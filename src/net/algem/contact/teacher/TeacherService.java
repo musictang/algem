@@ -1,0 +1,125 @@
+/*
+ * @(#)TeacherService.java	2.7.a 10/12/12
+ *
+ * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ *
+ * This file is part of Algem.
+ * Algem is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Algem is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with Algem. If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+package net.algem.contact.teacher;
+
+import java.sql.SQLException;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Vector;
+import net.algem.planning.*;
+import net.algem.util.DataConnection;
+import net.algem.util.GemLogger;
+
+/**
+ * Service class for teachers.
+ * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
+ * @version 2.7.a
+ * @since 2.4.a 22/05/12
+ */
+public class TeacherService
+{
+
+  private DataConnection dc;
+  private TeacherIO teacherIO;
+  private PlanningService pService;
+
+  public TeacherService(DataConnection dc) {
+    this.dc = dc;
+    this.teacherIO = new TeacherIO(dc);
+  }
+
+  public TeacherService(PlanningService service, DataConnection dc) {
+    this(dc);
+    pService = service;
+  }
+  /**
+   * Finds the schedules of the teacher {@code idprof} between date {@code start}
+   * and date {@code end}.
+   * @param teacher teacher id
+   * @param start date start
+   * @param end date end
+   * @return a list of schedules
+   */
+  public Vector<Schedule> getSchedule(int teacher, String start, String end) {
+    String query = "WHERE ptype = "+Schedule.COURSE_SCHEDULE+" AND idper = " + teacher
+            + " AND jour >= '" + start + "' AND jour <= '" + end + "' ORDER BY jour,debut";
+    return ScheduleIO.find(query, dc);
+  }
+
+  /**
+   * Finds the schedules of the teacher {@code idprof} between date {@code start}
+   * and date {@code end} and in establishment {@code estab}.
+   * @param teacher teacher id
+   * @param estab establishment id
+   * @param start date start
+   * @param end date end
+   * @return a list of schedules
+   */
+  public Vector<ScheduleObject> getCourseSchedule(int teacher, int estab, String start, String end) throws SQLException {
+    String query = ", salle s, action a WHERE p.ptype = " + Schedule.COURSE_SCHEDULE + " AND p.idper = " + teacher
+              + " AND p.jour>='" + start + "'"
+              + " AND p.jour<='" + end + "'"
+              + " AND p.lieux = s.id AND s.etablissement=" + estab
+              + " AND p.action = a.id"
+              + " ORDER BY p.lieux,p.jour,p.debut,a.cours"; //OK
+              //+" order by p.place,p.start,p.day,p.action"; //OK mais
+              //+" order by extract(dow from p.day),p.place,p.action,p.start"; //OUI MAIS
+    return ScheduleIO.findObject(query, dc);
+  }
+
+  public Vector<Teacher> findTeachers() throws SQLException {
+    return teacherIO.find("");
+  }
+  
+   /**
+   * Finds the substitutes for this teacher and for the day selected in schedule.
+   * Days of week are represented from index 0 to 6 (from monday to sunday)
+   * In french calendar, monday is 2. It's the reason why we decrement the day by 2.
+   * 
+   * @param s schedule object
+   * @return a list of teachers
+   */
+  public Vector<SubstituteTeacher> getSubstitutes(ScheduleObject s) {
+
+    int day = getDayOfWeek(s.getDay().getDate());
+    try {
+      int c = ActionIO.getCourse(s.getIdAction(), dc);
+      return SubstituteTeacherIO.find(s.getRoom().getEstab(), c, s.getIdPerson(), day - 2, dc);
+    } catch (SQLException ex) {
+      GemLogger.logException(ex);
+      return null;
+    }
+  }
+  
+  /**
+   * Under postgresql, days of week (only for timestamp values) 
+   * are enumerated from 0 to 6 (sunday is 0).
+   *
+   * @return an integer representing day of week (for FRANCE)
+   */
+  private int getDayOfWeek(Date date) {
+
+    Calendar cal = Calendar.getInstance(Locale.FRANCE);
+    cal.setTime(date);
+    return cal.get(Calendar.DAY_OF_WEEK);
+  }
+}

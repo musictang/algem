@@ -1,0 +1,148 @@
+/*
+ * @(#)ListCtrl.java	2.6.a 31/07/12
+ * 
+ * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ *
+ * This file is part of Algem.
+ * Algem is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Algem is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with Algem. If not, see <http://www.gnu.org/licenses/>.
+ * 
+ */
+package net.algem.util.ui;
+
+import java.awt.BorderLayout;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseListener;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Vector;
+import javax.swing.JTable;
+import javax.swing.table.TableColumnModel;
+import net.algem.util.GemCommand;
+
+/**
+ * comment
+ *
+ * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
+ * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
+ * @version 2.6.a
+ * @since 1.0a 07/07/1999
+ */
+public abstract class ListCtrl
+        extends GemPanel
+{
+
+  protected JTableModel tableModel;
+  protected JTable jtable;
+  protected GemButton back;
+
+  public ListCtrl() {
+    setLayout(new BorderLayout());
+    addSearchComponent();
+  }
+
+  public ListCtrl(boolean searchFlag) {
+    //super();
+    setLayout(new BorderLayout());
+    if (searchFlag) {
+      addSearchComponent();
+    }
+  }
+
+  @Override
+  public void addMouseListener(MouseListener l) {
+    jtable.addMouseListener(l);
+  }
+
+  public void addActionListener(ActionListener l) {
+    back.addActionListener(l);
+  }
+
+  public <E> void addBlock(Vector<E> block) {
+    Enumeration e = block.elements();
+    while (e.hasMoreElements()) {
+      addRow(e.nextElement());
+    }
+  }
+
+  public int getSelectedIndex() {
+    return jtable.convertRowIndexToModel(jtable.getSelectedRow());
+  }
+
+  public int getIdFromIndex(int i) {
+    return tableModel.getIdFromIndex(jtable.convertRowIndexToModel(i));
+  }
+
+  public int getSelectedID() {
+    return tableModel.getIdFromIndex(jtable.convertRowIndexToModel(jtable.getSelectedRow()));
+  }
+
+  public <E> void loadResult(Vector<E> liste) {
+    tableModel.clear();
+    addBlock(liste);
+  }
+
+  public int nbLines() {
+    return tableModel.getRowCount();
+  }
+
+  public void clear() {
+    tableModel.clear();
+  }
+
+  public void addRow(Object item) {
+    tableModel.addItem(item);
+  }
+
+  public void updateRow(Object item) {
+    tableModel.modItem(getSelectedIndex(), item);
+  }
+
+  public void deleteRow(Object item) {
+    if (nbLines() > 0) {
+      tableModel.deleteItem(item);
+    }
+  }
+
+  /**
+   * Contenu du modèle.
+   * @param <T>
+   * @return une collection d'objets de type T
+   */
+  public <T> Collection<T> getData() {
+    return tableModel.getData();
+  }
+
+  /**
+   * Sets the column width for a table.
+   * Widths are calculated from index 0.
+   * @param cols a list of integers
+   * @since 2.3.a 14/02/12
+   */
+  protected void setColumns(int... cols) {
+
+    TableColumnModel cm = jtable.getColumnModel();
+    for (int i = 0; i < cols.length; i++) {
+      cm.getColumn(i).setPreferredWidth(cols[i]);
+    }
+
+  }
+
+  /**
+   * Adds a button for new search.
+   */
+  private void addSearchComponent() {
+    back = new GemButton(GemCommand.NEW_SEARCH_CMD);
+    add(back, BorderLayout.SOUTH);
+  }
+}

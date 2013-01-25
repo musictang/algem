@@ -1,0 +1,195 @@
+/*
+ * @(#)MusicianListView.java	2.7.a 26/11/12
+ * 
+ * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ *
+ * This file is part of Algem.
+ * Algem is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Algem is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with Algem. If not, see <http://www.gnu.org/licenses/>.
+ * 
+ */
+package net.algem.group;
+
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.sql.SQLException;
+import java.util.Vector;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.TableColumnModel;
+import net.algem.contact.*;
+import net.algem.util.BundleUtil;
+import net.algem.util.DataCache;
+import net.algem.util.GemCommand;
+import net.algem.util.GemLogger;
+import net.algem.util.model.Model;
+import net.algem.util.module.GemDesktop;
+import net.algem.util.ui.GemBorderPanel;
+import net.algem.util.ui.GemButton;
+import net.algem.util.ui.GemLabel;
+import net.algem.util.ui.GemPanel;
+
+/**
+ * Musicians list view.
+ *
+ * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
+ * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
+ * @version 2.7.a
+ * @since 1.0a 18/02/2004
+ */
+public class MusicianListView
+        extends GemPanel
+        implements ActionListener
+{
+
+  private GemDesktop desktop;
+  private DataCache dataCache;
+  private int id;
+  private MusicianTableModel musicians;
+  private JTable table;
+  private GemButton btAdd;
+  private GemButton btModify;
+  private GemButton btDel;
+
+  public MusicianListView(GemDesktop _desktop) {
+
+    setLayout(new BorderLayout());
+    desktop = _desktop;
+    dataCache = desktop.getDataCache();
+
+    musicians = new MusicianTableModel(dataCache);
+    table = new JTable(musicians)
+    {
+      public void processMouseEvent(MouseEvent evt) {
+        if (evt.getID() == MouseEvent.MOUSE_CLICKED && evt.getClickCount() > 1) {
+          voirPersonne();
+        } else {
+          super.processMouseEvent(evt);
+        }
+      }
+    };
+    table.setAutoCreateRowSorter(true);
+
+    TableColumnModel cm = table.getColumnModel();
+    cm.getColumn(0).setPreferredWidth(30);
+    cm.getColumn(1).setPreferredWidth(120);
+    cm.getColumn(2).setPreferredWidth(120);
+    cm.getColumn(3).setPreferredWidth(120);
+
+    JScrollPane pm = new JScrollPane(table);
+
+    GemPanel bas = new GemPanel();
+    bas.setLayout(new GridLayout(1, 4));
+    bas.add(new GemLabel(BundleUtil.getLabel("Group.members.label")));
+
+    bas.add(btDel = new GemButton(GemCommand.REMOVE_CMD));
+    bas.add(btModify = new GemButton(GemCommand.MODIFY_CMD));
+    bas.add(btAdd = new GemButton(GemCommand.ADD_CMD));
+    btAdd.addActionListener(this);
+    btModify.addActionListener(this);
+    btDel.addActionListener(this);
+
+    GemBorderPanel pb1 = new GemBorderPanel();
+    pb1.setLayout(new BorderLayout());
+    pb1.add(bas, BorderLayout.NORTH);
+    pb1.add(pm, BorderLayout.CENTER);
+
+    this.setLayout(new BorderLayout());
+    add(pb1, BorderLayout.CENTER);
+
+  }
+
+  public void voirPersonne() {
+    int row = table.getSelectedRow();
+    if (row < 0) {
+      return;
+    }
+    int n = table.convertRowIndexToModel(row);
+    if (n < 0) {
+      return;
+    }
+
+    Musician m = (Musician) musicians.getItem(n);
+    // il est nécessaire de récupérer les adresses, tel et email éventuels du contact
+    Contact c = ContactIO.findId(m.getId(), dataCache.getDataConnection());
+    PersonFile pf = new PersonFile(c);
+    try {
+      ((PersonFileIO) DataCache.getDao(Model.PersonFile)).complete(pf);
+    } catch (SQLException ex) {
+      GemLogger.logException("complete dossier musicien liste", ex);
+    }
+    PersonFileEditor editor = new PersonFileEditor(pf);
+    desktop.addModule(editor);
+  }
+
+  @Override
+  public void actionPerformed(ActionEvent e) {
+    String cmd = e.getActionCommand();
+    if (GemCommand.ADD_CMD.equals(cmd)) {
+      MusicianDlg dlg = new MusicianDlg(this, "ajout musicien", dataCache);
+      dlg.show();
+      if (dlg.isValidation()) {
+        musicians.addItem(dlg.get());
+      }
+    } else {
+      int row = table.getSelectedRow();
+      if (row < 0) {
+        return;
+      }
+      int n = table.convertRowIndexToModel(row);
+      if (n < 0) {
+        return;
+      }
+
+      if (GemCommand.MODIFY_CMD.equals(cmd)) {
+        Musician m = (Musician) musicians.getItem(n);
+        MusicianDlg dlg = new MusicianDlg(this, "modif musicien", dataCache);
+        dlg.setPerson(m);
+        dlg.show();
+        if (dlg.isValidation()) {
+          musicians.modItem(n, dlg.get());
+        }
+      } else if (GemCommand.REMOVE_CMD.equals(cmd)) {
+        musicians.deleteItem(n);
+      }
+    }
+  }
+
+  public int getId() {
+    return id;
+  }
+
+  public void setId(int i) {
+    id = i;
+    //no.setText(String.valueOf(i));
+  }
+
+  public Vector<Musician> get() {
+    return musicians.getData();
+  }
+
+  void addRow(Musician p) {
+    musicians.addItem(p);
+  }
+
+  void deleteCurrent() {
+    musicians.deleteItem(table.getSelectedRow());
+  }
+
+  void clear() {
+    musicians.clear();
+  }
+}
