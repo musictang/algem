@@ -1,0 +1,222 @@
+Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+
+This file is part of Algem.
+Algem is free software: you can redistribute it and/or modify it
+under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Algem is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with Algem. If not, see <http://www.gnu.org/licenses/>.
+
+============================================================================
+NOTES POUR LE DEVELOPPEUR
+============================================================================
+
+Si le projet vous intéresse, n'hésitez pas à nous contacter.
+Le projet est supporté par l'association Musiques Tangentes.
+Responsable du projet (Bruno Mauguil) :
+bruno (@) musiques-tangentes.asso.fr
+Développeur principal (Jean-Marc Gobat) :
+jmg (@) musiques-tangentes.asso.fr
+
+CONTENU DE L'ARCHIVE
+====================
+src : code source de l'application
+test : code source des classes de test
+doc : documentation java et base de données
+plugins : projets associés
+
+ARBORESCENCE DES PACKAGES SRC
+=============================
+(entre parenthèses, usage et signification)
+src/
+`-- net
+    `-- algem
+        |-- accounting (comptabilité)
+        |-- bank (banque, agence bancaire, rib)
+        |-- billing (facturation)
+        |-- config
+        |-- contact
+        |   |-- member (adhérent)
+        |   `-- teacher
+        |-- course (cours)
+        |-- edition (impression, export)
+        |-- enrolment (inscription)
+        |-- group (groupe)
+        |-- opt (optionnel, obsolète)
+        |-- planning 
+        |   |-- agenda
+        |   |-- day (planning jour)
+        |   |-- editing (édition planning)
+        |   `-- month (planning mois)
+        |-- room (salle de cours, établissement)
+        |-- security (sécurité, utilisateur, droits)
+        `-- util
+            |-- event (socket event)
+            |-- jdesktop (classes utilitaires API Java Desktop)
+            |-- menu
+            |-- model
+            |-- module (internal frame)
+            |-- postit
+            `-- ui (ihm)
+
+Notes : 
+- group a été choisi plutôt que band afin d'étendre la notion de groupe de
+musiciens à un simple groupe de personnes
+
+Quelques exemples de correspondances de noms de classe français - anglais
+net.algem.accounting.OrderLine : écheancier, ligne d'échéance
+net.algem.accounting.CostAccount : Analytique
+net.algem.bank.BankBranch : AgenceBancaire
+net.algem.bank.Bic : Rib
+net.algem.billing.Invoice : Facture
+net.algem.billing.Quote : Devis
+net.algem.config.CategoryOccup : Catégorie professionnelle (Occupational
+Category)
+net.algem.contact.PersonFile : DossierPersonne
+net.algem.edition.AttendanceSheet : Feuille de présence
+net.algem.enrolment.Enrolment : Inscription
+net.algem.planning.FollowUpDlg : SuiviDlg
+net.algem.planning.Schedule : Planning
+net.algem.planning.ScheduleRange : Plage
+net.algem.planning.TrainingCourseSchedule : Stage
+net.algem.room.RoomRate : TarifSalle
+net.algem.room.RoomFileEditor : EditeurDossierSalle
+
+Une plage est liée à un planning. Les plannings collectifs (couleur rouge par
+défaut) comportent un ensemble de plages de même durée. Les plannings
+individuels (couleur verte par défaut), peuvent comporter des plages de durée
+différente.
+
+LOG
+===
+- La gestion des journaux se fait désormais par l'intermédiaire de l'API Logger.
+- Le journal est enregistré dans le fichier algem.log dans le sous-répertoire
+Journaux de l'application.
+- Le nom de l'utilisateur et la date sont visibles dans l'en-tête de chaque log.
+
+CONNEXION
+=========
+- La gestion de la connexion est déportée dans la classe
+net.algem.util.DataConnection
+
+CACHE
+=====
+Bien qu'Algem soit conçu pour être utilisé sur un réseau local, rien n'interdit
+de déporter le serveur de bases de données sur une machine distante (hébergement
+internet ou VPN). Afin d'accélérer le chargement de l'application, l'affichage
+des plannings et la lecture des données, il est essentiel de disposer d'un cache
+client. C'est le rôle de la classe net.algem.util.DataCache.
+
+Les données mises en cache le sont sous 2 formes :
+- A travers des listes de type GemList<T> implémentant l'interface
+net.algem.util.model.GemModel. Ces listes sont utilisées en particulier pour
+l'affichage des éléments dans les combobox. La mise à jour d'une liste est
+immédiatement répercutée dans la combobox correspondante.
+- A travers des Hashtable (il est envisageable de remplacer ces hashtables par
+des objets implémentant Map ou Set)
+
+Ce sont les données récurrentes (Action, Niveau, Status, Instrument, etc.) pour
+lesquelles la mise en cache se révèle la plus efficace.
+
+Depuis sa création, Algem a connu de multiples changements de cap. La gestion du
+cache et les appels aux méthodes du cache dans les différents services et
+controlleurs n'est pas des plus uniformes. Différentes procédures sont parfois 
+utilisées pour obtenir le même résultat, ce qui nuit à la lisibilité de
+l'ensemble. Le cas échéant, des caches locaux peuvent être encore présents dans
+certains DAO, pour des raisons pratiques. Du travail reste à faire à ce niveau.
+
+DISPATCHER
+==========
+- Le dispatcher est un service (java) tournant en tache de fond. Il permet la
+synchronisation en temps réel des différents clients sur le réseau. Le client,
+en l'occurrence, étant la JVM lancée au démarrage d'Algem sur l'un des postes de
+travail.
+- Sous Linux, le script gemdispatcher peut être placé dans le répertoire
+/etc/init.d du serveur et démarré comme un service. Dans un environnement 100%
+Windows, il est nécessaire d'initialiser un service équivalent.
+
+- A l'instar des méthodes add, update et delete, la méthode remoteEvent du
+DataCache permet de déclencher les actions appropriées à la réception d'un
+événement.
+
+MVC
+Algem est construit suivant une architecture MVC : modèles, vues, controlleurs.
+Les développeurs se sont efforcés dans la mesure du possible de coller à cette
+architecture. La dissociation entre vues et controlleurs n'est pas toujours
+parfaite cependant et du travail reste à faire à ce niveau.
+
+SERVICES
+========
+- Des classes de service métier ont été créées pour regrouper les fonctions
+d'accès aux ressources. Un certain nombre de controlleurs jouent encore ce rôle
+mais ils devraient être idéalement déchargés de cette responsabilité.
+
+SECURITE
+========
+- La gestion de la sécurité est encore minimale. Des profils permettent de
+différencier les différents rôles d'utilisateurs. Dans la pratique, seuls 2
+profils sont utilisés au quotidien : Administrateur et Utilisateur.
+L'administrateur a tous les droits par défaut, alors que ceux de l'utilisateur
+(une personne de l'accueil par exemple) sont limités à certaines opérations.
+Au démarrage d'Algem, on vérifie que l'utilisateur choisi en argument est bien
+présent dans la table login de la base de données. Les mots de passe étaient
+bien gérés par le passé mais leur recours a été désactivé pour des raisons
+purement pratiques. Leur remise en service est aujourd'hui nécessaire.
+
+I18N
+====
+- Le fichier algem.properties (non inclus dans le jar) est destiné à la
+traduction des labels, des titres ou des menus.
+Ce fichier est placé dans le répertoire de travail (à l'extérieur du .jar) pour
+des raisons pratiques et historiques.
+Les clés sont en anglais et commencent arbitrairement par une majuscule.
+- Le fichier message.properties (inclus dans le jar) est utilisé, comme son nom
+l'indique pour les messages et les différents textes d'accompagnement : clés en
+minuscules et mots séparés par des points.
+
+PLUGINS
+=======
+- Le package plugins a été conçu pour rendre extensible l'application et
+l'adapter à l'organisation dans laquelle elle est mise en service. C'est le rôle
+en particulier de la classe StatisticsPlugin, qui peut être développée de
+manière indépendante. Une fois compilée et archivée dans un jar, il suffit de
+placer ce jar dans le classpath pour que l'organisation dispose de statistiques
+(exportation de données) personnalisées.
+
+TESTS
+=====
+Très incomplètes, les classes de test nécessitent JUnit 3 et JUnit 4. Il serait
+préférable d'unifier le tout sous JUnit 4.
+Par défaut, une copie de la base de travail (nommée test) doit être présente
+dans l'environnement de travail. Rien n'a été fait pour automatiser la création
+ou la recréation de cette base. Rien n'assure non plus la cohérence des données
+dans la base après test (bien que des opérations de nettoyage soient présentes
+dans certains tests faisant appel aux DAO).
+
+EN PROJET
+=========
+- Procédure de démarrage et de mise à jour via Java Webstart.
+- Remaniement de la partie gestion de cours. 
+La création et la conception des modules (ensemble de cours soumis à un tarif)
+est à revoir. Il est impossible aujourd'hui d'ajouter autant de cours que l'on
+veut à un module. Les choix actuels sont trop restrictifs. L'ihm pour la
+création de modules, de cours et l'inscription proprement dite est encore trop
+peu intuitive.
+
+- Exports comptables vers les logiciels de comptabilité Ciel Compta ou Sage.
+Actuellement, seul le logiciel DVLog PGI est pris en compte.
+
+- Gestion des stages (cours sur plusieurs jours d'affilée)
+
+- Rédaction d'une doc utilisateur
+
+- Extension des tests unitaires et des tests d'intégration
+
+
