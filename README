@@ -147,6 +147,7 @@ DataCache permet de déclencher les actions appropriées à la réception d'un
 événement.
 
 MVC
+===
 Algem est construit suivant une architecture MVC : modèles, vues, controlleurs.
 Les développeurs se sont efforcés dans la mesure du possible de coller à cette
 architecture. La dissociation entre vues et controlleurs n'est pas toujours
@@ -202,7 +203,8 @@ dans certains tests faisant appel aux DAO).
 
 EN PROJET
 =========
-- Procédure de démarrage et de mise à jour via Java Webstart.
+- Procédure de démarrage, de mise à jour automatique et d'utilisation en ligne
+ via Java Webstart.
 - Remaniement de la partie gestion de cours. 
 La création et la conception des modules (ensemble de cours soumis à un tarif)
 est à revoir. Il est impossible aujourd'hui d'ajouter autant de cours que l'on
