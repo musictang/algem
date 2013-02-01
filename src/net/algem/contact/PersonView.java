@@ -1,5 +1,5 @@
 /*
- * @(#)PersonView.java	2.6.a 17/09/12
+ * @(#)PersonView.java	2.7.e 01/02/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -29,6 +29,9 @@ import java.io.File;
 import java.net.URL;
 import java.util.Collection;
 import javax.imageio.ImageIO;
+import javax.jnlp.DownloadService;
+import javax.jnlp.ServiceManager;
+import javax.jnlp.UnavailableServiceException;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -47,7 +50,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.7.e
  */
 public class PersonView
         extends GemBorderPanel
@@ -60,7 +63,7 @@ public class PersonView
   private JCheckBox cbImgRights;
   private JLabel photo;
   private GemLabel rhLabel;
-  /**  Nombre d'heures restantes sur carte abonnement. */
+  /** Nombre d'heures restantes sur carte abonnement. */
   private GemLabel nrh;
   private GemDesktop desktop;
   private GridBagHelper gb;
@@ -121,28 +124,30 @@ public class PersonView
     ImageIcon icon;
 
     String path = ImageUtil.PHOTO_PATH + idper + ".jpg";
-    URL s = getClass().getResource(path);
-    if (s == null) {
+    URL url = getClass().getResource(path);
+    if (url == null) {
       return null;
     }
     try {
-      File f = new File(s.getPath());
-      BufferedImage bi1 = ImageIO.read(f);
+      //InputStream is = getClass().getResourceAsStream(url.getPath());
+      //BufferedImage bi1 = ImageIO.read(is);
+      BufferedImage bi1 = ImageIO.read(url);
       //if (ImageUtil.PHOTO_WIDTH != bi1.getWidth() || ImageUtil.PHOTO_HEIGHT != bi1.getHeight()) {
-      if (ImageUtil.PHOTO_HEIGHT != bi1.getHeight()) {
+      if (bi1.getHeight() > ImageUtil.PHOTO_HEIGHT  && !isRunningJavaWebStart()) {
+
         System.out.println("rescaling !");
         BufferedImage bi2 = ImageUtil.rescale(bi1);
         BufferedImage bi3 = ImageUtil.formatPhoto(bi2);
 
-        String dest = s.getFile();
+        String dest = url.getFile();
         File oldFile = new File(dest);
         int index = dest.lastIndexOf(".");
         dest = dest.substring(0, index);
         oldFile.renameTo(new File(dest + "_" + System.currentTimeMillis() + ".jpg"));
-        File newFile = new File(s.getPath());
+        File newFile = new File(url.getPath());
         ImageIO.write(bi3, "jpg", newFile);
       }
-      icon = new ImageIcon(s);
+      icon = new ImageIcon(url);
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -177,12 +182,6 @@ public class PersonView
     return pr;
   }
 
-
-  /*public void setNote(int n)
-
-  {
-  note = n;
-  }*/
   public void setId(int n) {
     no.setText(String.valueOf(n));
   }
@@ -223,6 +222,7 @@ public class PersonView
       JButton jb = new JButton(g.getName());
       jb.addActionListener(new ActionListener()
       {
+
         public void actionPerformed(ActionEvent e) {
           GroupFileEditor editeurGroupe = new GroupFileEditor(g, GemModule.GROUPE_DOSSIER_KEY);
           desktop.addModule(editeurGroupe);
@@ -234,4 +234,17 @@ public class PersonView
 
   }
 
+  /**
+   * Checks if java webstart is running.
+   * 
+   * @return true if running
+   */
+  private boolean isRunningJavaWebStart() {
+    try {
+      DownloadService ds = (DownloadService) ServiceManager.lookup("javax.jnlp.DownloadService");
+      return ds != null;
+    } catch (UnavailableServiceException e) {
+      return false;
+    }
+  }
 }

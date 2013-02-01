@@ -1,5 +1,5 @@
 /*
- * @(#)Algem.java	2.7.d 24/01/13
+ * @(#)Algem.java	2.7.e 01/02/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -26,6 +26,7 @@ import java.awt.Point;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.Locale;
@@ -42,16 +43,15 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.d
+ * @version 2.7.e
  */
 public class Algem
 {
 
-  public static final String APP_VERSION = "2.7.d";
+  public static final String APP_VERSION = "2.7.e";
   private static final int DEF_WIDTH = 1080;// (850,650) => ancienne taille
   private static final int DEF_HEIGHT = 780;
   private static final Point DEF_LOCATION = new Point(70, 30);
-  
   private JFrame frame;
   private DataCache cache;
   private User user;
@@ -67,14 +67,20 @@ public class Algem
     props = new Properties();
   }
 
-  private void init(String configFile, final String host, final String base, String login) {
+  private void init(String configFile, final String host, final String base, String login) throws IOException {
 
     final GemBoot gemBoot = new GemBoot();
     // opening configuration file
-    try {
+    try { // local file
       props.load(new FileInputStream(configFile));
+    } catch (FileNotFoundException fe) {
+      try { //url
+        props.load(new URL(configFile).openStream());
+      } catch (MalformedURLException ex) {
+        System.err.println(ex);
+      }
     } catch (IOException e) {
-      MessagePopup.error(gemBoot.getFrame(), e.getMessage() + ">>" + System.getProperty("user.dir"));
+      MessagePopup.error(gemBoot.getFrame(), e.getMessage() + ">>" + configFile);
       System.exit(1);
     }
 
@@ -93,7 +99,7 @@ public class Algem
       System.exit(4);
     }
     /* -------------------------- */
-    /* Logger initialisation      */
+    /* Logger initialisation */
     /* -------------------------- */
     //String logPath = ConfigUtil.getConf(ConfigKey.LOG_PATH.getKey(), dc);
     URL url = getClass().getResource("/Journaux/algem.log");
@@ -102,25 +108,25 @@ public class Algem
       if (url != null) {
         GemLogger.set(url.getPath());
         GemLogger.log(Level.INFO, "net.algem.Algem", "main", msg);
-      } 
+      }
     } catch (IOException ex) {
       System.err.println(ex.getMessage());
     }
 
     cache = DataCache.getInstance(dc, login);
-    
+
     /* ------------------------ */
     /* Test login user validity */
     /* ------------------------ */
     checkUser(login);
-    
+
     cache.load(gemBoot);
 
     /* ------------------------------------------------ */
-    /* Creates the frame of the application             */
+    /* Creates the frame of the application */
     /* ------------------------------------------------ */
     setDesktop();
-    
+
     gemBoot.close();
 
   }
@@ -223,10 +229,10 @@ public class Algem
   }
 
   /**
-   * 
+   *
    * @param v
    * @throws SQLException
-   * @deprecated 
+   * @deprecated
    */
   private void updateVersionFrom(String v) throws SQLException {
     System.out.println("UPDATE version v = " + v + " app = " + APP_VERSION);
@@ -237,7 +243,7 @@ public class Algem
       dc.executeUpdate(query);
       query = "INSERT INTO version VALUES('" + APP_VERSION + "')";
       dc.executeUpdate(query);
-    } 
+    }
     query = "UPDATE version SET version = '" + APP_VERSION + "'";
     dc.executeUpdate(query);
   }
@@ -253,7 +259,7 @@ public class Algem
       ImageIcon icon = ImageUtil.createImageIcon(ImageUtil.ALGEM_LOGO);
 
       label = new JLabel("", JLabel.LEFT);
-      frame.setSize(420, 150);
+      frame.setSize(420, 160);
       frame.setLocation(100, 100);
 
       frame.add(new JLabel(icon), BorderLayout.WEST);
@@ -329,10 +335,10 @@ public class Algem
 
 // JUST FOR HISTORY INFO : DO NOT UNCOMMENT
 /*
-  System.setSecurityManager(new RMISecurityManager()); 
-  try { 
-    dc =  (DataCacheObjet) Naming.lookup("//www/DataCache"); 
-  } catch (Exception e) {
-    System.err.println("Erreur Lookup "+e); 
-  }
+ * System.setSecurityManager(new RMISecurityManager());
+ * try {
+ * dc = (DataCacheObjet) Naming.lookup("//www/DataCache");
+ * } catch (Exception e) {
+ * System.err.println("Erreur Lookup "+e);
+ * }
  */

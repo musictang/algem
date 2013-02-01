@@ -1,5 +1,5 @@
 /*
- * @(#)ImageUtil.java	2.5.a 29/06/12
+ * @(#)ImageUtil.java	2.7.e 01/02/13
  *
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -31,14 +31,14 @@ import net.algem.accounting.AccountUtil;
  * Utility class for image operations.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.5.a
+ * @version 2.7.e
  */
 public class ImageUtil
 {
 
   public static String IMAGE_PATH = "/resources/images/";
   public static String PHOTO_PATH = "/resources/photos/";
-  public static String ALGEM_LOGO = "logo1.gif";
+  public static String ALGEM_LOGO = "logo.png";
   public static String SEARCH_ICON = "cherche.png";
   public static String CAL_ICON = "cal.gif";
   public static String NO_CONFLICT_ICON = "feuvert.gif";
@@ -46,9 +46,9 @@ public class ImageUtil
   public static String DELETE_ICON = "quitter_trans_12x12.png";
   public static String TAB_CLOSING_ICON = "quitter_trans_12x12.png";
   public static int PHOTO_WIDTH = 100;
-  public static int PHOTO_HEIGHT = 128;
+  public static int PHOTO_HEIGHT = 130;
 
-  private ImageUtil() {
+  public ImageUtil() {
   }
 
   /**
@@ -57,25 +57,6 @@ public class ImageUtil
    * @return BufferedImage
    */
   public static BufferedImage rescale(BufferedImage img) {
-    /*int w = img.getWidth();
-    int h = img.getHeight();
-    double width = (double) w;
-    double height = (double) h;
-    double rapport = 1;
-    int newWidth = 0;
-    if (width >= height) {
-      rapport = width / height;
-      newWidth = (int) (PHOTO_HEIGHT * rapport);
-    } else {
-      rapport = height / width;
-      newWidth = (int) (PHOTO_HEIGHT / rapport);
-    }
-    BufferedImage dimg = new BufferedImage(newWidth, PHOTO_HEIGHT, img.getType());
-    Graphics2D g = dimg.createGraphics();
-    g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-    g.drawImage(img, 0, 0, newWidth, PHOTO_HEIGHT, 0, 0, w, h, null);
-    g.dispose();
-    return dimg;*/
   	return rescale(img, PHOTO_WIDTH, PHOTO_HEIGHT);
   }
   
@@ -173,9 +154,9 @@ public class ImageUtil
   public static ImageIcon createImageIcon(String file) {
     ImageIcon img = null;
     String path = ImageUtil.IMAGE_PATH + file;
-    URL url = path.getClass().getResource(path);
+    URL url = new ImageUtil().getClass().getResource(path);
     if (url != null) {
-      img = new ImageIcon(path.getClass().getResource(path));
+      img = new ImageIcon(url);
     }
     return img;
   }

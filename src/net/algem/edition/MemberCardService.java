@@ -1,5 +1,5 @@
 /*
- * @(#)MemberCardService.java 2.7.a 22/11/12
+ * @(#)MemberCardService.java 2.7.e 01/02/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -21,7 +21,6 @@
 package net.algem.edition;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.ResultSet;
@@ -49,7 +48,7 @@ import net.algem.util.module.GemDesktop;
  * Service class for member card edition.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.7.e
  * @since 2.4.a 16/05/12
  */
 public class MemberCardService
@@ -235,7 +234,7 @@ public class MemberCardService
     if (url == null) {
       return null;
     }
-    BufferedImage img = ImageIO.read(new File(url.getPath()));
+    BufferedImage img = ImageIO.read(url);
     if (img == null) {
       return null;
     }
