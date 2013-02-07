@@ -1,5 +1,5 @@
 /*
- * @(#)CourseSearchCtrl.java	2.7.a 26/11/12
+ * @(#)CourseSearchCtrl.java	2.7.f 07/02/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -34,7 +34,7 @@ import net.algem.util.ui.SearchCtrl;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.7.f
  * @since 1.0a 07/07/1999
  */
 public class CourseSearchCtrl
@@ -74,7 +74,7 @@ public class CourseSearchCtrl
 
     int id = getId();
     if (id > 0) {
-      query += " AND id=" + id;
+      query += " AND id = " + id;
     } // recherche par title
     else if (null != (m = searchView.getField(1))) {
       query += " AND titre ~* '" + m.toUpperCase() + "'";
@@ -88,7 +88,7 @@ public class CourseSearchCtrl
     }
 
     query += " ORDER BY titre";
-    System.out.println(query);
+
     Vector<Course> v = null;
 		try {
 			v = ((CourseIO) DataCache.getDao(Model.Course)).find(query);

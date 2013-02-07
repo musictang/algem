@@ -1,5 +1,5 @@
 /*
- * @(#)Algem.java	2.7.e 01/02/13
+ * @(#)Algem.java	2.7.f 07/02/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -43,12 +43,12 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.e
+ * @version 2.7.f
  */
 public class Algem
 {
 
-  public static final String APP_VERSION = "2.7.e";
+  public static final String APP_VERSION = "2.7.f";
   private static final int DEF_WIDTH = 1080;// (850,650) => ancienne taille
   private static final int DEF_HEIGHT = 780;
   private static final Point DEF_LOCATION = new Point(70, 30);
@@ -177,6 +177,7 @@ public class Algem
     if (base == null) {
       base = props.getProperty("base");
     }
+    
 
     if (host == null && base == null) {
       dc = new DataConnection();
@@ -187,7 +188,14 @@ public class Algem
     } else {
       dc = new DataConnection(host, base);
     }
-
+    String ssl = props.getProperty("ssl");
+    if (ssl != null && "true".equals(ssl)) {
+      dc.setSsl(true);
+    }
+    String cacert = props.getProperty("cacert");
+    if (cacert != null && "true".equals(cacert)) {
+      dc.setCacert(true);
+    }
     dc.connect();
   }
 
@@ -286,22 +294,22 @@ public class Algem
   public static void main(String args[]) {
 
     Algem appli;
-    String user = null;
-    String cache = null;
-    String base = null;
-    String conf = null;
+    String userArg = null;
+    String hostArg = null;
+    String baseArg = null;
+    String confArg = null;
 
     if (args.length > 0) {
-      conf = args[0];
+      confArg = args[0];
     }
     if (args.length > 1) {
-      user = args[1];
+      userArg = args[1];
     }
     if (args.length > 2) {
-      cache = args[2];
+      hostArg = args[2];
     }
     if (args.length > 3) {
-      base = args[3];
+      baseArg = args[3];
     }
 
     Font fsans = new Font("Lucida Sans", Font.BOLD, 12);
@@ -321,7 +329,7 @@ public class Algem
 
     try {
       appli = new Algem();
-      appli.init(conf, cache, base, user);
+      appli.init(confArg, hostArg, baseArg, userArg);
     } catch (Exception ex) {
       JOptionPane.showMessageDialog(null,
               ex.toString(),

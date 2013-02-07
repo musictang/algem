@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileEditor 2.7.a 16/01/13
+ * @(#)PersonFileEditor 2.7.e 05/02/13
  *
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -65,7 +65,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.7.e
  */
 public class PersonFileEditor
         extends FileEditor
@@ -307,6 +307,7 @@ public class PersonFileEditor
       try {
         close();
       } catch (GemCloseVetoException i) {
+        System.err.println("GemCloseVetoException");
       }
     } // clic sur le bouton Enregistrer
     else if (GemCommand.SAVE_CMD.equals(arg)) {
@@ -508,6 +509,7 @@ public class PersonFileEditor
     updatePersonFile();
     String msg = dossier.hasErrors();
     if (msg != null) {
+      
       new ErrorDlg(personFileView, msg);
     } else {
       if (dossier.isModified()) {

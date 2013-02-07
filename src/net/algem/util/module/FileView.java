@@ -1,5 +1,5 @@
 /*
- * @(#)FileView.java	2.6.a 18/09/12
+ * @(#)FileView.java	2.7.e 04/02/13
  *
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -29,7 +29,7 @@ import net.algem.util.ui.TabPanel;
 /**
  * Base class for dossiers views.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.7.e
  * @since 2.3.c 21/03/12
  */
 public class FileView
@@ -90,7 +90,7 @@ public class FileView
     if (selectionFlag) {
       wTab.setSelectedComponent(tab);
     }
-    wTab.addCloseButton(wTab.getSelectedIndex(), listener);
+    wTab.addCloseButton(wTab.indexOfTab(label), listener);
   }
   
 

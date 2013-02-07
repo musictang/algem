@@ -1,5 +1,5 @@
 /*
- * @(#)DataConnection.java	2.7.a 26/11/12
+ * @(#)DataConnection.java	2.7.e 05/02/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -21,13 +21,14 @@
 package net.algem.util;
 
 import java.sql.*;
+import java.util.Properties;
 import java.util.logging.Level;
 
 /**
  * Utility class for database connection.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.7.e
  * @since 2.6.a 01/08/2012
  */
 public class DataConnection
@@ -45,6 +46,8 @@ public class DataConnection
   private String dbname;
   private boolean connected;
   private boolean debugSQL;
+  private boolean ssl = false;
+  private boolean cacert = false;
   private static final String DB_PASS = "Pigfy!"; // PigG8fy!
 
   public DataConnection(String dbhost, int dbport, String dbname) {
@@ -53,18 +56,54 @@ public class DataConnection
     this.dbname = dbname;
   }
 
+  /**
+   * Creates an instance with default host, port and base.
+   */
   public DataConnection() {
     this(DEF_HOST, DEF_PORT, DEF_DB_NAME);
   }
 
+  /**
+   * Creates an instance with default port and base.
+   * @param host 
+   */
   public DataConnection(String host) {
     this(host, DEF_PORT, DEF_DB_NAME);
   }
 
+  /**
+   * Creates an instance with default port.
+   * @param host
+   * @param dbname 
+   */
   public DataConnection(String host, String dbname) {
     this(host, DEF_PORT, dbname);
   }
 
+  public boolean isSsl() {
+    return ssl;
+  }
+
+  public void setSsl(boolean ssl) {
+    this.ssl = ssl;
+  }
+
+  public boolean isCacert() {
+    return cacert;
+  }
+
+  public void setCacert(boolean cacert) {
+    this.cacert = cacert;
+  }
+
+  /**
+   * 
+   * @param h host
+   * @param p port
+   * @param b base
+   * @return true if connected
+   * @throws SQLException 
+   */
   public boolean connect(String h, int p, String b) throws SQLException {
     dbhost = h;
     dbport = p;
@@ -82,11 +121,26 @@ public class DataConnection
 //		String url = "jdbc:postgres95://"+dbhost+"/"+dbname;
 //		String url = "jdbc:rst://"+dbhost+"/"+dbname;
     String url = DRIVER_URL + "://" + dbhost + "/" + dbname;
-
-    cnx = DriverManager.getConnection(url, DB_USER, DB_PASS);
+    cnx = DriverManager.getConnection(url, getConnectionProperties());
     connected = true;
 
     return connected;
+  }
+  
+  public Properties getConnectionProperties() {
+    Properties props = new Properties();
+    props.setProperty("user", DB_USER);
+    props.setProperty("password", DB_PASS);
+    if (ssl) {
+      props.setProperty("ssl", "true");
+      // by default, jdbc requests certificat
+      // to install certificate on client :
+      // keytool -keystore /path/to/java/lib/security/cacerts -alias <myalias> -import -file /path/to/server.crt.der
+      if (!cacert) { // for demo usage
+        props.setProperty("sslfactory", "org.postgresql.ssl.NonValidatingFactory");
+      }
+    }
+    return props;
   }
 
   public String getUrl() {

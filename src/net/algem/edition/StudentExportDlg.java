@@ -1,5 +1,5 @@
 /*
- * @(#)StudentExportDlg.java 2.6.g 19/11/12
+ * @(#)StudentExportDlg.java 2.7.e 05/02/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -44,7 +44,7 @@ import net.algem.util.ui.MessagePopup;
  * Abstract class for student export operations.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.g
+ * @version 2.7.e
  * @since 2.6.a 06/11/2012
  */
 public abstract class StudentExportDlg
@@ -111,9 +111,10 @@ public abstract class StudentExportDlg
       path = file.getPath();
     }
     try {
-        out = new PrintWriter(new FileWriter(path));
+        
         List<Person> list = service.getContacts(query);
         if (typeContact.getSelectedIndex() == 0) {
+          out = new PrintWriter(new FileWriter(path));
           counter = service.printCSV(out, list);
           MessagePopup.information(this, MessageUtil.getMessage("export.success.info", new Object[]{counter, path}));
         } else {

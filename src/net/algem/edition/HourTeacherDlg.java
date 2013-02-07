@@ -1,5 +1,5 @@
 /*
- * @(#)HourTeacherDlg.java	2.7.a 08/01/13
+ * @(#)HourTeacherDlg.java	2.7.e 04/02/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -62,7 +62,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.7.e
  * @since 1.0a 14/12/1999
  */
 public class HourTeacherDlg
@@ -330,7 +330,7 @@ public class HourTeacherDlg
               }
             int tt = totalEstab.get(ee);
             totalEstab.put(ee, tt + nmin);
-            out.print(" [" + ee.getName().charAt(0) + type + "] " + p.getStart() + " " + p.getEnd() + ",");
+            out.print(" [" + ee.getName().charAt(0) + type + "] " + pl.getStart() + " " + pl.getEnd() + ",");
             } // end detail individuel
           } // end for plage.size()
         } // end si cours individuel

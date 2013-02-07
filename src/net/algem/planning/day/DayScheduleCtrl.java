@@ -84,7 +84,6 @@ public class DayScheduleCtrl
   public void init() {
     daySchedule = dataCache.getDaySchedule();
 
-    //EstabList estabs = dataCache.getEstablishmentList();
     GemList<Establishment> estabs = dataCache.getList(Model.Establishment);
     view = new DayScheduleView(desktop, daySchedule, estabs);
     view.setSize(GemModule.DAY_PLANNING_SIZE);

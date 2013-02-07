@@ -1,5 +1,5 @@
 /*
- * @(#)CourseSearchDeleteCtrl.java	2.7.a 26/11/12
+ * @(#)CourseSearchDeleteCtrl.java	2.7.f 07/02/13
  * 
  * Copyright (c) 19992012 Musiques Tangentes. All Rights Reserved.
  *
@@ -35,7 +35,7 @@ import net.algem.util.ui.SearchCtrl;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.7.f
  */
 public class CourseSearchDeleteCtrl
 	extends SearchCtrl {
@@ -74,9 +74,9 @@ public class CourseSearchDeleteCtrl
 		String t = null;
 		int id = getId();
 		if (id > 0) {
-			query = "WHERE c.id=" + id;
+			query = "WHERE c.id = " + id;
 		} else if ((t = searchView.getField(1)) != null) {
-			query = "WHERE c.titre ~ '" + t + "'";
+			query = "WHERE c.titre ~* '" + t + "'";
 		} else {
 			query = "";
 		}

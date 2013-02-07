@@ -1,5 +1,5 @@
 /*
- * @(#)Establishment.java	2.6.a 24/09/12
+ * @(#)Establishment.java	2.7.e 06/02/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -33,7 +33,7 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.7.e
  */
 public class Establishment
         implements GemModel {
@@ -55,15 +55,24 @@ public class Establishment
   }
 
   @Override
-  public boolean equals(Object e) {
-    return (e != null && e instanceof Establishment
-            && p.equals(((Establishment) e).p));
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final Establishment other = (Establishment) obj;
+    if (this.p != other.p && (this.p == null || !this.p.equals(other.p))) {
+      return false;
+    }
+    return true;
   }
 
   @Override
   public int hashCode() {
-    int hash = 7;
-    hash = 47 * hash + (this.p != null ? this.p.hashCode() : 0);
+    int hash = 3;
+    hash = 67 * hash + (this.p != null ? this.p.hashCode() : 0);
     return hash;
   }
 

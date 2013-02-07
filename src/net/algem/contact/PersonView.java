@@ -1,5 +1,5 @@
 /*
- * @(#)PersonView.java	2.7.e 01/02/13
+ * @(#)PersonView.java	2.7.e 05/02/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -67,6 +67,7 @@ public class PersonView
   private GemLabel nrh;
   private GemDesktop desktop;
   private GridBagHelper gb;
+  private short ptype = Person.PERSON;
 
   public PersonView() {
     init();
@@ -117,6 +118,7 @@ public class PersonView
     if (icon != null) {
       photo.setIcon(icon);
     }
+    ptype = pr.getType();
 
   }
 
@@ -173,7 +175,7 @@ public class PersonView
     } catch (Exception e) {
       pr.setId(0);
     }
-
+    pr.setType(ptype);
     pr.setName(name.getText());
     pr.setFirstName(firstname.getText());
     pr.setCivility((String) civil.getSelectedItem());

@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileTabView.java  2.7.a 10/01/13
+ * @(#)PersonFileTabView.java  2.7.e 04/02/13
  *
  * Copyright (c) 1999-2012 Musiques Tangentes All Rights Reserved.
  *
@@ -58,7 +58,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.7.e
  */
 public class PersonFileTabView
         extends FileView
@@ -577,17 +577,17 @@ public class PersonFileTabView
       return false;
     }
     if (groupView == null) {
-      Vector<Musician> msc = new Vector<Musician>();
+      Vector<Musician> vm = new Vector<Musician>();
       for (Group g : dossier.getGroups()) {
         //Musicien m = g.getMusician(dossier.getId());
         Musician m = getMusician(g, dossier.getId());
         if (m != null) {
-          msc.addElement(m);
+          vm.addElement(m);
         }
       }
-      if (msc.size() > 0) {
+      if (vm.size() > 0) {
         PersonFileGroupListCtrl groupList = new PersonFileGroupListCtrl();
-        groupList.addBlock(msc);
+        groupList.addBlock(vm);
         groupView = new PersonFileGroupView(desktop, groupList);
       }
     } else {

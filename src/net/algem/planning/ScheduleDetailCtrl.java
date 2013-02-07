@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleDetailCtrl.java 2.7.a 10/01/13
+ * @(#)ScheduleDetailCtrl.java 2.7.e 05/02/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -57,7 +57,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.7.e
  * @since 1.0a 07/07/1999
  */
 public class ScheduleDetailCtrl
@@ -176,7 +176,12 @@ public class ScheduleDetailCtrl
 
     Point pos = event.getPosition();
     pos.x -= 100;
-    pos.y -= frame.getHeight() - 15;
+    int y = pos.y - frame.getHeight() - 15;
+    if (y < desktop.getFrame().getY()) {
+      y = desktop.getFrame().getY() + 110;
+    }
+    pos.y = y;
+//    pos.y -= frame.getHeight() - 15;
     frame.setLocation(pos);
     frame.setSize(260, frame.getHeight());
     frame.setVisible(true);

@@ -1,5 +1,5 @@
 /*
- * @(#)CourseDeleteCtrl.java	2.7.a 26/11/12
+ * @(#)CourseDeleteCtrl.java	2.7.e 04/02/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -40,7 +40,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.7.e
  */
 public class CourseDeleteCtrl
         extends CardCtrl
@@ -100,7 +100,7 @@ public class CourseDeleteCtrl
       String where = ", action a WHERE p.ptype = " + Schedule.COURSE_SCHEDULE + " AND p.action = a.id AND a.cours = " + course.getId();
       if (ScheduleIO.findCourse(where, dc).size() > 0) {
         MessagePopup.warning(this, MessageUtil.getMessage("course.suppression.warning"));
-        throw new Exception();
+        return false;
       }
       ((CourseIO) DataCache.getDao(Model.Course)).delete(course);
       desktop.getDataCache().remove(course);

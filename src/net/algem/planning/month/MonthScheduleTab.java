@@ -1,5 +1,5 @@
 /*
- * @(#)MonthScheduleTab.java	2.6.f 12/11/12
+ * @(#)MonthScheduleTab.java	2.7.e 05/02/13
  *
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -44,7 +44,7 @@ import net.algem.util.ui.FileTab;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.f
+ * @version 2.7.e
  */
 public class MonthScheduleTab
         extends FileTab
@@ -215,7 +215,9 @@ public class MonthScheduleTab
       ScheduleDetailEvent pde = new ScheduleDetailEvent(this, p);
       pde.setPosition(v.getClickPosition());
       pde.setRanges(v.getScheduleRanges());
+      desktop.setWaitCursor();
       detailCtrl.loadSchedule(pde);
+      desktop.setDefaultCursor();
     }
     /*
      * else if (_evt.getActionCommand().equals("ClickDate")) // click hors plage

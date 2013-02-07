@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileSearchCtrl.java 2.7.a 10/12/12
+ * @(#)PersonFileSearchCtrl.java 2.7.e 04/02/13
  *
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -40,7 +40,7 @@ import net.algem.util.ui.SearchCtrl;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.7.e
  * @since 1.0a 07/07/1999
  */
 public class PersonFileSearchCtrl
@@ -141,7 +141,8 @@ public class PersonFileSearchCtrl
     String url = dc.getUrl();
     Connection cnx;
     try {
-      cnx = DriverManager.getConnection(url, "nobody", "Pigfy");
+      //cnx = DriverManager.getConnection(url, "nobody", "Pigfy");
+      cnx = DriverManager.getConnection(url, dc.getConnectionProperties());
     } catch (SQLException e) {
       GemLogger.logException("ThreadTablePersonne: Erreur Connexion:", e);
       return;

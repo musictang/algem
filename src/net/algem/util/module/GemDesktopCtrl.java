@@ -1,5 +1,5 @@
 /*
- * @(#)GemDesktopCtrl.java	2.7.a 26/11/12
+ * @(#)GemDesktopCtrl.java	2.7.e 05/02/13
  *
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -63,7 +63,7 @@ import net.algem.util.ui.HtmlViewer;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.7.e
  * @since 1.0a 05/07/2002
  */
 public class GemDesktopCtrl
@@ -405,7 +405,9 @@ public class GemDesktopCtrl
     
     if (evt instanceof ScheduleDetailEvent) {
       ScheduleDetailEvent pde = (ScheduleDetailEvent) evt;
+      setWaitCursor();
       detailCtrl.loadSchedule(pde);
+      setDefaultCursor();
     } else if (evt instanceof SelectDateEvent) {
     } else {
       if (evt instanceof ModifPlanEvent) {

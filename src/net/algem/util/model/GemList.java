@@ -1,5 +1,5 @@
 /*
- * @(#)GemList.java 2.6.g 20/11/12
+ * @(#)GemList.java 2.7.e 06/02/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -30,7 +30,7 @@ import javax.swing.AbstractListModel;
 /**
  * Base class for list of GemModel objects.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.g
+ * @version 2.7.e
  * @since 2.5.a 28/06/12
  */
 public class GemList<T extends GemModel>
@@ -77,7 +77,19 @@ public class GemList<T extends GemModel>
    * @return an integer
    */
   public int indexOf(Object obj) {
-    return list.indexOf(obj);
+    if (!(obj instanceof GemModel)) {
+      return -1;
+    }
+    for (int i = 0 ; i < list.size(); i++) {
+      GemModel m = list.get(i);
+      if (m.getId() == ((GemModel) obj).getId()) {
+        return i;
+      }
+    }
+    return -1;
+    // the result of List.indexOf may be not valid if object's properties have been updated
+    // it is preferable to check only the id as above
+    // return list.indexOf(obj);
   }
   
   /**
@@ -116,11 +128,11 @@ public class GemList<T extends GemModel>
   public void update(T obj, Comparator<T> comp) {
     
     int idx = indexOf(obj);
-    if (idx > -1 && comp != null) {
+    if (idx > -1) {
       setElementAt(obj, idx);
-    }
-    if (comp != null) {
-      Collections.sort(list, comp);
+      if (comp != null) {
+        Collections.sort(list, comp);
+      }
     }
   }
   

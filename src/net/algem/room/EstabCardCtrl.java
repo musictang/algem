@@ -1,5 +1,5 @@
 /*
- * @(#)EstabCardCtrl.java	2.7.a 17/01/13
+ * @(#)EstabCardCtrl.java	2.7.e 06/02/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -36,7 +36,7 @@ import net.algem.util.ui.CardCtrl;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.7.e
  */
 public class EstabCardCtrl
         extends CardCtrl
@@ -94,7 +94,8 @@ public class EstabCardCtrl
   @Override
   public boolean validation() {
     try {
-      EstablishmentIO.update(oldEstab, get(), dc);
+      estab = get();
+      EstablishmentIO.update(oldEstab, estab, dc);//TODO refresh estab list table model
       dataCache.update(estab);
       desktop.postEvent(new GemEvent(this, GemEvent.MODIFICATION, GemEvent.ESTABLISHMENT, estab));
     } catch (SQLException e1) {
@@ -147,7 +148,11 @@ public class EstabCardCtrl
 
   private Establishment get() {
     Establishment e = new Establishment();
-    e.setPerson(contactEditor.getPerson());
+    Person p = contactEditor.getPerson();
+    if (p != null) {
+      p.setType(Person.ESTABLISHMENT);
+    }
+    e.setPerson(p);
 
     Vector<Address> va = contactEditor.getAddressAll();
     if (va != null) {
