@@ -1,5 +1,5 @@
 /*
- * @(#)GroupFileEditor.java 2.7.a 16/01/13
+ * @(#)GroupFileEditor.java 2.7.k 04/03/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -25,6 +25,8 @@ import java.awt.event.ActionEvent;
 import java.sql.SQLException;
 import java.util.Vector;
 import javax.swing.*;
+import net.algem.accounting.GroupOrderLineEditor;
+import net.algem.accounting.OrderLineTableModel;
 import net.algem.contact.Contact;
 import net.algem.contact.NoteException;
 import net.algem.contact.WebSite;
@@ -36,20 +38,17 @@ import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
 import net.algem.util.model.GemCloseVetoException;
 import net.algem.util.module.GemModule;
-import net.algem.util.ui.GemBorderPanel;
-import net.algem.util.ui.GemButton;
-import net.algem.util.ui.GemToolBar;
-import net.algem.util.ui.MessagePopup;
+import net.algem.util.ui.*;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.7.k
  */
 public class GroupFileEditor
         extends GemModule
 {
-
+  
   private Group group, oldGroup;
   private Vector<Musician> musicians;
   private GroupFileView groupFileTabView;
@@ -60,22 +59,23 @@ public class GroupFileEditor
   private GemButton btSave;
   private GemButton btClose;
   private GemButton btNote;
+  private GemButton btSchedulePayment;
   private GemButton btRehearsal;
   private JMenuBar mBar;
   private JMenu mFichier, mOptions;
   private JMenuItem miSuppression, miRehearsal, miPass;
   private GroupService service;
   private Schedule plan;
-
+  
   public GroupFileEditor() {
     super("Nouveau Groupe");
   }
-
+  
   public GroupFileEditor(Group g, String key, Schedule plan) {
     this(g, key);
     this.plan = plan;
   }
-
+  
   public GroupFileEditor(Group g, String key) {
     super(key);
     this.group = g;
@@ -92,11 +92,11 @@ public class GroupFileEditor
   public String getSID() {
     return String.valueOf(group.getId());
   }
-
+  
   public int getId() {
     return group.getId();
   }
-
+  
   @Override
   public void init() {
     service = new GroupService(dataCache.getDataConnection());
@@ -110,37 +110,44 @@ public class GroupFileEditor
       group.setSites(sites);
       oldGroup = group;
       view = groupFileTabView = new GroupFileView(desktop, service, group);
+      view.addActionListener(this);
       Vector<Musician> vm = service.getMusicians(group);
       oldGroup.setMusicians(vm);
       groupFileTabView.init(vm);
+      
     } catch (SQLException ex) {
       GemLogger.log(getClass().getName(), "init", ex);
     } catch (NoteException e) {
       GemLogger.log(getClass().getName(), "init", e);
     }
-
+    
     mBar = new JMenuBar();
     mFichier = new JMenu(BundleUtil.getLabel("Menu.file.label"));
     miSuppression = getMenuItem("Action.suppress");
-
+    
     mFichier.add(miSuppression);
-
+    
     mOptions = new JMenu(BundleUtil.getLabel("Menu.options.label"));
     miPass = getMenuItem("Rehearsal.pass");
     mOptions.add(miPass);
-
+    
     mBar.add(mFichier);
     mBar.add(mOptions);
-
+    
     view.setJMenuBar(mBar);
-
+    
     mainToolbar = new GemToolBar(false);
-
+    
     btNote = mainToolbar.addIcon(BundleUtil.getLabel("Member.note.icon"), "Note", BundleUtil.getLabel("Group.note.tip"));
     btNote.addActionListener(this);
+    btSchedulePayment = mainToolbar.addIcon(
+            BundleUtil.getLabel("Member.schedule.payment.icon"),
+            "Member.schedule.payment",
+            BundleUtil.getLabel("Member.schedule.payment.tip"));
+    btSchedulePayment.addActionListener(this);
     btRehearsal = mainToolbar.addIcon(BundleUtil.getLabel("Rehearsal.icon"), "Rehearsal", BundleUtil.getLabel("Rehearsal.tip"));
     btRehearsal.addActionListener(this);
-
+    
     closeToolbar = new GemToolBar(false);
     //closeToolbar.setAlignmentX(JToolBar.RIGHT_ALIGNMENT);
 
@@ -149,9 +156,9 @@ public class GroupFileEditor
     toolbar.add(mainToolbar);
     toolbar.add(Box.createHorizontalGlue());
     toolbar.add(closeToolbar);
-
+    
     groupFileTabView.add(toolbar, BorderLayout.NORTH);
-
+    
     btSave = closeToolbar.addIcon(
             BundleUtil.getLabel("Contact.save.icon"),
             GemCommand.SAVE_CMD,
@@ -160,12 +167,13 @@ public class GroupFileEditor
             BundleUtil.getLabel("Contact.close.icon"),
             GemCommand.CLOSE_CMD,
             BundleUtil.getLabel("Close.tip"));
-
+    
     btSave.addActionListener(this);
     btClose.addActionListener(this);
-
+    loadPaymentSchedule();
+    groupFileTabView.setSelectedTab(0);
   }
-
+  
   @Override
   public void actionPerformed(ActionEvent evt) {
     String arg = evt.getActionCommand();
@@ -200,6 +208,10 @@ public class GroupFileEditor
         super.close();
       } catch (GemCloseVetoException i) {
       }
+    } else if ("Member.schedule.payment".equals(arg)) {
+      loadPaymentSchedule();
+    } else if (CloseableTab.CLOSE_CMD.equals(arg)) {
+        closeTab(source);
     } // clic sur le bouton Enregistrer
     else if (GemCommand.SAVE_CMD.equals(arg)) {
       if (hasChanged()) {
@@ -207,6 +219,29 @@ public class GroupFileEditor
       }
     } else if ("Action.suppress".equals(arg)) {
       deleteGroup();
+    }
+  }
+  
+  private void loadPaymentSchedule() {
+    OrderLineTableModel tableModel = new OrderLineTableModel();
+    tableModel.load(service.getSchedulePayment(group));
+    GroupOrderLineEditor orderLineEditor = new GroupOrderLineEditor(desktop, tableModel);
+    orderLineEditor.init();
+    
+    groupFileTabView.addTab(orderLineEditor, BundleUtil.getLabel("Person.schedule.payment.tab.label"));
+    btSchedulePayment.setEnabled(false);
+  }
+  
+  private void closeTab(Object source) {
+    String classname = null;
+    if (source instanceof String) {
+      classname = (String) source;
+    } else {
+      return;
+    }
+    
+    if (classname.equals(GroupOrderLineEditor.class.getSimpleName())) {
+       btSchedulePayment.setEnabled(true);
     }
   }
 
@@ -228,11 +263,11 @@ public class GroupFileEditor
       view.close();
     } catch (GemCloseVetoException ex) {
     }
-
+    
     desktop.removeGemEventListener(this);
     desktop.removeModule(this);
   }
-
+  
   private void create() throws SQLException {
     service.create(group);
     if (musicians != null) {
@@ -245,10 +280,10 @@ public class GroupFileEditor
   }
 
   /**
-   * Updtes group.
+   * Updates group.
    */
   private void update() throws GroupException, SQLException {
-
+    
     service.update(oldGroup, group);
     if (musicians != null) {
       service.update(group.getId(), musicians, oldGroup.getMusicians());
@@ -262,7 +297,7 @@ public class GroupFileEditor
    * Only if modification. Idem for musicians.
    */
   private void save() {
-
+    
     if (service == null) {
       service = new GroupService(dataCache.getDataConnection());
     }
@@ -279,7 +314,7 @@ public class GroupFileEditor
           desktop.postEvent(new ModifPlanEvent(this, plan.getDay(), plan.getDay()));
         }
       }
-
+      
     } catch (GroupException ex) {
       MessagePopup.error(view, ex.getMessage());
       GemLogger.logException(ex);
@@ -287,7 +322,7 @@ public class GroupFileEditor
       MessagePopup.error(view, sqe.getMessage());
       GemLogger.logException(sqe);
     }
-
+    
   }
 
   /**
@@ -298,7 +333,7 @@ public class GroupFileEditor
   private boolean hasChanged() {
     group = groupFileTabView.getGroup();
     musicians = groupFileTabView.getMusicians();
-
+    
     return !oldGroup.equiv(group)
             || musicians != null
             || !Contact.sitesEqual(group.getSites(), oldGroup.getSites());

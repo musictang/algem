@@ -1,5 +1,5 @@
 /*
- * @(#)GroupService.java	2.7.a 16/01/13
+ * @(#)GroupService.java	2.7.k 05/03/13
  *
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -22,11 +22,13 @@ package net.algem.group;
 
 import java.sql.SQLException;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
 import net.algem.accounting.AccountPrefIO;
 import net.algem.accounting.AccountUtil;
 import net.algem.accounting.OrderLine;
+import net.algem.accounting.OrderLineIO;
 import net.algem.config.*;
 import net.algem.contact.*;
 import net.algem.planning.*;
@@ -50,17 +52,17 @@ public class GroupService
 
   public static final int MIN_ANNULATION = 72; //72 heures minimum before annulation
   private DataConnection dc;
-  private GroupIO groupeIO;
+  private GroupIO groupIO;
   private ActionIO actionIO;
 
   public GroupService(DataConnection dc) {
     this.dc = dc;
-    groupeIO = (GroupIO) DataCache.getDao(Model.Group);
+    groupIO = (GroupIO) DataCache.getDao(Model.Group);
     actionIO = (ActionIO) DataCache.getDao(Model.Action);
   }
 
   public void create(Group g) throws SQLException {
-    groupeIO.insert(g);
+    groupIO.insert(g);
     Vector<WebSite> sites = g.getSites();
     if (sites != null) {
       for (int i = 0; i < sites.size(); i++) {
@@ -74,11 +76,11 @@ public class GroupService
   }
 
   public void create(int g, Musician m) throws SQLException {
-    groupeIO.insert(g, m);
+    groupIO.insert(g, m);
   }
 
   public void update(Group old, Group g) throws SQLException {
-    groupeIO.update(g);
+    groupIO.update(g);
     update(old.getSites(), g);
   }
 
@@ -123,13 +125,13 @@ public class GroupService
     }
     try {
       dc.setAutoCommit(false); 
-      groupeIO.delete(g);
+      groupIO.delete(g);
       // instruments suppression
       for (Musician m : g.getMusicians()) {
         InstrumentIO.delete(m.getId(), Instrument.MUSICIAN, dc);
       }
       // group detail suppression
-      String query = "DELETE FROM groupe_det WHERE id = " + g.getId();
+      String query = "DELETE FROM " + GroupIO.TABLE_DETAIL + " WHERE id = " + g.getId();
       dc.executeUpdate(query);
       dc.commit();
     } catch (SQLException se) {
@@ -142,15 +144,15 @@ public class GroupService
   }
 
   public Vector<Group> findAll(String order) throws SQLException {
-    return groupeIO.find(order);
+    return groupIO.find(order);
   }
 
   public Group find(int id) throws SQLException {
-    return groupeIO.findId(id);
+    return groupIO.findId(id);
   }
 
   public Vector<Group> find(String where) throws SQLException {
-    return groupeIO.find(where);
+    return groupIO.find(where);
   }
 
   public Contact getContact(int idper) {
@@ -170,15 +172,15 @@ public class GroupService
   }
 
   public Vector<Musician> getMusicians(Group g) throws SQLException {
-    return groupeIO.findMusicians(g);
+    return groupIO.findMusicians(g);
   }
 
   public Vector<Musician> getMusicians(int idper) throws SQLException {
-    return groupeIO.findMusicians(idper);
+    return groupIO.findMusicians(idper);
   }
 
   public Vector<Group> getGroups(int idper) throws SQLException {
-    return groupeIO.find(idper);
+    return groupIO.find(idper);
   }
 
   public Vector<WebSite> getSites(int id) throws SQLException {
@@ -196,6 +198,20 @@ public class GroupService
     }
     query += " ORDER BY jour,debut";
     return ScheduleIO.find(query, dc);
+  }
+  
+  Vector<OrderLine> getSchedulePayment(Group g) {
+    List<Musician> lm = g.getMusicians();
+    if (lm == null) {
+      return new Vector<OrderLine>();
+    }
+    StringBuilder where = new StringBuilder("adherent IN (");
+    for (Musician m : lm) {
+      where.append(m.getId()).append(",");
+    }
+    where.deleteCharAt(where.length()-1);
+    where.append(")");
+    return OrderLineIO.find(where.toString(), dc);
   }
 
   /**
@@ -335,14 +351,14 @@ public class GroupService
    */
   private int getNumberOfMusicians(Group g) {
     int nm = 1;// nombre de musiciens
-    Vector<Musician> musiciens = null;
+    Vector<Musician> vm = null;
     try {
-      musiciens = groupeIO.findMusicians(g);
+      vm = groupIO.findMusicians(g);
     } catch (SQLException ex) {
       GemLogger.logException(ex);
     }
-    if (musiciens != null && musiciens.size() > 1) {
-      nm = musiciens.size();
+    if (vm != null && vm.size() > 1) {
+      nm = vm.size();
     }
     return nm;
   }
@@ -355,19 +371,19 @@ public class GroupService
 
     for (int i = 0; i < dates.size(); i++) {
       DateFr d = dates.elementAt(i);
-      ScheduleTestConflict conflit = new ScheduleTestConflict(d, start, end);
+      ScheduleTestConflict conflict = new ScheduleTestConflict(d, start, end);
 
       String query = ConflictQueries.getRoomConflictSelection(d.toString(), startHour, endHour, room);
 
       if (ScheduleIO.count(query, dc) > 0) {
-        conflit.setRoomFree(false);
+        conflict.setRoomFree(false);
       }
       query = ConflictQueries.getGroupConflictSelection(d.toString(), startHour, endHour, g);
 
       if (ScheduleIO.count(query, dc) > 0) {
-        conflit.setMemberFree(false);
+        conflict.setMemberFree(false);
       }
-      vc.add(conflit);
+      vc.add(conflict);
     }
 
     return vc;

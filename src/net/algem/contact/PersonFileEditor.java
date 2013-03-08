@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileEditor 2.7.e 05/02/13
+ * @(#)PersonFileEditor 2.7.k 04/03/13
  *
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -65,7 +65,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.e
+ * @version 2.7.k
  */
 public class PersonFileEditor
         extends FileEditor
@@ -237,7 +237,7 @@ public class PersonFileEditor
     } else if ("Teacher".equals(arg)) {
       personFileView.addTeacherTab();
       miTeacher.setEnabled(false);
-    } else if ("Person.group.tab".equals(arg)) {
+    } else if ("Person.group.tab".equals(arg) || "Groups".equals(arg)) {
       if (personFileView.addGroupsTab(true)) {
         miGroups.setEnabled(false);
       }
@@ -508,8 +508,7 @@ public class PersonFileEditor
   public void close() throws GemCloseVetoException {
     updatePersonFile();
     String msg = dossier.hasErrors();
-    if (msg != null) {
-      
+    if (msg != null) {      
       new ErrorDlg(personFileView, msg);
     } else {
       if (dossier.isModified()) {
@@ -645,6 +644,7 @@ public class PersonFileEditor
   private void addSchedulePayment(OrderLineTableModel t, Person p) {
 
     orderLineEditor = new OrderLineEditor(desktop, t);
+    orderLineEditor.init();
     orderLineEditor.addActionListener(this);
     if (dossier.getMember() == null) {
       orderLineEditor.setPayerId(dossier.getId());
@@ -979,6 +979,7 @@ public class PersonFileEditor
     view.removeActionListener(this);
     desktop.removeGemEventListener(this);
     desktop.removeGemEventListener(personFileView);
+    personFileView.clear();
     desktop.removeModule(this);
   }
 

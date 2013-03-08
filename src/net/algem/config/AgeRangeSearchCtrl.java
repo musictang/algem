@@ -1,7 +1,7 @@
 /*
- * @(#)AgeRangeSearchCtrl.java 2.7.a 17/01/13
+ * @(#)AgeRangeSearchCtrl.java 2.7.k 05/03/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -37,7 +37,7 @@ import net.algem.util.ui.SearchCtrl;
  *
  * @author <a href="mailto:nicolasnouet@gmail.com">Nicolas Nouet</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.7.k
  * @since 2.3.a
  */
 public class AgeRangeSearchCtrl
@@ -57,21 +57,36 @@ public class AgeRangeSearchCtrl
 
   @Override
   public void init() {
-    searchView = new AgeRangeSearchView();
-    searchView.addActionListener(this);
+    try {
+      //    searchView.addActionListener(this);
+      //    searchView.addActionListener(this);
 
-    list = new AgeRangeListCtrl();
-    list.addMouseListener(this);
-    list.addActionListener(this);
+      list = new AgeRangeListCtrl(false);
+      list.addMouseListener(this);
+      list.addActionListener(this);
 
-    mask = new AgeRangeCardCtrl(dc);
-    mask.addActionListener(this);
+      mask = new AgeRangeCardCtrl();
+      mask.addActionListener(this);
 
-    wCard.add("cherche", searchView);
-    wCard.add("masque", mask);
-    wCard.add("liste", list);
+      //    wCard.add("cherche", searchView);
+      wCard.add("masque", mask);
+      wCard.add("liste", list);
 
-    ((CardLayout) wCard.getLayout()).show(wCard, "cherche");
+      String query = " ORDER BY agemin";
+      Vector<AgeRange> v = dao.find(query);
+      if (v == null || v.isEmpty()) {
+        setStatus(EMPTY_LIST);
+      } else if (v.size() == 1) {
+        ((CardLayout) wCard.getLayout()).show(wCard, "masque");
+        mask.loadCard(v.elementAt(0));
+      } else {
+        ((CardLayout) wCard.getLayout()).show(wCard, "liste");
+        list.loadResult(v);
+      }
+      ((CardLayout) wCard.getLayout()).show(wCard, "cherche");
+    } catch (SQLException ex) {
+      GemLogger.logException(ex);
+    }
   }
 
   @Override
@@ -112,17 +127,18 @@ public class AgeRangeSearchCtrl
   public void actionPerformed(ActionEvent evt) {
     super.actionPerformed(evt);
     String cmd = evt.getActionCommand();
-
-    if (GemCommand.CREATE_CMD.equals(cmd)) {
+    if (GemCommand.CLOSE_CMD.equals(cmd)) {
+      desktop.removeModule("Menu.age.range");
+    } else if (GemCommand.CREATE_CMD.equals(cmd)) {
       ((CardLayout) wCard.getLayout()).show(wCard, "masque");
       mask.loadCard(null);
     } else if (GemCommand.APPLY_CMD.equals(cmd)) {
       AgeRange r = ((AgeRangeCardCtrl) evt.getSource()).getRange();
       try {
-        /*AgeRange t = AgeRangeIO.check(r, dc);
-        if (t != null) {
-          throw new AgeRangeException(MessageUtil.getMessage("age.range.error.validation5", t.getLabel()));
-        }*/
+        /* AgeRange t = AgeRangeIO.check(r, dc);
+         * if (t != null) {
+         * throw new AgeRangeException(MessageUtil.getMessage("age.range.error.validation5", t.getLabel()));
+         * } */
         if (r.getId() == 0) {
           dao.insert(r);
           list.addRow(r);

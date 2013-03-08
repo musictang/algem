@@ -1,14 +1,31 @@
 /*
- * @(#)DeferCourseDlg.java	2.7.a 26/11/12
-
+ * @(#)PostponeCourseDlg.java	2.7.h 22/02/13
+ * 
+ * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ *
+ * This file is part of Algem.
+ * Algem is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Algem is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with Algem. If not, see <http://www.gnu.org/licenses/>.
+ * 
  */
+
 package net.algem.planning.editing;
 
 import java.awt.Frame;
-import java.util.Date;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
-import net.algem.planning.DateFr;
+import net.algem.course.Course;
+import net.algem.planning.CourseSchedule;
 import net.algem.planning.Hour;
 import net.algem.planning.ScheduleObject;
 import net.algem.room.Room;
@@ -21,27 +38,26 @@ import net.algem.util.model.Model;
  * Dialog for course time modification.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.7.h
  *
  */
-public class DeferCourseDlg
+public class PostponeCourseDlg
         extends ModifPlanDlg
 {
 
   private DataCache dataCache;
-  private int roomId;
-  private PutOffCourseView pv;
+//  private int roomId;
+  private PostponeCourseView pv;
   private ScheduleObject schedule;
 
-  public DeferCourseDlg(Frame f, DataCache dc, ScheduleObject _plan, String titleKey) {
+  public PostponeCourseDlg(Frame f, DataCache dc, ScheduleObject _plan, String titleKey) {
     super(f);
     dataCache = dc;
     schedule = _plan;
-    pv = new PutOffCourseView(dataCache);
-    setTitle(schedule.getScheduleLabel());
-    setDate(schedule.getDay().getDate());
-    setRoom(schedule.getPlace());
-    setHour(schedule.getStart(), schedule.getEnd());
+    pv = new PostponeCourseView(dataCache);
+    boolean noRange = titleKey.equals("Schedule.course.copy.title") ||
+            (schedule instanceof CourseSchedule && ((Course) schedule.getActivity()).isCollective());
+    pv.set(schedule, noRange);
     validation = false;
     dlg = new JDialog(f, true);
     addContent(pv, titleKey);
@@ -54,7 +70,8 @@ public class DeferCourseDlg
 
   @Override
   public boolean isEntryValid() {
-    if (!pv.getHourEnd().after(pv.getHourStart())) {
+    ScheduleObject ns = pv.getSchedule();
+    if (!ns.getEnd().after(ns.getStart())) {
       JOptionPane.showMessageDialog(dlg,
                                     MessageUtil.getMessage("hour.range.error"),
                                     MessageUtil.getMessage("invalid.time.slot"),
@@ -62,7 +79,7 @@ public class DeferCourseDlg
       return false;
     }
     /* Condition annulée car on peut différer un cours par anticipation à une date antérieure */
-    /*if (pv.getNewStart().before(pv.getStart()))
+    /*if (pv.getNewDate().before(pv.getDate()))
     {
     JOptionPane.showMessageDialog(dlg,
     "Date de end invalide",
@@ -70,8 +87,8 @@ public class DeferCourseDlg
     JOptionPane.ERROR_MESSAGE);
     return false;
     }*/
-
-    if (pv.getHourStart().getDuration(pv.getHourEnd()) != pv.getOldHourStart().getDuration(pv.getOldHourEnd())) {
+    // > versus != because range time may be only one part of the original range
+    if (ns.getStart().getLength(ns.getEnd()) > schedule.getStart().getLength(schedule.getEnd())) {
       JOptionPane.showMessageDialog(dlg,
                                     MessageUtil.getMessage("invalid.duration"),
                                     MessageUtil.getMessage("invalid.time.slot"),
@@ -80,10 +97,10 @@ public class DeferCourseDlg
 
     }
 
-    int room = getNewRoom();
+    int room = ns.getPlace();
     /* 1.1c Ajout d'une condition pour les salles de type exterieur */
     RoomIO roomIO = (RoomIO) DataCache.getDao(Model.Room);
-    Room r = roomIO.findId(roomId); //salle habituelle du planning
+    Room r = roomIO.findId(schedule.getPlace()); //salle habituelle du planning
     Room n = roomIO.findId(room); //nouvelle salle
     // SEULEMENT POUR MUSIQUES TANGENTES
     if (r.getEstab() > 13000 && n.getName().toLowerCase().startsWith("rattrap")) {
@@ -102,43 +119,12 @@ public class DeferCourseDlg
     return validation;
   }
 
-  private void setTitle(String t) {
-    pv.setTitle(t);
+  ScheduleObject getSchedule() {
+    return pv.getSchedule();
   }
 
-  private void setDate(Date d) {
-    pv.setStart(d);
-    pv.setNewStart(d);
+  Hour[] getRange() {
+    return new Hour[] {pv.getRange().getStart(), pv.getRange().getEnd()};
   }
-  
-  private void setHour(Hour start, Hour end) {
-    pv.setHour(start, end);
-  }
-
-  private void setRoom(int id) {
-    roomId = id;
-    pv.setRoom(id);
-  }
-
-  public DateFr getStart() {
-    return pv.getStart();
-  }
-
-  public DateFr getNewStart() {
-    return pv.getNewStart();
-  }
-
-  public Hour getNewHourStart() {
-    return pv.getHourStart();
-  }
-
-  public Hour getNewHourEnd() {
-    return pv.getHourEnd();
-  }
-
-  public int getNewRoom() {
-    return pv.getRoomId();
-  }
-
 }
 

@@ -1,5 +1,5 @@
 /*
- * @(#)InvoiceTableModel.java 2.5.d 25/07/12
+ * @(#)InvoiceTableModel.java 2.7.h 22/02/13
  *
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -28,7 +28,7 @@ import net.algem.util.ui.JTableModel;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.5.d
+ * @version 2.7.h
  * @since 2.3.a 14/02/12
  */
 public class InvoiceTableModel
@@ -41,6 +41,7 @@ public class InvoiceTableModel
     this.service = service;
     header = new String[]{
       BundleUtil.getLabel("Invoice.id.label"),
+      BundleUtil.getLabel("Payer.label"),
       BundleUtil.getLabel("Member.label"),
       BundleUtil.getLabel("Date.label"),
       BundleUtil.getLabel("Invoice.description.label"),
@@ -60,12 +61,14 @@ public class InvoiceTableModel
       case 0:
         return q.getNumber();
       case 1:
-        return service.getContact(q.getMember());
+        return service.getContact(q.getPayer());
       case 2:
-        return q.getDate();
+        return service.getContact(q.getMember());
       case 3:
-        return q.getDescription();
+        return q.getDate();
       case 4:
+        return q.getDescription();
+      case 5:
         return AccountUtil.round(q.getTotalATI());
 
     }
@@ -75,15 +78,15 @@ public class InvoiceTableModel
   @Override
   public Class getColumnClass(int column) {
     switch (column) {
-      case 0:
-        return String.class;
+      case 0:       
       case 1:
-        return String.class;
       case 2:
-        return DateFr.class;
-      case 3:
         return String.class;
+      case 3:
+        return DateFr.class;
       case 4:
+        return String.class;
+      case 5:
         return Double.class;
       default:
         return Object.class;

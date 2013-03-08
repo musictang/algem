@@ -77,8 +77,8 @@ public class MemberService
     PersonSubscriptionCard nc = null;
     PersonSubscriptionCard card = findSubscriptionCard(plan.getIdPerson());
     if (card != null) {
-      int oldDuration = plan.getStart().getDuration(plan.getEnd());
-      int newDuration = start.getDuration(end);
+      int oldDuration = plan.getStart().getLength(plan.getEnd());
+      int newDuration = start.getLength(end);
       if (newDuration >= oldDuration) {
         card.dec(newDuration - oldDuration);
         if (card.getRest() < 0) {
@@ -151,7 +151,7 @@ public class MemberService
     if (card == null) {
       return;
     }
-    int duree = plan.getStart().getDuration(plan.getEnd());
+    int duree = plan.getStart().getLength(plan.getEnd());
     card.inc(duree);
     updateSubscriptionCard(card);
   }

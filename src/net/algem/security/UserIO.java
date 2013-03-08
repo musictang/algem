@@ -147,7 +147,7 @@ public class UserIO
       u.setType(rs.getShort(2));
       u.setName(rs.getString(3).trim());
       u.setFirstName(rs.getString(4).trim());
-      u.setCivility(rs.getString(5).trim());
+      u.setGender(rs.getString(5).trim());
       u.setLogin(rs.getString(6).trim());
       u.setPassword(rs.getString(7).trim());
       u.setProfile(rs.getInt(8));

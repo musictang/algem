@@ -1,5 +1,5 @@
 /*
- * @(#)RoomView.java	2.7.a 03/12/12
+ * @(#)RoomView.java	2.7.g 13/02/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -32,7 +32,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.7.g
  * @since 1.0a 02/09/2001
  */
 public class RoomView
@@ -47,6 +47,7 @@ public class RoomView
     BundleUtil.getLabel("Place.number.label"),
     BundleUtil.getLabel("Establishment.label"),
     BundleUtil.getLabel("Room.active.label"),
+    BundleUtil.getLabel("Room.public.label"),
     BundleUtil.getLabel("Room.price.label"),
     BundleUtil.getLabel("Payer.label")
   };
@@ -57,6 +58,7 @@ public class RoomView
   private GemNumericField npers;
   private GemChoice estab;
   private JCheckBox active;
+  private JCheckBox available;
   private RoomRateChoice rate;
   private RoomPayerCtrl payerCtrl;
 
@@ -70,7 +72,9 @@ public class RoomView
     npers = new GemNumericField(8);
     estab = new EstabChoice(dataCache.getList(Model.Establishment));
     rate = new RoomRateChoice(dataCache.getList(Model.RoomRate));
-    active = new JCheckBox("", true);
+    active = new JCheckBox(labels[6], true);
+    available = new JCheckBox(labels[7], false);
+    available.setToolTipText(BundleUtil.getLabel("Room.public.tip"));
     payerCtrl = new RoomPayerCtrl();
 
     this.setLayout(new GridBagLayout());
@@ -83,9 +87,9 @@ public class RoomView
     gb.add(new GemLabel(labels[3]), 0, 3, 1, 1, GridBagHelper.EAST);
     gb.add(new GemLabel(labels[4]), 0, 4, 1, 1, GridBagHelper.EAST);
     gb.add(new GemLabel(labels[5]), 0, 5, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel(labels[6]), 0, 10, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel(labels[7]), 0, 11, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel(labels[8]), 0, 12, 1, 1, GridBagHelper.EAST);
+//    gb.add(new GemLabel(labels[6]), 0, 10, 1, 1, GridBagHelper.EAST);
+    gb.add(new GemLabel(labels[8]), 0, 11, 1, 1, GridBagHelper.EAST);
+    gb.add(new GemLabel(labels[9]), 0, 12, 1, 1, GridBagHelper.EAST);
 
     gb.add(no, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(name, 1, 1, 1, 1, GridBagHelper.WEST);
@@ -93,7 +97,10 @@ public class RoomView
     gb.add(surf, 1, 3, 1, 1, GridBagHelper.WEST);
     gb.add(npers, 1, 4, 1, 1, GridBagHelper.WEST);
     gb.add(estab, 1, 5, 1, 1, GridBagHelper.WEST);
-    gb.add(active, 1, 10, 1, 1, GridBagHelper.WEST);
+    GemPanel p = new GemPanel();
+    p.add(active);
+    p.add(available);
+    gb.add(p, 1, 10, 1, 1, GridBagHelper.WEST);
     gb.add(rate, 1, 11, 1, 1, GridBagHelper.WEST);
     gb.add(payerCtrl, 1, 12, 1, 1, GridBagHelper.WEST);
   }
@@ -106,7 +113,7 @@ public class RoomView
     npers.setText(String.valueOf(r.getNPers()));
     estab.setKey(r.getEstab());
     active.setSelected(r.isActive());
-
+    available.setSelected(r.isAvailable());
     setRate(r);
     payerCtrl.setRoom(r);
 
@@ -144,6 +151,7 @@ public class RoomView
     }
     s.setEstab(estab.getKey());
     s.setActive(active.isSelected());
+    s.setAvailable(available.isSelected());
     s.setRate((RoomRate) rate.getSelectedItem());
     s.setPayer(payerCtrl.getPayer());
 

@@ -50,7 +50,7 @@ public class EstablishmentIO
             + "," + String.valueOf((int) type)
             + ",'" + escape(p.getName().toUpperCase())
             + "','" + p.getFirstName()
-            + "','" + p.getCivility()
+            + "','" + p.getGender()
             //+ "'," + p.getNote()
             + "')";
 

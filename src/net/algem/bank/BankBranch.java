@@ -42,14 +42,14 @@ public class BankBranch
   public BankBranch() {
     type = Person.BANK;
     firstName = "";
-    civility = "";
+    gender = "";
   }
 
   public BankBranch(Person pp) {
     super(pp);
     type = Person.BANK;
     firstName = "";
-    civility = "";
+    gender = "";
   }
 
   public boolean equals(BankBranch a) {
@@ -96,7 +96,7 @@ public class BankBranch
   }
 
   @Override
-  public String getCivility() {
+  public String getGender() {
     return "";
   }
 

@@ -273,11 +273,11 @@ public class MemberEnrolment
     String analytics = "";
 
     int key = 0;
-    if (f.getCode().charAt(0) == 'L') {
+    if (f.isLeisure()) {
       Preference p = AccountPrefIO.find(AccountPrefIO.LEISURE_KEY_PREF, dc);
       key = (Integer) p.getValues()[0];
       analytics = (String) p.getValues()[1];
-    } else {
+    } else if (f.isProfessional()) {
       Preference p = AccountPrefIO.find(AccountPrefIO.PRO_KEY_PREF, dc);
       key = (Integer) p.getValues()[0];
       analytics = (String) p.getValues()[1];
@@ -509,11 +509,17 @@ public class MemberEnrolment
       int duree = 0;
 
       // ajout des commandes_cours d'instrument
+      // TODO list Inst type
+//      for (ModuleCompo mc : m.getComposition()) {
+//          if (mc.getType() == INSTRUMENT) {
+//        addCourseInstrument(cm, mc.getLength());
+//      }
       if ((duree = m.getInstrumentDuration()) > 0) {
         addCourseInstrument(cm, duree);
       }
 
       // ajout des commandes_cours collectifs
+      // TODO list AT type
       if ((duree = m.getWorkshopDuration()) > 0) {
         addCourseCo(cm, duree);
       }

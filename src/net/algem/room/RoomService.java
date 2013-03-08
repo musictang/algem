@@ -68,7 +68,7 @@ public class RoomService
         p.setName(r.getName());
         p.setType(Person.ROOM);
         p.setFirstName("");
-        p.setCivility("");
+        p.setGender("");
         p.setImgRights(false);
 
         ((PersonIO) DataCache.getDao(Model.Person)).insert(p);

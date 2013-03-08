@@ -87,13 +87,13 @@ public class RehearsalUtil
     Hour endOffPeak = getEndOffpeakHour(dc);
     double total = 0.0;
     if (end.le(endOffPeak)) {
-      total = (roomRate.getNh() * start.getDuration(end)) / 60;
+      total = (roomRate.getNh() * start.getLength(end)) / 60;
     } else if (start.ge(endOffPeak)) {
-      total = (roomRate.getPh() * start.getDuration(end)) / 60;
+      total = (roomRate.getPh() * start.getLength(end)) / 60;
     } // si la réservation débute en période creuse et se termine en période plein tarif
     else {
-      int before = start.getDuration(endOffPeak);
-      int past = endOffPeak.getDuration(end);
+      int before = start.getLength(endOffPeak);
+      int past = endOffPeak.getLength(end);
       double amountBefore = (roomRate.getNh() * before) / 60;
       double amountPast = (roomRate.getPh() * past) / 60;
       total = amountBefore + amountPast;
@@ -113,7 +113,7 @@ public class RehearsalUtil
    */
   public static double calcPersonRate(Hour start, Hour end, RoomRate rate, int nm) {
 
-    int duration = start.getDuration(end);
+    int duration = start.getLength(end);
     double total_plafond = (rate.getMax() * duration) / 60;
     //Pas de distinction entre heure pleine et heure creuse dans le tarif par personne
     double total = rate.getPh() * nm;

@@ -1,5 +1,5 @@
 /*
- * @(#)ConfigFile.java 2.1.k 07/07/11
+ * @(#)ConfigFile.java 2.7.h 25/02/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -34,6 +34,7 @@ import net.algem.util.ui.GemPanel;
  * Default paths config.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
+ * @version 2.7.h
  * @since 2.1.k
  */
 public class ConfigFile
@@ -51,6 +52,8 @@ public class ConfigFile
   @Override
   public List<Config> get() {
     List<Config> conf = new ArrayList<Config>();
+    //XXX this works only if standard_conforming_strings = off in postgresql.conf
+    // From 9.1 default is on.
     c1.setValue(FileUtil.escapeBackSlashes(logFilePanel.getText()));
     c2.setValue(FileUtil.escapeBackSlashes(exportFilePanel.getText()));
 

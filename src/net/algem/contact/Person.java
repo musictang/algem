@@ -1,7 +1,7 @@
 /*
- * @(#)Person.java	2.7.a 07/01/13
+ * @(#)Person.java	2.7.h 25/02/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -24,12 +24,13 @@ import net.algem.util.model.GemModel;
 
 /**
  * Generic model of contact.
- * A person is identified by his <code>type</code> and may be a physical person, a room,
+ * A person is identified by his
+ * <code>type</code> and may be a physical person, a room,
  * a bank or an establishment.
- * 
+ *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.7.h
  *
  * @since 1.0a 07/07/1999
  */
@@ -46,9 +47,10 @@ public class Person
   protected short type = PERSON;
   protected String name;
   protected String firstName;
-  protected String civility;
+  protected String gender;
   //protected int note;
   protected boolean imgRights;
+  protected String organization;
 
   public Person() {
   }
@@ -69,7 +71,7 @@ public class Person
     id = i;
     name = n;
     firstName = p;
-    civility = c;
+    gender = c;
   }
 
   @Override
@@ -90,7 +92,10 @@ public class Person
     if ((this.firstName == null) ? (other.firstName != null) : !this.firstName.equals(other.firstName)) {
       return false;
     }
-    if ((this.civility == null) ? (other.civility != null) : !this.civility.equals(other.civility)) {
+    if ((this.gender == null) ? (other.gender != null) : !this.gender.equals(other.gender)) {
+      return false;
+    }
+    if ((this.organization == null) ? (other.organization != null) : !this.organization.equals(other.organization)) {
       return false;
     }
     return true;
@@ -100,9 +105,10 @@ public class Person
   public int hashCode() {
     int hash = 5;
     hash = 23 * hash + this.id;
+    hash = 23 * hash + (this.organization != null ? this.organization.hashCode() : 0);
     hash = 23 * hash + (this.name != null ? this.name.hashCode() : 0);
     hash = 23 * hash + (this.firstName != null ? this.firstName.hashCode() : 0);
-    hash = 23 * hash + (this.civility != null ? this.civility.hashCode() : 0);
+    hash = 23 * hash + (this.gender != null ? this.gender.hashCode() : 0);
     return hash;
   }
 
@@ -119,13 +125,14 @@ public class Person
     if (firstName == null || firstName.isEmpty()) {
       return name;
     } else {
-        StringBuilder b = new StringBuilder(firstName);   
-        return b.append(" ").append(name).toString();
+      StringBuilder b = new StringBuilder(firstName);
+      return b.append(" ").append(name).toString();
     }
   }
 
   /**
    * Abbreviation display of teacher name in plannings.
+   *
    * @since 1.1e
    * @return la première lettre du prénom suivie du name (ex. B. Sagno pour Bernard Sagno)
    */
@@ -190,12 +197,12 @@ public class Person
     return name + " " + firstName;
   }
 
-  public void setCivility(String s) {
-    civility = s;
+  public void setGender(String s) {
+    gender = s;
   }
 
-  public String getCivility() {
-    return civility;
+  public String getGender() {
+    return gender;
   }
 
   public void setImgRights(boolean s) {
@@ -206,12 +213,21 @@ public class Person
     return imgRights;
   }
 
-  public boolean isValid() {
-    return name.length() > 1;
+  public String getOrganization() {
+    return organization;
   }
-  
+
+  public void setOrganization(String organization) {
+    this.organization = organization;
+  }
+
+  public boolean isValid() {
+    return organization != null && !organization.isEmpty()
+            ? organization.length() > 1 : name.length() > 1;
+  }
+
   private boolean out(int n) {
-    System.out.println("!Personne.equals "+n);
+    System.out.println("!Personne.equals " + n);
     return false;
   }
 }

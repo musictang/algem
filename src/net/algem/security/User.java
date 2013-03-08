@@ -46,7 +46,7 @@ public class User
     id = p.getId();
     name = p.getName();
     firstName = p.getFirstName();
-    civility = p.getCivility();
+    gender = p.getGender();
   }
 
   @Override

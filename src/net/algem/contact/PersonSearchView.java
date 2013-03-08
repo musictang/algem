@@ -1,5 +1,5 @@
 /*
- * @(#)PersonSearchView.java	2.6.d 08/11/12
+ * @(#)PersonSearchView.java	2.7.k 04/03/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -32,7 +32,7 @@ import net.algem.util.ui.*;
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.d
+ * @version 2.7.k
  * @since 1.0a 07/07/1999
  */
 public class PersonSearchView
@@ -40,6 +40,7 @@ public class PersonSearchView
 {
 
   private GemNumericField number;
+  private GemField org;
   private GemField name;
   private GemField firstname;
   private GemField telephone;
@@ -55,6 +56,8 @@ public class PersonSearchView
   public GemPanel init() {
     number = new GemNumericField(6);
     number.addActionListener(this);
+    org = new GemField(15);
+    org.addActionListener(this);
     name = new GemField(15);
     name.addActionListener(this);
     firstname = new GemField(15);
@@ -75,19 +78,21 @@ public class PersonSearchView
     GridBagHelper gb = new GridBagHelper(mask);
     gb.insets = GridBagHelper.SMALL_INSETS;
     gb.add(new GemLabel(BundleUtil.getLabel("Number.label")), 0, 0, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Name.label")), 0, 1, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel(BundleUtil.getLabel("First.name.label")), 0, 2, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Telephone.label")), 0, 3, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Email.label")), 0, 4, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Website.label")), 0, 5, 1, 1, GridBagHelper.EAST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Organization.label")), 0, 1, 1, 1, GridBagHelper.EAST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Name.label")), 0, 2, 1, 1, GridBagHelper.EAST);
+    gb.add(new GemLabel(BundleUtil.getLabel("First.name.label")), 0, 3, 1, 1, GridBagHelper.EAST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Telephone.label")), 0, 4, 1, 1, GridBagHelper.EAST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Email.label")), 0, 5, 1, 1, GridBagHelper.EAST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Website.label")), 0, 6, 1, 1, GridBagHelper.EAST);
 
     gb.add(number, 1, 0, 1, 1, GridBagHelper.WEST);
-    gb.add(name, 1, 1, 1, 1, GridBagHelper.WEST);
-    gb.add(firstname, 1, 2, 1, 1, GridBagHelper.WEST);
-    gb.add(telephone, 1, 3, 1, 1, GridBagHelper.WEST);
-    gb.add(email, 1, 4, 1, 1, GridBagHelper.WEST);
-    gb.add(site, 1, 5, 1, 1, GridBagHelper.WEST);
-    gb.add(btErase, 2, 7, 1, 1, GridBagHelper.WEST);
+    gb.add(org, 1, 1, 1, 1, GridBagHelper.WEST);
+    gb.add(name, 1, 2, 1, 1, GridBagHelper.WEST);
+    gb.add(firstname, 1, 3, 1, 1, GridBagHelper.WEST);
+    gb.add(telephone, 1, 4, 1, 1, GridBagHelper.WEST);
+    gb.add(email, 1, 5, 1, 1, GridBagHelper.WEST);
+    gb.add(site, 1, 6, 1, 1, GridBagHelper.WEST);
+    gb.add(btErase, 2, 8, 1, 1, GridBagHelper.WEST);
 
     return mask;
   }
@@ -99,6 +104,7 @@ public class PersonSearchView
       return;
     }
     if (evt.getSource() == name
+            || evt.getSource() == org
             || evt.getSource() == number
             || evt.getSource() == telephone
             || evt.getSource() == firstname
@@ -118,18 +124,21 @@ public class PersonSearchView
         s = number.getText();
         break;
       case 1:
-        s = name.getText();
+        s = org.getText();
         break;
       case 2:
-        s = firstname.getText();
+        s = name.getText();
         break;
       case 3:
-        s = telephone.getText();
+        s = firstname.getText();
         break;
       case 4:
-        s = email.getText();
+        s = telephone.getText();
         break;
       case 5:
+        s = email.getText();
+        break;
+      case 6:
         s = site.getText();
         break;
     }
@@ -143,6 +152,7 @@ public class PersonSearchView
   @Override
   public void clear() {
     number.setText("");
+    org.setText("");
     name.setText("");
     firstname.setText("");
     telephone.setText("");

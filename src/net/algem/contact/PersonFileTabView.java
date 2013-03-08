@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileTabView.java  2.7.e 04/02/13
+ * @(#)PersonFileTabView.java  2.7.k 04/03/13
  *
  * Copyright (c) 1999-2012 Musiques Tangentes All Rights Reserved.
  *
@@ -58,7 +58,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.e
+ * @version 2.7.k
  */
 public class PersonFileTabView
         extends FileView
@@ -384,12 +384,18 @@ public class PersonFileTabView
     contactFileEditor.clear();
     if (memberEditor != null) {
       wTab.remove(memberEditor);
+      memberEditor.clear();
       memberEditor = null;
     }
-    wTab.setSelectedIndex(0);
+//    wTab.setSelectedIndex(0);
     if (cbTelAdresse != null) {
       cbTelAdresse.removeItemListener(this);
       cbTelAdresse = null;
+    }
+    if (teacherEditor != null) {
+      wTab.remove(teacherEditor);
+      teacherEditor.clear();
+      teacherEditor = null;
     }
   }
 
@@ -409,6 +415,11 @@ public class PersonFileTabView
   @Override
   public String toString() {
     return getClass().getSimpleName() + " : " + dossier.getId();
+  }
+  
+  @Override
+  public void close() {
+    clear();
   }
 
   /**

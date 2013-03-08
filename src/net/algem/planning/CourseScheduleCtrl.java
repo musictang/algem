@@ -1,5 +1,5 @@
 /*
- * @(#)CourseScheduleCtrl.java	2.6.a 21/09/12
+ * @(#)CourseScheduleCtrl.java	2.7.h 25/02/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -38,7 +38,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.7.h
  * @since 1.0a 07/07/1999
  */
 public class CourseScheduleCtrl
@@ -81,10 +81,10 @@ public class CourseScheduleCtrl
     if (c == null || c.isUndefined()) {
       msg += MessageUtil.getMessage("course.invalid.choice");
     }
-    if (c.isCourseCoInst() && v.getDuration() < 15) { // 15 minutes mini
-      msg += "\n" + MessageUtil.getMessage("course.duration.warning");
+    if (c.isCourseCoInst() && v.getCourseLength() < 15) { // 15 minutes mini
+      msg += "\n" + MessageUtil.getMessage("course.length.warning");
     }
-    if (!v.isValidDuration()) {
+    if (!v.hasValidLength()) {
       msg += "\n" + MessageUtil.getMessage("hour.range.error");
     }
     Action a = v.get();
@@ -135,16 +135,16 @@ public class CourseScheduleCtrl
     Hour end = action.getHourEnd();
     List<Action> v = new ArrayList<Action>();
 
-    if (action.getDuration() > 15) {
+    if (action.getLength() > 15) {
       Hour start = new Hour(action.getHourStart());
-      action.setHourEnd(start.end(action.getDuration()));
+      action.setHourEnd(start.end(action.getLength()));
       action.setDates(service.generationDate(action));
       v.add(action);
       start = action.getHourEnd();
       while (start.before(end)) {
         Action a = new Action(action);
         a.setHourStart(start.end(intervalle));
-        a.setHourEnd(a.getHourStart().end(action.getDuration()));
+        a.setHourEnd(a.getHourStart().end(action.getLength()));
         if (a.getHourEnd().after(end)) {
           break;
         }

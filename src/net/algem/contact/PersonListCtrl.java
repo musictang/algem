@@ -1,5 +1,5 @@
 /*
- * @(#)PersonListCtrl.java	2.6.a 18/09/12
+ * @(#)PersonListCtrl.java	2.7.i 26/02/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -33,7 +33,7 @@ import net.algem.util.ui.ListCtrl;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.7.i
  */
 public class PersonListCtrl
 	extends ListCtrl
@@ -48,8 +48,9 @@ public class PersonListCtrl
 		TableColumnModel cm = jtable.getColumnModel();
 		cm.getColumn(0).setPreferredWidth(60);
 		cm.getColumn(1).setPreferredWidth(40);
-		cm.getColumn(2).setPreferredWidth(250);
-		cm.getColumn(3).setPreferredWidth(150);
+		cm.getColumn(2).setPreferredWidth(100);
+		cm.getColumn(3).setPreferredWidth(130);
+        cm.getColumn(4).setPreferredWidth(80);
 
 		JScrollPane p = new JScrollPane(jtable);
 		p.setBorder(new BevelBorder(BevelBorder.LOWERED));

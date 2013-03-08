@@ -1,5 +1,5 @@
 /*
- * @(#)InvoiceListCtrl.java 2.5.d 25/07/12
+ * @(#)InvoiceListCtrl.java 2.7.h 22/02/13
  *
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -18,7 +18,6 @@
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 package net.algem.billing;
 
 import java.awt.BorderLayout;
@@ -31,13 +30,13 @@ import net.algem.util.ui.ListCtrl;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.5.d
+ * @version 2.7.h
  * @since 2.3.a 14/02/12
  */
 public class InvoiceListCtrl
-  extends ListCtrl
+        extends ListCtrl
 {
-  
+
   public InvoiceListCtrl(boolean b, BillingServiceI service) {
 
     super(b);
@@ -47,11 +46,12 @@ public class InvoiceListCtrl
     jtable.setAutoCreateRowSorter(true);
 
     TableColumnModel cm = jtable.getColumnModel();
-    cm.getColumn(0).setPreferredWidth(15);
-    cm.getColumn(1).setPreferredWidth(100);
-    cm.getColumn(2).setPreferredWidth(20);
-    cm.getColumn(3).setPreferredWidth(300);
-    cm.getColumn(4).setPreferredWidth(60);
+    cm.getColumn(0).setPreferredWidth(14);
+    cm.getColumn(1).setPreferredWidth(80);
+    cm.getColumn(2).setPreferredWidth(80);
+    cm.getColumn(3).setPreferredWidth(18);
+    cm.getColumn(4).setPreferredWidth(280);
+    cm.getColumn(5).setPreferredWidth(30);
 
     JScrollPane p = new JScrollPane(jtable);
     p.setBorder(new BevelBorder(BevelBorder.LOWERED));
@@ -63,5 +63,13 @@ public class InvoiceListCtrl
   public Quote getElementAt(int n) {
     return (Quote) tableModel.getItem(n);
   }
-  
+
+  public int getIdContact() {
+    int index = getSelectedIndex();
+    int col = jtable.getSelectedColumn();
+    Quote q = (Quote) tableModel.getItem(index);
+    if (col == 1) return q.getPayer(); 
+    if (col == 2) return q.getMember();
+    return 0;
+  }
 }

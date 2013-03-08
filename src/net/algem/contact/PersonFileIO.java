@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileIO.java  2.7.a 16/01/13
+ * @(#)PersonFileIO.java  2.7.k 04/03/13
  *
  * Copyright (c) 2009 Musiques Tangentes All Rights Reserved.
  *
@@ -22,7 +22,6 @@ package net.algem.contact;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 import net.algem.bank.Bic;
@@ -45,7 +44,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.7.k
  */
 public class PersonFileIO
         extends TableIO
@@ -62,13 +61,11 @@ public class PersonFileIO
   private DataConnection dc;
   private TeacherIO teacherIO;
   private MemberIO memberIO;
-  private static Hashtable<Integer, PersonFile> cache = new Hashtable<Integer, PersonFile>();
 
   public PersonFileIO(DataConnection dc) {
     this.dc = dc;
     teacherIO = (TeacherIO) DataCache.getDao(Model.Teacher);
     memberIO = (MemberIO) DataCache.getDao(Model.Member);
-//    this.teacherIO = new TeacherIO(dc);
   }
 
   public Vector<String> update(PersonFile dossier) throws SQLException {
@@ -139,19 +136,11 @@ public class PersonFileIO
   }
 
   public PersonFile findId(int n, boolean complete) {
-    PersonFile p = cache.get(n);
 
-    if (p != null) {
-      return p;
-    }
     String query = "WHERE id = " + n;
     Vector<PersonFile> v = find(query, complete);
     if (v.size() > 0) {
-      p = v.elementAt(0);
-      if (p.getTeacher() != null) {
-        cache.put(n, p);
-      }
-      return p;
+      return v.elementAt(0);
     }
     return null;
   }

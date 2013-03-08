@@ -81,7 +81,7 @@ public class TestCourseScheduleCtrl
     a.setDateEnd(new DateFr("17-09-2012"));
     a.setHourStart(start);
     a.setHourEnd(end);
-    a.setDuration(60);
+    a.setLength(60);
     a.setDay(1);
     a.setPeriodicity(Periodicity.SEMAINE);
     a.setNSessions((short) 1);
@@ -94,7 +94,7 @@ public class TestCourseScheduleCtrl
     int duration = 45;
     int intervall = 15;
 
-    a.setDuration(duration);
+    a.setLength(duration);
 
     a.setHourEnd(end);
     la = ctrl.getPlanification(a, 0);
@@ -110,7 +110,7 @@ public class TestCourseScheduleCtrl
     assertEquals(new Hour("17:45"), la.get(la.size() - 1).getHourEnd());
 
     a.setHourEnd(end);
-    a.setDuration(55);
+    a.setLength(55);
     intervall = 5;
     la = ctrl.getPlanification(a, intervall);
     assertTrue(la.size() == 4);
@@ -119,7 +119,7 @@ public class TestCourseScheduleCtrl
     assertEquals(new Hour("17:55"), la.get(la.size() - 1).getHourEnd());
 
     a.setHourEnd(end);
-    a.setDuration(40);
+    a.setLength(40);
     la = ctrl.getPlanification(a, intervall);
     assertTrue(la.size() == 5);
     assertEquals(start, la.get(0).getHourStart());
@@ -134,19 +134,19 @@ public class TestCourseScheduleCtrl
     Course c = new Course();
     c.setCode("AT090");
     c.setCollective(true);
-    assertTrue(90 == c.getDuration());
+    assertTrue(90 == c.getLength());
 
     c.setCode("AT");
-    assertTrue(60 == c.getDuration());
+    assertTrue(60 == c.getLength());
 
     c.setCode("F.M.");
-    assertTrue(60 == c.getDuration());
+    assertTrue(60 == c.getLength());
 
     c.setCode("FM");
-    assertTrue(0 == c.getDuration());
+    assertTrue(0 == c.getLength());
 
     c.setCode("AT006");
-    assertTrue(6 == c.getDuration());
+    assertTrue(6 == c.getLength());
 
     String code = "at123";
     c.setCode(code);

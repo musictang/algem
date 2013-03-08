@@ -72,28 +72,28 @@ public class TestCourseModel extends TestCase {
       Course c = new Course();
       
       c.setCode("ATP045");
-      assertTrue(c.hasDuration());
+      assertTrue(c.hasValidCodeLength());
       
       c.setCode("ATP120");
-      assertTrue(c.hasDuration());
+      assertTrue(c.hasValidCodeLength());
       
       c.setCode("455");
-      assertTrue(c.hasDuration());
+      assertTrue(c.hasValidCodeLength());
       
       c.setCode("ATP");
-      assertFalse(c.hasDuration());
+      assertFalse(c.hasValidCodeLength());
       
       c.setCode("Inst");
-      assertFalse(c.hasDuration());
+      assertFalse(c.hasValidCodeLength());
       
       c.setCode("");
-      assertFalse(c.hasDuration());
+      assertFalse(c.hasValidCodeLength());
       
       c.setCode(null);
-      assertFalse(c.hasDuration());
+      assertFalse(c.hasValidCodeLength());
       
       c.setCode("ATP04A4");
-      assertFalse(c.hasDuration());
+      assertFalse(c.hasValidCodeLength());
     }
 
 }

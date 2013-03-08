@@ -1,5 +1,5 @@
 /*
- * @(#)ContactFileEditor.java	2.6.a 17/09/12
+ * @(#)ContactFileEditor.java	2.7.k 01/03/13
  * 
  * Copyright (c) 1998-2011 Musiques Tangentes. All Rights Reserved.
  *
@@ -21,6 +21,7 @@
 package net.algem.contact;
 
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.Vector;
@@ -33,17 +34,14 @@ import net.algem.config.ParamTableIO;
 import net.algem.contact.member.PersonSubscriptionCard;
 import net.algem.util.model.Reloadable;
 import net.algem.util.module.GemDesktop;
-import net.algem.util.ui.FileTab;
-import net.algem.util.ui.GemBorderPanel;
-import net.algem.util.ui.GemLabel;
-import net.algem.util.ui.GridBagHelper;
+import net.algem.util.ui.*;
 
 /**
  * Contact editor view.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.7.k
  * @since 1.0a 09/07/2002
  */
 public class ContactFileEditor
@@ -59,7 +57,7 @@ public class ContactFileEditor
   private JCheckBox cbTelAddress;
   private GridBagHelper gb;
 
-  private GemBorderPanel infosView;
+  private GemPanel infosView;
   private EmailView emailView;
   private WebSiteView websiteView;
 
@@ -82,19 +80,18 @@ public class ContactFileEditor
     infosView.add(emailView);
     infosView.add(websiteView);
 
-    JScrollPane scp = new JScrollPane(infosView);scp.setBorder(null);
+    JScrollPane scp = new JScrollPane(infosView);
+    scp.setBorder(null);
 
     addressView = new AddressView();
 
     this.setLayout(new GridBagLayout());
     gb = new GridBagHelper(this);
-
-    gb.add(personView, 0, 0, 1, 2, GridBagHelper.BOTH, 1.0, 1.0);
-    //gb.add(vueTele, 1, 0, 1, 1, GridBagHelper.BOTH, 1.0, 1.0);
-    gb.add(scp, 1, 0, 1, 1, GridBagHelper.BOTH, 1.0, 1.0);
-    //gb.add(vueSiteWeb, 1, 1, 1, 1, GridBagHelper.BOTH, GridBagConstraints.LINE_START, 0.0, 1.0);
+    GemPanel gp = new GemPanel(new GridLayout(1,1));
+    gp.add(personView);
+    gp.add(scp);
+    gb.add(gp, 1, 0, 1, 1, GridBagHelper.BOTH, 1.0, 1.0);
     gb.add(new JLabel(" "), 0, 2, 1, 1, GridBagHelper.WEST);
-    //gb.add(vueAdresse, 0, 3, 2, 1, GridBagHelper.BOTH, 1.0, 1.0);
     gb.add(addressView, 0, 3, 2, 1, GridBagHelper.BOTH, GridBagHelper.WEST);
     gb.add(note, 0, 4, 2, 1, GridBagHelper.WEST);
 

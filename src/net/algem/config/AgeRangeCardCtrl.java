@@ -1,7 +1,7 @@
 /*
- * @(#)AgeRangeCardCtrl.java 2.7.a 07/01/13
+ * @(#)AgeRangeCardCtrl.java 2.7.k 05/03/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,7 +21,10 @@ package net.algem.config;
 
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
-import net.algem.util.*;
+import net.algem.util.DataCache;
+import net.algem.util.GemCommand;
+import net.algem.util.GemLogger;
+import net.algem.util.MessageUtil;
 import net.algem.util.model.Model;
 import net.algem.util.ui.CardCtrl;
 import net.algem.util.ui.MessagePopup;
@@ -30,19 +33,17 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:nicolasnouet@gmail.com">Nicolas Nouet</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.7.k
  * @since 2.3.a
  */
 public class AgeRangeCardCtrl
         extends CardCtrl
 {
 
-  private DataConnection dc;
   private AgeRangeView view;
   private AgeRange range;
 
-  public AgeRangeCardCtrl(DataConnection dc) {
-    this.dc = dc;
+  public AgeRangeCardCtrl() {
     btPrev.setText(GemCommand.DELETE_CMD);
     view = new AgeRangeView();
     addCard("Fiche tranche age", view);
@@ -140,7 +141,7 @@ public class AgeRangeCardCtrl
       msg += MessageUtil.getMessage("age.range.error.validation2") + "\n";
     }
 
-    if (agemax > 100) { //@jm un peu restrictif peut-etre
+    if (agemax > 150) {
       msg = MessageUtil.getMessage("age.range.error.validation3") + "\n";
     }
 

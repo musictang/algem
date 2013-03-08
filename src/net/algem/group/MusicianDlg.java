@@ -1,5 +1,5 @@
 /*
- * @(#)MusicianDlg.java	2.7.b 21/01/13
+ * @(#)MusicianDlg.java	2.7.k 04/03/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -32,10 +32,16 @@ import javax.swing.ImageIcon;
 import net.algem.config.Instrument;
 import net.algem.config.InstrumentChoice;
 import net.algem.config.InstrumentIO;
+import net.algem.contact.Contact;
+import net.algem.contact.ContactSelectEvent;
 import net.algem.contact.Person;
-import net.algem.contact.PersonSearchDlg;
+import net.algem.contact.PersonFileSearchCtrl;
 import net.algem.util.*;
+import net.algem.util.event.GemEvent;
+import net.algem.util.event.GemEventListener;
 import net.algem.util.model.Model;
+import net.algem.util.module.GemDesktop;
+import net.algem.util.module.GemModule;
 import net.algem.util.ui.*;
 
 /**
@@ -43,11 +49,11 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.b
+ * @version 2.7.k
  */
 public class MusicianDlg
         extends PopupDlg
-        implements ActionListener
+        implements ActionListener, GemEventListener
 {
 
   private DataCache dataCache;
@@ -59,11 +65,15 @@ public class MusicianDlg
   private Musician mus;
   private ImageIcon icon;
   private GemButton btSearch;
+  private GemDesktop desktop;
+  private Component component;
+  private int operation;
 
-  public MusicianDlg(Component c, String t, DataCache _dc) {
-    super(c, t);
-
-    dataCache = _dc;
+  public MusicianDlg(Component c, String t, GemDesktop desktop) {
+    super(c, t, false);
+    this.component = c;
+    this.desktop = desktop;
+    dataCache = desktop.getDataCache();
 
     no = new GemNumericField(6);
     no.addActionListener(this);
@@ -139,6 +149,10 @@ public class MusicianDlg
     m.setInstrument(Integer.parseInt(getField(3)));
     return m;
   }
+  
+  public void setOperation(int operation) {
+    this.operation = operation;
+  }
 
   @Override
   public void actionPerformed(ActionEvent evt) {
@@ -152,17 +166,12 @@ public class MusicianDlg
         GemLogger.log(Level.SEVERE, ex.getMessage());
       }
     } else if (evt.getSource() == btSearch) {
-      PersonSearchDlg dlg = new PersonSearchDlg(parent, dataCache);
-      dlg.setVisible(true);
-
-      if (dlg.isValidation()) {
-        try {
-          setMusician(dlg.getContact(), dc);
-        } catch (SQLException ex) {
-          GemLogger.log(Level.SEVERE, ex.getMessage());
-        }
-      }
-
+      PersonFileSearchCtrl pfSearch = new PersonFileSearchCtrl(desktop, BundleUtil.getLabel("Contact.browser.label"), this); 
+      pfSearch.init();
+      desktop.addPanel("Contact", pfSearch, GemModule.S_SIZE);
+    } else if (evt.getActionCommand().equals(GemCommand.OK_CMD)) {
+      ((MusicianListView) component).setMusician(get(), operation);
+      super.actionPerformed(evt);// force closing
     } else {
       super.actionPerformed(evt);
     }
@@ -181,8 +190,23 @@ public class MusicianDlg
     }
     mus = new Musician(p);
     mus.setInstrument(inst);
+    no.setText(String.valueOf(mus.getId()));
     name.setText(mus.getName());
     firstname.setText(mus.getFirstName());
     instrument.setKey(inst);
   }
+
+  @Override
+  public void postEvent(GemEvent evt) {
+    if (evt instanceof ContactSelectEvent) {
+      Contact c = ((ContactSelectEvent) evt).getContact();
+      try {
+        setMusician(c, dataCache.getDataConnection());
+      } catch (SQLException ex) {
+        GemLogger.log(Level.SEVERE, ex.getMessage());
+      }
+    }
+  }
+  
+  
 }

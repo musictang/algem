@@ -35,6 +35,4 @@ public class Config
     super(_key, _value);
   }
 
-
-
 }

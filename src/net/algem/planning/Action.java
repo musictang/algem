@@ -1,5 +1,5 @@
 /*
- * @(#)Action.java	2.7.a 07/01/13
+ * @(#)Action.java	2.7.h 25/02/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -36,7 +36,7 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.7.h
  * @since 1.0a 07/07/1999
  */
 public class Action
@@ -59,8 +59,8 @@ public class Action
   private int memberId;
   private Periodicity periodicity;
 
-  /** Duration in minutes. */
-  private int duration;
+  /** Length in minutes. */
+  private int length;
 
   private GemParam level;
 
@@ -170,12 +170,12 @@ public class Action
     hourEnd = h;
   }
 
-  public int getDuration() {
-    return duration;
+  public int getLength() {
+    return length;
   }
 
-  public void setDuration(int duree) {
-    this.duration = duree;
+  public void setLength(int length) {
+    this.length = length;
   }
 
   public DateFr getDateStart() {

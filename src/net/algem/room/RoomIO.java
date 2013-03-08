@@ -1,5 +1,5 @@
 /*
- * @(#)RoomIO.java	2.7.a 13/12/12
+ * @(#)RoomIO.java	2.7.g 13/02/13
  *
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -41,7 +41,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.7.g
  * @since 1.0a 07/07/1999
  */
 public class RoomIO
@@ -71,14 +71,11 @@ public class RoomIO
             + "'," + s.getSurface()
             + "," + s.getNPers()
             + "," + s.getEstab()
-            /*
-             * +","+ns.getRsrvOccase() +","+ns.getRsrvPlafond()
-             * +","+ns.getRsrvRegulier()
-             */
             + ",'" + (s.isActive() ? "t" : "f")
             + "'," + s.getRate().getId()
             + "," + s.getContact().getId()
             + "," + s.getPayer().getId()
+            + ",'" + (s.isAvailable() ? "t" : "f") + "'"
             + ")";
 
     dc.executeUpdate(query);
@@ -129,9 +126,10 @@ public class RoomIO
             + "',surf = " + n.getSurface()
             + ",npers = " + n.getNPers()
             + ",etablissement =" + n.getEstab()
-            + ",active = '" + (n.isActive() ? "t" : "f")
+            + ",active = '" + (n.isActive() ? "t" : "f")           
             + "',idtarif =" + n.getRate().getId()
             + ",payeur = " + n.getPayer().getId()
+            + ",public = '" + (n.isAvailable() ? "t" : "f") + "'"
             + " WHERE id = " + n.getId();
 
     dc.executeUpdate(query);
@@ -236,13 +234,13 @@ public class RoomIO
         s.setSurface(rs.getInt(4));
         s.setNPers(rs.getInt(5));
         s.setEstab(rs.getInt(6));
-        s.setActive(rs.getBoolean(7));
+        s.setActive(rs.getBoolean(7));              
         RoomRate rt = loadRate(rs.getInt(8));
         s.setRate(rt);
         Contact c = loadContact(rs.getInt(9));
         s.setContact(c);
         s.setPayer(loadPayer(rs.getInt(10)));
-
+        s.setAvailable(rs.getBoolean(11));
         v.addElement(s);
       }
       rs.close();

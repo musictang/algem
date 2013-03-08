@@ -1,7 +1,7 @@
 /*
- * @(#)Algem.java	2.7.f 07/02/13
+ * @(#)Algem.java	2.7.k 05/03/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -43,12 +43,12 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.f
+ * @version 2.7.k
  */
 public class Algem
 {
 
-  public static final String APP_VERSION = "2.7.f";
+  public static final String APP_VERSION = "2.7.k";
   private static final int DEF_WIDTH = 1080;// (850,650) => ancienne taille
   private static final int DEF_HEIGHT = 780;
   private static final Point DEF_LOCATION = new Point(70, 30);
@@ -178,22 +178,20 @@ public class Algem
       base = props.getProperty("base");
     }
     
-
-    if (host == null && base == null) {
-      dc = new DataConnection();
-    } else if (host == null) {
-      dc = new DataConnection(DataConnection.DEF_HOST, base);
-    } else if (base == null) {
-      dc = new DataConnection(host, DataConnection.DEF_DB_NAME);
-    } else {
-      dc = new DataConnection(host, base);
+    String port = props.getProperty("port");
+    int dbport = DataConnection.DEF_PORT;
+    if (port != null) {
+      dbport = Integer.parseInt(port);
     }
+    
+    dc = new DataConnection(host, dbport, base);
+
     String ssl = props.getProperty("ssl");
-    if (ssl != null && "true".equals(ssl)) {
+    if (ssl != null && "true".equalsIgnoreCase(ssl)) {
       dc.setSsl(true);
     }
     String cacert = props.getProperty("cacert");
-    if (cacert != null && "true".equals(cacert)) {
+    if (cacert != null && "true".equalsIgnoreCase(cacert)) {
       dc.setCacert(true);
     }
     dc.connect();

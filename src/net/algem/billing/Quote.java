@@ -1,5 +1,5 @@
 /*
- * @(#)Quote.java 2.7.c 23/01/13
+ * @(#)Quote.java 2.7.h 22/02/13
  *
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -32,7 +32,7 @@ import net.algem.security.User;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.c
+ * @version 2.7.h
  * @since 2.4.d 08/06/12
  */
 public class Quote
@@ -107,16 +107,15 @@ public class Quote
    */
   public Quote(PersonFile pf, User u) {
     this(u);
-    int d = pf.getId();
-    this.member = pf.getId();
+    int id = pf.getId();
+    this.member = id;
 
     if (pf.getMember() != null) {
-      int payeur = pf.getMember().getPayer();
-      if (payeur > 0 && payeur != d) {
-        d = payeur;
-      }
+      int p = pf.getMember().getPayer();
+      this.payer = (p > 0 && p != id) ? p : id;  
+    } else {
+      this.payer = id;
     }
-    setPayer(d);
   }
 
   public Quote(Room s, User u) {

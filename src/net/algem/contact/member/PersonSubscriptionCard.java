@@ -105,11 +105,11 @@ public class PersonSubscriptionCard
    * @param duration in minutes
    */
   public void dec(int duration) {
-    /*if (getDuration > restant) {
+    /*if (getLength > restant) {
     restant = 0;
     }
     else {
-    restant -= getDuration;
+    restant -= getLength;
     }*/
     rest -= duration;
   }

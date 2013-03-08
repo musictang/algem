@@ -1,7 +1,7 @@
 /*
- * @(#)Contact.java 2.7.a 16/01/13
+ * @(#)Contact.java 2.7.h 20/02/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,7 +27,7 @@ import java.util.Vector;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.7.h
  * @since 1.0a 07/07/1999
  */
 public class Contact
@@ -46,14 +46,14 @@ public class Contact
   }
 
   public Contact(Person pp) {
-    this();
     id = pp.getId();
     firstName = pp.getFirstName();
     name = pp.getName();
-    civility = pp.getCivility();
+    gender = pp.getGender();
     type = pp.getType();
     //note = pp.getNote();
     imgRights = pp.getImgRights();
+    organization = pp.getOrganization();
   }
 
   public Address getAddress() {
@@ -162,7 +162,7 @@ public class Contact
     if (o == null || !(o instanceof Contact)) {
       return out(1);
     }
-    // superclass Person : comparison id, name, firstName, civility
+    // superclass Person
     if (!super.equals(o)) {
       return out(2);
     }

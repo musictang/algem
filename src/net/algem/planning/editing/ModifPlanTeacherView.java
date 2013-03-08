@@ -1,5 +1,5 @@
 /*
- * @(#)ModifPlanTeacherView.java	2.7.a 10/12/12
+ * @(#)ModifPlanTeacherView.java	2.7.h 21/02/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -24,6 +24,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JCheckBox;
 import net.algem.contact.teacher.*;
+import net.algem.course.Course;
+import net.algem.planning.CourseSchedule;
 import net.algem.planning.Hour;
 import net.algem.planning.HourRangePanel;
 import net.algem.planning.ScheduleObject;
@@ -40,7 +42,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.7.h
  */
 public class ModifPlanTeacherView
         extends ModifPlanView
@@ -116,6 +118,9 @@ public class ModifPlanTeacherView
   void setTime(ScheduleObject s) {
     hourRange.setStart(s.getStart());
     hourRange.setEnd(s.getEnd());
+    if (s instanceof CourseSchedule &&  ((Course) s.getActivity()).isCollective()) {
+      hourRange.setEditable(false);
+    }
   }
   
   Hour getHourStart() {

@@ -1,5 +1,5 @@
 /*
- * @(#)InstrumentView.java 2.7.a 21/11/12
+ * @(#)InstrumentView.java 2.7.k 01/03/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -30,7 +30,7 @@ import net.algem.util.BundleUtil;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.7.k
  * @since 2.7.a 21/11/12
  */
 public class InstrumentView 
@@ -40,6 +40,11 @@ public class InstrumentView
   
   public InstrumentView(List<Instrument> list) {
     super(BundleUtil.getLabel("Instruments.label"), false);
+    this.list = list;
+  }
+  
+  public InstrumentView(List<Instrument> list, String label) {
+    super(label, false);
     this.list = list;
   }
   

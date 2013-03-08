@@ -1,5 +1,5 @@
 /*
- * @(#)TestProperties.java 2.6.a 08/10/12
+ * @(#)TestProperties.java 2.7.h 20/02/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -25,13 +25,12 @@ import java.sql.SQLException;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
-import org.junit.Ignore;
 
 /**
  * Default values for database connection.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.7.h
  * @since 2.5.a 28/06/12
  */
 public class TestProperties 
@@ -64,7 +63,7 @@ public class TestProperties
   /**
    * List system properties. For info only.
    */
-  @Ignore
+//  @Ignore
   public void listSystemProperties() {
     java.util.Properties props = System.getProperties();
     props.list(System.out);

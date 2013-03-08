@@ -87,7 +87,7 @@ public class CourseOrderTableModel
       case 3:
         return m.getStart().toString();
       case 4:
-        return new Hour(m.getStart().getDuration(m.getEnd())).toString();
+        return new Hour(m.getStart().getLength(m.getEnd())).toString();
     }
     return null;
   }

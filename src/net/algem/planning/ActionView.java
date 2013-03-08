@@ -1,5 +1,5 @@
 /*
- * @(#)ActionView.java	2.7.a 29/11/12
+ * @(#)ActionView.java	2.7.h 25/02/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -46,7 +46,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.7.h
  */
 public class ActionView
         extends GemPanel
@@ -64,7 +64,7 @@ public class ActionView
   protected GemNumericField places;
   protected ParamChoice vChoix;
   protected JComboBox periodicity;
-  protected GemNumericField duration;
+  protected HourField courseLength; 
   protected GemNumericField intervall;
 
   public ActionView(GemDesktop desktop) {
@@ -85,15 +85,15 @@ public class ActionView
     places = new GemNumericField(2);
     places.setText(String.valueOf(((Room)room.getSelectedItem()).getNPers()));
     vChoix = new ParamChoice(dataCache.getVacancyCat());
-    duration = new GemNumericField(3);
+    courseLength = new HourField();
     intervall = new GemNumericField(2);
     load(((Course) course.getSelectedItem()));
   }
   
   private void load(Course c) {
-    duration.setText(c.getDuration() == 0 ? null : String.valueOf(c.getDuration()));
-    hourPanel.setEnd(hourPanel.getStart().end(c.getDuration()));
-    duration.setEditable(c.isCourseCoInst());
+    courseLength.set(c.getLength() == 0 ? new Hour() : new Hour(c.getLength()));
+    hourPanel.setEnd(hourPanel.getStart().end(c.getLength()));
+    courseLength.setEditable(c.isCourseCoInst());
     intervall.setEditable(c.isCourseCoInst());
   }
 
@@ -120,9 +120,9 @@ public class ActionView
 
     GemPanel p = new GemPanel();
     p.add(hourPanel);
-    p.add(new GemLabel(BundleUtil.getLabel("Course.duration.label")));
-    duration.setToolTipText(BundleUtil.getLabel("Course.duration.tip"));
-    p.add(duration);
+    p.add(new GemLabel(BundleUtil.getLabel("Course.length.label")));
+    courseLength.setToolTipText(BundleUtil.getLabel("Course.length.tip"));
+    p.add(courseLength);
     p.add(new GemLabel(BundleUtil.getLabel("Course.interval.label")));
     intervall.setToolTipText(BundleUtil.getLabel("Course.interval.tip"));
     p.add(intervall);
@@ -147,7 +147,7 @@ public class ActionView
     a.setDateEnd(datePanel.getEndFr());
     a.setHourStart(hourPanel.getStart());
     a.setHourEnd(hourPanel.getEnd());
-    a.setDuration(getDuration());
+    a.setLength(getCourseLength());
     a.setTeacher(teacher.getKey());
     a.setRoom(room.getKey());
     a.setDay(day.getDay());
@@ -173,20 +173,16 @@ public class ActionView
   }
 
   /**
-   * Gets the duration from entry field.
+   * Gets the course's length entered in field.
    *
-   * @return a duration in minutes
+   * @return a course's length in minutes
    */
-  int getDuration() {
-    try {
-      return Integer.parseInt(duration.getText());
-    } catch (NumberFormatException nfe) {
-      return 0;
-    }
+  int getCourseLength() {
+    return courseLength.get().toMinutes();
   }
 
   /**
-   * Gets the intervall between two schedules for collective instrument planification.
+   * Gets the intervall between two schedules for collective instrument batch planification.
    *
    * @return a number of minutes
    */
@@ -207,16 +203,18 @@ public class ActionView
   }
 
   /**
-   * Checks if the time range equals to the course duration.
-   *
-   * @return true if equals
+   * Checks if the time range equals to the course's length.
+   * 
+   * @return true if range length equals course's length
    */
-  boolean isValidDuration() {
+  boolean hasValidLength() {
     Course c = getCourse();
-    if (c.isCollective() && c.hasDuration()) {
-      return hourPanel.getStart().getDuration(hourPanel.getEnd()) == getDuration();
+    int length = hourPanel.getStart().getLength(hourPanel.getEnd());
+    if (c.isCollective() && c.hasValidCodeLength()) {
+      return length == getCourseLength();
     }
-    return true;
+    // length must be > 10 min
+    return length < 10 ? false : true;
   }
 
   public void clear() {
@@ -229,7 +227,7 @@ public class ActionView
     day.setSelectedIndex(0);
     periodicity.setSelectedIndex(0);
     sessions.setText("");
-    duration.setText(null);
+    courseLength.set(new Hour());
     intervall.setText(null);
   }
   
@@ -248,7 +246,7 @@ public class ActionView
       if (evt.getStateChange() == ItemEvent.SELECTED) {
         load(c);
       } else if (evt.getStateChange() == ItemEvent.DESELECTED) {
-        duration.setText(null);
+        courseLength.setText(null);
       }
     }
   }

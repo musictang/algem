@@ -48,7 +48,7 @@ public class TestPlanningService extends TestCase {
       Hour ha = new Hour("10:00");
       Hour hb = new Hour("14:00");
       Hour hc = new Hour("10:00");
-      int offset = ha.getDuration(hb);
+      int offset = ha.getLength(hb);
 
       ha.incMinute(offset);
       assertEquals("positif offset", "14:00", ha.toString());

@@ -1,5 +1,5 @@
 /*
- * @(#)GemModule.java	2.6.a 18/09/12
+ * @(#)GemModule.java	2.7.i 26/02/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -41,7 +41,7 @@ import net.algem.util.model.GemCloseVetoException;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.6.a
+ * @version 2.7.i
  * @since 1.0a 06/07/2002
  */
 public class GemModule
@@ -51,7 +51,7 @@ public class GemModule
   public static final Dimension DEFAULT_SIZE = new Dimension(650, 450);
   public static final Dimension XXS_SIZE = new Dimension(240, 120);
   public static final Dimension XS_SIZE = new Dimension(320, 240);
-  public static final Dimension S_SIZE = new Dimension(380, 400);
+  public static final Dimension S_SIZE = new Dimension(420, 400);
   public static final Dimension M_SIZE = new Dimension(750, 450);
   public static final Dimension L_SIZE = new Dimension(800, 500);
   public static final Dimension XL_SIZE = new Dimension(870, 500);

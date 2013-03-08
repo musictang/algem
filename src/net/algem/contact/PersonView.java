@@ -1,5 +1,5 @@
 /*
- * @(#)PersonView.java	2.7.e 05/02/13
+ * @(#)PersonView.java	2.7.k 01/03/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -32,10 +32,7 @@ import javax.imageio.ImageIO;
 import javax.jnlp.DownloadService;
 import javax.jnlp.ServiceManager;
 import javax.jnlp.UnavailableServiceException;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
+import javax.swing.*;
 import net.algem.contact.member.PersonSubscriptionCard;
 import net.algem.group.Group;
 import net.algem.group.GroupFileEditor;
@@ -50,7 +47,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.e
+ * @version 2.7.k
  */
 public class PersonView
         extends GemBorderPanel
@@ -61,6 +58,7 @@ public class PersonView
   private GemField firstname;
   private CivilChoice civil;
   private JCheckBox cbImgRights;
+  private GemField organization;
   private JLabel photo;
   private GemLabel rhLabel;
   /** Nombre d'heures restantes sur carte abonnement. */
@@ -83,42 +81,46 @@ public class PersonView
     no = new GemNumericField(6);
     no.setEditable(false);
     no.setBackground(Color.lightGray);
+    organization = new GemField(true, 20);
     name = new GemField(true, 20);
     firstname = new GemField(true, 20);
     civil = new CivilChoice();
-    cbImgRights = new JCheckBox();
+    cbImgRights = new JCheckBox(BundleUtil.getLabel("Person.img.rights.label"));
     rhLabel = new GemLabel();
     nrh = new GemLabel();
 
     this.setLayout(new GridBagLayout());
     gb = new GridBagHelper(this);
+    GemBorderPanel photoPanel = new GemBorderPanel(BorderFactory.createEmptyBorder(0, 10, 0, 10));
     photo = new JLabel();
-    gb.add(photo, 0, 0, 1, 1, GridBagHelper.WEST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Number.label")), 0, 1, 1, 1, GridBagHelper.WEST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Name.label")), 0, 2, 1, 1, GridBagHelper.WEST);
-    gb.add(new GemLabel(BundleUtil.getLabel("First.name.label")), 0, 3, 1, 1, GridBagHelper.WEST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Person.civility.label")), 0, 4, 1, 1, GridBagHelper.WEST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Person.img.rights.label")), 0, 5, 1, 1, GridBagHelper.WEST);
-    gb.add(rhLabel, 0, 6, 1, 1, GridBagHelper.WEST);
-    gb.add(no, 1, 1, 1, 1, GridBagHelper.WEST);
-    gb.add(name, 1, 2, 3, 1, GridBagHelper.WEST);
-    gb.add(firstname, 1, 3, 3, 1, GridBagHelper.WEST);
-    gb.add(civil, 1, 4, 1, 1, GridBagHelper.WEST);
-    gb.add(cbImgRights, 1, 5, 1, 1, GridBagHelper.WEST);
-    gb.add(nrh, 1, 6, 1, 1, GridBagHelper.WEST);
+    photoPanel.add(photo);
+    gb.insets = GridBagHelper.SMALL_INSETS;
+    gb.add(photoPanel, 0, 0, 1, 6, GridBagHelper.NORTHWEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Number.label")), 1, 0, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Organization.label")), 1, 1, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Name.label")), 1, 2, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("First.name.label")), 1, 3, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Person.civility.label")), 1, 4, 1, 1, GridBagHelper.WEST);
+    gb.add(rhLabel, 2, 6, 1, 1, GridBagHelper.WEST);
+    gb.add(no, 2, 0, 2, 1, GridBagHelper.WEST);
+    gb.add(organization, 2, 1, 2, 1, GridBagHelper.WEST);
+    gb.add(name, 2, 2, 2, 1, GridBagHelper.WEST);
+    gb.add(firstname, 2, 3, 2, 1, GridBagHelper.WEST);
+    gb.add(civil, 2, 4, 2, 1, GridBagHelper.WEST);
+    gb.add(cbImgRights, 2, 5, 1, 1, GridBagHelper.WEST);
+    gb.add(nrh, 3, 6, 1, 1, GridBagHelper.WEST);
   }
 
-  public void set(Person pr) {
-    no.setText(String.valueOf(pr.getId()));
-    name.setText(pr.getName());
-    firstname.setText(pr.getFirstName());
-    civil.setSelectedItem(pr.getCivility());
-    cbImgRights.setSelected(!pr.getImgRights()); // si false, sélectionner
-    ImageIcon icon = setPhoto(pr.getId());
-    if (icon != null) {
-      photo.setIcon(icon);
-    }
-    ptype = pr.getType();
+  public void set(Person p) {
+    no.setText(String.valueOf(p.getId()));
+    name.setText(p.getName());
+    firstname.setText(p.getFirstName());
+    civil.setSelectedItem(p.getGender());
+    cbImgRights.setSelected(!p.getImgRights()); // si false, sélectionner
+    organization.setText(p.getOrganization());
+    ImageIcon icon = setPhoto(p.getId());
+    photo.setIcon(icon);
+    ptype = p.getType();
 
   }
 
@@ -178,8 +180,9 @@ public class PersonView
     pr.setType(ptype);
     pr.setName(name.getText());
     pr.setFirstName(firstname.getText());
-    pr.setCivility((String) civil.getSelectedItem());
+    pr.setGender((String) civil.getSelectedItem());
     pr.setImgRights(!cbImgRights.isSelected()); // si sélectionné refuse le droit à l'image
+    pr.setOrganization(organization.getText().isEmpty() ? null : organization.getText().trim());
     //pr.setNote(note);
     return pr;
   }
@@ -204,6 +207,7 @@ public class PersonView
     firstname.setText("");
     civil.setSelectedIndex(0);
     cbImgRights.setSelected(false);
+    photo.setText("");
     //note=0;
   }
 

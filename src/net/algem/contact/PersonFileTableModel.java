@@ -78,7 +78,7 @@ public class PersonFileTableModel
       case 0:
         return new Integer(p.getId());
       case 1:
-        return p.getContact().getCivility();
+        return p.getContact().getGender();
       case 2:
         return p.getContact().getFirstName();
       case 3:

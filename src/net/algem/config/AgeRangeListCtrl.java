@@ -1,7 +1,7 @@
 /*
  * @(#)AgeRangeListCtrl.java 2.6.a 24/09/12
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,10 +20,16 @@
 
 package net.algem.config;
 
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionListener;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.border.BevelBorder;
 import javax.swing.table.TableColumnModel;
+import net.algem.util.GemCommand;
+import net.algem.util.ui.GemButton;
+import net.algem.util.ui.GemPanel;
 import net.algem.util.ui.ListCtrl;
 
 /**
@@ -37,8 +43,10 @@ import net.algem.util.ui.ListCtrl;
 public class AgeRangeListCtrl
 	extends ListCtrl
 {
-
-  public AgeRangeListCtrl() {
+  private GemButton btClose;
+  
+  public AgeRangeListCtrl(boolean searchFlag) {
+    super(searchFlag);
     tableModel = new AgeRangeTableModel();
 
     jtable = new JTable(tableModel);
@@ -54,7 +62,20 @@ public class AgeRangeListCtrl
     JScrollPane p = new JScrollPane(jtable);
     p.setBorder(new BevelBorder(BevelBorder.LOWERED));
 
-    add("Center", p);
+    add(p, BorderLayout.CENTER);
+    GemPanel bp = new GemPanel(new GridLayout(1,1));
+    
+    back = new GemButton(GemCommand.CREATE_CMD);
+    btClose = new GemButton(GemCommand.CLOSE_CMD);
+    bp.add(back);
+    bp.add(btClose);
+    add(bp, BorderLayout.SOUTH);
+  }
+  
+  @Override
+  public void addActionListener(ActionListener l) {
+    super.addActionListener(l);
+    btClose.addActionListener(l);
   }
 }
 

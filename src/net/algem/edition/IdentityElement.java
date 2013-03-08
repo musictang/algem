@@ -1,5 +1,5 @@
 /*
- * @(#)IdentityElement.java 2.6.a 17/09/12
+ * @(#)IdentityElement.java 2.7.h 22/02/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -18,7 +18,6 @@
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  * 
  */
-
 package net.algem.edition;
 
 import java.awt.Graphics;
@@ -26,12 +25,13 @@ import net.algem.contact.Contact;
 
 /**
  * Identity element.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.7.h
  * @since 2.1.n 22/07/2011
  */
-public class IdentityElement extends DrawableElement
+public class IdentityElement
+        extends DrawableElement
 {
 
   private Contact contact;
@@ -44,10 +44,16 @@ public class IdentityElement extends DrawableElement
   @Override
   public void draw(Graphics g) {
     g.setFont(serifMed);
-    if (contact != null) { 
-      String p = (contact.getFirstName() == null || contact.getFirstName().isEmpty()) ? "" : contact.getFirstName() + " ";
-      String n = contact.getName() == null ? "" : contact.getName();
-      g.drawString(p + n, x, y);
+    String ident = "";
+    if (contact != null) {
+      if (contact.getOrganization() != null && !contact.getOrganization().isEmpty()) {
+        ident = contact.getOrganization();
+      } else {
+        String p = (contact.getFirstName() == null || contact.getFirstName().isEmpty()) ? "" : contact.getFirstName() + " ";
+        String n = contact.getName() == null ? "" : contact.getName();
+        ident = p + n;
+      }
+      g.drawString(ident, x, y);
     }
   }
 }

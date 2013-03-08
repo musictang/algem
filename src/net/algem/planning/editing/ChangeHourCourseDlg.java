@@ -124,7 +124,7 @@ public class ChangeHourCourseDlg
    */
   void changeHour() {
     DateFr start = view.getDateStart();
-    Hour duration = new Hour(courseOrder.getStart().getDuration(courseOrder.getEnd()));
+    Hour duration = new Hour(courseOrder.getStart().getLength(courseOrder.getEnd()));
     Hour hStart = view.getHour();
     Hour hEnd = new Hour(hStart);
     hEnd.incMinute(duration.toMinutes());

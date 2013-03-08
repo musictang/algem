@@ -1,5 +1,5 @@
 /*
- * @(#)MusicianEditor.java 2.6.a 31/07/12
+ * @(#)MusicianEditor.java 2.7.k 04/03/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -30,7 +30,7 @@ import net.algem.util.ui.FileTab;
  * Musicians tab.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.7.k
  */
 public class MusicianEditor
         extends FileTab
@@ -41,14 +41,13 @@ public class MusicianEditor
 
   public MusicianEditor(GemDesktop desktop, Vector<Musician> vm) {
     super(desktop);
-
     musiciansView = new MusicianListView(desktop);
     if (vm != null) {
       for (Musician m : vm) {
         musiciansView.addRow(m);
       }     
     }
-    update();
+    
     this.setLayout(new BorderLayout());
     add(musiciansView, BorderLayout.CENTER);
   }
@@ -67,24 +66,16 @@ public class MusicianEditor
    */
   public boolean hasChanged() {
 
-    Vector<Musician> m = getMusicians();
-    if (musicians.size() != m.size()) {
+    Vector<Musician> vm = getMusicians();
+    if (musicians.size() != vm.size()) {
       return true;
     }
     for (int i = 0; i < musicians.size(); i++) {
-      if (!musicians.elementAt(i).equals(m.elementAt(i))) {
+      if (!musicians.elementAt(i).equals(vm.elementAt(i))) {
         return true;
       }
     }
     return false;
-  }
-
-  /**
-   * Reload the list of musicians.
-   * This list is read-only.
-   */
-  public void update() {
-    musicians = new Vector(Collections.unmodifiableCollection(getMusicians()));
   }
 
   @Override
@@ -92,7 +83,12 @@ public class MusicianEditor
     return true;
   }
 
+  /**
+   * Reload the list of musicians.
+   * This list is read-only.
+   */
   @Override
   public void load() {
+    musicians = new Vector(Collections.unmodifiableCollection(getMusicians()));
   }
 }

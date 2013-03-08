@@ -1,5 +1,5 @@
 /*
- * @(#)OrderLineTableView.java	2.7.a 05/12/12
+ * @(#)OrderLineTableView.java	2.7.k 04/03/13
  *
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -21,6 +21,7 @@
 package net.algem.accounting;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.util.Calendar;
@@ -30,29 +31,31 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.*;
 import javax.swing.text.JTextComponent;
+import net.algem.contact.Person;
+import net.algem.contact.PersonIO;
 import net.algem.planning.DateFr;
 import net.algem.util.BundleUtil;
+import net.algem.util.DataCache;
 import net.algem.util.menu.MenuPopupListener;
+import net.algem.util.model.Model;
 
 /**
  * Order line table view.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.7.k
  * @since 1.0a 07/07/1999
  *
  */
 public class OrderLineTableView
         extends JPanel
         implements TableModelListener
-
 {
 
   private OrderLineTableModel tableModel;
   private JTable table;
   private JScrollPane panel;
-
   /** Tooltips for columns header. */
   private String[] columnToolTips = {
     BundleUtil.getLabel("Payment.schedule.payer.tip"),
@@ -68,22 +71,25 @@ public class OrderLineTableView
     BundleUtil.getLabel("Payment.schedule.transfer.tip"),
     BundleUtil.getLabel("Invoice.label")
   };
-
   private RowFilter<Object, Object> dateFilter;
+  private RowFilter<Object, Object> memberShipFilter;
+  private RowFilter<Object, Object> unpaidFilter;
   private final TableRowSorter<TableModel> sorter;
   private DateFr begin;
   private DateFr end;
 
   public OrderLineTableView(OrderLineTableModel _tableModel, ActionListener al) {
-    
+
     tableModel = _tableModel;
     table = new JTable(tableModel)
     {
       //Implements table header tool tips.
+
       @Override
       protected JTableHeader createDefaultTableHeader() {
         return new JTableHeader(columnModel)
         {
+
           @Override
           public String getToolTipText(MouseEvent e) {
             //String tip = null;
@@ -99,14 +105,25 @@ public class OrderLineTableView
     sorter = new TableRowSorter<TableModel>(tableModel);
     table.setRowSorter(sorter);
 //    tableVue.setAutoCreateRowSorter(true);
-    dateFilter = new RowFilter<Object, Object>() {
+    dateFilter = new RowFilter<Object, Object>()
+    {
+
       @Override
       public boolean include(Entry<? extends Object, ? extends Object> entry) {
         DateFr date = (DateFr) entry.getValue(2);
         return date.after(begin) && date.before(end);
       }
     };
+    
+    unpaidFilter = new RowFilter<Object, Object>()
+    {
 
+      @Override
+      public boolean include(Entry<? extends Object, ? extends Object> entry) {
+        boolean paid = (Boolean) entry.getValue(9);
+        return !paid;
+      }
+    };
     table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 
     TableColumnModel cm = table.getColumnModel();
@@ -133,25 +150,43 @@ public class OrderLineTableView
     // la sélection multiple permet le copier-coller d'un ensemble de lignes vers une autre application
     table.getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
     tableModel.addTableModelListener(this);
+
+    // Display name in tooltip for member column
+    table.getColumnModel().getColumn(1).setCellRenderer(new DefaultTableCellRenderer()
+    {
+      public Component getTableCellRendererComponent(
+              JTable table, Object value,
+              boolean isSelected, boolean hasFocus,
+              int row, int column) {
+        JLabel c = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+        String idper = (String) value;
+        Person p = ((PersonIO) DataCache.getDao(Model.Person)).findId(Integer.parseInt(idper.trim()));
+        c.setToolTipText(p != null ? p.getFirstnameName() : "");
+        return c;
+      }
+    });
     
     panel = new JScrollPane(table);
 
     setLayout(new BorderLayout());
     add(panel, BorderLayout.CENTER);
   }
-  
+
   /**
    * Adds right click listener for displaying popup menu.
    * At least one row must be selected and this row must be marked transfered.
-   * @param popup 
+   *
+   * @param popup
    */
   void addPopupMenuListener(JPopupMenu popup) {
-    table.addMouseListener(new MenuPopupListener(table, popup) {
+    table.addMouseListener(new MenuPopupListener(table, popup)
+    {
+
       @Override
       public void maybeShowPopup(MouseEvent e) {
-        int [] rows = table.getSelectedRows();
+        int[] rows = table.getSelectedRows();
         boolean t = false;
-        for(int i = 0 ; i < rows.length; i++) {
+        for (int i = 0; i < rows.length; i++) {
           if (getElementAt(rows[i]).isTransfered()) {
             t = true;
             break;
@@ -189,28 +224,39 @@ public class OrderLineTableView
     return n;
   }
 
-  public int [] getSelectedRows() {
-    int r [] = table.getSelectedRows();
+  public int[] getSelectedRows() {
+    int r[] = table.getSelectedRows();
     return r;
+  }
+
+  public void setMemberShipFilter(final String a) {
+    memberShipFilter = new RowFilter<Object, Object>()
+    {
+      @Override
+      public boolean include(Entry<? extends Object, ? extends Object> entry) {
+        DateFr date = (DateFr) entry.getValue(2);
+        String account = (String) entry.getValue(7);
+        return account.equals(a) && date.after(begin) && date.before(end);
+      }
+    };
   }
 
   /**
    * Line selection by date.
-   * 
+   *
    * @param date start date
    */
   public void filterByDate(DateFr date) {
 
     if (date == null) {
       sorter.setRowFilter(null);
-    }
-    else {
+    } else {
       Calendar cal = Calendar.getInstance();
       cal.setTime(date.getDate());
       cal.set(Calendar.MONTH, Calendar.AUGUST);
       cal.set(Calendar.DAY_OF_MONTH, 1);
       begin = new DateFr(cal.getTime());
-      end  = new DateFr(begin);
+      end = new DateFr(begin);
       end.incYear(1);
       sorter.setRowFilter(dateFilter);
 //      sorter.setRowFilter(RowFilter.regexFilter("^.*"+year+".*$", 2));
@@ -218,8 +264,26 @@ public class OrderLineTableView
     }
   }
 
+  public void filterByPeriod(DateFr begin, DateFr end) {
+    this.begin = begin;
+    this.end = end;
+    sorter.setRowFilter(dateFilter);
+  }
+
+  public void filterByMemberShip(DateFr begin, DateFr end) {
+    this.begin = begin;
+    this.end = end;
+    sorter.setRowFilter(memberShipFilter);
+  }
+  
+   public void filterByUnpaid() {
+    sorter.setRowFilter(unpaidFilter);
+  }
+  
+
   /**
    * Activates a listener for rows selection.
+   *
    * @param tc text component to update
    */
   public void addListSelectionListener(JTextComponent tc) {
@@ -228,10 +292,10 @@ public class OrderLineTableView
 
   /**
    * Retrieves the table view.
+   *
    * @return une table
    */
   public JTable getTable() {
     return table;
   }
-  
 }

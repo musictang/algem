@@ -73,7 +73,7 @@ public class QuoteEditor
 
     if (d.getNumber() == null || d.getNumber().isEmpty()) {
       try {
-        service.create(d);
+        billingService.create(d);
         view.setId(d.getNumber()); // rafraîchissement du numéro
         desktop.postEvent(new QuoteCreateEvent(d));
       } catch (SQLException e) {
@@ -83,7 +83,7 @@ public class QuoteEditor
       }
     } else {    
       try {
-        service.update(d);
+        billingService.update(d);
         MessagePopup.information(view, MessageUtil.getMessage("modification.confirmation.label"));
         desktop.postEvent(new QuoteUpdateEvent(d));
       } catch (BillingException fe) {
@@ -115,7 +115,7 @@ public class QuoteEditor
       }
       d.setItems(view.getItems()); // récupération des articles éventuellement modifiés dans la vue 
       try {
-        Invoice f = service.createInvoiceFrom(d);
+        Invoice f = billingService.createInvoiceFrom(d);
         if (f != null) {
           MessagePopup.information(this, MessageUtil.getMessage("invoice.create.info", new Object[] {f.getNumber()}));
           desktop.postEvent(new InvoiceCreateEvent(f));

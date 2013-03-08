@@ -1,5 +1,5 @@
 /*
- * @(#)AccountUtil.java	2.7.a 25/01/13
+ * @(#)AccountUtil.java	2.7.h 22/02/13
  *
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -43,7 +43,7 @@ import net.algem.util.DataConnection;
  * Utility class for orderline operations.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.7.h
  * @since 2.0r
  */
 public class AccountUtil {
@@ -325,6 +325,7 @@ public class AccountUtil {
    * @param orderLines
    */
   public static void setInvoiceOrderLines(Invoice f, Collection<OrderLine> orderLines) {
+    int i = 0;
     for (OrderLine e : orderLines) {
       if (ModeOfPayment.FAC.toString().equals(e.getModeOfPayment())) {
         f.addItem(new InvoiceItem(e)); // un reglement "FAC" correspond à un item de facturation        
@@ -332,17 +333,26 @@ public class AccountUtil {
         f.setDescription(e.getLabel());
       }
       f.addOrderLine(e); // on garde la trace des échéances sélectionnées
-      // IMPORTANT : le payeur enregistré dans l'échéance est prioritaire
-      // par rapport à celui de la fiche
-      f.setPayer(e.getPayer());
+      if (i++ == 0) {
+        // IMPORTANT : le payeur enregistré dans l'échéance est prioritaire
+        // par rapport à celui de la fiche
+        f.setPayer(e.getPayer());
+        // on utilise le numéro d'adhérent enregistré dans l'échéance
+        f.setMember(e.getMember());
+      }
     }
+    
   }
 
   public static void setQuoteOrderLines(Quote d, Collection<OrderLine> orderLines) {
     if (orderLines != null) {
+      int i = 0;
       for (OrderLine e : orderLines) {
-        d.setPayer(e.getPayer());
         d.addItem(new InvoiceItem(e));
+        if (i++ == 0) {
+          d.setPayer(e.getPayer());
+          d.setMember(e.getMember());
+        }
       }
     }
   }

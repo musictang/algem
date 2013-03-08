@@ -1,5 +1,5 @@
 /*
- * @(#)InvoiceView.java 2.7.a 09/01/13
+ * @(#)InvoiceView.java 2.7.h 22/02/13
  *
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -65,7 +65,7 @@ import net.algem.util.ui.*;
  * Invoice / quotation view.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.7.h
  * @since 2.3.a 07/02/12
  */
 public class InvoiceView
@@ -305,7 +305,7 @@ public class InvoiceView
         if (dlg.isModified()) {
           OrderLine ol = selectedItem.getOrderLine();
           InvoiceItem updatedItem = dlg.get();
-          // l'article à modifier pourrait être référencé dans un devis (on aurait créé une invoice à partir de ce devis)
+          // l'article à modifier pourrait être référencé dans un devis (on aurait créé une facture à partir de ce devis)
           try {
             if (updatedItem.getItem() != null && QuoteIO.isQuotationItem(updatedItem.getItem().getId(), dc)) {
               if (!MessagePopup.confirm(this, MessageUtil.getMessage("existing.estimate.item"), BundleUtil.getLabel("Warning.label"))) {
@@ -433,7 +433,7 @@ public class InvoiceView
     if (c != null) {
       a = c.getAddress();
     }
-
+      
     IdentityElement name = new IdentityElement(c, left, top + 10);
     AddressElement address = new InvoiceAddressElement(a, left, top + 30);
     // nom et adresse

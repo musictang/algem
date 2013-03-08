@@ -345,7 +345,7 @@ public class GroupView
   }
 
   private void findContact() {
-    dpBrowser = new PersonFileSearchCtrl(desktop, "Recherche contact", this);
+    dpBrowser = new PersonFileSearchCtrl(desktop, BundleUtil.getLabel("Contact.browser.label"), this);
     dpBrowser.init();
     desktop.addPanel("Contact", dpBrowser, GemModule.S_SIZE);
   }

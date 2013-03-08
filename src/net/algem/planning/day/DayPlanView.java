@@ -335,7 +335,7 @@ public class DayPlanView
     
     String teacherName = null;
     if (p.getIdPerson() != prev.getIdPerson()) {
-      int duree = p.getStart().getDuration(p.getEnd());
+      int duree = p.getStart().getLength(p.getEnd());
       if ((p instanceof CourseSchedule || p instanceof WorkshopSchedule) && duree > 30) {
         teacherName = p.getPerson().getAbbrevFirstNameName();
         if (teacherName != null) {

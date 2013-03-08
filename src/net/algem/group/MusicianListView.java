@@ -1,5 +1,5 @@
 /*
- * @(#)MusicianListView.java	2.7.a 26/11/12
+ * @(#)MusicianListView.java	2.7.j 27/02/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -35,6 +35,7 @@ import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
+import net.algem.util.event.GemEvent;
 import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.GemBorderPanel;
@@ -47,7 +48,7 @@ import net.algem.util.ui.GemPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.7.j
  * @since 1.0a 18/02/2004
  */
 public class MusicianListView
@@ -73,9 +74,10 @@ public class MusicianListView
     musicians = new MusicianTableModel(dataCache);
     table = new JTable(musicians)
     {
+
       public void processMouseEvent(MouseEvent evt) {
         if (evt.getID() == MouseEvent.MOUSE_CLICKED && evt.getClickCount() > 1) {
-          voirPersonne();
+          viewPerson();
         } else {
           super.processMouseEvent(evt);
         }
@@ -112,7 +114,7 @@ public class MusicianListView
 
   }
 
-  public void voirPersonne() {
+  public void viewPerson() {
     int row = table.getSelectedRow();
     if (row < 0) {
       return;
@@ -139,35 +141,48 @@ public class MusicianListView
   public void actionPerformed(ActionEvent e) {
     String cmd = e.getActionCommand();
     if (GemCommand.ADD_CMD.equals(cmd)) {
-      MusicianDlg dlg = new MusicianDlg(this, "ajout musicien", dataCache);
+      MusicianDlg dlg = new MusicianDlg(this, "ajout musicien", desktop);
+      dlg.setOperation(GemEvent.CREATION);
       dlg.show();
-      if (dlg.isValidation()) {
-        musicians.addItem(dlg.get());
-      }
     } else {
-      int row = table.getSelectedRow();
-      if (row < 0) {
-        return;
-      }
-      int n = table.convertRowIndexToModel(row);
-      if (n < 0) {
-        return;
-      }
-
-      if (GemCommand.MODIFY_CMD.equals(cmd)) {
-        Musician m = (Musician) musicians.getItem(n);
-        MusicianDlg dlg = new MusicianDlg(this, "modif musicien", dataCache);
-        dlg.setPerson(m);
-        dlg.show();
-        if (dlg.isValidation()) {
-          musicians.modItem(n, dlg.get());
+        int n = getSelectedRow();
+        if (n < 0) {
+          return;
         }
-      } else if (GemCommand.REMOVE_CMD.equals(cmd)) {
-        musicians.deleteItem(n);
-      }
+
+        if (GemCommand.MODIFY_CMD.equals(cmd)) {
+          Musician m = (Musician) musicians.getItem(n);
+          MusicianDlg dlg = new MusicianDlg(this, "modif musicien", desktop);
+          dlg.setPerson(m);
+          dlg.setOperation(GemEvent.MODIFICATION);
+          dlg.show();
+        } else if (GemCommand.REMOVE_CMD.equals(cmd)) {
+          musicians.deleteItem(n);
+        }
     }
   }
 
+  void setMusician(Musician m, int operation) {
+    if (operation == GemEvent.CREATION) {
+      musicians.addItem(m);
+    } else if (operation == GemEvent.MODIFICATION) {
+      int n = getSelectedRow();
+      if (n < 0) {
+        return;
+      }
+      musicians.modItem(n, m);
+    } 
+
+  }
+
+  private int getSelectedRow() {
+    int row = table.getSelectedRow();
+    if (row < 0) {
+      return -1;
+    }
+    return table.convertRowIndexToModel(row); 
+  }
+  
   public int getId() {
     return id;
   }

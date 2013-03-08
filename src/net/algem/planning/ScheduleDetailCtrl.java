@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleDetailCtrl.java 2.7.e 05/02/13
+ * @(#)ScheduleDetailCtrl.java 2.7.j 27/02/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -21,6 +21,7 @@
 package net.algem.planning;
 
 import java.awt.BorderLayout;
+import java.awt.Cursor;
 import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -57,7 +58,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.e
+ * @version 2.7.j
  * @since 1.0a 07/07/1999
  */
 public class ScheduleDetailCtrl
@@ -374,7 +375,7 @@ public class ScheduleDetailCtrl
         ScheduleRange g = (ScheduleRange) ((GemMenuButton) evt.getSource()).getObject();
         MessagePopup.warning(null, MessageUtil.getMessage("member.null.exception", g.getMemberId()));
       } else if ("MemberLink".equals(arg)) {
-        desktop.setWaitCursor();
+        setWaitCursor();
         ScheduleRangeObject po = (ScheduleRangeObject) ((GemMenuButton) evt.getSource()).getObject();
         if (schedule instanceof WorkshopSchedule) {
           c = ((WorkshopSchedule) schedule).getWorkshop();
@@ -384,7 +385,7 @@ public class ScheduleDetailCtrl
         if (!(evt.getModifiers() == InputEvent.BUTTON1_MASK)) { //ouverture du suivi élève touche MAJ/CTRL
           //if (!c.isCollective()) { @since 2.4.a entry suivi individuel activé pour les cours collectifs
           setFollowUp(po, c);
-          desktop.setDefaultCursor();
+          setDefaultCursor();
           return;
         }
 
@@ -393,12 +394,13 @@ public class ScheduleDetailCtrl
         if (editor != null) {
           desktop.setSelectedModule(editor);
         } else {
+            setWaitCursor();
             PersonFile pf = (PersonFile) DataCache.findId(p.getId(), Model.PersonFile);
             loadPersonFile(pf);
         }
 
       } else if ("PersonLink".equals(arg)) {
-        desktop.setWaitCursor();
+        setWaitCursor();
         Person p = (Person) ((GemMenuButton) evt.getSource()).getObject();
         PersonFile pf = (PersonFile) DataCache.findId(p.getId(), Model.PersonFile);
         loadPersonFile(pf);
@@ -414,25 +416,25 @@ public class ScheduleDetailCtrl
           }
           return;
         }
-        desktop.setWaitCursor();
+        setWaitCursor();
         Person p = (Person) ((GemMenuButton) evt.getSource()).getObject();
         PersonFile pf = (PersonFile) DataCache.findId(p.getId(), Model.PersonFile);
         loadPersonFile(pf);
       } else if ("GroupLink".equals(arg)) {// ouverture fiche groupe
-        desktop.setWaitCursor();
+        setWaitCursor();
         Group g = (Group) ((GemMenuButton) evt.getSource()).getObject();
         GroupFileEditor groupEditor = new GroupFileEditor(g, GemModule.GROUPE_DOSSIER_KEY, schedule);
         desktop.addModule(groupEditor);
         frame.setLocation(getOffset(groupEditor.getView()));
       } else if ("RoomLink".equals(arg)) { // ouverture fiche salle
-        desktop.setWaitCursor();
+        setWaitCursor();
         Room s = (Room) ((GemMenuButton) evt.getSource()).getObject();
         RoomFileEditor roomEditor = new RoomFileEditor(s, GemModule.SALLE_DOSSIER_KEY);
         roomEditor.setDate(schedule.getDay().getDate());
         desktop.addModule(roomEditor);
         frame.setLocation(getOffset(roomEditor.getView()));
       } else if ("CourseLink".equals(arg)) {
-        desktop.setWaitCursor();
+        setWaitCursor();
         c = (Course) ((GemMenuButton) evt.getSource()).getObject();
         if (!(evt.getModifiers() == InputEvent.BUTTON1_MASK)) { // ouverture du suivi cours touche majuscule
           CollectiveFollowUpDlg dlg = new CollectiveFollowUpDlg(desktop, scheduleService, (ScheduleObject) schedule, c.getTitle());
@@ -477,8 +479,9 @@ public class ScheduleDetailCtrl
       GemLogger.logException(sqe);
     } catch (PlanningException pex) {
       GemLogger.logException(pex);
+    } finally {
+      setDefaultCursor();
     }
-    desktop.setDefaultCursor();
   }
 
   private void setFollowUp(ScheduleRangeObject po, Course c) throws PlanningException, SQLException {
@@ -528,7 +531,7 @@ public class ScheduleDetailCtrl
   private void loadPersonFile(PersonFile dossier) {
     PersonFileEditor editor = new PersonFileEditor(dossier);
     desktop.addModule(editor);
-    desktop.setDefaultCursor();
+    setDefaultCursor();
     frame.setLocation(getOffset(editor.getView()));
   }
 
@@ -647,5 +650,13 @@ public class ScheduleDetailCtrl
     int w = view.getWidth();
     int h = view.getHeight();
     return new Point(x + w, y + h);
+  }
+  
+  private void setWaitCursor() {
+    frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+  }
+  
+  private void setDefaultCursor() {
+    frame.setCursor(Cursor.getDefaultCursor());
   }
 }

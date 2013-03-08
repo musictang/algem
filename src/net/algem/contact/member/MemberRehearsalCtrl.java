@@ -279,7 +279,7 @@ public class MemberRehearsalCtrl
       service.saveRehearsal(p);
       //ajout échéance et mise à jour choix abonnement
       if (subscription) {
-        int duree = view.getHourStart().getDuration(view.getHourEnd());
+        int duree = view.getHourStart().getLength(view.getHourEnd());
         PopupDlg dialog = new RehearsalCardDlg(view, service.getPassList());
         // recherche d'une choix d'abonnement pour cet adhérent
         float montant = setRehearsalCard(personFile, view.getDate(), duree, dialog);

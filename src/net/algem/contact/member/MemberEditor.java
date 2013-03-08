@@ -1,5 +1,5 @@
 /*
- * @(#)MemberEditor.java	2.7.a 11/01/13
+ * @(#)MemberEditor.java	2.7.k 01/03/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -48,15 +48,13 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.7.k
  */
 public class MemberEditor
         extends FileTab
         implements FocusListener, ActionListener, Reloadable
 {
 
-//  private GemChoice instrument1;
-//  private GemChoice instrument2;
   private GemChoice profession;
   private DateFrField birth;
   private GemNumericField age;
@@ -66,7 +64,6 @@ public class MemberEditor
   private GemNumericField practice;
   private GemNumericField level;
   private int id;
-//  private Member member;
   private InstrumentView instrument;
 
   public MemberEditor(GemDesktop _desktop, int _id) {
@@ -77,7 +74,7 @@ public class MemberEditor
     birth = new DateFrField();
     birth.addFocusListener(this);
     nMemberships = new GemNumericField(3);
-    payer = new GemNumericField(8);
+    payer = new GemNumericField(6);
     payer.addFocusListener(this);
     payer.addActionListener(this);
     payerName = new GemField(30);
@@ -94,18 +91,19 @@ public class MemberEditor
     p.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(p);
     gb.insets = GridBagHelper.SMALL_INSETS;
-    gb.add(new GemLabel(BundleUtil.getLabel("Occupation.label")), 0, 2, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Date.of.birth.label")), 0, 3, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Membership.number.label")), 0, 4, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Practical.experience.label")), 0, 5, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Level.label")), 0, 6, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Payer.label")), 0, 7, 1, 1, GridBagHelper.EAST);
+    //gb.add(new GemLabel(BundleUtil.getLabel("Instruments.label")), 0, 0, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Occupation.label")), 0, 2, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Date.of.birth.label")), 0, 3, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Membership.number.label")), 0, 4, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Practical.experience.label")), 0, 5, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Level.label")), 0, 6, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Payer.label")), 0, 7, 1, 1, GridBagHelper.WEST);
 
     gb.add(instrument, 1, 0, 3, 1, GridBagHelper.WEST);
     gb.add(profession, 1, 2, 2, 1, GridBagHelper.WEST);
     gb.add(birth, 1, 3, 1, 1, GridBagHelper.WEST);
     gb.add(age, 2, 3, 1, 1, GridBagHelper.WEST);
-    gb.add(nMemberships, 1, 4, 2, 1, GridBagHelper.WEST);
+    gb.add(nMemberships, 1, 4, 1, 1, GridBagHelper.WEST);
     gb.add(practice, 1, 5, 1, 1, GridBagHelper.WEST);
     gb.add(level, 1, 6, 2, 1, GridBagHelper.WEST);
     gb.add(payer, 1, 7, 1, 1, GridBagHelper.WEST);

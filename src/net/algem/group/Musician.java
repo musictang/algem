@@ -48,7 +48,7 @@ public class Musician
     id = p.getId();
     name = p.getName();
     firstName = p.getFirstName();
-    civility = p.getCivility();
+    gender = p.getGender();
     type = p.getType();
     imgRights = p.getImgRights();
   }

@@ -1,5 +1,5 @@
 /*
- * @(#)InvoiceEditor.java 2.5.d 24/07/12
+ * @(#)InvoiceEditor.java 2.7.h 25/02/13
  *
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -39,26 +39,26 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.5.d
+ * @version 2.7.h
  * @since 2.3.a 07/02/12
  */
 public class InvoiceEditor
         extends FileTabDialog
 {
 
-  protected BillingServiceI service;
+  protected BillingServiceI billingService;
   protected InvoiceView view;
   protected ActionListener listener;
   protected GemButton btPrint;
   
-  public InvoiceEditor(GemDesktop desktop, BillingServiceI service, Quote f) {
+  public InvoiceEditor(GemDesktop desktop, BillingServiceI service, Quote quote) {
 
     this(desktop);
     
-    this.service = service;
-    view = new InvoiceView(f, desktop, service);
-    view.setMember(service.getContact(f.getMember()));
-    view.setPayer(service.getContact(f.getPayer()));
+    this.billingService = service;
+    view = new InvoiceView(quote, desktop, service);
+    view.setMember(service.getContact(quote.getMember()));
+    view.setPayer(service.getContact(quote.getPayer()));
     
     setLayout(new BorderLayout());
     addView();
@@ -91,7 +91,7 @@ public class InvoiceEditor
     if (f.getNumber() == null || f.getNumber().isEmpty()) {
       try {
         setTransfer(f);
-        service.create(f);
+        billingService.create(f);
         view.setId(f.getNumber()); // rafraîchissement du numéro
         //vueFacture.set(f);
         desktop.postEvent(new InvoiceCreateEvent(f));
@@ -111,7 +111,7 @@ public class InvoiceEditor
         }
       }
       try {
-        service.update(f);
+        billingService.update(f);
         MessagePopup.information(view, MessageUtil.getMessage("modification.confirmation.label"));
         desktop.postEvent(new InvoiceUpdateEvent(f));
       } catch (BillingException fe) {

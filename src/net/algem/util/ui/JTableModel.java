@@ -94,8 +94,8 @@ public abstract class JTableModel
   }
 
   @Override
-  public abstract Object getValueAt(int ligne, int colonne);
+  public abstract Object getValueAt(int line, int col);
 
   @Override
-  public abstract void setValueAt(Object value, int ligne, int column);
+  public abstract void setValueAt(Object value, int line, int column);
 }

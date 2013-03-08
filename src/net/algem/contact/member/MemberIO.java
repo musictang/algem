@@ -1,5 +1,5 @@
 /*
- * @(#)MemberIO.java	2.7.a 10/01/13
+ * @(#)MemberIO.java	2.7.g 18/02/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -37,7 +37,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.7.g
  * @since 1.0a 07/07/1999
  */
 public class MemberIO
@@ -101,6 +101,7 @@ public class MemberIO
             + "', pratique='" + m.getPractice()
             + "', niveau='" + m.getLevel() + "'"
             + " WHERE idper=" + m.getId();
+    dc.executeUpdate(query);
     InstrumentIO.delete(m.getId(), Instrument.MEMBER, dc);
     InstrumentIO.insert(m.getInstruments(), m.getId(), Instrument.MEMBER, dc);
 

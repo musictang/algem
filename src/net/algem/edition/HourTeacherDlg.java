@@ -286,7 +286,7 @@ public class HourTeacherDlg
         // Pour chaque planning, recherche des plages
         Vector<ScheduleRange> plage = service.getCourseScheduleRange(p.getID());
         if (c.isCollective()) {
-          nmin = p.getStart().getDuration(p.getEnd());
+          nmin = p.getStart().getLength(p.getEnd());
           totalDay += nmin;
           // Affichage détaillé
           if (detail) {
@@ -318,7 +318,7 @@ public class HourTeacherDlg
         } else { // si cours individuel
           for (int j = 0; j < plage.size(); j++) {
             ScheduleRange pl = plage.elementAt(j);
-            nmin = pl.getStart().getDuration(pl.getEnd());
+            nmin = pl.getStart().getLength(pl.getEnd());
             totalDay += nmin;
             if (detail) {
               if (OrderLineIO.isPro(pl.getMemberId(), dataCache)) {

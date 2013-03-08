@@ -1,5 +1,5 @@
 /*
- * @(#)PlanningService.java	2.7.a 11/01/13
+ * @(#)PlanningService.java	2.7.h 21/02/13
  *
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -38,7 +38,7 @@ import net.algem.util.model.Model;
  * Service class for planning.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.7.h
  * @since 2.4.a 07/05/12
  */
 public class PlanningService
@@ -161,9 +161,9 @@ public class PlanningService
   }
 
   /**
-   * Planning suppression. 
+   * Planning suppression.
    * Action is also deleted if there are no schedule ranges for this planning.
-   * 
+   *
    * @param action
    * @return un nombre de plages
    * @throws PlanningException
@@ -179,7 +179,7 @@ public class PlanningService
           actionIO.delete(action.getId());// on supprime l'action sinon
         }
       }
-      
+
     } catch (SQLException ex) {
       throw new PlanningException(ex.getMessage());
     } finally {
@@ -216,6 +216,7 @@ public class PlanningService
 
   /**
    * Changes the schedule location between 2 dates.
+   *
    * @param orig initial schedule
    * @param start date start
    * @param end date end
@@ -262,7 +263,7 @@ public class PlanningService
         CourseSchedule rc = addSchedule(orig, range);
         ScheduleIO.insert(rc, dc);
         query = "UPDATE " + ScheduleRangeIO.TABLE + " SET idplanning = " + rc.getId()
-                + " WHERE idplanning = " + orig.getId() + " AND debut >= '" + rc.getStart() + "'"; 
+                + " WHERE idplanning = " + orig.getId() + " AND debut >= '" + rc.getStart() + "'";
         dc.executeUpdate(query);
         orig.setEnd(range.getStart());
       } else if (range.getStart().le(orig.getStart()) && range.getEnd().before(orig.getEnd())) {
@@ -286,7 +287,7 @@ public class PlanningService
         s2.setStart(range.getEnd());
         s2.setEnd(orig.getEnd());
         s2.setIdPerson(orig.getIdPerson());
-        
+
         ScheduleIO.insert(s2, dc); //id has changed
         orig.setEnd(range.getStart());
         query = "UPDATE " + ScheduleRangeIO.TABLE + " SET idplanning = " + s2.getId()
@@ -299,13 +300,14 @@ public class PlanningService
       throw new PlanningException(sqe.getMessage());
     }
   }
-  
+
   /**
    * Gets a schedule object with new teacher id and possibly new beginning and end time.
+   *
    * @param s schedule model
    * @param n new schedule
    * @return a schedule object
-   * @throws SQLException 
+   * @throws SQLException
    */
   private CourseSchedule addSchedule(ScheduleObject s, ScheduleObject n) throws SQLException {
     CourseSchedule ns = new CourseSchedule(s);
@@ -326,21 +328,121 @@ public class PlanningService
    * @param s new room (optional)
    * @throws PlanningException si erreur SQL
    */
-  public void putOffCourse(ScheduleObject plan, DateFr day, Hour hStart, Hour hEnd, int s) throws PlanningException {
+  public void postPoneCourse(ScheduleObject plan, ScheduleObject newPlan) throws PlanningException {
     // probleme avec les heures de end = 24:00 l'update les transforme en 00:00 / erreurs futures dans le décompte des heures
-    String query = "UPDATE " + ScheduleIO.TABLE + " SET  jour = '" + day + "', debut = '" + hStart + "', fin = '" + hEnd + "', lieux = " + s + " WHERE id = " + plan.getId();
+    String query = "UPDATE " + ScheduleIO.TABLE
+            + " SET jour = '" + newPlan.getDay()
+            + "', debut = '" + newPlan.getStart()
+            + "', fin = '" + newPlan.getEnd()
+            + "', lieux = " + newPlan.getPlace()
+            + " WHERE id = " + plan.getId();
     try {
       dc.setAutoCommit(false);
-      dc.executeUpdate(query); // plage update
-      int offset = plan.getStart().getDuration(hStart); // getDuration en minutes entre l'ancienne heure et la nouvelle passée en paramètre.
-      // probleme avec les heures de end = 24:00 l'update les transforme en 00:00 / erreurs futures dans le décompte des heures
-      query = "UPDATE " + ScheduleRangeIO.TABLE + " SET debut = debut + interval '" + offset + " min', fin = fin + interval '" + offset + " min'" + " WHERE idplanning = " + plan.getId();
+      dc.executeUpdate(query); // update schedule
+      int offset = plan.getStart().getLength(newPlan.getStart()); // getLength en minutes entre l'ancienne heure et la nouvelle passée en paramètre.
+      //XXX probleme avec les heures de fin = 24:00 l'update les transforme en 00:00 / erreurs futures dans le décompte des heures
+      query = "UPDATE " + ScheduleRangeIO.TABLE
+              + " SET debut = debut + interval '" + offset + " min', fin = fin + interval '" + offset + " min'"
+              + " WHERE idplanning = " + plan.getId();
       dc.executeUpdate(query); // plage update
       // pour les ateliers ponctuels d'un jour seulement
       if (Schedule.WORKSHOP_SCHEDULE == plan.getType()) {
-        query = "UPDATE " + CourseOrderIO.TABLE + " SET debut = '" + hStart + "', fin = '" + hEnd + "', datedebut = '" + day + "', datefin = '" + day + "' WHERE idaction = " + plan.getIdAction();
+        query = "UPDATE " + CourseOrderIO.TABLE
+                + " SET debut = '" + newPlan.getStart() + "', fin = '" + newPlan.getEnd()
+                + "', datedebut = '" + newPlan.getDay() + "', datefin = '" + newPlan.getDay()
+                + "' WHERE idaction = " + plan.getIdAction();
         dc.executeUpdate(query); // commande_cours update
       }
+      dc.commit();
+    } catch (SQLException ex) {
+      dc.rollback();
+      throw new PlanningException(ex.getMessage() + " : " + query);
+    } finally {
+      dc.setAutoCommit(true);
+    }
+  }
+
+  public void postPoneCourseBefore(ScheduleObject plan, ScheduleObject newPlan, Hour rangeEnd) throws PlanningException {
+    String query = "UPDATE " + ScheduleIO.TABLE + " SET debut = '" + rangeEnd + "' WHERE id = " + plan.getId();
+    newPlan.setActivity(plan.getActivity());
+    newPlan.setIdAction(plan.getIdAction());
+    newPlan.setIdPerson(plan.getIdPerson());
+    newPlan.setType(plan.getType());
+    try {
+      dc.setAutoCommit(false);
+      dc.executeUpdate(query); // update schedule
+      ScheduleIO.insert(newPlan, dc); // create postpone schedule
+      int offset = plan.getStart().getLength(newPlan.getStart());
+      query = "UPDATE " + ScheduleRangeIO.TABLE
+              + " SET idplanning = " + newPlan.getId()
+              + " , debut = debut + interval '" + offset + " min', fin = fin + interval '" + offset + " min'"
+              + " WHERE idplanning = " + plan.getId()
+              + " AND fin <= '" + rangeEnd + "'";
+
+      dc.executeUpdate(query);
+
+      dc.commit();
+    } catch (SQLException ex) {
+      dc.rollback();
+      throw new PlanningException(ex.getMessage() + " : " + query);
+    } finally {
+      dc.setAutoCommit(true);
+    }
+  }
+
+  public void postPoneCourseAfter(ScheduleObject plan, ScheduleObject newPlan, Hour rangeStart) throws PlanningException {
+    String query = "UPDATE " + ScheduleIO.TABLE + " SET fin = '" + rangeStart + "' WHERE id = " + plan.getId();
+    newPlan.setActivity(plan.getActivity());
+    newPlan.setIdAction(plan.getIdAction());
+    newPlan.setIdPerson(plan.getIdPerson());
+    newPlan.setType(plan.getType());
+    try {
+      dc.setAutoCommit(false);
+      dc.executeUpdate(query); // update schedule
+      ScheduleIO.insert(newPlan, dc); // create postpone schedule
+      int offset = rangeStart.getLength(newPlan.getStart());
+      query = "UPDATE " + ScheduleRangeIO.TABLE
+              + " SET idplanning = " + newPlan.getId()
+              + " , debut = debut + interval '" + offset + " min', fin = fin + interval '" + offset + " min'"
+              + " WHERE idplanning = " + plan.getId()
+              + " AND debut >= '" + rangeStart + "'";
+      dc.executeUpdate(query);
+      dc.commit();
+    } catch (SQLException ex) {
+      dc.rollback();
+      throw new PlanningException(ex.getMessage() + " : " + query);
+    } finally {
+      dc.setAutoCommit(true);
+    }
+  }
+
+  public void postPoneCourseBetween(ScheduleObject plan, ScheduleObject newPlan, Hour[] range) throws PlanningException {
+    String query = "UPDATE " + ScheduleIO.TABLE + " SET fin = '" + range[0] + "' WHERE id = " + plan.getId();
+    newPlan.setActivity(plan.getActivity());
+    newPlan.setIdAction(plan.getIdAction());
+    newPlan.setIdPerson(plan.getIdPerson());
+    newPlan.setType(plan.getType());
+    int offset = range[0].getLength(newPlan.getStart());
+    try {
+      dc.setAutoCommit(false);
+      dc.executeUpdate(query); // update schedule
+      ScheduleIO.insert(newPlan, dc); // create postpone schedule
+      query = "UPDATE " + ScheduleRangeIO.TABLE
+              + " SET idplanning = " + newPlan.getId()
+              + " , debut = debut + interval '" + offset + " min', fin = fin + interval '" + offset + " min'"
+              + " WHERE idplanning = " + plan.getId()
+              + " AND debut >= '" + range[0] + "' AND fin <= '" + range[1] + "'";
+      dc.executeUpdate(query);
+      newPlan.setStart(range[1]);
+      newPlan.setEnd(plan.getEnd());
+      newPlan.setPlace(plan.getPlace());
+      ScheduleIO.insert(newPlan, dc);
+
+      query = "UPDATE " + ScheduleRangeIO.TABLE
+              + " SET idplanning = " + newPlan.getId()
+              + " WHERE idplanning = " + plan.getId()
+              + " AND debut >= '" + range[1] + "'";
+      dc.executeUpdate(query);
       dc.commit();
     } catch (SQLException ex) {
       dc.rollback();
@@ -355,8 +457,8 @@ public class PlanningService
     try {
       dc.setAutoCommit(false);
       ScheduleIO.insert(planCopy, dc);
-      // getDuration en minutes entre l'ancienne heure et la nouvelle passée en paramètre.
-      int offset = planModel.getStart().getDuration(planCopy.getStart());
+      // getLength en minutes entre l'ancienne heure et la nouvelle passée en paramètre.
+      int offset = planModel.getStart().getLength(planCopy.getStart());
 
       String where = "WHERE pg.idplanning = " + planModel.getId();
       Vector<ScheduleRange> vpg = ScheduleRangeIO.find(where, dc);
@@ -421,7 +523,7 @@ public class PlanningService
         ScheduleIO.update(p, dc);
       }
       dc.commit();
-      
+
     } catch (SQLException ex) {
       dc.rollback();
       throw new PlanningException(ex.getMessage());
@@ -662,13 +764,13 @@ public class PlanningService
 
   public void updateAction(Action a) throws SQLException {
     actionIO.update(a);
-    
+
   }
-  
+
   public Vector<ScheduleObject> getSchedule(String where) throws SQLException {
     return ScheduleIO.findObject(where, dc);
   }
-  
+
   public Vector<ScheduleRangeObject> getScheduleRange(String where) throws SQLException {
     return ScheduleRangeIO.findObject(where, this, dc);
   }
@@ -686,12 +788,12 @@ public class PlanningService
     }
     return n;
   }
-  
+
   public void markPaid(ScheduleObject schedule) throws SQLException {
     String query = "UPDATE planning SET note = 0 WHERE id = " + schedule.getId();
     dc.executeUpdate(query);
   }
-  
+
   public void markNotPaid(ScheduleObject schedule) throws SQLException {
     String query = "UPDATE planning SET note = -1 WHERE id = " + schedule.getId();
     dc.executeUpdate(query);
@@ -749,5 +851,4 @@ public class PlanningService
       System.out.println(d.toString());
     }
   }
-
 }

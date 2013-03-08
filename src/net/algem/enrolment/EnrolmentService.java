@@ -390,7 +390,7 @@ public class EnrolmentService
         return;
       }
 
-      Hour duree = new Hour(cc.getStart().getDuration(cc.getEnd()));
+      Hour duree = new Hour(cc.getStart().getLength(cc.getEnd()));
 
       // si la demande d'arret est postérieure à la date d'inscription à ce cours
       if (from.after(cc.getDateStart())) {

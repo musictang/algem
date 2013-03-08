@@ -127,7 +127,7 @@ public class OldMemberCard
 
     g.drawString("Carte d'adhérent " + String.valueOf(adh.getId()), xadhinfo - 30, 35);
     //g.setFont(bigFont);
-    g.drawString(adh.getCivility() + " " + adh.getFirstName() + " " + adh.getName(), xadhinfo - 30, 60);
+    g.drawString(adh.getGender() + " " + adh.getFirstName() + " " + adh.getName(), xadhinfo - 30, 60);
     //g.setFont(bigFont);
     g.drawString(cache.getInstrumentName(member.getFirstInstrument()), xadhinfo - 30, 125);
 
@@ -220,7 +220,7 @@ public class OldMemberCard
     //int yoffset = g.getFontMetrics().getDescent();
     g.drawString(String.valueOf(adh.getId()), xadhinfo, mgm);//correction marge droite
     //g.drawString(f.getBirth().toString(), xadhinfo + 100, mgm);//correction marge droite
-    g.drawString(adh.getCivility() + " " + adh.getFirstName() + " " + adh.getName(), xadhinfo, mgm + 20);
+    g.drawString(adh.getGender() + " " + adh.getFirstName() + " " + adh.getName(), xadhinfo, mgm + 20);
 
     if (adr != null) {
       g.setFont(normalFont);

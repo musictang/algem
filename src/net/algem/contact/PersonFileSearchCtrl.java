@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileSearchCtrl.java 2.7.e 04/02/13
+ * @(#)PersonFileSearchCtrl.java 2.7.h 22/02/13
  *
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -40,7 +40,7 @@ import net.algem.util.ui.SearchCtrl;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.e
+ * @version 2.7.h
  * @since 1.0a 07/07/1999
  */
 public class PersonFileSearchCtrl
@@ -55,14 +55,14 @@ public class PersonFileSearchCtrl
   private Contact currentContact;
   private GemEventListener gemListener;
 
-  public PersonFileSearchCtrl(GemDesktop _desktop, String titre) {
-    super(_desktop.getDataCache().getDataConnection(), titre);
+  public PersonFileSearchCtrl(GemDesktop _desktop, String title) {
+    super(_desktop.getDataCache().getDataConnection(), title);
     desktop = _desktop;
   }
 
-  public PersonFileSearchCtrl(GemDesktop _desktop, String titre, GemEventListener _gv) {
-    this(_desktop, titre);
-    gemListener = _gv;
+  public PersonFileSearchCtrl(GemDesktop _desktop, String title, GemEventListener gl) {
+    this(_desktop, title);
+    gemListener = gl;
 
   }
 
@@ -84,23 +84,26 @@ public class PersonFileSearchCtrl
   @Override
   public void search() {
 
-    String name, firstname, telephone, email, site;
+    String org, name, firstname, telephone, email, site;
     int id = getId();
     if (id > 0) {
       query = "WHERE id = " + id;
-    } else if ((name = searchView.getField(1)) != null) {
+    } else if ((org = searchView.getField(1)) != null) {
+      query = "WHERE translate(lower(organisation),'" + TRANSLATE_FROM + "', '" + TRANSLATE_TO + "') ~* '"
+              + TableIO.normalize(org) + "'";
+    } else if ((name = searchView.getField(2)) != null) {
       query = "WHERE translate(lower(nom),'" + TRANSLATE_FROM + "', '" + TRANSLATE_TO + "') ~* '"
               + TableIO.normalize(name) + "'";
-    } else if ((firstname = searchView.getField(2)) != null) {
+    } else if ((firstname = searchView.getField(3)) != null) {
       query = "WHERE translate(lower(prenom),'" + TRANSLATE_FROM + "', '" + TRANSLATE_TO + "') ~* '"
               + TableIO.normalize(firstname) + "'";
-    } else if ((telephone = searchView.getField(3)) != null) {
+    } else if ((telephone = searchView.getField(4)) != null) {
       query = ", "+TeleIO.TABLE+" t WHERE id = t.idper AND t.numero ~ '"+telephone+"'";
     } //ajout 2.0g recherche email
-    else if ((email = searchView.getField(4)) != null) {
+    else if ((email = searchView.getField(5)) != null) {
       query = ", "+EmailIO.TABLE+" e WHERE id = e.idper AND e.email ~* '"+email+"'";
     } // ajout 2.1a recherche site web
-    else if ((site = searchView.getField(5)) != null) {
+    else if ((site = searchView.getField(6)) != null) {
       query = ", "+WebSiteIO.TABLE+" s WHERE id = s.idper AND s.url ~* '"+site+"'";
     } else {
       query = "";
@@ -152,7 +155,6 @@ public class PersonFileSearchCtrl
     int cpt = 0;
     try {
       Vector<Contact> block; // vecteur de Contact
-      int row = 0;
       Statement stmt = cnx.createStatement();
       stmt.executeUpdate("begin");
       stmt.executeUpdate(squery);
@@ -190,11 +192,10 @@ public class PersonFileSearchCtrl
   }
 
   public void createModule() {
-    // selection contact pour groupe
+    // selection contact for group and musician editor
     if (gemListener != null) {
       gemListener.postEvent(new ContactSelectEvent(this, currentContact));
       desktop.removeCurrentModule();
-//      actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, GemCommand.CANCEL_CMD));
       return;
     }
     // Recherche si un module correspondant au contact est déjà ouvert.

@@ -144,7 +144,7 @@ public abstract class AbstractHistoRehearsal
       Schedule p = vp.elementAt(i);
       Hour hd = p.getStart();
       Hour hf = p.getEnd();
-      min += hd.getDuration(hf);
+      min += hd.getLength(hf);
       rehearsalTableModel.addItem(p);
     }
     int nbh = min / 60;

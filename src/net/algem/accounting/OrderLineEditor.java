@@ -1,5 +1,5 @@
 /*
- * @(#)OrderLineEditor.java	2.7.a 05/12/12
+ * @(#)OrderLineEditor.java	2.7.k 01/03/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -47,30 +47,28 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.7.k
  * @since 1.0a 07/07/1999
  */
 public class OrderLineEditor
         extends FileTab
         implements ActionListener, TableModelListener, GemEventListener {
 
+  protected OrderLineTableView table;
+  protected GemButton btCreate;
+  protected GemButton btSuppress;
+  protected GemButton btModify;
+  protected GemButton btYear;
+  protected JLabel totalLabel;
+  protected GemField totalField;
+  protected JToggleButton btFilter;
   private OrderLineTableModel tableModel;
   private int memberId, payerId;
   private JTextField payerName;
-  private OrderLineTableView table;
-  private GemButton btCreate;
-  private GemButton btSuppress;
-  private GemButton btModify;
-  private GemButton btYear;
-  private JLabel totalLabel;
-  private GemField totalField;
-  private JToggleButton btFilter;
   private GemButton btInvoice;
   private GemButton btQuotation;
-  private JPanel buttons;
   private ActionListener actionListener;
   private List<OrderLine> invoiceSelection;
-  //private NumberFormat nf = NumberFormat.getInstance(Locale.FRANCE);
   private static final String NO_PAYMENT_SELECTED = MessageUtil.getMessage("no.payment.selected");
   private static final String PAYMENT_UPDATE_EXCEPTION = MessageUtil.getMessage("update.exception.info");
   private static final String PAYMENT_CREATE_EXCEPTION = MessageUtil.getMessage("payment.add.exception");
@@ -81,7 +79,10 @@ public class OrderLineEditor
     tableModel = _tableModel;
 
     table = new OrderLineTableView(tableModel, this);
-
+    
+  }
+  
+  public void init(){
     btQuotation = new GemButton(BundleUtil.getLabel("Quotation.label"));
     btQuotation.addActionListener(this);
     btInvoice = new GemButton(BundleUtil.getLabel("Invoice.label"));
@@ -106,7 +107,7 @@ public class OrderLineEditor
     entete.add(payerName);
 
     GemPanel footer = new GemPanel(new BorderLayout());
-    buttons = new GemPanel();
+    GemPanel buttons = new GemPanel();
 
     buttons.add(btQuotation);
     buttons.add(btInvoice);

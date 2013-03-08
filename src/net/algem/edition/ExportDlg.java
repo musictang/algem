@@ -166,7 +166,7 @@ public abstract class ExportDlg
         Contact c = v.elementAt(i);
         cpt++;
         out.print(c.getId() + ";");
-        out.print(c.getCivility() + ";");
+        out.print(c.getGender() + ";");
         out.print(c.getName() + ";");
         out.print(c.getFirstName() + ";");
         Address a = c.getAddress();

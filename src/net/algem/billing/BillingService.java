@@ -1,5 +1,5 @@
 /*
- * @(#)BillingService 2.7.a 16/01/13
+ * @(#)BillingService 2.7.h 22/02/13
  *
  * Copyright 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -39,7 +39,7 @@ import net.algem.util.model.Model;
  * Service class for billing.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.7.h
  * @since 2.3.a 06/02/12
  */
 public class BillingService
@@ -117,6 +117,9 @@ public class BillingService
   public String getContact(int id)  {
     try {
       Person p = (Person) DataCache.findId(id, Model.Person);
+      if (p.getOrganization() != null && !p.getOrganization().isEmpty()) {
+        return p.getOrganization();
+      }
       return p != null ? p.getFirstnameName() : "";
     } catch (SQLException ex) {
        GemLogger.logException(ex);

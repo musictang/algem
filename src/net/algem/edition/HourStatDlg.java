@@ -157,7 +157,7 @@ public class HourStatDlg
 //        Establishment estab = dataCache.getEstabFromId(s.getEstab());
         Establishment estab = (Establishment) DataCache.findId(s.getEstab(), Model.Establishment);
 
-        int duration = p.getStart().getDuration(p.getEnd());
+        int duration = p.getStart().getLength(p.getEnd());
         int idx = estabList.indexOf(estab);
 
         if (p.getType() == Schedule.COURSE_SCHEDULE) {
@@ -174,7 +174,7 @@ public class HourStatDlg
       Vector<ScheduleRangeObject> plages = service.getScheduleRange(start, end);
       for (int i = 0; i < plages.size(); i++) {
         ScheduleRangeObject p = plages.elementAt(i);
-        int duree = p.getStart().getDuration(p.getEnd());
+        int duree = p.getStart().getLength(p.getEnd());
         Room s = p.getRoom();
 //        Establishment ee = dataCache.getEstabFromId(s.getEstab());
         Establishment ee = (Establishment) DataCache.findId(s.getEstab(), Model.Establishment);

@@ -1,5 +1,5 @@
 /*
- * @(#)Hour.java	2.6.a 19/09/12
+ * @(#)Hour.java	2.7.h 20/02/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -25,7 +25,7 @@ package net.algem.planning;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.7.h
  */
 public class Hour
         implements java.io.Serializable
@@ -200,7 +200,7 @@ public class Hour
    * @param end
    * @return a duration in minutes
    */
-  public int getDuration(Hour end) {
+  public int getLength(Hour end) {
     int t1, t2;
       // modifier pour transformer les heures 00:00 en 24:00
     t1 = (getHour() * 60) + getMinute();

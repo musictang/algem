@@ -1,5 +1,5 @@
 /*
- * @(#)Course.java	2.7.a 29/11/12
+ * @(#)Course.java	2.7.h 25/02/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -27,7 +27,7 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.7.h
  * @since 1.0a 07/07/1999
  */
 public class Course
@@ -35,7 +35,11 @@ public class Course
 {
 
   public static final int BREAK = 0;
+  
+  /** Single workshop code. */
   public static final String ATP_CODE = "ATP";
+ 
+  public static final String PRIVATE_INSTRUMENT_CODE = "Inst";
   protected int id;
   protected String title;
   protected String label;
@@ -208,10 +212,10 @@ public class Course
   /**
    * Checks if course's code is of instrument type.
    *
-   * @return true if code begins with "Inst"
+   * @return true if code begins with {@code PRIVATE_INSTRUMENT_CODE}
    */
   public boolean isInstCode() {
-    return "Inst".equals(getCode());
+    return PRIVATE_INSTRUMENT_CODE.equals(getCode());
   }
 
   public boolean isCourseCoInst() {
@@ -219,10 +223,12 @@ public class Course
   }
 
   /**
-   * Checks if the course has a valid duration.
+   * Checks if course has a valid length in its code.
+   * Some courses may not include length in their codes (eg F.M. code)
+   * 
    * @return true if code ends with 3 digits
    */
-  public boolean hasDuration() {
+  public boolean hasValidCodeLength() {
     if (code == null || code.isEmpty() || code.length() < 3) {
       return false;
     }
@@ -230,12 +236,12 @@ public class Course
   }
 
   /**
-   * Gets the course's duration.
-   * If 0 is returned, the course's duration is free.
+   * Gets the course's length.
+   * If 0 is returned, the course's length is free.
    *
-   * @return a duration in minutes
+   * @return a length in minutes
    */
-  public int getDuration() {
+  public int getLength() {
     String c = getCode();
     if (isCollective() && !isATP()) {
       if ("AT".equals(c) || "F.M.".equals(c)) {

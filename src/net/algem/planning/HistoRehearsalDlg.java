@@ -113,7 +113,7 @@ public class HistoRehearsalDlg
       Schedule p = v.elementAt(i);
       Hour hd = p.getStart();
       Hour hf = p.getEnd();
-      min += hd.getDuration(hf);
+      min += hd.getLength(hf);
       tableModel.addItem(p);
     }
     int nbh = min / 60;

@@ -1,7 +1,7 @@
 /*
- * @(#)DataCache.java	2.7.b 21/01/13
+ * @(#)DataCache.java	2.7.k 05/03/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -63,7 +63,7 @@ import net.algem.util.model.Model;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.b
+ * @version 2.7.k
  * @since 1.0b 03/09/2001
  */
 public class DataCache
@@ -429,12 +429,20 @@ public class DataCache
   public void update(GemModel m) {
     if (m instanceof Room) {
       ROOM_LIST.update((Room) m, new RoomComparator());
+      Person c = ((Room) m).getContact();
+      PERSON_CACHE.put(c.getId(), c);
     } else if (m instanceof Establishment) {
       ESTAB_LIST.update((Establishment) m, null);
     } else if (m instanceof Course) {
       COURSE_LIST.update((Course)m, new CourseComparator());
     } else if (m instanceof Person) {
-      PERSON_CACHE.put(m.getId(), (Person) m); 
+      PERSON_CACHE.put(m.getId(), (Person) m);
+      Teacher t = (Teacher) TEACHER_LIST.getItem(m.getId());
+      if (t != null) {
+        t.setFirstName(((Person) m).getFirstName());
+        t.setName(((Person) m).getName());
+        TEACHER_LIST.update(t, new TeacherComparator());
+      }
     } else if (m instanceof Teacher) {
       Teacher t = (Teacher) m;
       TEACHER_LIST.update(t, new TeacherComparator());
@@ -672,9 +680,8 @@ public class DataCache
   }
   
   private void loadRoomContactCache() {
-    String query = "SELECT p.id,p.ptype,p.nom,p.prenom,p.civilite,p.droit_img FROM " 
-            + PersonIO.TABLE + " p, " + RoomIO.TABLE + " r "
-            + "WHERE r.idper = p.id or r.payeur = p.id ORDER BY nom";
+    String query = "SELECT " + PersonIO.COLUMNS + " FROM " + PersonIO.TABLE + ", " + RoomIO.TABLE + " r "
+            + "WHERE r.idper = " + PersonIO.TABLE + ".id OR r.payeur = " + PersonIO.TABLE + ".id ORDER BY nom";
     try {
       ResultSet rs = dc.executeQuery(query);
       while (rs.next()) {

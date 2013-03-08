@@ -1,5 +1,5 @@
 /*
- * @(#)Room.java	2.7.a 10/12/12
+ * @(#)Room.java	2.7.g 13/02/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -31,7 +31,7 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.7.g
  * @since 1.0a 02/09/2001
  * 
  */
@@ -53,6 +53,9 @@ public class Room
   private int npers;
   private int estab;
   private boolean active;
+  
+  /** Public access and available for rehearsals. */
+  private boolean available;
 
   private Vector<Equipment> equipment;
   
@@ -125,6 +128,9 @@ public class Room
       return false;
     }
     if (this.active != other.active) {
+      return false;
+    }
+    if (this.available != other.available) {
       return false;
     }
     /*if ((this.payer == null) ? (other.payer != null) : this.payer.getId() != other.payer.getId()) {
@@ -205,6 +211,14 @@ public class Room
 
   public boolean isActive() {
     return active;
+  }
+
+  public boolean isAvailable() {
+    return available;
+  }
+
+  public void setAvailable(boolean available) {
+    this.available = available;
   }
 
   public Person getPayer() {

@@ -1,5 +1,5 @@
 /*
- * @(#)PersonTableModel.java	2.6.a 18/09/12
+ * @(#)PersonTableModel.java	2.7.i 26/02/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -26,7 +26,7 @@ import net.algem.util.ui.JTableModel;
 /**
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.7.i
  */
 public class PersonTableModel
         extends JTableModel
@@ -36,6 +36,7 @@ public class PersonTableModel
     header = new String[]{
       BundleUtil.getLabel("Id.label"),
       BundleUtil.getLabel("Person.civility.label"),
+      BundleUtil.getLabel("Organization.label"),
       BundleUtil.getLabel("Name.label"),
       BundleUtil.getLabel("First.name.label")
     };
@@ -56,6 +57,7 @@ public class PersonTableModel
       case 1:
       case 2:
       case 3:
+      case 4:
         return String.class;
       default:
         return Object.class;
@@ -74,10 +76,12 @@ public class PersonTableModel
       case 0:
         return new Integer(p.getId());
       case 1:
-        return p.getCivility();
+        return p.getGender();
       case 2:
-        return p.getName();
+        return p.getOrganization();
       case 3:
+        return p.getName();
+      case 4:
         return p.getFirstName();
     }
     return null;

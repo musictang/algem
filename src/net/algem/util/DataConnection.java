@@ -1,5 +1,5 @@
 /*
- * @(#)DataConnection.java	2.7.e 05/02/13
+ * @(#)DataConnection.java	2.7.g 18/02/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -28,7 +28,7 @@ import java.util.logging.Level;
  * Utility class for database connection.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.e
+ * @version 2.7.g
  * @since 2.6.a 01/08/2012
  */
 public class DataConnection
@@ -38,7 +38,7 @@ public class DataConnection
   public static final String DEF_HOST = "localhost";
   public static final String DB_USER = "nobody";
   public final String DEF_DRIVER_NAME = "org.postgresql.Driver";
-  private static final int DEF_PORT = 5432;
+  public static final int DEF_PORT = 5432;
   private static final String DRIVER_URL = "jdbc:postgresql";
   private Connection cnx;
   private String dbhost;
@@ -50,10 +50,11 @@ public class DataConnection
   private boolean cacert = false;
   private static final String DB_PASS = "Pigfy!"; // PigG8fy!
 
-  public DataConnection(String dbhost, int dbport, String dbname) {
-    this.dbhost = dbhost;
-    this.dbport = dbport;
-    this.dbname = dbname;
+  public DataConnection(String host, int port, String dbname) {
+    
+    this.dbhost = host == null ? DEF_HOST : host;
+    this.dbport = port;
+    this.dbname = dbname == null ? DEF_DB_NAME : dbname;
   }
 
   /**
@@ -117,11 +118,7 @@ public class DataConnection
       close();
     }
 
-//		String url = "jdbc:msql://"+dbhost+"/"+dbname;
-//		String url = "jdbc:postgres95://"+dbhost+"/"+dbname;
-//		String url = "jdbc:rst://"+dbhost+"/"+dbname;
-    String url = DRIVER_URL + "://" + dbhost + "/" + dbname;
-    cnx = DriverManager.getConnection(url, getConnectionProperties());
+    cnx = DriverManager.getConnection(getUrl(), getConnectionProperties());
     connected = true;
 
     return connected;
@@ -144,7 +141,7 @@ public class DataConnection
   }
 
   public String getUrl() {
-    return DRIVER_URL + "://" + dbhost + "/" + dbname;
+    return DRIVER_URL + "://" + dbhost + ":" + dbport + "/" + dbname;
   }
 
   public String getDbhost() {

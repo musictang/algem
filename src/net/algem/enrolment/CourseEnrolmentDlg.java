@@ -262,7 +262,7 @@ public class CourseEnrolmentDlg
    * public void set(PlanCours p) { //System.out.println("InscriptonCoursDlg.set
    * plan:"+p); coursListe.setKey(p.getCourseFromAction()); //
    * heure.setText(p.getStart().toString()); //
-   * getDuration.setText(p.getDuration().toString()); prof.setKey(p.getTeacher());
+   * getLength.setText(p.getLength().toString()); prof.setKey(p.getTeacher());
    * //salle.setKey(p.getRoomOnPeriod());
   }
    */
@@ -326,9 +326,9 @@ public class CourseEnrolmentDlg
     roomInfo.setText(s.toString());// affichage de la salle
     hour.setText(p.getStart().toString());
 
-    // getDuration independante pour les ateliers découverte et les cours instrument collective.
+    // getLength independante pour les ateliers découverte et les cours instrument collective.
     if (p.getType() == Schedule.WORKSHOP_SCHEDULE || course.isCourseCoInst()) {
-      duration.setText(new Hour(p.getStart().getDuration(p.getEnd())).toString());
+      duration.setText(new Hour(p.getStart().getLength(p.getEnd())).toString());
     }
 
     range.removeAll();
@@ -403,7 +403,7 @@ public class CourseEnrolmentDlg
       module.setText(String.valueOf(cc.getModule()));
       hour.setText(cc.getStart().toString());
 
-      duration.setText(new Hour(cc.getStart().getDuration(cc.getEnd())).toString());
+      duration.setText(new Hour(cc.getStart().getLength(cc.getEnd())).toString());
     } catch (SQLException e) {
       throw new EnrolmentException(MessageUtil.getMessage("enrolment.loading.exception") + " :\n" + e.getMessage());
     }

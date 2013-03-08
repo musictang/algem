@@ -1,5 +1,5 @@
 /*
- * @(#)HistoInvoice 2.7.a 14/01/13
+ * @(#)HistoInvoice 2.7.j 27/02/13
  *
  * Copyright (c) 1999-2012 Musiques Tangentes All Rights Reserved.
  *
@@ -18,28 +18,36 @@
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 package net.algem.billing;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
+import net.algem.contact.PersonFile;
+import net.algem.contact.PersonFileEditor;
+import net.algem.util.DataCache;
 import net.algem.util.GemCommand;
+import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
+import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
+import net.algem.util.module.GemDesktopCtrl;
 import net.algem.util.ui.FileTabDialog;
 import net.algem.util.ui.GemPanel;
 import net.algem.util.ui.MessagePopup;
 
 /**
  * Controller for a list of invoices.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.7.j
  * @since 2.3.a 14/02/12
  */
 public class HistoInvoice
@@ -52,19 +60,20 @@ public class HistoInvoice
   protected static final String card0 = "histo";
   protected static final String card1 = "invoice";
 
-  public <F extends Quote> HistoInvoice(GemDesktop desktop, List<F> fcl) {
+  public <F extends Quote> HistoInvoice(final GemDesktop desktop, List<F> fcl) {
     super(desktop);
     btValidation.setText(GemCommand.VIEW_EDIT_CMD);
     btCancel.setText(GemCommand.CLOSE_CMD);
+    
+
     load(fcl);
     setLayout(new CardLayout());
     GemPanel histo = new GemPanel(new BorderLayout());
-    
+
     histo.add(invoiceListCtrl, BorderLayout.CENTER);
     histo.add(buttons, BorderLayout.SOUTH);
     add(histo, card0);
   }
-
 
   @Override
   public boolean isLoaded() {
@@ -73,13 +82,38 @@ public class HistoInvoice
 
   @Override
   public void load() {
-    
   }
 
   @Override
   public <T extends Object> void load(Collection<T> c) {
 
     invoiceListCtrl = new InvoiceListCtrl(false, new BillingService(dataCache));
+    invoiceListCtrl.addMouseListener(new MouseAdapter()
+    {
+      @Override
+      public void mouseClicked(MouseEvent e) {
+        if (e.getClickCount() == 2) {
+          int id = ((InvoiceListCtrl) invoiceListCtrl).getIdContact();
+          if (id > 0) {
+            PersonFileEditor m = ((GemDesktopCtrl) desktop).getPersonFileEditor(id);
+            if (m == null) {
+              try {
+                desktop.setWaitCursor();
+                PersonFile pf = (PersonFile) DataCache.findId(id, Model.PersonFile);
+                PersonFileEditor editor = new PersonFileEditor(pf);
+                desktop.addModule(editor);
+              } catch (SQLException ex) {
+                GemLogger.logException(ex);
+              } finally {
+                desktop.setDefaultCursor();
+              }
+            } else {
+              desktop.setSelectedModule(m);
+            }
+          }
+        }
+      }
+    });
     if (c != null) {
       invoiceListCtrl.loadResult(new Vector<T>(c));
     }
@@ -91,7 +125,7 @@ public class HistoInvoice
     int n = 0;
     try {
       n = invoiceListCtrl.getSelectedIndex();
-    } catch(IndexOutOfBoundsException ix) {
+    } catch (IndexOutOfBoundsException ix) {
       MessagePopup.warning(this, MessageUtil.getMessage("no.line.selected"));
       return;
     }
@@ -109,13 +143,13 @@ public class HistoInvoice
   public void cancel() {
     actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "HistoFacture.Abandon"));
   }
-  
+
   @Override
   public void actionPerformed(ActionEvent e) {
     super.actionPerformed(e);
     if (e.getActionCommand().equals("CtrlAbandonFacture")) {
       layout.show(this, card0);
-    }   
+    }
   }
 
   public void addActionListener(ActionListener l) {

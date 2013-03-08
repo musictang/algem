@@ -1,5 +1,5 @@
 /*
- * @(#)HourRangePanel.java	2.6.a 19/09/12
+ * @(#)HourRangePanel.java	2.7.i 26/02/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -32,7 +32,7 @@ import net.algem.util.ui.GemLabel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.7.i
  */
 public class HourRangePanel
         extends GemBorderPanel
@@ -46,17 +46,25 @@ public class HourRangePanel
   private HourField end;
   private Hour old;
   private int maxi;
-  private CalendarDlg dlg;
+  private int minLength = -1;
+  private int maxLength = -1;
 
-  public HourRangePanel(int _maxi) {
+  public HourRangePanel(int max) {
     this();
-    maxi = _maxi;
+    this.maxi = max;
   }
 
   public HourRangePanel() {
+    this(new Hour(START), new Hour(START));
+  }
 
-    start = new HourField(START);
-    end = new HourField(START);
+  public HourRangePanel(Hour h) {
+    this(h,h);
+  }
+
+  public HourRangePanel(Hour hStart, Hour hEnd) {
+    start = new HourField(hStart);
+    end = new HourField(hEnd);
     start.addFocusListener(this);
     end.addFocusListener(this);
 
@@ -64,16 +72,6 @@ public class HourRangePanel
     add(start);
     add(new GemLabel(BundleUtil.getLabel("Hour.To.label")));
     add(end);
-  }
-
-  public HourRangePanel(Hour h) {
-    start.set(h);
-    end.set(h);
-  }
-
-  public HourRangePanel(Hour hStart, Hour hEnd) {
-    start.set(hStart);
-    end.set(hEnd);
   }
 
   @Override
@@ -112,10 +110,22 @@ public class HourRangePanel
   public void setEnd(String s) {
     end.setText(s);
   }
+  
+  public int getLength() {
+    return start.get().getLength(end.get());
+  }
 
   public void clear() {
     start.setText(START);
     end.setText(START);
+  }
+
+  public void setMax(int max) {
+    this.maxLength = max;
+  }
+
+  public void setMin(int min) {
+    this.minLength = min;
   }
 
   @Override
@@ -138,6 +148,8 @@ public class HourRangePanel
       end.set(old);
       validHour2(f);
     }
+    
+   
   }
 
   @Override
@@ -150,9 +162,9 @@ public class HourRangePanel
   }
 
   public void validHour1(Hour d) {
-    Hour f = end.get();
+    Hour e = end.get();
     //int dif = f.toMinutes() - d.toMinutes();
-    if (!d.before(f)) {
+    if (!d.before(e)) {
       end.set(d);
     } 
     /*else if (dif > maxi) {// désactivation @since 2.1.k
@@ -162,14 +174,17 @@ public class HourRangePanel
       }
     }*/
     start.set(d);
+    if (minLength > 0 && start.get().toMinutes() < minLength) {
+      start.set(new Hour(minLength));
+    }
   }
 
-  public void validHour2(Hour f) {
-    Hour deb = start.get();
-    int dif = f.toMinutes() - deb.toMinutes();
-    if (f.before(deb)) {
+  public void validHour2(Hour e) {
+    Hour s = start.get();
+//    int dif = e.toMinutes() - s.toMinutes();
+    if (e.before(s)) {
       //JOptionPane.showMessageDialog(null, "heure end<debut", "heure end<debut", JOptionPane.ERROR_MESSAGE);
-      end.set(deb);
+      end.set(s);
       return;
     }
     /*else if (dif > maxi) {
@@ -182,6 +197,14 @@ public class HourRangePanel
       JOptionPane.showMessageDialog(null, "heure debut=end", "heure debut=end", JOptionPane.ERROR_MESSAGE);
       return;
     }*/
-    end.set(f);
+    end.set(e);
+    if (maxLength > 0 && end.get().toMinutes() > maxLength) {
+      end.set(new Hour(maxLength));
+    }
+  }
+  
+  public void setEditable(boolean e) {
+    start.setEditable(e);
+    end.setEditable(e);
   }
 }

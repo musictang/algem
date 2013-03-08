@@ -1,7 +1,7 @@
 /*
- * @(#)Statistics.java	2.7.a 23/11/12
+ * @(#)Statistics.java	2.7.k 05/03/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -35,13 +35,16 @@ import net.algem.config.Preference;
 import net.algem.planning.DateFr;
 import net.algem.planning.Schedule;
 import net.algem.room.Establishment;
-import net.algem.util.*;
+import net.algem.util.DataCache;
+import net.algem.util.DataConnection;
+import net.algem.util.FileUtil;
+import net.algem.util.MessageUtil;
 import net.algem.util.model.Model;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.7.k
  * @since 2.6.a 09/10/12
  */
 public class Statistics
@@ -72,7 +75,7 @@ public class Statistics
     MEMBERSHIP_ACCOUNT = (Integer) p.getValues()[0];
   }
   
-  private void setConfig(DateFr start, DateFr end) throws IOException, SQLException {
+  public void setConfig(DateFr start, DateFr end) throws IOException, SQLException {
     this.start = start;
     this.end = end;
     String path = ConfigUtil.getExportPath(dc) + FileUtil.FILE_SEPARATOR + "stats.txt";
@@ -81,47 +84,7 @@ public class Statistics
     MEMBERSHIP_ACCOUNT = (Integer) p.getValues()[0];
   }
 
-  public static void main(String[] args) throws SQLException {
-    if (args.length != 1) {
-      System.exit(1);
-    }
-    String y = args[0].trim();
-    if (y.length() != 4) {
-      System.exit(2);
-    }
-    year = Integer.parseInt(y);
-    DataConnection dc = new DataConnection("localhost", "algem");
-
-    dc.connect();
-
-    DataCache cache = DataCache.getInstance(dc, System.getProperty("user.name"));
-//    DataCache cache = DataCache.getInstance(dc, "adrien");
-    cache.load(null);
-
-    Statistics st = null;
-    try {
-      //st = StatisticsFactory.getStatistics(ConfigUtil.getConf(ConfigKey.ORGANIZATION_NAME.getKey(), dc), cache);
-      st = StatisticsFactory.getInstance();
-      if (st == null) {
-        st = new StatisticsDefault();  
-      }
-      st.init(cache);
-      st.setConfig(new DateFr("01-09-"+year), new DateFr("31-08-"+(year+1)));
-//      st.setConfig(new DateFr("01-10-"+year), new DateFr("01-10-"+(year)));
-      st.makeStats();
-      System.out.println(MessageUtil.getMessage("statistics.completed", ""));
-    } catch (IOException ex) {
-      GemLogger.logException(ex);
-    } catch (SQLException sqe) {
-      GemLogger.logException(sqe);
-    } finally {
-      if (st != null) {
-        st.close();
-      }
-    }
-
-  }
-
+  
   public void makeStats() throws SQLException {
     header();
     printIntListResult(MessageUtil.getMessage("statistics.members.without.date.of.birth"), getQuery("members_without_date_of_birth"));
@@ -333,7 +296,7 @@ public class Statistics
               + " AND commande_cours.module = module.id"
               + " AND commande_cours.datedebut between '" + start + "' AND '" + end + "'"
               + " AND extract(year from age(commande_cours.datedebut,datenais)) >= " + a1
-              + " AND extract(year from age(commande_cours.datedebut,datenais)) < " + a2
+              + " AND extract(year from age(commande_cours.datedebut,datenais)) <= " + a2 // correction agemax inclus
               + " AND module.code NOT LIKE 'P%'"
               + " AND commande_cours.debut != '00:00:00'";
     }
@@ -348,7 +311,7 @@ public class Statistics
               + " AND action.cours = cours.id"
               + " AND commande_cours.datedebut between '" + start + "' AND '" + end + "'"
               + " AND extract(year from age(commande_cours.datedebut,datenais)) >= " + a1
-              + " AND extract(year from age(commande_cours.datedebut,datenais)) < " + a2
+              + " AND extract(year from age(commande_cours.datedebut,datenais)) <= " + a2 // correction agemax inclus
               + " AND module.code LIKE 'P%'"
               + " AND cours.titre NOT LIKE '%A_D_FINIR%'";
     }
