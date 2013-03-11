@@ -48,7 +48,7 @@ import net.algem.util.ui.MessagePopup;
 public class Algem
 {
 
-  public static final String APP_VERSION = "2.7.l";
+  public static final String APP_VERSION = "2.7.l";//experimental
   private static final int DEF_WIDTH = 1080;// (850,650) => ancienne taille
   private static final int DEF_HEIGHT = 780;
   private static final Point DEF_LOCATION = new Point(70, 30);
