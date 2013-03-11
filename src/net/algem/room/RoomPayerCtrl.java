@@ -1,5 +1,5 @@
 /*
- * @(#)RoomPayerCtrl.java 2.6.a 24/09/12
+ * @(#)RoomPayerCtrl.java 2.7.l 11/03/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -25,7 +25,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.BoxLayout;
 import net.algem.contact.Person;
-import net.algem.util.MessageUtil;
+import net.algem.util.BundleUtil;
 import net.algem.util.ui.GemField;
 import net.algem.util.ui.GemNumericField;
 import net.algem.util.ui.GemPanel;
@@ -33,7 +33,7 @@ import net.algem.util.ui.GemPanel;
 /**
  * TODO reuse in person file
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.7.l
  * @since 2.2.b
  */
 public class RoomPayerCtrl
@@ -68,11 +68,10 @@ public class RoomPayerCtrl
     }
     payerId.setText(String.valueOf(p.getId()));
     if (p.getId() == room.getContact().getId()) {
-      payerName.setText(MessageUtil.getMessage("payer.link.himself"));
-    }
-    else {
-      payerName.setText(p.getNameFirstname());
-
+      payerName.setText(BundleUtil.getLabel("Himself.label"));
+    } else {
+      String org = p.getOrganization();
+      payerName.setText(org == null || org.isEmpty() ? p.getFirstnameName() : org);
     }
     room.setPayer(p);
   }

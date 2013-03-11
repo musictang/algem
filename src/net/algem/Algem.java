@@ -1,5 +1,5 @@
 /*
- * @(#)Algem.java	2.7.k 05/03/13
+ * @(#)Algem.java	2.7.l 13/03/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -43,12 +43,12 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.k
+ * @version 2.7.l
  */
 public class Algem
 {
 
-  public static final String APP_VERSION = "2.7.k";
+  public static final String APP_VERSION = "2.7.l";
   private static final int DEF_WIDTH = 1080;// (850,650) => ancienne taille
   private static final int DEF_HEIGHT = 780;
   private static final Point DEF_LOCATION = new Point(70, 30);

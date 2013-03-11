@@ -1,5 +1,5 @@
 /*
- * @(#)MemberEditor.java	2.7.k 01/03/13
+ * @(#)MemberEditor.java	2.7.l 11/03/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -48,7 +48,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.k
+ * @version 2.7.l
  */
 public class MemberEditor
         extends FileTab
@@ -215,14 +215,15 @@ public class MemberEditor
 
   public void loadPayeur(int _id) {
     if (_id == id) {
-      payerName.setText("lui même");
+      payerName.setText(BundleUtil.getLabel("Himself.label"));
       return;
     }
     Person p = ((PersonIO) DataCache.getDao(Model.Person)).findId(_id);
     if (p != null) {
-      payerName.setText(p.getName() + " " + p.getFirstName());
+      String org = p.getOrganization();
+      payerName.setText(org == null || org.isEmpty() ? p.getFirstnameName() : org);
     } else {
-      payerName.setText("inconnu !");
+      payerName.setText(BundleUtil.getLabel("Unknown.label"));
     }
   }
 

@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileTabView.java  2.7.k 04/03/13
+ * @(#)PersonFileTabView.java  2.7.l 11/03/13
  *
  * Copyright (c) 1999-2012 Musiques Tangentes All Rights Reserved.
  *
@@ -58,7 +58,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.k
+ * @version 2.7.l
  */
 public class PersonFileTabView
         extends FileView
@@ -315,10 +315,15 @@ public class PersonFileTabView
     if (memberEditor == null) {
       memberEditor = new MemberEditor(desktop, dossier.getId());
       if (parent != null) {
-        memberEditor.setPayer(parent.getId(), parent.getContact().getFirstnameName());
+        String name = "";
+        if (parent.getContact() != null) {
+          String org = parent.getContact().getOrganization();
+          name = (org == null || org.isEmpty()) ? parent.getContact().getFirstnameName() : org;
+        }
+        memberEditor.setPayer(parent.getId(), name);
       } // ajout 2.Oi payeur lui-même par défaut
       else {
-        memberEditor.setPayer(dossier.getId(), MessageUtil.getMessage("payer.link.himself"));
+        memberEditor.setPayer(dossier.getId(), BundleUtil.getLabel("Himself.label"));
       }
       wTab.addItem(memberEditor, MEMBER_TAB_TITLE);
       
