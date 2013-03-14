@@ -1,7 +1,7 @@
 /*
- * @(#)GemButton.java	2.6.a 31/07/12
+ * @(#)ButtonRemove.java	2.8.a 14/03/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,37 +20,35 @@
  */
 package net.algem.util.ui;
 
-import java.awt.Insets;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
+import java.awt.Component;
+import net.algem.util.GemCommand;
+import net.algem.util.ImageUtil;
 
 /**
- * Generic button.
  *
- * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.a
+ * @since 2.8.a 13/03/2013
  */
-public class GemButton
-        extends JButton
+public class ButtonRemove 
+  extends GemButton
+
 {
 
-  private Insets insets;
+  private Component container;
 
-  public GemButton(String s) {
-    super(s);
+  public ButtonRemove(Component container) {
+    this();
+    this.container = container;
   }
 
-  public GemButton(ImageIcon icon) {
-    super(icon);
-    insets = new Insets(0, 1, 0, 1);
-    if (getIcon() == null) {
-      setText("OK");
-    }
+  public ButtonRemove() {
+    super(ImageUtil.createImageIcon(ImageUtil.DELETE_ICON));
+    setActionCommand(GemCommand.REMOVE_CMD);
   }
 
-  @Override
-  public Insets getInsets() {
-    return insets != null ? insets : super.getInsets();
+  public Component getContainer() {
+    return container;
   }
+
 }

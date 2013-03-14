@@ -20,6 +20,7 @@
  */
 package net.algem.course;
 
+import java.util.List;
 import net.algem.util.model.GemModel;
 
 /**
@@ -40,6 +41,7 @@ public class Module
   private double basePrice;
   private double monthReducRate;
   private double quarterReducRate;
+  private List<CourseModuleInfo> courses;
 
   public Module() {
   }
@@ -224,6 +226,16 @@ public class Module
   public double getQuarterReducRate() {
     return quarterReducRate;
   }
+
+  public List<CourseModuleInfo> getCourses() {
+    return courses;
+  }
+
+  public void setCourses(List<CourseModuleInfo> courses) {
+    this.courses = courses;
+  }
+  
+  
 
   @Override
   public boolean equals(Object o) {

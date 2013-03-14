@@ -40,11 +40,13 @@ public class ModuleView
   private String id = "0";
   private GemNumericField no;
   private GemField title;
+  
   private GemField code;
   private GemDecimalField basicPrice;
   private GemDecimalField monthRateReduc;
   private GemDecimalField quarterRateReduc;
   private ModuleCodeView viewCode;
+  private CourseModuleView courseView;
 
   public ModuleView() {
     no = new GemNumericField(6);
@@ -63,27 +65,29 @@ public class ModuleView
     monthRateReduc.setColumns(3);
     quarterRateReduc.setColumns(3);
     
-    GemPanel panelPrix = new GemPanel();
-    panelPrix.setBorder(BorderFactory.createTitledBorder(BundleUtil.getLabel("Module.rate.label")));
-    panelPrix.add(new GemLabel(BundleUtil.getLabel("Module.basic.rate.label")));
-    panelPrix.add(basicPrice);
-    panelPrix.add(new GemLabel(BundleUtil.getLabel("Module.month.reduc.rate.label")));
-    panelPrix.add(monthRateReduc);
-    panelPrix.add(new GemLabel(BundleUtil.getLabel("Module.trim.reduc.rate.label")));
-    panelPrix.add(quarterRateReduc);
+    GemPanel pricePanel = new GemPanel();
+    pricePanel.setBorder(BorderFactory.createTitledBorder(BundleUtil.getLabel("Module.rate.label")));
+    pricePanel.add(new GemLabel(BundleUtil.getLabel("Module.basic.rate.label")));
+    pricePanel.add(basicPrice);
+    pricePanel.add(new GemLabel(BundleUtil.getLabel("Module.month.reduc.rate.label")));
+    pricePanel.add(monthRateReduc);
+    pricePanel.add(new GemLabel(BundleUtil.getLabel("Module.trim.reduc.rate.label")));
+    pricePanel.add(quarterRateReduc);
 
     viewCode = new ModuleCodeView();
-
+    courseView = new CourseModuleView();
     setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
     gb.insets = GridBagHelper.SMALL_INSETS;
 
     gb.add(new GemLabel(BundleUtil.getLabel("Number.abbrev.label")), 0, 0, 1, 1, GridBagHelper.WEST);
-    gb.add(viewCode, 0, 1, 2, 1, GridBagHelper.WEST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Title.label")), 0, 2, 1, 1, GridBagHelper.WEST);
-    gb.add(panelPrix, 0, 3, 2, 1, GridBagHelper.WEST);
     gb.add(no, 1, 0, 1, 1, GridBagHelper.WEST);
-    gb.add(title, 1, 2, 1, 1, GridBagHelper.WEST);
+    gb.add(title, 0, 1, 2, 1, GridBagHelper.WEST);
+    gb.add(courseView, 0, 2, 2, 1, GridBagHelper.WEST);
+//    gb.add(viewCode, 0, 1, 2, 1, GridBagHelper.WEST);
+//    gb.add(new GemLabel(BundleUtil.getLabel("Title.label")), 0, 2, 1, 1, GridBagHelper.WEST);
+    gb.add(pricePanel, 0, 3, 2, 1, GridBagHelper.WEST);
+    
   }
 
   public String getId() {
@@ -142,6 +146,7 @@ public class ModuleView
     basicPrice.setValue(m.getBasePrice());
     monthRateReduc.setValue(m.getMonthReducRate());
     quarterRateReduc.setValue(m.getQuarterReducRate());
+    courseView.set(m);
   }
 
   /**
@@ -155,5 +160,6 @@ public class ModuleView
     basicPrice.setValue(0.0);
     monthRateReduc.setValue(0.0);
     quarterRateReduc.setValue(0.0);
+    courseView.clear();
   }
 }

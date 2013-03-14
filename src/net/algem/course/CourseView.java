@@ -24,7 +24,10 @@ import net.algem.config.ParamChoice;
 import java.awt.Color;
 import java.awt.GridBagLayout;
 import java.util.Vector;
+import javax.swing.ComboBoxModel;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.event.ListDataListener;
 import net.algem.util.BundleUtil;
 import net.algem.config.Param;
 import net.algem.util.ui.*;
@@ -43,7 +46,8 @@ public class CourseView
   private GemNumericField no;
   private GemField title;
   private GemField label;
-  private GemChoice code;
+  private JComboBox type;
+//  private GemChoice code;
   private GemNumericField nplaces;
   private GemField level;
   private JCheckBox collective;
@@ -51,13 +55,16 @@ public class CourseView
   private GemChoice schoolChoice;
 
   public CourseView(Vector<ModuleType> vm, Vector<Param> schools) {
+    
 
     no = new GemNumericField(6);
     no.setEditable(false);
     no.setBackground(Color.lightGray);
     title = new GemField(32);
     label = new GemField(16);
-    code = new ModuleTypeChoice(vm);
+//    code = new ModuleTypeChoice(vm);
+    type = new JComboBox();
+
     nplaces = new GemNumericField(5);
     level = new GemField(5);
     collective = new JCheckBox();
@@ -83,7 +90,8 @@ public class CourseView
     gb.add(no, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(title, 1, 1, 3, 1, GridBagHelper.WEST);
     gb.add(label, 1, 2, 3, 1, GridBagHelper.WEST);
-    gb.add(code, 1, 3, 3, 1, GridBagHelper.WEST);
+//    gb.add(code, 1, 3, 3, 1, GridBagHelper.WEST);
+    gb.add(type, 1, 3, 3, 1, GridBagHelper.WEST);
     gb.add(nplaces, 1, 4, 1, 1, GridBagHelper.WEST);
     gb.add(level, 1, 5, 1, 1, GridBagHelper.WEST);
     gb.add(collective, 1, 6, 1, 1, GridBagHelper.WEST);
@@ -107,9 +115,21 @@ public class CourseView
     level.setText(String.valueOf(c.getLevel()));
     collective.setSelected(c.isCollective());
     active.setSelected(c.isActive());
-    code.setSelectedItem(c.getCode());
+//    code.setSelectedItem(c.getCode());
+//    setType(c.getCode());
+//    type.setSelectedItem(c.getCode());
     schoolChoice.setKey(c.getSchool());
   }
+  
+//  private void setType(String code) {
+//
+//    for (CourseCode p : CourseCode.values()) {
+//      if (p.getKey().equals(code) || code.startsWith("AT") && p.getKey().equals(code.substring(0, 2))) {
+//        type.setSelectedItem(p);
+//        break;
+//      } 
+//    }
+//  }
 
   public Course get() {
     Course cr = new Course();
@@ -134,7 +154,8 @@ public class CourseView
     }
     cr.setCollective(collective.isSelected());
     cr.setActive(active.isSelected());
-    cr.setCode((String) code.getSelectedItem());
+//    cr.setCode((String) code.getSelectedItem());
+    cr.setCode(((CourseCode)type.getSelectedItem()).getKey());
     cr.setSchool(schoolChoice.getKey());
     return cr;
   }
@@ -147,7 +168,8 @@ public class CourseView
     level.setText("");
     collective.setSelected(true);
     active.setSelected(true);
-    code.setSelectedIndex(0);
+//    code.setSelectedIndex(0);
+    type.setSelectedIndex(0);
     schoolChoice.setSelectedIndex(0);
   }
 }

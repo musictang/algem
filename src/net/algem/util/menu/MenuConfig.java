@@ -77,6 +77,7 @@ public class MenuConfig
     mParameters.add(new JMenuItem(menus.get("Menu.web.site.cat.label")));   
     mParameters.addSeparator();
     
+    mParameters.add(new JMenuItem("CourseCode"));
     mParameters.add(new JMenuItem(menus.get("Status.label")));
     mParameters.add(new JMenuItem(menus.get("Level.label")));
     mParameters.add(new JMenuItem(BundleUtil.getLabel("Menu.age.range.label")));
@@ -145,6 +146,9 @@ public class MenuConfig
     } else if (menus.get("Menu.web.site.cat.label").equals(arg)) {
       CategoryWebSiteCtrl siteCatCtrl = new CategoryWebSiteCtrl(desktop);
       desktop.addPanel("Menu.web.site.cat", siteCatCtrl);
+    } else if ("CourseCode".equals(arg)) {
+      CourseCodeCtrl ccCtrl = new CourseCodeCtrl(desktop);
+      desktop.addPanel("CourseCode", ccCtrl);
     } else if (menus.get("Status.label").equals(arg)) {
       StatusCtrl statutCtrl = new StatusCtrl(desktop, arg);
       desktop.addPanel("Status", statutCtrl);

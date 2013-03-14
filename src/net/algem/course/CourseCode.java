@@ -1,7 +1,7 @@
 /*
- * @(#)GemButton.java	2.6.a 31/07/12
+ * @(#)CourseCode.java	2.8.a 14/03/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -18,39 +18,25 @@
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  * 
  */
-package net.algem.util.ui;
+package net.algem.course;
 
-import java.awt.Insets;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
+import net.algem.config.GemParam;
+import net.algem.util.model.GemModel;
 
 /**
- * Generic button.
  *
- * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.a
+ * @since 2.8.a 13/03/2013
  */
-public class GemButton
-        extends JButton
+public class CourseCode
+        extends GemParam
 {
 
-  private Insets insets;
-
-  public GemButton(String s) {
-    super(s);
+  public CourseCode() {
   }
-
-  public GemButton(ImageIcon icon) {
-    super(icon);
-    insets = new Insets(0, 1, 0, 1);
-    if (getIcon() == null) {
-      setText("OK");
-    }
-  }
-
-  @Override
-  public Insets getInsets() {
-    return insets != null ? insets : super.getInsets();
+  
+  public CourseCode(GemParam p) {
+    super(p.getId(), p.getCode(), p.getLabel());
   }
 }

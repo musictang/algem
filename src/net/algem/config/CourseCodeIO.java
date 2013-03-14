@@ -1,5 +1,5 @@
 /*
- * @(#)GemButton.java	2.6.a 31/07/12
+ * @(#) CourseCodeIO.java Algem 2.8.a 14/03/2013
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -16,41 +16,45 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
  */
-package net.algem.util.ui;
+package net.algem.config;
 
-import java.awt.Insets;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
+import java.sql.SQLException;
+import java.util.List;
+import net.algem.util.DataConnection;
+import net.algem.util.model.Cacheable;
 
 /**
- * Generic button.
  *
- * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.a
+ * @since 2.8.a 14/03/2013
  */
-public class GemButton
-        extends JButton
+public class CourseCodeIO
+  extends GemParamIO 
+        implements Cacheable
 {
+  
+  private final static String TABLE = "module_type";
+  private final static String SEQUENCE = "idmoduletype";
 
-  private Insets insets;
-
-  public GemButton(String s) {
-    super(s);
+  public CourseCodeIO(DataConnection dc) {
+    this.dc = dc;
   }
-
-  public GemButton(ImageIcon icon) {
-    super(icon);
-    insets = new Insets(0, 1, 0, 1);
-    if (getIcon() == null) {
-      setText("OK");
-    }
+  
+  @Override
+  protected String getSequence() {
+    return SEQUENCE;
   }
 
   @Override
-  public Insets getInsets() {
-    return insets != null ? insets : super.getInsets();
+  protected String getTable() {
+    return TABLE;
   }
+
+  @Override
+  public List<GemParam> load() throws SQLException {
+    return find();
+  }
+
 }

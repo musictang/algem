@@ -56,7 +56,7 @@ public abstract class ParamTableCtrl
   protected String title;
   protected ParamTableView table;
   protected ParamView mask;
-  private boolean editableKey;
+  private boolean editKey;
   protected GemPanel wCard;
   protected int mode;
   protected Param current;
@@ -68,14 +68,14 @@ public abstract class ParamTableCtrl
    *
    * @param _desktop
    * @param title
-   * @param editable clé éditable
+   * @param editKey clé éditable
    * @param activable
    */
-  public ParamTableCtrl(GemDesktop _desktop, String title, boolean editable, boolean activable) {
+  public ParamTableCtrl(GemDesktop _desktop, String title, boolean editKey, boolean activable) {
     desktop = _desktop;
     dc = desktop.getDataCache().getDataConnection();
     this.title = title;
-    editableKey = editable;
+    this.editKey = editKey;
 
     setView(activable);
     init();
@@ -110,7 +110,7 @@ public abstract class ParamTableCtrl
       }
     });
     mask.addActionListener(this);
-    mask.setKeyEditable(editableKey);
+    mask.setKeyEditable(editKey);
 
     wCard = new GemPanel();
     wCard.setLayout(new CardLayout());
@@ -171,7 +171,7 @@ public abstract class ParamTableCtrl
     } else if (cmd.equals(GemCommand.ADD_CMD)) {
       mask.clear();
       mode = CREATION_MODE;
-      mask.setKeyEditable(editableKey);
+      mask.setKeyEditable(true);
       ((CardLayout) wCard.getLayout()).show(wCard, "masque");
     } else if (cmd.equals(GemCommand.DELETE_CMD)) {
       try {

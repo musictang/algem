@@ -18,28 +18,32 @@
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  * 
  */
-
 package net.algem.config;
 
 import net.algem.util.BundleUtil;
 
 /**
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.6.a
  * @since 2.5.a 22/06/2012
  */
-public class GemParamView 
-
-extends ParamView
+public class GemParamView
+        extends ParamView
 {
 
   private int id;
-  
+
   public GemParamView() {
     super(false);
     key.setEditable(true);
     key.setColumns(1);
+  }
+  
+  public GemParamView(boolean keyEditable, int cols) {
+    super(false);
+    key.setEditable(keyEditable);
+    key.setColumns(cols);
   }
 
   @Override

@@ -50,8 +50,4 @@ public class InstrumentPanel
     return instrument.getKey();
   }
   
-  public void init() {
-    
-  }
-  
 }

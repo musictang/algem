@@ -22,6 +22,7 @@ package net.algem.course;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 import net.algem.util.DataConnection;
@@ -113,10 +114,29 @@ public class ModuleIO
       m.setBasePrice(rs.getDouble(4)); // prixinst
       m.setMonthReducRate(rs.getDouble(5)); // taux de réduction prélèvement mensuel
       m.setQuarterReducRate(rs.getDouble(6)); // taux de réduction prélèvement trimestriel
+      
+      m.setCourses(findCourses(m.getId()));
+      
       v.addElement(m);
     }
     rs.close();
     return v;
+  }
+  
+  private List<CourseModuleInfo> findCourses(int module) throws SQLException {
+    List<CourseModuleInfo> courses = new ArrayList<CourseModuleInfo>();
+    String query = "SELECT * FROM module_cours WHERE idmodule = " + module;
+    ResultSet rs = dc.executeQuery(query);
+    while (rs.next()) {
+      CourseModuleInfo info = new CourseModuleInfo();
+      info.setId(rs.getShort(1));
+      info.setIdModule(module);
+      info.setCode(rs.getInt(3));
+      info.setTimeLength(rs.getInt(4));
+      
+      courses.add(info);
+    }
+    return courses;
   }
 
   @Override
