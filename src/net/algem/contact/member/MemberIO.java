@@ -1,7 +1,7 @@
 /*
- * @(#)MemberIO.java	2.7.g 18/02/13
+ * @(#)MemberIO.java	2.7.m 15/03/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -37,7 +37,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.g
+ * @version 2.7.m
  * @since 1.0a 07/07/1999
  */
 public class MemberIO
@@ -107,13 +107,13 @@ public class MemberIO
 
   }
 
-  public void delete(Member m) throws SQLException {
+  public void delete(int m) throws SQLException {
 
-    String query = "DELETE FROM " + TABLE + " WHERE idper = " + m.getId();
+    String query = "DELETE FROM " + TABLE + " WHERE idper = " + m;
     try {
       dc.setAutoCommit(false);
       dc.executeUpdate(query);
-      InstrumentIO.delete(m.getId(), Instrument.MEMBER, dc);
+      InstrumentIO.delete(m, Instrument.MEMBER, dc);
       dc.commit();
     } catch (SQLException ex) {
       dc.rollback();

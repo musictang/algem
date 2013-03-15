@@ -1,5 +1,5 @@
 /*
- * @(#)LevelCtrl.java 2.7.c 23/01/13
+ * @(#)LevelCtrl.java 2.7.m 14/03/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -30,7 +30,7 @@ import net.algem.util.module.GemDesktop;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.c
+ * @version 2.7.m
  * @since 2.5.a 22/06/2012
  */
 public class LevelCtrl 
@@ -54,7 +54,7 @@ public class LevelCtrl
   @Override
   public void modification(Param current, Param p) throws SQLException, ParamException {
     if (p instanceof GemParam) {
-      Level level = (Level) p;
+      Level level = new Level((GemParam) p);
       if (isValidUpdate(level)) {
         service.updateLevel(level);
         desktop.getDataCache().update(level);
@@ -66,7 +66,7 @@ public class LevelCtrl
   @Override
   public void insertion(Param p) throws SQLException, ParamException {
     if (p instanceof GemParam) {
-      Level level = (Level) p;
+      Level level = new Level((GemParam) p);
       if (isValidInsert(level)) {
         service.insertLevel(level); 
         desktop.getDataCache().add(level);
@@ -78,7 +78,7 @@ public class LevelCtrl
   @Override
   public void suppression(Param p) throws Exception {
     if (p instanceof GemParam) {
-      Level level = (Level) p;
+      Level level = new Level((GemParam) p);
       service.deleteLevel((GemParam)p);
       desktop.getDataCache().remove(level);
       desktop.postEvent(new GemEvent(this, GemEvent.SUPPRESSION, GemEvent.LEVEL, level));
