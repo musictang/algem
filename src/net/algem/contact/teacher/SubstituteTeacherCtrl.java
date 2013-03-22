@@ -1,5 +1,5 @@
 /*
- * @(#)SubstituteTeacherCtrl.java	2.7.d 24/01/13
+ * @(#)SubstituteTeacherCtrl.java	2.7.n 22/03/13
  *
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -52,7 +52,7 @@ import net.algem.util.ui.*;
  * Substitute teachers management.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.d
+ * @version 2.7.n
  * @since 2.0n
  */
 public class SubstituteTeacherCtrl
@@ -199,9 +199,10 @@ public class SubstituteTeacherCtrl
 
   public void setEditSubstitute(SubstituteTeacher r) {
     estabChoice.setKey(r.getEstablishment());
-    courseChoice.setKey(r.getCourse().getId());
-    teacherChoice.setKey(r.getTeacher().getId());
-    int id = r.getSubstitute().getId();
+    
+    courseChoice.setKey(r.getCourse() == null ? 0 : r.getCourse().getId());
+    teacherChoice.setKey(r.getTeacher() == null ? 0 : r.getTeacher().getId());
+    int id = r.getSubstitute() == null ? 0 : r.getSubstitute().getId();
     substituteChoice.setKey(id);
     
     // si le remplacant fait partie des profs non actifs
@@ -283,7 +284,6 @@ public class SubstituteTeacherCtrl
     for (JCheckBox jcb : days) {
       j += jcb.isSelected() ? "1" : "0";
     }
-
     r.setEstablishment(estabChoice.getKey());
     r.setDays(j);
     r.setFavorite(favorite.isSelected());

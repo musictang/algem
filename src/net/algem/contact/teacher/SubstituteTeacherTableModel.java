@@ -1,5 +1,5 @@
 /*
- * @(#)SubstituteTeacherTableModel.java	2.7.a 10/01/13
+ * @(#)SubstituteTeacherTableModel.java	2.7.n 22/03/13
  *
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -21,6 +21,8 @@
 package net.algem.contact.teacher;
 
 import java.sql.SQLException;
+import net.algem.contact.Person;
+import net.algem.course.Course;
 import net.algem.room.Establishment;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
@@ -31,7 +33,7 @@ import net.algem.util.ui.JTableModel;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.7.n
  * @since 2.0n
  */
 public class SubstituteTeacherTableModel
@@ -71,7 +73,9 @@ public class SubstituteTeacherTableModel
 
   @Override
   public Object getValueAt(int line, int col) {
-
+    if (tuples.isEmpty()) {
+      return null;
+    }
     SubstituteTeacher r = (SubstituteTeacher) tuples.elementAt(line);
     boolean days[] = r.daysToArray();
     switch (col) {
@@ -86,11 +90,14 @@ public class SubstituteTeacherTableModel
           return "";
         }
       case 1:
-        return r.getCourse().getTitle();
+        Course c = r.getCourse();
+        return c == null ? null : c.getTitle();
       case 2:
-        return r.getTeacher().getFirstnameName();
+        Person t = r.getTeacher();
+        return t == null ? null : t.getFirstnameName();
       case 3:
-        return r.getSubstitute().getFirstnameName();
+        Person s = r.getSubstitute();
+        return s == null ? null : s.getFirstnameName();
       case 4:
         return r.isFavorite();
       case 5:
