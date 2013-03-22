@@ -1,5 +1,5 @@
 /*
- * @(#)IdentityElement.java 2.7.h 22/02/13
+ * @(#)IdentityElement.java 2.7.m 14/03/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -27,7 +27,7 @@ import net.algem.contact.Contact;
  * Identity element.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.h
+ * @version 2.7.m
  * @since 2.1.n 22/07/2011
  */
 public class IdentityElement
@@ -46,14 +46,15 @@ public class IdentityElement
     g.setFont(serifMed);
     String ident = "";
     if (contact != null) {
-      if (contact.getOrganization() != null && !contact.getOrganization().isEmpty()) {
-        ident = contact.getOrganization();
-      } else {
-        String p = (contact.getFirstName() == null || contact.getFirstName().isEmpty()) ? "" : contact.getFirstName() + " ";
-        String n = contact.getName() == null ? "" : contact.getName();
-        ident = p + n;
+      String p = (contact.getFirstName() == null || contact.getFirstName().isEmpty()) ? "" : contact.getFirstName() + " ";
+      String n = contact.getName() == null ? "" : contact.getName();
+      ident = p + n;
+      String org = contact.getOrganization();
+      if (org != null && !org.isEmpty()) {
+        g.drawString(org, x, y - 10);
       }
-      g.drawString(ident, x, y);
     }
+    g.drawString(ident, x, y);
   }
+
 }

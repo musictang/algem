@@ -1,7 +1,7 @@
 /*
- * @(#)PersonIO.java 2.7.h 20/02/13
+ * @(#)PersonIO.java 2.7.m 15/03/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -36,7 +36,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.h
+ * @version 2.7.m
  */
 public class PersonIO
         extends TableIO
@@ -65,7 +65,7 @@ public class PersonIO
             + "','" + escape(p.getFirstName())
             + "','" + p.getGender()
             + "','" + (p.getImgRights() ? "t" : "f") // f pour non autorisation, t pour autorisation image
-            + (p.getOrganization() == null || p.getOrganization().isEmpty() ? "')" : "'," + escape(p.getOrganization()) + "')");
+            + (p.getOrganization() == null || p.getOrganization().isEmpty() ? "')" : "','" + escape(p.getOrganization()) + "')");
 
     dc.executeUpdate(query);
     p.setId(n);

@@ -1,5 +1,5 @@
 /*
- * @(#)Status.java 2.7.a 10/01/13
+ * @(#)Status.java 2.7.m 14/03/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -24,11 +24,13 @@ package net.algem.config;
 /**
  * GemParam specialization for action status.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.7.m
  * @since 2.7.a 10/01/13
  */
 public class Status
   extends GemParam 
 {
-
+  public Status(GemParam p) {
+    super(p.getId(), p.getCode(), p.getLabel());
+  }
 }

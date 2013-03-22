@@ -1,7 +1,7 @@
 /*
- * @(#)ContactIO.java	2.7.a 29/11/12
+ * @(#)ContactIO.java	2.7.m 15/03/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -25,6 +25,7 @@ import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.Vector;
 import net.algem.bank.BicIO;
+import net.algem.contact.member.MemberIO;
 import net.algem.planning.Schedule;
 import net.algem.planning.ScheduleIO;
 import net.algem.planning.ScheduleRange;
@@ -41,7 +42,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.7.m
  * @since 1.0a 07/07/1999
  */
 public class ContactIO
@@ -210,6 +211,8 @@ public class ContactIO
   public void delete(Contact c) throws SQLException, ContactDeleteException {
     checkDelete(c, dc);
     personIO.delete(c);
+    // member might be deleted if exists
+    ((MemberIO) DataCache.getDao(Model.Member)).delete(c.getId());
     AddressIO.delete(c.getId(), dc);
     TeleIO.delete(c.getId(), dc);
     EmailIO.delete(c.getId(), dc);
@@ -367,7 +370,7 @@ public class ContactIO
       if (rs.next()) {
         int count = rs.getInt(1);
         if (count > 0) {
-          msg += MessageUtil.getMessage("contact.delete.payer.warning1", new Object[]{count});
+          msg += MessageUtil.getMessage("contact.delete.payer.warning1", count);
           throw new ContactDeleteException(msg);
         }
       }
@@ -376,7 +379,7 @@ public class ContactIO
       rs = dc.executeQuery(check);
       if (rs.next()) {
         int a = rs.getInt(2);
-        msg += MessageUtil.getMessage("contact.delete.payer.warning2", new Object[]{a});
+        msg += MessageUtil.getMessage("contact.delete.payer.warning2", a);
         throw new ContactDeleteException(msg);
       }
       // vérifies if contact belongs to a group
@@ -384,19 +387,19 @@ public class ContactIO
       rs = dc.executeQuery(check);
       if (rs.next()) {
         int g = rs.getInt(1);
-        msg += MessageUtil.getMessage("contact.delete.musician.warning", new Object[]{g});
+        msg += MessageUtil.getMessage("contact.delete.musician.warning", g);
         throw new ContactDeleteException(msg);
       }
       // vérifies if contact is scheduled
       Vector<ScheduleRange> vp = ScheduleRangeIO.find(" WHERE pg.adherent =" + c.getId(), dc);
       if (vp != null && vp.size() > 0) {
-        msg += MessageUtil.getMessage("contact.delete.range.warning", new Object[]{vp.size()});
+        msg += MessageUtil.getMessage("contact.delete.range.warning", vp.size());
         throw new ContactDeleteException(msg);
       }
-      // vérifies if contact is teacher scheduled
+      // vérifies if contact is scheduled (teacher or rehearsal)
       Vector<Schedule> vpl = ScheduleIO.find(" WHERE p.idper = " + c.getId(), dc);
       if (vpl != null && vpl.size() > 0) {
-        msg += MessageUtil.getMessage("contact.delete.prof.warning", new Object[]{vpl.size()});
+        msg += MessageUtil.getMessage("contact.delete.schedule.warning", vpl.size());
         throw new ContactDeleteException(msg);
       }
     }

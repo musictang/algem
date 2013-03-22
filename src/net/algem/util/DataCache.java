@@ -1,5 +1,5 @@
 /*
- * @(#)DataCache.java	2.7.k 05/03/13
+ * @(#)DataCache.java	2.7.m 14/03/13
  *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -63,7 +63,7 @@ import net.algem.util.model.Model;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.k
+ * @version 2.7.m
  * @since 1.0b 03/09/2001
  */
 public class DataCache
@@ -277,6 +277,10 @@ public class DataCache
         return AGE_RANGE_IO;
       case Action:
         return ACTION_IO;
+      case Level:
+        return LEVEL_IO;
+      case Status:
+        return STATUS_IO;
       case User:
         return USER_IO;
       default: return null;

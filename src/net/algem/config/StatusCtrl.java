@@ -1,5 +1,5 @@
 /*
- * @(#)StatusCtrl.java 2.7.c 23/01/13
+ * @(#)StatusCtrl.java 2.7.m 14/03/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -31,7 +31,7 @@ import net.algem.util.module.GemDesktop;
  * Status management (Leisure, Professional, etc.).
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.c
+ * @version 2.7.m
  * @since 2.5.a 06/07/12
  */
 public class StatusCtrl 
@@ -55,7 +55,7 @@ public class StatusCtrl
   @Override
   public void modification(Param current, Param p) throws SQLException, ParamException {
     if (p instanceof GemParam) {
-      Status status = (Status) p;
+      Status status = new Status((GemParam) p);
       if (isValidUpdate(status)) {
         service.updateStatus(status);
         desktop.getDataCache().update(status);
@@ -67,7 +67,7 @@ public class StatusCtrl
   @Override
   public void insertion(Param p) throws SQLException, ParamException {
     if (p instanceof GemParam) {
-      Status status = (Status) p;
+      Status status = new Status((GemParam) p);
       if (isValidInsert(status)) {
         service.insertStatus(status);
         desktop.getDataCache().add(status);
@@ -79,7 +79,7 @@ public class StatusCtrl
   @Override
   public void suppression(Param p) throws Exception {
     if (p instanceof GemParam) {
-      Status status = (Status) p;
+      Status status = new Status((GemParam) p);
       service.deleteStatus(status);
       desktop.getDataCache().remove(status);
       desktop.postEvent(new GemEvent(this, GemEvent.SUPPRESSION, GemEvent.STATUS, status));
