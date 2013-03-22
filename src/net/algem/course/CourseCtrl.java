@@ -1,7 +1,7 @@
 /*
- * @(#)CourseCtrl.java	2.7.a 26/11/12
+ * @(#)CourseCtrl.java	2.8.a 19/03/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,38 +27,46 @@ import net.algem.config.SchoolCtrl;
 import net.algem.enrolment.CourseEnrolmentView;
 import net.algem.enrolment.EnrolmentService;
 import net.algem.util.DataCache;
+import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
+import net.algem.util.MessageUtil;
+import net.algem.util.event.GemEvent;
 import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.CardCtrl;
+import net.algem.util.ui.MessagePopup;
 
 /**
  * comment
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.a
  */
 public class CourseCtrl
-        extends CardCtrl {
+        extends CardCtrl
+{
 
   private DataCache dataCache;
   private CourseView cv;
   private CourseEnrolmentView iv;
   private Course course;
-  private EnrolmentService service;
+  private EnrolmentService enrolService;
+  private ModuleService service;
   private GemDesktop desktop;
 
   public CourseCtrl(GemDesktop desktop) {
     this.desktop = desktop;
     dataCache = desktop.getDataCache();
-    service = new EnrolmentService(dataCache);
+    enrolService = new EnrolmentService(dataCache);
+    service = new ModuleService(dataCache.getDataConnection());
 
-    cv = new CourseView(dataCache.getModuleType(), 
-			ParamTableIO.find(SchoolCtrl.TABLE, SchoolCtrl.SORT_COLUMN, dataCache.getDataConnection()));
-    iv = new CourseEnrolmentView(service);
+    cv = new CourseView(
+            dataCache.getList(Model.CourseCode),
+            ParamTableIO.find(SchoolCtrl.TABLE, SchoolCtrl.SORT_COLUMN, dataCache.getDataConnection()));
+    iv = new CourseEnrolmentView(enrolService);
 
-    addCard("cours", cv);
+    addCard("", cv);
     addCard("Elèves inscrits", iv);
 
     select(0);
@@ -77,7 +85,7 @@ public class CourseCtrl
   @Override
   public boolean cancel() {
     if (actionListener != null) {
-      actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Abandon"));
+      actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "CtrlValider"));
     }
     return true;
   }
@@ -85,6 +93,23 @@ public class CourseCtrl
   @Override
   public boolean prev() {
     switch (step) {
+      case 0:
+        try {
+          if (dataCache.authorize("Course.suppression.auth")) {
+            service.delete(cv.get());
+            dataCache.remove(course);
+            desktop.postEvent(new CourseEvent(this, GemEvent.SUPPRESSION, course));
+          } else {
+            MessagePopup.warning(this, MessageUtil.getMessage("action.authorization.error", dataCache.getUser().getLogin()));
+          }
+          close();
+        } catch (CourseException cex) {
+          MessagePopup.warning(this, cex.getMessage());
+          return false;
+        } catch (SQLException ex) {
+          GemLogger.logException(ex);
+          return false;
+        }
       default:
         select(step - 1);
         break;
@@ -100,16 +125,20 @@ public class CourseCtrl
     }
 
     try {
-      ((CourseIO) DataCache.getDao(Model.Course)).update(course);
-      dataCache.update(course);
-      desktop.postEvent(new CourseUpdateEvent(this, course));
+      if (course.getId() == 0) {
+        service.create(course);
+        dataCache.add(course);
+        desktop.postEvent(new CourseEvent(this, GemEvent.CREATION, course));
+      } else {
+        service.update(course);
+        dataCache.update(course);
+        desktop.postEvent(new CourseEvent(this, GemEvent.MODIFICATION, course));
+      }
     } catch (SQLException e1) {
-      GemLogger.logException("Update cours", e1, this);
+      GemLogger.logException(getClass().getSimpleName() + "#validation", e1, this);
       return false;
     }
-    if (actionListener != null) {
-      actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Abandon"));
-    }
+    cancel();
     return true;
   }
 
@@ -121,7 +150,7 @@ public class CourseCtrl
   @Override
   public boolean loadCard(Object o) {
     clear();
-    select(0);
+
     if (o == null || !(o instanceof Course)) {
       return false;
     }
@@ -129,6 +158,14 @@ public class CourseCtrl
     course = (Course) o;
 
     cv.set(course);
+
+    if (course.getId() > 0) {
+      btPrev.setText(GemCommand.DELETE_CMD);
+      btPrev.setActionCommand(GemCommand.DELETE_CMD);
+    } else {
+      btPrev.setText("");
+    }
+    select(0);
     iv.load(course.getId());
     return true;
   }
@@ -142,8 +179,11 @@ public class CourseCtrl
     }
     return false;
   }
-
-  Course getCours() {
-    return cv.get();
+  
+  private void close() {
+     if (actionListener != null) {
+      actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Abandon"));
+    }
   }
+
 }

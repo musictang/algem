@@ -20,6 +20,7 @@
  */
 package net.algem.enrolment;
 
+import net.algem.course.CourseModuleInfo;
 import net.algem.planning.DateFr;
 import net.algem.planning.Hour;
 
@@ -43,9 +44,11 @@ public class CourseOrder
   private Hour start;
   private Hour end;
   private String title;
-  private String code;
+  private int code;
   private int day;
   private int room;
+  private String codeLabel;
+  private CourseModuleInfo courseModuleInfo;
 
   public boolean equals(CourseOrder d) {
     return (d != null
@@ -138,11 +141,11 @@ public class CourseOrder
     title = t;
   }
 
-  public String getCode() {
+  public int getCode() {
     return code;
   }
 
-  public void setCode(String c) {
+  public void setCode(int c) {
     code = c;
   }
 
@@ -170,4 +173,14 @@ public class CourseOrder
   public void setRoom(int _room) {
     room = _room;
   }
+
+  public CourseModuleInfo getCourseModuleInfo() {
+    return courseModuleInfo;
+  }
+
+  public void setCourseModuleInfo(CourseModuleInfo courseModuleInfo) {
+    this.courseModuleInfo = courseModuleInfo;
+  }
+
+  
 }

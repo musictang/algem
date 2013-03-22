@@ -62,8 +62,9 @@ public class CourseSearchView
     code.addActionListener(this);
     collective = new JCheckBox();
     
-    btCreate.setText("");
-    btCreate.setEnabled(false);
+    btCreate.setText(GemCommand.CREATE_CMD);
+    btCreate.setEnabled(true);
+    
     btErase = new GemButton(GemCommand.ERASE_CMD);
     btErase.addActionListener(this);
 

@@ -1,7 +1,7 @@
 /*
- * @(#)Course.java	2.7.h 25/02/13
+ * @(#)Course.java	2.8.a 18/03/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,7 +27,7 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.h
+ * @version 2.8.a
  * @since 1.0a 07/07/1999
  */
 public class Course
@@ -37,13 +37,16 @@ public class Course
   public static final int BREAK = 0;
   
   /** Single workshop code. */
-  public static final String ATP_CODE = "ATP";
- 
-  public static final String PRIVATE_INSTRUMENT_CODE = "Inst";
+  public static final int ATP_CODE = 11;
+  
+//  public static final int AT_CODE = 3;
+  
+  public static final int PRIVATE_INSTRUMENT_CODE = 1;
+  
   protected int id;
   protected String title;
   protected String label;
-  protected String code;
+  protected int code;
   protected short nplaces;
   protected short level;
   protected boolean collective;
@@ -124,12 +127,12 @@ public class Course
     label = l;
   }
 
-  public String getCode() {
+  public int getCode() {
     return code;
   }
 
-  public void setCode(String c) {
-    code = c;
+  public void setCode(int idCode) {
+    code = idCode;
   }
 
   public short getLevel() {
@@ -206,7 +209,7 @@ public class Course
    * @since 2.4.a 04/05/12
    */
   public boolean isATP() {
-    return ATP_CODE.equals(code.trim());
+    return ATP_CODE == code;
   }
 
   /**
@@ -215,7 +218,7 @@ public class Course
    * @return true if code begins with {@code PRIVATE_INSTRUMENT_CODE}
    */
   public boolean isInstCode() {
-    return PRIVATE_INSTRUMENT_CODE.equals(getCode());
+    return PRIVATE_INSTRUMENT_CODE == getCode();
   }
 
   public boolean isCourseCoInst() {
@@ -229,10 +232,11 @@ public class Course
    * @return true if code ends with 3 digits
    */
   public boolean hasValidCodeLength() {
-    if (code == null || code.isEmpty() || code.length() < 3) {
-      return false;
-    }
-    return code.substring(code.length() - 3).matches("[0-9]{3}");
+    return true;
+//    if (code == null || code.isEmpty() || code.length() < 3) {
+//      return false;
+//    }
+//    return code.substring(code.length() - 3).matches("[0-9]{3}");
   }
 
   /**
@@ -242,20 +246,20 @@ public class Course
    * @return a length in minutes
    */
   public int getLength() {
-    String c = getCode();
-    if (isCollective() && !isATP()) {
-      if ("AT".equals(c) || "F.M.".equals(c)) {
-        return 60;
-      } else {
-        try {
-          if (c.length() >= 3) {
-            return Integer.parseInt(c.substring(c.length() - 3));
-          }
-        } catch (NumberFormatException nfe) {
-          return 0;
-        }
-      }
-    }
+    int c = getCode();
+//    if (isCollective() && !isATP()) {
+//      if ("AT".equals(c) || "F.M.".equals(c)) {
+//        return 60;
+//      } else {
+//        try {
+//          if (c.length() >= 3) {
+//            return Integer.parseInt(c.substring(c.length() - 3));
+//          }
+//        } catch (NumberFormatException nfe) {
+//          return 0;
+//        }
+//      }
+//    }
     return 0;
   }
 }

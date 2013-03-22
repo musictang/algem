@@ -33,6 +33,7 @@ import net.algem.contact.member.MemberIO;
 import net.algem.contact.teacher.Teacher;
 import net.algem.course.Course;
 import net.algem.course.CourseIO;
+import net.algem.course.CourseModuleInfo;
 import net.algem.course.Module;
 import net.algem.group.Musician;
 import net.algem.planning.*;
@@ -83,7 +84,7 @@ public class EnrolmentService
     return (Module) DataCache.findId(id, Model.Module);
   }
 
-  public int getIdAction(String code) throws SQLException {
+  public int getIdAction(int code) throws SQLException {
     int id = 0;
     String where = ", cours WHERE action.cours = cours.id AND cours.code = '" + code + "' AND trim(cours.titre) ~* 'd[é|e|É]finir' LIMIT 1";
     id = actionIO.findId(where);
@@ -96,21 +97,37 @@ public class EnrolmentService
     return planningService.getCourseFromAction(idAction);
   }
 
-  public Vector<SQLkey> getCoursFromEtab(int idEtab, int type, DateFr debut, String code) throws SQLException {
+  /**
+   * Gets a list of courses(id, title) scheduled from {@code startDate} in {@code estab}.
+   * Depending course's code, schedule's type and length may be used to filter the results.
+   * @param estab estab id
+   * @param startDate from date
+   * @param courseInfo course module info
+   * @return a list of (id,title)
+   * @throws SQLException 
+   */
+  public Vector<SQLkey> getCoursesFromEstab(int estab, DateFr startDate, CourseModuleInfo courseInfo) throws SQLException {
+
+    int code = courseInfo.getCode().getId();
+    int type = Course.ATP_CODE == code ? Schedule.WORKSHOP_SCHEDULE : Schedule.COURSE_SCHEDULE;
     String query = "SELECT DISTINCT cours.id, cours.titre FROM cours, planning, action, salle"
             + " WHERE planning.ptype = " + type
-            + " AND planning.jour >= '" + debut + "'"
+            + " AND planning.jour >= '" + startDate + "'"
             + " AND planning.action = action.id"
             + " AND action.cours = cours.id"
-            + " AND cours.code ~* '" + code.trim() + "'"
-            + " AND planning.lieux = salle.id AND salle.etablissement = " + idEtab
-            + " ORDER BY cours.titre";
-
+            + " AND cours.code = " + code
+            + " AND planning.lieux = salle.id AND salle.etablissement = " + estab;
+    if (code != Course.ATP_CODE && code != Course.PRIVATE_INSTRUMENT_CODE) {
+      query += " AND planning.fin - planning.debut = '" + new Hour(courseInfo.getTimeLength()) + "'";
+    }
+    query += " ORDER BY cours.titre";
+    
     Vector<SQLkey> values = new Vector<SQLkey>();
     ResultSet rs = dc.executeQuery(query);
     while (rs.next()) {
       values.addElement(new SQLkey(rs.getInt(1), rs.getString(2)));
     }
+
     return values;
   }
 
@@ -132,12 +149,12 @@ public class EnrolmentService
       return new Vector<Schedule>();
     }
 
-    DateFr fin = new DateFr(p.getDay());
-    fin.incDay(7);
+    DateFr end = new DateFr(p.getDay());
+    end.incDay(7);
     //XXX et si le reste de la semaine tombe pendant les vacances ?
     int type = c.isATP() ? Schedule.WORKSHOP_SCHEDULE : Schedule.COURSE_SCHEDULE;
     String query = ",salle, action WHERE p.ptype = " + type
-            + " AND p.jour >= '" + p.getDay() + "' AND p.jour < '" + fin + "'"
+            + " AND p.jour >= '" + p.getDay() + "' AND p.jour < '" + end + "'"
             + " AND p.action = action.id"
             + " AND action.cours = " + c.getId()
             + " AND p.lieux = salle.id AND salle.etablissement = " + idEstab
@@ -224,7 +241,7 @@ public class EnrolmentService
 
   }
 
-  public int getPlaces(int a, DateFr debut, DateFr fin) throws SQLException {
+  public int getPlaceNumber(int a, DateFr debut, DateFr fin) throws SQLException {
     int n = 0;
     String query = "SELECT count(pg.id) FROM plage pg, planning p "
             + " WHERE p.action = " + a
@@ -245,7 +262,7 @@ public class EnrolmentService
       Teacher p = (Teacher) DataCache.findId(teacherId, Model.Teacher);
       return p.toString();
     } catch (SQLException ex) {
-      GemLogger.log(EnrolmentService.class.getName(), "getTeacher", ex);
+      GemLogger.log(getClass().getName(), "getTeacher", ex);
       return null;
     }
   }
@@ -505,7 +522,7 @@ public class EnrolmentService
             + MemberIO.TABLE + " e, "
             + OrderIO.TABLE + " c, "
             + CourseOrderIO.TABLE + " cc, "
-            + ActionIO.TABLE + " a, " 
+            + ActionIO.TABLE + " a, "
             + InstrumentIO.PERSON_INSTRUMENT_TABLE + " pi"
             + " WHERE p.id = e.idper AND cc.idaction = a.id AND a.cours = " + course
             + " AND c.adh = p.id AND cc.idcmd = c.id AND pi.idper = p.id "
@@ -525,7 +542,7 @@ public class EnrolmentService
   }
 
   /**
-   * Gets the list of course order associated with the enrolment {@code i} 
+   * Gets the list of course order associated with the enrolment {@code i}
    * and the module {@code m}.
    *
    * @param i enrolment id
@@ -542,10 +559,10 @@ public class EnrolmentService
    * @param code
    * @return a course
    */
-  public Course getCourseUndefined(String code) {
+  public Course getCourseUndefined(int code) {
     Vector<Course> vc = null;
     try {
-      String where = "WHERE trim(c.code) = '" + code + "' AND trim(c.titre) ~* 'd[eéÉ]finir' LIMIT 1";
+      String where = "WHERE c.code = '" + code + "' AND trim(c.titre) ~* 'd[eéÉ]finir' LIMIT 1";
       vc = ((CourseIO) DataCache.getDao(Model.Course)).find(where);
     } catch (SQLException ex) {
       GemLogger.logException(ex);
@@ -598,7 +615,7 @@ public class EnrolmentService
   }
 
   /**
-   * Gets the first scheduled course {@code c} from {@code start} 
+   * Gets the first scheduled course {@code c} from {@code start}
    * in the establishment {@code estab}.
    *
    * @param idCours

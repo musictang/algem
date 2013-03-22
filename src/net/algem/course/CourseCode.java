@@ -21,7 +21,6 @@
 package net.algem.course;
 
 import net.algem.config.GemParam;
-import net.algem.util.model.GemModel;
 
 /**
  *

@@ -29,7 +29,7 @@ package net.algem.course;
  */
 public class TrainingCourse extends Course
 {
-public final static String CODELABEL = "STAGE";
+public final static int CODELABEL = 100;
 
   public TrainingCourse() {
     init();

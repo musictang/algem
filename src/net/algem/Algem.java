@@ -1,5 +1,5 @@
 /*
- * @(#)Algem.java	2.7.l 13/03/13
+ * @(#)Algem.java	2.8.a 13/03/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *

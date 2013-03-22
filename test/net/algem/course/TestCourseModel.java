@@ -68,32 +68,32 @@ public class TestCourseModel extends TestCase {
       assertFalse(c.isUndefined());
     }
     
-    public void testHasDuration() {
-      Course c = new Course();
-      
-      c.setCode("ATP045");
-      assertTrue(c.hasValidCodeLength());
-      
-      c.setCode("ATP120");
-      assertTrue(c.hasValidCodeLength());
-      
-      c.setCode("455");
-      assertTrue(c.hasValidCodeLength());
-      
-      c.setCode("ATP");
-      assertFalse(c.hasValidCodeLength());
-      
-      c.setCode("Inst");
-      assertFalse(c.hasValidCodeLength());
-      
-      c.setCode("");
-      assertFalse(c.hasValidCodeLength());
-      
-      c.setCode(null);
-      assertFalse(c.hasValidCodeLength());
-      
-      c.setCode("ATP04A4");
-      assertFalse(c.hasValidCodeLength());
-    }
+//    public void testHasDuration() {
+//      Course c = new Course();
+//      
+//      c.setCode("ATP045");
+//      assertTrue(c.hasValidCodeLength());
+//      
+//      c.setCode("ATP120");
+//      assertTrue(c.hasValidCodeLength());
+//      
+//      c.setCode("455");
+//      assertTrue(c.hasValidCodeLength());
+//      
+//      c.setCode("ATP");
+//      assertFalse(c.hasValidCodeLength());
+//      
+//      c.setCode("Inst");
+//      assertFalse(c.hasValidCodeLength());
+//      
+//      c.setCode("");
+//      assertFalse(c.hasValidCodeLength());
+//      
+//      c.setCode(null);
+//      assertFalse(c.hasValidCodeLength());
+//      
+//      c.setCode("ATP04A4");
+//      assertFalse(c.hasValidCodeLength());
+//    }
 
 }

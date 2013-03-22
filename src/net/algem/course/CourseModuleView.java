@@ -31,11 +31,15 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.JComboBox;
+import net.algem.config.GemParam;
+import net.algem.config.GemParamChoice;
 import net.algem.util.BundleUtil;
+import net.algem.util.DataCache;
 import net.algem.util.GemCommand;
+import net.algem.util.model.Model;
 import net.algem.util.ui.ButtonRemove;
 import net.algem.util.ui.GemButton;
+import net.algem.util.ui.GemChoiceModel;
 import net.algem.util.ui.GemPanel;
 
 /**
@@ -47,24 +51,21 @@ import net.algem.util.ui.GemPanel;
 public class CourseModuleView
   extends GemPanel
   implements ActionListener
-//  extends InfoView
 {
-
-  protected List<Component> rows;
-  private JComboBox type;
+  
+  private GemParamChoice code;
   private GemButton plus;
   private GemPanel rowsPanel;
   
-  public CourseModuleView() {
-   
-    rows = new ArrayList<Component>();
+  public CourseModuleView(DataCache dataCache) {
+
     setLayout(new BorderLayout());
 
     GemPanel header = new GemPanel();
     header.setLayout(new BoxLayout(header, BoxLayout.X_AXIS));
-    type = new JComboBox();
-    
-    header.add(type);
+    code = new GemParamChoice(new GemChoiceModel(dataCache.getList(Model.CourseCode)));
+
+    header.add(code);
     header.add(Box.createHorizontalStrut(20));
     plus = new GemButton("+");
     plus.addActionListener(this); 
@@ -78,27 +79,22 @@ public class CourseModuleView
     add(rowsPanel, BorderLayout.CENTER);
   }
 
-//  @Override
   protected void addRow() {
     CourseModuleInfo info = new CourseModuleInfo();
-    info.setCode(0);
+    GemParam cc = (GemParam) code.getSelectedItem();
+    info.setCode(cc);
     info.setTimeLength(0);
     CourseModulePanel p = new CourseModulePanel(info, this);
-//    rows.add(p);
     rowsPanel.add(p);
     revalidate();
   }
   
    protected void addRow(CourseModuleInfo info) {
-    
     CourseModulePanel p = new CourseModulePanel(info, this);
-//    rows.add(p);
-    rowsPanel.add(p);
-    
+    rowsPanel.add(p); 
   }
   
   void deleteRow(Component o) {
-//    rows.remove(o);
     rowsPanel.remove(o);
     revalidate();
   }
@@ -113,18 +109,28 @@ public class CourseModuleView
   }
   
   public void set(Module m) {
+    if (m.getCourses() == null) {
+      return;
+    }
     for (CourseModuleInfo info : m.getCourses()) {
       addRow(info);
     }
     revalidate();
   }
   
-  public void get() {
-    
+  public List<CourseModuleInfo> get() {
+    List<CourseModuleInfo> courses = new ArrayList<CourseModuleInfo>();
+    Component rows [] = rowsPanel.getComponents();
+    for (int i = 0 ; i < rows.length; i++) {
+      CourseModuleInfo cmi = ((CourseModulePanel) rows[i]).get();
+      cmi.setId(i);
+      courses.add(cmi);
+    }
+    return courses;
   }
   
   public void clear() {
-    type.setSelectedIndex(0);
+    code.setSelectedIndex(0);
     rowsPanel.removeAll();
     revalidate();
   }

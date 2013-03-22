@@ -1,7 +1,7 @@
 /*
- * @(#)CourseIO.java	2.7.a 08/01/13
+ * @(#)CourseIO.java	2.8.a 19/03/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -34,7 +34,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.7.a
+ * @version 2.8.a
  */
 public class CourseIO
         extends TableIO
@@ -63,8 +63,8 @@ public class CourseIO
             + "','" + c.getNPlaces()
             + "','" + c.getLevel()
             + "','" + (c.isCollective() ? "t" : "f")
-            + "','" + c.getCode()
-            + "'," + c.getSchool()
+            + "'," + c.getCode()
+            + "," + c.getSchool()
             + ",'" + (c.isActive() ? "t" : "f") //ajout 1.1d
             + "')";
 
@@ -80,8 +80,8 @@ public class CourseIO
             + "',nplaces = '" + c.getNPlaces()
             + "',niveau = '" + c.getLevel()
             + "',collectif = '" + (c.isCollective() ? "t" : "f")
-            + "',code = '" + c.getCode()
-            + "',ecole = " + c.getSchool()
+            + "',code = " + c.getCode()
+            + ",ecole = " + c.getSchool()
             + ",actif = '" + (c.isActive() ? "t" : "f") //ajout 1.1d
             + "' WHERE id = " + c.getId();
 
@@ -130,7 +130,7 @@ public class CourseIO
       c.setNPlaces(rs.getShort(4));
       c.setLevel(rs.getShort(5));
       c.setCollective(rs.getBoolean(6));
-      c.setCode(rs.getString(7).trim());
+      c.setCode(rs.getInt(7));
       c.setSchool(rs.getShort(8));
       c.setActive(rs.getBoolean(9));// ajout 1.1d
       v.addElement(c);
@@ -142,7 +142,7 @@ public class CourseIO
 
   @Override
   public List<Course> load() throws SQLException {
-    String where = "WHERE c.code <> '" + Course.ATP_CODE + "' ORDER BY c.titre";
+    String where = "WHERE c.code <> " + Course.ATP_CODE + " ORDER BY c.titre";
     return find(where);
   }
 

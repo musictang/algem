@@ -31,10 +31,7 @@ import java.util.Vector;
 import net.algem.accounting.*;
 import net.algem.config.*;
 import net.algem.contact.PersonFile;
-import net.algem.course.Course;
-import net.algem.course.Module;
-import net.algem.course.ModuleDlg;
-import net.algem.course.ModuleIO;
+import net.algem.course.*;
 import net.algem.edition.MemberCardEditor;
 import net.algem.planning.DateFr;
 import net.algem.planning.Hour;
@@ -224,11 +221,12 @@ public class MemberEnrolment
       /*
        * 2.0j : ajout conditionnel d'un atelier ponctuel supplementaire.
        */
-      if (Course.ATP_CODE.equals(cc.getCode()) && !"00:00".equals(cc.getStart().toString())) {
+      if (Course.ATP_CODE == cc.getCourseModuleInfo().getIdCode() && !"00:00".equals(cc.getStart().toString())) {
+        
         CourseOrder cd = new CourseOrder();
         cd.setIdOrder(cc.getIdOrder());
         cd.setModule(cc.getModule());
-        cd.setCode(Course.ATP_CODE);
+//        cd.setCode(Course.ATP_CODE);
         cd.setAction(service.getIdAction(Course.ATP_CODE));
         cd.setStart(new Hour("00:00:00"));
         cd.setEnd(new Hour("02:00:00"));
@@ -507,14 +505,12 @@ public class MemberEnrolment
       addModule(cm, m);
 
       int duree = 0;
-
+for(CourseModuleInfo info : m.getCourses()) {
+  addCourse(cm, info);
+}
       // ajout des commandes_cours d'instrument
-      // TODO list Inst type
-//      for (ModuleCompo mc : m.getComposition()) {
-//          if (mc.getType() == INSTRUMENT) {
-//        addCourseInstrument(cm, mc.getLength());
-//      }
-      if ((duree = m.getInstrumentDuration()) > 0) {
+
+      /*if ((duree = m.getInstrumentDuration()) > 0) {
         addCourseInstrument(cm, duree);
       }
 
@@ -532,7 +528,7 @@ public class MemberEnrolment
       // ajout des commandes_cours collectifs de formation musicale
       if (m.withMusicalFormation()) {
         addFM(cm);
-      }
+      }*/
     } catch (SQLException ex) {
       MessagePopup.warning(vue, "#moduleAjouter " + ex.getMessage());
     }
@@ -599,7 +595,8 @@ public class MemberEnrolment
       coursDlg = new CourseEnrolmentDlg(desktop, service, dossier.getId());
     }
     coursDlg.clear();
-    coursDlg.setCode(cc.getCode());
+//    coursDlg.setCode(cc.getCode());
+    coursDlg.setCourseInfo(cc.getCourseModuleInfo());
     try {
       coursDlg.loadEnrolment(cc);
     } catch (EnrolmentException ex) {
@@ -615,7 +612,7 @@ public class MemberEnrolment
       cc.setTitle(coursDlg.getField(3));
       cc.setDay(Integer.parseInt(coursDlg.getField(4)));
 
-      if (Course.ATP_CODE.equalsIgnoreCase(coursDlg.getCourse().getCode())) {
+      if (Course.ATP_CODE == coursDlg.getCourse().getCode()) {
         DateFr dfr = new DateFr(coursDlg.getField(7));
         cc.setDateStart(dfr);
         cc.setDateEnd(dfr);
@@ -842,15 +839,30 @@ public class MemberEnrolment
 
   private void addCourseInstrument(ModuleOrder cm, int duree) throws SQLException {
     CourseOrder cc = new CourseOrder();
-    cc.setAction(service.getIdAction("Inst"));
+    cc.setAction(service.getIdAction(Course.PRIVATE_INSTRUMENT_CODE));
     cc.setTitle(NONE);
     cc.setDay(0);//dimanche
     cc.setModule(cm.getModule());
     cc.setStart(new Hour("00:00"));
     cc.setEnd(new Hour(duree));
-    cc.setCode("Inst");
+//    cc.setCode(Course.PRIVATE_INSTRUMENT_CODE);
     cc.setDateStart(cm.getStart());
     cc.setDateEnd(cm.getEnd());
+    cc.setRoom(0);// salle à définir
+    vue.addCourse(cc);
+    commandes_cours.addElement(cc);
+  }
+  
+  private void addCourse(ModuleOrder mo, CourseModuleInfo cm) {
+    CourseOrder cc = new CourseOrder();
+    cc.setTitle(cm.getCode().getLabel());
+    cc.setDay(0);//dimanche
+    cc.setModule(cm.getIdModule());
+    cc.setStart(new Hour("00:00"));
+    cc.setEnd(new Hour(cm.getTimeLength()));
+    cc.setCourseModuleInfo(cm);
+    cc.setDateStart(mo.getStart());
+    cc.setDateEnd(mo.getEnd());
     cc.setRoom(0);// salle à définir
     vue.addCourse(cc);
     commandes_cours.addElement(cc);
@@ -868,9 +880,10 @@ public class MemberEnrolment
     if (duree < 100) {
       code = "0" + code;
     }
-    code = "AT" + code;
-    cc.setCode(code);
-    cc.setAction(service.getIdAction(code));
+//    code = "AT" + code;
+    
+//    cc.setCode(3);
+    cc.setAction(service.getIdAction(3));
     cc.setDateStart(cm.getStart());
     cc.setDateEnd(cm.getEnd());
     vue.addCourse(cc);
@@ -880,11 +893,11 @@ public class MemberEnrolment
   private void addFM(ModuleOrder cm) throws SQLException {
     String fmCode = "F.M.";
     CourseOrder cc = new CourseOrder();
-    cc.setAction(service.getIdAction(fmCode));
+    cc.setAction(service.getIdAction(2));
     cc.setTitle(NONE);
     cc.setDay(0);
     cc.setModule(cm.getModule());
-    cc.setCode(fmCode);
+//    cc.setCode(2);
     cc.setStart(new Hour("00:00"));
     cc.setEnd(new Hour("01:00"));
     cc.setDateStart(cm.getStart());
@@ -901,7 +914,7 @@ public class MemberEnrolment
     cc.setModule(cm.getModule());
     cc.setStart(new Hour("00:00"));
     cc.setEnd(new Hour("00:00"));
-    cc.setCode(Course.ATP_CODE);
+//    cc.setCode(Course.ATP_CODE);
     cc.setDateStart(cm.getStart());
     cc.setDateEnd(cm.getEnd());
     vue.addCourse(cc);

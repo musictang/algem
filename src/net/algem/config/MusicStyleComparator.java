@@ -1,5 +1,5 @@
 /*
- * @(#)MusicStyleComparator     2.0l 03/02/10 17:19
+ * @(#)MusicStyleComparator     2.8.a 18/03/13
  *
  * Copyright (c) 2009 Musiques Tangentes All Rights Reserved.
  *
@@ -25,15 +25,14 @@ import java.util.Comparator;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc</a>
+ * @version 2.8.a
  */
 public class MusicStyleComparator
-        implements Comparator
+        implements Comparator<MusicStyle>
 {
 
   @Override
-  public int compare(Object o1, Object o2) {
-    MusicStyle g1 = (MusicStyle) o1;
-    MusicStyle g2 = (MusicStyle) o2;
-    return g1.getLabel().compareTo(g2.getLabel());
+  public int compare(MusicStyle o1, MusicStyle o2) {
+    return o1.getLabel().compareTo(o2.getLabel());
   }
 }

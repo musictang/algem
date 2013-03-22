@@ -129,27 +129,27 @@ public class TestCourseScheduleCtrl
     assertEquals(new Hour("17:40"), la.get(la.size() - 1).getHourEnd());
   }
 
-  @Test
-  public void duration() {
-    Course c = new Course();
-    c.setCode("AT090");
-    c.setCollective(true);
-    assertTrue(90 == c.getLength());
-
-    c.setCode("AT");
-    assertTrue(60 == c.getLength());
-
-    c.setCode("F.M.");
-    assertTrue(60 == c.getLength());
-
-    c.setCode("FM");
-    assertTrue(0 == c.getLength());
-
-    c.setCode("AT006");
-    assertTrue(6 == c.getLength());
-
-    String code = "at123";
-    c.setCode(code);
-    assertEquals("123", code.substring(code.length() - 3));
-  }
+//  @Test
+//  public void duration() {
+//    Course c = new Course();
+//    c.setCode("AT090");
+//    c.setCollective(true);
+//    assertTrue(90 == c.getLength());
+//
+//    c.setCode("AT");
+//    assertTrue(60 == c.getLength());
+//
+//    c.setCode("F.M.");
+//    assertTrue(60 == c.getLength());
+//
+//    c.setCode("FM");
+//    assertTrue(0 == c.getLength());
+//
+//    c.setCode("AT006");
+//    assertTrue(6 == c.getLength());
+//
+//    String code = "at123";
+//    c.setCode(code);
+//    assertEquals("123", code.substring(code.length() - 3));
+//  }
 }

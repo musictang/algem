@@ -83,6 +83,7 @@ public class DataCache
   private static AgeRangeIO AGE_RANGE_IO;
   private static LevelIO LEVEL_IO;
   private static StatusIO STATUS_IO;
+  private static CourseCodeIO COURSE_CODE_IO;
   private static ActionIO ACTION_IO;
   private static UserIO USER_IO;
   private static ItemIO ITEM_IO;
@@ -111,6 +112,7 @@ public class DataCache
   private static GemList<Establishment> ESTAB_LIST;
   private static GemList<Account> ACCOUNT_LIST;
   private static GemList<Vat> VAT_LIST;
+  private static GemList<GemParam> COURSE_CODE_LIST;
    
   private Vector<Instrument> instruments;//TODO manage list
   private Vector<ModuleType> moduleType;
@@ -165,6 +167,7 @@ public class DataCache
     ACTION_IO = new ActionIO(dc);
     USER_IO = new UserIO(dc);
     ITEM_IO = new ItemIO(dc);
+    COURSE_CODE_IO = new CourseCodeIO(dc);
 
     loadMonthStmt = dc.prepareStatement("SELECT " + ScheduleIO.COLUMNS + " FROM planning p WHERE jour >= ? AND jour <= ? ORDER BY p.jour,p.debut");
     loadMonthRangeStmt = dc.prepareStatement(ScheduleRangeIO.getMonthRangeStmt());
@@ -241,6 +244,8 @@ public class DataCache
         return ACCOUNT_LIST;
       case Vat:
         return VAT_LIST;
+      case CourseCode:
+        return COURSE_CODE_LIST;
       default: return null;
     }
 
@@ -281,6 +286,8 @@ public class DataCache
         return LEVEL_IO;
       case Status:
         return STATUS_IO;
+      case CourseCode:
+        return COURSE_CODE_IO;
       case User:
         return USER_IO;
       default: return null;
@@ -364,7 +371,9 @@ public class DataCache
         return u != null ? u : USER_IO.findId(id);
       case Vat:
         return (Vat) VAT_LIST.getItem(id);
-
+      case CourseCode:
+        GemParam cc = (GemParam) COURSE_CODE_LIST.getItem(id);
+        return cc != null ? cc : COURSE_CODE_IO.find(id);
       default:
         return null;
     }
@@ -423,6 +432,8 @@ public class DataCache
       USER_CACHE.put(m.getId(), (User) m);
     } else if (m instanceof Vat) {
       VAT_LIST.addElement((Vat) m);
+    } else if (m instanceof CourseCode) {
+      COURSE_CODE_LIST.addElement((CourseCode) m);
     }
   }
   
@@ -477,6 +488,8 @@ public class DataCache
       ACTION_CACHE.put(m.getId(), (Action) m);
     } else if (m instanceof Vat) {
       VAT_LIST.update((Vat) m, null);
+    } else if (m instanceof CourseCode) {
+      COURSE_CODE_LIST.update((CourseCode) m, null);
     }
     
   }
@@ -516,6 +529,8 @@ public class DataCache
       USER_CACHE.remove(m.getId());
     } else if (m instanceof Vat) {
       VAT_LIST.removeElement((Vat) m);
+    } else if (m instanceof CourseCode) {
+      COURSE_CODE_LIST.removeElement((CourseCode) m);
     }
     
   }
@@ -524,12 +539,13 @@ public class DataCache
     System.out.println("DataCache.remoteEvent:" + _evt);
     switch (_evt.getType()) {
       case GemEvent.COURSE:
+        Course c = ((CourseEvent) _evt).getCourse();
         if (_evt.getOperation() == GemEvent.CREATION) {
-          add(((CourseCreateEvent) _evt).getCourse());
+          add(c);
         } else if (_evt.getOperation() == GemEvent.MODIFICATION) {
-          update(((CourseUpdateEvent) _evt).getCourse());
+          update(c);
         } else if (_evt.getOperation() == GemEvent.SUPPRESSION) {
-          remove(((CourseDeleteEvent) _evt).getCourse());
+          remove(c);
         }
         break;
       case GemEvent.CONTACT:
@@ -593,6 +609,10 @@ public class DataCache
         sync(_evt, (Level) _evt.getObject());
         break;
        
+     case GemEvent.COURSE_CODE:
+        sync(_evt, (CourseCode) _evt.getObject());
+        break;
+       
      case GemEvent.USER:
         sync(_evt, (User) _evt.getObject());
         break;
@@ -647,6 +667,8 @@ public class DataCache
       TEACHER_LIST = new GemList<Teacher>(TEACHER_IO.load());
 
       showMessage(frame, BundleUtil.getLabel("Modules.label"));
+      // important : before module
+      COURSE_CODE_LIST = new GemList<GemParam>(COURSE_CODE_IO.load());
       MODULE_LIST = new GemList<Module>(MODULE_IO.load());
       
       moduleType = ModuleTypeIO.find("ORDER BY code", dc);
@@ -657,6 +679,8 @@ public class DataCache
       
       showMessage(frame, BundleUtil.getLabel("Scheduling.label"));
       loadScheduleCache();
+      
+      
       
       showMessage(frame, BundleUtil.getLabel("Menu.style.label"));
       STYLE_LIST = new GemList<MusicStyle>(MUSIC_STYLE_IO.load());

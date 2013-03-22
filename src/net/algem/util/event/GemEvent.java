@@ -1,5 +1,5 @@
 /*
- * @(#)GemEvent.java	2.7.a 17/01/13
+ * @(#)GemEvent.java	2.8.a 15/03/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -26,7 +26,7 @@ package net.algem.util.event;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.a
  */
 public class GemEvent extends java.util.EventObject
 {
@@ -64,6 +64,7 @@ public class GemEvent extends java.util.EventObject
   public static final int ACCOUNT = 24;
   public static final int COST_ACCOUNT = 25;
   public static final int VAT = 26;
+  public static final int COURSE_CODE = 27;
   
   protected int operation;
   protected int type;

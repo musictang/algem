@@ -1,7 +1,7 @@
 /*
- * @(#)CourseSearchCtrl.java	2.7.f 07/02/13
+ * @(#)CourseSearchCtrl.java	2.8.a 19/03/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,9 +21,11 @@
 package net.algem.course;
 
 import java.awt.CardLayout;
+import java.awt.event.ActionEvent;
 import java.sql.SQLException;
 import java.util.Vector;
 import net.algem.util.DataCache;
+import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
 import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
@@ -34,7 +36,7 @@ import net.algem.util.ui.SearchCtrl;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.f
+ * @version 2.8.a
  * @since 1.0a 07/07/1999
  */
 public class CourseSearchCtrl
@@ -69,7 +71,7 @@ public class CourseSearchCtrl
 
 	@Override
   public void search() {
-    String query = "WHERE code != '"+Course.ATP_CODE+"'";
+    String query = "WHERE code != "+Course.ATP_CODE;
     String m;
 
     int id = getId();
@@ -80,7 +82,7 @@ public class CourseSearchCtrl
       query += " AND titre ~* '" + m.toUpperCase() + "'";
     } // recherche par type
     else if (null != (m = searchView.getField(2))) {
-      query += " AND code ~* '" + m + "'";
+      query += " AND code IN(SELECT id FROM module_type WHERE code ~* '" + m + "')";
     } else if (null != (m = searchView.getField(3))) {
       if (m.equals("t")) {
         query += " AND collectif = '" + m + "'";
@@ -103,6 +105,16 @@ public class CourseSearchCtrl
     } else {
       ((CardLayout) wCard.getLayout()).show(wCard, "liste");
       list.loadResult(v);
+    }
+  }
+    
+  @Override
+  public void actionPerformed(ActionEvent evt) {
+    if (GemCommand.CREATE_CMD.equals(evt.getActionCommand())) {
+      mask.loadCard(new Course());
+      ((CardLayout) wCard.getLayout()).show(wCard, "masque");
+    } else {
+      super.actionPerformed(evt);
     }
   }
 }

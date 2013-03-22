@@ -1,7 +1,7 @@
 /*
- * @(#)ModuleSearchView.java	2.6.a 17/09/12
+ * @(#)ModuleSearchView.java	2.8.a 15/03/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -31,7 +31,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.a
  * @since 1.0a 07/07/1999
  */
 public class ModuleSearchView
@@ -55,12 +55,12 @@ public class ModuleSearchView
     title = new GemField(30);
     title.addActionListener(this);
 
-    btCreate.setText("");
-    btCreate.setEnabled(false);
+    btCreate.setText(GemCommand.CREATE_CMD);
+    btCreate.setEnabled(true);
 
     btErase = new GemButton(GemCommand.ERASE_CMD);
     btErase.addActionListener(this);
-
+    
     mask = new GemPanel();
     mask.setLayout(new GridBagLayout());
 

@@ -1,7 +1,7 @@
 /*
- * @(#)CourseTableModel.java	2.6.a 17/09/12
+ * @(#)CourseTableModel.java	2.8.a 18/03/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,31 +20,28 @@
  */
 package net.algem.course;
 
-import net.algem.planning.Hour;
-import net.algem.planning.PlanningService;
+import java.sql.SQLException;
+import net.algem.config.GemParam;
 import net.algem.util.BundleUtil;
+import net.algem.util.DataCache;
+import net.algem.util.model.Model;
 import net.algem.util.ui.JTableModel;
 
 /**
- * 
+ *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.a
  */
 public class CourseTableModel
         extends JTableModel
 {
 
-  static String[] dayNames = PlanningService.WEEK_DAYS;
-
   public CourseTableModel() {
     header = new String[]{
-      "id",
+      BundleUtil.getLabel("Id.label"),
       BundleUtil.getLabel("Title.label"),
-      BundleUtil.getLabel("Type.label"), 
-      BundleUtil.getLabel("Day.label"),
-      BundleUtil.getLabel("Hour.start.label"), 
-      BundleUtil.getLabel("Hour.end.label")
+      BundleUtil.getLabel("Type.label")
     };
   }
 
@@ -54,7 +51,6 @@ public class CourseTableModel
     return p.getId();
   }
 
-  // TableModel Interface
   @Override
   public Class getColumnClass(int column) {
     switch (column) {
@@ -62,11 +58,7 @@ public class CourseTableModel
         return Integer.class;
       case 1:
       case 2:
-      case 3:
         return String.class;
-      case 4:
-      case 5:
-        return Hour.class;
       default:
         return Object.class;
     }
@@ -78,23 +70,19 @@ public class CourseTableModel
   }
 
   @Override
-  public Object getValueAt(int ligne, int colonne) {
-    Course c = (Course) tuples.elementAt(ligne);
-    switch (colonne) {
+  public Object getValueAt(int line, int col) {
+    Course c = (Course) tuples.elementAt(line);
+    switch (col) {
       case 0:
-        return new Integer(c.getId());
+        return c.getId();
       case 1:
         return c.getTitle();
       case 2:
-        return c.getCode();
-      /* TODOGEM
-      case 3:
-      return dayNames[c.getJour()+1];
-      case 4:
-      return c.getHeureDebut();
-      case 5:
-      return c.getHeureFin();
-       */
+        try {
+          return ((GemParam) DataCache.findId(c.getCode(), Model.CourseCode)).getLabel();
+        } catch (SQLException ex) {
+          return "";
+        }
     }
     return null;
   }

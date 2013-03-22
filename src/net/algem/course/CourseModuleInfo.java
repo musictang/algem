@@ -21,6 +21,8 @@
 
 package net.algem.course;
 
+import net.algem.config.GemParam;
+
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
@@ -32,18 +34,19 @@ public class CourseModuleInfo
   
   private int id;
   private int idModule;
-  private int code;
+  private int idCode;
   private int timeLength;
+  private GemParam code;
 
   public CourseModuleInfo() {
   }
 
-  public int getCode() {
-    return code;
+  public int getIdCode() {
+    return idCode;
   }
 
-  public void setCode(int code) {
-    this.code = code;
+  public void setIdCode(int code) {
+    this.idCode = code;
   }
 
   public int getId() {
@@ -68,6 +71,14 @@ public class CourseModuleInfo
 
   public void setTimeLength(int timeLength) {
     this.timeLength = timeLength;
+  }
+
+  public GemParam getCode() {
+    return code;
+  }
+
+  public void setCode(GemParam code) {
+    this.code = code;
   }
 
 }

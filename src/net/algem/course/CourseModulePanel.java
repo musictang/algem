@@ -29,6 +29,8 @@ import javax.swing.JLabel;
 import net.algem.contact.InfoPanel;
 import net.algem.planning.Hour;
 import net.algem.planning.HourField;
+import net.algem.util.BundleUtil;
+import net.algem.util.GemCommand;
 import net.algem.util.ui.ButtonRemove;
 import net.algem.util.ui.GridBagHelper;
 
@@ -42,18 +44,22 @@ public class CourseModulePanel
   extends InfoPanel 
 {
   private CourseModuleInfo info;
+  private HourField hf;
 
   public CourseModulePanel(CourseModuleInfo info, ActionListener listener) {
+    this.info = info;
     setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
-    gb.insets = GridBagHelper.SMALL_INSETS;
+    gb.insets = GridBagHelper.MEDIUM_INSETS;
 
-    HourField hf = new HourField(new Hour(info.getTimeLength()));
+    hf = new HourField(new Hour(info.getTimeLength()));
+    hf.setToolTipText(BundleUtil.getLabel("Course.length.tip"));
     
-//    JLabel jl = new JLabel(info.get);
-    JLabel jl = new JLabel();
+    JLabel jl = new JLabel(info.getCode().getLabel());
+
     jl.setPreferredSize(new Dimension(150, 10));
     ButtonRemove minus = new ButtonRemove(this);
+    minus.setToolTipText(GemCommand.DELETE_CMD);
     minus.addActionListener(listener);
     
     gb.add(Box.createVerticalStrut(4), 0, 0, 4, 1, GridBagHelper.WEST);
@@ -61,6 +67,11 @@ public class CourseModulePanel
     gb.add(hf, 2, 1, 1, 1);
     gb.add(minus, 3, 1, 1, 1, GridBagHelper.EAST);
     
+  }
+  
+  public CourseModuleInfo get() {
+    info.setTimeLength(hf.get().toMinutes());
+    return info;
   }
 
 }

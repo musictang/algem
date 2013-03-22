@@ -1,7 +1,7 @@
 /*
- * @(#)CourseListCtrl.java	2.6.a 17/09/12
+ * @(#)CourseListCtrl.java	2.8.a 18/03/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,6 +20,7 @@
  */
 package net.algem.course;
 
+import java.awt.BorderLayout;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.border.BevelBorder;
@@ -31,7 +32,7 @@ import net.algem.util.ui.ListCtrl;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.a
  */
 public class CourseListCtrl
         extends ListCtrl
@@ -44,16 +45,13 @@ public class CourseListCtrl
     jtable.setAutoCreateRowSorter(true);
 
     TableColumnModel cm = jtable.getColumnModel();
-    cm.getColumn(0).setPreferredWidth(40);
+    cm.getColumn(0).setPreferredWidth(25);
     cm.getColumn(1).setPreferredWidth(200);
-    cm.getColumn(2).setPreferredWidth(40);
-    cm.getColumn(3).setPreferredWidth(40);
-    cm.getColumn(4).setPreferredWidth(40);
-    cm.getColumn(5).setPreferredWidth(40);
+    cm.getColumn(2).setPreferredWidth(150);
 
     JScrollPane p = new JScrollPane(jtable);
     p.setBorder(new BevelBorder(BevelBorder.LOWERED));
 
-    add("Center", p);
+    add(p, BorderLayout.CENTER);
   }
 }

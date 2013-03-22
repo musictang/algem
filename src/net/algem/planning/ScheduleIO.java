@@ -387,21 +387,14 @@ public class ScheduleIO
     String query = "DELETE FROM " + TABLE
             + " WHERE jour >= '" + a.getDateStart() + "' AND jour <= '" + a.getDateEnd() + "'"
             + " AND action = " + a.getId();
-    /*+ " AND date_part('dow', day) = " + (a.getDay())
-    //+ "' and ptype=1 and action="+plan.getAction()
-    + " AND action=" + a.getCourse()
-    + " AND idper=" + a.getTeacher()
-    + " AND start='" + a.getHourStart()
-    + "' AND end='" + a.getHourEnd()
-    + "' AND place=" + a.getRoom();*/
     return query;
   }
 
   /**
    * Gets the number of schedule ranges for the planification  {@code a}.
    * 
-   * @param dc dataCache
    * @param a action
+   * @param dc dataConnection
    * @return a number of ranges (may be 0)
    * @throws SQLException
    */
@@ -410,12 +403,6 @@ public class ScheduleIO
     String query = "SELECT COUNT(pg.debut) AS nb_cours FROM " + ScheduleRangeIO.TABLE + " pg, " + TABLE + " p"
             + " WHERE pg.idplanning = p.id AND p.action = " + a.getId()
             + " AND p.jour >= '" + a.getDateStart() + "' AND p.jour <= '" + a.getDateEnd() + "'";
-    /*+ " WHERE day >= '" + a.getDateStart() + "' AND day <= '" + a.getDateEnd() + "'"
-    + " AND date_part('dow', day) = " + (a.getDay()) // lundi = 1 pour postgresql
-    + " AND cours=" + a.getCourse()
-    + " and prof=" + a.getTeacher()
-    + " AND start >='" + a.getHourStart() + "' AND end <='" + a.getHourEnd() + "'"
-    + " AND salle=" + a.getRoom();*/
     ResultSet rs = dc.executeQuery(query);
     if (rs.next()) {
       rows = rs.getInt("nb_cours");
@@ -424,12 +411,11 @@ public class ScheduleIO
   }
 
   /**
-   * Gets a result set listing start and end time of schedules
+   * Gets a result set listing start and end time of all schedules
    * which type, date and action equal to model {@code p}.
-   * 
-   * @param dc
-   * @param p model
-   * @return a résultset
+   * @param p schedule
+   * @param dc dataConnection
+   * @return a resultSet
    * @throws SQLException 
    */
   public static ResultSet getRSCourseRange(Schedule p, DataConnection dc) throws SQLException {

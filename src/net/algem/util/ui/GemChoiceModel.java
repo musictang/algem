@@ -100,7 +100,7 @@ public class GemChoiceModel
     }
     
   }
-
+  
   @Override
   public Object getSelectedItem() {
     return selected;

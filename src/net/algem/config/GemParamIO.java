@@ -1,5 +1,5 @@
 /*
- * @(#)GemParamIO.java 2.6.a 02/08/2012
+ * @(#)GemParamIO.java 2.8.a 15/03/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -30,7 +30,7 @@ import net.algem.util.model.TableIO;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.a
  * @since 2.5.a 05/07/12
  */
 public abstract class GemParamIO 
@@ -44,13 +44,13 @@ public abstract class GemParamIO
 
   public void insert(GemParam n) throws SQLException {
     int id = nextId(getSequence(), dc);
-    String query = "INSERT INTO " + getTable() + " VALUES(" + id + ",'" + n.getCode() + "','" + n.getLabel() + "')";
+    String query = "INSERT INTO " + getTable() + " VALUES(" + id + ",'" + n.getCode().trim() + "','" + n.getLabel().trim() + "')";
     dc.executeUpdate(query);
     n.setId(id);
   }
 
   public void update(GemParam n) throws SQLException {
-    String query = "UPDATE " + getTable() + " SET code = '" + n.getCode() + "', libelle='" + n.getLabel() + "' WHERE id = " + n.getId();
+    String query = "UPDATE " + getTable() + " SET code = '" + n.getCode().trim() + "', libelle='" + n.getLabel().trim() + "' WHERE id = " + n.getId();
     dc.executeUpdate(query);
   }
 

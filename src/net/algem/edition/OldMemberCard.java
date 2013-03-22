@@ -187,19 +187,19 @@ public class OldMemberCard
             jj = 1;
           }
           String lib = c.getLabel() + ", le " + journom[jj] + ", à " + cc.getStart() + " h";
-          if (c.getCode().equals("Inst")) {
+          if (c.getCode() == Course.PRIVATE_INSTRUMENT_CODE) {
             g.drawString(lib, 115, mpl + 0 + cpt1);
             cpt1 += 10;
-          } else if (c.getCode().startsWith("AT")
-                  || c.getCode().equals("Evei")) {
-            g.drawString(lib, 115, mpl + 40 + cpt2);
-            cpt2 += 10;
-          } else if (c.getCode().equals("F.M.")) {
-            g.drawString(lib, 115, mpl + 80 + cpt3);
-            cpt3 += 10;
-          } else if (c.getCode().equals("B.B.")
-                  || c.getCode().equals("AcRe")) {
-            g.drawString(lib, 115, mpl + 120 + cpt4);
+//          } else if (c.getCode().startsWith("AT")
+//                  || c.getCode().equals("Evei")) {
+//            g.drawString(lib, 115, mpl + 40 + cpt2);
+//            cpt2 += 10;
+//          } else if (c.getCode().equals("F.M.")) {
+//            g.drawString(lib, 115, mpl + 80 + cpt3);
+//            cpt3 += 10;
+//          } else if (c.getCode().equals("B.B.")
+//                  || c.getCode().equals("AcRe")) {
+//            g.drawString(lib, 115, mpl + 120 + cpt4);
             cpt4 += 10;
           }
         } catch (SQLException ex) {

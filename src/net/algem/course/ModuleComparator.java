@@ -1,7 +1,7 @@
 /*
- * @(#)ModuleComparator.java 2.5.a 03/07/12
+ * @(#)ModuleComparator.java 2.8.a 18/03/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,15 +27,13 @@ import java.util.Comparator;
  * The comparison applies to title.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.5.a
+ * @version 2.8.a
  * @since 2.0pc
  */
-public class ModuleComparator implements Comparator {
+public class ModuleComparator implements Comparator<Module> {
 
   @Override
-  public int compare(Object o1, Object o2) {
-    Module m1 = (Module) o1;
-    Module m2 = (Module) o2;
+  public int compare(Module m1, Module m2) {
     return m1.getTitle().compareTo(m2.getTitle());
   }
 }

@@ -1,7 +1,7 @@
 /*
- * @(#)ModuleSearchCtrl.java	2.7.a 26/11/12
+ * @(#)ModuleSearchCtrl.java	2.8.a 15/03/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,10 +21,12 @@
 package net.algem.course;
 
 import java.awt.CardLayout;
+import java.awt.event.ActionEvent;
 import java.sql.SQLException;
 import java.util.Vector;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
+import net.algem.util.GemCommand;
 import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.CardCtrl;
@@ -35,7 +37,7 @@ import net.algem.util.ui.SearchCtrl;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.a
  * @since 1.0a 07/07/1999
  */
 public class ModuleSearchCtrl
@@ -84,9 +86,9 @@ public class ModuleSearchCtrl
       query = "WHERE id = " + id;
     } //else if ((code = searchView.getField(1)) != null)	{
     else if (null != (code = searchView.getField(1))) {
-      query = "WHERE code ~ '" + code + "'";
+      query = "WHERE code ~* '" + code + "'";
     } else if ((nom = searchView.getField(2)) != null) {
-      query = "WHERE titre ~ '" + nom + "'";
+      query = "WHERE titre ~* '" + nom + "'";
     }
 
     query += " ORDER BY titre";
@@ -106,5 +108,15 @@ public class ModuleSearchCtrl
       list.loadResult(v);
     }
 
+  }
+  
+  @Override
+  public void actionPerformed(ActionEvent evt) {
+    if (GemCommand.CREATE_CMD.equals(evt.getActionCommand())) {
+      mask.loadCard(new Module());
+      ((CardLayout) wCard.getLayout()).show(wCard, "masque");
+    } else {
+      super.actionPerformed(evt);
+    }
   }
 }

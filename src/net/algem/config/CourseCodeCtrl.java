@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 import net.algem.course.CourseCode;
 import net.algem.util.GemLogger;
+import net.algem.util.event.GemEvent;
+import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
 
 /**
@@ -59,21 +61,24 @@ public class CourseCodeCtrl
   @Override
   public void load() {
     ccIO = new CourseCodeIO(dc);
-    try {
-      List<Param> codes = new ArrayList<Param>();
-      String query = "SELECT * FROM module_type ORDER BY id";
-      
-      ResultSet rs = dc.executeQuery(query);
-      while(rs.next()) {
-        CourseCode p = new CourseCode();
-        p.setId(rs.getInt(1));
-        p.setKey(rs.getString(2));
-        p.setValue(rs.getString(3));
+//    try {
+      List<GemParam> codes = desktop.getDataCache().getList(Model.CourseCode).getData();
+      for(GemParam p : codes) {
         table.addRow(p);
       }
-    } catch (SQLException ex) {
-      GemLogger.logException(ex);
-    }
+//      String query = "SELECT * FROM module_type ORDER BY id";
+//      
+//      ResultSet rs = dc.executeQuery(query);
+//      while(rs.next()) {
+//        CourseCode p = new CourseCode();
+//        p.setId(rs.getInt(1));
+//        p.setKey(rs.getString(2));
+//        p.setValue(rs.getString(3));
+//        table.addRow(p);
+//      }
+//    } catch (SQLException ex) {
+//      GemLogger.logException(ex);
+//    }
   }
 
   @Override
@@ -82,7 +87,7 @@ public class CourseCodeCtrl
       CourseCode cc = new CourseCode((GemParam) p);
       ccIO.update(cc);
       desktop.getDataCache().update(cc);
-//        desktop.postEvent(new GemEvent(this, GemEvent.MODIFICATION, GemEvent., level));
+      desktop.postEvent(new GemEvent(this, GemEvent.MODIFICATION, GemEvent.COURSE_CODE, cc));
       
     }
   }
@@ -93,6 +98,7 @@ public class CourseCodeCtrl
       CourseCode cc = new CourseCode((GemParam) p);
       ccIO.insert(cc);
       desktop.getDataCache().add(cc);
+      desktop.postEvent(new GemEvent(this, GemEvent.CREATION, GemEvent.COURSE_CODE, cc));
     }
   }
 
@@ -102,6 +108,7 @@ public class CourseCodeCtrl
       CourseCode cc = (CourseCode) p;
       ccIO.delete((CourseCode) p);
       desktop.getDataCache().remove(cc);
+      desktop.postEvent(new GemEvent(this, GemEvent.SUPPRESSION, GemEvent.COURSE_CODE, cc));
     }
   }
 

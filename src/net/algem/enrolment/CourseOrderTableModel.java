@@ -79,7 +79,7 @@ public class CourseOrderTableModel
     CourseOrder m = (CourseOrder) tuples.elementAt(ligne);
     switch (colonne) {
       case 0:
-        return m.getCode();
+        return m.getCourseModuleInfo().getCode().getLabel();
       case 1:
         return m.getTitle();
       case 2:

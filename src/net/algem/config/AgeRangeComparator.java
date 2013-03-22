@@ -1,5 +1,5 @@
 /*
- * @(#)AgeRangeComparator     2.7.a 10/01/13
+ * @(#)AgeRangeComparator     2.8.a 18/03/13
  *
  * Copyright (c) 2009 Musiques Tangentes All Rights Reserved.
  *
@@ -25,17 +25,18 @@ import java.util.Comparator;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc</a>
- * @version 2.7.a
+ * @version 2.8.a
  * @since 2.7.a 10/01/13
  */
 public class AgeRangeComparator
-        implements Comparator
+        implements Comparator<AgeRange>
 {
 
   @Override
-  public int compare(Object o1, Object o2) {
-    Integer a1 = ((AgeRange) o1).getAgemin();
-    Integer a2 = ((AgeRange) o1).getAgemax();
+  public int compare(AgeRange o1, AgeRange o2) {
+    Integer a1 = o1.getAgemin();
+    Integer a2 = o2.getAgemax();
     return a1.compareTo(a2);
   }
+  
 }

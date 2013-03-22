@@ -1,5 +1,5 @@
 /*
- * @(#)ModuleCtrl.java	2.7.a 26/11/12
+ * @(#)ModuleCtrl.java	2.8.a 15/03/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -22,9 +22,7 @@ package net.algem.course;
 
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
-import net.algem.util.DataCache;
-import net.algem.util.GemLogger;
-import net.algem.util.MessageUtil;
+import net.algem.util.*;
 import net.algem.util.event.GemEvent;
 import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
@@ -36,11 +34,12 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.a
  * @since 1.0a 07/07/1999
  */
 public class ModuleCtrl
-        extends CardCtrl {
+        extends CardCtrl
+{
 
   protected GemDesktop desktop;
   protected DataCache dataCache;
@@ -50,7 +49,8 @@ public class ModuleCtrl
   public ModuleCtrl(GemDesktop desktop) {
     this.desktop = desktop;
     dataCache = desktop.getDataCache();
-    view = new ModuleView();
+    view = new ModuleView(dataCache);
+
     addCard("Module", view);
     select(0);
   }
@@ -76,6 +76,14 @@ public class ModuleCtrl
   @Override
   public boolean prev() {
     switch (step) {
+      case 0:
+        try {
+          delete(view.get());
+        } catch (ModuleException ex) {
+          GemLogger.logException(ex);
+          return false;
+        }
+        break;
       default:
         select(step - 1);
         break;
@@ -89,7 +97,7 @@ public class ModuleCtrl
     Module m = view.get();
     try {
       if (isValid(m)) {
-       edit(m);
+        edit(m);
       }
     } catch (ModuleException e1) {
       MessagePopup.error(this, e1.getMessage());
@@ -102,6 +110,8 @@ public class ModuleCtrl
 
   public void clear() {
     view.clear();
+    //btPrev.setActionCommand(GemCommand.BACK_CMD);
+    btPrev.setEnabled(false);
   }
 
   @Override
@@ -114,6 +124,13 @@ public class ModuleCtrl
     module = (Module) o;
     try {
       view.set(module);
+
+      if (module.getId() > 0) {
+        btPrev.setText(GemCommand.DELETE_CMD);
+        btPrev.setActionCommand(GemCommand.DELETE_CMD);
+      } else {
+        btPrev.setText("");
+      }
       select(0);
     } catch (Exception e) {
       GemLogger.logException("lecture ficher module", e);
@@ -125,7 +142,7 @@ public class ModuleCtrl
   @Override
   public boolean loadId(int id) {
     try {
-      return loadCard(((ModuleIO)DataCache.getDao(Model.Module)).findId(id));
+      return loadCard(((ModuleIO) DataCache.getDao(Model.Module)).findId(id));
     } catch (SQLException ex) {
       System.err.println(ex.getMessage());
       return false;
@@ -133,15 +150,15 @@ public class ModuleCtrl
   }
 
   private boolean isValid(Module m) throws ModuleException {
-    if (getClass() == ModuleSearchDeleteCtrl.class) {
-      return true;
-    }
+//    if (getClass() == ModuleSearchDeleteCtrl.class) {
+//      return true;
+//    }
     String e = "";
     if (m.getCode().length() < 8) {
       e += MessageUtil.getMessage("invalid.module.code");
     }
     if (m.getTitle().length() < 1 || m.getTitle().length() > ModuleIO.TITLE_MAX_LEN) {
-      e += "\n" + MessageUtil.getMessage("invalid.name", new Object[] {1, ModuleIO.TITLE_MAX_LEN});
+      e += "\n" + MessageUtil.getMessage("invalid.name", new Object[]{1, ModuleIO.TITLE_MAX_LEN});
     }
     if (m.getBasePrice() < 0.0) {
       e += "\n" + MessageUtil.getMessage("invalid.module.price");
@@ -159,17 +176,52 @@ public class ModuleCtrl
   }
 
   protected void edit(Module m) throws ModuleException {
+
+    DataConnection dc = dataCache.getDataConnection();
     try {
-      ModuleService service = new ModuleService(dataCache.getDataConnection());
-      service.update(m);
-      dataCache.update(m);
-      desktop.postEvent(new ModuleEvent(this, GemEvent.MODIFICATION, m));
+      ModuleService service = new ModuleService(dc);
+      dc.setAutoCommit(false);
+      if (m.getId() == 0) {
+        service.create(m);
+        dataCache.add(m);
+        desktop.postEvent(new ModuleEvent(this, GemEvent.CREATION, m));
+        MessagePopup.information(this, MessageUtil.getMessage("create.info"));
+      } else {
+        service.update(m);
+        dataCache.update(m);
+        desktop.postEvent(new ModuleEvent(this, GemEvent.MODIFICATION, m));
+      }
+      dc.commit();
       if (actionListener != null) {
         actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "CtrlValider"));
       }
-      
     } catch (SQLException ex) {
-      throw new ModuleException("Update module : " + ex.getMessage());
+      dc.rollback();
+      throw new ModuleException("Edit module : " + ex.getMessage());
+    } finally {
+      dc.setAutoCommit(true);
+    }
+  }
+
+  private void delete(Module m) throws ModuleException {
+    DataConnection dc = dataCache.getDataConnection();
+    try {
+      dc.setAutoCommit(false);
+      ModuleService service = new ModuleService(dc);
+      service.delete(m);
+      dc.commit();
+      dataCache.remove(m);
+      desktop.postEvent(new ModuleEvent(this, GemEvent.SUPPRESSION, m));
+      MessagePopup.information(this, MessageUtil.getMessage("delete.info"));
+//      cancel();
+      if (actionListener != null) {
+        actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, GemCommand.NEW_SEARCH_CMD));
+      }
+    } catch (SQLException ex) {
+      dc.rollback();
+      throw new ModuleException("Edit module : " + ex.getMessage());
+    } finally {
+      dc.setAutoCommit(true);
     }
   }
 }

@@ -128,7 +128,7 @@ public class CourseOrderIO
         c.setDateStart(new DateFr(rs.getString(7)));
         c.setDateEnd(new DateFr(rs.getString(8)));
         c.setTitle(rs.getString(9));
-        c.setCode(rs.getString(10).trim());
+        c.setCode(rs.getInt(10));
         //c.setDay(rs.getInt(9));
 
         v.addElement(c);

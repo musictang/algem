@@ -1,5 +1,5 @@
 /*
- * @(#)ModuleIO.java 2.7.a 07/01/13
+ * @(#)ModuleIO.java 2.8.a 15/03/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -25,8 +25,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
+import net.algem.config.GemParam;
+import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 import net.algem.util.model.Cacheable;
+import net.algem.util.model.Model;
 import net.algem.util.model.TableIO;
 
 /**
@@ -34,7 +37,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.a
  */
 public class ModuleIO
         extends TableIO
@@ -49,7 +52,7 @@ public class ModuleIO
   public ModuleIO(DataConnection dc) {
     this.dc = dc;
   }
-  
+
   public void insert(Module m) throws SQLException {
 
     int n = nextId(SEQUENCE, dc);
@@ -66,6 +69,21 @@ public class ModuleIO
 
     int rsn = dc.executeUpdate(query);
     m.setId(n);
+    transInsert(m);
+
+  }
+  
+  private void transInsert(Module m) throws SQLException {
+    for (CourseModuleInfo cm : m.getCourses()) {
+      cm.setIdModule(m.getId());
+      String query = "INSERT INTO module_cours VALUES("
+              + cm.getId()
+              + ", " + cm.getIdModule()
+              + ", " + cm.getCode().getId()
+              + ", " + cm.getTimeLength()
+              + ")";
+      dc.executeUpdate(query);
+    }
   }
 
   public void update(Module m) throws SQLException {
@@ -79,10 +97,16 @@ public class ModuleIO
             + " WHERE id = " + m.getId();
 
     dc.executeUpdate(query);
+    query = "DELETE FROM module_cours WHERE idmodule = " + m.getId();
+    dc.executeUpdate(query);
+    transInsert(m);
   }
 
   public void delete(Module m) throws SQLException {
+    //TODO verifier la non utilisation du module dans les commandes cours
     String query = "DELETE FROM " + TABLE + " WHERE id = " + m.getId();
+    dc.executeUpdate(query);
+    query = "DELETE FROM module_cours WHERE idmodule = " + m.getId();
     dc.executeUpdate(query);
   }
 
@@ -114,15 +138,15 @@ public class ModuleIO
       m.setBasePrice(rs.getDouble(4)); // prixinst
       m.setMonthReducRate(rs.getDouble(5)); // taux de réduction prélèvement mensuel
       m.setQuarterReducRate(rs.getDouble(6)); // taux de réduction prélèvement trimestriel
-      
+
       m.setCourses(findCourses(m.getId()));
-      
+
       v.addElement(m);
     }
     rs.close();
     return v;
   }
-  
+
   private List<CourseModuleInfo> findCourses(int module) throws SQLException {
     List<CourseModuleInfo> courses = new ArrayList<CourseModuleInfo>();
     String query = "SELECT * FROM module_cours WHERE idmodule = " + module;
@@ -131,9 +155,10 @@ public class ModuleIO
       CourseModuleInfo info = new CourseModuleInfo();
       info.setId(rs.getShort(1));
       info.setIdModule(module);
-      info.setCode(rs.getInt(3));
+      info.setCode((GemParam) DataCache.findId(rs.getInt(3), Model.CourseCode));
+      //info.setIdCode(rs.getInt(3));
       info.setTimeLength(rs.getInt(4));
-      
+
       courses.add(info);
     }
     return courses;

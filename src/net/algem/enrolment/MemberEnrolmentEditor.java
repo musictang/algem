@@ -410,7 +410,7 @@ public class MemberEnrolmentEditor
     cc.setTitle(dlg.getField(3));
     cc.setDay(Integer.parseInt(dlg.getField(4)));
 
-    if (Course.ATP_CODE.equals(cc.getCode().trim())) {
+    if (Course.ATP_CODE == cc.getCode()) {
       DateFr d = new DateFr(dlg.getField(7));
       cc.setDateStart(d);
       cc.setDateEnd(d);

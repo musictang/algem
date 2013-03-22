@@ -1,7 +1,7 @@
 /*
- * @(#)TeacherComparator.java	2.7.a 26/11/12
+ * @(#)TeacherComparator.java	2.8.a 18/03/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -26,16 +26,15 @@ import java.util.Comparator;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.a
  * @since 2.7.a 26/11/2012
  */
 public class TeacherComparator
-  implements Comparator {
+  implements Comparator<Teacher> 
+{
 
   @Override
-  public int compare(Object o1, Object o2) {
-    Teacher t1 = (Teacher) o1;
-    Teacher t2 = (Teacher) o2;
+  public int compare(Teacher t1, Teacher t2) {
     return t1.toString().compareTo(t2.toString());
   }
 
