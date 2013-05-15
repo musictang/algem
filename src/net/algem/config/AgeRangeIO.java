@@ -1,5 +1,5 @@
 /*
- * @(#)AgeRangeIO.java 2.7.a 07/01/13
+ * @(#)AgeRangeIO.java 2.7.n 22/03/13
  *
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -33,7 +33,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:nicolasnouet@gmail.com">Nicolas Nouet</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.7.n
  * @since 2.3.a
  */
 public class AgeRangeIO 
@@ -86,7 +86,7 @@ public class AgeRangeIO
   }
 
   public boolean delete(int id) throws AgeRangeException {
-    if (id <= 1) {
+    if (id == 0) {
       return false;
     }
     try {

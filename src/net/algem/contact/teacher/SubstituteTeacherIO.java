@@ -56,7 +56,8 @@ public class SubstituteTeacherIO
     dc.executeUpdate(query);
   }
 
-  public static void update(SubstituteTeacher old, SubstituteTeacher r, DataConnection dc) throws SQLException {
+  public static void update(SubstituteTeacher old, SubstituteTeacher r, DataConnection dc) 
+          throws SQLException {
     String query = "UPDATE " + TABLE + " SET jours = '" + r.getDays()
             + "', id_etab = " + r.getEstablishment()
             + ", id_cours = " + r.getCourse().getId()

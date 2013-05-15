@@ -1,5 +1,5 @@
 /*
- * @(#)AgeRangeSearchCtrl.java 2.7.k 05/03/13
+ * @(#)AgeRangeSearchCtrl.java 2.7.n 22/03/13
  *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -37,7 +37,7 @@ import net.algem.util.ui.SearchCtrl;
  *
  * @author <a href="mailto:nicolasnouet@gmail.com">Nicolas Nouet</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.k
+ * @version 2.7.n
  * @since 2.3.a
  */
 public class AgeRangeSearchCtrl
@@ -76,14 +76,14 @@ public class AgeRangeSearchCtrl
       Vector<AgeRange> v = dao.find(query);
       if (v == null || v.isEmpty()) {
         setStatus(EMPTY_LIST);
-      } else if (v.size() == 1) {
+      } /*else if (v.size() == 1) {
         ((CardLayout) wCard.getLayout()).show(wCard, "masque");
         mask.loadCard(v.elementAt(0));
-      } else {
+      }*/ else {
         ((CardLayout) wCard.getLayout()).show(wCard, "liste");
         list.loadResult(v);
       }
-      ((CardLayout) wCard.getLayout()).show(wCard, "cherche");
+      //((CardLayout) wCard.getLayout()).show(wCard, "cherche");
     } catch (SQLException ex) {
       GemLogger.logException(ex);
     }
