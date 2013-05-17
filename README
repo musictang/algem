@@ -203,19 +203,14 @@ dans certains tests faisant appel aux DAO).
 
 EN PROJET
 =========
-- Procédure de démarrage, de mise à jour automatique et d'utilisation en ligne
- via Java Webstart.
-- Remaniement de la partie gestion de cours. 
-La création et la conception des modules (ensemble de cours soumis à un tarif)
-est à revoir. Il est impossible aujourd'hui d'ajouter autant de cours que l'on
-veut à un module. Les choix actuels sont trop restrictifs. L'ihm pour la
-création de modules, de cours et l'inscription proprement dite est encore trop
-peu intuitive.
+- Remaniement des tarifs pour les modules de cours.
+
+- Gestion des salariés (date et lieu de naissance, n° insee)
+
+- Gestion des stages (cours sur plusieurs jours d'affilée)
 
 - Exports comptables vers les logiciels de comptabilité Ciel Compta ou Sage.
 Actuellement, seul le logiciel DVLog PGI est pris en compte.
-
-- Gestion des stages (cours sur plusieurs jours d'affilée)
 
 - Rédaction d'une doc utilisateur
 
