@@ -1,7 +1,7 @@
 /*
- * @(#)AccountDocumentTransferView.java	2.7.a 05/12/12
+ * @(#)AccountDocumentTransferView.java	2.8.a 01/04/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -22,7 +22,7 @@ package net.algem.accounting;
 
 import javax.swing.JLabel;
 import net.algem.util.BundleUtil;
-import net.algem.util.DataConnection;
+import net.algem.util.DataCache;
 import net.algem.util.ui.GemField;
 import net.algem.util.ui.GridBagHelper;
 
@@ -31,7 +31,7 @@ import net.algem.util.ui.GridBagHelper;
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.a
  */
 public class AccountDocumentTransferView
         extends AccountTransferView
@@ -39,8 +39,8 @@ public class AccountDocumentTransferView
 
   private GemField document;
 
-  public AccountDocumentTransferView(DataConnection dc) {
-    super(dc);
+  public AccountDocumentTransferView(DataCache dataCache) {
+    super(dataCache);
     document = new GemField(8);
     gb.add(new JLabel(BundleUtil.getLabel("Document.number.label")), 0, 4, 1, 1, GridBagHelper.EAST);
     gb.add(document, 1, 4, 2, 1, GridBagHelper.WEST);

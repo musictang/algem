@@ -1,7 +1,7 @@
 /*
- * @(#)MemberCardService.java 2.7.e 01/02/13
+ * @(#)MemberCardService.java 2.8.a 19/04/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -35,6 +35,7 @@ import net.algem.course.Course;
 import net.algem.enrolment.CourseOrder;
 import net.algem.enrolment.Enrolment;
 import net.algem.planning.DateFr;
+import net.algem.planning.Hour;
 import net.algem.planning.PlanningService;
 import net.algem.planning.Schedule;
 import net.algem.util.DataCache;
@@ -48,7 +49,7 @@ import net.algem.util.module.GemDesktop;
  * Service class for member card edition.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.e
+ * @version 2.8.a
  * @since 2.4.a 16/05/12
  */
 public class MemberCardService
@@ -148,7 +149,7 @@ public class MemberCardService
   }
 
   /**
-   * Retrieves infos (teacher, week day) for the course followed up by member.
+   * Retrieves infos (teacher, week date) for the course followed up by member.
    * Search starts at the beginning of school year.
    * Initially, it started at the beginning of period.
    * The infos should be relative to first course in the year.
@@ -191,22 +192,22 @@ public class MemberCardService
 
   List<PlanningInfo> getPlanningInfo(PersonFile p) {
     List<PlanningInfo> infos = new ArrayList<PlanningInfo>();
-    List<CourseOrder> commandes = getCourseOrder(p);
-    if (commandes != null) {
-      for (CourseOrder cc : commandes) {
-        Course c = getCourse(cc);
+    List<CourseOrder> orders = getCourseOrder(p);
+    if (orders != null) {
+      for (CourseOrder co : orders) {
+        Course c = getCourse(co);
         if (c != null) {
-          String titre = c.getTitle();
-          int[] others = getInfos(cc.getAction(), p.getId());
-          String prof = getTeacher(others[0]);
-          String jour = getDay(others[1]);
-          String debut = cc.getStart().toString();
-          String fin = cc.getEnd().toString();
-          if ("00:00".equals(debut)) {
-            debut = "";
-            fin = "";
+          String title = c.getTitle();
+          int[] others = getInfos(co.getAction(), p.getId());
+          String teacher = getTeacher(others[0]);
+          String day = getDay(others[1]);
+          String start = co.getStart().toString();
+          String end = co.getEnd().toString();
+          if (Hour.NULL_HOUR.equals(start)) {
+            start = "";
+            end = "";
           }
-          PlanningInfo info = new PlanningInfo(titre, prof, jour, debut, fin);
+          PlanningInfo info = new PlanningInfo(title, teacher, day, start, end);
           infos.add(info);
         }
       }

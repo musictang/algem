@@ -1,7 +1,7 @@
 /*
- * @(#)MemberEnrolment.java	2.7.a 26/11/12
+ * @(#)MemberEnrolmentDlg.java	2.8.a 13/05/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -25,19 +25,15 @@ import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Vector;
-import net.algem.accounting.*;
-import net.algem.config.*;
+import net.algem.accounting.NullAccountException;
 import net.algem.contact.PersonFile;
 import net.algem.course.*;
 import net.algem.edition.MemberCardEditor;
 import net.algem.planning.DateFr;
 import net.algem.planning.Hour;
-import net.algem.planning.PlanningService;
 import net.algem.planning.editing.ModifPlanEvent;
-import net.algem.room.Room;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.GemLogger;
@@ -53,24 +49,26 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.a
  * @since 1.0a 07/07/1999
  * @see net.algem.contact.PersonFileEditor
  *
  */
-public class MemberEnrolment
+public class MemberEnrolmentDlg
         extends FileTabDialog
 {
 
+  static final String MODULE_ADD = BundleUtil.getLabel("Module.add.label");
+  static final String MODULE_MODIFY = BundleUtil.getLabel("Module.modify.label");
+  static final String MODULE_REMOVE = BundleUtil.getLabel("Module.remove.label");
+  static final String COURSE_MODIFY = BundleUtil.getLabel("Course.modification.label");
+  
   private final static int SESSIONS_MAX = 66;
-  /** Last month of debiting. */
-  private static int LAST_MONTH_PRL = 6;
-  private final static String NONE = MessageUtil.getMessage("none.info");
-  private EnrolmentView vue;
+  private EnrolmentView view;
+  
   /** Module order list. */
-  private Vector<ModuleOrder> modules;
-  /** Course order list. */
-  private Vector<CourseOrder> commandes_cours;
+  private Vector<ModuleOrder> module_orders;
+  
   private ModuleDlg moduleDlg;
   private CourseEnrolmentDlg coursDlg;
   private double totalBase = 0.0;
@@ -81,90 +79,88 @@ public class MemberEnrolment
   private ActionListener listener;
   private EnrolmentService service;
 
-  public MemberEnrolment(GemDesktop _desktop, ActionListener _listener, PersonFile _dossier) {
+  public MemberEnrolmentDlg(GemDesktop _desktop, ActionListener _listener, PersonFile _dossier) {
     super(_desktop);
     dossier = _dossier;
     listener = _listener;
     service = new EnrolmentService(desktop.getDataCache());
 
-    vue = new EnrolmentView();
-    vue.setMember(dossier.getContact());
-    vue.addActionListener(this);
+    view = new EnrolmentView();
+    view.setMember(dossier.getContact());
+    view.addActionListener(this);
 
-    modules = new Vector<ModuleOrder>();
-    commandes_cours = new Vector<CourseOrder>();
+    module_orders = new Vector<ModuleOrder>();
 
     setLayout(new BorderLayout());
-    add(vue, BorderLayout.CENTER);
+    add(view, BorderLayout.CENTER);
     add(buttons, BorderLayout.SOUTH);
   }
 
   @Override
   public void cancel() {
-    listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "AdherentInscription.Abandon"));
+    listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "MemberEnrolmentCancel"));
   }
 
   @Override
   public void validation() {
 
-    if (modules.isEmpty()) {
-      new ErrorDlg(this, "Inscription vide");
+    if (module_orders.isEmpty()) {
+      new ErrorDlg(this, MessageUtil.getMessage("enrolment.empty.list"));
       return;
     }
     try {
       // Vérification des modules
-      for (int i = 0; i < modules.size(); i++) {
-        ModuleOrder m = modules.elementAt(i);
+      for (int i = 0; i < module_orders.size(); i++) {
+        ModuleOrder m = module_orders.elementAt(i);
         Module mod = service.getModule(m.getModule());
         if (m.getModule() == 0 || mod == null) {// si module inexistant
-          new ErrorDlg(this, "Choix module incorrect");
+          new ErrorDlg(this, MessageUtil.getMessage("invalid.module.choice"));
           return;
         }
       }
-      PlanningService pService = new PlanningService(dc);
-
+      
       Date d = new Date();
-      Order cmd = new Order();
-      cmd.setMember(dossier.getId());
-      cmd.setPayer(dossier.getMember().getPayer());
-      cmd.setInvoice(null);
-      cmd.setCreation(new DateFr(d));
+      Order order = new Order();
+      order.setMember(dossier.getId());
+      order.setPayer(dossier.getMember().getPayer());
+      order.setInvoice(null);
+      order.setCreation(new DateFr(d));
       //insertion dans la table commande
       dc.setAutoCommit(false);
-      OrderIO.insert(cmd, dc);
+      service.create(order);
 
-      //Détermination de l'établissement et de l'école pour l'enregistrement des échéances
-      CourseOrder cc = commandes_cours.elementAt(0);
-      Room s = service.getRoom(cc.getRoom());//1.1da
-      int etablissement = s.getEstab();
-      Course c = pService.getCourseFromAction(cc.getAction());
-      int ecole = c.getSchool();
+      //Détermination de l'école pour l'enregistrement des échéances
+      int school = getSchool(module_orders.elementAt(0));
 
       ModuleOrder m = null;
 
-      //premier parcours de boucle pour détermine le prix total.
-      for (int i = 0; i < modules.size(); i++) {
-        m = modules.elementAt(i);
+      //premier parcours de boucle pour déterminer le prix total.
+      for (int i = 0; i < module_orders.size(); i++) {
+        m = module_orders.elementAt(i);
         totalBase += m.getPrice();
       }
-      /*
-       * enregistrement des modules
-       */
-      for (int i = 0; i < modules.size(); i++) {
-        m = modules.elementAt(i);
-        m.setId(cmd.getId());//récupération du numéro de commande
-        enregistreModule(m);
+      
+      // enregistrement des modules
+      for (int i = 0; i < module_orders.size(); i++) {
+        m = module_orders.elementAt(i);
+        m.setIdOrder(order.getId());//récupération du numéro de commande
+        saveModule(m);
         moduleCourant++;
       }
 
-      if (modules != null && modules.size() > 0 && maxCours > 0) {// ajout maxCours > 0 2.0pq
+      if (module_orders != null && module_orders.size() > 0 && maxCours > 0) {// ajout maxCours > 0 2.0pq
         try {
-          saveOrderLines(modules.elementAt(0), ecole, etablissement);
+          EnrolmentOrderUtil orderUtil = new EnrolmentOrderUtil(dossier, dc);
+          orderUtil.setTotalBase(totalBase);
+          int n = orderUtil.saveOrderLines(module_orders.elementAt(0), school);
+          for(ModuleOrder mo : module_orders) {
+            orderUtil.updateModuleOrder(n, mo);
+          }
         } catch (NullAccountException ne) {
-          MessagePopup.warning(vue, ne.getMessage());
+          MessagePopup.warning(view, ne.getMessage());
         }
       }
-      if (!MessagePopup.confirm(vue, msg.toString(), BundleUtil.getLabel("Confirmation.title"))) {
+      if (!MessagePopup.confirm(view, msg.toString(), BundleUtil.getLabel("Confirmation.title"))) {
         throw new SQLException("abandon");
       }
       dc.commit();
@@ -173,8 +169,9 @@ public class MemberEnrolment
       clear();
     } catch (SQLException e1) {
       dc.rollback();
+      resetIdModule();
       GemLogger.logException("Insertion inscription", e1);
-      MessagePopup.information(vue, MessageUtil.getMessage("enrolment.cancel.info"));
+      MessagePopup.information(view, MessageUtil.getMessage("enrolment.cancel.info"));
       return;
     } finally {
       dc.setAutoCommit(true);
@@ -182,11 +179,26 @@ public class MemberEnrolment
       moduleCourant = 0;
       maxCours = 0;
     }
-
-    listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "AdherentInscription.Validation"));
+    // print member's card
+    listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "MemberEnrolmentValidation"));
     MemberCardEditor ca = new MemberCardEditor(desktop, dossier);
     ca.edit();
 
+  }
+  
+  private void resetIdModule() {
+    for(int i = 0, size = module_orders.size(); i < size; i++) {
+      ModuleOrder mo = module_orders.elementAt(i);
+      mo.setId(i);
+    }
+  }
+  
+  private int getSchool(ModuleOrder mo) throws SQLException {
+    if (mo.getCourseOrders().isEmpty()) {
+      return 0;
+    }
+    Course c = planningService.getCourseFromAction(mo.getCourseOrders().get(0).getAction()); 
+    return c == null ? 0 : c.getSchool();
   }
 
   /**
@@ -195,247 +207,45 @@ public class MemberEnrolment
    * @param module
    * @throws java.lang.SQLException
    */
-  public void enregistreModule(ModuleOrder module) throws SQLException {
+  private void saveModule(ModuleOrder mo) throws SQLException {
 
-    int sessions = 0;
-
+    int sessions = 0; // le nombre de plages insérées (nombre de séances)
     //insertion dans la table commande_module
-    ModuleOrderIO.insert(module, dc);
+    service.create(mo);
 
-    //parcours des commandes_cours
-    for (int i = 0; i < commandes_cours.size(); i++) {
-
-      CourseOrder cc = commandes_cours.elementAt(i);
-      if (module.getModule() != cc.getModule()) {
-        continue; // on ne sélectionne que les commandes_cours appartenant au même module
-      }
-      cc.setIdOrder(module.getId());//id de la commande
-      // dates de début et de end  spécifiques pour les ateliers ?
+    for (CourseOrder co : mo.getCourseOrders()) {
+      co.setIdOrder(mo.getIdOrder());// mise à jour id de la commande
+      co.setModuleOrder(mo.getId());// mise à jour id de la commande module
+      // dates de début et de fin  spécifiques pour les ateliers ?
       //if (!cc.getCode().equals("ATP")) {
-      cc.setDateStart(module.getStart());
-      cc.setDateEnd(module.getEnd());
+      co.setDateStart(mo.getStart());
+      co.setDateEnd(mo.getEnd());
 
       //insertion dans la table commande_cours
-      CourseOrderIO.insert(cc, dc);
-
-      /*
-       * 2.0j : ajout conditionnel d'un atelier ponctuel supplementaire.
-       */
-      if (Course.ATP_CODE == cc.getCourseModuleInfo().getIdCode() && !"00:00".equals(cc.getStart().toString())) {
-        
-        CourseOrder cd = new CourseOrder();
-        cd.setIdOrder(cc.getIdOrder());
-        cd.setModule(cc.getModule());
-//        cd.setCode(Course.ATP_CODE);
-        cd.setAction(service.getIdAction(Course.ATP_CODE));
-        cd.setStart(new Hour("00:00:00"));
-        cd.setEnd(new Hour("02:00:00"));
-        cd.setDateStart(module.getStart());
-        cd.setDateEnd(module.getEnd());
-        CourseOrderIO.insert(cd, dc);
-      }
-      // le nombre de plages insérées (nombre de séances)
-      sessions = service.updateRange(module, cc, dossier.getId());
-      if (sessions > maxCours) {
-        maxCours = sessions;
-      }
-      if (maxCours > SESSIONS_MAX) {
-        maxCours = SESSIONS_MAX;
-      }
-    }// end parcours des commandes_cours
-
-  }//fin enregistreModule
-
-  /**
-   * Saves the order lines. 
-   * This depends on organization configuration. 
-   *
-   * @param moduleOrder
-   * @param schoolId
-   * @param estabId estab id
-   * @throws Exception
-   */
-  public void saveOrderLines(ModuleOrder moduleOrder, int schoolId, int estabId) throws SQLException, NullAccountException {
-
-    String label = "p" + dossier.getMember().getPayer() + " a" + dossier.getId();
-    ArrayList<OrderLine> orderLines = new ArrayList<OrderLine>();
-
-    Module f = ((ModuleIO) DataCache.getDao(Model.Module)).findId(moduleOrder.getModule());
-    // le payeur, le type de reglement et le numero d'inscription sont déjà récupérés par le constructeur
-    OrderLine e = new OrderLine(moduleOrder);
-    //numero adherent
-    e.setMember(dossier.getId());
-    //libelle
-    e.setLabel(label); // 1.2c
-    //compte et analytique
-    String analytics = "";
-
-    int key = 0;
-    if (f.isLeisure()) {
-      Preference p = AccountPrefIO.find(AccountPrefIO.LEISURE_KEY_PREF, dc);
-      key = (Integer) p.getValues()[0];
-      analytics = (String) p.getValues()[1];
-    } else if (f.isProfessional()) {
-      Preference p = AccountPrefIO.find(AccountPrefIO.PRO_KEY_PREF, dc);
-      key = (Integer) p.getValues()[0];
-      analytics = (String) p.getValues()[1];
-    }
-    Account p = AccountIO.find(key, dc);
-    e.setAccount(p);
-    Param a = ParamTableIO.findByKey(CostAccountCtrl.tableName, CostAccountCtrl.columnKey, analytics, dc);
-    if (a != null) {
-      e.setCostAccount(new Account(a));
-    } else {
-      throw new NullAccountException(MessageUtil.getMessage("no.default.cost.account"));
-    }
-    e.setCostAccount(new Account(a));
-
-    Param school = ParamTableIO.findByKey(SchoolCtrl.TABLE, SchoolCtrl.COLUMN_KEY, String.valueOf(schoolId), dc);
-    e.setSchool(school.getValue());
-    // ajout des lignes d'échéances
-    if (!ModeOfPayment.NUL.toString().equals(moduleOrder.getModeOfPayment())) {
-      if ("TRIM".equals(moduleOrder.getPayment())) { // echeance trimestrielle
-        orderLines = setQuarterOrderLines(moduleOrder, e);
-      } else if ("MOIS".equals(moduleOrder.getPayment())) {// echeance mensuelle
-        orderLines = setMonthOrderLines(moduleOrder, e);
-      } else { // (ANNUEL)
-        e.setAmount(AccountUtil.getIntValue(totalBase));
-        DateFr de = moduleOrder.getStart();
-        de.incMonth(1);
-        de.setDay(15);
-        e.setDate(de);
-        //insertion echeances
-        orderLines.add(e);
-      }
+      service.create(co);
+      sessions = service.updateRange(mo, co, dossier.getId());
     }
 
-    for (OrderLine ol : orderLines) {
-      AccountUtil.createEntry(ol, dc);
+    if (sessions > maxCours) {
+      maxCours = sessions;
     }
-    //mise à jour nombre d'échéances dans commande_module
-    if (orderLines.size() > 0) {
-      Vector<ModuleOrder> cmv = ModuleOrderIO.findId(moduleOrder.getId(), dc);
-      if (!cmv.isEmpty()) {
-        ModuleOrder cm = cmv.elementAt(0);
-        cm.setNOrderLines(orderLines.size());
-        ModuleOrderIO.update(cm, dc);
-      }
+    if (maxCours > SESSIONS_MAX) {
+      maxCours = SESSIONS_MAX;
     }
-
-  } //fin saveOrderLines
-
-  /**
-   *
-   * @param module
-   * @param e
-   * @return a list of order lines
-   */
-  public ArrayList<OrderLine> setQuarterOrderLines(ModuleOrder module, OrderLine e) {
-    ArrayList<OrderLine> orderLines = new ArrayList<OrderLine>();
-    Vector<DateFr> dates = getOrderQuarterDates(module.getStart(), module.getEnd());
-    int firstDocumentNumber = 0;
-    try {
-      firstDocumentNumber = Integer.parseInt(ConfigUtil.getConf(ConfigKey.ACCOUNTING_DOCUMENT_NUMBER.getKey(), dc));
-    } catch (NumberFormatException nfe) {
-      System.err.println(getClass().getName() + "#setEcheancesTrim " + nfe.getMessage());
-    }
-
-    int documentNumber = firstDocumentNumber;
-    /* int nombreEcheances = 0; if (echeances != null) { nombreEcheances =
-     * echeances.size();
-		} */
-
-
-    // DESACTIVATION CALCUL PRORATA
-    // double montantPremiereEcheance = calcFirstOrderLineAmount(totalBase, maxCours, nombreEcheances, "TRIM");
-    // e.setAmount(AccountUtil.getIntValue(montantPremiereEcheance));
-    e.setAmount(AccountUtil.getIntValue(totalBase));
-    e.setDate((DateFr) dates.elementAt(0));
-    if (module.getModeOfPayment().equals("PRL")) {
-      documentNumber = calcDocumentNumber(firstDocumentNumber, ((DateFr) dates.elementAt(0)).getMonth());
-      e.setDocument("PRL" + String.valueOf(documentNumber));
-    } else {
-      e.setDocument(module.getModeOfPayment() + 1);// pas nécessaire
-    }
-    orderLines.add(new OrderLine(e));
-    for (int i = 1; i < dates.size(); i++) {
-      //libelle numero piece
-      if (module.getModeOfPayment().equals("PRL")) {
-        documentNumber = calcDocumentNumber(firstDocumentNumber, ((DateFr) dates.elementAt(i)).getMonth());
-        e.setDocument("PRL" + String.valueOf(documentNumber));
-      } else {
-        e.setDocument(module.getModeOfPayment() + (i + 1));
-      }
-      e.setAmount(AccountUtil.getIntValue(totalBase));
-      e.setDate((DateFr) dates.elementAt(i));
-      orderLines.add(new OrderLine(e));
-    }
-    return orderLines;
-  }
-
-  /**
-   *
-   * @param module
-   * @param e
-   * @return a list of order lines
-   */
-  public ArrayList<OrderLine> setMonthOrderLines(ModuleOrder module, OrderLine e) {
-    ArrayList<OrderLine> orderLines = new ArrayList<OrderLine>();
-    Vector<DateFr> orderDates = getOrderMonthDates(module.getStart(), module.getEnd());
-    int firstDocumentNumber = 0;
-    try {
-      firstDocumentNumber = Integer.parseInt(ConfigUtil.getConf(ConfigKey.ACCOUNTING_DOCUMENT_NUMBER.getKey(), dc));
-    } catch (NumberFormatException ne) {
-      System.err.println("Format Numero.piece " + ne.getMessage());
-    }
-    int documentNumber = firstDocumentNumber;
-    int orderLinesNumber = 0;
-    if (orderDates != null) {
-      orderLinesNumber = orderDates.size();
-    }
-    // DESACTIVATION CALCUL PRORATA
-//		double montantPremiereEcheance = calcFirstOrderLineAmount(totalBase, maxCours, nombreEcheances, "MOIS");
-//		e.setAmount(AccountUtil.getIntValue(montantPremiereEcheance));
-
-    e.setAmount(AccountUtil.getIntValue(totalBase));
-    e.setDate(orderDates.elementAt(0));
-    documentNumber = calcDocumentNumber(firstDocumentNumber, ((DateFr) orderDates.elementAt(0)).getMonth());
-    if ("PRL".equals(module.getModeOfPayment())) {
-      e.setDocument("PRL" + String.valueOf(documentNumber));
-    } else {
-      e.setDocument(module.getModeOfPayment() + 1);
-    }
-    orderLines.add(new OrderLine(e));
-
-    for (int i = 1; i < orderLinesNumber; i++) {
-      e.setAmount(AccountUtil.getIntValue(totalBase));
-      e.setDate((DateFr) orderDates.elementAt(i));
-      if ("PRL".equals(module.getModeOfPayment())) {
-        documentNumber = calcDocumentNumber(firstDocumentNumber, ((DateFr) orderDates.elementAt(i)).getMonth());
-        e.setDocument("PRL" + String.valueOf(documentNumber));
-      } else {
-        e.setDocument(module.getModeOfPayment() + (i + 1));
-      }
-      orderLines.add(new OrderLine(e));
-    }
-    return orderLines;
   }
 
   /**
    * Reset.
    */
   public void clear() {
-    vue.clear();
-    modules = new Vector<ModuleOrder>();
-    commandes_cours = new Vector<CourseOrder>();
-    //if (moduleDlg != null)
-    //	moduleDlg.clear();
+    view.clear();
+    module_orders = new Vector<ModuleOrder>();
   }
 
   public void load(PersonFile d) {
     clear();
     dossier = d;
-    vue.setMember(d.getContact());
+    view.setMember(d.getContact());
   }
 
   @Override
@@ -450,42 +260,23 @@ public class MemberEnrolment
 
   @Override
   public void actionPerformed(ActionEvent e) {
-    if (e.getActionCommand().equals("Ajouter Module")) {
+    if (e.getActionCommand().equals(MODULE_ADD)) {
       addModule();
-    } else if (e.getActionCommand().equals("Enlever Module")) {
-      removeModule();
-    } else if (e.getActionCommand().equals("Modification Cours")) {
-      modifyCourse();
-    } else if (e.getActionCommand().equals("Modifier Module")) {
+    } else if (e.getActionCommand().equals(MODULE_MODIFY)) {
       modifyModule();
-    } else {
+    } else if (e.getActionCommand().equals(MODULE_REMOVE)) {
+      removeModule();
+    } else if (e.getActionCommand().equals(COURSE_MODIFY)) {
+      modifyCourse();
+    }  else {
       super.actionPerformed(e);
-    }
-  }
-
-  public void removeModule() {
-    int n = vue.getSelectedModule();
-    if (n < 0) {
-      return;
-    }
-
-    ModuleOrder cm = modules.elementAt(n);
-    modules.removeElementAt(n);
-    vue.removeModule(n);
-
-    for (int i = commandes_cours.size() - 1; i >= 0; i--) {
-      CourseOrder cc = commandes_cours.elementAt(i);
-      if (cc.getModule() == cm.getModule()) {
-        vue.removeCourse(i);
-        commandes_cours.removeElementAt(i);
-      }
     }
   }
 
   /**
    * Adds a module.
    */
-  public void addModule() {
+  void addModule() {
     try {
       if (moduleDlg == null) {
         moduleDlg = new ModuleDlg(this, dossier, service, dataCache);
@@ -495,307 +286,127 @@ public class MemberEnrolment
         return;
       }
       int idModule = Integer.parseInt(moduleDlg.getField(0));
-      if (alreadySelectedModule(idModule)) {
-        MessagePopup.warning(null, MessageUtil.getMessage("module.already.selected", new Object[]{idModule}));
-        return;
-      }
-      ModuleOrder cm = new ModuleOrder();
-
+      // Un même module peut être sélectionné plusieurs fois à partir de la version 2.8
+//      if (alreadySelectedModule(idModule)) {
+//        MessagePopup.warning(null, MessageUtil.getMessage("module.already.selected", idModule));
+//        return;
+//      }
+      
+      ModuleOrder mo = new ModuleOrder();
+      
       Module m = ((ModuleIO) DataCache.getDao(Model.Module)).findId(idModule);
-      addModule(cm, m);
+      addModule(mo, m);
 
-      int duree = 0;
-for(CourseModuleInfo info : m.getCourses()) {
-  addCourse(cm, info);
-}
-      // ajout des commandes_cours d'instrument
-
-      /*if ((duree = m.getInstrumentDuration()) > 0) {
-        addCourseInstrument(cm, duree);
+      for (CourseModuleInfo info : m.getCourses()) {
+        addCourse(mo, info);
       }
-
-      // ajout des commandes_cours collectifs
-      // TODO list AT type
-      if ((duree = m.getWorkshopDuration()) > 0) {
-        addCourseCo(cm, duree);
-      }
-
-      // ajout des ateliers découverte
-      if (m.withSelectiveWorkshop()) {
-        addWorkshop(cm);
-      }
-
-      // ajout des commandes_cours collectifs de formation musicale
-      if (m.withMusicalFormation()) {
-        addFM(cm);
-      }*/
     } catch (SQLException ex) {
-      MessagePopup.warning(vue, "#moduleAjouter " + ex.getMessage());
+      MessagePopup.warning(view, "#addModule " + ex.getMessage());
     }
   }// end addModule
 
-  public void modifyModule() {
-    int n = vue.getSelectedModule();
+  /**
+   * Adds a module.
+   *
+   * @param mo module order
+   * @param m module
+   */
+  private void addModule(ModuleOrder mo, Module m) {
+
+    mo.setTitle(m.getTitle());
+    mo.setPayer(dossier.getMember().getPayer());
+    mo.setModule(m.getId());
+    mo.setSelectedModule(Integer.parseInt(moduleDlg.getField(7)));
+    mo.setStart(new DateFr(moduleDlg.getField(2)));
+    mo.setEnd(new DateFr(moduleDlg.getField(3)));
+    mo.setPrice(Double.parseDouble(moduleDlg.getField(4)));
+    mo.setModeOfPayment(moduleDlg.getField(5));
+    mo.setPayment(moduleDlg.getField(6));
+    mo.setNOrderLines(1);
+    mo.setId(module_orders.size());// id temporaire
+    view.addModule(mo);
+    
+    module_orders.addElement(mo);
+  }
+
+  private void modifyModule() {
+    int n = view.getSelectedModule();
     if (n < 0) {
       return;
     }
 
     setCursor(new Cursor(Cursor.WAIT_CURSOR));
 
-    ModuleOrder cm = (ModuleOrder) modules.elementAt(n);
-
+    ModuleOrder mo = (ModuleOrder) module_orders.elementAt(n);
+    int oldModule = mo.getModule();
     if (moduleDlg == null) {
       try {
         moduleDlg = new ModuleDlg(this, dossier, service, dataCache);
       } catch (SQLException ex) {
-        GemLogger.log(getClass().getName(), "moduleModif", ex);
+        GemLogger.log(getClass().getName(), "modifyModule", ex);
         return;
       }
     }
 
-    moduleDlg.setField(0, String.valueOf(cm.getModule()));
-    moduleDlg.setField(2, cm.getStart().toString());
-    moduleDlg.setField(3, cm.getEnd().toString());
-    moduleDlg.setField(4, String.valueOf(cm.getPrice()));
-    moduleDlg.setField(5, cm.getModeOfPayment());
-    moduleDlg.setField(6, cm.getPayment());
-    moduleDlg.setField(7, String.valueOf(cm.getSelectedModule()));
+    moduleDlg.setField(0, String.valueOf(mo.getModule()));
+    moduleDlg.setField(2, mo.getStart().toString());
+    moduleDlg.setField(3, mo.getEnd().toString());
+    moduleDlg.setField(4, String.valueOf(mo.getPrice()));
+    moduleDlg.setField(5, mo.getModeOfPayment());
+    moduleDlg.setField(6, mo.getPayment());
+    moduleDlg.setField(7, String.valueOf(mo.getSelectedModule()));
 
     setCursor(Cursor.getDefaultCursor());
 
     moduleDlg.show();
     if (moduleDlg.isValidation()) {
-      cm.setModule(Integer.parseInt(moduleDlg.getField(0)));
-      cm.setSelectedModule(Integer.parseInt(moduleDlg.getField(7)));
-      cm.setTitle(moduleDlg.getField(1));
-      cm.setStart(new DateFr(moduleDlg.getField(2)));
-      cm.setEnd(new DateFr(moduleDlg.getField(3)));
-      cm.setPrice(Double.parseDouble(moduleDlg.getField(4)));
-      cm.setModeOfPayment(moduleDlg.getField(5));
-      cm.setPayment(moduleDlg.getField(6));
-      vue.changeModule(n, cm);
+      mo.setModule(Integer.parseInt(moduleDlg.getField(0)));
+      mo.setSelectedModule(Integer.parseInt(moduleDlg.getField(7)));
+      mo.setTitle(moduleDlg.getField(1));
+      mo.setStart(new DateFr(moduleDlg.getField(2)));
+      mo.setEnd(new DateFr(moduleDlg.getField(3)));
+      mo.setPrice(Double.parseDouble(moduleDlg.getField(4)));
+      mo.setModeOfPayment(moduleDlg.getField(5));
+      mo.setPayment(moduleDlg.getField(6));
+      view.changeModule(n, mo);
+      
+      if (mo.getModule() != oldModule) {
+        for(CourseOrder co : mo.getCourseOrders()) {
+          view.remove(co);
+        }
+        mo.getCourseOrders().clear();
+        try {
+          Module m = ((ModuleIO) DataCache.getDao(Model.Module)).findId(mo.getModule());
+          if (m != null) {
+            for (CourseModuleInfo info : m.getCourses()) {
+              addCourse(mo, info);
+            }
+          }
+        } catch (SQLException ex) {
+          GemLogger.logException(ex);
+        }
+      } else {
+        for(CourseOrder co : mo.getCourseOrders()) {
+          co.setDateStart(mo.getStart());
+          co.setDateEnd(mo.getEnd());
+        }
+      }
     }
   }
 
-  /**
-   * Opens the dialog for course order modification.
-   */
-  public void modifyCourse() {
-    int n = vue.getSelectedCourse();// le commandes_cours selectionné
+  private void removeModule() {
+    int n = view.getSelectedModule();
     if (n < 0) {
       return;
     }
-    Hour start = null;
 
-    setCursor(new Cursor(Cursor.WAIT_CURSOR));
-
-    CourseOrder cc = commandes_cours.elementAt(n);
-
-    if (coursDlg == null) {
-      coursDlg = new CourseEnrolmentDlg(desktop, service, dossier.getId());
+    ModuleOrder mo = module_orders.elementAt(n);
+    module_orders.removeElementAt(n);
+    view.removeModule(n);
+    for(CourseOrder co : mo.getCourseOrders()) {
+      view.remove(co);
     }
-    coursDlg.clear();
-//    coursDlg.setCode(cc.getCode());
-    coursDlg.setCourseInfo(cc.getCourseModuleInfo());
-    try {
-      coursDlg.loadEnrolment(cc);
-    } catch (EnrolmentException ex) {
-      MessagePopup.warning(vue, ex.getMessage());
-      setCursor(Cursor.getDefaultCursor());
-      return;
-    }
-    setCursor(Cursor.getDefaultCursor());
-    coursDlg.entry();
-    if (coursDlg.isValid()) {
-      cc.setModule(Integer.parseInt(coursDlg.getField(1)));
-      cc.setAction(Integer.parseInt(coursDlg.getField(2)));
-      cc.setTitle(coursDlg.getField(3));
-      cc.setDay(Integer.parseInt(coursDlg.getField(4)));
-
-      if (Course.ATP_CODE == coursDlg.getCourse().getCode()) {
-        DateFr dfr = new DateFr(coursDlg.getField(7));
-        cc.setDateStart(dfr);
-        cc.setDateEnd(dfr);
-      }
-
-      start = new Hour(coursDlg.getField(5));
-      Hour du = new Hour(coursDlg.getField(6));
-      cc.setStart(start);
-      cc.setEnd(start.end(du.toMinutes()));
-
-      cc.setRoom(coursDlg.getRoomId()); // modification de la salle
-      vue.changeCourse(n, cc);
-    }
-  }
-
-  @Override
-  public String toString() {
-    return getClass().getSimpleName() + " " + dossier.getId();
-  }
-
-  /**
-   * Gets a list of dates for quarterly payment.
-   *
-   * @param orderDateStart
-   * @param orderDateEnd
-   * @return a list of dates
-   */
-  public static Vector<DateFr> getOrderQuarterDates(DateFr orderDateStart, DateFr orderDateEnd) {
-    Vector<DateFr> dates = new Vector<DateFr>();
-    boolean inc = false;
-    int nbMonths = 0;
-    int nbOrderLines = 0;
-
-    DateFr firstOrderLine = new DateFr(orderDateStart);
-    firstOrderLine.setDay(15);
-
-    int orderStartMonth = orderDateStart.getMonth();
-    //System.out.println("1 date 1ere echeance " + firstOrderLine);
-    // on incrémente d'un mois, passé le 10 du mois ou si mois de septembre
-    if (orderDateStart.getDay() > 10 || orderStartMonth == 9) {
-      firstOrderLine.incMonth(1);
-      inc = true;
-    }
-    dates.add(new DateFr(firstOrderLine));
-    if (inc && orderStartMonth != 9 && orderStartMonth != 12 && orderStartMonth != 3) {
-      //nbMois = calcNumberOfMonths(moisDebutCommande, dateFinCommande.getMonth());
-      nbMonths = calcNumberOfMonths(orderDateStart, orderDateEnd);
-    } else {
-      //nbMois = calcNumberOfMonths(premiereEcheance.getMonth(), dateFinCommande.getMonth());
-      nbMonths = calcNumberOfMonths(firstOrderLine, orderDateEnd);// premiere echeance
-    }
-    if (nbMonths <= 3) {
-      nbOrderLines = 1;
-    } else if (nbMonths <= 6) {
-      nbOrderLines = 2;
-    } else {
-      nbOrderLines = 3;
-    }
-    //System.out.println("nombre echeances trimestre: " + nbOrderLines);
-    // ajout des échéances
-    for (int i = 1; i < nbOrderLines; i++) {
-      switch (firstOrderLine.getMonth()) {
-        case 10:
-        case 1:
-        case 4:
-          firstOrderLine.incMonth(3);
-          break;
-        case 11:
-        case 2:
-          firstOrderLine.incMonth(2);
-          break;
-        case 12:
-        case 3:
-          firstOrderLine.incMonth(1);
-          break;
-      }
-      dates.add(new DateFr(firstOrderLine));
-    }
-    return dates;
-  }
-
-  public static Vector<DateFr> getOrderMonthDates(DateFr startOrderDate, DateFr endOrderDate) {
-    Vector<DateFr> dates = new Vector<DateFr>();
-
-    int n = 0;
-    DateFr firstOrderLine = new DateFr(startOrderDate);
-    firstOrderLine.setDay(15);
-    /*
-     * int jourDebutCommande = dateDebutCommande.getDay(); int moisDebutCommande
-     * = dateDebutCommande.getMonth();
-     */
-
-    if (startOrderDate.getDay() > 10 || startOrderDate.getMonth() == 9) {
-      firstOrderLine.incMonth(1);
-    }
-    dates.add(new DateFr(firstOrderLine));
-
-    n = calcNumberOfMonths(firstOrderLine, endOrderDate);
-    for (int i = 1; i < n; i++) {
-      firstOrderLine.incMonth(1);
-      dates.add(new DateFr(firstOrderLine));
-    }
-
-    return dates;
-  }
-
-  /**
-   *
-   * @param total montant période
-   * @param maxSessions nombre de séances
-   * @param nbOrderLines nombre d'échéances
-   * @param type périodicité des échéances
-   * @return un double
-   */
-  public static double calcFirstOrderLineAmount(double total, int maxSessions, int nbOrderLines, String type) {
-
-    double fistAmount = total;
-    double sessionPrice = 0.0;
-
-    if (type.equals("TRIM")) {
-      sessionPrice = total / 11; // 11 séances par trimestre
-    } else {
-      sessionPrice = ((total * 3) / 11);
-    }
-
-    if (nbOrderLines > 0) {
-      if (maxSessions > 0) {
-        // au prorata du nombre de commandes_cours effectifs
-        // (prixSeance * maxCours) supposé supérieur à (total * (necheances - 1)
-        fistAmount = (sessionPrice * maxSessions) - (total * (nbOrderLines - 1));
-      }
-    } else {
-      fistAmount = 0.0;
-    }
-
-    return fistAmount;
-  }
-
-  /**
-   * Calculates an intervall between two months.
-   *
-   * @param monthStart
-   * @param monthEnd
-   * @return an integer
-   */
-  public static int calcNumberOfMonths(int monthStart, int monthEnd) {
-    if (monthEnd > MemberEnrolment.LAST_MONTH_PRL && monthEnd < 9) {
-      monthEnd = MemberEnrolment.LAST_MONTH_PRL;
-    }
-    if (monthStart > monthEnd) {
-      return monthEnd + (13 - monthStart);
-    } else {
-      return Math.abs((monthEnd - monthStart)) + 1;
-    }
-  }
-
-  public static int calcNumberOfMonths(DateFr deb, DateFr fin) {
-    DateFr d = new DateFr(deb);
-    DateFr f = new DateFr(fin);
-    if (d.getMonth() == f.getMonth()) {
-      return 1;
-    }
-    int m = 0;
-    while (d.compareTo(f) <= 0) {
-      m++;
-      d.incMonth(1);
-    }
-    return m;
-  }
-
-  /**
-   * Calculates the document number for debiting.
-   *
-   * @param month first month
-   * @return
-   */
-  private static int calcDocumentNumber(int num, int month) {
-    int number = num;
-    if (month >= 9 && month <= 12) {
-      return number + (month - 10);
-    } else {
-      return number + 2 + month;
-    }
+    mo.getCourseOrders().clear();
   }
 
   /**
@@ -803,9 +414,10 @@ for(CourseModuleInfo info : m.getCourses()) {
    *
    * @param id module id
    * @return true if module exists
+   * @deprecated from 2.8.a
    */
   private boolean alreadySelectedModule(int id) {
-    for (ModuleOrder cmd : modules) {
+    for (ModuleOrder cmd : module_orders) {
       if (cmd.getModule() == id) {
         return true;
       }
@@ -813,111 +425,78 @@ for(CourseModuleInfo info : m.getCourses()) {
     return false;
   }
 
-  /**
-   * Adds a module.
-   *
-   * @param cm module order
-   * @param f module
-   */
-  private void addModule(ModuleOrder cm, Module f) {
+  private void addCourse(ModuleOrder mo, CourseModuleInfo moduleInfo) {
+    CourseOrder co = new CourseOrder();
+    co.setTitle("["+mo.getTitle()+"]"+ moduleInfo.getCode().getLabel() + " " + BundleUtil.getLabel("To.define.label"));
+    co.setDay(0);//dimanche
+    co.setModuleOrder(mo.getId()); // id module temp
+    co.setStart(new Hour());
+    co.setEnd(new Hour(moduleInfo.getTimeLength()));
+    co.setCourseModuleInfo(moduleInfo);
+    co.setDateStart(mo.getStart());
+    co.setDateEnd(mo.getEnd());
 
-    cm.setTitle(f.getTitle());
-    cm.setPayer(dossier.getMember().getPayer());
-    cm.setModule(f.getId());
-    cm.setSelectedModule(Integer.parseInt(moduleDlg.getField(7)));
-    //System.out.println("module selected :" + cm.getSelectedModule());
-    cm.setStart(new DateFr(moduleDlg.getField(2)));
-    cm.setEnd(new DateFr(moduleDlg.getField(3)));
-    cm.setPrice(Double.parseDouble(moduleDlg.getField(4)));
-    cm.setModeOfPayment(moduleDlg.getField(5));
-    cm.setPayment(moduleDlg.getField(6));
-    cm.setNOrderLines(1);
-
-    vue.addModule(cm);
-    modules.addElement(cm);
+    view.addCourse(co);
+    mo.addCourseOrder(co);
   }
 
-  private void addCourseInstrument(ModuleOrder cm, int duree) throws SQLException {
-    CourseOrder cc = new CourseOrder();
-    cc.setAction(service.getIdAction(Course.PRIVATE_INSTRUMENT_CODE));
-    cc.setTitle(NONE);
-    cc.setDay(0);//dimanche
-    cc.setModule(cm.getModule());
-    cc.setStart(new Hour("00:00"));
-    cc.setEnd(new Hour(duree));
-//    cc.setCode(Course.PRIVATE_INSTRUMENT_CODE);
-    cc.setDateStart(cm.getStart());
-    cc.setDateEnd(cm.getEnd());
-    cc.setRoom(0);// salle à définir
-    vue.addCourse(cc);
-    commandes_cours.addElement(cc);
+  /**
+   * Opens the dialog for course order modification.
+   */
+  private void modifyCourse() {
+    int n = view.getSelectedCourse();// le commandes_cours selectionné
+    if (n < 0) {
+      return;
+    }
+
+    setCursor(new Cursor(Cursor.WAIT_CURSOR));
+
+    CourseOrder co = view.getCourseOrder(n);
+    if (coursDlg == null) {
+      coursDlg = new CourseEnrolmentDlg(desktop, service, dossier.getId());
+    }
+    coursDlg.clear();
+    coursDlg.setCourseInfo(co.getCourseModuleInfo());
+    try {
+      coursDlg.loadEnrolment(co);
+    } catch (EnrolmentException ex) {
+      MessagePopup.warning(view, ex.getMessage());
+      setCursor(Cursor.getDefaultCursor());
+      return;
+    }
+    setCursor(Cursor.getDefaultCursor());
+    coursDlg.entry();
+    if (coursDlg.isValidation()) {
+      co.setModule(Integer.parseInt(coursDlg.getField(1)));//XXX
+      co.setAction(Integer.parseInt(coursDlg.getField(2)));
+      co.setTitle(getModuleTitle(co) + coursDlg.getField(3));
+      co.setDay(Integer.parseInt(coursDlg.getField(4)));
+
+      if (Course.ATP_CODE == coursDlg.getCourse().getCode()) {
+        DateFr dfr = new DateFr(coursDlg.getField(7));
+        co.setDateStart(dfr);
+        co.setDateEnd(dfr);
+      }
+
+      Hour start = new Hour(coursDlg.getField(5));
+      Hour length = new Hour(coursDlg.getField(6));
+      co.setStart(start);
+      co.setEnd(start.end(length.toMinutes()));
+      co.setEstab(coursDlg.getEstab());
+      
+      view.changeCourse(n, co);
+    }
+  }
+
+  private String getModuleTitle(CourseOrder co) {
+    String t = co.getTitle();
+    return t.substring(0, t.indexOf(']')+1);
   }
   
-  private void addCourse(ModuleOrder mo, CourseModuleInfo cm) {
-    CourseOrder cc = new CourseOrder();
-    cc.setTitle(cm.getCode().getLabel());
-    cc.setDay(0);//dimanche
-    cc.setModule(cm.getIdModule());
-    cc.setStart(new Hour("00:00"));
-    cc.setEnd(new Hour(cm.getTimeLength()));
-    cc.setCourseModuleInfo(cm);
-    cc.setDateStart(mo.getStart());
-    cc.setDateEnd(mo.getEnd());
-    cc.setRoom(0);// salle à définir
-    vue.addCourse(cc);
-    commandes_cours.addElement(cc);
+
+  @Override
+  public String toString() {
+    return getClass().getSimpleName() + " " + dossier.getId();
   }
 
-  private void addCourseCo(ModuleOrder cm, int duree) throws SQLException {
-    CourseOrder cc = new CourseOrder();
-    cc.setTitle(NONE);
-    cc.setDay(0);
-    cc.setModule(cm.getModule());
-    cc.setStart(new Hour("00:00"));
-    cc.setEnd(new Hour(duree));
-
-    String code = String.valueOf(duree);
-    if (duree < 100) {
-      code = "0" + code;
-    }
-//    code = "AT" + code;
-    
-//    cc.setCode(3);
-    cc.setAction(service.getIdAction(3));
-    cc.setDateStart(cm.getStart());
-    cc.setDateEnd(cm.getEnd());
-    vue.addCourse(cc);
-    commandes_cours.addElement(cc);
-  }
-
-  private void addFM(ModuleOrder cm) throws SQLException {
-    String fmCode = "F.M.";
-    CourseOrder cc = new CourseOrder();
-    cc.setAction(service.getIdAction(2));
-    cc.setTitle(NONE);
-    cc.setDay(0);
-    cc.setModule(cm.getModule());
-//    cc.setCode(2);
-    cc.setStart(new Hour("00:00"));
-    cc.setEnd(new Hour("01:00"));
-    cc.setDateStart(cm.getStart());
-    cc.setDateEnd(cm.getEnd());
-    vue.addCourse(cc);
-    commandes_cours.addElement(cc);
-  }
-
-  private void addWorkshop(ModuleOrder cm) throws SQLException {
-    CourseOrder cc = new CourseOrder();
-    cc.setAction(service.getIdAction(Course.ATP_CODE));
-    cc.setTitle(NONE);
-    cc.setDay(0);
-    cc.setModule(cm.getModule());
-    cc.setStart(new Hour("00:00"));
-    cc.setEnd(new Hour("00:00"));
-//    cc.setCode(Course.ATP_CODE);
-    cc.setDateStart(cm.getStart());
-    cc.setDateEnd(cm.getEnd());
-    vue.addCourse(cc);
-    commandes_cours.addElement(cc);
-  }
 }

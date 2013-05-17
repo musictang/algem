@@ -1,7 +1,7 @@
 /*
- * @(#)EnrolmentView.java	2.6.a 17/09/12
+ * @(#)EnrolmentView.java	2.8.a 23/04/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -32,6 +32,7 @@ import javax.swing.table.TableColumnModel;
 import net.algem.contact.Person;
 import net.algem.planning.PlanningService;
 import net.algem.util.BundleUtil;
+import net.algem.util.MessageUtil;
 import net.algem.util.ui.*;
 
 /**
@@ -39,7 +40,7 @@ import net.algem.util.ui.*;
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.a
  * @since 1.0a 07/07/1999
  */
 public class EnrolmentView
@@ -47,8 +48,8 @@ public class EnrolmentView
 
 {
 
-  private String[] dayNames;
-  private ModuleOrderTableModel module;
+  //private String[] dayNames;
+  private ModuleOrderTableModel moduleTableModel;
   private JTable moduleTable;
   private CourseOrderTableModel courseOrderTableModel;
   private JTable courseTable;
@@ -63,67 +64,65 @@ public class EnrolmentView
 
   public EnrolmentView() {
 
-    dayNames = PlanningService.WEEK_DAYS;
+    //dayNames = PlanningService.WEEK_DAYS;
     member = new GemField(35);
     member.setEditable(false);
 
-    module = new ModuleOrderTableModel();
-    moduleTable = new JTable(module);
+    moduleTableModel = new ModuleOrderTableModel();
+    moduleTable = new JTable(moduleTableModel);
 
     TableColumnModel cm = moduleTable.getColumnModel();
-    cm.getColumn(0).setPreferredWidth(30);
-    cm.getColumn(1).setPreferredWidth(120);
-    cm.getColumn(2).setPreferredWidth(60);
-    cm.getColumn(3).setPreferredWidth(60);
+    cm.getColumn(0).setPreferredWidth(10);
+    cm.getColumn(1).setPreferredWidth(250);
+    cm.getColumn(2).setPreferredWidth(40);
+    cm.getColumn(3).setPreferredWidth(40);
     cm.getColumn(4).setPreferredWidth(40);
-    cm.getColumn(5).setPreferredWidth(35);
-    cm.getColumn(6).setPreferredWidth(30);
+    cm.getColumn(5).setPreferredWidth(10);
 
-    JScrollPane pm = new JScrollPane(moduleTable);
+    JScrollPane scrollPane = new JScrollPane(moduleTable);
     courseOrderTableModel = new CourseOrderTableModel();
     courseTable = new JTable(courseOrderTableModel);
 
     cm = courseTable.getColumnModel();
-    cm.getColumn(0).setPreferredWidth(30);
-    cm.getColumn(1).setPreferredWidth(150);
-    cm.getColumn(2).setPreferredWidth(60);
-    cm.getColumn(3).setPreferredWidth(40);
-    cm.getColumn(4).setPreferredWidth(40);
+    cm.getColumn(0).setPreferredWidth(60);
+    cm.getColumn(1).setPreferredWidth(300);
+    cm.getColumn(2).setPreferredWidth(20);
+    cm.getColumn(3).setPreferredWidth(20);
+    cm.getColumn(4).setPreferredWidth(20);
 
     JScrollPane pc = new JScrollPane(courseTable);
 
     GemPanel buttons = new GemPanel();
     buttons.setLayout(new GridLayout(1, 3));
-    buttons.add(btRemove = new GemButton("Enlever Module"));
+    buttons.add(btRemove = new GemButton(MemberEnrolmentDlg.MODULE_REMOVE));
+    buttons.add(btModify = new GemButton(MemberEnrolmentDlg.MODULE_MODIFY));
+    buttons.add(btAdd = new GemButton(MemberEnrolmentDlg.MODULE_ADD));
 
-    buttons.add(btModify = new GemButton("Modifier Module"));
-    buttons.add(btAdd = new GemButton("Ajouter Module"));
+    GemPanel memberPanel = new GemPanel();
+    memberPanel.add(new GemLabel(BundleUtil.getLabel("Member.label")));
+    memberPanel.add(member);
 
-    GemPanel padherent = new GemPanel();
-    padherent.add(new GemLabel(BundleUtil.getLabel("Member.label")));
-    padherent.add(member);
+    GemPanel top = new GemPanel();
+    top.setLayout(new BorderLayout());
+    top.add(memberPanel, BorderLayout.NORTH);
+    top.add(scrollPane, BorderLayout.CENTER);
+    top.add(buttons, BorderLayout.SOUTH);
+    top.setBorder(new BevelBorder(BevelBorder.LOWERED));
 
-    GemPanel haut = new GemPanel();
-    haut.setLayout(new BorderLayout());
-    haut.add(padherent, BorderLayout.NORTH);
-    haut.add(pm, BorderLayout.CENTER);
-    haut.add(buttons, BorderLayout.SOUTH);
-    haut.setBorder(new BevelBorder(BevelBorder.LOWERED));
+    btCourseModify = new GemButton(MemberEnrolmentDlg.COURSE_MODIFY);
 
-    btCourseModify = new GemButton("Modification Cours");
-
-    GemPanel bas = new GemPanel();
-    bas.setLayout(new BorderLayout());
-    bas.add(pc, BorderLayout.CENTER);
-    bas.add(btCourseModify, BorderLayout.SOUTH);
-    bas.setBorder(new BevelBorder(BevelBorder.LOWERED));
+    GemPanel bottom = new GemPanel();
+    bottom.setLayout(new BorderLayout());
+    bottom.add(pc, BorderLayout.CENTER);
+    bottom.add(btCourseModify, BorderLayout.SOUTH);
+    bottom.setBorder(new BevelBorder(BevelBorder.LOWERED));
 
     this.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
 
-    gb.add(haut, 0, 0, 1, 1, GridBagHelper.BOTH, 1.0, 0.4);
-    gb.add(new GemLabel("Liste des cours correspondants au(x) module(s)"), 0, 1, 1, 1, GridBagHelper.CENTER);
-    gb.add(bas, 0, 2, 1, 1, GridBagHelper.BOTH, 1.0, 0.6);
+    gb.add(top, 0, 0, 1, 1, GridBagHelper.BOTH, 1.0, 0.4);
+    gb.add(new GemLabel(MessageUtil.getMessage("course.list.by.module")), 0, 1, 1, 1, GridBagHelper.CENTER);
+    gb.add(bottom, 0, 2, 1, 1, GridBagHelper.BOTH, 1.0, 0.6);
 
   }
 
@@ -142,71 +141,54 @@ public class EnrolmentView
       btCourseModify.addActionListener(l);
     }
   }
-  /*
 
-  public void itemStateChanged(ItemEvent e)
-
-  {
-  if (e.getSource()  == module)
-  {
-  if (actionListener != null)
-  actionListener.actionPerformed(new ActionEvent(this,ActionEvent.ACTION_PERFORMED,"Modifier"));
-  }
-  else if (e.getSource()  == cours)
-  {
-  if (actionListener != null)
-  actionListener.actionPerformed(new ActionEvent(this,ActionEvent.ACTION_PERFORMED,"CoursModif"));
-  }
-  }
-   */
-
-  public int getSelectedModule() {
+  int getSelectedModule() {
     return moduleTable.getSelectedRow();
   }
 
-  public void addModule(ModuleOrder cmm) {
-    module.addItem(cmm);
+  void addModule(ModuleOrder mo) {
+    moduleTableModel.addItem(mo);
   }
 
-  public void changeModule(int i, ModuleOrder cmm) {
-    module.modItem(i, cmm);
+  void changeModule(int i, ModuleOrder mo) {
+    moduleTableModel.modItem(i, mo);
   }
 
-  public void setModifModule(boolean b) {
-    modifModule = b;
+  void removeModule(int i) {
+    moduleTableModel.deleteItem(i);
   }
 
-  public void setModifCours(boolean b) {
-    modifCourse = b;
-  }
-
-  public void removeModule(int i) {
-    module.deleteItem(i);
-  }
-
-  public int getSelectedCourse() {
+  int getSelectedCourse() {
     return courseTable.getSelectedRow();
   }
 
-  public void addCourse(CourseOrder cmc) {
-    courseOrderTableModel.addItem(cmc);
+  void addCourse(CourseOrder order) {
+    courseOrderTableModel.addItem(order);
+  }
+  
+  CourseOrder getCourseOrder(int row) {
+    return (CourseOrder) courseOrderTableModel.getItem(row);
   }
 
-  public void changeCourse(int i, CourseOrder cmc) {
-    courseOrderTableModel.modItem(i, cmc);// ajouter une mise a jour de la salle
+  void changeCourse(int i, CourseOrder co) {
+    courseOrderTableModel.modItem(i, co);
   }
 
-  public void removeCourse(int i) {
+  void removeCourse(int i) {
     courseOrderTableModel.deleteItem(i);
   }
+  
+  void remove(CourseOrder co) {
+    courseOrderTableModel.deleteItem(co);
+  }
 
-  public void setMember(Person p) {
+  void setMember(Person p) {
     member.setText(p.toString());
   }
 
   public void clear() {
     member.setText("");
-    module.clear();
+    moduleTableModel.clear();
     courseOrderTableModel.clear();
   }
 }

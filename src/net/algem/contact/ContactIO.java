@@ -391,7 +391,7 @@ public class ContactIO
         throw new ContactDeleteException(msg);
       }
       // vérifies if contact is scheduled
-      Vector<ScheduleRange> vp = ScheduleRangeIO.find(" WHERE pg.adherent =" + c.getId(), dc);
+      Vector<ScheduleRange> vp = ScheduleRangeIO.find("pg WHERE pg.adherent = " + c.getId(), dc);
       if (vp != null && vp.size() > 0) {
         msg += MessageUtil.getMessage("contact.delete.range.warning", vp.size());
         throw new ContactDeleteException(msg);

@@ -36,7 +36,6 @@ public class GemParam
   implements GemModel
  {
 
-  protected int id;
   public final static String NONE = "-";
   
   public GemParam() {
@@ -106,26 +105,24 @@ public class GemParam
     if (obj == null) {
       return false;
     }
-    if (!(obj instanceof Param)) {
+    if (getClass() != obj.getClass()) {
       return false;
     }
-    final Param other = (Param) obj;
-    if ((this.key == null) ? (other.key != null) : !this.key.equals(other.key)) {
+    final GemParam other = (GemParam) obj;
+    if (this.id != other.id) {
       return false;
     }
-    if ((this.value == null) ? (other.value != null) : !this.value.equals(other.value)) {
-      return false;
-    }
-    return true;
+    return super.equals(obj);
   }
 
   @Override
   public int hashCode() {
     int hash = 5;
-    hash = 83 * hash + this.id;
+    hash = 29 * hash + this.id;
+    hash = 37 * hash + (this.key != null ? this.key.hashCode() : 0);
+    hash = 37 * hash + (this.value != null ? this.value.hashCode() : 0);
     return hash;
   }
-  
   
   public boolean isUndefined() {
     return key == null || NONE.equals(key);

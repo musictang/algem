@@ -1,7 +1,7 @@
 /*
- * @(#)DateFr.java	2.6.a 21/09/12
+ * @(#)DateFr.java	2.8.a 24/04/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -31,7 +31,7 @@ import java.util.Locale;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.a
  * @since 1.0a 07/07/1999
  */
 public class DateFr
@@ -154,14 +154,23 @@ public class DateFr
   }
 
   /**
-   * Retourne le jour du mois
-   * @return un entier
+   * Gets day of month.
+   * @return an integer
    */
   public int getDay() {
     int j;
     j = (buf.charAt(0) - '0') * 10;
     j += buf.charAt(1) - '0';
     return j;
+  }
+  
+  /**
+   * Gets day of week.
+   * @return an integer
+   */
+  public int getDayOfWeek() {
+    cal.setTime(getDate());
+    return cal.get(Calendar.DAY_OF_WEEK);
   }
 
   int digitAt(int pos) {
@@ -269,10 +278,6 @@ public class DateFr
     return hash;
   }
 
-  /*public boolean equals(DateFr d)
-  {
-  return (d != null && buf.toString().equals(d.buf.toString()));//??
-  }*/
   public boolean equals(String d) {
     return buf.toString().equals(d);
   }
@@ -317,9 +322,9 @@ public class DateFr
   }
 
   /**
-   * Checks if the frenche date {@code d} is valid.
-   * Vérification de validité d'une date au format français.
-   * @param d a date
+   * Checks if the french date {@code d} is correctly formatted.
+   *
+   * @param d date
    * @return false if invalid or not correctly formatted
    */
   public static boolean isValid(DateFr d) {

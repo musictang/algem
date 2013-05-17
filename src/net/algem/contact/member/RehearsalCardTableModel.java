@@ -79,7 +79,7 @@ public class RehearsalCardTableModel
       case 3:
         return c.getSessionsNumber();
       case 4:
-        return c.getDuration();
+        return c.getLength();
     }
     return null;
   }

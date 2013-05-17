@@ -70,7 +70,7 @@ public class ConflictListDlg
     dlg.setSize(w, h);
   }
 
-  public void addConflit(ScheduleTestConflict p) {
+  public void addConflict(ScheduleTestConflict p) {
     listView.addConflict(p);
   }
 

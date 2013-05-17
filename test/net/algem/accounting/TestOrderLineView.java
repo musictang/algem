@@ -1,7 +1,7 @@
 /*
- * @(#)TestOrderLineView.java 2.7.a 05/12/12
+ * @(#)TestOrderLineView.java 2.8.a 01/04/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -37,7 +37,7 @@ import net.algem.util.module.GemDesktop;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.a
  */
 public class TestOrderLineView
         extends TestCase
@@ -63,7 +63,7 @@ public class TestOrderLineView
     amountFormat.setMaximumFractionDigits(2);
     amountFormat.setMinimumFractionDigits(2);
     amount = new JFormattedTextField(amountFormat);
-    view = new OrderLineView(new Frame(), "", dc);
+    view = new OrderLineView(new Frame(), "", dataCache);
   }
 
   @Override
@@ -109,7 +109,7 @@ public class TestOrderLineView
     e.setAmount(0);
     e.setModeOfPayment("CHQ");
 
-    e.setSchool("");
+    e.setSchool(0);
     e.setDocument("");
     e.setLabel("");
     e.setPaid(false);

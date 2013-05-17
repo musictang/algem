@@ -40,7 +40,7 @@ import net.algem.contact.member.*;
 import net.algem.contact.teacher.TeacherEditor;
 import net.algem.contact.teacher.TeacherEvent;
 import net.algem.edition.*;
-import net.algem.enrolment.MemberEnrolment;
+import net.algem.enrolment.MemberEnrolmentDlg;
 import net.algem.group.PersonFileGroupView;
 import net.algem.planning.TeacherBreakDlg;
 import net.algem.planning.month.MonthScheduleTab;
@@ -338,12 +338,12 @@ public class PersonFileEditor
     } else if ("AdherentForfaitRepetition.Abandon".equals(arg) || "AdherentForfaitRepetition.Validation".equals(arg)) {
       personFileView.removeTab((MemberRehearsalPassCtrl) src);
       miPassRehearsal.setEnabled(true);
-    } else if ("AdherentInscription.Create".equals(arg)) {
-      MemberEnrolment dlg = new MemberEnrolment(desktop, this, dossier);
+    } else if ("MemberEnrolmentCreate".equals(arg)) {
+      MemberEnrolmentDlg dlg = new MemberEnrolmentDlg(desktop, this, dossier);
       personFileView.addTab(dlg, BundleUtil.getLabel("Course.registration.label"));
       personFileView.activateEnrolment(false);// désactivation du bouton nouvelle inscription
-    } else if ("AdherentInscription.Abandon".equals(arg) || "AdherentInscription.Validation".equals(arg)) {
-      personFileView.removeTab((MemberEnrolment) src);
+    } else if ("MemberEnrolmentCancel".equals(arg) || "MemberEnrolmentValidation".equals(arg)) {
+      personFileView.removeTab((MemberEnrolmentDlg) src);
       personFileView.activateEnrolment(true);//réactivation du bouton de nouvelle inscription
     } else if ("EditionCarteAbo.Abandon".equals(arg) || "EditionCarteAbo.Validation".equals(arg)) {
       personFileView.removeTab((SubscriptionCardEditor) src);
@@ -931,7 +931,7 @@ public class PersonFileEditor
       miHistoRehearsal.setEnabled(true);
     } else if (PersonFileGroupView.class.getSimpleName().equals(classname)) {
       miGroups.setEnabled(true);
-    } else if (MemberEnrolment.class.getSimpleName().equals(classname)) {
+    } else if (MemberEnrolmentDlg.class.getSimpleName().equals(classname)) {
       personFileView.activateEnrolment(true);
     } else if (MemberRehearsalCtrl.class.getSimpleName().equals(classname)) {
       miRehearsal.setEnabled(true);

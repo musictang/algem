@@ -1,5 +1,5 @@
 /*
- * @(#)CourseView.java	2.8.a 18/03/13
+ * @(#)CourseView.java	2.8.a 19/04/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -22,10 +22,8 @@ package net.algem.course;
 
 import java.awt.Color;
 import java.awt.GridBagLayout;
-import java.util.Vector;
 import javax.swing.JCheckBox;
 import net.algem.config.GemParamChoice;
-import net.algem.config.Param;
 import net.algem.config.ParamChoice;
 import net.algem.util.BundleUtil;
 import net.algem.util.model.GemList;
@@ -50,9 +48,9 @@ public class CourseView
   private GemField level;
   private JCheckBox collective;
   private JCheckBox active;
-  private GemChoice schoolChoice;
+  private ParamChoice schoolChoice;
 
-  public CourseView(GemList codes, Vector<Param> schools) {
+  public CourseView(GemList codes, GemList schools) {
     
     no = new GemNumericField(6);
     no.setEditable(false);
@@ -67,7 +65,7 @@ public class CourseView
     collective.setSelected(true);
     active = new JCheckBox();
     active.setSelected(true);
-    schoolChoice = new ParamChoice(schools);
+    schoolChoice = new ParamChoice(schools.getData());
 
     this.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
@@ -119,7 +117,7 @@ public class CourseView
 
     try {
       cr.setId(Integer.parseInt(no.getText()));
-    } catch (Exception e) {
+    } catch (NumberFormatException e) {
       cr.setId(0);
     }
 
@@ -127,18 +125,19 @@ public class CourseView
     cr.setLabel(label.getText());
     try {
       cr.setNPlaces((short) Integer.parseInt(nplaces.getText()));
-    } catch (Exception e) {
+    } catch (NumberFormatException e) {
       cr.setNPlaces((short) 0);
     }
     try {
       cr.setLevel((short) Integer.parseInt(level.getText()));
-    } catch (Exception e) {
+    } catch (NumberFormatException e) {
       cr.setLevel((short) 0);
     }
     cr.setCollective(collective.isSelected());
     cr.setActive(active.isSelected());
     cr.setCode(code.getKey());
     cr.setSchool(schoolChoice.getKey());
+    
     return cr;
   }
 

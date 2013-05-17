@@ -74,7 +74,7 @@ public class RehearsalCardView extends GemBorderPanel
     label.setText("");
     amount.setValue(0.0);
     nbSessions.setText(String.valueOf(RehearsalCard.NB_SESSIONS_DEFAULT));
-    minDuration.setText(String.valueOf(RehearsalCard.MIN_DURATION_DEFAULT));
+    minDuration.setText(String.valueOf(RehearsalCard.MIN_LENGTH_DEFAULT));
   }
 
   public void setCard(RehearsalCard c)
@@ -88,7 +88,7 @@ public class RehearsalCardView extends GemBorderPanel
     label.setText(c.getLabel());
     amount.setValue(c.getAmount());
     nbSessions.setText(String.valueOf(c.getSessionsNumber()));
-    minDuration.setText(String.valueOf(c.getDuration()));
+    minDuration.setText(String.valueOf(c.getLength()));
 
   }
 
@@ -100,7 +100,7 @@ public class RehearsalCardView extends GemBorderPanel
     card.setLabel(label.getText());
     card.setAmount((Float) amount.getValue());
     card.setSessionsNumber(Integer.parseInt(nbSessions.getText()));
-    card.setDuration(Integer.parseInt(minDuration.getText()));
+    card.setLength(Integer.parseInt(minDuration.getText()));
 
     return card;
   }

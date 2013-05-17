@@ -1,7 +1,7 @@
 /*
- * @(#)ModuleCtrl.java	2.8.a 15/03/13
+ * @(#)ModuleCtrl.java	2.8.a 23/04/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -80,7 +80,8 @@ public class ModuleCtrl
         try {
           delete(view.get());
         } catch (ModuleException ex) {
-          GemLogger.logException(ex);
+          GemLogger.log(ex.getMessage());
+          MessagePopup.warning(this, ex.getMessage());
           return false;
         }
         break;
@@ -95,6 +96,13 @@ public class ModuleCtrl
   public boolean validation() {
 
     Module m = view.get();
+    for (CourseModuleInfo cm : m.getCourses()) {
+      String err = isValid(cm);
+      if (err != null) {
+        MessagePopup.error(this, err);         
+        return false;
+      }
+    }
     try {
       if (isValid(m)) {
         edit(m);
@@ -106,6 +114,18 @@ public class ModuleCtrl
     }
 
     return true;
+  }
+  
+  private String isValid(CourseModuleInfo cm) {
+    String msg = "";
+    if (cm.getCode().getId() < 1) {
+      msg += MessageUtil.getMessage("course.module.info.invalid.code");
+    }
+    if (!cm.hasValidLength()) {
+      msg += MessageUtil.getMessage("course.module.info.invalid.length",
+              new Object[] {cm.getCode().getLabel(), CourseModuleInfo.MIN_LENGTH, CourseModuleInfo.MAX_LENGTH});
+    }
+    return msg.isEmpty() ? null : msg;
   }
 
   public void clear() {
@@ -150,25 +170,33 @@ public class ModuleCtrl
   }
 
   private boolean isValid(Module m) throws ModuleException {
-//    if (getClass() == ModuleSearchDeleteCtrl.class) {
-//      return true;
-//    }
+
     String e = "";
-    if (m.getCode().length() < 8) {
+    
+    if (m.getCode().length() < 1) {
       e += MessageUtil.getMessage("invalid.module.code");
     }
+    
+    if (m.getCourses() == null || m.getCourses().isEmpty()) {
+      e += "\n" + MessageUtil.getMessage("module.course.create.exception");
+    }
+    
     if (m.getTitle().length() < 1 || m.getTitle().length() > ModuleIO.TITLE_MAX_LEN) {
       e += "\n" + MessageUtil.getMessage("invalid.name", new Object[]{1, ModuleIO.TITLE_MAX_LEN});
     }
+    
     if (m.getBasePrice() < 0.0) {
       e += "\n" + MessageUtil.getMessage("invalid.module.price");
     }
+    
     if (m.getMonthReducRate() < 0.0 || m.getMonthReducRate() > 100.0) {
       e += "\n" + MessageUtil.getMessage("invalid.module.month.reduc");
     }
+    
     if (m.getQuarterReducRate() < 0.0 || m.getQuarterReducRate() > 100.0) {
       e += "\n" + MessageUtil.getMessage("invalid.module.trim.reduc");
     }
+    
     if (!e.isEmpty()) {
       throw new ModuleException(e);
     }

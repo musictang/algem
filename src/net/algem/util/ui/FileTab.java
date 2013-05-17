@@ -39,13 +39,13 @@ public abstract class FileTab
   protected GemDesktop desktop;
   protected DataCache dataCache;
   protected DataConnection dc;
-  protected PlanningService service;
+  protected PlanningService planningService;
 
   public FileTab(GemDesktop _desktop) {
     desktop = _desktop;
     dataCache = _desktop.getDataCache();
     dc = dataCache.getDataConnection();
-    service = new PlanningService(dc);
+    planningService = new PlanningService(dc);
   }
 
   public abstract boolean isLoaded();

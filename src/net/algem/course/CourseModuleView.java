@@ -1,5 +1,5 @@
 /*
- * @(#)CourseModuleView.java	2.8.a 14/03/13
+ * @(#)CourseModuleView.java	2.8.a 24/04/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -23,23 +23,18 @@ package net.algem.course;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Insets;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.BorderFactory;
-import javax.swing.Box;
 import javax.swing.BoxLayout;
-import net.algem.config.GemParam;
-import net.algem.config.GemParamChoice;
 import net.algem.util.BundleUtil;
-import net.algem.util.DataCache;
 import net.algem.util.GemCommand;
-import net.algem.util.model.Model;
+import net.algem.util.model.GemList;
 import net.algem.util.ui.ButtonRemove;
 import net.algem.util.ui.GemButton;
-import net.algem.util.ui.GemChoiceModel;
 import net.algem.util.ui.GemPanel;
 
 /**
@@ -52,27 +47,26 @@ public class CourseModuleView
   extends GemPanel
   implements ActionListener
 {
-  
-  private GemParamChoice code;
+
   private GemButton plus;
   private GemPanel rowsPanel;
+  private GemList<CourseCode> codeList;
   
-  public CourseModuleView(DataCache dataCache) {
+  public CourseModuleView(GemList<CourseCode> codeList) {
 
+    this.codeList = codeList;
+    
     setLayout(new BorderLayout());
 
-    GemPanel header = new GemPanel();
-    header.setLayout(new BoxLayout(header, BoxLayout.X_AXIS));
-    code = new GemParamChoice(new GemChoiceModel(dataCache.getList(Model.CourseCode)));
+    GemPanel footer = new GemPanel();
+    footer.setLayout(new GridLayout());
 
-    header.add(code);
-    header.add(Box.createHorizontalStrut(20));
-    plus = new GemButton("+");
+    plus = new GemButton(BundleUtil.getLabel("Course.add.label"));
     plus.addActionListener(this); 
-    plus.setMargin(new Insets(0, 5, 0, 5)); //reduction de la taille du bouton
-    header.add(plus);
+//    plus.setMargin(new Insets(0, 5, 0, 5)); //reduction de la taille du bouton
+    footer.add(plus);
   
-    add(header, BorderLayout.NORTH);
+    add(footer, BorderLayout.SOUTH);
     rowsPanel = new GemPanel();
     rowsPanel.setBorder(BorderFactory.createTitledBorder(BundleUtil.getLabel("Course.label")));
     rowsPanel.setLayout(new BoxLayout(rowsPanel, BoxLayout.Y_AXIS));
@@ -80,17 +74,17 @@ public class CourseModuleView
   }
 
   protected void addRow() {
+    
     CourseModuleInfo info = new CourseModuleInfo();
-    GemParam cc = (GemParam) code.getSelectedItem();
-    info.setCode(cc);
     info.setTimeLength(0);
-    CourseModulePanel p = new CourseModulePanel(info, this);
+    CourseModulePanel p = new CourseModulePanel(info, codeList, this);
     rowsPanel.add(p);
     revalidate();
   }
   
    protected void addRow(CourseModuleInfo info) {
-    CourseModulePanel p = new CourseModulePanel(info, this);
+     
+    CourseModulePanel p = new CourseModulePanel(info, codeList, this);
     rowsPanel.add(p); 
   }
   
@@ -130,7 +124,6 @@ public class CourseModuleView
   }
   
   public void clear() {
-    code.setSelectedIndex(0);
     rowsPanel.removeAll();
     revalidate();
   }

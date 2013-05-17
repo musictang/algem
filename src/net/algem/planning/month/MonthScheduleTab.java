@@ -123,7 +123,7 @@ public class MonthScheduleTab
               + " AND p.jour >= '" + start + "' AND p.jour <= '" + end + "'"
               + " ORDER BY p.jour,p.debut";
 
-      Vector<ScheduleObject> vpl = service.getSchedule(query);
+      Vector<ScheduleObject> vpl = planningService.getSchedule(query);
 
       Vector<ScheduleObject> vp2 = null;
       // recherche des plannings cours auxquels est inscrit l'adhérent
@@ -136,7 +136,7 @@ public class MonthScheduleTab
                 + " AND p.id = plage.idplanning"
                 + " AND p.jour >= '" + start + "' AND p.jour <= '" + end + "'"
                 + " ORDER BY p.jour,p.debut";
-        vp2 = service.getSchedule(query);
+        vp2 = planningService.getSchedule(query);
         //vpl.addAll(vp2);
       }
 
@@ -154,7 +154,7 @@ public class MonthScheduleTab
                 + " ORDER BY p.jour, pg.debut";
       }
       
-      Vector<ScheduleRangeObject> vpg = service.getScheduleRange(query);
+      Vector<ScheduleRangeObject> vpg = planningService.getScheduleRange(query);
       // test correlation plannings/plages
       if (vp2 != null) {
         for (int i = 0; i < vpg.size(); i++) {

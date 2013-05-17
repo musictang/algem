@@ -1,7 +1,7 @@
 /*
- * @(#)Hour.java	2.7.h 20/02/13
+ * @(#)Hour.java	2.8.a 26/04/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -25,7 +25,7 @@ package net.algem.planning;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.h
+ * @version 2.8.a
  */
 public class Hour
         implements java.io.Serializable
@@ -261,6 +261,16 @@ public class Hour
    */
   public boolean between(Hour d, Hour f) {
     return ge(d) && le(f);
+  }
+  
+   /**
+   * Specifies if this hour is between {@code d} and {@code f}.
+   * @param d
+   * @param f
+   * @return true if between
+   */
+  public boolean inside(Hour d, Hour f) {
+    return gt(d) && lt(f);
   }
 
   public void set(String s) {

@@ -311,7 +311,7 @@ public class GroupFileEditor
         dataCache.update(group);
         desktop.postEvent(new GroupUpdateEvent(this, group));
         if (plan != null) {
-          desktop.postEvent(new ModifPlanEvent(this, plan.getDay(), plan.getDay()));
+          desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));
         }
       }
       

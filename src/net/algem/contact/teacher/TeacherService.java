@@ -81,8 +81,8 @@ public class TeacherService
               + " AND p.lieux = s.id AND s.etablissement=" + estab
               + " AND p.action = a.id"
               + " ORDER BY p.lieux,p.jour,p.debut,a.cours"; //OK
-              //+" order by p.place,p.start,p.day,p.action"; //OK mais
-              //+" order by extract(dow from p.day),p.place,p.action,p.start"; //OUI MAIS
+              //+" order by p.place,p.start,p.date,p.action"; //OK mais
+              //+" order by extract(dow from p.date),p.place,p.action,p.start"; //OUI MAIS
     return ScheduleIO.findObject(query, dc);
   }
 
@@ -91,16 +91,16 @@ public class TeacherService
   }
   
    /**
-   * Finds the substitutes for this teacher and for the day selected in schedule.
+   * Finds the substitutes for this teacher and for the date selected in schedule.
    * Days of week are represented from index 0 to 6 (from monday to sunday)
-   * In french calendar, monday is 2. It's the reason why we decrement the day by 2.
+   * In french calendar, monday is 2. It's the reason why we decrement the date by 2.
    * 
    * @param s schedule object
    * @return a list of teachers
    */
   public Vector<SubstituteTeacher> getSubstitutes(ScheduleObject s) {
 
-    int day = getDayOfWeek(s.getDay().getDate());
+    int day = getDayOfWeek(s.getDate().getDate());
     try {
       int c = ActionIO.getCourse(s.getIdAction(), dc);
       return SubstituteTeacherIO.find(s.getRoom().getEstab(), c, s.getIdPerson(), day - 2, dc);
@@ -114,7 +114,7 @@ public class TeacherService
    * Under postgresql, days of week (only for timestamp values) 
    * are enumerated from 0 to 6 (sunday is 0).
    *
-   * @return an integer representing day of week (for FRANCE)
+   * @return an integer representing date of week (for FRANCE)
    */
   private int getDayOfWeek(Date date) {
 

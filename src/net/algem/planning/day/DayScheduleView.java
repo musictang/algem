@@ -1,7 +1,7 @@
 /*
- * @(#)DayScheduleView.java	2.7.a 03/12/12
+ * @(#)DayScheduleView.java	2.8.a 17/04/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -26,6 +26,7 @@ import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.sql.SQLException;
 import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
 import javax.print.attribute.standard.MediaPrintableArea;
@@ -35,7 +36,9 @@ import javax.print.attribute.standard.OrientationRequested;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
 import net.algem.room.Establishment;
+import net.algem.room.Room;
 import net.algem.util.BundleUtil;
+import net.algem.util.DataCache;
 import net.algem.util.GemLogger;
 import net.algem.util.model.GemCloseVetoException;
 import net.algem.util.model.GemList;
@@ -50,7 +53,7 @@ import sun.print.DialogTypeSelection;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.a
  * @version 1.0b 06/10/2001
  */
 public class DayScheduleView
@@ -60,9 +63,8 @@ public class DayScheduleView
 
   private static final int PREF_WIDTH = 700;
   private static final int PREF_HEIGHT = 540;
-  private GemList<Establishment> estabList;
-  private DaySchedule daySchedule;
   
+  private DaySchedule daySchedule;
   private DayPlanTableView teacherView;
 
   /** Room view array with default size. Actual size is calculated in constructor. */
@@ -70,18 +72,17 @@ public class DayScheduleView
 
   private TabPanel tabPanel;
 
-  public DayScheduleView(GemDesktop _desktop, DaySchedule _modele, GemList<Establishment> _etablissements) {
+  public DayScheduleView(GemDesktop _desktop, DaySchedule daySchedule, GemList<Establishment> estabList) {
     super(_desktop, "Menu.day.schedule");
 
-    daySchedule = _modele;
-    daySchedule.addPropertyChangeListener(this);
+    this.daySchedule = daySchedule;
+    this.daySchedule.addPropertyChangeListener(this);
     
-    estabList = _etablissements;
-
     tabPanel = new TabPanel();
     add(tabPanel, BorderLayout.CENTER);
 
     setSize(PREF_WIDTH, PREF_HEIGHT);
+    
     String s = null;
     if ((s = ConfigUtil.getConf(
 			ConfigKey.TEACHER_MANAGEMENT.getKey(), dataCache.getDataConnection())) != null 
@@ -90,8 +91,9 @@ public class DayScheduleView
       teacherView = new DayPlanTeacherView(dataCache.getList(Model.Teacher));
       tabPanel.addItem(teacherView, BundleUtil.getLabel("Day.schedule.teacher.tab"));
     }
+    
     // récupération de la liste des salles
-    GemList vs = dataCache.getList(Model.Room);
+    GemList<Room> vs = dataCache.getList(Model.Room);
     roomView = new DayPlanTableView[estabList.getSize()];
     // ajout des onglets pour les différents établissements
     for (int i = 0; i < estabList.getSize() && i < roomView.length; i++) {
@@ -99,7 +101,19 @@ public class DayScheduleView
       roomView[i] = new DayPlanRoomView(vs, e.getId());
       tabPanel.addItem(roomView[i], BundleUtil.getLabel("Rooms.label") + " " + e.getName());
     }
-    tabPanel.setSelectedIndex(0);
+    int e = 0;
+    Establishment estab = null;
+    try {
+      e = Integer.parseInt(ConfigUtil.getConf(ConfigKey.DEFAULT_ESTABLISHMENT.getKey(), dataCache.getDataConnection()));
+      estab =  (Establishment) DataCache.findId(e, Model.Establishment);
+    } catch (NumberFormatException nfe) {
+      GemLogger.log(getClass().getName() + "#init " + nfe.getMessage());
+    } catch (SQLException sqe) {
+      GemLogger.log(sqe.getMessage());
+    }
+    
+    tabPanel.setSelectedIndex(estabList.indexOf(estab) + 1);//+1 car le premier onglet correspond aux profs
+
   }
   
    @Override

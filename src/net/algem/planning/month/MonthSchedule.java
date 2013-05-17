@@ -95,7 +95,7 @@ public class MonthSchedule
 
     for (int i = 0; i < schedules.size(); i++) {
       ScheduleObject p = (ScheduleObject) schedules.elementAt(i);
-      DateFr fd = new DateFr(p.getDay());
+      DateFr fd = new DateFr(p.getDate());
       if (fd.equals(nd)) {
         v.addElement(p);
       }
@@ -113,7 +113,7 @@ public class MonthSchedule
     for (int i = 0; i < ranges.size(); i++) {
       ScheduleObject p = (ScheduleObject) ranges.elementAt(i);
 
-      DateFr fd = new DateFr(p.getDay());
+      DateFr fd = new DateFr(p.getDate());
       if (fd.equals(nd)) {
         v.addElement(p);
       }

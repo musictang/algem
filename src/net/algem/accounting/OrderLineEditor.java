@@ -1,7 +1,7 @@
 /*
- * @(#)OrderLineEditor.java	2.7.k 01/03/13
+ * @(#)OrderLineEditor.java	2.8.a 01/04/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -47,7 +47,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.k
+ * @version 2.8.a
  * @since 1.0a 07/07/1999
  */
 public class OrderLineEditor
@@ -77,7 +77,6 @@ public class OrderLineEditor
   public OrderLineEditor(GemDesktop _desktop, OrderLineTableModel _tableModel) {
     super(_desktop);
     tableModel = _tableModel;
-
     table = new OrderLineTableView(tableModel, this);
     
   }
@@ -254,7 +253,7 @@ public class OrderLineEditor
       }
     }
     try {
-      dlg = new OrderLineView(desktop.getFrame(), MessageUtil.getMessage("payment.update.label"), dc);
+      dlg = new OrderLineView(desktop.getFrame(), MessageUtil.getMessage("payment.update.label"), dataCache);
       dlg.setOrderLine(e);
       dlg.setInvoiceEditable(false);
       dlg.setVisible(true);
@@ -281,7 +280,7 @@ public class OrderLineEditor
       e.setInvoice(null);
     }
     try {
-      dlg = new OrderLineView(desktop.getFrame(), MessageUtil.getMessage("payment.add.label"), dc);
+      dlg = new OrderLineView(desktop.getFrame(), MessageUtil.getMessage("payment.add.label"), dataCache);
       if (e != null) {
         dlg.setOrderLine(e);
       } else {

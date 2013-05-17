@@ -1,7 +1,7 @@
 /*
- * @(#)ModifPlanRangeDlg.java	2.6.a 21/09/12
+ * @(#)ModifPlanRangeDlg.java	2.8.a 24/04/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -32,7 +32,7 @@ import net.algem.util.MessageUtil;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.4.a
+ * @version 2.8.a
  * @since 1.1b vendredi 27 mars 2009
  */
 public class ModifPlanRangeDlg
@@ -61,7 +61,7 @@ public class ModifPlanRangeDlg
 
   public void set() {
     setTitle(plan.getScheduleLabel());
-    setDate(plan.getDay());
+    setDate(plan.getDate());
     setRoom(plan.getPlace());
     setHour(plan.getStart(), plan.getEnd());
   }
@@ -126,7 +126,7 @@ public class ModifPlanRangeDlg
     return pv.getNewHourEnd();
   }
 
-  DateFr getDateStart() {
+  DateFr getDateEnd() {
     return pv.getEnd();
   }
 

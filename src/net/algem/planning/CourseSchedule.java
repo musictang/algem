@@ -86,11 +86,11 @@ public class CourseSchedule
 
   public boolean equiv(ScheduleObject d) {
     Calendar cal1 = Calendar.getInstance(Locale.FRANCE);
-    cal1.setTime(this.getDay().getDate());
+    cal1.setTime(this.getDate().getDate());
     int this_dow = cal1.get(Calendar.DAY_OF_WEEK);
 
     Calendar cal2 = Calendar.getInstance(Locale.FRANCE);
-    cal2.setTime(d.getDay().getDate());
+    cal2.setTime(d.getDate().getDate());
     int other_dow = cal2.get(Calendar.DAY_OF_WEEK);
 
     return (d != null

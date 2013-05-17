@@ -1,7 +1,7 @@
 /*
- * @(#)Param.java	2.6.a 17/09/12
+ * @(#)Param.java	2.8.a 01/04/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,18 +20,21 @@
  */
 package net.algem.config;
 
+import net.algem.util.model.GemModel;
+
 /**
  * comment
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.6.a
+ * @version 2.8.a
  * @since 1.0a 07/07/1999
  */
 public class Param
-        implements java.io.Serializable
+        implements GemModel
 {
 
+  protected int id;
   protected String key;
   protected String value;
 
@@ -94,6 +97,22 @@ public class Param
     hash = 37 * hash + (this.key != null ? this.key.hashCode() : 0);
     hash = 37 * hash + (this.value != null ? this.value.hashCode() : 0);
     return hash;
+  }
+
+  @Override
+  public int getId() {
+    int i = 0;
+    try {
+      i = Integer.parseInt(key);
+    } catch(NumberFormatException ex) {
+       
+    }
+    return i;
+  }
+
+  @Override
+  public void setId(int id) {
+    setKey(String.valueOf(id));
   }
   
 }

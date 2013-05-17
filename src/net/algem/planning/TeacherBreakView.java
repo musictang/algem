@@ -97,8 +97,8 @@ public class TeacherBreakView
   public void set(CourseSchedule plan) {
     room.setKey(plan.getPlace());
     course.setKey(plan.getCourse().getId());
-    dateStart.set(plan.getDay());
-    dateEnd.set(plan.getDay());
+    dateStart.set(plan.getDate());
+    dateEnd.set(plan.getDate());
     hStart.set(plan.getStart());
     hEnd.set(plan.getStart());
     msgLabel.setText(null);

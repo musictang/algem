@@ -1,5 +1,5 @@
 /*
- * @(#)MemberRehearsalCtrl.java	2.7.a 26/11/12
+ * @(#)MemberRehearsalCtrl.java	2.8.b 14/05/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -46,7 +46,7 @@ import net.algem.util.ui.PopupDlg;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.b
  * @since 1.0a 12/12/2001
  */
 public class MemberRehearsalCtrl
@@ -106,42 +106,42 @@ public class MemberRehearsalCtrl
         return;
       }
       JOptionPane.showMessageDialog(this,
-                                    MessageUtil.getMessage("planning.update.info"),
-                                    MessageUtil.getMessage("rehearsal.member.entry"),
-                                    JOptionPane.INFORMATION_MESSAGE);
+              MessageUtil.getMessage("planning.update.info"),
+              MessageUtil.getMessage("rehearsal.member.entry"),
+              JOptionPane.INFORMATION_MESSAGE);
       desktop.postEvent(new ModifPlanEvent(this, view.getDate(), view.getDate()));
       actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "AdherentRepetitionPonctuelle.Validation"));
     } catch (MemberException ex) {
       GemLogger.logException(MessageUtil.getMessage("rehearsal.create.exception"), ex, this);
-    } 
+    }
   }
 
-  
-
   /**
-   * Mise à day de la choix d'abonnement répétition individuelle.
-   * Si la carte n'existe pas, une nouvelle carte est créée.
-   * Sinon, le temps restant sur la carte est mis à day. Si le temps restant est insuffisant,
-   * une nouvelle carte est créée.
-   * @param duration durée de la répétition
-   * @param pFile dossier adhérent
-   * @date date de répétition
-   * @param dialog dialogue de sélection de choix d'abonnement
-   * @return le montant correspondant au tarif de la choix choisie
+   * Updates member's card for single rehearsal.
+   * If card doesn't exist, a new one is created.
+   * Else, the remaining time is updated.
+   * If there is not enough remaining time, a new card is created.
+   *
+   * @param pFile member's file
+   * @date date of rehearsal
+   * @param length rehearsal length
+   * @param dialog dialog for selecting a subscription
+   *
+   * @return an amount
    * @throws SQLException
    */
-  float setRehearsalCard(PersonFile pFile, DateFr date, int duration, PopupDlg dialog) throws SQLException {
+  float setRehearsalCard(PersonFile pFile, DateFr date, int length, PopupDlg dialog) throws SQLException {
     float amount = 0.0F;
     PersonSubscriptionCard nc = null;
     PersonFileEvent event = null;
     PersonSubscriptionCard abo = pFile.getSubscriptionCard();
     if (abo == null) {//aucune carte n'existe pour cette personne
       RehearsalCard choice = chooseCard(dialog);
-      nc = createNewCard(choice, duration, pFile.getId(), date);//XXX choix peut etre null
+      nc = createNewCard(choice, length, pFile.getId(), date);//XXX choix peut etre null
       event = new PersonFileEvent(nc, PersonFileEvent.SUBSCRIPTION_CARD_CHANGED);
       amount = choice.getAmount();
     } else {
-      int remainder = calcRemainder(abo.getRest(), duration);
+      int remainder = calcRemainder(abo.getRest(), length);
       if (remainder < 0) { // plus de place sur la carte
         abo.setRest(0);
         RehearsalCard card = chooseCard(dialog);
@@ -165,53 +165,54 @@ public class MemberRehearsalCtrl
   }
 
   /**
-   * 
-   * @param choix d'abonnement
-   * @param duration durée de la répétition
-   * @return 0 si la durée de la répétition dépasse la durée totale de la choix, sinon la soustraction des 2
+   *
+   * @param card selected card
+   * @param length rehearsal length
+   * @return 0 if length is longer than the total length
    */
-  int calcRemainder(RehearsalCard card, int duration) {
-    int totalDuration = card.getTotalDuration();
-    if (totalDuration > duration) {
-      return totalDuration - duration;
+  int calcRemainder(RehearsalCard card, int length) {
+    int totalLength = card.getTotalLength();
+    if (totalLength > length) {
+      return totalLength - length;
     }
     return 0;
   }
 
   /**
    *
-   * @param duration de la répétition
-   * @param remainder durée restante sur la choix d'abonnement
-   * @return la nouvelle durée restante sur la choix
+   * @param length rehearsal length
+   * @param remainder remainder length on the card
+   * @return the new remainder length
    */
-  int calcRemainder(int duration, int remainder) {
-    return duration - remainder;
+  int calcRemainder(int length, int remainder) {
+    return length - remainder;
   }
 
   /**
-   * Création d'une nouvelle choix d'abonnement individuel.
-   * @param choix d'abonnement sélectionnée
-   * @param duration de la répétition
-   * @param idper id de la personne
+   * Creates a new subscription card.
+   *
+   * @param card selected card
+   * @param length rehearsal length
+   * @param idper person's id
    * @throws SQLException
    */
-  PersonSubscriptionCard createNewCard(RehearsalCard card, int duration, int idper, DateFr date) throws SQLException {
-    //Calendar cal = Calendar.getInstance();
+  PersonSubscriptionCard createNewCard(RehearsalCard card, int length, int idper, DateFr date) throws SQLException {
 
     PersonSubscriptionCard subscriptionCard = new PersonSubscriptionCard();
     subscriptionCard.setIdper(idper);
     subscriptionCard.setRehearsalCardId(card.getId());
     subscriptionCard.setPurchaseDate(date);
-    subscriptionCard.setRest(calcRemainder(card, duration));
+    subscriptionCard.setRest(calcRemainder(card, length));
 
     service.create(subscriptionCard);
-		return subscriptionCard;
+    return subscriptionCard;
   }
 
   /**
-   * Choix d'une choix d'abonnement
+   * Selects a subscription.
+   *
    * @param dialog
-   * @return la choix sélectionnée dans le dialogue
+   * @return a rehearsal card
    */
   private RehearsalCard chooseCard(PopupDlg dialog) {
     dialog.show();
@@ -221,8 +222,6 @@ public class MemberRehearsalCtrl
     return null;
   }
 
- 
-
   private boolean isEntryValid(DateFr date) {
 
     String dateError = MessageUtil.getMessage("date.entry.error");//date incorrecte
@@ -230,17 +229,17 @@ public class MemberRehearsalCtrl
 
     if (date.equals(DateFr.NULLDATE)) {
       JOptionPane.showMessageDialog(view,
-                                    dateError,
-                                    entryError,
-                                    JOptionPane.ERROR_MESSAGE);
+              dateError,
+              entryError,
+              JOptionPane.ERROR_MESSAGE);
       return false;
     }
     if (date.before(dataCache.getStartOfPeriod())
             || date.after(dataCache.getEndOfPeriod())) {
       JOptionPane.showMessageDialog(view,
-                                    MessageUtil.getMessage("date.out.of.period"),
-                                    entryError,
-                                    JOptionPane.ERROR_MESSAGE);
+              MessageUtil.getMessage("date.out.of.period"),
+              entryError,
+              JOptionPane.ERROR_MESSAGE);
       return false;
     }
     Hour hdeb = view.getHourStart();
@@ -249,9 +248,9 @@ public class MemberRehearsalCtrl
             || hfin.toString().equals("00:00")
             || !(hfin.after(hdeb))) {
       JOptionPane.showMessageDialog(view,
-                                    MessageUtil.getMessage("hour.range.error"),
-                                    entryError,
-                                    JOptionPane.ERROR_MESSAGE);
+              MessageUtil.getMessage("hour.range.error"),
+              entryError,
+              JOptionPane.ERROR_MESSAGE);
       return false;
     }
     return true;
@@ -279,19 +278,19 @@ public class MemberRehearsalCtrl
       service.saveRehearsal(p);
       //ajout échéance et mise à jour choix abonnement
       if (subscription) {
-        int duree = view.getHourStart().getLength(view.getHourEnd());
+        int length = view.getHourStart().getLength(view.getHourEnd());
         PopupDlg dialog = new RehearsalCardDlg(view, service.getPassList());
         // recherche d'une choix d'abonnement pour cet adhérent
-        float montant = setRehearsalCard(personFile, view.getDate(), duree, dialog);
-        if (montant > 0.0f) {
-          service.saveOrderLine(personFile, view.getDate(), montant);
+        float amount = setRehearsalCard(personFile, view.getDate(), length, dialog);
+        if (amount > 0.0f) {
+          service.saveOrderLine(personFile, view.getDate(), amount);
         }
       } else {
         // calcul montant repet
         Room s = ((RoomIO) DataCache.getDao(Model.Room)).findId(view.getRoom());
-        double montant = RehearsalUtil.calcSingleRehearsalAmount(view.getHourStart(), view.getHourEnd(), s.getRate(), 1, dc);
-        if (montant > 0.0) {
-          service.saveOrderLine(personFile, view.getDate(), montant);
+        double amount = RehearsalUtil.calcSingleRehearsalAmount(view.getHourStart(), view.getHourEnd(), s.getRate(), 1, dc);
+        if (amount > 0.0) {
+          service.saveOrderLine(personFile, view.getDate(), amount);
         }
       }
     } catch (MemberException e) {
@@ -303,35 +302,34 @@ public class MemberRehearsalCtrl
   }
 
   private boolean isFree(ScheduleDTO p) {
-		// verification salle
+    // room checking
     String query = ConflictQueries.getRoomConflictSelection(p.getDay(), p.getStart(), p.getEnd(), p.getPlace());
     if (ScheduleIO.count(query, dc) > 0) {
       JOptionPane.showMessageDialog(null,
-                                    "salle occupée",
-                                    "Conflit planning",
-                                    JOptionPane.ERROR_MESSAGE);
+              "salle occupée",
+              "Conflit planning",
+              JOptionPane.ERROR_MESSAGE);
       return false;
     }
-		// verification repetition adherent
+    // rehearsal member checking
     query = ConflictQueries.getMemberRehearsalSelection(p.getDay(), p.getStart(), p.getEnd(), p.getPersonId());
     if (ScheduleIO.count(query, dc) > 0) {
       JOptionPane.showMessageDialog(null,
-                                    "Adhérent occupé",
-                                    "Conflit planning",
-                                    JOptionPane.ERROR_MESSAGE);
+              "Adhérent occupé",
+              "Conflit planning",
+              JOptionPane.ERROR_MESSAGE);
       return false;
     }
-		
-		// verification cours adherent
+
+    // course member checking
     query = ConflictQueries.getMemberScheduleSelection(p.getDay(), p.getStart(), p.getEnd(), p.getPersonId());
     if (ScheduleIO.count(query, dc) > 0) {
       JOptionPane.showMessageDialog(null,
-                                    "Adhérent occupé",
-                                    "Conflit planning",
-                                    JOptionPane.ERROR_MESSAGE);
+              "Adhérent occupé",
+              "Conflit planning",
+              JOptionPane.ERROR_MESSAGE);
       return false;
     }
     return true;
   }
 }
-

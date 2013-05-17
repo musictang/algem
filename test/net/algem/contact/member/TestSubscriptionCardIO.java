@@ -76,7 +76,7 @@ public class TestSubscriptionCardIO
     assertNotNull(card.getId());
     assertTrue(0.0 == card.getAmount());
     assertTrue(0 == card.getSessionsNumber());
-    assertTrue(0 == card.getDuration());
+    assertTrue(0 == card.getLength());
 
     // clean up
     RehearsalCardIO.delete(card.getId(), dc);
@@ -88,7 +88,7 @@ public class TestSubscriptionCardIO
     assertNotNull(card.getId());
     assertTrue(22.0 == card.getAmount());
     assertTrue(10 == card.getSessionsNumber());
-    assertTrue(60 == card.getDuration());
+    assertTrue(60 == card.getLength());
 
     // clean up
     RehearsalCardIO.delete(card.getId(), dc);

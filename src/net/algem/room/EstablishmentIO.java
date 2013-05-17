@@ -1,5 +1,5 @@
 /*
- * @(#)EstablishmentIO.java	2.7.a 26/11/12
+ * @(#)EstablishmentIO.java	2.8.a 28/03/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,6 +20,7 @@
  */
 package net.algem.room;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.Vector;
@@ -35,7 +36,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.a
  */
 public class EstablishmentIO
         extends TableIO
@@ -89,7 +90,7 @@ public class EstablishmentIO
       dc.commit();
     } catch (SQLException e1) {
       dc.rollback();
-			GemLogger.logException("transaction insert Etablissement", e1);
+      GemLogger.logException("transaction insert Etablissement", e1);
       throw e1;
     } finally {
       dc.setAutoCommit(true);
@@ -170,7 +171,7 @@ public class EstablishmentIO
   public static void delete(DataCache dc) throws SQLException {
   }
 
-  public static Establishment findId(int n, DataConnection dc) {
+  public static Establishment findId(int n, DataConnection dc) throws SQLException {
     String query;
     query = "WHERE id=" + n;
     Vector<Establishment> v = find(query, dc);
@@ -180,14 +181,21 @@ public class EstablishmentIO
     return null;
   }
 
-  public static Vector<Establishment> find(String where, DataConnection dc) {
+  public static Vector<Establishment> find(String where, DataConnection dc) throws SQLException {
+
     Vector<Establishment> v = new Vector<Establishment>();
-    if (where.length() > 0) {
-      where += " AND ptype=" + Person.ESTABLISHMENT;
-    } else {
-      where = " WHERE ptype=" + Person.ESTABLISHMENT;
+    String query = "SELECT " + PersonIO.COLUMNS
+            + " FROM " + PersonIO.TABLE
+            + " WHERE ptype = " + Person.ESTABLISHMENT;
+    query += " " + where;
+    //query += " " + where + " ORDER BY id";
+
+    ResultSet rs = dc.executeQuery(query);
+    Vector<Person> pl = new Vector<Person>();
+    while (rs.next()) {
+      pl.addElement(PersonIO.getFromRS(rs));
     }
-    Vector<Person> pl = PersonIO.find(where, dc);
+
     if (pl.size() < 1) {
       return v;
     }
@@ -195,17 +203,14 @@ public class EstablishmentIO
     while (enu.hasMoreElements()) {
       Person p = enu.nextElement();
       Establishment e = new Establishment(p);
-      try {
-        e.setAddress(AddressIO.findId(p.getId(), dc));
-        e.setTele(TeleIO.findId(p.getId(), dc));
 
-        e.setEmail(EmailIO.find(p.getId(), dc));
-      } catch (SQLException se) {
-        GemLogger.logException(se);
-      }
+      e.setAddress(AddressIO.findId(p.getId(), dc));
+      e.setTele(TeleIO.findId(p.getId(), dc));
+      e.setEmail(EmailIO.find(p.getId(), dc));
 
       v.addElement(e);
     }
+
     return v;
   }
 }

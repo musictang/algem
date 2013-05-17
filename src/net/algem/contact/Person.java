@@ -1,5 +1,5 @@
 /*
- * @(#)Person.java	2.7.h 25/02/13
+ * @(#)Person.java	2.8.a 11/04/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -30,12 +30,12 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.h
+ * @version 2.8.a
  *
  * @since 1.0a 07/07/1999
  */
 public class Person
-        implements GemModel
+        implements GemModel, Comparable<Person>
 {
 
   public static final short PERSON = 1;
@@ -229,5 +229,10 @@ public class Person
   private boolean out(int n) {
     System.out.println("!Personne.equals " + n);
     return false;
+  }
+
+  @Override
+  public int compareTo(Person o) {
+    return getFirstnameName().compareToIgnoreCase(o.getFirstnameName());
   }
 }

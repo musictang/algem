@@ -1,7 +1,7 @@
 /*
- * @(#)EnrolmentService.java	2.7.a 11/01/13
+ * @(#)EnrolmentService.java	2.8.a 13/05/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -22,9 +22,7 @@ package net.algem.enrolment;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Calendar;
-import java.util.Locale;
-import java.util.Vector;
+import java.util.*;
 import net.algem.config.*;
 import net.algem.contact.PersonFile;
 import net.algem.contact.PersonFileIO;
@@ -39,16 +37,15 @@ import net.algem.group.Musician;
 import net.algem.planning.*;
 import net.algem.room.Room;
 import net.algem.room.RoomIO;
-import net.algem.util.DataCache;
-import net.algem.util.GemLogger;
-import net.algem.util.GemService;
+import net.algem.util.*;
 import net.algem.util.model.Model;
 import net.algem.util.model.SQLkey;
+import net.algem.util.ui.MessagePopup;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.a
  * @since 2.4.a 20/04/12
  */
 public class EnrolmentService
@@ -84,6 +81,12 @@ public class EnrolmentService
     return (Module) DataCache.findId(id, Model.Module);
   }
 
+  public boolean hasModule(int m, int order) throws SQLException {
+    String where = " AND cm.module = " + m + " AND cm.idcmd = " + order;
+    Vector<ModuleOrder> vm = ModuleOrderIO.find(where, dc);
+    return vm.size() > 0;
+  }
+
   public int getIdAction(int code) throws SQLException {
     int id = 0;
     String where = ", cours WHERE action.cours = cours.id AND cours.code = '" + code + "' AND trim(cours.titre) ~* 'd[é|e|É]finir' LIMIT 1";
@@ -100,11 +103,12 @@ public class EnrolmentService
   /**
    * Gets a list of courses(id, title) scheduled from {@code startDate} in {@code estab}.
    * Depending course's code, schedule's type and length may be used to filter the results.
+   *
    * @param estab estab id
    * @param startDate from date
    * @param courseInfo course module info
    * @return a list of (id,title)
-   * @throws SQLException 
+   * @throws SQLException
    */
   public Vector<SQLkey> getCoursesFromEstab(int estab, DateFr startDate, CourseModuleInfo courseInfo) throws SQLException {
 
@@ -121,7 +125,7 @@ public class EnrolmentService
       query += " AND planning.fin - planning.debut = '" + new Hour(courseInfo.getTimeLength()) + "'";
     }
     query += " ORDER BY cours.titre";
-    
+
     Vector<SQLkey> values = new Vector<SQLkey>();
     ResultSet rs = dc.executeQuery(query);
     while (rs.next()) {
@@ -149,12 +153,12 @@ public class EnrolmentService
       return new Vector<Schedule>();
     }
 
-    DateFr end = new DateFr(p.getDay());
+    DateFr end = new DateFr(p.getDate());
     end.incDay(7);
     //XXX et si le reste de la semaine tombe pendant les vacances ?
     int type = c.isATP() ? Schedule.WORKSHOP_SCHEDULE : Schedule.COURSE_SCHEDULE;
     String query = ",salle, action WHERE p.ptype = " + type
-            + " AND p.jour >= '" + p.getDay() + "' AND p.jour < '" + end + "'"
+            + " AND p.jour >= '" + p.getDate() + "' AND p.jour < '" + end + "'"
             + " AND p.action = action.id"
             + " AND action.cours = " + c.getId()
             + " AND p.lieux = salle.id AND salle.etablissement = " + idEstab
@@ -270,15 +274,19 @@ public class EnrolmentService
   /**
    * Specifies if member {@code a} is already scheduled for {@code p}.
    *
-   * @param a member id
+   * @param m member id
    * @param p schedule
    * @return true if scheduled
    * @throws EnrolmentException
    */
-  public boolean isOnRange(int a, Schedule p) throws EnrolmentException {
+  public boolean isOnRange(int m, Schedule p) throws EnrolmentException {
 
     try {
-      String where = "WHERE pg.adherent = " + a + " AND pg.idplanning = " + p.getId();
+//      String where = "pg WHERE pg.adherent = " + a + " AND pg.idplanning = " + p.getId();
+      String where = "pg WHERE pg.adherent = " + m + " AND pg.idplanning IN("
+              + "SELECT id FROM " + ScheduleIO.TABLE 
+              + " WHERE action = " + p.getIdAction()
+              + ")";
 
       Vector<ScheduleRange> vp = ScheduleRangeIO.find(where, dc);
       if (vp.size() > 0) {
@@ -289,157 +297,258 @@ public class EnrolmentService
     }
     return false;
   }
+  
+  public List<ScheduleRange> getRangeOverlap(DateFr start, int member, Hour hStart, Hour hEnd, int action) throws SQLException {
+    String where = ConflictQueries.getRangeOverlapSelection(start, member, hStart, hEnd, action);
+    return ScheduleRangeIO.find(where, dc);
+  }
 
   /**
    * Updates schedule ranges after order validation.
    *
    * @param module
-   * @param cc
+   * @param co
    * @param memberId
    * @return the number of scheduled ranges inserted
    * @throws java.sql.SQLException
    */
-  public int updateRange(ModuleOrder module, CourseOrder cc, int memberId) throws SQLException {
+  public int updateRange(ModuleOrder module, CourseOrder co, int memberId) throws SQLException {
 
-    // prise en compte les ateliers
-    /*
-     * int type; boolean atp = c.getCode().equalsIgnoreCase("ATP"); if (atp) {
-     * type = Schedule.WORKSHOP_SCHEDULE; } else { type =
-     * Schedule.COURSE_SCHEDULE; }
-     */
-
-    String query = "WHERE action = " + cc.getAction()
+    String query = "WHERE action = " + co.getAction()
             + " AND jour >='" + module.getStart() + "'"
-            + " AND jour <= '" + module.getEnd() + "'";
-    //+ " AND extract(dow from day)=" + courseOrder.getDay();
+            + " AND jour <= '" + module.getEnd() + "'"
+            + " ORDER BY p.jour";
 
     Vector<Schedule> v = ScheduleIO.findCourse(query, dc);
     if (v.size() < 1) {
       return 0;
     }
+    Course c = planningService.getCourseFromAction(co.getAction());
     ScheduleRange h = new ScheduleRange();
     h.setMemberId(memberId);
-
-    for (int i = 0; i < v.size(); i++) {
-      Schedule p = v.elementAt(i);
-      h.setScheduleId(p.getId());
-      // TODO VERIFIER heures de début/fin si planning a été copié/déplacé
-      // et tenir compte du décalage si oui
-      if (!cc.getStart().between(p.getStart(), p.getEnd())
-              || !cc.getEnd().between(p.getStart(), p.getEnd())) {
-        continue;
-      }
-      h.setStart(cc.getStart());
-      h.setEnd(cc.getEnd());
-      ScheduleRangeIO.insert(h, dc); // insertion des plages a décommenter après test
+    try {
+      insertRange(co, c, v, h);
+    } catch (EnrolmentScheduleException ex) {
+      throw new SQLException(MessageUtil.getMessage("enrolment.cancel.info"));
     }
+
     return v.size();
   }
 
   /**
-   * Gets the day when the member {@code member} is scheduled for the action {@code action}.
+   * Updates the scheduled ranges when course order is modified.
+   *
+   * @param co course order
+   * @param m member id
+   * 
+   * @throws SQLException
+   */
+  public void updateRange(CourseOrder co, int m) throws SQLException {
+
+    String query = "WHERE action = " + co.getAction()
+            + " AND jour >='" + co.getDateStart() + "'"
+            + " AND jour <= '" + co.getDateEnd() + "'";
+    Vector<Schedule> v = ScheduleIO.findCourse(query, dc);
+
+    if (v.isEmpty()) {
+      return;
+    }
+    Course c = planningService.getCourseFromAction(co.getAction());
+    ScheduleRange h = new ScheduleRange();
+    h.setMemberId(m);
+    try {
+      insertRange(co, c, v, h);
+    } catch (EnrolmentScheduleException ex) {
+      throw new SQLException(BundleUtil.getLabel("Action.cancel.label"));
+    }
+  }
+
+  private void insertRange(CourseOrder co, Course c, Vector<Schedule> v, ScheduleRange h)
+          throws SQLException, EnrolmentScheduleException {
+
+    List<Schedule> notInRange = new ArrayList<Schedule>();
+
+    for (int i = 0; i < v.size(); i++) {
+      Schedule p = v.elementAt(i);
+      h.setScheduleId(p.getId());
+
+      if (c.isCollective()) {
+        h.setStart(p.getStart());
+        h.setEnd(p.getEnd());
+      } else {
+        // TODO VERIFIER heures de début/fin si planning a été copié/déplacé
+        // et tenir compte du décalage si oui
+        if (!co.getStart().between(p.getStart(), p.getEnd())
+                || !co.getEnd().between(p.getStart(), p.getEnd())) {
+          notInRange.add(p);
+          continue;
+        }
+        h.setStart(co.getStart());
+        h.setEnd(co.getEnd());
+      }
+      ScheduleRangeIO.insert(h, dc); // insertion des plages
+    }
+    if (!notInRange.isEmpty()) {
+      StringBuilder sb = new StringBuilder();
+      for (Schedule s : notInRange) {
+        sb.append(s.getDate()).append("->").append(s.getStart()).append("-").append(s.getEnd()).append("\n");
+      }
+      String msgKey = notInRange.size() == 1 ? "member.enrolment.schedule.session.warning"
+              : "member.enrolment.schedule.sessions.warning";
+      String msg2 = MessageUtil.getMessage(msgKey, new Object[] {notInRange.size(), v.size()});
+      if (!MessagePopup.confirm(null, 
+              MessageUtil.getMessage("member.enrolment.schedule.warning",
+              new Object[]{c.getTitle(), sb.toString(), }) + msg2)) {
+        throw new EnrolmentScheduleException();
+      }
+    }
+  }
+  
+
+  /**
+   * Gets the date when the member {@code member} is scheduled for the action {@code action}.
    *
    * @param action
    * @param start start date of enrolment
    * @param member member id
-   * @return an integer representing the day of week
+   * @return an integer representing the date of week
    */
-  public int getCourseDayMember(int action, DateFr start, int member) {
+  public int getCourseDayMember(int action, DateFr start, int member) throws SQLException {
+
     int j = 0;
+    if (action == 0) {
+      return j;
+    }
+
     Calendar cal = Calendar.getInstance(Locale.FRANCE);
     DateFr d = null;
 
-    try {
-      Course course = getCourse(action);
-      // pas de recherche pour les cours à définir
-      if (course.isUndefined()) {
-        return j;
-      }
-      String debut = "00-00-0000".equals(start.toString()) ? "01-01-1900" : start.toString();
-      String query = "SELECT jour FROM planning p, plage pl WHERE p.id = pl.idplanning  AND p.jour >= '" + debut
-              + "' AND p.action = " + action
-              + " AND pl.adherent=" + member + " LIMIT 1";
+    Course course = getCourse(action);
+    // pas de recherche pour les cours à définir
+    if (course == null || course.isUndefined()) {
+      return j;
+    }
+    String dateStart = "00-00-0000".equals(start.toString()) ? "01-01-1900" : start.toString();
+    String query = "SELECT jour FROM " + ScheduleIO.TABLE + " p, " + ScheduleRangeIO.TABLE + " pl"
+            + " WHERE p.id = pl.idplanning"
+            + " AND p.jour >= '" + dateStart + "' AND p.action = " + action
+            + " AND pl.adherent = " + member
+            + " LIMIT 1";
 
-      ResultSet rs = dc.executeQuery(query);
+    ResultSet rs = dc.executeQuery(query);
+    if (rs.next()) {
+      d = new DateFr(rs.getString(1));
+    } else { // pour les anciennes commandes
+      query = "SELECT jour FROM " + ScheduleIO.TABLE + " p, "
+              + ScheduleRangeIO.TABLE + " pl, action a"
+              + " WHERE p.jour >= '" + dateStart + "' AND p.id = pl.idplanning"
+              + " AND pl.adherent = " + member
+              + " AND p.action = a.id"
+              + " AND a.cours = " + course.getId()
+              + " LIMIT 1";
+      rs = dc.executeQuery(query);
       if (rs.next()) {
         d = new DateFr(rs.getString(1));
-      } else { // pour les anciennes commandes
-        query = "SELECT jour FROM planning p, plage pl, action a WHERE p.jour >= '" + debut
-                + "' AND p.id = pl.idplanning AND pl.adherent = " + member
-                + " AND p.action = a.id AND a.cours = " + course.getId() + "  LIMIT 1";
-        rs = dc.executeQuery(query);
-        if (rs.next()) {
-          d = new DateFr(rs.getString(1));
-        }
       }
-      rs.close();
-      if (d != null) {
-        cal.setTime(d.getDate());
-        j = cal.get(Calendar.DAY_OF_WEEK);
-      }
-    } catch (SQLException e) {
-      GemLogger.log(getClass().getName(), "getJourCoursAdh", e);
+    }
+    rs.close();
+    if (d != null) {
+      cal.setTime(d.getDate());
+      j = cal.get(Calendar.DAY_OF_WEEK);
     }
     return j;
   }
+  
+  public void deleteRange(DateFr from, int member, int action) throws SQLException {
+    String query = "DELETE FROM " + ScheduleRangeIO.TABLE
+            + " WHERE adherent = " + member
+            + " AND idplanning IN ("
+            + " SELECT id FROM planning"
+            + " WHERE jour >= '" + from + "' AND action = " + action
+            + ")";
+      dc.executeUpdate(query);
+  }
 
   /**
-   * Stops a course from a date {@code from}.
+   * Stops a member's course from a date {@code from}.
    *
-   * @param cmd order id
-   * @param cc course order id
-   * @param c course id
-   * @param from start date
+   * @param member id
+   * @param co course order
+   * @param c course
+   * @param from date
    * @throws EnrolmentException
    */
-  public void stopCourse(Order cmd, CourseOrder cc, Course c, DateFr from) throws EnrolmentException {
-    String query = "DELETE FROM plage WHERE adherent = " + cmd.getMember() + " AND idplanning IN (SELECT id FROM planning WHERE jour >= '" + from + "' AND action = " + cc.getAction() + ")";
+  public void stopCourse(int member, CourseOrder co, Course c, DateFr from) throws EnrolmentException {
+    String query = "DELETE FROM " + ScheduleRangeIO.TABLE
+            + " WHERE adherent = " + member
+            + " AND idplanning IN ("
+            + " SELECT id FROM planning"
+            + " WHERE jour >= '" + from + "' AND action = " + co.getAction()
+            + ")";
     try {
       dc.setAutoCommit(false);
       dc.executeUpdate(query);
-      String libADefinir = "A Definir";
-      int idADefinir = 0;
-      Course cad = getCourseUndefined(c.getCode());
-      if (cad != null) {
-        idADefinir = getActionFromCourse(cad.getId());
-        libADefinir = cad.getLabel();
-      } else {
-        return;
-      }
+      
+      String label = ((GemParam) DataCache.findId(c.getCode(), Model.CourseCode)).getLabel()
+              + " " + BundleUtil.getLabel("To.define.label");
 
-      Hour duree = new Hour(cc.getStart().getLength(cc.getEnd()));
+      Hour timeLength = new Hour(co.getStart().getLength(co.getEnd()));
 
       // si la demande d'arret est postérieure à la date d'inscription à ce cours
-      if (from.after(cc.getDateStart())) {
-        //DateFr datefin = ccours.getDateEnd();
+      if (from.after(co.getDateStart())) {
         if (!c.isATP()) {
-          cc.setDateEnd(from);	// on change la date de end de l'ancienne commande_cours
-          CourseOrderIO.update(cc, dc);// on update l'ancienne commande
-        } else {
-          ////CommandeCoursIO.deleteOID(ccours, dc);//oid (seule la commande_cours courante)
-        }
-        cc.setDateStart(from);
-        cc.setDateEnd(dataCache.getEndOfYear());
-        cc.setAction(idADefinir);
-        cc.setTitle(libADefinir);
-        cc.setStart(new Hour());
-        cc.setEnd(duree);
-        cc.setDay(0);
+          co.setDateEnd(from);	// on change la date de fin de l'ancienne commande_cours
+          CourseOrderIO.update(co, dc);// on update l'ancienne commande
+        } 
+        co.setDateStart(from);
+        co.setDateEnd(dataCache.getEndOfYear());
+        co.setAction(0);
+        co.setTitle(label);
+        co.setStart(new Hour());
+        co.setEnd(timeLength);
+        co.setDay(0);
         // on insère une nouvelle commande_cours (à définir)
-        CourseOrderIO.insert(cc, dc);
+        CourseOrderIO.insert(co, dc);
       } else {// si la demande d'arret est antérieure ou égale à la date d'inscription à ce cours
-        cc.setAction(idADefinir);
-        cc.setTitle(libADefinir);
-        cc.setStart(new Hour());
-        cc.setEnd(duree);
-        cc.setDay(0);
+        co.setAction(0);
+        co.setTitle(label);
+        co.setStart(new Hour());
+        co.setEnd(timeLength);
+        co.setDay(0);
         if (c.isATP()) {
-          cc.setDateStart(from);
-          cc.setDateEnd(dataCache.getEndOfYear());
-          cc.setEnd(new Hour());
+          co.setDateStart(from);
+          co.setDateEnd(dataCache.getEndOfYear());
+          co.setEnd(new Hour());
         }
         // on modifie la commande_cours existante
-        CourseOrderIO.update(cc, dc);
+        CourseOrderIO.update(co, dc);
+      }
+      dc.commit();
+    } catch (SQLException sqe) {
+      dc.rollback();
+      throw new EnrolmentException(sqe.getMessage());
+    } finally {
+      dc.setAutoCommit(true);
+    }
+  }
+  
+  public void changeHour(int member, CourseOrder co, Course c, DateFr from) throws EnrolmentException {
+    String query = "DELETE FROM " + ScheduleRangeIO.TABLE
+            + " WHERE adherent = " + member
+            + " AND idplanning IN ("
+            + " SELECT id FROM planning"
+            + " WHERE jour >= '" + from + "' AND action = " + co.getAction()
+            + ")";
+    try {
+      dc.setAutoCommit(false);
+      dc.executeUpdate(query);
+      // si la demande d'arret est postérieure à la date d'inscription à ce cours
+      if (from.after(co.getDateStart())) {
+        co.setDateStart(from);
+        co.setDateEnd(dataCache.getEndOfYear());
+        CourseOrderIO.insert(co, dc);
+      } else {// si la demande d'arret est antérieure ou égale à la date d'inscription à ce cours
+        CourseOrderIO.update(co, dc);
       }
       dc.commit();
     } catch (SQLException sqe) {
@@ -461,7 +570,7 @@ public class EnrolmentService
 
     try {
       dc.setAutoCommit(false);
-      updateRange(cc, memberId);// 1.1d ajout de la salle
+      updateRange(cc, memberId);
       CourseOrderIO.update(cc, dc);
       dc.commit();
     } catch (SQLException sqe) {
@@ -470,9 +579,20 @@ public class EnrolmentService
     } finally {
       dc.setAutoCommit(true);
     }
-//        desktop.postEvent(new ModifPlanEvent(this, cc.getDateStart(), cc.getDateEnd()));// test
-//        // Rafraichissement de la vue inscription
-//        desktop.postEvent(new UpdateInscriptionEvent(this, dossier.getID()));
+  }
+
+  public void createCourse(CourseOrder cc, int memberId) throws EnrolmentException {
+    try {
+      dc.setAutoCommit(false);
+      updateRange(cc, memberId);
+      CourseOrderIO.insert(cc, dc);
+      dc.commit();
+    } catch (SQLException sqe) {
+      dc.rollback();
+      throw new EnrolmentException(sqe.getMessage());
+    } finally {
+      dc.setAutoCommit(true);
+    }
   }
 
   /**
@@ -491,7 +611,7 @@ public class EnrolmentService
   }
 
   public Vector<MemberOrder> getOrders() {
-    return OrderIO.findMember(dc);
+    return OrderIO.findMemberOrders(dc);
   }
 
   public PersonFile getMemberFile(int idMember) throws SQLException {
@@ -502,15 +622,15 @@ public class EnrolmentService
    * Gets the members scheduled for this {@code plan}.
    */
   public static Vector<PersonFile> findMembersByPlanning(Schedule plan) {
-    //23092003 String query = "SELECT p.id,p.ptype,p.nom,p.prenom,p.civilite,p.note,e.instrument1 from personne p, eleve e, commande c, commande_cours cc WHERE cc.cours = "+cours+" AND c.id = cc.idcmd and cc.datedebut <= '"+day+"' and cc.datefin >= '"+day+"' AND p.id = c.adh and p.id = e.idper ORDER by p.nom";
-    //String query = "SELECT p.id,p.ptype,p.nom,p.prenom,p.civilite,p.note,p.droit_img,e.idper,e.instrument1,e.instrument2,e.profession,e.datenais,e.payeur,e.nadhesions,e.pratique,e.niveau  from personne p, eleve e, plage pl WHERE pl.cours = " + cours + " AND pl.day = '" + day + "' AND pl.prof = " + idprof + " AND p.id = pl.adherent and p.id = e.idper ORDER by p.nom";
+    //23092003 String query = "SELECT p.id,p.ptype,p.nom,p.prenom,p.civilite,p.note,e.instrument1 from personne p, eleve e, commande c, commande_cours cc WHERE cc.cours = "+cours+" AND c.id = cc.idcmd and cc.datedebut <= '"+date+"' and cc.datefin >= '"+date+"' AND p.id = c.adh and p.id = e.idper ORDER by p.nom";
+    //String query = "SELECT p.id,p.ptype,p.nom,p.prenom,p.civilite,p.note,p.droit_img,e.idper,e.instrument1,e.instrument2,e.profession,e.datenais,e.payeur,e.nadhesions,e.pratique,e.niveau  from personne p, eleve e, plage pl WHERE pl.cours = " + cours + " AND pl.date = '" + date + "' AND pl.prof = " + idprof + " AND p.id = pl.adherent and p.id = e.idper ORDER by p.nom";
     String query = "SELECT " + PersonIO.COLUMNS + "," + MemberIO.COLUMNS
             + " FROM " + PersonIO.TABLE + ", " + MemberIO.TABLE + ", plage pl "
             + " WHERE pl.idplanning = " + plan.getId()
             + " AND personne.id = pl.adherent "
             + " AND personne.id = eleve.idper ORDER BY personne.nom";
     return ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findRegistered(query);
-//    return ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findId(query, false);
+//    return ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findByIdOrder(query, false);
   }
 
   public Vector<Musician> findCourseMembers(int course) throws SQLException {
@@ -550,7 +670,7 @@ public class EnrolmentService
    * @return a liste of course order
    */
   public Vector<CourseOrder> getCourseOrder(int i, int m) throws SQLException {
-    return CourseOrderIO.find(" AND cc.idcmd=" + i + " AND cc.module=" + m, dc);
+    return CourseOrderIO.find(" AND cc.idcmd = " + i + " AND cc.module = " + m + " ORDER BY idaction, datedebut", dc);
   }
 
   /**
@@ -585,36 +705,6 @@ public class EnrolmentService
   }
 
   /**
-   * Updates the scheduled ranges when course order is modified.
-   *
-   * @param ccours course order
-   * @param start date
-   * @param m member id
-   * @throws SQLException
-   */
-  private void updateRange(CourseOrder ccours, int m) throws SQLException {
-
-    String query = "WHERE action = " + ccours.getAction()
-            + " AND jour >='" + ccours.getDateStart() + "'"
-            + " AND jour <= '" + ccours.getDateEnd() + "'";
-    Vector<Schedule> v = ScheduleIO.findCourse(query, dc);
-
-    if (v.size() < 1) {
-      return;
-    }
-    ScheduleRange h = new ScheduleRange();
-    h.setMemberId(m);
-
-    for (int i = 0; i < v.size(); i++) {
-      Schedule p = v.elementAt(i);
-      h.setScheduleId(p.getId());
-      h.setStart(ccours.getStart());
-      h.setEnd(ccours.getEnd());
-      ScheduleRangeIO.insert(h, dc);
-    }
-  }
-
-  /**
    * Gets the first scheduled course {@code c} from {@code start}
    * in the establishment {@code estab}.
    *
@@ -645,10 +735,48 @@ public class EnrolmentService
     return ParamTableIO.getValues(ModeOfPaymentCtrl.TABLE, ModeOfPaymentCtrl.COLUMN_NAME, dc);
   }
 
-  public void create(Order cmd) {
+  public void create(Order order) throws SQLException {
+    OrderIO.insert(order, dc);
   }
 
-  public void delete(Order cmd) throws Exception {
-    OrderIO.delete(cmd, dc);
+  public void create(CourseOrder co) throws SQLException {
+    CourseOrderIO.insert(co, dc);
+  }
+  
+  public void update(CourseOrder co) throws SQLException {
+    CourseOrderIO.update(co, dc);
+  }
+
+  void create(ModuleOrder mo) throws SQLException {
+    ModuleOrderIO.insert(mo, dc);
+  }
+
+  public void delete(Order order) throws Exception {
+    OrderIO.delete(order, dc);
+  }
+
+  void delete(ModuleOrder mo, int member) throws EnrolmentException {
+    try {
+      dc.setAutoCommit(false);
+
+      ModuleOrderIO.delete(mo.getId(), dc);
+      Vector<CourseOrder> courseOrders = CourseOrderIO.find(" AND cc.module = " + mo.getId(), dc);
+      for (int i = 0; i < courseOrders.size(); i++) {
+        CourseOrder cc = courseOrders.elementAt(i);
+        // suppression des plages de cours
+        String query = "idplanning IN (SELECT id FROM " + ScheduleIO.TABLE
+                + " WHERE action = " + cc.getAction() + ")"
+                + " AND adherent = " + member;
+        ScheduleRangeIO.delete(query, dc);
+      }
+      // suppression de la commande_cours
+      CourseOrderIO.deleteByIdModule(mo.getId(), dc);
+      dc.commit();
+    } catch (SQLException sqe) {
+      dc.rollback();
+      throw new EnrolmentException(sqe.getMessage());
+    } finally {
+      dc.setAutoCommit(true);
+    }
   }
 }

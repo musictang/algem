@@ -1,7 +1,7 @@
 /*
- * @(#)ConfigAdmin.java 2.7.a 03/12/12
+ * @(#)ConfigAdmin.java 2.8.a 01/04/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -36,7 +36,7 @@ import net.algem.util.ui.GemPanel;
  * Panel for config and administrative tasks.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.a
  * @since 2.1.k
  */
 public class ConfigAdmin
@@ -45,8 +45,8 @@ public class ConfigAdmin
 
   private Config c1, c2, c3, c4, c5;
   private JCheckBox jc1, jc2, jc3;
-  private ParamChoice ecoleChoix;
-  private EstabChoice etabChoix;
+  private ParamChoice school;
+  private EstabChoice estab;
 
   public ConfigAdmin(String title, Map<String, Config> cm) {
     super(title, cm);
@@ -66,11 +66,11 @@ public class ConfigAdmin
     jc2 = new JCheckBox(ConfigKey.COURSE_MANAGEMENT.getLabel());
     jc3 = new JCheckBox(ConfigKey.WORKSHOP_MANAGEMENT.getLabel());
 
-    ecoleChoix = new ParamChoice(ParamTableIO.find(SchoolCtrl.TABLE, SchoolCtrl.SORT_COLUMN, dataCache.getDataConnection()));
-    ecoleChoix.setValue(c4.getValue());
+    school = new ParamChoice(dataCache.getList(Model.School).getData());
+    school.setKey(Integer.parseInt(c4.getValue()));
 
-    etabChoix = new EstabChoice(dataCache.getList(Model.Establishment));
-    etabChoix.setKey(Integer.parseInt(c5.getValue()));
+    estab = new EstabChoice(dataCache.getList(Model.Establishment));
+    estab.setKey(Integer.parseInt(c5.getValue()));
 
     jc1.setSelected(isSelected(c1.getValue()));
     jc2.setSelected(isSelected(c2.getValue()));
@@ -83,10 +83,10 @@ public class ConfigAdmin
     
     GemPanel p = new GemPanel();
     p.add(new GemLabel(ConfigKey.DEFAULT_SCHOOL.getLabel()));
-    p.add(ecoleChoix);
+    p.add(school);
     p.add(Box.createHorizontalGlue());
     p.add(new GemLabel(ConfigKey.DEFAULT_ESTABLISHMENT.getLabel()));
-    p.add(etabChoix);
+    p.add(estab);
     content.add(p);
 
     add(content);
@@ -98,8 +98,8 @@ public class ConfigAdmin
     c1.setValue(getValue(jc1));
     c2.setValue(getValue(jc2));
     c3.setValue(getValue(jc3));
-    c4.setValue(((Param)ecoleChoix.getSelectedItem()).getValue());
-    c5.setValue(String.valueOf(etabChoix.getKey()));
+    c4.setValue(String.valueOf(school.getKey()));
+    c5.setValue(String.valueOf(estab.getKey()));
 
     conf.add(c1);
     conf.add(c2);

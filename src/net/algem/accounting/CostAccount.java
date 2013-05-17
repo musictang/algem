@@ -1,5 +1,5 @@
 /*
- * @(#)CostAccount.java	2.7.a 16/01/2013
+ * @(#)CostAccount.java	2.8.d 16/05/13
  *
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -22,12 +22,13 @@
 package net.algem.accounting;
 
 import net.algem.config.ActivableParam;
+import net.algem.config.Param;
 import net.algem.util.model.GemModel;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.d
  * @since 2.7.a 16/01/2013
  */
 public class CostAccount 
@@ -35,6 +36,19 @@ public class CostAccount
   implements GemModel
 {
 
+
+  public CostAccount() {
+  }
+
+  public CostAccount(Param ap) {
+    this.key = ap.getKey();
+    this.value = ap.getValue();
+  }
+  
+  public CostAccount(ActivableParam ap) {
+    super(ap.getKey(), ap.getValue(), ap.isActive());
+  }
+  
   @Override
   public int getId() {
     throw new UnsupportedOperationException("Not supported yet.");

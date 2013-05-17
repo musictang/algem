@@ -79,7 +79,7 @@ public class TestMemberSingleRehearsal
     RehearsalCard card = new RehearsalCard("ZikTest", 120.0F, nbs, sessionDuration);
 
     int rest = rehearsalCtrl.calcRemainder(card, duration);
-    int expected = card.getTotalDuration() - duration;
+    int expected = card.getTotalLength() - duration;
     assertTrue(expected == rest); //duree totale > duree repet
 
     card.setSessionsNumber(3);
@@ -111,7 +111,7 @@ public class TestMemberSingleRehearsal
     PersonSubscriptionCard nc = io.find(idper, null); // dernière carte enregistrée
     assertNotNull("carte repet introuvable ?", nc);
     assertEquals("erreur date ?", new DateFr(cal.getTime()), nc.getPurchaseDate());
-    assertTrue(card.getTotalDuration() - 60 == nc.getRest());
+    assertTrue(card.getTotalLength() - 60 == nc.getRest());
     assertTrue(0.0 < amount);
     assertTrue(card.getAmount() == amount);
     // clean up

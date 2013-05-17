@@ -1,7 +1,7 @@
 /*
- * @(#)ActionView.java	2.7.h 25/02/13
+ * @(#)ActionView.java	2.8.a 15/04/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -46,7 +46,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.h
+ * @version 2.8.a
  */
 public class ActionView
         extends GemPanel
@@ -72,7 +72,7 @@ public class ActionView
     this.desktop = desktop;
     dataCache = desktop.getDataCache();
     course = new CourseChoice(new CourseChoiceActiveModel(dataCache.getList(Model.Course), true));//modification 1.1d ajout d'un filtre
-    course.addItemListener(new CoursCoItemListener());
+    course.addItemListener(new CourseCoItemListener());
     datePanel = new DateRangePanel(dataCache.getStartOfYear(), dataCache.getEndOfYear());
     hourPanel = new HourRangePanel();
     teacher = new TeacherChoice(dataCache.getList(Model.Teacher));
@@ -91,8 +91,6 @@ public class ActionView
   }
   
   private void load(Course c) {
-    courseLength.set(c.getLength() == 0 ? new Hour() : new Hour(c.getLength()));
-    hourPanel.setEnd(hourPanel.getStart().end(c.getLength()));
     courseLength.setEditable(c.isCourseCoInst());
     intervall.setEditable(c.isCourseCoInst());
   }
@@ -103,20 +101,20 @@ public class ActionView
     GridBagHelper gb = new GridBagHelper(this);
     gb.insets = GridBagHelper.SMALL_INSETS;
 
-    gb.add(new GemLabel(BundleUtil.getLabel("Course.label")), 0, 0, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Date.label")), 0, 1, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Day.label")), 0, 2, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Periodicity.label")), 0, 3, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Hour.label")), 0, 4, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Teacher.label")), 0, 5, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Room.label")), 0, 6, 1, 1, GridBagHelper.EAST);    
-    gb.add(new GemLabel(BundleUtil.getLabel("Sessions.label")), 0, 7, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Menu.holidays.label")), 0, 8, 1, 1, GridBagHelper.EAST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Course.label")), 0, 0, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Date.label")), 0, 1, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Day.label")), 0, 2, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Periodicity.label")), 0, 3, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Hour.label")), 0, 4, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Teacher.label")), 0, 5, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Room.label")), 0, 6, 1, 1, GridBagHelper.WEST);    
+    gb.add(new GemLabel(BundleUtil.getLabel("Sessions.label")), 0, 7, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Menu.holidays.label")), 0, 8, 1, 1, GridBagHelper.WEST);
 
-    gb.add(course, 1, 0, 2, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
-    gb.add(datePanel, 1, 1, 2, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
-    gb.add(day, 1, 2, 2, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
-    gb.add(periodicity, 1, 3, 2, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
+    gb.add(course, 1, 0, 2, 1, GridBagHelper.HORIZONTAL, GridBagHelper.EAST);
+    gb.add(datePanel, 1, 1, 2, 1, GridBagHelper.HORIZONTAL, GridBagHelper.EAST);
+    gb.add(day, 1, 2, 2, 1, GridBagHelper.HORIZONTAL, GridBagHelper.EAST);
+    gb.add(periodicity, 1, 3, 2, 1, GridBagHelper.HORIZONTAL, GridBagHelper.EAST);
 
     GemPanel p = new GemPanel();
     p.add(hourPanel);
@@ -203,17 +201,12 @@ public class ActionView
   }
 
   /**
-   * Checks if the time range equals to the course's length.
+   * Checks if the time range is valid.
    * 
-   * @return true if range length equals course's length
+   * @return true if range length >= 10
    */
   boolean hasValidLength() {
-    Course c = getCourse();
     int length = hourPanel.getStart().getLength(hourPanel.getEnd());
-    if (c.isCollective() && c.hasValidCodeLength()) {
-      return length == getCourseLength();
-    }
-    // length must be > 10 min
     return length < 10 ? false : true;
   }
 
@@ -236,7 +229,7 @@ public class ActionView
     return getClass().getSimpleName();
   }
 
-  class CoursCoItemListener implements ItemListener {
+  class CourseCoItemListener implements ItemListener {
     // This method is called only if a new item has been selected.
 
     @Override
@@ -252,7 +245,10 @@ public class ActionView
   }
   
   class RoomItemListener implements ItemListener {
-
+    /**
+     * Gets and diplays the maximum capacity of this room.
+     * @param e 
+     */
     @Override
     public void itemStateChanged(ItemEvent e) {
       

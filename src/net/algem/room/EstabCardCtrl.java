@@ -1,5 +1,5 @@
 /*
- * @(#)EstabCardCtrl.java	2.7.e 06/02/13
+ * @(#)EstabCardCtrl.java	2.8.a 28/03/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -28,6 +28,7 @@ import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
 import net.algem.util.event.GemEvent;
+import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.CardCtrl;
 
@@ -36,7 +37,7 @@ import net.algem.util.ui.CardCtrl;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.e
+ * @version 2.8.a
  */
 public class EstabCardCtrl
         extends CardCtrl
@@ -143,7 +144,12 @@ public class EstabCardCtrl
 
   @Override
   public boolean loadId(int id) {
-    return loadCard(EstablishmentIO.findId(id, dc));
+    try {
+      return loadCard(dataCache.findId(id, Model.Establishment));
+    } catch (SQLException ex) {
+      GemLogger.logException(ex);
+      return false;
+    }
   }
 
   private Establishment get() {

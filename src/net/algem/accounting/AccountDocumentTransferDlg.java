@@ -1,7 +1,7 @@
 /*
- * @(#)AccountDocumentTransferDlg.java	2.7.a 05/12/12
+ * @(#)AccountDocumentTransferDlg.java	2.8.a 01/04/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,7 +27,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import net.algem.planning.DateFr;
 import net.algem.util.BundleUtil;
-import net.algem.util.DataConnection;
+import net.algem.util.DataCache;
 import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
 import net.algem.util.ui.GemPanel;
@@ -39,7 +39,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.a
  * @since 1.0a 27/09/2000
  */
 public class AccountDocumentTransferDlg
@@ -48,22 +48,22 @@ public class AccountDocumentTransferDlg
 
   private AccountDocumentTransferView view;
 
-  public AccountDocumentTransferDlg(Dialog _parent, DataConnection dc) {
-    super(_parent, dc);
+  public AccountDocumentTransferDlg(Dialog _parent, DataCache dataCache) {
+    super(_parent, dataCache);
   }
 
-  public AccountDocumentTransferDlg(Frame _parent, DataConnection dc) {
-    super(_parent, dc);
+  public AccountDocumentTransferDlg(Frame _parent, DataCache dataCache) {
+    super(_parent, dataCache);
   }
-
-  @Override
-  public void init(DataConnection dc) {
-    super.init(dc);
-  }
+//
+//  @Override
+//  public void init(DataCache dataCache) {
+//    super.init(dataCache);
+//  }
 
   @Override
   public void setDisplay() {
-    view = new AccountDocumentTransferView(dbx);
+    view = new AccountDocumentTransferView(dataCache);
     Container container = getContentPane();
     setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
     GemPanel entete = new GemPanel();

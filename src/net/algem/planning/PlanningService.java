@@ -1,7 +1,7 @@
 /*
- * @(#)PlanningService.java	2.7.h 21/02/13
+ * @(#)PlanningService.java	2.8.d 16/05/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,6 +28,7 @@ import net.algem.course.Course;
 import net.algem.course.CourseIO;
 import net.algem.enrolment.CourseOrder;
 import net.algem.enrolment.CourseOrderIO;
+import net.algem.room.Room;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
@@ -38,7 +39,7 @@ import net.algem.util.model.Model;
  * Service class for planning.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.h
+ * @version 2.8.d
  * @since 2.4.a 07/05/12
  */
 public class PlanningService
@@ -65,7 +66,7 @@ public class PlanningService
     end.setTime(a.getDateEnd().getDate());
 
     while (start.get(Calendar.DAY_OF_WEEK) != a.getDay() + 1) {
-      start.add(Calendar.DATE, 1); // on incrémente d'un day
+      start.add(Calendar.DATE, 1); // on incrémente d'un date
     }
     int dwm = start.get(Calendar.DAY_OF_WEEK_IN_MONTH);
     while (!start.after(end) && i < a.getNSessions()) {
@@ -301,6 +302,11 @@ public class PlanningService
     }
   }
 
+  
+  public Vector<ScheduleTestConflict> testRange(ScheduleObject orig, ScheduleObject range) 
+          throws SQLException {
+    return conflictService.getRangeConflicts(orig, range, orig.getDate(), orig.getDate());
+  }
   /**
    * Gets a schedule object with new teacher id and possibly new beginning and end time.
    *
@@ -322,16 +328,14 @@ public class PlanningService
    * Room and time may be also modified.
    *
    * @param plan
-   * @param day new date
-   * @param hStart start time
-   * @param hEnd end time
-   * @param s new room (optional)
+   * @param newPlan
+   * 
    * @throws PlanningException si erreur SQL
    */
   public void postPoneCourse(ScheduleObject plan, ScheduleObject newPlan) throws PlanningException {
     // probleme avec les heures de end = 24:00 l'update les transforme en 00:00 / erreurs futures dans le décompte des heures
     String query = "UPDATE " + ScheduleIO.TABLE
-            + " SET jour = '" + newPlan.getDay()
+            + " SET jour = '" + newPlan.getDate()
             + "', debut = '" + newPlan.getStart()
             + "', fin = '" + newPlan.getEnd()
             + "', lieux = " + newPlan.getPlace()
@@ -349,7 +353,7 @@ public class PlanningService
       if (Schedule.WORKSHOP_SCHEDULE == plan.getType()) {
         query = "UPDATE " + CourseOrderIO.TABLE
                 + " SET debut = '" + newPlan.getStart() + "', fin = '" + newPlan.getEnd()
-                + "', datedebut = '" + newPlan.getDay() + "', datefin = '" + newPlan.getDay()
+                + "', datedebut = '" + newPlan.getDate() + "', datefin = '" + newPlan.getDate()
                 + "' WHERE idaction = " + plan.getIdAction();
         dc.executeUpdate(query); // commande_cours update
       }
@@ -433,6 +437,7 @@ public class PlanningService
               + " WHERE idplanning = " + plan.getId()
               + " AND debut >= '" + range[0] + "' AND fin <= '" + range[1] + "'";
       dc.executeUpdate(query);
+      newPlan.setDate(plan.getDate());//important
       newPlan.setStart(range[1]);
       newPlan.setEnd(plan.getEnd());
       newPlan.setPlace(plan.getPlace());
@@ -460,7 +465,7 @@ public class PlanningService
       // getLength en minutes entre l'ancienne heure et la nouvelle passée en paramètre.
       int offset = planModel.getStart().getLength(planCopy.getStart());
 
-      String where = "WHERE pg.idplanning = " + planModel.getId();
+      String where = "pg WHERE pg.idplanning = " + planModel.getId();
       Vector<ScheduleRange> vpg = ScheduleRangeIO.find(where, dc);
       for (ScheduleRange pl : vpg) {
         ScheduleRange pg = new ScheduleRange();
@@ -556,21 +561,40 @@ public class PlanningService
    * @version 1.1b
    *
    */
-  public void modifyPlanningRange(ScheduleObject plan, Hour start, Hour end, DateFr endDate) throws PlanningException {
-    String query = null;
+  public void modifyPlanningLength(ScheduleObject plan, Hour start, Hour end, DateFr endDate) throws PlanningException {
+    
     Calendar cal = Calendar.getInstance(Locale.FRANCE);
-    cal.setTime(plan.getDay().getDate());
+    cal.setTime(plan.getDate().getDate());
     int dow = cal.get(Calendar.DAY_OF_WEEK) - 1;
-    query = "UPDATE planning SET debut = '" + start + "', fin = '" + end + "'"
-            + " WHERE jour BETWEEN '" + plan.getDay() + "' AND '" + endDate + "'"
+    
+    String query = "UPDATE " + ScheduleIO.TABLE + " SET debut = '" + start + "', fin = '" + end + "'"
+            + " WHERE jour BETWEEN '" + plan.getDate() + "' AND '" + endDate + "'"
             + " AND date_part('dow', jour) = " + dow
             + " AND debut = '" + plan.getStart() + "' AND fin = '" + plan.getEnd() + "'"
-            + " AND action = " + plan.getIdAction() + " AND lieux = " + plan.getPlace(); // on ne touche pas aux plannings dont l'action est différente
+            + " AND action = " + plan.getIdAction() // on ne touche pas aux plannings dont l'action est différente
+            + " AND lieux = " + plan.getPlace();
 
     try {
       if (dc.executeUpdate(query) < 1) {
         throw new PlanningException("PLANNING UPDATE = 0 " + query);
       }
+      if (plan.getActivity() instanceof Course) {
+        Course c = (Course) plan.getActivity();
+        if (c.isCollective()) {
+          query = "UPDATE " + ScheduleRangeIO.TABLE 
+                  + " SET debut = '" + start + "', fin = '" + end
+                  + "' WHERE idplanning IN ("
+                  + " SELECT id FROM " + ScheduleIO.TABLE
+                  + " WHERE jour BETWEEN '" + plan.getDate() + "' AND '" + endDate + "'"
+                  + " AND date_part('dow', jour) = " + dow
+                  + " AND debut = '" + start + "' AND fin = '" + end + "'" // new length
+                  + " AND action = " + plan.getIdAction()
+                  + " AND lieux = " + plan.getPlace()
+                  + ")";
+          dc.executeUpdate(query);
+        }
+      }
+      
     } catch (SQLException e) {
       GemLogger.logException("Modification planning", e);
     }
@@ -616,7 +640,7 @@ public class PlanningService
         pl.setStart(a.getHourStart());
         pl.setEnd(a.getHourEnd());
 
-        String j = p.getDay().toString();
+        String j = p.getDate().toString();
         String hd = heureDebut.toString();
         String hf = heureFin.toString();
         String query = ConflictQueries.getBreakConflict(p.getId(), hd, hf);
@@ -644,13 +668,6 @@ public class PlanningService
    * @throws SQLException
    */
   public void deleteBreak(ScheduleRangeObject p, DateFr start, DateFr end) throws SQLException {
-//    String where = " cours=" + p.getAction()
-//                  + " AND adherent = " + Course.BREAK
-//                  + " AND day >='" + start.toString() + "' AND day <='" + end.toString() + "'"
-//                  + " AND extract(dow from timestamp '" + start + "') = date_part('dow',day)"
-//                  + " AND prof =" + p.getIdPerson()
-//                  + " AND start ='" + p.getStart() + "' AND end ='" + po.getEnd() + "'"
-//                  + " AND salle =" + p.getPlace();
     String where = "adherent = " + Course.BREAK
             + " AND debut ='" + p.getStart() + "' AND fin ='" + p.getEnd() + "'"
             + " AND idplanning IN ("
@@ -774,19 +791,30 @@ public class PlanningService
   public Vector<ScheduleRangeObject> getScheduleRange(String where) throws SQLException {
     return ScheduleRangeIO.findObject(where, this, dc);
   }
-
-  public int testRange(Hour hStart, Hour hEnd, ScheduleObject plan) throws SQLException {
-    String where = "WHERE pg.idplanning = " + plan.getId() + " ORDER BY pg.debut";
-    Vector<ScheduleRange> v = ScheduleRangeIO.find(where, dc);
-    int n = 0;
-    for (int i = 0; i < v.size(); i++) {
-      ScheduleRange p = v.elementAt(i);
-      if ((hStart.after(p.getStart()) && plan.getStart().toMinutes() <= p.getStart().toMinutes())
-              || (hEnd.before(p.getEnd()) && plan.getEnd().toMinutes() >= p.getEnd().toMinutes())) {
-        n++;
-      }
+  
+  /**
+   * Gets the id of an establishment from an action code.
+   * @param action
+   * @return an integer or -1 if establishment is not found
+   * @throws SQLException 
+   */
+  public int getEstab(int action) throws SQLException {
+    
+    Vector<Schedule> v = ScheduleIO.find("WHERE p.action = " + action + " LIMIT 1", dc);
+    
+    if (v.isEmpty()) {
+      return -1;
     }
-    return n;
+    Schedule s = v.elementAt(0);
+    Room r = (Room) DataCache.findId(s.getPlace(), Model.Room);
+    
+    return r == null ? -1 : r.getEstab();
+
+  }
+
+  public Vector<ScheduleTestConflict> testRange(ScheduleObject plan, Hour hStart, Hour hEnd, DateFr lastDate) 
+          throws SQLException {
+    return conflictService.testRange(plan, hStart, hEnd, lastDate);
   }
 
   public void markPaid(ScheduleObject schedule) throws SQLException {
@@ -804,22 +832,37 @@ public class PlanningService
     return conflictService.testHourConflict(plan, dateStart, dateEnd, hStart, hEnd);
   }
 
-  public Vector<ScheduleTestConflict> testRoom(ScheduleObject plan, DateFr dateStart, DateFr dateEnd, int roomId)
+  public Vector<ScheduleTestConflict> testChangeRoom(ScheduleObject plan, DateFr dateStart, DateFr dateEnd, int roomId)
           throws SQLException {
     return conflictService.testRoomConflict(plan, dateStart, dateEnd, roomId);
   }
 
-  public Vector<ScheduleTestConflict> testRoom(DateFr dateStart, Hour hStart, Hour hEnd, int roomId)
+  public Vector<ScheduleTestConflict> testRoomForScheduleCopy(ScheduleObject newPlan)
           throws SQLException {
-    return conflictService.testRoomConflict(dateStart, hStart, hEnd, roomId);
+    return conflictService.testRoomConflict(newPlan.getDate(), newPlan.getStart(), newPlan.getEnd(), newPlan.getPlace());
+  }
+  
+  public Vector<ScheduleTestConflict> testRoomForSchedulePostpone(ScheduleObject plan, ScheduleObject newPlan)
+          throws SQLException {
+    return conflictService.testRoomConflict(newPlan.getPlace(), plan.getId(), newPlan.getDate(), newPlan.getStart(), newPlan.getEnd());
   }
 
-  public Vector<ScheduleTestConflict> testRoom(ScheduleObject plan, Hour hStart, Hour hEnd)
+  public Vector<ScheduleTestConflict> testRoomForScheduleLengthModif(ScheduleObject plan, Hour hStart, Hour hEnd, DateFr lastDate)
           throws SQLException {
-    return conflictService.testRoomConflict(plan, hStart, hEnd);
+    return conflictService.testRoomConflict(plan, hStart, hEnd, lastDate);
+  }
+  
+  public Vector<ScheduleTestConflict> testTeacherForScheduleCopy(ScheduleObject plan, ScheduleObject newPlan)
+          throws SQLException {
+    return conflictService.testTeacherConflict(plan.getIdPerson(), newPlan);
+  }
+  
+  public Vector<ScheduleTestConflict> testTeacherForSchedulePostpone(ScheduleObject plan, DateFr day, Hour hStart, Hour hEnd)
+          throws SQLException {
+    return conflictService.testTeacherConflict(plan, day, hStart, hEnd);
   }
 
-  public Vector<ScheduleTestConflict> testTeacher(ScheduleObject orig, ScheduleObject range, DateFr dateStart, DateFr dateEnd)
+  public Vector<ScheduleTestConflict> testChangeTeacher(ScheduleObject orig, ScheduleObject range, DateFr dateStart, DateFr dateEnd)
           throws PlanningException {
     try {
       return conflictService.testTeacherConflict(orig, range, dateStart, dateEnd);
@@ -829,16 +872,12 @@ public class PlanningService
     }
   }
 
-  public Vector<ScheduleTestConflict> testTeacher(ScheduleObject plan, DateFr day, Hour hStart, Hour hEnd)
-          throws SQLException {
-    return conflictService.testTeacherConflict(plan, day, hStart, hEnd);
-  }
-
+  
   private void debug(Vector<DateFr> sessions, int hId) {
     Vector<DateFr> v = new Vector<DateFr>();
     for (DateFr d : sessions) {
       if (VacationIO.findDay(d.getDate(), hId, dc) == null) {
-        // si cette date ne correspond pas à un day de vacances du type sélectionné
+        // si cette date ne correspond pas à un date de vacances du type sélectionné
         v.addElement(d);
       }
     }

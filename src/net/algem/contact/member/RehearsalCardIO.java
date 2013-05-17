@@ -56,7 +56,7 @@ public class RehearsalCardIO
     c.setLabel(rs.getString(2));
     c.setAmount(rs.getFloat(3));
     c.setSessionsNumber(rs.getInt(4));
-    c.setDuration(rs.getInt(5));
+    c.setLength(rs.getInt(5));
 
     return c;
   }
@@ -72,7 +72,7 @@ public class RehearsalCardIO
       c.setLabel(rs.getString(2));
       c.setAmount(rs.getFloat(3));
       c.setSessionsNumber(rs.getInt(4));
-      c.setDuration(rs.getInt(5));
+      c.setLength(rs.getInt(5));
       v.addElement(c);
     }
     return v.isEmpty() ? null : v;
@@ -96,7 +96,7 @@ public class RehearsalCardIO
     ps.setString(1, unEscape(card.getLabel()));
     ps.setFloat(2, card.getAmount());
     ps.setInt(3, card.getSessionsNumber());
-    ps.setInt(4, card.getDuration());
+    ps.setInt(4, card.getLength());
     ps.setInt(5, card.getId());
     return ps.executeUpdate();
   }
@@ -104,7 +104,7 @@ public class RehearsalCardIO
   public static String getInsertQuery(RehearsalCard card) {
     StringBuilder query = new StringBuilder("INSERT INTO " + TABLE + " VALUES(");
     query.append(card.getId());
-    query.append(LEFT_COL_SEPARATOR).append(escape(card.getLabel())).append(RIGHT_COL_SEPARATOR).append(card.getAmount()).append(RIGHT_COL_SEPARATOR).append(card.getSessionsNumber()).append(RIGHT_COL_SEPARATOR).append(card.getDuration()).append(END_OF_QUERY);
+    query.append(LEFT_COL_SEPARATOR).append(escape(card.getLabel())).append(RIGHT_COL_SEPARATOR).append(card.getAmount()).append(RIGHT_COL_SEPARATOR).append(card.getSessionsNumber()).append(RIGHT_COL_SEPARATOR).append(card.getLength()).append(END_OF_QUERY);
     return query.toString();
   }
 

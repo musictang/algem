@@ -1,5 +1,5 @@
 /*
- * @(#)InvoiceView.java 2.7.h 22/02/13
+ * @(#)InvoiceView.java 2.8.a 28/03/13
  *
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -65,7 +65,7 @@ import net.algem.util.ui.*;
  * Invoice / quotation view.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.h
+ * @version 2.8.a
  * @since 2.3.a 07/02/12
  */
 public class InvoiceView
@@ -442,7 +442,7 @@ public class InvoiceView
 
     g.setFont(serif);
     // nom établissement
-    g.drawString(getEtabName(invoice) + ", le " + invoice.getDate(), left, top + 80);
+    g.drawString(getEstabName(invoice) + ", le " + invoice.getDate(), left, top + 80);
     // numéro invoice
     String nlabel = invoice.getClass() == Quote.class
             ? BundleUtil.getLabel("Quotation.label") : BundleUtil.getLabel("Invoice.label");
@@ -513,9 +513,14 @@ public class InvoiceView
    * @param f invoice
    * @return a name or null
    */
-  private String getEtabName(Quote f) {
-    Establishment e = EstablishmentIO.findId(f.getEstablishment(), dc);
-    return e == null ? "" : e.getName();
+  private String getEstabName(Quote f) {
+    try {
+      Establishment e = EstablishmentIO.findId(f.getEstablishment(), dc);
+      return e == null ? "" : e.getName();
+    } catch (SQLException ex) {
+      GemLogger.logException(ex);
+      return "";
+    }
   }
 
   /**

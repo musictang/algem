@@ -1,7 +1,7 @@
 /*
- * @(#)CourseOrder.java	2.6.a 17/09/12
+ * @(#)CourseOrder.java	2.8.a 26/03/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -29,7 +29,7 @@ import net.algem.planning.Hour;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.a
  */
 public class CourseOrder
         implements java.io.Serializable
@@ -37,7 +37,7 @@ public class CourseOrder
 
   private int id;
   private int idcmd;
-  private int module;
+  private int moduleOrder;
   private int action;
   private DateFr startDate;
   private DateFr endDate;
@@ -47,21 +47,64 @@ public class CourseOrder
   private int code;
   private int day;
   private int room;
-  private String codeLabel;
+  private int estab;
   private CourseModuleInfo courseModuleInfo;
+  private int module;
 
-  public boolean equals(CourseOrder d) {
-    return (d != null
-            && idcmd == d.idcmd
-            && module == d.module
-            && action == d.action
-            && start.equals(d.start)
-            && end.equals(d.end));
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final CourseOrder other = (CourseOrder) obj;
+    if (this.id != other.id) {
+      return false;
+    }
+    if (this.idcmd != other.idcmd) {
+      return false;
+    }
+    if (this.moduleOrder != other.moduleOrder) {
+      return false;
+    }
+    if (this.action != other.action) {
+      return false;
+    }
+    if (this.start != other.start && (this.start == null || !this.start.equals(other.start))) {
+      return false;
+    }
+    if (this.end != other.end && (this.end == null || !this.end.equals(other.end))) {
+      return false;
+    }
+    return true;
   }
 
   @Override
+  public int hashCode() {
+    int hash = 7;
+    hash = 59 * hash + this.id;
+    hash = 59 * hash + this.idcmd;
+    hash = 59 * hash + this.moduleOrder;
+    hash = 59 * hash + this.action;
+    hash = 59 * hash + (this.start != null ? this.start.hashCode() : 0);
+    hash = 59 * hash + (this.end != null ? this.end.hashCode() : 0);
+    return hash;
+  }
+
+//  public boolean equals(CourseOrder d) {
+//    return (d != null
+//            && idcmd == d.idcmd
+//            && moduleOrder == d.moduleOrder
+//            && action == d.action
+//            && start.equals(d.start)
+//            && end.equals(d.end));
+//  }
+
+  @Override
   public String toString() {
-    return idcmd + " " + module + " " + action + " " + start + " " + end + " " + startDate + " " + endDate;
+    return idcmd + " " + moduleOrder + " " + action + " " + start + " " + end + " " + startDate + " " + endDate;
   }
 
   public int getId() {
@@ -85,12 +128,20 @@ public class CourseOrder
     idcmd = i;
   }
 
+  public int getModuleOrder() {
+    return moduleOrder;
+  }
+
+  public void setModuleOrder(int i) {
+    moduleOrder = i;
+  }
+
   public int getModule() {
     return module;
   }
 
-  public void setModule(int i) {
-    module = i;
+  public void setModule(int module) {
+    this.module = module;
   }
 
   public void setAction(int a) {
@@ -115,6 +166,10 @@ public class CourseOrder
 
   public Hour getEnd() {
     return end;
+  }
+  
+  public int getTimeLength() {
+    return start.getLength(end);
   }
 
   public void setDateStart(DateFr h) {
@@ -157,29 +212,23 @@ public class CourseOrder
     day = (short) j;
   }
 
-  /**
-   * @return an integer
-   * @since 1.1da bug inscription
-   */
-  public int getRoom() {
-    return room;
+  public int getEstab() {
+    return estab;
   }
 
-  /**
-   * 
-   * @param _room
-   * @since 1.1da bug inscription
-   */
-  public void setRoom(int _room) {
-    room = _room;
+  public void setEstab(int estab) {
+    this.estab = estab;
   }
 
   public CourseModuleInfo getCourseModuleInfo() {
     return courseModuleInfo;
   }
 
-  public void setCourseModuleInfo(CourseModuleInfo courseModuleInfo) {
-    this.courseModuleInfo = courseModuleInfo;
+  public void setCourseModuleInfo(CourseModuleInfo moduleInfo) {
+    this.courseModuleInfo = moduleInfo;
+    if (moduleInfo != null) {
+      this.code = moduleInfo.getIdCode();
+    }
   }
 
   

@@ -41,7 +41,7 @@ public class ScheduleDTO
   }
 
   public ScheduleDTO(Schedule p) {
-    day = p.getDay().toString();
+    day = p.getDate().toString();
     start = p.getStart().toString();
     end = p.getEnd().toString();
     type = p.getType();

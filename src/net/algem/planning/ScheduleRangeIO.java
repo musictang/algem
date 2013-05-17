@@ -1,7 +1,7 @@
 /*
- * @(#)ScheduleRangeIO.java	2.7.a 26/11/12
+ * @(#)ScheduleRangeIO.java	2.8.a 26/04/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -38,7 +38,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.a
  * @since 1.0a 7/7/1999
  */
 public class ScheduleRangeIO
@@ -101,7 +101,8 @@ public class ScheduleRangeIO
 	}
 
 	public static Vector<ScheduleRange> find(String where, DataConnection dc) throws SQLException {
-		String query = "SELECT " + COLUMNS + " FROM " + TABLE + " pg " + where;
+		String query = "SELECT " + COLUMNS + " FROM " + TABLE + " " + where;
+        
 		return ifind(query, dc);
 	}
 
@@ -135,7 +136,7 @@ public class ScheduleRangeIO
 		p.setMember((Person) DataCache.findId(rs.getInt(5), Model.Person));
 		p.setNote(rs.getInt(6));
 
-		p.setDay(new DateFr(rs.getString(7)));
+		p.setDate(new DateFr(rs.getString(7)));
 		p.setIdAction(rs.getInt(8));
 		p.setIdPerson(rs.getInt(9));// id prof
 		p.setPlace(rs.getInt(10));
@@ -206,7 +207,7 @@ public class ScheduleRangeIO
 			p.setIdAction(rs.getInt(7));
             p.setAction(pService.getAction(p.getIdAction()));
 			p.setCourse(pService.getCourseFromAction(p.getIdAction()));
-			p.setDay(new DateFr(rs.getString(8)));
+			p.setDate(new DateFr(rs.getString(8)));
 			p.setIdPerson(rs.getInt(9));
 			p.setTeacher((Person) DataCache.findId(p.getIdPerson(), Model.Teacher));
 			p.setPlace(rs.getInt(10));

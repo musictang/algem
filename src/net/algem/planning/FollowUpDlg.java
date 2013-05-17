@@ -60,7 +60,7 @@ public class FollowUpDlg
 
     dlg = new JDialog(desktop.getFrame(), true);
     title = new GemLabel("Suivi " + range.getMember());
-    pv = new FollowUpView(_cours, range.getDay(), range.getStart(), range.getEnd());
+    pv = new FollowUpView(_cours, range.getDate(), range.getStart(), range.getEnd());
     pv.setText(pl.getFollowUp());
 
     btOk = new GemButton(GemCommand.OK_CMD);

@@ -1,7 +1,7 @@
 /*
  * @(#)CourseCodeCtrl.java	2.8.a 14/03/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,12 +20,9 @@
  */
 package net.algem.config;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import net.algem.course.CourseCode;
-import net.algem.util.GemLogger;
 import net.algem.util.event.GemEvent;
 import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
@@ -43,7 +40,7 @@ public class CourseCodeCtrl
   private CourseCodeIO ccIO;
 
   public CourseCodeCtrl(GemDesktop _desktop) {
-    super(_desktop, "Codes cours", false);
+    super(_desktop, "Course codes", false);
   }
   
   @Override
@@ -61,24 +58,10 @@ public class CourseCodeCtrl
   @Override
   public void load() {
     ccIO = new CourseCodeIO(dc);
-//    try {
-      List<GemParam> codes = desktop.getDataCache().getList(Model.CourseCode).getData();
-      for(GemParam p : codes) {
-        table.addRow(p);
-      }
-//      String query = "SELECT * FROM module_type ORDER BY id";
-//      
-//      ResultSet rs = dc.executeQuery(query);
-//      while(rs.next()) {
-//        CourseCode p = new CourseCode();
-//        p.setId(rs.getInt(1));
-//        p.setKey(rs.getString(2));
-//        p.setValue(rs.getString(3));
-//        table.addRow(p);
-//      }
-//    } catch (SQLException ex) {
-//      GemLogger.logException(ex);
-//    }
+    List<GemParam> codes = desktop.getDataCache().getList(Model.CourseCode).getData();
+    for(GemParam p : codes) {
+      table.addRow(p);
+    }
   }
 
   @Override

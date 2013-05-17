@@ -1,7 +1,7 @@
 /*
- * @(#)TestEnrolmentOrderLines.java 2.7.a 22/11/12
+ * @(#)TestEnrolmentOrderLines.java 2.8.a 09/04/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -29,7 +29,7 @@ import org.junit.*;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.a
  * @since 2.5.a 11/07/12
  */
 public class TestEnrolmentOrderLines {
@@ -61,12 +61,12 @@ public class TestEnrolmentOrderLines {
     DateFr d = new DateFr("17-09-2012");
     DateFr f = new DateFr("30-06-2013");
     int expected = 10;
-    int n = MemberEnrolment.calcNumberOfMonths(d, f);
+    int n = EnrolmentOrderUtil.calcNumberOfMonths(d, f);
     assertTrue(expected == n);
     
     f.incMonth(1);
     f.setDay(2);
-    n = MemberEnrolment.calcNumberOfMonths(d, f);
+    n = EnrolmentOrderUtil.calcNumberOfMonths(d, f);
     assertTrue(expected == n);
   }
 }

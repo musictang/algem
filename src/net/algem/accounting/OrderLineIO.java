@@ -1,7 +1,7 @@
 /*
- * @(#)OrderLineIO.java	2.7.a 10/01/13
+ * @(#)OrderLineIO.java	2.8.a 01/04/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -39,7 +39,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.a
  *
  */
 public class OrderLineIO
@@ -394,14 +394,13 @@ public class OrderLineIO
         e.setModeOfPayment(rs.getString(7).trim());
         e.setAmount(rs.getInt(8));
         e.setDocument(rs.getString(9));
-        e.setSchool(rs.getString(10));
-//        Account c = AccountIO.find(rs.getInt(11), false, dc);//XXX
+        e.setSchool(rs.getInt(10));
         Account c = (Account) DataCache.findId(rs.getInt(11), Model.Account);
         e.setAccount(c);
         e.setPaid(rs.getBoolean(12));
         e.setTransfered(rs.getBoolean(13));
         e.setCurrency(rs.getString(14).trim());
-//        Account a = findAccount(CostAccountCtrl.tableName, CostAccountCtrl.columnKey, rs.getString(15), dc);//XXX
+        
         String code = rs.getString(15);
         Param p = DataCache.getCostAccount(code);
         Account a = null;

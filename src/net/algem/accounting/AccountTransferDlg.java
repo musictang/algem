@@ -1,7 +1,7 @@
 /*
- * @(#)AccountTransferDlg.java	2.7.a 05/12/12
+ * @(#)AccountTransferDlg.java	2.8.a 01/04/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -44,7 +44,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.a
  * @since 1.0a 27/09/2000
  */
 public class AccountTransferDlg
@@ -55,23 +55,23 @@ public class AccountTransferDlg
   private AccountTransferView transferView;
   protected Account documentAccount;
   
-  public AccountTransferDlg(Dialog _parent, DataConnection dc) {
-    super(_parent, dc);
+  public AccountTransferDlg(Dialog _parent, DataCache dataCache) {
+    super(_parent, dataCache);
   }
 
-  public AccountTransferDlg(Frame _parent, DataConnection dc) {
-    super(_parent, dc);
+  public AccountTransferDlg(Frame _parent, DataCache dataCache) {
+    super(_parent, dataCache);
   }
 
   @Override
-  public void init(DataConnection _dc) {
-    super.init(_dc);
+  public void init(DataCache dataCache) {
+    super.init(dataCache);
     setDisplay();
   }
 
   protected void setDisplay() {
     
-    transferView = new AccountTransferView(dbx);
+    transferView = new AccountTransferView(dataCache);
     Container container = getContentPane();
     setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
     GemPanel header = new GemPanel();
@@ -98,10 +98,10 @@ public class AccountTransferDlg
     String codeJournal = "";
     DateFr start = transferView.getDateStart();
     DateFr end = transferView.getDateEnd();
-    String school = transferView.getSchool();
+    int school = transferView.getSchool();
     String modeOfPayment = transferView.getModeOfPayment();
     int errors = 0;
-    String query = "echeance >= '"+start+"' AND echeance <= '"+end+"' AND ecole='"+school+"' AND paye='t' AND transfert='f' AND reglement='"+modeOfPayment+"'";
+    String query = "echeance >= '"+start+"' AND echeance <= '"+end+"' AND ecole = '"+school+"' AND paye='t' AND transfert='f' AND reglement='"+modeOfPayment+"'";
     // les échéances de type prélèvement impliquent que le payeur ait un rib et qu'il existe en tant que contact.
     if ("PRL".equals(modeOfPayment)) {
       query += " AND payeur IN (SELECT idper FROM rib) AND payeur IN (SELECT id FROM personne)";

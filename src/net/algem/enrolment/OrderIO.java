@@ -1,5 +1,5 @@
 /*
- * @(#)OrderIO.java	2.6.a 17/09/12
+ * @(#)OrderIO.java	2.8.a 28/03/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -28,6 +28,7 @@ import net.algem.accounting.OrderLineIO;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
 import net.algem.config.Preference;
+import net.algem.contact.PersonIO;
 import net.algem.planning.DateFr;
 import net.algem.planning.ScheduleIO;
 import net.algem.planning.ScheduleRangeIO;
@@ -40,7 +41,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.a
  * @since 1.0a 07/07/1999
  */
 public class OrderIO
@@ -89,7 +90,7 @@ public class OrderIO
     try {
       dc.setAutoCommit(false);
       // suppression de la commande_module
-      ModuleOrderIO.delete(c.getId(), dc);
+      ModuleOrderIO.deleteByOrder(c.getId(), dc);
       Vector<CourseOrder> cours = CourseOrderIO.findId(c.getId(), dc);
       for (int i = 0; i < cours.size(); i++) {
         CourseOrder cc = cours.elementAt(i);
@@ -153,15 +154,16 @@ public class OrderIO
     return v;
   }
 
-  public static Vector<MemberOrder> findMember(DataConnection dc) {
+  public static Vector<MemberOrder> findMemberOrders(DataConnection dc) {
 
     String start = ConfigUtil.getConf(ConfigKey.BEGINNING_PERIOD.getKey(), dc);
     String end = ConfigUtil.getConf(ConfigKey.END_PERIOD.getKey(), dc);
     Vector<MemberOrder> v = new Vector<MemberOrder>();
-    String query = "SELECT c.id,c.adh,c.payeur,c.creation,c.facture,p.nom,p.prenom FROM " + TABLE
-            + " c, personne p WHERE c.adh = p.id"
+    String query = "SELECT c.id,c.adh,c.payeur,c.creation,c.facture,p.nom,p.prenom"
+            + " FROM " + TABLE + " c, " + PersonIO.TABLE + " p"
+            + " WHERE c.adh = p.id"
             + " AND c.creation >= '" + start + "' AND c.creation <= '" + end + "'"
-            + " ORDER BY c.id";
+            + " ORDER BY c.id DESC";
     try {
       ResultSet rs = dc.executeQuery(query);
       while (rs.next()) {

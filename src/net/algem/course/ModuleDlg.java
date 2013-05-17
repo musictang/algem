@@ -1,7 +1,7 @@
 /*
- * @(#)ModuleDlg.java	2.7.a 23/11/12
+ * @(#)ModuleDlg.java	2.8.a 15/04/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -46,7 +46,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.a
  * @since 1.0a 07/07/1999
  */
 public class ModuleDlg
@@ -191,7 +191,7 @@ public class ModuleDlg
         return;
       }
     }
-    calculPrix(module.getBasePrice());
+    calculatePrice(module.getBasePrice());
   }
 
   /**
@@ -199,7 +199,7 @@ public class ModuleDlg
    *
    * @param normalPrice
    */
-  private void calculPrix(double normalPrice) {
+  private void calculatePrice(double normalPrice) {
     String rs = (String) payment.getSelectedItem();
     String ps = (String) periodicity.getSelectedItem();
     double reducPrice = normalPrice;

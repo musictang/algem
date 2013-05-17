@@ -46,4 +46,5 @@ public class GemParamTableView
     cm.getColumn(1).setPreferredWidth(25);
     cm.getColumn(2).setPreferredWidth(400);
   }
+
 }

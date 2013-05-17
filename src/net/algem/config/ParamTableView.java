@@ -45,9 +45,9 @@ public class ParamTableView
 {
 
   protected JTable table;
-  private JTableModel modele;
-  private GemButton ajouter;
-  private GemButton fermer;
+  protected JTableModel tableModel;
+  private GemButton btAdd;
+  private GemButton btClose;
 
   public ParamTableView(String titre, JTableModel model) {
     this(titre, model, 0);
@@ -55,11 +55,11 @@ public class ParamTableView
 
   public ParamTableView(String titre, JTableModel model, int sortColumn) {
 
-    modele = model;
-    table = new JTable(modele);
+    tableModel = model;
+    table = new JTable(tableModel);
     //table.setAutoCreateRowSorter(true);
 		/* pour le tri automatique */
-    TableRowSorter<JTableModel> sorter = new TableRowSorter<JTableModel>(modele);
+    TableRowSorter<JTableModel> sorter = new TableRowSorter<JTableModel>(tableModel);
     table.setRowSorter(sorter);
     sorter.setSortsOnUpdates(true); // tri automatique après modification
     sorter.setComparator(sortColumn, new ParamKeyComparator());
@@ -68,19 +68,19 @@ public class ParamTableView
 
     JScrollPane pm = new JScrollPane(table);
 
-    ajouter = new GemButton(GemCommand.ADD_NEWVAL_CMD);
-    ajouter.setActionCommand(GemCommand.ADD_CMD);
+    btAdd = new GemButton(GemCommand.ADD_NEWVAL_CMD);
+    btAdd.setActionCommand(GemCommand.ADD_CMD);
 
-    fermer = new GemButton(GemCommand.CLOSE_CMD);
+    btClose = new GemButton(GemCommand.CLOSE_CMD);
 
-    GemPanel boutons = new GemPanel();
-    boutons.setLayout(new GridLayout(1, 1));
-    boutons.add(ajouter);
-    boutons.add(fermer);
+    GemPanel buttons = new GemPanel();
+    buttons.setLayout(new GridLayout(1, 1));
+    buttons.add(btAdd);
+    buttons.add(btClose);
 
     setLayout(new BorderLayout());
     add(pm, BorderLayout.CENTER);
-    add(boutons, BorderLayout.SOUTH);
+    add(buttons, BorderLayout.SOUTH);
   }
 
   protected void setColumnModel() {
@@ -98,24 +98,24 @@ public class ParamTableView
   }
 
   public void addActionListener(ActionListener l) {
-    ajouter.addActionListener(l);
-    fermer.addActionListener(l);
+    btAdd.addActionListener(l);
+    btClose.addActionListener(l);
   }
 
   public void modRow(Param p) {
-    modele.modItem(table.convertRowIndexToModel(table.getSelectedRow()), p);
+    tableModel.modItem(table.convertRowIndexToModel(table.getSelectedRow()), p);
   }
 
   public void addRow(Param p) {
-    modele.addItem(p);
+    tableModel.addItem(p);
   }
 
   public void deleteCurrent() {
-    modele.deleteItem(table.convertRowIndexToModel(table.getSelectedRow()));
+    tableModel.deleteItem(table.convertRowIndexToModel(table.getSelectedRow()));
   }
 
   public Param getItem(int n) {
-    return (Param) modele.getItem(table.convertRowIndexToModel(n));
+    return (Param) tableModel.getItem(table.convertRowIndexToModel(n));
   }
 
   public int getSelectedRow() {

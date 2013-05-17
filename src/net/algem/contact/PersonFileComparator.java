@@ -1,7 +1,7 @@
 /*
- * @(#)PersonFileComparator.java	2.6.a 18/09/12
+ * @(#)PersonFileComparator.java	2.8.a 11/04/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -26,14 +26,16 @@ import java.util.Comparator;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.a
  */
-public class PersonFileComparator implements Comparator {
+public class PersonFileComparator 
+  implements Comparator<PersonFile>
+{
 
-	@Override
-	public int compare(Object x, Object y) {
-		PersonFile dp1 = (PersonFile) x;
-		PersonFile dp2 = (PersonFile)y;
-		return dp1.getContact().getFirstnameName().compareToIgnoreCase(dp2.getContact().getFirstnameName());
-	}
+  @Override
+  public int compare(PersonFile o1, PersonFile o2) {
+    Person p1 = o1.getContact();
+    Person p2 = o2.getContact();
+    return p1 == null ? (p2 == null ? 0 : -1) : (p2 == null ? 1 : p1.compareTo(p2));
+  }
 }

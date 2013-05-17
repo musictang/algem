@@ -22,8 +22,6 @@ package net.algem.course;
 
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
-import net.algem.config.ParamTableIO;
-import net.algem.config.SchoolCtrl;
 import net.algem.enrolment.CourseEnrolmentView;
 import net.algem.enrolment.EnrolmentService;
 import net.algem.util.DataCache;
@@ -54,6 +52,7 @@ public class CourseCtrl
   private EnrolmentService enrolService;
   private ModuleService service;
   private GemDesktop desktop;
+  private String [] errors = new String[3];
 
   public CourseCtrl(GemDesktop desktop) {
     this.desktop = desktop;
@@ -63,7 +62,7 @@ public class CourseCtrl
 
     cv = new CourseView(
             dataCache.getList(Model.CourseCode),
-            ParamTableIO.find(SchoolCtrl.TABLE, SchoolCtrl.SORT_COLUMN, dataCache.getDataConnection()));
+            dataCache.getList(Model.School));
     iv = new CourseEnrolmentView(enrolService);
 
     addCard("", cv);
@@ -120,8 +119,16 @@ public class CourseCtrl
   @Override
   public boolean validation() {
     course = cv.get();
-    if (course == null) {
-      return false;
+    if (course == null || !isValid(course)) {
+      String msg = "";
+      for (String e : errors) {
+        if (e != null) {
+          msg += e + "\n";
+        }
+      }
+      MessagePopup.error(cv, msg);
+      errors = new String[3];
+      return prev();
     }
 
     try {
@@ -140,6 +147,32 @@ public class CourseCtrl
     }
     cancel();
     return true;
+  }
+  
+  private boolean isValid(Course c) {
+    
+    boolean ok = true;
+    
+    String t = c.getTitle();
+    
+    if (t == null || t.length() < Course.MIN_TITLE_LENGTH || t.length() > Course.MAX_TITLE_LENGTH) {
+      ok = false;
+      errors[0] = MessageUtil.getMessage("course.invalid.title", 
+              new Object[] {Course.MIN_TITLE_LENGTH, Course.MAX_TITLE_LENGTH} );
+    }
+    
+    if (c.getLabel() != null && c.getLabel().length() > Course.MAX_LABEL_LENGTH) {
+      ok = false;
+      errors[1] = MessageUtil.getMessage("course.invalid.label", Course.MAX_LABEL_LENGTH);
+    }
+    
+    if (c.getCode() <= 0) {
+      ok = false;
+      errors[2] = MessageUtil.getMessage("course.invalid.code");
+    }
+    
+    return ok;
+
   }
 
   public void clear() {
@@ -175,7 +208,7 @@ public class CourseCtrl
     try {
       return loadCard(((CourseIO) DataCache.getDao(Model.Course)).findId(id));
     } catch (SQLException ex) {
-      System.err.println(getClass().getName() + "#loadId :" + ex.getMessage());
+      GemLogger.log(getClass().getName() + "#loadId :" + ex.getMessage());
     }
     return false;
   }

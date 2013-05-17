@@ -54,7 +54,7 @@ public class GemParamChoice
 
   @Override
   public int getKey() {
-    return ((GemModel)getSelectedItem()).getId();
+    return ((GemModel) getSelectedItem()).getId();
   }
 
   @Override

@@ -45,7 +45,11 @@ public class CourseChoiceTypeActiveModel
     this.active = active;
 
     load(list);
-    selected = this.list.getElementAt(indices.get(0));
+    if (list != null && list.getSize() > 0) {
+      if (indices.size() > 0) {
+        selected = this.list.getElementAt(indices.get(0));
+      }
+    }
   }
 
   public CourseChoiceTypeActiveModel(Vector<Course> liste, boolean collective, boolean active) {

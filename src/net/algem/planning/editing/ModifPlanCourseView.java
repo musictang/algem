@@ -69,7 +69,7 @@ class ModifPlanCourseView
   public void set(ScheduleObject plan) {
     setTitle(plan.getScheduleLabel());
     setId(((Course) plan.getActivity()).getId());
-    dateRange.setStart(plan.getDay());
+    dateRange.setStart(plan.getDate());
     try {
       dateRange.setEnd(PlanningService.getLastDate(plan.getIdAction(), dataCache.getDataConnection()));
     } catch (SQLException ex) {

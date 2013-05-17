@@ -1,7 +1,7 @@
 /*
- * @(#)Module.java	 2.6.a 05/10/12
+ * @(#)Module.java	 2.8.a 15/04/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -30,7 +30,7 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.5.a
+ * @version 2.8.a
  */
 public class Module
         implements GemModel {
@@ -60,7 +60,7 @@ public class Module
 
   @Override
   public String toString() {
-    return title + " [" + code + "]";//
+    return "[" + code + "] " + title;
   }
 
   public boolean equals(Module f) {
@@ -124,53 +124,6 @@ public class Module
    */
   public boolean withGroupAccompaniment() {
     return code.endsWith("A");
-  }
-
-  /**
-   * With single workshop (discovery workshop)
-   * 
-   * @return true if character 8 of code = "1"
-   */
-  public boolean withSelectiveWorkshop() {
-    return code.substring(7, 8).equals("1");
-  }
-
-  /**
-   * With musical formation.
-   * @return true if character 9 of code =  "1"
-   */
-  public boolean withMusicalFormation() {
-    return code.substring(8, 9).equals("1");
-  }
-
-  /**
-   * Course instrument duration.
-   * @return a duration in minutes
-   */
-  public int getInstrumentDuration() {
-    int d = 0;
-    try {
-      d = Integer.parseInt(code.substring(1, 4));
-    } catch (Exception e) {
-      System.err.println(e.getMessage());
-    }
-
-    return d;
-  }
-
-  /**
-   * Workshop duration.
-   * @return a duration in minutes
-   */
-  public int getWorkshopDuration() {
-    int duree = 0;
-    try {
-      duree = Integer.parseInt(code.substring(4, 7));
-    } catch (Exception e) {
-      System.err.println(e.getMessage());
-    }
-
-    return duree;
   }
 
   /**
@@ -242,8 +195,8 @@ public class Module
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    Module f = (Module) o;
-    return getId() == f.getId();
+    Module m = (Module) o;
+    return getId() == m.getId();
   }
 
   @Override

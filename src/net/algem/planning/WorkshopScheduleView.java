@@ -1,5 +1,5 @@
 /*
- * @(#)WorkshopScheduleView.java	2.7.a 22/11/12
+ * @(#)WorkshopScheduleView.java	2.8.a 28/03/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -39,7 +39,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.a
  */
 public class WorkshopScheduleView
         extends GemPanel
@@ -64,17 +64,18 @@ public class WorkshopScheduleView
 
     this.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
+    gb.insets = GridBagHelper.SMALL_INSETS;
 
     GemPanel hours = new GemPanel();
     hours.add(start);
     hours.add(new GemLabel(BundleUtil.getLabel("Hour.To.label")));
     hours.add(end);
 
-    gb.add(new GemLabel(BundleUtil.getLabel("Workshop.label")), 0, 0, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Date.label")), 0, 1, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Hour.From.label")), 0, 2, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Room.label")), 0, 3, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Teacher.label")), 0, 4, 1, 1, GridBagHelper.EAST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Workshop.label")), 0, 0, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Date.label")), 0, 1, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Hour.From.label")), 0, 2, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Room.label")), 0, 3, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Teacher.label")), 0, 4, 1, 1, GridBagHelper.WEST);
 
     gb.add(workshop, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(date, 1, 1, 1, 1, GridBagHelper.WEST);

@@ -1,7 +1,7 @@
 /*
- * @(#)InstrumentIO.java	2.7.a 30/11/12
+ * @(#)InstrumentIO.java	2.8.a 15/03/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -32,7 +32,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.a
  */
 public class InstrumentIO
         extends TableIO {
@@ -95,7 +95,7 @@ public class InstrumentIO
       li.add(rs.getInt(1));
     }
     rs.close();
-    return li;
+    return li.isEmpty() ? null : li;
   }
   
   public static Hashtable<Integer, List<Integer>> load(DataConnection dc) throws SQLException {

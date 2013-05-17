@@ -48,6 +48,7 @@ public enum Model {
   Room,
   RoomRate,
   RoomContact,
+  School,
   Status,
   Teacher,
   User,

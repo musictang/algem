@@ -1,7 +1,7 @@
 /*
- * @(#)CourseOrderIO.java	2.6.a 17/09/12
+ * @(#)CourseOrderIO.java	2.8.a 28/03/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -33,7 +33,7 @@ import net.algem.util.model.TableIO;
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.a
  * @since 1.0a 07/07/1999
  */
 public class CourseOrderIO
@@ -41,7 +41,7 @@ public class CourseOrderIO
 {
 
   public static final String TABLE = "commande_cours";
-  public static final String COLUMNS = "cc.id,cc.idcmd,cc.module,cc.idaction,cc.debut,cc.fin,cc.datedebut,cc.datefin";
+  public static final String COLUMNS = "cc.id,cc.idcmd,cc.module,cc.idaction,cc.debut,cc.fin,cc.datedebut,cc.datefin, cc.code";
   public static final String SEQUENCE = "commande_cours_id_seq";
 
   public static void insert(CourseOrder c, DataConnection dc) throws SQLException {
@@ -50,20 +50,21 @@ public class CourseOrderIO
     String query = "INSERT INTO " + TABLE + " VALUES("
             + nextval
             + "," + c.getIdOrder()
-            + "," + c.getModule()
+            + "," + c.getModuleOrder()
             + "," + c.getAction()
             + ",'" + c.getStart()
             + "','" + c.getEnd()
             + "','" + c.getDateStart()
             + "','" + c.getDateEnd()
-            + "')";
+            + "'," + c.getCode()
+            + ")";
     dc.executeUpdate(query);
   }
 
   public static void update(CourseOrder c, DataConnection dc) throws SQLException {
     String query = "UPDATE " + TABLE + " SET "
             + "idcmd = '" + c.getIdOrder()
-            + "',module = '" + c.getModule()
+            + "',module = '" + c.getModuleOrder()
             + "',idaction = '" + c.getAction()
             + "',debut = '" + c.getStart()
             + "',fin = '" + c.getEnd()
@@ -84,53 +85,59 @@ public class CourseOrderIO
     String query = "DELETE FROM " + TABLE + " WHERE idcmd = " + cmd;
     dc.executeUpdate(query);
   }
+  
+  public static void deleteByIdModule(int id, DataConnection dc) throws SQLException {
+    String query = "DELETE FROM " + TABLE + " WHERE module = " + id;
+    dc.executeUpdate(query);
+  }
 
   /**
-   *
-   * @param n order id
+   * Retrieves a list of course's orders from order {@code n}.
+   * @param orderId order id
    * @param dc DataCache
    * @return a list of course order
    */
-  public static Vector<CourseOrder> findId(int n, DataConnection dc) throws SQLException {
-    String query = " AND cc.idcmd = " + n;
+  public static Vector<CourseOrder> findId(int orderId, DataConnection dc) throws SQLException {
+    String query = " AND cc.idcmd = " + orderId;
     return find(query, dc);
   }
 
   public static Vector<CourseOrder> find(String where, DataConnection dc) throws SQLException {
+
+    String query = "SELECT " + COLUMNS + ", cours.titre FROM " + TABLE + " cc,"
+            + " action LEFT JOIN cours ON action.cours = cours.id"
+            + " WHERE cc.idaction = action.id";
     
-    //String query = "SELECT cc.oid,cc.idcmd,cc.module,cc.cours,cc.debut,cc.end,c.titre,c.code,c.jour,cc.datedebut,cc.datefin from commande_cours cc, cours c WHERE c.id = cc.cours "+where;
-    // retrait du cours.jour dans la requête (c.jour)
-    //id,idcmd,module,idaction,debut,end,datedebut,datefin
-    //String query = "SELECT cc.oid,cc.idcmd,cc.module,cc.cours,cc.debut,cc.end,c.titre,c.code,cc.datedebut,cc.datefin from commande_cours cc, cours c WHERE c.id = cc.cours " + where;
-    String query = "SELECT " + COLUMNS + ", cours.titre, cours.code  FROM " + TABLE + " cc, action, cours"
-            + " WHERE cc.idaction = action.id AND action.cours = cours.id " + where;
-      return fillCommandeCours(query + where, dc);
+      return fillCourseOrder(query + where, dc);
   }
 
   public static Vector<CourseOrder> find(String where, int member, DataConnection dc) throws SQLException {
-    String query = "SELECT " + COLUMNS + ", cours.titre, cours.code  FROM " + TABLE + " cc, commande c, action, cours"
-            + " WHERE cc.idcmd = c.id AND c.adh = "+member
-            + " AND cc.idaction = action.id AND action.cours = cours.id ";
-      return fillCommandeCours(query + where, dc);
+    String query = "SELECT " + COLUMNS + ", cours.titre FROM " + TABLE + " cc, commande c, "
+            + " action LEFT JOIN cours ON action.cours = cours.id"
+            + " WHERE cc.idcmd = c.id"
+            + " AND c.adh = " + member
+            + " AND cc.idaction = action.id";
+    
+      return fillCourseOrder(query + where, dc);
   }
 
-  private static Vector<CourseOrder> fillCommandeCours(String query, DataConnection dc) throws SQLException {
+  private static Vector<CourseOrder> fillCourseOrder(String query, DataConnection dc) throws SQLException {
+
     Vector<CourseOrder> v = new Vector<CourseOrder>();
     ResultSet rs = dc.executeQuery(query);
       while (rs.next()) {
         CourseOrder c = new CourseOrder();
         c.setId(rs.getInt(1));
         c.setIdOrder(rs.getInt(2));
-        c.setModule(rs.getInt(3));
+        c.setModuleOrder(rs.getInt(3));
         c.setAction(rs.getInt(4));
         c.setStart(new Hour(rs.getString(5)));
         c.setEnd(new Hour(rs.getString(6)));
         c.setDateStart(new DateFr(rs.getString(7)));
         c.setDateEnd(new DateFr(rs.getString(8)));
-        c.setTitle(rs.getString(9));
-        c.setCode(rs.getInt(10));
-        //c.setDay(rs.getInt(9));
-
+        c.setCode(rs.getInt(9));
+        c.setTitle(rs.getString(10));
+        
         v.addElement(c);
       }
       rs.close();

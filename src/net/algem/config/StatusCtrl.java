@@ -1,7 +1,7 @@
 /*
- * @(#)StatusCtrl.java 2.7.m 14/03/13
+ * @(#)StatusCtrl.java 2.8.a 15/04/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -31,7 +31,7 @@ import net.algem.util.module.GemDesktop;
  * Status management (Leisure, Professional, etc.).
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.m
+ * @version 2.8.a
  * @since 2.5.a 06/07/12
  */
 public class StatusCtrl 
@@ -57,7 +57,7 @@ public class StatusCtrl
     if (p instanceof GemParam) {
       Status status = new Status((GemParam) p);
       if (isValidUpdate(status)) {
-        service.updateStatus(status);
+        service.updateStatus(status);  
         desktop.getDataCache().update(status);
         desktop.postEvent(new GemEvent(this, GemEvent.MODIFICATION, GemEvent.STATUS, status));
       }
@@ -70,6 +70,7 @@ public class StatusCtrl
       Status status = new Status((GemParam) p);
       if (isValidInsert(status)) {
         service.insertStatus(status);
+        p.setId(status.getId());// important
         desktop.getDataCache().add(status);
         desktop.postEvent(new GemEvent(this, GemEvent.CREATION, GemEvent.STATUS, status));
       }

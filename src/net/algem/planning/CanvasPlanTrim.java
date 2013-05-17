@@ -121,7 +121,7 @@ public class CanvasPlanTrim
       int x = 0;
       for (int i = 0; i < pl.size(); i++) {
         Schedule p = pl.elementAt(i);
-        d.setTime(p.getDay().getDate());
+        d.setTime(p.getDate().getDate());
         int m = d.get(Calendar.MONTH);
         plan[m].addElement(p);
       }
@@ -312,7 +312,7 @@ public class CanvasPlanTrim
         for (int j = 0; j < plan[m].size(); j++) {
           Schedule p = (Schedule) plan[m].elementAt(j);
 
-          d.setTime(p.getDay().getDate());
+          d.setTime(p.getDate().getDate());
           int y1 = y + (d.get(Calendar.DAY_OF_MONTH) * pas_y);
           Hour hd = p.getStart();
           int x1 = ((pas_x - margd2) * (hd.toMinutes() - 540)) / nbmin;

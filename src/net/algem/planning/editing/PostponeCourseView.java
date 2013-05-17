@@ -1,5 +1,5 @@
 /*
- * @(#)PostponeCourseView.java	2.7.h 22/02/13
+ * @(#)PostponeCourseView.java	2.8.a 23/04/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -22,7 +22,6 @@ package net.algem.planning.editing;
 
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import net.algem.course.Course;
 import net.algem.planning.*;
 import net.algem.room.Room;
 import net.algem.room.RoomChoice;
@@ -37,7 +36,7 @@ import net.algem.util.ui.GridBagHelper;
 /**
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.h
+ * @version 2.8.a
  * @since 1.0a 07/07/1999
  */
 public class PostponeCourseView
@@ -112,8 +111,8 @@ public class PostponeCourseView
    */
   void set(ScheduleObject s, boolean noRange) {
     courseLabel.setText(s.getScheduleLabel());
-    currentDate.set(s.getDay().getDate());
-    newDate.set(s.getDay().getDate());
+    currentDate.set(s.getDate().getDate());
+    newDate.set(s.getDate().getDate());
     setHour(s.getStart(), s.getEnd());
     setRoom(s.getPlace());
     
@@ -147,7 +146,9 @@ public class PostponeCourseView
   }
 
   ScheduleObject getSchedule() {
-    ScheduleObject s = new ScheduleObject() {
+
+    ScheduleObject s = new ScheduleObject()
+    {
 
       @Override
       public String getScheduleLabel() {
@@ -159,11 +160,12 @@ public class PostponeCourseView
         return null;
       }
     };
-    s.setDay(newDate.getDateFr());
+    
+    s.setDate(newDate.getDateFr());
     s.setStart(newStartTime.get());
     s.setEnd(getHourEnd());
     s.setPlace(newRoom.getKey());
-    
+
     return s;
   }
 

@@ -58,6 +58,6 @@ public class AccountingService {
 
   public Vector<ScheduleRange> getCourseScheduleRange(int idplanning) throws SQLException {
     // on ne comptabilise pas les plages de pause (adherent = 0)
-    return ScheduleRangeIO.find(" WHERE pg.idplanning = " + idplanning + " AND adherent != 0 ORDER BY debut", dc);
+    return ScheduleRangeIO.find("pg WHERE pg.idplanning = " + idplanning + " AND pg.adherent != 0 ORDER BY pg.debut", dc);
   }
 }

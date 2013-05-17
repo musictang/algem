@@ -79,7 +79,7 @@ public class ScheduleRangeTableModel
     ScheduleRangeObject p = (ScheduleRangeObject) tuples.elementAt(ligne);
     switch (colonne) {
       case 0:
-        return p.getDay();
+        return p.getDate();
       case 1:
         return p.getStart().toString();
       case 2:

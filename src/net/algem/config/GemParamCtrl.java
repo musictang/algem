@@ -32,7 +32,8 @@ import net.algem.util.module.GemDesktop;
  * @version 2.6.a
  * @since 2.5.a 06/07/12
  */
-public abstract class GemParamCtrl extends ParamTableCtrl 
+public abstract class GemParamCtrl 
+  extends ParamTableCtrl 
 {
 
   protected ActionService service;
@@ -71,4 +72,5 @@ public abstract class GemParamCtrl extends ParamTableCtrl
   }
   
   protected abstract boolean isValid(GemParam n) throws ParamException, SQLException;
+  
 }

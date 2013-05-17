@@ -1,7 +1,7 @@
 /*
- * @(#)PostponeCourseDlg.java	2.7.h 22/02/13
+ * @(#)PostponeCourseDlg.java	2.8.a 26/04/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,7 +21,6 @@
 
 package net.algem.planning.editing;
 
-import java.awt.Frame;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import net.algem.course.Course;
@@ -33,33 +32,31 @@ import net.algem.room.RoomIO;
 import net.algem.util.DataCache;
 import net.algem.util.MessageUtil;
 import net.algem.util.model.Model;
+import net.algem.util.module.GemDesktop;
 
 /**
  * Dialog for course time modification.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.h
+ * @version 2.8.a
  *
  */
 public class PostponeCourseDlg
         extends ModifPlanDlg
 {
 
-  private DataCache dataCache;
-//  private int roomId;
   private PostponeCourseView pv;
   private ScheduleObject schedule;
 
-  public PostponeCourseDlg(Frame f, DataCache dc, ScheduleObject _plan, String titleKey) {
-    super(f);
-    dataCache = dc;
+  public PostponeCourseDlg(GemDesktop desktop, ScheduleObject _plan, String titleKey) {
+    super(desktop.getFrame());
     schedule = _plan;
-    pv = new PostponeCourseView(dataCache);
+    pv = new PostponeCourseView(desktop.getDataCache());
     boolean noRange = titleKey.equals("Schedule.course.copy.title") ||
             (schedule instanceof CourseSchedule && ((Course) schedule.getActivity()).isCollective());
     pv.set(schedule, noRange);
     validation = false;
-    dlg = new JDialog(f, true);
+    dlg = new JDialog(desktop.getFrame(), true);
     addContent(pv, titleKey);
   }
 
@@ -71,30 +68,26 @@ public class PostponeCourseDlg
   @Override
   public boolean isEntryValid() {
     ScheduleObject ns = pv.getSchedule();
+    String error = MessageUtil.getMessage("invalid.time.slot");
     if (!ns.getEnd().after(ns.getStart())) {
-      JOptionPane.showMessageDialog(dlg,
-                                    MessageUtil.getMessage("hour.range.error"),
-                                    MessageUtil.getMessage("invalid.time.slot"),
-                                    JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(dlg, MessageUtil.getMessage("hour.range.error"), error, JOptionPane.ERROR_MESSAGE);
       return false;
     }
     /* Condition annulée car on peut différer un cours par anticipation à une date antérieure */
     /*if (pv.getNewDate().before(pv.getDate()))
     {
-    JOptionPane.showMessageDialog(dlg,
-    "Date de end invalide",
-    "Plage de date invalide",
-    JOptionPane.ERROR_MESSAGE);
+    JOptionPane.showMessageDialog(dlg,  "Date de end invalide", "Plage de date invalide", JOptionPane.ERROR_MESSAGE);
     return false;
     }*/
     // > versus != because range time may be only one part of the original range
     if (ns.getStart().getLength(ns.getEnd()) > schedule.getStart().getLength(schedule.getEnd())) {
-      JOptionPane.showMessageDialog(dlg,
-                                    MessageUtil.getMessage("invalid.duration"),
-                                    MessageUtil.getMessage("invalid.time.slot"),
-                                    JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(dlg, MessageUtil.getMessage("invalid.duration"), error, JOptionPane.ERROR_MESSAGE);
       return false;
-
+    }
+    
+     if (ns.getEnd().le(ns.getStart())) {
+       JOptionPane.showMessageDialog(dlg, MessageUtil.getMessage("hour.range.error"), error, JOptionPane.ERROR_MESSAGE);
+      return false;
     }
 
     int room = ns.getPlace();

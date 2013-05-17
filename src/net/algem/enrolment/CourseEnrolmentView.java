@@ -1,7 +1,7 @@
 /*
- * @(#)CourseEnrolmentView.java	2.7.a 22/11/12
+ * @(#)CourseEnrolmentView.java	2.8.a 19/04/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -37,7 +37,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.a
  */
 public class CourseEnrolmentView
         extends GemPanel
@@ -70,6 +70,9 @@ public class CourseEnrolmentView
   }
 
   public void load(int id) {
+    if (id == 0) {
+      return;
+    }
     try {
       Vector<Musician> vm = service.findCourseMembers(id);
       for (Musician m : vm) {

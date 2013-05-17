@@ -1,5 +1,5 @@
 /*
- * @(#)CourseEnrolmentNode.java 2.6.a 17/09/12
+ * @(#)CourseEnrolmentNode.java 2.8.a 04/04/13
  *
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -25,7 +25,7 @@ import net.algem.planning.PlanningService;
 /**
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.a
  */
 public class CourseEnrolmentNode
         extends EnrolmentNode
@@ -73,4 +73,5 @@ public class CourseEnrolmentNode
   public boolean isLeaf() {
     return true;
   }
+  
 }

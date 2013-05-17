@@ -1,5 +1,5 @@
 /*
- * @(#)CostAccountCtrl.java	2.7.a 16/01/13
+ * @(#)CostAccountCtrl.java	2.8.d 16/05/13
  *
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -29,7 +29,7 @@ import net.algem.util.module.GemDesktop;
  * Cost account persistence.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.d
  */
 public class CostAccountCtrl
         extends ParamTableCtrl
@@ -54,7 +54,9 @@ public class CostAccountCtrl
     if (p instanceof ActivableParam) {
       ActivableParam ap = (ActivableParam) p;
       ActivableParamTableIO.update(tableName, columnKey, columnName, columnFilter, ap, dc);
-      desktop.getDataCache().update((CostAccount)ap);
+      
+      CostAccount ca = new CostAccount(ap);
+      desktop.getDataCache().update(ca);
     }
   }
 
@@ -63,7 +65,9 @@ public class CostAccountCtrl
     if (p instanceof ActivableParam) {
       ActivableParam ap = (ActivableParam) p;
       ActivableParamTableIO.insert(tableName, ap, dc);
-      desktop.getDataCache().add((CostAccount)ap);
+      
+      CostAccount ca = new CostAccount(ap);
+      desktop.getDataCache().add(ca);
     }
   }
 
@@ -75,7 +79,9 @@ public class CostAccountCtrl
       throw new AccountDeleteException();
     } else {
       ParamTableIO.delete(tableName, columnKey, p, dc);
-      desktop.getDataCache().remove((CostAccount)p);
+      
+      CostAccount ca = new CostAccount(p);
+      desktop.getDataCache().remove(ca);
     }
   }
 }

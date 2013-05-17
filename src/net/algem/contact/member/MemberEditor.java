@@ -1,5 +1,5 @@
 /*
- * @(#)MemberEditor.java	2.7.l 11/03/13
+ * @(#)MemberEditor.java	2.8.c 14/05/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -48,14 +48,14 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.l
+ * @version 2.8.c
  */
 public class MemberEditor
         extends FileTab
         implements FocusListener, ActionListener, Reloadable
 {
 
-  private GemChoice profession;
+  private GemChoice occupation;
   private DateFrField birth;
   private GemNumericField age;
   private GemNumericField nMemberships;
@@ -70,7 +70,7 @@ public class MemberEditor
     super(_desktop);
     id = _id;
     instrument = new InstrumentView(dataCache.getInstruments());
-    profession = new CategoryOccupChoice(dataCache.getOccupationalCat());
+    occupation = new CategoryOccupChoice(dataCache.getOccupationalCat());
     birth = new DateFrField();
     birth.addFocusListener(this);
     nMemberships = new GemNumericField(3);
@@ -100,7 +100,7 @@ public class MemberEditor
     gb.add(new GemLabel(BundleUtil.getLabel("Payer.label")), 0, 7, 1, 1, GridBagHelper.WEST);
 
     gb.add(instrument, 1, 0, 3, 1, GridBagHelper.WEST);
-    gb.add(profession, 1, 2, 2, 1, GridBagHelper.WEST);
+    gb.add(occupation, 1, 2, 2, 1, GridBagHelper.WEST);
     gb.add(birth, 1, 3, 1, 1, GridBagHelper.WEST);
     gb.add(age, 2, 3, 1, 1, GridBagHelper.WEST);
     gb.add(nMemberships, 1, 4, 1, 1, GridBagHelper.WEST);
@@ -151,7 +151,7 @@ public class MemberEditor
   public Member getMember() {
     Member m = new Member(id);
 
-    m.setOccupation((String) profession.getSelectedItem());
+    m.setOccupation((String) occupation.getSelectedItem());
     m.setBirth(new DateFr(birth.getDateFr()));
     try {
       m.setNMemberShip(Integer.parseInt(nMemberships.getText()));
@@ -183,7 +183,7 @@ public class MemberEditor
     instrument.set(m.getInstruments());
 //    instrument1.setSelectedItem((String) m.getInstrument1());
 //    instrument2.setSelectedItem((String) m.getInstrument2());
-    profession.setSelectedItem((String) m.getOccupation());
+    occupation.setSelectedItem((String) m.getOccupation());
     if (m.getBirth() != null) {
       birth.set(m.getBirth());
       Calendar cal = Calendar.getInstance(Locale.FRANCE);
@@ -232,7 +232,7 @@ public class MemberEditor
 //    member = null;
 //    instrument1.setSelectedIndex(0);
 //    instrument2.setSelectedIndex(0);
-    profession.setSelectedIndex(0);
+    occupation.setSelectedIndex(0);
     birth.setText(DateFr.NULLDATE);
     age.setText("");
     nMemberships.setText("");

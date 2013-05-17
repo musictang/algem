@@ -153,7 +153,7 @@ public class AccountUtil {
   }
    */
   /**
-   * Verification algorythm of BIC.
+   * Checking BIC.
    * @link  http://fr.wikipedia.org/wiki/Relev%C3%A9_d%27identit%C3%A9_bancaire#Algorithme_de_v.C3.A9rification_en_Java
    *
    * @param bic on 23 digits
@@ -212,7 +212,7 @@ public class AccountUtil {
   }
 
   /**
-   * Verifies if an orderline exists in database.
+   * Checks if an orderline exists in database.
    *
    * @param dc datacache
    * @param e orderline
@@ -267,7 +267,7 @@ public class AccountUtil {
   }
 
   /**
-   * Simple printing with page number of a table.
+   * Simple printing of a table with page number.
    *
    * @param table
    * @throws PrinterException

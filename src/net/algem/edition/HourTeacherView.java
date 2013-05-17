@@ -1,5 +1,5 @@
 /*
- * @(#)HourTeacherView.java	2.6.a 02/08/2012
+ * @(#)HourTeacherView.java	2.8.a 01/04/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -24,13 +24,12 @@ import java.util.Date;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import net.algem.config.GemParam;
+import net.algem.config.GemParamChoice;
 import net.algem.planning.DateFr;
 import net.algem.planning.DateFrField;
 import net.algem.util.DataConnection;
-import net.algem.config.SchoolCtrl;
-import net.algem.config.Param;
-import net.algem.config.ParamChoice;
-import net.algem.config.ParamTableIO;
+import net.algem.util.model.GemList;
 import net.algem.util.ui.GridBagHelper;
 
 /**
@@ -38,7 +37,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.a
  */
 public class HourTeacherView
         extends JPanel
@@ -47,17 +46,16 @@ public class HourTeacherView
   private DateFrField dateStart;
   private DateFrField dateEnd;
   private JCheckBox detail;
-  private ParamChoice schoolChoice;
+  private GemParamChoice schoolChoice;
 
-  public HourTeacherView(DataConnection dc) {
+  public HourTeacherView(DataConnection dc, GemList schools) {
     setLayout(new java.awt.GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
 
     dateStart = new DateFrField(new Date());
     dateEnd = new DateFrField(new Date());
     detail = new JCheckBox();
-    //ecole = new JComboBox(ecoles);
-    schoolChoice = new ParamChoice(ParamTableIO.find(SchoolCtrl.TABLE, SchoolCtrl.SORT_COLUMN, dc));
+    schoolChoice = new GemParamChoice(schools);
 
     JPanel dates = new JPanel();
     dates.add(dateStart);
@@ -72,7 +70,6 @@ public class HourTeacherView
     gb.add(schoolChoice, 1, 1, 1, 1, GridBagHelper.WEST);
     gb.add(detail, 1, 2, 1, 1, GridBagHelper.WEST);
 
-    //setSize(500,400);
   }
 
   public DateFr getDateStart() {
@@ -83,9 +80,8 @@ public class HourTeacherView
     return dateEnd.getDateFr();
   }
 
-  public Param getSchool() {
-    return (Param) schoolChoice.getSelectedItem();
-    //return ecoleChoix.getKey();
+  public GemParam getSchool() {
+    return (GemParam) schoolChoice.getSelectedItem();
   }
 
   public boolean withDetail() {

@@ -1,5 +1,5 @@
 /*
- * @(#)OrderLineDlg.java	2.7.a 06/12/12
+ * @(#)OrderLineDlg.java	2.8.a 01/04/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -49,7 +49,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.a
  * @since 1.0a 07/07/1999
  */
 public class OrderLineDlg
@@ -254,7 +254,7 @@ public class OrderLineDlg
       }
       OrderLine e = tableView.getElementAt(n);
       try {
-        OrderLineView dlg = new OrderLineView(parent, BundleUtil.getLabel("Order.line.modification"), dc);
+        OrderLineView dlg = new OrderLineView(parent, BundleUtil.getLabel("Order.line.modification"), dataCache);
         dlg.setOrderLine(e);
         dlg.setIdEditable(true);
         dlg.setVisible(true);
@@ -283,7 +283,7 @@ public class OrderLineDlg
   private void modify(int[] rows) {
     OrderLine e = tableView.getElementAt(rows[0]);
     try {
-      OrderLineView dlg = new OrderLineView(parent, BundleUtil.getLabel("Order.line.modification"), dc);
+      OrderLineView dlg = new OrderLineView(parent, BundleUtil.getLabel("Order.line.modification"), dataCache);
       dlg.setOrderLine(e);
       dlg.setEditable(false);
       dlg.setVisible(true);
@@ -318,7 +318,7 @@ public class OrderLineDlg
     }
     OrderLineView dlg = null;
     try {
-      dlg = new OrderLineView(parent, MessageUtil.getMessage("payment.add.label"), dc);
+      dlg = new OrderLineView(parent, MessageUtil.getMessage("payment.add.label"), dataCache);
       if (e != null) {
         dlg.setOrderLine(e);
       }

@@ -1,7 +1,7 @@
 /*
- * @(#)Schedule.java	2.6.a 19/09/12
+ * @(#)Schedule.java	2.8.a 24/04/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -25,7 +25,7 @@ package net.algem.planning;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.a
  */
 public class Schedule
         implements java.io.Serializable
@@ -37,7 +37,7 @@ public class Schedule
   public static final int MEMBER_SCHEDULE = 4;
   public static final int WORKSHOP_SCHEDULE = 5;
   protected int id;
-  protected DateFr day;
+  protected DateFr date;
   protected Hour start;
   protected Hour end;
   protected int type;
@@ -50,14 +50,14 @@ public class Schedule
     return (d != null
             && type == d.type
             && idper == d.idper
-            && day.equals(d.day)
+            && date.equals(d.date)
             && start.equals(d.start)
             && end.equals(d.end));
   }
 
   @Override
   public String toString() {
-    return "Planning:" + day + " " + start + " " + end + " " + idper + " " + idAction + " " + place;
+    return "Planning:" + date + " " + start + " " + end + " " + idper + " " + idAction + " " + place;
   }
 
   public int getId() {
@@ -68,16 +68,16 @@ public class Schedule
     id = i;
   }
 
-  public void setDay(DateFr d) {
-    day = d;
+  public void setDate(DateFr d) {
+    date = d;
   }
 
-  public void setDay(java.util.Date d) {
-    day = new DateFr(d);
+  public void setDate(java.util.Date d) {
+    date = new DateFr(d);
   }
 
-  public DateFr getDay() {
-    return day;
+  public DateFr getDate() {
+    return date;
   }
 
   public void setStart(Hour h) {
@@ -142,6 +142,13 @@ public class Schedule
 
   public int getNote() {
     return note;
+  }
+  
+  /**
+   * Gets the schedule length in minutes.
+   */
+  public int getLength() {
+    return start.getLength(end);
   }
 
   public boolean isValid() {

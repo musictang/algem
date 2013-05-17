@@ -1,7 +1,7 @@
 /*
- * @(#)OrderLine.java	2.7.a 10/01/13
+ * @(#)OrderLine.java	2.8.a 01/04/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -31,7 +31,7 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.a
  *
  */
 public class OrderLine
@@ -48,7 +48,7 @@ public class OrderLine
   private int amount;
   /** Numéro de pièce. */
   private String document = "";
-  private String school = "";
+  private int school;
   private Account account = new Account();
   /** Analytique. */
   private Account costAccount = new Account();
@@ -70,7 +70,7 @@ public class OrderLine
     payer = m.getPayer();
     amount = AccountUtil.getIntValue(m.getPrice());
     modeOfPayment = m.getModeOfPayment();
-    order = m.getId();
+    order = m.getIdOrder();
   }
 
   public OrderLine(OrderLine e) {
@@ -182,11 +182,11 @@ public class OrderLine
     document = s;
   }
 
-  public String getSchool() {
+  public int getSchool() {
     return school;
   }
 
-  public void setSchool(String s) {
+  public void setSchool(int s) {
     school = s;
   }
 

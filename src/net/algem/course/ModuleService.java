@@ -21,6 +21,9 @@
 package net.algem.course;
 
 import java.sql.SQLException;
+import java.util.Vector;
+import net.algem.enrolment.ModuleOrder;
+import net.algem.enrolment.ModuleOrderIO;
 import net.algem.planning.Schedule;
 import net.algem.planning.ScheduleIO;
 import net.algem.util.DataCache;
@@ -56,7 +59,19 @@ public class ModuleService
     moduleIO.update(m);
   }
 
-  public void delete(Module m) throws SQLException {
+  public void delete(Module m) throws SQLException, ModuleException {
+    Vector<ModuleOrder> vm = ModuleOrderIO.find("AND m.id = " + m.getId(), dc);
+    if (vm != null && vm.size() > 0) {
+      if (vm.size() < 10) {
+        StringBuilder sb = new StringBuilder();
+        for (ModuleOrder mo : vm) {
+          sb.append("\n").append(mo.getIdOrder());
+        }
+        throw new ModuleException(MessageUtil.getMessage("module.delete.exception2", sb.toString()));
+      } else {
+        throw new ModuleException(MessageUtil.getMessage("module.delete.exception", vm.size()));
+      }
+    }
     moduleIO.delete(m);
   }
 

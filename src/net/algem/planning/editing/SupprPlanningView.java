@@ -46,9 +46,9 @@ public class SupprPlanningView
   private ActionListener actionListener;
 
   public SupprPlanningView(Schedule plan) {
-    start = new DateFrField(plan.getDay());
+    start = new DateFrField(plan.getDate());
     start.setEditable(false);
-    end = new DateFrField(plan.getDay());
+    end = new DateFrField(plan.getDate());
     setBorder(ModifPlanView.DEFAULT_BORDER);
 
     title = new GemLabel(BundleUtil.getLabel("Scheduling.label").toLowerCase() + " : " + plan.getIdAction());

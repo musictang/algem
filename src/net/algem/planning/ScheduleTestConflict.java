@@ -1,7 +1,7 @@
 /*
- * @(#)ScheduleTestConflict.java	2.6.a 20/09/12
+ * @(#)ScheduleTestConflict.java	2.8.a 26/04/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -25,14 +25,14 @@ package net.algem.planning;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.a
  * @since 1.0a 07/07/1999
  */
 public class ScheduleTestConflict
         implements java.io.Serializable
 {
 
-  private DateFr day;
+  private DateFr date;
   private Hour hStart;
   private Hour hEnd;
   private boolean teacherFree;
@@ -40,70 +40,70 @@ public class ScheduleTestConflict
   private boolean memberFree;
   private String detail;
 
-  public ScheduleTestConflict(DateFr _jour, Hour _debut, Hour _fin, boolean _prof, boolean _salle, boolean _adh) {
-    day = _jour;
-    hStart = _debut;
-    hEnd = _fin;
-    teacherFree = _prof;
-    roomFree = _salle;
-    memberFree = _adh;
+  public ScheduleTestConflict(DateFr date, Hour hStart, Hour hEnd, boolean teacherFree, boolean roomFree, boolean memberFree) {
+    this.date = date;
+    this.hStart = hStart;
+    this.hEnd = hEnd;
+    this.teacherFree = teacherFree;
+    this.roomFree = roomFree;
+    this.memberFree = memberFree;
   }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		final ScheduleTestConflict other = (ScheduleTestConflict) obj;
-		if (this.day != other.day && (this.day == null || !this.day.equals(other.day))) {
-			return false;
-		}
-		if (this.hStart != other.hStart && (this.hStart == null || !this.hStart.equals(other.hStart))) {
-			return false;
-		}
-		if (this.hEnd != other.hEnd && (this.hEnd == null || !this.hEnd.equals(other.hEnd))) {
-			return false;
-		}
-		if (this.teacherFree != other.teacherFree) {
-			return false;
-		}
-		if (this.roomFree != other.roomFree) {
-			return false;
-		}
-		if (this.memberFree != other.memberFree) {
-			return false;
-		}
-		return true;
-	}
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final ScheduleTestConflict other = (ScheduleTestConflict) obj;
+    if (this.date != other.date && (this.date == null || !this.date.equals(other.date))) {
+      return false;
+    }
+    if (this.hStart != other.hStart && (this.hStart == null || !this.hStart.equals(other.hStart))) {
+      return false;
+    }
+    if (this.hEnd != other.hEnd && (this.hEnd == null || !this.hEnd.equals(other.hEnd))) {
+      return false;
+    }
+    if (this.teacherFree != other.teacherFree) {
+      return false;
+    }
+    if (this.roomFree != other.roomFree) {
+      return false;
+    }
+    if (this.memberFree != other.memberFree) {
+      return false;
+    }
+    return true;
+  }
 
-	@Override
-	public int hashCode() {
-		int hash = 3;
-		return hash;
-	}
+  @Override
+  public int hashCode() {
+    int hash = 3;
+    return hash;
+  }
 
-  public ScheduleTestConflict(DateFr day, Hour start, Hour end) {
-    this(day, start, end, true, true, true);
+  public ScheduleTestConflict(DateFr date, Hour start, Hour end) {
+    this(date, start, end, true, true, true);
   }
 
   @Override
   public String toString() {
-    return "Conflit :" + day + " " + teacherFree + " " + roomFree;
+    return "Conflit :" + date + " " + teacherFree + " " + roomFree;
   }
 
-  public void setDay(DateFr d) {
-    day = d;
+  public void setDate(DateFr d) {
+    date = d;
   }
 
-  public void setDay(java.util.Date d) {
-    day = new DateFr(d);
+  public void setDate(java.util.Date d) {
+    date = new DateFr(d);
   }
 
-  public DateFr getDay() {
-    return day;
+  public DateFr getDate() {
+    return date;
   }
 
   public void setStart(Hour h) {

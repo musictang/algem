@@ -1,5 +1,5 @@
 /*
- * @(#)ActivableParam.java 2.6.a 18/09/12
+ * @(#)ActivableParam.java 2.8.c 16/05/13
  *
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -23,12 +23,12 @@ package net.algem.config;
 
 /**
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.c
  */
 public class ActivableParam 
         extends Param
 {
-  private boolean active; 
+  protected boolean active; 
   
   public ActivableParam() {
     

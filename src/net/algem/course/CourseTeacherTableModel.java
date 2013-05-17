@@ -79,7 +79,7 @@ public class CourseTeacherTableModel
     CourseSchedule p = (CourseSchedule) tuples.elementAt(ligne);
     switch (colonne) {
       case 0:
-        return p.getDay();
+        return p.getDate();
       case 1:
         return p.getStart().toString();
       case 2:

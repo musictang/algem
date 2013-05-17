@@ -1,5 +1,5 @@
 /*
- * @(#)EnrolmentModuleNode.java 2.6.a 17/09/12
+ * @(#)ModuleEnrolmentNode.java 2.6.a 17/09/12
  *
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -25,13 +25,13 @@ package net.algem.enrolment;
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.6.a
  */
-public class EnrolmentModuleNode
+public class ModuleEnrolmentNode
         extends EnrolmentNode
 {
 
   private ModuleOrder cm;
 
-  public EnrolmentModuleNode(Object o) {
+  public ModuleEnrolmentNode(Object o) {
     super(o);
 
     if (o instanceof ModuleOrder) {

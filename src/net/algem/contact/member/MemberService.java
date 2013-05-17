@@ -1,7 +1,7 @@
 /*
- * @(#)MemberService.java	2.7.a 11/01/13
+ * @(#)MemberService.java	2.8.a 01/04/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -48,7 +48,7 @@ import net.algem.util.model.Model;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.a
  * @since 2.4.a 14/05/12
  */
 public class MemberService
@@ -82,7 +82,7 @@ public class MemberService
       if (newDuration >= oldDuration) {
         card.dec(newDuration - oldDuration);
         if (card.getRest() < 0) {
-          nc = createSubscriptionCard(card, plan.getDay());
+          nc = createSubscriptionCard(card, plan.getDate());
           sendPersonFileEvent(nc);
         } else {
           updateSubscriptionCard(card);
@@ -110,12 +110,13 @@ public class MemberService
     card.setRest(0);
     // création automatique d'une nouvelle carte d'abonnement
     RehearsalCard cr = RehearsalCardIO.find(card.getRehearsalCardId(), dc);
-    PersonSubscriptionCard nc = new PersonSubscriptionCard(card.getIdper(), card.getRehearsalCardId(), date, cr.getTotalDuration() - offset);
+    PersonSubscriptionCard nc = new PersonSubscriptionCard(card.getIdper(), card.getRehearsalCardId(), date, cr.getTotalLength() - offset);
     cardIO.insert(nc);
     cardIO.update(card);
     PersonFile pf = ((PersonFileIO)DataCache.getDao(Model.PersonFile)).findMember(card.getIdper(), false);
     OrderLine e = AccountUtil.setOrderLine(pf, date, getPrefAccount(AccountPrefIO.REHEARSAL_KEY_PREF), cr.getAmount());
-    e.setSchool(ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey(), dc));
+    String s = ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey(), dc);
+    e.setSchool(Integer.parseInt(s));
     AccountUtil.createEntry(e, dc);
 
     return nc;
@@ -127,9 +128,9 @@ public class MemberService
     RehearsalCard abo = RehearsalCardIO.find(card.getRehearsalCardId(), dc);
     Preference p = AccountPrefIO.find(AccountPrefIO.REHEARSAL_KEY_PREF, dc);
     OrderLine e = AccountUtil.setOrderLine(pFile, new DateFr(new Date()), p, abo.getAmount());
-    e.setSchool(ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey(), dc));
+    String s = ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey(), dc);
+    e.setSchool(Integer.parseInt(s));
     AccountUtil.createEntry(e, dc);
-
   }
 
   public void create(PersonSubscriptionCard card) throws SQLException {
@@ -171,21 +172,21 @@ public class MemberService
     // recherche d'une carte précédente
     PersonSubscriptionCard lastCard = cardIO.find(card.getIdper(), " id < " + card.getId());
     int rest = card.getRest();
-    int totalDuration = rehearsalCard.getTotalDuration();
+    int totalDuration = rehearsalCard.getTotalLength();
     // si la durée restante sur la carte actuelle excède la durée totale possible
     if (rest > totalDuration) {
       if (lastCard != null) {
-        lastCard.inc(card.getRest() - rehearsalCard.getTotalDuration());
+        lastCard.inc(card.getRest() - rehearsalCard.getTotalLength());
         cardIO.delete(card.getId());
         cardIO.update(lastCard);
         //Suppression ligne échéancier
         deleteOrderLine(card.getPurchaseDate(), card.getIdper());
         sendPersonFileEvent(lastCard);
       } else {
-        card.setRest(rehearsalCard.getTotalDuration());
+        card.setRest(rehearsalCard.getTotalLength());
         sendPersonFileEvent(card);
       }
-    } else if (card.getRest() < rehearsalCard.getTotalDuration()) {
+    } else if (card.getRest() < rehearsalCard.getTotalLength()) {
       cardIO.update(card);
       sendPersonFileEvent(card);
     } else { // suppression d'une carte quand la durée restante est égale au max disponible
@@ -331,7 +332,8 @@ public class MemberService
 
     Preference p = AccountPrefIO.find(AccountPrefIO.REHEARSAL_KEY_PREF, dc);
     OrderLine e = AccountUtil.setOrderLine(pFile, date, p, amount);
-    e.setSchool(ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey(), dc));
+    String s = ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey(), dc);
+    e.setSchool(Integer.parseInt(s));
     AccountUtil.createEntry(e, dc);
   }
 

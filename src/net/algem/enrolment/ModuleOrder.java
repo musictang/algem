@@ -1,5 +1,5 @@
 /*
- * @(#)ModuleOrder.java	2.6.a 17/09/12
+ * @(#)ModuleOrder.java	2.8.a 03/04/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,6 +20,8 @@
  */
 package net.algem.enrolment;
 
+import java.util.ArrayList;
+import java.util.List;
 import net.algem.planning.DateFr;
 
 /**
@@ -27,13 +29,13 @@ import net.algem.planning.DateFr;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.a
  */
 public class ModuleOrder
         implements java.io.Serializable
 {
 
-  private int oid;
+  private int id;
   private int idcmd;
   private int payer;
   
@@ -55,26 +57,28 @@ public class ModuleOrder
   private String payment;
   private int nOrderLines;
   private String title;
+  
+  private List<CourseOrder> courseOrders = new ArrayList<CourseOrder>();
 
   @Override
   public String toString() {
     return idcmd + "," + module + "," + price + "," + start + "," + end + "," + price + "," + modeOfPayment + "," + payment + "," + nOrderLines;
   }
 
-  public int getId() {
+  public int getIdOrder() {
     return idcmd;
   }
 
-  public void setId(int i) {
+  public void setIdOrder(int i) {
     idcmd = i;
   }
 
-  public int getOID() {
-    return oid;
+  public int getId() {
+    return id;
   }
 
-  public void setOID(int i) {
-    oid = i;
+  public void setId(int i) {
+    id = i;
   }
 
   public int getModule() {
@@ -156,4 +160,21 @@ public class ModuleOrder
   public String getTitle() {
     return title;
   }
+
+  public List<CourseOrder> getCourseOrders() {
+    return courseOrders;
+  }
+
+  public void setCourseOrders(List<CourseOrder> courseOrders) {
+    this.courseOrders = courseOrders;
+  }
+  
+  public void addCourseOrder(CourseOrder co) {
+    courseOrders.add(co);
+  }
+  
+  void clear() {
+    courseOrders.clear();
+  }
+  
 }

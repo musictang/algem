@@ -206,7 +206,7 @@ public class PersonSubscriptionCardView
    * @param offset the duration to add or substract
    */
   public void setRest(int offset) {
-    int dureeCarte = getRehearsalCard().getTotalDuration();
+    int dureeCarte = getRehearsalCard().getTotalLength();
     if (personCard.isNewCard()) {
       rest = dureeCarte - offset;
     } else {

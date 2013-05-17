@@ -1,7 +1,7 @@
 /*
- * @(#)ConflictTableModel.java	2.6.a 19/09/12
+ * @(#)ConflictTableModel.java	2.8.a 24/04/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -29,7 +29,7 @@ import net.algem.util.ui.JTableModel;
  * Conflict table model.
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.a
  */
 public class ConflictTableModel
         extends JTableModel
@@ -83,7 +83,7 @@ public class ConflictTableModel
     ScheduleTestConflict p = (ScheduleTestConflict) tuples.elementAt(ligne);
     switch (colonne) {
       case 0:
-        return p.getDay().toString();
+        return p.getDate().toString();
       case 1:
         return p.getStart().toString();
       case 2:

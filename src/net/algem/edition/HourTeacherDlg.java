@@ -1,5 +1,5 @@
 /*
- * @(#)HourTeacherDlg.java	2.7.e 04/02/13
+ * @(#)HourTeacherDlg.java	2.8.a 01/04/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -42,7 +42,7 @@ import javax.swing.SwingWorker;
 import net.algem.accounting.AccountUtil;
 import net.algem.accounting.AccountingService;
 import net.algem.accounting.OrderLineIO;
-import net.algem.config.Param;
+import net.algem.config.GemParam;
 import net.algem.course.Course;
 import net.algem.planning.DateFr;
 import net.algem.planning.Hour;
@@ -62,7 +62,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.e
+ * @version 2.8.a
  * @since 1.0a 14/12/1999
  */
 public class HourTeacherDlg
@@ -108,7 +108,7 @@ public class HourTeacherDlg
     gb.add(new JLabel(BundleUtil.getLabel("Menu.file.label")), 0, 0, 1, 1, GridBagHelper.EAST);
     gb.add(filepath, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(chooser, 2, 0, 1, 1, GridBagHelper.WEST);
-    view = new HourTeacherView(dc);
+    view = new HourTeacherView(dc, dataCache.getList(Model.School));
 
     c.add(header);
     c.add(view);
@@ -121,7 +121,7 @@ public class HourTeacherDlg
     DateFr start = view.getDateStart();
     DateFr end = view.getDateEnd();
 
-    Param school = view.getSchool();
+    GemParam school = view.getSchool();
 
     boolean detail = view.withDetail();
     String lf = FileUtil.LINE_SEPARATOR;
@@ -135,9 +135,9 @@ public class HourTeacherDlg
 
       Vector<PlanningLib> plan = new Vector<PlanningLib>();
       if (teacher > 0) {
-        plan = service.getPlanningLib(start.toString(), end.toString(), Integer.valueOf(school.getKey()), teacher);
+        plan = service.getPlanningLib(start.toString(), end.toString(), school.getId(), teacher);
       } else {
-        plan = service.getPlanningLib(start.toString(), end.toString(), Integer.valueOf(school.getKey()));
+        plan = service.getPlanningLib(start.toString(), end.toString(), school.getId());
       }
 
       pm = new ProgressMonitor(view, MessageUtil.getMessage("active.search.label"), "", 1, 100);

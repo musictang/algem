@@ -1,7 +1,7 @@
 /*
- * @(#)GemParamIO.java 2.8.a 15/03/13
+ * @(#)GemParamIO.java 2.8.a 15/04/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -44,13 +44,13 @@ public abstract class GemParamIO
 
   public void insert(GemParam n) throws SQLException {
     int id = nextId(getSequence(), dc);
-    String query = "INSERT INTO " + getTable() + " VALUES(" + id + ",'" + n.getCode().trim() + "','" + n.getLabel().trim() + "')";
+    String query = "INSERT INTO " + getTable() + " VALUES(" + id + ",'" + n.getCode().trim() + "','" + escape(n.getLabel().trim()) + "')";
     dc.executeUpdate(query);
     n.setId(id);
   }
 
   public void update(GemParam n) throws SQLException {
-    String query = "UPDATE " + getTable() + " SET code = '" + n.getCode().trim() + "', libelle='" + n.getLabel().trim() + "' WHERE id = " + n.getId();
+    String query = "UPDATE " + getTable() + " SET code = '" + n.getCode().trim() + "', libelle='" + escape(n.getLabel().trim()) + "' WHERE id = " + n.getId();
     dc.executeUpdate(query);
   }
 
@@ -68,7 +68,7 @@ public abstract class GemParamIO
 
     ResultSet rs = dc.executeQuery(query);
     if (rs.next()) {
-      return new GemParam(rs.getInt(1), rs.getString(2), rs.getString(3));
+      return new GemParam(rs.getInt(1), rs.getString(2), unEscape(rs.getString(3)));
     }
     return null;
   }
@@ -82,7 +82,7 @@ public abstract class GemParamIO
     Vector<GemParam> vn = new Vector<GemParam>();
     ResultSet rs = dc.executeQuery(query);
     while (rs.next()) {
-      GemParam n = new GemParam(rs.getInt(1), rs.getString(2), rs.getString(3));
+      GemParam n = new GemParam(rs.getInt(1), rs.getString(2), unEscape(rs.getString(3)));
       vn.addElement(n);
     }
     return vn;

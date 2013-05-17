@@ -1,5 +1,5 @@
 /*
- * @(#)DayScheduleCtrl.java 2.7.a 11/01/13
+ * @(#)DayScheduleCtrl.java 2.8.a 17/04/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -32,8 +32,6 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import net.algem.config.ConfigKey;
-import net.algem.config.ConfigUtil;
 import net.algem.planning.*;
 import net.algem.planning.editing.ModifPlanEvent;
 import net.algem.room.Establishment;
@@ -114,19 +112,8 @@ public class DayScheduleCtrl
     miQuit.addActionListener(this);
     mLinkMonth.addActionListener(this);
     view.setJMenuBar(mBar);
-    // 1.1a onglet par défaut
-    int e = 0;
-
-    try {
-      e = Integer.parseInt(ConfigUtil.getConf(ConfigKey.DEFAULT_ESTABLISHMENT.getKey(), dataCache.getDataConnection()));
-    } catch (NumberFormatException nfe) {
-      GemLogger.log(getClass().getName() + "#init " + nfe.getMessage());
-    }
-
-    view.setSelectedTab(estabs.indexOf(e) + 1);//+1 car le premier onglet correspond aux profs
     new Thread(new Runnable()
     {
-
       @Override
       public void run() {
         load(new java.util.Date());

@@ -1,5 +1,5 @@
 /*
- * @(#)CourseModuleInfo.java	2.8.a 13/03/2013
+ * @(#)CourseModuleInfo.java	2.8.a 19/04/2013
  *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -31,10 +31,14 @@ import net.algem.config.GemParam;
  */
 public class CourseModuleInfo 
 {
+  /** Min length in minutes. */
+  public static final int MIN_LENGTH = 10;
+  
+  /** Max length in hours. */
+  public static final int MAX_LENGTH = 24;
   
   private int id;
   private int idModule;
-  private int idCode;
   private int timeLength;
   private GemParam code;
 
@@ -42,11 +46,7 @@ public class CourseModuleInfo
   }
 
   public int getIdCode() {
-    return idCode;
-  }
-
-  public void setIdCode(int code) {
-    this.idCode = code;
+    return code == null ? 0  : code.getId();
   }
 
   public int getId() {
@@ -72,6 +72,19 @@ public class CourseModuleInfo
   public void setTimeLength(int timeLength) {
     this.timeLength = timeLength;
   }
+  
+  public boolean hasValidLength() {
+    if (code == null) {
+      return false;
+    }
+    if (code.getId() != Course.ATP_CODE && timeLength < MIN_LENGTH) {
+      return false;
+    }
+    if (timeLength > (MAX_LENGTH * 60)) {
+      return false;
+    }
+    return true;
+  }
 
   public GemParam getCode() {
     return code;
@@ -79,6 +92,11 @@ public class CourseModuleInfo
 
   public void setCode(GemParam code) {
     this.code = code;
+  }
+  
+  @Override
+  public String toString() {
+    return code + " : " + timeLength;
   }
 
 }

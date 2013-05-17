@@ -78,7 +78,7 @@ public class RehearsalTableModel
     Schedule p = (Schedule) tuples.elementAt(ligne);
     switch (colonne) {
       case 0:
-        return p.getDay();
+        return p.getDate();
       case 1:
         return p.getStart().toString();
       case 2:

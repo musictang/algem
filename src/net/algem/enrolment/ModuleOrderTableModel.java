@@ -1,5 +1,5 @@
 /*
- * @(#)ModuleOrderTableModel.java	2.6.a 17/09/12
+ * @(#)ModuleOrderTableModel.java	2.8.a 12/04/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -30,7 +30,7 @@ import net.algem.util.ui.JTableModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.a
  */
 public class ModuleOrderTableModel
         extends JTableModel
@@ -38,20 +38,20 @@ public class ModuleOrderTableModel
 
   public ModuleOrderTableModel() {
     header = new String[]{
-      "id",
+      BundleUtil.getLabel("Id.label"),
       BundleUtil.getLabel("Module.label"),
       BundleUtil.getLabel("Start.label"),
       BundleUtil.getLabel("End.label"),
       BundleUtil.getLabel("Module.basic.rate.label"),
-      "Règl",
-      "NbEch"
+      BundleUtil.getLabel("Mode.of.payment.label")
+//      "NbEch"
     };
   }
 
   @Override
   public int getIdFromIndex(int i) {
     ModuleOrder m = (ModuleOrder) tuples.elementAt(i);
-    return m.getId();
+    return m.getIdOrder();
   }
 
   @Override
@@ -68,8 +68,6 @@ public class ModuleOrderTableModel
         return GemAmount.class;
       case 5:
         return String.class;
-      case 6:
-        return Integer.class;
       default:
         return Object.class;
     }
@@ -96,8 +94,8 @@ public class ModuleOrderTableModel
         return new GemAmount(m.getPrice());
       case 5:
         return m.getModeOfPayment();
-      case 6:
-        return new Integer(m.getNOrderLines());
+//      case 6:
+//        return new Integer(m.getNOrderLines());
     }
     return null;
   }

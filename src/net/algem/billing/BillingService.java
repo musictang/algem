@@ -1,7 +1,7 @@
 /*
- * @(#)BillingService 2.7.h 22/02/13
+ * @(#)BillingService 2.8.a 26/03/13
  *
- * Copyright 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -39,7 +39,7 @@ import net.algem.util.model.Model;
  * Service class for billing.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.h
+ * @version 2.8.a
  * @since 2.3.a 06/02/12
  */
 public class BillingService
@@ -47,7 +47,7 @@ public class BillingService
         implements BillingServiceI
 {
 
-  private static String DEFAULT_SCHOOL;
+  private static int DEFAULT_SCHOOL;
   private ItemIO itemIO;
   private InvoiceIO invoiceIO;
   private QuoteIO quotationIO;
@@ -62,7 +62,8 @@ public class BillingService
     itemIO = new ItemIO(dc);
     invoiceIO = new InvoiceIO(dc);
     quotationIO = new QuoteIO(dc);
-    DEFAULT_SCHOOL = ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey(), dc);
+    String s = ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey(), dc);
+    DEFAULT_SCHOOL = Integer.parseInt(s);
   }
 
   @Override

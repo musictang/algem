@@ -1,5 +1,5 @@
 /*
- * @(#)ModuleComparator.java 2.8.a 18/03/13
+ * @(#)ModuleComparator.java 2.8.a 19/04/13
  *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -24,7 +24,7 @@ import java.util.Comparator;
 
 /**
  * Module comparator.
- * The comparison applies to title.
+ * The comparison applies to code and title.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.8.a
@@ -34,6 +34,6 @@ public class ModuleComparator implements Comparator<Module> {
 
   @Override
   public int compare(Module m1, Module m2) {
-    return m1.getTitle().compareTo(m2.getTitle());
+    return m1.toString().compareTo(m2.toString());
   }
 }

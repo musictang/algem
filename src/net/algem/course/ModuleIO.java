@@ -1,7 +1,7 @@
 /*
- * @(#)ModuleIO.java 2.8.a 15/03/13
+ * @(#)ModuleIO.java 2.8.a 23/03/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -127,12 +127,11 @@ public class ModuleIO
 
   public Vector<Module> find(String where) throws SQLException {
     Vector<Module> v = new Vector<Module>();
-    String query = "SELECT * FROM " + TABLE + " " + where;
+    String query = "SELECT " + TABLE + ".* FROM " + TABLE + " " + where;
     ResultSet rs = dc.executeQuery(query);
     while (rs.next()) {
       Module m = new Module();
       m.setId(rs.getInt(1));
-      //System.out.println("id forfait :"+rs.getInt(1));//
       m.setCode(rs.getString(2).trim());
       m.setTitle(rs.getString(3));
       m.setBasePrice(rs.getDouble(4)); // prixinst
@@ -166,6 +165,6 @@ public class ModuleIO
 
   @Override
   public List<Module> load() throws SQLException {
-    return find("ORDER BY titre");
+    return find("ORDER BY code,titre");
   }
 }

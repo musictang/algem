@@ -1,7 +1,7 @@
 /*
- * @(#)MenuAccounting.java 2.7.a 14/01/13
+ * @(#)MenuAccounting.java 2.8.a 01/04/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -44,7 +44,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.7.a
+ * @version 2.8.a
  * @since 1.0a 07/07/1999
  */
 public class MenuAccounting
@@ -116,10 +116,10 @@ public class MenuAccounting
       dlg.init();
       dlg.setVisible(true);
     } else if (src == miAccountTransfert) {
-      AccountTransferDlg accountTransfertDlg = new AccountTransferDlg(desktop.getFrame(), dc);
+      AccountTransferDlg accountTransfertDlg = new AccountTransferDlg(desktop.getFrame(), dataCache);
       accountTransfertDlg.setVisible(true);
     } else if (src == miAccountDocument) {
-      AccountDocumentTransferDlg documentTransfertDlg = new AccountDocumentTransferDlg(desktop.getFrame(), dc);
+      AccountDocumentTransferDlg documentTransfertDlg = new AccountDocumentTransferDlg(desktop.getFrame(), dataCache);
       documentTransfertDlg.setVisible(true);
     } else if (menus.get("Menu.debiting.label").equals(arg)) {
       StandingOrderExportDlg dlg = new StandingOrderExportDlg((Frame) null, menus.get("Menu.debiting.label"), dc);

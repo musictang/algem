@@ -108,7 +108,7 @@ public class EnrolmentIO
     while (enu.hasMoreElements()) {
       Order c = enu.nextElement();
       Enrolment i = new Enrolment(c);
-      i.setModule(ModuleOrderIO.findId(i.getId(), dc));
+      i.setModule(ModuleOrderIO.findByIdOrder(i.getId(), dc));
       i.setCourseOrder(CourseOrderIO.findId(i.getId(), dc));
       v.addElement(i);
     }

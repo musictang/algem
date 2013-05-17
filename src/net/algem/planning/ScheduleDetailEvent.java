@@ -58,7 +58,7 @@ public class ScheduleDetailEvent
   }
 
   public Date getDate() {
-    return schedule.getDay().getDate();
+    return schedule.getDate().getDate();
   }
 
   public void setPosition(Point p) {

@@ -204,10 +204,11 @@ public class StandingOrderExportDlg
     label = flabel.getText();
 
     DateFr datePrl = datePanel.get();
-    Param pe = (Param) schoolChoice.getSelectedItem();
+    //Param pe = (Param) schoolChoice.getSelectedItem();
+    int school = schoolChoice.getKey();
     // TODO faire un groupement par payeur afin de calculer automatiquement le montant total.
     String query = "SELECT payeur,montant,analytique FROM echeancier2"
-            + " WHERE ecole = '" + pe.getValue() + "' AND reglement = 'PRL' AND paye = 't' AND echeance = '" + datePrl.toString() + "'"
+            + " WHERE ecole = '" + school + "' AND reglement = 'PRL' AND paye = 't' AND echeance = '" + datePrl.toString() + "'"
             //+" AND payeur IN (SELECT idper FROM rib)"
             + " ORDER BY payeur,echeance";
     setCursor(new Cursor(Cursor.WAIT_CURSOR));

@@ -62,6 +62,6 @@ public class CourseScheduleObject
 
   @Override
   public String toString() {
-    return "CourseScheduleObject:" + day + " " + start + " " + end + " " + idAction;
+    return "CourseScheduleObject:" + date + " " + start + " " + end + " " + idAction;
   }
 }

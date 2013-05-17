@@ -37,5 +37,5 @@ public class EnrolmentException
   public EnrolmentException(String message) {
     super(message);
   }
-
+  
 }

@@ -1,7 +1,7 @@
 /*
- * @(#)ConflictListView.java	2.6.a 19/09/12
+ * @(#)ConflictListView.java	2.8.a 24/04/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -33,7 +33,7 @@ import net.algem.util.ui.GemPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.a
  */
 public class ConflictListView
         extends GemPanel
@@ -50,9 +50,9 @@ public class ConflictListView
     table.setAutoCreateRowSorter(true);
 
     TableColumnModel cm = table.getColumnModel();
-    cm.getColumn(0).setPreferredWidth(70);
-    cm.getColumn(1).setPreferredWidth(30);
-    cm.getColumn(2).setPreferredWidth(30);
+    cm.getColumn(0).setPreferredWidth(80);
+    cm.getColumn(1).setPreferredWidth(40);
+    cm.getColumn(2).setPreferredWidth(40);
     cm.getColumn(3).setPreferredWidth(30);
     cm.getColumn(4).setPreferredWidth(400);
 

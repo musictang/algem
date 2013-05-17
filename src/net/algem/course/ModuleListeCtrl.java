@@ -1,7 +1,7 @@
 /*
- * @(#)ModuleListeCtrl.java	2.5.a 03/07/12
+ * @(#)ModuleListeCtrl.java	2.8.a 19/04/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -34,7 +34,7 @@ import net.algem.util.ui.ListCtrl;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.5.a
+ * @version 2.8.a
  */
 
 public class ModuleListeCtrl
@@ -50,9 +50,9 @@ public class ModuleListeCtrl
         jtable.setAutoCreateRowSorter(true);        
 
 		TableColumnModel cm = jtable.getColumnModel();
-		cm.getColumn(0).setPreferredWidth(40);
-		cm.getColumn(1).setPreferredWidth(50);
-		cm.getColumn(2).setPreferredWidth(300);
+		cm.getColumn(0).setPreferredWidth(30);
+		cm.getColumn(1).setPreferredWidth(30);
+		cm.getColumn(2).setPreferredWidth(400);
 
 		JScrollPane p = new JScrollPane(jtable);
 		p.setBorder(new BevelBorder(BevelBorder.LOWERED));

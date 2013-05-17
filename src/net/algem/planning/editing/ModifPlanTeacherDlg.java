@@ -1,5 +1,5 @@
 /*
- * @(#)ModifPlanTeacherDlg.java	2.7.a 10/12/12
+ * @(#)ModifPlanTeacherDlg.java	2.8.a 26/04/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -36,7 +36,7 @@ import net.algem.util.module.GemDesktop;
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.a
  * @since 1.0a 07/07/1999
  */
 public class ModifPlanTeacherDlg
@@ -65,19 +65,20 @@ public class ModifPlanTeacherDlg
 
   @Override
   public boolean isEntryValid() {
-		String wt = BundleUtil.getLabel("Warning.label");
+    
+    String wt = BundleUtil.getLabel("Warning.label");
+    
     if (origTeacher == view.getId()) {
-      JOptionPane.showMessageDialog(dlg,
-                                    MessageUtil.getMessage("same.teacher.choice"),
-                                    wt,
-                                    JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(dlg, MessageUtil.getMessage("same.teacher.choice"), wt, JOptionPane.ERROR_MESSAGE);
       return false;
     }
     if (view.getEnd().before(view.getStart())) {
-      JOptionPane.showMessageDialog(dlg,
-                                    MessageUtil.getMessage("end.date.invalid.choice"),
-                                    wt,
-                                    JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(dlg, MessageUtil.getMessage("end.date.invalid.choice"), wt, JOptionPane.ERROR_MESSAGE);
+      return false;
+    }
+
+    if (view.getHourEnd().le(view.getHourStart())) {
+      JOptionPane.showMessageDialog(dlg, MessageUtil.getMessage("hour.range.error"), wt, JOptionPane.ERROR_MESSAGE);
       return false;
     }
     return true;

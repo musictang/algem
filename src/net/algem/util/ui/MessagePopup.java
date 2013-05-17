@@ -1,7 +1,7 @@
 /*
- * @(#)MessagePopup.java	2.6.a 14/09/12
+ * @(#)MessagePopup.java	2.8.a 16/04/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -43,13 +43,13 @@ public class MessagePopup
    *
    * @param _parent
    * @param _message
-   * @param _titre
-   * @return un booléen
+   * @param title
+   * @return true if confirmation
    */
-  public static boolean confirm(Component _parent, String _message, String _titre) {
+  public static boolean confirm(Component _parent, String _message, String title) {
 
     Object[] options = {BundleUtil.getLabel("Yes.option.label"), BundleUtil.getLabel("No.option.label")};
-    return (JOptionPane.showOptionDialog(_parent, _message, _titre, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]) == JOptionPane.YES_OPTION);
+    return (JOptionPane.showOptionDialog(_parent, _message, title, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]) == JOptionPane.YES_OPTION);
   }
 
   /**

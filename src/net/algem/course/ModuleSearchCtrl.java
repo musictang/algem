@@ -1,5 +1,5 @@
 /*
- * @(#)ModuleSearchCtrl.java	2.8.a 15/03/13
+ * @(#)ModuleSearchCtrl.java	2.8.a 19/04/13
  *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -27,6 +27,7 @@ import java.util.Vector;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.GemCommand;
+import net.algem.util.GemLogger;
 import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.CardCtrl;
@@ -91,12 +92,12 @@ public class ModuleSearchCtrl
       query = "WHERE titre ~* '" + nom + "'";
     }
 
-    query += " ORDER BY titre";
+    query += " ORDER BY code,titre";
     Vector<Module> v = null;
     try {
       v = ((ModuleIO) DataCache.getDao(Model.Module)).find(query);
     } catch (SQLException sqe) {
-      System.err.println(getClass().getName() + "#chercher " + sqe.getMessage());
+      GemLogger.log(getClass().getName() + "#search " + sqe.getMessage());
     }
     if (v == null || v.isEmpty()) {
       setStatus(EMPTY_LIST);

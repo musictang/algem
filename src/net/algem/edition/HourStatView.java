@@ -1,7 +1,7 @@
 /*
- * @(#)HourStatView.java	2.6.f 12/11/12
+ * @(#)HourStatView.java	2.8.a 01/04/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -24,20 +24,20 @@ import java.util.Date;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import net.algem.config.GemParamChoice;
 import net.algem.config.ParamChoice;
-import net.algem.config.ParamTableIO;
-import net.algem.config.SchoolCtrl;
 import net.algem.planning.DateFr;
 import net.algem.planning.DateFrField;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataConnection;
+import net.algem.util.model.GemList;
 import net.algem.util.ui.GridBagHelper;
 
 /**
  * Hours statitics entry.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.f
+ * @version 2.8.a
  */
 public class HourStatView
         extends JPanel
@@ -48,14 +48,14 @@ public class HourStatView
   private JCheckBox detail;
   private ParamChoice schoolChoice;
 
-  public HourStatView(DataConnection dc) {
+  public HourStatView(DataConnection dc, GemList schools) {
     setLayout(new java.awt.GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
 
     dateStart = new DateFrField(new Date());
     dateEnd = new DateFrField(new Date());
     detail = new JCheckBox();
-    schoolChoice = new ParamChoice(ParamTableIO.find(SchoolCtrl.TABLE, SchoolCtrl.SORT_COLUMN, dc));
+    schoolChoice = new ParamChoice(schools.getData());
     JPanel dates = new JPanel();
     dates.add(dateStart);
     dates.add(new JLabel(BundleUtil.getLabel("Date.To.label")));

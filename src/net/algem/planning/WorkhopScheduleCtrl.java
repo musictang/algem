@@ -33,7 +33,7 @@ import net.algem.util.ui.MessagePopup;
 
 /**
  * Single workshop planification.
- * (A session on one day only)
+ * (A session on one date only)
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>

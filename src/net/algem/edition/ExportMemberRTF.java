@@ -121,7 +121,7 @@ public class ExportMemberRTF
     // Ne pas faire figurer l'adresse
 		/*
     adr = contact.getAddress();
-    if (adr == null && adh.getMember().getPayer() != adh.getId()) {
+    if (adr == null && adh.getMember().getPayer() != adh.getIdOrder()) {
     Vector v = AdresseIO.findId(dataCache, adh.getMember().getPayer());
     if (v != null && v.size() > 0)
     adr = (Adresse)v.elementAt(0);
@@ -132,7 +132,7 @@ public class ExportMemberRTF
 
     // Ne pas faire figurer le téléphone
 		/*tel = contact.getTele();
-    if (tel == null && adh.getMember().getPayer() != adh.getId())
+    if (tel == null && adh.getMember().getPayer() != adh.getIdOrder())
     tel = TeleIO.findId(dataCache, adh.getMember().getPayer());
 
     if (tel != null) {
@@ -246,7 +246,7 @@ public class ExportMemberRTF
 
             s = FileUtil.rtfReplaceChars(s);
             if (s.length() > 0) {
-              sb.append("\n\\par \\tab ").append(p.getDay()).append(" : ").append(s);
+              sb.append("\n\\par \\tab ").append(p.getDate()).append(" : ").append(s);
             }
           }
         }

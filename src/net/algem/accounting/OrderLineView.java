@@ -1,7 +1,7 @@
 /*
- * @(#)OrderLineView.java	2.7.a 05/12/12
+ * @(#)OrderLineView.java	2.8.a 01/04/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -32,6 +32,7 @@ import javax.swing.*;
 import net.algem.config.*;
 import net.algem.planning.DateFrField;
 import net.algem.util.*;
+import net.algem.util.model.Model;
 import net.algem.util.ui.*;
 
 /**
@@ -39,7 +40,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.a
  * @since 1.0a 18/07/1999
  */
 public class OrderLineView
@@ -62,8 +63,8 @@ public class OrderLineView
   private ParamChoice costAccount;
   private GemField invoice;
   //private JComboBox monnaie; // obsolète
-  private GemButton ok;
-  private GemButton cancel;
+  private GemButton okBt;
+  private GemButton cancelBt;
   private boolean validation;
   private OrderLine orderLine;
   private NumberFormat nf;
@@ -72,9 +73,9 @@ public class OrderLineView
    * 
    * @param frame
    * @param title
-   * @param dc
+   * @param dataCache
    */
-  public OrderLineView(Frame frame, String title, DataConnection dc) throws SQLException {
+  public OrderLineView(Frame frame, String title, DataCache dataCache) throws SQLException {
     super(frame, title, true);
 
     nf = AccountUtil.getDefaultNumberFormat();
@@ -90,12 +91,20 @@ public class OrderLineView
     label = new GemField(24);
     amount = new JFormattedTextField(nf);
     amount.setColumns(8);
-    modeOfPayment = new JComboBox(ParamTableIO.getValues(ModeOfPaymentCtrl.TABLE, ModeOfPaymentCtrl.COLUMN_NAME, dc));
+    modeOfPayment = new JComboBox(
+            ParamTableIO.getValues(
+            ModeOfPaymentCtrl.TABLE, 
+            ModeOfPaymentCtrl.COLUMN_NAME, dataCache.getDataConnection())
+            );
     document = new GemField(10);
-    schoolChoice = new ParamChoice(ParamTableIO.find(SchoolCtrl.TABLE, SchoolCtrl.SORT_COLUMN, dc));
-
-    account = new AccountChoice(AccountIO.find(true, dc));
-    costAccount = new ParamChoice(ActivableParamTableIO.findActive(CostAccountCtrl.tableName, CostAccountCtrl.columnName, CostAccountCtrl.columnFilter, dc));
+//    schoolChoice = new ParamChoice(ParamTableIO.find(SchoolCtrl.TABLE, SchoolCtrl.SORT_COLUMN, dc));
+    schoolChoice = new ParamChoice(dataCache.getList(Model.School).getData());
+    account = new AccountChoice(AccountIO.find(true, dataCache.getDataConnection()));
+    costAccount = new ParamChoice(
+            ActivableParamTableIO.findActive(
+            CostAccountCtrl.tableName, CostAccountCtrl.columnName, 
+            CostAccountCtrl.columnFilter, dataCache.getDataConnection())
+            );
 
     //monnaie = new JComboBox(monnaies);
     cbPaid = new JCheckBox();
@@ -127,21 +136,20 @@ public class OrderLineView
     gb.add(costAccount, 1, 9, 1, 1, GridBagHelper.WEST);
     gb.add(cbPaid, 1, 10, 1, 1, GridBagHelper.WEST);
     gb.add(invoice, 1, 11, 1, 1, GridBagHelper.WEST);
-
     //gb.add(monnaie, 1, 11, 1, 1, GridBagHelper.WEST); //
 
-    ok = new GemButton(GemCommand.VALIDATION_CMD);
-    ok.addActionListener(this);
-    cancel = new GemButton(GemCommand.CANCEL_CMD);
-    cancel.addActionListener(this);
+    okBt = new GemButton(GemCommand.VALIDATION_CMD);
+    okBt.addActionListener(this);
+    cancelBt = new GemButton(GemCommand.CANCEL_CMD);
+    cancelBt.addActionListener(this);
 
-    JPanel boutons = new JPanel(new GridLayout(1,1));
-    boutons.add(ok);
-    boutons.add(cancel);
+    JPanel buttons = new JPanel(new GridLayout(1,1));
+    buttons.add(okBt);
+    buttons.add(cancelBt);
 
     setLayout(new BorderLayout());
     add(editPanel,BorderLayout.CENTER);
-    add(boutons,BorderLayout.SOUTH);
+    add(buttons,BorderLayout.SOUTH);
     setSize(500, 420);
 
     setLocationRelativeTo(frame);
@@ -219,7 +227,7 @@ public class OrderLineView
     setAmount(orderLine.getDoubleAmount());
     modeOfPayment.setSelectedItem(orderLine.getModeOfPayment());
     document.setText(orderLine.getDocument());
-    schoolChoice.setValue(orderLine.getSchool());
+    schoolChoice.setKey(orderLine.getSchool());
     setAccount(orderLine.getAccount());
     costAccount.setSelectedItem(orderLine.getCostAccount());
     cbPaid.setSelected(orderLine.isPaid());
@@ -249,7 +257,7 @@ public class OrderLineView
     orderLine.setLabel(label.getText());
     orderLine.setAmount(getAmount());
     orderLine.setDocument(document.getText());
-    orderLine.setSchool(schoolChoice.getValue());
+    orderLine.setSchool(schoolChoice.getKey());
     orderLine.setAccount(getAccount());
     orderLine.setCostAccount(getCostAccount());
     orderLine.setPaid(cbPaid.isSelected());
@@ -261,7 +269,7 @@ public class OrderLineView
 
   @Override
   public void actionPerformed(ActionEvent evt) {
-    if (evt.getSource() == ok) {
+    if (evt.getSource() == okBt) {
       try {
         testValidation();
       } catch (NumberFormatException ex) {

@@ -1,7 +1,7 @@
 /*
- * @(#)TestAccountTransfertDlg.java 2.6.a 08/10/12
+ * @(#)TestAccountTransfertDlg.java 2.8.a 01/04/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -30,6 +30,7 @@ import junit.framework.TestCase;
 import net.algem.TestProperties;
 import net.algem.config.ConfigUtil;
 import net.algem.planning.DateFr;
+import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 import net.algem.util.FileUtil;
 import net.algem.util.model.ModelException;
@@ -37,7 +38,7 @@ import net.algem.util.model.ModelException;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.a
  */
 public class TestAccountTransfertDlg extends TestCase {
     
@@ -46,6 +47,7 @@ public class TestAccountTransfertDlg extends TestCase {
     }
 
     private DataConnection dc;
+    private DataCache dataCache;
     private JFrame frame;
     private String path;
     /** compte sans correspondance */
@@ -58,7 +60,9 @@ public class TestAccountTransfertDlg extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+        
         dc = TestProperties.getDataConnection();
+        dataCache = TestProperties.getDataCache(dc);
         path = ConfigUtil.getExportPath(dc);
         t = new Account(account1);
         t.setLabel("compte test");
@@ -88,7 +92,7 @@ public class TestAccountTransfertDlg extends TestCase {
     int payer = 12;
     int member = 12;
 
-    AccountTransferDlg dlg = new AccountTransferDlg(new JFrame(), dc);
+    AccountTransferDlg dlg = new AccountTransferDlg(new JFrame(), dataCache);
     Vector<OrderLine> orderLines = new Vector<OrderLine>();
 
     // Détection d'erreurs de correspondance de comptes
@@ -138,7 +142,7 @@ public class TestAccountTransfertDlg extends TestCase {
     e.setAccount(c);
     e.setAmount(amount);
     
-    e.setSchool("");
+    e.setSchool(0);
     e.setOrder(0);
     e.setLabel("pay "+payer+" adh"+member);
     

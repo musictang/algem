@@ -65,7 +65,7 @@ public class CollectiveFollowUpDlg
 
     dlg = new JDialog(desktop.getFrame(), true);
     title = new GemLabel("Suivi cours : " + cours);
-    pv = new FollowUpView(this.sched.getDay(), this.sched.getStart(), this.sched.getEnd());
+    pv = new FollowUpView(this.sched.getDate(), this.sched.getStart(), this.sched.getEnd());
 
     if (this.sched.getNote() != 0) {
       pv.setText(service.getCollectiveFollowUp(plan.getNote()));

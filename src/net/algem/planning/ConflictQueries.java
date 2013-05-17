@@ -1,7 +1,7 @@
 /*
- * @(#)ConflictQueries.java 2.6.a 19/09/12
+ * @(#)ConflictQueries.java 2.8.b 14/05/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,21 +21,19 @@
 package net.algem.planning;
 
 /**
- * Ensemble of requests for conflict detection in planning occupation.
+ * Set of requests for conflict detection when schedule is busy.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.b
  */
 public class ConflictQueries
 {
 
   public static String getRoomConflictSelection(String date, String hStart, String hEnd, int roomId) {
-
     return getConflictSelection(date, hStart, hEnd) + " AND (lieux = " + roomId + ")";
   }
 
   public static String getMemberRehearsalSelection(String date, String hStart, String hEnd, int memberId) {
-
     return getConflictSelection(date, hStart, hEnd) + " AND (idper = " + memberId + ")";
   }
 
@@ -47,6 +45,15 @@ public class ConflictQueries
             + " OR (plage.fin > '" + hStart + "' AND plage.fin <= '" + hEnd + "')"
             + " OR (plage.debut <= '" + hStart + "' AND plage.fin >= '" + hEnd + "'))";
 
+  }
+  
+  public static String getRangeOverlapSelection(DateFr start, int member, Hour hStart, Hour hEnd, int action) {
+    return "pg WHERE pg.adherent != " + member
+         + " AND ((pg.debut >= '" + hStart + "' AND pg.debut < '" + hEnd + "')"
+            + " OR (pg.fin > '" + hStart + "' AND pg.fin <= '" + hEnd + "')"
+            + " OR (pg.debut <= '" + hStart + "' AND pg.fin >= '" + hEnd + "'))"
+        + " AND idplanning IN (SELECT id FROM " + ScheduleIO.TABLE 
+        + " WHERE action = " + action + " AND jour >= '" + start + "')";
   }
 
   public static String getGroupConflictSelection(String date, String hdebut, String hfin, int groupId) {
@@ -71,11 +78,11 @@ public class ConflictQueries
   }
 
   public static String getBreakConflict(int idPlan, String hStart, String hEnd) {
-    /* return " WHERE pg.day='" + date + "'" + " AND ((pg.start >= '" + hdeb + "' AND
+    /* return " WHERE pg.date='" + date + "'" + " AND ((pg.start >= '" + hdeb + "' AND
      * pg.start < '" + hfin + "')" + " OR (pg.end > '" + hdeb + "' AND pg.end <=
      * '" + hfin + "')" + " OR (pg.start <= '" + hdeb + "' AND pg.end >= '" +
      * hfin + "'))" + " AND (pg.prof= " + idprof + ")"; */
-    return "WHERE pg.idplanning = " + idPlan
+    return "pg WHERE pg.idplanning = " + idPlan
             + " AND ((pg.debut >= '" + hStart + "' AND pg.debut < '" + hEnd + "')"
             + " OR (pg.fin > '" + hStart + "' AND pg.fin <= '" + hEnd + "')"
             + " OR (pg.debut <= '" + hStart + "' AND pg.fin >= '" + hEnd + "'))";

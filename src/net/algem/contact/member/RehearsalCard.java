@@ -1,5 +1,5 @@
 /*
- * @(#)RehearsalCard.java 2.6.a 03/10/12
+ * @(#)RehearsalCard.java 2.8.c 14/05/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -26,7 +26,7 @@ import net.algem.util.model.GemModel;
  * Subscription pass option for rehearsals.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.c
  */
 public class RehearsalCard
   implements GemModel
@@ -36,13 +36,14 @@ public class RehearsalCard
   private String label;
   private float amount;
   
-  /** Nombre de séances. */
+  /** Sessions number. */
   private int nbSessions;
   
-  /** Durée en minutes d'une séance. */
-  private int duration;
+  /** Length in minutes for a session. */
+  private int length;
+  
   public final static int NB_SESSIONS_DEFAULT = 10;
-  public final static int MIN_DURATION_DEFAULT = 30;
+  public final static int MIN_LENGTH_DEFAULT = 30;
 
   public RehearsalCard() {
   }
@@ -53,22 +54,22 @@ public class RehearsalCard
    * @param id
    */
   public RehearsalCard(int id) {
-    this(id, "", 0.0F, NB_SESSIONS_DEFAULT, MIN_DURATION_DEFAULT);
+    this(id, "", 0.0F, NB_SESSIONS_DEFAULT, MIN_LENGTH_DEFAULT);
   }
 
-  public RehearsalCard(String label, float amount, int n, int d) {
+  public RehearsalCard(String label, float amount, int sessions, int length) {
     this.label = label;
     this.amount = amount;
-    this.nbSessions = n;
-    this.duration = d;
+    this.nbSessions = sessions;
+    this.length = length;
   }
 
-  public RehearsalCard(int id, String label, float amount, int n, int d) {
+  public RehearsalCard(int id, String label, float amount, int sessions, int length) {
     this.id = id;
     this.label = label;
     this.amount = amount;
-    this.nbSessions = n;
-    this.duration = d;
+    this.nbSessions = sessions;
+    this.length = length;
   }
 
   @Override
@@ -105,12 +106,12 @@ public class RehearsalCard
     this.nbSessions = n;
   }
 
-  public int getDuration() {
-    return duration;
+  public int getLength() {
+    return length;
   }
 
-  public void setDuration(int d) {
-    this.duration = d;
+  public void setLength(int d) {
+    this.length = d;
   }
 
   public boolean strictlyEquals(RehearsalCard other) {
@@ -130,7 +131,7 @@ public class RehearsalCard
     if (this.nbSessions != other.nbSessions) {
       return false;
     }
-    if (this.duration != other.duration) {
+    if (this.length != other.length) {
       return false;
     }
     return true;
@@ -163,7 +164,7 @@ public class RehearsalCard
     return label;
   }
 
-  public int getTotalDuration() {
-    return getSessionsNumber() * getDuration();
+  public int getTotalLength() {
+    return getSessionsNumber() * getLength();
   }
 }

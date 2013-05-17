@@ -1,7 +1,7 @@
 /*
- * @(#)ScheduleIO.java	2.7.a 26/11/12
+ * @(#)ScheduleIO.java	2.8.a 23/04/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -40,7 +40,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.a
  */
 public class ScheduleIO
         extends TableIO
@@ -51,7 +51,7 @@ public class ScheduleIO
   public final static String FOLLOW_UP_SEQUENCE = "idsuivi";
   public final static String COLUMNS = "p.id,p.jour,p.debut,p.fin,p.ptype,p.idper,p.action,p.lieux,p.note";
   public static String BUSY_ROOM_STMT = "SELECT count(id) FROM planning WHERE lieux = ? AND jour > '01-01-1999'";
-  //private static String findHistoRepet = "SELECT "+COLUMNS+" FROM planning p WHERE p.ptype="+Schedule.MEMBER_SCHEDULE+" AND p.idper= ? AND (day BETWEEN ? AND ?) ORDER BY day,start";
+  //private static String findHistoRepet = "SELECT "+COLUMNS+" FROM planning p WHERE p.ptype="+Schedule.MEMBER_SCHEDULE+" AND p.idper= ? AND (date BETWEEN ? AND ?) ORDER BY date,start";
   
   public static void insert(Schedule p, DataConnection dc) throws SQLException {
 
@@ -59,7 +59,7 @@ public class ScheduleIO
 
     String query = "INSERT INTO " + TABLE + " VALUES("
             + id
-            + ",'" + p.getDay().toString() + "'"
+            + ",'" + p.getDate().toString() + "'"
             + ",'" + p.getStart() + "'"
             + ",'" + p.getEnd() + "'"
             + "," + p.getType()
@@ -94,7 +94,7 @@ public class ScheduleIO
 
   public static void update(Schedule p, DataConnection dc) throws SQLException {
     String query = "UPDATE " + TABLE + " SET "
-            + "jour = '" + p.getDay()
+            + "jour = '" + p.getDate()
             + "',debut = '" + p.getStart()
             + "',fin = '" + p.getEnd()
             + "',ptype = " + p.getType()
@@ -155,7 +155,7 @@ public class ScheduleIO
   }
 
   public static Schedule findId(int id, DataConnection dc) {
-    //String query = "SELECT id,day,dateDebut,dateFin,ptype,idper,action,place,idsuivi from planning where id="+id;
+    //String query = "SELECT id,date,dateDebut,dateFin,ptype,idper,action,place,idsuivi from planning where id="+id;
     String query = "SELECT " + COLUMNS + " FROM " + TABLE + " p WHERE id = " + id;
     Schedule p = null;
     try {
@@ -163,7 +163,7 @@ public class ScheduleIO
       if (rs.next()) {
         p = new Schedule();
         p.setId(rs.getInt(1));
-        p.setDay(new DateFr(rs.getString(2)));
+        p.setDate(new DateFr(rs.getString(2)));
         p.setStart(new Hour(rs.getString(3)));
         p.setEnd(new Hour(rs.getString(4)));
         p.setType(rs.getInt(5));
@@ -178,37 +178,10 @@ public class ScheduleIO
     }
     return p;
   }
-
-  /* NON utilisée */
-  /*public static Vector<Planning> findCoursInscript(DataCache dc, String where, DateFr day, int cours) {
-  Vector<Planning> v = new Vector<Planning>();
-  String query = "SELECT p.id,p.day,p.start,p.end,p.ptype,p.idper,p.action,p.place,p.idsuivi from planning p, commande_module cm, commande_cours cc " + where + " and cm.start <= '" + day + "' and cm.end >= '" + day + "' and cm.idcmd=cc.idcmd and cc.cours=" + cours;
-  try {
-  ResultSet rs = dc.executeQuery(query);
-  while (rs.next()) {
-  Schedule p = new Schedule();
-  p.setId(rs.getInt(1));
-  p.setDay(new DateFr(rs.getString(2)));
-  p.setDateStart(new Hour(rs.getString(3)));
-  p.setDateEnd(new Hour(rs.getString(4)));
-  p.setType(rs.getInt(5));
-  p.setIdPerson(rs.getInt(6));
-  p.setAction(rs.getInt(7));
-  p.setLieux(rs.getInt(8));
-  p.setNote(rs.getInt(9));
-
-  v.addElement(p);
-  }
-  rs.close();
-  } catch (Exception e) {
-  dc.logException(e);
-  }
-  return v;
-  }*/
   
   static Vector<Schedule> findClass(Class c, String where, DataConnection dc) {
     Vector<Schedule> v = new Vector<Schedule>();
-    //String query = "SELECT p.id,p.day,p.dateDebut,p.dateFin,p.ptype,p.idper,p.action,p.place,p.idsuivi from planning p "+where;
+    //String query = "SELECT p.id,p.date,p.dateDebut,p.dateFin,p.ptype,p.idper,p.action,p.place,p.idsuivi from planning p "+where;
     String query = "SELECT " + COLUMNS + " FROM " + TABLE + " p " + where;
 
     try {
@@ -217,7 +190,7 @@ public class ScheduleIO
         Constructor ct = c.getConstructor();
         Schedule p = (Schedule) ct.newInstance();
         p.setId(rs.getInt(1));
-        p.setDay(new DateFr(rs.getString(2)));
+        p.setDate(new DateFr(rs.getString(2)));
         p.setStart(new Hour(rs.getString(3)));
         p.setEnd(new Hour(rs.getString(4)));
         p.setType(rs.getInt(5));
@@ -235,17 +208,10 @@ public class ScheduleIO
     return v;
   }
 
-  /*public static Vector<PlanningObject> find(DataCache dc, int idper, DateFr start, DateFr end) throws SQLException {
-  PreparedStatement ps = dc.prepareStatement(findHistoRepet);
-  ps.setInt(1, idper);
-  ps.setDate(2, new java.sql.Date(start.getTime()));
-  ps.setDate(3, new java.sql.Date(end.getTime()));
-  return getLoadRS(dc, ps);
-  }*/
   private static void fillPlanning(ResultSet rs, ScheduleObject p, DataConnection dc)
           throws SQLException {
     p.setId(rs.getInt(1));
-    p.setDay(new DateFr(rs.getString(2)));
+    p.setDate(new DateFr(rs.getString(2)));
     p.setStart(new Hour(rs.getString(3)));
     p.setEnd(new Hour(rs.getString(4)));
     p.setType(rs.getInt(5));
@@ -260,19 +226,20 @@ public class ScheduleIO
 
   public static Vector<ScheduleObject> getLoadRS(PreparedStatement ps, DataConnection dc)
           throws SQLException {
+    
     Vector<ScheduleObject> v = new Vector<ScheduleObject>();
-    PlanningService service = new PlanningService(dc);
 
     ResultSet rs = ps.executeQuery();
+    
     while (!Thread.interrupted() && rs.next()) {
-      ScheduleObject p = planningObjectFactory(rs, service, dc);
+      ScheduleObject p = planningObjectFactory(rs, dc);
       v.addElement(p);
     }
     rs.close();
     return v;
   }
   
-  private static ScheduleObject planningObjectFactory(ResultSet rs, PlanningService service, DataConnection dc)
+  private static ScheduleObject planningObjectFactory(ResultSet rs, DataConnection dc)
           throws SQLException {
     ScheduleObject p = null;
     
@@ -281,18 +248,11 @@ public class ScheduleIO
         p = new CourseSchedule();
         fillPlanning(rs, p, dc);
         ((CourseSchedule) p).setTeacher((Person) DataCache.findId(p.getIdPerson(), Model.Teacher));
-        Action a = service.getAction(p.getIdAction());
+        Action a = (Action) DataCache.findId(p.getIdAction(), Model.Action);
         ((CourseSchedule) p).setAction(a);
-//        ((CourseSchedule) p).setCourse(((CourseIO) DataCache.getDao(Model.Course)).findIdByAction(p.getIdAction())) ;
         ((CourseSchedule) p).setCourse((Course) DataCache.findId(a.getCourse(), Model.Course));
 
         break;
-
-      //case Schedule.ACTION_SCHEDULE :
-      //	p = new ScheduleObject();
-      //	fillPlanning(dc, rs, p);
-      //	break;
-
       case Schedule.MEMBER_SCHEDULE:
         p = new MemberRehearsalSchedule();
         fillPlanning(rs, p, dc);
@@ -308,10 +268,9 @@ public class ScheduleIO
       case Schedule.WORKSHOP_SCHEDULE:
         p = new WorkshopSchedule();
         fillPlanning(rs, p, dc);
-//        ((WorkshopSchedule) p).setTeacher((Person) DataCache.findId(p.getIdPerson(), Model.Person));
         ((WorkshopSchedule) p).setTeacher((Person) DataCache.findId(p.getIdPerson(), Model.Teacher));
-        int w = service.getAction(p.getIdAction()).getCourse();
-        ((WorkshopSchedule) p).setWorkshop((Course) DataCache.findId(w, Model.Course));
+        Action w = (Action) DataCache.findId(p.getIdAction(), Model.Action);
+        ((WorkshopSchedule) p).setWorkshop((Course) DataCache.findId(w.getCourse(), Model.Course));
         break;
     }
     return p;
@@ -321,13 +280,12 @@ public class ScheduleIO
   public static Vector<ScheduleObject> findObject(String where, DataConnection dc)
           throws SQLException {
     Vector<ScheduleObject> v = new Vector<ScheduleObject>();
-    PlanningService service = new PlanningService(dc);
-    //String query = "SELECT id,day,dateDebut,dateFin,ptype,idper,action,place,idsuivi from planning  "+where;
-    String query = "SELECT " + COLUMNS + " FROM " + TABLE + " p " + where;
 
+    String query = "SELECT " + COLUMNS + " FROM " + TABLE + " p " + where;
     ResultSet rs = dc.executeQuery(query);
+    
     while (rs.next()) {
-      ScheduleObject p = planningObjectFactory(rs, service, dc);
+      ScheduleObject p = planningObjectFactory(rs, dc);
       v.addElement(p);
     }
     rs.close();
@@ -336,7 +294,7 @@ public class ScheduleIO
 
   public static int count(String where, DataConnection dc) {
     int n = 1;
-    String query = "SELECT count(*) FROM " + TABLE + " " + where;
+    String query = "SELECT count("+TABLE+".id) FROM " + TABLE + " " + where;
     try {
       ResultSet rs = dc.executeQuery(query);
       if (rs.next()) {
@@ -354,7 +312,6 @@ public class ScheduleIO
       dc.setAutoCommit(false);
       int num = nextId(FOLLOW_UP_SEQUENCE, dc);
       String query = "INSERT INTO suivi VALUES(" + num + ",'" + escape(text) + "')";
-      //+ "," + plan.getId()
       dc.executeUpdate(query);
       sched.setNote(num);
       update(sched, dc);
@@ -373,6 +330,7 @@ public class ScheduleIO
   }
 
   public static String findFollowUp(int note, DataConnection dc) throws SQLException {
+    
     String text = "";
     String query = "SELECT texte FROM suivi WHERE id = " + note;
 
@@ -421,7 +379,7 @@ public class ScheduleIO
   public static ResultSet getRSCourseRange(Schedule p, DataConnection dc) throws SQLException {
 
     String query = "SELECT debut, fin FROM " + TABLE + " WHERE ptype = " + p.getType()
-            + " AND jour = '" + p.getDay() + "'"
+            + " AND jour = '" + p.getDate() + "'"
             + " AND action = " + p.getIdAction() + " ORDER BY debut";
     return dc.executeQuery(query);
   }

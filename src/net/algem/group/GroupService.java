@@ -1,7 +1,7 @@
 /*
- * @(#)GroupService.java	2.7.k 05/03/13
+ * @(#)GroupService.java	2.8.a 01/04/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -44,7 +44,7 @@ import net.algem.util.model.Model;
  * Service class for group operations.
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.a
  * @since 2.4.a 10/05/12
  */
 public class GroupService
@@ -276,7 +276,8 @@ public class GroupService
       if (ref != null && ref.getId() > 0) {
         PersonFile dp = ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findId(ref.getId());
         OrderLine ol = AccountUtil.setOrderLine(dp, date, getAccount(AccountPrefIO.REHEARSAL_KEY_PREF), amount);
-        ol.setSchool(ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey(), dc));
+        String s = ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey(), dc);
+        ol.setSchool(Integer.parseInt(s));
         AccountUtil.createEntry(ol, dc);
       }
       dc.commit();     
@@ -320,9 +321,9 @@ public class GroupService
 
   /**
    * Generates a list of dates for rehearsal between {@code startDate} and {@code endDate}.
-   * The day of week is the same for each date.
+   * The date of week is the same for each date.
    *
-   * @param day day of week
+   * @param date date of week
    * @param startDate start date
    * @param endDate end date
    * @return a list of dates

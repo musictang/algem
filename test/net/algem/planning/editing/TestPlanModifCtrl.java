@@ -96,7 +96,7 @@ public class TestPlanModifCtrl
     io.insert(abo2);
     
     Schedule p = new Schedule();
-    p.setDay(toDay);
+    p.setDate(toDay);
     p.setIdPerson(idper);
     p.setType(Schedule.MEMBER_SCHEDULE);
     p.setPlace(1);

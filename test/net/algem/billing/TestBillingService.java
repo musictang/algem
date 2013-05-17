@@ -1,7 +1,7 @@
 /*
- * @(#)TestBillingService.java 2.7.a 14/01/13
+ * @(#)TestBillingService.java 2.8.a 01/04/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -36,7 +36,7 @@ import net.algem.util.module.GemDesktop;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.a
  * @since 2.3.d
  */
 public class TestBillingService extends TestCase
@@ -168,7 +168,7 @@ public class TestBillingService extends TestCase
     e1.setMember(1234);
     e1.setPayer(1234);
     e1.setDate(new DateFr(new Date()));
-    e1.setSchool("MT");
+    e1.setSchool(0);
     e1.setCurrency("E");
     e1.setLabel("Article 1 fac");
     e1.setModeOfPayment(ModeOfPayment.FAC.toString());
@@ -180,7 +180,7 @@ public class TestBillingService extends TestCase
     e2.setMember(1234);
     e2.setPayer(1234);
     e2.setDate(new DateFr(new Date()));
-    e2.setSchool("MT");
+    e2.setSchool(0);
     e2.setCurrency("E");
     e2.setLabel("Article 2 fac");
     e2.setModeOfPayment(ModeOfPayment.FAC.toString());
@@ -192,7 +192,7 @@ public class TestBillingService extends TestCase
     e3.setMember(1234);
     e3.setPayer(1234);
     e3.setDate(new DateFr(new Date()));
-    e3.setSchool("MT");
+    e3.setSchool(0);
     e3.setCurrency("E");
     e3.setLabel("Article 1 chq");
     e3.setModeOfPayment("CHQ");
@@ -204,7 +204,7 @@ public class TestBillingService extends TestCase
     e4.setMember(1234);
     e4.setPayer(1234);
     e4.setDate(new DateFr(new Date()));
-    e4.setSchool("MT");
+    e4.setSchool(0);
     e4.setCurrency("E");
     e4.setLabel("Article 2 chq");
     e4.setModeOfPayment("CHQ");

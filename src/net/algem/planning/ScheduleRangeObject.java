@@ -45,7 +45,7 @@ public class ScheduleRangeObject
   public ScheduleRangeObject(ScheduleRange d) {
     id = d.id;
     scheduleId = d.scheduleId;
-    day = d.day;
+    date = d.day;
     start = d.start;
     end = d.end;
     type = Schedule.COURSE_SCHEDULE;

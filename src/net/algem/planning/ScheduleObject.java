@@ -45,7 +45,7 @@ public abstract class ScheduleObject
 
   public ScheduleObject(Schedule d) {
     id = d.id;
-    day = d.day;
+    date = d.date;
     start = d.start;
     end = d.end;
     type = d.type;

@@ -1,5 +1,5 @@
 /*
- * @(#)Course.java	2.8.a 18/03/13
+ * @(#)Course.java	2.8.a 15/04/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -34,15 +34,24 @@ public class Course
         implements GemModel
 {
 
+  /** Break identification. */
   public static final int BREAK = 0;
+  
+  /** Instrument code. */
+  public static final int PRIVATE_INSTRUMENT_CODE = 1;
   
   /** Single workshop code. */
   public static final int ATP_CODE = 11;
   
-//  public static final int AT_CODE = 3;
+  /** Minimum length of title. */
+  public static final int MIN_TITLE_LENGTH = 1;
   
-  public static final int PRIVATE_INSTRUMENT_CODE = 1;
+  /** Maximum length of title. */
+  public static final int MAX_TITLE_LENGTH = 32;
   
+  /** Maximum length of label. */
+  public static final int MAX_LABEL_LENGTH = 16;
+
   protected int id;
   protected String title;
   protected String label;
@@ -187,7 +196,7 @@ public class Course
   public void setSchool(int j) {
     school = (short) j;
   }
-
+  
   /**
    * Checks if the course is undefined.
    * Course which names match "A DEFINIR" or "NON DEFINI" or "UNDEFINED" are considered as templates.
@@ -205,7 +214,7 @@ public class Course
   /**
    * Checks if the course is a single workshop (discovery workshop).
    *
-   * @return true if code equals {@code ATP_CODE }
+   * @return true if code == {@code ATP_CODE }
    * @since 2.4.a 04/05/12
    */
   public boolean isATP() {
@@ -215,7 +224,7 @@ public class Course
   /**
    * Checks if course's code is of instrument type.
    *
-   * @return true if code begins with {@code PRIVATE_INSTRUMENT_CODE}
+   * @return true if code == {@code PRIVATE_INSTRUMENT_CODE}
    */
   public boolean isInstCode() {
     return PRIVATE_INSTRUMENT_CODE == getCode();
@@ -225,41 +234,4 @@ public class Course
     return isCollective() && isInstCode();
   }
 
-  /**
-   * Checks if course has a valid length in its code.
-   * Some courses may not include length in their codes (eg F.M. code)
-   * 
-   * @return true if code ends with 3 digits
-   */
-  public boolean hasValidCodeLength() {
-    return true;
-//    if (code == null || code.isEmpty() || code.length() < 3) {
-//      return false;
-//    }
-//    return code.substring(code.length() - 3).matches("[0-9]{3}");
-  }
-
-  /**
-   * Gets the course's length.
-   * If 0 is returned, the course's length is free.
-   *
-   * @return a length in minutes
-   */
-  public int getLength() {
-    int c = getCode();
-//    if (isCollective() && !isATP()) {
-//      if ("AT".equals(c) || "F.M.".equals(c)) {
-//        return 60;
-//      } else {
-//        try {
-//          if (c.length() >= 3) {
-//            return Integer.parseInt(c.substring(c.length() - 3));
-//          }
-//        } catch (NumberFormatException nfe) {
-//          return 0;
-//        }
-//      }
-//    }
-    return 0;
-  }
 }

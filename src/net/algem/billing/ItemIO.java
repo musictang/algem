@@ -88,7 +88,7 @@ public class ItemIO
       a.setVat(getVat(rs.getInt(4)));
       v.add(a);
     }
-    return v.isEmpty() ? null : v;
+    return v;
   }
 
   public void update(Item i) throws SQLException {

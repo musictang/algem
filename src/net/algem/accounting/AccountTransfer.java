@@ -1,7 +1,7 @@
 /*
- * @(#)AccountTransfer.java	2.7.a 05/12/12
+ * @(#)AccountTransfer.java	2.8.a 01/04/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -52,7 +52,7 @@ import net.algem.util.ui.MessagePopup;
  * Abstract class for accounting transfers.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.a
  * @since 2.3.c 21/03/12
  */
 public abstract class AccountTransfer
@@ -62,6 +62,7 @@ public abstract class AccountTransfer
 
   static final int LEADING = 0;
   static final int TRAILING = 1;
+  protected DataCache dataCache;
   protected DataConnection dbx;
   protected JournalAccountService service;
   protected NumberFormat nf = NumberFormat.getInstance(Locale.FRENCH);
@@ -76,18 +77,19 @@ public abstract class AccountTransfer
   protected DateFormat dateFormat = new SimpleDateFormat("ddMMyyyy");
 
 
-  public AccountTransfer(Frame _parent, DataConnection dc) {
+  public AccountTransfer(Frame _parent, DataCache dataCache) {
     super(_parent, "Transfert Compta");
-    init(dc);
+    init(dataCache);
   }
 
-  public AccountTransfer(Dialog _parent, DataConnection dc) {
+  public AccountTransfer(Dialog _parent, DataCache dataCache) {
     super(_parent, "Transfert Compta");
-    init(dc);
+    init(dataCache);
   }
 
-  protected void init(DataConnection dc) {
-    dbx = dc;
+  protected void init(DataCache dataCache) {
+    this.dataCache = dataCache;
+    dbx = dataCache.getDataConnection();
     service = new JournalAccountService(dbx);
     nf.setGroupingUsed(false);
     nf.setMaximumFractionDigits(2);

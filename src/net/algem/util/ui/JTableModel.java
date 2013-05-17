@@ -1,7 +1,7 @@
 /*
- * @(#)JTableModel.java	2.6.a 20/09/12
+ * @(#)JTableModel.java	2.8.a 15/04/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,22 +27,22 @@ import javax.swing.table.AbstractTableModel;
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.a
  * @since 1.0a 07/07/1999
  */
-public abstract class JTableModel
+public abstract class JTableModel<T extends Object>
         extends AbstractTableModel
 {
 
   protected String[] header;
-  protected Vector tuples = new Vector();
+  protected Vector<T> tuples = new Vector<T>();
 
   public JTableModel() {
 
   }
 
   public void clear() {
-    tuples = new Vector();
+    tuples = new Vector<T>();
     fireTableDataChanged();
   }
 
@@ -56,12 +56,12 @@ public abstract class JTableModel
     fireTableRowsDeleted(idx, idx);
   }
 
-  public void modItem(int idx, Object o) {
+  public void modItem(int idx, T o) {
     tuples.setElementAt(o, idx);
     fireTableRowsUpdated(idx, idx);
   }
 
-  public void addItem(Object o) {
+  public void addItem(T o) {
     int idx = tuples.size();
     tuples.addElement(o);
     fireTableRowsInserted(idx, idx);
@@ -73,13 +73,12 @@ public abstract class JTableModel
 
   public abstract int getIdFromIndex(int i);
 
-  // TableModel Interface
   @Override
   public String getColumnName(int column) {
     return header[column];
   }
 
-  public Vector getData() {
+  public Vector<T> getData() {
     return tuples;
   }
 

@@ -1,5 +1,5 @@
 /*
- * @(#)AttendanceSheet.java	2.7.a 26/11/12
+ * @(#)AttendanceSheet.java	2.8.a 28/03/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -48,7 +48,7 @@ import net.algem.util.model.Model;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.a
  * @since 1.0a 07/07/1999
  */
 public class AttendanceSheet
@@ -81,10 +81,10 @@ public class AttendanceSheet
   private PlanningService planningService;
 
   public AttendanceSheet(Component c, DataCache _dc) {
-    dataCache = _dc; 
+    dataCache = _dc;
     planningService = new PlanningService(dataCache.getDataConnection());
     service = new TeacherService(dataCache.getDataConnection());
-    
+
     tk = Toolkit.getDefaultToolkit();
 
     normalFont = new Font("TimesRoman", Font.PLAIN, 8);
@@ -111,41 +111,44 @@ public class AttendanceSheet
   }
 
   public void edit(DateRange _plage, int etabId) {
-    
+
     dateRange = _plage;
-    Establishment estab = EstablishmentIO.findId(etabId, dataCache.getDataConnection());
     Vector<Teacher> teachers = null;
     try {
+      Establishment estab = EstablishmentIO.findId(etabId, dataCache.getDataConnection());
       teachers = service.findTeachers();
+      if (teachers != null) {
+        for (int i = 0; i < teachers.size(); i++) {
+          //PersonFile p = teachers.elementAt(i);
+          edit(teachers.elementAt(i), dateRange, estab);
+        }
+      }
+      prn.end();
     } catch (SQLException ex) {
       GemLogger.logException(ex);
     }
-    if (teachers != null) {
-      for (int i = 0; i < teachers.size(); i++) {
-        //PersonFile p = teachers.elementAt(i);
-        edit(teachers.elementAt(i), dateRange, estab);
-      }
-    }
-    prn.end();
-
   }
 
-  public void edit(Teacher teacher, DateRange _range, int etabId) {
-    dateRange = _range;
-    Establishment estab = EstablishmentIO.findId(etabId, dataCache.getDataConnection());
-    edit(teacher, dateRange, estab);
-    prn.end();
+  public void edit(Teacher teacher, DateRange _range, int estabId) {
+    try {
+      dateRange = _range;
+      Establishment estab = (Establishment) dataCache.findId(estabId, Model.Establishment);
+      edit(teacher, dateRange, estab);
+      prn.end();
+    } catch (SQLException ex) {
+      GemLogger.logException(ex);
+    }
   }
 
   void edit(Teacher teacher, DateRange _range, Establishment etab) {
-    
+
     dateRange = _range;
     this.teacher = teacher;
 
     try {
-      Vector<? extends ScheduleObject> vpl = 
+      Vector<? extends ScheduleObject> vpl =
               service.getCourseSchedule(teacher.getId(), etab.getId(),
-                                       dateRange.getStart().toString(), dateRange.getEnd().toString());
+              dateRange.getStart().toString(), dateRange.getEnd().toString());
       if (vpl.isEmpty()) {
         return;
       }
@@ -165,7 +168,7 @@ public class AttendanceSheet
       while (vpl.size() > 0) {
         Vector<Schedule> v = new Vector<Schedule>();
         for (int j = 0; j < vpl.size(); j++) {
-          CourseSchedule p = (CourseSchedule)vpl.elementAt(0);
+          CourseSchedule p = (CourseSchedule) vpl.elementAt(0);
           if (p.equiv(vpl.elementAt(j))) {
             v.addElement(vpl.elementAt(j));
           }
@@ -209,7 +212,7 @@ public class AttendanceSheet
     if (course.isCollective()) {
       g.drawString(course.getTitle() + " salle " + room.getName() + " " + plt.getStart() + "-" + plt.getEnd(), 25, line);
     } else { // pas de libelle horaire pour les cours individuels
-      g.drawString(course.getTitle() + " salle " + room.getName()/*+" "+plt.getStart()+"-"+plt.getEnd()*/, 25, line);
+      g.drawString(course.getTitle() + " salle " + room.getName()/* +" "+plt.getStart()+"-"+plt.getEnd() */, 25, line);
     }
     g.drawLine(25, line + 5, 800, line + 5);  // 15->5
 		/* HEADERS */
@@ -219,8 +222,8 @@ public class AttendanceSheet
     /* LIBELLE DES JOURS DE LA SEMAINE */
     for (int i = 0; i < vpl.size(); i++, col += 120) {
       Schedule pl = vpl.elementAt(i);
-      cal.setTime(pl.getDay().getDate());
-      g.drawString(dayLabels[cal.get(Calendar.DAY_OF_WEEK)] + " " + pl.getDay().getDay(), col, line + 15);// 25 -> 15
+      cal.setTime(pl.getDate().getDate());
+      g.drawString(dayLabels[cal.get(Calendar.DAY_OF_WEEK)] + " " + pl.getDate().getDay(), col, line + 15);// 25 -> 15
     }
     g.drawLine(25, line + 20, 800, line + 20); // 30->20
     //ligne+=30;
@@ -233,7 +236,7 @@ public class AttendanceSheet
     g.setFont(smallFont);
     Schedule plt = vpl.elementAt(0);
 
-    //Vector<DossierPersonne> v = DossierPersonneIO.findMembersByPlanning(dataCache, plt.getDay(), plt.getStart(), plt.getEnd(), cours.getId(), plt.getIdPerson());
+    //Vector<DossierPersonne> v = DossierPersonneIO.findMembersByPlanning(dataCache, plt.getDate(), plt.getStart(), plt.getEnd(), cours.getId(), plt.getIdPerson());
     Vector<PersonFile> v = EnrolmentService.findMembersByPlanning(plt);
     for (int i = 0; i < v.size(); i++) {
       PersonFile d = v.elementAt(i);
@@ -263,7 +266,7 @@ public class AttendanceSheet
         line += 10;
         g.setFont(smallFont);
       }
-      int instrument = d.getMember().getFirstInstrument();   
+      int instrument = d.getMember().getFirstInstrument();
       g.drawString(d.getContact().getFirstnameName() + " " + dataCache.getInstrumentName(instrument), 25, line);
       col = 160;
       for (int j = 0; j < 5; j++, col += 120) {
@@ -292,11 +295,11 @@ public class AttendanceSheet
 //    System.out.println("plt=" + plt);
 //    System.out.println("cours=" + cours);
 //    String query2 = " WHERE cours=" + cours.getId()
-//            + " AND jour='" + plt.getDay() + "'"
+//            + " AND jour='" + plt.getDate() + "'"
 //            + " AND prof=" + plt.getIdPerson()
 //            + " AND debut >= '" + plt.getStart() + "'"
 //            + " AND end <= '" + plt.getEnd() + "' ORDER BY debut";
-    String query2 = "WHERE pg.idplanning = " + plt.getId() + " ORDER BY debut";
+    String query2 = "pg WHERE pg.idplanning = " + plt.getId() + " ORDER BY pg.debut";
     Vector<ScheduleRange> v = ScheduleRangeIO.find(query2, dataCache.getDataConnection());
 
     for (int i = 0; i < v.size(); i++) {
@@ -339,4 +342,3 @@ public class AttendanceSheet
     }
   }
 }
-

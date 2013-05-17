@@ -1,5 +1,5 @@
 /*
- * @(#)CourseModulePanel.java	2.8.a 14/03/13
+ * @(#)CourseModulePanel.java	2.8.a 23/04/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -21,17 +21,19 @@
 
 package net.algem.course;
 
-import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionListener;
 import javax.swing.Box;
-import javax.swing.JLabel;
+import net.algem.config.GemParam;
+import net.algem.config.GemParamChoice;
 import net.algem.contact.InfoPanel;
 import net.algem.planning.Hour;
 import net.algem.planning.HourField;
 import net.algem.util.BundleUtil;
 import net.algem.util.GemCommand;
+import net.algem.util.model.GemList;
 import net.algem.util.ui.ButtonRemove;
+import net.algem.util.ui.GemChoiceModel;
 import net.algem.util.ui.GridBagHelper;
 
 /**
@@ -44,32 +46,37 @@ public class CourseModulePanel
   extends InfoPanel 
 {
   private CourseModuleInfo info;
+  private GemParamChoice code;
   private HourField hf;
 
-  public CourseModulePanel(CourseModuleInfo info, ActionListener listener) {
+  public CourseModulePanel(CourseModuleInfo info, GemList<CourseCode> codeList, ActionListener listener) {
     this.info = info;
     setLayout(new GridBagLayout());
-    GridBagHelper gb = new GridBagHelper(this);
+    gb = new GridBagHelper(this);
     gb.insets = GridBagHelper.MEDIUM_INSETS;
 
     hf = new HourField(new Hour(info.getTimeLength()));
+    if (info.getCode() != null && info.getCode().getId() == Course.ATP_CODE) {
+      hf.setEnabled(false);
+    }
     hf.setToolTipText(BundleUtil.getLabel("Course.length.tip"));
-    
-    JLabel jl = new JLabel(info.getCode().getLabel());
 
-    jl.setPreferredSize(new Dimension(150, 10));
+    code = new GemParamChoice(new GemChoiceModel(codeList));
+    code.setKey(info.getIdCode());
+
     ButtonRemove minus = new ButtonRemove(this);
     minus.setToolTipText(GemCommand.DELETE_CMD);
     minus.addActionListener(listener);
     
     gb.add(Box.createVerticalStrut(4), 0, 0, 4, 1, GridBagHelper.WEST);
-    gb.add(jl, 0, 1, 2, 1, GridBagHelper.WEST);
+    gb.add(code, 0, 1, 2, 1, GridBagHelper.WEST);
     gb.add(hf, 2, 1, 1, 1);
     gb.add(minus, 3, 1, 1, 1, GridBagHelper.EAST);
     
   }
   
   public CourseModuleInfo get() {
+    info.setCode((GemParam) code.getSelectedItem());
     info.setTimeLength(hf.get().toMinutes());
     return info;
   }

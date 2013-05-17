@@ -52,8 +52,8 @@ public class RehearsalCancelView
 
   public RehearsalCancelView(Schedule plan) {
 
-    start = new DateFrField(plan.getDay());
-    end = new DateFrField(plan.getDay());
+    start = new DateFrField(plan.getDate());
+    end = new DateFrField(plan.getDate());
     GemLabel title = null;
     if (plan.getType() == Schedule.MEMBER_SCHEDULE) {
       title = new GemLabel(BundleUtil.getLabel("Member.label") + " " + plan.getIdPerson());

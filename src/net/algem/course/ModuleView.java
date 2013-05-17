@@ -1,7 +1,7 @@
 /*
- * @(#)ModuleView.java	2.8.a 15/03/13
+ * @(#)ModuleView.java	2.8.a 23/04/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,6 +28,7 @@ import javax.swing.JLabel;
 import net.algem.accounting.AccountUtil;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
+import net.algem.util.model.Model;
 import net.algem.util.ui.*;
 
 /**
@@ -44,17 +45,15 @@ public class ModuleView
   private GemNumericField no;
   private GemField title;
   private JComboBox type;
-  private GemField code;
   private GemDecimalField basicPrice;
   private GemDecimalField monthRateReduc;
   private GemDecimalField quarterRateReduc;
-  private ModuleCodeView viewCode;
+  //private ModuleCodeView viewCode;
   private CourseModuleView courseView;
 
   public ModuleView(DataCache dataCache) {
     no = new GemNumericField(6);
     no.setEditable(false);
-//    code = new GemField(7);
     title = new GemField(ModuleIO.TITLE_MAX_LEN);
     title.setColumns(ModuleIO.TITLE_MAX_LEN);
 		
@@ -77,13 +76,12 @@ public class ModuleView
     pricePanel.add(new GemLabel(BundleUtil.getLabel("Module.trim.reduc.rate.label")));
     pricePanel.add(quarterRateReduc);
 
-//    viewCode = new ModuleCodeView();
     type = new JComboBox(new String[] {
       BundleUtil.getLabel("Leisure.training.label"),
       BundleUtil.getLabel("Professional.training.label")
     });
 
-    courseView = new CourseModuleView(dataCache);
+    courseView = new CourseModuleView(dataCache.getList(Model.CourseCode));
     setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
     gb.insets = GridBagHelper.SMALL_INSETS;
@@ -94,8 +92,6 @@ public class ModuleView
     gb.add(new JLabel(BundleUtil.getLabel("Type.label")), 0, 2, 1, 1, GridBagHelper.WEST);
     gb.add(type, 1, 2, 1, 1, GridBagHelper.WEST);
     gb.add(courseView, 0, 3, 2, 1, GridBagHelper.WEST);
-//    gb.add(viewCode, 0, 1, 2, 1, GridBagHelper.WEST);
-//    gb.add(new GemLabel(BundleUtil.getLabel("Title.label")), 0, 2, 1, 1, GridBagHelper.WEST);
     gb.add(pricePanel, 0, 4, 2, 1, GridBagHelper.WEST);
     
   }
@@ -122,7 +118,6 @@ public class ModuleView
       m.setId(0);
     }
     m.setTitle(title.getText());
-    //m.setCode(viewCode.getCode());
 
     switch(type.getSelectedIndex()) {
       case 0 :
@@ -174,8 +169,6 @@ public class ModuleView
       default:
         type.setSelectedIndex(0);
     }
-//    code.setText(m.getCode());
-//    viewCode.setCode(m.getCode());
     basicPrice.setValue(m.getBasePrice());
     monthRateReduc.setValue(m.getMonthReducRate());
     quarterRateReduc.setValue(m.getQuarterReducRate());
@@ -188,9 +181,7 @@ public class ModuleView
   public void clear() {
     no.setText(null);
     title.setText(null);
-//    code.setText(null);
     type.setSelectedIndex(0);
-//    viewCode.setCode("L00000000 ");
     basicPrice.setValue(0.0);
     monthRateReduc.setValue(0.0);
     quarterRateReduc.setValue(0.0);

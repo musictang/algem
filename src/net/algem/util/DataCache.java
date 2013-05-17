@@ -1,5 +1,5 @@
 /*
- * @(#)DataCache.java	2.7.m 14/03/13
+ * @(#)DataCache.java	2.8.a 09/04/13
  *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -63,7 +63,7 @@ import net.algem.util.model.Model;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.m
+ * @version 2.8.a
  * @since 1.0b 03/09/2001
  */
 public class DataCache
@@ -110,12 +110,12 @@ public class DataCache
   private static GemList<GemParam> STATUS_LIST;
   private static GemList<MusicStyle> STYLE_LIST;
   private static GemList<Establishment> ESTAB_LIST;
+  private static GemList<Param> SCHOOL_LIST;
   private static GemList<Account> ACCOUNT_LIST;
   private static GemList<Vat> VAT_LIST;
   private static GemList<GemParam> COURSE_CODE_LIST;
    
   private Vector<Instrument> instruments;//TODO manage list
-  private Vector<ModuleType> moduleType;
   private Vector<CategoryOccup> occupCat;
   private Vector<Param> vacancyCat;
   private Vector<Param> webSiteCat;
@@ -246,6 +246,8 @@ public class DataCache
         return VAT_LIST;
       case CourseCode:
         return COURSE_CODE_LIST;
+      case School:
+        return SCHOOL_LIST;
       default: return null;
     }
 
@@ -374,6 +376,9 @@ public class DataCache
       case CourseCode:
         GemParam cc = (GemParam) COURSE_CODE_LIST.getItem(id);
         return cc != null ? cc : COURSE_CODE_IO.find(id);
+      case School:
+        Param school = (Param) SCHOOL_LIST.getItem(id);
+        return school != null ? school : new Param("0", "");
       default:
         return null;
     }
@@ -648,7 +653,9 @@ public class DataCache
 
       ROOM_RATE_LIST = new GemList<RoomRate>(ROOM_RATE_IO.load());
       loadRoomContactCache();
-      ESTAB_LIST = new GemList<Establishment>(EstablishmentIO.find("", dc));
+      Vector<Param> schools = ParamTableIO.find(SchoolCtrl.TABLE, SchoolCtrl.COLUMN_KEY, dc);
+      SCHOOL_LIST = new GemList<Param>(schools);
+      ESTAB_LIST = new GemList<Establishment>(EstablishmentIO.find(" ORDER BY nom", dc));
 
       showMessage(frame, BundleUtil.getLabel("Room.label"));
       ROOM_LIST = new GemList<Room>(ROOM_IO.load());
@@ -671,16 +678,12 @@ public class DataCache
       COURSE_CODE_LIST = new GemList<GemParam>(COURSE_CODE_IO.load());
       MODULE_LIST = new GemList<Module>(MODULE_IO.load());
       
-      moduleType = ModuleTypeIO.find("ORDER BY code", dc);
-      
       occupCat = CategoryOccupIO.find("ORDER BY nom", dc);
       vacancyCat = ParamTableIO.find(Category.VACANCY.getTable(), Category.VACANCY.getCol(), dc);
       webSiteCat = ParamTableIO.find(Category.SITEWEB.getTable(), Category.SITEWEB.getCol(), dc);
       
       showMessage(frame, BundleUtil.getLabel("Scheduling.label"));
       loadScheduleCache();
-      
-      
       
       showMessage(frame, BundleUtil.getLabel("Menu.style.label"));
       STYLE_LIST = new GemList<MusicStyle>(MUSIC_STYLE_IO.load());
@@ -689,7 +692,7 @@ public class DataCache
       GROUP_LIST = new GemList<Group>(GROUP_IO.load());
       
       showMessage(frame, BundleUtil.getLabel("Accounting.label"));
-      loadAccountingcache();
+      loadAccountingCache();
 
       showMessage(frame, BundleUtil.getLabel("Billing.label"));
       loadBillingCache();
@@ -702,7 +705,7 @@ public class DataCache
       String m = MessageUtil.getMessage("cache.loading.exception");
       GemLogger.logException(m, ex);
     } finally {
-      showMessage(frame, MessageUtil.getMessage("cache.loading.completed"));
+      showMessage(frame, "<html>" + MessageUtil.getMessage("cache.loading.completed") +"</html>");
       cacheInit = true;
     }
   }
@@ -748,7 +751,7 @@ public class DataCache
     return lo;
   }
   
-  private void loadAccountingcache() throws SQLException {
+  private void loadAccountingCache() throws SQLException {
     ACCOUNT_LIST = new GemList<Account>(AccountIO.load(dc));
 
     Vector<Param> vca = ParamTableIO.find(CostAccountCtrl.tableName, CostAccountCtrl.columnKey,null, dc);
@@ -903,10 +906,6 @@ public class DataCache
 
   public Vector<Param> getWebSiteCat() {
     return webSiteCat;
-  }
-
-  public Vector<ModuleType> getModuleType() {
-    return moduleType;
   }
 
   public Vector<Instrument> getInstruments() {

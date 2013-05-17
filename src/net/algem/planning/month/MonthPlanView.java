@@ -173,7 +173,7 @@ public class MonthPlanView
               || p.getType() == Schedule.GROUP_SCHEDULE) {
         if (p.getNote() == -1) {
           c = colorPrefs.getColor(ColorPlan.FLAG);
-          flagNotPaid(p.getDay().getDay(), p.getStart().toMinutes(), p.getEnd().toMinutes(), c);
+          flagNotPaid(p.getDate().getDay(), p.getStart().toMinutes(), p.getEnd().toMinutes(), c);
         }
       }
     }
@@ -239,7 +239,7 @@ public class MonthPlanView
   public void drawRange(ScheduleObject p, Color c, int w) {
     int deb = p.getStart().toMinutes();
     int fin = p.getEnd().toMinutes();
-    int jour = p.getDay().getDay();
+    int jour = p.getDate().getDay();
 
     int x = MARGED + 2 + ((jour - 1) * pas_x) - (pas_x / 2);
     int y = MARGEH + 2 + (((deb - H_DEB) * pas_y) / GRID_Y);
@@ -253,7 +253,7 @@ public class MonthPlanView
     }
     if (p.getType() == Schedule.MEMBER_SCHEDULE || p.getType() == Schedule.GROUP_SCHEDULE) {
       if (p.getNote() == -1) {
-        flagNotPaid(p.getDay().getDay(), p.getStart().toMinutes(), p.getEnd().toMinutes(), c);
+        flagNotPaid(p.getDate().getDay(), p.getStart().toMinutes(), p.getEnd().toMinutes(), c);
       }
     }
   }
@@ -265,7 +265,7 @@ public class MonthPlanView
         return;
       }
       if (((Course) p.getActivity()).isCollective()) {
-        int x = MARGED + 0 + ((p.getDay().getDay() - 1) * pas_x) - (pas_x - 8);
+        int x = MARGED + 0 + ((p.getDate().getDay() - 1) * pas_x) - (pas_x - 8);
         int y = MARGEH + 0 + (((p.getStart().toMinutes() - H_DEB) * pas_y) / GRID_Y);
         bg.setColor(getTextColor(p));
         bg.setFont(X_SMALL_FONT);
@@ -354,7 +354,7 @@ public class MonthPlanView
     if (clickSchedule == null) {
       if (listener != null) {
         clickSchedule = new Schedule();//TODOGEM
-        clickSchedule.setDay(cal.getTime());
+        clickSchedule.setDate(cal.getTime());
         clickSchedule.setStart(hc);
         clickSchedule.setEnd(hc);
         //TODOGEM pp.setPlace();
@@ -370,7 +370,7 @@ public class MonthPlanView
     for (int i = 0; ranges != null && i < ranges.size(); i++) {
       ScheduleRangeObject pg = ranges.elementAt(i);
       if (pg.getScheduleId() == clickSchedule.getId()) {
-//      if (pg.getDay().equals(clickSchedule.getDay())
+//      if (pg.getDate().equals(clickSchedule.getDate())
 //              && pg.getIdAction() == clickSchedule.getIdAction()
 //              && pg.getTeacher().getId() == clickSchedule.getIdPerson() //ajout 1.1d
 //              && (pg.getDateStart().ge(clickSchedule.getDateStart()) && pg.getDateEnd().le(clickSchedule.getDateEnd()))) //ajout 1.1d
@@ -425,7 +425,7 @@ public class MonthPlanView
     if (plans != null) {
       for (int i = 0; i < plans.size(); i++) {
         ScheduleObject p = plans.elementAt(i);
-        DateFr d = p.getDay();
+        DateFr d = p.getDate();
         if (d.getDay() != jj) {
           continue;
         }

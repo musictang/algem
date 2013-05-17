@@ -1,7 +1,7 @@
 /*
- * @(#)ScheduleDetailCtrl.java 2.7.j 27/02/13
+ * @(#)ScheduleDetailCtrl.java 2.8.a 15/04/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,6 +28,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.Vector;
 import javax.swing.JDialog;
 import net.algem.contact.*;
@@ -58,7 +59,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.j
+ * @version 2.8.a
  * @since 1.0a 07/07/1999
  */
 public class ScheduleDetailCtrl
@@ -89,6 +90,8 @@ public class ScheduleDetailCtrl
   
   /** Presence indicator of the modification buttons. */
   private boolean allMenus;
+  private static PersonScheduleComparator psComparator = new PersonScheduleComparator();
+  private static PersonComparator personComparator = new PersonComparator();
 
   public ScheduleDetailCtrl(GemDesktop _desktop, PlanModifCtrl _mpc, boolean all) {
     desktop = _desktop;
@@ -143,7 +146,7 @@ public class ScheduleDetailCtrl
     headPanel.removeAll();
     listPanel.removeAll();
     menuPanel.removeAll();
-    title = schedule.getDay().toString() + " " + schedule.getStart().toString() + "-" + schedule.getEnd().toString();
+    title = schedule.getDate().toString() + " " + schedule.getStart().toString() + "-" + schedule.getEnd().toString();
     frame.setTitle(title);
     if (schedule instanceof CourseSchedule) {
       loadCourseSchedule(event);
@@ -215,20 +218,23 @@ public class ScheduleDetailCtrl
     if (v == null) {
       return;
     }
+    if (collective) {
+      Collections.sort(v, psComparator);
+    }
     StringBuffer buf = new StringBuffer();
     for (int i = 0; i < v.size(); i++) {
-      ScheduleRangeObject pg = v.elementAt(i);
-      Person per = pg.getMember();
+      ScheduleRangeObject pl = v.elementAt(i);
+      Person per = pl.getMember();
 
       if (!collective) {
         // Affichage de la plage horaire
-        buf = new StringBuffer(pg.getStart().toString());
-        buf.append("-").append(pg.getEnd());
+        buf = new StringBuffer(pl.getStart().toString());
+        buf.append("-").append(pl.getEnd());
       }
       if (per == null) {
         Vector<ScheduleRange> vp = null;
         try {
-          vp = ScheduleRangeIO.find("WHERE id = " + pg.getId(), dc);
+          vp = ScheduleRangeIO.find("pg WHERE pg.id = " + pl.getId(), dc);
         } catch (SQLException ex) {
           GemLogger.logException(ex);
         }
@@ -240,7 +246,7 @@ public class ScheduleDetailCtrl
       } else {
         if (per.getId() == 0) {
           buf.append(" ").append(BundleUtil.getLabel("Teacher.break.label"));
-          listPanel.add(new GemMenuButton(buf.toString(), this, "BreakLink", pg));
+          listPanel.add(new GemMenuButton(buf.toString(), this, "BreakLink", pl));
         } else {
           if (collective) {
             buf = new StringBuffer(per.getFirstnameName());
@@ -258,7 +264,7 @@ public class ScheduleDetailCtrl
           } else {
             buf.append(" ").append(per.getFirstnameName());
           }
-          listPanel.add(new GemMenuButton(buf.toString(), this, "MemberLink", pg));
+          listPanel.add(new GemMenuButton(buf.toString(), this, "MemberLink", pl));
         }
       }
     }
@@ -358,7 +364,7 @@ public class ScheduleDetailCtrl
     if (v == null) {
       return;
     }
-
+    Collections.sort(v, personComparator);
     for (int i = 0; i < v.size(); i++) {
       listPanel.add(getMemberButton(v.elementAt(i)));
     }
@@ -430,7 +436,7 @@ public class ScheduleDetailCtrl
         setWaitCursor();
         Room s = (Room) ((GemMenuButton) evt.getSource()).getObject();
         RoomFileEditor roomEditor = new RoomFileEditor(s, GemModule.SALLE_DOSSIER_KEY);
-        roomEditor.setDate(schedule.getDay().getDate());
+        roomEditor.setDate(schedule.getDate().getDate());
         desktop.addModule(roomEditor);
         frame.setLocation(getOffset(roomEditor.getView()));
       } else if ("CourseLink".equals(arg)) {
@@ -463,7 +469,7 @@ public class ScheduleDetailCtrl
 
       } else if ("BreakLink".equals(arg)) {
         ScheduleRangeObject po = (ScheduleRangeObject) ((GemMenuButton) evt.getSource()).getObject();
-        DateFr start = po.getDay();
+        DateFr start = po.getDate();
         BreakSuppressionDlg dlg = new BreakSuppressionDlg(desktop.getFrame(), true, start, dataCache.getEndOfYear());
         if (dlg.isValidate()) {
           try {
