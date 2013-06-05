@@ -1,5 +1,5 @@
 /*
- * @(#)ModuleListeCtrl.java	2.8.a 19/04/13
+ * @(#)EstablishmentIO.java	2.8.e 21/05/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -18,45 +18,29 @@
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  * 
  */
- 
 
-package net.algem.course;
-
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.border.BevelBorder;
-import javax.swing.table.TableColumnModel;
-import net.algem.util.ui.ListCtrl;
-
+package net.algem.room;
 
 /**
- * comment
  *
- * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.e
+ * @since 2.8.e 21/05/13
  */
+public class EstablishmentException extends Exception {
 
-public class ModuleListeCtrl
-	extends ListCtrl
-{
+    /**
+     * Creates a new instance of <code>EstablishmentException</code> without detail message.
+     */
+    public EstablishmentException() {
+    }
 
-	public ModuleListeCtrl()
 
-	{
-		tableModel = new ModuleTableModel();
-
-		table = new JTable(tableModel);
-        table.setAutoCreateRowSorter(true);        
-
-		TableColumnModel cm = table.getColumnModel();
-		cm.getColumn(0).setPreferredWidth(30);
-		cm.getColumn(1).setPreferredWidth(30);
-		cm.getColumn(2).setPreferredWidth(400);
-
-		JScrollPane p = new JScrollPane(table);
-		p.setBorder(new BevelBorder(BevelBorder.LOWERED));
-
-		add("Center",p);
-	}
+    /**
+     * Constructs an instance of <code>EstablishmentException</code> with the specified detail message.
+     * @param msg the detail message.
+     */
+    public EstablishmentException(String msg) {
+        super(msg);
+    }
 }

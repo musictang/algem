@@ -1,5 +1,5 @@
 /*
- * @(#)EstabListView.java	2.7.a 26/11/12
+ * @(#)EstabRoomListView.java	2.8.e 20/05/13
  *
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -36,41 +36,41 @@ import net.algem.util.ui.JTableModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.e
  * @since 1.0a 07/07/1999
  */
-public class EstabListView
+public class EstabRoomListView
         extends GemPanel
 {
 
-  private JTableModel table;
-  private JTable jtable;
+  private JTableModel tableModel;
+  private JTable table;
 
-  public EstabListView() {
-    table = new RoomTableModel();
-    jtable = new JTable(table);
-    jtable.setAutoCreateRowSorter(true);
+  public EstabRoomListView() {
+    tableModel = new RoomTableModel();
+    table = new JTable(tableModel);
+    table.setAutoCreateRowSorter(true);
 
-    TableColumnModel cm = jtable.getColumnModel();
+    TableColumnModel cm = table.getColumnModel();
     cm.getColumn(0).setPreferredWidth(40);
     cm.getColumn(1).setPreferredWidth(150);
     cm.getColumn(2).setPreferredWidth(100);
     cm.getColumn(3).setPreferredWidth(60);
 
-    JScrollPane scroll = new JScrollPane(jtable);
+    JScrollPane scroll = new JScrollPane(table);
     scroll.setBorder(new BevelBorder(BevelBorder.LOWERED));
     setLayout(new BorderLayout());
     add(scroll, BorderLayout.CENTER);
   }
 
   public void clear() {
-    table.clear();
+    tableModel.clear();
   }
 
   public void load(int id) {
     Vector<Room> v = ((RoomIO) DataCache.getDao(Model.Room)).find("WHERE etablissement = " + id);
     for (int i = 0; i < v.size(); i++) {
-      table.addItem(v.elementAt(i));
+      tableModel.addItem(v.elementAt(i));
     }
   }
 }

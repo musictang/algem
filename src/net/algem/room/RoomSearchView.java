@@ -55,7 +55,7 @@ public class RoomSearchView
     name.addActionListener(this);
     estab = new GemField(6);
     estab.addActionListener(this);
-    estab.setToolTipText(MessageUtil.getMessage("etablissement.number.tip"));
+    estab.setToolTipText(MessageUtil.getMessage("establishment.number.tip"));
 
     mask = new GemPanel();
     mask.setLayout(new GridBagLayout());

@@ -1,5 +1,5 @@
 /*
- * @(#)InstrumentIO.java	2.8.a 15/03/13
+ * @(#)InstrumentIO.java	2.8.g 31/05/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -32,7 +32,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.g
  */
 public class InstrumentIO
         extends TableIO {
@@ -65,7 +65,7 @@ public class InstrumentIO
     dc.executeUpdate(query);
   }
 
-  public static Instrument findId(String n, DataConnection dc) throws SQLException {
+  public static Instrument findId(int n, DataConnection dc) throws SQLException {
     String query = "WHERE id = " + n;
     Vector<Instrument> v = find(query, dc);
     if (v.size() > 0) {

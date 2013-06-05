@@ -98,7 +98,7 @@ public class EnrolmentOrderUtil {
    * @return the size of order lines collection
    * @throws SQLException 
    */
-  public int addOrderLines(ModuleOrder moduleOrder, OrderLine e) throws SQLException {
+  private int addOrderLines(ModuleOrder moduleOrder, OrderLine e) throws SQLException {
     List<OrderLine> orderLines = new ArrayList<OrderLine>();
     if (!ModeOfPayment.NUL.toString().equals(moduleOrder.getModeOfPayment())) {
       if ("TRIM".equals(moduleOrder.getPayment())) { // echeance trimestrielle

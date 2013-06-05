@@ -42,14 +42,14 @@ public class RoomRateListCtrl
   {
     tableModel = new RoomRateTableModel();
 
-    jtable = new JTable(tableModel);
-    jtable.setAutoCreateRowSorter(true);
+    table = new JTable(tableModel);
+    table.setAutoCreateRowSorter(true);
 
-    TableColumnModel cm = jtable.getColumnModel();
+    TableColumnModel cm = table.getColumnModel();
     cm.getColumn(0).setPreferredWidth(25);
     cm.getColumn(1).setPreferredWidth(250);
 
-    JScrollPane p = new JScrollPane(jtable);
+    JScrollPane p = new JScrollPane(table);
     p.setBorder(new BevelBorder(BevelBorder.LOWERED));
 
     add("Center", p);

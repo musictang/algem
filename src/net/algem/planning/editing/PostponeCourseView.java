@@ -1,5 +1,5 @@
 /*
- * @(#)PostponeCourseView.java	2.8.a 23/04/13
+ * @(#)PostponeCourseView.java	2.8.g 31/05/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -22,43 +22,48 @@ package net.algem.planning.editing;
 
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.sql.SQLException;
+import java.util.Vector;
 import net.algem.planning.*;
 import net.algem.room.Room;
 import net.algem.room.RoomChoice;
 import net.algem.util.BundleUtil;
-import net.algem.util.DataCache;
-import net.algem.util.model.Model;
-import net.algem.util.ui.GemField;
-import net.algem.util.ui.GemLabel;
-import net.algem.util.ui.GemPanel;
-import net.algem.util.ui.GridBagHelper;
+import net.algem.util.GemLogger;
+import net.algem.util.MessageUtil;
+import net.algem.util.model.GemList;
+import net.algem.util.ui.*;
 
 /**
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.g
  * @since 1.0a 07/07/1999
  */
 public class PostponeCourseView
         extends GemPanel
 {
 
-  private DataCache dataCache;
-  private int sid; // salle id
+  private int sid; // room id
   private GemField courseLabel;
   private DateFrField currentDate;
   private DateFrField newDate;
-  private GemField currentHour; // heure before
-  private GemField currentRoom; // salle before
-  private HourField newStartTime; // heure after
-  /** Must be included in original range. */
+  private GemField currentHour; 
+  private GemField currentRoom;
+  private HourField newStartTime;
+  /** Must be included in the origin range. */
   private HourRangePanel postPoneRange;
-  private RoomChoice newRoom; // salle after
+  private RoomChoice newRoom;
   private Insets padding;
-  
+  private PlanningService service;
+  private ScheduleObject orig;
 
-  public PostponeCourseView(DataCache _dc) {
-    dataCache = _dc;
+  public PostponeCourseView(GemList<Room> roomList, PlanningService service) 
+          
+    {
+
+    this.service = service;
     setBorder(ModifPlanView.DEFAULT_BORDER);
     this.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
@@ -71,11 +76,19 @@ public class PostponeCourseView
     currentHour = new GemField(20);
     currentHour.setEditable(false);
     newStartTime = new HourField();
+
     postPoneRange = new HourRangePanel();
+    
+    postPoneRange.addMouseListener(new MouseAdapter() {
+      @Override
+      public void mouseExited(MouseEvent e) {
+        checkRange();
+      }
+    });
     
     currentRoom = new GemField(20);
     currentRoom.setEditable(false);
-    newRoom = new RoomChoice(dataCache.getList(Model.Room));
+    newRoom = new RoomChoice(roomList);
 
     padding = new Insets(2, 2, 2, 2);
 
@@ -110,6 +123,7 @@ public class PostponeCourseView
    * @param noRange if true, range must be disabled
    */
   void set(ScheduleObject s, boolean noRange) {
+    orig = s;
     courseLabel.setText(s.getScheduleLabel());
     currentDate.set(s.getDate().getDate());
     newDate.set(s.getDate().getDate());
@@ -167,6 +181,34 @@ public class PostponeCourseView
     s.setPlace(newRoom.getKey());
 
     return s;
+  }
+
+  /**
+   * Checks range on the fly.
+   */
+  void checkRange() {
+    if(!postPoneRange.isEditable()) {
+      return;
+    }
+    
+    try {
+      ScheduleObject range = new CourseSchedule();
+      range.setStart(postPoneRange.getStart());
+      range.setEnd(postPoneRange.getEnd());
+      Vector<ScheduleTestConflict> v = service.checkRange(orig, range);
+      if (v != null && v.size() > 0) {
+        MessagePopup.warning(this, MessageUtil.getMessage("invalid.time.slot"));
+        resetRange();
+      } 
+    } catch (SQLException ex) {
+      GemLogger.log(ex.getMessage());
+      resetRange();
+    }
+  }
+  
+  private void resetRange() {
+    postPoneRange.setStart(orig.getStart());
+    postPoneRange.setEnd(orig.getEnd());
   }
 
 }

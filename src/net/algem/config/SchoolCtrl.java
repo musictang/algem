@@ -1,7 +1,7 @@
 /*
- * @(#)SchoolCtrl  2.6.a 06/08/2012
+ * @(#)SchoolCtrl  2.8.h 03/06/13
  *
- * Copyright (c) 2011 Musiques Tangentes All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,12 +21,14 @@
 package net.algem.config;
 
 import java.sql.SQLException;
+import java.util.Vector;
+import net.algem.util.MessageUtil;
 import net.algem.util.module.GemDesktop;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.h
  */
 public class SchoolCtrl extends ParamTableCtrl
 {
@@ -61,7 +63,12 @@ public class SchoolCtrl extends ParamTableCtrl
   }
 
   @Override
-  public void suppression(Param p) throws SQLException {
+  public void suppression(Param p) throws SQLException, ConfigException {
+    //TODO check if school id is used in order lines
+    Vector<Param> vp = ParamTableIO.find(TABLE, SORT_COLUMN, dc);
+    if (vp != null && vp.size() <= 1) {
+      throw new ConfigException(MessageUtil.getMessage("school.delete.info"));
+    }
     ParamTableIO.delete(TABLE, COLUMN_KEY, p, dc);
   }
 

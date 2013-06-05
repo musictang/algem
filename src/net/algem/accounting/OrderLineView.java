@@ -1,5 +1,5 @@
 /*
- * @(#)OrderLineView.java	2.8.a 01/04/13
+ * @(#)OrderLineView.java	2.8.f 24/05/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -40,7 +40,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.f
  * @since 1.0a 18/07/1999
  */
 public class OrderLineView
@@ -97,7 +97,6 @@ public class OrderLineView
             ModeOfPaymentCtrl.COLUMN_NAME, dataCache.getDataConnection())
             );
     document = new GemField(10);
-//    schoolChoice = new ParamChoice(ParamTableIO.find(SchoolCtrl.TABLE, SchoolCtrl.SORT_COLUMN, dc));
     schoolChoice = new ParamChoice(dataCache.getList(Model.School).getData());
     account = new AccountChoice(AccountIO.find(true, dataCache.getDataConnection()));
     costAccount = new ParamChoice(

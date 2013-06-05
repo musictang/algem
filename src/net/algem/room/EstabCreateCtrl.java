@@ -1,7 +1,7 @@
 /*
- * @(#)EstabCreateCtrl.java 2.7.a 17/01/13
+ * @(#)EstabCreateCtrl.java 2.8.f 24/05/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -37,7 +37,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.f
  */
 public class EstabCreateCtrl
         extends CardCtrl
@@ -92,13 +92,16 @@ public class EstabCreateCtrl
   public boolean validation() {
     try {
       Establishment p = save();
-      desktop.getDataCache().add(p);
-      desktop.postEvent(new GemEvent(this, GemEvent.CREATION, GemEvent.ESTABLISHMENT, p));
+      if (p != null) {
+        desktop.getDataCache().add(p);
+        desktop.postEvent(new GemEvent(this, GemEvent.CREATION, GemEvent.ESTABLISHMENT, p));
+        cancel();
+      }
     } catch (SQLException ex) {
       GemLogger.logException("Insertion etablissement", ex, this);
       return false;
-    }
-    clear();
+    } 
+    
     return true;
   }
 
@@ -118,14 +121,16 @@ public class EstabCreateCtrl
   }
 
   Establishment save() throws SQLException {
+    
     Establishment e = new Establishment();
+    
     e.setPerson(contact.getPerson());
     e.setAddress(contact.getAddressAll());
     e.setTele(contact.getTele());
     e.setEmail(contact.getEmail());
 
     if (!e.isValid()) {
-      MessagePopup.error(this, MessageUtil.getMessage("incomplete.entry.error"));
+      MessagePopup.error(this, MessageUtil.getMessage("establishment.empty.name.exception"));
       return null;
     }
 

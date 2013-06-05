@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleIO.java	2.8.a 23/04/13
+ * @(#)ScheduleIO.java	2.8.f 24/05/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -40,7 +40,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.f
  */
 public class ScheduleIO
         extends TableIO
@@ -117,33 +117,33 @@ public class ScheduleIO
     dc.executeUpdate(query);
   }
 
+  /**
+   * Rehearsal suppression.
+   * 
+   * @param startDate start date of removal
+   * @param endDate end date of removal
+   * @param sched schedule to remove
+   * @param dc dataConnection
+   * @throws SQLException 
+   */
   public static void deleteRehearsal(DateFr startDate, DateFr endDate, ScheduleObject sched, DataConnection dc) throws SQLException {
     String query = "jour >= '" + startDate + "' AND jour <= '" + endDate + "'"
             + " AND (ptype = " + Schedule.GROUP_SCHEDULE + " OR ptype=" + Schedule.MEMBER_SCHEDULE + ")"
             + " AND action = " + sched.getIdAction();
-    //+ " AND idper = " + plan.getIdPerson()
-    //+ " AND start = '" + plan.getDateStart() + "' AND end ='" + plan.getDateEnd() + "'"
-    //+ " AND place = " + plan.getPlace();
     delete(query, dc);
-    //dc.executeUpdate(query);
   }
 
   /**
-   * Suppression d'un planning.
-   * La suppression n'est possible que si le planning ne comporte plus de plages durant la période choisie.
-   * @param dc
-   * @param action object de planification
-   * @return 0 si le planning est vide, le nombre de plages existantes sinon
+   * Schedule suppression.
+   * 
+   * @param action scheduling link
+   * @param dc dataConnection
+   * 
    * @throws SQLException
    */
-  public static int deleteSchedule(Action action, DataConnection dc) throws SQLException {
-    int rows = containRanges(action, dc);
-    // s'il n'existe aucune plage active pour ce planning
-    if (rows == 0) {
+  public static void deleteSchedule(Action action, DataConnection dc) throws SQLException {
       String query = getDeleteScheduleSelection(action);
       dc.executeUpdate(query);
-    }
-    return rows;
   }
 
   public static Vector<Schedule> find(String where, DataConnection dc) {
@@ -155,7 +155,7 @@ public class ScheduleIO
   }
 
   public static Schedule findId(int id, DataConnection dc) {
-    //String query = "SELECT id,date,dateDebut,dateFin,ptype,idper,action,place,idsuivi from planning where id="+id;
+
     String query = "SELECT " + COLUMNS + " FROM " + TABLE + " p WHERE id = " + id;
     Schedule p = null;
     try {
@@ -180,8 +180,8 @@ public class ScheduleIO
   }
   
   static Vector<Schedule> findClass(Class c, String where, DataConnection dc) {
+    
     Vector<Schedule> v = new Vector<Schedule>();
-    //String query = "SELECT p.id,p.date,p.dateDebut,p.dateFin,p.ptype,p.idper,p.action,p.place,p.idsuivi from planning p "+where;
     String query = "SELECT " + COLUMNS + " FROM " + TABLE + " p " + where;
 
     try {

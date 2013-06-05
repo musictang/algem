@@ -1,7 +1,7 @@
 /*
- * @(#)ListCtrl.java	2.6.a 31/07/12
+ * @(#)ListCtrl.java	2.8.e 22/05/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -35,7 +35,7 @@ import net.algem.util.GemCommand;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.e
  * @since 1.0a 07/07/1999
  */
 public abstract class ListCtrl
@@ -43,7 +43,7 @@ public abstract class ListCtrl
 {
 
   protected JTableModel tableModel;
-  protected JTable jtable;
+  protected JTable table;
   protected GemButton back;
 
   public ListCtrl() {
@@ -61,7 +61,7 @@ public abstract class ListCtrl
 
   @Override
   public void addMouseListener(MouseListener l) {
-    jtable.addMouseListener(l);
+    table.addMouseListener(l);
   }
 
   public void addActionListener(ActionListener l) {
@@ -76,15 +76,15 @@ public abstract class ListCtrl
   }
 
   public int getSelectedIndex() {
-    return jtable.convertRowIndexToModel(jtable.getSelectedRow());
+    return table.convertRowIndexToModel(table.getSelectedRow());
   }
 
   public int getIdFromIndex(int i) {
-    return tableModel.getIdFromIndex(jtable.convertRowIndexToModel(i));
+    return tableModel.getIdFromIndex(table.convertRowIndexToModel(i));
   }
 
   public int getSelectedID() {
-    return tableModel.getIdFromIndex(jtable.convertRowIndexToModel(jtable.getSelectedRow()));
+    return tableModel.getIdFromIndex(table.convertRowIndexToModel(table.getSelectedRow()));
   }
 
   public <E> void loadResult(Vector<E> liste) {
@@ -110,7 +110,7 @@ public abstract class ListCtrl
 
   public void deleteRow(Object item) {
     if (nbLines() > 0) {
-      tableModel.deleteItem(item);
+      tableModel.deleteItem(item);//XXX
     }
   }
 
@@ -131,7 +131,7 @@ public abstract class ListCtrl
    */
   protected void setColumns(int... cols) {
 
-    TableColumnModel cm = jtable.getColumnModel();
+    TableColumnModel cm = table.getColumnModel();
     for (int i = 0; i < cols.length; i++) {
       cm.getColumn(i).setPreferredWidth(cols[i]);
     }
@@ -144,5 +144,10 @@ public abstract class ListCtrl
   private void addSearchComponent() {
     back = new GemButton(GemCommand.NEW_SEARCH_CMD);
     add(back, BorderLayout.SOUTH);
+  }
+  
+  @Override
+  public String toString() {
+    return getClass().getName();
   }
 }

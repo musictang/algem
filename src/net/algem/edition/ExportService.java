@@ -1,5 +1,5 @@
 /*
- * @(#)ExportService.java 2.7.a 30/11/12
+ * @(#)ExportService.java 2.8.h 03/06/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -32,6 +32,7 @@ import net.algem.contact.*;
 import net.algem.contact.member.MemberIO;
 import net.algem.course.ModuleIO;
 import net.algem.enrolment.CourseOrderIO;
+import net.algem.enrolment.ModuleOrderIO;
 import net.algem.enrolment.OrderIO;
 import net.algem.group.GroupIO;
 import net.algem.planning.*;
@@ -44,7 +45,7 @@ import net.algem.util.model.Model;
 /**
  * Service class for export operations.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.h
  * @since 2.6.d 06/11/2012
  */
 public class ExportService {
@@ -199,7 +200,6 @@ public class ExportService {
          + " AND o.id = c.idcmd"
          + " AND c.datedebut >= '"+ start + "' AND c.datefin <= '" + end + "'"
          + " AND m.idper = i.idper AND i.instrument = " + instrument + " AND i.ptype = " + Instrument.MEMBER
-//         + " AND (m.instrument1 = '" + instrument + "' OR e.instrument2 = '" + instrument + "')"
          + " AND m.idper = p.id"
          + " ORDER BY p.nom, p.prenom";
   }
@@ -228,14 +228,16 @@ public class ExportService {
             + " AND a.archive = false";
     
     ResultSet rs = dc.executeQuery(query.toString());
+    
     Address a = new Address();
-    while(rs.next()) {
-      
+    
+    while(rs.next()) {     
       a.setAdr1(rs.getString(1));
       a.setAdr2(rs.getString(2));
       a.setCdp(rs.getString(3));
       a.setCity(rs.getString(4));
     }
+    
     return a;
 
   }
@@ -279,7 +281,7 @@ public class ExportService {
   }
 
   String getMusicianByInstrument(int instrument, Date start, Date end) {
-    String query = "SELECT DISTINCT c.id, c.nom, c.prenom"
+    String query = "SELECT DISTINCT p.id, p.nom, p.prenom"
             + " FROM " 
             + PersonIO.TABLE + " p, " 
             + ScheduleIO.TABLE + " s, "
@@ -288,11 +290,13 @@ public class ExportService {
             + InstrumentIO.PERSON_INSTRUMENT_TABLE + " i"
             + " WHERE s.jour >= '" + start+"' AND s.jour <= '"+end+"'"
             + " AND s.ptype = "+ Schedule.GROUP_SCHEDULE
-            + " AND s.idper = g.id AND g.id = d.id AND d.musicien = p.id";
+            + " AND s.idper = g.id AND g.id = d.id AND d.musicien = p.id"
+            + " AND d.musicien = i.idper AND i.ptype = " + Instrument.MUSICIAN;
     if (instrument > 0) {
-      query += " AND d.musicien = i.idper AND i.ptype = " + Instrument.MUSICIAN + " AND i.instrument = "+ instrument;
-    }
-    query += " ORDER by nom, prenom";
+      query += " AND i.instrument = "+ instrument;
+    } 
+    query += " ORDER by p.nom, p.prenom";
+
     return query;
   }
   
@@ -314,9 +318,13 @@ public class ExportService {
   
   public boolean isPro(int action, int idper) throws SQLException {
     String query = "SELECT m.code FROM "
-            + ModuleIO.TABLE + " AS m, " + CourseOrderIO.TABLE + " AS c, " + OrderIO.TABLE + " AS o"
-            + " WHERE o.adh = " + idper + " AND o.id = c.idcmd AND c.idaction = " + action + " AND c.module = m.id";
-    
+            + ModuleIO.TABLE + " AS m, " + CourseOrderIO.TABLE + " AS c, " + OrderIO.TABLE + " AS o,"
+            + ModuleOrderIO.TABLE + " AS mo"
+            + " WHERE o.adh = " + idper
+            + " AND o.id = c.idcmd AND c.idaction = " + action
+            + " AND c.module = mo.id"
+            + " AND mo.module = m.id";
+
     ResultSet rs = dc.executeQuery(query);
     if (rs.next()) {
       return rs.getString(1).startsWith("P");

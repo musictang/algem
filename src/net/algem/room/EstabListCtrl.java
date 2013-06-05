@@ -1,7 +1,7 @@
 /*
- * @(#)EstabListCtrl.java	2.6.a 24/09/12
+ * @(#)EstabListCtrl.java	2.8.e 22/05/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -25,6 +25,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.border.BevelBorder;
 import javax.swing.table.TableColumnModel;
+import net.algem.util.event.GemEvent;
+import net.algem.util.event.GemEventListener;
 import net.algem.util.ui.ListCtrl;
 
 /**
@@ -32,11 +34,12 @@ import net.algem.util.ui.ListCtrl;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.d
  */
 
 public class EstabListCtrl
 	extends ListCtrl
+    implements GemEventListener
 {
 
 	public EstabListCtrl()
@@ -44,17 +47,32 @@ public class EstabListCtrl
 	{
 		tableModel = new EstabTableModel();
 
-		jtable = new JTable(tableModel);
-        jtable.setAutoCreateRowSorter(true);        
+		table = new JTable(tableModel);
+        table.setAutoCreateRowSorter(true);        
 
-		TableColumnModel cm = jtable.getColumnModel();
+		TableColumnModel cm = table.getColumnModel();
 		cm.getColumn(0).setPreferredWidth(40);
 		cm.getColumn(1).setPreferredWidth(150);
 		cm.getColumn(2).setPreferredWidth(200);
 
-		JScrollPane p = new JScrollPane(jtable);
+		JScrollPane p = new JScrollPane(table);
 		p.setBorder(new BevelBorder(BevelBorder.LOWERED));
 
 		add("Center",p);
 	}
+
+  @Override
+  public void postEvent(GemEvent _evt) {
+    if (_evt.getType() == GemEvent.ESTABLISHMENT) {
+      Establishment e = (Establishment) _evt.getObject();
+      if (e != null && e.getPerson() != null) {
+        if (_evt.getOperation() == GemEvent.MODIFICATION) {   
+          updateRow(e.getPerson());
+        } else if (_evt.getOperation() == GemEvent.SUPPRESSION) {
+          deleteRow(e.getPerson());
+        }
+      }
+    }
+  }
+
 }

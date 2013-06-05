@@ -1,7 +1,7 @@
 /*
- * @(#)ModifPlanTeacherView.java	2.7.h 21/02/13
+ * @(#)ModifPlanTeacherView.java	2.8.h 03/06/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -22,27 +22,27 @@ package net.algem.planning.editing;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.sql.SQLException;
+import java.util.Vector;
 import javax.swing.JCheckBox;
 import net.algem.contact.teacher.*;
 import net.algem.course.Course;
-import net.algem.planning.CourseSchedule;
-import net.algem.planning.Hour;
-import net.algem.planning.HourRangePanel;
-import net.algem.planning.ScheduleObject;
+import net.algem.planning.*;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
+import net.algem.util.GemLogger;
+import net.algem.util.MessageUtil;
 import net.algem.util.model.Model;
-import net.algem.util.ui.GemChoice;
-import net.algem.util.ui.GemField;
-import net.algem.util.ui.GemLabel;
-import net.algem.util.ui.GridBagHelper;
+import net.algem.util.ui.*;
 
 /**
  * Teacher modification view.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.h
+ * @version 2.8.h
  */
 public class ModifPlanTeacherView
         extends ModifPlanView
@@ -55,14 +55,23 @@ public class ModifPlanTeacherView
   private SubstituteTeacherChoice substitute;
   private HourRangePanel hourRange;
   private JCheckBox replacement;
+  private PlanningService service;
+  private ScheduleObject orig;
 
-  public ModifPlanTeacherView(DataCache dataCache, SubstituteTeacherList substitutes) {
+  public ModifPlanTeacherView(DataCache dataCache, SubstituteTeacherList substitutes, PlanningService service) {
     super(dataCache);
+    this.service = service;
     before = new GemField(20);
     before.setEditable(false);
     after = new TeacherChoice(dataCache.getList(Model.Teacher));
     
     hourRange = new HourRangePanel();
+    hourRange.addMouseListener(new MouseAdapter() {
+      @Override
+      public void mouseExited(MouseEvent e) {
+        checkRange();
+      }
+    });
     checkAll = new JCheckBox(BundleUtil.getLabel("Teacher.all.label"));
     checkAll.addActionListener(this);
 //    gb.add(new GemLabel(BundleUtil.getLabel("Hour.From.label")), 0, 2, 1, 1, GridBagHelper.WEST);
@@ -116,6 +125,7 @@ public class ModifPlanTeacherView
   }
   
   void setTime(ScheduleObject s) {
+    orig = s;
     hourRange.setStart(s.getStart());
     hourRange.setEnd(s.getEnd());
     if (s instanceof CourseSchedule &&  ((Course) s.getActivity()).isCollective()) {
@@ -157,5 +167,33 @@ public class ModifPlanTeacherView
       return replacement.isSelected();
     }
     return false;
+  }
+  
+  /**
+   * Checks range on the fly.
+   */
+  void checkRange() {
+    if(!hourRange.isEditable()) {
+      return;
+    }
+    
+    try {
+      ScheduleObject range = new CourseSchedule();
+      range.setStart(hourRange.getStart());
+      range.setEnd(hourRange.getEnd());
+      Vector<ScheduleTestConflict> v = service.checkRange(orig, range);
+      if (v != null && v.size() > 0) {
+        MessagePopup.warning(this, MessageUtil.getMessage("invalid.time.slot"));
+        resetRange();
+      } 
+    } catch (SQLException ex) {
+      GemLogger.log(ex.getMessage());
+      resetRange();
+    }
+  }
+  
+  private void resetRange() {
+    hourRange.setStart(orig.getStart());
+    hourRange.setEnd(orig.getEnd());
   }
 }

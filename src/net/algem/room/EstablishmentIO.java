@@ -1,5 +1,5 @@
 /*
- * @(#)EstablishmentIO.java	2.8.a 28/03/13
+ * @(#)EstablishmentIO.java	2.8.f 23/05/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -24,10 +24,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.Vector;
+import net.algem.bank.BicIO;
 import net.algem.contact.*;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
+import net.algem.util.MessageUtil;
 import net.algem.util.model.Model;
 import net.algem.util.model.TableIO;
 
@@ -36,7 +38,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.f
  */
 public class EstablishmentIO
         extends TableIO
@@ -168,13 +170,30 @@ public class EstablishmentIO
     }
   }
 
-  public static void delete(DataCache dc) throws SQLException {
+  public static void delete(Establishment e, DataConnection dc) throws EstablishmentException {
+
+    String query = "SELECT etablissement FROM " + RoomIO.TABLE + " WHERE etablissement = " + e.getId();
+    try {
+      ResultSet rs = dc.executeQuery(query);
+      if (rs.next()) {
+        throw new EstablishmentException(MessageUtil.getMessage("establishment.delete.exception"));
+      }
+
+      new PersonIO(dc).delete(e.getPerson());
+      AddressIO.delete(e.getId(), dc);
+      TeleIO.delete(e.getId(), dc);
+      EmailIO.delete(e.getId(), dc);
+      WebSiteIO.delete(e.getId(), Person.PERSON, dc);
+      BicIO.delete(e.getId(), dc);
+    } catch (SQLException sqe) {
+      throw new EstablishmentException("SQL : " + sqe.getMessage());
+    }
   }
 
   public static Establishment findId(int n, DataConnection dc) throws SQLException {
-    String query;
-    query = "WHERE id=" + n;
-    Vector<Establishment> v = find(query, dc);
+
+    String where = " AND id = " + n;
+    Vector<Establishment> v = find(where, dc);
     if (v.size() > 0) {
       return v.elementAt(0);
     }
@@ -184,11 +203,9 @@ public class EstablishmentIO
   public static Vector<Establishment> find(String where, DataConnection dc) throws SQLException {
 
     Vector<Establishment> v = new Vector<Establishment>();
-    String query = "SELECT " + PersonIO.COLUMNS
-            + " FROM " + PersonIO.TABLE
+    String query = "SELECT " + PersonIO.COLUMNS + " FROM " + PersonIO.TABLE
             + " WHERE ptype = " + Person.ESTABLISHMENT;
-    query += " " + where;
-    //query += " " + where + " ORDER BY id";
+    query += where;
 
     ResultSet rs = dc.executeQuery(query);
     Vector<Person> pl = new Vector<Person>();

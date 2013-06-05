@@ -42,10 +42,10 @@ public class PersonFileGroupListCtrl
     setLayout(new BorderLayout());
     tableModel = new PersonFileMusicianTableModel();
 
-    jtable = new JTable(tableModel);
-    jtable.setAutoCreateRowSorter(true);
+    table = new JTable(tableModel);
+    table.setAutoCreateRowSorter(true);
 
-    JScrollPane p = new JScrollPane(jtable);
+    JScrollPane p = new JScrollPane(table);
     add(p, BorderLayout.NORTH);
   }
 
@@ -54,7 +54,7 @@ public class PersonFileGroupListCtrl
    * @return un groupe
    */
   public Group getGroup() {
-    Musician m = ((PersonFileMusicianTableModel) tableModel).getMusicien(jtable.getSelectedRow());
+    Musician m = ((PersonFileMusicianTableModel) tableModel).getMusicien(table.getSelectedRow());
     return m.getGroup();
   }
 }

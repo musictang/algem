@@ -1,5 +1,5 @@
 /*
- * @(#)PlanModifCtrl.java	2.8.a 13/05/13
+ * @(#)PlanModifCtrl.java	2.8.h 03/06/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -44,7 +44,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.h
  * @since 1.0b 05/07/2002 lien salle et groupe
  */
 public class PlanModifCtrl
@@ -273,14 +273,17 @@ public class PlanModifCtrl
 
   }
 
-  /** Only for members and groups rehearsals ??? */
+  /** 
+   * Changes time schedule start.
+   * Only for members and groups rehearsals ???
+   */
   private void changeHour(DateFr start, DateFr end, Hour hStart, Hour hEnd) throws Exception {
-    String query = "UPDATE planning SET debut = '" + hStart + "',fin='" + hEnd + "'"
-            + " WHERE action=" + plan.getIdAction()
+    String query = "UPDATE planning SET debut = '" + hStart + "', fin='" + hEnd + "'"
+            + " WHERE action = " + plan.getIdAction()
             + " AND jour >= '" + start + "' AND jour <= '" + end + "'"
-            + " AND ptype=" + plan.getType()
-            + " AND debut='" + plan.getStart() + "' AND fin='" + plan.getEnd() + "'"
-            + " AND lieux=" + plan.getPlace() + " AND idper=" + plan.getIdPerson();
+            + " AND ptype = " + plan.getType()
+            + " AND debut = '" + plan.getStart() + "' AND fin = '" + plan.getEnd() + "'"
+            + " AND lieux = " + plan.getPlace() + " AND idper = " + plan.getIdPerson();
     if (dc.executeUpdate(query) < 1) {
       throw new Exception("PLANNING UPDATE=0 " + query);
     }
@@ -318,6 +321,7 @@ public class PlanModifCtrl
 
   /**
    * Gets the maximum number of places available for this {@code room}.
+   * 
    * @param np maximum number of places of the current action
    * @param room room instance
    * @return a short number
@@ -414,7 +418,7 @@ public class PlanModifCtrl
     TeacherService teacherService = new TeacherService(dc);
 
     SubstituteTeacherList substitutes = new SubstituteTeacherList(teacherService.getSubstitutes(plan));
-    ModifPlanTeacherDlg dlg = new ModifPlanTeacherDlg(desktop, plan, substitutes);
+    ModifPlanTeacherDlg dlg = new ModifPlanTeacherDlg(desktop, substitutes, service);
 
     dlg.setDate(cal.getTime());
     dlg.set(plan);
@@ -447,7 +451,7 @@ public class PlanModifCtrl
   }
 
   private void dialogCopyCourse() {
-    PostponeCourseDlg dlg = new PostponeCourseDlg(desktop, plan, "Schedule.course.copy.title");
+    PostponeCourseDlg dlg = new PostponeCourseDlg(desktop, plan, service, "Schedule.course.copy.title");
     dlg.entry();
     if (!dlg.isValidate()) {
       return;
@@ -482,7 +486,7 @@ public class PlanModifCtrl
    *
    */
   private void dialogPostponeCourse() {
-    PostponeCourseDlg dlg = new PostponeCourseDlg(desktop, plan, "Schedule.course.shifting.title");
+    PostponeCourseDlg dlg = new PostponeCourseDlg(desktop, plan, service, "Schedule.course.shifting.title");
     dlg.entry();
     if (!dlg.isValidate()) {
       return;
@@ -537,7 +541,7 @@ public class PlanModifCtrl
     }
 
     // teacher conflict
-    v = service.testTeacherForSchedulePostpone(plan, newPlan.getDate(), newPlan.getStart(), newPlan.getEnd());
+    v = service.testTeacherForSchedulePostpone(plan, newPlan);
     if (v.size() > 0) {
       ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), BundleUtil.getLabel("Teacher.conflict.label"));
       for (int i = 0; i < v.size(); i++) {
@@ -546,19 +550,8 @@ public class PlanModifCtrl
       cfd.show();
       return false;
     }
-    // range conflict
-    ScheduleObject part = new CourseSchedule();
-    part.setStart(range[0]);
-    part.setEnd(range[1]);
-    v = service.testRange(plan, part);
-    if (v.size() > 0) {
-      ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), BundleUtil.getLabel("Member.conflict.label"));
-      for (int i = 0; i < v.size(); i++) {
-        cfd.addConflict(v.elementAt(i));
-      }
-      cfd.show();
-      return false;
-    }
+    
+    // TODO member conflict
     
     return true;
   }
@@ -590,6 +583,9 @@ public class PlanModifCtrl
   }
 
 
+  /**
+   * @deprecated 
+   */
   private void dialogMoveCourse() {
     updatePlanCtrl = new UpdateCoursePlanCtrl(desktop, plan);
     updatePlanCtrl.init();
@@ -711,18 +707,29 @@ public class PlanModifCtrl
     }
   }
 
+  /**
+   * Deletes some schedules with common {@code action}.
+   * @param action scheduling link
+   * @throws PlanningException 
+   */
   private void deletePlanning(Action action) throws PlanningException {
-    int n = service.deletePlanning(action);
-    if (n > 0) {
-      String v = MessageUtil.getMessage("range.delete.warning", n);
-      String plages = (n == 1) ? v : MessageUtil.getMessage("ranges.delete.warning", n);
-      MessagePopup.information(desktop.getFrame(), MessageUtil.getMessage("delete.exception") + plages);
-    } else {
+    try {
+      service.deletePlanning(action);
       desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));
+    } catch(PlanningException pe) {
+      GemLogger.log(pe.getMessage());
     }
 
   }
 
+  /**
+   * 
+   * @param a
+   * @param plan
+   * @param jour
+   * @return 
+   * @deprecated 
+   */
   private Action getActionFrom(Action a, ScheduleObject plan, int jour) {
     Action action = new Action();
     action.setDay(jour);

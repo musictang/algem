@@ -1,5 +1,5 @@
 /*
- * @(#)PlanningService.java	2.8.d 16/05/13
+ * @(#)PlanningService.java	2.8.g 31/05/13
  *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -29,17 +29,15 @@ import net.algem.course.CourseIO;
 import net.algem.enrolment.CourseOrder;
 import net.algem.enrolment.CourseOrderIO;
 import net.algem.room.Room;
-import net.algem.util.DataCache;
-import net.algem.util.DataConnection;
-import net.algem.util.GemLogger;
-import net.algem.util.MessageUtil;
+import net.algem.util.*;
 import net.algem.util.model.Model;
+import net.algem.util.ui.MessagePopup;
 
 /**
  * Service class for planning.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.d
+ * @version 2.8.g
  * @since 2.4.a 07/05/12
  */
 public class PlanningService
@@ -135,30 +133,30 @@ public class PlanningService
    * @throws PlanningException
    */
   public void replanify(Action action, ScheduleObject plan) throws PlanningException {
-    try {
-      dc.setAutoCommit(false);
-      int r = ScheduleIO.deleteSchedule(action, dc);
-      if (r > 0) {// des plages existent encore pour ce planning
-        throw new PlanningException(MessageUtil.getMessage("ranges.delete.warning", new Object[]{r}));
-      }
-
-      String query = null;
-
-      for (DateFr d : action.getDates()) {
-        query = "INSERT INTO planning VALUES (DEFAULT"
-                + ",'" + d.toString()
-                + "','" + action.getHourStart() + "','" + action.getHourEnd() + "',"
-                + plan.getType() + ","// on ne change pas le type
-                + action.getTeacher() + ","
-                + action.getId() + ","
-                + action.getRoom() + ",0)";
-        dc.executeUpdate(query);
-      }
-      dc.commit();
-    } catch (SQLException ex) {
-      dc.rollback();
-      throw new PlanningException(ex.getMessage());
-    }
+//    try {
+//      dc.setAutoCommit(false);
+//      int r = ScheduleIO.deleteSchedule(action, dc);
+//      if (r > 0) {// des plages existent encore pour ce planning
+//        throw new PlanningException(MessageUtil.getMessage("ranges.delete.warning", new Object[]{r}));
+//      }
+//
+//      String query = null;
+//
+//      for (DateFr d : action.getDates()) {
+//        query = "INSERT INTO planning VALUES (DEFAULT"
+//                + ",'" + d.toString()
+//                + "','" + action.getHourStart() + "','" + action.getHourEnd() + "',"
+//                + plan.getType() + ","// on ne change pas le type
+//                + action.getTeacher() + ","
+//                + action.getId() + ","
+//                + action.getRoom() + ",0)";
+//        dc.executeUpdate(query);
+//      }
+//      dc.commit();
+//    } catch (SQLException ex) {
+//      dc.rollback();
+//      throw new PlanningException(ex.getMessage());
+//    }
   }
 
   /**
@@ -169,23 +167,27 @@ public class PlanningService
    * @return un nombre de plages
    * @throws PlanningException
    */
-  public int deletePlanning(Action action) throws PlanningException {
-    int r = 0;
+  public void deletePlanning(Action action) throws PlanningException {
+
     try {
-      r = ScheduleIO.deleteSchedule(action, dc);
+      int r = ScheduleIO.containRanges(action, dc);
       if (r == 0) {
         // on vérifie que l'action n'est plus référencée par un planning
+        ScheduleIO.deleteSchedule(action, dc);
         Vector<Schedule> vp = ScheduleIO.find("WHERE action = " + action.getId(), dc);
         if (vp == null || vp.isEmpty()) {
           actionIO.delete(action.getId());// on supprime l'action sinon
         }
+      } else {
+        if (MessagePopup.confirm(null, MessageUtil.getMessage("schedule.suppression.warning", r))) {
+          ScheduleIO.deleteSchedule(action, dc);
+          ScheduleRangeIO.delete(action, dc);
+        } else throw new PlanningException(GemCommand.CANCEL_CMD); 
       }
 
     } catch (SQLException ex) {
       throw new PlanningException(ex.getMessage());
-    } finally {
-      return r;
-    }
+    } 
   }
 
   /**
@@ -303,10 +305,21 @@ public class PlanningService
   }
 
   
-  public Vector<ScheduleTestConflict> testRange(ScheduleObject orig, ScheduleObject range) 
+//  public Vector<ScheduleTestConflict> testRange(ScheduleObject orig, ScheduleObject range) 
+//          throws SQLException {
+//    return conflictService.getRangeConflicts(orig, range, orig.getDate(), orig.getDate());
+//  }
+//  
+//  public Vector<ScheduleTestConflict> testCollectiveRange(ScheduleObject dest, ScheduleObject range) 
+//          throws SQLException {
+//    return conflictService.getRangeConflicts(dest, range, dest.getDate(), dest.getDate());
+//  }
+  
+  public Vector<ScheduleTestConflict> checkRange(ScheduleObject orig, ScheduleObject range) 
           throws SQLException {
     return conflictService.getRangeConflicts(orig, range, orig.getDate(), orig.getDate());
   }
+  
   /**
    * Gets a schedule object with new teacher id and possibly new beginning and end time.
    *
@@ -330,7 +343,7 @@ public class PlanningService
    * @param plan
    * @param newPlan
    * 
-   * @throws PlanningException si erreur SQL
+   * @throws PlanningException if sql exception
    */
   public void postPoneCourse(ScheduleObject plan, ScheduleObject newPlan) throws PlanningException {
     // probleme avec les heures de end = 24:00 l'update les transforme en 00:00 / erreurs futures dans le décompte des heures
@@ -844,8 +857,9 @@ public class PlanningService
   
   public Vector<ScheduleTestConflict> testRoomForSchedulePostpone(ScheduleObject plan, ScheduleObject newPlan)
           throws SQLException {
-    return conflictService.testRoomConflict(newPlan.getPlace(), plan.getId(), newPlan.getDate(), newPlan.getStart(), newPlan.getEnd());
-  }
+    return conflictService.testRoomConflict(plan.getId(), newPlan);
+    //return conflictService.testRoomConflict(newPlan.getPlace(), plan.getId(), newPlan.getDate(), newPlan.getStart(), newPlan.getEnd());
+  } 
 
   public Vector<ScheduleTestConflict> testRoomForScheduleLengthModif(ScheduleObject plan, Hour hStart, Hour hEnd, DateFr lastDate)
           throws SQLException {
@@ -857,9 +871,9 @@ public class PlanningService
     return conflictService.testTeacherConflict(plan.getIdPerson(), newPlan);
   }
   
-  public Vector<ScheduleTestConflict> testTeacherForSchedulePostpone(ScheduleObject plan, DateFr day, Hour hStart, Hour hEnd)
+  public Vector<ScheduleTestConflict> testTeacherForSchedulePostpone(ScheduleObject plan, ScheduleObject newPlan)
           throws SQLException {
-    return conflictService.testTeacherConflict(plan, day, hStart, hEnd);
+    return conflictService.testTeacherConflict(plan, newPlan.getDate(), newPlan.getStart(), newPlan.getEnd());
   }
 
   public Vector<ScheduleTestConflict> testChangeTeacher(ScheduleObject orig, ScheduleObject range, DateFr dateStart, DateFr dateEnd)

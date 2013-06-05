@@ -1,5 +1,5 @@
 /*
- * @(#)DataCache.java	2.8.a 09/04/13
+ * @(#)DataCache.java	2.8.f 24/05/13
  *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -63,7 +63,7 @@ import net.algem.util.model.Model;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.f
  * @since 1.0b 03/09/2001
  */
 public class DataCache
@@ -115,7 +115,7 @@ public class DataCache
   private static GemList<Vat> VAT_LIST;
   private static GemList<GemParam> COURSE_CODE_LIST;
    
-  private Vector<Instrument> instruments;//TODO manage list
+  private static Vector<Instrument> instruments;//TODO manage list
   private Vector<CategoryOccup> occupCat;
   private Vector<Param> vacancyCat;
   private Vector<Param> webSiteCat;
@@ -379,6 +379,13 @@ public class DataCache
       case School:
         Param school = (Param) SCHOOL_LIST.getItem(id);
         return school != null ? school : new Param("0", "");
+      case Instrument:
+        for (Instrument i : instruments) {
+          if (i.getId() == id) {
+            return i;
+          }
+        }
+        return null;
       default:
         return null;
     }

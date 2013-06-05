@@ -39,15 +39,15 @@ public class BankListCtrl
   public BankListCtrl() {
     tableModel = new BankTableModel();
 
-    jtable = new JTable(tableModel);
-    jtable.setAutoCreateRowSorter(true);
+    table = new JTable(tableModel);
+    table.setAutoCreateRowSorter(true);
 
-    TableColumnModel cm = jtable.getColumnModel();
+    TableColumnModel cm = table.getColumnModel();
     cm.getColumn(0).setPreferredWidth(50);
     cm.getColumn(1).setPreferredWidth(250);
     cm.getColumn(2).setPreferredWidth(100);
 
-    JScrollPane p = new JScrollPane(jtable);
+    JScrollPane p = new JScrollPane(table);
     p.setBorder(new BevelBorder(BevelBorder.LOWERED));
 
     add("Center", p);

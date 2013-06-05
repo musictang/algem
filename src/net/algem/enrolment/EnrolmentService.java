@@ -1,5 +1,5 @@
 /*
- * @(#)EnrolmentService.java	2.8.a 13/05/13
+ * @(#)EnrolmentService.java	2.8.g 31/05/13
  *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -45,7 +45,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.g
  * @since 2.4.a 20/04/12
  */
 public class EnrolmentService
@@ -272,21 +272,21 @@ public class EnrolmentService
   }
 
   /**
-   * Specifies if member {@code a} is already scheduled for {@code p}.
+   * Specifies if member {@code a} is already scheduled for {@code p} between the dates of enrolment.
    *
    * @param m member id
    * @param p schedule
    * @return true if scheduled
    * @throws EnrolmentException
    */
-  public boolean isOnRange(int m, Schedule p) throws EnrolmentException {
+  public boolean isOnRange(int m, Schedule p, CourseOrder courseOrder) throws EnrolmentException {
 
     try {
-//      String where = "pg WHERE pg.adherent = " + a + " AND pg.idplanning = " + p.getId();
       String where = "pg WHERE pg.adherent = " + m + " AND pg.idplanning IN("
               + "SELECT id FROM " + ScheduleIO.TABLE 
               + " WHERE action = " + p.getIdAction()
-              + ")";
+              + " AND jour >= '" + courseOrder.getDateStart() + "' AND jour <= '" + courseOrder.getDateEnd()
+              + "')";
 
       Vector<ScheduleRange> vp = ScheduleRangeIO.find(where, dc);
       if (vp.size() > 0) {

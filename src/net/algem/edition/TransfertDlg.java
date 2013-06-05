@@ -84,7 +84,7 @@ public abstract class TransfertDlg
     if (evt.getSource() == btCancel) {
       close();
     } else if (evt.getSource() == btValidation) {
-      transfert();
+      transfer();
       close();
     } else if (evt.getSource() == chooser) {
       JFileChooser fileChooser = ExportDlg.getFileChooser(filepath.getText());
@@ -101,5 +101,5 @@ public abstract class TransfertDlg
     dispose();
   }
 
-  abstract protected void transfert();
+  abstract protected void transfer();
 }

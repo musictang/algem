@@ -1,5 +1,5 @@
 /*
- * @(#)JTableModel.java	2.8.a 15/04/13
+ * @(#)JTableModel.java	2.8.f 24/05/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -27,7 +27,7 @@ import javax.swing.table.AbstractTableModel;
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.f
  * @since 1.0a 07/07/1999
  */
 public abstract class JTableModel<T extends Object>
@@ -52,7 +52,9 @@ public abstract class JTableModel<T extends Object>
   }
 
   public void deleteItem(int idx) {
-    tuples.remove(idx);
+    if (idx >= 0 && idx < tuples.size()) {
+      tuples.remove(idx);
+    }
     fireTableRowsDeleted(idx, idx);
   }
 

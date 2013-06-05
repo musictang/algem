@@ -57,14 +57,16 @@ public class CollectiveFollowUpDlg
   private GemButton btCancel;
   private PlanningService service;
 
-  public CollectiveFollowUpDlg(GemDesktop desktop, PlanningService service, ScheduleObject plan, String cours)
-          throws SQLException {
+  public CollectiveFollowUpDlg(GemDesktop desktop, PlanningService service, ScheduleObject plan, String courseTitle)
+          throws SQLException 
+  {
+    
     dc = desktop.getDataCache();
     this.service = service;
     this.sched = plan;
 
     dlg = new JDialog(desktop.getFrame(), true);
-    title = new GemLabel("Suivi cours : " + cours);
+    title = new GemLabel("Suivi cours : " + courseTitle);
     pv = new FollowUpView(this.sched.getDate(), this.sched.getStart(), this.sched.getEnd());
 
     if (this.sched.getNote() != 0) {

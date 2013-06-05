@@ -1,7 +1,7 @@
 /*
- * @(#)AccountingService.java	2.6.a 02/08/2012
+ * @(#)AccountingService.java	2.8.f 24/05/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -33,7 +33,7 @@ import net.algem.util.DataConnection;
  * Service class for accounting.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.f
  * @since 2.4.a 21/05/12
  */
 public class AccountingService {
@@ -44,16 +44,22 @@ public class AccountingService {
     this.dc = dc;
   }
 
-  public Vector<PlanningLib> getPlanningLib(String start, String end, int ecole) throws SQLException {
-    String where = "WHERE jour >= '" + start + "' AND jour <= '" + end + "' AND ecole=" + ecole
-              + " ORDER BY nomprof, jour, debut, coursid";
-      return PlanningLibIO.find(where, dc);
+  public Vector<PlanningLib> getPlanningLib(String start, String end, int school, boolean catchup) throws SQLException {
+    String where = "WHERE jour >= '" + start + "' AND jour <= '" + end + "' AND ecole = " + school;
+    if(!catchup) {
+      where += " AND salle !~* 'rattrap'";
+    }
+    where  += " ORDER BY nomprof, jour, debut, coursid";
+    return PlanningLibIO.find(where, dc);
   }
 
-  public Vector<PlanningLib> getPlanningLib(String start, String end, int school, int teacherId) throws SQLException {
-    String where = "WHERE jour >= '" + start + "' AND jour <= '" + end + "' AND ecole=" + school + " AND profid = " + teacherId
-              + " ORDER BY jour, debut, coursid";
-      return PlanningLibIO.find(where, dc);
+  public Vector<PlanningLib> getPlanningLib(String start, String end, int school, int teacherId, boolean catchup) throws SQLException {
+    String where = "WHERE jour >= '" + start + "' AND jour <= '" + end + "' AND ecole =" + school + " AND profid = " + teacherId;
+    if(!catchup) {
+      where += " AND salle !~* 'rattrap'";
+    }
+    where += " ORDER BY jour, debut, coursid";
+    return PlanningLibIO.find(where, dc);
   }
 
   public Vector<ScheduleRange> getCourseScheduleRange(int idplanning) throws SQLException {

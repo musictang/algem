@@ -1,5 +1,5 @@
 /*
- * @(#)ModifPlanTeacherDlg.java	2.8.a 26/04/13
+ * @(#)ModifPlanTeacherDlg.java	2.8.h 03/06/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -26,6 +26,7 @@ import javax.swing.JOptionPane;
 import net.algem.contact.teacher.SubstituteTeacherList;
 import net.algem.planning.CourseSchedule;
 import net.algem.planning.DateFr;
+import net.algem.planning.PlanningService;
 import net.algem.planning.ScheduleObject;
 import net.algem.util.BundleUtil;
 import net.algem.util.MessageUtil;
@@ -36,7 +37,7 @@ import net.algem.util.module.GemDesktop;
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.h
  * @since 1.0a 07/07/1999
  */
 public class ModifPlanTeacherDlg
@@ -46,10 +47,10 @@ public class ModifPlanTeacherDlg
   private int origTeacher;
   private ModifPlanTeacherView view;
 
-  public ModifPlanTeacherDlg(GemDesktop desktop, ScheduleObject plan, SubstituteTeacherList substitutes)  {
+  public ModifPlanTeacherDlg(GemDesktop desktop, SubstituteTeacherList substitutes, PlanningService service)  {
     super(desktop.getFrame());
     
-    view = new ModifPlanTeacherView(desktop.getDataCache(), substitutes);
+    view = new ModifPlanTeacherView(desktop.getDataCache(), substitutes, service);
     validation = false;
 
     dlg = new JDialog(desktop.getFrame(), true);

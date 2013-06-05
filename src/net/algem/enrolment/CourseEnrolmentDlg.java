@@ -1,5 +1,5 @@
 /*
- * @(#)CourseEnrolmentDlg.java	2.8.a 13/05/13
+ * @(#)CourseEnrolmentDlg.java	2.8.g 31/05/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -59,7 +59,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.g
  * @since 1.0a 07/07/1999
  */
 public class CourseEnrolmentDlg
@@ -524,7 +524,7 @@ public class CourseEnrolmentDlg
 
       //vérification adhérent déjà inscrit à un atelier
       if (Course.ATP_CODE == code || course.isCollective()) {
-        if (service.isOnRange(memberId, pj.getPlanning())) {
+        if (service.isOnRange(memberId, pj.getPlanning(), courseOrder)) {
           throw new EnrolmentException(MessageUtil.getMessage("member.enrolment.existing.range"));
         }
       }

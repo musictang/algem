@@ -1,5 +1,5 @@
 /*
- * @(#)ExportMemberRTF.java 2.7.a 22/11/12
+ * @(#)ExportMemberRTF.java 2.8.f 23/05/13
  * 
  * Copyright (c) 2001-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -51,7 +51,7 @@ import net.algem.util.module.GemDesktop;
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.f
  * @since 1.0b 05/03/2002
  */
 public class ExportMemberRTF
@@ -195,7 +195,7 @@ public class ExportMemberRTF
         try {
           ModuleOrder cm = enu.nextElement();
           out.println("\\par \\tab Module " + cm.getTitle());
-          Vector<CourseOrder> v = enrolmentService.getCourseOrder(i.getId(), cm.getModule());
+          Vector<CourseOrder> v = enrolmentService.getCourseOrder(i.getId(), cm.getId());
           for (CourseOrder cc : v) {
             cc.setDay(enrolmentService.getCourseDayMember(cc.getAction(), cc.getDateStart(), i.getMember()));
             courseOrderList.addElement(cc);

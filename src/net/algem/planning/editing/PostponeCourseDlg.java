@@ -1,5 +1,5 @@
 /*
- * @(#)PostponeCourseDlg.java	2.8.a 26/04/13
+ * @(#)PostponeCourseDlg.java	2.8.g 31/05/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -26,6 +26,7 @@ import javax.swing.JOptionPane;
 import net.algem.course.Course;
 import net.algem.planning.CourseSchedule;
 import net.algem.planning.Hour;
+import net.algem.planning.PlanningService;
 import net.algem.planning.ScheduleObject;
 import net.algem.room.Room;
 import net.algem.room.RoomIO;
@@ -38,7 +39,7 @@ import net.algem.util.module.GemDesktop;
  * Dialog for course time modification.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.g
  *
  */
 public class PostponeCourseDlg
@@ -48,10 +49,10 @@ public class PostponeCourseDlg
   private PostponeCourseView pv;
   private ScheduleObject schedule;
 
-  public PostponeCourseDlg(GemDesktop desktop, ScheduleObject _plan, String titleKey) {
+  public PostponeCourseDlg(GemDesktop desktop, ScheduleObject _plan, PlanningService service, String titleKey) {
     super(desktop.getFrame());
     schedule = _plan;
-    pv = new PostponeCourseView(desktop.getDataCache());
+    pv = new PostponeCourseView(desktop.getDataCache().getList(Model.Room), service);
     boolean noRange = titleKey.equals("Schedule.course.copy.title") ||
             (schedule instanceof CourseSchedule && ((Course) schedule.getActivity()).isCollective());
     pv.set(schedule, noRange);
@@ -85,7 +86,7 @@ public class PostponeCourseDlg
       return false;
     }
     
-     if (ns.getEnd().le(ns.getStart())) {
+    if (ns.getEnd().le(ns.getStart())) {
        JOptionPane.showMessageDialog(dlg, MessageUtil.getMessage("hour.range.error"), error, JOptionPane.ERROR_MESSAGE);
       return false;
     }
@@ -119,5 +120,6 @@ public class PostponeCourseDlg
   Hour[] getRange() {
     return new Hour[] {pv.getRange().getStart(), pv.getRange().getEnd()};
   }
+ 
 }
 

@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleRangeIO.java	2.8.a 26/04/13
+ * @(#)ScheduleRangeIO.java	2.8.f 23/05/13
  *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -38,7 +38,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.f
  * @since 1.0a 7/7/1999
  */
 public class ScheduleRangeIO
@@ -92,6 +92,20 @@ public class ScheduleRangeIO
 
 	public static void delete(ScheduleRangeObject p, DataConnection dc) throws SQLException {
 		String query = "DELETE FROM " + TABLE + " WHERE id = " + p.getId();
+		dc.executeUpdate(query);
+	}
+    
+    /**
+     * Suppress ranges by schedule id.
+     * @param scheduleId
+     * @param dc
+     * @throws SQLException 
+     */
+    public static void delete(Action a, DataConnection dc) throws SQLException {
+		String query = "DELETE FROM " + TABLE + " WHERE idplanning IN ("
+                + "SELECT id FROM " + ScheduleIO.TABLE
+                + " WHERE action = " + a.getId()
+                + " AND jour >= '" + a.getDateStart() + "' AND jour <= '" + a.getDateEnd() + "')";
 		dc.executeUpdate(query);
 	}
 
@@ -150,6 +164,24 @@ public class ScheduleRangeIO
 
 		return p;
 	}
+    
+//    p.setId(rs.getInt(1));
+//			p.setScheduleId(rs.getInt(2));
+//			p.setStart(new Hour(rs.getString(3)));
+//			p.setEnd(new Hour(rs.getString(4)));
+//			p.setMember((Person) DataCache.findId(rs.getInt(5), Model.Person));
+//			p.setNote(rs.getInt(6));
+//
+//			p.setIdAction(rs.getInt(7));
+//            p.setAction(pService.getAction(p.getIdAction()));
+//			p.setCourse(pService.getCourseFromAction(p.getIdAction()));
+//			p.setDate(new DateFr(rs.getString(8)));
+//			p.setIdPerson(rs.getInt(9));
+//			p.setTeacher((Person) DataCache.findId(p.getIdPerson(), Model.Teacher));
+//			p.setPlace(rs.getInt(10));
+//			p.setRoom((Room) DataCache.findId(p.getPlace(), Model.Room));
+
+//			p.setFollowUp(rs.getString(11));
 
 	public static Vector<ScheduleRangeObject> findObject(String and, PlanningService service, DataConnection dc) throws SQLException {
 //		DataConnection dc = dataCache.getDataConnection();
@@ -196,25 +228,8 @@ public class ScheduleRangeIO
 
 		ResultSet rs = dc.executeQuery(query);
 		while (rs.next()) {
-			ScheduleRangeObject p = new ScheduleRangeObject();
-			p.setId(rs.getInt(1));
-			p.setScheduleId(rs.getInt(2));
-			p.setStart(new Hour(rs.getString(3)));
-			p.setEnd(new Hour(rs.getString(4)));
-			p.setMember((Person) DataCache.findId(rs.getInt(5), Model.Person));
-			p.setNote(rs.getInt(6));
-
-			p.setIdAction(rs.getInt(7));
-            p.setAction(pService.getAction(p.getIdAction()));
-			p.setCourse(pService.getCourseFromAction(p.getIdAction()));
-			p.setDate(new DateFr(rs.getString(8)));
-			p.setIdPerson(rs.getInt(9));
-			p.setTeacher((Person) DataCache.findId(p.getIdPerson(), Model.Teacher));
-			p.setPlace(rs.getInt(10));
-			p.setRoom((Room) DataCache.findId(p.getPlace(), Model.Room));
-
-			p.setFollowUp(rs.getString(11));
-
+            ScheduleRangeObject p = rangeObjectFactory(rs, pService);
+            p.setFollowUp(rs.getString(11));
 			v.addElement(p);
 		}
 		rs.close();
@@ -223,13 +238,14 @@ public class ScheduleRangeIO
 
 	private static String getFollowUpRequest(boolean action) {
 		if (action) {
-			return "SELECT " + COLUMNS + ", pl.action, pl.jour, pl.idper, pl.lieux, s.texte FROM " + TABLE + " pg, planning pl, action a, suivi s"
-				+ " WHERE pl.ptype=" + Schedule.COURSE_SCHEDULE
-				+ " AND pl.id = pg.idplanning";
+			return "SELECT " + COLUMNS + ", p.jour, p.action, p.idper, p.lieux, s.texte FROM " + TABLE + " pg, planning p, action a, suivi s"
+				+ " WHERE p.ptype=" + Schedule.COURSE_SCHEDULE
+				+ " AND p.id = pg.idplanning";
+            
 		} else {
-			return "SELECT " + COLUMNS + ", pl.action, pl.jour, pl.idper, pl.lieux, s.texte FROM " + TABLE + " pg, planning pl, suivi s"
-				+ " WHERE pl.ptype=" + Schedule.COURSE_SCHEDULE
-				+ " AND pl.id = pg.idplanning";
+			return "SELECT " + COLUMNS + ", p.jour, p.action, p.idper, p.lieux, s.texte FROM " + TABLE + " pg, planning p, suivi s"
+				+ " WHERE p.ptype=" + Schedule.COURSE_SCHEDULE
+				+ " AND p.id = pg.idplanning";
 		}
 	}
 

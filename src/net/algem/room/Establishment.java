@@ -1,7 +1,7 @@
 /*
- * @(#)Establishment.java	2.7.e 06/02/13
+ * @(#)Establishment.java	2.8.e 20/05/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -33,7 +33,7 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.e
+ * @version 2.8.e
  */
 public class Establishment
         implements GemModel {
@@ -136,7 +136,7 @@ public class Establishment
   }
 
   public boolean isValid() {
-    return true;
+    return getName() != null && ! p.getName().isEmpty();
   }
 
 }

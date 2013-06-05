@@ -1,7 +1,7 @@
 /*
- * @(#)MemberFollowUpEditor.java	2.6.a 18/09/12
+ * @(#)MemberFollowUpEditor.java	2.8.f 24/05/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -31,21 +31,25 @@ import javax.swing.JTable;
 import javax.swing.table.TableColumnModel;
 import net.algem.contact.PersonFile;
 import net.algem.course.Course;
-import net.algem.planning.*;
+import net.algem.planning.FollowUpDlg;
+import net.algem.planning.PlanningException;
+import net.algem.planning.ScheduleRangeObject;
+import net.algem.planning.ScheduleRangeTableModel;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
+import net.algem.util.MessageUtil;
 import net.algem.util.module.GemDesktop;
-import net.algem.util.ui.ErrorDlg;
 import net.algem.util.ui.FileTab;
 import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GridBagHelper;
+import net.algem.util.ui.MessagePopup;
 
 /**
  * Follow up list controller for a member.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.f
  */
 public class MemberFollowUpEditor
         extends FileTab
@@ -57,12 +61,10 @@ public class MemberFollowUpEditor
   private GemButton btDelete;
   private ScheduleRangeTableModel scheduleRange;
   private JTable rangeTable;
-  private PlanningService planningService;
   private MemberService memberService;
 
   public MemberFollowUpEditor(GemDesktop _desktop, PersonFile pf) {
     super(_desktop);
-    planningService = new PlanningService(dataCache.getDataConnection());
     memberService = new MemberService(dataCache.getDataConnection());
     personFile = pf;
 
@@ -91,7 +93,6 @@ public class MemberFollowUpEditor
     gb.add(pm, 0, 0, 3, 2, GridBagHelper.BOTH, 1.0, 1.0);
     gb.add(btModify, 0, 2, 1, 1, GridBagHelper.HORIZONTAL, 1.0, 0.0);
     gb.add(btDelete, 1, 2, 1, 1, GridBagHelper.HORIZONTAL, 1.0, 0.0);
-    //load();
   }
 
   @Override
@@ -103,7 +104,6 @@ public class MemberFollowUpEditor
   public void load() {
     loaded = true;
 
-    //Vector<PlageObject> v = PlageIO.findPlageSuivi(dc, "pg.adherent = " + dossier.getId() + " ORDER BY pl.jour, pg.debut");
     Vector<ScheduleRangeObject> v = null;
     try {
       v = memberService.findFollowUp(personFile.getId());
@@ -148,12 +148,13 @@ public class MemberFollowUpEditor
     setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
     ScheduleRangeObject p = (ScheduleRangeObject) scheduleRange.getItem(n);
-//    Action a = p.getAction();
-    //System.out.println("plage object editeur suivi adherent "+p);
 
-    Course cours = p.getCourse();
-    if (!cours.isCollective()) {
-      FollowUpDlg dlg = new FollowUpDlg(desktop, p, cours.getTitle());
+    Course c = p.getCourse();
+    
+    if (c.isCollective() && p.getNote() <= 0) {
+      MessagePopup.error(this, MessageUtil.getMessage("follow.up.modification.warning"));
+    } else {
+      FollowUpDlg dlg = new FollowUpDlg(desktop, p, c.getTitle());
       setCursor(Cursor.getDefaultCursor());
       dlg.entry();
       if (!dlg.isValidation()) {
@@ -162,8 +163,6 @@ public class MemberFollowUpEditor
       planningService.updateFollowUp(p, dlg.getText());
       p.setFollowUp(dlg.getText());
       scheduleRange.modItem(n, p);
-    } else {
-      new ErrorDlg(desktop.getFrame(), "ce cours est collectif");
     }
 
     setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));

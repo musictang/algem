@@ -185,6 +185,10 @@ public abstract class CardCtrl
     gemListener = l;
   }
   
+  public void removeGemEventListener() {
+    gemListener = null;
+  }
+  
   @Override
   public String toString() {
     return getClass().getSimpleName();

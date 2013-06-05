@@ -1,7 +1,7 @@
 /*
- * @(#)ParamChoice.java	2.7.a 09/01/13
+ * @(#)ParamChoice.java	2.8.f 24/05/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,7 +28,7 @@ import net.algem.util.ui.GemChoice;
 /**
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.f
  * @since 2.0r
  */
 public class ParamChoice
@@ -36,20 +36,18 @@ public class ParamChoice
 {
 
   protected Map<String, Param> _categories;
-  private Map<String, Param> sortedMap;
 
   public ParamChoice() {
   }
 
   public <T extends Param> ParamChoice(Collection<T> parameters) {
+    
     _categories = new HashMap<String, Param>();
-//    sortedMap = new TreeMap<String, Param>(new ParamValueComparator(_categories));
 
     for (Param p : parameters) {
       addItem(p);
       _categories.put(p.getKey(), p);
     }
-//    sortedMap.putAll(_categories);
   }
 
   @Override
@@ -84,7 +82,4 @@ public class ParamChoice
     }
   }
 
-//  public Map<String, Param> getSortedMap() {
-//    return sortedMap;
-//  }
 }

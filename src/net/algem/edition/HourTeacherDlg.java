@@ -1,7 +1,7 @@
 /*
- * @(#)HourTeacherDlg.java	2.8.a 01/04/13
+ * @(#)HourTeacherDlg.java	2.8.f 24/05/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -42,7 +42,7 @@ import javax.swing.SwingWorker;
 import net.algem.accounting.AccountUtil;
 import net.algem.accounting.AccountingService;
 import net.algem.accounting.OrderLineIO;
-import net.algem.config.GemParam;
+import net.algem.config.Param;
 import net.algem.course.Course;
 import net.algem.planning.DateFr;
 import net.algem.planning.Hour;
@@ -62,7 +62,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.f
  * @since 1.0a 14/12/1999
  */
 public class HourTeacherDlg
@@ -117,17 +117,21 @@ public class HourTeacherDlg
   }
 
   @Override
-  public void transfert() {
+  public void transfer() {
     DateFr start = view.getDateStart();
     DateFr end = view.getDateEnd();
 
-    GemParam school = view.getSchool();
+    Param school = view.getSchool();
 
     boolean detail = view.withDetail();
     String lf = FileUtil.LINE_SEPARATOR;
     setCursor(new Cursor(Cursor.WAIT_CURSOR));
 
     PrintWriter out = null;
+    boolean catchup = true;
+    if (!MessagePopup.confirm(this, MessageUtil.getMessage("export.hour.teacher.catchup.warning"))) {
+      catchup = false;
+    }
     try {
       String f = filepath.getText();
       out = new PrintWriter(new FileWriter(f));
@@ -135,9 +139,9 @@ public class HourTeacherDlg
 
       Vector<PlanningLib> plan = new Vector<PlanningLib>();
       if (teacher > 0) {
-        plan = service.getPlanningLib(start.toString(), end.toString(), school.getId(), teacher);
+        plan = service.getPlanningLib(start.toString(), end.toString(), school.getId(), teacher, catchup);
       } else {
-        plan = service.getPlanningLib(start.toString(), end.toString(), school.getId());
+        plan = service.getPlanningLib(start.toString(), end.toString(), school.getId(), catchup);
       }
 
       pm = new ProgressMonitor(view, MessageUtil.getMessage("active.search.label"), "", 1, 100);

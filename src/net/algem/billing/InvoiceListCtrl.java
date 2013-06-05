@@ -42,10 +42,10 @@ public class InvoiceListCtrl
     super(b);
     this.tableModel = new InvoiceTableModel(service);
 
-    jtable = new JTable(tableModel);
-    jtable.setAutoCreateRowSorter(true);
+    table = new JTable(tableModel);
+    table.setAutoCreateRowSorter(true);
 
-    TableColumnModel cm = jtable.getColumnModel();
+    TableColumnModel cm = table.getColumnModel();
     cm.getColumn(0).setPreferredWidth(14);
     cm.getColumn(1).setPreferredWidth(80);
     cm.getColumn(2).setPreferredWidth(80);
@@ -53,7 +53,7 @@ public class InvoiceListCtrl
     cm.getColumn(4).setPreferredWidth(280);
     cm.getColumn(5).setPreferredWidth(30);
 
-    JScrollPane p = new JScrollPane(jtable);
+    JScrollPane p = new JScrollPane(table);
     p.setBorder(new BevelBorder(BevelBorder.LOWERED));
 
     add(p, BorderLayout.CENTER);
@@ -66,7 +66,7 @@ public class InvoiceListCtrl
 
   public int getIdContact() {
     int index = getSelectedIndex();
-    int col = jtable.getSelectedColumn();
+    int col = table.getSelectedColumn();
     Quote q = (Quote) tableModel.getItem(index);
     if (col == 1) return q.getPayer(); 
     if (col == 2) return q.getMember();

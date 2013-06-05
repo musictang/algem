@@ -1,5 +1,5 @@
 /*
- * @(#)EstabSearchCtrl.java	2.6.a 24/09/12
+ * @(#)EstabSearchCtrl.java	2.8.e 22/05/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -42,8 +42,8 @@ public class EstabSearchCtrl
 
   private GemDesktop desktop;
 
-  public EstabSearchCtrl(GemDesktop _desktop, String titre) {
-    super(_desktop.getDataCache().getDataConnection(), titre);
+  public EstabSearchCtrl(GemDesktop _desktop, String title) {
+    super(_desktop.getDataCache().getDataConnection(), title);
     desktop = _desktop;
   }
 
@@ -56,8 +56,9 @@ public class EstabSearchCtrl
     list.addMouseListener(this);
     list.addActionListener(this);
 
-    mask = new EstabCardCtrl(desktop);
+    mask = new EstabCtrl(desktop);
     mask.addActionListener(this);
+    mask.addGemEventListener((EstabListCtrl) list);
 
     wCard.add("cherche", searchView);
     wCard.add("masque", mask);
@@ -91,11 +92,11 @@ public class EstabSearchCtrl
       } catch (SQLException e) {
         GemLogger.logException(e);
       }
-      //masque.loadCard((Person)v.elementAt(0));
       mask.loadCard(estab);
     } else {
       ((CardLayout) wCard.getLayout()).show(wCard, "liste");
       list.loadResult(v);
     }
   }
+  
 }

@@ -39,10 +39,10 @@ public class PersonFileListCtrl
     setLayout(new BorderLayout());
     tableModel = new PersonFileTableModel();
 
-    jtable = new JTable(tableModel);
-    jtable.setAutoCreateRowSorter(true);
+    table = new JTable(tableModel);
+    table.setAutoCreateRowSorter(true);
 
-    JScrollPane p = new JScrollPane(jtable);
+    JScrollPane p = new JScrollPane(table);
     add(p, BorderLayout.SOUTH);
   }
 
@@ -53,6 +53,6 @@ public class PersonFileListCtrl
    * @return a person file
    */
   public PersonFile getPersonFile() {
-    return ((PersonFileTableModel) tableModel).getPersonFile(jtable.getSelectedRow());
+    return ((PersonFileTableModel) tableModel).getPersonFile(table.getSelectedRow());
   }
 }

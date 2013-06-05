@@ -1,5 +1,5 @@
 /*
- * @(#)HourTeacherView.java	2.8.a 01/04/13
+ * @(#)HourTeacherView.java	2.8.f 24/05/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -24,10 +24,13 @@ import java.util.Date;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import net.algem.config.GemParam;
-import net.algem.config.GemParamChoice;
+import net.algem.config.ConfigKey;
+import net.algem.config.ConfigUtil;
+import net.algem.config.Param;
+import net.algem.config.ParamChoice;
 import net.algem.planning.DateFr;
 import net.algem.planning.DateFrField;
+import net.algem.util.BundleUtil;
 import net.algem.util.DataConnection;
 import net.algem.util.model.GemList;
 import net.algem.util.ui.GridBagHelper;
@@ -37,7 +40,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.f
  */
 public class HourTeacherView
         extends JPanel
@@ -46,25 +49,27 @@ public class HourTeacherView
   private DateFrField dateStart;
   private DateFrField dateEnd;
   private JCheckBox detail;
-  private GemParamChoice schoolChoice;
+  private ParamChoice schoolChoice;
 
-  public HourTeacherView(DataConnection dc, GemList schools) {
+  public HourTeacherView(DataConnection dc, GemList<Param> schools) {
     setLayout(new java.awt.GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
 
     dateStart = new DateFrField(new Date());
     dateEnd = new DateFrField(new Date());
     detail = new JCheckBox();
-    schoolChoice = new GemParamChoice(schools);
+    schoolChoice = new ParamChoice(schools.getData());
+    int defaultSchool = Integer.parseInt(ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey(), dc));
+    schoolChoice.setKey(defaultSchool);
 
     JPanel dates = new JPanel();
     dates.add(dateStart);
-    dates.add(new JLabel("Au"));
+    dates.add(new JLabel(BundleUtil.getLabel("Date.To.label")));
     dates.add(dateEnd);
 
-    gb.add(new JLabel("Période"), 0, 0, 1, 1, GridBagHelper.EAST);
-    gb.add(new JLabel("Ecole"), 0, 1, 1, 1, GridBagHelper.EAST);
-    gb.add(new JLabel("Détail"), 0, 2, 1, 1, GridBagHelper.EAST);
+    gb.add(new JLabel(BundleUtil.getLabel("Period.label")), 0, 0, 1, 1, GridBagHelper.EAST);
+    gb.add(new JLabel(BundleUtil.getLabel("School.label")), 0, 1, 1, 1, GridBagHelper.EAST);
+    gb.add(new JLabel(BundleUtil.getLabel("Detail.label")), 0, 2, 1, 1, GridBagHelper.EAST);
 
     gb.add(dates, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(schoolChoice, 1, 1, 1, 1, GridBagHelper.WEST);
@@ -80,8 +85,8 @@ public class HourTeacherView
     return dateEnd.getDateFr();
   }
 
-  public GemParam getSchool() {
-    return (GemParam) schoolChoice.getSelectedItem();
+  public Param getSchool() {
+    return (Param) schoolChoice.getSelectedItem();
   }
 
   public boolean withDetail() {

@@ -49,17 +49,17 @@ public class AgeRangeListCtrl
     super(searchFlag);
     tableModel = new AgeRangeTableModel();
 
-    jtable = new JTable(tableModel);
-    jtable.setAutoCreateRowSorter(true);
+    table = new JTable(tableModel);
+    table.setAutoCreateRowSorter(true);
 
-    TableColumnModel cm = jtable.getColumnModel();
+    TableColumnModel cm = table.getColumnModel();
     cm.getColumn(0).setPreferredWidth(2);
     cm.getColumn(1).setPreferredWidth(2);
     cm.getColumn(2).setPreferredWidth(10);
     cm.getColumn(3).setPreferredWidth(10);
     cm.getColumn(4).setPreferredWidth(200);
 
-    JScrollPane p = new JScrollPane(jtable);
+    JScrollPane p = new JScrollPane(table);
     p.setBorder(new BevelBorder(BevelBorder.LOWERED));
 
     add(p, BorderLayout.CENTER);

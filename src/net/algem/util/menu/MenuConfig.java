@@ -1,7 +1,7 @@
 /*
- * @(#)MenuConfig.java 2.6.a 12/10/2012
+ * @(#)MenuConfig.java 2.8.f 24/05/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -45,7 +45,7 @@ import net.algem.util.module.GemModule;
 /**
  * Configuration menu.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.f
  * @since 2.6.a 12/10/2012
  */
 public class MenuConfig 
@@ -95,6 +95,9 @@ public class MenuConfig
     mEstab = new JMenu(menus.get("Menu.establishment.label"));
     miEstabBrowse = mEstab.add(GemCommand.VIEW_EDIT_CMD);
     msEstabCreate = mEstab.add(GemCommand.CREATE_CMD);
+    if (!dataCache.authorize("Establishment.creation.auth")) {
+      msEstabCreate.setEnabled(false);
+    }
     add(mEstab);
     addSeparator();
     

@@ -1,5 +1,5 @@
 /*
- * @(#)Statistics.java	2.7.k 05/03/13
+ * @(#)Statistics.java	2.8.h 03/06/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -44,7 +44,7 @@ import net.algem.util.model.Model;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.k
+ * @version 2.8.h
  * @since 2.6.a 09/10/12
  */
 public class Statistics
@@ -212,8 +212,10 @@ public class Statistics
               + " AND commande_cours.idcmd = commande.id AND commande.adh = eleve.idper and commande_cours.debut != '00:00:00'";
     }
     if (m.equals("list_pro_students")) { 
-      return "SELECT DISTINCT(commande.adh), trim(personne.nom), trim(personne.prenom) FROM commande, commande_cours, module,eleve,personne"
-              + " WHERE commande_cours.module = module.id"
+      return "SELECT DISTINCT(commande.adh), trim(personne.nom), trim(personne.prenom)"
+              + " FROM commande, commande_cours, commande_module, module, eleve, personne"
+              + " WHERE commande_cours.module = commande_module.id"
+              + " AND commande_module.module = module.id"
               + " AND commande_cours.idcmd = commande.id"
               + " AND eleve.idper = commande.adh"
               + " AND eleve.idper = personne.id"
@@ -250,9 +252,10 @@ public class Statistics
               + " WHERE plage.idplanning = planning.id"
               + " AND planning.jour BETWEEN '" + start + "' AND  '" + end + "'"
               + " AND plage.adherent IN ("
-              + " SELECT distinct adh FROM commande_cours, module, commande"
+              + " SELECT distinct adh FROM commande_cours, commande_module, module, commande"
               + " WHERE commande_cours.datedebut >= '" + start + "' AND commande_cours.datedebut <= '" + end + "'"
-              + " AND commande_cours.module = module.id"
+              + " AND commande_cours.module = commande_module.id"
+              + " AND commande_module.module = module.id"
               + " AND commande.id = commande_cours.idcmd"
               + " AND module.code LIKE 'P%') GROUP BY plage.adherent) AS t1";
     }
@@ -263,24 +266,28 @@ public class Statistics
               + " AND planning.jour BETWEEN '" + start + "' AND  '" + end + "'"
               + " AND planning.action = action.id AND action.cours = cours.id AND cours.collectif = 't'"
               + " AND plage.adherent IN ("
-              + " SELECT distinct adh FROM commande, commande_cours, module"
+              + " SELECT distinct adh FROM commande, commande_cours, commande_module, module"
               + " WHERE commande_cours.datedebut >= '" + start + "' AND commande_cours.datedebut <= '" + end + "'"
               + " AND commande_cours.idcmd = commande.id"
-              + " AND commande_cours.module = module.id"
+              + " AND commande_cours.module = commande_module.id"
+              + " AND commande_module.module = module.id"
               + " AND module.code LIKE 'P%') GROUP BY plage.adherent) AS t1";
     }
     if (m.equals("hours_of_private_pro_lessons")) {
-      return "SELECT sum(duree) FROM "
+      String query = "SELECT sum(duree) FROM "
               + "(SELECT distinct plage.adherent, extract(hour FROM sum(plage.fin - plage.debut)) AS duree FROM plage, planning, action, cours"
               + " WHERE plage.idplanning = planning.id"
               + " AND planning.jour BETWEEN '" + start + "' AND  '" + end + "'"
               + " AND planning.action = action.id and action.cours = cours.id and cours.collectif = 'f'"
               + " AND plage.adherent IN ("
-              + " SELECT distinct adh FROM commande, commande_cours, module"
-              + " WHERE commande_cours.datedebut >= '" + start + "' AND commande_cours.datedebut <= '" + end + "'"
-              + " AND commande_cours.idcmd = commande.id"
-              + " AND commande_cours.module = module.id"
+              + " SELECT distinct adh FROM commande, commande_cours, commande_module, module"
+              + " WHERE commande.id = commande_cours.idcmd"
+              + " AND commande_cours.datedebut >= '" + start + "' AND commande_cours.datedebut <= '" + end + "'"             
+              + " AND commande_cours.module = commande_module.id"
+              + " AND commande_module.module = module.id"
               + " AND module.code LIKE 'P%') GROUP BY plage.adherent) AS t1";
+      System.out.println(query);
+      return query;
     }
     
     return null;
@@ -290,10 +297,11 @@ public class Statistics
   protected String getQuery(String m, Object a1, Object a2) {
     if ("number_of_amateurs".equals(m)) { 
       return "SELECT count(DISTINCT eleve.idper) "
-              + "FROM eleve, commande, commande_cours, module"
+              + "FROM eleve, commande, commande_cours, commande_module, module"
               + " WHERE eleve.idper = commande.adh"
               + " AND commande.id = commande_cours.idcmd"
-              + " AND commande_cours.module = module.id"
+              + " AND commande_cours.module = commande_module.id"
+              + " AND commande_module.module = module.id"
               + " AND commande_cours.datedebut between '" + start + "' AND '" + end + "'"
               + " AND extract(year from age(commande_cours.datedebut,datenais)) >= " + a1
               + " AND extract(year from age(commande_cours.datedebut,datenais)) <= " + a2 // correction agemax inclus
@@ -303,10 +311,11 @@ public class Statistics
 
     if ("number_of_pros".equals(m)) {
       return "SELECT count(DISTINCT eleve.idper) "
-              + "FROM eleve, commande, commande_cours, module, action, cours"
+              + "FROM eleve, commande, commande_cours, commande_module, module, action, cours"
               + " WHERE eleve.idper = commande.adh"
               + " AND commande.id = commande_cours.idcmd"
-              + " AND commande_cours.module = module.id"
+              + " AND commande_cours.module = commande_module.id"
+              + " AND commande_module.module = module.id"
               + " AND commande_cours.idaction = action.id"
               + " AND action.cours = cours.id"
               + " AND commande_cours.datedebut between '" + start + "' AND '" + end + "'"

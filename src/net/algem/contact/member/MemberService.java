@@ -1,5 +1,5 @@
 /*
- * @(#)MemberService.java	2.8.a 01/04/13
+ * @(#)MemberService.java	2.8.f 23/05/13
  *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -48,7 +48,7 @@ import net.algem.util.model.Model;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.f
  * @since 2.4.a 14/05/12
  */
 public class MemberService
@@ -247,28 +247,31 @@ public class MemberService
    * 
    * @param memberId member's id
    * @param courseId course's id
-   * @param collective collective or individual
+   * @param collective collective or individual if false
    * @return a list of schedule ranges
    * @throws SQLException
    */
   public Vector<ScheduleRangeObject> findFollowUp(int memberId, int courseId, boolean collective) throws SQLException {
     String where = " AND pg.note = s.id";
     if (collective) {
-      where = " AND pl.note = s.id";
+      where = " AND p.note = s.id";
     }
-    where += " AND pg.adherent = " + memberId + " AND pl.action = a.id AND a.cours = " + courseId + " ORDER BY jour,debut";
+    where += " AND pg.adherent = " + memberId + " AND p.action = a.id AND a.cours = " + courseId + " ORDER BY p.jour, pg.debut";
     return ScheduleRangeIO.findFollowUp(where, true, dc);
   }
 
   /**
-   * Searches the schedule ranges containing a note for the member {@code memberId}.
+   * Gets the member's schedule ranges containing a follow up's note.
    *
    * @param memberId
    * @return a list of schedule ranges
    * @throws SQLException
    */
   public Vector<ScheduleRangeObject> findFollowUp(int memberId) throws SQLException {
-    String where = " AND pg.note = s.id AND pg.adherent = " + memberId + " ORDER BY pl.jour, pg.debut";
+    String where = " AND (pg.note > 0 OR p.note > 0)"
+            + " AND (pg.note = s.id OR p.note = s.id)"
+            + " AND pg.adherent = " + memberId
+            + " ORDER BY p.jour DESC, pg.debut";
     return ScheduleRangeIO.findFollowUp(where, false, dc);
   }
 

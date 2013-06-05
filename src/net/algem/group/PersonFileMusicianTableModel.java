@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileMusicianTableModel.java 2.6.a 31/07/12
+ * @(#)PersonFileMusicianTableModel.java 2.8.g 31/05/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,14 +20,19 @@
  */
 package net.algem.group;
 
+import java.sql.SQLException;
+import net.algem.config.Instrument;
 import net.algem.util.BundleUtil;
+import net.algem.util.DataCache;
+import net.algem.util.GemLogger;
+import net.algem.util.model.Model;
 import net.algem.util.ui.JTableModel;
 
 /**
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.g
  */
 public class PersonFileMusicianTableModel
         extends JTableModel
@@ -35,9 +40,10 @@ public class PersonFileMusicianTableModel
 
   public PersonFileMusicianTableModel() {
     super();
-    header = new String[]{"id", 
-                          BundleUtil.getLabel("Group.label"),
-                          BundleUtil.getLabel("Group.instrument.label")
+    header = new String[]{
+      BundleUtil.getLabel("Id.label"), 
+      BundleUtil.getLabel("Group.label"),
+      BundleUtil.getLabel("Instrument.label")
     };
   }
 
@@ -57,8 +63,9 @@ public class PersonFileMusicianTableModel
       case 0:
         return Integer.class;
       case 1:
-      case 2:
         return String.class;
+      case 2:
+        return Integer.class;
       default:
         return Object.class;
     }
@@ -69,16 +76,21 @@ public class PersonFileMusicianTableModel
     return false;
   }
 
-	@Override
+  @Override
   public Object getValueAt(int line, int col) {
-    Musician g = (Musician) tuples.elementAt(line);
+    Musician m = (Musician) tuples.elementAt(line);
     switch (col) {
       case 0:
-        return g.getGroup().getId();
+        return m.getGroup().getId();
       case 1:
-        return g.getGroup().getName();
+        return m.getGroup().getName();
       case 2:
-        return g.getInstrument();
+        try {
+          Instrument i = (Instrument) DataCache.findId(m.getInstrument(), Model.Instrument);
+          return i == null ? "" : i.getName();
+        } catch (SQLException ex) {
+          GemLogger.logException(ex);
+        }
     }
     return null;
 

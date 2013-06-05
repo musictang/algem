@@ -48,8 +48,8 @@ public class ItemListCtrl
   public ItemListCtrl() {
     super(true);
     this.tableModel = new ItemTableModel();
-    jtable = new JTable(tableModel);
-    jtable.setAutoCreateRowSorter(true);
+    table = new JTable(tableModel);
+    table.setAutoCreateRowSorter(true);
 
     setColumns(20, 300, 100, 20, 25);
     setColumnsRenderer(2, 3, 4);
@@ -67,8 +67,8 @@ public class ItemListCtrl
     super(withSearch);
     this.tableModel = tableModel;
 
-    jtable = new JTable(tableModel);
-    jtable.setAutoCreateRowSorter(true);
+    table = new JTable(tableModel);
+    table.setAutoCreateRowSorter(true);
 
     setColumns(400, 100, 40, 40, 120);
     setColumnsRenderer(1, 2, 3, 4);
@@ -77,7 +77,7 @@ public class ItemListCtrl
   }
 
   public InvoiceItem getSelectedItem() {
-    return (InvoiceItem) tableModel.getItem(jtable.convertRowIndexToModel(jtable.getSelectedRow()));
+    return (InvoiceItem) tableModel.getItem(table.convertRowIndexToModel(table.getSelectedRow()));
   }
 
   /**
@@ -87,7 +87,7 @@ public class ItemListCtrl
    */
   private void setColumnsRenderer(int... cols) {
     InvoiceNumberRenderer nr = new InvoiceNumberRenderer();
-    TableColumnModel cm = jtable.getColumnModel();
+    TableColumnModel cm = table.getColumnModel();
     for (int i = 0; i < cols.length; i++) {
       cm.getColumn(cols[i]).setCellRenderer(nr);
     }
@@ -96,7 +96,7 @@ public class ItemListCtrl
 
   private void addScrollPane() {
 
-    JScrollPane p = new JScrollPane(jtable);
+    JScrollPane p = new JScrollPane(table);
     p.setBorder(new BevelBorder(BevelBorder.LOWERED));
     add(p, BorderLayout.CENTER);
   }

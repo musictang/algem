@@ -1,5 +1,5 @@
 /*
- * @(#)MemberEnrolmentDlg.java	2.8.a 13/05/13
+ * @(#)MemberEnrolmentDlg.java	2.8.h 03/06/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -49,7 +49,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.h
  * @since 1.0a 07/07/1999
  * @see net.algem.contact.PersonFileEditor
  *
@@ -70,10 +70,10 @@ public class MemberEnrolmentDlg
   private Vector<ModuleOrder> module_orders;
   
   private ModuleDlg moduleDlg;
-  private CourseEnrolmentDlg coursDlg;
+  private CourseEnrolmentDlg courseEnrolmentDlg;
   private double totalBase = 0.0;
-  private int moduleCourant = 0;
-  private int maxCours = 0; // (le commandes_cours dans la liste comportant le plus grand nombre de séances)
+  private int currentModule = 0;
+  private int sessionsMax = 0; // (le commandes_cours dans la liste comportant le plus grand nombre de séances)
   private StringBuffer msg = new StringBuffer(MessageUtil.getMessage("enrolment.confirmation"));
   private PersonFile dossier;
   private ActionListener listener;
@@ -145,10 +145,10 @@ public class MemberEnrolmentDlg
         m = module_orders.elementAt(i);
         m.setIdOrder(order.getId());//récupération du numéro de commande
         saveModule(m);
-        moduleCourant++;
+        currentModule++;
       }
 
-      if (module_orders != null && module_orders.size() > 0 && maxCours > 0) {// ajout maxCours > 0 2.0pq
+      if (module_orders != null && module_orders.size() > 0 && sessionsMax > 0) {// ajout maxCours > 0 2.0pq
         try {
           EnrolmentOrderUtil orderUtil = new EnrolmentOrderUtil(dossier, dc);
           orderUtil.setTotalBase(totalBase);
@@ -176,8 +176,8 @@ public class MemberEnrolmentDlg
     } finally {
       dc.setAutoCommit(true);
       totalBase = 0.0;//
-      moduleCourant = 0;
-      maxCours = 0;
+      currentModule = 0;
+      sessionsMax = 0;
     }
     // print member's card
     listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "MemberEnrolmentValidation"));
@@ -226,11 +226,11 @@ public class MemberEnrolmentDlg
       sessions = service.updateRange(mo, co, dossier.getId());
     }
 
-    if (sessions > maxCours) {
-      maxCours = sessions;
+    if (sessions > sessionsMax) {
+      sessionsMax = sessions;
     }
-    if (maxCours > SESSIONS_MAX) {
-      maxCours = SESSIONS_MAX;
+    if (sessionsMax > SESSIONS_MAX) {
+      sessionsMax = SESSIONS_MAX;
     }
   }
 
@@ -452,37 +452,37 @@ public class MemberEnrolmentDlg
     setCursor(new Cursor(Cursor.WAIT_CURSOR));
 
     CourseOrder co = view.getCourseOrder(n);
-    if (coursDlg == null) {
-      coursDlg = new CourseEnrolmentDlg(desktop, service, dossier.getId());
+    if (courseEnrolmentDlg == null) {
+      courseEnrolmentDlg = new CourseEnrolmentDlg(desktop, service, dossier.getId());
     }
-    coursDlg.clear();
-    coursDlg.setCourseInfo(co.getCourseModuleInfo());
+    courseEnrolmentDlg.clear();
+    courseEnrolmentDlg.setCourseInfo(co.getCourseModuleInfo());
     try {
-      coursDlg.loadEnrolment(co);
+      courseEnrolmentDlg.loadEnrolment(co);
     } catch (EnrolmentException ex) {
       MessagePopup.warning(view, ex.getMessage());
       setCursor(Cursor.getDefaultCursor());
       return;
     }
     setCursor(Cursor.getDefaultCursor());
-    coursDlg.entry();
-    if (coursDlg.isValidation()) {
-      co.setModule(Integer.parseInt(coursDlg.getField(1)));//XXX
-      co.setAction(Integer.parseInt(coursDlg.getField(2)));
-      co.setTitle(getModuleTitle(co) + coursDlg.getField(3));
-      co.setDay(Integer.parseInt(coursDlg.getField(4)));
+    courseEnrolmentDlg.entry();
+    if (courseEnrolmentDlg.isValidation()) {
+      co.setModule(Integer.parseInt(courseEnrolmentDlg.getField(1)));//XXX
+      co.setAction(Integer.parseInt(courseEnrolmentDlg.getField(2)));
+      co.setTitle(getModuleTitle(co) + courseEnrolmentDlg.getField(3));
+      co.setDay(Integer.parseInt(courseEnrolmentDlg.getField(4)));
 
-      if (Course.ATP_CODE == coursDlg.getCourse().getCode()) {
-        DateFr dfr = new DateFr(coursDlg.getField(7));
+      if (Course.ATP_CODE == courseEnrolmentDlg.getCourse().getCode()) {
+        DateFr dfr = new DateFr(courseEnrolmentDlg.getField(7));
         co.setDateStart(dfr);
         co.setDateEnd(dfr);
       }
 
-      Hour start = new Hour(coursDlg.getField(5));
-      Hour length = new Hour(coursDlg.getField(6));
+      Hour start = new Hour(courseEnrolmentDlg.getField(5));
+      Hour length = new Hour(courseEnrolmentDlg.getField(6));
       co.setStart(start);
       co.setEnd(start.end(length.toMinutes()));
-      co.setEstab(coursDlg.getEstab());
+      co.setEstab(courseEnrolmentDlg.getEstab());
       
       view.changeCourse(n, co);
     }
