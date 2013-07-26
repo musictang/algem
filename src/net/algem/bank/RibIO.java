@@ -1,7 +1,7 @@
 /*
- * @(#)BicIO.java	2.6.a 14/09/12
+ * @(#)RibIO.java	2.8.i 08/07/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,44 +28,47 @@ import net.algem.util.GemLogger;
 import net.algem.util.model.TableIO;
 
 /**
- * IO methods for class {@link net.algem.bank.Bic}.
+ * IO methods for class {@link net.algem.bank.Rib}.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.i
  */
-public class BicIO
+public class RibIO
         extends TableIO
 {
 
   private static final String TABLE = "rib";
+  private static final String COLUMNS = "idper,etablissement,guichet,compte,clerib,guichetid,iban";
 
-  public static void insert(Bic r, DataConnection dc) throws SQLException {
+  public static void insert(Rib r, DataConnection dc) throws SQLException {
     String query = "INSERT INTO " + TABLE + " VALUES("
             + "'" + r.getId()
             + "','" + r.getEstablishment()
             + "','" + r.getBranch()
             + "','" + r.getAccount()
-            + "','" + r.getBicKey()
+            + "','" + r.getRibKey()
             + "'," + r.getBranchId()
-            + ")";
+            + ",'" + r.getIban()
+            + "')";
 
     dc.executeUpdate(query);
   }
 
-  public static void update(Bic r, DataConnection dc) throws SQLException {
+  public static void update(Rib r, DataConnection dc) throws SQLException {
     String query = "UPDATE " + TABLE + " SET"
             + " etablissement = '" + r.getEstablishment()
-            + "',guichet = '" + r.getBranch()
-            + "',compte = '" + r.getAccount()
-            + "',clerib = '" + r.getBicKey()
-            + "',guichetid = " + r.getBranchId()
-            + " WHERE idper = " + r.getId();
+            + "', guichet = '" + r.getBranch()
+            + "', compte = '" + r.getAccount()
+            + "', clerib = '" + r.getRibKey()
+            + "', guichetid = " + r.getBranchId()
+            + ", iban = '" + r.getIban()
+            + "' WHERE idper = " + r.getId();
 
     dc.executeUpdate(query);
   }
 
-  public static void delete(Bic r, DataConnection dc) throws SQLException {
+  public static void delete(Rib r, DataConnection dc) throws SQLException {
     String query = "DELETE FROM " + TABLE + " WHERE rib.idper = " + r.getId();
     dc.executeUpdate(query);
   }
@@ -84,31 +87,33 @@ public class BicIO
 
   }
 
-  public static Bic findId(int n, DataConnection dc) {
+  public static Rib findId(int n, DataConnection dc) {
     String query = "WHERE idper = " + n;
-    Vector v = find(query, dc);
+    Vector<Rib> v = find(query, dc);
     if (v.size() > 0) {
-      return (Bic) v.elementAt(0);
+      return (Rib) v.elementAt(0);
     }
     return null;
   }
 
-  public static Vector<Bic> find(String where, DataConnection dc) {
-    Vector<Bic> v = new Vector<Bic>();
+  public static Vector<Rib> find(String where, DataConnection dc) {
+    Vector<Rib> v = new Vector<Rib>();
     String query = "SELECT * FROM " + TABLE + " " + where;
     try {
       ResultSet rs = dc.executeQuery(query);
       while (rs.next()) {
-        Bic r = new Bic(rs.getInt(1));
+        Rib r = new Rib(rs.getInt(1));
         r.setEstablishment(rs.getString(2));
         r.setBranch(rs.getString(3));
         r.setAccount(rs.getString(4));
-        r.setBicKey(rs.getString(5));
+        r.setRibKey(rs.getString(5));
         r.setBranchId(rs.getInt(6));
-
+        r.setIban(rs.getString(7));
+        
         v.addElement(r);
       }
     } catch (SQLException e) {
+      v.clear();
       GemLogger.logException("find Rib: ", e);
     }
     return v;

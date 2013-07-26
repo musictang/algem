@@ -1,5 +1,5 @@
 /*
- * @(#)AccountDocumentTransferDlg.java	2.8.a 01/04/13
+ * @(#)AccountDocumentTransferDlg.java	2.8.k 25/07/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -23,6 +23,7 @@ package net.algem.accounting;
 
 import java.awt.*;
 import java.util.Vector;
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import net.algem.planning.DateFr;
@@ -39,7 +40,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.k
  * @since 1.0a 27/09/2000
  */
 public class AccountDocumentTransferDlg
@@ -63,21 +64,31 @@ public class AccountDocumentTransferDlg
 
   @Override
   public void setDisplay() {
+    
     view = new AccountDocumentTransferView(dataCache);
-    Container container = getContentPane();
-    setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
-    GemPanel entete = new GemPanel();
-    entete.setLayout(new GridBagLayout());
-    GridBagHelper gb = new GridBagHelper(entete);
+    
+    setLayout(new BorderLayout());
+
+    GemPanel p = new GemPanel();
+    p.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+    p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+    
+    GemPanel header = new GemPanel();
+    header.setLayout(new GridBagLayout());
+    
+    GridBagHelper gb = new GridBagHelper(header);
     gb.insets = GridBagHelper.SMALL_INSETS;
 
     gb.add(new JLabel(BundleUtil.getLabel("Menu.file.label")), 0, 0, 1, 1, GridBagHelper.EAST);
     gb.add(filePath, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(chooser, 2, 0, 1, 1, GridBagHelper.WEST);
 
-    container.add(entete);
-    container.add(view);
-    container.add(buttons);
+    p.add(header);
+    p.add(view);
+    
+    add(p, BorderLayout.CENTER);
+    add(buttons, BorderLayout.SOUTH);
+    
     pack();
   }
 
@@ -89,7 +100,7 @@ public class AccountDocumentTransferDlg
     String document = view.getDocument();
     int errors = 0;
 
-    String query = "echeance >= '" + start + "' AND echeance <= '" + end + "' AND piece='" + document + "' AND reglement='" + payment + "' AND paye='t' AND transfert='f'";
+    String query = "WHERE echeance >= '" + start + "' AND echeance <= '" + end + "' AND piece='" + document + "' AND reglement='" + payment + "' AND paye='t' AND transfert='f'";
     Vector<OrderLine> echeances = OrderLineIO.find(query, dbx);
     if (echeances.size() <= 0) {
       MessagePopup.information(this, MessageUtil.getMessage("payment.transfer.empty.collection"));

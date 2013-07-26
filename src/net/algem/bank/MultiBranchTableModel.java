@@ -1,7 +1,7 @@
 /*
- * @(#)MultiBranchTableModel.java	2.6.a 14/09/12
+ * @(#)MultiBranchTableModel.java	2.8.i 08/07/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,20 +21,27 @@
 package net.algem.bank;
 
 import net.algem.contact.Address;
+import net.algem.util.BundleUtil;
 import net.algem.util.ui.JTableModel;
 
 /**
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.i
  */
 public class MultiBranchTableModel
         extends JTableModel
 {
 
   public MultiBranchTableModel() {
-    header = new String[]{"id", "Adresse Agence", "Banque", "Multi"};
+    header = new String[]{
+      BundleUtil.getLabel("Id.label"),
+      BundleUtil.getLabel("Bank.branch.address.label"), 
+      BundleUtil.getLabel("Bank.label"),
+      BundleUtil.getLabel("Bic.code.label"),
+      "Multi"
+    };
   }
 
   @Override
@@ -47,11 +54,11 @@ public class MultiBranchTableModel
     switch (column) {
       case 0:
         return Integer.class;
-      case 1:
-        return String.class;
+      case 1:     
       case 2:
-        return String.class;
       case 3:
+        return String.class;
+      case 4:
         return Boolean.class;
       default:
         return Object.class;
@@ -64,13 +71,13 @@ public class MultiBranchTableModel
   }
 
   @Override
-  public Object getValueAt(int line, int colonne) {
+  public Object getValueAt(int line, int col) {
 
-    BankBranch ag = (BankBranch) tuples.elementAt(line);
-    Address adr = ag.getAddress();
-    switch (colonne) {
+    BankBranch bb = (BankBranch) tuples.elementAt(line);
+    Address adr = bb.getAddress();
+    switch (col) {
       case 0:
-        return new Integer(ag.getId());
+        return new Integer(bb.getId());
       case 1:
         if (adr == null) {
           return "";
@@ -78,9 +85,11 @@ public class MultiBranchTableModel
           return adr.getAdr1() + " " + adr.getCdp() + " " + adr.getCity();
         }
       case 2:
-        return ag.getBank().getName();
+        return bb.getBank().getName();
       case 3:
-        return ag.getBank().isMulti();
+        return bb.getBicCode();
+      case 4:
+        return bb.getBank().isMulti();
     }
     return null;
   }

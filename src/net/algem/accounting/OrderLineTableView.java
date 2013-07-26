@@ -1,7 +1,7 @@
 /*
- * @(#)OrderLineTableView.java	2.7.k 04/03/13
+ * @(#)OrderLineTableView.java 2.8.j /07/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -44,7 +44,7 @@ import net.algem.util.model.Model;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.k
+ * @version 2.8.j
  * @since 1.0a 07/07/1999
  *
  */
@@ -253,7 +253,7 @@ public class OrderLineTableView
     } else {
       Calendar cal = Calendar.getInstance();
       cal.setTime(date.getDate());
-      cal.set(Calendar.MONTH, Calendar.AUGUST);
+      cal.set(Calendar.MONTH, Calendar.SEPTEMBER);// beginning of year for accounting
       cal.set(Calendar.DAY_OF_MONTH, 1);
       begin = new DateFr(cal.getTime());
       end = new DateFr(begin);

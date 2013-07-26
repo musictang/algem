@@ -1,7 +1,7 @@
 /*
- * @(#)ModifPlanRoomView.java	2.7.a 23/11/12
+ * @(#)ModifPlanRoomView.java	2.8.k 25/07/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -34,7 +34,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.k
  * @since 1.0a 07/07/1999
  */
 public class ModifPlanRoomView
@@ -51,9 +51,9 @@ public class ModifPlanRoomView
     before.setEditable(false);
     after = new RoomChoice(dataCache.getList(Model.Room));
 
-    gb.add(new GemLabel(BundleUtil.getLabel("Current.room.label")), 0, 2, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Current.room.label")), 0, 2, 1, 1, GridBagHelper.EAST);
     gb.add(before, 1, 2, 3, 1, GridBagHelper.WEST);
-    gb.add(new GemLabel(BundleUtil.getLabel("New.room.label")), 0, 3, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("New.room.label")), 0, 3, 1, 1, GridBagHelper.EAST);
     gb.add(after, 1, 3, 1, 1, GridBagHelper.WEST);
   }
 

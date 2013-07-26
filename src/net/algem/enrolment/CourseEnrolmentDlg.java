@@ -1,5 +1,5 @@
 /*
- * @(#)CourseEnrolmentDlg.java	2.8.g 31/05/13
+ * @(#)CourseEnrolmentDlg.java	2.8.i 07/06/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -59,7 +59,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.g
+ * @version 2.8.i
  * @since 1.0a 07/07/1999
  */
 public class CourseEnrolmentDlg
@@ -175,14 +175,12 @@ public class CourseEnrolmentDlg
     gb.add(new GemLabel(BundleUtil.getLabel("Hour.label")), 0, 4, 1, 1, padding2, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Duration.label")), 0, 5, 1, 1, padding2, GridBagHelper.WEST);
 
-
     gb.add(cbDay, 1, 0, 1, 1, padding2, GridBagHelper.HORIZONTAL, 0.0, 0.0);
     gb.add(teacher, 1, 1, 1, 1, padding2, GridBagHelper.HORIZONTAL, 0.0, 0.0);
     gb.add(roomInfo, 1, 2, 1, 1, padding2, GridBagHelper.HORIZONTAL, 0.0, 0.0);
     gb.add(new JScrollPane(range), 1, 3, 1, 1, padding, GridBagHelper.BOTH, 1.0, 1.0);
     gb.add(hour, 1, 4, 1, 1, padding2, GridBagHelper.HORIZONTAL, 0.0, 0.0);
     gb.add(courseLength, 1, 5, 1, 1, padding2, GridBagHelper.HORIZONTAL, 0.0, 0.0);
-
 
     bgPanel = new GemBorderPanel();
     bgPanel.setLayout(new CardLayout());
@@ -523,7 +521,7 @@ public class CourseEnrolmentDlg
       DayRange pj = (DayRange) cbDay.getSelectedItem();
 
       //vérification adhérent déjà inscrit à un atelier
-      if (Course.ATP_CODE == code || course.isCollective()) {
+      if (Course.ATP_CODE == code || course.isCollective()) {//XXX pb with ATP if another ATP has the same action id
         if (service.isOnRange(memberId, pj.getPlanning(), courseOrder)) {
           throw new EnrolmentException(MessageUtil.getMessage("member.enrolment.existing.range"));
         }
@@ -541,7 +539,8 @@ public class CourseEnrolmentDlg
       
       // Vérification nombre de places pour les cours de type collectif.
       Action a = pService.getAction(p.getIdAction());
-      if (!isFree(a, courseOrder, service)) {
+      Course c = pService.getCourseFromAction(p.getIdAction());
+      if (c.isCollective() && !isFree(a, courseOrder, service)) {
         throw new EnrolmentException(MessageUtil.getMessage("max.place.number.warning"));
       }
 

@@ -1,5 +1,5 @@
 /*
- * @(#)HourStatView.java	2.8.a 01/04/13
+ * @(#)HourStatView.java	2.8.k 25/07/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -21,26 +21,26 @@
 package net.algem.edition;
 
 import java.util.Date;
+import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
-import net.algem.config.GemParamChoice;
 import net.algem.config.ParamChoice;
 import net.algem.planning.DateFr;
 import net.algem.planning.DateFrField;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataConnection;
 import net.algem.util.model.GemList;
+import net.algem.util.ui.GemPanel;
 import net.algem.util.ui.GridBagHelper;
 
 /**
  * Hours statitics entry.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.k
  */
 public class HourStatView
-        extends JPanel
+        extends GemPanel
 {
 
   private DateFrField dateStart;
@@ -50,22 +50,26 @@ public class HourStatView
 
   public HourStatView(DataConnection dc, GemList schools) {
     setLayout(new java.awt.GridBagLayout());
+    setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
     GridBagHelper gb = new GridBagHelper(this);
+    gb.insets = GridBagHelper.SMALL_INSETS;
 
     dateStart = new DateFrField(new Date());
     dateEnd = new DateFrField(new Date());
     detail = new JCheckBox();
     schoolChoice = new ParamChoice(schools.getData());
-    JPanel dates = new JPanel();
+    schoolChoice.setBorder(null);
+    
+    GemPanel dates = new GemPanel();
     dates.add(dateStart);
     dates.add(new JLabel(BundleUtil.getLabel("Date.To.label")));
     dates.add(dateEnd);
 
-    gb.add(new JLabel(BundleUtil.getLabel("Period.label")), 0, 0, 1, 1, GridBagHelper.EAST);
+    gb.add(new JLabel(BundleUtil.getLabel("Date.From.label")), 0, 0, 1, 1, GridBagHelper.EAST);
     gb.add(new JLabel(BundleUtil.getLabel("School.label")), 0, 1, 1, 1, GridBagHelper.EAST);
     gb.add(dates, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(schoolChoice, 1, 1, 1, 1, GridBagHelper.WEST);
-
+    
   }
 
   public DateFr getDateStart() {

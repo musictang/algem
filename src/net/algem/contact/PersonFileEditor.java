@@ -1,7 +1,7 @@
 /*
- * @(#)PersonFileEditor 2.7.k 04/03/13
+ * @(#)PersonFileEditor 2.8.i 05/07/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,6 +27,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Vector;
+import java.util.logging.Level;
 import javax.swing.*;
 import net.algem.accounting.AccountUtil;
 import net.algem.accounting.OrderLineEditor;
@@ -65,7 +66,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.k
+ * @version 2.8.i
  */
 public class PersonFileEditor
         extends FileEditor
@@ -93,10 +94,13 @@ public class PersonFileEditor
   private PersonFileListCtrl memberList;
   private HistoInvoice histoInvoice;
   private OrderLineEditor orderLineEditor;
+  private DataConnection dc;
+  private static BankBranchIO BANK_BRANCH_IO;
 
   public PersonFileEditor() {
     super("Fiche: ");
     dossier = new PersonFile();
+    
   }
 
   public PersonFileEditor(PersonFile _dossier) {
@@ -143,7 +147,10 @@ public class PersonFileEditor
   public void init() {
 
     super.init();
-
+    
+    dc = dataCache.getDataConnection();
+    BANK_BRANCH_IO = new BankBranchIO(dc);
+    
     desktop.addGemEventListener(this);
     view = personFileView = new PersonFileTabView(desktop, dossier, this);
     if (parent != null) {//???
@@ -269,15 +276,15 @@ public class PersonFileEditor
       ((GemButton) evt.getSource()).setEnabled(false);
       dlgSchedulePayment();
     } else if ("Payer.debiting".equals(arg)) {
-      if (dossier == null || dossier.getBic() == null) {
+      if (dossier == null || dossier.getRib() == null) {
         new ErrorDlg(personFileView, MessageUtil.getMessage("payer.invalid.warning"));
         return;
       }
-      boolean printEcheancier = true;
+      boolean printOrderLines = true;
       if (!MessagePopup.confirm(personFileView, MessageUtil.getMessage("standing.order.print.warning"), "Confirmation")) {
-        printEcheancier = false;
+        printOrderLines = false;
       }
-      StandingOrder prl = new StandingOrder(personFileView, printEcheancier);
+      DirectDebitRequest prl = new DirectDebitRequest(personFileView, printOrderLines);
       prl.edit(dossier, BundleUtil.getLabel("Menu.debiting.label"), dataCache);
 
     } else if ("Login.creation".equals(arg)) {
@@ -421,11 +428,24 @@ public class PersonFileEditor
       dossier.setTeacher(personFileView.getTeacherFile());
     }
 
-    if (dossier.getBic() == null) {
-      dossier.addBic(personFileView.getBankFile());
+    if (dossier.getRib() == null) {
+      dossier.addRib(personFileView.getRibFile());
     } else {
-      dossier.setBic(personFileView.getBankFile());
+      dossier.setRib(personFileView.getRibFile());
     }
+
+    BankBranch a = personFileView.getBranchBank();
+    if (a != null && a.getBicCode() != null && !a.getBicCode().isEmpty()) {
+      try {
+        BankBranch b = BANK_BRANCH_IO.findId(a.getId());
+        if (b != null && !a.getBicCode().equals(b.getBicCode())) {
+          BANK_BRANCH_IO.update(a.getId(), a.getBicCode());
+        }
+      } catch (SQLException ex) {
+        GemLogger.log(Level.WARNING, ex.getMessage());
+      }
+    }
+    
   }
 
   /**
@@ -448,11 +468,11 @@ public class PersonFileEditor
           }
         }
       }
-
+      
       if (personFileView.isNewBranchOfBank()) {
         BankBranch a = personFileView.getBranchBank();
-        if (a.isValid()) {
-          new BankBranchIO(dc).insert(a);
+        if (a != null && a.isValid()) {
+          BANK_BRANCH_IO.insert(a);
           personFileView.setBranchBank(a); // maj id guichet
         }
       }
@@ -511,7 +531,7 @@ public class PersonFileEditor
     if (msg != null) {      
       new ErrorDlg(personFileView, msg);
     } else {
-      if (dossier.isModified()) {
+      if (dossier.hasChanged()) {
         msg = checkContact(MessageUtil.getMessage("update.warning"));
         if (MessagePopup.confirm(personFileView,
                 msg,
@@ -687,7 +707,7 @@ public class PersonFileEditor
     if (dossier.getTeacher() != null) {
       miTeacher.setEnabled(false);
     }
-    if (dossier.getBic() != null) {
+    if (dossier.getRib() != null) {
       miBank.setEnabled(false);
     }
 
@@ -839,7 +859,7 @@ public class PersonFileEditor
       new ErrorDlg(mBar, msg);
       return;
     }
-    if (dossier.isModified()) {
+    if (dossier.hasChanged()) {
       msg = checkContact(MessageUtil.getMessage("update.warning"));
       if (MessagePopup.confirm(personFileView, msg, "Enregistrement du dossier:" + dossier.getId())) {
         save();
@@ -908,7 +928,7 @@ public class PersonFileEditor
       return;
     }
 
-    if (BicView.class.getSimpleName().equals(classname)) {
+    if (RibView.class.getSimpleName().equals(classname)) {
       miBank.setEnabled(true);
       personFileView.removeBankIcons();
     } else if (MonthScheduleTab.class.getSimpleName().equals(classname)) {

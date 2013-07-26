@@ -1,5 +1,5 @@
 /*
- * @(#)CourseModuleView.java	2.8.a 24/04/13
+ * @(#)CourseModuleView.java	2.8.k 23/07/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -23,7 +23,6 @@ package net.algem.course;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -40,7 +39,7 @@ import net.algem.util.ui.GemPanel;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.k
  * @since 2.8.a 13/03/2013
  */
 public class CourseModuleView
@@ -59,7 +58,8 @@ public class CourseModuleView
     setLayout(new BorderLayout());
 
     GemPanel footer = new GemPanel();
-    footer.setLayout(new GridLayout());
+    footer.setLayout(new BorderLayout());
+    footer.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 2));
 
     plus = new GemButton(BundleUtil.getLabel("Course.add.label"));
     plus.addActionListener(this); 

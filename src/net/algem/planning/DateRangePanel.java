@@ -1,7 +1,7 @@
 /*
- * @(#)DateRangePanel.java 2.4.b 30/05/12
+ * @(#)DateRangePanel.java 2.8.k 25/07/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,6 +20,7 @@
  */
 package net.algem.planning;
 
+import java.awt.BorderLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -43,7 +44,7 @@ import net.algem.util.ui.GemPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.4.b
+ * @version 2.8.k
  */
 public class DateRangePanel
         extends GemPanel
@@ -84,11 +85,11 @@ public class DateRangePanel
       border = DEFAULT_BORDER;
     }
     d1 = new GemBorderPanel(border);
-    //d1.add(new JLabel("du"));
     d1.add(start);
     d1.add(cal1);
 
-    add(d1);
+    setLayout(new BorderLayout());
+    add(d1, BorderLayout.WEST);
 
     if (mode == RANGE_DATE) {
       start.addFocusListener(this);
@@ -105,11 +106,17 @@ public class DateRangePanel
       d2.add(end);
       d2.add(cal2);
 
-      add(d2);
+      add(d2, BorderLayout.EAST);
+      
     }
     //dlg = new CalendarDlg(this, "calendrier");
   }
 
+  public DateRangePanel() {
+    this(new DateFr(new Date()), new DateFr(new Date()));
+  }
+
+  
   /**
    * Creates a panel for one date only.
    * @param _start

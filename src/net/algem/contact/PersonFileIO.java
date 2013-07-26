@@ -24,8 +24,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Vector;
-import net.algem.bank.Bic;
-import net.algem.bank.BicIO;
+import net.algem.bank.Rib;
+import net.algem.bank.RibIO;
 import net.algem.contact.member.Member;
 import net.algem.contact.member.MemberIO;
 import net.algem.contact.member.PersonSubscriptionCardIO;
@@ -105,12 +105,12 @@ public class PersonFileIO
         }
       }
 
-      if (dossier.getBic() != null) {
-        Bic fb = dossier.getBic();
-        if (dossier.getOldBic() == null) {
-          //dossier.getBic().setId(dossier.getId());
+      if (dossier.getRib() != null) {
+        Rib fb = dossier.getRib();
+        if (dossier.getOldRib() == null) {
+          //dossier.getRib().setId(dossier.getId());
           if (0 != fb.getBranchId()) {
-            BicIO.insert(dossier.getBic(), dc);
+            RibIO.insert(dossier.getRib(), dc);
             logEvents.addElement("bic.create.event " + dossier.getId());
           }
         } else {
@@ -118,10 +118,10 @@ public class PersonFileIO
           //if (fb.getAccount().isEmpty()) {
           //Suppression du rib si aucun des champs de la vue n'est rempli
           if (fb.isEmpty()) {
-            BicIO.delete(dossier.getOldBic(), dc);
+            RibIO.delete(dossier.getOldRib(), dc);
             logEvents.addElement("bic.delete.event");
-          } else if (!fb.equals(dossier.getOldBic())) {
-            BicIO.update(dossier.getBic(), dc);
+          } else if (!fb.equals(dossier.getOldRib())) {
+            RibIO.update(dossier.getRib(), dc);
             logEvents.addElement("bic.update.event");
           }
         }
@@ -252,9 +252,9 @@ public class PersonFileIO
         Person p = PersonIO.getFromRS(rs);
 
         PersonFile d = new PersonFile(new Contact(p));
-        Bic r = BicIO.findId(p.getId(), dc);
+        Rib r = RibIO.findId(p.getId(), dc);
         if (r != null) {
-          d.setBic(r);
+          d.setRib(r);
         }
 
         v.addElement(d);
@@ -290,7 +290,7 @@ public class PersonFileIO
     pf.addTeacher((Teacher) DataCache.findId(pf.getId(), Model.Teacher));
     /*pf.setMember(memberIO.findId(pf.getId()));
     pf.addTeacher(teacherIO.findId(pf.getId()));*/
-    pf.addBic(BicIO.findId(pf.getId(), dc));
+    pf.addRib(RibIO.findId(pf.getId(), dc));
     pf.setSubscriptionCard(new PersonSubscriptionCardIO(dc).find(pf.getId(), null));
     pf.setGroups(((GroupIO) DataCache.getDao(Model.Group)).find(pf.getId()));
   }

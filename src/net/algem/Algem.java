@@ -1,5 +1,5 @@
 /*
- * @(#)Algem.java	2.8.h 03/06/13
+ * @(#)Algem.java	2.8.k 19/07/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -43,12 +43,12 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.h
+ * @version 2.8.k
  */
 public class Algem
 {
 
-  public static final String APP_VERSION = "2.8.h";//experimental
+  public static final String APP_VERSION = "2.8.k";//experimental
   private static final int DEF_WIDTH = 1080;// (850,650) => ancienne taille
   private static final int DEF_HEIGHT = 780;
   private static final Point DEF_LOCATION = new Point(70, 30);
@@ -179,10 +179,7 @@ public class Algem
     }
     
     String port = props.getProperty("port");
-    int dbport = DataConnection.DEF_PORT;
-    if (port != null) {
-      dbport = Integer.parseInt(port);
-    }
+    int dbport = (port != null) ? Integer.parseInt(port) : DataConnection.DEF_PORT;
     
     dc = new DataConnection(host, dbport, base);
 

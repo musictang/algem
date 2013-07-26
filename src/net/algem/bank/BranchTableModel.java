@@ -1,7 +1,7 @@
 /*
- * @(#)BranchTableModel.java	2.6.a 14/09/12
+ * @(#)BranchTableModel.java	2.8.i 08/07/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,7 +27,7 @@ import net.algem.util.ui.JTableModel;
 /**
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.i
  */
 public class BranchTableModel
         extends JTableModel
@@ -35,10 +35,11 @@ public class BranchTableModel
 
   public BranchTableModel() {
     header = new String[]{
-      "id", 
+      BundleUtil.getLabel("Id.label"), 
       BundleUtil.getLabel("Bank.label"),
       BundleUtil.getLabel("Bank.branch.label"),
       "Domiciliation",
+      BundleUtil.getLabel("Bic.code.label"),
       BundleUtil.getLabel("Address.label")
     };
   }
@@ -58,6 +59,7 @@ public class BranchTableModel
       case 2:
       case 3:
       case 4:
+      case 5:
         return String.class;
       default:
         return Object.class;
@@ -82,12 +84,10 @@ public class BranchTableModel
       case 3:
         return a.getDomiciliation();
       case 4:
+        return a.getBicCode();
+      case 5:
         Address adr = a.getAddress();
-        if (adr != null) {
-          return adr;
-        } else {
-          return "Pas d'adresse !!";
-        }
+        return adr == null ? "Pas d'adresse !!" : adr;
     }
     return null;
   }

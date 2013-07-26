@@ -1,7 +1,7 @@
 /*
- * @(#)BankBranchCtrl.java	2.6.a 14/09/12
+ * @(#)BankBranchCtrl.java	2.8.i 07/07/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -22,20 +22,23 @@ package net.algem.bank;
 
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
+import java.util.Vector;
+import java.util.logging.Level;
 import net.algem.contact.AddressIO;
 import net.algem.contact.CodePostalCtrl;
 import net.algem.util.DataConnection;
+import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
 import net.algem.util.ui.CardCtrl;
-import net.algem.util.ui.ErrorDlg;
+import net.algem.util.ui.MessagePopup;
 
 /**
  * Branch of bank management.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.i
  */
 public class BankBranchCtrl
         extends CardCtrl
@@ -53,7 +56,9 @@ public class BankBranchCtrl
     branchView.setBankCodeCtrl(new BankCodeCtrl(this.dc, branchIO));
     branchView.setPostalCodeCtrl(new CodePostalCtrl(this.dc));
 
-    addCard("fiche agence bancaire", branchView);
+    addCard("Fiche agence bancaire", branchView);
+    btPrev.setText(GemCommand.DELETE_CMD);
+    btPrev.setActionCommand(GemCommand.DELETE_CMD);
     select(0);
   }
 
@@ -77,12 +82,14 @@ public class BankBranchCtrl
 
   @Override
   public boolean prev() {
-    switch (step) {
-      default:
-        select(step - 1);
-        break;
-    }
-    return true;
+//    switch (step) {
+//      default:
+//        select(step - 1);
+//        break;
+//    }
+//    return true;
+    delete();
+    return cancel();
   }
 
   @Override
@@ -92,9 +99,9 @@ public class BankBranchCtrl
     }
 
     try {
-      BankBranch a = branchView.getAgenceBancaire();
+      BankBranch a = branchView.getBankBranch();
       if (!a.isValid()) {
-        new ErrorDlg(this, MessageUtil.getMessage("incomplete.entry.error"));
+        MessagePopup.error(this, MessageUtil.getMessage("incomplete.entry.error"));
         return false;
       }
       bankBranchIO.update(branch, a);
@@ -113,6 +120,27 @@ public class BankBranchCtrl
     branchView.clear();
     select(0);
   }
+  
+  private void delete() {
+//    BankBranch a = branchView.getBankBranch();
+    
+    try {
+      Vector<Rib> ribs = BranchIO.getRibs(branch.getId(), dc);
+      if (ribs != null && ribs.size() > 0) {
+        StringBuilder sb = new StringBuilder();
+        for (Rib r : ribs) {
+          sb.append(r.getId()).append(',');
+        }
+        sb.deleteCharAt(sb.length() -1);
+        throw new Exception(MessageUtil.getMessage("bank.branch.delete.exception", sb.toString()));
+      }
+      bankBranchIO.delete(branch);
+    } catch (Exception ex) {
+      GemLogger.log(Level.WARNING, ex.getMessage());
+      MessagePopup.error(this, ex.getMessage());
+    }
+  }
+  
 
   @Override
   public boolean loadCard(Object o) {
@@ -125,12 +153,11 @@ public class BankBranchCtrl
     if (!branch.isComplete()) {
       try {
         branch.setAddress(AddressIO.findId(branch.getId(), dc));
-        //guichet.setTele(TeleIO.findId(dc,guichet.getId()));
       } catch (SQLException ex) {
-        System.err.println(getClass().getName() + "#loadFiche " + ex.getMessage());
+        GemLogger.log(this.toString(), "loadCard", ex.getMessage());
       }
     }
-    branchView.setAgenceBancaire(branch);
+    branchView.setBankBranch(branch);
 
     return true;
   }

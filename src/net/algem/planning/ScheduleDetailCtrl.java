@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleDetailCtrl.java 2.8.a 15/04/13
+ * @(#)ScheduleDetailCtrl.java 2.8.k 26/07/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -59,20 +59,22 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.k
  * @since 1.0a 07/07/1999
  */
 public class ScheduleDetailCtrl
         implements ActionListener
 {
 
+  private static PersonScheduleComparator psComparator = new PersonScheduleComparator();
+  private static PersonComparator personComparator = new PersonComparator();
+  private static MailUtil MAIL_UTIL;
+
   private GemDesktop desktop;
   private DataCache dataCache;
   private DataConnection dc;
-  
   /** Contains modification buttons. */
   private PlanModifCtrl modifCtrl;
-  
   private JDialog frame;
   private GemPanel panel;
   private GemBorderPanel headPanel;
@@ -83,15 +85,11 @@ public class ScheduleDetailCtrl
   private GemMenuButton btClose, btWrite, btGroupWrite;
   private ScheduleDetailEvent detailEvent;
   private DesktopMailHandler mailHandler;
-  
   private PlanningService scheduleService;
   private GroupService groupService;
   private MemberService memberService;
-  
   /** Presence indicator of the modification buttons. */
   private boolean allMenus;
-  private static PersonScheduleComparator psComparator = new PersonScheduleComparator();
-  private static PersonComparator personComparator = new PersonComparator();
 
   public ScheduleDetailCtrl(GemDesktop _desktop, PlanModifCtrl _mpc, boolean all) {
     desktop = _desktop;
@@ -100,6 +98,7 @@ public class ScheduleDetailCtrl
     scheduleService = new PlanningService(dc);
     groupService = new GroupService(dc);
     memberService = new MemberService(dc);
+    MAIL_UTIL = new MailUtil(dataCache, memberService);
     modifCtrl = _mpc;
     frame = new JDialog(desktop.getFrame(), "détail planning");
     allMenus = all;
@@ -400,9 +399,9 @@ public class ScheduleDetailCtrl
         if (editor != null) {
           desktop.setSelectedModule(editor);
         } else {
-            setWaitCursor();
-            PersonFile pf = (PersonFile) DataCache.findId(p.getId(), Model.PersonFile);
-            loadPersonFile(pf);
+          setWaitCursor();
+          PersonFile pf = (PersonFile) DataCache.findId(p.getId(), Model.PersonFile);
+          loadPersonFile(pf);
         }
 
       } else if ("PersonLink".equals(arg)) {
@@ -453,20 +452,22 @@ public class ScheduleDetailCtrl
           frame.setLocation(getOffset(desktop.getSelectedModule().getView()));
         }
       } else if ("Mailing".equals(arg)) {
-        Vector<ScheduleRangeObject> vct = detailEvent.getRanges();//plages
-        mailToMembers(vct);
-
+        Vector<ScheduleRangeObject> ranges = detailEvent.getRanges();//plages
+        String message = MAIL_UTIL.mailToMembers(ranges, schedule.getIdPerson());
+        if (message.length() > 0) {
+          String info = MessageUtil.getMessage("members.without.email");
+          new MessageDialog(frame, BundleUtil.getLabel("Information.label"), false, info, message);
+        }
       } else if ("MailingGroup".equals(arg)) {
         Vector<Musician> mus = null;
-        try {
-          mus = groupService.getMusicians(schedule.getIdPerson());
-        } catch (SQLException ex) {
-          GemLogger.logException(ex);
-        }
+        mus = groupService.getMusicians(schedule.getIdPerson());
         if (mus != null && mus.size() > 0) {
-          mailToGroupMembers(mus);
+          String message = MAIL_UTIL.mailToGroupMembers(mus);
+          if (message.length() > 0) {
+            String info = MessageUtil.getMessage("group.members.without.email");
+            new MessageDialog(desktop.getFrame(), BundleUtil.getLabel("Information.label"), false, info, message);
+          }
         }
-
       } else if ("BreakLink".equals(arg)) {
         ScheduleRangeObject po = (ScheduleRangeObject) ((GemMenuButton) evt.getSource()).getObject();
         DateFr start = po.getDate();
@@ -505,31 +506,6 @@ public class ScheduleDetailCtrl
   }
 
   /**
-   * Sends an email to recipients in bcc.
-   *
-   * @param bcc blind carbon copy
-   */
-  private void sendMailTo(StringBuffer bcc) {
-    if (bcc.length() > 0) {
-      if (mailHandler == null) {
-        mailHandler = new DesktopMailHandler();
-      }
-
-      String to = null;
-      // on recherche le 1er email de l'utilisateur
-      try {
-        to = EmailIO.findId(dataCache.getUser().getId(), dc);
-      } catch (SQLException ex) {
-        System.err.println(ex.getMessage());
-      }
-      if (to == null) {
-        to = dataCache.getUser().getLogin() + "@" + BundleUtil.getLabel("Domain");
-      }
-      mailHandler.send(to, bcc.toString());
-    }
-  }
-
-  /**
    * Loads the person file's editor.
    *
    * @param dossier
@@ -542,110 +518,8 @@ public class ScheduleDetailCtrl
   }
 
   /**
-   * Gets member's emails.
-   *
-   * @param pf
-   * @return a sequence of emails, separated by a comma
-   */
-  private String getEmail(PersonFile pf) {
-
-    String email = "";
-
-    Vector<Email> emails = pf.getContact().getEmail();
-    if (emails != null) {
-      for (Email e : emails) {
-        if (!e.isArchive()) {
-          email += (email.length() > 0) ? "," + e.getEmail() : e.getEmail();
-        }
-      }
-    } else {
-      // Si l'adherent est lié au payeur
-      if (pf.isPayerLinked()) {
-        try {
-          email = EmailIO.findId(pf.getMember().getPayer(), dc);
-        } catch (SQLException e) {
-          GemLogger.logException(e);
-        }
-      }
-    }
-
-    return email;
-  }
-
-  /**
-   * Sends an email to selected schedule's participants.
-   *
-   * @param vct selected schedule
-   */
-  private void mailToMembers(Vector<ScheduleRangeObject> vct) {
-
-    String message = "";
-    StringBuffer bcc = new StringBuffer();
-
-    try { // recherche de l'email du professeur
-      String teacherEmail = memberService.getEmail(schedule.getIdPerson());
-      if (teacherEmail != null && teacherEmail.indexOf('@') != -1) {// si contient @
-        bcc.append(teacherEmail);
-      }
-    } catch (SQLException ex) {
-      GemLogger.logException(ex);
-    }
-    // recherche des emails des adherents
-    for (ScheduleRangeObject pg : vct) {
-      if (pg.getMember().getId() == 0) {// les pauses ne sont pas prises en compte
-        continue;
-      }
-      Person m = pg.getMember();
-      PersonFile pf = ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findMember(m.getId(), true);
-      if (pf != null) {
-        String email = getEmail(pf);
-        if (email != null && email.length() > 0) {
-          bcc.append((bcc.length() > 0) ? "," + email : email);
-        } else {
-          message += pf.getContact().getFirstnameName() + "\n";
-        }
-      } else {
-        message += MessageUtil.getMessage("member.null.exception", new Object[]{m.getId()});
-      }
-    }
-    sendMailTo(bcc);
-
-    if (message.length() > 0) {
-      String info = MessageUtil.getMessage("members.without.email");
-      new MessageDialog(frame, BundleUtil.getLabel("Information.label"), false, info, message);
-    }
-  }
-
-  /**
-   * Sends an email to the members of the group.
-   * 
-   * @param mus the list of musicians (members)
-   */
-  private void mailToGroupMembers(Vector<Musician> mus) {
-    String message = "";
-    StringBuffer bcc = new StringBuffer();
-
-    for (Musician m : mus) {
-      PersonFile member = ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findMember(m.getId(), true);
-      if (member != null) {
-        String email = getEmail(member);
-        if (email != null && email.length() > 0) {
-          bcc.append((bcc.length() > 0) ? "," + email : email);
-        } else {
-          message += member.getContact().getFirstnameName() + "\n";
-        }
-      }
-    }
-    sendMailTo(bcc);
-
-    if (message.length() > 0) {
-      String info = MessageUtil.getMessage("group.members.without.email");
-      new MessageDialog(frame, BundleUtil.getLabel("Information.label"), false, info, message);
-    }
-  }
-
-  /**
    * Gets the position to move the view after opening.
+   *
    * @param view
    * @return a point
    */
@@ -657,11 +531,11 @@ public class ScheduleDetailCtrl
     int h = view.getHeight();
     return new Point(x + w, y + h);
   }
-  
+
   private void setWaitCursor() {
     frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
   }
-  
+
   private void setDefaultCursor() {
     frame.setCursor(Cursor.getDefaultCursor());
   }

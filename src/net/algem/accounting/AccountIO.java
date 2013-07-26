@@ -1,7 +1,7 @@
 /*
- * @(#)AccountIO.java	2.7.a 09/01/13
+ * @(#)AccountIO.java	2.8.i 28/06/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -31,7 +31,7 @@ import net.algem.util.model.TableIO;
  * Account persistence.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.i
  * @since 2.3.c 08/03/12
  */
 public class AccountIO
@@ -55,7 +55,7 @@ public class AccountIO
     c.setId(id);
 
     String query = "INSERT INTO " + TABLE + " VALUES ("
-            + c.getId() + ", '" + c.getNumber() + "', '" + c.getLabel() + "', " + c.isActive()
+            + c.getId() + ", '" + c.getNumber() + "', '" + escape(c.getLabel()) + "', " + c.isActive()
             + ")";
     dc.executeUpdate(query);
   }
@@ -69,7 +69,7 @@ public class AccountIO
   public static void update(Account c, DataConnection dc) throws SQLException {
 
     String query = "UPDATE " + TABLE
-            + " SET numero =  '" + c.getNumber() + "', libelle = '" + c.getLabel() + "', actif = " + c.isActive()
+            + " SET numero =  '" + c.getNumber() + "', libelle = '" + escape(c.getLabel()) + "', actif = " + c.isActive()
             + " WHERE id = " + c.getId();
     dc.executeUpdate(query);
   }
@@ -147,7 +147,7 @@ public class AccountIO
     }
     ResultSet rs = dc.executeQuery(query);
     if (rs.next()) {
-      c = new Account(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getBoolean(4));
+      c = new Account(rs.getInt(1), rs.getString(2), unEscape(rs.getString(3)), rs.getBoolean(4));
     }
     return c;
   }

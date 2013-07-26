@@ -1,7 +1,7 @@
 /*
- * @(#)WebSitePanel.java	2.7.a 30/11/12
+ * @(#)WebSitePanel.java	2.8.k 23/07/13
  *
- * Copyright (c) 1998-2011 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1998-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -33,7 +33,7 @@ import net.algem.util.jdesktop.DesktopBrowseHandler;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.k
  */
 public class WebSitePanel extends InfoPanel implements ActionListener, ItemListener {
 
@@ -44,7 +44,7 @@ public class WebSitePanel extends InfoPanel implements ActionListener, ItemListe
     super(v, false);
     setSite(s);
     iChoice.addItemListener(this);
-    addButton("Go", BundleUtil.getLabel("Website.view.tip"));
+    addButton(BundleUtil.getLabel("See.label"), BundleUtil.getLabel("Website.view.tip"));
     this.browser = browser;
     iButton.addActionListener(this);
   }

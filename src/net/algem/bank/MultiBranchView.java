@@ -1,7 +1,7 @@
 /*
- * @(#)MultiBranchView.java	2.6.a 14/09/12
+ * @(#)MultiBranchView.java	2.8.i 08/07/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -34,6 +34,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.TableColumnModel;
 import net.algem.contact.Address;
+import net.algem.util.BundleUtil;
+import net.algem.util.GemCommand;
 import net.algem.util.ui.*;
 
 /**
@@ -41,7 +43,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.i
  */
 public class MultiBranchView
         extends GemBorderPanel
@@ -49,20 +51,20 @@ public class MultiBranchView
 
   private MultiBranchTableModel branchTableModel;
   private JTable branchTable;
-  private Vector branchs;
-  private GemField bankCode;
-  private GemField branchCode;
+  private Vector<BankBranch> branches;
+  private GemField bankCodeField;
+  private GemField branchCodeField;
   private ActionListener actionListener;
 
-  public MultiBranchView(String bank, String branch) {
-    bankCode = new GemField(5);
-    bankCode.setText(bank);
-    bankCode.setEditable(false);
-    bankCode.setBackground(Color.lightGray);
-    branchCode = new GemField(5);
-    branchCode.setText(branch);
-    branchCode.setEditable(false);
-    branchCode.setBackground(Color.lightGray);
+  public MultiBranchView(String bankCode, String branchCode) {
+    bankCodeField = new GemField(5);
+    bankCodeField.setText(bankCode);
+    bankCodeField.setEditable(false);
+    bankCodeField.setBackground(Color.LIGHT_GRAY);
+    branchCodeField = new GemField(5);
+    branchCodeField.setText(branchCode);
+    branchCodeField.setEditable(false);
+    branchCodeField.setBackground(Color.LIGHT_GRAY);
 
     branchTableModel = new MultiBranchTableModel();
     branchTable = new JTable(branchTableModel);
@@ -73,27 +75,28 @@ public class MultiBranchView
       public void mouseClicked(MouseEvent e) {
         int n = branchTable.convertRowIndexToModel(branchTable.getSelectedRow());
         if (actionListener != null) {
-          actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Modifier"));
+          actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, GemCommand.MODIFY_CMD));
         }
       }
     });
 
 
     TableColumnModel cm = branchTable.getColumnModel();
+    
     cm.getColumn(0).setPreferredWidth(80);
     cm.getColumn(1).setPreferredWidth(300);
-    cm.getColumn(2).setPreferredWidth(250);
-
+    cm.getColumn(2).setPreferredWidth(200);
+    cm.getColumn(3).setPreferredWidth(100);
 
     JScrollPane pm = new JScrollPane(branchTable);
 
     GemPanel haut = new GemPanel();
     haut.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(haut);
-    gb.add(new GemLabel("code banque"), 0, 0, 1, 1, GridBagHelper.WEST);
-    gb.add(bankCode, 1, 0, 1, 1, GridBagHelper.HORIZONTAL, 1.0, 0.0);
-    gb.add(new GemLabel("code agence"), 0, 1, 1, 1, GridBagHelper.WEST);
-    gb.add(branchCode, 1, 1, 1, 1, GridBagHelper.HORIZONTAL, 1.0, 0.0);
+    gb.add(new GemLabel(BundleUtil.getLabel("Bank.code.label")), 0, 0, 1, 1, GridBagHelper.WEST);
+    gb.add(bankCodeField, 1, 0, 1, 1, GridBagHelper.HORIZONTAL, 1.0, 0.0);
+    gb.add(new GemLabel(BundleUtil.getLabel("Bank.branch.code.label")), 0, 1, 1, 1, GridBagHelper.WEST);
+    gb.add(branchCodeField, 1, 1, 1, 1, GridBagHelper.HORIZONTAL, 1.0, 0.0);
 
     this.setLayout(new BorderLayout());
 
@@ -109,50 +112,50 @@ public class MultiBranchView
     actionListener = AWTEventMulticaster.add(actionListener, l);
   }
 
-  public BankBranch getSelectedAgence() {
+  BankBranch getSelectedBranch() {
     int n = branchTable.getSelectedRow();
-    return (BankBranch) branchs.elementAt(n);
+    return (BankBranch) branches.elementAt(n);
   }
 
-  public void addBranch(BankBranch a) {
-    branchs.addElement(a);
+  void addBranch(BankBranch a) {
+    branches.addElement(a);
     branchTableModel.addItem(a);
     //addAdresse(a.getAdresse());
   }
 
-  public void loadBranches(Vector v) {
-    branchs = v;
-    Enumeration e = v.elements();
+  void loadBranches(Vector<BankBranch> v) {
+    branches = v;
+    Enumeration<BankBranch> e = v.elements();
     while (e.hasMoreElements()) {
-      BankBranch a = (BankBranch) e.nextElement();
+      BankBranch a = e.nextElement();
       //addAdresse(a.getAdresse());//remplissage du table model
       branchTableModel.addItem(a);
     }
   }
 
-  public void addAddress(Address adr) {
+  void addAddress(Address adr) {
     branchTableModel.addItem(adr);
   }
 
-  public void changeAddress(int i, Address adr) {
+  void changeAddress(int i, Address adr) {
     branchTableModel.modItem(i, adr);
   }
 
-  public void removeAddress(int i) {
+  void removeAddress(int i) {
     branchTableModel.deleteItem(i);
   }
 
-  public void setBankCode(String s) {
-    bankCode.setText(s);
+  void setBankCode(String s) {
+    bankCodeField.setText(s);
   }
 
-  public void setBranchCode(String s) {
-    branchCode.setText(s);
+  void setBranchCode(String s) {
+    branchCodeField.setText(s);
   }
 
-  public void clear() {
-    bankCode.setText("");
-    branchCode.setText("");
+  private void clear() {
+    bankCodeField.setText("");
+    branchCodeField.setText("");
     branchTableModel.clear();
   }
 }

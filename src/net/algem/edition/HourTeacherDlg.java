@@ -1,5 +1,5 @@
 /*
- * @(#)HourTeacherDlg.java	2.8.f 24/05/13
+ * @(#)HourTeacherDlg.java	2.8.k 25/07/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,7 +20,7 @@
  */
 package net.algem.edition;
 
-import java.awt.Container;
+import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Frame;
 import java.awt.GridBagLayout;
@@ -35,10 +35,7 @@ import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
-import javax.swing.BoxLayout;
-import javax.swing.JLabel;
-import javax.swing.ProgressMonitor;
-import javax.swing.SwingWorker;
+import javax.swing.*;
 import net.algem.accounting.AccountUtil;
 import net.algem.accounting.AccountingService;
 import net.algem.accounting.OrderLineIO;
@@ -62,11 +59,11 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.f
+ * @version 2.8.k
  * @since 1.0a 14/12/1999
  */
 public class HourTeacherDlg
-        extends TransfertDlg
+        extends TransferDlg
         implements ActionListener, PropertyChangeListener
 {
 
@@ -97,9 +94,11 @@ public class HourTeacherDlg
   @Override
   public void init(String file, DataConnection dc) {
     super.init(file, dc);
-
-    Container c = getContentPane();
-    c.setLayout(new BoxLayout(c, BoxLayout.Y_AXIS));
+    setLayout(new BorderLayout());
+    
+    GemPanel p = new GemPanel();
+    p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+    p.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
     GemPanel header = new GemPanel();
     header.setLayout(new GridBagLayout());
@@ -110,9 +109,11 @@ public class HourTeacherDlg
     gb.add(chooser, 2, 0, 1, 1, GridBagHelper.WEST);
     view = new HourTeacherView(dc, dataCache.getList(Model.School));
 
-    c.add(header);
-    c.add(view);
-    c.add(buttons);
+    p.add(header);
+    p.add(view);
+    
+    add(p, BorderLayout.CENTER);
+    add(buttons, BorderLayout.SOUTH);
     pack();
   }
 

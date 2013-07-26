@@ -1,7 +1,7 @@
 /*
- * @(#)GemLogFormatter.java	2.6.a 30/07/2012
+ * @(#)GemLogFormatter.java	2.8.j 12/07/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -29,7 +29,7 @@ import java.util.logging.LogRecord;
 /**
  * Formatter for logging.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.j
  * @since 2.6.a 30/07/2012
  */
 public class GemLogFormatter
@@ -38,19 +38,20 @@ public class GemLogFormatter
 
 	@Override
 	public String format(LogRecord record) {
+        String nl = FileUtil.LINE_SEPARATOR;
 		StringBuilder s = new StringBuilder(1000);
 
 		Date d = new Date(record.getMillis());
-		DateFormat df = new SimpleDateFormat("dd-MM-yyyy H:mm");
+		DateFormat df = new SimpleDateFormat("dd-MM-yyyy H:mm:ss");
 
-		s.append(df.format(d)).append(" ").append(System.getProperty("user.name")).append("\n");
-		s.append(record.getLevel()).append(" :\n").append(record.getMessage()).append("\n");
+		s.append(record.getLevel()).append(':').append(df.format(d)).append(" ").append(System.getProperty("user.name")).append(nl);
+		s.append(record.getMessage()).append(nl).append(nl);
 		return s.toString();
 	}
 
 	@Override
 	public String getHead(Handler h) {
-		return "=======================================\n";
+		return "============================================================================" + FileUtil.LINE_SEPARATOR;
 	}
 
 }

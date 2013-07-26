@@ -1,5 +1,5 @@
 /*
- * @(#)AccountTransfer.java	2.8.a 01/04/13
+ * @(#)AccountTransfer.java	2.8.k 19/07/13
  *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -52,7 +52,7 @@ import net.algem.util.ui.MessagePopup;
  * Abstract class for accounting transfers.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.k
  * @since 2.3.c 21/03/12
  */
 public abstract class AccountTransfer
@@ -75,7 +75,6 @@ public abstract class AccountTransfer
   protected static char cd = 'C';// credit
   protected static char dc = 'D';//debit
   protected DateFormat dateFormat = new SimpleDateFormat("ddMMyyyy");
-
 
   public AccountTransfer(Frame _parent, DataCache dataCache) {
     super(_parent, "Transfert Compta");
@@ -115,6 +114,10 @@ public abstract class AccountTransfer
     if (evt.getSource() == btCancel) {
       close();
     } else if (evt.getSource() == btValidation) {
+      file = new File(filePath.getText());
+      if (!FileUtil.confirmOverWrite(this, file)) {
+        return;
+      }
       transfer();
       close();
     } else if (evt.getSource() == chooser) {
@@ -123,7 +126,9 @@ public abstract class AccountTransfer
       int ret = fileChooser.showDialog(this, BundleUtil.getLabel("FileChooser.selection"));
       if (ret == JFileChooser.APPROVE_OPTION) {
         file = fileChooser.getSelectedFile();
-        filePath.setText(file.getPath());
+        if (FileUtil.confirmOverWrite(this, file)) {
+          filePath.setText(file.getPath());
+        }
       }
     }
   }

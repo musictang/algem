@@ -1,5 +1,5 @@
 /*
- * @(#)HourStatDlg.java	2.8.a 01/04/13
+ * @(#)HourStatDlg.java	2.8.k 25/07/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -23,6 +23,7 @@ package net.algem.edition;
 import java.awt.Cursor;
 import java.awt.Dialog;
 import java.awt.Frame;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileWriter;
@@ -52,7 +53,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.k
  * @since 1.0a 30/04/2003
  */
 public class HourStatDlg
@@ -69,7 +70,7 @@ public class HourStatDlg
   private ExportService service;
 
   public HourStatDlg(Frame _parent, DataCache _cache) {
-    super(_parent, "Edition Statitique activité");
+    super(_parent, "Edition Statistique activité");
     dataCache = _cache;
     init(_cache.getDataConnection());
   }
@@ -94,26 +95,27 @@ public class HourStatDlg
     btCancel = new GemButton(GemCommand.CANCEL_CMD);
     btCancel.addActionListener(this);
 
-    buttons = new GemPanel();
+    buttons = new GemPanel(new GridLayout(1,2));
     buttons.add(btValidation);
     buttons.add(btCancel);
 
     getContentPane().add("Center", view);
     getContentPane().add("South", buttons);
-    setSize(380, 250);
+//    setSize(380, 250);
+    pack();
   }
 
   @Override
   public void actionPerformed(ActionEvent evt) {
     if (evt.getSource() == btCancel) {
     } else if (evt.getSource() == btValidation) {
-      transfert();
+      transfer();
     }
     setVisible(false);
     dispose();
   }
 
-  void transfert() {
+  void transfer() {
     DateFr start = view.getDateStart();
     DateFr end = view.getDateEnd();
     int school = view.getSchool();

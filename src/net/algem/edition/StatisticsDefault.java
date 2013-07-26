@@ -1,7 +1,7 @@
 /*
- * @(#)StatisticsDefault.java	2.6.g 20/11/12
+ * @(#)StatisticsDefault.java	2.8.k 19/07/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,12 +21,13 @@
 package net.algem.edition;
 
 import java.sql.SQLException;
+import net.algem.util.MessageUtil;
 
 /**
  * Default file export for statistics.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.g
+ * @version 2.8.k
  * @since 2.6.a 12/10/2012
  */
 public class StatisticsDefault
@@ -40,16 +41,16 @@ public class StatisticsDefault
   public void makeStats() throws SQLException {
     super.makeStats();
     separate();
-    printIntResult("Payeurs sans adresse", getQuery("payers_without_address"));
-    printIntResult("Adhérents débiteurs", getQuery("debtors"));
+    printIntResult(MessageUtil.getMessage("statistics.payers.without.address"), getQuery("payers_without_address"));
+    printIntResult(MessageUtil.getMessage("statistics.debtors"), getQuery("debtors"));
     separate();
-    printIntResult("Nombre total d'adhérents", getQuery("total_number_of_members"));
-    printIntResult("Nombre d'adhérents hommes", getQuery("number_of_men_members"));
-    printIntResult("Nombre d'adhérentes", getQuery("number_of_women_members"));
+    printIntResult(MessageUtil.getMessage("statistics.total.number.of.members"), getQuery("total_number_of_members"));
+    printIntResult(MessageUtil.getMessage("statistics.number.of.men.members"), getQuery("number_of_men_members"));
+    printIntResult(MessageUtil.getMessage("statistics.number.of.women.members"), getQuery("number_of_women_members"));
     separate();
-    printListResult("Liste des adhérents par catégorie professionnelle", getQuery("members_by_occupational"));
+    printTableIntResult(MessageUtil.getMessage("statistics.members.by.occupational"), getQuery("members_by_occupational"));
     separate();
-    printListResult("Situation géographique des adhérents", getQuery("members_by_location"));
+    printTableIntResult(MessageUtil.getMessage("statistics.members.by.location"), getQuery("members_by_location"));
     footer();
   }
 
@@ -63,20 +64,21 @@ public class StatisticsDefault
             || m.equals("members_with_rehearsal")
             || m.equals("hours_of_pro_lessons")
             || m.equals("hours_of_collective_pro_lessons")
-            || m.equals("hours_of_private_pro_lessons")) {
+            || m.equals("hours_of_private_pro_lessons")
+            || m.equals("hours_teacher_of_collective_lessons")) {
       return super.getQuery(m);
     }
     if (m.equals("payers_without_address")) {
       return "SELECT DISTINCT payeur FROM echeancier2"
               + " WHERE echeance >= '" + start + "' AND echeance <= '" + end + "'"
-              + " AND echeancier2.montant = 1000"
+//              + " AND echeancier2.montant = 1000"
               + " AND compte = " + MEMBERSHIP_ACCOUNT
               + " AND payeur NOT IN (SELECT idper FROM adresse)";
     }
     if (m.equals("debtors")) {
       return "SELECT DISTINCT adherent, nom, prenom FROM echeancier2,personne"
               + " WHERE echeance BETWEEN '" + start + "' AND '" + end + "'"
-              + " AND echeancier2.montant = 1000"
+//              + " AND echeancier2.montant = 1000"
               + " AND compte = " + MEMBERSHIP_ACCOUNT
               + " AND echeancier2.paye = false"
               + " AND echeancier2.adherent = personne.id";
@@ -84,14 +86,14 @@ public class StatisticsDefault
     if (m.equals("total_number_of_members")) {
       return "SELECT count(DISTINCT adherent) FROM echeancier2"
               + " WHERE echeance BETWEEN '" + start + "' AND '" + end + "'"
-              + " AND echeancier2.montant = 1000"
+//              + " AND echeancier2.montant = 1000"
               + " AND compte = " + MEMBERSHIP_ACCOUNT;
     }
     if (m.equals("number_of_men_members")) {
       return "SELECT count(DISTINCT adherent) FROM echeancier2, personne"
               + " WHERE personne.id = echeancier2.adherent"
               + " AND echeance BETWEEN '" + start + "' AND '" + end + "'"
-              + " AND echeancier2.montant=1000"
+//              + " AND echeancier2.montant=1000"
               + " AND compte = " + MEMBERSHIP_ACCOUNT
               + " AND (trim(personne.civilite) = 'M' OR personne.civilite = '')";
     }
@@ -99,7 +101,7 @@ public class StatisticsDefault
       return "SELECT count(DISTINCT adherent) FROM echeancier2, personne"
               + " WHERE personne.id = echeancier2.adherent"
               + " AND echeance BETWEEN '" + start + "' AND '" + end + "'"
-              + " AND echeancier2.montant=1000"
+//              + " AND echeancier2.montant=1000"
               + " AND compte = " + MEMBERSHIP_ACCOUNT
               + " AND (trim(personne.civilite) = 'Mme' OR personne.civilite = 'Mlle')";
     }
@@ -107,14 +109,14 @@ public class StatisticsDefault
       return "SELECT profession, count(DISTINCT adherent) FROM echeancier2,eleve"
               + " WHERE eleve.idper=echeancier2.adherent"
               + " AND echeance BETWEEN '" + start + "' AND '" + end + "'"
-              + " AND montant = 1000"
+//              + " AND montant = 1000"
               + " AND compte  = " + MEMBERSHIP_ACCOUNT
               + " GROUP BY profession";
     }
     if (m.equals("members_by_location")) {
       return "SELECT adresse.ville, count(DISTINCT echeancier2.adherent) FROM echeancier2, adresse"
               + " WHERE echeancier2.echeance BETWEEN '" + start + "' AND '" + end + "'"
-              + " AND echeancier2.montant = 1000"
+//              + " AND echeancier2.montant = 1000"
               + " AND echeancier2.compte = " + MEMBERSHIP_ACCOUNT
               + " AND (echeancier2.payeur = adresse.idper OR echeancier2.adherent = adresse.idper)"
               + " GROUP BY adresse.ville ORDER BY adresse.ville";
@@ -125,5 +127,23 @@ public class StatisticsDefault
   @Override
   protected String getQuery(String m, Object a1, Object a2) {
     return super.getQuery(m, a1, a2);
+  }
+
+  @Override
+  protected void setSummaryDetail(StringBuilder nav) {
+    addEntry(nav, MessageUtil.getMessage("statistics.members.without.date.of.birth"));
+    addEntry(nav, MessageUtil.getMessage("statistics.number.of.students"));
+    addEntry(nav, MessageUtil.getMessage("statistics.distribution.between.amateurs.pros"));
+    addEntry(nav, MessageUtil.getMessage("statistics.list.of.pro.students"));
+    addEntry(nav, MessageUtil.getMessage("statistics.city.distribution"));
+    addEntry(nav, MessageUtil.getMessage("statistics.number.of.hours.of.rehearsal"));
+    addEntry(nav, MessageUtil.getMessage("statistics.number.of.rehearsing.people"));
+    addEntry(nav, MessageUtil.getMessage("statistics.payers.without.address"));
+    addEntry(nav, MessageUtil.getMessage("statistics.debtors"));
+    addEntry(nav, MessageUtil.getMessage("statistics.total.number.of.members"));
+    addEntry(nav, MessageUtil.getMessage("statistics.number.of.men.members"));
+    addEntry(nav, MessageUtil.getMessage("statistics.number.of.women.members"));
+    addEntry(nav, MessageUtil.getMessage("statistics.members.by.occupational"));
+    addEntry(nav, MessageUtil.getMessage("statistics.members.by.location"));
   }
 }

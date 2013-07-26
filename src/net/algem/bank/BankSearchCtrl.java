@@ -1,5 +1,5 @@
 /*
- * @(#)BankSearchCtrl.java	2.6.a 14/09/12
+ * @(#)BankSearchCtrl.java	2.8.i 03/07/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -30,7 +30,7 @@ import net.algem.util.ui.SearchCtrl;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.6.a
+ * @version 2.8.i
  * @since 1.0a 07/07/1999
  */
 public class BankSearchCtrl
@@ -68,9 +68,9 @@ public class BankSearchCtrl
     String name;
 
     if ((code = searchView.getField(0)) != null) {
-      query = "where code = '"+code+"'";
+      query = "WHERE code = '"+code+"'";
     } else if ((name = searchView.getField(1)) != null) {
-      query = "where nom = '"+name+"'";
+      query = "WHERE nom LIKE '%"+name+"%'";
     } else {
       query = "";
     }

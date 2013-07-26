@@ -1,7 +1,7 @@
 /*
- * @(#)WorkshopView.java	2.6.d 08/11/12
+ * @(#)WorkshopView.java	2.8.k 23/07/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -48,7 +48,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.d
+ * @version 2.8.k
  */
 public class WorkshopView
         extends GemPanel
@@ -81,6 +81,7 @@ public class WorkshopView
     places = new GemNumericField();
     level = new GemNumericField(2);
     active = new JCheckBox();
+    active.setBorder(null);
 
     members = new MusicianTableModel(dataCache);
     memberTable = new JTable(members);
@@ -108,12 +109,12 @@ public class WorkshopView
     GridBagHelper gb = new GridBagHelper(p);
     gb.insets = GridBagHelper.SMALL_INSETS;
 
-    gb.add(new GemLabel("No"), 0, 0, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Name.label")), 0, 1, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Label.label")), 0, 2, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Place.number.label")), 0, 3, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Level.label")), 0, 4, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Active.label")), 0, 5, 1, 1, GridBagHelper.EAST);
+    gb.add(new GemLabel("N°"), 0, 0, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Name.label")), 0, 1, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Label.label")), 0, 2, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Place.number.label")), 0, 3, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Level.label")), 0, 4, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Active.label")), 0, 5, 1, 1, GridBagHelper.WEST);
 
     gb.add(no, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(name, 1, 1, 1, 1, GridBagHelper.WEST);

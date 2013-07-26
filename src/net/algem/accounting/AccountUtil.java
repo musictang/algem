@@ -1,7 +1,7 @@
 /*
- * @(#)AccountUtil.java	2.7.h 22/02/13
+ * @(#)AccountUtil.java	2.8.i 03/07/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,7 +21,6 @@
 package net.algem.accounting;
 
 import java.awt.print.PrinterException;
-import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
@@ -43,7 +42,7 @@ import net.algem.util.DataConnection;
  * Utility class for orderline operations.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.h
+ * @version 2.8.i
  * @since 2.0r
  */
 public class AccountUtil {
@@ -125,50 +124,6 @@ public class AccountUtil {
 
   public static int getMemberShips(int m, DataConnection dc) throws SQLException {
     return OrderLineIO.countMemberShip(m, dc);
-  }
-
-  /**
-   *
-   * @param b bank code
-   * @param g branch code
-   * @param d 5 first digits of the account
-   * @param c 6 last digits of the account
-   * @return
-   */
-  /*
-   * public static boolean checkRibKey(int b, int g, int c) { //return 97 - ((89
-   * * b + 15 * g + 76 * d + 3 * c) % 97) == 0;
-   *
-   * return false; }
-   *
-   *
-   * public String accountTo(String numero) { char lettres [] = {'A','B',
-   * 'C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'};
-   * char chiffres [] =
-   * {'1','2','3','4','5','6','7','8','9','1','2','3','4','5','6','7','8','9','2','3','4','5','6','7','8','9'};
-   * char compte [] = numero.toCharArray(); for (int i = 0; i < compte.length;
-   * i++) { for (int j = 0 ; j < lettres.length ; j++) { if (compte[i] ==
-   * lettres[j]) { compte[i] = chiffres[j]; break; } } } return new
-   * String(compte);
-  }
-   */
-  /**
-   * Checking BIC.
-   * @link  http://fr.wikipedia.org/wiki/Relev%C3%A9_d%27identit%C3%A9_bancaire#Algorithme_de_v.C3.A9rification_en_Java
-   *
-   * @param bic on 23 digits
-   * @return true if rib % 97 = 0
-   */
-  public static boolean isBicOk(String bic) {
-    StringBuilder extendedRib = new StringBuilder(bic.length());
-    for (char currentChar : bic.toCharArray()) {
-      //Works on base 36 (26 lettres + 10 chiffres)
-      int currentCharValue = Character.digit(currentChar, Character.MAX_RADIX);
-      //Convert character to simple digit
-      extendedRib.append(currentCharValue < 10 ? currentCharValue : (currentCharValue + (int) StrictMath.pow(2, (currentCharValue - 10) / 9)) % 10);
-    }
-
-    return new BigDecimal(extendedRib.toString()).remainder(new BigDecimal(97)).intValue() == 0;
   }
 
   /**

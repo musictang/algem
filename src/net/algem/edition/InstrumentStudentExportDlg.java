@@ -1,7 +1,7 @@
 /*
- * @(#)InstrumentStudentExportDlg.java 2.6.g 19/11/12
+ * @(#)InstrumentStudentExportDlg.java 2.8.k 25/07/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,14 +27,13 @@ import net.algem.config.InstrumentChoice;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.ui.GemChoice;
-import net.algem.util.ui.GemPanel;
 import net.algem.util.ui.GridBagHelper;
 
 /**
  * Export dialog for contact infos of students playing the instrument selected.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.g
+ * @version 2.8.k
  * @since 2.6.d 06/11/2012
  */
 public class InstrumentStudentExportDlg
@@ -49,15 +48,15 @@ public class InstrumentStudentExportDlg
 
   @Override
   protected void setPanel() {
+    
     instrument = new InstrumentChoice(dataCache.getInstruments());
-    GemPanel p = new GemPanel();
-    p.add(typeContact);
+    
     gb.add(new JLabel(BundleUtil.getLabel("Instrument.label")), 0, 0, 1, 1, GridBagHelper.EAST);
     gb.add(instrument, 1, 0, 1, 1, GridBagHelper.WEST);
-    gb.add(new JLabel(BundleUtil.getLabel("Period.label")), 0, 1, 1, 1, GridBagHelper.EAST);
+    gb.add(new JLabel(BundleUtil.getLabel("Date.From.label")), 0, 1, 1, 1, GridBagHelper.EAST);
     gb.add(dateRange, 1, 1, 1, 1, GridBagHelper.WEST);
     gb.add(new JLabel(BundleUtil.getLabel("Type.label")), 0, 2, 1, 1, GridBagHelper.EAST);
-    gb.add(p, 1, 2, 1, 1, GridBagHelper.WEST);
+    gb.add(typeContact, 1, 2, 1, 1, GridBagHelper.WEST);
   }
 
   @Override

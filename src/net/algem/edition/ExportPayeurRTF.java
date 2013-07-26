@@ -143,7 +143,7 @@ public class ExportPayeurRTF
     out.println("\\par \\pard\\plain \\s3\\qc\\sa144\\slmult1 \\f1\\fs24\\cf1 {\\b\\f2\\fs28 Ech\\'e9ancier}");// du "+debut+" au "+fin+"}");
     out.println("\\par \\pard\\plain \\s3\\slmult1 \\f1\\fs24\\cf1");
 
-    Vector<OrderLine> echs = OrderLineIO.find("payeur=" + payer.getId() + " AND echeance >='" + start + "' AND echeance <='" + end + "'", dc);
+    Vector<OrderLine> echs = OrderLineIO.find("WHERE payeur=" + payer.getId() + " AND echeance >='" + start + "' AND echeance <='" + end + "'", dc);
 
     for (int i = 0; i < echs.size(); i++) {
       OrderLine e = echs.elementAt(i);

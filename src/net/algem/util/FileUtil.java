@@ -1,7 +1,7 @@
 /*
- * @(#)FileUtil.java	2.4.a 22/05/12
+ * @(#)FileUtil.java	2.8.k 19/07/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -30,11 +30,12 @@ import javax.print.attribute.standard.MediaSize;
 import javax.print.attribute.standard.MediaSizeName;
 import javax.print.attribute.standard.OrientationRequested;
 import javax.swing.JFileChooser;
+import net.algem.util.ui.MessagePopup;
 
 /**
  * Utility class for file operations.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.4.a
+ * @version 2.8.k
  * @since 2.0q
  */
 public class FileUtil {
@@ -102,6 +103,13 @@ public class FileUtil {
       file = fc.getSelectedFile();
     }
     return file;
+  }
+  
+  public static boolean confirmOverWrite(Component parent, File f) {
+    if (f.exists()) {
+      return MessagePopup.confirm(parent, MessageUtil.getMessage("file.overwrite.confirmation"));
+    }
+    return true;
   }
 
   /**

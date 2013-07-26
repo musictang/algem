@@ -1,7 +1,7 @@
 /*
- * @(#)GemButton.java	2.6.a 31/07/12
+ * @(#)GemButton.java	2.8.k 23/07/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,6 +20,7 @@
  */
 package net.algem.util.ui;
 
+import java.awt.Cursor;
 import java.awt.Insets;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -29,7 +30,7 @@ import javax.swing.JButton;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.k
  */
 public class GemButton
         extends JButton
@@ -39,6 +40,7 @@ public class GemButton
 
   public GemButton(String s) {
     super(s);
+    setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
   }
 
   public GemButton(ImageIcon icon) {
@@ -47,6 +49,7 @@ public class GemButton
     if (getIcon() == null) {
       setText("OK");
     }
+    setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
   }
 
   @Override

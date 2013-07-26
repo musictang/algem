@@ -32,6 +32,7 @@ import net.algem.util.model.TableIO;
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.6.a
+ * @deprecated 
  */
 public class ModuleTypeIO
         extends TableIO
@@ -40,6 +41,13 @@ public class ModuleTypeIO
   public static final String TABLE = "module_type";
   public static final String SEQUENCE = "idmoduletype";
 
+  /**
+   * 
+   * @param m
+   * @param dc
+   * @throws SQLException 
+   * @deprecated 
+   */
   public static void insert(ModuleType m, DataConnection dc) throws SQLException {
 
     int numero = nextId(SEQUENCE, dc);
@@ -52,9 +60,6 @@ public class ModuleTypeIO
 
     dc.executeUpdate(query);
     m.setId(numero);
-    //TODO après insertion, insérer aussi une ligne de cours à définir dans la table cours
-    // ex. si le type est 'AT200', on insère dans cours :
-    // INSERT INTO cours VALUES (DEFAULT,'AT200 A DEFINIR','AT200 à définir',0,0,'t','AT200',0,'t');
   }
 
   /**
@@ -62,6 +67,7 @@ public class ModuleTypeIO
    * @param m le module_tyep
    * @param dc dataCache
    * @throws SQLException
+   * @deprecated 
    */
   public static void update(ModuleType m, DataConnection dc) throws SQLException {
    /* A priori, on ne devrait pouvoir updater que le libellé.
@@ -76,11 +82,26 @@ public class ModuleTypeIO
     dc.executeUpdate(query);
   }
 
+  /**
+   * 
+   * @param m
+   * @param dc
+   * @throws SQLException
+   * @deprecated 
+   */
   public static void delete(ModuleType m, DataConnection dc) throws SQLException {
     String query = "DELETE FROM " + TABLE + " WHERE id=" + m.getId();
     dc.executeUpdate(query);
   }
 
+  /**
+   * 
+   * @param where
+   * @param dc
+   * @return
+   * @throws SQLException
+   * @deprecated 
+   */
   public static Vector<ModuleType> find(String where, DataConnection dc) throws SQLException {
     Vector<ModuleType> v = new Vector<ModuleType>();
     String query = "SELECT * FROM " + TABLE + " " + where;

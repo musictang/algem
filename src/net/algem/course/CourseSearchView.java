@@ -1,7 +1,7 @@
 /*
- * @(#)CourseSearchView.java	2.6.a 17/09/12
+ * @(#)CourseSearchView.java	2.8.k 23/07/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -32,7 +32,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.6.a
+ * @version 2.8.k
  * @since 1.0a 07/07/1999
  */
 public class CourseSearchView
@@ -69,6 +69,7 @@ public class CourseSearchView
     btErase.addActionListener(this);
 
     GridBagHelper gb = new GridBagHelper(mask);
+    gb.insets = GridBagHelper.SMALL_INSETS;
     gb.add(new GemLabel(BundleUtil.getLabel("Number.label")), 0, 0, 1, 1, GridBagHelper.EAST);
     gb.add(new GemLabel(BundleUtil.getLabel("Title.label")), 0, 1, 1, 1, GridBagHelper.EAST);
     gb.add(new GemLabel(BundleUtil.getLabel("Code.label")), 0, 2, 1, 1, GridBagHelper.EAST);

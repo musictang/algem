@@ -1,5 +1,5 @@
 /*
- * @(#)AccountTransferView.java	2.8.a 01/04/13
+ * @(#)AccountTransferView.java	2.8.k 25/07/13
  *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,11 +20,14 @@
  */
 package net.algem.accounting;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.GridBagLayout;
 import java.util.Date;
+import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import net.algem.config.GemParamChoice;
 import net.algem.config.ModeOfPaymentCtrl;
 import net.algem.config.ParamChoice;
 import net.algem.config.ParamTableIO;
@@ -42,7 +45,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.k
  * @since 1.0a 07/07/1999
  */
 public class AccountTransferView
@@ -56,22 +59,28 @@ public class AccountTransferView
   protected GridBagHelper gb;
 
   public AccountTransferView() {
-    
   }
-  
+
   public AccountTransferView(DataCache dataCache) {
-    setLayout(new java.awt.GridBagLayout());
-    gb = new GridBagHelper(this);
+
+    setLayout(new BorderLayout());
+    setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+
+    GemPanel p = new GemPanel(new GridBagLayout());
+    p.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+    gb = new GridBagHelper(p);
     gb.insets = GridBagHelper.SMALL_INSETS;
 
-    payment = new JComboBox(
-            ParamTableIO.getValues(ModeOfPaymentCtrl.TABLE, ModeOfPaymentCtrl.COLUMN_NAME, dataCache.getDataConnection())
-            );
+    payment = new JComboBox(ParamTableIO.getValues(ModeOfPaymentCtrl.TABLE,
+            ModeOfPaymentCtrl.COLUMN_NAME,
+            dataCache.getDataConnection()));
     schoolChoice = new ParamChoice(dataCache.getList(Model.School).getData());
 
     Date now = new Date();
     dateRange = new DateRangePanel(new DateFr(now), new DateFr(now));
     csv = new JCheckBox(MessageUtil.getMessage("csv.export.label"));
+    csv.setBorder(null);
 
     gb.add(new JLabel(BundleUtil.getLabel("Period.label")), 0, 0, 1, 1, GridBagHelper.EAST);
     gb.add(new JLabel(BundleUtil.getLabel("School.label")), 0, 1, 1, 1, GridBagHelper.EAST);
@@ -80,6 +89,8 @@ public class AccountTransferView
     gb.add(schoolChoice, 1, 1, 2, 1, GridBagHelper.WEST);
     gb.add(payment, 1, 2, 2, 1, GridBagHelper.WEST);
     gb.add(csv, 1, 3, 2, 1, GridBagHelper.WEST);
+
+    add(p, BorderLayout.CENTER);
   }
 
   public DateFr getDateStart() {
@@ -101,5 +112,4 @@ public class AccountTransferView
   public boolean withCSV() {
     return csv.isSelected();
   }
-
 }

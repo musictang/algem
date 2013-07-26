@@ -1,7 +1,7 @@
 /*
- * @(#)BankBranchIO.java 2.6.a 14/09/12
+ * @(#)BankBranchIO.java 2.8.i 08/07/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -36,25 +36,25 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.i
  */
 public class BankBranchIO
         extends TableIO
 {
 
-	private DataConnection dc;
-	private ContactIO contactIO;
+  private DataConnection dc;
+  private ContactIO contactIO;
 
-	public BankBranchIO(DataConnection dc, ContactIO contactIO) {
-		this.dc = dc;
-		this.contactIO = contactIO;
-	}
+  public BankBranchIO(DataConnection dc, ContactIO contactIO) {
+    this.dc = dc;
+    this.contactIO = contactIO;
+  }
 
-	public BankBranchIO(DataConnection dc) {
-		this.dc = dc;
-		contactIO = new ContactIO(dc);
-	}
-	
+  public BankBranchIO(DataConnection dc) {
+    this.dc = dc;
+    contactIO = new ContactIO(dc);
+  }
+
   public void insert(BankBranch a) throws SQLException {
     dc.setAutoCommit(false);
 
@@ -71,35 +71,39 @@ public class BankBranchIO
     }
   }
 
-  public void update(BankBranch a, BankBranch newval) throws SQLException {
+  public void update(BankBranch a, BankBranch newBranch) throws SQLException {
 
     try {
-			dc.setAutoCommit(false);
-      contactIO.update(a, newval);
-      if (!a.equals(newval)) {
-        newval.setId(a.getId());
-        BranchIO.update(newval, dc);
+      dc.setAutoCommit(false);
+      contactIO.update(a, newBranch);
+      if (!a.equals(newBranch)) { //XXX
+        newBranch.setId(a.getId());
+        BranchIO.update(newBranch, dc);
       }
       dc.commit();
     } catch (SQLException e1) {
-      GemLogger.logException("transaction update agence", e1);
       dc.rollback();
+      GemLogger.logException("transaction update agence", e1);
       throw e1;
     } finally {
       dc.setAutoCommit(true);
     }
   }
 
-  public void delete(BankBranch a) throws Exception {
+  public void update(int branchId, String bicCode) throws SQLException {
+    BranchIO.update(branchId, bicCode, dc);
+  }
+
+  void delete(BankBranch a) throws Exception {
     dc.setAutoCommit(false);
 
-    try {
+    try {      
       contactIO.delete(a);
       BranchIO.delete(a, dc);
       dc.commit();
     } catch (Exception e1) {
-      GemLogger.logException("transaction delete agence", e1);
       dc.rollback();
+      GemLogger.logException("transaction delete agence", e1);
       throw e1;
     } finally {
       dc.setAutoCommit(true);
@@ -107,7 +111,7 @@ public class BankBranchIO
   }
 
   public BankBranch findId(int n) {
-    String query = "WHERE p.id=" + n;
+    String query = "WHERE p.id = " + n;
     Vector<BankBranch> v = find(query, true);
     if (v.size() > 0) {
       return v.elementAt(0);
@@ -115,7 +119,7 @@ public class BankBranchIO
     return null;
   }
 
-  public Vector<BankBranch> findRib(Bic r) {
+  public Vector<BankBranch> findRib(Rib r) {
     return find(" WHERE b.code='" + r.getEstablishment() + "' and g.code='" + r.getBranch() + "'", true);
   }
 
@@ -132,7 +136,7 @@ public class BankBranchIO
   public Vector<BankBranch> find(String where, boolean complet) {
     Vector<BankBranch> v = new Vector<BankBranch>();
     // 2.1a AJOUT DISTINCT pour éviter les doublons dans la vue.
-    String query = "SELECT DISTINCT p.id,p.ptype,b.code, b.nom,b.multiguichet,g.code,g.domiciliation FROM personne p, guichet g, banque b ";
+    String query = "SELECT DISTINCT p.id,p.ptype,b.code, b.nom,b.multiguichet,g.code,g.domiciliation,g.bic FROM personne p, guichet g, banque b ";
     if (where != null && where.length() > 0) {
       query += where + " AND p.id = g.id";
     } else {
@@ -149,7 +153,7 @@ public class BankBranchIO
         a.setType(rs.getShort(2));
         Bank b = new Bank();
         b.setCode(rs.getString(3).trim());
-        b.setName(rs.getString(4).trim());
+        b.setName(unEscape(rs.getString(4)).trim());
         b.setMulti(rs.getBoolean(5));
         a.setBank(b);
         a.setCode(rs.getString(6).trim());
@@ -158,6 +162,7 @@ public class BankBranchIO
           a.setAddress(AddressIO.findId(a.getId(), dc));
           a.setTele(TeleIO.findId(a.getId(), dc));
         }
+        a.setBicCode(rs.getString(8));
         v.addElement(a);
       }
       rs.close();

@@ -51,7 +51,7 @@ public class ModuleCtrl
     dataCache = desktop.getDataCache();
     view = new ModuleView(dataCache);
 
-    addCard("Module", view);
+    addCard(BundleUtil.getLabel("Module.label"), view);
     select(0);
   }
 

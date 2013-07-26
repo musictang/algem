@@ -1,7 +1,7 @@
 /*
- * @(#)StatsExportDlg.java	2.6.g 20/11/12
+ * @(#)StatsExportDlg.java	2.8.k 23/07/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -30,15 +30,13 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JPanel;
+import javax.swing.*;
 import net.algem.accounting.AccountPrefIO;
 import net.algem.config.ConfigUtil;
 import net.algem.planning.DateFr;
 import net.algem.planning.DateRangePanel;
 import net.algem.util.*;
+import net.algem.util.jdesktop.DesktopBrowseHandler;
 import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GemField;
 import net.algem.util.ui.GemPanel;
@@ -47,7 +45,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.g
+ * @version 2.8.k
  * @since 2.6.a 11/10/2012
  */
 public class StatsExportDlg 
@@ -75,7 +73,7 @@ public class StatsExportDlg
     buttons.add(btValidation);
     buttons.add(btCancel);
 
-    filePathField = new GemField(ConfigUtil.getExportPath(dataCache.getDataConnection()) + FileUtil.FILE_SEPARATOR + "stats.txt", 30);
+    filePathField = new GemField(ConfigUtil.getExportPath(dataCache.getDataConnection()) + FileUtil.FILE_SEPARATOR + "stats.html", 30);
     GemPanel filePanel = new GemPanel();
     filePanel.add(new Label(BundleUtil.getLabel("Menu.file.label")));
     filePanel.add(filePathField);
@@ -87,18 +85,26 @@ public class StatsExportDlg
     DateFr end = new DateFr("31-08-"+(year +1));
     datePanel = new DateRangePanel(start, end);
 
-    getContentPane().add(filePanel, BorderLayout.NORTH);
-    getContentPane().add(datePanel, BorderLayout.CENTER);
-    getContentPane().add(buttons, BorderLayout.SOUTH);
+    setLayout(new BorderLayout());
+    add(filePanel, BorderLayout.NORTH);
+    GemPanel d = new GemPanel();
+    d.add(new JLabel(BundleUtil.getLabel("Date.From.label")));
+    d.add(datePanel);
+   
+    add(d, BorderLayout.CENTER);
+    add(buttons, BorderLayout.SOUTH);
     pack();
   }
-  
   
   @Override
   public void actionPerformed(ActionEvent e) {
     if (e.getSource() == btCancel) {
       close();
     } else if (e.getSource() == btValidation) {
+      file = new File(filePathField.getText());
+      if (!FileUtil.confirmOverWrite(this, file)) {
+        return;
+      }
       validation();
       close();
     } else if (e.getSource() == chooser) {
@@ -106,18 +112,17 @@ public class StatsExportDlg
       int ret = fileChooser.showDialog(this, BundleUtil.getLabel("FileChooser.selection"));
       if (ret == JFileChooser.APPROVE_OPTION) {
         file = fileChooser.getSelectedFile();
-        filePathField.setText(file.getPath());
+        if (FileUtil.confirmOverWrite(this, file)) {
+          filePathField.setText(file.getPath());
+        }
       }
     }
   }
   
   private void validation() {
     Statistics st = null;
-    try {
-//      DataConnection dc = dataCache.getDataConnection();
-//      st = StatisticsFactory.getStatistics(ConfigUtil.getConf(ConfigKey.ORGANIZATION_NAME.getKey(), dc), dataCache);
+    try {      
       st = StatisticsFactory.getInstance();    
-
       if (st == null) {
         MessagePopup.warning(this, MessageUtil.getMessage("statistics.default.warning"));
         st = new StatisticsDefault();   
@@ -131,7 +136,10 @@ public class StatsExportDlg
               datePanel.getEndFr()
               );
       st.makeStats();
-      MessagePopup.information(this, MessageUtil.getMessage("statistics.completed", filePathField.getText()));
+      if (MessagePopup.confirm(this, MessageUtil.getMessage("statistics.completed", filePathField.getText()))) {
+        DesktopBrowseHandler browser = new DesktopBrowseHandler();
+        browser.browse(file.toURI().toString());
+      }
     } catch (IOException ex) {
       GemLogger.logException(ex);
       MessagePopup.warning(this, MessageUtil.getMessage("file.path.exception", filePathField.getText()));

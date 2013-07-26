@@ -1,7 +1,7 @@
 /*
- * @(#)InfoView.java	2.7.a 21/11/12
+ * @(#)InfoView.java	2.8.k 23/07/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -38,7 +38,7 @@ import net.algem.util.ui.GemPanel;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.k
  */
 public abstract class InfoView
   extends GemPanel implements ActionListener
@@ -60,7 +60,7 @@ public abstract class InfoView
     header.add(Box.createHorizontalGlue());
     btAdd = new GemButton("+");
     btAdd.setToolTipText(MessageUtil.getMessage("add.entry"));
-    btAdd.setMargin(new Insets(0, 5, 0, 5)); //reduction de la taille du bouton
+    btAdd.setMargin(new Insets(0, 4, 0, 4)); //reduction de la taille du bouton
     btAdd.addActionListener(this);
     header.add(btAdd);
     add(header);

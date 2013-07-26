@@ -24,7 +24,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.Vector;
-import net.algem.bank.BicIO;
+import net.algem.bank.RibIO;
 import net.algem.contact.*;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
@@ -184,7 +184,7 @@ public class EstablishmentIO
       TeleIO.delete(e.getId(), dc);
       EmailIO.delete(e.getId(), dc);
       WebSiteIO.delete(e.getId(), Person.PERSON, dc);
-      BicIO.delete(e.getId(), dc);
+      RibIO.delete(e.getId(), dc);
     } catch (SQLException sqe) {
       throw new EstablishmentException("SQL : " + sqe.getMessage());
     }

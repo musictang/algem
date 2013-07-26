@@ -178,7 +178,7 @@ public class OrderLineDlg
     totalField.setText(null);
     DateFr debut = dateStart.getDateFr();
     DateFr fin = dateEnd.getDateFr();
-    String query = "echeance >= '" + debut + "' AND echeance <= '" + fin + "'";
+    String query = "WHERE echeance >= '" + debut + "' AND echeance <= '" + fin + "'";
     tableModel.load(OrderLineIO.find(query, dc));
   }
 

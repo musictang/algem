@@ -91,7 +91,7 @@ public class AccountCtrl
   public void suppression(Param p) throws SQLException, AccountDeleteException {
     if (p instanceof Account) {
       Account c = (Account) p;
-      String where = OrderLineIO.ACCOUNT_COLUMN+" = '"+c.getId()+"'";
+      String where = "WHERE " + OrderLineIO.ACCOUNT_COLUMN + " = '"+c.getId()+"'";
       Vector<OrderLine> e = OrderLineIO.find(where, 1, dc);
       if (e != null && e.size() > 0) {
         throw new AccountDeleteException();

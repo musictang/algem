@@ -1,7 +1,7 @@
 /*
- * @(#)PersonFileTabView.java  2.7.l 11/03/13
+ * @(#)PersonFileTabView.java  2.8.i 05/07/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -58,7 +58,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.l
+ * @version 2.8.i
  */
 public class PersonFileTabView
         extends FileView
@@ -78,7 +78,7 @@ public class PersonFileTabView
   private JCheckBox cbTelAdresse;
   private MemberEditor memberEditor;
   private TeacherEditor teacherEditor;
-  private BicView bankView;
+  private RibView ribView;
   private MemberFollowUpEditor memberFollowUpEditor;
   private TeacherFollowUpEditor teacherFollowUpEditor;
   private MemberEnrolmentEditor enrolmentEditor;
@@ -191,12 +191,12 @@ public class PersonFileTabView
       addTeacherTab();
       teacherEditor.set(dossier.getTeacher(), dossier.getId());
     }
-    if (dossier.getBic() != null) {
+    if (dossier.getRib() != null) {
       addBankTab();
-      bankView.setBic(dossier.getBic());
-      BankBranch bnq = new BankBranchIO(dataCache.getDataConnection()).findId(dossier.getBic().getBranchId());
-      if (bnq != null) {
-        bankView.setAgenceBancaire(bnq);
+      ribView.setRib(dossier.getRib());
+      BankBranch bb = new BankBranchIO(dataCache.getDataConnection()).findId(dossier.getRib().getBranchId());
+      if (bb != null) {
+        ribView.setBankBranch(bb);
       }
     }
 
@@ -276,8 +276,8 @@ public class PersonFileTabView
       Teacher t = ((Teacher) _evt.getSource());
       teacherEditor.set(t, contactFileEditor.getId());
     } else if (_evt.getType() == PersonFileEvent.BANK_ADDED) {
-      Bic b = ((Bic) _evt.getSource());
-      bankView.setBic(b);
+      Rib b = ((Rib) _evt.getSource());
+      ribView.setRib(b);
     } else if (_evt.getType() == PersonFileEvent.SUBSCRIPTION_CARD_CHANGED) {
       PersonSubscriptionCard card = (PersonSubscriptionCard) _evt.getSource();
       dossier.setSubscriptionCard(card);
@@ -449,8 +449,8 @@ public class PersonFileTabView
     return teacherEditor == null ? null : teacherEditor.getTeacher();
   }
 
-  Bic getBankFile() {
-    return bankView == null ? null : bankView.getBic();
+  Rib getRibFile() {
+    return ribView == null ? null : ribView.getRib();
   }
 
   /**
@@ -476,26 +476,27 @@ public class PersonFileTabView
   }
 
   boolean isNewBank() {
-    if (bankView == null) {
-      return false;
-    }
-    return bankView.isNewBank();
+    return ribView == null ? false : ribView.isNewBank();
   }
 
   boolean isNewBranchOfBank() {
-    return bankView == null ? false : bankView.isNewBranch();
+    return ribView == null ? false : ribView.isNewBranch();
   }
+  
+//  boolean hasBic() {
+//    return ribView == null ? true : ribView.hasBic();
+//  }
 
   Bank getBank() {
-    return bankView.getBank();
+    return ribView == null ? null : ribView.getBank();
   }
 
   BankBranch getBranchBank() {
-    return bankView.getAgenceBancaire();
+    return ribView == null ? null :  ribView.getBankBranch();
   }
 
   void setBranchBank(BankBranch a) {
-    bankView.setAgenceBancaire(a);
+    ribView.setBankBranch(a);
   }
 
   /**
@@ -551,20 +552,20 @@ public class PersonFileTabView
   }
 
   void addBankTab() {
-    if (bankView == null) {
-			BankBranchIO branchIO = new BankBranchIO(dataCache.getDataConnection());
-      bankView = new BicView(desktop, dossier.getId());
-      bankView.setBankCodeCtrl(new BankCodeCtrl(dataCache.getDataConnection(), branchIO));
-      bankView.setPostalCodeCtrl(new CodePostalCtrl(dataCache.getDataConnection()));
+    if (ribView == null) {
+      BankBranchIO branchIO = new BankBranchIO(dataCache.getDataConnection());
+      ribView = new RibView(desktop, dossier.getId());
+      ribView.setBankCodeCtrl(new BankCodeCtrl(dataCache.getDataConnection(), branchIO));
+      ribView.setPostalCodeCtrl(new CodePostalCtrl(dataCache.getDataConnection()));
     }
 
-    wTab.addItem(bankView, BANK_TAB_TITLE);//"Fiche Bank");
+    wTab.addItem(ribView, BANK_TAB_TITLE);//"Fiche Bank");
 
     mainToolbar.addIcon(listener,
             BundleUtil.getLabel("Payer.debiting.icon"),
             "Payer.debiting",
             BundleUtil.getLabel("Payer.debiting.tip"));
-    addTab(bankView);
+    addTab(ribView);
   }
 
   void addRehearsalHistoryTab() {

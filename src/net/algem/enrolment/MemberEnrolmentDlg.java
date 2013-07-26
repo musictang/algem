@@ -1,5 +1,5 @@
 /*
- * @(#)MemberEnrolmentDlg.java	2.8.h 03/06/13
+ * @(#)MemberEnrolmentDlg.java	2.8.i 03/07/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -49,7 +49,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.h
+ * @version 2.8.i
  * @since 1.0a 07/07/1999
  * @see net.algem.contact.PersonFileEditor
  *
@@ -147,8 +147,8 @@ public class MemberEnrolmentDlg
         saveModule(m);
         currentModule++;
       }
-
-      if (module_orders != null && module_orders.size() > 0 && sessionsMax > 0) {// ajout maxCours > 0 2.0pq
+      //XXX if sessionsMax == 0 no order line is generated (this behavior is not necessarily the best)
+      if (module_orders != null && module_orders.size() > 0 && sessionsMax > 0) {
         try {
           EnrolmentOrderUtil orderUtil = new EnrolmentOrderUtil(dossier, dc);
           orderUtil.setTotalBase(totalBase);
@@ -223,7 +223,10 @@ public class MemberEnrolmentDlg
 
       //insertion dans la table commande_cours
       service.create(co);
-      sessions = service.updateRange(mo, co, dossier.getId());
+      int updated = service.updateRange(mo, co, dossier.getId());
+      if (updated > sessions) {
+        sessions = updated;
+      }
     }
 
     if (sessions > sessionsMax) {
@@ -467,7 +470,7 @@ public class MemberEnrolmentDlg
     setCursor(Cursor.getDefaultCursor());
     courseEnrolmentDlg.entry();
     if (courseEnrolmentDlg.isValidation()) {
-      co.setModule(Integer.parseInt(courseEnrolmentDlg.getField(1)));//XXX
+      co.setModule(Integer.parseInt(courseEnrolmentDlg.getField(1)));//XXX module number not valid here
       co.setAction(Integer.parseInt(courseEnrolmentDlg.getField(2)));
       co.setTitle(getModuleTitle(co) + courseEnrolmentDlg.getField(3));
       co.setDay(Integer.parseInt(courseEnrolmentDlg.getField(4)));

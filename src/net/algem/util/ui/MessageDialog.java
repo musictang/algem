@@ -1,7 +1,7 @@
 /*
- * @(#)MessageDialog.java	2.6.a 25/09/12
+ * @(#)MessageDialog.java	2.8.k 26/07/13
  * 
- * Copyright (c) 1999-2009 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,10 +20,7 @@
  */
 package net.algem.util.ui;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Insets;
-import java.awt.Point;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
@@ -33,7 +30,7 @@ import net.algem.util.GemCommand;
  * Displays messages in a non modal frame.
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.k
  */
 public class MessageDialog
         extends JDialog
@@ -47,13 +44,41 @@ public class MessageDialog
   private JPanel mainPanel;
   private JPanel infoPanel;
   private JPanel libellePanel;
-  private GridBagHelper gb;
 
-  public MessageDialog(JDialog parent, String titre, boolean modal, String libelle, String infos) {
-    super(parent, titre, modal);
-    this.label = libelle;
+  public MessageDialog(Frame parent, String title, boolean modal, String label, String infos) {
+    super(parent, title, modal);
+    
+    this.label = label;
     this.infos = infos;
+    
+    initView();
+    
+    Point p = parent.getLocationOnScreen();
+    p.setLocation(p.getX() + 100D, p.getY());
+    setLocation(p);
+    
+    pack();
+    setVisible(true);
+  }
 
+  public MessageDialog(Dialog owner, String title, boolean modal, String label, String infos) {
+    super(owner, title, modal);
+    
+    this.label = label;
+    this.infos = infos;
+    
+    initView();
+    
+    Point p = owner.getLocationOnScreen();
+    p.setLocation(p.getX() + 100D, p.getY());
+    setLocation(p);
+    
+    pack();
+    setVisible(true);
+  }
+  
+  private void initView() {
+    
     mainPanel = new JPanel(new BorderLayout());
     mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
@@ -64,19 +89,16 @@ public class MessageDialog
     okButton = new JButton(GemCommand.OK_CMD);
     okButton.addActionListener(this);
 
-    libellePanel.add(new JLabel(libelle));
+    libellePanel.add(new JLabel(label));
     jtxt = new JTextArea(infos);
     jtxt.setMargin(new Insets(0, 10, 0, 10));
     infoPanel.add(jtxt, BorderLayout.WEST);
     mainPanel.add(libellePanel, BorderLayout.NORTH);
     mainPanel.add(infoPanel, BorderLayout.CENTER);
     mainPanel.add(okButton, BorderLayout.SOUTH);
-    getContentPane().add(mainPanel);
-    Point p = parent.getLocationOnScreen();
-    p.setLocation(p.getX() + 100D, p.getY());
-    pack();
-    setLocation(p);
-    setVisible(true);
+    
+    add(mainPanel);
+    
   }
 
   @Override

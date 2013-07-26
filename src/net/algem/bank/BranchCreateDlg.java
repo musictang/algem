@@ -1,7 +1,7 @@
 /*
- * @(#)BranchCreateDlg.java	2.6.a 14/09/12
+ * @(#)BranchCreateDlg.java	2.8.i 05/07/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -38,7 +38,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.i
  */
 public class BranchCreateDlg
         implements ActionListener
@@ -92,7 +92,7 @@ public class BranchCreateDlg
   }
 
   public void setBranchCode(String s) {
-    branchView.setCodeGuichet(s);
+    branchView.setBranchCode(s);
   }
 
   public void enter() {
@@ -113,9 +113,9 @@ public class BranchCreateDlg
         }
       }
     }
-    branch = branchView.getAgenceBancaire();
+    branch = branchView.getBankBranch();
     if (!branch.isValid()) {
-      new ErrorDlg(dlg, MessageUtil.getMessage("incomplete.entry.error"));
+      MessagePopup.error(dlg, MessageUtil.getMessage("incomplete.entry.error"));
       return false;
     }
     try {
@@ -132,11 +132,10 @@ public class BranchCreateDlg
   }
 
   public void setBranch(BankBranch b) {
-    branchView.setAgenceBancaire(b);
+    branchView.setBankBranch(b);
   }
 
   public BankBranch getBranch() {
-    //return vueGuichet.getBranch();
     return branch;
   }
 

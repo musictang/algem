@@ -1,5 +1,5 @@
 /*
- * @(#)AccountTransferDlg.java	2.8.a 01/04/13
+ * @(#)AccountTransferDlg.java	2.8.k 25/07/13
  *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.Vector;
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import net.algem.contact.Contact;
@@ -44,7 +45,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.k
  * @since 1.0a 27/09/2000
  */
 public class AccountTransferDlg
@@ -72,8 +73,13 @@ public class AccountTransferDlg
   protected void setDisplay() {
     
     transferView = new AccountTransferView(dataCache);
-    Container container = getContentPane();
-    setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
+    
+    setLayout(new BorderLayout());
+
+    GemPanel p = new GemPanel();
+    p.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+    p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+    
     GemPanel header = new GemPanel();
     header.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(header);
@@ -83,9 +89,11 @@ public class AccountTransferDlg
     gb.add(filePath, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(chooser, 2, 0, 1, 1, GridBagHelper.WEST);
 
-    container.add(header);
-    container.add(transferView);
-    container.add(buttons);
+    p.add(header);
+    p.add(transferView);
+    
+    add(p, BorderLayout.CENTER);
+    add(buttons, BorderLayout.SOUTH);
     pack();
   }
 
@@ -101,7 +109,9 @@ public class AccountTransferDlg
     int school = transferView.getSchool();
     String modeOfPayment = transferView.getModeOfPayment();
     int errors = 0;
-    String query = "echeance >= '"+start+"' AND echeance <= '"+end+"' AND ecole = '"+school+"' AND paye='t' AND transfert='f' AND reglement='"+modeOfPayment+"'";
+    String query = "WHERE echeance >= '"+start+"' AND echeance <= '"+end
+            +"' AND ecole = '"+school
+            +"' AND paye='t' AND transfert='f' AND reglement='"+modeOfPayment+"'";
     // les échéances de type prélèvement impliquent que le payeur ait un rib et qu'il existe en tant que contact.
     if ("PRL".equals(modeOfPayment)) {
       query += " AND payeur IN (SELECT idper FROM rib) AND payeur IN (SELECT id FROM personne)";

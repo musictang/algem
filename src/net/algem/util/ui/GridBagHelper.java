@@ -1,5 +1,5 @@
 /*
- * @(#)GridBagHelper.java	2.8.a 15/03/13
+ * @(#)GridBagHelper.java	2.8.k 22/07/13
  *
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -25,13 +25,13 @@ import java.awt.*;
 /**
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.k
  */
 public class GridBagHelper
 {
 
   /** Default padding for a component in GridBagHelper. */
-  public static Insets SMALL_INSETS = new Insets(2, 2, 2, 0);
+  public static Insets SMALL_INSETS = new Insets(2, 4, 2, 0);
   public static Insets MEDIUM_INSETS = new Insets(0, 5, 0, 0);
   
   public static final int RELATIVE = GridBagConstraints.RELATIVE;

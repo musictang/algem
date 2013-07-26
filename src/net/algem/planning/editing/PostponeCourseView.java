@@ -1,7 +1,7 @@
 /*
- * @(#)PostponeCourseView.java	2.8.g 31/05/13
+ * @(#)PostponeCourseView.java	2.8.k 25/07/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -38,7 +38,7 @@ import net.algem.util.ui.*;
 /**
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.g
+ * @version 2.8.k
  * @since 1.0a 07/07/1999
  */
 public class PostponeCourseView
@@ -73,7 +73,7 @@ public class PostponeCourseView
     currentDate = new DateFrField();
     currentDate.setEditable(false);
     newDate = new DateFrField();
-    currentHour = new GemField(20);
+    currentHour = new GemField(11);
     currentHour.setEditable(false);
     newStartTime = new HourField();
 

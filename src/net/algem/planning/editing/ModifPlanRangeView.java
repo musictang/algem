@@ -1,7 +1,7 @@
 /*
- * @(#)ModifPlanRangeView.java	2.6.a 21/09/12
+ * @(#)ModifPlanRangeView.java	2.8.k 25/07/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -22,10 +22,7 @@ package net.algem.planning.editing;
 
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import net.algem.planning.DateFr;
-import net.algem.planning.DateFrField;
-import net.algem.planning.Hour;
-import net.algem.planning.HourRangePanel;
+import net.algem.planning.*;
 import net.algem.util.BundleUtil;
 import net.algem.util.ui.GemField;
 import net.algem.util.ui.GemLabel;
@@ -37,7 +34,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.k
  * @since 1.0a 07/07/1999
  */
 public class ModifPlanRangeView
@@ -48,6 +45,7 @@ public class ModifPlanRangeView
   private GemField courseLabel;
   private Hour hStart, hEnd;
   private DateFrField from, to;
+  private DateRangePanel dateRange;
   private GemField currentRange; // time before
   private HourRangePanel newRange; // time after
 
@@ -56,13 +54,13 @@ public class ModifPlanRangeView
     setBorder(ModifPlanView.DEFAULT_BORDER);
     setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
-
+    dateRange = new DateRangePanel();
     courseLabel = new GemField(25);
     courseLabel.setEditable(false);
     from = new DateFrField();
     from.setEditable(false);
     to = new DateFrField();
-    currentRange = new GemField(20);
+    currentRange = new GemField(11);
     currentRange.setEditable(false);
     newRange = new HourRangePanel();
 
@@ -70,18 +68,14 @@ public class ModifPlanRangeView
 
     gb.add(new GemLabel(BundleUtil.getLabel("Course.label")), 0, 0, 1, 1, padding, GridBagHelper.EAST);
     gb.add(courseLabel, 1, 0, 1, 1, padding, GridBagHelper.WEST);
-
     gb.add(new GemLabel(BundleUtil.getLabel("Date.From.label")), 0, 1, 1, 1, GridBagHelper.EAST);
-    gb.add(from, 1, 1, 1, 1, padding, GridBagHelper.WEST);
+    gb.add(dateRange, 1, 1, 1, 1, padding, GridBagHelper.WEST);
 
-    gb.add(new GemLabel(BundleUtil.getLabel("Date.To.label")), 0, 2, 1, 1, GridBagHelper.EAST);
-    gb.add(to, 1, 2, 1, 1, padding, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Current.hour.range.label")), 0, 2, 1, 1, GridBagHelper.EAST);
+    gb.add(currentRange, 1, 2, 1, 1, padding, GridBagHelper.WEST);
 
-    gb.add(new GemLabel(BundleUtil.getLabel("Current.hour.range.label")), 0, 3, 1, 1, GridBagHelper.EAST);
-    gb.add(currentRange, 1, 3, 1, 1, padding, GridBagHelper.WEST);
-
-    gb.add(new GemLabel(BundleUtil.getLabel("New.hour.range.label")), 0, 4, 1, 1, GridBagHelper.EAST);
-    gb.add(newRange, 1, 4, 1, 1, padding, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("New.hour.range.label")), 0, 3, 1, 1, GridBagHelper.EAST);
+    gb.add(newRange, 1, 3, 1, 1, padding, GridBagHelper.WEST);
 
   }
 
@@ -118,19 +112,23 @@ public class ModifPlanRangeView
   }
 
   void setStart(DateFr d) {
-    from.set(d);
+//    from.set(d);
+    dateRange.setStart(d);
   }
 
   DateFr getStart() {
-    return from.getDateFr();
+    return dateRange.getStartFr();
+//    return from.getDateFr();
   }
 
   void setEnd(DateFr d) {
-    to.set(d);
+//    to.set(d);
+    dateRange.setEnd(d);
   }
 
   DateFr getEnd() {
-    return to.getDateFr();
+//    return to.getDateFr();
+    return dateRange.getEndFr();
   }
 
   void setTitle(String s) {

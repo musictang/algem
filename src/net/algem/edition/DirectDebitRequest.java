@@ -1,7 +1,7 @@
 /*
- * @(#)StandingOrder.java	2.6.a 17/09/12
+ * @(#)DirectDebitRequest.java	2.8.k 23/07/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,12 +28,13 @@ import java.util.TreeMap;
 import net.algem.accounting.OrderLineIO;
 import net.algem.bank.BankBranch;
 import net.algem.bank.BankBranchIO;
-import net.algem.bank.Bic;
+import net.algem.bank.Rib;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
 import net.algem.contact.Address;
 import net.algem.contact.PersonFile;
 import net.algem.planning.DateFr;
+import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 import net.algem.util.MessageUtil;
@@ -43,9 +44,9 @@ import net.algem.util.MessageUtil;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.k
  */
-public class StandingOrder
+public class DirectDebitRequest
         extends Canvas
 {
 
@@ -56,6 +57,7 @@ public class StandingOrder
 //  private Image bim;
 //  private Graphics bg;
   private Font normalFont;
+  private Font mediumFont;
   private Font smallFont;
   private Font boldFont;
   private Frame parent;
@@ -80,7 +82,7 @@ public class StandingOrder
    * @param c
    * @param withOrderLines prints also the amount of order lines
    */
-  public StandingOrder(Component c, boolean withOrderLines) {
+  public DirectDebitRequest(Component c, boolean withOrderLines) {
 
     detailed = withOrderLines;
     while (c.getParent() != null) {
@@ -95,6 +97,7 @@ public class StandingOrder
     props.put("awt.print.paperSize", "a4");
 
     normalFont = new Font("Helvetica", Font.PLAIN, 10);
+    mediumFont = new Font("Helvetica", Font.PLAIN, 7);
     smallFont = new Font("Helvetica", Font.PLAIN, 6);
     boldFont = new Font("Helvetica", Font.BOLD, 9);
 
@@ -105,7 +108,7 @@ public class StandingOrder
     //int mgh = 15;
     int mgm = 270;
     Address a = null;
-    Bic rib = null;
+    Rib rib = null;
     BankBranch branch = null;
     Address branchAddress = null;
     DataConnection dc = cache.getDataConnection();
@@ -136,13 +139,13 @@ public class StandingOrder
     g.drawString(MessageUtil.getMessage("standing.order.info1", new Object[] {cache.getStartOfYear(), cache.getEndOfYear()}), 25, 60);
     g.drawString(MessageUtil.getMessage("standing.order.info2") + " " + firmName, 25, 70);
 
-    g.drawString(MessageUtil.getMessage("standing.order.debtor.info.title"), 30, 91);
+    g.drawString(MessageUtil.getMessage("standing.order.debtor.info.title"), 25, 91);//30
 
     g.drawRect(25, 100, 260, 65);
 
     if (p != null) {
       g.setFont(normalFont);
-      g.drawString(p.getContact().getName(), 35, 115);
+      g.drawString(p.getContact().getFirstnameName(), 35, 115);
       g.setFont(smallFont);
       g.drawString(String.valueOf(p.getId()), 255, 160);
       a = p.getContact().getAddress();
@@ -155,13 +158,13 @@ public class StandingOrder
     }
 
     g.setFont(smallFont);
-    g.drawString(MessageUtil.getMessage("standing.order.firm.info.title"), 305, 91);
+    g.drawString(MessageUtil.getMessage("standing.order.firm.info.title"), 310, 91); // 305
     g.drawRect(310, 100, 260, 65);
 
     g.setFont(normalFont);
     branchAddress = null;
     if (p != null) {
-      rib = p.getBic();
+      rib = p.getRib();
       if (rib != null) {
         branch = new BankBranchIO(dc).findId(rib.getBranchId());
       }
@@ -176,29 +179,33 @@ public class StandingOrder
       g.drawString(branchAddress.getCdp() + " " + branchAddress.getCity(), 320, 160);
     }
     g.setFont(boldFont);
-    g.drawString(MessageUtil.getMessage("standing.order.debtor.account.title"), 90, 190);
+    g.drawString(MessageUtil.getMessage("standing.order.debtor.account.title"), 25, 190);
 
     g.setFont(smallFont);
-    g.drawString(MessageUtil.getMessage("standing.order.creditor.info.title"), 330, 210);
+    g.drawString(MessageUtil.getMessage("standing.order.creditor.info.title"), 320, 210);
 
     g.setFont(boldFont);
-    g.drawString(firmName, 330, 235);
-    g.drawString(street, 330, 250);//XXX TODO 25/08/11 A paramétrer dans Divers
-    g.drawString(city, 330, 265); // A paramétrer dans Divers
-
+    g.drawString(firmName, 320, 235);
+    g.drawString(street, 320, 250);
+    g.drawString(city, 320, 265);
 
     if (p == null) {
-      drawRib(g, 25, 200, null);
+      drawRib(g, 25, 200, null, null);
     } else {
-      drawRib(g, 25, 200, p.getBic());
+      drawRib(g, 25, 200, p.getRib(), branch);
     }
 
     g.setFont(smallFont);
-    g.drawString("Date :", 25, 230);
-    g.drawString("Signature :", 100, 230);
+    g.drawString("Date :", 25, 235);
+    g.drawString("Signature :", 100, 235);
 
     /* ajout montant et dates echeances */
-    String where = "echeance >= '" + cache.getStartOfYear() + "' AND echeance <='" + cache.getEndOfYear() + "' AND payeur=" + p.getId() + " AND reglement='PRL' AND transfert='f' GROUP BY echeance ORDER BY echeance;";
+    String where = "WHERE echeance >= '" + cache.getStartOfYear() 
+            + "' AND echeance <='" + cache.getEndOfYear() 
+            + "' AND payeur = " + p.getId() 
+            + " AND reglement = 'PRL'"
+            + " AND transfert = 'f'"
+            + " GROUP BY echeance ORDER BY echeance;";
     TreeMap<DateFr, String> prelevements = OrderLineIO.findPrl(where, dc);
     Set<Map.Entry<DateFr, String>> prlSet = prelevements.entrySet();
     g.setFont(smallFont);
@@ -280,11 +287,11 @@ public class StandingOrder
 
     //mgm += 30;
     g.setFont(smallFont);
-    g.drawString(MessageUtil.getMessage("standing.order.debtor.info.title"), 30, mgm + 60);
+    g.drawString(MessageUtil.getMessage("standing.order.debtor.info.title"), 25, mgm + 60);
     g.drawRect(25, mgm + 65, 260, 65);
     if (p != null) {
       g.setFont(boldFont);
-      g.drawString(p.getContact().getName(), 35, mgm + 80);
+      g.drawString(p.getContact().getFirstnameName(), 35, mgm + 80);
       g.setFont(smallFont);
       g.drawString(String.valueOf(p.getId()), 245, mgm + 125);
     }
@@ -296,7 +303,7 @@ public class StandingOrder
     }
 
     g.setFont(smallFont);
-    g.drawString(MessageUtil.getMessage("standing.order.creditor.info.title"), 305, mgm + 60);
+    g.drawString(MessageUtil.getMessage("standing.order.creditor.info.title"), 300, mgm + 60);
     g.drawRect(300, mgm + 65, 260, 65);
 
     g.setFont(boldFont);
@@ -309,11 +316,11 @@ public class StandingOrder
     g.drawString(MessageUtil.getMessage("standing.order.info7", firmName), 25, mgm + 150);
 
     g.setFont(smallFont);
-    g.drawString(MessageUtil.getMessage("standing.order.account.title"), 100, mgm + 160);
+    g.drawString(MessageUtil.getMessage("standing.order.account.title"), 25, mgm + 160);
 
     g.setFont(smallFont);
-    g.drawString(MessageUtil.getMessage("standing.order.address.info.title1"), 300, mgm + 160);
-    g.drawString(MessageUtil.getMessage("standing.order.address.info.title2"), 300, mgm + 170);
+    g.drawString(MessageUtil.getMessage("standing.order.address.info.title1"), 310, mgm + 160);
+    g.drawString(MessageUtil.getMessage("standing.order.address.info.title2"), 310, mgm + 170);
 
     g.setFont(normalFont);
     if (branch != null) {
@@ -326,14 +333,14 @@ public class StandingOrder
     }
 
     if (p == null) {
-      drawRib(g, 25, mgm + 170, null);
+      drawRib(g, 25, mgm + 170, null, null);
     } else {
-      drawRib(g, 25, mgm + 170, p.getBic());
+      drawRib(g, 25, mgm + 170, p.getRib(), branch);
     }
 
     g.setFont(smallFont);
-    g.drawString("Date :", 25, mgm + 200);
-    g.drawString("Signature :", 100, mgm + 200);
+    g.drawString("Date :", 25, mgm + 205);
+    g.drawString("Signature :", 100, mgm + 205);
 
     //mgm += 20;
     g.setFont(boldFont);
@@ -352,78 +359,103 @@ public class StandingOrder
     prn.end();
   }
 
-  void drawRib(Graphics g, int x, int y, Bic rib) {
+  private void drawRib(Graphics g, int x, int y, Rib rib, BankBranch bb) {
     g.setFont(smallFont);
-    g.drawString("Etablis", x, y);
-    g.drawLine(x, y + 20, x + 50, y + 20);
-    g.drawLine(x, y + 15, x, y + 20);
-    g.drawLine(x + 10, y + 15, x + 10, y + 20);
-    g.drawLine(x + 20, y + 15, x + 20, y + 20);
-    g.drawLine(x + 30, y + 15, x + 30, y + 20);
-    g.drawLine(x + 40, y + 15, x + 40, y + 20);
-    g.drawLine(x + 50, y + 15, x + 50, y + 20);
+    g.setFont(smallFont.deriveFont(Font.BOLD));
+    g.drawString(BundleUtil.getLabel("Iban.label") + " : ", x, y);
+    g.drawString(BundleUtil.getLabel("Bic.code.label") + " : ", x + 170, y);
+    
+    g.setFont(smallFont.deriveFont(Font.PLAIN));
+    int mTop = 5;
+    g.drawString("Etablis", x, y + 8 + mTop);
+    g.drawLine(x, y + 20 + mTop, x + 50, y + 20 + mTop);
+    g.drawLine(x, y + 15 + mTop, x, y + 20 + mTop);
+    g.drawLine(x + 10, y + 17 + mTop, x + 10, y + 20 + mTop);
+    g.drawLine(x + 20, y + 17 + mTop, x + 20, y + 20 + mTop);
+    g.drawLine(x + 30, y + 17 + mTop, x + 30, y + 20 + mTop);
+    g.drawLine(x + 40, y + 17 + mTop, x + 40, y + 20 + mTop);
+    g.drawLine(x + 50, y + 15 + mTop, x + 50, y + 20 + mTop);
 
-    g.drawString("Guichet", x + 60, y);
-    g.drawLine(x + 60, y + 20, x + 110, y + 20);
-    g.drawLine(x + 60, y + 15, x + 60, y + 20);
-    g.drawLine(x + 70, y + 15, x + 70, y + 20);
-    g.drawLine(x + 80, y + 15, x + 80, y + 20);
-    g.drawLine(x + 90, y + 15, x + 90, y + 20);
-    g.drawLine(x + 100, y + 15, x + 100, y + 20);
-    g.drawLine(x + 110, y + 15, x + 110, y + 20);
+    g.drawString("Guichet", x + 60, y +8 + mTop);
+    g.drawLine(x + 60, y + 20 + mTop, x + 110, y + 20 + mTop);
+    g.drawLine(x + 60, y + 15 + mTop, x + 60, y + 20 + mTop);
+    g.drawLine(x + 70, y + 17 + mTop, x + 70, y + 20 + mTop);
+    g.drawLine(x + 80, y + 17 + mTop, x + 80, y + 20 + mTop);
+    g.drawLine(x + 90, y + 17 + mTop, x + 90, y + 20 + mTop);
+    g.drawLine(x + 100, y + 17 + mTop, x + 100, y + 20 + mTop);
+    g.drawLine(x + 110, y + 15 + mTop, x + 110, y + 20 + mTop);
 
-    g.drawString("N° de compte", x + 120, y);
-    g.drawLine(x + 120, y + 20, x + 230, y + 20);
-    g.drawLine(x + 120, y + 15, x + 120, y + 20);
-    g.drawLine(x + 130, y + 15, x + 130, y + 20);
-    g.drawLine(x + 140, y + 15, x + 140, y + 20);
-    g.drawLine(x + 150, y + 15, x + 150, y + 20);
-    g.drawLine(x + 160, y + 15, x + 160, y + 20);
-    g.drawLine(x + 170, y + 15, x + 170, y + 20);
-    g.drawLine(x + 180, y + 15, x + 180, y + 20);
-    g.drawLine(x + 190, y + 15, x + 190, y + 20);
-    g.drawLine(x + 200, y + 15, x + 200, y + 20);
-    g.drawLine(x + 210, y + 15, x + 210, y + 20);
-    g.drawLine(x + 220, y + 15, x + 220, y + 20);
-    g.drawLine(x + 230, y + 15, x + 230, y + 20);
+    g.drawString("N° de compte", x + 120, y +8 + mTop);
+    g.drawLine(x + 120, y + 20 + mTop, x + 230, y + 20 + mTop);
+    g.drawLine(x + 120, y + 15 + mTop, x + 120, y + 20 + mTop);
+    g.drawLine(x + 130, y + 17 + mTop, x + 130, y + 20 + mTop);
+    g.drawLine(x + 140, y + 17 + mTop, x + 140, y + 20 + mTop);
+    g.drawLine(x + 150, y + 17 + mTop, x + 150, y + 20 + mTop);
+    g.drawLine(x + 160, y + 17 + mTop, x + 160, y + 20 + mTop);
+    g.drawLine(x + 170, y + 17 + mTop, x + 170, y + 20 + mTop);
+    g.drawLine(x + 180, y + 17 + mTop, x + 180, y + 20 + mTop);
+    g.drawLine(x + 190, y + 17 + mTop, x + 190, y + 20 + mTop);
+    g.drawLine(x + 200, y + 17 + mTop, x + 200, y + 20 + mTop);
+    g.drawLine(x + 210, y + 17 + mTop, x + 210, y + 20 + mTop);
+    g.drawLine(x + 220, y + 17 + mTop, x + 220, y + 20 + mTop);
+    g.drawLine(x + 230, y + 15 + mTop, x + 230, y + 20 + mTop);
 
-    g.drawString("Clé", x + 240, y);
-    g.drawLine(x + 240, y + 20, x + 260, y + 20);
-    g.drawLine(x + 240, y + 15, x + 240, y + 20);
-    g.drawLine(x + 250, y + 15, x + 250, y + 20);
-    g.drawLine(x + 260, y + 15, x + 260, y + 20);
+    g.drawString("Clé", x + 240, y + 8 + mTop);
+    g.drawLine(x + 240, y + 20 + mTop, x + 260, y + 20 + mTop);
+    g.drawLine(x + 240, y + 15 + mTop, x + 240, y + 20 + mTop);
+    g.drawLine(x + 250, y + 17 + mTop, x + 250, y + 20 + mTop);
+    g.drawLine(x + 260, y + 15 + mTop, x + 260, y + 20 + mTop);
 
     if (rib != null) {
+       // iban
+      g.setFont(mediumFont);
+      g.drawString(rib.getIban() == null ? "" : formatIban(rib.getIban()), x + 23, y);
+      // bic
+      if (bb != null) {
+        g.drawString(bb.getBicCode() == null ? "" : bb.getBicCode(), x + 211, y);
+      }
+      g.setFont(smallFont);
       char[] rEtab = rib.getEstablishment().toCharArray();
-      g.drawChars(rEtab, 0, 1, x + 1, y + 15);
-      g.drawChars(rEtab, 1, 1, x + 11, y + 15);
-      g.drawChars(rEtab, 2, 1, x + 21, y + 15);
-      g.drawChars(rEtab, 3, 1, x + 31, y + 15);
-      g.drawChars(rEtab, 4, 1, x + 41, y + 15);
+      g.drawChars(rEtab, 0, 1, x + 2, y + 17 + mTop);
+      g.drawChars(rEtab, 1, 1, x + 12, y + 17 + mTop);
+      g.drawChars(rEtab, 2, 1, x + 22, y + 17 + mTop);
+      g.drawChars(rEtab, 3, 1, x + 32, y + 17 + mTop);
+      g.drawChars(rEtab, 4, 1, x + 42, y + 17 + mTop);
 
       char[] rGuichet = rib.getBranch().toCharArray();
-      g.drawChars(rGuichet, 0, 1, x + 61, y + 15);
-      g.drawChars(rGuichet, 1, 1, x + 71, y + 15);
-      g.drawChars(rGuichet, 2, 1, x + 81, y + 15);
-      g.drawChars(rGuichet, 3, 1, x + 91, y + 15);
-      g.drawChars(rGuichet, 4, 1, x + 101, y + 15);
+      g.drawChars(rGuichet, 0, 1, x + 62, y + 17 + mTop);
+      g.drawChars(rGuichet, 1, 1, x + 72, y + 17 + mTop);
+      g.drawChars(rGuichet, 2, 1, x + 82, y + 17 + mTop);
+      g.drawChars(rGuichet, 3, 1, x + 92, y + 17 + mTop);
+      g.drawChars(rGuichet, 4, 1, x + 102, y + 17 + mTop);
 
       char[] rCompte = rib.getAccount().toCharArray();
-      g.drawChars(rCompte, 0, 1, x + 121, y + 15);
-      g.drawChars(rCompte, 1, 1, x + 131, y + 15);
-      g.drawChars(rCompte, 2, 1, x + 141, y + 15);
-      g.drawChars(rCompte, 3, 1, x + 151, y + 15);
-      g.drawChars(rCompte, 4, 1, x + 161, y + 15);
-      g.drawChars(rCompte, 5, 1, x + 171, y + 15);
-      g.drawChars(rCompte, 6, 1, x + 181, y + 15);
-      g.drawChars(rCompte, 7, 1, x + 191, y + 15);
-      g.drawChars(rCompte, 8, 1, x + 201, y + 15);
-      g.drawChars(rCompte, 9, 1, x + 211, y + 15);
-      g.drawChars(rCompte, 10, 1, x + 221, y + 15);
+      g.drawChars(rCompte, 0, 1, x + 122, y + 17 + mTop);
+      g.drawChars(rCompte, 1, 1, x + 132, y + 17 + mTop);
+      g.drawChars(rCompte, 2, 1, x + 142, y + 17 + mTop);
+      g.drawChars(rCompte, 3, 1, x + 152, y + 17 + mTop);
+      g.drawChars(rCompte, 4, 1, x + 162, y + 17 + mTop);
+      g.drawChars(rCompte, 5, 1, x + 172, y + 17 + mTop);
+      g.drawChars(rCompte, 6, 1, x + 182, y + 17 + mTop);
+      g.drawChars(rCompte, 7, 1, x + 192, y + 17 + mTop);
+      g.drawChars(rCompte, 8, 1, x + 202, y + 17 + mTop);
+      g.drawChars(rCompte, 9, 1, x + 212, y + 17 + mTop);
+      g.drawChars(rCompte, 10, 1, x + 222, y + 17 + mTop);
 
-      char[] cle = rib.getBicKey().toCharArray();
-      g.drawChars(cle, 0, 1, x + 241, y + 15);
-      g.drawChars(cle, 1, 1, x + 251, y + 15);
+      char[] cle = rib.getRibKey().toCharArray();
+      g.drawChars(cle, 0, 1, x + 242, y + 17 + mTop);
+      g.drawChars(cle, 1, 1, x + 252, y + 17 + mTop);
+        
     }
+  }
+  
+  private String formatIban(String iban) {
+    StringBuilder sb = new StringBuilder();
+    int i =0;
+    for (; i < iban.length()-3; i += 4) {
+      sb.append(iban.substring(i, i+4)).append(' ');
+    }
+    sb.append(iban.substring(i));
+    return sb.toString();
   }
 }

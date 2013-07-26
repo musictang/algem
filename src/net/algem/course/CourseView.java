@@ -1,5 +1,5 @@
 /*
- * @(#)CourseView.java	2.8.a 19/04/13
+ * @(#)CourseView.java	2.8.k 23/07/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -34,7 +34,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.k
  */
 public class CourseView
         extends GemPanel
@@ -62,8 +62,10 @@ public class CourseView
     nplaces = new GemNumericField(5);
     level = new GemField(5);
     collective = new JCheckBox();
+    collective.setBorder(null);
     collective.setSelected(true);
     active = new JCheckBox();
+    active.setBorder(null);
     active.setSelected(true);
     schoolChoice = new ParamChoice(schools.getData());
 
@@ -75,7 +77,7 @@ public class CourseView
     gb.add(new GemLabel(BundleUtil.getLabel("Title.label")), 0, 1, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Label.label")), 0, 2, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Type.label")), 0, 3, 1, 1, GridBagHelper.WEST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Room.number.label")), 0, 4, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Place.number.label")), 0, 4, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Level.label")), 0, 5, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Collective.label")), 0, 6, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Active.label")), 0, 7, 1, 1, GridBagHelper.WEST);

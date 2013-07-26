@@ -1,7 +1,7 @@
 /*
- * @(#)BranchListCtrl.java	2.6.a 14/09/12
+ * @(#)BranchListCtrl.java	2.8.i 09/07/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -23,15 +23,14 @@ package net.algem.bank;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.border.BevelBorder;
-import javax.swing.table.TableColumnModel;
 import net.algem.util.ui.ListCtrl;
 
 /**
- * comment
+ * Branch list controller.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.i
  */
 public class BranchListCtrl
         extends ListCtrl
@@ -43,12 +42,7 @@ public class BranchListCtrl
     table = new JTable(tableModel);
     table.setAutoCreateRowSorter(true);
 
-    TableColumnModel cm = table.getColumnModel();
-    cm.getColumn(0).setPreferredWidth(40);
-    cm.getColumn(1).setPreferredWidth(40);
-    cm.getColumn(2).setPreferredWidth(40);
-    cm.getColumn(3).setPreferredWidth(100);
-    cm.getColumn(4).setPreferredWidth(200);
+    setColumns(20,20,20,100,60,200);
 
     JScrollPane p = new JScrollPane(table);
     p.setBorder(new BevelBorder(BevelBorder.LOWERED));

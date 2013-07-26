@@ -1,7 +1,7 @@
 /*
- * @(#)StudentExportDlg.java 2.7.e 05/02/13
+ * @(#)StudentExportDlg.java 2.8.k 25/07/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -44,7 +44,7 @@ import net.algem.util.ui.MessagePopup;
  * Abstract class for student export operations.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.e
+ * @version 2.8.k
  * @since 2.6.a 06/11/2012
  */
 public abstract class StudentExportDlg
@@ -71,6 +71,7 @@ public abstract class StudentExportDlg
   public GemPanel getCriterion() {
     GemPanel pCriterion = new GemPanel();
     pCriterion.setLayout(new GridBagLayout());
+//    pCriterion.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
     gb = new GridBagHelper(pCriterion);
     gb.insets = GridBagHelper.SMALL_INSETS;
@@ -98,6 +99,11 @@ public abstract class StudentExportDlg
    */
   @Override
   abstract public String getRequest();
+  
+  @Override
+  protected boolean writeFile() {
+    return typeContact.getSelectedIndex() == 1 || super.writeFile();
+  }
   
   @Override
   protected final void validation() {

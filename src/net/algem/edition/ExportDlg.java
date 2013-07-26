@@ -1,7 +1,7 @@
 /*
- * @(#)ExportDlg.java	2.6.a 02/10/12
+ * @(#)ExportDlg.java 2.8.k 25/07/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,10 +27,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.Vector;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import net.algem.config.ConfigUtil;
 import net.algem.contact.*;
@@ -45,7 +42,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.k
  * @since 1.0a 14/12/1999
  */
 public abstract class ExportDlg
@@ -97,16 +94,21 @@ public abstract class ExportDlg
     buttons.add(btCancel);
 
     fileName = new GemField(ConfigUtil.getExportPath(dc) + FileUtil.FILE_SEPARATOR + getFileName() + ".csv", 30);
-    GemPanel pFichier = new GemPanel();
-    pFichier.add(new Label(BundleUtil.getLabel("Menu.file.label")));
-    pFichier.add(fileName);
+    GemPanel pFile = new GemPanel();
+    pFile.add(new Label(BundleUtil.getLabel("Menu.file.label")));
+    pFile.add(fileName);
     chooser = new JButton(GemCommand.BROWSE_CMD);
     chooser.addActionListener(this);
-    pFichier.add(chooser);
-
-    getContentPane().add(pFichier, BorderLayout.NORTH);
-    getContentPane().add(getCriterion(), BorderLayout.CENTER);
-    getContentPane().add(buttons, BorderLayout.SOUTH);
+    pFile.add(chooser);
+    
+    GemPanel body = new GemPanel(new BorderLayout());
+    body.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+    body.add(pFile, BorderLayout.NORTH);
+    body.add(getCriterion(), BorderLayout.SOUTH);
+    
+    setLayout(new BorderLayout());
+    add(body, BorderLayout.CENTER);
+    add(buttons, BorderLayout.SOUTH);
     pack();
   }
 
@@ -119,6 +121,10 @@ public abstract class ExportDlg
     if (evt.getSource() == btCancel) {
       close();
     } else if (evt.getSource() == btValidation) {
+      file = new File(fileName.getText());
+      if (!writeFile()) {
+        return;
+      }
       validation();
       close();
     } else if (evt.getSource() == chooser) {
@@ -131,10 +137,17 @@ public abstract class ExportDlg
     }
 
   }
+  
+  protected boolean writeFile() {
+    if (file == null) {
+      return true;
+    }
+    return FileUtil.confirmOverWrite(this, file);
+  }
 
   public static JFileChooser getFileChooser(String file) {
     JFileChooser fileChooser = new JFileChooser((File) null);
-    FileNameExtensionFilter filter = new FileNameExtensionFilter(TEXT_FILTER_LABEL, "csv", "txt");
+    FileNameExtensionFilter filter = new FileNameExtensionFilter(TEXT_FILTER_LABEL, "csv", "txt", "htm", "html");
     fileChooser.setFileFilter(filter);
     fileChooser.setSelectedFile(new File(file));
     return fileChooser;

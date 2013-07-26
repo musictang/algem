@@ -1,7 +1,7 @@
 /*
- * @(#)BankBranch.java	2.6.a 14/09/12
+ * @(#)BankBranch.java	2.8.i 05/07/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,7 +28,7 @@ import net.algem.contact.Person;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.i
  */
 public class BankBranch
         extends Contact
@@ -38,7 +38,8 @@ public class BankBranch
   private Bank bank;
   private String branchCode;
   private String domiciliation;
-
+  private String bicCode;
+  
   public BankBranch() {
     type = Person.BANK;
     firstName = "";
@@ -52,11 +53,46 @@ public class BankBranch
     gender = "";
   }
 
-  public boolean equals(BankBranch a) {
-    return branchCode.equals(a.branchCode)
-            && domiciliation.equals(a.domiciliation)
-            && getBankCode().equals(a.getBankCode());
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final BankBranch other = (BankBranch) obj;
+    if ((this.branchCode == null) ? (other.branchCode != null) : !this.branchCode.equals(other.branchCode)) {
+      return false;
+    }
+    if ((this.domiciliation == null) ? (other.domiciliation != null) : !this.domiciliation.equals(other.domiciliation)) {
+      return false;
+    }
+    if ((getBankCode() == null) ? (other.getBankCode() != null) : !getBankCode().equals(other.getBankCode())) {
+      return false;
+    }
+    if ((this.bicCode == null) ? (other.bicCode != null) : !this.bicCode.equals(other.bicCode)) {
+      return false;
+    }
+    return true;
   }
+
+  @Override
+  public int hashCode() {
+    int hash = 7;
+    hash = 89 * hash + (this.branchCode != null ? this.branchCode.hashCode() : 0);
+    hash = 89 * hash + (this.domiciliation != null ? this.domiciliation.hashCode() : 0);
+    hash = 89 * hash + (this.bicCode != null ? this.bicCode.hashCode() : 0);
+    hash = 89 * hash + (getBankCode() != null ? getBankCode().hashCode() : 0);
+    return hash;
+  }
+  
+//
+//  @Override
+//  public int hashCode() {
+//    int hash = 5;
+//    return hash;
+//  }
 
   public void setBank(Bank b) {
     bank = b;
@@ -93,6 +129,14 @@ public class BankBranch
 
   public String getDomiciliation() {
     return domiciliation;
+  }
+
+  public String getBicCode() {
+    return bicCode;
+  }
+
+  public void setBicCode(String bicCode) {
+    this.bicCode = bicCode;
   }
 
   @Override

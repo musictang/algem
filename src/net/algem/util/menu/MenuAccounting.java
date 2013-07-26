@@ -122,7 +122,7 @@ public class MenuAccounting
       AccountDocumentTransferDlg documentTransfertDlg = new AccountDocumentTransferDlg(desktop.getFrame(), dataCache);
       documentTransfertDlg.setVisible(true);
     } else if (menus.get("Menu.debiting.label").equals(arg)) {
-      StandingOrderExportDlg dlg = new StandingOrderExportDlg((Frame) null, menus.get("Menu.debiting.label"), dc);
+      DirectDebitExportDlg dlg = new DirectDebitExportDlg((Frame) null, menus.get("Menu.debiting.label"), dc);
       dlg.setVisible(true);
     } else if (src == miAccountHourTeacher) {
       HourTeacherDlg hourTeacherDlg = new HourTeacherDlg(desktop.getFrame(), "heureprof.txt", dataCache);

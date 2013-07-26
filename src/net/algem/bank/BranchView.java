@@ -1,5 +1,5 @@
 /*
- * @(#)BranchView.java	2.6.a 14/09/12
+ * @(#)BranchView.java	2.8.i 04/07/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -25,6 +25,7 @@ import java.awt.GridBagLayout;
 import net.algem.contact.Address;
 import net.algem.contact.AddressView;
 import net.algem.contact.CodePostalCtrl;
+import net.algem.util.BundleUtil;
 import net.algem.util.ui.GemBorderPanel;
 import net.algem.util.ui.GemField;
 import net.algem.util.ui.GemLabel;
@@ -35,7 +36,7 @@ import net.algem.util.ui.GridBagHelper;
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.i
  */
 public class BranchView
         extends GemBorderPanel
@@ -50,6 +51,7 @@ public class BranchView
   private AddressView addressView;
   private Bank bankRef = null;
   private BankBranch branchRef = null;
+  private GemField bicCode;
   private int branchId;
 
   public BranchView() {
@@ -63,23 +65,27 @@ public class BranchView
 
     branchCode = new BranchCodeField();
     domiciliation = new GemField(24);
+    bicCode = new BicCodeField();
+    bicCode.setToolTipText(BundleUtil.getLabel("Bic.code.tip"));
 
     addressView = new AddressView();
 
     this.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
 
-    gb.add(new GemLabel("id"), 0, 0, 1, 1, GridBagHelper.WEST);
-    gb.add(new GemLabel("code banque"), 0, 1, 1, 1, GridBagHelper.WEST);
-    gb.add(new GemLabel("nom banque"), 0, 2, 1, 1, GridBagHelper.WEST);
-    gb.add(new GemLabel("code guichet"), 0, 3, 1, 1, GridBagHelper.WEST);
-    gb.add(new GemLabel("domiciliation"), 0, 4, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Id.label")), 0, 0, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Bank.code.label")), 0, 1, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Bank.name.label")), 0, 2, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Bank.branch.code.label")), 0, 3, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel("Domiciliation"), 0, 4, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Bic.code.label")), 0, 5, 1, 1, GridBagHelper.WEST);
     gb.add(no, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(bankCode, 1, 1, 3, 1, GridBagHelper.WEST);
     gb.add(bankName, 1, 2, 3, 1, GridBagHelper.WEST);
     gb.add(branchCode, 1, 3, 1, 1, GridBagHelper.WEST);
     gb.add(domiciliation, 1, 4, 1, 1, GridBagHelper.WEST);
-    gb.add(addressView, 0, 5, 2, 1, GridBagHelper.BOTH, 1.0, 1.0);
+    gb.add(bicCode, 1, 5, 1, 1, GridBagHelper.WEST);
+    gb.add(addressView, 0, 6, 2, 1, GridBagHelper.BOTH, 1.0, 1.0);
   }
 
   @Override
@@ -88,6 +94,8 @@ public class BranchView
     bankCode.addActionListener(ctrl);
     branchCode.addFocusListener(ctrl);
     branchCode.addActionListener(ctrl);
+    bicCode.addFocusListener(ctrl);
+    bicCode.addActionListener(ctrl);
     ctrl.setBranchView(this);
   }
 
@@ -98,7 +106,6 @@ public class BranchView
 
   public void setCodeBanque(String s) {
     bankCode.setText(s);
-    //codeBanque.setValue(s);
   }
 
   @Override
@@ -111,30 +118,21 @@ public class BranchView
     return bankName.getText();
   }
 
-  @Override
-  public String getBankCode() {
-    return bankCode.getText();
-    //return codeBanque.getValue().toString();
-  }
-
-  public void setCodeGuichet(String s) {
+  public void setBranchCode(String s) {
     branchCode.setText(s);
   }
 
   @Override
-  public String getCodeGuichet() {
-    return branchCode.getText();
-  }
-
-  @Override
-  public void setAgenceBancaire(BankBranch a) {
+  public void setBankBranch(BankBranch a) {
     branchRef = a;
     if (branchRef != null) {
       branchId = a.getId();
       no.setText(String.valueOf(branchId));
       setBank(a.getBank());
       branchCode.setText(a.getCode());
+      
       domiciliation.setText(a.getDomiciliation());
+      bicCode.setText(a.getBicCode());
       Address adr = a.getAddress();
       if (adr != null) {
         addressView.set(adr);
@@ -143,25 +141,24 @@ public class BranchView
   }
 
   @Override
-  public BankBranch getAgenceBancaire() {
+  public BankBranch getBankBranch() {
     BankBranch a = new BankBranch();
-
-    //Banque b = new Bank(codeBanque.getText(), nomBanque.getText());
-    Bank b = new Bank(getBankCode(), bankName.getText());
+    Bank b = new Bank(bankCode.getText(), bankName.getText());
+    
     a.setId(getId());
-    a.setBank(b);
     a.setCode(branchCode.getText());
     a.setDomiciliation(domiciliation.getText());
+    a.setBicCode(bicCode.getText());
     a.setAddress(addressView.get());
 
+    a.setBank(b);
+    
     return a;
   }
 
   @Override
   public Bank getBank() {
-    //Banque b = new Bank(codeBanque.getText(), nomBanque.getText());
-    Bank b = new Bank(getBankCode(), bankName.getText());
-    return b;
+    return new Bank(bankCode.getText(), bankName.getText());
   }
 
   @Override
@@ -170,7 +167,6 @@ public class BranchView
     if (bankRef != null) {
       bankName.setText(bankRef.getName());
       bankCode.setText(bankRef.getCode());
-      //codeBanque.setValue(banqueRef.getCode());
     }
   }
 
@@ -192,17 +188,37 @@ public class BranchView
     return id;
   }
 
-  public void clearAgence() {
-    domiciliation.setText("");
+  private void clearBranch() {
+    domiciliation.setText(null);
+    bicCode.setText(null);
     addressView.clear();
   }
 
   public void clear() {
-    no.setText("");
-    bankCode.setText("");
-    //codeBanque.setValue(null);
-    bankName.setText("");
-    branchCode.setText("");
-    clearAgence();
+    no.setText(null);
+    bankCode.setText(null);
+    bankName.setText(null);
+    branchCode.setText(null);
+    clearBranch();
+  }
+
+  @Override
+  public String getBankCode() {
+    return bankCode.getText();
+  }
+
+  @Override
+  public String getBranchCode() {
+    return branchCode.getText();
+  }
+
+  @Override
+  public String getBicCode() {
+    return bicCode.getText().toUpperCase().trim();
+  }
+
+  @Override
+  public void markBic(boolean ok) {
+    bicCode.setBackground(ok ? Color.WHITE : ERROR_BG_COLOR);
   }
 }

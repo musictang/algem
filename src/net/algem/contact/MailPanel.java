@@ -47,6 +47,7 @@ public class MailPanel
     setEmail(email);
     this.mailer = mailer;
     iButton.addActionListener(this);
+    iButton.setToolTipText(BundleUtil.getLabel("Action.email.send.label"));
     iArchive.addActionListener(this);
     iArchive.setToolTipText(BundleUtil.getLabel("Action.archive.label"));
     iField.addFocusListener(new FocusAdapter()

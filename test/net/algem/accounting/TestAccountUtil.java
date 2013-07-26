@@ -1,7 +1,7 @@
 /*
- * @(#)TestAccountUtil.java 2.6.a 08/10/12
+ * @(#)TestAccountUtil.java 2.8.i 03/07/13
  * 
- * Copyright (c) 1999-2011 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,44 +20,46 @@
  */
 package net.algem.accounting;
 
-import java.util.Vector;
-import junit.framework.TestCase;
 import net.algem.TestProperties;
-import net.algem.bank.Bic;
-import net.algem.bank.BicIO;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
-import net.algem.util.MessageUtil;
+import org.junit.AfterClass;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.i
  */
 public class TestAccountUtil
-        extends TestCase
 {
 
   private DataCache dataCache;
   private DataConnection dc;
 
-  public TestAccountUtil(String testName) throws Exception {
-    super(testName);
+  public TestAccountUtil() {
   }
 
-  @Override
-  protected void setUp() throws Exception {
-    super.setUp();
+  @Before
+  public void setUp() throws Exception {
     dc = TestProperties.getDataConnection();
     dataCache = TestProperties.getDataCache(dc);
     dataCache.load(null);
   }
 
-  @Override
-  protected void tearDown() throws Exception {
-    super.tearDown();
+ @BeforeClass
+  public static void setUpClass() throws Exception {
   }
 
+  @AfterClass
+  public static void tearDownClass() throws Exception {
+  }
+
+  @Test
   public void testRound() {
     float montant = 28.599F;
     double res = AccountUtil.round(montant);
@@ -80,6 +82,7 @@ public class TestAccountUtil
     assertTrue(15.0 == res);
   }
 
+  @Test
   public void testGetIntValue() {
     float montant = 28.599F;
     double res = AccountUtil.getIntValue(montant);
@@ -90,106 +93,8 @@ public class TestAccountUtil
     assertTrue(1500 == res);
   }
 
-  /**
-   * Test de ribs dont les comptes ne comportent que des chiffres.
-   */
-  public void testBicWithDigits() {
-    /* String b = "45499"; // code banque String g = "06048"; // code guichet String c
-     * = "00027230241"; // code compte String k = "81"; // clé rib */
 
-    String b = "30002"; // code banque
-    String g = "05948"; // code guichet
-    String c = "00O00391696"; // code compte le 3è caractère est un O majuscule et non un 0 !
-    String k = "25"; // clé rib
-
-    StringBuilder rib = new StringBuilder();
-    rib.append(b).append(g).append(c).append(k);
-    assertTrue(AccountUtil.isBicOk(rib.toString()));
-
-    // erreur code banque
-    rib.replace(0, 5, "45498");
-    assertFalse(rib.toString(), AccountUtil.isBicOk(rib.toString()));
-
-    rib.replace(0, 5, b);
-    // erreur code guichet
-    rib.replace(5, 10, "06049");
-    assertFalse(rib.toString(), AccountUtil.isBicOk(rib.toString()));
-
-    rib.replace(5, 10, g);
-    // erreur code compte
-    rib.replace(10, 21, "00027230242");
-    assertFalse(rib.toString(), AccountUtil.isBicOk(rib.toString()));
-
-    rib.replace(10, 21, c);
-    // erreur clé
-    rib.replace(21, 23, "82");
-    assertFalse(rib.toString(), AccountUtil.isBicOk(rib.toString()));
-
-    // rib initial
-    rib.replace(21, 23, k);
-    assertTrue(rib.toString(), AccountUtil.isBicOk(rib.toString()));
-  }
-
-  /**
-   * Test de ribs comportant des lettres dans le numéro de compte.
-   */
-  public void testBicWithLetters() {
-    String b = "10011"; // code banque
-    String g = "00020"; // code guichet
-    String c = "0785039777F"; // code compte
-    String k = "05"; // clé rib
-
-    StringBuilder rib = new StringBuilder();
-    rib.append(b).append(g).append(c).append(k);
-    assertTrue(AccountUtil.isBicOk(rib.toString()));
-
-    // erreur code banque
-    rib.replace(0, 5, "10010");
-    assertFalse(rib.toString(), AccountUtil.isBicOk(rib.toString()));
-
-    rib.replace(0, 5, b);
-    // erreur code guichet
-    rib.replace(5, 10, "00010");
-    assertFalse(rib.toString(), AccountUtil.isBicOk(rib.toString()));
-
-    rib.replace(5, 10, g);
-    // erreur code compte
-    rib.replace(10, 21, "0785039777E");
-    assertFalse(rib.toString(), AccountUtil.isBicOk(rib.toString()));
-
-    rib.replace(10, 21, c);
-    // erreur clé
-    rib.replace(21, 23, "06");
-    assertFalse(rib.toString(), AccountUtil.isBicOk(rib.toString()));
-
-    // rib initial
-    rib.replace(21, 23, k);
-    assertTrue(rib.toString(), AccountUtil.isBicOk(rib.toString()));
-  }
-
-  /**
-   * Test de ribs sur une sélection aléatoire de 10 ribs en base de données.
-   */
-  public void testBic() {
-    String where = " ORDER BY random() LIMIT 10";
-    Vector<Bic> ribs = BicIO.find(where, dc);
-    if (ribs == null || ribs.isEmpty()) {
-      fail(MessageUtil.getMessage("search.empty.list.status"));
-    }
-    for (Bic r : ribs) {
-      assertTrue(r.toString(), AccountUtil.isBicOk(r.toString()));
-    }
-  }
-
-  /**
-   * Vérification de tous les ribs en BD.
-   */
-  /* public void testAllRIBs() { Vector<Bic> ribs = BicIO.find(dc,""); if (ribs ==
-   * null || ribs.isEmpty()) {
-   * fail(MessageUtil.getMessage("search.empty.list.status")); } for (Bic r :
-   * ribs) { String s = r.toString(); //System.out.println(s);
-   * assertTrue(r.toString(),AccountUtil.isBicOk(r.toString())); }
-  } */
+  @Test
   public void testIsPersonalAccount() {
     Account c1 = new Account("4111111111");
     Account c2 = new Account("41100001");

@@ -1,7 +1,7 @@
 /*
- * @(#)MemberExportDlg.java	2.7.a 22/11/12
+ * @(#)MemberExportDlg.java	2.8.k 25/07/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -39,6 +39,7 @@ import net.algem.util.DataCache;
 import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
 import net.algem.util.ui.GemChoice;
+import net.algem.util.ui.GemLabel;
 import net.algem.util.ui.GemPanel;
 import net.algem.util.ui.GridBagHelper;
 
@@ -48,7 +49,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.k
  * @since 1.0a 14/12/1999
  */
 public class MemberExportDlg
@@ -97,6 +98,7 @@ public class MemberExportDlg
     gb.add(account, 1, 1, 1, 1, GridBagHelper.WEST);
     gb.add(new JLabel(BundleUtil.getLabel("Export.cost.account.label")), 0, 2, 1, 1, GridBagHelper.EAST);
     gb.add(costAccount, 1, 2, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Date.From.label")), 0, 3, 1, 1, GridBagHelper.EAST);
     gb.add(dateRange, 1, 3, 1, 1, GridBagHelper.WEST);
     return pCriterion;
 
@@ -126,9 +128,8 @@ public class MemberExportDlg
     return query;
   }
 
-  private String getSchool() {
-    Param e = (Param) schoolChoice.getSelectedItem();
-    return e.getValue();
+  private int getSchool() {
+    return schoolChoice.getKey();
   }
 
   /**

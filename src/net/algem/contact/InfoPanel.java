@@ -1,7 +1,7 @@
 /*
- * @(#)InfoPanel.java	2.7.a 21/11/12
+ * @(#)InfoPanel.java	2.8.k 23/07/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -36,11 +36,13 @@ import net.algem.util.ui.GridBagHelper;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.k
  */
 public class InfoPanel extends GemPanel {
 
   protected static Insets PADDING = new Insets(0,5,0,5);
+  protected static Insets LEFT_SPACING = new Insets(0,4,0,0);
+  protected static Insets RIGHT_SPACING = new Insets(0,0,0,4);
   protected GemButton iButton;
   protected GemField iField;
   protected JCheckBox iArchive;
@@ -51,6 +53,7 @@ public class InfoPanel extends GemPanel {
   public InfoPanel() {
     setLayout(new GridBagLayout());
     gb = new GridBagHelper(this);
+//    gb.insets = RIGHT_SPACING;
   }
 
   public InfoPanel (String label) {
@@ -70,8 +73,9 @@ public class InfoPanel extends GemPanel {
     iField = new GemField();
 
     iArchive = new JCheckBox();
-    gb.add(iButton, 0,0,1,1, GridBagConstraints.HORIZONTAL, 0.0, 0.0);
-    gb.add(iField, 1,0,3,1, GridBagConstraints.HORIZONTAL, 1.0, 0.0);
+    iArchive.setBorder(null);
+    gb.add(iButton, 0,0,1,1, RIGHT_SPACING, GridBagHelper.HORIZONTAL, 0.0, 0.0);
+    gb.add(iField, 1,0,3,1, RIGHT_SPACING,GridBagConstraints.HORIZONTAL, 1.0, 0.0);
     gb.add(iArchive, 4,0,1,1, GridBagConstraints.HORIZONTAL, 0.0, 0.0);
   }
 
@@ -79,12 +83,13 @@ public class InfoPanel extends GemPanel {
 
     iChoice = new ParamChoice(v);
     iField = new GemField();  
-    gb.add(iChoice, 0,0,1,1, GridBagConstraints.HORIZONTAL, 0.0, 0.0);
+    gb.add(iChoice, 0,0,1,1, RIGHT_SPACING, GridBagConstraints.HORIZONTAL, 0.0, 0.0);
     gb.add(iField, 1,0,3,1, GridBagConstraints.HORIZONTAL, 1.0, 0.0);
     if (withArchive) {
       iArchive = new JCheckBox();
-      gb.add(iArchive,col++,0,1,1, GridBagConstraints.HORIZONTAL, 1.0, 0.0);
-    }
+      iArchive.setBorder(null);
+      gb.add(iArchive, col++,0,1,1, LEFT_SPACING, GridBagConstraints.EAST);
+    } 
 
   }
 
@@ -96,7 +101,7 @@ public class InfoPanel extends GemPanel {
   protected void addButton(String label) {
     iButton = new GemButton(label);
     iButton.setMargin(PADDING);
-    gb.add(iButton, col,0,1,1, GridBagHelper.EAST);
+    gb.add(iButton, col,0,1,1, LEFT_SPACING, GridBagHelper.EAST);
     revalidate();
   }
 

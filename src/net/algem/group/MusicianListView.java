@@ -1,7 +1,7 @@
 /*
- * @(#)MusicianListView.java	2.7.j 27/02/13
+ * @(#)MusicianListView.java	2.8.k 26/07/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -31,24 +31,18 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.TableColumnModel;
 import net.algem.contact.*;
-import net.algem.util.BundleUtil;
-import net.algem.util.DataCache;
-import net.algem.util.GemCommand;
-import net.algem.util.GemLogger;
+import net.algem.util.*;
 import net.algem.util.event.GemEvent;
 import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
-import net.algem.util.ui.GemBorderPanel;
-import net.algem.util.ui.GemButton;
-import net.algem.util.ui.GemLabel;
-import net.algem.util.ui.GemPanel;
+import net.algem.util.ui.*;
 
 /**
  * Musicians list view.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.j
+ * @version 2.8.k
  * @since 1.0a 18/02/2004
  */
 public class MusicianListView
@@ -64,6 +58,7 @@ public class MusicianListView
   private GemButton btAdd;
   private GemButton btModify;
   private GemButton btDel;
+  private GemButton btMail;
 
   public MusicianListView(GemDesktop _desktop) {
 
@@ -93,20 +88,23 @@ public class MusicianListView
 
     JScrollPane pm = new JScrollPane(table);
 
-    GemPanel bas = new GemPanel();
-    bas.setLayout(new GridLayout(1, 4));
-    bas.add(new GemLabel(BundleUtil.getLabel("Group.members.label")));
+    GemPanel buttons = new GemPanel();
+    buttons.setLayout(new GridLayout(1, 4));
+    buttons.add(new GemLabel(BundleUtil.getLabel("Group.members.label")));
 
-    bas.add(btDel = new GemButton(GemCommand.REMOVE_CMD));
-    bas.add(btModify = new GemButton(GemCommand.MODIFY_CMD));
-    bas.add(btAdd = new GemButton(GemCommand.ADD_CMD));
+    buttons.add(btMail = new GemButton(BundleUtil.getLabel("Action.mail.label")));
+    buttons.add(btDel = new GemButton(GemCommand.REMOVE_CMD));
+    buttons.add(btModify = new GemButton(GemCommand.MODIFY_CMD));
+    buttons.add(btAdd = new GemButton(GemCommand.ADD_CMD));
+    btMail.addActionListener(this);
+    btMail.setToolTipText(MessageUtil.getMessage("group.mailing.tip"));
     btAdd.addActionListener(this);
     btModify.addActionListener(this);
     btDel.addActionListener(this);
 
     GemBorderPanel pb1 = new GemBorderPanel();
     pb1.setLayout(new BorderLayout());
-    pb1.add(bas, BorderLayout.NORTH);
+    pb1.add(buttons, BorderLayout.NORTH);
     pb1.add(pm, BorderLayout.CENTER);
 
     this.setLayout(new BorderLayout());
@@ -140,7 +138,15 @@ public class MusicianListView
   @Override
   public void actionPerformed(ActionEvent e) {
     String cmd = e.getActionCommand();
-    if (GemCommand.ADD_CMD.equals(cmd)) {
+    if (GemCommand.MAIL_CMD.equals(cmd)) {
+      Vector<Musician> vm = musicians.getData();
+      MailUtil mailUtil = new MailUtil(dataCache);
+      String message = mailUtil.mailToGroupMembers(vm);
+      if (message.length() > 0) {
+        String info = MessageUtil.getMessage("group.members.without.email");
+        new MessageDialog(desktop.getFrame(), BundleUtil.getLabel("Information.label"), false, info, message);
+      }
+    } else if (GemCommand.ADD_CMD.equals(cmd)) {
       MusicianDlg dlg = new MusicianDlg(this, "ajout musicien", desktop);
       dlg.setOperation(GemEvent.CREATION);
       dlg.show();

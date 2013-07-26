@@ -1,7 +1,7 @@
 /*
- * @(#)BankSearchView.java	2.6.a 14/09/12
+ * @(#)BankSearchView.java	2.8.i 05/07/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -30,7 +30,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.6.a
+ * @version 2.8.i
  * @since 1.0a 07/07/1999
  */
 public class BankSearchView
@@ -42,7 +42,6 @@ public class BankSearchView
   private GemPanel maskPanel;
 
   public BankSearchView() {
-    super();
   }
 
   @Override

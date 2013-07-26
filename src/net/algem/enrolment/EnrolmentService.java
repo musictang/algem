@@ -285,7 +285,8 @@ public class EnrolmentService
       String where = "pg WHERE pg.adherent = " + m + " AND pg.idplanning IN("
               + "SELECT id FROM " + ScheduleIO.TABLE 
               + " WHERE action = " + p.getIdAction()
-              + " AND jour >= '" + courseOrder.getDateStart() + "' AND jour <= '" + courseOrder.getDateEnd()
+              //+ " AND jour >= '" + courseOrder.getDateStart() + "' AND jour <= '" + courseOrder.getDateEnd()
+              + " AND jour >= '" + p.getDate() + "' AND jour <= '" + courseOrder.getDateEnd()
               + "')";
 
       Vector<ScheduleRange> vp = ScheduleRangeIO.find(where, dc);

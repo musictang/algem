@@ -1,7 +1,7 @@
 /*
- * @(#)HourTeacherView.java	2.8.f 24/05/13
+ * @(#)HourTeacherView.java	2.8.k 25/07/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,7 +20,11 @@
  */
 package net.algem.edition;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.GridBagLayout;
 import java.util.Date;
+import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -33,6 +37,7 @@ import net.algem.planning.DateFrField;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataConnection;
 import net.algem.util.model.GemList;
+import net.algem.util.ui.GemPanel;
 import net.algem.util.ui.GridBagHelper;
 
 /**
@@ -40,7 +45,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.f
+ * @version 2.8.k
  */
 public class HourTeacherView
         extends JPanel
@@ -52,12 +57,20 @@ public class HourTeacherView
   private ParamChoice schoolChoice;
 
   public HourTeacherView(DataConnection dc, GemList<Param> schools) {
-    setLayout(new java.awt.GridBagLayout());
-    GridBagHelper gb = new GridBagHelper(this);
+
+    setLayout(new BorderLayout());
+    setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+    
+    GemPanel body = new GemPanel(new GridBagLayout());
+    body.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+    GridBagHelper gb = new GridBagHelper(body);
+    gb.insets = GridBagHelper.SMALL_INSETS;
 
     dateStart = new DateFrField(new Date());
     dateEnd = new DateFrField(new Date());
     detail = new JCheckBox();
+    detail.setBorder(null);
+    
     schoolChoice = new ParamChoice(schools.getData());
     int defaultSchool = Integer.parseInt(ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey(), dc));
     schoolChoice.setKey(defaultSchool);
@@ -74,6 +87,8 @@ public class HourTeacherView
     gb.add(dates, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(schoolChoice, 1, 1, 1, 1, GridBagHelper.WEST);
     gb.add(detail, 1, 2, 1, 1, GridBagHelper.WEST);
+    
+    add(body, BorderLayout.CENTER);
 
   }
 

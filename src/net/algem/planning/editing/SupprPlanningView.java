@@ -1,7 +1,7 @@
 /*
- * @(#)SupprPlanningView.java	2.6.a 21/09/12
+ * @(#)SupprPlanningView.java	2.8.k 25/07/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,7 +20,6 @@
 package net.algem.planning.editing;
 
 import java.awt.GridBagLayout;
-import java.awt.event.ActionListener;
 import java.util.Date;
 import net.algem.planning.DateFr;
 import net.algem.planning.DateFrField;
@@ -34,7 +33,7 @@ import net.algem.util.ui.GridBagHelper;
 /**
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.k
  */
 public class SupprPlanningView
         extends GemPanel
@@ -43,7 +42,6 @@ public class SupprPlanningView
   private GemLabel title;
   private DateFrField start;
   private DateFrField end;
-  private ActionListener actionListener;
 
   public SupprPlanningView(Schedule plan) {
     start = new DateFrField(plan.getDate());
@@ -54,12 +52,13 @@ public class SupprPlanningView
     title = new GemLabel(BundleUtil.getLabel("Scheduling.label").toLowerCase() + " : " + plan.getIdAction());
     this.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
-
+    gb.insets = GridBagHelper.SMALL_INSETS;
+    
     gb.add(new GemLabel(GemCommand.DELETE_CMD+" "), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(title, 1, 0, 1, 1, GridBagHelper.WEST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Date.From.label")), 0, 1, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Date.From.label")), 0, 1, 1, 1, GridBagHelper.EAST);
     gb.add(start, 1, 1, 1, 1, GridBagHelper.WEST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Date.To.label")), 0, 2, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Date.To.label")), 0, 2, 1, 1, GridBagHelper.EAST);
     gb.add(end, 1, 2, 1, 1, GridBagHelper.WEST);
   }
 

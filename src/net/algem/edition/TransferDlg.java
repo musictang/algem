@@ -1,7 +1,7 @@
 /*
- * @(#)TransfertDlg.java	2.6.a 02/08/2012
+ * @(#)TransferDlg.java	2.8.k 19/07/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -41,10 +41,10 @@ import net.algem.util.ui.GemPanel;
  * Abstract class for transfer operations dialog.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.k
  * @since 2.4.a 10/05/12
  */
-public abstract class TransfertDlg
+public abstract class TransferDlg
         extends JDialog
         implements ActionListener
 {
@@ -57,7 +57,7 @@ public abstract class TransfertDlg
   protected File file;
   protected DataConnection dc;
 
-  public TransfertDlg(Frame _parent, String title, String file, DataConnection dc) {
+  public TransferDlg(Frame _parent, String title, String file, DataConnection dc) {
     super(_parent, title);
     this.dc = dc;
   }
@@ -84,6 +84,10 @@ public abstract class TransfertDlg
     if (evt.getSource() == btCancel) {
       close();
     } else if (evt.getSource() == btValidation) {
+      file = new File(filepath.getText());
+      if (!FileUtil.confirmOverWrite(this, file)) {
+        return;
+      }
       transfer();
       close();
     } else if (evt.getSource() == chooser) {
@@ -91,7 +95,9 @@ public abstract class TransfertDlg
       int ret = fileChooser.showDialog(this, BundleUtil.getLabel("FileChooser.selection"));
       if (ret == JFileChooser.APPROVE_OPTION) {
         file = fileChooser.getSelectedFile();
-        filepath.setText(file.getPath());
+        if (FileUtil.confirmOverWrite(this, file)) {
+          filepath.setText(file.getPath());
+        }
       }
     }
   }

@@ -1,5 +1,5 @@
 /*
- * @(#)MemberService.java	2.8.f 23/05/13
+ * @(#)MemberService.java	2.8.j 12/07/13
  *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -21,9 +21,7 @@
 package net.algem.contact.member;
 
 import java.sql.SQLException;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 import java.util.Vector;
 import net.algem.accounting.AccountPrefIO;
 import net.algem.accounting.AccountUtil;
@@ -48,7 +46,7 @@ import net.algem.util.model.Model;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.f
+ * @version 2.8.j
  * @since 2.4.a 14/05/12
  */
 public class MemberService
@@ -163,8 +161,7 @@ public class MemberService
    * a former card is searched and its remaining time is incremented by the duration
    * available after sessions' cancelling. Then, the current card is destroyed.
    *
-   * @param dc
-   * @param card
+   * @param card actual card
    */
   private void updateSubscriptionCard(PersonSubscriptionCard card) throws SQLException {
     assert card != null : "Card should not be null here.";
@@ -212,7 +209,7 @@ public class MemberService
   }
 
   public void deleteOrderLine(DateFr date, int member) throws SQLException {
-    String where = " echeance = '" + date + "' AND adherent = " + member + " AND paye = 'f' AND transfert = 'f'";
+    String where = "WHERE echeance = '" + date + "' AND adherent = " + member + " AND paye = 'f' AND transfert = 'f'";
     Vector<OrderLine> ve = OrderLineIO.find(where, dc);
     if (ve.size() > 0) {
       OrderLineIO.delete(ve.elementAt(0), dc); // suppression de la première échéance trouvée seulement
@@ -352,21 +349,28 @@ public class MemberService
     return conflictService.testMemberScheduleConflict(plan, debut, hd, hf);
   }
 
-  public Vector<DateFr> generationDate(int jour, DateFr _debut, DateFr _fin) {
+  public Vector<DateFr> generationDate(int day, DateFr start, DateFr end) {
 
     Vector<DateFr> v = new Vector<DateFr>();
-
-    Calendar debut = Calendar.getInstance(Locale.FRANCE);
-    debut.setTime(_debut.getDate());
-    Calendar fin = Calendar.getInstance(Locale.FRANCE);
-    fin.setTime(_fin.getDate());
-
-    while (!debut.after(fin)) {
-      if (debut.get(Calendar.DAY_OF_WEEK) == jour + 1) {
-        v.addElement(new DateFr(debut.getTime()));
+    
+    while(!start.after(end)) {
+      if (start.getDayOfWeek() == day + 1) {
+        v.addElement(new DateFr(start));
       }
-      debut.add(Calendar.DATE, 1);
+      start.incDay(1);
     }
+
+//    Calendar debut = Calendar.getInstance(Locale.FRANCE);
+//    debut.setTime(start.getDate());
+//    Calendar fin = Calendar.getInstance(Locale.FRANCE);
+//    fin.setTime(end.getDate());
+//
+//    while (!debut.after(fin)) {
+//      if (debut.get(Calendar.DAY_OF_WEEK) == day + 1) {
+//        v.addElement(new DateFr(debut.getTime()));
+//      }
+//      debut.add(Calendar.DATE, 1);
+//    }
     return v;
   }
 
@@ -377,7 +381,7 @@ public class MemberService
   /**
    * Gets the preferred account for {@code key}.
    *
-   * @param key
+   * @param key preference key
    * @return a Preference
    * @throws SQLException
    */

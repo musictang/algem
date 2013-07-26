@@ -1,7 +1,7 @@
 /*
- * @(#)AddressView.java	2.6.a 17/09/12
+ * @(#)AddressView.java	2.8.k 23/07/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -22,11 +22,13 @@ package net.algem.contact;
 
 import java.awt.Color;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.Vector;
 import javax.swing.JCheckBox;
 import javax.swing.border.Border;
+import net.algem.util.BundleUtil;
 import net.algem.util.ui.GemBorderPanel;
 import net.algem.util.ui.GemField;
 import net.algem.util.ui.GemLabel;
@@ -37,7 +39,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.k
  * @since 1.0a 07/07/1999
  */
 public class AddressView
@@ -158,11 +160,12 @@ public class AddressView
 
     this.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
-
-    gb.add(new GemLabel("adr1"), 0, 0, 1, 1, GridBagHelper.WEST); //EAST
-    gb.add(new GemLabel("adr2"), 0, 1, 1, 1, GridBagHelper.WEST); //EAST
-    gb.add(new GemLabel("cdp"), 0, 2, 1, 1, GridBagHelper.WEST); //EAST
-    gb.add(new GemLabel("ville"), 0, 3, 1, 1, GridBagHelper.WEST); //EAST
+    gb.insets = new Insets(0,0,4,4);
+    
+    gb.add(new GemLabel(BundleUtil.getLabel("Address1.label").toLowerCase()), 0, 0, 1, 1, GridBagHelper.WEST); //EAST
+    gb.add(new GemLabel(BundleUtil.getLabel("Address2.label").toLowerCase()), 0, 1, 1, 1, GridBagHelper.WEST); //EAST
+    gb.add(new GemLabel(BundleUtil.getLabel("Address.zip.code.label").toLowerCase()), 0, 2, 1, 1, GridBagHelper.WEST); //EAST
+    gb.add(new GemLabel(BundleUtil.getLabel("City.label").toLowerCase()), 0, 3, 1, 1, GridBagHelper.WEST); //EAST
 
     gb.add(adr1, 1, 0, 3, 1, GridBagHelper.WEST);
     gb.add(adr2, 1, 1, 3, 1, GridBagHelper.WEST);
@@ -170,6 +173,7 @@ public class AddressView
     gb.add(city, 1, 3, 2, 1, GridBagHelper.WEST);
     if(ar) {
       archive = new JCheckBox("archive");
+      archive.setBorder(null);
       archive.addItemListener(this);
       gb.add(archive, 4, 0, 1, 1, GridBagHelper.EAST);
     }

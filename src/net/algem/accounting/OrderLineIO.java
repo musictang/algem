@@ -1,5 +1,5 @@
 /*
- * @(#)OrderLineIO.java	2.8.a 01/04/13
+ * @(#)OrderLineIO.java	2.8.j 12/07/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -39,7 +39,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.j
  *
  */
 public class OrderLineIO
@@ -60,7 +60,7 @@ public class OrderLineIO
    * OrderLine insertion.
    *
    * @param e orderLine
-   * @param dc
+   * @param dc dataConnection instance
    * @throws SQLException
    */
   public static void insert(OrderLine e, DataConnection dc) throws SQLException {
@@ -96,7 +96,7 @@ public class OrderLineIO
    * OrderLine update.
    *
    * @param e orderLine to update
-   * @param dc
+   * @param dc dataConnection instance
    * @throws SQLException
    */
   public static void update(OrderLine e, DataConnection dc) throws SQLException {
@@ -126,7 +126,7 @@ public class OrderLineIO
    * Update of column transfer for one orderline.
    *
    * @param e orderLine to transfer
-   * @param dc
+   * @param dc dataConnection instance
    * @throws SQLException
    */
   public static void transfer(OrderLine e, DataConnection dc) throws SQLException {
@@ -143,36 +143,36 @@ public class OrderLineIO
   }
 
   /**
-   * Search of orderlines for member {@code adh} and whose payer id is {@code p} or {@code adh}
+   * Search of orderlines for member {@code m} and whose payer id is {@code p} or {@code m}
    *
-   * @param member
-   * @param p
-   * @param dc
-   * @return une liste d'échéances
+   * @param m member id
+   * @param p payer id
+   * @param dc dataConnection instance
+   * @return a list of order lines
    */
-  public static Vector<OrderLine> findByMember(int member, int p, DataConnection dc) {
-    String where = " (adherent = " + member + " OR payeur = " + p + ") AND adherent in(SELECT adherent FROM echeancier2 WHERE adherent = " + member + ")";
+  public static Vector<OrderLine> findByMember(int m, int p, DataConnection dc) {
+    String where = "WHERE (adherent = " + m + " OR payeur = " + p + ") AND adherent in(SELECT adherent FROM echeancier2 WHERE adherent = " + m + ")";
     return find(where, dc);
   }
 
   /**
-   * Search of orderlines by member {@code adh} or payer {@code p}.
+   * Search of orderlines by member {@code m} or payer {@code p}.
    *
-   * @param member
-   * @param p
-   * @param dc
+   * @param m member id
+   * @param p payer id
+   * @param dc dataConnection instance
    * @return une liste d'échéances
    */
-  public static Vector<OrderLine> findByMemberOrPayer(int member, int p, DataConnection dc) {
-    return find(" adherent = " + member + " OR payeur = " + p, dc);
+  public static Vector<OrderLine> findByMemberOrPayer(int m, int p, DataConnection dc) {
+    return find("WHERE adherent = " + m + " OR payeur = " + p, dc);
   }
 
   /**
    * Search of orderlines.
    * By default, orderlines are sorted by date asc.
    *
-   * @param where
-   * @param dc
+   * @param where sql expression
+   * @param dc dataConnection instance
    * @return a list of orderlines
    */
   public static Vector<OrderLine> find(String where, DataConnection dc) {
@@ -181,7 +181,7 @@ public class OrderLineIO
   }
 
   public static OrderLine find(int id, DataConnection dc) {
-    String query = getSelectWhereExpression("oid = " + id, 1);
+    String query = getSelectWhereExpression("WHERE oid = " + id, 1);
     Vector<OrderLine> ve = getResult(query, dc);
     if (ve != null && ve.size() > 0) {
       return ve.elementAt(0);
@@ -192,8 +192,8 @@ public class OrderLineIO
   /**
    * Search of orderlines with same order id and same payer that {@code e}.
    *
-   * @param e
-   * @param dc
+   * @param e order line instance
+   * @param dc dataConnection instance
    * @return an orderline
    */
   public static OrderLine find(OrderLine e, DataConnection dc) {
@@ -209,9 +209,9 @@ public class OrderLineIO
   /**
    * Search of orderlines with rows limit.
    *
-   * @param where
-   * @param limit
-   * @param dc
+   * @param where sql expression
+   * @param limit number of rows returned (if 0, no limit)
+   * @param dc dataConnection instance
    * @return une liste d'échéances
    */
   public static Vector<OrderLine> find(String where, int limit, DataConnection dc) {
@@ -222,13 +222,13 @@ public class OrderLineIO
   /**
    * Associates amount with date for the selected period and payer in {@code where}.
    *
-   * @param where
-   * @param dc
+   * @param where sql expression 
+   * @param dc dataConnection instance
    * @return a sorted map
    */
   public static TreeMap<DateFr, String> findPrl(String where, DataConnection dc) {
     TreeMap<DateFr, String> prl = new TreeMap<DateFr, String>();
-    String query = "SELECT echeance,sum(montant) AS total FROM " + TABLE + " WHERE " + where;
+    String query = "SELECT echeance, sum(montant) AS total FROM " + TABLE + " " + where;
     try {
       ResultSet rs = dc.executeQuery(query);
       while (rs.next()) {
@@ -244,10 +244,10 @@ public class OrderLineIO
 
   /**
    * Specifies if cost account is of type pro during the period.
-   * TODO this pro status definition is not valid for the calculation of teachers' hours.
+   * This pro status definition is not valid for the calculation of teachers' hours.
    *
-   * @param adh
-   * @param dc
+   * @param adh member id
+   * @param dc dataConnection instance
    * @return true if pro
    * @deprecated use instead {@link net.algem.edition.ExportService#isPro(int, int) }
    */
@@ -277,9 +277,9 @@ public class OrderLineIO
    * A problem arises when several accounts may be used for membership.
    * In this case, the default one may not correspond to the current account.
    *
-   * @param m
-   * @param dc
-   * @return un entier
+   * @param m member id
+   * @param dc dataConnection instance
+   * @return an integer
    * @throws SQLException
    */
   public static int countMemberShip(int m, DataConnection dc) throws SQLException {
@@ -296,18 +296,28 @@ public class OrderLineIO
   /**
    * Gets a string selection.
    *
-   * @param where
-   * @param limit
-   * @return
+   * @param where sql expression
+   * @param limit when 0 : no limit, else limit the number of rows returned
+   * @return a query string
    */
   private static String getSelectWhereExpression(String where, int limit) {
     String query = "SELECT " + COLUMNS + " FROM " + TABLE;
-    query += " WHERE " + where;
-    query += " ORDER BY echeance,oid";
+    query += " " + where;
+    query += " ORDER BY echeance, oid";
     if (limit > 0) {
       query += " LIMIT " + limit;
     }
     return query;
+  }
+  
+  /**
+   * Utility method used where joint expression is needed.
+   * @param query sql query
+   * @param dc
+   * @return a list of order lines
+   */
+  public static Vector<OrderLine> getOrderLines(String query, DataConnection dc) {
+    return getResult(query, dc);
   }
 
   /**
@@ -426,7 +436,7 @@ public class OrderLineIO
   
   public static Vector<OrderLine> getBillingOrderLines(DataConnection dc) {
 //    String where = "oid IN (SELECT id_echeancier FROM " + InvoiceIO.JOIN_TABLE + ")";
-    String where = "facture IS NOT NULL";
+    String where = "WHERE facture IS NOT NULL";
     return find(where, dc);
   }
 }

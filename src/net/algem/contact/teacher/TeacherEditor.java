@@ -1,7 +1,7 @@
 /*
- * @(#)TeacherEditor.java	2.7.a 26/11/12
+ * @(#)TeacherEditor.java	2.8.k 25/07/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -33,7 +33,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.k
  */
 public class TeacherEditor
         extends FileTab
@@ -56,6 +56,7 @@ public class TeacherEditor
     cert3 = new GemField(32);
 
     active = new JCheckBox();
+    active.setBorder(null);
     instrument = new InstrumentView(dataCache.getInstruments());
     GemPanel p = new GemPanel();
     p.setLayout(new GridBagLayout());

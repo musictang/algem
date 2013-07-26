@@ -73,7 +73,7 @@ public class CostAccountCtrl
 
   @Override
   public void suppression(Param p) throws SQLException, AccountDeleteException {
-    String where = OrderLineIO.COST_COLUMN + " = '" + p.getKey() + "'";
+    String where = "WHERE " + OrderLineIO.COST_COLUMN + " = '" + p.getKey() + "'";
     Vector<OrderLine> e = OrderLineIO.find(where, 1, dc);
     if (e != null && e.size() > 0) {
       throw new AccountDeleteException();

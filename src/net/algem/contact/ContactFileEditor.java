@@ -1,7 +1,7 @@
 /*
- * @(#)ContactFileEditor.java	2.7.k 01/03/13
+ * @(#)ContactFileEditor.java	2.8.k 23/07/13
  * 
- * Copyright (c) 1998-2011 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1998-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -25,10 +25,8 @@ import java.awt.GridLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.Vector;
-import javax.swing.BoxLayout;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JScrollPane;
+import javax.swing.*;
+import javax.swing.border.BevelBorder;
 import net.algem.config.Category;
 import net.algem.config.ParamTableIO;
 import net.algem.contact.member.PersonSubscriptionCard;
@@ -41,7 +39,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.k
+ * @version 2.8.k
  * @since 1.0a 09/07/2002
  */
 public class ContactFileEditor
@@ -51,7 +49,7 @@ public class ContactFileEditor
   private Contact contact;
   private GemLabel note;
   private PersonView personView;
-  private TeleView teleView;
+  private TelView teleView;
   private AddressView addressView;
   private boolean linkTelAddress;
   private JCheckBox cbTelAddress;
@@ -69,7 +67,7 @@ public class ContactFileEditor
     personView = new PersonView();
     infosView = new GemBorderPanel();
     //vueTele = new TeleViewOld(dc);
-    teleView = new TeleView(ParamTableIO.find(Category.TELEPHONE.getTable(), Category.TELEPHONE.getCol(), dc));
+    teleView = new TelView(ParamTableIO.find(Category.TELEPHONE.getTable(), Category.TELEPHONE.getCol(), dc));
     emailView = new EmailView();
 
     //vueSiteWeb = new SiteWebViewOld(dc);
@@ -83,7 +81,11 @@ public class ContactFileEditor
     JScrollPane scp = new JScrollPane(infosView);
     scp.setBorder(null);
 
+    GemPanel addressPanel = new GemPanel();
+    addressPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
     addressView = new AddressView();
+    addressView.setBorder(null);
+    addressPanel.add(addressView);
 
     this.setLayout(new GridBagLayout());
     gb = new GridBagHelper(this);
@@ -92,7 +94,7 @@ public class ContactFileEditor
     gp.add(scp);
     gb.add(gp, 1, 0, 1, 1, GridBagHelper.BOTH, 1.0, 1.0);
     gb.add(new JLabel(" "), 0, 2, 1, 1, GridBagHelper.WEST);
-    gb.add(addressView, 0, 3, 2, 1, GridBagHelper.BOTH, GridBagHelper.WEST);
+    gb.add(addressPanel, 0, 3, 2, 1, GridBagHelper.BOTH, GridBagHelper.WEST);
     gb.add(note, 0, 4, 2, 1, GridBagHelper.WEST);
 
   }

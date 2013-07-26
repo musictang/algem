@@ -1,5 +1,5 @@
 /*
- * @(#)ModifPlanTeacherView.java	2.8.h 03/06/13
+ * @(#)ModifPlanTeacherView.java	2.8.k 25/07/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -42,7 +42,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.h
+ * @version 2.8.k
  */
 public class ModifPlanTeacherView
         extends ModifPlanView
@@ -73,25 +73,28 @@ public class ModifPlanTeacherView
       }
     });
     checkAll = new JCheckBox(BundleUtil.getLabel("Teacher.all.label"));
+    checkAll.setBorder(null);
     checkAll.addActionListener(this);
-//    gb.add(new GemLabel(BundleUtil.getLabel("Hour.From.label")), 0, 2, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Hour.label")), 0, 2, 1, 1, GridBagHelper.EAST);
     gb.add(hourRange, 1, 2, 3, 1, GridBagHelper.WEST);
     
-    gb.add(new GemLabel(BundleUtil.getLabel("Current.teacher.label")), 0, 3, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Current.teacher.label")), 0, 3, 1, 1, GridBagHelper.EAST);
     gb.add(before, 1, 3, 3, 1, GridBagHelper.WEST);
     
-    gb.add(checkAll, 0, 4, 3, 1, GridBagHelper.WEST);
     
-    gb.add(new GemLabel(BundleUtil.getLabel("New.teacher.label")), 0, 5, 1, 1, GridBagHelper.WEST);
-    gb.add(after, 1, 5, 3, 1, GridBagHelper.WEST);
+    
+    gb.add(new GemLabel(BundleUtil.getLabel("New.teacher.label")), 0, 4, 1, 1, GridBagHelper.EAST);
+    gb.add(after, 1, 4, 3, 1, GridBagHelper.WEST);
+    gb.add(checkAll, 1, 5, 3, 1, GridBagHelper.WEST);
     //Optional display of substitutes
     if (substitutes != null && substitutes.getSize() > 0) {
       replacement = new JCheckBox(BundleUtil.getLabel("Substitute.activate.label"));
+      replacement.setBorder(null);
       replacement.addActionListener(this);
       substitute = new SubstituteTeacherChoice(substitutes);
       substitute.setEnabled(false);
-      gb.add(replacement, 0, 6, 3, 1, GridBagHelper.WEST);
-      gb.add(new GemLabel(BundleUtil.getLabel("Substitute.label")), 0, 7, 1, 1, GridBagHelper.WEST);
+      gb.add(replacement, 1, 6, 3, 1, GridBagHelper.WEST);
+      gb.add(new GemLabel(BundleUtil.getLabel("Substitute.label")), 0, 7, 1, 1, GridBagHelper.EAST);
       gb.add(substitute, 1, 7, 3, 1, GridBagHelper.WEST);
     }
   }

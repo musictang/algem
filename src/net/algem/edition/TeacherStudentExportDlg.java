@@ -1,7 +1,7 @@
 /*
- * @(#)TeacherStudentExportDlg.java 2.7.a 23/11/12
+ * @(#)TeacherStudentExportDlg.java 2.8.k 25/07/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,14 +28,13 @@ import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.model.Model;
 import net.algem.util.ui.GemChoice;
-import net.algem.util.ui.GemPanel;
 import net.algem.util.ui.GridBagHelper;
 
 /**
  * Export dialog for contact infos of the selected teacher's students.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.k
  * @since 2.6.d 05/11/2012
  */
 public class TeacherStudentExportDlg 
@@ -49,15 +48,15 @@ public class TeacherStudentExportDlg
 
   @Override
   protected void setPanel() {
+    
     teacher = new TeacherChoice(dataCache.getList(Model.Teacher), true);
-    GemPanel p = new GemPanel();
-    p.add(typeContact);
+
     gb.add(new JLabel(BundleUtil.getLabel("Teacher.label")), 0, 0, 1, 1, GridBagHelper.EAST);
     gb.add(teacher, 1, 0, 1, 1, GridBagHelper.WEST);
-    gb.add(new JLabel(BundleUtil.getLabel("Period.label")), 0, 1, 1, 1, GridBagHelper.EAST);
+    gb.add(new JLabel(BundleUtil.getLabel("Date.From.label")), 0, 1, 1, 1, GridBagHelper.EAST);
     gb.add(dateRange, 1, 1, 1, 1, GridBagHelper.WEST);
     gb.add(new JLabel(BundleUtil.getLabel("Type.label")), 0, 2, 1, 1, GridBagHelper.EAST);
-    gb.add(p, 1, 2, 1, 1, GridBagHelper.WEST);
+    gb.add(typeContact, 1, 2, 1, 1, GridBagHelper.WEST);
   }
 
   @Override

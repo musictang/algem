@@ -53,13 +53,12 @@ public class PersonSubscriptionCardIO
    */
   public PersonSubscriptionCard find(int idper, String conditions)
           throws SQLException {
-    String query = null;
-    if (conditions == null) {
-      query = "SELECT " + COLUMNS + " FROM " + TABLE + " WHERE idper = " + idper + " ORDER BY id desc LIMIT 1";
-    } else {
-      query = "SELECT " + COLUMNS + " FROM " + TABLE + " WHERE idper = " + idper + "AND " + conditions + " ORDER BY id desc LIMIT 1";
+    String query = "SELECT " + COLUMNS + " FROM " + TABLE + " WHERE idper = " + idper;
+    if (conditions != null) {
+      query += " AND " + conditions;
     }
-    //System.out.println(query);
+    query += " ORDER BY id desc LIMIT 1";
+
     ResultSet rs = dc.executeQuery(query);
 
     if (!rs.next()) {

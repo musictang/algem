@@ -1,5 +1,5 @@
 /*
- * @(#)GroupService.java	2.8.a 01/04/13
+ * @(#)GroupService.java	2.8.j 12/07/13
  *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -44,13 +44,13 @@ import net.algem.util.model.Model;
  * Service class for group operations.
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.j
  * @since 2.4.a 10/05/12
  */
 public class GroupService
 {
 
-  public static final int MIN_ANNULATION = 72; //72 heures minimum before annulation
+  public static final int MIN_ANNULATION = 72; //72 heures minimum before annulation TODO set config parameter
   private DataConnection dc;
   private GroupIO groupIO;
   private ActionIO actionIO;
@@ -205,7 +205,7 @@ public class GroupService
     if (lm == null) {
       return new Vector<OrderLine>();
     }
-    StringBuilder where = new StringBuilder("adherent IN (");
+    StringBuilder where = new StringBuilder("WHERE adherent IN (");
     for (Musician m : lm) {
       where.append(m.getId()).append(",");
     }

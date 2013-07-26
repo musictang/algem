@@ -68,9 +68,7 @@ public abstract class SearchCtrl
 
     this.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
-
     Insets in = new Insets(0, 0, 0, 0);
-
     gb.add(title, 0, 0, 1, 1, in, GridBagHelper.CENTER);
     gb.add(wCard, 0, 1, 1, 1, in, GridBagHelper.BOTH, 1.0, 1.0);
   }

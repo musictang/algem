@@ -1,7 +1,7 @@
 /*
- * @(#)DayChoice.java	2.6.a 21/09/12
+ * @(#)DayChoice.java	2.8.j 12/07/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,7 +27,7 @@ import net.algem.planning.PlanningService;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.6.a
+ * @version 2.8.j
  */
 public class DayChoice
         extends javax.swing.JComboBox
@@ -36,8 +36,8 @@ public class DayChoice
   static final String[] dayLabel = PlanningService.WEEK_DAYS;
 
   /**
-   * Les jours sont numérotés de 1 (dimanche) à (samedi) 7 pour la Locale.FRANCE.
-   * dayLabel[0] est vide.
+   * Days are numbered from 1 (sunday) to (saturday) 7.
+   * dayLabel[0] is empty.
    */
   public DayChoice() {
     addItem(dayLabel[2]); // du lundi
@@ -49,12 +49,16 @@ public class DayChoice
     addItem(dayLabel[1]); // au dimanche
   }
 
+  /**
+   * Gets day of week.
+   * @return an integer
+   */
   public int getDay() {
     int i = super.getSelectedIndex();
     if (i == 6) {
       return 0;
     }
-    return i + 1; // si lundi retourne 1, si dimanche retourne 7
+    return i + 1; // si lundi retourne 1, si dimanche retourne 0
   }
 
   public void setDay(int i) {

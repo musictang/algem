@@ -302,7 +302,7 @@ public class InvoiceIO
   private Collection<OrderLine> findOrderLines(Invoice inv) {
     Collection<OrderLine> cl = DataCache.findOrderLines(inv.getNumber());
     if (cl.isEmpty()) {
-      String query = "facture = '" + inv.getNumber() + "'";
+      String query = "WHERE facture = '" + inv.getNumber() + "'";
       cl =  OrderLineIO.find(query, dc);
     }
     return cl;

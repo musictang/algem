@@ -1,7 +1,7 @@
 /*
- * @(#)TeleView.java	2.6.a 17/09/12
+ * @(#)TelView.java	2.8.k 24/07/13
  *
- * Copyright (c) 1998-2011 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1998-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -18,7 +18,6 @@
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 package net.algem.contact;
 
 import java.util.Vector;
@@ -28,14 +27,15 @@ import net.algem.util.BundleUtil;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.k
  */
-public class TeleView extends InfoView
+public class TelView
+        extends InfoView
 {
 
   private Vector<Param> vp;
 
-  public TeleView(Vector<Param> vp) {
+  public TelView(Vector<Param> vp) {
     super(BundleUtil.getLabel("Telephones.label"), true);
     this.vp = vp;
   }
@@ -69,14 +69,13 @@ public class TeleView extends InfoView
   }
 
   @Override
-  public void setEditable(boolean val)
-	{
+  public void setEditable(boolean val) {
     super.setEditable(val);
-		for (InfoPanel p : rows) {
-      ((TelPanel)p).setEditable(val);
+    for (InfoPanel p : rows) {
+      ((TelPanel) p).setEditable(val);
     }
 
-	}
+  }
 
   public void setLien(Vector<Telephone> tels) {
     clearAll();
@@ -92,6 +91,4 @@ public class TeleView extends InfoView
     add(pt);
     revalidate();
   }
-
-
 }

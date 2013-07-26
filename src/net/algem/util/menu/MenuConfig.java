@@ -198,10 +198,10 @@ public class MenuConfig
       bankCtrl.init();
       desktop.addPanel("Menu.bank", bankCtrl);
     } else if (src == mBankBranchBrowse) {
-      BranchSearchCtrl branchBrowse = new BranchSearchCtrl(dc);
-      branchBrowse.addActionListener(this);
-      branchBrowse.init();
-      desktop.addPanel("Menu.branch.bank", branchBrowse);
+      BranchSearchCtrl branchSearchCtrl = new BranchSearchCtrl(dc);
+      branchSearchCtrl.addActionListener(this);
+      branchSearchCtrl.init();
+      desktop.addPanel("Menu.branch.bank", branchSearchCtrl);
     } else if (src == mBankBranchCreate) {
       BranchCreateCtrl branchCreate = new BranchCreateCtrl(dc);
       branchCreate.addActionListener(this);

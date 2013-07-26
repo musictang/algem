@@ -1,7 +1,7 @@
 /*
- * @(#)BankIO.java	2.6.a 01/08/2012
+ * @(#)BankIO.java	2.8.i 04/07/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -32,69 +32,70 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.i
  */
 public class BankIO
-	extends TableIO {
+        extends TableIO
+{
 
-	private static final String TABLE = "banque";
+  private static final String TABLE = "banque";
 
-	public static void insert(Bank b, DataConnection dc) throws SQLException {
-		String query = "INSERT INTO " + TABLE + " VALUES("
-			+ "'" + b.getCode()
-			+ "','" + escape(b.getName())
-			+ "','" + (b.isMulti() ? "t" : "f")
-			+ "')";
+  public static void insert(Bank b, DataConnection dc) throws SQLException {
+    String query = "INSERT INTO " + TABLE + " VALUES("
+            + "'" + b.getCode()
+            + "','" + escape(b.getName())
+            + "','" + (b.isMulti() ? "t" : "f")
+            + "')";
 
-		dc.executeUpdate(query);
-	}
+    dc.executeUpdate(query);
+  }
 
-	public static void update(Bank b, DataConnection dc) throws SQLException {
-		String query = "UPDATE " + TABLE + " SET "
-			+ "nom='" + escape(b.getName())
-			+ "',multiguichet='" + (b.isMulti() ? "t" : "f")
-			+ "' WHERE code='" + b.getCode() + "'";
+  public static void update(Bank b, DataConnection dc) throws SQLException {
+    String query = "UPDATE " + TABLE + " SET "
+            + "nom='" + escape(b.getName())
+            + "',multiguichet='" + (b.isMulti() ? "t" : "f")
+            + "' WHERE code='" + b.getCode() + "'";
 
-		dc.executeUpdate(query);
-	}
+    dc.executeUpdate(query);
+  }
 
-	public static void delete(Bank b, DataConnection dc) throws SQLException {
-	}
+  public static void delete(Bank b, DataConnection dc) throws SQLException {
+  }
 
-	/**
-	 * Search a bank from code identifier {@code code}.
-	 *
-	 * @param dc
-	 * @param code identifier code
-	 * @return a bank instance or null
-	 */
-	public static Bank findCode(String code, DataConnection dc) {
-		String query = "WHERE code = '" + code + "'";
-		Vector<Bank> v = find(query, dc);
-		if (v.size() > 0) {
-			return (Bank) v.elementAt(0);
-		}
-		return null;
-	}
+  /**
+   * Search a bank from code identifier {@code code}.
+   *
+   * @param dc
+   * @param code identifier code
+   * @return a bank instance or null
+   */
+  public static Bank findCode(String code, DataConnection dc) {
+    String query = "WHERE code = '" + code + "'";
+    Vector<Bank> v = find(query, dc);
+    if (v.size() > 0) {
+      return (Bank) v.elementAt(0);
+    }
+    return null;
+  }
 
-	public static Vector<Bank> find(String where, DataConnection dc) {
-		Vector<Bank> v = new Vector<Bank>();
-		String query = "SELECT * FROM " + TABLE + " " + where;
-		query += " ORDER BY code";
-		try {
-			ResultSet rs = dc.executeQuery(query);
-			while (rs.next()) {
-				Bank b = new Bank();
-				b.setCode(rs.getString(1));
-				b.setName(rs.getString(2).trim());
-				b.setMulti(rs.getBoolean(3));
+  public static Vector<Bank> find(String where, DataConnection dc) {
+    Vector<Bank> v = new Vector<Bank>();
+    String query = "SELECT * FROM " + TABLE + " " + where;
+    query += " ORDER BY code";
+    try {
+      ResultSet rs = dc.executeQuery(query);
+      while (rs.next()) {
+        Bank b = new Bank();
+        b.setCode(rs.getString(1));
+        b.setName(unEscape(rs.getString(2)).trim());
+        b.setMulti(rs.getBoolean(3));
 
-				v.addElement(b);
-			}
-			rs.close();
-		} catch (Exception e) {
-			GemLogger.logException(query, e);
-		}
-		return v;
-	}
+        v.addElement(b);
+      }
+      rs.close();
+    } catch (Exception e) {
+      GemLogger.logException(query, e);
+    }
+    return v;
+  }
 }

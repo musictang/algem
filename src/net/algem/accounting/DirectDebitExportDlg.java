@@ -1,7 +1,7 @@
 /*
- * @(#)StandingOrderExportDlg.java	2.7.f 07/02/13
+ * @(#)DirectDebitExportDlg.java	2.8.k 23/07/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -29,10 +29,7 @@ import java.io.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Calendar;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JPanel;
+import javax.swing.*;
 import net.algem.config.*;
 import net.algem.planning.DateFr;
 import net.algem.planning.DateRangePanel;
@@ -40,13 +37,13 @@ import net.algem.util.*;
 import net.algem.util.ui.*;
 
 /**
- * Export standing order info list and bank file.
+ * Export direct debit info list and bank file.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.f
+ * @version 2.8.k
  */
-public class StandingOrderExportDlg
+public class DirectDebitExportDlg
         extends JDialog
         implements ActionListener
 {
@@ -59,15 +56,15 @@ public class StandingOrderExportDlg
    * $date="151001";
    * $entete=sprintf("0308 %06d%12.12s%-24.24s%-7.7s E %-5.5s%-11.11s %05d ",$noemet,$date,$raison,"TRIM1",$guichet,$compte,$etab);
    */
-  /** Numéro d'émetteur. */
+  /** Issuer number. */
   private String noIssuer;
-  /** Raison sociale. */
+  /** Company name (raison sociale). */
   private String firmName;
-  /** Code agence bancaire. */
+  /** Branch code. */
   private String bankBranch;
-  /** Numéro de compte. */
+  /** Account number. */
   private String account;
-  /** Code établissement (bancaire). */
+  /** Bank code. */
   private String bankHouse;
   private String label = "COTIS";
   private DataConnection dc;
@@ -87,12 +84,12 @@ public class StandingOrderExportDlg
   private File file1, file2, logFile;
   
 
-  public StandingOrderExportDlg(Frame _parent, String _titre, DataConnection dc) {
+  public DirectDebitExportDlg(Frame _parent, String _titre, DataConnection dc) {
     super(_parent, _titre);
     init(dc);
   }
 
-  public StandingOrderExportDlg(Dialog _parent, String _titre, DataConnection dc) {
+  public DirectDebitExportDlg(Dialog _parent, String _titre, DataConnection dc) {
     super(_parent, _titre);
     init(dc);
   }
@@ -126,14 +123,17 @@ public class StandingOrderExportDlg
     btCancel = new GemButton(GemCommand.CANCEL_CMD);
     btCancel.addActionListener(this);
 
-    buttons = new GemPanel();
+    buttons = new GemPanel(new GridLayout(1,2));
     buttons.add(btValidation);
     buttons.add(btCancel);
 
     GemPanel p = new GemPanel();
+    
     p.setLayout(new GridBagLayout());
-    GridBagHelper gb = new GridBagHelper(p);
-    gb.insets = GridBagHelper.SMALL_INSETS;
+    p.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+    
+    GridBagHelper gb1 = new GridBagHelper(p);
+    gb1.insets = GridBagHelper.SMALL_INSETS;
 
     Calendar c = Calendar.getInstance();
     c.set(Calendar.DAY_OF_MONTH, 15);
@@ -144,28 +144,41 @@ public class StandingOrderExportDlg
 
     fMailling = new GemField(path + MAILING_FILE_NAME, 30);
     fMailling.setAutoscrolls(true);
-    gb.add(new GemLabel(BundleUtil.getLabel("Mailing.file.label")), 0, 0, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
-    gb.add(fMailling, 1, 0, 1, 1);
-    gb.add(browse1, 2, 0, 1, 1, GridBagHelper.NONE, GridBagHelper.WEST);
+    gb1.add(new GemLabel(BundleUtil.getLabel("Mailing.file.label")), 0, 0, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
+    gb1.add(fMailling, 1, 0, 1, 1);
+    gb1.add(browse1, 2, 0, 1, 1, GridBagHelper.NONE, GridBagHelper.WEST);
 
     fExport = new GemField(path + EXPORT_FILE_NAME, 30);
-    gb.add(new GemLabel(BundleUtil.getLabel("Export.file.label")), 0, 1, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
-    gb.add(fExport, 1, 1, 1, 1);
+    gb1.add(new GemLabel(BundleUtil.getLabel("Export.file.label")), 0, 1, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
+    gb1.add(fExport, 1, 1, 1, 1);
     fExport.setAutoscrolls(true);
-    gb.add(browse2, 2, 1, 1, 1, GridBagHelper.NONE, GridBagHelper.WEST);
+    gb1.add(browse2, 2, 1, 1, 1, GridBagHelper.NONE, GridBagHelper.WEST);
+    
+    GemPanel bodyBorder = new GemPanel(new BorderLayout());
+    bodyBorder.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+    
+    GemPanel body = new GemPanel(new GridBagLayout());
+    body.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+    GridBagHelper gb2 = new GridBagHelper(body);
+    gb2.insets = GridBagHelper.SMALL_INSETS;
 
-    gb.add(new GemLabel(BundleUtil.getLabel("Date.label")), 1, 2, 1, 1, GridBagHelper.NONE, GridBagHelper.EAST);
-    gb.add(datePanel, 2, 2, 1, 1, GridBagHelper.NONE, GridBagHelper.WEST);
+    gb2.add(new GemLabel(BundleUtil.getLabel("Date.label")), 0, 0, 1, 1, GridBagHelper.NONE, GridBagHelper.EAST);
+    gb2.add(datePanel, 1, 0, 1, 1, GridBagHelper.NONE, GridBagHelper.WEST);
 
-    gb.add(new GemLabel(BundleUtil.getLabel("School.label")), 1, 3, 1, 1, GridBagHelper.NONE, GridBagHelper.EAST);
-    gb.add(schoolChoice, 2, 3, 1, 1, GridBagHelper.NONE, GridBagHelper.WEST);
+    gb2.add(new GemLabel(BundleUtil.getLabel("School.label")), 0, 1, 1, 1, GridBagHelper.NONE, GridBagHelper.EAST);
+    gb2.add(schoolChoice, 1, 1, 1, 1, GridBagHelper.NONE, GridBagHelper.WEST);
 
     flabel = new GemField(getLabel());
-    gb.add(new GemLabel(BundleUtil.getLabel("Label.label")), 0, 4, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
-    gb.add(flabel, 1, 4, 2, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
+    gb2.add(new GemLabel(BundleUtil.getLabel("Label.label")), 0, 2, 1, 1, GridBagHelper.NONE, GridBagHelper.EAST);
+    gb2.add(flabel, 1, 2, 2, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
+    
+    bodyBorder.add(body, BorderLayout.CENTER);
+    
+    gb1.add(bodyBorder, 0, 2, 2, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
 
-    getContentPane().add(p, BorderLayout.CENTER);
-    getContentPane().add(buttons, BorderLayout.SOUTH);
+    add(p, BorderLayout.CENTER);
+    add(buttons, BorderLayout.SOUTH);
+    
     setSize(500, 300);
     pack();
   }
@@ -178,19 +191,28 @@ public class StandingOrderExportDlg
     if (evt.getSource() == btCancel) {
       close();
     } else if (evt.getSource() == btValidation) {
+      /*file1 = new File(fMailling.getText());
+      file2 = new File(fExport.getText());
+      if (!FileUtil.confirmOverWrite(this, file1) || !FileUtil.confirmOverWrite(this, file2)) {
+        return;
+      }*/
       validation();
       close();
     } else if (evt.getSource() == browse1) {
       ret = fileChooser.showDialog(this, BundleUtil.getLabel("FileChooser.selection"));
       if (ret == JFileChooser.APPROVE_OPTION) {
         file1 = fileChooser.getSelectedFile();
-        fMailling.setText(file1.getPath());
+        if (FileUtil.confirmOverWrite(this, file1)) {
+          fMailling.setText(file1.getPath());
+        }
       }
     } else if (evt.getSource() == browse2) {
       ret = fileChooser.showDialog(this, BundleUtil.getLabel("FileChooser.selection"));
       if (ret == JFileChooser.APPROVE_OPTION) {
         file2 = fileChooser.getSelectedFile();
-        fExport.setText(file2.getPath());
+        if (FileUtil.confirmOverWrite(this, file2)) {
+          fExport.setText(file2.getPath());
+        }
       }
     }
   }

@@ -1,7 +1,7 @@
 /*
- * @(#)RoomView.java	2.7.g 13/02/13
+ * @(#)RoomView.java	2.8.k 22/07/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,6 +20,7 @@
  */
 package net.algem.room;
 
+import java.awt.BorderLayout;
 import java.awt.GridBagLayout;
 import javax.swing.JCheckBox;
 import net.algem.util.BundleUtil;
@@ -32,7 +33,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.g
+ * @version 2.8.k
  * @since 1.0a 02/09/2001
  */
 public class RoomView
@@ -40,12 +41,12 @@ public class RoomView
 {
 
   private static String labels[] = {
-    BundleUtil.getLabel("Id.label"),
+    BundleUtil.getLabel("Number.label"),
     BundleUtil.getLabel("Name.label"),
     BundleUtil.getLabel("Function.label"),
     BundleUtil.getLabel("Surface.label"),
     BundleUtil.getLabel("Place.number.label"),
-    BundleUtil.getLabel("Establishment.label"),
+    BundleUtil.getLabel("Establishment.label").substring(0, 4) + ".",
     BundleUtil.getLabel("Room.active.label"),
     BundleUtil.getLabel("Room.public.label"),
     BundleUtil.getLabel("Room.price.label"),
@@ -81,15 +82,15 @@ public class RoomView
     GridBagHelper gb = new GridBagHelper(this);
     gb.insets = GridBagHelper.SMALL_INSETS;
 
-    gb.add(new GemLabel(labels[0]), 0, 0, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel(labels[1]), 0, 1, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel(labels[2]), 0, 2, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel(labels[3]), 0, 3, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel(labels[4]), 0, 4, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel(labels[5]), 0, 5, 1, 1, GridBagHelper.EAST);
+    gb.add(new GemLabel(labels[0]), 0, 0, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(labels[1]), 0, 1, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(labels[2]), 0, 2, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(labels[3]), 0, 3, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(labels[4]), 0, 4, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(labels[5]), 0, 5, 1, 1, GridBagHelper.WEST);
 //    gb.add(new GemLabel(labels[6]), 0, 10, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel(labels[8]), 0, 11, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel(labels[9]), 0, 12, 1, 1, GridBagHelper.EAST);
+    gb.add(new GemLabel(labels[8]), 0, 11, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(labels[9]), 0, 12, 1, 1, GridBagHelper.WEST);
 
     gb.add(no, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(name, 1, 1, 1, 1, GridBagHelper.WEST);
@@ -97,9 +98,10 @@ public class RoomView
     gb.add(surf, 1, 3, 1, 1, GridBagHelper.WEST);
     gb.add(npers, 1, 4, 1, 1, GridBagHelper.WEST);
     gb.add(estab, 1, 5, 1, 1, GridBagHelper.WEST);
-    GemPanel p = new GemPanel();
-    p.add(active);
-    p.add(available);
+    GemPanel p = new GemPanel(new BorderLayout());
+    active.setBorder(null);
+    p.add(active, BorderLayout.WEST);
+    p.add(available, BorderLayout.EAST);
     gb.add(p, 1, 10, 1, 1, GridBagHelper.WEST);
     gb.add(rate, 1, 11, 1, 1, GridBagHelper.WEST);
     gb.add(payerCtrl, 1, 12, 1, 1, GridBagHelper.WEST);

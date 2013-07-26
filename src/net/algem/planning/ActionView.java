@@ -1,5 +1,5 @@
 /*
- * @(#)ActionView.java	2.8.a 15/04/13
+ * @(#)ActionView.java	2.8.k 23/07/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,9 +20,12 @@
  */
 package net.algem.planning;
 
+import java.awt.BorderLayout;
 import java.awt.GridBagLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JComboBox;
 import net.algem.config.ParamChoice;
 import net.algem.contact.teacher.TeacherChoice;
@@ -46,7 +49,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.k
  */
 public class ActionView
         extends GemPanel
@@ -93,6 +96,13 @@ public class ActionView
   private void load(Course c) {
     courseLength.setEditable(c.isCourseCoInst());
     intervall.setEditable(c.isCourseCoInst());
+    if (c.isCollective()) {
+      places.setText(String.valueOf(((Room)room.getSelectedItem()).getNPers()));
+      places.setEditable(true);
+    } else {
+      places.setText("0");
+      places.setEditable(false);
+    }
   }
 
   public void init() {
@@ -111,28 +121,36 @@ public class ActionView
     gb.add(new GemLabel(BundleUtil.getLabel("Sessions.label")), 0, 7, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Menu.holidays.label")), 0, 8, 1, 1, GridBagHelper.WEST);
 
-    gb.add(course, 1, 0, 2, 1, GridBagHelper.HORIZONTAL, GridBagHelper.EAST);
-    gb.add(datePanel, 1, 1, 2, 1, GridBagHelper.HORIZONTAL, GridBagHelper.EAST);
-    gb.add(day, 1, 2, 2, 1, GridBagHelper.HORIZONTAL, GridBagHelper.EAST);
-    gb.add(periodicity, 1, 3, 2, 1, GridBagHelper.HORIZONTAL, GridBagHelper.EAST);
+    gb.add(course, 1, 0, 2, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
+    gb.add(datePanel, 1, 1, 1, 1, GridBagHelper.NORTHWEST);
+    gb.add(day, 1, 2, 2, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
+    gb.add(periodicity, 1, 3, 2, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
 
+    GemPanel hp = new GemPanel(new BorderLayout());
+    hp.setBorder(null);
+    hp.add(hourPanel, BorderLayout.WEST);
+    
     GemPanel p = new GemPanel();
-    p.add(hourPanel);
     p.add(new GemLabel(BundleUtil.getLabel("Course.length.label")));
     courseLength.setToolTipText(BundleUtil.getLabel("Course.length.tip"));
     p.add(courseLength);
     p.add(new GemLabel(BundleUtil.getLabel("Course.interval.label")));
     intervall.setToolTipText(BundleUtil.getLabel("Course.interval.tip"));
     p.add(intervall);
+    hp.add(p, BorderLayout.EAST);
 
-    gb.add(p, 1, 4, 2, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
+    gb.add(hp, 1, 4, 2, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
     gb.add(teacher, 1, 5, 2, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
     gb.add(room, 1, 6, 2, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
+    
     GemPanel s = new GemPanel();
+    s.setLayout(new BoxLayout(s, BoxLayout.X_AXIS));
     s.add(sessions);
+    s.add(Box.createHorizontalStrut(4));
     s.add(new GemLabel(BundleUtil.getLabel("Place.number.label")));
-   
+    s.add(Box.createHorizontalStrut(4));
     s.add(places);
+    
     gb.add(s, 1, 7, 1, 1, GridBagHelper.WEST);
     gb.add(vChoix, 1, 8, 2, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
   }
@@ -254,7 +272,8 @@ public class ActionView
       
       if (e.getStateChange() == ItemEvent.SELECTED) {
         int n = ((Room) e.getItem()).getNPers();
-        places.setText(n == 0 ? null : String.valueOf(n));
+        Course c = (Course) course.getSelectedItem();
+        places.setText(n == 0 || !c.isCollective() ? "0" : String.valueOf(n));
       } else if (e.getStateChange() == ItemEvent.DESELECTED) {
         places.setText(null);
       }

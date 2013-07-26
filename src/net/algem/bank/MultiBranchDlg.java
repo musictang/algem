@@ -1,7 +1,7 @@
 /*
- * @(#)MultiBranchDlg.java	2.6.a 14/09/12
+ * @(#)MultiBranchDlg.java	2.8.i 08/07/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,6 +28,7 @@ import java.awt.event.ActionListener;
 import java.util.Vector;
 import javax.swing.JDialog;
 import net.algem.util.GemCommand;
+import net.algem.util.module.GemModule;
 import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GemLabel;
 import net.algem.util.ui.GemPanel;
@@ -38,7 +39,7 @@ import net.algem.util.ui.PopupDlg;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.i
  */
 public class MultiBranchDlg
         implements ActionListener
@@ -53,13 +54,13 @@ public class MultiBranchDlg
   private GemButton btCreation;
   private MultiBranchView gv;
 
-  public MultiBranchDlg(Component c, String t, String banque, String guichet) {
+  public MultiBranchDlg(Component c, String t, String bankCode, String branchCode) {
     dlg = new JDialog(PopupDlg.getTopFrame(c), true);
 
     title = new GemLabel(t);
     validation = false;
 
-    gv = new MultiBranchView(banque, guichet);
+    gv = new MultiBranchView(bankCode, branchCode);
 
     btValidation = new GemButton(GemCommand.OK_CMD);
     btValidation.addActionListener(this);
@@ -77,39 +78,39 @@ public class MultiBranchDlg
     dlg.getContentPane().add("North", title);
     dlg.getContentPane().add("Center", gv);
     dlg.getContentPane().add("South", buttons);
-    dlg.setSize(new Dimension(600, 400));
+    dlg.setSize(GemModule.L_SIZE);
     dlg.setLocation(100, 100);
   }
 
-  public void saisie() {
+  public void show() {
     dlg.setVisible(true);
   }
 
-  public BankBranch getSelectedBranch() {
-    return gv.getSelectedAgence();
+  BankBranch getSelectedBranch() {
+    return gv.getSelectedBranch();
   }
 
-  public boolean isValidEntry() {
+  private boolean isValidEntry() {
     return true;
   }
 
-  public boolean isValid() {
+  boolean isValid() {
     return validation;
   }
 
-  public boolean isNewBranch() {
+  boolean isNewBranch() {
     return createBranch;
   }
 
-  public void loadBranchs(Vector v) {
+  void loadBranchs(Vector<BankBranch> v) {
     gv.loadBranches(v);
   }
 
-  public void setBankCode(String s) {
+  void setBankCode(String s) {
     gv.setBankCode(s);
   }
 
-  public void setBranchCode(String s) {
+  void setBranchCode(String s) {
     gv.setBranchCode(s);
   }
 

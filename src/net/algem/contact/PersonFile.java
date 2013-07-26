@@ -23,7 +23,8 @@ package net.algem.contact;
 import java.util.Collection;
 import java.util.Vector;
 import javax.swing.event.EventListenerList;
-import net.algem.bank.Bic;
+import net.algem.bank.BankUtil;
+import net.algem.bank.Rib;
 import net.algem.contact.member.Member;
 import net.algem.contact.member.PersonSubscriptionCard;
 import net.algem.contact.teacher.Teacher;
@@ -44,7 +45,7 @@ public class PersonFile
   private Contact contact, oldContact;
   private Member member, oldMember;
   private Teacher teacher, oldTeacher;
-  private Bic bic, oldBic;
+  private Rib rib, oldRib;
   protected EventListenerList listenerList = new EventListenerList();
   private PersonSubscriptionCard subscriptionCard;
   private Collection<Group> groups;
@@ -138,27 +139,27 @@ public class PersonFile
    * Rib.
    * @param b 
    */
-  public void setBic(Bic b) {
-    oldBic = bic;
-    bic = b;
+  public void setRib(Rib b) {
+    oldRib = rib;
+    rib = b;
     fireContentsChanged(b, PersonFileEvent.BANK_CHANGED);
   }
 
-  public Bic getBic() {
-    return bic;
+  public Rib getRib() {
+    return rib;
   }
 
-  public Bic getOldBic() {
-    return oldBic;
+  public Rib getOldRib() {
+    return oldRib;
   }
 
-  public void removeBic() {
-    fireContentsChanged(bic, PersonFileEvent.BANK_REMOVED);
-    bic = oldBic = null;
+  public void removeRib() {
+    fireContentsChanged(rib, PersonFileEvent.BANK_REMOVED);
+    rib = oldRib = null;
   }
 
-  public void addBic(Bic b) {
-    bic = b;
+  public void addRib(Rib b) {
+    rib = b;
     fireContentsChanged(b, PersonFileEvent.BANK_ADDED);
   }
 
@@ -170,7 +171,7 @@ public class PersonFile
     return subscriptionCard;
   }
 
-  public boolean isModified() {
+  public boolean hasChanged() {
     if (contact.getId() == 0 && contact.getName().length() > 0) {
       return true;
     } else if (oldContact != null && !contact.equals(oldContact)) {
@@ -180,7 +181,7 @@ public class PersonFile
     } else if (teacher != null && !teacher.equals(oldTeacher)) {
       return true;
     } //Modification du test (oldBic != null) . Correction bug création rib 2.0d
-    else if (bic != null && !bic.equals(oldBic)) {
+    else if (rib != null && !rib.equals(oldRib)) {
       return true;
     }
     return false;
@@ -202,13 +203,13 @@ public class PersonFile
     if (teacher != null && !teacher.isValid()) {
       error.append(MessageUtil.getMessage("invalid.teacher"));
     }
-    if (bic != null && !bic.isEmpty()) {
-      if (!bic.hasCorrectLength()) {
+    if (rib != null && !rib.isEmpty()) {
+      if (!rib.hasCorrectLength()) {
         error.append(MessageUtil.getMessage("rib.length.warning"));
-        bic = oldBic;// @since 2.2.q restoration en cas d'invalidité
-      } else if (!bic.isValid()) {
-        error.append(MessageUtil.getMessage("invalid.rib", new Object[]{bic.toString()}));
-        bic = oldBic;// @since 2.2.q
+        rib = oldRib;// @since 2.2.q restoration en cas d'invalidité
+      } else if (!BankUtil.isRibOk(rib.toString())) {
+        error.append(MessageUtil.getMessage("invalid.rib", new Object[]{rib.toString()}));
+        rib = oldRib;// @since 2.2.q
       }
     }
     return error.length() > 0 ? error.toString() : null;
@@ -249,25 +250,25 @@ public class PersonFile
     oldContact = null;
     oldMember = null;
     oldTeacher = null;
-    oldBic = null;
+    oldRib = null;
   }
 
   public Object[] backUpOldValues() {
-    return new Object[]{getOldContact(), getOldMember(), getOldTeacher(), getOldBic()};
+    return new Object[]{getOldContact(), getOldMember(), getOldTeacher(), getOldRib()};
   }
 
   public void restoreOldValues(Object[] values) {
     oldContact = (Contact) values[0];
     oldMember = (Member) values[1];
     oldTeacher = (Teacher) values[2];
-    oldBic = (Bic) values[3];
+    oldRib = (Rib) values[3];
   }
 
   public void setOldValues() {
     oldContact = getContact();
     oldMember = getMember();
     oldTeacher = getTeacher();
-    oldBic = getBic();
+    oldRib = getRib();
   }
 
   public void setGroups(Vector<Group> groups) {

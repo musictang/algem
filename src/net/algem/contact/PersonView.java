@@ -1,7 +1,7 @@
 /*
- * @(#)PersonView.java	2.7.k 01/03/13
+ * @(#)PersonView.java	2.8.k 23/07/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -43,11 +43,11 @@ import net.algem.util.module.GemModule;
 import net.algem.util.ui.*;
 
 /**
- * comment
+ * Person view.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.k
+ * @version 2.8.k
  */
 public class PersonView
         extends GemBorderPanel
@@ -61,7 +61,7 @@ public class PersonView
   private GemField organization;
   private JLabel photo;
   private GemLabel rhLabel;
-  /** Nombre d'heures restantes sur carte abonnement. */
+  /** Rest time on subscription card. */
   private GemLabel nrh;
   private GemDesktop desktop;
   private GridBagHelper gb;
@@ -86,6 +86,7 @@ public class PersonView
     firstname = new GemField(true, 20);
     civil = new CivilChoice();
     cbImgRights = new JCheckBox(BundleUtil.getLabel("Person.img.rights.label"));
+    cbImgRights.setBorder(null);
     rhLabel = new GemLabel();
     nrh = new GemLabel();
 

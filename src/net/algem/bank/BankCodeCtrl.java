@@ -1,7 +1,7 @@
 /*
- * @(#)BankCodeCtrl.java	2.6.a 14/09/12
+ * @(#)BankCodeCtrl.java	2.8.i 05/07/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,22 +21,22 @@
 package net.algem.bank;
 
 import java.awt.Component;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.util.Vector;
-import javax.swing.JOptionPane;
 import net.algem.util.DataConnection;
-import net.algem.util.MessageUtil;
 
 /**
  * Search control for bank and branch from their codes.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.i
  * @since 1.0a 07/07/1999
  */
 public class BankCodeCtrl
-        extends MouseAdapter
         implements ActionListener, FocusListener
 {
 
@@ -73,7 +73,7 @@ public class BankCodeCtrl
    * @param flag
    * @param dc
    */
-  public BankCodeCtrl(boolean flag, DataConnection dc, BankBranchIO branchIO) {
+  BankCodeCtrl(boolean flag, DataConnection dc, BankBranchIO branchIO) {
     this(null, flag, dc, branchIO);
   }
 
@@ -85,8 +85,8 @@ public class BankCodeCtrl
     branchView = view;
   }
 
-  private void searchBank(BankCodeField bank) {
-    bankCode = bank.getText();
+  private void searchBank(String bankCode) {
+    this.bankCode = bankCode;
     branchView.setBank(BankIO.findCode(bankCode, dc));
   }
 
@@ -94,39 +94,46 @@ public class BankCodeCtrl
    *
    * @param branch
    */
-  private void searchBranch(BranchCodeField branch) {
-    bankCode = branchView.getBankCode();
+  private void searchBranch(String branchCode) {
+//    this.bankCode = bankCode;
+    this.branchCode = branchCode;
+    if (bankCode == null) {
+      bankCode = branchView.getBankCode();
+    }
+
     Bank b = BankIO.findCode(bankCode, dc);
-    branchCode = branch.getText();
+
     Vector<BankBranch> v = bankBranchIO.findCode(bankCode, branchCode);
-    if (v.isEmpty()) // s'il n'existe pas d'agence
-    {
-      branchView.setAgenceBancaire(null);
-      //return;//XXX creation si le codeguichet n'existe pas, commenté par jm depuis version 2.0pc
+    if (v.isEmpty()) { // s'il n'existe pas d'agence
+      branchView.setBankBranch(null);
+      //return;//creation si le codeguichet n'existe pas, commenté par jm depuis version 2.0pc
     } else if (v.size() == 1 && !b.isMulti()) {
-      //if (flagCreate) // commenté par jm depuis version 2.0pc
-      //{
-      JOptionPane.showMessageDialog(null,
+      // useless message
+      /*JOptionPane.showMessageDialog(null,
               MessageUtil.getMessage("bank.branch.creation.error"),
               "Erreur création guichet",
-              JOptionPane.ERROR_MESSAGE);
-      branchView.setAgenceBancaire((BankBranch) v.elementAt(0));
+              JOptionPane.ERROR_MESSAGE);*/
+      branchView.setBankBranch((BankBranch) v.elementAt(0));
       return;
     }
     if (createFlag) {
       return;
     }
+    setBranch(v);
+  }
+
+  private void setBranch(Vector<BankBranch> v) {
     Component parent = (Component) branchView;
     MultiBranchDlg branchDlg = new MultiBranchDlg(parent, "code guichet", bankCode, branchCode);
     branchDlg.loadBranchs(v);
-    branchDlg.saisie();
+    branchDlg.show();
     if (!branchDlg.isValid()) {
       return;
     }
     if (!branchDlg.isNewBranch()) {
       BankBranch a = branchDlg.getSelectedBranch();
       branchView.setBank(a.getBank());
-      branchView.setAgenceBancaire(a);
+      branchView.setBankBranch(a);
       return;
     }
     BranchCreateDlg gCreateDlg = new BranchCreateDlg(parent, "nouvelle adresse guichet", dc);
@@ -139,16 +146,21 @@ public class BankCodeCtrl
     }
     BankBranch a = gCreateDlg.getBranch();
     branchView.setBank(a.getBank());
-    branchView.setAgenceBancaire(a);
+    branchView.setBankBranch(a);
   }
 
   @Override
   public void actionPerformed(ActionEvent evt) {
     if (evt.getSource() instanceof BankCodeField) {
-      searchBank((BankCodeField) evt.getSource());
-    } else if (evt.getSource() instanceof BranchCodeField) {
-      searchBranch((BranchCodeField) evt.getSource());
+      searchBank(branchView.getBankCode());
+    } else {
+      String bCode = branchView.getBranchCode();
+      if (bCode == null) {
+        return;
+      }
+      searchBranch(bCode);
     }
+
   }
 
   @Override
@@ -157,38 +169,43 @@ public class BankCodeCtrl
 
   @Override
   public void focusLost(FocusEvent evt) {
+    
     Object src = evt.getSource();
-    if (src instanceof BankCodeField) {
-      BankCodeField bank = (BankCodeField) evt.getSource();
-      if (bankCode != null && bankCode.equals(bank.getText())) {
-        return;
+    
+    if (src instanceof IbanField) {
+      if (branchView instanceof RibView) {
+        RibView bv = (RibView) branchView;
+        bv.markIban(BankUtil.isIbanOk(bv.getIban()));
+        bv.setRibFromIban();
+
+        if (bv.isNewBank()) {
+          String bank = bv.getBankCode();
+          if (bank != null && !bank.equals(bankCode)) {
+            searchBank(bank);
+          }
+        }
+        if (bv.isNewBranch()) {
+          String branch = bv.getBranchCode();
+          if (branch != null && !branch.equals(branchCode)) {
+            searchBranch(branch);
+          }
+        }
       }
-      searchBank(bank);
+    } else if (src instanceof BicCodeField) {
+        String bic = branchView.getBicCode();
+        branchView.markBic(BankUtil.isBicOk(bic));
+    } else if (src instanceof BankCodeField) {
+      String bCode = branchView.getBankCode();
+      if (bCode != null && !bCode.equals(bankCode)) {
+        searchBank(branchView.getBankCode());
+      }
     } else if (src instanceof BranchCodeField) {
-      BranchCodeField branch = (BranchCodeField) evt.getSource();
-      if (branchCode != null && branchCode.equals(branch.getText())) {
-        return;
+      String bbCode = branchView.getBranchCode();
+      if (bbCode != null && !bbCode.equals(branchCode)) {    
+        searchBranch(bbCode);
       }
-      searchBranch(branch);
     }
-    /* else if (src instanceof ChampsNumerique) { Bic r =
-     * ((BicView)vueAgence).getBic(); if (r != null && !r.toString().isEmpty())
-     * { if (!r.isValid()) { //MessagePopup.warning(null,
-     * MessageUtil.getMessage("invalid.rib", new Object[] {r.toString()}));
-     * ((BicView)vueAgence).markBic(true); } else
-     * ((BicView)vueAgence).markBic(false); }
-    } */
+
   }
 
-  @Override
-  public void mouseExited(MouseEvent e) {
-    Bic r = ((BicView) branchView).getBic();
-    if (r != null && !r.toString().isEmpty()) {
-      if (!r.isValid()) {
-        ((BicView) branchView).markBic(true);
-      } else {
-        ((BicView) branchView).markBic(false);
-      }
-    }
-  }
 }

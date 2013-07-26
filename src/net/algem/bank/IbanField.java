@@ -1,5 +1,5 @@
 /*
- * @(#)BankBranchView.java	2.8.i 27/06/13
+ * @(#)IbanField.java	2.8.i 08/07/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -18,46 +18,36 @@
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  * 
  */
- 
 
 package net.algem.bank;
 
-import java.awt.Color;
-import	net.algem.contact.CodePostalCtrl;
+import javax.swing.JFormattedTextField;
+import javax.swing.text.MaskFormatter;
+import net.algem.util.MessageUtil;
 
 /**
- * comment
- * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
+ * IBAN field with mask formatter.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.8.i
+ * @since 2.8.i 04/07/13
  */
-
-public interface BankBranchView
+public class IbanField 
+  extends JFormattedTextField
 {
-  public static final Color ERROR_BG_COLOR = Color.decode("#ff4a4a");
   
-  public void setPostalCodeCtrl(CodePostalCtrl ctrl);
-    
-	public void setBankCodeCtrl(BankCodeCtrl ctrl);
-
-	public String getBankName();
-
-    public String getBankCode();
-    
-	public void setBankName(String s);
-    
-	public Bank getBank();
-    
-	public void setBank(Bank b);
-
-	public BankBranch getBankBranch();
-    
-	public void setBankBranch(BankBranch g);
-    
-    public String getBranchCode();
-    
-    public String getBicCode();
-    
-    public void markBic(boolean ok);
-
+  public static final String FRENCH_MASK=  "UUAA AAAA AAAA AAAA AAAA AAAA AAA";
+  public static final MaskFormatter mf;
+  static {
+    mf = MessageUtil.createFormatter(FRENCH_MASK);
+    mf.setValueContainsLiteralCharacters(false);
+  }
+  private static final String INTERNATIONAL_MASK=  "UUAA AAAA AAAA AAAA AAAA AAAA AAAA AAAA AA";
+  /**
+   * Constructs a field with french format.
+   */
+  public IbanField() {
+    super(mf);
+    setColumns(23);
+  }
+  
 }

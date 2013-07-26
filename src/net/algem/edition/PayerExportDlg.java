@@ -1,5 +1,5 @@
 /*
- * @(#)PayerExportDlg.java	2.6.a 02/08/2012
+ * @(#)PayerExportDlg.java	2.8.k 25/07/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -22,16 +22,19 @@ package net.algem.edition;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Frame;
+import java.awt.GridBagLayout;
 import java.util.Date;
-import javax.swing.BoxLayout;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import net.algem.config.ModeOfPaymentCtrl;
+import net.algem.config.ParamTableIO;
 import net.algem.planning.DateFr;
 import net.algem.planning.DateRangePanel;
+import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.MessageUtil;
-import net.algem.config.ParamTableIO;
 import net.algem.util.ui.GemPanel;
+import net.algem.util.ui.GridBagHelper;
 
 /**
  * Export mailling payers.
@@ -40,7 +43,7 @@ import net.algem.util.ui.GemPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.k
  * @since 1.0a 14/12/1999
  */
 public class PayerExportDlg
@@ -70,8 +73,9 @@ public class PayerExportDlg
   @Override
   public GemPanel getCriterion() {
 
-    pCriterion = new GemPanel();
-    pCriterion.setLayout(new BoxLayout(pCriterion,BoxLayout.Y_AXIS));
+    pCriterion = new GemPanel(new GridBagLayout());
+    GridBagHelper gb = new GridBagHelper(pCriterion);
+    gb.insets = GridBagHelper.SMALL_INSETS;
 
     cbCriterion = new JComboBox(criteria);
     cbCriterion.setMaximumSize(new Dimension(ITEM_DEF_WIDTH,cbCriterion.getHeight()));
@@ -80,11 +84,13 @@ public class PayerExportDlg
     payment.setMaximumSize(new Dimension(ITEM_DEF_WIDTH,payment.getHeight()));
 
     initDateRange();
+    gb.add(new JLabel(BundleUtil.getLabel("Type.label")), 0, 0, 1, 1, GridBagHelper.EAST);
+    gb.add(cbCriterion, 1, 0, 1, 1, GridBagHelper.WEST);
+    gb.add(new JLabel(BundleUtil.getLabel("Mode.of.payment.label")), 0, 1, 1, 1, GridBagHelper.EAST);
+    gb.add(payment, 1, 1, 1, 1, GridBagHelper.WEST);
+    gb.add(new JLabel(BundleUtil.getLabel("Date.From.label")), 0, 2, 1, 1, GridBagHelper.EAST);
+    gb.add(dateRange, 1, 2, 1, 1, GridBagHelper.WEST);
 
-    pCriterion.add(cbCriterion);
-    pCriterion.add(payment);
-    pCriterion.add(dateRange);
-    
     return pCriterion;
   }
 

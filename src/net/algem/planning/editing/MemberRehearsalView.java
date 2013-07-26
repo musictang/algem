@@ -1,7 +1,7 @@
 /*
- * @(#)MemberRehearsalView.java	2.7.a 23/11/12
+ * @(#)MemberRehearsalView.java	2.8.k 25/07/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -43,7 +43,7 @@ import net.algem.util.ui.GridBagHelper;
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.7.a
+ * @version 2.8.k
  */
 public class MemberRehearsalView
         extends GemPanel
@@ -53,7 +53,7 @@ public class MemberRehearsalView
   private DateRangePanel datePanel;
   private HourRangePanel hourPanel;
   private RoomChoice roomChoice;
-  private JCheckBox cardChoice;
+  private JCheckBox withCard;
 
   public MemberRehearsalView(DataCache dc) {
 
@@ -62,7 +62,8 @@ public class MemberRehearsalView
     datePanel = new DateRangePanel(DateRangePanel.SIMPLE_DATE, null);
     hourPanel = new HourRangePanel(3 * 60);
     roomChoice = new RoomChoice(dc.getList(Model.Room));
-    cardChoice = new JCheckBox();
+    withCard = new JCheckBox();
+    withCard.setBorder(null);
     this.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
     gb.insets = GridBagHelper.SMALL_INSETS;
@@ -75,7 +76,7 @@ public class MemberRehearsalView
     gb.add(datePanel, 1, 1, 1, 1, GridBagHelper.WEST);
     gb.add(hourPanel, 1, 2, 1, 1, GridBagHelper.WEST);
     gb.add(roomChoice, 1, 3, 1, 1, GridBagHelper.WEST);
-    gb.add(cardChoice, 1, 4, 1, 1, GridBagHelper.WEST);
+    gb.add(withCard, 1, 4, 1, 1, GridBagHelper.WEST);
 
   }
 
@@ -110,7 +111,7 @@ public class MemberRehearsalView
   }
 
   public boolean withCard() {
-    return cardChoice.isSelected();
+    return withCard.isSelected();
   }
 
   public void clear() {

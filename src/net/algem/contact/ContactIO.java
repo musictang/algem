@@ -24,7 +24,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.Vector;
-import net.algem.bank.BicIO;
+import net.algem.bank.RibIO;
 import net.algem.contact.member.MemberIO;
 import net.algem.planning.Schedule;
 import net.algem.planning.ScheduleIO;
@@ -210,14 +210,20 @@ public class ContactIO
    */
   public void delete(Contact c) throws SQLException, ContactDeleteException {
     checkDelete(c, dc);
+    
     personIO.delete(c);
-    // member might be deleted if exists
-    ((MemberIO) DataCache.getDao(Model.Member)).delete(c.getId());
     AddressIO.delete(c.getId(), dc);
-    TeleIO.delete(c.getId(), dc);
-    EmailIO.delete(c.getId(), dc);
-    WebSiteIO.delete(c.getId(), Person.PERSON, dc);
-    BicIO.delete(c.getId(), dc);
+    
+    if (c.getType() != Person.BANK) {
+      TeleIO.delete(c.getId(), dc);
+      EmailIO.delete(c.getId(), dc);
+      WebSiteIO.delete(c.getId(), Person.PERSON, dc);
+    }
+    // member might be deleted if exists
+    if (c.getType() == Person.PERSON) {
+      ((MemberIO) DataCache.getDao(Model.Member)).delete(c.getId());
+      RibIO.delete(c.getId(), dc);
+    }
   }
 
   /**

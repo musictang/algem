@@ -1,7 +1,7 @@
 /*
- * @(#)BranchCreateCtrl.java 2.6.a 14/09/12
+ * @(#)BranchCreateCtrl.java 2.8.i 05/07/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,14 +27,14 @@ import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
 import net.algem.util.ui.CardCtrl;
-import net.algem.util.ui.ErrorDlg;
+import net.algem.util.ui.MessagePopup;
 
 /**
  * comment
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.i
  */
 public class BranchCreateCtrl
         extends CardCtrl
@@ -46,7 +46,7 @@ public class BranchCreateCtrl
 
   public BranchCreateCtrl(DataConnection dc) {
     this.dc = dc;
-		bankBranchIO = new BankBranchIO(dc);
+    bankBranchIO = new BankBranchIO(dc);
   }
 
   public void init() {
@@ -85,8 +85,8 @@ public class BranchCreateCtrl
       Bank b = branchView.getBank();
       if (b.isValid()) {
         try {
-          Bank bque = BankIO.findCode(b.getCode(), dc);
-          if (bque == null) {
+          Bank bk = BankIO.findCode(b.getCode(), dc);
+          if (bk == null) {
             BankIO.insert(b, dc);
           }
         } catch (Exception e) {
@@ -95,10 +95,10 @@ public class BranchCreateCtrl
       }
     }
     try {
-      BankBranch a = branchView.getAgenceBancaire();
+      BankBranch a = branchView.getBankBranch();
 
       if (!a.isValid()) {
-        new ErrorDlg(this, MessageUtil.getMessage("incomplete.entry.error"));
+        MessagePopup.error(this, MessageUtil.getMessage("incomplete.entry.error"));
         return false;
       }
       bankBranchIO.insert(a);
