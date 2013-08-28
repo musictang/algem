@@ -96,8 +96,8 @@ public class ScheduleRangeIO
 	}
     
     /**
-     * Suppress ranges by schedule id.
-     * @param scheduleId
+     * Suppress ranges by action.
+     * @param a
      * @param dc
      * @throws SQLException 
      */

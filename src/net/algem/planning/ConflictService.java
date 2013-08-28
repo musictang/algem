@@ -91,7 +91,7 @@ public class ConflictService
   }
 
   /**
-   * Test of time occupation for hour modification dialog.
+   * Test time occupation for hour modification dialog.
    * @param plan planning
    * @param startDate
    * @param endDate
@@ -144,7 +144,7 @@ public class ConflictService
   }
 
   /**
-   * Test of room occupation for room modification dialog.
+   * Test room occupation for room modification dialog.
    * Time and date of week rest the same.
    * Don't work for single workshops when new date is before actual date.
    * @param plan schedule
@@ -227,19 +227,14 @@ public class ConflictService
     return conflicts;
   }
   
-/**
- * Test of room occupation for schedule time modification dialog and schedule postpone.
- *
- * @param roomId room id
- * @param scheduleId orig schedule id
- * @param dateStart start date
- * @param newHourStart new start time
- * @param newHourEnd new end time
-
- * @return a list of conflicts
- * @throws SQLException 
- */
-//  public Vector<ScheduleTestConflict> testRoomConflict(int roomId, int scheduleId, DateFr dateStart, Hour newHourStart, Hour newHourEnd) throws SQLException {
+  /**
+   * Test room occupation for schedule time modification dialog and schedule postpone.
+   * 
+   * @param origScheduleId
+   * @param newPlan
+   * @return a list of schedules
+   * @throws SQLException 
+   */
   public Vector<ScheduleTestConflict> testRoomConflict(int origScheduleId, ScheduleObject newPlan) throws SQLException {
     
     Vector<ScheduleTestConflict> conflicts = new Vector<ScheduleTestConflict>();
@@ -268,7 +263,7 @@ public class ConflictService
 
 
   /**
-   * Test of room occupation for modification of planning length.
+   * Test room occupation for modification of planning length.
    *
    * @param plan schedule object
    * @param hStart new start time
@@ -311,7 +306,7 @@ public class ConflictService
   }
   
   /**
-   * Test of schedule occupation for modification of planning length.
+   * Test schedule occupation for modification of planning length.
    * @param plan schedule
    * @param hStart new start time
    * @param hEnd new end time
@@ -345,7 +340,7 @@ public class ConflictService
   }
 
   /**
-   * Test of teacher planning occupation for modification teacher dialog.
+   * Test teacher occupation for modification teacher dialog.
    * @param orig initial schedule
    * @param newPlan new schedule
    * @param dateStart start date
@@ -447,7 +442,7 @@ public class ConflictService
   }
 
   /**
-   * Test of teacher occupation for course postpone modification.
+   * Test teacher occupation for course postpone modification.
    * @param plan orig schedule
    * @param day new date of schedule
    * @param nhStart new start time
@@ -483,7 +478,7 @@ public class ConflictService
   }
   
   /**
-   * Test of teacher occupation for schedule copy.
+   * Test teacher occupation for schedule copy.
    *
    * @param teacherId teacher id
    * @param newPlan new schedule

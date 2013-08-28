@@ -1,5 +1,5 @@
 /*
- * @(#)HourTeacherView.java	2.8.k 25/07/13
+ * @(#)HourTeacherView.java	2.8.k 27/08/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -33,7 +33,7 @@ import net.algem.config.ConfigUtil;
 import net.algem.config.Param;
 import net.algem.config.ParamChoice;
 import net.algem.planning.DateFr;
-import net.algem.planning.DateFrField;
+import net.algem.planning.DateRangePanel;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataConnection;
 import net.algem.util.model.GemList;
@@ -51,8 +51,7 @@ public class HourTeacherView
         extends JPanel
 {
 
-  private DateFrField dateStart;
-  private DateFrField dateEnd;
+  private DateRangePanel dateRange;
   private JCheckBox detail;
   private ParamChoice schoolChoice;
 
@@ -66,8 +65,7 @@ public class HourTeacherView
     GridBagHelper gb = new GridBagHelper(body);
     gb.insets = GridBagHelper.SMALL_INSETS;
 
-    dateStart = new DateFrField(new Date());
-    dateEnd = new DateFrField(new Date());
+    dateRange = new DateRangePanel(new DateFr(new Date()), new DateFr(new Date()));
     detail = new JCheckBox();
     detail.setBorder(null);
     
@@ -75,16 +73,11 @@ public class HourTeacherView
     int defaultSchool = Integer.parseInt(ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey(), dc));
     schoolChoice.setKey(defaultSchool);
 
-    JPanel dates = new JPanel();
-    dates.add(dateStart);
-    dates.add(new JLabel(BundleUtil.getLabel("Date.To.label")));
-    dates.add(dateEnd);
-
     gb.add(new JLabel(BundleUtil.getLabel("Period.label")), 0, 0, 1, 1, GridBagHelper.EAST);
     gb.add(new JLabel(BundleUtil.getLabel("School.label")), 0, 1, 1, 1, GridBagHelper.EAST);
     gb.add(new JLabel(BundleUtil.getLabel("Detail.label")), 0, 2, 1, 1, GridBagHelper.EAST);
 
-    gb.add(dates, 1, 0, 1, 1, GridBagHelper.WEST);
+    gb.add(dateRange, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(schoolChoice, 1, 1, 1, 1, GridBagHelper.WEST);
     gb.add(detail, 1, 2, 1, 1, GridBagHelper.WEST);
     
@@ -93,11 +86,11 @@ public class HourTeacherView
   }
 
   public DateFr getDateStart() {
-    return dateStart.getDateFr();
+    return dateRange.getStartFr();
   }
 
   public DateFr getDateEnd() {
-    return dateEnd.getDateFr();
+    return dateRange.getEndFr();
   }
 
   public Param getSchool() {

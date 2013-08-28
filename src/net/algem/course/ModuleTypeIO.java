@@ -97,8 +97,8 @@ public class ModuleTypeIO
   /**
    * 
    * @param where
-   * @param dc
-   * @return
+   * @param dc connection
+   * @return a list of moduleType
    * @throws SQLException
    * @deprecated 
    */

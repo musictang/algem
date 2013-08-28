@@ -1,7 +1,7 @@
 /*
- * @(#)RehearsalCancelView.java	2.6.a 21/09/12
+ * @(#)RehearsalCancelView.java	2.8.k 27/08/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,10 +20,10 @@
  */
 package net.algem.planning.editing;
 
-import java.awt.AWTEventMulticaster;
+import java.awt.BorderLayout;
 import java.awt.GridBagLayout;
-import java.awt.event.ActionListener;
 import java.util.Date;
+import javax.swing.BorderFactory;
 import net.algem.planning.DateFr;
 import net.algem.planning.DateFrField;
 import net.algem.planning.Schedule;
@@ -33,12 +33,11 @@ import net.algem.util.ui.GemPanel;
 import net.algem.util.ui.GridBagHelper;
 
 /**
- * comment
- *
+ * View used in rehearsal cancellation dialog.
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.k
  * @since 1.0a 07/07/1999
  */
 public class RehearsalCancelView
@@ -48,28 +47,35 @@ public class RehearsalCancelView
   private GridBagHelper gb;
   private DateFrField start;
   private DateFrField end;
-  private ActionListener actionListener;
 
   public RehearsalCancelView(Schedule plan) {
 
     start = new DateFrField(plan.getDate());
     end = new DateFrField(plan.getDate());
-    GemLabel title = null;
+    String title = null;
     if (plan.getType() == Schedule.MEMBER_SCHEDULE) {
-      title = new GemLabel(BundleUtil.getLabel("Member.label") + " " + plan.getIdPerson());
+      title = BundleUtil.getLabel("Member.label") + " " + plan.getIdPerson();
     } else {
-      title = new GemLabel(BundleUtil.getLabel("Group.label") + " " + plan.getIdPerson());
+      title = BundleUtil.getLabel("Group.label") + " " + plan.getIdPerson();
     }
 
-    this.setLayout(new GridBagLayout());
-    gb = new GridBagHelper(this);
+    GemPanel tp = new GemPanel();
+    tp.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+    tp.add(new GemLabel(BundleUtil.getLabel("Rehearsal.cancel.label") + " " + title));
+    
+    GemPanel body = new GemPanel();
+    body.setLayout(new GridBagLayout());
+    gb = new GridBagHelper(body);
+    gb.insets = GridBagHelper.SMALL_INSETS;
 
-    gb.add(new GemLabel(BundleUtil.getLabel("Rehearsal.cancel.label") + " "), 0, 0, 1, 1, GridBagHelper.WEST);
-    gb.add(title, 1, 0, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Date.From.label")), 0, 1, 1, 1, GridBagHelper.WEST);
-    gb.add(start, 1, 1, 1, 1, GridBagHelper.WEST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Date.To.label")), 0, 2, 1, 1, GridBagHelper.WEST);
-    gb.add(end, 1, 2, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Date.From.label")), 0, 0, 1, 1, GridBagHelper.WEST);
+    gb.add(start, 1, 0, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Date.To.label")), 0, 1, 1, 1, GridBagHelper.WEST);
+    gb.add(end, 1, 1, 1, 1, GridBagHelper.WEST);
+
+    setLayout(new BorderLayout());
+    add(tp, BorderLayout.NORTH);
+    add(body, BorderLayout.CENTER);
   }
 
   public void setStart(Date d) {
@@ -88,14 +94,4 @@ public class RehearsalCancelView
     return end.getDateFr();
   }
 
-  public void removeActionListener(ActionListener l) {
-    actionListener = AWTEventMulticaster.remove(actionListener, l);
-  }
-
-  public void addActionListener(ActionListener l) {
-    actionListener = AWTEventMulticaster.add(actionListener, l);
-  }
-  
-  public void clear() {
-  }
 }

@@ -164,7 +164,6 @@ public class PlanningService
    * Action is also deleted if there are no schedule ranges for this planning.
    *
    * @param action
-   * @return un nombre de plages
    * @throws PlanningException
    */
   public void deletePlanning(Action action) throws PlanningException {

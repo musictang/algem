@@ -1,5 +1,5 @@
 /*
- * @(#)MailUtil.java	2.8.k 26/07/13
+ * @(#)MailUtil.java	2.8.k 27/08/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -135,7 +135,7 @@ public class MailUtil {
     StringBuilder bcc = new StringBuilder();
 
     for (Musician m : mus) {
-      PersonFile member = ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findMember(m.getId(), true);
+      PersonFile member = ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findId(m.getId(), true);
       if (member != null) {
         String email = getEmail(member);
         if (email != null && email.length() > 0) {

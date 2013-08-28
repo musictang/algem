@@ -1,5 +1,5 @@
 /*
- * @(#)RibView.java	2.8.k 22/07/13
+ * @(#)RibView.java	2.8.k 27/08/13
  *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -349,7 +349,6 @@ public class RibView
 
   /**
    * Gets the 5-characters (french) bank code from an iban number.
-   * @param iban
    * @return a string
    */
   @Override
@@ -360,7 +359,6 @@ public class RibView
 
   /**
    * Gets the 5-characters (french) branch code from an iban number.
-   * @param iban
    * @return a string
    */
   @Override
@@ -418,10 +416,6 @@ public class RibView
   public boolean isNewBranch() {
     return branchRef == null;
   }
-//  
-//  public boolean hasBic() {
-//    return hasBicCode;
-//  }
 
   void clear() {
     id = 0;
