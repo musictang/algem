@@ -127,8 +127,10 @@ public class GroupService
       dc.setAutoCommit(false); 
       groupIO.delete(g);
       // instruments suppression
-      for (Musician m : g.getMusicians()) {
-        InstrumentIO.delete(m.getId(), Instrument.MUSICIAN, dc);
+      if (g.getMusicians() != null) {
+        for (Musician m : g.getMusicians()) {
+          InstrumentIO.delete(m.getId(), Instrument.MUSICIAN, dc);
+        }
       }
       // group detail suppression
       String query = "DELETE FROM " + GroupIO.TABLE_DETAIL + " WHERE id = " + g.getId();

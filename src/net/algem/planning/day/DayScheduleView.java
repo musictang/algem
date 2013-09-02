@@ -111,8 +111,9 @@ public class DayScheduleView
     } catch (SQLException sqe) {
       GemLogger.log(sqe.getMessage());
     }
-    
-    tabPanel.setSelectedIndex(estabList.indexOf(estab) + 1);//+1 car le premier onglet correspond aux profs
+    String teacherManaged = ConfigUtil.getConf(ConfigKey.TEACHER_MANAGEMENT.getKey(), desktop.getDataCache().getDataConnection());
+    int offset = (teacherManaged.equals("t")) ? 1 : 0;
+    tabPanel.setSelectedIndex(estabList.indexOf(estab) + offset);//+1 quand la gestion prof est activée car le premier onglet correspond aux profs
 
   }
   

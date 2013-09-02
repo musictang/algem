@@ -1,5 +1,5 @@
 /*
- * @(#)ConfigAdmin.java 2.8.a 01/04/13
+ * @(#)ConfigAdmin.java 2.8.l 30/08/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -36,7 +36,7 @@ import net.algem.util.ui.GemPanel;
  * Panel for config and administrative tasks.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.l
  * @since 2.1.k
  */
 public class ConfigAdmin
@@ -56,7 +56,7 @@ public class ConfigAdmin
 
     c1 = confs.get(ConfigKey.TEACHER_MANAGEMENT.getKey());
     c2 = confs.get(ConfigKey.COURSE_MANAGEMENT.getKey());
-    c3 = confs.get(ConfigKey.WORKSHOP_MANAGEMENT.getKey());
+//    c3 = confs.get(ConfigKey.WORKSHOP_MANAGEMENT.getKey());
     c4 = confs.get(ConfigKey.DEFAULT_SCHOOL.getKey());
     c5 = confs.get(ConfigKey.DEFAULT_ESTABLISHMENT.getKey());
 
@@ -64,7 +64,7 @@ public class ConfigAdmin
 
     jc1 = new JCheckBox(ConfigKey.TEACHER_MANAGEMENT.getLabel());
     jc2 = new JCheckBox(ConfigKey.COURSE_MANAGEMENT.getLabel());
-    jc3 = new JCheckBox(ConfigKey.WORKSHOP_MANAGEMENT.getLabel());
+//    jc3 = new JCheckBox(ConfigKey.WORKSHOP_MANAGEMENT.getLabel());
 
     school = new ParamChoice(dataCache.getList(Model.School).getData());
     school.setKey(Integer.parseInt(c4.getValue()));
@@ -74,12 +74,12 @@ public class ConfigAdmin
 
     jc1.setSelected(isSelected(c1.getValue()));
     jc2.setSelected(isSelected(c2.getValue()));
-    jc3.setSelected(isSelected(c3.getValue()));
+//    jc3.setSelected(isSelected(c3.getValue()));
 
     content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
     content.add(jc1);
     content.add(jc2);
-    content.add(jc3);
+//    content.add(jc3);
     
     GemPanel p = new GemPanel();
     p.add(new GemLabel(ConfigKey.DEFAULT_SCHOOL.getLabel()));
@@ -97,13 +97,13 @@ public class ConfigAdmin
     List<Config> conf = new ArrayList<Config>();
     c1.setValue(getValue(jc1));
     c2.setValue(getValue(jc2));
-    c3.setValue(getValue(jc3));
+//    c3.setValue(getValue(jc3));
     c4.setValue(String.valueOf(school.getKey()));
     c5.setValue(String.valueOf(estab.getKey()));
 
     conf.add(c1);
     conf.add(c2);
-    conf.add(c3);
+//    conf.add(c3);
     conf.add(c4);
     conf.add(c5);
 

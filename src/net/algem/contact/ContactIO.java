@@ -1,5 +1,5 @@
 /*
- * @(#)ContactIO.java	2.7.m 15/03/13
+ * @(#)ContactIO.java	2.8.l 30/08/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -42,7 +42,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.m
+ * @version 2.8.l
  * @since 1.0a 07/07/1999
  */
 public class ContactIO
@@ -359,7 +359,7 @@ public class ContactIO
   }
 
   /**
-   * Verifies contact data before suppression.
+   * Checks contact data before suppression.
    *
    * @param dc dataCache
    * @param c the contact to delete
@@ -384,7 +384,7 @@ public class ContactIO
       check = "SELECT idper FROM eleve WHERE payeur = " + c.getId() + " AND payeur != idper";
       rs = dc.executeQuery(check);
       if (rs.next()) {
-        int a = rs.getInt(2);
+        int a = rs.getInt(1);
         msg += MessageUtil.getMessage("contact.delete.payer.warning2", a);
         throw new ContactDeleteException(msg);
       }

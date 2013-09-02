@@ -1,5 +1,5 @@
 /*
- * @(#)MemberEnrolmentEditor.java 2.8.a 15/04/13
+ * @(#)MemberEnrolmentEditor.java 2.8.l 30/08/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -58,7 +58,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.l
  * @since 1.0b 06/09/2001
  */
 public class MemberEnrolmentEditor
@@ -219,9 +219,9 @@ public class MemberEnrolmentEditor
       Enumeration<ModuleOrder> enu = i.getModule().elements();
       while (enu.hasMoreElements()) {
         try {
-          ModuleOrder cm = enu.nextElement();//probleme apres inscription
-          ModuleEnrolmentNode nmi = new ModuleEnrolmentNode(cm);
-          Vector<CourseOrder> v = service.getCourseOrder(i.getId(), cm.getId());
+          ModuleOrder mo = enu.nextElement();//probleme apres inscription
+          ModuleEnrolmentNode mnode = new ModuleEnrolmentNode(mo);
+          Vector<CourseOrder> v = service.getCourseOrder(i.getId(), mo.getId());
           for (int k = 0; k < v.size(); k++) {
             CourseOrder cc = v.elementAt(k);
             int jj = service.getCourseDayMember(cc.getAction(), cc.getDateStart(), i.getMember());
@@ -229,9 +229,9 @@ public class MemberEnrolmentEditor
               cc.setTitle(getUndefinedLabel(cc));
             }
             CourseEnrolmentNode nci = new CourseEnrolmentNode(cc, jj);
-            nmi.add(nci);
+            mnode.add(nci);
           }
-          ni.add(nmi);
+          ni.add(mnode);
         } catch (SQLException ex) {
           GemLogger.logException(getClass().getName() + "#load.run", ex);
         }

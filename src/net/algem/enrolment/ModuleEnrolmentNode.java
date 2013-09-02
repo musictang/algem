@@ -1,7 +1,7 @@
 /*
- * @(#)ModuleEnrolmentNode.java 2.6.a 17/09/12
+ * @(#)ModuleEnrolmentNode.java 2.8.l 30/08/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,32 +20,36 @@
  */
 package net.algem.enrolment;
 
+import net.algem.util.BundleUtil;
+
 /**
+ * Tree node for module info.
+ * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.l
  */
 public class ModuleEnrolmentNode
         extends EnrolmentNode
 {
 
-  private ModuleOrder cm;
+  private ModuleOrder mo;
 
   public ModuleEnrolmentNode(Object o) {
     super(o);
 
     if (o instanceof ModuleOrder) {
-      cm = (ModuleOrder) o;
+      mo = (ModuleOrder) o;
     }
   }
 
   public ModuleOrder getModule() {
-    return cm;
+    return mo;
   }
 
   @Override
   public String toString() {
-    return "Module : " + cm.getTitle();
+    return BundleUtil.getLabel("Module.label") + " : " + mo.getTitle();
   }
 
   @Override
