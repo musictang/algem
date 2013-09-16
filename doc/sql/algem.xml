@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!-- $Header: /cvsroot/autodoc/autodoc/xml.tmpl,v 1.2 2006/05/16 19:01:27 rbt Exp $ -->
 
-<book id="database.mustang" xreflabel="mustang database schema"><title>mustang Model</title>
+<book id="database.algem-git" xreflabel="algem database schema"><title>algem Model</title>
 
 
 
@@ -4417,6 +4417,73 @@
 
 
 
+        <variablelist>
+          <title>Permissions on facture</title>
+
+          <varlistentry>
+            <term>nobody</term>
+            <listitem>
+              <para>
+                <simplelist type="inline">
+
+                  <member>Select</member>
+
+
+                  <member>Insert</member>
+
+
+                  <member>Update</member>
+
+
+                  <member>Delete</member>
+
+
+
+                  <member>References</member>
+
+
+                  <member>Trigger</member>
+
+                </simplelist>
+              </para>
+            </listitem>
+          </varlistentry>
+
+
+
+          <varlistentry>
+            <term>postgres</term>
+            <listitem>
+              <para>
+                <simplelist type="inline">
+
+                  <member>Select</member>
+
+
+                  <member>Insert</member>
+
+
+                  <member>Update</member>
+
+
+                  <member>Delete</member>
+
+
+
+                  <member>References</member>
+
+
+                  <member>Trigger</member>
+
+                </simplelist>
+              </para>
+            </listitem>
+          </varlistentry>
+
+        </variablelist>
+
+
+
       </para>
     </section>
 
@@ -5265,6 +5332,268 @@
       </para>
     </section>
 
+      <section id="public.table.maintenance"
+               xreflabel="public.maintenance">
+        <title id="public.table.maintenance-title">
+         Table:
+         
+         <structname>maintenance</structname>
+        </title>
+ 
+
+
+        <para>
+          <variablelist>
+            <title>
+              Structure of <structname>maintenance</structname>
+            </title>
+
+
+            <varlistentry>
+              <term><structfield>jour</structfield></term>
+              <listitem><para>
+                <type>date</type>
+
+
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+            <varlistentry>
+              <term><structfield>personne</structfield></term>
+              <listitem><para>
+                <type>character varying(16)</type>
+
+
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+            <varlistentry>
+              <term><structfield>niveau</structfield></term>
+              <listitem><para>
+                <type>integer</type>
+
+
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+            <varlistentry>
+              <term><structfield>texte</structfield></term>
+              <listitem><para>
+                <type>text</type>
+
+
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+            <varlistentry>
+              <term><structfield>fait</structfield></term>
+              <listitem><para>
+                <type>boolean</type>
+
+
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+        </variablelist>
+
+
+
+
+
+
+
+
+
+
+        <variablelist>
+          <title>Permissions on maintenance</title>
+
+          <varlistentry>
+            <term>nobody</term>
+            <listitem>
+              <para>
+                <simplelist type="inline">
+
+                  <member>Select</member>
+
+
+                  <member>Insert</member>
+
+
+                  <member>Update</member>
+
+
+                  <member>Delete</member>
+
+
+
+                  <member>References</member>
+
+
+                  <member>Trigger</member>
+
+                </simplelist>
+              </para>
+            </listitem>
+          </varlistentry>
+
+        </variablelist>
+
+
+
+      </para>
+    </section>
+
+      <section id="public.table.majoration"
+               xreflabel="public.majoration">
+        <title id="public.table.majoration-title">
+         Table:
+         
+         <structname>majoration</structname>
+        </title>
+ 
+
+
+        <para>
+          <variablelist>
+            <title>
+              Structure of <structname>majoration</structname>
+            </title>
+
+
+            <varlistentry>
+              <term><structfield>id</structfield></term>
+              <listitem><para>
+                <type>integer</type>
+
+
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+            <varlistentry>
+              <term><structfield>mode</structfield></term>
+              <listitem><para>
+                <type>character(32)</type>
+
+
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+            <varlistentry>
+              <term><structfield>pcent</structfield></term>
+              <listitem><para>
+                <type>integer</type>
+
+
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+        </variablelist>
+
+
+
+
+
+
+
+
+
+
+        <variablelist>
+          <title>Permissions on majoration</title>
+
+          <varlistentry>
+            <term>nobody</term>
+            <listitem>
+              <para>
+                <simplelist type="inline">
+
+                  <member>Select</member>
+
+
+                  <member>Insert</member>
+
+
+                  <member>Update</member>
+
+
+                  <member>Delete</member>
+
+
+
+                  <member>References</member>
+
+
+                  <member>Trigger</member>
+
+                </simplelist>
+              </para>
+            </listitem>
+          </varlistentry>
+
+        </variablelist>
+
+
+
+      </para>
+    </section>
+
       <section id="public.table.menu"
                xreflabel="public.menu">
         <title id="public.table.menu-title">
@@ -5860,6 +6189,105 @@
 
         <variablelist>
           <title>Permissions on module</title>
+
+          <varlistentry>
+            <term>nobody</term>
+            <listitem>
+              <para>
+                <simplelist type="inline">
+
+                  <member>Select</member>
+
+
+                  <member>Insert</member>
+
+
+                  <member>Update</member>
+
+
+                  <member>Delete</member>
+
+
+
+                  <member>References</member>
+
+
+                  <member>Trigger</member>
+
+                </simplelist>
+              </para>
+            </listitem>
+          </varlistentry>
+
+        </variablelist>
+
+
+
+      </para>
+    </section>
+
+      <section id="public.table.module-compo"
+               xreflabel="public.module_compo">
+        <title id="public.table.module-compo-title">
+         Table:
+         
+         <structname>module_compo</structname>
+        </title>
+ 
+
+
+        <para>
+          <variablelist>
+            <title>
+              Structure of <structname>module_compo</structname>
+            </title>
+
+
+            <varlistentry>
+              <term><structfield>module</structfield></term>
+              <listitem><para>
+                <type>integer</type>
+
+
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+            <varlistentry>
+              <term><structfield>mtype</structfield></term>
+              <listitem><para>
+                <type>integer</type>
+
+
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+        </variablelist>
+
+
+
+
+
+
+
+
+
+
+        <variablelist>
+          <title>Permissions on module_compo</title>
 
           <varlistentry>
             <term>nobody</term>
@@ -6689,6 +7117,14 @@
           <listitem>
             <para>
               <xref linkend="public.table.groupe"/>
+            </para>
+          </listitem>
+
+
+
+          <listitem>
+            <para>
+              <xref linkend="public.table.salarie"/>
             </para>
           </listitem>
 
@@ -8248,6 +8684,136 @@ WHERE (
           </varlistentry>
 
         </variablelist>
+
+
+
+      </para>
+    </section>
+
+      <section id="public.table.salarie"
+               xreflabel="public.salarie">
+        <title id="public.table.salarie-title">
+         Table:
+         
+         <structname>salarie</structname>
+        </title>
+ 
+
+
+        <para>
+          <variablelist>
+            <title>
+              Structure of <structname>salarie</structname>
+            </title>
+
+
+            <varlistentry>
+              <term><structfield>idper</structfield></term>
+              <listitem><para>
+                <type>integer</type>
+
+
+
+
+
+
+                <literal>PRIMARY KEY</literal>
+
+
+
+
+
+
+
+
+
+
+
+
+                <literal>REFERENCES</literal> <xref linkend="public.table.personne"/>
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+            <varlistentry>
+              <term><structfield>insee</structfield></term>
+              <listitem><para>
+                <type>character(15)</type>
+
+
+
+                <literal>NOT NULL</literal>
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+            <varlistentry>
+              <term><structfield>datenais</structfield></term>
+              <listitem><para>
+                <type>date</type>
+
+
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+            <varlistentry>
+              <term><structfield>lieunais</structfield></term>
+              <listitem><para>
+                <type>character varying(128)</type>
+
+
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+            <varlistentry>
+              <term><structfield>guso</structfield></term>
+              <listitem><para>
+                <type>character(10)</type>
+
+
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+        </variablelist>
+
+
+
+
+
+
+
 
 
 

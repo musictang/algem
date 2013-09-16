@@ -30,7 +30,7 @@ CONTENU DE L'ARCHIVE
 src : code source de l'application
 test : code source des classes de test
 doc : documentation java et base de données
-plugins : projets associés
+plugins (optionnel) : projets associés
 
 ARBORESCENCE DES PACKAGES SRC
 =============================
@@ -74,7 +74,6 @@ Quelques exemples de correspondances de noms de classe français - anglais
 net.algem.accounting.OrderLine : écheancier, ligne d'échéance
 net.algem.accounting.CostAccount : Analytique
 net.algem.bank.BankBranch : AgenceBancaire
-net.algem.bank.Bic : Rib
 net.algem.billing.Invoice : Facture
 net.algem.billing.Quote : Devis
 net.algem.config.CategoryOccup : Catégorie professionnelle (Occupational
@@ -204,8 +203,6 @@ dans certains tests faisant appel aux DAO).
 EN PROJET
 =========
 - Remaniement des tarifs pour les modules de cours.
-
-- Gestion des salariés (date et lieu de naissance, n° insee)
 
 - Gestion des stages (cours sur plusieurs jours d'affilée)
 
