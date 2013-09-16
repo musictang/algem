@@ -1,7 +1,7 @@
 /*
- * @(#)GemDesktopCtrl.java	2.7.e 05/02/13
+ * @(#)GemDesktopCtrl.java	2.8.m 09/09/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -63,7 +63,7 @@ import net.algem.util.ui.HtmlViewer;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.e
+ * @version 2.8.m
  * @since 1.0a 05/07/2002
  */
 public class GemDesktopCtrl
@@ -482,31 +482,31 @@ public class GemDesktopCtrl
     addModule(_module, false);
   }
   
-  public void addModule(GemModule _module, boolean _iconified) //public void addModule(GemModule _module, int _layer)
+  public void addModule(GemModule module, boolean iconified) //public void addModule(GemModule _module, int _layer)
   {
-    JMenuItem m = new JMenuItem(_module.getLabel());
-    menus.put(_module.getLabel(), m);
-    m.addActionListener(this);
+    JMenuItem mItem = new JMenuItem(module.getLabel());
+    menus.put(module.getLabel(), mItem);
+    mItem.addActionListener(this);
     
-    modules.put(_module.getLabel(), _module);
-    _module.setDesktop(this);	// createIHM
-    GemView f = _module.getView();
-    desktop.add(f);
+    modules.put(module.getLabel(), module);
+    module.setDesktop(this);	// createIHM
+    GemView gemView = module.getView();
+    desktop.add(gemView);
     
-    f.setVisible(true);
+    gemView.setVisible(true);
     try {
-      if (_iconified) {
-        f.setIcon(true);
+      if (iconified) {
+        gemView.setIcon(true);
       } else {
-        f.setLocation(new Point(100, 10 + (modules.size() * 10))); // position x : 110 au lieu de orig : 80
-        f.setSelected(true);
+        gemView.setLocation(new Point(100, 10 + (modules.size() * 10))); // position x : 110 au lieu de orig : 80
+        gemView.setSelected(true);
       }
     } catch (java.beans.PropertyVetoException e2) {
       System.err.println(e2.getMessage());
     }
     
     desktop.revalidate();
-    mWindows.add(m);
+    mWindows.add(mItem);
     
   }
   
@@ -524,17 +524,17 @@ public class GemDesktopCtrl
   }
   
   @Override
-  public void removeModule(GemModule _module) {
-    if (_module == null || _module == postit) {
+  public void removeModule(GemModule module) {
+    if (module == null || module == postit) {
       return;
     }
-    
-    desktop.remove(_module.getView());
+//module.removeGemEventListeners();// test
+    desktop.remove(module.getView());
     desktop.repaint();
-    JMenuItem m = (JMenuItem) menus.get(_module.getLabel());
-    mWindows.remove(m);
+    JMenuItem mItem = (JMenuItem) menus.get(module.getLabel());
+    mWindows.remove(mItem);
     
-    modules.remove(_module.getLabel());
+    modules.remove(module.getLabel());
   }
   
   @Override

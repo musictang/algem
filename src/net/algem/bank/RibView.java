@@ -1,5 +1,5 @@
 /*
- * @(#)RibView.java	2.8.k 27/08/13
+ * @(#)RibView.java	2.8.m 11/09/13
  *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -27,6 +27,7 @@ import java.awt.GridBagLayout;
 import java.text.ParseException;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
+import net.algem.config.ColorPrefs;
 import net.algem.contact.Address;
 import net.algem.contact.AddressView;
 import net.algem.contact.CodePostalCtrl;
@@ -41,7 +42,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.k
+ * @version 2.8.m
  * @since 1.0a 07/07/1999
  */
 public class RibView
@@ -69,7 +70,6 @@ public class RibView
   private BankBranch branchRef = null;
   private int branchId;
   private JLabel ribError;
-//  private boolean hasBicCode;
 
   public RibView(GemDesktop _desktop, int _id) {
     super(_desktop);
@@ -170,14 +170,14 @@ public class RibView
     if (iban == null || iban.isEmpty()) {
       return;
     }
-//    if (bbanIsEmpty() ||  ) {
-      Rib r = new Rib(id);
-      r.setRib(iban);
-      bankCodeField.setText(r.getEstablishment());
-      branchCodeField.setText(r.getBranch());
-      accountField.setText(r.getAccount());
-      keyField.setText(r.getRibKey());
-//    }
+
+    Rib r = new Rib(id);
+    r.setRib(iban);
+    bankCodeField.setText(r.getEstablishment());
+    branchCodeField.setText(r.getBranch());
+    accountField.setText(r.getAccount());
+    keyField.setText(r.getRibKey());
+
   }
 
   private boolean bbanIsEmpty() {
@@ -259,14 +259,14 @@ public class RibView
     } else {
       ibanField.requestFocusInWindow();
 //      ibanField.setCaretPosition(ibanField.getText().length());
-      ibanField.setBackground(ERROR_BG_COLOR);
+      ibanField.setBackground(ColorPrefs.ERROR_BG_COLOR);
       ribError.setText(MessageUtil.getMessage("rib.error"));
     }
   }
   
   @Override
   public void markBic(boolean ok) {
-    bicCodeField.setBackground(ok ? Color.WHITE : ERROR_BG_COLOR);
+    bicCodeField.setBackground(ok ? Color.WHITE : ColorPrefs.ERROR_BG_COLOR);
   }
 
   @Override
@@ -296,9 +296,9 @@ public class RibView
   public void setBank(Bank bank) {
     bankRef = bank;
     if (bankRef != null) {
-      if (!bankName.getText().equals(bankRef.getName())) {
-        clearBranch();
-      }
+//      if (!bankName.getText().equals(bankRef.getName())) {
+//        clearBranch();
+//      }
       bankName.setText(bankRef.getName());
       bankName.setEditable(false);
       bankName.setBackground(Color.lightGray);
@@ -377,12 +377,7 @@ public class RibView
       domiciliation.setEditable(false);
       domiciliation.setBackground(Color.LIGHT_GRAY);
       String bicCode = branchRef.getBicCode();
-//      hasBicCode = bicCode != null && !bicCode.isEmpty();
-      
-//      if (hasBicCode && bicCode.equals(bicCodeField.getText())) {
-//        bicCodeField.setEditable(false);
-//        bicCodeField.setBackground(Color.LIGHT_GRAY);
-//      }
+
       bicCodeField.setText(bicCode);
       addressView.set(branchRef.getAddress());
       if (branchRef.getBank().isMulti()) {
@@ -399,10 +394,11 @@ public class RibView
       bicCodeField.setText(null);
       bicCodeField.setEditable(true);
       bicCodeField.setBackground(Color.WHITE);
-      if (bankRef == null) {
+//      if (bankRef == null) {
+        bankName.setText(null);
         bankName.setBackground(Color.WHITE);
         bankName.setEditable(true);
-      }
+//      }
       addressView.clear();
       addressView.setEditable(true);
       addressView.setBgColor(Color.WHITE);

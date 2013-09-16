@@ -1,7 +1,7 @@
 /*
- * @(#)BranchView.java	2.8.i 04/07/13
+ * @(#)BranchView.java	2.8.m 04/09/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -22,6 +22,7 @@ package net.algem.bank;
 
 import java.awt.Color;
 import java.awt.GridBagLayout;
+import net.algem.config.ColorPrefs;
 import net.algem.contact.Address;
 import net.algem.contact.AddressView;
 import net.algem.contact.CodePostalCtrl;
@@ -36,7 +37,7 @@ import net.algem.util.ui.GridBagHelper;
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.i
+ * @version 2.8.m
  */
 public class BranchView
         extends GemBorderPanel
@@ -219,6 +220,6 @@ public class BranchView
 
   @Override
   public void markBic(boolean ok) {
-    bicCode.setBackground(ok ? Color.WHITE : ERROR_BG_COLOR);
+    bicCode.setBackground(ok ? Color.WHITE : ColorPrefs.ERROR_BG_COLOR);
   }
 }

@@ -1,7 +1,7 @@
 /*
- * @(#)EquipTableModel.java	2.6.a 24/09/12
+ * @(#)EquipTableModel.java	2.8.m 06/09/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,7 +27,7 @@ import net.algem.util.ui.JTableModel;
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.m
  *
  * @since 1.0a 07/07/1999
  */
@@ -78,9 +78,9 @@ public class EquipTableModel
   }
 
   @Override
-  public void setValueAt(Object e, int ligne, int column) {
-    Equipment v = (Equipment) tuples.elementAt(ligne);
-    switch (column) {
+  public void setValueAt(Object e, int line, int col) {
+    Equipment v = (Equipment) tuples.elementAt(line);
+    switch (col) {
       case 0:
         v.setQuantity((Integer) e);
         break;
@@ -88,6 +88,6 @@ public class EquipTableModel
         v.setLabel((String) e);
         break;
     }
-    modItem(ligne, v);
+    modItem(line, v);
   }
 }

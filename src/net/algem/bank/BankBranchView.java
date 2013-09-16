@@ -1,5 +1,5 @@
 /*
- * @(#)BankBranchView.java	2.8.i 27/06/13
+ * @(#)BankBranchView.java	2.8.m 04/09/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -18,46 +18,41 @@
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  * 
  */
- 
-
 package net.algem.bank;
 
-import java.awt.Color;
-import	net.algem.contact.CodePostalCtrl;
+import net.algem.contact.CodePostalCtrl;
 
 /**
  * comment
+ *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.i
+ * @version 2.8.m
  */
-
 public interface BankBranchView
 {
-  public static final Color ERROR_BG_COLOR = Color.decode("#ff4a4a");
-  
+
   public void setPostalCodeCtrl(CodePostalCtrl ctrl);
-    
-	public void setBankCodeCtrl(BankCodeCtrl ctrl);
 
-	public String getBankName();
+  public void setBankCodeCtrl(BankCodeCtrl ctrl);
 
-    public String getBankCode();
-    
-	public void setBankName(String s);
-    
-	public Bank getBank();
-    
-	public void setBank(Bank b);
+  public String getBankName();
 
-	public BankBranch getBankBranch();
-    
-	public void setBankBranch(BankBranch g);
-    
-    public String getBranchCode();
-    
-    public String getBicCode();
-    
-    public void markBic(boolean ok);
+  public String getBankCode();
 
+  public void setBankName(String s);
+
+  public Bank getBank();
+
+  public void setBank(Bank b);
+
+  public BankBranch getBankBranch();
+
+  public void setBankBranch(BankBranch g);
+
+  public String getBranchCode();
+
+  public String getBicCode();
+
+  public void markBic(boolean ok);
 }

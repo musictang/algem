@@ -1,7 +1,7 @@
 /*
- * @(#)RoomIO.java	2.7.g 13/02/13
+ * @(#)RoomIO.java	2.8.m 09/09/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -41,7 +41,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.g
+ * @version 2.8.m
  * @since 1.0a 07/07/1999
  */
 public class RoomIO
@@ -82,7 +82,7 @@ public class RoomIO
     s.setId(id);
   }
 
-  public void insert(Equipment e) throws SQLException {
+  private void insert(Equipment e) throws SQLException {
     String query = "INSERT INTO " + EQUIP_TABLE + " VALUES("
             + "" + e.getRoom()
             + ",'" + escape(e.getLabel()) // 64 caractères max depuis version 2.0pc
@@ -105,9 +105,10 @@ public class RoomIO
   public void updateEquipment(Room r) throws SQLException {
 
     deleteEquipment(r.getId());
-    Vector<Equipment> ve = r.getEquipment();
+    List<Equipment> ve = r.getEquipment();
     for (int i = 0; i < ve.size(); i++) {
       Equipment e = ve.get(i);
+      e.setRoom(r.getId());
       e.setIdx((short) i);
       insert(e);
     }
@@ -143,7 +144,7 @@ public class RoomIO
    * Equipment infos are also deleted but the contact is not.
    *
    * @param r
-   * @throws RoomDeleteException if error sql
+   * @throws RoomException if error sql
    */
   public void delete(Room r) throws RoomException {
     try {
@@ -272,12 +273,7 @@ public class RoomIO
   }
 
   private Contact loadContact(int idper) throws SQLException {
-//    Vector<Person> vp = PersonIO.find("WHERE id = " + idper + " AND ptype = " + Person.ROOM, dc);
-//    if (vp != null && vp.size() > 0) {
-//      Contact c = new Contact(vp.elementAt(0));
-//      //ContactIO.complete(c, dc); // lazy loading
-//      return c;
-//    }
+    
     Person p = (Person) DataCache.findId(idper, Model.Person);
     if (p != null) {
       return new Contact(p);
@@ -287,15 +283,10 @@ public class RoomIO
   }
 
   private RoomRate loadRate(int rate) throws SQLException {
-//    Vector<RoomRate> vts = RoomRateIO.find("WHERE id = " + rate, dc);
-//    if (vts != null && vts.size() > 0) {
-//      return vts.elementAt(0);
-//    }
     return (RoomRate) DataCache.findId(rate, Model.RoomRate);
   }
 
   private Person loadPayer(int payerId) throws SQLException {
-//    return (Person) DataCache.findId(payerId, Model.Person);
     return (Person) DataCache.findId(payerId, Model.Person);
   }
 

@@ -1,7 +1,7 @@
 /*
- * @(#)RoomEquipEditor.java	2.6.a 24/09/12
+ * @(#)RoomEquipEditor.java	2.8.m 06/09/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -29,12 +29,11 @@ import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.FileTab;
 
 /**
- * comment
- *
+ * Equipment editor for a room.
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.m
  * @since 1.0a 07/07/1999
  */
 public class RoomEquipEditor
@@ -47,7 +46,7 @@ public class RoomEquipEditor
   public RoomEquipEditor(GemDesktop _desktop) {
     super(_desktop);
 
-    table = new EquipTableView("Equipements de la salle");
+    table = new EquipTableView();
     table.addActionListener(this);
 
     this.setLayout(new BorderLayout());
@@ -57,8 +56,8 @@ public class RoomEquipEditor
 
   public Vector<Equipment> getData() {
     return table.getData();
-  }
-
+    }
+    
   public void clear() {
     table.clear();
   }

@@ -1,7 +1,7 @@
 /*
- * @(#)PersonFileIO.java  2.7.k 04/03/13
+ * @(#)PersonFileIO.java  2.8.m 09/09/13
  *
- * Copyright (c) 2009 Musiques Tangentes All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -24,6 +24,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Vector;
+import java.util.logging.Level;
 import net.algem.bank.Rib;
 import net.algem.bank.RibIO;
 import net.algem.contact.member.Member;
@@ -35,16 +36,18 @@ import net.algem.group.GroupIO;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
+import net.algem.util.MessageUtil;
 import net.algem.util.model.Cacheable;
 import net.algem.util.model.Model;
 import net.algem.util.model.TableIO;
+import net.algem.util.ui.MessagePopup;
 
 /**
  * IO methods for class {@link net.algem.contact.PersonFile}.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.k
+ * @version 2.8.m
  */
 public class PersonFileIO
         extends TableIO
@@ -59,11 +62,13 @@ public class PersonFileIO
   static final String MEMBER_UPDATE_EVENT = "member.update.event";
 
   private DataConnection dc;
+  private DataCache dataCache;
   private TeacherIO teacherIO;
   private MemberIO memberIO;
 
-  public PersonFileIO(DataConnection dc) {
-    this.dc = dc;
+  public PersonFileIO(DataCache dataCache) {
+    this.dataCache = dataCache;
+    this.dc = dataCache.getDataConnection();
     teacherIO = (TeacherIO) DataCache.getDao(Model.Teacher);
     memberIO = (MemberIO) DataCache.getDao(Model.Member);
   }
@@ -92,42 +97,64 @@ public class PersonFileIO
           }
         }
       }
-      if (dossier.getTeacher() != null) {
-        if (dossier.getOldTeacher() == null) {
-          dossier.getTeacher().setId(dossier.getId());
-          teacherIO.insert(dossier.getTeacher());
-          logEvents.addElement(TEACHER_CREATE_EVENT);
-        } else {
-          if (!dossier.getTeacher().equals(dossier.getOldTeacher())) {
-            teacherIO.update(dossier.getTeacher());
-            logEvents.addElement(TEACHER_UPDATE_EVENT);
-          }
-        }
-      }
-
-      if (dossier.getRib() != null) {
-        Rib fb = dossier.getRib();
-        if (dossier.getOldRib() == null) {
-          //dossier.getRib().setId(dossier.getId());
-          if (0 != fb.getBranchId()) {
-            RibIO.insert(dossier.getRib(), dc);
-            logEvents.addElement("bic.create.event " + dossier.getId());
-          }
-        } else {
-          //Suppression du rib si la chaîne code compte est vide
-          //if (fb.getAccount().isEmpty()) {
-          //Suppression du rib si aucun des champs de la vue n'est rempli
-          if (fb.isEmpty()) {
-            RibIO.delete(dossier.getOldRib(), dc);
-            logEvents.addElement("bic.delete.event");
-          } else if (!fb.equals(dossier.getOldRib())) {
-            RibIO.update(dossier.getRib(), dc);
-            logEvents.addElement("bic.update.event");
-          }
-        }
-      }
+      updateTeacher(dossier, logEvents);
+      updateRib(dossier, logEvents);
     }
     return logEvents;
+  }
+  
+  private void updateTeacher(PersonFile dossier, Vector<String> logEvents) throws SQLException {
+    if (dossier.getTeacher() == null) {
+      return;
+    }
+    Teacher t = dossier.getTeacher();
+    if (dossier.getOldTeacher() == null) {
+      if (dataCache.authorize("Teacher.creation.auth")) {
+        if (t.isEmpty() && !MessagePopup.confirm(null, MessageUtil.getMessage("teacher.create.confirmation"))) {
+          GemLogger.log(Level.INFO, "Teacher creation cancelled");
+        } else {
+          t.setId(dossier.getId());
+          teacherIO.insert(t);
+          dossier.loadTeacher(t);
+          logEvents.addElement(TEACHER_CREATE_EVENT);
+        }
+      } else {
+        MessagePopup.information(null, MessageUtil.getMessage("teacher.create.authorization.warning"));
+      }
+    } else {
+      if (!t.equals(dossier.getOldTeacher())) {
+        teacherIO.update(t);
+        dossier.loadTeacher(t);
+        logEvents.addElement(TEACHER_UPDATE_EVENT);
+      }
+    }
+      
+  }
+  
+  private void updateRib(PersonFile dossier, Vector<String> logEvents) throws SQLException {
+    if (dossier.getRib() == null) {
+      return;
+    }
+    Rib fb = dossier.getRib();
+    if (dossier.getOldRib() == null) {
+      //dossier.getRib().setId(dossier.getId());
+      if (0 != fb.getBranchId()) {
+        RibIO.insert(dossier.getRib(), dc);
+        logEvents.addElement("bic.create.event " + dossier.getId());
+      }
+    } else {
+      //Suppression du rib si la chaîne code compte est vide
+      //if (fb.getAccount().isEmpty()) {
+      //Suppression du rib si aucun des champs de la vue n'est rempli
+      if (fb.isEmpty()) {
+        RibIO.delete(dossier.getOldRib(), dc);
+        logEvents.addElement("bic.delete.event");
+      } else if (!fb.equals(dossier.getOldRib())) {
+        RibIO.update(dossier.getRib(), dc);
+        logEvents.addElement("bic.update.event");
+      }
+    }
+      
   }
 
   public void delete(PersonFile dossier) throws Exception {
@@ -287,9 +314,8 @@ public class PersonFileIO
 
   public void complete(PersonFile pf) throws SQLException {
     pf.setMember((Member) DataCache.findId(pf.getId(), Model.Member));
-    pf.addTeacher((Teacher) DataCache.findId(pf.getId(), Model.Teacher));
-    /*pf.setMember(memberIO.findId(pf.getId()));
-    pf.addTeacher(teacherIO.findId(pf.getId()));*/
+//    pf.addTeacher((Teacher) DataCache.findId(pf.getId(), Model.Teacher));
+    pf.loadTeacher((Teacher) DataCache.findId(pf.getId(), Model.Teacher));
     pf.addRib(RibIO.findId(pf.getId(), dc));
     pf.setSubscriptionCard(new PersonSubscriptionCardIO(dc).find(pf.getId(), null));
     pf.setGroups(((GroupIO) DataCache.getDao(Model.Group)).find(pf.getId()));

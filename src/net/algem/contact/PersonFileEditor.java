@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileEditor 2.8.i 05/07/13
+ * @(#)PersonFileEditor 2.8.m 11/09/13
  *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -40,6 +40,7 @@ import net.algem.config.ConfigUtil;
 import net.algem.contact.member.*;
 import net.algem.contact.teacher.TeacherEditor;
 import net.algem.contact.teacher.TeacherEvent;
+import net.algem.contact.teacher.TeacherIO;
 import net.algem.edition.*;
 import net.algem.enrolment.MemberEnrolmentDlg;
 import net.algem.group.PersonFileGroupView;
@@ -66,7 +67,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.i
+ * @version 2.8.m
  */
 public class PersonFileEditor
         extends FileEditor
@@ -81,7 +82,7 @@ public class PersonFileEditor
   private JMenuItem miDoc;
   private JMenuItem miDelete;
   private JMenuItem miLogin;
-  private JMenuItem miMember, miTeacher, miBank;
+  private JMenuItem miMember, miTeacher, miBank, miEmployee;
   private JMenuItem miPassRehearsal, miRehearsal;
   private JMenuItem miHistoRehearsal;
   private JMenuItem miCard;
@@ -181,7 +182,7 @@ public class PersonFileEditor
    */
   @Override
   public void contentsChanged(PersonFileEvent _evt) {
-    System.out.println("EditeurDossierPersonne.contentChanged:" + _evt);
+    System.out.println("PersonFileEditor.contentChanged:" + _evt);
     if (PersonFileEvent.MEMBER_ADDED == _evt.getType()) {
       PersonFile d = ((PersonFile) _evt.getSource());
       addMenuDossier("Adhérent", d);
@@ -242,9 +243,31 @@ public class PersonFileEditor
       personFileView.addSubscriptionCardTab(dossier);
       miCard.setEnabled(false);
     } else if ("Teacher".equals(arg)) {
-      personFileView.addTeacherTab();
+      personFileView.addTeacherTab(this);
       miTeacher.setEnabled(false);
-    } else if ("Person.group.tab".equals(arg) || "Groups".equals(arg)) {
+    } else if ("TeacherDelete".equals(arg)) {
+      if (!dataCache.authorize("Teacher.suppression.auth")) {
+        MessagePopup.warning(view, MessageUtil.getMessage("teacher.delete.authorization.warning"));
+        return;
+      }
+      TeacherIO dao = (TeacherIO) DataCache.getDao(Model.Teacher);
+      try {
+        int c = dao.hasSchedules(dossier.getId());
+        if (c > 0) {
+          MessagePopup.warning(view, MessageUtil.getMessage("teacher.delete.warning", c));
+        } else {
+          dao.delete(dossier.getId());
+          dataCache.remove(dossier.getTeacher());
+          desktop.postEvent(new TeacherEvent(this, GemEvent.SUPPRESSION, dossier.getTeacher()));
+          dossier.removeTeacher();
+          personFileView.removeTeacher();
+          miTeacher.setEnabled(true);
+        }
+      } catch (SQLException ex) {
+        GemLogger.logException(ex);
+      }
+    }
+      else if ("Person.group.tab".equals(arg) || "Groups".equals(arg)) {
       if (personFileView.addGroupsTab(true)) {
         miGroups.setEnabled(false);
       }
@@ -262,7 +285,15 @@ public class PersonFileEditor
       nd.loadNote(personFileView.getNote(), dossier.getContact());
       nd.show();
       personFileView.setNote(nd.getNote());
-    } /*
+    } 
+    else if ("Employee".equals(arg)) {
+      personFileView.addEmployeeTab();
+      miEmployee.setEnabled(false);
+    } else if ("EmployeeDelete".equals(arg)) {
+      personFileView.deleteEmployee();
+      miEmployee.setEnabled(true);
+    }
+    /*
      * else if (evt.getActionCommand().equals("Payeur")) { view.setCursor(new
      * Cursor(Cursor.WAIT_CURSOR)); PersonFile payeur =
      * PersonFileIO.findPayer(dataCache, dossier.getMember().getPayer());
@@ -285,7 +316,8 @@ public class PersonFileEditor
         printOrderLines = false;
       }
       DirectDebitRequest prl = new DirectDebitRequest(personFileView, printOrderLines);
-      prl.edit(dossier, BundleUtil.getLabel("Menu.debiting.label"), dataCache);
+      dossier.setRib(personFileView.getRibFile());// get rib from view
+      prl.edit(dossier, personFileView.getBranchBank(), BundleUtil.getLabel("Menu.debiting.label"), dataCache);
 
     } else if ("Login.creation".equals(arg)) {
       dlgLogin();
@@ -293,7 +325,7 @@ public class PersonFileEditor
       Person p = new Person(dossier.getContact().getName());
       PersonFile d = new PersonFile(new Contact(p));
       PersonFileEditor ed = new PersonFileEditor(d, dossier);
-      d.addDossierPersonneListener(this);
+      d.addPersonFileListener(this);
       desktop.addModule(ed);
     } else if ("Teacher.break".equals(arg)) {
       TeacherBreakDlg dlg = new TeacherBreakDlg(desktop, dossier.getId());
@@ -422,11 +454,7 @@ public class PersonFileEditor
       dossier.setMember(personFileView.getMemberFile());
     }
 
-    if (dossier.getTeacher() == null) {
-      dossier.addTeacher(personFileView.getTeacherFile());
-    } else {
-      dossier.setTeacher(personFileView.getTeacherFile());
-    }
+    dossier.setTeacher(personFileView.getTeacher());
 
     if (dossier.getRib() == null) {
       dossier.addRib(personFileView.getRibFile());
@@ -458,8 +486,7 @@ public class PersonFileEditor
     DataConnection dc = dataCache.getDataConnection();
 
     try {
-      dc.setAutoCommit(false);
-      
+      dc.setAutoCommit(false);     
       if (personFileView.isNewBank()) {
         Bank b = personFileView.getBank();
         if (b.isValid()) {
@@ -476,6 +503,8 @@ public class PersonFileEditor
           personFileView.setBranchBank(a); // maj id guichet
         }
       }
+      
+      personFileView.updateEmployee();
 
       Vector<String> logs = ((PersonFileIO) DataCache.getDao(Model.PersonFile)).update(dossier);
       if (logs.contains(PersonFileIO.CONTACT_CREATE_EVENT)) {
@@ -531,11 +560,9 @@ public class PersonFileEditor
     if (msg != null) {      
       new ErrorDlg(personFileView, msg);
     } else {
-      if (dossier.hasChanged()) {
+      if (hasChanged()) {
         msg = checkContact(MessageUtil.getMessage("update.warning"));
-        if (MessagePopup.confirm(personFileView,
-                msg,
-                MessageUtil.getMessage("closing.record.info", new Object[]{dossier.getId()}))) {
+        if (MessagePopup.confirm(personFileView, msg, MessageUtil.getMessage("closing.record.info", dossier.getId()))) {
           save();
         }
       } else {
@@ -544,6 +571,10 @@ public class PersonFileEditor
     }
     closeModule();
 
+  }
+  
+  private boolean hasChanged() {
+    return dossier.hasChanged() || personFileView.hasEmployeeChanged();
   }
 
   void dlgLogin() {
@@ -641,9 +672,6 @@ public class PersonFileEditor
   }
 
   private void addPayerFile(String _label, final PersonFile _dossier) {
-//    GemButton b = personFileView.getBar().addIcon(BundleUtil.getLabel("Member.payer.icon"),
-//            _label,
-//            BundleUtil.getLabel("Member.payer.tip"));
     GemButton b = personFileView.addIcon("Member.payer");
     b.addActionListener(new ActionListener()
     {
@@ -698,6 +726,7 @@ public class PersonFileEditor
     mOptions.add(miMember = getMenuItem("Member.reading"));
     mOptions.add(miBank = getMenuItem("Person.bank.editing"));
     mOptions.add(miTeacher = getMenuItem("Teacher"));
+    mOptions.add(miEmployee = getMenuItem("Employee"));
 
     mOptions.add(miGroups = getMenuItem("Groups"));
     //Désactivation conditionnelle des menus Adherent, Prof et Bank
@@ -739,14 +768,14 @@ public class PersonFileEditor
   }
 
   /**
-   * Verifies the number of memberships.
+   * Checks and updates if necessary the number of memberships.
    * 
    */
   private void checkMembershipNumber() {
     int a = 0;
     int nba = 0;
     if (dossier.getMember() != null) {
-      a = dossier.getMember().getNMembership();
+      a = dossier.getMember().getMembershipCount();
       try {
         nba = AccountUtil.getMemberShips(dossier.getMember().getId(), dataCache.getDataConnection());
       } catch (SQLException ex) {
@@ -830,15 +859,15 @@ public class PersonFileEditor
   /**
    * Homonymous verification.
    */
-  private boolean contactExists(String nom, String prenom) {
-    String where = " WHERE lower(nom) = '" + nom.toLowerCase() + "' AND lower(prenom) = '" + prenom.toLowerCase() + "'";
-    Contact ch = ContactIO.findId(where, dataCache.getDataConnection());
-    return ch != null;
+  private boolean contactExists(String name, String firstName) {
+    String where = " WHERE lower(nom) = '" + name.toLowerCase() + "' AND lower(prenom) = '" + firstName.toLowerCase() + "'";
+    Contact c = ContactIO.findId(where, dataCache.getDataConnection());
+    return c != null;
   }
 
   /**
    * Checks if a contact exists.
-   * If new, we verify he does not already exists.
+   * If he is new, we should check that it does not already exist.
    *
    * @return a message
    */
@@ -850,6 +879,35 @@ public class PersonFileEditor
     return message;
   }
 
+  /**
+   * Opens an external document with the contact's main data.
+   */
+  private void showPersonFile() {
+    String path = null;
+    ExportMemberRTF rtfExport = null;
+    try {
+      rtfExport = new ExportMemberRTF(desktop, System.getProperty("java.io.tmpdir"), dossier);
+      rtfExport.edit();
+
+      ExportPayeurRTF fic2 = new ExportPayeurRTF(System.getProperty("java.io.tmpdir"), dossier, dataCache.getDataConnection());
+      path = fic2.getPath();
+      fic2.edit();
+      // jm	java Desktop rtf handler
+      DesktopOpenHandler handler = new DesktopOpenHandler();
+      handler.open(rtfExport.getPath(), path);
+    } catch (DesktopHandlerException de) {
+      System.err.println(de.getMessage());
+      try {
+        Runtime.getRuntime().exec("oowriter " + rtfExport.getPath() + " " + path);
+      } catch (IOException ioe) {
+        System.err.println(ioe.getMessage());
+      }
+    } catch (FileNotFoundException fe) {
+      System.err.println(fe.getMessage());
+      JOptionPane.showMessageDialog(view, path, fe.getMessage(), JOptionPane.ERROR_MESSAGE);
+    }
+  }
+  
   private void savePersonFile() {
 
     Object[] backup = dossier.backUpOldValues();
@@ -859,7 +917,7 @@ public class PersonFileEditor
       new ErrorDlg(mBar, msg);
       return;
     }
-    if (dossier.hasChanged()) {
+    if (hasChanged()) {
       msg = checkContact(MessageUtil.getMessage("update.warning"));
       if (MessagePopup.confirm(personFileView, msg, "Enregistrement du dossier:" + dossier.getId())) {
         save();
@@ -929,19 +987,18 @@ public class PersonFileEditor
     }
 
     if (RibView.class.getSimpleName().equals(classname)) {
-      miBank.setEnabled(true);
       personFileView.removeBankIcons();
+      miBank.setEnabled(true);
     } else if (MonthScheduleTab.class.getSimpleName().equals(classname)) {
       miMonthPlanning.setEnabled(true);
     } else if (TeacherEditor.class.getSimpleName().equals(classname)) {
-      personFileView.removeTab(personFileView.getTeacherFollowUp());
+      personFileView.closeTeacher();
       miTeacher.setEnabled(true);
-      personFileView.removeTeacherIcons();
     } else if (MemberEditor.class.getSimpleName().equals(classname)) {
       personFileView.removeTab(personFileView.getEnrolmentView());
       personFileView.removeTab(personFileView.getMemberFollowUp());
-      miMember.setEnabled(true);
       personFileView.removeMemberIcons();
+      miMember.setEnabled(true);
     } else if (OrderLineEditor.class.getSimpleName().equals(classname)) {
       personFileView.activate(true, "Member.schedule.payment");
       desktop.removeGemEventListener(orderLineEditor);
@@ -964,34 +1021,10 @@ public class PersonFileEditor
       miHistoQuote.setEnabled(true);
     } else if (MemberListTab.class.getSimpleName().equals(classname)) {
       personFileView.activate(true, "Payer.members");
+    } else if (EmployeeEditor.class.getSimpleName().equals(classname)) {
+      miEmployee.setEnabled(true);
     }
 
-  }
-
-  private void showPersonFile() {
-    String path = null;
-    ExportMemberRTF rtfExport = null;
-    try {
-      rtfExport = new ExportMemberRTF(desktop, System.getProperty("java.io.tmpdir"), dossier);
-      rtfExport.edit();
-
-      ExportPayeurRTF fic2 = new ExportPayeurRTF(System.getProperty("java.io.tmpdir"), dossier, dataCache.getDataConnection());
-      path = fic2.getPath();
-      fic2.edit();
-      // jm	java Desktop rtf handler
-      DesktopOpenHandler handler = new DesktopOpenHandler();
-      handler.open(rtfExport.getPath(), path);
-    } catch (DesktopHandlerException de) {
-      System.err.println(de.getMessage());
-      try {
-        Runtime.getRuntime().exec("oowriter " + rtfExport.getPath() + " " + path);
-      } catch (IOException ioe) {
-        System.err.println(ioe.getMessage());
-      }
-    } catch (FileNotFoundException fe) {
-      System.err.println(fe.getMessage());
-      JOptionPane.showMessageDialog(view, path, fe.getMessage(), JOptionPane.ERROR_MESSAGE);
-    }
   }
 
   private void closeModule() throws GemCloseVetoException {

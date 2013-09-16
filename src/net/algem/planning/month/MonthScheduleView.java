@@ -1,7 +1,7 @@
 /*
- * @(#)MonthScheduleView.java	2.7.a 03/12/12
+ * @(#)MonthScheduleView.java	2.8.m 11/09/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -58,7 +58,7 @@ import sun.print.DialogTypeSelection;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.m
  */
 public class MonthScheduleView
         extends GemView
@@ -206,6 +206,8 @@ public class MonthScheduleView
       for (int i = 0; i < roomView.length; i++) {
         roomView[i].detailChange(e);
       }
+    } else if (teacherView != null && teacherView instanceof MonthPlanTeacherView) {        
+        ((MonthPlanTeacherView) teacherView).reload(dataCache.getList(Model.Teacher));
     }
   }
 
@@ -242,7 +244,6 @@ public class MonthScheduleView
     setVisible(false);
     dispose();
   }
-
 
 }
 

@@ -1,5 +1,5 @@
 /*
- * @(#)RoomView.java	2.8.k 22/07/13
+ * @(#)RoomView.java	2.8.m 11/09/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -33,7 +33,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.k
+ * @version 2.8.m
  * @since 1.0a 02/09/2001
  */
 public class RoomView
@@ -130,34 +130,34 @@ public class RoomView
   }
 
   public Room get() {
-    Room s = new Room();
+    Room r = new Room();
 
     try {
-      s.setId(Integer.parseInt(no.getText()));
+      r.setId(Integer.parseInt(no.getText()));
     } catch (NumberFormatException e) {
-      s.setId(0);
+      r.setId(0);
     }
 
-    s.setName(name.getText());
+    r.setName(name.getText());
 
-    s.setFunction(function.getText());
+    r.setFunction(function.getText());
     try {
-      s.setSurface(Integer.parseInt(surf.getText()));
+      r.setSurface(Integer.parseInt(surf.getText()));
     } catch (NumberFormatException e) {
-      s.setSurface(0);
+      r.setSurface(0);
     }
     try {
-      s.setNPers(Integer.parseInt(npers.getText()));
+      r.setNPers(Integer.parseInt(npers.getText()));
     } catch (NumberFormatException e) {
-      s.setNPers(0);
+      r.setNPers(0);
     }
-    s.setEstab(estab.getKey());
-    s.setActive(active.isSelected());
-    s.setAvailable(available.isSelected());
-    s.setRate((RoomRate) rate.getSelectedItem());
-    s.setPayer(payerCtrl.getPayer());
+    r.setEstab(estab.getKey());
+    r.setActive(active.isSelected());
+    r.setAvailable(available.isSelected());
+    r.setRate((RoomRate) rate.getSelectedItem());
+    r.setPayer(payerCtrl.getPayer());
 
-    return s;
+    return r;
   }
 
   public void clear() {

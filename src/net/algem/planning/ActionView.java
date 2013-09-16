@@ -1,5 +1,5 @@
 /*
- * @(#)ActionView.java	2.8.k 23/07/13
+ * @(#)ActionView.java	2.8.m 11/09/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -29,6 +29,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JComboBox;
 import net.algem.config.ParamChoice;
 import net.algem.contact.teacher.TeacherChoice;
+import net.algem.contact.teacher.TeacherEvent;
 import net.algem.course.Course;
 import net.algem.course.CourseChoice;
 import net.algem.course.CourseChoiceActiveModel;
@@ -37,22 +38,22 @@ import net.algem.room.Room;
 import net.algem.room.RoomChoice;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
+import net.algem.util.event.GemEvent;
+import net.algem.util.event.GemEventListener;
 import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
-import net.algem.util.ui.GemLabel;
-import net.algem.util.ui.GemNumericField;
-import net.algem.util.ui.GemPanel;
-import net.algem.util.ui.GridBagHelper;
+import net.algem.util.ui.*;
 
 /**
  * View for course planification.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.k
+ * @version 2.8.m
  */
 public class ActionView
         extends GemPanel
+        implements GemEventListener
 {
 
   protected DataCache dataCache;
@@ -65,7 +66,7 @@ public class ActionView
   protected DayChoice day;
   protected GemNumericField sessions;
   protected GemNumericField places;
-  protected ParamChoice vChoix;
+  protected ParamChoice vacancy;
   protected JComboBox periodicity;
   protected HourField courseLength; 
   protected GemNumericField intervall;
@@ -74,11 +75,12 @@ public class ActionView
 
     this.desktop = desktop;
     dataCache = desktop.getDataCache();
+    
     course = new CourseChoice(new CourseChoiceActiveModel(dataCache.getList(Model.Course), true));//modification 1.1d ajout d'un filtre
     course.addItemListener(new CourseCoItemListener());
     datePanel = new DateRangePanel(dataCache.getStartOfYear(), dataCache.getEndOfYear());
     hourPanel = new HourRangePanel();
-    teacher = new TeacherChoice(dataCache.getList(Model.Teacher));
+    teacher = new TeacherChoice(dataCache.getList(Model.Teacher), true);
     teacher.setSelectedIndex(0);
     room = new RoomChoice(dataCache.getList(Model.Room));//salles actives par défaut
     room.addItemListener(new RoomItemListener());
@@ -87,7 +89,7 @@ public class ActionView
     sessions = new GemNumericField(2);
     places = new GemNumericField(2);
     places.setText(String.valueOf(((Room)room.getSelectedItem()).getNPers()));
-    vChoix = new ParamChoice(dataCache.getVacancyCat());
+    vacancy = new ParamChoice(dataCache.getVacancyCat());
     courseLength = new HourField();
     intervall = new GemNumericField(2);
     load(((Course) course.getSelectedItem()));
@@ -107,6 +109,8 @@ public class ActionView
 
   public void init() {
 
+    desktop.addGemEventListener(this);
+    
     this.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
     gb.insets = GridBagHelper.SMALL_INSETS;
@@ -152,7 +156,7 @@ public class ActionView
     s.add(places);
     
     gb.add(s, 1, 7, 1, 1, GridBagHelper.WEST);
-    gb.add(vChoix, 1, 8, 2, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
+    gb.add(vacancy, 1, 8, 2, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
   }
 
   public Action get() {
@@ -167,7 +171,7 @@ public class ActionView
     a.setTeacher(teacher.getKey());
     a.setRoom(room.getKey());
     a.setDay(day.getDay());
-    a.setVacancy(vChoix.getKey());
+    a.setVacancy(vacancy.getKey());
     a.setPeriodicity((Periodicity) periodicity.getSelectedItem());
     try {
       a.setNSessions((short) Integer.parseInt(sessions.getText()));
@@ -247,6 +251,13 @@ public class ActionView
     return getClass().getSimpleName();
   }
 
+  @Override
+  public void postEvent(GemEvent evt) {
+    if (evt instanceof TeacherEvent && evt.getOperation() == GemEvent.CREATION) {
+      ((GemChoiceFilterModel) teacher.getModel()).load(dataCache.getList(Model.Teacher));
+    }
+  }
+  
   class CourseCoItemListener implements ItemListener {
     // This method is called only if a new item has been selected.
 

@@ -74,7 +74,7 @@ public class MemberIO
       m.setPayer(m.getId());
     }
     query += ",'" + m.getPayer()
-            + "','" + m.getNMembership()
+            + "','" + m.getMembershipCount()
             + "','" + m.getPractice()
             + "','" + m.getLevel()
             + "'";
@@ -97,7 +97,7 @@ public class MemberIO
       query += ",datenais='" + m.getBirth().toString() + "'";
     }
     query += ", payeur='" + m.getPayer()
-            + "', nadhesions='" + m.getNMembership()
+            + "', nadhesions='" + m.getMembershipCount()
             + "', pratique='" + m.getPractice()
             + "', niveau='" + m.getLevel() + "'"
             + " WHERE idper=" + m.getId();
@@ -137,7 +137,7 @@ public class MemberIO
     member.setOccupation(rs.getString(col++).trim());
     member.setBirth(new DateFr(rs.getString(col++)));
     member.setPayer(rs.getInt(col++));
-    member.setNMemberShip(rs.getInt(col++));
+    member.setMembershipCount(rs.getInt(col++));
     member.setPractice(rs.getInt(col++));
     member.setLevel(rs.getInt(col++));
 

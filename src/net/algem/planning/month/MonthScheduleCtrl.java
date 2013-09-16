@@ -1,7 +1,7 @@
 /*
- * @(#)MonthScheduleCtrl.java	2.7.a 03/12/12
+ * @(#)MonthScheduleCtrl.java	2.8.m 12/09/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -31,6 +31,7 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import net.algem.contact.teacher.TeacherEvent;
 import net.algem.planning.*;
 import net.algem.planning.editing.ModifPlanEvent;
 import net.algem.room.Establishment;
@@ -47,7 +48,7 @@ import net.algem.util.module.GemModule;
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.m
  * @since 1.0b 06/10/2001
  */
 public class MonthScheduleCtrl
@@ -61,7 +62,7 @@ public class MonthScheduleCtrl
   private JMenu mOptions;
   private JCheckBoxMenuItem mLinkDay;
   private MonthSchedule monthSchedule;
-  private boolean lienJour = false;
+  private boolean linkedToDay = false;
   private Calendar cal;
   private Date start;
   private Date end;
@@ -96,12 +97,12 @@ public class MonthScheduleCtrl
     mQuit = getMenuItem("Menu.quit");
     mOptions = new JMenu("Options");
     //mLienJour = new JMenuItem("Lien planning jour");
-    mLinkDay = new JCheckBoxMenuItem(BundleUtil.getLabel("Month.schedule.link.label"), lienJour);
+    mLinkDay = new JCheckBoxMenuItem(BundleUtil.getLabel("Month.schedule.link.label"), linkedToDay);
     mLinkDay.setSelected(false);
     mLinkDay.addItemListener(new ItemListener()
     {
       public void itemStateChanged(ItemEvent e) {
-        lienJour = (e.getStateChange() == ItemEvent.SELECTED);
+        linkedToDay = (e.getStateChange() == ItemEvent.SELECTED);
       }
     });
 
@@ -170,14 +171,14 @@ public class MonthScheduleCtrl
   }
 
   @Override
-  public void postEvent(GemEvent _evt) {
-    System.out.println("PlanningMoisCtrl.postEvent:" + _evt);
-    if (_evt instanceof SelectDateEvent) {
-      if (!lienJour) {
+  public void postEvent(GemEvent evt) {
+    System.out.println("MonthScheduleCtrl.postEvent:" + evt);
+    if (evt instanceof SelectDateEvent) {
+      if (!linkedToDay) {
         return;
       }
 
-      final Date d = ((SelectDateEvent) _evt).getDate();
+      final Date d = ((SelectDateEvent) evt).getDate();
       if (d.before(start) || d.after(end)) {
         EventQueue.invokeLater(new Runnable()
         {
@@ -186,12 +187,12 @@ public class MonthScheduleCtrl
           }
         });
       }
-    } else if (_evt instanceof ScheduleDetailEvent) {
-      if (!lienJour) {
+    } else if (evt instanceof ScheduleDetailEvent) {
+      if (!linkedToDay) {
         return;
       }
 
-      ScheduleDetailEvent e = (ScheduleDetailEvent) _evt;
+      ScheduleDetailEvent e = (ScheduleDetailEvent) evt;
       view.postEvent(e);
 
       final Date d = e.getDate();
@@ -203,7 +204,7 @@ public class MonthScheduleCtrl
           }
         });
       }
-    } else if (_evt instanceof ModifPlanEvent) {
+    } else if (evt instanceof ModifPlanEvent) {
       final Date d = cal.getTime();
       EventQueue.invokeLater(new Runnable()
       {
@@ -211,8 +212,10 @@ public class MonthScheduleCtrl
           load(d);
         }
       });
+    } else if (evt instanceof TeacherEvent && evt.getOperation() == GemEvent.CREATION) {
+      view.postEvent(evt);
     } else {
-      System.out.println("PlanningMoisCtrl.postEvent: IGNORE");
+      System.out.println("MonthScheduleCtrl.postEvent: IGNORE");
     }
   }
 

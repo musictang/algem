@@ -1,5 +1,5 @@
 /*
- * @(#)CourseScheduleCtrl.java	2.7.h 25/02/13
+ * @(#)CourseScheduleCtrl.java	2.8.m 09/09/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -38,7 +38,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.h
+ * @version 2.8.m
  * @since 1.0a 07/07/1999
  */
 public class CourseScheduleCtrl
@@ -61,6 +61,7 @@ public class CourseScheduleCtrl
   public void init() {
     av = new ActionView(desktop);
     av.init();
+    
     cfv = new ConflictListView();
 
     addCard(MessageUtil.getMessage("planning.session.init"), av);
@@ -163,6 +164,7 @@ public class CourseScheduleCtrl
   public boolean cancel() {
     clear();
     if (actionListener != null) {
+      cleanUp();
       actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, GemCommand.CANCEL_CMD));
     }
     return true;
@@ -172,6 +174,13 @@ public class CourseScheduleCtrl
     av.clear();
     cfv.clear();
     select(0);
+  }
+  
+   private void cleanUp() {
+    desktop.removeGemEventListener(av);
+    actions = null;
+    av = null;
+    cfv = null;
   }
 
   @Override

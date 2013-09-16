@@ -154,9 +154,9 @@ public class MemberEditor
     m.setOccupation((String) occupation.getSelectedItem());
     m.setBirth(new DateFr(birth.getDateFr()));
     try {
-      m.setNMemberShip(Integer.parseInt(nMemberships.getText()));
+      m.setMembershipCount(Integer.parseInt(nMemberships.getText()));
     } catch (Exception e) {
-      m.setNMemberShip(0);
+      m.setMembershipCount(0);
     }
     try {
       m.setPractice(Integer.parseInt(practice.getText()));
@@ -193,7 +193,7 @@ public class MemberEditor
       age.setText("0");
     }
     // vérifier nombre de lignes d'adhésions dans l'échéancier
-    nMemberships.setText(String.valueOf(m.getNMembership()));
+    nMemberships.setText(String.valueOf(m.getMembershipCount()));
     practice.setText(String.valueOf(m.getPractice()));
     level.setText(String.valueOf(m.getLevel()));
     payer.setText(String.valueOf(m.getPayer()));

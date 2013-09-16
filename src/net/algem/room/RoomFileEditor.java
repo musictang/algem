@@ -1,7 +1,7 @@
 /*
- * @(#)RoomFileEditor.java 2.7.a 26/11/12
+ * @(#)RoomFileEditor.java 2.8.m 11/09/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -24,6 +24,7 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.List;
 import java.util.Vector;
 import javax.swing.*;
 import net.algem.accounting.OrderLineEditor;
@@ -42,7 +43,7 @@ import net.algem.util.ui.*;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.m
  * @since 2.1.b
  */
 public class RoomFileEditor
@@ -50,7 +51,6 @@ public class RoomFileEditor
 {
 
   private Room room;
-  private Room oldRoom;
   private GemToolBar mainToolbar;
   private GemToolBar closeToolbar;
   private GemButton btSave;
@@ -63,14 +63,14 @@ public class RoomFileEditor
   private JMenuItem miHistoQuote;
   private RoomFileView roomView;
   private RoomService service;
+  private List<Equipment> oldEquip = new Vector<Equipment>();
   private int oldPayerId;
   private PersonFile payerFile;
   private Date date;
 
   public RoomFileEditor(Room r, String key) {
     super(key);
-    this.room = r;
-    backup();
+    this.room = r;    
   }
 
   /**
@@ -88,6 +88,7 @@ public class RoomFileEditor
     desktop.addGemEventListener(this);
     service = new RoomService(dataCache.getDataConnection());
     loadEquipment();
+    backup();
     view = roomView = new RoomFileView(desktop, room, service);
     roomView.init();
     roomView.addActionListener(this);
@@ -171,7 +172,7 @@ public class RoomFileEditor
     } else if (GemCommand.CLOSE_CMD.equals(arg)) {
       close();
     } else if (GemCommand.SAVE_CMD.equals(arg)) {
-      save();
+      save(roomView.getRoom());
     } else if ("Room.suppression".equals(arg)) {
       delete();
     } else if ("PayerLink".equals(arg)) {
@@ -241,11 +242,11 @@ public class RoomFileEditor
    */
   public void postEvent(GemEvent evt) {
     if (evt instanceof InvoiceEvent) {
-      Invoice f = ((InvoiceEvent) evt).getInvoice();
-      if (room != null && room.getPayer() != null && room.getPayer().getId() == f.getPayer()) {
-        OrderLineEditor ee = roomView.getOrderLineEditor();
-        if (ee != null) {
-          ee.postEvent(evt);
+      Invoice iv = ((InvoiceEvent) evt).getInvoice();
+      if (room != null && room.getPayer() != null && room.getPayer().getId() == iv.getPayer()) {
+        OrderLineEditor ole = roomView.getOrderLineEditor();
+        if (ole != null) {
+          ole.postEvent(evt);
         }
       }
     }
@@ -254,18 +255,13 @@ public class RoomFileEditor
 
   @Override
   public void close() {
-    if (hasChanged()) {
+    Room r = roomView.getRoom();
+    if (hasChanged(r)) {
       if (MessagePopup.confirm(roomView,
               MessageUtil.getMessage("room.update.confirmation", room.getName()),
               MessageUtil.getMessage("closing.label"))) {
-        updateRoom();
-      } else {
-        room = oldRoom;
-        
-//        if (room.getPayer() != null) {
-//          addPayerFile(room.getPayer().getId());
-//        }
-      }
+        updateRoom(r);
+      } 
     }
     closeModule();
   }
@@ -279,21 +275,21 @@ public class RoomFileEditor
    *
    * @return true if modification
    */
-  private boolean hasChanged() {
-    room = roomView.getRoom();
-    return !(oldRoom.isEqualOf(room))
-            || !(oldRoom.getEquipment().equals(room.getEquipment()))
-            || oldPayerId != room.getPayer().getId();
+  private boolean hasChanged(Room r) {
+
+    return !(r.isEqualOf(room))
+            || !(r.getEquipment().equals(oldEquip))
+            || oldPayerId != r.getPayer().getId();
   }
 
   /**
    * Enregistrement d'une salle après modifications éventuelles.
    */
-  private void save() {
-    if (hasChanged()) {
-      updateRoom();
+  private void save(Room r) {
+    if (hasChanged(r)) {
+      updateRoom(r);
       if (hasOtherPayer()) {
-        addPayerFile(room.getPayer().getId());
+        addPayerFile(r.getPayer().getId());
       } else if (payerFile != null) {
         payerFile = null;
         btPayer.setEnabled(false);
@@ -305,22 +301,20 @@ public class RoomFileEditor
   /**
    * Creates or update the current room.
    */
-  private void updateRoom() {
+  private void updateRoom(Room r) {
     try {
 
-      if (room.getId() == 0) {
-        service.create(room);
-        roomView.completeTabs(room);
-        dataCache.add(room);
-        desktop.postEvent(new RoomCreateEvent(this, room));
+      if (r.getId() == 0) {
+        service.create(r);
+        roomView.completeTabs(r);
+        dataCache.add(r);
+        desktop.postEvent(new RoomCreateEvent(this, r));
       } else {
-        service.update(oldRoom, room);
-//        oldRoom = room;
-//        oldRoom.setContact(room.getContact());
-//        oldRoom.setEquipment(room.getEquipment());
-        dataCache.update(room);
-        desktop.postEvent(new RoomUpdateEvent(this, room, date));
+        service.update(room, r);
+        dataCache.update(r);
+        desktop.postEvent(new RoomUpdateEvent(this, r, date));
       }
+      this.room = r;
       backup();
     } catch (RoomException c) {
       MessagePopup.warning(null, c.getMessage());
@@ -329,6 +323,19 @@ public class RoomFileEditor
       GemLogger.logException(e);
     }
 
+  }
+  
+  private void backup() {
+
+    if (room.getEquipment() != null) {
+      oldEquip.clear();
+      for (Equipment e : room.getEquipment()) {       
+        oldEquip.add(new Equipment(e.getLabel(), e.getQuantity(), e.getRoom()));
+      }
+    }
+    if (room.getPayer() != null) {
+      oldPayerId = room.getPayer().getId();
+    }
   }
 
   private void delete() {
@@ -356,13 +363,6 @@ public class RoomFileEditor
   private void loadEquipment() {
     Vector<Equipment> ve = service.getEquipment(room);
     room.setEquipment(ve);
-  }
-
-  private void backup() {
-    oldRoom = room;
-    if (room.getPayer() != null) {
-      oldPayerId = room.getPayer().getId();
-    }
   }
 
   private void closeModule() {

@@ -1,7 +1,7 @@
 /*
- * @(#)Teacher.java	2.7.c 23/01/13
+ * @(#)Teacher.java	2.8.m 06/09/13
  *
- * Copyright (c) 2009 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,7 +28,7 @@ import net.algem.contact.Person;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.c
+ * @version 2.8.m
  */
 public class Teacher
   extends Person
@@ -46,7 +46,6 @@ public class Teacher
 
   @Override
   public String toString() {
-    //return String.valueOf(id); //+ instrument1 + "/" + instrument2;
     return firstName + " " + name;
   }
 
@@ -85,7 +84,7 @@ public class Teacher
   @Override
   public int hashCode() {
     int hash = 3;
-
+    hash = 59 * hash + this.id;
     hash = 59 * hash + (this.cert1 != null ? this.cert1.hashCode() : 0);
     hash = 59 * hash + (this.cert2 != null ? this.cert2.hashCode() : 0);
     hash = 59 * hash + (this.cert3 != null ? this.cert3.hashCode() : 0);
@@ -139,5 +138,13 @@ public class Teacher
     return true;
 //    return instruments == null || instruments.isEmpty() ? true : 
 //    return instruments.size() > 1;//Ca ne devrait pas arriver
+  }
+  
+  public boolean isEmpty() {
+    return (cert1 == null || cert1.isEmpty())
+            && (cert2 == null || cert2.isEmpty())
+            && (cert3 == null || cert3.isEmpty())
+            && (instruments == null || instruments.isEmpty())
+            && active == false;
   }
 }

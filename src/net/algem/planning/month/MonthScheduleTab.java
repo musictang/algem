@@ -81,7 +81,7 @@ public class MonthScheduleTab
     monthSchedule = new MonthSchedule();
     monthSchedule.addPropertyChangeListener(teacherView);
 
-    teacherView = new MonthPlanTeacherView(null);
+    teacherView = new MonthPlanTeacherView();
     teacherView.addActionListener(this);
 
     setLayout(new BorderLayout());

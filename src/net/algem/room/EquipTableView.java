@@ -1,7 +1,7 @@
 /*
- * @(#)EquipTableView.java	2.6.a 24/09/12
+ * @(#)EquipTableView.java	2.8.m 06/09/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -33,13 +33,13 @@ import net.algem.util.ui.GemPanel;
 import net.algem.util.ui.GridBagHelper;
 
 /**
- * List of room equipment.
+ * List of equipment of the room.
  * Each equipment is identified by its quantity and its name.
  * Cells are editable.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.m
  *
  * @since 1.0a 07/07/1999
  */
@@ -52,7 +52,7 @@ public class EquipTableView
   private GemButton btAdd;
   private GemButton btDelete;
 
-  public EquipTableView(String titre) {
+  public EquipTableView() {
 
     model = new EquipTableModel();
     table = new JTable(model);
@@ -85,7 +85,7 @@ public class EquipTableView
     btDelete.addActionListener(l);
   }
 
-  public Vector getData() {
+  public Vector<Equipment> getData() {
     return model.getData();
   }
 

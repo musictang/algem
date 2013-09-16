@@ -1,7 +1,7 @@
 /*
- * @(#)RoomFileView.java 2.7.g 13/02/13
+ * @(#)RoomFileView.java 2.8.m 11/09/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -38,7 +38,7 @@ import net.algem.util.ui.TabPanel;
  * Tab container for room file.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.g
+ * @version 2.8.m
  * @since 2.1.j
  */
 public class RoomFileView
@@ -113,23 +113,19 @@ public class RoomFileView
   }
 
   public Room getRoom() {
-    Room s = editor.getRoom();
+    Room r = editor.getRoom();
     if (!creation) {
-      s.setContact(contactEditor.getContact());
-      s.setEquipment(equipEditor.getData());
-      if (s.getPayer() == null) {
-        s.setPayer(new Person(s.getContact().getId()));
+      r.setContact(contactEditor.getContact());
+      r.setEquipment(equipEditor.getData());
+      if (r.getPayer() == null) {
+        r.setPayer(new Person(r.getContact().getId()));
       }
     }
-    return s;
+    return r;
   }
 
-  public Vector<Equipment> getEquipment() {
-    return equipEditor.getData();
-  }
-
-  public void completeTabs(Room s) {
-    setRoom(s);
+  public void completeTabs(Room r) {
+    setRoom(r);
     initContact();
     wTab.setSelectedIndex(1);
   }
@@ -173,22 +169,12 @@ public class RoomFileView
     creation = false;
   }
 
-  private void setRoom(Room s) {
-    this.room = s;
-    editor.set(s);
+  private void setRoom(Room r) {
+    this.room = r;
+    editor.set(r);
   }
 
   private void setEquipment(Vector<Equipment> ve) {
-    Vector<Equipment> vt = new Vector<Equipment>();
-    if (ve != null) {
-      try {
-        for (Equipment e : ve) {
-          vt.add((Equipment) e.clone());
-        }
-      } catch (CloneNotSupportedException ex) {
-        GemLogger.logException(ex);
-      }
-    }
-    equipEditor.load(vt);
+    equipEditor.load(ve);
   }
 }

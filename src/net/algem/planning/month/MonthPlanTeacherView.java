@@ -1,7 +1,7 @@
 /*
- * @(#)MonthPlanTeacherView.java	2.7.a 26/11/12
+ * @(#)MonthPlanTeacherView.java	2.8.m 11/09/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -24,23 +24,29 @@ import net.algem.contact.Person;
 import net.algem.contact.teacher.Teacher;
 import net.algem.planning.ScheduleDetailEvent;
 import net.algem.planning.ScheduleObject;
+import net.algem.util.model.GemList;
 import net.algem.util.ui.GemChoice;
+import net.algem.util.ui.GemChoiceFilterModel;
 
 /**
  * comment
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.m
  */
 public class MonthPlanTeacherView
         extends MonthPlanDetailView
 {
 
+  public MonthPlanTeacherView() {
+    super(null);
+  }
+  
   public MonthPlanTeacherView(GemChoice teacher) {
     super(teacher);
   }
-
+  
   @Override
   public boolean isFiltered(ScheduleObject p) {
     if (choice == null) {
@@ -58,4 +64,11 @@ public class MonthPlanTeacherView
     }
     //choix.setKey(evt.getSchedule().getPersonne().getId());
   }
+  
+  void reload(GemList<Teacher> list) {
+    if (choice != null) {
+      ((GemChoiceFilterModel) choice.getModel()).load(list);
+    }
+  }
+
 }

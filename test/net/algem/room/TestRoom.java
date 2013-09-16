@@ -1,7 +1,7 @@
 /*
- * @(#)TestRoom.java	2.7.a 10/12/12
+ * @(#)TestRoom.java	2.8.m 11/09/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -22,14 +22,13 @@ package net.algem.room;
 
 import java.util.Vector;
 import net.algem.contact.Person;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import org.junit.*;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
+ * @version 2.8.m
  */
 public class TestRoom
 {
@@ -108,5 +107,19 @@ public class TestRoom
     assertEquals(r1, r2);
     assertTrue(r1.getPayer().getId() == r2.getPayer().getId() && r2.getPayer().getId() == 1234);
     assertTrue(r1.getEquipment().equals(r2.getEquipment()));
+    
+    r1.setEquipment(v1);
+    System.out.println(r1.getEquipment());
+    System.out.println(r2.getEquipment());
+    assertTrue(r1.getEquipment().equals(r2.getEquipment()));
+    
+    Room r3 = new Room();
+    r3.setEquipment(v1);
+    Vector<Equipment> v3 = new Vector<Equipment>(v1);
+    v3.addElement(new Equipment(1,"Trompette"));
+    r3.setEquipment(v3);
+    assertFalse(r3.getEquipment().equals(r1.getEquipment()));
+    System.out.println(r3.getEquipment());
+    
   }
 }

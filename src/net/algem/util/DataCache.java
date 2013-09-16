@@ -1,5 +1,5 @@
 /*
- * @(#)DataCache.java	2.8.f 24/05/13
+ * @(#)DataCache.java	2.8.m 11/09/13
  *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -63,7 +63,7 @@ import net.algem.util.model.Model;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.f
+ * @version 2.8.m
  * @since 1.0b 03/09/2001
  */
 public class DataCache
@@ -154,7 +154,7 @@ public class DataCache
     PERSON_IO = new PersonIO(dc);
     MEMBER_IO = new MemberIO(dc);
     TEACHER_IO = new TeacherIO(dc);
-    PERSON_FILE_IO = new PersonFileIO(dc);
+    PERSON_FILE_IO = new PersonFileIO(this);
     COURSE_IO = new CourseIO(dc);
     ROOM_RATE_IO = new RoomRateIO(dc);
     ROOM_IO = new RoomIO(dc);
@@ -406,15 +406,17 @@ public class DataCache
     } else if (m instanceof Course) {
       COURSE_LIST.addElement((Course) m);
       Collections.sort(COURSE_LIST.getData(), new CourseComparator());
-    } else if (m instanceof Person) {
-      PERSON_CACHE.put(m.getId(), (Person) m);
     } else if (m instanceof Teacher) {
       Teacher t = (Teacher) m;
       TEACHER_LIST.addElement(t);
       Collections.sort(TEACHER_LIST.getData(), new TeacherComparator());
-      TEACHER_INSTRUMENT_CACHE.put(t.getId(), t.getInstruments());
+      if(t.getInstruments() != null) {
+        TEACHER_INSTRUMENT_CACHE.put(t.getId(), t.getInstruments());
+      }
     } else if (m instanceof Member) {
       MEMBER_CACHE.put(m.getId(), (Member) m);
+    } else if (m instanceof Person) {
+      PERSON_CACHE.put(m.getId(), (Person) m);
     } else if (m instanceof Group) {
       GROUP_LIST.addElement((Group) m);
       Collections.sort(GROUP_LIST.getData(), new GroupComparator());
@@ -439,7 +441,7 @@ public class DataCache
     } else if (m instanceof Account) {
       ACCOUNT_LIST.addElement((Account) m);
     } else if (m instanceof CostAccount) {
-      COST_ACCOUNT_CACHE.put(((CostAccount)m).getKey(), (CostAccount) m);
+      COST_ACCOUNT_CACHE.put(((CostAccount) m).getKey(), (CostAccount) m);
     } else if (m instanceof User) {
       USER_CACHE.put(m.getId(), (User) m);
     } else if (m instanceof Vat) {
@@ -462,6 +464,14 @@ public class DataCache
       ESTAB_LIST.update((Establishment) m, null);
     } else if (m instanceof Course) {
       COURSE_LIST.update((Course)m, new CourseComparator());
+    } else if (m instanceof Teacher) {
+      Teacher t = (Teacher) m;
+      TEACHER_LIST.update(t, new TeacherComparator());
+      if(t.getInstruments() != null) {
+        TEACHER_INSTRUMENT_CACHE.put(t.getId(), t.getInstruments());
+      }
+    } else if (m instanceof Member) {
+      MEMBER_CACHE.put(m.getId(), (Member) m);
     } else if (m instanceof Person) {
       PERSON_CACHE.put(m.getId(), (Person) m);
       Teacher t = (Teacher) TEACHER_LIST.getItem(m.getId());
@@ -470,12 +480,6 @@ public class DataCache
         t.setName(((Person) m).getName());
         TEACHER_LIST.update(t, new TeacherComparator());
       }
-    } else if (m instanceof Teacher) {
-      Teacher t = (Teacher) m;
-      TEACHER_LIST.update(t, new TeacherComparator());
-      TEACHER_INSTRUMENT_CACHE.put(t.getId(), t.getInstruments());
-    } else if (m instanceof Member) {
-      MEMBER_CACHE.put(m.getId(), (Member) m);
     } else if (m instanceof Group) {
       GROUP_LIST.update((Group) m, new GroupComparator());
     } else if (m instanceof Module) {
@@ -517,6 +521,9 @@ public class DataCache
       ESTAB_LIST.removeElement((Establishment) m);
     } else if (m instanceof Course) {
       COURSE_LIST.removeElement((Course)m);
+    } else if (m instanceof Teacher) {
+      TEACHER_INSTRUMENT_CACHE.remove(m.getId());
+      TEACHER_LIST.removeElement((Teacher) m);
     } else if (m instanceof Person) {
       PERSON_CACHE.remove(m.getId());
     } else if (m instanceof Group) {
@@ -543,7 +550,7 @@ public class DataCache
       VAT_LIST.removeElement((Vat) m);
     } else if (m instanceof CourseCode) {
       COURSE_CODE_LIST.removeElement((CourseCode) m);
-    }
+    } 
     
   }
   

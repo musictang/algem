@@ -310,24 +310,24 @@ public class DayPlanView
   
   private void showLabel(ScheduleObject p, ScheduleObject prev, int x, int y) {
     String code = getCode(p);
-    String lib = null;
+    String label = null;
     int offset = (pas_x / 2);
     if (!p.getScheduleLabel().equals(prev.getScheduleLabel())) {
-      lib = p.getScheduleLabel() + (code == null ? "" : code);
+      label = p.getScheduleLabel() + (code == null ? "" : code);
     } else {
-      lib = code;
+      label = code;
       offset = (pas_x - 15);
     }
-    if (lib != null && !lib.isEmpty()) {
-      int w = fm.stringWidth(lib) + 4;// largeur du texte
+    if (label != null && !label.isEmpty()) {
+      int w = fm.stringWidth(label) + 4;// largeur du texte
 
       while (w > pas_x) {
-        lib = lib.substring(0, lib.length() - 1);// on enlève un caractère
-        w = fm.stringWidth(lib) + 4; // on réduit la largeur en fonction
+        label = label.substring(0, label.length() - 1);// on enlève un caractère
+        w = fm.stringWidth(label) + 4; // on réduit la largeur en fonction
       }
 
       //bg.drawString(lib, x + (pas_x / 2) - (w - 4) / 2, y + 10);
-      bg.drawString(lib, x + offset - (w - 4) / 2, y + 10);
+      bg.drawString(label, x + offset - (w - 4) / 2, y + 10);
     }
   }
   

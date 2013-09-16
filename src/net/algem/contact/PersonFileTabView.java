@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileTabView.java  2.8.i 05/07/13
+ * @(#)PersonFileTabView.java  2.8.m 06/09/13
  *
  * Copyright (c) 1999-2013 Musiques Tangentes All Rights Reserved.
  *
@@ -58,7 +58,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.i
+ * @version 2.8.m
  */
 public class PersonFileTabView
         extends FileView
@@ -78,6 +78,7 @@ public class PersonFileTabView
   private JCheckBox cbTelAdresse;
   private MemberEditor memberEditor;
   private TeacherEditor teacherEditor;
+  private EmployeeEditor employeeEditor;
   private RibView ribView;
   private MemberFollowUpEditor memberFollowUpEditor;
   private TeacherFollowUpEditor teacherFollowUpEditor;
@@ -188,8 +189,8 @@ public class PersonFileTabView
       contactFileEditor.setLinkTelAddress(parent.getContact().getAddressAll(), parent.getContact().getTele(), cbTelAdresse);
     }
     if (dossier.getTeacher() != null) {
-      addTeacherTab();
-      teacherEditor.set(dossier.getTeacher(), dossier.getId());
+      addTeacherTab(listener);
+//      teacherEditor.load();
     }
     if (dossier.getRib() != null) {
       addBankTab();
@@ -271,10 +272,9 @@ public class PersonFileTabView
     } else if (_evt.getType() == PersonFileEvent.MEMBER_ADDED) {
       Member m = ((Member) _evt.getSource());
       memberEditor.set(m);
-    } // ajout enseignant
-    else if (_evt.getType() == PersonFileEvent.TEACHER_ADDED) {
+    } else if (_evt.getType() == PersonFileEvent.TEACHER_ADDED) {
       Teacher t = ((Teacher) _evt.getSource());
-      teacherEditor.set(t, contactFileEditor.getId());
+//      teacherEditor.set(t);
     } else if (_evt.getType() == PersonFileEvent.BANK_ADDED) {
       Rib b = ((Rib) _evt.getSource());
       ribView.setRib(b);
@@ -348,6 +348,36 @@ public class PersonFileTabView
   
   GemButton addIcon(String command) {
     return mainToolbar.addIcon(BundleUtil.getLabel(command+".icon"), command,BundleUtil.getLabel(command+".tip"));           
+  }
+  
+  /**
+   * Adds employee tab.
+   */
+  void addEmployeeTab() {
+
+    employeeEditor = new EmployeeEditor(desktop, listener);
+    employeeEditor.setEmployee(dossier.getId());
+    wTab.addItem(employeeEditor, BundleUtil.getLabel("Employee.label"));
+    addTab(employeeEditor);
+  }
+  
+  Employee getEmployee() {
+    return employeeEditor == null ? null : employeeEditor.get();
+  }
+  
+  void updateEmployee() {
+    if (employeeEditor != null) {
+      employeeEditor.update();
+    }
+  }
+  
+  void deleteEmployee() {
+    employeeEditor.delete();
+    removeTab(employeeEditor);
+  }
+  
+  boolean hasEmployeeChanged() {
+    return employeeEditor != null && employeeEditor.hasChanged();
   }
 
   /**
@@ -445,8 +475,8 @@ public class PersonFileTabView
     return memberEditor == null ? null : memberEditor.getMember();
   }
 
-  Teacher getTeacherFile() {
-    return teacherEditor == null ? null : teacherEditor.getTeacher();
+  Teacher getTeacher() {
+    return teacherEditor == null ? null : teacherEditor.get();
   }
 
   Rib getRibFile() {
@@ -519,9 +549,10 @@ public class PersonFileTabView
     mainToolbar.removeIcon("Member.card");
   }
 
-  void addTeacherTab() {
+  void addTeacherTab(ActionListener listener) {
     if (teacherEditor == null) {
-      teacherEditor = new TeacherEditor(desktop, dossier.getId());
+      teacherEditor = new TeacherEditor(desktop, dossier);
+      teacherEditor.addActionListener(listener);
     }
     if (teacherFollowUpEditor == null) {
       teacherFollowUpEditor = new TeacherFollowUpEditor(desktop, dossier);
@@ -544,8 +575,22 @@ public class PersonFileTabView
 			BundleUtil.getLabel("Teacher.presence.tip"));
     addTab(teacherEditor);
   }
+  
+  void closeTeacher() {
+    removeTab(teacherFollowUpEditor);
+    removeTab(teacherEditor);
+    removeTeacherIcons();
+  }
+  
+  void removeTeacher() {
+    closeTeacher();
+    teacherFollowUpEditor = null;
+    teacherEditor.clear();
+    teacherEditor = null;
+    
+  }
 
-  void removeTeacherIcons() {
+  private void removeTeacherIcons() {
     mainToolbar.removeIcon("Teacher.hour");
     mainToolbar.removeIcon("Teacher.break");
     mainToolbar.removeIcon("Teacher.presence");

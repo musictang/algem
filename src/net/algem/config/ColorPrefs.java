@@ -1,7 +1,7 @@
 /*
- * @(#)ColorPrefs.java	2.6.a 25/09/12
+ * @(#)ColorPrefs.java	2.8.m 04/09/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -34,11 +34,12 @@ import java.util.prefs.Preferences;
  * For this reason, current preferences are declared at user level.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.m
  */
 public class ColorPrefs
 {
 
+  public static final Color ERROR_BG_COLOR = Color.decode("#ff4a4a");
   private Preferences prefs;
 
   public ColorPrefs() {

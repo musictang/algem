@@ -1,5 +1,5 @@
 /*
- * @(#)TeacherIO.java	2.7.a 07/01/13
+ * @(#)TeacherIO.java	2.8.m 06/09/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -27,6 +27,8 @@ import java.util.Vector;
 import net.algem.config.Instrument;
 import net.algem.config.InstrumentIO;
 import net.algem.contact.PersonIO;
+import net.algem.planning.Schedule;
+import net.algem.planning.ScheduleIO;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
@@ -38,7 +40,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.m
  */
 public class TeacherIO
         extends TableIO
@@ -94,6 +96,24 @@ public class TeacherIO
     InstrumentIO.delete(t.getId(), Instrument.TEACHER, dc);
     InstrumentIO.insert(t.getInstruments(), t.getId(), Instrument.TEACHER, dc);
   }
+  
+  /**
+   * Gets the number of schedules occupied by a teacher.
+   * @param id teacher id
+   * @return 0 or an integer > 0
+   * @throws SQLException 
+   */
+  public int hasSchedules(int id) throws SQLException {
+    String query = "SELECT count(idper) FROM " + ScheduleIO.TABLE
+            + " WHERE idper = " + id 
+            + " AND ptype IN (" + Schedule.COURSE_SCHEDULE + ", " + Schedule.WORKSHOP_SCHEDULE +")";
+    ResultSet rs = dc.executeQuery(query);
+    int count = 0;
+    if(rs.next()) {
+      count = rs.getInt(1);
+    }
+    return count;
+  }
 
   /**
    * Deletes a teacher.
@@ -101,13 +121,13 @@ public class TeacherIO
    * @param t
    * @throws SQLException
    */
-  public void delete(Teacher t) {
-
-    String query = "DELETE FROM " + TABLE + " WHERE idper = " + t.getId();
+  public void delete(int idper) {
+//    if (hasSchedules(id))
+    String query = "DELETE FROM " + TABLE + " WHERE idper = " + idper;
     try {
       dc.setAutoCommit(false);
       dc.executeUpdate(query);
-      InstrumentIO.delete(t.getId(), Instrument.TEACHER, dc);
+      InstrumentIO.delete(idper, Instrument.TEACHER, dc);
       dc.commit();
     } catch (SQLException ex) {
       dc.rollback();

@@ -1,7 +1,7 @@
 /*
- * @(#)PersonFile.java 2.7.a 29/11/12
+ * @(#)PersonFile.java 2.8.m 06/09/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -36,7 +36,7 @@ import net.algem.util.model.GemModel;
  * Person management.
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.m
  * @since 1.0a 12/08/2009
  */
 public class PersonFile
@@ -80,7 +80,9 @@ public class PersonFile
   public void setContact(Contact _contact) {
     //oldContact = contact;
     contact = _contact;
-    fireContentsChanged(_contact, PersonFileEvent.CONTACT_CHANGED);
+//    if (_contact != null) {
+//      fireContentsChanged(_contact, PersonFileEvent.CONTACT_CHANGED);
+//    }
   }
 
   public Member getMember() {
@@ -98,17 +100,14 @@ public class PersonFile
     }
 
     this.member = m;
-    fireContentsChanged(m, PersonFileEvent.MEMBER_CHANGED);
   }
 
   public void removeMember() {
-    fireContentsChanged(member, PersonFileEvent.MEMBER_REMOVED);
     member = oldMember = null;
   }
 
   public void addMember(Member m) {
     member = m;
-    fireContentsChanged(m, PersonFileEvent.MEMBER_ADDED);
   }
 
   public Teacher getTeacher() {
@@ -120,19 +119,19 @@ public class PersonFile
   }
 
   public void setTeacher(Teacher t) {
-    oldTeacher = teacher;
     teacher = t;
-    fireContentsChanged(t, PersonFileEvent.TEACHER_CHANGED);
+  }
+
+  public void setOldTeacher(Teacher t) {
+    this.oldTeacher = t;
+  }
+  
+  public void loadTeacher(Teacher t) {
+    teacher = oldTeacher = t;
   }
 
   public void removeTeacher() {
-    fireContentsChanged(teacher, PersonFileEvent.TEACHER_REMOVED);
     teacher = oldTeacher = null;
-  }
-
-  public void addTeacher(Teacher t) {
-    teacher = t;
-    fireContentsChanged(teacher, PersonFileEvent.TEACHER_ADDED);
   }
 
   /**
@@ -142,7 +141,6 @@ public class PersonFile
   public void setRib(Rib b) {
     oldRib = rib;
     rib = b;
-    fireContentsChanged(b, PersonFileEvent.BANK_CHANGED);
   }
 
   public Rib getRib() {
@@ -154,13 +152,12 @@ public class PersonFile
   }
 
   public void removeRib() {
-    fireContentsChanged(rib, PersonFileEvent.BANK_REMOVED);
-    rib = oldRib = null;
+//    fireContentsChanged(rib, PersonFileEvent.BANK_REMOVED);
+    rib = oldRib = null;  
   }
 
   public void addRib(Rib b) {
     rib = b;
-    fireContentsChanged(b, PersonFileEvent.BANK_ADDED);
   }
 
   public void setSubscriptionCard(PersonSubscriptionCard card) {
@@ -222,7 +219,7 @@ public class PersonFile
     return getContact().getAddress() == null && getContact().getTele() == null;
   }
 
-  public void addDossierPersonneListener(PersonFileListener l) {
+  public void addPersonFileListener(PersonFileListener l) {
     listenerList.add(PersonFileListener.class, l);
   }
 
@@ -232,8 +229,7 @@ public class PersonFile
 
   protected void fireContentsChanged(Object source, int event) {
     Object[] listeners = listenerList.getListenerList();
-    PersonFileEvent e = new PersonFileEvent(this, event);
-
+    PersonFileEvent e = new PersonFileEvent(source, event);
     for (int i = listeners.length - 2; i >= 0; i -= 2) {
       if (listeners[i] == PersonFileListener.class) {
         ((PersonFileListener) listeners[i + 1]).contentsChanged(e);

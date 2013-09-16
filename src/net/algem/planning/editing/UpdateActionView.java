@@ -90,7 +90,7 @@ public class UpdateActionView
     gb.add(oldRoom, 1, 7, 1, 1, GridBagHelper.WEST);
     gb.add(room, 1, 8, 1, 1, GridBagHelper.WEST);
     gb.add(sessions, 1, 9, 1, 1, GridBagHelper.WEST);
-    gb.add(vChoix, 1, 10, 1, 1, GridBagHelper.WEST);
+    gb.add(vacancy, 1, 10, 1, 1, GridBagHelper.WEST);
   }
 
   @Override

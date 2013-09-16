@@ -1,5 +1,5 @@
 /*
- * @(#)BankCodeCtrl.java	2.8.i 05/07/13
+ * @(#)BankCodeCtrl.java	2.8.m 11/09/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -33,7 +33,7 @@ import net.algem.util.DataConnection;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.i
+ * @version 2.8.m
  * @since 1.0a 07/07/1999
  */
 public class BankCodeCtrl
@@ -178,18 +178,18 @@ public class BankCodeCtrl
         bv.markIban(BankUtil.isIbanOk(bv.getIban()));
         bv.setRibFromIban();
 
-        if (bv.isNewBank()) {
-          String bank = bv.getBankCode();
-          if (bank != null && !bank.equals(bankCode)) {
-            searchBank(bank);
-          }
-        }
-        if (bv.isNewBranch()) {
+//        if (bv.isNewBank()) {
+//          String bank = bv.getBankCode();
+//          if (bank != null && !bank.equals(bankCode)) {
+//            searchBank(bank);
+//          }
+//        }
+//        if (bv.isNewBranch()) {
           String branch = bv.getBranchCode();
           if (branch != null && !branch.equals(branchCode)) {
             searchBranch(branch);
           }
-        }
+//        }
       }
     } else if (src instanceof BicCodeField) {
         String bic = branchView.getBicCode();

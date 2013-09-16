@@ -1,5 +1,5 @@
 /*
- * @(#)DirectDebitRequest.java	2.8.k 23/07/13
+ * @(#)DirectDebitRequest.java	2.8.m 11/09/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -44,18 +44,13 @@ import net.algem.util.MessageUtil;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.k
+ * @version 2.8.m
  */
 public class DirectDebitRequest
         extends Canvas
 {
 
-//  private int margeh = 30;
-//  private int marged = 50;
-//  private int th;
   private FontMetrics fm;
-//  private Image bim;
-//  private Graphics bg;
   private Font normalFont;
   private Font mediumFont;
   private Font smallFont;
@@ -71,10 +66,6 @@ public class DirectDebitRequest
   private String firmName;
   
   private String street;
-//  private String city;
-//  private String guichet;
-//  private String compte;
-//  private String etab;
   private boolean detailed;
 
   /**
@@ -91,7 +82,7 @@ public class DirectDebitRequest
     if (c instanceof Frame) {
       parent = (Frame) c;
     }
-
+    
     tk = Toolkit.getDefaultToolkit();
 
     props.put("awt.print.paperSize", "a4");
@@ -103,13 +94,14 @@ public class DirectDebitRequest
 
   }
 
-  public void edit(PersonFile p, String titre, DataCache cache) {
+  public void edit(final PersonFile p, final BankBranch b, String title, DataCache cache) {
     //int l = 0;
     //int mgh = 15;
     int mgm = 270;
     Address a = null;
     Rib rib = null;
-    BankBranch branch = null;
+    BankBranch branch = b;
+
     Address branchAddress = null;
     DataConnection dc = cache.getDataConnection();
 
@@ -122,7 +114,7 @@ public class DirectDebitRequest
     String city = ConfigUtil.getConf(ConfigKey.ORGANIZATION_CITY.getKey(), dc);
     city = cp + " " + city;
 
-    PrintJob prn = tk.getPrintJob(parent, titre, props);
+    PrintJob prn = tk.getPrintJob(parent, title, props);
     if (prn == null) {
       return;
     }
@@ -165,14 +157,17 @@ public class DirectDebitRequest
     branchAddress = null;
     if (p != null) {
       rib = p.getRib();
+    }
+    if (branch == null) {
       if (rib != null) {
         branch = new BankBranchIO(dc).findId(rib.getBranchId());
       }
-      if (branch != null) {
-        g.drawString(branch.getBank().getName(), 320, 115);
-        branchAddress = branch.getAddress();
-      }
     }
+    if (branch != null) {
+      g.drawString(branch.getBank().getName(), 320, 115);
+      branchAddress = branch.getAddress();
+    }
+    
     if (branchAddress != null) {
       g.drawString(branchAddress.getAdr1(), 320, 130);
       g.drawString(branchAddress.getAdr2(), 320, 145);
@@ -192,7 +187,7 @@ public class DirectDebitRequest
     if (p == null) {
       drawRib(g, 25, 200, null, null);
     } else {
-      drawRib(g, 25, 200, p.getRib(), branch);
+      drawRib(g, 25, 200, rib, branch);
     }
 
     g.setFont(smallFont);

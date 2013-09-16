@@ -1,7 +1,7 @@
 /*
- * @(#)Member.java	2.7.c 23/11/12
+ * @(#)Member.java	2.8.m 06/09/13
  * 
- * Copyright (c) 2009 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -30,7 +30,7 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.c
+ * @version 2.8.m
  */
 public class Member
         implements GemModel, Cloneable
@@ -40,7 +40,7 @@ public class Member
   private String occupation;
   private DateFr birth;
   private int payer;
-  private int nMembership;
+  private int membershipCount;
   private int practice;
   private int level;
   private List<Integer> instruments;
@@ -77,7 +77,7 @@ public class Member
     if (this.payer != other.payer) {
       return false;
     }
-    if (this.nMembership != other.nMembership) {
+    if (this.membershipCount != other.membershipCount) {
       return false;
     }
     if (this.practice != other.practice) {
@@ -99,7 +99,7 @@ public class Member
     hash = 47 * hash + (this.occupation != null ? this.occupation.hashCode() : 0);
     hash = 47 * hash + (this.birth != null ? this.birth.hashCode() : 0);
     hash = 47 * hash + this.payer;
-    hash = 47 * hash + this.nMembership;
+    hash = 47 * hash + this.membershipCount;
     hash = 47 * hash + this.practice;
     hash = 47 * hash + this.level;
     hash = 47 * hash + (this.instruments != null ? this.instruments.hashCode() : 0);
@@ -156,12 +156,12 @@ public class Member
     return payer;
   }
 
-  public void setNMemberShip(int n) {
-    nMembership = n;
+  public void setMembershipCount(int n) {
+    membershipCount = n;
   }
 
-  public int getNMembership() {
-    return nMembership;
+  public int getMembershipCount() {
+    return membershipCount;
   }
 
   public void setLevel(int p) {

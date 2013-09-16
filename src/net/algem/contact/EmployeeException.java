@@ -1,5 +1,5 @@
 /*
- * @(#)TeacherEvent.java	2.8.m 06/09/13
+ * @(#)EmployeeException.java 2.8.m 03/09/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -19,29 +19,28 @@
  * 
  */
 
-package net.algem.contact.teacher;
-
-import net.algem.util.event.GemEvent;
+package net.algem.contact;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.8.m
- * @since 2.6.a 01/10/12
+ * @since 2.8.m 02/09/13
  */
-public class TeacherEvent 
-extends GemEvent
-{
+public class EmployeeException extends Exception {
 
-  protected Teacher teacher;
+    /**
+     * Creates a new instance of <code>EmployeeException</code> without detail message.
+     */
+    public EmployeeException() {
+    }
 
-  public TeacherEvent(Object _source, int type, Teacher t) {
-    super(_source, type, TEACHER);
-    teacher = t;
-  }
 
-  public Teacher getTeacher() {
-    return teacher;
-  }
-
+    /**
+     * Constructs an instance of <code>EmployeeException</code> with the specified detail message.
+     * @param msg the detail message.
+     */
+    public EmployeeException(String msg) {
+        super(msg);
+    }
 }

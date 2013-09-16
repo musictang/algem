@@ -1,7 +1,7 @@
 /*
- * @(#)RoomService.java 2.7.a 26/11/12
+ * @(#)RoomService.java 2.8.m 11/09/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -38,7 +38,7 @@ import net.algem.util.model.TableIO;
  * Service class for room operations.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.m
  * @since 2.2.b
  */
 public class RoomService
@@ -91,10 +91,10 @@ public class RoomService
   }
 
   /**
-   * Mise à jour d'une salle.
+   * Updates a room.
    *
-   * @param o ancienne salle
-   * @param n nouvelle salle
+   * @param o old room
+   * @param n new room
    * @throws SQLException
    */
   public void update(Room o, Room n) throws RoomException {
@@ -102,13 +102,13 @@ public class RoomService
       dc.setAutoCommit(false);
       roomIO.update(o, n);
 
-      Vector<Equipment> vo = o.getEquipment();
+      /*Vector<Equipment> vo = o.getEquipment();
       Vector<Equipment> vn = n.getEquipment();
 
       // Aucun changement
       if (vo.equals(vn)) {
         return;
-      }
+      }*/
       roomIO.updateEquipment(n);
       dc.commit();
     } catch (SQLException ex) {

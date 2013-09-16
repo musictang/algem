@@ -1,5 +1,5 @@
 /*
- * @(#)TeacherEditor.java	2.8.k 25/07/13
+ * @(#)TeacherEditor.java	2.8.m 06/09/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -21,94 +21,76 @@
 package net.algem.contact.teacher;
 
 import java.awt.BorderLayout;
-import java.awt.GridBagLayout;
-import javax.swing.JCheckBox;
-import net.algem.contact.InstrumentView;
-import net.algem.util.BundleUtil;
+import java.awt.event.ActionListener;
+import net.algem.contact.PersonFile;
+import net.algem.util.GemCommand;
 import net.algem.util.module.GemDesktop;
-import net.algem.util.ui.*;
+import net.algem.util.ui.FileTab;
+import net.algem.util.ui.GemButton;
 
 /**
  * Teacher editor tab.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.k
+ * @version 2.8.m
  */
 public class TeacherEditor
         extends FileTab
 {
 
-  private GemField cert1;
-  private GemField cert2;
-  private GemField cert3;
-  private JCheckBox active;
-  private int id;
-  private InstrumentView instrument;
+  private PersonFile dossier;
+  private TeacherView view;
+  private GemButton deleteBt;
+  private boolean loaded;
 
-  public TeacherEditor(GemDesktop _desktop, int _id) {
+  public TeacherEditor(GemDesktop _desktop, PersonFile dossier) {
     super(_desktop);
+    this.dossier = dossier;
+    view = new TeacherView(dataCache.getInstruments());
 
-    id = _id;
-
-    cert1 = new GemField(32);
-    cert2 = new GemField(32);
-    cert3 = new GemField(32);
-
-    active = new JCheckBox();
-    active.setBorder(null);
-    instrument = new InstrumentView(dataCache.getInstruments());
-    GemPanel p = new GemPanel();
-    p.setLayout(new GridBagLayout());
-    GridBagHelper gb = new GridBagHelper(p);
-    gb.insets = GridBagHelper.SMALL_INSETS;
-    
-    gb.add(new GemLabel(BundleUtil.getLabel("Certificate.label")), 0, 1, 1, 1, GridBagHelper.WEST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Active.label")), 0, 4, 1, 1, GridBagHelper.WEST);
-
-    gb.add(instrument, 1, 0, 1, 1, GridBagHelper.WEST);
-    gb.add(cert1, 1, 1, 1, 1, GridBagHelper.WEST);
-    gb.add(cert2, 1, 2, 1, 1, GridBagHelper.WEST);
-    gb.add(cert3, 1, 3, 1, 1, GridBagHelper.WEST);
-    gb.add(active, 1, 4, 1, 1, GridBagHelper.WEST);
+    deleteBt = new GemButton(GemCommand.DELETE_CMD);
+    deleteBt.setActionCommand("TeacherDelete");
 
     this.setLayout(new BorderLayout());
-    add(p, BorderLayout.CENTER);
+    add(view, BorderLayout.CENTER);
+    add(deleteBt, BorderLayout.SOUTH);
   }
 
-  public void set(Teacher t, int _id) {
-    id = _id;
-    instrument.set(t.getInstruments());
-    cert1.setText(t.getCertificate1());
-    cert2.setText(t.getCertificate2());
-    cert3.setText(t.getCertificate3());
-    active.setSelected(t.isActive());
+  public void addActionListener(ActionListener listener) {
+    deleteBt.addActionListener(listener);
+  }
+  
+  private void set(Teacher t) {
+    if (t == null) {
+      t = new Teacher(dossier.getId());      
+    }
+    view.set(t);
   }
 
-  public Teacher getTeacher() {
-    Teacher t = new Teacher(id);
-    t.setInstruments(instrument.get());
-    t.setCertificate1(cert1.getText());
-    t.setCertificate2(cert2.getText());
-    t.setCertificate3(cert3.getText());
-    t.setActive(active.isSelected());
-
+  public Teacher get() {
+    Teacher t = view.get();
+    if (dossier.getContact() != null) {
+      t.setName(dossier.getContact().getName());
+      t.setFirstName(dossier.getContact().getFirstName());
+    }
     return t;
   }
 
   public void clear() {
-    cert1.setText("");
-    cert2.setText("");
-    cert3.setText("");
-    //instrument.clear();
+    view.clear();
+    // loaded = false;
   }
 
   @Override
   public boolean isLoaded() {
-    return id != 0;
+    return loaded;
   }
 
   @Override
   public void load() {
+    set(dossier.getTeacher());
+    loaded = true;
   }
+
 }
