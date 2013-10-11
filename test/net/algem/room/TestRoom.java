@@ -78,6 +78,7 @@ public class TestRoom
     Equipment e2 = new Equipment(1, "Piano 1");
     Equipment e3 = new Equipment(1, "Ampli 1");
     Equipment e4 = new Equipment(1, "Piano 1");
+    
     Vector<Equipment> v1 = new Vector<Equipment>();
     Vector<Equipment> v2 = new Vector<Equipment>();
     

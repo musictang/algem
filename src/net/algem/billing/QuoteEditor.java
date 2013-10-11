@@ -1,7 +1,7 @@
 /*
- * @(#)QuoteEditor 2.6.a 25/09/12
+ * @(#)QuoteEditor 2.8.n 26/09/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -34,7 +34,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.n
  * @since 2.4.d 07/06/12
  */
 public class QuoteEditor
@@ -47,22 +47,28 @@ public class QuoteEditor
     super(desktop);
   }
 
-  public QuoteEditor(GemDesktop desktop, BillingServiceI service, Quote f) {
-    super(desktop, service, f);
+  public QuoteEditor(GemDesktop desktop, BillingService service, Quote q) {
+    super(desktop, service, q);
   }
 
   @Override
    protected void addView() {
     add(view, BorderLayout.CENTER);
 
+    btDuplicate = new GemButton(GemCommand.DUPLICATE_CMD);
+    btDuplicate.addActionListener(this);
+    
     btPrint = new GemButton(GemCommand.PRINT_CMD);
     btPrint.addActionListener(this);
+    
     btInvoice = new GemButton(BundleUtil.getLabel("Quotation.invoice.creation.label"));
     btInvoice.addActionListener(this);
+    btInvoice.setToolTipText(BundleUtil.getLabel("Quotation.invoice.creation.tip"));
 
     buttons.add(btPrint,0);
+    buttons.add(btDuplicate,0);
     buttons.add(btInvoice,0);
-
+    
     add(buttons, BorderLayout.SOUTH);
   }
 
@@ -73,7 +79,7 @@ public class QuoteEditor
 
     if (d.getNumber() == null || d.getNumber().isEmpty()) {
       try {
-        billingService.create(d);
+        service.create(d);
         view.setId(d.getNumber()); // rafraîchissement du numéro
         desktop.postEvent(new QuoteCreateEvent(d));
       } catch (SQLException e) {
@@ -83,8 +89,8 @@ public class QuoteEditor
       }
     } else {    
       try {
-        billingService.update(d);
-        MessagePopup.information(view, MessageUtil.getMessage("modification.confirmation.label"));
+        service.update(d);
+        MessagePopup.information(view, MessageUtil.getMessage("modification.success.label"));
         desktop.postEvent(new QuoteUpdateEvent(d));
       } catch (BillingException fe) {
         MessagePopup.warning(this, MessageUtil.getMessage("invoicing.update.exception")+"\n"+fe.getMessage());
@@ -107,6 +113,9 @@ public class QuoteEditor
   public void actionPerformed(ActionEvent e) {
     super.actionPerformed(e);
     if (e.getSource() == btInvoice) {
+      if (!MessagePopup.confirm(this, MessageUtil.getMessage("invoice.estimate.create.confirmation"))) {
+        return;
+      }
       Quote d = view.get();
       // le devis doit être d'abord enregistré
       if (d.getNumber() == null || d.getNumber().isEmpty()) {
@@ -115,16 +124,16 @@ public class QuoteEditor
       }
       d.setItems(view.getItems()); // récupération des articles éventuellement modifiés dans la vue 
       try {
-        Invoice f = billingService.createInvoiceFrom(d);
+        Invoice f = service.createInvoiceFrom(d);
         if (f != null) {
-          MessagePopup.information(this, MessageUtil.getMessage("invoice.create.info", new Object[] {f.getNumber()}));
+          MessagePopup.information(this, MessageUtil.getMessage("invoice.create.info", f.getNumber()));
           desktop.postEvent(new InvoiceCreateEvent(f));
         }
       } catch (BillingException ex) {
         MessagePopup.warning(this, ex.getMessage());
       }
       cancel();
-    }
+    } 
   }
 
 }

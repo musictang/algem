@@ -1,7 +1,7 @@
 /*
- * @(#)InvoiceItemSearchCtrl.java 2.6.a 01/08/2012
+ * @(#)InvoiceItemSearchCtrl.java 2.8.o 08/10/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -30,7 +30,7 @@ import net.algem.util.module.GemModule;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.o
  * @since 2.3.a 15/02/12
  */
 public class InvoiceItemSearchCtrl

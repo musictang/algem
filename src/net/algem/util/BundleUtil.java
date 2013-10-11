@@ -1,7 +1,7 @@
 /*
- * @(#)BundleUtil.java 2.7.a 21/11/12
+ * @(#)BundleUtil.java 2.8.n 04/10/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -30,7 +30,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  * Utility class for i18n labels.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.n
  */
 public class BundleUtil
 {
@@ -53,11 +53,7 @@ public class BundleUtil
   }
 
   public static String getLabel(String key, ResourceBundle bundle) {
-    if (bundle == null) {
-      return getLabel(key);
-    }
-    return get(key, bundle);
-
+    return bundle == null ? getLabel(key) : get(key, bundle);
   }
 
   public static String getLabel(String key, Object[] args) {

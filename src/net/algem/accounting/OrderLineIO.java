@@ -201,7 +201,9 @@ public class OrderLineIO
     String fac = ModeOfPayment.FAC.toString();
     String query = "SELECT * FROM " + TABLE + " WHERE reglement";
     query += fac.equals(e.getModeOfPayment()) ? " != '" + fac + "'" : " = '" + fac + "'";
-    query += " AND (commande >  0 AND commande = " + e.getOrder() + ") AND payeur = " + e.getPayer();
+    query += " AND (commande >  0 AND commande = " + e.getOrder() + ")"
+            + " AND payeur = " + e.getPayer()
+            + " AND echeance = '" + e.getDate() + "'";
     Vector<OrderLine> r = getResult(query, dc);
     return (r == null || r.isEmpty()) ? null : r.elementAt(0);
   }

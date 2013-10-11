@@ -1,7 +1,7 @@
 /*
- * @(#)Quote.java 2.7.h 22/02/13
+ * @(#)Quote.java 2.8.n 25/09/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -32,7 +32,7 @@ import net.algem.security.User;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.h
+ * @version 2.8.n
  * @since 2.4.d 08/06/12
  */
 public class Quote
@@ -46,28 +46,39 @@ public class Quote
    * n : an incremental number
    */
   protected String number;
+  
   /** Invoice/quote label. */
   protected String description;
+  
   /** Establishment id. */
   protected int estab;
+  
   /** Curent user. */
   protected User user;
+  
   /** Invoice issuer id. */
   protected int issuer;
+  
   /** Invoice member id. */
   protected int member;
+  
   /** Client id. Payer must exists in Algem contacts. */
   protected int payer;
+  
   /** Creation date. */
   protected DateFr date;
-  /** Références. */
+
   protected String reference;
+  
   /** Down payment. */
   protected double downPayment;
+  
   /** Invoice item collection. */
   protected Collection<InvoiceItem> items = new ArrayList<InvoiceItem>();
+  
   /** Order line collection. */
   protected Collection<OrderLine> orderLines = new ArrayList<OrderLine>();
+  
   private boolean editable = true;
 
   /**
@@ -89,14 +100,14 @@ public class Quote
 
   public Quote(Quote d) {
     this(d.getNumber());
-    setDate(d.getDate());
-    setEstablishment(d.getEstablishment());
-    setIssuer(d.getIssuer());
-    setPayer(d.getPayer());
-    setDescription(d.getDescription());
-    setReference(d.getReference());
-    setMember(d.getMember());
-    setDownPayment(d.getDownPayment());
+    this.date = d.getDate();
+    this.estab = d.getEstablishment();
+    this.issuer = d.getIssuer();
+    this.payer = d.getPayer();
+    this.description = d.getDescription();
+    this.reference = d.getReference();
+    this.member = d.getMember();
+    this.downPayment = d.getDownPayment();
   }
 
   /**
@@ -158,6 +169,63 @@ public class Quote
     return hash;
   }
 
+//  @Override
+//  public boolean equals(Object obj) {
+//    if (obj == null) {
+//      return false;
+//    }
+//    if (getClass() != obj.getClass()) {
+//      return false;
+//    }
+//    final Quote other = (Quote) obj;
+//    if ((this.number == null) ? (other.number != null) : !this.number.equals(other.number)) {
+//      return false;
+//    }
+//    if (this.items == null || !this.items.equals(other.items)) {
+//      return false;
+//    }
+//    return true;
+//  }
+  
+  
+  boolean equiv(Invoice n) {
+    if (n == null) {
+      return false;
+    }
+    if ((this.description == null) ? (n.description != null) : !this.description.equals(n.description)) {
+      return false;
+    }
+    if ((this.reference == null) ? (n.reference != null) : !this.reference.equals(n.reference)) {
+      return false;
+    }
+    if ((this.date == null) ? (n.date != null) : !this.date.equals(n.date)) {
+      return false;
+    }
+    if (estab != n.estab) {
+      return false;
+    }
+    if (downPayment != n.downPayment) {
+      return false;
+    }
+    if (getTotalATI() != n.getTotalATI()) {
+      return false;
+    }
+    if (this.items == null) {
+      return false;
+    }
+    if (n.getItems() == null) {
+      return false;
+    }
+    List<InvoiceItem> i1 = new ArrayList<InvoiceItem>(items);
+    List<InvoiceItem> i2 = new ArrayList<InvoiceItem>(n.getItems());
+    if (!i1.equals(i2)) {
+      return false;
+    }
+    
+    return true;
+  }
+
+
   @Override
   public String toString() {
     return getClass().getSimpleName() + " " + number + ", " + description;
@@ -169,7 +237,7 @@ public class Quote
    *
    * @param last last saved invoice number
    */
-  public void inc(int last) {
+  void inc(int last) {
 
     String d = date.toString().substring(8);// les 2 premiers chiffres de l'année
     String m = date.toString().substring(3, 5); // le mois sur 2 chiffres
@@ -182,7 +250,7 @@ public class Quote
     return date;
   }
 
-  public void setDate(DateFr date) {
+  void setDate(DateFr date) {
     this.date = date;
   }
 
@@ -190,7 +258,7 @@ public class Quote
     return member;
   }
 
-  public void setMember(int m) {
+  void setMember(int m) {
     this.member = m;
   }
 
@@ -198,11 +266,11 @@ public class Quote
     return payer;
   }
 
-  public void setPayer(int p) {
+  void setPayer(int p) {
     this.payer = p;
   }
 
-  public int getIssuer() {
+  int getIssuer() {
     return issuer;
   }
 
@@ -210,20 +278,20 @@ public class Quote
     this.issuer = (user == null) ? 0 : user.getId();
   }
 
-  public void setIssuer(int issuer) {
+  void setIssuer(int issuer) {
     this.issuer = issuer;
   }
 
-  public User getUser() {
+  User getUser() {
     return user;
   }
 
-  public void setUser(User user) {
+  void setUser(User user) {
     this.user = user;
     setIssuer();
   }
 
-  public int getEstablishment() {
+  int getEstablishment() {
     return estab;
   }
 
@@ -235,23 +303,23 @@ public class Quote
     return number;
   }
 
-  public void setNumber(String n) {
+  void setNumber(String n) {
     this.number = n;
   }
 
-  public String getDescription() {
+  String getDescription() {
     return description;
   }
 
-  public void setDescription(String desc) {
+  void setDescription(String desc) {
     this.description = desc;
   }
 
-  public String getReference() {
+  String getReference() {
     return reference;
   }
 
-  public void setReference(String ref) {
+  void setReference(String ref) {
     this.reference = ref;
   }
 
@@ -259,7 +327,7 @@ public class Quote
     return downPayment;
   }
 
-  public void setDownPayment(double ac) {
+  void setDownPayment(double ac) {
     this.downPayment = ac;
   }
 
@@ -268,15 +336,15 @@ public class Quote
    *
    * @return a collection of items
    */
-  public Collection<InvoiceItem> getItems() {
+  Collection<InvoiceItem> getItems() {
     return items;
   }
 
-  public void setItems(Collection<InvoiceItem> items) {
+  void setItems(Collection<InvoiceItem> items) {
     this.items = items;
   }
 
-  public void setOrderLines(Collection<OrderLine> ol) {
+  void setOrderLines(Collection<OrderLine> ol) {
     orderLines = ol;
   }
 
@@ -289,11 +357,11 @@ public class Quote
    *
    * @param it the item to add
    */
-  public void addItem(InvoiceItem it) {
+  void addItem(InvoiceItem it) {
     items.add(it);
   }
 
-  public void remove(InvoiceItem it) {
+  void remove(InvoiceItem it) {
     items.remove(it);
   }
 
@@ -351,7 +419,7 @@ public class Quote
   }
 
   /**
-   * Verify if quote/invoice includes a down payment.
+   * Checks if quote/invoice includes a down payment.
    *
    * @return true if downPayment > 0
    */
@@ -364,15 +432,15 @@ public class Quote
    *
    * @return true if invoice
    */
-  public boolean isInvoice() {
+  boolean isInvoice() {
     return getClass() == Invoice.class;
   }
 
-  public boolean isEditable() {
+  boolean isEditable() {
     return editable;
   }
 
-  public void setEditable(boolean editable) {
+  void setEditable(boolean editable) {
     this.editable = editable;
   }
 }

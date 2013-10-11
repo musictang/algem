@@ -1,7 +1,7 @@
 /*
- * @(#)ExportService.java 2.8.h 03/06/13
+ * @(#)ExportService.java 2.8.o 09/10/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -45,7 +45,7 @@ import net.algem.util.model.Model;
 /**
  * Service class for export operations.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.h
+ * @version 2.8.o
  * @since 2.6.d 06/11/2012
  */
 public class ExportService {
@@ -186,6 +186,22 @@ public class ExportService {
             + " WHERE s.jour >= '" + start + "' AND s.jour <= '" + end + "'"
             + " AND s.action = a.id AND a.cours = " + course
             + " AND s.id = r.idplanning AND r.adherent = m.idper AND m.idper = p.id"
+            + " ORDER BY p.nom, p.prenom";
+  }
+  
+  String getContactQueryByModule(int module, Date start, Date end) {
+    return "SELECT DISTINCT p.id, p.nom, p.prenom FROM "
+            + PersonIO.TABLE + " p, "
+            + ScheduleIO.TABLE + " s, "
+            + OrderIO.TABLE + " c, "
+            + CourseOrderIO.TABLE + " cc, "
+            + ModuleOrderIO.TABLE + " cm"
+            + " WHERE s.jour >= '" + start + "' AND s.jour <= '" + end + "'"
+            + " AND s.action = cc.idaction"
+            + " AND cc.module = cm.id"
+            + " AND cm.module = " + module
+            + " AND cc.idcmd = c.id"
+            + " AND c.adh = p.id"
             + " ORDER BY p.nom, p.prenom";
   }
   

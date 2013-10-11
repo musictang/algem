@@ -1,5 +1,5 @@
 /*
- * @(#)CourseCtrl.java	2.8.a 19/03/13
+ * @(#)CourseCtrl.java	2.8.n 03/10/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -33,13 +33,14 @@ import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.CardCtrl;
 import net.algem.util.ui.MessagePopup;
+import net.algem.util.ui.SearchCtrl;
 
 /**
  * comment
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.n
  */
 public class CourseCtrl
         extends CardCtrl
@@ -76,6 +77,8 @@ public class CourseCtrl
     switch (step) {
       default:
         select(step + 1);
+        btPrev.setText(GemCommand.BACK_CMD);
+        btPrev.setActionCommand(GemCommand.BACK_CMD);
         break;
     }
     return true;
@@ -83,9 +86,16 @@ public class CourseCtrl
 
   @Override
   public boolean cancel() {
+    
     if (actionListener != null) {
+      if (actionListener instanceof SearchCtrl) {
       actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "CtrlValider"));
+      } else if (actionListener instanceof GemDesktop) {
+        clear();
+        actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, GemCommand.CANCEL_CMD));
+      }
     }
+
     return true;
   }
 
@@ -93,6 +103,7 @@ public class CourseCtrl
   public boolean prev() {
     switch (step) {
       case 0:
+        
         try {
           if (dataCache.authorize("Course.suppression.auth")) {
             service.delete(cv.get());
@@ -109,6 +120,11 @@ public class CourseCtrl
           GemLogger.logException(ex);
           return false;
         }
+      case 1:
+        btPrev.setActionCommand(GemCommand.DELETE_CMD);
+        btPrev.setText(GemCommand.DELETE_CMD);
+        select(step - 1);
+        break;
       default:
         select(step - 1);
         break;
@@ -215,8 +231,8 @@ public class CourseCtrl
   
   private void close() {
      if (actionListener != null) {
-      actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Abandon"));
-    }
+      actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, GemCommand.CANCEL_CMD));
+    } 
   }
 
 }

@@ -1,5 +1,5 @@
 /*
- * @(#)BasicEmployeeService.java 2.8.m 04/09/13
+ * @(#)BasicEmployeeService.java 2.8.n 07/10/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -27,7 +27,7 @@ import net.algem.util.DataConnection;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.m
+ * @version 2.8.n
  * @since 2.8.m 03/09/13
  */
 public class BasicEmployeeService
@@ -78,7 +78,7 @@ public class BasicEmployeeService
   
   @Override
   public boolean checkNir(String insee) {
-    if (insee.length() < 15) {
+    if (insee == null || insee.length() < 15) {
       return false;
     }
     int key = Integer.parseInt(insee.substring(13));

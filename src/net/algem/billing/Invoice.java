@@ -1,7 +1,7 @@
 /*
- * @(#)Invoice.java 2.5.d 25/07/12
+ * @(#)Invoice.java 2.8.n 26/09/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -22,6 +22,7 @@ package net.algem.billing;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import net.algem.accounting.ModeOfPayment;
 import net.algem.accounting.OrderLine;
 import net.algem.contact.PersonFile;
@@ -31,7 +32,7 @@ import net.algem.security.User;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.5.d
+ * @version 2.8.n
  * @since 2.3.a 22/12/11
  */
 public class Invoice
@@ -44,8 +45,8 @@ public class Invoice
     super(number);
   }
 
-  public <F extends Quote> Invoice(F f) {
-    super(f);
+  public <Q extends Quote> Invoice(Q quote) {
+    super(quote);
   }
 
   public Invoice(User u) {
@@ -73,4 +74,10 @@ public class Invoice
   public void addOrderLine(OrderLine e) {
     orderLines.add(e);
   }
+  
+  boolean isFromScratch() {
+    List<OrderLine> lines = new ArrayList<OrderLine>(orderLines);
+    return lines != null && lines.size() > 0 && lines.get(0).getId() <= 0;
+  }
+
 }

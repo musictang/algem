@@ -1,5 +1,5 @@
 /*
- * @(#)MemberEnrolmentDlg.java	2.8.i 03/07/13
+ * @(#)MemberEnrolmentDlg.java	2.8.n 24/09/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -49,7 +49,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.i
+ * @version 2.8.n
  * @since 1.0a 07/07/1999
  * @see net.algem.contact.PersonFileEditor
  *
@@ -137,7 +137,7 @@ public class MemberEnrolmentDlg
       //premier parcours de boucle pour déterminer le prix total.
       for (int i = 0; i < module_orders.size(); i++) {
         m = module_orders.elementAt(i);
-        totalBase += m.getPrice();
+        totalBase += m.getPrice();// prix calculé en fonction de la périodicité
       }
       
       // enregistrement des modules
@@ -277,7 +277,7 @@ public class MemberEnrolmentDlg
   }
 
   /**
-   * Adds a module.
+   * Adds a module to the list of module orders.
    */
   void addModule() {
     try {
@@ -290,11 +290,6 @@ public class MemberEnrolmentDlg
       }
       int idModule = Integer.parseInt(moduleDlg.getField(0));
       // Un même module peut être sélectionné plusieurs fois à partir de la version 2.8
-//      if (alreadySelectedModule(idModule)) {
-//        MessagePopup.warning(null, MessageUtil.getMessage("module.already.selected", idModule));
-//        return;
-//      }
-      
       ModuleOrder mo = new ModuleOrder();
       
       Module m = ((ModuleIO) DataCache.getDao(Model.Module)).findId(idModule);
@@ -306,7 +301,7 @@ public class MemberEnrolmentDlg
     } catch (SQLException ex) {
       MessagePopup.warning(view, "#addModule " + ex.getMessage());
     }
-  }// end addModule
+  }
 
   /**
    * Adds a module.

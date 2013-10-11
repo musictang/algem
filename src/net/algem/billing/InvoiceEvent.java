@@ -33,13 +33,13 @@ public class InvoiceEvent
         extends GemEvent
 {
 
-  protected Invoice f;
+  protected Invoice q;
 
-  public InvoiceEvent(Object _source, int operation) {
-    super(_source, operation, INVOICE);
+  public InvoiceEvent(Object source, int operation) {
+    super(source, operation, INVOICE);
   }
 
   public Invoice getInvoice() {
-    return f;
+    return q;
   }
 }

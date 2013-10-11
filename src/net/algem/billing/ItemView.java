@@ -1,7 +1,7 @@
 /*
- * @(#)ItemView.java 2.7.a 09/01/13
+ * @(#)ItemView.java 2.8.n 19/09/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -22,6 +22,7 @@
 package net.algem.billing;
 
 import java.awt.GridBagLayout;
+import java.util.logging.Level;
 import net.algem.accounting.AccountChoice;
 import net.algem.config.Param;
 import net.algem.config.ParamChoice;
@@ -32,7 +33,7 @@ import net.algem.util.ui.*;
 /**
  * Invoice item view.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.n
  * @since 2.3.a 03/02/12
  */
 public class ItemView
@@ -48,7 +49,7 @@ public class ItemView
   protected GridBagHelper gb;
   protected boolean standard;
 
-  public ItemView(final BillingServiceI service) {
+  public ItemView(final BillingService service) {
 
     id = new GemNumericField(5);
     id.setEditable(false);
@@ -83,10 +84,14 @@ public class ItemView
   public Item get() {
 
     int i = 0;
+    String idString = id.getText();
+    if (idString == null || idString.isEmpty()) {
+      idString = "0";
+    }
     try {
-      i = Integer.parseInt(id.getText());
+      i = Integer.parseInt(idString);
     } catch (NumberFormatException nfe) {
-      GemLogger.logException(nfe);
+      GemLogger.log(Level.WARNING, nfe.getMessage());
     }
     Item a = new Item(i);
     a.setDesignation(designation.getText().trim());

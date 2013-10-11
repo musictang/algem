@@ -39,14 +39,14 @@ public class ItemCtrl
         extends CardCtrl
 {
 
-  protected BillingService service;
+  protected BasicBillingService service;
   protected ItemView view;
   private Item old;
 
   public ItemCtrl() {
   }
 
-  public ItemCtrl(BillingService service) {
+  public ItemCtrl(BasicBillingService service) {
 
     this.service = service;
     view = new ItemView(service);

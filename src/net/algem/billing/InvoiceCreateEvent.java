@@ -33,7 +33,7 @@ public class InvoiceCreateEvent
 
   public InvoiceCreateEvent(Invoice source) {
     super(source, CREATION);
-    this.f = source;
+    this.q = source;
   }
 
 }

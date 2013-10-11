@@ -1,5 +1,5 @@
 /*
- * @(#)EmployeeIO.java 2.8.m 02/09/13
+ * @(#)EmployeeIO.java 2.8.n 03/10/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -31,13 +31,13 @@ import net.algem.util.model.TableIO;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.m
+ * @version 2.8.n
  * @since 2.8.m 02/09/13
  */
 public class EmployeeIO
 {
   public static final String TABLE = "salarie";
-  public static final String COLUMNS = "idper,insee,datenais,lieunais,guso";
+  public static final String COLUMNS = "idper,insee,datenais,lieunais,guso,nationalite";
   
   private DataConnection dc;
 
@@ -47,10 +47,11 @@ public class EmployeeIO
   
   public void insert(Employee e) throws SQLException {
     String query = "INSERT INTO " + TABLE + " VALUES(" + e.getIdPer()
-            + ",'" + TableIO.escape(e.getInsee())
+            + ",'" + TableIO.escape(e.getNir())
             + "', " + ((e.getDateBirth() == null) ? null : "'" + e.getDateBirth() + "'")
             + ",'" + TableIO.escape(e.getPlaceBirth())
             + "','" + TableIO.escape(e.getGuso())
+            + "','" + TableIO.escape(e.getNationality())
             + "')";
     
     dc.executeUpdate(query);
@@ -59,10 +60,11 @@ public class EmployeeIO
   
   public void update(Employee e) throws SQLException {
     String query = "UPDATE " + TABLE + " SET"
-            + " insee = '" + TableIO.escape(e.getInsee())
+            + " insee = '" + TableIO.escape(e.getNir())
             + "', datenais = " + ((e.getDateBirth() == null) ? null : "'" + e.getDateBirth() + "'")
             + ", lieunais = '" + TableIO.escape(e.getPlaceBirth())
             + "', guso = '" + TableIO.escape(e.getGuso())
+            + "', nationalite = '" + TableIO.escape(e.getNationality())
             + "' WHERE idper = " + e.getIdPer();
 
     dc.executeUpdate(query);
@@ -77,12 +79,13 @@ public class EmployeeIO
     while (rs.next()) {
       e = new Employee(idper);
       String insee = TableIO.unEscape(rs.getString(2));
-      e.setInsee(insee == null ? null : insee.trim());
+      e.setNir(insee == null ? null : insee.trim());
       Date d = rs.getDate(3);
       e.setDateBirth(d == null ? null : new DateFr(d));
       e.setPlaceBirth(TableIO.unEscape(rs.getString(4)));
       String guso = TableIO.unEscape(rs.getString(5));
       e.setGuso(guso == null ? null : guso.trim());
+      e.setNationality(TableIO.unEscape(rs.getString(6)));
     }
     return e;
   }

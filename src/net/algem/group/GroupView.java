@@ -1,7 +1,7 @@
 /*
- * @(#)GroupView.java	2.7.a 03/12/12
+ * @(#)GroupView.java	2.8.n 04/10/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,16 +20,13 @@
  */
 package net.algem.group;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.GridBagLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.sql.SQLException;
-import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import net.algem.config.GemParamChoice;
 import net.algem.config.MusicStyle;
@@ -37,6 +34,8 @@ import net.algem.contact.*;
 import net.algem.util.*;
 import net.algem.util.event.GemEvent;
 import net.algem.util.event.GemEventListener;
+import net.algem.util.jdesktop.DesktopHandler;
+import net.algem.util.jdesktop.DesktopOpenHandler;
 import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.module.GemDesktopCtrl;
@@ -48,7 +47,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.n
  * @since 1.1aa mardi 24 février 2009
  *
  */
@@ -59,6 +58,18 @@ public class GroupView
 
   private static Dimension btDimension = new Dimension(100, 20);
   private static final Contact nullContact = new Contact();
+  
+  private static final String PARENT_DIR = "groupes/";
+  
+   /** Default bio dir name. */
+  private static final String BIO_DIR = "bio";
+  
+  /** Default datasheet dir name. */
+  private static final String DATASHEET_DIR = "fiche-technique";
+  
+  /** Default stage plan name. */
+  static final String STAGE_DIR = "plan-scene";
+  
 
   static {
     nullContact.setId(0);
@@ -80,17 +91,28 @@ public class GroupView
   private GemField book;
   private WebSiteView sw;
   private GemLabel noteLabel;
-  private GemButton bRef;
-  private GemButton bMan;
-  private GemButton bBook;
+  private GemButton refBt;
+  private GemButton manBt;
+  private GemButton bookBt;
   private GemButton refReset, manReset, bookReset;
   private ImageIcon resetIcon;
   private Note note;
   private GroupService service;
+  
+  private GemButton bioBt;
+  private GemButton dataSheetBt;
+  private GemButton stagePlanBt;
+  
+  private File bio;
+  private File dataSheet;
+  private File stage;
+  private DesktopHandler handler;
 
   public GroupView(GemDesktop desktop, GroupService service) {
     this.desktop = desktop;
     this.service = service;
+    handler = new DesktopOpenHandler();
+    
     resetIcon = ImageUtil.createImageIcon(ImageUtil.DELETE_ICON);
     noteLabel = new GemLabel();
     noteLabel.setForeground(java.awt.Color.red);
@@ -101,18 +123,18 @@ public class GroupView
     initButtons();
     initFields();
 
-    GemPanel infos = new GemPanel();
-    infos.setLayout(new GridBagLayout());
+    GemPanel contactPanel = new GemPanel();
+    contactPanel.setLayout(new GridBagLayout());
 
-    GridBagHelper gb = new GridBagHelper(infos);
+    GridBagHelper gb = new GridBagHelper(contactPanel);
     gb.insets = GridBagHelper.SMALL_INSETS;
 
     gb.add(new GemLabel("N°"), 0, 0, 1, 1, GridBagHelper.EAST);
     gb.add(new GemLabel(BundleUtil.getLabel("Name.label")), 0, 1, 1, 1, GridBagHelper.EAST);
     gb.add(new GemLabel(BundleUtil.getLabel("Style.label")), 0, 2, 1, 1, GridBagHelper.EAST);
-    gb.add(bRef, 0, 3, 1, 1, GridBagHelper.EAST);
-    gb.add(bMan, 0, 4, 1, 1, GridBagHelper.EAST);
-    gb.add(bBook, 0, 5, 1, 1, GridBagHelper.EAST);
+    gb.add(refBt, 0, 3, 1, 1, GridBagHelper.EAST);
+    gb.add(manBt, 0, 4, 1, 1, GridBagHelper.EAST);
+    gb.add(bookBt, 0, 5, 1, 1, GridBagHelper.EAST);
 
     gb.add(no, 1, 0, 3, 1, GridBagHelper.WEST);
     gb.add(name, 1, 1, 3, 1, GridBagHelper.WEST);
@@ -125,21 +147,30 @@ public class GroupView
     gb.add(manReset, 4, 4, 1, 1, GridBagHelper.WEST);
     gb.add(bookReset, 4, 5, 1, 1, GridBagHelper.WEST);
 
-    GemBorderPanel b = new GemBorderPanel();
-    GemBorderPanel body = new GemBorderPanel(BorderFactory.createEmptyBorder(50, 50, 50, 50));
-    body.setLayout(new BorderLayout());
-    body.add(infos, BorderLayout.CENTER);
-    sw = new WebSiteView(service.getCategoriesSite());
-    sw.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 0));
-    body.add(sw, BorderLayout.SOUTH);
+    sw = new WebSiteView(service.getCategoriesSite(), false);
+    gb.add(sw, 0, 6, 5, 1, GridBagHelper.BOTH, GridBagHelper.WEST);
 
-    b.add(body);
+    ActionListener groupFileListener = new GroupDocListener();
+    
+    GemPanel buttons = new GemPanel(new GridLayout(1,3));
+    bioBt = new GemButton(BundleUtil.getLabel("Bio.label"));
+    bioBt.addActionListener(groupFileListener);
+    dataSheetBt = new GemButton(BundleUtil.getLabel("Datasheet.label"));
+    dataSheetBt.addActionListener(groupFileListener);
+    stagePlanBt = new GemButton(BundleUtil.getLabel("Stage.plan.label"));
+    stagePlanBt.addActionListener(groupFileListener);
+    
+    buttons.add(bioBt);
+    buttons.add(dataSheetBt);
+    buttons.add(stagePlanBt);
+    gb.add(buttons, 0, 7, 5, 1, GridBagHelper.BOTH, GridBagHelper.WEST);
+    
     this.setLayout(new BorderLayout());
-    add(b, BorderLayout.CENTER);
+    add(contactPanel, BorderLayout.CENTER);
     add(noteLabel, BorderLayout.SOUTH);
   }
 
-  public void setId(int i) {
+  void setId(int i) {
     id = i;
     no.setText(String.valueOf(i));
   }
@@ -148,7 +179,7 @@ public class GroupView
    * Inits the fields for the group {@code g}.
    * @param g current group
    */
-  public void setGroup(Group g) {
+  void setGroup(Group g) {
     if (g == null) {
       g = new Group();
     }
@@ -159,16 +190,8 @@ public class GroupView
     setContact(g);
     setNote(g.getNote());
     sw.setSites(g.getSites());
-
-  }
-
-  public String getGroupName() {
-    return name.getText();
-  }
-
-  /* ajout 1.1a */
-  public Note getNote() {
-    return note;
+    
+    setButtonAccess(id);
   }
 
   /**
@@ -177,7 +200,7 @@ public class GroupView
    * @param n the note to display
    * @since 1.1.a
    */
-  void setNote(Note n) {
+  private void setNote(Note n) {
     note = n;
     if (n != null && n.getText() != null) {
       noteLabel.setText(n.getText().replace('\n', ' '));
@@ -185,24 +208,41 @@ public class GroupView
   }
 
   /** Sets the referent. */
-  public void setRef(Contact c) {
+  private void setRef(Contact c) {
     idref = c.getId();
     ref.setText(c.getFirstnameName());
   }
 
   /** Sets the manager. */
-  public void setMan(Contact c) {
+  private void setMan(Contact c) {
     idman = c.getId();
     man.setText(c.getFirstnameName());
   }
 
   /** Sets the booker. */
-  public void setBook(Contact c) {
+  private void setBook(Contact c) {
     idbook = c.getId();
     book.setText(c.getFirstnameName());
   }
+  
+  /**
+   * Sets the state of the file's access buttons.
+   * If a particular file exists for this group, the button is enabled.
+   * @param groupId 
+   */
+  private void setButtonAccess(int groupId) {
 
-  public Group get() {
+    bio = FileUtil.findLastFile(PARENT_DIR, BIO_DIR, groupId);
+    bioBt.setEnabled(bio != null && bio.canRead());
+    
+    dataSheet = FileUtil.findLastFile(PARENT_DIR, DATASHEET_DIR, groupId);
+    dataSheetBt.setEnabled(dataSheet != null && dataSheet.canRead());
+    
+    stage = FileUtil.findLastFile(PARENT_DIR, STAGE_DIR, groupId);
+    stagePlanBt.setEnabled(stage != null && stage.canRead());
+  }
+
+  Group get() {
     Group g = new Group();
     g.setId(id);
     g.setName(name.getText());
@@ -223,17 +263,12 @@ public class GroupView
   }
 
   /** Specifies the type of contact to search. */
-  public void setCurrentSearch(int search) {
-    currentSearch = search;
-  }
-
-  /** Gets the current type of contact. */
-  public int getCurrentSearch() {
-    return currentSearch;
+  private void setCurrentSearch(int type) {
+    currentSearch = type;
   }
 
   /** Reset. */
-  public void clear() {
+  void clear() {
     no.setText("");
     name.setText("");
     ref.setText("");
@@ -245,6 +280,7 @@ public class GroupView
     idman = 0;
     idbook = 0;
     noteLabel.setText("");
+    currentSearch = 0;
   }
 
   @Override
@@ -273,7 +309,7 @@ public class GroupView
   public void postEvent(GemEvent evt) {
     if (evt instanceof ContactSelectEvent) {
       Contact c = ((ContactSelectEvent) evt).getContact();
-      setContact(c, getCurrentSearch());
+      setContact(c, currentSearch);
     } else if (evt instanceof NoteEvent) {
       Note n = ((NoteEvent) evt).getNote();
       if (n.getIdPer() == id && n.getPtype() == Person.GROUP) {
@@ -284,14 +320,14 @@ public class GroupView
 
   /** Initialisation des boutons du panneau central. */
   private void initButtons() {
-    bRef = new GemButton(BundleUtil.getLabel("Group.referent"));
-    set(bRef, "setREF");
+    refBt = new GemButton(BundleUtil.getLabel("Group.referent"));
+    set(refBt, "setREF");
 
-    bMan = new GemButton(BundleUtil.getLabel("Group.manager"));
-    set(bMan, "setMAN");
+    manBt = new GemButton(BundleUtil.getLabel("Group.manager"));
+    set(manBt, "setMAN");
 
-    bBook = new GemButton(BundleUtil.getLabel("Group.booker"));
-    set(bBook, "setTOUR");
+    bookBt = new GemButton(BundleUtil.getLabel("Group.booker"));
+    set(bookBt, "setTOUR");
     
     refReset = new GemButton(resetIcon);
     setReset(refReset, "resetREF");
@@ -413,6 +449,28 @@ public class GroupView
   @Override
   public String toString() {
     return getClass().getSimpleName();
+  }
+  
+  private class GroupDocListener implements ActionListener
+  {
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      Object src = e.getSource();
+      if (src == bioBt) {
+        if (bio != null) {
+          FileUtil.open(handler, bio.getAbsolutePath());
+        }
+      } else if (src == dataSheetBt) {
+         if (dataSheet != null) {
+          FileUtil.open(handler, dataSheet.getAbsolutePath());
+        }
+      } else if (src == stagePlanBt) {
+        if (stage != null) {
+          FileUtil.open(handler, stage.getAbsolutePath());
+        }
+      }
+    }
+  
   }
   
   /* pour aligner les items dans la combobox */

@@ -1,5 +1,5 @@
 /*
- * @(#)RoomFileEditor.java 2.8.m 11/09/13
+ * @(#)RoomFileEditor.java 2.8.o 08/10/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -43,7 +43,7 @@ import net.algem.util.ui.*;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.m
+ * @version 2.8.o
  * @since 2.1.b
  */
 public class RoomFileEditor
@@ -61,6 +61,7 @@ public class RoomFileEditor
   private JMenuBar mBar;
   private JMenuItem miHistoInvoice;
   private JMenuItem miHistoQuote;
+  private JMenuItem miSchedule;
   private RoomFileView roomView;
   private RoomService service;
   private List<Equipment> oldEquip = new Vector<Equipment>();
@@ -99,6 +100,8 @@ public class RoomFileEditor
 
     mFile.add(getMenuItem("Room.suppression"));
     JMenu mOptions = new JMenu(BundleUtil.getLabel("Menu.options.label"));
+    mOptions.add(miSchedule = getMenuItem("Menu.month.schedule"));
+    mOptions.addSeparator();
     mOptions.add(miHistoInvoice = getMenuItem("Invoice.history"));
     mOptions.add(miHistoQuote = getMenuItem("Quotation.history"));
 
@@ -188,16 +191,16 @@ public class RoomFileEditor
       if (payer <= 0) {
         return;
       }
-      HistoInvoice hf = addHistoInvoice(payer, room.getContact().getId());
+      HistoInvoice hf = addHistoInvoice(payer);
       hf.addActionListener(this);
       roomView.addTab(hf, FileView.HISTO_INVOICE_TAB_TITLE);
       miHistoInvoice.setEnabled(false);
     } else if ("Quotation.history".equals(arg)) {
-      int payeur = getPayer();
-      if (payeur <= 0) {
+      int payer = getPayer();
+      if (payer <= 0) {
         return;
       }
-      HistoQuote hd = getHistoQuotation(payeur, room.getContact().getId());
+      HistoQuote hd = getHistoQuotation(payer);
       hd.addActionListener(this);
       roomView.addTab(hd, FileView.HISTO_ESTIMATE_TAB_TITLE);
       miHistoQuote.setEnabled(false);
@@ -217,6 +220,10 @@ public class RoomFileEditor
       roomView.addTab(ed, FileView.ESTIMATE_TAB_TITLE);
     } else if ("CtrlAbandonDevis".equals(arg)) {
       roomView.removeTab((QuoteEditor) src);
+    }  else if ("Menu.month.schedule".equals(arg)) {
+      RoomScheduleCtrl dlg = new RoomScheduleCtrl(desktop, room.getId());
+      roomView.addTab(dlg, BundleUtil.getLabel("Menu.month.schedule.label"));
+      miSchedule.setEnabled(false);
     } else if (CloseableTab.CLOSE_CMD.equals(arg)) {// fermeture de l'onglet par le bouton de fermeture
       if (getClassName(OrderLineEditor.class).equals(src)) {
         btOrderLine.setEnabled(true);
@@ -224,6 +231,8 @@ public class RoomFileEditor
         miHistoInvoice.setEnabled(true);
       } else if (getClassName(HistoQuote.class).equals(src)) {
         miHistoQuote.setEnabled(true);
+      } else if (getClassName(RoomScheduleCtrl.class).equals(src)) {
+        miSchedule.setEnabled(true);
       }
     }
 

@@ -1,5 +1,5 @@
 /*
- * @(#)GemDesktopCtrl.java	2.8.m 09/09/13
+ * @(#)GemDesktopCtrl.java	2.8.o 09/10/13
  *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -63,7 +63,7 @@ import net.algem.util.ui.HtmlViewer;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.m
+ * @version 2.8.o
  * @since 1.0a 05/07/2002
  */
 public class GemDesktopCtrl
@@ -355,6 +355,9 @@ public class GemDesktopCtrl
       dlg.setVisible(true);
     } else if (BundleUtil.getLabel("Menu.student.by.course.label").equals(arg)) {
       CourseStudentExportDlg dlg = new CourseStudentExportDlg(getFrame(), dataCache);
+      dlg.setVisible(true);
+    } else if (BundleUtil.getLabel("Menu.student.by.module.label").equals(arg)) {
+      ModuleStudentExportDlg dlg = new ModuleStudentExportDlg(getFrame(), dataCache);
       dlg.setVisible(true);
     } else if (BundleUtil.getLabel("Menu.student.by.instrument.label").equals(arg)) {
       InstrumentStudentExportDlg dlg = new InstrumentStudentExportDlg(getFrame(), dataCache);
@@ -724,6 +727,8 @@ public class GemDesktopCtrl
     menu = mExport.add(new JMenuItem(BundleUtil.getLabel("Menu.student.by.teacher.label")));
     menu.addActionListener(this);
     menu = mExport.add(new JMenuItem(BundleUtil.getLabel("Menu.student.by.course.label")));
+    menu.addActionListener(this);
+    menu = mExport.add(new JMenuItem(BundleUtil.getLabel("Menu.student.by.module.label")));
     menu.addActionListener(this);
     menu = mExport.add(new JMenuItem(BundleUtil.getLabel("Menu.student.by.instrument.label")));
     menu.addActionListener(this);

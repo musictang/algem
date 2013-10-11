@@ -1,7 +1,7 @@
 /*
- * @(#)QuoteIO.java 2.7.a 09/01/13
+ * @(#)QuoteIO.java 2.8.n 26/09/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -35,7 +35,7 @@ import net.algem.util.model.Model;
  * Quote persistence {@link net.algem.billing.Quote}.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.n
  * @since 2.4.d 07/06/12
  */
 public class QuoteIO
@@ -213,8 +213,9 @@ public class QuoteIO
     return lf == null ? null : lf.get(0);
   }
 
-  public List<Quote> findBy(int payer, int member) throws SQLException {
-    String where = " WHERE debiteur = " + payer + " OR adherent = " + member;
+  public List<Quote> findBy(int idper) throws SQLException {
+//    String where = " WHERE debiteur = " + payer + " OR adherent = " + member;
+    String where = "  WHERE debiteur = " + idper + " OR adherent = " + idper;
     return find(where);
 
   }

@@ -1,7 +1,7 @@
 /*
- * @(#)InvoiceView.java 2.8.a 28/03/13
+ * @(#)InvoiceView.java 2.8.o 08/10/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -65,7 +65,7 @@ import net.algem.util.ui.*;
  * Invoice / quotation view.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.o
  * @since 2.3.a 07/02/12
  */
 public class InvoiceView
@@ -82,7 +82,7 @@ public class InvoiceView
   private GemField invoiceLabel;
   private DateFrField date;
   private GemField ref;
-  private EstabChoice etabChoix;
+  private EstabChoice estab;
   private GemField payer;
   private GemField member;
   private JFormattedTextField downPayment;
@@ -92,27 +92,27 @@ public class InvoiceView
   private ItemListCtrl itemList;
   private Quote invoice;
   private DataCache dataCache;
-	private DataConnection dc;
+  private DataConnection dc;
   private GemDesktop desktop;
   private GemButton btAdd;
   private GemButton btModify;
   private GemButton btDelete;
   private InvoiceItemSearchCtrl browser;
   private NumberFormat nf;
-	private BillingServiceI service;
+  private BillingService service;
+  private Collection<OrderLine> orderLines;
+  private boolean isInvoice;
 
-  public <F extends Quote> InvoiceView(F f, GemDesktop desktop, BillingServiceI service) {
+  public InvoiceView(GemDesktop desktop, BillingService service) {
 
     this.desktop = desktop;
     this.dataCache = desktop.getDataCache();
-		this.dc = dataCache.getDataConnection();
-		this.service = service;
-
-    init(f);
+    this.dc = dataCache.getDataConnection();
+    this.service = service;
+    init();
   }
 
-  public <F extends Quote> void init(F f) {
-
+  private void init() {
     GemPanel head = new GemPanel(new BorderLayout());
 
     GemPanel head1 = new GemPanel();
@@ -124,7 +124,7 @@ public class InvoiceView
     invoiceLabel = new GemField(20);
     date = new DateFrField();
     ref = new GemField(15);
-    etabChoix = new EstabChoice(dataCache.getList(Model.Establishment));
+    estab = new EstabChoice(dataCache.getList(Model.Establishment));
     payer = new GemField(20);
     payer.setEditable(false);
     member = new GemField(20);
@@ -150,7 +150,6 @@ public class InvoiceView
 
     itemList = new ItemListCtrl(new InvoiceItemTableModel(), false);
 
-    set(f); // corrélation invoice
     head1.add(invoiceId);
     head1.add(new GemLabel(BundleUtil.getLabel("Invoice.description.label")));
     head1.add(invoiceLabel);
@@ -159,7 +158,7 @@ public class InvoiceView
     head1.add(new GemLabel(BundleUtil.getLabel("Invoice.reference.label")));
     head1.add(ref);
     head2.add(new GemLabel(BundleUtil.getLabel("Establishment.label")));
-    head2.add(etabChoix);
+    head2.add(estab);
     head2.add(new GemLabel(BundleUtil.getLabel("Payer.label")));
     head2.add(payer);
     head2.add(new GemLabel(BundleUtil.getLabel("Member.label")));
@@ -168,7 +167,7 @@ public class InvoiceView
     head.add(head1, BorderLayout.NORTH);
     head.add(head2, BorderLayout.SOUTH);
 
-    GemPanel boutons = new GemPanel(new GridLayout(1, 3));
+    GemPanel buttons = new GemPanel(new GridLayout(1, 3));
     btDelete = new GemButton(GemCommand.DELETE_CMD);
     btDelete.addActionListener(this);
     btModify = new GemButton(GemCommand.MODIFY_CMD);
@@ -176,15 +175,9 @@ public class InvoiceView
     btAdd = new GemButton(GemCommand.ADD_CMD);
     btAdd.addActionListener(this);
 
-    if (!f.isInvoice() && !f.isEditable()) {
-      btDelete.setEnabled(false);
-      btModify.setEnabled(false);
-      btAdd.setEnabled(false);
-    }
-
-    boutons.add(btDelete);
-    boutons.add(btModify);
-    boutons.add(btAdd);
+    buttons.add(btDelete);
+    buttons.add(btModify);
+    buttons.add(btAdd);
 
     GemPanel body = new GemPanel(new BorderLayout());
     body.add(itemList, BorderLayout.CENTER);
@@ -194,7 +187,6 @@ public class InvoiceView
     GemPanel total = new GemPanel();
     total.add(new GemLabel(BundleUtil.getLabel("Invoice.down.payment.label")));
     total.add(downPayment);
-//    total.add(new GemLabel(BundleUtil.getLabel("Invoice.total.label")));
     total.add(new GemLabel(BundleUtil.getLabel("Invoice.et.label")));
     total.add(totalET);
     total.add(new GemLabel(BundleUtil.getLabel("Invoice.ati.label")));
@@ -202,7 +194,7 @@ public class InvoiceView
     total.add(new GemLabel(BundleUtil.getLabel("Invoice.net.label")));
     total.add(net);
 
-    footer.add(boutons, BorderLayout.NORTH);
+    footer.add(buttons, BorderLayout.NORTH);
     footer.add(total, BorderLayout.SOUTH);
 
     setLayout(new BorderLayout());
@@ -222,39 +214,55 @@ public class InvoiceView
 
   public void setId(String n) {
     invoiceId.setText(n);
+    if (invoice != null) {
+      invoice.setNumber(n);
+    }
   }
 
   /**
-   * Set the differents fields.
+   * Sets the different field values.
    *
-   * @param f
+   * @param quote
    */
-  public <F extends Quote> void set(F f) {
-    if (f == null) {
+  <Q extends Quote> void set(Q quote, String m, String p) {
+    if (quote == null) {
       return;
     }
-    invoice = f;
+    invoice = quote;
+    
+    isInvoice = quote.isInvoice();
+    invoiceId.setText(quote.getNumber());
+    invoiceLabel.setText(quote.getDescription());
+    date.setText(quote.getDate().toString());
+    ref.setText(quote.getReference());
+    estab.setKey(quote.getEstablishment());
+    payer.setText(p);
+    member.setText(m);
 
-    invoiceId.setText(f.getNumber());
-    invoiceLabel.setText(f.getDescription());
-    date.setText(f.getDate().toString());
-    ref.setText(f.getReference());
-    etabChoix.setKey(f.getEstablishment());
-    payer.setText(String.valueOf(f.getPayer()));
-    member.setText(String.valueOf(f.getMember()));
-
-    if (f.getItems() != null) {
-      itemList.loadResult(new Vector<InvoiceItem>(f.getItems()));
+    if (quote.getItems() != null) {
+      itemList.loadResult(new Vector<InvoiceItem>(quote.getItems()));
     }
 
-    if (!f.isInvoice()) {
+    if (!isInvoice) {
       downPayment.setEditable(false);
     }
-    downPayment.setValue(f.getDownPayment());
-    totalET.setValue(f.getTotalET());
-    double ttc = invoice.getTotalATI();
+    downPayment.setValue(quote.getDownPayment());
+    totalET.setValue(quote.getTotalET());
+    double ttc = quote.getTotalATI();
     totalATI.setValue(ttc);
-    net.setValue(Double.valueOf(ttc - f.getDownPayment()));
+    net.setValue(Double.valueOf(ttc - quote.getDownPayment()));
+    
+    orderLines = quote.getOrderLines();
+    
+    if (!isInvoice && !quote.isEditable()) {
+      btDelete.setEnabled(false);
+      btModify.setEnabled(false);
+      btAdd.setEnabled(false);
+    } else {
+      btDelete.setEnabled(true);
+      btModify.setEnabled(true);
+      btAdd.setEnabled(true);
+    }
   }
 
   /**
@@ -262,18 +270,27 @@ public class InvoiceView
    *
    * @return a quote/invoice
    */
-  public Quote get() {
-
-    if (invoice != null) {
-      invoice.setDescription(invoiceLabel.getText());
-      invoice.setDate(new DateFr(date.getText()));
-      invoice.setReference(ref.getText());
-      invoice.setEstablishment(etabChoix.getKey());
+  Quote get() {
+    Invoice inv = new Invoice(invoiceId.getText());
+      inv.setDescription(invoiceLabel.getText());
+      inv.setDate(new DateFr(date.getText()));
+      inv.setReference(ref.getText());
+      inv.setEstablishment(estab.getKey());
       double a = ((Number) downPayment.getValue()).doubleValue();
-      invoice.setDownPayment(Math.abs(a));
-    }
+      inv.setDownPayment(Math.abs(a));
+      
+      inv.setItems(getItems());
+      inv.setOrderLines(orderLines);
+      
+      if (invoice != null) {
+        inv.setPayer(invoice.getPayer());
+        inv.setMember(invoice.getMember());
+        inv.setEstablishment(invoice.getEstablishment());
+        inv.setIssuer(invoice.getIssuer());
+        inv.setUser(invoice.getUser());
+      }
 
-    return invoice;
+    return inv;
   }
 
   /**
@@ -281,13 +298,12 @@ public class InvoiceView
    *
    * @return a collection of invoice items
    */
-  public Collection<InvoiceItem> getItems() {
+  Collection<InvoiceItem> getItems() {
     return itemList.getData();
   }
 
   @Override
   public void actionPerformed(ActionEvent e) {
-    //System.out.println("InvoiceView.actionPerformed");
     String cmd = e.getActionCommand();
     try {
       if (GemCommand.ADD_CMD.equals(cmd)) {
@@ -302,7 +318,7 @@ public class InvoiceView
         InvoiceItem selectedItem = itemList.getSelectedItem();
         InvoiceItemEditor dlg = new InvoiceItemEditor(desktop, selectedItem, service);
         dlg.setVisible(true);
-        if (dlg.isModified()) {
+        if (dlg.hasChanged()) {
           OrderLine ol = selectedItem.getOrderLine();
           InvoiceItem updatedItem = dlg.get();
           // l'article à modifier pourrait être référencé dans un devis (on aurait créé une facture à partir de ce devis)
@@ -315,13 +331,14 @@ public class InvoiceView
           } catch (SQLException ex) {
             System.err.println(ex.getMessage());
           }
-          if (ol != null && !AccountUtil.isRevenueAccount(ol.getAccount())
-                  && updatedItem.getQuantity() > 0.0f
-                  && Math.abs(ol.getDoubleAmount()) != updatedItem.getTotal(true)) {
-            MessagePopup.warning(this, MessageUtil.getMessage("invoice.item.amount.modification.warning"));
+          if (ol != null && ol.getId() > 0) {
+//          if (ol != null && !AccountUtil.isRevenueAccount(ol.getAccount())
+//                  && updatedItem.getQuantity() > 0.0f
+//                  && Math.abs(ol.getDoubleAmount()) != updatedItem.getTotal(true)) {
+            MessagePopup.warning(this, MessageUtil.getMessage("invoice.item.modification.warning"));
             // modification des items déjà payés
             if (ol.isPaid()) {
-              if (!MessagePopup.confirm(this, MessageUtil.getMessage("invoice.item.amount.modification.confirmation"), "")) {
+              if (!MessagePopup.confirm(this, MessageUtil.getMessage("invoice.item.modification.confirmation"), "")) {
                 return;
               }
             }
@@ -333,9 +350,10 @@ public class InvoiceView
       } else if (GemCommand.DELETE_CMD.equals(cmd)) {
         InvoiceItem item = itemList.getSelectedItem();
         itemList.deleteRow(item);
-        if (invoice.isInvoice()) {
+        if (isInvoice) {
           MessagePopup.warning(this, MessageUtil.getMessage("invoice.item.suppression.warning"));
-          ((Invoice) invoice).getOrderLines().remove(item.getOrderLine());
+//          ((Invoice) invoice).getOrderLines().remove(item.getOrderLine());
+          orderLines.remove(item.getOrderLine());
         }
         updateTotal();
 
@@ -364,17 +382,18 @@ public class InvoiceView
   /**
    * Reset the fields.
    */
-  public void reset() {
+  void reset() {
     invoice = null;
     itemList = null;
     invoiceLabel.setText(null);
     date.set(new DateFr());
-    etabChoix.setSelectedIndex(0);
+    estab.setSelectedIndex(0);
     totalET.setValue(null);
     totalATI.setValue(null);
     member.setText(null);
     payer.setText(null);
     downPayment.setValue(null);
+    ref.setText(null);
   }
 
   /**
@@ -405,7 +424,7 @@ public class InvoiceView
   }
 
   /**
-   * Updates total in the view.
+   * Updates total in the main view.
    */
   private void updateTotal() {
     invoice.setItems(getItems());
@@ -419,6 +438,8 @@ public class InvoiceView
   @Override
   public int print(Graphics g, PageFormat pageFormat, int pageIndex) throws PrinterException {
 
+    Quote p = get();
+    
     if (pageIndex > 0) { /* We have only one page, and 'page' is zero-based */
       return NO_SUCH_PAGE;
     }
@@ -427,8 +448,7 @@ public class InvoiceView
     int bottom = ImageUtil.toPoints(297 - 20);// hauteur de page - 20 mm de marge
     int margin = ImageUtil.toPoints(15);
 
-    get();
-    Contact c = ContactIO.findId(invoice.getPayer(), dc);
+    Contact c = ContactIO.findId(p.getPayer(), dc);
     Address a = null;
     if (c != null) {
       a = c.getAddress();
@@ -442,17 +462,17 @@ public class InvoiceView
 
     g.setFont(serif);
     // nom établissement
-    g.drawString(getEstabName(invoice) + ", le " + invoice.getDate(), left, top + 80);
+    g.drawString(getEstabName(p) + ", le " + p.getDate(), left, top + 80);
     // numéro invoice
     String nlabel = invoice.getClass() == Quote.class
             ? BundleUtil.getLabel("Quotation.label") : BundleUtil.getLabel("Invoice.label");
-    g.drawString(nlabel + " : " + invoice.getNumber(), margin, top + 100);
+    g.drawString(nlabel + " : " + p.getNumber(), margin, top + 100);
     // référence
-    g.drawString("Ref. : " + invoice.getReference(), left, top + 100);
+    g.drawString("Ref. : " + p.getReference(), left, top + 100);
     // émetteur
-    g.drawString(BundleUtil.getLabel("Issuer.label") + " : " + invoice.getUser().getFirstnameName(), margin, top + 120);
+    g.drawString(BundleUtil.getLabel("Issuer.label") + " : " + p.getUser().getFirstnameName(), margin, top + 120);
     // description
-    g.drawString(BundleUtil.getLabel("Invoice.description.label") + " : " + invoice.getDescription(), margin, top + 140);
+    g.drawString(BundleUtil.getLabel("Invoice.description.label") + " : " + p.getDescription(), margin, top + 140);
 
     int tableY = top + 160;
     int tabletop = tableY;
@@ -462,8 +482,8 @@ public class InvoiceView
     g.drawLine(margin, tableY + 20, margin + InvoiceItemElement.TABLE_WIDTH, tableY + 20);
     // items
     tableY += 5;
-    for (InvoiceItem af : invoice.getItems()) {
-      InvoiceItemElement item = new InvoiceItemElement(margin, tableY + 20, af);
+    for (InvoiceItem invoiceItem : p.getItems()) {
+      InvoiceItemElement item = new InvoiceItemElement(margin, tableY + 20, invoiceItem);
       item.draw(g);
       tableY += 20;
     }
@@ -478,7 +498,7 @@ public class InvoiceView
     g.drawLine(InvoiceItemElement.xColHT, tabletop, InvoiceItemElement.xColHT, tablebottom); // colonne total HT
 
     // pied tableau
-    new InvoiceFooterElement(margin, tablebottom + 20, invoice).draw(g);
+    new InvoiceFooterElement(margin, tablebottom + 20, p).draw(g);
     // infos légales
     drawFooter(g, margin, bottom);
 
@@ -488,8 +508,8 @@ public class InvoiceView
   /**
    * Prints the invoice.
    */
-  public void print() {
-
+  void print() {
+    
     if (invoice.getClass() != Quote.class && (invoice.getNumber() == null || invoice.getNumber().isEmpty())) {
       MessagePopup.warning(this, MessageUtil.getMessage("invoice.printing.warning"));
       return;
@@ -510,12 +530,12 @@ public class InvoiceView
   /**
    * Search establishment name.
    *
-   * @param f invoice
+   * @param q quote/invoice
    * @return a name or null
    */
-  private String getEstabName(Quote f) {
+  private String getEstabName(Quote q) {
     try {
-      Establishment e = EstablishmentIO.findId(f.getEstablishment(), dc);
+      Establishment e = EstablishmentIO.findId(q.getEstablishment(), dc);
       return e == null ? "" : e.getName();
     } catch (SQLException ex) {
       GemLogger.logException(ex);

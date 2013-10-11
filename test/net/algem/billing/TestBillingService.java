@@ -20,10 +20,7 @@
  */
 package net.algem.billing;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import junit.framework.TestCase;
 import net.algem.TestProperties;
 import net.algem.accounting.Account;
@@ -32,6 +29,8 @@ import net.algem.accounting.OrderLine;
 import net.algem.planning.DateFr;
 import net.algem.util.DataConnection;
 import net.algem.util.module.GemDesktop;
+import org.junit.*;
+import static org.junit.Assert.*;
 
 /**
  *
@@ -39,29 +38,47 @@ import net.algem.util.module.GemDesktop;
  * @version 2.8.a
  * @since 2.3.d
  */
-public class TestBillingService extends TestCase
+public class TestBillingService
 {
 
   private DataConnection dc;
   private GemDesktop desktop;
-  private BillingService service;
-
-  public TestBillingService(String testName) {
-    super(testName);
+  private BasicBillingService service;
+  
+  @BeforeClass
+  public static void setUpClass() throws Exception {
   }
 
-  @Override
-  protected void setUp() throws Exception {
-    super.setUp();
+  @AfterClass
+  public static void tearDownClass() throws Exception {
+  }
+  
+  @Before
+  public void setUp() throws Exception {
     dc = TestProperties.getDataConnection();
-    service = new BillingService(TestProperties.getDataCache(dc));
-
+    service = new BasicBillingService(TestProperties.getDataCache(dc));
+  }
+  
+  @After
+  public void tearDown() {
   }
 
-  @Override
-  protected void tearDown() throws Exception {
-    super.tearDown();
-  }
+//  public TestBillingService(String testName) {
+//    super(testName);
+//  }
+//
+//  @Override
+//  protected void setUp() throws Exception {
+//    super.setUp();
+//    dc = TestProperties.getDataConnection();
+//    service = new BasicBillingService(TestProperties.getDataCache(dc));
+//
+//  }
+//
+//  @Override
+//  protected void tearDown() throws Exception {
+//    super.tearDown();
+//  }
 
   /*public void testUpdateArticleFacture() throws SQLException, FacturationException {
 
@@ -162,7 +179,7 @@ public class TestBillingService extends TestCase
 
   }*/
   
-	
+  @Test
   public void testCollection() {
     OrderLine e1 = new OrderLine();
     e1.setMember(1234);
@@ -232,7 +249,7 @@ public class TestBillingService extends TestCase
 
     double total = 0.0;
 
-    System.out.println("u" + u.getAmount());
+    //System.out.println("u" + u.getAmount());
     for (OrderLine c : c3) {
       if (c.getModeOfPayment().equals(ModeOfPayment.FAC.toString())) {
         total += c.getAmount();
@@ -242,6 +259,96 @@ public class TestBillingService extends TestCase
 
     assertTrue("total = " + total, total == -220.00);
 
+  }
+  
+  @Test
+  public void testAddOrderLines() {
+    InvoiceItem i1 = new InvoiceItem(new Item("", 100, 13, false));
+    InvoiceItem i2 = new InvoiceItem(new Item("", 200, 13, false));
+    InvoiceItem i3 = new InvoiceItem(new Item("", 200, 13, false));
+    InvoiceItem i4 = new InvoiceItem(new Item("", 110, 14, false));
+    InvoiceItem i5 = new InvoiceItem(new Item("", 159.87, 29, false));
+    
+    List<InvoiceItem> items = new ArrayList<InvoiceItem>();
+    items.add(i1);
+    items.add(i2);
+    items.add(i3);
+    items.add(i4);
+    items.add(i5);
+    Map<Integer,List<InvoiceItem>> map = mapInvoiceItemsByAccount(items);
+
+    int expected = 3;
+    System.out.println(map.size());
+    assertTrue(map.size() == expected);
+    assertTrue(getTotal(map.get(13)) == 500);
+    assertTrue(getTotal(map.get(14)) == 110);
+    assertTrue(getTotal(map.get(29)) == 159.87);
+    
+    items.clear();
+    i1 = new InvoiceItem(new Item("", 100, 13, false));
+    i2 = new InvoiceItem(new Item("", 200, 14, false));
+    i3 = new InvoiceItem(new Item("", 200, 13, false));
+    i4 = new InvoiceItem(new Item("", 110, 14, false));
+    i5 = new InvoiceItem(new Item("", 159.87, 14, false));
+    
+    items.add(i1);
+    items.add(i2);
+    items.add(i3);
+    items.add(i4);
+    items.add(i5);
+    
+    map = mapInvoiceItemsByAccount(items);
+    expected = 2;
+    System.out.println(map.size());
+    assertTrue(map.size() == expected);
+    assertTrue(getTotal(map.get(13)) == 300);
+    assertTrue(getTotal(map.get(14)) == 469.87);
+//    
+    items.clear();
+    i1 = new InvoiceItem(new Item("", 100, 0, false));
+    i2 = new InvoiceItem(new Item("", 200, 14, false));
+    i3 = new InvoiceItem(new Item("", 200.0, 13, false));
+    i4 = new InvoiceItem(new Item("", 110.0, 14, false));
+    i5 = new InvoiceItem(new Item("", 0.0, 14, false));
+    
+    items.add(i1);
+    items.add(i2);
+    items.add(i3);
+    items.add(i4);
+    items.add(i5);
+    map = mapInvoiceItemsByAccount(items);
+
+    expected = 2;
+    System.out.println(map.size());
+    assertTrue(map.size() == expected);
+    assertTrue(getTotal(map.get(13)) == 200);
+    assertTrue(getTotal(map.get(14)) == 310);
+    
+  }
+  
+  private Double getTotal(List<InvoiceItem> items) {
+    double total = 0.0;
+    for(InvoiceItem i : items) {
+      total += i.getTotal(true);
+    }
+    return total;
+  }
+  
+  private Map<Integer,List<InvoiceItem>> mapInvoiceItemsByAccount(List<InvoiceItem> items) {
+    Map<Integer, List<InvoiceItem>> map = new HashMap<Integer, List<InvoiceItem>>();
+    for (InvoiceItem item : items) {
+      if (item.getOrderLine() == null && item.getTotal(true) != 0.0) {
+        int c = item.getItem().getAccount();
+        if (c == 0) continue;
+        List<InvoiceItem> list = map.get(c);
+        if (list == null) {
+          list = new ArrayList<InvoiceItem>();
+        }
+        list.add(item);
+        map.put(c, list);
+      }
+    }
+    return map;
   }
 	
 }

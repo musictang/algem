@@ -35,9 +35,9 @@ public class InvoiceTableModel
         extends JTableModel
 {
 
-  private BillingServiceI service;
+  private BillingService service;
 
-  public InvoiceTableModel(BillingServiceI service) {
+  public InvoiceTableModel(BillingService service) {
     this.service = service;
     header = new String[]{
       BundleUtil.getLabel("Invoice.id.label"),
@@ -49,6 +49,13 @@ public class InvoiceTableModel
     };
   }
 
+  <Q extends Quote> void reset(Q v) {
+    int idx = tuples.indexOf(v);
+    if (idx > -1) {
+      modItem(idx, v);
+    }
+  }
+  
   @Override
   public int getIdFromIndex(int i) {
     return 0;

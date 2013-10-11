@@ -1,7 +1,7 @@
 /*
- * @(#)ItemListCtrl.java	2.3.d 23/03/12
+ * @(#)ItemListCtrl.java	2.8.o 08/10/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,7 +21,10 @@
 package net.algem.billing;
 
 import java.awt.BorderLayout;
+import java.awt.event.MouseEvent;
+import java.sql.SQLException;
 import java.text.NumberFormat;
+import java.util.logging.Level;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
@@ -30,13 +33,17 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import net.algem.accounting.AccountUtil;
 import net.algem.config.Param;
+import net.algem.util.BundleUtil;
+import net.algem.util.DataCache;
+import net.algem.util.GemLogger;
+import net.algem.util.model.Model;
 import net.algem.util.ui.ListCtrl;
 
 /**
  * Item list controller.
  * 
- * @author Jean-Marc Gobat <a href="mailto:jmg@musiques-tangentes.asso.fr">jmg@musiques-tangentes.asso.fr</a>
- * @version 2.3.d
+ * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
+ * @version 2.8.o
  * @since 2.3.a 30/01/12
  */
 public class ItemListCtrl
@@ -44,6 +51,7 @@ public class ItemListCtrl
 {
 
   private static NumberFormat nf = AccountUtil.getDefaultNumberFormat();
+//  private DataCache dataCache;
 
   public ItemListCtrl() {
     super(true);
@@ -62,20 +70,36 @@ public class ItemListCtrl
    * @param tableModel
    * @param withSearch
    */
-  public ItemListCtrl(InvoiceItemTableModel tableModel, boolean withSearch) {
+  public ItemListCtrl(final InvoiceItemTableModel tableModel, boolean withSearch) {
 
     super(withSearch);
     this.tableModel = tableModel;
+//    this.dataCache = dataCache;
 
-    table = new JTable(tableModel);
+    table = new JTable(tableModel) {
+      @Override
+      public String getToolTipText(MouseEvent e){
+        int row = rowAtPoint(e.getPoint());
+        InvoiceItem obj = (InvoiceItem) tableModel.getItem(row);
+        int a = obj.getItem().getAccount();
+        try {
+          return BundleUtil.getLabel("Account.label") + " : " + DataCache.findId(a, Model.Account).toString();
+        } catch (SQLException ex) {
+          GemLogger.log(Level.WARNING, ex.getMessage());
+          return null;
+        }
+      }
+    };
+    
     table.setAutoCreateRowSorter(true);
-
+   
     setColumns(400, 100, 40, 40, 120);
     setColumnsRenderer(1, 2, 3, 4);
     addScrollPane();
 
   }
 
+  
   public InvoiceItem getSelectedItem() {
     return (InvoiceItem) tableModel.getItem(table.convertRowIndexToModel(table.getSelectedRow()));
   }

@@ -1,7 +1,7 @@
 /*
- * @(#)InvoiceEditor.java 2.7.h 25/02/13
+ * @(#)InvoiceEditor.java 2.8.n 26/09/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -25,12 +25,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Vector;
 import net.algem.accounting.AccountUtil;
 import net.algem.accounting.OrderLine;
+import net.algem.util.BundleUtil;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
+import net.algem.util.event.GemEventListener;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.FileTabDialog;
 import net.algem.util.ui.GemButton;
@@ -39,29 +42,35 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.h
+ * @version 2.8.n
  * @since 2.3.a 07/02/12
  */
 public class InvoiceEditor
         extends FileTabDialog
 {
 
-  protected BillingServiceI billingService;
+  protected BillingService service;
   protected InvoiceView view;
   protected ActionListener listener;
+  protected GemEventListener gemListener;
   protected GemButton btPrint;
+  protected GemButton btDuplicate;
   
-  public InvoiceEditor(GemDesktop desktop, BillingServiceI service, Quote quote) {
+  /** Mock object for edit detection and backup. */
+  private Quote old;
+  
+  public InvoiceEditor(GemDesktop desktop, BillingService service, Quote quote) {
 
     this(desktop);
+    this.service = service;
+    old = quote;
+    btCancel.setText(btCancel.getText()+"/"+BundleUtil.getLabel("Action.closing.label"));
+    view = new InvoiceView(desktop, service);
     
-    this.billingService = service;
-    view = new InvoiceView(quote, desktop, service);
-    view.setMember(service.getContact(quote.getMember()));
-    view.setPayer(service.getContact(quote.getPayer()));
     
     setLayout(new BorderLayout());
     addView();
+   
   }
 
   protected void addView() {
@@ -69,8 +78,12 @@ public class InvoiceEditor
 
     btPrint = new GemButton(GemCommand.PRINT_CMD);
     btPrint.addActionListener(this);
+    
+    btDuplicate = new GemButton(GemCommand.DUPLICATE_CMD);
+    btDuplicate.addActionListener(this);
 
     buttons.add(btPrint,0);
+    buttons.add(btDuplicate,1);
 
     add(buttons, BorderLayout.SOUTH);
   }
@@ -85,40 +98,39 @@ public class InvoiceEditor
 
   @Override
   public void validation() {
-    Invoice f = (Invoice) view.get();
-    //f.setItems(view.getItems());
+    Invoice v = (Invoice) view.get();
 
-    if (f.getNumber() == null || f.getNumber().isEmpty()) {
+    if (v.getNumber() == null || v.getNumber().isEmpty()) {
       try {
-        setTransfer(f);
-        billingService.create(f);
-        view.setId(f.getNumber()); // rafraîchissement du numéro
-        //vueFacture.set(f);
-        desktop.postEvent(new InvoiceCreateEvent(f));
+        setTransfer(v);
+        service.create(v);
+        view.setId(v.getNumber()); // rafraîchissement du numéro
+        desktop.postEvent(new InvoiceCreateEvent(v));
+        backup(v);
+        btDuplicate.setEnabled(true);
       } catch (SQLException e) {
         GemLogger.logException(e);
       } catch (BillingException fe) {
         MessagePopup.warning(this, MessageUtil.getMessage("invoicing.create.exception")+"\n"+fe.getMessage());
       }
     } else {
-      //System.out.println("InvoiceEditor update");
-      Collection<OrderLine> nf = f.getOrderLines();
-      for (OrderLine e : nf) {
+      Collection<OrderLine> col = v.getOrderLines();
+      for (OrderLine o : col) {
         // pas de modification si les échéances de facturation (dont le compte est en classe 4) ont été déjà transférées
-        if (e.isTransfered() && AccountUtil.isPersonalAccount(e.getAccount())) {
+        if (o.isTransfered() && AccountUtil.isPersonalAccount(o.getAccount())) {
           MessagePopup.warning(this, MessageUtil.getMessage("invoice.modification.warning"));
           return;
         }
       }
       try {
-        billingService.update(f);
-        MessagePopup.information(view, MessageUtil.getMessage("modification.confirmation.label"));
-        desktop.postEvent(new InvoiceUpdateEvent(f));
+        service.update(v);
+        MessagePopup.information(view, MessageUtil.getMessage("modification.success.label"));
+        desktop.postEvent(new InvoiceUpdateEvent(v));
+        backup(v);
       } catch (BillingException fe) {
         MessagePopup.warning(this, MessageUtil.getMessage("invoicing.update.exception")+"\n"+fe.getMessage());
       }
     }
-
     //abandon(); // COMMENTÉ POUR LAISSER OUVERTE LA FENETRE
 
   }
@@ -141,23 +153,61 @@ public class InvoiceEditor
 
   @Override
   public void cancel() {
+    Invoice v = (Invoice) view.get();
+    if (old != null && !old.equiv(v)) {
+      if (!MessagePopup.confirm(this, MessageUtil.getMessage("invoice.cancel.editing.warning"))) {
+        return;
+      } else {
+        v = (Invoice) old;
+        gemListener.postEvent(new InvoiceUpdateEvent(v));
+      }
+    }
     if (listener != null) {
       listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "CtrlAbandonFacture"));
     }
+    btDuplicate.setEnabled(true);
     view.reset();
+    gemListener = null;
   }
 
   @Override
   public boolean isLoaded() {
-    return true;
+    return old != null;
   }
 
   @Override
   public void load() {
+    view.set(old, service.getContact(old.getMember()), service.getContact(old.getPayer()));
+    if (old == null || old.getNumber() == null) {
+      btDuplicate.setEnabled(false);
+    }
+    backup(old);
+  }
+  
+  private void backup(Quote q) {
+    old = new Invoice(q);
+    old.setUser(q.getUser());
+
+    Iterator<InvoiceItem> it = q.getItems().iterator();
+    while(it.hasNext()) {
+      InvoiceItem invoiceItem = it.next();
+      InvoiceItem t = new InvoiceItem();
+      t.setQuantity(invoiceItem.quantity);
+      t.setBillingId(invoiceItem.billingId);
+      t.setOrderLine(invoiceItem.getOrderLine());
+      Item i = invoiceItem.getItem();
+      t.setItem(i.copy());
+      old.addItem(t);
+    } 
+    old.setOrderLines(q.orderLines);
   }
 
   public void addActionListener(ActionListener listener) {
     this.listener = listener;
+  }
+  
+  public void addGemEventListener(GemEventListener listener) {
+    this.gemListener = listener;
   }
 
   @Override
@@ -165,6 +215,13 @@ public class InvoiceEditor
     super.actionPerformed(evt);
     if (evt.getSource() == btPrint) {
       view.print();
+    } else if(evt.getSource() == btDuplicate) {
+        Quote n = service.duplicate(view.get());
+        n.setUser(dataCache.getUser());
+        n.setEditable(true);
+        view.set(n, service.getContact(n.getMember()), service.getContact(n.getPayer()));
+        view.setId("");
+        btDuplicate.setEnabled(false);
     }
   }
   

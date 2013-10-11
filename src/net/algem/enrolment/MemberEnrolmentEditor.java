@@ -1,5 +1,5 @@
 /*
- * @(#)MemberEnrolmentEditor.java 2.8.l 30/08/13
+ * @(#)MemberEnrolmentEditor.java 2.8.n 19/09/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -58,7 +58,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.l
+ * @version 2.8.n
  * @since 1.0b 06/09/2001
  */
 public class MemberEnrolmentEditor
@@ -518,9 +518,10 @@ public class MemberEnrolmentEditor
       for (CourseModuleInfo info : m.getCourses()) {
         addCourse(mo, info);
       }
+      // TODO désactiver l'ajout de lignes d'échéance à l'ajout d'un module
       enrolmentOrder.setTotalBase(mo.getPrice());
+      
       String school = ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey(), dc);
-//      String estab = ConfigUtil.getConf(ConfigKey.DEFAULT_ESTABLISHMENT.getKey(), dc);
       try {
         int n = enrolmentOrder.saveOrderLines(mo, Integer.parseInt(school));
         enrolmentOrder.updateModuleOrder(n, mo);

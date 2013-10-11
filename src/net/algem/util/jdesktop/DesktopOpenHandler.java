@@ -24,26 +24,29 @@ import java.io.File;
 
 /**
  * Java desktop handler for file opening.
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.6.a
  */
-public class DesktopOpenHandler extends DesktopHandler {
+public class DesktopOpenHandler
+        extends DesktopHandler
+{
 
-	public DesktopOpenHandler() {
-	}
+  public DesktopOpenHandler() {
+  }
 
-	public void open(String... paths) throws DesktopHandlerException {
-		if (!isOpenSupported()) {
-			throw new DesktopHandlerException("Desktop Open not supported");
-		}
-		try {
-			File f = null;
-			for (String path : paths) {
-				f = new File(path);
-				getDesktop().open(f);
-			}
-		} catch (Exception e) {
-			throw new DesktopHandlerException(e.getMessage() + " : Desktop Open Exception");
-		}
-	}
+  public void open(String... paths) throws DesktopHandlerException {
+    if (!isOpenSupported()) {
+      throw new DesktopHandlerException("Desktop Open not supported");
+    }
+    try {
+      File f = null;
+      for (String path : paths) {
+        f = new File(path);
+        getDesktop().open(f);
+      }
+    } catch (Exception e) {
+      throw new DesktopHandlerException(e.getMessage() + " : Desktop Open Exception");
+    }
+  }
 }

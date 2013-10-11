@@ -20,14 +20,15 @@
  */
 package net.algem.enrolment;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
-import org.junit.*;
 import java.util.Vector;
-//import junit.framework.TestCase;
+import net.algem.TestProperties;
 import net.algem.accounting.AccountUtil;
 import net.algem.planning.DateFr;
+import net.algem.util.DataConnection;
+import org.junit.After;
+import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  *
@@ -36,12 +37,17 @@ import net.algem.planning.DateFr;
  */
 public class TestMemberEnrolment {
 
+  private DataConnection dc;
+  private EnrolmentOrderUtil util;
+  
   public TestMemberEnrolment() {
 
   }
 
   @Before
   public void setUp() throws Exception {
+    dc = TestProperties.getDataConnection();
+    util = new EnrolmentOrderUtil(null, dc);
   }
   
   @After
@@ -75,7 +81,7 @@ public class TestMemberEnrolment {
 
     DateFr startDateOrder = new DateFr("09-09-2008");
     DateFr endDateOrder = new DateFr("14-12-2008");
-    Vector dates = EnrolmentOrderUtil.getOrderQuarterDates(startDateOrder, endDateOrder);
+    Vector<DateFr> dates = util.getQuarterPaymentDates(startDateOrder, endDateOrder);
     assertTrue("not null", dates != null);
     assertTrue("nombre d'échéances erronné 09-09-2008", 1 == dates.size());
     assertEquals("09-09-2008 1","15-10-2008", dates.elementAt(0).toString());
@@ -84,7 +90,7 @@ public class TestMemberEnrolment {
     /*********************/
     startDateOrder = new DateFr("15-12-2008");
     endDateOrder = new DateFr("28-06-2009");
-    dates = EnrolmentOrderUtil.getOrderQuarterDates(startDateOrder, endDateOrder);
+    dates = util.getQuarterPaymentDates(startDateOrder, endDateOrder);
     assertTrue("not null", dates != null);
     assertTrue("nombre d'échéances erronné 15-12-2008", 2 == dates.size());
     assertEquals("15-12-2008 1", "15-01-2009", dates.elementAt(0).toString());
@@ -93,7 +99,7 @@ public class TestMemberEnrolment {
      /*********************/
     startDateOrder = new DateFr("02-02-2009");
     endDateOrder = new DateFr("28-06-2009");
-    dates = EnrolmentOrderUtil.getOrderQuarterDates(startDateOrder, endDateOrder);
+    dates = util.getQuarterPaymentDates(startDateOrder, endDateOrder);
     assertTrue("not null", dates != null);
     assertTrue("nombre d'échéances erronné 02-02-2009", 2 == dates.size());
     assertEquals("02-02-2009 1", "15-02-2009", dates.elementAt(0).toString());
@@ -103,7 +109,7 @@ public class TestMemberEnrolment {
      /*********************/
     startDateOrder = new DateFr("20-09-2008");
     endDateOrder = new DateFr("28-06-2009");
-    dates = EnrolmentOrderUtil.getOrderQuarterDates(startDateOrder, endDateOrder);
+    dates = util.getQuarterPaymentDates(startDateOrder, endDateOrder);
     assertTrue("not null", dates != null);
     assertTrue("nombre d'échéances erronné 20-09-2008", 3 == dates.size());
     assertEquals("20-09-2008 1","15-10-2008", dates.elementAt(0).toString());
@@ -114,7 +120,7 @@ public class TestMemberEnrolment {
      /*********************/
     startDateOrder = new DateFr("05-01-2009");
     endDateOrder = new DateFr("28-06-2009");
-    dates = EnrolmentOrderUtil.getOrderQuarterDates(startDateOrder, endDateOrder);
+    dates = util.getQuarterPaymentDates(startDateOrder, endDateOrder);
     assertTrue("not null", dates != null);
     assertTrue("nombre d'échéances erronné 05-01-2009", 2 == dates.size());
     assertEquals("05-01-2009 1", "15-01-2009", dates.elementAt(0).toString());
@@ -124,7 +130,7 @@ public class TestMemberEnrolment {
       /*********************/
     startDateOrder = new DateFr("12-01-2009");
     endDateOrder = new DateFr("26-03-2009");
-    dates = EnrolmentOrderUtil.getOrderQuarterDates(startDateOrder, endDateOrder);
+    dates = util.getQuarterPaymentDates(startDateOrder, endDateOrder);
     assertTrue("not null", dates != null);
     assertTrue("nombre d'échéances erronné 05-01-2009", 1 == dates.size());
     assertEquals("05-01-2009 1","15-02-2009", dates.elementAt(0).toString());
@@ -134,7 +140,7 @@ public class TestMemberEnrolment {
      /*********************/
     startDateOrder = new DateFr("11-04-2009");
     endDateOrder = new DateFr("28-06-2009");
-    dates = EnrolmentOrderUtil.getOrderQuarterDates(startDateOrder, endDateOrder);
+    dates = util.getQuarterPaymentDates(startDateOrder, endDateOrder);
     assertTrue("not null", dates != null);
     assertTrue("nombre d'échéances erronné 10-04-2009", 1 == dates.size());
     assertEquals("10-04-2009 1", "15-05-2009", dates.elementAt(0).toString());
@@ -144,7 +150,7 @@ public class TestMemberEnrolment {
      /*********************/
     startDateOrder = new DateFr("11-06-2009");
     endDateOrder = new DateFr("28-06-2009");
-    dates = EnrolmentOrderUtil.getOrderQuarterDates(startDateOrder, endDateOrder);
+    dates = util.getQuarterPaymentDates(startDateOrder, endDateOrder);
     assertTrue("not null", dates != null);
     assertTrue("nombre d'échéances erronné 11-06-2009", 1 == dates.size());
     assertEquals("11-06-2009 1", "15-07-2009", dates.elementAt(0).toString());
@@ -192,7 +198,7 @@ public class TestMemberEnrolment {
 
   public void testOrderMonthDates() {
     int expected = 9;
-    Vector<DateFr> dates = EnrolmentOrderUtil.getOrderMonthDates(new DateFr("12-09-2008"), new DateFr("28-06-2009"));
+    Vector<DateFr> dates = util.getMonthPaymentDates(new DateFr("12-09-2008"), new DateFr("28-06-2009"));
     assertTrue("vecteur null ??", null != dates);
     assertTrue("Attendu : "+expected+", reçu "+dates.size(), expected == dates.size());
     assertEquals("date premiere echeance ??", "15-10-2008", dates.elementAt(0).toString());
@@ -200,34 +206,34 @@ public class TestMemberEnrolment {
     dates.clear();
     /*--------------------------------------------------------------------------------------*/
     expected = 7;
-    dates = EnrolmentOrderUtil.getOrderMonthDates(new DateFr("09-12-2008"), new DateFr("28-06-2009"));
+    dates = util.getMonthPaymentDates(new DateFr("09-12-2008"), new DateFr("28-06-2009"));
     assertTrue("Attendu : "+expected+", reçu "+dates.size(), 7 == dates.size());
     assertEquals("date premiere echeance ??", "15-12-2008", dates.elementAt(0).toString());
     assertEquals("date derniere echeance ??", "15-06-2009", dates.elementAt(dates.size()-1).toString());
     dates.clear();
     /*--------------------------------------------------------------------------------------*/
     expected = 2;
-    dates = EnrolmentOrderUtil.getOrderMonthDates(new DateFr("11-01-2009"), new DateFr("29-03-2009"));
+    dates = util.getMonthPaymentDates(new DateFr("11-01-2009"), new DateFr("29-03-2009"));
     assertTrue("Attendu : "+expected+", reçu "+dates.size(), 2 == dates.size());
     assertEquals("date premiere echeance ??", "15-02-2009", dates.elementAt(0).toString());
     assertEquals("date derniere echeance ??", "15-03-2009", dates.elementAt(dates.size()-1).toString());
     dates.clear();
     /*--------------------------------------------------------------------------------------*/
     expected = 1;
-    dates = EnrolmentOrderUtil.getOrderMonthDates(new DateFr("20-05-2009"), new DateFr("28-06-2009"));
+    dates = util.getMonthPaymentDates(new DateFr("20-05-2009"), new DateFr("28-06-2009"));
     assertTrue("Attendu : "+expected+", reçu "+dates.size(), 1 == dates.size());
     assertEquals("date premiere echeance ??", "15-06-2009", dates.elementAt(0).toString());
     //assertEquals("date derniere echeance ??", "15-07-2009", dates.elementAt(dates.size()-1).toString());
     dates.clear();
     /*--------------------------------------------------------------------------------------*/
     expected = 6;
-    dates = EnrolmentOrderUtil.getOrderMonthDates(new DateFr("02-09-2008"), new DateFr("29-03-2009"));
+    dates = util.getMonthPaymentDates(new DateFr("02-09-2008"), new DateFr("29-03-2009"));
     assertTrue("Attendu : "+expected+", reçu "+dates.size(), 6 == dates.size());
     assertEquals("date premiere echeance ??", "15-10-2008", dates.elementAt(0).toString());
     assertEquals("date derniere echeance ??", "15-03-2009", dates.elementAt(dates.size()-1).toString());
     dates.clear();
 
-    dates = EnrolmentOrderUtil.getOrderMonthDates(new DateFr("28-06-2011"), new DateFr("02-07-2011"));
+    dates = util.getMonthPaymentDates(new DateFr("28-06-2011"), new DateFr("02-07-2011"));
     expected = 1;
     assertTrue("Attendu : "+expected+", reçu "+dates.size(), expected == dates.size());
     assertEquals("date premiere echeance ??", "15-07-2011", dates.elementAt(0).toString());

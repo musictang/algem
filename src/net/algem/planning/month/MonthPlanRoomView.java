@@ -1,7 +1,7 @@
 /*
- * @(#)MonthPlanRoomView.java	2.6.a 21/09/12
+ * @(#)MonthPlanRoomView.java	2.8.o 08/10/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -30,20 +30,23 @@ import net.algem.util.ui.GemChoice;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.o
  */
 public class MonthPlanRoomView
         extends MonthPlanDetailView
 {
 
-  public MonthPlanRoomView(GemChoice _choixSalle) {
-    super(_choixSalle);
+  public MonthPlanRoomView(GemChoice roomChoice) {
+    super(roomChoice);
   }
 
   @Override
   public boolean isFiltered(ScheduleObject p) {
-    Room ps = (Room) choice.getSelectedItem();
-    return ps != null && p.getRoom() != null && p.getRoom().getId() == ps.getId();
+    if (choice == null) {
+      return true;
+    }
+    Room r = (Room) choice.getSelectedItem();
+    return r != null && p.getRoom() != null && p.getRoom().getId() == r.getId();
   }
 
   @Override

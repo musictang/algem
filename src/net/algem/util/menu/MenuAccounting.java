@@ -128,7 +128,7 @@ public class MenuAccounting
       HourTeacherDlg hourTeacherDlg = new HourTeacherDlg(desktop.getFrame(), "heureprof.txt", dataCache);
       hourTeacherDlg.setVisible(true);
     } else if (menus.get("Menu.invoice.history.label").equals(arg)) {
-      BillingServiceI billService = new BillingService(dataCache);
+      BillingService billService = new BasicBillingService(dataCache);
       try {
         HistoInvoice hf = new HistoInvoice(desktop, billService.getInvoices());
         desktop.addPanel("Menu.invoice.history", hf, GemModule.XXL_SIZE);
@@ -139,7 +139,7 @@ public class MenuAccounting
         desktop.setDefaultCursor();
       }
     } else if (menus.get("Menu.quotation.history.label").equals(arg)) {
-      BillingServiceI facService = new BillingService(dataCache);
+      BillingService facService = new BasicBillingService(dataCache);
       try {
         HistoQuote hd = new HistoQuote(desktop, facService.getQuotations());
         desktop.addPanel("Menu.quotation.history", hd, GemModule.XXL_SIZE);

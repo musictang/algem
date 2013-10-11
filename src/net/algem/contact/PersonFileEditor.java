@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileEditor 2.8.m 11/09/13
+ * @(#)PersonFileEditor 2.8.n 26/09/13
  *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -67,7 +67,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.m
+ * @version 2.8.n
  */
 public class PersonFileEditor
         extends FileEditor
@@ -291,7 +291,7 @@ public class PersonFileEditor
       miEmployee.setEnabled(false);
     } else if ("EmployeeDelete".equals(arg)) {
       personFileView.deleteEmployee();
-      miEmployee.setEnabled(true);
+      miEmployee.setEnabled(dataCache.authorize("Employee.editing.auth"));
     }
     /*
      * else if (evt.getActionCommand().equals("Payeur")) { view.setCursor(new
@@ -401,9 +401,9 @@ public class PersonFileEditor
       miHistoRehearsal.setEnabled(true);
       personFileView.removeTab((HistoRehearsalView) src);  
     } else if ("Invoice.history".equals(arg)) {
-      int payer = getPayer();
+      int payer = getPayer();     
       if (payer > 0) {
-        histoInvoice = addHistoInvoice(payer, dossier.getId());
+        histoInvoice = addHistoInvoice(dossier.getId());
         histoInvoice.addActionListener(this);
         personFileView.addTab(histoInvoice, FileView.HISTO_INVOICE_TAB_TITLE);
         miHistoInvoice.setEnabled(false);
@@ -415,7 +415,7 @@ public class PersonFileEditor
     } else if ("Quotation.history".equals(arg)) {
       int payer = getPayer();
       if (payer > 0) {
-        HistoQuote histoQuote = getHistoQuotation(payer, dossier.getId());
+        HistoQuote histoQuote = getHistoQuotation(dossier.getId());
         histoQuote.addActionListener(this);
         personFileView.addTab(histoQuote, FileView.HISTO_ESTIMATE_TAB_TITLE);
         miHistoQuote.setEnabled(false);
@@ -434,11 +434,11 @@ public class PersonFileEditor
    * @return
    */
   private int getPayer() {
-    int payeur = 0;
+    int payer = 0;
     if (dossier.getMember() != null) {
-      payeur = dossier.getMember().getPayer();
+      payer = dossier.getMember().getPayer();
     }
-    return payeur == 0 ? dossier.getId() : payeur;
+    return payer == 0 ? dossier.getId() : payer;
   }
 
   /**
@@ -727,6 +727,7 @@ public class PersonFileEditor
     mOptions.add(miBank = getMenuItem("Person.bank.editing"));
     mOptions.add(miTeacher = getMenuItem("Teacher"));
     mOptions.add(miEmployee = getMenuItem("Employee"));
+    miEmployee.setEnabled(dataCache.authorize("Employee.editing.auth"));
 
     mOptions.add(miGroups = getMenuItem("Groups"));
     //Désactivation conditionnelle des menus Adherent, Prof et Bank
@@ -898,7 +899,7 @@ public class PersonFileEditor
     } catch (DesktopHandlerException de) {
       System.err.println(de.getMessage());
       try {
-        Runtime.getRuntime().exec("oowriter " + rtfExport.getPath() + " " + path);
+        Runtime.getRuntime().exec("oowriter " + rtfExport.getPath() + " " + path); // TODO paramétrer lecteur par défaut
       } catch (IOException ioe) {
         System.err.println(ioe.getMessage());
       }
@@ -1022,7 +1023,7 @@ public class PersonFileEditor
     } else if (MemberListTab.class.getSimpleName().equals(classname)) {
       personFileView.activate(true, "Payer.members");
     } else if (EmployeeEditor.class.getSimpleName().equals(classname)) {
-      miEmployee.setEnabled(true);
+      miEmployee.setEnabled(dataCache.authorize("Employee.editing.auth"));
     }
 
   }
@@ -1043,29 +1044,29 @@ public class PersonFileEditor
    */
   private void addInvoice(Object source) {
 
-    Invoice f = new Invoice(dossier, dataCache.getUser());
-    f.setEstablishment(Integer.parseInt(ConfigUtil.getConf(ConfigKey.DEFAULT_ESTABLISHMENT.getKey(), dataCache.getDataConnection())));
+    Invoice inv = new Invoice(dossier, dataCache.getUser());
+    inv.setEstablishment(Integer.parseInt(ConfigUtil.getConf(ConfigKey.DEFAULT_ESTABLISHMENT.getKey(), dataCache.getDataConnection())));
     if (source != null && source instanceof OrderLineEditor) {
-      AccountUtil.setInvoiceOrderLines(f, ((OrderLineEditor) source).getInvoiceSelection());
+      BillingUtil.setInvoiceOrderLines(inv, ((OrderLineEditor) source).getInvoiceSelection());
     }
 
-    InvoiceEditor fe = new InvoiceEditor(desktop, billingService, f);
-    fe.addActionListener(this);
-
-    personFileView.addTab(fe, FileView.INVOICE_TAB_TITLE);
+    InvoiceEditor editor = new InvoiceEditor(desktop, billingService, inv);
+    editor.addActionListener(this);
+    editor.load();
+    personFileView.addTab(editor, FileView.INVOICE_TAB_TITLE);
   }
 
   private void addQuotation(Object source) {
-    Quote d = new Quote(dossier, dataCache.getUser());
-    d.setEstablishment(Integer.parseInt(ConfigUtil.getConf(ConfigKey.DEFAULT_ESTABLISHMENT.getKey(), dataCache.getDataConnection())));
+    Quote q = new Quote(dossier, dataCache.getUser());
+    q.setEstablishment(Integer.parseInt(ConfigUtil.getConf(ConfigKey.DEFAULT_ESTABLISHMENT.getKey(), dataCache.getDataConnection())));
     /*
      * if (source != null && source instanceof OrderLineEditor) {
      * AccountUtil.setQuoteOrderLines(d, ((OrderLineEditor)
      * source).getInvoiceSelection()); }
      */
-    QuoteEditor de = new QuoteEditor(desktop, billingService, d);
-    de.addActionListener(this);
-
-    personFileView.addTab(de, FileView.ESTIMATE_TAB_TITLE);
+    QuoteEditor editor = new QuoteEditor(desktop, billingService, q);
+    editor.addActionListener(this);
+    editor.load();
+    personFileView.addTab(editor, FileView.ESTIMATE_TAB_TITLE);
   }
 }

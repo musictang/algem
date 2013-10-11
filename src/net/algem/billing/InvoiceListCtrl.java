@@ -1,7 +1,7 @@
 /*
- * @(#)InvoiceListCtrl.java 2.7.h 22/02/13
+ * @(#)InvoiceListCtrl.java 2.8.n 26/09/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -30,14 +30,14 @@ import net.algem.util.ui.ListCtrl;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.h
+ * @version 2.8.n
  * @since 2.3.a 14/02/12
  */
 public class InvoiceListCtrl
         extends ListCtrl
 {
 
-  public InvoiceListCtrl(boolean b, BillingServiceI service) {
+  public InvoiceListCtrl(boolean b, BillingService service) {
 
     super(b);
     this.tableModel = new InvoiceTableModel(service);
@@ -62,6 +62,10 @@ public class InvoiceListCtrl
 
   public Quote getElementAt(int n) {
     return (Quote) tableModel.getItem(n);
+  }
+
+  <Q extends Quote> void reload(Q v) {
+    ((InvoiceTableModel) tableModel).reset(v);
   }
 
   public int getIdContact() {

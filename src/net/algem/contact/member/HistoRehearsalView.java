@@ -1,7 +1,7 @@
 /*
- * @(#)HistoRehearsalView.java 2.6.a 18/09/12
+ * @(#)HistoRehearsalView.java 2.8.o 08/10/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -25,6 +25,7 @@ import java.util.Vector;
 import net.algem.planning.AbstractHistoRehearsal;
 import net.algem.planning.Schedule;
 import net.algem.planning.ScheduleIO;
+import net.algem.util.BundleUtil;
 import net.algem.util.GemCommand;
 import net.algem.util.module.GemDesktop;
 
@@ -32,14 +33,15 @@ import net.algem.util.module.GemDesktop;
  * Rehearsal history tab.
  * The rehearsals of the last 30 days are loaded by default.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.o
  */
 public class HistoRehearsalView extends AbstractHistoRehearsal
 {
 
   public HistoRehearsalView(GemDesktop desktop, ActionListener listener, int pf) {
     super(desktop, listener, pf);
-    btValidation.setText("Sélection");
+    btValidation.setText(BundleUtil.getLabel("Selection.label"));
+    btValidation.setToolTipText(BundleUtil.getLabel("Rehearsal.list.selection.tip"));
     btCancel.setText(GemCommand.CLOSE_CMD);
   }
 

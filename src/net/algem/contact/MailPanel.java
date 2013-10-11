@@ -1,7 +1,7 @@
 /*
- * @(#)MailPanel.java	2.6.a 17/09/12
+ * @(#)MailPanel.java	2.8.n 04/10/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -25,14 +25,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import net.algem.config.ColorPrefs;
 import net.algem.util.BundleUtil;
-import net.algem.util.MessageUtil;
 import net.algem.util.jdesktop.DesktopMailHandler;
-import net.algem.util.ui.MessagePopup;
 
 /**
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.n
  */
 public class MailPanel
         extends InfoPanel
@@ -52,13 +51,24 @@ public class MailPanel
     iArchive.setToolTipText(BundleUtil.getLabel("Action.archive.label"));
     iField.addFocusListener(new FocusAdapter()
     {
-
+      public void focusGained(FocusEvent evt) {
+        setEmailColorState();
+      }
+      
       public void focusLost(FocusEvent evt) {
-        if (!EmailField.check(iField.getText())) {
-          MessagePopup.error(null,MessageUtil.getMessage("invalid.email.warning"));
-        }
+        setEmailColorState();
       }
     });
+    iField.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        setEmailColorState();
+      }
+    });
+  }
+  
+  private void setEmailColorState() {
+    iField.setBackground(EmailField.check(iField.getText()) ? Color.WHITE : ColorPrefs.ERROR_BG_COLOR);
   }
 
   public Email getEmail() {
@@ -93,6 +103,7 @@ public class MailPanel
   private void setEditable(boolean selected) {
     iButton.setEnabled(!selected);
     iField.setEditable(!selected);
-    iField.setBackground(!selected ? Color.white : InfoView.ARCHIVE_COLOR);
+//    iField.setBackground(!selected ? Color.white : InfoView.ARCHIVE_COLOR);
+    iField.setEnabled(!selected);
   }
 }

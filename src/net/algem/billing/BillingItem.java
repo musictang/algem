@@ -1,7 +1,7 @@
 /*
- * @(#)BillingItem.java 2.4.d 07/06/12
+ * @(#)BillingItem.java 2.8.n 26/09/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -22,8 +22,8 @@ package net.algem.billing;
 
 /**
  *
- * @author Jean-Marc Gobat <a href="mailto:jmao@free.fr">jmao@free.fr</a>
- * @version 2.4.d
+ * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
+ * @version 2.8.n 26/09/13
  * @since 2.4.d 07/06/12
  */
 public class BillingItem
@@ -112,4 +112,32 @@ public class BillingItem
   protected double getTotalET() {
     return item.getPrice() * quantity;
   }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final BillingItem other = (BillingItem) obj;
+    if (this.item != other.item && (this.item == null || !this.item.equals(other.item))) {
+      return false;
+    }
+    if (Float.floatToIntBits(this.quantity) != Float.floatToIntBits(other.quantity)) {
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 5;
+    hash = 97 * hash + (this.item != null ? this.item.hashCode() : 0);
+    hash = 97 * hash + Float.floatToIntBits(this.quantity);
+    return hash;
+  }
+  
+  
 }

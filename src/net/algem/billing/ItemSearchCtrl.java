@@ -45,14 +45,14 @@ public class ItemSearchCtrl
         implements GemEventListener
 {
 
-  protected BillingService service;
+  protected BasicBillingService service;
   protected GemDesktop desktop;
 
   public ItemSearchCtrl(GemDesktop desktop) {
     super(desktop.getDataCache().getDataConnection(), MessageUtil.getMessage("invoice.item.edition.label"));
     this.desktop = desktop;
     this.desktop.addGemEventListener(this);
-    service = new BillingService(desktop.getDataCache());
+    service = new BasicBillingService(desktop.getDataCache());
   }
 
   @Override

@@ -1,5 +1,5 @@
 /*
- * @(#)EmployeeEditor.java 2.8.m 03/09/13
+ * @(#)EmployeeEditor.java 2.8.n 03/10/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -33,7 +33,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.m
+ * @version 2.8.n
  * @since 2.8.m 02/09/13
  */
 public class EmployeeEditor 
@@ -96,7 +96,7 @@ public class EmployeeEditor
   }
   
   String getNir() {
-    return view.getInsee();
+    return view.getNir();
   }
   
   @Override

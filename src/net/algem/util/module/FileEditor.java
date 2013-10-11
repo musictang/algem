@@ -1,7 +1,7 @@
 /*
- * @(#)FileEditor.java	2.7.a 14/01/13
+ * @(#)FileEditor.java	2.8.n 25/09/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -22,7 +22,6 @@ package net.algem.util.module;
 
 import java.sql.SQLException;
 import java.util.List;
-import net.algem.accounting.AccountUtil;
 import net.algem.accounting.OrderLineEditor;
 import net.algem.billing.*;
 import net.algem.config.ConfigKey;
@@ -34,13 +33,13 @@ import net.algem.util.GemLogger;
  * Base class for editing dossiers.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.n
  * @since 2.3.c 21/03/12
  */
 public class FileEditor
         extends GemModule {
 
-  protected BillingServiceI billingService;
+  protected BillingService billingService;
 
   public FileEditor(String _label) {
     super(_label);
@@ -48,7 +47,7 @@ public class FileEditor
 
   @Override
   public void init() {
-    billingService = new BillingService(dataCache);
+    billingService = new BasicBillingService(dataCache);
   }
 
   /**
@@ -60,15 +59,16 @@ public class FileEditor
    */
   protected InvoiceEditor addInvoice(Object source, Room s) {
 
-    Invoice f = new Invoice(s, dataCache.getUser());
-    f.setEstablishment(Integer.parseInt(ConfigUtil.getConf(ConfigKey.DEFAULT_ESTABLISHMENT.getKey(), dataCache.getDataConnection())));
+    Invoice inv = new Invoice(s, dataCache.getUser());
+    inv.setEstablishment(Integer.parseInt(ConfigUtil.getConf(ConfigKey.DEFAULT_ESTABLISHMENT.getKey(), dataCache.getDataConnection())));
     if (source != null && source instanceof OrderLineEditor) {
-      AccountUtil.setInvoiceOrderLines(f, ((OrderLineEditor) source).getInvoiceSelection());
+      BillingUtil.setInvoiceOrderLines(inv, ((OrderLineEditor) source).getInvoiceSelection());
     }
 
-    InvoiceEditor ef = new InvoiceEditor(desktop, billingService, f);
-    ef.addActionListener(this);
-    return ef;
+    InvoiceEditor editor = new InvoiceEditor(desktop, billingService, inv);
+    editor.addActionListener(this);
+    editor.load();
+    return editor;
   }
 
   /**
@@ -79,15 +79,16 @@ public class FileEditor
    * @return a quote editor
    */
   protected QuoteEditor addQuotation(Object source, Room s) {
-    Quote d = new Quote(s, dataCache.getUser());
-    d.setEstablishment(Integer.parseInt(ConfigUtil.getConf(ConfigKey.DEFAULT_ESTABLISHMENT.getKey(), dataCache.getDataConnection())));
+    Quote q = new Quote(s, dataCache.getUser());
+    q.setEstablishment(Integer.parseInt(ConfigUtil.getConf(ConfigKey.DEFAULT_ESTABLISHMENT.getKey(), dataCache.getDataConnection())));
     if (source != null && source instanceof OrderLineEditor) {
-      AccountUtil.setQuoteOrderLines(d, ((OrderLineEditor) source).getInvoiceSelection());
+      BillingUtil.setQuoteOrderLines(q, ((OrderLineEditor) source).getInvoiceSelection());
     }
 
-    QuoteEditor ed = new QuoteEditor(desktop, billingService, d);
-    ed.addActionListener(this);
-    return ed;
+    QuoteEditor editor = new QuoteEditor(desktop, billingService, q);
+    editor.addActionListener(this);
+    editor.load();
+    return editor;
   }
 
   /**
@@ -97,16 +98,15 @@ public class FileEditor
    * @param memberId
    * @return a history
    */
-  protected HistoInvoice addHistoInvoice(int payerId, int memberId) {
-    HistoInvoice hf = null;
+  protected HistoInvoice addHistoInvoice(int idper) {
+    HistoInvoice history = null;
     try {
-      List<Invoice> fcl = billingService.getInvoices(payerId, memberId);
-      hf = new HistoInvoice(desktop, fcl);
-
+      List<Invoice> invoices = billingService.getInvoices(idper);
+      history = new HistoInvoice(desktop, invoices);
     } catch (SQLException ex) {
       GemLogger.logException(ex);
     }
-    return hf;
+    return history;
   }
 
   /**
@@ -116,15 +116,15 @@ public class FileEditor
    * @param memberId
    * @return a history
    */
-  protected HistoQuote getHistoQuotation(int payerId, int memberId) {
-    HistoQuote hd = null;
+  protected HistoQuote getHistoQuotation(int idper) {
+    HistoQuote hq = null;
     try {
-      List<Quote> ld = billingService.getQuotation(payerId, memberId);
-      hd = new HistoQuote(desktop, ld);
+      List<Quote> quotes = billingService.getQuotations(idper);
+      hq = new HistoQuote(desktop, quotes);
 
     } catch (SQLException ex) {
       GemLogger.logException(ex);
     }
-    return hd;
+    return hq;
   }
 }

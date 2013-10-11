@@ -1,7 +1,7 @@
 /*
- * @(#)InvoiceItemCtrl.java 2.6.a 01/08/2012
+ * @(#)InvoiceItemCtrl.java 2.8.n 27/09/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -29,16 +29,16 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.n
  * @since 2.3.a 15/02/12
  */
 public class InvoiceItemCtrl
         extends ItemCtrl
 {
 
-  private InvoiceItem af;
+  private InvoiceItem invoiceItem;
 
-  public InvoiceItemCtrl(DataConnection dc, BillingService service) {
+  public InvoiceItemCtrl(DataConnection dc, BasicBillingService service) {
 
     this.service = service;
     view = new InvoiceItemView(service);
@@ -57,8 +57,8 @@ public class InvoiceItemCtrl
       return false;
     }
 
-    af = (InvoiceItem) o;
-    ((InvoiceItemView) view).set(af);
+    invoiceItem = (InvoiceItem) o;
+    ((InvoiceItemView) view).set(invoiceItem);
 
     return true;
   }
@@ -67,10 +67,10 @@ public class InvoiceItemCtrl
   public boolean loadId(int id) {
     try {
       Item a = service.getItem(id);
-      af = new InvoiceItem(a);
-      return loadCard(af);
+      invoiceItem = new InvoiceItem(a);
+      return loadCard(invoiceItem);
     } catch (SQLException ex) {
-      MessagePopup.warning(view, MessageUtil.getMessage("facturation.item.not.found.exception"));
+      MessagePopup.warning(view, MessageUtil.getMessage("invoice.item.not.found.exception"));
       return loadCard(null);
     }
   }
@@ -80,8 +80,8 @@ public class InvoiceItemCtrl
     if (gemListener == null) {
       return false;
     }
-    af = ((InvoiceItemView) view).getInvoiceItem();
-    gemListener.postEvent(new InvoiceItemCreateEvent(af, GemEvent.CREATION, GemEvent.INVOICE_ITEM));
+    invoiceItem = ((InvoiceItemView) view).getInvoiceItem();
+    gemListener.postEvent(new InvoiceItemCreateEvent(invoiceItem, GemEvent.CREATION, GemEvent.INVOICE_ITEM));
     return cancel();
 
   }

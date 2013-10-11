@@ -1,5 +1,5 @@
 /*
- * @(#)OrderLineEditor.java	2.8.a 01/04/13
+ * @(#)OrderLineEditor.java	2.8.n 25/09/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -29,6 +29,7 @@ import java.util.Vector;
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import net.algem.billing.BillingUtil;
 import net.algem.billing.Invoice;
 import net.algem.billing.InvoiceCreateEvent;
 import net.algem.billing.InvoiceUpdateEvent;
@@ -47,7 +48,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.n
  * @since 1.0a 07/07/1999
  */
 public class OrderLineEditor
@@ -321,10 +322,10 @@ public class OrderLineEditor
   public void postEvent(GemEvent evt) {
 
     if (evt instanceof InvoiceCreateEvent) {
-      Invoice f = ((InvoiceCreateEvent) evt).getInvoice();
+      Invoice inv = ((InvoiceCreateEvent) evt).getInvoice();
       Vector<OrderLine> data = tableModel.getData();
-      for (OrderLine c : f.getOrderLines()) {
-        if (c.getPayer() != f.getPayer()) {
+      for (OrderLine c : inv.getOrderLines()) {
+        if (c.getPayer() != inv.getPayer()) {
           continue;
         }
         if (!data.contains(c)) {
@@ -341,13 +342,13 @@ public class OrderLineEditor
       tableModel.fireTableDataChanged();
 
     } else if (evt instanceof InvoiceUpdateEvent) {
-      Invoice f = ((InvoiceUpdateEvent) evt).getInvoice();
+      Invoice inv = ((InvoiceUpdateEvent) evt).getInvoice();
       // on récupère les données de l'échéancier
       Vector<OrderLine> data = tableModel.getData();
       // on enlève de l'échéancier les échéances dont le numéro de facture = facture à mettre à jour
-      data.removeAll(AccountUtil.getInvoiceOrderLines(data, f.getNumber()));
+      data.removeAll(BillingUtil.getInvoiceOrderLines(data, inv.getNumber()));
       // on ajoute à l'échéancier les échéances modifiées de la facture mise à jour
-      data.addAll(f.getOrderLines());
+      data.addAll(inv.getOrderLines());
       // on met à jour l'affichage de la table
       tableModel.fireTableDataChanged();
 

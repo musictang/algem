@@ -36,7 +36,7 @@ public class InvoiceItemView
   private GemDecimalField qty;
   private InvoiceItem invoiceItem = new InvoiceItem();
 
-  public InvoiceItemView(BillingServiceI service) {
+  public InvoiceItemView(BillingService service) {
     super(service);
 
     qty = new GemDecimalField();

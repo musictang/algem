@@ -1,5 +1,5 @@
 /*
- * @(#)EnrolmentOrderUtil.java	2.8.a 04/04/13
+ * @(#)EnrolmentOrderUtil.java	2.8.n 24/09/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -38,7 +38,7 @@ import net.algem.util.model.Model;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.n
  * @since 2.8.a 01/04/2013
  */
 public class EnrolmentOrderUtil {
@@ -71,24 +71,28 @@ public class EnrolmentOrderUtil {
 
     Module mod = ((ModuleIO) DataCache.getDao(Model.Module)).findId(moduleOrder.getModule());
     // le payeur, le type de reglement et le numero d'inscription sont déjà récupérés par le constructeur
-    OrderLine e = new OrderLine(moduleOrder);
+    OrderLine orderLine = new OrderLine(moduleOrder);
     //numero adherent
-    e.setMember(dossier.getId());
+    orderLine.setMember(dossier.getId());
     //libelle
-    e.setLabel(label); // 1.2c
+    orderLine.setLabel(label); // 1.2c
     //compte et analytique
     Account [] prefAccount = getPrefAccount(mod, dc);
     Account p = prefAccount[0];
     Account a = prefAccount[1];
     if (p != null && a != null) {
-      e.setAccount(p);
-      e.setCostAccount(a);
+      orderLine.setAccount(p);
+      orderLine.setCostAccount(a);
     } else {
       throw new NullAccountException(MessageUtil.getMessage("no.default.cost.account"));
     }
     
-    e.setSchool(schoolId);
-    return addOrderLines(moduleOrder, e);
+    orderLine.setSchool(schoolId);
+    List<OrderLine> lines = getOrderLines(moduleOrder, orderLine);
+    for (OrderLine ol : lines) {
+      AccountUtil.createEntry(ol, dc);
+    }
+    return lines.size();
   } 
   
   /**
@@ -98,13 +102,24 @@ public class EnrolmentOrderUtil {
    * @return the size of order lines collection
    * @throws SQLException 
    */
-  private int addOrderLines(ModuleOrder moduleOrder, OrderLine e) throws SQLException {
+  List<OrderLine> getOrderLines(ModuleOrder moduleOrder, OrderLine e) throws SQLException {
+    
     List<OrderLine> orderLines = new ArrayList<OrderLine>();
     if (!ModeOfPayment.NUL.toString().equals(moduleOrder.getModeOfPayment())) {
-      if ("TRIM".equals(moduleOrder.getPayment())) { // echeance trimestrielle
-        orderLines = setQuarterOrderLines(moduleOrder, e);
+      if ("TRIM".equals(moduleOrder.getPayment())) {// echeance trimestrielle
+        List<DateFr> dates = getQuarterPaymentDates(moduleOrder.getStart(), moduleOrder.getEnd());
+        /*if (AccountUtil.isPersonalAccount(e.getAccount())) {
+          addPersonalOrderLine(e, dates);
+          setPaymentOrderLine(e, moduleOrder.getPayment());
+        }*/
+        orderLines = setQuarterOrderLines(moduleOrder, e, dates);       
       } else if ("MOIS".equals(moduleOrder.getPayment())) {// echeance mensuelle
-        orderLines = setMonthOrderLines(moduleOrder, e);
+        List<DateFr> dates = getMonthPaymentDates(moduleOrder.getStart(), moduleOrder.getEnd());
+        /*if (AccountUtil.isPersonalAccount(e.getAccount())) {
+          addPersonalOrderLine(e, dates);
+          setPaymentOrderLine(e, moduleOrder.getPayment());
+        }*/
+        orderLines = setMonthOrderLines(moduleOrder, e, dates);       
       } else { // (ANNUEL)
         e.setAmount(AccountUtil.getIntValue(totalBase));
         DateFr de = moduleOrder.getStart();
@@ -116,11 +131,40 @@ public class EnrolmentOrderUtil {
       }
     }
 
-    for (OrderLine ol : orderLines) {
-      AccountUtil.createEntry(ol, dc);
+    return orderLines;
+
+  }
+  
+  private DateFr getFirstDateOfPayment(DateFr orderDateStart) {
+    
+    DateFr first = new DateFr(orderDateStart);
+    first.setDay(15);
+    // on incrémente d'un mois, passé le 10 du mois ou si mois de septembre
+    if (isFirstPaymentAfter(orderDateStart)) {
+      first.incMonth(1);
     }
-    return orderLines.size();
-    //mise à jour nombre d'échéances dans commande_module
+    return first;
+  }
+  
+  private boolean isFirstPaymentAfter(DateFr orderDateStart) {
+    return (orderDateStart.getDay() > 10 || orderDateStart.getMonth() == 9);
+  }
+
+  private void addPersonalOrderLine(OrderLine e, List<DateFr> dates) throws SQLException {
+      e.setPaid(true);
+      e.setAmount(-(totalBase * dates.size()));
+      e.setDate(dates.get(0));
+      AccountUtil.createPersonalEntry(e, dc);
+  }
+  
+  private void setPaymentOrderLine(OrderLine e, String payment) throws SQLException {
+    //payment line
+    e.setAmount(totalBase);
+    e.setModeOfPayment(payment);
+    e.setPaid(false);
+    int pr = PersonalRevenueAccountIO.find(e.getAccount().getId(), dc);
+    Account p = AccountIO.find(pr, dc);
+    e.setAccount(p);
   }
   
   /**
@@ -163,102 +207,6 @@ public class EnrolmentOrderUtil {
     
     return new Account[] {p, new Account(a)};
   }
-
-  /**
-   * Gets a list of order lines for quarter dues.
-   * @param moduleOrder
-   * @param e single order line
-   * @return a list of order lines
-   */
-  public ArrayList<OrderLine> setQuarterOrderLines(ModuleOrder moduleOrder, OrderLine e) {
-    ArrayList<OrderLine> orderLines = new ArrayList<OrderLine>();
-    Vector<DateFr> dates = getOrderQuarterDates(moduleOrder.getStart(), moduleOrder.getEnd());
-    int firstDocumentNumber = 0;
-    try {
-      firstDocumentNumber = Integer.parseInt(ConfigUtil.getConf(ConfigKey.ACCOUNTING_DOCUMENT_NUMBER.getKey(), dc));
-    } catch (NumberFormatException nfe) {
-      System.err.println(getClass().getName() + "#setEcheancesTrim " + nfe.getMessage());
-    }
-
-    int documentNumber = firstDocumentNumber;
-    /* int nombreEcheances = 0; if (echeances != null) { nombreEcheances =
-     * echeances.size();
-     * } */
-
-    // DESACTIVATION CALCUL PRORATA
-    // double montantPremiereEcheance = calcFirstOrderLineAmount(totalBase, maxCours, nombreEcheances, "TRIM");
-    // e.setAmount(AccountUtil.getIntValue(montantPremiereEcheance));
-    e.setAmount(AccountUtil.getIntValue(totalBase));
-    e.setDate((DateFr) dates.elementAt(0));
-    if (moduleOrder.getModeOfPayment().equals("PRL")) {
-      documentNumber = calcDocumentNumber(firstDocumentNumber, ((DateFr) dates.elementAt(0)).getMonth());
-      e.setDocument("PRL" + String.valueOf(documentNumber));
-    } else {
-      e.setDocument(moduleOrder.getModeOfPayment() + 1);// pas nécessaire
-    }
-    orderLines.add(new OrderLine(e));
-    for (int i = 1; i < dates.size(); i++) {
-      //libelle numero piece
-      if (moduleOrder.getModeOfPayment().equals("PRL")) {
-        documentNumber = calcDocumentNumber(firstDocumentNumber, ((DateFr) dates.elementAt(i)).getMonth());
-        e.setDocument("PRL" + String.valueOf(documentNumber));
-      } else {
-        e.setDocument(moduleOrder.getModeOfPayment() + (i + 1));
-      }
-      e.setAmount(AccountUtil.getIntValue(totalBase));
-      e.setDate((DateFr) dates.elementAt(i));
-      orderLines.add(new OrderLine(e));
-    }
-    return orderLines;
-  }
-
-  /**
-   * Gets a list of order lines for month dues.
-   * @param moduleOrder
-   * @param e
-   * @return a list of order lines
-   */
-  public ArrayList<OrderLine> setMonthOrderLines(ModuleOrder moduleOrder, OrderLine e) {
-    ArrayList<OrderLine> orderLines = new ArrayList<OrderLine>();
-    Vector<DateFr> orderDates = getOrderMonthDates(moduleOrder.getStart(), moduleOrder.getEnd());
-    int firstDocumentNumber = 0;
-    try {
-      firstDocumentNumber = Integer.parseInt(ConfigUtil.getConf(ConfigKey.ACCOUNTING_DOCUMENT_NUMBER.getKey(), dc));
-    } catch (NumberFormatException ne) {
-      System.err.println("Format Numero.piece " + ne.getMessage());
-    }
-    int documentNumber = firstDocumentNumber;
-    int orderLinesNumber = 0;
-    if (orderDates != null) {
-      orderLinesNumber = orderDates.size();
-    }
-    // DESACTIVATION CALCUL PRORATA
-//		double montantPremiereEcheance = calcFirstOrderLineAmount(totalBase, maxCours, nombreEcheances, "MOIS");
-//		e.setAmount(AccountUtil.getIntValue(montantPremiereEcheance));
-
-    e.setAmount(AccountUtil.getIntValue(totalBase));
-    e.setDate(orderDates.elementAt(0));
-    documentNumber = calcDocumentNumber(firstDocumentNumber, ((DateFr) orderDates.elementAt(0)).getMonth());
-    if ("PRL".equals(moduleOrder.getModeOfPayment())) {
-      e.setDocument("PRL" + String.valueOf(documentNumber));
-    } else {
-      e.setDocument(moduleOrder.getModeOfPayment() + 1);
-    }
-    orderLines.add(new OrderLine(e));
-
-    for (int i = 1; i < orderLinesNumber; i++) {
-      e.setAmount(AccountUtil.getIntValue(totalBase));
-      e.setDate((DateFr) orderDates.elementAt(i));
-      if ("PRL".equals(moduleOrder.getModeOfPayment())) {
-        documentNumber = calcDocumentNumber(firstDocumentNumber, ((DateFr) orderDates.elementAt(i)).getMonth());
-        e.setDocument("PRL" + String.valueOf(documentNumber));
-      } else {
-        e.setDocument(moduleOrder.getModeOfPayment() + (i + 1));
-      }
-      orderLines.add(new OrderLine(e));
-    }
-    return orderLines;
-  }
   
   /**
    * Gets a list of dates for quarterly payment.
@@ -267,29 +215,22 @@ public class EnrolmentOrderUtil {
    * @param orderDateEnd
    * @return a list of dates
    */
-  public static Vector<DateFr> getOrderQuarterDates(DateFr orderDateStart, DateFr orderDateEnd) {
+  public Vector<DateFr> getQuarterPaymentDates(DateFr orderDateStart, DateFr orderDateEnd) {
+    
     Vector<DateFr> dates = new Vector<DateFr>();
-    boolean inc = false;
+
     int nbMonths = 0;
     int nbOrderLines = 0;
 
-    DateFr firstOrderLine = new DateFr(orderDateStart);
-    firstOrderLine.setDay(15);
+    DateFr firstOrderDate = getFirstDateOfPayment(orderDateStart);
 
     int orderStartMonth = orderDateStart.getMonth();
-    //System.out.println("1 date 1ere echeance " + firstOrderLine);
-    // on incrémente d'un mois, passé le 10 du mois ou si mois de septembre
-    if (orderDateStart.getDay() > 10 || orderStartMonth == 9) {
-      firstOrderLine.incMonth(1);
-      inc = true;
-    }
-    dates.add(new DateFr(firstOrderLine));
-    if (inc && orderStartMonth != 9 && orderStartMonth != 12 && orderStartMonth != 3) {
-      //nbMois = calcNumberOfMonths(moisDebutCommande, dateFinCommande.getMonth());
+
+    dates.add(new DateFr(firstOrderDate));
+    if (isFirstPaymentAfter(orderDateStart) && orderStartMonth != 9 && orderStartMonth != 12 && orderStartMonth != 3) {
       nbMonths = calcNumberOfMonths(orderDateStart, orderDateEnd);
     } else {
-      //nbMois = calcNumberOfMonths(premiereEcheance.getMonth(), dateFinCommande.getMonth());
-      nbMonths = calcNumberOfMonths(firstOrderLine, orderDateEnd);// premiere echeance
+      nbMonths = calcNumberOfMonths(firstOrderDate, orderDateEnd);// premiere echeance
     }
     if (nbMonths <= 3) {
       nbOrderLines = 1;
@@ -301,55 +242,138 @@ public class EnrolmentOrderUtil {
     //System.out.println("nombre echeances trimestre: " + nbOrderLines);
     // ajout des échéances
     for (int i = 1; i < nbOrderLines; i++) {
-      switch (firstOrderLine.getMonth()) {
+      switch (firstOrderDate.getMonth()) {
         case 10:
         case 1:
         case 4:
-          firstOrderLine.incMonth(3);
+          firstOrderDate.incMonth(3);
           break;
         case 11:
         case 2:
-          firstOrderLine.incMonth(2);
+          firstOrderDate.incMonth(2);
           break;
         case 12:
         case 3:
-          firstOrderLine.incMonth(1);
+          firstOrderDate.incMonth(1);
           break;
       }
-      dates.add(new DateFr(firstOrderLine));
+      dates.add(new DateFr(firstOrderDate));
     }
     return dates;
   }
 
+  /**
+   * Gets a list of order lines for quarter dues.
+   * @param moduleOrder
+   * @param e single order line
+   * @return a list of order lines
+   */
+  ArrayList<OrderLine> setQuarterOrderLines(ModuleOrder moduleOrder, OrderLine e, List<DateFr> dates) {
+    ArrayList<OrderLine> orderLines = new ArrayList<OrderLine>();
+//    Vector<DateFr> dates = getQuarterPaymentDates(moduleOrder.getStart(), moduleOrder.getEnd());
+    int firstDocumentNumber = 0;
+    try {
+      firstDocumentNumber = Integer.parseInt(ConfigUtil.getConf(ConfigKey.ACCOUNTING_DOCUMENT_NUMBER.getKey(), dc));
+    } catch (NumberFormatException nfe) {
+      System.err.println(getClass().getName() + "#setQuarterOrderLines " + nfe.getMessage());
+    }
+
+    int documentNumber = firstDocumentNumber;
+
+    // DESACTIVATION CALCUL PRORATA
+    // double montantPremiereEcheance = calcFirstOrderLineAmount(totalBase, maxCours, nombreEcheances, "TRIM");
+    // e.setAmount(AccountUtil.getIntValue(montantPremiereEcheance));
+    e.setAmount(AccountUtil.getIntValue(totalBase));
+    e.setDate((DateFr) dates.get(0));
+    if (moduleOrder.getModeOfPayment().equals("PRL")) {
+      documentNumber = calcDocumentNumber(firstDocumentNumber, ((DateFr) dates.get(0)).getMonth());
+      e.setDocument("PRL" + String.valueOf(documentNumber));
+    } else {
+      e.setDocument(moduleOrder.getModeOfPayment() + 1);// pas nécessaire
+    }
+    orderLines.add(new OrderLine(e));// first
+    for (int i = 1; i < dates.size(); i++) {
+      //libelle numero piece
+      if (moduleOrder.getModeOfPayment().equals("PRL")) {
+        documentNumber = calcDocumentNumber(firstDocumentNumber, ((DateFr) dates.get(i)).getMonth());
+        e.setDocument("PRL" + String.valueOf(documentNumber));
+      } else {
+        e.setDocument(moduleOrder.getModeOfPayment() + (i + 1));
+      }
+      e.setAmount(AccountUtil.getIntValue(totalBase));
+      e.setDate((DateFr) dates.get(i)); 
+      orderLines.add(new OrderLine(e)); // others
+    }
+    return orderLines;
+  }
+  
   /**
    * Gets a list of dates for monthly payment.
    * @param startOrderDate
    * @param endOrderDate
    * @return a list of dates
    */
-  public static Vector<DateFr> getOrderMonthDates(DateFr startOrderDate, DateFr endOrderDate) {
+  Vector<DateFr> getMonthPaymentDates(DateFr startOrderDate, DateFr endOrderDate) {
+    
     Vector<DateFr> dates = new Vector<DateFr>();
 
-    int n = 0;
-    DateFr firstOrderLine = new DateFr(startOrderDate);
-    firstOrderLine.setDay(15);
-    /*
-     * int jourDebutCommande = dateDebutCommande.getDay(); int moisDebutCommande
-     * = dateDebutCommande.getMonth();
-     */
-
-    if (startOrderDate.getDay() > 10 || startOrderDate.getMonth() == 9) {
-      firstOrderLine.incMonth(1);
-    }
+    DateFr firstOrderLine = getFirstDateOfPayment(startOrderDate);
     dates.add(new DateFr(firstOrderLine));
 
-    n = calcNumberOfMonths(firstOrderLine, endOrderDate);
+    int n = calcNumberOfMonths(firstOrderLine, endOrderDate);
     for (int i = 1; i < n; i++) {
       firstOrderLine.incMonth(1);
       dates.add(new DateFr(firstOrderLine));
     }
 
     return dates;
+  }
+  
+   /**
+   * Gets a list of order lines for month dues.
+   * @param moduleOrder
+   * @param e
+   * @return a list of order lines
+   */
+  ArrayList<OrderLine> setMonthOrderLines(ModuleOrder moduleOrder, OrderLine e, List<DateFr> dates) {
+    ArrayList<OrderLine> orderLines = new ArrayList<OrderLine>();
+//    Vector<DateFr> orderDates = getMonthPaymentDates(moduleOrder.getStart(), moduleOrder.getEnd());
+    int firstDocumentNumber = 0;
+    try {
+      firstDocumentNumber = Integer.parseInt(ConfigUtil.getConf(ConfigKey.ACCOUNTING_DOCUMENT_NUMBER.getKey(), dc));
+    } catch (NumberFormatException ne) {
+      System.err.println("Format Numero.piece " + ne.getMessage());
+    }
+    int documentNumber = firstDocumentNumber;
+    int orderLinesNumber = 0;
+    if (dates != null) {
+      orderLinesNumber = dates.size();
+    }
+    // DESACTIVATION CALCUL PRORATA
+//		double montantPremiereEcheance = calcFirstOrderLineAmount(totalBase, maxCours, nombreEcheances, "MOIS");
+//		e.setAmount(AccountUtil.getIntValue(montantPremiereEcheance));
+    e.setAmount(AccountUtil.getIntValue(totalBase));
+    e.setDate(dates.get(0));
+    documentNumber = calcDocumentNumber(firstDocumentNumber, ((DateFr) dates.get(0)).getMonth());
+    if ("PRL".equals(moduleOrder.getModeOfPayment())) {
+      e.setDocument("PRL" + String.valueOf(documentNumber));
+    } else {
+      e.setDocument(moduleOrder.getModeOfPayment() + 1);
+    }
+    orderLines.add(new OrderLine(e));
+
+    for (int i = 1; i < orderLinesNumber; i++) {
+      e.setAmount(AccountUtil.getIntValue(totalBase));
+      e.setDate((DateFr) dates.get(i));
+      if ("PRL".equals(moduleOrder.getModeOfPayment())) {
+        documentNumber = calcDocumentNumber(firstDocumentNumber, ((DateFr) dates.get(i)).getMonth());
+        e.setDocument("PRL" + String.valueOf(documentNumber));
+      } else {
+        e.setDocument(moduleOrder.getModeOfPayment() + (i + 1));
+      }
+      orderLines.add(new OrderLine(e));
+    }
+    return orderLines;
   }
 
   /**

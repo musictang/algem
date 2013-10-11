@@ -1,5 +1,5 @@
 /*
- * @(#)AccountUtil.java	2.8.i 03/07/13
+ * @(#)AccountUtil.java	2.8.n 25/09/13
  *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -24,14 +24,8 @@ import java.awt.print.PrinterException;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.Locale;
 import javax.swing.JTable;
-import net.algem.billing.Invoice;
-import net.algem.billing.InvoiceItem;
-import net.algem.billing.Quote;
 import net.algem.config.Preference;
 import net.algem.contact.PersonFile;
 import net.algem.contact.member.Member;
@@ -42,7 +36,7 @@ import net.algem.util.DataConnection;
  * Utility class for orderline operations.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.i
+ * @version 2.8.n
  * @since 2.0r
  */
 public class AccountUtil {
@@ -147,23 +141,31 @@ public class AccountUtil {
   /**
    * Creates an orderline.
    * If the account is of type personal, a complementary orderline is also created.
-   * As a precaution, orderlines are marked non tranferred.
+   * As a precaution, orderlines are marked not transfered.
    *
    * @param dc
    * @param e
    * @throws SQLException
    */
   public static OrderLine createEntry(OrderLine e, DataConnection dc) throws SQLException {
-    OrderLine c = null;
+    OrderLine p = null;
     e.setTransfered(false);
     if (isPersonalAccount(e.getAccount()) && !hasPersonalEntry(e, dc)) { // compte de classe 4
-      c = createOrderLine(e);
+      p = createOrderLine(e);
       OrderLineIO.insert(e, dc);//première échéance à reglement FAC
-      OrderLineIO.insert(c, dc);
+      OrderLineIO.insert(p, dc);
     } else {
       OrderLineIO.insert(e, dc);
     }
-    return c;
+    return p;
+  }
+  
+  public static OrderLine createPersonalEntry(OrderLine ol, DataConnection dc) throws SQLException {
+    
+    ol.setTransfered(false);
+    ol.setModeOfPayment(ModeOfPayment.FAC.toString());
+    OrderLineIO.insert(ol, dc);
+    return ol;
   }
 
   /**
@@ -261,54 +263,4 @@ public class AccountUtil {
     return nf;
   }
 
-  public static List<OrderLine> getInvoiceOrderLines(List<OrderLine> l, String n) {
-
-    List<OrderLine> fl = new ArrayList<OrderLine>();
-
-    for (OrderLine e : l) {
-      if (e.getInvoice() != null && e.getInvoice().equals(n)) {
-        fl.add(e);
-      }
-    }
-    return fl;
-  }
-
-  /**
-   * Adds orderlines and items to invoice when created from a selection.
-   *
-   * @param f invoice
-   * @param orderLines
-   */
-  public static void setInvoiceOrderLines(Invoice f, Collection<OrderLine> orderLines) {
-    int i = 0;
-    for (OrderLine e : orderLines) {
-      if (ModeOfPayment.FAC.toString().equals(e.getModeOfPayment())) {
-        f.addItem(new InvoiceItem(e)); // un reglement "FAC" correspond à un item de facturation        
-      } else {
-        f.setDescription(e.getLabel());
-      }
-      f.addOrderLine(e); // on garde la trace des échéances sélectionnées
-      if (i++ == 0) {
-        // IMPORTANT : le payeur enregistré dans l'échéance est prioritaire
-        // par rapport à celui de la fiche
-        f.setPayer(e.getPayer());
-        // on utilise le numéro d'adhérent enregistré dans l'échéance
-        f.setMember(e.getMember());
-      }
-    }
-    
-  }
-
-  public static void setQuoteOrderLines(Quote d, Collection<OrderLine> orderLines) {
-    if (orderLines != null) {
-      int i = 0;
-      for (OrderLine e : orderLines) {
-        d.addItem(new InvoiceItem(e));
-        if (i++ == 0) {
-          d.setPayer(e.getPayer());
-          d.setMember(e.getMember());
-        }
-      }
-    }
-  }
 }

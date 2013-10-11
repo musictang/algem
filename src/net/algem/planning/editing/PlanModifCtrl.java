@@ -79,7 +79,7 @@ public class PlanModifCtrl
   }
 
   /** Gets a list of buttons for course modification. */
-  public Vector<GemMenuButton> getMenuCours() {
+  public Vector<GemMenuButton> getCourseMenu() {
     Vector<GemMenuButton> v = new Vector<GemMenuButton>();
 
     v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.room.modification.label"), this, "ChangeRoom"));

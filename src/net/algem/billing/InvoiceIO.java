@@ -1,7 +1,7 @@
 /*
- * @(#)InvoiceIO.java 2.7.a 10/01/13
+ * @(#)InvoiceIO.java 2.8.n 26/09/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -36,7 +36,7 @@ import net.algem.util.model.Model;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.n
  * @since 2.3.a 22/12/11
  */
 public class InvoiceIO
@@ -120,14 +120,14 @@ public class InvoiceIO
     // Insertion échéances
     for (OrderLine ol : inv.getOrderLines()) {
       ol.setInvoice(inv.getNumber());
-      boolean invoiceMp = ModeOfPayment.FAC.toString().equals(ol.getModeOfPayment());
-      if (invoiceMp) {
+      boolean billing = ModeOfPayment.FAC.toString().equals(ol.getModeOfPayment());
+      if (billing) {
         ol.setDocument(inv.getNumber()); // par défaut, numéro de pièce = numéro de facture
         ol.setPaid(true);// encaissé par défaut pour les échéances de type "FAC"
         ol.setDate(inv.getDate());// la date des échéances de facturation reprend celle de la facture
       }
-      if (ol.getId() == 0) { // in fact, invoice lines only
-        if (!invoiceMp) {
+      if (ol.getId() == 0) {
+        if (!billing) {
           Account c = AccountPrefIO.getAccount(p, dc);//
           ol.setAccount(c);//XXX compte de tiers par défaut //compte de l'article plutôt
           Account a = AccountPrefIO.getCostAccount(p, dc);
@@ -137,7 +137,7 @@ public class InvoiceIO
       } else {
         OrderLineIO.update(ol, dc);// update echeancier
       }
-      if (invoiceMp && AccountUtil.isRevenueAccount(ol.getAccount())) {
+      if (billing && AccountUtil.isRevenueAccount(ol.getAccount())) {
         OrderLineIO.transfer(ol, dc);// on force la mise à jour du transfer pour les échéances de classe 7
       }
     }
@@ -162,24 +162,25 @@ public class InvoiceIO
       String q2 = "DELETE FROM " + JOIN_TABLE + " WHERE id_facture = '" + inv.getNumber() + "'";
       dc.executeUpdate(q2);
 
-      Collection<OrderLine> old_echeances = findOrderLines(inv);
-      Collection<OrderLine> echeances = inv.getOrderLines();
+      // commented since 2.8.n
+//      Collection<OrderLine> old_echeances = findOrderLines(inv);
+//      Collection<OrderLine> echeances = inv.getOrderLines();
+//
+//      for (OrderLine o : old_echeances) {
+//        if (!echeances.contains(o)) {
+//          OrderLineIO.delete(o, dc);
+//        }
+//      }
+//      for (OrderLine n : echeances) {
+//        if (n.getId() == 0) {
+//          OrderLineIO.insert(n, dc);
+//        } else {
+//          OrderLineIO.update(n, dc);
+//        }
+//      }
 
-      for (OrderLine o : old_echeances) {
-        if (!echeances.contains(o)) {
-          OrderLineIO.delete(o, dc);
-        }
-      }
-      for (OrderLine n : echeances) {
-        if (n.getId() == 0) {
-          OrderLineIO.insert(n, dc);
-        } else {
-          OrderLineIO.update(n, dc);
-        }
-      }
-
-      for (InvoiceItem af : inv.getItems()) {
-        insert(af, inv.getNumber());
+      for (InvoiceItem invoiceItem : inv.getItems()) {
+        insert(invoiceItem, inv.getNumber());
       }
 
       dc.commit();
@@ -210,17 +211,18 @@ public class InvoiceIO
   }
 
   /**
-   * Recherche de factures par {@code payer} ou {@code member}.
+   * Search invoices by {@code payer} or {@code idper}.
    *
    * @param payer
-   * @param member
-   * @return une liste de factures
+   * @param idper
+   * @return a list of invoices
    * @throws SQLException
    */
-  public List<Invoice> findBy(int payer, int member) throws SQLException {
-    String where = " WHERE numero IN (SELECT facture FROM echeancier2 WHERE payeur = " + payer + " OR adherent = " + member + ")";
+  public List<Invoice> findBy(int idper) throws SQLException {
+    //XXX problème si facture sans échéances
+//    String where = " WHERE numero IN (SELECT facture FROM echeancier2 WHERE payeur = " + payer + " OR adherent = " + idper + ")";
+    String where = "  WHERE debiteur = " + idper + " OR adherent = " + idper;
     return find(where);
-
   }
 
   /**
@@ -331,4 +333,5 @@ public class InvoiceIO
     query += id_echeancier + "," + a.getId() + "," + invItem.getQuantity() + ")";
     dc.executeUpdate(query);//jointure
   }
+  
 }

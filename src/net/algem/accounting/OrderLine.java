@@ -1,5 +1,5 @@
 /*
- * @(#)OrderLine.java	2.8.a 01/04/13
+ * @(#)OrderLine.java	2.8.n 25/09/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -31,7 +31,7 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.n
  *
  */
 public class OrderLine
@@ -92,21 +92,21 @@ public class OrderLine
     invoice = e.getInvoice();
   }
 
-  public OrderLine(Invoice f, InvoiceItem af) {
-    this(f);
-    label = af.getItem().getDesignation();
+  public OrderLine(Invoice v, InvoiceItem item) {
+    this(v);
+    label = item.getItem().getDesignation();
     modeOfPayment = ModeOfPayment.FAC.toString(); // FAC
-    amount = -(AccountUtil.getIntValue(af.getTotal(true)));
+    amount = -(AccountUtil.getIntValue(item.getTotal(true)));
   }
 
-  public OrderLine(Invoice f) {
+  public OrderLine(Invoice inv) {
     id = 0;
-    date = f.getDate();
-    payer = f.getPayer();
-    member = f.getMember();
-    invoice = f.getNumber();
+    date = inv.getDate();
+    payer = inv.getPayer();
+    member = inv.getMember();
+    invoice = inv.getNumber();
     order = 0;
-    document = (f.getNumber() == null) ? "" : f.getNumber();
+    document = (inv.getNumber() == null) ? "" : inv.getNumber();
     paid = false;
     transfered = false;
     currency = "E";

@@ -1,7 +1,7 @@
 /*
- * @(#)RoomSearchView.java	2.6.a 24/09/12
+ * @(#)RoomSearchView.java	2.8.n 27/09/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -32,7 +32,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.n
  * @since 1.0a 07/07/1999
  */
 public class RoomSearchView
@@ -56,6 +56,9 @@ public class RoomSearchView
     estab = new GemField(6);
     estab.addActionListener(this);
     estab.setToolTipText(MessageUtil.getMessage("establishment.number.tip"));
+    
+    btErase = new GemButton(GemCommand.ERASE_CMD);
+    btErase.addActionListener(this);
 
     mask = new GemPanel();
     mask.setLayout(new GridBagLayout());
@@ -69,6 +72,8 @@ public class RoomSearchView
     gb.add(number, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(name, 1, 1, 1, 1, GridBagHelper.WEST);
     gb.add(estab, 1, 2, 1, 1, GridBagHelper.WEST);
+    
+    gb.add(btErase, 2, 4, 1, 1, GridBagHelper.WEST);
 
     return mask;
   }

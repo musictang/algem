@@ -1,7 +1,7 @@
 /*
- * @(#)AbstractHistoRehearsal.java 2.6.a 19/09/12
+ * @(#)AbstractHistoRehearsal.java 2.8.o 08/10/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -39,7 +39,7 @@ import net.algem.util.ui.GemPanel;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.o
  * @since 2.1.j
  */
 public abstract class AbstractHistoRehearsal 
@@ -97,6 +97,7 @@ public abstract class AbstractHistoRehearsal
     bottomPanel.add(hoursPanel, BorderLayout.CENTER);
 
     btAll = new GemButton(BundleUtil.getLabel("All.label"));
+    btAll.setToolTipText(BundleUtil.getLabel("Rehearsal.list.all.tip"));
     btAll.addActionListener(this);
     buttons.add(btAll, 0);
 

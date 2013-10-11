@@ -1,7 +1,7 @@
 /*
- * @(#)HistoQuote 2.7.a 14/01/13
+ * @(#)HistoQuote 2.8.o 08/10/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -31,7 +31,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.o
  * @since 2.4.d 07/06/12
  */
 public class HistoQuote 
@@ -51,11 +51,11 @@ public class HistoQuote
       MessagePopup.warning(this, MessageUtil.getMessage("no.line.selected"));
       return;
     }
-    Quote f = (Quote) invoiceListCtrl.getElementAt(n);
-    QuoteEditor fe = new QuoteEditor(desktop, new BillingService(dataCache), f);
-    fe.addActionListener(this);
-
-    add(fe, card1);
+    Quote q = (Quote) invoiceListCtrl.getElementAt(n);
+    QuoteEditor qeditor = new QuoteEditor(desktop, new BasicBillingService(dataCache), q);
+    qeditor.addActionListener(this);
+    qeditor.load();
+    add(qeditor, card1);
     layout = (CardLayout) getLayout();
     layout.show(this, card1);
    }

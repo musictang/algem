@@ -33,7 +33,7 @@ public class InvoiceUpdateEvent
 	
   public InvoiceUpdateEvent(Invoice source) {
     super(source, MODIFICATION);
-    this.f = source;
+    this.q = source;
   }
 
 }

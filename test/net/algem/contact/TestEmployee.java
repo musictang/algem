@@ -1,5 +1,5 @@
 /*
- * @(#)TestEmployee.java 2.8.m 03/09/13
+ * @(#)TestEmployee.java 2.8.n 03/10/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -21,6 +21,7 @@
 package net.algem.contact;
 
 import net.algem.TestProperties;
+import net.algem.planning.DateFr;
 import net.algem.util.DataConnection;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -29,7 +30,7 @@ import org.junit.*;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.m
+ * @version 2.8.n
  * @since 2.8.m 03/09/13
  */
 public class TestEmployee
@@ -88,5 +89,19 @@ public class TestEmployee
     assertFalse(service.checkNir(insee));
     insee = "160109935202623";
     assertFalse(service.checkNir(insee));
+  }
+  
+  @Test
+  public void testDueFile() {
+    String path1 = "due-24-04-2000-1234.pdf";
+    String path2 = "due-12-01-2010-1234.pdf";
+    String path3 = "due-01-05-2009-1234.pdf";
+    
+    int start = EmployeeView.DUE_DIR.length()+1;
+System.out.println(start);
+        DateFr d1 = new DateFr(path1.substring(start, start + 10));
+        DateFr d2 = new DateFr(path2.substring(start, start + 10));
+        
+        assertTrue(d1.before(d2));
   }
 }

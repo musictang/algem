@@ -1,5 +1,5 @@
 /*
- * @(#)Employee.java 2.8.m 06/09/13
+ * @(#)Employee.java 2.8.n 02/10/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -26,16 +26,17 @@ import net.algem.planning.DateFr;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.m
+ * @version 2.8.n
  * @since 2.8.m 04/09/13
  */
 public class Employee {
   
   private int idper;
-  private String insee;
+  private String nir;
   private DateFr dateBirth;
   private String placeBirth;
   private String guso;
+  private String nationality;
 
   public Employee(int idper) {
     this.idper = idper;
@@ -73,17 +74,25 @@ public class Employee {
     this.idper = id;
   }
 
-  public String getInsee() {
-    return insee;
+  public String getNir() {
+    return nir;
   }
 
-  public void setInsee(String insee) {
-    this.insee = insee;
+  public void setNir(String nir) {
+    this.nir = nir;
+  }
+
+  public String getNationality() {
+    return nationality;
+  }
+
+  public void setNationality(String nationality) {
+    this.nationality = nationality;
   }
 
   @Override
   public String toString() {
-    return idper + " " + insee;
+    return idper + " " + nir;
   }
 
   @Override
@@ -98,7 +107,7 @@ public class Employee {
     if (this.idper != other.idper) {
       return false;
     }
-    if ((this.insee == null) ? (other.insee != null) : !this.insee.equals(other.insee)) {
+    if ((this.nir == null) ? (other.nir != null) : !this.nir.equals(other.nir)) {
       return false;
     }
     if ((this.dateBirth == null) ? (other.dateBirth != null) : !this.dateBirth.equals(other.dateBirth)) {
@@ -110,6 +119,9 @@ public class Employee {
     if ((this.guso == null) ? (other.guso != null) : !this.guso.equals(other.guso)) {
       return false;
     }
+    if ((this.nationality == null) ? (other.nationality != null) : !this.nationality.equals(other.nationality)) {
+      return false;
+    }
     return true;
   }
 
@@ -117,7 +129,7 @@ public class Employee {
   public int hashCode() {
     int hash = 7;
     hash = 59 * hash + this.idper;
-    hash = 59 * hash + (this.insee != null ? this.insee.hashCode() : 0);
+    hash = 59 * hash + (this.nir != null ? this.nir.hashCode() : 0);
     hash = 59 * hash + (this.dateBirth != null ? this.dateBirth.hashCode() : 0);
     hash = 59 * hash + (this.placeBirth != null ? this.placeBirth.hashCode() : 0);
     hash = 59 * hash + (this.guso != null ? this.guso.hashCode() : 0);
@@ -129,10 +141,11 @@ public class Employee {
    * @return true if all infos are empty, false if there is at least one info not empty.
    */
   public boolean isEmpty() {
-    return (insee == null || insee.isEmpty())
+    return (nir == null || nir.isEmpty())
             && (dateBirth == null || dateBirth.toString().equals(DateFr.NULLDATE))
             && (placeBirth == null || placeBirth.isEmpty())
-            && (guso == null || guso.isEmpty());
+            && (guso == null || guso.isEmpty())
+            && (nationality == null || nationality.isEmpty());
   }
   
 }

@@ -1,7 +1,7 @@
 /*
- * @(#)InvoiceItemEditor.java	2.6.a 01/08/2012
+ * @(#)InvoiceItemEditor.java	2.8.n 19/09/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -36,7 +36,7 @@ import net.algem.util.ui.GemPanel;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.n
  * @since 2.3.a 14/02/12
  */
 public class InvoiceItemEditor
@@ -47,9 +47,9 @@ public class InvoiceItemEditor
   private InvoiceItemView view;
   private GemButton ok;
   private GemButton cancel;
-  private boolean modification = false;
+  private boolean changed = false;
 
-  public InvoiceItemEditor(GemDesktop desktop, final InvoiceItem it, BillingServiceI service) {
+  public InvoiceItemEditor(GemDesktop desktop, final InvoiceItem it, BillingService service) {
     super(desktop.getFrame(), MessageUtil.getMessage("invoicing.item.modification.label"), true);
 
     view = new InvoiceItemView(service);
@@ -76,17 +76,17 @@ public class InvoiceItemEditor
     return view.getInvoiceItem();
   }
 
-  public boolean isModified() {
-    return modification;
+  public boolean hasChanged() {
+    return changed;
   }
 
   @Override
   public void actionPerformed(ActionEvent e) {
 
     if (e.getSource() == ok) {
-      modification = true;
+      changed = true;
     } else if (e.getSource() == cancel) {
-      modification = false;
+      changed = false;
       view.clear();
     }
     setVisible(false);

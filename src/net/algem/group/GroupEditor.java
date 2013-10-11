@@ -1,7 +1,7 @@
 /*
- * @(#)GroupEditor.java 2.6.a 31/07/12
+ * @(#)GroupEditor.java 2.8.n 04/10/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,7 +28,7 @@ import net.algem.util.ui.FileTab;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.n
  */
 public class GroupEditor 
   extends FileTab {
@@ -51,11 +51,11 @@ public class GroupEditor
     return loaded;
   }
 
-  public Group getGroup() {
+  Group getGroup() {
     return gv.get();
   }
 
-  public void setId(int id) {
+  void setId(int id) {
     gv.setId(id);
   }
 
