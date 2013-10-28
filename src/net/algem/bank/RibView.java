@@ -1,5 +1,5 @@
 /*
- * @(#)RibView.java	2.8.m 11/09/13
+ * @(#)RibView.java	2.8.p 17/10/13
  *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -42,20 +42,15 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.m
+ * @version 2.8.p
  * @since 1.0a 07/07/1999
  */
 public class RibView
         extends FileTab
         implements BankBranchView
 {
-  
-  
-  
-  /** Max IBAN code length. */
-  private static final int MAX_IBAN_LENGTH = 34;
-  
-  private int id; // id dossier personne
+ 
+  private int idper; // id dossier personne
   private GemField bankName;
   private GemField domiciliation;
   private BankCodeField bankCodeField;
@@ -71,9 +66,14 @@ public class RibView
   private int branchId;
   private JLabel ribError;
 
-  public RibView(GemDesktop _desktop, int _id) {
-    super(_desktop);
-    id = _id;
+  /**
+   * Constructs a rib view.
+   * @param desktop
+   * @param id person's id
+   */
+  public RibView(GemDesktop desktop, int id) {
+    super(desktop);
+    this.idper = id;
 
     bankName = new GemField(32);
     domiciliation = new GemField(32);
@@ -119,9 +119,13 @@ public class RibView
     this.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
     gb.insets = GridBagHelper.SMALL_INSETS;
-
-    gb.add(new GemLabel(BundleUtil.getLabel("Bic.label")), 0, 1, 1, 1, GridBagHelper.NORTHWEST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Iban.label")), 0, 2, 1, 1, GridBagHelper.WEST);
+    GemLabel bicLabel = new GemLabel(BundleUtil.getLabel("Bic.label"));
+    bicLabel.setToolTipText(BundleUtil.getLabel("Bic.code.tip"));
+    gb.add(bicLabel, 0, 1, 1, 1, GridBagHelper.NORTHWEST);
+    
+    GemLabel ibanLabel = new GemLabel(BundleUtil.getLabel("Iban.label"));
+    ibanLabel.setToolTipText(BundleUtil.getLabel("Iban.tip"));
+    gb.add(ibanLabel, 0, 2, 1, 1, GridBagHelper.WEST);
     
     gb.add(new GemLabel(BundleUtil.getLabel("Bic.code.label")), 0, 3, 1, 1, GridBagHelper.WEST);
     
@@ -171,7 +175,7 @@ public class RibView
       return;
     }
 
-    Rib r = new Rib(id);
+    Rib r = new Rib(idper);
     r.setRib(iban);
     bankCodeField.setText(r.getEstablishment());
     branchCodeField.setText(r.getBranch());
@@ -196,6 +200,7 @@ public class RibView
   public void setBankCodeCtrl(BankCodeCtrl ctrl) {
     
     ibanField.addFocusListener(ctrl);
+    ibanField.addActionListener(ctrl);
 //    bankCodeField.addMouseListener(ctrl);
 //    branchCodeField.addMouseListener(ctrl);
 //    accountField.addMouseListener(ctrl);
@@ -225,12 +230,11 @@ public class RibView
       keyField.setText(r.getRibKey());
       branchId = r.getBranchId();
       ibanField.setValue(r.getIban() == null ? BankUtil.ribToIban(r.toString()) : r.getIban());
-
     }
   }
 
   public Rib getRib() {
-    Rib r = new Rib(id); // id initialise idper dans Rib
+    Rib r = new Rib(idper); // id initialise idper dans Rib
 
     r.setEstablishment(bankCodeField.getText());
     r.setBranch(branchCodeField.getText());
@@ -257,7 +261,7 @@ public class RibView
       ibanField.setBackground(Color.WHITE);
       ribError.setText(null);
     } else {
-      ibanField.requestFocusInWindow();
+//      ibanField.requestFocusInWindow();
 //      ibanField.setCaretPosition(ibanField.getText().length());
       ibanField.setBackground(ColorPrefs.ERROR_BG_COLOR);
       ribError.setText(MessageUtil.getMessage("rib.error"));
@@ -402,6 +406,7 @@ public class RibView
       addressView.clear();
       addressView.setEditable(true);
       addressView.setBgColor(Color.WHITE);
+      branchId = 0;
     }
   }
 
@@ -413,10 +418,11 @@ public class RibView
     return branchRef == null;
   }
 
-  void clear() {
-    id = 0;
+  public void clear() {
+    idper = 0;
     bankName.setText("");
     clearBban();
+    ibanField.setValue(null);
     clearBranch();
   }
 
@@ -424,10 +430,11 @@ public class RibView
     bankCodeField.setText("");
     branchCodeField.setText("");
     accountField.setText("");
-    keyField.setText("");
+    keyField.setText("");    
   }
 
   private void clearBranch() {
+    branchId = 0;
     domiciliation.setBackground(Color.white);
     domiciliation.setText(null);
     bicCodeField.setText(null);
@@ -436,7 +443,7 @@ public class RibView
 
   @Override
   public boolean isLoaded() {
-    return id != 0;
+    return idper != 0;
   }
 
   @Override

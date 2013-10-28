@@ -34,11 +34,12 @@ import java.util.logging.Level;
 public class DataConnection
 {
 
-  public static final String DEF_DB_NAME = "algem";
-  public static final String DEF_HOST = "localhost";
-  public static final String DB_USER = "nobody";
-  public final String DEF_DRIVER_NAME = "org.postgresql.Driver";
-  public static final int DEF_PORT = 5432;
+  public static final String DEFAULT_DB_USER = "nobody";
+  public static final int DEFAULT_PORT = 5432;
+  
+  private static final String DEFAULT_DB_NAME = "algem";
+  private static final String DEFAULT_HOST = "localhost";
+  private final String DEFAULT_DRIVER_NAME = "org.postgresql.Driver";
   private static final String DRIVER_URL = "jdbc:postgresql";
   private Connection cnx;
   private String dbhost;
@@ -48,28 +49,31 @@ public class DataConnection
   private boolean debugSQL;
   private boolean ssl = false;
   private boolean cacert = false;
-  private static final String DB_PASS = "Pigfy!"; // PigG8fy!
+  
+  /** Default database pass. */
+  private static final String DEFAULT_DB_PASS = "Pigfy!"; // PigG8fy!
+  private String dbpass;
 
-  public DataConnection(String host, int port, String dbname) {
-    
-    this.dbhost = host == null ? DEF_HOST : host;
+  public DataConnection(String host, int port, String dbname, String dbpass) {
+    this.dbhost = host == null ? DEFAULT_HOST : host;
     this.dbport = port;
-    this.dbname = dbname == null ? DEF_DB_NAME : dbname;
+    this.dbname = (dbname == null) ? DEFAULT_DB_NAME : dbname;
+    this.dbpass = (dbpass == null) ? DEFAULT_DB_NAME : dbpass;
   }
 
   /**
    * Creates an instance with default host, port and base.
    */
   public DataConnection() {
-    this(DEF_HOST, DEF_PORT, DEF_DB_NAME);
+    this(DEFAULT_HOST, DEFAULT_PORT, DEFAULT_DB_NAME, DEFAULT_DB_PASS);
   }
 
   /**
-   * Creates an instance with default port and base.
+   * Creates an instance with default port, base and password.
    * @param host 
    */
   public DataConnection(String host) {
-    this(host, DEF_PORT, DEF_DB_NAME);
+    this(host, DEFAULT_PORT, DEFAULT_DB_NAME, DEFAULT_DB_PASS);
   }
 
   /**
@@ -78,10 +82,10 @@ public class DataConnection
    * @param dbname 
    */
   public DataConnection(String host, String dbname) {
-    this(host, DEF_PORT, dbname);
+    this(host, DEFAULT_PORT, dbname, DEFAULT_DB_PASS);
   }
 
-  public boolean isSsl() {
+  boolean isSsl() {
     return ssl;
   }
 
@@ -89,7 +93,7 @@ public class DataConnection
     this.ssl = ssl;
   }
 
-  public boolean isCacert() {
+  boolean isCacert() {
     return cacert;
   }
 
@@ -126,12 +130,13 @@ public class DataConnection
   
   public Properties getConnectionProperties() {
     Properties props = new Properties();
-    props.setProperty("user", DB_USER);
-    props.setProperty("password", DB_PASS);
+    props.setProperty("user", DEFAULT_DB_USER);
+    props.setProperty("password", dbpass);
     if (ssl) {
       props.setProperty("ssl", "true");
       // by default, jdbc requests certificat
       // to install certificate on client :
+      // server.crt.der is on postgresql cluster
       // keytool -keystore /path/to/java/lib/security/cacerts -alias <myalias> -import -file /path/to/server.crt.der
       if (!cacert) { // for demo usage
         props.setProperty("sslfactory", "org.postgresql.ssl.NonValidatingFactory");

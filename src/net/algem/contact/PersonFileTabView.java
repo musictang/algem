@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileTabView.java  2.8.o 08/10/13
+ * @(#)PersonFileTabView.java  2.8.p 17/10/13
  *
  * Copyright (c) 1999-2013 Musiques Tangentes All Rights Reserved.
  *
@@ -58,7 +58,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.o
+ * @version 2.8.p
  */
 public class PersonFileTabView
         extends FileView
@@ -188,17 +188,19 @@ public class PersonFileTabView
       cbTelAdresse.addItemListener(this);
       contactFileEditor.setLinkTelAddress(parent.getContact().getAddressAll(), parent.getContact().getTele(), cbTelAdresse);
     }
+    
     if (dossier.getTeacher() != null) {
       addTeacherTab(listener);
 //      teacherEditor.load();
     }
+    
     if (dossier.getRib() != null) {
       addBankTab();
-      ribView.setRib(dossier.getRib());
+     /* ribView.setRib(dossier.getRib());
       BankBranch bb = new BankBranchIO(dataCache.getDataConnection()).findId(dossier.getRib().getBranchId());
       if (bb != null) {
         ribView.setBankBranch(bb);
-      }
+      }*/
     }
 
     saveBt = closeToolbar.addIcon(BundleUtil.getLabel("Contact.save.icon"),
@@ -259,6 +261,7 @@ public class PersonFileTabView
 
   /**
    * @see net.algem.contact.PersonFileListener
+   * Used only for subscription card.
    */
   @Override
   public void contentsChanged(PersonFileEvent _evt) {
@@ -277,7 +280,7 @@ public class PersonFileTabView
 //      teacherEditor.set(t);
     } else if (_evt.getType() == PersonFileEvent.BANK_ADDED) {
       Rib b = ((Rib) _evt.getSource());
-      ribView.setRib(b);
+//      ribView.setRib(b);
     } else if (_evt.getType() == PersonFileEvent.SUBSCRIPTION_CARD_CHANGED) {
       PersonSubscriptionCard card = (PersonSubscriptionCard) _evt.getSource();
       dossier.setSubscriptionCard(card);
@@ -433,6 +436,15 @@ public class PersonFileTabView
       wTab.remove(teacherEditor);
       teacherEditor.clear();
       teacherEditor = null;
+    }
+    clearRib();
+  }
+
+  void clearRib() {
+    if (ribView != null) {
+      mainToolbar.removeIcon("Payer.debiting");
+      ribView.clear();
+      ribView = null;
     }
   }
 
@@ -602,11 +614,19 @@ public class PersonFileTabView
     if (ribView == null) {
       BankBranchIO branchIO = new BankBranchIO(dataCache.getDataConnection());
       ribView = new RibView(desktop, dossier.getId());
+      ribView.setRib(dossier.getRib());
       ribView.setBankCodeCtrl(new BankCodeCtrl(dataCache.getDataConnection(), branchIO));
       ribView.setPostalCodeCtrl(new CodePostalCtrl(dataCache.getDataConnection()));
+      if (dossier.getRib() != null) {
+        BankBranch bb = branchIO.findId(dossier.getRib().getBranchId());
+//        BankBranch bb = branchIO.findId(ribView.getBranchCode());
+        if (bb != null) {
+          ribView.setBankBranch(bb);
+        }
+      }
     }
 
-    wTab.addItem(ribView, BANK_TAB_TITLE);//"Fiche Bank");
+    wTab.addItem(ribView, BANK_TAB_TITLE);
 
     mainToolbar.addIcon(listener,
             BundleUtil.getLabel("Payer.debiting.icon"),
@@ -660,10 +680,6 @@ public class PersonFileTabView
     addTab(groupView, BAND_TAB_TITLE, selectionFlag);
 
     return true;
-  }
-
-  void removeBankIcons() {
-    mainToolbar.removeIcon("Payer.debiting");
   }
 
   void setNote(Note nd) {

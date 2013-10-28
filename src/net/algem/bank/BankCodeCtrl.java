@@ -1,5 +1,5 @@
 /*
- * @(#)BankCodeCtrl.java	2.8.m 11/09/13
+ * @(#)BankCodeCtrl.java	2.8.p 17/10/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -33,7 +33,7 @@ import net.algem.util.DataConnection;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.m
+ * @version 2.8.p
  * @since 1.0a 07/07/1999
  */
 public class BankCodeCtrl
@@ -153,6 +153,9 @@ public class BankCodeCtrl
   public void actionPerformed(ActionEvent evt) {
     if (evt.getSource() instanceof BankCodeField) {
       searchBank(branchView.getBankCode());
+    } else if (branchView instanceof RibView) {
+        RibView bv = (RibView) branchView;
+        bv.markIban(BankUtil.isIbanOk(bv.getIban()));
     } else {
       String bCode = branchView.getBranchCode();
       if (bCode == null) {
@@ -165,6 +168,10 @@ public class BankCodeCtrl
 
   @Override
   public void focusGained(FocusEvent evt) {
+    if (evt.getSource() instanceof BicCodeField) {
+        String bic = branchView.getBicCode();
+        branchView.markBic(BankUtil.isBicOk(bic));
+    } 
   }
 
   @Override

@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileEditor 2.8.n 26/09/13
+ * @(#)PersonFileEditor 2.8.p 17/10/13
  *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -67,7 +67,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.n
+ * @version 2.8.p
  */
 public class PersonFileEditor
         extends FileEditor
@@ -302,13 +302,19 @@ public class PersonFileEditor
      * PersonFileEditor(dossier); desktop.addModule(editeur);
      *
      * view.setCursor(new Cursor(Cursor.DEFAULT_CURSOR)); }
-     */ else if ("Member.schedule.payment".equals(arg)) {
+     */ 
+    else if ("Member.schedule.payment".equals(arg)) {
       // jm interdire l'ouverture multiple de l'échéancier
       ((GemButton) evt.getSource()).setEnabled(false);
       dlgSchedulePayment();
     } else if ("Payer.debiting".equals(arg)) {
       if (dossier == null || dossier.getRib() == null) {
-        new ErrorDlg(personFileView, MessageUtil.getMessage("payer.invalid.warning"));
+        MessagePopup.error(personFileView, MessageUtil.getMessage("payer.invalid.warning"));
+        return;
+      }
+      dossier.setRib(personFileView.getRibFile());// get rib from view
+      if (dossier.hasChanged()) {// non enregistrement éventuel du rib
+        MessagePopup.warning(personFileView, MessageUtil.getMessage("rib.error.printing"));
         return;
       }
       boolean printOrderLines = true;
@@ -316,7 +322,7 @@ public class PersonFileEditor
         printOrderLines = false;
       }
       DirectDebitRequest prl = new DirectDebitRequest(personFileView, printOrderLines);
-      dossier.setRib(personFileView.getRibFile());// get rib from view
+//      dossier.setRib(personFileView.getRibFile());// get rib from view
       prl.edit(dossier, personFileView.getBranchBank(), BundleUtil.getLabel("Menu.debiting.label"), dataCache);
 
     } else if ("Login.creation".equals(arg)) {
@@ -456,11 +462,11 @@ public class PersonFileEditor
 
     dossier.setTeacher(personFileView.getTeacher());
 
-    if (dossier.getRib() == null) {
-      dossier.addRib(personFileView.getRibFile());
-    } else {
+//    if (dossier.getRib() == null) {
+//      dossier.addRib(personFileView.getRibFile());
+//    } else {
       dossier.setRib(personFileView.getRibFile());
-    }
+//    }
 
     BankBranch a = personFileView.getBranchBank();
     if (a != null && a.getBicCode() != null && !a.getBicCode().isEmpty()) {
@@ -558,7 +564,7 @@ public class PersonFileEditor
     updatePersonFile();
     String msg = dossier.hasErrors();
     if (msg != null) {      
-      new ErrorDlg(personFileView, msg);
+      MessagePopup.error(personFileView, msg);
     } else {
       if (hasChanged()) {
         msg = checkContact(MessageUtil.getMessage("update.warning"));
@@ -569,6 +575,7 @@ public class PersonFileEditor
         System.out.println(MessageUtil.getMessage("no.update.info"));
       }
     }
+    personFileView.clear();
     closeModule();
 
   }
@@ -915,7 +922,7 @@ public class PersonFileEditor
     updatePersonFile();
     String msg = dossier.hasErrors();
     if (msg != null) {
-      new ErrorDlg(mBar, msg);
+      MessagePopup.error(personFileView, msg);
       return;
     }
     if (hasChanged()) {
@@ -936,7 +943,7 @@ public class PersonFileEditor
       //vuePersonne.setSaveState(true);
     } else {
       dossier.restoreOldValues(backup);
-      JOptionPane.showMessageDialog(mBar,
+      JOptionPane.showMessageDialog(personFileView,
               MessageUtil.getMessage("no.update.info"),
               BundleUtil.getLabel("Warning.label"),
               JOptionPane.INFORMATION_MESSAGE);
@@ -988,8 +995,9 @@ public class PersonFileEditor
     }
 
     if (RibView.class.getSimpleName().equals(classname)) {
-      personFileView.removeBankIcons();
-      miBank.setEnabled(true);
+      savePersonFile();// on enregistre (le rib) par précaution
+      personFileView.clearRib();
+      miBank.setEnabled(true);      
     } else if (MonthScheduleTab.class.getSimpleName().equals(classname)) {
       miMonthPlanning.setEnabled(true);
     } else if (TeacherEditor.class.getSimpleName().equals(classname)) {

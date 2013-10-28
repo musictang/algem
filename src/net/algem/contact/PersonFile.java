@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFile.java 2.8.m 06/09/13
+ * @(#)PersonFile.java 2.8.p 17/10/13
  *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -36,7 +36,7 @@ import net.algem.util.model.GemModel;
  * Person management.
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.m
+ * @version 2.8.p
  * @since 1.0a 12/08/2009
  */
 public class PersonFile
@@ -80,9 +80,6 @@ public class PersonFile
   public void setContact(Contact _contact) {
     //oldContact = contact;
     contact = _contact;
-//    if (_contact != null) {
-//      fireContentsChanged(_contact, PersonFileEvent.CONTACT_CHANGED);
-//    }
   }
 
   public Member getMember() {
@@ -157,6 +154,7 @@ public class PersonFile
   }
 
   public void addRib(Rib b) {
+    oldRib = b;
     rib = b;
   }
 
@@ -177,8 +175,7 @@ public class PersonFile
       return true;
     } else if (teacher != null && !teacher.equals(oldTeacher)) {
       return true;
-    } //Modification du test (oldBic != null) . Correction bug création rib 2.0d
-    else if (rib != null && !rib.equals(oldRib)) {
+    } else if (rib != null && !rib.equals(oldRib)) {
       return true;
     }
     return false;
@@ -257,7 +254,7 @@ public class PersonFile
     oldContact = (Contact) values[0];
     oldMember = (Member) values[1];
     oldTeacher = (Teacher) values[2];
-    oldRib = (Rib) values[3];
+    oldRib = rib = (Rib) values[3];
   }
 
   public void setOldValues() {

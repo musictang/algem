@@ -1,7 +1,7 @@
 /*
- * @(#)TableSGBDView.java	2.6.a 06/08/12
+ * @(#)TableSGBDView.java	2.8.p 24/10/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -39,7 +39,8 @@ import net.algem.util.model.TableSGBD;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.p
+ * @deprecated 
  */
 public class TableSGBDView
         extends GemPanel

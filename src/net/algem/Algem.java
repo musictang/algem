@@ -178,10 +178,25 @@ public class Algem
       base = props.getProperty("base");
     }
     
-    String port = props.getProperty("port");
-    int dbport = (port != null) ? Integer.parseInt(port) : DataConnection.DEF_PORT;
+    String pass = null;
     
-    dc = new DataConnection(host, dbport, base);
+    String auth = props.getProperty("auth");
+    if ("true".equalsIgnoreCase(auth)) {
+      pass = (String) JOptionPane.showInputDialog(
+                    frame,
+                    "Entrez le mot de passe de connexion",
+                    "Connexion",
+                    JOptionPane.PLAIN_MESSAGE
+                   );
+      
+    } else {
+      pass = props.getProperty("pass");
+    }
+        
+    String port = props.getProperty("port");
+    int dbport = (port != null) ? Integer.parseInt(port) : DataConnection.DEFAULT_PORT;
+    
+    dc = new DataConnection(host, dbport, base, pass);
 
     String ssl = props.getProperty("ssl");
     if (ssl != null && "true".equalsIgnoreCase(ssl)) {

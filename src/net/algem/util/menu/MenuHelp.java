@@ -23,7 +23,9 @@ package net.algem.util.menu;
 
 import java.awt.event.ActionEvent;
 import java.net.URL;
+import javax.swing.JDialog;
 import javax.swing.JMenuItem;
+import net.algem.util.About;
 import net.algem.util.BundleUtil;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.HtmlViewer;
@@ -48,7 +50,6 @@ public class MenuHelp extends GemMenu
   public MenuHelp(GemDesktop _desktop) {
     super(BundleUtil.getLabel("Menu.help.label"), _desktop);
 
-
     //add(miIndex = new JMenuItem(BundleUtil.getLabel("Menu.help.index.label"), 'i'));
     //add(miSearch = new JMenuItem(BundleUtil.getLabel("Action.search.label"), 'r'));
     //add(miCurrent = new JMenuItem(BundleUtil.getLabel("Menu.help.current.label"), 'c'));
@@ -67,7 +68,8 @@ public class MenuHelp extends GemMenu
     desktop.setWaitCursor();
 
     if (source == miAbout) {
-      MessagePopup.information(this,"Algem, version : "+dataCache.getVersion());
+//      MessagePopup.information(this,"Algem, version : "+ dataCache.getVersion());
+      JDialog about = new About(desktop, "Algem [version " + desktop.getDataCache().getVersion() + "]");
     } /*else if (source == miIndex) {
       showHelp("index.html");
     } else if (source == miSearch) {

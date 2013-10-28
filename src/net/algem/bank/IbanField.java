@@ -1,5 +1,5 @@
 /*
- * @(#)IbanField.java	2.8.i 08/07/13
+ * @(#)IbanField.java	2.8.p 17/10/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -28,20 +28,26 @@ import net.algem.util.MessageUtil;
 /**
  * IBAN field with mask formatter.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.i
+ * @version 2.8.p
  * @since 2.8.i 04/07/13
  */
 public class IbanField 
   extends JFormattedTextField
 {
   
-  public static final String FRENCH_MASK=  "UUAA AAAA AAAA AAAA AAAA AAAA AAA";
-  public static final MaskFormatter mf;
+  static final String FRENCH_MASK=  "UUAA AAAA AAAA AAAA AAAA AAAA AAA";
+  
+  static final MaskFormatter mf;
+  
   static {
     mf = MessageUtil.createFormatter(FRENCH_MASK);
     mf.setValueContainsLiteralCharacters(false);
   }
+  /** Max IBAN code length. */
+  private static final int MAX_IBAN_LENGTH = 34;
+  
   private static final String INTERNATIONAL_MASK=  "UUAA AAAA AAAA AAAA AAAA AAAA AAAA AAAA AA";
+  
   /**
    * Constructs a field with french format.
    */

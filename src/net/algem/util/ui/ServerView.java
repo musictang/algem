@@ -53,7 +53,7 @@ public class ServerView
 		pghost = new GemField(this.dc.getDbhost(), 24);
 		pgport = new GemNumericField(String.valueOf(this.dc.getDbport()), 6);
 		pgbase = new GemField(this.dc.getDbname(), 16);
-		pguser = new GemField(DataConnection.DB_USER, 8);
+		pguser = new GemField(DataConnection.DEFAULT_DB_USER, 8);
 		pgetat = new GemField(16);
 		pgetat.setText(this.dc.isConnected() ? "connect?" : "non connect?");
 
@@ -105,7 +105,7 @@ public class ServerView
 		}
 		String user = pguser.getText();
 		if (user.length() == 0) {
-			user = DataConnection.DB_USER;
+			user = DataConnection.DEFAULT_DB_USER;
 		}
 
 		try {
