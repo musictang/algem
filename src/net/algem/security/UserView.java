@@ -1,7 +1,7 @@
 /*
- * @(#)UserView.java	2.6.c 31/10/12
+ * @(#)UserView.java	2.8.p 30/10/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,52 +20,56 @@
  */
 package net.algem.security;
 
-import java.awt.Color;
 import java.awt.GridBagLayout;
+import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
+import javax.swing.JPasswordField;
 import net.algem.contact.Person;
 import net.algem.util.BundleUtil;
 import net.algem.util.ui.*;
 
 /**
- * comment
+ * User login modification view.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.c
+ * @version 2.8.p
  */
 public class UserView
         extends GemBorderPanel
 {
 
-  Person personne;
-  GemNumericField id;
-  GemField name;
-  GemField login;
-  GemField password;
-  JComboBox profil;
+  private Person person;
+  private GemNumericField id;
+  private GemField name;
+  private GemField login;
+	private JPasswordField  password;
+  private JComboBox profile;
 
+	public UserView() {
+		super(BorderFactory.createEmptyBorder(20,20,20,20));
+	}
+	
   public UserView(Person p) {
 
-    personne = p;
+    this.person = p;
 
     id = new GemNumericField(6);
-    id.setText(String.valueOf(personne.getId()));
+    id.setText(String.valueOf(person.getId()));
     id.setEditable(false);
-    id.setBackground(Color.lightGray);
-    name = new GemField(40);
-    name.setText(personne.getFirstName() + " " + personne.getName());
+
+    name = new GemField(25);
+    name.setText(person.getFirstName() + " " + person.getName());
     name.setEditable(false);
-    name.setBackground(Color.lightGray);
 
     login = new GemField(8);
-    password = new GemField(8);
-    //password.setEchoChar('*');
+		password = new JPasswordField(8);
 
-    profil = new JComboBox(UserIO.PROFIL_NAMES);
+    profile = new JComboBox(UserIO.PROFIL_NAMES);
     
     this.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
+		gb.insets = GridBagHelper.SMALL_INSETS;
 
     gb.add(id, 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Login.label")), 0, 1, 1, 1, GridBagHelper.WEST);
@@ -74,14 +78,15 @@ public class UserView
     gb.add(name, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(login, 1, 1, 1, 1, GridBagHelper.WEST);
     gb.add(password, 1, 2, 1, 1, GridBagHelper.WEST);
-    gb.add(profil, 1, 3, 1, 1, GridBagHelper.WEST);
+    gb.add(profile, 1, 3, 1, 1, GridBagHelper.WEST);
   }
 
   public User get() {
-    User u = new User(personne);
+		// login, pass, profile
+    User u = new User(person);
     u.setLogin(login.getText());
-    u.setPassword(password.getText());
-    u.setProfile(profil.getSelectedIndex());
+		u.setPassword(String.valueOf(password.getPassword()));
+    u.setProfile(profile.getSelectedIndex());
     return u;
   }
 
@@ -89,7 +94,7 @@ public class UserView
     name.setText(u.getFirstName() + " " + u.getName());
     password.setText(u.getPassword());
     login.setText(u.getLogin());
-    profil.setSelectedIndex(u.getProfile());
+    profile.setSelectedIndex(u.getProfile());
   }
 
   public void clear() {
@@ -97,6 +102,6 @@ public class UserView
     name.setText("");
     password.setText("");
     login.setText("");
-    profil.setSelectedIndex(0);
+    profile.setSelectedIndex(0);
   }
 }

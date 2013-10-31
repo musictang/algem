@@ -21,6 +21,7 @@
 package net.algem.util.postit;
 
 import java.awt.GridBagLayout;
+import java.util.List;
 import java.util.Vector;
 import javax.swing.JComboBox;
 import net.algem.planning.DateFr;
@@ -44,13 +45,13 @@ public class PostitCreateView
 {
 
   private int userId;
-  private Vector<User> users;
+  private List<User> users;
   private JComboBox type;
   private JComboBox receiver;
   private DateFrField term;
   private GemTextArea textArea;
 
-  public PostitCreateView(int _userId, Vector<User> _users) {
+  public PostitCreateView(int _userId, List<User> _users) {
     userId = _userId;
     users = _users;
     type = new JComboBox(new String[]{
@@ -63,7 +64,7 @@ public class PostitCreateView
     });
 
     for (int i = 2; i < users.size(); i++) {
-      receiver.addItem(((User) users.elementAt(i)).getLogin());
+      receiver.addItem(((User) users.get(i)).getLogin());
     }
     term = new DateFrField();
     textArea = new GemTextArea();
@@ -91,7 +92,7 @@ public class PostitCreateView
     } else if (i == 1) { // public
       p.setReceiver(0);
     } else {
-      p.setReceiver(((User) users.elementAt(i)).getId()); //id de l'utilisateur choisi
+      p.setReceiver(((User) users.get(i)).getId()); //id de l'utilisateur choisi
     }
     p.setTerm(term.getDateFr());
     p.setDay(new DateFr(new java.util.Date()));

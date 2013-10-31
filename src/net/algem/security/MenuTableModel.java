@@ -23,7 +23,6 @@ package net.algem.security;
 import java.util.Vector;
 import javax.swing.table.AbstractTableModel;
 import net.algem.util.BundleUtil;
-import net.algem.util.DataConnection;
 
 /**
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
@@ -35,7 +34,6 @@ public class MenuTableModel
         extends AbstractTableModel
 {
 
-  private DataConnection dc;
   private String[] header = {
     BundleUtil.getLabel("Id.label"),
     BundleUtil.getLabel("Menu.label"),
@@ -51,7 +49,7 @@ public class MenuTableModel
 
   public void load(int id) {
     userId = id;
-    tuples = service.getMenuAccess(id);
+    tuples = ((DefaultUserService) service).getMenuAccess(id);
     fireTableChanged(null);
   }
 

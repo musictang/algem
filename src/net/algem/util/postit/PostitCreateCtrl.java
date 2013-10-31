@@ -26,6 +26,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
+import net.algem.security.DefaultUserService;
 import net.algem.security.UserService;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;

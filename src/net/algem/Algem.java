@@ -33,6 +33,7 @@ import java.util.Locale;
 import java.util.Properties;
 import java.util.logging.Level;
 import javax.swing.*;
+import net.algem.security.AuthDlg;
 import net.algem.security.User;
 import net.algem.util.*;
 import net.algem.util.module.GemDesktopCtrl;
@@ -96,7 +97,7 @@ public class Algem
       setDB(host, base, props);
     } catch (SQLException ex) {
       MessagePopup.error(frame, ex.getMessage());
-      System.exit(4);
+      System.exit(2);
     }
     /* -------------------------- */
     /* Logger initialisation */
@@ -112,13 +113,23 @@ public class Algem
     } catch (IOException ex) {
       System.err.println(ex.getMessage());
     }
-
+		String pass = null;
+		boolean auth = "true".equalsIgnoreCase(props.getProperty("auth"));
+		if (auth || login == null) {//authentification requise
+			AuthDlg dlg = new AuthDlg(gemBoot.getFrame());
+			if (dlg.isValidation()) {
+				login = dlg.getLogin();
+				pass = dlg.getPass();
+			}
+    }
+		
     cache = DataCache.getInstance(dc, login);
 
     /* ------------------------ */
     /* Test login user validity */
     /* ------------------------ */
-    checkUser(login);
+		
+    checkUser(login, pass, auth);
 
     cache.load(gemBoot);
 
@@ -132,8 +143,13 @@ public class Algem
   }
 
   private void setDesktop() {
-    frame = new JFrame("Algem/" + props.getProperty("appClient") + "(" + APP_VERSION + ") jdbc://" + hostName + "/" + baseName);
-    frame.setSize(DEF_WIDTH, DEF_HEIGHT);
+		String title = "Algem"+ "(" + APP_VERSION +")/" +  props.getProperty("appClient")
+//			+ " - Utilisateur système " +System.getProperty("user.name") 
+			 + " - jdbc://" + hostName + "/" + baseName;
+		
+//    frame = new JFrame("Algem/" + props.getProperty("appClient") + "(" + APP_VERSION + ") jdbc://" + hostName + "/" + baseName);
+    frame = new JFrame(title);
+		frame.setSize(DEF_WIDTH, DEF_HEIGHT);
     frame.setLocation(DEF_LOCATION);
     checkVersion(frame);
 
@@ -151,7 +167,7 @@ public class Algem
     } catch (FileNotFoundException e) {
     } catch (IOException e) {
       MessagePopup.error(null, e.toString());
-      System.exit(2);
+      System.exit(3);
     }
   }
 
@@ -178,21 +194,8 @@ public class Algem
       base = props.getProperty("base");
     }
     
-    String pass = null;
-    
-    String auth = props.getProperty("auth");
-    if ("true".equalsIgnoreCase(auth)) {
-      pass = (String) JOptionPane.showInputDialog(
-                    frame,
-                    "Entrez le mot de passe de connexion",
-                    "Connexion",
-                    JOptionPane.PLAIN_MESSAGE
-                   );
-      
-    } else {
-      pass = props.getProperty("pass");
-    }
-        
+    String pass = props.getProperty("pass");
+
     String port = props.getProperty("port");
     int dbport = (port != null) ? Integer.parseInt(port) : DataConnection.DEFAULT_PORT;
     
@@ -209,12 +212,20 @@ public class Algem
     dc.connect();
   }
 
-  private void checkUser(String u) {
-    if (cache.getUser() == null) {
-      MessagePopup.error(null, MessageUtil.getMessage("unknown.login", u));
-      System.exit(5);
-    }
-  }
+  private void checkUser(String u, String pass, boolean auth) {
+		User currentUser = cache.getUser();
+		if (currentUser == null) {
+			MessagePopup.error(null, MessageUtil.getMessage("unknown.login", u));
+			System.exit(4);
+		} else {
+			if (auth) {
+				if (!cache.getUserService().authenticate(currentUser, pass)) {
+					MessagePopup.error(null, MessageUtil.getMessage("authentication.failure"));
+					System.exit(5);
+				}
+			}
+		}
+	}
 
   private void checkVersion(JFrame frame) {
     String v = cache.getVersion();
@@ -235,7 +246,7 @@ public class Algem
         JOptionPane.showMessageDialog(frame,
                 mv, MessageUtil.getMessage("version.update.label"),
                 JOptionPane.ERROR_MESSAGE);
-        System.exit(5);
+        System.exit(6);
       } finally {
         dc.setAutoCommit(true);
       }
@@ -346,7 +357,7 @@ public class Algem
               "Erreur et conflit en création de l'appli",
               JOptionPane.ERROR_MESSAGE);
       ex.printStackTrace();
-      System.exit(6);
+      System.exit(7);
     }
   }
 }

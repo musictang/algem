@@ -51,6 +51,7 @@ import net.algem.planning.month.MonthSchedule;
 import net.algem.room.*;
 import net.algem.security.User;
 import net.algem.security.UserIO;
+import net.algem.security.DefaultUserService;
 import net.algem.security.UserService;
 import net.algem.util.event.GemEvent;
 import net.algem.util.model.Cacheable;
@@ -174,8 +175,8 @@ public class DataCache
     loadDayStmt = dc.prepareStatement("SELECT " + ScheduleIO.COLUMNS + " FROM planning p WHERE jour = ? ORDER BY p.debut");//ORDER BY p.action,p.debut
     loadDayRangeStmt = dc.prepareStatement(ScheduleRangeIO.getDayRangeStmt());
 
-    userService = new UserService(this);
-    user = userService.find(login);
+    userService = new DefaultUserService(this);
+    user = ((DefaultUserService) userService).find(login);
 
     monthSchedule = new MonthSchedule();
     daySchedule = new DaySchedule();

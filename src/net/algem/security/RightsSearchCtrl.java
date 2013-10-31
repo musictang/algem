@@ -21,6 +21,7 @@
 package net.algem.security;
 
 import java.awt.CardLayout;
+import java.util.List;
 import java.util.Vector;
 import net.algem.util.DataCache;
 import net.algem.util.MessageUtil;
@@ -79,12 +80,12 @@ public class RightsSearchCtrl
       query = null;
     }
 
-    Vector<User> v = service.findAll(query);
+    List<User> v = service.findAll(query);
     if (v == null || v.isEmpty()) {
       setStatus(MessageUtil.getMessage("search.empty.list.status"));
     } else if (v.size() == 1) {
       ((CardLayout) wCard.getLayout()).show(wCard, "masque");
-      mask.loadCard(v.elementAt(0));
+      mask.loadCard(v.get(0));
     } else {
       ((CardLayout) wCard.getLayout()).show(wCard, "liste");
       list.loadResult(v);

@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileEditor 2.8.p 17/10/13
+ * @(#)PersonFileEditor 2.8.p 30/10/13
  *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -46,9 +46,7 @@ import net.algem.enrolment.MemberEnrolmentDlg;
 import net.algem.group.PersonFileGroupView;
 import net.algem.planning.TeacherBreakDlg;
 import net.algem.planning.month.MonthScheduleTab;
-import net.algem.security.User;
-import net.algem.security.UserCreateDlg;
-import net.algem.security.UserIO;
+import net.algem.security.*;
 import net.algem.util.*;
 import net.algem.util.event.GemEvent;
 import net.algem.util.event.GemEventListener;
@@ -586,11 +584,12 @@ public class PersonFileEditor
 
   void dlgLogin() {
 
-    DataConnection dc = dataCache.getDataConnection();
-    UserIO dao = (UserIO) DataCache.getDao(Model.User);
+//    DataConnection dc = dataCache.getDataConnection();
+		UserService service = dataCache.getUserService();
+//    UserIO dao = (UserIO) DataCache.getDao(Model.User);
     personFileView.setCursor(new Cursor(Cursor.WAIT_CURSOR));
     UserCreateDlg dlg = new UserCreateDlg(personFileView, "login", dossier.getContact());
-    User u = dataCache.getUserService().findId(dossier.getId());
+    User u = service.findId(dossier.getId());
     if (u != null) {
       dlg.setUser(u);
     }
@@ -603,22 +602,21 @@ public class PersonFileEditor
     try {
       if (u == null) {
         u = dlg.getUser();
-        dao.insert(u);
-        dao.initMenus(u);
-        dao.initRights(u);
+				service.create(u);
         dataCache.add(u);
         desktop.postEvent(new GemEvent(this,GemEvent.CREATION, GemEvent.USER, u));
       } else {
-        User nu = dlg.getUser();
-        if (!nu.equals(u)) {
-          dao.update(nu);
-          dataCache.update(u);
-          desktop.postEvent(new GemEvent(this,GemEvent.MODIFICATION, GemEvent.USER, u));
+					User nu = dlg.getUser();
+					if (service.update(nu, u)) {
+						dataCache.update(u);
+						desktop.postEvent(new GemEvent(this,GemEvent.MODIFICATION, GemEvent.USER, u));
+					}
         }
-      }
     } catch (SQLException e) {
       GemLogger.logException("enregistrement user", e, personFileView);
-    }
+    } catch(UserException ue) {
+			GemLogger.logException(ue);
+		}
   }
 
   void dlgSchedulePayment() {

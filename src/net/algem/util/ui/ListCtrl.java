@@ -25,6 +25,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Vector;
 import javax.swing.JTable;
 import javax.swing.table.TableColumnModel;
@@ -68,11 +69,14 @@ public abstract class ListCtrl
     back.addActionListener(l);
   }
 
-  public <E> void addBlock(Vector<E> block) {
-    Enumeration e = block.elements();
-    while (e.hasMoreElements()) {
-      addRow(e.nextElement());
-    }
+  public <E> void addBlock(List<E> block) {
+//    Enumeration e = block.elements();
+//    while (e.hasMoreElements()) {
+//      addRow(e.nextElement());
+//    }
+		for (E element : block) {
+			addRow(element);
+		}
   }
 
   public int getSelectedIndex() {
@@ -87,9 +91,9 @@ public abstract class ListCtrl
     return tableModel.getIdFromIndex(table.convertRowIndexToModel(table.getSelectedRow()));
   }
 
-  public <E> void loadResult(Vector<E> liste) {
+  public <E> void loadResult(List<E> liste) {
     tableModel.clear();
-    addBlock(liste);
+    addBlock(new Vector<E>(liste));
   }
 
   public int nbLines() {

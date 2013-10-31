@@ -1,7 +1,7 @@
 /*
- * @(#)User.java	2.6.d 06/11/12
+ * @(#)User.java	2.8.p 30/10/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -25,90 +25,103 @@ import net.algem.contact.Person;
 /**
  * Algem user.
  * An user is defined by a default profile.
+ *
  * @see net.algem.security.UserIO
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.d
+ * @version 2.8.p
  */
 public class User
-        extends Person
-{
+	extends Person {
 
-  private String login;
-  private String password;
-  private int profile;
+	private String login;
+	private String password;
+	private int profile;
+	private UserPass pass;
 
-  public User() {
-  }
+	public User() {
+	}
 
-  public User(Person p) {
-    id = p.getId();
-    name = p.getName();
-    firstName = p.getFirstName();
-    gender = p.getGender();
-  }
+	public User(Person p) {
+		id = p.getId();
+		name = p.getName();
+		firstName = p.getFirstName();
+		gender = p.getGender();
+	}
 
-  @Override
-  public boolean equals(Object obj) {
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    final Person p = (Person) obj;
-    if (!super.equals(p)) {
-      return false;
-    }
-    final User other = (User) obj;
-    if ((this.login == null) ? (other.login != null) : !this.login.equals(other.login)) {
-      return false;
-    }
-    if ((this.password == null) ? (other.password != null) : !this.password.equals(other.password)) {
-      return false;
-    }
-    if (this.profile != other.profile) {
-      return false;
-    }
-    return true;
-  }
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final Person p = (Person) obj;
+		if (!super.equals(p)) {
+			return false;
+		}
+		final User other = (User) obj;
+		if ((this.login == null) ? (other.login != null) : !this.login.equals(other.login)) {
+			return false;
+		}
+		if ((this.password == null) ? (other.password != null) : !this.password.equals(other.password)) {
+			return false;
+		}
+		if (this.profile != other.profile) {
+			return false;
+		}
+		if (this.pass != other.pass && (this.pass == null || !this.pass.equals(other.pass))) {
+			return false;
+		}
+		return true;
+	}
 
-  @Override
-  public int hashCode() {
-    int hash = 7;
-    hash = 17 * hash + (this.login != null ? this.login.hashCode() : 0);
-    hash = 17 * hash + (this.password != null ? this.password.hashCode() : 0);
-    hash = 17 * hash + this.profile;
-    return hash;
-  }
+	@Override
+	public int hashCode() {
+		int hash = 7;
+		hash = 17 * hash + (this.login != null ? this.login.hashCode() : 0);
+		hash = 17 * hash + (this.password != null ? this.password.hashCode() : 0);
+		hash = 17 * hash + this.profile;
+		hash = 17 * hash + (this.pass != null ? this.pass.hashCode() : 0);
+		return hash;
+	}
+	
+	@Override
+	public String toString() {
+		return super.toString() + " " + login;
+	}
 
-  @Override
-  public String toString() {
-    return super.toString() + " " + login;
-  }
+	void setLogin(String s) {
+		login = s;
+	}
 
-  public void setLogin(String s) {
-    login = s;
-  }
+	public String getLogin() {
+		return login;
+	}
 
-  public String getLogin() {
-    return login;
-  }
+	void setPassword(String s) {
+		password = s;
+	}
 
-  public void setPassword(String s) {
-    password = s;
-  }
+	public String getPassword() {
+		return password;
+	}
 
-  public String getPassword() {
-    return password;
-  }
+	void setProfile(int i) {
+		profile = i;
+	}
 
-  public void setProfile(int i) {
-    profile = i;
-  }
+	public int getProfile() {
+		return profile;
+	}
 
-  public int getProfile() {
-    return profile;
-  }
+	UserPass getPassInfo() {
+		return pass;
+	}
+
+	void setPassInfo(UserPass pass) {
+		this.pass = pass;
+	}
 }

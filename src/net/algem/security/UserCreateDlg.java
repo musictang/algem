@@ -1,7 +1,7 @@
 /*
- * @(#)userCreateDlg.java	2.6.a 09/10/12
+ * @(#)UserCreateDlg.java	2.8.p 30/10/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,18 +28,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JDialog;
 import net.algem.contact.Person;
+import net.algem.util.BundleUtil;
 import net.algem.util.GemCommand;
 import net.algem.util.ui.GemButton;
-import net.algem.util.ui.GemLabel;
 import net.algem.util.ui.GemPanel;
 import net.algem.util.ui.PopupDlg;
 
 /**
- * comment
+ * User creation and modification dialog.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.p
  */
 public class UserCreateDlg
         implements ActionListener
@@ -56,9 +56,7 @@ public class UserCreateDlg
     person = p;
 
     dlg = new JDialog(PopupDlg.getTopFrame(c), true);
-    GemLabel title = new GemLabel(t);
-    validation = false;
-
+    
     userView = new UserView(person);
 
     btValidation = new GemButton(GemCommand.OK_CMD);
@@ -73,11 +71,13 @@ public class UserCreateDlg
 
     Container ct = dlg.getContentPane();
     ct.setLayout(new BorderLayout());
-    ct.add(title, BorderLayout.NORTH);
+
     ct.add(userView, BorderLayout.CENTER);
     ct.add(buttons, BorderLayout.SOUTH);
-    dlg.pack();
-    dlg.setLocation(100, 100);
+		
+		dlg.setTitle(BundleUtil.getLabel("Login.creation.label"));
+		dlg.setSize(440,180);
+    dlg.setLocationRelativeTo(c);
   }
 
   public void display() {
@@ -88,10 +88,6 @@ public class UserCreateDlg
     dlg.dispose();
   }
 
-  public void validate() {
-    validation = true;
-  }
-
   public boolean isEntryValid() {
     User u = getUser();
     if ("".equals(u.getLogin()) && "".equals(u.getPassword())) {
@@ -100,6 +96,10 @@ public class UserCreateDlg
     return true;
   }
 
+	/**
+	 * Checks status of validation command.
+	 * @return validation status
+	 */
   public boolean isValidation() {
     return validation;
   }
@@ -118,7 +118,7 @@ public class UserCreateDlg
       if (!isEntryValid()) {
         return;
       }
-      validate();
+      validation = true;
     } else {
       validation = false;
     }

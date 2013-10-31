@@ -29,6 +29,7 @@ import java.util.Enumeration;
 import java.util.Vector;
 import javax.swing.JInternalFrame;
 import net.algem.planning.DateFr;
+import net.algem.security.DefaultUserService;
 import net.algem.security.UserService;
 import net.algem.util.GemLogger;
 import net.algem.util.event.GemEvent;

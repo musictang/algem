@@ -27,7 +27,7 @@ package net.algem.security;
  * @version 2.6.a
  * @since 2.6.a 13/09/12
  */
-class MenuAccess {
+public class MenuAccess {
   
   private int id;
   private String label;
