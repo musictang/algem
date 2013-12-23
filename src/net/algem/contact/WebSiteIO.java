@@ -1,7 +1,7 @@
 /*
- * @(#)WebSiteIO.java	2.6.a 25/09/12
+ * @(#)WebSiteIO.java	2.8.p 06/12/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -29,7 +29,7 @@ import net.algem.util.model.TableIO;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.p
  */
 public class WebSiteIO
         extends TableIO
@@ -89,4 +89,22 @@ public class WebSiteIO
 
     return v;
   }
+  
+  /**
+   * Find by type.
+   * @param type category
+   * @param dc dataConnection
+   * @return the number of results or 0 if no site found.
+   * @throws SQLException 
+   */
+  public static int find(int type, DataConnection dc) throws SQLException {
+    String query = "SELECT * FROM " + TABLE + " WHERE type = " + type; 
+    ResultSet rs = dc.executeQuery(query);
+    int count = 0;
+    while (rs.next()) {
+      count ++;
+    }
+    return count;
+  }
+  
 }

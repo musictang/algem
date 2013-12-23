@@ -1,7 +1,7 @@
 /*
- * @(#)MusicStyleCtrl.java	2.6.a 12/09/12
+ * @(#)MusicStyleCtrl.java	2.8.p 06/12/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,16 +21,20 @@
 package net.algem.config;
 
 import java.sql.SQLException;
+import net.algem.group.GroupIO;
 import net.algem.util.DataCache;
+import net.algem.util.MessageUtil;
 import net.algem.util.event.GemEvent;
+import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
+import net.algem.util.ui.MessagePopup;
 
 /**
  * comment
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.p
  */
 public class MusicStyleCtrl
         extends ParamTableCtrl
@@ -67,10 +71,23 @@ public class MusicStyleCtrl
   }
 
   @Override
-  public void suppression(Param _p) throws SQLException {
-    ParamTableIO.delete(MusicStyleIO.TABLE, COLUMN_KEY, _p, dc);
-    MusicStyle ms = new MusicStyle(Integer.parseInt(_p.getKey()), _p.getValue());
-    dataCache.remove(ms);
-    desktop.postEvent(new MusicStyleEvent(this, GemEvent.SUPPRESSION, ms));
+  public void suppression(Param p) throws SQLException, ParamException {
+    MusicStyle ms = new MusicStyle(Integer.parseInt(p.getKey()), p.getValue());
+    if (ms.getId() == 0) {
+      throw new ParamException(MessageUtil.getMessage("musical.style.default.delete.exception"));
+    }
+    int used = ((GroupIO) DataCache.getDao(Model.Group)).findByStyle(ms.getId());
+    if (used > 0) {
+     throw new ParamException(MessageUtil.getMessage("musical.style.delete.exception",used));
+    }
+    else {
+      if (MessagePopup.confirm(this, MessageUtil.getMessage("param.delete.confirmation"))) {
+        ParamTableIO.delete(MusicStyleIO.TABLE, COLUMN_KEY, p, dc);
+        dataCache.remove(ms);
+        desktop.postEvent(new MusicStyleEvent(this, GemEvent.SUPPRESSION, ms));
+      } else {
+        throw new ParamException();
+      }
+    }
   }
 }

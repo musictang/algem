@@ -31,7 +31,7 @@ import net.algem.contact.teacher.SubstituteTeacherList;
 import net.algem.contact.teacher.TeacherService;
 import net.algem.course.Course;
 import net.algem.group.Group;
-import net.algem.group.GroupService;
+import net.algem.group.GemGroupService;
 import net.algem.planning.*;
 import net.algem.room.Room;
 import net.algem.util.*;
@@ -662,9 +662,9 @@ public class PlanModifCtrl
           memberService.editSubscriptionCard(dataCache, plan);
         } else if (ScheduleObject.GROUP_SCHEDULE == plan.getType()) {
           // annulation échéance
-          Group g = new GroupService(dc).find(plan.getIdPerson());
+          Group g = new GemGroupService(dc).find(plan.getIdPerson());
           if (g != null && g.getIdref() > 0) {
-            int delay = GroupService.MIN_ANNULATION;
+            int delay = GemGroupService.MIN_ANNULATION;
             boolean ok = true;
             if (!RehearsalUtil.isCancelledBefore(plan.getDate(), delay)) {
               if (!MessagePopup.confirm(null, MessageUtil.getMessage("rehearsal.payment.cancel.confirmation"), "Confirmation")) {

@@ -51,13 +51,13 @@ public class GroupSearchCtrl
 {
 
   private GemDesktop desktop;
-  private GroupService service;
+  private GemGroupService service;
 
   public GroupSearchCtrl(GemDesktop _desktop) {
     super(_desktop.getDataCache().getDataConnection(), null);
     desktop = _desktop;
     desktop.addGemEventListener(this);
-    service = new GroupService(dc);
+    service = new GemGroupService(dc);
 
   }
 

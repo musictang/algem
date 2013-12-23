@@ -54,7 +54,7 @@ public class GroupPassCreateCtrl
   private ConflictListView cfv;
   private Vector<DateFr> dateList;
   private Group group;
-  private GroupService service;
+  private GemGroupService service;
   private String wt = BundleUtil.getLabel("Warning.label");
 
   public GroupPassCreateCtrl(GemDesktop d) {
@@ -62,7 +62,7 @@ public class GroupPassCreateCtrl
     dataCache = d.getDataCache();
     view = new GroupPassRehearsalView(dataCache);
     cfv = new ConflictListView();
-    service = new GroupService(dataCache.getDataConnection());
+    service = new GemGroupService(dataCache.getDataConnection());
 
     addCard("Saisie forfait répétition groupe", view);
     addCard("Vérification conflit", cfv);

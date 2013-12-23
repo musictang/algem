@@ -240,7 +240,7 @@ public class MemberCardService
       return null;
     }
     // recadrer si nécessaire
-    if (ImageUtil.PHOTO_HEIGHT != img.getHeight()) {
+    if (ImageUtil.PHOTO_ID_HEIGHT != img.getHeight()) {
       System.out.println(img.getHeight() + "rescaling !");
       BufferedImage bi2 = ImageUtil.rescale(img);
       img = ImageUtil.formatPhoto(bi2);

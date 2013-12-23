@@ -1,5 +1,5 @@
 /*
- * @(#)BasicEmployeeService.java 2.8.n 07/10/13
+ * @(#)BasicEmployeeService.java 2.8.p 08/11/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -22,22 +22,27 @@ package net.algem.contact;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import net.algem.config.ConfigKey;
 import net.algem.util.DataConnection;
+import net.algem.util.DocService;
+import net.algem.util.FileUtil;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.n
+ * @version 2.8.p
  * @since 2.8.m 03/09/13
  */
 public class BasicEmployeeService
-  implements EmployeeService
+  implements EmployeeService, DocService
 {
-
+  
   private EmployeeIO employeeIO;
+  private DataConnection dc;
 
   public BasicEmployeeService(DataConnection dc) {
     this.employeeIO = new EmployeeIO(dc);
+    this.dc = dc;
   }
   
   @Override
@@ -107,4 +112,10 @@ public class BasicEmployeeService
 //    (int) (97L - ( nir % 97L));
     return op.subtract(n.remainder(op)).intValue();
   }
+  
+  @Override
+  public String getDocumentPath() {
+    return FileUtil.getDocumentPath(ConfigKey.EMPLOYEES_PATH, dc);
+  }
+
 }

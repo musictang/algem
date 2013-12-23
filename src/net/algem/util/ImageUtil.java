@@ -1,7 +1,7 @@
 /*
- * @(#)ImageUtil.java	2.7.e 01/02/13
+ * @(#)ImageUtil.java	2.8.p 06/12/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -31,33 +31,35 @@ import net.algem.accounting.AccountUtil;
  * Utility class for image operations.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.e
+ * @version 2.8.p
  */
 public class ImageUtil
 {
 
-  public static String IMAGE_PATH = "/resources/images/";
-  public static String PHOTO_PATH = "/resources/photos/";
-  public static String ALGEM_LOGO = "logo.png";
-  public static String SEARCH_ICON = "cherche.png";
-  public static String CAL_ICON = "cal.gif";
-  public static String NO_CONFLICT_ICON = "feuvert.gif";
-  public static String CONFLICT_ICON = "feurouge.gif";
-  public static String DELETE_ICON = "quitter_trans_12x12.png";
-  public static String TAB_CLOSING_ICON = "quitter_trans_12x12.png";
-  public static int PHOTO_WIDTH = 100;
-  public static int PHOTO_HEIGHT = 130;
+  public static final String IMAGE_PATH = "/resources/images/";
+  public static final String PHOTO_PATH = "/resources/photos/";
+  public static final String DEFAULT_PHOTO_ID = "/resources/images/idphoto.png";
+  public static final String ALGEM_LOGO = "logo.png";
+  public static final String SEARCH_ICON = "cherche.png";
+  public static final String CAL_ICON = "cal.gif";
+  public static final String NO_CONFLICT_ICON = "feuvert.gif";
+  public static final String CONFLICT_ICON = "feurouge.gif";
+  public static final String DELETE_ICON = "quitter_trans_12x12.png";
+  public static final String TAB_CLOSING_ICON = "quitter_trans_12x12.png";
+  public static final String [] DEFAULT_IMG_EXTENSIONS = {".jpg",".jpg",".JPG",".JPEG",".png",".PNG"};
+  public static final int PHOTO_ID_HEIGHT = 130;
+  private static final int PHOTO_ID_WIDTH = 100;
 
   public ImageUtil() {
   }
 
   /**
-   * Redimensionne les photos proportionnellement à la hauteur d'une photo d'identité (PHOTO_HEIGHT).
+   * Redimensionne les photos proportionnellement à la hauteur d'une photo d'identité (PHOTO_ID_HEIGHT).
    * @param img BufferedImage
    * @return BufferedImage
    */
   public static BufferedImage rescale(BufferedImage img) {
-  	return rescale(img, PHOTO_WIDTH, PHOTO_HEIGHT);
+  	return rescale(img, PHOTO_ID_WIDTH, PHOTO_ID_HEIGHT);
   }
   
   
@@ -101,12 +103,12 @@ public class ImageUtil
       int x = 0;
       //System.out.println("w = "+w+" h = "+h);
       double width = img.getWidth();
-      if (width > PHOTO_WIDTH) {
+      if (width > PHOTO_ID_WIDTH) {
         double half_width = width / 2;
         //System.out.println("half width "+half_width);
-        x = (int) (half_width - (PHOTO_WIDTH / 2));
+        x = (int) (half_width - (PHOTO_ID_WIDTH / 2));
         //System.out.println("x = "+x);      
-        BufferedImage img2 = img.getSubimage(x, 0, PHOTO_WIDTH, h);
+        BufferedImage img2 = img.getSubimage(x, 0, PHOTO_ID_WIDTH, h);
         return img2;
       } else {
         return img;

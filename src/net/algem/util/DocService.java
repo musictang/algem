@@ -1,7 +1,7 @@
 /*
- * @(#)Config.java 2.6.a 17/09/12
- * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * @(#)DocService.java	2.8.p 08/11/13
+ *
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,23 +16,22 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
-
-package net.algem.config;
+package net.algem.util;
 
 /**
- * Alias of {@link net.algem.config.Param}.
+ * General documents interface.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.p
+ * @since 2.8.p 08/11/13
  */
-public class Config
-  extends Param
-{
+public interface DocService {
 
-  public Config(String key, String value) {
-    super(key, value);
-  }
-
+  /**
+   * Gets the path of documents.
+   * @return a string representing some path
+   */
+  String getDocumentPath();
 }

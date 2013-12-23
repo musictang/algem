@@ -1,5 +1,5 @@
 /*
- * @(#)Algem.java	2.8.o 10/10/13
+ * @(#)Algem.java	2.8.r 23/12/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -38,28 +38,29 @@ import net.algem.security.User;
 import net.algem.util.*;
 import net.algem.util.module.GemDesktopCtrl;
 import net.algem.util.ui.MessagePopup;
+import org.apache.commons.codec.binary.Base64;
 
 /**
  * Main class.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.o
+ * @version 2.8.r
  */
 public class Algem
 {
 
-  public static final String APP_VERSION = "2.8.o";//experimental
+  public static final String APP_VERSION = "2.8.r";//experimental
   private static final int DEF_WIDTH = 1080;// (850,650) => ancienne taille
   private static final int DEF_HEIGHT = 780;
   private static final Point DEF_LOCATION = new Point(70, 30);
   private JFrame frame;
   private DataCache cache;
-  private User user;
+//  private User user;
   private String driverName = "org.postgresql.Driver";
   private String hostName = "localhost";
   private String baseName = "algem";
-  private GemDesktopCtrl desktop;
+//  private GemDesktopCtrl desktop;
   private Properties props;
   private DataConnection dc;
 
@@ -113,22 +114,22 @@ public class Algem
     } catch (IOException ex) {
       System.err.println(ex.getMessage());
     }
-		String pass = null;
-		boolean auth = "true".equalsIgnoreCase(props.getProperty("auth"));
-		if (auth || login == null) {//authentification requise
-			AuthDlg dlg = new AuthDlg(gemBoot.getFrame());
-			if (dlg.isValidation()) {
-				login = dlg.getLogin();
-				pass = dlg.getPass();
-			}
+    String pass = null;
+    boolean auth = "true".equalsIgnoreCase(props.getProperty("auth"));
+    if (auth || login == null) {//authentification requise
+      AuthDlg dlg = new AuthDlg(gemBoot.getFrame());
+      if (dlg.isValidation()) {
+        login = dlg.getLogin();
+        pass = dlg.getPass();
+      }
     }
-		
+
     cache = DataCache.getInstance(dc, login);
 
     /* ------------------------ */
     /* Test login user validity */
     /* ------------------------ */
-		
+
     checkUser(login, pass, auth);
 
     cache.load(gemBoot);
@@ -143,17 +144,17 @@ public class Algem
   }
 
   private void setDesktop() {
-		String title = "Algem"+ "(" + APP_VERSION +")/" +  props.getProperty("appClient")
-//			+ " - Utilisateur système " +System.getProperty("user.name") 
-			 + " - jdbc://" + hostName + "/" + baseName;
-		
+    String title = "Algem" + "(" + APP_VERSION + ")/" + props.getProperty("appClient")
+            //			+ " - Utilisateur système " +System.getProperty("user.name") 
+            + " - jdbc://" + hostName + "/" + baseName;
+
 //    frame = new JFrame("Algem/" + props.getProperty("appClient") + "(" + APP_VERSION + ") jdbc://" + hostName + "/" + baseName);
     frame = new JFrame(title);
-		frame.setSize(DEF_WIDTH, DEF_HEIGHT);
+    frame.setSize(DEF_WIDTH, DEF_HEIGHT);
     frame.setLocation(DEF_LOCATION);
     checkVersion(frame);
 
-    desktop = new GemDesktopCtrl(frame, cache, props);
+    GemDesktopCtrl desktop = new GemDesktopCtrl(frame, cache, props);
     frame.setVisible(true);
   }
 
@@ -193,13 +194,18 @@ public class Algem
     if (base == null) {
       base = props.getProperty("base");
     }
-    
-    String pass = props.getProperty("pass");
+
+    String dbPass = props.getProperty("dbpass");
+
+    if (dbPass != null) {
+      byte[] pass64 = Base64.decodeBase64(dbPass);
+      dbPass = new String(pass64).trim();
+    }
 
     String port = props.getProperty("port");
-    int dbport = (port != null) ? Integer.parseInt(port) : DataConnection.DEFAULT_PORT;
-    
-    dc = new DataConnection(host, dbport, base, pass);
+    int dbport = (port != null) ? Integer.parseInt(port) : 0;
+
+    dc = new DataConnection(host, dbport, base, dbPass);
 
     String ssl = props.getProperty("ssl");
     if (ssl != null && "true".equalsIgnoreCase(ssl)) {
@@ -213,19 +219,19 @@ public class Algem
   }
 
   private void checkUser(String u, String pass, boolean auth) {
-		User currentUser = cache.getUser();
-		if (currentUser == null) {
-			MessagePopup.error(null, MessageUtil.getMessage("unknown.login", u));
-			System.exit(4);
-		} else {
-			if (auth) {
-				if (!cache.getUserService().authenticate(currentUser, pass)) {
-					MessagePopup.error(null, MessageUtil.getMessage("authentication.failure"));
-					System.exit(5);
-				}
-			}
-		}
-	}
+    User currentUser = cache.getUser();
+    if (currentUser == null) {
+      MessagePopup.error(null, MessageUtil.getMessage("unknown.login", u));
+      System.exit(4);
+    } else {
+      if (auth) {
+        if (!cache.getUserService().authenticate(currentUser, pass)) {
+          MessagePopup.error(null, MessageUtil.getMessage("authentication.failure"));
+          System.exit(5);
+        }
+      }
+    }
+  }
 
   private void checkVersion(JFrame frame) {
     String v = cache.getVersion();

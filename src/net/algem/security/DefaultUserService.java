@@ -1,5 +1,5 @@
 /*
- * @(#)DefaultUserService.java	2.8.p 30/10/13
+ * @(#)DefaultUserService.java	2.8.p 01/11/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -37,69 +37,73 @@ import net.algem.util.postit.PostitIO;
 
 /**
  * User operations service.
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.8.p
  * @since 2.6.a 06/08/2012
  */
-public class DefaultUserService implements UserService
+public class DefaultUserService
+        implements UserService
 {
 
   private DataConnection dc;
   private DataCache dataCache;
   private UserIO dao;
-	private PasswordEncryptionService encryptionService;
+  private PasswordEncryptionService encryptionService;
 
   public DefaultUserService(DataCache dataCache) {
     this.dataCache = dataCache;
     this.dc = dataCache.getDataConnection();
     dao = (UserIO) DataCache.getDao(Model.User);
-		encryptionService = new PasswordEncryptionService();
+    encryptionService = new PasswordEncryptionService();
   }
-	
-	/**
-	 * Authenticates a user by his login and pass.
-	 * @param login login name
-	 * @param pass clear text password
-	 * @return true if pass encryption equals stored encrypted pass
-	 */
-	@Override
-	public boolean authenticate(String login, String pass) {
-		byte[] salt = findAuthInfo(login, "clef");// find salt in BD
-		byte[] encryptedPassword = findAuthInfo(login, "pass");
-		try {
-			return encryptionService.authenticate(pass, encryptedPassword, salt);
-		} catch (NoSuchAlgorithmException ex) {
-			GemLogger.logException(ex);
-		} catch (InvalidKeySpecException ex) {
-			GemLogger.logException(ex);
-		} 
-		return false;
-	}
-	
-	/**
-	 * Authenticates a user with some {@code pass}.
-	 * @param user user instance
-	 * @param pass clear text password
-	 * @return true if clearPass encryption equals stored encrypted pass
-	 */
-	@Override
-	public boolean authenticate(User user, String pass) {
-		byte[] salt = user.getPassInfo().getKey();
-		byte[] encryptedPassword = user.getPassInfo().getPass();
-		if (salt == null || encryptedPassword == null) {
-			return false;
-		}
-		try {
-			return encryptionService.authenticate(pass, encryptedPassword, salt);
-		} catch (NoSuchAlgorithmException ex) {
-			GemLogger.logException(ex);
-		} catch (InvalidKeySpecException ex) {
-			GemLogger.logException(ex);
-		} 
-		return false;
-	}
 
-	@Override
+  /**
+   * Authenticates a user by his login and pass.
+   *
+   * @param login login name
+   * @param pass clear text password
+   * @return true if pass encryption equals stored encrypted pass
+   */
+  @Override
+  public boolean authenticate(String login, String pass) {
+    byte[] salt = findAuthInfo(login, "clef");// find salt in BD
+    byte[] encryptedPassword = findAuthInfo(login, "pass");
+    try {
+      return encryptionService.authenticate(pass, encryptedPassword, salt);
+    } catch (NoSuchAlgorithmException ex) {
+      GemLogger.logException(ex);
+    } catch (InvalidKeySpecException ex) {
+      GemLogger.logException(ex);
+    }
+    return false;
+  }
+
+  /**
+   * Authenticates a user with some {@code pass}.
+   *
+   * @param user user instance
+   * @param pass clear text password
+   * @return true if clearPass encryption equals stored encrypted pass
+   */
+  @Override
+  public boolean authenticate(User user, String pass) {
+    byte[] salt = user.getPassInfo().getKey();
+    byte[] encryptedPassword = user.getPassInfo().getPass();
+    if (salt == null || encryptedPassword == null) {
+      return false;
+    }
+    try {
+      return encryptionService.authenticate(pass, encryptedPassword, salt);
+    } catch (NoSuchAlgorithmException ex) {
+      GemLogger.logException(ex);
+    } catch (InvalidKeySpecException ex) {
+      GemLogger.logException(ex);
+    }
+    return false;
+  }
+
+  @Override
   public List<User> findAll(String where) {
     List<User> v = new Vector<User>();
     try {
@@ -110,54 +114,54 @@ public class DefaultUserService implements UserService
     return v;
   }
 
-	@Override
+  @Override
   public User find(String login) {
-		User u = null;
-		try {
-			u = dao.findLogin(login);
-			if (u == null) {
-				try {
-					u = dao.findId(Integer.parseInt(login));
-				} catch (NumberFormatException ex) {
-					GemLogger.log(Level.WARNING, ex.getMessage());
-				}
-			}
-		} catch (SQLException ex) {
-			GemLogger.logException(ex);
-		} finally {
-			return u;
-		}
-	}
-	
-	/**
-	 * Search password authentification info for some user.
-	 * @param login login name
-	 * @param colName table column name
-	 * @return an array of bytes
-	 */
-	private byte[] findAuthInfo(String login, String colName) {
-		byte[] info = null;
-		try {
-			int id = 0;
-			try {
-				Integer.parseInt(login);
-			} catch (NumberFormatException ex) {
-				id = -1;
-			}
-			String query = "SELECT " + colName + " FROM " + UserIO.TABLE + " WHERE login = '" + login + "' OR idper = " + id;
-			ResultSet rs = dc.executeQuery(query);
-			while (rs.next()) {
-				info = rs.getBytes(1);
-			}
-		} catch (SQLException ex) {
-			GemLogger.logException(ex);
-		} finally {
-			return info;
-		}
-	}
-	
-	
-	@Override
+    User u = null;
+    try {
+      u = dao.findLogin(login);
+      if (u == null) {
+        try {
+          u = dao.findId(Integer.parseInt(login));
+        } catch (NumberFormatException ex) {
+          GemLogger.log(Level.WARNING, ex.getMessage());
+        }
+      }
+    } catch (SQLException ex) {
+      GemLogger.logException(ex);
+    } finally {
+      return u;
+    }
+  }
+
+  /**
+   * Search password authentification info for some user.
+   *
+   * @param login login name
+   * @param colName table column name
+   * @return an array of bytes
+   */
+  private byte[] findAuthInfo(String login, String colName) {
+    byte[] info = null;
+    try {
+      int id = 0;
+      try {
+        Integer.parseInt(login);
+      } catch (NumberFormatException ex) {
+        id = -1;
+      }
+      String query = "SELECT " + colName + " FROM " + UserIO.TABLE + " WHERE login = '" + login + "' OR idper = " + id;
+      ResultSet rs = dc.executeQuery(query);
+      while (rs.next()) {
+        info = rs.getBytes(1);
+      }
+    } catch (SQLException ex) {
+      GemLogger.logException(ex);
+    } finally {
+      return info;
+    }
+  }
+
+  @Override
   public User findId(int id) {
     try {
       return (User) DataCache.findId(id, Model.User);
@@ -167,7 +171,7 @@ public class DefaultUserService implements UserService
     }
   }
 
-	@Override
+  @Override
   public void update(User user) throws SQLException {
     dao.update(user);
     dataCache.update(user);
@@ -190,8 +194,7 @@ public class DefaultUserService implements UserService
     return mv;
   }
 
-	@Override
-  public void updateAccess(MenuAccess m, String col, int userId) {
+  void updateAccess(MenuAccess m, String col, int userId) {
     try {
       String query = "UPDATE menuaccess SET " + col + " = '" + (m.isAuth() ? "t" : "f")
               + "' WHERE idper = " + userId + " AND idmenu = " + m.getId();
@@ -201,7 +204,7 @@ public class DefaultUserService implements UserService
     }
   }
 
-	public @Override
+  public @Override
   Vector getTableRights(int userId) {
     Vector vr = new Vector();
     String query = "SELECT nomtable,lecture,insertion,modification,suppression FROM droits WHERE idper=" + userId + " ORDER BY nomtable";
@@ -221,7 +224,7 @@ public class DefaultUserService implements UserService
     return vr;
   }
 
-	@Override
+  @Override
   public void updateTableRights(String table, String col, Object value, int userId) {
     String query = "UPDATE droits SET " + col + " = " + (((Boolean) value).booleanValue() ? "1" : "0")
             + " WHERE idper = " + userId + " AND nomtable = '" + table + "'";
@@ -232,7 +235,7 @@ public class DefaultUserService implements UserService
     }
   }
 
-	@Override
+  @Override
   public List<User> getRegisteredUsers() {
     List<User> v = new Vector<User>();
     try {
@@ -243,31 +246,31 @@ public class DefaultUserService implements UserService
     return v;
   }
 
-	@Override
+  @Override
   public void create(Postit p) throws SQLException {
     PostitIO.insert(p, dc);
   }
 
-	@Override
+  @Override
   public void update(Postit p) throws SQLException {
     PostitIO.update(p, dc);
   }
 
-	@Override
+  @Override
   public void delete(Postit p) throws SQLException {
     PostitIO.delete(p, dc);
   }
 
-	@Override
-  public Vector<Postit> getPostits(int idUser, int read) {
-    String where = "WHERE (dest = 0 OR dest = " + idUser + ") AND id > " + read;
+  @Override
+  public Vector<Postit> getPostits(int userId, int read) {
+    String where = "WHERE (dest = 0 OR dest = " + userId + ") AND id > " + read;
     return PostitIO.find(where, dc);
   }
 
-	@Override
-  public boolean authorize(String menu2, User user) {
+  @Override
+  public boolean authorize(String menu, User user) {
     String query = "SELECT autorisation FROM menuaccess a, menu2 m"
-            + " WHERE m.label = '" + menu2 + "'"
+            + " WHERE m.label = '" + menu + "'"
             + " AND a.idper = " + user.getId()
             + " AND a.idmenu = m.id";
     try {
@@ -281,56 +284,56 @@ public class DefaultUserService implements UserService
     }
     return true; // autorisé par défaut
   }
-	
-	UserPass createPassword(String pass) {
 
-		try {
-			byte[] salt = encryptionService.generateSalt();
-			UserPass up = new UserPass(encryptionService.getEncryptedPassword(pass, salt), salt);
-			return up;
-		} catch (InvalidKeySpecException ex) {
-			GemLogger.logException(ex);
-		} catch (NoSuchAlgorithmException ex) {
-			GemLogger.logException(ex);
-		}
-		return null;
- }
-	
-	@Override
-	public void create(User u) throws SQLException {
-		u.setPassInfo(createPassword(u.getPassword()));
-		dao.insert(u);
-		dao.initMenus(u);
-		dao.initRights(u);
-	}
-	
-	@Override
-	public boolean update(User nu, final User old) throws SQLException, UserException {
-		byte[] salt = null;
+  UserPass createPassword(String pass) {
 
-		if (old.getPassInfo() == null || old.getPassInfo().getKey() == null) {
-			try {
-				salt = encryptionService.generateSalt();
-			} catch (NoSuchAlgorithmException ex) {
-				throw new UserException(ex.getMessage());
-			}
-		} else {
-			salt = old.getPassInfo().getKey();
-		}
+    try {
+      byte[] salt = encryptionService.generateSalt();
+      UserPass up = new UserPass(encryptionService.getEncryptedPassword(pass, salt), salt);
+      return up;
+    } catch (InvalidKeySpecException ex) {
+      GemLogger.logException(ex);
+    } catch (NoSuchAlgorithmException ex) {
+      GemLogger.logException(ex);
+    }
+    return null;
+  }
 
-		try {
-			byte[] p = encryptionService.getEncryptedPassword(nu.getPassword(), salt);
-			nu.setPassInfo(new UserPass(p, salt));
-		} catch (NoSuchAlgorithmException ex) {
-			throw new UserException(ex.getMessage());
-		} catch (InvalidKeySpecException ex) {
-			throw new UserException(ex.getMessage());
-		}
-		
-		if (!nu.equals(old)) {
+  @Override
+  public void create(User u) throws SQLException {
+    u.setPassInfo(createPassword(u.getPassword()));
+    dao.insert(u);
+    dao.initMenus(u);
+    dao.initRights(u);
+  }
+
+  @Override
+  public boolean update(User nu, final User old) throws SQLException, UserException {
+    byte[] salt = null;
+
+    if (old.getPassInfo() == null || old.getPassInfo().getKey() == null) {
+      try {
+        salt = encryptionService.generateSalt();
+      } catch (NoSuchAlgorithmException ex) {
+        throw new UserException(ex.getMessage());
+      }
+    } else {
+      salt = old.getPassInfo().getKey();
+    }
+
+    try {
+      byte[] p = encryptionService.getEncryptedPassword(nu.getPassword(), salt);
+      nu.setPassInfo(new UserPass(p, salt));
+    } catch (NoSuchAlgorithmException ex) {
+      throw new UserException(ex.getMessage());
+    } catch (InvalidKeySpecException ex) {
+      throw new UserException(ex.getMessage());
+    }
+
+    if (!nu.equals(old)) {
       dao.update(nu);
-			return true;
-		}
-		return false;
-	}
+      return true;
+    }
+    return false;
+  }
 }

@@ -1,7 +1,7 @@
 /*
- * @(#)BicConfig.java 2.6.a 14/09/12
+ * @(#)BicConfig.java 2.8.r 13/12/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -19,15 +19,14 @@
  * 
  */
 
-package net.algem.bank;
+package net.algem.config;
 
 import java.awt.GridBagLayout;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import net.algem.config.Config;
-import net.algem.config.ConfigKey;
-import net.algem.config.ConfigPanel;
+import javax.swing.JComboBox;
+import net.algem.util.BundleUtil;
 import net.algem.util.ui.GemField;
 import net.algem.util.ui.GemLabel;
 import net.algem.util.ui.GemPanel;
@@ -37,13 +36,13 @@ import net.algem.util.ui.GridBagHelper;
  * Bic infos for the organization.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.6.a
+ * @version 2.8.r
  * @since 2.2.d
  */
 public class BicConfig
     extends ConfigPanel {
 
-  private  Config c1, c2, c3, c4, c5, c6, c7;
+  private  Config c1, c2, c3, c4, c5, c6, c7, c8, c9;
 
   private GemField firmName;
   private GemField issuer;
@@ -52,6 +51,8 @@ public class BicConfig
   private GemField account;
   private GemField document;
   private GemField invoice;
+  private GemField dossierName;
+  private JComboBox accountingFormat;
 
   public BicConfig(String title, Map<String, Config> cm) {
     super(title, cm);
@@ -66,6 +67,8 @@ public class BicConfig
     c5 = confs.get(ConfigKey.STANDING_ORDER_ACCOUNT.getKey());//compte
     c6 = confs.get(ConfigKey.ACCOUNTING_DOCUMENT_NUMBER.getKey());//piece
     c7 = confs.get(ConfigKey.ACCOUNTING_INVOICE_NUMBER.getKey());//facture
+    c8 = confs.get(ConfigKey.ACCOUNTING_DOSSIER_NAME.getKey());//nom du dossier comptable
+    c9 = confs.get(ConfigKey.ACCOUNTING_EXPORT_FORMAT.getKey());//format export
 
     firmName = new GemField(20);
     firmName.setText(c1.getValue());
@@ -81,7 +84,13 @@ public class BicConfig
     document.setText(c6.getValue());
     invoice = new GemField(10);
     invoice.setText(c7.getValue());
-    
+    dossierName = new GemField(20);
+    dossierName.setText(c8.getValue());
+    accountingFormat = new JComboBox(new String[]{
+              AccountingExportFormat.CIEL.getLabel(),
+              AccountingExportFormat.DVLOG_PGI.getLabel(),
+              AccountingExportFormat.SAGE.getLabel()});
+    accountingFormat.setSelectedItem(c9.getValue());
     content = new GemPanel();
 
     content.setLayout(new GridBagLayout());
@@ -103,6 +112,14 @@ public class BicConfig
     gb.add(document,1,5,1,1, GridBagHelper.WEST);
     gb.add(new GemLabel(ConfigKey.ACCOUNTING_INVOICE_NUMBER.getLabel()),0,6,1,1,GridBagHelper.EAST);
     gb.add(invoice,1,6,1,1, GridBagHelper.WEST);
+    GemLabel accountingDossierName = new GemLabel(ConfigKey.ACCOUNTING_DOSSIER_NAME.getLabel());
+    accountingDossierName.setToolTipText(BundleUtil.getLabel("ConfEditor.accounting.export.dossier.tip"));
+    gb.add(accountingDossierName,0,7,1,1,GridBagHelper.EAST);
+    gb.add(dossierName,1,7,1,1,GridBagHelper.EAST);
+    GemLabel accountingFormatLabel = new GemLabel(ConfigKey.ACCOUNTING_EXPORT_FORMAT.getLabel());
+    accountingFormatLabel.setToolTipText(BundleUtil.getLabel("ConfEditor.accounting.export.format.tip"));
+    gb.add(accountingFormatLabel,0,8,1,1,GridBagHelper.EAST);
+    gb.add(accountingFormat,1,8,1,1, GridBagHelper.WEST);
     
     add(content);
   }
@@ -118,6 +135,8 @@ public class BicConfig
     c5.setValue(account.getText().trim());
     c6.setValue(document.getText().trim());
     c7.setValue(invoice.getText().trim());
+    c8.setValue(dossierName.getText().trim());
+    c9.setValue(accountingFormat.getSelectedItem().toString());
 
     conf.add(c1);
     conf.add(c2);
@@ -126,6 +145,8 @@ public class BicConfig
     conf.add(c5);
     conf.add(c6);
     conf.add(c7);
+    conf.add(c8);
+    conf.add(c9);
 
     return conf;
   }

@@ -41,7 +41,7 @@ import net.algem.contact.teacher.TeacherFollowUpEditor;
 import net.algem.enrolment.EnrolmentEvent;
 import net.algem.enrolment.MemberEnrolmentEditor;
 import net.algem.group.Group;
-import net.algem.group.GroupService;
+import net.algem.group.GemGroupService;
 import net.algem.group.Musician;
 import net.algem.group.PersonFileGroupView;
 import net.algem.util.*;
@@ -705,7 +705,7 @@ public class PersonFileTabView
   private Musician getMusician(Group g, int idper) {
 
     try {
-      Vector<Musician> vm = new GroupService(dataCache.getDataConnection()).getMusicians(g);
+      Vector<Musician> vm = new GemGroupService(dataCache.getDataConnection()).getMusicians(g);
       for (Musician m : vm) {
         if (m.getId() == idper) {
           return m;

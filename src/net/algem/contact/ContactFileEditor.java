@@ -1,5 +1,5 @@
 /*
- * @(#)ContactFileEditor.java	2.8.k 23/07/13
+ * @(#)ContactFileEditor.java	2.8.p 07/11/13
  * 
  * Copyright (c) 1998-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -28,6 +28,8 @@ import java.util.Vector;
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import net.algem.config.Category;
+import net.algem.config.ConfigKey;
+import net.algem.config.ConfigUtil;
 import net.algem.config.ParamTableIO;
 import net.algem.contact.member.PersonSubscriptionCard;
 import net.algem.util.model.Reloadable;
@@ -39,7 +41,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.k
+ * @version 2.8.p
  * @since 1.0a 09/07/2002
  */
 public class ContactFileEditor
@@ -179,7 +181,8 @@ public class ContactFileEditor
 
   public void setPerson(Person p) {
     if (p != null) {
-      personView.set(p);
+      String configDir = ConfigUtil.getConf(ConfigKey.PHOTOS_PATH.getKey(), dc);
+      personView.set(p, configDir);
     }
   }
 

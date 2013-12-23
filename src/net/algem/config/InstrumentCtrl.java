@@ -1,7 +1,7 @@
 /*
- * @(#)InstrumentCtrl.java 2.6.a 03/08/12
+ * @(#)InstrumentCtrl.java 2.8.p 06/12/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -23,58 +23,73 @@ package net.algem.config;
 import java.sql.SQLException;
 import java.util.Collections;
 import net.algem.util.DataCache;
+import net.algem.util.MessageUtil;
 import net.algem.util.module.GemDesktop;
+import net.algem.util.ui.MessagePopup;
 
 /**
  * comment
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.p
  */
 public class InstrumentCtrl
-	extends ParamTableCtrl {
+        extends ParamTableCtrl
+{
 
-	public final static InstrumentComparator instrumentComparator = new InstrumentComparator();
-	public static final String TABLE = "instrument";
-	public static final String SEQUENCE = "idinstrument";
-	public static final String COLUMN_KEY = "id";
-	public static final String COLUMN_NAME = "nom";
-	private DataCache dataCache;
+  public final static InstrumentComparator instrumentComparator = new InstrumentComparator();
+  public static final String TABLE = "instrument";
+  public static final String SEQUENCE = "idinstrument";
+  public static final String COLUMN_KEY = "id";
+  public static final String COLUMN_NAME = "nom";
+  private DataCache dataCache;
 
-	public InstrumentCtrl(GemDesktop _desktop) {
-		super(_desktop, "Instruments", false);
-		dataCache = _desktop.getDataCache();
-	}
+  public InstrumentCtrl(GemDesktop _desktop) {
+    super(_desktop, "Instruments", false);
+    dataCache = _desktop.getDataCache();
+  }
 
-	@Override
-	public void load() {
-		load(ParamTableIO.find(TABLE, COLUMN_NAME, dc).elements());
-	}
+  @Override
+  public void load() {
+    load(ParamTableIO.find(TABLE, COLUMN_NAME, dc).elements());
+  }
 
-	@Override
-	public void modification(Param _current, Param _p) throws SQLException {
-		ParamTableIO.update(TABLE, COLUMN_KEY, COLUMN_NAME, _p, dc);
-		Instrument i = new Instrument(Integer.parseInt(_p.getKey()), _p.getValue());
-		int index = dataCache.getInstruments().indexOf(i);
-		if (index != -1) {
-			dataCache.getInstruments().setElementAt(i, index);
-			Collections.sort(dataCache.getInstruments(), instrumentComparator);
-		}
+  @Override
+  public void modification(Param _current, Param _p) throws SQLException {
+    ParamTableIO.update(TABLE, COLUMN_KEY, COLUMN_NAME, _p, dc);
+    Instrument i = new Instrument(Integer.parseInt(_p.getKey()), _p.getValue());
+    int index = dataCache.getInstruments().indexOf(i);
+    if (index != -1) {
+      dataCache.getInstruments().setElementAt(i, index);
+      Collections.sort(dataCache.getInstruments(), instrumentComparator);
+    }
 
-	}
+  }
 
-	@Override
-	public void insertion(Param _p) throws SQLException {
-		ParamTableIO.insert(TABLE, SEQUENCE, _p, dc);
-		Instrument i = new Instrument(Integer.parseInt(_p.getKey()), _p.getValue());
-		dataCache.getInstruments().addElement(i);
-		Collections.sort(dataCache.getInstruments(), instrumentComparator);
-	}
+  @Override
+  public void insertion(Param _p) throws SQLException {
+    ParamTableIO.insert(TABLE, SEQUENCE, _p, dc);
+    Instrument i = new Instrument(Integer.parseInt(_p.getKey()), _p.getValue());
+    dataCache.getInstruments().addElement(i);
+    Collections.sort(dataCache.getInstruments(), instrumentComparator);
+  }
 
-	@Override
-	public void suppression(Param _p) throws SQLException {
-		ParamTableIO.delete(TABLE, COLUMN_KEY, _p, dc);
-		Instrument i = new Instrument(Integer.parseInt(_p.getKey()), _p.getValue());
-		dataCache.getInstruments().remove(i);
-	}
+  @Override
+  public void suppression(Param p) throws SQLException, ParamException {
+    Instrument i = new Instrument(Integer.parseInt(p.getKey()), p.getValue());
+    if (i.getId() == 0) {
+      throw new ParamException(MessageUtil.getMessage("instrument.default.delete.exception"));
+    }
+    int used = InstrumentIO.findUsed(i.getId(), dc);
+    if (used > 0) {
+      throw new ParamException(MessageUtil.getMessage("instrument.delete.exception", used));
+    } else {
+      if (MessagePopup.confirm(this, MessageUtil.getMessage("param.delete.confirmation"))) {
+        ParamTableIO.delete(TABLE, COLUMN_KEY, p, dc);
+        dataCache.getInstruments().remove(i);
+      } else {
+        throw new ParamException();
+      }
+    }
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * @(#)UserService.java	2.8.p 30/10/13
+ * @(#)UserService.java	2.8.p 01/11/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -31,52 +31,52 @@ import net.algem.util.postit.Postit;
  * @version 2.8.p
  * @since 2.8.p 30/10/13
  */
-public interface UserService {
+public interface UserService
+{
 
-	/**
-	 * Authenticates a user by his login and pass.
-	 * @param login login name
-	 * @param pass clear text password
-	 * @return true if pass encryption equals stored encrypted pass
-	 */
-	public boolean authenticate(String login, String pass);
+  /**
+   * Authenticates a user by his login and pass.
+   *
+   * @param login login name
+   * @param pass clear text password
+   * @return true if pass encryption equals stored encrypted pass
+   */
+  public boolean authenticate(String login, String pass);
 
-	/**
-	 * Authenticates a user with some {@code pass}.
-	 * @param user user instance
-	 * @param pass clear text password
-	 * @return true if clearPass encryption equals stored encrypted pass
-	 */
-	public boolean authenticate(User user, String pass);
+  /**
+   * Authenticates a user with some {@code pass}.
+   *
+   * @param user user instance
+   * @param pass clear text password
+   * @return true if clearPass encryption equals stored encrypted pass
+   */
+  public boolean authenticate(User user, String pass);
 
-	public boolean authorize(String menu2, User user);
+  public boolean authorize(String menu2, User user);
 
-	public void create(User u) throws SQLException;
+  public void create(User u) throws SQLException;
 
-	public User findId(int id);
-	
-	public User find(String login);
-	
-	public List<User> findAll(String where);
+  public User findId(int id);
 
-	public void update(User user) throws SQLException;
+  public User find(String login);
 
-	public boolean update(User nu, final User old) throws SQLException, UserException;
-	
-	public void updateAccess(MenuAccess m, String col, int userId);
-	
-	public List<User> getRegisteredUsers();
+  public List<User> findAll(String where);
+
+  public void update(User user) throws SQLException;
+
+  public boolean update(User nu, final User old) throws SQLException, UserException;
+
+  public List<User> getRegisteredUsers();
 
   public void create(Postit p) throws SQLException;
 
   public void update(Postit p) throws SQLException;
 
-  public void delete(Postit p) throws SQLException ;
-	
-	public Vector<Postit> getPostits(int idUser, int read);
+  public void delete(Postit p) throws SQLException;
 
-	public void updateTableRights(String table, String col, Object value, int userId);
-	
-	public Vector getTableRights(int userId);
-	
+  public Vector<Postit> getPostits(int idUser, int read);
+
+  public void updateTableRights(String table, String col, Object value, int userId);
+
+  public Vector getTableRights(int userId);
 }

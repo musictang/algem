@@ -1,7 +1,7 @@
 /*
- * @(#)GroupIO.java	2.7.a 08/01/13
+ * @(#)GroupIO.java	2.8.p 06/12/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -42,7 +42,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.p
  * @since 1.0a 07/07/1999
  */
 public class GroupIO
@@ -197,6 +197,17 @@ public class GroupIO
   private MusicStyle findStyle(int id) throws SQLException {
 //    return ((MusicStyleIO) DataCache.getDao(Model.MusicStyle)).findId(id);//XXX
     return (MusicStyle) DataCache.findId(id, Model.MusicStyle);
+  }
+  
+  /**
+   * Find by style.
+   * @param styleId
+   * @return the number of groups with this {@code styleId}.
+   * @throws SQLException 
+   */
+  public int findByStyle(int styleId) throws SQLException {
+    Vector<Group> vg = find("WHERE style = " + styleId);
+    return vg.size();
   }
 
   @Override

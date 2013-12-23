@@ -1,5 +1,5 @@
 /*
- * @(#)MenuTableModel.java	2.6.a 13/09/12
+ * @(#)MenuTableModel.java	2.8.p 01/11/13
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -39,7 +39,7 @@ public class MenuTableModel
     BundleUtil.getLabel("Menu.label"),
     BundleUtil.getLabel("Authorization.label")
   };
-  private Vector<MenuAccess> tuples = new Vector();
+  private Vector<MenuAccess> tuples = new Vector<MenuAccess>();
   private int userId;
   private UserService service;
 
@@ -47,7 +47,7 @@ public class MenuTableModel
     this.service = service;
   }
 
-  public void load(int id) {
+  void load(int id) {
     userId = id;
     tuples = ((DefaultUserService) service).getMenuAccess(id);
     fireTableChanged(null);
@@ -109,6 +109,6 @@ public class MenuTableModel
 
     MenuAccess m = tuples.elementAt(line);
     m.setAuth((Boolean) value);
-    service.updateAccess(m, getColumnName(col), userId);
+    ((DefaultUserService) service).updateAccess(m, getColumnName(col), userId);
   }
 }

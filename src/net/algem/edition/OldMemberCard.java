@@ -251,7 +251,7 @@ public class OldMemberCard
     try {
       img = ImageIO.read(new File(url.getPath()));
       // recadrer si nécessaire
-      if (ImageUtil.PHOTO_HEIGHT != img.getHeight()) {
+      if (ImageUtil.PHOTO_ID_HEIGHT != img.getHeight()) {
         System.out.println("rescaling !");
         BufferedImage bi2 = ImageUtil.rescale(img);
         img = ImageUtil.formatPhoto(bi2);

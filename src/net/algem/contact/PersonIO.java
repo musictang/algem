@@ -1,5 +1,5 @@
 /*
- * @(#)PersonIO.java 2.7.m 15/03/13
+ * @(#)PersonIO.java 2.8.q 09/12/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -36,7 +36,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.m
+ * @version 2.8.q
  */
 public class PersonIO
         extends TableIO
@@ -44,11 +44,11 @@ public class PersonIO
 {
 
   public static final String TABLE = "personne";
-  public static final String COLUMNS = TABLE + ".id," + TABLE + ".ptype," + TABLE + ".nom," + TABLE + ".prenom," + TABLE + ".civilite," + TABLE + ".droit_img," + TABLE + ".organisation";
+  public static final String COLUMNS = TABLE + ".id," + TABLE + ".ptype," + TABLE + ".nom," +
+          TABLE + ".prenom," + TABLE + ".civilite," + TABLE + ".droit_img," + TABLE + ".organisation," + TABLE + ".partenaire";
   public static final String SEQUENCE = "idper";
-  public static final int PERSON_COLUMNS_OFFSET = 8;
-  public final static String TEACHER_COLUMNS = "instrument1,instrument2,instrument3,diplome1,diplome2,diplome3,actif";
-  public final static String MEMBER_COLUMNS = "idper,instrument1,instrument2,profession,datenais,payeur,nadhesions,pratique,niveau";
+  public static final int PERSON_COLUMNS_OFFSET = 9;
+
   private DataConnection dc;
 
   public PersonIO(DataConnection _dc) {
@@ -64,8 +64,9 @@ public class PersonIO
             + ",'" + escape(p.getName().toUpperCase())
             + "','" + escape(p.getFirstName())
             + "','" + p.getGender()
-            + "','" + (p.getImgRights() ? "t" : "f") // f pour non autorisation, t pour autorisation image
-            + (p.getOrganization() == null || p.getOrganization().isEmpty() ? "')" : "','" + escape(p.getOrganization()) + "')");
+            + "','" + (p.hasImgRights() ? "t" : "f") // t pour non autorisation, f pour autorisation image
+            + (p.getOrganization() == null || p.getOrganization().isEmpty() ? "',NULL" : "','" + escape(p.getOrganization()) + "'")
+            + ",'" + (p.isPartnerInfo() ? "t" : "f") + "')";
 
     dc.executeUpdate(query);
     p.setId(n);
@@ -78,8 +79,9 @@ public class PersonIO
             + "nom = '" + escape(p.getName())
             + "',prenom = '" + escape(p.getFirstName())
             + "',civilite = '" + p.getGender() + "'"
-            + ",droit_img = '" + (p.getImgRights() ? "t" : "f")
+            + ",droit_img = '" + (p.hasImgRights() ? "t" : "f")
             + "',organisation = " + (p.getOrganization() == null || p.getOrganization().isEmpty() ? "NULL" : "'" + escape(p.getOrganization()) + "'")
+            + ",partenaire = '" + (p.isPartnerInfo() ? "t" : "f") + "'"
             + " WHERE id = " + p.getId();
 
     dc.executeUpdate(query);
@@ -119,6 +121,7 @@ public class PersonIO
     p.setGender(cv != null ? cv.trim() : null);
     p.setImgRights(rs.getBoolean(6));
     p.setOrganization(unEscape(rs.getString(7)));
+    p.setPartnerInfo(rs.getBoolean(8));
 
     return p;
   }

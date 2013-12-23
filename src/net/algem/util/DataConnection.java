@@ -1,7 +1,7 @@
 /*
- * @(#)DataConnection.java	2.7.g 18/02/13
+ * @(#)DataConnection.java	2.8.p 07/11/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -34,8 +34,16 @@ import java.util.logging.Level;
 public class DataConnection
 {
 
-  public static final String DEFAULT_DB_USER = "nobody";
-  public static final int DEFAULT_PORT = 5432;
+  static final String DEFAULT_DB_USER = "nobody";
+  
+  private static final int DEFAULT_PORT = 5432;
+  
+  /** 
+   * Default database pass. 
+   * Users must change it in Postgre database (ex. ALTER USER nobody ENCRYPTED PASSWORD 'mypass').
+   * Set auth-method to password in pg_hba.conf 
+   */
+  private static final String DEFAULT_DB_PASS = "Pigfy!"; // PigG8fy!
   
   private static final String DEFAULT_DB_NAME = "algem";
   private static final String DEFAULT_HOST = "localhost";
@@ -49,16 +57,13 @@ public class DataConnection
   private boolean debugSQL;
   private boolean ssl = false;
   private boolean cacert = false;
-  
-  /** Default database pass. */
-  private static final String DEFAULT_DB_PASS = "Pigfy!"; // PigG8fy!
   private String dbpass;
 
   public DataConnection(String host, int port, String dbname, String dbpass) {
-    this.dbhost = host == null ? DEFAULT_HOST : host;
-    this.dbport = port;
-    this.dbname = (dbname == null) ? DEFAULT_DB_NAME : dbname;
-    this.dbpass = (dbpass == null) ? DEFAULT_DB_NAME : dbpass;
+    this.dbhost = (host == null || host.isEmpty()) ? DEFAULT_HOST : host;
+    this.dbport = port == 0 ? DEFAULT_PORT : port;
+    this.dbname = (dbname == null || dbname.isEmpty()) ? DEFAULT_DB_NAME : dbname;
+    this.dbpass = (dbpass == null || dbpass.isEmpty()) ? DEFAULT_DB_PASS : dbpass;
   }
 
   /**

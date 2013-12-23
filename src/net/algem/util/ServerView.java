@@ -18,12 +18,12 @@
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  * 
  */
-package net.algem.util.ui;
+package net.algem.util;
 
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import net.algem.util.DataConnection;
+import net.algem.util.ui.*;
 
 /**
  * comment

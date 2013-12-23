@@ -1,5 +1,5 @@
 /*
- * @(#)LevelCtrl.java 2.8.a 15/04/13
+ * @(#)LevelCtrl.java 2.8.p 06/12/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -22,15 +22,20 @@
 package net.algem.config;
 
 import java.sql.SQLException;
+import net.algem.planning.ActionIO;
 import net.algem.planning.ActionService;
+import net.algem.util.DataCache;
 import net.algem.util.GemLogger;
+import net.algem.util.MessageUtil;
 import net.algem.util.event.GemEvent;
+import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
+import net.algem.util.ui.MessagePopup;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.p
  * @since 2.5.a 22/06/2012
  */
 public class LevelCtrl 
@@ -80,9 +85,20 @@ public class LevelCtrl
   public void suppression(Param p) throws Exception {
     if (p instanceof GemParam) {
       Level level = new Level((GemParam) p);
-      service.deleteLevel((GemParam)p);
-      desktop.getDataCache().remove(level);
-      desktop.postEvent(new GemEvent(this, GemEvent.SUPPRESSION, GemEvent.LEVEL, level));
+      if (level.getId() == 0) {
+        throw new ParamException(MessageUtil.getMessage("level.default.delete.exception"));
+      }
+      int used = ((ActionIO) DataCache.getDao(Model.Action)).haveLevel(level.getId());
+      if (used > 0) {
+        throw new ParamException(MessageUtil.getMessage("level.delete.exception", used));
+      }
+      if (MessagePopup.confirm(this, MessageUtil.getMessage("param.delete.confirmation"))) {
+        service.deleteLevel((GemParam)p);
+        desktop.getDataCache().remove(level);
+        desktop.postEvent(new GemEvent(this, GemEvent.SUPPRESSION, GemEvent.LEVEL, level));
+      } else {
+        throw new ParamException();
+      }
     }
   }
   

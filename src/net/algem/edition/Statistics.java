@@ -542,7 +542,7 @@ public abstract class Statistics
 				+ " GROUP BY plage.idplanning) AS t1";
 		}
 		
-    if (m.equals("hours_of_teacher_lessons")) {
+    if (m.equals("hours_of_teacher_lessons")) { // collectif !
       String query = "SELECT sum(duree) FROM("
               + "SELECT distinct p1.id, sum(p1.fin - p1.debut) as duree"
               + " FROM planning p1, action, cours"

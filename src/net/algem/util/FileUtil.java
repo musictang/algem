@@ -1,5 +1,5 @@
 /*
- * @(#)FileUtil.java	2.8.n 04/10/13
+ * @(#)FileUtil.java	2.8.p 08/11/13
  *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -23,7 +23,6 @@ package net.algem.util;
 
 import java.awt.Component;
 import java.io.*;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.Comparator;
 import javax.print.attribute.HashPrintRequestAttributeSet;
@@ -33,6 +32,8 @@ import javax.print.attribute.standard.MediaSize;
 import javax.print.attribute.standard.MediaSizeName;
 import javax.print.attribute.standard.OrientationRequested;
 import javax.swing.JFileChooser;
+import net.algem.config.ConfigKey;
+import net.algem.config.ConfigUtil;
 import net.algem.util.jdesktop.DesktopHandler;
 import net.algem.util.jdesktop.DesktopHandlerException;
 import net.algem.util.jdesktop.DesktopOpenHandler;
@@ -41,7 +42,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  * Utility class for file operations.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.n
+ * @version 2.8.p
  * @since 2.0q
  */
 public class FileUtil {
@@ -52,7 +53,7 @@ public class FileUtil {
   /** Relative path for invoice footer file. */
   public final static String INVOICE_FOOTER_FILE = "/resources/doc/fact-pdp.txt";
   
-  public final static String DOC_DIR = "/resources/doc/";
+//  public final static String DOC_DIR = "/resources/doc/";
 
   /** Default margin in mm for printing. */
   private static int MARGIN = 5; //
@@ -92,55 +93,28 @@ public class FileUtil {
   }
 
   /**
-   * Gets a file from some dir name and person's id.
-   * @param dirPath relative directory path
-   * @param idper contact's id
-   * @return a file if one at least is found, null otherwhise
-   */
-  public static File findFile(String dirPath, final int idper) {
-
-    File dirFile = getDirFile(dirPath);
-    if (dirFile == null) {
-      return null;
-    }
-    File[] files = dirFile.listFiles(new FilenameFilter() {
-      public boolean accept(File dir, String filename) {
-        // without extension
-        int idx = filename.lastIndexOf('.');
-        return filename.substring(0, idx).toLowerCase().endsWith(String.valueOf(idper));
-      }
-    });
-    if (files == null || files.length == 0) {
-      return null;
-    }
-    return files[0].isFile() ? files[0] : null;
-
-  }
-  
-  /**
    * Find the most recent file in the specified {@code dirname} for contact {@code idper}.
-   * The name of this file must match the following pattern : {@code dirname.*idper\..*}.
+   * The name of this file must match the following pattern : {@code ^.*[0-9]*\..*$}.
    * 
-   * @param parentDir parentDir below resources directory
-   * @param dirName actual directory name
+   * @param parent parent directory name
+   * @param subDir actual directory name
    * @param id contact id
    * @return a file if at list one is found, null otherwise.
    */
-  public static File findLastFile(String parentDir, final String dirName, final int id) {
+  public static File findLastFile(String parent, final String subDir, final int id) {
 
-    File baseDir = getDirFile(parentDir+dirName);
-    if (baseDir == null) {
-      return null;
-    }
-
-    File[] files = baseDir.listFiles(new FilenameFilter() {
-      public boolean accept(File dir, String filename) {
-        String lower = filename.toLowerCase();
-        int idx = lower.lastIndexOf('.');
-//        return lower.startsWith(dirName) && lower.substring(0,idx).endsWith(String.valueOf(id));
-        return lower.substring(0,idx).endsWith(String.valueOf(id));
-      }
-    });
+    File baseDir = null;
+    File[] files = null;
+    
+    ContactFileNameFilter fileNameFilter = new ContactFileNameFilter(id);
+    
+    if (parent != null) {
+      baseDir = new File(parent + subDir);
+      if (isValidDirectory(baseDir)) {
+        files = baseDir.listFiles(fileNameFilter);
+      } 
+    } 
+    
     if (files == null || files.length == 0) {
       return null;
     }
@@ -148,11 +122,6 @@ public class FileUtil {
     {
       @Override
       public int compare(File o1, File o2) {
-        //assert(o1.getName().startsWith(DUE_DIR));
-        //assert(o2.getName().startsWith(DUE_DIR));
-        //int idx = dirname.length()+1;
-        // DateFr d1 = new DateFr(o1.getName().substring(idx, idx + 10));
-        // DateFr d2 = new DateFr(o2.getName().substring(idx, idx + 10));
         if (o1.lastModified() < o2.lastModified()) {
           return 1;
         } else if (o1.lastModified() > o2.lastModified()) {
@@ -165,22 +134,21 @@ public class FileUtil {
 
     return files[0].isFile() ? files[0] : null;
   }
-  
-  /**
-   * Gets a directory file from its name.
-   * @param dir directory basename
-   * @return a file
-   */
-  public static File getDirFile(String dir) {
-    String path = FileUtil.DOC_DIR + dir;
-    URL url = FileUtil.class.getResource(path);
-    if (url != null) {
-     File f = new File(url.getPath());
-     return f.isDirectory() && f.canRead() ? f : null;
+
+  public static String getDocumentPath(ConfigKey config, DataConnection dc) {
+    String path = ConfigUtil.getPath(config, dc);
+    if (path != null && !path.isEmpty()) {
+      if (!path.endsWith(FILE_SEPARATOR)) {
+        path += FILE_SEPARATOR;
+      }      
     }
-    return null;
+    return path;
   }
-  
+
+  private static boolean isValidDirectory(File file) {
+    return file != null && file.isDirectory() && file.canRead();
+  }
+
   /**
    * Opens some file by java desktop.
    * @param path the path of the file to open

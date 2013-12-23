@@ -42,14 +42,14 @@ public class GroupFileView
 {
 
   private Group group;
-  private GroupService service;
+  private GemGroupService service;
   private TabPanel tabPanel;
   private GroupEditor groupEditor;
   private MusicianEditor musiciansEditor;
   private GroupRehearsalHistoView rehearsalHistoView;
   private ActionListener listener;
 
-  public GroupFileView(GemDesktop _desktop, GroupService service, Group group) {
+  public GroupFileView(GemDesktop _desktop, GemGroupService service, Group group) {
     super(_desktop, GemModule.GROUP_VIEW_KEY);
     this.service = service;
     if (group != null && group.getId() > 0) {

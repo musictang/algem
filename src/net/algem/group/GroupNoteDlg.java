@@ -40,10 +40,10 @@ public class GroupNoteDlg
 {
 
   private GemDesktop desktop;
-  private GroupService service;
+  private GemGroupService service;
   private Group group;
 
-  public GroupNoteDlg(GemDesktop desktop, GroupService service) {
+  public GroupNoteDlg(GemDesktop desktop, GemGroupService service) {
     super(desktop.getFrame());
     this.desktop = desktop;
     this.service = service;

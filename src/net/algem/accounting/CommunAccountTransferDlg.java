@@ -1,6 +1,6 @@
 /*
- * @(#)AccountDocumentTransferDlg.java	2.8.r 13/12/13
- * 
+ * @(#)CommunAccountTransferDlg.java	2.8.r 13/12/13
+ *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.accounting;
 
@@ -24,6 +24,8 @@ import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Frame;
 import java.awt.GridBagLayout;
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -38,27 +40,26 @@ import net.algem.util.ui.GridBagHelper;
 import net.algem.util.ui.MessagePopup;
 
 /**
- * Transfer from a document number.
+ * Commun transfer.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.8.r
- * @since 1.0a 27/09/2000
+ * @since 2.8.r 13/12/13
  */
-public class AccountDocumentTransferDlg
+public class CommunAccountTransferDlg
         extends AccountTransferDlg
 {
-
-  private AccountDocumentTransferView view;
-
-  public AccountDocumentTransferDlg(Frame parent, DataCache dataCache, AccountExportService exportService) {
+  private AccountTransferView transferView;
+  
+  public CommunAccountTransferDlg(Frame parent, DataCache dataCache, AccountExportService exportService) {
     super(parent, dataCache, exportService);
     setDisplay();
   }
 
   private void setDisplay() {
 
-    view = new AccountDocumentTransferView(dataCache);
+    transferView = new AccountTransferView(dataCache);
 
     setLayout(new BorderLayout());
 
@@ -68,7 +69,6 @@ public class AccountDocumentTransferDlg
 
     GemPanel header = new GemPanel();
     header.setLayout(new GridBagLayout());
-
     GridBagHelper gb = new GridBagHelper(header);
     gb.insets = GridBagHelper.SMALL_INSETS;
 
@@ -77,79 +77,72 @@ public class AccountDocumentTransferDlg
     gb.add(chooser, 2, 0, 1, 1, GridBagHelper.WEST);
 
     p.add(header);
-    p.add(view);
+    p.add(transferView);
 
     add(p, BorderLayout.CENTER);
     add(buttons, BorderLayout.SOUTH);
-
     pack();
   }
 
   @Override
   void transfer() {
+    
+    String modeOfPayment = transferView.getModeOfPayment();
 
-    String payment = view.getModeOfPayment();
-
-    Vector<OrderLine> orderLines = getOrderLines(payment);
+    Vector<OrderLine> orderLines = getOrderLines(modeOfPayment);
     if (orderLines.size() <= 0) {
       MessagePopup.information(this, MessageUtil.getMessage("payment.transfer.empty.collection"));
       return;
     }
+    
     int errors = 0;
     setCursor(new Cursor(Cursor.WAIT_CURSOR));
     try {
-
-      /* String codeJournal = "";
-       * String documentAccount = "";
-       *
-       * Compte c = getDocumentAccount(reglement);
-       * if (c != null) {
-       * codeJournal = getCodeJournal(c.getId());
-       * documentAccount = c.getNumber();
-       * } */
-
-      /* if ("ESP".equalsIgnoreCase(reglement)) {
-       * codeJournal = "CA";
-       * documentAccount = "5300000000";
-       * } else {
-       * codeJournal = "CC";
-       * documentAccount = "5120300000";
-       * } */
       String codeJournal = "";
-      Account documentAccount = exportService.getDocumentAccount(payment);
+      Account documentAccount = exportService.getDocumentAccount(modeOfPayment);
       if (documentAccount != null) {
         codeJournal = exportService.getCodeJournal(documentAccount.getId());
       }
       String path = filePath.getText();
 
-      if (view.withCSV()) {
+      if (transferView.withCSV()) {
         path = path.replace(".txt", ".csv");
         exportService.exportCSV(path, orderLines);
       } else {
-        if (ModeOfPayment.FAC.toString().equalsIgnoreCase(payment)) {
+        if (ModeOfPayment.FAC.toString().equalsIgnoreCase(modeOfPayment)) {
           errors = exportService.tiersExport(path, orderLines);
         } else {
           exportService.export(path, orderLines, codeJournal, documentAccount);
         }
+        // maj transfer echeances
         updateTransfer(orderLines);
       }
       MessagePopup.information(this, MessageUtil.getMessage("payment.transfer.info", new Object[]{orderLines.size() - errors, path}));
+    } catch (IOException ioe) {
+      System.err.println(ioe.getMessage());
+    } catch (SQLException sqe) {
+      GemLogger.logException(MessageUtil.getMessage("payment.transfer.exception"), sqe, this);
     } catch (Exception ex) {
       GemLogger.logException(MessageUtil.getMessage("payment.transfer.exception"), ex, this);
+    } finally {
+      setCursor(Cursor.getDefaultCursor());
     }
-    setCursor(Cursor.getDefaultCursor());
   }
 
-  private Vector<OrderLine> getOrderLines(String payment) {
+  protected Vector<OrderLine> getOrderLines(String modeOfPayment) {
 
-    DateFr start = view.getDateStart();
-    DateFr end = view.getDateEnd();
-    String document = view.getDocument();
+    DateFr start = transferView.getDateStart();
+    DateFr end = transferView.getDateEnd();
+    int school = transferView.getSchool();
 
     String query = "WHERE echeance >= '" + start + "' AND echeance <= '" + end
-            + "' AND piece = '" + document
-            + "' AND reglement = '" + payment
-            + "' AND paye = 't' AND transfert = 'f'";
+            + "' AND ecole = '" + school
+            + "' AND paye = 't' AND transfert = 'f' AND reglement = '" + modeOfPayment + "'";
+    // les échéances de type prélèvement impliquent que le payeur ait un rib et qu'il existe en tant que contact.
+    if ("PRL".equals(modeOfPayment)) {
+      query += " AND payeur IN (SELECT idper FROM rib) AND payeur IN (SELECT id FROM personne)";
+    }
+    
     return OrderLineIO.find(query, dbx);
   }
 }

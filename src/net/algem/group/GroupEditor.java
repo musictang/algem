@@ -36,7 +36,7 @@ public class GroupEditor
   private boolean loaded;
   private GroupView gv;
 
-  public GroupEditor(GemDesktop desktop, GroupService service, Group g) {
+  public GroupEditor(GemDesktop desktop, GemGroupService service, Group g) {
     super(desktop);
     loaded = (g != null && g.getId() > 0);
     gv = new GroupView(this.desktop, service);

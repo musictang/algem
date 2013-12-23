@@ -1,5 +1,5 @@
 /*
- * @(#)Contact.java 2.7.h 20/02/13
+ * @(#)Contact.java 2.8.p 03/12/13
  *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -27,7 +27,7 @@ import java.util.Vector;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.h
+ * @version 2.8.p
  * @since 1.0a 07/07/1999
  */
 public class Contact
@@ -52,7 +52,8 @@ public class Contact
     gender = pp.getGender();
     type = pp.getType();
     //note = pp.getNote();
-    imgRights = pp.getImgRights();
+    imgRights = pp.hasImgRights();
+    partnerInfo = pp.isPartnerInfo();
     organization = pp.getOrganization();
   }
 
@@ -168,24 +169,28 @@ public class Contact
     }
     Contact c = (Contact) o;
 
-    if (getImgRights() != c.getImgRights()) {
+    if (hasImgRights() != c.hasImgRights()) {
       return out(3);
     }
-
-    if (!telsEqual(c)) {
+    
+    if (isPartnerInfo() != c.isPartnerInfo()) {
       return out(4);
     }
 
-    if (!emailsEqual(c)) {
+    if (!telsEqual(c)) {
       return out(5);
     }
 
-    if (!addressesEqual(c)) {
+    if (!emailsEqual(c)) {
       return out(6);
     }
 
-    if (!sitesEqual(sites, c.getSites())) {
+    if (!addressesEqual(c)) {
       return out(7);
+    }
+
+    if (!sitesEqual(sites, c.getSites())) {
+      return out(8);
     }
     
     return true;

@@ -1,7 +1,7 @@
 /*
- * @(#)FilePanel.java 2.6.a 25/09/12
+ * @(#)FilePanel.java 2.8.p 07/11/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -33,7 +33,7 @@ import net.algem.util.GemCommand;
  * Panel controller for selecting directories or opening files.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.p
  */
 public class FilePanel
   extends GemPanel implements ActionListener
@@ -70,7 +70,7 @@ public class FilePanel
 
   @Override
   public void setToolTipText(String text) {
-    path.setToolTipText(text);
+    super.setToolTipText(text);
   }
 
   @Override

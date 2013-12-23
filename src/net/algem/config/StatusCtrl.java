@@ -1,5 +1,5 @@
 /*
- * @(#)StatusCtrl.java 2.8.a 15/04/13
+ * @(#)StatusCtrl.java 2.8.p 06/12/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -22,16 +22,21 @@
 package net.algem.config;
 
 import java.sql.SQLException;
+import net.algem.planning.ActionIO;
 import net.algem.planning.ActionService;
+import net.algem.util.DataCache;
 import net.algem.util.GemLogger;
+import net.algem.util.MessageUtil;
 import net.algem.util.event.GemEvent;
+import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
+import net.algem.util.ui.MessagePopup;
 
 /**
  * Status management (Leisure, Professional, etc.).
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.p
  * @since 2.5.a 06/07/12
  */
 public class StatusCtrl 
@@ -81,9 +86,20 @@ public class StatusCtrl
   public void suppression(Param p) throws Exception {
     if (p instanceof GemParam) {
       Status status = new Status((GemParam) p);
-      service.deleteStatus(status);
-      desktop.getDataCache().remove(status);
-      desktop.postEvent(new GemEvent(this, GemEvent.SUPPRESSION, GemEvent.STATUS, status));
+      if (status.getId() == 0) {
+        throw new ParamException(MessageUtil.getMessage("status.default.delete.exception"));
+      }
+      int used = ((ActionIO) DataCache.getDao(Model.Action)).haveStatus(status.getId());
+      if (used > 0) {
+        throw new ParamException(MessageUtil.getMessage("status.delete.exception", used));
+      }
+      if (MessagePopup.confirm(this, MessageUtil.getMessage("param.delete.confirmation"))) {
+        service.deleteStatus(status);
+        desktop.getDataCache().remove(status);
+        desktop.postEvent(new GemEvent(this, GemEvent.SUPPRESSION, GemEvent.STATUS, status));
+      } else {
+        throw new ParamException();
+      }
     }
   }
   

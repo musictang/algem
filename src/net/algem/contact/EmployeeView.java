@@ -35,6 +35,8 @@ import java.util.logging.Level;
 import javax.swing.JFormattedTextField;
 import javax.swing.text.MaskFormatter;
 import net.algem.config.ColorPrefs;
+import net.algem.config.ConfigKey;
+import net.algem.config.ConfigUtil;
 import net.algem.planning.DateFr;
 import net.algem.planning.DateFrField;
 import net.algem.util.BundleUtil;
@@ -58,7 +60,7 @@ public class EmployeeView
   /** Default format for NIR. */
   private static final String NIR_FORMAT = "# ## ## AA AAA ### ##";
   
-  private static final String PARENT_DIR = "salaries/";
+//  private static final String PARENT_DIR = "salaries/";
    
    /** Default CV dir name. */
   private static final String CV_DIR = "cv";
@@ -223,15 +225,16 @@ public class EmployeeView
    */
   private void setButtonAccess(int idper) {
 
-    cvFile = FileUtil.findLastFile(PARENT_DIR, CV_DIR, idper);
+    String parent = ((BasicEmployeeService)service).getDocumentPath();
+    
+    cvFile = FileUtil.findLastFile(parent, CV_DIR, idper);
     cvBt.setEnabled(cvFile != null && cvFile.canRead());
     
-    dueFile = FileUtil.findLastFile(PARENT_DIR, DUE_DIR, idper);
+    dueFile = FileUtil.findLastFile(parent, DUE_DIR, idper);
     dueBt.setEnabled(dueFile != null && dueFile.canRead());
     
-    residenceFile = FileUtil.findFile(PARENT_DIR+RESIDENCE_DIR, idper);
+    residenceFile = FileUtil.findLastFile(parent, RESIDENCE_DIR, idper);
     residenceBt.setEnabled(residenceFile != null && residenceFile.canRead());
-    
     
   }
   

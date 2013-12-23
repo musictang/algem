@@ -1,7 +1,7 @@
 /*
- * @(#)CategoryWebSiteCtrl.java	2.6.a 03/08/12
+ * @(#)CategoryWebSiteCtrl.java	2.8.p 06/12/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,48 +21,67 @@
 package net.algem.config;
 
 import java.sql.SQLException;
+import net.algem.contact.WebSiteIO;
 import net.algem.util.DataCache;
+import net.algem.util.MessageUtil;
 import net.algem.util.module.GemDesktop;
+import net.algem.util.ui.MessagePopup;
 
 /**
  * comment
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.p
  */
 public class CategoryWebSiteCtrl
-	extends ParamTableCtrl {
+        extends ParamTableCtrl
+{
 
-	private static final String TABLE = "categorie_siteweb";
-	private static final String SEQUENCE = "categorie_siteweb_id_seq";
-	private static final String COLUMN_KEY = "id";
-	private static final String COLUMN_NAME = "libelle";
-	private DataCache dataCache;
+  private static final String TABLE = "categorie_siteweb";
+  private static final String SEQUENCE = "categorie_siteweb_id_seq";
+  private static final String COLUMN_KEY = "id";
+  private static final String COLUMN_NAME = "libelle";
+  private DataCache dataCache;
 
-	public CategoryWebSiteCtrl(GemDesktop _desktop) {
-		super(_desktop, "Catégorie de sites web", false);
-		dataCache = _desktop.getDataCache();
-	}
+  public CategoryWebSiteCtrl(GemDesktop _desktop) {
+    super(_desktop, "Catégorie de sites web", false);
+    dataCache = _desktop.getDataCache();
+  }
 
-	@Override
-	public void load() {
-		load(ParamTableIO.find(TABLE, COLUMN_NAME, dc).elements());
-	}
+  @Override
+  public void load() {
+    load(ParamTableIO.find(TABLE, COLUMN_NAME, dc).elements());
+  }
 
-	@Override
-	public void modification(Param _current, Param _p) throws SQLException {
-		ParamTableIO.update(TABLE, COLUMN_KEY, COLUMN_NAME, _p, dc);
-	}
+  @Override
+  public void modification(Param _current, Param _p) throws SQLException {
+    ParamTableIO.update(TABLE, COLUMN_KEY, COLUMN_NAME, _p, dc);
+  }
 
-	@Override
-	public void insertion(Param _p) throws SQLException {
-		ParamTableIO.insert(TABLE, SEQUENCE, _p, dc);
-		dataCache.getWebSiteCat().addElement(_p);
-	}
+  @Override
+  public void insertion(Param _p) throws SQLException {
+    ParamTableIO.insert(TABLE, SEQUENCE, _p, dc);
+    dataCache.getWebSiteCat().addElement(_p);
+  }
 
-	@Override
-	public void suppression(Param _p) throws SQLException {
-		ParamTableIO.delete(TABLE, COLUMN_KEY, _p, dc);
-		dataCache.getWebSiteCat().remove(_p);
-	}
+  @Override
+  public void suppression(Param p) throws SQLException, ParamException {
+    int key = 0;
+    try {
+      key = Integer.parseInt(p.getKey());
+    } catch (NumberFormatException nfe) {
+      key = -1;
+    }
+    if (key == 1) { // min_value in sequence
+      throw new ParamException(MessageUtil.getMessage("web.site.category.default.delete.exception"));
+    }
+    int sites = WebSiteIO.find(key, dc);
+    if (sites == 0 && MessagePopup.confirm(this, MessageUtil.getMessage("param.delete.confirmation"))) {
+      ParamTableIO.delete(TABLE, COLUMN_KEY, p, dc);
+      dataCache.getWebSiteCat().remove(p);
+    } else {
+      throw new ParamException(MessageUtil.getMessage("web.site.category.delete.exception", sites));
+    }
+    
+  }
 }

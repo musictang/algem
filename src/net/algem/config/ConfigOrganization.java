@@ -1,7 +1,7 @@
 /*
- * @(#)ConfigOrganization.java 2.2.p 23/01/12
+ * @(#)ConfigOrganization.java 2.8.p 12/11/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import javax.swing.BorderFactory;
 import javax.swing.JFormattedTextField;
+import javax.swing.text.MaskFormatter;
 import net.algem.contact.Address;
 import net.algem.contact.AddressView;
 import net.algem.util.BundleUtil;
@@ -40,7 +41,7 @@ import net.algem.util.ui.GemPanel;
  * Organization parameters and contact.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.2.p
+ * @version 2.8.p
  * @since 2.2.p 23/01/12
  */
 public class ConfigOrganization
@@ -68,7 +69,7 @@ public class ConfigOrganization
   /**
    * Code Formation professionnelle.
    */
-  private JFormattedTextField fp;
+  private JFormattedTextField forPro;
 
   /** Address */
   private AddressView address;
@@ -96,20 +97,29 @@ public class ConfigOrganization
     name = new GemField(20);
     name.setText(c1.getValue());
 
-    siret = new JFormattedTextField(MessageUtil.createFormatter("### ### ### #####"));
+    MaskFormatter siretMask = MessageUtil.createFormatter("### ### ### #####");
+    siretMask.setValueContainsLiteralCharacters(false);
+    siret = new JFormattedTextField(siretMask);
     siret.setColumns(14);
-    siret.setText(c6.getValue());
+    siret.setValue(c6.getValue());
 
     naf = new JFormattedTextField(MessageUtil.createFormatter("AAAAA"));
     naf.setColumns(5);
-    naf.setText(c7.getValue());
+    naf.setValue(c7.getValue());
 
-    tva = new JFormattedTextField(MessageUtil.createFormatter("AA AA AAA AAA AAA AAAAA"));
+    MaskFormatter tvaMask = MessageUtil.createFormatter("AA AA AAA AAA AAA AAAAA");
+    tvaMask.setValueContainsLiteralCharacters(false);
+
+    tva = new JFormattedTextField(tvaMask);
     tva.setColumns(18);
-    tva.setText(c8.getValue());
-    fp = new JFormattedTextField(MessageUtil.createFormatter("## ## ##### ##"));
-    fp.setColumns(11);
-    fp.setText(c9.getValue());
+    tva.setValue(c8.getValue());
+    
+    MaskFormatter forProMask = MessageUtil.createFormatter("## ## ##### ##");
+    forProMask.setValueContainsLiteralCharacters(false);
+
+    forPro = new JFormattedTextField(forProMask);
+    forPro.setColumns(11);
+    forPro.setValue(c9.getValue());
 
     pName.add(name);
 
@@ -132,7 +142,7 @@ public class ConfigOrganization
     pCodes.add(new GemLabel(ConfigKey.CODE_TVA.getLabel()));
     pCodes.add(tva);
     pCodes.add(new GemLabel(ConfigKey.CODE_FP.getLabel()));
-    pCodes.add(fp);
+    pCodes.add(forPro);
 
     content.add(pName, BorderLayout.NORTH);
     content.add(address, BorderLayout.CENTER);
@@ -151,10 +161,10 @@ public class ConfigOrganization
     c3.setValue(b.getAdr2().trim());
     c4.setValue(b.getCdp().trim());
     c5.setValue(b.getCity().trim());
-    c6.setValue(siret.getText());
+    c6.setValue((String)siret.getValue());
     c7.setValue(naf.getText());
-    c8.setValue(tva.getText());
-    c9.setValue(fp.getText());
+    c8.setValue((String)tva.getValue());
+    c9.setValue((String)forPro.getValue());
 
     conf.add(c1);
     conf.add(c2);

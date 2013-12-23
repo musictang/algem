@@ -1,7 +1,7 @@
 /*
- * @(#)ParamView.java	2.6.a 24/09/12
+ * @(#)ParamView.java	2.8.p 06/12/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -34,7 +34,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.p
  * @since 1.0a 07/07/1999
  */
 public class ParamView
@@ -70,7 +70,7 @@ public class ParamView
     GemPanel masque = new GemPanel();
     masque.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(masque);
-
+    gb.insets = GridBagHelper.SMALL_INSETS;
     keyLabel = new GemLabel();
     valueLabel = new GemLabel();
 

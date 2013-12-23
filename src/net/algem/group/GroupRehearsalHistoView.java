@@ -36,9 +36,9 @@ public class GroupRehearsalHistoView
         extends AbstractHistoRehearsal
 {
   
-  private GroupService service;
+  private GemGroupService service;
 
-  public GroupRehearsalHistoView(GemDesktop desktop, GroupService service, int id) {
+  public GroupRehearsalHistoView(GemDesktop desktop, GemGroupService service, int id) {
     super(desktop, null, id);
     this.service = service;
     btValidation.setText(BundleUtil.getLabel("Selection.label"));

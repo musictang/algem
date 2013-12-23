@@ -114,6 +114,13 @@ public class GridBagHelper
           Insets insets, int anchor) {
     add(component, gridx, gridy, gridwidth, gridheight, fill, ipadx, ipady, insets, anchor, weightx, weighty);
   }
+  
+  public void add(Component component,
+          int gridx, int gridy, int gridwidth, int gridheight,
+          double weightx, double weighty,
+          int anchor) {
+    add(component, gridx, gridy, gridwidth, gridheight, fill, ipadx, ipady, insets, anchor, weightx, weighty);
+  }
 
   public void add(Component component,
           int gridx, int gridy, int gridwidth, int gridheight,

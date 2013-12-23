@@ -1,7 +1,7 @@
 /*
- * @(#)ActionIO.java 2.7.a 14/01/13
+ * @(#)ActionIO.java 2.8.p 06/12/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -36,7 +36,7 @@ import net.algem.util.model.TableIO;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.p
  * @since 2.4.a 18/04/12
  */
 public class ActionIO
@@ -181,6 +181,16 @@ public class ActionIO
 //    GemParam n = statusIO.findId(id);
     GemParam n = (GemParam) DataCache.findId(id, Model.Status);
     return n == null ? new GemParam(0) : n;
+  }
+  
+  public int haveStatus(int status) throws SQLException {
+    Vector<Action> va = find(" WHERE statut = " + status);
+    return va.size();
+  }
+  
+  public int haveLevel(int level) throws SQLException {
+    Vector<Action> va = find(" WHERE niveau = " + level);
+    return va.size();
   }
 
   private AgeRange getAgeRange(int id) throws SQLException {

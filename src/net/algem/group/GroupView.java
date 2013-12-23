@@ -1,5 +1,5 @@
 /*
- * @(#)GroupView.java	2.8.n 04/10/13
+ * @(#)GroupView.java	2.8.p 08/11/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -47,7 +47,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.n
+ * @version 2.8.p
  * @since 1.1aa mardi 24 février 2009
  *
  */
@@ -59,7 +59,7 @@ public class GroupView
   private static Dimension btDimension = new Dimension(100, 20);
   private static final Contact nullContact = new Contact();
   
-  private static final String PARENT_DIR = "groupes/";
+//  private static final String PARENT_DIR = "groupes/";
   
    /** Default bio dir name. */
   private static final String BIO_DIR = "bio";
@@ -97,7 +97,7 @@ public class GroupView
   private GemButton refReset, manReset, bookReset;
   private ImageIcon resetIcon;
   private Note note;
-  private GroupService service;
+  private GemGroupService service;
   
   private GemButton bioBt;
   private GemButton dataSheetBt;
@@ -108,7 +108,7 @@ public class GroupView
   private File stage;
   private DesktopHandler handler;
 
-  public GroupView(GemDesktop desktop, GroupService service) {
+  public GroupView(GemDesktop desktop, GemGroupService service) {
     this.desktop = desktop;
     this.service = service;
     handler = new DesktopOpenHandler();
@@ -231,14 +231,16 @@ public class GroupView
    * @param groupId 
    */
   private void setButtonAccess(int groupId) {
+    
+    String parent = service.getDocumentPath();
 
-    bio = FileUtil.findLastFile(PARENT_DIR, BIO_DIR, groupId);
+    bio = FileUtil.findLastFile(parent, BIO_DIR, groupId);
     bioBt.setEnabled(bio != null && bio.canRead());
     
-    dataSheet = FileUtil.findLastFile(PARENT_DIR, DATASHEET_DIR, groupId);
+    dataSheet = FileUtil.findLastFile(parent, DATASHEET_DIR, groupId);
     dataSheetBt.setEnabled(dataSheet != null && dataSheet.canRead());
     
-    stage = FileUtil.findLastFile(PARENT_DIR, STAGE_DIR, groupId);
+    stage = FileUtil.findLastFile(parent, STAGE_DIR, groupId);
     stagePlanBt.setEnabled(stage != null && stage.canRead());
   }
 

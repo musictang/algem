@@ -1,7 +1,7 @@
 /*
- * @(#)MenuAccess.java 2.6.a 13/09/12
+ * @(#)MenuAccess.java 2.8.p 01/11/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -22,40 +22,41 @@
 package net.algem.security;
 
 /**
- *
+ * Access authorization menu.
+ * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.p
  * @since 2.6.a 13/09/12
  */
-public class MenuAccess {
+class MenuAccess {
   
   private int id;
   private String label;
   private boolean auth;
 
-  public MenuAccess(int id, String label, boolean auth) {
+  MenuAccess(int id, String label, boolean auth) {
     this.id = id;
     this.label = label;
     this.auth = auth;
   }
 
-  public boolean isAuth() {
+  boolean isAuth() {
     return auth;
   }
 
-  public void setAuth(boolean auth) {
+  void setAuth(boolean auth) {
     this.auth = auth;
   }
 
-  public int getId() {
+  int getId() {
     return id;
   }
 
-  public String getLabel() {
+  String getLabel() {
     return label;
   }
  
-  public void setLabel(String menuLabel) {
+  void setLabel(String menuLabel) {
     this.label = menuLabel;
   }
 

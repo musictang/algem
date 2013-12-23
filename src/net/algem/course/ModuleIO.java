@@ -1,5 +1,5 @@
 /*
- * @(#)ModuleIO.java 2.8.a 23/03/13
+ * @(#)ModuleIO.java 2.8.p 06/12/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -37,7 +37,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.p
  */
 public class ModuleIO
         extends TableIO
@@ -161,6 +161,22 @@ public class ModuleIO
       courses.add(info);
     }
     return courses;
+  }
+  
+  /**
+   * Find all associations between modules and course code.
+   * @param code course code
+   * @return the number of associations found
+   * @throws SQLException 
+   */
+  public int haveCode(int code) throws SQLException {
+    String query = "SELECT count(*) FROM module_cours WHERE code = " + code;
+    int count = 0;
+    ResultSet rs = dc.executeQuery(query);
+    while (rs.next()) {
+      count = rs.getInt(1);
+    }
+    return count;
   }
 
   @Override

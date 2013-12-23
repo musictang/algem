@@ -1,5 +1,5 @@
 /*
- * @(#)Person.java	2.8.a 11/04/13
+ * @(#)Person.java	2.8.p 03/12/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -30,7 +30,7 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.p
  *
  * @since 1.0a 07/07/1999
  */
@@ -51,6 +51,7 @@ public class Person
   //protected int note;
   protected boolean imgRights;
   protected String organization;
+  protected boolean partnerInfo;
 
   public Person() {
   }
@@ -209,7 +210,7 @@ public class Person
     imgRights = s;
   }
 
-  public boolean getImgRights() {
+  public boolean hasImgRights() {
     return imgRights;
   }
 
@@ -219,6 +220,14 @@ public class Person
 
   public void setOrganization(String organization) {
     this.organization = organization;
+  }
+
+  public boolean isPartnerInfo() {
+    return partnerInfo;
+  }
+
+  public void setPartnerInfo(boolean partnerInfo) {
+    this.partnerInfo = partnerInfo;
   }
 
   public boolean isValid() {

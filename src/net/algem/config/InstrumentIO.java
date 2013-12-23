@@ -1,5 +1,5 @@
 /*
- * @(#)InstrumentIO.java	2.8.g 31/05/13
+ * @(#)InstrumentIO.java	2.8.p 06/12/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -32,7 +32,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.g
+ * @version 2.8.p
  */
 public class InstrumentIO
         extends TableIO {
@@ -61,7 +61,7 @@ public class InstrumentIO
   }
 
   public static void delete(Instrument i, DataConnection dc) throws SQLException {
-    String query = "DELETE FROM " + TABLE + " WHERE id = " + i.getId();
+    String query = "DELETE FROM " + TABLE + " WHERE id > 0 AND id = " + i.getId();
     dc.executeUpdate(query);
   }
 
@@ -72,6 +72,15 @@ public class InstrumentIO
       return (Instrument) v.elementAt(0);
     }
     return null;
+  }
+  
+  public static int findUsed(int id, DataConnection dc) throws SQLException {
+    String query = "SELECT count(instrument) FROM " + PERSON_INSTRUMENT_TABLE + " WHERE instrument = " + id;
+    ResultSet rs = dc.executeQuery(query);
+    while (rs.next()) {
+      return rs.getInt(1);
+    }
+    return 0;
   }
 
   public static Vector<Instrument> find(String where, DataConnection dc) throws SQLException {
@@ -122,6 +131,13 @@ public class InstrumentIO
     }
   }
   
+  /**
+   * Removes the association between a person and an instrument in the joint table.
+   * @param idper person's id
+   * @param ptype person type
+   * @param dc dataConnection
+   * @throws SQLException 
+   */
   public static void delete(int idper, int ptype, DataConnection dc) throws SQLException {
     String query = "DELETE FROM " + PERSON_INSTRUMENT_TABLE + " WHERE idper = " + idper + " AND ptype = " + ptype;
     dc.executeUpdate(query);

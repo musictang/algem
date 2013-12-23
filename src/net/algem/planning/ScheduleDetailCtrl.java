@@ -38,7 +38,7 @@ import net.algem.course.Course;
 import net.algem.course.CourseCtrl;
 import net.algem.group.Group;
 import net.algem.group.GroupFileEditor;
-import net.algem.group.GroupService;
+import net.algem.group.GemGroupService;
 import net.algem.group.Musician;
 import net.algem.planning.editing.BreakSuppressionDlg;
 import net.algem.planning.editing.ModifPlanEvent;
@@ -86,7 +86,7 @@ public class ScheduleDetailCtrl
   private ScheduleDetailEvent detailEvent;
   private DesktopMailHandler mailHandler;
   private PlanningService scheduleService;
-  private GroupService groupService;
+  private GemGroupService groupService;
   private MemberService memberService;
   /** Presence indicator of the modification buttons. */
   private boolean allMenus;
@@ -96,7 +96,7 @@ public class ScheduleDetailCtrl
     dataCache = desktop.getDataCache();
     dc = dataCache.getDataConnection();
     scheduleService = new PlanningService(dc);
-    groupService = new GroupService(dc);
+    groupService = new GemGroupService(dc);
     memberService = new MemberService(dc);
     MAIL_UTIL = new MailUtil(dataCache, memberService);
     modifCtrl = _mpc;

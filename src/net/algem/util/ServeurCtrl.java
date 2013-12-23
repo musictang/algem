@@ -18,10 +18,15 @@
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  * 
  */
-package net.algem.util.ui;
+package net.algem.util;
 
 import java.awt.BorderLayout;
 import net.algem.util.DataConnection;
+import net.algem.util.ui.GemPanel;
+import net.algem.util.ui.GemTextArea;
+import net.algem.util.ui.SQLView;
+import net.algem.util.ui.TabPanel;
+import net.algem.util.ui.TableSGBDView;
 
 //SELECT datname as base,usename as proprio from pg_database,pg_user where datdba = usesysid
 //SELECT relname as relation from pg_class where (relkind = 'r' OR relkind = 'i') AND relname !~ '^pg' AND relname !~ '^Inv' ORDER BY relation

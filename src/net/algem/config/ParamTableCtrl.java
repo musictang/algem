@@ -1,7 +1,7 @@
 /*
- * @(#)ParamTableCtrl  2.6.a 18/09/12
+ * @(#)ParamTableCtrl  2.8.p 06/12/13
  *
- * Copyright (c) 1999-2012 Musiques Tangentes All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -40,7 +40,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.p
  * @since 1.0a 21/08/2009
  */
 public abstract class ParamTableCtrl
@@ -171,7 +171,7 @@ public abstract class ParamTableCtrl
     } else if (cmd.equals(GemCommand.ADD_CMD)) {
       mask.clear();
       mode = CREATION_MODE;
-      mask.setKeyEditable(true);
+      mask.setKeyEditable(editKey);
       ((CardLayout) wCard.getLayout()).show(wCard, "masque");
     } else if (cmd.equals(GemCommand.DELETE_CMD)) {
       try {
@@ -180,7 +180,9 @@ public abstract class ParamTableCtrl
       } catch (SQLException e) {
         GemLogger.logException("suppression " + title, e, this);
       } catch (Exception ex) {
-        MessagePopup.information(this, ex.getMessage());
+        if (ex.getMessage() != null) {
+          MessagePopup.information(this, ex.getMessage());
+        }
       }
 
       mode = READING_MODE;

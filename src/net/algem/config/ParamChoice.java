@@ -1,5 +1,5 @@
 /*
- * @(#)ParamChoice.java	2.8.f 24/05/13
+ * @(#)ParamChoice.java	2.8.p 06/12/13
  *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -28,7 +28,7 @@ import net.algem.util.ui.GemChoice;
 /**
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.f
+ * @version 2.8.p
  * @since 2.0r
  */
 public class ParamChoice
@@ -52,8 +52,11 @@ public class ParamChoice
 
   @Override
   public int getKey() {
-    String key = ((Param) getSelectedItem()).getKey();
-    return Integer.parseInt(key);
+    Param p = (Param) getSelectedItem();
+    if (p != null) {
+      return Integer.parseInt(p.getKey());
+    }
+    return -1;
   }
 
   @Override

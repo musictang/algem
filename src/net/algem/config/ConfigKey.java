@@ -115,7 +115,20 @@ public enum ConfigKey
   DEFAULT_SCHOOL("Ecole.par.defaut", BundleUtil.getLabel("ConfEditor.default.school")),
 
   /** Default establishment. */
-  DEFAULT_ESTABLISHMENT("Etablissement.par.defaut", BundleUtil.getLabel("ConfEditor.default.establishment"));
+  DEFAULT_ESTABLISHMENT("Etablissement.par.defaut", BundleUtil.getLabel("ConfEditor.default.establishment")),
+  
+  /** Photos path. */
+  PHOTOS_PATH("Dossier.Photos", BundleUtil.getLabel("ConfEditor.photos.path.label")),
+  
+  EMPLOYEES_PATH("Dossier.Salaries", BundleUtil.getLabel("ConfEditor.employees.path.label")),
+  
+  GROUPS_PATH("Dossier.Groupes", BundleUtil.getLabel("ConfEditor.groups.path.label")), 
+  
+  INVOICE_FOOTER("Pied.de.page.Facture", BundleUtil.getLabel("Menu.invoice.footer.label")), 
+  
+  ACCOUNTING_EXPORT_FORMAT("Compta.format.export", BundleUtil.getLabel("ConfEditor.accounting.export.format.label")),
+  
+  ACCOUNTING_DOSSIER_NAME("Compta.nom.dossier", BundleUtil.getLabel("ConfEditor.accounting.export.dossier.label"));
   
   private final String key;
   private final String label;

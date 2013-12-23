@@ -50,13 +50,13 @@ public class GroupRehearsalCreateCtrl
   private GroupRehearsalView rv;
   private Group group;
   private String label = MessageUtil.getMessage("rehearsal.band.entry");
-  private GroupService service;
+  private GemGroupService service;
 
   public GroupRehearsalCreateCtrl(GemDesktop d) {
     desktop = d;
     addActionListener((ActionListener) d);
     dataCache = d.getDataCache();
-    service = new GroupService(dataCache.getDataConnection());
+    service = new GemGroupService(dataCache.getDataConnection());
   }
 
   public GroupRehearsalCreateCtrl(GemDesktop d, Group g) {

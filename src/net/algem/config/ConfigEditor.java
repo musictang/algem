@@ -30,7 +30,6 @@ import java.util.Map;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JScrollPane;
-import net.algem.bank.BicConfig;
 import net.algem.util.*;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.module.GemModule;

@@ -1,5 +1,5 @@
 /*
- * @(#)RoomIO.java	2.8.m 09/09/13
+ * @(#)RoomIO.java	2.8.q 09/12/13
  *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -41,7 +41,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.m
+ * @version 2.8.q
  * @since 1.0a 07/07/1999
  */
 public class RoomIO
@@ -253,7 +253,7 @@ public class RoomIO
 
   public Vector<Equipment> loadEquip(int idsalle) {
     Vector<Equipment> v = new Vector<Equipment>();
-    String query = "SELECT * FROM " + EQUIP_TABLE + " WHERE idsalle = " + idsalle;
+    String query = "SELECT * FROM " + EQUIP_TABLE + " WHERE idsalle = " + idsalle + " ORDER BY idx";
     try {
       ResultSet rs = dc.executeQuery(query);
       while (rs.next()) {

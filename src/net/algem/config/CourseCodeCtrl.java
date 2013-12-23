@@ -1,5 +1,5 @@
 /*
- * @(#)CourseCodeCtrl.java	2.8.a 14/03/13
+ * @(#)CourseCodeCtrl.java	2.8.p 06/12/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -23,14 +23,18 @@ package net.algem.config;
 import java.sql.SQLException;
 import java.util.List;
 import net.algem.course.CourseCode;
+import net.algem.course.ModuleIO;
+import net.algem.util.DataCache;
+import net.algem.util.MessageUtil;
 import net.algem.util.event.GemEvent;
 import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
+import net.algem.util.ui.MessagePopup;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.p
  * @since 2.8.a 14/03/2013
  */
 public class CourseCodeCtrl 
@@ -88,10 +92,18 @@ public class CourseCodeCtrl
   @Override
   public void suppression(Param p) throws Exception {
     if (p instanceof GemParam) {
-      CourseCode cc = (CourseCode) p;
-      ccIO.delete((CourseCode) p);
-      desktop.getDataCache().remove(cc);
-      desktop.postEvent(new GemEvent(this, GemEvent.SUPPRESSION, GemEvent.COURSE_CODE, cc));
+      CourseCode cc = new CourseCode((GemParam) p);
+      int used = ((ModuleIO) DataCache.getDao(Model.Module)).haveCode(cc.getId());
+      if (used > 0) {
+        throw new ParamException(MessageUtil.getMessage("course.code.delete.exception", used));
+      }
+      if (MessagePopup.confirm(this, MessageUtil.getMessage("param.delete.confirmation"))) {
+        ccIO.delete(cc);
+        desktop.getDataCache().remove(cc);
+        desktop.postEvent(new GemEvent(this, GemEvent.SUPPRESSION, GemEvent.COURSE_CODE, cc));
+      } else {
+        throw new ParamException();
+      }
     }
   }
 

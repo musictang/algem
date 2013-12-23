@@ -50,7 +50,7 @@ public class Musician
     firstName = p.getFirstName();
     gender = p.getGender();
     type = p.getType();
-    imgRights = p.getImgRights();
+    imgRights = p.hasImgRights();
   }
 
   public void setInstrument(int i) {

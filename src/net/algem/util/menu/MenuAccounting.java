@@ -1,5 +1,5 @@
 /*
- * @(#)MenuAccounting.java 2.8.a 01/04/13
+ * @(#)MenuAccounting.java 2.8.r 13/12/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -28,6 +28,9 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import net.algem.accounting.*;
 import net.algem.billing.*;
+import net.algem.config.AccountingExportFormat;
+import net.algem.config.ConfigKey;
+import net.algem.config.ConfigUtil;
 import net.algem.config.ModeOfPaymentCtrl;
 import net.algem.edition.HourTeacherDlg;
 import net.algem.room.RoomRateSearchCtrl;
@@ -44,7 +47,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.8.a
+ * @version 2.8.r
  * @since 1.0a 07/07/1999
  */
 public class MenuAccounting
@@ -116,10 +119,12 @@ public class MenuAccounting
       dlg.init();
       dlg.setVisible(true);
     } else if (src == miAccountTransfert) {
-      AccountTransferDlg accountTransfertDlg = new AccountTransferDlg(desktop.getFrame(), dataCache);
+      AccountExportService exportService = getAccountingExportService(ConfigUtil.getConf(ConfigKey.ACCOUNTING_EXPORT_FORMAT.getKey(), dc));
+      CommunAccountTransferDlg accountTransfertDlg = new CommunAccountTransferDlg(desktop.getFrame(), dataCache, exportService);
       accountTransfertDlg.setVisible(true);
     } else if (src == miAccountDocument) {
-      AccountDocumentTransferDlg documentTransfertDlg = new AccountDocumentTransferDlg(desktop.getFrame(), dataCache);
+      AccountExportService exportService = getAccountingExportService(ConfigUtil.getConf(ConfigKey.ACCOUNTING_EXPORT_FORMAT.getKey(), dc));
+      AccountDocumentTransferDlg documentTransfertDlg = new AccountDocumentTransferDlg(desktop.getFrame(), dataCache, exportService);
       documentTransfertDlg.setVisible(true);
     } else if (menus.get("Menu.debiting.label").equals(arg)) {
       DirectDebitExportDlg dlg = new DirectDebitExportDlg((Frame) null, menus.get("Menu.debiting.label"), dc);
@@ -194,6 +199,16 @@ public class MenuAccounting
       desktop.removeModule("Menu.quotation.history");
     }
     desktop.setDefaultCursor();
+  }
+  
+  private AccountExportService getAccountingExportService(String format) {
+    if (format.equals(AccountingExportFormat.CIEL.getLabel())) {
+      return new ExportCiel(dc);
+    } 
+    if (format.equals(AccountingExportFormat.SAGE.getLabel())) {
+      return new ExportSage30(dc);
+    }
+    return new ExportDvlogPGI(dc);
   }
 
   private static void initLabels() {

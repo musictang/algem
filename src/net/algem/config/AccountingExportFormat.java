@@ -1,7 +1,7 @@
 /*
- * @(#)Config.java 2.6.a 17/09/12
- * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * @(#)AccountingExportFormat.java	2.8.r 17/12/13
+ *
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,23 +16,31 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
-
 package net.algem.config;
 
 /**
- * Alias of {@link net.algem.config.Param}.
- * 
+ * Accounting export format.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.r
+ * @since 2.8.r 13/12/13
  */
-public class Config
-  extends Param
+public enum AccountingExportFormat 
 {
+ 
+ CIEL("CIEL (ximport)"),
+ DVLOG_PGI("DVLOG PGI"),
+ SAGE("SAGE 30/100 (pnm)");
+ 
+ private String label;
 
-  public Config(String key, String value) {
-    super(key, value);
+ private AccountingExportFormat(String label) {
+    this.label = label;
   }
-
+ 
+ public String getLabel() {
+   return label;
+ }
+ 
 }

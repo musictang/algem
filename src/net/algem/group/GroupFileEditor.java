@@ -64,7 +64,7 @@ public class GroupFileEditor
   private JMenuBar mBar;
   private JMenu mFichier, mOptions;
   private JMenuItem miSuppression, miRehearsal, miPass;
-  private GroupService service;
+  private GemGroupService service;
   private Schedule plan;
   
   public GroupFileEditor() {
@@ -99,7 +99,7 @@ public class GroupFileEditor
   
   @Override
   public void init() {
-    service = new GroupService(dataCache.getDataConnection());
+    service = new GemGroupService(dataCache.getDataConnection());
     try {
       Contact ref = service.getContact(group.getIdref());
       Contact man = service.getContact(group.getIdman());
@@ -299,7 +299,7 @@ public class GroupFileEditor
   private void save() {
     
     if (service == null) {
-      service = new GroupService(dataCache.getDataConnection());
+      service = new GemGroupService(dataCache.getDataConnection());
     }
     try {
       if (group.getId() == 0) {
@@ -345,7 +345,7 @@ public class GroupFileEditor
    */
   private void deleteGroup() {
     if (service == null) {
-      service = new GroupService(dataCache.getDataConnection());
+      service = new GemGroupService(dataCache.getDataConnection());
     }
     try {
       if (dataCache.authorize("Group.suppression.auth")) {

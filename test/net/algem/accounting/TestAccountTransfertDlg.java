@@ -91,8 +91,8 @@ public class TestAccountTransfertDlg extends TestCase {
     DateFr day = new DateFr("15-12-2012");
     int payer = 12;
     int member = 12;
-
-    AccountTransferDlg dlg = new AccountTransferDlg(new JFrame(), dataCache);
+AccountExportService exportService = new ExportDvlogPGI(dc);
+    CommunAccountTransferDlg dlg = new CommunAccountTransferDlg(new JFrame(), dataCache, exportService);
     Vector<OrderLine> orderLines = new Vector<OrderLine>();
 
     // Détection d'erreurs de correspondance de comptes
@@ -102,7 +102,7 @@ public class TestAccountTransfertDlg extends TestCase {
     orderLines.add(getOrderLine(day, payer, member, -30000, account2));
     orderLines.add(getOrderLine(day, payer, member, -25855, account2));
 
-    int err = dlg.tiersExport(file, orderLines);
+    int err = exportService.tiersExport(file, orderLines);
     int expected = 2;
     assertTrue("Pas d'erreurs détectées ?", err > 0);
     assertTrue("Le nombre d'erreurs est faux", expected == err);
@@ -111,7 +111,7 @@ public class TestAccountTransfertDlg extends TestCase {
     // Un règlement de type FAC entraîne un compte de tiers (4 ou C)
     orderLines.add(getOrderLine(day, payer, member, -30000, account3));
     expected = 3;
-    err = dlg.tiersExport(file,orderLines);
+    err = exportService.tiersExport(file,orderLines);
     assertTrue("Le nombre d'erreurs est faux", expected == err);
 
     FileReader fr = new FileReader(file+".log");

@@ -1,7 +1,7 @@
 /*
- * @(#)ConfigUtil.java 2.6.a 03/08/2012
+ * @(#)ConfigUtil.java 2.8.p 07/11/13
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,7 +28,7 @@ import net.algem.util.MessageUtil;
 
 /**
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.p
  */
 public class ConfigUtil {
 
@@ -44,6 +44,10 @@ public class ConfigUtil {
     return null;
   }
 
+  public static String getPath(ConfigKey key, DataConnection dc) {
+    return getConf(key.getKey(), dc);
+  }
+  
   public static String getExportPath(DataConnection dc) {
     return getConf(ConfigKey.EXPORT_PATH.getKey(), dc);
   }
