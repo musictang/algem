@@ -38,7 +38,7 @@ public class GemLogFormatter
 
 	@Override
 	public String format(LogRecord record) {
-        String nl = FileUtil.LINE_SEPARATOR;
+        String nl = TextUtil.LINE_SEPARATOR;
 		StringBuilder s = new StringBuilder(1000);
 
 		Date d = new Date(record.getMillis());
@@ -51,7 +51,7 @@ public class GemLogFormatter
 
 	@Override
 	public String getHead(Handler h) {
-		return "============================================================================" + FileUtil.LINE_SEPARATOR;
+		return "============================================================================" + TextUtil.LINE_SEPARATOR;
 	}
 
 }

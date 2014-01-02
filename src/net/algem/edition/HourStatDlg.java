@@ -133,7 +133,7 @@ public class HourStatDlg
     int workshop[] = new int[size];
     int other[] = new int[size];
 
-    String lf = FileUtil.LINE_SEPARATOR;
+    String lf = TextUtil.LINE_SEPARATOR;
 
     setCursor(new Cursor(Cursor.WAIT_CURSOR));
     PrintWriter out;

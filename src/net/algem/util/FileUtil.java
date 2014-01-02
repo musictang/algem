@@ -1,5 +1,5 @@
 /*
- * @(#)FileUtil.java	2.8.p 08/11/13
+ * @(#)FileUtil.java	2.8.r 01/01/14
  *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -42,13 +42,12 @@ import net.algem.util.ui.MessagePopup;
 /**
  * Utility class for file operations.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.p
+ * @version 2.8.r
  * @since 2.0q
  */
 public class FileUtil {
 
   public final static String FILE_SEPARATOR = System.getProperty("file.separator");
-  public final static String LINE_SEPARATOR = System.getProperty("line.separator");
 
   /** Relative path for invoice footer file. */
   public final static String INVOICE_FOOTER_FILE = "/resources/doc/fact-pdp.txt";
@@ -194,7 +193,7 @@ public class FileUtil {
   
   public static boolean confirmOverWrite(Component parent, File f) {
     if (f.exists()) {
-      return MessagePopup.confirm(parent, MessageUtil.getMessage("file.overwrite.confirmation"));
+      return MessagePopup.confirm(parent, MessageUtil.getMessage("file.overwrite.confirmation", f.getName()));
     }
     return true;
   }
@@ -206,26 +205,6 @@ public class FileUtil {
    */
   public static String escapeBackSlashes(String path) {
       return path.replace("\\", "\\\\");
-  }
-
-  /**
-   * Removes particular characters from a string.
-   * @param s
-   * @return a string
-   */
-  public static String replaceChars(String s) {
-    char str [] = s.toCharArray();
-    char from [] = {'À','Â','É','È','Ê','Ë','Î','Ï','Ô','Ö','Ù','Ü','\''};
-    char to [] = {'A','A','E','E','E','E','I','I','O','O','U','U',' '};
-    for (int i = 0 ; i < str.length; i++) {
-      for (int j = 0 ; j < from.length; j++) {
-        if (str[i] == from[j]) {
-          str[i] = to[j];
-        }
-      }
-    }
-    return new String(str);
-
   }
 
   /**

@@ -1,5 +1,5 @@
 /*
- * @(#)TextUtil.java	2.8.r 13/12/13
+ * @(#)TextUtil.java	2.8.r 30/12/13
  *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -32,6 +32,7 @@ public class TextUtil
 
   public static final int LEADING = 0;
   public static final int TRAILING = 1;
+	public final static String LINE_SEPARATOR = System.getProperty("line.separator");
 
   /**
    * Tronque la chaine de caractères au nombre de caractères
@@ -106,4 +107,25 @@ public class TextUtil
   public static String padWithLeadingSpaces(String chaine, int size) {
     return pad(chaine, size, ' ', LEADING);
   }
+	
+	/**
+   * Removes accented characters from a string.
+   * @param s the original string
+   * @return a string without accents if any
+   */
+  public static String replaceChars(String s) {
+    char str [] = s.toCharArray();
+    char from [] = {'À','Â','É','È','Ê','Ë','Î','Ï','Ô','Ö','Ù','Ü','\''};
+    char to [] = {'A','A','E','E','E','E','I','I','O','O','U','U',' '};
+    for (int i = 0 ; i < str.length; i++) {
+      for (int j = 0 ; j < from.length; j++) {
+        if (str[i] == from[j]) {
+          str[i] = to[j];
+        }
+      }
+    }
+    return new String(str);
+
+  }
+
 }

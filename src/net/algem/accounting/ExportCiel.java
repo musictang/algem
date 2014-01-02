@@ -31,7 +31,6 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Vector;
 import net.algem.util.DataConnection;
-import net.algem.util.FileUtil;
 import net.algem.util.MessageUtil;
 import net.algem.util.TextUtil;
 import net.algem.util.model.ModelException;
@@ -128,7 +127,7 @@ public class ExportCiel
       e =  orderLines.elementAt(i);
       if (!AccountUtil.isPersonalAccount(e.getAccount())) {
         errors++;
-        logMessage.append(m1prefix).append(" -> ").append(e).append(" [").append(e.getAccount()).append("]").append(FileUtil.LINE_SEPARATOR);
+        logMessage.append(m1prefix).append(" -> ").append(e).append(" [").append(e.getAccount()).append("]").append(TextUtil.LINE_SEPARATOR);
         m1 = true;
         continue;
       }
@@ -136,7 +135,7 @@ public class ExportCiel
       int p = getPersonalAccountId(e.getAccount().getId());
       if (p == 0) {
         errors++;
-        logMessage.append(m2prefix).append(" -> ").append(e.getAccount()).append(FileUtil.LINE_SEPARATOR);
+        logMessage.append(m2prefix).append(" -> ").append(e.getAccount()).append(TextUtil.LINE_SEPARATOR);
         m2 = true;
         continue;
       }

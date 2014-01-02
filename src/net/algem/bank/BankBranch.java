@@ -1,5 +1,5 @@
 /*
- * @(#)BankBranch.java	2.8.i 05/07/13
+ * @(#)BankBranch.java	2.8.r 30/12/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -28,7 +28,7 @@ import net.algem.contact.Person;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.i
+ * @version 2.8.r
  */
 public class BankBranch
         extends Contact
@@ -38,7 +38,11 @@ public class BankBranch
   private Bank bank;
   private String branchCode;
   private String domiciliation;
-  private String bicCode;
+	/**
+	 * BIC identifier.
+	 * Must respect the pattern : [A-Z]{6,6}[A-Z2-9][A-NP-Z0-9]([A-Z0-9]{3,3}){0,1}
+	 */
+  private String bicCode; // ' for type 'BICIdentifier'. [55] 
   
   public BankBranch() {
     type = Person.BANK;

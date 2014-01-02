@@ -1,7 +1,7 @@
 /*
- * @(#)DirectDebitExportDlg.java	2.8.k 23/07/13
+ * @(#)DirectDebitExportDlg.java	2.8.r 02/01/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,6 +28,7 @@ import java.awt.event.ItemListener;
 import java.io.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import javax.swing.*;
 import net.algem.config.*;
@@ -41,7 +42,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.k
+ * @version 2.8.r
  */
 public class DirectDebitExportDlg
         extends JDialog
@@ -51,13 +52,14 @@ public class DirectDebitExportDlg
   private static final String MAILING_FILE_NAME = "mailing_prlv.csv";
   private static final String EXPORT_FILE_NAME = "prlv.txt";
   private static final String LOG_FILE_NAME = ".log";
-  private static String lf = FileUtil.LINE_SEPARATOR;
+  private static String LF = TextUtil.LINE_SEPARATOR;
+//	private static String TAB = "  ";
   /*
    * $date="151001";
    * $entete=sprintf("0308 %06d%12.12s%-24.24s%-7.7s E %-5.5s%-11.11s %05d ",$noemet,$date,$raison,"TRIM1",$guichet,$compte,$etab);
    */
   /** Issuer number. */
-  private String noIssuer;
+  private String creditorNNE;
   /** Company name (raison sociale). */
   private String firmName;
   /** Branch code. */
@@ -84,24 +86,24 @@ public class DirectDebitExportDlg
   private File file1, file2, logFile;
   
 
-  public DirectDebitExportDlg(Frame _parent, String _titre, DataConnection dc) {
-    super(_parent, _titre);
+  public DirectDebitExportDlg(Frame frame, String title, DataConnection dc) {
+    super(frame, title);
     init(dc);
   }
 
-  public DirectDebitExportDlg(Dialog _parent, String _titre, DataConnection dc) {
-    super(_parent, _titre);
+  public DirectDebitExportDlg(Dialog dialog, String title, DataConnection dc) {
+    super(dialog, title);
     init(dc);
   }
 
   public void init(DataConnection dc) {
     this.dc = dc;
 
-    noIssuer = ConfigUtil.getConf(ConfigKey.STANDING_ORDER_ISSUER.getKey(), dc);
-    firmName = ConfigUtil.getConf(ConfigKey.STANDING_ORDER_FIRM_NAME.getKey(), dc);
-    bankBranch = ConfigUtil.getConf(ConfigKey.STANDING_ORDER_BANK_BRANCH.getKey(), dc);
-    account = ConfigUtil.getConf(ConfigKey.STANDING_ORDER_ACCOUNT.getKey(), dc);
-    bankHouse = ConfigUtil.getConf(ConfigKey.STANDING_ORDER_BANKHOUSE_CODE.getKey(), dc);
+    creditorNNE = ConfigUtil.getConf(ConfigKey.DIRECT_DEBIT_CREDITOR_NNE.getKey(), dc);
+    firmName = ConfigUtil.getConf(ConfigKey.DIRECT_DEBIT_FIRM_NAME.getKey(), dc);
+    bankBranch = ConfigUtil.getConf(ConfigKey.DIRECT_DEBIT_BANK_BRANCH.getKey(), dc);
+    account = ConfigUtil.getConf(ConfigKey.DIRECT_DEBIT_ACCOUNT.getKey(), dc);
+    bankHouse = ConfigUtil.getConf(ConfigKey.DIRECT_DEBIT_BANKHOUSE_CODE.getKey(), dc);
 
     schoolChoice = new ParamChoice(ParamTableIO.find(SchoolCtrl.TABLE, SchoolCtrl.SORT_COLUMN, dc));
     schoolChoice.addItemListener(new ItemListener()
@@ -191,12 +193,17 @@ public class DirectDebitExportDlg
     if (evt.getSource() == btCancel) {
       close();
     } else if (evt.getSource() == btValidation) {
-      /*file1 = new File(fMailling.getText());
+			
+      file1 = new File(fMailling.getText());
       file2 = new File(fExport.getText());
       if (!FileUtil.confirmOverWrite(this, file1) || !FileUtil.confirmOverWrite(this, file2)) {
         return;
-      }*/
-      validation();
+      } 
+			// CFNOB 160
+      //validation();
+			// SEPA CORE
+			createSepa();
+			
       close();
     } else if (evt.getSource() == browse1) {
       ret = fileChooser.showDialog(this, BundleUtil.getLabel("FileChooser.selection"));
@@ -216,7 +223,87 @@ public class DirectDebitExportDlg
       }
     }
   }
-
+	
+	
+	void createSepa() {
+		try {
+			String mailingPath = fMailling.getText();
+			String exportPath = fExport.getText();
+			DateFr datePrl = datePanel.get();
+			int school = schoolChoice.getKey();
+			DirectDebitService ddService = new DirectDebitService(dc);
+			SepaXmlBuilder sepa = new SepaXmlBuilder(ddService);
+			StringBuilder xml = new StringBuilder();
+			
+			String xmlDoc = sepa.getDocument();
+			java.util.List<String> payments = new ArrayList<String>();
+			for (DirectDebitSeqType seq : DirectDebitSeqType.values()) {
+				String xmlPayment = sepa.getPayment(school, flabel.getText(), datePrl, seq, sepa.getBatch());
+				if (xmlPayment != null) {
+					payments.add(xmlPayment);
+				}
+			}
+			String xmlHeader = sepa.getGroupHeader();
+			// affichage xml
+			xml.append(xmlDoc);
+			xml.append(xmlHeader);
+			for (String p : payments) {
+				xml.append(p);
+			}
+			xml.append(TextUtil.LINE_SEPARATOR).append("  </CstmrDrctDbtInitn>");
+			xml.append(TextUtil.LINE_SEPARATOR).append("</Document>");
+			
+			// Enregistrement fichiers
+			pMailing = new PrintWriter(new FileWriter(mailingPath));
+      pExport = new PrintWriter(new FileWriter(exportPath));
+			pExport.print(xml.toString());
+			
+			// mise à jour sequence type FRST -> RCUR
+			if (sepa.getDebtors().size() > 0) {
+				if (MessagePopup.confirm(this, MessageUtil.getMessage("direct.debit.seq.type.update.confirmation"))) {
+					ddService.updateToRcurSeqType(sepa.getDebtors());
+				}
+			}
+			String message = MessageUtil.getMessage("export.success.info", new Object[]{sepa.getNumberOfTx(), mailingPath});
+			// warnings
+			if (sepa.getMailing().length() > 0) {
+				pMailing.println(sepa.getMailing().toString());
+			}
+			
+      if (sepa.getLog().length() > 0) {
+				if (pLog == null) {
+					createLogFile(fExport.getText());
+				}
+				pLog.print(sepa.getLog().toString());
+        message += LF + MessageUtil.getMessage("payer.export.warning");
+        message += LF + MessageUtil.getMessage("payer.log.info", logFile.getAbsolutePath());
+        MessagePopup.warning(this, message);
+      } else {
+        MessagePopup.information(this, message);
+      }
+		} catch (IOException ex) {
+			GemLogger.logException(ex);
+		} catch (SQLException ex) {
+			GemLogger.logException(ex);
+		} finally {
+      closeFiles();
+      setCursor(Cursor.getDefaultCursor());
+    }
+	}
+	
+	private void closeFiles() {
+		if (pMailing != null) {
+        pMailing.close();
+		}
+		if (pExport != null) {
+			pExport.close();
+		}
+		if (pLog != null) {
+			pLog.close();
+		}
+	}
+	
+	
   void validation() {
     boolean error = false;
     int cpt = 0; // nombre de lignes exportées
@@ -224,9 +311,7 @@ public class DirectDebitExportDlg
     String path2 = fExport.getText();
 
     label = flabel.getText();
-
     DateFr datePrl = datePanel.get();
-    //Param pe = (Param) schoolChoice.getSelectedItem();
     int school = schoolChoice.getKey();
     // TODO faire un groupement par payeur afin de calculer automatiquement le montant total.
     String query = "SELECT payeur,montant,analytique FROM echeancier2"
@@ -240,7 +325,7 @@ public class DirectDebitExportDlg
       pExport = new PrintWriter(new FileWriter(path2));
 
       pMailing.println("id;civil;nom;prenom;adr1;adr2;cdp;ville;analytique;montant");
-      pExport.format("0308        %-6.6s%12.12s%-24.24s%-7.7s                   E     %-5.5s%-11.11s                                               %-5.5s      ", noIssuer, datePrl.toStringShort(), firmName, "PRLV", bankBranch, account, bankHouse);
+      pExport.format("0308        %-6.6s%12.12s%-24.24s%-7.7s                   E     %-5.5s%-11.11s                                               %-5.5s      ", creditorNNE, datePrl.toStringShort(), firmName, "PRLV", bankBranch, account, bankHouse);
 
       int oldid = 0;
       int total = 0;
@@ -276,12 +361,12 @@ public class DirectDebitExportDlg
           gtotal += total;
         }
       }
-      pExport.format(lf + "0808        %-6.6s                                                                                    %016d                                          ", noIssuer, gtotal);
+      pExport.format(LF + "0808        %-6.6s                                                                                    %016d                                          ", creditorNNE, gtotal);
 
       String message = MessageUtil.getMessage("export.success.info", new Object[]{cpt, path1});
       if (error) {
-        message += lf + MessageUtil.getMessage("payer.export.warning");
-        message += lf + MessageUtil.getMessage("payer.log.info", logFile.getAbsolutePath());
+        message += LF + MessageUtil.getMessage("payer.export.warning");
+        message += LF + MessageUtil.getMessage("payer.log.info", logFile.getAbsolutePath());
         MessagePopup.warning(this, message);
       } else {
         MessagePopup.information(this, message);
@@ -325,6 +410,7 @@ public class DirectDebitExportDlg
     String query = "SELECT p.id,p.civilite,p.nom,p.prenom,a.adr1,a.adr2,a.cdp,a.ville,r.etablissement,r.guichet,r.compte,r.clerib"
             + " FROM personne p LEFT JOIN adresse a ON p.id=a.idper, rib r"
             + " WHERE p.id = " + id + " and p.id = r.idper";
+		System.out.println(query);
     ResultSet rs2 = dc.executeQuery(query);
     String payerId = "";
     String payerName = "";
@@ -334,7 +420,7 @@ public class DirectDebitExportDlg
       //nomPayeur = rs2.getString(3)+" "+rs2.getString(4);
       // Correction 1.1a bug sur la longueur du champ nom
       payerName = rs2.getString(3);
-      payerName = FileUtil.replaceChars(payerName);
+      payerName = TextUtil.replaceChars(payerName);
       for (int i = 1; i <= 8; i++) {
         String info = rs2.getString(i);
         pMailing.print((info == null ? "" : info.trim()) + ";");
@@ -357,7 +443,7 @@ public class DirectDebitExportDlg
     String destBankBranch = rs2.getString(10);
     String destAccount = rs2.getString(11);
 
-    pExport.format(lf + "0608        %-6.6s%-12.12s%-24.24s%-24.24s        %-5.5s%-11.11s%016d%-31.31s%-5.5s      ", noIssuer, payerId, payerName, " ", destBankBranch, destAccount, total, label, destEtab);
+    pExport.format(LF + "0608        %-6.6s%-12.12s%-24.24s%-24.24s        %-5.5s%-11.11s%016d%-31.31s%-5.5s      ", creditorNNE, payerId, payerName, " ", destBankBranch, destAccount, total, label, destEtab);
 
     rs2.close();
     return true;
@@ -384,6 +470,6 @@ public class DirectDebitExportDlg
    */
   public static void main(String[] args) {
     String n = "FÂURÉÈ'N'DÏAYE";
-    System.out.println(FileUtil.replaceChars(n));
+    System.out.println(TextUtil.replaceChars(n));
   }
 }

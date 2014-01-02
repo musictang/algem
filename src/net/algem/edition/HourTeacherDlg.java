@@ -125,7 +125,7 @@ public class HourTeacherDlg
     Param school = view.getSchool();
 
     boolean detail = view.withDetail();
-    String lf = FileUtil.LINE_SEPARATOR;
+    String lf = TextUtil.LINE_SEPARATOR;
     setCursor(new Cursor(Cursor.WAIT_CURSOR));
 
     PrintWriter out = null;
@@ -248,7 +248,7 @@ public class HourTeacherDlg
             out.println();
           }
           //out.println("\n" + p.getTeacher());
-          out.println(FileUtil.LINE_SEPARATOR + p.getTeacher()); // prénom et nom du prof
+          out.println(TextUtil.LINE_SEPARATOR + p.getTeacher()); // prénom et nom du prof
           out.println(p.getDay().toString()); // date du jour
           totalDay = 0;
           totalMonth = 0;

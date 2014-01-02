@@ -1,7 +1,7 @@
 /*
- * @(#)AccountingExportFormat.java	2.8.r 17/12/13
+ * @(#)AccountingExportFormat.java	2.8.r 02/01/14
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -18,7 +18,7 @@
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package net.algem.config;
+package net.algem.accounting;
 
 /**
  * Accounting export format.
@@ -30,7 +30,7 @@ public enum AccountingExportFormat
 {
  
  CIEL("CIEL (ximport)"),
- DVLOG_PGI("DVLOG PGI"),
+ DVLOG("DVLOG"),
  SAGE("SAGE 30/100 (pnm)");
  
  private String label;

@@ -39,10 +39,14 @@ public class TestProperties
   public final static String BASE = "test";
   /** SGBD server. */
   public final static String HOST = "localhost";
+	/** Test database port. */
+  public final static int PORT = 5434;
   /** User with profile 4. */
   public final static String ADMIN = System.getProperty("user.name");
    /** User with profile 1. */
   public final static String USER = "lm"; // a modifier suivant le contexte
+	 /** Pass. */
+  public final static String PASS = "Pigfy!"; // a modifier suivant le contexte
   /** JDBC driver. */
   public final static String DRIVER = "org.postgresql.Driver";
   
@@ -51,7 +55,7 @@ public class TestProperties
   }
  
   public static DataConnection getDataConnection() {
-    DataConnection dc = new DataConnection(HOST, BASE);
+    DataConnection dc = new DataConnection(HOST, PORT, BASE, PASS);
     try {
       dc.connect();
     } catch (SQLException ex) {

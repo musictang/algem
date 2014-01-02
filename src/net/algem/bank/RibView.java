@@ -1,7 +1,7 @@
 /*
- * @(#)RibView.java	2.8.p 17/10/13
+ * @(#)RibView.java	2.8.r 02/01/14
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -42,7 +42,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.p
+ * @version 2.8.r
  * @since 1.0a 07/07/1999
  */
 public class RibView
@@ -119,15 +119,17 @@ public class RibView
     this.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
     gb.insets = GridBagHelper.SMALL_INSETS;
-    GemLabel bicLabel = new GemLabel(BundleUtil.getLabel("Bic.label"));
-    bicLabel.setToolTipText(BundleUtil.getLabel("Bic.code.tip"));
-    gb.add(bicLabel, 0, 1, 1, 1, GridBagHelper.NORTHWEST);
-    
+    GemLabel ribLabel = new GemLabel(BundleUtil.getLabel("Rib.label"));
+    ribLabel.setToolTipText(BundleUtil.getLabel("Rib.tip"));
+    gb.add(ribLabel, 0, 1, 1, 1, GridBagHelper.NORTHWEST);
+
     GemLabel ibanLabel = new GemLabel(BundleUtil.getLabel("Iban.label"));
     ibanLabel.setToolTipText(BundleUtil.getLabel("Iban.tip"));
     gb.add(ibanLabel, 0, 2, 1, 1, GridBagHelper.WEST);
     
-    gb.add(new GemLabel(BundleUtil.getLabel("Bic.code.label")), 0, 3, 1, 1, GridBagHelper.WEST);
+		GemLabel bicLabel = new GemLabel(BundleUtil.getLabel("Bic.code.label"));
+		bicLabel.setToolTipText(BundleUtil.getLabel("Bic.code.tip"));
+    gb.add(bicLabel, 0, 3, 1, 1, GridBagHelper.WEST);
     
     gb.add(new GemLabel(BundleUtil.getLabel("Bank.label")), 0, 4, 1, 1, GridBagHelper.WEST);
     GemLabel dom = new GemLabel("Dom.");

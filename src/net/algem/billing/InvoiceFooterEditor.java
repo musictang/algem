@@ -31,10 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JTextArea;
-import net.algem.util.FileUtil;
-import net.algem.util.GemCommand;
-import net.algem.util.GemLogger;
-import net.algem.util.MessageUtil;
+import net.algem.util.*;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.*;
 
@@ -147,7 +144,7 @@ public class InvoiceFooterEditor
     StringBuilder sb = new StringBuilder();
     List<String> ls = getFooter();
     for (String s : ls) {
-      sb.append(s).append(FileUtil.LINE_SEPARATOR);
+      sb.append(s).append(TextUtil.LINE_SEPARATOR);
     }
     return sb.toString();
   }

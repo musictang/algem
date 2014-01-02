@@ -28,7 +28,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import net.algem.accounting.*;
 import net.algem.billing.*;
-import net.algem.config.AccountingExportFormat;
+import net.algem.accounting.AccountingExportFormat;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
 import net.algem.config.ModeOfPaymentCtrl;

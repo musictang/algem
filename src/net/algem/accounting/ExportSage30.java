@@ -1,7 +1,7 @@
 /*
- * @(#)ExportSage30.java	2.8.r 17/12/13
+ * @(#)ExportSage30.java	2.8.r 02/01/14
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -60,7 +60,7 @@ public class ExportSage30
   public ExportSage30(DataConnection dc) {
     dbx = dc;
     journalService = new JournalAccountService(dc);
-    dossierName = ConfigUtil.getConf(ConfigKey.ACCOUNTING_DOSSIER_NAME.getKey(), dc);
+    dossierName = ConfigUtil.getConf(ConfigKey.DIRECT_DEBIT_FIRM_NAME.getKey(), dc);
     nf.setGroupingUsed(false);
     nf.setMinimumFractionDigits(2);
     nf.setMaximumFractionDigits(2); 
@@ -138,7 +138,7 @@ public class ExportSage30
       e =  orderLines.elementAt(i);
       if (!AccountUtil.isPersonalAccount(e.getAccount())) {
         errors++;
-        logMessage.append(m1prefix).append(" -> ").append(e).append(" [").append(e.getAccount()).append("]").append(FileUtil.LINE_SEPARATOR);
+        logMessage.append(m1prefix).append(" -> ").append(e).append(" [").append(e.getAccount()).append("]").append(TextUtil.LINE_SEPARATOR);
         m1 = true;
         continue;
       }
@@ -146,7 +146,7 @@ public class ExportSage30
       int p = getPersonalAccountId(e.getAccount().getId());
       if (p == 0) {
         errors++;
-        logMessage.append(m2prefix).append(" -> ").append(e.getAccount()).append(FileUtil.LINE_SEPARATOR);
+        logMessage.append(m2prefix).append(" -> ").append(e.getAccount()).append(TextUtil.LINE_SEPARATOR);
         m2 = true;
         continue;
       }

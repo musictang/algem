@@ -94,7 +94,7 @@ public class ConfigEditor
       filePanel = new ConfigFile(BundleUtil.getLabel("ConfEditor.file.label"), confs);
       content.add(filePanel);
       // panneau infos bancaires
-      ribPanel = new BicConfig(BundleUtil.getLabel("ConfEditor.accounting.label"), confs);
+      ribPanel = new CreditorConfig(BundleUtil.getLabel("ConfEditor.accounting.label"), confs);
       content.add(ribPanel);
     } catch (SQLException ex) {
         GemLogger.logException(ex);

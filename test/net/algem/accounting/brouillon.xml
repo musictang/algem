@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:iso:std:iso:20022:tech:xsd:pain.008.001.02" xsi:schemaLocation="urn:iso:std:iso:20022:tech:xsd:pain.008.001.02 file:/home/jm/Algem/src/git/test/net/algem/pain.008.001.02.xsd">
+  <CstmrDrctDbtInitn>
+    <GrpHdr>
+      <MsgId>MSG ID 1388576833422</MsgId>
+      <CreDtTm>2014-01-01T12:47:13</CreDtTm>
+      <NbOfTxs>2</NbOfTxs>
+      <InitgPty><Nm>MUSIQUES TANGENTES</Nm></InitgPty>
+    </GrpHdr>
+    <PmtInf>
+      <PmtInfId>COTIS MT 2013-2014 janv. : L0</PmtInfId>
+      <PmtMtd>DD</PmtMtd>
+      <PmtTpInf><SvcLvl><Cd>SEPA</Cd></SvcLvl><LclInstrm><Cd>CORE</Cd></LclInstrm><SeqTp>FRST</SeqTp></PmtTpInf>
+      <ReqdColltnDt>2014-01-16</ReqdColltnDt>
+      <Cdtr><Nm>MUSIQUES TANGENTES</Nm></Cdtr>
+      <CdtrAcct><Id><IBAN>FR7642559000052102737870703</IBAN></Id></CdtrAcct>
+      <CdtrAgt><FinInstnId><BIC>CCOPFRPPXXX</BIC></FinInstnId></CdtrAgt>
+      <CdtrSchmeId><Id><PrvtId><Othr><Id>FR68ZZZ000144</Id><SchmeNm><Prtry>SEPA</Prtry></SchmeNm></Othr></PrvtId></Id></CdtrSchmeId>
+      <DrctDbtTxInf>
+        <PmtId><EndToEndId>u7p15fc7bdy9</EndToEndId></PmtId>
+        <InstdAmt Ccy="EUR">12400.0</InstdAmt>
+        <DrctDbtTx><MndtRltdInf><MndtId>M1477439561 150114 168</MndtId><DtOfSgntr>2014-01-16</DtOfSgntr><AmdmntInd>false</AmdmntInd></MndtRltdInf></DrctDbtTx>
+        <DbtrAgt><FinInstnId><Othr><Id>NOTPROVIDED</Id></Othr></FinInstnId></DbtrAgt>
+        <Dbtr><Nm>DUPONT</Nm></Dbtr>
+        <DbtrAcct><Id><IBAN>FR7612345123451234567891A16</IBAN></Id></DbtrAcct>
+      </DrctDbtTxInf>
+    </PmtInf>
+    <PmtInf>
+      <PmtInfId>COTIS MT 2013-2014 janv. : L1</PmtInfId>
+      <PmtMtd>DD</PmtMtd>
+      <PmtTpInf><SvcLvl><Cd>SEPA</Cd></SvcLvl><LclInstrm><Cd>CORE</Cd></LclInstrm><SeqTp>RCUR</SeqTp></PmtTpInf>
+      <ReqdColltnDt>2014-01-16</ReqdColltnDt>
+      <Cdtr><Nm>MUSIQUES TANGENTES</Nm></Cdtr>
+      <CdtrAcct><Id><IBAN>FR7642559000052102737870703</IBAN></Id></CdtrAcct>
+      <CdtrAgt><FinInstnId><BIC>CCOPFRPPXXX</BIC></FinInstnId></CdtrAgt>
+      <CdtrSchmeId><Id><PrvtId><Othr><Id>FR68ZZZ000144</Id><SchmeNm><Prtry>SEPA</Prtry></SchmeNm></Othr></PrvtId></Id></CdtrSchmeId>
+      <DrctDbtTxInf>
+        <PmtId><EndToEndId>s50o7vjuwzzs</EndToEndId></PmtId>
+        <InstdAmt Ccy="EUR">325.66</InstdAmt>
+        <DrctDbtTx><MndtRltdInf><MndtId>M1477439561 150114 166</MndtId><DtOfSgntr>2014-01-15</DtOfSgntr><AmdmntInd>false</AmdmntInd></MndtRltdInf></DrctDbtTx>
+        <DbtrAgt><FinInstnId><BIC>SOGEFRPP</BIC></FinInstnId></DbtrAgt>
+        <Dbtr><Nm>ALOUIS</Nm></Dbtr>
+        <DbtrAcct><Id><IBAN>FR7630003035470005072512177</IBAN></Id></DbtrAcct>
+      </DrctDbtTxInf>
+    </PmtInf>
+  </CstmrDrctDbtInitn>
+</Document>

@@ -1,7 +1,7 @@
 /*
- * @(#)ConfigKey.java 2.4.b 30/05/12
+ * @(#)ConfigKey.java 2.8.r 01/01/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,7 +27,7 @@ import net.algem.util.BundleUtil;
  * First arg represents key in the table, second arg represents the label.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.4.b
+ * @version 2.8.r
  * @since 2.1.k 07/07/11
  */
 public enum ConfigKey
@@ -90,21 +90,30 @@ public enum ConfigKey
   /** Export path. */
   EXPORT_PATH("ExportPath", BundleUtil.getLabel("ConfEditor.export.path.label")),
 
-  /** Standing order issuer. */
-  STANDING_ORDER_ISSUER("Compta.Prelevement.emetteur", BundleUtil.getLabel("ConfEditor.debiting.issuer.label")),
+  /** Direct debit creditor NNE. */
+  DIRECT_DEBIT_CREDITOR_NNE("Compta.prelevement.emetteur", BundleUtil.getLabel("ConfEditor.debiting.issuer.label")),
   
-  /** Branch bank. */
-  STANDING_ORDER_BANK_BRANCH("Compta.Prelevement.guichet", BundleUtil.getLabel("ConfEditor.debiting.branch.label")),
+  /** Direct debit creditor's bank branch code. */
+  DIRECT_DEBIT_BANK_BRANCH("Compta.prelevement.guichet", BundleUtil.getLabel("ConfEditor.debiting.branch.label")),
   
-  /** Firm name. */
-  STANDING_ORDER_FIRM_NAME("Compta.Prelevement.raison", BundleUtil.getLabel("ConfEditor.corporate.label")),
+  /** Direct debit creditor's firm name. */
+  DIRECT_DEBIT_FIRM_NAME("Compta.prelevement.raison", BundleUtil.getLabel("ConfEditor.corporate.label")),
 
-  /** Account. */
-  STANDING_ORDER_ACCOUNT("Compta.Prelevement.compte", BundleUtil.getLabel("Account.label")),
+  /** Direct debit creditor's account. */
+  DIRECT_DEBIT_ACCOUNT("Compta.prelevement.compte", BundleUtil.getLabel("Account.label")),
   
-  /** Bankhouse. */
-  STANDING_ORDER_BANKHOUSE_CODE("Compta.Prelevement.etablissement", BundleUtil.getLabel("Establishment.label")),
+  /** Direct debit creditor's bankhouse code. */
+  DIRECT_DEBIT_BANKHOUSE_CODE("Compta.prelevement.etablissement", BundleUtil.getLabel("Establishment.label")),
 
+	/** Direct debit creditor's ICS. */
+  DIRECT_DEBIT_ICS("Compta.prelevement.ics", BundleUtil.getLabel("ConfEditor.debiting.ics.label")),
+	
+	/** Direct debit creditor's IBAN. */
+  DIRECT_DEBIT_IBAN("Compta.prelevement.iban", BundleUtil.getLabel("Iban.label")),
+	
+	/** Direct debit creditor's BIC. */
+  DIRECT_DEBIT_BIC("Compta.prelevement.bic", BundleUtil.getLabel("Bic.code.label")),
+	
   /** Document number. */
   ACCOUNTING_DOCUMENT_NUMBER("Compta.Numero.Piece", BundleUtil.getLabel("Document.number.label")),
 

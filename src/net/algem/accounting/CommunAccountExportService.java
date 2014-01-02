@@ -1,5 +1,5 @@
 /*
- * @(#)CommunAccountExportService.java	2.8.r 13/12/13
+ * @(#)CommunAccountExportService.java	2.8.r 30/12/13
  *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -33,7 +33,7 @@ import net.algem.config.Preference;
 import net.algem.contact.Contact;
 import net.algem.contact.ContactIO;
 import net.algem.util.DataConnection;
-import net.algem.util.FileUtil;
+import net.algem.util.TextUtil;
 import net.algem.util.model.ModelException;
 import net.algem.util.model.ModelNotFoundException;
 
@@ -172,7 +172,7 @@ public abstract class CommunAccountExportService
     int total = 0;
     OrderLine e = null;
     PrintWriter out = new PrintWriter(new FileWriter(path));
-    out.print("id;nom;date;reglement;piece;libelle;montant;analytique" + FileUtil.LINE_SEPARATOR);
+    out.print("id;nom;date;reglement;piece;libelle;montant;analytique" + TextUtil.LINE_SEPARATOR);
     for (int i = 0, n = orderLines.size(); i < n; i++) {
       e = orderLines.elementAt(i);
       Contact c = ContactIO.findId(e.getPayer(), dbx);
@@ -186,7 +186,7 @@ public abstract class CommunAccountExportService
               + ";" + e.getLabel()
               + ";" + defaultNumberFormat.format(e.getAmount() / 100.0)
               + ";" + e.getCostAccount().getNumber() + " : " + e.getCostAccount().getLabel()
-              + FileUtil.LINE_SEPARATOR);
+              + TextUtil.LINE_SEPARATOR);
     }
     if (total > 0) {
       out.print(";;" + defaultDateFormat.format(e.getDate().getDate()) + ";;;TOTAL;" + defaultNumberFormat.format(total / 100.0) + ";" + (char) 13);
