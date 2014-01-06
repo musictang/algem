@@ -1,5 +1,5 @@
 /*
- * @(#)SepaXmlBuilder.java	2.8.r 02/01/14
+ * @(#)SepaXmlBuilder.java	2.8.r 03/01/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -24,12 +24,11 @@ import java.nio.ByteBuffer;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.regex.Pattern;
+import net.algem.bank.BankUtil;
 import net.algem.planning.DateFr;
 import net.algem.util.MessageUtil;
 import net.algem.util.TextUtil;
@@ -51,21 +50,23 @@ public class SepaXmlBuilder {
 
 	private DirectDebitService service;
 	private StringBuilder sbMailing, sbLog;
-	private String bicRegex = "[A-Z]{6,6}[A-Z2-9][A-NP-Z0-9]([A-Z0-9]{3,3}){0,1}";
 	private String ibanRegex = "[A-Z]{2,2}[0-9]{2,2}[a-zA-Z0-9]{1,30}";
-	private Pattern bicPattern;
 	private Pattern ibanPattern;
 	private int totalTx = 0;
 	private int numberOfGlobalTx = 0;
 	private int batch;
 	private List<Integer> debtors = new ArrayList<Integer>();
+	private NumberFormat nf;
 	
 	public SepaXmlBuilder(DirectDebitService service) {
 		this.service = service;
-		bicPattern = Pattern.compile(bicRegex);
 		ibanPattern = Pattern.compile(ibanRegex);
 		sbMailing = new StringBuilder();
 		sbLog = new StringBuilder();
+		nf = NumberFormat.getInstance(Locale.UK);
+		nf.setGroupingUsed(false);
+		nf.setMinimumFractionDigits(2);
+		nf.setMaximumFractionDigits(2);
 	}
 
 	public int getNumberOfTx() {
@@ -106,6 +107,8 @@ public class SepaXmlBuilder {
 		indent(sb,3);
 		sb.append("<NbOfTxs>").append(numberOfGlobalTx).append("</NbOfTxs>");
 		indent(sb,3);
+		sb.append("<CtrlSum>").append(formatAmount(totalTx)).append("</CtrlSum>");
+		indent(sb,3);
 		sb.append("<InitgPty><Nm>").append(service.getFirmName()).append("</Nm></InitgPty>");
 		indent(sb,2);
 		sb.append("</GrpHdr>");
@@ -113,7 +116,13 @@ public class SepaXmlBuilder {
 		return sb.toString();
 	}
 	
-		private String getMessageId() {
+	private String formatAmount(int sum) {
+		/*String s = nf.format(sum / 100d);
+		s = s.replace(',', ' ');*/ 
+		return nf.format(sum / 100d);
+	}
+	
+	private String getMessageId() {
 		return "MSG ID " + String.valueOf(System.currentTimeMillis());
 	}
 
@@ -143,6 +152,7 @@ public class SepaXmlBuilder {
 						numberOfLocalTx++;
 						numberOfGlobalTx++;
 						totalTx += total;
+//						globalSum += 
 						if (seqType.equals(DirectDebitSeqType.FRST)) {
 							debtors.add(currentPayer);
 						}
@@ -218,50 +228,17 @@ public class SepaXmlBuilder {
 			tx = getTxElement(mandate, total);
 			if (tx != null) {
 				addMailingInfo(rs, total, analytique);
-			} else {
-//				addLogInfo(id);
 			}
 		} else {
 				addLogInfo(id, null);
 		}
 		
 		rs.close();
+		
 		return tx;
 
 	}
 	
-	private void addMailingInfo(ResultSet rs, int total, String costAccount) throws SQLException {
-		if (sbMailing != null) {
-			for (int i = 1; i <= 8; i++) {
-				String info = rs.getString(i);
-				sbMailing.append(info == null ? "" : info.trim()).append(";");
-			}
-			sbMailing.append(costAccount).append(";").append(total).append(TextUtil.LINE_SEPARATOR);
-		}
-	}
-	
-	private void addLogInfo(int id, String msg) {
-		if (sbLog != null) {
-			sbLog.append(MessageUtil.getMessage("payer.export.error", id)).append(msg == null ? "" : msg).append(TextUtil.LINE_SEPARATOR);
-		}
-	}
-
-	private DirectDebitMandate getMandate(ResultSet rs) throws SQLException {
-		DirectDebitMandate mandate = new DirectDebitMandate(rs.getInt(1));
-		String payerName = TextUtil.replaceChars(rs.getString(3));
-		if (payerName.length() > MAX_NAME_LENGTH) {
-			payerName = payerName.substring(0, MAX_NAME_LENGTH);
-		}
-		mandate.setName(payerName);
-		mandate.setDateSign(new DateFr(rs.getDate(10)).toString());
-		mandate.setRum(rs.getString(9));
-		mandate.setIcs(rs.getString(12));
-		mandate.setIban(rs.getString(13));
-		mandate.setBic(rs.getString(14));
-
-		return mandate;
-	}
-
 	private String getTxElement(DirectDebitMandate debtor, int amount) {
 
 		StringBuilder sb = new StringBuilder();
@@ -270,17 +247,16 @@ public class SepaXmlBuilder {
 		indent(sb, 4);
 		sb.append("<PmtId><EndToEndId>").append(getEnd2EndId()).append("</EndToEndId></PmtId>");
 		indent(sb, 4);
-		sb.append("<InstdAmt Ccy=\"EUR\">").append((double) (amount / 100d)).append("</InstdAmt>");
+		sb.append("<InstdAmt Ccy=\"EUR\">").append(formatAmount(amount)).append("</InstdAmt>");
 		indent(sb, 4);
 		sb.append("<DrctDbtTx><MndtRltdInf><MndtId>").append(debtor.getRum()).append("</MndtId>");
 		sb.append("<DtOfSgntr>").append(getIsoDate(debtor.getDateSign())).append("</DtOfSgntr><AmdmntInd>false</AmdmntInd></MndtRltdInf></DrctDbtTx>");
 		indent(sb, 4);
 		String bic = debtor.getBic();		
-		if (bic != null && bicPattern.matcher(bic).matches()) {
+		if (bic != null && BankUtil.isBicOk(bic)) {
 			sb.append("<DbtrAgt><FinInstnId><BIC>").append(debtor.getBic()).append("</BIC></FinInstnId></DbtrAgt>");
 		} else {
 			addLogInfo(debtor.getIdper(), " -> BIC");
-			// return null ???
 			sb.append("<DbtrAgt><FinInstnId><Othr><Id>NOTPROVIDED</Id></Othr></FinInstnId></DbtrAgt>");
 		}
 		indent(sb, 4);
@@ -297,6 +273,37 @@ public class SepaXmlBuilder {
 		sb.append("</DrctDbtTxInf>");
 
 		return sb.toString();
+	}
+	
+	private DirectDebitMandate getMandate(ResultSet rs) throws SQLException {
+		DirectDebitMandate mandate = new DirectDebitMandate(rs.getInt(1));
+		String payerName = TextUtil.replaceChars(rs.getString(3));
+		if (payerName.length() > MAX_NAME_LENGTH) {
+			payerName = payerName.substring(0, MAX_NAME_LENGTH);
+		}
+		mandate.setName(payerName);
+		mandate.setDateSign(new DateFr(rs.getDate(10)).toString());
+		mandate.setRum(rs.getString(9));
+		mandate.setIban(rs.getString(12));
+		mandate.setBic(rs.getString(13));
+
+		return mandate;
+	}
+		
+	private void addMailingInfo(ResultSet rs, int total, String costAccount) throws SQLException {
+		if (sbMailing != null) {
+			for (int i = 1; i <= 8; i++) {
+				String info = rs.getString(i);
+				sbMailing.append(info == null ? "" : info.trim()).append(";");
+			}
+			sbMailing.append(costAccount).append(";").append(total).append(TextUtil.LINE_SEPARATOR);
+		}
+	}
+	
+	private void addLogInfo(int id, String msg) {
+		if (sbLog != null) {
+			sbLog.append(MessageUtil.getMessage("payer.export.error", id)).append(msg == null ? "" : msg).append(TextUtil.LINE_SEPARATOR);
+		}
 	}
 
 	private void indent(StringBuilder sb, int nbOfTabs) {

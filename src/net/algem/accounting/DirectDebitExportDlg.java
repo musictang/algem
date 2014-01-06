@@ -1,5 +1,5 @@
 /*
- * @(#)DirectDebitExportDlg.java	2.8.r 02/01/14
+ * @(#)DirectDebitExportDlg.java	2.8.r 03/01/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -53,21 +53,22 @@ public class DirectDebitExportDlg
   private static final String EXPORT_FILE_NAME = "prlv.txt";
   private static final String LOG_FILE_NAME = ".log";
   private static String LF = TextUtil.LINE_SEPARATOR;
-//	private static String TAB = "  ";
-  /*
-   * $date="151001";
-   * $entete=sprintf("0308 %06d%12.12s%-24.24s%-7.7s E %-5.5s%-11.11s %05d ",$noemet,$date,$raison,"TRIM1",$guichet,$compte,$etab);
-   */
+
   /** Issuer number. */
   private String creditorNNE;
+	
   /** Company name (raison sociale). */
   private String firmName;
+	
   /** Branch code. */
   private String bankBranch;
+	
   /** Account number. */
   private String account;
+	
   /** Bank code. */
   private String bankHouse;
+	
   private String label = "COTIS";
   private DataConnection dc;
   private PrintWriter pMailing;
@@ -84,8 +85,8 @@ public class DirectDebitExportDlg
   private GemChoice schoolChoice;
   private JButton browse1, browse2;
   private File file1, file2, logFile;
+	private JComboBox exportFormat;
   
-
   public DirectDebitExportDlg(Frame frame, String title, DataConnection dc) {
     super(frame, title);
     init(dc);
@@ -164,15 +165,23 @@ public class DirectDebitExportDlg
     GridBagHelper gb2 = new GridBagHelper(body);
     gb2.insets = GridBagHelper.SMALL_INSETS;
 
-    gb2.add(new GemLabel(BundleUtil.getLabel("Date.label")), 0, 0, 1, 1, GridBagHelper.NONE, GridBagHelper.EAST);
+    gb2.add(new GemLabel(BundleUtil.getLabel("Date.label")), 0, 0, 1, 1, GridBagHelper.NONE, GridBagHelper.WEST);
     gb2.add(datePanel, 1, 0, 1, 1, GridBagHelper.NONE, GridBagHelper.WEST);
 
-    gb2.add(new GemLabel(BundleUtil.getLabel("School.label")), 0, 1, 1, 1, GridBagHelper.NONE, GridBagHelper.EAST);
+    gb2.add(new GemLabel(BundleUtil.getLabel("School.label")), 0, 1, 1, 1, GridBagHelper.NONE, GridBagHelper.WEST);
     gb2.add(schoolChoice, 1, 1, 1, 1, GridBagHelper.NONE, GridBagHelper.WEST);
 
     flabel = new GemField(getLabel());
-    gb2.add(new GemLabel(BundleUtil.getLabel("Label.label")), 0, 2, 1, 1, GridBagHelper.NONE, GridBagHelper.EAST);
+    gb2.add(new GemLabel(BundleUtil.getLabel("Label.label")), 0, 2, 1, 1, GridBagHelper.NONE, GridBagHelper.WEST);
     gb2.add(flabel, 1, 2, 2, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
+		
+		GemLabel formatLabel = new GemLabel(BundleUtil.getLabel("Format.label"));
+		formatLabel.setToolTipText(MessageUtil.getMessage("direct.debit.export.format.info"));
+		exportFormat = new JComboBox(DirectDebitExportFormat.values());
+		exportFormat.setToolTipText(MessageUtil.getMessage("direct.debit.export.format.info"));
+		
+		gb2.add(formatLabel, 0, 3, 1, 1, GridBagHelper.NONE, GridBagHelper.WEST);
+    gb2.add(exportFormat, 1, 3, 1, 1, GridBagHelper.NONE, GridBagHelper.WEST);
     
     bodyBorder.add(body, BorderLayout.CENTER);
     
@@ -198,12 +207,16 @@ public class DirectDebitExportDlg
       file2 = new File(fExport.getText());
       if (!FileUtil.confirmOverWrite(this, file1) || !FileUtil.confirmOverWrite(this, file2)) {
         return;
-      } 
-			// CFNOB 160
-      //validation();
-			// SEPA CORE
-			createSepa();
-			
+      }
+			DirectDebitExportFormat format = (DirectDebitExportFormat) exportFormat.getSelectedItem();
+			switch(format) {
+				case NATIONAL :
+					createCfnob160();
+					break;
+				case SEPA :
+					createSepa();
+					break;
+			}
       close();
     } else if (evt.getSource() == browse1) {
       ret = fileChooser.showDialog(this, BundleUtil.getLabel("FileChooser.selection"));
@@ -225,7 +238,7 @@ public class DirectDebitExportDlg
   }
 	
 	
-	void createSepa() {
+	private void createSepa() {
 		try {
 			String mailingPath = fMailling.getText();
 			String exportPath = fExport.getText();
@@ -290,21 +303,8 @@ public class DirectDebitExportDlg
       setCursor(Cursor.getDefaultCursor());
     }
 	}
-	
-	private void closeFiles() {
-		if (pMailing != null) {
-        pMailing.close();
-		}
-		if (pExport != null) {
-			pExport.close();
-		}
-		if (pLog != null) {
-			pLog.close();
-		}
-	}
-	
-	
-  void validation() {
+		
+  private void createCfnob160() {
     boolean error = false;
     int cpt = 0; // nombre de lignes exportées
     String path1 = fMailling.getText();
@@ -378,15 +378,16 @@ public class DirectDebitExportDlg
     } catch (SQLException e) {
       GemLogger.logException(query, e, this);
     } finally {
-      if (pMailing != null) {
-        pMailing.close();
-      }
-      if (pExport != null) {
-        pExport.close();
-      }
-      if (pLog != null) {
-        pLog.close();
-      }
+			closeFiles();
+//      if (pMailing != null) {
+//        pMailing.close();
+//      }
+//      if (pExport != null) {
+//        pExport.close();
+//      }
+//      if (pLog != null) {
+//        pLog.close();
+//      }
       setCursor(Cursor.getDefaultCursor());
     }
 
@@ -448,12 +449,7 @@ public class DirectDebitExportDlg
     rs2.close();
     return true;
   }
-
-  private void close() {
-    setVisible(false);
-    dispose();
-  }
-
+	
   private String getLabel() {
     String e = ((Param) schoolChoice.getSelectedItem()).getValue();
     String school = (e == null) ? "" : e;
@@ -462,6 +458,24 @@ public class DirectDebitExportDlg
 
     return "COTIS " + school + " " + String.valueOf(d.getYear()) + "-" + String.valueOf(f.getYear());
   }
+		
+	private void closeFiles() {
+		if (pMailing != null) {
+        pMailing.close();
+		}
+		if (pExport != null) {
+			pExport.close();
+		}
+		if (pLog != null) {
+			pLog.close();
+		}
+	}
+
+  private void close() {
+    setVisible(false);
+    dispose();
+  }
+
 
   /**
    * For test only.

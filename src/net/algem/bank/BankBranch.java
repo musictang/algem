@@ -1,7 +1,7 @@
 /*
- * @(#)BankBranch.java	2.8.r 30/12/13
+ * @(#)BankBranch.java	2.8.r 03/01/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -40,9 +40,17 @@ public class BankBranch
   private String domiciliation;
 	/**
 	 * BIC identifier.
-	 * Must respect the pattern : [A-Z]{6,6}[A-Z2-9][A-NP-Z0-9]([A-Z0-9]{3,3}){0,1}
+	 * Must respect the pattern : [A-Z]{6,6}[A-Z2-9][A-NP-Z0-9]([A-Z0-9]{3,3}){0,1}.
+	 * The BIC is an ISO 9362 standard. It contains 8 or 11 characters:
+	 *
+	 * 4 digits: bank code
+	 * 2-character ISO country code
+	 * 2 characters: location
+	 * Possibly three additional characters to define an agency or a branch (branch code)
+	 *
+	 * The systematic supply BIC enables reliable flow of funds.
 	 */
-  private String bicCode; // ' for type 'BICIdentifier'. [55] 
+  private String bicCode;
   
   public BankBranch() {
     type = Person.BANK;
@@ -90,13 +98,6 @@ public class BankBranch
     hash = 89 * hash + (getBankCode() != null ? getBankCode().hashCode() : 0);
     return hash;
   }
-  
-//
-//  @Override
-//  public int hashCode() {
-//    int hash = 5;
-//    return hash;
-//  }
 
   public void setBank(Bank b) {
     bank = b;

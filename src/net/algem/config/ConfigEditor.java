@@ -47,7 +47,7 @@ public class ConfigEditor
   extends GemPanel implements ActionListener {
 
   private ConfigOrganization orgPanel;
-  private PlanningConfig activityPanel;
+  private ConfigPlanning activityPanel;
   private ConfigPanel adminPanel;
   private ConfigPanel filePanel;
   private ConfigPanel ribPanel;
@@ -86,7 +86,7 @@ public class ConfigEditor
 
       orgPanel = new ConfigOrganization(BundleUtil.getLabel("ConfEditor.organization.label"), confs);
       content.add(orgPanel);
-      activityPanel = new PlanningConfig(BundleUtil.getLabel("ConfEditor.schedule.label"), confs);
+      activityPanel = new ConfigPlanning(BundleUtil.getLabel("ConfEditor.schedule.label"), confs);
       content.add(activityPanel);
       adminPanel = new ConfigAdmin(BundleUtil.getLabel("ConfEditor.management.label"), confs);
       ((ConfigAdmin) adminPanel).init(dataCache);
@@ -94,7 +94,7 @@ public class ConfigEditor
       filePanel = new ConfigFile(BundleUtil.getLabel("ConfEditor.file.label"), confs);
       content.add(filePanel);
       // panneau infos bancaires
-      ribPanel = new CreditorConfig(BundleUtil.getLabel("ConfEditor.accounting.label"), confs);
+      ribPanel = new ConfigCreditor(BundleUtil.getLabel("ConfEditor.accounting.label"), confs);
       content.add(ribPanel);
     } catch (SQLException ex) {
         GemLogger.logException(ex);

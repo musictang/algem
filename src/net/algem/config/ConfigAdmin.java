@@ -1,7 +1,7 @@
 /*
- * @(#)ConfigAdmin.java 2.8.l 30/08/13
+ * @(#)ConfigAdmin.java 2.8.r 03/01/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -36,7 +36,7 @@ import net.algem.util.ui.GemPanel;
  * Panel for config and administrative tasks.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.l
+ * @version 2.8.r
  * @since 2.1.k
  */
 public class ConfigAdmin
@@ -75,10 +75,17 @@ public class ConfigAdmin
     jc1.setSelected(isSelected(c1.getValue()));
     jc2.setSelected(isSelected(c2.getValue()));
 //    jc3.setSelected(isSelected(c3.getValue()));
-
+		
+		Box box1 = Box.createHorizontalBox();
+		box1.add(jc1);
+		box1.add(Box.createHorizontalGlue());
+		Box box2 = Box.createHorizontalBox();
+		box2.add(jc2);
+		box2.add(Box.createHorizontalGlue());
+		
     content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
-    content.add(jc1);
-    content.add(jc2);
+    content.add(box1);
+    content.add(box2);
 //    content.add(jc3);
     
     GemPanel p = new GemPanel();
@@ -87,6 +94,7 @@ public class ConfigAdmin
     p.add(Box.createHorizontalGlue());
     p.add(new GemLabel(ConfigKey.DEFAULT_ESTABLISHMENT.getLabel()));
     p.add(estab);
+		
     content.add(p);
 
     add(content);

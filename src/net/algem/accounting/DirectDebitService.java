@@ -1,5 +1,5 @@
 /*
- * @(#)DirectDebitService.java	2.8.r 01/01/14
+ * @(#)DirectDebitService.java	2.8.r 03/01/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -57,12 +57,12 @@ public class DirectDebitService {
 	
 	ResultSet getTx(int payer) throws SQLException {
 		String query = "SELECT p.id, p.civilite, p.nom, p.prenom, a.adr1, a.adr2, a.cdp, a.ville,"
-			+ " s.rum, s.signature, s.seqtype, s.ics, r.iban, g.bic"
+			+ " s.rum, s.signature, s.seqtype, r.iban, g.bic"
 			+ " FROM personne p LEFT JOIN adresse a ON p.id = a.idper, rib r, guichet g, prlsepa s"
 			+ " WHERE p.id = " + payer
 			+ " AND p.id = r.idper AND r.guichetid = g.id"
 			+ " AND p.id = s.payeur";
-		//9 rum, 10 sign, 11 seqtype, 12 ics, 13 iban, 14 bic
+		//9 rum, 10 sign, 11 seqtype, 12 iban, 13 bic
 		return dc.executeQuery(query);
 	}
 	

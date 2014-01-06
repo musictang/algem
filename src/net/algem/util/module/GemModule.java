@@ -198,7 +198,7 @@ public class GemModule
     m.getAccessibleContext().setAccessibleDescription(dataCache.getLabel(menu+".info"));
     m.setToolTipText(dataCache.getLabel(menu+".bulle"));*/
     //int initialDelay = ToolTipManager.sharedInstance().getInitialDelay();
-    ToolTipManager.sharedInstance().setInitialDelay(300);
+    ToolTipManager.sharedInstance().setInitialDelay(50);
     //m.setEnabled((dataCache.authorize(menu)));
     m.setActionCommand(menu);
     m.addActionListener(this);

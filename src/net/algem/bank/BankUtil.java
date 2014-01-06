@@ -1,5 +1,5 @@
 /*
- * @(#)BankUtil.java	2.8.i 05/07/13
+ * @(#)BankUtil.java	2.8.r 03/01/14
  *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -22,14 +22,24 @@
 package net.algem.bank;
 
 import java.math.BigDecimal;
+import java.util.regex.Pattern;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.i
+ * @version 2.8.r
  * @since 2.8.i 20/06/13
  */
 public class BankUtil {
+	
+	private final static String bicRegex;
+	private final static Pattern bicPattern;
+	
+	static {
+		bicRegex = "[A-Z]{6,6}[A-Z2-9][A-NP-Z0-9]([A-Z0-9]{3,3}){0,1}";
+		bicPattern = Pattern.compile(bicRegex);
+	}
+
    /**
    * Checking BIC.
    * @link  http://fr.wikipedia.org/wiki/Relev%C3%A9_d%27identit%C3%A9_bancaire#Algorithme_de_v.C3.A9rification_en_Java
@@ -84,7 +94,7 @@ public class BankUtil {
   }
   
   public static boolean isBicOk(String bic) {
-    int length = bic.length();
+    /*int length = bic.length();
     if (length < 0 || length < 8 || length > 11) {
       return false;
     }
@@ -98,8 +108,8 @@ public class BankUtil {
       if (!Character.isLetterOrDigit(cars[j])) {
         return false;
       }
-    }
-    return true;
+    }*/
+		return bicPattern.matcher(bic).matches();
   }
   
 

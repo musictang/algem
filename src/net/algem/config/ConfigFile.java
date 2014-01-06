@@ -1,7 +1,7 @@
 /*
- * @(#)ConfigFile.java 2.8.p 12/11/13
+ * @(#)ConfigFile.java 2.8.r 03/01/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -24,6 +24,7 @@ package net.algem.config;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import net.algem.util.BundleUtil;
 import net.algem.util.FileUtil;
@@ -34,7 +35,7 @@ import net.algem.util.ui.GemPanel;
  * Default paths config.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.p
+ * @version 2.8.r
  * @since 2.1.k
  */
 public class ConfigFile
@@ -98,13 +99,17 @@ public class ConfigFile
     employeesFilePanel.setToolTipText(BundleUtil.getLabel("ConfEditor.employees.path.tip"));
     invoiceFooterPanel = new FilePanel(ConfigKey.INVOICE_FOOTER.getLabel(),c6.getValue());
     invoiceFooterPanel.setToolTipText(BundleUtil.getLabel("ConfEditor.invoice.footer.tip"));
-
-
+		
     content.add(logFilePanel);
+		content.add(Box.createVerticalStrut(4));
     content.add(exportFilePanel);
+		content.add(Box.createVerticalStrut(4));
     content.add(photosFilePanel);
+		content.add(Box.createVerticalStrut(4));
     content.add(groupsFilePanel);
+		content.add(Box.createVerticalStrut(4));
     content.add(employeesFilePanel);
+		content.add(Box.createVerticalStrut(4));
     content.add(invoiceFooterPanel);
     
     add(content);

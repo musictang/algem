@@ -1,7 +1,7 @@
 /*
- * @(#)ConfigOrganization.java 2.8.p 12/11/13
+ * @(#)ConfigOrganization.java 2.8.r 03/01/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.JFormattedTextField;
 import javax.swing.text.MaskFormatter;
 import net.algem.contact.Address;
@@ -41,7 +42,7 @@ import net.algem.util.ui.GemPanel;
  * Organization parameters and contact.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.p
+ * @version 2.8.r
  * @since 2.2.p 23/01/12
  */
 public class ConfigOrganization
@@ -92,10 +93,14 @@ public class ConfigOrganization
 
     content = new GemPanel(new BorderLayout());
 
-    GemPanel pName = new GemPanel();
+    Box pName = Box.createHorizontalBox();
+		pName.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
     pName.add(new GemLabel(BundleUtil.getLabel("Name.label")));
+		pName.add(Box.createHorizontalStrut(3));
     name = new GemField(20);
     name.setText(c1.getValue());
+		pName.add(name);
+		pName.add(Box.createHorizontalGlue());
 
     MaskFormatter siretMask = MessageUtil.createFormatter("### ### ### #####");
     siretMask.setValueContainsLiteralCharacters(false);
@@ -121,8 +126,6 @@ public class ConfigOrganization
     forPro.setColumns(11);
     forPro.setValue(c9.getValue());
 
-    pName.add(name);
-
     address = new AddressView(null,false);
 
     Address a = new Address();
@@ -134,7 +137,9 @@ public class ConfigOrganization
     address.set(a);
 
     GemPanel pCodes = new GemPanel(new GridLayout(4,2));
-    pCodes.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+		((GridLayout) pCodes.getLayout()).setHgap(4);
+		((GridLayout) pCodes.getLayout()).setVgap(4);
+    pCodes.setBorder(BorderFactory.createEmptyBorder(10,0,10,0));
     pCodes.add(new GemLabel(ConfigKey.SIRET_NUMBER.getLabel()));
     pCodes.add(siret);
     pCodes.add(new GemLabel(ConfigKey.CODE_NAF.getLabel()));

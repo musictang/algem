@@ -1,7 +1,7 @@
 /*
- * @(#)FilePanel.java 2.8.p 07/11/13
+ * @(#)FilePanel.java 2.8.r 03/01/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,6 +21,7 @@
 
 package net.algem.util.ui;
 
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -33,7 +34,7 @@ import net.algem.util.GemCommand;
  * Panel controller for selecting directories or opening files.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.p
+ * @version 2.8.r
  */
 public class FilePanel
   extends GemPanel implements ActionListener
@@ -55,6 +56,7 @@ public class FilePanel
     add(fileLabel);
     add(path);
     btBrowse = new JButton(GemCommand.BROWSE_CMD);
+		btBrowse.setPreferredSize(new Dimension(100,btBrowse.getHeight()));
     btBrowse.addActionListener(this);
     add(btBrowse);
 

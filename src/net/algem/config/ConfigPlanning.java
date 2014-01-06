@@ -1,7 +1,7 @@
 /*
- * @(#)PlanningConfig.java 2.6.a 20/09/12
+ * @(#)ConfigPlanning.java 2.8.r 03/01/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -31,6 +31,7 @@ import javax.swing.border.EtchedBorder;
 import net.algem.planning.DateFr;
 import net.algem.planning.DateRangePanel;
 import net.algem.planning.HourField;
+import net.algem.util.BundleUtil;
 import net.algem.util.ui.GemBorderPanel;
 import net.algem.util.ui.GemLabel;
 import net.algem.util.ui.GemPanel;
@@ -39,9 +40,9 @@ import net.algem.util.ui.GridBagHelper;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.r
  */
-public class PlanningConfig
+public class ConfigPlanning
   extends ConfigPanel
 {
 
@@ -52,7 +53,7 @@ public class PlanningConfig
 
 
 
-  public PlanningConfig(String title, Map<String, Config> confs) {
+  public ConfigPlanning(String title, Map<String, Config> confs) {
     super(title, confs);
     init();
   }
@@ -66,25 +67,33 @@ public class PlanningConfig
 
     Border border = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
     yearPanel = new DateRangePanel(new DateFr(c1.getValue()),new DateFr(c2.getValue()), border);
+		yearPanel.setToolTipText(ConfigKey.BEGINNING_YEAR.getLabel());
     periodPanel = new DateRangePanel(new DateFr(c3.getValue()),new DateFr(c4.getValue()), border);
+		periodPanel.setToolTipText(ConfigKey.BEGINNING_PERIOD.getLabel());
 
     offPeakHour = new HourField(c5.getValue());
+		offPeakHour.setToolTipText(ConfigKey.OFFPEAK_HOUR.getLabel());
 
     content = new GemPanel();
-
-
     content.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(content);
-    gb.add(new GemLabel(ConfigKey.BEGINNING_YEAR.getLabel()),0,0,1,1,GridBagHelper.EAST);
+		gb.insets = GridBagHelper.SMALL_INSETS;
+
+		GemLabel yearLabel = new GemLabel(BundleUtil.getLabel("School.year.label"));
+		yearLabel.setToolTipText(ConfigKey.BEGINNING_YEAR.getLabel());
+    gb.add(yearLabel,0,0,1,1,GridBagHelper.WEST);
     gb.add(yearPanel,1,0,1,1,GridBagHelper.WEST);
     
-    gb.add(new GemLabel(ConfigKey.BEGINNING_PERIOD.getLabel()),0,1,1,1,GridBagHelper.EAST);
+		GemLabel periodLabel = new GemLabel(BundleUtil.getLabel("Period.label"));
+		periodLabel.setToolTipText(ConfigKey.BEGINNING_PERIOD.getLabel());
+    gb.add(periodLabel,0,1,1,1,GridBagHelper.WEST);
     gb.add(periodPanel,1,1,1,1,GridBagHelper.WEST);
     
-    GemLabel h = new GemLabel(ConfigKey.OFFPEAK_HOUR.getLabel());
-    GemBorderPanel ph = new GemBorderPanel(BorderFactory.createEmptyBorder());
+    GemLabel hourLabel = new GemLabel(BundleUtil.getLabel("Room.rate.peak.label"));
+		hourLabel.setToolTipText(ConfigKey.OFFPEAK_HOUR.getLabel());
+    GemBorderPanel ph = new GemBorderPanel();
     ph.add(offPeakHour);
-    gb.add(h,0,2,1,1,GridBagHelper.EAST);
+    gb.add(hourLabel,0,2,1,1,GridBagHelper.WEST);
     gb.add(ph,1,2,1,1,GridBagHelper.WEST);
 
     add(content);
