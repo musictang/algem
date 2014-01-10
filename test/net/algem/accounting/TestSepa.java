@@ -389,7 +389,7 @@ public void testTransactionElement() {
 	
 	@Ignore
 	public void testTxElement() {
-		DirectDebitMandate debtor = new DirectDebitMandate(1234);
+		DDMandate debtor = new DDMandate(1234);
 		debtor.setName("UNTEL");
 			debtor.setDateSign(new DateFr("15-01-2014").toString());
 			debtor.setRum("M1446136132 150114 1234");
@@ -439,7 +439,7 @@ public void testTransactionElement() {
 	@Ignore
 	public void testPaymentInformation() throws DocumentException {
 		SepaXmlBuilder sepa = new SepaXmlBuilder(new DirectDebitService(dc));
-		StringBuilder sb = sepa.getPaymentInformation("MT",new DateFr("15-01-2014"), DirectDebitSeqType.FRST.toString(), new Short((short)0));
+		StringBuilder sb = sepa.getPaymentInformation("MT",new DateFr("15-01-2014"), DDSeqType.FRST.toString(), new Short((short)0));
 		System.out.println(sb.toString());
 	}
 	
@@ -479,13 +479,13 @@ public void testTransactionElement() {
 		
 		List<String> payments = new ArrayList<String>();
 		
-		String xmlPayment = sepa.getPayment(0, "TEST PRL SEPA",new DateFr("16-01-2014"), DirectDebitSeqType.FRST, 0);
+		String xmlPayment = sepa.getPayment(0, "TEST PRL SEPA",new DateFr("16-01-2014"), DDSeqType.FRST, 0);
 		if (xmlPayment != null) {
 			doc = DocumentHelper.parseText(xmlPayment);
 //			System.out.println(xmlPayment);
 			payments.add(xmlPayment);
 		}
-		xmlPayment = sepa.getPayment(0, "TEST PRL SEPA",new DateFr("16-01-2014"), DirectDebitSeqType.RCUR, sepa.getBatch());
+		xmlPayment = sepa.getPayment(0, "TEST PRL SEPA",new DateFr("16-01-2014"), DDSeqType.RCUR, sepa.getBatch());
 		if (xmlPayment != null) {
 			doc = DocumentHelper.parseText(xmlPayment);
 //			System.out.println(xmlPayment);
@@ -536,7 +536,7 @@ public void testTransactionElement() {
 		assertTrue(untel.substring(0,max).equals("ABRACA"));
 	}
 	
-	private String getTxElement(DirectDebitMandate debtor, double amount) {
+	private String getTxElement(DDMandate debtor, double amount) {
 
 		StringBuilder sb = new StringBuilder();
 		indent(sb,3);

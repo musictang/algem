@@ -26,8 +26,9 @@ package net.algem.accounting;
  * @version 2.8.r
  * @since 2.8.r 03/01/14
  */
-public enum DirectDebitExportFormat 
+public enum DirectDebitExportFormat
 {
-	NATIONAL,
-	SEPA
+
+  NATIONAL,
+  SEPA
 }

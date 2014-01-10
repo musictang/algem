@@ -1,5 +1,5 @@
 /*
- * @(#)DirectDebitExportDlg.java	2.8.r 03/01/14
+ * @(#)DirectDebitExportDlg.java	2.8.r 06/01/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -53,22 +53,16 @@ public class DirectDebitExportDlg
   private static final String EXPORT_FILE_NAME = "prlv.txt";
   private static final String LOG_FILE_NAME = ".log";
   private static String LF = TextUtil.LINE_SEPARATOR;
-
   /** Issuer number. */
   private String creditorNNE;
-	
   /** Company name (raison sociale). */
   private String firmName;
-	
   /** Branch code. */
   private String bankBranch;
-	
   /** Account number. */
   private String account;
-	
   /** Bank code. */
   private String bankHouse;
-	
   private String label = "COTIS";
   private DataConnection dc;
   private PrintWriter pMailing;
@@ -85,8 +79,8 @@ public class DirectDebitExportDlg
   private GemChoice schoolChoice;
   private JButton browse1, browse2;
   private File file1, file2, logFile;
-	private JComboBox exportFormat;
-  
+  private JComboBox exportFormat;
+
   public DirectDebitExportDlg(Frame frame, String title, DataConnection dc) {
     super(frame, title);
     init(dc);
@@ -126,15 +120,15 @@ public class DirectDebitExportDlg
     btCancel = new GemButton(GemCommand.CANCEL_CMD);
     btCancel.addActionListener(this);
 
-    buttons = new GemPanel(new GridLayout(1,2));
+    buttons = new GemPanel(new GridLayout(1, 2));
     buttons.add(btValidation);
     buttons.add(btCancel);
 
     GemPanel p = new GemPanel();
-    
+
     p.setLayout(new GridBagLayout());
     p.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-    
+
     GridBagHelper gb1 = new GridBagHelper(p);
     gb1.insets = GridBagHelper.SMALL_INSETS;
 
@@ -156,10 +150,10 @@ public class DirectDebitExportDlg
     gb1.add(fExport, 1, 1, 1, 1);
     fExport.setAutoscrolls(true);
     gb1.add(browse2, 2, 1, 1, 1, GridBagHelper.NONE, GridBagHelper.WEST);
-    
+
     GemPanel bodyBorder = new GemPanel(new BorderLayout());
     bodyBorder.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-    
+
     GemPanel body = new GemPanel(new GridBagLayout());
     body.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
     GridBagHelper gb2 = new GridBagHelper(body);
@@ -174,22 +168,22 @@ public class DirectDebitExportDlg
     flabel = new GemField(getLabel());
     gb2.add(new GemLabel(BundleUtil.getLabel("Label.label")), 0, 2, 1, 1, GridBagHelper.NONE, GridBagHelper.WEST);
     gb2.add(flabel, 1, 2, 2, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
-		
-		GemLabel formatLabel = new GemLabel(BundleUtil.getLabel("Format.label"));
-		formatLabel.setToolTipText(MessageUtil.getMessage("direct.debit.export.format.info"));
-		exportFormat = new JComboBox(DirectDebitExportFormat.values());
-		exportFormat.setToolTipText(MessageUtil.getMessage("direct.debit.export.format.info"));
-		
-		gb2.add(formatLabel, 0, 3, 1, 1, GridBagHelper.NONE, GridBagHelper.WEST);
+
+    GemLabel formatLabel = new GemLabel(BundleUtil.getLabel("Format.label"));
+    formatLabel.setToolTipText(MessageUtil.getMessage("direct.debit.export.format.info"));
+    exportFormat = new JComboBox(DirectDebitExportFormat.values());
+    exportFormat.setToolTipText(MessageUtil.getMessage("direct.debit.export.format.info"));
+
+    gb2.add(formatLabel, 0, 3, 1, 1, GridBagHelper.NONE, GridBagHelper.WEST);
     gb2.add(exportFormat, 1, 3, 1, 1, GridBagHelper.NONE, GridBagHelper.WEST);
-    
+
     bodyBorder.add(body, BorderLayout.CENTER);
-    
+
     gb1.add(bodyBorder, 0, 2, 2, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
 
     add(p, BorderLayout.CENTER);
     add(buttons, BorderLayout.SOUTH);
-    
+
     setSize(500, 300);
     pack();
   }
@@ -202,21 +196,21 @@ public class DirectDebitExportDlg
     if (evt.getSource() == btCancel) {
       close();
     } else if (evt.getSource() == btValidation) {
-			
+
       file1 = new File(fMailling.getText());
       file2 = new File(fExport.getText());
       if (!FileUtil.confirmOverWrite(this, file1) || !FileUtil.confirmOverWrite(this, file2)) {
         return;
       }
-			DirectDebitExportFormat format = (DirectDebitExportFormat) exportFormat.getSelectedItem();
-			switch(format) {
-				case NATIONAL :
-					createCfnob160();
-					break;
-				case SEPA :
-					createSepa();
-					break;
-			}
+      DirectDebitExportFormat format = (DirectDebitExportFormat) exportFormat.getSelectedItem();
+      switch (format) {
+        case NATIONAL:
+          createCfnob160();
+          break;
+        case SEPA:
+          createSepa();
+          break;
+      }
       close();
     } else if (evt.getSource() == browse1) {
       ret = fileChooser.showDialog(this, BundleUtil.getLabel("FileChooser.selection"));
@@ -236,74 +230,73 @@ public class DirectDebitExportDlg
       }
     }
   }
-	
-	
-	private void createSepa() {
-		try {
-			String mailingPath = fMailling.getText();
-			String exportPath = fExport.getText();
-			DateFr datePrl = datePanel.get();
-			int school = schoolChoice.getKey();
-			DirectDebitService ddService = new DirectDebitService(dc);
-			SepaXmlBuilder sepa = new SepaXmlBuilder(ddService);
-			StringBuilder xml = new StringBuilder();
-			
-			String xmlDoc = sepa.getDocument();
-			java.util.List<String> payments = new ArrayList<String>();
-			for (DirectDebitSeqType seq : DirectDebitSeqType.values()) {
-				String xmlPayment = sepa.getPayment(school, flabel.getText(), datePrl, seq, sepa.getBatch());
-				if (xmlPayment != null) {
-					payments.add(xmlPayment);
-				}
-			}
-			String xmlHeader = sepa.getGroupHeader();
-			// affichage xml
-			xml.append(xmlDoc);
-			xml.append(xmlHeader);
-			for (String p : payments) {
-				xml.append(p);
-			}
-			xml.append(TextUtil.LINE_SEPARATOR).append("  </CstmrDrctDbtInitn>");
-			xml.append(TextUtil.LINE_SEPARATOR).append("</Document>");
-			
-			// Enregistrement fichiers
-			pMailing = new PrintWriter(new FileWriter(mailingPath));
+
+  private void createSepa() {
+    try {
+      String mailingPath = fMailling.getText();
+      String exportPath = fExport.getText();
+      DateFr datePrl = datePanel.get();
+      int school = schoolChoice.getKey();
+      DirectDebitService ddService = new DirectDebitService(dc);
+      SepaXmlBuilder sepa = new SepaXmlBuilder(ddService);
+      StringBuilder xml = new StringBuilder();
+
+      String xmlDoc = sepa.getDocument();
+      java.util.List<String> payments = new ArrayList<String>();
+      for (DDSeqType seq : DDSeqType.values()) {
+        String xmlPayment = sepa.getPayment(school, flabel.getText(), datePrl, seq, sepa.getBatch());
+        if (xmlPayment != null) {
+          payments.add(xmlPayment);
+        }
+      }
+      String xmlHeader = sepa.getGroupHeader();
+      // affichage xml
+      xml.append(xmlDoc);
+      xml.append(xmlHeader);
+      for (String p : payments) {
+        xml.append(p);
+      }
+      xml.append(TextUtil.LINE_SEPARATOR).append("  </CstmrDrctDbtInitn>");
+      xml.append(TextUtil.LINE_SEPARATOR).append("</Document>");
+
+      // Enregistrement fichiers
+      pMailing = new PrintWriter(new FileWriter(mailingPath));
       pExport = new PrintWriter(new FileWriter(exportPath));
-			pExport.print(xml.toString());
-			
-			// mise à jour sequence type FRST -> RCUR
-			if (sepa.getDebtors().size() > 0) {
-				if (MessagePopup.confirm(this, MessageUtil.getMessage("direct.debit.seq.type.update.confirmation"))) {
-					ddService.updateToRcurSeqType(sepa.getDebtors());
-				}
-			}
-			String message = MessageUtil.getMessage("export.success.info", new Object[]{sepa.getNumberOfTx(), mailingPath});
-			// warnings
-			if (sepa.getMailing().length() > 0) {
-				pMailing.println(sepa.getMailing().toString());
-			}
-			
+      pExport.print(xml.toString());
+
+      // mise à jour sequence type FRST -> RCUR
+      if (sepa.getDebtors().size() > 0) {
+        if (MessagePopup.confirm(this, MessageUtil.getMessage("direct.debit.seq.type.update.confirmation"))) {
+          ddService.updateToRcurSeqType(sepa.getDebtors());
+        }
+      }
+      String message = MessageUtil.getMessage("export.success.info", new Object[]{sepa.getNumberOfTx(), mailingPath});
+      // warnings
+      if (sepa.getMailing().length() > 0) {
+        pMailing.println(sepa.getMailing().toString());
+      }
+
       if (sepa.getLog().length() > 0) {
-				if (pLog == null) {
-					createLogFile(fExport.getText());
-				}
-				pLog.print(sepa.getLog().toString());
+        if (pLog == null) {
+          createLogFile(fExport.getText());
+        }
+        pLog.print(sepa.getLog().toString());
         message += LF + MessageUtil.getMessage("payer.export.warning");
         message += LF + MessageUtil.getMessage("payer.log.info", logFile.getAbsolutePath());
         MessagePopup.warning(this, message);
       } else {
         MessagePopup.information(this, message);
       }
-		} catch (IOException ex) {
-			GemLogger.logException(ex);
-		} catch (SQLException ex) {
-			GemLogger.logException(ex);
-		} finally {
+    } catch (IOException ex) {
+      GemLogger.logException(ex);
+    } catch (SQLException ex) {
+      GemLogger.logException(ex);
+    } finally {
       closeFiles();
       setCursor(Cursor.getDefaultCursor());
     }
-	}
-		
+  }
+
   private void createCfnob160() {
     boolean error = false;
     int cpt = 0; // nombre de lignes exportées
@@ -378,16 +371,7 @@ public class DirectDebitExportDlg
     } catch (SQLException e) {
       GemLogger.logException(query, e, this);
     } finally {
-			closeFiles();
-//      if (pMailing != null) {
-//        pMailing.close();
-//      }
-//      if (pExport != null) {
-//        pExport.close();
-//      }
-//      if (pLog != null) {
-//        pLog.close();
-//      }
+      closeFiles();
       setCursor(Cursor.getDefaultCursor());
     }
 
@@ -411,7 +395,7 @@ public class DirectDebitExportDlg
     String query = "SELECT p.id,p.civilite,p.nom,p.prenom,a.adr1,a.adr2,a.cdp,a.ville,r.etablissement,r.guichet,r.compte,r.clerib"
             + " FROM personne p LEFT JOIN adresse a ON p.id=a.idper, rib r"
             + " WHERE p.id = " + id + " and p.id = r.idper";
-		System.out.println(query);
+    System.out.println(query);
     ResultSet rs2 = dc.executeQuery(query);
     String payerId = "";
     String payerName = "";
@@ -428,14 +412,14 @@ public class DirectDebitExportDlg
       }
       pMailing.println(analytique + ";" + total);
     } else {
-        try {
-          if (pLog == null) {
-            createLogFile(fExport.getText());
-          }
-          pLog.println(MessageUtil.getMessage("payer.export.error", id));
-        } catch (IOException io) {
-          GemLogger.logException(io);
+      try {
+        if (pLog == null) {
+          createLogFile(fExport.getText());
         }
+        pLog.println(MessageUtil.getMessage("payer.export.error", id));
+      } catch (IOException io) {
+        GemLogger.logException(io);
+      }
       rs2.close();
       return false;
     }
@@ -449,7 +433,7 @@ public class DirectDebitExportDlg
     rs2.close();
     return true;
   }
-	
+
   private String getLabel() {
     String e = ((Param) schoolChoice.getSelectedItem()).getValue();
     String school = (e == null) ? "" : e;
@@ -458,24 +442,23 @@ public class DirectDebitExportDlg
 
     return "COTIS " + school + " " + String.valueOf(d.getYear()) + "-" + String.valueOf(f.getYear());
   }
-		
-	private void closeFiles() {
-		if (pMailing != null) {
-        pMailing.close();
-		}
-		if (pExport != null) {
-			pExport.close();
-		}
-		if (pLog != null) {
-			pLog.close();
-		}
-	}
+
+  private void closeFiles() {
+    if (pMailing != null) {
+      pMailing.close();
+    }
+    if (pExport != null) {
+      pExport.close();
+    }
+    if (pLog != null) {
+      pLog.close();
+    }
+  }
 
   private void close() {
     setVisible(false);
     dispose();
   }
-
 
   /**
    * For test only.

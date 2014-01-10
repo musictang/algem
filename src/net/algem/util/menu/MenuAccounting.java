@@ -1,7 +1,7 @@
 /*
- * @(#)MenuAccounting.java 2.8.r 13/12/13
+ * @(#)MenuAccounting.java 2.8.r 08/01/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,7 +28,6 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import net.algem.accounting.*;
 import net.algem.billing.*;
-import net.algem.accounting.AccountingExportFormat;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
 import net.algem.config.ModeOfPaymentCtrl;
@@ -64,7 +63,8 @@ public class MenuAccounting
   private JMenuItem miAccountDocument;
   private JMenuItem miAccountSchedule;
   private JMenuItem miAccountHourTeacher;
-  private JMenuItem miRoomRate;
+  private JMenuItem miRoomRate;  
+  private JMenuItem miDirectDebitList;
   private DataConnection dc;
   
   public MenuAccounting(GemDesktop _desktop) {
@@ -75,7 +75,16 @@ public class MenuAccounting
     
     miAccountTransfert = add(getItem(new JMenuItem(menus.get("Menu.schedule.payment.transfer.label")), "Accounting.transfer.auth"));
     miAccountDocument = add(getItem(new JMenuItem(menus.get("Menu.document.transfer.label")), "Accounting.document.transfer.auth"));
-    add(getItem(new JMenuItem(BundleUtil.getLabel("Menu.debiting.label")), "Standing.order.export.auth"));
+    
+    JMenu mDirectDebit = new JMenu(menus.get("Menu.debiting.label"));
+    mDirectDebit.add(new JMenuItem(menus.get("Menu.export.label")));
+    miDirectDebitList = new JMenuItem(menus.get("Direct.debit.sepa.list.label"));
+    mDirectDebit.add(miDirectDebitList);
+    if (!dataCache.authorize("Standing.order.export.auth")) {
+      mDirectDebit.setEnabled(false);
+    }
+    add(mDirectDebit);
+//    add(mDirectDebit, "Standing.order.export.auth");
     miAccountHourTeacher = add(getItem(new JMenuItem(menus.get("Menu.teacher.hour.label")), "Accounting.hours.export.auth"));
     addSeparator();
     
@@ -126,9 +135,13 @@ public class MenuAccounting
       AccountExportService exportService = getAccountingExportService(ConfigUtil.getConf(ConfigKey.ACCOUNTING_EXPORT_FORMAT.getKey(), dc));
       AccountDocumentTransferDlg documentTransfertDlg = new AccountDocumentTransferDlg(desktop.getFrame(), dataCache, exportService);
       documentTransfertDlg.setVisible(true);
-    } else if (menus.get("Menu.debiting.label").equals(arg)) {
+    } else if (menus.get("Menu.export.label").equals(arg)) {
       DirectDebitExportDlg dlg = new DirectDebitExportDlg((Frame) null, menus.get("Menu.debiting.label"), dc);
       dlg.setVisible(true);
+    } else if (src == miDirectDebitList) {
+      DirectDebitService ddService = new DirectDebitService(dataCache.getDataConnection());
+      DDMandateCtrl ddCtrl = new DDMandateCtrl(desktop, ddService);
+      desktop.addPanel("Direct.debit.sepa.list", ddCtrl, GemModule.M_SIZE);
     } else if (src == miAccountHourTeacher) {
       HourTeacherDlg hourTeacherDlg = new HourTeacherDlg(desktop.getFrame(), "heureprof.txt", dataCache);
       hourTeacherDlg.setVisible(true);
@@ -216,6 +229,8 @@ public class MenuAccounting
     menus.put("Menu.schedule.payment.transfer.label", BundleUtil.getLabel("Menu.schedule.payment.transfer.label"));
     menus.put("Menu.document.transfer.label", BundleUtil.getLabel("Menu.document.transfer.label"));
     menus.put("Menu.debiting.label", BundleUtil.getLabel("Menu.debiting.label"));
+    menus.put("Direct.debit.sepa.list.label", BundleUtil.getLabel("Direct.debit.sepa.list.label"));
+    menus.put("Menu.export.label", BundleUtil.getLabel("Menu.export.label"));
     menus.put("Menu.teacher.hour.label", BundleUtil.getLabel("Menu.teacher.hour.label"));
     menus.put("Menu.invoice.history.label", BundleUtil.getLabel("Menu.invoice.history.label"));
     menus.put("Menu.quotation.history.label", BundleUtil.getLabel("Menu.quotation.history.label"));

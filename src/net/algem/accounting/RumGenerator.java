@@ -1,7 +1,7 @@
 /*
- * @(#)RumGenerator.java	2.8.r 30/12/13
+ * @(#)RumGenerator.java	2.8.r 06/01/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -18,7 +18,6 @@
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  * 
  */
-
 package net.algem.accounting;
 
 import java.io.*;
@@ -32,85 +31,87 @@ import java.util.regex.Pattern;
 
 /**
  * Utility class for generation of rum numbers.
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.8.r
  * @since 2.8.r 29/12/13
  */
-public class RumGenerator {
+public class RumGenerator
+{
 
-	private static SecureRandom random = new SecureRandom();
-	private static DateFormat df = new SimpleDateFormat("dd-MM-yyyy");
-	private static DateFormat df2 = new SimpleDateFormat("ddMMyy");
-	private static Pattern pattern = Pattern.compile("[0-3][0-9]-[0-1][0-9]-2[0-9]{3}");
-	private static final int LEADING = 0;
+  private static SecureRandom random = new SecureRandom();
+  private static DateFormat df = new SimpleDateFormat("dd-MM-yyyy");
+  private static DateFormat df2 = new SimpleDateFormat("ddMMyy");
+  private static Pattern datePattern = Pattern.compile("[0-3][0-9]-[0-1][0-9]-2[0-9]{3}");
+  private static final int LEADING = 0;
   private static final int TRAILING = 1;
 
-	public static void main(String... args) {
+  public static void main(String... args) {
 
-		if (args.length < 2) {
-		  System.err.println("Erreur : Nombre d'arguments incorrect !");
-			System.err.println("Usage : java RumGenerator <dateecheance> <ics> < fichier_payeurs.txt");
-			System.exit(1);
-		}
+    if (args.length < 1) {
+      System.err.println("Erreur : Nombre d'arguments incorrect !");
+      System.err.println("Usage : java RumGenerator <dateecheance> < fichier_payeurs.txt");
+      System.exit(1);
+    }
 
-		String signDate = args[0];
-		Matcher m = pattern.matcher(signDate);
-		if (!m.matches()) {
-		  System.err.println("Erreur : Date de signature (ou d'échéance) incorrecte !");
-			System.err.println("Date de signature (ou d'échéance) au format : jj-mm-aaaa");
-			System.exit(1);
-		}
-		
-		String ics =  args[1];
+    String signDate = args[0];
+    Matcher m = datePattern.matcher(signDate);
+    if (!m.matches()) {
+      System.err.println("Erreur : Date de signature (ou d'échéance) incorrecte !");
+      System.err.println("Date de signature (ou d'échéance) au format : jj-mm-aaaa");
+      System.exit(1);
+    }
 
-		BufferedReader in = null;
-		FileOutputStream os = null;
-		try {
-			os = new FileOutputStream(new File("mandats.sql"));
+//    String ics = args[1];
 
-			in = new BufferedReader(new InputStreamReader(System.in));
-			String line;
-			while ((line = in.readLine()) != null) {
-				String sql = generateSQL(line, df.format(new Date()), signDate, ics) + System.getProperty("line.separator");
-				os.write(sql.getBytes());
-			}
-		} catch (IOException e) {
-			System.err.println(e.getMessage());
-			System.exit(1);
-		}  finally {
-			if (in != null) {
-				try {
-					in.close();
-					os.close();
-				} catch (IOException ex) {
-					System.err.println(ex.getMessage());
-					System.exit(1);
-				}
-			}
-		}
-		//-- 56 | 1234 | 2013-01-02 | 2014-01-15 | TRUE | FRST | FR00ZZZ123456 | M1446136132 150114 1234 |
-	}
+    BufferedReader in = null;
+    FileOutputStream os = null;
+    try {
+      os = new FileOutputStream(new File("mandats.sql"));
 
-	private static String generateRum(String idper, String signDate) {
-		Date d = null;
-		try {
-			d = df.parse(signDate);
-		} catch (ParseException ex) {
-			System.err.println(ex.getMessage());
-			System.exit(1);
-		}
-		String r = String.valueOf(Math.abs(random.nextInt()));
-		return "M"
-			+ padWithLeadingZeros(r, 10)
-			+ " " + df2.format(d)
-			+ " " + idper;
-	}
-	
-	private static String generateSQL(String idper, String createDate, String signDate, String ics) {
-		return idper +";"+ createDate + ";" + signDate + ";TRUE;FRST;"+ics+";"+generateRum(idper, signDate);
-	}
-	
-	private static String pad(String chaine, int size, char c, int where) {
+      in = new BufferedReader(new InputStreamReader(System.in));
+      String line;
+      while ((line = in.readLine()) != null) {
+        String sql = generateMigrationSQL(line, df.format(new Date()), signDate) + System.getProperty("line.separator");
+        os.write(sql.getBytes());
+      }
+    } catch (IOException e) {
+      System.err.println(e.getMessage());
+      System.exit(1);
+    } finally {
+      if (in != null) {
+        try {
+          in.close();
+          os.close();
+        } catch (IOException ex) {
+          System.err.println(ex.getMessage());
+          System.exit(1);
+        }
+      }
+    }
+    //-- 56 | 1234 | 2013-01-02 | 2014-01-15 | TRUE | FRST | M1446136132 150114 1234 |
+  }
+
+  private static String generateRum(String idper, String signDate) {
+    Date d = null;
+    try {
+      d = df.parse(signDate);
+    } catch (ParseException ex) {
+      System.err.println(ex.getMessage());
+      System.exit(1);
+    }
+    String r = String.valueOf(Math.abs(random.nextInt()));
+    return "M"
+            + padWithLeadingZeros(r, 10)
+            + " " + df2.format(d)
+            + " " + idper;
+  }
+
+  private static String generateMigrationSQL(String idper, String createDate, String signDate) {
+    return idper + ";" + createDate + ";" + signDate + ";TRUE;FMGR;" + generateRum(idper, signDate);
+  }
+
+  private static String pad(String chaine, int size, char c, int where) {
 
     if (chaine == null) {
       chaine = "";
@@ -129,8 +130,8 @@ public class RumGenerator {
     }
     return resultat;
   }
-  
- public static String padWithLeadingZeros(String chaine, int size) {
+
+  public static String padWithLeadingZeros(String chaine, int size) {
     return pad(chaine, size, '0', LEADING);
   }
 }

@@ -30,7 +30,7 @@ import javax.swing.table.AbstractTableModel;
  * @version 2.8.f
  * @since 1.0a 07/07/1999
  */
-public abstract class JTableModel<T extends Object>
+public abstract class JTableModel<T>
         extends AbstractTableModel
 {
 
