@@ -1,5 +1,5 @@
 /*
- * @(#)MenuAccounting.java 2.8.r 08/01/14
+ * @(#)MenuAccounting.java 2.8.r 10/01/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -139,8 +139,9 @@ public class MenuAccounting
       DirectDebitExportDlg dlg = new DirectDebitExportDlg((Frame) null, menus.get("Menu.debiting.label"), dc);
       dlg.setVisible(true);
     } else if (src == miDirectDebitList) {
-      DirectDebitService ddService = new DirectDebitService(dataCache.getDataConnection());
+      DirectDebitService ddService = DirectDebitService.getInstance(dataCache.getDataConnection());
       DDMandateCtrl ddCtrl = new DDMandateCtrl(desktop, ddService);
+			ddCtrl.load();
       desktop.addPanel("Direct.debit.sepa.list", ddCtrl, GemModule.M_SIZE);
     } else if (src == miAccountHourTeacher) {
       HourTeacherDlg hourTeacherDlg = new HourTeacherDlg(desktop.getFrame(), "heureprof.txt", dataCache);

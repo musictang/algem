@@ -1,7 +1,7 @@
 /*
- * @(#)DDMandate.java	2.8.r 30/12/13
+ * @(#)DDMandate.java	2.8.r 10/01/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -45,7 +45,7 @@ public class DDMandate
   private DDSeqType seqType;
   private boolean recurrent;
 
-  DDMandate(int idper) {
+  public DDMandate(int idper) {
     this.idper = idper;
   }
 
@@ -93,7 +93,7 @@ public class DDMandate
     this.name = name;
   }
 
-  String getRum() {
+  public String getRum() {
     return rum;
   }
 

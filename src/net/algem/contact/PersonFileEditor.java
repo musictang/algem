@@ -1,7 +1,7 @@
 /*
- * @(#)PersonFileEditor 2.8.p 07/11/13
+ * @(#)PersonFileEditor 2.8.r 10/01/14
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -29,10 +29,7 @@ import java.sql.SQLException;
 import java.util.Vector;
 import java.util.logging.Level;
 import javax.swing.*;
-import net.algem.accounting.AccountUtil;
-import net.algem.accounting.OrderLineEditor;
-import net.algem.accounting.OrderLineIO;
-import net.algem.accounting.OrderLineTableModel;
+import net.algem.accounting.*;
 import net.algem.bank.*;
 import net.algem.billing.*;
 import net.algem.config.ConfigKey;
@@ -68,7 +65,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.p
+ * @version 2.8.r
  */
 public class PersonFileEditor
         extends FileEditor
@@ -104,23 +101,23 @@ public class PersonFileEditor
     dossier = new PersonFile();
   }
 
-  public PersonFileEditor(PersonFile _dossier) {
-    super("Fiche:" + _dossier.getContact().toString());
-    dossier = _dossier;
+  public PersonFileEditor(PersonFile dossier) {
+    super("Fiche:" + dossier.getContact().toString());
+    this.dossier = dossier;
   }
 
-  public PersonFileEditor(PersonFile _dossier, PersonFile _parent) {
-    this(_dossier);
-    parent = _parent;
+  public PersonFileEditor(PersonFile dossier, PersonFile parent) {
+    this(dossier);
+    this.parent = parent;
   }
 
   /**
    *
-   * @param _dossier
+   * @param dossier
    * @deprecated
    */
-  public void setDossierPersonne(PersonFile _dossier) {
-    dossier = _dossier;
+  public void setDossierPersonne(PersonFile dossier) {
+    this.dossier = dossier;
     personFileView.contentsChanged(new PersonFileEvent(dossier, PersonFileEvent.CONTENTS_CHANGED));
   }
 
@@ -313,14 +310,29 @@ public class PersonFileEditor
         MessagePopup.warning(personFileView, MessageUtil.getMessage("rib.error.printing"));
         return;
       }
-      boolean printOrderLines = true;
-      if (!MessagePopup.confirm(personFileView, MessageUtil.getMessage("standing.order.print.warning"), "Confirmation")) {
-        printOrderLines = false;
-      }
-      DirectDebitRequest prl = new DirectDebitRequest(personFileView, printOrderLines);
-//      dossier.setRib(personFileView.getRibFile());// get rib from view
-      prl.edit(dossier, personFileView.getBranchBank(), BundleUtil.getLabel("Menu.debiting.label"), dataCache);
+			//TODO  detection existence mandat sepa
+			DirectDebitService ddService = DirectDebitService.getInstance(dc);
+			try {
+				int payer = dossier.getMember() == null ? dossier.getId() : dossier.getMember().getPayer();
+				DDMandate dd = ddService.getMandate(payer);
+				if (dd == null) {
+					if (payer > 0 && MessagePopup.confirm(view, "Aucun mandat actif : Voulez-vous créer un nouveau mandate de prélèvement pour le payeur ?")) {
+						dd = ddService.createMandate(payer);
+					} 
+				}
+				personFileView.addMandates(ddService, payer);
+				
 
+					/*boolean printOrderLines = true;
+					if (!MessagePopup.confirm(personFileView, MessageUtil.getMessage("standing.order.print.warning"), "Confirmation")) {
+						printOrderLines = false;
+					}
+					DirectDebitRequest prl = new DirectDebitRequest(personFileView, printOrderLines);
+		//      dossier.setRib(personFileView.getRibFile());// get rib from view
+					prl.edit(dossier, personFileView.getBranchBank(), BundleUtil.getLabel("Menu.debiting.label"), dataCache);*/
+			} catch (DDMandateException ex) {
+				MessagePopup.error(view, ex.getMessage());
+			}
     } else if ("Login.creation".equals(arg)) {
       dlgLogin();
     } else if ("Lié".equals(arg)) {
@@ -985,6 +997,7 @@ public class PersonFileEditor
 
   private void closeTab(Object source) {
     String classname = null;
+		
     if (source instanceof String) {
       classname = (String) source;
     } else {
@@ -1029,7 +1042,9 @@ public class PersonFileEditor
       personFileView.activate(true, "Payer.members");
     } else if (EmployeeEditor.class.getSimpleName().equals(classname)) {
       miEmployee.setEnabled(dataCache.authorize("Employee.editing.auth"));
-    }
+    } else if ("net.algem.contact.PersonFileTabView$1".equals(classname)) {
+			personFileView.activate(true, "Payer.debiting");
+		}
 
   }
 

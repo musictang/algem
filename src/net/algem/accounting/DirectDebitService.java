@@ -1,5 +1,5 @@
 /*
- * @(#)DirectDebitService.java	2.8.r 09/01/14
+ * @(#)DirectDebitService.java	2.8.r 10/01/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -24,9 +24,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import net.algem.planning.DateFr;
 import net.algem.util.DataConnection;
+import net.algem.util.GemLogger;
+import net.algem.util.MessageUtil;
 
 /**
  * Direct debit service.
@@ -40,22 +43,32 @@ public class DirectDebitService
 
   private DateFormat df = new SimpleDateFormat("MMM");
   private DirectDebitIO dao;
+	private static volatile DirectDebitService INSTANCE;
 
-  public DirectDebitService(DataConnection dc) {
-//    this.dc = dc;
+  private DirectDebitService(DataConnection dc) {
     dao = new DirectDebitIO(dc);
   }
+	
+	public static DirectDebitService getInstance(DataConnection dc) {
+		if (INSTANCE == null) {
+      synchronized (DirectDebitService.class) {
+        if (INSTANCE == null) {
+          INSTANCE = new DirectDebitService(dc);
+        }
+      }
+    }
+    return INSTANCE;
+	}
 
   ResultSet getDirectDebit(int school, DateFr datePrl, Enum seqType) throws SQLException {
     return dao.getDirectDebit(school, datePrl, seqType);
-
   }
 
   ResultSet getTransaction(int payer) throws SQLException {
     return dao.getDDTransaction(payer);
   }
 
-  DirectDebitCreditor getCreditorInfo() {
+  public DirectDebitCreditor getCreditorInfo() {
     return dao.getCreditorInfo();
   }
 
@@ -96,8 +109,36 @@ public class DirectDebitService
     dao.deleteMandate(id);
   }
 
-  List<DDMandate> getMandates() throws SQLException {
+  public List<DDMandate> getMandates() throws SQLException {
     return dao.getMandates();
   }
+	
+	public List<DDMandate> getMandates(int payer) throws SQLException {
+    return dao.getMandates(payer);
+  }
+	
+	public DDMandate getMandate(int idper) throws DDMandateException {
+		try {
+			return dao.getMandate(idper);
+		} catch (SQLException ex) {
+			GemLogger.logException(ex);
+			throw new DDMandateException(MessageUtil.getMessage("direct.debit.retrieve.mandate.exception"));
+		}
+	}
+	
+	public DDMandate createMandate(int idper) throws DDMandateException {
+		DDMandate dd = new DDMandate(idper);
+		dd.setCreation(new DateFr(new Date()));
+		dd.setDateSign(dd.getCreation());
+		dd.setRecurrent(true); // default
+		dd.setSeqType(DDSeqType.FRST);
+		dd.setRum(RumGenerator.generateRum(String.valueOf(idper), dd.getDateSign().toString()));
+		try {
+			return dao.createMandate(dd);
+		} catch (SQLException ex) {
+			GemLogger.logException(ex);
+			throw new DDMandateException(MessageUtil.getMessage("direct.debit.create.mandate.exception"));
+		}
+	}
   
 }

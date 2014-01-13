@@ -1,7 +1,7 @@
 /*
- * @(#)DirectDebitRequest.java	2.8.m 11/09/13
+ * @(#)DirectDebitRequest.java	2.8.r 11/01/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -25,6 +25,9 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
+import net.algem.accounting.DDMandate;
+import net.algem.accounting.DirectDebitCreditor;
+import net.algem.accounting.DirectDebitService;
 import net.algem.accounting.OrderLineIO;
 import net.algem.bank.BankBranch;
 import net.algem.bank.BankBranchIO;
@@ -44,7 +47,7 @@ import net.algem.util.MessageUtil;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.m
+ * @version 2.8.r
  */
 public class DirectDebitRequest
         extends Canvas
@@ -58,24 +61,19 @@ public class DirectDebitRequest
   private Frame parent;
   private Toolkit tk;
   private Properties props = new Properties();
-  
-  /** Issuer id. */
-  private String issuer;
-  
-  /** Firm name. */
-  private String firmName;
-  
   private String street;
   private boolean detailed;
+	private DDMandate mandate;
 
   /**
    *
    * @param c
    * @param withOrderLines prints also the amount of order lines
    */
-  public DirectDebitRequest(Component c, boolean withOrderLines) {
+  public DirectDebitRequest(Component c, DDMandate ddMandate, boolean withOrderLines) {
 
     detailed = withOrderLines;
+		this.mandate = ddMandate;
     while (c.getParent() != null) {
       c = c.getParent();
     }
@@ -94,9 +92,8 @@ public class DirectDebitRequest
 
   }
 
-  public void edit(final PersonFile p, final BankBranch b, String title, DataCache cache) {
-    //int l = 0;
-    //int mgh = 15;
+  public void edit(final PersonFile dossier, final BankBranch b, String title, DataCache cache) {
+
     int mgm = 270;
     Address a = null;
     Rib rib = null;
@@ -104,9 +101,10 @@ public class DirectDebitRequest
 
     Address branchAddress = null;
     DataConnection dc = cache.getDataConnection();
+		DirectDebitService ddService = DirectDebitService.getInstance(dc);
+		
+		DirectDebitCreditor ddCreditor = ddService.getCreditorInfo();
 
-    issuer = ConfigUtil.getConf(ConfigKey.DIRECT_DEBIT_CREDITOR_NNE.getKey(), dc);
-    firmName = ConfigUtil.getConf(ConfigKey.DIRECT_DEBIT_FIRM_NAME.getKey(), dc);
     String adr1 = ConfigUtil.getConf(ConfigKey.ORGANIZATION_ADDRESS1.getKey(), dc);
     String adr2 = ConfigUtil.getConf(ConfigKey.ORGANIZATION_ADDRESS2.getKey(), dc);
     street = adr1 + " " + adr2;
@@ -114,33 +112,33 @@ public class DirectDebitRequest
     String city = ConfigUtil.getConf(ConfigKey.ORGANIZATION_CITY.getKey(), dc);
     city = cp + " " + city;
 
-    PrintJob prn = tk.getPrintJob(parent, title, props);
-    if (prn == null) {
+    PrintJob job = tk.getPrintJob(parent, title, props);
+    if (job == null) {
       return;
     }
 
-    Graphics g = prn.getGraphics();
+    Graphics g = job.getGraphics();
     g.setColor(Color.black);
-
-    //	fm = bg.getFontMetrics();
-    //	th = fm.getHeight() + 4;
 
     g.setFont(boldFont);
     g.drawString(MessageUtil.getMessage("standing.order.title"), 25, 40);
+		g.drawString(mandate.getRum(), 200, 40);
+		
     g.setFont(smallFont);
+		g.drawString(MessageUtil.getMessage("standing.order.authorization.info1"), 360, 40);
     g.drawString(MessageUtil.getMessage("standing.order.info1", new Object[] {cache.getStartOfYear(), cache.getEndOfYear()}), 25, 60);
-    g.drawString(MessageUtil.getMessage("standing.order.info2") + " " + firmName, 25, 70);
+    g.drawString(MessageUtil.getMessage("standing.order.info2") + " " + ddCreditor.getFirmName(), 25, 70);
 
     g.drawString(MessageUtil.getMessage("standing.order.debtor.info.title"), 25, 91);//30
 
     g.drawRect(25, 100, 260, 65);
 
-    if (p != null) {
+    if (dossier != null) {
       g.setFont(normalFont);
-      g.drawString(p.getContact().getFirstnameName(), 35, 115);
+      g.drawString(dossier.getContact().getFirstnameName(), 35, 115);
       g.setFont(smallFont);
-      g.drawString(String.valueOf(p.getId()), 255, 160);
-      a = p.getContact().getAddress();
+      g.drawString(String.valueOf(dossier.getId()), 255, 160);
+      a = dossier.getContact().getAddress();
     }
     if (a != null) {
       g.setFont(normalFont);
@@ -155,8 +153,8 @@ public class DirectDebitRequest
 
     g.setFont(normalFont);
     branchAddress = null;
-    if (p != null) {
-      rib = p.getRib();
+    if (dossier != null) {
+      rib = dossier.getRib();
     }
     if (branch == null) {
       if (rib != null) {
@@ -180,11 +178,12 @@ public class DirectDebitRequest
     g.drawString(MessageUtil.getMessage("standing.order.creditor.info.title"), 320, 210);
 
     g.setFont(boldFont);
-    g.drawString(firmName, 320, 235);
+//    g.drawString(firmName, 320, 235);
+		g.drawString(ddCreditor.getFirmName(), 320, 235);
     g.drawString(street, 320, 250);
     g.drawString(city, 320, 265);
 
-    if (p == null) {
+    if (dossier == null) {
       drawRib(g, 25, 200, null, null);
     } else {
       drawRib(g, 25, 200, rib, branch);
@@ -197,7 +196,7 @@ public class DirectDebitRequest
     /* ajout montant et dates echeances */
     String where = "WHERE echeance >= '" + cache.getStartOfYear() 
             + "' AND echeance <='" + cache.getEndOfYear() 
-            + "' AND payeur = " + p.getId() 
+            + "' AND payeur = " + dossier.getId() 
             + " AND reglement = 'PRL'"
             + " AND transfert = 'f'"
             + " GROUP BY echeance ORDER BY echeance;";
@@ -226,11 +225,29 @@ public class DirectDebitRequest
       i++;
     }
     mgm = 320;
+		// Direct debit recurrence type
+		g.setFont(boldFont);
+		g.drawString(BundleUtil.getLabel("Direct.debit.type.of.payment.label"), 25, mgm);
+//		Rectangle recurRect = new Rectangle(25, mgm + 8, 8, 8);
+		g.setFont(normalFont);
+		g.drawRect(25, mgm + 8, 8, 8);
+		g.drawString(BundleUtil.getLabel("Recurrent.label"), 25 + 12, mgm + 16);
+		g.drawRect(150, mgm + 8, 8, 8);
+		g.drawString(BundleUtil.getLabel("Direct.debit.OOFF.label"), 150 + 12, mgm + 16);
+		if (mandate.isRecurrent()) {
+//			g.fillRect(25, mgm + 8, 8, 8);
+			g.drawLine(25, mgm + 8, 25 + 8, mgm + 16);
+			g.drawLine(25 + 8, mgm + 8, 25, mgm + 16);
+		} else {
+//			g.fillRect(150, mgm + 8, 8, 8);
+			g.drawLine(150, mgm + 8, 150 + 8, mgm + 16);
+			g.drawLine(150 + 8, mgm + 8, 150, mgm + 16);
+		}
+		
     g.setFont(smallFont);
-    g.drawString(MessageUtil.getMessage("standing.order.info3"), 25, mgm);
-    g.drawString(MessageUtil.getMessage("standing.order.info4"), 25, mgm + 10);
-    g.drawString(MessageUtil.getMessage("standing.order.info5"), 25, mgm + 20);
-
+    g.drawString(MessageUtil.getMessage("standing.order.info3"), 25, mgm + 30);
+    g.drawString(MessageUtil.getMessage("standing.order.info4"), 25, mgm + 40);
+    g.drawString(MessageUtil.getMessage("standing.order.info5"), 25, mgm + 50);
 
     mgm += 220;
     // ligne de séparation
@@ -238,17 +255,13 @@ public class DirectDebitRequest
 
     g.setFont(boldFont);
     g.drawString(MessageUtil.getMessage("standing.order.authorization.title"), 25, mgm + 10);
-
+		
+		g.drawString(mandate.getRum(), 200, mgm + 10);
+			
     g.setFont(smallFont);
-    g.drawString(MessageUtil.getMessage("standing.order.authorization.info1"), 250, mgm + 10);
-    g.drawString(MessageUtil.getMessage("standing.order.authorization.info2", firmName), 25, mgm + 20);
-
-    /* ajout montant et dates echeances */
-    /* String where = "echeance >= '"+cache.getStartOfYear()+"' and echeance
-     * <='"+cache.getEndOfYear()+"' and payeur="+p.getId()+" and reglement='PRL'
-     * group by echeance order by echeance;"; TreeMap<DateFr,String>
-     * prelevements = OrderLineIO.findPrl(cache, where);
-     * Set<Map.Entry<DateFr,String>> prlSet = prelevements.entrySet(); */
+//    g.drawString(MessageUtil.getMessage("standing.order.authorization.info1"), 250, mgm + 10);
+		g.drawString(MessageUtil.getMessage("standing.order.authorization.info1"), 360, mgm + 10);
+    g.drawString(MessageUtil.getMessage("standing.order.authorization.info2", ddCreditor.getFirmName()), 25, mgm + 20);
 
     g.setFont(smallFont);
     i = 0;
@@ -270,25 +283,15 @@ public class DirectDebitRequest
       x += 150;
       i++;
     }
-    /* g.drawString("LE ",25,mgm+30); g.drawString("LA SOMME DE",50,mgm+30);
-     * g.drawString("- LE",250,mgm+30); g.drawString("- LE",420,mgm+30);
-     *
-     * g.drawString("LE",25,mgm+40); g.drawString("LA SOMME DE",50,mgm+40);
-     * g.drawString("- LE",250,mgm+40); g.drawString("- LE",420,mgm+40);
-     *
-     * g.drawString("LE",25,mgm+50); g.drawString("LA SOMME DE",50,mgm+50);
-     * g.drawString("- LE",250,mgm+50); g.drawString("- LE",420,mgm+50); */
 
-
-    //mgm += 30;
     g.setFont(smallFont);
     g.drawString(MessageUtil.getMessage("standing.order.debtor.info.title"), 25, mgm + 60);
     g.drawRect(25, mgm + 65, 260, 65);
-    if (p != null) {
+    if (dossier != null) {
       g.setFont(boldFont);
-      g.drawString(p.getContact().getFirstnameName(), 35, mgm + 80);
+      g.drawString(dossier.getContact().getFirstnameName(), 35, mgm + 80);
       g.setFont(smallFont);
-      g.drawString(String.valueOf(p.getId()), 245, mgm + 125);
+      g.drawString(String.valueOf(dossier.getId()), 245, mgm + 125);
     }
     if (a != null) {
       g.setFont(normalFont);
@@ -302,13 +305,13 @@ public class DirectDebitRequest
     g.drawRect(300, mgm + 65, 260, 65);
 
     g.setFont(boldFont);
-    g.drawString(firmName, 310, mgm + 80);
+    g.drawString(ddCreditor.getFirmName(), 310, mgm + 80);
     g.drawString(street, 310, mgm + 95);
     g.drawString(city, 310, mgm + 110);
 
     g.setFont(smallFont);
     g.drawString(MessageUtil.getMessage("standing.order.info6"), 25, mgm + 140);
-    g.drawString(MessageUtil.getMessage("standing.order.info7", firmName), 25, mgm + 150);
+    g.drawString(MessageUtil.getMessage("standing.order.info7", ddCreditor.getFirmName()), 25, mgm + 150);
 
     g.setFont(smallFont);
     g.drawString(MessageUtil.getMessage("standing.order.account.title"), 25, mgm + 160);
@@ -327,21 +330,21 @@ public class DirectDebitRequest
       g.drawString(branchAddress.getCdp() + " " + branchAddress.getCity(), 310, mgm + 230);
     }
 
-    if (p == null) {
+    if (dossier == null) {
       drawRib(g, 25, mgm + 170, null, null);
     } else {
-      drawRib(g, 25, mgm + 170, p.getRib(), branch);
+      drawRib(g, 25, mgm + 170, dossier.getRib(), branch);
     }
 
     g.setFont(smallFont);
     g.drawString("Date :", 25, mgm + 205);
     g.drawString("Signature :", 100, mgm + 205);
 
-    //mgm += 20;
     g.setFont(boldFont);
     g.drawRect(25, mgm + 250, 190, 35);
-    g.drawString(MessageUtil.getMessage("standing.order.issuer.number"), 35, mgm + 265);
-    g.drawString(issuer, 90, mgm + 280);
+//    g.drawString(MessageUtil.getMessage("standing.order.issuer.number"), 35, mgm + 265);
+		g.drawString(BundleUtil.getLabel("ConfEditor.debiting.ics.tip"), 35, mgm + 265);
+		g.drawString(ddCreditor.getIcs(), 35, mgm + 280);
 
     g.setFont(smallFont);
     g.drawString(MessageUtil.getMessage("standing.order.info8"), 300, mgm + 285);
@@ -351,7 +354,7 @@ public class DirectDebitRequest
     //g.drawLine(25,mgm+295,570,mgm+295);
 
     g.dispose();
-    prn.end();
+    job.end();
   }
 
   private void drawRib(Graphics g, int x, int y, Rib rib, BankBranch bb) {

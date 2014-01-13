@@ -1,7 +1,7 @@
 /*
- * @(#)PersonFileTabView.java  2.8.p 17/10/13
+ * @(#)PersonFileTabView.java  2.8.r 10/01/14
  *
- * Copyright (c) 1999-2013 Musiques Tangentes All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -26,6 +26,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Vector;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -33,15 +34,20 @@ import javax.swing.JCheckBox;
 import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import net.algem.accounting.DDMandate;
+import net.algem.accounting.DDMandateCtrl;
+import net.algem.accounting.DDPrivateMandateCtrl;
+import net.algem.accounting.DirectDebitService;
 import net.algem.bank.*;
 import net.algem.contact.member.*;
 import net.algem.contact.teacher.Teacher;
 import net.algem.contact.teacher.TeacherEditor;
 import net.algem.contact.teacher.TeacherFollowUpEditor;
+import net.algem.edition.DirectDebitRequest;
 import net.algem.enrolment.EnrolmentEvent;
 import net.algem.enrolment.MemberEnrolmentEditor;
-import net.algem.group.Group;
 import net.algem.group.GemGroupService;
+import net.algem.group.Group;
 import net.algem.group.Musician;
 import net.algem.group.PersonFileGroupView;
 import net.algem.util.*;
@@ -58,7 +64,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.p
+ * @version 2.8.r
  */
 public class PersonFileTabView
         extends FileView
@@ -92,11 +98,11 @@ public class PersonFileTabView
   private GemToolBar closeToolbar;
   private BankBranchIO bankBranchIO;
 
-  public PersonFileTabView(GemDesktop _desktop, PersonFile _dossier, ActionListener _listener) {
-    super(_desktop, "Person");
-    desktop.addGemEventListener(this);
-    listener = _listener;
-    dossier = _dossier;
+  public PersonFileTabView(GemDesktop desktop, PersonFile dossier, ActionListener listener) {
+    super(desktop, "Person");
+    this.desktop.addGemEventListener(this);
+    this.listener = listener;
+    this.dossier = dossier;
   }
 
   public MemberEnrolmentEditor getEnrolmentView() {
@@ -363,6 +369,8 @@ public class PersonFileTabView
     wTab.addItem(employeeEditor, BundleUtil.getLabel("Employee.label"));
     addTab(employeeEditor);
   }
+	
+	
   
   Employee getEmployee() {
     return employeeEditor == null ? null : employeeEditor.get();
@@ -373,6 +381,48 @@ public class PersonFileTabView
       employeeEditor.update();
     }
   }
+	
+	void addMandates(final DirectDebitService ddService, final int payer) {
+
+		DDMandateCtrl ddMandateCtrl = new DDPrivateMandateCtrl(desktop, ddService) {
+			
+			@Override
+			public void load() {
+				try {
+					List<DDMandate> mandates = ddService.getMandates(payer);
+					if (mandates != null) {
+						listCtrl.loadResult(mandates);
+					}
+				} catch (SQLException ex) {
+					GemLogger.logException(ex);
+				}
+			}
+			
+			@Override
+			protected void print() {
+				
+				boolean printOrderLines = true;
+				
+				DDMandate dd = listCtrl.getMandate();
+				if (dd == null) {
+					MessagePopup.warning(this, MessageUtil.getMessage("no.line.selected"));
+					return;
+				}
+				
+				if (!MessagePopup.confirm(this, MessageUtil.getMessage("standing.order.print.warning"), "Confirmation")) {
+					printOrderLines = false;
+				}
+				
+				DirectDebitRequest ddRequest = new DirectDebitRequest(this, dd, printOrderLines);
+				ddRequest.edit(dossier, getBranchBank(), BundleUtil.getLabel("Menu.debiting.label"), dataCache);
+			}
+		};
+		
+		ddMandateCtrl.load();
+		wTab.addItem(ddMandateCtrl, BundleUtil.getLabel("Direct.debit.label"));
+    addTab(ddMandateCtrl);
+		activate(false, "Payer.debiting");
+	}
   
   void deleteEmployee() {
     if (MessagePopup.confirm(this, MessageUtil.getMessage("employee.delete.confirmation"))) { 

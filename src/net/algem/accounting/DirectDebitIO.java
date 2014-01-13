@@ -1,5 +1,5 @@
 /*
- * @(#)DirectDebitIO.java 2.8.r 09/01/14
+ * @(#)DirectDebitIO.java 2.8.r 13/01/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -41,6 +41,7 @@ public class DirectDebitIO
 
 {
   static final String TABLE = "prlsepa";
+	static final String SEQUENCE = "prlsepa_id_seq";
   static final String COLUMNS = "id,payeur,creation,signature,recurrent,seqtype,rum";
 
   private DataConnection dc;
@@ -49,59 +50,30 @@ public class DirectDebitIO
     this.dc = dc;
   }
   
-  ResultSet getDirectDebit(int school, DateFr datePrl, Enum seqType) throws SQLException {
-    String query = "SELECT e.payeur, e.montant, e.analytique FROM echeancier2 e, prlsepa p"
-            + " WHERE e.ecole = '" + school
-            + "' AND e.reglement = 'PRL"
-            + "' AND e.paye = 't"
-            + "' AND e.echeance = '" + datePrl.toString()
-            + "' AND e.payeur = p.payeur"
-            + " AND p.seqtype != '" + DDSeqType.LOCK.name() + "' AND p.seqtype = '" + seqType.name() 
-            + "' ORDER BY e.payeur, e.echeance";
-
-    return dc.executeQuery(query);
-
-  }
+	/**
+	 * Find the last unlocked mandate for the payer {@code idper}.
+	 * 
+	 * @param idper payer's id
+	 * @return a mandate
+	 * @throws SQLException 
+	 */
+	DDMandate getMandate(int idper) throws SQLException {
+		String query = "SELECT s.*, p.nom FROM " + TABLE + " s, " + PersonIO.TABLE + " p"
+            + " WHERE s.payeur = " + idper
+            + " AND s.seqtype != '" + DDSeqType.LOCK.name() + "'";
+		ResultSet rs = dc.executeQuery(query);
+    while (rs.next()) {
+			return getMandateFromRs(rs);
+		}
+		return null;
+	}
   
-  /**
-   * Method called after a successful direct debit ordering.
-   * @param payers list of payers' id
-   * @throws SQLException 
-   */
-  void updateToRcurSeqType(String payers) throws SQLException {
-    String query = "UPDATE " + TABLE + " SET seqtype = '" + DDSeqType.RCUR
-            + "' WHERE payeur IN(" + payers + ")"
-            + " AND seqtype IN ('" + DDSeqType.FRST.name() + "', '" + DDSeqType.FMGR.name() + "', '" + DDSeqType.FDOM.name() + "')";
-    dc.executeUpdate(query);
-  }
-  
-  void update(DDMandate dd) throws SQLException {
-    String query = "UPDATE " + TABLE + " SET signature = '" + dd.getDateSign() 
-            + "', recurrent = " + (dd.isRecurrent() ? "TRUE" : "FALSE")
-            + ", seqtype = '" + dd.getSeqType().name()
-            + "', rum = '" + dd.getRum() 
-            + "' WHERE id = " + dd.getId();
-    dc.executeUpdate(query);
-  }
-  
-  void updateSeqType(List<DDMandate> mandates, DDSeqType seqType) throws SQLException {
-    StringBuilder query = new StringBuilder("UPDATE " + TABLE + " SET seqtype = '" + seqType.name() + "' WHERE id IN(");
-    for (DDMandate dd : mandates) {
-      query.append(dd.getId()).append(',');
-    }
-    if (query.length() > 0) {
-      query.deleteCharAt(query.length()-1);
-      query.append(')');
-    }
-    System.out.println(query);
-    dc.executeUpdate(query.toString());
-  }
-  
-  void deleteMandate(int id) throws SQLException {
-    String query = "DELETE FROM " + TABLE + " WHERE id = " + id;
-    dc.executeUpdate(query.toString());
-  }
-  
+	/**
+	 * Find the list of all unlocked mandates.
+	 * 
+	 * @return a list of mandates
+	 * @throws SQLException 
+	 */
   List<DDMandate> getMandates() throws SQLException {
     List<DDMandate> mandates = new ArrayList<DDMandate>();
     String query = "SELECT s.*, p.nom FROM " + TABLE + " s, " + PersonIO.TABLE + " p"
@@ -110,7 +82,44 @@ public class DirectDebitIO
             + "' ORDER BY s.payeur";
     ResultSet rs = dc.executeQuery(query);
     while (rs.next()) {
-      DDMandate dd = new DDMandate(rs.getInt(2));
+			DDMandate dd = getMandateFromRs(rs); 
+      mandates.add(dd);
+    }
+    return mandates;
+  }
+	
+	/**
+	 * Find the list of all the mandates of the {@code payer}.
+	 * 
+	 * @param payer payer's id
+	 * @return a list of mandates
+	 * @throws SQLException 
+	 */
+	List<DDMandate> getMandates(int payer) throws SQLException {
+    List<DDMandate> mandates = new ArrayList<DDMandate>();
+    String query = "SELECT s.*, p.nom FROM " + TABLE + " s, " + PersonIO.TABLE + " p"
+            + " WHERE s.payeur = " + payer
+						+ " AND s.payeur = p.id"
+//            + " AND s.seqtype != '" + DDSeqType.LOCK.name()
+            + " ORDER BY s.creation";
+    ResultSet rs = dc.executeQuery(query);
+		System.out.println(query);
+    while (rs.next()) {
+			DDMandate dd = getMandateFromRs(rs); 
+      mandates.add(dd);
+    }
+    return mandates;
+  }
+	
+	/**
+	 * Creates an object of type DDMandate from a result set.
+	 * 
+	 * @param rs the result set
+	 * @return a mandate
+	 * @throws SQLException 
+	 */
+	private DDMandate getMandateFromRs(ResultSet rs) throws SQLException {
+		 DDMandate dd = new DDMandate(rs.getInt(2));
       dd.setId(rs.getInt(1));
       dd.setCreation(new DateFr(rs.getDate(3)));
       dd.setDateSign(new DateFr(rs.getDate(4)));
@@ -118,12 +127,17 @@ public class DirectDebitIO
       dd.setSeqType(DDSeqType.valueOf(rs.getString(6).trim()));
       dd.setRum(rs.getString(7));
       dd.setName(TableIO.unEscape(rs.getString(8)));
-      
-      mandates.add(dd);
-    }
-    return mandates;
-  }
+			
+			return dd;
+	}
   
+	/**
+	 * Gets SEPA transaction info for this {@code payer}.
+	 * 
+	 * @param payer payer's id
+	 * @return a result set
+	 * @throws SQLException 
+	 */
   ResultSet getDDTransaction(int payer) throws SQLException {
     String query = "SELECT p.id, p.civilite, p.nom, p.prenom, a.adr1, a.adr2, a.cdp, a.ville,"
             + " s.id, s.rum, s.signature, s.seqtype, r.iban, g.bic"
@@ -136,6 +150,11 @@ public class DirectDebitIO
     return dc.executeQuery(query);
   }
   
+	/**
+	 * Retrieves the creditor's data.
+	 * 
+	 * @return a directDebitCreditor instance
+	 */
   DirectDebitCreditor getCreditorInfo() {
 
     DirectDebitCreditor creditor = new DirectDebitCreditor();
@@ -152,7 +171,122 @@ public class DirectDebitIO
     return creditor;
   }
   
+	/**
+	 * Retrieves the firm's name.
+	 * 
+	 * @return a name
+	 */
   String getFirmName() {
     return ConfigUtil.getConf(ConfigKey.DIRECT_DEBIT_FIRM_NAME.getKey(), dc);
   }
+	
+	/**
+	 * Search the set of all payers will be charged to the next {@code datePrl}.
+	 * 
+	 * @param school
+	 * @param datePrl
+	 * @param seqType
+	 * @return
+	 * @throws SQLException 
+	 */
+  ResultSet getDirectDebit(int school, DateFr datePrl, Enum seqType) throws SQLException {
+    String query = "SELECT e.payeur, e.montant, e.analytique FROM echeancier2 e, prlsepa p"
+            + " WHERE e.ecole = '" + school
+            + "' AND e.reglement = 'PRL"
+            + "' AND e.paye = 't"
+            + "' AND e.echeance = '" + datePrl.toString()
+            + "' AND e.payeur = p.payeur"
+            + " AND p.seqtype != '" + DDSeqType.LOCK.name() + "' AND p.seqtype = '" + seqType.name() 
+            + "' ORDER BY e.payeur, e.echeance";
+
+    return dc.executeQuery(query);
+
+  }
+
+	/**
+	 * Stores a new mandate.
+	 * 
+	 * @param dd the mandate to store
+	 * @return the created mandate
+	 * @throws SQLException 
+	 */
+	DDMandate createMandate(DDMandate dd) throws SQLException {
+
+		dd.setId(TableIO.nextId(SEQUENCE, dc));
+		
+		String query = "INSERT INTO " + TABLE + " VALUES("
+			+ dd.getId()
+			+ ", " + dd.getIdper()
+			+ ", '" + dd.getCreation()
+			+ "', '" + dd.getDateSign()
+			+ "', " + (dd.isRecurrent() ? "TRUE" : "FALSE")
+			+ ", '" + dd.getSeqType().name()
+			+ "', '" + dd.getRum()
+			+ "')";
+
+		dc.executeUpdate(query);
+		
+		return dd;
+	}
+	
+	/**
+	 * Updates a mandate.
+	 * 
+	 * @param dd the mandate to update
+	 * @throws SQLException 
+	 */
+  void update(DDMandate dd) throws SQLException {
+    String query = "UPDATE " + TABLE + " SET signature = '" + dd.getDateSign() 
+            + "', recurrent = " + (dd.isRecurrent() ? "TRUE" : "FALSE")
+            + ", seqtype = '" + dd.getSeqType().name()
+            + "', rum = '" + dd.getRum() 
+            + "' WHERE id = " + dd.getId();
+    dc.executeUpdate(query);
+  }
+  
+	/**
+	 * Updates the sequence type of all these {@code mandates} to {@code seqType}.
+	 * 
+	 * @param mandates
+	 * @param seqType
+	 * @throws SQLException 
+	 */
+  void updateSeqType(List<DDMandate> mandates, DDSeqType seqType) throws SQLException {
+    String query = "UPDATE " + TABLE + " SET seqtype = '" + seqType.name() + "' WHERE id IN(";
+    StringBuilder mList = new StringBuilder();
+		for (DDMandate dd : mandates) {
+      mList.append(dd.getId()).append(',');
+    }
+    if (mList.length() > 0) {
+      mList.deleteCharAt(query.length()-1);
+			query += mList.toString() + ")";
+			dc.executeUpdate(query);
+    }
+
+  }
+	  
+  /**
+   * Method called after a successful direct debit ordering.
+	 * 
+   * @param payers list of payers' id
+   * @throws SQLException 
+   */
+  void updateToRcurSeqType(String payers) throws SQLException {
+    String query = "UPDATE " + TABLE + " SET seqtype = '" + DDSeqType.RCUR
+            + "' WHERE payeur IN(" + payers + ")"
+            + " AND seqtype IN ('" + DDSeqType.FRST.name() + "', '" + DDSeqType.FMGR.name() + "', '" + DDSeqType.FDOM.name() + "')";
+    dc.executeUpdate(query);
+  }
+  
+	/**
+	 * Optionnaly delete a mandate.
+	 * 
+	 * @param id the mandate's id
+	 * @throws SQLException 
+	 */
+  void deleteMandate(int id) throws SQLException {
+    String query = "DELETE FROM " + TABLE + " WHERE id = " + id;
+    dc.executeUpdate(query.toString());
+  }
+
 }

@@ -1,5 +1,5 @@
 /*
- * @(#)DDMandateListCtrl.java 2.8.r 09/01/14
+ * @(#)DDMandateListCtrl.java 2.8.r 10/01/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -37,9 +37,9 @@ import net.algem.util.ui.ListCtrl;
 public class DDMandateListCtrl 
   extends ListCtrl
 {
- public DDMandateListCtrl(boolean b, DirectDebitService service) {
+ public DDMandateListCtrl(boolean searchFlag, DirectDebitService service) {
 
-    super(b);
+    super(searchFlag);
     this.tableModel = new DDMandateTableModel();
 
     table = new JTable(tableModel);
@@ -69,7 +69,7 @@ public class DDMandateListCtrl
     return selected;
   }
   
-  DDMandate getMandate() {
+  public DDMandate getMandate() {
     int n = table.getSelectedRow();
     if (n < 0) {
       return null;

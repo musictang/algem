@@ -1,5 +1,5 @@
 /*
- * @(#)DDMandateCtrl.java 2.8.r 08/01/14
+ * @(#)DDMandateCtrl.java 2.8.r 10/01/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -43,12 +43,16 @@ public class DDMandateCtrl
         extends FileTabDialog
 {
 
-//  protected ActionListener actionListener;
+	protected DDMandateListCtrl listCtrl;
+	
   private List<DDMandate> mandates;
-  private DDMandateListCtrl listCtrl;
   private DirectDebitService service;
   private GemButton btDelete;
-
+	
+	public DDMandateCtrl(GemDesktop desktop) {
+		super(desktop);
+	}
+	
   public DDMandateCtrl(GemDesktop desktop, DirectDebitService service) {
     super(desktop);
     this.service = service;
@@ -57,8 +61,8 @@ public class DDMandateCtrl
     btDelete = new GemButton(GemCommand.DELETE_CMD);
     btDelete.addActionListener(this);
     buttons.add(btDelete, 0);
+		listCtrl = new DDMandateListCtrl(false, service);
 
-    load();
     setLayout(new BorderLayout());
     GemPanel panel = new GemPanel(new BorderLayout());
 
@@ -104,8 +108,7 @@ public class DDMandateCtrl
   }
 
   @Override
-  public void load() {
-    listCtrl = new DDMandateListCtrl(false, service);
+  public void load() {   
     try {
       mandates = service.getMandates();
       if (mandates != null) {

@@ -1,5 +1,5 @@
 /*
- * @(#)DirectDebitExportDlg.java	2.8.r 06/01/14
+ * @(#)DirectDebitExportDlg.java	2.8.r 10/01/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -237,7 +237,7 @@ public class DirectDebitExportDlg
       String exportPath = fExport.getText();
       DateFr datePrl = datePanel.get();
       int school = schoolChoice.getKey();
-      DirectDebitService ddService = new DirectDebitService(dc);
+      DirectDebitService ddService = DirectDebitService.getInstance(dc);
       SepaXmlBuilder sepa = new SepaXmlBuilder(ddService);
       StringBuilder xml = new StringBuilder();
 

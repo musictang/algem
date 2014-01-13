@@ -91,6 +91,9 @@ public class CloseableTab extends JPanel implements ActionListener
     int i = pane.indexOfTabComponent(this);
     if (i != -1) {
       String classname = pane.getComponentAt(i).getClass().getSimpleName();
+			if (classname == null || classname.isEmpty()) {
+				classname = pane.getComponentAt(i).getClass().getName();
+			}
       pane.remove(i);
       listener.actionPerformed(new ActionEvent(classname, ActionEvent.ACTION_PERFORMED, CLOSE_CMD));
     }

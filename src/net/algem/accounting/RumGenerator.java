@@ -1,5 +1,5 @@
 /*
- * @(#)RumGenerator.java	2.8.r 06/01/14
+ * @(#)RumGenerator.java	2.8.r 10/01/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -92,7 +92,7 @@ public class RumGenerator
     //-- 56 | 1234 | 2013-01-02 | 2014-01-15 | TRUE | FRST | M1446136132 150114 1234 |
   }
 
-  private static String generateRum(String idper, String signDate) {
+  static String generateRum(String idper, String signDate) {
     Date d = null;
     try {
       d = df.parse(signDate);

@@ -1,5 +1,5 @@
 /*
- * @(#)TestSepa.java	2.8.r 01/01/14
+ * @(#)TestSepa.java	2.8.r 10/01/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -28,7 +28,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import net.algem.TestProperties;
-import net.algem.config.Param;
 import net.algem.planning.DateFr;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
@@ -391,7 +390,7 @@ public void testTransactionElement() {
 	public void testTxElement() {
 		DDMandate debtor = new DDMandate(1234);
 		debtor.setName("UNTEL");
-			debtor.setDateSign(new DateFr("15-01-2014").toString());
+			debtor.setDateSign(new DateFr("15-01-2014"));
 			debtor.setRum("M1446136132 150114 1234");
 			debtor.setIcs("FR00ZZZ123456");
 			debtor.setBic("CEPAFRPP751");
@@ -404,7 +403,7 @@ public void testTransactionElement() {
 	@Ignore
 	public void testDirectDebitTx() throws DocumentException {
 //		DirectDebitExportDlg dlg = new DirectDebitExportDlg(new Frame(),"test",dc);
-		SepaXmlBuilder sepa = new SepaXmlBuilder(new DirectDebitService(dc));
+		SepaXmlBuilder sepa = new SepaXmlBuilder(DirectDebitService.getInstance(dc));
 		try {
 			String xml = sepa.getDirectDebitTransaction(166,41185,"MFORLOISIR");
 			System.out.println(xml);
@@ -438,14 +437,14 @@ public void testTransactionElement() {
 	
 	@Ignore
 	public void testPaymentInformation() throws DocumentException {
-		SepaXmlBuilder sepa = new SepaXmlBuilder(new DirectDebitService(dc));
-		StringBuilder sb = sepa.getPaymentInformation("MT",new DateFr("15-01-2014"), DDSeqType.FRST.toString(), new Short((short)0));
+		SepaXmlBuilder sepa = new SepaXmlBuilder(DirectDebitService.getInstance(dc));
+		StringBuilder sb = sepa.getPaymentInformation("MT",new DateFr("15-01-2014"), DDSeqType.FRST, new Short((short)0));
 		System.out.println(sb.toString());
 	}
 	
 	@Ignore
 	public void testGroupHeader() {
-		SepaXmlBuilder sepa = new SepaXmlBuilder(new DirectDebitService(dc));
+		SepaXmlBuilder sepa = new SepaXmlBuilder(DirectDebitService.getInstance(dc));
 		String sb = sepa.getGroupHeader();
 		System.out.println(sb.toString());
 	}
@@ -472,7 +471,7 @@ public void testTransactionElement() {
 		// 1 FRST, 1 RCUR
 		Document doc = null;
 
-		SepaXmlBuilder sepa = new SepaXmlBuilder(new DirectDebitService(dc));
+		SepaXmlBuilder sepa = new SepaXmlBuilder(DirectDebitService.getInstance(dc));
 		StringBuilder xml = new StringBuilder();
 		
 		String xmlDoc = sepa.getDocument();
