@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileTabView.java  2.8.r 10/01/14
+ * @(#)PersonFileTabView.java  2.8.r 14/01/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes All Rights Reserved.
  *
@@ -35,7 +35,6 @@ import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import net.algem.accounting.DDMandate;
-import net.algem.accounting.DDMandateCtrl;
 import net.algem.accounting.DDPrivateMandateCtrl;
 import net.algem.accounting.DirectDebitService;
 import net.algem.bank.*;
@@ -125,23 +124,23 @@ public class PersonFileTabView
     closeToolbar = new GemToolBar(false);
 
     mainToolbar.addIcon(listener,
-			BundleUtil.getLabel("Note.icon"), 
-			GemCommand.NOTE_CMD,
-			BundleUtil.getLabel("Note.icon.tip"));
+            BundleUtil.getLabel("Note.icon"),
+            GemCommand.NOTE_CMD,
+            BundleUtil.getLabel("Note.icon.tip"));
     mainToolbar.addIcon(listener,
-			BundleUtil.getLabel("Member.schedule.payment.icon"),
-			"Member.schedule.payment",
-			BundleUtil.getLabel("Member.schedule.payment.tip"));
+            BundleUtil.getLabel("Member.schedule.payment.icon"),
+            "Member.schedule.payment",
+            BundleUtil.getLabel("Member.schedule.payment.tip"));
     if (dataCache.authorize("Person.rehearsal.scheduling.auth")) {
       mainToolbar.addIcon(listener,
-            BundleUtil.getLabel("Person.rehearsal.scheduling.icon"),
-            "Person.rehearsal.scheduling",
-            BundleUtil.getLabel("Person.rehearsal.scheduling.tip"));
+              BundleUtil.getLabel("Person.rehearsal.scheduling.icon"),
+              "Person.rehearsal.scheduling",
+              BundleUtil.getLabel("Person.rehearsal.scheduling.tip"));
     }
 
     // modification des espacements par défaut de la partie haute de l'onglet.
     UIManager.put("TabbedPane.tabInsets", TabPanel.DEFAULT_INSETS);
-    
+
     wTab = new TabPanel();
     wTab.addChangeListener(this);
 
@@ -190,23 +189,23 @@ public class PersonFileTabView
       }
     } else if (parent != null) {
       //cbTelAdresse = new JCheckBox("Address/téléphone liés au payeur N° " + parent.getId(), true);
-      cbTelAdresse = new JCheckBox(MessageUtil.getMessage("payer.link.info",parent.getId()), true);
+      cbTelAdresse = new JCheckBox(MessageUtil.getMessage("payer.link.info", parent.getId()), true);
       cbTelAdresse.addItemListener(this);
       contactFileEditor.setLinkTelAddress(parent.getContact().getAddressAll(), parent.getContact().getTele(), cbTelAdresse);
     }
-    
+
     if (dossier.getTeacher() != null) {
       addTeacherTab(listener);
 //      teacherEditor.load();
     }
-    
+
     if (dossier.getRib() != null) {
       addBankTab();
-     /* ribView.setRib(dossier.getRib());
-      BankBranch bb = new BankBranchIO(dataCache.getDataConnection()).findId(dossier.getRib().getBranchId());
-      if (bb != null) {
-        ribView.setBankBranch(bb);
-      }*/
+      /* ribView.setRib(dossier.getRib());
+       * BankBranch bb = new BankBranchIO(dataCache.getDataConnection()).findId(dossier.getRib().getBranchId());
+       * if (bb != null) {
+       * ribView.setBankBranch(bb);
+       * } */
     }
 
     saveBt = closeToolbar.addIcon(BundleUtil.getLabel("Contact.save.icon"),
@@ -313,6 +312,10 @@ public class PersonFileTabView
     addTab(cardEditor);
   }
 
+  GemButton addIcon(String command) {
+    return mainToolbar.addIcon(BundleUtil.getLabel(command + ".icon"), command, BundleUtil.getLabel(command + ".tip"));
+  }
+  
   /**
    * Adds a member tab.
    * If the member is a student, follow up and enrolment tabs are also added.
@@ -335,7 +338,7 @@ public class PersonFileTabView
         memberEditor.setPayer(dossier.getId(), BundleUtil.getLabel("Himself.label"));
       }
       wTab.addItem(memberEditor, MEMBER_TAB_TITLE);
-      
+
       /*
        * if (MemberIO.findId(dataCache,dossier.getId()) != null) {
        * completeMember(); }
@@ -354,11 +357,7 @@ public class PersonFileTabView
     }
     addTab(memberEditor);
   }
-  
-  GemButton addIcon(String command) {
-    return mainToolbar.addIcon(BundleUtil.getLabel(command+".icon"), command,BundleUtil.getLabel(command+".tip"));           
-  }
-  
+
   /**
    * Adds employee tab.
    */
@@ -369,76 +368,128 @@ public class PersonFileTabView
     wTab.addItem(employeeEditor, BundleUtil.getLabel("Employee.label"));
     addTab(employeeEditor);
   }
-	
-	
-  
+
   Employee getEmployee() {
     return employeeEditor == null ? null : employeeEditor.get();
   }
-  
+
   void updateEmployee() {
     if (employeeEditor != null) {
       employeeEditor.update();
     }
   }
-	
-	void addMandates(final DirectDebitService ddService, final int payer) {
-
-		DDMandateCtrl ddMandateCtrl = new DDPrivateMandateCtrl(desktop, ddService) {
-			
-			@Override
-			public void load() {
-				try {
-					List<DDMandate> mandates = ddService.getMandates(payer);
-					if (mandates != null) {
-						listCtrl.loadResult(mandates);
-					}
-				} catch (SQLException ex) {
-					GemLogger.logException(ex);
-				}
-			}
-			
-			@Override
-			protected void print() {
-				
-				boolean printOrderLines = true;
-				
-				DDMandate dd = listCtrl.getMandate();
-				if (dd == null) {
-					MessagePopup.warning(this, MessageUtil.getMessage("no.line.selected"));
-					return;
-				}
-				
-				if (!MessagePopup.confirm(this, MessageUtil.getMessage("standing.order.print.warning"), "Confirmation")) {
-					printOrderLines = false;
-				}
-				
-				DirectDebitRequest ddRequest = new DirectDebitRequest(this, dd, printOrderLines);
-				ddRequest.edit(dossier, getBranchBank(), BundleUtil.getLabel("Menu.debiting.label"), dataCache);
-			}
-		};
-		
-		ddMandateCtrl.load();
-		wTab.addItem(ddMandateCtrl, BundleUtil.getLabel("Direct.debit.label"));
-    addTab(ddMandateCtrl);
-		activate(false, "Payer.debiting");
-	}
-  
+    
   void deleteEmployee() {
-    if (MessagePopup.confirm(this, MessageUtil.getMessage("employee.delete.confirmation"))) { 
+    if (MessagePopup.confirm(this, MessageUtil.getMessage("employee.delete.confirmation"))) {
       employeeEditor.delete();
       removeTab(employeeEditor);
     }
   }
-  
+
   boolean hasEmployeeChanged() {
     return employeeEditor != null && employeeEditor.hasChanged();
   }
 
+
+  void addMandates(final DirectDebitService ddService, final int payer) {
+
+    DDPrivateMandateCtrl ddMandateCtrl = new DDPrivateMandateCtrl(desktop, ddService)
+    {
+
+      @Override
+      public void load() {
+        try {
+          List<DDMandate> mandates = ddService.getMandates(payer);
+          if (mandates != null) {
+            listCtrl.loadResult(mandates);
+          }
+        } catch (SQLException ex) {
+          GemLogger.logException(ex);
+        }
+      }
+
+      @Override
+      protected void print() {
+
+        boolean printOrderLines = true;
+
+        DDMandate dd = listCtrl.getMandate();
+        if (dd == null) {
+          MessagePopup.warning(this, MessageUtil.getMessage("no.line.selected"));
+          return;
+        }
+        if (!MessagePopup.confirm(this, MessageUtil.getMessage("standing.order.print.warning"), "Confirmation")) {
+          printOrderLines = false;
+        }
+        DirectDebitRequest ddRequest = new DirectDebitRequest(this, dd, printOrderLines);
+        ddRequest.edit(dossier, getBranchBank(), BundleUtil.getLabel("Menu.debiting.label"), dataCache);
+      }
+    };
+    
+    ddMandateCtrl.load();
+    ddMandateCtrl.addActionListener(listener);
+    wTab.addItem(ddMandateCtrl, BundleUtil.getLabel("Direct.debit.label"));
+    addTab(ddMandateCtrl);
+    activate(false, "Payer.debiting");
+  }
+  
+  void addBankTab() {
+    if (ribView == null) {
+      BankBranchIO branchIO = new BankBranchIO(dataCache.getDataConnection());
+      ribView = new RibView(desktop, dossier.getId());
+      ribView.setRib(dossier.getRib());
+      ribView.setBankCodeCtrl(new BankCodeCtrl(dataCache.getDataConnection(), branchIO));
+      ribView.setPostalCodeCtrl(new CodePostalCtrl(dataCache.getDataConnection()));
+      if (dossier.getRib() != null) {
+        BankBranch bb = branchIO.findId(dossier.getRib().getBranchId());
+//        BankBranch bb = branchIO.findId(ribView.getBranchCode());
+        if (bb != null) {
+          ribView.setBankBranch(bb);
+        }
+      }
+    }
+
+    wTab.addItem(ribView, BANK_TAB_TITLE);
+
+    mainToolbar.addIcon(listener,
+            BundleUtil.getLabel("Payer.debiting.icon"),
+            "Payer.debiting",
+            BundleUtil.getLabel("Payer.debiting.tip"));
+    addTab(ribView);
+  }
+    
+  void addTeacherTab(ActionListener listener) {
+    if (teacherEditor == null) {
+      teacherEditor = new TeacherEditor(desktop, dossier);
+      teacherEditor.addActionListener(listener);
+    }
+    if (teacherFollowUpEditor == null) {
+      teacherFollowUpEditor = new TeacherFollowUpEditor(desktop, dossier);
+    }
+
+    wTab.addItem(teacherEditor, TEACHER_TAB_TITLE);//"Fiche Enseignant");
+    wTab.addItem(teacherFollowUpEditor, TEACHER_TAB_F_TITLE);//"Suivi Enseignant");
+
+    mainToolbar.addIcon(listener,
+            BundleUtil.getLabel("Teacher.hour.icon"),
+            "Teacher.hour",
+            BundleUtil.getLabel("Teacher.hour.tip"));
+    mainToolbar.addIcon(listener,
+            BundleUtil.getLabel("Teacher.break.icon"),
+            "Teacher.break",
+            BundleUtil.getLabel("Teacher.break.tip"));
+    mainToolbar.addIcon(listener,
+            BundleUtil.getLabel("Teacher.presence.icon"),
+            "Teacher.presence",
+            BundleUtil.getLabel("Teacher.presence.tip"));
+    addTab(teacherEditor);
+  }  
+  
   /**
    * Activates or desactivates an icon.
+   *
    * @param b
-   * @param command 
+   * @param command
    */
   void activate(boolean b, String command) {
     mainToolbar.setEnabled(b, command);
@@ -460,13 +511,13 @@ public class PersonFileTabView
     wTab.addItem(memberFollowUpEditor, MEMBER_TAB_F_TITLE);//suivi
 
     mainToolbar.addIcon(listener,
-			BundleUtil.getLabel("Member.file.icon"),
-			"Member.file",
-			BundleUtil.getLabel("Member.file.tip"));
-    mainToolbar.addIcon(listener, 
-			BundleUtil.getLabel("Member.card.icon"), 
-			"Member.card",
-			BundleUtil.getLabel("Member.card.tip"));
+            BundleUtil.getLabel("Member.file.icon"),
+            "Member.file",
+            BundleUtil.getLabel("Member.file.tip"));
+    mainToolbar.addIcon(listener,
+            BundleUtil.getLabel("Member.card.icon"),
+            "Member.card",
+            BundleUtil.getLabel("Member.card.tip"));
   }
 
   // TODO EG a voir
@@ -509,16 +560,6 @@ public class PersonFileTabView
         enrolmentEditor.load();
       }
     }
-  }
-
-  @Override
-  public String toString() {
-    return getClass().getSimpleName() + " : " + dossier.getId();
-  }
-  
-  @Override
-  public void close() {
-    clear();
   }
 
   /**
@@ -576,17 +617,16 @@ public class PersonFileTabView
   boolean isNewBranchOfBank() {
     return ribView == null ? false : ribView.isNewBranch();
   }
-  
+
 //  boolean hasBic() {
 //    return ribView == null ? true : ribView.hasBic();
 //  }
-
   Bank getBank() {
     return ribView == null ? null : ribView.getBank();
   }
 
   BankBranch getBranchBank() {
-    return ribView == null ? null :  ribView.getBankBranch();
+    return ribView == null ? null : ribView.getBankBranch();
   }
 
   void setBranchBank(BankBranch a) {
@@ -613,45 +653,18 @@ public class PersonFileTabView
     mainToolbar.removeIcon("Member.card");
   }
 
-  void addTeacherTab(ActionListener listener) {
-    if (teacherEditor == null) {
-      teacherEditor = new TeacherEditor(desktop, dossier);
-      teacherEditor.addActionListener(listener);
-    }
-    if (teacherFollowUpEditor == null) {
-      teacherFollowUpEditor = new TeacherFollowUpEditor(desktop, dossier);
-    }
-
-    wTab.addItem(teacherEditor, TEACHER_TAB_TITLE);//"Fiche Enseignant");
-    wTab.addItem(teacherFollowUpEditor, TEACHER_TAB_F_TITLE);//"Suivi Enseignant");
-
-    mainToolbar.addIcon(listener, 
-			BundleUtil.getLabel("Teacher.hour.icon"), 
-			"Teacher.hour", 
-			BundleUtil.getLabel("Teacher.hour.tip"));
-    mainToolbar.addIcon(listener, 
-			BundleUtil.getLabel("Teacher.break.icon"),
-			"Teacher.break", 
-			BundleUtil.getLabel("Teacher.break.tip"));
-    mainToolbar.addIcon(listener, 
-			BundleUtil.getLabel("Teacher.presence.icon"),
-			"Teacher.presence", 
-			BundleUtil.getLabel("Teacher.presence.tip"));
-    addTab(teacherEditor);
-  }
-  
   void closeTeacher() {
     removeTab(teacherFollowUpEditor);
     removeTab(teacherEditor);
     removeTeacherIcons();
   }
-  
+
   void removeTeacher() {
     closeTeacher();
     teacherFollowUpEditor = null;
     teacherEditor.clear();
     teacherEditor = null;
-    
+
   }
 
   private void removeTeacherIcons() {
@@ -660,35 +673,10 @@ public class PersonFileTabView
     mainToolbar.removeIcon("Teacher.presence");
   }
 
-  void addBankTab() {
-    if (ribView == null) {
-      BankBranchIO branchIO = new BankBranchIO(dataCache.getDataConnection());
-      ribView = new RibView(desktop, dossier.getId());
-      ribView.setRib(dossier.getRib());
-      ribView.setBankCodeCtrl(new BankCodeCtrl(dataCache.getDataConnection(), branchIO));
-      ribView.setPostalCodeCtrl(new CodePostalCtrl(dataCache.getDataConnection()));
-      if (dossier.getRib() != null) {
-        BankBranch bb = branchIO.findId(dossier.getRib().getBranchId());
-//        BankBranch bb = branchIO.findId(ribView.getBranchCode());
-        if (bb != null) {
-          ribView.setBankBranch(bb);
-        }
-      }
-    }
-
-    wTab.addItem(ribView, BANK_TAB_TITLE);
-
-    mainToolbar.addIcon(listener,
-            BundleUtil.getLabel("Payer.debiting.icon"),
-            "Payer.debiting",
-            BundleUtil.getLabel("Payer.debiting.tip"));
-    addTab(ribView);
-  }
-
   void addRehearsalHistoryTab() {
     if (HistoRehearsalView == null) {
       HistoRehearsalView = new HistoRehearsalView(desktop, listener, dossier.getId());
-    } 
+    }
     HistoRehearsalView.load();
     wTab.addItem(HistoRehearsalView, HISTO_REHEARSAL_TAB_TITLE);
     addTab(HistoRehearsalView);
@@ -696,7 +684,8 @@ public class PersonFileTabView
 
   /**
    * Adds a tab for groups the member belongs to.
-   * Only contacts of type <code>PERSON</code> may belong to a group.
+   * Only contacts of type
+   * <code>PERSON</code> may belong to a group.
    *
    * @param selectionFlag if true, tab is selected in view
    * @return true if tab opened
@@ -743,6 +732,16 @@ public class PersonFileTabView
 
   Note getNote() {
     return note;
+  }
+  
+  @Override
+  public String toString() {
+    return getClass().getSimpleName() + " : " + dossier.getId();
+  }
+
+  @Override
+  public void close() {
+    clear();
   }
 
   /**

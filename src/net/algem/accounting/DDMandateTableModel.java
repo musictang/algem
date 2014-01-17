@@ -1,46 +1,62 @@
-
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * @(#)DDMandateTableModel.java 2.8.r 14/01/14
+ * 
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ *
+ * This file is part of Algem.
+ * Algem is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Algem is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with Algem. If not, see <http://www.gnu.org/licenses/>.
+ * 
  */
-
 package net.algem.accounting;
 
-import java.text.DateFormat;
 import net.algem.planning.DateFr;
 import net.algem.util.BundleUtil;
 import net.algem.util.ui.JTableModel;
 
 /**
  * Direct debit mandate table model.
- * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.p
- * @since 2.7.p 06/01/2014
+ *
+ * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
+ * @version 2.8.r
+ * @since 2.8.r 08/01/14
  */
-public class DDMandateTableModel 
-extends JTableModel
-
+public class DDMandateTableModel
+        extends JTableModel
 {
-  
-public DDMandateTableModel() {
-    header = new String[]{BundleUtil.getLabel("Payer.label"),
-                          BundleUtil.getLabel("Direct.debit.creation.label"),
-                          BundleUtil.getLabel("Direct.debit.signature.label"),
-                          BundleUtil.getLabel("Direct.debit.seq.type.label"),
-                          BundleUtil.getLabel("Recurrent.label")};
-    
-    
+
+  public DDMandateTableModel() {
+    header = new String[]{
+      BundleUtil.getLabel("Payer.label"),
+      BundleUtil.getLabel("Direct.debit.last.label"),
+      BundleUtil.getLabel("Direct.debit.signature.label"),
+      BundleUtil.getLabel("Direct.debit.seq.type.label"),
+      BundleUtil.getLabel("Direct.debit.rum.label"),
+      BundleUtil.getLabel("Recurrent.label")
+    };
+
+
   }
 
   @Override
   public int getIdFromIndex(int i) {
     return ((DDMandate) getItem(i)).getId();
   }
-  
-   @Override
+
+  @Override
   public Class getColumnClass(int column) {
     switch (column) {
-      case 0:  
+      case 0:
         return Integer.class;
       case 1:
       case 2:
@@ -48,6 +64,8 @@ public DDMandateTableModel() {
       case 3:
         return DDSeqType.class;
       case 4:
+        return String.class;
+      case 5:
         return Boolean.class;
       default:
         return Object.class;
@@ -61,12 +79,14 @@ public DDMandateTableModel() {
       case 0:
         return dd.getIdper();
       case 1:
-        return new DateFr(dd.getCreation());
-        case 2:
+        return new DateFr(dd.getLastDebit());
+      case 2:
         return new DateFr(dd.getDateSign());
       case 3:
         return dd.getSeqType();
       case 4:
+        return dd.getRum();
+      case 5:
         return dd.isRecurrent();
     }
     return null;

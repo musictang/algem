@@ -1,7 +1,7 @@
 /*
- * @(#)StatusCtrl.java 2.8.p 06/12/13
+ * @(#)StatusCtrl.java 2.8.r 14/01/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -36,15 +36,15 @@ import net.algem.util.ui.MessagePopup;
  * Status management (Leisure, Professional, etc.).
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.p
+ * @version 2.8.r
  * @since 2.5.a 06/07/12
  */
 public class StatusCtrl 
   extends GemParamCtrl 
 {
   
-  public StatusCtrl(GemDesktop _desktop, String _titre) {
-    super(_desktop, _titre);
+  public StatusCtrl(GemDesktop desktop, String title) {
+    super(desktop, title);
   }
 
   @Override

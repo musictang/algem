@@ -1,7 +1,7 @@
 /*
- * @(#)GemParamTableModel.java 2.5.a 07/07/12
+ * @(#)GemParamTableModel.java 2.8.r 14/01/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,10 +27,10 @@ import net.algem.util.ui.JTableModel;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.5.a
+ * @version 2.8.r
  * @since 2.5.a 22/06/2012
  */
-public class GemParamTableModel 
+public class GemParamTableModel<T extends GemParam> 
   extends JTableModel
 {
 

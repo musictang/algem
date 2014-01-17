@@ -1,7 +1,7 @@
 /*
- * @(#)LevelCtrl.java 2.8.p 06/12/13
+ * @(#)LevelCtrl.java 2.8.r 14/01/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -35,15 +35,15 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.p
+ * @version 2.8.r
  * @since 2.5.a 22/06/2012
  */
 public class LevelCtrl 
   extends GemParamCtrl 
 {
   
-  public LevelCtrl(GemDesktop _desktop, String _titre) {
-    super(_desktop, _titre);
+  public LevelCtrl(GemDesktop desktop, String title) {
+    super(desktop, title);
   }
 
   @Override

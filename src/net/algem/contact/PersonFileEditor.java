@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileEditor 2.8.r 10/01/14
+ * @(#)PersonFileEditor 2.8.r 14/01/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -296,7 +296,8 @@ public class PersonFileEditor
      * PersonFileEditor(dossier); desktop.addModule(editeur);
      *
      * view.setCursor(new Cursor(Cursor.DEFAULT_CURSOR)); }
-     */ else if ("Member.schedule.payment".equals(arg)) {
+     */ 
+    else if ("Member.schedule.payment".equals(arg)) {
       // jm interdire l'ouverture multiple de l'échéancier
       ((GemButton) evt.getSource()).setEnabled(false);
       dlgSchedulePayment();
@@ -310,29 +311,22 @@ public class PersonFileEditor
         MessagePopup.warning(personFileView, MessageUtil.getMessage("rib.error.printing"));
         return;
       }
-			//TODO  detection existence mandat sepa
-			DirectDebitService ddService = DirectDebitService.getInstance(dc);
-			try {
-				int payer = dossier.getMember() == null ? dossier.getId() : dossier.getMember().getPayer();
-				DDMandate dd = ddService.getMandate(payer);
-				if (dd == null) {
-					if (payer > 0 && MessagePopup.confirm(view, "Aucun mandat actif : Voulez-vous créer un nouveau mandate de prélèvement pour le payeur ?")) {
-						dd = ddService.createMandate(payer);
-					} 
-				}
-				personFileView.addMandates(ddService, payer);
-				
-
-					/*boolean printOrderLines = true;
-					if (!MessagePopup.confirm(personFileView, MessageUtil.getMessage("standing.order.print.warning"), "Confirmation")) {
-						printOrderLines = false;
-					}
-					DirectDebitRequest prl = new DirectDebitRequest(personFileView, printOrderLines);
-		//      dossier.setRib(personFileView.getRibFile());// get rib from view
-					prl.edit(dossier, personFileView.getBranchBank(), BundleUtil.getLabel("Menu.debiting.label"), dataCache);*/
-			} catch (DDMandateException ex) {
-				MessagePopup.error(view, ex.getMessage());
-			}
+      // Ouverture de l'onglet prélèvement
+      DirectDebitService ddService = DirectDebitService.getInstance(dc);
+      try {
+        int payer = dossier.getMember() == null ? dossier.getId() : dossier.getMember().getPayer();
+        DDMandate dd = ddService.getMandate(payer);
+        if (dd == null) {
+          if (payer > 0 && MessagePopup.confirm(view, MessageUtil.getMessage("direct.debit.create.mandate.confirmation", payer))) {
+            ddService.createMandate(payer);
+          } else {
+            return;
+          }
+        }
+        personFileView.addMandates(ddService, payer);
+      } catch (DDMandateException ex) {
+        MessagePopup.error(view, ex.getMessage());
+      }
     } else if ("Login.creation".equals(arg)) {
       dlgLogin();
     } else if ("Lié".equals(arg)) {
@@ -414,7 +408,11 @@ public class PersonFileEditor
     } else if ("HistoRepet.Abandon".equals(arg)) {
       miHistoRehearsal.setEnabled(true);
       personFileView.removeTab((HistoRehearsalView) src);
-    } else if ("Invoice.history".equals(arg)) {
+    } else if (DDPrivateMandateCtrl.CLOSE_COMMAND.equals(arg)) {
+      personFileView.removeTab((DDPrivateMandateCtrl) src);
+      personFileView.activate(true, "Payer.debiting");
+    }
+      else if ("Invoice.history".equals(arg)) {
       int payer = getPayer();
       if (payer > 0) {
         histoInvoice = addHistoInvoice(dossier.getId());
@@ -559,33 +557,6 @@ public class PersonFileEditor
     }
 
     return true;
-  }
-
-  /**
-   * Closes the module.
-   * Click on closing icon.
-   *
-   * @throws net.algem.event.GemCloseVetoException
-   */
-  @Override
-  public void close() throws GemCloseVetoException {
-    updatePersonFile();
-    String msg = dossier.hasErrors();
-    if (msg != null) {
-      MessagePopup.error(personFileView, msg);
-    } else {
-      if (hasChanged()) {
-        msg = checkContact(MessageUtil.getMessage("update.warning"));
-        if (MessagePopup.confirm(personFileView, msg, MessageUtil.getMessage("closing.record.info", dossier.getId()))) {
-          save();
-        }
-      } else {
-        System.out.println(MessageUtil.getMessage("no.update.info"));
-      }
-    }
-    personFileView.clear();
-    closeModule();
-
   }
 
   private boolean hasChanged() {
@@ -994,6 +965,33 @@ public class PersonFileEditor
       }
     }
   }
+  
+  /**
+   * Closes the module.
+   * Click on closing icon.
+   *
+   * @throws net.algem.event.GemCloseVetoException
+   */
+  @Override
+  public void close() throws GemCloseVetoException {
+    updatePersonFile();
+    String msg = dossier.hasErrors();
+    if (msg != null) {
+      MessagePopup.error(personFileView, msg);
+    } else {
+      if (hasChanged()) {
+        msg = checkContact(MessageUtil.getMessage("update.warning"));
+        if (MessagePopup.confirm(personFileView, msg, MessageUtil.getMessage("closing.record.info", dossier.getId()))) {
+          save();
+        }
+      } else {
+        System.out.println(MessageUtil.getMessage("no.update.info"));
+      }
+    }
+    personFileView.clear();
+    closeModule();
+
+  }
 
   private void closeTab(Object source) {
     String classname = null;
@@ -1043,8 +1041,8 @@ public class PersonFileEditor
     } else if (EmployeeEditor.class.getSimpleName().equals(classname)) {
       miEmployee.setEnabled(dataCache.authorize("Employee.editing.auth"));
     } else if ("net.algem.contact.PersonFileTabView$1".equals(classname)) {
-			personFileView.activate(true, "Payer.debiting");
-		}
+      personFileView.activate(true, "Payer.debiting");
+    }
 
   }
 

@@ -235,6 +235,9 @@ public class DirectDebitExportDlg
     try {
       String mailingPath = fMailling.getText();
       String exportPath = fExport.getText();
+      if (exportPath.endsWith(".txt")) {
+        exportPath = exportPath.substring(0, exportPath.lastIndexOf(".txt")) + ".xml";
+      }
       DateFr datePrl = datePanel.get();
       int school = schoolChoice.getKey();
       DirectDebitService ddService = DirectDebitService.getInstance(dc);
@@ -243,8 +246,10 @@ public class DirectDebitExportDlg
 
       String xmlDoc = sepa.getDocument();
       java.util.List<String> payments = new ArrayList<String>();
+      sepa.setMessageId();
+      sepa.setTxRmtInf(flabel.getText(), datePrl);
       for (DDSeqType seq : DDSeqType.values()) {
-        String xmlPayment = sepa.getPayment(school, flabel.getText(), datePrl, seq, sepa.getBatch());
+        String xmlPayment = sepa.getPayment(school, datePrl, seq, sepa.getBatch());
         if (xmlPayment != null) {
           payments.add(xmlPayment);
         }
@@ -265,10 +270,13 @@ public class DirectDebitExportDlg
       pExport.print(xml.toString());
 
       // mise à jour sequence type FRST -> RCUR
-      if (sepa.getDebtors().size() > 0) {
+      if (sepa.getFirstDebited().size() > 0) {
         if (MessagePopup.confirm(this, MessageUtil.getMessage("direct.debit.seq.type.update.confirmation"))) {
-          ddService.updateToRcurSeqType(sepa.getDebtors());
+          ddService.updateToRcurSeqType(sepa.getFirstDebited());
         }
+      }
+      if (sepa.getDebited().size() > 0) {
+        ddService.updateLastDebit(datePrl, sepa.getDebited());
       }
       String message = MessageUtil.getMessage("export.success.info", new Object[]{sepa.getNumberOfTx(), mailingPath});
       // warnings
@@ -395,7 +403,7 @@ public class DirectDebitExportDlg
     String query = "SELECT p.id,p.civilite,p.nom,p.prenom,a.adr1,a.adr2,a.cdp,a.ville,r.etablissement,r.guichet,r.compte,r.clerib"
             + " FROM personne p LEFT JOIN adresse a ON p.id=a.idper, rib r"
             + " WHERE p.id = " + id + " and p.id = r.idper";
-    System.out.println(query);
+
     ResultSet rs2 = dc.executeQuery(query);
     String payerId = "";
     String payerName = "";

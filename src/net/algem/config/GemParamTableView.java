@@ -1,7 +1,7 @@
 /*
- * @(#)GemParamTableView.java 2.6.a 24/09/12
+ * @(#)GemParamTableView.java 2.8.r 14/01/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,7 +27,7 @@ import net.algem.util.ui.JTableModel;
 /**
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.r
  * @since 2.5.a 22/06/2012
  */
 public class GemParamTableView 
@@ -36,7 +36,6 @@ public class GemParamTableView
 
    public GemParamTableView(String title, JTableModel model) {
     super(title, model, 1);
-
   }
 
   @Override
@@ -45,6 +44,13 @@ public class GemParamTableView
     cm.getColumn(0).setPreferredWidth(25);
     cm.getColumn(1).setPreferredWidth(25);
     cm.getColumn(2).setPreferredWidth(400);
+  }
+  
+  @Override
+  public void addRow(Param p) {
+    if (p instanceof GemParam) {
+      tableModel.addItem((GemParam) p);
+    }
   }
 
 }

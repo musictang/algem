@@ -1,5 +1,5 @@
 /*
- * @(#)RumGenerator.java	2.8.r 10/01/14
+ * @(#)RumGenerator.java	2.8.r 16/01/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -108,7 +108,7 @@ public class RumGenerator
   }
 
   private static String generateMigrationSQL(String idper, String createDate, String signDate) {
-    return idper + ";" + createDate + ";" + signDate + ";TRUE;FMGR;" + generateRum(idper, signDate);
+    return idper + ";" + createDate + ";" + signDate + ";TRUE;FMGR;++" + generateRum(idper, signDate);
   }
 
   private static String pad(String chaine, int size, char c, int where) {

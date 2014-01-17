@@ -1,5 +1,5 @@
 /*
- * @(#)DirectDebitService.java	2.8.r 10/01/14
+ * @(#)DirectDebitService.java	2.8.r 14/01/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -43,14 +43,14 @@ public class DirectDebitService
 
   private DateFormat df = new SimpleDateFormat("MMM");
   private DirectDebitIO dao;
-	private static volatile DirectDebitService INSTANCE;
+  private static volatile DirectDebitService INSTANCE;
 
   private DirectDebitService(DataConnection dc) {
     dao = new DirectDebitIO(dc);
   }
-	
-	public static DirectDebitService getInstance(DataConnection dc) {
-		if (INSTANCE == null) {
+
+  public static DirectDebitService getInstance(DataConnection dc) {
+    if (INSTANCE == null) {
       synchronized (DirectDebitService.class) {
         if (INSTANCE == null) {
           INSTANCE = new DirectDebitService(dc);
@@ -58,7 +58,7 @@ public class DirectDebitService
       }
     }
     return INSTANCE;
-	}
+  }
 
   ResultSet getDirectDebit(int school, DateFr datePrl, Enum seqType) throws SQLException {
     return dao.getDirectDebit(school, datePrl, seqType);
@@ -76,69 +76,81 @@ public class DirectDebitService
     return dao.getFirmName();
   }
 
-  String getPaymentInformationLabel(String label, DateFr dateOfPayment, int batchNumber) {
-
-    /* DateFr d = new DateFr(ConfigUtil.getConf(ConfigKey.BEGINNING_YEAR.getKey(), dc));
-     * DateFr f = new DateFr(ConfigUtil.getConf(ConfigKey.END_YEAR.getKey(), dc));
-     *
-     * return "COTIS " + school
-     * + " " + String.valueOf(d.getYear()) + "-" + String.valueOf(f.getYear())
-     * + " " + df.format(dateOfPayment.getDate())
-     * + " : L" + batchNumber; */
-    return label + " " + df.format(dateOfPayment.getDate()) + " : L" + batchNumber;
+  String getTxInformationLabel(String label, DateFr dateOfPayment) {
+    return label + " " + df.format(dateOfPayment.getDate());
   }
 
-  void updateToRcurSeqType(List<Integer> debtors) throws SQLException {
+  void updateToRcurSeqType(List<Integer> firstDebited) throws SQLException {
     StringBuilder list = new StringBuilder();
-    for (Integer i : debtors) {
+    for (Integer i : firstDebited) {
       list.append(i).append(",");
     }
     list.deleteCharAt(list.length() - 1);
     dao.updateToRcurSeqType(list.toString());
   }
   
+  void updateLastDebit(DateFr date, List<Integer> debited) throws SQLException {
+    StringBuilder list = new StringBuilder();
+    for (Integer i : debited) {
+      list.append(i).append(",");
+    }
+    list.deleteCharAt(list.length() - 1);
+    dao.updateLastDebit(date.toString(), list.toString());
+  }
+
   void update(DDMandate dd) throws SQLException {
     dao.update(dd);
   }
-  
+
   void update(List<DDMandate> mandates, DDSeqType seqType) throws SQLException {
     dao.updateSeqType(mandates, seqType);
   }
-  
-  void deleteMandate(int id) throws SQLException {
-    dao.deleteMandate(id);
+
+  void deleteMandate(DDMandate dd) throws SQLException, DDMandateException {
+    if (dd.isSuppressible()) {
+      dao.deleteMandate(dd.getId());
+    } else {
+      throw new DDMandateException(MessageUtil.getMessage("direct.debit.delete.mandate.exception"));
+    }
   }
 
   public List<DDMandate> getMandates() throws SQLException {
     return dao.getMandates();
   }
-	
-	public List<DDMandate> getMandates(int payer) throws SQLException {
+
+  public List<DDMandate> getMandates(int payer) throws SQLException {
     return dao.getMandates(payer);
   }
-	
-	public DDMandate getMandate(int idper) throws DDMandateException {
-		try {
-			return dao.getMandate(idper);
-		} catch (SQLException ex) {
-			GemLogger.logException(ex);
-			throw new DDMandateException(MessageUtil.getMessage("direct.debit.retrieve.mandate.exception"));
-		}
-	}
-	
-	public DDMandate createMandate(int idper) throws DDMandateException {
-		DDMandate dd = new DDMandate(idper);
-		dd.setCreation(new DateFr(new Date()));
-		dd.setDateSign(dd.getCreation());
-		dd.setRecurrent(true); // default
-		dd.setSeqType(DDSeqType.FRST);
-		dd.setRum(RumGenerator.generateRum(String.valueOf(idper), dd.getDateSign().toString()));
-		try {
-			return dao.createMandate(dd);
-		} catch (SQLException ex) {
-			GemLogger.logException(ex);
-			throw new DDMandateException(MessageUtil.getMessage("direct.debit.create.mandate.exception"));
-		}
-	}
+
+  public DDMandate getMandate(int idper) throws DDMandateException {
+    try {
+      DDMandate dd = dao.getMandate(idper);
+      if (dd != null && !dd.isValid()) {
+        dd.setSeqType(DDSeqType.LOCK);
+        dao.update(dd);
+        return null;
+      } 
+      return dd;
+    } catch (SQLException ex) {
+      GemLogger.logException(ex);
+      throw new DDMandateException(MessageUtil.getMessage("direct.debit.retrieve.mandate.exception"));
+    }
+  }
+
+  public void createMandate(int idper) throws DDMandateException {
+    DDMandate dd = new DDMandate(idper);
+    
+    dd.setLastDebit(null);
+    dd.setDateSign(new DateFr(new Date()));
+    dd.setRecurrent(true); // default
+    dd.setSeqType(DDSeqType.FRST);
+    dd.setRum(RumGenerator.generateRum(String.valueOf(idper), dd.getDateSign().toString()));
+    try {
+      dao.createMandate(dd);
+    } catch (SQLException ex) {
+      GemLogger.logException(ex);
+      throw new DDMandateException(MessageUtil.getMessage("direct.debit.create.mandate.exception"));
+    }
+  }
   
 }

@@ -1,5 +1,5 @@
 /*
- * @(#)SepaXmlBuilder.java	2.8.r 06/01/14
+ * @(#)SepaXmlBuilder.java	2.8.r 14/01/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -52,11 +52,14 @@ public class SepaXmlBuilder
   private StringBuilder sbMailing, sbLog;
   private String ibanRegex = "[A-Z]{2,2}[0-9]{2,2}[a-zA-Z0-9]{1,30}";
   private Pattern ibanPattern;
-  private int totalTx = 0;
+  private int totalDebit = 0;
   private int numberOfGlobalTx = 0;
   private int batch;
-  private List<Integer> firstDebtors = new ArrayList<Integer>();
+  private List<Integer> firstDebited = new ArrayList<Integer>();
+  private List<Integer> debited = new ArrayList<Integer>();
   private NumberFormat nf;
+  private String msgId;
+  private String txRmtInf;
 
   public SepaXmlBuilder(DirectDebitService service) {
     this.service = service;
@@ -74,7 +77,7 @@ public class SepaXmlBuilder
   }
 
   public int getTotalTx() {
-    return totalTx;
+    return totalDebit;
   }
 
   public StringBuilder getLog() {
@@ -84,12 +87,20 @@ public class SepaXmlBuilder
   public StringBuilder getMailing() {
     return sbMailing;
   }
+  
+  List<Integer> getFirstDebited() {
+    return firstDebited;
+  }
+  
+  List<Integer> getDebited() {
+    return debited;
+  }
 
   String getDocument() {
     StringBuilder sb = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
     indent(sb, 0);
     sb.append("<Document xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"urn:iso:std:iso:20022:tech:xsd:pain.008.001.02\"");
-    sb.append(" xsi:schemaLocation=\"urn:iso:std:iso:20022:tech:xsd:pain.008.001.02 file:/home/jm/Algem/src/git/test/net/algem/pain.008.001.02.xsd\">");
+    sb.append(" xsi:schemaLocation=\"urn:iso:std:iso:20022:tech:xsd:pain.008.001.02 file:/home/jm/Algem/src/git/trunk/test/net/algem/pain.008.001.02.xsd\">");
     indent(sb, 1);
     sb.append("<CstmrDrctDbtInitn>");
     return sb.toString();
@@ -107,7 +118,7 @@ public class SepaXmlBuilder
     indent(sb, 3);
     sb.append("<NbOfTxs>").append(numberOfGlobalTx).append("</NbOfTxs>");
     indent(sb, 3);
-    sb.append("<CtrlSum>").append(formatAmount(totalTx)).append("</CtrlSum>");
+    sb.append("<CtrlSum>").append(formatAmount(totalDebit)).append("</CtrlSum>");
     indent(sb, 3);
     sb.append("<InitgPty><Nm>").append(service.getFirmName()).append("</Nm></InitgPty>");
     indent(sb, 2);
@@ -116,9 +127,11 @@ public class SepaXmlBuilder
     return sb.toString();
   }
 
-  String getPayment(int school, String label, DateFr datePrl, DDSeqType seqType, int batchNumber) throws SQLException {
+  String getPayment(int school, DateFr datePrl, DDSeqType seqType, int batchNumber) throws SQLException {
 
-    StringBuilder sb = getPaymentInformation(label, datePrl, seqType, batchNumber);
+    StringBuilder sb = new StringBuilder();
+    int totalPayment = 0;
+//    StringBuilder sb = getPaymentInformation(datePrl, seqType, batchNumber);
 
     batch = batchNumber;
     int currentPayer = 0;
@@ -136,15 +149,16 @@ public class SepaXmlBuilder
       } else {
         if (total > 0) {
           String tx = getDirectDebitTransaction(currentPayer, total, costAccount);
-          if (tx != null) {
+          if (tx != null && tx.length() > 0) {
             // ajout transaction au lot
             sb.append(tx);
             numberOfLocalTx++;
             numberOfGlobalTx++;
-            totalTx += total;
-            if (isFirstDebtor(seqType)) {
+            totalPayment += total;
+            totalDebit += total;
+            /*if (isFirstDebtor(seqType)) {
               firstDebtors.add(currentPayer);
-            }
+            }*/
           }
         }
         total = amount;
@@ -153,22 +167,25 @@ public class SepaXmlBuilder
     }
     if (total > 0) {
       String tx = getDirectDebitTransaction(currentPayer, total, costAccount);
-      if (tx != null) {
+      if (tx != null && tx.length() > 0) {
         sb.append(tx);
         numberOfLocalTx++;
         numberOfGlobalTx++;
-        totalTx += total;
-        if (isFirstDebtor(seqType)) {
+        totalPayment += total;
+        totalDebit += total;
+        /*if (isFirstDebtor(seqType)) {
           firstDebtors.add(currentPayer);
-        }
+        }*/
       }
     }
     rs.close();
-    indent(sb, 2);
-    sb.append("</PmtInf>");
 
     if (numberOfLocalTx > 0) {
+      sb.insert(0, getPaymentInformation(datePrl, seqType, batchNumber, totalPayment, numberOfLocalTx));
+      indent(sb, 2);
+      sb.append("</PmtInf>");
       batch++;
+      
       return sb.toString();
     }
     return null;
@@ -178,19 +195,22 @@ public class SepaXmlBuilder
     return batch;
   }
 
-  List getDebtors() {
-    return firstDebtors;
-  }
-
-  StringBuilder getPaymentInformation(String school, DateFr datePrl, DDSeqType seqType, int batchNumber) {
+  StringBuilder getPaymentInformation(DateFr datePrl, DDSeqType seqType, int batchNumber, int total, int nbTx) {
     DirectDebitCreditor creditor = service.getCreditorInfo();
     StringBuilder sb = new StringBuilder();
     indent(sb, 2);
     sb.append("<PmtInf>");
     indent(sb, 3);
-    sb.append("<PmtInfId>").append(service.getPaymentInformationLabel(school, datePrl, batchNumber)).append("</PmtInfId>");
+//    sb.append("<PmtInfId>").append(service.getPaymentInformationLabel(school, datePrl, batchNumber)).append("</PmtInfId>");
+    sb.append("<PmtInfId>").append(msgId).append("-L").append(batchNumber).append("</PmtInfId>");
     indent(sb, 3);
     sb.append("<PmtMtd>DD</PmtMtd>");
+    indent(sb, 3);
+    sb.append("<BtchBookg>true</BtchBookg>");
+    indent(sb, 3);
+    sb.append("<NbOfTxs>").append(nbTx).append("</NbOfTxs>");
+    indent(sb, 3);
+    sb.append("<CtrlSum>").append(formatAmount(total)).append("</CtrlSum>");
     indent(sb, 3);
     sb.append("<PmtTpInf><SvcLvl><Cd>SEPA</Cd></SvcLvl><LclInstrm><Cd>CORE</Cd></LclInstrm><SeqTp>").append(selectSeqType(seqType)).append("</SeqTp></PmtTpInf>");
     indent(sb, 3);
@@ -225,7 +245,11 @@ public class SepaXmlBuilder
     if (rs.next()) {
       DDMandate mandate = getMandate(rs);
       tx = getTxElement(mandate, total);
-      if (tx != null) {
+      if (tx != null && tx.length() > 0) {
+        if (isFirst(mandate.getSeqType())) {
+          firstDebited.add(mandate.getId());
+        }
+        debited.add(mandate.getId());
         addMailingInfo(rs, total, analytique);
       }
     } else {
@@ -237,18 +261,20 @@ public class SepaXmlBuilder
     return tx;
 
   }
-  
-  private String formatAmount(int sum) {
-    /* String s = nf.format(sum / 100d);
-      s = s.replace(',', ' '); */
-    return nf.format(sum / 100d);
-  }
 
   private String getMessageId() {
-    return "MSG ID " + String.valueOf(System.currentTimeMillis());
+    return msgId;
+  }
+  
+  void setMessageId() {
+    msgId = String.valueOf(System.currentTimeMillis());
+  }
+  
+  void setTxRmtInf(String label, DateFr datePrl) {
+    txRmtInf = service.getTxInformationLabel(label, datePrl);
   }
 
-  private String getTxElement(DDMandate debtor, int amount) {
+  private String getTxElement(DDMandate mandate, int amount) {
 
     StringBuilder sb = new StringBuilder();
     indent(sb, 3);
@@ -258,26 +284,33 @@ public class SepaXmlBuilder
     indent(sb, 4);
     sb.append("<InstdAmt Ccy=\"EUR\">").append(formatAmount(amount)).append("</InstdAmt>");
     indent(sb, 4);
-    sb.append("<DrctDbtTx><MndtRltdInf><MndtId>").append(debtor.getRum()).append("</MndtId>");
-    sb.append("<DtOfSgntr>").append(getIsoDate(debtor.getDateSign())).append("</DtOfSgntr><AmdmntInd>false</AmdmntInd></MndtRltdInf></DrctDbtTx>");
+    StringBuilder rum = new StringBuilder(mandate.getRum());
+    /*if (mandate.getSeqType().equals(DDSeqType.FMGR)) {
+      rum.insert(0, "++");
+    }*/
+    sb.append("<DrctDbtTx><MndtRltdInf><MndtId>").append(rum.toString()).append("</MndtId>");
+    sb.append("<DtOfSgntr>").append(getIsoDate(mandate.getDateSign())).append("</DtOfSgntr><AmdmntInd>false</AmdmntInd></MndtRltdInf></DrctDbtTx>");
     indent(sb, 4);
-    String bic = debtor.getBic();
+    String bic = mandate.getBic();
     if (bic != null && BankUtil.isBicOk(bic)) {
-      sb.append("<DbtrAgt><FinInstnId><BIC>").append(debtor.getBic()).append("</BIC></FinInstnId></DbtrAgt>");
+      sb.append("<DbtrAgt><FinInstnId><BIC>").append(mandate.getBic()).append("</BIC></FinInstnId></DbtrAgt>");
     } else {
-      addLogInfo(debtor.getIdper(), " -> BIC");
+      addLogInfo(mandate.getIdper(), " -> BIC");
       sb.append("<DbtrAgt><FinInstnId><Othr><Id>NOTPROVIDED</Id></Othr></FinInstnId></DbtrAgt>");
     }
     indent(sb, 4);
-    sb.append("<Dbtr><Nm>").append(debtor.getName()).append("</Nm></Dbtr>");
+    sb.append("<Dbtr><Nm>").append(mandate.getName()).append("</Nm></Dbtr>");
     indent(sb, 4);
-    String iban = debtor.getIban();
+    String iban = mandate.getIban();
     if (iban != null && iban.length() > 0 && ibanPattern.matcher(iban).matches()) {
-      sb.append("<DbtrAcct><Id><IBAN>").append(debtor.getIban()).append("</IBAN></Id></DbtrAcct>");
+      sb.append("<DbtrAcct><Id><IBAN>").append(mandate.getIban()).append("</IBAN></Id></DbtrAcct>");
     } else {
-      addLogInfo(debtor.getIdper(), " -> IBAN");
+      addLogInfo(mandate.getIdper(), " -> IBAN");
       return null;
     }
+    indent(sb, 4);
+    sb.append("<RmtInf><Ustrd>").append(txRmtInf).append("</Ustrd></RmtInf>");
+    
     indent(sb, 3);
     sb.append("</DrctDbtTxInf>");
 
@@ -286,15 +319,15 @@ public class SepaXmlBuilder
 
   private DDMandate getMandate(ResultSet rs) throws SQLException {
     DDMandate mandate = new DDMandate(rs.getInt(1));
-    mandate.setId(rs.getInt(9));
     String payerName = TextUtil.replaceChars(rs.getString(3));
     if (payerName.length() > MAX_NAME_LENGTH) {
       payerName = payerName.substring(0, MAX_NAME_LENGTH);
     }
     mandate.setName(payerName);
+    mandate.setId(rs.getInt(9));
     mandate.setRum(rs.getString(10));
     mandate.setDateSign(new DateFr(rs.getDate(11)));
-    
+    mandate.setSeqType(DDSeqType.valueOf(rs.getString(12).trim()));
     mandate.setIban(rs.getString(13));
     mandate.setBic(rs.getString(14));
 
@@ -317,7 +350,7 @@ public class SepaXmlBuilder
     }
   }
   
-  private boolean isFirstDebtor(DDSeqType seqType) {
+  private boolean isFirst(DDSeqType seqType) {
     switch (seqType) {
       case FMGR:
       case FDOM:
@@ -326,6 +359,13 @@ public class SepaXmlBuilder
       default:
         return false;
     }
+  }
+
+    
+  private String formatAmount(int sum) {
+    /* String s = nf.format(sum / 100d);
+      s = s.replace(',', ' '); */
+    return nf.format(sum / 100d);
   }
 
   private void indent(StringBuilder sb, int nbOfTabs) {
@@ -338,11 +378,10 @@ public class SepaXmlBuilder
   private String getEnd2EndId() {
     UUID uuid = UUID.randomUUID();
     long lg = ByteBuffer.wrap(uuid.toString().getBytes()).getLong();
-    return Long.toString(lg, Character.MAX_RADIX);
+    return Long.toString(lg, Character.MAX_RADIX).toUpperCase();
   }
 
   private String getIsoDate(DateFr date) {
-//		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
     if (date == null || date.toString().equals(DateFr.NULLDATE)) {
       return ISO_DATE_FORMAT.format(new Date());
     }
@@ -351,7 +390,6 @@ public class SepaXmlBuilder
   }
 
   private String getIsoDate(String date) {
-//		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
     if (date == null || date.equals(DateFr.NULLDATE)) {
       return ISO_DATE_FORMAT.format(new Date());
     }

@@ -1,5 +1,5 @@
 /*
- * @(#)DDMandateListCtrl.java 2.8.r 10/01/14
+ * @(#)DDMandateListCtrl.java 2.8.r 14/01/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -45,7 +45,7 @@ public class DDMandateListCtrl
     table = new JTable(tableModel);
     table.setAutoCreateRowSorter(true);
 
-    setColumns(10,25,25,100,10);
+    setColumns(10,25,25,100,130,10);
 
     JScrollPane p = new JScrollPane(table);
     p.setBorder(new BevelBorder(BevelBorder.LOWERED));

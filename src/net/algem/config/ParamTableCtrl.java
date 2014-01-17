@@ -1,7 +1,7 @@
 /*
- * @(#)ParamTableCtrl  2.8.p 06/12/13
+ * @(#)ParamTableCtrl  2.8.r 14/01/14
  *
- * Copyright (c) 1999-2013 Musiques Tangentes All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -40,7 +40,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.p
+ * @version 2.8.r
  * @since 1.0a 21/08/2009
  */
 public abstract class ParamTableCtrl
@@ -66,14 +66,14 @@ public abstract class ParamTableCtrl
 
   /**
    *
-   * @param _desktop
+   * @param desktop
    * @param title
-   * @param editKey clé éditable
+   * @param editKey editable key
    * @param activable
    */
-  public ParamTableCtrl(GemDesktop _desktop, String title, boolean editKey, boolean activable) {
-    desktop = _desktop;
-    dc = desktop.getDataCache().getDataConnection();
+  public ParamTableCtrl(GemDesktop desktop , String title, boolean editKey, boolean activable) {
+    this.desktop = desktop;
+    this.dc = desktop.getDataCache().getDataConnection();
     this.title = title;
     this.editKey = editKey;
 
@@ -81,8 +81,8 @@ public abstract class ParamTableCtrl
     init();
   }
 
-  public ParamTableCtrl(GemDesktop _desktop, String title, boolean editable) {
-    this(_desktop, title, editable, false);
+  public ParamTableCtrl(GemDesktop desktop, String title, boolean editable) {
+    this(desktop, title, editable, false);
   }
 
   protected void setView(boolean activable) {
@@ -104,7 +104,7 @@ public abstract class ParamTableCtrl
         int n = table.getSelectedRow();
         current = table.getItem(n);
         mask.set(current);
-        mask.setKeyEditable(isKeyModif());//interdiction de changer la clé en mode modification
+        mask.setKeyEditable(isKeyModif());
         ((CardLayout) wCard.getLayout()).show(wCard, "masque");
         mode = MODIFICATION_MODE;
       }
@@ -125,6 +125,11 @@ public abstract class ParamTableCtrl
     load();
   }
   
+  /**
+   * Specifies if the key may be changed.
+   * The default value is FALSE.
+   * @return true if key may be changed in #MODIFICATION mode
+   */
   protected boolean isKeyModif() {
     return false;
   }

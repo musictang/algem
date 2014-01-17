@@ -69,17 +69,20 @@ public class DateFr
       } else {
         buf = new StringBuffer(h);
       }
-    } else {
-      buf = new StringBuffer(NULLDATE);
-    }
+    } 
+//    else {
+//      buf = new StringBuffer(NULLDATE);
+//    }
   }
 
   public DateFr(Date d) {
     this();
-    cal.setTime(d);
-    setYear(cal.get(Calendar.YEAR));
-    setMonth(cal.get(Calendar.MONTH) + 1);
-    setDay(cal.get(Calendar.DAY_OF_MONTH));
+    if (d != null) {
+      cal.setTime(d);
+      setYear(cal.get(Calendar.YEAR));
+      setMonth(cal.get(Calendar.MONTH) + 1);
+      setDay(cal.get(Calendar.DAY_OF_MONTH));
+    } 
   }
 
   public DateFr(int j, int m, int a) {
@@ -337,5 +340,30 @@ public class DateFr
     }
     return true;
 
+  }
+  
+  /**
+   * Gets the number of months between 2 dates.
+   * A negative result implies the first date is later than the second.
+   * @param date1
+   * @param date2
+   * @return a double
+   */
+  public static double monthsBetween(Date date1, Date date2) {
+    double monthsBetween = 0;
+    Calendar cal1 = Calendar.getInstance();
+    cal1.setTime(date1);
+    Calendar cal2 = Calendar.getInstance();
+    cal1.setTime(date2);
+    //difference in month for years
+    monthsBetween = (cal1.get(Calendar.YEAR) - cal2.get(Calendar.YEAR)) * 12;
+    //difference in month for months
+    monthsBetween += cal1.get(Calendar.MONTH) - cal2.get(Calendar.MONTH);
+    //difference in month for days
+    if (cal1.get(Calendar.DAY_OF_MONTH) != cal1.getActualMaximum(Calendar.DAY_OF_MONTH)
+            && cal2.get(Calendar.DAY_OF_MONTH) != cal2.getActualMaximum(Calendar.DAY_OF_MONTH)) {
+      monthsBetween += ((cal1.get(Calendar.DAY_OF_MONTH) - cal2.get(Calendar.DAY_OF_MONTH)) / 31d);
+    }
+    return monthsBetween;
   }
 }

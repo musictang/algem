@@ -1,7 +1,7 @@
 /*
- * @(#)BankCodeCtrl.java	2.8.p 17/10/13
+ * @(#)BankCodeCtrl.java	2.8.r 15/01/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -33,13 +33,15 @@ import net.algem.util.DataConnection;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.p
+ * @version 2.8.r
  * @since 1.0a 07/07/1999
  */
 public class BankCodeCtrl
         implements ActionListener, FocusListener
 {
 
+  static final String IBAN_CMD = "Iban.action.command";
+  static final String BIC_CMD = "Bic.action.command";
   private DataConnection dc;
   private BankBranchView branchView;
   private String bankCode;
@@ -108,13 +110,8 @@ public class BankCodeCtrl
       branchView.setBankBranch(null);
       //return;//creation si le codeguichet n'existe pas, commenté par jm depuis version 2.0pc
     } else if (v.size() == 1 && !b.isMulti()) {
-      // useless message
-      /*JOptionPane.showMessageDialog(null,
-              MessageUtil.getMessage("bank.branch.creation.error"),
-              "Erreur création guichet",
-              JOptionPane.ERROR_MESSAGE);*/
-      branchView.setBankBranch((BankBranch) v.elementAt(0));
-      return;
+        branchView.setBankBranch((BankBranch) v.elementAt(0));
+        return;
     }
     if (createFlag) {
       return;
@@ -151,17 +148,20 @@ public class BankCodeCtrl
 
   @Override
   public void actionPerformed(ActionEvent evt) {
-    if (evt.getSource() instanceof BankCodeField) {
+    Object src = evt.getSource();
+    String cmd = evt.getActionCommand();
+
+    if (src instanceof BankCodeField) {
       searchBank(branchView.getBankCode());
-    } else if (branchView instanceof RibView) {
+    } else if (IBAN_CMD.equals(cmd)) {
         RibView bv = (RibView) branchView;
         bv.markIban(BankUtil.isIbanOk(bv.getIban()));
-    } else {
-      String bCode = branchView.getBranchCode();
-      if (bCode == null) {
-        return;
-      }
-      searchBranch(bCode);
+    } else if (BIC_CMD.equals(cmd)) {
+        String bCode = branchView.getBranchCode();
+        if (bCode == null) {
+          return;
+        }
+        searchBranch(bCode);
     }
 
   }

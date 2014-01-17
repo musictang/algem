@@ -1,5 +1,5 @@
 /*
- * @(#)DDMandateView.java 2.8.r 08/01/14
+ * @(#)DDMandateView.java 2.8.r 16/01/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -66,7 +66,7 @@ public class DDMandateView
     GridBagHelper gb = new GridBagHelper(this);
     gb.insets = GridBagHelper.SMALL_INSETS;
     
-    gb.add(new GemLabel(BundleUtil.getLabel("Direct.debit.creation.label")), 0, 0, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Direct.debit.last.label")), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Direct.debit.signature.label")), 0, 1, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Direct.debit.seq.type.label")), 0, 2, 1, 1, GridBagHelper.WEST);
     GemLabel rumLabel = new GemLabel(BundleUtil.getLabel("Direct.debit.rum.label"));
@@ -91,7 +91,7 @@ public class DDMandateView
     if (multiple) {
       filter();
     } else {
-      dateCreationField.setDate(dd.getCreation());
+      dateCreationField.setDate(dd.getLastDebit());
       dateSignField.setDate(dd.getDateSign());
       rum.setText(dd.getRum());
       recur.setSelected(dd.isRecurrent());

@@ -1,7 +1,7 @@
 /*
- * @(#)ParamTableView.java	2.3.c 09/03/12
+ * @(#)ParamTableView.java	2.8.r 14/01/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -38,7 +38,7 @@ import net.algem.util.ui.JTableModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.3.c
+ * @version 2.8.r
  */
 public class ParamTableView
         extends GemPanel
@@ -49,14 +49,14 @@ public class ParamTableView
   private GemButton btAdd;
   private GemButton btClose;
 
-  public ParamTableView(String titre, JTableModel model) {
-    this(titre, model, 0);
+  public ParamTableView(String title, JTableModel model) {
+    this(title, model, 0);
   }
 
-  public ParamTableView(String titre, JTableModel model, int sortColumn) {
+  public ParamTableView(String title, JTableModel model, int sortColumn) {
 
-    tableModel = model;
-    table = new JTable(tableModel);
+    this.tableModel = model;
+    this.table = new JTable(tableModel);
     //table.setAutoCreateRowSorter(true);
 		/* pour le tri automatique */
     TableRowSorter<JTableModel> sorter = new TableRowSorter<JTableModel>(tableModel);

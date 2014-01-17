@@ -1,5 +1,5 @@
 /*
- * @(#)DDMandateCtrl.java 2.8.r 10/01/14
+ * @(#)DDMandateCtrl.java 2.8.r 14/01/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -43,16 +43,15 @@ public class DDMandateCtrl
         extends FileTabDialog
 {
 
-	protected DDMandateListCtrl listCtrl;
-	
+  protected DDMandateListCtrl listCtrl;
   private List<DDMandate> mandates;
   private DirectDebitService service;
   private GemButton btDelete;
-	
-	public DDMandateCtrl(GemDesktop desktop) {
-		super(desktop);
-	}
-	
+
+  public DDMandateCtrl(GemDesktop desktop) {
+    super(desktop);
+  }
+
   public DDMandateCtrl(GemDesktop desktop, DirectDebitService service) {
     super(desktop);
     this.service = service;
@@ -61,7 +60,7 @@ public class DDMandateCtrl
     btDelete = new GemButton(GemCommand.DELETE_CMD);
     btDelete.addActionListener(this);
     buttons.add(btDelete, 0);
-		listCtrl = new DDMandateListCtrl(false, service);
+    listCtrl = new DDMandateListCtrl(false, service);
 
     setLayout(new BorderLayout());
     GemPanel panel = new GemPanel(new BorderLayout());
@@ -74,14 +73,14 @@ public class DDMandateCtrl
   @Override
   public void validation() {
     List<DDMandate> selected = listCtrl.getSelected();
-    if(selected.isEmpty()) {
+    if (selected.isEmpty()) {
       MessagePopup.warning(this, MessageUtil.getMessage("no.line.selected"));
       return;
     }
-    
+
     DDMandate mandate = selected.get(0);
     DDMandateEditor editor = new DDMandateEditor(desktop.getFrame(), true, mandate, (selected.size() > 1));
-  
+
     if (editor.isValidated()) {
       try {
         if (selected.size() == 1) {
@@ -108,7 +107,7 @@ public class DDMandateCtrl
   }
 
   @Override
-  public void load() {   
+  public void load() {
     try {
       mandates = service.getMandates();
       if (mandates != null) {
@@ -118,7 +117,7 @@ public class DDMandateCtrl
       GemLogger.logException(ex);
     }
   }
-  
+
   @Override
   public void actionPerformed(ActionEvent e) {
     super.actionPerformed(e);
@@ -130,11 +129,13 @@ public class DDMandateCtrl
       }
       try {
         if (MessagePopup.confirm(this, MessageUtil.getMessage("direct.debit.delete.mandate.confirmation", dd.getIdper()))) {
-          service.deleteMandate(dd.getId());
+          service.deleteMandate(dd);
           listCtrl.deleteRow(dd);
         }
       } catch (SQLException ex) {
         GemLogger.logException(ex);
+      } catch (DDMandateException dex) {
+        MessagePopup.warning(this, dex.getMessage());
       }
     }
   }

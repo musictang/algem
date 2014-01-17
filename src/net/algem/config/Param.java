@@ -41,17 +41,17 @@ public class Param
   public Param() {
   }
 
-  public Param(String _key, String _value) {
-    key = _key;
-    value = _value;
+  public Param(String key, String value) {
+    this.key = key;
+    this.value = value;
   }
 
   public String getKey() {
     return key;
   }
 
-  public void setKey(String _key) {
-    key = _key;
+  public void setKey(String key) {
+    this.key = key;
   }
 
   public String getValue() {

@@ -1,5 +1,5 @@
 /*
- * @(#)DDMandate.java	2.8.r 10/01/14
+ * @(#)DDMandate.java	2.8.r 16/01/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,6 +20,7 @@
  */
 package net.algem.accounting;
 
+import java.util.Date;
 import net.algem.planning.DateFr;
 import net.algem.util.model.GemModel;
 
@@ -37,13 +38,14 @@ public class DDMandate
   private int idper;
   private String name;
   private String rum;
-  private DateFr creation;
+  private DateFr lastDebit;
   private DateFr dateSign;
   private String iban;
   private String bic;
   private String ics;
   private DDSeqType seqType;
   private boolean recurrent;
+  private static final double EXPIRATION_LIMIT = -36.0;
 
   public DDMandate(int idper) {
     this.idper = idper;
@@ -61,12 +63,16 @@ public class DDMandate
     this.bic = bic;
   }
 
-  public DateFr getCreation() {
-    return creation;
+  public DateFr getLastDebit() {
+    return lastDebit;
   }
 
-  public void setCreation(DateFr creation) {
-    this.creation = creation;
+  public void setLastDebit(DateFr last) {
+    this.lastDebit = last;
+  }
+  
+  boolean isSuppressible() {
+    return lastDebit == null || DateFr.NULLDATE.equals(lastDebit.toString());
   }
 
   public DateFr getDateSign() {
@@ -123,6 +129,14 @@ public class DDMandate
 
   public void setRecurrent(boolean recurrent) {
     this.recurrent = recurrent;
+  }
+  
+  public boolean isValid() {
+   if (lastDebit == null || DateFr.NULLDATE.equals(lastDebit.toString())) {
+     return true;
+   }
+   Date now = new Date();
+   return DateFr.monthsBetween(now, lastDebit.getDate()) >  EXPIRATION_LIMIT;
   }
 
   @Override

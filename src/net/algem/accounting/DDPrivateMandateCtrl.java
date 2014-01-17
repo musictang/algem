@@ -1,5 +1,5 @@
 /*
- * @(#)DDPrivateMandateCtrl.java	2.8.r 10/01/14
+ * @(#)DDPrivateMandateCtrl.java	2.8.r 14/01/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -18,7 +18,6 @@
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  * 
  */
-
 package net.algem.accounting;
 
 import java.awt.event.ActionEvent;
@@ -33,25 +32,39 @@ import net.algem.util.ui.GemButton;
  * @version 2.8.r
  * @since 2.8.r 10/01/14
  */
-abstract public class DDPrivateMandateCtrl 
-	extends DDMandateCtrl
+abstract public class DDPrivateMandateCtrl
+        extends DDMandateCtrl
 {
 
-	private GemButton btPrint;
-	
-	public DDPrivateMandateCtrl(GemDesktop desktop, DirectDebitService service) {
-		super(desktop, service);
-		btPrint = new GemButton(GemCommand.PRINT_CMD);
-		
-		btPrint.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				print();
-			}
-			
-		});
-		buttons.add(btPrint, 1);
-	}
-	
-	protected abstract void print();
+  public final static String CLOSE_COMMAND = "DDMandate.Close";
+  private GemButton btPrint;
+  private ActionListener listener;
+  
+
+  public DDPrivateMandateCtrl(GemDesktop desktop, DirectDebitService service) {
+    super(desktop, service);
+    btPrint = new GemButton(GemCommand.PRINT_CMD);
+
+    btPrint.addActionListener(new ActionListener()
+    {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        print();
+      }
+    });
+    buttons.add(btPrint, 1);
+  }
+
+  protected abstract void print();
+  
+  @Override
+  public void cancel() {
+    if (listener != null) {
+      listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, CLOSE_COMMAND));
+    }
+  }
+  
+  public void addActionListener(ActionListener listener) {
+    this.listener = listener;
+  }
 }

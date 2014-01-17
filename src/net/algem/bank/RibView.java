@@ -85,9 +85,11 @@ public class RibView
     setRibEnabled(false);
     
     ibanField = new IbanField();
+    ibanField.setActionCommand(BankCodeCtrl.IBAN_CMD);
     ibanField.setToolTipText(BundleUtil.getLabel("Iban.tip"));
 
     bicCodeField = new BicCodeField();
+    bicCodeField.setActionCommand(BankCodeCtrl.BIC_CMD);
     bicCodeField.setToolTipText(BundleUtil.getLabel("Bic.code.tip"));
 
     ribError = new JLabel();
@@ -145,6 +147,7 @@ public class RibView
     GemPanel branchPanel = new GemPanel(new BorderLayout());
     branchPanel.add(bicCodeField, BorderLayout.WEST);
     selectBranchBt = new GemButton(ImageUtil.createImageIcon(ImageUtil.SEARCH_ICON));
+    selectBranchBt.setActionCommand(BankCodeCtrl.BIC_CMD);
     selectBranchBt.setBorder(null);
     selectBranchBt.setRolloverIcon(ImageUtil.createImageIcon("cherche_roll.png"));
     branchPanel.add(selectBranchBt, BorderLayout.EAST);
