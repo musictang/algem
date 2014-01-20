@@ -1,5 +1,5 @@
 /*
- * @(#)SepaXmlBuilder.java	2.8.r 14/01/14
+ * @(#)SepaXmlBuilder.java	2.8.r 18/01/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -48,6 +48,8 @@ public class SepaXmlBuilder
   public static DateFormat ISO_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
   private static String TAB = "  ";
   private static short MAX_NAME_LENGTH = 70;
+	private static int MAX_LENGTH = 140;
+	private static int SHORT_LENGTH = 35;
   private DirectDebitService service;
   private StringBuilder sbMailing, sbLog;
   private String ibanRegex = "[A-Z]{2,2}[0-9]{2,2}[a-zA-Z0-9]{1,30}";
@@ -271,7 +273,11 @@ public class SepaXmlBuilder
   }
   
   void setTxRmtInf(String label, DateFr datePrl) {
-    txRmtInf = service.getTxInformationLabel(label, datePrl);
+		String rmt = service.getTxInformationLabel(label, datePrl);
+		if (rmt != null && rmt.length() > MAX_LENGTH) {
+			rmt = rmt.substring(0, MAX_LENGTH);
+		}
+    txRmtInf = rmt;
   }
 
   private String getTxElement(DDMandate mandate, int amount) {
@@ -284,11 +290,8 @@ public class SepaXmlBuilder
     indent(sb, 4);
     sb.append("<InstdAmt Ccy=\"EUR\">").append(formatAmount(amount)).append("</InstdAmt>");
     indent(sb, 4);
-    StringBuilder rum = new StringBuilder(mandate.getRum());
-    /*if (mandate.getSeqType().equals(DDSeqType.FMGR)) {
-      rum.insert(0, "++");
-    }*/
-    sb.append("<DrctDbtTx><MndtRltdInf><MndtId>").append(rum.toString()).append("</MndtId>");
+		assert(mandate.getRum() != null && mandate.getRum().length() > 0);
+    sb.append("<DrctDbtTx><MndtRltdInf><MndtId>").append(mandate.getRum()).append("</MndtId>");
     sb.append("<DtOfSgntr>").append(getIsoDate(mandate.getDateSign())).append("</DtOfSgntr><AmdmntInd>false</AmdmntInd></MndtRltdInf></DrctDbtTx>");
     indent(sb, 4);
     String bic = mandate.getBic();

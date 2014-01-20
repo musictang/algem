@@ -38,7 +38,7 @@ public class RibIO
         extends TableIO
 {
 
-  private static final String TABLE = "rib";
+  public static final String TABLE = "rib";
   private static final String COLUMNS = "idper,etablissement,guichet,compte,clerib,guichetid,iban";
 
   public static void insert(Rib r, DataConnection dc) throws SQLException {

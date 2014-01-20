@@ -1,7 +1,7 @@
 /*
- * @(#)PlanningService.java	2.8.g 31/05/13
+ * @(#)PlanningService.java	2.8.r 18/01/14
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -37,7 +37,7 @@ import net.algem.util.ui.MessagePopup;
  * Service class for planning.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.g
+ * @version 2.8.r
  * @since 2.4.a 07/05/12
  */
 public class PlanningService
@@ -236,6 +236,17 @@ public class PlanningService
       throw new PlanningException("PLANNING UPDATE=0 " + query);
     }
   }
+	
+	public void changeTeacher(ScheduleObject orig, ScheduleObject range, DateFr date) throws PlanningException {
+		String query = "UPDATE " + ScheduleIO.TABLE + " SET idper = " + range.getIdPerson()
+                + " WHERE id = " + orig.getId()
+                + " AND jour = '" + date + "'";
+		try {
+			dc.executeUpdate(query);
+		} catch (SQLException ex) {
+			throw new PlanningException(ex.getMessage());
+		}
+	}
 
   /**
    * Changes the teacher between 2 dates.

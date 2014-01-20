@@ -40,7 +40,7 @@ import net.algem.util.model.TableIO;
 public class DirectDebitIO
 {
 
-  static final String TABLE = "prlsepa";
+  public static final String TABLE = "prlsepa";
   static final String SEQUENCE = "prlsepa_id_seq";
   static final String COLUMNS = "id,payeur,lastdebit,signature,recurrent,seqtype,rum";
   private DataConnection dc;

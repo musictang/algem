@@ -1,7 +1,7 @@
 /*
- * @(#)UserIO.java 2.8.p 30/10/13
+ * @(#)UserIO.java 2.8.r 17/01/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -35,7 +35,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.8.p
+ * @version 2.8.r
  * @since 1.0a 07/07/1999
  */
 public class UserIO
@@ -58,15 +58,7 @@ public class UserIO
   }
 
   public void insert(User u) throws SQLException {
-		
-		/*String query = "INSERT INTO " + TABLE + " (idper,login,profil,pass,clef) VALUES("
-			+ u.getId()
-			+ ",'" + u.getLogin()
-			//+ "','" + u.getPassword()
-			+ "'," + u.getProfile()
-			+ "," + u.getPassInfo().getPassInfo()
-			+ "," + u.getPassInfo().getKey()
-			+ ")";*/
+
 		String query = "INSERT INTO " + TABLE + " (idper,login,profil,pass,clef) VALUES(?,?,?,?,?)";
 		PreparedStatement statement = dc.prepareStatement(query);
 		statement.setInt(1, u.getId());
@@ -76,22 +68,12 @@ public class UserIO
 		statement.setBytes(5, u.getPassInfo().getKey());
 		statement.executeUpdate();
 		statement.close();
-//		dc.executeUpdate(query);
+
 	}
 
   public void update(User u) throws SQLException {
-    /*String query = "UPDATE " + TABLE + " SET"
-            + " login = '" + u.getLogin()
-            //+ "',password = '" + u.getPassword()
-            + "',profil = " + u.getProfile();*/
-		String query = "UPDATE " + TABLE + " SET login = ?, profil = ?";
+		String query = "UPDATE " + TABLE + " SET login = ?, profil = ?, pass = ?, clef = ? WHERE idper = " + u.getId();
 		UserPass pass = u.getPassInfo();
-		if (pass != null) {
-			if (pass.getPass() != null && pass.getKey() != null) {
-				query += ",pass = ?,clef = ?";
-			}
-		}
-    query += " WHERE idper = " + u.getId();
 
 		PreparedStatement statement = dc.prepareStatement(query);
 		statement.setString(1, u.getLogin());
@@ -100,7 +82,7 @@ public class UserIO
 		statement.setBytes(4, pass == null ? null : u.getPassInfo().getKey());
 		statement.executeUpdate();
 		statement.close();
-//    dc.executeUpdate(query);
+
   }
 
   public void delete(User u) throws SQLException {
@@ -142,9 +124,7 @@ public class UserIO
   public User findId(int n) throws SQLException {
     String query = "WHERE idper = " + n;
     List<User> v = find(query);
-//    if (v.size() > 0) {
-//      return v.get(0);
-//    }
+
     return v.isEmpty() ? null : v.get(0);
   }
 

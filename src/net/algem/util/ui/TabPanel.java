@@ -1,7 +1,7 @@
 /*
- * @(#)TabPanel.java	2.6.a 25/09/12
+ * @(#)TabPanel.java	2.8.r 17/01/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,7 +28,7 @@ import java.awt.event.ActionListener;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.r
  */
 public class TabPanel
         extends javax.swing.JTabbedPane
@@ -39,8 +39,8 @@ public class TabPanel
   public TabPanel() {
   }
 
-  public void addItem(java.awt.Component c, String l) {
-    add(l, c);
+  public void addItem(java.awt.Component c, String title) {
+    add(title, c);
   }
 
   /**

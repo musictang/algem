@@ -1,5 +1,5 @@
 /*
- * @(#)DDMandateCtrl.java 2.8.r 14/01/14
+ * @(#)DDMandateCtrl.java 2.8.r 18/01/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -56,6 +56,9 @@ public class DDMandateCtrl
     super(desktop);
     this.service = service;
     btValidation.setText(GemCommand.EDIT_CMD);
+		if (!dataCache.authorize("Direct.debit.mandate.editing.auth")) {
+			btValidation.setEnabled(false);
+		}
     btCancel.setText(GemCommand.CLOSE_CMD);
     btDelete = new GemButton(GemCommand.DELETE_CMD);
     btDelete.addActionListener(this);

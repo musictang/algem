@@ -1,7 +1,7 @@
 /*
- * @(#)PlanModifCtrl.java	2.8.h 03/06/13
+ * @(#)PlanModifCtrl.java	2.8.r 17/01/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -30,8 +30,8 @@ import net.algem.contact.member.MemberService;
 import net.algem.contact.teacher.SubstituteTeacherList;
 import net.algem.contact.teacher.TeacherService;
 import net.algem.course.Course;
-import net.algem.group.Group;
 import net.algem.group.GemGroupService;
+import net.algem.group.Group;
 import net.algem.planning.*;
 import net.algem.room.Room;
 import net.algem.util.*;
@@ -44,7 +44,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.h
+ * @version 2.8.r
  * @since 1.0b 05/07/2002 lien salle et groupe
  */
 public class PlanModifCtrl
@@ -442,8 +442,11 @@ public class PlanModifCtrl
         cfd.show();
         return;
       }
-      
-      service.changeTeacher(plan, range, start, end);
+      if (start.equals(end) && MessagePopup.confirm(null, MessageUtil.getMessage("teacher.modification.single.schedule.confirmation"))) {
+				service.changeTeacher(plan, range, start);
+			} else {
+				service.changeTeacher(plan, range, start, end);
+			}
       desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));//XXX dlg.getDateEnd/Fin
     } catch (PlanningException e) {
       MessagePopup.warning(null, e.getMessage());

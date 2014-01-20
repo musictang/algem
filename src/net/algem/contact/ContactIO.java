@@ -1,7 +1,7 @@
 /*
- * @(#)ContactIO.java	2.8.l 30/08/13
+ * @(#)ContactIO.java	2.8.r 18/01/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -24,12 +24,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.Vector;
+import net.algem.accounting.DirectDebitIO;
 import net.algem.bank.RibIO;
+import net.algem.billing.InvoiceIO;
 import net.algem.contact.member.MemberIO;
 import net.algem.planning.Schedule;
 import net.algem.planning.ScheduleIO;
 import net.algem.planning.ScheduleRange;
 import net.algem.planning.ScheduleRangeIO;
+import net.algem.room.RoomIO;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
@@ -42,7 +45,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.l
+ * @version 2.8.r
  * @since 1.0a 07/07/1999
  */
 public class ContactIO
@@ -219,7 +222,7 @@ public class ContactIO
       EmailIO.delete(c.getId(), dc);
       WebSiteIO.delete(c.getId(), Person.PERSON, dc);
     }
-    // member might be deleted if exists
+    // member and rib might be deleted if exists
     if (c.getType() == Person.PERSON) {
       ((MemberIO) DataCache.getDao(Model.Member)).delete(c.getId());
       RibIO.delete(c.getId(), dc);
@@ -368,8 +371,8 @@ public class ContactIO
    */
   private static void checkDelete(Contact c, DataConnection dc) throws SQLException, ContactDeleteException {
 
-    if (c.getType() == Person.PERSON) {
-      String msg = MessageUtil.getMessage("delete.exception");
+		String msg = MessageUtil.getMessage("delete.exception");
+    if (c.getType() == Person.PERSON || c.getType() == Person.ROOM) {
       // vérifier qu'il n'existe plus d'échéances pour ce contact (en tant que payeur)
       String check = "SELECT count(payeur) FROM echeancier2 WHERE payeur = " + c.getId();
       ResultSet rs = dc.executeQuery(check);
@@ -380,7 +383,7 @@ public class ContactIO
           throw new ContactDeleteException(msg);
         }
       }
-      // vérifies if contact is payer
+      // checks if contact is payer
       check = "SELECT idper FROM eleve WHERE payeur = " + c.getId() + " AND payeur != idper";
       rs = dc.executeQuery(check);
       if (rs.next()) {
@@ -388,7 +391,7 @@ public class ContactIO
         msg += MessageUtil.getMessage("contact.delete.payer.warning2", a);
         throw new ContactDeleteException(msg);
       }
-      // vérifies if contact belongs to a group
+      // checks if contact belongs to a group
       check = "SELECT id FROM groupe_det WHERE musicien = " + c.getId();
       rs = dc.executeQuery(check);
       if (rs.next()) {
@@ -396,19 +399,60 @@ public class ContactIO
         msg += MessageUtil.getMessage("contact.delete.musician.warning", g);
         throw new ContactDeleteException(msg);
       }
-      // vérifies if contact is scheduled
+			// checks if some invoice exists with this contact
+			check = "SELECT numero FROM " + InvoiceIO.TABLE + " WHERE debiteur = " + c.getId() + " OR adherent = " + c.getId();
+			rs = dc.executeQuery(check);
+			if (rs.next()) {
+        String g = rs.getString(1);
+        msg += MessageUtil.getMessage("contact.delete.invoice.warning", g);
+        throw new ContactDeleteException(msg);
+      }
+			/*// checks if some rib exists for this contact (DO NOT USE)*/
+			/*check = "SELECT idper FROM " + RibIO.TABLE + " WHERE idper = " + c.getId();
+			rs = dc.executeQuery(check);
+			if (rs.next()) {
+        int g = rs.getInt(1);
+        msg += MessageUtil.getMessage("contact.delete.rib.warning", g);
+        throw new ContactDeleteException(msg);
+      }*/
+			// checks if some mandate exists for this contact
+			check = "SELECT id FROM " + DirectDebitIO.TABLE + " WHERE payeur = " + c.getId();
+			rs = dc.executeQuery(check);
+			if (rs.next()) {
+        int g = rs.getInt(1);
+        msg += MessageUtil.getMessage("contact.delete.mandate.warning", g);
+        throw new ContactDeleteException(msg);
+      }
+			// checks if some room is associated with this contact
+			check = "SELECT id FROM " + RoomIO.TABLE + " WHERE payeur = " + c.getId() + " OR idper = " + c.getId();
+			rs = dc.executeQuery(check);
+			if (rs.next()) {
+        int g = rs.getInt(1);
+        msg += MessageUtil.getMessage("contact.delete.room.warning", g);
+        throw new ContactDeleteException(msg);
+      }
+      // checks if contact is scheduled
       Vector<ScheduleRange> vp = ScheduleRangeIO.find("pg WHERE pg.adherent = " + c.getId(), dc);
       if (vp != null && vp.size() > 0) {
         msg += MessageUtil.getMessage("contact.delete.range.warning", vp.size());
         throw new ContactDeleteException(msg);
       }
-      // vérifies if contact is scheduled (teacher or rehearsal)
+      // checks if contact is scheduled (teacher or rehearsal)
       Vector<Schedule> vpl = ScheduleIO.find(" WHERE p.idper = " + c.getId(), dc);
       if (vpl != null && vpl.size() > 0) {
         msg += MessageUtil.getMessage("contact.delete.schedule.warning", vpl.size());
         throw new ContactDeleteException(msg);
       }
     }
+		else if (c.getType() == Person.BANK) {
+			String check = "SELECT count(guichetid) FROM " + RibIO.TABLE + " WHERE guichetid = " + c.getId();
+			ResultSet rs = dc.executeQuery(check);
+			if (rs.next()) {
+        int g = rs.getInt(1);
+        msg += MessageUtil.getMessage("contact.delete.bank.branch.warning", g);
+        throw new ContactDeleteException(msg);
+      }
+		}
 
   }
 }

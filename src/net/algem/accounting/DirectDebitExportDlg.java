@@ -1,5 +1,5 @@
 /*
- * @(#)DirectDebitExportDlg.java	2.8.r 10/01/14
+ * @(#)DirectDebitExportDlg.java	2.8.r 18/01/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -444,11 +444,11 @@ public class DirectDebitExportDlg
 
   private String getLabel() {
     String e = ((Param) schoolChoice.getSelectedItem()).getValue();
-    String school = (e == null) ? "" : e;
-    DateFr d = new DateFr(ConfigUtil.getConf(ConfigKey.BEGINNING_YEAR.getKey(), dc));
+    String school = (e == null || e.isEmpty()) ? ConfigUtil.getConf(ConfigKey.ORGANIZATION_NAME.getKey(), dc) : e;
+    /*DateFr d = new DateFr(ConfigUtil.getConf(ConfigKey.BEGINNING_YEAR.getKey(), dc));
     DateFr f = new DateFr(ConfigUtil.getConf(ConfigKey.END_YEAR.getKey(), dc));
-
-    return "COTIS " + school + " " + String.valueOf(d.getYear()) + "-" + String.valueOf(f.getYear());
+    return "COTIS " + school + " " + String.valueOf(d.getYear()) + "-" + String.valueOf(f.getYear());*/
+		return "COTIS " + school;
   }
 
   private void closeFiles() {

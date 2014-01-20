@@ -1,7 +1,7 @@
 /*
- * @(#)FileView.java	2.7.e 04/02/13
+ * @(#)FileView.java	2.8.r 18/01/14
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -29,7 +29,7 @@ import net.algem.util.ui.TabPanel;
 /**
  * Base class for dossiers views.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.e
+ * @version 2.8.r
  * @since 2.3.c 21/03/12
  */
 public class FileView
@@ -44,13 +44,12 @@ public class FileView
   protected TabPanel wTab;
   protected ActionListener listener;
 
-  public FileView(GemDesktop _desktop) {
-    super(_desktop);
+  public FileView(GemDesktop desktop) {
+    super(desktop);
   }
 
-  public FileView(GemDesktop _desktop, String _label) {
-    super(_desktop, _label);
-    //desktop.addGemEventListener(this);
+  public FileView(GemDesktop desktop, String label) {
+    super(desktop, label);
   }
 
   /**
@@ -75,7 +74,7 @@ public class FileView
    */
   public void addTab(FileTab tab, String label) {
     wTab.addItem(tab, label);
-    wTab.setSelectedComponent(tab);//wTab.indexOfComponent(
+    wTab.setSelectedComponent(tab);
     wTab.addCloseButton(wTab.getSelectedIndex(), listener);
   }
 

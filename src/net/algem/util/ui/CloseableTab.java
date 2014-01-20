@@ -1,7 +1,7 @@
 /*
- * @(#)CloseableTab.java	2.6.a 25/09/12
+ * @(#)CloseableTab.java	2.8.r 17/01/14
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -24,21 +24,19 @@ package net.algem.util.ui;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.*;
 import net.algem.util.BundleUtil;
 import net.algem.util.ImageUtil;
 
 /**
  * Tab with closing button.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.r
  */
 public class CloseableTab extends JPanel implements ActionListener
 {
   public final static String CLOSE_CMD = "TabClosingCmd";
+	private static final String JGOODIES = "com.jgoodies.looks.plastic";
   private final TabPanel pane;
   private final ActionListener listener;
   private GemButton button;
@@ -51,10 +49,10 @@ public class CloseableTab extends JPanel implements ActionListener
     if (pane == null) {
       throw new NullPointerException("TabbedPane is null");
     }
+		setOpaque(false);
     this.pane = pane;
-    setOpaque(false);
-    setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-
+		
+		setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
     JLabel label = new JLabel()
     {
       @Override
@@ -62,14 +60,22 @@ public class CloseableTab extends JPanel implements ActionListener
       {
         int i = pane.indexOfTabComponent(CloseableTab.this);
         if (i != -1) {
-          return pane.getTitleAt(i);
+					return pane.getTitleAt(i);
         }
         return null;
       }
     };
+		
+		//add more space between the label and the button
+		if (UIManager.getLookAndFeel().getClass().getName().startsWith(JGOODIES)) {
+			label.setOpaque(true);
+			label.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 7));
+		} else {
+			label.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
+		}
+
     add(label);
-    //add more space between the label and the button
-    label.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
+    
     //tab button
     button = new GemButton(closeIcon);
     button.setContentAreaFilled(false);
@@ -79,9 +85,8 @@ public class CloseableTab extends JPanel implements ActionListener
     button.setToolTipText(BundleUtil.getLabel("Tab.closing.tip"));
     button.addActionListener(this);
     add(button);
-
     //add more space to the top of the component
-    //setBorder(BorderFactory.createEmptyBorder(2, 0, 0, 0));
+//    setBorder(BorderFactory.createEmptyBorder(2, 0, 0, 5));
 
   }
 
