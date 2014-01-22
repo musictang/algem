@@ -1,5 +1,5 @@
 /*
- * @(#)ExportSage30.java	2.8.r 02/01/14
+ * @(#)ExportSage30.java	2.8.r 21/01/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -33,7 +33,6 @@ import java.util.Vector;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
 import net.algem.util.DataConnection;
-import net.algem.util.FileUtil;
 import net.algem.util.MessageUtil;
 import net.algem.util.TextUtil;
 import net.algem.util.model.ModelException;
@@ -155,21 +154,7 @@ public class ExportSage30
       Account c = getAccount(p);
       String m = nf.format(Math.abs(e.getAmount()) / 100.0); // le montant doit être positif
       String codeJournal = getCodeJournal(e.getAccount().getId());
-//      String f = (e.getInvoice() == null) ? "" : e.getInvoice();
-//      out.print(TextUtil.padWithLeadingSpaces(String.valueOf(mouvement), 5) // n° mouvement
-//              + TextUtil.padWithTrailingSpaces(codeJournal,2) // code journal
-//              + dateFormat.format(new Date()) // date écriture
-//              + dateFormat.format(e.getDate().getDate()) // date échéance
-//              + TextUtil.padWithTrailingSpaces(e.getDocument(), 12) // libellé pièce
-//              + TextUtil.padWithTrailingSpaces(c.getNumber(), 11) // numéro dompte
-//              + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getLabel() + getInvoiceNumber(e), 25), 25) 
-//              + TextUtil.padWithLeadingSpaces(m, 13) // montant
-//              + cd // crédit
-//              + TextUtil.padWithTrailingSpaces(e.getDocument(), 12) // numéro pointage
-//              + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getCostAccount().getNumber(), 6),6) // code analytique
-//              + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getAccount().getLabel(), 34), 34) // libellé compte
-//              + "O" // lettre O pour Euro = Oui
-//              + (char) 13);
+
       out.print(TextUtil.padWithTrailingSpaces(codeJournal,3) // code journal
               + dateFormat.format(new Date()) // date écriture
               + default_document_type
@@ -186,21 +171,6 @@ public class ExportSage30
               + (char) 13);
 
       String debit = getAccount(e);
-//      String debitLabel = debit.charAt(0) == 'C' ? "Compte client " + debit : e.getAccountLabel();
-//              out.print(TextUtil.padWithLeadingSpaces(String.valueOf(mouvement), 5) // n° mouvement
-//              + TextUtil.padWithTrailingSpaces(codeJournal,2) // code journal
-//              + dateFormat.format(new Date()) // date écriture
-//              + dateFormat.format(e.getDate().getDate()) // date échéance
-//              + TextUtil.padWithTrailingSpaces(null, 12) // libellé pièce
-//              + TextUtil.padWithTrailingSpaces(debit, 11) // numéro compte tiers
-//              + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getLabel(), 25), 25) 
-//              + TextUtil.padWithLeadingSpaces(m, 13) // montant
-//              + dc // débit
-//              + TextUtil.padWithTrailingSpaces(null, 12) // numéro pointage
-//              + TextUtil.padWithTrailingSpaces(null, 6) // code analytique
-//              + TextUtil.padWithTrailingSpaces(TextUtil.truncate(debitLabel, 34), 34) // libellé compte tiers
-//              + "O" // lettre O pour Euro = Oui
-//              + (char) 13);
               
         out.print(TextUtil.padWithTrailingSpaces(codeJournal,3) // code journal
               + dateFormat.format(new Date()) // date écriture

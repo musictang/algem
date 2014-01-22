@@ -1,5 +1,5 @@
 /*
- * @(#)DirectDebitService.java	2.8.r 14/01/14
+ * @(#)DirectDebitService.java	2.8.r 21/01/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -102,7 +102,14 @@ public class DirectDebitService
     dao.update(dd);
   }
 
-  void update(List<DDMandate> mandates, DDSeqType seqType) throws SQLException {
+  void update(List<DDMandate> mandates, DDSeqType seqType) throws SQLException, DDMandateException {
+    for (DDMandate dd : mandates) {
+      if (dd.isRecurrent() && seqType.equals(DDSeqType.OOFF)) {
+        throw new DDMandateException(MessageUtil.getMessage("direct.debit.edit.ooff.warning", seqType));
+      } else if (!dd.isRecurrent() && !seqType.equals(DDSeqType.OOFF)) { 
+        throw new DDMandateException(MessageUtil.getMessage("direct.debit.edit.rcur.warning", seqType));
+      }
+    }
     dao.updateSeqType(mandates, seqType);
   }
 

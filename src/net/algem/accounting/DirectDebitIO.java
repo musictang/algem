@@ -1,5 +1,5 @@
 /*
- * @(#)DirectDebitIO.java 2.8.r 16/01/14
+ * @(#)DirectDebitIO.java 2.8.r 21/01/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -271,7 +271,7 @@ public class DirectDebitIO
   void updateToRcurSeqType(String mandates) throws SQLException {
     String query = "UPDATE " + TABLE + " SET seqtype = '" + DDSeqType.RCUR.name()
             + "' WHERE id IN(" + mandates + ")"
-            + " AND seqtype IN ('" + DDSeqType.FRST.name() + "', '" + DDSeqType.FMGR.name() + "', '" + DDSeqType.FDOM.name() + "')";
+            + " AND seqtype = '" + DDSeqType.FRST.name() + "'";
     dc.executeUpdate(query);
   }
   

@@ -1,5 +1,5 @@
 /*
- * @(#)DDMandateCtrl.java 2.8.r 18/01/14
+ * @(#)DDMandateCtrl.java 2.8.r 21/01/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -87,14 +87,17 @@ public class DDMandateCtrl
     if (editor.isValidated()) {
       try {
         if (selected.size() == 1) {
-          service.update(editor.get());
-          listCtrl.updateRow(mandate);
+          DDMandate edit = editor.get();
+          service.update(edit);
+          listCtrl.updateRow(edit);
         } else {
           service.update(selected, editor.get().getSeqType());
           listCtrl.loadResult(service.getMandates());
         }
       } catch (SQLException ex) {
         GemLogger.logException(ex);
+      } catch(DDMandateException dex) {
+        MessagePopup.warning(this, dex.getMessage());
       }
     }
   }

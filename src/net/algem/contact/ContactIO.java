@@ -213,10 +213,10 @@ public class ContactIO
    */
   public void delete(Contact c) throws SQLException, ContactDeleteException {
     checkDelete(c, dc);
-    
+
     personIO.delete(c);
     AddressIO.delete(c.getId(), dc);
-    
+
     if (c.getType() != Person.BANK) {
       TeleIO.delete(c.getId(), dc);
       EmailIO.delete(c.getId(), dc);
@@ -371,7 +371,7 @@ public class ContactIO
    */
   private static void checkDelete(Contact c, DataConnection dc) throws SQLException, ContactDeleteException {
 
-		String msg = MessageUtil.getMessage("delete.exception");
+    String msg = MessageUtil.getMessage("delete.exception");
     if (c.getType() == Person.PERSON || c.getType() == Person.ROOM) {
       // vérifier qu'il n'existe plus d'échéances pour ce contact (en tant que payeur)
       String check = "SELECT count(payeur) FROM echeancier2 WHERE payeur = " + c.getId();
@@ -399,34 +399,34 @@ public class ContactIO
         msg += MessageUtil.getMessage("contact.delete.musician.warning", g);
         throw new ContactDeleteException(msg);
       }
-			// checks if some invoice exists with this contact
-			check = "SELECT numero FROM " + InvoiceIO.TABLE + " WHERE debiteur = " + c.getId() + " OR adherent = " + c.getId();
-			rs = dc.executeQuery(check);
-			if (rs.next()) {
+      // checks if some invoice exists with this contact
+      check = "SELECT numero FROM " + InvoiceIO.TABLE + " WHERE debiteur = " + c.getId() + " OR adherent = " + c.getId();
+      rs = dc.executeQuery(check);
+      if (rs.next()) {
         String g = rs.getString(1);
         msg += MessageUtil.getMessage("contact.delete.invoice.warning", g);
         throw new ContactDeleteException(msg);
       }
-			/*// checks if some rib exists for this contact (DO NOT USE)*/
-			/*check = "SELECT idper FROM " + RibIO.TABLE + " WHERE idper = " + c.getId();
-			rs = dc.executeQuery(check);
-			if (rs.next()) {
-        int g = rs.getInt(1);
-        msg += MessageUtil.getMessage("contact.delete.rib.warning", g);
-        throw new ContactDeleteException(msg);
-      }*/
-			// checks if some mandate exists for this contact
-			check = "SELECT id FROM " + DirectDebitIO.TABLE + " WHERE payeur = " + c.getId();
-			rs = dc.executeQuery(check);
-			if (rs.next()) {
+      /* // checks if some rib exists for this contact (DO NOT USE) */
+      /* check = "SELECT idper FROM " + RibIO.TABLE + " WHERE idper = " + c.getId();
+       * rs = dc.executeQuery(check);
+       * if (rs.next()) {
+       * int g = rs.getInt(1);
+       * msg += MessageUtil.getMessage("contact.delete.rib.warning", g);
+       * throw new ContactDeleteException(msg);
+       * } */
+      // checks if some mandate exists for this contact
+      check = "SELECT id FROM " + DirectDebitIO.TABLE + " WHERE payeur = " + c.getId();
+      rs = dc.executeQuery(check);
+      if (rs.next()) {
         int g = rs.getInt(1);
         msg += MessageUtil.getMessage("contact.delete.mandate.warning", g);
         throw new ContactDeleteException(msg);
       }
-			// checks if some room is associated with this contact
-			check = "SELECT id FROM " + RoomIO.TABLE + " WHERE payeur = " + c.getId() + " OR idper = " + c.getId();
-			rs = dc.executeQuery(check);
-			if (rs.next()) {
+      // checks if some room is associated with this contact
+      check = "SELECT id FROM " + RoomIO.TABLE + " WHERE payeur = " + c.getId() + " OR idper = " + c.getId();
+      rs = dc.executeQuery(check);
+      if (rs.next()) {
         int g = rs.getInt(1);
         msg += MessageUtil.getMessage("contact.delete.room.warning", g);
         throw new ContactDeleteException(msg);
@@ -443,16 +443,15 @@ public class ContactIO
         msg += MessageUtil.getMessage("contact.delete.schedule.warning", vpl.size());
         throw new ContactDeleteException(msg);
       }
-    }
-		else if (c.getType() == Person.BANK) {
-			String check = "SELECT count(guichetid) FROM " + RibIO.TABLE + " WHERE guichetid = " + c.getId();
-			ResultSet rs = dc.executeQuery(check);
-			if (rs.next()) {
+    } else if (c.getType() == Person.BANK) {
+      String check = "SELECT count(guichetid) FROM " + RibIO.TABLE + " WHERE guichetid = " + c.getId();
+      ResultSet rs = dc.executeQuery(check);
+      if (rs.next()) {
         int g = rs.getInt(1);
         msg += MessageUtil.getMessage("contact.delete.bank.branch.warning", g);
         throw new ContactDeleteException(msg);
       }
-		}
+    }
 
   }
 }

@@ -1,7 +1,7 @@
 /*
- * @(#)Algem.java	2.8.r 23/12/13
+ * @(#)Algem.java	2.8.r 21/01/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -60,7 +60,6 @@ public class Algem
   private String driverName = "org.postgresql.Driver";
   private String hostName = "localhost";
   private String baseName = "algem";
-//  private GemDesktopCtrl desktop;
   private Properties props;
   private DataConnection dc;
 
@@ -148,7 +147,6 @@ public class Algem
             //			+ " - Utilisateur système " +System.getProperty("user.name") 
             + " - jdbc://" + hostName + "/" + baseName;
 
-//    frame = new JFrame("Algem/" + props.getProperty("appClient") + "(" + APP_VERSION + ") jdbc://" + hostName + "/" + baseName);
     frame = new JFrame(title);
     frame.setSize(DEF_WIDTH, DEF_HEIGHT);
     frame.setLocation(DEF_LOCATION);
@@ -353,14 +351,15 @@ public class Algem
     UIManager.put("CheckBox.font", fsans);
     UIManager.put("CheckBoxMenuItem.font", fsans);
     UIManager.put("TitledBorder.font", fsans.deriveFont(Font.BOLD + Font.ITALIC));
+    UIManager.put("RadioButton.font", fsans);
 
     try {
       appli = new Algem();
       appli.init(confArg, hostArg, baseArg, userArg);
     } catch (Exception ex) {
       JOptionPane.showMessageDialog(null,
-              ex.toString(),
-              "Erreur et conflit en création de l'appli",
+              ex.getMessage(),
+              MessageUtil.getMessage("application.create.error"),
               JOptionPane.ERROR_MESSAGE);
       ex.printStackTrace();
       System.exit(7);

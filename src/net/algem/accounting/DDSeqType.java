@@ -1,5 +1,5 @@
 /*
- * @(#)DDSeqType.java	2.8.r 08/01/14
+ * @(#)DDSeqType.java	2.8.r 20/01/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -32,8 +32,6 @@ public enum DDSeqType
 {
 
   FRST(BundleUtil.getLabel("Direct.debit.FRST.label")),
-  FMGR(BundleUtil.getLabel("Direct.debit.FMGR.label")),
-  FDOM(BundleUtil.getLabel("Direct.debit.FDOM.label")),
   RCUR(BundleUtil.getLabel("Direct.debit.RCUR.label")),
   FNAL(BundleUtil.getLabel("Direct.debit.FNAL.label")),
   OOFF(BundleUtil.getLabel("Direct.debit.OOFF.label")),

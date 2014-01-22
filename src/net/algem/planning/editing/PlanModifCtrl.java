@@ -443,10 +443,10 @@ public class PlanModifCtrl
         return;
       }
       if (start.equals(end) && MessagePopup.confirm(null, MessageUtil.getMessage("teacher.modification.single.schedule.confirmation"))) {
-				service.changeTeacher(plan, range, start);
-			} else {
-				service.changeTeacher(plan, range, start, end);
-			}
+        service.changeTeacher(plan, range, start);
+      } else {
+        service.changeTeacher(plan, range, start, end);
+      }
       desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));//XXX dlg.getDateEnd/Fin
     } catch (PlanningException e) {
       MessagePopup.warning(null, e.getMessage());
