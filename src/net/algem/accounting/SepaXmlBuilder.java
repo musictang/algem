@@ -35,10 +35,10 @@ import net.algem.util.TextUtil;
 
 /**
  * Xml builder for creating documents in pain.008.001.02 standard scheme.
- * Cf. {@link www.iso20022.org}
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.8.r
+ * @see <a href="http:\\www.iso20022.org">iso20022</a>
  * @since 2.8.r 24/12/13
  *
  */

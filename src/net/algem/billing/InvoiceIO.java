@@ -213,7 +213,6 @@ public class InvoiceIO
   /**
    * Search invoices by {@code payer} or {@code idper}.
    *
-   * @param payer
    * @param idper
    * @return a list of invoices
    * @throws SQLException

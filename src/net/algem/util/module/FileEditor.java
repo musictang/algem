@@ -94,8 +94,7 @@ public class FileEditor
   /**
    * Gets invoice history for {@code payerId} or {@code memberId}.
    *
-   * @param payerId
-   * @param memberId
+   * @param idper
    * @return a history
    */
   protected HistoInvoice addHistoInvoice(int idper) {
@@ -112,8 +111,7 @@ public class FileEditor
   /**
    * Gets quotation history for {@code payerId} or {@code memberId}.
    *
-   * @param payerId
-   * @param memberId
+   * @param idper
    * @return a history
    */
   protected HistoQuote getHistoQuotation(int idper) {

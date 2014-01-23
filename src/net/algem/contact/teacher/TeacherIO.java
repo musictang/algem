@@ -118,7 +118,7 @@ public class TeacherIO
   /**
    * Deletes a teacher.
    *
-   * @param t
+   * @param idper
    * @throws SQLException
    */
   public void delete(int idper) {

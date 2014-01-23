@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!-- $Header: /cvsroot/autodoc/autodoc/xml.tmpl,v 1.2 2006/05/16 19:01:27 rbt Exp $ -->
 
-<book id="database.algem-git" xreflabel="algem database schema"><title>algem Model</title>
+<book id="database.mustang" xreflabel="mustang database schema"><title>mustang Model</title>
 
 
 
@@ -288,6 +288,236 @@
 
         <variablelist>
           <title>Permissions on adresse</title>
+
+          <varlistentry>
+            <term>nobody</term>
+            <listitem>
+              <para>
+                <simplelist type="inline">
+
+                  <member>Select</member>
+
+
+                  <member>Insert</member>
+
+
+                  <member>Update</member>
+
+
+                  <member>Delete</member>
+
+
+
+                  <member>References</member>
+
+
+                  <member>Trigger</member>
+
+                </simplelist>
+              </para>
+            </listitem>
+          </varlistentry>
+
+        </variablelist>
+
+
+
+      </para>
+    </section>
+
+      <section id="public.table.afaire"
+               xreflabel="public.afaire">
+        <title id="public.table.afaire-title">
+         Table:
+         
+         <structname>afaire</structname>
+        </title>
+ 
+
+
+        <para>
+          <variablelist>
+            <title>
+              Structure of <structname>afaire</structname>
+            </title>
+
+
+            <varlistentry>
+              <term><structfield>id</structfield></term>
+              <listitem><para>
+                <type>integer</type>
+
+
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+            <varlistentry>
+              <term><structfield>idper</structfield></term>
+              <listitem><para>
+                <type>integer</type>
+
+
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+            <varlistentry>
+              <term><structfield>priorite</structfield></term>
+              <listitem><para>
+                <type>smallint</type>
+
+
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+            <varlistentry>
+              <term><structfield>categorie</structfield></term>
+              <listitem><para>
+                <type>smallint</type>
+
+
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+            <varlistentry>
+              <term><structfield>texte</structfield></term>
+              <listitem><para>
+                <type>character varying(60)</type>
+
+
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+            <varlistentry>
+              <term><structfield>echeance</structfield></term>
+              <listitem><para>
+                <type>date</type>
+
+
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+            <varlistentry>
+              <term><structfield>fait</structfield></term>
+              <listitem><para>
+                <type>boolean</type>
+
+
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+            <varlistentry>
+              <term><structfield>faitle</structfield></term>
+              <listitem><para>
+                <type>date</type>
+
+
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+            <varlistentry>
+              <term><structfield>note</structfield></term>
+              <listitem><para>
+                <type>integer</type>
+
+
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+        </variablelist>
+
+
+
+
+
+        <variablelist>
+          <title>Indexes on afaire</title>
+
+          <varlistentry>
+            <term>afx1</term>
+            <listitem><para>id</para></listitem>
+          </varlistentry>
+
+
+
+          <varlistentry>
+            <term>afx2</term>
+            <listitem><para>idper</para></listitem>
+          </varlistentry>
+
+        </variablelist>
+
+
+
+
+
+
+
+
+        <variablelist>
+          <title>Permissions on afaire</title>
 
           <varlistentry>
             <term>nobody</term>
@@ -2378,6 +2608,18 @@
 
 
 
+        <variablelist>
+          <title>Indexes on commande_cours</title>
+
+          <varlistentry>
+            <term>commande_cours_idcmd_idx</term>
+            <listitem><para>idcmd</para></listitem>
+          </varlistentry>
+
+        </variablelist>
+
+
+
 
 
 
@@ -2807,6 +3049,71 @@
 
 
                 <literal>NOT NULL</literal>
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+        </variablelist>
+
+
+
+
+
+
+
+
+
+
+      </para>
+    </section>
+
+      <section id="public.table.copyright"
+               xreflabel="public.copyright">
+        <title id="public.table.copyright-title">
+         Table:
+         
+         <structname>copyright</structname>
+        </title>
+ 
+
+
+        <para>
+          <variablelist>
+            <title>
+              Structure of <structname>copyright</structname>
+            </title>
+
+
+            <varlistentry>
+              <term><structfield>id</structfield></term>
+              <listitem><para>
+                <type>serial</type>
+
+
+
+                <literal>NOT NULL</literal>
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+            <varlistentry>
+              <term><structfield>type</structfield></term>
+              <listitem><para>
+                <type>character varying(256)</type>
+
+
 
 
 
@@ -3737,6 +4044,20 @@
             <listitem><para>echeance</para></listitem>
           </varlistentry>
 
+
+
+          <varlistentry>
+            <term>echeancier2_adh_idx</term>
+            <listitem><para>adherent</para></listitem>
+          </varlistentry>
+
+
+
+          <varlistentry>
+            <term>echeancier2_payeur_idx</term>
+            <listitem><para>payeur</para></listitem>
+          </varlistentry>
+
         </variablelist>
 
 
@@ -4417,73 +4738,6 @@
 
 
 
-        <variablelist>
-          <title>Permissions on facture</title>
-
-          <varlistentry>
-            <term>nobody</term>
-            <listitem>
-              <para>
-                <simplelist type="inline">
-
-                  <member>Select</member>
-
-
-                  <member>Insert</member>
-
-
-                  <member>Update</member>
-
-
-                  <member>Delete</member>
-
-
-
-                  <member>References</member>
-
-
-                  <member>Trigger</member>
-
-                </simplelist>
-              </para>
-            </listitem>
-          </varlistentry>
-
-
-
-          <varlistentry>
-            <term>postgres</term>
-            <listitem>
-              <para>
-                <simplelist type="inline">
-
-                  <member>Select</member>
-
-
-                  <member>Insert</member>
-
-
-                  <member>Update</member>
-
-
-                  <member>Delete</member>
-
-
-
-                  <member>References</member>
-
-
-                  <member>Trigger</member>
-
-                </simplelist>
-              </para>
-            </listitem>
-          </varlistentry>
-
-        </variablelist>
-
-
-
       </para>
     </section>
 
@@ -4636,6 +4890,22 @@
 
 
                 <literal>REFERENCES</literal> <xref linkend="public.table.personne"/>
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+            <varlistentry>
+              <term><structfield>copyright</structfield></term>
+              <listitem><para>
+                <type>integer</type>
+
+
+
+
+
 
 
               </para>
@@ -5242,6 +5512,14 @@
 
 
 
+                      <literal>UNIQUE</literal>
+
+
+
+
+
+
+
 
 
 
@@ -5270,6 +5548,38 @@
               <term><structfield>profil</structfield></term>
               <listitem><para>
                 <type>integer</type>
+
+
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+            <varlistentry>
+              <term><structfield>pass</structfield></term>
+              <listitem><para>
+                <type>bytea</type>
+
+
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+            <varlistentry>
+              <term><structfield>clef</structfield></term>
+              <listitem><para>
+                <type>bytea</type>
 
 
 
@@ -5557,121 +5867,6 @@
 
         <variablelist>
           <title>Permissions on majoration</title>
-
-          <varlistentry>
-            <term>nobody</term>
-            <listitem>
-              <para>
-                <simplelist type="inline">
-
-                  <member>Select</member>
-
-
-                  <member>Insert</member>
-
-
-                  <member>Update</member>
-
-
-                  <member>Delete</member>
-
-
-
-                  <member>References</member>
-
-
-                  <member>Trigger</member>
-
-                </simplelist>
-              </para>
-            </listitem>
-          </varlistentry>
-
-        </variablelist>
-
-
-
-      </para>
-    </section>
-
-      <section id="public.table.menu"
-               xreflabel="public.menu">
-        <title id="public.table.menu-title">
-         Table:
-         
-         <structname>menu</structname>
-        </title>
- 
-
-
-        <para>
-          <variablelist>
-            <title>
-              Structure of <structname>menu</structname>
-            </title>
-
-
-            <varlistentry>
-              <term><structfield>id</structfield></term>
-              <listitem><para>
-                <type>integer</type>
-
-
-
-
-
-
-
-              </para>
-
-            </listitem>
-          </varlistentry>
-
-            <varlistentry>
-              <term><structfield>nom</structfield></term>
-              <listitem><para>
-                <type>character varying(64)</type>
-
-
-
-
-
-
-
-              </para>
-
-            </listitem>
-          </varlistentry>
-
-            <varlistentry>
-              <term><structfield>libelle</structfield></term>
-              <listitem><para>
-                <type>character varying(32)</type>
-
-
-
-
-
-
-
-              </para>
-
-            </listitem>
-          </varlistentry>
-
-        </variablelist>
-
-
-
-
-
-
-
-
-
-
-        <variablelist>
-          <title>Permissions on menu</title>
 
           <varlistentry>
             <term>nobody</term>
@@ -6189,105 +6384,6 @@
 
         <variablelist>
           <title>Permissions on module</title>
-
-          <varlistentry>
-            <term>nobody</term>
-            <listitem>
-              <para>
-                <simplelist type="inline">
-
-                  <member>Select</member>
-
-
-                  <member>Insert</member>
-
-
-                  <member>Update</member>
-
-
-                  <member>Delete</member>
-
-
-
-                  <member>References</member>
-
-
-                  <member>Trigger</member>
-
-                </simplelist>
-              </para>
-            </listitem>
-          </varlistentry>
-
-        </variablelist>
-
-
-
-      </para>
-    </section>
-
-      <section id="public.table.module-compo"
-               xreflabel="public.module_compo">
-        <title id="public.table.module-compo-title">
-         Table:
-         
-         <structname>module_compo</structname>
-        </title>
- 
-
-
-        <para>
-          <variablelist>
-            <title>
-              Structure of <structname>module_compo</structname>
-            </title>
-
-
-            <varlistentry>
-              <term><structfield>module</structfield></term>
-              <listitem><para>
-                <type>integer</type>
-
-
-
-
-
-
-
-              </para>
-
-            </listitem>
-          </varlistentry>
-
-            <varlistentry>
-              <term><structfield>mtype</structfield></term>
-              <listitem><para>
-                <type>integer</type>
-
-
-
-
-
-
-
-              </para>
-
-            </listitem>
-          </varlistentry>
-
-        </variablelist>
-
-
-
-
-
-
-
-
-
-
-        <variablelist>
-          <title>Permissions on module_compo</title>
 
           <varlistentry>
             <term>nobody</term>
@@ -6924,6 +7020,18 @@
 
 
 
+        <variablelist>
+          <title>Indexes on person_instrument</title>
+
+          <varlistentry>
+            <term>person_instrument_idper_idx</term>
+            <listitem><para>idper</para></listitem>
+          </varlistentry>
+
+        </variablelist>
+
+
+
 
 
 
@@ -7066,6 +7174,24 @@
 
 
                 <literal>DEFAULT NULL::character varying</literal>
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+            <varlistentry>
+              <term><structfield>partenaire</structfield></term>
+              <listitem><para>
+                <type>boolean</type>
+
+
+
+
+
+                <literal>DEFAULT false</literal>
 
 
 
@@ -7314,6 +7440,13 @@
           <title>Indexes on plage</title>
 
           <varlistentry>
+            <term>plage_adh_idx</term>
+            <listitem><para>adherent</para></listitem>
+          </varlistentry>
+
+
+
+          <varlistentry>
             <term>plage_idplanning_idx</term>
             <listitem><para>idplanning</para></listitem>
           </varlistentry>
@@ -7517,8 +7650,22 @@
 
 
           <varlistentry>
+            <term>planning_idper_idx</term>
+            <listitem><para>idper</para></listitem>
+          </varlistentry>
+
+
+
+          <varlistentry>
             <term>planning_jour_idx</term>
             <listitem><para>jour</para></listitem>
+          </varlistentry>
+
+
+
+          <varlistentry>
+            <term>planning_lieux_idx</term>
+            <listitem><para>lieux</para></listitem>
           </varlistentry>
 
         </variablelist>
@@ -8045,6 +8192,163 @@ WHERE (
           </varlistentry>
 
         </variablelist>
+
+
+
+      </para>
+    </section>
+
+      <section id="public.table.prlsepa"
+               xreflabel="public.prlsepa">
+        <title id="public.table.prlsepa-title">
+         Table:
+         
+         <structname>prlsepa</structname>
+        </title>
+ 
+
+
+        <para>
+          <variablelist>
+            <title>
+              Structure of <structname>prlsepa</structname>
+            </title>
+
+
+            <varlistentry>
+              <term><structfield>id</structfield></term>
+              <listitem><para>
+                <type>serial</type>
+
+
+
+                <literal>NOT NULL</literal>
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+            <varlistentry>
+              <term><structfield>payeur</structfield></term>
+              <listitem><para>
+                <type>integer</type>
+
+
+
+                <literal>NOT NULL</literal>
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+            <varlistentry>
+              <term><structfield>lastdebit</structfield></term>
+              <listitem><para>
+                <type>date</type>
+
+
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+            <varlistentry>
+              <term><structfield>signature</structfield></term>
+              <listitem><para>
+                <type>date</type>
+
+
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+            <varlistentry>
+              <term><structfield>recurrent</structfield></term>
+              <listitem><para>
+                <type>boolean</type>
+
+
+
+
+
+                <literal>DEFAULT true</literal>
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+            <varlistentry>
+              <term><structfield>seqtype</structfield></term>
+              <listitem><para>
+                <type>prlseqtype</type>
+
+
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+            <varlistentry>
+              <term><structfield>rum</structfield></term>
+              <listitem><para>
+                <type>character varying(35)</type>
+
+
+
+
+                      <literal>UNIQUE</literal>
+
+
+
+
+
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+        </variablelist>
+
+
+
+
+
+
+
 
 
 
@@ -8794,6 +9098,22 @@ WHERE (
               <term><structfield>guso</structfield></term>
               <listitem><para>
                 <type>character(10)</type>
+
+
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+            <varlistentry>
+              <term><structfield>nationalite</structfield></term>
+              <listitem><para>
+                <type>character varying(64)</type>
 
 
 
@@ -10742,33 +11062,6 @@ WHERE (
     </section>
 
 
-
-<!-- Function array_agg( anyelement ) -->
-    <section id="public.function.array-agg-anyelement"
-             xreflabel="publicarray_agg( anyelement )">
-      <title id="public.function.array-agg-anyelement-title">
-       array_agg( anyelement )
-      </title>
-      <titleabbrev id="public.function.array-agg-anyelement-titleabbrev">
-       array_agg( anyelement )
-      </titleabbrev>
-
-      <para>
-       <segmentedlist>
-        <title>Function Properties</title>
-        <?dbhtml list-presentation="list"?>
-        <segtitle>Language</segtitle>
-        <segtitle>Return Type</segtitle>
-        <seglistitem>
-         <seg>INTERNAL</seg>
-         <seg>anyarray</seg>
-        </seglistitem>
-       </segmentedlist>
- 
-       
-        <programlisting>aggregate_dummy</programlisting>
-      </para>
-    </section>
 
   </chapter>
 
