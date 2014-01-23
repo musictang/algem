@@ -204,13 +204,17 @@ EN PROJET
 =========
 - Remaniement des tarifs pour les modules de cours.
 
-- Gestion des stages (cours sur plusieurs jours d'affilée)
+- Gestion des stages (cours sur plusieurs jours d'affilée).
 
-- Exports comptables vers les logiciels de comptabilité Ciel Compta ou Sage.
-Actuellement, seul le logiciel DVLog PGI est pris en compte.
+- L'export comptable vers les logiciels CIEL et SAGE est opérationnel mais
+encore en phase de test.
 
-- Rédaction d'une doc utilisateur
+- Gestion des acomptes dans l'échéancier après création de facture.
 
-- Extension des tests unitaires et des tests d'intégration
+- Rédaction d'une doc utilisateur.
+
+- Extension des tests unitaires et des tests d'intégration.
+
+- Extension et amélioration des exportations de données.
 
 
