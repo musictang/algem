@@ -1,5 +1,5 @@
 /*
- * @(#)SepaXmlBuilder.java	2.8.r 22/01/14
+ * @(#)SepaXmlBuilder.java	2.8.r 23/01/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -101,8 +101,8 @@ public class SepaXmlBuilder
   String getDocument() {
     StringBuilder sb = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
     indent(sb, 0);
-    sb.append("<Document xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"urn:iso:std:iso:20022:tech:xsd:pain.008.001.02\"");
-    sb.append(" xsi:schemaLocation=\"urn:iso:std:iso:20022:tech:xsd:pain.008.001.02 file:/home/jm/Algem/src/git/trunk/test/net/algem/pain.008.001.02.xsd\">");
+    sb.append("<Document xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"urn:iso:std:iso:20022:tech:xsd:pain.008.001.02\">");
+    //sb.append(" xsi:schemaLocation=\"urn:iso:std:iso:20022:tech:xsd:pain.008.001.02 file:/src/git/trunk/test/net/algem/pain.008.001.02.xsd\">");
     indent(sb, 1);
     sb.append("<CstmrDrctDbtInitn>");
     return sb.toString();
