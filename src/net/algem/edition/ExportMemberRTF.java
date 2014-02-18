@@ -1,7 +1,7 @@
 /*
- * @(#)ExportMemberRTF.java 2.8.f 23/05/13
+ * @(#)ExportMemberRTF.java 2.8.s 18/02/14
  * 
- * Copyright (c) 2001-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -51,7 +51,7 @@ import net.algem.util.module.GemDesktop;
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.f
+ * @version 2.8.s
  * @since 1.0b 05/03/2002
  */
 public class ExportMemberRTF
@@ -84,7 +84,7 @@ public class ExportMemberRTF
 
     out = new PrintWriter(new FileOutputStream(path));
 
-    out.println("{\\rtf1\\utf8\\deflang1024\\deff0{\\fonttbl{\\f0\\froman Times Roman;}{\\f1\\fnil Times;}{\\f2\\fswiss Helvetica;}}{\\colortbl;\\red0\\green0\\blue0;\\red255\\green255\\blue255;}{\\stylesheet{\\sa144\\sl240\\slmult1\\brdrt0\\brdrl0\\brdrr0\\brdrb0\\brdrbtw0 \\f1\\fs24\\cf1 ");
+    out.println("{\\rtf1\\utf8\\deflang1024 \\deff0{\\fonttbl{\\f0\\froman Times Roman;}{\\f1\\fnil Times;}{\\f2\\fswiss Helvetica;}}{\\colortbl;\\red0\\green0\\blue0;\\red255\\green255\\blue255;}{\\stylesheet{\\sa144\\sl240\\slmult1\\brdrt0\\brdrl0\\brdrr0\\brdrb0\\brdrbtw0 \\f1\\fs24\\cf1 ");
     out.println("\\snext0 Normal;}{\\s1\\sl240\\slmult1\\brdrt0\\brdrl0\\brdrr0\\brdrb0\\brdrbtw0 \\f1\\fs24\\cf1 \\sbasedon0\\snext1 Cellule;}{\\s2\\sa144\\sl240\\slmult1\\tqc\\tx5044\\tqr\\tx9636\\brdrt0\\brdrl0\\brdrr0\\brdrb0\\brdrbtw0 \\f1\\fs24\\cf1 \\sbasedon0\\snext2 EnTetePiedDePage;}{\\s3");
     out.println("\\sa144\\sl240\\slmult1\\brdrt0\\brdrl0\\brdrr0\\brdrb0\\brdrbtw0 \\f1\\fs24\\cf1 \\sbasedon0\\snext3 Paragraphe;}{\\s4\\sa144\\sl240\\slmult1\\brdrt0\\brdrl0\\brdrr0\\brdrb0\\brdrbtw0 \\b\\f1\\fs28\\cf1 \\sbasedon5\\snext4 Sous-titre;}{\\s5\\qc\\sa144\\sl240\\slmult1\\brdrt0\\brdrl0");
     out.println("\\brdrr0\\brdrb0\\brdrbtw0 \\b\\f1\\fs36\\cf1 \\sbasedon0\\snext5 Titre;}}");
@@ -178,9 +178,11 @@ public class ExportMemberRTF
     out.println("\\par \\pard\\plain \\s3\\sa144\\slmult1 \\f1\\fs24\\cf1 ");
     out.println("\\par \\pard\\plain \\s3\\qc\\sa144\\slmult1 \\f1\\fs24\\cf1 {\\b\\f2\\fs28 Suivi p\\'e9dagogique}");
 
-    List<Course> triListe = getCourseOrderList(courseOrderList);
-    if (!triListe.isEmpty()) {
-      out.println(getFollowUp(member, triListe));
+    List<Course> courseList = getCourseOrderList(courseOrderList);
+    if (!courseList.isEmpty()) {
+      out.println(getFollowUp(member, courseList));
+    } else {
+      out.print("\n\\par }");
     }
     out.close();
   }

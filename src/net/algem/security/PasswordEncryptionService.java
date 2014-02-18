@@ -69,7 +69,7 @@ class PasswordEncryptionService
     KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, iterations, derivedKeyLength);
 
     SecretKeyFactory f = SecretKeyFactory.getInstance(algorithm);
-
+   
     return f.generateSecret(spec).getEncoded();
   }
 

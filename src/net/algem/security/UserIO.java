@@ -1,5 +1,5 @@
 /*
- * @(#)UserIO.java 2.8.r 17/01/14
+ * @(#)UserIO.java 2.8.s 18/02/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -29,13 +29,14 @@ import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
 import net.algem.util.model.Cacheable;
 import net.algem.util.model.TableIO;
+import org.apache.commons.codec.binary.Base64;
 
 /**
  * IO methods for class {@link net.algem.security.User}.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.8.r
+ * @version 2.8.s
  * @since 1.0a 07/07/1999
  */
 public class UserIO
@@ -50,7 +51,6 @@ public class UserIO
   public static int PROFIL_ADMIN = 4; // ADMIN
   public static String[] PROFIL_NAMES = {"Basique", "Utilisateur", "Professeur", "Public", "Administrateur"};
   static final String TABLE = "login";
-  
   private DataConnection dc;
 
   public UserIO(DataConnection dc) {
@@ -59,29 +59,38 @@ public class UserIO
 
   public void insert(User u) throws SQLException {
 
-		String query = "INSERT INTO " + TABLE + " (idper,login,profil,pass,clef) VALUES(?,?,?,?,?)";
-		PreparedStatement statement = dc.prepareStatement(query);
-		statement.setInt(1, u.getId());
-		statement.setString(2, u.getLogin());
-		statement.setInt(3, u.getProfile());
-		statement.setBytes(4, u.getPassInfo().getPass());
-		statement.setBytes(5, u.getPassInfo().getKey());
-		statement.executeUpdate();
-		statement.close();
+    String query = "INSERT INTO " + TABLE + " (idper,login,profil,pass,clef) VALUES(?,?,?,?,?)";
+    PreparedStatement statement = dc.prepareStatement(query);
+    statement.setInt(1, u.getId());
+    statement.setString(2, u.getLogin());
+    statement.setInt(3, u.getProfile());
+    String b64pass = Base64.encodeBase64String(u.getPassInfo().getPass());
+    statement.setString(4, b64pass);
+    String b64salt = Base64.encodeBase64String(u.getPassInfo().getKey());
+    statement.setString(5, b64salt);
+    statement.executeUpdate();
+    statement.close();
 
-	}
+  }
 
   public void update(User u) throws SQLException {
-		String query = "UPDATE " + TABLE + " SET login = ?, profil = ?, pass = ?, clef = ? WHERE idper = " + u.getId();
-		UserPass pass = u.getPassInfo();
+    String query = "UPDATE " + TABLE + " SET login = ?, profil = ?, pass = ?, clef = ? WHERE idper = " + u.getId();
+    UserPass pass = u.getPassInfo();
+    String b64pass = null;
+    String b64salt = null;
+    PreparedStatement statement = dc.prepareStatement(query);
+    statement.setString(1, u.getLogin());
+    statement.setInt(2, u.getProfile());
 
-		PreparedStatement statement = dc.prepareStatement(query);
-		statement.setString(1, u.getLogin());
-		statement.setInt(2, u.getProfile());
-		statement.setBytes(3, pass == null ? null : u.getPassInfo().getPass());
-		statement.setBytes(4, pass == null ? null : u.getPassInfo().getKey());
-		statement.executeUpdate();
-		statement.close();
+    if (pass != null) {
+      b64pass = Base64.encodeBase64String(pass.getPass());
+      b64salt = Base64.encodeBase64String(pass.getKey());
+    }
+
+    statement.setString(3, pass == null ? null : b64pass);
+    statement.setString(4, pass == null ? null : b64salt);
+    statement.executeUpdate();
+    statement.close();
 
   }
 
@@ -155,10 +164,12 @@ public class UserIO
       u.setFirstName(rs.getString(4).trim());
       u.setGender(rs.getString(5).trim());
       u.setLogin(rs.getString(6).trim());
-      //u.setPassword(rs.getString(7).trim());
       u.setProfile(rs.getInt(7));
-			u.setPassInfo(new UserPass(rs.getBytes(8), rs.getBytes(9)));
 
+      byte[] b64pass = Base64.decodeBase64(rs.getString(8));
+      byte[] b64salt = Base64.decodeBase64(rs.getString(9));
+
+      u.setPassInfo(new UserPass(b64pass, b64salt));
       v.add(u);
     }
     rs.close();
@@ -169,5 +180,4 @@ public class UserIO
   public List<User> load() throws SQLException {
     return find(null);
   }
-  
 }

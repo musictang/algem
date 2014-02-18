@@ -18,7 +18,6 @@
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 package net.algem.util;
 
 import java.awt.Component;
@@ -41,30 +40,28 @@ import net.algem.util.ui.MessagePopup;
 
 /**
  * Utility class for file operations.
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.8.r
  * @since 2.0q
  */
-public class FileUtil {
+public class FileUtil
+{
 
   public final static String FILE_SEPARATOR = System.getProperty("file.separator");
-
   /** Relative path for invoice footer file. */
   public final static String INVOICE_FOOTER_FILE = "/resources/doc/fact-pdp.txt";
-  
 //  public final static String DOC_DIR = "/resources/doc/";
-
   /** Default margin in mm for printing. */
   private static int MARGIN = 5; //
-
   /** Default width in mm for printing. */
   private static int WIDTH = 210;
-
   /** Default heigth in mm for printing. */
   private static int HEIGHT = 297;// 
 
   /**
    * Gets a directory.
+   *
    * @param parent
    * @param command text of command
    * @param path default path
@@ -79,6 +76,7 @@ public class FileUtil {
 
   /**
    * Selects a file.
+   *
    * @param parent parent
    * @param command text of command
    * @param path default path
@@ -94,7 +92,7 @@ public class FileUtil {
   /**
    * Find the most recent file in the specified {@code dirname} for contact {@code idper}.
    * The name of this file must match the following pattern : {@code ^.*[0-9]*\..*$}.
-   * 
+   *
    * @param parent parent directory name
    * @param subDir actual directory name
    * @param id contact id
@@ -104,21 +102,22 @@ public class FileUtil {
 
     File baseDir = null;
     File[] files = null;
-    
+
     ContactFileNameFilter fileNameFilter = new ContactFileNameFilter(id);
-    
+
     if (parent != null) {
       baseDir = new File(parent + subDir);
       if (isValidDirectory(baseDir)) {
         files = baseDir.listFiles(fileNameFilter);
-      } 
-    } 
-    
+      }
+    }
+
     if (files == null || files.length == 0) {
       return null;
     }
     Arrays.sort(files, new Comparator<File>()
     {
+
       @Override
       public int compare(File o1, File o2) {
         if (o1.lastModified() < o2.lastModified()) {
@@ -139,7 +138,7 @@ public class FileUtil {
     if (path != null && !path.isEmpty()) {
       if (!path.endsWith(FILE_SEPARATOR)) {
         path += FILE_SEPARATOR;
-      }      
+      }
     }
     return path;
   }
@@ -150,24 +149,15 @@ public class FileUtil {
 
   /**
    * Opens some file by java desktop.
+   *
    * @param path the path of the file to open
    */
   public static void open(DesktopHandler handler, String path) {
-     try {
+    try {
       ((DesktopOpenHandler) handler).open(path);
-      } catch (DesktopHandlerException ex) {
-        GemLogger.log(ex.getMessage());
-        try {   
-          String prog = BundleUtil.getLabel("Office.client");
-          if (prog == null) {
-            prog = "oowriter";
-          }
-          String [] command = {prog, path};
-          Runtime.getRuntime().exec(command); 
-        } catch (IOException ioe) {
-          GemLogger.log(ioe.getMessage());
-        }
-      }
+    } catch (DesktopHandlerException ex) {
+      GemLogger.log(ex.getMessage());
+    }
   }
 
   /**
@@ -190,7 +180,7 @@ public class FileUtil {
     }
     return file;
   }
-  
+
   public static boolean confirmOverWrite(Component parent, File f) {
     if (f.exists()) {
       return MessagePopup.confirm(parent, MessageUtil.getMessage("file.overwrite.confirmation", f.getName()));
@@ -200,20 +190,22 @@ public class FileUtil {
 
   /**
    * Escape backslashes in a string.
+   *
    * @param path
    * @return a string
    */
   public static String escapeBackSlashes(String path) {
-      return path.replace("\\", "\\\\");
+    return path.replace("\\", "\\\\");
   }
 
   /**
    * Replace accents with their code in RTF export.
-   * @param s 
+   *
+   * @param s
    * @return a string
    */
   public static String rtfReplaceChars(String s) {
-    
+
     s = s.replaceAll("é", "\\\\'e9");
     s = s.replaceAll("è", "\\\\'e8");
     s = s.replaceAll("ê", "\\\\'ea");
@@ -239,6 +231,7 @@ public class FileUtil {
 
   /**
    * Gets the number of lines in a file.
+   *
    * @param path file path
    * @return an integer
    * @throws IOException
@@ -247,13 +240,14 @@ public class FileUtil {
 
     FileReader r = new FileReader(path);
     LineNumberReader l = new LineNumberReader(new BufferedReader(r));
-    while (l.readLine() != null) {}
+    while (l.readLine() != null) {
+    }
     return l.getLineNumber();
   }
 
-   /**
+  /**
    * Printing configuration.
-   * 
+   *
    * @param size page size
    * @param orientation page orientation
    * @return a set of attributes
@@ -267,5 +261,4 @@ public class FileUtil {
 
     return attSet;
   }
-
 }

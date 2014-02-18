@@ -1,7 +1,7 @@
 /*
- * @(#)MonthScheduleTab.java	2.8.o 10/10/13
+ * @(#)MonthScheduleTab.java	2.8.s 17/02/14
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -42,7 +42,7 @@ import net.algem.util.module.GemDesktop;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.o
+ * @version 2.8.s
  */
 public class MonthScheduleTab
         extends AbstractMonthScheduleCtrl
@@ -91,13 +91,14 @@ public class MonthScheduleTab
 
     try {
       int type = pFile.getContact().getType();
-      String query;
+      
 //      boolean isTeacher = pFile.getTeacher() != null;
       if (type != Contact.PERSON) {
         return;
       }
       // recherche des répétitions / plannings prof dans les plannings
-      query = " WHERE p.idper = " + pFile.getId()
+      // TODO (problème si n° groupe = n° personne) ajouter ptype = 1 or ptype = 4 ??
+      String query = " WHERE p.idper = " + pFile.getId()
               + " AND p.jour >= '" + start + "' AND p.jour <= '" + end + "'"
               + " ORDER BY p.jour,p.debut";
 
@@ -105,20 +106,19 @@ public class MonthScheduleTab
 
       Vector<ScheduleObject> vp2 = null;
 
-        query = " ,plage WHERE plage.adherent = " + pFile.getId()
-                //                + " AND p.jour = plage.jour"
-                //                + " AND p.lieux = plage.salle "
-                //                + " AND (plage.debut >= p.debut AND plage.fin <= p.fin)"
-                + " AND p.id = plage.idplanning"
-                + " AND p.jour >= '" + start + "' AND p.jour <= '" + end + "'"
-                + " ORDER BY p.jour,p.debut";
-        vp2 = planningService.getSchedule(query);
+      query = " ,plage pg WHERE pg.adherent = " + pFile.getId()
+              + " AND p.id = pg.idplanning"
+              + " AND p.jour >= '" + start + "' AND p.jour <= '" + end + "'"
+//              + " ORDER BY p.jour,p.debut";// bug!!
+              + " ORDER BY p.jour, pg.debut";
+      vp2 = planningService.getSchedule(query);
 
       query = " AND pg.adherent = " + pFile.getId()
                 + " AND p.jour >= '" + start + "' AND p.jour <= '" + end + "'"
                 + " ORDER BY p.jour, pg.debut";
       Vector<ScheduleRangeObject> vpg1 = planningService.getScheduleRange(query);
-      // test correlation plannings/plages
+      
+      // test correlation plannings/plages (on réduit la durée du planning à la durée effective de la plage)
       if (vp2 != null) {
         for (int i = 0; i < vpg1.size(); i++) {
             vp2.elementAt(i).setStart(vpg1.elementAt(i).getStart());
@@ -127,6 +127,7 @@ public class MonthScheduleTab
         vp1.addAll(vp2);
       }
       
+      // plages prof/répétiteur
       query = " AND p.idper = " + pFile.getId()
                 + " AND p.jour >= '" + start + "' AND p.jour <= '" + end + "'"
                 + " ORDER BY p.jour, pg.debut";

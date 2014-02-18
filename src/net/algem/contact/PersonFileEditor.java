@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileEditor 2.8.r 14/01/14
+ * @(#)PersonFileEditor 2.8.s 18/02/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -24,7 +24,6 @@ import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Vector;
 import java.util.logging.Level;
@@ -65,7 +64,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.r
+ * @version 2.8.s
  */
 public class PersonFileEditor
         extends FileEditor
@@ -884,14 +883,9 @@ public class PersonFileEditor
       DesktopOpenHandler handler = new DesktopOpenHandler();
       handler.open(rtfExport.getPath(), path);
     } catch (DesktopHandlerException de) {
-      System.err.println(de.getMessage());
-      try {
-        Runtime.getRuntime().exec("oowriter " + rtfExport.getPath() + " " + path); // TODO paramétrer lecteur par défaut
-      } catch (IOException ioe) {
-        System.err.println(ioe.getMessage());
-      }
+      GemLogger.log(de.getMessage());
     } catch (FileNotFoundException fe) {
-      System.err.println(fe.getMessage());
+      GemLogger.log(fe.getMessage());
       JOptionPane.showMessageDialog(view, path, fe.getMessage(), JOptionPane.ERROR_MESSAGE);
     }
   }

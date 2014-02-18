@@ -1,5 +1,5 @@
 /*
- * @(#)SepaXmlBuilder.java	2.8.r 23/01/14
+ * @(#)SepaXmlBuilder.java	2.8.s 17/02/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -37,7 +37,7 @@ import net.algem.util.TextUtil;
  * Xml builder for creating documents in pain.008.001.02 standard scheme.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.r
+ * @version 2.8.s
  * @see <a href="http:\\www.iso20022.org">iso20022</a>
  * @since 2.8.r 24/12/13
  *
@@ -212,7 +212,7 @@ public class SepaXmlBuilder
     indent(sb, 3);
     sb.append("<Cdtr><Nm>").append(creditor.getFirmName()).append("</Nm></Cdtr>");
     indent(sb, 3);
-    sb.append("<CdtrAcct><Id><IBAN>").append(creditor.getIban()).append("</IBAN></Id></CdtrAcct>");
+    sb.append("<CdtrAcct><Id><IBAN>").append(creditor.getIban().toUpperCase()).append("</IBAN></Id></CdtrAcct>");
     indent(sb, 3);
     sb.append("<CdtrAgt><FinInstnId><BIC>").append(creditor.getBic()).append("</BIC></FinInstnId></CdtrAgt>");
     indent(sb, 3);
@@ -288,7 +288,7 @@ public class SepaXmlBuilder
     indent(sb, 4);
     String iban = mandate.getIban();
     if (iban != null && iban.length() > 0 && ibanPattern.matcher(iban).matches()) {
-      sb.append("<DbtrAcct><Id><IBAN>").append(mandate.getIban()).append("</IBAN></Id></DbtrAcct>");
+      sb.append("<DbtrAcct><Id><IBAN>").append(mandate.getIban().toUpperCase()).append("</IBAN></Id></DbtrAcct>");
     } else {
       addLogInfo(mandate.getIdper(), " -> IBAN");
       return null;

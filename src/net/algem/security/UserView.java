@@ -1,7 +1,7 @@
 /*
- * @(#)UserView.java	2.8.p 30/10/13
+ * @(#)UserView.java	2.8.s 18/02/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -33,7 +33,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.p
+ * @version 2.8.s
  */
 public class UserView
         extends GemBorderPanel
@@ -43,13 +43,13 @@ public class UserView
   private GemNumericField id;
   private GemField name;
   private GemField login;
-	private JPasswordField  password;
+  private JPasswordField password;
   private JComboBox profile;
 
-	public UserView() {
-		super(BorderFactory.createEmptyBorder(20,20,20,20));
-	}
-	
+  public UserView() {
+    super(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+  }
+
   public UserView(Person p) {
 
     this.person = p;
@@ -63,13 +63,13 @@ public class UserView
     name.setEditable(false);
 
     login = new GemField(8);
-		password = new JPasswordField(8);
+    password = new JPasswordField(8);
 
     profile = new JComboBox(UserIO.PROFIL_NAMES);
-    
+
     this.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
-		gb.insets = GridBagHelper.SMALL_INSETS;
+    gb.insets = GridBagHelper.SMALL_INSETS;
 
     gb.add(id, 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Login.label")), 0, 1, 1, 1, GridBagHelper.WEST);
@@ -82,17 +82,17 @@ public class UserView
   }
 
   public User get() {
-		// login, pass, profile
+    // login, pass, profile
     User u = new User(person);
     u.setLogin(login.getText());
-		u.setPassword(String.valueOf(password.getPassword()));
+    u.setPassword(String.valueOf(password.getPassword()));
     u.setProfile(profile.getSelectedIndex());
     return u;
   }
 
   public void set(User u) {
     name.setText(u.getFirstName() + " " + u.getName());
-    password.setText(u.getPassword());
+    password.setText(u.getPassword());// clear text password is null by default
     login.setText(u.getLogin());
     profile.setSelectedIndex(u.getProfile());
   }

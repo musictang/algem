@@ -1,7 +1,7 @@
 /*
- * @(#)DesktopMailHandler.java	2.7.a 03/12/12
+ * @(#)DesktopMailHandler.java	2.8.s 17/02/14
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -31,7 +31,7 @@ import net.algem.util.GemLogger;
  * Sending mail manager.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.s
  * @since 2.0k 11/01/10
  * @see java.awt.Desktop
  */
@@ -96,12 +96,14 @@ public class DesktopMailHandler
       } else {
         args = _to;
       }
-    } else if (app.equalsIgnoreCase("thunderbird")) {
+    } else if (app.equalsIgnoreCase("thunderbird") || app.endsWith("thunderbird")) {
       if (bcc != null && bcc.length() > 0) {
         args = " -compose to='" + _to + "',bcc='" + bcc + "'";
       } else {
         args = " -compose to='" + _to + "'";
       }
+    } else {
+      args = "mailto:" + _to + "?bcc=" + bcc;
     }
     return args;
   }

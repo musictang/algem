@@ -1,7 +1,7 @@
 /*
- * @(#)User.java	2.8.p 30/10/13
+ * @(#)User.java	2.8.s 18/02/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -30,7 +30,7 @@ import net.algem.contact.Person;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.p
+ * @version 2.8.s
  */
 public class User
 	extends Person {
@@ -66,15 +66,13 @@ public class User
 		if ((this.login == null) ? (other.login != null) : !this.login.equals(other.login)) {
 			return false;
 		}
-		if ((this.password == null) ? (other.password != null) : !this.password.equals(other.password)) {
-			return false;
-		}
 		if (this.profile != other.profile) {
 			return false;
 		}
 		if (this.pass != other.pass && (this.pass == null || !this.pass.equals(other.pass))) {
 			return false;
 		}
+
 		return true;
 	}
 
@@ -82,7 +80,6 @@ public class User
 	public int hashCode() {
 		int hash = 7;
 		hash = 17 * hash + (this.login != null ? this.login.hashCode() : 0);
-		hash = 17 * hash + (this.password != null ? this.password.hashCode() : 0);
 		hash = 17 * hash + this.profile;
 		hash = 17 * hash + (this.pass != null ? this.pass.hashCode() : 0);
 		return hash;

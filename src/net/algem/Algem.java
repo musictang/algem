@@ -1,5 +1,5 @@
 /*
- * @(#)Algem.java	2.8.r 21/01/14
+ * @(#)Algem.java	2.8.s 18/02/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -45,18 +45,17 @@ import org.apache.commons.codec.binary.Base64;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.r
+ * @version 2.8.s
  */
 public class Algem
 {
 
-  public static final String APP_VERSION = "2.8.r";//experimental
+  public static final String APP_VERSION = "2.8.s";//experimental
   private static final int DEF_WIDTH = 1080;// (850,650) => ancienne taille
   private static final int DEF_HEIGHT = 780;
   private static final Point DEF_LOCATION = new Point(70, 30);
   private JFrame frame;
   private DataCache cache;
-//  private User user;
   private String driverName = "org.postgresql.Driver";
   private String hostName = "localhost";
   private String baseName = "algem";

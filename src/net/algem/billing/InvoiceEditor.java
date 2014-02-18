@@ -1,7 +1,7 @@
 /*
- * @(#)InvoiceEditor.java 2.8.n 26/09/13
+ * @(#)InvoiceEditor.java 2.8.s 17/02/14
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -42,7 +42,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.n
+ * @version 2.8.s
  * @since 2.3.a 07/02/12
  */
 public class InvoiceEditor
@@ -95,6 +95,23 @@ public class InvoiceEditor
   public Vector<Invoice> find(int client) {
     return null;
   }
+  
+  /**
+   * Resets items' id to 0 after sql failure.
+   * Under some circumstances, sql error may be generated after inserting an
+   * item and updating its id in corresponding object instance. So, it may be necessary
+   * to reset this id to 0 before recreation. Else, the program will update this
+   * item without creating first.
+   * @param v invoice
+   */
+  private void resetItemsId(Invoice v) {
+    for (InvoiceItem vi : v.getItems()) {
+      Item i = vi.getItem();
+      if (!i.isStandard()) {
+        i.setId(0);
+      }
+    }
+  }
 
   @Override
   public void validation() {
@@ -109,8 +126,10 @@ public class InvoiceEditor
         backup(v);
         btDuplicate.setEnabled(true);
       } catch (SQLException e) {
+        resetItemsId(v);
         GemLogger.logException(e);
       } catch (BillingException fe) {
+        resetItemsId(v);
         MessagePopup.warning(this, MessageUtil.getMessage("invoicing.create.exception")+"\n"+fe.getMessage());
       }
     } else {

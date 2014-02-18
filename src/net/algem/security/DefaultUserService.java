@@ -1,7 +1,7 @@
 /*
- * @(#)DefaultUserService.java	2.8.p 01/11/13
+ * @(#)DefaultUserService.java	2.8.s 18/02/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -34,12 +34,13 @@ import net.algem.util.GemLogger;
 import net.algem.util.model.Model;
 import net.algem.util.postit.Postit;
 import net.algem.util.postit.PostitIO;
+import org.apache.commons.codec.binary.Base64;
 
 /**
  * User operations service.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.p
+ * @version 2.8.s
  * @since 2.6.a 06/08/2012
  */
 public class DefaultUserService
@@ -152,7 +153,7 @@ public class DefaultUserService
       String query = "SELECT " + colName + " FROM " + UserIO.TABLE + " WHERE login = '" + login + "' OR idper = " + id;
       ResultSet rs = dc.executeQuery(query);
       while (rs.next()) {
-        info = rs.getBytes(1);
+        info = Base64.decodeBase64(rs.getString(1));
       }
     } catch (SQLException ex) {
       GemLogger.logException(ex);
@@ -327,6 +328,7 @@ public class DefaultUserService
     } catch (NoSuchAlgorithmException ex) {
       throw new UserException(ex.getMessage());
     } catch (InvalidKeySpecException ex) {
+      // if password is null for exemple
       throw new UserException(ex.getMessage());
     }
 

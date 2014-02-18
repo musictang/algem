@@ -1,7 +1,7 @@
 /*
- * @(#)MenuConfig.java 2.8.f 24/05/13
+ * @(#)MenuConfig.java 2.8.s 18/02/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -45,7 +45,7 @@ import net.algem.util.module.GemModule;
 /**
  * Configuration menu.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.f
+ * @version 2.8.s
  * @since 2.6.a 12/10/2012
  */
 public class MenuConfig 
@@ -186,7 +186,7 @@ public class MenuConfig
       estabBrowse.addActionListener(this);
       estabBrowse.init();
       desktop.addPanel("Establishment.browser", estabBrowse);
-      desktop.getSelectedModule().setSize(GemModule.M_SIZE);
+      desktop.getSelectedModule().setSize(GemModule.XXL_SIZE);
     } else if (menus.get("Menu.card.label").equals(arg)) {
       RehearsalCardSearchCtrl rehearsalCardSearch = new RehearsalCardSearchCtrl(desktop);
       rehearsalCardSearch.init();

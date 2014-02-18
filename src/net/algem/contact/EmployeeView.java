@@ -247,16 +247,7 @@ public class EmployeeView
       ((DesktopOpenHandler) handler).open(path);
       } catch (DesktopHandlerException ex) {
         GemLogger.log(ex.getMessage());
-        try {   
-          String prog = BundleUtil.getLabel("Office.client");
-          if (prog == null) {
-            prog = "oowriter";
-          }
-          String [] command = {prog, path};// TODO paramétrer lecteur par défaut
-          Runtime.getRuntime().exec(command); 
-        } catch (IOException ioe) {
-          GemLogger.log(ioe.getMessage());
-        }
+        MessagePopup.warning(this, ex.getMessage());
       }
   }
 
