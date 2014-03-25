@@ -1,0 +1,56 @@
+APPLICATION SPRING 3 ALGEM AGENDA
+
+PRESENTATION
+Algem Agenda permet la consultation publique des plannings en ligne.
+Il utilise la même base de données que le logiciel Algem.
+Bien que ce module puisse fonctionner de manière indépendante, il est
+préférable de l'utiliser en complément de l'application principale, écrite
+en Java Swing. 
+
+SERVEUR D'APPLICATIONS
+Apache Tomcat 6 ou supérieur
+Application testée avec apache-tomcat-6.0.32 et apache-tomcat-6.0.36
+
+LIBRAIRIES REQUISES/CONSEILLEES
+|-- aopalliance.jar
+|-- asm-3.0.jar
+|-- aspectjrt-1.6.4.jar
+|-- aspectjweaver-1.6.4.jar
+|-- commons-logging-1.1.1.jar
+|-- jstl.jar
+|-- org-apache-commons-logging.jar
+|-- spring-aop-3.0.6.RELEASE.jar
+|-- spring-asm-3.0.6.RELEASE.jar
+|-- spring-beans-3.0.6.RELEASE.jar
+|-- spring-context-3.0.6.RELEASE.jar
+|-- spring-core-3.0.6.RELEASE.jar
+|-- spring-expression-3.0.6.RELEASE.jar
+|-- spring-jdbc-3.0.6.RELEASE.jar
+|-- spring-tx-3.0.6.RELEASE.jar
+|-- spring-web-3.0.6.RELEASE.jar
+|-- spring-webmvc-3.0.6.RELEASE.jar
+`-- standard.jar
+
+
+Un répertoire META-INF peut être créé dans le sous-dossier web.
+Afin d'initialiser un contexte jndi, ce répertoire peut inclure un fichier
+context.xml construit sur le modèle suivant :
+
+<?xml version="1.0" encoding="UTF-8"?>
+<Context antiJARLocking="true" path="/algem/agenda">
+  <Resource auth="Container" driverClassName="org.postgresql.Driver" 
+	maxActive="20" 
+	maxIdle="30" maxWait="10000" 
+	name="jdbc/algem"
+	username="nobody"
+	password="monpass"
+	type="javax.sql.DataSource"
+	url="jdbc:postgresql://localhost:5432/algem" />
+</Context>
+
+Modifiez le numéro de port, le mot de passe ou le nom de la base de travail
+à votre convenance.
+N'oubliez pas dans ce cas de modifier le nom jndi par défaut dans le fichier
+application-context.xml :
+<jee:jndi-lookup id="dataSource" jndi-name="jdbc/algem"/>
+

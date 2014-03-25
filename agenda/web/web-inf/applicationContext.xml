@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:jee="http://www.springframework.org/schema/jee"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+       http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.0.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+
+<!--	tells Spring that you intend to use annotation-based wiring in Spring. -->
+  <context:annotation-config />
+
+  <context:component-scan base-package="net.algem" />
+    <!--bean id="propertyConfigurer"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"
+          p:location="/WEB-INF/jdbc.properties" />-->
+
+  <jee:jndi-lookup id="dataSource" jndi-name="jdbc/mustang"/>
+
+  <bean id="jdbcTemplate" class="org.springframework.jdbc.core.simple.SimpleJdbcTemplate">
+    <constructor-arg ref="dataSource"/>
+  </bean>
+  <bean id="validator" class="net.algem.security.UserValidator" />
+
+  <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+    <property name="basename" value="/WEB-INF/resources/messages" />
+  <!--<property name="basenames">
+      <list>
+          <value>/WEB-INF/resources/messages</value>
+          <value>exceptions</value>
+      </list>
+	</property>-->
+  </bean>
+
+  <util:map id="horaires" key-type="java.lang.String" value-type="java.lang.String" >
+    <entry key="Malakoff" value="01 40 84 80 09 (lundi au vendredi 10h-22h - samedi 11h-18h)" />
+    <entry key="Chaville" value="01 47 50 66 63 (lundi au jeudi 14h-20h)" />
+  </util:map>
+
+  <bean id="localeResolver" class="org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver" />
+
+</beans>
