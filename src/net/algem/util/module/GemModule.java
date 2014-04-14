@@ -1,7 +1,7 @@
 /*
- * @(#)GemModule.java	2.7.i 26/02/13
+ * @(#)GemModule.java	2.8.t 14/04/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -41,7 +41,7 @@ import net.algem.util.model.GemCloseVetoException;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.7.i
+ * @version 2.8.t
  * @since 1.0a 06/07/2002
  */
 public class GemModule
@@ -86,9 +86,10 @@ public class GemModule
   public static final String WORKSHOP_SCHEDULING_KEY="Workshop.scheduling";
   public static final String POSTIT_CREATE_KEY="Postit.create";
   public static final String REPLACEMENT_KEY="Replacement";
+  public static final String TRAINING_SCHEDULING_KEY="Training.course.scheduling";
   
 	
-	protected String label;
+  protected String label;
   protected GemView view;
   protected GemDesktop desktop;
   protected DataCache dataCache;

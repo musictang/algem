@@ -1,7 +1,7 @@
 /*
- * @(#)Model.java	2.7.a 09/01/13
+ * @(#)Model.java	2.8.t 11/04/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -24,7 +24,7 @@ package net.algem.util.model;
 /**
  * Enumeration of {@link net.algem.util.model.GemModel } objects.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.t
  * @since 2.7.a 22/11/12
  */
 public enum Model {
@@ -51,8 +51,9 @@ public enum Model {
   School,
   Status,
   Teacher,
+  Training,
   User,
   Vat,
   Workshop
-  
+
 }

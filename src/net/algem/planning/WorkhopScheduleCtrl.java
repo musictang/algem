@@ -1,7 +1,7 @@
 /*
- * @(#)WorkhopScheduleCtrl.java	2.7.a 26/11/12
+ * @(#)WorkhopScheduleCtrl.java	2.8.t 11/04/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -37,7 +37,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.t
  * @since 1.0a 07/07/1999
  */
 public class WorkhopScheduleCtrl
@@ -49,8 +49,8 @@ public class WorkhopScheduleCtrl
 	private WorkshopScheduleView rv;
 	private PlanningService service;
 
-	public WorkhopScheduleCtrl(GemDesktop _desktop) {
-		desktop = _desktop;
+	public WorkhopScheduleCtrl(GemDesktop desktop) {
+		this.desktop = desktop;
 		dc = desktop.getDataCache().getDataConnection();
 		service = new PlanningService(dc);
 	}

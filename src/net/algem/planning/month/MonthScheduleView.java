@@ -1,7 +1,7 @@
 /*
- * @(#)MonthScheduleView.java	2.8.m 11/09/13
+ * @(#)MonthScheduleView.java	2.8.t 11/04/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,10 +28,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
-import javax.print.attribute.standard.MediaPrintableArea;
-import javax.print.attribute.standard.MediaSize;
-import javax.print.attribute.standard.MediaSizeName;
-import javax.print.attribute.standard.OrientationRequested;
+import javax.print.attribute.standard.*;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
 import net.algem.contact.teacher.TeacherChoice;
@@ -51,14 +48,13 @@ import net.algem.util.module.GemDesktop;
 import net.algem.util.module.GemView;
 import net.algem.util.ui.GemChoice;
 import net.algem.util.ui.TabPanel;
-import sun.print.DialogTypeSelection;
 
 /**
  * Month schedule view.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.m
+ * @version 2.8.t
  */
 public class MonthScheduleView
         extends GemView
@@ -79,8 +75,8 @@ public class MonthScheduleView
   private GemChoice collectiveChoice;
   private GemChoice privateChoice;
 
-  public MonthScheduleView(GemDesktop _desktop, MonthSchedule schedule, GemList<Establishment> list) {
-    super(_desktop, "Menu.month.schedule");
+  public MonthScheduleView(GemDesktop desktop, MonthSchedule schedule, GemList<Establishment> list) {
+    super(desktop, "Menu.month.schedule");
 
     monthSchedule = schedule;
     estabList = list;

@@ -30,6 +30,7 @@ import net.algem.enrolment.CourseOrder;
 import net.algem.enrolment.CourseOrderIO;
 import net.algem.room.Room;
 import net.algem.util.*;
+import net.algem.util.model.GemDateTime;
 import net.algem.util.model.Model;
 import net.algem.util.ui.MessagePopup;
 
@@ -103,6 +104,10 @@ public class PlanningService
 
   public void planify(Action a, int type) throws PlanningException {
     actionIO.planify(a, type);
+  }
+  
+  public void planify(Action a, int type, List<GemDateTime> dates) throws PlanningException {
+    actionIO.planify(a, type, dates);
   }
 
   public void planify(List<Action> actions) throws PlanningException {

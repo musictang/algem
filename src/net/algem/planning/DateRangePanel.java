@@ -1,7 +1,7 @@
 /*
- * @(#)DateRangePanel.java 2.8.k 25/07/13
+ * @(#)DateRangePanel.java 2.8.t 14/04/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -44,7 +44,7 @@ import net.algem.util.ui.GemPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.k
+ * @version 2.8.t
  */
 public class DateRangePanel
         extends GemPanel
@@ -69,12 +69,12 @@ public class DateRangePanel
 
   /**
    *
-   * @param _mode constante déterminant s'il s'agit d'une simple date ou d'une plage
+   * @param mode constante déterminant s'il s'agit d'une simple date ou d'une plage
    * @param border si null, la bordure par défaut est utilisée
    */
-  public DateRangePanel(int _mode, Border border) {
+  public DateRangePanel(int mode, Border border) {
     
-    mode = _mode;
+    this.mode = mode;
     icon = ImageUtil.createImageIcon(ImageUtil.CAL_ICON);
     start = new DateFrField(new Date());
 
@@ -115,7 +115,6 @@ public class DateRangePanel
   public DateRangePanel() {
     this(new DateFr(new Date()), new DateFr(new Date()));
   }
-
   
   /**
    * Creates a panel for one date only.
@@ -158,6 +157,21 @@ public class DateRangePanel
     this(RANGE_DATE, border);
     start.setDate(_start);
     end.setDate(_end);
+  }
+  
+  /**
+   * Sets the inner and optionally the outer border of the current instance.
+   * @param external external border or null if  none is required
+   * @param internal internal border or null
+   */
+  public void setBorder(Border external, Border internal) {
+    if (external != null) {
+      super.setBorder(external);
+    }
+    d1.setBorder(internal); 
+    if (d2 != null) {
+      d2.setBorder(internal);
+    }
   }
 
   @Override

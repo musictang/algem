@@ -30,6 +30,7 @@ import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
 import net.algem.util.model.Cacheable;
+import net.algem.util.model.GemDateTime;
 import net.algem.util.model.Model;
 import net.algem.util.model.TableIO;
 
@@ -66,6 +67,37 @@ public class ActionIO
                 + a.getTeacher() + ","
                 + a.getId() + ","
                 + a.getRoom() + ",0)";
+        dc.executeUpdate(query);
+      }
+      dc.commit();
+    } catch (SQLException ex) {
+      dc.rollback();
+      GemLogger.log(ex.getMessage());
+      throw new PlanningException(ex.getMessage());
+    } finally {
+      dc.setAutoCommit(true);
+    }
+  }
+  
+  /**
+   * Planifies an action schedule with type {@code type } at one or more dates and times.
+   * @param a action to planify
+   * @param type the schedule's type
+   * @param dates list of dates and times
+   * @throws PlanningException if SQL exception is thrown
+   */
+  public void planify(Action a, int type, List<GemDateTime> dates) throws PlanningException {
+    try {
+      dc.setAutoCommit(false);
+      insert(a);
+      for (GemDateTime dt : dates) {
+        String query = "INSERT INTO planning VALUES (DEFAULT"
+                + ",'" + dt.toString()
+                + "','" + dt.getTimeRange().getStart() + "','" + dt.getTimeRange().getEnd() + "',"
+                + type + ","
+                + a.getTeacher() + ","
+                + a.getId() + ","
+                + a.getRoom() + ", 0)";
         dc.executeUpdate(query);
       }
       dc.commit();

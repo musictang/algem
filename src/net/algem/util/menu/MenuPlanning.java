@@ -27,6 +27,7 @@ import net.algem.config.ConfigUtil;
 import net.algem.contact.teacher.SubstituteTeacherCtrl;
 import net.algem.edition.AttendanceSheetDlg;
 import net.algem.planning.CourseScheduleCtrl;
+import net.algem.planning.TrainingScheduleCtrl;
 import net.algem.planning.WorkhopScheduleCtrl;
 import net.algem.planning.day.DayScheduleCtrl;
 import net.algem.planning.month.MonthScheduleCtrl;
@@ -52,6 +53,7 @@ public class MenuPlanning
   private JMenuItem miAttendanceSheet;
   private JMenuItem miCourse;
   private JMenuItem miWorkshop;
+  private JMenuItem miTraining;
   private JMenuItem miReplacement;
 
   public MenuPlanning(GemDesktop _desktop) {
@@ -61,18 +63,22 @@ public class MenuPlanning
     add(miDay = new JMenuItem(BundleUtil.getLabel("Menu.day.schedule.label")));
     add(miMonth = new JMenuItem(BundleUtil.getLabel("Menu.month.schedule.label")));
     addSeparator();
-		DataConnection dc = dataCache.getDataConnection();
-    String s;
-    if ((s = ConfigUtil.getConf(ConfigKey.WORKSHOP_MANAGEMENT.getKey(), dc)) != null
-            && s.startsWith("t")) {
-      add(miWorkshop = new JMenuItem(BundleUtil.getLabel("Workshop.scheduling.label")));
-    }
-    if ((s = ConfigUtil.getConf(ConfigKey.COURSE_MANAGEMENT.getKey(), dc)) != null
-            && s.startsWith("t")) {
+    DataConnection dc = dataCache.getDataConnection();
+
+    String manage = ConfigUtil.getConf(ConfigKey.COURSE_MANAGEMENT.getKey(), dc);
+    if (manage != null && manage.startsWith("t")) {
       add(miCourse = new JMenuItem(BundleUtil.getLabel("Course.scheduling.label")));
-      add(miAttendanceSheet = new JMenuItem(BundleUtil.getLabel("Menu.presence.file.label")));
+      add(miWorkshop = new JMenuItem(BundleUtil.getLabel("Workshop.scheduling.label")));
+      add(miTraining = new JMenuItem(BundleUtil.getLabel("Training.course.scheduling.label")));
     }
-    add(miReplacement = dataCache.getMenu2("Menu.replacement", true));
+
+    manage = ConfigUtil.getConf(ConfigKey.TEACHER_MANAGEMENT.getKey(), dc);
+    if (manage != null && manage.startsWith("t")) {
+      addSeparator();
+      add(miAttendanceSheet = new JMenuItem(BundleUtil.getLabel("Menu.presence.file.label")));
+      add(miReplacement = dataCache.getMenu2("Menu.replacement", true));
+    }
+    
     setListener(this);
   }
 
@@ -97,6 +103,11 @@ public class MenuPlanning
       wsCtrl.addActionListener(this);
       wsCtrl.init();
       desktop.addPanel(GemModule.WORKSHOP_SCHEDULING_KEY, wsCtrl);
+    } else if (src == miTraining) {
+      TrainingScheduleCtrl tsCtrl = new TrainingScheduleCtrl(desktop);
+      tsCtrl.addActionListener(this);
+      tsCtrl.init();
+      desktop.addPanel(GemModule.TRAINING_SCHEDULING_KEY, tsCtrl);
     } else if (src == miAttendanceSheet) {
         new AttendanceSheetDlg(desktop.getFrame(), dataCache);
     } 

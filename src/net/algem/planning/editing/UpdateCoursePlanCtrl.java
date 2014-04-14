@@ -47,10 +47,10 @@ public class UpdateCoursePlanCtrl
 	public void init() {
 		av = new UpdateActionView(desktop, plan);
         ((UpdateActionView)av).init(plan);
-		cfv = new ConflictListView();
+		conflictsView = new ConflictListView();
 
 		addCard("Initialisation des sessions", av);
-		addCard("Vérification conflit", cfv);
+		addCard("Vérification conflit", conflictsView);
 		select(0);
 	}
 
@@ -82,7 +82,7 @@ public class UpdateCoursePlanCtrl
 	@Override
 	public void clear() {
 		av.clear();
-		cfv.clear();
+		conflictsView.clear();
 		select(0);
 	}
 }

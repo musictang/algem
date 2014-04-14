@@ -47,13 +47,13 @@ public class CourseScheduleCtrl
   protected GemDesktop desktop;
   protected DataConnection dc;
   protected ActionView av;
-  protected ConflictListView cfv;
+  protected ConflictListView conflictsView;
   protected List<Action> actions;
   protected PlanningService service;
 
-  public CourseScheduleCtrl(GemDesktop _desktop) {
+  public CourseScheduleCtrl(GemDesktop desktop) {
 
-    desktop = _desktop;
+    this.desktop = desktop;
     dc = desktop.getDataCache().getDataConnection();
     service = new PlanningService(dc);
   }
@@ -62,10 +62,10 @@ public class CourseScheduleCtrl
     av = new ActionView(desktop);
     av.init();
     
-    cfv = new ConflictListView();
+    conflictsView = new ConflictListView();
 
     addCard(MessageUtil.getMessage("planning.session.init"), av);
-    addCard(BundleUtil.getLabel("Conflict.verification.label"), cfv);
+    addCard(BundleUtil.getLabel("Conflict.verification.label"), conflictsView);
     select(0);
   }
 
@@ -121,7 +121,7 @@ public class CourseScheduleCtrl
       actions = getPlanification(action, av.getIntervall());
 
       int n = 0;
-      cfv.clear();
+      conflictsView.clear();
       for (Action a : actions) {
         n += testConflict(a);
       }
@@ -132,7 +132,7 @@ public class CourseScheduleCtrl
     return true;
   }
 
-  List<Action> getPlanification(Action action, int intervalle) {
+  List<Action> getPlanification(Action action, int interval) {
     Hour end = action.getHourEnd();
     List<Action> v = new ArrayList<Action>();
 
@@ -144,7 +144,7 @@ public class CourseScheduleCtrl
       start = action.getHourEnd();
       while (start.before(end)) {
         Action a = new Action(action);
-        a.setHourStart(start.end(intervalle));
+        a.setHourStart(start.end(interval));
         a.setHourEnd(a.getHourStart().end(action.getLength()));
         if (a.getHourEnd().after(end)) {
           break;
@@ -172,7 +172,7 @@ public class CourseScheduleCtrl
 
   public void clear() {
     av.clear();
-    cfv.clear();
+    conflictsView.clear();
     select(0);
   }
   
@@ -180,7 +180,7 @@ public class CourseScheduleCtrl
     desktop.removeGemEventListener(av);
     actions = null;
     av = null;
-    cfv = null;
+    conflictsView = null;
   }
 
   @Override
@@ -235,7 +235,7 @@ public class CourseScheduleCtrl
         conflit.setTeacherFree(false);
         conflicts++;
       }
-      cfv.addConflict(conflit);
+      conflictsView.addConflict(conflit);
     }
     return conflicts;
   }

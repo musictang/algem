@@ -1,7 +1,7 @@
 /*
- * @(#)Schedule.java	2.8.a 24/04/13
+ * @(#)Schedule.java	2.8.t 11/04/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -25,7 +25,7 @@ package net.algem.planning;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.t
  */
 public class Schedule
         implements java.io.Serializable
@@ -36,6 +36,7 @@ public class Schedule
   public static final int GROUP_SCHEDULE = 3;
   public static final int MEMBER_SCHEDULE = 4;
   public static final int WORKSHOP_SCHEDULE = 5;
+  public static final int TRAINING_SCHEDULE = 6;
   protected int id;
   protected DateFr date;
   protected Hour start;

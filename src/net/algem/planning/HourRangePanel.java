@@ -1,7 +1,7 @@
 /*
- * @(#)HourRangePanel.java	2.8.g 31/05/13
+ * @(#)HourRangePanel.java	2.8.t 14/04/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -32,15 +32,16 @@ import net.algem.util.ui.GemLabel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.g
+ * @version 2.8.t
  */
 public class HourRangePanel
         extends GemBorderPanel
         implements FocusListener
 {
 
+  public static final String DEF_START = "10:00";
+  
   private static final int MAX = 60 * 12;
-  private static final String START = "10:00";
   private static final String END = "23:00";
   private HourField start;
   private HourField end;
@@ -55,7 +56,7 @@ public class HourRangePanel
   }
 
   public HourRangePanel() {
-    this(new Hour(START), new Hour(START));
+    this(new Hour(DEF_START), new Hour(DEF_START));
   }
 
   public HourRangePanel(Hour h) {
@@ -116,8 +117,8 @@ public class HourRangePanel
   }
 
   public void clear() {
-    start.setText(START);
-    end.setText(START);
+    start.setText(DEF_START);
+    end.setText(DEF_START);
   }
 
   public void setMax(int max) {
