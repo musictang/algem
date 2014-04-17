@@ -150,8 +150,8 @@ public class MemberFollowUpEditor
     ScheduleRangeObject p = (ScheduleRangeObject) scheduleRange.getItem(n);
 
     Course c = p.getCourse();
-    
-    if (c.isCollective() && p.getNote() <= 0) {
+
+    if (c.isCollective() && p.getNote() <= 0) { // ?? <= 0
       MessagePopup.error(this, MessageUtil.getMessage("follow.up.modification.warning"));
     } else {
       FollowUpDlg dlg = new FollowUpDlg(desktop, p, c.getTitle());

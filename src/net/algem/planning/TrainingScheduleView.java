@@ -1,6 +1,6 @@
 /*
  * @(#)TrainingScheduleView.java	2.8.t 14/04/14
- * 
+ *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,21 +16,21 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 
 package net.algem.planning;
 
 import java.awt.GridBagLayout;
-import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 import net.algem.contact.teacher.TeacherChoice;
 import net.algem.course.CourseChoice;
-import net.algem.course.CourseChoiceActiveModel;
+import net.algem.course.CourseChoiceTrainingModel;
 import net.algem.room.RoomChoice;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
-import net.algem.util.model.GemDateTime;
 import net.algem.util.model.Model;
 import net.algem.util.ui.GemLabel;
 import net.algem.util.ui.GemPanel;
@@ -42,18 +42,18 @@ import net.algem.util.ui.GridBagHelper;
  * @version 2.8.t
  * @since 2.8.t 11/04/14
  */
-public class TrainingScheduleView 
+public class TrainingScheduleView
 extends GemPanel{
 
   private CourseChoice course;
   private DateTimeCtrl dateTimeCtrl;
-
   private RoomChoice room;
   private TeacherChoice teacher;
-  
+
   public TrainingScheduleView(DataCache dataCache) {
 
-    course = new CourseChoice(new CourseChoiceActiveModel(dataCache.getList(Model.Course), true));
+    course = new CourseChoice(new CourseChoiceTrainingModel(dataCache.getList(Model.Course), true));
+
     dateTimeCtrl = new DateTimeCtrl();
 
     room = new RoomChoice(dataCache.getList(Model.Room));
@@ -73,28 +73,28 @@ extends GemPanel{
     gb.add(teacher, 1, 3, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
 
   }
-  
+
   public void clear() {
-    course.setSelectedIndex(0);
+    if (course.getItemCount() > 0) {
+      course.setSelectedIndex(0);
+    }
     dateTimeCtrl.clear();
   }
-  
+
   int getCourse() {
     return course.getKey();
   }
-  
+
   int getRoom() {
     return room.getKey();
   }
-  
+
   int getTeacher() {
     return teacher.getKey();
   }
-  
+
   List<GemDateTime> getDates() {
     return dateTimeCtrl.getRanges();
   }
-  
-  
 
 }

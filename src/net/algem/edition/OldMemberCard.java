@@ -1,7 +1,7 @@
 /*
- * @(#)OldMemberCard.java	2.7.a 26/11/12
- * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * @(#)OldMemberCard.java	2.8.t 15/04/14
+ *
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.edition;
 
@@ -32,6 +32,7 @@ import javax.imageio.ImageIO;
 import net.algem.contact.*;
 import net.algem.contact.member.Member;
 import net.algem.course.Course;
+import net.algem.course.CourseCodeType;
 import net.algem.course.CourseIO;
 import net.algem.enrolment.CourseOrder;
 import net.algem.enrolment.Enrolment;
@@ -47,9 +48,9 @@ import net.algem.util.module.GemDesktop;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
- * @deprecated 
- * 
+ * @version 2.8.t
+ * @deprecated
+ *
  */
 public class OldMemberCard
         extends Canvas {
@@ -187,18 +188,18 @@ public class OldMemberCard
             jj = 1;
           }
           String lib = c.getLabel() + ", le " + journom[jj] + ", à " + cc.getStart() + " h";
-          if (c.getCode() == Course.PRIVATE_INSTRUMENT_CODE) {
+          if (c.getCode() == CourseCodeType.INS.getId()) {
             g.drawString(lib, 115, mpl + 0 + cpt1);
             cpt1 += 10;
 //          } else if (c.getCode().startsWith("AT")
-//                  || c.getCode().equals("Evei")) {
+//                  || c.getCode().bufferEquals("Evei")) {
 //            g.drawString(lib, 115, mpl + 40 + cpt2);
 //            cpt2 += 10;
-//          } else if (c.getCode().equals("F.M.")) {
+//          } else if (c.getCode().bufferEquals("F.M.")) {
 //            g.drawString(lib, 115, mpl + 80 + cpt3);
 //            cpt3 += 10;
-//          } else if (c.getCode().equals("B.B.")
-//                  || c.getCode().equals("AcRe")) {
+//          } else if (c.getCode().bufferEquals("B.B.")
+//                  || c.getCode().bufferEquals("AcRe")) {
 //            g.drawString(lib, 115, mpl + 120 + cpt4);
             cpt4 += 10;
           }

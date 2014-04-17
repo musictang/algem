@@ -1,6 +1,6 @@
 /*
  * @(#)MemberRehearsalCtrl.java	2.8.b 14/05/13
- * 
+ *
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.contact.member;
 
@@ -227,7 +227,7 @@ public class MemberRehearsalCtrl
     String dateError = MessageUtil.getMessage("date.entry.error");//date incorrecte
     String entryError = MessageUtil.getMessage("entry.error");
 
-    if (date.equals(DateFr.NULLDATE)) {
+    if (date.bufferEquals(DateFr.NULLDATE)) {
       JOptionPane.showMessageDialog(view,
               dateError,
               entryError,

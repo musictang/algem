@@ -1,6 +1,6 @@
 /*
  * @(#)ModuleDlg.java	2.8.a 15/04/13
- * 
+ *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.course;
 
@@ -215,7 +215,7 @@ public class ModuleDlg
         } else {
           reducPrice = normalPrice / 3;
         }
-      } else {//(ps.equals("ANNU"))// si annuel
+      } else {//(ps.bufferEquals("ANNU"))// si annuel
         reducPrice = normalPrice * 3; // 3 trimestres // prix normal ou prix trimestriel ?
       }
       price.setValue(new Double(reducPrice));

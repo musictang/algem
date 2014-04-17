@@ -1,7 +1,7 @@
 /*
- * @(#)CourseEnrolmentDlg.java	2.8.i 07/06/13
- * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * @(#)CourseEnrolmentDlg.java	2.8.t 16/04/14
+ *
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.enrolment;
 
@@ -39,6 +39,7 @@ import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
 import net.algem.contact.teacher.TeacherChoice;
 import net.algem.course.Course;
+import net.algem.course.CourseCodeType;
 import net.algem.course.CourseModuleInfo;
 import net.algem.planning.*;
 import net.algem.room.EstabChoice;
@@ -59,7 +60,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.i
+ * @version 2.8.t
  * @since 1.0a 07/07/1999
  */
 public class CourseEnrolmentDlg
@@ -69,24 +70,24 @@ public class CourseEnrolmentDlg
   private GemBorderPanel bgPanel;
   private int code = 0;
   private CourseModuleInfo courseInfo;
-  
+
   /** Combo box establishment. */
   private GemChoice estabChoice;
-  
+
   private GemField module; // non visible
   private GemField startEnd;
-  
+
   /** Course list. */
   private SqlList courseList;
-  
+
   /** Avalaible days for course selection (page 2). */
   private JComboBox cbDay;
-  
+
   /** Busy time slot list (page 2). */
   private SqlList range;
-  
-  /** 
-   * Beginning time. 
+
+  /**
+   * Beginning time.
    * Editable field with checking (page 2).
    */
   private HourField hour;
@@ -95,33 +96,33 @@ public class CourseEnrolmentDlg
   private HourField courseLength;
 
   private int roomId;
-  
+
   private TeacherChoice teacher;// (a supprimer ?)
 
   /** Room info field. */
   private GemField roomInfo;
-  
+
   private CourseOrder courseOrder;
-  
+
   private Course course;
 
   private Vector<ScheduleRange> pl;	//Plage
-  
+
   private Vector<HourRange> vph;	//Plage horaire
-  
+
   private int estab;
-  
+
   private Frame parent;
-  
+
   private JDialog dlg;
-  
+
   /** Page for course choice. */
   private GemPanel page1;
-  
+
   /** Modification page for time slot. */
   private GemPanel page2;
-  
-  private boolean validation; 
+
+  private boolean validation;
   private GemButton btNext;
   private int memberId;
   private EnrolmentService service;
@@ -259,7 +260,7 @@ public class CourseEnrolmentDlg
   public Course getCourse() {
     return course;
   }
-  
+
   int getEstab() {
     return estabChoice.getKey();
   }
@@ -308,8 +309,8 @@ public class CourseEnrolmentDlg
   }
 
   /**
-   * Displays the occupied time slots for a specific date schedule range.
-   * 
+   * Displays the occupied time slots for a specific schedule range.
+   *
    */
   void loadDay() {
     DayRange pj = (DayRange) cbDay.getSelectedItem();
@@ -325,7 +326,9 @@ public class CourseEnrolmentDlg
     hour.setText(p.getStart().toString());
 
     // durée independante pour les ateliers découverte et les cours d'instrument collectif
-    if (p.getType() == Schedule.WORKSHOP_SCHEDULE || course.isCourseCoInst()) {
+    if (p.getType() == Schedule.WORKSHOP_SCHEDULE
+      || course.isCourseCoInst()
+      || course.getCode() == CourseCodeType.STG.getId()) {
       courseLength.setText(new Hour(p.getStart().getLength(p.getEnd())).toString());
     }
 
@@ -351,11 +354,10 @@ public class CourseEnrolmentDlg
    */
   @Override
   public void itemStateChanged(ItemEvent evt) {
-//    System.out.println("CourseEnrolmentDlg.itemStateChanged:"+evt);
     if (evt.getStateChange() == ItemEvent.SELECTED) {
       if (evt.getSource() == estabChoice) {
         try {
-          loadEstab(estabChoice.getKey());       
+          loadEstab(estabChoice.getKey());
         } catch (SQLException ex) {
           System.err.println(ex.getMessage());
         }
@@ -373,7 +375,7 @@ public class CourseEnrolmentDlg
   public void loadEnrolment(CourseOrder co) throws EnrolmentException {
 
     courseOrder = co;
-    
+
     if (co.getEstab() <= 0) {
       co.setEstab(getDefaultEstab());
     }
@@ -417,9 +419,9 @@ public class CourseEnrolmentDlg
   }
 
   /**
-   * Loads the course {@code id}.
+   * Loads the selected course in the {@code estab}.
    * @param id
-   * @param estab 
+   * @param estab
    */
   private void loadCourse(int id, int estab) {//TODOGEM +etab
     Course c = null;
@@ -444,10 +446,9 @@ public class CourseEnrolmentDlg
   {
     Calendar cal = Calendar.getInstance(Locale.FRANCE);
     course = c;
-    //boolean isAtP = "ATP".equalsIgnoreCase(cours.getCode());
-    Vector<Schedule> v = null;
+
     cbDay.removeAllItems();
-    v = service.getCourseWeek(course, courseOrder.getDateStart(), estab);
+    Vector<Schedule> v = service.getCourseWeek(course, courseOrder.getDateStart(), estab);
 
     if (v == null || v.isEmpty()) {
       return;
@@ -457,13 +458,17 @@ public class CourseEnrolmentDlg
 
     for (int i = 0; i < v.size(); i++) {
       Schedule p = v.elementAt(i);
-      if (p.getIdAction() == po.getIdAction() && p.getDate().equals(po.getDate())) {
+      if (p.getIdAction() == po.getIdAction()
+        && p.getDate().equals(po.getDate())
+        && p.getStart().equals(po.getStart())) // autorise 2 séances dans la même journée (2.8.t)
+      {
         continue;
       }
       po = p;
       cal.setTime(p.getDate().getDate());
-      StringBuilder bf = new StringBuilder();
-      
+
+      StringBuilder bf = new StringBuilder();// label
+
       HourRange ph = new HourRange(p.getStart(), p.getEnd());
         if (c.isATP()) {
           bf.append(p.getDate().toString());
@@ -510,7 +515,7 @@ public class CourseEnrolmentDlg
         throw new EnrolmentException(MessageUtil.getMessage("invalid.course.selection"));
       }
 
-      if (hour.getText().equals(Hour.NULL_HOUR) 
+      if (hour.getText().equals(Hour.NULL_HOUR)
               || courseLength.get().toString().equals(Hour.NULL_HOUR)) {
         throw new EnrolmentException(MessageUtil.getMessage("invalid.time.slot"));
       }
@@ -521,7 +526,7 @@ public class CourseEnrolmentDlg
       DayRange pj = (DayRange) cbDay.getSelectedItem();
 
       //vérification adhérent déjà inscrit à un atelier
-      if (Course.ATP_CODE == code || course.isCollective()) {//XXX pb with ATP if another ATP has the same action id
+      if (CourseCodeType.ATP.getId() == code || course.isCollective()) {//XXX pb with ATP if another ATP has the same action id
         if (service.isOnRange(memberId, pj.getPlanning(), courseOrder)) {
           throw new EnrolmentException(MessageUtil.getMessage("member.enrolment.existing.range"));
         }
@@ -530,13 +535,13 @@ public class CourseEnrolmentDlg
       if (pj.getPlanning().getType() == Schedule.WORKSHOP_SCHEDULE) {
         return true;
       }
-      
+
       // time slot must be included in schedule
       Schedule p = pj.getPlanning();
       if (!rangeStart.between(p.getStart(), p.getEnd()) || !rangeEnd.between(p.getStart(), p.getEnd())) {
         throw new EnrolmentException(MessageUtil.getMessage("time.slot.out.of.schedule"));
       }
-      
+
       // Vérification nombre de places pour les cours de type collectif.
       Action a = pService.getAction(p.getIdAction());
       Course c = pService.getCourseFromAction(p.getIdAction());
@@ -557,8 +562,8 @@ public class CourseEnrolmentDlg
           }
         }
       }
-      
-      
+
+
     } catch (SQLException ex) {
       GemLogger.logException(ex);
       return false;
@@ -576,7 +581,7 @@ public class CourseEnrolmentDlg
    * @param c course order
    * @param service enrolment service
    * @return true if there is enough places
-   * @throws SQLException 
+   * @throws SQLException
    */
   private boolean isFree(Action a, CourseOrder c, EnrolmentService service) throws SQLException {
 
@@ -587,7 +592,7 @@ public class CourseEnrolmentDlg
     }
     return true;
   }
-  
+
 }
 
 class DayRange {
@@ -596,7 +601,7 @@ class DayRange {
   private Schedule plan;
   private int dayOfWeek;
   private String range;
-  
+
   DayRange(Schedule p, String l) {
     plan = p;
     range = l;
@@ -621,6 +626,6 @@ class DayRange {
   public String toString() {
     return dayLabels[dayOfWeek] + " " + range;//+" "+teacherName;
   }
-  
-  
+
+
 }

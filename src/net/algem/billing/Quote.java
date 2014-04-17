@@ -46,39 +46,39 @@ public class Quote
    * n : an incremental number
    */
   protected String number;
-  
+
   /** Invoice/quote label. */
   protected String description;
-  
+
   /** Establishment id. */
   protected int estab;
-  
+
   /** Curent user. */
   protected User user;
-  
+
   /** Invoice issuer id. */
   protected int issuer;
-  
+
   /** Invoice member id. */
   protected int member;
-  
+
   /** Client id. Payer must exists in Algem contacts. */
   protected int payer;
-  
+
   /** Creation date. */
   protected DateFr date;
 
   protected String reference;
-  
+
   /** Down payment. */
   protected double downPayment;
-  
+
   /** Invoice item collection. */
   protected Collection<InvoiceItem> items = new ArrayList<InvoiceItem>();
-  
+
   /** Order line collection. */
   protected Collection<OrderLine> orderLines = new ArrayList<OrderLine>();
-  
+
   private boolean editable = true;
 
   /**
@@ -123,7 +123,7 @@ public class Quote
 
     if (pf.getMember() != null) {
       int p = pf.getMember().getPayer();
-      this.payer = (p > 0 && p != id) ? p : id;  
+      this.payer = (p > 0 && p != id) ? p : id;
     } else {
       this.payer = id;
     }
@@ -170,7 +170,7 @@ public class Quote
   }
 
 //  @Override
-//  public boolean equals(Object obj) {
+//  public boolean bufferEquals(Object obj) {
 //    if (obj == null) {
 //      return false;
 //    }
@@ -178,16 +178,16 @@ public class Quote
 //      return false;
 //    }
 //    final Quote other = (Quote) obj;
-//    if ((this.number == null) ? (other.number != null) : !this.number.equals(other.number)) {
+//    if ((this.number == null) ? (other.number != null) : !this.number.bufferEquals(other.number)) {
 //      return false;
 //    }
-//    if (this.items == null || !this.items.equals(other.items)) {
+//    if (this.items == null || !this.items.bufferEquals(other.items)) {
 //      return false;
 //    }
 //    return true;
 //  }
-  
-  
+
+
   boolean equiv(Invoice n) {
     if (n == null) {
       return false;
@@ -221,7 +221,7 @@ public class Quote
     if (!i1.equals(i2)) {
       return false;
     }
-    
+
     return true;
   }
 

@@ -1,6 +1,6 @@
 /*
  * @(#)MonthPlanView.java	2.8.p 13/11/13
- * 
+ *
  * Copyright (cp) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning.month;
 
@@ -42,11 +42,11 @@ public class MonthPlanView
         extends ScheduleCanvas
         implements MouseMotionListener
 {
-  
+
   private static final int GRID_Y = 30;// orig : 28 (subdivisions)
   private static final int H_DEB = 540; // -> 9:00 (orig : 600)
   private static final int H_FIN = 1440;
-  
+
   private Calendar cal;
   private String[] dayNames;
   private int pas_y = 12;
@@ -58,7 +58,7 @@ public class MonthPlanView
   private Vector<ScheduleObject> schedules;
   private Vector<ScheduleRangeObject> ranges;
   private GemField status;
-  
+
 
   public MonthPlanView(GemField status) {
 
@@ -275,7 +275,7 @@ public class MonthPlanView
   }
 
   private void showLabel(ScheduleObject p, int x, int y) {
-    
+
     String code = getCode(p);
     int offset = (pas_x / 2);
     if (code != null && !code.isEmpty()) {
@@ -285,7 +285,7 @@ public class MonthPlanView
         w = fm.stringWidth(code) + 4; // on réduit la largeur en fonction
       }
       bg.drawString(code, x + offset - (w - 4) / 2, y + 10);
-    } 
+    }
   }
 
   @Override
@@ -370,7 +370,7 @@ public class MonthPlanView
     for (int i = 0; ranges != null && i < ranges.size(); i++) {
       ScheduleRangeObject pg = ranges.elementAt(i);
       if (pg.getScheduleId() == clickSchedule.getId()) {
-//      if (pg.getDate().equals(clickSchedule.getDate())
+//      if (pg.getDate().bufferEquals(clickSchedule.getDate())
 //              && pg.getIdAction() == clickSchedule.getIdAction()
 //              && pg.getTeacher().getId() == clickSchedule.getIdPerson() //ajout 1.1d
 //              && (pg.getDateStart().ge(clickSchedule.getDateStart()) && pg.getDateEnd().le(clickSchedule.getDateEnd()))) //ajout 1.1d

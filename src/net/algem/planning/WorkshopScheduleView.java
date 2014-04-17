@@ -1,7 +1,7 @@
 /*
- * @(#)WorkshopScheduleView.java	2.8.a 28/03/13
- * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * @(#)WorkshopScheduleView.java	2.8.t 16/04/14
+ *
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,12 +16,15 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning;
 
+import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.util.Date;
+import javax.swing.BorderFactory;
+import javax.swing.border.BevelBorder;
 import net.algem.contact.teacher.TeacherChoice;
 import net.algem.course.CourseChoice;
 import net.algem.course.CourseChoiceTypeActiveModel;
@@ -39,7 +42,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.t
  */
 public class WorkshopScheduleView
         extends GemPanel
@@ -55,18 +58,23 @@ public class WorkshopScheduleView
   public WorkshopScheduleView(DataCache dataCache) {
 
     workshop = new CourseChoice(new CourseChoiceTypeActiveModel(dataCache.getList(Model.Workshop), true, true));
+    Dimension comboDim = new Dimension(250, workshop.getPreferredSize().height);
+    workshop.setPreferredSize(comboDim);
     date = new DateFrField();
     date.set(new DateFr(new Date()));
     start = new HourField();
     end = new HourField();
     room = new RoomChoice(dataCache.getList(Model.Room));
+    room.setPreferredSize(comboDim);
     teacher = new TeacherChoice(dataCache.getList(Model.Teacher));
+    teacher.setPreferredSize(comboDim);
 
     this.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
     gb.insets = GridBagHelper.SMALL_INSETS;
 
     GemPanel hours = new GemPanel();
+    hours.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
     hours.add(start);
     hours.add(new GemLabel(BundleUtil.getLabel("Hour.To.label")));
     hours.add(end);

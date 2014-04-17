@@ -1,7 +1,7 @@
 /*
- * @(#)ModifPlanActionView.java 2.7.a 08/01/13
- * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * @(#)ModifPlanActionView.java 2.8.t 16/04/14
+ *
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 
 package net.algem.planning.editing;
@@ -24,9 +24,7 @@ package net.algem.planning.editing;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.sql.SQLException;
-import net.algem.config.AgeRange;
-import net.algem.config.GemParam;
-import net.algem.config.GemParamChoice;
+import net.algem.config.*;
 import net.algem.planning.Action;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
@@ -35,13 +33,13 @@ import net.algem.util.ui.*;
 
 /**
  * View planification parameters.
- * Status, level, age range, and number of places modification.
- * 
+ * Modification of status, level, age range and number of places.
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.t
  * @since 2.5.a 22/06/12
  */
-class ModifPlanActionView 
+class ModifPlanActionView
   extends GemPanel
 {
   private GemParamChoice status;
@@ -50,15 +48,15 @@ class ModifPlanActionView
   private GemNumericField places;
 
   public ModifPlanActionView(DataCache dataCache, Action a) throws SQLException {
-    status = new GemParamChoice(new GemChoiceModel(dataCache.getList(Model.Status)));
+    status = new GemParamChoice(new GemChoiceModel<Status>(dataCache.getList(Model.Status)));
     status.setKey(a.getStatus().getId());
-    level = new GemParamChoice(new GemChoiceModel(dataCache.getList(Model.Level)));
+    level = new GemParamChoice(new GemChoiceModel<Level>(dataCache.getList(Model.Level)));
     level.setKey(a.getLevel().getId());
-    ageRange = new GemParamChoice(new GemChoiceModel(dataCache.getList(Model.AgeRange)));
+    ageRange = new GemParamChoice(new GemChoiceModel<AgeRange>(dataCache.getList(Model.AgeRange)));
     ageRange.setKey(a.getAgeRange().getId());
     places = new GemNumericField(2);
     places.setText(String.valueOf(a.getPlaces()));
-    
+
     GemPanel p = new GemPanel(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(p);
     gb.insets = new Insets(4, 2, 4, 2);
@@ -73,19 +71,19 @@ class ModifPlanActionView
 
     add(p);
   }
-  
+
   public GemParam getLevel() {
     return (GemParam) level.getSelectedItem();
   }
-  
+
   public GemParam getStatus() {
     return (GemParam) status.getSelectedItem();
   }
-  
+
   public AgeRange getRange() {
     return (AgeRange) ageRange.getSelectedItem();
   }
-  
+
   public short getPlaces() {
     try {
       return Short.parseShort(places.getText());
@@ -93,7 +91,7 @@ class ModifPlanActionView
       return 0;
     }
   }
-  
+
   public boolean isEntryValid() {
     short p = getPlaces();
     return getLevel().getId() >= 0 && getStatus().getId() >= 0 && p >= 0 && p < 500;

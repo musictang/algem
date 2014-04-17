@@ -90,8 +90,8 @@ public abstract class AbstractMonthScheduleCtrl
       desktop.setWaitCursor();
       detailCtrl.loadSchedule(pde);
       desktop.setDefaultCursor();
-    } 
-    /*else if (e.getActionCommand().equals("ClickDate")) { // click hors plage
+    }
+    /*else if (e.getActionCommand().bufferEquals("ClickDate")) { // click hors plage
       ScheduleView v = (ScheduleView) e.getSource();
       Schedule p = v.getSchedule(); //System.out.println("PlanningMoisCtrl.ClickDate:"+p);
 

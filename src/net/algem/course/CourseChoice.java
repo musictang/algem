@@ -1,6 +1,6 @@
 /*
  * @(#)CourseChoice.java	2.6.a 17/09/12
- * 
+ *
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,12 +16,13 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.course;
 
 import net.algem.config.GemParamChoice;
 import net.algem.util.model.GemList;
+import net.algem.util.model.GemModel;
 import net.algem.util.ui.GemChoiceModel;
 
 /**
@@ -35,12 +36,12 @@ public class CourseChoice
         extends GemParamChoice
 {
 
-  public CourseChoice(GemChoiceModel model) {
+  public CourseChoice(GemChoiceModel<GemModel> model) {
     super(model);
   }
 
-  public CourseChoice(GemList list) {
-    super(new GemChoiceModel(list));
+  public CourseChoice(GemList<Course> list) {
+    super(new GemChoiceModel<Course>(list));
   }
 
 }

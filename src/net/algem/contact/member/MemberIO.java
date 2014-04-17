@@ -1,6 +1,6 @@
 /*
  * @(#)MemberIO.java	2.7.m 15/03/13
- * 
+ *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.contact.member;
 
@@ -47,7 +47,7 @@ public class MemberIO
 
   public static final String COLUMNS = "idper,profession,datenais,payeur,nadhesions,pratique,niveau";
   public static final String TABLE = "eleve";
-  
+
   private DataConnection dc;
 
   public MemberIO(DataConnection dc) {
@@ -65,7 +65,7 @@ public class MemberIO
     String query = "INSERT INTO " + TABLE + " VALUES("
             + "'" + m.getId()
             + "','" + m.getOccupation() + "'";
-    if (!m.getBirth().equals(DateFr.NULLDATE)) {
+    if (!m.getBirth().bufferEquals(DateFr.NULLDATE)) {
       query += ",'" + m.getBirth().toString() + "'";
     } else {
       query += ",null";
@@ -93,7 +93,7 @@ public class MemberIO
    */
   public void update(Member m) throws SQLException {
     String query = "UPDATE " + TABLE + " SET profession='" + m.getOccupation() + "'";
-    if (!m.getBirth().equals(DateFr.NULLDATE)) {
+    if (!m.getBirth().bufferEquals(DateFr.NULLDATE)) {
       query += ",datenais='" + m.getBirth().toString() + "'";
     }
     query += ", payeur='" + m.getPayer()

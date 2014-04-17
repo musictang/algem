@@ -1,7 +1,7 @@
 /*
- * @(#)ScheduleIO.java	2.8.f 24/05/13
- * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * @(#)ScheduleIO.java	2.8.t 15/04/14
+ *
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning;
 
@@ -40,7 +40,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.f
+ * @version 2.8.t
  */
 public class ScheduleIO
         extends TableIO
@@ -52,7 +52,7 @@ public class ScheduleIO
   public final static String COLUMNS = "p.id,p.jour,p.debut,p.fin,p.ptype,p.idper,p.action,p.lieux,p.note";
   public static String BUSY_ROOM_STMT = "SELECT count(id) FROM planning WHERE lieux = ? AND jour > '01-01-1999'";
   //private static String findHistoRepet = "SELECT "+COLUMNS+" FROM planning p WHERE p.ptype="+Schedule.MEMBER_SCHEDULE+" AND p.idper= ? AND (date BETWEEN ? AND ?) ORDER BY date,start";
-  
+
   public static void insert(Schedule p, DataConnection dc) throws SQLException {
 
     int id = nextId(SEQUENCE, dc);
@@ -74,7 +74,7 @@ public class ScheduleIO
   }
 
   public static void insert(ScheduleDTO p, DataConnection dc) throws SQLException {
-    
+
     int id = nextId(SEQUENCE, dc);
 
     String query = "INSERT INTO " + TABLE + " VALUES("
@@ -119,12 +119,12 @@ public class ScheduleIO
 
   /**
    * Rehearsal suppression.
-   * 
+   *
    * @param startDate start date of removal
    * @param endDate end date of removal
    * @param sched schedule to remove
    * @param dc dataConnection
-   * @throws SQLException 
+   * @throws SQLException
    */
   public static void deleteRehearsal(DateFr startDate, DateFr endDate, ScheduleObject sched, DataConnection dc) throws SQLException {
     String query = "jour >= '" + startDate + "' AND jour <= '" + endDate + "'"
@@ -135,10 +135,10 @@ public class ScheduleIO
 
   /**
    * Schedule suppression.
-   * 
+   *
    * @param action scheduling link
    * @param dc dataConnection
-   * 
+   *
    * @throws SQLException
    */
   public static void deleteSchedule(Action action, DataConnection dc) throws SQLException {
@@ -178,9 +178,9 @@ public class ScheduleIO
     }
     return p;
   }
-  
+
   static Vector<Schedule> findClass(Class c, String where, DataConnection dc) {
-    
+
     Vector<Schedule> v = new Vector<Schedule>();
     String query = "SELECT " + COLUMNS + " FROM " + TABLE + " p " + where;
 
@@ -221,16 +221,16 @@ public class ScheduleIO
     p.setNote(rs.getInt(9));
 
     p.setRoom((Room) DataCache.findId(p.getPlace(), Model.Room));
-    
+
   }
 
   public static Vector<ScheduleObject> getLoadRS(PreparedStatement ps, DataConnection dc)
           throws SQLException {
-    
+
     Vector<ScheduleObject> v = new Vector<ScheduleObject>();
 
     ResultSet rs = ps.executeQuery();
-    
+
     while (!Thread.interrupted() && rs.next()) {
       ScheduleObject p = planningObjectFactory(rs, dc);
       v.addElement(p);
@@ -238,13 +238,14 @@ public class ScheduleIO
     rs.close();
     return v;
   }
-  
+
   private static ScheduleObject planningObjectFactory(ResultSet rs, DataConnection dc)
           throws SQLException {
     ScheduleObject p = null;
-    
+
     switch (rs.getInt(5)) {
       case Schedule.COURSE_SCHEDULE:
+      case Schedule.TRAINING_SCHEDULE:
         p = new CourseSchedule();
         fillPlanning(rs, p, dc);
         ((CourseSchedule) p).setTeacher((Person) DataCache.findId(p.getIdPerson(), Model.Teacher));
@@ -283,7 +284,7 @@ public class ScheduleIO
 
     String query = "SELECT " + COLUMNS + " FROM " + TABLE + " p " + where;
     ResultSet rs = dc.executeQuery(query);
-    
+
     while (rs.next()) {
       ScheduleObject p = planningObjectFactory(rs, dc);
       v.addElement(p);
@@ -330,7 +331,7 @@ public class ScheduleIO
   }
 
   public static String findFollowUp(int note, DataConnection dc) throws SQLException {
-    
+
     String text = "";
     String query = "SELECT texte FROM suivi WHERE id = " + note;
 
@@ -350,7 +351,7 @@ public class ScheduleIO
 
   /**
    * Gets the number of schedule ranges for the planification  {@code a}.
-   * 
+   *
    * @param a action
    * @param dc dataConnection
    * @return a number of ranges (may be 0)
@@ -374,7 +375,7 @@ public class ScheduleIO
    * @param p schedule
    * @param dc dataConnection
    * @return a resultSet
-   * @throws SQLException 
+   * @throws SQLException
    */
   public static ResultSet getRSCourseRange(Schedule p, DataConnection dc) throws SQLException {
 

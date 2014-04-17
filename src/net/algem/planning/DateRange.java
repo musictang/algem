@@ -1,6 +1,6 @@
 /*
  * @(#)DateRange.java	2.6.a 21/09/12
- * 
+ *
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,13 +16,13 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning;
 
 /**
  * Date range field.
- * 
+ *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
  * @version 2.6.a
@@ -48,12 +48,12 @@ public class DateRange
     end = new DateFr(_end);
   }
 
-  public boolean isValid() 
+  public boolean isValid()
   {
     //XXX ajouter test +/- 1 an date du jour et fin-debut <= 1 an
     return start != null && end != null
-            && !start.equals(DateFr.NULLDATE)
-            && !end.equals(DateFr.NULLDATE)
+            && !start.bufferEquals(DateFr.NULLDATE)
+            && !end.bufferEquals(DateFr.NULLDATE)
             && (end.equals(start) || end.after(start));
   }
 

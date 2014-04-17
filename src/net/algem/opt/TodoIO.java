@@ -1,6 +1,6 @@
 /*
  * @(#)TodoIO.java	2.6.a 25/09/12
- * 
+ *
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.opt;
 
@@ -30,7 +30,7 @@ import net.algem.util.model.TableIO;
 
 /**
  * méthodes IO classe Todo
- * 
+ *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.6.a
@@ -40,7 +40,7 @@ public class TodoIO
 	extends TableIO {
 
 
-	public static void insert(Todo a, DataConnection dc) throws SQLException 
+	public static void insert(Todo a, DataConnection dc) throws SQLException
 	{
 		int numero = nextId("idafaire", dc);
 
@@ -61,7 +61,7 @@ public class TodoIO
 	}
 
 
-	public static void update(Todo a, DataConnection dc) throws SQLException 
+	public static void update(Todo a, DataConnection dc) throws SQLException
 	{
 		String query = "UPDATE afaire set "
 			+ "idper=" + a.getIdPer()
@@ -70,10 +70,10 @@ public class TodoIO
 			+ ",texte='" + escape(a.getTexte())
 			+ "',fait='" + (a.isFait() ? "t" : "f")
 			+ "',note='" + a.getNote();
-		if (!a.getEcheance().equals(DateFr.NULLDATE)) {
+		if (!a.getEcheance().bufferEquals(DateFr.NULLDATE)) {
 			query += ",echeance='" + a.getEcheance().toString() + "'";
 		}
-		if (!a.getFaitLe().equals(DateFr.NULLDATE)) {
+		if (!a.getFaitLe().bufferEquals(DateFr.NULLDATE)) {
 			query += ",faitle='" + a.getFaitLe().toString() + "'";
 		}
 
@@ -83,7 +83,7 @@ public class TodoIO
 	}
 
 
-	public static Vector findId(int n, DataConnection dc) 
+	public static Vector findId(int n, DataConnection dc)
 	{
 		String query;
 		query = "WHERE id=" + n;
@@ -91,7 +91,7 @@ public class TodoIO
 	}
 
 
-	public static Vector find(String where, DataConnection dc) 
+	public static Vector find(String where, DataConnection dc)
 	{
 		Vector v = new Vector();
 

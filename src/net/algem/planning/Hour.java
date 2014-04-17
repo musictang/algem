@@ -1,6 +1,6 @@
 /*
  * @(#)Hour.java	2.8.a 26/04/13
- * 
+ *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning;
 
@@ -31,8 +31,8 @@ public class Hour
         implements java.io.Serializable
 {
 
-  public static String NULL_HOUR = "00:00";
-  StringBuffer buf;
+  public static final String NULL_HOUR = "00:00";
+  private StringBuffer buf;
 
   public Hour() {
     buf = new StringBuffer(NULL_HOUR);
@@ -262,7 +262,7 @@ public class Hour
   public boolean between(Hour d, Hour f) {
     return ge(d) && le(f);
   }
-  
+
    /**
    * Specifies if this hour is between {@code d} and {@code f}.
    * @param d

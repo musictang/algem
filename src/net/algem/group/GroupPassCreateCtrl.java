@@ -1,6 +1,6 @@
 /*
  * @(#)GroupPassCreateCtrl.java	2.7.a 03/12/12
- * 
+ *
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.group;
 
@@ -93,7 +93,7 @@ public class GroupPassCreateCtrl
       }
 
       DateFr date = view.getDateStart();
-      if (date.equals(DateFr.NULLDATE)) {
+      if (date.bufferEquals(DateFr.NULLDATE)) {
         JOptionPane.showMessageDialog(this, MessageUtil.getMessage("beginning.date.invalid.choice"), wt, JOptionPane.ERROR_MESSAGE);
         return prev();
       }
@@ -103,7 +103,7 @@ public class GroupPassCreateCtrl
         return prev();
       }
       date = view.getDateEnd();
-      if (date.equals(DateFr.NULLDATE)) {
+      if (date.bufferEquals(DateFr.NULLDATE)) {
         JOptionPane.showMessageDialog(this, MessageUtil.getMessage("end.date.invalid.choice"), wt,JOptionPane.ERROR_MESSAGE);
         return prev();
       }

@@ -1,6 +1,6 @@
 /*
  * @(#)EmployeeView.java 2.8.n 04/10/13
- * 
+ *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.contact;
 
@@ -59,50 +59,50 @@ public class EmployeeView
 
   /** Default format for NIR. */
   private static final String NIR_FORMAT = "# ## ## AA AAA ### ##";
-  
+
 //  private static final String PARENT_DIR = "salaries/";
-   
+
    /** Default CV dir name. */
   private static final String CV_DIR = "cv";
-  
+
   /** Default residence permit dir name. */
   private static final String RESIDENCE_DIR = "sejour";
-  
+
   /** Default DUE dir name. */
   static final String DUE_DIR = "due";
-  
+
   private GemNumericField idper;
-  
+
   /** National Identification number. */
   private JFormattedTextField nir;
-  
+
   /** Birth date. */
   private DateFrField birth;
-  
+
   /** Place of birth. */
   private GemField place;
-  
+
   /** Guso number. */
   private GemField guso;
-  
+
   private GemField nationality;
-  
+
   private DesktopHandler handler = new DesktopOpenHandler();
- 
+
   private GemButton cvBt;
   private GemButton dueBt;
   private GemButton residenceBt;
-  
+
   private File cvFile;
   private File dueFile;
   private File residenceFile;
-  
+
   private EmployeeService service;
 
   public EmployeeView(final EmployeeService service) {
     idper = new GemNumericField(6);
     idper.setEditable(false);
-   
+
       //    insee = new GemField(13, 15);
     nir = new JFormattedTextField(getMask());
     nir.setColumns(13);
@@ -124,20 +124,20 @@ public class EmployeeView
       public void focusGained(FocusEvent e) {
          markNir();
       }
-      
+
     });
     nir.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
         markNir();
       }
-      
+
     });
     birth = new DateFrField();
     place = new GemField(true, 20);
     place.setToolTipText(BundleUtil.getLabel("Place.of.birth.tip"));
     guso = new GemField(13, 10);
-    
+
     nationality = new GemField(true, 20);
 
     this.setLayout(new GridBagLayout());
@@ -162,25 +162,25 @@ public class EmployeeView
     gb.add(birth, 1, 3, 1, 1, GridBagHelper.WEST);
     gb.add(place, 1, 4, 1, 1, GridBagHelper.WEST);
     gb.add(nationality, 1, 5, 1, 1, GridBagHelper.WEST);
-    
+
     ActionListener fileListener = new EmployeeDocListener();
     GemPanel buttons = new GemPanel(new GridLayout(1,3));
-    
+
     cvBt = new GemButton(BundleUtil.getLabel("CV.label"));
     cvBt.setToolTipText(BundleUtil.getLabel("CV.tip"));
     cvBt.setEnabled(false);
     cvBt.addActionListener(fileListener);
-    
+
     dueBt = new GemButton(BundleUtil.getLabel("Hiring.declaration.label"));
     dueBt.setToolTipText(BundleUtil.getLabel("Hiring.declaration.tip"));
     dueBt.setEnabled(false);
     dueBt.addActionListener(fileListener);
-    
+
     residenceBt = new GemButton(BundleUtil.getLabel("Residence.permit.label"));
     residenceBt.setToolTipText(BundleUtil.getLabel("Residence.permit.tip"));
     residenceBt.setEnabled(false);
     residenceBt.addActionListener(fileListener);
-    
+
     buttons.add(cvBt);
     buttons.add(dueBt);
     buttons.add(residenceBt);
@@ -188,7 +188,7 @@ public class EmployeeView
     gb.add(buttons, 0, 6, 2, 1, GridBagHelper.BOTH, GridBagHelper.WEST);
 
   }
-  
+
   private MaskFormatter getMask() {
     MaskFormatter mask = null;
     try {
@@ -213,31 +213,31 @@ public class EmployeeView
     place.setText(e.getPlaceBirth());
     guso.setText(e.getGuso() == null ? null : e.getGuso().trim());
     nationality.setText(e.getNationality());
-    
+
     setButtonAccess(e.getIdPer());
-    
+
   }
-  
+
   /**
    * Sets the state of the file's access buttons.
    * If a particular file exists for this person, the button is enabled.
-   * @param idper 
+   * @param idper
    */
   private void setButtonAccess(int idper) {
 
     String parent = ((BasicEmployeeService)service).getDocumentPath();
-    
+
     cvFile = FileUtil.findLastFile(parent, CV_DIR, idper);
     cvBt.setEnabled(cvFile != null && cvFile.canRead());
-    
+
     dueFile = FileUtil.findLastFile(parent, DUE_DIR, idper);
     dueBt.setEnabled(dueFile != null && dueFile.canRead());
-    
+
     residenceFile = FileUtil.findLastFile(parent, RESIDENCE_DIR, idper);
     residenceBt.setEnabled(residenceFile != null && residenceFile.canRead());
-    
+
   }
-  
+
   /**
    * Opens some file by java desktop.
    * @param path the path of the file to open
@@ -255,7 +255,7 @@ public class EmployeeView
     Employee e = new Employee(Integer.parseInt(idper.getText()));
     e.setNir(getNir());
     DateFr d = birth.getDateFr();
-    if (d.equals(DateFr.NULLDATE)) {
+    if (d.bufferEquals(DateFr.NULLDATE)) {
       d = null;
     }
     e.setDateBirth(d == null ? null : new DateFr(d));
@@ -283,7 +283,7 @@ public class EmployeeView
     dueBt.setEnabled(true);
     residenceBt.setEnabled(true);
   }
-  
+
   /**
    * Changes the display to notify or not an error on NIR number.
    */
@@ -291,7 +291,7 @@ public class EmployeeView
     boolean valid = service.checkNir(getNir());
     nir.setBackground(valid ? Color.WHITE : ColorPrefs.ERROR_BG_COLOR);
   }
-  
+
   private class EmployeeDocListener implements ActionListener
   {
     @Override
@@ -311,7 +311,7 @@ public class EmployeeView
         }
       }
     }
-  
+
   }
-  
+
 }

@@ -1,7 +1,7 @@
 /*
- * @(#)ModuleView.java	2.8.a 23/04/13
- * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * @(#)ModuleView.java	2.8.t 16/04/14
+ *
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.course;
 
@@ -32,11 +32,13 @@ import net.algem.util.model.Model;
 import net.algem.util.ui.*;
 
 /**
- * comment
+ * Module View.
+ * In this view are defined the courses that compose the module
+ * and optionally the rates of this module.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.t
  */
 public class ModuleView
         extends GemPanel {
@@ -48,7 +50,6 @@ public class ModuleView
   private GemDecimalField basicPrice;
   private GemDecimalField monthRateReduc;
   private GemDecimalField quarterRateReduc;
-  //private ModuleCodeView viewCode;
   private CourseModuleView courseView;
 
   public ModuleView(DataCache dataCache) {
@@ -56,9 +57,9 @@ public class ModuleView
     no.setEditable(false);
     title = new GemField(ModuleIO.TITLE_MAX_LEN);
     title.setColumns(ModuleIO.TITLE_MAX_LEN);
-		
+
     Format f = AccountUtil.getDefaultNumberFormat();
-    
+
     basicPrice = new GemDecimalField(f);
 
     monthRateReduc = new GemDecimalField(f);
@@ -66,7 +67,7 @@ public class ModuleView
     basicPrice.setColumns(6);
     monthRateReduc.setColumns(3);
     quarterRateReduc.setColumns(3);
-    
+
     GemPanel pricePanel = new GemPanel();
     pricePanel.setBorder(BorderFactory.createTitledBorder(BundleUtil.getLabel("Module.rate.label")));
     pricePanel.add(new GemLabel(BundleUtil.getLabel("Module.basic.rate.label")));
@@ -93,7 +94,7 @@ public class ModuleView
     gb.add(type, 1, 2, 1, 1, GridBagHelper.WEST);
     gb.add(courseView, 0, 3, 2, 1, GridBagHelper.WEST);
     gb.add(pricePanel, 0, 4, 2, 1, GridBagHelper.WEST);
-    
+
   }
 
   public String getId() {
@@ -105,7 +106,7 @@ public class ModuleView
   }
 
   /**
-   * 
+   *
    * Gets the (updated) module.
    *
    * @return un Module
@@ -130,12 +131,12 @@ public class ModuleView
         m.setCode("L");
     }
     m.setCourses(courseView.get());
-    
+
     try {
       m.setBasePrice((Double) basicPrice.getValue());
     } catch (Exception e) {
       m.setBasePrice(0.0);
-    } 
+    }
     try {
       m.setMonthReducRate((Double) monthRateReduc.getValue());
     } catch (Exception e) {

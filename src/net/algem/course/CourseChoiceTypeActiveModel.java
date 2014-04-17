@@ -1,7 +1,7 @@
 /*
- * @(#)CourseChoiceTypeActiveModel.java	2.7.a 28/11/12
- * 
- * Copyright (c) 1998 Musiques Tangentes. All Rights Reserved.
+ * @(#)CourseChoiceTypeActiveModel.java	2.8.t 15/04/14
+ *
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.course;
 
@@ -30,14 +30,13 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
-
+ * @version 2.8.t
  */
 public class CourseChoiceTypeActiveModel
         extends CourseChoiceFilterModel {
 
-  private boolean collective;
-  private boolean active;
+  protected boolean collective;
+  protected boolean active;
 
   public CourseChoiceTypeActiveModel(GemList<Course> list, boolean collective, boolean active) {
     super(list);
@@ -45,6 +44,7 @@ public class CourseChoiceTypeActiveModel
     this.active = active;
 
     load(list);
+
     if (list != null && list.getSize() > 0) {
       if (indices.size() > 0) {
         selected = this.list.getElementAt(indices.get(0));

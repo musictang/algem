@@ -1,7 +1,7 @@
 /*
- * @(#)MemberEnrolmentEditor.java 2.8.n 19/09/13
- * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * @(#)MemberEnrolmentEditor.java 2.8.t 16/04/14
+ *
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.enrolment;
 
@@ -58,7 +58,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.n
+ * @version 2.8.t
  * @since 1.0b 06/09/2001
  */
 public class MemberEnrolmentEditor
@@ -73,7 +73,7 @@ public class MemberEnrolmentEditor
   private final static String NEW_MODULE = BundleUtil.getLabel("New.module.label");
   private final static String MODULE_DEL = BundleUtil.getLabel("Module.delete.label");
   private final static String NONE_ENROLMENT = MessageUtil.getMessage("enrolment.empty.list");
-  
+
   private PersonFile dossier;
   private DefaultMutableTreeNode root;
   private JPopupMenu popup;
@@ -91,7 +91,7 @@ public class MemberEnrolmentEditor
   private ActionListener acListener;
   private EnrolmentService service;
   private ModuleDlg moduleDlg;
-  
+
 
   public MemberEnrolmentEditor(GemDesktop _desktop, ActionListener _listener, PersonFile _dossier) {
 
@@ -110,7 +110,7 @@ public class MemberEnrolmentEditor
     popup.add(m4 = new JMenuItem(NEW_COURSE));
     popup.add(m5 = new JMenuItem(NEW_MODULE));
     popup.add(m6 = new JMenuItem(MODULE_DEL));
-    
+
 
     m1.addActionListener(this);
     m2.addActionListener(this);
@@ -136,7 +136,7 @@ public class MemberEnrolmentEditor
 
       @Override
       public void maybeShowPopup(MouseEvent e) {
-        
+
         if (currentSelection != null) {
           Object node = currentSelection.getLastPathComponent();
           if (node.getClass() == DefaultMutableTreeNode.class) {
@@ -165,7 +165,7 @@ public class MemberEnrolmentEditor
     add(view, BorderLayout.CENTER);
     add(btEnrolment, BorderLayout.SOUTH);
   }
-  
+
   private void setEnabledPopupMenu(boolean e) {
     if (e) {
       m1.setEnabled(true);
@@ -183,7 +183,7 @@ public class MemberEnrolmentEditor
       m6.setEnabled(false);
     }
   }
-  
+
   private void setModulePopupMenu() {
     m1.setEnabled(false);
     m2.setEnabled(false);
@@ -304,11 +304,11 @@ public class MemberEnrolmentEditor
       return;
     }
     CourseOrder co = ((CourseEnrolmentNode) path[i - 1]).getCourseOrder();
-    
+
     if (co.getStart().equals(new Hour(Hour.NULL_HOUR))) {
       return;
     }
-    
+
     ChangeHourCourseDlg dlg2;
     try {
       Course c = service.getCourse(co.getAction());
@@ -344,6 +344,9 @@ public class MemberEnrolmentEditor
     }
     try {
       CourseModuleInfo cm = dlg.getCourseInfo();
+      if (dlg.getDate() != null) {
+        cm.setDate(dlg.getDate());
+      }
       CourseOrder co = createCourse(mo, cm);
       if (courseDlg == null) {
         courseDlg = new CourseEnrolmentDlg(desktop, service, dossier.getId());
@@ -376,7 +379,7 @@ public class MemberEnrolmentEditor
     CourseOrder co = new CourseOrder();
     co.setIdOrder(mo.getIdOrder());
     co.setModuleOrder(mo.getId());
-    co.setDateStart(new DateFr(new Date()));
+    co.setDateStart(cm.getDate() == null ? new DateFr(new Date()) : cm.getDate());
     co.setDateEnd(mo.getEnd());
     co.setStart(new Hour("00:00"));
     co.setEnd(new Hour(cm.getTimeLength()));
@@ -426,7 +429,7 @@ public class MemberEnrolmentEditor
       MessagePopup.error(this, MessageUtil.getMessage("course.invalid.choice"));
       return;
     }
-    
+
     view.setCursor(new Cursor(Cursor.WAIT_CURSOR));
 
     if (courseDlg == null) {
@@ -467,14 +470,14 @@ public class MemberEnrolmentEditor
     }
 
   }
-  
+
   private void modifyCourseOrder(CourseOrder cc, CourseEnrolmentDlg dlg) {
     cc.setModuleOrder(Integer.parseInt(dlg.getField(1)));
     cc.setAction(Integer.parseInt(dlg.getField(2)));
     cc.setTitle(dlg.getField(3));
     cc.setDay(Integer.parseInt(dlg.getField(4)));
 
-    if (Course.ATP_CODE == cc.getCode()) {
+    if (CourseCodeType.ATP.getId() == cc.getCode()) {
       DateFr d = new DateFr(dlg.getField(7));
       cc.setDateStart(d);
       cc.setDateEnd(d);
@@ -497,7 +500,7 @@ public class MemberEnrolmentEditor
     }
 
     Order order = ((EnrolmentNode) path[i - 1]).getOrder();
-    
+
     try {
       if (moduleDlg == null) {
         moduleDlg = new ModuleDlg(this, dossier, service, dataCache);
@@ -510,17 +513,17 @@ public class MemberEnrolmentEditor
 
       ModuleOrder mo = new ModuleOrder();
       mo.setIdOrder(order.getId());
-      
+
       Module m = ((ModuleIO) DataCache.getDao(Model.Module)).findId(idModule);
       addModule(mo, m);
       service.create(mo);
-      
+
       for (CourseModuleInfo info : m.getCourses()) {
         addCourse(mo, info);
       }
       // TODO désactiver l'ajout de lignes d'échéance à l'ajout d'un module
       enrolmentOrder.setTotalBase(mo.getPrice());
-      
+
       String school = ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey(), dc);
       try {
         int n = enrolmentOrder.saveOrderLines(mo, Integer.parseInt(school));
@@ -531,9 +534,9 @@ public class MemberEnrolmentEditor
       desktop.postEvent(new EnrolmentUpdateEvent(this, dossier.getId()));
     } catch (SQLException ex) {
       MessagePopup.warning(this, "#addModule " + ex.getMessage());
-    } 
+    }
   }// end addModule
-  
+
     private void addCourse(ModuleOrder mo, CourseModuleInfo cm) throws SQLException {
     CourseOrder co = new CourseOrder();
     co.setIdOrder(mo.getIdOrder());
@@ -546,7 +549,7 @@ public class MemberEnrolmentEditor
     co.setDateStart(mo.getStart());
     co.setDateEnd(mo.getEnd());
 //    co.setRoom(0);// salle à définir
-    
+
     service.create(co);
   }
 
@@ -570,14 +573,14 @@ public class MemberEnrolmentEditor
     mo.setNOrderLines(1);
 
   }
-  
+
   private void deleteModuleOrder() {
     Object[] path = currentSelection.getPath();
     int i = path.length;
     if (!(path[i - 1] instanceof ModuleEnrolmentNode)) {
       return;
     }
-    
+
     ModuleOrder mo = ((ModuleEnrolmentNode) path[i - 1]).getModule();
     if (MessagePopup.confirm(this, MessageUtil.getMessage("module.delete.confirmation", mo.getTitle()))) {
       try {

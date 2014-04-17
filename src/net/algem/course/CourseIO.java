@@ -1,7 +1,7 @@
 /*
- * @(#)CourseIO.java	2.8.a 19/03/13
- * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * @(#)CourseIO.java	2.8.t 15/04/14
+ *
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.course;
 
@@ -34,7 +34,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.8.a
+ * @version 2.8.t
  */
 public class CourseIO
         extends TableIO
@@ -142,12 +142,12 @@ public class CourseIO
 
   @Override
   public List<Course> load() throws SQLException {
-    String where = "WHERE c.code <> " + Course.ATP_CODE + " ORDER BY c.titre";
+    String where = "WHERE c.code <> " + CourseCodeType.ATP.getId() + " ORDER BY c.titre";
     return find(where);
   }
 
   public List<Course> load(String where) throws SQLException {
     return find(where);
   }
-  
+
 }

@@ -1,6 +1,6 @@
 /*
  * @(#)CourseView.java	2.8.k 23/07/13
- * 
+ *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,11 +16,12 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.course;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import javax.swing.JCheckBox;
 import net.algem.config.GemParamChoice;
@@ -50,15 +51,16 @@ public class CourseView
   private JCheckBox active;
   private ParamChoice schoolChoice;
 
-  public CourseView(GemList codes, GemList schools) {
-    
+  public CourseView(GemList<CourseCode> codes, GemList schools) {
+
     no = new GemNumericField(6);
     no.setEditable(false);
     no.setBackground(Color.lightGray);
-    title = new GemField(32);
-    label = new GemField(16);
-    code = new GemParamChoice(new GemChoiceModel(codes));
-
+    title = new GemField(24);
+    label = new GemField(24);
+    code = new GemParamChoice(new GemChoiceModel<CourseCode>(codes));
+    Dimension comboDim = new Dimension(200, code.getPreferredSize().height);
+    code.setPreferredSize(comboDim);
     nplaces = new GemNumericField(5);
     level = new GemField(5);
     collective = new JCheckBox();
@@ -68,7 +70,7 @@ public class CourseView
     active.setBorder(null);
     active.setSelected(true);
     schoolChoice = new ParamChoice(schools.getData());
-
+    schoolChoice.setPreferredSize(comboDim);
     this.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
     gb.insets = GridBagHelper.SMALL_INSETS;
@@ -139,7 +141,7 @@ public class CourseView
     cr.setActive(active.isSelected());
     cr.setCode(code.getKey());
     cr.setSchool(schoolChoice.getKey());
-    
+
     return cr;
   }
 

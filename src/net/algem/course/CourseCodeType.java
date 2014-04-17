@@ -1,5 +1,5 @@
 /*
- * @(#)CourseChoiceTypeModel.java	2.8.t 16/04/14
+ * @(#)CourseCodeType.java	2.8.t 11/04/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,39 +20,31 @@
  */
 package net.algem.course;
 
-import java.util.Vector;
-import net.algem.util.model.GemList;
-import net.algem.util.model.GemModel;
-
 /**
- * Filter model for collective course.
+ * Enumeration of the types of courses defined in enrollment and planning.
  *
- * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.8.t
+ * @since 2.8.t 11/04/14
  */
-public class CourseChoiceTypeModel
-        extends CourseChoiceFilterModel {
+public enum CourseCodeType {
 
-  protected boolean collective;
+  ATP(11),
+  ATL(3),
+  EXT(9),
+  FMU(2),
+  INS(1),
+  FPR(7),
+  STG(12);
 
-  public CourseChoiceTypeModel(GemList<Course> list, boolean collective) {
-    super(list);
-    this.collective = collective;
-    load(list);
-    if (list != null && list.getSize() > 0) {
-      if (indices.size() > 0) {
-        selected = this.list.getElementAt(indices.get(0));
-      }
-    }
+  private int id;
+
+  private CourseCodeType(int id) {
+    this.id = id;
   }
 
-  public CourseChoiceTypeModel(Vector<Course> list, boolean collective) {
-    this(new GemList<Course>(list), collective);
+  public int getId() {
+    return id;
   }
 
-  @Override
-  public boolean isFilterOk(GemModel c) {
-    return ((Course)c).isCollective() == collective;
-  }
 }

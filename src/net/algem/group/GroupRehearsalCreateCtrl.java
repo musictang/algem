@@ -1,6 +1,6 @@
 /*
  * @(#)GroupRehearsalCreateCtrl.java	2.7.a 03/12/12
- * 
+ *
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.group;
 
@@ -117,7 +117,7 @@ public class GroupRehearsalCreateCtrl
     Hour hdeb = rv.getStartingTime();
     Hour hfin = rv.getEndingTime();
 
-    if (date.equals(DateFr.NULLDATE)) {
+    if (date.bufferEquals(DateFr.NULLDATE)) {
       JOptionPane.showMessageDialog(rv,
                                     MessageUtil.getMessage("date.entry.error"),
                                     entryError,
@@ -171,7 +171,7 @@ public class GroupRehearsalCreateCtrl
       GemLogger.logException(ex.getMessage(), ex, this);
       MessagePopup.warning(this, ex.getMessage());
       return false;
-    } 
+    }
     return true;
   }
 

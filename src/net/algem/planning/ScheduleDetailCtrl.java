@@ -1,6 +1,6 @@
 /*
  * @(#)ScheduleDetailCtrl.java 2.8.o 08/10/13
- * 
+ *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning;
 
@@ -55,7 +55,7 @@ import net.algem.util.module.GemView;
 import net.algem.util.ui.*;
 
 /**
- * Access infos and schedule modification.
+ * Access schedule infos and modifications.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
@@ -146,7 +146,7 @@ public class ScheduleDetailCtrl
     listPanel.removeAll();
     menuPanel.removeAll();
     title = schedule.getDate().toString() + " " + schedule.getStart().toString() + "-" + schedule.getEnd().toString();
-    frame.setTitle(title);
+    frame.setTitle(title);// || schedule instanceof WorkshopSchedule
     if (schedule instanceof CourseSchedule) {
       loadCourseSchedule(event);
     } else if (schedule instanceof MemberRehearsalSchedule) {
@@ -439,7 +439,7 @@ public class ScheduleDetailCtrl
         roomEditor.setDate(schedule.getDate().getDate());
         desktop.addModule(roomEditor);
         frame.setLocation(getOffset(roomEditor.getView()));
-      } else if ("CourseLink".equals(arg)) {
+      } else if ("CourseLink".equals(arg) || "WorkshopLink".equals(arg) ) {
         setWaitCursor();
         c = (Course) ((GemMenuButton) evt.getSource()).getObject();
         if (!(evt.getModifiers() == InputEvent.BUTTON1_MASK)) { // ouverture du suivi cours touche majuscule

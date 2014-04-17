@@ -1,6 +1,6 @@
 /*
- * @(#)TrainingScheduleCtrl.java	2.8.t 14/04/14
- * 
+ * @(#)TrainingScheduleCtrl.java	2.8.t 16/04/14
+ *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,21 +16,27 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning;
 
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 import net.algem.course.Course;
 import net.algem.planning.editing.ModifPlanEvent;
 import net.algem.util.*;
-import net.algem.util.model.GemDateTime;
 import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.CardCtrl;
+import net.algem.util.ui.GemPanel;
 import net.algem.util.ui.MessagePopup;
 
 /**
@@ -59,8 +65,14 @@ public class TrainingScheduleCtrl
 
   public void init() {
     trainingView = new TrainingScheduleView(desktop.getDataCache());
+    JScrollPane scroll = new JScrollPane(trainingView);
+    scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+    scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+    GemPanel gp = new GemPanel(new BorderLayout());
+    gp.add(scroll, BorderLayout.CENTER);
+
     conflictsView = new ConflictListView();
-    addCard(null, trainingView);
+    addCard(null, gp);
     addCard(BundleUtil.getLabel("Conflict.verification.label"), conflictsView);
     select(0);
   }
@@ -132,8 +144,7 @@ public class TrainingScheduleCtrl
     return cancel();
   }
 
-  public void save() throws PlanningException {
-//    List<GemDateTime> dates = trainingView.getDates();
+  private void save() throws PlanningException {
     service.planify(action, Schedule.TRAINING_SCHEDULE, dates);
   }
 
@@ -152,6 +163,16 @@ public class TrainingScheduleCtrl
     }
 
     dates = trainingView.getDates();
+    // check duplicates
+    Set<GemDateTime> uniques = new HashSet<GemDateTime>(dates);
+    if (uniques.size() < dates.size()) {
+      throw new PlanningException(MessageUtil.getMessage("time.duplication"));
+    }
+    // check overlapping
+    if (hasOverlapping(dates)) {
+      throw new PlanningException(MessageUtil.getMessage("time.overlapping"));
+    }
+
     for (GemDateTime dt : dates) {
       HourRange hr = dt.getTimeRange();
       if (hr.getStart().equals(hr.getEnd()) || hr.getEnd().before(hr.getStart())) {
@@ -170,6 +191,22 @@ public class TrainingScheduleCtrl
     a.setCourse(course);
 
     return a;
+  }
+
+  private boolean hasOverlapping(List<GemDateTime> orig) {
+    List<GemDateTime> dup = new ArrayList<GemDateTime>(orig);
+    for (int i = 0; i < orig.size(); i++) {
+      DateFr d = orig.get(i).getDate();
+      HourRange h = orig.get(i).getTimeRange();
+      for(int j = 0; j < dup.size(); j++) {
+        if (j != i && dup.get(j).getDate().equals(d)) {
+          if (dup.get(j).getTimeRange().overlap(h.getStart(), h.getEnd())) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
   }
 
   private int testConflicts(Action a) {

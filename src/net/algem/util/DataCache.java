@@ -1,7 +1,7 @@
 /*
- * @(#)DataCache.java	2.8.m 11/09/13
+ * @(#)DataCache.java	2.8.t 15/04/14
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -49,9 +49,9 @@ import net.algem.planning.*;
 import net.algem.planning.day.DaySchedule;
 import net.algem.planning.month.MonthSchedule;
 import net.algem.room.*;
+import net.algem.security.DefaultUserService;
 import net.algem.security.User;
 import net.algem.security.UserIO;
-import net.algem.security.DefaultUserService;
 import net.algem.security.UserService;
 import net.algem.util.event.GemEvent;
 import net.algem.util.model.Cacheable;
@@ -64,7 +64,7 @@ import net.algem.util.model.Model;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.m
+ * @version 2.8.t
  * @since 1.0b 03/09/2001
  */
 public class DataCache
@@ -74,7 +74,7 @@ public class DataCache
   private static MemberIO MEMBER_IO;
   private static PersonIO PERSON_IO;
   private static PersonFileIO PERSON_FILE_IO;
-  private static TeacherIO TEACHER_IO; 
+  private static TeacherIO TEACHER_IO;
   private static RoomIO ROOM_IO;
   private static RoomRateIO ROOM_RATE_IO;
   private static GroupIO GROUP_IO;
@@ -88,7 +88,7 @@ public class DataCache
   private static ActionIO ACTION_IO;
   private static UserIO USER_IO;
   private static ItemIO ITEM_IO;
-  
+
   // Cache data
   private static Hashtable<Integer, List<Integer>> TEACHER_INSTRUMENT_CACHE = new Hashtable<Integer, List<Integer>>();
   private static Hashtable<String, Param> COST_ACCOUNT_CACHE = new Hashtable<String, Param>();
@@ -98,7 +98,7 @@ public class DataCache
   private static Hashtable<Integer, Action> ACTION_CACHE = new Hashtable<Integer, Action>();
   private static Hashtable<Integer, Item> ITEM_CACHE = new Hashtable<Integer, Item>();
   private static Hashtable<Integer, OrderLine> ORDER_LINE_CACHE = new Hashtable<Integer, OrderLine>();
-  
+
   private static GemList<Course> COURSE_LIST;
   private static GemList<Course> WORKSHOP_LIST;
   private static GemList<Teacher> TEACHER_LIST;
@@ -115,12 +115,12 @@ public class DataCache
   private static GemList<Account> ACCOUNT_LIST;
   private static GemList<Vat> VAT_LIST;
   private static GemList<GemParam> COURSE_CODE_LIST;
-   
+
   private static Vector<Instrument> instruments;//TODO manage list
   private Vector<CategoryOccup> occupCat;
   private Vector<Param> vacancyCat;
   private Vector<Param> webSiteCat;
-  
+
   private boolean cacheInit = false;
   private User user;
   private DateFr startOfPeriod;
@@ -209,7 +209,7 @@ public class DataCache
   public DataConnection getDataConnection() {
     return dc;
   }
-  
+
    /**
    * Generic getter for GemList instances.
    * @param model enumeration model
@@ -296,13 +296,13 @@ public class DataCache
       default: return null;
     }
   }
-  
+
   /**
    * Gets a model instance.
-   * @param id 
+   * @param id
    * @param m model enumeration
    * @return an instance of {@link net.algem.util.model.GemModel }
-   * @throws SQLException 
+   * @throws SQLException
    */
   public static GemModel findId(int id, Model m) throws SQLException {
     switch (m) {
@@ -391,14 +391,14 @@ public class DataCache
         return null;
     }
   }
-  
+
   public static Param getCostAccount(String code) {
     return code == null ? null : COST_ACCOUNT_CACHE.get(code);
   }
 
   /**
    * Adds a new element to the list in dataCache.
-   * @param m 
+   * @param m
    */
   public <T extends GemModel> void add(T m) {
     if (m instanceof Room) {
@@ -451,10 +451,10 @@ public class DataCache
       COURSE_CODE_LIST.addElement((CourseCode) m);
     }
   }
-  
+
   /**
    * Updates an element in the list in dataCache.
-   * @param m 
+   * @param m
    */
   public void update(GemModel m) {
     if (m instanceof Room) {
@@ -508,9 +508,9 @@ public class DataCache
     } else if (m instanceof CourseCode) {
       COURSE_CODE_LIST.update((CourseCode) m, null);
     }
-    
+
   }
-  
+
   /**
    * Removes an element from the list in dataCache.
    * @param m
@@ -551,10 +551,10 @@ public class DataCache
       VAT_LIST.removeElement((Vat) m);
     } else if (m instanceof CourseCode) {
       COURSE_CODE_LIST.removeElement((CourseCode) m);
-    } 
-    
+    }
+
   }
-  
+
   public void remoteEvent(GemEvent _evt) {
     System.out.println("DataCache.remoteEvent:" + _evt);
     switch (_evt.getType()) {
@@ -577,7 +577,7 @@ public class DataCache
       case GemEvent.TEACHER:
         Teacher t = ((TeacherEvent) _evt).getTeacher();
         if (_evt.getOperation() == GemEvent.CREATION) {
-          add(t);  
+          add(t);
         } else if (_evt.getOperation() == GemEvent.MODIFICATION) {
           update(t);
         }
@@ -594,7 +594,7 @@ public class DataCache
         break;
       case GemEvent.ROOM_RATE:
         sync(_evt, (RoomRate) _evt.getObject());
-        break;  
+        break;
       case GemEvent.ESTABLISHMENT:
         sync(_evt, (Establishment) _evt.getObject());
         break;
@@ -616,27 +616,27 @@ public class DataCache
       case GemEvent.MODULE:
         sync(_evt, ((ModuleEvent) _evt).getModule());
         break;
-        
+
       case GemEvent.AGE_RANGE:
         sync(_evt, (AgeRange) _evt.getObject());
         break;
-        
+
       case GemEvent.STATUS:
         sync(_evt, (Status) _evt.getObject());
         break;
-        
+
      case GemEvent.LEVEL:
         sync(_evt, (Level) _evt.getObject());
         break;
-       
+
      case GemEvent.COURSE_CODE:
         sync(_evt, (CourseCode) _evt.getObject());
         break;
-       
+
      case GemEvent.USER:
         sync(_evt, (User) _evt.getObject());
         break;
-       
+
      case GemEvent.ACCOUNT:
         sync(_evt, (Account) _evt.getObject());
         break;
@@ -645,7 +645,7 @@ public class DataCache
        break;
     }
   }
-  
+
   private <T extends GemModel> void sync(GemEvent evt, T obj) {
     if (evt.getOperation() == GemEvent.CREATION) {
       add(obj);
@@ -674,16 +674,16 @@ public class DataCache
 
       showMessage(frame, BundleUtil.getLabel("Room.label"));
       ROOM_LIST = new GemList<Room>(ROOM_IO.load());
-      
+
       showMessage(frame, BundleUtil.getLabel("Course.label"));
       COURSE_LIST = new GemList<Course>(COURSE_IO.load());
-      
+
       showMessage(frame, BundleUtil.getLabel("Workshop.reading.label"));
-      WORKSHOP_LIST = new GemList<Course>(COURSE_IO.load("WHERE c.code = '" + Course.ATP_CODE + "' AND titre !~* 'DEFIN' ORDER BY c.titre"));
- 
+      WORKSHOP_LIST = new GemList<Course>(COURSE_IO.load("WHERE c.code = '" + CourseCodeType.ATP.getId() + "' AND titre !~* 'DEFIN' ORDER BY c.titre"));
+
       showMessage(frame, BundleUtil.getLabel("Instruments.label"));
       instruments = InstrumentIO.find("ORDER BY nom", dc);
-      
+
       showMessage(frame, BundleUtil.getLabel("Teachers.label"));
       loadTeacherInstrumentCache();
       TEACHER_LIST = new GemList<Teacher>(TEACHER_IO.load());
@@ -692,30 +692,30 @@ public class DataCache
       // important : before module
       COURSE_CODE_LIST = new GemList<GemParam>(COURSE_CODE_IO.load());
       MODULE_LIST = new GemList<Module>(MODULE_IO.load());
-      
+
       occupCat = CategoryOccupIO.find("ORDER BY nom", dc);
       vacancyCat = ParamTableIO.find(Category.VACANCY.getTable(), Category.VACANCY.getCol(), dc);
       webSiteCat = ParamTableIO.find(Category.SITEWEB.getTable(), Category.SITEWEB.getCol(), dc);
-      
+
       showMessage(frame, BundleUtil.getLabel("Scheduling.label"));
       loadScheduleCache();
-      
+
       showMessage(frame, BundleUtil.getLabel("Menu.style.label"));
       STYLE_LIST = new GemList<MusicStyle>(MUSIC_STYLE_IO.load());
-      
+
       showMessage(frame, BundleUtil.getLabel("Groups.label"));
       GROUP_LIST = new GemList<Group>(GROUP_IO.load());
-      
+
       showMessage(frame, BundleUtil.getLabel("Accounting.label"));
       loadAccountingCache();
 
       showMessage(frame, BundleUtil.getLabel("Billing.label"));
       loadBillingCache();
-      
+
       for(User u : USER_IO.load()) {
         USER_CACHE.put(u.getId(), u);
       }
-      
+
     } catch (SQLException ex) {
       String m = MessageUtil.getMessage("cache.loading.exception");
       GemLogger.logException(m, ex);
@@ -724,7 +724,7 @@ public class DataCache
       cacheInit = true;
     }
   }
-  
+
   private void loadRoomContactCache() {
     String query = "SELECT " + PersonIO.COLUMNS + " FROM " + PersonIO.TABLE + ", " + RoomIO.TABLE + " r "
             + "WHERE r.idper = " + PersonIO.TABLE + ".id OR r.payeur = " + PersonIO.TABLE + ".id ORDER BY nom";
@@ -738,15 +738,15 @@ public class DataCache
       GemLogger.logException(query, e);
     }
   }
-  
+
   private void loadTeacherInstrumentCache() {
-    try { 
+    try {
       TEACHER_INSTRUMENT_CACHE = InstrumentIO.load(dc);
     } catch (SQLException ex) {
       GemLogger.logException(ex);
     }
   }
-  
+
   private void loadScheduleCache() throws SQLException {
     LEVEL_LIST = new GemList<GemParam>(LEVEL_IO.load());
     STATUS_LIST = new GemList<GemParam>(STATUS_IO.load());
@@ -755,7 +755,7 @@ public class DataCache
       ACTION_CACHE.put(a.getId(), a);
     }
   }
-  
+
   public static List<OrderLine> findOrderLines(String invoiceId) {
     List<OrderLine> lo = new ArrayList<OrderLine>();
     for (OrderLine ol : ORDER_LINE_CACHE.values()) {
@@ -765,7 +765,7 @@ public class DataCache
     }
     return lo;
   }
-  
+
   private void loadAccountingCache() throws SQLException {
     ACCOUNT_LIST = new GemList<Account>(AccountIO.load(dc));
 
@@ -792,19 +792,19 @@ public class DataCache
     for (OrderLine ol : OrderLineIO.getBillingOrderLines(dc)) {
       ORDER_LINE_CACHE.put(ol.getId(), ol);
     }
-    
+
   }
-  
+
   private void showMessage(GemBoot frame, String msg) {
     if (frame != null) {
-      frame.setMessage(msg);       
+      frame.setMessage(msg);
     }
   }
 
   public UserService getUserService() {
     return userService;
   }
-  
+
   public User getUser() {
     return user;
   }
@@ -896,21 +896,21 @@ public class DataCache
       }
     });
     monthThread.start();
-    
+
   }
 
-  public void setDaySchedule(java.util.Date _date) {
+  public void setDaySchedule(java.util.Date date) {
     try {
-      loadDayStmt.setDate(1, new java.sql.Date(_date.getTime()));
-      loadDayRangeStmt.setDate(1, new java.sql.Date(_date.getTime()));
-      daySchedule.setDay(_date,
+      loadDayStmt.setDate(1, new java.sql.Date(date.getTime()));
+      loadDayRangeStmt.setDate(1, new java.sql.Date(date.getTime()));
+      daySchedule.setDay(date,
               ScheduleIO.getLoadRS(loadDayStmt, dc),
               ScheduleRangeIO.getLoadRS(loadDayRangeStmt, this));
     } catch (SQLException e) {
       GemLogger.logException(e);
     }
   }
-  
+
   public Vector<CategoryOccup> getOccupationalCat() {
     return occupCat;
   }
@@ -926,11 +926,11 @@ public class DataCache
   public Vector<Instrument> getInstruments() {
     return instruments;
   }
-  
+
   public static List<Integer> getTeacherInstruments(int idper) {
     return TEACHER_INSTRUMENT_CACHE.get(idper);
   }
-  
+
   /**
    * Gets the name of an instrument from its {@code id }.
    * @param id
@@ -996,7 +996,7 @@ public class DataCache
    * @param table
    * @param operation
    * @return true if access authorized
-   * @deprecated 
+   * @deprecated
    */
   public boolean checkAccess(String table, String operation) {
     boolean ret = false;
@@ -1060,7 +1060,7 @@ public class DataCache
       throw new ConfigException(BundleUtil.getLabel("ConfEditor.date.end.period.exception"));
     }
   }
-  
+
   <T extends Object> void dump(String p, Vector<T> v) {
     try {
       FileOutputStream fic = new FileOutputStream(p);

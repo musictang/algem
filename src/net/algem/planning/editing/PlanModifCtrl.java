@@ -1,6 +1,6 @@
 /*
  * @(#)PlanModifCtrl.java	2.8.r 17/01/14
- * 
+ *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning.editing;
 
@@ -199,7 +199,7 @@ public class PlanModifCtrl
       desktop.removeCurrentModule();
     }
     /*
-    else if (arg.equals("Replanifier")) {
+    else if (arg.bufferEquals("Replanifier")) {
       dialogDeplacerCours();
     } else if (arg.equalsIgnoreCase("Replanifier.Validation")) {
       try {
@@ -220,7 +220,7 @@ public class PlanModifCtrl
       } finally {
         dataCache.setAutoCommit(true);
       }
-    } 
+    }
     */
 
     desktop.setDefaultCursor();
@@ -273,7 +273,7 @@ public class PlanModifCtrl
 
   }
 
-  /** 
+  /**
    * Changes time schedule start.
    * Only for members and groups rehearsals ???
    */
@@ -321,7 +321,7 @@ public class PlanModifCtrl
 
   /**
    * Gets the maximum number of places available for this {@code room}.
-   * 
+   *
    * @param np maximum number of places of the current action
    * @param room room instance
    * @return a short number
@@ -459,7 +459,7 @@ public class PlanModifCtrl
     if (!dlg.isValidate()) {
       return;
     }
-    
+
     ScheduleObject newPlan = dlg.getSchedule();
 
     try {
@@ -494,8 +494,8 @@ public class PlanModifCtrl
     if (!dlg.isValidate()) {
       return;
     }
-    
-    ScheduleObject newPlan = dlg.getSchedule();   
+
+    ScheduleObject newPlan = dlg.getSchedule();
     Hour [] range = dlg.getRange();
 //     if (!((Course) plan.getActivity()).isCollective()) {
 //        Vector<ScheduleRange> ranges = ScheduleRangeIO.find("WHERE idplanning = " + plan.getId(), dc);
@@ -504,7 +504,7 @@ public class PlanModifCtrl
 //        // ouvrir un dialogue de sélection
 //        // mettre à jour les plages en fonction des adhérents sélectionnés
 //      }
-    
+
     try {
       if (!testConflictCourse(plan, newPlan, range)) {
         return;
@@ -553,15 +553,15 @@ public class PlanModifCtrl
       cfd.show();
       return false;
     }
-    
+
     // TODO member conflict
-    
+
     return true;
   }
-  
+
   private boolean testConflictCopyCourse(ScheduleObject plan, ScheduleObject newPlan)
           throws SQLException {
-    
+
     Vector<ScheduleTestConflict> v = service.testRoomForScheduleCopy(newPlan);
 
     if (v.size() > 0) {
@@ -587,7 +587,7 @@ public class PlanModifCtrl
 
 
   /**
-   * @deprecated 
+   * @deprecated
    */
   private void dialogMoveCourse() {
     updatePlanCtrl = new UpdateCoursePlanCtrl(desktop, plan);
@@ -596,7 +596,7 @@ public class PlanModifCtrl
     desktop.addPanel("planification cours", updatePlanCtrl);
   }
 
-  /** 
+  /**
    * Calls a dialog for compressing or extending a schedule.
    */
   private void dialogPlanningLength() {
@@ -639,7 +639,7 @@ public class PlanModifCtrl
       System.err.println(sqe.getMessage());
       return;
     }
-    
+
     try {
       service.modifyPlanningLength(plan, hStart, hEnd, lastDay);
       desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));
@@ -713,7 +713,7 @@ public class PlanModifCtrl
   /**
    * Deletes some schedules with common {@code action}.
    * @param action scheduling link
-   * @throws PlanningException 
+   * @throws PlanningException
    */
   private void deletePlanning(Action action) throws PlanningException {
     try {
@@ -726,12 +726,12 @@ public class PlanModifCtrl
   }
 
   /**
-   * 
+   *
    * @param a
    * @param plan
    * @param jour
-   * @return 
-   * @deprecated 
+   * @return
+   * @deprecated
    */
   private Action getActionFrom(Action a, ScheduleObject plan, int jour) {
     Action action = new Action();

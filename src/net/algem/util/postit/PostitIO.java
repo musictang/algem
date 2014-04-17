@@ -1,6 +1,6 @@
 /*
  * @(#)PostitIO.java	2.6.a 21/09/12
- * 
+ *
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.util.postit;
 
@@ -44,7 +44,7 @@ public class PostitIO
 	public static void insert(Postit p, DataConnection dc) throws SQLException {
 		int numero = nextId(SEQUENCE, dc);
 
-		if (p.getTerm().equals(DateFr.NULLDATE)) {
+		if (p.getTerm().bufferEquals(DateFr.NULLDATE)) {
 			p.setTerm(p.getDay());
 		}
 		String query = "INSERT INTO " + TABLE + " VALUES("

@@ -94,12 +94,12 @@ public class ScheduleRangeIO
 		String query = "DELETE FROM " + TABLE + " WHERE id = " + p.getId();
 		dc.executeUpdate(query);
 	}
-    
+
     /**
      * Suppress ranges by action.
      * @param a
      * @param dc
-     * @throws SQLException 
+     * @throws SQLException
      */
     public static void delete(Action a, DataConnection dc) throws SQLException {
 		String query = "DELETE FROM " + TABLE + " WHERE idplanning IN ("
@@ -116,7 +116,7 @@ public class ScheduleRangeIO
 
 	public static Vector<ScheduleRange> find(String where, DataConnection dc) throws SQLException {
 		String query = "SELECT " + COLUMNS + " FROM " + TABLE + " " + where;
-        
+
 		return ifind(query, dc);
 	}
 
@@ -157,14 +157,14 @@ public class ScheduleRangeIO
 
 		p.setRoom((Room) DataCache.findId(p.getPlace(), Model.Room));
 		p.setTeacher((Person) DataCache.findId(p.getIdPerson(), Model.Teacher));
-        
+
         p.setAction(service.getAction(p.getIdAction()));
 //        p.setCourse(service.getCourseFromAction(p.getIdAction()));
         p.setCourse((Course) DataCache.findId(p.getAction().getCourse(), Model.Course));
 
 		return p;
 	}
-    
+
 //    p.setId(rs.getInt(1));
 //			p.setScheduleId(rs.getInt(2));
 //			p.setStart(new Hour(rs.getString(3)));
@@ -239,13 +239,13 @@ public class ScheduleRangeIO
 	private static String getFollowUpRequest(boolean action) {
 		if (action) {
 			return "SELECT " + COLUMNS + ", p.jour, p.action, p.idper, p.lieux, s.texte FROM " + TABLE + " pg, planning p, action a, suivi s"
-				+ " WHERE p.ptype=" + Schedule.COURSE_SCHEDULE
-				+ " AND p.id = pg.idplanning";
-            
+				+ " WHERE p.ptype IN (" + Schedule.COURSE_SCHEDULE + "," + Schedule.WORKSHOP_SCHEDULE + "," + Schedule.TRAINING_SCHEDULE
+				+ ") AND p.id = pg.idplanning";
+
 		} else {
 			return "SELECT " + COLUMNS + ", p.jour, p.action, p.idper, p.lieux, s.texte FROM " + TABLE + " pg, planning p, suivi s"
-				+ " WHERE p.ptype=" + Schedule.COURSE_SCHEDULE
-				+ " AND p.id = pg.idplanning";
+				+ " WHERE p.ptype IN (" + Schedule.COURSE_SCHEDULE + "," + Schedule.WORKSHOP_SCHEDULE + "," + Schedule.TRAINING_SCHEDULE
+				+ ") AND p.id = pg.idplanning";
 		}
 	}
 
@@ -285,7 +285,7 @@ public class ScheduleRangeIO
 		if (rs.next()) {
 			texte = unEscape(rs.getString(1));
 		}
-		
+
 		return texte;
 	}
 

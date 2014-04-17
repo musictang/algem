@@ -1,7 +1,7 @@
 /*
- * @(#)Course.java	2.8.a 15/04/13
- * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * @(#)Course.java	2.8.t 15/04/14
+ *
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.course;
 
@@ -27,7 +27,7 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.t
  * @since 1.0a 07/07/1999
  */
 public class Course
@@ -36,19 +36,19 @@ public class Course
 
   /** Break identification. */
   public static final int BREAK = 0;
-  
-  /** Instrument code. */
-  public static final int PRIVATE_INSTRUMENT_CODE = 1;
-  
-  /** Single workshop code. */
-  public static final int ATP_CODE = 11;
-  
+
+//  /** Instrument code. */
+//  public static final int PRIVATE_INSTRUMENT_CODE = 1;
+//
+//  /** Single workshop code. */
+//  public static final int ATP_CODE = 11;
+
   /** Minimum length of title. */
   public static final int MIN_TITLE_LENGTH = 1;
-  
+
   /** Maximum length of title. */
   public static final int MAX_TITLE_LENGTH = 32;
-  
+
   /** Maximum length of label. */
   public static final int MAX_LABEL_LENGTH = 16;
 
@@ -80,7 +80,7 @@ public class Course
     title = a.getName();
     collective = true;
     label = title.length() > 15 ? title.substring(0, 15) : title;
-    code = ATP_CODE;
+    code = CourseCodeType.ATP.getId();
   }
 
   @Override
@@ -182,7 +182,7 @@ public class Course
   /**
    * Sets the state (active or inactive) of a course.
    *
-   * @param a 
+   * @param a
    * @version 1.1d
    */
   public void setActive(boolean a) {
@@ -196,7 +196,7 @@ public class Course
   public void setSchool(int j) {
     school = (short) j;
   }
-  
+
   /**
    * Checks if the course is undefined.
    * Course which names match "A DEFINIR" or "NON DEFINI" or "UNDEFINED" are considered as templates.
@@ -218,7 +218,7 @@ public class Course
    * @since 2.4.a 04/05/12
    */
   public boolean isATP() {
-    return ATP_CODE == code;
+    return CourseCodeType.ATP.getId() == code;
   }
 
   /**
@@ -227,7 +227,7 @@ public class Course
    * @return true if code == {@code PRIVATE_INSTRUMENT_CODE}
    */
   public boolean isInstCode() {
-    return PRIVATE_INSTRUMENT_CODE == getCode();
+    return CourseCodeType.INS.getId() == getCode();
   }
 
   public boolean isCourseCoInst() {

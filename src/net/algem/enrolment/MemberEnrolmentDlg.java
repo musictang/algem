@@ -1,7 +1,7 @@
 /*
- * @(#)MemberEnrolmentDlg.java	2.8.n 24/09/13
- * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * @(#)MemberEnrolmentDlg.java	2.8.t 16/04/14
+ *
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.enrolment;
 
@@ -49,7 +49,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.n
+ * @version 2.8.t
  * @since 1.0a 07/07/1999
  * @see net.algem.contact.PersonFileEditor
  *
@@ -62,13 +62,13 @@ public class MemberEnrolmentDlg
   static final String MODULE_MODIFY = BundleUtil.getLabel("Module.modify.label");
   static final String MODULE_REMOVE = BundleUtil.getLabel("Module.remove.label");
   static final String COURSE_MODIFY = BundleUtil.getLabel("Course.modification.label");
-  
+
   private final static int SESSIONS_MAX = 66;
   private EnrolmentView view;
-  
+
   /** Module order list. */
   private Vector<ModuleOrder> module_orders;
-  
+
   private ModuleDlg moduleDlg;
   private CourseEnrolmentDlg courseEnrolmentDlg;
   private double totalBase = 0.0;
@@ -118,7 +118,7 @@ public class MemberEnrolmentDlg
           return;
         }
       }
-      
+
       Date d = new Date();
       Order order = new Order();
       order.setMember(dossier.getId());
@@ -139,7 +139,7 @@ public class MemberEnrolmentDlg
         m = module_orders.elementAt(i);
         totalBase += m.getPrice();// prix calculé en fonction de la périodicité
       }
-      
+
       // enregistrement des modules
       for (int i = 0; i < module_orders.size(); i++) {
         m = module_orders.elementAt(i);
@@ -185,19 +185,19 @@ public class MemberEnrolmentDlg
     ca.edit();
 
   }
-  
+
   private void resetIdModule() {
     for(int i = 0, size = module_orders.size(); i < size; i++) {
       ModuleOrder mo = module_orders.elementAt(i);
       mo.setId(i);
     }
   }
-  
+
   private int getSchool(ModuleOrder mo) throws SQLException {
     if (mo.getCourseOrders().isEmpty()) {
       return 0;
     }
-    Course c = planningService.getCourseFromAction(mo.getCourseOrders().get(0).getAction()); 
+    Course c = planningService.getCourseFromAction(mo.getCourseOrders().get(0).getAction());
     return c == null ? 0 : c.getSchool();
   }
 
@@ -217,7 +217,7 @@ public class MemberEnrolmentDlg
       co.setIdOrder(mo.getIdOrder());// mise à jour id de la commande
       co.setModuleOrder(mo.getId());// mise à jour id de la commande module
       // dates de début et de fin  spécifiques pour les ateliers ?
-      //if (!cc.getCode().equals("ATP")) {
+      //if (!cc.getCode().bufferEquals("ATP")) {
       co.setDateStart(mo.getStart());
       co.setDateEnd(mo.getEnd());
 
@@ -291,7 +291,7 @@ public class MemberEnrolmentDlg
       int idModule = Integer.parseInt(moduleDlg.getField(0));
       // Un même module peut être sélectionné plusieurs fois à partir de la version 2.8
       ModuleOrder mo = new ModuleOrder();
-      
+
       Module m = ((ModuleIO) DataCache.getDao(Model.Module)).findId(idModule);
       addModule(mo, m);
 
@@ -323,7 +323,7 @@ public class MemberEnrolmentDlg
     mo.setNOrderLines(1);
     mo.setId(module_orders.size());// id temporaire
     view.addModule(mo);
-    
+
     module_orders.addElement(mo);
   }
 
@@ -367,7 +367,7 @@ public class MemberEnrolmentDlg
       mo.setModeOfPayment(moduleDlg.getField(5));
       mo.setPayment(moduleDlg.getField(6));
       view.changeModule(n, mo);
-      
+
       if (mo.getModule() != oldModule) {
         for(CourseOrder co : mo.getCourseOrders()) {
           view.remove(co);
@@ -470,7 +470,7 @@ public class MemberEnrolmentDlg
       co.setTitle(getModuleTitle(co) + courseEnrolmentDlg.getField(3));
       co.setDay(Integer.parseInt(courseEnrolmentDlg.getField(4)));
 
-      if (Course.ATP_CODE == courseEnrolmentDlg.getCourse().getCode()) {
+      if (CourseCodeType.ATP.getId() == courseEnrolmentDlg.getCourse().getCode()) {
         DateFr dfr = new DateFr(courseEnrolmentDlg.getField(7));
         co.setDateStart(dfr);
         co.setDateEnd(dfr);
@@ -481,7 +481,7 @@ public class MemberEnrolmentDlg
       co.setStart(start);
       co.setEnd(start.end(length.toMinutes()));
       co.setEstab(courseEnrolmentDlg.getEstab());
-      
+
       view.changeCourse(n, co);
     }
   }
@@ -490,7 +490,7 @@ public class MemberEnrolmentDlg
     String t = co.getTitle();
     return t.substring(0, t.indexOf(']')+1);
   }
-  
+
 
   @Override
   public String toString() {

@@ -61,7 +61,7 @@ public class MemberService
     conflictService = new ConflictService(dc);
     cardIO = new PersonSubscriptionCardIO(dc);
   }
-  
+
   public Member findMember(int id) throws SQLException {
     return (Member) DataCache.findId(id, Model.Member);
 //    return m != null ? m : MemberIO.findId(id, dc);
@@ -157,7 +157,7 @@ public class MemberService
 
   /**
    * Synchronisation of the member's subscription cards.
-   * If remaining time on current card exceeds the total available duration of this card, 
+   * If remaining time on current card exceeds the total available duration of this card,
    * a former card is searched and its remaining time is incremented by the duration
    * available after sessions' cancelling. Then, the current card is destroyed.
    *
@@ -241,7 +241,7 @@ public class MemberService
   /**
    * Searches collective or individual follow-up's notes for the member {@code memberId}
    * and the {@code courseId}.
-   * 
+   *
    * @param memberId member's id
    * @param courseId course's id
    * @param collective collective or individual if false
@@ -253,6 +253,7 @@ public class MemberService
     if (collective) {
       where = " AND p.note = s.id";
     }
+    // TODO BUG note individuelle/collective
     where += " AND pg.adherent = " + memberId + " AND p.action = a.id AND a.cours = " + courseId + " ORDER BY p.jour, pg.debut";
     return ScheduleRangeIO.findFollowUp(where, true, dc);
   }
@@ -352,7 +353,7 @@ public class MemberService
   public Vector<DateFr> generationDate(int day, DateFr start, DateFr end) {
 
     Vector<DateFr> v = new Vector<DateFr>();
-    
+
     while(!start.after(end)) {
       if (start.getDayOfWeek() == day + 1) {
         v.addElement(new DateFr(start));

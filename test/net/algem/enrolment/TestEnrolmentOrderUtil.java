@@ -1,6 +1,6 @@
 /*
  * @(#)TestEnrolmentOrderUtil.java 2.8.n 25/09/13
- * 
+ *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.enrolment;
 
@@ -44,7 +44,7 @@ public class TestEnrolmentOrderUtil {
   private DataConnection dc;
   private DataCache dataCache;
   private Vector<OrderLine> bdLines;
-          
+
     public TestEnrolmentOrderUtil() {
     }
 
@@ -58,21 +58,21 @@ public class TestEnrolmentOrderUtil {
 
     @Before
     public void setUp() throws Exception {
-      
+
       dc = TestProperties.getDataConnection();
       dataCache = TestProperties.getDataCache(dc);
       dataCache.load(null);
-    
+
     }
 
     @After
     public void tearDown() throws SQLException {
       cleanUp(bdLines);
     }
-    
+
   @Test
   public void testOrderLineCreationForQuarterPayment() {
-    
+
     int orderId = 50000;
     int payer = 1234;
     List<DateFr> dates = new ArrayList<DateFr>();
@@ -90,7 +90,7 @@ public class TestEnrolmentOrderUtil {
     ol.setOrder(orderId);
     EnrolmentOrderUtil util = new EnrolmentOrderUtil(null, dc);
     util.setTotalBase(600); // total des modules au trimestre
-    
+
     ModuleOrder mo = new ModuleOrder();
     mo.setStart(new DateFr("16-09-2013"));
     mo.setEnd(new DateFr("26-06-2014"));
@@ -100,7 +100,7 @@ public class TestEnrolmentOrderUtil {
     try {
       List<OrderLine> lines = util.getOrderLines(mo, ol);
       assertTrue(lines.size() == 3);
-      
+
       for (OrderLine o : lines) {
         AccountUtil.createEntry(o, dc);
       }
@@ -108,19 +108,19 @@ public class TestEnrolmentOrderUtil {
       bdLines = OrderLineIO.find("WHERE commande = " + orderId + " AND payeur = " + payer, dc);
       assertTrue(bdLines != null && bdLines.size() == 6);
 //      assertTrue(bdLines.get(1).getAmount() == 60000);
-//      assertTrue("CHQ".equals(bdLines.get(1).getModeOfPayment()));
+//      assertTrue("CHQ".bufferEquals(bdLines.get(1).getModeOfPayment()));
 //      assertFalse(bdLines.get(1).isPaid());
 //      assertFalse(bdLines.get(1).isTransfered());
-      
+
       cleanUp(bdLines);
-      
+
       // compte de produit
       ol.setAccount(new Account(1,"7061100000", "Cotisation aux cours"));
       ol.setModeOfPayment(ModeOfPayment.PRL.toString());
       mo.setModeOfPayment(ModeOfPayment.PRL.toString());
       lines = util.getOrderLines(mo, ol);
       assertTrue(lines.size() == 3);
-      
+
       bdLines = OrderLineIO.find("WHERE commande = " + orderId + " AND payeur = " + payer, dc);
       assertTrue(bdLines == null || bdLines.isEmpty());
 
@@ -131,20 +131,20 @@ public class TestEnrolmentOrderUtil {
       bdLines = OrderLineIO.find("WHERE commande = " + orderId + " AND payeur = " + payer, dc);
       assertTrue(bdLines != null && bdLines.size() == 3);
 //      assertTrue(bdLines.get(1).getAmount() == 60000);
-//      assertTrue("PRL".equals(bdLines.get(1).getModeOfPayment()));
+//      assertTrue("PRL".bufferEquals(bdLines.get(1).getModeOfPayment()));
 //      assertFalse(bdLines.get(1).isPaid());
 //      assertFalse(bdLines.get(1).isTransfered());
-      
+
       cleanUp(bdLines);
-      
+
     } catch (SQLException ex) {
       GemLogger.logException(ex);
     }
   }
-  
+
   @Test
   public void testOrderLineCreationForMonthPayment() {
-    
+
     int orderId = 50000;
     int payer = 1234;
 //    List<DateFr> dates = new ArrayList<DateFr>();
@@ -162,7 +162,7 @@ public class TestEnrolmentOrderUtil {
     ol.setOrder(orderId);
     EnrolmentOrderUtil util = new EnrolmentOrderUtil(null, dc);
     util.setTotalBase(300); // total des modules au mois
-    
+
     ModuleOrder mo = new ModuleOrder();
     mo.setStart(new DateFr("16-09-2013"));
     mo.setEnd(new DateFr("26-06-2014"));
@@ -172,7 +172,7 @@ public class TestEnrolmentOrderUtil {
     try {
       List<OrderLine> lines = util.getOrderLines(mo, ol);
       assertTrue(lines.size() == 9);
-      
+
       bdLines = OrderLineIO.find("WHERE commande = " + orderId + " AND payeur = " + payer, dc);
 //      assertTrue(bdLines != null && bdLines.size() == 1);
 //      assertTrue(bdLines.get(0).getAmount() == -270000);
@@ -185,7 +185,7 @@ public class TestEnrolmentOrderUtil {
       bdLines = OrderLineIO.find("WHERE commande = " + orderId + " AND payeur = " + payer, dc);
       assertTrue(bdLines != null && bdLines.size() == 18);
 //      assertTrue(bdLines.get(1).getAmount() == 30000);
-//      assertTrue("CHQ".equals(bdLines.get(1).getModeOfPayment()));
+//      assertTrue("CHQ".bufferEquals(bdLines.get(1).getModeOfPayment()));
 //      assertFalse(bdLines.get(1).isPaid());
 //      assertFalse(bdLines.get(1).isTransfered());
 //      cleanUp(lines);
@@ -193,7 +193,7 @@ public class TestEnrolmentOrderUtil {
       GemLogger.logException(ex);
     }
   }
-  
+
   private void cleanUp(List<OrderLine> bdLines) throws SQLException {
     if (bdLines == null) return;
     for (OrderLine ol : bdLines) {

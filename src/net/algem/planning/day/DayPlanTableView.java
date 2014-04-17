@@ -1,7 +1,7 @@
 /*
- * @(#)DayPlanTableView.java	2.6.a 21/09/12
- * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * @(#)DayPlanTableView.java	2.8.t 16/04/14
+ *
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning.day;
 
@@ -46,7 +46,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.6.a
+ * @version 2.8.t
  * @since 1.0a 07/07/1999
  */
 public abstract class DayPlanTableView
@@ -120,9 +120,9 @@ public abstract class DayPlanTableView
   public void propertyChange(PropertyChangeEvent evt) {
 
     if (evt.getSource() instanceof DaySchedule) {
-      DaySchedule modele = (DaySchedule) evt.getSource();
+      DaySchedule model = (DaySchedule) evt.getSource();
       Date d = (Date) evt.getNewValue();
-      load(d, modele.getSchedules(), modele.getRanges());
+      load(d, model.getSchedules(), model.getRanges());
       dayBar.setDate(d);
     }
   }
@@ -145,7 +145,7 @@ public abstract class DayPlanTableView
       e.consume();
     }
   }
-  
+
   public DayPlanView getCanvas() {
     return plan;
   }

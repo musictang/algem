@@ -1,7 +1,7 @@
 /*
- * @(#)CourseSearchView.java	2.8.k 23/07/13
- * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * @(#)CourseSearchView.java	2.8.t 15/04/14
+ *
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,23 +16,25 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.course;
 
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import javax.swing.JCheckBox;
+import net.algem.config.GemParamChoice;
 import net.algem.util.BundleUtil;
 import net.algem.util.GemCommand;
+import net.algem.util.model.GemList;
 import net.algem.util.ui.*;
 
 /**
- * comment
+ * Course search view.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.8.k
+ * @version 2.8.t
  * @since 1.0a 07/07/1999
  */
 public class CourseSearchView
@@ -41,9 +43,11 @@ public class CourseSearchView
 
   private GemNumericField number;
   private GemField title;
-  private GemField code;
+//  private GemField code;
+  private GemParamChoice code;
   private JCheckBox collective;
   private GemPanel mask;
+  private GemList<CourseCode> codes;
 
   public CourseSearchView() {
     super();
@@ -56,24 +60,26 @@ public class CourseSearchView
 
     number = new GemNumericField(6);
     number.addActionListener(this);
-    title = new GemField(30);
+    title = new GemField(24);
     title.addActionListener(this);
-    code = new GemField(25);
+    code = new GemParamChoice();
+//    code = new GemField(25);
     code.addActionListener(this);
     collective = new JCheckBox();
-    
+    collective.setBorder(null);
+
     btCreate.setText(GemCommand.CREATE_CMD);
     btCreate.setEnabled(true);
-    
+
     btErase = new GemButton(GemCommand.ERASE_CMD);
     btErase.addActionListener(this);
 
     GridBagHelper gb = new GridBagHelper(mask);
     gb.insets = GridBagHelper.SMALL_INSETS;
-    gb.add(new GemLabel(BundleUtil.getLabel("Number.label")), 0, 0, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Title.label")), 0, 1, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Code.label")), 0, 2, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Collective.only.label")), 0, 3, 1, 1, GridBagHelper.EAST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Number.label")), 0, 0, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Title.label")), 0, 1, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Code.label")), 0, 2, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Collective.label")), 0, 3, 1, 1, GridBagHelper.WEST);
 
     gb.add(number, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(title, 1, 1, 1, 1, GridBagHelper.WEST);
@@ -81,6 +87,10 @@ public class CourseSearchView
     gb.add(collective, 1, 3, 1, 1, GridBagHelper.WEST);
 
     return mask;
+  }
+
+  void setCode(GemList<CourseCode> codes){
+    code.setModel(new GemChoiceModel<CourseCode>(codes));
   }
 
   @Override
@@ -107,7 +117,7 @@ public class CourseSearchView
         s = title.getText();
         break;
       case 2:
-        s = code.getText();
+        s = String.valueOf(code.getKey());
         break;
       case 3:
         s = collective.isSelected() ? "t" : "f";
@@ -124,7 +134,7 @@ public class CourseSearchView
   public void clear() {
     number.setText("");
     title.setText("");
-    code.setText("");
+    code.setSelectedIndex(0);
     collective.setSelected(false);
   }
 }

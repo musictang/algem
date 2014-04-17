@@ -1,7 +1,7 @@
 /*
- * @(#)RoomRateChoiceModel.java	2.6.a 24/09/12
+ * @(#)RoomRateChoiceModel.java	2.8.t 16/04/14
  *
- * Copyright (c) 1998 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,12 +28,12 @@ import net.algem.util.ui.GemChoiceModel;
  * ComboxBox model for room rates.
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.t
  */
 public class RoomRateChoiceModel
         extends GemChoiceModel {
 
-  public RoomRateChoiceModel(GemList list) {
+  public RoomRateChoiceModel(GemList<RoomRate> list) {
     super(list);
   }
 
@@ -41,7 +41,7 @@ public class RoomRateChoiceModel
     this(new RoomRateList(list));
   }
 
-  public RoomRate getTarifSalle(int id) {
+  public RoomRate getRoomRate(int id) {
     return (RoomRate) list.getItem(id);
   }
 }

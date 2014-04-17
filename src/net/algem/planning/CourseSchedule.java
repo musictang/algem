@@ -1,7 +1,7 @@
 /*
- * @(#)ScheduleObject.java	2.6.a 19/09/12
- * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * @(#)ScheduleObject.java	2.8.t 16/04/14
+ *
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning;
 
@@ -30,14 +30,14 @@ import net.algem.course.Course;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.t
  */
 public class CourseSchedule
         extends ScheduleObject
 {
 
   private Action action;
-  
+
   public CourseSchedule() {
   }
 
@@ -100,6 +100,6 @@ public class CourseSchedule
             && ( idAction == d.getIdAction() || ((Course)getActivity()).equals((Course)d.getActivity()))
             && this_dow == other_dow
             && start.le(d.start)
-            && end.ge(d.end));//plutot que equals
+            && end.ge(d.end));//plutot que bufferEquals
   }
 }

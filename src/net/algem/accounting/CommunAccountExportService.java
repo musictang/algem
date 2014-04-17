@@ -55,7 +55,7 @@ public abstract class CommunAccountExportService
     defaultNumberFormat.setMinimumFractionDigits(2);
     defaultNumberFormat.setMaximumFractionDigits(2);
   }
-  
+
   protected DateFormat defaultDateFormat = new SimpleDateFormat("ddMMyyyy");
 
   /**
@@ -140,7 +140,7 @@ public abstract class CommunAccountExportService
     String c = e.getAccount().getNumber();
 
     if (e.getInvoice() != null && !e.getInvoice().isEmpty()
-            //&& !AccountUtil.INVOICE_PAYMENT.equals(e.getModeOfPayment())
+            //&& !AccountUtil.INVOICE_PAYMENT.bufferEquals(e.getModeOfPayment())
             && AccountUtil.isCustomerAccount(e.getAccount())) {
       c = "C" + e.getPayer();
     }

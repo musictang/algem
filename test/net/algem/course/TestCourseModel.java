@@ -1,7 +1,7 @@
 /*
- * @(#)TestCourseModel.java	2.7.a 29/11/12
+ * @(#)TestCourseModel.java	2.8.t 15/04/14
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -26,11 +26,11 @@ import junit.framework.TestCase;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.t
  * @since 2.4.a 20/04/12
  */
 public class TestCourseModel extends TestCase {
-    
+
     public TestCourseModel(String testName) {
         super(testName);
     }
@@ -67,33 +67,5 @@ public class TestCourseModel extends TestCase {
       c.setTitle("GUITARE");
       assertFalse(c.isUndefined());
     }
-    
-//    public void testHasDuration() {
-//      Course c = new Course();
-//      
-//      c.setCode("ATP045");
-//      assertTrue(c.hasValidCodeLength());
-//      
-//      c.setCode("ATP120");
-//      assertTrue(c.hasValidCodeLength());
-//      
-//      c.setCode("455");
-//      assertTrue(c.hasValidCodeLength());
-//      
-//      c.setCode("ATP");
-//      assertFalse(c.hasValidCodeLength());
-//      
-//      c.setCode("Inst");
-//      assertFalse(c.hasValidCodeLength());
-//      
-//      c.setCode("");
-//      assertFalse(c.hasValidCodeLength());
-//      
-//      c.setCode(null);
-//      assertFalse(c.hasValidCodeLength());
-//      
-//      c.setCode("ATP04A4");
-//      assertFalse(c.hasValidCodeLength());
-//    }
 
 }

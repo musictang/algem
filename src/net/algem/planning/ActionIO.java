@@ -1,7 +1,7 @@
 /*
- * @(#)ActionIO.java 2.8.p 06/12/13
+ * @(#)ActionIO.java 2.8.t 16/04/14
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -30,18 +30,17 @@ import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
 import net.algem.util.model.Cacheable;
-import net.algem.util.model.GemDateTime;
 import net.algem.util.model.Model;
 import net.algem.util.model.TableIO;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.p
+ * @version 2.8.t
  * @since 2.4.a 18/04/12
  */
 public class ActionIO
-        extends TableIO 
+        extends TableIO
         implements Cacheable
 {
 
@@ -78,7 +77,7 @@ public class ActionIO
       dc.setAutoCommit(true);
     }
   }
-  
+
   /**
    * Planifies an action schedule with type {@code type } at one or more dates and times.
    * @param a action to planify
@@ -92,7 +91,7 @@ public class ActionIO
       insert(a);
       for (GemDateTime dt : dates) {
         String query = "INSERT INTO planning VALUES (DEFAULT"
-                + ",'" + dt.toString()
+                + ",'" + dt.getDate()
                 + "','" + dt.getTimeRange().getStart() + "','" + dt.getTimeRange().getEnd() + "',"
                 + type + ","
                 + a.getTeacher() + ","
@@ -158,7 +157,7 @@ public class ActionIO
   }
 
   public int findId(String where) throws SQLException {
-    
+
     int action = 0;
     String query = "SELECT action.id FROM " + TABLE + " " + where;
     ResultSet rs = dc.executeQuery(query);
@@ -214,12 +213,12 @@ public class ActionIO
     GemParam n = (GemParam) DataCache.findId(id, Model.Status);
     return n == null ? new GemParam(0) : n;
   }
-  
+
   public int haveStatus(int status) throws SQLException {
     Vector<Action> va = find(" WHERE statut = " + status);
     return va.size();
   }
-  
+
   public int haveLevel(int level) throws SQLException {
     Vector<Action> va = find(" WHERE niveau = " + level);
     return va.size();
@@ -230,11 +229,11 @@ public class ActionIO
     AgeRange ar = (AgeRange) DataCache.findId(id, Model.AgeRange);
     return ar == null ? new AgeRange(0, GemParam.NONE) : ar;
   }
-  
+
   /**
    * Gets all actions scheduled on the current week.
    * @return a list of actions
-   * @throws SQLException 
+   * @throws SQLException
    */
   @Override
   public List<Action> load() throws SQLException {

@@ -1,7 +1,7 @@
 /*
- * @(#)DateFr.java	2.8.a 24/04/13
- * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * @(#)DateFr.java	2.8.t 11/04/14
+ *
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning;
 
@@ -31,7 +31,7 @@ import java.util.Locale;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.t
  * @since 1.0a 07/07/1999
  */
 public class DateFr
@@ -69,7 +69,7 @@ public class DateFr
       } else {
         buf = new StringBuffer(h);
       }
-    } 
+    }
 //    else {
 //      buf = new StringBuffer(NULLDATE);
 //    }
@@ -82,7 +82,7 @@ public class DateFr
       setYear(cal.get(Calendar.YEAR));
       setMonth(cal.get(Calendar.MONTH) + 1);
       setDay(cal.get(Calendar.DAY_OF_MONTH));
-    } 
+    }
   }
 
   public DateFr(int j, int m, int a) {
@@ -166,7 +166,7 @@ public class DateFr
     j += buf.charAt(1) - '0';
     return j;
   }
-  
+
   /**
    * Gets day of week.
    * @return an integer
@@ -276,12 +276,11 @@ public class DateFr
   @Override
   public int hashCode() {
     int hash = 3;
-    hash = 73 * hash + (this.buf != null ? this.buf.hashCode() : 0);
-    hash = 73 * hash + (this.cal != null ? this.cal.hashCode() : 0);
+    hash = 73 * hash + (this.buf != null ? (this.buf.toString() != null ? this.buf.toString().hashCode() : 0) : 0);
     return hash;
   }
 
-  public boolean equals(String d) {
+  public boolean bufferEquals(String d) {
     return buf.toString().equals(d);
   }
 
@@ -341,7 +340,7 @@ public class DateFr
     return true;
 
   }
-  
+
   /**
    * Gets the number of months between 2 dates.
    * A negative result implies the first date is later than the second.

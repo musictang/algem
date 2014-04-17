@@ -1,6 +1,6 @@
 /*
  * @(#)MemberRehearsalPassCtrl.java	2.6.a 18/09/12
- * 
+ *
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.contact.member;
 
@@ -102,7 +102,7 @@ public class MemberRehearsalPassCtrl
 		}
 
 		DateFr date = rehearsalView.getDateStart();
-		if (date.equals(DateFr.NULLDATE)) {
+		if (date.bufferEquals(DateFr.NULLDATE)) {
 			JOptionPane.showMessageDialog(this,
 				MessageUtil.getMessage("beginning.date.invalid.choice"),
 				wt,
@@ -118,7 +118,7 @@ public class MemberRehearsalPassCtrl
 			return false;
 		}
 		date = rehearsalView.getDateEnd();
-		if (date.equals(DateFr.NULLDATE)) {
+		if (date.bufferEquals(DateFr.NULLDATE)) {
 			JOptionPane.showMessageDialog(this,
 				MessageUtil.getMessage("end.date.invalid.choice"),
 				wt,

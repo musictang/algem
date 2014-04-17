@@ -1,7 +1,7 @@
 /*
- * @(#)GemParamChoice.java 2.6.a 18/09/12
- * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * @(#)GemParamChoice.java 2.8.t 14/04/14
+ *
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 
 package net.algem.config;
@@ -31,10 +31,10 @@ import net.algem.util.ui.GemChoiceModel;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.t
  * @since 2.5.a 22/06/2012
  */
-public class GemParamChoice 
+public class GemParamChoice
   extends GemChoice {
 
   public GemParamChoice() {
@@ -43,23 +43,24 @@ public class GemParamChoice
   public <T extends Object> GemParamChoice(Vector<T> v) {
     super(v);
   }
-  
+
   public GemParamChoice(ComboBoxModel m) {
     super(m);
   }
-  
-  public GemParamChoice(GemList list) {
-    this(new GemChoiceModel(list));
+
+  public <T extends GemModel> GemParamChoice(GemList<T> list) {
+    this(new GemChoiceModel<T>(list));
   }
 
   @Override
   public int getKey() {
-    return ((GemModel) getSelectedItem()).getId();
+    GemModel m = (GemModel) getSelectedItem();
+    return m == null ? -1 : m.getId();
   }
 
   @Override
   public void setKey(int k) {
      ((GemChoiceModel) getModel()).setSelectedItem(k);
   }
-  
+
 }

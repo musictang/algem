@@ -1,7 +1,7 @@
 /*
- * @(#)CourseSearchCtrl.java	2.8.a 19/03/13
- * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * @(#)CourseSearchCtrl.java	2.8.t 15/04/14
+ *
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.course;
 
@@ -32,11 +32,11 @@ import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.SearchCtrl;
 
 /**
- * comment
+ * Course search controller.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.t
  * @since 1.0a 07/07/1999
  */
 public class CourseSearchCtrl
@@ -44,7 +44,7 @@ public class CourseSearchCtrl
 {
 
   private GemDesktop desktop;
-  
+
   public CourseSearchCtrl(GemDesktop desktop) {
     super(desktop.getDataCache().getDataConnection(), "Recherche d'un cours");
     this.desktop = desktop;
@@ -53,6 +53,7 @@ public class CourseSearchCtrl
 	@Override
   public void init() {
     searchView = new CourseSearchView();
+    ((CourseSearchView) searchView).setCode(desktop.getDataCache().getList(Model.CourseCode));
     searchView.addActionListener(this);
 
     list = new CourseListCtrl();
@@ -71,21 +72,25 @@ public class CourseSearchCtrl
 
 	@Override
   public void search() {
-    String query = "WHERE code != "+Course.ATP_CODE;
-    String m;
 
+    String m;
+    String query = "";
     int id = getId();
     if (id > 0) {
-      query += " AND id = " + id;
-    } // recherche par title
+      query += "WHERE id = " + id;
+    } // search by title
     else if (null != (m = searchView.getField(1))) {
-      query += " AND titre ~* '" + m.toUpperCase() + "'";
-    } // recherche par type
-    else if (null != (m = searchView.getField(2))) {
-      query += " AND code IN(SELECT id FROM module_type WHERE code ~* '" + m + "')";
-    } else if (null != (m = searchView.getField(3))) {
-      if (m.equals("t")) {
-        query += " AND collectif = '" + m + "'";
+      query += "WHERE titre ~* '" + m.toUpperCase() + "'";
+    } // search by type
+    else {
+      m = searchView.getField(2);
+      int c = Integer.parseInt(m);
+      if (c > 0) {
+        query += "WHERE code IN(SELECT id FROM module_type WHERE id = " + c + ")";
+      } else if (null != (m = searchView.getField(3))) { // search by status
+        if (m.equals("t")) {
+          query += "WHERE collectif = '" + m + "'";
+        }
       }
     }
 
@@ -107,7 +112,7 @@ public class CourseSearchCtrl
       list.loadResult(v);
     }
   }
-    
+
   @Override
   public void actionPerformed(ActionEvent evt) {
     if (GemCommand.CREATE_CMD.equals(evt.getActionCommand())) {

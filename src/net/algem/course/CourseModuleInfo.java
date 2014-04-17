@@ -1,7 +1,7 @@
 /*
- * @(#)CourseModuleInfo.java	2.8.a 19/04/2013
+ * @(#)CourseModuleInfo.java	2.8.t 16/04/14
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -22,25 +22,27 @@
 package net.algem.course;
 
 import net.algem.config.GemParam;
+import net.algem.planning.DateFr;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.t
  * @since 2.8.a 13/03/2013
  */
-public class CourseModuleInfo 
+public class CourseModuleInfo
 {
   /** Min length in minutes. */
   public static final int MIN_LENGTH = 10;
-  
+
   /** Max length in hours. */
   public static final int MAX_LENGTH = 24;
-  
+
   private int id;
   private int idModule;
   private int timeLength;
   private GemParam code;
+  private DateFr date;
 
   public CourseModuleInfo() {
   }
@@ -72,12 +74,14 @@ public class CourseModuleInfo
   public void setTimeLength(int timeLength) {
     this.timeLength = timeLength;
   }
-  
+
   public boolean hasValidLength() {
     if (code == null) {
       return false;
     }
-    if (code.getId() != Course.ATP_CODE && timeLength < MIN_LENGTH) {
+    if (code.getId() != CourseCodeType.ATP.getId()
+      &&  code.getId() != CourseCodeType.STG.getId()
+      && timeLength < MIN_LENGTH) {
       return false;
     }
     if (timeLength > (MAX_LENGTH * 60)) {
@@ -93,7 +97,15 @@ public class CourseModuleInfo
   public void setCode(GemParam code) {
     this.code = code;
   }
-  
+
+  public DateFr getDate() {
+    return date;
+  }
+
+  public void setDate(DateFr date) {
+    this.date = date;
+  }
+
   @Override
   public String toString() {
     return code + " : " + timeLength;

@@ -1,7 +1,7 @@
 /*
- * @(#)GemChoiceModel.java 2.6.a 02/10/12
- * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * @(#)GemChoiceModel.java 2.8.t 16/04/14
+ *
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.util.ui;
 
@@ -30,23 +30,24 @@ import net.algem.util.model.GemModel;
 
 /**
  * ComboBoxModel implementation.
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.t
  * @since 2.5.a 26/06/12
  */
-public class GemChoiceModel
+public class GemChoiceModel<T extends GemModel>
         extends AbstractListModel
         implements ComboBoxModel, ListDataListener {
 
-  protected GemList list;
+  protected GemList<T> list;
   protected Object selected;
 
-  public GemChoiceModel(GemList list) {
+  public GemChoiceModel(GemList<T> list) {
     this.list = list;
     this.list.addListDataListener(this);
   }
-  
-  public <T extends GemModel> GemChoiceModel(Vector<T> v) {
+
+  public GemChoiceModel(Vector<T> v) {
    this(new GemList<T>(v));
   }
 
@@ -54,8 +55,8 @@ public class GemChoiceModel
   public int getSize() {
     return list.getSize();
   }
-  
-  public  void addElement(GemModel e) {
+
+  public void addElement(T e) {
     list.addElement(e);
     fireContentsChanged(this, -1, -1);
   }
@@ -64,12 +65,12 @@ public class GemChoiceModel
   public Object getElementAt(int index) {
     return list.getElementAt(index);
   }
-  
-  public int indexOf(GemModel m) {
+
+  public int indexOf(T m) {
     return list.indexOf(m);
   }
-  
-  public void setElement(GemModel m) {
+
+  public void setElement(T m) {
     int idx = list.indexOf(m);
     if (idx > -1) {
       list.setElementAt(m, idx);
@@ -83,7 +84,7 @@ public class GemChoiceModel
     } else {
       selected = list.getElementAt(0);
     }
-    fireContentsChanged(this, -1, -1); 
+    fireContentsChanged(this, -1, -1);
   }
 
   /**
@@ -98,9 +99,8 @@ public class GemChoiceModel
         break;
       }
     }
-    
   }
-  
+
   @Override
   public Object getSelectedItem() {
     return selected;

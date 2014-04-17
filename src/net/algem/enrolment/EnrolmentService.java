@@ -1,7 +1,7 @@
 /*
- * @(#)EnrolmentService.java	2.8.g 31/05/13
+ * @(#)EnrolmentService.java	2.8.t 16/04/14
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -29,10 +29,7 @@ import net.algem.contact.PersonFileIO;
 import net.algem.contact.PersonIO;
 import net.algem.contact.member.MemberIO;
 import net.algem.contact.teacher.Teacher;
-import net.algem.course.Course;
-import net.algem.course.CourseIO;
-import net.algem.course.CourseModuleInfo;
-import net.algem.course.Module;
+import net.algem.course.*;
 import net.algem.group.Musician;
 import net.algem.planning.*;
 import net.algem.room.Room;
@@ -45,7 +42,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.g
+ * @version 2.8.t
  * @since 2.4.a 20/04/12
  */
 public class EnrolmentService
@@ -101,6 +98,23 @@ public class EnrolmentService
   }
 
   /**
+   * Gets the type of schedule corresponding to the {@code courseCode}.
+   *
+   * @param courseCode course code
+   * @return an integer representing the type constant
+   */
+  private int getScheduleType(int courseCode) {
+
+    if (courseCode == CourseCodeType.ATP.getId()) {
+      return Schedule.WORKSHOP_SCHEDULE;
+    }
+    if (courseCode == CourseCodeType.STG.getId()) {
+      return Schedule.TRAINING_SCHEDULE;
+    }
+    return Schedule.COURSE_SCHEDULE;
+  }
+
+  /**
    * Gets a list of courses(id, title) scheduled from {@code startDate} in {@code estab}.
    * Depending course's code, schedule's type and length may be used to filter the results.
    *
@@ -113,7 +127,9 @@ public class EnrolmentService
   public Vector<SQLkey> getCoursesFromEstab(int estab, DateFr startDate, CourseModuleInfo courseInfo) throws SQLException {
 
     int code = courseInfo.getCode().getId();
-    int type = Course.ATP_CODE == code ? Schedule.WORKSHOP_SCHEDULE : Schedule.COURSE_SCHEDULE;
+//    int type = CourseCodeType.ATP.getId() == code ? Schedule.WORKSHOP_SCHEDULE : Schedule.COURSE_SCHEDULE;
+    int type = getScheduleType(courseInfo.getCode().getId());
+
     String query = "SELECT DISTINCT cours.id, cours.titre FROM cours, planning, action, salle"
             + " WHERE planning.ptype = " + type
             + " AND planning.jour >= '" + startDate + "'"
@@ -121,7 +137,7 @@ public class EnrolmentService
             + " AND action.cours = cours.id"
             + " AND cours.code = " + code
             + " AND planning.lieux = salle.id AND salle.etablissement = " + estab;
-    if (code != Course.ATP_CODE && code != Course.PRIVATE_INSTRUMENT_CODE) {
+    if (code != CourseCodeType.ATP.getId() && code != CourseCodeType.INS.getId() && code != CourseCodeType.STG.getId()) {
       query += " AND planning.fin - planning.debut = '" + new Hour(courseInfo.getTimeLength()) + "'";
     }
     query += " ORDER BY cours.titre";
@@ -156,7 +172,9 @@ public class EnrolmentService
     DateFr end = new DateFr(p.getDate());
     end.incDay(7);
     //XXX et si le reste de la semaine tombe pendant les vacances ?
-    int type = c.isATP() ? Schedule.WORKSHOP_SCHEDULE : Schedule.COURSE_SCHEDULE;
+//    int type = c.isATP() ? Schedule.WORKSHOP_SCHEDULE : Schedule.COURSE_SCHEDULE;
+
+    int type = getScheduleType(c.getCode());
     String query = ",salle, action WHERE p.ptype = " + type
             + " AND p.jour >= '" + p.getDate() + "' AND p.jour < '" + end + "'"
             + " AND p.action = action.id"
@@ -283,7 +301,7 @@ public class EnrolmentService
 
     try {
       String where = "pg WHERE pg.adherent = " + m + " AND pg.idplanning IN("
-              + "SELECT id FROM " + ScheduleIO.TABLE 
+              + "SELECT id FROM " + ScheduleIO.TABLE
               + " WHERE action = " + p.getIdAction()
               //+ " AND jour >= '" + courseOrder.getDateStart() + "' AND jour <= '" + courseOrder.getDateEnd()
               + " AND jour >= '" + p.getDate() + "' AND jour <= '" + courseOrder.getDateEnd()
@@ -298,7 +316,7 @@ public class EnrolmentService
     }
     return false;
   }
-  
+
   public List<ScheduleRange> getRangeOverlap(DateFr start, int member, Hour hStart, Hour hEnd, int action) throws SQLException {
     String where = ConflictQueries.getRangeOverlapSelection(start, member, hStart, hEnd, action);
     return ScheduleRangeIO.find(where, dc);
@@ -341,7 +359,7 @@ public class EnrolmentService
    *
    * @param co course order
    * @param m member id
-   * 
+   *
    * @throws SQLException
    */
   public void updateRange(CourseOrder co, int m) throws SQLException {
@@ -397,14 +415,14 @@ public class EnrolmentService
       String msgKey = notInRange.size() == 1 ? "member.enrolment.schedule.session.warning"
               : "member.enrolment.schedule.sessions.warning";
       String msg2 = MessageUtil.getMessage(msgKey, new Object[] {notInRange.size(), v.size()});
-      if (!MessagePopup.confirm(null, 
+      if (!MessagePopup.confirm(null,
               MessageUtil.getMessage("member.enrolment.schedule.warning",
               new Object[]{c.getTitle(), sb.toString(), }) + msg2)) {
         throw new EnrolmentScheduleException();
       }
     }
   }
-  
+
 
   /**
    * Gets the date when the member {@code member} is scheduled for the action {@code action}.
@@ -459,7 +477,7 @@ public class EnrolmentService
     }
     return j;
   }
-  
+
   public void deleteRange(DateFr from, int member, int action) throws SQLException {
     String query = "DELETE FROM " + ScheduleRangeIO.TABLE
             + " WHERE adherent = " + member
@@ -489,7 +507,7 @@ public class EnrolmentService
     try {
       dc.setAutoCommit(false);
       dc.executeUpdate(query);
-      
+
       String label = ((GemParam) DataCache.findId(c.getCode(), Model.CourseCode)).getLabel()
               + " " + BundleUtil.getLabel("To.define.label");
 
@@ -500,7 +518,7 @@ public class EnrolmentService
         if (!c.isATP()) {
           co.setDateEnd(from);	// on change la date de fin de l'ancienne commande_cours
           CourseOrderIO.update(co, dc);// on update l'ancienne commande
-        } 
+        }
         co.setDateStart(from);
         co.setDateEnd(dataCache.getEndOfYear());
         co.setAction(0);
@@ -532,7 +550,7 @@ public class EnrolmentService
       dc.setAutoCommit(true);
     }
   }
-  
+
   public void changeHour(int member, CourseOrder co, Course c, DateFr from) throws EnrolmentException {
     String query = "DELETE FROM " + ScheduleRangeIO.TABLE
             + " WHERE adherent = " + member
@@ -716,7 +734,9 @@ public class EnrolmentService
    */
   private Schedule get1PlanCourse(Course c, DateFr debut, int estab) {
     //XXX voir pour les ateliers ponctuels
-    int type = c.isATP() ? Schedule.WORKSHOP_SCHEDULE : Schedule.COURSE_SCHEDULE;
+//    int type = c.isATP() ? Schedule.WORKSHOP_SCHEDULE : Schedule.COURSE_SCHEDULE;
+
+    int type = getScheduleType(c.getCode());
     String query = " ,salle, action WHERE ptype = " + type
             + " AND jour >= '" + debut + "'"
             + " AND p.action = action.id"
@@ -743,7 +763,7 @@ public class EnrolmentService
   public void create(CourseOrder co) throws SQLException {
     CourseOrderIO.insert(co, dc);
   }
-  
+
   public void update(CourseOrder co) throws SQLException {
     CourseOrderIO.update(co, dc);
   }
