@@ -22,7 +22,6 @@
 package net.algem.enrolment;
 
 import java.awt.BorderLayout;
-import java.awt.Frame;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -45,6 +44,7 @@ import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.GemCommand;
 import net.algem.util.model.Model;
+import net.algem.util.module.GemDesktop;
 import net.algem.util.module.GemModule;
 import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GemPanel;
@@ -67,11 +67,15 @@ public class CourseInfoDlg
   private boolean validation;
   private DateRangePanel datePanel;
 
-  public CourseInfoDlg(Frame owner, boolean modal, DataCache dataCache) {
-    super(owner, modal);
-    code = new GemParamChoice(dataCache.getList(Model.CourseCode));
+  public CourseInfoDlg(GemDesktop desktop, boolean modal, DateFr date) {
+    super(desktop.getFrame(), modal);
+    code = new GemParamChoice(desktop.getDataCache().getList(Model.CourseCode));
     code.setSelectedIndex(0);
-    datePanel  = new DateRangePanel(new DateFr(new Date()));
+    if (date != null) {
+      datePanel  = new DateRangePanel(date);
+    } else {
+      datePanel  = new DateRangePanel(new DateFr(new Date()));
+    }
     hf = new HourField();
     code.addItemListener(new ItemListener() {
 
@@ -114,9 +118,8 @@ public class CourseInfoDlg
     add(buttons, BorderLayout.SOUTH);
     setSize(GemModule.XXS_SIZE);
     pack();
-    setLocationRelativeTo(owner);
+    setLocationRelativeTo(desktop.getFrame());
     setVisible(true);
-
   }
 
   public boolean isValidation() {
@@ -139,6 +142,10 @@ public class CourseInfoDlg
     info.setCode((GemParam) DataCache.findId(code.getKey(), Model.CourseCode));
     info.setTimeLength(hf.getHour().toMinutes());
     return info;
+  }
+
+  void setDate(DateFr d) {
+    datePanel.setDate(d);
   }
 
   DateFr getDate() {

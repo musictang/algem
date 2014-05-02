@@ -1,6 +1,6 @@
 /*
- * @(#)ModifPlanActionDlg.java 2.7.a 07/01/13
- * 
+ * @(#)ModifPlanActionDlg.java 2.8.t 02/05/14
+ *
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 
 package net.algem.planning.editing;
@@ -28,24 +28,23 @@ import net.algem.util.module.GemDesktop;
 
 /**
  * Dialog for changing planification parameters.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.t
  * @since 2.5.a 22/06/12
  */
-class ModifPlanActionDlg 
+class ModifPlanActionDlg
   extends ModifPlanDlg
 {
 
   private ModifPlanActionView pv;
   private int id;
   private int courseId;
-  
+
   public ModifPlanActionDlg(GemDesktop desktop, Action a) throws SQLException {
     super(desktop.getFrame());
     id = a.getId();
     courseId = a.getCourse();
-//    ActionService service = new ActionService(desktop.getDataCache().getDataConnection());
     pv = new ModifPlanActionView(desktop.getDataCache(), a);
     dlg = new JDialog(parent, true);
     addContent(pv, null);
@@ -60,7 +59,7 @@ class ModifPlanActionDlg
   public boolean isValidate() {
     return validation;
   }
-  
+
   public Action get() {
     Action a = new Action();
     a.setId(id);
@@ -69,7 +68,7 @@ class ModifPlanActionDlg
     a.setPlaces(pv.getPlaces());
     a.setAgeRange(pv.getRange());
     a.setStatus(pv.getStatus());
-    
+
     return a;
   }
 

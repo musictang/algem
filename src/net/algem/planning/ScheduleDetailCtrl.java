@@ -1,7 +1,7 @@
 /*
- * @(#)ScheduleDetailCtrl.java 2.8.o 08/10/13
+ * @(#)ScheduleDetailCtrl.java 2.8.t 02/05/14
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -36,9 +36,9 @@ import net.algem.contact.member.Member;
 import net.algem.contact.member.MemberService;
 import net.algem.course.Course;
 import net.algem.course.CourseCtrl;
+import net.algem.group.GemGroupService;
 import net.algem.group.Group;
 import net.algem.group.GroupFileEditor;
-import net.algem.group.GemGroupService;
 import net.algem.group.Musician;
 import net.algem.planning.editing.BreakSuppressionDlg;
 import net.algem.planning.editing.ModifPlanEvent;
@@ -59,7 +59,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.k
+ * @version 2.8.t
  * @since 1.0a 07/07/1999
  */
 public class ScheduleDetailCtrl
@@ -389,7 +389,7 @@ public class ScheduleDetailCtrl
           c = ((CourseSchedule) schedule).getCourse();
         }
         if (!(evt.getModifiers() == InputEvent.BUTTON1_MASK)) { //ouverture du suivi élève touche MAJ/CTRL
-          //if (!c.isCollective()) { @since 2.4.a entry suivi individuel activé pour les cours collectifs
+          //if (!c.isCollective()) { @since 2.4.a saisie suivi individuel activée pour les cours collectifs
           setFollowUp(po, c);
           setDefaultCursor();
           return;

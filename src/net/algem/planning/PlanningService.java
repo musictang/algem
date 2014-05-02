@@ -1,5 +1,5 @@
 /*
- * @(#)PlanningService.java	2.8.t 16/04/14
+ * @(#)PlanningService.java	2.8.t 02/05/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -164,8 +164,8 @@ public class PlanningService
   }
 
   /**
-   * Planning suppression.
-   * Action is also deleted if there are no schedule ranges for this planning.
+   * Removes all schedules sharing the same {@code action}.
+   * Action is also deleted if there are no more schedules in this planning.
    *
    * @param action
    * @throws PlanningException
@@ -173,11 +173,11 @@ public class PlanningService
   public void deletePlanning(Action action) throws PlanningException {
 
     try {
-      int r = ScheduleIO.containRanges(action, dc);
+      int r = ScheduleIO.containRanges(action,  dc);
       if (r == 0) {
         // on vérifie que l'action n'est plus référencée par un planning
         ScheduleIO.deleteSchedule(action, dc);
-        Vector<Schedule> vp = ScheduleIO.find("WHERE action = " + action.getId(), dc);
+        List<Schedule> vp = getScheduleByAction(action);
         if (vp == null || vp.isEmpty()) {
           actionIO.delete(action.getId());// on supprime l'action sinon
         }
@@ -191,6 +191,72 @@ public class PlanningService
     } catch (SQLException ex) {
       throw new PlanningException(ex.getMessage());
     }
+  }
+
+  /**
+   * Removes all schedules sharing the same action {@code a} and enclosed in the same timeslot.
+   * @param a a action
+   * @param s selected schedule
+   * @throws PlanningException
+   */
+  public void deleteSchedule(Action a, Schedule s) throws PlanningException {
+    try {
+      int r = ScheduleIO.containRanges(a, s, dc);
+      if (r == 0) {
+        ScheduleIO.deleteSchedule(a, s, dc);
+      } else {
+        if (MessagePopup.confirm(null, MessageUtil.getMessage("schedule.suppression.warning", r))) {
+          ScheduleIO.deleteSchedule(a, s, dc);
+          ScheduleRangeIO.delete(a, s, dc);
+        } else throw new PlanningException(GemCommand.CANCEL_CMD);
+      }
+    } catch (SQLException ex) {
+      throw new PlanningException(ex.getMessage());
+    }
+  }
+
+  /**
+   * Gets all schedule sharing the same action {@code a}.
+   * @param a action
+   * @return a list of schedules
+   */
+  private List<Schedule> getScheduleByAction(Action a) {
+    return ScheduleIO.find("WHERE action = " + a.getId(), dc);
+  }
+
+  /**
+   * Indicates if there are multiples time slots for the same planning on the selected date.
+   * @param s schedule
+   * @return true if multiple time slots are found
+   */
+  public boolean hasMultipleTimes(Schedule s) {
+    List<Schedule> schedules = ScheduleIO.find("WHERE action = " + s.getIdAction() + " AND jour = '" + s.getDate() + "'", dc);
+    if (schedules == null || schedules.size() < 2) {
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Indicates if there are multiples time slots for the same planning {@code a} between the selected period.
+   * @param a action
+   * @return true if multiple time slots are found
+   */
+   public boolean hasMultipleTimes(Action a) {
+    List<Schedule> schedules = ScheduleIO.find("WHERE action = " + a.getId(), dc);
+    if (schedules == null || schedules.size() < 2) {
+      return false;
+    }
+    Hour start = schedules.get(0).getStart();
+    Hour end = schedules.get(0).getEnd();
+    for (Schedule s : schedules) {
+      if (! (s.getStart().ge(start) && s.getEnd().le(end))) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   /**
@@ -241,7 +307,7 @@ public class PlanningService
     }
   }
 
-	public void changeTeacher(ScheduleObject orig, ScheduleObject range, DateFr date) throws PlanningException {
+	public void changeTeacherForSchedule(ScheduleObject orig, ScheduleObject range, DateFr date) throws PlanningException {
 		String query = "UPDATE " + ScheduleIO.TABLE + " SET idper = " + range.getIdPerson()
                 + " WHERE id = " + orig.getId()
                 + " AND jour = '" + date + "'";

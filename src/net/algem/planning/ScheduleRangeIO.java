@@ -1,7 +1,7 @@
 /*
- * @(#)ScheduleRangeIO.java	2.8.f 23/05/13
+ * @(#)ScheduleRangeIO.java	2.8.t 02/05/14
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -38,267 +38,262 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.f
+ * @version 2.8.t
  * @since 1.0a 7/7/1999
  */
 public class ScheduleRangeIO
-	extends TableIO {
+  extends TableIO {
 
-	public final static String TABLE = "plage";
-	public final static String COLUMNS = "pg.id, pg.idplanning, pg.debut, pg.fin, pg.adherent, pg.note";
-	public final static String SEQUENCE = "plage_id_seq";
+  public final static String TABLE = "plage";
+  public final static String COLUMNS = "pg.id, pg.idplanning, pg.debut, pg.fin, pg.adherent, pg.note";
+  public final static String SEQUENCE = "plage_id_seq";
 
-	public static void insert(ScheduleRange p, DataConnection dc) throws SQLException {
+  public static void insert(ScheduleRange p, DataConnection dc) throws SQLException {
 
-		int id = nextId(SEQUENCE, dc);
-		String query = "INSERT INTO " + TABLE + " VALUES("
-			+ id
-			+ ", " + p.getScheduleId()
-			+ ",'" + p.getStart()
-			+ "','" + p.getEnd()
-			+ "'," + p.getMemberId()
-			+ "," + p.getNote()
-			+ ")";
-		dc.executeUpdate(query);
-	}
+    int id = nextId(SEQUENCE, dc);
+    String query = "INSERT INTO " + TABLE + " VALUES("
+      + id
+      + ", " + p.getScheduleId()
+      + ",'" + p.getStart()
+      + "','" + p.getEnd()
+      + "'," + p.getMemberId()
+      + "," + p.getNote()
+      + ")";
+    dc.executeUpdate(query);
+  }
 
-	public static void update(ScheduleRange p, DataConnection dc) throws SQLException {
-		String query = "UPDATE " + TABLE + " SET debut = '" + p.getStart()
-			+ "', fin = '" + p.getEnd()
-			+ "', adherent = " + p.getMemberId()
-			+ ", note = " + p.getNote()
-			+ " WHERE id =" + p.getId();
-		dc.executeUpdate(query);
-	}
+  public static void update(ScheduleRange p, DataConnection dc) throws SQLException {
+    String query = "UPDATE " + TABLE + " SET debut = '" + p.getStart()
+      + "', fin = '" + p.getEnd()
+      + "', adherent = " + p.getMemberId()
+      + ", note = " + p.getNote()
+      + " WHERE id =" + p.getId();
+    dc.executeUpdate(query);
+  }
 
-	public static void update(ScheduleRangeObject p, DataConnection dc) throws SQLException {
-		String query = "UPDATE " + TABLE + " SET debut = '" + p.getStart()
-			+ "', fin = '" + p.getEnd()
-			+ "', adherent = " + p.getMember().getId()
-			+ ", note = " + p.getNote()
-			+ " WHERE id=" + p.getId();
-		dc.executeUpdate(query);
-	}
+  public static void update(ScheduleRangeObject p, DataConnection dc) throws SQLException {
+    String query = "UPDATE " + TABLE + " SET debut = '" + p.getStart()
+      + "', fin = '" + p.getEnd()
+      + "', adherent = " + p.getMember().getId()
+      + ", note = " + p.getNote()
+      + " WHERE id=" + p.getId();
+    dc.executeUpdate(query);
+  }
 
-	public static void update(String _query, DataConnection dc) throws SQLException {
-		String query = "UPDATE " + TABLE + " " + _query;
-		dc.executeUpdate(query);
-	}
+  public static void update(String _query, DataConnection dc) throws SQLException {
+    String query = "UPDATE " + TABLE + " " + _query;
+    dc.executeUpdate(query);
+  }
 
-	public static void delete(ScheduleRange p, DataConnection dc) throws SQLException {
-		String query = "DELETE FROM " + TABLE + " WHERE id = " + p.getId();
-		dc.executeUpdate(query);
-	}
+  public static void delete(ScheduleRange p, DataConnection dc) throws SQLException {
+    String query = "DELETE FROM " + TABLE + " WHERE id = " + p.getId();
+    dc.executeUpdate(query);
+  }
 
-	public static void delete(ScheduleRangeObject p, DataConnection dc) throws SQLException {
-		String query = "DELETE FROM " + TABLE + " WHERE id = " + p.getId();
-		dc.executeUpdate(query);
-	}
+  public static void delete(ScheduleRangeObject p, DataConnection dc) throws SQLException {
+    String query = "DELETE FROM " + TABLE + " WHERE id = " + p.getId();
+    dc.executeUpdate(query);
+  }
 
-    /**
-     * Suppress ranges by action.
-     * @param a
-     * @param dc
-     * @throws SQLException
-     */
-    public static void delete(Action a, DataConnection dc) throws SQLException {
-		String query = "DELETE FROM " + TABLE + " WHERE idplanning IN ("
-                + "SELECT id FROM " + ScheduleIO.TABLE
-                + " WHERE action = " + a.getId()
-                + " AND jour >= '" + a.getDateStart() + "' AND jour <= '" + a.getDateEnd() + "')";
-		dc.executeUpdate(query);
-	}
+  /**
+   * Suppress ranges by action.
+   *
+   * @param a action
+   * @param dc data connection
+   * @throws SQLException
+   */
+  public static void delete(Action a, DataConnection dc) throws SQLException {
+    String query = "DELETE FROM " + TABLE + " WHERE idplanning IN ("
+      + "SELECT id FROM " + ScheduleIO.TABLE
+      + " WHERE action = " + a.getId()
+      + " AND jour >= '" + a.getDateStart() + "' AND jour <= '" + a.getDateEnd() + "')";
+    dc.executeUpdate(query);
+  }
 
-	public static void delete(String where, DataConnection dc) throws SQLException {
-		String query = "DELETE FROM " + TABLE + " WHERE " + where;
-		dc.executeUpdate(query);
-	}
+  /**
+   * Deletes all ranges scheduled with the action {@code a} and enclosed in the selected tims slot.
+   * @param a action
+   * @param s schedule
+   * @param dc data connection
+   * @throws SQLException
+   */
+  public static void delete(Action a, Schedule s, DataConnection dc) throws SQLException {
+    String query = "DELETE FROM " + TABLE + " WHERE idplanning IN ("
+      + "SELECT id FROM " + ScheduleIO.TABLE
+      + " WHERE action = " + a.getId()
+      + " AND jour >= '" + a.getDateStart() + "' AND jour <= '" + a.getDateEnd()
+      + "' AND debut >= '" + s.getStart() + "' AND fin <= '" + s.getEnd() + "')";
+    dc.executeUpdate(query);
+  }
 
-	public static Vector<ScheduleRange> find(String where, DataConnection dc) throws SQLException {
-		String query = "SELECT " + COLUMNS + " FROM " + TABLE + " " + where;
+  public static void delete(String where, DataConnection dc) throws SQLException {
+    String query = "DELETE FROM " + TABLE + " WHERE " + where;
+    dc.executeUpdate(query);
+  }
 
-		return ifind(query, dc);
-	}
+  public static Vector<ScheduleRange> find(String where, DataConnection dc) throws SQLException {
+    String query = "SELECT " + COLUMNS + " FROM " + TABLE + " " + where;
 
-	private static Vector<ScheduleRange> ifind(String query, DataConnection dc) throws SQLException {
-		Vector<ScheduleRange> v = new Vector<ScheduleRange>();
-		ResultSet rs = dc.executeQuery(query);
-		while (rs.next()) {
-			ScheduleRange p = new ScheduleRange();
-			p.setId(rs.getInt(1));
-			p.setScheduleId(rs.getInt(2));
-			p.setStart(new Hour(rs.getString(3)));
-			p.setEnd(new Hour(rs.getString(4)));
-			p.setMemberId(rs.getInt(5));
-			p.setNote(rs.getInt(6));
+    return ifind(query, dc);
+  }
 
-			v.addElement(p);
-		}
-		rs.close();
+  private static Vector<ScheduleRange> ifind(String query, DataConnection dc) throws SQLException {
+    Vector<ScheduleRange> v = new Vector<ScheduleRange>();
+    ResultSet rs = dc.executeQuery(query);
+    while (rs.next()) {
+      ScheduleRange p = new ScheduleRange();
+      p.setId(rs.getInt(1));
+      p.setScheduleId(rs.getInt(2));
+      p.setStart(new Hour(rs.getString(3)));
+      p.setEnd(new Hour(rs.getString(4)));
+      p.setMemberId(rs.getInt(5));
+      p.setNote(rs.getInt(6));
 
-		return v;
-	}
+      v.addElement(p);
+    }
+    rs.close();
 
-	private static ScheduleRangeObject rangeObjectFactory(ResultSet rs, PlanningService service)
-		throws SQLException {
+    return v;
+  }
 
-		ScheduleRangeObject p = new ScheduleRangeObject();
-		p.setId(rs.getInt(1));
-		p.setScheduleId(rs.getInt(2));
-		p.setStart(new Hour(rs.getString(3)));
-		p.setEnd(new Hour(rs.getString(4)));
-		p.setMember((Person) DataCache.findId(rs.getInt(5), Model.Person));
-		p.setNote(rs.getInt(6));
+  private static ScheduleRangeObject rangeObjectFactory(ResultSet rs, PlanningService service)
+    throws SQLException {
 
-		p.setDate(new DateFr(rs.getString(7)));
-		p.setIdAction(rs.getInt(8));
-		p.setIdPerson(rs.getInt(9));// id prof
-		p.setPlace(rs.getInt(10));
+    ScheduleRangeObject p = new ScheduleRangeObject();
+    p.setId(rs.getInt(1));
+    p.setScheduleId(rs.getInt(2));
+    p.setStart(new Hour(rs.getString(3)));
+    p.setEnd(new Hour(rs.getString(4)));
+    p.setMember((Person) DataCache.findId(rs.getInt(5), Model.Person));
+    p.setNote(rs.getInt(6));
 
-		p.setRoom((Room) DataCache.findId(p.getPlace(), Model.Room));
-		p.setTeacher((Person) DataCache.findId(p.getIdPerson(), Model.Teacher));
+    p.setDate(new DateFr(rs.getString(7)));
+    p.setIdAction(rs.getInt(8));
+    p.setIdPerson(rs.getInt(9));// id prof
+    p.setPlace(rs.getInt(10));
 
-        p.setAction(service.getAction(p.getIdAction()));
-//        p.setCourse(service.getCourseFromAction(p.getIdAction()));
-        p.setCourse((Course) DataCache.findId(p.getAction().getCourse(), Model.Course));
+    p.setRoom((Room) DataCache.findId(p.getPlace(), Model.Room));
+    p.setTeacher((Person) DataCache.findId(p.getIdPerson(), Model.Teacher));
 
-		return p;
-	}
+    p.setAction(service.getAction(p.getIdAction()));
+    p.setCourse((Course) DataCache.findId(p.getAction().getCourse(), Model.Course));
 
-//    p.setId(rs.getInt(1));
-//			p.setScheduleId(rs.getInt(2));
-//			p.setStart(new Hour(rs.getString(3)));
-//			p.setEnd(new Hour(rs.getString(4)));
-//			p.setMember((Person) DataCache.findId(rs.getInt(5), Model.Person));
-//			p.setNote(rs.getInt(6));
-//
-//			p.setIdAction(rs.getInt(7));
-//            p.setAction(pService.getAction(p.getIdAction()));
-//			p.setCourse(pService.getCourseFromAction(p.getIdAction()));
-//			p.setDate(new DateFr(rs.getString(8)));
-//			p.setIdPerson(rs.getInt(9));
-//			p.setTeacher((Person) DataCache.findId(p.getIdPerson(), Model.Teacher));
-//			p.setPlace(rs.getInt(10));
-//			p.setRoom((Room) DataCache.findId(p.getPlace(), Model.Room));
+    return p;
+  }
 
-//			p.setFollowUp(rs.getString(11));
+  public static Vector<ScheduleRangeObject> findObject(String and, PlanningService service, DataConnection dc) throws SQLException {
+    String query = "SELECT " + COLUMNS + ", p.jour, p.action, p.idper, p.lieux"
+      + " FROM " + TABLE + " pg, " + ScheduleIO.TABLE + " p"
+      + " WHERE pg.idplanning = p.id " + and;
 
-	public static Vector<ScheduleRangeObject> findObject(String and, PlanningService service, DataConnection dc) throws SQLException {
-//		DataConnection dc = dataCache.getDataConnection();
-//        PlanningService service = new PlanningService(dc);
-		String query = "SELECT " + COLUMNS + ", p.jour, p.action, p.idper, p.lieux"
-                + " FROM " + TABLE + " pg, " + ScheduleIO.TABLE + " p"
-                + " WHERE pg.idplanning = p.id " + and;
+    Vector<ScheduleRangeObject> v = new Vector<ScheduleRangeObject>();
 
-		Vector<ScheduleRangeObject> v = new Vector<ScheduleRangeObject>();
+    ResultSet rs = dc.executeQuery(query);
+    while (rs.next()) {
+      ScheduleRangeObject p = rangeObjectFactory(rs, service);
+      v.addElement(p);
+    }
+    rs.close();
 
-		ResultSet rs = dc.executeQuery(query);
-		while (rs.next()) {
-			ScheduleRangeObject p = rangeObjectFactory(rs, service);
-			v.addElement(p);
-		}
-		rs.close();
+    return v;
+  }
 
-		return v;
-	}
+  public static Vector<ScheduleRangeObject> getLoadRS(PreparedStatement ps, DataCache dataCache) {
 
-	public static Vector<ScheduleRangeObject> getLoadRS(PreparedStatement ps, DataCache dataCache) {
+    Vector<ScheduleRangeObject> v = new Vector<ScheduleRangeObject>();
+    PlanningService service = new PlanningService(dataCache.getDataConnection());
+    try {
+      ResultSet rs = ps.executeQuery();
+      while (!Thread.interrupted() && rs.next()) {
+        ScheduleRangeObject p = rangeObjectFactory(rs, service);
+        v.addElement(p);
+      }
+      rs.close();
+    } catch (SQLException e) {
+      GemLogger.logException("plage prepared stmt", e);
+    }
+    return v;
+  }
 
-		Vector<ScheduleRangeObject> v = new Vector<ScheduleRangeObject>();
-        PlanningService service = new PlanningService(dataCache.getDataConnection());
-		try {
-			ResultSet rs = ps.executeQuery();
-			while (!Thread.interrupted() && rs.next()) {
-				ScheduleRangeObject p = rangeObjectFactory(rs, service);
-				v.addElement(p);
-			}
-			rs.close();
-		} catch (SQLException e) {
-			GemLogger.logException("plage prepared stmt", e);
-		}
-		return v;
-	}
+  public static Vector<ScheduleRangeObject> findFollowUp(String where, boolean action, DataConnection dc) throws SQLException {
+    Vector<ScheduleRangeObject> v = new Vector<ScheduleRangeObject>();
+    String query = getFollowUpRequest(action);
+    query += where;
 
-	public static Vector<ScheduleRangeObject> findFollowUp(String where, boolean action, DataConnection dc) throws SQLException {
-		Vector<ScheduleRangeObject> v = new Vector<ScheduleRangeObject>();
-		String query = getFollowUpRequest(action);
-		query += where;
+    PlanningService pService = new PlanningService(dc);
 
-		PlanningService pService = new PlanningService(dc);
+    ResultSet rs = dc.executeQuery(query);
+    while (rs.next()) {
+      ScheduleRangeObject p = rangeObjectFactory(rs, pService);
+      p.setFollowUp(rs.getString(11));
+      v.addElement(p);
+    }
+    rs.close();
+    return v;
+  }
 
-		ResultSet rs = dc.executeQuery(query);
-		while (rs.next()) {
-            ScheduleRangeObject p = rangeObjectFactory(rs, pService);
-            p.setFollowUp(rs.getString(11));
-			v.addElement(p);
-		}
-		rs.close();
-		return v;
-	}
+  private static String getFollowUpRequest(boolean action) {
+    if (action) {
+      return "SELECT " + COLUMNS + ", p.jour, p.action, p.idper, p.lieux, s.texte FROM " + TABLE + " pg, planning p, action a, suivi s"
+        + " WHERE p.ptype IN (" + Schedule.COURSE_SCHEDULE + "," + Schedule.WORKSHOP_SCHEDULE + "," + Schedule.TRAINING_SCHEDULE
+        + ") AND p.id = pg.idplanning";
 
-	private static String getFollowUpRequest(boolean action) {
-		if (action) {
-			return "SELECT " + COLUMNS + ", p.jour, p.action, p.idper, p.lieux, s.texte FROM " + TABLE + " pg, planning p, action a, suivi s"
-				+ " WHERE p.ptype IN (" + Schedule.COURSE_SCHEDULE + "," + Schedule.WORKSHOP_SCHEDULE + "," + Schedule.TRAINING_SCHEDULE
-				+ ") AND p.id = pg.idplanning";
+    } else {
+      return "SELECT " + COLUMNS + ", p.jour, p.action, p.idper, p.lieux, s.texte FROM " + TABLE + " pg, planning p, suivi s"
+        + " WHERE p.ptype IN (" + Schedule.COURSE_SCHEDULE + "," + Schedule.WORKSHOP_SCHEDULE + "," + Schedule.TRAINING_SCHEDULE
+        + ") AND p.id = pg.idplanning";
+    }
+  }
 
-		} else {
-			return "SELECT " + COLUMNS + ", p.jour, p.action, p.idper, p.lieux, s.texte FROM " + TABLE + " pg, planning p, suivi s"
-				+ " WHERE p.ptype IN (" + Schedule.COURSE_SCHEDULE + "," + Schedule.WORKSHOP_SCHEDULE + "," + Schedule.TRAINING_SCHEDULE
-				+ ") AND p.id = pg.idplanning";
-		}
-	}
+  public static void createNote(ScheduleRangeObject plage, String texte, DataConnection dc) throws PlanningException {
+    try {
+      dc.setAutoCommit(false);
+      int id = nextId("idsuivi", dc);
+      String query = "INSERT INTO suivi VALUES(" + id + ",'" + escape(texte) + "')";
+      dc.executeUpdate(query);
 
-	public static void createNote(ScheduleRangeObject plage, String texte, DataConnection dc) throws PlanningException {
-		try {
-			dc.setAutoCommit(false);
-			int id = nextId("idsuivi", dc);
-			String query = "INSERT INTO suivi VALUES(" + id + ",'" + escape(texte) + "')";
-			dc.executeUpdate(query);
+      plage.setNote(id);
+      update(plage, dc);
+    } catch (SQLException sqe) {
+      dc.rollback();
+      throw new PlanningException(sqe.getMessage());
+    } finally {
+      dc.setAutoCommit(true);
+    }
+  }
 
-			plage.setNote(id);
-			update(plage, dc);
-		} catch (SQLException sqe) {
-			dc.rollback();
-			throw new PlanningException(sqe.getMessage());
-		} finally {
-			dc.setAutoCommit(true);
-		}
-	}
+  public static void updateNote(int note, String texte, DataConnection dc) throws SQLException {
+    String query = "UPDATE suivi SET texte = '" + escape(texte) + "' WHERE id = " + note;
+    dc.executeUpdate(query);
+  }
 
-	public static void updateNote(int note, String texte, DataConnection dc) throws SQLException {
-		String query = "UPDATE suivi SET texte = '" + escape(texte) + "' WHERE id = " + note;
-		dc.executeUpdate(query);
-	}
+  public static void deleteNote(int note, DataConnection dc) throws SQLException {
+    String query = "DELETE FROM suivi WHERE id = " + note;
+    dc.executeUpdate(query);
+  }
 
-	public static void deleteNote(int note, DataConnection dc) throws SQLException {
-		String query = "DELETE FROM suivi WHERE id = " + note;
-		dc.executeUpdate(query);
-	}
+  public static String findNote(int note, DataConnection dc) throws SQLException {
 
-	public static String findNote(int note, DataConnection dc) throws SQLException {
+    String texte = "";
+    String query = "SELECT texte FROM suivi WHERE id = " + note;
 
-		String texte = "";
-		String query = "SELECT texte FROM suivi WHERE id = " + note;
+    ResultSet rs = dc.executeQuery(query);
+    if (rs.next()) {
+      texte = unEscape(rs.getString(1));
+    }
 
-		ResultSet rs = dc.executeQuery(query);
-		if (rs.next()) {
-			texte = unEscape(rs.getString(1));
-		}
+    return texte;
+  }
 
-		return texte;
-	}
+  public static String getMonthRangeStmt() {
+    return "SELECT " + COLUMNS + ", p.jour, p.action, p.idper, p.lieux  FROM " + TABLE + " pg, " + ScheduleIO.TABLE + " p"
+      + " WHERE pg.idplanning = p.id"
+      + " AND p.jour >= ? AND p.jour <= ? ORDER BY p.jour, pg.debut";
+  }
 
-	public static String getMonthRangeStmt() {
-		return "SELECT " + COLUMNS + ", p.jour, p.action, p.idper, p.lieux  FROM " + TABLE + " pg, " + ScheduleIO.TABLE + " p"
-			+ " WHERE pg.idplanning = p.id"
-			+ " AND p.jour >= ? AND p.jour <= ? ORDER BY p.jour, pg.debut";
-	}
-
-	public static String getDayRangeStmt() {
-		return "SELECT " + COLUMNS + ", p.jour, p.action, p.idper, p.lieux FROM " + TABLE + " pg, " + ScheduleIO.TABLE + " p"
-			+ " WHERE pg.idplanning = p.id"
-			+ " AND p.jour = ? ORDER BY p.debut, pg.debut"; //?? ou p.action, p.start
-	}
-
+  public static String getDayRangeStmt() {
+    return "SELECT " + COLUMNS + ", p.jour, p.action, p.idper, p.lieux FROM " + TABLE + " pg, " + ScheduleIO.TABLE + " p"
+      + " WHERE pg.idplanning = p.id"
+      + " AND p.jour = ? ORDER BY p.debut, pg.debut"; //?? ou p.action, p.start
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * @(#)CourseEnrolmentDlg.java	2.8.t 16/04/14
+ * @(#)CourseEnrolmentDlg.java	2.8.t 02/05/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -92,7 +92,7 @@ public class CourseEnrolmentDlg
    */
   private HourField hour;
 
-  /** Time slot duration. (page 2). */
+  /** Course length. (page 2). */
   private HourField courseLength;
 
   private int roomId;
@@ -108,15 +108,11 @@ public class CourseEnrolmentDlg
 
   private Vector<ScheduleRange> pl;	//Plage
 
-  private Vector<HourRange> vph;	//Plage horaire
-
-  private int estab;
-
   private Frame parent;
 
   private JDialog dlg;
 
-  /** Page for course choice. */
+  /** Course selection page. */
   private GemPanel page1;
 
   /** Modification page for time slot. */
@@ -415,7 +411,7 @@ public class CourseEnrolmentDlg
 //    courseOrder.setEstab(id);
     // tous les cours d'un type, d'un code et à partir d'une date spécifiés pour un établissement donné.
     Vector<SQLkey> sqlist = service.getCoursesFromEstab(id, courseOrder.getDateStart(), courseInfo);
-    courseList.loadSQL(sqlist); // recupere id et title des cours
+    courseList.loadSQL(sqlist); // recupere id et titre des cours
   }
 
   /**
@@ -428,7 +424,7 @@ public class CourseEnrolmentDlg
     try {
       c = (Course) DataCache.findId(id, Model.Course);
     } catch (SQLException ex) {
-      GemLogger.log(getClass().getName() + "#loadCours :" + ex.getMessage());
+      GemLogger.log(getClass().getName() + "#loadCourse :" + ex.getMessage());
     }
     if (c == null) {
       return;
@@ -536,7 +532,7 @@ public class CourseEnrolmentDlg
         return true;
       }
 
-      // time slot must be included in schedule
+      // time slot must be enclosed in schedule
       Schedule p = pj.getPlanning();
       if (!rangeStart.between(p.getStart(), p.getEnd()) || !rangeEnd.between(p.getStart(), p.getEnd())) {
         throw new EnrolmentException(MessageUtil.getMessage("time.slot.out.of.schedule"));

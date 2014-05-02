@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleIO.java	2.8.t 15/04/14
+ * @(#)ScheduleIO.java	2.8.t 02/05/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -142,7 +142,13 @@ public class ScheduleIO
    * @throws SQLException
    */
   public static void deleteSchedule(Action action, DataConnection dc) throws SQLException {
-      String query = getDeleteScheduleSelection(action);
+      String query = getDeleteScheduleQuery(action);
+      dc.executeUpdate(query);
+  }
+
+   public static void deleteSchedule(Action action, Schedule s, DataConnection dc) throws SQLException {
+      String query = getDeleteScheduleQuery(action);
+      query += " AND debut = '" + s.getStart() + "' AND fin = '" + s.getEnd() +"'";
       dc.executeUpdate(query);
   }
 
@@ -342,7 +348,7 @@ public class ScheduleIO
     return text;
   }
 
-  private static String getDeleteScheduleSelection(Action a) {
+  private static String getDeleteScheduleQuery(Action a) {
     String query = "DELETE FROM " + TABLE
             + " WHERE jour >= '" + a.getDateStart() + "' AND jour <= '" + a.getDateEnd() + "'"
             + " AND action = " + a.getId();
@@ -359,14 +365,29 @@ public class ScheduleIO
    */
   public static int containRanges(Action a, DataConnection dc) throws SQLException {
     int rows = 0;
-    String query = "SELECT COUNT(pg.debut) AS nb_cours FROM " + ScheduleRangeIO.TABLE + " pg, " + TABLE + " p"
-            + " WHERE pg.idplanning = p.id AND p.action = " + a.getId()
-            + " AND p.jour >= '" + a.getDateStart() + "' AND p.jour <= '" + a.getDateEnd() + "'";
+    String query = getQueryNumberOfRanges(a);
     ResultSet rs = dc.executeQuery(query);
     if (rs.next()) {
       rows = rs.getInt("nb_cours");
     }
     return rows;
+  }
+
+  public static int containRanges(Action a, Schedule s, DataConnection dc) throws SQLException {
+    int rows = 0;
+    String query = getQueryNumberOfRanges(a);
+    query += " AND p.debut >= '" + s.getStart() + "' AND p.fin <= '" + s.getEnd() + "'";
+    ResultSet rs = dc.executeQuery(query);
+    if (rs.next()) {
+      rows = rs.getInt("nb_cours");
+    }
+    return rows;
+  }
+
+  private static String getQueryNumberOfRanges(Action a) {
+    return "SELECT COUNT(pg.debut) AS nb_cours FROM " + ScheduleRangeIO.TABLE + " pg, " + TABLE + " p"
+            + " WHERE pg.idplanning = p.id AND p.action = " + a.getId()
+            + " AND p.jour >= '" + a.getDateStart() + "' AND p.jour <= '" + a.getDateEnd() + "'";
   }
 
   /**

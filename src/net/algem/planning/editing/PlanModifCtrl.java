@@ -1,5 +1,5 @@
 /*
- * @(#)PlanModifCtrl.java	2.8.r 17/01/14
+ * @(#)PlanModifCtrl.java	2.8.t 02/05/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -44,7 +44,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.r
+ * @version 2.8.t
  * @since 1.0b 05/07/2002 lien salle et groupe
  */
 public class PlanModifCtrl
@@ -443,7 +443,7 @@ public class PlanModifCtrl
         return;
       }
       if (start.equals(end) && MessagePopup.confirm(null, MessageUtil.getMessage("teacher.modification.single.schedule.confirmation"))) {
-        service.changeTeacher(plan, range, start);
+        service.changeTeacherForSchedule(plan, range, start);
       } else {
         service.changeTeacher(plan, range, start, end);
       }
@@ -691,7 +691,7 @@ public class PlanModifCtrl
    *
    * @since 1.1e
    */
-  private void dialogPlanningSuppression() {
+  private void dialogPlanningSuppression(){
     SupprPlanningDlg dlg = new SupprPlanningDlg(desktop.getFrame(), plan);
     dlg.entry();
 
@@ -701,28 +701,28 @@ public class PlanModifCtrl
       action.setDateStart(dlg.getDateStart());
       action.setDateEnd(dlg.getDateEnd());
       try {
-        deletePlanning(action);
+        if (action.getDateStart().equals(action.getDateEnd())) {
+          if (service.hasMultipleTimes(plan)
+            && !MessagePopup.confirm(null, MessageUtil.getMessage("schedule.multi.suppression.confirmation"))) {
+            service.deleteSchedule(action, plan);
+          } else {
+            service.deletePlanning(action);
+          }
+        } else {
+          if (service.hasMultipleTimes(action)
+            && !MessagePopup.confirm(null, MessageUtil.getMessage("schedule.multi.suppression.confirmation"))) {
+            service.deleteSchedule(action, plan);
+          } else {
+            service.deletePlanning(action);
+          }
+        }
+        desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));
       } catch (PlanningException ex) {
         MessagePopup.warning(null, MessageUtil.getMessage("delete.error") + " :\n" + ex.getMessage());
         GemLogger.logException(ex);
       }
 
     }
-  }
-
-  /**
-   * Deletes some schedules with common {@code action}.
-   * @param action scheduling link
-   * @throws PlanningException
-   */
-  private void deletePlanning(Action action) throws PlanningException {
-    try {
-      service.deletePlanning(action);
-      desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));
-    } catch(PlanningException pe) {
-      GemLogger.log(pe.getMessage());
-    }
-
   }
 
   /**

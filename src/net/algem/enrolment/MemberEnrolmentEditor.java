@@ -1,5 +1,5 @@
 /*
- * @(#)MemberEnrolmentEditor.java 2.8.t 16/04/14
+ * @(#)MemberEnrolmentEditor.java 2.8.t 02/05/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -73,6 +73,7 @@ public class MemberEnrolmentEditor
   private final static String NEW_MODULE = BundleUtil.getLabel("New.module.label");
   private final static String MODULE_DEL = BundleUtil.getLabel("Module.delete.label");
   private final static String NONE_ENROLMENT = MessageUtil.getMessage("enrolment.empty.list");
+  private final static String COURSE_DATE = BundleUtil.getLabel("Course.date.modification.label");
 
   private PersonFile dossier;
   private DefaultMutableTreeNode root;
@@ -84,7 +85,7 @@ public class MemberEnrolmentEditor
   private boolean loaded;
   private boolean validation;
   private CourseEnrolmentDlg courseDlg;
-  private JMenuItem m1, m2, m3, m4, m5, m6;
+  private JMenuItem m1, m2, m3, m4, m5, m6, m7;
   /** New enrolment button. */
   private GemButton btEnrolment;
   private TreePath currentSelection;
@@ -107,10 +108,10 @@ public class MemberEnrolmentEditor
     popup.add(m1 = new JMenuItem(STOP));
     popup.add(m2 = new JMenuItem(COURSE_MODIF));
     popup.add(m3 = new JMenuItem(HOUR_MODIF));
+    popup.add(m7 = new JMenuItem(COURSE_DATE));
     popup.add(m4 = new JMenuItem(NEW_COURSE));
     popup.add(m5 = new JMenuItem(NEW_MODULE));
     popup.add(m6 = new JMenuItem(MODULE_DEL));
-
 
     m1.addActionListener(this);
     m2.addActionListener(this);
@@ -118,6 +119,7 @@ public class MemberEnrolmentEditor
     m4.addActionListener(this);
     m5.addActionListener(this);
     m6.addActionListener(this);
+    m7.addActionListener(this);
 
     tree = new JTree(new DefaultMutableTreeNode(NONE_ENROLMENT));
     //tree.setCellRenderer(new MyRenderer());//XXX ne fonctionne pas
@@ -174,6 +176,7 @@ public class MemberEnrolmentEditor
       m4.setEnabled(false);
       m5.setEnabled(false);
       m6.setEnabled(false);
+      m7.setEnabled(true);
     } else {
       m1.setEnabled(false);
       m2.setEnabled(false);
@@ -181,6 +184,7 @@ public class MemberEnrolmentEditor
       m4.setEnabled(false);
       m5.setEnabled(true);
       m6.setEnabled(false);
+      m7.setEnabled(false);
     }
   }
 
@@ -191,6 +195,7 @@ public class MemberEnrolmentEditor
     m4.setEnabled(true);
     m5.setEnabled(false);
     m6.setEnabled(true);
+    m7.setEnabled(false);
   }
 
   @Override
@@ -281,6 +286,11 @@ public class MemberEnrolmentEditor
         return;
       }
       modifCourse();
+    } else if (s.equals(COURSE_DATE)) {
+      if (currentSelection == null) {
+        return;
+      }
+      changeDateOfCourseOrder();
     } else if (s.equals(HOUR_MODIF)) {
       if (currentSelection == null) {
         return;
@@ -338,7 +348,7 @@ public class MemberEnrolmentEditor
     }
     ModuleOrder mo = ((ModuleEnrolmentNode) path[i - 1]).getModule();
 
-    CourseInfoDlg dlg = new CourseInfoDlg(desktop.getFrame(), true, dataCache);
+    CourseInfoDlg dlg = new CourseInfoDlg(desktop, true, null);
     if (!dlg.isValidation()) {
       return;
     }
@@ -417,6 +427,31 @@ public class MemberEnrolmentEditor
     }
   }
 
+  private void changeDateOfCourseOrder() {
+    Object[] path = currentSelection.getPath();
+    int i = path.length;
+    if (!(path[i - 1] instanceof CourseEnrolmentNode)) {
+      return;
+    }
+    CourseOrder cc = ((CourseEnrolmentNode) path[i - 1]).getCourseOrder();
+    if (!cc.getStart().equals(new Hour("00-00-00"))) {
+      MessagePopup.error(this, MessageUtil.getMessage("course.invalid.choice"));
+      return;
+    }
+    DateFr oldDate = cc.getDateStart();
+    CourseInfoDlg dlg = new CourseInfoDlg(desktop, true, oldDate);
+
+    if (dlg.getDate() != null && !dlg.getDate().equals(oldDate)) {
+      cc.setDateStart(dlg.getDate());
+      try {
+        service.update(cc);
+      } catch (SQLException e) {
+        GemLogger.log(e.getMessage());
+      }
+    }
+
+  }
+
   private void modifCourse() {
     Object[] path = currentSelection.getPath();
     int i = path.length;
@@ -430,7 +465,7 @@ public class MemberEnrolmentEditor
       return;
     }
 
-    view.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+    view.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
     if (courseDlg == null) {
       courseDlg = new CourseEnrolmentDlg(desktop, service, dossier.getId());
