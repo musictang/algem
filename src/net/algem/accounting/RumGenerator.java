@@ -72,7 +72,7 @@ public class RumGenerator
       in = new BufferedReader(new InputStreamReader(System.in));
       String line;
       while ((line = in.readLine()) != null) {
-        String sql = generateMigrationSQL(line, df.format(new Date()), signDate) + System.getProperty("line.separator");
+        String sql = generateMigrationSQL(line, signDate) + System.getProperty("line.separator");
         os.write(sql.getBytes());
       }
     } catch (IOException e) {
@@ -107,8 +107,8 @@ public class RumGenerator
             + " " + idper;
   }
 
-  private static String generateMigrationSQL(String idper, String createDate, String signDate) {
-    return idper + ";" + createDate + ";" + signDate + ";TRUE;FMGR;++" + generateRum(idper, signDate);
+  private static String generateMigrationSQL(String idper, String signDate) {
+    return idper + ";NULL;" + signDate + ";TRUE;FRST;++" + generateRum(idper, signDate);
   }
 
   private static String pad(String chaine, int size, char c, int where) {
