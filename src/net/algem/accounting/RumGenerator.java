@@ -1,6 +1,6 @@
 /*
- * @(#)RumGenerator.java	2.8.r 16/01/14
- * 
+ * @(#)RumGenerator.java	2.8.t 07/05/14
+ *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.accounting;
 
@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
  * Utility class for generation of rum numbers.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.r
+ * @version 2.8.t
  * @since 2.8.r 29/12/13
  */
 public class RumGenerator
