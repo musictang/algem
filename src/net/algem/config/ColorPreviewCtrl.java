@@ -1,7 +1,7 @@
 /*
- * @(#)ColorPreviewCtrl.java	2.6.a 03/10/12
+ * @(#)ColorPreviewCtrl.java	2.8.t 08/05/14
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -37,9 +37,10 @@ import net.algem.util.ui.GemPanel;
 import net.algem.util.ui.MessagePopup;
 
 /**
+ * Controller panel utility for previewing colors.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.t
  */
 public class ColorPreviewCtrl extends GemPanel implements ActionListener {
 
@@ -65,7 +66,7 @@ public class ColorPreviewCtrl extends GemPanel implements ActionListener {
     JPanel commandPanel = new JPanel(new GridLayout(1, 3));
 
     GemButton reset = new GemButton("Reset");
-    reset.setToolTipText("Restaurer les couleurs par défaut");
+    reset.setToolTipText(MessageUtil.getMessage("reset.default.colors"));
     reset.addActionListener(this);
     GemButton ok = new GemButton(GemCommand.VALIDATE_CMD);
     ok.addActionListener(this);

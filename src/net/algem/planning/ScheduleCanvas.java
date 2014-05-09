@@ -1,7 +1,7 @@
 /*
- * @(#)ScheduleCanvas.java 2.7.a 30/11/12
- * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * @(#)ScheduleCanvas.java 2.8.t 08/05/14
+ *
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning;
 
@@ -40,9 +40,9 @@ import net.algem.util.ui.GemPanel;
 
 /**
  * Abstract class for planning layout.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.t
  * @since 2.5.a 10/07/12
  */
 public abstract class ScheduleCanvas
@@ -54,7 +54,7 @@ public abstract class ScheduleCanvas
   protected static final Font NORMAL_FONT = new Font("Helvetica", Font.PLAIN, 10);
   protected static final Font SMALL_FONT = new Font("Helvetica", Font.PLAIN, 9);
   protected static final Font X_SMALL_FONT = new Font("Helvetica", Font.PLAIN, 8);
-  
+
   protected int pas_x;
   protected ActionListener listener;
   protected Schedule clickSchedule;
@@ -116,10 +116,14 @@ public abstract class ScheduleCanvas
         //c = Color.white; // couleur atelier ponctuel
         c = colorPrefs.getColor(ColorPlan.WORKSHOP);
         break;
+      case Schedule.TRAINING_SCHEDULE:
+        //c = Color.white; // couleur atelier ponctuel
+        c = colorPrefs.getColor(ColorPlan.TRAINING);
+        break;
     } // end switch couleurs
     return c;
   }
-  
+
   /**
    * Gets the text color for headers.
    *
@@ -139,6 +143,8 @@ public abstract class ScheduleCanvas
       }
     } else if (p instanceof WorkshopSchedule) {
       return colorPrefs.getColor(ColorPlan.WORKSHOP_LABEL);
+    } else if (p.getType() == Schedule.TRAINING_SCHEDULE) {
+      return colorPrefs.getColor(ColorPlan.TRAINING_LABEL);
     } else if (p instanceof GroupRehearsalSchedule) {
       return colorPrefs.getColor(ColorPlan.GROUP_LABEL);
     } else if (p instanceof MemberRehearsalSchedule) {
@@ -196,7 +202,7 @@ public abstract class ScheduleCanvas
 
     if (p instanceof CourseSchedule) {
       GemParam status = ((CourseSchedule) p).getAction().getStatus();
-      GemParam level = ((CourseSchedule) p).getAction().getLevel();      
+      GemParam level = ((CourseSchedule) p).getAction().getLevel();
       AgeRange t = ((CourseSchedule) p).getAction().getAgeRange();
 
       String n = GemParam.NONE;
@@ -210,7 +216,7 @@ public abstract class ScheduleCanvas
     }
 
   }
-  
+
   protected String getCodeDetail(ScheduleObject p) {
     String c = "";
     String n = GemParam.NONE;
@@ -223,15 +229,15 @@ public abstract class ScheduleCanvas
       c += (t == null || t.getCode().equals(n) ? "" : " " + t.getLabel());
     }
     return c.isEmpty() ? null : c;
-     
+
   }
   @Override
   public int print(Graphics g, PageFormat pageFormat, int pageIndex) throws PrinterException {
-    if (pageIndex > 0) { 
+    if (pageIndex > 0) {
       // We have only one page, and 'page' is zero-based
       return NO_SUCH_PAGE;
     }
-    
+
     if (img != null) {
       g.translate((int) pageFormat.getImageableX(), (int) pageFormat.getImageableY());
       if (img.getWidth(this) > pageFormat.getImageableWidth() || img.getHeight(this) > pageFormat.getImageableHeight()) {
@@ -244,10 +250,10 @@ public abstract class ScheduleCanvas
         g.drawImage(img, 0, 0, this);
       }
     }
-    
-    return PAGE_EXISTS; 
+
+    return PAGE_EXISTS;
   }
-  
+
   @Override
   public void mouseEntered(MouseEvent e) {
   }
@@ -273,9 +279,9 @@ public abstract class ScheduleCanvas
   public Vector<ScheduleRangeObject> getScheduleRanges() {
     return clickRange;
   }
-  
+
   public java.util.List<ScheduleRangeObject> getPlagesCoursCoInst(java.util.List<ScheduleRangeObject> plages) {
-    
+
     java.util.List<ScheduleRangeObject> vcc = new ArrayList<ScheduleRangeObject>();
     for (ScheduleRangeObject p : plages) {
       Course c = p.getCourse();
@@ -297,13 +303,13 @@ public abstract class ScheduleCanvas
     }
     super.setBounds(nx, ny, nw, nh);
   }
-  
+
   /**
    * Gest the schedule under click position.
    * @param v a list of schedules
    * @param hc time grid position
    * @return a schedule
-   */  
+   */
   protected ScheduleObject getClickedSchedule(Vector<ScheduleObject> v, Hour hc) {
     if (v != null) {
       for (int i = 0; i < v.size(); i++) {
@@ -316,8 +322,8 @@ public abstract class ScheduleCanvas
       }
     }
     return null;
-  }  
-  
+  }
+
   /**
    * Gets the click position.
    * @return a point

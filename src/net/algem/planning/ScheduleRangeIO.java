@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleRangeIO.java	2.8.t 02/05/14
+ * @(#)ScheduleRangeIO.java	2.8.t 09/05/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -111,7 +111,7 @@ public class ScheduleRangeIO
   }
 
   /**
-   * Deletes all ranges scheduled with the action {@code a} and enclosed in the selected tims slot.
+   * Deletes all ranges scheduled with the action {@code a} and enclosed in the selected time slots.
    * @param a action
    * @param s schedule
    * @param dc data connection

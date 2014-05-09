@@ -1,7 +1,7 @@
 /*
- * @(#)ColorPlanListener.java	2.6.a 25/09/12
+ * @(#)ColorPlanListener.java	2.8.t 08/05/14
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -29,9 +29,10 @@ import javax.swing.JPanel;
 import net.algem.util.MessageUtil;
 
 /**
+ * This listener is used to change the default background's color in schedules' templates.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.t
  */
 public class ColorPlanListener
         extends MouseAdapter
@@ -39,7 +40,7 @@ public class ColorPlanListener
 
   private String title = MessageUtil.getMessage("prefs.modify.bg.color.tip");
   private JPanel p;
-  private Cursor hand = new Cursor(Cursor.HAND_CURSOR);
+  private Cursor hand = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
 
   @Override
   public void mouseClicked(MouseEvent e) {

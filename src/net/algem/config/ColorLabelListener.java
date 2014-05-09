@@ -1,7 +1,7 @@
 /*
- * @(#)ColorLabelListener.java	2.6.a 25/09/12
+ * @(#)ColorLabelListener.java	2.8.t 08/05/14
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.*
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.*
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,9 +28,10 @@ import javax.swing.JLabel;
 import net.algem.util.MessageUtil;
 
 /**
+ * This listener is used to change the default label's color in schedules' templates.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.t
  */
 class ColorLabelListener
         extends MouseAdapter
@@ -43,7 +44,9 @@ class ColorLabelListener
   public void mouseClicked(MouseEvent e) {
     jl = (JLabel) e.getSource();
     Color c = JColorChooser.showDialog(jl, title, jl.getForeground());
-    jl.setForeground(c);
+    if (c != null) {
+      jl.setForeground(c);
+    }
   }
 
   @Override

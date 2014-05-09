@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleDetailCtrl.java 2.8.t 02/05/14
+ * @(#)ScheduleDetailCtrl.java 2.8.t 09/05/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -91,15 +91,15 @@ public class ScheduleDetailCtrl
   /** Presence indicator of the modification buttons. */
   private boolean allMenus;
 
-  public ScheduleDetailCtrl(GemDesktop _desktop, PlanModifCtrl _mpc, boolean all) {
-    desktop = _desktop;
+  public ScheduleDetailCtrl(GemDesktop desktop, PlanModifCtrl pmCtrl, boolean all) {
+    this.desktop = desktop;
     dataCache = desktop.getDataCache();
     dc = dataCache.getDataConnection();
     scheduleService = new PlanningService(dc);
     groupService = new GemGroupService(dc);
     memberService = new MemberService(dc);
     MAIL_UTIL = new MailUtil(dataCache, memberService);
-    modifCtrl = _mpc;
+    modifCtrl = pmCtrl;
     frame = new JDialog(desktop.getFrame(), "détail planning");
     allMenus = all;
 
@@ -126,8 +126,8 @@ public class ScheduleDetailCtrl
     frame.getContentPane().add(panel, BorderLayout.CENTER);
   }
 
-  public ScheduleDetailCtrl(GemDesktop _desktop, PlanModifCtrl _mpc) {
-    this(_desktop, _mpc, true);
+  public ScheduleDetailCtrl(GemDesktop desktop, PlanModifCtrl pmCtrl) {
+    this(desktop, pmCtrl, true);
   }
 
   /**
@@ -382,20 +382,24 @@ public class ScheduleDetailCtrl
         MessagePopup.warning(null, MessageUtil.getMessage("member.null.exception", g.getMemberId()));
       } else if ("MemberLink".equals(arg)) {
         setWaitCursor();
-        ScheduleRangeObject po = (ScheduleRangeObject) ((GemMenuButton) evt.getSource()).getObject();
+        ScheduleRangeObject range = (ScheduleRangeObject) ((GemMenuButton) evt.getSource()).getObject();
         if (schedule instanceof WorkshopSchedule) {
           c = ((WorkshopSchedule) schedule).getWorkshop();
         } else {
           c = ((CourseSchedule) schedule).getCourse();
         }
-        if (!(evt.getModifiers() == InputEvent.BUTTON1_MASK)) { //ouverture du suivi élève touche MAJ/CTRL
+        //if (!(evt.getModifiers() == InputEvent.BUTTON1_MASK)) {
+        if ((evt.getModifiers() & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK) {//ouverture du suivi élève touche MAJ
           //if (!c.isCollective()) { @since 2.4.a saisie suivi individuel activée pour les cours collectifs
-          setFollowUp(po, c);
-          setDefaultCursor();
+          setFollowUp(range, c);
+//          setDefaultCursor();
+          return;
+        } else if ((evt.getModifiers() & InputEvent.CTRL_MASK) == InputEvent.CTRL_MASK) {
+          deleteRange(range);
           return;
         }
 
-        Person p = po.getMember();
+        Person p = range.getMember();
         PersonFileEditor editor = ((GemDesktopCtrl) desktop).getPersonFileEditor(p.getId());
         if (editor != null) {
           desktop.setSelectedModule(editor);
@@ -492,18 +496,39 @@ public class ScheduleDetailCtrl
     }
   }
 
-  private void setFollowUp(ScheduleRangeObject po, Course c) throws PlanningException, SQLException {
+  /**
+   * Opens a followUp dialog.
+   * @param range the selected time slot
+   * @param c the selected course
+   * @throws PlanningException
+   * @throws SQLException
+   */
+  private void setFollowUp(ScheduleRangeObject range, Course c) throws PlanningException, SQLException {
 
-    if (po.getNote() != 0 && po.getFollowUp() == null) {
-      po.setFollowUp(scheduleService.getFollowUp(po.getNote()));
+    if (range.getNote() != 0 && range.getFollowUp() == null) {
+      range.setFollowUp(scheduleService.getFollowUp(range.getNote()));
     }
-    FollowUpDlg dlg = new FollowUpDlg(desktop, po, c.getTitle());
+    FollowUpDlg dlg = new FollowUpDlg(desktop, range, c.getTitle());
     dlg.entry();
     if (dlg.isValidation()) {
-      scheduleService.updateFollowUp(po, dlg.getText());
-      po.setFollowUp(dlg.getText());
+      scheduleService.updateFollowUp(range, dlg.getText());
+      range.setFollowUp(dlg.getText());
     }
 
+  }
+
+  /**
+   * Deletes the time slot of the student within the selected schedule.
+   *
+   * @param range the selected time slot
+   * @throws PlanningException
+   */
+  private void deleteRange(ScheduleRangeObject range) throws PlanningException {
+    if (MessagePopup.confirm(desktop.getFrame(), MessageUtil.getMessage("schedule.range.delete.confirmation"))) {
+      scheduleService.deleteScheduleRange(range);
+      desktop.postEvent(new ModifPlanEvent(this, range.getDate(), range.getDate()));
+      frame.setVisible(false);
+    }
   }
 
   /**

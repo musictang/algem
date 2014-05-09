@@ -1,7 +1,7 @@
 /*
- * @(#)ColorPreview.java	2.6.a 03/10/12
+ * @(#)ColorPreview.java	2.8.t 08/05/14
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -18,7 +18,6 @@
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 package net.algem.config;
 
 import java.awt.Color;
@@ -34,40 +33,43 @@ import net.algem.util.BundleUtil;
 import net.algem.util.ui.GemPanel;
 
 /**
- * Display and modification panel for the planning colors.
- * 
+ * Display and modification panel of the planning colors.
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.t
  */
-public class ColorPreview extends GemPanel
-{
+public class ColorPreview extends GemPanel {
+
   private ColorPrefs prefs;
-  private static int w = 120;
-  private JPanel ciPanel;
-  private JPanel plPanel1;
-  private JPanel ccPanel;
-  private JPanel cciPanel;
-  private JPanel rgPanel;
-  private JPanel riPanel;
-  private JPanel atPanel;
-  private JPanel rtPanel;
-  private JLabel ciLabel = new JLabel(BundleUtil.getLabel("Month.schedule.course.tab"));
-  private JLabel ccLabel = new JLabel(BundleUtil.getLabel("Month.schedule.collective.course.tab"));
-  private JLabel cciLabel = new JLabel(BundleUtil.getLabel("Course.instrument.collective.label"));
-  private JLabel plLabel1 = new JLabel(BundleUtil.getLabel("Member.range.label"));
-  private JLabel rgLabel = new JLabel(BundleUtil.getLabel("Group.rehearsal.label"));
-  private JLabel riLabel = new JLabel(BundleUtil.getLabel("Member.rehearsal.label"));
-  private JLabel atLabel = new JLabel(BundleUtil.getLabel("Workshop.label"));
-  private JLabel rtLabel = new JLabel(BundleUtil.getLabel("Catching.up.label"));
+  private static final int w = 120;
+
+  private final JLabel courseLabel = new JLabel(BundleUtil.getLabel("Month.schedule.course.tab"));
+  private final JLabel courseCoLabel = new JLabel(BundleUtil.getLabel("Month.schedule.collective.course.tab"));
+  private final JLabel courseCoInstrLabel = new JLabel(BundleUtil.getLabel("Course.instrument.collective.label"));
+  private final JLabel memberRangeLabel = new JLabel(BundleUtil.getLabel("Member.range.label"));
+  private final JLabel groupRehearsalLabel = new JLabel(BundleUtil.getLabel("Group.rehearsal.label"));
+  private final JLabel memberRehearsalLabel = new JLabel(BundleUtil.getLabel("Member.rehearsal.label"));
+  private final JLabel workshopLabel = new JLabel(BundleUtil.getLabel("Workshop.label"));
+  private final JLabel trainingLabel = new JLabel(BundleUtil.getLabel("Training.course.label"));
+  private final JLabel catchUpLabel = new JLabel(BundleUtil.getLabel("Catching.up.label"));
+
+  private JPanel coursePanel;
+  private JPanel memberRangePanel;
+  private JPanel coCoursePanel;
+  private JPanel coCourseInstrPanel;
+  private JPanel groupRehearsalPanel;
+  private JPanel memberRehearsalPanel;
+  private JPanel workshopPanel;
+  private JPanel catchUpPanel;
+  private JPanel trainingPanel;
 
   private Font f;
   private ColorPlanListener pColorListener;
   private ColorLabelListener lColorListener;
 
-  public ColorPreview(ColorPrefs prefs)
-  {
+  public ColorPreview(ColorPrefs prefs) {
     this.prefs = prefs;
-    setLayout(new GridLayout(1,4));
+    setLayout(new GridLayout(1, 4));
     f = new Font("Helvetica", Font.PLAIN, 10);
     pColorListener = new ColorPlanListener();
     lColorListener = new ColorLabelListener();
@@ -75,48 +77,50 @@ public class ColorPreview extends GemPanel
   }
 
   /**
-   * Retrieves the preferred colors.
+   * Gets the preferred colors.
+   *
    * @return a ColorPrefs instance
    */
-  public ColorPrefs getPrefs()
-  {
+  public ColorPrefs getPrefs() {
     return prefs;
   }
 
-  private void initComponents(){
+  private void initComponents() {
     int h = 100;
-    Dimension dsize = new Dimension(w,h);
+    Dimension dsize = new Dimension(w, h);
 
     JPanel p1 = new JPanel();
-    p1.setLayout(new BoxLayout(p1,BoxLayout.Y_AXIS));
-    ciPanel = initPanel(ciLabel, ColorPlan.COURSE_INDIVIDUAL, 60);
-    plPanel1 = initPanel(plLabel1, ColorPlan.RANGE, 40);
+    p1.setLayout(new BoxLayout(p1, BoxLayout.Y_AXIS));
+    coursePanel = initPanel(courseLabel, ColorPlan.COURSE_INDIVIDUAL, 60);
+    memberRangePanel = initPanel(memberRangeLabel, ColorPlan.RANGE, 40);
 
-    p1.add(ciPanel);
-    p1.add(plPanel1);
+    p1.add(coursePanel);
+    p1.add(memberRangePanel);
 
     JPanel p2 = new JPanel();
     p2.setLayout(new BoxLayout(p2, BoxLayout.Y_AXIS));
     p2.setPreferredSize(dsize);
-    ccPanel = initPanel(ccLabel, ColorPlan.COURSE_CO, 40);
-    cciPanel = initPanel(cciLabel, ColorPlan.INSTRUMENT_CO, 30);
-    rgPanel = initPanel(rgLabel, ColorPlan.GROUP_REHEARSAL, 30);
-    p2.add(ccPanel);
-    p2.add(cciPanel);
-    p2.add(rgPanel);
+    coCoursePanel = initPanel(courseCoLabel, ColorPlan.COURSE_CO, 40);
+    coCourseInstrPanel = initPanel(courseCoInstrLabel, ColorPlan.INSTRUMENT_CO, 30);
+    groupRehearsalPanel = initPanel(groupRehearsalLabel, ColorPlan.GROUP_REHEARSAL, 30);
+    p2.add(coCoursePanel);
+    p2.add(coCourseInstrPanel);
+    p2.add(groupRehearsalPanel);
 
     JPanel p3 = new JPanel();
     p3.setLayout(new BoxLayout(p3, BoxLayout.Y_AXIS));
     p3.setPreferredSize(dsize);
-    riPanel = initPanel(riLabel, ColorPlan.MEMBER_REHEARSAL, 30);
-    atPanel = initPanel(atLabel, ColorPlan.WORKSHOP, 70);
-    p3.add(riPanel);
-    p3.add(atPanel);
+    memberRehearsalPanel = initPanel(memberRehearsalLabel, ColorPlan.MEMBER_REHEARSAL, 20);
+    workshopPanel = initPanel(workshopLabel, ColorPlan.WORKSHOP, 40);
+    trainingPanel = initPanel(trainingLabel, ColorPlan.TRAINING, 40);
+    p3.add(memberRehearsalPanel);
+    p3.add(workshopPanel);
+    p3.add(trainingPanel);
 
     JPanel p4 = new JPanel();
-    p4.setLayout(new BoxLayout(p4,BoxLayout.Y_AXIS));
-    rtPanel = initPanel(rtLabel, ColorPlan.CATCHING_UP, 60);
-    p4.add(rtPanel);
+    p4.setLayout(new BoxLayout(p4, BoxLayout.Y_AXIS));
+    catchUpPanel = initPanel(catchUpLabel, ColorPlan.CATCHING_UP, 60);
+    p4.add(catchUpPanel);
 
     add(p1);
     add(p2);
@@ -127,64 +131,67 @@ public class ColorPreview extends GemPanel
 
   /**
    * Retrieves background and foreground colors.
+   *
    * @return une Map
    */
   public Map<ColorPlan, Color> getColors() {
 
     Map<ColorPlan, Color> colors = new EnumMap<ColorPlan, Color>(ColorPlan.class);
 
-    colors.put(ColorPlan.COURSE_INDIVIDUAL, ciPanel.getBackground());
-    colors.put(ColorPlan.COURSE_CO, ccPanel.getBackground());
-    colors.put(ColorPlan.INSTRUMENT_CO, cciPanel.getBackground());
-    colors.put(ColorPlan.CATCHING_UP, rtPanel.getBackground());
-    colors.put(ColorPlan.RANGE, plPanel1.getBackground());
-    colors.put(ColorPlan.WORKSHOP, atPanel.getBackground());
-    colors.put(ColorPlan.GROUP_REHEARSAL, rgPanel.getBackground());
-    colors.put(ColorPlan.MEMBER_REHEARSAL, riPanel.getBackground());
+    colors.put(ColorPlan.COURSE_INDIVIDUAL, coursePanel.getBackground());
+    colors.put(ColorPlan.COURSE_CO, coCoursePanel.getBackground());
+    colors.put(ColorPlan.INSTRUMENT_CO, coCourseInstrPanel.getBackground());
+    colors.put(ColorPlan.CATCHING_UP, catchUpPanel.getBackground());
+    colors.put(ColorPlan.RANGE, memberRangePanel.getBackground());
+    colors.put(ColorPlan.WORKSHOP, workshopPanel.getBackground());
+    colors.put(ColorPlan.TRAINING, workshopPanel.getBackground());
+    colors.put(ColorPlan.GROUP_REHEARSAL, groupRehearsalPanel.getBackground());
+    colors.put(ColorPlan.MEMBER_REHEARSAL, memberRehearsalPanel.getBackground());
 
-    colors.put(ColorPlan.COURSE_INDIVIDUAL_LABEL, ciLabel.getForeground());
-    colors.put(ColorPlan.COURSE_CO_LABEL, ccLabel.getForeground());
-    colors.put(ColorPlan.INSTRUMENT_CO_LABEL, cciLabel.getForeground());
-    colors.put(ColorPlan.CATCHING_UP_LABEL, rtLabel.getForeground());
-    colors.put(ColorPlan.WORKSHOP_LABEL, atLabel.getForeground());
-    colors.put(ColorPlan.GROUP_LABEL, rgLabel.getForeground());
-    colors.put(ColorPlan.MEMBER_LABEL, riLabel.getForeground());
+    colors.put(ColorPlan.COURSE_INDIVIDUAL_LABEL, courseLabel.getForeground());
+    colors.put(ColorPlan.COURSE_CO_LABEL, courseCoLabel.getForeground());
+    colors.put(ColorPlan.INSTRUMENT_CO_LABEL, courseCoInstrLabel.getForeground());
+    colors.put(ColorPlan.CATCHING_UP_LABEL, catchUpLabel.getForeground());
+    colors.put(ColorPlan.WORKSHOP_LABEL, workshopLabel.getForeground());
+    colors.put(ColorPlan.TRAINING_LABEL, workshopLabel.getForeground());
+    colors.put(ColorPlan.GROUP_LABEL, groupRehearsalLabel.getForeground());
+    colors.put(ColorPlan.MEMBER_LABEL, memberRehearsalLabel.getForeground());
 
     return colors;
   }
 
   /*@Override
-  public void paint(Graphics g) {
-    super.paint(g);
-    g.setFont(f);
-    texte = "";
-    int x = 0;
-    int y = 0;
-    int h = 100;
-    Color c = g.getColor();
-		g.setColor(prefs.getColor(ColorPlan.COURSE_INDIVIDUAL));
-		g.fillRect(x,y,w,h);
-		g.setColor(prefs.getColor(ColorPlan.COURS_LABEL));
-    f = g.getFontMetrics();
-    texte = "Cours individuel";
-   
-    g.drawString(texte, getXpos(x), 25);
-    g.setColor(prefs.getColor(ColorPlan.COURSE_CO));
-    x += w;
-		g.fillRect(x,y,w,h);
-    g.setColor(prefs.getColor(ColorPlan.COURS_LABEL));
-    texte = "Cours collectif";
-    g.drawString(texte, getXpos(x), 25);
-		g.setColor(c);
+   public void paint(Graphics g) {
+   super.paint(g);
+   g.setFont(f);
+   texte = "";
+   int x = 0;
+   int y = 0;
+   int h = 100;
+   Color c = g.getColor();
+   g.setColor(prefs.getColor(ColorPlan.COURSE_INDIVIDUAL));
+   g.fillRect(x,y,w,h);
+   g.setColor(prefs.getColor(ColorPlan.COURS_LABEL));
+   f = g.getFontMetrics();
+   texte = "Cours individuel";
 
-  }
+   g.drawString(texte, getXpos(x), 25);
+   g.setColor(prefs.getColor(ColorPlan.COURSE_CO));
+   x += w;
+   g.fillRect(x,y,w,h);
+   g.setColor(prefs.getColor(ColorPlan.COURS_LABEL));
+   texte = "Cours collectif";
+   g.drawString(texte, getXpos(x), 25);
+   g.setColor(c);
 
-  private int getXpos(int offset) {
-    return offset + ((w - f.stringWidth(texte)) / 2);
-  }*/
+   }
 
+   private int getXpos(int offset) {
+   return offset + ((w - f.stringWidth(texte)) / 2);
+   }*/
   /**
    * Gets the differents color areas and labels.
+   *
    * @param jlb label
    * @param pc a color enumeration
    * @param h height
@@ -193,41 +200,45 @@ public class ColorPreview extends GemPanel
   private JPanel initPanel(JLabel jlb, ColorPlan pc, int h) {
     Color bg = null;
     Color fg = null;
-    
-    switch(pc) {
-      case COURSE_INDIVIDUAL :
+
+    switch (pc) {
+      case COURSE_INDIVIDUAL:
         bg = prefs.getColor(ColorPlan.COURSE_INDIVIDUAL);
         fg = prefs.getColor(ColorPlan.COURSE_INDIVIDUAL_LABEL);
         break;
-      case COURSE_CO :
+      case COURSE_CO:
         bg = prefs.getColor(ColorPlan.COURSE_CO);
         fg = prefs.getColor(ColorPlan.COURSE_CO_LABEL);
         break;
-      case INSTRUMENT_CO :
+      case INSTRUMENT_CO:
         bg = prefs.getColor(ColorPlan.INSTRUMENT_CO);
         fg = prefs.getColor(ColorPlan.INSTRUMENT_CO_LABEL);
-        break;  
-      case CATCHING_UP :
+        break;
+      case CATCHING_UP:
         bg = prefs.getColor(ColorPlan.CATCHING_UP);
         fg = prefs.getColor(ColorPlan.CATCHING_UP_LABEL);
         break;
-      case WORKSHOP :
+      case WORKSHOP:
         bg = prefs.getColor(ColorPlan.WORKSHOP);
         fg = prefs.getColor(ColorPlan.WORKSHOP_LABEL);
         break;
-      case ACTION :
+      case TRAINING:
+        bg = prefs.getColor(ColorPlan.TRAINING);
+        fg = prefs.getColor(ColorPlan.TRAINING_LABEL);
+        break;
+      case ACTION:
         bg = prefs.getColor(ColorPlan.ACTION);
         fg = prefs.getColor(ColorPlan.ACTION_LABEL);
         break;
-      case GROUP_REHEARSAL :
+      case GROUP_REHEARSAL:
         bg = prefs.getColor(ColorPlan.GROUP_REHEARSAL);
         fg = prefs.getColor(ColorPlan.GROUP_LABEL);
         break;
-      case MEMBER_REHEARSAL :
+      case MEMBER_REHEARSAL:
         bg = prefs.getColor(ColorPlan.MEMBER_REHEARSAL);
         fg = prefs.getColor(ColorPlan.MEMBER_LABEL);
         break;
-      case RANGE :
+      case RANGE:
         bg = prefs.getColor(ColorPlan.RANGE);
         fg = prefs.getColor(ColorPlan.LABEL);
         break;
@@ -238,7 +249,7 @@ public class ColorPreview extends GemPanel
     }
 
     JPanel jp = new JPanel();
-    jp.setPreferredSize(new Dimension(w,h));
+    jp.setPreferredSize(new Dimension(w, h));
     jp.setBackground(bg);
     setLabel(jlb, fg);
     jp.add(jlb);
@@ -248,6 +259,7 @@ public class ColorPreview extends GemPanel
 
   /**
    * Sets a label.
+   *
    * @param label
    * @param c color
    */
@@ -257,6 +269,4 @@ public class ColorPreview extends GemPanel
     label.addMouseListener(lColorListener);
   }
 
-  
 }
-

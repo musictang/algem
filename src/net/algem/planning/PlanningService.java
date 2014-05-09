@@ -1,5 +1,5 @@
 /*
- * @(#)PlanningService.java	2.8.t 02/05/14
+ * @(#)PlanningService.java	2.8.t 09/05/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -215,6 +215,14 @@ public class PlanningService
     }
   }
 
+   public void deleteScheduleRange(ScheduleRangeObject s) throws PlanningException {
+    try {
+      ScheduleRangeIO.delete(s, dc);
+    } catch (SQLException ex) {
+      throw new PlanningException(ex.getMessage());
+    }
+   }
+
   /**
    * Gets all schedule sharing the same action {@code a}.
    * @param a action
@@ -307,19 +315,31 @@ public class PlanningService
     }
   }
 
-	public void changeTeacherForSchedule(ScheduleObject orig, ScheduleObject range, DateFr date) throws PlanningException {
-		String query = "UPDATE " + ScheduleIO.TABLE + " SET idper = " + range.getIdPerson()
-                + " WHERE id = " + orig.getId()
-                + " AND jour = '" + date + "'";
-		try {
-			dc.executeUpdate(query);
-		} catch (SQLException ex) {
-			throw new PlanningException(ex.getMessage());
-		}
-	}
+   /**
+    * Changes the teacher on selected schedule.
+    * @param orig initial schedule
+    * @param range replacement schedule
+    * @param date start date
+    * @throws PlanningException
+    */
+	 public void changeTeacherForSchedule(ScheduleObject orig, ScheduleObject range, DateFr date) throws PlanningException {
+
+    if (range.getStart().le(orig.getStart()) && range.getEnd().ge(orig.getEnd())) {
+      String query = "UPDATE " + ScheduleIO.TABLE + " SET idper = " + range.getIdPerson() + " WHERE id = " + orig.getId();
+      try {
+        dc.executeUpdate(query);
+      } catch (SQLException ex) {
+        throw new PlanningException(ex.getMessage());
+      }
+    } else {
+      changeTeacher(orig, range, date, date);
+    }
+  }
 
   /**
    * Changes the teacher between 2 dates.
+   * If range has not changed,the modification is made for all schedules between 2 dates, else
+   * the modification is made only for the selected schedule.
    * Changes may apply on only one part of schedule. In this case, it is necessary to create
    * another planning with same action id.
    *

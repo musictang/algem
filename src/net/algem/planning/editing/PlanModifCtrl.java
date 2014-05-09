@@ -1,5 +1,5 @@
 /*
- * @(#)PlanModifCtrl.java	2.8.t 02/05/14
+ * @(#)PlanModifCtrl.java	2.8.t 09/05/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -442,7 +442,8 @@ public class PlanModifCtrl
         cfd.show();
         return;
       }
-      if (start.equals(end) && MessagePopup.confirm(null, MessageUtil.getMessage("teacher.modification.single.schedule.confirmation"))) {
+      // on ne modifie que ce planning s'il en existe plusieurs partageant la même action à la même date.
+      if (start.equals(end) && service.hasMultipleTimes(plan) && MessagePopup.confirm(null, MessageUtil.getMessage("teacher.modification.single.schedule.confirmation"))) {
         service.changeTeacherForSchedule(plan, range, start);
       } else {
         service.changeTeacher(plan, range, start, end);

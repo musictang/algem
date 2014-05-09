@@ -1,7 +1,7 @@
 /*
- * @(#)ColorPlan.java	2.7.d 24/01/13
+ * @(#)ColorPlan.java	2.8.t 08/05/14
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -24,17 +24,18 @@ package net.algem.config;
 import java.awt.Color;
 
 /**
- * Default colors for planning.
+ * Default colors of schedule elements.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.d
+ * @version 2.8.t
  */
 public enum ColorPlan
 {
-  // commented : historical colors
+  // commented : old default colors
   ACTION("plan.action.color", Color.WHITE.getRGB()),
 //  WORKSHOP("plan.atelier.color", Color.WHITE.getRGB()),
   WORKSHOP("plan.atelier.color", -526420),
+  TRAINING("plan.stage.color", 16250748), //247,247,124
 //  COURSE_CO("plan.cours.collectif.color", Color.RED.getRGB()),
   COURSE_CO("plan.cours.collectif.color", -44462),
 //  INSTRUMENT_CO("plan.cours.instr.collectif.color", Color.ORANGE.getRGB()),
@@ -55,6 +56,7 @@ public enum ColorPlan
   MEMBER_LABEL("plan.adherent.label.color", -256),
 //  WORKSHOP_LABEL("plan.atelier.label.color", Color.BLACK.getRGB()),
   WORKSHOP_LABEL("plan.atelier.label.color", -16777216),
+  TRAINING_LABEL("plan.stage.label.color", -16777216),
 //  COURSE_INDIVIDUAL_LABEL("plan.cours.individuel.label.color", Color.BLACK.getRGB()),
   COURSE_INDIVIDUAL_LABEL("plan.cours.individuel.label.color", -16777216),
 //  COURSE_CO_LABEL("plan.cours.collectif.label.color", Color.BLACK.getRGB()),
@@ -72,8 +74,8 @@ public enum ColorPlan
 
   /**
    *
-   * @param key key name for preferences file
-   * @param color an integer representing default color
+   * @param key key name in preferences file
+   * @param color an integer representing the default color
    */
   ColorPlan(String key, int color) {
     this.key = key;
