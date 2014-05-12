@@ -25,6 +25,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
+import net.algem.accounting.Account;
 import net.algem.accounting.AccountPrefIO;
 import net.algem.accounting.AccountUtil;
 import net.algem.accounting.OrderLine;
@@ -117,7 +118,7 @@ public class GemGroupService
   @Override
   public void delete(Group g) throws GroupException {
     String where = " WHERE idper = " + g.getId() + " AND ptype = " + Schedule.GROUP_SCHEDULE;
-   
+
     try {
       Vector<ScheduleObject> vp = ScheduleIO.findObject(where, dc);
       if (vp != null && vp.size() > 0) {
@@ -127,7 +128,7 @@ public class GemGroupService
       throw new GroupException(e.getMessage());
     }
     try {
-      dc.setAutoCommit(false); 
+      dc.setAutoCommit(false);
       groupIO.delete(g);
       // instruments suppression
       if (g.getMusicians() != null) {
@@ -210,18 +211,29 @@ public class GemGroupService
     query += " ORDER BY jour,debut";
     return ScheduleIO.find(query, dc);
   }
-  
-  Vector<OrderLine> getSchedulePayment(Group g) {
+
+  Vector<OrderLine> getSchedulePayment(Group g)  {
+    int membershipAccount = 0;
+    StringBuilder where = new StringBuilder("WHERE groupe = ");
+    where.append(g.getId());
     List<Musician> lm = g.getMusicians();
-    if (lm == null) {
-      return new Vector<OrderLine>();
+    if (lm != null) {
+      try {
+        Preference p = AccountPrefIO.find(AccountPrefIO.MEMBER_KEY_PREF, dc);
+        Account a = AccountPrefIO.getAccount(p, dc);
+        membershipAccount = a.getId();
+      } catch (SQLException ex) {
+        GemLogger.log(ex.getMessage());
+      }
+      where.append("OR (adherent IN (");
+      for (Musician m : lm) {
+        where.append(m.getId()).append(",");
+      }
+      where.deleteCharAt(where.length()-1);
+      where.append(") AND compte = ").append(membershipAccount);
+      where.append(")");
     }
-    StringBuilder where = new StringBuilder("WHERE adherent IN (");
-    for (Musician m : lm) {
-      where.append(m.getId()).append(",");
-    }
-    where.deleteCharAt(where.length()-1);
-    where.append(")");
+
     return OrderLineIO.find(where.toString(), dc);
   }
 
@@ -285,13 +297,13 @@ public class GemGroupService
       Person ref = ((PersonIO) DataCache.getDao(Model.Person)).findId(g.getIdref());
       // Echéance référent
       if (ref != null && ref.getId() > 0) {
-        PersonFile dp = ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findId(ref.getId());
-        OrderLine ol = AccountUtil.setOrderLine(dp, date, getAccount(AccountPrefIO.REHEARSAL_KEY_PREF), amount);
+        PersonFile dossier = ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findId(ref.getId());
+        OrderLine ol = AccountUtil.setGroupOrderLine(g.getId(), dossier, date, getAccount(AccountPrefIO.REHEARSAL_KEY_PREF), amount);
         String s = ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey(), dc);
         ol.setSchool(Integer.parseInt(s));
         AccountUtil.createEntry(ol, dc);
       }
-      dc.commit();     
+      dc.commit();
     } catch (SQLException sqe) {
       dc.rollback();
       throw new GroupException(MessageUtil.getMessage("rehearsal.create.exception") + "\n" + sqe.getMessage());
@@ -411,7 +423,7 @@ public class GemGroupService
   private Preference getAccount(String key) throws SQLException {
     return AccountPrefIO.find(key, dc);
   }
-  
+
   @Override
   public String getDocumentPath() {
     return FileUtil.getDocumentPath(ConfigKey.GROUPS_PATH, dc);

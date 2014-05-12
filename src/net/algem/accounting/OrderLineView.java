@@ -1,7 +1,7 @@
 /*
- * @(#)OrderLineView.java	2.8.f 24/05/13
- * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * @(#)OrderLineView.java	2.8.t 10/05/14
+ *
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.accounting;
 
@@ -40,7 +40,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.f
+ * @version 2.8.t
  * @since 1.0a 18/07/1999
  */
 public class OrderLineView
@@ -50,6 +50,7 @@ public class OrderLineView
 
   private GemNumericField payer;
   private GemNumericField member;
+  private GemNumericField group;
   private DateFrField date;
   private GemField label;
 
@@ -68,9 +69,9 @@ public class OrderLineView
   private boolean validation;
   private OrderLine orderLine;
   private NumberFormat nf;
-  
+
   /**
-   * 
+   *
    * @param frame
    * @param title
    * @param dataCache
@@ -87,13 +88,14 @@ public class OrderLineView
 
     payer = new GemNumericField(8);
     member = new GemNumericField(8);
+    group = new GemNumericField(8);
     date = new DateFrField();
     label = new GemField(24);
     amount = new JFormattedTextField(nf);
     amount.setColumns(8);
     modeOfPayment = new JComboBox(
             ParamTableIO.getValues(
-            ModeOfPaymentCtrl.TABLE, 
+            ModeOfPaymentCtrl.TABLE,
             ModeOfPaymentCtrl.COLUMN_NAME, dataCache.getDataConnection())
             );
     document = new GemField(10);
@@ -101,7 +103,7 @@ public class OrderLineView
     account = new AccountChoice(AccountIO.find(true, dataCache.getDataConnection()));
     costAccount = new ParamChoice(
             ActivableParamTableIO.findActive(
-            CostAccountCtrl.tableName, CostAccountCtrl.columnName, 
+            CostAccountCtrl.tableName, CostAccountCtrl.columnName,
             CostAccountCtrl.columnFilter, dataCache.getDataConnection())
             );
 
@@ -109,32 +111,34 @@ public class OrderLineView
     cbPaid = new JCheckBox();
     invoice = new GemField(10);
 
-    gb.add(new JLabel(BundleUtil.getLabel("Payer.label")), 0, 0, 1, 1, GridBagHelper.EAST);
-    gb.add(new JLabel(BundleUtil.getLabel("Member.label")), 0, 1, 1, 1, GridBagHelper.EAST);
-    gb.add(new JLabel(BundleUtil.getLabel("Payment.schedule.date.label")), 0, 2, 1, 1, GridBagHelper.EAST);
-    gb.add(new JLabel(BundleUtil.getLabel("Label.label")), 0, 3, 1, 1, GridBagHelper.EAST);
-    gb.add(new JLabel(BundleUtil.getLabel("Amount.label")), 0, 4, 1, 1, GridBagHelper.EAST);
-    gb.add(new JLabel(BundleUtil.getLabel("Mode.of.payment.label")), 0, 5, 1, 1, GridBagHelper.EAST);
-    gb.add(new JLabel(BundleUtil.getLabel("Document.number.label")), 0, 6, 1, 1, GridBagHelper.EAST);
-    gb.add(new JLabel(BundleUtil.getLabel("School.label")), 0, 7, 1, 1, GridBagHelper.EAST);
-    gb.add(new JLabel(BundleUtil.getLabel("Account.label")), 0, 8, 1, 1, GridBagHelper.EAST);
-    gb.add(new JLabel(BundleUtil.getLabel("Cost.account.label")), 0, 9, 1, 1, GridBagHelper.EAST);
-    gb.add(new JLabel(BundleUtil.getLabel("Payment.schedule.cashing.tip")), 0, 10, 1, 1, GridBagHelper.EAST);
-    gb.add(new JLabel(BundleUtil.getLabel("Invoice.label")), 0, 11, 1, 1, GridBagHelper.EAST);
+    gb.add(new JLabel(BundleUtil.getLabel("Payer.label")), 0, 0, 1, 1, GridBagHelper.WEST);
+    gb.add(new JLabel(BundleUtil.getLabel("Member.label")), 0, 1, 1, 1, GridBagHelper.WEST);
+    gb.add(new JLabel(BundleUtil.getLabel("Group.label")), 0, 2, 1, 1, GridBagHelper.WEST);
+    gb.add(new JLabel(BundleUtil.getLabel("Payment.schedule.date.label")), 0, 3, 1, 1, GridBagHelper.WEST);
+    gb.add(new JLabel(BundleUtil.getLabel("Label.label")), 0, 4, 1, 1, GridBagHelper.WEST);
+    gb.add(new JLabel(BundleUtil.getLabel("Amount.label")), 0, 5, 1, 1, GridBagHelper.WEST);
+    gb.add(new JLabel(BundleUtil.getLabel("Mode.of.payment.label")), 0, 6, 1, 1, GridBagHelper.WEST);
+    gb.add(new JLabel(BundleUtil.getLabel("Document.number.label")), 0, 7, 1, 1, GridBagHelper.WEST);
+    gb.add(new JLabel(BundleUtil.getLabel("School.label")), 0, 8, 1, 1, GridBagHelper.WEST);
+    gb.add(new JLabel(BundleUtil.getLabel("Account.label")), 0, 9, 1, 1, GridBagHelper.WEST);
+    gb.add(new JLabel(BundleUtil.getLabel("Cost.account.label")), 0, 10, 1, 1, GridBagHelper.WEST);
+    gb.add(new JLabel(BundleUtil.getLabel("Payment.schedule.cashing.tip")), 0, 11, 1, 1, GridBagHelper.WEST);
+    gb.add(new JLabel(BundleUtil.getLabel("Invoice.label")), 0, 12, 1, 1, GridBagHelper.WEST);
     //gb.add(new JLabel("Monnaie"), 0, 11, 1, 1, GridBagHelper.EAST);
 
     gb.add(payer, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(member, 1, 1, 1, 1, GridBagHelper.WEST);
-    gb.add(date, 1, 2, 1, 1, GridBagHelper.WEST);
-    gb.add(label, 1, 3, 1, 1, GridBagHelper.WEST);
-    gb.add(amount, 1, 4, 1, 1, GridBagHelper.WEST);
-    gb.add(modeOfPayment, 1, 5, 1, 1, GridBagHelper.WEST);
-    gb.add(document, 1, 6, 1, 1, GridBagHelper.WEST);
-    gb.add(schoolChoice, 1, 7, 1, 1, GridBagHelper.WEST);
-    gb.add(account, 1, 8, 1, 1, GridBagHelper.WEST);
-    gb.add(costAccount, 1, 9, 1, 1, GridBagHelper.WEST);
-    gb.add(cbPaid, 1, 10, 1, 1, GridBagHelper.WEST);
-    gb.add(invoice, 1, 11, 1, 1, GridBagHelper.WEST);
+    gb.add(group, 1, 2, 1, 1, GridBagHelper.WEST);
+    gb.add(date, 1, 3, 1, 1, GridBagHelper.WEST);
+    gb.add(label, 1, 4, 1, 1, GridBagHelper.WEST);
+    gb.add(amount, 1, 5, 1, 1, GridBagHelper.WEST);
+    gb.add(modeOfPayment, 1, 6, 1, 1, GridBagHelper.WEST);
+    gb.add(document, 1, 7, 1, 1, GridBagHelper.WEST);
+    gb.add(schoolChoice, 1, 8, 1, 1, GridBagHelper.WEST);
+    gb.add(account, 1, 9, 1, 1, GridBagHelper.WEST);
+    gb.add(costAccount, 1, 10, 1, 1, GridBagHelper.WEST);
+    gb.add(cbPaid, 1, 11, 1, 1, GridBagHelper.WEST);
+    gb.add(invoice, 1, 12, 1, 1, GridBagHelper.WEST);
     //gb.add(monnaie, 1, 11, 1, 1, GridBagHelper.WEST); //
 
     okBt = new GemButton(GemCommand.VALIDATION_CMD);
@@ -161,6 +165,7 @@ public class OrderLineView
   void setIdEditable(boolean b) {
     payer.setEditable(b);
     member.setEditable(b);
+    group.setEditable(b);
   }
 
   void setInvoiceEditable(boolean b) {
@@ -176,6 +181,7 @@ public class OrderLineView
       setIdEditable(false);
       payer.setEditable(false);
       member.setEditable(false);
+      group.setEditable(false);
       label.setEditable(false);
       amount.setEditable(false);
       modeOfPayment.setEnabled(false);
@@ -221,6 +227,7 @@ public class OrderLineView
 
     setPayerId(orderLine.getPayer());
     setMemberId(orderLine.getMember());
+    group.setText(String.valueOf(orderLine.getGroup()));
     date.setText(orderLine.getDate().toString());
     label.setText(orderLine.getLabel());
     setAmount(orderLine.getDoubleAmount());
@@ -241,15 +248,21 @@ public class OrderLineView
 
     try {
       orderLine.setPayer(nf.parse(payer.getText()).intValue());
-    } catch (Exception ignore) {
+    } catch (ParseException ignore) {
       GemLogger.logException(ignore);
       orderLine.setPayer(0);
     }
     try {
       orderLine.setMember(nf.parse(member.getText()).intValue());
-    } catch (Exception ignore) {
+    } catch (ParseException ignore) {
       GemLogger.logException(ignore);
       orderLine.setMember(0);
+    }
+    try {
+      orderLine.setGroup(nf.parse(group.getText()).intValue());
+    } catch (ParseException ignore) {
+      GemLogger.logException(ignore);
+      orderLine.setGroup(0);
     }
     orderLine.setDate(date.getDate());
     orderLine.setModeOfPayment((String) modeOfPayment.getSelectedItem());

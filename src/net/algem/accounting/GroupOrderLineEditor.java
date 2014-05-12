@@ -1,7 +1,7 @@
 /*
- * @(#)GroupOrderLineEditor.java	2.7.k 01/03/2013
+ * @(#)GroupOrderLineEditor.java	2.8.t 10/05/14
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -40,20 +40,20 @@ import net.algem.util.ui.GemPanel;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.k
+ * @version 2.8.t
  * @since 2.7.k 01/03/2013
  */
-public class GroupOrderLineEditor 
+public class GroupOrderLineEditor
   extends OrderLineEditor
 {
-  
+
   private DateRangePanel dateRange;
   private GemButton btDateRange;
   private JToggleButton btMembershipFilter;
   private JToggleButton btUnpaidFilter;
 
-  public GroupOrderLineEditor(GemDesktop _desktop, OrderLineTableModel _tableModel) {
-    super(_desktop, _tableModel);
+  public GroupOrderLineEditor(GemDesktop desktop, OrderLineTableModel tableModel) {
+    super(desktop, tableModel);
     try {
       Preference p = AccountPrefIO.find(AccountPrefIO.MEMBER_KEY_PREF, dc);
       Account a = AccountPrefIO.getAccount(p, dc);
@@ -64,7 +64,7 @@ public class GroupOrderLineEditor
       GemLogger.logException(ex);
     }
   }
-  
+
   @Override
   public void init(){
     btCreate = new GemButton(GemCommand.ADD_CMD);
@@ -76,7 +76,7 @@ public class GroupOrderLineEditor
 
     btMembershipFilter = new JToggleButton(BundleUtil.getLabel("Membership.label"));
     btMembershipFilter.addActionListener(this);
-    
+
     btUnpaidFilter = new JToggleButton(BundleUtil.getLabel("Payment.schedule.unpaid"));
     btUnpaidFilter.addActionListener(this);
 
@@ -106,7 +106,7 @@ public class GroupOrderLineEditor
     pTotal.add(totalField);
     footer.add(pTotal, BorderLayout.NORTH);
     footer.add(buttons, BorderLayout.CENTER);
-    
+
     table.filterByPeriod(dateRange.getStartFr(), dateRange.getEndFr());
 
     setLayout(new BorderLayout());
@@ -114,9 +114,9 @@ public class GroupOrderLineEditor
     add(table, BorderLayout.CENTER);
     add(footer, BorderLayout.SOUTH);
     setLocation(70, 30);
-    
+
   }
-  
+
   @Override
   public void actionPerformed(ActionEvent evt) {
     if (evt.getSource() == btDateRange) {
@@ -130,7 +130,7 @@ public class GroupOrderLineEditor
       } else {
         table.filterByPeriod(dateRange.getStartFr(), dateRange.getEndFr());
       }
-      
+
     } else if (evt.getSource() == btUnpaidFilter) {
       if (btUnpaidFilter.isSelected()) {
         table.filterByUnpaid();

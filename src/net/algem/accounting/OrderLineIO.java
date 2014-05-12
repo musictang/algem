@@ -1,7 +1,7 @@
 /*
- * @(#)OrderLineIO.java	2.8.j 12/07/13
- * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * @(#)OrderLineIO.java	2.8.t 10/05/14
+ *
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.accounting;
 
@@ -39,7 +39,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.j
+ * @version 2.8.t
  *
  */
 public class OrderLineIO
@@ -47,13 +47,13 @@ public class OrderLineIO
 {
 
   public static final String TABLE = "echeancier2";
-  public static final String COLUMNS = "oid,echeance,payeur,adherent,commande,libelle,reglement,montant,piece,ecole,compte,paye,transfert,monnaie,analytique,facture";
+  public static final String COLUMNS = "oid,echeance,payeur,adherent,commande,libelle,reglement,montant,piece,ecole,compte,paye,transfert,monnaie,analytique,facture,groupe";
   public final static String ACCOUNT_COLUMN = "compte";
   public final static String COST_COLUMN = "analytique";
-  
+
   /** Max label length. */
   public static final int MAX_CHARS_LABEL = 50;
-  
+
   private static final String SEQUENCE = "echeancier2_oid_seq";
 
   /**
@@ -84,6 +84,7 @@ public class OrderLineIO
             + ",'" + e.getCurrency()
             + "','" + e.getCostAccount().getNumber()
             + "'," + ((e.getInvoice() == null || e.getInvoice().isEmpty()) ? "NULL" : "'" + e.getInvoice() + "'") //@since 2.3.a
+            + ", " + e.getGroup()
             + ")";
 
     dc.executeUpdate(query);
@@ -115,11 +116,11 @@ public class OrderLineIO
             //+"', transfer='"+ (e.isTransfered() ? "t" : "f") // on ne modifie pas le champ transfer
             + "', monnaie = '" + e.getCurrency()
             + "', analytique = '" + e.getCostAccount().getNumber()
-            + "', facture = " + ((e.getInvoice() == null || e.getInvoice().isEmpty()) ? "NULL" : "'" + e.getInvoice() + "'");
-
+            + "', facture = " + ((e.getInvoice() == null || e.getInvoice().isEmpty()) ? "NULL" : "'" + e.getInvoice() + "'")
+            + ", groupe = " + e.getGroup();
     query += " WHERE oid = " + e.getId();
     dc.executeUpdate(query);
-    
+
   }
 
   /**
@@ -224,7 +225,7 @@ public class OrderLineIO
   /**
    * Associates amount with date for the selected period and payer in {@code where}.
    *
-   * @param where sql expression 
+   * @param where sql expression
    * @param dc dataConnection instance
    * @return a sorted map
    */
@@ -311,7 +312,7 @@ public class OrderLineIO
     }
     return query;
   }
-  
+
   /**
    * Utility method used where joint expression is needed.
    * @param query sql query
@@ -412,7 +413,7 @@ public class OrderLineIO
         e.setPaid(rs.getBoolean(12));
         e.setTransfered(rs.getBoolean(13));
         e.setCurrency(rs.getString(14).trim());
-        
+
         String code = rs.getString(15);
         Param p = DataCache.getCostAccount(code);
         Account a = null;
@@ -423,19 +424,21 @@ public class OrderLineIO
           a = new Account(code);
           a.setLabel(code);
         }
-        
+
         e.setCostAccount(a);
         e.setInvoice(rs.getString(16));
+
+        e.setGroup(rs.getInt(17));
 
         v.addElement(e);
       }
       rs.close();
-    } catch (Exception e) {
+    } catch (SQLException e) {
       GemLogger.logException(query, e);
     }
     return v;
   }
-  
+
   public static Vector<OrderLine> getBillingOrderLines(DataConnection dc) {
 //    String where = "oid IN (SELECT id_echeancier FROM " + InvoiceIO.JOIN_TABLE + ")";
     String where = "WHERE facture IS NOT NULL";

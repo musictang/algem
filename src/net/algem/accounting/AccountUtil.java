@@ -1,7 +1,7 @@
 /*
- * @(#)AccountUtil.java	2.8.n 25/09/13
+ * @(#)AccountUtil.java	2.8.t 10/05/14
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -36,7 +36,7 @@ import net.algem.util.DataConnection;
  * Utility class for orderline operations.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.n
+ * @version 2.8.t
  * @since 2.0r
  */
 public class AccountUtil {
@@ -116,6 +116,12 @@ public class AccountUtil {
     return e;
   }
 
+  public static OrderLine setGroupOrderLine(int group, PersonFile pf, DateFr date, Preference pref, double amount) {
+    OrderLine ol = setOrderLine(pf, date, pref, amount);
+    ol.setGroup(group);
+    return ol;
+  }
+
   public static int getMemberShips(int m, DataConnection dc) throws SQLException {
     return OrderLineIO.countMemberShip(m, dc);
   }
@@ -159,9 +165,9 @@ public class AccountUtil {
     }
     return p;
   }
-  
+
   public static OrderLine createPersonalEntry(OrderLine ol, DataConnection dc) throws SQLException {
-    
+
     ol.setTransfered(false);
     ol.setModeOfPayment(ModeOfPayment.FAC.toString());
     OrderLineIO.insert(ol, dc);
@@ -182,7 +188,7 @@ public class AccountUtil {
 
   /**
    * Specifies if the account {@code c} is a personal account.
-   * 
+   *
    * Personal account begins by digit {@link AccountUtil#PERSONAL_ACCOUNT_FIRST_DIGIT}.
    * @param c account
    * @return true if personal account

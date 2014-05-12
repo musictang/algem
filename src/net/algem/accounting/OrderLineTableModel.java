@@ -1,7 +1,7 @@
 /*
- * @(#)OrderLineTableModel.java	2.7.a 05/12/12
+ * @(#)OrderLineTableModel.java	2.8.t 10/05/14
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -32,7 +32,7 @@ import net.algem.util.ui.TableElementModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.7.t
  * @since 1.0a 18/07/1999
  */
 public class OrderLineTableModel
@@ -47,10 +47,10 @@ public class OrderLineTableModel
 
   /**
    * Loads a list of orderlines.
-   * @param _orderLines
+   * @param lines
    */
-  public void load(Vector _orderLines) {
-    orderLines = _orderLines;
+  public void load(Vector<OrderLine> lines) {
+    orderLines = lines;
     fireTableDataChanged();
   }
 
@@ -67,7 +67,7 @@ public class OrderLineTableModel
   }
 
   public OrderLine getOrderLineAt(int line) {
-    return (OrderLine) orderLines.elementAt(line);
+    return orderLines.elementAt(line);
   }
 
   public void setOrderLineAt(OrderLine p, int line) {
@@ -108,7 +108,7 @@ public class OrderLineTableModel
 
   @Override
   public int getColumnCount() {
-    return 12;
+    return 13;
   }
 
   @Override
@@ -119,24 +119,26 @@ public class OrderLineTableModel
       case 1:
         return BundleUtil.getLabel("Member.label");
       case 2:
-        return BundleUtil.getLabel("Date.label");
+        return BundleUtil.getLabel("Group.label");
       case 3:
-        return BundleUtil.getLabel("Label.label");
+        return BundleUtil.getLabel("Date.label");
       case 4:
-        return BundleUtil.getLabel("Mode.of.payment.label").substring(0, 5);
+        return BundleUtil.getLabel("Label.label");
       case 5:
-        return BundleUtil.getLabel("Amount.label");
+        return BundleUtil.getLabel("Mode.of.payment.label").substring(0, 5);
       case 6:
-        return BundleUtil.getLabel("Document.number.label");
+        return BundleUtil.getLabel("Amount.label");
       case 7:
-        return BundleUtil.getLabel("Account.label");
+        return BundleUtil.getLabel("Document.number.label");
       case 8:
-        return BundleUtil.getLabel("Cost.account.label");
+        return BundleUtil.getLabel("Account.label");
       case 9:
-        return BundleUtil.getLabel("Payment.schedule.cashing.tip");
+        return BundleUtil.getLabel("Cost.account.label");
       case 10:
-        return BundleUtil.getLabel("Payment.schedule.transfer.tip").substring(0, 5);
+        return BundleUtil.getLabel("Payment.schedule.cashing.tip");
       case 11:
+        return BundleUtil.getLabel("Payment.schedule.transfer.tip").substring(0, 5);
+      case 12:
         return BundleUtil.getLabel("Invoice.label").substring(0, 5);
       /*case 11:
         return "Monnaie";*/
@@ -149,26 +151,27 @@ public class OrderLineTableModel
   @Override
   public Class getColumnClass(int col) {
     switch (col) {
-      case 0: //payeur
-      case 1: //adherent
-        return String.class;
-      case 2: //date
+      case 0: //payer
+      case 1: //member
+      case 2: //group
+        return Integer.class;
+      case 3: //date
         return DateFr.class;
-      case 3: //libelle
-      case 4: //reglement
+      case 4: //label
+      case 5: //mode of payment
         return String.class;
-      case 5: //montant
+      case 6: //amount
         return GemAmount.class;
-      case 6: //n.piece
+      case 7: //document number
         return String.class;
-      case 7: //compte
+      case 8: //account
         return Account.class;
-      case 8: // analytique
+      case 9: //cost account
         return Account.class;
-      case 9: //encaisse
-      case 10: //transfert
+      case 10: //payed
+      case 11: //transfered
         return Boolean.class;
-      case 11: //facture
+      case 12: //invoice
         return String.class;
       default:
         System.out.println("OrderLineTableModel#getColumnClass colonne " + col);
@@ -190,29 +193,31 @@ public class OrderLineTableModel
       case 1:
         return " " + e.getMember();
       case 2:
-        return e.getDate();
+        return e.getGroup();
       case 3:
-        return e.getLabel();
+        return e.getDate();
       case 4:
-        return e.getModeOfPayment();
+        return e.getLabel();
       case 5:
-        return new GemAmount(e.getAmount());
+        return e.getModeOfPayment();
       case 6:
-        return e.getDocument();
+        return new GemAmount(e.getAmount());
       case 7:
+        return e.getDocument();
+      case 8:
         if (e.getAccount() == null) {
           return null;
         }
         String l = e.getAccount().getLabel();
         return (l == null) ? e.getAccount().getNumber() : l;
-      case 8:
+      case 9:
         String a = e.getCostAccount().getLabel();
         return (a == null) ? e.getCostAccount().getNumber() : a;
-      case 9:
-        return e.isPaid();
       case 10:
-        return e.isTransfered();
+        return e.isPaid();
       case 11:
+        return e.isTransfered();
+      case 12:
         return e.getInvoice();
       default:
         System.out.println("TableEcheancier.getValueAt colonne " + col);

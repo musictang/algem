@@ -1,7 +1,7 @@
 /*
- * @(#)GroupFileEditor.java 2.7.k 04/03/13
- * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * @(#)GroupFileEditor.java 2.8.t 10/05/14
+ *
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.group;
 
@@ -43,12 +43,12 @@ import net.algem.util.ui.*;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.k
+ * @version 2.8.t
  */
 public class GroupFileEditor
         extends GemModule
 {
-  
+
   private Group group, oldGroup;
   private Vector<Musician> musicians;
   private GroupFileView groupFileTabView;
@@ -62,20 +62,20 @@ public class GroupFileEditor
   private GemButton btSchedulePayment;
   private GemButton btRehearsal;
   private JMenuBar mBar;
-  private JMenu mFichier, mOptions;
+  private JMenu mFile, mOptions;
   private JMenuItem miSuppression, miRehearsal, miPass;
   private GemGroupService service;
   private Schedule plan;
-  
+
   public GroupFileEditor() {
     super("Nouveau Groupe");
   }
-  
+
   public GroupFileEditor(Group g, String key, Schedule plan) {
     this(g, key);
     this.plan = plan;
   }
-  
+
   public GroupFileEditor(Group g, String key) {
     super(key);
     this.group = g;
@@ -92,11 +92,11 @@ public class GroupFileEditor
   public String getSID() {
     return String.valueOf(group.getId());
   }
-  
+
   public int getId() {
     return group.getId();
   }
-  
+
   @Override
   public void init() {
     service = new GemGroupService(dataCache.getDataConnection());
@@ -114,30 +114,30 @@ public class GroupFileEditor
       Vector<Musician> vm = service.getMusicians(group);
       oldGroup.setMusicians(vm);
       groupFileTabView.init(vm);
-      
+
     } catch (SQLException ex) {
       GemLogger.log(getClass().getName(), "init", ex);
     } catch (NoteException e) {
       GemLogger.log(getClass().getName(), "init", e);
     }
-    
+
     mBar = new JMenuBar();
-    mFichier = new JMenu(BundleUtil.getLabel("Menu.file.label"));
+    mFile = new JMenu(BundleUtil.getLabel("Menu.file.label"));
     miSuppression = getMenuItem("Action.suppress");
-    
-    mFichier.add(miSuppression);
-    
+
+    mFile.add(miSuppression);
+
     mOptions = new JMenu(BundleUtil.getLabel("Menu.options.label"));
     miPass = getMenuItem("Rehearsal.pass");
     mOptions.add(miPass);
-    
-    mBar.add(mFichier);
+
+    mBar.add(mFile);
     mBar.add(mOptions);
-    
+
     view.setJMenuBar(mBar);
-    
+
     mainToolbar = new GemToolBar(false);
-    
+
     btNote = mainToolbar.addIcon(BundleUtil.getLabel("Member.note.icon"), "Note", BundleUtil.getLabel("Group.note.tip"));
     btNote.addActionListener(this);
     btSchedulePayment = mainToolbar.addIcon(
@@ -147,7 +147,7 @@ public class GroupFileEditor
     btSchedulePayment.addActionListener(this);
     btRehearsal = mainToolbar.addIcon(BundleUtil.getLabel("Rehearsal.icon"), "Rehearsal", BundleUtil.getLabel("Rehearsal.tip"));
     btRehearsal.addActionListener(this);
-    
+
     closeToolbar = new GemToolBar(false);
     //closeToolbar.setAlignmentX(JToolBar.RIGHT_ALIGNMENT);
 
@@ -156,9 +156,9 @@ public class GroupFileEditor
     toolbar.add(mainToolbar);
     toolbar.add(Box.createHorizontalGlue());
     toolbar.add(closeToolbar);
-    
+
     groupFileTabView.add(toolbar, BorderLayout.NORTH);
-    
+
     btSave = closeToolbar.addIcon(
             BundleUtil.getLabel("Contact.save.icon"),
             GemCommand.SAVE_CMD,
@@ -167,13 +167,14 @@ public class GroupFileEditor
             BundleUtil.getLabel("Contact.close.icon"),
             GemCommand.CLOSE_CMD,
             BundleUtil.getLabel("Close.tip"));
-    
+
     btSave.addActionListener(this);
     btClose.addActionListener(this);
+
     loadPaymentSchedule();
     groupFileTabView.setSelectedTab(0);
   }
-  
+
   @Override
   public void actionPerformed(ActionEvent evt) {
     String arg = evt.getActionCommand();
@@ -221,17 +222,17 @@ public class GroupFileEditor
       deleteGroup();
     }
   }
-  
+
   private void loadPaymentSchedule() {
     OrderLineTableModel tableModel = new OrderLineTableModel();
     tableModel.load(service.getSchedulePayment(group));
     GroupOrderLineEditor orderLineEditor = new GroupOrderLineEditor(desktop, tableModel);
     orderLineEditor.init();
-    
+
     groupFileTabView.addTab(orderLineEditor, BundleUtil.getLabel("Person.schedule.payment.tab.label"));
     btSchedulePayment.setEnabled(false);
   }
-  
+
   private void closeTab(Object source) {
     String classname = null;
     if (source instanceof String) {
@@ -239,7 +240,7 @@ public class GroupFileEditor
     } else {
       return;
     }
-    
+
     if (classname.equals(GroupOrderLineEditor.class.getSimpleName())) {
        btSchedulePayment.setEnabled(true);
     }
@@ -263,11 +264,11 @@ public class GroupFileEditor
       view.close();
     } catch (GemCloseVetoException ex) {
     }
-    
+
     desktop.removeGemEventListener(this);
     desktop.removeModule(this);
   }
-  
+
   private void create() throws SQLException {
     service.create(group);
     if (musicians != null) {
@@ -283,7 +284,7 @@ public class GroupFileEditor
    * Updates group.
    */
   private void update() throws GroupException, SQLException {
-    
+
     service.update(oldGroup, group);
     if (musicians != null) {
       service.update(group.getId(), musicians, oldGroup.getMusicians());
@@ -297,7 +298,7 @@ public class GroupFileEditor
    * Only if modification. Idem for musicians.
    */
   private void save() {
-    
+
     if (service == null) {
       service = new GemGroupService(dataCache.getDataConnection());
     }
@@ -314,7 +315,7 @@ public class GroupFileEditor
           desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));
         }
       }
-      
+
     } catch (GroupException ex) {
       MessagePopup.error(view, ex.getMessage());
       GemLogger.logException(ex);
@@ -322,7 +323,7 @@ public class GroupFileEditor
       MessagePopup.error(view, sqe.getMessage());
       GemLogger.logException(sqe);
     }
-    
+
   }
 
   /**
@@ -333,7 +334,7 @@ public class GroupFileEditor
   private boolean hasChanged() {
     group = groupFileTabView.getGroup();
     musicians = groupFileTabView.getMusicians();
-    
+
     return !oldGroup.equiv(group)
             || musicians != null
             || !Contact.sitesEqual(group.getSites(), oldGroup.getSites());

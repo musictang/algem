@@ -1,7 +1,7 @@
 /*
- * @(#)OrderLineEditor.java	2.8.n 25/09/13
- * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * @(#)OrderLineEditor.java	2.8.t 10/05/14
+ *
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,13 +16,14 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.accounting;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -48,7 +49,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.n
+ * @version 2.8.t
  * @since 1.0a 07/07/1999
  */
 public class OrderLineEditor
@@ -79,9 +80,9 @@ public class OrderLineEditor
     super(_desktop);
     tableModel = _tableModel;
     table = new OrderLineTableView(tableModel, this);
-    
+
   }
-  
+
   public void init(){
     btQuotation = new GemButton(BundleUtil.getLabel("Quotation.label"));
     btQuotation.addActionListener(this);
@@ -138,12 +139,12 @@ public class OrderLineEditor
     payerName.setText(s);
   }
 
-  public void setPayerId(int _id) {
-    payerId = _id;
+  public void setPayerId(int id) {
+    payerId = id;
   }
 
-  public void setMemberId(int _id) {
-    memberId = _id;
+  public void setMemberId(int id) {
+    memberId = id;
   }
 
   @Override
@@ -228,7 +229,7 @@ public class OrderLineEditor
         }
       }
 
-    } catch (Exception ex) {
+    } catch (SQLException ex) {
       GemLogger.logException(PAYMENT_DELETE_EXCEPTION, ex, this);
     }
   }
@@ -367,7 +368,7 @@ public class OrderLineEditor
 
   /**
    * Creates an invoice from a selection of order lines.
-   * 
+   *
    * Several orderlines may be selected but at least one of them must have a valid
    * mode of payment (generally FAC) and none of them is already associated
    * with an invoice.
@@ -420,15 +421,11 @@ public class OrderLineEditor
     int[] rows = table.getSelectedRows();
     invoiceSelection = new ArrayList<OrderLine>();
 
-    boolean fact = false;
-    boolean other = false;
+    boolean invoice = false;
+
     for (int i = 0; i < rows.length; i++) {
       OrderLine e = table.getElementAt(rows[i]);
-      if (ModeOfPayment.FAC.toString().equals(e.getModeOfPayment())) {
-        fact = true;
-      } else {
-        other = true;
-      }
+      invoice = ModeOfPayment.FAC.toString().equals(e.getModeOfPayment());
       // la création de facture n'est possible que si l'échéance ne comporte encore aucun numéro de facture
       if (e.getInvoice() == null || e.getInvoice().isEmpty()) {
         invoiceSelection.add(e);
@@ -439,7 +436,7 @@ public class OrderLineEditor
 
     }
     // paiement seulement //OU paiement mais pas les deux
-    if (!(fact)) {
+    if (!invoice) {
       if (actionListener != null) {
         actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, FileView.ESTIMATE_TAB_TITLE));
       }

@@ -1,7 +1,7 @@
 /*
- * @(#)OrderLine.java	2.8.n 25/09/13
- * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * @(#)OrderLine.java	2.8.t 10/05/14
+ *
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.accounting;
 
@@ -31,7 +31,7 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.n
+ * @version 2.8.t
  *
  */
 public class OrderLine
@@ -57,6 +57,7 @@ public class OrderLine
   private String currency = "E";
   /** Numéro de facture */
   private String invoice;
+  private int group;
 
   public OrderLine() {
   }
@@ -254,6 +255,14 @@ public class OrderLine
 
   public void setPaid(boolean i) {
     paid = i;
+  }
+
+  public int getGroup() {
+    return group;
+  }
+
+  public void setGroup(int group) {
+    this.group = group;
   }
 
   public String getCurrency() {

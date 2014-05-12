@@ -1,7 +1,7 @@
 /*
- * @(#)OrderLineTableView.java 2.8.j /07/13
+ * @(#)OrderLineTableView.java 2.8.t 10/05/14
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -44,7 +44,7 @@ import net.algem.util.model.Model;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.j
+ * @version 2.8.t
  * @since 1.0a 07/07/1999
  *
  */
@@ -60,6 +60,7 @@ public class OrderLineTableView
   private String[] columnToolTips = {
     BundleUtil.getLabel("Payment.schedule.payer.tip"),
     BundleUtil.getLabel("Payment.schedule.member.tip"),
+    BundleUtil.getLabel("Group.label"),
     BundleUtil.getLabel("Payment.schedule.date.tip"),
     BundleUtil.getLabel("Payment.schedule.label.tip"),
     BundleUtil.getLabel("Payment.schedule.mode.of.payment.tip"),
@@ -110,42 +111,43 @@ public class OrderLineTableView
 
       @Override
       public boolean include(Entry<? extends Object, ? extends Object> entry) {
-        DateFr date = (DateFr) entry.getValue(2);
+        DateFr date = (DateFr) entry.getValue(3);
         return date.after(begin) && date.before(end);
       }
     };
-    
+
     unpaidFilter = new RowFilter<Object, Object>()
     {
 
       @Override
       public boolean include(Entry<? extends Object, ? extends Object> entry) {
-        boolean paid = (Boolean) entry.getValue(9);
+        boolean paid = (Boolean) entry.getValue(10);
         return !paid;
       }
     };
     table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 
     TableColumnModel cm = table.getColumnModel();
-    cm.getColumn(0).setPreferredWidth(50);//payeur
-    cm.getColumn(1).setPreferredWidth(50);//adherent
-    cm.getColumn(2).setPreferredWidth(90);//date
-    cm.getColumn(3).setPreferredWidth(160);//libelle
-    cm.getColumn(4).setPreferredWidth(35);//reglement
-    cm.getColumn(5).setPreferredWidth(70);//montant
-    cm.getColumn(6).setPreferredWidth(70);//piece
-    cm.getColumn(7).setPreferredWidth(160);//compte
-    cm.getColumn(8).setPreferredWidth(140);//analytique
-    cm.getColumn(9).setPreferredWidth(35);//encaissé
-    cm.getColumn(10).setPreferredWidth(35);//transféré
-    cm.getColumn(11).setPreferredWidth(35);//facture
+    cm.getColumn(0).setPreferredWidth(50);//payer
+    cm.getColumn(1).setPreferredWidth(50);//member
+    cm.getColumn(2).setPreferredWidth(30);//group
+    cm.getColumn(3).setPreferredWidth(85);//date
+    cm.getColumn(4).setPreferredWidth(160);//label
+    cm.getColumn(5).setPreferredWidth(30);//mode of payment
+    cm.getColumn(6).setPreferredWidth(70);//amount
+    cm.getColumn(7).setPreferredWidth(65);//document number
+    cm.getColumn(8).setPreferredWidth(160);//account
+    cm.getColumn(9).setPreferredWidth(140);//cost account
+    cm.getColumn(10).setPreferredWidth(30);//payed
+    cm.getColumn(11).setPreferredWidth(30);//transfered
+    cm.getColumn(12).setPreferredWidth(40);//invoice
     //cm.getColumn(11).setPreferredWidth(20);// suppression devise de la vue
     //cm.getColumn(12).setPreferredWidth(50);
 
     DefaultTableCellRenderer rd = new DefaultTableCellRenderer();
     rd.setHorizontalAlignment(SwingConstants.RIGHT);
     // alignement à droite de la colonne Montant
-    table.getColumnModel().getColumn(5).setCellRenderer(rd);
+    table.getColumnModel().getColumn(6).setCellRenderer(rd);
     //tableVue.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     // la sélection multiple permet le copier-coller d'un ensemble de lignes vers une autre application
     table.getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -165,7 +167,7 @@ public class OrderLineTableView
         return c;
       }
     });
-    
+
     panel = new JScrollPane(table);
 
     setLayout(new BorderLayout());
@@ -234,8 +236,8 @@ public class OrderLineTableView
     {
       @Override
       public boolean include(Entry<? extends Object, ? extends Object> entry) {
-        DateFr date = (DateFr) entry.getValue(2);
-        String account = (String) entry.getValue(7);
+        DateFr date = (DateFr) entry.getValue(3);
+        String account = (String) entry.getValue(8);
         return account.equals(a) && date.after(begin) && date.before(end);
       }
     };
@@ -275,11 +277,11 @@ public class OrderLineTableView
     this.end = end;
     sorter.setRowFilter(memberShipFilter);
   }
-  
+
    public void filterByUnpaid() {
     sorter.setRowFilter(unpaidFilter);
   }
-  
+
 
   /**
    * Activates a listener for rows selection.
