@@ -1,7 +1,7 @@
 /*
-* @(#)OrderLineDlg.java	2.8.a 01/04/13
+* @(#)OrderLineDlg.java	2.8.t 13/05/14
 *
-* Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+* Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
 *
 * This file is part of Algem.
 * Algem is free software: you can redistribute it and/or modify it
@@ -49,344 +49,387 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @author <a href="mailto:damien.loustau@gmail.com">Damien Loustau</a>
+ * @version 2.8.t
  * @since 1.0a 07/07/1999
  */
 public class OrderLineDlg
 extends JDialog
 implements ActionListener, TableModelListener {
+  
+  private Frame parent;
+  private DataConnection dc;
+  private DataCache dataCache;
+  private OrderLineTableModel tableModel;
+  private DateFrField dateStart;
+  private DateFrField dateEnd;
+  private OrderLineTableView tableView;
+  private GemButton btLoad;
+  private GemButton btCurrentMonth;
+  private GemButton btPrint;
+  private GemButton btCreate;
+  private GemButton btSuppress;
+  private GemButton btModify;
+  private GemPanel boutons;
+  private JLabel totalLabel;
+  private GemField totalField;
+  private NumberFormat nf = NumberFormat.getInstance(Locale.FRANCE);
+  private JPopupMenu popup;
+  private JMenuItem miTransfer;
+  private JMenuItem miCashing;
+  private JCheckBoxMenuItem checkPayment;
+  private JMenu menutop;
+  
+  /**
+   *
+   * @param desktop GemDesktop instance
+   * @param tableModel
+   */
+  public OrderLineDlg(GemDesktop desktop, OrderLineTableModel tableModel) {
+    super(desktop.getFrame(), BundleUtil.getLabel("Action.schedule.payment.label"));
+    parent = desktop.getFrame();
+    this.dataCache = desktop.getDataCache();
+    this.dc = desktop.getDataCache().getDataConnection();
+    this.tableModel = tableModel;
+  }
+  
+  public void init() {
     
-    private Frame parent;
-    private DataConnection dc;
-    private DataCache dataCache;
-    private OrderLineTableModel tableModel;
-    private DateFrField dateStart;
-    private DateFrField dateEnd;
-    private OrderLineTableView tableView;
-    private GemButton btLoad;
-    private GemButton btCurrentMonth;
-    private GemButton btPrint;
-    private GemButton btCreate;
-    private GemButton btSuppress;
-    private GemButton btModify;
-    private GemPanel boutons;
-    private JLabel totalLabel;
-    private GemField totalField;
-    private NumberFormat nf = NumberFormat.getInstance(Locale.FRANCE);
-    private JPopupMenu popup;
-    private JMenuItem miTransfer;
-    private JMenuItem miCashing;
+    tableView = new OrderLineTableView(tableModel, this);
+    JMenuBar menubar = new JMenuBar();
+    //Menu Option qui apparâitra en TOP Screen, fait partie de la barre Menu
+    menutop = new JMenu("Options");
+    menubar.add(menutop);
+    if (!dataCache.authorize("Standing.order.export.auth")) {
+      //Si on a pas les droits, on ne peut pas cocher l'option Encaissements multiples
+      checkPayment.setEnabled(false);
+    }
+    menutop.add(checkPayment = new JCheckBoxMenuItem(BundleUtil.getLabel("Payment.multiple.modification.auth")));
+    checkPayment.addActionListener(this);
+    popup = new JPopupMenu();
+    popup.add(miTransfer = new JMenuItem(BundleUtil.getLabel("Transfer.cancel.label")));
+    //miCahing correspond à l'option Encaissement multiple qui apparaît au clic droit
+    popup.add(miCashing = new JMenuItem (BundleUtil.getLabel("Cashing.multiple.action.label")));
+    popup.getComponent(1).setEnabled(false);
+    //Par défaut, on ne met pas de listener sur ce clic, on ne met le listener que si on a coché dans Option l'encaissement multiple
+    //miCashing.addActionListener(this);
+    miTransfer.addActionListener(this);
+    tableView.addPopupMenuListener(popup);
     
-    public OrderLineDlg(GemDesktop desktop, OrderLineTableModel tableModel) {
-        super(desktop.getFrame(), BundleUtil.getLabel("Action.schedule.payment.label"));
-        parent = desktop.getFrame();
-        this.dataCache = desktop.getDataCache();
-        this.dc = desktop.getDataCache().getDataConnection();
-        this.tableModel = tableModel;
+    btPrint = new GemButton(BundleUtil.getLabel("Action.print.label"));
+    btPrint.addActionListener(this);
+    btCreate = new GemButton(BundleUtil.getLabel("Action.add.label"));
+    btCreate.addActionListener(this);
+    btModify = new GemButton(BundleUtil.getLabel("Action.modify.label"));
+    btModify.addActionListener(this);
+    btSuppress = new GemButton(BundleUtil.getLabel("Action.suppress.label"));
+    btSuppress.addActionListener(this);
+    
+    btLoad = new GemButton(BundleUtil.getLabel("Action.load.label"));
+    btLoad.addActionListener(this);
+    btCurrentMonth = new GemButton(BundleUtil.getLabel("Action.current.month.label"));
+    btCurrentMonth.addActionListener(this);
+    dateStart = new DateFrField(new Date());
+    dateEnd = new DateFrField(new Date());
+    GemPanel header = new GemPanel();
+    header.add(new JLabel(BundleUtil.getLabel("Date.From.label")));
+    header.add(dateStart);
+    header.add(new JLabel(BundleUtil.getLabel("Date.To.label")));
+    header.add(dateEnd);
+    header.add(btLoad);
+    header.add(btCurrentMonth);
+    
+    boutons = new GemPanel(new GridLayout(1, 4));
+    boutons.add(btPrint);
+    boutons.add(btModify);
+    boutons.add(btCreate);
+    boutons.add(btSuppress);
+    
+    GemPanel top = new GemPanel(new BorderLayout());
+    top.add(menubar, BorderLayout.NORTH);
+    top.add(header, BorderLayout.SOUTH);
+    
+    GemPanel bottom = new GemPanel(new BorderLayout());
+    
+    GemPanel pTotal = new GemPanel();
+    totalLabel = new JLabel(BundleUtil.getLabel("Total.label"));
+    totalField = new GemField(10);
+    totalField.setEditable(false);
+    tableView.addListSelectionListener(totalField);
+    
+    pTotal.add(totalLabel);
+    pTotal.add(totalField);
+    
+    bottom.add(pTotal, BorderLayout.NORTH);
+    bottom.add(boutons, BorderLayout.CENTER);
+    
+    add(top, BorderLayout.NORTH);
+    add(tableView, BorderLayout.CENTER);
+    add(bottom, BorderLayout.SOUTH);
+    
+    setSize(GemModule.XL_SIZE);
+    setLocation(70, 30);
+  }
+  
+  @Override
+  public void tableChanged(TableModelEvent evt) {
+  }
+  
+  @Override
+  public void actionPerformed(ActionEvent evt) {
+    Object src = evt.getSource();
+    
+    if (src == btPrint) {
+      try {
+        // printing of all orderlines, regardless of selection
+        AccountUtil.print(tableView.getTable());
+      } catch (PrinterException ex) {
+        System.err.format("Cannot print %s%n", ex.getMessage());
+      }
+    } else if (src == checkPayment) {
+      removeMultipleCashingOption();
+    } else if (src == btCreate) {
+      dialogCreation();
+    } else if (src == btModify) {
+      dialogModification();
+    } else if (src == btSuppress) {
+      dialogSuppression();
+    } else if (src == miTransfer && dataCache.authorize("Accounting.transfer")) {
+      cancelTransfer();
+    } else if (src == miCashing && dataCache.authorize("Accouting.transfert")){
+      multipleCashing(); // encaissement multiple
+    } else if (src == btLoad) {
+      load();
+    } else if (src == btCurrentMonth) {
+      loadCurrentMonth();
+    }
+  }
+  
+  public void load() {
+    totalField.setText(null);
+    DateFr debut = dateStart.getDateFr();
+    DateFr fin = dateEnd.getDateFr();
+    String query = "WHERE echeance >= '" + debut + "' AND echeance <= '" + fin + "'";
+    tableModel.load(OrderLineIO.find(query, dc));
+  }
+  
+  public void dialogSuppression() {
+    int n = tableView.getSelectedRow();
+    if (n < 0) {
+      JOptionPane.showMessageDialog(this,
+              MessageUtil.getMessage("no.payment.selected"),
+              MessageUtil.getMessage("payment.delete.exception"),
+              JOptionPane.ERROR_MESSAGE);
+      return;
+    }
+    OrderLine e = tableView.getElementAt(n);
+    
+    if (e.isTransfered()) {
+      JOptionPane.showMessageDialog(this,
+              MessageUtil.getMessage("payment.transfer.warning"),
+              MessageUtil.getMessage("delete.exception.info"),
+              JOptionPane.ERROR_MESSAGE);
+      return;
+    }
+    GemAmount amount = new GemAmount(e.getAmount());
+    if (!MessagePopup.confirm(this,
+            MessageUtil.getMessage("payment.delete.confirmation",
+                    new Object[]{amount, e.getCurrencyCode(), e.getDate()}),
+            MessageUtil.getMessage("payment.delete.label"))) {
+      return;
     }
     
-    public void init() {
-        
-        tableView = new OrderLineTableView(tableModel, this);
-        JMenuBar menubar = new JMenuBar();
-        JMenu menutop = new JMenu("Options");
-        menubar.add(menutop);
-        JCheckBoxMenuItem checkPayment = new JCheckBoxMenuItem(BundleUtil.getLabel("Payment.multiple.modification.auth"));
-        if (!dataCache.authorize("Standing.order.export.auth")) {
-            checkPayment.setEnabled(false);
-        }
-        menutop.add(checkPayment);
-        popup = new JPopupMenu();
-        popup.add(miTransfer = new JMenuItem(BundleUtil.getLabel("Transfer.cancel.label")));
-        popup.add(miCashing = new JMenuItem (BundleUtil.getLabel("Cashing.multiple.action.label")));
-        miCashing.addActionListener(this);
-        miTransfer.addActionListener(this);
-        tableView.addPopupMenuListener(popup);
-        
-        btPrint = new GemButton(BundleUtil.getLabel("Action.print.label"));
-        btPrint.addActionListener(this);
-        btCreate = new GemButton(BundleUtil.getLabel("Action.add.label"));
-        btCreate.addActionListener(this);
-        btModify = new GemButton(BundleUtil.getLabel("Action.modify.label"));
-        btModify.addActionListener(this);
-        btSuppress = new GemButton(BundleUtil.getLabel("Action.suppress.label"));
-        btSuppress.addActionListener(this);
-        
-        btLoad = new GemButton(BundleUtil.getLabel("Action.load.label"));
-        btLoad.addActionListener(this);
-        btCurrentMonth = new GemButton(BundleUtil.getLabel("Action.current.month.label"));
-        btCurrentMonth.addActionListener(this);
-        dateStart = new DateFrField(new Date());
-        dateEnd = new DateFrField(new Date());
-        GemPanel header = new GemPanel();
-        header.add(new JLabel(BundleUtil.getLabel("Date.From.label")));
-        header.add(dateStart);
-        header.add(new JLabel(BundleUtil.getLabel("Date.To.label")));
-        header.add(dateEnd);
-        header.add(btLoad);
-        header.add(btCurrentMonth);
-        
-        boutons = new GemPanel(new GridLayout(1, 4));
-        boutons.add(btPrint);
-        boutons.add(btModify);
-        boutons.add(btCreate);
-        boutons.add(btSuppress);
-        
-        GemPanel top = new GemPanel(new BorderLayout());
-        top.add(menubar, BorderLayout.NORTH);
-        top.add(header, BorderLayout.SOUTH);
-        
-        GemPanel bottom = new GemPanel(new BorderLayout());
-        
-        GemPanel pTotal = new GemPanel();
-        totalLabel = new JLabel(BundleUtil.getLabel("Total.label"));
-        totalField = new GemField(10);
-        totalField.setEditable(false);
-        tableView.addListSelectionListener(totalField);
-        
-        pTotal.add(totalLabel);
-        pTotal.add(totalField);
-        
-        bottom.add(pTotal, BorderLayout.NORTH);
-        bottom.add(boutons, BorderLayout.CENTER);
-        
-        add(top, BorderLayout.NORTH);
-        add(tableView, BorderLayout.CENTER);
-        add(bottom, BorderLayout.SOUTH);
-        
-        setSize(GemModule.XL_SIZE);
-        setLocation(70, 30);
+    try {
+      OrderLineIO.delete(e, dc);
+      tableView.removeElementAt(n);
+    } catch (Exception ex) {
+      GemLogger.logException(MessageUtil.getMessage("delete.error"), ex, this);
     }
-    
-    @Override
-    public void tableChanged(TableModelEvent evt) {
+  }
+  
+  /**
+   * Mark the selected rows as not transfered. Attribute transfer in database is
+   * also updated.
+   */
+  private void cancelTransfer() {
+    if (!MessagePopup.confirm(parent, MessageUtil.getMessage("payment.update.confirmation"))) {
+      return;
     }
-    
-    @Override
-    public void actionPerformed(ActionEvent evt) {
-        Object src = evt.getSource();
-        
-        if (src == btPrint) {
-            try {
-                // printing of all orderlines, regardless of selection
-                AccountUtil.print(tableView.getTable());
-            } catch (PrinterException ex) {
-                System.err.format("Cannot print %s%n", ex.getMessage());
-            }
-        } else if (src == btCreate) {
-            dialogCreation();
-        } else if (src == btModify) {
-            dialogModification();
-        } else if (src == btSuppress) {
-            dialogSuppression();
-        } else if (src == miTransfer && dataCache.authorize("Accounting.transfer")) {
-            cancelTransfer();
-        } else if (src == miCashing && dataCache.authorize("Accouting.transfert")){
-            multipleCashing();
-        } else if (src == btLoad) {
-            load();
-        } else if (src == btCurrentMonth) {
-            loadCurrentMonth();
+    int[] rows = tableView.getSelectedRows();
+    try {
+      for (int i = 0; i < rows.length; i++) {
+        OrderLine ol = tableView.getElementAt(rows[i]);
+        if (ol.isTransfered()) {
+          ol.setTransfered(false);
+          OrderLineIO.transfer(ol, dc);
+          tableView.setElementAt(ol, rows[i]);
         }
+      }
+    } catch (SQLException e) {
+      GemLogger.logException(e);
     }
-    
-    public void load() {
-        totalField.setText(null);
-        DateFr debut = dateStart.getDateFr();
-        DateFr fin = dateEnd.getDateFr();
-        String query = "WHERE echeance >= '" + debut + "' AND echeance <= '" + fin + "'";
-        tableModel.load(OrderLineIO.find(query, dc));
+  }
+  
+  /**
+   * Update selected rows to "paid".
+   */
+  private void multipleCashing() {
+    if (!MessagePopup.confirm(parent, MessageUtil.getMessage("payment.multiple.update.confirmation"))) {
+      //Si l'utilisateur clique sur non dans la boîte de dialogue, on sort
+      return;
     }
-    
-    public void dialogSuppression() {
-        int n = tableView.getSelectedRow();
-        if (n < 0) {
-            JOptionPane.showMessageDialog(this,
-                    MessageUtil.getMessage("no.payment.selected"),
-                    MessageUtil.getMessage("payment.delete.exception"),
-                    JOptionPane.ERROR_MESSAGE);
-            return;
+    int[] rows = tableView.getSelectedRows();
+    try {
+      //pour toutes les lignes sélectionnées, si l'encaissement n'est pas encore coché, on le coche, et on fait la MAJ dans la BDD
+      for (int i = 0; i < rows.length; i++) {
+        OrderLine ol = tableView.getElementAt(rows[i]);
+        if (!ol.isPaid()) {
+          ol.setPaid(true);
+          OrderLineIO.paid(ol, dc);
+          tableView.setElementAt(ol, rows[i]);
         }
-        OrderLine e = tableView.getElementAt(n);
-        
-        if (e.isTransfered()) {
-            JOptionPane.showMessageDialog(this,
-                    MessageUtil.getMessage("payment.transfer.warning"),
-                    MessageUtil.getMessage("delete.exception.info"),
-                    JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        GemAmount amount = new GemAmount(e.getAmount());
-        if (!MessagePopup.confirm(this,
-                MessageUtil.getMessage("payment.delete.confirmation",
-                        new Object[]{amount, e.getCurrencyCode(), e.getDate()}),
-                MessageUtil.getMessage("payment.delete.label"))) {
-            return;
-        }
-        
-        try {
-            OrderLineIO.delete(e, dc);
-            tableView.removeElementAt(n);
-        } catch (Exception ex) {
-            GemLogger.logException(MessageUtil.getMessage("delete.error"), ex, this);
-        }
+      }
+    } catch (SQLException e) {
+      GemLogger.logException(e);
     }
-    
-    /**
-     * Mark the selected rows as not transfered. Attribute transfer in database is
-     * also updated.
-     */
-    private void cancelTransfer() {
-        if (!MessagePopup.confirm(parent, MessageUtil.getMessage("payment.update.confirmation"))) {
-            return;
+  }
+  
+  
+  
+  public void dialogModification() {
+    int[] rows = tableView.getSelectedRows();
+    if (rows.length > 1) {
+      modify(rows);
+    } else {
+      int n = tableView.getSelectedRow();
+      if (n < 0) {
+        JOptionPane.showMessageDialog(this,
+                MessageUtil.getMessage("no.payment.selected"),
+                MessageUtil.getMessage("update.error"),
+                JOptionPane.ERROR_MESSAGE);
+        return;
+      }
+      OrderLine e = tableView.getElementAt(n);
+      try {
+        OrderLineView dlg = new OrderLineView(parent, BundleUtil.getLabel("Order.line.modification"), dataCache);
+        dlg.setOrderLine(e);
+        dlg.setIdEditable(true);
+        dlg.setVisible(true);
+        if (dlg.isValidation()) {
+          
+          e = dlg.getOrderLine();
+          OrderLineIO.update(e, dc);
+          tableView.setElementAt(e, n);
+          
         }
-        int[] rows = tableView.getSelectedRows();
-        try {
-            for (int i = 0; i < rows.length; i++) {
-                OrderLine ol = tableView.getElementAt(rows[i]);
-                if (ol.isTransfered()) {
-                    ol.setTransfered(false);
-                    OrderLineIO.transfer(ol, dc);
-                    tableView.setElementAt(ol, rows[i]);
-                }
-            }
-        } catch (SQLException e) {
-            GemLogger.logException(e);
-        }
+        dlg.dispose();
+      } catch (Exception ex) {
+        GemLogger.logException("modification échéance", ex, this);
+      }
+      
     }
-    
-    private void multipleCashing() {
-        int[] rows = tableView.getSelectedRows();
-        try {
-            for (int i = 0; i < rows.length; i++) {
-                OrderLine ol = tableView.getElementAt(rows[i]);
-                ol.setPaid(true);//Remplacer Transfered par Encaisser
-                OrderLineIO.transfer(ol, dc);
-                tableView.setElementAt(ol, rows[i]);
-                
-            }
-        } catch (SQLException e) {
-            GemLogger.logException(e);
+  }
+  
+  /**
+   * One shot modification of several order lines. Modification is active only
+   * for date and document number.
+   *
+   * @param rows
+   * @since 2.2.p
+   */
+  private void modify(int[] rows) {
+    OrderLine e = tableView.getElementAt(rows[0]);
+    try {
+      OrderLineView dlg = new OrderLineView(parent, BundleUtil.getLabel("Order.line.modification"), dataCache);
+      dlg.setOrderLine(e);
+      dlg.setEditable(false);
+      dlg.setVisible(true);
+      if (dlg.isValidation()) {
+        dc.setAutoCommit(false);
+        OrderLine u = dlg.getOrderLine();
+        for (int i = 0; i < rows.length; i++) {
+          OrderLine r = tableView.getElementAt(rows[i]);
+          r.setDate(u.getDate());
+          r.setDocument(u.getDocument());
+          OrderLineIO.update(r, dc);
+          tableView.setElementAt(r, rows[i]);
         }
+      }
+      dc.commit();
+      dlg.dispose();
+    } catch (SQLException ex) {
+      dc.rollback();
+      GemLogger.logException(MessageUtil.getMessage("update.error"), ex, this);
+    } catch (ParseException pe) {
+      System.err.println(pe.getMessage());
+    } finally {
+      dc.setAutoCommit(true);
     }
-    
-    public void dialogModification() {
-        int[] rows = tableView.getSelectedRows();
-        if (rows.length > 1) {
-            modify(rows);
-        } else {
-            int n = tableView.getSelectedRow();
-            if (n < 0) {
-                JOptionPane.showMessageDialog(this,
-                        MessageUtil.getMessage("no.payment.selected"),
-                        MessageUtil.getMessage("update.error"),
-                        JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            OrderLine e = tableView.getElementAt(n);
-            try {
-                OrderLineView dlg = new OrderLineView(parent, BundleUtil.getLabel("Order.line.modification"), dataCache);
-                dlg.setOrderLine(e);
-                dlg.setIdEditable(true);
-                dlg.setVisible(true);
-                if (dlg.isValidation()) {
-                    
-                    e = dlg.getOrderLine();
-                    OrderLineIO.update(e, dc);
-                    tableView.setElementAt(e, n);
-                    
-                }
-                dlg.dispose();
-            } catch (Exception ex) {
-                GemLogger.logException("modification échéance", ex, this);
-            }
-            
+  }
+  
+  /**
+   * Activation / Desactivation for the option "Encaissement Multiple"
+   * On vérifie, dans le menu option, si la ligne encaissement multiple (checkPayment) est cochée
+   * Si c'est le cas, on ajouter un listener sur le menu dans le clic droit "encaissement multiple" et on dégrise ce dernier
+   * Si ce n'est pas le cas, on enlève le listener et on grise l'option
+   */
+  public void removeMultipleCashingOption() {
+    if (checkPayment.getState()==true){
+      miCashing.addActionListener(this);
+      miCashing.setEnabled(true);
+    }
+    else {
+      miCashing.removeActionListener(this);
+      miCashing.setEnabled(false);
+    }
+  }
+  
+  public void dialogCreation() {
+    OrderLine e = null;
+    int n = tableView.getSelectedRow();
+    if (n >= 0) {
+      e = new OrderLine(tableView.getElementAt(n));
+    }
+    OrderLineView dlg = null;
+    try {
+      dlg = new OrderLineView(parent, MessageUtil.getMessage("payment.add.label"), dataCache);
+      if (e != null) {
+        dlg.setOrderLine(e);
+      }
+      dlg.setIdEditable(true);
+      dlg.setVisible(true);
+      if (dlg.isValidation()) {
+        e = dlg.getOrderLine();
+        OrderLine c = AccountUtil.createEntry(e, dc);
+        tableModel.addElement(e);
+        if (c != null) {
+          tableModel.addElement(c);
         }
+      }
+      
+    } catch (ParseException px) {
+      System.err.println(px.getMessage());
+    } catch (SQLException ex) {
+      GemLogger.logException(MessageUtil.getMessage("payment.add.exception"), ex, this);
+    } finally {
+      if (dlg != null) {
+        dlg.dispose();
+      }
     }
+  }
+  
+  /**
+   * Loading of the orderlines of current month.
+   */
+  private void loadCurrentMonth() {
     
-    /**
-     * One shot modification of several order lines. Modification is active only
-     * for date and document number.
-     *
-     * @param rows
-     * @since 2.2.p
-     */
-    private void modify(int[] rows) {
-        OrderLine e = tableView.getElementAt(rows[0]);
-        try {
-            OrderLineView dlg = new OrderLineView(parent, BundleUtil.getLabel("Order.line.modification"), dataCache);
-            dlg.setOrderLine(e);
-            dlg.setEditable(false);
-            dlg.setVisible(true);
-            if (dlg.isValidation()) {
-                dc.setAutoCommit(false);
-                OrderLine u = dlg.getOrderLine();
-                for (int i = 0; i < rows.length; i++) {
-                    OrderLine r = tableView.getElementAt(rows[i]);
-                    r.setDate(u.getDate());
-                    r.setDocument(u.getDocument());
-                    OrderLineIO.update(r, dc);
-                    tableView.setElementAt(r, rows[i]);
-                }
-            }
-            dc.commit();
-            dlg.dispose();
-        } catch (SQLException ex) {
-            dc.rollback();
-            GemLogger.logException(MessageUtil.getMessage("update.error"), ex, this);
-        } catch (ParseException pe) {
-            System.err.println(pe.getMessage());
-        } finally {
-            dc.setAutoCommit(true);
-        }
-    }
-    
-    public void dialogCreation() {
-        OrderLine e = null;
-        int n = tableView.getSelectedRow();
-        if (n >= 0) {
-            e = new OrderLine(tableView.getElementAt(n));
-        }
-        OrderLineView dlg = null;
-        try {
-            dlg = new OrderLineView(parent, MessageUtil.getMessage("payment.add.label"), dataCache);
-            if (e != null) {
-                dlg.setOrderLine(e);
-            }
-            dlg.setIdEditable(true);
-            dlg.setVisible(true);
-            if (dlg.isValidation()) {
-                e = dlg.getOrderLine();
-                OrderLine c = AccountUtil.createEntry(e, dc);
-                tableModel.addElement(e);
-                if (c != null) {
-                    tableModel.addElement(c);
-                }
-            }
-            
-        } catch (ParseException px) {
-            System.err.println(px.getMessage());
-        } catch (SQLException ex) {
-            GemLogger.logException(MessageUtil.getMessage("payment.add.exception"), ex, this);
-        } finally {
-            if (dlg != null) {
-                dlg.dispose();
-            }
-        }
-    }
-    
-    /**
-     * Loading of the orderlines of current month.
-     */
-    private void loadCurrentMonth() {
-        
-        DateFr b = new DateFr(new Date());
-        b.setDay(1);
-        dateStart.set(b);
-        b.incMonth(1);
-        b.decDay(1);
-        dateEnd.set(b);
-        load();
-    }
-    
+    DateFr b = new DateFr(new Date());
+    b.setDay(1);
+    dateStart.set(b);
+    b.incMonth(1);
+    b.decDay(1);
+    dateEnd.set(b);
+    load();
+  }
+  
 }

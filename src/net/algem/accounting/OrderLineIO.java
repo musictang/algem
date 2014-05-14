@@ -137,6 +137,22 @@ public class OrderLineIO
 
     dc.executeUpdate(query);
   }
+  
+  /**
+   * Update paid.
+   * Permet de mettre à jour, dans la bdd, la colonne 'paye' de la table echeancier 2
+   * Cette fonction est appelée quand on fait des encaissements multiples.
+   * @param e
+   * @param dc
+   * @throws SQLException 
+   */
+  public static void paid(OrderLine e, DataConnection dc) throws SQLException {
+    
+    String query = "UPDATE " + TABLE + " SET paye = '" + (e.isPaid() ? "t" : "f") + "'";
+    query += " WHERE oid = " +e.getId();
+    
+    dc.executeUpdate(query);
+  }
 
   public static void delete(OrderLine e, DataConnection dc) throws SQLException {
     String query = "DELETE FROM " + TABLE + " WHERE oid = " + e.getId();
