@@ -182,11 +182,9 @@ implements TableModelListener {
       
       @Override
       public void maybeShowPopup(MouseEvent e) {
-        int[] rows = table.getSelectedRows();
-        //t : booleen pour annuler tranfsert, p : booleen pour encaissement multiple
+        int[] rows = table.getSelectedRows();        
         boolean t = false;
         boolean p = false;
-        //On fait deux boucles for, la première pour voir si une des lignes selectionnées est déjà transférée, la seconde boucle pour voir si une des lignes selectionnées n'est pas déjà encaissée
         for (int i = 0; i < rows.length; i++) {
           if (getElementAt(rows[i]).isTransfered()) {
             t = true;
@@ -200,20 +198,15 @@ implements TableModelListener {
           }
         }
         if (t || p) {
-          //On passe par défaut les deux option en enabled
           popup.getComponent(0).setEnabled(true);
-          //Pour l'option encaissement multiple, on regarde d'abord s'il y a un listener dessus (ce qui correspond au fait que l'option encaissement multiple est cochée [voir OrderLineDlg.java : removeMultipleCashing()])
           ActionListener[] tabList = popup.getComponent(1).getListeners(ActionListener.class);
           if (tabList != null && tabList.length > 0){
             popup.getComponent(1).setEnabled(true);
           }
-          //on affiche le menu du clic droit
           super.maybeShowPopup(e);
-          //S'il n'y a pas de ligne qui sont déjà transférée, on n'affiche pas l'option annuler transfert
           if (!t) {
             popup.getComponent(0).setEnabled(false);
           }
-          //S'il n'y a pas de ligne qui ne sont pas déjà encaissée, on n'affiche pas l'option encaissement multiple
           if (!p) {
             if (popup.getComponent(1) != null){
               popup.getComponent(1).setEnabled(false);

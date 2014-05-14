@@ -97,21 +97,17 @@ implements ActionListener, TableModelListener {
     
     tableView = new OrderLineTableView(tableModel, this);
     JMenuBar menubar = new JMenuBar();
-    //Menu Option qui apparâitra en TOP Screen, fait partie de la barre Menu
     menutop = new JMenu("Options");
     menubar.add(menutop);
     if (!dataCache.authorize("Standing.order.export.auth")) {
-      //Si on a pas les droits, on ne peut pas cocher l'option Encaissements multiples
       checkPayment.setEnabled(false);
     }
     menutop.add(checkPayment = new JCheckBoxMenuItem(BundleUtil.getLabel("Payment.multiple.modification.auth")));
     checkPayment.addActionListener(this);
     popup = new JPopupMenu();
     popup.add(miTransfer = new JMenuItem(BundleUtil.getLabel("Transfer.cancel.label")));
-    //miCahing correspond à l'option Encaissement multiple qui apparaît au clic droit
     popup.add(miCashing = new JMenuItem (BundleUtil.getLabel("Cashing.multiple.action.label")));
     popup.getComponent(1).setEnabled(false);
-    //Par défaut, on ne met pas de listener sur ce clic, on ne met le listener que si on a coché dans Option l'encaissement multiple
     //miCashing.addActionListener(this);
     miTransfer.addActionListener(this);
     tableView.addPopupMenuListener(popup);
@@ -275,12 +271,10 @@ implements ActionListener, TableModelListener {
    */
   private void multipleCashing() {
     if (!MessagePopup.confirm(parent, MessageUtil.getMessage("payment.multiple.update.confirmation"))) {
-      //Si l'utilisateur clique sur non dans la boîte de dialogue, on sort
       return;
     }
     int[] rows = tableView.getSelectedRows();
     try {
-      //pour toutes les lignes sélectionnées, si l'encaissement n'est pas encore coché, on le coche, et on fait la MAJ dans la BDD
       for (int i = 0; i < rows.length; i++) {
         OrderLine ol = tableView.getElementAt(rows[i]);
         if (!ol.isPaid()) {
@@ -368,10 +362,8 @@ implements ActionListener, TableModelListener {
   }
   
   /**
-   * Activation / Desactivation for the option "Encaissement Multiple"
-   * On vérifie, dans le menu option, si la ligne encaissement multiple (checkPayment) est cochée
-   * Si c'est le cas, on ajouter un listener sur le menu dans le clic droit "encaissement multiple" et on dégrise ce dernier
-   * Si ce n'est pas le cas, on enlève le listener et on grise l'option
+   * Activation / Desactivation for the option "Encaissement Multiple".
+   * Check, in the option menu, if the line "encaissement multiple" (checkPayment" is checked
    */
   public void removeMultipleCashingOption() {
     if (checkPayment.getState()==true){
