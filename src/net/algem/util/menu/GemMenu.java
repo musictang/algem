@@ -1,7 +1,7 @@
 /*
- * @(#)GemMenu.java	2.6.a 03/08/12
+ * @(#)GemMenu.java	2.8.t 16/05/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -33,7 +33,7 @@ import net.algem.util.module.GemDesktop;
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.t
  * @since 1.0a 07/07/1999
  */
 public abstract class GemMenu
@@ -68,7 +68,7 @@ public abstract class GemMenu
    * 
    * @param item
    * @param key
-   * @return 
+   * @return a menu item
    */
   JMenuItem getItem(JMenuItem item, String key) {
     if (!dataCache.authorize(key)) {

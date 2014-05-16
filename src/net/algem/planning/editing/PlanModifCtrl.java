@@ -1,5 +1,5 @@
 /*
- * @(#)PlanModifCtrl.java	2.8.t 09/05/14
+ * @(#)PlanModifCtrl.java	2.8.t 16/05/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -731,7 +731,7 @@ public class PlanModifCtrl
    * @param a
    * @param plan
    * @param jour
-   * @return
+   * @return an action
    * @deprecated
    */
   private Action getActionFrom(Action a, ScheduleObject plan, int jour) {

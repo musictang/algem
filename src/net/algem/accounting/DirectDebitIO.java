@@ -1,5 +1,5 @@
 /*
- * @(#)DirectDebitIO.java 2.8.t 15/05/14
+ * @(#)DirectDebitIO.java 2.8.t 16/05/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -184,7 +184,7 @@ public class DirectDebitIO
    * @param school
    * @param datePrl
    * @param seqType
-   * @return
+   * @return a result set
    * @throws SQLException
    */
   ResultSet getDirectDebit(int school, DateFr datePrl, Enum seqType) throws SQLException {

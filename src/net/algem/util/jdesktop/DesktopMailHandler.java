@@ -1,5 +1,5 @@
 /*
- * @(#)DesktopMailHandler.java	2.8.s 17/02/14
+ * @(#)DesktopMailHandler.java	2.8.t 16/05/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -31,7 +31,7 @@ import net.algem.util.GemLogger;
  * Sending mail manager.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.s
+ * @version 2.8.t
  * @since 2.0k 11/01/10
  * @see java.awt.Desktop
  */
@@ -83,27 +83,27 @@ public class DesktopMailHandler
   /**
    * Gets a string including (if necessary) bcc options for mail agent editor.
    *
-   * @param _to
+   * @param to
    * @param bcc
    * @param app
-   * @return
+   * @return a string representing a list of arguments
    */
-  private String formatMailto(String _to, String bcc, String app) {
+  private String formatMailto(String to, String bcc, String app) {
     String args = null;
     if (app.equalsIgnoreCase("kmail")) {
       if (bcc != null && bcc.length() > 0) {
-        args = _to + " -b " + bcc;
+        args = to + " -b " + bcc;
       } else {
-        args = _to;
+        args = to;
       }
     } else if (app.equalsIgnoreCase("thunderbird") || app.endsWith("thunderbird")) {
       if (bcc != null && bcc.length() > 0) {
-        args = " -compose to='" + _to + "',bcc='" + bcc + "'";
+        args = " -compose to='" + to + "',bcc='" + bcc + "'";
       } else {
-        args = " -compose to='" + _to + "'";
+        args = " -compose to='" + to + "'";
       }
     } else {
-      args = "mailto:" + _to + "?bcc=" + bcc;
+      args = "mailto:" + to + "?bcc=" + bcc;
     }
     return args;
   }

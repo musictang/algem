@@ -1,7 +1,7 @@
 /*
- * @(#)FileUtil.java	2.8.r 01/01/14
+ * @(#)FileUtil.java	2.8.t 16/05/14
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -42,7 +42,7 @@ import net.algem.util.ui.MessagePopup;
  * Utility class for file operations.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.r
+ * @version 2.8.t
  * @since 2.0q
  */
 public class FileUtil
@@ -164,7 +164,7 @@ public class FileUtil
    *
    * @param mode selection mode
    * @param path default path
-   * @return
+   * @return a file chooser
    */
   private static JFileChooser getChooser(int mode, String path) {
     JFileChooser fc = new JFileChooser(path);

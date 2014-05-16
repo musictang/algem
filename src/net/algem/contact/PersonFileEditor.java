@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileEditor 2.8.s 18/02/14
+ * @(#)PersonFileEditor 2.8.t 16/05/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -64,7 +64,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.s
+ * @version 2.8.t
  */
 public class PersonFileEditor
         extends FileEditor
@@ -442,7 +442,7 @@ public class PersonFileEditor
   /**
    * Gets the payer id.
    *
-   * @return
+   * @return an integer representing the payer
    */
   private int getPayer() {
     int payer = 0;

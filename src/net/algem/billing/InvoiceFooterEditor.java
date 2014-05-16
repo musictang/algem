@@ -1,7 +1,7 @@
 /*
- * @(#)InvoiceFooterEditor.java 2.6.a 03/10/12
+ * @(#)InvoiceFooterEditor.java 2.8.t 16/05/14
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -39,7 +39,7 @@ import net.algem.util.ui.*;
  * Reading and updating of invoice footer.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.t
  * @since 2.3.a 27/02/12
  */
 public class InvoiceFooterEditor
@@ -138,7 +138,7 @@ public class InvoiceFooterEditor
 
   /**
    * Fills the text area.
-   * @return
+   * @return a string representing the invoice footer
    */
   private String read() {
     StringBuilder sb = new StringBuilder();
