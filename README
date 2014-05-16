@@ -1,4 +1,4 @@
-Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
 
 This file is part of Algem.
 Algem is free software: you can redistribute it and/or modify it
@@ -203,8 +203,6 @@ dans certains tests faisant appel aux DAO).
 EN PROJET
 =========
 - Remaniement des tarifs pour les modules de cours.
-
-- Gestion des stages (cours sur plusieurs jours d'affilée).
 
 - L'export comptable vers les logiciels CIEL et SAGE est opérationnel mais
 encore en phase de test.

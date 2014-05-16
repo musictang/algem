@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!-- $Header: /cvsroot/autodoc/autodoc/xml.tmpl,v 1.2 2006/05/16 19:01:27 rbt Exp $ -->
 
-<book id="database.mustang" xreflabel="mustang database schema"><title>mustang Model</title>
+<book id="database.algem" xreflabel="algem database schema"><title>algem Model</title>
 
 
 
@@ -288,236 +288,6 @@
 
         <variablelist>
           <title>Permissions on adresse</title>
-
-          <varlistentry>
-            <term>nobody</term>
-            <listitem>
-              <para>
-                <simplelist type="inline">
-
-                  <member>Select</member>
-
-
-                  <member>Insert</member>
-
-
-                  <member>Update</member>
-
-
-                  <member>Delete</member>
-
-
-
-                  <member>References</member>
-
-
-                  <member>Trigger</member>
-
-                </simplelist>
-              </para>
-            </listitem>
-          </varlistentry>
-
-        </variablelist>
-
-
-
-      </para>
-    </section>
-
-      <section id="public.table.afaire"
-               xreflabel="public.afaire">
-        <title id="public.table.afaire-title">
-         Table:
-         
-         <structname>afaire</structname>
-        </title>
- 
-
-
-        <para>
-          <variablelist>
-            <title>
-              Structure of <structname>afaire</structname>
-            </title>
-
-
-            <varlistentry>
-              <term><structfield>id</structfield></term>
-              <listitem><para>
-                <type>integer</type>
-
-
-
-
-
-
-
-              </para>
-
-            </listitem>
-          </varlistentry>
-
-            <varlistentry>
-              <term><structfield>idper</structfield></term>
-              <listitem><para>
-                <type>integer</type>
-
-
-
-
-
-
-
-              </para>
-
-            </listitem>
-          </varlistentry>
-
-            <varlistentry>
-              <term><structfield>priorite</structfield></term>
-              <listitem><para>
-                <type>smallint</type>
-
-
-
-
-
-
-
-              </para>
-
-            </listitem>
-          </varlistentry>
-
-            <varlistentry>
-              <term><structfield>categorie</structfield></term>
-              <listitem><para>
-                <type>smallint</type>
-
-
-
-
-
-
-
-              </para>
-
-            </listitem>
-          </varlistentry>
-
-            <varlistentry>
-              <term><structfield>texte</structfield></term>
-              <listitem><para>
-                <type>character varying(60)</type>
-
-
-
-
-
-
-
-              </para>
-
-            </listitem>
-          </varlistentry>
-
-            <varlistentry>
-              <term><structfield>echeance</structfield></term>
-              <listitem><para>
-                <type>date</type>
-
-
-
-
-
-
-
-              </para>
-
-            </listitem>
-          </varlistentry>
-
-            <varlistentry>
-              <term><structfield>fait</structfield></term>
-              <listitem><para>
-                <type>boolean</type>
-
-
-
-
-
-
-
-              </para>
-
-            </listitem>
-          </varlistentry>
-
-            <varlistentry>
-              <term><structfield>faitle</structfield></term>
-              <listitem><para>
-                <type>date</type>
-
-
-
-
-
-
-
-              </para>
-
-            </listitem>
-          </varlistentry>
-
-            <varlistentry>
-              <term><structfield>note</structfield></term>
-              <listitem><para>
-                <type>integer</type>
-
-
-
-
-
-
-
-              </para>
-
-            </listitem>
-          </varlistentry>
-
-        </variablelist>
-
-
-
-
-
-        <variablelist>
-          <title>Indexes on afaire</title>
-
-          <varlistentry>
-            <term>afx1</term>
-            <listitem><para>id</para></listitem>
-          </varlistentry>
-
-
-
-          <varlistentry>
-            <term>afx2</term>
-            <listitem><para>idper</para></listitem>
-          </varlistentry>
-
-        </variablelist>
-
-
-
-
-
-
-
-
-        <variablelist>
-          <title>Permissions on afaire</title>
 
           <varlistentry>
             <term>nobody</term>
@@ -1717,6 +1487,93 @@
           </varlistentry>
 
         </variablelist>
+
+
+
+      </para>
+    </section>
+
+      <section id="public.table.categorie-tech"
+               xreflabel="public.categorie_tech">
+        <title id="public.table.categorie-tech-title">
+         Table:
+         
+         <structname>categorie_tech</structname>
+        </title>
+ 
+
+
+        <para>
+          <variablelist>
+            <title>
+              Structure of <structname>categorie_tech</structname>
+            </title>
+
+
+            <varlistentry>
+              <term><structfield>id</structfield></term>
+              <listitem><para>
+                <type>serial</type>
+
+
+                <literal>PRIMARY KEY</literal>
+
+
+
+
+
+
+
+
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+            <varlistentry>
+              <term><structfield>nom</structfield></term>
+              <listitem><para>
+                <type>character varying(64)</type>
+
+
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+        </variablelist>
+
+
+
+
+
+
+
+        <itemizedlist>
+          <title>
+            Tables referencing technicien via Foreign Key Constraints
+          </title>
+
+          <listitem>
+            <para>
+              <xref linkend="public.table.technicien"/>
+            </para>
+          </listitem>
+
+        </itemizedlist>
+
+
+
 
 
 
@@ -4030,6 +3887,30 @@
             </listitem>
           </varlistentry>
 
+            <varlistentry>
+              <term><structfield>groupe</structfield></term>
+              <listitem><para>
+                <type>integer</type>
+
+
+
+
+
+
+
+
+
+
+
+
+                <literal>REFERENCES</literal> <xref linkend="public.table.groupe"/>
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
         </variablelist>
 
 
@@ -4921,6 +4802,21 @@
 
 
 
+        <itemizedlist>
+          <title>
+            Tables referencing echeancier2 via Foreign Key Constraints
+          </title>
+
+          <listitem>
+            <para>
+              <xref linkend="public.table.echeancier2"/>
+            </para>
+          </listitem>
+
+        </itemizedlist>
+
+
+
 
 
 
@@ -5242,6 +5138,139 @@
       </para>
     </section>
 
+      <section id="public.table.horaires"
+               xreflabel="public.horaires">
+        <title id="public.table.horaires-title">
+         Table:
+         
+         <structname>horaires</structname>
+        </title>
+ 
+
+
+        <para>
+          <variablelist>
+            <title>
+              Structure of <structname>horaires</structname>
+            </title>
+
+
+            <varlistentry>
+              <term><structfield>idsalle</structfield></term>
+              <listitem><para>
+                <type>integer</type>
+
+
+
+
+
+
+                <literal>PRIMARY KEY</literal>
+
+
+
+
+
+
+
+
+
+
+
+
+                <literal>REFERENCES</literal> <xref linkend="public.table.salle"/>
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+            <varlistentry>
+              <term><structfield>jour</structfield></term>
+              <listitem><para>
+                <type>integer</type>
+
+
+                <literal>PRIMARY KEY</literal>
+
+
+
+
+
+
+
+
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+            <varlistentry>
+              <term><structfield>ouverture</structfield></term>
+              <listitem><para>
+                <type>time without time zone</type>
+
+
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+            <varlistentry>
+              <term><structfield>fermeture</structfield></term>
+              <listitem><para>
+                <type>time without time zone</type>
+
+
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+        </variablelist>
+
+
+
+        <variablelist>
+          <title>Constraints on horaires</title>
+
+          <varlistentry>
+            <term>jour_semaine</term>
+            <listitem><para>CHECK (((jour &gt;= 0) AND (jour &lt;= 6)))</para></listitem>
+          </varlistentry>
+
+        </variablelist>
+
+
+
+
+
+
+
+
+
+
+      </para>
+    </section>
+
       <section id="public.table.instrument"
                xreflabel="public.instrument">
         <title id="public.table.instrument-title">
@@ -5494,6 +5523,15 @@
                 <type>integer</type>
 
 
+                <literal>PRIMARY KEY</literal>
+
+
+
+
+
+
+
+
 
 
 
@@ -5529,22 +5567,6 @@
           </varlistentry>
 
             <varlistentry>
-              <term><structfield>password</structfield></term>
-              <listitem><para>
-                <type>character(8)</type>
-
-
-
-
-
-
-
-              </para>
-
-            </listitem>
-          </varlistentry>
-
-            <varlistentry>
               <term><structfield>profil</structfield></term>
               <listitem><para>
                 <type>integer</type>
@@ -5563,7 +5585,7 @@
             <varlistentry>
               <term><structfield>pass</structfield></term>
               <listitem><para>
-                <type>bytea</type>
+                <type>character varying(64)</type>
 
 
 
@@ -5579,7 +5601,7 @@
             <varlistentry>
               <term><structfield>clef</structfield></term>
               <listitem><para>
-                <type>bytea</type>
+                <type>character varying(32)</type>
 
 
 
@@ -5752,121 +5774,6 @@
 
         <variablelist>
           <title>Permissions on maintenance</title>
-
-          <varlistentry>
-            <term>nobody</term>
-            <listitem>
-              <para>
-                <simplelist type="inline">
-
-                  <member>Select</member>
-
-
-                  <member>Insert</member>
-
-
-                  <member>Update</member>
-
-
-                  <member>Delete</member>
-
-
-
-                  <member>References</member>
-
-
-                  <member>Trigger</member>
-
-                </simplelist>
-              </para>
-            </listitem>
-          </varlistentry>
-
-        </variablelist>
-
-
-
-      </para>
-    </section>
-
-      <section id="public.table.majoration"
-               xreflabel="public.majoration">
-        <title id="public.table.majoration-title">
-         Table:
-         
-         <structname>majoration</structname>
-        </title>
- 
-
-
-        <para>
-          <variablelist>
-            <title>
-              Structure of <structname>majoration</structname>
-            </title>
-
-
-            <varlistentry>
-              <term><structfield>id</structfield></term>
-              <listitem><para>
-                <type>integer</type>
-
-
-
-
-
-
-
-              </para>
-
-            </listitem>
-          </varlistentry>
-
-            <varlistentry>
-              <term><structfield>mode</structfield></term>
-              <listitem><para>
-                <type>character(32)</type>
-
-
-
-
-
-
-
-              </para>
-
-            </listitem>
-          </varlistentry>
-
-            <varlistentry>
-              <term><structfield>pcent</structfield></term>
-              <listitem><para>
-                <type>integer</type>
-
-
-
-
-
-
-
-              </para>
-
-            </listitem>
-          </varlistentry>
-
-        </variablelist>
-
-
-
-
-
-
-
-
-
-
-        <variablelist>
-          <title>Permissions on majoration</title>
 
           <varlistentry>
             <term>nobody</term>
@@ -7259,6 +7166,14 @@
           <listitem>
             <para>
               <xref linkend="public.table.salle"/>
+            </para>
+          </listitem>
+
+
+
+          <listitem>
+            <para>
+              <xref linkend="public.table.technicien"/>
             </para>
           </listitem>
 
@@ -9368,6 +9283,21 @@ WHERE (
 
 
 
+        <itemizedlist>
+          <title>
+            Tables referencing horaires via Foreign Key Constraints
+          </title>
+
+          <listitem>
+            <para>
+              <xref linkend="public.table.horaires"/>
+            </para>
+          </listitem>
+
+        </itemizedlist>
+
+
+
 
 
 
@@ -10242,6 +10172,96 @@ WHERE (
           </listitem>
 
         </itemizedlist>
+
+
+
+
+
+
+      </para>
+    </section>
+
+      <section id="public.table.technicien"
+               xreflabel="public.technicien">
+        <title id="public.table.technicien-title">
+         Table:
+         
+         <structname>technicien</structname>
+        </title>
+ 
+
+
+        <para>
+          <variablelist>
+            <title>
+              Structure of <structname>technicien</structname>
+            </title>
+
+
+            <varlistentry>
+              <term><structfield>idper</structfield></term>
+              <listitem><para>
+                <type>integer</type>
+
+
+
+
+
+
+                <literal>PRIMARY KEY</literal>
+
+
+
+
+
+
+
+
+
+
+
+
+                <literal>REFERENCES</literal> <xref linkend="public.table.personne"/>
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+            <varlistentry>
+              <term><structfield>specialite</structfield></term>
+              <listitem><para>
+                <type>integer</type>
+
+
+
+
+
+
+
+                <literal>NOT NULL</literal>
+
+
+
+
+
+
+                <literal>REFERENCES</literal> <xref linkend="public.table.categorie-tech"/>
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+        </variablelist>
+
+
+
+
 
 
 
