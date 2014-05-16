@@ -1,7 +1,7 @@
 /*
- * @(#)PersonFileSearchCtrl.java 2.7.h 22/02/13
+ * @(#)PersonFileSearchCtrl.java 2.8.t 15/05/14
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -40,7 +40,7 @@ import net.algem.util.ui.SearchCtrl;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.h
+ * @version 2.8.t
  * @since 1.0a 07/07/1999
  */
 public class PersonFileSearchCtrl
@@ -50,14 +50,14 @@ public class PersonFileSearchCtrl
 
   private GemDesktop desktop;
   private String query;
-  private String cquery = "DECLARE pc CURSOR FOR SELECT * FROM personne ";
+  private String cquery = "DECLARE pc CURSOR FOR SELECT * FROM " + PersonIO.TABLE;
   private PersonFileEditor dossierPersonne;
   private Contact currentContact;
   private GemEventListener gemListener;
 
-  public PersonFileSearchCtrl(GemDesktop _desktop, String title) {
-    super(_desktop.getDataCache().getDataConnection(), title);
-    desktop = _desktop;
+  public PersonFileSearchCtrl(GemDesktop desktop, String title) {
+    super(desktop.getDataCache().getDataConnection(), title);
+    this.desktop = desktop;
   }
 
   public PersonFileSearchCtrl(GemDesktop _desktop, String title, GemEventListener gl) {
@@ -144,7 +144,6 @@ public class PersonFileSearchCtrl
     String url = dc.getUrl();
     Connection cnx;
     try {
-      //cnx = DriverManager.getConnection(url, "nobody", "Pigfy");
       cnx = DriverManager.getConnection(url, dc.getConnectionProperties());
     } catch (SQLException e) {
       GemLogger.logException("ThreadTablePersonne: Erreur Connexion:", e);
@@ -217,7 +216,6 @@ public class PersonFileSearchCtrl
 
   }
 
-  //ajout 2.0g créer
   @Override
   public void actionPerformed(ActionEvent evt) {
     super.actionPerformed(evt);

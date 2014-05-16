@@ -1,5 +1,5 @@
 /*
- * @(#)DirectDebitIO.java 2.8.r 21/01/14
+ * @(#)DirectDebitIO.java 2.8.t 15/05/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -34,7 +34,7 @@ import net.algem.util.model.TableIO;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.8.r
+ * @version 2.8.t
  * @since 2.8.r 08/01/14
  */
 public class DirectDebitIO
@@ -188,7 +188,7 @@ public class DirectDebitIO
    * @throws SQLException
    */
   ResultSet getDirectDebit(int school, DateFr datePrl, Enum seqType) throws SQLException {
-    String query = "SELECT e.payeur, e.montant, e.analytique FROM echeancier2 e, prlsepa p"
+    String query = "SELECT e.payeur, e.montant, e.analytique FROM " + OrderLineIO.TABLE + " e, prlsepa p"
             + " WHERE e.ecole = '" + school
             + "' AND e.reglement = 'PRL"
             + "' AND e.paye = 't"

@@ -1,5 +1,5 @@
 /*
-* @(#)OrderLineTableView.java 2.8.t 13/05/14
+* @(#)OrderLineTableView.java 2.8.t 15/05/14
 *
 * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
 *
@@ -244,8 +244,7 @@ implements TableModelListener {
   }
   
   public int[] getSelectedRows() {
-    int r[] = table.getSelectedRows();
-    return r;
+    return table.getSelectedRows();
   }
   
   public void setMemberShipFilter(final String a) {

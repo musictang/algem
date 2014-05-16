@@ -1,5 +1,5 @@
 /*
- * @(#)GroupOrderLineEditor.java	2.8.t 10/05/14
+ * @(#)GroupOrderLineEditor.java	2.8.t 16/05/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -24,14 +24,17 @@ package net.algem.accounting;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JToggleButton;
+import java.text.ParseException;
+import javax.swing.*;
 import net.algem.config.Preference;
+import net.algem.group.GemGroupService;
+import net.algem.group.GroupService;
 import net.algem.planning.DateRangePanel;
 import net.algem.util.BundleUtil;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
+import net.algem.util.MessageUtil;
+import net.algem.util.menu.MenuPopupListener;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GemField;
@@ -51,14 +54,17 @@ public class GroupOrderLineEditor
   private GemButton btDateRange;
   private JToggleButton btMembershipFilter;
   private JToggleButton btUnpaidFilter;
+  private JMenuItem miGroupModif;
+  private GroupService service;
 
-  public GroupOrderLineEditor(GemDesktop desktop, OrderLineTableModel tableModel) {
+  public GroupOrderLineEditor(GemDesktop desktop, OrderLineTableModel tableModel, GroupService service) {
     super(desktop, tableModel);
+    this.service = service;
     try {
       Preference p = AccountPrefIO.find(AccountPrefIO.MEMBER_KEY_PREF, dc);
       Account a = AccountPrefIO.getAccount(p, dc);
       if (a != null) {
-        table.setMemberShipFilter(a.getLabel());
+        tableView.setMemberShipFilter(a.getLabel());
       }
     } catch (SQLException ex) {
       GemLogger.logException(ex);
@@ -67,6 +73,12 @@ public class GroupOrderLineEditor
 
   @Override
   public void init(){
+    
+    JPopupMenu popup = new JPopupMenu();
+    miGroupModif = new JMenuItem(BundleUtil.getLabel("Order.line.modify.group.action"));
+    miGroupModif.addActionListener(this);
+    popup.add(miGroupModif);
+    
     btCreate = new GemButton(GemCommand.ADD_CMD);
     btCreate.addActionListener(this);
     btModify = new GemButton(GemCommand.MODIFY_CMD);
@@ -100,18 +112,19 @@ public class GroupOrderLineEditor
     totalLabel = new JLabel(BundleUtil.getLabel("Total.label"));
     totalField = new GemField(10);
     totalField.setEditable(false);
-    table.addListSelectionListener(totalField);
+    tableView.addListSelectionListener(totalField);
 
     pTotal.add(totalLabel);
     pTotal.add(totalField);
     footer.add(pTotal, BorderLayout.NORTH);
     footer.add(buttons, BorderLayout.CENTER);
 
-    table.filterByPeriod(dateRange.getStartFr(), dateRange.getEndFr());
-
+    tableView.filterByPeriod(dateRange.getStartFr(), dateRange.getEndFr());
+    tableView.getTable().addMouseListener(new MenuPopupListener(tableView, popup));
+    
     setLayout(new BorderLayout());
     add(header, BorderLayout.NORTH);
-    add(table, BorderLayout.CENTER);
+    add(tableView, BorderLayout.CENTER);
     add(footer, BorderLayout.SOUTH);
     setLocation(70, 30);
 
@@ -119,27 +132,67 @@ public class GroupOrderLineEditor
 
   @Override
   public void actionPerformed(ActionEvent evt) {
-    if (evt.getSource() == btDateRange) {
-      table.filterByPeriod(dateRange.getStartFr(), dateRange.getEndFr());
+    Object src = evt.getSource();
+    if (src == btDateRange) {
+      tableView.filterByPeriod(dateRange.getStartFr(), dateRange.getEndFr());
       btMembershipFilter.setSelected(false);
       btUnpaidFilter.setSelected(false);
     } else if (evt.getSource() == btMembershipFilter) {
       if (btMembershipFilter.isSelected()) {
-        table.filterByMemberShip(dateRange.getStartFr(), dateRange.getEndFr());
+        tableView.filterByMemberShip(dateRange.getStartFr(), dateRange.getEndFr());
         btUnpaidFilter.setSelected(false);
       } else {
-        table.filterByPeriod(dateRange.getStartFr(), dateRange.getEndFr());
+        tableView.filterByPeriod(dateRange.getStartFr(), dateRange.getEndFr());
       }
-
-    } else if (evt.getSource() == btUnpaidFilter) {
+    } else if (src == btUnpaidFilter) {
       if (btUnpaidFilter.isSelected()) {
-        table.filterByUnpaid();
+        tableView.filterByUnpaid();
         btMembershipFilter.setSelected(false);
       } else {
-        table.filterByPeriod(dateRange.getStartFr(), dateRange.getEndFr());
+        tableView.filterByPeriod(dateRange.getStartFr(), dateRange.getEndFr());
       }
+    } else if (src == miGroupModif) {
+      updateGroup();
     } else {
       super.actionPerformed(evt);
+    }
+  }
+  
+  /**
+   * Updates the group number on selected order lines.
+   */
+  private void updateGroup() {
+    int[] rows = tableView.getSelectedRows();
+    if (rows.length == 0) {
+      return;
+    }
+    OrderLine e = tableView.getElementAt(rows[0]);
+    try {
+      OrderLineView dlg = new OrderLineView(desktop.getFrame(), BundleUtil.getLabel("Order.line.modification"), dataCache);
+      dlg.setOrderLine(e);
+      dlg.setGroupEditable(true);
+      dlg.setVisible(true);
+      if (dlg.isValidation()) {
+        dc.setAutoCommit(false);
+        OrderLine u = dlg.getOrderLine();
+        int oids [] = new int[rows.length];
+        for (int i = 0; i < rows.length; i++) {
+          OrderLine r = tableView.getElementAt(rows[i]);
+          oids[i] = r.getId();
+          r.setGroup(u.getGroup());
+          tableView.setElementAt(r, rows[i]);
+        }
+        ((GemGroupService) service).updateOrderLine(oids, u.getGroup());
+        dc.commit();
+      }
+      dlg.dispose();
+    } catch (SQLException ex) {
+      dc.rollback();
+      GemLogger.logException(MessageUtil.getMessage("update.error"), ex, this);
+    } catch (ParseException pe) {
+      GemLogger.log(pe.getMessage());
+    } finally {
+      dc.setAutoCommit(true);
     }
   }
 }

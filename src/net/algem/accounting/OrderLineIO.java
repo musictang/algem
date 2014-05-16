@@ -1,5 +1,5 @@
 /*
- * @(#)OrderLineIO.java	2.8.t 10/05/14
+ * @(#)OrderLineIO.java	2.8.t 15/05/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -152,6 +152,19 @@ public class OrderLineIO
     
     dc.executeUpdate(query);
   }
+  
+  public static void setGroup(int [] oids, int g, DataConnection dc) throws SQLException {
+    if (oids == null || oids.length == 0) {
+      return;
+    }
+    StringBuilder query = new StringBuilder("UPDATE " + TABLE + " SET groupe = " + g + " WHERE oid IN (");
+    for (int i : oids) {
+      query.append(i).append(",");
+    }
+    query.deleteCharAt(query.length()-1);
+    query.append(")");
+    dc.executeUpdate(query.toString());
+  }
 
   public static void delete(OrderLine e, DataConnection dc) throws SQLException {
     String query = "DELETE FROM " + TABLE + " WHERE oid = " + e.getId();
@@ -167,7 +180,7 @@ public class OrderLineIO
    * @return a list of order lines
    */
   public static Vector<OrderLine> findByMember(int m, int p, DataConnection dc) {
-    String where = "WHERE (adherent = " + m + " OR payeur = " + p + ") AND adherent in(SELECT adherent FROM echeancier2 WHERE adherent = " + m + ")";
+    String where = "WHERE (adherent = " + m + " OR payeur = " + p + ") AND adherent in(SELECT adherent FROM " + TABLE + " WHERE adherent = " + m + ")";
     return find(where, dc);
   }
 

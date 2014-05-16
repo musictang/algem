@@ -1,7 +1,7 @@
 /*
- * @(#)GemGroupService.java	2.8.p 08/11/13
+ * @(#)GemGroupService.java	2.8.t 15/05/14
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -42,7 +42,7 @@ import net.algem.util.model.Model;
  * Service class for group operations.
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.p
+ * @version 2.8.t
  * @since 2.4.a 10/05/12
  */
 public class GemGroupService
@@ -212,6 +212,11 @@ public class GemGroupService
     return ScheduleIO.find(query, dc);
   }
 
+  /**
+   * Gets the payment schedules of the group {@code g}.
+   * @param g group instance
+   * @return a list of order lines
+   */
   Vector<OrderLine> getSchedulePayment(Group g)  {
     int membershipAccount = 0;
     StringBuilder where = new StringBuilder("WHERE groupe = ");
@@ -235,6 +240,35 @@ public class GemGroupService
     }
 
     return OrderLineIO.find(where.toString(), dc);
+  }
+  
+  /**
+   * Gets the payment schedules of the persons in the group {@code g}.
+   * @param g group instance
+   * @return a list of order lines
+   */
+  Vector<OrderLine> getMemberSchedulePayment(Group g)  {
+    List<Musician> lm = g.getMusicians();
+    if (lm == null) {
+      return new Vector<OrderLine>();
+    }
+    StringBuilder where = new StringBuilder("WHERE adherent IN (");
+    for (Musician m : lm) {
+      where.append(m.getId()).append(",");
+    }
+    where.deleteCharAt(where.length()-1);
+    where.append(")");
+    return OrderLineIO.find(where.toString(), dc);
+  }
+  
+  /**
+   * Changes the group number of the order lines with the selected {@code oids}.
+   * @param oids the list of lines to change
+   * @param g group number
+   * @throws SQLException 
+   */
+  public void updateOrderLine(int oids [], int g) throws SQLException {
+    OrderLineIO.setGroup(oids, g, dc);
   }
 
   /**

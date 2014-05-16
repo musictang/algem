@@ -1,7 +1,7 @@
 /*
- * @(#)StatisticsDefault.java	2.8.k 19/07/13
+ * @(#)StatisticsDefault.java	2.8.t 15/05/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,13 +21,14 @@
 package net.algem.edition;
 
 import java.sql.SQLException;
+import net.algem.accounting.OrderLineIO;
 import net.algem.util.MessageUtil;
 
 /**
  * Default file export for statistics.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.k
+ * @version 2.8.t
  * @since 2.6.a 12/10/2012
  */
 public class StatisticsDefault
@@ -69,57 +70,50 @@ public class StatisticsDefault
       return super.getQuery(m);
     }
     if (m.equals("payers_without_address")) {
-      return "SELECT DISTINCT payeur FROM echeancier2"
+      return "SELECT DISTINCT payeur FROM " + OrderLineIO.TABLE
               + " WHERE echeance >= '" + start + "' AND echeance <= '" + end + "'"
-//              + " AND echeancier2.montant = 1000"
               + " AND compte = " + MEMBERSHIP_ACCOUNT
               + " AND payeur NOT IN (SELECT idper FROM adresse)";
     }
     if (m.equals("debtors")) {
-      return "SELECT DISTINCT adherent, nom, prenom FROM echeancier2,personne"
-              + " WHERE echeance BETWEEN '" + start + "' AND '" + end + "'"
-//              + " AND echeancier2.montant = 1000"
-              + " AND compte = " + MEMBERSHIP_ACCOUNT
-              + " AND echeancier2.paye = false"
-              + " AND echeancier2.adherent = personne.id";
+      return "SELECT DISTINCT e.adherent, p.nom, p.prenom FROM " + OrderLineIO.TABLE + " e, personne p"
+              + " WHERE e.echeance BETWEEN '" + start + "' AND '" + end + "'"
+              + " AND e.compte = " + MEMBERSHIP_ACCOUNT
+              + " AND e.paye = false"
+              + " AND e.adherent = p.id";
     }
     if (m.equals("total_number_of_members")) {
-      return "SELECT count(DISTINCT adherent) FROM echeancier2"
+      return "SELECT count(DISTINCT adherent) FROM " + OrderLineIO.TABLE
               + " WHERE echeance BETWEEN '" + start + "' AND '" + end + "'"
-//              + " AND echeancier2.montant = 1000"
               + " AND compte = " + MEMBERSHIP_ACCOUNT;
     }
     if (m.equals("number_of_men_members")) {
-      return "SELECT count(DISTINCT adherent) FROM echeancier2, personne"
-              + " WHERE personne.id = echeancier2.adherent"
-              + " AND echeance BETWEEN '" + start + "' AND '" + end + "'"
-//              + " AND echeancier2.montant=1000"
-              + " AND compte = " + MEMBERSHIP_ACCOUNT
-              + " AND (trim(personne.civilite) = 'M' OR personne.civilite = '')";
+      return "SELECT count(DISTINCT e.adherent) FROM " + OrderLineIO.TABLE + " e, personne p"
+              + " WHERE p.id = e.adherent"
+              + " AND e.echeance BETWEEN '" + start + "' AND '" + end + "'"
+              + " AND e.compte = " + MEMBERSHIP_ACCOUNT
+              + " AND (trim(p.civilite) = 'M' OR p.civilite = '')";
     }
     if (m.equals("number_of_women_members")) {
-      return "SELECT count(DISTINCT adherent) FROM echeancier2, personne"
-              + " WHERE personne.id = echeancier2.adherent"
-              + " AND echeance BETWEEN '" + start + "' AND '" + end + "'"
-//              + " AND echeancier2.montant=1000"
-              + " AND compte = " + MEMBERSHIP_ACCOUNT
-              + " AND (trim(personne.civilite) = 'Mme' OR personne.civilite = 'Mlle')";
+      return "SELECT count(DISTINCT e.adherent) FROM " + OrderLineIO.TABLE + " e, personne p"
+              + " WHERE p.id = e.adherent"
+              + " AND e.echeance BETWEEN '" + start + "' AND '" + end + "'"
+              + " AND e.compte = " + MEMBERSHIP_ACCOUNT
+              + " AND (trim(p.civilite) = 'Mme' OR p.civilite = 'Mlle')";
     }
     if (m.equals("members_by_occupational")) {
-      return "SELECT profession, count(DISTINCT adherent) FROM echeancier2,eleve"
-              + " WHERE eleve.idper=echeancier2.adherent"
-              + " AND echeance BETWEEN '" + start + "' AND '" + end + "'"
-//              + " AND montant = 1000"
-              + " AND compte  = " + MEMBERSHIP_ACCOUNT
-              + " GROUP BY profession";
+      return "SELECT m.profession, count(DISTINCT e.adherent) FROM " + OrderLineIO.TABLE + " e, eleve m"
+              + " WHERE m.idper = e.adherent"
+              + " AND e.echeance BETWEEN '" + start + "' AND '" + end + "'"
+              + " AND e.compte  = " + MEMBERSHIP_ACCOUNT
+              + " GROUP BY m.profession";
     }
     if (m.equals("members_by_location")) {
-      return "SELECT adresse.ville, count(DISTINCT echeancier2.adherent) FROM echeancier2, adresse"
-              + " WHERE echeancier2.echeance BETWEEN '" + start + "' AND '" + end + "'"
-//              + " AND echeancier2.montant = 1000"
-              + " AND echeancier2.compte = " + MEMBERSHIP_ACCOUNT
-              + " AND (echeancier2.payeur = adresse.idper OR echeancier2.adherent = adresse.idper)"
-              + " GROUP BY adresse.ville ORDER BY adresse.ville";
+      return "SELECT a.ville, count(DISTINCT e.adherent) FROM " + OrderLineIO.TABLE + " e, adresse a"
+              + " WHERE e.echeance BETWEEN '" + start + "' AND '" + end + "'"
+              + " AND e.compte = " + MEMBERSHIP_ACCOUNT
+              + " AND (e.payeur = a.idper OR e.adherent = a.idper)"
+              + " GROUP BY a.ville ORDER BY a.ville";
     }
     return null;
   }

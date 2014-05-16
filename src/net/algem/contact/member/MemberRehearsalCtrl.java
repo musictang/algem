@@ -1,7 +1,7 @@
 /*
- * @(#)MemberRehearsalCtrl.java	2.8.b 14/05/13
+ * @(#)MemberRehearsalCtrl.java	2.8.t 16/05/14
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -46,7 +46,7 @@ import net.algem.util.ui.PopupDlg;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.b
+ * @version 2.8.t
  * @since 1.0a 12/12/2001
  */
 public class MemberRehearsalCtrl
@@ -63,10 +63,10 @@ public class MemberRehearsalCtrl
     service = new MemberService(dataCache.getDataConnection());
   }
 
-  public MemberRehearsalCtrl(GemDesktop _desktop, ActionListener _listener, PersonFile _dossier) {
-    this(_desktop);
-    personFile = _dossier;
-    actionListener = _listener;
+  public MemberRehearsalCtrl(GemDesktop desktop, ActionListener listener, PersonFile dossier) {
+    this(desktop);
+    personFile = dossier;
+    actionListener = listener;
 
     view = new MemberRehearsalView(dataCache);
     view.set(personFile.getContact());

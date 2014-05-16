@@ -1,5 +1,5 @@
 /*
- * @(#)OrderLineView.java	2.8.t 10/05/14
+ * @(#)OrderLineView.java	2.8.t 15/05/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -167,6 +167,18 @@ public class OrderLineView
     member.setEditable(b);
     group.setEditable(b);
   }
+  
+  /**
+   * Desactivates all but group field.
+   * @param e editable
+   */
+  void setGroupEditable(boolean e) {
+    setEditable(!e);
+    date.setEditable(!e);
+    document.setEditable(!e);
+    
+    group.setEditable(e);
+  }
 
   void setInvoiceEditable(boolean b) {
     invoice.setEditable(b);
@@ -177,7 +189,7 @@ public class OrderLineView
    * @param single simple or multiple selection
    */
   public void setEditable(boolean single) {
-    if (single == false) {
+    if (!single) {
       setIdEditable(false);
       payer.setEditable(false);
       member.setEditable(false);

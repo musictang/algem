@@ -1,7 +1,7 @@
 /*
- * @(#)StatsExportDlg.java	2.8.k 23/07/13
+ * @(#)StatsExportDlg.java	2.8.t 16/05/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -37,6 +37,7 @@ import net.algem.planning.DateFr;
 import net.algem.planning.DateRangePanel;
 import net.algem.util.*;
 import net.algem.util.jdesktop.DesktopBrowseHandler;
+import net.algem.util.jdesktop.DesktopHandlerException;
 import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GemField;
 import net.algem.util.ui.GemPanel;
@@ -45,7 +46,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.k
+ * @version 2.8.t
  * @since 2.6.a 11/10/2012
  */
 public class StatsExportDlg 
@@ -138,7 +139,11 @@ public class StatsExportDlg
       st.makeStats();
       if (MessagePopup.confirm(this, MessageUtil.getMessage("statistics.completed", filePathField.getText()))) {
         DesktopBrowseHandler browser = new DesktopBrowseHandler();
-        browser.browse(file.toURI().toString());
+        try {
+          browser.browse(file.toURI().toString());
+        } catch (DesktopHandlerException ex) {
+          GemLogger.log(ex.getMessage());
+        }
       }
     } catch (IOException ex) {
       GemLogger.logException(ex);

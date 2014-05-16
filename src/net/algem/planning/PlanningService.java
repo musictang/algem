@@ -1,5 +1,5 @@
 /*
- * @(#)PlanningService.java	2.8.t 09/05/14
+ * @(#)PlanningService.java	2.8.t 15/05/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -609,7 +609,7 @@ public class PlanningService
     try {
       dc.setAutoCommit(false);
       //modifier les commande_cours jusqu'à la date de début
-      String where = "AND cc.idaction = " + a.getId();
+      String where = " AND cc.idaction = " + a.getId();
       Vector<CourseOrder> vcc = CourseOrderIO.find(where, dc);
 
       // selection planning
@@ -643,7 +643,7 @@ public class PlanningService
       dc.commit();
 
     } catch (SQLException ex) {
-      dc.rollback();
+      dc.rollback();GemLogger.logException(ex);
       throw new PlanningException(ex.getMessage());
     } finally {
       dc.setAutoCommit(true);

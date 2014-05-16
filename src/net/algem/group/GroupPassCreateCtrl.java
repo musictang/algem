@@ -1,7 +1,7 @@
 /*
- * @(#)GroupPassCreateCtrl.java	2.7.a 03/12/12
+ * @(#)GroupPassCreateCtrl.java	2.8.t 16/05/14
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -42,7 +42,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.t
  */
 public class GroupPassCreateCtrl
         extends CardCtrl
@@ -64,8 +64,8 @@ public class GroupPassCreateCtrl
     cfv = new ConflictListView();
     service = new GemGroupService(dataCache.getDataConnection());
 
-    addCard("Saisie forfait répétition groupe", view);
-    addCard("Vérification conflit", cfv);
+    addCard(BundleUtil.getLabel("Group.pass.scheduling.auth"), view);
+    addCard(BundleUtil.getLabel("Conflict.verification.label"), cfv);
 
     select(0);
   }

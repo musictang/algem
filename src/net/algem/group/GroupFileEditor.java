@@ -1,5 +1,5 @@
 /*
- * @(#)GroupFileEditor.java 2.8.t 10/05/14
+ * @(#)GroupFileEditor.java 2.8.t 15/05/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -41,7 +41,7 @@ import net.algem.util.module.GemModule;
 import net.algem.util.ui.*;
 
 /**
- *
+ * Group file main editor.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.8.t
  */
@@ -64,11 +64,12 @@ public class GroupFileEditor
   private JMenuBar mBar;
   private JMenu mFile, mOptions;
   private JMenuItem miSuppression, miRehearsal, miPass;
+  private JCheckBoxMenuItem miMemberPayments;
   private GemGroupService service;
   private Schedule plan;
 
   public GroupFileEditor() {
-    super("Nouveau Groupe");
+    super(BundleUtil.getLabel("New.group.label"));
   }
 
   public GroupFileEditor(Group g, String key, Schedule plan) {
@@ -85,14 +86,18 @@ public class GroupFileEditor
   }
 
   /**
-   *
-   * @return group id
+   * Gets the id of the group.
+   * @return the string value of the id
    */
   @Override
   public String getSID() {
     return String.valueOf(group.getId());
   }
 
+  /**
+   * Gets the id of the group.
+   * @return the integer value of the id
+   */
   public int getId() {
     return group.getId();
   }
@@ -115,10 +120,8 @@ public class GroupFileEditor
       oldGroup.setMusicians(vm);
       groupFileTabView.init(vm);
 
-    } catch (SQLException ex) {
+    } catch (SQLException | NoteException ex) {
       GemLogger.log(getClass().getName(), "init", ex);
-    } catch (NoteException e) {
-      GemLogger.log(getClass().getName(), "init", e);
     }
 
     mBar = new JMenuBar();
@@ -129,7 +132,10 @@ public class GroupFileEditor
 
     mOptions = new JMenu(BundleUtil.getLabel("Menu.options.label"));
     miPass = getMenuItem("Rehearsal.pass");
+    miMemberPayments = new JCheckBoxMenuItem(BundleUtil.getLabel("Action.members.schedule.payment.label"));
+    miMemberPayments.addActionListener(this);
     mOptions.add(miPass);
+    mOptions.add(miMemberPayments);
 
     mBar.add(mFile);
     mBar.add(mOptions);
@@ -178,12 +184,12 @@ public class GroupFileEditor
   @Override
   public void actionPerformed(ActionEvent evt) {
     String arg = evt.getActionCommand();
-    Object source = evt.getSource();
+    Object src = evt.getSource();
 
     // On sauve au préalable l'éventuel nouveau groupe avant d'executer les actions des menus.
     if (group.getId() == 0 && !arg.equals(GemCommand.SAVE_CMD) && !arg.equals(GemCommand.CLOSE_CMD)) {
       // TODO
-    } else if (source == miPass) {
+    } else if (src == miPass) {
       passCreateCtrl = new GroupPassCreateCtrl(desktop, group);
       passCreateCtrl.addActionListener(this);
       desktop.addPanel("Group.pass", passCreateCtrl);
@@ -210,9 +216,14 @@ public class GroupFileEditor
       } catch (GemCloseVetoException i) {
       }
     } else if ("Member.schedule.payment".equals(arg)) {
+        loadPaymentSchedule();
+    } else if (src == miMemberPayments) {
+      groupFileTabView.remove(GroupOrderLineEditor.class);
+      closeTab(GroupOrderLineEditor.class);
       loadPaymentSchedule();
-    } else if (CloseableTab.CLOSE_CMD.equals(arg)) {
-        closeTab(source);
+    }
+    else if (CloseableTab.CLOSE_CMD.equals(arg)) {
+      closeTab(src);
     } // clic sur le bouton Enregistrer
     else if (GemCommand.SAVE_CMD.equals(arg)) {
       if (hasChanged()) {
@@ -225,8 +236,12 @@ public class GroupFileEditor
 
   private void loadPaymentSchedule() {
     OrderLineTableModel tableModel = new OrderLineTableModel();
-    tableModel.load(service.getSchedulePayment(group));
-    GroupOrderLineEditor orderLineEditor = new GroupOrderLineEditor(desktop, tableModel);
+    if (miMemberPayments.isSelected()) {
+      tableModel.load(service.getMemberSchedulePayment(group));
+    } else {
+      tableModel.load(service.getSchedulePayment(group));
+    }
+    GroupOrderLineEditor orderLineEditor = new GroupOrderLineEditor(desktop, tableModel, service);
     orderLineEditor.init();
 
     groupFileTabView.addTab(orderLineEditor, BundleUtil.getLabel("Person.schedule.payment.tab.label"));

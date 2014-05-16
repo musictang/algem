@@ -1,7 +1,7 @@
 /*
- * @(#)PayeurListView.java	2.7.a 26/11/12
+ * @(#)PayeurListView.java	2.8.t 15/05/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -36,22 +36,22 @@ import net.algem.util.ui.GemPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.t
  * @deprecated
  */
 public class PayerListView
         extends GemPanel
 {
 
-  DataCache cache;
-  PersonTableModel adherents;
-  JTable tableAdherents;
+  private DataCache cache;
+  private PersonTableModel personTableModel;
+  private JTable tableAdherents;
 
   public PayerListView(DataCache dc) {
     cache = dc;
 
-    adherents = new PersonTableModel();
-    tableAdherents = new JTable(adherents);
+    personTableModel = new PersonTableModel();
+    tableAdherents = new JTable(personTableModel);
     tableAdherents.setAutoCreateRowSorter(true);
 
     TableColumnModel cm = tableAdherents.getColumnModel();
@@ -67,7 +67,7 @@ public class PayerListView
   }
 
   public void clear() {
-    adherents.clear();
+    personTableModel.clear();
   }
 
   public void load(int id) {
@@ -78,9 +78,9 @@ public class PayerListView
         int eid = rs.getInt(1);
         Person p = ((PersonIO) DataCache.getDao(Model.Person)).findId(eid);
         if (p != null) {
-          adherents.addItem(p);
+          personTableModel.addItem(p);
         } else {
-          adherents.addItem(new Person("inconnu"));
+          personTableModel.addItem(new Person("inconnu"));
         }
       }
     } catch (SQLException e) {

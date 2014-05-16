@@ -1,5 +1,5 @@
 /*
- * @(#)GroupFileView.java 2.7.k 04/03/13
+ * @(#)GroupFileView.java 2.8.t 15/05/14
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -21,6 +21,7 @@
 package net.algem.group;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.util.Vector;
 import net.algem.util.BundleUtil;
@@ -31,11 +32,11 @@ import net.algem.util.ui.FileTab;
 import net.algem.util.ui.TabPanel;
 
 /**
- * View group editor.
+ * Group view tab container.
  * View is divided in 4 tabs (group, musicians, history, schedule payment).
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.k
+ * @version 2.8.t 15/05/14
  */
 public class GroupFileView
         extends GemView
@@ -91,6 +92,36 @@ public class GroupFileView
     tabPanel.setSelectedComponent(tab);
     tabPanel.addCloseButton(tabPanel.getSelectedIndex(),listener);
     
+  }
+  
+   /**
+   * Gets the component which type is {@code clazz}.
+   * @param <T>
+   * @param clazz class type
+   */
+  <T> Object getTab(final Class<T> clazz) {
+    Component [] tabs = tabPanel.getComponents();
+    for(Component c : tabs) {
+      if (c.getClass() == clazz) {
+        return c;
+      }
+    }
+    return null;
+  }
+  
+  /**
+   * Removes the tab which type is {@code clazz}.
+   * @param <T>
+   * @param clazz class type
+   */
+  <T> void remove(final Class<T> clazz) {
+    Component [] tabs = tabPanel.getComponents();
+    for(Component c : tabs) {
+      if (c.getClass() == clazz) {
+        tabPanel.remove(c);
+        break;
+      }
+    }   
   }
   
   @Override

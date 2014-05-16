@@ -1,7 +1,7 @@
 /*
- * @(#)PayerExportDlg.java	2.8.k 25/07/13
+ * @(#)PayerExportDlg.java	2.8.t 15/05/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -26,6 +26,7 @@ import java.awt.GridBagLayout;
 import java.util.Date;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import net.algem.accounting.OrderLineIO;
 import net.algem.config.ModeOfPaymentCtrl;
 import net.algem.config.ParamTableIO;
 import net.algem.planning.DateFr;
@@ -43,7 +44,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.k
+ * @version 2.8.t
  * @since 1.0a 14/12/1999
  */
 public class PayerExportDlg
@@ -101,15 +102,15 @@ public class PayerExportDlg
     switch (cbCriterion.getSelectedIndex()) {
       case 0 : // Payeurs non encaissés
         //query = "where id in (SELECT distinct p.id from personne p,adresse a,echeancier2 e where e.payeur=p.id and p.id=a.idper and p.arch='f' and e.reglement='CHQ' and e.paye = 'f' and e.echeance <= '" + d2 + "')";  
-        query = "WHERE id IN (SELECT DISTINCT payeur FROM echeancier2 WHERE paye = 'f' AND";
+        query = "WHERE id IN (SELECT DISTINCT payeur FROM " + OrderLineIO.TABLE + " WHERE paye = 'f' AND";
         break;
       case 1: // Les payeurs encaissés
         //query = "where id in (SELECT distinct p.id from personne p,adresse a,echeancier2 e where e.payeur=p.id and p.id=a.idper and p.arch='f' and e.echeance >= '" + dc.getDebutPeriode() + "')";
-        query = "WHERE id IN (SELECT DISTINCT payeur FROM echeancier2 WHERE paye = 't' AND";
+        query = "WHERE id IN (SELECT DISTINCT payeur FROM " + OrderLineIO.TABLE + " WHERE paye = 't' AND";
         break;
       case 2 : // Tous les payeurs
         //query = "where id in (SELECT distinct p.id from personne p,adresse a,echeancier2 e where e.payeur=p.id and p.id=a.idper and p.arch='f')";
-        query = "WHERE id IN (SELECT DISTINCT payeur FROM echeancier2 WHERE";
+        query = "WHERE id IN (SELECT DISTINCT payeur FROM " + OrderLineIO.TABLE + " WHERE";
         break;
     }
     if (!all_payment.equals(r)) {

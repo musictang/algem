@@ -1,5 +1,5 @@
 /*
- * @(#)ContactIO.java	2.8.r 18/01/14
+ * @(#)ContactIO.java	2.8.t 15/05/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -25,6 +25,7 @@ import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.Vector;
 import net.algem.accounting.DirectDebitIO;
+import net.algem.accounting.OrderLineIO;
 import net.algem.bank.RibIO;
 import net.algem.billing.InvoiceIO;
 import net.algem.contact.member.MemberIO;
@@ -45,7 +46,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.r
+ * @version 2.8.t
  * @since 1.0a 07/07/1999
  */
 public class ContactIO
@@ -374,7 +375,7 @@ public class ContactIO
     String msg = MessageUtil.getMessage("delete.exception");
     if (c.getType() == Person.PERSON || c.getType() == Person.ROOM) {
       // vérifier qu'il n'existe plus d'échéances pour ce contact (en tant que payeur)
-      String check = "SELECT count(payeur) FROM echeancier2 WHERE payeur = " + c.getId();
+      String check = "SELECT count(payeur) FROM " + OrderLineIO.TABLE + " WHERE payeur = " + c.getId();
       ResultSet rs = dc.executeQuery(check);
       if (rs.next()) {
         int count = rs.getInt(1);

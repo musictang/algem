@@ -1,5 +1,5 @@
 /*
- * @(#)DirectDebitExportDlg.java	2.8.r 18/01/14
+ * @(#)DirectDebitExportDlg.java	2.8.t 15/05/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -42,7 +42,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.r
+ * @version 2.8.t
  */
 public class DirectDebitExportDlg
         extends JDialog
@@ -315,7 +315,7 @@ public class DirectDebitExportDlg
     DateFr datePrl = datePanel.get();
     int school = schoolChoice.getKey();
     // TODO faire un groupement par payeur afin de calculer automatiquement le montant total.
-    String query = "SELECT payeur,montant,analytique FROM echeancier2"
+    String query = "SELECT payeur,montant,analytique FROM " + OrderLineIO.TABLE
             + " WHERE ecole = '" + school + "' AND reglement = 'PRL' AND paye = 't' AND echeance = '" + datePrl.toString() + "'"
             //+" AND payeur IN (SELECT idper FROM rib)"
             + " ORDER BY payeur,echeance";

@@ -1,5 +1,5 @@
 /*
- * @(#)OrderLineEditor.java	2.8.t 10/05/14
+ * @(#)OrderLineEditor.java	2.8.t 15/05/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -56,7 +56,7 @@ public class OrderLineEditor
         extends FileTab
         implements ActionListener, TableModelListener, GemEventListener {
 
-  protected OrderLineTableView table;
+  protected OrderLineTableView tableView;
   protected GemButton btCreate;
   protected GemButton btSuppress;
   protected GemButton btModify;
@@ -79,7 +79,7 @@ public class OrderLineEditor
   public OrderLineEditor(GemDesktop _desktop, OrderLineTableModel _tableModel) {
     super(_desktop);
     tableModel = _tableModel;
-    table = new OrderLineTableView(tableModel, this);
+    tableView = new OrderLineTableView(tableModel, this);
 
   }
 
@@ -121,7 +121,7 @@ public class OrderLineEditor
     totalLabel = new JLabel(BundleUtil.getLabel("Total.label"));
     totalField = new GemField(10);
     totalField.setEditable(false);
-    table.addListSelectionListener(totalField);
+    tableView.addListSelectionListener(totalField);
 
     pTotal.add(totalLabel);
     pTotal.add(totalField);
@@ -130,7 +130,7 @@ public class OrderLineEditor
 
     setLayout(new BorderLayout());
     add(entete, BorderLayout.NORTH);
-    add(table, BorderLayout.CENTER);
+    add(tableView, BorderLayout.CENTER);
     add(footer, BorderLayout.SOUTH);
     setLocation(70, 30);
   }
@@ -174,9 +174,9 @@ public class OrderLineEditor
     } else if (src == btFilter) {
       totalField.setText(null);
       if (btFilter.isSelected()) {
-        table.filterByDate(dataCache.getStartOfYear());
+        tableView.filterByDate(dataCache.getStartOfYear());
       } else {
-        table.filterByDate(null);
+        tableView.filterByDate(null);
       }
     } else if (src == btInvoice) {
       createInvoice();
@@ -190,7 +190,7 @@ public class OrderLineEditor
   }
 
   public void dialogSuppression() {
-    int n = table.getSelectedRow();
+    int n = tableView.getSelectedRow();
     if (n < 0) {
       JOptionPane.showMessageDialog(this,
               NO_PAYMENT_SELECTED,
@@ -198,7 +198,7 @@ public class OrderLineEditor
               JOptionPane.ERROR_MESSAGE);
       return;
     }
-    OrderLine e = table.getElementAt(n);
+    OrderLine e = tableView.getElementAt(n);
 
     if (e.isTransfered()) {
       JOptionPane.showMessageDialog(this,
@@ -216,7 +216,7 @@ public class OrderLineEditor
 
     try {
       OrderLineIO.delete(e, dc);
-      table.removeElementAt(n);
+      tableView.removeElementAt(n);
       // suppression de l'échéance de tiers s'il y a lieu
       if (AccountUtil.isPersonalAccount(e.getAccount())) {
         OrderLine t = OrderLineIO.find(e, dc);
@@ -237,7 +237,7 @@ public class OrderLineEditor
   public void dialogModification() {
 
     OrderLineView dlg = null;
-    int n = table.getSelectedRow();
+    int n = tableView.getSelectedRow();
     if (n < 0) {
       JOptionPane.showMessageDialog(this,
               NO_PAYMENT_SELECTED,
@@ -246,7 +246,7 @@ public class OrderLineEditor
       return;
     }
 
-    OrderLine e = table.getElementAt(n);
+    OrderLine e = tableView.getElementAt(n);
     if (e.isTransfered()) {
       if (!MessagePopup.confirm(this,
               MessageUtil.getMessage("payment.update.confirmation"),
@@ -262,7 +262,7 @@ public class OrderLineEditor
       if (dlg.isValidation()) {
         e = dlg.getOrderLine();
         OrderLineIO.update(e, dc);
-        table.setElementAt(e, n);
+        tableView.setElementAt(e, n);
       }
     } catch (Exception ex) {
       GemLogger.logException(PAYMENT_UPDATE_EXCEPTION, ex, this);
@@ -275,9 +275,9 @@ public class OrderLineEditor
   public void dialogCreation() {
     OrderLineView dlg = null;
     OrderLine e = null;
-    int n = table.getSelectedRow();
+    int n = tableView.getSelectedRow();
     if (n >= 0) {
-      e = new OrderLine(table.getElementAt(n));
+      e = new OrderLine(tableView.getElementAt(n));
       e.setPaid(false); // echeance remise à non payée pour la copie
       e.setInvoice(null);
     }
@@ -350,7 +350,7 @@ public class OrderLineEditor
       data.removeAll(BillingUtil.getInvoiceOrderLines(data, inv.getNumber()));
       // on ajoute à l'échéancier les échéances modifiées de la facture mise à jour
       data.addAll(inv.getOrderLines());
-      // on met à jour l'affichage de la table
+      // on met à jour l'affichage de la tableView
       tableModel.fireTableDataChanged();
 
     }
@@ -376,12 +376,12 @@ public class OrderLineEditor
    */
   private void createInvoice() {
 
-    int[] rows = table.getSelectedRows();
+    int[] rows = tableView.getSelectedRows();
     invoiceSelection = new ArrayList<OrderLine>();
     int nullItems = 0;
 
     for (int i = 0; i < rows.length; i++) {
-      OrderLine e = table.getElementAt(rows[i]);
+      OrderLine e = tableView.getElementAt(rows[i]);
       if (ModeOfPayment.FAC.toString().equals(e.getModeOfPayment())) {
         nullItems++;
       }
@@ -418,13 +418,13 @@ public class OrderLineEditor
    */
   private void createQuotationFromSelection() {
 
-    int[] rows = table.getSelectedRows();
+    int[] rows = tableView.getSelectedRows();
     invoiceSelection = new ArrayList<OrderLine>();
 
     boolean invoice = false;
 
     for (int i = 0; i < rows.length; i++) {
-      OrderLine e = table.getElementAt(rows[i]);
+      OrderLine e = tableView.getElementAt(rows[i]);
       invoice = ModeOfPayment.FAC.toString().equals(e.getModeOfPayment());
       // la création de facture n'est possible que si l'échéance ne comporte encore aucun numéro de facture
       if (e.getInvoice() == null || e.getInvoice().isEmpty()) {

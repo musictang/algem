@@ -1,7 +1,7 @@
 /*
- * @(#)MemberExportDlg.java	2.8.k 25/07/13
+ * @(#)MemberExportDlg.java	2.8.t 15/05/14
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -24,10 +24,7 @@ import java.awt.Frame;
 import java.awt.GridBagLayout;
 import java.sql.SQLException;
 import javax.swing.JLabel;
-import net.algem.accounting.Account;
-import net.algem.accounting.AccountChoice;
-import net.algem.accounting.AccountIO;
-import net.algem.accounting.CostAccountCtrl;
+import net.algem.accounting.*;
 import net.algem.config.Param;
 import net.algem.config.ParamChoice;
 import net.algem.config.ParamTableIO;
@@ -117,13 +114,13 @@ public class MemberExportDlg
     Param n = (Param) costAccount.getSelectedItem();
     a = (n == null) ? new Account(0) : new Account(n);
 
-    String query = "WHERE id IN (SELECT DISTINCT p.id FROM personne p, eleve e, echeancier2 c"
+    String query = "WHERE id IN (SELECT DISTINCT p.id FROM personne p, eleve e, " + OrderLineIO.TABLE + " c"
             + " WHERE e.idper = p.id AND p.id = c.adherent"
             + " AND c.echeance BETWEEN '" + dateRange.getStartFr().toString() + "' AND '" + dateRange.getEndFr().toString() + "'"
             + " AND c.ecole = '" + getSchool() + "'";
-            //+" AND (p.id=a.idper OR e.payeur=a.idper)";
-    query += c.getNumber().isEmpty() ? "" : " AND c.compte = '"+c.getId()+"'";
-    query += a.getNumber().isEmpty() ? ")" : " AND c.analytique = '"+a.getNumber()+"')";
+    //+" AND (p.id=a.idper OR e.payeur=a.idper)";
+    query += c.getNumber().isEmpty() ? "" : " AND c.compte = '" + c.getId() + "'";
+    query += a.getNumber().isEmpty() ? ")" : " AND c.analytique = '" + a.getNumber() + "')";
 
     return query;
   }

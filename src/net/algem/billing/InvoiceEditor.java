@@ -1,5 +1,5 @@
 /*
- * @(#)InvoiceEditor.java 2.8.s 17/02/14
+ * @(#)InvoiceEditor.java 2.8.t 16/05/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -42,7 +42,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.s
+ * @version 2.8.t
  * @since 2.3.a 07/02/12
  */
 public class InvoiceEditor
@@ -178,7 +178,9 @@ public class InvoiceEditor
         return;
       } else {
         v = (Invoice) old;
-        gemListener.postEvent(new InvoiceUpdateEvent(v));
+        if (gemListener != null) {
+          gemListener.postEvent(new InvoiceUpdateEvent(v));
+        }
       }
     }
     if (listener != null) {

@@ -1,5 +1,5 @@
 /*
- * @(#)DesktopOpenHandler.java 2.8.s 18/02/14
+ * @(#)DesktopOpenHandler.java 2.8.t 16/05/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -27,10 +27,10 @@ import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
 
 /**
- * Java desktop handler for file opening.
+ * Java desktop handler for opening files.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.s
+ * @version 2.8.t
  */
 public class DesktopOpenHandler
         extends DesktopHandler
@@ -39,19 +39,28 @@ public class DesktopOpenHandler
   public DesktopOpenHandler() {
   }
 
+  /**
+   * Tries to open files using the default system application.
+   * 
+   * @param paths files' paths
+   * @throws DesktopHandlerException 
+   */
   public void open(String... paths) throws DesktopHandlerException {
-    if (!isOpenSupported()) {
-      GemLogger.log("Desktop Open not supported");
-      executeClient(paths);
-    }
-    try {
-      for (String path : paths) {
-        getDesktop().open(new File(path));
+
+    if (isOpenSupported()) {
+      try {
+        for (String path : paths) {
+          getDesktop().open(new File(path));
+        }
+      } catch (IOException e) {
+        GemLogger.log("Desktop Open io Exception " + e.getMessage());
+        executeClient(paths);
       }
-    } catch (Exception e) {
-      GemLogger.log(e.getMessage() + " : Desktop Open Exception");
+    } else {
+      GemLogger.log("Desktop.Action.OPEN not supported");
       executeClient(paths);
     }
+
   }
   
   

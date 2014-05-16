@@ -1,7 +1,7 @@
 /*
- * @(#)WebSitePanel.java	2.8.k 23/07/13
+ * @(#)WebSitePanel.java	2.8.t 16/05/14
  *
- * Copyright (c) 1998-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1998-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,12 +28,14 @@ import java.awt.event.ItemListener;
 import java.util.Vector;
 import net.algem.config.Param;
 import net.algem.util.BundleUtil;
+import net.algem.util.GemLogger;
 import net.algem.util.jdesktop.DesktopBrowseHandler;
+import net.algem.util.jdesktop.DesktopHandlerException;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.k
+ * @version 2.8.t
  */
 public class WebSitePanel extends InfoPanel implements ActionListener, ItemListener {
 
@@ -56,7 +58,7 @@ public class WebSitePanel extends InfoPanel implements ActionListener, ItemListe
     return s;
   }
 
-  public void setSite(WebSite s) {
+  private void setSite(WebSite s) {
     if (s.getType() >= 0) {
       iChoice.setKey(s.getType());
     }
@@ -90,6 +92,10 @@ public class WebSitePanel extends InfoPanel implements ActionListener, ItemListe
 
   @Override
   public void actionPerformed(ActionEvent e) {
-    browser.browse(iField.getText());
+    try {
+      browser.browse(iField.getText());
+    } catch (DesktopHandlerException ex) {
+      GemLogger.log(ex.getMessage());
+    }
   }
 }
