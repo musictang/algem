@@ -1,5 +1,5 @@
 /*
-* @(#)OrderLineDlg.java	2.8.t 13/05/14
+* @(#)OrderLineDlg.java	2.8.u 19/05/14
 *
 * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
 *
@@ -50,7 +50,7 @@ import net.algem.util.ui.MessagePopup;
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @author <a href="mailto:damien.loustau@gmail.com">Damien Loustau</a>
- * @version 2.8.t
+ * @version 2.8.u
  * @since 1.0a 07/07/1999
  */
 public class OrderLineDlg
@@ -77,7 +77,7 @@ implements ActionListener, TableModelListener {
   private JPopupMenu popup;
   private JMenuItem miTransfer;
   private JMenuItem miCashing;
-  private JCheckBoxMenuItem checkPayment;
+  private JCheckBoxMenuItem cbCheckPayment;
   private JMenu menutop;
   
   /**
@@ -99,18 +99,18 @@ implements ActionListener, TableModelListener {
     JMenuBar menubar = new JMenuBar();
     menutop = new JMenu("Options");
     menubar.add(menutop);
-    if (!dataCache.authorize("Standing.order.export.auth")) {
-      checkPayment.setEnabled(false);
+
+    menutop.add(cbCheckPayment = new JCheckBoxMenuItem(BundleUtil.getLabel("Payment.multiple.modification.auth")));
+    if (!dataCache.authorize("Payment.multiple.modification.auth")) {
+      cbCheckPayment.setEnabled(false);
     }
-    menutop.add(checkPayment = new JCheckBoxMenuItem(BundleUtil.getLabel("Payment.multiple.modification.auth")));
-    checkPayment.addActionListener(this);
+    cbCheckPayment.addActionListener(this);
     popup = new JPopupMenu();
     popup.add(miTransfer = new JMenuItem(BundleUtil.getLabel("Transfer.cancel.label")));
     popup.add(miCashing = new JMenuItem (BundleUtil.getLabel("Cashing.multiple.action.label")));
     popup.getComponent(1).setEnabled(false);
-    //miCashing.addActionListener(this);
     miTransfer.addActionListener(this);
-    tableView.addPopupMenuListener(popup);
+    tableView.addPopupMenuListener(popup, dataCache);
     
     btPrint = new GemButton(BundleUtil.getLabel("Action.print.label"));
     btPrint.addActionListener(this);
@@ -182,7 +182,7 @@ implements ActionListener, TableModelListener {
       } catch (PrinterException ex) {
         System.err.format("Cannot print %s%n", ex.getMessage());
       }
-    } else if (src == checkPayment) {
+    } else if (src == cbCheckPayment) {
       removeMultipleCashingOption();
     } else if (src == btCreate) {
       dialogCreation();
@@ -190,9 +190,9 @@ implements ActionListener, TableModelListener {
       dialogModification();
     } else if (src == btSuppress) {
       dialogSuppression();
-    } else if (src == miTransfer && dataCache.authorize("Accounting.transfer")) {
+    } else if (src == miTransfer && dataCache.authorize("Accounting.transfer.auth")) {
       cancelTransfer();
-    } else if (src == miCashing && dataCache.authorize("Accouting.transfert")){
+    } else if (src == miCashing && dataCache.authorize("Payment.multiple.modification.auth")){
       multipleCashing(); // encaissement multiple
     } else if (src == btLoad) {
       load();
@@ -362,15 +362,14 @@ implements ActionListener, TableModelListener {
   }
   
   /**
-   * Activation / Desactivation for the option "Encaissement Multiple".
-   * Check, in the option menu, if the line "encaissement multiple" (checkPayment" is checked
+   * Activation / Desactivation of the option "Payment.multiple.modification.auth".
+   * Sets the option "Payment.multiple.modification.auth" on menu.
    */
   public void removeMultipleCashingOption() {
-    if (checkPayment.getState()==true){
+    if (cbCheckPayment.getState()){
       miCashing.addActionListener(this);
       miCashing.setEnabled(true);
-    }
-    else {
+    } else {
       miCashing.removeActionListener(this);
       miCashing.setEnabled(false);
     }

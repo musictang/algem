@@ -1,7 +1,7 @@
 /*
- * @(#)MenuTableModel.java	2.8.p 01/11/13
+ * @(#)MenuTableModel.java	2.8.u 19/05/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,7 +27,7 @@ import net.algem.util.BundleUtil;
 /**
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.u
  * @since 2.6.a 01/08/2012
  */
 public class MenuTableModel
@@ -109,6 +109,6 @@ public class MenuTableModel
 
     MenuAccess m = tuples.elementAt(line);
     m.setAuth((Boolean) value);
-    ((DefaultUserService) service).updateAccess(m, getColumnName(col), userId);
+    ((DefaultUserService) service).updateAccess(m, getColumnName(col).toLowerCase(), userId);
   }
 }

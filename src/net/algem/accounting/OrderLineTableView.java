@@ -1,5 +1,5 @@
 /*
-* @(#)OrderLineTableView.java 2.8.t 15/05/14
+* @(#)OrderLineTableView.java 2.8.u 19/05/14
 *
 * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
 *
@@ -45,7 +45,7 @@ import net.algem.util.model.Model;
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @author <a href="mailto:damien.loustau@gmail.com">Damien Loustau</a>
- * @version 2.8.t
+ * @version 2.8.u
  * @since 1.0a 07/07/1999
  *
  */
@@ -81,9 +81,9 @@ implements TableModelListener {
   private DateFr begin;
   private DateFr end;
   
-  public OrderLineTableView(OrderLineTableModel _tableModel, ActionListener al) {
+  public OrderLineTableView(OrderLineTableModel tableModel, ActionListener al) {
     
-    tableModel = _tableModel;
+    this.tableModel = tableModel;
     table = new JTable(tableModel) {
       //Implements table header tool tips.
       
@@ -93,7 +93,6 @@ implements TableModelListener {
           
           @Override
           public String getToolTipText(MouseEvent e) {
-            //String tip = null;
             java.awt.Point p = e.getPoint();
             int index = columnModel.getColumnIndexAtX(p.x);
             int realIndex = columnModel.getColumn(index).getModelIndex();
@@ -177,12 +176,13 @@ implements TableModelListener {
    *
    * @param popup
    */
-  void addPopupMenuListener(JPopupMenu popup) {
-    table.addMouseListener(new MenuPopupListener(table, popup) {
-      
+  void addPopupMenuListener(JPopupMenu popup, final DataCache dataCache) {
+    table.addMouseListener(new MenuPopupListener(table, popup)
+    {
+
       @Override
       public void maybeShowPopup(MouseEvent e) {
-        int[] rows = table.getSelectedRows();        
+        int[] rows = table.getSelectedRows();
         boolean t = false;
         boolean p = false;
         for (int i = 0; i < rows.length; i++) {
@@ -191,29 +191,21 @@ implements TableModelListener {
             break;
           }
         }
+
         for (int i = 0; i < rows.length; i++) {
           if (!getElementAt(rows[i]).isPaid()) {
             p = true;
             break;
           }
         }
-        if (t || p) {
-          popup.getComponent(0).setEnabled(true);
-          ActionListener[] tabList = popup.getComponent(1).getListeners(ActionListener.class);
-          if (tabList != null && tabList.length > 0){
-            popup.getComponent(1).setEnabled(true);
-          }
-          super.maybeShowPopup(e);
-          if (!t) {
-            popup.getComponent(0).setEnabled(false);
-          }
-          if (!p) {
-            if (popup.getComponent(1) != null){
-              popup.getComponent(1).setEnabled(false);
-            }
-          }
+        popup.getComponent(0).setEnabled(t && dataCache.authorize("Accounting.transfer.auth"));
+
+        ActionListener[] listeners = popup.getComponent(1).getListeners(ActionListener.class);
+        if (listeners != null && listeners.length > 0) {
+          popup.getComponent(1).setEnabled(p && dataCache.authorize("Payment.multiple.modification.auth"));
         }
-        
+        super.maybeShowPopup(e);
+
       }
     });
   }

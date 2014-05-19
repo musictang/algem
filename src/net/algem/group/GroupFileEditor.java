@@ -1,5 +1,5 @@
 /*
- * @(#)GroupFileEditor.java 2.8.t 15/05/14
+ * @(#)GroupFileEditor.java 2.8.u 19/05/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -43,7 +43,7 @@ import net.algem.util.ui.*;
 /**
  * Group file main editor.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.8.u
  */
 public class GroupFileEditor
         extends GemModule

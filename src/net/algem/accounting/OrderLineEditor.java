@@ -1,5 +1,5 @@
 /*
- * @(#)OrderLineEditor.java	2.8.t 15/05/14
+ * @(#)OrderLineEditor.java	2.8.u 19/05/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -49,7 +49,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.8.u
  * @since 1.0a 07/07/1999
  */
 public class OrderLineEditor
@@ -76,9 +76,9 @@ public class OrderLineEditor
   private static final String PAYMENT_CREATE_EXCEPTION = MessageUtil.getMessage("payment.add.exception");
   private static final String PAYMENT_DELETE_EXCEPTION = MessageUtil.getMessage("payment.delete.exception");
 
-  public OrderLineEditor(GemDesktop _desktop, OrderLineTableModel _tableModel) {
-    super(_desktop);
-    tableModel = _tableModel;
+  public OrderLineEditor(GemDesktop desktop, OrderLineTableModel tableModel) {
+    super(desktop);
+    this.tableModel = tableModel;
     tableView = new OrderLineTableView(tableModel, this);
 
   }
