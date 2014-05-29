@@ -84,7 +84,7 @@ public class ModuleService
   }
 
   public void delete(Course c) throws CourseException, SQLException {
-    String where = ", action a WHERE p.ptype = " + Schedule.COURSE_SCHEDULE + " AND p.action = a.id AND a.cours = " + c.getId();
+    String where = ", action a WHERE p.ptype = " + Schedule.COURSE + " AND p.action = a.id AND a.cours = " + c.getId();
     if (ScheduleIO.findCourse(where, dc).size() > 0) {
       throw new CourseException(MessageUtil.getMessage("course.suppression.warning"));
     }

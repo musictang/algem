@@ -24,9 +24,11 @@ import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 import net.algem.accounting.*;
 import net.algem.bank.*;
@@ -80,6 +82,7 @@ public class PersonFileEditor
   private JMenuItem miDelete;
   private JMenuItem miLogin;
   private JMenuItem miMember, miTeacher, miBank, miEmployee;
+  private JCheckBoxMenuItem miTech;
   private JMenuItem miPassRehearsal, miRehearsal;
   private JMenuItem miHistoRehearsal;
   private JMenuItem miCard;
@@ -286,7 +289,9 @@ public class PersonFileEditor
     } else if ("EmployeeDelete".equals(arg)) {
       personFileView.deleteEmployee();
       miEmployee.setEnabled(dataCache.authorize("Employee.editing.auth"));
-    } /*
+    } else if ("Technician".equals(arg)) {
+      updateTechnician(dossier.getId());
+    }/*
      * else if (evt.getActionCommand().equals("Payeur")) { view.setCursor(new
      * Cursor(Cursor.WAIT_CURSOR)); PersonFile payeur =
      * PersonFileIO.findPayer(dataCache, dossier.getMember().getPayer());
@@ -487,6 +492,14 @@ public class PersonFileEditor
 
   }
 
+  void updateTechnician(int idper) {
+    try {
+      String query = "INSERT INTO " + EmployeeIO.TYPE_TABLE + " VALUES(" + dossier.getId() + ")";
+      dc.executeUpdate(query);
+    } catch (SQLException ex) {
+      GemLogger.log(ex.getMessage());
+    }
+  }
   /**
    * Inserts or updates dossier.
    *
@@ -709,11 +722,18 @@ public class PersonFileEditor
     mFile.add(miDelete);
 
     mOptions.add(miMember = getMenuItem("Member.reading"));
-    mOptions.add(miBank = getMenuItem("Person.bank.editing"));
+    miMember.setToolTipText(BundleUtil.getLabel("Member.tab.tip"));
     mOptions.add(miTeacher = getMenuItem("Teacher"));
+    miTeacher.setToolTipText(BundleUtil.getLabel("Teacher.tab.tip"));
     mOptions.add(miEmployee = getMenuItem("Employee"));
     miEmployee.setEnabled(dataCache.authorize("Employee.editing.auth"));
-
+    miEmployee.setToolTipText(BundleUtil.getLabel("Employee.tab.tip"));
+    miTech = new JCheckBoxMenuItem(BundleUtil.getLabel("Technician.label"));
+    miTech.setActionCommand("Technician");
+    mOptions.add(miTech);
+//    miTech.setToolTipText(BundleUtil.getLabel("Technician.tab.tip"));
+//    miTech.setSelected(isTechnician(dossier.getId()));
+    
     mOptions.add(miGroups = getMenuItem("Groups"));
     //Désactivation conditionnelle des menus Adherent, Prof et Bank
     if (dossier.getMember() != null) {
@@ -722,24 +742,27 @@ public class PersonFileEditor
     if (dossier.getTeacher() != null) {
       miTeacher.setEnabled(false);
     }
-    if (dossier.getRib() != null) {
-      miBank.setEnabled(false);
-    }
-
+    
     mOptions.addSeparator();
     mOptions.add(miRehearsal = getMenuItem("Person.rehearsal.scheduling"));
     mOptions.add(miPassRehearsal = getMenuItem("Person.pass.scheduling"));
+   
     mOptions.addSeparator();
-
     mOptions.add(miHistoRehearsal = getMenuItem("Rehearsal.history"));
     mOptions.add(miMonthPlanning = getMenuItem("Menu.month.schedule"));
+    
     mOptions.addSeparator();
-
     mOptions.add(miHistoInvoice = getMenuItem("Invoice.history"));
     mOptions.add(miHistoQuote = getMenuItem("Quotation.history"));
+    
     mOptions.addSeparator();
-
+    mOptions.add(miBank = getMenuItem("Person.bank.editing"));
+    if (dossier.getRib() != null) {
+      miBank.setEnabled(false);
+    }
     mOptions.add(miCard = getMenuItem("Rehearsal.card.editing"));
+    
+    mOptions.addSeparator();
     mOptions.add(miLogin = getMenuItem("Login.creation"));
 
     mHelp.add(miAbout);

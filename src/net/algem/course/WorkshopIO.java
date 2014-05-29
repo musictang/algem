@@ -107,7 +107,7 @@ public class WorkshopIO
             + InstrumentIO.PERSON_INSTRUMENT_TABLE + " pi"
             + " WHERE pl.adherent = pi.idper"
             + " AND pl.idplanning = p.id"
-            + " AND p.ptype = " + Schedule.WORKSHOP_SCHEDULE
+            + " AND p.ptype = " + Schedule.WORKSHOP
             + " AND p.action = a.id"
             + " AND a.cours = " + id
             + " AND pi.ptype = " + Instrument.MEMBER + " AND pi.idx = " + 0

@@ -258,7 +258,7 @@ public class PlanModifCtrl
 
       dc.setAutoCommit(false);
       changeHour(start, end, hStart, hEnd);
-      if (ScheduleObject.MEMBER_SCHEDULE == plan.getType()) {
+      if (ScheduleObject.MEMBER == plan.getType()) {
         memberService.checkSubscriptionCard(plan, hStart, hEnd);
       }
       dc.commit();
@@ -283,7 +283,7 @@ public class PlanModifCtrl
             + " AND jour >= '" + start + "' AND jour <= '" + end + "'"
             + " AND ptype = " + plan.getType()
             + " AND debut = '" + plan.getStart() + "' AND fin = '" + plan.getEnd() + "'"
-            + " AND lieux = " + plan.getPlace() + " AND idper = " + plan.getIdPerson();
+            + " AND lieux = " + plan.getIdRoom() + " AND idper = " + plan.getIdPerson();
     if (dc.executeUpdate(query) < 1) {
       throw new Exception("PLANNING UPDATE=0 " + query);
     }
@@ -377,7 +377,7 @@ public class PlanModifCtrl
 
     dlg.setTitle(plan.getScheduleLabel());
     dlg.setDate(cal.getTime());
-    dlg.setRoom(plan.getPlace());
+    dlg.setRoom(plan.getIdRoom());
 
     dlg.entry();
     if (!dlg.isValidate()) {
@@ -471,7 +471,7 @@ public class PlanModifCtrl
       copy.setDate(newPlan.getDate());
       copy.setStart(newPlan.getStart());
       copy.setEnd(newPlan.getEnd());
-      copy.setPlace(newPlan.getPlace());
+      copy.setIdRoom(newPlan.getIdRoom());
       copy.setNote(0);
       service.copyCourse(plan, copy);
       desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));
@@ -662,9 +662,9 @@ public class PlanModifCtrl
       try {
         // suppression du planning
         service.deleteRehearsal(dlg.getDateStart(), dlg.getDateEnd(), plan);
-        if (ScheduleObject.MEMBER_SCHEDULE == plan.getType()) {
+        if (ScheduleObject.MEMBER == plan.getType()) {
           memberService.editSubscriptionCard(dataCache, plan);
-        } else if (ScheduleObject.GROUP_SCHEDULE == plan.getType()) {
+        } else if (ScheduleObject.GROUP == plan.getType()) {
           // annulation échéance
           Group g = new GemGroupService(dc).find(plan.getIdPerson());
           if (g != null && g.getIdref() > 0) {
@@ -743,15 +743,15 @@ public class PlanModifCtrl
     action.setDateEnd(a.getDateEnd());
     action.setHourStart(plan.getStart());
     action.setHourEnd(plan.getEnd());
-    action.setRoom(plan.getPlace());
+    action.setRoom(plan.getIdRoom());
     return action;
   }
 
   private String getLabel(ScheduleObject plan) {
     switch (plan.getType()) {
-      case ScheduleObject.MEMBER_SCHEDULE:
+      case ScheduleObject.MEMBER:
         return BundleUtil.getLabel("Schedule.person.modification.label");
-      case ScheduleObject.GROUP_SCHEDULE:
+      case ScheduleObject.GROUP:
         return BundleUtil.getLabel("Schedule.group.modification.label");
       default:
         return BundleUtil.getLabel("Schedule.default.modification.label");

@@ -146,15 +146,15 @@ public class HourStatDlg
       for (int i = 0; i < plan.size(); i++) {
         Schedule p = plan.elementAt(i);
 
-        if (p.getType() == Schedule.COURSE_SCHEDULE) {
+        if (p.getType() == Schedule.COURSE) {
           Course c = ((CourseIO) DataCache.getDao(Model.Course)).findIdByAction(p.getIdAction());
           if (!c.isCollective()) {
             continue;
           }
         }
 
-//        Room s = ((RoomIO) DataCache.getDao(Model.Room)).findId(p.getPlace());
-        Room s = (Room) DataCache.findId(p.getPlace(), Model.Room);
+//        Room s = ((RoomIO) DataCache.getDao(Model.Room)).findId(p.getIdRoom());
+        Room s = (Room) DataCache.findId(p.getIdRoom(), Model.Room);
         
 //        Establishment estab = dataCache.getEstabFromId(s.getEstab());
         Establishment estab = (Establishment) DataCache.findId(s.getEstab(), Model.Establishment);
@@ -162,11 +162,11 @@ public class HourStatDlg
         int duration = p.getStart().getLength(p.getEnd());
         int idx = estabList.indexOf(estab);
 
-        if (p.getType() == Schedule.COURSE_SCHEDULE) {
+        if (p.getType() == Schedule.COURSE) {
           collective[idx] += duration;
-        } else if (p.getType() == Schedule.GROUP_SCHEDULE || p.getType() == Schedule.MEMBER_SCHEDULE) {
+        } else if (p.getType() == Schedule.GROUP || p.getType() == Schedule.MEMBER) {
           rehearsal[idx] += duration;
-        } else if (p.getType() == Schedule.WORKSHOP_SCHEDULE) {
+        } else if (p.getType() == Schedule.WORKSHOP) {
           workshop[idx] += duration;
         } else {
           other[idx] += duration;

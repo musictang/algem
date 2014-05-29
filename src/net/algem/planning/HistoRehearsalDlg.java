@@ -107,7 +107,7 @@ public class HistoRehearsalDlg
     group = g;
 
     int min = 0;
-    String query = " WHERE p.ptype=" + Schedule.GROUP_SCHEDULE + " AND p.idper=" + group.getId() + " ORDER BY jour,debut";
+    String query = " WHERE p.ptype=" + Schedule.GROUP + " AND p.idper=" + group.getId() + " ORDER BY jour,debut";
     Vector<Schedule> v = ScheduleIO.find(query, dataCache.getDataConnection());
     for (int i = 0; i < v.size(); i++) {
       Schedule p = v.elementAt(i);

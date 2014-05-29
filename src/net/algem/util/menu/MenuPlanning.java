@@ -1,5 +1,5 @@
 /*
- * @(#)MenuPlanning.java	2.6.a 12/10/2012
+ * @(#)MenuPlanning.java	2.8.v 21/05/14
  * 
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
@@ -27,6 +27,7 @@ import net.algem.config.ConfigUtil;
 import net.algem.contact.teacher.SubstituteTeacherCtrl;
 import net.algem.edition.AttendanceSheetDlg;
 import net.algem.planning.CourseScheduleCtrl;
+import net.algem.planning.StudioScheduleCtrl;
 import net.algem.planning.TrainingScheduleCtrl;
 import net.algem.planning.WorkhopScheduleCtrl;
 import net.algem.planning.day.DayScheduleCtrl;
@@ -39,9 +40,10 @@ import net.algem.util.module.GemModule;
 
 /**
  * Planning menu.
+ * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.v
  * @since 1.0a 07/07/1999
  */
 public class MenuPlanning
@@ -54,6 +56,7 @@ public class MenuPlanning
   private JMenuItem miCourse;
   private JMenuItem miWorkshop;
   private JMenuItem miTraining;
+  private JMenuItem miStudio;
   private JMenuItem miReplacement;
 
   public MenuPlanning(GemDesktop _desktop) {
@@ -70,6 +73,7 @@ public class MenuPlanning
       add(miCourse = new JMenuItem(BundleUtil.getLabel("Course.scheduling.label")));
       add(miWorkshop = new JMenuItem(BundleUtil.getLabel("Workshop.scheduling.label")));
       add(miTraining = new JMenuItem(BundleUtil.getLabel("Training.course.scheduling.label")));
+      add(miStudio = new JMenuItem(BundleUtil.getLabel("Studio.scheduling.label")));
     }
 
     manage = ConfigUtil.getConf(ConfigKey.TEACHER_MANAGEMENT.getKey(), dc);
@@ -108,10 +112,14 @@ public class MenuPlanning
       tsCtrl.addActionListener(this);
       tsCtrl.init();
       desktop.addPanel(GemModule.TRAINING_SCHEDULING_KEY, tsCtrl);
+    } else if (src == miStudio) {
+      StudioScheduleCtrl studioCtrl = new StudioScheduleCtrl(desktop);
+      studioCtrl.addActionListener(this);
+      studioCtrl.init();
+      desktop.addPanel(GemModule.STUDIO_SCHEDULING_KEY, studioCtrl);
     } else if (src == miAttendanceSheet) {
-        new AttendanceSheetDlg(desktop.getFrame(), dataCache);
-    } 
-    else if (src == miReplacement) {
+       new AttendanceSheetDlg(desktop.getFrame(), dataCache);
+    } else if (src == miReplacement) {
       SubstituteTeacherCtrl rCtrl = new SubstituteTeacherCtrl(desktop);
       desktop.addPanel("Replacement", rCtrl);
       desktop.getSelectedModule().setSize(GemModule.L_SIZE);

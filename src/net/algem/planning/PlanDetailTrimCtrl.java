@@ -44,6 +44,7 @@ import net.algem.util.ui.GridBagHelper;
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.6.a
  * @since 1.0a 07/07/1999
+ * @deprecated 
  */
 public abstract class PlanDetailTrimCtrl
         extends GemPanel

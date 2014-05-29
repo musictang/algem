@@ -130,8 +130,8 @@ public abstract class Statistics
     printTableIntResult(MessageUtil.getMessage("statistics.city.distribution"), getQuery("students_by_location"));
 
     printTitle(MessageUtil.getMessage("statistics.number.of.hours.of.rehearsal"));
-    String hr = getStringResult(getQuery("hours_of_rehearsal", null, Schedule.GROUP_SCHEDULE));
-    String hm = getStringResult(getQuery("hours_of_rehearsal", null, Schedule.MEMBER_SCHEDULE));
+    String hr = getStringResult(getQuery("hours_of_rehearsal", null, Schedule.GROUP));
+    String hm = getStringResult(getQuery("hours_of_rehearsal", null, Schedule.MEMBER));
     out.println("\n\t\t<table>");
     out.println("\n\t\t<tr><th>Groupes</th><td>"+parseTimeResult(hr)+"</td></tr>");
     out.println("\n\t\t<tr><th>Adhérents</th><td>"+parseTimeResult(hm)+"</td></tr>");
@@ -356,7 +356,7 @@ public abstract class Statistics
       return "SELECT count(DISTINCT planning.idper) FROM planning, groupe"
               + " WHERE planning.idper = groupe.id"
               + " AND planning.jour BETWEEN '" + start + "' AND '" + end + "'"
-              + " AND planning.ptype = " + Schedule.GROUP_SCHEDULE
+              + " AND planning.ptype = " + Schedule.GROUP
               + " AND planning.lieux <> 8"; // musiques tangentes seulement
     }
 
@@ -364,7 +364,7 @@ public abstract class Statistics
       return "SELECT count(DISTINCT planning.idper) FROM planning, personne"
               + " WHERE planning.idper = personne.id"
               + " AND jour BETWEEN '" + start + "' AND '" + end + "'"
-              + " AND planning.ptype = " + Schedule.MEMBER_SCHEDULE
+              + " AND planning.ptype = " + Schedule.MEMBER
               + " AND planning.lieux <> 8"; // musiques tangentes seulement
     }
 
@@ -487,7 +487,7 @@ public abstract class Statistics
               + " AND plage.fin <= planning.fin"
               + " AND planning.action = action.id"
               + " AND action.cours = cours.id"
-              + " AND planning.ptype = " + Schedule.COURSE_SCHEDULE
+              + " AND planning.ptype = " + Schedule.COURSE
               + " AND planning.lieux = salle.id"
               + " AND cours.collectif = " + a1;
       if ((Integer) a2 > 0) {
@@ -528,7 +528,7 @@ public abstract class Statistics
 				+ " WHERE plage.idplanning = p.id"
 				+ " AND p.jour BETWEEN '" + start + "' AND  '" + end + "'"
 				+ " AND p.action = action.id"
-				+ " AND p.ptype = " + Schedule.COURSE_SCHEDULE
+				+ " AND p.ptype = " + Schedule.COURSE
 				+ " AND action.cours = cours.id"
 				+ " AND cours.collectif = " + a1
 				+ " AND plage.adherent IN("
@@ -547,7 +547,7 @@ public abstract class Statistics
               + "SELECT distinct p1.id, sum(p1.fin - p1.debut) as duree"
               + " FROM planning p1, action, cours"
               + " WHERE p1.jour BETWEEN '" + start + "' AND  '" + end + "'"
-							+ " AND p1.ptype = " + Schedule.COURSE_SCHEDULE
+							+ " AND p1.ptype = " + Schedule.COURSE
               + " AND p1.action = action.id"
               + " AND action.cours = cours.id"
               + " AND cours.collectif = " + a1

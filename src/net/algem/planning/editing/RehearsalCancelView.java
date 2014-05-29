@@ -53,7 +53,7 @@ public class RehearsalCancelView
     start = new DateFrField(plan.getDate());
     end = new DateFrField(plan.getDate());
     String title = null;
-    if (plan.getType() == Schedule.MEMBER_SCHEDULE) {
+    if (plan.getType() == Schedule.MEMBER) {
       title = BundleUtil.getLabel("Member.label") + " " + plan.getIdPerson();
     } else {
       title = BundleUtil.getLabel("Group.label") + " " + plan.getIdPerson();

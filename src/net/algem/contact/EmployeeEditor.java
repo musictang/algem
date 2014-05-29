@@ -45,10 +45,10 @@ public class EmployeeEditor
   private Employee old;
   
   
-  public EmployeeEditor(GemDesktop _desktop, ActionListener listener) {
-    super(_desktop);
+  public EmployeeEditor(GemDesktop desktop, ActionListener listener) {
+    super(desktop);
     service = new BasicEmployeeService(dc);
-    view = new EmployeeView(service);
+    view = new EmployeeView(service, dataCache);
     
     this.setLayout(new BorderLayout());
     add(view, BorderLayout.CENTER);

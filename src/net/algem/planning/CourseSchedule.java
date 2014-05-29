@@ -47,11 +47,7 @@ public class CourseSchedule
 
   public void setTeacher(Person p) {
     person = p;
-    if (p == null) {
-      idper = 0;
-    } else {
-      idper = p.getId();
-    }
+    idper = p == null ? 0 : p.getId();
   }
 
   public Person getTeacher() {
@@ -96,7 +92,7 @@ public class CourseSchedule
     return (d != null
             && type == d.type
             && idper == d.idper
-            && place == d.getPlace()
+            && idRoom == d.getIdRoom()
             && ( idAction == d.getIdAction() || ((Course)getActivity()).equals((Course)d.getActivity()))
             && this_dow == other_dow
             && start.le(d.start)

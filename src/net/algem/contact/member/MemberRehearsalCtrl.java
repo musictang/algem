@@ -142,7 +142,7 @@ public class MemberRehearsalCtrl
       amount = choice.getAmount();
     } else {
       int remainder = calcRemainder(abo.getRest(), length);
-      if (remainder < 0) { // plus de place sur la carte
+      if (remainder < 0) { // plus de idRoom sur la carte
         abo.setRest(0);
         RehearsalCard card = chooseCard(dialog);
         nc = createNewCard(card, Math.abs(remainder), abo.getIdper(), date);
@@ -272,7 +272,7 @@ public class MemberRehearsalCtrl
 
     boolean subscription = view.withCard();
 
-    p.setType(Schedule.MEMBER_SCHEDULE);
+    p.setType(Schedule.MEMBER);
     p.setNote(0);
     try {
       service.saveRehearsal(p);

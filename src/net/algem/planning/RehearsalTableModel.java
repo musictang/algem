@@ -85,7 +85,7 @@ public class RehearsalTableModel
         return p.getEnd().toString();
       case 3:
         try {
-          return DataCache.findId(p.getPlace(), Model.Room).toString();
+          return DataCache.findId(p.getIdRoom(), Model.Room).toString();
         } catch (SQLException ex) {
           GemLogger.logException(ex);
         }

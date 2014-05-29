@@ -299,7 +299,7 @@ public class MemberService
       Action a = new Action();
       actionIO.insert(a);
       ScheduleDTO dto = new ScheduleDTO();
-      dto.setType(Schedule.MEMBER_SCHEDULE);
+      dto.setType(Schedule.MEMBER);
       dto.setPersonId(idper);
       dto.setPlace(room);
       dto.setNote(0);

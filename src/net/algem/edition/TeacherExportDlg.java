@@ -81,7 +81,7 @@ public class TeacherExportDlg
         break;
       case 2: // les intervenants de l'année
         //query = "where id in (SELECT distinct p.id from personne p,adresse a,prof e, cours c where e.idper=p.id and p.id=a.idper and c.prof=p.id and c.start >='" + dc.getStartOfYear() + "')";
-        query = "where id in (SELECT DISTINCT e.idper FROM prof e, planning p WHERE e.idper=p.idper AND (p.ptype = " + Schedule.COURSE_SCHEDULE + " OR p.ptype = " + Schedule.WORKSHOP_SCHEDULE + ") AND p.jour >='" + dataCache.getStartOfYear() + "')";
+        query = "where id in (SELECT DISTINCT e.idper FROM prof e, planning p WHERE e.idper=p.idper AND (p.ptype = " + Schedule.COURSE + " OR p.ptype = " + Schedule.WORKSHOP + ") AND p.jour >='" + dataCache.getStartOfYear() + "')";
         break;
     }
 

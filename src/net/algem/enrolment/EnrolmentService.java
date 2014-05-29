@@ -106,12 +106,12 @@ public class EnrolmentService
   private int getScheduleType(int courseCode) {
 
     if (courseCode == CourseCodeType.ATP.getId()) {
-      return Schedule.WORKSHOP_SCHEDULE;
+      return Schedule.WORKSHOP;
     }
     if (courseCode == CourseCodeType.STG.getId()) {
-      return Schedule.TRAINING_SCHEDULE;
+      return Schedule.TRAINING;
     }
-    return Schedule.COURSE_SCHEDULE;
+    return Schedule.COURSE;
   }
 
   /**
@@ -127,7 +127,7 @@ public class EnrolmentService
   public Vector<SQLkey> getCoursesFromEstab(int estab, DateFr startDate, CourseModuleInfo courseInfo) throws SQLException {
 
     int code = courseInfo.getCode().getId();
-//    int type = CourseCodeType.ATP.getId() == code ? Schedule.WORKSHOP_SCHEDULE : Schedule.COURSE_SCHEDULE;
+//    int type = CourseCodeType.ATP.getId() == code ? Schedule.WORKSHOP : Schedule.COURSE;
     int type = getScheduleType(courseInfo.getCode().getId());
 
     String query = "SELECT DISTINCT cours.id, cours.titre FROM cours, planning, action, salle"
@@ -172,7 +172,7 @@ public class EnrolmentService
     DateFr end = new DateFr(p.getDate());
     end.incDay(7);
     //XXX et si le reste de la semaine tombe pendant les vacances ?
-//    int type = c.isATP() ? Schedule.WORKSHOP_SCHEDULE : Schedule.COURSE_SCHEDULE;
+//    int type = c.isATP() ? Schedule.WORKSHOP : Schedule.COURSE;
 
     int type = getScheduleType(c.getCode());
     String query = ",salle, action WHERE p.ptype = " + type
@@ -203,7 +203,7 @@ public class EnrolmentService
    */
   public Schedule get1PlanCours(int courseId, DateFr start) {
 
-    String query = " ,action WHERE ptype = " + Schedule.COURSE_SCHEDULE
+    String query = " ,action WHERE ptype = " + Schedule.COURSE
             + " AND jour >= '" + start + "'"
             + " AND p.action = action.id"
             + " AND action.cours = " + courseId + " ORDER BY jour LIMIT 1";
@@ -734,7 +734,7 @@ public class EnrolmentService
    */
   private Schedule get1PlanCourse(Course c, DateFr debut, int estab) {
     //XXX voir pour les ateliers ponctuels
-//    int type = c.isATP() ? Schedule.WORKSHOP_SCHEDULE : Schedule.COURSE_SCHEDULE;
+//    int type = c.isATP() ? Schedule.WORKSHOP : Schedule.COURSE;
 
     int type = getScheduleType(c.getCode());
     String query = " ,salle, action WHERE ptype = " + type

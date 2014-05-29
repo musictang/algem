@@ -202,7 +202,7 @@ public class RoomIO
   public Room getRoom(int courseId, String dateStart) throws SQLException {
     int s = 0;
 
-    String query = "SELECT lieux FROM planning, action WHERE ptype = " + Schedule.COURSE_SCHEDULE
+    String query = "SELECT lieux FROM planning, action WHERE ptype = " + Schedule.COURSE
             + " AND jour >= '" + dateStart + "' AND planning.action = action.id AND action.cours = " + courseId + " LIMIT 1";
     ResultSet rs = dc.executeQuery(query);
     if (rs.next()) {

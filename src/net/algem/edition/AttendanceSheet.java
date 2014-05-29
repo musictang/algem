@@ -182,7 +182,7 @@ public class AttendanceSheet
         Vector<Schedule> v = liste.elementAt(i);
         Schedule pl = v.elementAt(0);
         Course course = planningService.getCourseFromAction(pl.getIdAction());
-        Room room = ((RoomIO) DataCache.getDao(Model.Room)).findId(pl.getPlace());
+        Room room = ((RoomIO) DataCache.getDao(Model.Room)).findId(pl.getIdRoom());
         courseHeader(course, room, v);
         if (course.isCollective()) {
           detailCollective(course, room, _range, v);

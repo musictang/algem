@@ -81,7 +81,7 @@ public abstract class ScheduleCanvas
   protected Color getScheduleColor(ScheduleObject p) {
     Color c = Color.white;
     switch (p.getType()) {
-      case Schedule.COURSE_SCHEDULE:
+      case Schedule.COURSE:
         Room s = ((CourseSchedule) p).getRoom();
         Course cc = ((CourseSchedule) p).getCourse();
         if (s.isCatchingUp()) {
@@ -101,22 +101,22 @@ public abstract class ScheduleCanvas
           }
         }
         break;
-      case Schedule.ACTION_SCHEDULE:
+      case Schedule.ACTION:
         //c = Color.green;
         c = colorPrefs.getColor(ColorPlan.ACTION);
         break;
-      case Schedule.MEMBER_SCHEDULE:
+      case Schedule.MEMBER:
         c = colorPrefs.getColor(ColorPlan.MEMBER_REHEARSAL);
         break;
-      case Schedule.GROUP_SCHEDULE:
+      case Schedule.GROUP:
         //c= DARK_BLUE; // couleur groupe et repetiteurs
         c = colorPrefs.getColor(ColorPlan.GROUP_REHEARSAL);
         break;
-      case Schedule.WORKSHOP_SCHEDULE:
+      case Schedule.WORKSHOP:
         //c = Color.white; // couleur atelier ponctuel
         c = colorPrefs.getColor(ColorPlan.WORKSHOP);
         break;
-      case Schedule.TRAINING_SCHEDULE:
+      case Schedule.TRAINING:
         //c = Color.white; // couleur atelier ponctuel
         c = colorPrefs.getColor(ColorPlan.TRAINING);
         break;
@@ -143,7 +143,7 @@ public abstract class ScheduleCanvas
       }
     } else if (p instanceof WorkshopSchedule) {
       return colorPrefs.getColor(ColorPlan.WORKSHOP_LABEL);
-    } else if (p.getType() == Schedule.TRAINING_SCHEDULE) {
+    } else if (p.getType() == Schedule.TRAINING) {
       return colorPrefs.getColor(ColorPlan.TRAINING_LABEL);
     } else if (p instanceof GroupRehearsalSchedule) {
       return colorPrefs.getColor(ColorPlan.GROUP_LABEL);

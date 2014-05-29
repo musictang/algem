@@ -34,6 +34,7 @@ public enum Model {
   CostAccount,
   Course,
   CourseCode,
+  EmployeeType,
   Establishment,
   Group,
   Instrument,

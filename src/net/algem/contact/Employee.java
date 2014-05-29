@@ -21,6 +21,9 @@
 
 package net.algem.contact;
 
+import java.util.List;
+import java.util.Objects;
+import net.algem.config.GemParam;
 import net.algem.planning.DateFr;
 
 /**
@@ -37,6 +40,7 @@ public class Employee {
   private String placeBirth;
   private String guso;
   private String nationality;
+  private List<Integer> types;
 
   public Employee(int idper) {
     this.idper = idper;
@@ -90,10 +94,32 @@ public class Employee {
     this.nationality = nationality;
   }
 
+  public List<Integer> getTypes() {
+    return types;
+  }
+
+  public void setTypes(List<Integer> types) {
+    this.types = types;
+  }
+  
   @Override
   public String toString() {
     return idper + " " + nir;
   }
+
+//  @Override
+//  public boolean equals(Object obj) {
+//    if (obj == null) {
+//      return false;
+//    }
+//    if (getClass() != obj.getClass()) {
+//      return false;
+//    }
+//    final Employee other = (Employee) obj;
+////    List<Integer> oTypes = other.getTypes();
+//    
+//    return true;
+//  }
 
   @Override
   public boolean equals(Object obj) {
@@ -121,6 +147,14 @@ public class Employee {
     }
     if ((this.nationality == null) ? (other.nationality != null) : !this.nationality.equals(other.nationality)) {
       return false;
+    }
+    if ((this.types == null) ? (other.types != null) : this.types.size() != other.types.size()) {
+      return false;
+    }
+    for(int i = 0; i < types.size(); i++) {
+      if (types.get(i) != other.types.get(i)) {
+        return false;
+      }
     }
     return true;
   }

@@ -1,5 +1,5 @@
 /*
- * @(#)GemModule.java	2.8.t 14/04/14
+ * @(#)GemModule.java	2.8.v 21/05/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -41,7 +41,7 @@ import net.algem.util.model.GemCloseVetoException;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.8.t
+ * @version 2.8.v
  * @since 1.0a 06/07/2002
  */
 public class GemModule
@@ -87,6 +87,7 @@ public class GemModule
   public static final String POSTIT_CREATE_KEY="Postit.create";
   public static final String REPLACEMENT_KEY="Replacement";
   public static final String TRAINING_SCHEDULING_KEY="Training.course.scheduling";
+  public static final String STUDIO_SCHEDULING_KEY="Studio.scheduling";
   
 	
   protected String label;

@@ -77,12 +77,12 @@ public class ConflictService
 			+ " OR (debut <= ? AND fin >= ?))"
             + " AND p.id != ?");
     testMemberPS = this.dc.prepareStatement("SELECT " + ScheduleIO.COLUMNS + " FROM planning p "
-			+ "WHERE (ptype = "+Schedule.COURSE_SCHEDULE+" OR ptype = "+Schedule.MEMBER_SCHEDULE+") "
+			+ "WHERE (ptype = "+Schedule.COURSE+" OR ptype = "+Schedule.MEMBER+") "
 			+ "AND jour = ? AND idper = ? "
 			+ "AND ((debut >= ? AND debut < ?) "
 			+ "OR (fin > ? AND fin <= ?) OR (debut <= ? AND fin >= ?))");
     testMemberSchedulePS = this.dc.prepareStatement("SELECT " + ScheduleIO.COLUMNS + " FROM planning p, plage pl "
-			+ "WHERE ptype = "+Schedule.COURSE_SCHEDULE
+			+ "WHERE ptype = "+Schedule.COURSE
 			+ " AND p.id = pl.idplanning"
 			+ " AND p.jour = ? AND pl.adherent = ?"
 			+ " AND ((pl.debut >= ? AND pl.debut < ?)"
@@ -106,7 +106,7 @@ public class ConflictService
     // tous les plannings entre 2 dates avec même action et même lieu (peu importe le date de la semaine ou le prof)
     String query = "WHERE jour >='" + startDate + "' AND jour <= '" + endDate + "'"
             + " AND action=" + plan.getIdAction()
-            + " AND lieux=" + plan.getPlace();
+            + " AND lieux=" + plan.getIdRoom();
 
     Vector<Schedule> v = ScheduleIO.find(query, dc);
     String end = hEnd.toString();
@@ -119,7 +119,7 @@ public class ConflictService
       Schedule p = v.elementAt(i);
 
       testHourPS.setDate(1, new java.sql.Date(p.getDate().getTime()));
-      testHourPS.setInt(2, plan.getPlace());
+      testHourPS.setInt(2, plan.getIdRoom());
       testHourPS.setTime(3, java.sql.Time.valueOf(hStart.toString() + ":00"));
       //testHeurePS.setTime(4, java.sql.Time.valueOf(hf.toString()+":00"));
       testHourPS.setTime(4, java.sql.Time.valueOf(end));
@@ -166,7 +166,7 @@ public class ConflictService
             + " AND date_part('dow',jour)=" + (dow - 1) // SUNDAY=1
             + " AND debut = '" + plan.getStart() + "' AND fin = '" + plan.getEnd() + "'"
             + " AND action = " + plan.getIdAction()
-            + " AND lieux = " + plan.getPlace();
+            + " AND lieux = " + plan.getIdRoom();
     // sélection des plannings dont on veut modifier la salle
     Vector<Schedule> v = ScheduleIO.find(query, dc);
     // pour chaque instance de planning, vérifier l'occupation
@@ -241,7 +241,7 @@ public class ConflictService
     Hour newHourEnd = newPlan.getEnd();
     newHourEnd.decMidnight();
     testRoomPS3.setDate(1, new java.sql.Date(newPlan.getDate().getTime()));
-    testRoomPS3.setInt(2, newPlan.getPlace());
+    testRoomPS3.setInt(2, newPlan.getIdRoom());
     testRoomPS3.setTime(3, java.sql.Time.valueOf(newPlan.getStart().toString() + ":00"));
     testRoomPS3.setTime(4, java.sql.Time.valueOf(newHourEnd.toString() + ":00"));
     testRoomPS3.setTime(5, java.sql.Time.valueOf(newPlan.getStart().toString() + ":00"));
@@ -275,7 +275,7 @@ public class ConflictService
   public Vector<ScheduleTestConflict> testRoomConflict(ScheduleObject plan, Hour hStart, Hour hEnd, DateFr lastDate) throws SQLException {
     Vector<ScheduleTestConflict> conflicts = new Vector<ScheduleTestConflict>();
     String query = "WHERE jour BETWEEN '" + plan.getDate() + "' AND '" + lastDate + "'"
-            + " AND action = " + plan.getIdAction() + " AND lieux = " + plan.getPlace()
+            + " AND action = " + plan.getIdAction() + " AND lieux = " + plan.getIdRoom()
             + " AND debut = '" + plan.getStart() + "' AND fin = '" + plan.getEnd() + "'";
 
     Vector<Schedule> v = ScheduleIO.find(query, dc);
@@ -284,7 +284,7 @@ public class ConflictService
       Schedule p = v.elementAt(i);
 
       testRoomPS3.setDate(1, new java.sql.Date(p.getDate().getTime()));
-      testRoomPS3.setInt(2, plan.getPlace());
+      testRoomPS3.setInt(2, plan.getIdRoom());
       testRoomPS3.setTime(3, java.sql.Time.valueOf(hStart.toString() + ":00"));
       testRoomPS3.setTime(4, java.sql.Time.valueOf(hEnd.toString() + ":00"));
       testRoomPS3.setTime(5, java.sql.Time.valueOf(hStart.toString() + ":00"));
@@ -320,7 +320,7 @@ public class ConflictService
     String where = "pg WHERE pg.idplanning IN ("
             + "SELECT id FROM " + ScheduleIO.TABLE 
             + " WHERE jour BETWEEN '" + plan.getDate() + "' AND '" + lastDate
-            + "' AND lieux = " + plan.getPlace()
+            + "' AND lieux = " + plan.getIdRoom()
             + " AND action = " + plan.getIdAction()
             + " AND debut = '" + plan.getStart() + "' AND fin = '" + plan.getEnd() + "')";
     Vector<ScheduleRange> v = ScheduleRangeIO.find(where, dc);

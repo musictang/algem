@@ -167,7 +167,7 @@ public class MemberCardService
     int[] infos = new int[2];
     Calendar cal = Calendar.getInstance(Locale.FRANCE); // on force la locale ici
     String query = "SELECT planning.idper, planning.jour FROM planning, plage"
-            + " WHERE planning.ptype = " + Schedule.COURSE_SCHEDULE
+            + " WHERE planning.ptype = " + Schedule.COURSE
             + " AND planning.jour >= '" + startDate + "'"
             + " AND planning.action = " + action
             + " AND planning.id = plage.idplanning"

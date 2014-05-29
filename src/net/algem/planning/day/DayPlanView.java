@@ -209,8 +209,7 @@ public class DayPlanView
       ScheduleObject p = v.elementAt(j);
       Color c = getScheduleColor(p);
       drawRange(i, p, c, pas_x); // dessin des plannings p comme ScheduleObject
-      if (p.getType() == Schedule.MEMBER_SCHEDULE
-              || p.getType() == Schedule.GROUP_SCHEDULE) {
+      if (p.getType() == Schedule.MEMBER || p.getType() == Schedule.GROUP) {
         if (p.getNote() == -1) {
           flagNotPaid(i, p.getStart().toMinutes(), p.getEnd().toMinutes(), c);
         }
@@ -238,7 +237,7 @@ public class DayPlanView
     // tracé des plages de cours individuels
     for (ScheduleRangeObject p : vp) {
       Course cc = p.getCourse();
-      if (!cc.isCollective()) {
+      if (cc != null && !cc.isCollective()) {
       drawRange(i, p, c, pas_x);
       }
     }
@@ -292,13 +291,10 @@ public class DayPlanView
    * @param p
    */
   public void textRange(int colonne, ScheduleObject p, ScheduleObject prev) {
-    int deb = p.getStart().toMinutes();
-
-    String nomProf = "";
-    String lib = null;
-
+    int start = p.getStart().toMinutes();
+    
     int x = MARGED + 1 + ((colonne - top) * pas_x);
-    int y = MARGEH + 1 + (((deb - H_START) * pas_y) / GRID_Y);// MARGEH + 1  (orig : MARGEH + 2)
+    int y = MARGEH + 1 + (((start - H_START) * pas_y) / GRID_Y);// MARGEH + 1  (orig : MARGEH + 2)
 
     bg.setColor(getTextColor(p));
     bg.setFont(NORMAL_FONT);
@@ -332,12 +328,16 @@ public class DayPlanView
   }
   
   private void showTeacher(ScheduleObject p, ScheduleObject prev, int x, int y) {
-    
+
     String teacherName = null;
     if (p.getIdPerson() != prev.getIdPerson()) {
       int duree = p.getStart().getLength(p.getEnd());
-      if ((p instanceof CourseSchedule || p instanceof WorkshopSchedule) && duree > 30) {
-        teacherName = p.getPerson().getAbbrevFirstNameName();
+      if ((p instanceof CourseSchedule || p instanceof WorkshopSchedule || p instanceof StudioSchedule) && duree > 30) {
+        if (p instanceof StudioSchedule) {
+          teacherName = ((StudioSchedule) p).getActivityLabel();
+        } else {
+          teacherName = p.getPerson().getAbbrevFirstNameName();
+        }
         if (teacherName != null) {
           bg.setFont(SMALL_FONT);
           int w = fm.stringWidth(teacherName) + 4;

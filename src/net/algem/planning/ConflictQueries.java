@@ -59,7 +59,7 @@ public class ConflictQueries
   public static String getGroupConflictSelection(String date, String hdebut, String hfin, int groupId) {
     return getConflictSelection(date, hdebut, hfin)
             + " AND idper=" + groupId
-            + " AND ptype=" + Schedule.GROUP_SCHEDULE;
+            + " AND ptype=" + Schedule.GROUP;
   }
 
   public static String getRoomTeacherConflictSelection(String date, String hStart, String hEnd, int roomId, int teacherId) {

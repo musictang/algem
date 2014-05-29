@@ -1,7 +1,7 @@
 /*
- * @(#)GemChoice.java	2.6.a 31/07/12
+ * @(#)GemChoice.java	2.8.v 28/05/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -24,13 +24,14 @@ import java.util.Vector;
 import javax.swing.ComboBoxModel;
 import javax.swing.JComboBox;
 import net.algem.util.model.GemList;
+import net.algem.util.model.GemModel;
 
 /**
  * Generic combo box.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.6.v
  */
 public abstract class GemChoice
         extends JComboBox {
@@ -46,7 +47,7 @@ public abstract class GemChoice
     super(v);
   }
 
-  public void set(GemList l) {
+  public <T extends GemModel> void set(GemList<T> l) {
     if (getModel() instanceof GemChoiceModel) {
       int k = getKey();
       ((GemChoiceModel) getModel()).list = l;

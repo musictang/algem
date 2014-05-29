@@ -221,7 +221,7 @@ public class CourseEnrolmentDlg
     DayRange pg = (DayRange) cbDay.getSelectedItem();
     switch (n) {
       case 0:
-        //XXXreturn place.getLabel();//OK
+        //XXXreturn idRoom.getLabel();//OK
         break;
       case 1:
         return module.getText();
@@ -316,13 +316,13 @@ public class CourseEnrolmentDlg
     }
     Schedule p = pj.getPlanning();
     teacher.setKey(p.getIdPerson());
-    Room s = ((RoomIO) DataCache.getDao(Model.Room)).findId(p.getPlace());
+    Room s = ((RoomIO) DataCache.getDao(Model.Room)).findId(p.getIdRoom());
     setRoomId(s.getId()); // récupération du numéro (id) de salle
     roomInfo.setText(s.toString());// affichage de la salle
     hour.setText(p.getStart().toString());
 
     // durée independante pour les ateliers découverte et les cours d'instrument collectif
-    if (p.getType() == Schedule.WORKSHOP_SCHEDULE
+    if (p.getType() == Schedule.WORKSHOP
       || course.isCourseCoInst()
       || course.getCode() == CourseCodeType.STG.getId()) {
       courseLength.setText(new Hour(p.getStart().getLength(p.getEnd())).toString());
@@ -528,7 +528,7 @@ public class CourseEnrolmentDlg
         }
       }
       // pas de vérification des chevauchements de plages pour les plannings de type atelier.
-      if (pj.getPlanning().getType() == Schedule.WORKSHOP_SCHEDULE) {
+      if (pj.getPlanning().getType() == Schedule.WORKSHOP) {
         return true;
       }
 

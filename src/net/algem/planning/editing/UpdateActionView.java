@@ -55,7 +55,7 @@ public class UpdateActionView
     hourPanel.setStart(plan.getStart());
     hourPanel.setEnd(plan.getEnd());
     teacher.setKey(plan.getIdPerson());
-    room.setKey(plan.getPlace());
+    room.setKey(plan.getIdRoom());
 
     oldTeacher = new GemField(20);
     oldTeacher.setText(plan.getPerson().getFirstnameName());

@@ -1,5 +1,5 @@
 /*
- * @(#)ConfigKey.java 2.8.r 01/01/14
+ * @(#)ConfigKey.java 2.8.v 27/05/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -27,7 +27,7 @@ import net.algem.util.BundleUtil;
  * First arg represents key in the table, second arg represents the label.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.r
+ * @version 2.8.v
  * @since 2.1.k 07/07/11
  */
 public enum ConfigKey
@@ -125,6 +125,8 @@ public enum ConfigKey
 
   /** Default establishment. */
   DEFAULT_ESTABLISHMENT("Etablissement.par.defaut", BundleUtil.getLabel("ConfEditor.default.establishment")),
+  
+  DEFAULT_STUDIO("Studio.par.defaut", BundleUtil.getLabel("ConfEditor.default.studio")),
   
   /** Photos path. */
   PHOTOS_PATH("Dossier.Photos", BundleUtil.getLabel("ConfEditor.photos.path.label")),

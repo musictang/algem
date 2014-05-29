@@ -48,10 +48,10 @@ public class ScheduleRangeObject
     date = d.day;
     start = d.start;
     end = d.end;
-    type = Schedule.COURSE_SCHEDULE;
+    type = Schedule.COURSE;
     idper = d.teacherId;
     memberId = d.memberId;
-    place = d.roomId;
+    idRoom = d.roomId;
     note = d.note;
   }
 

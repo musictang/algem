@@ -25,6 +25,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
+import net.algem.config.GemParam;
+import net.algem.config.Param;
 import net.algem.contact.Person;
 import net.algem.course.Course;
 import net.algem.group.Group;
@@ -51,7 +53,7 @@ public class ScheduleIO
   public final static String FOLLOW_UP_SEQUENCE = "idsuivi";
   public final static String COLUMNS = "p.id,p.jour,p.debut,p.fin,p.ptype,p.idper,p.action,p.lieux,p.note";
   public static String BUSY_ROOM_STMT = "SELECT count(id) FROM planning WHERE lieux = ? AND jour > '01-01-1999'";
-  //private static String findHistoRepet = "SELECT "+COLUMNS+" FROM planning p WHERE p.ptype="+Schedule.MEMBER_SCHEDULE+" AND p.idper= ? AND (date BETWEEN ? AND ?) ORDER BY date,start";
+  //private static String findHistoRepet = "SELECT "+COLUMNS+" FROM planning p WHERE p.ptype="+Schedule.MEMBER+" AND p.idper= ? AND (date BETWEEN ? AND ?) ORDER BY date,start";
 
   public static void insert(Schedule p, DataConnection dc) throws SQLException {
 
@@ -65,7 +67,7 @@ public class ScheduleIO
             + "," + p.getType()
             + "," + p.getIdPerson()
             + "," + p.getIdAction()
-            + "," + p.getPlace()
+            + "," + p.getIdRoom()
             + "," + p.getNote()
             + ")";
 
@@ -100,7 +102,7 @@ public class ScheduleIO
             + "',ptype = " + p.getType()
             + ",idper = " + p.getIdPerson()
             + ",action = " + p.getIdAction()
-            + ",lieux = " + p.getPlace()
+            + ",lieux = " + p.getIdRoom()
             + ",note = " + p.getNote()
             + " WHERE id = " + p.getId();
 
@@ -128,7 +130,7 @@ public class ScheduleIO
    */
   public static void deleteRehearsal(DateFr startDate, DateFr endDate, ScheduleObject sched, DataConnection dc) throws SQLException {
     String query = "jour >= '" + startDate + "' AND jour <= '" + endDate + "'"
-            + " AND (ptype = " + Schedule.GROUP_SCHEDULE + " OR ptype=" + Schedule.MEMBER_SCHEDULE + ")"
+            + " AND (ptype = " + Schedule.GROUP + " OR ptype=" + Schedule.MEMBER + ")"
             + " AND action = " + sched.getIdAction();
     delete(query, dc);
   }
@@ -175,7 +177,7 @@ public class ScheduleIO
         p.setType(rs.getInt(5));
         p.setIdPerson(rs.getInt(6));
         p.setIdAction(rs.getInt(7));
-        p.setPlace(rs.getInt(8));
+        p.setIdRoom(rs.getInt(8));
         p.setNote(rs.getInt(9));
       }
       rs.close();
@@ -202,7 +204,7 @@ public class ScheduleIO
         p.setType(rs.getInt(5));
         p.setIdPerson(rs.getInt(6));
         p.setIdAction(rs.getInt(7));
-        p.setPlace(rs.getInt(8));
+        p.setIdRoom(rs.getInt(8));
         p.setNote(rs.getInt(9));
 
         v.addElement(p);
@@ -214,7 +216,7 @@ public class ScheduleIO
     return v;
   }
 
-  private static void fillPlanning(ResultSet rs, ScheduleObject p, DataConnection dc)
+  private static void fillPlanning(ResultSet rs, ScheduleObject p)
           throws SQLException {
     p.setId(rs.getInt(1));
     p.setDate(new DateFr(rs.getString(2)));
@@ -223,10 +225,10 @@ public class ScheduleIO
     p.setType(rs.getInt(5));
     p.setIdPerson(rs.getInt(6));
     p.setIdAction(rs.getInt(7));
-    p.setPlace(rs.getInt(8));
+    p.setIdRoom(rs.getInt(8));
     p.setNote(rs.getInt(9));
 
-    p.setRoom((Room) DataCache.findId(p.getPlace(), Model.Room));
+    p.setRoom((Room) DataCache.findId(p.getIdRoom(), Model.Room));
 
   }
 
@@ -250,31 +252,36 @@ public class ScheduleIO
     ScheduleObject p = null;
 
     switch (rs.getInt(5)) {
-      case Schedule.COURSE_SCHEDULE:
-      case Schedule.TRAINING_SCHEDULE:
+      case Schedule.COURSE:
+      case Schedule.TRAINING:
         p = new CourseSchedule();
-        fillPlanning(rs, p, dc);
+        fillPlanning(rs, p);
         ((CourseSchedule) p).setTeacher((Person) DataCache.findId(p.getIdPerson(), Model.Teacher));
         Action a = (Action) DataCache.findId(p.getIdAction(), Model.Action);
         ((CourseSchedule) p).setAction(a);
         ((CourseSchedule) p).setCourse((Course) DataCache.findId(a.getCourse(), Model.Course));
-
         break;
-      case Schedule.MEMBER_SCHEDULE:
+      case Schedule.MEMBER:
         p = new MemberRehearsalSchedule();
-        fillPlanning(rs, p, dc);
+        fillPlanning(rs, p);
         ((MemberRehearsalSchedule) p).setMember((Person) DataCache.findId(p.getIdPerson(), Model.Person));
         break;
 
-      case Schedule.GROUP_SCHEDULE:
+      case Schedule.GROUP:
         p = new GroupRehearsalSchedule();
-        fillPlanning(rs, p, dc);
+        fillPlanning(rs, p);
         ((GroupRehearsalSchedule) p).setGroup((Group) DataCache.findId(p.getIdPerson(), Model.Group));
         break;
-
-      case Schedule.WORKSHOP_SCHEDULE:
+      case Schedule.STUDIO:
+        p = new StudioSchedule();
+        fillPlanning(rs, p);
+        ((StudioSchedule) p).setGroup((Group) DataCache.findId(p.getIdPerson(), Model.Group));
+        Action as = (Action) DataCache.findId(p.getIdAction(), Model.Action);
+         ((StudioSchedule) p).setActivity(new GemParam(new Param("1", "Enregistrement")));
+        break;
+      case Schedule.WORKSHOP:
         p = new WorkshopSchedule();
-        fillPlanning(rs, p, dc);
+        fillPlanning(rs, p);
         ((WorkshopSchedule) p).setTeacher((Person) DataCache.findId(p.getIdPerson(), Model.Teacher));
         Action w = (Action) DataCache.findId(p.getIdAction(), Model.Action);
         ((WorkshopSchedule) p).setWorkshop((Course) DataCache.findId(w.getCourse(), Model.Course));

@@ -1,5 +1,5 @@
 /*
- * @(#)ConfigAdmin.java 2.8.r 03/01/14
+ * @(#)ConfigAdmin.java 2.8.v 27/05/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,6 +20,7 @@
  */
 package net.algem.config;
 
+import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,8 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import net.algem.room.EstabChoice;
+import net.algem.room.RoomActiveChoiceModel;
+import net.algem.room.RoomChoice;
 import net.algem.util.DataCache;
 import net.algem.util.model.Model;
 import net.algem.util.ui.GemLabel;
@@ -34,19 +37,20 @@ import net.algem.util.ui.GemPanel;
 
 /**
  * Panel for config and administrative tasks.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.r
+ * @version 2.8.v
  * @since 2.1.k
  */
 public class ConfigAdmin
         extends ConfigPanel
 {
 
-  private Config c1, c2, c3, c4, c5;
+  private Config c1, c2, c3, c4, c5, c6;
   private JCheckBox jc1, jc2, jc3;
   private ParamChoice school;
   private EstabChoice estab;
+  private RoomChoice studio;
 
   public ConfigAdmin(String title, Map<String, Config> cm) {
     super(title, cm);
@@ -59,6 +63,7 @@ public class ConfigAdmin
 //    c3 = confs.get(ConfigKey.WORKSHOP_MANAGEMENT.getKey());
     c4 = confs.get(ConfigKey.DEFAULT_SCHOOL.getKey());
     c5 = confs.get(ConfigKey.DEFAULT_ESTABLISHMENT.getKey());
+    c6 = confs.get(ConfigKey.DEFAULT_STUDIO.getKey());
 
     content = new GemPanel();
 
@@ -72,30 +77,40 @@ public class ConfigAdmin
     estab = new EstabChoice(dataCache.getList(Model.Establishment));
     estab.setKey(Integer.parseInt(c5.getValue()));
 
+    studio = new RoomChoice(new RoomActiveChoiceModel(dataCache.getList(Model.Room), true));
+    studio.setKey(Integer.parseInt(c6.getValue()));
+
     jc1.setSelected(isSelected(c1.getValue()));
     jc2.setSelected(isSelected(c2.getValue()));
 //    jc3.setSelected(isSelected(c3.getValue()));
-		
-		Box box1 = Box.createHorizontalBox();
-		box1.add(jc1);
-		box1.add(Box.createHorizontalGlue());
-		Box box2 = Box.createHorizontalBox();
-		box2.add(jc2);
-		box2.add(Box.createHorizontalGlue());
-		
+
+    Box box1 = Box.createHorizontalBox();
+    box1.add(jc1);
+    box1.add(Box.createHorizontalGlue());
+    Box box2 = Box.createHorizontalBox();
+    box2.add(jc2);
+    box2.add(Box.createHorizontalGlue());
+
     content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
     content.add(box1);
     content.add(box2);
 //    content.add(jc3);
-    
+
+    GemPanel defs = new GemPanel(new BorderLayout());
     GemPanel p = new GemPanel();
     p.add(new GemLabel(ConfigKey.DEFAULT_SCHOOL.getLabel()));
     p.add(school);
     p.add(Box.createHorizontalGlue());
     p.add(new GemLabel(ConfigKey.DEFAULT_ESTABLISHMENT.getLabel()));
     p.add(estab);
-		
-    content.add(p);
+    
+    GemPanel s = new GemPanel();
+    s.add(new GemLabel(ConfigKey.DEFAULT_STUDIO.getLabel()));
+    s.add(studio);
+    
+    defs.add(p, BorderLayout.NORTH);
+    defs.add(s, BorderLayout.WEST);
+    content.add(defs);
 
     add(content);
   }
@@ -108,12 +123,14 @@ public class ConfigAdmin
 //    c3.setValue(getValue(jc3));
     c4.setValue(String.valueOf(school.getKey()));
     c5.setValue(String.valueOf(estab.getKey()));
+    c6.setValue(String.valueOf(studio.getKey()));
 
     conf.add(c1);
     conf.add(c2);
 //    conf.add(c3);
     conf.add(c4);
     conf.add(c5);
+    conf.add(c6);
 
     return conf;
   }

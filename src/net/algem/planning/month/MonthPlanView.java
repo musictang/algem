@@ -169,8 +169,8 @@ public class MonthPlanView
       ScheduleObject p = (ScheduleObject) plans.elementAt(i);
       Color c = getScheduleColor(p);
       drawRange(p, c, pas_x);
-      if (p.getType() == Schedule.MEMBER_SCHEDULE
-              || p.getType() == Schedule.GROUP_SCHEDULE) {
+      if (p.getType() == Schedule.MEMBER
+              || p.getType() == Schedule.GROUP) {
         if (p.getNote() == -1) {
           c = colorPrefs.getColor(ColorPlan.FLAG);
           flagNotPaid(p.getDate().getDay(), p.getStart().toMinutes(), p.getEnd().toMinutes(), c);
@@ -251,7 +251,7 @@ public class MonthPlanView
     if (p instanceof CourseSchedule && p.getClass() != ScheduleRangeObject.class) {
       bg.drawLine(x, y - 1, (x + w) - 1, y - 1);
     }
-    if (p.getType() == Schedule.MEMBER_SCHEDULE || p.getType() == Schedule.GROUP_SCHEDULE) {
+    if (p.getType() == Schedule.MEMBER || p.getType() == Schedule.GROUP) {
       if (p.getNote() == -1) {
         flagNotPaid(p.getDate().getDay(), p.getStart().toMinutes(), p.getEnd().toMinutes(), c);
       }
@@ -357,7 +357,7 @@ public class MonthPlanView
         clickSchedule.setDate(cal.getTime());
         clickSchedule.setStart(hc);
         clickSchedule.setEnd(hc);
-        //TODOGEM pp.setPlace();
+        //TODOGEM pp.setIdRoom();
         //TODOGEM pp.setIdPerson();
         //TODOGEM pp.setAction();
         listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "ClickDate"));

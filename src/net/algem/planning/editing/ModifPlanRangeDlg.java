@@ -62,7 +62,7 @@ public class ModifPlanRangeDlg
   public void set() {
     setTitle(plan.getScheduleLabel());
     setDate(plan.getDate());
-    setRoom(plan.getPlace());
+    setRoom(plan.getIdRoom());
     setHour(plan.getStart(), plan.getEnd());
   }
 

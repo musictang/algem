@@ -51,7 +51,7 @@ public abstract class ScheduleObject
     type = d.type;
     idper = d.idper;
     idAction = d.idAction;
-    place = d.place;
+    idRoom = d.idRoom;
     note = d.note;
   }
 
@@ -61,11 +61,7 @@ public abstract class ScheduleObject
 
   public void setPerson(Person p) {
     person = p;
-    if (p == null) {
-      idper = 0;
-    } else {
-      idper = p.getId();
-    }
+    idper = p == null ? 0 : p.getId();
   }
 
   public Person getPerson() {
@@ -80,13 +76,9 @@ public abstract class ScheduleObject
     return activity;
   }
 
-  public void setRoom(Room s) {
-    room = s;
-    if (s == null) {
-      place = 0;
-    } else {
-      place = s.getId();
-    }
+  public void setRoom(Room r) {
+    room = r;
+    idRoom = r == null ? 0 : r.getId();
   }
 
   public Room getRoom() {

@@ -110,7 +110,7 @@ public class ActionIO
   }
 
   public void planify(Action a) throws PlanningException {
-    planify(a, Schedule.COURSE_SCHEDULE);
+    planify(a, Schedule.COURSE);
   }
 
   public void insert(Action a) throws SQLException {

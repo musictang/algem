@@ -88,6 +88,7 @@ public class DataCache
   private static ActionIO ACTION_IO;
   private static UserIO USER_IO;
   private static ItemIO ITEM_IO;
+  private static EmployeeTypeIO EMPLOYEE_TYPE_IO;
 
   // Cache data
   private static Hashtable<Integer, List<Integer>> TEACHER_INSTRUMENT_CACHE = new Hashtable<Integer, List<Integer>>();
@@ -115,6 +116,7 @@ public class DataCache
   private static GemList<Account> ACCOUNT_LIST;
   private static GemList<Vat> VAT_LIST;
   private static GemList<GemParam> COURSE_CODE_LIST;
+  private static GemList<GemParam> EMPLOYEE_TYPE_LIST;
 
   private static Vector<Instrument> instruments;//TODO manage list
   private Vector<CategoryOccup> occupCat;
@@ -169,6 +171,7 @@ public class DataCache
     USER_IO = new UserIO(dc);
     ITEM_IO = new ItemIO(dc);
     COURSE_CODE_IO = new CourseCodeIO(dc);
+    EMPLOYEE_TYPE_IO = new EmployeeTypeIO(dc);
 
     loadMonthStmt = dc.prepareStatement("SELECT " + ScheduleIO.COLUMNS + " FROM planning p WHERE jour >= ? AND jour <= ? ORDER BY p.jour,p.debut");
     loadMonthRangeStmt = dc.prepareStatement(ScheduleRangeIO.getMonthRangeStmt());
@@ -249,6 +252,8 @@ public class DataCache
         return COURSE_CODE_LIST;
       case School:
         return SCHOOL_LIST;
+      case EmployeeType:
+        return EMPLOYEE_TYPE_LIST;
       default: return null;
     }
 
@@ -715,6 +720,8 @@ public class DataCache
       for(User u : USER_IO.load()) {
         USER_CACHE.put(u.getId(), u);
       }
+      
+      EMPLOYEE_TYPE_LIST = new GemList<GemParam>(EMPLOYEE_TYPE_IO.load());
 
     } catch (SQLException ex) {
       String m = MessageUtil.getMessage("cache.loading.exception");

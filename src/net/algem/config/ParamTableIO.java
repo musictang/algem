@@ -1,7 +1,7 @@
 /*
- * @(#)ParamTableIO     2.6.a 01/08/2012
+ * @(#)ParamTableIO     2.8.v 28/05/14
  *
- * Copyright (c) 2009 Musiques Tangentes All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -32,7 +32,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.v
  */
 public class ParamTableIO
         extends TableIO
@@ -123,13 +123,13 @@ public class ParamTableIO
   /**
    * Finds a list of param without criterion.
    * 
-   * @param _table 
-   * @param _sortColumn column for sorting
-   * @param dc data Connexion
+   * @param table 
+   * @param sortColumn column for sorting
+   * @param dc data Connection
    * @return a list of params
    */
-  public static Vector<Param> find(String _table, String _sortColumn, DataConnection dc) {
-    return find(_table, _sortColumn, null, dc);
+  public static Vector<Param> find(String table, String sortColumn, DataConnection dc) {
+    return find(table, sortColumn, null, dc);
   }
 
   /**

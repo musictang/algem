@@ -170,9 +170,9 @@ public class ScheduleRangeIO
     p.setDate(new DateFr(rs.getString(7)));
     p.setIdAction(rs.getInt(8));
     p.setIdPerson(rs.getInt(9));// id prof
-    p.setPlace(rs.getInt(10));
+    p.setIdRoom(rs.getInt(10));
 
-    p.setRoom((Room) DataCache.findId(p.getPlace(), Model.Room));
+    p.setRoom((Room) DataCache.findId(p.getIdRoom(), Model.Room));
     p.setTeacher((Person) DataCache.findId(p.getIdPerson(), Model.Teacher));
 
     p.setAction(service.getAction(p.getIdAction()));
@@ -235,12 +235,12 @@ public class ScheduleRangeIO
   private static String getFollowUpRequest(boolean action) {
     if (action) {
       return "SELECT " + COLUMNS + ", p.jour, p.action, p.idper, p.lieux, s.texte FROM " + TABLE + " pg, planning p, action a, suivi s"
-        + " WHERE p.ptype IN (" + Schedule.COURSE_SCHEDULE + "," + Schedule.WORKSHOP_SCHEDULE + "," + Schedule.TRAINING_SCHEDULE
+        + " WHERE p.ptype IN (" + Schedule.COURSE + "," + Schedule.WORKSHOP + "," + Schedule.TRAINING
         + ") AND p.id = pg.idplanning";
 
     } else {
       return "SELECT " + COLUMNS + ", p.jour, p.action, p.idper, p.lieux, s.texte FROM " + TABLE + " pg, planning p, suivi s"
-        + " WHERE p.ptype IN (" + Schedule.COURSE_SCHEDULE + "," + Schedule.WORKSHOP_SCHEDULE + "," + Schedule.TRAINING_SCHEDULE
+        + " WHERE p.ptype IN (" + Schedule.COURSE + "," + Schedule.WORKSHOP + "," + Schedule.TRAINING
         + ") AND p.id = pg.idplanning";
     }
   }

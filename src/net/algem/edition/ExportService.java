@@ -305,7 +305,7 @@ public class ExportService {
             + GroupIO.TABLE_DETAIL + " d, "
             + InstrumentIO.PERSON_INSTRUMENT_TABLE + " i"
             + " WHERE s.jour >= '" + start+"' AND s.jour <= '"+end+"'"
-            + " AND s.ptype = "+ Schedule.GROUP_SCHEDULE
+            + " AND s.ptype = "+ Schedule.GROUP
             + " AND s.idper = g.id AND g.id = d.id AND d.musicien = p.id"
             + " AND d.musicien = i.idper AND i.ptype = " + Instrument.MUSICIAN;
     if (instrument > 0) {

@@ -23,8 +23,6 @@ package net.algem.planning;
 
 import java.awt.GridBagLayout;
 import java.util.List;
-import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
 import net.algem.contact.teacher.TeacherChoice;
 import net.algem.course.CourseChoice;
 import net.algem.course.CourseChoiceTrainingModel;

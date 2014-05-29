@@ -117,7 +117,7 @@ public class GemGroupService
 
   @Override
   public void delete(Group g) throws GroupException {
-    String where = " WHERE idper = " + g.getId() + " AND ptype = " + Schedule.GROUP_SCHEDULE;
+    String where = " WHERE idper = " + g.getId() + " AND ptype = " + Schedule.GROUP;
 
     try {
       Vector<ScheduleObject> vp = ScheduleIO.findObject(where, dc);
@@ -204,7 +204,7 @@ public class GemGroupService
   }
 
   Vector<Schedule> getRehearsalHisto(int g, DateFr start, DateFr end, boolean all) {
-    String query = " WHERE p.ptype = " + Schedule.GROUP_SCHEDULE + " AND p.idper = " + g;
+    String query = " WHERE p.ptype = " + Schedule.GROUP + " AND p.idper = " + g;
     if (!all) {
       query += " AND jour BETWEEN '" + start + "' AND '" + end + "'";
     }
@@ -315,7 +315,7 @@ public class GemGroupService
     dto.setDay(date.toString());
     dto.setStart(start.toString());
     dto.setEnd(end.toString());
-    dto.setType(Schedule.GROUP_SCHEDULE);
+    dto.setType(Schedule.GROUP);
     dto.setPersonId(g.getId());
     dto.setPlace(rn);
     dto.setNote(0);
@@ -353,7 +353,7 @@ public class GemGroupService
       Action a = new Action();
       actionIO.insert(a);
       ScheduleDTO dto = new ScheduleDTO();
-      dto.setType(Schedule.GROUP_SCHEDULE);
+      dto.setType(Schedule.GROUP);
       dto.setPersonId(g);
       dto.setPlace(room);
       dto.setNote(0);

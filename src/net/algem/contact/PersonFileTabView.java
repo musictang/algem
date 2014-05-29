@@ -390,7 +390,6 @@ public class PersonFileTabView
     return employeeEditor != null && employeeEditor.hasChanged();
   }
 
-
   void addMandates(final DirectDebitService ddService, final int payer) {
 
     DDPrivateMandateCtrl ddMandateCtrl = new DDPrivateMandateCtrl(desktop, ddService)
