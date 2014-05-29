@@ -1,5 +1,5 @@
 /*
- * @(#)PlanningService.java	2.8.t 15/05/14
+ * @(#)PlanningService.java	2.8.v 29/05/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -37,7 +37,7 @@ import net.algem.util.ui.MessagePopup;
  * Service class for planning.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.8.v
  * @since 2.4.a 07/05/12
  */
 public class PlanningService
@@ -64,7 +64,7 @@ public class PlanningService
     end.setTime(a.getDateEnd().getDate());
 
     while (start.get(Calendar.DAY_OF_WEEK) != a.getDay() + 1) {
-      start.add(Calendar.DATE, 1); // on incrémente d'un date
+      start.add(Calendar.DATE, 1); // on incrémente d'un jour
     }
     int dwm = start.get(Calendar.DAY_OF_WEEK_IN_MONTH);
     while (!start.after(end) && i < a.getNSessions()) {
@@ -107,6 +107,22 @@ public class PlanningService
 
   public void planify(Action a, int type, List<GemDateTime> dates) throws PlanningException {
     actionIO.planify(a, type, dates);
+  }
+
+  public void planifyStudio(List<GemDateTime> dates, StudioSession session) throws PlanningException {
+    try {
+      dc.setAutoCommit(false);
+      Action a = new Action();
+      a.setTeacher(session.getGroup());
+      actionIO.insert(a);
+      actionIO.planify(a, Schedule.STUDIO, dates, session.getRooms(), session.getTechnicians());
+      actionIO.planify(a, Schedule.TECH, dates, new int[] {session.getStudio()}, session.getTechnicians());
+    } catch (SQLException ex) {
+      dc.rollback();
+      throw new PlanningException(ex.getMessage());
+    } finally {
+      dc.setAutoCommit(true);
+    }
   }
 
   public void planify(List<Action> actions) throws PlanningException {

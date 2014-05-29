@@ -1,7 +1,7 @@
 /*
- * @(#)DayPlanView.java 2.7.a 30/11/12
- * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * @(#)DayPlanView.java 2.8.v 29/05/14
+ *
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning.day;
 
@@ -34,7 +34,7 @@ import net.algem.planning.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.v
  * @since 1.0a 07/07/1999
  */
 public class DayPlanView
@@ -44,7 +44,7 @@ public class DayPlanView
 
   private static final int H_START = 540;
   private static final int GRID_Y = 30; // orig : 28
-  
+
   private int ncols = 5;
   private int pas_y;
   private int th;
@@ -64,7 +64,7 @@ public class DayPlanView
     pas_x = 100;
 
     addMouseListener(this);
-    
+
   }
 
   public DayPlanView() {
@@ -216,9 +216,9 @@ public class DayPlanView
       }
     }
   }
-  
+
   /**
-   * Schedule range coloring. 
+   * Schedule range coloring.
    *
    * @param i
    * @param vpl
@@ -273,7 +273,7 @@ public class DayPlanView
     int x = MARGED + 2 + ((col - top) * pas_x);
     int y = MARGEH + 2 + (((deb - H_START) * pas_y) / GRID_Y);
     int ht = ((fin - deb) * pas_y) / GRID_Y;
-   
+
     bg.setColor(getScheduleRangeColor(p, c));
     //bg.fillRect(x, y, pas_x - 2, ht - 1);
     bg.fillRect(x, y, w - 1, ht - 1);
@@ -292,18 +292,18 @@ public class DayPlanView
    */
   public void textRange(int colonne, ScheduleObject p, ScheduleObject prev) {
     int start = p.getStart().toMinutes();
-    
+
     int x = MARGED + 1 + ((colonne - top) * pas_x);
     int y = MARGEH + 1 + (((start - H_START) * pas_y) / GRID_Y);// MARGEH + 1  (orig : MARGEH + 2)
 
     bg.setColor(getTextColor(p));
     bg.setFont(NORMAL_FONT);
-    
+
     showLabel(p, prev, x, y);
     showTeacher(p, prev, x, y);
-   
+
   }
-  
+
   private void showLabel(ScheduleObject p, ScheduleObject prev, int x, int y) {
     String code = getCode(p);
     String label = null;
@@ -326,7 +326,7 @@ public class DayPlanView
       bg.drawString(label, x + offset - (w - 4) / 2, y + 10);
     }
   }
-  
+
   private void showTeacher(ScheduleObject p, ScheduleObject prev, int x, int y) {
 
     String teacherName = null;
@@ -437,12 +437,12 @@ public class DayPlanView
 
     clickRange = new Vector<ScheduleRangeObject>();
     Vector<ScheduleRangeObject> vpl = pj.getScheduleRange();
-    
+
     // ajout des plages
     for (int i = 0; vpl != null && i < vpl.size(); i++) {
       ScheduleRangeObject pg = vpl.elementAt(i);
       Course cc = ((CourseSchedule) pg).getCourse();
-      if (cc.isCollective()) { // les plages affichées sont restreintes aux limites des plannings
+      if (cc != null && cc.isCollective()) { // les plages affichées sont restreintes aux limites des plannings
           if (pg.getScheduleId() == clickSchedule.getId()) {
             clickRange.add(pg);
           }
@@ -450,7 +450,7 @@ public class DayPlanView
         // les plages de plusieurs plannings peuvent être ajoutées si elles font
         // référence au même prof
         if (pg.getIdAction() == clickSchedule.getIdAction()
-                && pg.getTeacher().getId() == clickSchedule.getIdPerson()) {
+                && pg.getTeacher() != null && pg.getTeacher().getId() == clickSchedule.getIdPerson()) {
           clickRange.add(pg);
         }
       }

@@ -1,5 +1,5 @@
 /*
- * @(#)TechSchedule.java	2.8.v 29/05/14
+ * @(#)EmployeeTypeSelector.java	2.8.v 28/05/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -18,53 +18,24 @@
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
-package net.algem.planning;
+package net.algem.contact;
 
 import net.algem.config.GemParam;
-import net.algem.group.Group;
-import net.algem.util.BundleUtil;
+import net.algem.config.GemParamModel;
+import net.algem.util.model.GemList;
+import net.algem.util.ui.GenericSelector;
 
 /**
- * Technician schedule.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.8.v
- * @since 2.8.v 27/05/14
+ * @since 2.8.v 28/05/14
  */
-public class TechSchedule
-    extends ScheduleObject
+public class EmployeeTypeSelector
+        extends GenericSelector
 {
 
-  private Group group;
-
-  public TechSchedule() {
-  }
-
-  public TechSchedule(Schedule d) {
-    super(d);
-  }
-
-  public void setGroup(Group g) {
-    idper = g == null ? 0 : g.getId();
-    group = g;
-  }
-
-  public Group getGroup() {
-    return group;
-  }
-
-  public String getActivityLabel() {
-    return ((GemParam) activity).getLabel();
-  }
-
-  @Override
-  public String getScheduleLabel() {
-    return group.getName();
-  }
-
-  @Override
-  public String getScheduleDetail() {
-    return BundleUtil.getLabel("Studio.label") + " " + group.getName();
+  public EmployeeTypeSelector(GemList<GemParam> list) {
+    super(new GemParamModel(list));
   }
 }

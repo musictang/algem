@@ -1,5 +1,5 @@
 /*
- * @(#)RemovablePanel.java	2.8.v 21/05/14
+ * @(#)RemovablePanel.java	2.8.v 29/05/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -21,6 +21,7 @@
 
 package net.algem.util.ui;
 
+import java.awt.Dimension;
 import java.awt.event.ActionListener;
 import javax.swing.ImageIcon;
 import net.algem.util.GemCommand;
@@ -28,14 +29,16 @@ import net.algem.util.ImageUtil;
 
 /**
  * Abstract panel with removing button.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.8.v
  * @since 2.8.v 21/05/14
  */
-public abstract class RemovablePanel 
+public abstract class RemovablePanel
   extends GemPanel
 {
+  protected static final Dimension CB_SIZE = new Dimension(250, 24);
+  protected static final Dimension BT_SIZE = new Dimension(24, 24);
   protected GemRemovingButton removeBt;
 
   public RemovablePanel() {
@@ -44,7 +47,7 @@ public abstract class RemovablePanel
     removeBt.setActionCommand(GemCommand.REMOVE_CMD);
     removeBt.setToolTipText(GemCommand.REMOVE_CMD);
   }
-  
+
   public void addActionListener(ActionListener listener) {
     removeBt.addActionListener(listener);
   }

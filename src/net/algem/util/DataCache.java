@@ -1,5 +1,5 @@
 /*
- * @(#)DataCache.java	2.8.t 15/04/14
+ * @(#)DataCache.java	2.8.v 29/05/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -34,6 +34,7 @@ import net.algem.billing.Item;
 import net.algem.billing.ItemIO;
 import net.algem.billing.Vat;
 import net.algem.config.*;
+import net.algem.contact.EmployeeTypeIO;
 import net.algem.contact.Person;
 import net.algem.contact.PersonFileIO;
 import net.algem.contact.PersonIO;
@@ -64,7 +65,7 @@ import net.algem.util.model.Model;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.8.v
  * @since 1.0b 03/09/2001
  */
 public class DataCache
@@ -720,7 +721,7 @@ public class DataCache
       for(User u : USER_IO.load()) {
         USER_CACHE.put(u.getId(), u);
       }
-      
+
       EMPLOYEE_TYPE_LIST = new GemList<GemParam>(EMPLOYEE_TYPE_IO.load());
 
     } catch (SQLException ex) {

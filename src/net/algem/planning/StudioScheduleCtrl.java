@@ -1,5 +1,5 @@
 /*
- * @(#)StudioScheduleCtrl.java	2.8.v 21/05/14
+ * @(#)StudioScheduleCtrl.java	2.8.v 29/05/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -23,39 +23,48 @@ package net.algem.planning;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
+import net.algem.config.ConfigKey;
+import net.algem.config.ConfigUtil;
+import net.algem.planning.editing.ModifPlanEvent;
 import net.algem.util.BundleUtil;
+import net.algem.util.DataConnection;
 import net.algem.util.GemCommand;
 import net.algem.util.MessageUtil;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.CardCtrl;
 import net.algem.util.ui.GemPanel;
+import net.algem.util.ui.MessagePopup;
 
 /**
  * This controller is used to planify one or more rooms at differents times and for different technicians.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.8.v
  * @since 2.8.v 21/05/14
  */
-public class StudioScheduleCtrl 
+public class StudioScheduleCtrl
   extends CardCtrl
 {
 
   protected ConflictListView conflictsView;
   private GemDesktop desktop;
   private PlanningService service;
-  private Action action;
   private List<GemDateTime> dates;
   private StudioScheduleView studioView;
-  
+  private DataConnection dc;
+
   public StudioScheduleCtrl(GemDesktop desktop) {
     this.desktop = desktop;
-    service = new PlanningService(desktop.getDataCache().getDataConnection());
+    this.dc = desktop.getDataCache().getDataConnection();
+    service = new PlanningService(dc);
   }
-  
+
   public void init() {
     studioView = new StudioScheduleView(desktop.getDataCache());
     JScrollPane scroll = new JScrollPane(studioView);
@@ -69,23 +78,23 @@ public class StudioScheduleCtrl
     addCard(BundleUtil.getLabel("Conflict.verification.label"), conflictsView);
     select(0);
   }
-  
+
   @Override
   public boolean next() {
     select(step + 1);
     if (step == 1) {
       String t = MessageUtil.getMessage("invalid.choice");
-//      try {
-//        action = checkAction();
-//      } catch (PlanningException pe) {
-//        JOptionPane.showMessageDialog(this, pe.getMessage(), t, JOptionPane.ERROR_MESSAGE);
-//        return prev();
-//      }
+      try {
+        checkAction();
+      } catch (PlanningException pe) {
+        JOptionPane.showMessageDialog(this, pe.getMessage(), t, JOptionPane.ERROR_MESSAGE);
+        return prev();
+      }
       conflictsView.clear();
-//      int n = testConflicts(action);
-//      if (n > 0) {
-//        btNext.setText("");//bouton validation
-//      }
+      int n = testConflicts(studioView.getGroup(), studioView.getRooms());
+      if (n > 0) {
+        btNext.setText("");//bouton validation
+      }
     }
     return true;
   }
@@ -95,7 +104,7 @@ public class StudioScheduleCtrl
     select(step - 1);
     return true;
   }
-  
+
   @Override
   public boolean cancel() {
     if (actionListener != null) {
@@ -106,17 +115,101 @@ public class StudioScheduleCtrl
 
   @Override
   public boolean validation() {
-    throw new UnsupportedOperationException("Not supported yet.");
+    int studio = Integer.parseInt(ConfigUtil.getConf(ConfigKey.DEFAULT_STUDIO.getKey(), dc));
+    StudioSession session = new StudioSession();
+    session.setGroup(studioView.getGroup());
+    session.setStudio(studio);
+    session.setRooms(studioView.getRooms());
+    session.setTechnicians(studioView.getEmployees());
+    try {
+      service.planifyStudio(dates, session);
+      GemDateTime dts = dates.get(0);
+      GemDateTime dte = dates.get(dates.size() - 1);
+      desktop.postEvent(new ModifPlanEvent(this, dts.getDate(), dte.getDate()));
+    } catch (PlanningException ex) {
+      MessagePopup.warning(this, ex.getMessage());
+      return false;
+    }
+    clear();
+    return cancel();
   }
 
   @Override
   public boolean loadId(int id) {
-    throw new UnsupportedOperationException("Not supported yet.");
+    return false;
   }
 
   @Override
   public boolean loadCard(Object p) {
-    throw new UnsupportedOperationException("Not supported yet.");
+    return false;
+  }
+
+  private void checkAction() throws PlanningException {
+
+    int [] rooms = studioView.getRooms();
+    int [] employees = studioView.getEmployees();
+
+    dates = studioView.getDates();
+    // check duplicates
+    Set<GemDateTime> uniques = new HashSet<GemDateTime>(dates);
+    if (uniques.size() < dates.size()) {
+      throw new PlanningException(MessageUtil.getMessage("time.duplication"));
+    }
+    // check overlapping
+    if (PlanificationUtil.hasOverlapping(dates)) {
+      throw new PlanningException(MessageUtil.getMessage("time.overlapping"));
+    }
+
+    for (GemDateTime dt : dates) {
+      HourRange hr = dt.getTimeRange();
+      if (hr.getStart().equals(hr.getEnd()) || hr.getEnd().before(hr.getStart())) {
+        throw new PlanningException(MessageUtil.getMessage("hour.range.error"));
+      }
+    }
+    for (int r : rooms) {
+      if (r == 0) {
+        throw new PlanningException(MessageUtil.getMessage("room.invalid.choice"));
+      }
+    }
+
+    for (int e : employees) {
+      if (e == 0) {
+        throw new PlanningException(MessageUtil.getMessage("invalid.teacher"));
+      }
+    }
+  }
+
+  private int testConflicts(int groupId, int [] rooms) {
+    int conflicts = 0;
+
+    for (GemDateTime dt : dates) {
+      DateFr d = dt.getDate();
+      Hour start = dt.getTimeRange().getStart();
+      Hour end = dt.getTimeRange().getEnd();
+      ScheduleTestConflict testConflict = new ScheduleTestConflict(d, start, end);
+      String query = null;
+      for (int r : rooms) {
+        query = ConflictQueries.getRoomConflictSelection(d.toString(), start.toString(), end.toString(), r);
+        if (ScheduleIO.count(query, dc) > 0) {
+          testConflict.setRoomFree(false);
+          conflicts++;
+        }
+      }
+      // test group
+      query = ConflictQueries.getGroupConflictSelection(d.toString(), start.toString(), end.toString(), groupId);
+      if (ScheduleIO.count(query, dc) > 0) {
+        testConflict.setMemberFree(false);
+        conflicts++;
+      }
+      conflictsView.addConflict(testConflict);
+    }
+    return conflicts;
+  }
+
+  private void clear() {
+    studioView.clear();
+    conflictsView.clear();
+    select(0);
   }
 
 }

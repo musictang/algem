@@ -1,5 +1,5 @@
 /*
- * @(#)EmployeeTypeSelector.java	2.8.v 28/05/14
+ * @(#)EmployeeType.java	2.8.v 29/05/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -17,23 +17,21 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  *
- */
-package net.algem.config;
+*/
 
-import net.algem.util.model.GemList;
-import net.algem.util.ui.GenericSelector;
+package net.algem.contact;
 
 /**
- *
+ * Enumeration of the different employee categories.
+ * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.8.v
- * @since 2.8.v 28/05/14
+ * @since 2.8.v 21/05/14
  */
-public class EmployeeTypeSelector
-        extends GenericSelector
+public enum EmployeeType
 {
-
-  public EmployeeTypeSelector(GemList<GemParam> list) {
-    super(new GemParamModel(list));
-  }
+  NONE,
+  TEACHER,
+  TECHNICIAN,
+  ADMINISTRATOR
 }

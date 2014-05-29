@@ -1,7 +1,7 @@
 /*
- * @(#)EmployeeView.java 2.8.n 04/10/13
+ * @(#)EmployeeView.java 2.8.v 29/05/14
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -34,7 +34,6 @@ import java.util.logging.Level;
 import javax.swing.JFormattedTextField;
 import javax.swing.text.MaskFormatter;
 import net.algem.config.ColorPrefs;
-import net.algem.config.EmployeeTypePanelCtrl;
 import net.algem.planning.DateFr;
 import net.algem.planning.DateFrField;
 import net.algem.util.BundleUtil;
@@ -49,7 +48,7 @@ import net.algem.util.ui.*;
 /**
  * Employee view.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.n
+ * @version 2.8.v
  * @since 2.8.m 02/09/13
  */
 public class EmployeeView
@@ -140,7 +139,7 @@ public class EmployeeView
 
     nationality = new GemField(true, 20);
     typeCtrl = new EmployeeTypePanelCtrl(dataCache);
-    
+
 
     this.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
@@ -218,8 +217,10 @@ public class EmployeeView
     guso.setText(e.getGuso() == null ? null : e.getGuso().trim());
     nationality.setText(e.getNationality());
 
-    for(Integer t : e.getTypes()) {
-      typeCtrl.addPanel(t);
+    if (e.getTypes() != null) {
+      for(Integer t : e.getTypes()) {
+        typeCtrl.addPanel(t);
+      }
     }
 
     setButtonAccess(e.getIdPer());
@@ -270,7 +271,7 @@ public class EmployeeView
     e.setPlaceBirth(place.getText().trim().toUpperCase());
     e.setGuso(guso.getText().trim().toUpperCase());
     e.setNationality(nationality.getText().trim().toUpperCase());
-    
+
     e.setTypes(typeCtrl.getTypes());
 
     return e;

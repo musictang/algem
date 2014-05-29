@@ -1,5 +1,5 @@
 /*
- * @(#)RoomPanel.java	2.8.v 21/05/14
+ * @(#)RoomPanel.java	2.8.v 29/05/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -22,14 +22,12 @@
 package net.algem.room;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import javax.swing.BorderFactory;
 import net.algem.util.model.GemList;
 import net.algem.util.ui.RemovablePanel;
 
 /**
  * Room selection panel with removing button.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.8.v
  * @since 2.8.v 21/05/14
@@ -44,12 +42,12 @@ public class RoomPanel
   }
 
   public RoomPanel(GemList<Room> roomList) {
-    removeBt.setBorder(null);
+    removeBt.setPreferredSize(BT_SIZE);
     room = new RoomChoice(new RoomActiveChoiceModel(roomList, true));
+    room.setPreferredSize(CB_SIZE);
     setLayout(new BorderLayout());
     add(room, BorderLayout.WEST);
     add(removeBt, BorderLayout.EAST);
-    setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1, true)); 
   }
 
   int getRoom() {

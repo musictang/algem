@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleDetailCtrl.java 2.8.t 09/05/14
+ * @(#)ScheduleDetailCtrl.java 2.8.v 29/05/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -59,7 +59,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.8.v
  * @since 1.0a 07/07/1999
  */
 public class ScheduleDetailCtrl
@@ -155,6 +155,10 @@ public class ScheduleDetailCtrl
       loadGroupRehearsalSchedule(schedule);
     } else if (schedule instanceof WorkshopSchedule) {
       loadWorkshopSchedule(event);
+    } else if (schedule instanceof StudioSchedule) {
+       loadStudioSchedule(schedule);
+    } else if (schedule instanceof TechSchedule) {
+       loadTechnicianSchedule(event);
     } else if (schedule instanceof Schedule) {
       Schedule p = (Schedule) schedule;
       headPanel.add(new GemLabel("Saisie sur planning"));
@@ -301,6 +305,49 @@ public class ScheduleDetailCtrl
       menuPanel.add((GemMenuButton) v.elementAt(i));
     }
     menuPanel.add(btGroupWrite);//mailing button
+  }
+
+  private void loadStudioSchedule(Schedule plan) {
+    StudioSchedule s = (StudioSchedule) plan;
+    GemLabel l = new GemLabel(BundleUtil.getLabel("Group.label"));
+    headPanel.add(l);
+    StringBuilder buf = new StringBuilder(BundleUtil.getLabel("Group.label")).append(" ");
+    buf.append(s.getGroup().getName());// unescape
+    GemMenuButton b = new GemMenuButton(buf.toString(), this, "GroupLink", s.getGroup());
+    headPanel.add(b);
+    try {
+      loadMusicianList(groupService.getMusicians(plan.getIdPerson()));
+    } catch (SQLException ex) {
+      GemLogger.logException(ex);
+    }
+
+    menuPanel.add(btGroupWrite);//mailing button
+  }
+
+  private void loadTechnicianSchedule(ScheduleDetailEvent de) {
+    TechSchedule p = (TechSchedule) de.getSchedule();
+    GemLabel l = new GemLabel(BundleUtil.getLabel("Studio.label"));
+    headPanel.add(l);
+    StringBuilder buf = new StringBuilder(BundleUtil.getLabel("Group.label")).append(" ");
+    buf.append(p.getGroup().getName());// unescape
+    GemMenuButton b = new GemMenuButton(buf.toString(), this, "GroupLink", p.getGroup());
+    headPanel.add(b);
+    Vector<ScheduleRangeObject> v = de.getRanges();
+    for (int i = 0; v != null && i < v.size(); i++) {
+      ScheduleRangeObject pg = v.elementAt(i);
+      Person per = pg.getMember();
+      buf = new StringBuilder(per.getFirstnameName());
+      Member m = null;
+      try {
+        m = memberService.findMember(per.getId());
+      } catch (SQLException ex) {
+        GemLogger.logException(ex);
+      }
+//      if (m != null && m.getFirstInstrument() > 0) {
+//        buf.append(" : ").append(dataCache.getInstrumentName(m.getFirstInstrument()));
+//      }
+      listPanel.add(new GemMenuButton(buf.toString(), this, "MemberLink", pg));
+    }
   }
 
   private void loadWorkshopSchedule(ScheduleDetailEvent de) {

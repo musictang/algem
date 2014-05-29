@@ -1,5 +1,5 @@
 /*
- * @(#)ActionIO.java 2.8.t 16/04/14
+ * @(#)ActionIO.java 2.8.v 29/05/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -36,7 +36,7 @@ import net.algem.util.model.TableIO;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.8.v
  * @since 2.4.a 18/04/12
  */
 public class ActionIO
@@ -106,6 +106,32 @@ public class ActionIO
       throw new PlanningException(ex.getMessage());
     } finally {
       dc.setAutoCommit(true);
+    }
+  }
+
+  public void planify(Action a, int type, List<GemDateTime> dates, int[] rooms, int[] members) throws SQLException {
+    for (GemDateTime dt : dates) {
+      for (int r : rooms) {
+        Schedule s = new Schedule();
+        s.setDate(dt.getDate());
+        s.setStart(dt.getTimeRange().getStart());
+        s.setEnd(dt.getTimeRange().getEnd());
+        s.setType(type);
+        s.setIdPerson(a.getTeacher());
+        s.setIdAction(a.getId());
+        s.setIdRoom(r);
+        ScheduleIO.insert(s, dc);
+        if (type == Schedule.TECH) {
+          for (int m : members) {
+            ScheduleRange sr = new ScheduleRange();
+            sr.setScheduleId(s.getId());
+            sr.setStart(s.getStart());
+            sr.setEnd(s.getEnd());
+            sr.setMemberId(m);
+            ScheduleRangeIO.insert(sr, dc);
+          }
+        }
+      }
     }
   }
 

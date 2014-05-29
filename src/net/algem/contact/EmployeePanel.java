@@ -1,5 +1,5 @@
 /*
- * @(#)TechSchedule.java	2.8.v 29/05/14
+ * @(#)EmployeePanel.java	2.8.v 29/05/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -18,53 +18,43 @@
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  *
  */
+package net.algem.contact;
 
-package net.algem.planning;
-
-import net.algem.config.GemParam;
-import net.algem.group.Group;
-import net.algem.util.BundleUtil;
+import java.awt.BorderLayout;
+import java.util.List;
+import net.algem.util.ui.GemChoice;
+import net.algem.util.ui.RemovablePanel;
 
 /**
- * Technician schedule.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.8.v
- * @since 2.8.v 27/05/14
+ * @since 2.8.v 29/05/14
  */
-public class TechSchedule
-    extends ScheduleObject
-{
+public class EmployeePanel
+  extends RemovablePanel {
 
-  private Group group;
+  private GemChoice employee;
 
-  public TechSchedule() {
+  public EmployeePanel() {
   }
 
-  public TechSchedule(Schedule d) {
-    super(d);
+  public EmployeePanel(List<Person> employees) {
+    employee = new EmployeeSelector(employees);
+    employee.setSelectedIndex(0);
+    employee.setPreferredSize(CB_SIZE);
+    removeBt.setPreferredSize(BT_SIZE);
+    setLayout(new BorderLayout());
+    add(employee, BorderLayout.WEST);
+    add(removeBt, BorderLayout.EAST);
+    setBorder(null);
   }
 
-  public void setGroup(Group g) {
-    idper = g == null ? 0 : g.getId();
-    group = g;
+  int getId() {
+    return employee.getKey();
   }
 
-  public Group getGroup() {
-    return group;
-  }
-
-  public String getActivityLabel() {
-    return ((GemParam) activity).getLabel();
-  }
-
-  @Override
-  public String getScheduleLabel() {
-    return group.getName();
-  }
-
-  @Override
-  public String getScheduleDetail() {
-    return BundleUtil.getLabel("Studio.label") + " " + group.getName();
+  void setId(int id) {
+    employee.setKey(id);
   }
 }

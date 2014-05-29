@@ -1,7 +1,7 @@
 /*
- * @(#)Action.java	2.7.h 25/02/13
- * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * @(#)Action.java	2.8.v 29/05/14
+ *
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,27 +16,25 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning;
 
 import java.util.List;
 import net.algem.config.AgeRange;
 import net.algem.config.GemParam;
-import net.algem.contact.Person;
-import net.algem.room.Room;
 import net.algem.util.model.GemModel;
 
 /**
  * An action ensures the grouping of several schedule objects.
  * Each schedule of the group has the same action id. It facilitates the
- * modification and the suppression of schedules and the recording of members 
+ * modification and the suppression of schedules and the recording of members
  * on planning.
  * An action is composed also of specific parameters (status, level, age range, etc.).
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.h
+ * @version 2.8.v
  * @since 1.0a 07/07/1999
  */
 public class Action
@@ -126,15 +124,15 @@ public class Action
     teacherId = i;
   }
 
-  public void setTeacher(int i, String n) {
-    teacherId = i;
-    teacherName = n;
-  }
-
-  public void setTeacher(Person p) {
-    teacherId = p.getId();
-    teacherName = p.getFirstnameName();
-  }
+//  public void setTeacher(int i, String n) {
+//    teacherId = i;
+//    teacherName = n;
+//  }
+//
+//  public void setTeacher(Person p) {
+//    teacherId = p.getId();
+//    teacherName = p.getFirstnameName();
+//  }
 
   public int getRoom() {
     return roomId;
@@ -142,16 +140,6 @@ public class Action
 
   public void setRoom(int i) {
     roomId = i;
-  }
-
-  public void setRoom(int i, String n) {
-    roomId = i;
-    room = n;
-  }
-
-  public void setRoom(Room s) {
-    roomId = s.getId();
-    room = s.getName();
   }
 
   public Hour getHourStart() {
@@ -270,7 +258,7 @@ public class Action
   public String toString() {
     return id + " " + hourStart + " " + hourEnd + " " + teacherId + " " + memberId + " " + roomId;
   }
-  
+
   public String getCodeLabel() {
     StringBuilder c = new StringBuilder();
     String s = status.getId() == 0 ? null : " " + status.getLabel();

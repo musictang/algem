@@ -1,5 +1,5 @@
 /*
- * @(#)RoomPanelCtrl.java	2.8.v 29/05/14
+ * @(#)EmployeePanelCtrl.java	2.8.v 29/05/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -18,7 +18,7 @@
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package net.algem.room;
+package net.algem.contact;
 
 import java.awt.BorderLayout;
 import java.awt.Insets;
@@ -27,30 +27,29 @@ import java.util.List;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ToolTipManager;
-import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.GemCommand;
-import net.algem.util.model.Model;
 import net.algem.util.ui.AbstractGemPanelCtrl;
 import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GemLabel;
 import net.algem.util.ui.GemPanel;
 
 /**
- * This controller is used to add or remove DateTimePanel components.
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.8.v
- * @since 2.8.v 21/05/14
+ * @since 2.8.v 29/05/14
  */
-public class RoomPanelCtrl
-        extends AbstractGemPanelCtrl
+public class EmployeePanelCtrl
+  extends AbstractGemPanelCtrl
 {
 
-  private List<RoomPanel> panels;
+  private List<EmployeePanel> panels;
   private final static int SPACING = 4;
   private DataCache dataCache;
+  private List<Person> employees;
 
-  public RoomPanelCtrl(DataCache dataCache) {
+  public EmployeePanelCtrl(DataCache dataCache, String label) {
     this.dataCache = dataCache;
     plus = new GemButton("+");
     plus.setMargin(new Insets(0, 4, 0, 4)); //reduction de la taille du bouton
@@ -58,28 +57,31 @@ public class RoomPanelCtrl
     plus.setToolTipText(GemCommand.ADD_CMD);
     ToolTipManager.sharedInstance().setInitialDelay(20);
     GemPanel top = new GemPanel(new BorderLayout());
-    top.add(new GemLabel(BundleUtil.getLabel("Room.label")), BorderLayout.WEST);
+    top.add(new GemLabel(label), BorderLayout.WEST);
     top.add(plus, BorderLayout.EAST);
 
+    this.dataCache = dataCache;
     setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
     add(top);
     add(Box.createVerticalStrut(SPACING));
-    panels = new ArrayList<RoomPanel>();
+    panels = new ArrayList<EmployeePanel>();
     addPanel();
   }
 
-  public int[] getRooms() {
-    int rooms[] = new int[panels.size()];
-    for (int i = 0; i < panels.size(); i++) {
-      rooms[i] = panels.get(i).getRoom();
-    }
-    return rooms;
-  }
 
   @Override
   public void addPanel() {
-    RoomPanel p = new RoomPanel(dataCache.getList(Model.Room));
+    EmployeePanel p = new EmployeePanel(setEmployees(EmployeeType.TECHNICIAN));
     p.addActionListener(this);
+    panels.add(p);
+    add(panels.get(panels.size() - 1));
+    add(Box.createVerticalStrut(SPACING));
+  }
+
+  public void addPanel(int id) {
+    EmployeePanel p = new EmployeePanel(setEmployees(EmployeeType.TECHNICIAN));
+    p.addActionListener(this);
+    p.setId(id);
     panels.add(p);
     add(panels.get(panels.size() - 1));
     add(Box.createVerticalStrut(SPACING));
@@ -87,8 +89,8 @@ public class RoomPanelCtrl
 
   @Override
   public void removePanel(GemPanel panel) {
-    panels.remove((RoomPanel) panel);
-    ((RoomPanel) panel).removeActionListener(this);
+    panels.remove((EmployeePanel) panel);
+    ((EmployeePanel) panel).removeActionListener(this);
     remove(panel);
     revalidate();
   }
@@ -96,11 +98,31 @@ public class RoomPanelCtrl
   @Override
   public void clear() {
     for (int i = 1; i < panels.size(); i++) {
-      RoomPanel rp = panels.get(i);
+      EmployeePanel rp = panels.get(i);
       panels.remove(rp);
       remove(rp);
     }
 //    panels.get(0).reset();
     revalidate();
   }
+
+  private List<Person> setEmployees(Enum cat) {
+
+    if (employees == null) {
+      String where = ", " + EmployeeIO.TYPE_TABLE + " t  WHERE "
+      + PersonIO.TABLE + ".id = t.idper AND t.idcat = " + cat.ordinal();
+    employees =  PersonIO.find(where, dataCache.getDataConnection());
+    }
+    return employees;
+  }
+
+  public int[] getEmployees() {
+    int emps [] = new int[panels.size()];
+    for (int i = 0; i < panels.size(); i++) {
+      emps[i] = panels.get(i).getId();
+    }
+    return emps;
+  }
+
+
 }

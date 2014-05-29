@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleIO.java	2.8.t 02/05/14
+ * @(#)ScheduleIO.java	2.8.v 29/05/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -42,7 +42,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.8.v
  */
 public class ScheduleIO
         extends TableIO
@@ -276,8 +276,15 @@ public class ScheduleIO
         p = new StudioSchedule();
         fillPlanning(rs, p);
         ((StudioSchedule) p).setGroup((Group) DataCache.findId(p.getIdPerson(), Model.Group));
-        Action as = (Action) DataCache.findId(p.getIdAction(), Model.Action);
+//        Action as = (Action) DataCache.findId(p.getIdAction(), Model.Action);
          ((StudioSchedule) p).setActivity(new GemParam(new Param("1", "Enregistrement")));
+        break;
+      case Schedule.TECH:
+        p = new TechSchedule();
+        fillPlanning(rs, p);
+        ((TechSchedule) p).setGroup((Group) DataCache.findId(p.getIdPerson(), Model.Group));
+//        Action as = (Action) DataCache.findId(p.getIdAction(), Model.Action);
+         ((TechSchedule) p).setActivity(new GemParam(new Param("1", "Enregistrement")));
         break;
       case Schedule.WORKSHOP:
         p = new WorkshopSchedule();

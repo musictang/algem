@@ -1,5 +1,5 @@
 /*
- * @(#)TechSchedule.java	2.8.v 29/05/14
+ * @(#)PlanificationUtil.java	2.8.v 29/05/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -21,50 +21,32 @@
 
 package net.algem.planning;
 
-import net.algem.config.GemParam;
-import net.algem.group.Group;
-import net.algem.util.BundleUtil;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Technician schedule.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.8.v
- * @since 2.8.v 27/05/14
+ * @since 2.8.v 29/05/14
  */
-public class TechSchedule
-    extends ScheduleObject
+public class PlanificationUtil
 {
 
-  private Group group;
-
-  public TechSchedule() {
+  static boolean hasOverlapping(List<GemDateTime> orig) {
+    List<GemDateTime> dup = new ArrayList<GemDateTime>(orig);
+    for (int i = 0; i < orig.size(); i++) {
+      DateFr d = orig.get(i).getDate();
+      HourRange h = orig.get(i).getTimeRange();
+      for(int j = 0; j < dup.size(); j++) {
+        if (j != i && dup.get(j).getDate().equals(d)) {
+          if (dup.get(j).getTimeRange().overlap(h.getStart(), h.getEnd())) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
   }
 
-  public TechSchedule(Schedule d) {
-    super(d);
-  }
-
-  public void setGroup(Group g) {
-    idper = g == null ? 0 : g.getId();
-    group = g;
-  }
-
-  public Group getGroup() {
-    return group;
-  }
-
-  public String getActivityLabel() {
-    return ((GemParam) activity).getLabel();
-  }
-
-  @Override
-  public String getScheduleLabel() {
-    return group.getName();
-  }
-
-  @Override
-  public String getScheduleDetail() {
-    return BundleUtil.getLabel("Studio.label") + " " + group.getName();
-  }
 }

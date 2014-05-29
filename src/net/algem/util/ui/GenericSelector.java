@@ -1,5 +1,5 @@
 /*
- * @(#)GenericSelector.java	2.8.v 28/05/14
+ * @(#)GenericSelector.java	2.8.v 29/05/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -24,22 +24,24 @@ package net.algem.util.ui;
 import net.algem.util.model.GemModel;
 
 /**
+ * Generic selector of gemModel instances.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.8.v
  * @since 2.8.v 28/05/14
  */
-public class GenericSelector 
+public class GenericSelector
   extends GemChoice
 {
-  
+
   public GenericSelector(GemChoiceModel model) {
     super(model);
   }
 
   @Override
   public int getKey() {
-    return ((GemModel) getSelectedItem()).getId();
+    GemModel m = (GemModel) getSelectedItem();
+    return m == null ? -1 : m.getId();
   }
 
   @Override

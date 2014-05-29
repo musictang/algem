@@ -1,5 +1,5 @@
 /*
- * @(#)TechSchedule.java	2.8.v 29/05/14
+ * @(#)StudioSession.java	2.8.v 29/05/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -17,54 +17,59 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  *
- */
+*/
 
 package net.algem.planning;
 
-import net.algem.config.GemParam;
-import net.algem.group.Group;
-import net.algem.util.BundleUtil;
-
 /**
- * Technician schedule.
+ * A StudioSession object includes elements required for planning a studio session.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.8.v
- * @since 2.8.v 27/05/14
+ * @since 2.8.v 29/05/14
  */
-public class TechSchedule
-    extends ScheduleObject
+public class StudioSession
 {
 
-  private Group group;
+  private int studio;
+  private int group;
+  private int [] rooms;
+  private int [] technicians;
 
-  public TechSchedule() {
+  public StudioSession() {
   }
 
-  public TechSchedule(Schedule d) {
-    super(d);
-  }
-
-  public void setGroup(Group g) {
-    idper = g == null ? 0 : g.getId();
-    group = g;
-  }
-
-  public Group getGroup() {
+  public int getGroup() {
     return group;
   }
 
-  public String getActivityLabel() {
-    return ((GemParam) activity).getLabel();
+  public void setGroup(int group) {
+    this.group = group;
   }
 
-  @Override
-  public String getScheduleLabel() {
-    return group.getName();
+  public int[] getRooms() {
+    return rooms;
   }
 
-  @Override
-  public String getScheduleDetail() {
-    return BundleUtil.getLabel("Studio.label") + " " + group.getName();
+  public void setRooms(int[] rooms) {
+    this.rooms = rooms;
   }
+
+  public int getStudio() {
+    return studio;
+  }
+
+  public void setStudio(int studio) {
+    this.studio = studio;
+  }
+
+  public int[] getTechnicians() {
+    return technicians;
+  }
+
+  public void setTechnicians(int[] technicians) {
+    this.technicians = technicians;
+  }
+
+
 }

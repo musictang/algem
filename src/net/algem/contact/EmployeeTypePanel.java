@@ -18,10 +18,10 @@
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package net.algem.config;
+package net.algem.contact;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
+import net.algem.config.GemParam;
 import net.algem.util.model.GemList;
 import net.algem.util.ui.GemChoice;
 import net.algem.util.ui.RemovablePanel;
@@ -36,9 +36,7 @@ class EmployeeTypePanel
         extends RemovablePanel
 {
 
-  private GemChoice type; 
-  private static final Dimension CB_SIZE = new Dimension(250, 24);
-  private static final Dimension BT_SIZE = new Dimension(24, 24);
+  private GemChoice type;
 
   public EmployeeTypePanel() {
   }

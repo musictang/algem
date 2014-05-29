@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileEditor 2.8.t 16/05/14
+ * @(#)PersonFileEditor 2.8.v 29/05/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -24,11 +24,9 @@ import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.*;
 import net.algem.accounting.*;
 import net.algem.bank.*;
@@ -66,7 +64,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.8.v
  */
 public class PersonFileEditor
         extends FileEditor
@@ -82,7 +80,6 @@ public class PersonFileEditor
   private JMenuItem miDelete;
   private JMenuItem miLogin;
   private JMenuItem miMember, miTeacher, miBank, miEmployee;
-  private JCheckBoxMenuItem miTech;
   private JMenuItem miPassRehearsal, miRehearsal;
   private JMenuItem miHistoRehearsal;
   private JMenuItem miCard;
@@ -300,7 +297,7 @@ public class PersonFileEditor
      * PersonFileEditor(dossier); desktop.addModule(editeur);
      *
      * view.setCursor(new Cursor(Cursor.DEFAULT_CURSOR)); }
-     */ 
+     */
     else if ("Member.schedule.payment".equals(arg)) {
       // jm interdire l'ouverture multiple de l'échéancier
       ((GemButton) evt.getSource()).setEnabled(false);
@@ -622,7 +619,7 @@ public class PersonFileEditor
     Person p = dossier.getContact();
 
     // chargement des échéances
-    //un adhérent a pu avoir plusieurs payeurs  
+    //un adhérent a pu avoir plusieurs payeurs
     if (dossier.getMember() != null) {
       // si l'adhérent n'est pas son propre payeur
       if (dossier.getMember().getPayer() != dossier.getId()) {
@@ -728,12 +725,7 @@ public class PersonFileEditor
     mOptions.add(miEmployee = getMenuItem("Employee"));
     miEmployee.setEnabled(dataCache.authorize("Employee.editing.auth"));
     miEmployee.setToolTipText(BundleUtil.getLabel("Employee.tab.tip"));
-    miTech = new JCheckBoxMenuItem(BundleUtil.getLabel("Technician.label"));
-    miTech.setActionCommand("Technician");
-    mOptions.add(miTech);
-//    miTech.setToolTipText(BundleUtil.getLabel("Technician.tab.tip"));
-//    miTech.setSelected(isTechnician(dossier.getId()));
-    
+
     mOptions.add(miGroups = getMenuItem("Groups"));
     //Désactivation conditionnelle des menus Adherent, Prof et Bank
     if (dossier.getMember() != null) {
@@ -742,26 +734,26 @@ public class PersonFileEditor
     if (dossier.getTeacher() != null) {
       miTeacher.setEnabled(false);
     }
-    
+
     mOptions.addSeparator();
     mOptions.add(miRehearsal = getMenuItem("Person.rehearsal.scheduling"));
     mOptions.add(miPassRehearsal = getMenuItem("Person.pass.scheduling"));
-   
+
     mOptions.addSeparator();
     mOptions.add(miHistoRehearsal = getMenuItem("Rehearsal.history"));
     mOptions.add(miMonthPlanning = getMenuItem("Menu.month.schedule"));
-    
+
     mOptions.addSeparator();
     mOptions.add(miHistoInvoice = getMenuItem("Invoice.history"));
     mOptions.add(miHistoQuote = getMenuItem("Quotation.history"));
-    
+
     mOptions.addSeparator();
     mOptions.add(miBank = getMenuItem("Person.bank.editing"));
     if (dossier.getRib() != null) {
       miBank.setEnabled(false);
     }
     mOptions.add(miCard = getMenuItem("Rehearsal.card.editing"));
-    
+
     mOptions.addSeparator();
     mOptions.add(miLogin = getMenuItem("Login.creation"));
 
@@ -982,7 +974,7 @@ public class PersonFileEditor
       }
     }
   }
-  
+
   /**
    * Closes the module.
    * Click on closing icon.
@@ -1012,7 +1004,7 @@ public class PersonFileEditor
 
   private void closeTab(Object source) {
     String classname = null;
-		
+
     if (source instanceof String) {
       classname = (String) source;
     } else {

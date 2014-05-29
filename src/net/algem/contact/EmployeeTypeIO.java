@@ -19,12 +19,14 @@
  *
  */
 
-package net.algem.config;
+package net.algem.contact;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Vector;
+import net.algem.config.GemParam;
+import net.algem.config.GemParamIO;
 import net.algem.util.DataConnection;
 import net.algem.util.model.Cacheable;
 
@@ -34,7 +36,7 @@ import net.algem.util.model.Cacheable;
  * @version 2.8.v
  * @since 2.8.v 28/05/14
  */
-public class EmployeeTypeIO 
+public class EmployeeTypeIO
   extends GemParamIO
   implements Cacheable
 {
@@ -42,11 +44,11 @@ public class EmployeeTypeIO
   private final static String COLS = "id, libelle";
   private final static String TABLE = "categorie_salarie";
   private final static String SEQUENCE = "categorie_salarie_id_seq";
-  
+
   public EmployeeTypeIO(DataConnection dc) {
     this.dc = dc;
   }
-  
+
   @Override
   protected String getSequence() {
     return SEQUENCE;
@@ -56,12 +58,12 @@ public class EmployeeTypeIO
   protected String getTable() {
     return TABLE;
   }
-  
+
   @Override
   public List<GemParam> load() throws SQLException {
     return find();
   }
-  
+
   @Override
   public Vector<GemParam> find(String where) throws SQLException {
     String query = "SELECT " + COLS + " FROM " + getTable();

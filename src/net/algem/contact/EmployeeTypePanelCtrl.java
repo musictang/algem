@@ -1,5 +1,5 @@
 /*
- * @(#)EmployeeTypePanelCtrl.java	2.8.v 28/05/14
+ * @(#)EmployeeTypePanelCtrl.java	2.8.v 29/05/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -19,7 +19,7 @@
  *
  */
 
-package net.algem.config;
+package net.algem.contact;
 
 import java.awt.BorderLayout;
 import java.awt.Insets;
@@ -38,12 +38,13 @@ import net.algem.util.ui.GemLabel;
 import net.algem.util.ui.GemPanel;
 
 /**
+ * Controller used to add or remove panels for selecting categories of employee.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.8.v
  * @since 2.8.v 28/05/14
  */
-public class EmployeeTypePanelCtrl 
+public class EmployeeTypePanelCtrl
   extends AbstractGemPanelCtrl
 {
 
@@ -62,14 +63,13 @@ public class EmployeeTypePanelCtrl
     top.add(new GemLabel(BundleUtil.getLabel("Category.label")), BorderLayout.WEST);
     top.add(plus, BorderLayout.EAST);
 
-    this.dataCache = dataCache;
     setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
     add(top);
     add(Box.createVerticalStrut(SPACING));
     panels = new ArrayList<EmployeeTypePanel>();
 //    addPanel();
   }
-  
+
   @Override
   public void addPanel() {
     EmployeeTypePanel p = new EmployeeTypePanel(dataCache.getList(Model.EmployeeType));
@@ -78,8 +78,8 @@ public class EmployeeTypePanelCtrl
     add(panels.get(panels.size() - 1));
     add(Box.createVerticalStrut(SPACING));
   }
-  
-  
+
+
   public void addPanel(int t) {
     EmployeeTypePanel p = new EmployeeTypePanel(dataCache.getList(Model.EmployeeType));
     p.addActionListener(this);
@@ -107,14 +107,16 @@ public class EmployeeTypePanelCtrl
 //    panels.get(0).reset();
     revalidate();
   }
-  
+
   public List<Integer> getTypes() {
     List<Integer> t = new ArrayList<Integer>();
     for (EmployeeTypePanel p : panels) {
-      t.add(p.getType());
+      if (p.getType() > 0) {
+        t.add(p.getType());
+      }
     }
     return t;
   }
-  
+
 
 }
