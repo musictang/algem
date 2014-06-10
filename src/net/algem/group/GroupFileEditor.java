@@ -1,5 +1,5 @@
 /*
- * @(#)GroupFileEditor.java 2.8.u 19/05/14
+ * @(#)GroupFileEditor.java 2.8.v 09/06/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -43,7 +43,7 @@ import net.algem.util.ui.*;
 /**
  * Group file main editor.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.u
+ * @version 2.8.v
  */
 public class GroupFileEditor
         extends GemModule
@@ -119,10 +119,11 @@ public class GroupFileEditor
       Vector<Musician> vm = service.getMusicians(group);
       oldGroup.setMusicians(vm);
       groupFileTabView.init(vm);
-
-    } catch (SQLException | NoteException ex) {
+    } catch(NoteException ne) {
+      GemLogger.log(getClass().getName(), "init", ne);
+    } catch (SQLException ex) {// NoteException ex) {
       GemLogger.log(getClass().getName(), "init", ex);
-    }
+    } 
 
     mBar = new JMenuBar();
     mFile = new JMenu(BundleUtil.getLabel("Menu.file.label"));

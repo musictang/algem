@@ -30,6 +30,7 @@ package net.algem.contact;
  */
 public enum EmployeeType
 {
+  // DO NOT MODIDY THE ORDER !
   NONE,
   TEACHER,
   TECHNICIAN,

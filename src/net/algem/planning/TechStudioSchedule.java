@@ -1,5 +1,5 @@
 /*
- * @(#)EmployeePanel.java	2.8.v 06/06/14
+ * @(#)TechStudioSchedule.java	2.8.v 02/06/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -18,43 +18,34 @@
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package net.algem.contact;
 
-import java.awt.BorderLayout;
-import java.util.List;
-import net.algem.util.ui.GemChoice;
-import net.algem.util.ui.RemovablePanel;
+package net.algem.planning;
+
+import net.algem.util.BundleUtil;
 
 /**
+ * Technician schedule.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.8.v
- * @since 2.8.v 29/05/14
+ * @since 2.8.v 27/05/14
  */
-public class EmployeePanel
-  extends RemovablePanel {
+public class TechStudioSchedule
+    extends StudioSchedule
+{
 
-  private GemChoice employee;
+  private String techName;
 
-  public EmployeePanel() {
+  void setTechnicianLabel(String name) {
+    techName = name;
   }
 
-  public EmployeePanel(List<Person> employees) {
-    employee = new EmployeeSelector(employees);
-    employee.setSelectedIndex(0);
-    employee.setPreferredSize(CB_SIZE);
-    removeBt.setPreferredSize(BT_SIZE);
-    setLayout(new BorderLayout());
-    add(employee, BorderLayout.WEST);
-    add(removeBt, BorderLayout.EAST);
-    setBorder(null);
+  public String getTechnicianLabel() {
+    return techName;
   }
 
-  public int getId() {
-    return employee.getKey();
-  }
-
-  public void setId(int id) {
-    employee.setKey(id);
+  @Override
+  public String getScheduleDetail() {
+    return BundleUtil.getLabel("Studio.label") + " " + group.getName();
   }
 }

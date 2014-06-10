@@ -1,5 +1,5 @@
 /*
- * @(#)RoomPanel.java	2.8.v 29/05/14
+ * @(#)RoomPanel.java	2.8.v 03/06/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -56,5 +56,11 @@ public class RoomPanel
 
   void setRoom(int r) {
     room.setKey(r);
+  }
+  
+  @Override
+  public void setEnabled(boolean enabled) {
+    room.setEnabled(enabled);
+    removeBt.setEnabled(enabled);
   }
 }

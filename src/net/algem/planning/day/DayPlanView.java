@@ -1,5 +1,5 @@
 /*
- * @(#)DayPlanView.java 2.8.v 29/05/14
+ * @(#)DayPlanView.java 2.8.v 09/06/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -300,7 +300,7 @@ public class DayPlanView
     bg.setFont(NORMAL_FONT);
 
     showLabel(p, prev, x, y);
-    showTeacher(p, prev, x, y);
+    showSubLabel(p, prev, x, y);
 
   }
 
@@ -327,26 +327,28 @@ public class DayPlanView
     }
   }
 
-  private void showTeacher(ScheduleObject p, ScheduleObject prev, int x, int y) {
+  private void showSubLabel(ScheduleObject p, ScheduleObject prev, int x, int y) {
 
-    String teacherName = null;
-    if (p.getIdPerson() != prev.getIdPerson()) {
-      int duree = p.getStart().getLength(p.getEnd());
-      if ((p instanceof CourseSchedule || p instanceof WorkshopSchedule || p instanceof StudioSchedule) && duree > 30) {
-        if (p instanceof StudioSchedule) {
-          teacherName = ((StudioSchedule) p).getActivityLabel();
+    String subLabel = null;
+    if (p.getIdPerson() != prev.getIdPerson() || prev.getIdPerson() == 0) {
+      int length = p.getStart().getLength(p.getEnd());
+      if (length > 30 && (p instanceof CourseSchedule || p instanceof WorkshopSchedule || p instanceof GroupStudioSchedule || p instanceof TechStudioSchedule)) {
+        if (p instanceof GroupStudioSchedule) {
+          subLabel = ((GroupStudioSchedule) p).getActivityLabel();
+        } else if (p instanceof TechStudioSchedule) {
+          subLabel = ((TechStudioSchedule) p).getTechnicianLabel();
         } else {
-          teacherName = p.getPerson().getAbbrevFirstNameName();
+          subLabel = p.getPerson().getAbbrevFirstNameName();
         }
-        if (teacherName != null) {
+        if (subLabel != null) {
           bg.setFont(SMALL_FONT);
-          int w = fm.stringWidth(teacherName) + 4;
+          int w = fm.stringWidth(subLabel) + 4;
           while (w > pas_x) {
-            teacherName = teacherName.substring(0, teacherName.length() - 1);
-            w = fm.stringWidth(teacherName) + 4;
+            subLabel = subLabel.substring(0, subLabel.length() - 1);
+            w = fm.stringWidth(subLabel) + 4;
             //System.out.println("w = "+w);
           }
-          bg.drawString(teacherName, x + (pas_x / 2) - (w - 4) / 2, y + 18);
+          bg.drawString(subLabel, x + (pas_x / 2) - (w - 4) / 2, y + 18);
         }
       }
     }
@@ -442,19 +444,23 @@ public class DayPlanView
     for (int i = 0; vpl != null && i < vpl.size(); i++) {
       ScheduleRangeObject pg = vpl.elementAt(i);
       Course cc = ((CourseSchedule) pg).getCourse();
-      if (cc != null && cc.isCollective()) { // les plages affichées sont restreintes aux limites des plannings
+      if (cc != null) {
+        if (cc.isCollective()) {
+          // les plages affichées sont restreintes aux limites des plannings
           if (pg.getScheduleId() == clickSchedule.getId()) {
             clickRange.add(pg);
           }
-      } else {
-        // les plages de plusieurs plannings peuvent être ajoutées si elles font
-        // référence au même prof
-        if (pg.getIdAction() == clickSchedule.getIdAction()
-                && pg.getTeacher() != null && pg.getTeacher().getId() == clickSchedule.getIdPerson()) {
-          clickRange.add(pg);
+        } else {
+          // les plages de plusieurs plannings peuvent être ajoutées si elles font
+          // référence au même prof
+          if (pg.getIdAction() == clickSchedule.getIdAction()
+                  && pg.getTeacher() != null && pg.getTeacher().getId() == clickSchedule.getIdPerson()) {
+            clickRange.add(pg);
+          }
         }
+      } else if (pg.getScheduleId() == clickSchedule.getId()) {
+        clickRange.add(pg);
       }
-
     }
     if (listener != null) {
       listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Click"));

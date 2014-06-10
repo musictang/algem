@@ -1,7 +1,7 @@
 /*
- * @(#)ConflictQueries.java 2.8.b 14/05/13
+ * @(#)ConflictQueries.java 2.8.v 03/06/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,10 +21,10 @@
 package net.algem.planning;
 
 /**
- * Set of requests for conflict detection when schedule is busy.
+ * Set of requests used in conflict detection when schedule is busy.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.b
+ * @version 2.8.v
  */
 public class ConflictQueries
 {
@@ -38,7 +38,7 @@ public class ConflictQueries
   }
 
   public static String getMemberScheduleSelection(String date, String hStart, String hEnd, int memberId) {
-    return ",plage WHERE planning.jour='" + date + "'"
+    return ",plage WHERE planning.jour = '" + date + "'"
             + " AND plage.idplanning = planning.id"
             + " AND plage.adherent = " + memberId
             + " AND ((plage.debut >= '" + hStart + "' AND plage.debut < '" + hEnd + "')"
@@ -58,19 +58,12 @@ public class ConflictQueries
 
   public static String getGroupConflictSelection(String date, String hdebut, String hfin, int groupId) {
     return getConflictSelection(date, hdebut, hfin)
-            + " AND idper=" + groupId
-            + " AND ptype=" + Schedule.GROUP;
+            + " AND idper = " + groupId
+            + " AND ptype = " + Schedule.GROUP;
   }
 
   public static String getRoomTeacherConflictSelection(String date, String hStart, String hEnd, int roomId, int teacherId) {
     return getConflictSelection(date, hStart, hEnd) + " AND (lieux = " + roomId + " OR idper = " + teacherId + ")";
-  }
-
-  private static String getConflictSelection(String date, String hStart, String hEnd) {
-    return "WHERE jour='" + date + "'"
-            + " AND ((debut >= '" + hStart + "' AND debut < '" + hEnd + "')"
-            + " OR (fin > '" + hStart + "' AND fin <= '" + hEnd + "')"
-            + " OR (debut <= '" + hStart + "' AND fin >= '" + hEnd + "'))";
   }
 
   public static String getTeacherConflictSelection(String date, String hStart, String hEnd, int teacherId) {
@@ -86,5 +79,12 @@ public class ConflictQueries
             + " AND ((pg.debut >= '" + hStart + "' AND pg.debut < '" + hEnd + "')"
             + " OR (pg.fin > '" + hStart + "' AND pg.fin <= '" + hEnd + "')"
             + " OR (pg.debut <= '" + hStart + "' AND pg.fin >= '" + hEnd + "'))";
+  }
+  
+   private static String getConflictSelection(String date, String hStart, String hEnd) {
+    return "WHERE jour = '" + date + "'"
+            + " AND ((debut >= '" + hStart + "' AND debut < '" + hEnd + "')"
+            + " OR (fin > '" + hStart + "' AND fin <= '" + hEnd + "')"
+            + " OR (debut <= '" + hStart + "' AND fin >= '" + hEnd + "'))";
   }
 }

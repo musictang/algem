@@ -1,5 +1,5 @@
 /*
- * @(#)EmployeeTypePanel.java	2.8.v 28/05/14
+ * @(#)EmployeeTypePanel.java	2.8.v 09/06/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -32,7 +32,7 @@ import net.algem.util.ui.RemovablePanel;
  * @version 2.8.v
  * @since 2.8.v 28/05/14
  */
-class EmployeeTypePanel
+public class EmployeeTypePanel
         extends RemovablePanel
 {
 
@@ -51,11 +51,11 @@ class EmployeeTypePanel
     setBorder(null);
   }
 
-  int getType() {
+  public int getType() {
     return type.getKey();
   }
 
-  void setType(int t) {
+  public void setType(int t) {
     type.setKey(t);
   }
 }

@@ -1,7 +1,7 @@
 /*
- * @(#)GroupRehearsalCreateCtrl.java	2.7.a 03/12/12
+ * @(#)GroupRehearsalCreateCtrl.java	2.8.v 04/06/14
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -38,7 +38,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.v
  * @since 1.0a 07/07/1999
  */
 public class GroupRehearsalCreateCtrl
@@ -153,7 +153,7 @@ public class GroupRehearsalCreateCtrl
 
     if (service.testGroupConflict(date.toString(), hdeb.toString(), hfin.toString(), group.getId()) > 0) {
       JOptionPane.showMessageDialog(null,
-                                    MessageUtil.getMessage("busy.band.warning"),
+                                    MessageUtil.getMessage("busy.group.warning"),
                                     conflict,
                                     JOptionPane.ERROR_MESSAGE);
       return false;

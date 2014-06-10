@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleCanvas.java 2.8.t 08/05/14
+ * @(#)ScheduleCanvas.java 2.8.v 02/06/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -120,6 +120,11 @@ public abstract class ScheduleCanvas
         //c = Color.white; // couleur atelier ponctuel
         c = colorPrefs.getColor(ColorPlan.TRAINING);
         break;
+      case Schedule.STUDIO:
+      case Schedule.TECH:
+        //c = Color.white; // couleur atelier ponctuel
+        c = colorPrefs.getColor(ColorPlan.STUDIO);
+        break;
     } // end switch couleurs
     return c;
   }
@@ -149,6 +154,8 @@ public abstract class ScheduleCanvas
       return colorPrefs.getColor(ColorPlan.GROUP_LABEL);
     } else if (p instanceof MemberRehearsalSchedule) {
       return colorPrefs.getColor(ColorPlan.MEMBER_LABEL);
+    } else if (p instanceof GroupStudioSchedule || p instanceof TechStudioSchedule) {
+      return colorPrefs.getColor(ColorPlan.STUDIO_LABEL);
     } else {
       return colorPrefs.getColor(ColorPlan.LABEL);
     }

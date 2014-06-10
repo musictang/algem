@@ -1,5 +1,5 @@
 /*
- * @(#)RoomPanelCtrl.java	2.8.v 29/05/14
+ * @(#)RoomPanelCtrl.java	2.8.v 04/06/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -91,6 +91,14 @@ public class RoomPanelCtrl
     ((RoomPanel) panel).removeActionListener(this);
     remove(panel);
     revalidate();
+  }
+  
+  @Override
+  public void setEnabled(boolean enabled) {
+    plus.setEnabled(enabled);
+    for(RoomPanel p : panels) {
+      p.setEnabled(enabled);
+    }
   }
 
   @Override

@@ -1,5 +1,5 @@
 /*
- * @(#)ColorPreview.java	2.8.t 08/05/14
+ * @(#)ColorPreview.java	2.8.v 02/06/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -36,7 +36,7 @@ import net.algem.util.ui.GemPanel;
  * Display and modification panel of the planning colors.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.8.v
  */
 public class ColorPreview extends GemPanel {
 
@@ -52,6 +52,7 @@ public class ColorPreview extends GemPanel {
   private final JLabel workshopLabel = new JLabel(BundleUtil.getLabel("Workshop.label"));
   private final JLabel trainingLabel = new JLabel(BundleUtil.getLabel("Training.course.label"));
   private final JLabel catchUpLabel = new JLabel(BundleUtil.getLabel("Catching.up.label"));
+  private final JLabel studioLabel = new JLabel(BundleUtil.getLabel("Studio.label"));
 
   private JPanel coursePanel;
   private JPanel memberRangePanel;
@@ -62,6 +63,7 @@ public class ColorPreview extends GemPanel {
   private JPanel workshopPanel;
   private JPanel catchUpPanel;
   private JPanel trainingPanel;
+  private JPanel studioPanel;
 
   private Font f;
   private ColorPlanListener pColorListener;
@@ -119,7 +121,9 @@ public class ColorPreview extends GemPanel {
 
     JPanel p4 = new JPanel();
     p4.setLayout(new BoxLayout(p4, BoxLayout.Y_AXIS));
+    studioPanel = initPanel(studioLabel, ColorPlan.STUDIO, 40);
     catchUpPanel = initPanel(catchUpLabel, ColorPlan.CATCHING_UP, 60);
+    p4.add(studioPanel);
     p4.add(catchUpPanel);
 
     add(p1);
@@ -147,6 +151,7 @@ public class ColorPreview extends GemPanel {
     colors.put(ColorPlan.TRAINING, workshopPanel.getBackground());
     colors.put(ColorPlan.GROUP_REHEARSAL, groupRehearsalPanel.getBackground());
     colors.put(ColorPlan.MEMBER_REHEARSAL, memberRehearsalPanel.getBackground());
+    colors.put(ColorPlan.STUDIO, studioPanel.getBackground());
 
     colors.put(ColorPlan.COURSE_INDIVIDUAL_LABEL, courseLabel.getForeground());
     colors.put(ColorPlan.COURSE_CO_LABEL, courseCoLabel.getForeground());
@@ -156,6 +161,7 @@ public class ColorPreview extends GemPanel {
     colors.put(ColorPlan.TRAINING_LABEL, workshopLabel.getForeground());
     colors.put(ColorPlan.GROUP_LABEL, groupRehearsalLabel.getForeground());
     colors.put(ColorPlan.MEMBER_LABEL, memberRehearsalLabel.getForeground());
+    colors.put(ColorPlan.STUDIO_LABEL, studioLabel.getForeground());
 
     return colors;
   }
@@ -241,6 +247,10 @@ public class ColorPreview extends GemPanel {
       case RANGE:
         bg = prefs.getColor(ColorPlan.RANGE);
         fg = prefs.getColor(ColorPlan.LABEL);
+        break;
+      case STUDIO:
+        bg = prefs.getColor(ColorPlan.STUDIO);
+        fg = prefs.getColor(ColorPlan.STUDIO_LABEL);
         break;
       default:
         bg = Color.GRAY;

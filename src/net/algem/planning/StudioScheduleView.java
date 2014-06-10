@@ -1,5 +1,5 @@
 /*
- * @(#)StudioScheduleView.java	2.8.v 29/05/14
+ * @(#)StudioScheduleView.java	2.8.v 03/06/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -22,11 +22,18 @@
 package net.algem.planning;
 
 import java.awt.GridBagLayout;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.List;
 import java.util.Vector;
+import javax.swing.JCheckBox;
+import net.algem.config.ConfigKey;
+import net.algem.config.ConfigUtil;
 import net.algem.contact.EmployeePanelCtrl;
 import net.algem.group.Group;
 import net.algem.group.GroupChoice;
+import net.algem.room.RoomActiveChoiceModel;
+import net.algem.room.RoomChoice;
 import net.algem.room.RoomPanelCtrl;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
@@ -50,23 +57,46 @@ public class StudioScheduleView
    private DateTimeCtrl dateTimeCtrl;
    private RoomPanelCtrl roomPanelCtrl;
    private EmployeePanelCtrl employeePanelCtrl;
+   private RoomChoice studio;
+   private int defStudio;
+   private JCheckBox onlyStudio;
 
   public StudioScheduleView(DataCache dataCache) {
+    onlyStudio = new JCheckBox("Réservation studio seul");
+    onlyStudio.addItemListener(new ItemListener() {
+
+      @Override
+      public void itemStateChanged(ItemEvent e) {      
+        roomPanelCtrl.setEnabled(!((JCheckBox) e.getItem()).isSelected());
+      }
+      
+    });
+    
     group = new GroupChoice(new Vector<Group>(dataCache.getList(Model.Group).getData()));
     dateTimeCtrl = new DateTimeCtrl();
     roomPanelCtrl = new RoomPanelCtrl(dataCache);
     employeePanelCtrl = new EmployeePanelCtrl(dataCache, BundleUtil.getLabel("Technician.label"));
+    studio = new RoomChoice(new RoomActiveChoiceModel(dataCache.getList(Model.Room), true));
+    defStudio = Integer.parseInt(ConfigUtil.getConf(ConfigKey.DEFAULT_STUDIO.getKey(), dataCache.getDataConnection()));
+    studio.setKey(defStudio);
 
     this.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
     gb.insets = GridBagHelper.SMALL_INSETS;
 
-    gb.add(new GemLabel(BundleUtil.getLabel("Group.label")), 0, 0, 1, 1, GridBagHelper.WEST);
-    gb.add(group, 0, 1, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
-    gb.add(roomPanelCtrl, 0, 2, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
-    gb.add(dateTimeCtrl, 0, 3, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
-    gb.add(employeePanelCtrl, 0, 4, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
+    gb.add(onlyStudio, 0, 0, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Group.label")), 0, 1, 1, 1, GridBagHelper.WEST);
+    gb.add(group, 0, 2, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
+    gb.add(roomPanelCtrl, 0, 3, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
+    gb.add(dateTimeCtrl, 0, 4, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
+    gb.add(employeePanelCtrl, 0, 5, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Studio.label")), 0, 6, 1, 1, GridBagHelper.WEST);
+    gb.add(studio, 0, 7, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
 
+  }
+  
+  boolean isStudioOnly() {
+    return onlyStudio.isSelected();
   }
 
   int getGroup() {
@@ -78,7 +108,14 @@ public class StudioScheduleView
   }
 
   int [] getRooms() {
+    if (isStudioOnly()) {
+      return null;
+    }
     return roomPanelCtrl.getRooms();
+  }
+  
+  int getStudio() {
+    return studio.getKey();
   }
 
   int [] getEmployees() {
@@ -87,6 +124,7 @@ public class StudioScheduleView
 
   void clear() {
      group.setSelectedIndex(0);
+     studio.setKey(defStudio);
      dateTimeCtrl.clear();
      roomPanelCtrl.clear();
      employeePanelCtrl.clear();

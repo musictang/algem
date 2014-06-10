@@ -31,7 +31,7 @@ import net.algem.billing.*;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
 import net.algem.config.ModeOfPaymentCtrl;
-import net.algem.edition.HourTeacherDlg;
+import net.algem.edition.HourEmployeeDlg;
 import net.algem.room.RoomRateSearchCtrl;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataConnection;
@@ -62,7 +62,7 @@ public class MenuAccounting
   private JMenuItem miAccountTransfert;
   private JMenuItem miAccountDocument;
   private JMenuItem miAccountSchedule;
-  private JMenuItem miAccountHourTeacher;
+  private JMenuItem miAccountHourEmployee;
   private JMenuItem miRoomRate;  
   private JMenuItem miDirectDebitList;
   private DataConnection dc;
@@ -85,7 +85,8 @@ public class MenuAccounting
     }
     add(mDirectDebit);
 //    add(mDirectDebit, "Standing.order.export.auth");
-    miAccountHourTeacher = add(getItem(new JMenuItem(menus.get("Menu.teacher.hour.label")), "Accounting.hours.export.auth"));
+//    miAccountHourTeacher = add(getItem(new JMenuItem(menus.get("Menu.teacher.hour.label")), "Accounting.hours.export.auth"));
+    miAccountHourEmployee = add(getItem(new JMenuItem(menus.get("Menu.employee.hour.label")), "Accounting.hours.export.auth"));
     addSeparator();
     
     add(getItem(new JMenuItem(menus.get("Menu.invoice.history.label")), "Invoice.history.auth"));
@@ -143,8 +144,8 @@ public class MenuAccounting
       DDMandateCtrl ddCtrl = new DDMandateCtrl(desktop, ddService);
 			ddCtrl.load();
       desktop.addPanel("Direct.debit.sepa.list", ddCtrl, GemModule.M_SIZE);
-    } else if (src == miAccountHourTeacher) {
-      HourTeacherDlg hourTeacherDlg = new HourTeacherDlg(desktop.getFrame(), "heureprof.txt", dataCache);
+    } else if (src == miAccountHourEmployee) {
+      HourEmployeeDlg hourTeacherDlg = new HourEmployeeDlg(desktop.getFrame(), "heureprof.txt", dataCache);
       hourTeacherDlg.setVisible(true);
     } else if (menus.get("Menu.invoice.history.label").equals(arg)) {
       BillingService billService = new BasicBillingService(dataCache);
@@ -233,6 +234,7 @@ public class MenuAccounting
     menus.put("Direct.debit.sepa.list.label", BundleUtil.getLabel("Direct.debit.sepa.list.label"));
     menus.put("Menu.export.label", BundleUtil.getLabel("Menu.export.label"));
     menus.put("Menu.teacher.hour.label", BundleUtil.getLabel("Menu.teacher.hour.label"));
+    menus.put("Menu.employee.hour.label", BundleUtil.getLabel("Menu.employee.hour.label"));
     menus.put("Menu.invoice.history.label", BundleUtil.getLabel("Menu.invoice.history.label"));
     menus.put("Menu.quotation.history.label", BundleUtil.getLabel("Menu.quotation.history.label"));
     menus.put("Menu.invoice.label", BundleUtil.getLabel("Menu.invoice.label"));

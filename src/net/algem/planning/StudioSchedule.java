@@ -1,6 +1,6 @@
 /*
- * @(#)StudioSchedule.java	2.8.v 27/05/14
- * 
+ * @(#)StudioSchedule.java	2.8.v 02/06/14
+ *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,34 +16,30 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning;
 
-import net.algem.config.GemParam;
 import net.algem.group.Group;
-import net.algem.util.BundleUtil;
 
 /**
- * Studio schedule instance.
- *
+ * Abstract studio schedule.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.8.v
- * @since 2.8.v 27/05/14
+ * @since 2.8.v 02/06/14
  */
-public class StudioSchedule
+public abstract class StudioSchedule
         extends ScheduleObject
 {
-
-  private Group group;
-
+  protected Group group;
+  
   public StudioSchedule() {
   }
 
   public StudioSchedule(Schedule d) {
     super(d);
   }
-
+  
   public void setGroup(Group g) {
     idper = g == null ? 0 : g.getId();
     group = g;
@@ -52,18 +48,9 @@ public class StudioSchedule
   public Group getGroup() {
     return group;
   }
-
-  public String getActivityLabel() {
-    return ((GemParam) activity).getLabel();
-  }
   
-  @Override
+   @Override
   public String getScheduleLabel() {
     return group.getName();
-  }
-
-  @Override
-  public String getScheduleDetail() {
-    return BundleUtil.getLabel("Group.rehearsal.label") + " " + group.getName();
   }
 }

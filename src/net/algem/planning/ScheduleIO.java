@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleIO.java	2.8.v 29/05/14
+ * @(#)ScheduleIO.java	2.8.v 02/06/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -25,8 +25,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
-import net.algem.config.GemParam;
-import net.algem.config.Param;
 import net.algem.contact.Person;
 import net.algem.course.Course;
 import net.algem.group.Group;
@@ -273,18 +271,19 @@ public class ScheduleIO
         ((GroupRehearsalSchedule) p).setGroup((Group) DataCache.findId(p.getIdPerson(), Model.Group));
         break;
       case Schedule.STUDIO:
-        p = new StudioSchedule();
+        p = new GroupStudioSchedule();
         fillPlanning(rs, p);
-        ((StudioSchedule) p).setGroup((Group) DataCache.findId(p.getIdPerson(), Model.Group));
-//        Action as = (Action) DataCache.findId(p.getIdAction(), Model.Action);
-         ((StudioSchedule) p).setActivity(new GemParam(new Param("1", "Enregistrement")));
+        ((GroupStudioSchedule) p).setGroup((Group) DataCache.findId(p.getIdPerson(), Model.Group));
         break;
       case Schedule.TECH:
-        p = new TechSchedule();
+        p = new TechStudioSchedule();
         fillPlanning(rs, p);
-        ((TechSchedule) p).setGroup((Group) DataCache.findId(p.getIdPerson(), Model.Group));
-//        Action as = (Action) DataCache.findId(p.getIdAction(), Model.Action);
-         ((TechSchedule) p).setActivity(new GemParam(new Param("1", "Enregistrement")));
+        int tech = getFirstPerson(p.getId(), dc);
+        if (tech > 0) {
+          Person per = (Person) DataCache.findId(tech, Model.Person);
+          ((TechStudioSchedule) p).setTechnicianLabel(per.getAbbrevFirstNameName());
+        }
+        ((TechStudioSchedule) p).setGroup((Group) DataCache.findId(p.getIdPerson(), Model.Group));
         break;
       case Schedule.WORKSHOP:
         p = new WorkshopSchedule();
@@ -296,6 +295,24 @@ public class ScheduleIO
     }
     return p;
 
+  }
+  
+  /**
+   * Gets the first person's id stored in this schedule {@code id}.
+   * 
+   * @param id schedule id
+   * @param dc data connection
+   * @return an integer >= 0
+   * @throws SQLException 
+   */
+  private static int getFirstPerson(int id, DataConnection dc) throws SQLException {
+    int t = 0;
+    String query = "SELECT adherent FROM " + ScheduleRangeIO.TABLE + " WHERE idplanning = " + id + " ORDER BY id LIMIT 1";
+    ResultSet rs = dc.executeQuery(query);
+    if (rs.next()) {
+      t = rs.getInt(1);
+    }
+    return t;
   }
 
   public static Vector<ScheduleObject> findObject(String where, DataConnection dc)

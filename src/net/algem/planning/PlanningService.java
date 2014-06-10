@@ -1,5 +1,5 @@
 /*
- * @(#)PlanningService.java	2.8.v 29/05/14
+ * @(#)PlanningService.java	2.8.v 05/06/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -24,6 +24,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormatSymbols;
 import java.util.*;
+import net.algem.contact.Person;
 import net.algem.course.Course;
 import net.algem.course.CourseIO;
 import net.algem.enrolment.CourseOrder;
@@ -208,6 +209,27 @@ public class PlanningService
       throw new PlanningException(ex.getMessage());
     }
   }
+  
+  /**
+   * Deletes only the schedule {@code s}.
+   * @param s schedule to delete
+   * @throws PlanningException if SQLException is catched
+   */
+  public void deleteSchedule(Schedule s) throws PlanningException {
+    try {
+//      int r = ScheduleIO.containRanges(s, dc);
+//      if (r == 0) {
+//        ScheduleIO.delete(s, dc);
+//      } else {
+//        if (MessagePopup.confirm(null, MessageUtil.getMessage("schedule.suppression.warning", r))) {
+          ScheduleIO.delete(s, dc);
+          ScheduleRangeIO.delete("idplanning = " + s.getId(), dc);
+//        } else throw new PlanningException(GemCommand.CANCEL_CMD);
+//      }
+    } catch (SQLException ex) {
+      throw new PlanningException(ex.getMessage());
+    }
+  }
 
   /**
    * Removes all schedules sharing the same action {@code a} and enclosed in the same timeslot.
@@ -249,11 +271,11 @@ public class PlanningService
   }
 
   /**
-   * Indicates if there are multiples time slots for the same planning on the selected date.
+   * Checks if several schedules share the same action on the selected date.
    * @param s schedule
-   * @return true if multiple time slots are found
+   * @return  true if several schedules are found
    */
-  public boolean hasMultipleTimes(Schedule s) {
+  public boolean hasSiblings(Schedule s) {
     List<Schedule> schedules = ScheduleIO.find("WHERE action = " + s.getIdAction() + " AND jour = '" + s.getDate() + "'", dc);
     if (schedules == null || schedules.size() < 2) {
       return false;
@@ -263,11 +285,11 @@ public class PlanningService
   }
 
   /**
-   * Indicates if there are multiples time slots for the same planning {@code a} between the selected period.
-   * @param a action
-   * @return true if multiple time slots are found
+   * Checks if other schedules at different times share the same action {@code a} between 2 dates.
+   * @param a action 
+   * @return true if several schedules are found
    */
-   public boolean hasMultipleTimes(Action a) {
+   public boolean hasSiblings(Action a) {
     List<Schedule> schedules = ScheduleIO.find("WHERE action = " + a.getId(), dc);
     if (schedules == null || schedules.size() < 2) {
       return false;
@@ -286,7 +308,7 @@ public class PlanningService
   /**
    * Modification of schedule time between 2 dates.
    *
-   * @param plan
+   * @param plan schedule instance
    * @param start start date
    * @param end end date
    * @param hStart new start time
@@ -326,6 +348,21 @@ public class PlanningService
             + " AND jour >= '" + start + "' AND jour <= '" + end + "'"
             + " AND debut >= '" + orig.getStart() + "' AND fin <= '" + orig.getEnd() + "'";
     // le changement de salle est borné à l'heure de début et de fin du planning
+    if (dc.executeUpdate(query) < 1) {
+      throw new PlanningException("PLANNING UPDATE=0 " + query);
+    }
+  }
+  
+  /**
+   * This room modification affects only the selected schedule.
+   * This occurs for exemple on studio-type schedules.
+   * @param scheduleId
+   * @param roomId new room id
+   * @throws SQLException
+   * @throws PlanningException 
+   */
+  public void changeRoom(int scheduleId, int roomId) throws SQLException, PlanningException {
+    String query = "UPDATE " + ScheduleIO.TABLE + " SET lieux = " + roomId + " WHERE id = " + scheduleId;
     if (dc.executeUpdate(query) < 1) {
       throw new PlanningException("PLANNING UPDATE=0 " + query);
     }
@@ -417,6 +454,14 @@ public class PlanningService
     } catch (SQLException sqe) {
       dc.rollback();
       throw new PlanningException(sqe.getMessage());
+    }
+  }
+  
+  public void addScheduleRange(ScheduleRange sr) throws PlanningException {
+    try {
+      ScheduleRangeIO.insert(sr, dc);
+    } catch (SQLException ex) {
+      throw new PlanningException(ex.getMessage());
     }
   }
 
@@ -901,6 +946,25 @@ public class PlanningService
       GemLogger.logException(ex);
     }
     return null;
+  }
+  
+  /**
+   * Gets all the persons stored in this schedule {@code id}.
+   * @param id schedule id
+   * @return a list of persons or an empty list if no one was found
+   * @throws SQLException 
+   */
+  List<Person> getPersons(int id) throws SQLException {
+    List<Person> persons = new ArrayList<Person>();
+    String query =  "SELECT adherent FROM " + ScheduleRangeIO.TABLE + " WHERE idplanning = " + id;
+    ResultSet rs = dc.executeQuery(query);
+    while(rs.next()) {
+      Person per = (Person) DataCache.findId(rs.getInt(1), Model.Person);
+      if (per != null) {
+        persons.add(per);
+      }
+    }
+    return persons;
   }
 
   public Action getAction(int id) throws SQLException {

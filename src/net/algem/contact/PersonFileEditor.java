@@ -348,7 +348,7 @@ public class PersonFileEditor
       AttendanceSheetDlg dlg = new AttendanceSheetDlg(personFileView, dataCache, dossier.getTeacher());
     } else if ("Teacher.hour".equals(arg)) {
       String file = "heures_" + dossier.getContact().getFirstName() + "_" + dossier.getContact().getName() + ".txt";
-      HourTeacherDlg heureProf = new HourTeacherDlg(desktop.getFrame(), file, dossier.getId(), dataCache);
+      HourEmployeeDlg heureProf = new HourEmployeeDlg(desktop.getFrame(), file, dossier.getId(), dataCache);
       heureProf.setVisible(true);
     } // clic sur le bouton/icone Fermer la fiche
     else if (GemCommand.CLOSE_CMD.equals(arg)) { // GemCommand.

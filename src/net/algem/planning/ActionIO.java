@@ -47,7 +47,6 @@ public class ActionIO
   public static final String TABLE = "action";
   public static final String COLUMNS = "id, cours, niveau, places, tage, statut";
   public static final String SEQUENCE = "action_id_seq";
-//  private static Hashtable<Integer, Action> cache = new  Hashtable<Integer, Action>();
   private DataConnection dc;
 
   public ActionIO(DataConnection dc) {
@@ -110,6 +109,9 @@ public class ActionIO
   }
 
   public void planify(Action a, int type, List<GemDateTime> dates, int[] rooms, int[] members) throws SQLException {
+    if (rooms == null) {
+      return;
+    }
     for (GemDateTime dt : dates) {
       for (int r : rooms) {
         Schedule s = new Schedule();
@@ -121,6 +123,7 @@ public class ActionIO
         s.setIdAction(a.getId());
         s.setIdRoom(r);
         ScheduleIO.insert(s, dc);
+        
         if (type == Schedule.TECH) {
           for (int m : members) {
             ScheduleRange sr = new ScheduleRange();

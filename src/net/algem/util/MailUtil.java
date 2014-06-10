@@ -1,7 +1,7 @@
 /*
- * @(#)MailUtil.java	2.8.k 27/08/13
+ * @(#)MailUtil.java	2.8.v 10/06/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,11 +21,15 @@
 
 package net.algem.util;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
 import net.algem.contact.*;
 import net.algem.contact.member.MemberService;
 import net.algem.group.Musician;
+import net.algem.planning.Schedule;
+import net.algem.planning.ScheduleIO;
+import net.algem.planning.ScheduleRangeIO;
 import net.algem.planning.ScheduleRangeObject;
 import net.algem.util.jdesktop.DesktopMailHandler;
 import net.algem.util.model.Model;
@@ -34,7 +38,7 @@ import net.algem.util.model.Model;
  * Utility class for sending emails.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.k
+ * @version 2.8.v
  * @since 2.8.k 26/07/13
  */
 public class MailUtil {
@@ -91,15 +95,17 @@ public class MailUtil {
    *
    * @param ranges selected schedule
    */
-  public String mailToMembers(Vector<ScheduleRangeObject> ranges, int teacherId) throws SQLException {
+  public String mailToMembers(Vector<ScheduleRangeObject> ranges, Schedule schedule) throws SQLException {
 
     String message = "";
     StringBuilder bcc = new StringBuilder();
 
     // recherche de l'email du professeur
-    String teacherEmail = memberService.getEmail(teacherId);
-    if (teacherEmail != null && teacherEmail.indexOf('@') != -1) {// si contient @
-      bcc.append(teacherEmail);
+    if (Schedule.COURSE == schedule.getType()) {
+      String teacherEmail = memberService.getEmail(schedule.getIdPerson());
+      if (teacherEmail != null && teacherEmail.indexOf('@') != -1) {// si contient @
+        bcc.append(teacherEmail);
+      }
     }
     // recherche des emails des adherents
     for (ScheduleRangeObject pg : ranges) {
@@ -107,7 +113,8 @@ public class MailUtil {
         continue;
       }
       Person m = pg.getMember();
-      PersonFile pf = ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findMember(m.getId(), true);
+//      PersonFile pf = ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findMember(m.getId(), true);
+      PersonFile pf = ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findId(m.getId());
       if (pf != null) {
         String email = getEmail(pf);
         if (email != null && email.length() > 0) {
@@ -150,6 +157,35 @@ public class MailUtil {
     return message;
   }
   
+  public String mailToGroupMembers(Vector<Musician> mus, int action) throws SQLException {
+    String message = "";
+    StringBuilder bcc = new StringBuilder();
+
+    for (Musician m : mus) {
+      PersonFile member = ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findId(m.getId(), true);
+      if (member != null) {
+        String email = getEmail(member);
+        if (email != null && email.length() > 0) {
+          bcc.append((bcc.length() > 0) ? "," + email : email);
+        } else {
+          message += member.getContact().getFirstnameName() + "\n";
+        }
+      }
+    }
+    String where = "SELECT DISTINCT e.email FROM " + ScheduleRangeIO.TABLE + " pg, " + ScheduleIO.TABLE + " p, " + EmailIO.TABLE + " e"
+            + " WHERE p.action = " + action 
+            + " AND pg.idplanning = p.id"
+            + " AND p.ptype = " + Schedule.TECH
+            + " AND pg.adherent = e.idper";
+    ResultSet rs = dc.executeQuery(where);
+    while (rs.next()) {
+      bcc.append((bcc.length() > 0) ? "," + rs.getString(1) : rs.getString(1));
+    }
+    sendMailTo(bcc.toString());
+    
+    return message;
+  }
+
   /**
    * Sends an email to recipients in bcc.
    *

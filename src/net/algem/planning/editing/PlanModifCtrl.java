@@ -1,5 +1,5 @@
 /*
- * @(#)PlanModifCtrl.java	2.8.t 16/05/14
+ * @(#)PlanModifCtrl.java	2.8.v 06/06/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -24,8 +24,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
+import net.algem.contact.EmployeeIO;
+import net.algem.contact.EmployeeType;
+import net.algem.contact.Person;
+import net.algem.contact.PersonIO;
 import net.algem.contact.member.MemberService;
 import net.algem.contact.teacher.SubstituteTeacherList;
 import net.algem.contact.teacher.TeacherService;
@@ -44,7 +49,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.8.v
  * @since 1.0b 05/07/2002 lien salle et groupe
  */
 public class PlanModifCtrl
@@ -60,8 +65,8 @@ public class PlanModifCtrl
   private PlanningService service;
   private MemberService memberService;
 
-  public PlanModifCtrl(GemDesktop _desktop) {
-    desktop = _desktop;
+  public PlanModifCtrl(GemDesktop desktop) {
+    this.desktop = desktop;
     dataCache = desktop.getDataCache();
     dc = dataCache.getDataConnection();
     memberService = new MemberService(dc);
@@ -78,7 +83,7 @@ public class PlanModifCtrl
     cal.setTime(p.getDate().getDate());
   }
 
-  /** Gets a list of buttons for course modification. */
+  /** Gets a list of buttons for course schedule modification. */
   public Vector<GemMenuButton> getCourseMenu() {
     Vector<GemMenuButton> v = new Vector<GemMenuButton>();
 
@@ -102,7 +107,7 @@ public class PlanModifCtrl
     return v;
   }
 
-  /** Gets a list of buttons for rehearsal. */
+  /** Gets a list of buttons for rehearsal schedule. */
   public Vector<GemMenuButton> getMenuMemberRehearsal() {
     Vector<GemMenuButton> v = new Vector<GemMenuButton>();
 
@@ -115,7 +120,7 @@ public class PlanModifCtrl
     return v;
   }
 
-  /** Gets a list of buttons for group modification. */
+  /** Gets a list of buttons for group schedule modification. */
   public Vector<GemMenuButton> getMenuGroupRehearsal() {
     Vector<GemMenuButton> v = new Vector<GemMenuButton>();
 
@@ -128,7 +133,7 @@ public class PlanModifCtrl
     return v;
   }
 
-  /** Gets a list of buttons for workshop modification. */
+  /** Gets a list of buttons for workshop schedule modification. */
   public Vector<GemMenuButton> getMenuWorkshop() {
     Vector<GemMenuButton> v = new Vector<GemMenuButton>();
 
@@ -137,6 +142,21 @@ public class PlanModifCtrl
     //v.add(new GemMenuButton("Changer de date", this, "ChangerDate"));
     v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.workshop.cancellation.label"), this, "CancelWorkshop"));
 
+    return v;
+  }
+  
+  /** Gets a list of buttons for studio group schedule modification. */
+  public Vector<GemMenuButton> getMenuStudio(int type) {
+    Vector<GemMenuButton> v = new Vector<GemMenuButton>();
+    v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.room.modification.label"), this, "ChangeRoom"));
+    v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.time.modification.label"), this, "ChangeScheduleLength"));
+    if (Schedule.TECH == type) {
+      v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.add.participant.label"), this, "AddParticipant"));
+    }
+    
+    if (dataCache.authorize("Schedule.suppression.auth")) {
+      v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.suppression.label"), this, "DeletePlanning"));
+    }
     return v;
   }
 
@@ -177,6 +197,8 @@ public class PlanModifCtrl
       dialogChangeHour();
     } else if (arg.equals("ChangeTeacher")) {
       dialogChangeTeacher();
+    } else  if (arg.equals("AddParticipant")) {
+      dialogAddParticipant(EmployeeType.TECHNICIAN);
     } else if (arg.equals("CancelWorkshop")) {
       dialogCancelWorkshop();
     } else if (arg.equals("CancelRehearsal")) {
@@ -398,7 +420,11 @@ public class PlanModifCtrl
         cfd.show();
         return;
       }
-      service.changeRoom(plan, start, end, roomId);
+      if (plan instanceof StudioSchedule) {
+        service.changeRoom(plan.getId(), roomId);
+      } else {
+        service.changeRoom(plan, start, end, roomId);
+      }
       desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));//XXX dlg.getDateEnd/Fin
     } catch (PlanningException e) {
       GemLogger.logException("Change room", e);
@@ -443,7 +469,7 @@ public class PlanModifCtrl
         return;
       }
       // on ne modifie que ce planning s'il en existe plusieurs partageant la même action à la même date.
-      if (start.equals(end) && service.hasMultipleTimes(plan) && MessagePopup.confirm(null, MessageUtil.getMessage("teacher.modification.single.schedule.confirmation"))) {
+      if (start.equals(end) && service.hasSiblings(plan) && MessagePopup.confirm(null, MessageUtil.getMessage("teacher.modification.single.schedule.confirmation"))) {
         service.changeTeacherForSchedule(plan, range, start);
       } else {
         service.changeTeacher(plan, range, start, end);
@@ -451,6 +477,32 @@ public class PlanModifCtrl
       desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));//XXX dlg.getDateEnd/Fin
     } catch (PlanningException e) {
       MessagePopup.warning(null, e.getMessage());
+    }
+  }
+  
+  private void dialogAddParticipant(Enum cat)  {
+    try {
+      String where = ", " + EmployeeIO.TYPE_TABLE + " t  WHERE "
+        + PersonIO.TABLE + ".id = t.idper AND t.idcat = " + cat.ordinal();
+      List<Person> persons = PersonIO.find(where, dataCache.getDataConnection());
+      if (persons.size() < 1) {
+        throw new PlanningException("Aucun participant disponible");
+      }
+      AddParticipantDlg dlg = new AddParticipantDlg(desktop, plan, persons);
+      dlg.entry();
+      if (!dlg.isValidate()) {
+        return;
+      }
+      ScheduleRange sr = new ScheduleRange();
+      sr.setScheduleId(plan.getId());
+      sr.setMemberId(dlg.getParticipant());
+      sr.setStart(plan.getStart());
+      sr.setEnd(plan.getEnd());
+      service.addScheduleRange(sr);
+      desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));
+    } catch (PlanningException ex) {
+      GemLogger.log(ex.getMessage());
+      MessagePopup.warning(null, ex.getMessage());
     }
   }
 
@@ -487,7 +539,6 @@ public class PlanModifCtrl
    * Calls course time modification dialog.
    * This dialog is runned when date or hour must be changed. If not, it is
    * preferable to call the dialog for room modification.
-   *
    */
   private void dialogPostponeCourse() {
     PostponeCourseDlg dlg = new PostponeCourseDlg(desktop, plan, service, "Schedule.course.shifting.title");
@@ -688,7 +739,7 @@ public class PlanModifCtrl
   }
 
   /**
-   * Calls a dialog for planning suppression.
+   * Calls a dialog for schedule(s) suppression.
    *
    * @since 1.1e
    */
@@ -703,26 +754,69 @@ public class PlanModifCtrl
       action.setDateEnd(dlg.getDateEnd());
       try {
         if (action.getDateStart().equals(action.getDateEnd())) {
-          if (service.hasMultipleTimes(plan)
-            && !MessagePopup.confirm(null, MessageUtil.getMessage("schedule.multi.suppression.confirmation"))) {
-            service.deleteSchedule(action, plan);
+          if (service.hasSiblings(plan)) {
+            if (plan instanceof StudioSchedule) {
+              deleteStudioSchedule(plan, action);
+            } else {
+              deleteSchedule(plan, action);
+            }
           } else {
             service.deletePlanning(action);
-          }
+          }   
         } else {
-          if (service.hasMultipleTimes(action)
-            && !MessagePopup.confirm(null, MessageUtil.getMessage("schedule.multi.suppression.confirmation"))) {
-            service.deleteSchedule(action, plan);
-          } else {
-            service.deletePlanning(action);
-          }
+          deletePlanning(plan, action);
         }
         desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));
       } catch (PlanningException ex) {
-        MessagePopup.warning(null, MessageUtil.getMessage("delete.error") + " :\n" + ex.getMessage());
         GemLogger.logException(ex);
+        MessagePopup.warning(null, MessageUtil.getMessage("delete.error") + "\n" + ex.getMessage());
       }
 
+    }
+  }
+  
+  /**
+   * Deletes the schedule [@code plan} on a given date.
+   * Optionnaly deletes all shared instances of this schedule.
+   * @param plan schedule to delete
+   * @param a action schedule
+   * @throws PlanningException 
+   */
+  private void deleteSchedule(ScheduleObject plan, Action a) throws PlanningException {
+    if (!MessagePopup.confirm(null, MessageUtil.getMessage("schedule.multi.suppression.confirmation"))) {
+      service.deleteSchedule(a, plan);
+    } else {
+      service.deletePlanning(a);
+    }
+  }
+  
+  /**
+   * Deletes the studio schedule [@code plan} on a given date.
+   * Optionnaly deletes all shared instances of this schedule.
+   * @param plan schedule to delete
+   * @param a action schedule
+   * @throws PlanningException 
+   */
+  private void deleteStudioSchedule(ScheduleObject plan, Action a) throws PlanningException {
+    if (!MessagePopup.confirm(null, MessageUtil.getMessage("schedule.studio.suppression.confirmation"))) {
+      service.deleteSchedule(plan);
+    } else {
+      service.deletePlanning(a);
+    }
+  }
+  
+  /**
+   * Deletes a set of schedules between two dates.
+   * Optionnaly deletes all shared instances of these schedules.
+   * @param plan specific schedule instance
+   * @param a action schedule
+   * @throws PlanningException 
+   */
+  private void deletePlanning(ScheduleObject plan, Action a) throws PlanningException {
+    if (service.hasSiblings(a) && !MessagePopup.confirm(null, MessageUtil.getMessage("schedule.multi.suppression.confirmation"))) {
+      service.deleteSchedule(a, plan);
+    } else {
+      service.deletePlanning(a);
     }
   }
 

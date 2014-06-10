@@ -1,6 +1,6 @@
 /*
- * @(#)TechSchedule.java	2.8.v 29/05/14
- *
+ * @(#)GroupStudioSchedule.java	2.8.v 02/06/14
+ * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,48 +16,27 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- *
+ * 
  */
-
 package net.algem.planning;
 
-import net.algem.config.GemParam;
-import net.algem.group.Group;
 import net.algem.util.BundleUtil;
 
 /**
- * Technician schedule.
+ * Studio schedule instance.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.8.v
  * @since 2.8.v 27/05/14
  */
-public class TechSchedule
-    extends ScheduleObject
+public class GroupStudioSchedule
+        extends StudioSchedule
 {
 
-  private Group group;
-
-  public TechSchedule() {
-  }
-
-  public TechSchedule(Schedule d) {
-    super(d);
-  }
-
-  public void setGroup(Group g) {
-    idper = g == null ? 0 : g.getId();
-    group = g;
-  }
-
-  public Group getGroup() {
-    return group;
-  }
-
   public String getActivityLabel() {
-    return ((GemParam) activity).getLabel();
+    return BundleUtil.getLabel("Studio.label");
   }
-
+  
   @Override
   public String getScheduleLabel() {
     return group.getName();
@@ -65,6 +44,6 @@ public class TechSchedule
 
   @Override
   public String getScheduleDetail() {
-    return BundleUtil.getLabel("Studio.label") + " " + group.getName();
+    return group.getName();
   }
 }

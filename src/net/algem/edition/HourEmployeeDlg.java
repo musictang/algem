@@ -1,7 +1,7 @@
 /*
- * @(#)HourTeacherDlg.java	2.8.k 25/07/13
+ * @(#)HourEmployeeDlg.java	2.8.v 10/06/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -30,8 +30,11 @@ import java.beans.PropertyChangeListener;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.Format;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
@@ -40,11 +43,10 @@ import net.algem.accounting.AccountUtil;
 import net.algem.accounting.AccountingService;
 import net.algem.accounting.OrderLineIO;
 import net.algem.config.Param;
+import net.algem.contact.EmployeeType;
+import net.algem.contact.Person;
 import net.algem.course.Course;
-import net.algem.planning.DateFr;
-import net.algem.planning.Hour;
-import net.algem.planning.PlanningLib;
-import net.algem.planning.ScheduleRange;
+import net.algem.planning.*;
 import net.algem.room.Establishment;
 import net.algem.room.Room;
 import net.algem.util.*;
@@ -59,10 +61,10 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.k
- * @since 1.0a 14/12/1999
+ * @version 2.8.v
+ * @since 2.8.v 10/06/14
  */
-public class HourTeacherDlg
+public class HourEmployeeDlg
         extends TransferDlg
         implements ActionListener, PropertyChangeListener
 {
@@ -71,22 +73,22 @@ public class HourTeacherDlg
   private final String total_month = MessageUtil.getMessage("total.month");
   private final String total_period = MessageUtil.getMessage("total.period");
   
-  private HourTeacherView view;
+  private HourEmployeeView view;
   private NumberFormat nf = AccountUtil.getDefaultNumberFormat();
   private AccountingService service;
   private int teacher = 0;
   private ProgressMonitor pm;
-  private Task task;
+  private HourTeacherTask teacherTask;
   private DataCache dataCache;
 
-  public HourTeacherDlg(Frame _parent, String file, DataCache dataCache) {
+  public HourEmployeeDlg(Frame _parent, String file, DataCache dataCache) {
     super(_parent, "Edition/Export Heure Prof", file, dataCache.getDataConnection());
     this.dataCache = dataCache;
     service = new AccountingService(dc);
     init(file, dc);
   }
 
-  public HourTeacherDlg(Frame _parent, String file, int teacher, DataCache dataCache) {
+  public HourEmployeeDlg(Frame _parent, String file, int teacher, DataCache dataCache) {
     this(_parent, file, dataCache);
     this.teacher = teacher;
   }
@@ -107,7 +109,7 @@ public class HourTeacherDlg
     gb.add(new JLabel(BundleUtil.getLabel("Menu.file.label")), 0, 0, 1, 1, GridBagHelper.EAST);
     gb.add(filepath, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(chooser, 2, 0, 1, 1, GridBagHelper.WEST);
-    view = new HourTeacherView(dc, dataCache.getList(Model.School));
+    view = new HourEmployeeView(dc, dataCache.getList(Model.School), dataCache.getList(Model.EmployeeType));
 
     p.add(header);
     p.add(view);
@@ -125,6 +127,8 @@ public class HourTeacherDlg
     Param school = view.getSchool();
 
     boolean detail = view.withDetail();
+    int type = view.getType();
+    
     String lf = TextUtil.LINE_SEPARATOR;
     setCursor(new Cursor(Cursor.WAIT_CURSOR));
 
@@ -136,21 +140,28 @@ public class HourTeacherDlg
     try {
       String f = filepath.getText();
       out = new PrintWriter(new FileWriter(f));
-      out.println(MessageUtil.getMessage("export.hour.teacher.header", new Object[] {school.getValue(), start, end}) + lf);
+      if (EmployeeType.TEACHER.ordinal() == type) {
+        out.println(MessageUtil.getMessage("export.hour.teacher.header", new Object[] {school.getValue(), start, end}) + lf);
 
-      Vector<PlanningLib> plan = new Vector<PlanningLib>();
-      if (teacher > 0) {
-        plan = service.getPlanningLib(start.toString(), end.toString(), school.getId(), teacher, catchup);
-      } else {
-        plan = service.getPlanningLib(start.toString(), end.toString(), school.getId(), catchup);
+        Vector<PlanningLib> plan = new Vector<PlanningLib>();
+        if (teacher > 0) {
+          plan = service.getPlanningLib(start.toString(), end.toString(), school.getId(), teacher, catchup);
+        } else {
+          plan = service.getPlanningLib(start.toString(), end.toString(), school.getId(), catchup);
+        }
+
+        pm = new ProgressMonitor(view, MessageUtil.getMessage("active.search.label"), "", 1, 100);
+        pm.setMillisToDecideToPopup(10);
+
+        teacherTask = new HourTeacherTask(out, plan, detail);
+        teacherTask.addPropertyChangeListener(this);
+        teacherTask.execute();
+      } else if (EmployeeType.TECHNICIAN.ordinal() == type) {
+        ResultSet rs = service.getDetailEmployee(start.toString(), end.toString(), Schedule.TECH);
+        HourTechnicianTask task = new HourTechnicianTask(out, rs, detail);
+//        task.addPropertyChangeListener(this);
+        task.execute();
       }
-
-      pm = new ProgressMonitor(view, MessageUtil.getMessage("active.search.label"), "", 1, 100);
-      pm.setMillisToDecideToPopup(10);
-
-      task = new Task(out, plan, detail);
-      task.addPropertyChangeListener(this);
-      task.execute();
     } catch (IOException ex) {
       MessagePopup.warning(view, MessageUtil.getMessage("file.exception"));
       GemLogger.logException(ex);
@@ -163,8 +174,8 @@ public class HourTeacherDlg
   public void propertyChange(PropertyChangeEvent event) {
     // if the operation is finished or has been canceled by
     // the user, take appropriate action
-    if (pm.isCanceled() || task.isDone()) {
-      task.cancel(true);
+    if (pm.isCanceled() || teacherTask.isDone()) {
+      teacherTask.cancel(true);
     } else if (event.getPropertyName().equals("progress")) {
       // get the % complete from the progress event
       // and set it on the progress monitor
@@ -176,7 +187,7 @@ public class HourTeacherDlg
   /**
    * Thread for file writing.
    */
-  class Task
+  class HourTeacherTask
           extends SwingWorker<Void, Void>
   {
 
@@ -185,7 +196,7 @@ public class HourTeacherDlg
     private boolean detail;
     private int k;
 
-    public Task(PrintWriter out, Vector<PlanningLib> plan, boolean detail) {
+    public HourTeacherTask(PrintWriter out, Vector<PlanningLib> plan, boolean detail) {
       this.out = out;
       this.plan = plan;
       this.detail = detail;
@@ -360,6 +371,93 @@ public class HourTeacherDlg
       out.println();
       out.close();
     } // end write method
-  } // end Task class
+  } // end HourTeacherTask class
 
+
+
+class HourTechnicianTask 
+extends SwingWorker<Void, Void> 
+{
+
+  private PrintWriter out;
+  private ResultSet rs;
+  private boolean detail;
+
+  public HourTechnicianTask(PrintWriter out, ResultSet rs, boolean detail) {
+    this.out = out;
+    this.rs = rs;
+    this.detail = detail;
+  }
+  
+  
+  @Override
+  protected Void doInBackground() throws Exception {
+    int oldMonth = -1;
+    int oldPer = 0;
+    double totalDay = 0;
+    int totalMonth = 0;
+    int totalPeriod = 0;
+    String tm = BundleUtil.getLabel("Total.label") + " " + BundleUtil.getLabel("Month.label");
+    String tp = BundleUtil.getLabel("Total.label") + " " + BundleUtil.getLabel("Period.label");
+    Format df = new SimpleDateFormat("MMM yyyy");
+    
+    StringBuilder sb = new StringBuilder();
+    //header
+    out.println(BundleUtil.getLabel("Date.label")
+        + "," + BundleUtil.getLabel("Group.label")
+        + "," + BundleUtil.getLabel("Start.label") 
+        + "," + BundleUtil.getLabel("End.label")
+        + "," + BundleUtil.getLabel("Duration.label"));
+    while (rs.next()) {
+      DateFr date = new DateFr(rs.getDate(1));
+      int groupId = rs.getInt(2);
+      Hour start = new Hour(rs.getString(3));
+      Hour end = new Hour(rs.getString(4));
+      Hour length = new Hour(rs.getString(5));
+      int idper = rs.getInt(6);
+      
+      if (idper != oldPer) {
+        //totalPeriod += totalMonth;
+        if (oldPer > 0) {
+          out.println(tm + ",,,," + nf.format(totalMonth / 60.0));
+          totalPeriod += totalMonth;
+          out.println(tp + ",,,," + nf.format(totalPeriod / 60.0));
+          out.println();
+        }
+        
+        out.println(((Person)DataCache.findId(idper, Model.Person)).getFirstnameName() + ",,,,");
+        oldPer = idper;
+        oldMonth = 0;
+        totalMonth = 0;
+        totalPeriod = 0;
+      }
+      
+      if (date.getMonth() != oldMonth) {
+        if (oldMonth > 0) {
+        out.println(tm + ",,,," + nf.format(totalMonth / 60.0));
+        }
+        //cal.setTime(date.getDate());
+        out.println(df.format(date.getDate()).toUpperCase() + ",,,,");//out.println(cal.get(Calendar.MONTH));      
+        oldMonth = date.getMonth();
+        totalPeriod += totalMonth;
+        totalMonth = 0; 
+      }
+      
+      
+      totalMonth += length.toMinutes();
+      
+      sb.append(date).append(',').append(groupId).append(',').append(start).append(',').append(end).append(',').append(length);
+      out.println(sb.toString());
+      sb.delete(0, sb.length());
+//      totalDay += length.toMinutes();
+      
+    }
+    out.println(tm + ",,,," + nf.format(totalMonth / 60.0));
+    totalPeriod += totalMonth;
+        out.println(tp + ",,,," + nf.format(totalPeriod / 60.0));
+    out.close();
+    return null;
+  }
+  
+  }
 }

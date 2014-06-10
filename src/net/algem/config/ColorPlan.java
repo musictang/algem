@@ -1,5 +1,5 @@
 /*
- * @(#)ColorPlan.java	2.8.t 08/05/14
+ * @(#)ColorPlan.java	2.8.v 02/06/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -27,7 +27,7 @@ import java.awt.Color;
  * Default colors of schedule elements.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.8.v
  */
 public enum ColorPlan
 {
@@ -50,6 +50,7 @@ public enum ColorPlan
   MEMBER_REHEARSAL("plan.repet.adherent.color", -13395457),
 //  GROUP_REHEARSAL("plan.repet.groupe.color", Color.BLUE.getRGB()),
   GROUP_REHEARSAL("plan.repet.groupe.color", -14591745),
+  STUDIO("plan.studio.color", 6711039), //102,102,255
 
   ACTION_LABEL("plan.action.label.color", Color.GREEN.getRGB()),
 //  MEMBER_LABEL("plan.adherent.label.color", Color.YELLOW.getRGB()),
@@ -67,7 +68,8 @@ public enum ColorPlan
 //  GROUP_LABEL("plan.groupe.label.color", Color.WHITE.getRGB()),
   GROUP_LABEL("plan.groupe.label.color", -1),
   LABEL("plan.label.color", Color.BLACK.getRGB()),
-  CATCHING_UP_LABEL("plan.rattrapage.label.color", Color.GREEN.getRGB());
+  CATCHING_UP_LABEL("plan.rattrapage.label.color", Color.GREEN.getRGB()),
+  STUDIO_LABEL("plan.studio.label.color", Color.WHITE.getRGB());
 
   private final String key;
   private final int color;

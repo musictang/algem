@@ -1,5 +1,5 @@
 /*
- * @(#)StudioScheduleCtrl.java	2.8.v 29/05/14
+ * @(#)StudioScheduleCtrl.java	2.8.v 09/06/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -29,8 +29,6 @@ import java.util.Set;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
-import net.algem.config.ConfigKey;
-import net.algem.config.ConfigUtil;
 import net.algem.planning.editing.ModifPlanEvent;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataConnection;
@@ -115,10 +113,10 @@ public class StudioScheduleCtrl
 
   @Override
   public boolean validation() {
-    int studio = Integer.parseInt(ConfigUtil.getConf(ConfigKey.DEFAULT_STUDIO.getKey(), dc));
+
     StudioSession session = new StudioSession();
     session.setGroup(studioView.getGroup());
-    session.setStudio(studio);
+    session.setStudio(studioView.getStudio());
     session.setRooms(studioView.getRooms());
     session.setTechnicians(studioView.getEmployees());
     try {
@@ -146,9 +144,6 @@ public class StudioScheduleCtrl
 
   private void checkAction() throws PlanningException {
 
-    int [] rooms = studioView.getRooms();
-    int [] employees = studioView.getEmployees();
-
     dates = studioView.getDates();
     // check duplicates
     Set<GemDateTime> uniques = new HashSet<GemDateTime>(dates);
@@ -166,16 +161,25 @@ public class StudioScheduleCtrl
         throw new PlanningException(MessageUtil.getMessage("hour.range.error"));
       }
     }
-    for (int r : rooms) {
-      if (r == 0) {
-        throw new PlanningException(MessageUtil.getMessage("room.invalid.choice"));
+    
+    if (!studioView.isStudioOnly()) {
+      int [] rooms = studioView.getRooms();
+      for (int r : rooms) {
+        if (r == 0) {
+          throw new PlanningException(MessageUtil.getMessage("room.invalid.choice"));
+        }
       }
     }
 
+    int [] employees = studioView.getEmployees();
     for (int e : employees) {
       if (e == 0) {
         throw new PlanningException(MessageUtil.getMessage("invalid.teacher"));
       }
+    }
+    
+    if (studioView.getStudio() <= 0) {
+      throw new PlanningException(MessageUtil.getMessage("studio.invalid.choice"));
     }
   }
 
@@ -188,18 +192,42 @@ public class StudioScheduleCtrl
       Hour end = dt.getTimeRange().getEnd();
       ScheduleTestConflict testConflict = new ScheduleTestConflict(d, start, end);
       String query = null;
-      for (int r : rooms) {
-        query = ConflictQueries.getRoomConflictSelection(d.toString(), start.toString(), end.toString(), r);
-        if (ScheduleIO.count(query, dc) > 0) {
-          testConflict.setRoomFree(false);
-          conflicts++;
+      if (rooms != null) {
+        for (int r : rooms) {
+          query = ConflictQueries.getRoomConflictSelection(d.toString(), start.toString(), end.toString(), r);
+          if (ScheduleIO.count(query, dc) > 0) {
+            testConflict.setRoomFree(false);
+            conflicts++;
+          }
         }
+      }
+      // test studio occupation
+      query = ConflictQueries.getRoomConflictSelection(d.toString(), start.toString(), end.toString(), studioView.getStudio());
+      if (ScheduleIO.count(query, dc) > 0) {
+        testConflict.setRoomFree(false);
+        conflicts++;
       }
       // test group
       query = ConflictQueries.getGroupConflictSelection(d.toString(), start.toString(), end.toString(), groupId);
       if (ScheduleIO.count(query, dc) > 0) {
-        testConflict.setMemberFree(false);
+        testConflict.setGroupFree(false);
         conflicts++;
+      }
+      // test employee in schedule range
+      for (int e : studioView.getEmployees()) {
+        query = ConflictQueries.getMemberScheduleSelection(d.toString(), start.toString(), end.toString(), e);
+         if (ScheduleIO.count(query, dc) > 0) {
+          testConflict.setMemberFree(false);
+          conflicts++;
+        }
+      }
+      // test employee in schedule (teacher or rehearsal)
+      for (int e : studioView.getEmployees()) {
+        query = ConflictQueries.getTeacherConflictSelection(d.toString(), start.toString(), end.toString(), e);
+         if (ScheduleIO.count(query, dc) > 0) {
+          testConflict.setMemberFree(false);
+          conflicts++;
+        }
       }
       conflictsView.addConflict(testConflict);
     }
