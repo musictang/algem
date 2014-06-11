@@ -1,6 +1,6 @@
 /*
- * @(#)HourEmployeeDlg.java	2.8.v 10/06/14
- * 
+ * @(#)HourEmployeeDlg.java	2.8.v 11/06/14
+ *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.edition;
 
@@ -72,32 +72,39 @@ public class HourEmployeeDlg
   private final String total_day = MessageUtil.getMessage("total.day").toLowerCase();
   private final String total_month = MessageUtil.getMessage("total.month");
   private final String total_period = MessageUtil.getMessage("total.period");
-  
+
   private HourEmployeeView view;
   private NumberFormat nf = AccountUtil.getDefaultNumberFormat();
   private AccountingService service;
-  private int teacher = 0;
+  private int employee = 0;
   private ProgressMonitor pm;
-  private HourTeacherTask teacherTask;
+  private SwingWorker teacherTask;
+  private SwingWorker employeeTask;
   private DataCache dataCache;
+  private String path;
 
-  public HourEmployeeDlg(Frame _parent, String file, DataCache dataCache) {
-    super(_parent, "Edition/Export Heure Prof", file, dataCache.getDataConnection());
+  public HourEmployeeDlg(Frame parent, String file, DataCache dataCache) {
+    super(
+      parent,
+      BundleUtil.getLabel("Menu.edition.export.label") + " " + BundleUtil.getLabel("Menu.employee.hour.label"),
+      file,
+      dataCache.getDataConnection()
+      );
     this.dataCache = dataCache;
     service = new AccountingService(dc);
     init(file, dc);
   }
 
-  public HourEmployeeDlg(Frame _parent, String file, int teacher, DataCache dataCache) {
-    this(_parent, file, dataCache);
-    this.teacher = teacher;
+  public HourEmployeeDlg(Frame parent, String file, int idper, DataCache dataCache) {
+    this(parent, file, dataCache);
+    this.employee = idper;
   }
 
   @Override
   public void init(String file, DataConnection dc) {
     super.init(file, dc);
     setLayout(new BorderLayout());
-    
+
     GemPanel p = new GemPanel();
     p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
     p.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -113,7 +120,7 @@ public class HourEmployeeDlg
 
     p.add(header);
     p.add(view);
-    
+
     add(p, BorderLayout.CENTER);
     add(buttons, BorderLayout.SOUTH);
     pack();
@@ -128,24 +135,28 @@ public class HourEmployeeDlg
 
     boolean detail = view.withDetail();
     int type = view.getType();
-    
+
     String lf = TextUtil.LINE_SEPARATOR;
     setCursor(new Cursor(Cursor.WAIT_CURSOR));
 
     PrintWriter out = null;
-    boolean catchup = true;
-    if (!MessagePopup.confirm(this, MessageUtil.getMessage("export.hour.teacher.catchup.warning"))) {
+    boolean catchup = EmployeeType.TEACHER.ordinal() == type;
+    if (catchup && !MessagePopup.confirm(this, MessageUtil.getMessage("export.hour.teacher.catchup.warning"))) {
       catchup = false;
     }
     try {
-      String f = filepath.getText();
-      out = new PrintWriter(new FileWriter(f));
+      path = filepath.getText();
+      if (EmployeeType.TECHNICIAN.ordinal() == type && !path.endsWith(".csv")) {
+        path = path.substring(0, path.lastIndexOf('.'));
+        path = path.concat(".csv");
+      }
+      out = new PrintWriter(new FileWriter(path));
       if (EmployeeType.TEACHER.ordinal() == type) {
         out.println(MessageUtil.getMessage("export.hour.teacher.header", new Object[] {school.getValue(), start, end}) + lf);
 
         Vector<PlanningLib> plan = new Vector<PlanningLib>();
-        if (teacher > 0) {
-          plan = service.getPlanningLib(start.toString(), end.toString(), school.getId(), teacher, catchup);
+        if (employee > 0) {
+          plan = service.getPlanningLib(start.toString(), end.toString(), school.getId(), employee, catchup);
         } else {
           plan = service.getPlanningLib(start.toString(), end.toString(), school.getId(), catchup);
         }
@@ -158,9 +169,11 @@ public class HourEmployeeDlg
         teacherTask.execute();
       } else if (EmployeeType.TECHNICIAN.ordinal() == type) {
         ResultSet rs = service.getDetailEmployee(start.toString(), end.toString(), Schedule.TECH);
-        HourTechnicianTask task = new HourTechnicianTask(out, rs, detail);
-//        task.addPropertyChangeListener(this);
-        task.execute();
+        pm = new ProgressMonitor(view, MessageUtil.getMessage("active.search.label"), "", 1, 100);
+        pm.setMillisToDecideToPopup(10);
+        employeeTask = new HourTechnicianTask(out, rs, detail);
+        employeeTask.addPropertyChangeListener(this);
+        employeeTask.execute();
       }
     } catch (IOException ex) {
       MessagePopup.warning(view, MessageUtil.getMessage("file.exception"));
@@ -174,8 +187,16 @@ public class HourEmployeeDlg
   public void propertyChange(PropertyChangeEvent event) {
     // if the operation is finished or has been canceled by
     // the user, take appropriate action
-    if (pm.isCanceled() || teacherTask.isDone()) {
+    if (teacherTask != null && teacherTask.isDone()) {
       teacherTask.cancel(true);
+    } else if (employeeTask != null && employeeTask.isDone()) {
+      employeeTask.cancel(true);
+    } else if (pm.isCanceled()) {
+      if (teacherTask != null) {
+        teacherTask.cancel(true);
+      } else if (employeeTask != null) {
+        employeeTask.cancel(true);
+      }
     } else if (event.getPropertyName().equals("progress")) {
       // get the % complete from the progress event
       // and set it on the progress monitor
@@ -217,7 +238,7 @@ public class HourEmployeeDlg
      */
     @Override
     public void done() {
-      MessagePopup.information(view, MessageUtil.getMessage("export.hour.teacher.done.info",filepath.getText()));
+      MessagePopup.information(view, MessageUtil.getMessage("export.hour.teacher.done.info",path));
       setCursor(null); //turn off the wait cursor
       pm.close();
     }
@@ -231,7 +252,7 @@ public class HourEmployeeDlg
       int totalPeriod = 0;
       int totalPro = 0;
       int totalLeisure = 0;
-      
+
       GemList<Establishment> estab = dataCache.getList(Model.Establishment);
       HashMap<Establishment, Integer> totalEstab = new HashMap<Establishment, Integer>();
       for (Establishment e : estab.getData()) {
@@ -269,7 +290,7 @@ public class HourEmployeeDlg
           for (Establishment e : estab.getData()) {
             totalEstab.put(e, 0);// reset
           }
-          
+
           oldTeacher = p.getTeacherId();
           oldDay = p.getDay();
           oldMonth = oldDay.getMonth();
@@ -326,7 +347,7 @@ public class HourEmployeeDlg
               type = "L";
               totalLeisure += nmin;
             }
-  
+
             int tt = totalEstab.get(ee);
             totalEstab.put(ee, tt + nmin);
             out.print(" [" + ee.getName().charAt(0) + type + "] " + p.getStart() + " " + p.getEnd() + ",");
@@ -375,89 +396,123 @@ public class HourEmployeeDlg
 
 
 
-class HourTechnicianTask 
-extends SwingWorker<Void, Void> 
+class HourTechnicianTask
+extends SwingWorker<Void, Void>
 {
 
   private PrintWriter out;
   private ResultSet rs;
   private boolean detail;
+  private String tm = BundleUtil.getLabel("Total.label") + " " + BundleUtil.getLabel("Month.label");
+  private String tp = BundleUtil.getLabel("Total.label") + " " + BundleUtil.getLabel("Period.label");
 
   public HourTechnicianTask(PrintWriter out, ResultSet rs, boolean detail) {
     this.out = out;
     this.rs = rs;
     this.detail = detail;
   }
-  
-  
-  @Override
-  protected Void doInBackground() throws Exception {
-    int oldMonth = -1;
-    int oldPer = 0;
-    double totalDay = 0;
-    int totalMonth = 0;
-    int totalPeriod = 0;
-    String tm = BundleUtil.getLabel("Total.label") + " " + BundleUtil.getLabel("Month.label");
-    String tp = BundleUtil.getLabel("Total.label") + " " + BundleUtil.getLabel("Period.label");
-    Format df = new SimpleDateFormat("MMM yyyy");
-    
-    StringBuilder sb = new StringBuilder();
-    //header
-    out.println(BundleUtil.getLabel("Date.label")
-        + "," + BundleUtil.getLabel("Group.label")
-        + "," + BundleUtil.getLabel("Start.label") 
-        + "," + BundleUtil.getLabel("End.label")
-        + "," + BundleUtil.getLabel("Duration.label"));
-    while (rs.next()) {
-      DateFr date = new DateFr(rs.getDate(1));
-      int groupId = rs.getInt(2);
-      Hour start = new Hour(rs.getString(3));
-      Hour end = new Hour(rs.getString(4));
-      Hour length = new Hour(rs.getString(5));
-      int idper = rs.getInt(6);
-      
-      if (idper != oldPer) {
-        //totalPeriod += totalMonth;
-        if (oldPer > 0) {
-          out.println(tm + ",,,," + nf.format(totalMonth / 60.0));
+
+
+    @Override
+    protected Void doInBackground() throws Exception {
+      int prevMonth = -1;
+      int prevIdper = -1;
+      int totalDay = 0;
+      int totalMonth = 0;
+      int totalPeriod = 0;
+      DateFr prevDate = null;
+
+      Format dmf = new SimpleDateFormat("MMM yyyy");
+      Format df = new SimpleDateFormat("EEE dd-MM-yyyy");
+
+      StringBuilder sb = new StringBuilder();
+      //header
+      out.println(BundleUtil.getLabel("Date.label")
+        + ";" + BundleUtil.getLabel("Group.label")
+        + ";" + BundleUtil.getLabel("Start.label")
+        + ";" + BundleUtil.getLabel("End.label")
+        + ";" + BundleUtil.getLabel("Duration.label"));
+
+      while (rs.next()) {
+        DateFr date = new DateFr(rs.getDate(1));
+        int groupId = rs.getInt(2);
+        Hour start = new Hour(rs.getString(3));
+        Hour end = new Hour(rs.getString(4));
+        Hour length = new Hour(rs.getString(5));
+        int idper = rs.getInt(6);
+
+        if (idper != prevIdper) {
+          if (prevIdper > 0) {
+            if (!detail) {
+              out.println(df.format(prevDate.getDate()) + ";;;;" + nf.format(totalDay / 60.0));
+            }
+            out.println(tm + ";;;;" + nf.format(totalMonth / 60.0));
+            totalPeriod += totalMonth;
+            out.println(tp + ";;;;" + nf.format(totalPeriod / 60.0));
+            out.println();
+          }
+
+          out.println(((Person) DataCache.findId(idper, Model.Person)).getFirstnameName() + ";;;;");
+          prevIdper = idper;
+          prevDate = null;
+          prevMonth = 0;
+          totalDay = 0;
+          totalMonth = 0;
+          totalPeriod = 0;
+        }
+
+        if (date.getMonth() != prevMonth) {
+          if (prevMonth > 0) {
+            if (!detail && prevDate != null) {
+              out.println(df.format(prevDate.getDate()) + ";;;;" + nf.format(totalDay / 60.0));
+            }
+            totalDay = 0;
+            prevDate = null;
+            out.println(tm + ";;;;" + nf.format(totalMonth / 60.0));
+          }
+
+          out.println(dmf.format(date.getDate()).toUpperCase() + ";;;;");//out.println(cal.get(Calendar.MONTH));
+          prevMonth = date.getMonth();
           totalPeriod += totalMonth;
-          out.println(tp + ",,,," + nf.format(totalPeriod / 60.0));
-          out.println();
+          totalMonth = 0;
         }
-        
-        out.println(((Person)DataCache.findId(idper, Model.Person)).getFirstnameName() + ",,,,");
-        oldPer = idper;
-        oldMonth = 0;
-        totalMonth = 0;
-        totalPeriod = 0;
-      }
-      
-      if (date.getMonth() != oldMonth) {
-        if (oldMonth > 0) {
-        out.println(tm + ",,,," + nf.format(totalMonth / 60.0));
+
+        if (!date.equals(prevDate)) {
+          if (!detail && prevDate != null) {
+            out.println(df.format(prevDate.getDate()) + ";;;;" + nf.format(totalDay / 60.0));
+            totalDay = 0;
+          }
+          prevDate = new DateFr(date);
         }
-        //cal.setTime(date.getDate());
-        out.println(df.format(date.getDate()).toUpperCase() + ",,,,");//out.println(cal.get(Calendar.MONTH));      
-        oldMonth = date.getMonth();
-        totalPeriod += totalMonth;
-        totalMonth = 0; 
+
+        totalMonth += length.toMinutes();
+        totalDay += length.toMinutes();
+        if (detail) {
+          sb.append(date).append(';').append(groupId).append(';').append(start).append(';').append(end).append(';').append(length);
+          out.println(sb.toString());
+          sb.delete(0, sb.length());
+        }
+      } // end while
+
+      if (!detail && prevDate != null) {
+        out.println(df.format(prevDate.getDate()) + ";;;;" + nf.format(totalDay / 60.0));
       }
-      
-      
-      totalMonth += length.toMinutes();
-      
-      sb.append(date).append(',').append(groupId).append(',').append(start).append(',').append(end).append(',').append(length);
-      out.println(sb.toString());
-      sb.delete(0, sb.length());
-//      totalDay += length.toMinutes();
-      
+      out.println(tm + ";;;;" + nf.format(totalMonth / 60.0));
+      totalPeriod += totalMonth;
+      out.println(tp + ";;;;" + nf.format(totalPeriod / 60.0));
+      out.close();
+      return null;
+    } // end doInBackground
+
+    @Override
+    public void done() {
+      MessagePopup.information(view, MessageUtil.getMessage("export.hour.employee.done.info",path));
+      setCursor(null); //turn off the wait cursor
+      if (pm != null) {
+        pm.close();
+      }
     }
-    out.println(tm + ",,,," + nf.format(totalMonth / 60.0));
-    totalPeriod += totalMonth;
-        out.println(tp + ",,,," + nf.format(totalPeriod / 60.0));
-    out.close();
-    return null;
-  }
-  
-  }
+
+  } // end of HourTechnicianTask
+
 }

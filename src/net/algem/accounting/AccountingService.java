@@ -29,7 +29,7 @@ import net.algem.util.DataConnection;
 
 /**
  * Service class for accounting.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.8.v
  * @since 2.4.a 21/05/12
@@ -64,7 +64,7 @@ public class AccountingService {
     // on ne comptabilise pas les plages de pause (adherent = 0)
     return ScheduleRangeIO.find("pg WHERE pg.idplanning = " + idplanning + " AND pg.adherent != 0 ORDER BY pg.debut", dc);
   }
-  
+
   public ResultSet getDetailEmployee(String start, String end, int type) throws SQLException {
     String query = "SELECT p.jour, p.idper, p.debut, p.fin, (p.fin - p.debut) AS duree, pg.adherent"
             + " FROM " + ScheduleIO.TABLE + " p, " + ScheduleRangeIO.TABLE + " pg"
@@ -72,7 +72,6 @@ public class AccountingService {
             + " AND p.jour BETWEEN '" + start + "' and '" + end + "'"
             + " AND p.ptype = " + type
             + " ORDER BY pg.adherent,p.jour,p.debut";
-    System.out.println(query);
     return dc.executeQuery(query);
   }
 }

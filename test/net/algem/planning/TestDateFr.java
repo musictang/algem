@@ -1,7 +1,7 @@
 /*
- * @(#)TestDateFr.java 2.6.a 08/10/12
- * 
- * Copyright (c) 1999-2010 Musiques Tangentes. All Rights Reserved.
+ * @(#)TestDateFr.java 2.8.v 11/06/14
+ *
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,40 +16,49 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning;
 
+import java.text.Format;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
+import org.junit.*;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.v
  */
 public class TestDateFr
-        extends TestCase
+
 {
 
   private Calendar cal;
 
-  public TestDateFr(String testName) {
-    super(testName);
+  public TestDateFr() {
   }
 
-  @Override
-  protected void setUp() throws Exception {
-    super.setUp();
+  @BeforeClass
+  public static void setUpClass() throws Exception {
+  }
+
+  @AfterClass
+  public static void tearDownClass() throws Exception {
+  }
+
+  @Before
+  public void setUp() {
     cal = Calendar.getInstance(Locale.FRANCE);
   }
 
-  @Override
-  protected void tearDown() throws Exception {
-    super.tearDown();
+  @After
+  public void tearDown() {
   }
 
+  @Test
   public void testEqualsDateFr() {
     DateFr d1 = new DateFr("10-10-2010");
     DateFr d2 = new DateFr("10-10-2010");
@@ -61,5 +70,21 @@ public class TestDateFr
     assertEquals("10-10-2009", d2.toString());
     assertFalse("datefr equals ?", d1.equals(d2));
 
+  }
+
+  @Test
+  public void testDateFormat() {
+    Format f1 = new SimpleDateFormat("MMM yyyy");
+    Format f2 = new SimpleDateFormat("EEEE dd-MM-yyyy");
+    DateFr d1 = new DateFr("11-06-2014");
+    String formatted = f2.format(d1.getDate());
+
+    assertTrue(formatted, formatted.equals("mercredi 11-06-2014"));
+    f2 = new SimpleDateFormat("EEE dd/MM/yyyy");
+    formatted = f2.format(d1.getDate());
+    assertTrue(formatted, formatted.equals("mer. 11/06/2014"));
+    f2 = new SimpleDateFormat("EEEE dd MMM yyyy");
+    formatted = f2.format(d1.getDate());
+    assertTrue(formatted, formatted.equals("mercredi 11 juin 2014"));
   }
 }

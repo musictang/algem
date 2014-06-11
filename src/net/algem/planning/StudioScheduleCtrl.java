@@ -161,7 +161,7 @@ public class StudioScheduleCtrl
         throw new PlanningException(MessageUtil.getMessage("hour.range.error"));
       }
     }
-    
+
     if (!studioView.isStudioOnly()) {
       int [] rooms = studioView.getRooms();
       for (int r : rooms) {
@@ -177,7 +177,7 @@ public class StudioScheduleCtrl
         throw new PlanningException(MessageUtil.getMessage("invalid.teacher"));
       }
     }
-    
+
     if (studioView.getStudio() <= 0) {
       throw new PlanningException(MessageUtil.getMessage("studio.invalid.choice"));
     }
