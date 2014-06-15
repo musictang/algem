@@ -114,7 +114,7 @@ des plannings et la lecture des données, il est essentiel de disposer d'un cach
 client. C'est le rôle de la classe net.algem.util.DataCache.
 
 Les données mises en cache le sont sous 2 formes :
-- A travers des listes de type GemList<T> implémentant l'interface
+- A travers des listes de type GemList<T>, T implémentant l'interface
 net.algem.util.model.GemModel. Ces listes sont utilisées en particulier pour
 l'affichage des éléments dans les combobox. La mise à jour d'une liste est
 immédiatement répercutée dans la combobox correspondante.
@@ -125,11 +125,10 @@ Ce sont les données récurrentes (Action, Niveau, Status, Instrument, etc.) pou
 lesquelles la mise en cache se révèle la plus efficace.
 
 Depuis sa création, Algem a connu de multiples changements de cap. La gestion du
-cache et les appels aux méthodes du cache dans les différents services et
-controlleurs n'est pas des plus uniformes. Différentes procédures sont parfois 
-utilisées pour obtenir le même résultat, ce qui nuit à la lisibilité de
-l'ensemble. Le cas échéant, des caches locaux peuvent être encore présents dans
-certains DAO, pour des raisons pratiques. Du travail reste à faire à ce niveau.
+cache et les appels aux méthodes du cache dans les différents services 
+n'est pas rigoureusement uniforme. Le cas échéant, des caches locaux peuvent être
+encore présents danscertains DAO, pour des raisons pratiques.
+Du travail reste à faire à ce niveau.
 
 DISPATCHER
 ==========
@@ -160,15 +159,19 @@ mais ils devraient être idéalement déchargés de cette responsabilité.
 
 SECURITE
 ========
-- La gestion de la sécurité est encore minimale. Des profils permettent de
-différencier les différents rôles d'utilisateurs. Dans la pratique, seuls 2
-profils sont utilisés au quotidien : Administrateur et Utilisateur.
+Des profils permettent de différencier les différents rôles d'utilisateurs.
+Dans la pratique, seuls 2 profils sont utilisés au quotidien : Administrateur et Utilisateur.
 L'administrateur a tous les droits par défaut, alors que ceux de l'utilisateur
 (une personne de l'accueil par exemple) sont limités à certaines opérations.
-Au démarrage d'Algem, on vérifie que l'utilisateur choisi en argument est bien
-présent dans la table login de la base de données. Les mots de passe étaient
-bien gérés par le passé mais leur recours a été désactivé pour des raisons
-purement pratiques. Leur remise en service est aujourd'hui nécessaire.
+Un certain nombre de droits sont paramétrables au cas par cas, indépendamment
+du profil de l'utilisateur.
+
+Il est possible de forcer la saisie d'un login et d'un mot de passe
+au démarrage d'Algem. Dans le cas contraire, on vérifie que l'utilisateur
+choisi en argument est bien présent en base de données.
+
+Optionnellement, on peut exiger la présence chez l'utilisateur d'un
+certificat SSL (de connexion à la base de données).
 
 I18N
 ====
