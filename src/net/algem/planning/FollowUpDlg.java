@@ -1,7 +1,7 @@
 /*
- * @(#)FollowUpDlg.java	2.6.a 21/09/12
+ * @(#)FollowUpDlg.java	2.8.v 13/06/14
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -25,7 +25,6 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JDialog;
-import net.algem.course.Course;
 import net.algem.util.GemCommand;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.GemButton;
@@ -34,19 +33,16 @@ import net.algem.util.ui.GemPanel;
 
 /**
  * Dialog for followup editing.
- * A (CTRL OR Maj) click in the schedule detail view opens the dialog
+ * A Maj-click in the schedule detail view opens the dialog.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.6.a
+ * @version 2.8.v
  */
 public class FollowUpDlg
         implements ActionListener
 {
 
-  private GemDesktop desktop;
-  private Course course;
-  private ScheduleRangeObject range;
   private JDialog dlg;
   private FollowUpView pv;
   private GemLabel title;
@@ -54,14 +50,12 @@ public class FollowUpDlg
   private GemButton btOk;
   private GemButton btCancel;
 
-  public FollowUpDlg(GemDesktop _desktop, ScheduleRangeObject pl, String _cours) {
-    desktop = _desktop;
-    range = pl;
+  public FollowUpDlg(GemDesktop desktop, ScheduleRangeObject range, String courseName) {
 
     dlg = new JDialog(desktop.getFrame(), true);
     title = new GemLabel("Suivi " + range.getMember());
-    pv = new FollowUpView(_cours, range.getDate(), range.getStart(), range.getEnd());
-    pv.setText(pl.getFollowUp());
+    pv = new FollowUpView(courseName, range.getDate(), range.getStart(), range.getEnd());
+    pv.setText(range.getFollowUp());
 
     btOk = new GemButton(GemCommand.OK_CMD);
     btOk.addActionListener(this);
@@ -104,7 +98,7 @@ public class FollowUpDlg
   public void actionPerformed(ActionEvent evt) {
     Object src = evt.getSource();
     if (src == btOk) {
-      validation = true; 
+      validation = true;
     } else if (src == btCancel) {
       validation = false;
     }

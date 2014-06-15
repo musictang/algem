@@ -1,5 +1,5 @@
 /*
- * @(#)StudioSession.java	2.8.v 29/05/14
+ * @(#)StudioSession.java	2.8.v 13/06/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -21,6 +21,9 @@
 
 package net.algem.planning;
 
+import java.util.List;
+import net.algem.config.GemParam;
+
 /**
  * A StudioSession object includes elements required for planning a studio session.
  *
@@ -35,6 +38,8 @@ public class StudioSession
   private int group;
   private int [] rooms;
   private int [] technicians;
+  private List<GemDateTime> dates;
+  private GemParam category;
 
   public StudioSession() {
   }
@@ -71,5 +76,20 @@ public class StudioSession
     this.technicians = technicians;
   }
 
+  public List<GemDateTime> getDates() {
+    return dates;
+  }
+
+  public void setDates(List<GemDateTime> dates) {
+    this.dates = dates;
+  }
+
+  public GemParam getCategory() {
+    return category;
+  }
+
+  public void setCategory(GemParam category) {
+    this.category = category;
+  }
 
 }

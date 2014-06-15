@@ -1,5 +1,5 @@
 /*
- * @(#)DayPlanView.java 2.8.v 09/06/14
+ * @(#)DayPlanView.java 2.8.v 13/06/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -96,19 +96,6 @@ public class DayPlanView
     cols = new Vector<DayPlan>();
     img = null;
   }
-
-  /*public void print() {
-    Component c = this;
-    while (c.getParent() != null) {
-      c = c.getParent();
-    }
-    if (c instanceof Frame && img != null) {
-      PrintJob prn = Toolkit.getDefaultToolkit().getPrintJob((Frame) c, "edition", null);
-      Graphics g = prn.getGraphics();
-      g.drawImage(img, 0, 0, this);
-      prn.end();
-    }
-  }*/
 
   @Override
   public void paint(Graphics g) {
@@ -229,7 +216,7 @@ public class DayPlanView
     }
     Collections.sort(vpl, new ScheduleRangeComparator());
     java.util.List<ScheduleRangeObject> vp = new ArrayList<ScheduleRangeObject>(vpl);
-    java.util.List<ScheduleRangeObject> vpci = getPlagesCoursCoInst(vp);
+    java.util.List<ScheduleRangeObject> vpci = getRangesCoursCoInst(vp);
     if (vpci != null) {
       vp.removeAll(vpci);
     }
@@ -238,7 +225,7 @@ public class DayPlanView
     for (ScheduleRangeObject p : vp) {
       Course cc = p.getCourse();
       if (cc != null && !cc.isCollective()) {
-      drawRange(i, p, c, pas_x);
+        drawRange(i, p, c, pas_x);
       }
     }
     if (vpci == null || vpci.isEmpty()) {
@@ -332,7 +319,7 @@ public class DayPlanView
     String subLabel = null;
     if (p.getIdPerson() != prev.getIdPerson() || prev.getIdPerson() == 0) {
       int length = p.getStart().getLength(p.getEnd());
-      if (length > 30 && (p instanceof CourseSchedule || p instanceof WorkshopSchedule || p instanceof GroupStudioSchedule || p instanceof TechStudioSchedule)) {
+      if (length > 30 && (p instanceof CourseSchedule || p instanceof WorkshopSchedule || p instanceof StudioSchedule)) {
         if (p instanceof GroupStudioSchedule) {
           subLabel = ((GroupStudioSchedule) p).getActivityLabel();
         } else if (p instanceof TechStudioSchedule) {
@@ -342,16 +329,23 @@ public class DayPlanView
         }
         if (subLabel != null) {
           bg.setFont(SMALL_FONT);
-          int w = fm.stringWidth(subLabel) + 4;
-          while (w > pas_x) {
-            subLabel = subLabel.substring(0, subLabel.length() - 1);
-            w = fm.stringWidth(subLabel) + 4;
-            //System.out.println("w = "+w);
+          drawSubLabel(subLabel, x, y + (18), pas_x);
+          if (p instanceof TechStudioSchedule) {
+            subLabel = ((TechStudioSchedule) p).getActivityLabel();
+            drawSubLabel(subLabel, x, y + (28), pas_x);
           }
-          bg.drawString(subLabel, x + (pas_x / 2) - (w - 4) / 2, y + 18);
         }
       }
     }
+  }
+
+  private void drawSubLabel(String subLabel, int x, int y, int step_x) {
+    int w = fm.stringWidth(subLabel) + 4;
+    while (w > step_x) {
+      subLabel = subLabel.substring(0, subLabel.length() - 1);
+      w = fm.stringWidth(subLabel) + 4;
+    }
+    bg.drawString(subLabel, x + (step_x / 2) - (w - 4) / 2, y);
   }
 
   @Override

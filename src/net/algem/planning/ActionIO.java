@@ -1,5 +1,5 @@
 /*
- * @(#)ActionIO.java 2.8.v 29/05/14
+ * @(#)ActionIO.java 2.8.v 13/06/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -108,11 +108,11 @@ public class ActionIO
     }
   }
 
-  public void planify(Action a, int type, List<GemDateTime> dates, int[] rooms, int[] members) throws SQLException {
+  public void planify(Action a, int type, int[] rooms, StudioSession session) throws SQLException, PlanningException {
     if (rooms == null) {
       return;
     }
-    for (GemDateTime dt : dates) {
+    for (GemDateTime dt : session.getDates()) {
       for (int r : rooms) {
         Schedule s = new Schedule();
         s.setDate(dt.getDate());
@@ -122,10 +122,13 @@ public class ActionIO
         s.setIdPerson(a.getTeacher());
         s.setIdAction(a.getId());
         s.setIdRoom(r);
+        if (session.getCategory() != null) {
+          s.setNote(session.getCategory().getId());
+        }
         ScheduleIO.insert(s, dc);
-        
+
         if (type == Schedule.TECH) {
-          for (int m : members) {
+          for (int m : session.getTechnicians()) {
             ScheduleRange sr = new ScheduleRange();
             sr.setScheduleId(s.getId());
             sr.setStart(s.getStart());

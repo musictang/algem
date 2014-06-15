@@ -1,7 +1,7 @@
 /*
- * @(#)AccountPrefCtrl.java 2.6.a 12/09/12
+ * @(#)AccountPrefCtrl.java 2.8.v 13/06/14
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -33,21 +33,19 @@ import net.algem.config.Param;
 import net.algem.config.ParamChoice;
 import net.algem.config.ParamTableIO;
 import net.algem.config.Preference;
+import net.algem.util.BundleUtil;
 import net.algem.util.DataConnection;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.module.GemModule;
-import net.algem.util.ui.GemButton;
-import net.algem.util.ui.GemChoice;
-import net.algem.util.ui.GemLabel;
-import net.algem.util.ui.GemPanel;
+import net.algem.util.ui.*;
 
 /**
  * Management of default accounts : membership, enrolment, course subscription, rehearsal, etc.
  * On update only. Creation of new default account is not activated.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.v
  * @since 2.1.i
  */
 public class AccountPrefCtrl
@@ -58,21 +56,22 @@ public class AccountPrefCtrl
   String[] keys;
   GemChoice[] ccChoix;
   ParamChoice[] caChoix;
-  
+
   private GemDesktop desktop;
   private DataConnection dc;
   private Vector<Account> accounts;
   private Vector<Param> costAccounts;
-  private static String accountLabel = "Compte";
-  private static String costLabel = "Analytique";
-  private GemButton ok;
-  private GemButton cancel;  
+  private static String accountLabel = BundleUtil.getLabel("Account.label");
+  private static String costLabel = BundleUtil.getLabel("Cost.account.label");
+  private GemButton btOk;
+  private GemButton btCancel;
 
   public AccountPrefCtrl() {
   }
 
   /**
-   * Initialisation du JPanel et préchargement de la liste des comptes comptables et analytiques.
+   * Initializing panel and preloading the list of Costing and Accounting accounts.
+   *
    * @param desktop
    */
   public AccountPrefCtrl(GemDesktop desktop) {
@@ -93,8 +92,7 @@ public class AccountPrefCtrl
 
     choice.setLayout(new BoxLayout(choice, BoxLayout.Y_AXIS));
     choice.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-    JScrollPane sp = new JScrollPane(choice);
-    sp.getVerticalScrollBar().setUnitIncrement(16);
+    JScrollPane sp = new GemScrollPane(choice);
 
     keys = AccountPrefIO.findKeys(dc);
     if (keys != null && keys.length > 0) {
@@ -125,13 +123,13 @@ public class AccountPrefCtrl
     GemPanel commandPanel = new GemPanel();
     commandPanel.setLayout(new GridLayout(1, 1));
 
-    ok = new GemButton(GemCommand.VALIDATION_CMD);
-    cancel = new GemButton(GemCommand.CANCEL_CMD);
-    ok.addActionListener(this);
-    cancel.addActionListener(this);
+    btOk = new GemButton(GemCommand.VALIDATION_CMD);
+    btCancel = new GemButton(GemCommand.CANCEL_CMD);
+    btOk.addActionListener(this);
+    btCancel.addActionListener(this);
 
-    commandPanel.add(ok);
-    commandPanel.add(cancel);
+    commandPanel.add(btOk);
+    commandPanel.add(btCancel);
 
     add(sp, BorderLayout.CENTER);
     add(commandPanel, BorderLayout.SOUTH);
@@ -141,7 +139,7 @@ public class AccountPrefCtrl
   @Override
   public void actionPerformed(ActionEvent e) {
 
-    if (e.getSource() == ok) {
+    if (e.getSource() == btOk) {
       try {
         for (int i = 0; i < keys.length; i++) {
           int p1 = ((Account) ccChoix[i].getSelectedItem()).getId();

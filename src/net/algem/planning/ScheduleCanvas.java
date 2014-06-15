@@ -287,7 +287,7 @@ public abstract class ScheduleCanvas
     return clickRange;
   }
 
-  public java.util.List<ScheduleRangeObject> getPlagesCoursCoInst(java.util.List<ScheduleRangeObject> plages) {
+  public java.util.List<ScheduleRangeObject> getRangesCoursCoInst(java.util.List<ScheduleRangeObject> plages) {
 
     java.util.List<ScheduleRangeObject> vcc = new ArrayList<ScheduleRangeObject>();
     for (ScheduleRangeObject p : plages) {

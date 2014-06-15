@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleDetailCtrl.java 2.8.v 09/06/14
+ * @(#)ScheduleDetailCtrl.java 2.8.v 13/06/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -309,8 +309,7 @@ public class ScheduleDetailCtrl
 
   private void loadStudioSchedule(Schedule plan) {
     GroupStudioSchedule s = (GroupStudioSchedule) plan;
-    GemLabel l = new GemLabel(BundleUtil.getLabel("Group.label"));
-    headPanel.add(l);
+    headPanel.add(new GemLabel(s.getActivityLabel()));
     StringBuilder buf = new StringBuilder(BundleUtil.getLabel("Group.label")).append(" ");
     buf.append(s.getGroup().getName());// unescape
     GemMenuButton b = new GemMenuButton(buf.toString(), this, "GroupLink", s.getGroup());
@@ -329,8 +328,7 @@ public class ScheduleDetailCtrl
 
   private void loadTechnicianSchedule(ScheduleDetailEvent de) {
     TechStudioSchedule p = (TechStudioSchedule) de.getSchedule();
-    GemLabel l = new GemLabel(BundleUtil.getLabel("Studio.label"));
-    headPanel.add(l);
+    headPanel.add(new GemLabel(p.getScheduleDetail()));
     StringBuilder buf = new StringBuilder(BundleUtil.getLabel("Group.label")).append(" ");
     buf.append(p.getGroup().getName());// unescape
     GemMenuButton b = new GemMenuButton(buf.toString(), this, "GroupLink", p.getGroup());
@@ -409,16 +407,16 @@ public class ScheduleDetailCtrl
       listPanel.add(getMemberButton(v.elementAt(i)));
     }
   }
-  
+
   private void loadTechnicianList(Vector<ScheduleRangeObject> ranges) {
     if(ranges.size() > 0) {
       Collections.sort(ranges, psComparator);
     }
     for(ScheduleRangeObject sr : ranges) {
       Person p = sr.getMember();
-      listPanel.add(new GemMenuButton(p == null ? "" : p.getFirstnameName(), this, "PersonLink", sr));    
+      listPanel.add(new GemMenuButton(p == null ? "" : p.getFirstnameName(), this, "PersonLink", sr));
     }
-    
+
   }
 
   @Override

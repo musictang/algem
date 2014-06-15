@@ -1,5 +1,5 @@
 /*
- * @(#)TechStudioSchedule.java	2.8.v 02/06/14
+ * @(#)TechStudioSchedule.java	2.8.v 13/06/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,8 +20,6 @@
  */
 
 package net.algem.planning;
-
-import net.algem.util.BundleUtil;
 
 /**
  * Technician schedule.
@@ -46,6 +44,6 @@ public class TechStudioSchedule
 
   @Override
   public String getScheduleDetail() {
-    return BundleUtil.getLabel("Studio.label") + " " + group.getName();
+    return getActivityLabel() + " " + group.getName();
   }
 }

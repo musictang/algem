@@ -20,7 +20,9 @@
  */
 package net.algem.planning;
 
+import net.algem.config.GemParam;
 import net.algem.group.Group;
+import net.algem.util.BundleUtil;
 
 /**
  * Abstract studio schedule.
@@ -32,14 +34,15 @@ public abstract class StudioSchedule
         extends ScheduleObject
 {
   protected Group group;
-  
+  //protected String category;
+
   public StudioSchedule() {
   }
 
   public StudioSchedule(Schedule d) {
     super(d);
   }
-  
+
   public void setGroup(Group g) {
     idper = g == null ? 0 : g.getId();
     group = g;
@@ -48,7 +51,13 @@ public abstract class StudioSchedule
   public Group getGroup() {
     return group;
   }
-  
+
+  public String getActivityLabel() {
+    GemParam p = (GemParam) activity;
+    return p == null || p.getLabel() == null || p.getLabel().isEmpty() ?
+      BundleUtil.getLabel("Studio.label") : p.getLabel();
+  }
+
    @Override
   public String getScheduleLabel() {
     return group.getName();

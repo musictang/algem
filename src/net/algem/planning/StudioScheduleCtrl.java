@@ -1,5 +1,5 @@
 /*
- * @(#)StudioScheduleCtrl.java	2.8.v 09/06/14
+ * @(#)StudioScheduleCtrl.java	2.8.v 13/06/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -23,9 +23,11 @@ package net.algem.planning;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.swing.BorderFactory;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
@@ -37,6 +39,7 @@ import net.algem.util.MessageUtil;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.CardCtrl;
 import net.algem.util.ui.GemPanel;
+import net.algem.util.ui.GemScrollPane;
 import net.algem.util.ui.MessagePopup;
 
 /**
@@ -65,9 +68,12 @@ public class StudioScheduleCtrl
 
   public void init() {
     studioView = new StudioScheduleView(desktop.getDataCache());
-    JScrollPane scroll = new JScrollPane(studioView);
+
+    JScrollPane scroll = new GemScrollPane(studioView);
     scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
     scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+    scroll.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+
     GemPanel gp = new GemPanel(new BorderLayout());
     gp.add(scroll, BorderLayout.CENTER);
 
@@ -119,8 +125,10 @@ public class StudioScheduleCtrl
     session.setStudio(studioView.getStudio());
     session.setRooms(studioView.getRooms());
     session.setTechnicians(studioView.getEmployees());
+    session.setDates(dates);
+    session.setCategory(studioView.getCategory());
     try {
-      service.planifyStudio(dates, session);
+      service.planifyStudio(session);
       GemDateTime dts = dates.get(0);
       GemDateTime dte = dates.get(dates.size() - 1);
       desktop.postEvent(new ModifPlanEvent(this, dts.getDate(), dte.getDate()));
@@ -171,11 +179,19 @@ public class StudioScheduleCtrl
       }
     }
 
-    int [] employees = studioView.getEmployees();
+    int[] employees = studioView.getEmployees();
+    List employeeList = new ArrayList<Integer>();
     for (int e : employees) {
       if (e == 0) {
-        throw new PlanningException(MessageUtil.getMessage("invalid.teacher"));
+        throw new PlanningException(MessageUtil.getMessage("invalid.technician"));
       }
+      employeeList.add(e);
+    }
+
+    // check duplicates in employees
+    Set employeeSet = new HashSet(employeeList);
+    if (employeeSet.size() < employeeList.size()) {
+      throw new PlanningException(MessageUtil.getMessage("invalid.technician.duplicate"));
     }
 
     if (studioView.getStudio() <= 0) {

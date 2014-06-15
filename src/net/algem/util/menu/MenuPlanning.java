@@ -1,6 +1,6 @@
 /*
- * @(#)MenuPlanning.java	2.8.v 21/05/14
- * 
+ * @(#)MenuPlanning.java	2.8.v 13/06/14
+ *
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,10 +16,11 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.util.menu;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import javax.swing.JMenuItem;
 import net.algem.config.ConfigKey;
@@ -40,7 +41,7 @@ import net.algem.util.module.GemModule;
 
 /**
  * Planning menu.
- * 
+ *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.8.v
@@ -82,7 +83,7 @@ public class MenuPlanning
       add(miAttendanceSheet = new JMenuItem(BundleUtil.getLabel("Menu.presence.file.label")));
       add(miReplacement = dataCache.getMenu2("Menu.replacement", true));
     }
-    
+
     setListener(this);
   }
 
@@ -116,7 +117,7 @@ public class MenuPlanning
       StudioScheduleCtrl studioCtrl = new StudioScheduleCtrl(desktop);
       studioCtrl.addActionListener(this);
       studioCtrl.init();
-      desktop.addPanel(GemModule.STUDIO_SCHEDULING_KEY, studioCtrl);
+      desktop.addPanel(GemModule.STUDIO_SCHEDULING_KEY, studioCtrl, new Dimension(650, 480));
     } else if (src == miAttendanceSheet) {
        new AttendanceSheetDlg(desktop.getFrame(), dataCache);
     } else if (src == miReplacement) {

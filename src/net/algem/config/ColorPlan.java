@@ -1,5 +1,5 @@
 /*
- * @(#)ColorPlan.java	2.8.v 02/06/14
+ * @(#)ColorPlan.java	2.8.v 12/06/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -50,7 +50,7 @@ public enum ColorPlan
   MEMBER_REHEARSAL("plan.repet.adherent.color", -13395457),
 //  GROUP_REHEARSAL("plan.repet.groupe.color", Color.BLUE.getRGB()),
   GROUP_REHEARSAL("plan.repet.groupe.color", -14591745),
-  STUDIO("plan.studio.color", 6711039), //102,102,255
+  STUDIO("plan.studio.color", 10027263),//153,0,255 (alternative : 6711039 //102,102,255)
 
   ACTION_LABEL("plan.action.label.color", Color.GREEN.getRGB()),
 //  MEMBER_LABEL("plan.adherent.label.color", Color.YELLOW.getRGB()),

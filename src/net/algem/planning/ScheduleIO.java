@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleIO.java	2.8.v 02/06/14
+ * @(#)ScheduleIO.java	2.8.v 13/06/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -25,6 +25,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
+import net.algem.config.GemParam;
 import net.algem.contact.Person;
 import net.algem.course.Course;
 import net.algem.group.Group;
@@ -48,6 +49,7 @@ public class ScheduleIO
 
   public final static String TABLE = "planning";
   public final static String SEQUENCE = "planning_id_seq";
+  public final static String FOLLOW_UP_TABLE = "suivi";
   public final static String FOLLOW_UP_SEQUENCE = "idsuivi";
   public final static String COLUMNS = "p.id,p.jour,p.debut,p.fin,p.ptype,p.idper,p.action,p.lieux,p.note";
   public static String BUSY_ROOM_STMT = "SELECT count(id) FROM planning WHERE lieux = ? AND jour > '01-01-1999'";
@@ -269,11 +271,13 @@ public class ScheduleIO
         p = new GroupRehearsalSchedule();
         fillPlanning(rs, p);
         ((GroupRehearsalSchedule) p).setGroup((Group) DataCache.findId(p.getIdPerson(), Model.Group));
+
         break;
       case Schedule.STUDIO:
         p = new GroupStudioSchedule();
         fillPlanning(rs, p);
         ((GroupStudioSchedule) p).setGroup((Group) DataCache.findId(p.getIdPerson(), Model.Group));
+        ((GroupStudioSchedule) p).setActivity((GemParam) DataCache.findId(p.getNote(),Model.StudioType));
         break;
       case Schedule.TECH:
         p = new TechStudioSchedule();
@@ -284,6 +288,7 @@ public class ScheduleIO
           ((TechStudioSchedule) p).setTechnicianLabel(per.getAbbrevFirstNameName());
         }
         ((TechStudioSchedule) p).setGroup((Group) DataCache.findId(p.getIdPerson(), Model.Group));
+        ((TechStudioSchedule) p).setActivity((GemParam) DataCache.findId(p.getNote(),Model.StudioType));
         break;
       case Schedule.WORKSHOP:
         p = new WorkshopSchedule();
@@ -296,14 +301,14 @@ public class ScheduleIO
     return p;
 
   }
-  
+
   /**
    * Gets the first person's id stored in this schedule {@code id}.
-   * 
+   *
    * @param id schedule id
    * @param dc data connection
    * @return an integer >= 0
-   * @throws SQLException 
+   * @throws SQLException
    */
   private static int getFirstPerson(int id, DataConnection dc) throws SQLException {
     int t = 0;
@@ -332,7 +337,7 @@ public class ScheduleIO
 
   public static int count(String where, DataConnection dc) {
     int n = 1;
-    String query = "SELECT count("+TABLE+".id) FROM " + TABLE + " " + where;
+    String query = "SELECT count(" + TABLE + ".id) FROM " + TABLE + " " + where;
     try {
       ResultSet rs = dc.executeQuery(query);
       if (rs.next()) {
@@ -349,7 +354,7 @@ public class ScheduleIO
     try {
       dc.setAutoCommit(false);
       int num = nextId(FOLLOW_UP_SEQUENCE, dc);
-      String query = "INSERT INTO suivi VALUES(" + num + ",'" + escape(text) + "')";
+      String query = "INSERT INTO " + FOLLOW_UP_TABLE + " VALUES(" + num + ",'" + escape(text) + "')";
       dc.executeUpdate(query);
       sched.setNote(num);
       update(sched, dc);
@@ -363,14 +368,14 @@ public class ScheduleIO
   }
 
   public static void updateFollowUp(int idFollow, String text, DataConnection dc) throws SQLException {
-    String query = "UPDATE suivi SET texte = '" + escape(text) + "' WHERE id = " + idFollow;
+    String query = "UPDATE " + FOLLOW_UP_TABLE + " SET texte = '" + escape(text) + "' WHERE id = " + idFollow;
     dc.executeUpdate(query);
   }
 
   public static String findFollowUp(int note, DataConnection dc) throws SQLException {
 
     String text = "";
-    String query = "SELECT texte FROM suivi WHERE id = " + note;
+    String query = "SELECT texte FROM " + FOLLOW_UP_TABLE + " WHERE id = " + note;
 
     ResultSet rs = dc.executeQuery(query);
     if (rs.next()) {

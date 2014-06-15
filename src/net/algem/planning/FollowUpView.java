@@ -1,7 +1,7 @@
 /*
- * @(#)FollowUpView.java	2.6.a 21/09/12
- * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * @(#)FollowUpView.java	2.8.v 13/06/14
+ *
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning;
 
@@ -32,18 +32,18 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.6.a
+ * @version 2.8.v
  */
 public class FollowUpView
         extends GemBorderPanel
 {
 
   private JLabel course;
-  GemTextArea textArea;
+  private GemTextArea textArea;
 
-  public FollowUpView(String _cours, DateFr _jour, Hour _debut, Hour _fin) {
-    course = new JLabel(_cours);
-    JLabel detail = new JLabel(_jour + " " + _debut + "-" + _fin);
+  public FollowUpView(String courseName, DateFr date, Hour start, Hour end) {
+    course = new JLabel(courseName);
+    JLabel detail = new JLabel(date + " " + start + "-" + end);
 
     textArea = new GemTextArea(3, 30);
 
@@ -55,17 +55,17 @@ public class FollowUpView
     gb.add(textArea, 0, 2, 1, 1, GridBagHelper.BOTH, 1.0, 1.0);
   }
 
-  public FollowUpView(DateFr _jour, Hour _debut, Hour _fin) {
-    this("", _jour,_debut, _fin);
+  public FollowUpView(DateFr date, Hour start, Hour end) {
+    this("", date,start, end);
   }
 
-  public void set(String _cours, String _txt) {
-    course.setText(_cours);
-    textArea.setText(_txt);
+  public void set(String courseName, String txt) {
+    course.setText(courseName);
+    textArea.setText(txt);
   }
 
-  public void setText(String _txt) {
-    textArea.setText(_txt);
+  public void setText(String txt) {
+    textArea.setText(txt);
   }
 
   public String getText() {

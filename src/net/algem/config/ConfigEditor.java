@@ -1,7 +1,7 @@
 /*
- * @(#)ConfigEditor.java 2.6.a 17/09/12
- * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * @(#)ConfigEditor.java 2.8.v 13/06/14
+ *
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 
 package net.algem.config;
@@ -35,15 +35,16 @@ import net.algem.util.module.GemDesktop;
 import net.algem.util.module.GemModule;
 import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GemPanel;
+import net.algem.util.ui.GemScrollPane;
 
 /**
  * General config editor.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.v
  * @since 2.1.k
  */
-public class ConfigEditor 
+public class ConfigEditor
   extends GemPanel implements ActionListener {
 
   private ConfigOrganization orgPanel;
@@ -80,7 +81,7 @@ public class ConfigEditor
     setLayout(new BorderLayout());
     GemPanel content = new GemPanel();
     content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
-    
+
     try {
       confs = ConfigIO.find(null, dc);
 
@@ -99,9 +100,9 @@ public class ConfigEditor
     } catch (SQLException ex) {
         GemLogger.logException(ex);
     }
-    JScrollPane sp = new JScrollPane(content);
+    JScrollPane sp = new GemScrollPane(content);
     sp.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
-    sp.getVerticalScrollBar().setUnitIncrement(20);
+
     add(sp,BorderLayout.CENTER);
     btPanel = new GemPanel();
     btPanel.setLayout(new GridLayout(1,1));
@@ -118,7 +119,7 @@ public class ConfigEditor
 
   @Override
   public void actionPerformed(ActionEvent e) {
-    if (e.getSource() == btValidation) {    
+    if (e.getSource() == btValidation) {
       try {
         for (Config c : orgPanel.get()) {
           confs.put(c.getKey(), c);

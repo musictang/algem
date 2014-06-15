@@ -1,5 +1,5 @@
 /*
- * @(#)PlanningService.java	2.8.v 05/06/14
+ * @(#)PlanningService.java	2.8.v 13/06/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -110,14 +110,14 @@ public class PlanningService
     actionIO.planify(a, type, dates);
   }
 
-  public void planifyStudio(List<GemDateTime> dates, StudioSession session) throws PlanningException {
+  public void planifyStudio(StudioSession session) throws PlanningException {
     try {
       dc.setAutoCommit(false);
       Action a = new Action();
       a.setTeacher(session.getGroup());
       actionIO.insert(a);
-      actionIO.planify(a, Schedule.STUDIO, dates, session.getRooms(), session.getTechnicians());
-      actionIO.planify(a, Schedule.TECH, dates, new int[] {session.getStudio()}, session.getTechnicians());
+      actionIO.planify(a, Schedule.STUDIO, session.getRooms(), session);
+      actionIO.planify(a, Schedule.TECH, new int[] {session.getStudio()}, session);
     } catch (SQLException ex) {
       dc.rollback();
       throw new PlanningException(ex.getMessage());
@@ -209,7 +209,7 @@ public class PlanningService
       throw new PlanningException(ex.getMessage());
     }
   }
-  
+
   /**
    * Deletes only the schedule {@code s}.
    * @param s schedule to delete
@@ -286,7 +286,7 @@ public class PlanningService
 
   /**
    * Checks if other schedules at different times share the same action {@code a} between 2 dates.
-   * @param a action 
+   * @param a action
    * @return true if several schedules are found
    */
    public boolean hasSiblings(Action a) {
@@ -352,14 +352,14 @@ public class PlanningService
       throw new PlanningException("PLANNING UPDATE=0 " + query);
     }
   }
-  
+
   /**
    * This room modification affects only the selected schedule.
    * This occurs for exemple on studio-type schedules.
    * @param scheduleId
    * @param roomId new room id
    * @throws SQLException
-   * @throws PlanningException 
+   * @throws PlanningException
    */
   public void changeRoom(int scheduleId, int roomId) throws SQLException, PlanningException {
     String query = "UPDATE " + ScheduleIO.TABLE + " SET lieux = " + roomId + " WHERE id = " + scheduleId;
@@ -456,7 +456,7 @@ public class PlanningService
       throw new PlanningException(sqe.getMessage());
     }
   }
-  
+
   public void addScheduleRange(ScheduleRange sr) throws PlanningException {
     try {
       ScheduleRangeIO.insert(sr, dc);
@@ -947,12 +947,12 @@ public class PlanningService
     }
     return null;
   }
-  
+
   /**
    * Gets all the persons stored in this schedule {@code id}.
    * @param id schedule id
    * @return a list of persons or an empty list if no one was found
-   * @throws SQLException 
+   * @throws SQLException
    */
   List<Person> getPersons(int id) throws SQLException {
     List<Person> persons = new ArrayList<Person>();

@@ -1,7 +1,7 @@
 /*
- * @(#)MonthPlanView.java	2.8.p 13/11/13
+ * @(#)MonthPlanView.java	2.8.v 12/06/14
  *
- * Copyright (cp) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (cp) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -36,7 +36,7 @@ import net.algem.util.ui.GemField;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.p
+ * @version 2.8.v
  */
 public class MonthPlanView
         extends ScheduleCanvas
@@ -58,6 +58,7 @@ public class MonthPlanView
   private Vector<ScheduleObject> schedules;
   private Vector<ScheduleRangeObject> ranges;
   private GemField status;
+  private static final ScheduleRangeComparator RANGE_COMPARATOR = new ScheduleRangeComparator();
 
 
   public MonthPlanView(GemField status) {
@@ -169,8 +170,7 @@ public class MonthPlanView
       ScheduleObject p = (ScheduleObject) plans.elementAt(i);
       Color c = getScheduleColor(p);
       drawRange(p, c, pas_x);
-      if (p.getType() == Schedule.MEMBER
-              || p.getType() == Schedule.GROUP) {
+      if (p.getType() == Schedule.MEMBER || p.getType() == Schedule.GROUP) {
         if (p.getNote() == -1) {
           c = colorPrefs.getColor(ColorPlan.FLAG);
           flagNotPaid(p.getDate().getDay(), p.getStart().toMinutes(), p.getEnd().toMinutes(), c);
@@ -179,48 +179,48 @@ public class MonthPlanView
     }
   }
 
-  private void drawScheduleRanges(Vector<ScheduleRangeObject> vpl) {
-    if (vpl == null || vpl.isEmpty()) {
+  private void drawScheduleRanges(Vector<ScheduleRangeObject> all) {
+    if (all == null || all.isEmpty()) {
       return;
     }
-    Collections.sort(vpl, new ScheduleRangeComparator());
-    java.util.List<ScheduleRangeObject> vp = new ArrayList<ScheduleRangeObject>(vpl);
-    java.util.List<ScheduleRangeObject> vpci = getPlagesCoursCoInst(vp);
-    if (vpci != null) {
-      vp.removeAll(vpci);
+    Collections.sort(all, RANGE_COMPARATOR);
+    java.util.List<ScheduleRangeObject> regular = new ArrayList<ScheduleRangeObject>(all);
+    java.util.List<ScheduleRangeObject> collective = getRangesCoursCoInst(regular);
+    if (collective != null) {
+      regular.removeAll(collective);
     }
 
     Color cp = colorPrefs.getColor(ColorPlan.RANGE);
     // tracé des plages de cours individuels
-    for (ScheduleRangeObject p : vp) {
+    for (ScheduleRangeObject p : regular) {
       Course cc = p.getCourse();
-      if (!cc.isCollective()) {
+      if (cc != null && !cc.isCollective()) {
         drawRange(p, cp, pas_x);
       }
     }
-    if (vpci == null || vpci.isEmpty()) {
+    if (collective == null || collective.isEmpty()) {
       return;
     }
-    int idp = vpci.get(0).getScheduleId();
+    int idp = collective.get(0).getScheduleId();
     int n = 0; // nombre de participants
     int w = 0; // largeur de plage occupée
     int idx = 0; // index plage
     // tracé des plages de cours collectifs
-    for (int j = 0; j < vpci.size(); j++) {
-      ScheduleRangeObject p = vpci.get(j);
+    for (int j = 0; j < collective.size(); j++) {
+      ScheduleRangeObject p = collective.get(j);
       if (idp == p.getScheduleId()) {
         n++;
         idx = j;
         continue;
       }
-      w = getScheduleRangeWidth(vpci.get(idx).getAction().getPlaces(), n);
-      drawRange(vpci.get(idx), cp, w);
+      w = getScheduleRangeWidth(collective.get(idx).getAction().getPlaces(), n);
+      drawRange(collective.get(idx), cp, w);
       idp = p.getScheduleId();
       n = 1;
       idx = j;
     }
-    w = getScheduleRangeWidth(vpci.get(idx).getAction().getPlaces(), n);
-    drawRange(vpci.get(idx), cp, w);
+    w = getScheduleRangeWidth(collective.get(idx).getAction().getPlaces(), n);
+    drawRange(collective.get(idx), cp, w);
   }
 
   public void drawRange(DateFr j, Hour deb, Hour fin, Color c) {

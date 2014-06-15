@@ -1,5 +1,5 @@
 /*
- * @(#)DataCache.java	2.8.v 29/05/14
+ * @(#)DataCache.java	2.8.v 13/06/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -90,6 +90,7 @@ public class DataCache
   private static UserIO USER_IO;
   private static ItemIO ITEM_IO;
   private static EmployeeTypeIO EMPLOYEE_TYPE_IO;
+  private static StudioTypeIO STUDIO_TYPE_IO;
 
   // Cache data
   private static Hashtable<Integer, List<Integer>> TEACHER_INSTRUMENT_CACHE = new Hashtable<Integer, List<Integer>>();
@@ -118,6 +119,7 @@ public class DataCache
   private static GemList<Vat> VAT_LIST;
   private static GemList<GemParam> COURSE_CODE_LIST;
   private static GemList<GemParam> EMPLOYEE_TYPE_LIST;
+  private static GemList<GemParam> STUDIO_TYPE_LIST;
 
   private static Vector<Instrument> instruments;//TODO manage list
   private Vector<CategoryOccup> occupCat;
@@ -173,6 +175,7 @@ public class DataCache
     ITEM_IO = new ItemIO(dc);
     COURSE_CODE_IO = new CourseCodeIO(dc);
     EMPLOYEE_TYPE_IO = new EmployeeTypeIO(dc);
+    STUDIO_TYPE_IO = new StudioTypeIO(dc);
 
     loadMonthStmt = dc.prepareStatement("SELECT " + ScheduleIO.COLUMNS + " FROM planning p WHERE jour >= ? AND jour <= ? ORDER BY p.jour,p.debut");
     loadMonthRangeStmt = dc.prepareStatement(ScheduleRangeIO.getMonthRangeStmt());
@@ -255,6 +258,8 @@ public class DataCache
         return SCHOOL_LIST;
       case EmployeeType:
         return EMPLOYEE_TYPE_LIST;
+      case StudioType:
+        return STUDIO_TYPE_LIST;
       default: return null;
     }
 
@@ -393,6 +398,9 @@ public class DataCache
           }
         }
         return null;
+      case StudioType:
+        GemParam stype = (GemParam) STUDIO_TYPE_LIST.getItem(id);
+        return stype != null ? stype : STUDIO_TYPE_IO.find(id);
       default:
         return null;
     }
@@ -723,6 +731,7 @@ public class DataCache
       }
 
       EMPLOYEE_TYPE_LIST = new GemList<GemParam>(EMPLOYEE_TYPE_IO.load());
+      STUDIO_TYPE_LIST = new GemList<GemParam>(STUDIO_TYPE_IO.load());
 
     } catch (SQLException ex) {
       String m = MessageUtil.getMessage("cache.loading.exception");

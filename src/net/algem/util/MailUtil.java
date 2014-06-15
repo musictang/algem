@@ -1,6 +1,6 @@
 /*
- * @(#)MailUtil.java	2.8.v 10/06/14
- * 
+ * @(#)MailUtil.java	2.8.v 12/06/14
+ *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 
 package net.algem.util;
@@ -24,6 +24,8 @@ package net.algem.util;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
+import net.algem.config.ConfigKey;
+import net.algem.config.ConfigUtil;
 import net.algem.contact.*;
 import net.algem.contact.member.MemberService;
 import net.algem.group.Musician;
@@ -36,13 +38,13 @@ import net.algem.util.model.Model;
 
 /**
  * Utility class for sending emails.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.8.v
  * @since 2.8.k 26/07/13
  */
 public class MailUtil {
-  
+
   private DataCache dataCache;
   private DataConnection dc;
   private MemberService memberService;
@@ -51,14 +53,14 @@ public class MailUtil {
   public MailUtil(DataCache dataCache) {
     this(dataCache, new MemberService(dataCache.getDataConnection()));
   }
-  
+
   public MailUtil(DataCache dataCache, MemberService service) {
     this.dataCache = dataCache;
     dc = dataCache.getDataConnection();
     mailHandler = new DesktopMailHandler();
     memberService = service;
   }
-  
+
   /**
    * Gets member's emails.
    *
@@ -127,14 +129,14 @@ public class MailUtil {
       }
     }
     sendMailTo(bcc.toString());
-    
+
     return message;
 
   }
 
   /**
    * Sends an email to the members of the group.
-   * 
+   *
    * @param mus the list of musicians (members)
    */
   public String mailToGroupMembers(Vector<Musician> mus) {
@@ -153,10 +155,10 @@ public class MailUtil {
       }
     }
     sendMailTo(bcc.toString());
-    
+
     return message;
   }
-  
+
   public String mailToGroupMembers(Vector<Musician> mus, int action) throws SQLException {
     String message = "";
     StringBuilder bcc = new StringBuilder();
@@ -173,7 +175,7 @@ public class MailUtil {
       }
     }
     String where = "SELECT DISTINCT e.email FROM " + ScheduleRangeIO.TABLE + " pg, " + ScheduleIO.TABLE + " p, " + EmailIO.TABLE + " e"
-            + " WHERE p.action = " + action 
+            + " WHERE p.action = " + action
             + " AND pg.idplanning = p.id"
             + " AND p.ptype = " + Schedule.TECH
             + " AND pg.adherent = e.idper";
@@ -182,7 +184,7 @@ public class MailUtil {
       bcc.append((bcc.length() > 0) ? "," + rs.getString(1) : rs.getString(1));
     }
     sendMailTo(bcc.toString());
-    
+
     return message;
   }
 
@@ -198,15 +200,16 @@ public class MailUtil {
     String to = null;
     // on recherche le 1er email de l'utilisateur
     try {
-      to = EmailIO.findId(dataCache.getUser().getId(), dataCache.getDataConnection());
+      to = EmailIO.findId(dataCache.getUser().getId(), dc);
     } catch (SQLException ex) {
       System.err.println(ex.getMessage());
     }
     if (to == null) {
-      to = dataCache.getUser().getLogin() + "@" + BundleUtil.getLabel("Domain");
+      String domain = ConfigUtil.getConf(ConfigKey.ORGANIZATION_DOMAIN.getKey(), dc);
+      to = dataCache.getUser().getLogin() + "@" + (domain == null ? BundleUtil.getLabel("Domain") : domain.trim().toLowerCase());
     }
     mailHandler.send(to, bcc);
-    
+
   }
 
 }
