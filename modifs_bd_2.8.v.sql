@@ -43,4 +43,5 @@ UPDATE categorie_studio SET nom = 'Maintenance' WHERE id = 5;
 ALTER SEQUENCE categorie_studio_id_seq restart 6;
 
 
-
+CREATE INDEX id_module_idx ON commande_cours (module)
+CREATE INDEX action_cours_idx ON action (cours); 

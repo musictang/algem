@@ -1,5 +1,5 @@
 /*
- * @(#)StudioTypeIO.java	2.8.v 13/06/14
+ * @(#)StudioTypeIO.java	2.8.v 16/06/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -39,8 +39,8 @@ extends GemParamIO
   implements Cacheable
 {
 
+  public final static String TABLE = "categorie_studio";
   private final static String COLS = "id, nom";
-  private final static String TABLE = "categorie_studio";
   private final static String SEQUENCE = "categorie_studio_id_seq";
 
   public StudioTypeIO(DataConnection dc) {

@@ -1,7 +1,7 @@
 /*
- * @(#)GemEvent.java	2.8.a 15/03/13
+ * @(#)GemEvent.java	2.8.v 17/06/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -23,10 +23,11 @@ package net.algem.util.event;
 
 /**
  * Gem event object.
+ * Basic event handler utility.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.v
  */
 public class GemEvent extends java.util.EventObject
 {
@@ -70,35 +71,55 @@ public class GemEvent extends java.util.EventObject
   protected int type;
   private Object object;
 
-  public GemEvent(Object _source) {
-    super(_source);
+  public GemEvent(Object src) {
+    super(src);
   }
 
   /**
-   *
-   * @param source
-   * @param operation
-   * @param type
+   * Constructs a basic event.
+   * 
+   * @param src source of event
+   * @param operation type of operation
+   * @param type object destination type
    */
-  public GemEvent(Object source, int operation, int type) {
-    super(source);
+  public GemEvent(Object src, int operation, int type) {
+    super(src);
     this.operation = operation;
     this.type = type;
   }
 
-  public GemEvent(Object source, int operation, int type, Object object) {
-    this(source, operation, type);
+  /**
+   * Constructs a basic event associated with the object {@code object}.
+   * @param src source of event
+   * @param operation type of operation
+   * @param type object destination type
+   * @param object related object
+   */
+  public GemEvent(Object src, int operation, int type, Object object) {
+    this(src, operation, type);
     this.object = object;
   }
 
+  /**
+   * Gets the type of the current operation.
+   * @return an integer representing the type of operation
+   */
   public int getOperation() {
     return operation;
   }
 
+  /**
+   * Gets the type of the current destination.
+   * @return an integer representing the type of destination
+   */
   public int getType() {
     return type;
   }
   
+  /**
+   * Gets the object associated with this event.
+   * @return an object instance
+   */
   public Object getObject() {
     return object;
   }

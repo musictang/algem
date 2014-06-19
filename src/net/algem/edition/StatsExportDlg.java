@@ -1,5 +1,5 @@
 /*
- * @(#)StatsExportDlg.java	2.8.t 16/05/14
+ * @(#)StatsExportDlg.java	2.8.v 19/06/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -18,7 +18,6 @@
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  * 
  */
-
 package net.algem.edition;
 
 import java.awt.BorderLayout;
@@ -27,6 +26,8 @@ import java.awt.GridLayout;
 import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -36,8 +37,7 @@ import net.algem.config.ConfigUtil;
 import net.algem.planning.DateFr;
 import net.algem.planning.DateRangePanel;
 import net.algem.util.*;
-import net.algem.util.jdesktop.DesktopBrowseHandler;
-import net.algem.util.jdesktop.DesktopHandlerException;
+import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GemField;
 import net.algem.util.ui.GemPanel;
@@ -46,13 +46,15 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.8.v
  * @since 2.6.a 11/10/2012
  */
-public class StatsExportDlg 
- extends JDialog
-        implements ActionListener {
+public class StatsExportDlg
+        extends JDialog
+        implements ActionListener, PropertyChangeListener
+{
 
+  protected GemDesktop desktop;
   protected DataCache dataCache;
   protected GemField filePathField;
   protected GemButton btValidation;
@@ -61,9 +63,12 @@ public class StatsExportDlg
   protected JButton chooser;
   protected File file;
   protected DateRangePanel datePanel;
+  private ProgressMonitor progressMonitor;
+  private Statistics st;
 
-  public StatsExportDlg(DataCache dataCache) {
-    this.dataCache = dataCache;
+  public StatsExportDlg(GemDesktop desktop) {
+    this.desktop = desktop;
+    this.dataCache = desktop.getDataCache();
     btValidation = new GemButton(GemCommand.VALIDATION_CMD);
     btValidation.addActionListener(this);
     btCancel = new GemButton(GemCommand.CANCEL_CMD);
@@ -82,8 +87,8 @@ public class StatsExportDlg
     chooser.addActionListener(this);
     filePanel.add(chooser);
     int year = dataCache.getStartOfYear().getYear();
-    DateFr start = new DateFr("01-09-"+year);
-    DateFr end = new DateFr("31-08-"+(year +1));
+    DateFr start = new DateFr("01-09-" + year);
+    DateFr end = new DateFr("31-08-" + (year + 1));
     datePanel = new DateRangePanel(start, end);
 
     setLayout(new BorderLayout());
@@ -91,12 +96,12 @@ public class StatsExportDlg
     GemPanel d = new GemPanel();
     d.add(new JLabel(BundleUtil.getLabel("Date.From.label")));
     d.add(datePanel);
-   
+
     add(d, BorderLayout.CENTER);
     add(buttons, BorderLayout.SOUTH);
     pack();
   }
-  
+
   @Override
   public void actionPerformed(ActionEvent e) {
     if (e.getSource() == btCancel) {
@@ -107,7 +112,6 @@ public class StatsExportDlg
         return;
       }
       validation();
-      close();
     } else if (e.getSource() == chooser) {
       JFileChooser fileChooser = ExportDlg.getFileChooser(filePathField.getText());
       int ret = fileChooser.showDialog(this, BundleUtil.getLabel("FileChooser.selection"));
@@ -119,45 +123,50 @@ public class StatsExportDlg
       }
     }
   }
-  
+
   private void validation() {
-    Statistics st = null;
-    try {      
-      st = StatisticsFactory.getInstance();    
+    try {
+      st = StatisticsFactory.getInstance();
       if (st == null) {
-        MessagePopup.warning(this, MessageUtil.getMessage("statistics.default.warning"));
-        st = new StatisticsDefault();   
+        MessagePopup.warning(desktop.getFrame(), MessageUtil.getMessage("statistics.default.warning"));
+        st = new StatisticsDefault();
       }
-      st.init(dataCache);
       setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+      st.init(dataCache);
+      progressMonitor = new ProgressMonitor(desktop.getFrame(), MessageUtil.getMessage("statistics.active.operation"), "", 1, 100);
+      progressMonitor.setMillisToDecideToPopup(10);
+
       st.setConfig(
               filePathField.getText(),
               AccountPrefIO.find(AccountPrefIO.MEMBER_KEY_PREF, dataCache.getDataConnection()),
-              datePanel.getStartFr(), 
-              datePanel.getEndFr()
-              );
-      st.makeStats();
-      if (MessagePopup.confirm(this, MessageUtil.getMessage("statistics.completed", filePathField.getText()))) {
-        DesktopBrowseHandler browser = new DesktopBrowseHandler();
-        try {
-          browser.browse(file.toURI().toString());
-        } catch (DesktopHandlerException ex) {
-          GemLogger.log(ex.getMessage());
-        }
-      }
+              datePanel.getStartFr(),
+              datePanel.getEndFr());
+      st.setMonitor(progressMonitor);
+      st.addPropertyChangeListener(this);
+      st.execute();
+
     } catch (IOException ex) {
       GemLogger.logException(ex);
-      MessagePopup.warning(this, MessageUtil.getMessage("file.path.exception", filePathField.getText()));
+      MessagePopup.warning(desktop.getFrame(), MessageUtil.getMessage("file.path.exception", filePathField.getText()));
     } catch (SQLException ex) {
       GemLogger.logException(ex);
     } finally {
-      if (st != null) {
-        st.close();
-      }
       setCursor(Cursor.getDefaultCursor());
     }
   }
-  
+
+  @Override
+  public void propertyChange(PropertyChangeEvent event) {
+    if (progressMonitor.isCanceled()) {
+      if (st != null) {
+        st.cancel(true);
+      }
+    } else if (event.getPropertyName().equals("progress")) {
+      int pg = ((Integer) event.getNewValue()).intValue();
+      progressMonitor.setProgress(pg);
+    }
+  }
+
   private void close() {
     setVisible(false);
     dispose();

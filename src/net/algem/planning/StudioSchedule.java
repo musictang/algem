@@ -1,5 +1,5 @@
 /*
- * @(#)StudioSchedule.java	2.8.v 02/06/14
+ * @(#)StudioSchedule.java	2.8.v 16/06/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -34,7 +34,6 @@ public abstract class StudioSchedule
         extends ScheduleObject
 {
   protected Group group;
-  //protected String category;
 
   public StudioSchedule() {
   }
@@ -54,7 +53,7 @@ public abstract class StudioSchedule
 
   public String getActivityLabel() {
     GemParam p = (GemParam) activity;
-    return p == null || p.getLabel() == null || p.getLabel().isEmpty() ?
+    return p == null || p.getId() == 0 || p.getLabel() == null || p.getLabel().isEmpty() ?
       BundleUtil.getLabel("Studio.label") : p.getLabel();
   }
 

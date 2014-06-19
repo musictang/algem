@@ -1,5 +1,5 @@
 /*
- * @(#)PlanModifCtrl.java	2.8.v 06/06/14
+ * @(#)PlanModifCtrl.java	2.8.v 16/06/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -27,6 +27,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
+import net.algem.config.GemParam;
 import net.algem.contact.EmployeeIO;
 import net.algem.contact.EmployeeType;
 import net.algem.contact.Person;
@@ -150,6 +151,7 @@ public class PlanModifCtrl
     Vector<GemMenuButton> v = new Vector<GemMenuButton>();
     v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.room.modification.label"), this, "ChangeRoom"));
     v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.time.modification.label"), this, "ChangeScheduleLength"));
+    v.add(new GemMenuButton(BundleUtil.getLabel("Session.type.modification.label"), this, "ChangeSessionType"));
     if (Schedule.TECH == type) {
       v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.add.participant.label"), this, "AddParticipant"));
     }
@@ -164,7 +166,6 @@ public class PlanModifCtrl
   public Vector<GemMenuButton> getMenuPlanning() {
     Vector<GemMenuButton> v = new Vector<GemMenuButton>();
     /* v.add(new GemMenuButton("Marquer salle indisponible", this, "InsertSalleNonDispo")); */
-
     return v;
   }
 
@@ -174,52 +175,46 @@ public class PlanModifCtrl
     String arg = evt.getActionCommand();
 
     desktop.setWaitCursor();
-
-    if (arg.equals("ChangeRoom")) {
-      dialogChangeRoom();
-    } else if (arg.equals("PutOffCourse")) {
-      dialogPostponeCourse();
-    } else if (arg.equals("CopyCourse")) {
-      dialogCopyCourse();
-    } else if (arg.equals("ChangeScheduleLength")) {
-      dialogPlanningLength();
-    } else if (arg.equals("ChangeCourse")) {
-      dialogChangeCourse();
-    } else if (arg.equals("DeletePlanning")) {
-      if (dataCache.authorize("Schedule.suppression.auth")) {
-        dialogPlanningSuppression();
-      } else {
-        MessagePopup.information(desktop.getFrame(), MessageUtil.getMessage("delete.exception") + MessageUtil.getMessage("rights.exception"));
-      }
-    } else if ("ModifiyAction".equals(arg)) {
-      dialogModifyAction();
-    } else if (arg.equals("ChangeHour")) {
-      dialogChangeHour();
-    } else if (arg.equals("ChangeTeacher")) {
-      dialogChangeTeacher();
-    } else  if (arg.equals("AddParticipant")) {
-      dialogAddParticipant(EmployeeType.TECHNICIAN);
-    } else if (arg.equals("CancelWorkshop")) {
-      dialogCancelWorkshop();
-    } else if (arg.equals("CancelRehearsal")) {
-      dialogCancelRehearsal();
-    } else if (arg.equals("MarkPaid")) {
-      try {
+    try {
+      if (arg.equals("ChangeRoom")) {
+        dialogChangeRoom();
+      } else if (arg.equals("PutOffCourse")) {
+        dialogPostponeCourse();
+      } else if (arg.equals("CopyCourse")) {
+        dialogCopyCourse();
+      } else if (arg.equals("ChangeScheduleLength")) {
+        dialogPlanningLength();
+      } else if (arg.equals("ChangeCourse")) {
+        dialogChangeCourse();
+      } else if (arg.equals("DeletePlanning")) {
+        if (dataCache.authorize("Schedule.suppression.auth")) {
+          dialogPlanningSuppression();
+        } else {
+          MessagePopup.information(desktop.getFrame(), MessageUtil.getMessage("delete.exception") + MessageUtil.getMessage("rights.exception"));
+        }
+      } else if ("ModifiyAction".equals(arg)) {
+        dialogModifyAction();
+      } else if (arg.equals("ChangeHour")) {
+        dialogChangeHour();
+      } else if (arg.equals("ChangeTeacher")) {
+        dialogChangeTeacher();
+      } else if (arg.equals("AddParticipant")) {
+        dialogAddParticipant(EmployeeType.TECHNICIAN);
+      } else if (arg.equals("ChangeSessionType")) {
+        dialogChangeSessionType();
+      } else if (arg.equals("CancelWorkshop")) {
+        dialogCancelWorkshop();
+      } else if (arg.equals("CancelRehearsal")) {
+        dialogCancelRehearsal();
+      } else if (arg.equals("MarkPaid")) {
         service.markPaid(plan);
         desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));
-      } catch (Exception ex) {
-        GemLogger.logException("mark rehearsal paid", ex);
-      }
-    } else if (arg.equals("MarkNotPaid")) {
-      try {
+      } else if (arg.equals("MarkNotPaid")) {
         service.markNotPaid(plan);
         desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));
-      } catch (Exception ex) {
-        GemLogger.logException("mark rehearsal not paid", ex);
+      } else if (arg.equals(GemCommand.CANCEL_CMD)) {
+        desktop.removeCurrentModule();
       }
-    } else if (arg.equals(GemCommand.CANCEL_CMD)) {
-      desktop.removeCurrentModule();
-    }
     /*
     else if (arg.bufferEquals("Replanifier")) {
       dialogDeplacerCours();
@@ -244,8 +239,14 @@ public class PlanModifCtrl
       }
     }
     */
-
-    desktop.setDefaultCursor();
+    } catch(PlanningException ex) {
+      GemLogger.log(ex.getMessage());
+      MessagePopup.warning(desktop.getFrame(), ex.getMessage());
+    } catch(SQLException sqe) {
+      GemLogger.log(sqe.getMessage());
+    } finally {
+      desktop.setDefaultCursor();
+    }
   }
 
   /** Calls hour modification dialog. */
@@ -480,29 +481,41 @@ public class PlanModifCtrl
     }
   }
   
-  private void dialogAddParticipant(Enum cat)  {
-    try {
-      String where = ", " + EmployeeIO.TYPE_TABLE + " t  WHERE "
-        + PersonIO.TABLE + ".id = t.idper AND t.idcat = " + cat.ordinal();
-      List<Person> persons = PersonIO.find(where, dataCache.getDataConnection());
-      if (persons.size() < 1) {
-        throw new PlanningException("Aucun participant disponible");
+  private void dialogAddParticipant(Enum cat) throws PlanningException  {
+
+    String where = ", " + EmployeeIO.TYPE_TABLE + " t  WHERE "
+      + PersonIO.TABLE + ".id = t.idper AND t.idcat = " + cat.ordinal();
+    List<Person> persons = PersonIO.find(where, dataCache.getDataConnection());
+    if (persons.size() < 1) {
+      throw new PlanningException("Aucun participant disponible");
+    }
+    AddParticipantDlg dlg = new AddParticipantDlg(desktop, plan, persons);
+    dlg.entry();
+    if (!dlg.isValidate()) {
+      return;
+    }
+    ScheduleRange sr = new ScheduleRange();
+    sr.setScheduleId(plan.getId());
+    sr.setMemberId(dlg.getParticipant());
+    sr.setStart(plan.getStart());
+    sr.setEnd(plan.getEnd());
+    service.addScheduleRange(sr);
+    desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));
+
+  }
+  
+  private void dialogChangeSessionType() throws PlanningException {
+    GemParam gp = (GemParam) plan.getActivity();
+    ChangeSessionTypeDlg dlg = new ChangeSessionTypeDlg(desktop, gp.getId());
+    dlg.entry();
+    if (dlg.isEntryValid()) {
+      try {
+        plan.setNote(dlg.getType());
+        service.updateSessionType(plan);
+        desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));
+      } catch (SQLException ex) {
+        throw new PlanningException(ex.getMessage());
       }
-      AddParticipantDlg dlg = new AddParticipantDlg(desktop, plan, persons);
-      dlg.entry();
-      if (!dlg.isValidate()) {
-        return;
-      }
-      ScheduleRange sr = new ScheduleRange();
-      sr.setScheduleId(plan.getId());
-      sr.setMemberId(dlg.getParticipant());
-      sr.setStart(plan.getStart());
-      sr.setEnd(plan.getEnd());
-      service.addScheduleRange(sr);
-      desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));
-    } catch (PlanningException ex) {
-      GemLogger.log(ex.getMessage());
-      MessagePopup.warning(null, ex.getMessage());
     }
   }
 

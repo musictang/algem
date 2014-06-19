@@ -1,5 +1,5 @@
 /*
- * @(#)PlanningService.java	2.8.v 13/06/14
+ * @(#)PlanningService.java	2.8.v 16/06/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -465,6 +465,9 @@ public class PlanningService
     }
   }
 
+  public void updateSessionType(Schedule s) throws SQLException {
+    ScheduleIO.update(s, dc);
+  }
 
 //  public Vector<ScheduleTestConflict> testRange(ScheduleObject orig, ScheduleObject range)
 //          throws SQLException {

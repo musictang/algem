@@ -1,7 +1,7 @@
 /*
- * @(#)ModuleEvent.java	2.6.a 28/09/12
+ * @(#)ModuleEvent.java	2.8.v 17/06/14
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -25,7 +25,7 @@ import net.algem.util.event.GemEvent;
 
 /**
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.v
  * @since 2.6.a 28/09/12
  */
 public class ModuleEvent 
@@ -33,9 +33,9 @@ public class ModuleEvent
 
   protected  Module module;
 
-  public ModuleEvent(Object _source, int type, Module _module) {
-    super(_source, type, MODULE);
-    module = _module;
+  public ModuleEvent(Object src, int type, Module module) {
+    super(src, type, MODULE);
+    this.module = module;
   }
 
   public Module getModule() {

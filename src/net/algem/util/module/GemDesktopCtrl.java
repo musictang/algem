@@ -366,7 +366,8 @@ public class GemDesktopCtrl
       HourStatDlg hourStatDlg = new HourStatDlg(getFrame(), dataCache);
       hourStatDlg.setVisible(true);
     } else if (BundleUtil.getLabel("Statistics.label").equals(arg)) {
-      StatsExportDlg dlg = new StatsExportDlg(dataCache);
+      StatsExportDlg dlg = new StatsExportDlg(this);
+//      addPanel("stats", dlg);
       dlg.setVisible(true);
     } else if (BundleUtil.getLabel("Menu.windows.iconify.all.label").equals(arg)) {
       iconify();

@@ -1,7 +1,7 @@
 /*
- * @(#)Statistics.java	2.8.k 19/07/13
+ * @(#)Statistics.java	2.8.v 19/06/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,6 +20,7 @@
  */
 package net.algem.edition;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -27,27 +28,28 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
+import javax.swing.ProgressMonitor;
+import javax.swing.SwingWorker;
 import net.algem.accounting.AccountPrefIO;
-import net.algem.config.AgeRange;
-import net.algem.config.ConfigKey;
-import net.algem.config.ConfigUtil;
-import net.algem.config.Preference;
+import net.algem.config.*;
 import net.algem.planning.DateFr;
 import net.algem.planning.Schedule;
+import net.algem.planning.ScheduleIO;
 import net.algem.room.Establishment;
-import net.algem.util.DataCache;
-import net.algem.util.DataConnection;
-import net.algem.util.FileUtil;
-import net.algem.util.MessageUtil;
+import net.algem.util.*;
+import net.algem.util.jdesktop.DesktopBrowseHandler;
+import net.algem.util.jdesktop.DesktopHandlerException;
 import net.algem.util.model.Model;
+import net.algem.util.ui.MessagePopup;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.k
+ * @version 2.8.v
  * @since 2.6.a 09/10/12
  */
 public abstract class Statistics
+  extends SwingWorker<Void,Void>
 {
 
   protected DataCache dataCache;
@@ -58,8 +60,13 @@ public abstract class Statistics
   protected DateFr end;
   protected static Integer MEMBERSHIP_ACCOUNT;
   protected List<Establishment> estabList;
-  protected int id = 0;
-  
+  protected int navId = 0;
+  protected int navCount = 0;
+  protected ProgressMonitor progressMonitor;
+  protected int progressTime;
+  protected int extraTime;
+  protected int maxTime;
+  protected String path;
 
   public Statistics() {
   }
@@ -73,6 +80,7 @@ public abstract class Statistics
   public void setConfig(String path, Preference p, DateFr start, DateFr end) throws IOException {
     this.start = start;
     this.end = end;
+    this.path = path;
     out = new PrintWriter(new FileWriter(path));
     MEMBERSHIP_ACCOUNT = (Integer) p.getValues()[0];
   }
@@ -80,10 +88,14 @@ public abstract class Statistics
   public void setConfig(DateFr start, DateFr end) throws IOException, SQLException {
     this.start = start;
     this.end = end;
-    String path = ConfigUtil.getExportPath(dc) + FileUtil.FILE_SEPARATOR + "stats.html";
+    path = ConfigUtil.getExportPath(dc) + FileUtil.FILE_SEPARATOR + "stats.html";
     out = new PrintWriter(new FileWriter(path));
     Preference p = AccountPrefIO.find(AccountPrefIO.MEMBER_KEY_PREF, dc);
     MEMBERSHIP_ACCOUNT = (Integer) p.getValues()[0];
+  }
+  
+  protected void setMonitor(ProgressMonitor pm) {
+    this.progressMonitor = pm;
   }
   
   public void makeStats() throws SQLException {
@@ -91,7 +103,7 @@ public abstract class Statistics
     header();
     
     printIntListResult(MessageUtil.getMessage("statistics.members.without.date.of.birth"), getQuery("members_without_date_of_birth"));
-
+    
     printIntResult(MessageUtil.getMessage("statistics.number.of.students"), getQuery("total_number_of_students"));
     
     printTitle(MessageUtil.getMessage("statistics.distribution.between.amateurs.pros"));
@@ -113,7 +125,7 @@ public abstract class Statistics
         out.print("<td>"+r1+"</td>");
       }
     }
-
+    
     out.print("<td>"+totalLeisure+"</td></tr>\n\t\t\t<tr><th>Pro</th>");
     for (AgeRange a : ages) {
       if (!a.getCode().equals("-")) {
@@ -122,6 +134,7 @@ public abstract class Statistics
         out.print("<td>"+getIntResult(getQuery("number_of_pros", a.getAgemin(), a.getAgemax()))+"</td>");
       }
     }
+    
     out.print("<td>"+totalPro+"</td></tr>");
     out.print("\n\t\t\t<tr><td colspan = '"+(ages.size()+1)+"'>"+(totalLeisure+totalPro)+"</td></tr>\n\t\t</table>");
     
@@ -142,9 +155,9 @@ public abstract class Statistics
     out.println("\n\t\t<tr><th>Groupes</th><td>"+getIntResult(getQuery("groups_with_rehearsal"))+"</td></tr>");
     out.println("\n\t\t<tr><th>Adhérents</th><td>"+getIntResult(getQuery("members_with_rehearsal"))+"</td></tr>");
     out.println("\n\t\t</table>");
-
+    
   }
-  
+
   protected void separate() {
     out.println("<div style='height : 20px'></div>");
   }
@@ -175,27 +188,73 @@ public abstract class Statistics
   }
   
   protected void addEntry(StringBuilder nav, String title) {
-    nav.append("<li><a href = \"#").append(id).append("\">").append(title).append("</a></li>");
-    id ++;
+    nav.append("<li><a href = \"#").append(navId).append("\">").append(title).append("</a></li>");
+    navId ++;
   }
   
   protected void setSummary() {
     StringBuilder nav = new StringBuilder("<header><nav><ul>");
     // to redefine in subclasses
     setSummaryDetail(nav);
+    navCount = navId -2;
     nav.append("</ul></nav></header>");
     
     out.println(nav.toString());
-    id = 0;
+    navId = 0;
   }
   
   abstract protected void setSummaryDetail(StringBuilder nav);
   
+  @Override
+  protected Void doInBackground() throws Exception {
+     
+      makeStats();
+      return null;
+    }
+    
+  @Override
+  public void done() {
+      if(progressMonitor != null) {
+        progressMonitor.setProgress(100);
+      }
+      if (MessagePopup.confirm(null, MessageUtil.getMessage("statistics.completed", path))) {
+        DesktopBrowseHandler browser = new DesktopBrowseHandler();
+        try {
+          browser.browse(new File(path).toURI().toString());
+        } catch (DesktopHandlerException ex) {
+          GemLogger.log(ex.getMessage());
+        }
+      }
+      close();
+    }
+  
+  /**
+   * Sends the degree of progression of the operation depending on a time estimate.
+   * 
+   * @param time in milliseconds
+   */   
+  protected void makeProgress(int weight) {
+      progressTime += weight;
+      int p = (int) ((progressTime * 100) / maxTime);
+      if (p > maxTime) p = maxTime;
+      setProgress(p);
+  }
+  
+  /**
+   * Prints title of the current request.
+   * @param title 
+   */
   protected void printTitle(String title) {
-    out.println("\n\t\t<h3 id=\""+ id + "\"><a href=\"#top\">^ </a>"+title+"</h3>");
-    id ++;
+    out.println("\n\t\t<h3 id=\""+ navId + "\"><a href=\"#top\">^ </a>"+title+"</h3>");
+    navId ++;
   }
 
+  /**
+   * Returns the result of a query as an integer.
+   * @param query
+   * @return an integer
+   * @throws SQLException 
+   */
   protected int getIntResult(String query) throws SQLException {
     ResultSet rs = dc.executeQuery(query);
     int n = 0;
@@ -205,6 +264,12 @@ public abstract class Statistics
     return n;
   }
   
+  /**
+   * Returns the result of a query as a string.
+   * @param query
+   * @return a string optionnaly empty
+   * @throws SQLException 
+   */
   protected String getStringResult(String query) throws SQLException {
     ResultSet rs = dc.executeQuery(query);
     while (rs.next()) {
@@ -213,6 +278,12 @@ public abstract class Statistics
     return "";
   }
 
+  /**
+   * Prints a title followed by the integer result of a query.
+   * @param title
+   * @param query
+   * @throws SQLException 
+   */
   protected void printIntResult(String title, String query) throws SQLException {
 
     printTitle(title);
@@ -224,6 +295,12 @@ public abstract class Statistics
     out.println("\t\t</ul>");
   }
    
+  /**
+   * Prints a title followed by the string result of a query.
+   * @param title
+   * @param query
+   * @throws SQLException 
+   */
   protected void printStringResult(String title, String query) throws SQLException {
     printTitle(title);
     ResultSet rs = dc.executeQuery(query);
@@ -233,6 +310,11 @@ public abstract class Statistics
     out.println();
   }
   
+  /**
+   * Converts a string into time representation.
+   * @param h string to convert
+   * @return a time-formatted string
+   */
   protected String parseTimeResult(String h) {
     if (h == null) {
       return "";
@@ -247,6 +329,12 @@ public abstract class Statistics
     return hh + ":" + hm;
   }
   
+  /**
+   * Prints a title followed by the time-formatted result of a query.
+   * @param title
+   * @param query
+   * @throws SQLException 
+   */
   protected void printTimeResult(String title, String query) throws SQLException {
     printTitle(title);
     ResultSet rs = dc.executeQuery(query);
@@ -256,6 +344,12 @@ public abstract class Statistics
     out.println();
   }
   
+  /**
+   * Prints a title followed by an unordered list of integers.
+   * @param title
+   * @param query
+   * @throws SQLException 
+   */
   protected void printIntListResult(String title, String query) throws SQLException {
 
     printTitle(title);
@@ -267,6 +361,12 @@ public abstract class Statistics
     out.println("\n\t\t</ul>");
   }
 
+  /**
+   * Prints an array of String-integer pairs.
+   * @param title title of the array
+   * @param query
+   * @throws SQLException 
+   */
   protected void printTableIntResult(String title, String query) throws SQLException {
 
     printTitle(title);
@@ -314,18 +414,24 @@ public abstract class Statistics
      out.println("\n\t\t</table>");
   }
 
+  /**
+   * Returns a query depending on type {@code m}.
+   * @param m 
+   * @return a SQL query
+   * @throws SQLException 
+   */
   protected String getQuery(String m) throws SQLException {
     if (m.equals("members_without_date_of_birth")) {
       return "SELECT DISTINCT (eleve.idper) FROM commande_cours, commande, eleve "
               + "WHERE commande_cours.datedebut >= '" + start + "' AND commande_cours.datedebut <= '" + end + "'"
               + "AND commande_cours.idcmd = commande.id "
               + "AND commande.adh = eleve.idper "
-//              + "AND to_char(eleve.datenais, 'HH12') = '12' ";
+              //              + "AND to_char(eleve.datenais, 'HH12') = '12' ";
               + " AND (extract(year from age(eleve.datenais)) > 100"
               + " OR extract(year from age(eleve.datenais)) < 1"
               + " OR eleve.datenais is null)";
     }
-     if (m.equals("total_number_of_students")) { 
+    if (m.equals("total_number_of_students")) {
       // on ne tient pas compte des commande_cours à définir
       return "SELECT count(DISTINCT eleve.idper) FROM commande_cours, commande, eleve"
               + " WHERE commande_cours.datedebut >= '" + start + "' AND commande_cours.datedebut <= '" + end + "'"
@@ -333,7 +439,7 @@ public abstract class Statistics
               + " AND commande.adh = eleve.idper"
               + " AND commande_cours.debut != '00:00:00'"; // ou commande_cours.idaction = 0
     }
-    if (m.equals("list_pro_students")) { 
+    if (m.equals("list_pro_students")) {
       return "SELECT DISTINCT(commande.adh), trim(personne.nom), trim(personne.prenom)"
               + " FROM commande, commande_cours, commande_module, module, eleve, personne"
               + " WHERE commande_cours.module = commande_module.id"
@@ -344,7 +450,7 @@ public abstract class Statistics
               + " AND commande_cours.datedebut BETWEEN '" + start + "' AND '" + end + "'"
               + " AND module.code LIKE 'P%'";
     }
-    if (m.equals("students_by_location")) { 
+    if (m.equals("students_by_location")) {
       return "SELECT adresse.ville, count(distinct eleve.idper) FROM commande_cours,commande, eleve, adresse"
               + " WHERE commande_cours.datedebut >= '" + start + "' AND commande_cours.datedebut <= '" + end + "'"
               + " AND commande_cours.idcmd = commande.id and commande.adh = eleve.idper"
@@ -352,7 +458,7 @@ public abstract class Statistics
               + " AND adresse.idper = eleve.payeur"
               + " GROUP BY adresse.ville";
     }
-     if (m.equals("groups_with_rehearsal")) { 
+    if (m.equals("groups_with_rehearsal")) {
       return "SELECT count(DISTINCT planning.idper) FROM planning, groupe"
               + " WHERE planning.idper = groupe.id"
               + " AND planning.jour BETWEEN '" + start + "' AND '" + end + "'"
@@ -360,7 +466,7 @@ public abstract class Statistics
               + " AND planning.lieux <> 8"; // musiques tangentes seulement
     }
 
-    if (m.equals("members_with_rehearsal")) { 
+    if (m.equals("members_with_rehearsal")) {
       return "SELECT count(DISTINCT planning.idper) FROM planning, personne"
               + " WHERE planning.idper = personne.id"
               + " AND jour BETWEEN '" + start + "' AND '" + end + "'"
@@ -383,7 +489,7 @@ public abstract class Statistics
               + " AND module.code LIKE 'P%'"
               + " GROUP BY plage.adherent) AS t1";
     }
-    
+
     if (m.equals("hours_of_collective_pro_lessons")) {
       return "SELECT sum(duree) FROM "
               + "(SELECT DISTINCT plage.adherent, sum(plage.fin - plage.debut) AS duree"
@@ -401,9 +507,9 @@ public abstract class Statistics
               + " AND commande_module.module = module.id"
               + " AND module.code LIKE 'P%'"
               + " GROUP BY plage.adherent) AS t1";
-      
+
     }
-    if (m.equals("hours_of_private_pro_lessons")) {    
+    if (m.equals("hours_of_private_pro_lessons")) {
       return "SELECT sum(duree) FROM "
               + "(SELECT DISTINCT plage.adherent, sum(plage.fin - plage.debut) AS duree"
               + " FROM plage, planning, action, cours, commande, commande_cours, commande_module, module"
@@ -421,9 +527,9 @@ public abstract class Statistics
               + " AND module.code LIKE 'P%'"
               + " GROUP BY plage.adherent) AS t1";
     }
-    
+
     if (m.equals("hours_teacher_of_collective_lessons")) {
-      String query = "SELECT sum(duree) FROM("
+      return "SELECT sum(duree) FROM("
               + "SELECT distinct p1.id, sum(p1.fin - p1.debut) as duree"
               + " FROM planning p1, action, cours"
               + " WHERE p1.jour BETWEEN '" + start + "' AND  '" + end + "'"
@@ -440,15 +546,27 @@ public abstract class Statistics
               + "	AND commande_cours.module = commande_module.id"
               + "	AND commande_module.module = module.id"
               + "	AND module.code LIKE 'P%') GROUP BY p1.id) AS t1";
-      return query;
     }
     
+    if (m.equals("total_hours_of_studio")) {
+      return "SELECT sum(p.fin - p.debut) FROM " + ScheduleIO.TABLE + " p"
+              + " WHERE p.jour >= '" + start + "' AND p.jour <= '" + end + "'"
+              + " AND p.ptype = " + Schedule.TECH;
+    }
+    if (m.equals("hours_of_studio_by_type")) {
+      return "SELECT c.nom, sum(p.fin - p.debut) FROM " + ScheduleIO.TABLE + " p, " + StudioTypeIO.TABLE + " c"
+              + " WHERE p.jour >= '" + start + "' AND p.jour <= '" + end + "'"
+              + " AND p.ptype = " + Schedule.TECH
+              + " AND p.note = c.id GROUP BY c.nom";
+    }
+
+
     return null;
 
   }
-  
+
   protected String getQuery(String m, Object a1, Object a2) {
-    if ("number_of_amateurs".equals(m)) { 
+    if ("number_of_amateurs".equals(m)) {
       return "SELECT count(DISTINCT eleve.idper) "
               + "FROM eleve, commande, commande_cours, commande_module, module"
               + " WHERE eleve.idper = commande.adh"
@@ -497,57 +615,57 @@ public abstract class Statistics
       return query;
     }
 
-    
+
     if ("hours_of_rehearsal".equals(m)) {
 //      return "SELECT extract(hour FROM sum(planning.fin - planning.debut)) FROM planning"
-        return "SELECT sum(planning.fin - planning.debut) FROM planning"
+      return "SELECT sum(planning.fin - planning.debut) FROM planning"
               + " WHERE planning.jour BETWEEN '" + start + "' AND '" + end + "'"
               + " AND planning.ptype = " + a2;
     }
-    
+
     if (m.equals("hours_of_lessons")) {
 //      return "SELECT sum(duree) FROM "
 //              + "(SELECT DISTINCT plage.adherent, sum(plage.fin - plage.debut) AS duree"
 //              + " FROM plage, planning, action, cours, commande, commande_cours, commande_module, module"
-//              + " WHERE plage.idplanning = planning.id"
+//              + " WHERE plage.idplanning = planning.navId"
 //              + " AND planning.jour BETWEEN '" + start + "' AND  '" + end + "'"
-//              + " AND planning.action = action.id"
-//              + " AND action.cours = cours.id"
+//              + " AND planning.action = action.navId"
+//              + " AND action.cours = cours.navId"
 //              + " AND cours.collectif = " + a1
 //              + " AND plage.adherent = commande.adh"
-//              + " AND commande.id = commande_cours.idcmd"
+//              + " AND commande.navId = commande_cours.idcmd"
 //              + " AND commande_cours.datedebut BETWEEN '" + start + "' AND  '" + end + "'"
 //              + " AND commande_cours.idaction = planning.action"
-//              + " AND commande_cours.module = commande_module.id"
-//              + " AND commande_module.module = module.id"
+//              + " AND commande_cours.module = commande_module.navId"
+//              + " AND commande_module.module = module.navId"
 //              + " AND module.code LIKE '" + a2 + "%'"
 //              + " GROUP BY plage.adherent) AS t1";
-			return "SELECT sum(duree) FROM("
-				+ "SELECT plage.idplanning, sum(plage.fin - plage.debut) AS duree"
-				+ " FROM plage, planning p, action, cours"
-				+ " WHERE plage.idplanning = p.id"
-				+ " AND p.jour BETWEEN '" + start + "' AND  '" + end + "'"
-				+ " AND p.action = action.id"
-				+ " AND p.ptype = " + Schedule.COURSE
-				+ " AND action.cours = cours.id"
-				+ " AND cours.collectif = " + a1
-				+ " AND plage.adherent IN("
-				+ "SELECT commande.adh FROM commande, commande_cours, commande_module, module"
-				+ " WHERE commande_cours.idaction = p.action "
-				+ " AND commande.id = commande_cours.idcmd"
-				+ " AND commande_cours.datedebut BETWEEN '" + start + "' AND  '" + end + "'"
-				+ " AND commande_cours.module = commande_module.id"
-				+ " AND commande_module.module = module.id"
-				+ " AND module.code LIKE '" + a2 + "%')"
-				+ " GROUP BY plage.idplanning) AS t1";
-		}
-		
+      return "SELECT sum(duree) FROM("
+              + "SELECT plage.idplanning, sum(plage.fin - plage.debut) AS duree"
+              + " FROM plage, planning p, action, cours"
+              + " WHERE plage.idplanning = p.id"
+              + " AND p.jour BETWEEN '" + start + "' AND  '" + end + "'"
+              + " AND p.action = action.id"
+              + " AND p.ptype = " + Schedule.COURSE
+              + " AND action.cours = cours.id"
+              + " AND cours.collectif = " + a1
+              + " AND plage.adherent IN("
+              + "SELECT commande.adh FROM commande, commande_cours, commande_module, module"
+              + " WHERE commande_cours.idaction = p.action "
+              + " AND commande.id = commande_cours.idcmd"
+              + " AND commande_cours.datedebut BETWEEN '" + start + "' AND  '" + end + "'"
+              + " AND commande_cours.module = commande_module.id"
+              + " AND commande_module.module = module.id"
+              + " AND module.code LIKE '" + a2 + "%')"
+              + " GROUP BY plage.idplanning) AS t1";
+    }
+
     if (m.equals("hours_of_teacher_lessons")) { // collectif !
-      String query = "SELECT sum(duree) FROM("
+      return "SELECT sum(duree) FROM("
               + "SELECT distinct p1.id, sum(p1.fin - p1.debut) as duree"
               + " FROM planning p1, action, cours"
               + " WHERE p1.jour BETWEEN '" + start + "' AND  '" + end + "'"
-							+ " AND p1.ptype = " + Schedule.COURSE
+              + " AND p1.ptype = " + Schedule.COURSE
               + " AND p1.action = action.id"
               + " AND action.cours = cours.id"
               + " AND cours.collectif = " + a1
@@ -561,14 +679,17 @@ public abstract class Statistics
               + "	AND commande_cours.module = commande_module.id"
               + "	AND commande_module.module = module.id"
               + "	AND module.code LIKE '" + a2 + "%') GROUP BY p1.id) AS t1";
-      return query;
     }
+
     return null;
   }
 
   public void close() {
     if (out != null) {
       out.close();
+    }
+    if (progressMonitor != null) {
+      progressMonitor.close();
     }
   }
 

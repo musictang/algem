@@ -1,5 +1,5 @@
 /*
- * @(#)CourseModuleInfo.java	2.8.t 16/04/14
+ * @(#)CourseModuleInfo.java	2.8.v 17/06/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -23,14 +23,16 @@ package net.algem.course;
 
 import net.algem.config.GemParam;
 import net.algem.planning.DateFr;
+import net.algem.util.model.GemModel;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.8.v
  * @since 2.8.a 13/03/2013
  */
 public class CourseModuleInfo
+  implements GemModel
 {
   /** Min length in minutes. */
   public static final int MIN_LENGTH = 10;
@@ -51,10 +53,12 @@ public class CourseModuleInfo
     return code == null ? 0  : code.getId();
   }
 
+  @Override
   public int getId() {
     return id;
   }
 
+  @Override
   public void setId(int id) {
     this.id = id;
   }
