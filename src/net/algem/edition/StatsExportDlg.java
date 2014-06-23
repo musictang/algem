@@ -1,6 +1,6 @@
 /*
  * @(#)StatsExportDlg.java	2.8.v 19/06/14
- * 
+ *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.edition;
 
@@ -64,6 +64,7 @@ public class StatsExportDlg
   protected File file;
   protected DateRangePanel datePanel;
   private ProgressMonitor progressMonitor;
+  private JProgressBar progressBar;
   private Statistics st;
 
   public StatsExportDlg(GemDesktop desktop) {
@@ -93,10 +94,14 @@ public class StatsExportDlg
 
     setLayout(new BorderLayout());
     add(filePanel, BorderLayout.NORTH);
+
+//    progressBar = new JProgressBar();
     GemPanel d = new GemPanel();
     d.add(new JLabel(BundleUtil.getLabel("Date.From.label")));
     d.add(datePanel);
-
+//    GemPanel pCenter = new GemPanel(new BorderLayout());
+//    pCenter.add(d, BorderLayout.NORTH);
+//    pCenter.add(progressBar, BorderLayout.SOUTH);
     add(d, BorderLayout.CENTER);
     add(buttons, BorderLayout.SOUTH);
     pack();
@@ -133,7 +138,7 @@ public class StatsExportDlg
       }
       setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
       st.init(dataCache);
-      progressMonitor = new ProgressMonitor(desktop.getFrame(), MessageUtil.getMessage("statistics.active.operation"), "", 1, 100);
+      progressMonitor = new ProgressMonitor(desktop.getFrame(), MessageUtil.getMessage("statistics.active.operation"), "", 0, 100);
       progressMonitor.setMillisToDecideToPopup(10);
 
       st.setConfig(
