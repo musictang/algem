@@ -1,5 +1,5 @@
 /*
- * @(#)StatsExportDlg.java	2.8.v 19/06/14
+ * @(#)StatsExportDlg.java	2.8.v 24/06/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -63,11 +63,11 @@ public class StatsExportDlg
   protected JButton chooser;
   protected File file;
   protected DateRangePanel datePanel;
-  private ProgressMonitor progressMonitor;
   private JProgressBar progressBar;
   private Statistics st;
 
   public StatsExportDlg(GemDesktop desktop) {
+    super(desktop.getFrame(), BundleUtil.getLabel("Statistics.label"));
     this.desktop = desktop;
     this.dataCache = desktop.getDataCache();
     btValidation = new GemButton(GemCommand.VALIDATION_CMD);
@@ -95,22 +95,25 @@ public class StatsExportDlg
     setLayout(new BorderLayout());
     add(filePanel, BorderLayout.NORTH);
 
-//    progressBar = new JProgressBar();
+    progressBar = new JProgressBar();
     GemPanel d = new GemPanel();
     d.add(new JLabel(BundleUtil.getLabel("Date.From.label")));
     d.add(datePanel);
-//    GemPanel pCenter = new GemPanel(new BorderLayout());
-//    pCenter.add(d, BorderLayout.NORTH);
-//    pCenter.add(progressBar, BorderLayout.SOUTH);
-    add(d, BorderLayout.CENTER);
+    GemPanel pCenter = new GemPanel(new BorderLayout());
+    pCenter.add(d, BorderLayout.NORTH);
+    pCenter.add(progressBar, BorderLayout.SOUTH);
+    add(pCenter, BorderLayout.CENTER);
     add(buttons, BorderLayout.SOUTH);
     pack();
+    setLocationRelativeTo(desktop.getFrame());
   }
 
   @Override
   public void actionPerformed(ActionEvent e) {
     if (e.getSource() == btCancel) {
-      close();
+      if (st == null || st.isDone()) {
+        close();
+      } 
     } else if (e.getSource() == btValidation) {
       file = new File(filePathField.getText());
       if (!FileUtil.confirmOverWrite(this, file)) {
@@ -129,6 +132,16 @@ public class StatsExportDlg
     }
   }
 
+  @Override
+  public void propertyChange(PropertyChangeEvent evt) {
+    if (evt.getPropertyName().equals("done")) {
+      btValidation.setEnabled(true);
+      btCancel.setEnabled(true);
+      setCursor(Cursor.getDefaultCursor());
+      close();
+    }
+  }
+
   private void validation() {
     try {
       st = StatisticsFactory.getInstance();
@@ -137,43 +150,36 @@ public class StatsExportDlg
         st = new StatisticsDefault();
       }
       setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+      btValidation.setEnabled(false);
+      btCancel.setEnabled(false);
+      
       st.init(dataCache);
-      progressMonitor = new ProgressMonitor(desktop.getFrame(), MessageUtil.getMessage("statistics.active.operation"), "", 0, 100);
-      progressMonitor.setMillisToDecideToPopup(10);
-
+      progressBar.setStringPainted(true);
+      progressBar.setString(MessageUtil.getMessage("statistics.active.operation"));
+      
       st.setConfig(
               filePathField.getText(),
               AccountPrefIO.find(AccountPrefIO.MEMBER_KEY_PREF, dataCache.getDataConnection()),
               datePanel.getStartFr(),
               datePanel.getEndFr());
-      st.setMonitor(progressMonitor);
       st.addPropertyChangeListener(this);
+      st.setMonitor(progressBar);
+      progressBar.setIndeterminate(true);
       st.execute();
-
     } catch (IOException ex) {
       GemLogger.logException(ex);
       MessagePopup.warning(desktop.getFrame(), MessageUtil.getMessage("file.path.exception", filePathField.getText()));
     } catch (SQLException ex) {
       GemLogger.logException(ex);
-    } finally {
-      setCursor(Cursor.getDefaultCursor());
-    }
-  }
-
-  @Override
-  public void propertyChange(PropertyChangeEvent event) {
-    if (progressMonitor.isCanceled()) {
-      if (st != null) {
-        st.cancel(true);
-      }
-    } else if (event.getPropertyName().equals("progress")) {
-      int pg = ((Integer) event.getNewValue()).intValue();
-      progressMonitor.setProgress(pg);
-    }
+    } 
   }
 
   private void close() {
+    if (st != null) {
+      st.removePropertyChangeListener(this);
+    }
     setVisible(false);
     dispose();
   }
+
 }

@@ -1,5 +1,5 @@
 /*
- * @(#)StatisticsDefault.java	2.8.v 19/06/14
+ * @(#)StatisticsDefault.java	2.8.v 26/06/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -44,26 +44,26 @@ public class StatisticsDefault
   @Override
   public void makeStats() throws SQLException {
     super.makeStats();
-    makeProgress(navId);
+    
     separate();
     printIntResult(MessageUtil.getMessage("statistics.payers.without.address"), getQuery("payers_without_address"));
     printIntResult(MessageUtil.getMessage("statistics.debtors"), getQuery("debtors"));
-    makeProgress(navId);
+    
     separate();
     printIntResult(MessageUtil.getMessage("statistics.total.number.of.members"), getQuery("total_number_of_members"));
     printIntResult(MessageUtil.getMessage("statistics.number.of.men.members"), getQuery("number_of_men_members"));
     printIntResult(MessageUtil.getMessage("statistics.number.of.women.members"), getQuery("number_of_women_members"));
-    makeProgress(navId);
+    
     separate();
     printTableIntResult(MessageUtil.getMessage("statistics.members.by.occupational"), getQuery("members_by_occupational"));
-    makeProgress(navId);
+    
     separate();
     printTableIntResult(MessageUtil.getMessage("statistics.members.by.location"), getQuery("members_by_location"));
-    makeProgress(navId);
     
     printTimeResult(MessageUtil.getMessage("statistics.total.hours.of.studio"), getQuery("total_hours_of_studio"));
     printTableTimeResult(MessageUtil.getMessage("statistics.hours.of.studio.by.type"), getQuery("hours_of_studio_by_type"));
-    makeProgress(navId);
+    printTimeResult(MessageUtil.getMessage("statistics.hours.of.training"), getQuery("hours_of_training"));
+    
     footer();
   }
   
@@ -80,7 +80,8 @@ public class StatisticsDefault
             || m.equals("hours_of_private_pro_lessons")
             || m.equals("hours_teacher_of_collective_lessons")
             || m.equals("total_hours_of_studio")
-            || m.equals("hours_of_studio_by_type")) {
+            || m.equals("hours_of_studio_by_type")
+            || m.equals("hours_of_training")) {
       return super.getQuery(m);
     }
     if (m.equals("payers_without_address")) {
@@ -146,8 +147,6 @@ public class StatisticsDefault
     addEntry(nav, MessageUtil.getMessage("statistics.city.distribution"));
     addEntry(nav, MessageUtil.getMessage("statistics.number.of.hours.of.rehearsal"));
     addEntry(nav, MessageUtil.getMessage("statistics.number.of.rehearsing.people"));
-    addEntry(nav, MessageUtil.getMessage("statistics.total.hours.of.studio"));
-    addEntry(nav, MessageUtil.getMessage("statistics.hours.of.studio.by.type"));
     addEntry(nav, MessageUtil.getMessage("statistics.payers.without.address"));
     addEntry(nav, MessageUtil.getMessage("statistics.debtors"));
     addEntry(nav, MessageUtil.getMessage("statistics.total.number.of.members"));
@@ -155,12 +154,9 @@ public class StatisticsDefault
     addEntry(nav, MessageUtil.getMessage("statistics.number.of.women.members"));
     addEntry(nav, MessageUtil.getMessage("statistics.members.by.occupational"));
     addEntry(nav, MessageUtil.getMessage("statistics.members.by.location"));
-  }
-
-  @Override
-  protected Void doInBackground() throws Exception {
-    makeStats();
-    return null;
+    addEntry(nav, MessageUtil.getMessage("statistics.total.hours.of.studio"));
+    addEntry(nav, MessageUtil.getMessage("statistics.hours.of.studio.by.type"));
+    addEntry(nav, MessageUtil.getMessage("statistics.hours.of.training"));
   }
 
 }

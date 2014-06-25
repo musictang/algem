@@ -1,5 +1,5 @@
 /*
- * @(#)EnrolmentService.java	2.8.t 16/04/14
+ * @(#)EnrolmentService.java	2.8.v 24/06/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -42,7 +42,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.8.v
  * @since 2.4.a 20/04/12
  */
 public class EnrolmentService
@@ -579,18 +579,18 @@ public class EnrolmentService
   }
 
   /**
-   * Modifies a course enrolment.
+   * Redefines a course to define.
    *
-   * @param cc course order
+   * @param co course order
    * @param memberId member id
    * @throws EnrolmentException en cas d'erreur SQL
    */
-  public void modifyCourse(CourseOrder cc, int memberId) throws EnrolmentException {
+  public void modifyCourse(CourseOrder co, int memberId) throws EnrolmentException {
 
     try {
       dc.setAutoCommit(false);
-      updateRange(cc, memberId);
-      CourseOrderIO.update(cc, dc);
+      updateRange(co, memberId);
+      CourseOrderIO.update(co, dc);
       dc.commit();
     } catch (SQLException sqe) {
       dc.rollback();

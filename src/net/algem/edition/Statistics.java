@@ -1,5 +1,5 @@
 /*
- * @(#)Statistics.java	2.8.v 20/06/14
+ * @(#)Statistics.java	2.8.v 25/06/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -28,11 +28,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
+import javax.accessibility.Accessible;
+import javax.swing.JProgressBar;
 import javax.swing.ProgressMonitor;
 import javax.swing.SwingWorker;
 import net.algem.accounting.AccountPrefIO;
 import net.algem.config.*;
 import net.algem.planning.DateFr;
+import net.algem.planning.Hour;
 import net.algem.planning.Schedule;
 import net.algem.planning.ScheduleIO;
 import net.algem.room.Establishment;
@@ -51,20 +54,19 @@ import net.algem.util.ui.MessagePopup;
 public abstract class Statistics
   extends SwingWorker<Void, Void> {
 
+  protected static Integer MEMBERSHIP_ACCOUNT;
+  protected static int MAINTENANCE = 5;
+  
   protected DataCache dataCache;
   protected DataConnection dc;
   protected PrintWriter out;
   private static int year;
   protected DateFr start;
   protected DateFr end;
-  protected static Integer MEMBERSHIP_ACCOUNT;
   protected List<Establishment> estabList;
   protected int navId = 0;
   protected int navCount = 0;
-  protected ProgressMonitor progressMonitor;
-  protected int progressTime;
-  protected int extraTime;
-  protected int maxTime;
+  protected Accessible monitor;
   protected String path;
 
   public Statistics() {
@@ -108,8 +110,8 @@ public abstract class Statistics
     MEMBERSHIP_ACCOUNT = (Integer) p.getValues()[0];
   }
 
-  protected void setMonitor(ProgressMonitor pm) {
-    this.progressMonitor = pm;
+  protected void setMonitor(Accessible m) {
+    this.monitor = m;
   }
 
   /**
@@ -236,7 +238,7 @@ public abstract class Statistics
     StringBuilder summary = new StringBuilder("<header><nav><ul>");
     // to redefine in subclasses
     setSummaryDetail(summary);
-
+    navCount = navId - 2;
     summary.append("</ul></nav></header>");
 
     out.println(summary.toString());
@@ -259,6 +261,7 @@ public abstract class Statistics
   @Override
   public void done() {
     close();
+    firePropertyChange("done", null, null);
     if (MessagePopup.confirm(null, MessageUtil.getMessage("statistics.completed", path))) {
       DesktopBrowseHandler browser = new DesktopBrowseHandler();
       try {
@@ -268,22 +271,6 @@ public abstract class Statistics
       }
     }
   }
-
-  /**
-   * Sends the degree of progression of the operation depending on a time estimate.
-   *
-   * @param time in milliseconds
-   */
-  protected void makeProgress(int weight) {
-    progressTime += weight;
-    int p = (int) ((progressTime * 100) / maxTime);
-    if (p > 100)  {
-      p = 100;
-    }
-    System.out.println(p);
-    setProgress(p);
-  }
-
 
   /**
    * Prints title of the current topic requested.
@@ -448,17 +435,56 @@ public abstract class Statistics
     out.println("\n\t\t<table class='list'>");
     ResultSet rs = dc.executeQuery(query);
     int total = 0;
+    Hour hm = new Hour();
     while (rs.next()) {
       String h = parseTimeResult(rs.getString(2));
       if (h != null) {
-        int t = Integer.parseInt(h.substring(0, h.indexOf(":")));
-        total += t;
+        hm.set(rs.getString(2));
+        total += hm.toMinutes();
       }
       out.println("\n\t\t\t<tr><th>" + rs.getString(1) + "</th>");
       out.println("<td>" + h + "</td></tr>");
     }
-    out.println("\n\t\t\t<tr><td colspan='2'>Total : " + (total) + "</td></tr>");
+    out.println("\n\t\t\t<tr><td colspan='2'>Total : " + getTimeFromMinutes(total) + "</td></tr>");
     out.println("\n\t\t</table>");
+  }
+  
+  protected String getTimeFromMinutes(int minutes) {
+    int h = (minutes / 60);
+    int m = minutes % 60;
+    return h + ":" + m;
+  }
+  
+  /**
+   * Gets the total in minutes from formatted time string.
+   * @param time with this pattern *hh:mm:00
+   * @return a total in minutes
+   */
+  protected int getMinutesFromString(String time) {
+     if (time == null || time.isEmpty()) {
+      return 0;
+    }
+    try {
+      int h = 0;
+      int m = 0;
+      int firstIdx = time.indexOf(':');
+      int lastIdx = time.lastIndexOf(':');
+      if (firstIdx == -1) {
+        h = Integer.parseInt(time.substring(0));
+        m = 0;
+      } else {
+        h = Integer.parseInt(time.substring(0, firstIdx));
+        if (lastIdx == -1) { 
+          m = Integer.parseInt(time.substring(firstIdx + 1));
+        } else {
+          m = Integer.parseInt(time.substring(firstIdx + 1, lastIdx));
+        }
+      }
+      return (h + m) * 60;
+    } catch (NumberFormatException ne) {
+      return 0;
+    }
+    
   }
 
   /**
@@ -619,13 +645,20 @@ public abstract class Statistics
     if (topic.equals("total_hours_of_studio")) {
       return "SELECT sum(p.fin - p.debut) FROM " + ScheduleIO.TABLE + " p"
         + " WHERE p.jour >= '" + start + "' AND p.jour <= '" + end + "'"
-        + " AND p.ptype = " + Schedule.TECH;
+        + " AND p.ptype = " + Schedule.TECH + " AND p.note != " + MAINTENANCE;
     }
     if (topic.equals("hours_of_studio_by_type")) {
       return "SELECT c.nom, sum(p.fin - p.debut) FROM " + ScheduleIO.TABLE + " p, " + StudioTypeIO.TABLE + " c"
         + " WHERE p.jour >= '" + start + "' AND p.jour <= '" + end + "'"
         + " AND p.ptype = " + Schedule.TECH
-        + " AND p.note = c.id GROUP BY c.nom";
+        + " AND p.note = c.id"
+        + " AND p.note != " + MAINTENANCE
+        + " GROUP BY c.nom";
+    }
+    if (topic.equals("hours_of_training")) {
+      return "SELECT sum(p.fin - p.debut) FROM " + ScheduleIO.TABLE + " p"
+        + " WHERE p.jour >= '" + start + "' AND p.jour <= '" + end + "'"
+        + " AND p.ptype = " + Schedule.TRAINING;
     }
 
 
@@ -759,10 +792,16 @@ public abstract class Statistics
     return null;
   }
 
+  /**
+   * Closes monitor and output file.
+   */
   public void close() {
-    if (progressMonitor != null) {
-      progressMonitor.setProgress(100);
-      progressMonitor.close();
+    if (monitor != null && monitor instanceof JProgressBar) {
+       ((JProgressBar) monitor).setIndeterminate(false);
+       ((JProgressBar) monitor).setStringPainted(false);
+    } else if (monitor != null && monitor instanceof ProgressMonitor) {
+      ((ProgressMonitor) monitor).setProgress(100);
+      ((ProgressMonitor) monitor).close();
     }
     if (out != null) {
       out.close();

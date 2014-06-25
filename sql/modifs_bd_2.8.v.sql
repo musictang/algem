@@ -41,7 +41,7 @@ ALTER SEQUENCE categorie_tech_id_seq RENAME TO categorie_studio_id_seq;
 DELETE FROM categorie_studio WHERE id = 6;
 UPDATE categorie_studio SET nom = 'Maintenance' WHERE id = 5;
 ALTER SEQUENCE categorie_studio_id_seq restart 6;
-
+INSERT INTO categorie_studio VALUES (DEFAULT, 'Post-prod');
 
 CREATE INDEX id_module_idx ON commande_cours (module);
 CREATE INDEX action_cours_idx ON action (cours); 

@@ -1,5 +1,5 @@
 /*
- * @(#)EmployeePanel.java	2.8.v 06/06/14
+ * @(#)EmployeePanel.java	2.8.v 24/06/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -41,7 +41,9 @@ public class EmployeePanel
 
   public EmployeePanel(List<Person> employees) {
     employee = new EmployeeSelector(employees);
-    employee.setSelectedIndex(0);
+    if (employees != null && employees.size() > 0) {
+      employee.setSelectedIndex(0);
+    }
     employee.setPreferredSize(CB_SIZE);
     removeBt.setPreferredSize(BT_SIZE);
     setLayout(new BorderLayout());

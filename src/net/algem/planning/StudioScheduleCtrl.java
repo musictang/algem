@@ -1,5 +1,5 @@
 /*
- * @(#)StudioScheduleCtrl.java	2.8.v 13/06/14
+ * @(#)StudioScheduleCtrl.java	2.8.v 24/06/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -182,7 +182,7 @@ public class StudioScheduleCtrl
     int[] employees = studioView.getEmployees();
     List employeeList = new ArrayList<Integer>();
     for (int e : employees) {
-      if (e == 0) {
+      if (e <= 0) {
         throw new PlanningException(MessageUtil.getMessage("invalid.technician"));
       }
       employeeList.add(e);

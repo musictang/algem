@@ -1,5 +1,5 @@
 /*
- * @(#)MemberEnrolmentEditor.java 2.8.t 02/05/14
+ * @(#)MemberEnrolmentEditor.java 2.8.v 24/06/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -58,7 +58,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.8.v
  * @since 1.0b 06/09/2001
  */
 public class MemberEnrolmentEditor
@@ -459,8 +459,8 @@ public class MemberEnrolmentEditor
       return;
     }
 
-    CourseOrder cc = ((CourseEnrolmentNode) path[i - 1]).getCourseOrder();
-    if (!cc.getStart().equals(new Hour("00-00-00"))) {
+    CourseOrder co = ((CourseEnrolmentNode) path[i - 1]).getCourseOrder();
+    if (!co.getStart().equals(new Hour("00-00-00"))) {
       MessagePopup.error(this, MessageUtil.getMessage("course.invalid.choice"));
       return;
     }
@@ -473,27 +473,27 @@ public class MemberEnrolmentEditor
     CourseModuleInfo cmi = new CourseModuleInfo();
     GemParam code = null;
     try {
-      code = (GemParam) DataCache.findId(cc.getCode(), Model.CourseCode);
+      code = (GemParam) DataCache.findId(co.getCode(), Model.CourseCode);
       cmi.setCode(code);
-      cmi.setTimeLength(cc.getTimeLength());
+      cmi.setTimeLength(co.getTimeLength());
       courseDlg.setCourseInfo(cmi);
     } catch (SQLException ex) {
       GemLogger.logException(ex);
     }
     courseDlg.clear();
-    courseDlg.setCode(cc.getCode());
+    courseDlg.setCode(co.getCode());
     try {
-      courseDlg.loadEnrolment(cc);
+      courseDlg.loadEnrolment(co);
       courseDlg.entry();
       if (courseDlg.isValidation()) {
         if (!MessagePopup.confirm(desktop.getFrame(),
-                MessageUtil.getMessage("enrolment.update.confirmation", cc.getDateStart()))) {
+                MessageUtil.getMessage("enrolment.update.confirmation", co.getDateStart()))) {
           view.setCursor(Cursor.getDefaultCursor());
           return;
         }
-        modifyCourseOrder(cc, courseDlg);
-        service.modifyCourse(cc, dossier.getId());
-        desktop.postEvent(new ModifPlanEvent(this, cc.getDateStart(), cc.getDateEnd()));
+        modifyCourseOrder(co, courseDlg);
+        service.modifyCourse(co, dossier.getId());
+        desktop.postEvent(new ModifPlanEvent(this, co.getDateStart(), co.getDateEnd()));
         // Rafraichissement de la vue inscription
         desktop.postEvent(new EnrolmentUpdateEvent(this, dossier.getId()));
       }
@@ -506,21 +506,21 @@ public class MemberEnrolmentEditor
 
   }
 
-  private void modifyCourseOrder(CourseOrder cc, CourseEnrolmentDlg dlg) {
-    cc.setModuleOrder(Integer.parseInt(dlg.getField(1)));
-    cc.setAction(Integer.parseInt(dlg.getField(2)));
-    cc.setTitle(dlg.getField(3));
-    cc.setDay(Integer.parseInt(dlg.getField(4)));
+  private void modifyCourseOrder(CourseOrder co, CourseEnrolmentDlg dlg) {
+    co.setModuleOrder(Integer.parseInt(dlg.getField(1)));
+    co.setAction(Integer.parseInt(dlg.getField(2)));
+    co.setTitle(dlg.getField(3));
+    co.setDay(Integer.parseInt(dlg.getField(4)));
 
-    if (CourseCodeType.ATP.getId() == cc.getCode()) {
+    if (CourseCodeType.ATP.getId() == co.getCode()) {
       DateFr d = new DateFr(dlg.getField(7));
-      cc.setDateStart(d);
-      cc.setDateEnd(d);
+      co.setDateStart(d);
+      co.setDateEnd(d);
     }
     Hour start = new Hour(dlg.getField(5));
     Hour length = new Hour(dlg.getField(6));
-    cc.setStart(start);
-    cc.setEnd(start.end(length.toMinutes()));
+    co.setStart(start);
+    co.setEnd(start.end(length.toMinutes()));
   }
 
   /**
