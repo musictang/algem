@@ -1,7 +1,7 @@
 /*
- * @(#)RoomCreateEvent.java	2.6.a 24/09/12
+ * @(#)RoomCreateEvent.java	2.8.v 27/06/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -23,11 +23,11 @@ package net.algem.room;
 import net.algem.util.event.GemEvent;
 
 /**
- * comment
+ * Room creation event notification.
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.v
  */
 public class RoomCreateEvent
         extends GemEvent
@@ -35,8 +35,8 @@ public class RoomCreateEvent
 
   private Room room;
 
-  public RoomCreateEvent(Object _source, Room room) {
-    super(_source, CREATION, ROOM);
+  public RoomCreateEvent(Object src, Room room) {
+    super(src, CREATION, ROOM);
     this.room = room;
   }
 

@@ -24,10 +24,10 @@ ALTER TABLE salarie_type OWNER TO nobody;
 
 UPDATE groupe SET nom = '0 (aucun)' WHERE id = 0;
 
-CREATE OR REPLACE VIEW planningvue AS
-SELECT pl.id, pl.jour, pl.debut, pl.fin, pl.action, p.id AS profid, p.prenom AS prenomprof, p.nom AS nomprof, s.id AS salleid, s.nom AS salle, c.id AS coursid, c.titre AS cours, c.ecole
-   FROM planning pl, personne p, salle s, cours c, action a
-  WHERE pl.ptype IN (1,5,6) AND pl.action = a.id AND a.cours = c.id AND pl.lieux = s.id AND pl.idper = p.id;
+-- CREATE OR REPLACE VIEW planningvue AS
+-- SELECT pl.id, pl.jour, pl.debut, pl.fin, pl.action, p.id AS profid, p.prenom AS prenomprof, p.nom AS nomprof, s.id AS salleid, s.nom AS salle, c.id AS coursid, c.titre AS cours, c.ecole
+--    FROM planning pl, personne p, salle s, cours c, action a
+--   WHERE pl.ptype IN (1,5,6) AND pl.action = a.id AND a.cours = c.id AND pl.lieux = s.id AND pl.idper = p.id;
 
 -- Configuration du nom de domaine par défaut
 INSERT INTO config VALUES ('Organisation.domaine','');
@@ -45,3 +45,18 @@ INSERT INTO categorie_studio VALUES (DEFAULT, 'Post-prod');
 
 CREATE INDEX id_module_idx ON commande_cours (module);
 CREATE INDEX action_cours_idx ON action (cours); 
+
+-- -- -- -- complement final 2
+DROP VIEW planningvue;
+-- modification taille nom salle
+ALTER TABLE salle ALTER nom type varchar(32);
+ALTER INDEX slx2 RENAME TO salle_nom_idx; 
+
+CREATE VIEW planningvue AS 
+SELECT pl.id, pl.jour, pl.debut, pl.fin, pl.action, p.id AS profid, p.prenom AS prenomprof, p.nom AS nomprof, s.id AS salleid, s.nom AS salle, c.id AS coursid, c.titre AS cours, c.ecole
+   FROM planning pl, personne p, salle s, cours c, action a
+  WHERE (pl.ptype = ANY (ARRAY[1, 5, 6])) AND pl.action = a.id AND a.cours = c.id AND pl.lieux = s.id AND pl.idper = p.id;
+
+-- nettoyage salle 0
+DELETE FROM sallequip where idsalle = 0; 
+

@@ -1,7 +1,7 @@
 /*
- * @(#)RoomService.java 2.8.m 11/09/13
+ * @(#)RoomService.java 2.8.v 27/06/14
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -38,7 +38,7 @@ import net.algem.util.model.TableIO;
  * Service class for room operations.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.m
+ * @version 2.8.v
  * @since 2.2.b
  */
 public class RoomService
@@ -165,10 +165,13 @@ public class RoomService
   /**
    * Gets equipment registered for the room {@code s}.
    *
-   * @param r room
+   * @param r room instance
    * @return a list of equipments
    */
   public Vector<Equipment> getEquipment(Room r) {
+    if (r.getId() == 0) {
+      return new Vector<Equipment>();
+    }
     return roomIO.loadEquip(r.getId());
   }
 
