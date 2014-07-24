@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileEditor 2.8.v 29/05/14
+ * @(#)PersonFileEditor 2.8.w 09/07/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -64,7 +64,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.v
+ * @version 2.8.w
  */
 public class PersonFileEditor
         extends FileEditor
@@ -145,7 +145,7 @@ public class PersonFileEditor
 
     super.init();
 
-    dc = dataCache.getDataConnection();
+    dc = DataCache.getDataConnection();
     BANK_BRANCH_IO = new BankBranchIO(dc);
 
     desktop.addGemEventListener(this);
@@ -173,22 +173,24 @@ public class PersonFileEditor
   }
 
   /**
+   * @param evt
    * @see PersonFileListener
    *
    */
   @Override
-  public void contentsChanged(PersonFileEvent _evt) {
-    System.out.println("PersonFileEditor.contentChanged:" + _evt);
-    if (PersonFileEvent.MEMBER_ADDED == _evt.getType()) {
-      PersonFile d = ((PersonFile) _evt.getSource());
+  public void contentsChanged(PersonFileEvent evt) {
+    System.out.println("PersonFileEditor.contentChanged:" + evt);
+    if (PersonFileEvent.MEMBER_ADDED == evt.getType()) {
+      PersonFile d = ((PersonFile) evt.getSource());
       addMenuDossier("Adhérent", d);
-    } else if (PersonFileEvent.SUBSCRIPTION_CARD_CHANGED == _evt.getType()) {
-      personFileView.contentsChanged(_evt);
+    } else if (PersonFileEvent.SUBSCRIPTION_CARD_CHANGED == evt.getType()) {
+      personFileView.contentsChanged(evt);
     }
 
   }
 
   /**
+   * @param evt
    * @see GemEventListener
    */
   @Override
@@ -503,9 +505,6 @@ public class PersonFileEditor
    * @return true if no errors
    */
   boolean save() {
-
-    DataConnection dc = dataCache.getDataConnection();
-
     try {
       dc.setAutoCommit(false);
       if (personFileView.isNewBank()) {
@@ -613,7 +612,7 @@ public class PersonFileEditor
     if (dossier == null) {
       return;
     }
-    DataConnection dc = dataCache.getDataConnection();
+
     personFileView.setCursor(new Cursor(Cursor.WAIT_CURSOR));
     OrderLineTableModel tableEcheancier = new OrderLineTableModel();
     Person p = dossier.getContact();
@@ -778,7 +777,7 @@ public class PersonFileEditor
     if (dossier.getMember() != null) {
       a = dossier.getMember().getMembershipCount();
       try {
-        nba = AccountUtil.getMemberShips(dossier.getMember().getId(), dataCache.getDataConnection());
+        nba = AccountUtil.getMemberShips(dossier.getMember().getId(), dc);
       } catch (SQLException ex) {
         nba = a;
       }
@@ -793,7 +792,7 @@ public class PersonFileEditor
    */
   private void checkPayer() {
     if (dossier.getMember() != null && dossier.getMember().getPayer() != dossier.getId()) {
-      Contact c = ContactIO.findId(dossier.getMember().getPayer(), dataCache.getDataConnection());
+      Contact c = ContactIO.findId(dossier.getMember().getPayer(), dc);
       if (c != null) {
         PersonFile d = new PersonFile(c);
         try {
@@ -840,7 +839,7 @@ public class PersonFileEditor
 
     for (int i = 0; i < v.size(); i++) {
       PersonFile d = v.elementAt(i);
-      ContactIO.complete(d.getContact(), dataCache.getDataConnection());
+      ContactIO.complete(d.getContact(), dc);
     }
     if (v != null && v.size() > 0) {
       memberList.addBlock(v);
@@ -863,7 +862,7 @@ public class PersonFileEditor
    */
   private boolean contactExists(String name, String firstName) {
     String where = " WHERE lower(nom) = '" + name.toLowerCase() + "' AND lower(prenom) = '" + firstName.toLowerCase() + "'";
-    Contact c = ContactIO.findId(where, dataCache.getDataConnection());
+    Contact c = ContactIO.findId(where, dc);
     return c != null;
   }
 
@@ -891,7 +890,7 @@ public class PersonFileEditor
       rtfExport = new ExportMemberRTF(desktop, System.getProperty("java.io.tmpdir"), dossier);
       rtfExport.edit();
 
-      ExportPayeurRTF fic2 = new ExportPayeurRTF(System.getProperty("java.io.tmpdir"), dossier, dataCache.getDataConnection());
+      ExportPayeurRTF fic2 = new ExportPayeurRTF(System.getProperty("java.io.tmpdir"), dossier, dc);
       path = fic2.getPath();
       fic2.edit();
       // jm	java Desktop rtf handler
@@ -950,7 +949,6 @@ public class PersonFileEditor
       MessagePopup.information(personFileView, "Droits insuffisants");
       return;
     }
-    DataConnection dc = dataCache.getDataConnection();
     if (MessagePopup.confirm(personFileView, MessageUtil.getMessage("contact.delete.confirmation", dossier.getId()))) {
       try {
         dc.setAutoCommit(false);
@@ -979,7 +977,7 @@ public class PersonFileEditor
    * Closes the module.
    * Click on closing icon.
    *
-   * @throws net.algem.event.GemCloseVetoException
+   * @throws net.algem.util.model.GemCloseVetoException
    */
   @Override
   public void close() throws GemCloseVetoException {
@@ -1072,7 +1070,7 @@ public class PersonFileEditor
   private void addInvoice(Object source) {
 
     Invoice inv = new Invoice(dossier, dataCache.getUser());
-    inv.setEstablishment(Integer.parseInt(ConfigUtil.getConf(ConfigKey.DEFAULT_ESTABLISHMENT.getKey(), dataCache.getDataConnection())));
+    inv.setEstablishment(Integer.parseInt(ConfigUtil.getConf(ConfigKey.DEFAULT_ESTABLISHMENT.getKey())));
     if (source != null && source instanceof OrderLineEditor) {
       BillingUtil.setInvoiceOrderLines(inv, ((OrderLineEditor) source).getInvoiceSelection());
     }
@@ -1085,7 +1083,7 @@ public class PersonFileEditor
 
   private void addQuotation(Object source) {
     Quote q = new Quote(dossier, dataCache.getUser());
-    q.setEstablishment(Integer.parseInt(ConfigUtil.getConf(ConfigKey.DEFAULT_ESTABLISHMENT.getKey(), dataCache.getDataConnection())));
+    q.setEstablishment(Integer.parseInt(ConfigUtil.getConf(ConfigKey.DEFAULT_ESTABLISHMENT.getKey())));
     /*
      * if (source != null && source instanceof OrderLineEditor) {
      * AccountUtil.setQuoteOrderLines(d, ((OrderLineEditor)

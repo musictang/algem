@@ -1,7 +1,7 @@
 /*
- * @(#)HistoRehearsalDlg.java	2.6.a 19/09/12
+ * @(#)HistoRehearsalDlg.java	2.8.w 08/07/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -44,14 +44,14 @@ import net.algem.util.ui.PopupDlg;
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.w
  * @since 1.0a 25/02/2004
  */
 public class HistoRehearsalDlg
         implements ActionListener
 {
 
-  private DataCache dataCache;
+  private final DataCache dataCache;
   private JDialog dlg;
   private GemLabel title;
   private GemLabel nbHour;
@@ -60,9 +60,9 @@ public class HistoRehearsalDlg
   private RehearsalTableModel tableModel;
   private JTable table;
 
-  public HistoRehearsalDlg(Component c, DataCache _dc, String t) {
+  public HistoRehearsalDlg(Component c, DataCache dataCache, String t) {
 
-    dataCache = _dc;
+    this.dataCache = dataCache;
     title = new GemLabel(t);
 
     dlg = new JDialog(PopupDlg.getTopFrame(c), true);
@@ -108,7 +108,7 @@ public class HistoRehearsalDlg
 
     int min = 0;
     String query = " WHERE p.ptype=" + Schedule.GROUP + " AND p.idper=" + group.getId() + " ORDER BY jour,debut";
-    Vector<Schedule> v = ScheduleIO.find(query, dataCache.getDataConnection());
+    Vector<Schedule> v = ScheduleIO.find(query, DataCache.getDataConnection());
     for (int i = 0; i < v.size(); i++) {
       Schedule p = v.elementAt(i);
       Hour hd = p.getStart();

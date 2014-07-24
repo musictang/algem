@@ -1,5 +1,5 @@
 /*
- * @(#)DirectDebitExportDlg.java	2.8.t 15/05/14
+ * @(#)DirectDebitExportDlg.java	2.8.w 09/07/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -42,7 +42,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.8.w
  */
 public class DirectDebitExportDlg
         extends JDialog
@@ -94,11 +94,11 @@ public class DirectDebitExportDlg
   public void init(DataConnection dc) {
     this.dc = dc;
 
-    creditorNNE = ConfigUtil.getConf(ConfigKey.DIRECT_DEBIT_CREDITOR_NNE.getKey(), dc);
-    firmName = ConfigUtil.getConf(ConfigKey.DIRECT_DEBIT_FIRM_NAME.getKey(), dc);
-    bankBranch = ConfigUtil.getConf(ConfigKey.DIRECT_DEBIT_BANK_BRANCH.getKey(), dc);
-    account = ConfigUtil.getConf(ConfigKey.DIRECT_DEBIT_ACCOUNT.getKey(), dc);
-    bankHouse = ConfigUtil.getConf(ConfigKey.DIRECT_DEBIT_BANKHOUSE_CODE.getKey(), dc);
+    creditorNNE = ConfigUtil.getConf(ConfigKey.DIRECT_DEBIT_CREDITOR_NNE.getKey());
+    firmName = ConfigUtil.getConf(ConfigKey.DIRECT_DEBIT_FIRM_NAME.getKey());
+    bankBranch = ConfigUtil.getConf(ConfigKey.DIRECT_DEBIT_BANK_BRANCH.getKey());
+    account = ConfigUtil.getConf(ConfigKey.DIRECT_DEBIT_ACCOUNT.getKey());
+    bankHouse = ConfigUtil.getConf(ConfigKey.DIRECT_DEBIT_BANKHOUSE_CODE.getKey());
 
     schoolChoice = new ParamChoice(ParamTableIO.find(SchoolCtrl.TABLE, SchoolCtrl.SORT_COLUMN, dc));
     schoolChoice.addItemListener(new ItemListener()
@@ -136,7 +136,7 @@ public class DirectDebitExportDlg
     c.set(Calendar.DAY_OF_MONTH, 15);
     datePanel = new DateRangePanel(DateRangePanel.SIMPLE_DATE, null);
     datePanel.setDate(c.getTime());
-    String path = ConfigUtil.getExportPath(this.dc) + FileUtil.FILE_SEPARATOR;
+    String path = ConfigUtil.getExportPath() + FileUtil.FILE_SEPARATOR;
 
 
     fMailling = new GemField(path + MAILING_FILE_NAME, 30);
@@ -444,7 +444,7 @@ public class DirectDebitExportDlg
 
   private String getLabel() {
     String e = ((Param) schoolChoice.getSelectedItem()).getValue();
-    String school = (e == null || e.isEmpty()) ? ConfigUtil.getConf(ConfigKey.ORGANIZATION_NAME.getKey(), dc) : e;
+    String school = (e == null || e.isEmpty()) ? ConfigUtil.getConf(ConfigKey.ORGANIZATION_NAME.getKey()) : e;
     /*DateFr d = new DateFr(ConfigUtil.getConf(ConfigKey.BEGINNING_YEAR.getKey(), dc));
     DateFr f = new DateFr(ConfigUtil.getConf(ConfigKey.END_YEAR.getKey(), dc));
     return "COTIS " + school + " " + String.valueOf(d.getYear()) + "-" + String.valueOf(f.getYear());*/

@@ -1,5 +1,5 @@
 /*
- * @(#)DirectDebitIO.java 2.8.t 16/05/14
+ * @(#)DirectDebitIO.java 2.8.w 09/07/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -34,7 +34,7 @@ import net.algem.util.model.TableIO;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.8.t
+ * @version 2.8.w
  * @since 2.8.r 08/01/14
  */
 public class DirectDebitIO
@@ -157,14 +157,14 @@ public class DirectDebitIO
 
     DirectDebitCreditor creditor = new DirectDebitCreditor();
 
-    creditor.setFirmName(ConfigUtil.getConf(ConfigKey.DIRECT_DEBIT_FIRM_NAME.getKey(), dc));
-    creditor.setBankHouse(ConfigUtil.getConf(ConfigKey.DIRECT_DEBIT_BANKHOUSE_CODE.getKey(), dc));
-    creditor.setBankBranch(ConfigUtil.getConf(ConfigKey.DIRECT_DEBIT_BANK_BRANCH.getKey(), dc));
-    creditor.setAccount(ConfigUtil.getConf(ConfigKey.DIRECT_DEBIT_ACCOUNT.getKey(), dc));
-    creditor.setNne(ConfigUtil.getConf(ConfigKey.DIRECT_DEBIT_CREDITOR_NNE.getKey(), dc));
-    creditor.setIban(ConfigUtil.getConf(ConfigKey.DIRECT_DEBIT_IBAN.getKey(), dc));
-    creditor.setBic(ConfigUtil.getConf(ConfigKey.DIRECT_DEBIT_BIC.getKey(), dc));
-    creditor.setIcs(ConfigUtil.getConf(ConfigKey.DIRECT_DEBIT_ICS.getKey(), dc));
+    creditor.setFirmName(ConfigUtil.getConf(ConfigKey.DIRECT_DEBIT_FIRM_NAME.getKey()));
+    creditor.setBankHouse(ConfigUtil.getConf(ConfigKey.DIRECT_DEBIT_BANKHOUSE_CODE.getKey()));
+    creditor.setBankBranch(ConfigUtil.getConf(ConfigKey.DIRECT_DEBIT_BANK_BRANCH.getKey()));
+    creditor.setAccount(ConfigUtil.getConf(ConfigKey.DIRECT_DEBIT_ACCOUNT.getKey()));
+    creditor.setNne(ConfigUtil.getConf(ConfigKey.DIRECT_DEBIT_CREDITOR_NNE.getKey()));
+    creditor.setIban(ConfigUtil.getConf(ConfigKey.DIRECT_DEBIT_IBAN.getKey()));
+    creditor.setBic(ConfigUtil.getConf(ConfigKey.DIRECT_DEBIT_BIC.getKey()));
+    creditor.setIcs(ConfigUtil.getConf(ConfigKey.DIRECT_DEBIT_ICS.getKey()));
 
     return creditor;
   }
@@ -175,7 +175,7 @@ public class DirectDebitIO
    * @return a name
    */
   String getFirmName() {
-    return ConfigUtil.getConf(ConfigKey.DIRECT_DEBIT_FIRM_NAME.getKey(), dc);
+    return ConfigUtil.getConf(ConfigKey.DIRECT_DEBIT_FIRM_NAME.getKey());
   }
 
   /**

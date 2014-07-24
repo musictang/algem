@@ -1,5 +1,5 @@
 /*
- * @(#)RoomService.java 2.8.v 27/06/14
+ * @(#)RoomService.java 2.8.w 24/07/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -27,18 +27,23 @@ import java.util.Vector;
 import net.algem.accounting.OrderLineIO;
 import net.algem.accounting.OrderLineTableModel;
 import net.algem.contact.*;
+import net.algem.planning.DateFr;
+import net.algem.planning.Hour;
+import net.algem.planning.PlanificationUtil;
 import net.algem.planning.ScheduleIO;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
+import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
 import net.algem.util.model.Model;
 import net.algem.util.model.TableIO;
+import net.algem.util.ui.MessagePopup;
 
 /**
  * Service class for room operations.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.v
+ * @version 2.8.w
  * @since 2.2.b
  */
 public class RoomService
@@ -46,10 +51,12 @@ public class RoomService
 
   private DataConnection dc;
   private RoomIO roomIO;
+  private RoomTimesIO roomTimesIO;
 
   public RoomService(DataConnection dc) {
     this.dc = dc;
     roomIO = (RoomIO) DataCache.getDao(Model.Room);
+    roomTimesIO = new RoomTimesIO(dc);
   }
 
   /**
@@ -57,9 +64,9 @@ public class RoomService
    * contact associé, du payeur puis celle de la salle.
    *
    * @param r la nouvelle salle
-   * @throws SQLException
+   * @throws RoomException
    */
-  public void create(Room r) throws SQLException, RoomException {
+  void create(Room r) throws RoomException {
 
     if (roomIO.find("WHERE nom = '" + TableIO.escape(r.getName()) + "'").isEmpty()) {
       try {
@@ -95,9 +102,9 @@ public class RoomService
    *
    * @param o old room
    * @param n new room
-   * @throws SQLException
+   * @throws RoomException
    */
-  public void update(Room o, Room n) throws RoomException {
+  void update(Room o, Room n) throws RoomException {
     try {
       dc.setAutoCommit(false);
       roomIO.update(o, n);
@@ -120,18 +127,19 @@ public class RoomService
   }
 
   /**
-   * Gets all order lines of the contact associated whith the room {@code r}.
+   * Gets all order lines of the contact associated whith the room {@literal r}.
    *
    * @param r room
    * @return a table model
    */
-  public OrderLineTableModel getOrderLineTabelModel(Room r) {
+  OrderLineTableModel getOrderLineTabelModel(Room r) {
     OrderLineTableModel t = null;
 
-    Person p = r.getContact();
-    if (p != null && p.getId() > 0) {
+    int contactId = r.getContact() != null ? r.getContact().getId() : 0;
+    int payeurId = r.getPayer() != null ? r.getPayer().getId() : contactId;
+    if (contactId > 0 || payeurId > 0) {
       t = new OrderLineTableModel();
-      t.load(OrderLineIO.findByMemberOrPayer(p.getId(), p.getId(), dc));
+      t.load(OrderLineIO.findByMemberOrPayer(contactId, payeurId, dc));
     }
     return t;
   }
@@ -140,9 +148,9 @@ public class RoomService
    * Room suppression.
    *
    * @param r room
-   * @throws RoomDeleteException if error sql or unallowed suppression
+   * @throws RoomException if error sql or unallowed suppression
    */
-  public void delete(Room r) throws RoomException {
+  void delete(Room r) throws RoomException {
     try {
       //recherche de plannings existants
       //TODO visualiser les plannings existants en cas d'occupation
@@ -163,12 +171,12 @@ public class RoomService
   }
 
   /**
-   * Gets equipment registered for the room {@code s}.
+   * Gets equipment registered for the room {@literal s}.
    *
    * @param r room instance
    * @return a list of equipments
    */
-  public Vector<Equipment> getEquipment(Room r) {
+  Vector<Equipment> getEquipment(Room r) {
     if (r.getId() == 0) {
       return new Vector<Equipment>();
     }
@@ -176,7 +184,7 @@ public class RoomService
   }
 
   /**
-   * Gets the person whose code is {@code id}.
+   * Gets the person whose code is {@literal id}.
    *
    * @param id payer id
    * @return a person
@@ -195,7 +203,56 @@ public class RoomService
    * @param r
    * @since 2.6.b
    */
-  public void fillContact(Room r) {
+  void fillContact(Room r) {
     ContactIO.complete(r.getContact(), dc);
+  }
+  
+  public DailyTimes[] findDailyTimes(int roomId) {
+    try {
+      return roomTimesIO.find(roomId);
+    } catch (SQLException ex) {
+      GemLogger.log(ex.getMessage());
+      return getDefaultDailyTimes();
+    }
+  }
+  
+  /**
+   * Default opening times.
+   * @return an array of daily times
+   */
+  private DailyTimes[] getDefaultDailyTimes() {
+    DailyTimes[] timesArray = new DailyTimes[7];
+    
+    for (int i = 0 ; i < 7 ; i++) {
+      DailyTimes dt = new DailyTimes(i+1);
+      dt.setOpening(new Hour("00:00"));
+      dt.setClosing(new Hour("24:00"));
+      timesArray[i] = dt;      
+    }
+    return timesArray;
+  }
+  
+  void updateTimes(int roomId, DailyTimes [] times) {
+    roomTimesIO.update(roomId, times);
+  }
+  
+  public static boolean isClosed(int room, DateFr date, Hour hStart, Hour hEnd) {
+    Hour closed = PlanificationUtil.isRoomClosed(room, date, hStart);
+    if (new Hour().equals(closed)) {
+      return MessagePopup.confirm(null, MessageUtil.getMessage("room.closed.warning"));
+    }
+
+    if (closed != null) {
+      if (!MessagePopup.confirm(null, MessageUtil.getMessage("opening.room.warning", closed))) {
+        return false;
+      }
+    }
+    closed = PlanificationUtil.isRoomClosed(room, date, hEnd);
+    if (closed != null) {
+      if (!MessagePopup.confirm(null, MessageUtil.getMessage("closing.room.warning", closed))) {
+        return false;
+      }
+    }
+    return true;
   }
 }

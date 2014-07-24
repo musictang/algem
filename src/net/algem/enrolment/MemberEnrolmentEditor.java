@@ -1,5 +1,5 @@
 /*
- * @(#)MemberEnrolmentEditor.java 2.8.v 24/06/14
+ * @(#)MemberEnrolmentEditor.java 2.8.w 09/07/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -58,7 +58,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.v
+ * @version 2.8.w
  * @since 1.0b 06/09/2001
  */
 public class MemberEnrolmentEditor
@@ -544,7 +544,7 @@ public class MemberEnrolmentEditor
       if (!moduleDlg.isValidation()) {
         return;
       }
-      int idModule = Integer.parseInt(moduleDlg.getField(0));
+      int idModule = (Integer) moduleDlg.getField(0);
 
       ModuleOrder mo = new ModuleOrder();
       mo.setIdOrder(order.getId());
@@ -559,7 +559,7 @@ public class MemberEnrolmentEditor
       // TODO désactiver l'ajout de lignes d'échéance à l'ajout d'un module
       enrolmentOrder.setTotalBase(mo.getPrice());
 
-      String school = ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey(), dc);
+      String school = ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey());
       try {
         int n = enrolmentOrder.saveOrderLines(mo, Integer.parseInt(school));
         enrolmentOrder.updateModuleOrder(n, mo);
@@ -599,12 +599,12 @@ public class MemberEnrolmentEditor
     mo.setTitle(m.getTitle());
     mo.setPayer(dossier.getMember().getPayer());
     mo.setModule(m.getId());
-    mo.setSelectedModule(Integer.parseInt(moduleDlg.getField(7)));
-    mo.setStart(new DateFr(moduleDlg.getField(2)));
-    mo.setEnd(new DateFr(moduleDlg.getField(3)));
-    mo.setPrice(Double.parseDouble(moduleDlg.getField(4)));
-    mo.setModeOfPayment(moduleDlg.getField(5));
-    mo.setPayment(moduleDlg.getField(6));
+    mo.setSelectedModule((Integer) moduleDlg.getField(7));
+    mo.setStart(new DateFr((DateFr) moduleDlg.getField(2)));
+    mo.setEnd(new DateFr((DateFr) moduleDlg.getField(3)));
+    mo.setPrice((Double) moduleDlg.getField(4));
+    mo.setModeOfPayment((String) moduleDlg.getField(5));
+    mo.setPayment((PayFrequency) moduleDlg.getField(6));
     mo.setNOrderLines(1);
 
   }

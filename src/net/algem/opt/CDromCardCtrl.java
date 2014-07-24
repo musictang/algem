@@ -1,7 +1,7 @@
 /*
- * @(#)CDromCardCtrl.java	1.0a 07/07/1999
+ * @(#)CDromCardCtrl.java	2.8.w 08/07/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -31,7 +31,7 @@ import net.algem.util.ui.CardCtrl;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.w
  * @deprecated 
  */
 public class CDromCardCtrl
@@ -85,7 +85,7 @@ public class CDromCardCtrl
 	@Override
 	public boolean validation() {
 		try {
-			CDromIO.update(cdrom, cache.getDataConnection());
+			CDromIO.update(cdrom, DataCache.getDataConnection());
 		} catch (SQLException e1) {
 			GemLogger.logException("Update CDrom", e1, this);
 			return false;
@@ -123,7 +123,7 @@ public class CDromCardCtrl
 
 	@Override
 	public boolean loadId(int id) {
-		return loadCard(CDromIO.findId(id, cache.getDataConnection()));
+		return loadCard(CDromIO.findId(id, DataCache.getDataConnection()));
 	}
 
 	CDrom get() {

@@ -1,7 +1,7 @@
 /*
- * @(#)CourseCtrl.java	2.8.n 03/10/13
+ * @(#)CourseCtrl.java	2.8.w 08/07/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -40,26 +40,27 @@ import net.algem.util.ui.SearchCtrl;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.n
+ * @version 2.8.w
  */
 public class CourseCtrl
         extends CardCtrl
 {
 
-  private DataCache dataCache;
   private CourseView cv;
   private CourseEnrolmentView iv;
   private Course course;
-  private EnrolmentService enrolService;
-  private ModuleService service;
-  private GemDesktop desktop;
   private String [] errors = new String[3];
+  
+  private final GemDesktop desktop;
+  private final DataCache dataCache;
+  private final EnrolmentService enrolService;
+  private final ModuleService service;
 
   public CourseCtrl(GemDesktop desktop) {
     this.desktop = desktop;
     dataCache = desktop.getDataCache();
     enrolService = new EnrolmentService(dataCache);
-    service = new ModuleService(dataCache.getDataConnection());
+    service = new ModuleService(DataCache.getDataConnection());
 
     cv = new CourseView(
             dataCache.getList(Model.CourseCode),

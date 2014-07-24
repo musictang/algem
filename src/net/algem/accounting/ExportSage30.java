@@ -1,5 +1,5 @@
 /*
- * @(#)ExportSage30.java	2.8.r 21/01/14
+ * @(#)ExportSage30.java	2.8.w 09/07/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -42,24 +42,24 @@ import net.algem.util.ui.MessagePopup;
  * Utility class for exporting lines to CIEL accounting software.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.r
+ * @version 2.8.w
  * @since 2.8.r 17/12/13
  */
 public class ExportSage30
   extends  CommunAccountExportService
 {
 
-  private DateFormat dateFormat = new SimpleDateFormat("ddMMyy");
-  private NumberFormat nf = NumberFormat.getInstance(Locale.ENGLISH);
-  private static char cd = 'C';// credit
-  private static char dc = 'D';//debit
-  private static String default_document_type = "OD";
+  private final DateFormat dateFormat = new SimpleDateFormat("ddMMyy");
+  private final NumberFormat nf = NumberFormat.getInstance(Locale.ENGLISH);
+  private static final char cd = 'C';// credit
+  private static final char dc = 'D';//debit
+  private static final String default_document_type = "OD";
   private String dossierName;
 
   public ExportSage30(DataConnection dc) {
     dbx = dc;
     journalService = new JournalAccountService(dc);
-    dossierName = ConfigUtil.getConf(ConfigKey.DIRECT_DEBIT_FIRM_NAME.getKey(), dc);
+    dossierName = ConfigUtil.getConf(ConfigKey.DIRECT_DEBIT_FIRM_NAME.getKey());
     nf.setGroupingUsed(false);
     nf.setMinimumFractionDigits(2);
     nf.setMaximumFractionDigits(2); 

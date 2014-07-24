@@ -1,5 +1,5 @@
 /*
- * @(#)Action.java	2.8.v 29/05/14
+ * @(#)Action.java	2.8.w 22/07/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -34,7 +34,7 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.v
+ * @version 2.8.w
  * @since 1.0a 07/07/1999
  */
 public class Action

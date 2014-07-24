@@ -284,11 +284,12 @@ public class MemberEnrolmentDlg
       if (moduleDlg == null) {
         moduleDlg = new ModuleDlg(this, dossier, service, dataCache);
       }
+      moduleDlg.setTitle(BundleUtil.getLabel("Module.add.label"));
       moduleDlg.show();
       if (!moduleDlg.isValidation()) {
         return;
       }
-      int idModule = Integer.parseInt(moduleDlg.getField(0));
+      int idModule = (Integer) moduleDlg.getField(0);
       // Un même module peut être sélectionné plusieurs fois à partir de la version 2.8
       ModuleOrder mo = new ModuleOrder();
 
@@ -314,12 +315,12 @@ public class MemberEnrolmentDlg
     mo.setTitle(m.getTitle());
     mo.setPayer(dossier.getMember().getPayer());
     mo.setModule(m.getId());
-    mo.setSelectedModule(Integer.parseInt(moduleDlg.getField(7)));
-    mo.setStart(new DateFr(moduleDlg.getField(2)));
-    mo.setEnd(new DateFr(moduleDlg.getField(3)));
-    mo.setPrice(Double.parseDouble(moduleDlg.getField(4)));
-    mo.setModeOfPayment(moduleDlg.getField(5));
-    mo.setPayment(moduleDlg.getField(6));
+    mo.setSelectedModule((Integer) moduleDlg.getField(7));
+    mo.setStart(new DateFr((DateFr) moduleDlg.getField(2)));
+    mo.setEnd(new DateFr((DateFr) moduleDlg.getField(3)));
+    mo.setPrice((Double) moduleDlg.getField(4));
+    mo.setModeOfPayment((String) moduleDlg.getField(5));
+    mo.setPayment((PayFrequency) moduleDlg.getField(6));
     mo.setNOrderLines(1);
     mo.setId(module_orders.size());// id temporaire
     view.addModule(mo);
@@ -345,27 +346,30 @@ public class MemberEnrolmentDlg
         return;
       }
     }
+    moduleDlg.setTitle(BundleUtil.getLabel("Module.modify.label"));
 
-    moduleDlg.setField(0, String.valueOf(mo.getModule()));
-    moduleDlg.setField(2, mo.getStart().toString());
-    moduleDlg.setField(3, mo.getEnd().toString());
-    moduleDlg.setField(4, String.valueOf(mo.getPrice()));
+    moduleDlg.setField(0, mo.getModule());
+    moduleDlg.setField(2, mo.getStart());
+    moduleDlg.setField(3, mo.getEnd());
+    moduleDlg.setField(4, mo.getPrice());
     moduleDlg.setField(5, mo.getModeOfPayment());
     moduleDlg.setField(6, mo.getPayment());
-    moduleDlg.setField(7, String.valueOf(mo.getSelectedModule()));
+    moduleDlg.setField(7, mo.getSelectedModule());
 
     setCursor(Cursor.getDefaultCursor());
 
     moduleDlg.show();
     if (moduleDlg.isValidation()) {
-      mo.setModule(Integer.parseInt(moduleDlg.getField(0)));
-      mo.setSelectedModule(Integer.parseInt(moduleDlg.getField(7)));
-      mo.setTitle(moduleDlg.getField(1));
-      mo.setStart(new DateFr(moduleDlg.getField(2)));
-      mo.setEnd(new DateFr(moduleDlg.getField(3)));
-      mo.setPrice(Double.parseDouble(moduleDlg.getField(4)));
-      mo.setModeOfPayment(moduleDlg.getField(5));
-      mo.setPayment(moduleDlg.getField(6));
+//      mo.setModule(Integer.parseInt(moduleDlg.getField(0)));
+      mo.setModule((Integer) moduleDlg.getField(0));
+//      mo.setSelectedModule(Integer.parseInt(moduleDlg.getField(7)));
+      mo.setSelectedModule((Integer) moduleDlg.getField(7));
+      mo.setTitle((String) moduleDlg.getField(1));
+      mo.setStart(new DateFr((String) moduleDlg.getField(2)));
+      mo.setEnd(new DateFr((String) moduleDlg.getField(3)));
+      mo.setPrice(Double.parseDouble((String) moduleDlg.getField(4)));
+      mo.setModeOfPayment((String) moduleDlg.getField(5));
+      mo.setPayment((PayFrequency) moduleDlg.getField(6));
       view.changeModule(n, mo);
 
       if (mo.getModule() != oldModule) {
@@ -408,7 +412,7 @@ public class MemberEnrolmentDlg
   }
 
   /**
-   * Checks if the module {@code id} has been already added.
+   * Checks if the module {@literal id} has been already added.
    *
    * @param id module id
    * @return true if module exists

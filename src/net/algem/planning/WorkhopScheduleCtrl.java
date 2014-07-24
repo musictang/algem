@@ -1,5 +1,5 @@
 /*
- * @(#)WorkhopScheduleCtrl.java	2.8.t 11/04/14
+ * @(#)WorkhopScheduleCtrl.java	2.8.w 08/07/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -37,21 +37,21 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.8.w
  * @since 1.0a 07/07/1999
  */
 public class WorkhopScheduleCtrl
 	extends CardCtrl 
 {
 
-	private GemDesktop desktop;
-	private DataConnection dc;
-	private WorkshopScheduleView rv;
-	private PlanningService service;
+  private WorkshopScheduleView rv;
+	private final GemDesktop desktop;
+	private final DataConnection dc;
+	private final PlanningService service;
 
 	public WorkhopScheduleCtrl(GemDesktop desktop) {
 		this.desktop = desktop;
-		dc = desktop.getDataCache().getDataConnection();
+		dc = DataCache.getDataConnection();
 		service = new PlanningService(dc);
 	}
 

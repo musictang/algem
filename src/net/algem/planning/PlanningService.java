@@ -76,16 +76,16 @@ public class PlanningService
       }
 
       switch (a.getPeriodicity()) {
-        case SEMAINE:
+        case WEEK:
           start.add(Calendar.WEEK_OF_YEAR, 1); // on incrémente d'une semaine
           break;
-        case QUINZAINE:
+        case FORTNIGHT:
           start.add(Calendar.WEEK_OF_YEAR, 2); // on incrémente de 2 semaines
           break;
-        case JOUR:
+        case DAY:
           start.add(Calendar.DATE, 1);
           break;
-        case MOIS:
+        case MONTH:
           start.add(Calendar.MONTH, 1);
           start.set(Calendar.DAY_OF_WEEK_IN_MONTH, dwm);
           while (start.get(Calendar.DAY_OF_WEEK) != a.getDay() + 1) {
@@ -181,7 +181,7 @@ public class PlanningService
   }
 
   /**
-   * Removes all schedules sharing the same {@code action}.
+   * Removes all schedules sharing the same {@literal action}.
    * Action is also deleted if there are no more schedules in this planning.
    *
    * @param action
@@ -211,7 +211,7 @@ public class PlanningService
   }
 
   /**
-   * Deletes only the schedule {@code s}.
+   * Deletes only the schedule {@literal s}.
    * @param s schedule to delete
    * @throws PlanningException if SQLException is catched
    */
@@ -232,7 +232,7 @@ public class PlanningService
   }
 
   /**
-   * Removes all schedules sharing the same action {@code a} and enclosed in the same timeslot.
+   * Removes all schedules sharing the same action {@literal a} and enclosed in the same timeslot.
    * @param a a action
    * @param s selected schedule
    * @throws PlanningException
@@ -262,7 +262,7 @@ public class PlanningService
    }
 
   /**
-   * Gets all schedule sharing the same action {@code a}.
+   * Gets all schedule sharing the same action {@literal a}.
    * @param a action
    * @return a list of schedules
    */
@@ -285,7 +285,7 @@ public class PlanningService
   }
 
   /**
-   * Checks if other schedules at different times share the same action {@code a} between 2 dates.
+   * Checks if other schedules at different times share the same action {@literal a} between 2 dates.
    * @param a action
    * @return true if several schedules are found
    */
@@ -715,7 +715,7 @@ public class PlanningService
   }
 
   /**
-   * Finds the last scheduled date for an action {@code action}.
+   * Finds the last scheduled date for an action {@literal action}.
    *
    * @param action action id
    * @return a date
@@ -952,7 +952,7 @@ public class PlanningService
   }
 
   /**
-   * Gets all the persons stored in this schedule {@code id}.
+   * Gets all the persons stored in this schedule {@literal id}.
    * @param id schedule id
    * @return a list of persons or an empty list if no one was found
    * @throws SQLException

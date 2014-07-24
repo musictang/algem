@@ -1,7 +1,7 @@
 /*
- * @(#)ConfigUtil.java 2.8.p 07/11/13
+ * @(#)ConfigUtil.java 2.8.w 17/07/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -22,17 +22,22 @@
 package net.algem.config;
 
 import java.sql.SQLException;
+import net.algem.room.DailyTimes;
+import net.algem.room.RoomService;
+import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
 
 /**
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.p
+ * @version 2.8.w
  */
 public class ConfigUtil {
+  
+  private static final DataConnection dc = DataCache.getDataConnection();
 
-  public static String getConf(String key, DataConnection dc) {
+  public static String getConf(String key) {
     try {
       Config c = ConfigIO.findId(key, dc);
       if (c != null) {
@@ -44,27 +49,31 @@ public class ConfigUtil {
     return null;
   }
 
-  public static String getPath(ConfigKey key, DataConnection dc) {
-    return getConf(key.getKey(), dc);
+  public static String getPath(ConfigKey key) {
+    return getConf(key.getKey());
   }
   
-  public static String getExportPath(DataConnection dc) {
-    return getConf(ConfigKey.EXPORT_PATH.getKey(), dc);
+  public static String getExportPath() {
+    return getConf(ConfigKey.EXPORT_PATH.getKey());
   }
 	
-	public static String getStartOfPeriod(DataConnection dc) {
-    return getConf(ConfigKey.BEGINNING_PERIOD.getKey(), dc);
+	public static String getStartOfPeriod() {
+    return getConf(ConfigKey.BEGINNING_PERIOD.getKey());
   }
 	
-	public static String getEndOfPeriod(DataConnection dc) {
-    return getConf(ConfigKey.END_PERIOD.getKey(), dc);
+	public static String getEndOfPeriod() {
+    return getConf(ConfigKey.END_PERIOD.getKey());
   }
 	
-	public static String getStartOfYear(DataConnection dc) {
-    return getConf(ConfigKey.BEGINNING_YEAR.getKey(), dc);
+	public static String getStartOfYear() {
+    return getConf(ConfigKey.BEGINNING_YEAR.getKey());
   }
 	
-	public static String getEndOfYear(DataConnection dc) {
-    return getConf(ConfigKey.END_YEAR.getKey(), dc);
+	public static String getEndOfYear() {
+    return getConf(ConfigKey.END_YEAR.getKey());
+  }
+
+  public static DailyTimes [] getTimes(int roomId){
+    return new RoomService(dc).findDailyTimes(roomId);
   }
 }

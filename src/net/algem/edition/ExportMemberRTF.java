@@ -1,5 +1,5 @@
 /*
- * @(#)ExportMemberRTF.java 2.8.s 18/02/14
+ * @(#)ExportMemberRTF.java 2.8.w 08/07/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -51,7 +51,7 @@ import net.algem.util.module.GemDesktop;
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.s
+ * @version 2.8.w
  * @since 1.0b 05/03/2002
  */
 public class ExportMemberRTF
@@ -77,8 +77,8 @@ public class ExportMemberRTF
   public ExportMemberRTF(GemDesktop desktop, String _path, int m) throws FileNotFoundException {
     dataCache = desktop.getDataCache();
     enrolmentService = new EnrolmentService(dataCache);
-    memberService = new MemberService(dataCache.getDataConnection());
-    planningService = new PlanningService(dataCache.getDataConnection());
+    memberService = new MemberService(DataCache.getDataConnection());
+    planningService = new PlanningService(DataCache.getDataConnection());
     memberId = m;
     path = _path + "/adh" + memberId + ".rtf";
 

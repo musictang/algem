@@ -1,7 +1,7 @@
 /*
- * @(#)ExportDlg.java 2.8.k 25/07/13
+ * @(#)ExportDlg.java 2.8.w 09/07/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -68,20 +68,20 @@ public abstract class ExportDlg
   protected static final int ITEM_DEF_WIDTH = 250;
   public static final String TEXT_FILTER_LABEL = MessageUtil.getMessage("filechooser.text.filter.label");
 
-  public ExportDlg(Frame _parent, String _title, DataCache dc) {
+  public ExportDlg(Frame _parent, String _title, DataCache dataCache) {
     super(_parent, _title);
-    this.dataCache = dc;
-    init(dc.getDataConnection());
+    this.dataCache = dataCache;
+    init(DataCache.getDataConnection());
   }
 
-  public ExportDlg(Dialog _parent, String _title, DataCache dc) {
-    super(_parent, _title);
-    this.dataCache = dc;
-    init(dc.getDataConnection());
+  public ExportDlg(Dialog parent, String title, DataCache dataCache) {
+    super(parent, title);
+    this.dataCache = dataCache;
+    init(DataCache.getDataConnection());
   }
 
-  public void init(DataConnection _dc) {
-    dc = _dc;
+  public void init(DataConnection dc) {
+    this.dc = dc;
 
     btValidation = new GemButton(GemCommand.VALIDATION_CMD);
     btValidation.addActionListener(this);
@@ -93,7 +93,7 @@ public abstract class ExportDlg
     buttons.add(btValidation);
     buttons.add(btCancel);
 
-    fileName = new GemField(ConfigUtil.getExportPath(dc) + FileUtil.FILE_SEPARATOR + getFileName() + ".csv", 30);
+    fileName = new GemField(ConfigUtil.getExportPath() + FileUtil.FILE_SEPARATOR + getFileName() + ".csv", 30);
     GemPanel pFile = new GemPanel();
     pFile.add(new Label(BundleUtil.getLabel("Menu.file.label")));
     pFile.add(fileName);

@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileSearchCtrl.java 2.8.t 15/05/14
+ * @(#)PersonFileSearchCtrl.java 2.8.w 08/07/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -40,7 +40,7 @@ import net.algem.util.ui.SearchCtrl;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.8.w
  * @since 1.0a 07/07/1999
  */
 public class PersonFileSearchCtrl
@@ -56,12 +56,12 @@ public class PersonFileSearchCtrl
   private GemEventListener gemListener;
 
   public PersonFileSearchCtrl(GemDesktop desktop, String title) {
-    super(desktop.getDataCache().getDataConnection(), title);
+    super(DataCache.getDataConnection(), title);
     this.desktop = desktop;
   }
 
-  public PersonFileSearchCtrl(GemDesktop _desktop, String title, GemEventListener gl) {
-    this(_desktop, title);
+  public PersonFileSearchCtrl(GemDesktop desktop, String title, GemEventListener gl) {
+    this(desktop, title);
     gemListener = gl;
 
   }
@@ -171,13 +171,13 @@ public class PersonFileSearchCtrl
       } while (block.size() > 0 && !abort);
       stmt.executeUpdate("end");
       stmt.close();
-    } catch (Exception ex) {
+    } catch (SQLException ex) {
       GemLogger.logException(query, ex);
     }
 
     try {
       cnx.close();
-    } catch (Exception ignore) {
+    } catch (SQLException ignore) {
       GemLogger.logException(ignore);
     }
     thread = null;

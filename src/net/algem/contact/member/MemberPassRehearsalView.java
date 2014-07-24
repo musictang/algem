@@ -1,5 +1,5 @@
 /*
- * @(#)MemberPassRehearsalView.java	2.8.t 16/05/14
+ * @(#)MemberPassRehearsalView.java	2.8.w 21/07/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -18,7 +18,7 @@
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  * 
  */
-package net.algem.planning.editing;
+package net.algem.contact.member;
 
 import java.awt.GridBagLayout;
 import java.util.Date;
@@ -41,7 +41,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.8.w
  */
 public class MemberPassRehearsalView
         extends GemPanel
@@ -79,31 +79,31 @@ public class MemberPassRehearsalView
     gb.add(roomChoice, 1, 4, 1, 1, GridBagHelper.WEST);
   }
 
-  public void setMember(String s) {
+  void setMember(String s) {
     memberField.setText(s);
   }
 
-  public int getRoom() {
+  int getRoom() {
     return roomChoice.getKey();
   }
 
-  public int getDay() {
+  int getDay() {
     return dayChoice.getDay();
   }
 
-  public DateFr getDateStart() {
+  DateFr getDateStart() {
     return datePanel.getStartFr();
   }
 
-  public DateFr getDateEnd() {
+  DateFr getDateEnd() {
     return datePanel.getEndFr();
   }
 
-  public Hour getHourStart() {
+  Hour getHourStart() {
     return hourPanel.getStart();
   }
 
-  public Hour getHourEnd() {
+  Hour getHourEnd() {
     return hourPanel.getEnd();
   }
 

@@ -1,5 +1,5 @@
 /*
- * @(#)MemberRehearsalPassCtrl.java	2.8.t 16/05/14
+ * @(#)MemberRehearsalPassCtrl.java	2.8.w 24/07/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -24,23 +24,23 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.util.Vector;
-import javax.swing.JOptionPane;
 import net.algem.contact.PersonFile;
 import net.algem.planning.*;
-import net.algem.planning.editing.MemberPassRehearsalView;
 import net.algem.planning.editing.ModifPlanEvent;
+import net.algem.room.RoomService;
 import net.algem.util.BundleUtil;
 import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.FileTabCard;
+import net.algem.util.ui.MessagePopup;
 
 /**
  * Pass rehersal controller for a member.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.8.w
  */
 public class MemberRehearsalPassCtrl
         extends FileTabCard
@@ -85,7 +85,7 @@ public class MemberRehearsalPassCtrl
       }
 
       dateList = service.generationDate(rehearsalView.getDay(), rehearsalView.getDateStart(), rehearsalView.getDateEnd());
-      if (testConflict() > 0) {
+      if (testConflict(dateList, rehearsalView.getHourStart(), rehearsalView.getHourEnd()) > 0) {
         btNext.setText("");
       }
     }
@@ -95,56 +95,45 @@ public class MemberRehearsalPassCtrl
   private boolean isEntryValid() {
     String wt = BundleUtil.getLabel("Warning.label");
     if (rehearsalView.getRoom() == 0) {
-      JOptionPane.showMessageDialog(this,
-              MessageUtil.getMessage("room.invalid.choice"),
-              wt,
-              JOptionPane.ERROR_MESSAGE);
+      MessagePopup.error(this, MessageUtil.getMessage("room.invalid.choice"), wt);
       return false;
     }
 
     DateFr date = rehearsalView.getDateStart();
     if (date.bufferEquals(DateFr.NULLDATE)) {
-      JOptionPane.showMessageDialog(this,
-              MessageUtil.getMessage("beginning.date.invalid.choice"),
-              wt,
-              JOptionPane.ERROR_MESSAGE);
+      MessagePopup.error(this, MessageUtil.getMessage("beginning.date.invalid.choice"), wt);
       return false;
     }
     if (date.before(dataCache.getStartOfPeriod())
             || date.after(dataCache.getEndOfPeriod())) {
-      JOptionPane.showMessageDialog(this,
-              MessageUtil.getMessage("beginning.date.out.of.period"),
-              wt,
-              JOptionPane.ERROR_MESSAGE);
+      MessagePopup.error(this, MessageUtil.getMessage("beginning.date.out.of.period"), wt);
       return false;
     }
     date = rehearsalView.getDateEnd();
     if (date.bufferEquals(DateFr.NULLDATE)) {
-      JOptionPane.showMessageDialog(this,
-              MessageUtil.getMessage("end.date.invalid.choice"),
-              wt,
-              JOptionPane.ERROR_MESSAGE);
+      MessagePopup.error(this, MessageUtil.getMessage("end.date.invalid.choice"), wt);
       return false;
     }
     if (date.before(dataCache.getStartOfPeriod())
             || date.after(dataCache.getEndOfPeriod())) {
-      JOptionPane.showMessageDialog(this,
-              MessageUtil.getMessage("end.date.out.of.period"),
-              wt,
-              JOptionPane.ERROR_MESSAGE);
+      MessagePopup.error(this, MessageUtil.getMessage("end.date.out.of.period"), wt);
       return false;
     }
-    Hour hdeb = rehearsalView.getHourStart();
-    Hour hfin = rehearsalView.getHourEnd();
-    if (hdeb.toString().equals("00:00")
-            || hfin.toString().equals("00:00")
-            || !(hfin.after(hdeb))) {
-      JOptionPane.showMessageDialog(this,
-              MessageUtil.getMessage("hour.range.error"),
-              wt,
-              JOptionPane.ERROR_MESSAGE);
+    
+    Hour hStart = rehearsalView.getHourStart();
+    Hour hEnd = rehearsalView.getHourEnd();
+    
+    if (hStart.toString().equals("00:00")
+            || hEnd.toString().equals("00:00")
+            || !(hEnd.after(hStart))) {
+      MessagePopup.error(this, MessageUtil.getMessage("hour.range.error"), wt);
       return false;
     }
+
+    if (!RoomService.isClosed(rehearsalView.getRoom(), rehearsalView.getDateStart(), hStart, hEnd)) {
+      return false;
+    }
+    
     return true;
   }
 
@@ -175,18 +164,12 @@ public class MemberRehearsalPassCtrl
 
     String wt = BundleUtil.getLabel("Warning.label");
     if (dateList.isEmpty()) {
-      JOptionPane.showMessageDialog(this,
-              MessageUtil.getMessage("empty.planning.create.warning"),
-              wt,
-              JOptionPane.ERROR_MESSAGE);
+      MessagePopup.error(this, MessageUtil.getMessage("empty.planning.create.warning"), wt);
     }
 
     try {
       save();
-      JOptionPane.showMessageDialog(this,
-              MessageUtil.getMessage("planning.update.info"),
-              "",
-              JOptionPane.INFORMATION_MESSAGE);
+      MessagePopup.information(this, MessageUtil.getMessage("planning.update.info"));
       desktop.postEvent(new ModifPlanEvent(this, rehearsalView.getDateStart(), rehearsalView.getDateEnd()));
       listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "AdherentForfaitRepetition.Validation"));
     } catch (MemberException ex) {
@@ -199,7 +182,7 @@ public class MemberRehearsalPassCtrl
     service.saveRehearsalPass(dateList, rehearsalView.getHourStart(), rehearsalView.getHourEnd(), personFile.getId(), rehearsalView.getRoom());
   }
 
-  public int testConflict() {
+  public int testConflict(Vector<DateFr> dateList, Hour start, Hour end) {
     cfv.clear();
 
     int conflicts = 0;
@@ -207,11 +190,13 @@ public class MemberRehearsalPassCtrl
     try {
       for (int i = 0; i < dateList.size(); i++) {
         DateFr d = dateList.elementAt(i);
-        vc = service.testRoom(d, rehearsalView.getHourStart(), rehearsalView.getHourEnd(), rehearsalView.getRoom());
+        ScheduleTestConflict conflict = new ScheduleTestConflict(d, start, end);
+        
+        vc = service.testRoom(d, start, end, rehearsalView.getRoom());
         if (vc.size() > 0) {
           for (ScheduleTestConflict c : vc) {
             conflicts++;
-            cfv.addConflict(c);
+            conflict.setRoomFree(false);
           }
         }
 
@@ -223,7 +208,7 @@ public class MemberRehearsalPassCtrl
         if (vc.size() > 0) {
           for (ScheduleTestConflict c : vc) {
             conflicts++;
-            cfv.addConflict(c);
+            conflict.setMemberFree(false);
           }
         }
         // test conflits plage adhérent
@@ -231,10 +216,10 @@ public class MemberRehearsalPassCtrl
         if (vc.size() > 0) {
           for (ScheduleTestConflict c : vc) {
             conflicts++;
-            cfv.addConflict(c);
+            conflict.setMemberFree(false);
           }
         }
-
+        cfv.addConflict(conflict);
       }
     } catch (SQLException e) {
       GemLogger.logException(e);

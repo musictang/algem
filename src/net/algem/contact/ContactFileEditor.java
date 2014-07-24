@@ -1,7 +1,7 @@
 /*
- * @(#)ContactFileEditor.java	2.8.p 07/11/13
+ * @(#)ContactFileEditor.java	2.8.w 09/07/14
  * 
- * Copyright (c) 1998-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1998-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -41,7 +41,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.p
+ * @version 2.8.w
  * @since 1.0a 09/07/2002
  */
 public class ContactFileEditor
@@ -181,7 +181,7 @@ public class ContactFileEditor
 
   public void setPerson(Person p) {
     if (p != null) {
-      String configDir = ConfigUtil.getConf(ConfigKey.PHOTOS_PATH.getKey(), dc);
+      String configDir = ConfigUtil.getConf(ConfigKey.PHOTOS_PATH.getKey());
       personView.set(p, configDir);
     }
   }

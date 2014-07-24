@@ -1,7 +1,7 @@
 /*
- * @(#)MaintenanceCtrl.java	1.0b 12/12/2001
+ * @(#)MaintenanceCtrl.java	2.8.w 08/07/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -42,7 +42,7 @@ import net.algem.util.GemLogger;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.w
  * @deprecated 
  */
 public class MaintenanceCtrl
@@ -131,17 +131,18 @@ public class MaintenanceCtrl
 
   public void load() {
     String query = " where fait='f' order by jour, personne";
-    Vector v = MaintenanceIO.find(query, cache.getDataConnection());
+    Vector v = MaintenanceIO.find(query, DataCache.getDataConnection());
     for (int i = 0; i < v.size(); i++) {
       afaire.addItem((Maintenance) v.elementAt(i));
     }
     query = " where fait='t' order by jour, personne";
-    v = MaintenanceIO.find(query, cache.getDataConnection());
+    v = MaintenanceIO.find(query, DataCache.getDataConnection());
     for (int i = 0; i < v.size(); i++) {
       fait.addItem((Maintenance) v.elementAt(i));
     }
   }
 
+  @Override
   public void actionPerformed(ActionEvent evt) {
     String cmd = evt.getActionCommand();
     if (cmd.equals(GemCommand.CLOSE_CMD)) {
@@ -171,7 +172,7 @@ public class MaintenanceCtrl
       return;
     }
     Maintenance v = new Maintenance(cache.getUser().getLogin(), type.getSelectedIndex(), s);
-    MaintenanceIO.insert(v, cache.getDataConnection());
+    MaintenanceIO.insert(v, DataCache.getDataConnection());
 
     afaire.addItem(v);
     clear();

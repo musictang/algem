@@ -1,7 +1,7 @@
 /*
- * @(#)RoomFileEditor.java 2.8.o 08/10/13
+ * @(#)RoomFileEditor.java 2.8.w 23/07/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -43,7 +43,7 @@ import net.algem.util.ui.*;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.o
+ * @version 2.8.w
  * @since 2.1.b
  */
 public class RoomFileEditor
@@ -62,6 +62,7 @@ public class RoomFileEditor
   private JMenuItem miHistoInvoice;
   private JMenuItem miHistoQuote;
   private JMenuItem miSchedule;
+  private JMenuItem miTimes;
   private RoomFileView roomView;
   private RoomService service;
   private List<Equipment> oldEquip = new Vector<Equipment>();
@@ -71,11 +72,11 @@ public class RoomFileEditor
 
   public RoomFileEditor(Room r, String key) {
     super(key);
-    this.room = r;    
+    this.room = r;
   }
 
   /**
-   *
+   * Gets room's id as string.
    * @return room id converted to string
    */
   @Override
@@ -87,7 +88,7 @@ public class RoomFileEditor
   public void init() {
     super.init();
     desktop.addGemEventListener(this);
-    service = new RoomService(dataCache.getDataConnection());
+    service = new RoomService(DataCache.getDataConnection());
     loadEquipment();
     backup();
     view = roomView = new RoomFileView(desktop, room, service);
@@ -104,6 +105,10 @@ public class RoomFileEditor
     mOptions.addSeparator();
     mOptions.add(miHistoInvoice = getMenuItem("Invoice.history"));
     mOptions.add(miHistoQuote = getMenuItem("Quotation.history"));
+    miTimes = new JMenuItem(BundleUtil.getLabel("Times.label"));
+    miTimes.setToolTipText(BundleUtil.getLabel("Room.times.tip"));
+    miTimes.addActionListener(this);
+    mOptions.add(miTimes);
 
     mBar.add(mFile);
     mBar.add(mOptions);
@@ -220,10 +225,19 @@ public class RoomFileEditor
       roomView.addTab(ed, FileView.ESTIMATE_TAB_TITLE);
     } else if ("CtrlAbandonDevis".equals(arg)) {
       roomView.removeTab((QuoteEditor) src);
-    }  else if ("Menu.month.schedule".equals(arg)) {
+    } else if ("Menu.month.schedule".equals(arg)) {
       RoomScheduleCtrl dlg = new RoomScheduleCtrl(desktop, room.getId());
       roomView.addTab(dlg, BundleUtil.getLabel("Menu.month.schedule.label"));
       miSchedule.setEnabled(false);
+    } else if (BundleUtil.getLabel("Times.label").equals(arg)) {
+      DailyTimesEditor dtEditor = new DailyTimesEditor(desktop, room.getId(), service);
+      dtEditor.load();
+      dtEditor.addActionListener(this);
+      roomView.addTab(dtEditor, arg);
+      miTimes.setEnabled(false);
+    } else if ("CancelEditingTimes".equals(arg)) {
+      roomView.removeTab((DailyTimesEditor) src);
+      miTimes.setEnabled(true);
     } else if (CloseableTab.CLOSE_CMD.equals(arg)) {// fermeture de l'onglet par le bouton de fermeture
       if (getClassName(OrderLineEditor.class).equals(src)) {
         btOrderLine.setEnabled(true);
@@ -233,16 +247,11 @@ public class RoomFileEditor
         miHistoQuote.setEnabled(true);
       } else if (getClassName(RoomScheduleCtrl.class).equals(src)) {
         miSchedule.setEnabled(true);
+      } else if (getClassName(DailyTimesEditor.class).equals(src)) {
+        miTimes.setEnabled(true);
       }
     }
 
-  }
-
-  private int getPayer() {
-    if (room.getPayer() == null || room.getContact() == null) {
-      return -1;
-    }
-    return room.getPayer().getId() > 0 ? room.getPayer().getId() : room.getContact().getId();
   }
 
   @Override
@@ -270,13 +279,20 @@ public class RoomFileEditor
               MessageUtil.getMessage("room.update.confirmation", room.getName()),
               MessageUtil.getMessage("closing.label"))) {
         updateRoom(r);
-      } 
+      }
     }
     closeModule();
   }
 
   public void setDate(Date d) {
     this.date = d;
+  }
+
+  private int getPayer() {
+    if (room.getPayer() == null || room.getContact() == null) {
+      return -1;
+    }
+    return room.getPayer().getId() > 0 ? room.getPayer().getId() : room.getContact().getId();
   }
 
   /**
@@ -327,18 +343,14 @@ public class RoomFileEditor
       backup();
     } catch (RoomException c) {
       MessagePopup.warning(null, c.getMessage());
-    } catch (SQLException e) {
-      MessagePopup.warning(roomView, MessageUtil.getMessage("update.exception.info") + e.getMessage());
-      GemLogger.logException(e);
     }
-
   }
-  
+
   private void backup() {
 
     if (room.getEquipment() != null) {
       oldEquip.clear();
-      for (Equipment e : room.getEquipment()) {       
+      for (Equipment e : room.getEquipment()) {
         oldEquip.add(new Equipment(e.getLabel(), e.getQuantity(), e.getRoom()));
       }
     }
@@ -392,7 +404,7 @@ public class RoomFileEditor
     if (payerFile != null && payerFile.getId() == id) {
       return;
     }
-    Contact c = ContactIO.findId(id, dataCache.getDataConnection());
+    Contact c = ContactIO.findId(id, DataCache.getDataConnection());
     if (c != null) {
       payerFile = new PersonFile(c);
       try {

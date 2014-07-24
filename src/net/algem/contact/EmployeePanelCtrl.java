@@ -1,5 +1,5 @@
 /*
- * @(#)EmployeePanelCtrl.java	2.8.v 29/05/14
+ * @(#)EmployeePanelCtrl.java	2.8.w 08/07/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -37,7 +37,7 @@ import net.algem.util.ui.GemPanel;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.v
+ * @version 2.8.w
  * @since 2.8.v 29/05/14
  */
 public class EmployeePanelCtrl
@@ -111,7 +111,7 @@ public class EmployeePanelCtrl
     if (employees == null) {
       String where = ", " + EmployeeIO.TYPE_TABLE + " t  WHERE "
       + PersonIO.TABLE + ".id = t.idper AND t.idcat = " + cat.ordinal();
-    employees =  PersonIO.find(where, dataCache.getDataConnection());
+    employees =  PersonIO.find(where, DataCache.getDataConnection());
     }
     return employees;
   }

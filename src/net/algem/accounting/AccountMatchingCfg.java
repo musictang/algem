@@ -1,5 +1,5 @@
 /*
- * @(#)AccountMatchingCfg.java 2.8.v 13/06/14
+ * @(#)AccountMatchingCfg.java 2.8.w 08/07/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -37,19 +37,19 @@ import net.algem.util.ui.*;
 /**
  * Management of account matching between personal and revenue accounts.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.v
+ * @version 2.8.w
  * @since 2.2.l 07/12/11
  */
 public class AccountMatchingCfg
         extends GemPanel implements ActionListener
 {
 
-  private GemDesktop desktop;
-  private DataConnection dc;
+  private final GemDesktop desktop;
+  private final DataConnection dc;
+  private static final String personalAccountLabel = BundleUtil.getLabel("Personal.account.label");
+  private static final String revenueAccountLabel = BundleUtil.getLabel("Revenue.account.label");
   private Vector<Account> personalAccounts;
   private Vector<Account> revenueAccounts;
-  private static String personalAccountLabel = BundleUtil.getLabel("Personal.account.label");
-  private static String revenueAccountLabel = BundleUtil.getLabel("Revenue.account.label");
   private GemButton btOk;
   private GemButton btClose;
   private GemPanel mainPanel = new GemPanel();
@@ -58,7 +58,7 @@ public class AccountMatchingCfg
 
   public AccountMatchingCfg(GemDesktop desktop) {
     this.desktop = desktop;
-    dc = desktop.getDataCache().getDataConnection();
+    dc = DataCache.getDataConnection();
     try {
       String where = " WHERE (numero LIKE '" + AccountUtil.PERSONAL_ACCOUNT_FIRST_DIGIT + "%' OR numero LIKE '" + AccountUtil.CUSTOMER_ACCOUNT_FIRST_LETTER + "%') AND actif = true";
       personalAccounts = AccountIO.find(where, dc);

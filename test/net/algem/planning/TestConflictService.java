@@ -1,7 +1,7 @@
 /*
- * @(#)TestConflictService.java 2.6.a 08/10/12
+ * @(#)TestConflictService.java 2.8.w 22/07/14
  *
- * Copyright (c) 1999-2010 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,21 +28,19 @@ import junit.framework.TestCase;
 import net.algem.TestProperties;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
-import net.algem.util.module.GemDesktop;
 
 /**
  * Classe de test pour la détection de conflits lors de modification de
  * plannings.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.w
  * @since 2.4.a 09/05/12
  */
 public class TestConflictService
         extends TestCase
 {
 
-  private GemDesktop desktop;
   private DataCache dataCache;
   private DataConnection dc;
   private PlanningService planningService;
@@ -115,7 +113,7 @@ public class TestConflictService
     a.setRoom(salle);
     a.setDay(1);
     a.setVacancy(3);// sans vacances
-    a.setPeriodicity(Periodicity.SEMAINE);
+    a.setPeriodicity(Periodicity.WEEK);
     a.setNSessions((short) 1);
 
     return a;

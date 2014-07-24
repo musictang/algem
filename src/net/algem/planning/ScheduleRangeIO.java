@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleRangeIO.java	2.8.t 09/05/14
+ * @(#)ScheduleRangeIO.java	2.8.w 08/07/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -38,7 +38,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.8.w
  * @since 1.0a 7/7/1999
  */
 public class ScheduleRangeIO
@@ -201,7 +201,7 @@ public class ScheduleRangeIO
   public static Vector<ScheduleRangeObject> getLoadRS(PreparedStatement ps, DataCache dataCache) {
 
     Vector<ScheduleRangeObject> v = new Vector<ScheduleRangeObject>();
-    PlanningService service = new PlanningService(dataCache.getDataConnection());
+    PlanningService service = new PlanningService(DataCache.getDataConnection());
     try {
       ResultSet rs = ps.executeQuery();
       while (!Thread.interrupted() && rs.next()) {

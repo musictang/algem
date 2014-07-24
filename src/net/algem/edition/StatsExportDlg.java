@@ -1,5 +1,5 @@
 /*
- * @(#)StatsExportDlg.java	2.8.v 24/06/14
+ * @(#)StatsExportDlg.java	2.8.w 09/07/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -46,7 +46,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.v
+ * @version 2.8.w
  * @since 2.6.a 11/10/2012
  */
 public class StatsExportDlg
@@ -80,7 +80,7 @@ public class StatsExportDlg
     buttons.add(btValidation);
     buttons.add(btCancel);
 
-    filePathField = new GemField(ConfigUtil.getExportPath(dataCache.getDataConnection()) + FileUtil.FILE_SEPARATOR + "stats.html", 30);
+    filePathField = new GemField(ConfigUtil.getExportPath() + FileUtil.FILE_SEPARATOR + "stats.html", 30);
     GemPanel filePanel = new GemPanel();
     filePanel.add(new Label(BundleUtil.getLabel("Menu.file.label")));
     filePanel.add(filePathField);
@@ -159,7 +159,7 @@ public class StatsExportDlg
       
       st.setConfig(
               filePathField.getText(),
-              AccountPrefIO.find(AccountPrefIO.MEMBER_KEY_PREF, dataCache.getDataConnection()),
+              AccountPrefIO.find(AccountPrefIO.MEMBER_KEY_PREF, DataCache.getDataConnection()),
               datePanel.getStartFr(),
               datePanel.getEndFr());
       st.addPropertyChangeListener(this);

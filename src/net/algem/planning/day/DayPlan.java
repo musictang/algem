@@ -1,7 +1,7 @@
 /*
- * @(#)DayPlan.java	2.6.a 21/09/12
+ * @(#)DayPlan.java	2.8.w 17/07/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -23,13 +23,14 @@ package net.algem.planning.day;
 import java.util.Vector;
 import net.algem.planning.ScheduleObject;
 import net.algem.planning.ScheduleRangeObject;
+import net.algem.room.DailyTimes;
 
 /**
  * Ensemble of schedules and schedule ranges in one column of planning day.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.w
  * @since 1.0a 07/07/1999
  */
 public class DayPlan
@@ -37,17 +38,18 @@ public class DayPlan
 
   private int id;
   private String label;
-  private Vector<ScheduleObject> plan;
-  private Vector<ScheduleRangeObject> range;
+  private Vector<ScheduleObject> schedules;
+  private Vector<ScheduleRangeObject> ranges;
+  private DailyTimes [] dailyTimes;
 
   public DayPlan() {
   }
 
-  public DayPlan(int i, String l, Vector pl, Vector pg) {
-    id = i;
-    label = l;
-    plan = pl;
-    range = pg;
+  public DayPlan(int id, String label, Vector<ScheduleObject> schedules, Vector<ScheduleRangeObject> ranges) {
+    this.id = id;
+    this.label = label;
+    this.schedules = schedules;
+    this.ranges = ranges;
   }
 
   public void setId(int i) {
@@ -67,19 +69,28 @@ public class DayPlan
   }
 
   public void setSchedule(Vector<ScheduleObject> v) {
-    plan = v;
+    schedules = v;
   }
 
   public Vector<ScheduleObject> getSchedule() {
-    return plan;
+    return schedules;
   }
 
   public void setScheduleRange(Vector<ScheduleRangeObject> v) {
-    range = v;
+    ranges = v;
   }
 
   public Vector<ScheduleRangeObject> getScheduleRange() {
-    return range;
+    return ranges;
   }
+
+  public DailyTimes getDailyTime(int dow) {
+    return dailyTimes == null || dailyTimes.length == 0 ? null : dailyTimes[dow-1];
+  }
+
+  public void setDailyTimes(DailyTimes[] dailyTimes) {
+    this.dailyTimes = dailyTimes;
+  }
+  
 }
 

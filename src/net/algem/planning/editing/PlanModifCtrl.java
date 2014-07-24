@@ -1,5 +1,5 @@
 /*
- * @(#)PlanModifCtrl.java	2.8.v 16/06/14
+ * @(#)PlanModifCtrl.java	2.8.w 08/07/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -50,26 +50,26 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.v
+ * @version 2.8.w
  * @since 1.0b 05/07/2002 lien salle et groupe
  */
 public class PlanModifCtrl
         implements ActionListener
 {
 
-  private GemDesktop desktop;
-  private DataCache dataCache;
-  private DataConnection dc;
   private Calendar cal;
   private ScheduleObject plan;
   private UpdateCoursePlanCtrl updatePlanCtrl;
-  private PlanningService service;
-  private MemberService memberService;
+  private final GemDesktop desktop;
+  private final DataCache dataCache;
+  private final DataConnection dc;
+  private final PlanningService service;
+  private final MemberService memberService;
 
   public PlanModifCtrl(GemDesktop desktop) {
     this.desktop = desktop;
     dataCache = desktop.getDataCache();
-    dc = dataCache.getDataConnection();
+    dc = DataCache.getDataConnection();
     memberService = new MemberService(dc);
     service = new PlanningService(dc);
     cal = Calendar.getInstance(Locale.FRANCE);
@@ -84,7 +84,10 @@ public class PlanModifCtrl
     cal.setTime(p.getDate().getDate());
   }
 
-  /** Gets a list of buttons for course schedule modification. */
+  /** 
+   * Gets a list of buttons for course schedule modification.
+   * @return  a list of buttons
+   */
   public Vector<GemMenuButton> getCourseMenu() {
     Vector<GemMenuButton> v = new Vector<GemMenuButton>();
 
@@ -108,7 +111,10 @@ public class PlanModifCtrl
     return v;
   }
 
-  /** Gets a list of buttons for rehearsal schedule. */
+  /** 
+   * Gets a list of buttons for rehearsal schedule.
+   * @return a list of buttons
+   */
   public Vector<GemMenuButton> getMenuMemberRehearsal() {
     Vector<GemMenuButton> v = new Vector<GemMenuButton>();
 
@@ -121,7 +127,10 @@ public class PlanModifCtrl
     return v;
   }
 
-  /** Gets a list of buttons for group schedule modification. */
+  /** 
+   * Gets a list of buttons for group schedule modification.
+   * @return  a list of buttons
+   */
   public Vector<GemMenuButton> getMenuGroupRehearsal() {
     Vector<GemMenuButton> v = new Vector<GemMenuButton>();
 
@@ -134,7 +143,11 @@ public class PlanModifCtrl
     return v;
   }
 
-  /** Gets a list of buttons for workshop schedule modification. */
+  /** 
+   * Gets a list of buttons for workshop schedule modification.
+   * 
+   * @return a list of buttons
+   */
   public Vector<GemMenuButton> getMenuWorkshop() {
     Vector<GemMenuButton> v = new Vector<GemMenuButton>();
 
@@ -146,7 +159,11 @@ public class PlanModifCtrl
     return v;
   }
   
-  /** Gets a list of buttons for studio group schedule modification. */
+  /** 
+   * Gets a list of buttons for studio group schedule modification.
+   * @param type studio type
+   * @return a list of buttons
+   */
   public Vector<GemMenuButton> getMenuStudio(int type) {
     Vector<GemMenuButton> v = new Vector<GemMenuButton>();
     v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.room.modification.label"), this, "ChangeRoom"));
@@ -162,7 +179,10 @@ public class PlanModifCtrl
     return v;
   }
 
-  /** Gets a list of buttons for schedule creation. */
+  /** 
+   * Gets a list of buttons for schedule creation.
+   * @return  a list of buttons
+   */
   public Vector<GemMenuButton> getMenuPlanning() {
     Vector<GemMenuButton> v = new Vector<GemMenuButton>();
     /* v.add(new GemMenuButton("Marquer salle indisponible", this, "InsertSalleNonDispo")); */
@@ -485,7 +505,7 @@ public class PlanModifCtrl
 
     String where = ", " + EmployeeIO.TYPE_TABLE + " t  WHERE "
       + PersonIO.TABLE + ".id = t.idper AND t.idcat = " + cat.ordinal();
-    List<Person> persons = PersonIO.find(where, dataCache.getDataConnection());
+    List<Person> persons = PersonIO.find(where, DataCache.getDataConnection());
     if (persons.size() < 1) {
       throw new PlanningException("Aucun participant disponible");
     }

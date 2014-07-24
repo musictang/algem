@@ -1,5 +1,5 @@
 /*
- * @(#)AccountPrefCtrl.java 2.8.v 13/06/14
+ * @(#)AccountPrefCtrl.java 2.8.w 08/07/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -34,6 +34,7 @@ import net.algem.config.ParamChoice;
 import net.algem.config.ParamTableIO;
 import net.algem.config.Preference;
 import net.algem.util.BundleUtil;
+import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
@@ -45,7 +46,7 @@ import net.algem.util.ui.*;
  * Management of default accounts : membership, enrolment, course subscription, rehearsal, etc.
  * On update only. Creation of new default account is not activated.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.v
+ * @version 2.8.w
  * @since 2.1.i
  */
 public class AccountPrefCtrl
@@ -76,7 +77,7 @@ public class AccountPrefCtrl
    */
   public AccountPrefCtrl(GemDesktop desktop) {
     this.desktop = desktop;
-    dc = desktop.getDataCache().getDataConnection();
+    dc = DataCache.getDataConnection();
     try {
       accounts = AccountIO.find(true, dc);
       costAccounts = ParamTableIO.find(CostAccountCtrl.tableName, CostAccountCtrl.columnName, dc);

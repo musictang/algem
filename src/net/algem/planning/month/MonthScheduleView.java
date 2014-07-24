@@ -1,5 +1,5 @@
 /*
- * @(#)MonthScheduleView.java	2.8.t 11/04/14
+ * @(#)MonthScheduleView.java	2.8.w 09/07/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -54,7 +54,7 @@ import net.algem.util.ui.TabPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.8.w
  */
 public class MonthScheduleView
         extends GemView
@@ -102,9 +102,7 @@ public class MonthScheduleView
 
     setSize(PREF_WIDTH, PREF_HEIGHT);
     String s = "";
-    if ((s = ConfigUtil.getConf(
-						ConfigKey.TEACHER_MANAGEMENT.getKey(), dataCache.getDataConnection())) != null
-            && s.startsWith("t")) {
+    if ((s = ConfigUtil.getConf(ConfigKey.TEACHER_MANAGEMENT.getKey())) != null && s.startsWith("t")) {
       teacherChoice = new TeacherChoice(dataCache.getList(Model.Teacher));
       teacherView = new MonthPlanTeacherView(teacherChoice);
       tabPanel.addItem(teacherView, BundleUtil.getLabel("Month.schedule.teacher.tab"));
@@ -120,9 +118,7 @@ public class MonthScheduleView
       tabPanel.addItem(roomView[i], BundleUtil.getLabel("Rooms.label") + " " + e.getName());
     }
 
-    if ((s = ConfigUtil.getConf(
-						ConfigKey.COURSE_MANAGEMENT.getKey(), dataCache.getDataConnection())) != null
-            && s.startsWith("t")) {
+    if ((s = ConfigUtil.getConf(ConfigKey.COURSE_MANAGEMENT.getKey())) != null && s.startsWith("t")) {
       collectiveChoice = new CourseChoice(new CourseChoiceTypeModel(dataCache.getList(Model.Course), true));
       collectiveView = new MonthPlanCourseView(collectiveChoice, true);
       tabPanel.addItem(collectiveView, BundleUtil.getLabel("Month.schedule.collective.course.tab"));

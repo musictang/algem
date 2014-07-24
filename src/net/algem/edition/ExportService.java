@@ -1,7 +1,7 @@
 /*
- * @(#)ExportService.java 2.8.o 09/10/13
+ * @(#)ExportService.java 2.8.w 09/07/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -45,7 +45,7 @@ import net.algem.util.model.Model;
 /**
  * Service class for export operations.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.o
+ * @version 2.8.w
  * @since 2.6.d 06/11/2012
  */
 public class ExportService {
@@ -349,7 +349,7 @@ public class ExportService {
   }
   
   public String getPath() {
-    return ConfigUtil.getExportPath(dc);
+    return ConfigUtil.getExportPath();
   }
   
 }

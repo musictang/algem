@@ -1,5 +1,5 @@
 /*
- * @(#)GroupPassCreateCtrl.java	2.8.t 16/05/14
+ * @(#)GroupPassCreateCtrl.java	2.8.w 24/07/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -23,12 +23,12 @@ package net.algem.group;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Vector;
-import javax.swing.JOptionPane;
 import net.algem.planning.ConflictListView;
 import net.algem.planning.DateFr;
 import net.algem.planning.Hour;
 import net.algem.planning.ScheduleTestConflict;
 import net.algem.planning.editing.ModifPlanEvent;
+import net.algem.room.RoomService;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.GemLogger;
@@ -42,7 +42,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.8.w
  */
 public class GroupPassCreateCtrl
         extends CardCtrl
@@ -62,7 +62,7 @@ public class GroupPassCreateCtrl
     dataCache = d.getDataCache();
     view = new GroupPassRehearsalView(dataCache);
     cfv = new ConflictListView();
-    service = new GemGroupService(dataCache.getDataConnection());
+    service = new GemGroupService(DataCache.getDataConnection());
 
     addCard(BundleUtil.getLabel("Group.pass.scheduling.auth"), view);
     addCard(BundleUtil.getLabel("Conflict.verification.label"), cfv);
@@ -88,42 +88,45 @@ public class GroupPassCreateCtrl
     select(step + 1);
     if (step == 1) {
       if (view.getRoom() == 0) {
-        JOptionPane.showMessageDialog(this, MessageUtil.getMessage("room.invalid.choice"), wt,JOptionPane.ERROR_MESSAGE);
+        MessagePopup.error(this,MessageUtil.getMessage("room.invalid.choice"), wt);
         return prev();
       }
 
       DateFr date = view.getDateStart();
       if (date.bufferEquals(DateFr.NULLDATE)) {
-        JOptionPane.showMessageDialog(this, MessageUtil.getMessage("beginning.date.invalid.choice"), wt, JOptionPane.ERROR_MESSAGE);
+        MessagePopup.error(this,MessageUtil.getMessage("beginning.date.invalid.choice"), wt);
         return prev();
       }
       if (date.before(dataCache.getStartOfPeriod())
               || date.after(dataCache.getEndOfPeriod())) {
-        JOptionPane.showMessageDialog(this,MessageUtil.getMessage("beginning.date.out.of.period"), wt,JOptionPane.ERROR_MESSAGE);
+        MessagePopup.error(this,MessageUtil.getMessage("beginning.date.out.of.period"), wt);
         return prev();
       }
       date = view.getDateEnd();
       if (date.bufferEquals(DateFr.NULLDATE)) {
-        JOptionPane.showMessageDialog(this, MessageUtil.getMessage("end.date.invalid.choice"), wt,JOptionPane.ERROR_MESSAGE);
+        MessagePopup.error(this,MessageUtil.getMessage("end.date.invalid.choice"), wt);
         return prev();
       }
       if (date.before(dataCache.getStartOfPeriod())
               || date.after(dataCache.getEndOfPeriod())) {
-        JOptionPane.showMessageDialog(this, MessageUtil.getMessage("end.date.out.of.period"), wt,JOptionPane.ERROR_MESSAGE);
+        MessagePopup.error(this,MessageUtil.getMessage("end.date.out.of.period"), wt);
         return prev();
       }
-      Hour hdeb = view.getHourStart();
-      Hour hfin = view.getHourEnd();
-      if (hdeb.toString().equals("00:00")
-              || hfin.toString().equals("00:00")
-              || !(hfin.after(hdeb))) {
-        JOptionPane.showMessageDialog(this, MessageUtil.getMessage("hour.range.error"), wt,JOptionPane.ERROR_MESSAGE);
+      Hour hStart = view.getHourStart();
+      Hour hEnd = view.getHourEnd();
+      
+      if (hStart.toString().equals("00:00")
+              || hEnd.toString().equals("00:00")
+              || !(hEnd.after(hStart))) {
+        MessagePopup.error(this,MessageUtil.getMessage("hour.range.error"), wt);
         return prev();
       }
-
+      if (!RoomService.isClosed(view.getRoom(), view.getDateStart(), hStart, hEnd)) {
+        return prev();
+      }
       dateList = service.generateDates(view.getDay(), view.getDateStart(), view.getDateEnd());
       cfv.clear();
-      Vector<ScheduleTestConflict> vc = service.testConflict(dateList, hdeb, hfin, group.getId(), view.getRoom());
+      Vector<ScheduleTestConflict> vc = service.testConflict(dateList, hStart, hEnd, group.getId(), view.getRoom());
       if (vc.size() > 0) {
         for (ScheduleTestConflict pc : vc) {
           cfv.addConflict(pc);
@@ -174,13 +177,13 @@ public class GroupPassCreateCtrl
   public boolean validation() {
 
     if (dateList.isEmpty()) {
-      JOptionPane.showMessageDialog(this, MessageUtil.getMessage("empty.planning.create.warning"), wt, JOptionPane.ERROR_MESSAGE);
+      MessagePopup.error(this,MessageUtil.getMessage("empty.planning.create.warning"), wt);
       return false;
     }
 
     try {
       service.createPassRehearsal(dateList, view.getHourStart(), view.getHourEnd(), group.getId(), view.getRoom());
-      JOptionPane.showMessageDialog(this, MessageUtil.getMessage("planning.update.info"), null, JOptionPane.INFORMATION_MESSAGE);
+      MessagePopup.information(this,MessageUtil.getMessage("planning.update.info"));
       desktop.postEvent(new ModifPlanEvent(this, view.getDateStart(), view.getDateEnd()));
     } catch (GroupException ex) {
       MessagePopup.warning(this, ex.getMessage());

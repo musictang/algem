@@ -1,5 +1,5 @@
 /*
- * @(#)FileTab.java	2.8.r 17/01/14
+ * @(#)FileTab.java	2.8.w 21/07/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -30,7 +30,7 @@ import net.algem.util.module.GemDesktop;
  * Generic tab.
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.r
+ * @version 2.8.w
  */
 public abstract class FileTab
         extends GemBorderPanel
@@ -43,8 +43,8 @@ public abstract class FileTab
 
   public FileTab(GemDesktop desktop) {
     this.desktop = desktop;
-    dataCache = desktop.getDataCache();
-    dc = dataCache.getDataConnection();
+    this.dataCache = desktop.getDataCache();
+    this.dc = DataCache.getDataConnection();
     planningService = new PlanningService(dc);
   }
 

@@ -1,5 +1,5 @@
 /*
- * @(#)GemGroupService.java	2.8.t 15/05/14
+ * @(#)GemGroupService.java	2.8.w 09/07/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -42,7 +42,7 @@ import net.algem.util.model.Model;
  * Service class for group operations.
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.8.w
  * @since 2.4.a 10/05/12
  */
 public class GemGroupService
@@ -333,7 +333,7 @@ public class GemGroupService
       if (ref != null && ref.getId() > 0) {
         PersonFile dossier = ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findId(ref.getId());
         OrderLine ol = AccountUtil.setGroupOrderLine(g.getId(), dossier, date, getAccount(AccountPrefIO.REHEARSAL_KEY_PREF), amount);
-        String s = ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey(), dc);
+        String s = ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey());
         ol.setSchool(Integer.parseInt(s));
         AccountUtil.createEntry(ol, dc);
       }

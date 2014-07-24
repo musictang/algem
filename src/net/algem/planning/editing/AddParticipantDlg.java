@@ -1,7 +1,7 @@
 /*
- * @(#)AddParticipantDlg.java	2.8.v 06/06/14
+ * @(#)AddParticipantDlg.java	2.8.w 08/07/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -42,7 +42,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.v
+ * @version 2.8.w
  * @since 2.8.v 06/06/14
  */
 public class AddParticipantDlg
@@ -51,7 +51,7 @@ public class AddParticipantDlg
   
   private EmployeePanel selector;
   private ScheduleObject plan;
-  private DataCache dataCache;
+  private final DataCache dataCache;
   
   public AddParticipantDlg(GemDesktop desktop, ScheduleObject plan, List<Person> persons) {
     super(desktop.getFrame());
@@ -76,7 +76,7 @@ public class AddParticipantDlg
     int per = selector.getId();
 
     String query = ConflictQueries.getMemberScheduleSelection(plan.getDate().toString(), plan.getStart().toString(), plan.getEnd().toString(), per);
-    if (per < 1 || ScheduleIO.count(query, dataCache.getDataConnection()) > 0) {
+    if (per < 1 || ScheduleIO.count(query, DataCache.getDataConnection()) > 0) {
       MessagePopup.warning(dlg, MessageUtil.getMessage("busy.person.warning"));
       return false;
     }

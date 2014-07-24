@@ -1,7 +1,7 @@
 /*
- * @(#)InvoiceView.java 2.8.o 08/10/13
+ * @(#)InvoiceView.java 2.8.w 08/07/14
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -65,7 +65,7 @@ import net.algem.util.ui.*;
  * Invoice / quotation view.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.o
+ * @version 2.8.w
  * @since 2.3.a 07/02/12
  */
 public class InvoiceView
@@ -91,15 +91,15 @@ public class InvoiceView
   private JFormattedTextField net;
   private ItemListCtrl itemList;
   private Quote invoice;
-  private DataCache dataCache;
-  private DataConnection dc;
-  private GemDesktop desktop;
+  private final DataCache dataCache;
+  private final DataConnection dc;
+  private final GemDesktop desktop;
   private GemButton btAdd;
   private GemButton btModify;
   private GemButton btDelete;
   private InvoiceItemSearchCtrl browser;
   private NumberFormat nf;
-  private BillingService service;
+  private final BillingService service;
   private Collection<OrderLine> orderLines;
   private boolean isInvoice;
 
@@ -107,7 +107,7 @@ public class InvoiceView
 
     this.desktop = desktop;
     this.dataCache = desktop.getDataCache();
-    this.dc = dataCache.getDataConnection();
+    this.dc = DataCache.getDataConnection();
     this.service = service;
     init();
   }

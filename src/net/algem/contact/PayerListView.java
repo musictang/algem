@@ -1,5 +1,5 @@
 /*
- * @(#)PayeurListView.java	2.8.t 15/05/14
+ * @(#)PayeurListView.java	2.8.w 08/07/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -36,20 +36,17 @@ import net.algem.util.ui.GemPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.8.w
  * @deprecated
  */
 public class PayerListView
         extends GemPanel
 {
 
-  private DataCache cache;
-  private PersonTableModel personTableModel;
-  private JTable tableAdherents;
+  private final PersonTableModel personTableModel;
+  private final JTable tableAdherents;
 
-  public PayerListView(DataCache dc) {
-    cache = dc;
-
+  public PayerListView() {
     personTableModel = new PersonTableModel();
     tableAdherents = new JTable(personTableModel);
     tableAdherents.setAutoCreateRowSorter(true);
@@ -71,9 +68,9 @@ public class PayerListView
   }
 
   public void load(int id) {
-    String query = "SELECT idper from eleve where payeur=" + id;
+    String query = "SELECT idper FROM eleve WHERE payeur=" + id;
     try {
-      ResultSet rs = cache.getDataConnection().executeQuery(query);
+      ResultSet rs = DataCache.getDataConnection().executeQuery(query);
       while (rs.next()) {
         int eid = rs.getInt(1);
         Person p = ((PersonIO) DataCache.getDao(Model.Person)).findId(eid);

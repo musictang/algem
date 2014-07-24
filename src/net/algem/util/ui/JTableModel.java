@@ -1,7 +1,7 @@
 /*
- * @(#)JTableModel.java	2.8.f 24/05/13
+ * @(#)JTableModel.java	2.8.w 16/07/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,7 +27,8 @@ import javax.swing.table.AbstractTableModel;
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.f
+ * @version 2.8.w
+ * @param <T>
  * @since 1.0a 07/07/1999
  */
 public abstract class JTableModel<T>

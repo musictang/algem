@@ -1,7 +1,7 @@
 /*
- * @(#)AgeRangeSearchCtrl.java 2.7.n 22/03/13
+ * @(#)AgeRangeSearchCtrl.java 2.8.w 08/07/14
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -37,19 +37,19 @@ import net.algem.util.ui.SearchCtrl;
  *
  * @author <a href="mailto:nicolasnouet@gmail.com">Nicolas Nouet</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.n
+ * @version 2.8.w
  * @since 2.3.a
  */
 public class AgeRangeSearchCtrl
         extends SearchCtrl
 {
 
-  private DataCache dataCache;
-  private GemDesktop desktop;
-  private AgeRangeIO dao;
+  private final DataCache dataCache;
+  private final GemDesktop desktop;
+  private final AgeRangeIO dao;
 
   public AgeRangeSearchCtrl(GemDesktop _desktop) {
-    super(_desktop.getDataCache().getDataConnection(), MessageUtil.getMessage("age.range.edition.label"));
+    super(DataCache.getDataConnection(), MessageUtil.getMessage("age.range.edition.label"));
     this.desktop = _desktop;
     dataCache = _desktop.getDataCache();
     dao = (AgeRangeIO) DataCache.getDao(Model.AgeRange);

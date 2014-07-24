@@ -1,5 +1,5 @@
 /*
- * @(#)DefaultUserService.java	2.8.s 18/02/14
+ * @(#)DefaultUserService.java	2.8.w 08/07/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -40,21 +40,21 @@ import org.apache.commons.codec.binary.Base64;
  * User operations service.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.s
+ * @version 2.8.w
  * @since 2.6.a 06/08/2012
  */
 public class DefaultUserService
         implements UserService
 {
 
-  private DataConnection dc;
-  private DataCache dataCache;
-  private UserIO dao;
-  private PasswordEncryptionService encryptionService;
+  private final DataConnection dc;
+  private final DataCache dataCache;
+  private final UserIO dao;
+  private final PasswordEncryptionService encryptionService;
 
   public DefaultUserService(DataCache dataCache) {
     this.dataCache = dataCache;
-    this.dc = dataCache.getDataConnection();
+    this.dc = DataCache.getDataConnection();
     dao = (UserIO) DataCache.getDao(Model.User);
     encryptionService = new PasswordEncryptionService();
   }

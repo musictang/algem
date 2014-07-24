@@ -1,7 +1,7 @@
 /*
- * @(#)MemberCardService.java 2.8.a 19/04/13
+ * @(#)MemberCardService.java 2.8.w 09/07/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -49,20 +49,20 @@ import net.algem.util.module.GemDesktop;
  * Service class for member card edition.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.w
  * @since 2.4.a 16/05/12
  */
 public class MemberCardService
 {
 
-  private DataCache dataCache;
-  private DataConnection dc;
-  private PlanningService planningService;
-  private MemberService memberService;
+  private final DataCache dataCache;
+  private final DataConnection dc;
+  private final PlanningService planningService;
+  private final MemberService memberService;
 
   public MemberCardService(GemDesktop desktop) {
     this.dataCache = desktop.getDataCache();
-    this.dc = dataCache.getDataConnection();
+    this.dc = DataCache.getDataConnection();
     planningService = new PlanningService(dc);
     memberService = new MemberService(dc);
   }
@@ -228,7 +228,7 @@ public class MemberCardService
   }
 
   String getConf(String conf) {
-    return ConfigUtil.getConf(conf, dc);
+    return ConfigUtil.getConf(conf);
   }
 
   private BufferedImage getPhoto(URL url) throws IOException {

@@ -1,5 +1,5 @@
 /*
- * @(#)HourEmployeeView.java	2.8.v 10/06/14
+ * @(#)HourEmployeeView.java	2.8.w 09/07/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -44,7 +44,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.v
+ * @version 2.8.w
  * @since 2.8.v 10/06/14
  */
 public class HourEmployeeView
@@ -72,7 +72,7 @@ public class HourEmployeeView
     detail.setBorder(null);
     
     schoolChoice = new ParamChoice(schools.getData());
-    int defaultSchool = Integer.parseInt(ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey(), dc));
+    int defaultSchool = Integer.parseInt(ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey()));
     schoolChoice.setKey(defaultSchool);
     gb.add(new JLabel(BundleUtil.getLabel("Type.label")), 0, 0, 1, 1, GridBagHelper.EAST);
     gb.add(new JLabel(BundleUtil.getLabel("Period.label")), 0, 1, 1, 1, GridBagHelper.EAST);

@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleDetailCtrl.java 2.8.v 13/06/14
+ * @(#)ScheduleDetailCtrl.java 2.8.w 08/07/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -59,7 +59,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.v
+ * @version 2.8.w
  * @since 1.0a 07/07/1999
  */
 public class ScheduleDetailCtrl
@@ -94,7 +94,7 @@ public class ScheduleDetailCtrl
   public ScheduleDetailCtrl(GemDesktop desktop, PlanModifCtrl pmCtrl, boolean all) {
     this.desktop = desktop;
     dataCache = desktop.getDataCache();
-    dc = dataCache.getDataConnection();
+    dc = DataCache.getDataConnection();
     scheduleService = new PlanningService(dc);
     groupService = new GemGroupService(dc);
     memberService = new MemberService(dc);

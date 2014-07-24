@@ -1,7 +1,7 @@
 /*
- * @(#)MenuPlanning.java	2.8.v 13/06/14
+ * @(#)MenuPlanning.java	2.8.w 09/07/14
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -34,6 +34,7 @@ import net.algem.planning.WorkhopScheduleCtrl;
 import net.algem.planning.day.DayScheduleCtrl;
 import net.algem.planning.month.MonthScheduleCtrl;
 import net.algem.util.BundleUtil;
+import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 import net.algem.util.GemCommand;
 import net.algem.util.module.GemDesktop;
@@ -44,7 +45,7 @@ import net.algem.util.module.GemModule;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.v
+ * @version 2.8.w
  * @since 1.0a 07/07/1999
  */
 public class MenuPlanning
@@ -60,16 +61,16 @@ public class MenuPlanning
   private JMenuItem miStudio;
   private JMenuItem miReplacement;
 
-  public MenuPlanning(GemDesktop _desktop) {
+  public MenuPlanning(GemDesktop desktop) {
 
-    super(BundleUtil.getLabel("Menu.schedule.label"), _desktop);
+    super(BundleUtil.getLabel("Menu.schedule.label"), desktop);
 
     add(miDay = new JMenuItem(BundleUtil.getLabel("Menu.day.schedule.label")));
     add(miMonth = new JMenuItem(BundleUtil.getLabel("Menu.month.schedule.label")));
     addSeparator();
-    DataConnection dc = dataCache.getDataConnection();
+    DataConnection dc = DataCache.getDataConnection();
 
-    String manage = ConfigUtil.getConf(ConfigKey.COURSE_MANAGEMENT.getKey(), dc);
+    String manage = ConfigUtil.getConf(ConfigKey.COURSE_MANAGEMENT.getKey());
     if (manage != null && manage.startsWith("t")) {
       add(miCourse = new JMenuItem(BundleUtil.getLabel("Course.scheduling.label")));
       add(miWorkshop = new JMenuItem(BundleUtil.getLabel("Workshop.scheduling.label")));
@@ -77,7 +78,7 @@ public class MenuPlanning
       add(miStudio = new JMenuItem(BundleUtil.getLabel("Studio.scheduling.label")));
     }
 
-    manage = ConfigUtil.getConf(ConfigKey.TEACHER_MANAGEMENT.getKey(), dc);
+    manage = ConfigUtil.getConf(ConfigKey.TEACHER_MANAGEMENT.getKey());
     if (manage != null && manage.startsWith("t")) {
       addSeparator();
       add(miAttendanceSheet = new JMenuItem(BundleUtil.getLabel("Menu.presence.file.label")));

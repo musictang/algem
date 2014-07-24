@@ -1,7 +1,7 @@
 /*
- * @(#)AccountTransferDlg.java	2.8.r 13/12/13
+ * @(#)AccountTransferDlg.java	2.8.w 09/07/14
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -44,7 +44,7 @@ import net.algem.util.ui.MessagePopup;
  * Dialog for transfering orderlines to a file readable by accounting software.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.r
+ * @version 2.8.w
  * @since 2.8.r 13/12/13
  */
 public abstract class AccountTransferDlg
@@ -53,7 +53,7 @@ public abstract class AccountTransferDlg
 {
 
   protected DataCache dataCache;
-  protected DataConnection dbx;
+  protected DataConnection dc;
   protected AccountExportService exportService;
   protected GemButton btValidation;
   protected GemButton btCancel;
@@ -65,7 +65,7 @@ public abstract class AccountTransferDlg
   public AccountTransferDlg(Frame parent, DataCache dataCache, AccountExportService exportService) {
     super(parent);
     this.dataCache = dataCache;
-    dbx = dataCache.getDataConnection();
+    dc = DataCache.getDataConnection();
     this.exportService = exportService;
 
     btValidation = new GemButton(GemCommand.VALIDATION_CMD);
@@ -77,7 +77,7 @@ public abstract class AccountTransferDlg
     buttons.add(btValidation);
     buttons.add(btCancel);
 
-    filePath = new GemField(ConfigUtil.getExportPath(dbx) + FileUtil.FILE_SEPARATOR + "export.txt", 25);
+    filePath = new GemField(ConfigUtil.getExportPath() + FileUtil.FILE_SEPARATOR + "export.txt", 25);
     chooser = new JButton(GemCommand.BROWSE_CMD);
     chooser.addActionListener(this);
   }
@@ -119,7 +119,7 @@ public abstract class AccountTransferDlg
       for (int i = 0; i < n; i++) {
         OrderLine e = list.elementAt(i);
         e.setTransfered(true);
-        OrderLineIO.transfer(e, dbx);
+        OrderLineIO.transfer(e, dc);
       }
     }
   }

@@ -1,5 +1,5 @@
 /*
- * @(#)TrainingScheduleCtrl.java	2.8.v 29/05/14
+ * @(#)TrainingScheduleCtrl.java	2.8.w 08/07/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -41,24 +41,24 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.v
+ * @version 2.8.w
  * @since 2.8.t 11/04/14
  */
 public class TrainingScheduleCtrl
         extends CardCtrl
 {
 
-  private GemDesktop desktop;
-  private DataConnection dc;
+  private final GemDesktop desktop;
+  private final DataConnection dc;
+  private final PlanningService service;
   private TrainingScheduleView trainingView;
   protected ConflictListView conflictsView;
-  private PlanningService service;
   private Action action;
   private List<GemDateTime> dates;
 
   public TrainingScheduleCtrl(GemDesktop desktop) {
     this.desktop = desktop;
-    dc = desktop.getDataCache().getDataConnection();
+    dc = DataCache.getDataConnection();
     service = new PlanningService(dc);
   }
 

@@ -1,5 +1,5 @@
 /*
- * @(#)ConfigEditor.java 2.8.v 13/06/14
+ * @(#)ConfigEditor.java 2.8.w 08/07/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -52,8 +52,6 @@ public class ConfigEditor
   private ConfigPanel adminPanel;
   private ConfigPanel filePanel;
   private ConfigPanel ribPanel;
-  //private ConfigPanel programPanel;
-
   private Map<String,Config> confs;
   private DataConnection dc;
 	private DataCache dataCache;
@@ -62,15 +60,13 @@ public class ConfigEditor
   private GemButton btClose;
   private GemDesktop desktop;
 
-
-
   public ConfigEditor() {
   }
 
   public ConfigEditor(GemDesktop desktop) {
     this.desktop = desktop;
 		dataCache = desktop.getDataCache();
-    this.dc = dataCache.getDataConnection();
+    this.dc = DataCache.getDataConnection();
     load();
   }
 

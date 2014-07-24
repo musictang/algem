@@ -1,5 +1,5 @@
 /*
- * @(#)HourEmployeeDlg.java	2.8.v 11/06/14
+ * @(#)HourEmployeeDlg.java	2.8.w 08/07/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -61,7 +61,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.v
+ * @version 2.8.w
  * @since 2.8.v 10/06/14
  */
 public class HourEmployeeDlg
@@ -88,7 +88,7 @@ public class HourEmployeeDlg
       parent,
       BundleUtil.getLabel("Menu.edition.export.label") + " " + BundleUtil.getLabel("Menu.employee.hour.label"),
       file,
-      dataCache.getDataConnection()
+      DataCache.getDataConnection()
       );
     this.dataCache = dataCache;
     service = new AccountingService(dc);

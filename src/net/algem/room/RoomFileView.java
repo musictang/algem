@@ -1,7 +1,7 @@
 /*
- * @(#)RoomFileView.java 2.8.m 11/09/13
+ * @(#)RoomFileView.java 2.8.w 17/07/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,6 +28,7 @@ import net.algem.accounting.OrderLineEditor;
 import net.algem.accounting.OrderLineTableModel;
 import net.algem.contact.*;
 import net.algem.util.BundleUtil;
+import net.algem.util.DataCache;
 import net.algem.util.GemLogger;
 import net.algem.util.module.FileView;
 import net.algem.util.module.GemDesktop;
@@ -38,7 +39,7 @@ import net.algem.util.ui.TabPanel;
  * Tab container for room file.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.m
+ * @version 2.8.w
  * @since 2.1.j
  */
 public class RoomFileView
@@ -59,8 +60,8 @@ public class RoomFileView
   private boolean creation;
   private RoomService service;
 
-  public RoomFileView(GemDesktop _desktop, Room room, RoomService service) {
-    super(_desktop, GemModule.ROOM_VIEW_KEY);
+  public RoomFileView(GemDesktop desktop, Room room, RoomService service) {
+    super(desktop, GemModule.ROOM_VIEW_KEY);
     this.service = service;
 
     if (room != null && room.getId() > 0) {
@@ -142,8 +143,17 @@ public class RoomFileView
     orderLineEditor = new OrderLineEditor(desktop, t);
     orderLineEditor.init();
     orderLineEditor.setMemberId(room.getContact().getId());
-    orderLineEditor.setPayerId(room.getPayer().getId());
-    orderLineEditor.setLabel(room.getPayer().getNameFirstname());
+    int payerId = room.getPayer() != null ? room.getPayer().getId() : 0;
+    orderLineEditor.setPayerId(payerId);
+    String label = String.valueOf(payerId);
+    if (room.getPayer() != null) {
+      if (room.getPayer().getNameFirstname() != null && room.getPayer().getNameFirstname().trim().length() > 0) {
+        label = room.getPayer().getNameFirstname();
+      } else if (room.getPayer().getOrganization() != null && room.getPayer().getOrganization().length() > 0) {
+        label = room.getPayer().getOrganization();
+      } 
+    }
+    orderLineEditor.setLabel(label);
     orderLineEditor.addActionListener(listener);
     wTab.addItem(orderLineEditor, BundleUtil.getLabel("Person.schedule.payment.tab.label"));
     wTab.setSelectedComponent(orderLineEditor);
@@ -162,7 +172,7 @@ public class RoomFileView
 
   private void initContact() {
     contactEditor = new ContactFileEditor(desktop);
-    contactEditor.setCodePostalCtrl(new CodePostalCtrl(dataCache.getDataConnection()));
+    contactEditor.setCodePostalCtrl(new CodePostalCtrl(DataCache.getDataConnection()));
     setContact();
     wTab.addItem(contactEditor, TABS[1]);
     wTab.addItem(equipEditor, TABS[2]);

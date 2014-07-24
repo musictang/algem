@@ -52,8 +52,8 @@ public class DayPlanTeacherView
 
     int cpt = 0;
 
-    plan.clear();
-    plan.setDate(d);
+    dayPlanView.clear();
+    dayPlanView.setDate(d);
     date.set(d);
 
     for (int i = 0; i < teacherList.getSize(); i++) {
@@ -68,13 +68,13 @@ public class DayPlanTeacherView
         pj.setSchedule(v1);
         pj.setScheduleRange(v2);
 
-        plan.addCol(pj);
+        dayPlanView.addCol(pj);
 
         cpt++;
       }
     }
 
-    plan.repaint();
+    dayPlanView.repaint();
     setBar();
   }
 

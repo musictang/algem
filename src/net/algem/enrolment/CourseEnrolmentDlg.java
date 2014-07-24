@@ -1,5 +1,5 @@
 /*
- * @(#)CourseEnrolmentDlg.java	2.8.t 02/05/14
+ * @(#)CourseEnrolmentDlg.java	2.8.w 09/07/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -60,7 +60,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.8.w
  * @since 1.0a 07/07/1999
  */
 public class CourseEnrolmentDlg
@@ -131,7 +131,7 @@ public class CourseEnrolmentDlg
     validation = false;
     dataCache = desktop.getDataCache();
     service = s;
-    pService = new PlanningService(dataCache.getDataConnection());
+    pService = new PlanningService(DataCache.getDataConnection());
     memberId = adh;
 
     estabChoice = new EstabChoice(dataCache.getList(Model.Establishment));
@@ -367,6 +367,7 @@ public class CourseEnrolmentDlg
    * Sets the course characteristics for the course order {@code co}.
    *
    * @param co course order
+   * @throws net.algem.enrolment.EnrolmentException
    */
   public void loadEnrolment(CourseOrder co) throws EnrolmentException {
 
@@ -389,7 +390,7 @@ public class CourseEnrolmentDlg
   private int getDefaultEstab() {
 
     try {
-      return Integer.parseInt(ConfigUtil.getConf(ConfigKey.DEFAULT_ESTABLISHMENT.getKey(), dataCache.getDataConnection()));
+      return Integer.parseInt(ConfigUtil.getConf(ConfigKey.DEFAULT_ESTABLISHMENT.getKey()));
     } catch (NumberFormatException nfe) {
       GemLogger.log(nfe.getMessage());
     }
@@ -402,6 +403,7 @@ public class CourseEnrolmentDlg
    * ~* : regex matching case unsensitive
    *
    * @param id establishment id
+   * @throws java.sql.SQLException
    */
   public void loadEstab(int id) throws SQLException {
 

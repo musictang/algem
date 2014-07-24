@@ -1,5 +1,5 @@
 /*
- * @(#)DayPlanView.java 2.8.v 13/06/14
+ * @(#)DayPlanView.java 2.8.w 21/07/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -24,17 +24,21 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.print.Printable;
+import java.sql.SQLException;
 import java.util.*;
 import net.algem.config.ColorPlan;
+import net.algem.config.ConfigUtil;
 import net.algem.course.Course;
 import net.algem.planning.*;
+import net.algem.room.DailyTimes;
+import net.algem.util.GemLogger;
 
 /**
  * Day schedule layout.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.v
+ * @version 2.8.w
  * @since 1.0a 07/07/1999
  */
 public class DayPlanView
@@ -42,29 +46,23 @@ public class DayPlanView
         implements Printable
 {
 
-  private static final int H_START = 540;
-  private static final int GRID_Y = 30; // orig : 28
-
   private int ncols = 5;
-  private int pas_y;
-  private int th;
+  private int lineHeight;
   private FontMetrics fm;
   private Dimension dim;
   private Graphics bg;
   private Date date;
   private Calendar cal;
   private Vector<DayPlan> cols;
-  private int top;
 
   public DayPlanView(Date d) {
     cols = new Vector<DayPlan>();
     date = d;
     cal = Calendar.getInstance(Locale.FRANCE);
     cal.setTime(d);
-    pas_x = 100;
+    step_x = 100;
 
     addMouseListener(this);
-
   }
 
   public DayPlanView() {
@@ -102,15 +100,14 @@ public class DayPlanView
     super.paint(g);
     if (img == null) {
       dim = getSize();
-      pas_y = (dim.height - MARGEH) / GRID_Y;
+      step_y = (dim.height - TOP_MARGIN) / GRID_Y;
       img = createImage(dim.width, dim.height);
       bg = img.getGraphics();
       bg.setFont(NORMAL_FONT);
       fm = bg.getFontMetrics();
-      th = fm.getHeight() + 4;
+      lineHeight = fm.getHeight() + 4;
       drawBackground();
     }
-//		g.drawImage(img, in.left, in.top, this);
     g.drawImage(img, 0, 0, this);
   }
 
@@ -119,17 +116,32 @@ public class DayPlanView
    */
   @Override
   public void drawBackground() {
-    //Dimension d = getSize();
-    //pas_x = 100;
-    ncols = dim.width / pas_x;
+    ncols = dim.width / step_x;
     drawGrid();
 
     if (cols == null) {
       return;
     }
 
+    ScheduleObject dummy = new ScheduleObject()
+    {
+      @Override
+      public String getScheduleLabel() {
+        return null;
+      }
+
+      @Override
+      public String getScheduleDetail() {
+        return null;
+      }
+    };
+    int dow = cal.get(Calendar.DAY_OF_WEEK);
     for (int i = top; i < top + ncols && i < cols.size(); i++) {
       DayPlan pj = cols.elementAt(i);
+      DailyTimes dt = pj.getDailyTime(dow);
+      if (dt != null) {
+        drawClosed(i, dt, dummy);
+      }
       drawSchedules(i, pj.getSchedule());
       drawScheduleRanges(i, pj.getScheduleRange());
     }
@@ -140,52 +152,86 @@ public class DayPlanView
       ScheduleObject prv = new CourseSchedule();
       prv.setActivity(new Course(""));
       prv.setIdPerson(0);
+
       for (int j = 0; j < v.size(); j++) {
         ScheduleObject p = v.elementAt(j);
         ScheduleObject prev = (j == 0) ? prv : v.elementAt(j - 1);
         textRange(i, p, prev); // ajout des textes sur les plannings
       }
+    }
+  }
 
+  protected void drawClosed(int col, DailyTimes dt, ScheduleObject dummy) {
+    Hour start = dt.getOpening();
+    Hour end = dt.getClosing();
+
+    Hour first = new Hour(H_START);
+    Hour last = new Hour("24:00");
+
+    if (start != null && start.toMinutes() > H_START) {
+      dummy.setStart(first);
+      dummy.setEnd(start);
+      drawRange(col, dummy, CLOSED_COLOR, step_x);
+    }
+    if (end != null && end.toMinutes() < 1440) {
+      dummy.setStart(end.toString().equals(Hour.NULL_HOUR) ? first : end);
+      dummy.setEnd(last);
+      drawRange(col, dummy, CLOSED_COLOR, step_x);
     }
   }
 
   private void drawGrid() {
-    int x = MARGED + (pas_x / 2) + 1;
-    int y = th;
-    // Dessin des entetes de colonne sur la partie visible
+    int x = RIGHT_MARGIN + (step_x / 2) + 1;
+    int y = lineHeight;
+    // Column headers
     for (int i = top; i < top + ncols && i < cols.size(); i++) {
       DayPlan p = cols.elementAt(i);
       String s = p.getLabel();
       int w = fm.stringWidth(s) + 4;
-      while (w > pas_x) {
+      // fits string in column
+      while (w > step_x) {
         s = s.substring(0, s.length() - 1);
         w = fm.stringWidth(s) + 4;
       }
       bg.drawString(s, x - (w - 4) / 2, y);
-      bg.drawLine(x - (pas_x / 2), 0, x - (pas_x / 2), dim.height);
-      x += pas_x;
+      bg.drawLine(x - (step_x / 2), 0, x - (step_x / 2), dim.height);
+      x += step_x;
     }
-    bg.drawLine(x - (pas_x / 2), 0, x - (pas_x / 2), dim.height);
-    bg.drawLine(0, MARGEH, dim.width, MARGEH);
+    // first vertical line
+    bg.drawLine(x - (step_x / 2), 0, x - (step_x / 2), dim.height);
+    // first horizontal line
+    bg.drawLine(5 + fm.stringWidth("00:00") + 5, TOP_MARGIN, dim.width, TOP_MARGIN);
+
     x = 5;
-    y = MARGEH + pas_y;
-    Hour heure = new Hour(H_START);
-    // tracé des libellés des heures sur la colonne de gauche
+    y = TOP_MARGIN + (fm.getHeight() / 2);
+
+    Hour hour = new Hour(H_START);
+
+    // Hour labels on left column
     for (int i = 0; i < GRID_Y; i++) {
-      bg.drawString(heure.toString(), x, y);
-      heure.incMinute(30);
-      y += pas_y;
+      bg.drawString(hour.toString(), x, y);
+      hour.incMinute(30);
+      y += step_y;
     }
     bg.setColor(Color.gray);
-    x = 5;
-    y = MARGEH + (pas_y * 2);
-    // tracé des lignes de séparation
-    for (int i = 0; i < GRID_Y; i += 2, y += (pas_y * 2)) {
-      bg.drawLine(2, y + 1, dim.width, y + 1);
+
+    x = 5 + fm.stringWidth(hour.toString()) + 5;
+    y = TOP_MARGIN + step_y;
+    // Half hours lines (odd lines are dotted)
+
+    Graphics2D g2d = (Graphics2D) bg.create();
+    Stroke dotted = new BasicStroke(0.1f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 10, new float[]{1f, 3f}, 0);
+    g2d.setStroke(dotted);
+    for (int i = 0; i < GRID_Y; i++, y += step_y) {
+      if (0 == (i & 1)) {
+        g2d.drawLine(x, y + 1, dim.width, y + 1);
+      } else {
+        bg.drawLine(x, y + 1, dim.width, y + 1);
+      }
     }
   }
 
-   /**
+  /**
    * Schedule coloring.
    *
    * @param i column number
@@ -195,7 +241,7 @@ public class DayPlanView
     for (int j = 0; j < v.size(); j++) {
       ScheduleObject p = v.elementAt(j);
       Color c = getScheduleColor(p);
-      drawRange(i, p, c, pas_x); // dessin des plannings p comme ScheduleObject
+      drawRange(i, p, c, step_x); // dessin des plannings p comme ScheduleObject
       if (p.getType() == Schedule.MEMBER || p.getType() == Schedule.GROUP) {
         if (p.getNote() == -1) {
           flagNotPaid(i, p.getStart().toMinutes(), p.getEnd().toMinutes(), c);
@@ -221,11 +267,11 @@ public class DayPlanView
       vp.removeAll(vpci);
     }
     Color c = colorPrefs.getColor(ColorPlan.RANGE);
-    // tracé des plages de cours individuels
+    // individual schedule ranges
     for (ScheduleRangeObject p : vp) {
       Course cc = p.getCourse();
       if (cc != null && !cc.isCollective()) {
-        drawRange(i, p, c, pas_x);
+        drawRange(i, p, c, step_x);
       }
     }
     if (vpci == null || vpci.isEmpty()) {
@@ -236,7 +282,7 @@ public class DayPlanView
     int idx = 0; // index plage
     int idp = vpci.get(0).getScheduleId();
     // tracé des plages de cours collectifs
-    for (int j = 0 ; j < vpci.size(); j++) {
+    for (int j = 0; j < vpci.size(); j++) {
       ScheduleRangeObject p = vpci.get(j);
       if (idp == p.getScheduleId()) {
         n++;
@@ -254,34 +300,34 @@ public class DayPlanView
   }
 
   protected void drawRange(int col, ScheduleObject p, Color c, int w) {
-    int deb = p.getStart().toMinutes();
-    int fin = p.getEnd().toMinutes();
+    int pStart = p.getStart().toMinutes();
+    int pEnd = p.getEnd().toMinutes();
 
-    int x = MARGED + 2 + ((col - top) * pas_x);
-    int y = MARGEH + 2 + (((deb - H_START) * pas_y) / GRID_Y);
-    int ht = ((fin - deb) * pas_y) / GRID_Y;
+    int x = setX(col, 2);
+    int y = setY(pStart);
+    int ht = setY(pEnd) - y;
 
     bg.setColor(getScheduleRangeColor(p, c));
-    //bg.fillRect(x, y, pas_x - 2, ht - 1);
     bg.fillRect(x, y, w - 1, ht - 1);
     bg.setColor(Color.black);
-    // trait noir séparateur
+    // black line separator
     if (p instanceof CourseSchedule && p.getClass() != ScheduleRangeObject.class) {
-      bg.drawLine(x, y-1, (x + w) -1,y-1);
+      bg.drawLine(x, y - 1, (x + w) - 1, y - 1);
     }
   }
 
   /**
    * Text coloring.
    *
-   * @param colonne
+   * @param col
    * @param p
+   * @param prev
    */
-  public void textRange(int colonne, ScheduleObject p, ScheduleObject prev) {
-    int start = p.getStart().toMinutes();
+  public void textRange(int col, ScheduleObject p, ScheduleObject prev) {
+    int pStart = p.getStart().toMinutes();
 
-    int x = MARGED + 1 + ((colonne - top) * pas_x);
-    int y = MARGEH + 1 + (((start - H_START) * pas_y) / GRID_Y);// MARGEH + 1  (orig : MARGEH + 2)
+    int x = setX(col, 1);
+    int y = setY(pStart);
 
     bg.setColor(getTextColor(p));
     bg.setFont(NORMAL_FONT);
@@ -294,22 +340,20 @@ public class DayPlanView
   private void showLabel(ScheduleObject p, ScheduleObject prev, int x, int y) {
     String code = getCode(p);
     String label = null;
-    int offset = (pas_x / 2);
+    int offset = (step_x / 2);
     if (!p.getScheduleLabel().equals(prev.getScheduleLabel())) {
       label = p.getScheduleLabel() + (code == null ? "" : code);
     } else {
       label = code;
-      offset = (pas_x - 15);
+      offset = (step_x - 15);
     }
     if (label != null && !label.isEmpty()) {
       int w = fm.stringWidth(label) + 4;// largeur du texte
 
-      while (w > pas_x) {
+      while (w > step_x) {
         label = label.substring(0, label.length() - 1);// on enlève un caractère
         w = fm.stringWidth(label) + 4; // on réduit la largeur en fonction
       }
-
-      //bg.drawString(lib, x + (pas_x / 2) - (w - 4) / 2, y + 10);
       bg.drawString(label, x + offset - (w - 4) / 2, y + 10);
     }
   }
@@ -329,10 +373,10 @@ public class DayPlanView
         }
         if (subLabel != null) {
           bg.setFont(SMALL_FONT);
-          drawSubLabel(subLabel, x, y + (18), pas_x);
+          drawSubLabel(subLabel, x, y + (18), step_x);
           if (p instanceof TechStudioSchedule) {
             subLabel = ((TechStudioSchedule) p).getActivityLabel();
-            drawSubLabel(subLabel, x, y + (28), pas_x);
+            drawSubLabel(subLabel, x, y + (28), step_x);
           }
         }
       }
@@ -350,23 +394,20 @@ public class DayPlanView
 
   @Override
   public void flagNotPaid(int colonne, int deb, int fin, Color c) {
-    int x = MARGED + 2 + ((colonne - top) * pas_x);
-    int y = MARGEH + 2 + (((deb - H_START) * pas_y) / GRID_Y);
-    //int ht = ((end - deb) * pas_y) / 30;
+    int x = RIGHT_MARGIN + 2 + ((colonne - top) * step_x);
+    int y = setY(deb);
     bg.setColor(colorPrefs.getColor(ColorPlan.FLAG));
     bg.drawString("$$$", x, y + 12);
     bg.setColor(Color.black);
   }
 
-
-
   @Override
   public void processMouseEvent(MouseEvent e) {
     /*
-     * if (e.isPopupTrigger()) { int	x = e.getX() - MARGED -2; int	y = e.getY()
-     * - MARGEH -2;
+     * if (e.isPopupTrigger()) { int	x = e.getX() - RIGHT_MARGIN -2; int	y = e.getY()
+     * - TOP_MARGIN -2;
      *
-     * int	jj = ((x + (pas_x)/2) / pas_x) + 1; int	hh = ((y * 30)/12)+540; int
+     * int	jj = ((x + (step_x)/2) / step_x) + 1; int	hh = ((y * 30)/12)+540; int
      * mm = hh % 60; hh /=	60; Date d = new Date(annee-1900,mois-1,jj,hh,mm);
      * popup.setLabel(d.toString());
      * popup.show(e.getComponent(),e.getX(),e.getY()); }
@@ -375,12 +416,12 @@ public class DayPlanView
   }
 
   public int getColId() {
-    int x = clickx - MARGED - 2;
-    int y = clicky - MARGEH - 2;
+    int x = clickX - RIGHT_MARGIN - 2;
+    int y = clickY - TOP_MARGIN - 2;
 
-    int col = x / pas_x;
+    int col = x / step_x;
     col += top;
-//		int	col = ((x + (pas_x)/2) / pas_x) + 1;
+//		int	col = ((x + (step_x)/2) / step_x) + 1;
     if (col >= 0 && col < cols.size()) {
       return ((DayPlan) cols.elementAt(col)).getId();
     } else {
@@ -396,14 +437,14 @@ public class DayPlanView
   @Override
   public void mouseClicked(MouseEvent e) {
 
-    clickx = e.getX();
-    clicky = e.getY();
-    int x = clickx - MARGED - 2;
-    int y = clicky - MARGEH - 2;
+    clickX = e.getX();
+    clickY = e.getY();
+    int x = clickX - RIGHT_MARGIN - 2;
+    int y = clickY - TOP_MARGIN - 2;
 
-    int col = x / pas_x; // le numéro de la colonne
-//		int	jj = ((x + (pas_x)/2) / pas_x) + 1;
-    int hh = ((y * 30) / pas_y) + H_START; //heure
+    int col = x / step_x; // le numéro de la colonne
+//		int	jj = ((x + (step_x)/2) / step_x) + 1;
+    int hh = ((y * 30) / step_y) + H_START; //heure
     int mm = hh % 60; // minute
     hh /= 60;
 

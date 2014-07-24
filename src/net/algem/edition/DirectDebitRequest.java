@@ -1,5 +1,5 @@
 /*
- * @(#)DirectDebitRequest.java	2.8.r 11/01/14
+ * @(#)DirectDebitRequest.java	2.8.w 09/07/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -47,7 +47,7 @@ import net.algem.util.MessageUtil;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.r
+ * @version 2.8.w
  */
 public class DirectDebitRequest
         extends Canvas
@@ -68,6 +68,7 @@ public class DirectDebitRequest
   /**
    *
    * @param c
+   * @param ddMandate
    * @param withOrderLines prints also the amount of order lines
    */
   public DirectDebitRequest(Component c, DDMandate ddMandate, boolean withOrderLines) {
@@ -100,16 +101,16 @@ public class DirectDebitRequest
     BankBranch branch = b;
 
     Address branchAddress = null;
-    DataConnection dc = cache.getDataConnection();
+    DataConnection dc = DataCache.getDataConnection();
 		DirectDebitService ddService = DirectDebitService.getInstance(dc);
 		
 		DirectDebitCreditor ddCreditor = ddService.getCreditorInfo();
 
-    String adr1 = ConfigUtil.getConf(ConfigKey.ORGANIZATION_ADDRESS1.getKey(), dc);
-    String adr2 = ConfigUtil.getConf(ConfigKey.ORGANIZATION_ADDRESS2.getKey(), dc);
+    String adr1 = ConfigUtil.getConf(ConfigKey.ORGANIZATION_ADDRESS1.getKey());
+    String adr2 = ConfigUtil.getConf(ConfigKey.ORGANIZATION_ADDRESS2.getKey());
     street = adr1 + " " + adr2;
-    String cp = ConfigUtil.getConf(ConfigKey.ORGANIZATION_ZIPCODE.getKey(), dc);
-    String city = ConfigUtil.getConf(ConfigKey.ORGANIZATION_CITY.getKey(), dc);
+    String cp = ConfigUtil.getConf(ConfigKey.ORGANIZATION_ZIPCODE.getKey());
+    String city = ConfigUtil.getConf(ConfigKey.ORGANIZATION_CITY.getKey());
     city = cp + " " + city;
 
     PrintJob job = tk.getPrintJob(parent, title, props);

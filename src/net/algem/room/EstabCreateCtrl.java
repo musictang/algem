@@ -1,7 +1,7 @@
 /*
- * @(#)EstabCreateCtrl.java 2.8.f 24/05/13
+ * @(#)EstabCreateCtrl.java 2.8.w 08/07/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -24,6 +24,7 @@ import java.awt.event.ActionEvent;
 import java.sql.SQLException;
 import net.algem.contact.ContactFileEditor;
 import net.algem.contact.Person;
+import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
@@ -37,19 +38,19 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.f
+ * @version 2.8.w
  */
 public class EstabCreateCtrl
         extends CardCtrl
 {
 
-  private DataConnection dc;
-  private GemDesktop desktop;
+  private final DataConnection dc;
+  private final GemDesktop desktop;
   private ContactFileEditor contact;
 
-  public EstabCreateCtrl(GemDesktop _desktop) {
-    desktop = _desktop;
-    dc = _desktop.getDataCache().getDataConnection();
+  public EstabCreateCtrl(GemDesktop desktop) {
+    this.desktop = desktop;
+    dc = DataCache.getDataConnection();
   }
 
   public void init() {

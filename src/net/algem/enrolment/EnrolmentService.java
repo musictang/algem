@@ -1,5 +1,5 @@
 /*
- * @(#)EnrolmentService.java	2.8.v 24/06/14
+ * @(#)EnrolmentService.java	2.8.w 09/07/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -42,21 +42,21 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.v
+ * @version 2.8.w
  * @since 2.4.a 20/04/12
  */
 public class EnrolmentService
         extends GemService
 {
 
-  private RoomIO roomIO;
-  private ActionIO actionIO;
-  private PlanningService planningService;
-  private DataCache dataCache;
+  private final RoomIO roomIO;
+  private final ActionIO actionIO;
+  private final PlanningService planningService;
+  private final DataCache dataCache;
 
   public EnrolmentService(DataCache dataCache) {
     this.dataCache = dataCache;
-    this.dc = dataCache.getDataConnection();
+    this.dc = DataCache.getDataConnection();
     roomIO = (RoomIO) DataCache.getDao(Model.Room);
     actionIO = (ActionIO) DataCache.getDao(Model.Action);
     planningService = new PlanningService(dc);
@@ -67,7 +67,7 @@ public class EnrolmentService
   }
 
   public Room getRoomOnPeriod(int c) throws SQLException {
-    return roomIO.getRoom(c, ConfigUtil.getStartOfPeriod(dc));
+    return roomIO.getRoom(c, ConfigUtil.getStartOfPeriod());
   }
 
   public Room getRoom(int id) throws SQLException {

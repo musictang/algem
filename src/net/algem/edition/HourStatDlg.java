@@ -1,7 +1,7 @@
 /*
- * @(#)HourStatDlg.java	2.8.k 25/07/13
+ * @(#)HourStatDlg.java	2.8.w 08/07/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -53,7 +53,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.k
+ * @version 2.8.w
  * @since 1.0a 30/04/2003
  */
 public class HourStatDlg
@@ -69,26 +69,26 @@ public class HourStatDlg
   private NumberFormat nf = NumberFormat.getInstance(Locale.FRANCE);
   private ExportService service;
 
-  public HourStatDlg(Frame _parent, DataCache _cache) {
-    super(_parent, "Edition Statistique activité");
-    dataCache = _cache;
-    init(_cache.getDataConnection());
+  public HourStatDlg(Frame frame, DataCache dataCache) {
+    super(frame, "Edition Statistique activité");
+    this.dataCache = dataCache;
+    init(DataCache.getDataConnection());
   }
 
-  public HourStatDlg(Dialog _parent, DataCache _cache) {
-    super(_parent, "Edition Statitique activité");
-    dataCache = _cache;
-    init(_cache.getDataConnection());
+  public HourStatDlg(Dialog dialog, DataCache dataCache) {
+    super(dialog, "Edition Statitique activité");
+    this.dataCache = dataCache;
+    init(DataCache.getDataConnection());
   }
 
-  public void init(DataConnection _dc) {
+  public void init(DataConnection dc) {
     
-    service = new ExportService(_dc);
+    service = new ExportService(dc);
     nf = NumberFormat.getInstance();
     nf.setMaximumFractionDigits(2);
     nf.setMinimumFractionDigits(2);
 
-    view = new HourStatView(_dc, dataCache.getList(Model.School));
+    view = new HourStatView(dc, dataCache.getList(Model.School));
 
     btValidation = new GemButton(GemCommand.VALIDATION_CMD);
     btValidation.addActionListener(this);

@@ -1,5 +1,5 @@
 /*
- * @(#)StudioScheduleCtrl.java	2.8.v 24/06/14
+ * @(#)StudioScheduleCtrl.java	2.8.w 08/07/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -33,6 +33,7 @@ import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import net.algem.planning.editing.ModifPlanEvent;
 import net.algem.util.BundleUtil;
+import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 import net.algem.util.GemCommand;
 import net.algem.util.MessageUtil;
@@ -46,7 +47,7 @@ import net.algem.util.ui.MessagePopup;
  * This controller is used to planify one or more rooms at differents times and for different technicians.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.v
+ * @version 2.8.w
  * @since 2.8.v 21/05/14
  */
 public class StudioScheduleCtrl
@@ -54,15 +55,16 @@ public class StudioScheduleCtrl
 {
 
   protected ConflictListView conflictsView;
-  private GemDesktop desktop;
-  private PlanningService service;
+
   private List<GemDateTime> dates;
   private StudioScheduleView studioView;
-  private DataConnection dc;
+  private final GemDesktop desktop;
+  private final PlanningService service;
+  private final DataConnection dc;
 
   public StudioScheduleCtrl(GemDesktop desktop) {
     this.desktop = desktop;
-    this.dc = desktop.getDataCache().getDataConnection();
+    this.dc = DataCache.getDataConnection();
     service = new PlanningService(dc);
   }
 

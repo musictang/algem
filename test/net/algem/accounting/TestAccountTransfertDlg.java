@@ -1,7 +1,7 @@
 /*
- * @(#)TestAccountTransfertDlg.java 2.8.a 01/04/13
+ * @(#)TestAccountTransfertDlg.java 2.8.w 09/07/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -38,7 +38,7 @@ import net.algem.util.model.ModelException;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.w
  */
 public class TestAccountTransfertDlg extends TestCase {
     
@@ -63,7 +63,7 @@ public class TestAccountTransfertDlg extends TestCase {
         
         dc = TestProperties.getDataConnection();
         dataCache = TestProperties.getDataCache(dc);
-        path = ConfigUtil.getExportPath(dc);
+        path = ConfigUtil.getExportPath();
         t = new Account(account1);
         t.setLabel("compte test");
         AccountIO.insert(t, dc);

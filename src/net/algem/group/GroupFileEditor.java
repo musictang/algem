@@ -1,5 +1,5 @@
 /*
- * @(#)GroupFileEditor.java 2.8.v 09/06/14
+ * @(#)GroupFileEditor.java 2.8.w 08/07/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -33,6 +33,7 @@ import net.algem.contact.WebSite;
 import net.algem.planning.Schedule;
 import net.algem.planning.editing.ModifPlanEvent;
 import net.algem.util.BundleUtil;
+import net.algem.util.DataCache;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
@@ -43,7 +44,7 @@ import net.algem.util.ui.*;
 /**
  * Group file main editor.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.v
+ * @version 2.8.w
  */
 public class GroupFileEditor
         extends GemModule
@@ -104,7 +105,7 @@ public class GroupFileEditor
 
   @Override
   public void init() {
-    service = new GemGroupService(dataCache.getDataConnection());
+    service = new GemGroupService(DataCache.getDataConnection());
     try {
       Contact ref = service.getContact(group.getIdref());
       Contact man = service.getContact(group.getIdman());
@@ -316,7 +317,7 @@ public class GroupFileEditor
   private void save() {
 
     if (service == null) {
-      service = new GemGroupService(dataCache.getDataConnection());
+      service = new GemGroupService(DataCache.getDataConnection());
     }
     try {
       if (group.getId() == 0) {
@@ -362,7 +363,7 @@ public class GroupFileEditor
    */
   private void deleteGroup() {
     if (service == null) {
-      service = new GemGroupService(dataCache.getDataConnection());
+      service = new GemGroupService(DataCache.getDataConnection());
     }
     try {
       if (dataCache.authorize("Group.suppression.auth")) {

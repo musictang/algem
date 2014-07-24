@@ -1,5 +1,5 @@
 /*
- * @(#)ParamTableCtrl  2.8.r 14/01/14
+ * @(#)ParamTableCtrl  2.8.w 08/07/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes All Rights Reserved.
  *
@@ -28,6 +28,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
 import java.util.Enumeration;
+import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
@@ -40,7 +41,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.r
+ * @version 2.8.w
  * @since 1.0a 21/08/2009
  */
 public abstract class ParamTableCtrl
@@ -73,7 +74,7 @@ public abstract class ParamTableCtrl
    */
   public ParamTableCtrl(GemDesktop desktop , String title, boolean editKey, boolean activable) {
     this.desktop = desktop;
-    this.dc = desktop.getDataCache().getDataConnection();
+    this.dc = DataCache.getDataConnection();
     this.title = title;
     this.editKey = editKey;
 

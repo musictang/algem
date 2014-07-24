@@ -1,7 +1,7 @@
 /*
- * @(#)RoomSearchCtrl.java	2.7.a 11/12/12
+ * @(#)RoomSearchCtrl.java	2.8.w 08/07/14
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -37,18 +37,18 @@ import net.algem.util.ui.SearchCtrl;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.w
  * @since 2.2.b
  */
 public class RoomSearchCtrl
         extends SearchCtrl
 {
 
-  private GemDesktop desktop;
+  private final GemDesktop desktop;
 
-  public RoomSearchCtrl(GemDesktop _desktop) {
-    super(_desktop.getDataCache().getDataConnection(), null);
-    desktop = _desktop;
+  public RoomSearchCtrl(GemDesktop desktop) {
+    super(DataCache.getDataConnection(), null);
+    this.desktop = desktop;
   }
 
   @Override

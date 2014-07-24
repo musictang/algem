@@ -1,5 +1,5 @@
 /*
- * @(#)DayScheduleView.java	2.8.t 11/04/14
+ * @(#)DayScheduleView.java	2.8.w 08/07/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -49,7 +49,7 @@ import net.algem.util.ui.TabPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.8.w
  * @version 1.0b 06/10/2001
  */
 public class DayScheduleView
@@ -78,12 +78,10 @@ public class DayScheduleView
     add(tabPanel, BorderLayout.CENTER);
 
     setSize(PREF_WIDTH, PREF_HEIGHT);
-    
+    // @add par Baptiste
+    int b = 1;
     String s = null;
-    if ((s = ConfigUtil.getConf(
-			ConfigKey.TEACHER_MANAGEMENT.getKey(), dataCache.getDataConnection())) != null 
-			&& s.startsWith("t")
-			) {
+    if ((s = ConfigUtil.getConf(ConfigKey.TEACHER_MANAGEMENT.getKey())) != null && s.startsWith("t")) {
       teacherView = new DayPlanTeacherView(dataCache.getList(Model.Teacher));
       tabPanel.addItem(teacherView, BundleUtil.getLabel("Day.schedule.teacher.tab"));
     }
@@ -100,14 +98,14 @@ public class DayScheduleView
     int e = 0;
     Establishment estab = null;
     try {
-      e = Integer.parseInt(ConfigUtil.getConf(ConfigKey.DEFAULT_ESTABLISHMENT.getKey(), dataCache.getDataConnection()));
+      e = Integer.parseInt(ConfigUtil.getConf(ConfigKey.DEFAULT_ESTABLISHMENT.getKey()));
       estab =  (Establishment) DataCache.findId(e, Model.Establishment);
     } catch (NumberFormatException nfe) {
       GemLogger.log(getClass().getName() + "#init " + nfe.getMessage());
     } catch (SQLException sqe) {
       GemLogger.log(sqe.getMessage());
     }
-    String teacherManaged = ConfigUtil.getConf(ConfigKey.TEACHER_MANAGEMENT.getKey(), desktop.getDataCache().getDataConnection());
+    String teacherManaged = ConfigUtil.getConf(ConfigKey.TEACHER_MANAGEMENT.getKey());
     int offset = (teacherManaged.equals("t")) ? 1 : 0;
     tabPanel.setSelectedIndex(estabList.indexOf(estab) + offset);//+1 quand la gestion prof est activée car le premier onglet correspond aux profs
 

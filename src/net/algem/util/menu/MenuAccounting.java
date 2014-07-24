@@ -1,5 +1,5 @@
 /*
- * @(#)MenuAccounting.java 2.8.v 11/06/14
+ * @(#)MenuAccounting.java 2.8.w 09/07/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -34,6 +34,7 @@ import net.algem.config.ModeOfPaymentCtrl;
 import net.algem.edition.HourEmployeeDlg;
 import net.algem.room.RoomRateSearchCtrl;
 import net.algem.util.BundleUtil;
+import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
@@ -46,7 +47,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.8.v
+ * @version 2.8.w
  * @since 1.0a 07/07/1999
  */
 public class MenuAccounting
@@ -120,7 +121,7 @@ public class MenuAccounting
   public void actionPerformed(ActionEvent evt) {
     String arg = evt.getActionCommand();
     Object src = evt.getSource();
-    dc = dataCache.getDataConnection();
+    dc = DataCache.getDataConnection();
     desktop.setWaitCursor();
 
     if (src == miAccountSchedule) {
@@ -129,18 +130,18 @@ public class MenuAccounting
       dlg.init();
       dlg.setVisible(true);
     } else if (src == miAccountTransfert) {
-      AccountExportService exportService = getAccountingExportService(ConfigUtil.getConf(ConfigKey.ACCOUNTING_EXPORT_FORMAT.getKey(), dc));
+      AccountExportService exportService = getAccountingExportService(ConfigUtil.getConf(ConfigKey.ACCOUNTING_EXPORT_FORMAT.getKey()));
       CommunAccountTransferDlg accountTransfertDlg = new CommunAccountTransferDlg(desktop.getFrame(), dataCache, exportService);
       accountTransfertDlg.setVisible(true);
     } else if (src == miAccountDocument) {
-      AccountExportService exportService = getAccountingExportService(ConfigUtil.getConf(ConfigKey.ACCOUNTING_EXPORT_FORMAT.getKey(), dc));
+      AccountExportService exportService = getAccountingExportService(ConfigUtil.getConf(ConfigKey.ACCOUNTING_EXPORT_FORMAT.getKey()));
       AccountDocumentTransferDlg documentTransfertDlg = new AccountDocumentTransferDlg(desktop.getFrame(), dataCache, exportService);
       documentTransfertDlg.setVisible(true);
     } else if (menus.get("Menu.export.label").equals(arg)) {
       DirectDebitExportDlg dlg = new DirectDebitExportDlg((Frame) null, menus.get("Menu.debiting.label"), dc);
       dlg.setVisible(true);
     } else if (src == miDirectDebitList) {
-      DirectDebitService ddService = DirectDebitService.getInstance(dataCache.getDataConnection());
+      DirectDebitService ddService = DirectDebitService.getInstance(DataCache.getDataConnection());
       DDMandateCtrl ddCtrl = new DDMandateCtrl(desktop, ddService);
 			ddCtrl.load();
       desktop.addPanel("Direct.debit.sepa.list", ddCtrl, GemModule.M_SIZE);

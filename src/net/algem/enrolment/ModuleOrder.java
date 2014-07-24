@@ -1,7 +1,7 @@
 /*
- * @(#)ModuleOrder.java	2.8.a 03/04/13
+ * @(#)ModuleOrder.java	2.8.w 23/07/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -29,7 +29,7 @@ import net.algem.planning.DateFr;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.w
  */
 public class ModuleOrder
         implements java.io.Serializable
@@ -54,7 +54,7 @@ public class ModuleOrder
   private DateFr start;
   private DateFr end;
   private String modeOfPayment;
-  private String payment;
+  private PayFrequency payFrequency;
   private int nOrderLines;
   private String title;
   
@@ -62,7 +62,7 @@ public class ModuleOrder
 
   @Override
   public String toString() {
-    return idcmd + "," + module + "," + price + "," + start + "," + end + "," + price + "," + modeOfPayment + "," + payment + "," + nOrderLines;
+    return idcmd + "," + module + "," + price + "," + start + "," + end + "," + price + "," + modeOfPayment + "," + payFrequency + "," + nOrderLines;
   }
 
   public int getIdOrder() {
@@ -137,12 +137,12 @@ public class ModuleOrder
     modeOfPayment = r;
   }
 
-  public String getPayment() {
-    return payment;
+  public PayFrequency getPayment() {
+    return payFrequency;
   }
 
-  public void setPayment(String r) {
-    payment = r;
+  public void setPayment(PayFrequency p) {
+    payFrequency = p;
   }
 
   public int getNOrderLines() {

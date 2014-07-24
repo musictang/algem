@@ -1,5 +1,5 @@
 /*
- * @(#)StudioScheduleView.java	2.8.v 13/06/14
+ * @(#)StudioScheduleView.java	2.8.w 09/07/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -51,7 +51,7 @@ import net.algem.util.ui.GridBagHelper;
  * when scheduling studio sessions.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.v
+ * @version 2.8.w
  * @since 2.8.v 21/05/14
  */
 class StudioScheduleView
@@ -90,7 +90,7 @@ class StudioScheduleView
     category.setKey(0);
     employeePanelCtrl = new EmployeePanelCtrl(dataCache, BundleUtil.getLabel("Technician.label"));
     studio = new RoomChoice(new RoomActiveChoiceModel(dataCache.getList(Model.Room), true));
-    defStudio = Integer.parseInt(ConfigUtil.getConf(ConfigKey.DEFAULT_STUDIO.getKey(), dataCache.getDataConnection()));
+    defStudio = Integer.parseInt(ConfigUtil.getConf(ConfigKey.DEFAULT_STUDIO.getKey()));
     studio.setKey(defStudio);
 
     this.setLayout(new GridBagLayout());

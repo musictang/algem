@@ -1,5 +1,5 @@
 /*
- * @(#)MailUtil.java	2.8.v 12/06/14
+ * @(#)MailUtil.java	2.8.w 09/07/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -40,7 +40,7 @@ import net.algem.util.model.Model;
  * Utility class for sending emails.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.v
+ * @version 2.8.w
  * @since 2.8.k 26/07/13
  */
 public class MailUtil {
@@ -51,12 +51,12 @@ public class MailUtil {
   private DesktopMailHandler mailHandler;
 
   public MailUtil(DataCache dataCache) {
-    this(dataCache, new MemberService(dataCache.getDataConnection()));
+    this(dataCache, new MemberService(DataCache.getDataConnection()));
   }
 
   public MailUtil(DataCache dataCache, MemberService service) {
     this.dataCache = dataCache;
-    dc = dataCache.getDataConnection();
+    dc = DataCache.getDataConnection();
     mailHandler = new DesktopMailHandler();
     memberService = service;
   }
@@ -96,6 +96,9 @@ public class MailUtil {
    * Sends an email to selected schedule's participants.
    *
    * @param ranges selected schedule
+   * @param schedule
+   * @return a mailto-string
+   * @throws java.sql.SQLException
    */
   public String mailToMembers(Vector<ScheduleRangeObject> ranges, Schedule schedule) throws SQLException {
 
@@ -138,6 +141,7 @@ public class MailUtil {
    * Sends an email to the members of the group.
    *
    * @param mus the list of musicians (members)
+   * @return a mailto-string
    */
   public String mailToGroupMembers(Vector<Musician> mus) {
     String message = "";
@@ -205,7 +209,7 @@ public class MailUtil {
       System.err.println(ex.getMessage());
     }
     if (to == null) {
-      String domain = ConfigUtil.getConf(ConfigKey.ORGANIZATION_DOMAIN.getKey(), dc);
+      String domain = ConfigUtil.getConf(ConfigKey.ORGANIZATION_DOMAIN.getKey());
       to = dataCache.getUser().getLogin() + "@" + (domain == null ? BundleUtil.getLabel("Domain") : domain.trim().toLowerCase());
     }
     mailHandler.send(to, bcc);

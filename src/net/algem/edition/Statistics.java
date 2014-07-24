@@ -1,5 +1,5 @@
 /*
- * @(#)Statistics.java	2.8.v 25/06/14
+ * @(#)Statistics.java	2.8.w 09/07/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -48,7 +48,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.v
+ * @version 2.8.w
  * @since 2.6.a 09/10/12
  */
 public abstract class Statistics
@@ -74,7 +74,7 @@ public abstract class Statistics
 
   public void init(DataCache dataCache) {
     this.dataCache = dataCache;
-    this.dc = dataCache.getDataConnection();
+    this.dc = DataCache.getDataConnection();
     estabList = dataCache.getList(Model.Establishment).getData();
   }
 
@@ -104,7 +104,7 @@ public abstract class Statistics
   public void setConfig(DateFr start, DateFr end) throws IOException, SQLException {
     this.start = start;
     this.end = end;
-    path = ConfigUtil.getExportPath(dc) + FileUtil.FILE_SEPARATOR + "stats.html";
+    path = ConfigUtil.getExportPath() + FileUtil.FILE_SEPARATOR + "stats.html";
     out = new PrintWriter(new FileWriter(path));
     Preference p = AccountPrefIO.find(AccountPrefIO.MEMBER_KEY_PREF, dc);
     MEMBERSHIP_ACCOUNT = (Integer) p.getValues()[0];
@@ -204,7 +204,7 @@ public abstract class Statistics
    * Prints html header.
    */
   protected void header() {
-    String title = MessageUtil.getMessage("statistics.title", ConfigUtil.getConf(ConfigKey.ORGANIZATION_NAME.getKey(), dc));
+    String title = MessageUtil.getMessage("statistics.title", ConfigUtil.getConf(ConfigKey.ORGANIZATION_NAME.getKey()));
     String period = MessageUtil.getMessage("statistics.period", new Object[]{start, end});
     out.println("<!DOCTYPE html>\n<html>\n\t<head>\n\t\t<title>" + title + "</title>\n\t\t<meta charset='utf-8' />\n\t\t<style type='text/css'>" + getStyle() + "</style>\n\t</head>\n\t<body>");
     out.println("<h1 id=\"top\">" + title + "</h1>");

@@ -1,7 +1,7 @@
 /*
- * @(#)RehearsalCardCtrl.java 2.6.a 03/10/12
+ * @(#)RehearsalCardCtrl.java 2.8.w 08/07/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -22,6 +22,7 @@ package net.algem.contact.member;
 
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
+import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
@@ -33,20 +34,20 @@ import net.algem.util.ui.MessagePopup;
  * Controller for rehearsal cards.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.6.w
  */
 public class RehearsalCardCtrl 
 	extends CardCtrl
 {
 
-  private DataConnection dc;
-  private GemDesktop desktop;
-  private RehearsalCardView view;
+  private final DataConnection dc;
+  private final GemDesktop desktop;
+  private final RehearsalCardView view;
   private RehearsalCard card;
 
   public RehearsalCardCtrl(GemDesktop desktop) {
     this.desktop = desktop;
-    this.dc = desktop.getDataCache().getDataConnection();
+    this.dc = DataCache.getDataConnection();
     view = new RehearsalCardView();
     addCard("Fiche abonnement", view);
     select(0);

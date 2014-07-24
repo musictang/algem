@@ -1,5 +1,5 @@
 /*
- * @(#)TransferDlg.java	2.8.v 19/06/14
+ * @(#)TransferDlg.java	2.8.w 09/07/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -41,7 +41,7 @@ import net.algem.util.ui.GemPanel;
  * Abstract class for transfer operations dialog.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.v
+ * @version 2.8.w
  * @since 2.4.a 10/05/12
  */
 public abstract class TransferDlg
@@ -76,7 +76,7 @@ public abstract class TransferDlg
     chooser = new JButton(GemCommand.BROWSE_CMD);
     chooser.addActionListener(this);
 
-    filepath = new GemField(ConfigUtil.getExportPath(dc) + FileUtil.FILE_SEPARATOR + file, 25);
+    filepath = new GemField(ConfigUtil.getExportPath() + FileUtil.FILE_SEPARATOR + file, 25);
   }
 
   @Override

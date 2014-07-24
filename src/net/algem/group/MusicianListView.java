@@ -1,7 +1,7 @@
 /*
- * @(#)MusicianListView.java	2.8.k 26/07/13
+ * @(#)MusicianListView.java	2.8.w 23/07/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -42,7 +42,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.k
+ * @version 2.8.w
  * @since 1.0a 18/02/2004
  */
 public class MusicianListView
@@ -124,7 +124,7 @@ public class MusicianListView
 
     Musician m = (Musician) musicians.getItem(n);
     // il est nécessaire de récupérer les adresses, tel et email éventuels du contact
-    Contact c = ContactIO.findId(m.getId(), dataCache.getDataConnection());
+    Contact c = ContactIO.findId(m.getId(), DataCache.getDataConnection());
     PersonFile pf = new PersonFile(c);
     try {
       ((PersonFileIO) DataCache.getDao(Model.PersonFile)).complete(pf);
@@ -147,7 +147,7 @@ public class MusicianListView
         new MessageDialog(desktop.getFrame(), BundleUtil.getLabel("Information.label"), false, info, message);
       }
     } else if (GemCommand.ADD_CMD.equals(cmd)) {
-      MusicianDlg dlg = new MusicianDlg(this, "ajout musicien", desktop);
+      MusicianDlg dlg = new MusicianDlg(this, BundleUtil.getLabel("Action.add.player"), desktop);
       dlg.setOperation(GemEvent.CREATION);
       dlg.show();
     } else {
@@ -158,7 +158,7 @@ public class MusicianListView
 
         if (GemCommand.MODIFY_CMD.equals(cmd)) {
           Musician m = (Musician) musicians.getItem(n);
-          MusicianDlg dlg = new MusicianDlg(this, "modif musicien", desktop);
+          MusicianDlg dlg = new MusicianDlg(this, BundleUtil.getLabel("Action.modifiy.player"), desktop);
           dlg.setPerson(m);
           dlg.setOperation(GemEvent.MODIFICATION);
           dlg.show();

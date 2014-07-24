@@ -143,6 +143,6 @@ public class CommunAccountTransferDlg
       query += " AND payeur IN (SELECT idper FROM rib) AND payeur IN (SELECT id FROM personne)";
     }
     
-    return OrderLineIO.find(query, dbx);
+    return OrderLineIO.find(query, dc);
   }
 }

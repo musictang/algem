@@ -1,5 +1,5 @@
 /*
- * @(#)ConfigKey.java 2.8.v 12/06/14
+ * @(#)ConfigKey.java 2.8.w 23/07/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -27,7 +27,7 @@ import net.algem.util.BundleUtil;
  * First arg represents key in the table, second arg represents the label.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.v
+ * @version 2.8.w
  * @since 2.1.k 07/07/11
  */
 public enum ConfigKey
@@ -74,7 +74,10 @@ public enum ConfigKey
 
   /** End peak hour - start full rate for rehearsals. */
   OFFPEAK_HOUR("FinHeureCreuse", BundleUtil.getLabel("ConfEditor.offpeak.time.label")),
-
+  
+  /** Default start time. */
+  START_TIME("Heure.ouverture", BundleUtil.getLabel("ConfEditor.start.time.label")),
+  
   /** Teacher management. */
   TEACHER_MANAGEMENT("GestionProf", BundleUtil.getLabel("ConfEditor.teacher.management.label")),
 
@@ -141,7 +144,9 @@ public enum ConfigKey
 
   ACCOUNTING_DOSSIER_NAME("Compta.nom.dossier", BundleUtil.getLabel("ConfEditor.accounting.export.dossier.label")),
 
-  ORGANIZATION_DOMAIN("Organisation.domaine", BundleUtil.getLabel("ConfEditor.organization.domain.label"));
+  ORGANIZATION_DOMAIN("Organisation.domaine", BundleUtil.getLabel("ConfEditor.organization.domain.label")),
+  
+  BASIC_RATE_FREQUENCY("Tarif.base", BundleUtil.getLabel("ConfEditor.basic.rate.frequency"));
 
   private final String key;
   private final String label;

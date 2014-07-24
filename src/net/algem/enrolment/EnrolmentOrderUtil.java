@@ -1,7 +1,7 @@
 /*
- * @(#)EnrolmentOrderUtil.java	2.8.n 24/09/13
+ * @(#)EnrolmentOrderUtil.java	2.8.w 09/07/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -38,7 +38,7 @@ import net.algem.util.model.Model;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.n
+ * @version 2.8.w
  * @since 2.8.a 01/04/2013
  */
 public class EnrolmentOrderUtil {
@@ -63,7 +63,9 @@ public class EnrolmentOrderUtil {
    *
    * @param moduleOrder
    * @param schoolId
-   * @throws Exception
+   * @return the number of saved order lines
+   * @throws java.sql.SQLException
+   * @throws net.algem.accounting.NullAccountException
    */
   public int saveOrderLines(ModuleOrder moduleOrder, int schoolId) throws SQLException, NullAccountException {
 
@@ -106,14 +108,14 @@ public class EnrolmentOrderUtil {
     
     List<OrderLine> orderLines = new ArrayList<OrderLine>();
     if (!ModeOfPayment.NUL.toString().equals(moduleOrder.getModeOfPayment())) {
-      if ("TRIM".equals(moduleOrder.getPayment())) {// echeance trimestrielle
+      if (PayFrequency.QUARTER.equals(moduleOrder.getPayment())) {// echeance trimestrielle
         List<DateFr> dates = getQuarterPaymentDates(moduleOrder.getStart(), moduleOrder.getEnd());
         /*if (AccountUtil.isPersonalAccount(e.getAccount())) {
           addPersonalOrderLine(e, dates);
           setPaymentOrderLine(e, moduleOrder.getPayment());
         }*/
         orderLines = setQuarterOrderLines(moduleOrder, e, dates);       
-      } else if ("MOIS".equals(moduleOrder.getPayment())) {// echeance mensuelle
+      } else if (PayFrequency.MONTH.equals(moduleOrder.getPayment())) {// echeance mensuelle
         List<DateFr> dates = getMonthPaymentDates(moduleOrder.getStart(), moduleOrder.getEnd());
         /*if (AccountUtil.isPersonalAccount(e.getAccount())) {
           addPersonalOrderLine(e, dates);
@@ -135,6 +137,12 @@ public class EnrolmentOrderUtil {
 
   }
   
+  /**
+   * Gets the date of the first payment.
+   * Optionnaly updates the first month of payment.
+   * @param orderDateStart
+   * @return a date
+   */
   private DateFr getFirstDateOfPayment(DateFr orderDateStart) {
     
     DateFr first = new DateFr(orderDateStart);
@@ -146,6 +154,11 @@ public class EnrolmentOrderUtil {
     return first;
   }
   
+  /**
+   * Checks if the first date of payment is after some day or month.
+   * @param orderDateStart
+   * @return true if after
+   */
   private boolean isFirstPaymentAfter(DateFr orderDateStart) {
     return (orderDateStart.getDay() > 10 || orderDateStart.getMonth() == 9);
   }
@@ -273,7 +286,7 @@ public class EnrolmentOrderUtil {
 //    Vector<DateFr> dates = getQuarterPaymentDates(moduleOrder.getStart(), moduleOrder.getEnd());
     int firstDocumentNumber = 0;
     try {
-      firstDocumentNumber = Integer.parseInt(ConfigUtil.getConf(ConfigKey.ACCOUNTING_DOCUMENT_NUMBER.getKey(), dc));
+      firstDocumentNumber = Integer.parseInt(ConfigUtil.getConf(ConfigKey.ACCOUNTING_DOCUMENT_NUMBER.getKey()));
     } catch (NumberFormatException nfe) {
       System.err.println(getClass().getName() + "#setQuarterOrderLines " + nfe.getMessage());
     }
@@ -340,7 +353,7 @@ public class EnrolmentOrderUtil {
 //    Vector<DateFr> orderDates = getMonthPaymentDates(moduleOrder.getStart(), moduleOrder.getEnd());
     int firstDocumentNumber = 0;
     try {
-      firstDocumentNumber = Integer.parseInt(ConfigUtil.getConf(ConfigKey.ACCOUNTING_DOCUMENT_NUMBER.getKey(), dc));
+      firstDocumentNumber = Integer.parseInt(ConfigUtil.getConf(ConfigKey.ACCOUNTING_DOCUMENT_NUMBER.getKey()));
     } catch (NumberFormatException ne) {
       System.err.println("Format Numero.piece " + ne.getMessage());
     }
