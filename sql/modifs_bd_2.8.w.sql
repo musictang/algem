@@ -1,15 +1,15 @@
---DROP VIEW planningvue;
----- modification taille nom salle
---ALTER TABLE salle ALTER nom type varchar(32);
---ALTER INDEX slx2 RENAME TO salle_nom_idx; 
+DROP VIEW planningvue;
+-- modification taille nom salle
+ALTER TABLE salle ALTER nom type varchar(32);
+ALTER INDEX slx2 RENAME TO salle_nom_idx; 
 
---CREATE VIEW planningvue AS 
---SELECT pl.id, pl.jour, pl.debut, pl.fin, pl.action, p.id AS profid, p.prenom AS prenomprof, p.nom AS nomprof, s.id AS salleid, s.nom AS salle, c.id AS coursid, c.titre AS cours, c.ecole
---   FROM planning pl, personne p, salle s, cours c, action a
---  WHERE (pl.ptype = ANY (ARRAY[1, 5, 6])) AND pl.action = a.id AND a.cours = c.id AND pl.lieux = s.id AND pl.idper = p.id;
+CREATE VIEW planningvue AS 
+SELECT pl.id, pl.jour, pl.debut, pl.fin, pl.action, p.id AS profid, p.prenom AS prenomprof, p.nom AS nomprof, s.id AS salleid, s.nom AS salle, c.id AS coursid, c.titre AS cours, c.ecole
+   FROM planning pl, personne p, salle s, cours c, action a
+  WHERE (pl.ptype = ANY (ARRAY[1, 5, 6])) AND pl.action = a.id AND a.cours = c.id AND pl.lieux = s.id AND pl.idper = p.id;
 
 ---- nettoyage salle 0
---DELETE FROM sallequip where idsalle = 0;
+DELETE FROM sallequip where idsalle = 0;
 
 
 ALTER TABLE horaires DROP CONSTRAINT jour_semaine;
@@ -48,4 +48,5 @@ INSERT INTO config VALUES ('Heure.ouverture','09:00');
 --INSERT INTO horaires VALUES (5,7,'10:00:00','18:00:00');
 
 INSERT INTO config VALUES ('Tarif.base', 'TRIM');
+INSERT INTO config VALUES ('Afficher.noms.plages', 't');
 
