@@ -1,5 +1,5 @@
 /*
- * @(#)GemModule.java	2.8.v 21/05/14
+ * @(#)GemModule.java	2.8.w 27/08/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -41,10 +41,10 @@ import net.algem.util.model.GemCloseVetoException;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.8.v
+ * @version 2.8.w
  * @since 1.0a 06/07/2002
  */
-public class GemModule
+public abstract class GemModule
         implements GemEventListener, ActionListener
 {
 
@@ -91,42 +91,53 @@ public class GemModule
   
 	
   protected String label;
-  protected GemView view;
+  protected DefaultGemView view;
   protected GemDesktop desktop;
   protected DataCache dataCache;
-  // encapsulation panneau version V4
-  Container container;
+  protected Container container;
 
-  public GemModule(String _label) {
-    label = _label;
+  public GemModule(String label) {
+    this.label = label;
   }
 
   /**
-  encapsulation panneau version V4
+   * Panel encapsulation.
+   * @param label
+   * @param p content panel
    */
-  public GemModule(String _label, Container p) {
-    this(_label);
-    container = p;
+  public GemModule(String label, Container p) {
+    this(label);
+    this.container = p;
   }
 
   /**
-   * Default initialization to redefine in modules.
+   * Default initialization to redefine in subclasses.
    */
-  public void init() {
-    view = new GemView(desktop, label);
-    view.setSize(DEFAULT_SIZE);
-    view.getContentPane().add("Center", container);
-  }
+  public abstract void init();
+
+  /**
+   * GemEventListener to redefine.
+   * @param evt
+   */
+  @Override
+  public void postEvent(GemEvent evt) {}
+
+  /**
+   * ActionListener to redefine.
+   * @param evt
+   */
+  @Override
+  public void actionPerformed(ActionEvent evt) {}
 
   /**
    * Called by desktop when adding module.
    * Call init() in subtype classes for IHM creation.
-   * @param _desktop
+   * @param desktop
    * @see net.algem.util.module.GemDesktopCtrl#addModule(net.algem.util.module.GemModule) 
    * 
    */
-  public void setDesktop(GemDesktop _desktop) {
-    desktop = _desktop;
+  public void setDesktop(GemDesktop desktop) {
+    this.desktop = desktop;
     dataCache = desktop.getDataCache();
 
     init();	// init module+IHM à redéfinir dans les modules
@@ -147,7 +158,7 @@ public class GemModule
     return desktop;
   }
 
-  public GemView getView() {
+  public DefaultGemView getView() {
     return view;
   }
 
@@ -159,8 +170,8 @@ public class GemModule
     return label;
   }
 
-  public void setLabel(String _label) {
-    label = _label;
+  public void setLabel(String label) {
+    this.label = label;
   }
 
   @Override
@@ -168,24 +179,10 @@ public class GemModule
     return label;
   }
 
-  /**
-   * Interface GemEventListener to redefine.
-   * @param _evt
-   */
-  @Override
-  public void postEvent(GemEvent _evt) {
-  }
 
   /**
-   * Interface ActionListener to redefine.
-   * @param _evt
-   */
-  @Override
-  public void actionPerformed(ActionEvent _evt) {
-  }
-
-  /**
-   * To redefine.
+   * 
+   * @throws net.algem.util.model.GemCloseVetoException
    */
   public void close() throws GemCloseVetoException {
     view.close();

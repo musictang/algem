@@ -24,14 +24,13 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.print.Printable;
-import java.sql.SQLException;
 import java.util.*;
 import net.algem.config.ColorPlan;
+import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
 import net.algem.course.Course;
 import net.algem.planning.*;
 import net.algem.room.DailyTimes;
-import net.algem.util.GemLogger;
 
 /**
  * Day schedule layout.
@@ -54,6 +53,7 @@ public class DayPlanView
   private Date date;
   private Calendar cal;
   private Vector<DayPlan> cols;
+  private boolean showRangeNames;
 
   public DayPlanView(Date d) {
     cols = new Vector<DayPlan>();
@@ -61,7 +61,7 @@ public class DayPlanView
     cal = Calendar.getInstance(Locale.FRANCE);
     cal.setTime(d);
     step_x = 100;
-
+    showRangeNames = ConfigUtil.getConf(ConfigKey.SCHEDULE_RANGE_NAMES.getKey()).equals("t");
     addMouseListener(this);
   }
 
@@ -314,6 +314,18 @@ public class DayPlanView
     if (p instanceof CourseSchedule && p.getClass() != ScheduleRangeObject.class) {
       bg.drawLine(x, y - 1, (x + w) - 1, y - 1);
     }
+    if (showRangeNames) {
+      textSubRange(p, x);
+    }
+  }
+  
+  private void textSubRange(ScheduleObject p, int x) {
+    if (p instanceof CourseSchedule && p instanceof ScheduleRangeObject) { 
+      Course crs = ((CourseSchedule) p).getCourse();
+      if (crs != null && !crs.isCollective()) {
+        showSubSubLabel((ScheduleRangeObject) p, x);
+      }
+    }
   }
 
   /**
@@ -323,7 +335,7 @@ public class DayPlanView
    * @param p
    * @param prev
    */
-  public void textRange(int col, ScheduleObject p, ScheduleObject prev) {
+  private void textRange(int col, ScheduleObject p, ScheduleObject prev) {
     int pStart = p.getStart().toMinutes();
 
     int x = setX(col, 1);
@@ -334,7 +346,6 @@ public class DayPlanView
 
     showLabel(p, prev, x, y);
     showSubLabel(p, prev, x, y);
-
   }
 
   private void showLabel(ScheduleObject p, ScheduleObject prev, int x, int y) {
@@ -382,6 +393,15 @@ public class DayPlanView
       }
     }
   }
+  
+  private void showSubSubLabel(ScheduleRangeObject p, int x) {
+    int length = p.getStart().getLength(p.getEnd());
+    if (length > 30) {
+      int y = setY(p.getEnd().toMinutes()) - (fm.getHeight() /2);
+      String subSubLabel = p.getMember() != null ? p.getMember().getCommunName() : "";
+      drawSubLabel(subSubLabel, x, y , step_x);
+    }
+  }
 
   private void drawSubLabel(String subLabel, int x, int y, int step_x) {
     int w = fm.stringWidth(subLabel) + 4;
@@ -415,7 +435,7 @@ public class DayPlanView
     super.processMouseEvent(e);
   }
 
-  public int getColId() {
+  private int getColId() {
     int x = clickX - RIGHT_MARGIN - 2;
     int y = clickY - TOP_MARGIN - 2;
 

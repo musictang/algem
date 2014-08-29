@@ -1,5 +1,5 @@
 /*
- * @(#)GemView.java	2.8.w 27/08/14
+ * @(#)DefaultGemModule.java 2.8.w 27/08/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -21,34 +21,31 @@
 
 package net.algem.util.module;
 
-import java.awt.event.ActionListener;
-import net.algem.util.event.GemEvent;
-import net.algem.util.event.GemEventListener;
-import net.algem.util.model.GemCloseVetoException;
+import java.awt.Container;
 
 /**
- * Algem view interface.
- *
- * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
+ * Basic algem module.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.8.w
- * @since 1.0a 07/07/2002
+ * @since 2.8.w 27/08/14
  */
-public interface GemView 
-        extends ActionListener, GemEventListener
+public class DefaultGemModule 
+  extends GemModule
 {
 
+  public DefaultGemModule(String label) {
+    super(label);
+  }
+
+  public DefaultGemModule(String label, Container p) {
+    super(label, p);
+  }
+
   @Override
-  public void postEvent(GemEvent evt);
-
-  public void addActionListener(ActionListener l) ;
-    
-  public void removeActionListener(ActionListener l);
-
-  public void print();
-
-  public void close() throws GemCloseVetoException ;
-
-  public void setSelectedTab(int tabIndex);
+  public void init() {
+    view = new DefaultGemView(desktop, label);
+    view.setSize(DEFAULT_SIZE);
+    view.getContentPane().add("Center", container);
+  }
 
 }

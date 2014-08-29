@@ -1,5 +1,5 @@
 /*
- * @(#)MonthScheduleView.java	2.8.w 09/07/14
+ * @(#)MonthScheduleView.java	2.8.w 27/08/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -44,8 +44,8 @@ import net.algem.util.event.GemEvent;
 import net.algem.util.model.GemCloseVetoException;
 import net.algem.util.model.GemList;
 import net.algem.util.model.Model;
+import net.algem.util.module.DefaultGemView;
 import net.algem.util.module.GemDesktop;
-import net.algem.util.module.GemView;
 import net.algem.util.ui.GemChoice;
 import net.algem.util.ui.TabPanel;
 
@@ -57,7 +57,7 @@ import net.algem.util.ui.TabPanel;
  * @version 2.8.w
  */
 public class MonthScheduleView
-        extends GemView
+        extends DefaultGemView
         implements PropertyChangeListener
 {
 
@@ -86,19 +86,6 @@ public class MonthScheduleView
     tabPanel = new TabPanel();
 
     getContentPane().add(tabPanel, BorderLayout.CENTER);
-
-    //String s = dataCache.getLabel("Month.schedule.width");
-    //int width = PREF_WIDTH;
-    /*try {
-      width = Integer.parseInt(s);
-    } catch (Exception e) {
-    }*/
-    //s = dataCache.getLabel("Month.schedule.height");
-    //int height = PREF_HEIGHT;
-    /*try {
-      height = Integer.parseInt(s);
-    } catch (Exception e) {
-    }*/
 
     setSize(PREF_WIDTH, PREF_HEIGHT);
     String s = "";

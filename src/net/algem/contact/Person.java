@@ -154,6 +154,14 @@ public class Person
     StringBuilder b = new StringBuilder(name);
     return b.append(" ").append(firstName).toString();
   }
+  
+  public String getCommunName() {
+    if (organization != null) {
+      return organization.isEmpty() ? getAbbrevFirstNameName() : organization;
+    } else {
+      return getAbbrevFirstNameName();
+    }
+  }
 
   public void setType(short i) {
     type = i;

@@ -1,5 +1,5 @@
 /*
- * @(#)DayScheduleView.java	2.8.w 08/07/14
+ * @(#)DayScheduleView.java	2.8.w 27/08/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -40,8 +40,8 @@ import net.algem.util.GemLogger;
 import net.algem.util.model.GemCloseVetoException;
 import net.algem.util.model.GemList;
 import net.algem.util.model.Model;
+import net.algem.util.module.DefaultGemView;
 import net.algem.util.module.GemDesktop;
-import net.algem.util.module.GemView;
 import net.algem.util.ui.TabPanel;
 
 /**
@@ -53,12 +53,9 @@ import net.algem.util.ui.TabPanel;
  * @version 1.0b 06/10/2001
  */
 public class DayScheduleView
-        extends GemView
+        extends DefaultGemView
         implements PropertyChangeListener
 {
-
-  private static final int PREF_WIDTH = 700;
-  private static final int PREF_HEIGHT = 540;
   
   private DaySchedule daySchedule;
   private DayPlanTableView teacherView;
@@ -77,9 +74,6 @@ public class DayScheduleView
     tabPanel = new TabPanel();
     add(tabPanel, BorderLayout.CENTER);
 
-    setSize(PREF_WIDTH, PREF_HEIGHT);
-    // @add par Baptiste
-    int b = 1;
     String s = null;
     if ((s = ConfigUtil.getConf(ConfigKey.TEACHER_MANAGEMENT.getKey())) != null && s.startsWith("t")) {
       teacherView = new DayPlanTeacherView(dataCache.getList(Model.Teacher));

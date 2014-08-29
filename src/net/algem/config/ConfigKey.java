@@ -1,5 +1,5 @@
 /*
- * @(#)ConfigKey.java 2.8.w 23/07/14
+ * @(#)ConfigKey.java 2.8.w 27/08/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -146,7 +146,9 @@ public enum ConfigKey
 
   ORGANIZATION_DOMAIN("Organisation.domaine", BundleUtil.getLabel("ConfEditor.organization.domain.label")),
   
-  BASIC_RATE_FREQUENCY("Tarif.base", BundleUtil.getLabel("ConfEditor.basic.rate.frequency"));
+  BASIC_RATE_FREQUENCY("Tarif.base", BundleUtil.getLabel("ConfEditor.basic.rate.frequency")),
+  
+  SCHEDULE_RANGE_NAMES("Afficher.noms.plages", BundleUtil.getLabel("ConfEditor.schedule.ranges.names"));
 
   private final String key;
   private final String label;

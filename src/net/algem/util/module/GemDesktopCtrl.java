@@ -1,5 +1,5 @@
 /*
- * @(#)GemDesktopCtrl.java	2.8.w 08/07/14
+ * @(#)GemDesktopCtrl.java	2.8.w 27/08/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -205,6 +205,7 @@ public class GemDesktopCtrl
             addModule(dayScheduleCtrl);
             // location initiale du tableau jour.
             dayScheduleCtrl.getView().setLocation(110, 0);
+            dayScheduleCtrl.mayBeMaximize();
           }
         }
       }
@@ -480,10 +481,10 @@ public class GemDesktopCtrl
   public DataCache getDataCache() {
     return dataCache;
   }
-  
+
   @Override
-  public void addModule(GemModule _module) {
-    addModule(_module, false);
+  public void addModule(GemModule module) {
+    addModule(module, false);
   }
   
   public void addModule(GemModule module, boolean iconified) //public void addModule(GemModule _module, int _layer)
@@ -494,7 +495,7 @@ public class GemDesktopCtrl
     
     modules.put(module.getLabel(), module);
     module.setDesktop(this);	// createIHM
-    GemView gemView = module.getView();
+    DefaultGemView gemView = module.getView();
     desktop.add(gemView);
     
     gemView.setVisible(true);
@@ -516,13 +517,13 @@ public class GemDesktopCtrl
   
   @Override
   public void addPanel(String s, Container p) {
-    GemModule m = new GemModule(s, p);
+    GemModule m = new DefaultGemModule(s, p);
     addModule(m); 	//m.init();
   }
   
   @Override
   public void addPanel(String s, Container p, Dimension size) {
-    GemModule m = new GemModule(s, p);
+    GemModule m = new DefaultGemModule(s, p);
     addModule(m);
     m.setSize(size);
   }
@@ -532,7 +533,6 @@ public class GemDesktopCtrl
     if (module == null || module == postit) {
       return;
     }
-//module.removeGemEventListeners();// test
     desktop.remove(module.getView());
     desktop.repaint();
     JMenuItem mItem = (JMenuItem) menus.get(module.getLabel());
@@ -554,7 +554,7 @@ public class GemDesktopCtrl
   
   @Override
   public GemModule getSelectedModule() {
-    GemView v = (GemView) desktop.getSelectedFrame();
+    DefaultGemView v = (DefaultGemView) desktop.getSelectedFrame();
     GemModule m = modules.get(v.getLabel());
     return m;
   }

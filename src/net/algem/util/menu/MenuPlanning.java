@@ -1,5 +1,5 @@
 /*
- * @(#)MenuPlanning.java	2.8.w 09/07/14
+ * @(#)MenuPlanning.java	2.8.w 27/08/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -96,7 +96,9 @@ public class MenuPlanning
     desktop.setWaitCursor();
 
     if (src == miDay) {
-      desktop.addModule(new DayScheduleCtrl());
+      DayScheduleCtrl dsCtrl = new DayScheduleCtrl();
+      desktop.addModule(dsCtrl);
+      dsCtrl.mayBeMaximize();
     } else if (src == miMonth) {
       desktop.addModule(new MonthScheduleCtrl());
     } else if (src == miCourse) {// planification d'un cours

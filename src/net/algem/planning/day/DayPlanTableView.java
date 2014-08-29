@@ -1,5 +1,5 @@
 /*
- * @(#)DayPlanTableView.java	2.8.w 17/07/14
+ * @(#)DayPlanTableView.java	2.8.w 27/08/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -68,7 +68,7 @@ public abstract class DayPlanTableView
 
     GemPanel p = new GemPanel();
     p.setLayout(new BorderLayout());
-    p.add(new GemLabel("Planning journalier par " + label + " le "), BorderLayout.WEST);
+    p.add(new GemLabel(BundleUtil.getLabel("Day.schedule.prefix.label") + " " + label), BorderLayout.WEST);
     p.add(date, BorderLayout.CENTER);
     btNow = new GemButton(BundleUtil.getLabel("Action.today.label"));
     p.add(btNow, BorderLayout.EAST);

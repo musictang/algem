@@ -1,7 +1,7 @@
 /*
- * @(#)PostitModule.java	2.6.a 21/09/12
+ * @(#)PostitModule.java	2.8.w 27/08/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -29,19 +29,17 @@ import java.util.Enumeration;
 import java.util.Vector;
 import javax.swing.JInternalFrame;
 import net.algem.planning.DateFr;
-import net.algem.security.DefaultUserService;
 import net.algem.security.UserService;
 import net.algem.util.GemLogger;
-import net.algem.util.event.GemEvent;
+import net.algem.util.module.DefaultGemView;
 import net.algem.util.module.GemModule;
-import net.algem.util.module.GemView;
 
 /**
- * Internal frame for displaying postits.
+ * Internal frame used to display postits.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.w
  */
 public class PostitModule
 	extends GemModule
@@ -58,7 +56,7 @@ public class PostitModule
 
 	@Override
 	public void init() {
-		view = new GemView(desktop, "Postit");
+		view = new DefaultGemView(desktop, "Postit");
 
 		postit = new CanvasPostit();
 		postit.addActionListener(this);
@@ -79,7 +77,7 @@ public class PostitModule
 	/**
 	 * Adds a postit.
 	 * A receiver == 0 implies a public status.
-     * Private postits are seen by current user only.
+   * Private postits are seen by current user only.
 	 */
 	public void getNewPostit() {
 
@@ -154,7 +152,4 @@ public class PostitModule
 		System.out.println("PostitModule lu=" + lus);
 	}
     
-	@Override
-	public void postEvent(GemEvent _evt) {
-	}
 }

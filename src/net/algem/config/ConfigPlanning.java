@@ -1,5 +1,5 @@
 /*
- * @(#)ConfigPlanning.java 2.8.w 17/07/14
+ * @(#)ConfigPlanning.java 2.8.w 27/08/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.swing.BorderFactory;
+import javax.swing.JCheckBox;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 import net.algem.planning.DateFr;
@@ -51,7 +52,8 @@ public class ConfigPlanning
   private DateRangePanel periodPanel;
   private HourField offPeakTime;
   private HourField startTime;
-  private Config c1,c2,c3,c4,c5,c6;
+  private JCheckBox rangeNames;
+  private Config c1,c2,c3,c4,c5,c6,c7;
 
   public ConfigPlanning(String title, Map<String, Config> confs) {
     super(title, confs);
@@ -65,6 +67,7 @@ public class ConfigPlanning
     c4 = confs.get(ConfigKey.END_PERIOD.getKey());
     c5 = confs.get(ConfigKey.OFFPEAK_HOUR.getKey());
     c6 = confs.get(ConfigKey.START_TIME.getKey());
+    c7 = confs.get(ConfigKey.SCHEDULE_RANGE_NAMES.getKey());
 
     Border border = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
     yearPanel = new DateRangePanel(new DateFr(c1.getValue()),new DateFr(c2.getValue()), border);
@@ -108,6 +111,10 @@ public class ConfigPlanning
     gb.add(startTimeLabel,0,3,1,1,GridBagHelper.WEST);
     gb.add(startTime,1,3,1,1,GridBagHelper.WEST);
     
+    rangeNames = new JCheckBox(ConfigKey.SCHEDULE_RANGE_NAMES.getLabel());
+    rangeNames.setSelected(c7.getValue().equals("t"));
+    
+    gb.add(rangeNames, 0, 4, 2, 1);
     add(content);
   }
 
@@ -124,12 +131,14 @@ public class ConfigPlanning
     h = startTime.get();
     c6.setValue(h.after(limit) ? limit.toString() : h.toString());
 
+    c7.setValue(rangeNames.isSelected() ? "t" : "f");
     conf.add(c1);
     conf.add(c2);
     conf.add(c3);
     conf.add(c4);
     conf.add(c5);
     conf.add(c6);
+    conf.add(c7);
     
     return conf;
   }

@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleDetailCtrl.java 2.8.w 08/07/14
+ * @(#)ScheduleDetailCtrl.java 2.8.w 27/08/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -48,6 +48,7 @@ import net.algem.room.RoomFileEditor;
 import net.algem.util.*;
 import net.algem.util.jdesktop.DesktopMailHandler;
 import net.algem.util.model.Model;
+import net.algem.util.module.DefaultGemView;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.module.GemDesktopCtrl;
 import net.algem.util.module.GemModule;
@@ -622,7 +623,7 @@ public class ScheduleDetailCtrl
    * @param view
    * @return a point
    */
-  private Point getOffset(GemView view) {
+  private Point getOffset(DefaultGemView view) {
     // TODO change position when the new point doesn't fit inside the screen.
     int x = view.getX();
     int y = view.getY();

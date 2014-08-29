@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileEditor 2.8.w 09/07/14
+ * @(#)PersonFileEditor 2.8.w 27/08/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -143,7 +143,7 @@ public class PersonFileEditor
   @Override
   public void init() {
 
-    super.init();
+    //super.init();
 
     dc = DataCache.getDataConnection();
     BANK_BRANCH_IO = new BankBranchIO(dc);

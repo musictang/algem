@@ -86,7 +86,7 @@ public class RoomFileEditor
 
   @Override
   public void init() {
-    super.init();
+    //super.init();
     desktop.addGemEventListener(this);
     service = new RoomService(DataCache.getDataConnection());
     loadEquipment();
