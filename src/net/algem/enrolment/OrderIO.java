@@ -1,7 +1,7 @@
 /*
- * @(#)OrderIO.java	2.8.a 28/03/13
+ * @(#)OrderIO.java	2.8.w 09/07/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -41,7 +41,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.w
  * @since 1.0a 07/07/1999
  */
 public class OrderIO
@@ -156,8 +156,8 @@ public class OrderIO
 
   public static Vector<MemberOrder> findMemberOrders(DataConnection dc) {
 
-    String start = ConfigUtil.getConf(ConfigKey.BEGINNING_PERIOD.getKey(), dc);
-    String end = ConfigUtil.getConf(ConfigKey.END_PERIOD.getKey(), dc);
+    String start = ConfigUtil.getConf(ConfigKey.BEGINNING_PERIOD.getKey());
+    String end = ConfigUtil.getConf(ConfigKey.END_PERIOD.getKey());
     Vector<MemberOrder> v = new Vector<MemberOrder>();
     String query = "SELECT c.id,c.adh,c.payeur,c.creation,c.facture,p.nom,p.prenom"
             + " FROM " + TABLE + " c, " + PersonIO.TABLE + " p"
@@ -179,7 +179,7 @@ public class OrderIO
         v.addElement(c);
       }
       rs.close();
-    } catch (Exception e) {
+    } catch (SQLException e) {
       GemLogger.logException(query, e);
     }
     return v;

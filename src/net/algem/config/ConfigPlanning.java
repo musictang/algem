@@ -1,5 +1,5 @@
 /*
- * @(#)ConfigPlanning.java 2.8.r 03/01/14
+ * @(#)ConfigPlanning.java 2.8.w 27/08/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -21,18 +21,20 @@
 
 package net.algem.config;
 
+import java.awt.BorderLayout;
 import java.awt.GridBagLayout;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.swing.BorderFactory;
+import javax.swing.JCheckBox;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 import net.algem.planning.DateFr;
 import net.algem.planning.DateRangePanel;
+import net.algem.planning.Hour;
 import net.algem.planning.HourField;
 import net.algem.util.BundleUtil;
-import net.algem.util.ui.GemBorderPanel;
 import net.algem.util.ui.GemLabel;
 import net.algem.util.ui.GemPanel;
 import net.algem.util.ui.GridBagHelper;
@@ -40,7 +42,7 @@ import net.algem.util.ui.GridBagHelper;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.r
+ * @version 2.8.w
  */
 public class ConfigPlanning
   extends ConfigPanel
@@ -48,10 +50,10 @@ public class ConfigPlanning
 
   private DateRangePanel yearPanel;
   private DateRangePanel periodPanel;
-  private HourField offPeakHour;
-  private Config c1,c2,c3,c4,c5;
-
-
+  private HourField offPeakTime;
+  private HourField startTime;
+  private JCheckBox rangeNames;
+  private Config c1,c2,c3,c4,c5,c6,c7;
 
   public ConfigPlanning(String title, Map<String, Config> confs) {
     super(title, confs);
@@ -64,6 +66,8 @@ public class ConfigPlanning
     c3 = confs.get(ConfigKey.BEGINNING_PERIOD.getKey());
     c4 = confs.get(ConfigKey.END_PERIOD.getKey());
     c5 = confs.get(ConfigKey.OFFPEAK_HOUR.getKey());
+    c6 = confs.get(ConfigKey.START_TIME.getKey());
+    c7 = confs.get(ConfigKey.SCHEDULE_RANGE_NAMES.getKey());
 
     Border border = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
     yearPanel = new DateRangePanel(new DateFr(c1.getValue()),new DateFr(c2.getValue()), border);
@@ -71,8 +75,10 @@ public class ConfigPlanning
     periodPanel = new DateRangePanel(new DateFr(c3.getValue()),new DateFr(c4.getValue()), border);
 		periodPanel.setToolTipText(ConfigKey.BEGINNING_PERIOD.getLabel());
 
-    offPeakHour = new HourField(c5.getValue());
-		offPeakHour.setToolTipText(ConfigKey.OFFPEAK_HOUR.getLabel());
+    offPeakTime = new HourField(c5.getValue());
+		offPeakTime.setToolTipText(ConfigKey.OFFPEAK_HOUR.getLabel());
+    startTime = new HourField(c6 == null ? "00:00" : c6.getValue());
+		startTime.setToolTipText(BundleUtil.getLabel("ConfEditor.start.time.tip"));
 
     content = new GemPanel();
     content.setLayout(new GridBagLayout());
@@ -91,11 +97,24 @@ public class ConfigPlanning
     
     GemLabel hourLabel = new GemLabel(BundleUtil.getLabel("Room.rate.peak.label"));
 		hourLabel.setToolTipText(ConfigKey.OFFPEAK_HOUR.getLabel());
-    GemBorderPanel ph = new GemBorderPanel();
-    ph.add(offPeakHour);
-    gb.add(hourLabel,0,2,1,1,GridBagHelper.WEST);
-    gb.add(ph,1,2,1,1,GridBagHelper.WEST);
+    
+    GemPanel opPanel = new GemPanel(new BorderLayout());
+    opPanel.add(offPeakTime, BorderLayout.WEST);
 
+    gb.add(hourLabel,0,2,1,1,GridBagHelper.WEST);
+    gb.add(opPanel,1,2,1,1,GridBagHelper.WEST);
+    
+    GemPanel stPanel = new GemPanel(new BorderLayout());
+    stPanel.add(startTime, BorderLayout.WEST);
+    GemLabel startTimeLabel = new GemLabel(ConfigKey.START_TIME.getLabel());
+    startTimeLabel.setToolTipText(BundleUtil.getLabel("ConfEditor.start.time.tip"));
+    gb.add(startTimeLabel,0,3,1,1,GridBagHelper.WEST);
+    gb.add(startTime,1,3,1,1,GridBagHelper.WEST);
+    
+    rangeNames = new JCheckBox(ConfigKey.SCHEDULE_RANGE_NAMES.getLabel());
+    rangeNames.setSelected(c7.getValue().equals("t"));
+    
+    gb.add(rangeNames, 0, 4, 2, 1);
     add(content);
   }
 
@@ -106,13 +125,21 @@ public class ConfigPlanning
     c2.setValue(yearPanel.getEndFr().toString());
     c3.setValue(periodPanel.getStartFr().toString());
     c4.setValue(periodPanel.getEndFr().toString());
-    c5.setValue(offPeakHour.get().toString());
+    Hour h = offPeakTime.get();
+    Hour limit = new Hour("23:00");
+    c5.setValue(h.after(limit) ? limit.toString() : h.toString());
+    h = startTime.get();
+    c6.setValue(h.after(limit) ? limit.toString() : h.toString());
 
+    c7.setValue(rangeNames.isSelected() ? "t" : "f");
     conf.add(c1);
     conf.add(c2);
     conf.add(c3);
     conf.add(c4);
     conf.add(c5);
+    conf.add(c6);
+    conf.add(c7);
+    
     return conf;
   }
 

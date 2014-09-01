@@ -128,7 +128,7 @@ public class PostponeCourseView
     currentDate.set(s.getDate().getDate());
     newDate.set(s.getDate().getDate());
     setHour(s.getStart(), s.getEnd());
-    setRoom(s.getPlace());
+    setRoom(s.getIdRoom());
     
     postPoneRange.setEditable(!noRange);
     
@@ -178,7 +178,7 @@ public class PostponeCourseView
     s.setDate(newDate.getDateFr());
     s.setStart(newStartTime.get());
     s.setEnd(getHourEnd());
-    s.setPlace(newRoom.getKey());
+    s.setIdRoom(newRoom.getKey());
 
     return s;
   }

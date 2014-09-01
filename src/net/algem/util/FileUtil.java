@@ -1,5 +1,5 @@
 /*
- * @(#)FileUtil.java	2.8.t 16/05/14
+ * @(#)FileUtil.java	2.8.w 09/07/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -42,7 +42,7 @@ import net.algem.util.ui.MessagePopup;
  * Utility class for file operations.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.8.w
  * @since 2.0q
  */
 public class FileUtil
@@ -134,7 +134,7 @@ public class FileUtil
   }
 
   public static String getDocumentPath(ConfigKey config, DataConnection dc) {
-    String path = ConfigUtil.getPath(config, dc);
+    String path = ConfigUtil.getPath(config);
     if (path != null && !path.isEmpty()) {
       if (!path.endsWith(FILE_SEPARATOR)) {
         path += FILE_SEPARATOR;

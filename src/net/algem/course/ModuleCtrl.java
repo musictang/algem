@@ -1,7 +1,7 @@
 /*
- * @(#)ModuleCtrl.java	2.8.a 23/04/13
+ * @(#)ModuleCtrl.java	2.8.w 08/07/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -34,7 +34,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.w
  * @since 1.0a 07/07/1999
  */
 public class ModuleCtrl
@@ -205,7 +205,7 @@ public class ModuleCtrl
 
   protected void edit(Module m) throws ModuleException {
 
-    DataConnection dc = dataCache.getDataConnection();
+    DataConnection dc = DataCache.getDataConnection();
     try {
       ModuleService service = new ModuleService(dc);
       dc.setAutoCommit(false);
@@ -232,7 +232,7 @@ public class ModuleCtrl
   }
 
   private void delete(Module m) throws ModuleException {
-    DataConnection dc = dataCache.getDataConnection();
+    DataConnection dc = DataCache.getDataConnection();
     try {
       dc.setAutoCommit(false);
       ModuleService service = new ModuleService(dc);

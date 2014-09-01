@@ -1,5 +1,5 @@
 /*
- * @(#)MenuConfig.java 2.8.s 18/02/14
+ * @(#)MenuConfig.java 2.8.w 08/07/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -37,6 +37,7 @@ import net.algem.room.EstabCreateCtrl;
 import net.algem.room.EstabSearchCtrl;
 import net.algem.security.RightsSearchCtrl;
 import net.algem.util.BundleUtil;
+import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 import net.algem.util.GemCommand;
 import net.algem.util.module.GemDesktop;
@@ -45,7 +46,7 @@ import net.algem.util.module.GemModule;
 /**
  * Configuration menu.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.s
+ * @version 2.8.w
  * @since 2.6.a 12/10/2012
  */
 public class MenuConfig 
@@ -132,7 +133,7 @@ public class MenuConfig
     
     Object src = e.getSource();
     String arg = e.getActionCommand();
-    DataConnection dc = dataCache.getDataConnection();
+    DataConnection dc = DataCache.getDataConnection();
     desktop.setWaitCursor();
     if (menus.get("Menu.general.parameters.label").equals(arg)) {
       ConfigEditor confEditor = new ConfigEditor(desktop);

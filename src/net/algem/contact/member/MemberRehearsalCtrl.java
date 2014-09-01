@@ -1,5 +1,5 @@
 /*
- * @(#)MemberRehearsalCtrl.java	2.8.t 16/05/14
+ * @(#)MemberRehearsalCtrl.java	2.8.w 24/07/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -29,16 +29,18 @@ import net.algem.contact.PersonFile;
 import net.algem.contact.PersonFileEditor;
 import net.algem.contact.PersonFileEvent;
 import net.algem.planning.*;
-import net.algem.planning.editing.MemberRehearsalView;
 import net.algem.planning.editing.ModifPlanEvent;
 import net.algem.room.Room;
 import net.algem.room.RoomIO;
+import net.algem.room.RoomService;
+import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
 import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.FileTabDialog;
+import net.algem.util.ui.MessagePopup;
 import net.algem.util.ui.PopupDlg;
 
 /**
@@ -46,7 +48,7 @@ import net.algem.util.ui.PopupDlg;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.8.w
  * @since 1.0a 12/12/2001
  */
 public class MemberRehearsalCtrl
@@ -56,11 +58,11 @@ public class MemberRehearsalCtrl
   private PersonFile personFile;
   private MemberRehearsalView view;
   private ActionListener actionListener;
-  private MemberService service;
+  private MemberService memberService;
 
-  public MemberRehearsalCtrl(GemDesktop _desktop) {
-    super(_desktop);
-    service = new MemberService(dataCache.getDataConnection());
+  public MemberRehearsalCtrl(GemDesktop desktop) {
+    super(desktop);
+    memberService = new MemberService(dc);
   }
 
   public MemberRehearsalCtrl(GemDesktop desktop, ActionListener listener, PersonFile dossier) {
@@ -68,7 +70,7 @@ public class MemberRehearsalCtrl
     personFile = dossier;
     actionListener = listener;
 
-    view = new MemberRehearsalView(dataCache);
+    view = new MemberRehearsalView(dataCache.getList(Model.Room));
     view.set(personFile.getContact());
 
     setLayout(new BorderLayout());
@@ -142,7 +144,7 @@ public class MemberRehearsalCtrl
       amount = choice.getAmount();
     } else {
       int remainder = calcRemainder(abo.getRest(), length);
-      if (remainder < 0) { // plus de place sur la carte
+      if (remainder < 0) { // plus de idRoom sur la carte
         abo.setRest(0);
         RehearsalCard card = chooseCard(dialog);
         nc = createNewCard(card, Math.abs(remainder), abo.getIdper(), date);
@@ -151,7 +153,7 @@ public class MemberRehearsalCtrl
         abo.setRest(remainder);
       }
       // update abo
-      service.update(abo);
+      memberService.update(abo);
       if (abo.getRest() <= 0 && nc != null) {
         event = new PersonFileEvent(nc, PersonFileEvent.SUBSCRIPTION_CARD_CHANGED);
       } else {
@@ -204,7 +206,7 @@ public class MemberRehearsalCtrl
     subscriptionCard.setPurchaseDate(date);
     subscriptionCard.setRest(calcRemainder(card, length));
 
-    service.create(subscriptionCard);
+    memberService.create(subscriptionCard);
     return subscriptionCard;
   }
 
@@ -228,31 +230,29 @@ public class MemberRehearsalCtrl
     String entryError = MessageUtil.getMessage("entry.error");
 
     if (date.bufferEquals(DateFr.NULLDATE)) {
-      JOptionPane.showMessageDialog(view,
-              dateError,
-              entryError,
-              JOptionPane.ERROR_MESSAGE);
+      MessagePopup.error(view, dateError, entryError);
       return false;
     }
     if (date.before(dataCache.getStartOfPeriod())
             || date.after(dataCache.getEndOfPeriod())) {
-      JOptionPane.showMessageDialog(view,
-              MessageUtil.getMessage("date.out.of.period"),
-              entryError,
-              JOptionPane.ERROR_MESSAGE);
+      MessagePopup.error(view, MessageUtil.getMessage("date.out.of.period"), entryError);
       return false;
     }
-    Hour hdeb = view.getHourStart();
-    Hour hfin = view.getHourEnd();
-    if (hdeb.toString().equals("00:00")
-            || hfin.toString().equals("00:00")
-            || !(hfin.after(hdeb))) {
-      JOptionPane.showMessageDialog(view,
-              MessageUtil.getMessage("hour.range.error"),
-              entryError,
-              JOptionPane.ERROR_MESSAGE);
+    
+    Hour hStart = view.getHourStart();
+    Hour hEnd = view.getHourEnd();
+    
+    if (hStart.toString().equals("00:00")
+            || hEnd.toString().equals("00:00")
+            || !(hEnd.after(hStart))) {
+      MessagePopup.error(view, MessageUtil.getMessage("hour.range.error"), entryError);
       return false;
     }
+    
+    if (!RoomService.isClosed(view.getRoom(), date, hStart, hEnd)) {
+      return false;
+    }
+   
     return true;
   }
 
@@ -272,25 +272,25 @@ public class MemberRehearsalCtrl
 
     boolean subscription = view.withCard();
 
-    p.setType(Schedule.MEMBER_SCHEDULE);
+    p.setType(Schedule.MEMBER);
     p.setNote(0);
     try {
-      service.saveRehearsal(p);
+      memberService.saveRehearsal(p);
       //ajout échéance et mise à jour choix abonnement
       if (subscription) {
         int length = view.getHourStart().getLength(view.getHourEnd());
-        PopupDlg dialog = new RehearsalCardDlg(view, service.getPassList());
+        PopupDlg dialog = new RehearsalCardDlg(view, memberService.getPassList());
         // recherche d'une choix d'abonnement pour cet adhérent
         float amount = setRehearsalCard(personFile, view.getDate(), length, dialog);
         if (amount > 0.0f) {
-          service.saveOrderLine(personFile, view.getDate(), amount);
+          memberService.saveOrderLine(personFile, view.getDate(), amount);
         }
       } else {
         // calcul montant repet
         Room s = ((RoomIO) DataCache.getDao(Model.Room)).findId(view.getRoom());
         double amount = RehearsalUtil.calcSingleRehearsalAmount(view.getHourStart(), view.getHourEnd(), s.getRate(), 1, dc);
         if (amount > 0.0) {
-          service.saveOrderLine(personFile, view.getDate(), amount);
+          memberService.saveOrderLine(personFile, view.getDate(), amount);
         }
       }
     } catch (MemberException e) {
@@ -305,29 +305,20 @@ public class MemberRehearsalCtrl
     // room checking
     String query = ConflictQueries.getRoomConflictSelection(p.getDay(), p.getStart(), p.getEnd(), p.getPlace());
     if (ScheduleIO.count(query, dc) > 0) {
-      JOptionPane.showMessageDialog(null,
-              "salle occupée",
-              "Conflit planning",
-              JOptionPane.ERROR_MESSAGE);
+      MessagePopup.error(view, BundleUtil.getLabel("Room.conflict.label"), BundleUtil.getLabel("Conflit.label"));
       return false;
     }
     // rehearsal member checking
     query = ConflictQueries.getMemberRehearsalSelection(p.getDay(), p.getStart(), p.getEnd(), p.getPersonId());
     if (ScheduleIO.count(query, dc) > 0) {
-      JOptionPane.showMessageDialog(null,
-              "Adhérent occupé",
-              "Conflit planning",
-              JOptionPane.ERROR_MESSAGE);
+      MessagePopup.error(view, BundleUtil.getLabel("Member.conflict.label"), BundleUtil.getLabel("Conflit.label"));
       return false;
     }
 
     // course member checking
     query = ConflictQueries.getMemberScheduleSelection(p.getDay(), p.getStart(), p.getEnd(), p.getPersonId());
     if (ScheduleIO.count(query, dc) > 0) {
-      JOptionPane.showMessageDialog(null,
-              "Adhérent occupé",
-              "Conflit planning",
-              JOptionPane.ERROR_MESSAGE);
+      MessagePopup.error(view, BundleUtil.getLabel("Member.conflict.label"), BundleUtil.getLabel("Conflit.label"));
       return false;
     }
     return true;

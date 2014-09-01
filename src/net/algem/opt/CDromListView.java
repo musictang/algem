@@ -1,7 +1,7 @@
 /*
- * @(#)CDromListView.java	1.0a 08/09/2001
+ * @(#)CDromListView.java	2.8.w 08/07/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -29,10 +29,10 @@ import net.algem.util.DataCache;
 import net.algem.util.ui.GemPanel;
 
 /**
- * liste titre d'un cd
- *
- * @version 1.0a 08/09/2001
- * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
+ * liste titre d'un cd.
+ * 
+ * @author Eric
+ * @version 2.8.w
  * @deprecated
  */
 public class CDromListView
@@ -64,7 +64,7 @@ public class CDromListView
 	}
 
 	public void load(int id) {
-		Vector v = CdTitleIO.findId(id, cache.getDataConnection());
+		Vector v = CdTitleIO.findId(id, DataCache.getDataConnection());
 		for (int i = 0; i < v.size(); i++) {
 			CdTitle titre = (CdTitle) v.elementAt(i);
 			titres.addItem(titre);

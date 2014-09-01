@@ -44,11 +44,7 @@ public class GroupRehearsalSchedule
   }
 
   public void setGroup(Group g) {
-    if (g == null) {
-      idper = 0;
-    } else {
-      idper = g.getId();
-    }
+    idper = g == null ? 0 : g.getId();
     group = g;
   }
 

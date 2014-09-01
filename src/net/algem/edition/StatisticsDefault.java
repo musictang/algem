@@ -1,5 +1,5 @@
 /*
- * @(#)StatisticsDefault.java	2.8.t 15/05/14
+ * @(#)StatisticsDefault.java	2.8.v 26/06/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -22,13 +22,16 @@ package net.algem.edition;
 
 import java.sql.SQLException;
 import net.algem.accounting.OrderLineIO;
+import net.algem.contact.AddressIO;
+import net.algem.contact.PersonIO;
+import net.algem.contact.member.MemberIO;
 import net.algem.util.MessageUtil;
 
 /**
  * Default file export for statistics.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.8.v
  * @since 2.6.a 12/10/2012
  */
 public class StatisticsDefault
@@ -41,20 +44,29 @@ public class StatisticsDefault
   @Override
   public void makeStats() throws SQLException {
     super.makeStats();
+    
     separate();
     printIntResult(MessageUtil.getMessage("statistics.payers.without.address"), getQuery("payers_without_address"));
     printIntResult(MessageUtil.getMessage("statistics.debtors"), getQuery("debtors"));
+    
     separate();
     printIntResult(MessageUtil.getMessage("statistics.total.number.of.members"), getQuery("total_number_of_members"));
     printIntResult(MessageUtil.getMessage("statistics.number.of.men.members"), getQuery("number_of_men_members"));
     printIntResult(MessageUtil.getMessage("statistics.number.of.women.members"), getQuery("number_of_women_members"));
+    
     separate();
     printTableIntResult(MessageUtil.getMessage("statistics.members.by.occupational"), getQuery("members_by_occupational"));
+    
     separate();
     printTableIntResult(MessageUtil.getMessage("statistics.members.by.location"), getQuery("members_by_location"));
+    
+    printTimeResult(MessageUtil.getMessage("statistics.total.hours.of.studio"), getQuery("total_hours_of_studio"));
+    printTableTimeResult(MessageUtil.getMessage("statistics.hours.of.studio.by.type"), getQuery("hours_of_studio_by_type"));
+    printTimeResult(MessageUtil.getMessage("statistics.hours.of.training"), getQuery("hours_of_training"));
+    
     footer();
   }
-
+  
   @Override
   protected String getQuery(String m) throws SQLException {
     if (m.equals("members_without_date_of_birth")
@@ -66,7 +78,10 @@ public class StatisticsDefault
             || m.equals("hours_of_pro_lessons")
             || m.equals("hours_of_collective_pro_lessons")
             || m.equals("hours_of_private_pro_lessons")
-            || m.equals("hours_teacher_of_collective_lessons")) {
+            || m.equals("hours_teacher_of_collective_lessons")
+            || m.equals("total_hours_of_studio")
+            || m.equals("hours_of_studio_by_type")
+            || m.equals("hours_of_training")) {
       return super.getQuery(m);
     }
     if (m.equals("payers_without_address")) {
@@ -76,7 +91,7 @@ public class StatisticsDefault
               + " AND payeur NOT IN (SELECT idper FROM adresse)";
     }
     if (m.equals("debtors")) {
-      return "SELECT DISTINCT e.adherent, p.nom, p.prenom FROM " + OrderLineIO.TABLE + " e, personne p"
+      return "SELECT DISTINCT e.adherent, p.nom, p.prenom FROM " + OrderLineIO.TABLE + " e, " + PersonIO.TABLE + " p"
               + " WHERE e.echeance BETWEEN '" + start + "' AND '" + end + "'"
               + " AND e.compte = " + MEMBERSHIP_ACCOUNT
               + " AND e.paye = false"
@@ -88,28 +103,28 @@ public class StatisticsDefault
               + " AND compte = " + MEMBERSHIP_ACCOUNT;
     }
     if (m.equals("number_of_men_members")) {
-      return "SELECT count(DISTINCT e.adherent) FROM " + OrderLineIO.TABLE + " e, personne p"
+      return "SELECT count(DISTINCT e.adherent) FROM " + OrderLineIO.TABLE + " e, " + PersonIO.TABLE + " p"
               + " WHERE p.id = e.adherent"
               + " AND e.echeance BETWEEN '" + start + "' AND '" + end + "'"
               + " AND e.compte = " + MEMBERSHIP_ACCOUNT
               + " AND (trim(p.civilite) = 'M' OR p.civilite = '')";
     }
     if (m.equals("number_of_women_members")) {
-      return "SELECT count(DISTINCT e.adherent) FROM " + OrderLineIO.TABLE + " e, personne p"
+      return "SELECT count(DISTINCT e.adherent) FROM " + OrderLineIO.TABLE + " e, " + PersonIO.TABLE + " p"
               + " WHERE p.id = e.adherent"
               + " AND e.echeance BETWEEN '" + start + "' AND '" + end + "'"
               + " AND e.compte = " + MEMBERSHIP_ACCOUNT
               + " AND (trim(p.civilite) = 'Mme' OR p.civilite = 'Mlle')";
     }
     if (m.equals("members_by_occupational")) {
-      return "SELECT m.profession, count(DISTINCT e.adherent) FROM " + OrderLineIO.TABLE + " e, eleve m"
+      return "SELECT m.profession, count(DISTINCT e.adherent) FROM " + OrderLineIO.TABLE + " e, " + MemberIO.TABLE + " m"
               + " WHERE m.idper = e.adherent"
               + " AND e.echeance BETWEEN '" + start + "' AND '" + end + "'"
               + " AND e.compte  = " + MEMBERSHIP_ACCOUNT
               + " GROUP BY m.profession";
     }
     if (m.equals("members_by_location")) {
-      return "SELECT a.ville, count(DISTINCT e.adherent) FROM " + OrderLineIO.TABLE + " e, adresse a"
+      return "SELECT a.ville, count(DISTINCT e.adherent) FROM " + OrderLineIO.TABLE + " e, " + AddressIO.TABLE + " a"
               + " WHERE e.echeance BETWEEN '" + start + "' AND '" + end + "'"
               + " AND e.compte = " + MEMBERSHIP_ACCOUNT
               + " AND (e.payeur = a.idper OR e.adherent = a.idper)"
@@ -139,5 +154,9 @@ public class StatisticsDefault
     addEntry(nav, MessageUtil.getMessage("statistics.number.of.women.members"));
     addEntry(nav, MessageUtil.getMessage("statistics.members.by.occupational"));
     addEntry(nav, MessageUtil.getMessage("statistics.members.by.location"));
+    addEntry(nav, MessageUtil.getMessage("statistics.total.hours.of.studio"));
+    addEntry(nav, MessageUtil.getMessage("statistics.hours.of.studio.by.type"));
+    addEntry(nav, MessageUtil.getMessage("statistics.hours.of.training"));
   }
+
 }

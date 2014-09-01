@@ -1,7 +1,7 @@
 /*
- * @(#)MailUtil.java	2.8.k 27/08/13
- * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * @(#)MailUtil.java	2.8.w 09/07/14
+ *
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,45 +16,51 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 
 package net.algem.util;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
+import net.algem.config.ConfigKey;
+import net.algem.config.ConfigUtil;
 import net.algem.contact.*;
 import net.algem.contact.member.MemberService;
 import net.algem.group.Musician;
+import net.algem.planning.Schedule;
+import net.algem.planning.ScheduleIO;
+import net.algem.planning.ScheduleRangeIO;
 import net.algem.planning.ScheduleRangeObject;
 import net.algem.util.jdesktop.DesktopMailHandler;
 import net.algem.util.model.Model;
 
 /**
  * Utility class for sending emails.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.k
+ * @version 2.8.w
  * @since 2.8.k 26/07/13
  */
 public class MailUtil {
-  
+
   private DataCache dataCache;
   private DataConnection dc;
   private MemberService memberService;
   private DesktopMailHandler mailHandler;
 
   public MailUtil(DataCache dataCache) {
-    this(dataCache, new MemberService(dataCache.getDataConnection()));
+    this(dataCache, new MemberService(DataCache.getDataConnection()));
   }
-  
+
   public MailUtil(DataCache dataCache, MemberService service) {
     this.dataCache = dataCache;
-    dc = dataCache.getDataConnection();
+    dc = DataCache.getDataConnection();
     mailHandler = new DesktopMailHandler();
     memberService = service;
   }
-  
+
   /**
    * Gets member's emails.
    *
@@ -90,16 +96,21 @@ public class MailUtil {
    * Sends an email to selected schedule's participants.
    *
    * @param ranges selected schedule
+   * @param schedule
+   * @return a mailto-string
+   * @throws java.sql.SQLException
    */
-  public String mailToMembers(Vector<ScheduleRangeObject> ranges, int teacherId) throws SQLException {
+  public String mailToMembers(Vector<ScheduleRangeObject> ranges, Schedule schedule) throws SQLException {
 
     String message = "";
     StringBuilder bcc = new StringBuilder();
 
     // recherche de l'email du professeur
-    String teacherEmail = memberService.getEmail(teacherId);
-    if (teacherEmail != null && teacherEmail.indexOf('@') != -1) {// si contient @
-      bcc.append(teacherEmail);
+    if (Schedule.COURSE == schedule.getType()) {
+      String teacherEmail = memberService.getEmail(schedule.getIdPerson());
+      if (teacherEmail != null && teacherEmail.indexOf('@') != -1) {// si contient @
+        bcc.append(teacherEmail);
+      }
     }
     // recherche des emails des adherents
     for (ScheduleRangeObject pg : ranges) {
@@ -107,7 +118,8 @@ public class MailUtil {
         continue;
       }
       Person m = pg.getMember();
-      PersonFile pf = ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findMember(m.getId(), true);
+//      PersonFile pf = ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findMember(m.getId(), true);
+      PersonFile pf = ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findId(m.getId());
       if (pf != null) {
         String email = getEmail(pf);
         if (email != null && email.length() > 0) {
@@ -120,15 +132,16 @@ public class MailUtil {
       }
     }
     sendMailTo(bcc.toString());
-    
+
     return message;
 
   }
 
   /**
    * Sends an email to the members of the group.
-   * 
+   *
    * @param mus the list of musicians (members)
+   * @return a mailto-string
    */
   public String mailToGroupMembers(Vector<Musician> mus) {
     String message = "";
@@ -146,10 +159,39 @@ public class MailUtil {
       }
     }
     sendMailTo(bcc.toString());
-    
+
     return message;
   }
-  
+
+  public String mailToGroupMembers(Vector<Musician> mus, int action) throws SQLException {
+    String message = "";
+    StringBuilder bcc = new StringBuilder();
+
+    for (Musician m : mus) {
+      PersonFile member = ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findId(m.getId(), true);
+      if (member != null) {
+        String email = getEmail(member);
+        if (email != null && email.length() > 0) {
+          bcc.append((bcc.length() > 0) ? "," + email : email);
+        } else {
+          message += member.getContact().getFirstnameName() + "\n";
+        }
+      }
+    }
+    String where = "SELECT DISTINCT e.email FROM " + ScheduleRangeIO.TABLE + " pg, " + ScheduleIO.TABLE + " p, " + EmailIO.TABLE + " e"
+            + " WHERE p.action = " + action
+            + " AND pg.idplanning = p.id"
+            + " AND p.ptype = " + Schedule.TECH
+            + " AND pg.adherent = e.idper";
+    ResultSet rs = dc.executeQuery(where);
+    while (rs.next()) {
+      bcc.append((bcc.length() > 0) ? "," + rs.getString(1) : rs.getString(1));
+    }
+    sendMailTo(bcc.toString());
+
+    return message;
+  }
+
   /**
    * Sends an email to recipients in bcc.
    *
@@ -162,15 +204,16 @@ public class MailUtil {
     String to = null;
     // on recherche le 1er email de l'utilisateur
     try {
-      to = EmailIO.findId(dataCache.getUser().getId(), dataCache.getDataConnection());
+      to = EmailIO.findId(dataCache.getUser().getId(), dc);
     } catch (SQLException ex) {
       System.err.println(ex.getMessage());
     }
     if (to == null) {
-      to = dataCache.getUser().getLogin() + "@" + BundleUtil.getLabel("Domain");
+      String domain = ConfigUtil.getConf(ConfigKey.ORGANIZATION_DOMAIN.getKey());
+      to = dataCache.getUser().getLogin() + "@" + (domain == null ? BundleUtil.getLabel("Domain") : domain.trim().toLowerCase());
     }
     mailHandler.send(to, bcc);
-    
+
   }
 
 }

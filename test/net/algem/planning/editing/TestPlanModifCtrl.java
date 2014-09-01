@@ -98,8 +98,8 @@ public class TestPlanModifCtrl
     Schedule p = new Schedule();
     p.setDate(toDay);
     p.setIdPerson(idper);
-    p.setType(Schedule.MEMBER_SCHEDULE);
-    p.setPlace(1);
+    p.setType(Schedule.MEMBER);
+    p.setIdRoom(1);
     p.setStart(new Hour("10:00"));
     p.setEnd(new Hour("12:00"));// ajout 2h sur la carte
     ScheduleObject plan = new MemberRehearsalSchedule(p);

@@ -23,9 +23,15 @@ package net.algem.contact;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import net.algem.config.GemParam;
 import net.algem.planning.DateFr;
 import net.algem.util.DataConnection;
+import net.algem.util.GemLogger;
 import net.algem.util.model.TableIO;
 
 /**
@@ -37,6 +43,8 @@ import net.algem.util.model.TableIO;
 public class EmployeeIO
 {
   public static final String TABLE = "salarie";
+  public static final String TYPE_TABLE = "salarie_type";
+  public static final String CAT_TABLE = "categorie_salarie";
   public static final String COLUMNS = "idper,insee,datenais,lieunais,guso,nationalite";
   
   private DataConnection dc;
@@ -55,6 +63,7 @@ public class EmployeeIO
             + "')";
     
     dc.executeUpdate(query);
+    updateType(e);
     
   }
   
@@ -68,7 +77,34 @@ public class EmployeeIO
             + "' WHERE idper = " + e.getIdPer();
 
     dc.executeUpdate(query);
+    updateType(e);
     
+  }
+  
+  private void updateType(Employee e) {
+    List<Integer> types = e.getTypes();
+    String query = null;
+    try {
+      if (types != null && types.size() > 0) {
+        dc.setAutoCommit(false);
+        query = "DELETE FROM " + TYPE_TABLE + " WHERE idper = " + e.getIdPer();
+        dc.executeUpdate(query);
+        for (int i = 0; i < types.size(); i++) {
+          int t = types.get(i);
+          query = "INSERT INTO " + TYPE_TABLE + " VALUES(" + e.getIdPer() + ", " + t + ", " + i + ")";
+          dc.executeUpdate(query);
+        }
+      } else {
+        query = "DELETE FROM " + TYPE_TABLE + " WHERE idper = " + e.getIdPer();
+        dc.executeUpdate(query);
+      }
+      dc.commit();
+    } catch (SQLException ex) {
+      GemLogger.log(ex.getMessage());
+      dc.rollback();
+    } finally {
+      dc.setAutoCommit(true);
+    }
   }
   
   public Employee findId(int idper) throws SQLException {
@@ -86,6 +122,16 @@ public class EmployeeIO
       String guso = TableIO.unEscape(rs.getString(5));
       e.setGuso(guso == null ? null : guso.trim());
       e.setNationality(TableIO.unEscape(rs.getString(6)));
+    }
+    
+    if (e != null) {
+      query = "SELECT c.id FROM " + CAT_TABLE + " c, " + TYPE_TABLE + " t WHERE t.idper = " + idper + " AND t.idcat = c.id ORDER BY t.idx";
+      rs = dc.executeQuery(query);
+      List<Integer> types = new ArrayList<Integer>();
+      while(rs.next()) {
+        types.add(rs.getInt(1));
+      }
+      e.setTypes(types);
     }
     return e;
   }

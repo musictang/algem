@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleDetailCtrl.java 2.8.t 09/05/14
+ * @(#)ScheduleDetailCtrl.java 2.8.w 27/08/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -48,6 +48,7 @@ import net.algem.room.RoomFileEditor;
 import net.algem.util.*;
 import net.algem.util.jdesktop.DesktopMailHandler;
 import net.algem.util.model.Model;
+import net.algem.util.module.DefaultGemView;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.module.GemDesktopCtrl;
 import net.algem.util.module.GemModule;
@@ -59,7 +60,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.8.w
  * @since 1.0a 07/07/1999
  */
 public class ScheduleDetailCtrl
@@ -94,7 +95,7 @@ public class ScheduleDetailCtrl
   public ScheduleDetailCtrl(GemDesktop desktop, PlanModifCtrl pmCtrl, boolean all) {
     this.desktop = desktop;
     dataCache = desktop.getDataCache();
-    dc = dataCache.getDataConnection();
+    dc = DataCache.getDataConnection();
     scheduleService = new PlanningService(dc);
     groupService = new GemGroupService(dc);
     memberService = new MemberService(dc);
@@ -155,6 +156,10 @@ public class ScheduleDetailCtrl
       loadGroupRehearsalSchedule(schedule);
     } else if (schedule instanceof WorkshopSchedule) {
       loadWorkshopSchedule(event);
+    } else if (schedule instanceof GroupStudioSchedule) {
+       loadStudioSchedule(schedule);
+    } else if (schedule instanceof TechStudioSchedule) {
+       loadTechnicianSchedule(event);
     } else if (schedule instanceof Schedule) {
       Schedule p = (Schedule) schedule;
       headPanel.add(new GemLabel("Saisie sur planning"));
@@ -276,9 +281,9 @@ public class ScheduleDetailCtrl
     GemMenuButton b = getScheduleRangeButton(p.getMember());
     listPanel.add(b);
 
-    Vector<GemMenuButton> v = modifCtrl.getMenuMemberRehearsal();
-    for (int i = 0; i < v.size(); i++) {
-      menuPanel.add((GemMenuButton) v.elementAt(i));
+    Vector<GemMenuButton> modifButtons = modifCtrl.getMenuMemberRehearsal();
+    for (int i = 0; i < modifButtons.size(); i++) {
+      menuPanel.add((GemMenuButton) modifButtons.elementAt(i));
     }
   }
 
@@ -296,11 +301,45 @@ public class ScheduleDetailCtrl
     } catch (SQLException ex) {
       GemLogger.logException(ex);
     }
-    Vector<GemMenuButton> v = modifCtrl.getMenuGroupRehearsal();
-    for (int i = 0; i < v.size(); i++) {
-      menuPanel.add((GemMenuButton) v.elementAt(i));
+    Vector<GemMenuButton> modifButtons = modifCtrl.getMenuGroupRehearsal();
+    for (int i = 0; i < modifButtons.size(); i++) {
+      menuPanel.add((GemMenuButton) modifButtons.elementAt(i));
     }
     menuPanel.add(btGroupWrite);//mailing button
+  }
+
+  private void loadStudioSchedule(Schedule plan) {
+    GroupStudioSchedule s = (GroupStudioSchedule) plan;
+    headPanel.add(new GemLabel(s.getActivityLabel()));
+    StringBuilder buf = new StringBuilder(BundleUtil.getLabel("Group.label")).append(" ");
+    buf.append(s.getGroup().getName());// unescape
+    GemMenuButton b = new GemMenuButton(buf.toString(), this, "GroupLink", s.getGroup());
+    headPanel.add(b);
+    try {
+      loadMusicianList(groupService.getMusicians(plan.getIdPerson()));
+    } catch (SQLException ex) {
+      GemLogger.logException(ex);
+    }
+    Vector<GemMenuButton> modifButtons = modifCtrl.getMenuStudio(Schedule.STUDIO);
+    for (int i = 0; i < modifButtons.size(); i++) {
+      menuPanel.add((GemMenuButton) modifButtons.elementAt(i));
+    }
+    menuPanel.add(btGroupWrite);//mailing button
+  }
+
+  private void loadTechnicianSchedule(ScheduleDetailEvent de) {
+    TechStudioSchedule p = (TechStudioSchedule) de.getSchedule();
+    headPanel.add(new GemLabel(p.getScheduleDetail()));
+    StringBuilder buf = new StringBuilder(BundleUtil.getLabel("Group.label")).append(" ");
+    buf.append(p.getGroup().getName());// unescape
+    GemMenuButton b = new GemMenuButton(buf.toString(), this, "GroupLink", p.getGroup());
+    headPanel.add(b);
+    loadTechnicianList(de.getRanges());
+    Vector<GemMenuButton> modifButtons = modifCtrl.getMenuStudio(Schedule.TECH);
+    for (int i = 0; i < modifButtons.size(); i++) {
+      menuPanel.add((GemMenuButton) modifButtons.elementAt(i));
+    }
+    menuPanel.add(btWrite);//mailing button
   }
 
   private void loadWorkshopSchedule(ScheduleDetailEvent de) {
@@ -370,6 +409,17 @@ public class ScheduleDetailCtrl
     }
   }
 
+  private void loadTechnicianList(Vector<ScheduleRangeObject> ranges) {
+    if(ranges.size() > 0) {
+      Collections.sort(ranges, psComparator);
+    }
+    for(ScheduleRangeObject sr : ranges) {
+      Person p = sr.getMember();
+      listPanel.add(new GemMenuButton(p == null ? "" : p.getFirstnameName(), this, "PersonLink", sr));
+    }
+
+  }
+
   @Override
   public void actionPerformed(ActionEvent evt) {
     String arg = evt.getActionCommand();
@@ -411,10 +461,22 @@ public class ScheduleDetailCtrl
 
       } else if ("PersonLink".equals(arg)) {
         setWaitCursor();
-        Person p = (Person) ((GemMenuButton) evt.getSource()).getObject();
+        Person p = null;
+        Object src = ((GemMenuButton) evt.getSource()).getObject();
+        if (src instanceof ScheduleRangeObject) {
+          ScheduleRangeObject range = (ScheduleRangeObject) ((GemMenuButton) evt.getSource()).getObject();
+          if ((evt.getModifiers() & InputEvent.CTRL_MASK) == InputEvent.CTRL_MASK) {
+            deleteRange(range);
+            return;
+          }
+          p = range.getMember();
+        } else if (src instanceof Person) {
+          p = (Person) ((GemMenuButton) evt.getSource()).getObject();
+        } else {
+          return;
+        }
         PersonFile pf = (PersonFile) DataCache.findId(p.getId(), Model.PersonFile);
         loadPersonFile(pf);
-
       } else if ("TeacherLink".equals(arg)) {
         if (!(evt.getModifiers() == InputEvent.BUTTON1_MASK)) {
           TeacherBreakDlg dlg = new TeacherBreakDlg(desktop, (CourseSchedule) schedule);
@@ -458,7 +520,7 @@ public class ScheduleDetailCtrl
         }
       } else if ("Mailing".equals(arg)) {
         Vector<ScheduleRangeObject> ranges = detailEvent.getRanges();//plages
-        String message = MAIL_UTIL.mailToMembers(ranges, schedule.getIdPerson());
+        String message = MAIL_UTIL.mailToMembers(ranges, schedule);
         if (message.length() > 0) {
           String info = MessageUtil.getMessage("members.without.email");
           new MessageDialog(frame, BundleUtil.getLabel("Information.label"), false, info, message);
@@ -467,7 +529,19 @@ public class ScheduleDetailCtrl
         Vector<Musician> mus = null;
         mus = groupService.getMusicians(schedule.getIdPerson());
         if (mus != null && mus.size() > 0) {
-          String message = MAIL_UTIL.mailToGroupMembers(mus);
+          String message = "";
+          switch (schedule.getType()) {
+            case Schedule.GROUP :
+              message = MAIL_UTIL.mailToGroupMembers(mus);
+              break;
+            case Schedule.STUDIO :
+              message = MAIL_UTIL.mailToGroupMembers(mus, schedule.getIdAction());
+              break;
+            default :
+              message = MAIL_UTIL.mailToGroupMembers(mus);
+              break;
+          }
+          //String message = (Schedule.GROUP == schedule.getType()) ? MAIL_UTIL.mailToGroupMembers(mus) : MAIL_UTIL.mailToGroupMembers(mus, schedule.getIdAction());
           if (message.length() > 0) {
             String info = MessageUtil.getMessage("group.members.without.email");
             new MessageDialog(desktop.getFrame(), BundleUtil.getLabel("Information.label"), false, info, message);
@@ -549,7 +623,7 @@ public class ScheduleDetailCtrl
    * @param view
    * @return a point
    */
-  private Point getOffset(GemView view) {
+  private Point getOffset(DefaultGemView view) {
     // TODO change position when the new point doesn't fit inside the screen.
     int x = view.getX();
     int y = view.getY();

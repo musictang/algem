@@ -1,5 +1,5 @@
 /*
- * @(#)DayPlanTableView.java	2.8.t 16/04/14
+ * @(#)DayPlanTableView.java	2.8.w 27/08/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -41,12 +41,12 @@ import net.algem.util.ui.GridBagHelper;
 
 /**
  * Abstract class for day views.
- * Main view {@code DayPlanView} is composed of columns {@code DayPlan}.
- * The field {@code date} and button bar {@code dayBar} permit to navigate in the planning.
+ * Main view {@literal DayPlanView} is composed of columns {@literal DayPlan}.
+ * The field {@literal date} and button bar {@literal dayBar} permit to navigate in the dayPlanViewning.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.8.t
+ * @version 2.8.w
  * @since 1.0a 07/07/1999
  */
 public abstract class DayPlanTableView
@@ -54,7 +54,7 @@ public abstract class DayPlanTableView
         implements AdjustmentListener, PropertyChangeListener, KeyListener
 {
 
-  protected DayPlanView plan;
+  protected DayPlanView dayPlanView;
   private JScrollBar sb;
   protected DateDayBar dayBar;
   protected DateFrField date;
@@ -62,13 +62,13 @@ public abstract class DayPlanTableView
 
   public DayPlanTableView(String label) {
 
-    plan = new DayPlanView();
+    dayPlanView = new DayPlanView();
     date = new DateFrField();
     dayBar = new DateDayBar();
 
     GemPanel p = new GemPanel();
     p.setLayout(new BorderLayout());
-    p.add(new GemLabel("Planning journalier par " + label + " le "), BorderLayout.WEST);
+    p.add(new GemLabel(BundleUtil.getLabel("Day.schedule.prefix.label") + " " + label), BorderLayout.WEST);
     p.add(date, BorderLayout.CENTER);
     btNow = new GemButton(BundleUtil.getLabel("Action.today.label"));
     p.add(btNow, BorderLayout.EAST);
@@ -79,11 +79,11 @@ public abstract class DayPlanTableView
     GridBagHelper gb = new GridBagHelper(this);
 
     gb.add(p, 0, 0, 1, 1, GridBagHelper.WEST);
-    gb.add(plan, 0, 1, 1, 1, GridBagHelper.BOTH, 1.0, 1.0);
+    gb.add(dayPlanView, 0, 1, 1, 1, GridBagHelper.BOTH, 1.0, 1.0);
     gb.add(sb, 0, 2, 1, 1, GridBagHelper.HORIZONTAL, 1.0, 0.0);
     gb.add(dayBar, 0, 3, 1, 1, GridBagHelper.HORIZONTAL, 1.0, 0.0);
 
-    plan.addKeyListener(this);
+    dayPlanView.addKeyListener(this);
   }
 
   public DateDayBar getBar() {
@@ -91,27 +91,27 @@ public abstract class DayPlanTableView
   }
 
   public void setBar() {
-    Rectangle r = plan.computeScroll();
+    Rectangle r = dayPlanView.computeScroll();
     sb.setValues(r.x, r.y, r.width, r.height);
   }
 
   @Override
   public void adjustmentValueChanged(AdjustmentEvent e) {
-    plan.setTop(e.getValue());
-    Rectangle r = plan.computeScroll();
+    dayPlanView.setTop(e.getValue());
+    Rectangle r = dayPlanView.computeScroll();
     sb.setValues(r.x, r.y, r.width, r.height+1);//on ajoute 1 pour englober toutes les colonnes
   }
 
   public void addActionListener(ActionListener l) {
     dayBar.addActionListener(l);
-    plan.addActionListener(l);
+    dayPlanView.addActionListener(l);
     date.addActionListener(l);
     btNow.addActionListener(l);
   }
 
   public void removeActionListener(ActionListener l) {
     dayBar.removeActionListener(l);
-    plan.removeActionListener(l);
+    dayPlanView.removeActionListener(l);
     date.removeActionListener(l);
     btNow.removeActionListener(l);
   }
@@ -147,8 +147,8 @@ public abstract class DayPlanTableView
   }
 
   public DayPlanView getCanvas() {
-    return plan;
+    return dayPlanView;
   }
 
-  public abstract void load(java.util.Date d, Vector<ScheduleObject> plannings, Vector<ScheduleRangeObject> plages);
+  public abstract void load(java.util.Date d, Vector<ScheduleObject> schedules, Vector<ScheduleRangeObject> ranges);
 }

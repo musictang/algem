@@ -1,7 +1,7 @@
 /*
- * @(#)VacationCtrl.java	2.6.a 20/09/12
+ * @(#)VacationCtrl.java	2.8.w 08/07/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -44,7 +44,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.w
  */
 public class VacationCtrl
         extends GemPanel
@@ -123,7 +123,7 @@ public class VacationCtrl
   }
 
   public void load() {
-    Vector<Vacation> v = VacationIO.find("", dataCache.getDataConnection());
+    Vector<Vacation> v = VacationIO.find("", DataCache.getDataConnection());
     for (int i = 0; i < v.size(); i++) {
       Vacation va = v.elementAt(i);
       vacationModel.addItem(va);
@@ -159,7 +159,7 @@ public class VacationCtrl
   void modification() throws SQLException {
     Vacation v = new Vacation(start.getDateFr(), label.getText());
     v.setVid(vChoice.getKey());
-    VacationIO.update(v, dataCache.getDataConnection());
+    VacationIO.update(v, DataCache.getDataConnection());
 
     int n = vacationTable.convertRowIndexToModel(vacationTable.getSelectedRow());
     vacationModel.modItem(n, v);
@@ -171,7 +171,7 @@ public class VacationCtrl
     while (!deb.after(end.getDateFr())) {
       Vacation v = new Vacation(new DateFr(deb), label.getText());
       v.setVid(vChoice.getKey());// todo -> setId
-      VacationIO.insert(v, dataCache.getDataConnection());
+      VacationIO.insert(v, DataCache.getDataConnection());
       vacationModel.addItem(v);
       deb.incDay(1);
     }
@@ -183,7 +183,7 @@ public class VacationCtrl
     for (int i = rows.length - 1; i >= 0; i--) {
       int n = vacationTable.convertRowIndexToModel(rows[i]);
       Vacation v = (Vacation) vacationModel.getItem(n);
-      VacationIO.delete(v, dataCache.getDataConnection());
+      VacationIO.delete(v, DataCache.getDataConnection());
       vacationModel.deleteItem(n);
     }
     clear();

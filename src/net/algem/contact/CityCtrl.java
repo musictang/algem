@@ -1,7 +1,7 @@
 /*
- * @(#)CityCtrl.java	2.6.a 17/09/12
+ * @(#)CityCtrl.java	2.8.w 08/07/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -31,12 +31,12 @@ import java.util.Vector;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.TableColumnModel;
+import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
 import net.algem.util.module.GemDesktop;
-import net.algem.util.module.GemDesktopCtrl;
 import net.algem.util.module.GemModule;
 import net.algem.util.ui.*;
 
@@ -45,7 +45,7 @@ import net.algem.util.ui.*;
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.w
  * @since 1.0a 02/09/2001
  */
 public class CityCtrl
@@ -53,7 +53,6 @@ public class CityCtrl
         implements ActionListener
 {
 
-  private DataConnection dc;
   private CodePostalField cdp;
   private GemField city;
   private GemButton btAdd;
@@ -63,11 +62,12 @@ public class CityCtrl
   private CityTableModel cityTableModel;
   private JTable cityTable;
   private static final String entry_error = MessageUtil.getMessage("entry.error");
-  private GemDesktop desktop;
+  private final DataConnection dc;
+  private final GemDesktop desktop;
 
   public CityCtrl(GemDesktop desktop) {
     this.desktop = desktop;
-    dc = ((GemDesktopCtrl)desktop).getDataCache().getDataConnection();
+    dc = DataCache.getDataConnection();
 
     cityTableModel = new CityTableModel();
     cityTable = new JTable(cityTableModel);
@@ -139,7 +139,7 @@ public class CityCtrl
       try {
         insertion();
         //clear();
-      } catch (Exception e) {
+      } catch (SQLException e) {
         GemLogger.logException("insertion ville", e, this);
       }
     }
@@ -153,14 +153,14 @@ public class CityCtrl
       if (cmd.equals(GemCommand.MODIFY_CMD)) {
         try {
           modification(n);
-        } catch (Exception e) {
+        } catch (SQLException e) {
           GemLogger.logException("modification ville", e, this);
         }
       } else if (cmd.equals(GemCommand.DELETE_CMD)) {
         try {
           suppression(n);
           //clear();
-        } catch (Exception e) {
+        } catch (SQLException e) {
           GemLogger.logException("suppresion ville", e, this);
         }
       }

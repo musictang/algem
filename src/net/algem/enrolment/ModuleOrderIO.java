@@ -1,7 +1,7 @@
 /*
- * @(#)ModuleOrderIO.java	2.8.a 03/04/13
+ * @(#)ModuleOrderIO.java	2.8.w 23/07/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -55,7 +55,7 @@ public class ModuleOrderIO
             + "','" + c.getEnd()
             + "','" + c.getModeOfPayment()
             + "','" + c.getNOrderLines()
-            + "','" + c.getPayment()
+            + "','" + c.getPayment().getName()
             + "')";
     dc.executeUpdate(query);
     c.setId(next);
@@ -70,9 +70,8 @@ public class ModuleOrderIO
             + "',fin = '" + c.getEnd()
             + "',reglement = '" + c.getModeOfPayment()
             + "',necheance = '" + c.getNOrderLines()
-            + "',paiement = '" + c.getPayment()
-            + "'"
-            + " WHERE id = " + c.getId();
+            + "',paiement = '" + c.getPayment().getName()
+            + "' WHERE id = " + c.getId();
 
     dc.executeUpdate(query);
   }
@@ -104,8 +103,7 @@ public class ModuleOrderIO
 
   public static Vector<ModuleOrder> find(String where, DataConnection dc) throws SQLException {
     Vector<ModuleOrder> v = new Vector<ModuleOrder>();
-    String query = "SELECT cm.id, cm.idcmd, cm.module, cm.prix, cm.debut, cm.fin, cm.reglement, cm.necheance, cm.paiement"
-            + ", m.titre"
+    String query = "SELECT cm.id, cm.idcmd, cm.module, cm.prix, cm.debut, cm.fin, cm.reglement, cm.necheance, cm.paiement, m.titre"
             + " FROM " + TABLE + " cm, " + ModuleIO.TABLE + " m"
             + " WHERE cm.module = m.id " + where;
 
@@ -129,9 +127,22 @@ public class ModuleOrderIO
       m.setEnd(new DateFr(rs.getString(6)));
       m.setModeOfPayment(rs.getString(7));
       m.setNOrderLines(rs.getInt(8));
-      m.setPayment(rs.getString(9));
+      m.setPayment(getFrequencyByName(rs.getString(9)));
       m.setTitle(rs.getString(10));
       
       return m;
+  }
+  
+  public static PayFrequency getFrequencyByName(String f) {
+    if (PayFrequency.MONTH.getName().equals(f)) {
+      return PayFrequency.MONTH;
+    } else if (PayFrequency.QUARTER.getName().equals(f)) {
+      return PayFrequency.QUARTER;
+    } else if (PayFrequency.SEMESTER.getName().equals(f)) {
+      return PayFrequency.SEMESTER;
+    } else if (PayFrequency.YEAR.getName().equals(f)) {
+      return PayFrequency.YEAR;
+    }
+    return PayFrequency.QUARTER;//backward-compatible
   }
 }

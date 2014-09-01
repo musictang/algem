@@ -47,7 +47,7 @@ public class ScheduleDTO
     type = p.getType();
     personId = p.getIdPerson();
     action = p.getIdAction();
-    place = p.getPlace();
+    place = p.getIdRoom();
     note = p.getNote();
   }
 

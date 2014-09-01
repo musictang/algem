@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleCanvas.java 2.8.t 08/05/14
+ * @(#)ScheduleCanvas.java 2.8.w 09/07/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -32,6 +32,8 @@ import java.util.Vector;
 import net.algem.config.AgeRange;
 import net.algem.config.ColorPlan;
 import net.algem.config.ColorPrefs;
+import net.algem.config.ConfigKey;
+import net.algem.config.ConfigUtil;
 import net.algem.config.GemParam;
 import net.algem.contact.Person;
 import net.algem.course.Course;
@@ -42,27 +44,44 @@ import net.algem.util.ui.GemPanel;
  * Abstract class for planning layout.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.8.w
  * @since 2.5.a 10/07/12
  */
 public abstract class ScheduleCanvas
         extends GemPanel
         implements ScheduleView, MouseListener, Printable {
 
-  protected static final int MARGEH = 30;
-  protected static final int MARGED = 50;
+  protected static final int TOP_MARGIN = 30;
+  protected static final int RIGHT_MARGIN = 50;
   protected static final Font NORMAL_FONT = new Font("Helvetica", Font.PLAIN, 10);
   protected static final Font SMALL_FONT = new Font("Helvetica", Font.PLAIN, 9);
-  protected static final Font X_SMALL_FONT = new Font("Helvetica", Font.PLAIN, 8);
+  protected static final Font X_SMALL_FONT = new Font("Helvetica", Font.PLAIN, 8); 
+  protected static final Color CLOSED_COLOR = Color.decode("#cccccc");
+  // !IMPORTANT non final static variable : authorize opening time modification without rebooting Algem
+  protected int H_START;
+  {
+    String start = ConfigUtil.getConf(ConfigKey.START_TIME.getKey());
+    int s = 0;
+    try {
+      s = Integer.parseInt(start.substring(0, start.indexOf(':'))) * 60;
+    } catch(NumberFormatException nfe) {
+      System.err.println(nfe.getMessage());
+    }
+    H_START = s;
+  }
+  protected int GRID_Y = (1440 - H_START) /30;
 
-  protected int pas_x;
+  protected int top;
+  protected int step_x;
+  protected int step_y;
   protected ActionListener listener;
   protected Schedule clickSchedule;
   protected Vector<ScheduleRangeObject> clickRange;
-  protected int clickx;
-  protected int clicky;
+  protected int clickX;
+  protected int clickY;
   protected Image img;
   protected ColorPrefs colorPrefs = new ColorPrefs();
+  
 
   public void removeActionListener(ActionListener l) {
     listener = AWTEventMulticaster.remove(listener, l);
@@ -81,7 +100,7 @@ public abstract class ScheduleCanvas
   protected Color getScheduleColor(ScheduleObject p) {
     Color c = Color.white;
     switch (p.getType()) {
-      case Schedule.COURSE_SCHEDULE:
+      case Schedule.COURSE:
         Room s = ((CourseSchedule) p).getRoom();
         Course cc = ((CourseSchedule) p).getCourse();
         if (s.isCatchingUp()) {
@@ -93,7 +112,7 @@ public abstract class ScheduleCanvas
             c = colorPrefs.getColor(ColorPlan.COURSE_INDIVIDUAL);
           } else {
             //c = Color.red; // couleur cours collectif
-            if (cc.isInstCode()) {
+            if (cc != null && cc.isInstCode()) {
               c = colorPrefs.getColor(ColorPlan.INSTRUMENT_CO);
             } else {
               c = colorPrefs.getColor(ColorPlan.COURSE_CO);
@@ -101,24 +120,29 @@ public abstract class ScheduleCanvas
           }
         }
         break;
-      case Schedule.ACTION_SCHEDULE:
+      case Schedule.ACTION:
         //c = Color.green;
         c = colorPrefs.getColor(ColorPlan.ACTION);
         break;
-      case Schedule.MEMBER_SCHEDULE:
+      case Schedule.MEMBER:
         c = colorPrefs.getColor(ColorPlan.MEMBER_REHEARSAL);
         break;
-      case Schedule.GROUP_SCHEDULE:
+      case Schedule.GROUP:
         //c= DARK_BLUE; // couleur groupe et repetiteurs
         c = colorPrefs.getColor(ColorPlan.GROUP_REHEARSAL);
         break;
-      case Schedule.WORKSHOP_SCHEDULE:
+      case Schedule.WORKSHOP:
         //c = Color.white; // couleur atelier ponctuel
         c = colorPrefs.getColor(ColorPlan.WORKSHOP);
         break;
-      case Schedule.TRAINING_SCHEDULE:
+      case Schedule.TRAINING:
         //c = Color.white; // couleur atelier ponctuel
         c = colorPrefs.getColor(ColorPlan.TRAINING);
+        break;
+      case Schedule.STUDIO:
+      case Schedule.TECH:
+        //c = Color.white; // couleur atelier ponctuel
+        c = colorPrefs.getColor(ColorPlan.STUDIO);
         break;
     } // end switch couleurs
     return c;
@@ -143,12 +167,14 @@ public abstract class ScheduleCanvas
       }
     } else if (p instanceof WorkshopSchedule) {
       return colorPrefs.getColor(ColorPlan.WORKSHOP_LABEL);
-    } else if (p.getType() == Schedule.TRAINING_SCHEDULE) {
+    } else if (p.getType() == Schedule.TRAINING) {
       return colorPrefs.getColor(ColorPlan.TRAINING_LABEL);
     } else if (p instanceof GroupRehearsalSchedule) {
       return colorPrefs.getColor(ColorPlan.GROUP_LABEL);
     } else if (p instanceof MemberRehearsalSchedule) {
       return colorPrefs.getColor(ColorPlan.MEMBER_LABEL);
+    } else if (p instanceof GroupStudioSchedule || p instanceof TechStudioSchedule) {
+      return colorPrefs.getColor(ColorPlan.STUDIO_LABEL);
     } else {
       return colorPrefs.getColor(ColorPlan.LABEL);
     }
@@ -188,9 +214,9 @@ public abstract class ScheduleCanvas
       return 0;
     }
     if (n >= p) {
-      return pas_x;
+      return step_x;
     }
-    return (pas_x * n) / p;
+    return (step_x * n) / p;
   }
 
   /**
@@ -280,7 +306,7 @@ public abstract class ScheduleCanvas
     return clickRange;
   }
 
-  public java.util.List<ScheduleRangeObject> getPlagesCoursCoInst(java.util.List<ScheduleRangeObject> plages) {
+  public java.util.List<ScheduleRangeObject> getRangesCoursCoInst(java.util.List<ScheduleRangeObject> plages) {
 
     java.util.List<ScheduleRangeObject> vcc = new ArrayList<ScheduleRangeObject>();
     for (ScheduleRangeObject p : plages) {
@@ -323,6 +349,16 @@ public abstract class ScheduleCanvas
     }
     return null;
   }
+  
+   protected int setX(int col, int spacing) {
+    return RIGHT_MARGIN + spacing + ((col - top) * step_x);
+  }
+  
+  protected int setY(int start) {
+    int offset = start % 30;
+    int y = TOP_MARGIN  + 2 + ((start - offset - H_START) / 30) * step_y;
+    return y + (offset * step_y / 30);
+  }
 
   /**
    * Gets the click position.
@@ -332,8 +368,8 @@ public abstract class ScheduleCanvas
   public Point getClickPosition() {
     Point p = getLocationOnScreen();
 
-    p.x += clickx;
-    p.y += clicky;
+    p.x += clickX;
+    p.y += clickY;
 
     return p;
   }

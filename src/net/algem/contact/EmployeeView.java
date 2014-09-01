@@ -1,7 +1,7 @@
 /*
- * @(#)EmployeeView.java 2.8.n 04/10/13
+ * @(#)EmployeeView.java 2.8.v 29/05/14
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -29,17 +29,15 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.io.File;
-import java.io.IOException;
 import java.text.ParseException;
 import java.util.logging.Level;
 import javax.swing.JFormattedTextField;
 import javax.swing.text.MaskFormatter;
 import net.algem.config.ColorPrefs;
-import net.algem.config.ConfigKey;
-import net.algem.config.ConfigUtil;
 import net.algem.planning.DateFr;
 import net.algem.planning.DateFrField;
 import net.algem.util.BundleUtil;
+import net.algem.util.DataCache;
 import net.algem.util.FileUtil;
 import net.algem.util.GemLogger;
 import net.algem.util.jdesktop.DesktopHandler;
@@ -50,7 +48,7 @@ import net.algem.util.ui.*;
 /**
  * Employee view.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.n
+ * @version 2.8.v
  * @since 2.8.m 02/09/13
  */
 public class EmployeeView
@@ -98,8 +96,9 @@ public class EmployeeView
   private File residenceFile;
 
   private EmployeeService service;
+  private EmployeeTypePanelCtrl typeCtrl;
 
-  public EmployeeView(final EmployeeService service) {
+  public EmployeeView(final EmployeeService service, DataCache dataCache) {
     idper = new GemNumericField(6);
     idper.setEditable(false);
 
@@ -139,6 +138,8 @@ public class EmployeeView
     guso = new GemField(13, 10);
 
     nationality = new GemField(true, 20);
+    typeCtrl = new EmployeeTypePanelCtrl(dataCache);
+
 
     this.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
@@ -155,6 +156,7 @@ public class EmployeeView
     gb.add(new GemLabel(BundleUtil.getLabel("Date.of.birth.label")), 0, 3, 1, 1, GridBagHelper.WEST);
     gb.add(placeLabel, 0, 4, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Nationality.label")), 0, 5, 1, 1, GridBagHelper.WEST);
+//    gb.add(new GemLabel(BundleUtil.getLabel("Category.label")), 0, 6, 1, 1, GridBagHelper.WEST);
 
     gb.add(idper, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(nir, 1, 1, 1, 1, GridBagHelper.WEST);
@@ -162,6 +164,7 @@ public class EmployeeView
     gb.add(birth, 1, 3, 1, 1, GridBagHelper.WEST);
     gb.add(place, 1, 4, 1, 1, GridBagHelper.WEST);
     gb.add(nationality, 1, 5, 1, 1, GridBagHelper.WEST);
+    gb.add(typeCtrl, 0, 6, 2, 1, GridBagHelper.BOTH, GridBagHelper.WEST);
 
     ActionListener fileListener = new EmployeeDocListener();
     GemPanel buttons = new GemPanel(new GridLayout(1,3));
@@ -185,7 +188,7 @@ public class EmployeeView
     buttons.add(dueBt);
     buttons.add(residenceBt);
     gb.insets = new Insets(10, 0, 0, 0);
-    gb.add(buttons, 0, 6, 2, 1, GridBagHelper.BOTH, GridBagHelper.WEST);
+    gb.add(buttons, 0, 7, 2, 1, GridBagHelper.BOTH, GridBagHelper.WEST);
 
   }
 
@@ -213,6 +216,12 @@ public class EmployeeView
     place.setText(e.getPlaceBirth());
     guso.setText(e.getGuso() == null ? null : e.getGuso().trim());
     nationality.setText(e.getNationality());
+
+    if (e.getTypes() != null) {
+      for(Integer t : e.getTypes()) {
+        typeCtrl.addPanel(t);
+      }
+    }
 
     setButtonAccess(e.getIdPer());
 
@@ -262,6 +271,8 @@ public class EmployeeView
     e.setPlaceBirth(place.getText().trim().toUpperCase());
     e.setGuso(guso.getText().trim().toUpperCase());
     e.setNationality(nationality.getText().trim().toUpperCase());
+
+    e.setTypes(typeCtrl.getTypes());
 
     return e;
   }

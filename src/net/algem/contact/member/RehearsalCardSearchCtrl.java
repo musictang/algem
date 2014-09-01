@@ -1,7 +1,7 @@
 /*
- * @(#)RehearsalCardSearchCtrl.java 2.6.a 03/10/12
+ * @(#)RehearsalCardSearchCtrl.java 2.8.w 08/07/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -24,6 +24,7 @@ import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
 import java.util.Vector;
+import net.algem.util.DataCache;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
@@ -34,16 +35,16 @@ import net.algem.util.ui.SearchCtrl;
  * Rehearsal card search controller.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.6.w
  * @since 2.1ab 17/11/2010
  */
 public class RehearsalCardSearchCtrl
         extends SearchCtrl
 {
-  private GemDesktop desktop;
+  private final GemDesktop desktop;
 
   public RehearsalCardSearchCtrl(GemDesktop _desktop) {
-    super(_desktop.getDataCache().getDataConnection(), "Consultation/modification des cartes d'abonnement");
+    super(DataCache.getDataConnection(), "Consultation/modification des cartes d'abonnement");
     this.desktop = _desktop;
   }
 

@@ -1,5 +1,5 @@
 /*
- * @(#)FileView.java	2.8.r 18/01/14
+ * @(#)FileView.java	2.8.w 27/08/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -27,13 +27,14 @@ import net.algem.util.ui.FileTab;
 import net.algem.util.ui.TabPanel;
 
 /**
- * Base class for dossiers views.
+ * Base class used to display dossiers.
+ * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.r
+ * @version 2.8.w
  * @since 2.3.c 21/03/12
  */
 public class FileView
-        extends GemView
+        extends DefaultGemView
 {
 
   public static final String HISTO_INVOICE_TAB_TITLE = BundleUtil.getLabel("Invoice.tab.label");

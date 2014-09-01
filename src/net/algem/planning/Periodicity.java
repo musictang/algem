@@ -1,7 +1,7 @@
 /*
- * @(#)Periodicity.java	2.6.a 19/09/12
+ * @(#)Periodicity.java	2.8.w 23/07/14
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,22 +21,33 @@
 
 package net.algem.planning;
 
-/**
- * Enumeration for periodicity.
- * 
- * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
- * @since 2.4.a
- */
-public enum Periodicity {
+import net.algem.util.BundleUtil;
 
-  HEURE,
-  JOUR,
-  SEMAINE,
-  QUINZAINE,
-  MOIS,
-  TRIMESTRE,
-  TRIM,
-  ANNEE
+/**
+ *
+ * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
+ * @version 2.8.w
+ * @since 2.7.p 22/07/2014
+ */
+public enum Periodicity 
+{
+  DAY(BundleUtil.getLabel("Periodicity.day.label")),
+  FORTNIGHT(BundleUtil.getLabel("Periodicity.fortnight.label")),
+  MONTH(BundleUtil.getLabel("Periodicity.month.label")),
+  QUARTER(BundleUtil.getLabel("Periodicity.quarter.label")),
+  SEMESTER(BundleUtil.getLabel("Periodicity.semester.label")),
+  WEEK(BundleUtil.getLabel("Periodicity.week.label")),
+  YEAR(BundleUtil.getLabel("Periodicity.year.label"));
   
+  private String communName;
+
+  private Periodicity(String communName) {
+    this.communName = communName;
+  }
+  
+  @Override
+  public String toString() {
+    return communName;
+  }
+          
 }

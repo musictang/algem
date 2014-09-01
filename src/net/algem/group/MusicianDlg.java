@@ -1,7 +1,7 @@
 /*
- * @(#)MusicianDlg.java	2.7.k 04/03/13
+ * @(#)MusicianDlg.java	2.8.w 23/07/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -49,7 +49,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.k
+ * @version 2.7.w
  */
 public class MusicianDlg
         extends PopupDlg
@@ -57,7 +57,7 @@ public class MusicianDlg
 {
 
   private DataCache dataCache;
-  private GemBorderPanel back;
+  private GemPanel back;
   private GemNumericField no;
   private GemField name;
   private GemField firstname;
@@ -78,7 +78,7 @@ public class MusicianDlg
     no = new GemNumericField(6);
     no.addActionListener(this);
 
-    name = new GemField(30);
+    name = new GemField(25);
     name.setEditable(false);
     firstname = new GemField(25);
     firstname.setEditable(false);
@@ -86,11 +86,13 @@ public class MusicianDlg
     icon = ImageUtil.createImageIcon(ImageUtil.SEARCH_ICON);
     btSearch = new GemButton(icon);
     btSearch.setMargin(new Insets(0, 0, 0, 0));
+    //btSearch.setBorder(null);
     btSearch.addActionListener(this);
 
-    back = new GemBorderPanel();
+    back = new GemPanel();
     back.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(back);
+    gb.insets = GridBagHelper.SMALL_INSETS;
 
     gb.add(new GemLabel(BundleUtil.getLabel("Number.abbrev.label")), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(no, 1, 0, 1, 1, GridBagHelper.WEST);
@@ -157,7 +159,7 @@ public class MusicianDlg
   @Override
   public void actionPerformed(ActionEvent evt) {
     
-    DataConnection dc = dataCache.getDataConnection();
+    DataConnection dc = DataCache.getDataConnection();
     if (evt.getSource() == no) {
       try {
         int id = Integer.parseInt(no.getText());
@@ -201,7 +203,7 @@ public class MusicianDlg
     if (evt instanceof ContactSelectEvent) {
       Contact c = ((ContactSelectEvent) evt).getContact();
       try {
-        setMusician(c, dataCache.getDataConnection());
+        setMusician(c, DataCache.getDataConnection());
       } catch (SQLException ex) {
         GemLogger.log(Level.SEVERE, ex.getMessage());
       }

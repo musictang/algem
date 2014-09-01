@@ -1,7 +1,7 @@
 /*
- * @(#)GemDesktopCtrl.java	2.8.o 09/10/13
+ * @(#)GemDesktopCtrl.java	2.8.w 27/08/14
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -63,7 +63,7 @@ import net.algem.util.ui.HtmlViewer;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.o
+ * @version 2.8.w
  * @since 1.0a 05/07/2002
  */
 public class GemDesktopCtrl
@@ -77,7 +77,7 @@ public class GemDesktopCtrl
   private DataCache dataCache;
   private DataConnection dc;
   private UserService userService;
-  private JDesktopPane desktop; 
+  private final JDesktopPane desktop; 
   private PostitModule postit;
   private PostitCreateCtrl postitCreate;
   private PlanModifCtrl modifCtrl;
@@ -101,12 +101,12 @@ public class GemDesktopCtrl
   ObjectOutputStream oDispatcher;
   String remoteId;
   
-  public GemDesktopCtrl(JFrame _frame, DataCache _cache, Properties _props) {
-    frame = _frame;
-    dataCache = _cache;
-    dc = _cache.getDataConnection();
-    userService = _cache.getUserService();
-    props = _props;
+  public GemDesktopCtrl(JFrame frame, DataCache dataCache, Properties props) {
+    this.frame = frame;
+    this.dataCache = dataCache;
+    dc = DataCache.getDataConnection();
+    userService = dataCache.getUserService();
+    this.props = props;
     
     modules = new Hashtable<String, GemModule>();
     menus = new Hashtable<String, JMenuItem>();
@@ -205,6 +205,7 @@ public class GemDesktopCtrl
             addModule(dayScheduleCtrl);
             // location initiale du tableau jour.
             dayScheduleCtrl.getView().setLocation(110, 0);
+            dayScheduleCtrl.mayBeMaximize();
           }
         }
       }
@@ -366,7 +367,8 @@ public class GemDesktopCtrl
       HourStatDlg hourStatDlg = new HourStatDlg(getFrame(), dataCache);
       hourStatDlg.setVisible(true);
     } else if (BundleUtil.getLabel("Statistics.label").equals(arg)) {
-      StatsExportDlg dlg = new StatsExportDlg(dataCache);
+      StatsExportDlg dlg = new StatsExportDlg(this);
+//      addPanel("stats", dlg);
       dlg.setVisible(true);
     } else if (BundleUtil.getLabel("Menu.windows.iconify.all.label").equals(arg)) {
       iconify();
@@ -479,10 +481,10 @@ public class GemDesktopCtrl
   public DataCache getDataCache() {
     return dataCache;
   }
-  
+
   @Override
-  public void addModule(GemModule _module) {
-    addModule(_module, false);
+  public void addModule(GemModule module) {
+    addModule(module, false);
   }
   
   public void addModule(GemModule module, boolean iconified) //public void addModule(GemModule _module, int _layer)
@@ -493,7 +495,7 @@ public class GemDesktopCtrl
     
     modules.put(module.getLabel(), module);
     module.setDesktop(this);	// createIHM
-    GemView gemView = module.getView();
+    DefaultGemView gemView = module.getView();
     desktop.add(gemView);
     
     gemView.setVisible(true);
@@ -515,13 +517,13 @@ public class GemDesktopCtrl
   
   @Override
   public void addPanel(String s, Container p) {
-    GemModule m = new GemModule(s, p);
+    GemModule m = new DefaultGemModule(s, p);
     addModule(m); 	//m.init();
   }
   
   @Override
   public void addPanel(String s, Container p, Dimension size) {
-    GemModule m = new GemModule(s, p);
+    GemModule m = new DefaultGemModule(s, p);
     addModule(m);
     m.setSize(size);
   }
@@ -531,7 +533,6 @@ public class GemDesktopCtrl
     if (module == null || module == postit) {
       return;
     }
-//module.removeGemEventListeners();// test
     desktop.remove(module.getView());
     desktop.repaint();
     JMenuItem mItem = (JMenuItem) menus.get(module.getLabel());
@@ -553,7 +554,7 @@ public class GemDesktopCtrl
   
   @Override
   public GemModule getSelectedModule() {
-    GemView v = (GemView) desktop.getSelectedFrame();
+    DefaultGemView v = (DefaultGemView) desktop.getSelectedFrame();
     GemModule m = modules.get(v.getLabel());
     return m;
   }

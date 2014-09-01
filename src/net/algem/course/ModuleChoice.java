@@ -1,7 +1,7 @@
 /*
- * @(#)ModuleChoice.java	2.6.a 17/09/12
+ * @(#)ModuleChoice.java	2.8.w 23/07/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,6 +20,7 @@
  */
 package net.algem.course;
 
+import net.algem.util.BundleUtil;
 import net.algem.util.model.GemList;
 import net.algem.util.ui.GemChoice;
 
@@ -28,7 +29,7 @@ import net.algem.util.ui.GemChoice;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.w
  */
 public class ModuleChoice
         extends GemChoice {
@@ -37,7 +38,7 @@ public class ModuleChoice
     super(model);
 
     if (none) {
-      Module s = new Module("aucun");
+      Module s = new Module(BundleUtil.getLabel("None.label"));
       insertItemAt(s, 0);
     }
     if (model.getSize() > 0) {
@@ -50,9 +51,10 @@ public class ModuleChoice
   }
 
   /**
-   * Retourne l'id du module correspondant au choix dans la comboBox.
    *
-   * @return un entier
+   * Gets selected module's id.
+   *
+   * @return an integer supposed to be > 0
    */
   @Override
   public int getKey() {
@@ -60,9 +62,9 @@ public class ModuleChoice
   }
 
   /**
-   * Retourne le numéro d'index du module sélectionné dans la comboBox.
+   * Gets selected module index.
    *
-   * @return un entier
+   * @return index of selected element
    */
   public int getSelectedKey() {
     return getSelectedIndex();// l'index et pas l'id du forfait

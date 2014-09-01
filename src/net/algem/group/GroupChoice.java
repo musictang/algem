@@ -32,28 +32,29 @@ import net.algem.util.ui.GemChoice;
  * @version 2.6.a
  */
 public class GroupChoice
-	extends GemChoice {
+        extends GemChoice
+{
 
-	public GroupChoice(Vector<Group> groups, boolean none) {
-		super(groups);
+  public GroupChoice(Vector<Group> groups, boolean none) {
+    super(groups);
 
-		if (none) {
-			Group s = new Group(MessageUtil.getMessage("none.info"));
-			insertItemAt(s, 0);
-		}
-	}
+    if (none) {
+      Group s = new Group(MessageUtil.getMessage("none.info"));
+      insertItemAt(s, 0);
+    }
+  }
 
-	public GroupChoice(Vector<Group> groupes) {
-		this(groupes, false);
-	}
+  public GroupChoice(Vector<Group> groups) {
+    this(groups, false);
+  }
 
-	@Override
-	public int getKey() {
-		return ((Group) getSelectedItem()).getId();
-	}
+  @Override
+  public int getKey() {
+    return ((Group) getSelectedItem()).getId();
+  }
 
-	@Override
-	public void setKey(int k) {
-		setSelectedItem(new Group(k));
-	}
+  @Override
+  public void setKey(int k) {
+    setSelectedItem(new Group(k));
+  }
 }

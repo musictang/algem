@@ -1,7 +1,7 @@
 /*
- * @(#)AttendanceSheet.java	2.8.a 28/03/13
+ * @(#)AttendanceSheet.java	2.8.w 08/07/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -48,14 +48,14 @@ import net.algem.util.model.Model;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.w
  * @since 1.0a 07/07/1999
  */
 public class AttendanceSheet
         extends Canvas
 {
 
-  private static int HPAGES = 500;
+  private static final int HPAGES = 500;
   private int margeh = 30;
   private int marged = 50;
   private DateRange dateRange;
@@ -65,25 +65,25 @@ public class AttendanceSheet
   private FontMetrics fm;
   private Image bim;
   private Graphics bg;
-  private Font normalFont;
-  private Font smallFont;
-  private Font boldFont;
   private Toolkit tk;
   private Calendar cal;
   private String[] monthLabel;
   private String[] dayLabels;
   private Teacher teacher;
-  private DataCache dataCache;
   private PrintJob prn;
   private Graphics g;
   private Frame parent;
-  private TeacherService service;
-  private PlanningService planningService;
+  private final Font normalFont;
+  private final Font smallFont;
+  private final Font boldFont;
+  private final DataCache dataCache;
+  private final TeacherService service;
+  private final PlanningService planningService;
 
-  public AttendanceSheet(Component c, DataCache _dc) {
-    dataCache = _dc;
-    planningService = new PlanningService(dataCache.getDataConnection());
-    service = new TeacherService(dataCache.getDataConnection());
+  public AttendanceSheet(Component c, DataCache dataCache) {
+    this.dataCache = dataCache;
+    planningService = new PlanningService(DataCache.getDataConnection());
+    service = new TeacherService(DataCache.getDataConnection());
 
     tk = Toolkit.getDefaultToolkit();
 
@@ -115,7 +115,7 @@ public class AttendanceSheet
     dateRange = _plage;
     Vector<Teacher> teachers = null;
     try {
-      Establishment estab = EstablishmentIO.findId(etabId, dataCache.getDataConnection());
+      Establishment estab = EstablishmentIO.findId(etabId, DataCache.getDataConnection());
       teachers = service.findTeachers();
       if (teachers != null) {
         for (int i = 0; i < teachers.size(); i++) {
@@ -132,7 +132,7 @@ public class AttendanceSheet
   public void edit(Teacher teacher, DateRange _range, int estabId) {
     try {
       dateRange = _range;
-      Establishment estab = (Establishment) dataCache.findId(estabId, Model.Establishment);
+      Establishment estab = (Establishment) DataCache.findId(estabId, Model.Establishment);
       edit(teacher, dateRange, estab);
       prn.end();
     } catch (SQLException ex) {
@@ -140,9 +140,9 @@ public class AttendanceSheet
     }
   }
 
-  void edit(Teacher teacher, DateRange _range, Establishment etab) {
+  void edit(Teacher teacher, DateRange range, Establishment etab) {
 
-    dateRange = _range;
+    dateRange = range;
     this.teacher = teacher;
 
     try {
@@ -182,10 +182,10 @@ public class AttendanceSheet
         Vector<Schedule> v = liste.elementAt(i);
         Schedule pl = v.elementAt(0);
         Course course = planningService.getCourseFromAction(pl.getIdAction());
-        Room room = ((RoomIO) DataCache.getDao(Model.Room)).findId(pl.getPlace());
+        Room room = ((RoomIO) DataCache.getDao(Model.Room)).findId(pl.getIdRoom());
         courseHeader(course, room, v);
         if (course.isCollective()) {
-          detailCollective(course, room, _range, v);
+          detailCollective(course, room, range, v);
         } else {
           detailRange(course, room, v);
         }
@@ -300,7 +300,7 @@ public class AttendanceSheet
 //            + " AND debut >= '" + plt.getStart() + "'"
 //            + " AND end <= '" + plt.getEnd() + "' ORDER BY debut";
     String query2 = "pg WHERE pg.idplanning = " + plt.getId() + " ORDER BY pg.debut";
-    Vector<ScheduleRange> v = ScheduleRangeIO.find(query2, dataCache.getDataConnection());
+    Vector<ScheduleRange> v = ScheduleRangeIO.find(query2, DataCache.getDataConnection());
 
     for (int i = 0; i < v.size(); i++) {
       ScheduleRange h = v.elementAt(i);

@@ -1,5 +1,5 @@
 /*
- * @(#)TrainingScheduleCtrl.java	2.8.t 16/04/14
+ * @(#)TrainingScheduleCtrl.java	2.8.w 08/07/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -23,7 +23,6 @@ package net.algem.planning;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -42,24 +41,24 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.8.w
  * @since 2.8.t 11/04/14
  */
 public class TrainingScheduleCtrl
         extends CardCtrl
 {
 
-  private GemDesktop desktop;
-  private DataConnection dc;
+  private final GemDesktop desktop;
+  private final DataConnection dc;
+  private final PlanningService service;
   private TrainingScheduleView trainingView;
   protected ConflictListView conflictsView;
-  private PlanningService service;
   private Action action;
   private List<GemDateTime> dates;
 
   public TrainingScheduleCtrl(GemDesktop desktop) {
     this.desktop = desktop;
-    dc = desktop.getDataCache().getDataConnection();
+    dc = DataCache.getDataConnection();
     service = new PlanningService(dc);
   }
 
@@ -112,7 +111,7 @@ public class TrainingScheduleCtrl
     return true;
   }
 
-  public void clear() {
+  private void clear() {
     action = null;
     trainingView.clear();
     conflictsView.clear();
@@ -145,7 +144,7 @@ public class TrainingScheduleCtrl
   }
 
   private void save() throws PlanningException {
-    service.planify(action, Schedule.TRAINING_SCHEDULE, dates);
+    service.planify(action, Schedule.TRAINING, dates);
   }
 
   private Action checkAction() throws PlanningException {
@@ -169,7 +168,7 @@ public class TrainingScheduleCtrl
       throw new PlanningException(MessageUtil.getMessage("time.duplication"));
     }
     // check overlapping
-    if (hasOverlapping(dates)) {
+    if (PlanificationUtil.hasOverlapping(dates)) {
       throw new PlanningException(MessageUtil.getMessage("time.overlapping"));
     }
 
@@ -191,22 +190,6 @@ public class TrainingScheduleCtrl
     a.setCourse(course);
 
     return a;
-  }
-
-  private boolean hasOverlapping(List<GemDateTime> orig) {
-    List<GemDateTime> dup = new ArrayList<GemDateTime>(orig);
-    for (int i = 0; i < orig.size(); i++) {
-      DateFr d = orig.get(i).getDate();
-      HourRange h = orig.get(i).getTimeRange();
-      for(int j = 0; j < dup.size(); j++) {
-        if (j != i && dup.get(j).getDate().equals(d)) {
-          if (dup.get(j).getTimeRange().overlap(h.getStart(), h.getEnd())) {
-            return true;
-          }
-        }
-      }
-    }
-    return false;
   }
 
   private int testConflicts(Action a) {

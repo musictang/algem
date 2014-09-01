@@ -106,7 +106,7 @@ public class TeacherIO
   public int hasSchedules(int id) throws SQLException {
     String query = "SELECT count(idper) FROM " + ScheduleIO.TABLE
             + " WHERE idper = " + id 
-            + " AND ptype IN (" + Schedule.COURSE_SCHEDULE + ", " + Schedule.WORKSHOP_SCHEDULE +")";
+            + " AND ptype IN (" + Schedule.COURSE + ", " + Schedule.WORKSHOP +")";
     ResultSet rs = dc.executeQuery(query);
     int count = 0;
     if(rs.next()) {

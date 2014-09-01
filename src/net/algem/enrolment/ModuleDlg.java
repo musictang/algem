@@ -1,7 +1,7 @@
 /*
- * @(#)ModuleDlg.java	2.8.a 15/04/13
+ * @(#)ModuleDlg.java	2.8.w 23/07/14
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -18,7 +18,7 @@
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package net.algem.course;
+package net.algem.enrolment;
 
 import java.awt.Component;
 import java.awt.GridBagLayout;
@@ -31,13 +31,16 @@ import java.util.Locale;
 import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 import net.algem.accounting.ModeOfPayment;
+import net.algem.config.ConfigKey;
+import net.algem.config.ConfigUtil;
 import net.algem.contact.PersonFile;
-import net.algem.enrolment.EnrolmentService;
+import net.algem.course.Module;
+import net.algem.course.ModuleChoice;
 import net.algem.planning.DateFr;
 import net.algem.planning.DateFrField;
-import net.algem.planning.Periodicity;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
+import net.algem.util.GemLogger;
 import net.algem.util.model.Model;
 import net.algem.util.ui.*;
 
@@ -46,7 +49,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.w
  * @since 1.0a 07/07/1999
  */
 public class ModuleDlg
@@ -54,19 +57,22 @@ public class ModuleDlg
         implements ItemListener
 {
 
-  private GemBorderPanel panel;
+  private GemPanel maskPanel;
   private GemChoice moduleChoice;
   private DateFrField dateStart;
   private DateFrField dateEnd;
   private JFormattedTextField price;
   private JComboBox payment;
-  private JComboBox periodicity;
+  private JComboBox frequency;
   private Module module;
   private PersonFile personFile;
   private EnrolmentService service;
 
+  public ModuleDlg() {
+  }
+  
   public ModuleDlg(Component c, PersonFile p, EnrolmentService service, DataCache dataCache) throws SQLException {
-    super(c, BundleUtil.getLabel("Enrolment.label"));
+    super(c, BundleUtil.getLabel("Module.label"));
     this.service = service;
     personFile = p;
 
@@ -92,14 +98,15 @@ public class ModuleDlg
     dateEnd = new DateFrField(dataCache.getEndOfYear());
     payment = new JComboBox(service.getListOfPayment());
     payment.addItemListener(this);
-    periodicity = new JComboBox(new String[]{"MOIS", "TRIM", "ANNU"});
+    frequency = new JComboBox(new Enum[]{PayFrequency.MONTH, PayFrequency.QUARTER, PayFrequency.YEAR});
 
-    periodicity.addItemListener(this);
+    frequency.addItemListener(this);
 
-    panel = new GemBorderPanel();
-    panel.setLayout(new GridBagLayout());
-    GridBagHelper gb = new GridBagHelper(panel);
-
+    maskPanel = new GemPanel();
+    maskPanel.setLayout(new GridBagLayout());
+    GridBagHelper gb = new GridBagHelper(maskPanel);
+    gb.insets = GridBagHelper.SMALL_INSETS;
+    
     gb.add(new GemLabel(BundleUtil.getLabel("Module.label")), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Start.label")), 0, 1, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("End.label")), 0, 2, 1, 1, GridBagHelper.WEST);
@@ -112,69 +119,69 @@ public class ModuleDlg
     gb.add(dateEnd, 1, 2, 1, 1, GridBagHelper.WEST);
     gb.add(price, 1, 3, 1, 1, GridBagHelper.WEST);
     gb.add(payment, 1, 4, 1, 1, GridBagHelper.WEST);
-    gb.add(periodicity, 1, 5, 1, 1, GridBagHelper.WEST);
+    gb.add(frequency, 1, 5, 1, 1, GridBagHelper.WEST);
 
     //pour faire apparaître le prix du premier module à l'ouverture
     module = service.getModule(moduleChoice.getKey());
     price.setValue(initPrice(module));
-
     init();
   }
 
   @Override
   public GemPanel getMask() {
-    return panel;
+    return maskPanel;
   }
 
-  public void setField(int n, String val) {
+  public void setField(int n, Object val) {
     switch (n) {
       case 0:
-        moduleChoice.setKey(Integer.parseInt(val));
+        moduleChoice.setKey((Integer) val);
         break;
       case 1:
         //choixForfait.setLibel(val);
         break;
       case 2:
-        dateStart.setText(val);
+        dateStart.set((DateFr) val);
         break;
       case 3:
-        dateEnd.setText(val);
+        dateEnd.set((DateFr) val);
         break;
       case 4:
-        price.setValue(new Double(Double.parseDouble(val)));
+        price.setValue((Double) val);
         break;
       case 5:
         payment.setSelectedItem(val);
         break;
       case 6:
-        periodicity.setSelectedItem(val);
+        frequency.setSelectedItem(val);
         break;
       case 7:
-        moduleChoice.setSelectedIndex(Integer.parseInt(val));
+        moduleChoice.setSelectedIndex((Integer) val);
         break;
     }
   }
 
-  public String getField(int n) {
+  public Object getField(int n) {
     switch (n) {
       case 0:
-        return String.valueOf(moduleChoice.getKey());//id module
+        return moduleChoice.getKey();//id module
       case 1:
-        Module f = (Module) moduleChoice.getSelectedItem();
-        return f.getTitle();
+        Module m = (Module) moduleChoice.getSelectedItem();
+        return m.getTitle();
       case 2:
-        return dateStart.getText();//date debut
+        return dateStart.get();
       case 3:
-        return dateEnd.getText();//date fin
+        return dateEnd.get();
       case 4:
-        return String.valueOf(price.getValue());
+        return price.getValue();
       case 5:
-        return (String) payment.getSelectedItem();
+        return payment.getSelectedItem();
       case 6:
-        return (String) periodicity.getSelectedItem();
+        return frequency.getSelectedItem();
       // ajout d'un case pour l'index sélectionné dans la ComboBox choixModule
       case 7:
-        return String.valueOf(((ModuleChoice) moduleChoice).getSelectedKey());
+//        return String.valueOf(((ModuleChoice) moduleChoice).getSelectedKey());
+        return ((ModuleChoice) moduleChoice).getSelectedKey();
     }
     return null;
   }
@@ -185,13 +192,14 @@ public class ModuleDlg
       try {
         module = service.getModule(moduleChoice.getKey());
       } catch (SQLException ex) {
-        System.err.println(getClass().getName() + "#itemStateChanged " + ex.getMessage());
+        GemLogger.log(getClass().getName() + "#itemStateChanged " + ex.getMessage());
       }
       if (module == null || personFile == null) {
         return;
       }
     }
-    calculatePrice(module.getBasePrice());
+//    calculatePrice(module.getBasePrice()); // commenté 2.8.w
+    price.setValue(calculatePayment(module, (String) getField(5), (PayFrequency) getField(6), getDefaultFrequency()));
   }
 
   /**
@@ -201,15 +209,15 @@ public class ModuleDlg
    */
   private void calculatePrice(double normalPrice) {
     String rs = (String) payment.getSelectedItem();
-    String ps = (String) periodicity.getSelectedItem();
+    String ps = (String) frequency.getSelectedItem();
     double reducPrice = normalPrice;
 
     if (!ModeOfPayment.NUL.toString().equals(rs)) {
-      if ((Periodicity.TRIM.toString().equals(ps))) {
+      if ((PayFrequency.QUARTER.getName().equals(ps))) {
         if (ModeOfPayment.PRL.toString().equals(rs)) {
           reducPrice = normalPrice - (normalPrice * (module.getQuarterReducRate() / 100));
         }
-      } else if (Periodicity.MOIS.toString().equals(ps)) {
+      } else if (PayFrequency.MONTH.getName().equals(ps)) {
         if (ModeOfPayment.PRL.toString().equals(rs)) {
           reducPrice = (normalPrice - (normalPrice * module.getMonthReducRate() / 100)) / 3;
         } else {
@@ -223,16 +231,106 @@ public class ModuleDlg
       price.setValue(new Double(0.0)); // si NUL
     }
   }
+  
+  double calculatePayment(Module m, String mp, PayFrequency pf, PayFrequency def) {
+    double price = m.getBasePrice();
+    double reduc = m.getBasePrice();
+    if (ModeOfPayment.PRL.toString().equals(mp)) {
+      switch (pf) {
+        case YEAR:
+          break;
+        case SEMESTER:
+          break;
+        case QUARTER:
+          price = price - (price * m.getQuarterReducRate() / 100);
+          break;
+        case MONTH:
+          price = price - (price * m.getMonthReducRate() / 100);
+          break;
+      }
+    }
+    
+    if (def.equals(PayFrequency.YEAR)) {
+      switch (pf) {
+        case YEAR:
+          reduc = price;
+          break;
+        case SEMESTER:
+          reduc = price;
+          break;
+        case QUARTER:
+          reduc = price / 3;
+          break;
+        case MONTH:
+          reduc = price / 9;
+          break;
+      }
+    } else if (def.equals(PayFrequency.SEMESTER)) {
+      switch (pf) {
+        case YEAR:
+          reduc = price;
+          break;
+        case SEMESTER:
+          reduc = price;
+          break;
+        case QUARTER:
+          reduc = price / 2;
+          break;
+        case MONTH:
+          reduc = price / 6;
+          break;
+      }
+    } else if (def.equals(PayFrequency.QUARTER)) {
+      switch (pf) {
+        case YEAR:
+          reduc = price * 3;
+          break;
+        case SEMESTER:
+          reduc = price * 2;
+          break;
+        case QUARTER:
+          reduc = price;
+          break;
+        case MONTH:
+          reduc = price / 3;
+          break;
+      }
+    } else if (def.equals(PayFrequency.MONTH)) {
+      switch (pf) {
+        case YEAR:
+          reduc = price * 9;
+          break;
+        case SEMESTER:
+          reduc = price * 6;
+          break;
+        case QUARTER:
+          reduc = price * 3;
+          break;
+        case MONTH:
+          reduc = price;
+          break;
+      }
+    }
 
-  Double initPrice(Module f) {
-    return new Double((f.getBasePrice() - (f.getBasePrice() * (f.getMonthReducRate() / 100))) / 3);
+    return reduc;
+  }
+
+  private Double initPrice(Module f) {
+//    return new Double((f.getBasePrice() - (f.getBasePrice() * (f.getMonthReducRate() / 100))) / 3);
+    return calculatePayment(f, ModeOfPayment.CHQ.toString(), PayFrequency.MONTH, getDefaultFrequency());
   }
 
   @Override
   public boolean isEntryValid() {
-    if (moduleChoice.getKey() == 0) {
-      return false;
-    }
-    return true;
+    return moduleChoice.getKey() > 0;
+  }
+  
+  void setTitle(String t) {
+    dlg.setTitle(t);
+  }
+  
+  private PayFrequency getDefaultFrequency() {
+    String conf = ConfigUtil.getConf(ConfigKey.BASIC_RATE_FREQUENCY.getKey());
+    return conf != null ? ModuleOrderIO.getFrequencyByName(conf) : PayFrequency.QUARTER;
   }
 }

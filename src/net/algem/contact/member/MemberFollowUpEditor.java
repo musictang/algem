@@ -1,7 +1,7 @@
 /*
- * @(#)MemberFollowUpEditor.java	2.8.f 24/05/13
+ * @(#)MemberFollowUpEditor.java	2.8.w 08/07/14
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -35,6 +35,7 @@ import net.algem.planning.FollowUpDlg;
 import net.algem.planning.PlanningException;
 import net.algem.planning.ScheduleRangeObject;
 import net.algem.planning.ScheduleRangeTableModel;
+import net.algem.util.DataCache;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
@@ -49,7 +50,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.f
+ * @version 2.8.w
  */
 public class MemberFollowUpEditor
         extends FileTab
@@ -57,15 +58,15 @@ public class MemberFollowUpEditor
 
   private boolean loaded;
   private PersonFile personFile;
-  private GemButton btModify;
-  private GemButton btDelete;
+  private final GemButton btModify;
+  private final GemButton btDelete;
   private ScheduleRangeTableModel scheduleRange;
   private JTable rangeTable;
-  private MemberService memberService;
+  private final MemberService memberService;
 
   public MemberFollowUpEditor(GemDesktop _desktop, PersonFile pf) {
     super(_desktop);
-    memberService = new MemberService(dataCache.getDataConnection());
+    memberService = new MemberService(DataCache.getDataConnection());
     personFile = pf;
 
     scheduleRange = new ScheduleRangeTableModel(dataCache);

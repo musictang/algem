@@ -1,7 +1,7 @@
 /*
- * @(#)ModifPlanCourseView.java 2.7.a 23/11/12
+ * @(#)ModifPlanCourseView.java 2.8.w 08/07/14
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -37,7 +37,7 @@ import net.algem.util.ui.GridBagHelper;
  * View for course modification.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.w
  * @since 2.4.b 30/05/12
  */
 class ModifPlanCourseView
@@ -71,7 +71,7 @@ class ModifPlanCourseView
     setId(((Course) plan.getActivity()).getId());
     dateRange.setStart(plan.getDate());
     try {
-      dateRange.setEnd(PlanningService.getLastDate(plan.getIdAction(), dataCache.getDataConnection()));
+      dateRange.setEnd(PlanningService.getLastDate(plan.getIdAction(), DataCache.getDataConnection()));
     } catch (SQLException ex) {
       dateRange.setEnd(dataCache.getEndOfYear());//fin du cours par défaut
     }

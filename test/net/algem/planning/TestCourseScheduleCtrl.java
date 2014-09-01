@@ -1,7 +1,7 @@
 /*
- * @(#) TestCourseScheduleCtrl.java 2.6.a 08/10/12
+ * @(#) TestCourseScheduleCtrl.java 2.8.w 22/07/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Properties;
 import javax.swing.JFrame;
 import net.algem.TestProperties;
-import net.algem.course.Course;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 import net.algem.util.module.GemDesktop;
@@ -35,7 +34,7 @@ import org.junit.*;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.w
  */
 public class TestCourseScheduleCtrl
 {
@@ -83,7 +82,7 @@ public class TestCourseScheduleCtrl
     a.setHourEnd(end);
     a.setLength(60);
     a.setDay(1);
-    a.setPeriodicity(Periodicity.SEMAINE);
+    a.setPeriodicity(Periodicity.WEEK);
     a.setNSessions((short) 1);
     a.setRoom(1);
     a.setTeacher(16094);

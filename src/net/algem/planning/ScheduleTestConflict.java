@@ -1,7 +1,7 @@
 /*
- * @(#)ScheduleTestConflict.java	2.8.a 26/04/13
+ * @(#)ScheduleTestConflict.java	2.8.v 03/06/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,12 +20,14 @@
  */
 package net.algem.planning;
 
+import java.util.Objects;
+
 /**
- * comment
- *
+ * This class is used in the detection of conflicts when creating a schedule.
+ * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.v
  * @since 1.0a 07/07/1999
  */
 public class ScheduleTestConflict
@@ -38,15 +40,18 @@ public class ScheduleTestConflict
   private boolean teacherFree;
   private boolean roomFree;
   private boolean memberFree;
+  private boolean groupFree;
   private String detail;
 
-  public ScheduleTestConflict(DateFr date, Hour hStart, Hour hEnd, boolean teacherFree, boolean roomFree, boolean memberFree) {
+  
+  public ScheduleTestConflict(DateFr date, Hour start, Hour end) {
     this.date = date;
-    this.hStart = hStart;
-    this.hEnd = hEnd;
-    this.teacherFree = teacherFree;
-    this.roomFree = roomFree;
-    this.memberFree = memberFree;
+    this.hStart = start;
+    this.hEnd = end;
+    this.teacherFree = true;
+    this.roomFree = true;
+    this.memberFree = true;
+    this.groupFree = true;
   }
 
   @Override
@@ -76,17 +81,23 @@ public class ScheduleTestConflict
     if (this.memberFree != other.memberFree) {
       return false;
     }
+    if (this.groupFree != other.groupFree) {
+      return false;
+    }
     return true;
   }
 
   @Override
   public int hashCode() {
     int hash = 3;
+    hash = 67 * hash + Objects.hashCode(this.date);
+    hash = 67 * hash + Objects.hashCode(this.hStart);
+    hash = 67 * hash + Objects.hashCode(this.hEnd);
+    hash = 67 * hash + (this.teacherFree ? 1 : 0);
+    hash = 67 * hash + (this.roomFree ? 1 : 0);
+    hash = 67 * hash + (this.memberFree ? 1 : 0);
+    hash = 67 * hash + (this.groupFree ? 1 : 0);
     return hash;
-  }
-
-  public ScheduleTestConflict(DateFr date, Hour start, Hour end) {
-    this(date, start, end, true, true, true);
   }
 
   @Override
@@ -146,6 +157,14 @@ public class ScheduleTestConflict
     return memberFree;
   }
 
+  public void setGroupFree(boolean groupFree) {
+    this.groupFree = groupFree;
+  }
+
+  public boolean isGroupFree() {
+    return groupFree;
+  }
+
   public void setDetail(String s) {
     detail = s;
   }
@@ -155,6 +174,6 @@ public class ScheduleTestConflict
   }
 
   public boolean isConflict() {
-    return !(memberFree && roomFree && teacherFree);
+    return !(memberFree && roomFree && teacherFree && groupFree);
   }
 }

@@ -1,7 +1,7 @@
 /*
- * @(#)ConflictTableModel.java	2.8.a 24/04/13
+ * @(#)ConflictTableModel.java	2.8.v 04/06/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -23,13 +23,14 @@ package net.algem.planning;
 import javax.swing.ImageIcon;
 import net.algem.util.BundleUtil;
 import net.algem.util.ImageUtil;
+import net.algem.util.MessageUtil;
 import net.algem.util.ui.JTableModel;
 
 /**
  * Conflict table model.
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.v
  */
 public class ConflictTableModel
         extends JTableModel
@@ -97,13 +98,16 @@ public class ConflictTableModel
       case 4:
         StringBuilder lib = new StringBuilder();
         if (!p.isTeacherFree()) {
-          lib.append("[ Prof occupé ]");
+          lib.append(" [ ").append(MessageUtil.getMessage("busy.teacher.warning")).append(" ]");
         }
         if (!p.isRoomFree()) {
-          lib.append(" [ Salle occupée ]");//essai
+          lib.append(" [ ").append(MessageUtil.getMessage("busy.room.warning")).append(" ]");
         }
         if (!p.isMemberFree()) {
-          lib.append(" [ Adhérent occupé ]");
+          lib.append(" [ ").append(MessageUtil.getMessage("busy.member.warning")).append(" ]");
+        }
+         if (!p.isGroupFree()) {
+          lib.append(" [ ").append(MessageUtil.getMessage("busy.group.warning")).append(" ]");
         }
         if (p.getDetail() != null) {
           lib.append(p.getDetail());

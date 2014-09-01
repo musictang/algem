@@ -1,7 +1,7 @@
 /*
- * @(#)NoteDlg.java	2.6.a 17/09/12
+ * @(#)NoteDlg.java	2.8.w 08/07/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -26,6 +26,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JDialog;
 import javax.swing.JScrollPane;
 import javax.swing.text.DefaultCaret;
+import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
@@ -37,7 +38,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.w
  */
 public class NoteDlg
         implements ActionListener
@@ -109,7 +110,7 @@ public class NoteDlg
 
   public NoteDlg(GemDesktop desktop) {
     this(desktop.getFrame());
-    this.dc = desktop.getDataCache().getDataConnection();
+    this.dc = DataCache.getDataConnection();
   }
 
   public void show() {

@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileTabView.java  2.8.r 14/01/14
+ * @(#)PersonFileTabView.java  2.8.w 08/07/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes All Rights Reserved.
  *
@@ -63,7 +63,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.r
+ * @version 2.8.w
  */
 public class PersonFileTabView
         extends FileView
@@ -147,13 +147,13 @@ public class PersonFileTabView
     add(wTab, BorderLayout.CENTER);
 
     contactFileEditor = new ContactFileEditor(desktop);
-    contactFileEditor.setCodePostalCtrl(new CodePostalCtrl(dataCache.getDataConnection()));
+    contactFileEditor.setCodePostalCtrl(new CodePostalCtrl(DataCache.getDataConnection()));
     if (dossier.getContact() != null) {
       contactFileEditor.set(dossier.getContact());
       // Titre du module : name du contact suivi de son id
       setTitle(getTitle() + dossier.getContact().toString() + " " + dossier.getContact().getId());
       try {
-        note = NoteIO.findId(dossier.getId(), dossier.getContact().getType(), dataCache.getDataConnection());
+        note = NoteIO.findId(dossier.getId(), dossier.getContact().getType(), DataCache.getDataConnection());
       } catch (NoteException ex) {
         GemLogger.logException(ex);
       }
@@ -172,8 +172,8 @@ public class PersonFileTabView
         addMemberTab();
         memberEditor.set(dossier.getMember());
         if (dossier.getContact().getAddress() == null && dossier.getContact().getTele() == null) {
-          Vector<Address> addressLink = AddressIO.findId(dossier.getMember().getPayer(), dataCache.getDataConnection());
-          Vector<Telephone> phoneLink = TeleIO.findId(dossier.getMember().getPayer(), dataCache.getDataConnection());
+          Vector<Address> addressLink = AddressIO.findId(dossier.getMember().getPayer(), DataCache.getDataConnection());
+          Vector<Telephone> phoneLink = TeleIO.findId(dossier.getMember().getPayer(), DataCache.getDataConnection());
 
           if (addressLink.size() > 0 || phoneLink.size() > 0) {
             //cbTelAdresse = new JCheckBox("Address/téléphone liés au payeur N° " + dossier.getMember().getPayer(), true);
@@ -390,7 +390,6 @@ public class PersonFileTabView
     return employeeEditor != null && employeeEditor.hasChanged();
   }
 
-
   void addMandates(final DirectDebitService ddService, final int payer) {
 
     DDPrivateMandateCtrl ddMandateCtrl = new DDPrivateMandateCtrl(desktop, ddService)
@@ -435,11 +434,11 @@ public class PersonFileTabView
   
   void addBankTab() {
     if (ribView == null) {
-      BankBranchIO branchIO = new BankBranchIO(dataCache.getDataConnection());
+      BankBranchIO branchIO = new BankBranchIO(DataCache.getDataConnection());
       ribView = new RibView(desktop, dossier.getId());
       ribView.setRib(dossier.getRib());
-      ribView.setBankCodeCtrl(new BankCodeCtrl(dataCache.getDataConnection(), branchIO));
-      ribView.setPostalCodeCtrl(new CodePostalCtrl(dataCache.getDataConnection()));
+      ribView.setBankCodeCtrl(new BankCodeCtrl(DataCache.getDataConnection(), branchIO));
+      ribView.setPostalCodeCtrl(new CodePostalCtrl(DataCache.getDataConnection()));
       if (dossier.getRib() != null) {
         BankBranch bb = branchIO.findId(dossier.getRib().getBranchId());
 //        BankBranch bb = branchIO.findId(ribView.getBranchCode());
@@ -754,7 +753,7 @@ public class PersonFileTabView
   private Musician getMusician(Group g, int idper) {
 
     try {
-      Vector<Musician> vm = new GemGroupService(dataCache.getDataConnection()).getMusicians(g);
+      Vector<Musician> vm = new GemGroupService(DataCache.getDataConnection()).getMusicians(g);
       for (Musician m : vm) {
         if (m.getId() == idper) {
           return m;

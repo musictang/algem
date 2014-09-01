@@ -1,7 +1,7 @@
 /*
- * @(#)ModuleSearchCtrl.java	2.8.a 19/04/13
+ * @(#)ModuleSearchCtrl.java	2.8.w 08/07/14
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -38,7 +38,7 @@ import net.algem.util.ui.SearchCtrl;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.w
  * @since 1.0a 07/07/1999
  */
 public class ModuleSearchCtrl
@@ -48,7 +48,7 @@ public class ModuleSearchCtrl
   protected GemDesktop desktop;
 
   public ModuleSearchCtrl(GemDesktop d) {
-    super(d.getDataCache().getDataConnection(), t);
+    super(DataCache.getDataConnection(), t);
     this.desktop = d;
   }
 

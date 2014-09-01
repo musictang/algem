@@ -1,7 +1,7 @@
 /*
- * @(#)TodoDlg.java	2.6.a 25/09/12
+ * @(#)TodoDlg.java	2.8.w 08/07/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -45,7 +45,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.w
  * @deprecated
  */
 public class TodoDlg
@@ -144,10 +144,10 @@ public class TodoDlg
         String n = note.getText().trim();
         if (n.length() > 0) {
           Note note = new Note(n);
-          NoteIO.insert(note, cache.getDataConnection());
+          NoteIO.insert(note, DataCache.getDataConnection());
           afaire.setNote(note.getId());
         }
-        TodoIO.insert(afaire, cache.getDataConnection());
+        TodoIO.insert(afaire, DataCache.getDataConnection());
       } else {
         /*
          * String s = texte.getText(); { afaire.setText(s);

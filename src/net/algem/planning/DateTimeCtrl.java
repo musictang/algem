@@ -1,5 +1,5 @@
 /*
- * @(#)DateTimeCtrl.java	2.8.t 14/04/14
+ * @(#)DateTimeCtrl.java	2.8.v 21/05/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -22,8 +22,6 @@ package net.algem.planning;
 
 import java.awt.BorderLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.Box;
@@ -31,23 +29,23 @@ import javax.swing.BoxLayout;
 import javax.swing.ToolTipManager;
 import net.algem.util.BundleUtil;
 import net.algem.util.GemCommand;
+import net.algem.util.ui.AbstractGemPanelCtrl;
 import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GemLabel;
 import net.algem.util.ui.GemPanel;
 
 /**
- *
+ * This controller is used to add or remove DateTimePanel components.
+ * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.8.v
  * @since 2.8.t 11/04/14
  */
 public class DateTimeCtrl
-  extends GemPanel
-  implements ActionListener
+        extends AbstractGemPanelCtrl
 {
 
   private List<DateTimePanel> panels;
-  private GemButton plus;
   private final static int SPACING = 4;
 
   public DateTimeCtrl() {
@@ -70,40 +68,33 @@ public class DateTimeCtrl
 
   List<GemDateTime> getRanges() {
     List<GemDateTime> ranges = new ArrayList<GemDateTime>();
-    for(DateTimePanel dp : panels) {
+    for (DateTimePanel dp : panels) {
       ranges.add(new GemDateTime(dp.getDate(), dp.getHourRange()));
     }
     return ranges;
   }
 
-  @Override
-  public void actionPerformed(ActionEvent e) {
-    if (e.getSource() == plus) {
-      addPanel();
-      revalidate();
-    } else if (e.getActionCommand().equals(GemCommand.REMOVE_CMD)) {
-      removePanel((DateTimePanel) e.getSource());
-    }
-  }
 
-  private void addPanel() {
+  @Override
+  public void addPanel() {
     DateTimePanel dt = new DateTimePanel();
     dt.addActionListener(this);
     panels.add(dt);
-    add(panels.get(panels.size()-1));
+    add(panels.get(panels.size() - 1));
     add(Box.createVerticalStrut(SPACING));
-
   }
 
-  private void removePanel(DateTimePanel dt) {
-    panels.remove(dt);
-    dt.removeActionListener();
+  @Override
+  public void removePanel(GemPanel dt) {
+    panels.remove((DateTimePanel) dt);
+    ((DateTimePanel) dt).removeActionListener(this);
     remove(dt);
     revalidate();
   }
 
+  @Override
   public void clear() {
-    for (int i = 1 ; i < panels.size(); i++) {
+    for (int i = 1; i < panels.size(); i++) {
       DateTimePanel dp = panels.get(i);
       panels.remove(dp);
       remove(dp);
@@ -111,5 +102,4 @@ public class DateTimeCtrl
     panels.get(0).reset();
     revalidate();
   }
-
 }

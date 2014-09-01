@@ -1,7 +1,7 @@
 /*
- * @(#)PersonFileIO.java  2.8.m 09/09/13
+ * @(#)PersonFileIO.java  2.8.w 08/07/14
  *
- * Copyright (c) 1999-2013 Musiques Tangentes All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -47,7 +47,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.m
+ * @version 2.8.w
  */
 public class PersonFileIO
         extends TableIO
@@ -61,14 +61,14 @@ public class PersonFileIO
   static final String MEMBER_CREATE_EVENT = "member.create.event";
   static final String MEMBER_UPDATE_EVENT = "member.update.event";
 
-  private DataConnection dc;
-  private DataCache dataCache;
-  private TeacherIO teacherIO;
-  private MemberIO memberIO;
+  private final DataConnection dc;
+  private final DataCache dataCache;
+  private final TeacherIO teacherIO;
+  private final MemberIO memberIO;
 
   public PersonFileIO(DataCache dataCache) {
     this.dataCache = dataCache;
-    this.dc = dataCache.getDataConnection();
+    this.dc = DataCache.getDataConnection();
     teacherIO = (TeacherIO) DataCache.getDao(Model.Teacher);
     memberIO = (MemberIO) DataCache.getDao(Model.Member);
   }

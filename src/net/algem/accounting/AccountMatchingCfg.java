@@ -1,7 +1,7 @@
 /*
- * @(#)AccountMatchingCfg.java 2.6.a 02/08/2012
- * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * @(#)AccountMatchingCfg.java 2.8.w 08/07/14
+ *
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.accounting;
 
@@ -30,43 +30,40 @@ import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JScrollPane;
-import net.algem.util.module.GemDesktop;
 import net.algem.util.*;
-import net.algem.util.ui.GemButton;
-import net.algem.util.ui.GemLabel;
-import net.algem.util.ui.GemPanel;
-import net.algem.util.ui.MessagePopup;
+import net.algem.util.module.GemDesktop;
+import net.algem.util.ui.*;
 
 /**
  * Management of account matching between personal and revenue accounts.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.w
  * @since 2.2.l 07/12/11
  */
 public class AccountMatchingCfg
         extends GemPanel implements ActionListener
 {
 
-  private GemDesktop desktop;
-  private DataConnection dc;
-  private Vector<Account> comptesDeTiers;
-  private Vector<Account> comptesDeProduits;
-  private static String compteDeTiersLabel = BundleUtil.getLabel("Personal.account.label");
-  private static String comptesDeProduitsLabel = BundleUtil.getLabel("Revenue.account.label");
-  private GemButton ok;
-  private GemButton close;
-  private GemPanel choix = new GemPanel();
-  private AccountChoice[] ctChoix;
-  private AccountChoice[] cpChoix;
+  private final GemDesktop desktop;
+  private final DataConnection dc;
+  private static final String personalAccountLabel = BundleUtil.getLabel("Personal.account.label");
+  private static final String revenueAccountLabel = BundleUtil.getLabel("Revenue.account.label");
+  private Vector<Account> personalAccounts;
+  private Vector<Account> revenueAccounts;
+  private GemButton btOk;
+  private GemButton btClose;
+  private GemPanel mainPanel = new GemPanel();
+  private AccountChoice[] personal;
+  private AccountChoice[] revenue;
 
   public AccountMatchingCfg(GemDesktop desktop) {
     this.desktop = desktop;
-    dc = desktop.getDataCache().getDataConnection();
+    dc = DataCache.getDataConnection();
     try {
       String where = " WHERE (numero LIKE '" + AccountUtil.PERSONAL_ACCOUNT_FIRST_DIGIT + "%' OR numero LIKE '" + AccountUtil.CUSTOMER_ACCOUNT_FIRST_LETTER + "%') AND actif = true";
-      comptesDeTiers = AccountIO.find(where, dc);
+      personalAccounts = AccountIO.find(where, dc);
       where = " WHERE numero LIKE '" + AccountUtil.REVENUE_ACCOUNT_FIRST_DIGIT + "%' AND actif = true";
-      comptesDeProduits = AccountIO.find(where, dc);
+      revenueAccounts = AccountIO.find(where, dc);
 
       init();
     } catch (SQLException ex) {
@@ -80,50 +77,49 @@ public class AccountMatchingCfg
 
     setLayout(new BorderLayout());
 
-    choix.setLayout(new BoxLayout(choix, BoxLayout.Y_AXIS));
-    choix.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-    JScrollPane sp = new JScrollPane(choix);
-    sp.getVerticalScrollBar().setUnitIncrement(16);
+    mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+    mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+    JScrollPane sp = new GemScrollPane(mainPanel);
 
-    if (comptesDeTiers == null || comptesDeTiers.size() == 0) {
+    if (personalAccounts == null || personalAccounts.isEmpty()) {
       throw new NullAccountException(MessageUtil.getMessage("no.personal.account"));
     }
-    if (comptesDeProduits == null || comptesDeProduits.size() == 0) {
+    if (revenueAccounts == null || revenueAccounts.isEmpty()) {
       throw new NullAccountException(MessageUtil.getMessage("no.revenue.account"));
     }
 
-    int max = comptesDeTiers.size();
-    ctChoix = new AccountChoice[max];
-    cpChoix = new AccountChoice[max];
+    int max = personalAccounts.size();
+    personal = new AccountChoice[max];
+    revenue = new AccountChoice[max];
 
     for (int i = 0; i < max; i++) {
       GemPanel p = new GemPanel(new GridLayout(2,2,10,0));
       p.setBorder(BorderFactory.createTitledBorder(String.valueOf(i + 1)));
 
-      ctChoix[i] = new AccountChoice(comptesDeTiers);
-      cpChoix[i] = new AccountChoice(comptesDeProduits);
+      personal[i] = new AccountChoice(personalAccounts);
+      revenue[i] = new AccountChoice(revenueAccounts);
 
-      p.add(new GemLabel(compteDeTiersLabel));
-      p.add(new GemLabel(comptesDeProduitsLabel));
-      p.add(ctChoix[i]);    
-      p.add(cpChoix[i]);
-      
-      choix.add(p);
+      p.add(new GemLabel(personalAccountLabel));
+      p.add(new GemLabel(revenueAccountLabel));
+      p.add(personal[i]);
+      p.add(revenue[i]);
+
+      mainPanel.add(p);
     }
     set();
 
     GemPanel commandPanel = new GemPanel();
     commandPanel.setLayout(new GridLayout(1, 1));
 
-    ok = new GemButton(GemCommand.VALIDATION_CMD);
-    ok.setToolTipText(BundleUtil.getLabel("Save.and.close.tip"));
-    close = new GemButton(GemCommand.CANCEL_CMD);
-    close.setToolTipText(BundleUtil.getLabel("Close.without.saving.tip"));
-    ok.addActionListener(this);
-    close.addActionListener(this);
+    btOk = new GemButton(GemCommand.VALIDATION_CMD);
+    btOk.setToolTipText(BundleUtil.getLabel("Save.and.close.tip"));
+    btClose = new GemButton(GemCommand.CANCEL_CMD);
+    btClose.setToolTipText(BundleUtil.getLabel("Close.without.saving.tip"));
+    btOk.addActionListener(this);
+    btClose.addActionListener(this);
 
-    commandPanel.add(ok);
-    commandPanel.add(close);
+    commandPanel.add(btOk);
+    commandPanel.add(btClose);
 
     add(sp, BorderLayout.CENTER);
     add(commandPanel, BorderLayout.SOUTH);
@@ -131,8 +127,8 @@ public class AccountMatchingCfg
   }
 
   @Override
-  public void actionPerformed(ActionEvent e) { 
-    if (e.getSource() == ok) {
+  public void actionPerformed(ActionEvent e) {
+    if (e.getSource() == btOk) {
       try {
         save();
       } catch (SQLException ex) {
@@ -146,9 +142,9 @@ public class AccountMatchingCfg
 
   private void save() throws SQLException {
 
-    for (int i = 0; i < ctChoix.length; i++) {
-      int t = ((Account) ctChoix[i].getSelectedItem()).getId();
-      int p = ((Account) cpChoix[i].getSelectedItem()).getId();
+    for (int i = 0; i < personal.length; i++) {
+      int t = ((Account) personal[i].getSelectedItem()).getId();
+      int p = ((Account) revenue[i].getSelectedItem()).getId();
       if (PersonalRevenueAccountIO.find(t, dc) == 0) {
         PersonalRevenueAccountIO.insert(t, p, dc);
       } else {
@@ -173,8 +169,8 @@ public class AccountMatchingCfg
       }
 
       for (int i = 0; i < cm.size(); i++) {
-        ctChoix[i].setSelectedItem(keys[i]);
-        cpChoix[i].setSelectedItem(values[i]);
+        personal[i].setSelectedItem(keys[i]);
+        revenue[i].setSelectedItem(values[i]);
       }
     }
 

@@ -1,5 +1,5 @@
 /*
- * @(#)DayScheduleView.java	2.8.t 11/04/14
+ * @(#)DayScheduleView.java	2.8.w 27/08/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -40,8 +40,8 @@ import net.algem.util.GemLogger;
 import net.algem.util.model.GemCloseVetoException;
 import net.algem.util.model.GemList;
 import net.algem.util.model.Model;
+import net.algem.util.module.DefaultGemView;
 import net.algem.util.module.GemDesktop;
-import net.algem.util.module.GemView;
 import net.algem.util.ui.TabPanel;
 
 /**
@@ -49,16 +49,13 @@ import net.algem.util.ui.TabPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.8.w
  * @version 1.0b 06/10/2001
  */
 public class DayScheduleView
-        extends GemView
+        extends DefaultGemView
         implements PropertyChangeListener
 {
-
-  private static final int PREF_WIDTH = 700;
-  private static final int PREF_HEIGHT = 540;
   
   private DaySchedule daySchedule;
   private DayPlanTableView teacherView;
@@ -77,13 +74,8 @@ public class DayScheduleView
     tabPanel = new TabPanel();
     add(tabPanel, BorderLayout.CENTER);
 
-    setSize(PREF_WIDTH, PREF_HEIGHT);
-    
     String s = null;
-    if ((s = ConfigUtil.getConf(
-			ConfigKey.TEACHER_MANAGEMENT.getKey(), dataCache.getDataConnection())) != null 
-			&& s.startsWith("t")
-			) {
+    if ((s = ConfigUtil.getConf(ConfigKey.TEACHER_MANAGEMENT.getKey())) != null && s.startsWith("t")) {
       teacherView = new DayPlanTeacherView(dataCache.getList(Model.Teacher));
       tabPanel.addItem(teacherView, BundleUtil.getLabel("Day.schedule.teacher.tab"));
     }
@@ -100,14 +92,14 @@ public class DayScheduleView
     int e = 0;
     Establishment estab = null;
     try {
-      e = Integer.parseInt(ConfigUtil.getConf(ConfigKey.DEFAULT_ESTABLISHMENT.getKey(), dataCache.getDataConnection()));
+      e = Integer.parseInt(ConfigUtil.getConf(ConfigKey.DEFAULT_ESTABLISHMENT.getKey()));
       estab =  (Establishment) DataCache.findId(e, Model.Establishment);
     } catch (NumberFormatException nfe) {
       GemLogger.log(getClass().getName() + "#init " + nfe.getMessage());
     } catch (SQLException sqe) {
       GemLogger.log(sqe.getMessage());
     }
-    String teacherManaged = ConfigUtil.getConf(ConfigKey.TEACHER_MANAGEMENT.getKey(), desktop.getDataCache().getDataConnection());
+    String teacherManaged = ConfigUtil.getConf(ConfigKey.TEACHER_MANAGEMENT.getKey());
     int offset = (teacherManaged.equals("t")) ? 1 : 0;
     tabPanel.setSelectedIndex(estabList.indexOf(estab) + offset);//+1 quand la gestion prof est activée car le premier onglet correspond aux profs
 

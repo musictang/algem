@@ -1,7 +1,7 @@
 /*
- * @(#)ChangeHourCourseDlg.java	2.8.a 15/04/13
+ * @(#)ChangeHourCourseDlg.java	2.8.w 08/07/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -44,10 +44,10 @@ import net.algem.util.ui.MessagePopup;
 /**
  * Modification of course time in member enrolment course order.
  * TODO
- *
+ * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.w
  * @since 1.0a 27/09/2001
  */
 public class ChangeHourCourseDlg
@@ -55,8 +55,9 @@ public class ChangeHourCourseDlg
         implements ActionListener
 {
 
-  private GemDesktop desktop;
-  private DataCache dataCache;
+  private final GemDesktop desktop;
+  private final DataCache dataCache;
+  private final EnrolmentService service;
   private Course course;
   private int member;
   private CourseOrder courseOrder;
@@ -66,11 +67,10 @@ public class ChangeHourCourseDlg
   private GemButton btCancel;
   private JPanel buttons;
   private boolean validation = false;
-  private EnrolmentService service;
 
-  public ChangeHourCourseDlg(GemDesktop _desktop, EnrolmentService service, CourseOrder co, int member) throws SQLException {
-    super(_desktop.getFrame(), "Changement heure de cours", true);//modal
-    this.desktop = _desktop;
+  public ChangeHourCourseDlg(GemDesktop desktop, EnrolmentService service, CourseOrder co, int member) throws SQLException {
+    super(desktop.getFrame(), "Changement heure de cours", true);//modal
+    this.desktop = desktop;
     dataCache = desktop.getDataCache();
     this.service = service;
     courseOrder = co;
@@ -135,8 +135,9 @@ public class ChangeHourCourseDlg
       return;
     }
     setCursor(new Cursor(Cursor.WAIT_CURSOR));
-
-    DataConnection dc = dataCache.getDataConnection();
+    
+    DataConnection dc = DataCache.getDataConnection();
+    
     try {
       dc.setAutoCommit(false);
       // Vérification des conflits

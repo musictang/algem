@@ -1,6 +1,6 @@
 /*
- * @(#)ConfigOrganization.java 2.8.r 03/01/14
- * 
+ * @(#)ConfigOrganization.java 2.8.v 12/06/14
+ *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 
 package net.algem.config;
@@ -29,6 +29,7 @@ import java.util.Map;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JFormattedTextField;
+import javax.swing.border.Border;
 import javax.swing.text.MaskFormatter;
 import net.algem.contact.Address;
 import net.algem.contact.AddressView;
@@ -40,25 +41,30 @@ import net.algem.util.ui.GemPanel;
 
 /**
  * Organization parameters and contact.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.r
+ * @version 2.8.v
  * @since 2.2.p 23/01/12
  */
 public class ConfigOrganization
         extends ConfigPanel
 {
 
-  private Config c1, c2, c3, c4, c5, c6, c7, c8, c9;
-  
+  private Config c1, c2, c3, c4, c5, c6, c7, c8, c9, c10;
+
   /** Organization name. */
   private GemField name;
-  
+
   private JFormattedTextField siret;
   private JFormattedTextField naf;
 
   /**
+   * Intra-community VAT code.
    * Code TVA intra-communautaire.
+   * In France, it is composed of the letters FR, completed by a two-digits (or two-letters) key
+   * assigned by the tax office from the place of exercise of the company
+   * It ends by the SIREN 9-digits number.
+   * VAT key = [ 12 + 3 * ( SIREN modulo 97 ) ] modulo 97
    * Pour la France, il est composé des lettres FR, complétées d'une clé de deux chiffres
    * ou lettres attribuée par le centre des impôts du lieu d'exercice de l'entreprise,
    * et du numéro SIREN à 9 chiffres. Par exemple pour l'entreprise déjà citée : FR 83 404 833 048.
@@ -68,13 +74,17 @@ public class ConfigOrganization
   private JFormattedTextField tva;
 
   /**
-   * Code Formation professionnelle.
+   * Professional training code.
+   * Code formation professionnelle.
    */
   private JFormattedTextField forPro;
 
-  /** Address */
+  /** Address. */
   private AddressView address;
-  
+
+  /** Domain name. */
+  private GemField domainName;
+
   public ConfigOrganization(String title, Map<String, Config> cm) {
     super(title, cm);
     init();
@@ -90,6 +100,7 @@ public class ConfigOrganization
     c7 = confs.get(ConfigKey.CODE_NAF.getKey());
     c8 = confs.get(ConfigKey.CODE_TVA.getKey());
     c9 = confs.get(ConfigKey.CODE_FP.getKey());
+    c10 = confs.get(ConfigKey.ORGANIZATION_DOMAIN.getKey());
 
     content = new GemPanel(new BorderLayout());
 
@@ -118,7 +129,7 @@ public class ConfigOrganization
     tva = new JFormattedTextField(tvaMask);
     tva.setColumns(18);
     tva.setValue(c8.getValue());
-    
+
     MaskFormatter forProMask = MessageUtil.createFormatter("## ## ##### ##");
     forProMask.setValueContainsLiteralCharacters(false);
 
@@ -136,10 +147,25 @@ public class ConfigOrganization
 
     address.set(a);
 
+    domainName = new GemField(10);
+    domainName.setText(c10.getValue());
+
+    GemPanel domainPanel = new GemPanel(new GridLayout(1,2));
+    domainPanel.setToolTipText(BundleUtil.getLabel("ConfEditor.organization.domain.tip"));
+    domainPanel.add(new GemLabel(ConfigKey.ORGANIZATION_DOMAIN.getLabel()));
+    domainPanel.add(domainName);
+
+    GemPanel contactPanel = new GemPanel(new BorderLayout());
+    contactPanel.add(address, BorderLayout.NORTH);
+
+    Border topBorder = BorderFactory.createEmptyBorder(10,0,10,0);
+    domainPanel.setBorder(topBorder);
+    contactPanel.add(domainPanel, BorderLayout.SOUTH);
+
     GemPanel pCodes = new GemPanel(new GridLayout(4,2));
 		((GridLayout) pCodes.getLayout()).setHgap(4);
 		((GridLayout) pCodes.getLayout()).setVgap(4);
-    pCodes.setBorder(BorderFactory.createEmptyBorder(10,0,10,0));
+    pCodes.setBorder(topBorder);
     pCodes.add(new GemLabel(ConfigKey.SIRET_NUMBER.getLabel()));
     pCodes.add(siret);
     pCodes.add(new GemLabel(ConfigKey.CODE_NAF.getLabel()));
@@ -150,13 +176,13 @@ public class ConfigOrganization
     pCodes.add(forPro);
 
     content.add(pName, BorderLayout.NORTH);
-    content.add(address, BorderLayout.CENTER);
+    content.add(contactPanel, BorderLayout.CENTER);
     content.add(pCodes, BorderLayout.SOUTH);
 
     add(content);
   }
 
-  //TODO verify null values
+  //TODO check null values
   @Override
   public List<Config> get() {
     List<Config> conf = new ArrayList<Config>();
@@ -170,6 +196,7 @@ public class ConfigOrganization
     c7.setValue(naf.getText());
     c8.setValue((String)tva.getValue());
     c9.setValue((String)forPro.getValue());
+    c10.setValue(domainName.getText());
 
     conf.add(c1);
     conf.add(c2);
@@ -180,6 +207,7 @@ public class ConfigOrganization
     conf.add(c7);
     conf.add(c8);
     conf.add(c9);
+    conf.add(c10);
 
     return conf;
   }

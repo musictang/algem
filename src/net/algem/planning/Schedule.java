@@ -31,12 +31,15 @@ public class Schedule
         implements java.io.Serializable
 {
 
-  public static final int COURSE_SCHEDULE = 1;
-  public static final int ACTION_SCHEDULE = 2;
-  public static final int GROUP_SCHEDULE = 3;
-  public static final int MEMBER_SCHEDULE = 4;
-  public static final int WORKSHOP_SCHEDULE = 5;
-  public static final int TRAINING_SCHEDULE = 6;
+  public static final int COURSE = 1;
+  public static final int ACTION = 2;
+  public static final int GROUP = 3;
+  public static final int MEMBER = 4;
+  public static final int WORKSHOP = 5;
+  public static final int TRAINING = 6;
+  public static final int STUDIO = 7;
+  public static final int TECH = 8;
+  
   protected int id;
   protected DateFr date;
   protected Hour start;
@@ -44,7 +47,7 @@ public class Schedule
   protected int type;
   protected int idper;
   protected int idAction;
-  protected int place;
+  protected int idRoom;
   protected int note;
 
   public boolean equals(Schedule d) {
@@ -58,7 +61,7 @@ public class Schedule
 
   @Override
   public String toString() {
-    return "Planning:" + date + " " + start + " " + end + " " + idper + " " + idAction + " " + place;
+    return "Planning:" + date + " " + start + " " + end + " " + idper + " " + idAction + " " + idRoom;
   }
 
   public int getId() {
@@ -125,16 +128,16 @@ public class Schedule
    * Sets the schedule location.
    * @param i room id
    */
-  public void setPlace(int i) {
-    place = i;
+  public void setIdRoom(int i) {
+    idRoom = i;
   }
 
   /**
    * Gets the schedule location.
    * @return an integer
    */
-  public int getPlace() {
-    return place;
+  public int getIdRoom() {
+    return idRoom;
   }
 
   public void setNote(int i) {

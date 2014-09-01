@@ -53,11 +53,11 @@ public class CourseScheduleObject
   }
   
   public void setRoom(int s) {
-    place = s;
+    idRoom = s;
   }
 
   public int getRoom() {
-    return place;
+    return idRoom;
   }
 
   @Override

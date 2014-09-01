@@ -1,6 +1,6 @@
 /*
- * @(#)MenuAccounting.java 2.8.r 10/01/14
- * 
+ * @(#)MenuAccounting.java 2.8.w 09/07/14
+ *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.util.menu;
 
@@ -31,9 +31,10 @@ import net.algem.billing.*;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
 import net.algem.config.ModeOfPaymentCtrl;
-import net.algem.edition.HourTeacherDlg;
+import net.algem.edition.HourEmployeeDlg;
 import net.algem.room.RoomRateSearchCtrl;
 import net.algem.util.BundleUtil;
+import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
@@ -46,7 +47,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.8.r
+ * @version 2.8.w
  * @since 1.0a 07/07/1999
  */
 public class MenuAccounting
@@ -58,24 +59,24 @@ public class MenuAccounting
   static {
     initLabels();
   }
-  
+
   private JMenuItem miAccountTransfert;
   private JMenuItem miAccountDocument;
   private JMenuItem miAccountSchedule;
-  private JMenuItem miAccountHourTeacher;
-  private JMenuItem miRoomRate;  
+  private JMenuItem miAccountHourEmployee;
+  private JMenuItem miRoomRate;
   private JMenuItem miDirectDebitList;
   private DataConnection dc;
-  
+
   public MenuAccounting(GemDesktop _desktop) {
     super(menus.get("Menu.accounting.label"), _desktop);
 
     miAccountSchedule = add(getItem(new JMenuItem(menus.get("Menu.schedule.payment.label")), "Accounting.global.schedule.auth"));
     addSeparator();
-    
+
     miAccountTransfert = add(getItem(new JMenuItem(menus.get("Menu.schedule.payment.transfer.label")), "Accounting.transfer.auth"));
     miAccountDocument = add(getItem(new JMenuItem(menus.get("Menu.document.transfer.label")), "Accounting.document.transfer.auth"));
-    
+
     JMenu mDirectDebit = new JMenu(menus.get("Menu.debiting.label"));
     mDirectDebit.add(new JMenuItem(menus.get("Menu.export.label")));
     miDirectDebitList = new JMenuItem(menus.get("Direct.debit.sepa.list.label"));
@@ -85,9 +86,10 @@ public class MenuAccounting
     }
     add(mDirectDebit);
 //    add(mDirectDebit, "Standing.order.export.auth");
-    miAccountHourTeacher = add(getItem(new JMenuItem(menus.get("Menu.teacher.hour.label")), "Accounting.hours.export.auth"));
+//    miAccountHourTeacher = add(getItem(new JMenuItem(menus.get("Menu.teacher.hour.label")), "Accounting.hours.export.auth"));
+    miAccountHourEmployee = add(getItem(new JMenuItem(menus.get("Menu.employee.hour.label")), "Accounting.hours.export.auth"));
     addSeparator();
-    
+
     add(getItem(new JMenuItem(menus.get("Menu.invoice.history.label")), "Invoice.history.auth"));
     add(getItem(new JMenuItem(menus.get("Menu.quotation.history.label")), "Quotation.history.auth"));
     JMenu mInvoice = new JMenu(menus.get("Menu.invoice.label"));
@@ -95,16 +97,16 @@ public class MenuAccounting
     mInvoice.add(new JMenuItem(menus.get("Menu.invoice.footer.label")));
     add(mInvoice);
     addSeparator();
-    
+
     add(getItem(new JMenuItem(menus.get("Menu.account.label")), "Accounting.account.config.auth"));
-    add(getItem(new JMenuItem(menus.get("Menu.cost.account.label")), "Accounting.cost.account.config.auth")); 
+    add(getItem(new JMenuItem(menus.get("Menu.cost.account.label")), "Accounting.cost.account.config.auth"));
     addSeparator();
-    
+
     add(getItem(new JMenuItem(menus.get("Menu.default.account.label")), "Account.preferences.auth"));
     add(getItem(new JMenuItem(menus.get("Menu.booking.journal.label")), "Accounting.journal.config.auth"));
     add(new JMenuItem(menus.get("Menu.account.link.label")));
     addSeparator();
-    
+
     add(new JMenuItem(menus.get("Menu.mode.of.payment.label")));
     add(new JMenuItem(menus.get("Menu.vat.label")));
     miRoomRate = new JMenuItem(menus.get("Menu.room.rate.label"));
@@ -119,32 +121,32 @@ public class MenuAccounting
   public void actionPerformed(ActionEvent evt) {
     String arg = evt.getActionCommand();
     Object src = evt.getSource();
-    dc = dataCache.getDataConnection();
+    dc = DataCache.getDataConnection();
     desktop.setWaitCursor();
-    
+
     if (src == miAccountSchedule) {
       OrderLineTableModel tableEcheancier = new OrderLineTableModel();
       OrderLineDlg dlg = new OrderLineDlg(desktop, tableEcheancier);
       dlg.init();
       dlg.setVisible(true);
     } else if (src == miAccountTransfert) {
-      AccountExportService exportService = getAccountingExportService(ConfigUtil.getConf(ConfigKey.ACCOUNTING_EXPORT_FORMAT.getKey(), dc));
+      AccountExportService exportService = getAccountingExportService(ConfigUtil.getConf(ConfigKey.ACCOUNTING_EXPORT_FORMAT.getKey()));
       CommunAccountTransferDlg accountTransfertDlg = new CommunAccountTransferDlg(desktop.getFrame(), dataCache, exportService);
       accountTransfertDlg.setVisible(true);
     } else if (src == miAccountDocument) {
-      AccountExportService exportService = getAccountingExportService(ConfigUtil.getConf(ConfigKey.ACCOUNTING_EXPORT_FORMAT.getKey(), dc));
+      AccountExportService exportService = getAccountingExportService(ConfigUtil.getConf(ConfigKey.ACCOUNTING_EXPORT_FORMAT.getKey()));
       AccountDocumentTransferDlg documentTransfertDlg = new AccountDocumentTransferDlg(desktop.getFrame(), dataCache, exportService);
       documentTransfertDlg.setVisible(true);
     } else if (menus.get("Menu.export.label").equals(arg)) {
       DirectDebitExportDlg dlg = new DirectDebitExportDlg((Frame) null, menus.get("Menu.debiting.label"), dc);
       dlg.setVisible(true);
     } else if (src == miDirectDebitList) {
-      DirectDebitService ddService = DirectDebitService.getInstance(dataCache.getDataConnection());
+      DirectDebitService ddService = DirectDebitService.getInstance(DataCache.getDataConnection());
       DDMandateCtrl ddCtrl = new DDMandateCtrl(desktop, ddService);
 			ddCtrl.load();
       desktop.addPanel("Direct.debit.sepa.list", ddCtrl, GemModule.M_SIZE);
-    } else if (src == miAccountHourTeacher) {
-      HourTeacherDlg hourTeacherDlg = new HourTeacherDlg(desktop.getFrame(), "heureprof.txt", dataCache);
+    } else if (src == miAccountHourEmployee) {
+      HourEmployeeDlg hourTeacherDlg = new HourEmployeeDlg(desktop.getFrame(), BundleUtil.getLabel("File.export.hours.name") + ".txt", dataCache);
       hourTeacherDlg.setVisible(true);
     } else if (menus.get("Menu.invoice.history.label").equals(arg)) {
       BillingService billService = new BasicBillingService(dataCache);
@@ -203,7 +205,7 @@ public class MenuAccounting
       roomRateBrowse.addActionListener(this);
       roomRateBrowse.init();
       desktop.addPanel("Menu.room.rate", roomRateBrowse);
-    } 
+    }
 
     else if (GemCommand.CANCEL_CMD.equals(arg)) {
       desktop.removeCurrentModule();
@@ -214,11 +216,11 @@ public class MenuAccounting
     }
     desktop.setDefaultCursor();
   }
-  
+
   private AccountExportService getAccountingExportService(String format) {
     if (format.equals(AccountingExportFormat.CIEL.getLabel())) {
       return new ExportCiel(dc);
-    } 
+    }
     if (format.equals(AccountingExportFormat.SAGE.getLabel())) {
       return new ExportSage30(dc);
     }
@@ -233,6 +235,7 @@ public class MenuAccounting
     menus.put("Direct.debit.sepa.list.label", BundleUtil.getLabel("Direct.debit.sepa.list.label"));
     menus.put("Menu.export.label", BundleUtil.getLabel("Menu.export.label"));
     menus.put("Menu.teacher.hour.label", BundleUtil.getLabel("Menu.teacher.hour.label"));
+    menus.put("Menu.employee.hour.label", BundleUtil.getLabel("Menu.employee.hour.label"));
     menus.put("Menu.invoice.history.label", BundleUtil.getLabel("Menu.invoice.history.label"));
     menus.put("Menu.quotation.history.label", BundleUtil.getLabel("Menu.quotation.history.label"));
     menus.put("Menu.invoice.label", BundleUtil.getLabel("Menu.invoice.label"));
@@ -250,7 +253,7 @@ public class MenuAccounting
   }
 
   /**
-   * @deprecated 
+   * @deprecated
    */
   private void jmvLog() {
     Runtime r = Runtime.getRuntime();

@@ -1,7 +1,7 @@
 /*
- * @(#)AccountTransferView.java	2.8.k 25/07/13
+ * @(#)AccountTransferView.java	2.8.w 08/07/14
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -45,7 +45,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.k
+ * @version 2.8.w
  * @since 1.0a 07/07/1999
  */
 public class AccountTransferView
@@ -74,7 +74,7 @@ public class AccountTransferView
 
     payment = new JComboBox(ParamTableIO.getValues(ModeOfPaymentCtrl.TABLE,
             ModeOfPaymentCtrl.COLUMN_NAME,
-            dataCache.getDataConnection()));
+            DataCache.getDataConnection()));
     schoolChoice = new ParamChoice(dataCache.getList(Model.School).getData());
 
     Date now = new Date();

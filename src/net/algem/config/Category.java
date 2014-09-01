@@ -1,7 +1,7 @@
 /*
- * @(#)Category.java	2.6.a 20/09/12
+ * @(#)Category.java	2.8.v 28/05/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -24,14 +24,15 @@ package net.algem.config;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.v
  */
 public enum Category {
 
 
   SITEWEB ("categorie_siteweb", "libelle"),
   TELEPHONE ("typetel", "id"),
-  VACANCY("categorie_vacance", "id");
+  VACANCY("categorie_vacance", "id"),
+  EMPLOYEE("categorie_salarie", "id");
 
   private String table;
   private String column;

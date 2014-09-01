@@ -1,5 +1,5 @@
 /*
- * @(#)ActionIO.java 2.8.t 16/04/14
+ * @(#)ActionIO.java 2.8.v 13/06/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -36,7 +36,7 @@ import net.algem.util.model.TableIO;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.8.v
  * @since 2.4.a 18/04/12
  */
 public class ActionIO
@@ -47,7 +47,6 @@ public class ActionIO
   public static final String TABLE = "action";
   public static final String COLUMNS = "id, cours, niveau, places, tage, statut";
   public static final String SEQUENCE = "action_id_seq";
-//  private static Hashtable<Integer, Action> cache = new  Hashtable<Integer, Action>();
   private DataConnection dc;
 
   public ActionIO(DataConnection dc) {
@@ -109,8 +108,41 @@ public class ActionIO
     }
   }
 
+  public void planify(Action a, int type, int[] rooms, StudioSession session) throws SQLException, PlanningException {
+    if (rooms == null) {
+      return;
+    }
+    for (GemDateTime dt : session.getDates()) {
+      for (int r : rooms) {
+        Schedule s = new Schedule();
+        s.setDate(dt.getDate());
+        s.setStart(dt.getTimeRange().getStart());
+        s.setEnd(dt.getTimeRange().getEnd());
+        s.setType(type);
+        s.setIdPerson(a.getTeacher());
+        s.setIdAction(a.getId());
+        s.setIdRoom(r);
+        if (session.getCategory() != null) {
+          s.setNote(session.getCategory().getId());
+        }
+        ScheduleIO.insert(s, dc);
+
+        if (type == Schedule.TECH) {
+          for (int m : session.getTechnicians()) {
+            ScheduleRange sr = new ScheduleRange();
+            sr.setScheduleId(s.getId());
+            sr.setStart(s.getStart());
+            sr.setEnd(s.getEnd());
+            sr.setMemberId(m);
+            ScheduleRangeIO.insert(sr, dc);
+          }
+        }
+      }
+    }
+  }
+
   public void planify(Action a) throws PlanningException {
-    planify(a, Schedule.COURSE_SCHEDULE);
+    planify(a, Schedule.COURSE);
   }
 
   public void insert(Action a) throws SQLException {

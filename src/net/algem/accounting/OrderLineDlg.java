@@ -1,5 +1,5 @@
 /*
-* @(#)OrderLineDlg.java	2.8.u 19/05/14
+* @(#)OrderLineDlg.java	2.8.w 08/07/14
 *
 * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
 *
@@ -50,7 +50,7 @@ import net.algem.util.ui.MessagePopup;
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @author <a href="mailto:damien.loustau@gmail.com">Damien Loustau</a>
- * @version 2.8.u
+ * @version 2.8.w
  * @since 1.0a 07/07/1999
  */
 public class OrderLineDlg
@@ -58,8 +58,8 @@ extends JDialog
 implements ActionListener, TableModelListener {
   
   private Frame parent;
-  private DataConnection dc;
-  private DataCache dataCache;
+  private final DataConnection dc;
+  private final DataCache dataCache;
   private OrderLineTableModel tableModel;
   private DateFrField dateStart;
   private DateFrField dateEnd;
@@ -89,7 +89,7 @@ implements ActionListener, TableModelListener {
     super(desktop.getFrame(), BundleUtil.getLabel("Action.schedule.payment.label"));
     parent = desktop.getFrame();
     this.dataCache = desktop.getDataCache();
-    this.dc = desktop.getDataCache().getDataConnection();
+    this.dc = DataCache.getDataConnection();
     this.tableModel = tableModel;
   }
   

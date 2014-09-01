@@ -1,7 +1,7 @@
 /*
- * @(#)MemberService.java	2.8.j 12/07/13
+ * @(#)MemberService.java	2.8.w 09/07/14
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -46,7 +46,7 @@ import net.algem.util.model.Model;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.j
+ * @version 2.8.w
  * @since 2.4.a 14/05/12
  */
 public class MemberService
@@ -64,7 +64,6 @@ public class MemberService
 
   public Member findMember(int id) throws SQLException {
     return (Member) DataCache.findId(id, Model.Member);
-//    return m != null ? m : MemberIO.findId(id, dc);
   }
 
   public String getEmail(int id) throws SQLException {
@@ -113,7 +112,7 @@ public class MemberService
     cardIO.update(card);
     PersonFile pf = ((PersonFileIO)DataCache.getDao(Model.PersonFile)).findMember(card.getIdper(), false);
     OrderLine e = AccountUtil.setOrderLine(pf, date, getPrefAccount(AccountPrefIO.REHEARSAL_KEY_PREF), cr.getAmount());
-    String s = ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey(), dc);
+    String s = ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey());
     e.setSchool(Integer.parseInt(s));
     AccountUtil.createEntry(e, dc);
 
@@ -126,7 +125,7 @@ public class MemberService
     RehearsalCard abo = RehearsalCardIO.find(card.getRehearsalCardId(), dc);
     Preference p = AccountPrefIO.find(AccountPrefIO.REHEARSAL_KEY_PREF, dc);
     OrderLine e = AccountUtil.setOrderLine(pFile, new DateFr(new Date()), p, abo.getAmount());
-    String s = ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey(), dc);
+    String s = ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey());
     e.setSchool(Integer.parseInt(s));
     AccountUtil.createEntry(e, dc);
   }
@@ -223,6 +222,7 @@ public class MemberService
    * @param start start date
    * @param end end date
    * @return a list of enrolments
+   * @throws java.sql.SQLException
    */
   public Vector<Enrolment> getEnrolments(int memberId, DateFr start, DateFr end) throws SQLException {
     String where = "WHERE adh = " + memberId + " AND creation >='" + start + "' AND creation <='" + end + "' ORDER BY id";
@@ -299,7 +299,7 @@ public class MemberService
       Action a = new Action();
       actionIO.insert(a);
       ScheduleDTO dto = new ScheduleDTO();
-      dto.setType(Schedule.MEMBER_SCHEDULE);
+      dto.setType(Schedule.MEMBER);
       dto.setPersonId(idper);
       dto.setPlace(room);
       dto.setNote(0);
@@ -333,7 +333,7 @@ public class MemberService
 
     Preference p = AccountPrefIO.find(AccountPrefIO.REHEARSAL_KEY_PREF, dc);
     OrderLine e = AccountUtil.setOrderLine(pFile, date, p, amount);
-    String s = ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey(), dc);
+    String s = ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey());
     e.setSchool(Integer.parseInt(s));
     AccountUtil.createEntry(e, dc);
   }

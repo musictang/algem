@@ -1,7 +1,7 @@
 /*
- * @(#)TodoListCtrl.java	2.6.a 25/09/12
+ * @(#)TodoListCtrl.java	2.8.w 08/07/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -43,7 +43,7 @@ import net.algem.util.ui.GemPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.w
  * @deprecated
  */
 public class TodoListCtrl
@@ -140,7 +140,7 @@ public class TodoListCtrl
 
   public void load(int idcat) {
     afaire.clear();
-    Vector liste = TodoIO.find("where idper=" + idper + " and categorie=" + idcat, cache.getDataConnection());
+    Vector liste = TodoIO.find("where idper=" + idper + " and categorie=" + idcat, DataCache.getDataConnection());
     addBlock(liste);
   }
 

@@ -1,5 +1,5 @@
 /*
- * @(#)OrderLineIO.java	2.8.t 15/05/14
+ * @(#)OrderLineIO.java	2.8.w 08/07/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -39,7 +39,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.8.w
  *
  */
 public class OrderLineIO
@@ -287,7 +287,7 @@ public class OrderLineIO
     //String query = "SELECT analytique FROM echeancier2 WHERE echeance >= '"+dc.getStartOfYear()+"' AND adherent="+adh;
     String a = "";
     try {
-      ResultSet rs = dc.getDataConnection().executeQuery(query);
+      ResultSet rs = DataCache.getDataConnection().executeQuery(query);
       //if (rs.next()) {
       while (rs.next()) {
         a = rs.getString(1);

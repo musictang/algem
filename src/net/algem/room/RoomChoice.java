@@ -45,15 +45,15 @@ public class RoomChoice
     super(filterModel);
   }
 
-  public RoomChoice(GemList list, boolean active) {
+  public RoomChoice(GemList<Room> list, boolean active) {
     this(active ? new RoomActiveChoiceModel(list, true) : new RoomChoiceModel(list));
   }
 
-  public RoomChoice(GemList list, int estab) {
+  public RoomChoice(GemList<Room> list, int estab) {
     this(new RoomChoiceEstabModel(list, estab));
   }
 
-  public RoomChoice(GemList list) {
+  public RoomChoice(GemList<Room> list) {
     this(list, true);
   }
 

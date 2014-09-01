@@ -1,7 +1,7 @@
 /*
- * @(#)GroupRehearsalCreateCtrl.java	2.7.a 03/12/12
+ * @(#)GroupRehearsalCreateCtrl.java	2.8.w 24/07/14
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -22,10 +22,10 @@ package net.algem.group;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.JOptionPane;
 import net.algem.planning.DateFr;
 import net.algem.planning.Hour;
 import net.algem.planning.editing.ModifPlanEvent;
+import net.algem.room.RoomService;
 import net.algem.util.DataCache;
 import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
@@ -38,7 +38,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.w
  * @since 1.0a 07/07/1999
  */
 public class GroupRehearsalCreateCtrl
@@ -56,7 +56,7 @@ public class GroupRehearsalCreateCtrl
     desktop = d;
     addActionListener((ActionListener) d);
     dataCache = d.getDataCache();
-    service = new GemGroupService(dataCache.getDataConnection());
+    service = new GemGroupService(DataCache.getDataConnection());
   }
 
   public GroupRehearsalCreateCtrl(GemDesktop d, Group g) {
@@ -113,60 +113,44 @@ public class GroupRehearsalCreateCtrl
     String conflict = MessageUtil.getMessage("planning.conflict");
 
     DateFr date = rv.getDate();
-    int room = rv.getRoom();
-    Hour hdeb = rv.getStartingTime();
-    Hour hfin = rv.getEndingTime();
-
     if (date.bufferEquals(DateFr.NULLDATE)) {
-      JOptionPane.showMessageDialog(rv,
-                                    MessageUtil.getMessage("date.entry.error"),
-                                    entryError,
-                                    JOptionPane.ERROR_MESSAGE);
+      MessagePopup.error(rv,MessageUtil.getMessage("date.entry.error"), entryError);
       return false;
     }
-    if (date.before(dataCache.getStartOfPeriod())
-            || date.after(dataCache.getEndOfPeriod())) {
-      JOptionPane.showMessageDialog(rv,
-                                    MessageUtil.getMessage("date.out.of.period"),
-                                    entryError,
-                                    JOptionPane.ERROR_MESSAGE);
+    if (date.before(dataCache.getStartOfPeriod()) || date.after(dataCache.getEndOfPeriod())) {
+      MessagePopup.error(rv,MessageUtil.getMessage("date.out.of.period"), entryError);
       return false;
     }
-
-    if (hdeb.toString().equals("00:00")
-            || hfin.toString().equals("00:00")
-            || !(hfin.after(hdeb))) {
-      JOptionPane.showMessageDialog(rv,
-                                    MessageUtil.getMessage("hour.range.error"),
-                                    entryError,
-                                    JOptionPane.ERROR_MESSAGE);
+    
+    int room = rv.getRoom();
+    Hour hStart = rv.getStartingTime();
+    Hour hEnd = rv.getEndingTime();
+    
+    if (hStart.toString().equals("00:00")
+            || hEnd.toString().equals("00:00")
+            || !(hEnd.after(hStart))) {
+      MessagePopup.error(rv,MessageUtil.getMessage("hour.range.error"), entryError);
       return false;
     }
-
-    if (service.testRoomConflict(date.toString(), hdeb.toString(), hfin.toString(), room) > 0) {
-      JOptionPane.showMessageDialog(null,
-                                    MessageUtil.getMessage("busy.room.warning"),
-                                    conflict,
-                                    JOptionPane.ERROR_MESSAGE);
+    
+    if (!RoomService.isClosed(room, date, hStart, hEnd)) {
+      return false;
+    }
+    
+    if (service.testRoomConflict(date.toString(), hStart.toString(), hEnd.toString(), room) > 0) {
+      MessagePopup.error(rv,MessageUtil.getMessage("busy.room.warning"), conflict);
       return false;
     }
 
-    if (service.testGroupConflict(date.toString(), hdeb.toString(), hfin.toString(), group.getId()) > 0) {
-      JOptionPane.showMessageDialog(null,
-                                    MessageUtil.getMessage("busy.band.warning"),
-                                    conflict,
-                                    JOptionPane.ERROR_MESSAGE);
+    if (service.testGroupConflict(date.toString(), hStart.toString(), hEnd.toString(), group.getId()) > 0) {
+      MessagePopup.error(rv,MessageUtil.getMessage("busy.group.warning"), conflict);
       return false;
     }
     try {
-      service.createRehearsal(date, hdeb, hfin, group, room);
+      service.createRehearsal(date, hStart, hEnd, group, room);
       desktop.postEvent(new ModifPlanEvent(this, rv.getDate(), rv.getDate()));
-      clear();// L'ORDRE EST IMPORTANT : clear() before d'afficher le message
-      JOptionPane.showMessageDialog(this,
-                                    MessageUtil.getMessage("planning.update.info"),
-                                    label,
-                                    JOptionPane.INFORMATION_MESSAGE);
-
+      clear();// L'ORDRE EST IMPORTANT : clear() avant d'afficher le message
+      MessagePopup.information(rv,MessageUtil.getMessage("planning.update.info"), label);
     } catch (GroupException ex) {
       GemLogger.logException(ex.getMessage(), ex, this);
       MessagePopup.warning(this, ex.getMessage());

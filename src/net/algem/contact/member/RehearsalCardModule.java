@@ -1,7 +1,7 @@
 /*
- * @(#)RehearsalCardModule.java 2.6.a 18/09/12
+ * @(#)RehearsalCardModule.java 2.8.w 27/08/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -22,20 +22,20 @@ package net.algem.contact.member;
 
 import java.awt.Container;
 import java.awt.event.ActionEvent;
+import net.algem.util.module.DefaultGemModule;
 import net.algem.util.module.GemDesktopCtrl;
-import net.algem.util.module.GemModule;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.w
  */
 public class RehearsalCardModule
-        extends GemModule
+        extends DefaultGemModule
 {
 
-  public RehearsalCardModule(String _label, Container p) {
-    super(_label, p);
+  public RehearsalCardModule(String label, Container p) {
+    super(label, p);
     if (p instanceof RehearsalCardSearchCtrl) {
       ((RehearsalCardSearchCtrl) p).addActionListener(this);
     }

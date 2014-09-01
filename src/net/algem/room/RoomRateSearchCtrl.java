@@ -1,7 +1,7 @@
 /*
- * @(#)RoomRateSearchCtrl.java	2.7.a 17/01/13
+ * @(#)RoomRateSearchCtrl.java	2.8.w 08/07/14
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -35,17 +35,17 @@ import net.algem.util.ui.SearchCtrl;
  * Search controller for room rates.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.w
  * @since 2.1a
  */
 public class RoomRateSearchCtrl
         extends SearchCtrl {
 	
-	private DataCache dataCache;
-    private GemDesktop desktop;
+	private final DataCache dataCache;
+  private final GemDesktop desktop;
 
   public RoomRateSearchCtrl(GemDesktop desktop) {
-    super(desktop.getDataCache().getDataConnection(), "Consultation/modification des tarifs salles");
+    super(DataCache.getDataConnection(), "Consultation/modification des tarifs salles");
     this.desktop = desktop;
     this.dataCache = desktop.getDataCache();
   }

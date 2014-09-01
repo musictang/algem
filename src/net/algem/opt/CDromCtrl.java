@@ -1,7 +1,7 @@
 /*
- * @(#)CDromCtrl.java	2.5.b 12/07/12
+ * @(#)CDromCtrl.java	2.8.w 08/07/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -30,16 +30,16 @@ import net.algem.util.ui.SearchCtrl;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.5.b
+ * @version 2.8.w
  * @deprecated 
  */
 public class CDromCtrl
         extends SearchCtrl {
 	
-	private DataCache dataCache;
+	private final DataCache dataCache;
 
   public CDromCtrl(DataCache dc) {
-    super(dc.getDataConnection(), "Consultation/modification d'un CDROM");
+    super(DataCache.getDataConnection(), "Consultation/modification d'un CDROM");
 		this.dataCache = dc;
   }
 

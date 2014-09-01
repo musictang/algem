@@ -1,7 +1,7 @@
 /*
- * @(#)PopupDlg.java	2.6.a 25/09/12
+ * @(#)PopupDlg.java	2.8.w 23/07/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,20 +20,22 @@
  */
 package net.algem.util.ui;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.BorderFactory;
 import javax.swing.JDialog;
 import net.algem.util.GemCommand;
 
 /**
- * comment
+ * JDialog container.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.w
  */
 public abstract class PopupDlg
         implements ActionListener
@@ -41,7 +43,8 @@ public abstract class PopupDlg
 
   protected Frame parent;
   protected JDialog dlg;
-  protected GemLabel title;
+//  protected GemLabel title;
+  protected String dlgTitle;
   protected boolean validation;
   protected GemButton btValid;
   protected GemButton btCancel;
@@ -52,15 +55,17 @@ public abstract class PopupDlg
 
   public PopupDlg(Component c, String t) {
     parent = getTopFrame(c);
-    title = new GemLabel(t);
+    dlgTitle = t;
+//    title = new GemLabel(t);
     validation = false;
   }
 
-  public PopupDlg(Component c, String t, boolean _modal) {
+  public PopupDlg(Component c, String t, boolean modal) {
     parent = getTopFrame(c);
-    title = new GemLabel(t);
+    dlgTitle = t;
+//    title = new GemLabel(t);
     validation = false;
-    modal = _modal;
+    this.modal = modal;
   }
 
   public void init() {
@@ -80,9 +85,15 @@ public abstract class PopupDlg
     buttons.add(btCancel);
     buttons.add(btValid);
 
-    dlg.getContentPane().add("North", title);
-    dlg.getContentPane().add("Center", getMask());
-    dlg.getContentPane().add("South", buttons);
+    GemPanel panel = new GemPanel(new BorderLayout());
+    panel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+//    panel.add(title, BorderLayout.NORTH);
+    panel.add(getMask(), BorderLayout.CENTER);
+//    panel.add(buttons, BorderLayout.SOUTH);
+
+    dlg.add(panel, BorderLayout.CENTER);
+    dlg.add(buttons, BorderLayout.SOUTH);
+    dlg.setTitle(dlgTitle);
     dlg.pack();
     dlg.setLocation(100, 100);
   }
@@ -100,7 +111,7 @@ public abstract class PopupDlg
   public void setSize(int w, int h) {
     dlg.setSize(w, h);
   }
-
+ 
   public void show() {
     if (dlg != null) {
       dlg.setVisible(true);
@@ -120,8 +131,6 @@ public abstract class PopupDlg
   }
 
   public abstract GemPanel getMask();
-
-  /* public abstract String getField(int n);*/
   
   @Override
   public void actionPerformed(ActionEvent evt) {

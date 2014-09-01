@@ -1,7 +1,7 @@
 /*
- * @(#)TestEnrolmentOrderUtil.java 2.8.n 25/09/13
+ * @(#)TestEnrolmentOrderUtil.java 2.8.w 22/07/14
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -36,7 +36,7 @@ import org.junit.*;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.n
+ * @version 2.8.w
  * @since 2.8.n 25/09/13
  */
 public class TestEnrolmentOrderUtil {
@@ -95,7 +95,7 @@ public class TestEnrolmentOrderUtil {
     mo.setStart(new DateFr("16-09-2013"));
     mo.setEnd(new DateFr("26-06-2014"));
     mo.setModeOfPayment(ModeOfPayment.FAC.toString());
-    mo.setPayment("TRIM");
+    mo.setPayment(PayFrequency.QUARTER);
     mo.setPrice(300);
     try {
       List<OrderLine> lines = util.getOrderLines(mo, ol);
@@ -167,7 +167,7 @@ public class TestEnrolmentOrderUtil {
     mo.setStart(new DateFr("16-09-2013"));
     mo.setEnd(new DateFr("26-06-2014"));
     mo.setModeOfPayment(ModeOfPayment.FAC.toString());
-    mo.setPayment("MOIS");
+    mo.setPayment(PayFrequency.MONTH);
     mo.setPrice(100);
     try {
       List<OrderLine> lines = util.getOrderLines(mo, ol);

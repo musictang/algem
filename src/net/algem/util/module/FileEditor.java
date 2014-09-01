@@ -1,7 +1,7 @@
 /*
- * @(#)FileEditor.java	2.8.n 25/09/13
+ * @(#)FileEditor.java	2.8.w 09/07/14
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,13 +27,14 @@ import net.algem.billing.*;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
 import net.algem.room.Room;
+import net.algem.util.DataCache;
 import net.algem.util.GemLogger;
 
 /**
  * Base class for editing dossiers.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.n
+ * @version 2.8.w
  * @since 2.3.c 21/03/12
  */
 public class FileEditor
@@ -60,7 +61,7 @@ public class FileEditor
   protected InvoiceEditor addInvoice(Object source, Room s) {
 
     Invoice inv = new Invoice(s, dataCache.getUser());
-    inv.setEstablishment(Integer.parseInt(ConfigUtil.getConf(ConfigKey.DEFAULT_ESTABLISHMENT.getKey(), dataCache.getDataConnection())));
+    inv.setEstablishment(Integer.parseInt(ConfigUtil.getConf(ConfigKey.DEFAULT_ESTABLISHMENT.getKey())));
     if (source != null && source instanceof OrderLineEditor) {
       BillingUtil.setInvoiceOrderLines(inv, ((OrderLineEditor) source).getInvoiceSelection());
     }
@@ -80,7 +81,7 @@ public class FileEditor
    */
   protected QuoteEditor addQuotation(Object source, Room s) {
     Quote q = new Quote(s, dataCache.getUser());
-    q.setEstablishment(Integer.parseInt(ConfigUtil.getConf(ConfigKey.DEFAULT_ESTABLISHMENT.getKey(), dataCache.getDataConnection())));
+    q.setEstablishment(Integer.parseInt(ConfigUtil.getConf(ConfigKey.DEFAULT_ESTABLISHMENT.getKey())));
     if (source != null && source instanceof OrderLineEditor) {
       BillingUtil.setQuoteOrderLines(q, ((OrderLineEditor) source).getInvoiceSelection());
     }

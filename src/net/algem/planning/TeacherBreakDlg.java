@@ -1,7 +1,7 @@
 /*
- * @(#)TeacherBreakDlg.java 2.6.a 21/09/12
+ * @(#)TeacherBreakDlg.java 2.8.w 08/07/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -40,7 +40,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.w
  * @since 1.0a 08/10/2001
  */
 public class TeacherBreakDlg
@@ -61,7 +61,7 @@ public class TeacherBreakDlg
     this.desktop = desktop;
 		
     dataCache = desktop.getDataCache();
-    service = new PlanningService(dataCache.getDataConnection());
+    service = new PlanningService(DataCache.getDataConnection());
     teacher = idper;
     dlg = new JDialog(desktop.getFrame(), true);
 

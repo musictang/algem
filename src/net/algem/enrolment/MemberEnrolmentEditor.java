@@ -1,5 +1,5 @@
 /*
- * @(#)MemberEnrolmentEditor.java 2.8.t 02/05/14
+ * @(#)MemberEnrolmentEditor.java 2.8.w 09/07/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -25,7 +25,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Vector;
@@ -54,14 +53,13 @@ import net.algem.util.menu.MenuPopupListener;
 import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.*;
-import net.algem.enrolment.ModuleOrderIO;
 
 /**
  * Enrolment editor.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.8.w
  * @since 1.0b 06/09/2001
  */
 public class MemberEnrolmentEditor
@@ -74,7 +72,7 @@ public class MemberEnrolmentEditor
   private final static String HOUR_MODIF = BundleUtil.getLabel("Course.hour.modification.label");
   private final static String NEW_COURSE = BundleUtil.getLabel("New.course.label");
   private final static String NEW_MODULE = BundleUtil.getLabel("New.module.label");
-  private final static String MODULE_DEL = BundleUtil.getLabel("Module.delete.label");  
+  private final static String MODULE_DEL = BundleUtil.getLabel("Module.delete.label");
   private final static String MODULE_STOP = BundleUtil.getLabel("Module.stop.label");  
   private final static String NONE_ENROLMENT = MessageUtil.getMessage("enrolment.empty.list");
   private final static String COURSE_DATE = BundleUtil.getLabel("Course.date.modification.label");
@@ -195,6 +193,7 @@ public class MemberEnrolmentEditor
       m8.setEnabled(true);
     }
   }
+
 
   private void setModulePopupMenu() {
     m1.setEnabled(false);
@@ -413,43 +412,7 @@ public class MemberEnrolmentEditor
     return co;
   }
 
-  private void stopModule() {
-    StopCourseFromModuleDlg dlg2 = null;
-    Object[] path = currentSelection.getPath();
-    int i = path.length;
-    if (!(path[i - 1] instanceof ModuleEnrolmentNode)) {
-      return;
-    }
-    ModuleEnrolmentNode monode = ((ModuleEnrolmentNode) path[i - 1]);    
-    for (Enumeration e = monode.children(); e.hasMoreElements();) {
-      TreeNode n = (TreeNode) e.nextElement();
-      if(n instanceof CourseEnrolmentNode) {
-        CourseOrder co = ((CourseEnrolmentNode) n).getCourseOrder();
-        try {
-          Course c = planningService.getCourseFromAction(co.getAction());
-          if (c.isUndefined()) {
-            MessagePopup.information(this, MessageUtil.getMessage("course.invalid.choice"));
-            return;
-          }
-          dlg2 = new StopCourseFromModuleDlg(desktop, dossier.getId(), co, c);
-          dlg2.setVisible(true);
-        } catch (SQLException ex) {
-          GemLogger.log(getClass().getName(), "#stopCourse :", ex.getMessage());
-        }
-      }
-    }    
-    ModuleOrder module = monode.getModule();
-    module.setEnd(dlg2.getDateEnd());
-    try {
-        service.stop(module);
-        desktop.postEvent(new EnrolmentUpdateEvent(this, dossier.getId()));
-      } catch (EnrolmentException ex) {
-        MessagePopup.warning(this, ex.getMessage());
-      }
-    
-    //service.pauseModule(module); fonction à créer !
-  }
-
+  
   private void stopCourse() {
 
     StopCourseDlg dlg2 = null;
@@ -510,8 +473,8 @@ public class MemberEnrolmentEditor
       return;
     }
 
-    CourseOrder cc = ((CourseEnrolmentNode) path[i - 1]).getCourseOrder();
-    if (!cc.getStart().equals(new Hour("00-00-00"))) {
+    CourseOrder co = ((CourseEnrolmentNode) path[i - 1]).getCourseOrder();
+    if (!co.getStart().equals(new Hour("00-00-00"))) {
       MessagePopup.error(this, MessageUtil.getMessage("course.invalid.choice"));
       return;
     }
@@ -524,27 +487,27 @@ public class MemberEnrolmentEditor
     CourseModuleInfo cmi = new CourseModuleInfo();
     GemParam code = null;
     try {
-      code = (GemParam) DataCache.findId(cc.getCode(), Model.CourseCode);
+      code = (GemParam) DataCache.findId(co.getCode(), Model.CourseCode);
       cmi.setCode(code);
-      cmi.setTimeLength(cc.getTimeLength());
+      cmi.setTimeLength(co.getTimeLength());
       courseDlg.setCourseInfo(cmi);
     } catch (SQLException ex) {
       GemLogger.logException(ex);
     }
     courseDlg.clear();
-    courseDlg.setCode(cc.getCode());
+    courseDlg.setCode(co.getCode());
     try {
-      courseDlg.loadEnrolment(cc);
+      courseDlg.loadEnrolment(co);
       courseDlg.entry();
       if (courseDlg.isValidation()) {
         if (!MessagePopup.confirm(desktop.getFrame(),
-                MessageUtil.getMessage("enrolment.update.confirmation", cc.getDateStart()))) {
+                MessageUtil.getMessage("enrolment.update.confirmation", co.getDateStart()))) {
           view.setCursor(Cursor.getDefaultCursor());
           return;
         }
-        modifyCourseOrder(cc, courseDlg);
-        service.modifyCourse(cc, dossier.getId());
-        desktop.postEvent(new ModifPlanEvent(this, cc.getDateStart(), cc.getDateEnd()));
+        modifyCourseOrder(co, courseDlg);
+        service.modifyCourse(co, dossier.getId());
+        desktop.postEvent(new ModifPlanEvent(this, co.getDateStart(), co.getDateEnd()));
         // Rafraichissement de la vue inscription
         desktop.postEvent(new EnrolmentUpdateEvent(this, dossier.getId()));
       }
@@ -557,21 +520,21 @@ public class MemberEnrolmentEditor
 
   }
 
-  private void modifyCourseOrder(CourseOrder cc, CourseEnrolmentDlg dlg) {
-    cc.setModuleOrder(Integer.parseInt(dlg.getField(1)));
-    cc.setAction(Integer.parseInt(dlg.getField(2)));
-    cc.setTitle(dlg.getField(3));
-    cc.setDay(Integer.parseInt(dlg.getField(4)));
+  private void modifyCourseOrder(CourseOrder co, CourseEnrolmentDlg dlg) {
+    co.setModuleOrder(Integer.parseInt(dlg.getField(1)));
+    co.setAction(Integer.parseInt(dlg.getField(2)));
+    co.setTitle(dlg.getField(3));
+    co.setDay(Integer.parseInt(dlg.getField(4)));
 
-    if (CourseCodeType.ATP.getId() == cc.getCode()) {
+    if (CourseCodeType.ATP.getId() == co.getCode()) {
       DateFr d = new DateFr(dlg.getField(7));
-      cc.setDateStart(d);
-      cc.setDateEnd(d);
+      co.setDateStart(d);
+      co.setDateEnd(d);
     }
     Hour start = new Hour(dlg.getField(5));
     Hour length = new Hour(dlg.getField(6));
-    cc.setStart(start);
-    cc.setEnd(start.end(length.toMinutes()));
+    co.setStart(start);
+    co.setEnd(start.end(length.toMinutes()));
   }
 
   /**
@@ -595,7 +558,7 @@ public class MemberEnrolmentEditor
       if (!moduleDlg.isValidation()) {
         return;
       }
-      int idModule = Integer.parseInt(moduleDlg.getField(0));
+      int idModule = (Integer) moduleDlg.getField(0);
 
       ModuleOrder mo = new ModuleOrder();
       mo.setIdOrder(order.getId());
@@ -610,7 +573,7 @@ public class MemberEnrolmentEditor
       // TODO désactiver l'ajout de lignes d'échéance à l'ajout d'un module
       enrolmentOrder.setTotalBase(mo.getPrice());
 
-      String school = ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey(), dc);
+      String school = ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey());
       try {
         int n = enrolmentOrder.saveOrderLines(mo, Integer.parseInt(school));
         enrolmentOrder.updateModuleOrder(n, mo);
@@ -650,12 +613,12 @@ public class MemberEnrolmentEditor
     mo.setTitle(m.getTitle());
     mo.setPayer(dossier.getMember().getPayer());
     mo.setModule(m.getId());
-    mo.setSelectedModule(Integer.parseInt(moduleDlg.getField(7)));
-    mo.setStart(new DateFr(moduleDlg.getField(2)));
-    mo.setEnd(new DateFr(moduleDlg.getField(3)));
-    mo.setPrice(Double.parseDouble(moduleDlg.getField(4)));
-    mo.setModeOfPayment(moduleDlg.getField(5));
-    mo.setPayment(moduleDlg.getField(6));
+    mo.setSelectedModule((Integer) moduleDlg.getField(7));
+    mo.setStart(new DateFr((DateFr) moduleDlg.getField(2)));
+    mo.setEnd(new DateFr((DateFr) moduleDlg.getField(3)));
+    mo.setPrice((Double) moduleDlg.getField(4));
+    mo.setModeOfPayment((String) moduleDlg.getField(5));
+    mo.setPayment((PayFrequency) moduleDlg.getField(6));
     mo.setNOrderLines(1);
 
   }
@@ -696,6 +659,43 @@ public class MemberEnrolmentEditor
     }
     tree.setSelectionRow(x - 1);
     tree.scrollRowToVisible(x - 1); // doesn't seem to work
+  }
+  
+  private void stopModule() {
+    StopCourseFromModuleDlg dlg2 = null;
+    Object[] path = currentSelection.getPath();
+    int i = path.length;
+    if (!(path[i - 1] instanceof ModuleEnrolmentNode)) {
+      return;
+    }
+    ModuleEnrolmentNode monode = ((ModuleEnrolmentNode) path[i - 1]);    
+    for (Enumeration e = monode.children(); e.hasMoreElements();) {
+      TreeNode n = (TreeNode) e.nextElement();
+      if(n instanceof CourseEnrolmentNode) {
+        CourseOrder co = ((CourseEnrolmentNode) n).getCourseOrder();
+        try {
+          Course c = planningService.getCourseFromAction(co.getAction());
+          if (c.isUndefined()) {
+            MessagePopup.information(this, MessageUtil.getMessage("course.invalid.choice"));
+            return;
+          }
+          dlg2 = new StopCourseFromModuleDlg(desktop, dossier.getId(), co, c);
+          dlg2.setVisible(true);
+        } catch (SQLException ex) {
+          GemLogger.log(getClass().getName(), "#stopCourse :", ex.getMessage());
+        }
+      }
+    }    
+    ModuleOrder module = monode.getModule();
+    module.setEnd(dlg2.getDateEnd());
+    try {
+        service.stop(module);
+        desktop.postEvent(new EnrolmentUpdateEvent(this, dossier.getId()));
+      } catch (EnrolmentException ex) {
+        MessagePopup.warning(this, ex.getMessage());
+      }
+    
+    //service.pauseModule(module); fonction à créer !
   }
 
   class MyRenderer

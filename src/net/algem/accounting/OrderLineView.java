@@ -1,5 +1,5 @@
 /*
- * @(#)OrderLineView.java	2.8.t 15/05/14
+ * @(#)OrderLineView.java	2.8.w 08/07/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -40,7 +40,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.8.w
  * @since 1.0a 18/07/1999
  */
 public class OrderLineView
@@ -93,18 +93,19 @@ public class OrderLineView
     label = new GemField(24);
     amount = new JFormattedTextField(nf);
     amount.setColumns(8);
+    DataConnection dc = DataCache.getDataConnection();
     modeOfPayment = new JComboBox(
             ParamTableIO.getValues(
             ModeOfPaymentCtrl.TABLE,
-            ModeOfPaymentCtrl.COLUMN_NAME, dataCache.getDataConnection())
+            ModeOfPaymentCtrl.COLUMN_NAME, dc)
             );
     document = new GemField(10);
     schoolChoice = new ParamChoice(dataCache.getList(Model.School).getData());
-    account = new AccountChoice(AccountIO.find(true, dataCache.getDataConnection()));
+    account = new AccountChoice(AccountIO.find(true, dc));
     costAccount = new ParamChoice(
             ActivableParamTableIO.findActive(
             CostAccountCtrl.tableName, CostAccountCtrl.columnName,
-            CostAccountCtrl.columnFilter, dataCache.getDataConnection())
+            CostAccountCtrl.columnFilter, dc)
             );
 
     //monnaie = new JComboBox(monnaies);

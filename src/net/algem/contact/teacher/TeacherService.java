@@ -60,7 +60,7 @@ public class TeacherService
    * @return a list of schedules
    */
   public Vector<Schedule> getSchedule(int teacher, String start, String end) {
-    String query = "WHERE ptype = "+Schedule.COURSE_SCHEDULE+" AND idper = " + teacher
+    String query = "WHERE ptype = "+Schedule.COURSE+" AND idper = " + teacher
             + " AND jour >= '" + start + "' AND jour <= '" + end + "' ORDER BY jour,debut";
     return ScheduleIO.find(query, dc);
   }
@@ -75,14 +75,14 @@ public class TeacherService
    * @return a list of schedules
    */
   public Vector<ScheduleObject> getCourseSchedule(int teacher, int estab, String start, String end) throws SQLException {
-    String query = ", salle s, action a WHERE p.ptype = " + Schedule.COURSE_SCHEDULE + " AND p.idper = " + teacher
+    String query = ", salle s, action a WHERE p.ptype = " + Schedule.COURSE + " AND p.idper = " + teacher
               + " AND p.jour>='" + start + "'"
               + " AND p.jour<='" + end + "'"
               + " AND p.lieux = s.id AND s.etablissement=" + estab
               + " AND p.action = a.id"
               + " ORDER BY p.lieux,p.jour,p.debut,a.cours"; //OK
-              //+" order by p.place,p.start,p.date,p.action"; //OK mais
-              //+" order by extract(dow from p.date),p.place,p.action,p.start"; //OUI MAIS
+              //+" order by p.idRoom,p.start,p.date,p.action"; //OK mais
+              //+" order by extract(dow from p.date),p.idRoom,p.action,p.start"; //OUI MAIS
     return ScheduleIO.findObject(query, dc);
   }
 

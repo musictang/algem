@@ -1,7 +1,7 @@
 /*
- * @(#)StudentExportDlg.java 2.8.k 25/07/13
+ * @(#)StudentExportDlg.java 2.8.w 08/07/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -44,7 +44,7 @@ import net.algem.util.ui.MessagePopup;
  * Abstract class for student export operations.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.k
+ * @version 2.8.w
  * @since 2.6.a 06/11/2012
  */
 public abstract class StudentExportDlg
@@ -58,13 +58,13 @@ public abstract class StudentExportDlg
   protected GridBagHelper gb;
   protected ExportService service;
 
-  public StudentExportDlg(Frame _parent, DataCache dc) {
-    this(_parent, BundleUtil.getLabel("Export.student.title"), dc);
+  public StudentExportDlg(Frame frame, DataCache dataCache) {
+    this(frame, BundleUtil.getLabel("Export.student.title"), dataCache);
   }
   
-  public StudentExportDlg(Frame _parent, String title, DataCache dc) {
-    super(_parent, title, dc);
-    service = new ExportService(dc.getDataConnection());
+  public StudentExportDlg(Frame frame, String title, DataCache dataCache) {
+    super(frame, title, dataCache);
+    service = new ExportService(DataCache.getDataConnection());
   }
   
   @Override

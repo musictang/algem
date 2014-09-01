@@ -150,6 +150,6 @@ public class AccountDocumentTransferDlg
             + "' AND piece = '" + document
             + "' AND reglement = '" + payment
             + "' AND paye = 't' AND transfert = 'f'";
-    return OrderLineIO.find(query, dbx);
+    return OrderLineIO.find(query, dc);
   }
 }

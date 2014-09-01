@@ -1,7 +1,7 @@
 /*
- * @(#)BillingIO.java 2.6.a 01/08/2012
+ * @(#)BillingIO.java 2.8.w 09/07/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -30,7 +30,7 @@ import net.algem.util.model.TableIO;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.w
  * @since 2.4.d 07/06/12
  */
 public abstract class BillingIO
@@ -65,7 +65,7 @@ public abstract class BillingIO
   }
 
   static int getFirstId(DataConnection dc) {
-    String n = ConfigUtil.getConf(ConfigKey.ACCOUNTING_INVOICE_NUMBER.getKey(), dc);
+    String n = ConfigUtil.getConf(ConfigKey.ACCOUNTING_INVOICE_NUMBER.getKey());
     if (n != null) {
       return Integer.parseInt(n);
     }

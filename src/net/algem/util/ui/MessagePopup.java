@@ -1,7 +1,7 @@
 /*
- * @(#)MessagePopup.java	2.8.a 16/04/13
+ * @(#)MessagePopup.java	2.8.w 21/07/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -29,50 +29,82 @@ import net.algem.util.BundleUtil;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.w
  */
 public class MessagePopup
 {
 
-  public static boolean confirm(Component _parent, String _message) {
-    return confirm(_parent, _message, BundleUtil.getLabel("Warning.label"));
-  }
-
   /**
-   * Confirmation popup.
-   *
-   * @param _parent
-   * @param _message
-   * @param title
+   * Displays a confirmation dialog box with default warning title.
+   * @param parent parent component
+   * @param message message to display
    * @return true if confirmation
    */
-  public static boolean confirm(Component _parent, String _message, String title) {
+  public static boolean confirm(Component parent, String message) {
+    return confirm(parent, message, BundleUtil.getLabel("Warning.label"));
+  }
+
+  /**
+   * Displays a confirmation dialog box with custom title.
+   *
+   * @param parent parent component
+   * @param message message to display
+   * @param title custom title
+   * @return true if confirmation
+   */
+  public static boolean confirm(Component parent, String message, String title) {
 
     Object[] options = {BundleUtil.getLabel("Yes.option.label"), BundleUtil.getLabel("No.option.label")};
-    return (JOptionPane.showOptionDialog(_parent, _message, title, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]) == JOptionPane.YES_OPTION);
+    return (JOptionPane.showOptionDialog(parent, message, title, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]) == JOptionPane.YES_OPTION);
   }
 
   /**
-   * Information popup.
+   * Displays an information dialog box with default title.
    *
-   * @param _parent
-   * @param _message
+   * @param parent parent component
+   * @param message message to display
    */
-  public static void information(Component _parent, String _message) {
-    JOptionPane.showMessageDialog(_parent, _message, BundleUtil.getLabel("Information.label"), JOptionPane.INFORMATION_MESSAGE);
+  public static void information(Component parent, String message) {
+    JOptionPane.showMessageDialog(parent, message, BundleUtil.getLabel("Information.label"), JOptionPane.INFORMATION_MESSAGE);
+  }
+  
+  /**
+   * Displays an information dialog box with custom title.
+   *
+   * @param parent parent component
+   * @param message message to display
+   * @param title custom title
+   */
+  public static void information(Component parent, String message, String title) {
+    JOptionPane.showMessageDialog(parent, message, title, JOptionPane.INFORMATION_MESSAGE);
   }
 
   /**
-   * Warning popup.
+   * Displays a warning dialog box with default title.
    *
-   * @param c component
-   * @param m message
+   * @param c parent component
+   * @param m message to display
    */
   public static void warning(Component c, String m) {
     JOptionPane.showMessageDialog(c, m, BundleUtil.getLabel("Warning.label"), JOptionPane.WARNING_MESSAGE);
   }
 
+  /**
+   * Displays an error dialog box with default title.
+   * @param c parent component
+   * @param m message to display
+   */
   public static void error(Component c, String m) {
     JOptionPane.showMessageDialog(c, m, BundleUtil.getLabel("Error.label"), JOptionPane.ERROR_MESSAGE);
+  }
+  
+  /**
+   * Displays an error dialog box with custom title.
+   * @param c parent component
+   * @param m message to display
+   * @param title custom title
+   */
+  public static void error(Component c, String m, String title) {
+    JOptionPane.showMessageDialog(c, m, title, JOptionPane.ERROR_MESSAGE);
   }
 }

@@ -1,7 +1,7 @@
 /*
- * @(#)AgendaProfCtrl.java	2.7.a 23/11/12
+ * @(#)AgendaProfCtrl.java	2.8.w 08/07/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -40,7 +40,7 @@ import net.algem.util.ui.GemPanel;
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.w
  * @since 1.0a 07/07/1999
  */
 public class AgendaProfCtrl
@@ -94,7 +94,7 @@ public class AgendaProfCtrl
             + " ORDER BY jour,debut";
     Vector<PlanningLib> v = new Vector<PlanningLib>();
     try {
-      v = PlanningLibIO.find(query, cache.getDataConnection());
+      v = PlanningLibIO.find(query, DataCache.getDataConnection());
     } catch (SQLException e) {
       GemLogger.logException(e);
     }

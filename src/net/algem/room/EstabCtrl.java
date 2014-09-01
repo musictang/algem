@@ -1,7 +1,7 @@
 /*
- * @(#)EstabCtrl.java	2.8.e 20/05/13
+ * @(#)EstabCtrl.java	2.8.w 08/07/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -37,15 +37,15 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.e
+ * @version 2.8.w
  */
 public class EstabCtrl
         extends CardCtrl
 {
 
-  private GemDesktop desktop;
-  private DataCache dataCache;
-  private DataConnection dc;
+  private final GemDesktop desktop;
+  private final DataCache dataCache;
+  private final DataConnection dc;
   private ContactFileEditor contactEditor;
   private EstabRoomListView roomListView;
   private Establishment estab;
@@ -54,7 +54,7 @@ public class EstabCtrl
   public EstabCtrl(GemDesktop desktop) {
     this.desktop = desktop;
     this.dataCache = desktop.getDataCache();
-    dc = desktop.getDataCache().getDataConnection();
+    this.dc = DataCache.getDataConnection();
     contactEditor = new ContactFileEditor(desktop);
     contactEditor.filter(Person.ESTABLISHMENT);
     roomListView = new EstabRoomListView();

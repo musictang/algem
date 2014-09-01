@@ -56,7 +56,6 @@ public class ModifPlanTeacherDlg
     dlg = new JDialog(desktop.getFrame(), true);
     addContent(view, "Schedule.teacher.modification.title");
     dlg.setSize(450,340);
-
   }
 
   @Override

@@ -1,7 +1,7 @@
 /*
- * @(#)ActionView.java	2.8.m 11/09/13
+ * @(#)ActionView.java	2.8.w 22/07/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -49,7 +49,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.m
+ * @version 2.8.w
  */
 public class ActionView
         extends GemPanel
@@ -85,7 +85,7 @@ public class ActionView
     room = new RoomChoice(dataCache.getList(Model.Room));//salles actives par défaut
     room.addItemListener(new RoomItemListener());
     day = new DayChoice();
-    periodicity = new JComboBox(new Enum[]{Periodicity.SEMAINE, Periodicity.QUINZAINE, Periodicity.JOUR, Periodicity.MOIS});
+    periodicity = new JComboBox(new Enum[]{Periodicity.WEEK, Periodicity.FORTNIGHT, Periodicity.DAY, Periodicity.MONTH});
     sessions = new GemNumericField(2);
     places = new GemNumericField(2);
     places.setText(String.valueOf(((Room)room.getSelectedItem()).getNPers()));

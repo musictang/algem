@@ -30,7 +30,7 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.p
+ * @version 2.8.v
  *
  * @since 1.0a 07/07/1999
  */
@@ -48,7 +48,6 @@ public class Person
   protected String name;
   protected String firstName;
   protected String gender;
-  //protected int note;
   protected boolean imgRights;
   protected String organization;
   protected boolean partnerInfo;
@@ -115,11 +114,7 @@ public class Person
 
   @Override
   public String toString() {
-    if (type == PERSON) {
-      return getFirstnameName();
-    } else {
-      return name;
-    }
+    return type == PERSON ? getFirstnameName() : name;
   }
 
   public String getFirstnameName() {
@@ -158,6 +153,14 @@ public class Person
   public String getNameFirstname() {
     StringBuilder b = new StringBuilder(name);
     return b.append(" ").append(firstName).toString();
+  }
+  
+  public String getCommunName() {
+    if (organization != null) {
+      return organization.isEmpty() ? getAbbrevFirstNameName() : organization;
+    } else {
+      return getAbbrevFirstNameName();
+    }
   }
 
   public void setType(short i) {
@@ -235,13 +238,15 @@ public class Person
             ? organization.length() > 1 : name.length() > 1;
   }
 
+  @Override
+  public int compareTo(Person o) {
+    return getFirstnameName().compareToIgnoreCase(o.getFirstnameName());
+  }
+  
+  
   private boolean out(int n) {
     System.out.println("!Personne.equals " + n);
     return false;
   }
 
-  @Override
-  public int compareTo(Person o) {
-    return getFirstnameName().compareToIgnoreCase(o.getFirstnameName());
-  }
 }

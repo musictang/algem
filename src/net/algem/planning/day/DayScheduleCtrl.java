@@ -1,7 +1,7 @@
 /*
- * @(#)DayScheduleCtrl.java 2.8.a 17/04/13
+ * @(#)DayScheduleCtrl.java 2.8.w 27/08/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,6 +20,7 @@
  */
 package net.algem.planning.day;
 
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -32,6 +33,8 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import net.algem.config.ConfigKey;
+import net.algem.config.ConfigUtil;
 import net.algem.planning.*;
 import net.algem.planning.editing.ModifPlanEvent;
 import net.algem.room.Establishment;
@@ -45,11 +48,11 @@ import net.algem.util.model.Model;
 import net.algem.util.module.GemModule;
 
 /**
- * Day schedule controller.
+ * Day schedule main controller.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.w
  * @since 1.0b 06/10/2001
  */
 public class DayScheduleCtrl
@@ -131,6 +134,15 @@ public class DayScheduleCtrl
   public void load(Date date) {
     cal.setTime(date);
     dataCache.setDaySchedule(date);
+  }
+  
+  /**
+   * Maximizes the internal view to optimize name display in ranges.
+   */
+  public void mayBeMaximize() {
+     if (ConfigUtil.getConf(ConfigKey.SCHEDULE_RANGE_NAMES.getKey()).equals("t")) {
+        view.setSize(new Dimension(960,735));
+    } 
   }
 
   @Override

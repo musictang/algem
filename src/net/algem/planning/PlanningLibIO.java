@@ -1,7 +1,7 @@
 /*
- * @(#)PlanningLibIO.java	2.6.a 20/09/12
- * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * @(#)PlanningLibIO.java	2.8.v 11/06/14
+ *
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning;
 
@@ -31,7 +31,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.v
  * @since 1.0a 07/07/1999
  * @see net.algem.planning.PlanningLib
  */
@@ -45,7 +45,7 @@ public class PlanningLibIO
    * view in database.
    * SELECT pl.id, pl.jour, pl.debut, pl.end, pl.action, p.id AS profid, p.prenom AS prenomprof, p.nom AS nomprof, s.id AS salleid, s.nom AS salle, c.id AS coursid, c.titre AS cours, c.ecole
    *  FROM planning pl, personne p, salle s, cours c, action a
-   *  WHERE pl.action = a.id AND a.cours = c.id AND pl.lieux = s.id AND pl.idper = p.id;
+   *  WHERE pl.ptype IN (1,5,6) AND pl.action = a.id AND a.cours = c.id AND pl.lieux = s.id AND pl.idper = p.id;
    *
    * @param dc dataCache
    * @param where

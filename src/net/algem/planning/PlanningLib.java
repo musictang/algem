@@ -95,7 +95,7 @@ public class PlanningLib
   }
 
   public int getType() {
-    return Schedule.COURSE_SCHEDULE;
+    return Schedule.COURSE;
   }
 
   public void setDay(DateFr d) {

@@ -1,5 +1,5 @@
 /*
- * @(#)MemberRehearsalView.java	2.8.t 16/05/14
+ * @(#)MemberRehearsalView.java	2.8.w 17/07/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -18,7 +18,7 @@
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  * 
  */
-package net.algem.planning.editing;
+package net.algem.contact.member;
 
 import java.awt.GridBagLayout;
 import java.util.Date;
@@ -30,9 +30,9 @@ import net.algem.planning.Hour;
 import net.algem.planning.HourRangePanel;
 import net.algem.room.RoomChoice;
 import net.algem.util.BundleUtil;
-import net.algem.util.DataCache;
 import net.algem.util.GemLogger;
-import net.algem.util.model.Model;
+import net.algem.util.model.GemList;
+import net.algem.room.Room;
 import net.algem.util.ui.GemField;
 import net.algem.util.ui.GemLabel;
 import net.algem.util.ui.GemPanel;
@@ -43,7 +43,7 @@ import net.algem.util.ui.GridBagHelper;
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.8.t
+ * @version 2.8.w
  */
 public class MemberRehearsalView
         extends GemPanel
@@ -55,13 +55,13 @@ public class MemberRehearsalView
   private RoomChoice roomChoice;
   private JCheckBox withCard;
 
-  public MemberRehearsalView(DataCache dc) {
+  public MemberRehearsalView(GemList<Room> roomList) {
 
     memberField = new GemField(35);
     memberField.setEditable(false);
     datePanel = new DateRangePanel(DateRangePanel.SIMPLE_DATE, null);
     hourPanel = new HourRangePanel(3 * 60);
-    roomChoice = new RoomChoice(dc.getList(Model.Room));
+    roomChoice = new RoomChoice(roomList);
     withCard = new JCheckBox(BundleUtil.getLabel("Subscription.label"));
     withCard.setBorder(null);
     this.setLayout(new GridBagLayout());
@@ -82,41 +82,41 @@ public class MemberRehearsalView
 
   }
 
-  public int getMemberId() {
+  int getMemberId() {
     int n = 0;
     try {
       n = Integer.parseInt(memberField.getText());
-    } catch (Exception ex) {
+    } catch (NumberFormatException ex) {
       GemLogger.logException(ex);
     }
     return n;
   }
 
-  public int getRoom() {
+  int getRoom() {
     return roomChoice.getKey();
   }
 
-  public DateFr getDate() {
+  DateFr getDate() {
     return datePanel.get();
   }
 
-  public Hour getHourStart() {
+  Hour getHourStart() {
     return hourPanel.getStart();
   }
 
-  public Hour getHourEnd() {
+  Hour getHourEnd() {
     return hourPanel.getEnd();
   }
 
-  public void set(Person _adh) {
-    memberField.setText(_adh.getId() + " " + _adh.getFirstName() + " " + _adh.getName());
+  void set(Person per) {
+    memberField.setText(per.getId() + " " + per.getFirstName() + " " + per.getName());
   }
 
-  public boolean withCard() {
+  boolean withCard() {
     return withCard.isSelected();
   }
 
-  public void clear() {
+  void clear() {
     datePanel.setDate(new Date());
     hourPanel.clear();
     roomChoice.setSelectedIndex(0);

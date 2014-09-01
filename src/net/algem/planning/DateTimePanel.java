@@ -1,5 +1,5 @@
 /*
- * @(#)DateTimePanel.java	2.8.t 14/04/14
+ * @(#)DateTimePanel.java	2.8.v 21/05/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -22,41 +22,30 @@
 package net.algem.planning;
 
 import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Date;
 import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import net.algem.util.GemCommand;
-import net.algem.util.ImageUtil;
-import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GemPanel;
+import net.algem.util.ui.RemovablePanel;
 
 /**
- *
+ * Date and time selection panel with removing button.
+ * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.8.v
  * @since 2.8.t 11/04/14
  */
 public class DateTimePanel
-  extends GemPanel
-  implements ActionListener
+  extends RemovablePanel
+
 {
   
   private DateRangePanel datePanel;
   private HourRangePanel hourPanel;
-  private GemButton removeBt;
-  private ActionListener listener;
 
   public DateTimePanel() {
     
     datePanel = new DateRangePanel(new DateFr(new Date()));
     datePanel.setBorder(null, null);
-
-    ImageIcon resetIcon = ImageUtil.createImageIcon(ImageUtil.DELETE_ICON);
-    removeBt = new GemButton(resetIcon);
-    removeBt.addActionListener(this);
-    removeBt.setToolTipText(GemCommand.REMOVE_CMD);
 
     hourPanel = new HourRangePanel();
     hourPanel.setBorder(null);
@@ -73,14 +62,6 @@ public class DateTimePanel
   public DateFr getDate() {
     return datePanel.get();
   }
-  
-  public void addActionListener(ActionListener listener) {
-    this.listener = listener;
-  }
-  
-  public void removeActionListener() {
-    this.listener = null;
-  }
 
   public void setDate(DateFr date) {
     datePanel.setDate(date);
@@ -95,13 +76,6 @@ public class DateTimePanel
     hourPanel.setEnd(range.getEnd());
   }
 
-  @Override
-  public void actionPerformed(ActionEvent e) {
-    if (listener != null) {
-      listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, GemCommand.REMOVE_CMD));
-    }
-  }
-  
   public void reset() {
     setDate(new DateFr(new Date()));
     setHourRange(new HourRange(HourRangePanel.DEF_START, HourRangePanel.DEF_START));

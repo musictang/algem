@@ -91,10 +91,10 @@ public class PostponeCourseDlg
       return false;
     }
 
-    int room = ns.getPlace();
+    int room = ns.getIdRoom();
     /* 1.1c Ajout d'une condition pour les salles de type exterieur */
     RoomIO roomIO = (RoomIO) DataCache.getDao(Model.Room);
-    Room r = roomIO.findId(schedule.getPlace()); //salle habituelle du planning
+    Room r = roomIO.findId(schedule.getIdRoom()); //salle habituelle du planning
     Room n = roomIO.findId(room); //nouvelle salle
     // SEULEMENT POUR MUSIQUES TANGENTES
     if (r.getEstab() > 13000 && n.getName().toLowerCase().startsWith("rattrap")) {

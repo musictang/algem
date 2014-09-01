@@ -1,7 +1,7 @@
 /*
- * @(#)RightsSearchCtrl.java 2.6.a 03/10/12
+ * @(#)RightsSearchCtrl.java 2.8.w 08/07/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -22,7 +22,6 @@ package net.algem.security;
 
 import java.awt.CardLayout;
 import java.util.List;
-import java.util.Vector;
 import net.algem.util.DataCache;
 import net.algem.util.MessageUtil;
 import net.algem.util.ui.SearchCtrl;
@@ -32,15 +31,15 @@ import net.algem.util.ui.SearchCtrl;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.w
  */
 public class RightsSearchCtrl
         extends SearchCtrl {
 
-  private UserService service;
+  private final UserService service;
   
   public RightsSearchCtrl(DataCache dataCache) {
-    super(dataCache.getDataConnection(), "Consultation/modification des logins");
+    super(DataCache.getDataConnection(), "Consultation/modification des logins");
     this.service = dataCache.getUserService();
   }
 

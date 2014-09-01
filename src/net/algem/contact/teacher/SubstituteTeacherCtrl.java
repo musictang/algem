@@ -1,7 +1,7 @@
 /*
- * @(#)SubstituteTeacherCtrl.java	2.7.n 22/03/13
+ * @(#)SubstituteTeacherCtrl.java	2.8.w 08/07/14
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -52,7 +52,7 @@ import net.algem.util.ui.*;
  * Substitute teachers management.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.n
+ * @version 2.8.w
  * @since 2.0n
  */
 public class SubstituteTeacherCtrl
@@ -60,8 +60,8 @@ public class SubstituteTeacherCtrl
         implements ActionListener
 {
 
-  private GemDesktop desktop;
-  private DataCache dataCache;
+  private final GemDesktop desktop;
+  private final DataCache dataCache;
   private EstabChoice estabChoice;
   private CourseChoice courseChoice;
   
@@ -184,7 +184,7 @@ public class SubstituteTeacherCtrl
 
   public void load() {
     try {
-      Vector<SubstituteTeacher> v = SubstituteTeacherIO.findAll(dataCache.getDataConnection());
+      Vector<SubstituteTeacher> v = SubstituteTeacherIO.findAll(DataCache.getDataConnection());
       for (int i = 0; i < v.size(); i++) {
         substituteModel.addItem(v.elementAt(i));
       }
@@ -289,7 +289,7 @@ public class SubstituteTeacherCtrl
     r.setFavorite(favorite.isSelected());
     r.setSubstitute((Person) substituteChoice.getSelectedItem());
 
-    SubstituteTeacherIO.update(old, r, dataCache.getDataConnection());
+    SubstituteTeacherIO.update(old, r, DataCache.getDataConnection());
     substituteModel.modItem(n, r);
     clear();
   }
@@ -306,8 +306,8 @@ public class SubstituteTeacherCtrl
     }
     boolean b = favorite.isSelected();
     SubstituteTeacher r = new SubstituteTeacher(estab, c, dp, dpr, j, b);
-    if (null == SubstituteTeacherIO.find(r, dataCache.getDataConnection())) {
-      SubstituteTeacherIO.insert(r, dataCache.getDataConnection());
+    if (null == SubstituteTeacherIO.find(r, DataCache.getDataConnection())) {
+      SubstituteTeacherIO.insert(r, DataCache.getDataConnection());
     } else {
       MessagePopup.information(null, "Ce remplacement exitste déjà");
       return;
@@ -327,7 +327,7 @@ public class SubstituteTeacherCtrl
     try {
       Person t = (Teacher) DataCache.findId(r.getSubstitute().getId(), Model.Teacher);
       Contact c = new Contact(t);
-      ContactIO.complete(c, dataCache.getDataConnection());
+      ContactIO.complete(c, DataCache.getDataConnection());
 //    Contact c = ContactIO.findId(r.getSubstitute().getId(), dataCache.getDataConnection());
       PersonFile f = new PersonFile(c);
       ((PersonFileIO) DataCache.getDao(Model.PersonFile)).complete(f);
@@ -341,7 +341,7 @@ public class SubstituteTeacherCtrl
 
   void suppression(int n) throws SQLException {
     SubstituteTeacher r = (SubstituteTeacher) substituteModel.getItem(n);
-    SubstituteTeacherIO.delete(r, dataCache.getDataConnection());
+    SubstituteTeacherIO.delete(r, DataCache.getDataConnection());
 
     substituteModel.deleteItem(n);
     clear();

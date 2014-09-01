@@ -1,7 +1,7 @@
 /*
- * @(#)RehearsalUtil.java	2.6.a 20/09/12
+ * @(#)RehearsalUtil.java	2.8.w 09/07/14
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,7 +28,7 @@ import net.algem.util.DataConnection;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.6.w
  */
 public class RehearsalUtil
 {
@@ -40,7 +40,7 @@ public class RehearsalUtil
    */
   public static Hour getEndOffpeakHour(DataConnection dc) {
 
-    String end = ConfigUtil.getConf(ConfigKey.OFFPEAK_HOUR.getKey(), dc);
+    String end = ConfigUtil.getConf(ConfigKey.OFFPEAK_HOUR.getKey());
     if (end == null || end.equals("00:00")) {
       return new Hour("17:00"); // default
     } else {

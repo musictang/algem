@@ -1,7 +1,7 @@
 /*
- * @(#)GroupSearchCtrl.java	2.7.a 11/12/12
+ * @(#)GroupSearchCtrl.java	2.8.w 08/07/14
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,6 +27,7 @@ import java.util.Vector;
 import net.algem.config.MusicStyleIO;
 import net.algem.contact.Person;
 import net.algem.contact.WebSiteIO;
+import net.algem.util.DataCache;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
@@ -42,7 +43,7 @@ import net.algem.util.ui.SearchCtrl;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.8.w
  * @since 1.0a 07/07/1999
  */
 public class GroupSearchCtrl
@@ -50,11 +51,11 @@ public class GroupSearchCtrl
         implements GemEventListener
 {
 
-  private GemDesktop desktop;
-  private GemGroupService service;
+  private final GemDesktop desktop;
+  private final GemGroupService service;
 
   public GroupSearchCtrl(GemDesktop _desktop) {
-    super(_desktop.getDataCache().getDataConnection(), null);
+    super(DataCache.getDataConnection(), null);
     desktop = _desktop;
     desktop.addGemEventListener(this);
     service = new GemGroupService(dc);

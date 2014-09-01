@@ -48,7 +48,7 @@ public class HistoRehearsalView extends AbstractHistoRehearsal
   @Override
   public Vector<Schedule> getSchedule(boolean all) {
 
-    String query = " WHERE p.ptype=" + Schedule.MEMBER_SCHEDULE + " AND p.idper=" + idper;
+    String query = " WHERE p.ptype=" + Schedule.MEMBER + " AND p.idper=" + idper;
     if (!all) {
       query += " AND jour BETWEEN '" + datePanel.getStartFr() + "' AND '" + datePanel.getEndFr() + "'";
     }

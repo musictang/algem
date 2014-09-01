@@ -1,7 +1,7 @@
 /*
- * @(#)Employee.java 2.8.n 02/10/13
- * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * @(#)Employee.java 2.8.v 29/05/14
+ *
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,27 +16,30 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 
 package net.algem.contact;
 
+import java.util.List;
+import java.util.Objects;
 import net.algem.planning.DateFr;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.n
+ * @version 2.8.v
  * @since 2.8.m 04/09/13
  */
 public class Employee {
-  
+
   private int idper;
   private String nir;
   private DateFr dateBirth;
   private String placeBirth;
   private String guso;
   private String nationality;
+  private List<Integer> types;
 
   public Employee(int idper) {
     this.idper = idper;
@@ -90,6 +93,14 @@ public class Employee {
     this.nationality = nationality;
   }
 
+  public List<Integer> getTypes() {
+    return types;
+  }
+
+  public void setTypes(List<Integer> types) {
+    this.types = types;
+  }
+
   @Override
   public String toString() {
     return idper + " " + nir;
@@ -122,20 +133,30 @@ public class Employee {
     if ((this.nationality == null) ? (other.nationality != null) : !this.nationality.equals(other.nationality)) {
       return false;
     }
+    if ((this.types == null) ? (other.types != null) : this.types.size() != other.types.size()) {
+      return false;
+    }
+    for(int i = 0; i < types.size(); i++) {
+      if (types.get(i) != other.types.get(i)) {
+        return false;
+      }
+    }
     return true;
   }
 
   @Override
   public int hashCode() {
-    int hash = 7;
-    hash = 59 * hash + this.idper;
-    hash = 59 * hash + (this.nir != null ? this.nir.hashCode() : 0);
-    hash = 59 * hash + (this.dateBirth != null ? this.dateBirth.hashCode() : 0);
-    hash = 59 * hash + (this.placeBirth != null ? this.placeBirth.hashCode() : 0);
-    hash = 59 * hash + (this.guso != null ? this.guso.hashCode() : 0);
+    int hash = 5;
+    hash = 31 * hash + this.idper;
+    hash = 31 * hash + Objects.hashCode(this.nir);
+    hash = 31 * hash + Objects.hashCode(this.dateBirth);
+    hash = 31 * hash + Objects.hashCode(this.placeBirth);
+    hash = 31 * hash + Objects.hashCode(this.guso);
+    hash = 31 * hash + Objects.hashCode(this.nationality);
+    hash = 31 * hash + Objects.hashCode(this.types);
     return hash;
   }
-  
+
   /**
    * Checks if there is no information about insee.
    * @return true if all infos are empty, false if there is at least one info not empty.
@@ -147,5 +168,5 @@ public class Employee {
             && (guso == null || guso.isEmpty())
             && (nationality == null || nationality.isEmpty());
   }
-  
+
 }

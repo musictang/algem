@@ -1,5 +1,5 @@
 /*
- * @(#)DataCache.java	2.8.t 15/04/14
+ * @(#)DataCache.java	2.8.w 09/07/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -34,6 +34,7 @@ import net.algem.billing.Item;
 import net.algem.billing.ItemIO;
 import net.algem.billing.Vat;
 import net.algem.config.*;
+import net.algem.contact.EmployeeTypeIO;
 import net.algem.contact.Person;
 import net.algem.contact.PersonFileIO;
 import net.algem.contact.PersonIO;
@@ -64,7 +65,7 @@ import net.algem.util.model.Model;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.8.w
  * @since 1.0b 03/09/2001
  */
 public class DataCache
@@ -88,6 +89,8 @@ public class DataCache
   private static ActionIO ACTION_IO;
   private static UserIO USER_IO;
   private static ItemIO ITEM_IO;
+  private static EmployeeTypeIO EMPLOYEE_TYPE_IO;
+  private static StudioTypeIO STUDIO_TYPE_IO;
 
   // Cache data
   private static Hashtable<Integer, List<Integer>> TEACHER_INSTRUMENT_CACHE = new Hashtable<Integer, List<Integer>>();
@@ -115,6 +118,8 @@ public class DataCache
   private static GemList<Account> ACCOUNT_LIST;
   private static GemList<Vat> VAT_LIST;
   private static GemList<GemParam> COURSE_CODE_LIST;
+  private static GemList<GemParam> EMPLOYEE_TYPE_LIST;
+  private static GemList<GemParam> STUDIO_TYPE_LIST;
 
   private static Vector<Instrument> instruments;//TODO manage list
   private Vector<CategoryOccup> occupCat;
@@ -136,7 +141,7 @@ public class DataCache
   private DaySchedule daySchedule;
   private Thread monthThread;
 
-  private DataConnection dc;
+  private static DataConnection dc;
   private UserService userService;
 
   private DataCache() {
@@ -169,6 +174,8 @@ public class DataCache
     USER_IO = new UserIO(dc);
     ITEM_IO = new ItemIO(dc);
     COURSE_CODE_IO = new CourseCodeIO(dc);
+    EMPLOYEE_TYPE_IO = new EmployeeTypeIO(dc);
+    STUDIO_TYPE_IO = new StudioTypeIO(dc);
 
     loadMonthStmt = dc.prepareStatement("SELECT " + ScheduleIO.COLUMNS + " FROM planning p WHERE jour >= ? AND jour <= ? ORDER BY p.jour,p.debut");
     loadMonthRangeStmt = dc.prepareStatement(ScheduleRangeIO.getMonthRangeStmt());
@@ -206,7 +213,7 @@ public class DataCache
    *
    * @return a connection
    */
-  public DataConnection getDataConnection() {
+  public static DataConnection getDataConnection() {
     return dc;
   }
 
@@ -249,6 +256,10 @@ public class DataCache
         return COURSE_CODE_LIST;
       case School:
         return SCHOOL_LIST;
+      case EmployeeType:
+        return EMPLOYEE_TYPE_LIST;
+      case StudioType:
+        return STUDIO_TYPE_LIST;
       default: return null;
     }
 
@@ -387,6 +398,9 @@ public class DataCache
           }
         }
         return null;
+      case StudioType:
+        GemParam stype = (GemParam) STUDIO_TYPE_LIST.getItem(id);
+        return stype != null ? stype : STUDIO_TYPE_IO.find(id);
       default:
         return null;
     }
@@ -398,7 +412,8 @@ public class DataCache
 
   /**
    * Adds a new element to the list in dataCache.
-   * @param m
+   * @param <T> GemModel instance
+   * @param m model
    */
   public <T extends GemModel> void add(T m) {
     if (m instanceof Room) {
@@ -716,6 +731,9 @@ public class DataCache
         USER_CACHE.put(u.getId(), u);
       }
 
+      EMPLOYEE_TYPE_LIST = new GemList<GemParam>(EMPLOYEE_TYPE_IO.load());
+      STUDIO_TYPE_LIST = new GemList<GemParam>(STUDIO_TYPE_IO.load());
+
     } catch (SQLException ex) {
       String m = MessageUtil.getMessage("cache.loading.exception");
       GemLogger.logException(m, ex);
@@ -1032,28 +1050,28 @@ public class DataCache
    * @see net.algem.bdio.ConfigIO#findId
    */
   private void setDates() throws ConfigException {
-    String s = ConfigUtil.getConf(ConfigKey.BEGINNING_YEAR.getKey(), dc);
+    String s = ConfigUtil.getConf(ConfigKey.BEGINNING_YEAR.getKey());
     if (s != null) {
       startOfYear = new DateFr(s);
     } else {
       throw new ConfigException(BundleUtil.getLabel("ConfEditor.date.start.exception"));
     }
 
-    s = ConfigUtil.getConf(ConfigKey.BEGINNING_PERIOD.getKey(), dc);
+    s = ConfigUtil.getConf(ConfigKey.BEGINNING_PERIOD.getKey());
     if (s != null) {
       startOfPeriod = new DateFr(s);
     } else {
       throw new ConfigException(BundleUtil.getLabel("ConfEditor.date.start.period.exception"));
     }
 
-    s = ConfigUtil.getConf(ConfigKey.END_YEAR.getKey(), dc);
+    s = ConfigUtil.getConf(ConfigKey.END_YEAR.getKey());
     if (s != null) {
       endOfYear = new DateFr(s);
     } else {
       throw new ConfigException(BundleUtil.getLabel("ConfEditor.date.end.exception"));
     }
 
-    s = ConfigUtil.getConf(ConfigKey.END_PERIOD.getKey(), dc);
+    s = ConfigUtil.getConf(ConfigKey.END_PERIOD.getKey());
     if (s != null) {
       endOfPeriod = new DateFr(s);
     } else {

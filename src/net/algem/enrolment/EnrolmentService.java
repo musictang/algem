@@ -1,5 +1,5 @@
 /*
- * @(#)EnrolmentService.java	2.8.t 16/04/14
+ * @(#)EnrolmentService.java	2.8.w 09/07/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -42,21 +42,21 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.8.w
  * @since 2.4.a 20/04/12
  */
 public class EnrolmentService
         extends GemService
 {
 
-  private RoomIO roomIO;
-  private ActionIO actionIO;
-  private PlanningService planningService;
-  private DataCache dataCache;
+  private final RoomIO roomIO;
+  private final ActionIO actionIO;
+  private final PlanningService planningService;
+  private final DataCache dataCache;
 
   public EnrolmentService(DataCache dataCache) {
     this.dataCache = dataCache;
-    this.dc = dataCache.getDataConnection();
+    this.dc = DataCache.getDataConnection();
     roomIO = (RoomIO) DataCache.getDao(Model.Room);
     actionIO = (ActionIO) DataCache.getDao(Model.Action);
     planningService = new PlanningService(dc);
@@ -67,7 +67,7 @@ public class EnrolmentService
   }
 
   public Room getRoomOnPeriod(int c) throws SQLException {
-    return roomIO.getRoom(c, ConfigUtil.getStartOfPeriod(dc));
+    return roomIO.getRoom(c, ConfigUtil.getStartOfPeriod());
   }
 
   public Room getRoom(int id) throws SQLException {
@@ -106,12 +106,12 @@ public class EnrolmentService
   private int getScheduleType(int courseCode) {
 
     if (courseCode == CourseCodeType.ATP.getId()) {
-      return Schedule.WORKSHOP_SCHEDULE;
+      return Schedule.WORKSHOP;
     }
     if (courseCode == CourseCodeType.STG.getId()) {
-      return Schedule.TRAINING_SCHEDULE;
+      return Schedule.TRAINING;
     }
-    return Schedule.COURSE_SCHEDULE;
+    return Schedule.COURSE;
   }
 
   /**
@@ -127,7 +127,7 @@ public class EnrolmentService
   public Vector<SQLkey> getCoursesFromEstab(int estab, DateFr startDate, CourseModuleInfo courseInfo) throws SQLException {
 
     int code = courseInfo.getCode().getId();
-//    int type = CourseCodeType.ATP.getId() == code ? Schedule.WORKSHOP_SCHEDULE : Schedule.COURSE_SCHEDULE;
+//    int type = CourseCodeType.ATP.getId() == code ? Schedule.WORKSHOP : Schedule.COURSE;
     int type = getScheduleType(courseInfo.getCode().getId());
 
     String query = "SELECT DISTINCT cours.id, cours.titre FROM cours, planning, action, salle"
@@ -172,7 +172,7 @@ public class EnrolmentService
     DateFr end = new DateFr(p.getDate());
     end.incDay(7);
     //XXX et si le reste de la semaine tombe pendant les vacances ?
-//    int type = c.isATP() ? Schedule.WORKSHOP_SCHEDULE : Schedule.COURSE_SCHEDULE;
+//    int type = c.isATP() ? Schedule.WORKSHOP : Schedule.COURSE;
 
     int type = getScheduleType(c.getCode());
     String query = ",salle, action WHERE p.ptype = " + type
@@ -203,7 +203,7 @@ public class EnrolmentService
    */
   public Schedule get1PlanCours(int courseId, DateFr start) {
 
-    String query = " ,action WHERE ptype = " + Schedule.COURSE_SCHEDULE
+    String query = " ,action WHERE ptype = " + Schedule.COURSE
             + " AND jour >= '" + start + "'"
             + " AND p.action = action.id"
             + " AND action.cours = " + courseId + " ORDER BY jour LIMIT 1";
@@ -550,52 +550,6 @@ public class EnrolmentService
       dc.setAutoCommit(true);
     }
   }
-  
-  public void stopCourseFromModule(int member, CourseOrder co, Course c, DateFr from) throws EnrolmentException {
-    String query = "DELETE FROM " + ScheduleRangeIO.TABLE
-            + " WHERE adherent = " + member
-            + " AND idplanning IN ("
-            + " SELECT id FROM planning"
-            + " WHERE jour >= '" + from + "' AND action = " + co.getAction()
-            + ")";
-    try {
-      dc.setAutoCommit(false);
-      dc.executeUpdate(query);
-
-      String label = ((GemParam) DataCache.findId(c.getCode(), Model.CourseCode)).getLabel()
-              + " " + BundleUtil.getLabel("To.define.label");
-
-      Hour timeLength = new Hour(co.getStart().getLength(co.getEnd()));
-
-      // si la demande d'arret est postérieure à la date d'inscription à ce cours
-      if (from.after(co.getDateStart())) {
-        if (!c.isATP()) {
-          co.setDateEnd(from);	// on change la date de fin de l'ancienne commande_cours
-          CourseOrderIO.update(co, dc);// on update l'ancienne commande
-        }
-        
-      } else {// si la demande d'arret est antérieure ou égale à la date d'inscription à ce cours
-        co.setAction(0);
-        co.setTitle(label);
-        co.setStart(new Hour());
-        co.setEnd(timeLength);
-        co.setDay(0);
-        if (c.isATP()) {
-          co.setDateStart(from);
-          co.setDateEnd(dataCache.getEndOfYear());
-          co.setEnd(new Hour());
-        }
-        // on modifie la commande_cours existante
-        CourseOrderIO.update(co, dc);
-      }
-      dc.commit();
-    } catch (SQLException sqe) {
-      dc.rollback();
-      throw new EnrolmentException(sqe.getMessage());
-    } finally {
-      dc.setAutoCommit(true);
-    }
-  }
 
   public void changeHour(int member, CourseOrder co, Course c, DateFr from) throws EnrolmentException {
     String query = "DELETE FROM " + ScheduleRangeIO.TABLE
@@ -625,18 +579,18 @@ public class EnrolmentService
   }
 
   /**
-   * Modifies a course enrolment.
+   * Redefines a course to define.
    *
-   * @param cc course order
+   * @param co course order
    * @param memberId member id
    * @throws EnrolmentException en cas d'erreur SQL
    */
-  public void modifyCourse(CourseOrder cc, int memberId) throws EnrolmentException {
+  public void modifyCourse(CourseOrder co, int memberId) throws EnrolmentException {
 
     try {
       dc.setAutoCommit(false);
-      updateRange(cc, memberId);
-      CourseOrderIO.update(cc, dc);
+      updateRange(co, memberId);
+      CourseOrderIO.update(co, dc);
       dc.commit();
     } catch (SQLException sqe) {
       dc.rollback();
@@ -780,7 +734,7 @@ public class EnrolmentService
    */
   private Schedule get1PlanCourse(Course c, DateFr debut, int estab) {
     //XXX voir pour les ateliers ponctuels
-//    int type = c.isATP() ? Schedule.WORKSHOP_SCHEDULE : Schedule.COURSE_SCHEDULE;
+//    int type = c.isATP() ? Schedule.WORKSHOP : Schedule.COURSE;
 
     int type = getScheduleType(c.getCode());
     String query = " ,salle, action WHERE ptype = " + type
@@ -821,7 +775,7 @@ public class EnrolmentService
   public void delete(Order order) throws Exception {
     OrderIO.delete(order, dc);
   }
-  void stop(ModuleOrder mo) throws EnrolmentException {
+ void stop(ModuleOrder mo) throws EnrolmentException {
     try {
       dc.setAutoCommit(false);
 
@@ -834,7 +788,6 @@ public class EnrolmentService
       dc.setAutoCommit(true);
     }
   }
-    
   void delete(ModuleOrder mo, int member) throws EnrolmentException {
     try {
       dc.setAutoCommit(false);
@@ -851,6 +804,52 @@ public class EnrolmentService
       }
       // suppression de la commande_cours
       CourseOrderIO.deleteByIdModule(mo.getId(), dc);
+      dc.commit();
+    } catch (SQLException sqe) {
+      dc.rollback();
+      throw new EnrolmentException(sqe.getMessage());
+    } finally {
+      dc.setAutoCommit(true);
+    }
+  }
+  
+  public void stopCourseFromModule(int member, CourseOrder co, Course c, DateFr from) throws EnrolmentException {
+    String query = "DELETE FROM " + ScheduleRangeIO.TABLE
+            + " WHERE adherent = " + member
+            + " AND idplanning IN ("
+            + " SELECT id FROM planning"
+            + " WHERE jour >= '" + from + "' AND action = " + co.getAction()
+            + ")";
+    try {
+      dc.setAutoCommit(false);
+      dc.executeUpdate(query);
+
+      String label = ((GemParam) DataCache.findId(c.getCode(), Model.CourseCode)).getLabel()
+              + " " + BundleUtil.getLabel("To.define.label");
+
+      Hour timeLength = new Hour(co.getStart().getLength(co.getEnd()));
+
+      // si la demande d'arret est postérieure à la date d'inscription à ce cours
+      if (from.after(co.getDateStart())) {
+        if (!c.isATP()) {
+          co.setDateEnd(from);	// on change la date de fin de l'ancienne commande_cours
+          CourseOrderIO.update(co, dc);// on update l'ancienne commande
+        }
+        
+      } else {// si la demande d'arret est antérieure ou égale à la date d'inscription à ce cours
+        co.setAction(0);
+        co.setTitle(label);
+        co.setStart(new Hour());
+        co.setEnd(timeLength);
+        co.setDay(0);
+        if (c.isATP()) {
+          co.setDateStart(from);
+          co.setDateEnd(dataCache.getEndOfYear());
+          co.setEnd(new Hour());
+        }
+        // on modifie la commande_cours existante
+        CourseOrderIO.update(co, dc);
+      }
       dc.commit();
     } catch (SQLException sqe) {
       dc.rollback();

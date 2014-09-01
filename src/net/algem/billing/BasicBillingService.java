@@ -1,5 +1,5 @@
 /*
- * @(#)BasicBillingService 2.8.n 26/09/13
+ * @(#)BasicBillingService 2.8.w 09/07/14
  *
  * Copyright 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -39,7 +39,7 @@ import net.algem.util.model.Model;
  * Service class for billing.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.n
+ * @version 2.8.w
  * @since 2.3.a 06/02/12
  */
 public class BasicBillingService
@@ -48,21 +48,22 @@ public class BasicBillingService
 {
 
   private static int DEFAULT_SCHOOL;
-  private ItemIO itemIO;
-  private InvoiceIO invoiceIO;
-  private QuoteIO quotationIO;
-  private DataCache dataCache;
+  private final ItemIO itemIO;
+  private final InvoiceIO invoiceIO;
+  private final QuoteIO quotationIO;
+  private final DataCache dataCache;
 
   /**
    * Creates an instance of BasicBillingService.
+   * @param dataCache
    */
   public BasicBillingService(DataCache dataCache) {
     this.dataCache = dataCache;
-    this.dc = dataCache.getDataConnection();
+    this.dc = DataCache.getDataConnection();
     itemIO = new ItemIO(dc);
     invoiceIO = new InvoiceIO(dc);
     quotationIO = new QuoteIO(dc);
-    String s = ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey(), dc);
+    String s = ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey());
     DEFAULT_SCHOOL = Integer.parseInt(s);
   }
 

@@ -1,5 +1,5 @@
 /*
- * @(#)OldMemberCard.java	2.8.t 15/04/14
+ * @(#)OldMemberCard.java	2.8.w 08/07/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -48,7 +48,7 @@ import net.algem.util.module.GemDesktop;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.8.w
  * @deprecated
  *
  */
@@ -135,14 +135,14 @@ public class OldMemberCard
     adr = adh.getAddress();
     try {
       if (adr == null && member.getPayer() != adh.getId()) {
-        Vector v = AddressIO.findId(member.getPayer(), cache.getDataConnection());
+        Vector<Address> v = AddressIO.findId(member.getPayer(), DataCache.getDataConnection());
         if (v != null && v.size() > 0) {
           adr = (Address) v.elementAt(0);
         }
       }
       tel = adh.getTele();
       if (tel == null && member.getPayer() != adh.getId()) {
-        tel = TeleIO.findId(member.getPayer(), cache.getDataConnection());
+        tel = TeleIO.findId(member.getPayer(), DataCache.getDataConnection());
       }
     } catch (SQLException ex) {
       System.err.println(ex.getMessage());
@@ -163,7 +163,7 @@ public class OldMemberCard
     System.out.println(where);
     Vector<Enrolment> v = null;
     try {
-      v = EnrolmentIO.find(where, cache.getDataConnection()); // recherche des inscriptions
+      v = EnrolmentIO.find(where, DataCache.getDataConnection()); // recherche des inscriptions
     } catch (SQLException ex) {
       System.err.println(ex.getMessage());
     }
