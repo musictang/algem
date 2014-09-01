@@ -20,6 +20,14 @@
  */
 package net.algem.planning.editing;
 
+import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.JCheckBox;
+import net.algem.contact.Note;
+import net.algem.contact.NoteDlg;
+import net.algem.contact.teacher.TeacherActiveChoiceModel;
+import net.algem.contact.teacher.TeacherChoiceModel;
 import net.algem.room.Room;
 import net.algem.room.RoomChoice;
 import net.algem.util.BundleUtil;
@@ -39,10 +47,14 @@ import net.algem.util.ui.GridBagHelper;
  */
 public class ModifPlanRoomView
         extends ModifPlanView
+        implements ActionListener
 {
 
   private GemField before;
   private RoomChoice after;
+  private JCheckBox checkAbsence;
+  private Note noteAbs;
+  private String textAbs;
 
   public ModifPlanRoomView(DataCache _dc, String label) {
     super(_dc, label);
@@ -50,11 +62,18 @@ public class ModifPlanRoomView
     before = new GemField(20);
     before.setEditable(false);
     after = new RoomChoice(dataCache.getList(Model.Room));
-
+    
+    checkAbsence = new JCheckBox("Mémoriser absence");
+    checkAbsence.setBorder(null);
+    checkAbsence.addActionListener(this);
+    after.addActionListener(this);
+    
     gb.add(new GemLabel(BundleUtil.getLabel("Current.room.label")), 0, 2, 1, 1, GridBagHelper.EAST);
     gb.add(before, 1, 2, 3, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("New.room.label")), 0, 3, 1, 1, GridBagHelper.EAST);
     gb.add(after, 1, 3, 1, 1, GridBagHelper.WEST);
+    gb.add(checkAbsence, 1, 4, 3, 1, GridBagHelper.WEST);
+    checkAbsence.setEnabled(false);
   }
 
   @Override
@@ -67,6 +86,31 @@ public class ModifPlanRoomView
   @Override
   public int getId() {
     return after.getKey();
+  }
+  
+  public void loadNoteAbsence () {
+    if (checkAbsence.isSelected()==true) {
+      noteAbs = new Note (textAbs);
+      Frame f = new Frame("Motif Absence");
+      NoteDlg nd = new NoteDlg(f);
+      nd.show();
+    }
+  }
+  
+  @Override
+  public void actionPerformed(ActionEvent evt) {
+    Object src = evt.getSource();
+    if (src == after) {
+      if ((after.getKey() == 8) || (after.getKey() == 21) || (after.getKey() == 27)) {
+       checkAbsence.setEnabled(true);
+      }
+      else {
+        checkAbsence.setEnabled(false);
+      }
+    }
+    else if (src == checkAbsence) {
+      loadNoteAbsence ();
+    }
   }
 
 }

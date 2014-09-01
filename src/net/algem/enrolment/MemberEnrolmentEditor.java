@@ -25,6 +25,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Vector;
@@ -44,6 +45,7 @@ import net.algem.planning.PlanningService;
 import net.algem.planning.editing.ChangeHourCourseDlg;
 import net.algem.planning.editing.ModifPlanEvent;
 import net.algem.planning.editing.StopCourseDlg;
+import net.algem.planning.editing.StopCourseFromModuleDlg;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.GemLogger;
@@ -52,6 +54,7 @@ import net.algem.util.menu.MenuPopupListener;
 import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.*;
+import net.algem.enrolment.ModuleOrderIO;
 
 /**
  * Enrolment editor.
@@ -71,7 +74,8 @@ public class MemberEnrolmentEditor
   private final static String HOUR_MODIF = BundleUtil.getLabel("Course.hour.modification.label");
   private final static String NEW_COURSE = BundleUtil.getLabel("New.course.label");
   private final static String NEW_MODULE = BundleUtil.getLabel("New.module.label");
-  private final static String MODULE_DEL = BundleUtil.getLabel("Module.delete.label");
+  private final static String MODULE_DEL = BundleUtil.getLabel("Module.delete.label");  
+  private final static String MODULE_STOP = BundleUtil.getLabel("Module.stop.label");  
   private final static String NONE_ENROLMENT = MessageUtil.getMessage("enrolment.empty.list");
   private final static String COURSE_DATE = BundleUtil.getLabel("Course.date.modification.label");
 
@@ -85,7 +89,7 @@ public class MemberEnrolmentEditor
   private boolean loaded;
   private boolean validation;
   private CourseEnrolmentDlg courseDlg;
-  private JMenuItem m1, m2, m3, m4, m5, m6, m7;
+  private JMenuItem m1, m2, m3, m4, m5, m6, m7, m8;
   /** New enrolment button. */
   private GemButton btEnrolment;
   private TreePath currentSelection;
@@ -112,6 +116,7 @@ public class MemberEnrolmentEditor
     popup.add(m4 = new JMenuItem(NEW_COURSE));
     popup.add(m5 = new JMenuItem(NEW_MODULE));
     popup.add(m6 = new JMenuItem(MODULE_DEL));
+    popup.add(m8 = new JMenuItem (MODULE_STOP));
 
     m1.addActionListener(this);
     m2.addActionListener(this);
@@ -120,6 +125,7 @@ public class MemberEnrolmentEditor
     m5.addActionListener(this);
     m6.addActionListener(this);
     m7.addActionListener(this);
+    m8.addActionListener(this);
 
     tree = new JTree(new DefaultMutableTreeNode(NONE_ENROLMENT));
     //tree.setCellRenderer(new MyRenderer());//XXX ne fonctionne pas
@@ -177,6 +183,7 @@ public class MemberEnrolmentEditor
       m5.setEnabled(false);
       m6.setEnabled(false);
       m7.setEnabled(true);
+      m8.setEnabled(true); //On peut tout le temps arrêter une formule (si elle l'est déjà, on peut modifier sa date de fin)
     } else {
       m1.setEnabled(false);
       m2.setEnabled(false);
@@ -185,6 +192,7 @@ public class MemberEnrolmentEditor
       m5.setEnabled(true);
       m6.setEnabled(false);
       m7.setEnabled(false);
+      m8.setEnabled(true);
     }
   }
 
@@ -196,6 +204,7 @@ public class MemberEnrolmentEditor
     m5.setEnabled(false);
     m6.setEnabled(true);
     m7.setEnabled(false);
+    m8.setEnabled(true);
   }
 
   @Override
@@ -291,6 +300,11 @@ public class MemberEnrolmentEditor
         return;
       }
       changeDateOfCourseOrder();
+    } else if (s.equals (MODULE_STOP)) {
+      if (currentSelection == null) {
+        return;
+      }
+      stopModule();
     } else if (s.equals(HOUR_MODIF)) {
       if (currentSelection == null) {
         return;
@@ -397,6 +411,43 @@ public class MemberEnrolmentEditor
     co.setCode(cm.getIdCode());// important !
 
     return co;
+  }
+
+  private void stopModule() {
+    StopCourseFromModuleDlg dlg2 = null;
+    Object[] path = currentSelection.getPath();
+    int i = path.length;
+    if (!(path[i - 1] instanceof ModuleEnrolmentNode)) {
+      return;
+    }
+    ModuleEnrolmentNode monode = ((ModuleEnrolmentNode) path[i - 1]);    
+    for (Enumeration e = monode.children(); e.hasMoreElements();) {
+      TreeNode n = (TreeNode) e.nextElement();
+      if(n instanceof CourseEnrolmentNode) {
+        CourseOrder co = ((CourseEnrolmentNode) n).getCourseOrder();
+        try {
+          Course c = planningService.getCourseFromAction(co.getAction());
+          if (c.isUndefined()) {
+            MessagePopup.information(this, MessageUtil.getMessage("course.invalid.choice"));
+            return;
+          }
+          dlg2 = new StopCourseFromModuleDlg(desktop, dossier.getId(), co, c);
+          dlg2.setVisible(true);
+        } catch (SQLException ex) {
+          GemLogger.log(getClass().getName(), "#stopCourse :", ex.getMessage());
+        }
+      }
+    }    
+    ModuleOrder module = monode.getModule();
+    module.setEnd(dlg2.getDateEnd());
+    try {
+        service.stop(module);
+        desktop.postEvent(new EnrolmentUpdateEvent(this, dossier.getId()));
+      } catch (EnrolmentException ex) {
+        MessagePopup.warning(this, ex.getMessage());
+      }
+    
+    //service.pauseModule(module); fonction à créer !
   }
 
   private void stopCourse() {

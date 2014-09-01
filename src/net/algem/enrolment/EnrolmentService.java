@@ -550,6 +550,52 @@ public class EnrolmentService
       dc.setAutoCommit(true);
     }
   }
+  
+  public void stopCourseFromModule(int member, CourseOrder co, Course c, DateFr from) throws EnrolmentException {
+    String query = "DELETE FROM " + ScheduleRangeIO.TABLE
+            + " WHERE adherent = " + member
+            + " AND idplanning IN ("
+            + " SELECT id FROM planning"
+            + " WHERE jour >= '" + from + "' AND action = " + co.getAction()
+            + ")";
+    try {
+      dc.setAutoCommit(false);
+      dc.executeUpdate(query);
+
+      String label = ((GemParam) DataCache.findId(c.getCode(), Model.CourseCode)).getLabel()
+              + " " + BundleUtil.getLabel("To.define.label");
+
+      Hour timeLength = new Hour(co.getStart().getLength(co.getEnd()));
+
+      // si la demande d'arret est postérieure à la date d'inscription à ce cours
+      if (from.after(co.getDateStart())) {
+        if (!c.isATP()) {
+          co.setDateEnd(from);	// on change la date de fin de l'ancienne commande_cours
+          CourseOrderIO.update(co, dc);// on update l'ancienne commande
+        }
+        
+      } else {// si la demande d'arret est antérieure ou égale à la date d'inscription à ce cours
+        co.setAction(0);
+        co.setTitle(label);
+        co.setStart(new Hour());
+        co.setEnd(timeLength);
+        co.setDay(0);
+        if (c.isATP()) {
+          co.setDateStart(from);
+          co.setDateEnd(dataCache.getEndOfYear());
+          co.setEnd(new Hour());
+        }
+        // on modifie la commande_cours existante
+        CourseOrderIO.update(co, dc);
+      }
+      dc.commit();
+    } catch (SQLException sqe) {
+      dc.rollback();
+      throw new EnrolmentException(sqe.getMessage());
+    } finally {
+      dc.setAutoCommit(true);
+    }
+  }
 
   public void changeHour(int member, CourseOrder co, Course c, DateFr from) throws EnrolmentException {
     String query = "DELETE FROM " + ScheduleRangeIO.TABLE
@@ -775,7 +821,20 @@ public class EnrolmentService
   public void delete(Order order) throws Exception {
     OrderIO.delete(order, dc);
   }
+  void stop(ModuleOrder mo) throws EnrolmentException {
+    try {
+      dc.setAutoCommit(false);
 
+      ModuleOrderIO.update(mo, dc);
+    }
+    catch (SQLException sqe) {
+      dc.rollback();
+      throw new EnrolmentException(sqe.getMessage());
+    } finally {
+      dc.setAutoCommit(true);
+    }
+  }
+    
   void delete(ModuleOrder mo, int member) throws EnrolmentException {
     try {
       dc.setAutoCommit(false);

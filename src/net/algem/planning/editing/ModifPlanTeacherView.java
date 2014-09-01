@@ -36,6 +36,22 @@ import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
 import net.algem.util.model.Model;
 import net.algem.util.ui.*;
+import net.algem.contact.Note;
+import net.algem.contact.NoteDlg;
+import net.algem.util.jdesktop.DesktopHandlerException;
+import net.algem.util.jdesktop.DesktopOpenHandler;
+import net.algem.util.module.GemDesktop;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.JDialog;
+import javax.swing.JScrollPane;
+import javax.swing.text.DefaultCaret;
+import net.algem.util.DataConnection;
+import net.algem.util.GemCommand;
+import net.algem.util.GemLogger;
+import net.algem.util.module.GemDesktop;
+import net.algem.util.ui.*;
 
 /**
  * Teacher modification view.
@@ -52,11 +68,16 @@ public class ModifPlanTeacherView
   private GemField before;
   private GemChoice after;
   private JCheckBox checkAll;
+  private JCheckBox checkAbsence;
+  private JCheckBox checkReplacement;
   private SubstituteTeacherChoice substitute;
   private HourRangePanel hourRange;
   private JCheckBox replacement;
   private PlanningService service;
   private ScheduleObject orig;
+  private Note noteAbs;
+  private String textAbs;
+  protected GemDesktop desktop;
 
   public ModifPlanTeacherView(DataCache dataCache, SubstituteTeacherList substitutes, PlanningService service) {
     super(dataCache);
@@ -75,17 +96,29 @@ public class ModifPlanTeacherView
     checkAll = new JCheckBox(BundleUtil.getLabel("Teacher.all.label"));
     checkAll.setBorder(null);
     checkAll.addActionListener(this);
+    //checkAbsence = new JCheckBox(BundleUtil.getLabel("Teacher.notif.absence"));
+    checkAbsence = new JCheckBox("Mémoriser absence");
+    checkAbsence.setBorder(null);
+    checkAbsence.addActionListener(this);
+    //checkReplacement = new JCheckBox(BundleUtil.getLabel("Teacher.notif.replacement"));
+    checkReplacement = new JCheckBox("Mémoriser remplacement");
+    checkReplacement.setBorder(null);
+    checkReplacement.addActionListener(this);
     gb.add(new GemLabel(BundleUtil.getLabel("Hour.label")), 0, 2, 1, 1, GridBagHelper.EAST);
-    gb.add(hourRange, 1, 2, 3, 1, GridBagHelper.WEST);
+    gb.add(hourRange, 1, 2, 3, 1, GridBagHelper.CENTER);
     
     gb.add(new GemLabel(BundleUtil.getLabel("Current.teacher.label")), 0, 3, 1, 1, GridBagHelper.EAST);
     gb.add(before, 1, 3, 3, 1, GridBagHelper.WEST);
+    gb.add(checkAbsence, 1, 4, 3, 1, GridBagHelper.WEST);
     
     
     
-    gb.add(new GemLabel(BundleUtil.getLabel("New.teacher.label")), 0, 4, 1, 1, GridBagHelper.EAST);
-    gb.add(after, 1, 4, 3, 1, GridBagHelper.WEST);
-    gb.add(checkAll, 1, 5, 3, 1, GridBagHelper.WEST);
+    
+    
+    gb.add(new GemLabel(BundleUtil.getLabel("New.teacher.label")), 0, 5, 1, 1, GridBagHelper.EAST);
+    gb.add(after, 1, 5, 3, 1, GridBagHelper.WEST);
+    gb.add(checkReplacement, 1, 6, 5, 2, GridBagHelper.WEST);
+    gb.add(checkAll, 1, 8, 3, 1, GridBagHelper.WEST);
     //Optional display of substitutes
     if (substitutes != null && substitutes.getSize() > 0) {
       replacement = new JCheckBox(BundleUtil.getLabel("Substitute.activate.label"));
@@ -111,6 +144,15 @@ public class ModifPlanTeacherView
     }
 
     before.setText(after.getSelectedItem().toString());
+  }
+  
+  public void loadNoteAbsence () {
+    if (checkAbsence.isSelected()==true) {
+      noteAbs = new Note (textAbs);
+      Frame f = new Frame("Motif Absence");
+      NoteDlg nd = new NoteDlg(f);
+      nd.show();
+    }
   }
 
   /**
@@ -158,6 +200,9 @@ public class ModifPlanTeacherView
       } else {
         after.setModel(new TeacherActiveChoiceModel(dataCache.getList(Model.Teacher), true));
       }
+    }
+    else if (src == checkAbsence) {
+      loadNoteAbsence ();
     }
   }
 

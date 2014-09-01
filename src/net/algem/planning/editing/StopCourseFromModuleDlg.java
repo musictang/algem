@@ -1,5 +1,5 @@
 /*
- * @(#)StopCourseDlg.java	2.8.a 22/04/13
+ * @(#)StopCourseFromModuleDlg.java	2.8.a 22/04/13
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -47,11 +47,11 @@ import net.algem.util.ui.MessagePopup;
  * Dialog for stopping course.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
- * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @author <a href="mailto:damien.loustau@gmail.com">Damien Loustau</a>
+ * @version 2.8.t
  * @since 1.0a 27/09/2001
  */
-public class StopCourseDlg
+public class StopCourseFromModuleDlg
         extends JDialog
         implements ActionListener
 {
@@ -66,8 +66,8 @@ public class StopCourseDlg
   private EnrolmentService service;
 
 
-  public StopCourseDlg(GemDesktop _desktop, int member, CourseOrder courseOrder, Course c) throws SQLException {
-    super(_desktop.getFrame(), "Arret inscription cours", true);//modal
+  public StopCourseFromModuleDlg(GemDesktop _desktop, int member, CourseOrder courseOrder, Course c) throws SQLException {
+    super(_desktop.getFrame(), "Arret inscription formule", true);//modal
     init(_desktop, member, courseOrder, c);
   }
 
@@ -77,24 +77,28 @@ public class StopCourseDlg
     if (evt.getSource() == btCancel) {
     } else if (evt.getSource() == btOk) {
 //      validation = true;
-      stopCourse();
+      stopCourseFromModule();
     }
     close();
   }
 
+  public DateFr getDateEnd()
+  {
+    return checkDate(view.getDateStart());
+  }
   /**
    * Used when right click in the list of enrolment.
    * The course is stopped from the beginning of next week (excepted for the course
    * of type ATP, on one day only, by definition).
    *
    */
-  private void stopCourse() {
+  private void stopCourseFromModule() {
 
     DateFr start = checkDate(view.getDateStart());
 
     setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
     try {
-      service.stopCourse(member, courseOrder, course, start);
+      service.stopCourseFromModule(member, courseOrder, course, start);
       desktop.postEvent(new ModifPlanEvent(this, start, courseOrder.getDateEnd()));
       desktop.postEvent(new EnrolmentUpdateEvent(this, member));
     } catch (EnrolmentException ex) {
@@ -115,7 +119,7 @@ public class StopCourseDlg
    * @param start date
    * @return a date
    */
-  private DateFr checkDate(DateFr start) {
+  public DateFr checkDate(DateFr start) {
     DateFr d  = start;
     Calendar cal = Calendar.getInstance();
     cal.setTime(d.getDate());
