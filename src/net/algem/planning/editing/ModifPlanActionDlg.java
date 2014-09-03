@@ -1,7 +1,7 @@
 /*
- * @(#)ModifPlanActionDlg.java 2.8.t 02/05/14
+ * @(#)ModifPlanActionDlg.java 2.8.w 02/09/14
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -30,7 +30,7 @@ import net.algem.util.module.GemDesktop;
  * Dialog for changing planification parameters.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.8.w
  * @since 2.5.a 22/06/12
  */
 class ModifPlanActionDlg
@@ -48,6 +48,7 @@ class ModifPlanActionDlg
     pv = new ModifPlanActionView(desktop.getDataCache(), a);
     dlg = new JDialog(parent, true);
     addContent(pv, null);
+    dlg.setSize(320, 200);
   }
 
   @Override

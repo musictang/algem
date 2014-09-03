@@ -396,7 +396,7 @@ public class DayPlanView
   
   private void showSubSubLabel(ScheduleRangeObject p, int x) {
     int length = p.getStart().getLength(p.getEnd());
-    if (length > 30) {
+    if (length > 45) {
       int y = setY(p.getEnd().toMinutes()) - (fm.getHeight() /2);
       String subSubLabel = p.getMember() != null ? p.getMember().getCommunName() : "";
       drawSubLabel(subSubLabel, x, y , step_x);

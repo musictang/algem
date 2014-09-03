@@ -65,27 +65,23 @@ public class StopCourseFromModuleDlg
   private GemButton btCancel;
   private EnrolmentService service;
 
-
   public StopCourseFromModuleDlg(GemDesktop _desktop, int member, CourseOrder courseOrder, Course c) throws SQLException {
     super(_desktop.getFrame(), "Arret inscription formule", true);//modal
     init(_desktop, member, courseOrder, c);
   }
 
-  
   @Override
   public void actionPerformed(ActionEvent evt) {
-    if (evt.getSource() == btCancel) {
-    } else if (evt.getSource() == btOk) {
-//      validation = true;
+    if (evt.getSource() == btOk) {
       stopCourseFromModule();
     }
     close();
   }
 
-  public DateFr getDateEnd()
-  {
+  public DateFr getDateEnd() {
     return checkDate(view.getDateStart());
   }
+
   /**
    * Used when right click in the list of enrolment.
    * The course is stopped from the beginning of next week (excepted for the course
@@ -108,26 +104,23 @@ public class StopCourseFromModuleDlg
     }
 
   }
-  
-  
 
   /**
    * Checks the start date when stopping a course.
    * If the selected day is not a Sunday and if the modification is confirmed,
    * the date is automatically modified to the next Sunday.
-   * 
+   *
    * @param start date
    * @return a date
    */
   public DateFr checkDate(DateFr start) {
-    DateFr d  = start;
+    DateFr d = start;
     Calendar cal = Calendar.getInstance();
     cal.setTime(d.getDate());
     if (cal.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
       if (MessagePopup.confirm(null,
-                                MessageUtil.getMessage("stopping.course.date.confirmation"),
-                                BundleUtil.getLabel("Confirmation.title"))
-                                ) {
+              MessageUtil.getMessage("stopping.course.date.confirmation"),
+              BundleUtil.getLabel("Confirmation.title"))) {
         while (cal.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
           cal.add(Calendar.DAY_OF_WEEK, 1);
         }
@@ -137,13 +130,13 @@ public class StopCourseFromModuleDlg
     return d;
   }
 
-	private void init(GemDesktop _desktop, int member, CourseOrder co, Course c) throws SQLException {
+  private void init(GemDesktop _desktop, int member, CourseOrder co, Course c) throws SQLException {
     desktop = _desktop;
     service = new EnrolmentService(desktop.getDataCache());
     courseOrder = co;
     course = c;
     this.member = member;
-    
+
     view = new StopCourseView(course.getTitle());
 
     btOk = new GemButton(GemCommand.VALIDATION_CMD);
@@ -152,7 +145,7 @@ public class StopCourseFromModuleDlg
     btCancel.addActionListener(this);
 
     JPanel buttons = new JPanel();
-    buttons.setLayout(new GridLayout(1,1));
+    buttons.setLayout(new GridLayout(1, 1));
     buttons.add(btOk);
     buttons.add(btCancel);
 
@@ -167,7 +160,7 @@ public class StopCourseFromModuleDlg
     setVisible(false);
     dispose();
   }
-  
+
   @Override
   public String toString() {
     return getClass().getName();

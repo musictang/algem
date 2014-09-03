@@ -1,5 +1,5 @@
 /*
- * @(#)ModifPlanActionView.java 2.8.t 16/04/14
+ * @(#)ModifPlanActionView.java 2.8.w 02/09/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -21,6 +21,7 @@
 
 package net.algem.planning.editing;
 
+import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.sql.SQLException;
@@ -36,7 +37,7 @@ import net.algem.util.ui.*;
  * Modification of status, level, age range and number of places.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.8.w
  * @since 2.5.a 22/06/12
  */
 class ModifPlanActionView
@@ -48,26 +49,33 @@ class ModifPlanActionView
   private GemNumericField places;
 
   public ModifPlanActionView(DataCache dataCache, Action a) throws SQLException {
-    status = new GemParamChoice(new GemChoiceModel<Status>(dataCache.getList(Model.Status)));
+    status = new GemParamChoice(new GemChoiceModel<Status>(dataCache.getList(Model.Status))); 
     status.setKey(a.getStatus().getId());
     level = new GemParamChoice(new GemChoiceModel<Level>(dataCache.getList(Model.Level)));
+    
     level.setKey(a.getLevel().getId());
     ageRange = new GemParamChoice(new GemChoiceModel<AgeRange>(dataCache.getList(Model.AgeRange)));
     ageRange.setKey(a.getAgeRange().getId());
+    
     places = new GemNumericField(2);
     places.setText(String.valueOf(a.getPlaces()));
+    
+    Dimension prefSize = new Dimension(ageRange.getPreferredSize().width, ageRange.getPreferredSize().height);
+    status.setPreferredSize(prefSize);
+    level.setPreferredSize(prefSize);
+    ageRange.setPreferredSize(prefSize);
 
     GemPanel p = new GemPanel(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(p);
     gb.insets = new Insets(4, 2, 4, 2);
-    gb.add(new GemLabel(BundleUtil.getLabel("Status.label")), 0, 0, 1, 1, GridBagHelper.EAST);
-    gb.add(status, 1, 0, 3, 1, GridBagHelper.WEST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Level.label")), 0, 1, 1, 1, GridBagHelper.EAST);
-    gb.add(level, 1, 1, 3, 1, GridBagHelper.WEST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Menu.age.range.label")), 0, 2, 1, 1, GridBagHelper.EAST);
-    gb.add(ageRange, 1, 2, 3, 1, GridBagHelper.WEST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Place.number.label")), 0, 3, 1, 1, GridBagHelper.EAST);
-    gb.add(places, 1, 3, 3, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Status.label")), 0, 0, 1, 1, GridBagHelper.WEST);
+    gb.add(status, 1, 0, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Level.label")), 0, 1, 1, 1, GridBagHelper.WEST);
+    gb.add(level, 1, 1, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Menu.age.range.label")), 0, 2, 1, 1, GridBagHelper.WEST);
+    gb.add(ageRange, 1, 2, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Place.number.label")), 0, 3, 1, 1, GridBagHelper.WEST);
+    gb.add(places, 1, 3, 1, 1, GridBagHelper.WEST);
 
     add(p);
   }

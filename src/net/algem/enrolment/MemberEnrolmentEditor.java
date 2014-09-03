@@ -682,7 +682,7 @@ public class MemberEnrolmentEditor
           dlg2 = new StopCourseFromModuleDlg(desktop, dossier.getId(), co, c);
           dlg2.setVisible(true);
         } catch (SQLException ex) {
-          GemLogger.log(getClass().getName(), "#stopCourse :", ex.getMessage());
+          GemLogger.log(getClass().getName(), "#stopModule :", ex.getMessage());
         }
       }
     }    

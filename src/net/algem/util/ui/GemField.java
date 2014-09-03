@@ -1,7 +1,7 @@
 /*
- * @(#)GemField.java	2.6.d 08/11/12
+ * @(#)GemField.java	2.8.w 02/09/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,11 +20,14 @@
  */
 package net.algem.util.ui;
 
+import java.awt.Color;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.Vector;
+import javax.swing.JTextField;
+import javax.swing.border.Border;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
@@ -34,7 +37,7 @@ import javax.swing.text.PlainDocument;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.d
+ * @version 2.8.w
  * @since 1.0a 07/07/1999
  *
  */
@@ -53,6 +56,8 @@ public class GemField
    * Main constructor.
    * If {@code _histo} is true, a focusListener is added.
    * By default, history contains 20 elements.
+   * @param _histo
+   * @param length
    */
   public GemField(boolean _histo, int length) {
     super(length);
@@ -64,7 +69,10 @@ public class GemField
     addKeyListener(this);
   }
 
-  /** Constructs a field with history. */
+  /** 
+   * Constructs a field with history.
+   * @param _histo 
+   */
   public GemField(boolean _histo) {
     this(_histo, 5);
   }
@@ -76,11 +84,12 @@ public class GemField
   public GemField(int length) {
     this(false, length);
   }
-  
+
   /**
    * Constructs field with max input length of {@code limit}.
+   *
    * @param length
-   * @param limit 
+   * @param limit
    * @since 2.6.d
    */
   public GemField(int length, final int limit) {
@@ -97,15 +106,17 @@ public class GemField
     });
   }
 
-  /** 
+  /**
    * Constructs a field with a default text without history.
+   * @param text
+   * @param length
    */
   public GemField(String text, int length) {
     this(false, length);
     setText(text);
     //setFont(new Font("Helvetica",Font.PLAIN,12));
   }
-  
+
   public GemField(boolean _histo, String text, int length) {
     this(_histo, length);
     setText(text);
@@ -119,8 +130,9 @@ public class GemField
 
   /**
    * Length of the field depends on the {@code text} length.
+   *
    * @param _histo
-   * @param text 
+   * @param text
    */
   public GemField(boolean _histo, String text) {
     this(_histo, text.length());
@@ -129,6 +141,7 @@ public class GemField
 
   /**
    * Adds a text with history management.
+   * @param text
    */
   @Override
   public void setText(String text) {
@@ -169,9 +182,10 @@ public class GemField
   public void keyReleased(KeyEvent keyevent) {
   }
 
-  /** 
+  /**
    * History recall when key pressed (UP, DOWN).
    * With down, last element is retrieved.
+   * @param keyevent
    */
   @Override
   public void keyPressed(KeyEvent keyevent) {
@@ -193,5 +207,14 @@ public class GemField
         idx++;
       }
     }
+  }
+
+  public static Border getDefaultBorder() {
+    JTextField tx = new JTextField();
+    return tx.getBorder();
+  }
+
+  public static Color getDefaultBorderColor() {
+    return new JTextField().getBackground().darker();
   }
 }

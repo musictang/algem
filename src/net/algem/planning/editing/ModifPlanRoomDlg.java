@@ -1,7 +1,7 @@
 /*
- * @(#)ModifPlanRoomDlg.java	2.6.a 21/09/12
+ * @(#)ModifPlanRoomDlg.java	2.8.w 02/09/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -34,25 +34,24 @@ import net.algem.util.MessageUtil;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.w
  * @since 1.0a 07/07/1999
  */
 public class ModifPlanRoomDlg
         extends ModifPlanDlg
 {
 
-  private DataCache dataCache;
-  private Date date;
   private int room;
   private ModifPlanRoomView pv;
 
-  public ModifPlanRoomDlg(Frame f, String t, DataCache dc) {
+  public ModifPlanRoomDlg(Frame f, String t, DataCache dataCache) {
     super(f);
-    dataCache = dc;
     pv = new ModifPlanRoomView(dataCache, t);
     validation = false;
     dlg = new JDialog(f, true);
+    
     addContent(pv, "Schedule.room.modification.title");
+    dlg.setSize(400,280);
   }
 
   @Override
@@ -89,7 +88,6 @@ public class ModifPlanRoomDlg
   }
 
   void setDate(Date d) {
-    date = d;
     pv.setStart(d);
     pv.setEnd(d);
   }

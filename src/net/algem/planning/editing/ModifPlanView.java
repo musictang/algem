@@ -1,7 +1,7 @@
 /*
- * @(#)ModifPlanView.java	2.6.a 21/09/12
+ * @(#)ModifPlanView.java	2.8.w 02/09/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -42,41 +42,44 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.w
  * @since 1.0a 07/07/1999
  */
 public abstract class ModifPlanView
         extends GemPanel
 {
 
+  public final static Border DEFAULT_BORDER = BorderFactory.createEmptyBorder(10, 10, 10, 10);
+  protected final static int DEF_FIELD_WIDTH = 22;
+  
   protected DataCache dataCache;
   protected GridBagHelper gb;
   protected int id;
   protected GemField courseLabel;
   protected DateRangePanel dateRange;
   protected ActionListener actionListener;
-  public final static Border DEFAULT_BORDER = BorderFactory.createEmptyBorder(10, 10, 10, 10);
+  
 
-  public ModifPlanView(DataCache _dc) {
-    this(_dc, BundleUtil.getLabel("Schedule.default.modification.label"));
+  public ModifPlanView(DataCache dataCache) {
+    this(dataCache, BundleUtil.getLabel("Schedule.default.modification.label"));
   }
 
-  public ModifPlanView(DataCache _dc, String label) {
+  public ModifPlanView(DataCache dataCache, String label) {
 
-    dataCache = _dc;
+    this.dataCache = dataCache;
     setBorder(DEFAULT_BORDER);
-    courseLabel = new GemField(25);
+    courseLabel = new GemField(DEF_FIELD_WIDTH);
     courseLabel.setEditable(false);
 
-    dateRange = new DateRangePanel(DateRangePanel.RANGE_DATE, BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+    dateRange = new DateRangePanel(DateRangePanel.RANGE_DATE, GemField.getDefaultBorder());
 
     GemPanel p = new GemPanel();
     p.setLayout(new GridBagLayout());
     gb = new GridBagHelper(p);
     gb.insets = new Insets(4, 2, 4, 2);
-    gb.add(new GemLabel(label), 0, 0, 1, 1, GridBagHelper.EAST);
+    gb.add(new GemLabel(label), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(courseLabel, 1, 0, 3, 1, GridBagHelper.WEST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Date.From.label")), 0, 1, 1, 1, GridBagHelper.EAST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Date.From.label")), 0, 1, 1, 1, GridBagHelper.WEST);
     gb.add(dateRange, 1, 1, 3, 1, GridBagHelper.WEST);
 
     add(p);

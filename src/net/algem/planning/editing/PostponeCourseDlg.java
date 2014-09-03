@@ -1,7 +1,7 @@
 /*
- * @(#)PostponeCourseDlg.java	2.8.g 31/05/13
+ * @(#)PostponeCourseDlg.java	2.8.w 02/09/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -39,7 +39,7 @@ import net.algem.util.module.GemDesktop;
  * Dialog for course time modification.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.g
+ * @version 2.8.w
  *
  */
 public class PostponeCourseDlg
@@ -59,6 +59,7 @@ public class PostponeCourseDlg
     validation = false;
     dlg = new JDialog(desktop.getFrame(), true);
     addContent(pv, titleKey);
+    dlg.setSize(400,280);
   }
 
   @Override

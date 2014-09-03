@@ -1,7 +1,7 @@
 /*
- * @(#)ModifPlanTeacherView.java	2.8.k 25/07/13
+ * @(#)ModifPlanTeacherView.java	2.8.w 02/09/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,8 +20,8 @@
  */
 package net.algem.planning.editing;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
@@ -32,23 +32,12 @@ import net.algem.course.Course;
 import net.algem.planning.*;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
-import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
 import net.algem.util.model.Model;
-import net.algem.util.ui.*;
-import net.algem.contact.Note;
-import net.algem.contact.NoteDlg;
-import net.algem.util.jdesktop.DesktopHandlerException;
-import net.algem.util.jdesktop.DesktopOpenHandler;
-import net.algem.util.module.GemDesktop;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.JDialog;
-import javax.swing.JScrollPane;
-import javax.swing.text.DefaultCaret;
-import net.algem.util.DataConnection;
-import net.algem.util.GemCommand;
+import javax.swing.Box;
+import javax.swing.JPanel;
 import net.algem.util.GemLogger;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.*;
@@ -58,7 +47,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.k
+ * @version 2.8.w
  */
 public class ModifPlanTeacherView
         extends ModifPlanView
@@ -75,19 +64,22 @@ public class ModifPlanTeacherView
   private JCheckBox replacement;
   private PlanningService service;
   private ScheduleObject orig;
-  private Note noteAbs;
-  private String textAbs;
+  private GemField noteAbs;
+  private GemLabel noteLabel;
   protected GemDesktop desktop;
 
   public ModifPlanTeacherView(DataCache dataCache, SubstituteTeacherList substitutes, PlanningService service) {
     super(dataCache);
     this.service = service;
-    before = new GemField(20);
+    before = new GemField(DEF_FIELD_WIDTH);
     before.setEditable(false);
-    after = new TeacherChoice(dataCache.getList(Model.Teacher));
     
+    after = new TeacherChoice(dataCache.getList(Model.Teacher));
+    Dimension prefSize = new Dimension(before.getPreferredSize().width, after.getPreferredSize().height);
+    after.setPreferredSize(prefSize);
     hourRange = new HourRangePanel();
-    hourRange.addMouseListener(new MouseAdapter() {
+    hourRange.addMouseListener(new MouseAdapter()
+    {
       @Override
       public void mouseExited(MouseEvent e) {
         checkRange();
@@ -96,40 +88,42 @@ public class ModifPlanTeacherView
     checkAll = new JCheckBox(BundleUtil.getLabel("Teacher.all.label"));
     checkAll.setBorder(null);
     checkAll.addActionListener(this);
-    //checkAbsence = new JCheckBox(BundleUtil.getLabel("Teacher.notif.absence"));
-    checkAbsence = new JCheckBox("Mémoriser absence");
-    checkAbsence.setBorder(null);
-    checkAbsence.addActionListener(this);
-    //checkReplacement = new JCheckBox(BundleUtil.getLabel("Teacher.notif.replacement"));
-    checkReplacement = new JCheckBox("Mémoriser remplacement");
-    checkReplacement.setBorder(null);
-    checkReplacement.addActionListener(this);
-    gb.add(new GemLabel(BundleUtil.getLabel("Hour.label")), 0, 2, 1, 1, GridBagHelper.EAST);
-    gb.add(hourRange, 1, 2, 3, 1, GridBagHelper.CENTER);
-    
-    gb.add(new GemLabel(BundleUtil.getLabel("Current.teacher.label")), 0, 3, 1, 1, GridBagHelper.EAST);
-    gb.add(before, 1, 3, 3, 1, GridBagHelper.WEST);
-    gb.add(checkAbsence, 1, 4, 3, 1, GridBagHelper.WEST);
-    
-    
-    
-    
-    
-    gb.add(new GemLabel(BundleUtil.getLabel("New.teacher.label")), 0, 5, 1, 1, GridBagHelper.EAST);
-    gb.add(after, 1, 5, 3, 1, GridBagHelper.WEST);
-    gb.add(checkReplacement, 1, 6, 5, 2, GridBagHelper.WEST);
-    gb.add(checkAll, 1, 8, 3, 1, GridBagHelper.WEST);
+
+    gb.add(new GemLabel(BundleUtil.getLabel("Hour.label")), 0, 2, 1, 1, GridBagHelper.WEST);
+    gb.add(hourRange, 1, 2, 1, 1, GridBagHelper.WEST);
+
+    gb.add(new GemLabel(BundleUtil.getLabel("Current.teacher.label")), 0, 3, 1, 1, GridBagHelper.WEST);
+    gb.add(before, 1, 3, 1, 1, GridBagHelper.WEST);
+
+    gb.add(new GemLabel(BundleUtil.getLabel("New.teacher.label")), 0, 5, 1, 1, GridBagHelper.WEST);
+    gb.add(after, 1, 5, 1, 1, GridBagHelper.WEST);
+
+    gb.add(checkAll, 1, 6, 1, 1, GridBagHelper.WEST);
     //Optional display of substitutes
     if (substitutes != null && substitutes.getSize() > 0) {
       replacement = new JCheckBox(BundleUtil.getLabel("Substitute.activate.label"));
       replacement.setBorder(null);
       replacement.addActionListener(this);
       substitute = new SubstituteTeacherChoice(substitutes);
+      substitute.setPreferredSize(prefSize);
       substitute.setEnabled(false);
-      gb.add(replacement, 1, 6, 3, 1, GridBagHelper.WEST);
-      gb.add(new GemLabel(BundleUtil.getLabel("Substitute.label")), 0, 7, 1, 1, GridBagHelper.EAST);
-      gb.add(substitute, 1, 7, 3, 1, GridBagHelper.WEST);
+      
+      gb.add(replacement, 1, 7, 1, 1, GridBagHelper.WEST);
+      gb.add(new GemLabel(BundleUtil.getLabel("Substitute.label")), 0, 8, 1, 1, GridBagHelper.WEST);
+      gb.add(substitute, 1, 8, 1, 1, GridBagHelper.WEST);
     }
+    checkAbsence = new JCheckBox(BundleUtil.getLabel("Teacher.notif.absence"));
+    checkAbsence.setBorder(null);
+    checkAbsence.addActionListener(this);
+
+    checkReplacement = new JCheckBox(BundleUtil.getLabel("Teacher.notif.replacement"));
+    checkReplacement.setBorder(null);
+    checkReplacement.addActionListener(this);
+    
+    gb.add(Box.createVerticalStrut(10), 0, 9, 2, 1, GridBagHelper.WEST);
+    gb.add(checkAbsence, 0, 10, 2, 1, GridBagHelper.WEST);
+    gb.add(checkReplacement, 0, 12, 2, 1, GridBagHelper.WEST);
+
   }
 
   @Override
@@ -145,19 +139,11 @@ public class ModifPlanTeacherView
 
     before.setText(after.getSelectedItem().toString());
   }
-  
-  public void loadNoteAbsence () {
-    if (checkAbsence.isSelected()==true) {
-      noteAbs = new Note (textAbs);
-      Frame f = new Frame("Motif Absence");
-      NoteDlg nd = new NoteDlg(f);
-      nd.show();
-    }
-  }
 
   /**
    * Gets the selected teacher id or substitute id
    * if the list of substitutes is activated.
+   *
    * @return a teacher id
    */
   @Override
@@ -168,20 +154,20 @@ public class ModifPlanTeacherView
       return after.getKey();
     }
   }
-  
+
   void setTime(ScheduleObject s) {
     orig = s;
     hourRange.setStart(s.getStart());
     hourRange.setEnd(s.getEnd());
-    if (s instanceof CourseSchedule &&  ((Course) s.getActivity()).isCollective()) {
+    if (s instanceof CourseSchedule && ((Course) s.getActivity()).isCollective()) {
       hourRange.setEditable(false);
     }
   }
-  
+
   Hour getHourStart() {
     return hourRange.getStart();
   }
-  
+
   Hour getHourEnd() {
     return hourRange.getEnd();
   }
@@ -192,22 +178,21 @@ public class ModifPlanTeacherView
     if (src == replacement) {
       substitute.setEnabled(withReplacement());
       after.setEnabled(!withReplacement());
-    }
-    // afficher tous les profs ou seulement les actifs
+    } // afficher tous les profs ou seulement les actifs
     else if (src == checkAll) {
       if (((JCheckBox) src).isSelected()) {
         after.setModel(new TeacherChoiceModel(dataCache.getList(Model.Teacher)));
       } else {
         after.setModel(new TeacherActiveChoiceModel(dataCache.getList(Model.Teacher), true));
       }
-    }
-    else if (src == checkAbsence) {
-      loadNoteAbsence ();
+    } else if (src == checkAbsence) {
+      loadNoteAbsence();
     }
   }
 
   /**
    * Specifies if the list of substitutes is activated.
+   *
    * @return checkbox selection
    */
   private boolean withReplacement() {
@@ -217,14 +202,25 @@ public class ModifPlanTeacherView
     return false;
   }
   
+  private AbsenceNotification getMemo() {
+    AbsenceNotification memo = null;
+    if (checkAbsence.isSelected() || checkReplacement.isSelected()) {
+      memo = new AbsenceNotification();
+      memo.setAbsence(checkAbsence.isSelected());
+      memo.setReplacement(checkReplacement.isSelected());
+      memo.setNote(noteAbs == null ? null : noteAbs.getText().trim());
+    }
+    return memo;
+  }
+
   /**
    * Checks range on the fly.
    */
   void checkRange() {
-    if(!hourRange.isEditable()) {
+    if (!hourRange.isEditable()) {
       return;
     }
-    
+
     try {
       ScheduleObject range = new CourseSchedule();
       range.setStart(hourRange.getStart());
@@ -233,15 +229,41 @@ public class ModifPlanTeacherView
       if (v != null && v.size() > 0) {
         MessagePopup.warning(this, MessageUtil.getMessage("invalid.time.slot"));
         resetRange();
-      } 
+      }
     } catch (SQLException ex) {
       GemLogger.log(ex.getMessage());
       resetRange();
     }
   }
-  
+
   private void resetRange() {
     hourRange.setStart(orig.getStart());
     hourRange.setEnd(orig.getEnd());
+  }
+  
+  /**
+   * Adds or remove a note component depending on the state of {@code checkAbsence}.
+   */
+  private void loadNoteAbsence() {
+    if (checkAbsence.isSelected()) {
+      if (noteAbs == null) {
+        noteAbs = new GemField(DEF_FIELD_WIDTH);
+        noteLabel = new GemLabel(BundleUtil.getLabel("Reason.label"));
+        gb.add(noteLabel, 0, 11, 1, 1, GridBagHelper.WEST);
+        gb.add(noteAbs, 1, 11, 1, 1, GridBagHelper.WEST);
+        revalidate();
+      } 
+    } else {
+      if (noteAbs != null) {
+        Component c = gb.getContainer();
+        if (c instanceof JPanel) {
+          ((JPanel) gb.getContainer()).remove(noteLabel);
+          ((JPanel) gb.getContainer()).remove(noteAbs);
+          noteLabel = null;
+          noteAbs = null;
+          revalidate();
+        }
+      }
+    }
   }
 }

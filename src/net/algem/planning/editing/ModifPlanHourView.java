@@ -20,6 +20,11 @@
  */
 package net.algem.planning.editing;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import javax.swing.BorderFactory;
+import javax.swing.border.Border;
+import javax.swing.border.LineBorder;
 import net.algem.planning.Hour;
 import net.algem.planning.HourRangePanel;
 import net.algem.util.BundleUtil;
@@ -41,15 +46,22 @@ public class ModifPlanHourView
         extends ModifPlanView
 {
 
-  private GemField before;
+  private HourRangePanel before;
   private HourRangePanel after;
 
-  public ModifPlanHourView(DataCache _dc, String label) {
-    super(_dc, label);
+  public ModifPlanHourView(DataCache dataCache, String label) {
+    super(dataCache, label);
 
-    before = new GemField(20);
+//    before = new GemField(DEF_FIELD_WIDTH);
+    before = new HourRangePanel();
+//    if (courseLabel.getBorder() instanceof LineBorder) {
+//      LineBorder b = (LineBorder) courseLabel.getBorder();
+      before.setBorder(GemField.getDefaultBorder());
+//    }LineBorder
+//    before.setBorder(BorderFactory.createLineBorder(courseLabel.getBorder());
     before.setEditable(false);
     after = new HourRangePanel();
+//    before.setPreferredSize(new Dimension(after.getWidth(), before.getPreferredSize().height));
 
     gb.add(new GemLabel(BundleUtil.getLabel("Current.hour.label")), 0, 2, 1, 1, GridBagHelper.WEST);
     gb.add(before, 1, 2, 2, 1, GridBagHelper.WEST);
@@ -58,8 +70,10 @@ public class ModifPlanHourView
   }
 
   void setHour(Hour start, Hour end) {
-    before.setText(BundleUtil.getLabel("Hour.From.label") + " " 
-            + start + " " + BundleUtil.getLabel("Hour.From.label") + " " + end);
+//    before.setText(BundleUtil.getLabel("Hour.From.label") + " " 
+//            + start + " " + BundleUtil.getLabel("Hour.To.label") + " " + end);
+    before.setStart(start);
+    before.setEnd(end);
     after.setStart(start);
     after.setEnd(end);
   }

@@ -66,9 +66,9 @@ public class StopCourseDlg
   private EnrolmentService service;
 
 
-  public StopCourseDlg(GemDesktop _desktop, int member, CourseOrder courseOrder, Course c) throws SQLException {
-    super(_desktop.getFrame(), "Arret inscription cours", true);//modal
-    init(_desktop, member, courseOrder, c);
+  public StopCourseDlg(GemDesktop desktop, int member, CourseOrder courseOrder, Course c) throws SQLException {
+    super(desktop.getFrame(), "Arret inscription cours", true);//modal
+    init(desktop, member, courseOrder, c);
   }
 
   
@@ -76,7 +76,6 @@ public class StopCourseDlg
   public void actionPerformed(ActionEvent evt) {
     if (evt.getSource() == btCancel) {
     } else if (evt.getSource() == btOk) {
-//      validation = true;
       stopCourse();
     }
     close();
@@ -133,8 +132,8 @@ public class StopCourseDlg
     return d;
   }
 
-	private void init(GemDesktop _desktop, int member, CourseOrder co, Course c) throws SQLException {
-    desktop = _desktop;
+	private void init(GemDesktop desktop, int member, CourseOrder co, Course c) throws SQLException {
+    this.desktop = desktop;
     service = new EnrolmentService(desktop.getDataCache());
     courseOrder = co;
     course = c;

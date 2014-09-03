@@ -1,7 +1,7 @@
 /*
- * @(#)ChangeHourCourseView.java	2.6.a 21/09/12
+ * @(#)ChangeHourCourseView.java	2.8.w 02/09/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,6 +20,7 @@
  */
 package net.algem.planning.editing;
 
+import java.awt.Dimension;
 import java.util.Date;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -28,6 +29,7 @@ import net.algem.planning.DateFrField;
 import net.algem.planning.Hour;
 import net.algem.planning.HourField;
 import net.algem.util.BundleUtil;
+import net.algem.util.ui.GemLabel;
 import net.algem.util.ui.GridBagHelper;
 
 /**
@@ -35,7 +37,7 @@ import net.algem.util.ui.GridBagHelper;
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.w
  * @since 1.0a 02/09/2001
  */
 public class ChangeHourCourseView
@@ -47,9 +49,9 @@ public class ChangeHourCourseView
   private HourField hour;
   private JLabel courseLabel;
 
-  public ChangeHourCourseView(String _courseLabel, Hour _start, Hour _end) {
-    start = _start;
-    end = _end;
+  public ChangeHourCourseView(String label, Hour start, Hour end) {
+    this.start = start;
+    this.end = end;
 
     setLayout(new java.awt.GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
@@ -57,10 +59,12 @@ public class ChangeHourCourseView
 
     dateStart = new DateFrField(new Date());
     hour = new HourField();
-    courseLabel = new JLabel(_courseLabel);
+    this.courseLabel = new JLabel(label);
 
+    GemLabel currentTime = new GemLabel(BundleUtil.getLabel("Hour.label")  + " [" + start + "-" + end + "]");
+    currentTime.setPreferredSize(new Dimension(courseLabel.getPreferredSize().width, currentTime.getPreferredSize().height));
     gb.add(new JLabel(BundleUtil.getLabel("Course.label")), 0, 0, 1, 1, GridBagHelper.WEST);
-    gb.add(new JLabel(BundleUtil.getLabel("Hour.label")  + " [" + start + "-" + end + "]"), 0, 1, 1, 1, GridBagHelper.WEST);
+    gb.add(currentTime, 0, 1, 1, 1, GridBagHelper.WEST);
     gb.add(new JLabel(BundleUtil.getLabel("From.label")), 0, 2, 1, 1, GridBagHelper.WEST);
 
     gb.add(courseLabel, 1, 0, 1, 1, GridBagHelper.WEST);

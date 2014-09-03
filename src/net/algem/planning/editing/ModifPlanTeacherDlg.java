@@ -1,7 +1,7 @@
 /*
- * @(#)ModifPlanTeacherDlg.java	2.8.h 03/06/13
+ * @(#)ModifPlanTeacherDlg.java	2.8.w 02/09/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -37,7 +37,7 @@ import net.algem.util.module.GemDesktop;
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.h
+ * @version 2.8.w
  * @since 1.0a 07/07/1999
  */
 public class ModifPlanTeacherDlg
@@ -55,7 +55,7 @@ public class ModifPlanTeacherDlg
 
     dlg = new JDialog(desktop.getFrame(), true);
     addContent(view, "Schedule.teacher.modification.title");
-    dlg.setSize(450,340);
+    dlg.setSize(450,450);
   }
 
   @Override
@@ -118,6 +118,5 @@ public class ModifPlanTeacherDlg
   DateFr getEnd() {
     return view.getEnd();
   }
-
 
 }

@@ -1,5 +1,5 @@
 /*
- * @(#)ModifPlanCourseView.java 2.8.w 08/07/14
+ * @(#)ModifPlanCourseView.java 2.8.w 02/09/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,7 +20,9 @@
  */
 package net.algem.planning.editing;
 
+import java.awt.Dimension;
 import java.sql.SQLException;
+import java.util.logging.Level;
 import net.algem.course.Course;
 import net.algem.course.CourseChoice;
 import net.algem.planning.DateFr;
@@ -28,6 +30,7 @@ import net.algem.planning.PlanningService;
 import net.algem.planning.ScheduleObject;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
+import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
 import net.algem.util.model.Model;
 import net.algem.util.ui.GemLabel;
@@ -46,10 +49,12 @@ class ModifPlanCourseView
 
   private CourseChoice course;
 
-  public ModifPlanCourseView(String label, DataCache _dc) {
-    super(_dc, label);
+  public ModifPlanCourseView(String label, DataCache dataCache) {
+    super(dataCache, label);
 
     course = new CourseChoice(dataCache.getList(Model.Course));
+    Dimension prefSize = new Dimension(courseLabel.getPreferredSize().width, course.getPreferredSize().height);
+    course.setPreferredSize(prefSize);
     gb.add(new GemLabel(BundleUtil.getLabel("New.course.label")), 0, 2, 1, 1, GridBagHelper.WEST);
     gb.add(course, 1, 2, 2, 1, GridBagHelper.WEST);
   }
@@ -73,6 +78,7 @@ class ModifPlanCourseView
     try {
       dateRange.setEnd(PlanningService.getLastDate(plan.getIdAction(), DataCache.getDataConnection()));
     } catch (SQLException ex) {
+      GemLogger.log(Level.WARNING, ex.getMessage());
       dateRange.setEnd(dataCache.getEndOfYear());//fin du cours par défaut
     }
     dateRange.setEnabled(false, 1);
