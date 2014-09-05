@@ -1,5 +1,5 @@
 /*
- * @(#)HistoInvoice 2.8.n 26/09/13
+ * @(#)HistoInvoice 2.8.w 05/09/14
  *
  * Copyright (c) 1999-2013 Musiques Tangentes All Rights Reserved.
  *
@@ -54,7 +54,7 @@ import net.algem.util.ui.MessagePopup;
  */
 public class HistoInvoice
         extends FileTabDialog
-implements GemEventListener
+        implements GemEventListener
 {
 
   protected InvoiceListCtrl invoiceListCtrl;
@@ -66,6 +66,7 @@ implements GemEventListener
 
   public <Q extends Quote> HistoInvoice(final GemDesktop desktop, List<Q> quotes) {
     super(desktop);
+    
     btValidation.setText(GemCommand.VIEW_EDIT_CMD);
     btCancel.setText(GemCommand.CLOSE_CMD);
 
@@ -85,6 +86,7 @@ implements GemEventListener
 
   @Override
   public void load() {
+    desktop.addGemEventListener(this);
   }
 
   @Override
@@ -165,11 +167,9 @@ implements GemEventListener
   public void postEvent(GemEvent evt) {
     if (evt instanceof InvoiceEvent) {
       if (evt.getOperation() == GemEvent.MODIFICATION) {
-        Invoice edit = ((InvoiceEvent) evt).getInvoice();
-        if (edit.equals(current)) {
-          current = edit;
-          invoiceListCtrl.reload(current);
-        }
+        invoiceListCtrl.reload(((InvoiceEvent) evt).getInvoice());
+      } else if (evt.getOperation() == GemEvent.CREATION) {
+        invoiceListCtrl.addRow(((InvoiceEvent) evt).getInvoice());
       }
     }
   }

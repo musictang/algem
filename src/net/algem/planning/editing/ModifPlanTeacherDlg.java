@@ -1,5 +1,5 @@
 /*
- * @(#)ModifPlanTeacherDlg.java	2.8.w 02/09/14
+ * @(#)ModifPlanTeacherDlg.java	2.8.w 05/09/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -97,7 +97,6 @@ public class ModifPlanTeacherDlg
   }
 
   public void setDate(Date d) {
-    //date = _date;
     view.setStart(d);
     view.setEnd(d);
 

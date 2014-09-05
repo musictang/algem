@@ -1,5 +1,5 @@
 /*
- * @(#)MenuAccounting.java 2.8.w 09/07/14
+ * @(#)MenuAccounting.java 2.8.w 05/09/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -85,8 +85,6 @@ public class MenuAccounting
       mDirectDebit.setEnabled(false);
     }
     add(mDirectDebit);
-//    add(mDirectDebit, "Standing.order.export.auth");
-//    miAccountHourTeacher = add(getItem(new JMenuItem(menus.get("Menu.teacher.hour.label")), "Accounting.hours.export.auth"));
     miAccountHourEmployee = add(getItem(new JMenuItem(menus.get("Menu.employee.hour.label")), "Accounting.hours.export.auth"));
     addSeparator();
 
@@ -152,6 +150,7 @@ public class MenuAccounting
       BillingService billService = new BasicBillingService(dataCache);
       try {
         HistoInvoice hf = new HistoInvoice(desktop, billService.getInvoices());
+        hf.load();
         desktop.addPanel("Menu.invoice.history", hf, GemModule.XXL_SIZE);
         hf.addActionListener(this);
       } catch (SQLException ex) {

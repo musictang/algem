@@ -50,3 +50,7 @@ INSERT INTO config VALUES ('Heure.ouverture','09:00');
 INSERT INTO config VALUES ('Tarif.base', 'TRIM');
 INSERT INTO config VALUES ('Afficher.noms.plages', 't');
 
+-- -- Ajout colonne commande_module
+ALTER TABLE commande_module ADD arret boolean DEFAULT FALSE;
+
+

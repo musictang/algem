@@ -1,5 +1,5 @@
 /*
- * @(#)ModuleOrder.java	2.8.w 23/07/14
+ * @(#)ModuleOrder.java	2.8.w 05/09/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -38,6 +38,7 @@ public class ModuleOrder
   private int id;
   private int idcmd;
   private int payer;
+  private boolean stopped;
   
   /** Module id. */
   private int module;
@@ -171,6 +172,14 @@ public class ModuleOrder
   
   public void addCourseOrder(CourseOrder co) {
     courseOrders.add(co);
+  }
+
+  public boolean isStopped() {
+    return stopped;
+  }
+
+  public void setStopped(boolean stopped) {
+    this.stopped = stopped;
   }
   
   void clear() {

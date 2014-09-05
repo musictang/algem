@@ -1,7 +1,7 @@
 /*
- * @(#)ModifPlanHourView.java	2.6.a 21/09/12
+ * @(#)ModifPlanHourView.java	2.8.w 05/09/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,11 +20,6 @@
  */
 package net.algem.planning.editing;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import javax.swing.BorderFactory;
-import javax.swing.border.Border;
-import javax.swing.border.LineBorder;
 import net.algem.planning.Hour;
 import net.algem.planning.HourRangePanel;
 import net.algem.util.BundleUtil;
@@ -39,7 +34,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.w
  * @since 1.0a 07/07/1999
  */
 public class ModifPlanHourView

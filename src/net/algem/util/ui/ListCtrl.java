@@ -1,7 +1,7 @@
 /*
- * @(#)ListCtrl.java	2.8.e 22/05/13
+ * @(#)ListCtrl.java	2.8.w 05/09/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -24,7 +24,6 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
 import javax.swing.JTable;
@@ -52,6 +51,11 @@ public abstract class ListCtrl
     addSearchComponent();
   }
 
+  /**
+   * Creates a list controller with optional search component.
+   * 
+   * @param searchFlag 
+   */
   public ListCtrl(boolean searchFlag) {
     //super();
     setLayout(new BorderLayout());
@@ -70,10 +74,6 @@ public abstract class ListCtrl
   }
 
   public <E> void addBlock(List<E> block) {
-//    Enumeration e = block.elements();
-//    while (e.hasMoreElements()) {
-//      addRow(e.nextElement());
-//    }
 		for (E element : block) {
 			addRow(element);
 		}
@@ -119,16 +119,16 @@ public abstract class ListCtrl
   }
 
   /**
-   * Contenu du modèle.
+   * Model content data.
    * @param <T>
-   * @return une collection d'objets de type T
+   * @return object collection of type T
    */
   public <T> Collection<T> getData() {
     return tableModel.getData();
   }
 
   /**
-   * Sets the column width for a table.
+   * Sets the column widths of the table.
    * Widths are calculated from index 0.
    * @param cols a list of integers
    * @since 2.3.a 14/02/12
@@ -143,7 +143,7 @@ public abstract class ListCtrl
   }
 
   /**
-   * Adds a button for new search.
+   * Adds a "new search" button. 
    */
   private void addSearchComponent() {
     back = new GemButton(GemCommand.NEW_SEARCH_CMD);
