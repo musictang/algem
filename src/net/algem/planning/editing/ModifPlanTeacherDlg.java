@@ -110,6 +110,18 @@ public class ModifPlanTeacherDlg
     s.setEnd(view.getHourEnd());
     return s;
   }
+  
+   Boolean getMemoAbs() {
+    return view.getMemoAbs();    
+  }
+  
+  Boolean getMemoRepl() {
+    return view.getMemoRepla();
+  }
+  
+  String getNoteAbs() {
+    return view.getNoteAbs();
+  }
 
   DateFr getStart() {
     return view.getStart();

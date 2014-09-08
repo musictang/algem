@@ -154,6 +154,28 @@ public class ModifPlanTeacherView
       return after.getKey();
     }
   }
+  
+  public boolean getMemoAbs() {
+    if (checkAbsence.isSelected()) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+  
+  public boolean getMemoRepla() {
+    if (checkReplacement.isSelected()) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+  
+  public String getNoteAbs() {
+    return noteAbs.getText();
+  }
 
   void setTime(ScheduleObject s) {
     orig = s;
