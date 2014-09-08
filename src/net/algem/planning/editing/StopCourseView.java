@@ -1,7 +1,7 @@
 /*
- * @(#)StopCourseView.java	2.6.a 21/09/12
+ * @(#)StopCourseView.java	2.6.w 03/09/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -29,11 +29,11 @@ import net.algem.util.BundleUtil;
 import net.algem.util.ui.GridBagHelper;
 
 /**
- * View for stopping course.
+ * Input form used to select a date from which a course is stopped.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.6.w
  * @since 1.0a 27/09/2001
  */
 public class StopCourseView
@@ -51,8 +51,8 @@ public class StopCourseView
     this.course = new JLabel(c);
     gb.insets = GridBagHelper.SMALL_INSETS;
 
-    gb.add(new JLabel(BundleUtil.getLabel("Course.label")), 0, 0, 1, 1, GridBagHelper.EAST);
-    gb.add(new JLabel(BundleUtil.getLabel("From.label")), 0, 1, 1, 1, GridBagHelper.EAST);
+    gb.add(new JLabel(BundleUtil.getLabel("Course.label")), 0, 0, 1, 1, GridBagHelper.WEST);
+    gb.add(new JLabel(BundleUtil.getLabel("From.label")), 0, 1, 1, 1, GridBagHelper.WEST);
 
     gb.add(course, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(dateStart, 1, 1, 1, 1, GridBagHelper.WEST);

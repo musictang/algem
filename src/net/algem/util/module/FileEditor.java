@@ -1,5 +1,5 @@
 /*
- * @(#)FileEditor.java	2.8.w 09/07/14
+ * @(#)FileEditor.java	2.8.w 04/09/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -27,7 +27,6 @@ import net.algem.billing.*;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
 import net.algem.room.Room;
-import net.algem.util.DataCache;
 import net.algem.util.GemLogger;
 
 /**
@@ -42,8 +41,8 @@ public class FileEditor
 
   protected BillingService billingService;
 
-  public FileEditor(String _label) {
-    super(_label);
+  public FileEditor(String label) {
+    super(label);
   }
 
   @Override
@@ -103,6 +102,7 @@ public class FileEditor
     try {
       List<Invoice> invoices = billingService.getInvoices(idper);
       history = new HistoInvoice(desktop, invoices);
+      history.load();
     } catch (SQLException ex) {
       GemLogger.logException(ex);
     }

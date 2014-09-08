@@ -1,5 +1,5 @@
 /*
- * @(#)InvoiceEditor.java 2.8.t 16/05/14
+ * @(#)InvoiceEditor.java 2.8.w 05/09/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -42,7 +42,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.8.w
  * @since 2.3.a 07/02/12
  */
 public class InvoiceEditor
@@ -66,8 +66,7 @@ public class InvoiceEditor
     old = quote;
     btCancel.setText(btCancel.getText()+"/"+BundleUtil.getLabel("Action.closing.label"));
     view = new InvoiceView(desktop, service);
-    
-    
+
     setLayout(new BorderLayout());
     addView();
    
@@ -123,6 +122,7 @@ public class InvoiceEditor
         service.create(v);
         view.setId(v.getNumber()); // rafraîchissement du numéro
         desktop.postEvent(new InvoiceCreateEvent(v));
+        
         backup(v);
         btDuplicate.setEnabled(true);
       } catch (SQLException e) {
@@ -145,12 +145,15 @@ public class InvoiceEditor
         service.update(v);
         MessagePopup.information(view, MessageUtil.getMessage("modification.success.label"));
         desktop.postEvent(new InvoiceUpdateEvent(v));
+        for (InvoiceItem billingItem : v.getItems()) {
+          dataCache.update(billingItem.getItem());
+        }
         backup(v);
       } catch (BillingException fe) {
         MessagePopup.warning(this, MessageUtil.getMessage("invoicing.update.exception")+"\n"+fe.getMessage());
       }
     }
-    //abandon(); // COMMENTÉ POUR LAISSER OUVERTE LA FENETRE
+    //cancel(); // COMMENTÉ POUR LAISSER OUVERTE LA FENETRE
 
   }
 
@@ -198,11 +201,13 @@ public class InvoiceEditor
 
   @Override
   public void load() {
-    view.set(old, service.getContact(old.getMember()), service.getContact(old.getPayer()));
     if (old == null || old.getNumber() == null) {
       btDuplicate.setEnabled(false);
+    } 
+    if (old != null) {
+      view.set(old, service.getContact(old.getMember()), service.getContact(old.getPayer()));
+      backup(old);
     }
-    backup(old);
   }
   
   private void backup(Quote q) {

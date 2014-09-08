@@ -1,5 +1,5 @@
 /*
- * @(#)DataCache.java	2.8.w 09/07/14
+ * @(#)DataCache.java	2.8.w 05/09/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -522,6 +522,8 @@ public class DataCache
       VAT_LIST.update((Vat) m, null);
     } else if (m instanceof CourseCode) {
       COURSE_CODE_LIST.update((CourseCode) m, null);
+    } if (m instanceof Item) {
+      ITEM_CACHE.put(m.getId(), (Item) m);
     }
 
   }

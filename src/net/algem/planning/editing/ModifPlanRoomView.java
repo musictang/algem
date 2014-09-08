@@ -1,5 +1,5 @@
 /*
- * @(#)ModifPlanRoomView.java	2.8.w 02/09/14
+ * @(#)ModifPlanRoomView.java	2.8.w 05/09/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -29,7 +29,6 @@ import java.util.logging.Level;
 import javax.swing.Box;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
-import static net.algem.planning.editing.ModifPlanView.DEF_FIELD_WIDTH;
 import net.algem.room.Room;
 import net.algem.room.RoomChoice;
 import net.algem.util.BundleUtil;
@@ -99,12 +98,6 @@ public class ModifPlanRoomView
   @Override
   public void actionPerformed(ActionEvent evt) {
     Object src = evt.getSource();
-    //      if ((after.getKey() == 8) || (after.getKey() == 21) || (after.getKey() == 27)) {
-//       checkAbsence.setEnabled(true);
-//      }
-//      else {
-//        checkAbsence.setEnabled(false);
-//      }
     if (src == after) {
       try {
         Room r = (Room) DataCache.findId(after.getKey(), Model.Room);
@@ -115,7 +108,6 @@ public class ModifPlanRoomView
           checkAbsence.setSelected(false);
           removeNote();
         }
-
       } catch (SQLException ex) {
         GemLogger.log(Level.WARNING, ex.getMessage());
       }

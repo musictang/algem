@@ -1,5 +1,5 @@
 /*
- * @(#)MemberEnrolmentEditor.java 2.8.w 09/07/14
+ * @(#)MemberEnrolmentEditor.java 2.8.w 05/09/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -25,8 +25,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Vector;
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
@@ -85,7 +87,6 @@ public class MemberEnrolmentEditor
   private JScrollPane view;
   private GemLabel title;
   private boolean loaded;
-  private boolean validation;
   private CourseEnrolmentDlg courseDlg;
   private JMenuItem m1, m2, m3, m4, m5, m6, m7, m8;
   /** New enrolment button. */
@@ -104,7 +105,6 @@ public class MemberEnrolmentEditor
     service = new EnrolmentService(desktop.getDataCache());
 
     title = new GemLabel(BundleUtil.getLabel("Member.enrolment.label"));
-    validation = false;
 
     popup = new JPopupMenu();
     popup.add(m1 = new JMenuItem(STOP));
@@ -172,6 +172,10 @@ public class MemberEnrolmentEditor
     add(btEnrolment, BorderLayout.SOUTH);
   }
 
+  /**
+   * Enable or disable some menus depending on the state of {@literal e}.
+   * @param e true or false
+   */
   private void setEnabledPopupMenu(boolean e) {
     if (e) {
       m1.setEnabled(true);
@@ -181,7 +185,7 @@ public class MemberEnrolmentEditor
       m5.setEnabled(false);
       m6.setEnabled(false);
       m7.setEnabled(true);
-      m8.setEnabled(true); //On peut tout le temps arrêter une formule (si elle l'est déjà, on peut modifier sa date de fin)
+      m8.setEnabled(false);
     } else {
       m1.setEnabled(false);
       m2.setEnabled(false);
@@ -190,11 +194,13 @@ public class MemberEnrolmentEditor
       m5.setEnabled(true);
       m6.setEnabled(false);
       m7.setEnabled(false);
-      m8.setEnabled(true);
+      m8.setEnabled(false);
     }
   }
 
-
+  /**
+   * Sets the popup menu to suit module stopping.
+   */
   private void setModulePopupMenu() {
     m1.setEnabled(false);
     m2.setEnabled(false);
@@ -234,6 +240,9 @@ public class MemberEnrolmentEditor
         try {
           ModuleOrder mo = enu.nextElement();//probleme apres inscription
           ModuleEnrolmentNode mnode = new ModuleEnrolmentNode(mo);
+          if (mo.isStopped()) {
+            mnode.setInfo(" -> [[" + mo.getEnd().toString() + "]]");
+          }
           Vector<CourseOrder> v = service.getCourseOrder(i.getId(), mo.getId());
           for (int k = 0; k < v.size(); k++) {
             CourseOrder cc = v.elementAt(k);
@@ -662,40 +671,43 @@ public class MemberEnrolmentEditor
   }
   
   private void stopModule() {
-    StopCourseFromModuleDlg dlg2 = null;
+    
     Object[] path = currentSelection.getPath();
     int i = path.length;
     if (!(path[i - 1] instanceof ModuleEnrolmentNode)) {
       return;
     }
-    ModuleEnrolmentNode monode = ((ModuleEnrolmentNode) path[i - 1]);    
-    for (Enumeration e = monode.children(); e.hasMoreElements();) {
+    ModuleEnrolmentNode moduleNode = ((ModuleEnrolmentNode) path[i - 1]);
+    List<CourseOrder> orders = new ArrayList<CourseOrder>();
+    for (Enumeration e = moduleNode.children(); e.hasMoreElements();) {
       TreeNode n = (TreeNode) e.nextElement();
       if(n instanceof CourseEnrolmentNode) {
-        CourseOrder co = ((CourseEnrolmentNode) n).getCourseOrder();
-        try {
-          Course c = planningService.getCourseFromAction(co.getAction());
-          if (c.isUndefined()) {
-            MessagePopup.information(this, MessageUtil.getMessage("course.invalid.choice"));
-            return;
-          }
-          dlg2 = new StopCourseFromModuleDlg(desktop, dossier.getId(), co, c);
-          dlg2.setVisible(true);
-        } catch (SQLException ex) {
-          GemLogger.log(getClass().getName(), "#stopModule :", ex.getMessage());
-        }
+        orders.add(((CourseEnrolmentNode) n).getCourseOrder());
       }
-    }    
-    ModuleOrder module = monode.getModule();
-    module.setEnd(dlg2.getDateEnd());
-    try {
-        service.stop(module);
-        desktop.postEvent(new EnrolmentUpdateEvent(this, dossier.getId()));
-      } catch (EnrolmentException ex) {
-        MessagePopup.warning(this, ex.getMessage());
-      }
+    } 
     
-    //service.pauseModule(module); fonction à créer !
+    ModuleOrder moduleOrder = moduleNode.getModule();
+    
+    StopCourseFromModuleDlg dlg2 = new StopCourseFromModuleDlg(desktop, moduleOrder);
+    dlg2.setVisible(true);
+    if (!dlg2.isValidation()) {
+      return;
+    }
+    DateFr stop = dlg2.getEndDate();
+    DateFr origEnd = new DateFr(moduleOrder.getEnd()); // backup original end date
+    boolean hasStopped = moduleOrder.isStopped(); // backup stopped status
+    moduleOrder.setEnd(stop);
+    moduleOrder.setStopped(true);
+    try {
+      service.stopModule(moduleOrder, orders, dossier.getId(), stop);
+      desktop.postEvent(new EnrolmentUpdateEvent(this, dossier.getId()));
+      desktop.postEvent(new ModifPlanEvent(this, stop, dataCache.getEndOfYear()));
+      //TODO service.pauseModule(moduleOrder);
+    } catch (EnrolmentException ex) {
+      moduleOrder.setEnd(origEnd);
+      moduleOrder.setStopped(hasStopped);
+      MessagePopup.warning(this, ex.getMessage());
+    }
   }
 
   class MyRenderer

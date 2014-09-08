@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileEditor 2.8.w 27/08/14
+ * @(#)PersonFileEditor 2.8.w 04/09/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -143,7 +143,7 @@ public class PersonFileEditor
   @Override
   public void init() {
 
-    //super.init();
+    super.init();
 
     dc = DataCache.getDataConnection();
     BANK_BRANCH_IO = new BankBranchIO(dc);
@@ -858,7 +858,7 @@ public class PersonFileEditor
   }
 
   /**
-   * Homonymous verification.
+   * Checking homonyms.
    */
   private boolean contactExists(String name, String firstName) {
     String where = " WHERE lower(nom) = '" + name.toLowerCase() + "' AND lower(prenom) = '" + firstName.toLowerCase() + "'";
@@ -1063,7 +1063,7 @@ public class PersonFileEditor
   }
 
   /**
-   * Adds a tab for invoice edition / creation.
+   * Adds a tab for invoice editing / creating.
    *
    * @param source
    */
@@ -1081,6 +1081,11 @@ public class PersonFileEditor
     personFileView.addTab(editor, FileView.INVOICE_TAB_TITLE);
   }
 
+  /**
+   * Quote editing tab.
+   * 
+   * @param source not used
+   */
   private void addQuotation(Object source) {
     Quote q = new Quote(dossier, dataCache.getUser());
     q.setEstablishment(Integer.parseInt(ConfigUtil.getConf(ConfigKey.DEFAULT_ESTABLISHMENT.getKey())));

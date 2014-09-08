@@ -1,5 +1,5 @@
 /*
- * @(#)ModifPlanView.java	2.8.w 02/09/14
+ * @(#)ModifPlanView.java	2.8.w 05/09/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -21,7 +21,6 @@
 package net.algem.planning.editing;
 
 import java.awt.AWTEventMulticaster;
-import java.awt.Color;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionListener;

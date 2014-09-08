@@ -1,7 +1,7 @@
 /*
- * @(#)HistoQuote 2.8.o 08/10/13
+ * @(#)HistoQuote 2.8.w 05/09/14
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -25,13 +25,14 @@ import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.util.List;
 import net.algem.util.MessageUtil;
+import net.algem.util.event.GemEvent;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.MessagePopup;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.o
+ * @version 2.8.w
  * @since 2.4.d 07/06/12
  */
 public class HistoQuote 
@@ -40,6 +41,7 @@ public class HistoQuote
 
   public <F extends Quote> HistoQuote(GemDesktop desktop, List<F> fcl) {
     super(desktop, fcl);
+    load();
   }
 
    @Override
@@ -70,6 +72,17 @@ public class HistoQuote
     super.actionPerformed(e);
     if (e.getActionCommand().equals("CtrlAbandonDevis")) {
       layout.show(this, card0);
+    }
+  }
+  
+   @Override
+  public void postEvent(GemEvent evt) {
+    if (evt instanceof InvoiceEvent) {
+      if (evt.getOperation() == GemEvent.MODIFICATION) {
+        invoiceListCtrl.reload(((QuoteEvent) evt).getQuote());
+      } else if (evt.getOperation() == GemEvent.CREATION) {
+        invoiceListCtrl.addRow(((QuoteEvent) evt).getQuote());
+      }
     }
   }
 }

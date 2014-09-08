@@ -1,7 +1,7 @@
 /*
- * @(#)Quote.java 2.8.n 25/09/13
+ * @(#)Quote.java 2.8.w 05/09/14
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -32,7 +32,7 @@ import net.algem.security.User;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.n
+ * @version 2.8.w
  * @since 2.4.d 08/06/12
  */
 public class Quote
@@ -169,25 +169,6 @@ public class Quote
     return hash;
   }
 
-//  @Override
-//  public boolean bufferEquals(Object obj) {
-//    if (obj == null) {
-//      return false;
-//    }
-//    if (getClass() != obj.getClass()) {
-//      return false;
-//    }
-//    final Quote other = (Quote) obj;
-//    if ((this.number == null) ? (other.number != null) : !this.number.bufferEquals(other.number)) {
-//      return false;
-//    }
-//    if (this.items == null || !this.items.bufferEquals(other.items)) {
-//      return false;
-//    }
-//    return true;
-//  }
-
-
   boolean equiv(Invoice n) {
     if (n == null) {
       return false;
@@ -218,11 +199,8 @@ public class Quote
     }
     List<InvoiceItem> i1 = new ArrayList<InvoiceItem>(items);
     List<InvoiceItem> i2 = new ArrayList<InvoiceItem>(n.getItems());
-    if (!i1.equals(i2)) {
-      return false;
-    }
 
-    return true;
+    return i1.equals(i2);
   }
 
 

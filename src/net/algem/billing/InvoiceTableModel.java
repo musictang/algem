@@ -1,7 +1,7 @@
 /*
- * @(#)InvoiceTableModel.java 2.7.h 22/02/13
+ * @(#)InvoiceTableModel.java 2.8.w 05/09/14
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -104,4 +104,5 @@ public class InvoiceTableModel
   public void setValueAt(Object value, int line, int col) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
+
 }
