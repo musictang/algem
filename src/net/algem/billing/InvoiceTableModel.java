@@ -1,5 +1,5 @@
 /*
- * @(#)InvoiceTableModel.java 2.8.w 05/09/14
+ * @(#)InvoiceTableModel.java 2.8.w 08/09/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -49,10 +49,10 @@ public class InvoiceTableModel
     };
   }
 
-  <Q extends Quote> void reset(Q v) {
-    int idx = tuples.indexOf(v);
+  <Q extends Quote> void reset(Q q) {
+    int idx = tuples.indexOf(q);
     if (idx > -1) {
-      modItem(idx, v);
+      modItem(idx, q);
     }
   }
   

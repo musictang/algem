@@ -1,5 +1,5 @@
 /*
- * @(#)ConfigPlanning.java 2.8.w 27/08/14
+ * @(#)ConfigPlanning.java 2.8.w 10/09/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -112,6 +112,7 @@ public class ConfigPlanning
     gb.add(startTime,1,3,1,1,GridBagHelper.WEST);
     
     rangeNames = new JCheckBox(ConfigKey.SCHEDULE_RANGE_NAMES.getLabel());
+    rangeNames.setBorder(null);
     rangeNames.setSelected(c7.getValue().equals("t"));
     
     gb.add(rangeNames, 0, 4, 2, 1);

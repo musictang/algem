@@ -59,6 +59,7 @@ src/
         |-- security (sécurité, utilisateur, droits)
         `-- util
             |-- event (socket event)
+            |-- help
             |-- jdesktop (classes utilitaires API Java Desktop)
             |-- menu
             |-- model

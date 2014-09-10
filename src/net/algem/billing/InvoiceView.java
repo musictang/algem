@@ -1,5 +1,5 @@
 /*
- * @(#)InvoiceView.java 2.8.w 08/07/14
+ * @(#)InvoiceView.java 2.8.w 08/09/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -270,8 +270,8 @@ public class InvoiceView
    *
    * @return a quote/invoice
    */
-  Quote get() {
-    Invoice inv = new Invoice(invoiceId.getText());
+   Quote get() {
+    Quote inv = new Invoice(invoiceId.getText());
       inv.setDescription(invoiceLabel.getText());
       inv.setDate(new DateFr(date.getText()));
       inv.setReference(ref.getText());

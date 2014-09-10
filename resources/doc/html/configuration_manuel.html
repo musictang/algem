@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+  <head>
+    <title>TODO supply a title</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <!--<link href="help.css" rel="stylesheet" type="text/css" />-->
+  </head>
+  <body>
+    <h1>BIEN DEMARRER AVEC ALGEM</h1>
+    <p>Afin que tout fonctionne correctement, il est nécessaire de bien paramétrer le logiciel.
+      La configuration d'Algem peut se faire en plusieurs étapes et suivant vos besoins.
+      Bien que tous les paramètres ne soient pas indispensables, certains sont néanmoins primordiaux.</p>
+    
+    <h2>Configuration générale</h2>
+    <p>On accède aux paramètres de configuration générale en cliquant sur le menu
+      <u>Configuration → Paramètres → Généraux</u>.<br />
+      Ces paramètres sont répartis en 5 sections principales : Organisation, Planning, Gestion, Fichiers, Infos comptables.</p>
+    <p>Dans <b>Organisation</b>, vous pouvez définir le nom de votre organisme ainsi que les caractéristiques de votre société :
+      adresse, n° siret, code naf, etc.<br />Certains de ces champs comme le n° siret sont préformatés et permettent de faciliter la saisie.</p>
+    <p>Les dates de début et de fin d'année scolaire sont définies dans la section <b>Planning</b>.
+      Ces dates permettent entre autres de pré-initialiser les champs date lors des inscriptions ou des prises de répétition.<br />
+      Les dates de début et de fin de période, quant à elles, sont utilisées pour l'affichage de certains listings, comme les inscriptions par exemple.
+      Par défaut, elles englobent les dates d'année scolaire. Il est recommandé de définir
+      la date de début de période un an plus tôt que la date de début d'année scolaire. <br />
+      En effet, des pré-inscriptions peuvent avoir été enregistrées avant la date effective de début d'année scolaire...</p>
+    <p>Dans <b>Gestion</b>, l'activation (case cochée) des professeurs ou des cours permettra de les afficher dans les plannings.
+      Plus précisément, lorsque l'option Gestion professeurs est décochée, l'onglet Profs ne sera plus visible dans le planning jour
+      et la sélection des plannings par professeur ne sera plus possible dans le planning mois.<br />
+      Parallèlement, lorsque l'option Gestion cours est désactivée, la sélection des plannings par cours ne sera plus possible dans le planning mois.<br />
+      L'école ou l'établissement par défaut peuvent être modifiés dans le cas où votre organisme fait référence à plusieurs écoles ou dispose de plusieurs
+      établissements.<br />
+      L'école est associée à des infos comptables. Cette notion est principalement utilisée pour les échéances adhérent ou le décompte des heures professeurs.
+      Par défaut, il n'existe qu'une école et il est assez rare d'en avoir besoin de plusieurs.
+      Le libellé de l'école apparaîtra dans le texte d'information des prélèvements.<br />
+      Lorsque les salles de cours se répartissent dans plusieurs établissements (plusieurs lieux géographiques ou plusieurs locaux),
+      cette option permet de choisir quel établissement sera visible en priorité dans l'affichage du planning jour ou des factures.</p>
+    <p>La section <b>Fichiers</b> permet de définir les emplacements respectifs de l'historique.<br />
+      L'historique permet de retracer les différentes actions effectuées sur la base de données (insertions, modifications, suppressions) et d'isoler ainsi les problèmes éventuels. Toute proportion gardée, c'est un peu l'équivalent des journaux de Windows.
+ du logiciel, des fichiers d'exportation de données, des photos d'identité, des documents relatifs aux groupes et aux salariés
+      et du pied de page pour les factures. L'emplacement de l'historique n'est pas encore pris en compte dans cette version du logiciel.<br />
+      Par défaut, l'historique est automatiquement enregistrée dans le fichier algem.log (s'il existe) du répertoire Journaux.</p>
+    <p>La section <b>Infos comptables</b>, est subdivisée en plusieurs sous-ensembles :<br />
+      Dans <i>Prélèvement</i>, vous pouvez définir les caractéristiques de l'organisme créditeur pour les opérations de prélèvement automatique.<br />
+      Compte tenu du passage obligatoire à la norme européenne SEPA, l'émetteur, le guichet, l'établissement et le numéro de compte n'auront bientôt plus de raison d'être.
+      A partir d'Août 2014, les prélèvements et virements doivent obligatoirement s'effectuer suivant la norme SEPA.<br />
+      Seuls l'IBAN (International Bank Account Number), le BIC (Bank Identifier Code) et le numéro ICS (Identifiant Créancier SEPA)  seront requis.<br />
+      Dans <i>Options</i>, le numéro de pièce correspond au premier numéro de pièce de l'année scolaire en cours.<br />
+      Ce paramètre permet de définir et d'incrémenter automatiquement les numéros de pièce lors d'une inscription dont le paiement se fait en plusieurs échéances.<br />
+      Le dernier numéro de facture permet de continuer la numérotation des factures après passage de votre ancien logiciel de facturation à Algem. Ce numéro n'est important que si vous vous servez d'Algem pour établir des factures ou que si vous voulez poursuivre votre ancienne numérotation. Dans Algem, le numéro de facture est composé de l'année sur 2 chiffres suivis du mois sur 2 chiffres et d'un numéro incrémental. C'est ce dernier qu'il faut ici paramétrer. 12111 signifie par exemple une facture portant le numéro 1 de novembre 2012.
+      Dans <i>Format d'export</i>, vous pouvez choisir entre 3 types de format pour les fichiers comptables : Ciel
+      Fichier texte standard au format XIMPORT., DVLog et Sage
+      Ficher texte standard au format pnm.<br />
+      Le fichier généré pourra dès lors être importé sous votre logiciel de compatibilité, pour peu qu'il reconnaisse l'un ou l'autre de ces standards.<br />
+      L'exportation comptable est possible à partir des menus <u>Compta → Transfert échéancier</u> ou <u>Compta → Transfert pièce</u>, selon que vous désiriez effectuer
+      un export des lignes d'échéancier en fonction d'un mode de règlement et/ou d'un numéro de pièce.</p>
+    
+    <h2>Etablissements</h2>
+    <p>Un établissement est un ensemble de salles. Il n'est pas rare de disposer de plusieurs locaux.
+      Les salles de cours ou de répétition peuvent être réparties sur plusieurs lieux distants géographiquement.
+      C'est la raison pour laquelle nous vous avons laissé la possibilité de paramétrer plusieurs établissements.
+      Dans sa version de base, Algem comporte déjà un établissement, appelé « Etablissement ».
+      Il est préférable de le renommer pour qu'il corresponde au nom effectif de votre local.<br />
+      Vous pouvez modifier ou créer un nouvel établissement en utilisant le menu <u>Configuration → Etablissements</u>.
+      Pour modifier votre établissement principal, cliquez sur Consulter/Modifier puis sur le bouton « Chercher ».
+      Vous pouvez également ajouter ses coordonnées (adresse, email, site web, téléphone).</p>
+    
+    <h2>Salles</h2>
+    <p>Vous pouvez modifier leurs noms en cliquant dans le menu <u>Recherche → Salle</u>.<br />
+      Cliquez sur la salle qui vous intéresse dans la liste pour ouvrir la fiche correspondante. Voici la signification des différents champs :</p>
+    <ul><li><b>Id</b> : numéro de salle. Ce numéro est automatique et ne peut être édité.</li>
+      <li>Nom : nom de la salle. Le planning jour permet de voir l'occupation des salles de l'établissement sélectionné. Ce nom s'affiche en haut de chaque colonne.
+        Attention : afin qu'il puisse s'afficher correctement dans les plannings, le nom de la salle ne doit pas dépasser 32 caractères.</li>
+      <li>Fonction : la fonction principale de la salle (cours, répétitions, etc.).
+        Ce paramètre est optionnel mais pourra être utilisé dans une prochaine version du logiciel.</li>
+      <li>Surface : la superficie (optionnelle) de la salle en mètres carrés (pour 20 m² par exemple, entrez 20).</li>
+      <li>Nombre de places : nombre de places maximal. Ce nombre de places permet de pré-initialiser le champ « nombre de places » lors de la planification d'un cours
+        Voir <u>Menu Planning -> Planification cours</u>.
+        Etablissement : établissement dans lequel se trouve la salle.</li>
+      <li>Active : lorsque ce champ est décoché, le nom de la salle ne sera pas visible dans les listes déroulantes,
+        lors du choix d'une salle pour les planifications ou les prises de répétition.</li>
+      <li>Publique : lorsque ce champ est décoché, la salle ne sera pas prise en compte pour la consultation publique des plannings en ligne.</li>
+      <li>Tarif : une salle peut être associée à un tarif.
+        Les différents tarifs salle peuvent se paramétrer dans le menu <u>Compta -> Tarif salles</u>.<br />
+        Cette option permet de définir automatiquement le montant d'une répétition et de créer les lignes d'échéancier adéquates.</li>
+      <li>Payeur : numéro de payeur utilisé pour la création d'échéances ou de factures. Ce numéro doit correspondre à un contact existant.
+        Pour le modifier, indiquez le nouveau numéro et validez en tapant sur la touche « Entrée ».</li>
+    </ul>
+    <p>Une salle est automatiquement associée à un contact. Il s'agit du responsable de la salle ou de l'organisme éventuel gérant cette salle. L'onglet Contact permet ainsi de distinguer les données propres à la salle de celles du contact.
+      L'onglet Equipement permet de gérer le matériel présent dans la salle. Des exemples d'équipement ont été définis pour la Salle 1. Vous pouvez/devez les modifier. Pour modifier une ligne, double-cliquez dans la cellule correspondante, entrez vos modifications, puis validez avec la touche « Entrée ». Pour ajouter un équipement, cliquez sur le bouton « Ajouter » puis définissez la quantité et le nom de l'équipement. Pour supprimer une ligne, sélectionnez-là puis cliquez sur le bouton « Supprimer ».
+      N'oubliez pas d'enregistrer vos modifications en quittant la fiche salle.</p><p>
+    <p>Note : il est recommandé de créer une salle dont le nom commence par RATTRAPAGE.
+      Cette salle pourra être utilisée en attente pour les cours à rattraper lors de l'absence d'un professeur.
+      Les plannings à rattraper ont une couleur de fond noire.</p>
+   
+    <h2>Vacances</h2>
+    <p>Afin de faciliter la planification des cours, des périodes et des catégories de vacances ont été définies par défaut.
+      Quatre catégories ont déjà pu ếtre configurées (suivant la manière dont vous avez installé Algem) : Zone A, B, C et « Sans vacances ».
+      Cette dernière catégorie permet de s'affranchir des jours de congés lors d'une planification.<br />
+      Les périodes de vacances doivent être reconfigurées avant le début de l'année scolaire et avant toute planification.
+      Les périodes des 3 zones officielles devraient déjà avoir été configurées (à vous de le faire dans le cas contraire).
+      Libre à vous d'ajouter ou de supprimer certains jours de congés en fonction de vos particularités.
+      Pour modifier une période, cliquez sur le menu <u>Configuration → Vacances → Périodes</u>.<br />
+      Pour supprimer une ou plusieurs lignes, cliquez sur celles qui vous intéressent (Maj-clic pour une sélection adjacente, Ctrl-clic dans le cas contraire).
+      Vérifiez que la ou les lignes sélectionnées correspondent bien à votre zone (par défaut les zones A, B et C sont numérotées respectivement 1, 2, 3)
+      puis cliquez sur le bouton « Supprimer ».<br />
+      Pour ajouter des jours, indiquez une date de début et de fin, un libellé représentatif, et n'oubliez pas de sélectionner la bonne catégorie dans le champ Type.
+      La date de début (Du) correspond au premier jour de vacances, celle de fin au dernier jour. Pour les vacances de Toussaint 2013, par exemple,
+      la fin des cours est le samedi 19 octobre 2013 et la reprise le lundi 4 novembre 2013. Il faut donc rentrer Du « 20-10-2013 » au « 03-11-2013 ».</p>
+    
+    <h2>Contacts</h2>
+    <p>La fiche Contact est la clé de voûte du logiciel. Avant de pouvoir définir un adhérent, un élève ou un payeur,
+      il est obligatoire de créer un contact. Cette fiche regroupe les informations essentielles comme les nom, prénom et coordonnées.
+      Lorsque le contact n'est pas une personne physique, on peut ajouter également un nom d'organisation.
+      La création d'un contact se fait en cliquant sur le menu Recherche => Contact, puis sur le bouton « Créer ».</p>
+    <p>Dans sa version de base, six contacts ont déjà été définis : trois personnes (ADMINISTRATEUR, DURANT, DUPONT),
+      un professeur (MONPROF) et deux contacts salles. Vous pouvez modifier leurs noms et leurs coordonnées.</p>
+    <p>Dans la terminologie d'Algem, un adhérent est synonyme d'élève. Pour créer un élève, créez d'abord un contact, enregistrez-le,
+      puis cliquez sur « Adhérent » dans le menu Options de la fiche.<br />
+      Un nouvel onglet apparaîtra, vous permettant de saisir les informations essentielles comme les instruments pratiqués, la date de naissance,
+      la profession ou le payeur.<br />N'oubliez pas d'enregistrer la fiche lors de sa fermeture. Après enregistrement de l'élève (adhérent),
+      deux nouveaux onglets seront présents dans la fiche : Inscriptions et Suivi.</p>
+
+    <h2>Utilisateurs – Gestion des droits</h2>
+    <p>Par défaut, Algem est paramétré pour démarrer sous le nom d'utilisateur admin.
+      Ce nom d'utilisateur correspond au contact appelé « Administrateur » et dispose de tous les droits.<br />
+      Dans le cas où plusieurs personnes utilisent simultanément le logiciel, il est préférable que chacun démarre sous son propre nom d'utilisateur.
+      Ce nom d'utilisateur est en fait le nom utilisé sur votre système (le login).<br />
+      Afin de vous inscrire en tant qu'utilisateur sous Algem, voici les différentes étapes à accomplir :</p>
+    <ul>
+      <li>Dans Algem, créez un contact avec vos nom, prénom, email et coordonnées.</li>
+      <li>Dans le menu Options de la fiche contact nouvellement créée et enregistrée, cliquez sur « Création login ».
+        Devant le champ Login, indiquez votre nom d'utilisateur système (en respectant les majuscules et minuscules).
+        Mettez un mot de passe quelconque et choisissez un profil : Administrateur pour tous les droits,
+        Utilisateur pour les droits les plus courants. Dans la pratique, les autres profils ne sont guère utilisés.</li>
+      <li>Fermez Algem.</li>
+      <li>Suivant votre système, modifiez le fichier de démarrage (algem.bat sous Windows, algem.sh sous Linux ou Mac).<br />
+        Si vous êtes sous Windows, dans le fichier algem.bat, commentez la dernière ligne et décommentez l'avant-dernière. La fin du fichier doit se présenter ainsi&nbsp;:<br />
+        %JAVA% -Dfile.encoding=UTF-8 -cp %CLASSPATH% net.algem.Algem %CP%\algem.conf %USERNAME<br />
+        REM %JAVA% -Dfile.encoding=UTF-8 -cp %CLASSPATH% net.algem.Algem %CP%\algem.conf admin.<br />
+        Si vous êtes sous Linux ou Mac, faites de même pour avoir&nbsp;:<br />
+        #java -cp $CLASSPATH net.algem.Algem $CP/algem.conf admin<br />
+        java -cp $CLASSPATH net.algem.Algem algem.conf $USER
+      </li>
+      <li>Démarrez Algem et vérifiez que tout se passe bien. En cas d'erreur, vérifiez que le login défini dans Algem correspond bien à votre login système et que vous avez correctement édité le fichier de démarrage.
+        Une personne dont le profil est « Utilisateur » peut très bien se voir attribuer des droits qu'il n'avait pas par défaut. Pour ce faire, connectez-vous sous un login disposant des droits administrateur et éditez les droits de l'utilisateur en question dans le menu <u>Configuration →  Admin → Gestion des droits</u>&nbsp;:
+        cliquez sur le bouton « Chercher », choisissez l'utilisateur dans la liste et cochez ou décochez les droits que vous voulez lui attribuer ou lui interdire.
+        Cliquez sur « Suivant » puis « Valider ».</li>
+    </ul>
+    <p>Si l'option auth est égale à true dans le fichier algem.conf, l'utilisateur devra saisir explicitement son login et son mot de passe
+      à l'ouverture du logiciel. 
+      Par défaut, cette option est désactivée (auth=false) mais nous vous encourageons à la modifier afin de renforcer les options de sécurité.
+      N'oubliez pas de créer au préalable les mots de passe adéquats (8 caractères conseillé) dans la fiche de chaque utilisateur&nbsp;:
+      <u>Options → Création/modification login</u>.</p>
+
+    <h2>Professeurs</h2>
+    <p>Pour ajouter un professeur, ouvrez une fiche contact existante puis cliquez sur « Professeur » dans le menu Options.
+      Remplissez les informations et enregistrez la fiche. Définissez le ou les instruments qu'il pratique et son statut
+      (s'il n'est pas actif, ce professeur n'apparaîtra pas dans la liste lors des étapes de planification). Les diplômes sont optionnels.</p>
+    <p>Vous pouvez également modifier le nom du professeur « MONPROF », paramétré par défaut.
+     Pour rechercher un professeur, cliquez sur « Contact » dans le menu Recherche.</p>
+    <p>Note : rien n'interdit à ce qu'un professeur soit également adhérent.</p>
+
+    <h2>Groupes</h2>
+    <p>Un groupe est avant tout un groupe de musiciens. Suivant les spécificités de votre organisation,
+      cette notion peut s'appliquer également à un simple groupe de personnes.<br />
+      En version de base, deux groupes par défaut ont déjà été définis. Vous pouvez modifier leurs noms. La suppression d'un groupe n'est possible que s'il n'existe pas de répétitions de ce groupe dans le planning.
+      Dans le menu <u>Recherche → Groupe</u>, on peut créer ou modifier des groupes existants.
+      La fiche groupe réunit les informations essentielles : nom du groupe, contact référent, musiciens ou personnes qui le composent, échéancier.</p>
+    <p>L'onglet Répétitions permet d'afficher toutes les répétitions déjà effectuées par le groupe.
+      Cliquez sur le bouton « Tout » pour afficher toutes les répétitions, sur le bouton « Sélection » pour n'afficher que les répétitions prises pour la
+      période définie au-dessus ou Effacer pour réinitialiser l'affichage.</p>
+    <p>L'onglet Echéancier permet de visualiser les échéances des personnes appartenant au groupe sans avoir besoin d'aller sur leurs fiches contact respectives.
+      Le bouton « Impayés » permet d'afficher toutes les échéances non payées, quelle que soit la date.
+      Le bouton « Adhésion » permet d'afficher les échéances correspondantes aux lignes d'adhésion pour l'année courante.</p>
+    <p>Afin de prendre une répétition de groupe, allez sur sa fiche puis cliquez sur l'icone R (Saisie répétition ponctuelle) ou sur « Forfait répétition » dans le menu Options.
+      Le principe est identique pour une répétition d'adhérent.</p>
+    <p>Les boutons « Bio/Pressbook », « Fiche technique », « Plan de scène » permettent d'ouvrir les documents attachés au groupe courant.
+      Pour que l'un de ces boutons soit actif, il faut avoir enregistré au préalable le document en question dans l'un des sous-répertoires du dossier groupe.</p>
+    <p>Le dossier de recherche par défaut pour les groupes est paramétrable dans la section Fichiers du menu <u>Configuration → Paramètres → Généraux</u>. Ces sous-répertoires ont un nom déterminé et ne doivent pas être renommés
+      Ces sous-répertoires se nomment respectivement : bio, fiche-technique, plan-scene.. D'autre part, le numéro de groupe doit figurer dans le nom du document.  Prenons un exemple :
+      en partant du postulat que le dossier de recherche par défaut pour les groupes soit situé dans C:\Algem\documents\groupes, il faudra placer un fichier nommé par exemple bio-310.pdf dans le sous-dossier bio afin de pouvoir ouvrir directement à partir d'Algem la biographie du groupe 310. En fonction de l'état des boutons (actif, non actif), on peut ainsi savoir immédiatement si l'un des documents de référence existe pour le groupe sélectionné.
+      Ce principe est le même pour la recherche des documents attachés à un salarié.</p>
+<p>Les informations de salarié sont accessibles à partir du menu <u>Options →  Salarié</u> de la fiche Personne.<br />
+      Si vous utilisez Algem sur plusieurs postes du réseau, il faut bien entendu que les dossiers de recherche par défaut soient partagés
+      et accessibles en lecture par tous les utilisateurs potentiels.</p>
+
+
+    <h2>Comptabilité</h2>
+    <p>Même si vous n'utilisez pas toutes les fonctions comptables d'Algem, il est conseillé de paramétrer certains éléments comme les comptes,
+      les comptes par défaut ou l'analytique.</p>
+    <p>Des numéros de compte ont déjà été définis mais il est probable qu'ils ne correspondent pas à vos besoins.
+      Vous pouvez les désactiver ou en ajouter d'autres dans le menu Compta => Comptes comptables.</p>
+    <p>Le compte « Adhésions » est particulièrement important puisqu'il permet de calculer automatiquement le nombre d'adhésions d'un élève à
+      l'ouverture de sa fiche ou de cibler les adhérents lors des opérations d'exportation.</p>
+    <p>L'analytique (<u>Compta → Comptes analytiques</u>) permettra de faire des regroupements dans les divers exports de données.
+      Là encore, il est possible d'en désactiver certains et d'en créer de nouveaux.</p>
+<p>Dans <u>Compta → Comptes par défaut</u>, vous pouvez associer un compte à chacune des activités fondamentales.
+      Cette association est utilisée en particulier lors de la création automatique de lignes d'échéances
+      lors de l'inscription d'un élève ou de la prise de répétition.</p>
+    <p>Les tarifs salle se définissent dans <u>Compta → Tarif salles</u>. Le tarif intitulé « Non défini » a déjà été créé.
+      Ne le supprimez pas et ne le modifiez pas.<br />
+      Il existe deux types de tarif : les tarifs « Personne », le montant est calculé en fonction du nombre de personnes ou « Horaire »,
+      le montant est calculé en fonction du nombre d'heures (répétées).</p>
+    <p>Le champ « Heures creuses » permet de définir un montant spécifique pour cette partie de la journée.<br />
+      L'horaire de fin des heures creuses est défini dans la section Planning du menu <u>Configuration →  Paramètres →  Généraux</u> (Plein tarif).
+      Forfait heure creuse et plein tarif permet d'appliquer un tarif spécifique dans le cas de répétitions au forfait.
+      Plafond horaire indique le montant à ne pas dépasser.</p>
+    <p>Note : il se peut que ces options tarifaires soient redéfinies et clarifiées dans une future version du logiciel.</p>
+    
+    <h2>Cours / Formules</h2>
+    <p>Pour le paramétrage des cours et des formules, reportez-vous au document intitulé inscription.pdf.</p>
+    
+    <h2>Thèmes et Look & Feel</h2>
+    <p>L'apparence du logiciel (couleurs générales, format des boutons, aspect des fenêtres ou des onglets, etc.) peut être modifiée en fonction du look & feel
+      sélectionné (le thème dans la terminologie Java).<br />
+
+      Le thème par défaut dépendra de votre système. Mais vous pouvez en utiliser un autre par l'intermédiaire du fichier algem.conf.<br />
+      Trois thèmes sont disponibles : Metal, Windows et Plastic (Jgoodies).<br />
+      Le thème Windows ne fonctionnera que pour les utilisateurs sous Windows, autrement dit ne faites pas ce choix si vous êtes sous Linux ou Mac.
+      Pour choisir un autre thème que celui par défaut, décommentez la ligne correspondante dans le fichier
+      (supprimez le dièse devant la ligne commençant par #lookandfeel...).<br />
+      Redémarrez et testez ! Si l'affichage est incorrect ou ne correspond pas à vos goûts, remettez le dièse devant la ligne auparavant modifiée.
+    </p>
+  </body>
+</html>

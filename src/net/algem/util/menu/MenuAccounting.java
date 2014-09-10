@@ -1,5 +1,5 @@
 /*
- * @(#)MenuAccounting.java 2.8.w 05/09/14
+ * @(#)MenuAccounting.java 2.8.w 08/09/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -159,9 +159,9 @@ public class MenuAccounting
         desktop.setDefaultCursor();
       }
     } else if (menus.get("Menu.quotation.history.label").equals(arg)) {
-      BillingService facService = new BasicBillingService(dataCache);
+      BillingService billingService = new BasicBillingService(dataCache);
       try {
-        HistoQuote hd = new HistoQuote(desktop, facService.getQuotations());
+        HistoQuote hd = new HistoQuote(desktop, billingService.getQuotations());
         desktop.addPanel("Menu.quotation.history", hd, GemModule.XXL_SIZE);
         hd.addActionListener(this);
       } catch (SQLException ex) {

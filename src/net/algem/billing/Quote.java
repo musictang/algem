@@ -1,5 +1,5 @@
 /*
- * @(#)Quote.java 2.8.w 05/09/14
+ * @(#)Quote.java 2.8.w 08/09/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -152,9 +152,10 @@ public class Quote
     if (obj == null) {
       return false;
     }
-    if (getClass() != obj.getClass()) {
+    if (! (obj instanceof Quote)) {
       return false;
     }
+
     final Quote other = (Quote) obj;
     if ((this.number == null) ? (other.number != null) : !this.number.equals(other.number)) {
       return false;

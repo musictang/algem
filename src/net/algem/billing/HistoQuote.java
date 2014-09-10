@@ -1,5 +1,5 @@
 /*
- * @(#)HistoQuote 2.8.w 05/09/14
+ * @(#)HistoQuote 2.8.w 08/09/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -39,7 +39,7 @@ public class HistoQuote
         extends HistoInvoice
 {
 
-  public <F extends Quote> HistoQuote(GemDesktop desktop, List<F> fcl) {
+  public <Q extends Quote> HistoQuote(GemDesktop desktop, List<Q> fcl) {
     super(desktop, fcl);
     load();
   }
@@ -77,7 +77,7 @@ public class HistoQuote
   
    @Override
   public void postEvent(GemEvent evt) {
-    if (evt instanceof InvoiceEvent) {
+    if (evt instanceof QuoteEvent) {
       if (evt.getOperation() == GemEvent.MODIFICATION) {
         invoiceListCtrl.reload(((QuoteEvent) evt).getQuote());
       } else if (evt.getOperation() == GemEvent.CREATION) {

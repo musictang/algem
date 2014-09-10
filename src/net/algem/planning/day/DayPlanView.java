@@ -1,5 +1,5 @@
 /*
- * @(#)DayPlanView.java 2.8.w 21/07/14
+ * @(#)DayPlanView.java 2.8.w 08/09/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -396,7 +396,7 @@ public class DayPlanView
   
   private void showSubSubLabel(ScheduleRangeObject p, int x) {
     int length = p.getStart().getLength(p.getEnd());
-    if (length > 45) {
+    if (length > 56) {
       int y = setY(p.getEnd().toMinutes()) - (fm.getHeight() /2);
       String subSubLabel = p.getMember() != null ? p.getMember().getCommunName() : "";
       drawSubLabel(subSubLabel, x, y , step_x);

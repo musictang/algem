@@ -878,7 +878,7 @@ public class GemDesktopCtrl
     return m;
   }
   /*
-   * void showHelp(String url)
+   * void showHelpViewer(String url)
    *
    * {
    * String urlPrefix = getLabel("Url.doc.location"); if (aide == null ||

@@ -1,5 +1,5 @@
 /*
- * @(#)QuoteEditor 2.8.n 26/09/13
+ * @(#)QuoteEditor 2.8.w 08/09/14
  *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -75,13 +75,13 @@ public class QuoteEditor
   @Override
   public void validation() {
 
-    Quote d = view.get();
+    Quote edit = (Quote) view.get();
 
-    if (d.getNumber() == null || d.getNumber().isEmpty()) {
+    if (edit.getNumber() == null || edit.getNumber().isEmpty()) {
       try {
-        service.create(d);
-        view.setId(d.getNumber()); // rafraîchissement du numéro
-        desktop.postEvent(new QuoteCreateEvent(d));
+        service.create(edit);
+        view.setId(edit.getNumber()); // rafraîchissement du numéro
+        desktop.postEvent(new QuoteCreateEvent(edit));
       } catch (SQLException e) {
         System.err.println(e.getMessage());
       } catch (BillingException fe) {
@@ -89,9 +89,9 @@ public class QuoteEditor
       }
     } else {    
       try {
-        service.update(d);
+        service.update(edit);
         MessagePopup.information(view, MessageUtil.getMessage("modification.success.label"));
-        desktop.postEvent(new QuoteUpdateEvent(d));
+        desktop.postEvent(new QuoteUpdateEvent((Quote) edit));
       } catch (BillingException fe) {
         MessagePopup.warning(this, MessageUtil.getMessage("invoicing.update.exception")+"\n"+fe.getMessage());
       }
@@ -116,18 +116,18 @@ public class QuoteEditor
       if (!MessagePopup.confirm(this, MessageUtil.getMessage("invoice.estimate.create.confirmation"))) {
         return;
       }
-      Quote d = view.get();
+      Quote edit = (Quote) view.get();
       // le devis doit être d'abord enregistré
-      if (d.getNumber() == null || d.getNumber().isEmpty()) {
+      if (edit.getNumber() == null || edit.getNumber().isEmpty()) {
         MessagePopup.warning(this, MessageUtil.getMessage("invoice.estimate.create.warning"));
         return;
       }
-      d.setItems(view.getItems()); // récupération des articles éventuellement modifiés dans la vue 
+      edit.setItems(view.getItems()); // récupération des articles éventuellement modifiés dans la vue 
       try {
-        Invoice f = service.createInvoiceFrom(d);
-        if (f != null) {
-          MessagePopup.information(this, MessageUtil.getMessage("invoice.create.info", f.getNumber()));
-          desktop.postEvent(new InvoiceCreateEvent(f));
+        Invoice v = service.createInvoiceFrom(edit);
+        if (v != null) {
+          MessagePopup.information(this, MessageUtil.getMessage("invoice.create.info", v.getNumber()));
+          desktop.postEvent(new InvoiceCreateEvent(v));
         }
       } catch (BillingException ex) {
         MessagePopup.warning(this, ex.getMessage());
