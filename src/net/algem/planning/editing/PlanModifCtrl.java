@@ -478,7 +478,10 @@ public class PlanModifCtrl
     ScheduleObject range = dlg.getSchedule();
     DateFr start = dlg.getStart();
     DateFr end = dlg.getEnd();
-
+    Boolean doAbs = dlg.getMemoAbs();
+    Boolean doRepla = dlg.getMemoRepl();
+    String NoteAbs = dlg.getNoteAbs();
+    
     try {
       Vector<ScheduleTestConflict> v = service.testChangeTeacher(plan, range, start, end);
       if (v.size() > 0) {
@@ -491,8 +494,10 @@ public class PlanModifCtrl
       }
       // on ne modifie que ce planning s'il en existe plusieurs partageant la même action à la même date.
       if (start.equals(end) && service.hasSiblings(plan) && MessagePopup.confirm(null, MessageUtil.getMessage("teacher.modification.single.schedule.confirmation"))) {
+        //modifier cette fonction pour ajouter les insert dans la table absence
         service.changeTeacherForSchedule(plan, range, start);
       } else {
+        //modifier cette fonction pour ajouter les insert dans la table absence
         service.changeTeacher(plan, range, start, end);
       }
       desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));//XXX dlg.getDateEnd/Fin

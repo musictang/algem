@@ -1,5 +1,5 @@
 /*
- * @(#)ModifPlanTeacherDlg.java	2.8.w 05/09/14
+ * @(#)ModifPlanTeacherDlg.java	2.8.w 08/09/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -37,6 +37,7 @@ import net.algem.util.module.GemDesktop;
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
+ * @author <a href="mailto:damien.loustau@gmail.com">Damien Loustau</a>
  * @version 2.8.w
  * @since 1.0a 07/07/1999
  */
@@ -108,6 +109,18 @@ public class ModifPlanTeacherDlg
     s.setStart(view.getHourStart());
     s.setEnd(view.getHourEnd());
     return s;
+  }
+  
+  Boolean getMemoAbs() {
+    return view.getMemoAbs();    
+  }
+  
+  Boolean getMemoRepl() {
+    return view.getMemoRepla();
+  }
+  
+  String getNoteAbs() {
+    return view.getNoteAbs();
   }
 
   DateFr getStart() {
