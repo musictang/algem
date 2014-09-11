@@ -110,7 +110,7 @@ public class ModifPlanTeacherDlg
     s.setEnd(view.getHourEnd());
     return s;
   }
-  
+
   Boolean getMemoAbs() {
     return view.getMemoAbs();    
   }
