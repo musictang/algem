@@ -1,5 +1,5 @@
 /*
- * @(#)ExportMemberRTF.java 2.8.w 08/07/14
+ * @(#)ExportMemberRTF.java 2.8.x 16/09/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -51,7 +51,7 @@ import net.algem.util.module.GemDesktop;
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.8.x
  * @since 1.0b 05/03/2002
  */
 public class ExportMemberRTF
@@ -152,11 +152,13 @@ public class ExportMemberRTF
     }
 
     out.println();
-    Member fiche = member.getMember();
-    out.println("\\par N\\'e9 le : " + fiche.getBirth() + " - pratique " + fiche.getPractice() + " - niveau " + fiche.getLevel());
+    Member m = member.getMember();
+    out.println("\\par N\\'e9 le : " + m.getBirth() + " - pratique " + m.getPractice() + " - niveau " + m.getLevel());
     out.println("\\par Instruments : ");
-    for (Integer i : fiche.getInstruments()) {
-      out.println(dataCache.getInstrumentName(i));
+    if (m.getInstruments() != null) {
+      for (Integer i : m.getInstruments()) {
+        out.println(FileUtil.rtfReplaceChars(dataCache.getInstrumentName(i)));
+      }
     }
     out.println("\\par ");
 

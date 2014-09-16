@@ -1,7 +1,7 @@
 /*
- * @(#)DataConnection.java	2.8.p 07/11/13
+ * @(#)DataConnection.java	2.8.x 16/09/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,23 +28,22 @@ import java.util.logging.Level;
  * Utility class for database connection.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.g
+ * @version 2.8.x
  * @since 2.6.a 01/08/2012
  */
 public class DataConnection
 {
 
-  static final String DEFAULT_DB_USER = "nobody";
+  public static final int DEFAULT_DB_PORT = 5432;
   
-  private static final int DEFAULT_PORT = 5432;
+  static final String DEFAULT_DB_USER = "nobody";
   
   /** 
    * Default database pass. 
    * Users must change it in Postgre database (ex. ALTER USER nobody ENCRYPTED PASSWORD 'mypass').
-   * Set auth-method to password in pg_hba.conf 
+   * Set auth-method to password or md5 in pg_hba.conf 
    */
-  private static final String DEFAULT_DB_PASS = "Pigfy!"; // PigG8fy!
-  
+  private static final String DEFAULT_DB_PASS = "Pigfy!"; // PigG8fy!  
   private static final String DEFAULT_DB_NAME = "algem";
   private static final String DEFAULT_HOST = "localhost";
   private final String DEFAULT_DRIVER_NAME = "org.postgresql.Driver";
@@ -61,7 +60,7 @@ public class DataConnection
 
   public DataConnection(String host, int port, String dbname, String dbpass) {
     this.dbhost = (host == null || host.isEmpty()) ? DEFAULT_HOST : host;
-    this.dbport = port == 0 ? DEFAULT_PORT : port;
+    this.dbport = port == 0 ? DEFAULT_DB_PORT : port;
     this.dbname = (dbname == null || dbname.isEmpty()) ? DEFAULT_DB_NAME : dbname;
     this.dbpass = (dbpass == null || dbpass.isEmpty()) ? DEFAULT_DB_PASS : dbpass;
   }
@@ -70,7 +69,7 @@ public class DataConnection
    * Creates an instance with default host, port and base.
    */
   public DataConnection() {
-    this(DEFAULT_HOST, DEFAULT_PORT, DEFAULT_DB_NAME, DEFAULT_DB_PASS);
+    this(DEFAULT_HOST, DEFAULT_DB_PORT, DEFAULT_DB_NAME, DEFAULT_DB_PASS);
   }
 
   /**
@@ -78,7 +77,7 @@ public class DataConnection
    * @param host 
    */
   public DataConnection(String host) {
-    this(host, DEFAULT_PORT, DEFAULT_DB_NAME, DEFAULT_DB_PASS);
+    this(host, DEFAULT_DB_PORT, DEFAULT_DB_NAME, DEFAULT_DB_PASS);
   }
 
   /**
@@ -87,7 +86,7 @@ public class DataConnection
    * @param dbname 
    */
   public DataConnection(String host, String dbname) {
-    this(host, DEFAULT_PORT, dbname, DEFAULT_DB_PASS);
+    this(host, DEFAULT_DB_PORT, dbname, DEFAULT_DB_PASS);
   }
 
   boolean isSsl() {

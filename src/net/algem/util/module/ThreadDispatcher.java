@@ -1,7 +1,7 @@
 /*
- * @(#)ThreadDispatcher.java	2.7.d 24/01/13
+ * @(#)ThreadDispatcher.java	2.8.x 16/09/14
  * 
- * Copyright (c) 1999-2003 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -24,26 +24,28 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.logging.Level;
+import net.algem.util.GemLogger;
 import net.algem.util.event.GemRemoteEvent;
 
 /**
- * Thread for listening events sent through the network.
+ * Thread used to listening events sent through the local network.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.d
+ * @version 2.8.x
  * @since 1.0a 15/06/2003
  */
 public class ThreadDispatcher
         extends Thread {
 
-  private DesktopDispatcher dispatcher;
+  private final DesktopDispatcher dispatcher;
   private ObjectOutputStream out;
   private ObjectInputStream in;
 
   public ThreadDispatcher(Socket s, DesktopDispatcher d)
           throws IOException {
-    dispatcher = d;
+    this.dispatcher = d;
     out = new ObjectOutputStream(s.getOutputStream());
     in = new ObjectInputStream(s.getInputStream());
 
@@ -51,7 +53,7 @@ public class ThreadDispatcher
       dispatcher.ins.addElement(in);
       dispatcher.outs.addElement(out);
     }
-    System.out.println("Connexion client:" + s);
+    GemLogger.log(Level.INFO, "Connexion client:" + s);
   }
 
   @Override
@@ -59,13 +61,13 @@ public class ThreadDispatcher
     for (;;) {
       GemRemoteEvent evt = null;
       try {
-        System.out.println("Attente evt");
+        GemLogger.log(Level.INFO, "Attente evt");
         evt = (GemRemoteEvent) in.readObject();
       } catch (Exception e) {
         evt = null;
       }
       if (evt == null) {
-        System.out.println("fermeture flux");
+        GemLogger.log(Level.INFO, "fermeture flux");
         synchronized (dispatcher) {
           int idx = dispatcher.ins.indexOf(in);
           dispatcher.ins.removeElementAt(idx);
@@ -82,7 +84,7 @@ public class ThreadDispatcher
         return;
       } // fin if (evt == null) {
 
-      System.out.println("evt:" + evt);
+      GemLogger.log(Level.INFO, "evt:" + evt);
       synchronized (dispatcher) {
         for (int i = 0; i < dispatcher.outs.size(); i++) {
           ObjectOutputStream os = (ObjectOutputStream) dispatcher.outs.elementAt(i);

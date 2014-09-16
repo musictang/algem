@@ -1,7 +1,7 @@
 /*
- * @(#)DesktopDispatcher.java	2.6.a 25/09/12
+ * @(#)DesktopDispatcher.java	2.8.x 16/09/14
  *
- * Copyright (c) 1999-2003 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,21 +20,25 @@
  */
 package net.algem.util.module;
 
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Vector;
+import net.algem.util.GemLogger;
 
 /**
- * Service for sending and receiving events through the network.
+ * Service used to sending and receiving events through the local network.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.x
  */
 public class DesktopDispatcher {
 
+  static final int DEFAULT_SOCKET_PORT = 5433;
+  
   Vector<ObjectInputStream> ins = new Vector<ObjectInputStream>();
   Vector<ObjectOutputStream> outs = new Vector<ObjectOutputStream>();
 
@@ -42,9 +46,9 @@ public class DesktopDispatcher {
     ServerSocket sock;
 
     try {
-      sock = new ServerSocket(5433);
-    } catch (Exception e) {
-      e.printStackTrace();
+      sock = new ServerSocket(DEFAULT_SOCKET_PORT);
+    } catch (IOException e) {
+      GemLogger.logException(e);
       return;
     }
 
@@ -55,8 +59,8 @@ public class DesktopDispatcher {
         Socket client = sock.accept();
         ThreadDispatcher t = new ThreadDispatcher(client, dispatcher);
         t.start();
-      } catch (Exception e) {
-        e.printStackTrace();
+      } catch (IOException e) {
+        GemLogger.logException(e);
       }
     }
   }

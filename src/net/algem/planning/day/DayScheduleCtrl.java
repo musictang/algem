@@ -1,5 +1,5 @@
 /*
- * @(#)DayScheduleCtrl.java 2.8.w 27/08/14
+ * @(#)DayScheduleCtrl.java 2.8.x 16/09/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -52,7 +52,7 @@ import net.algem.util.module.GemModule;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.8.x
  * @since 1.0b 06/10/2001
  */
 public class DayScheduleCtrl
@@ -141,7 +141,7 @@ public class DayScheduleCtrl
    */
   public void mayBeMaximize() {
      if (ConfigUtil.getConf(ConfigKey.SCHEDULE_RANGE_NAMES.getKey()).equals("t")) {
-        view.setSize(new Dimension(960,735));
+        view.setSize(new Dimension(960,720));
     } 
   }
 
@@ -246,7 +246,6 @@ public class DayScheduleCtrl
       if (d != null) {
         EventQueue.invokeLater(new Runnable()
         {
-
           public void run() {
             load(d);
           }

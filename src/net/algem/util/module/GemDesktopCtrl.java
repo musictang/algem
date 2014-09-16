@@ -1,5 +1,5 @@
 /*
- * @(#)GemDesktopCtrl.java	2.8.w 27/08/14
+ * @(#)GemDesktopCtrl.java	2.8.x 16/09/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -31,6 +31,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.*;
+import java.util.logging.Level;
 import javax.swing.*;
 import javax.swing.event.EventListenerList;
 import net.algem.contact.*;
@@ -52,6 +53,7 @@ import net.algem.util.menu.*;
 import net.algem.util.model.GemCloseVetoException;
 import net.algem.util.model.Model;
 import net.algem.util.postit.CreatePostitEvent;
+import net.algem.util.postit.Postit;
 import net.algem.util.postit.PostitCreateCtrl;
 import net.algem.util.postit.PostitModule;
 import net.algem.util.ui.FrameDetach;
@@ -63,7 +65,7 @@ import net.algem.util.ui.HtmlViewer;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.8.x
  * @since 1.0a 05/07/2002
  */
 public class GemDesktopCtrl
@@ -464,7 +466,14 @@ public class GemDesktopCtrl
       JOptionPane.showMessageDialog(frame, ((MessageEvent) evt).getMessage(), "Message RMI", JOptionPane.INFORMATION_MESSAGE);
       return;
     } else if (evt instanceof CreatePostitEvent) {
-      postit.addPostit(((CreatePostitEvent) evt).getPostit());
+      Postit p = ((CreatePostitEvent) evt).getPostit();
+      if (p.getReceiver() > 0) {
+        if (dataCache.getUser().getId() == p.getReceiver()) {
+          postit.addPostit(((CreatePostitEvent) evt).getPostit());
+        }
+      } else {
+        postit.addPostit(((CreatePostitEvent) evt).getPostit());
+      }
       return;
     }
     // envoi vers le cache
@@ -661,11 +670,12 @@ public class GemDesktopCtrl
    * @throws IOException
    */
   private void initDispatcher() throws UnknownHostException, IOException {
-    dispatcher = new Socket(props.getProperty("host"), 5433);
-    System.out.println("Connexion dispatcher ok");
+    dispatcher = new Socket(props.getProperty("host"), DesktopDispatcher.DEFAULT_SOCKET_PORT);
+    // dispatcher.getPort() -> DEFAULT_SOCKET_PORT
+    GemLogger.log(Level.INFO, "Connexion dispatcher ok");
     InetAddress ia = dispatcher.getLocalAddress();
     remoteId = dataCache.getUser().getLogin() + "/" + ia.getHostName();
-    System.out.println("remoteId " + remoteId);
+    GemLogger.log(Level.INFO, "remoteId " + remoteId);
     iDispatcher = new ObjectInputStream(dispatcher.getInputStream());
     oDispatcher = new ObjectOutputStream(dispatcher.getOutputStream());
   }
