@@ -1,5 +1,5 @@
 /*
- * @(#)StopCourseAbstractDlg.java	2.6.w 03/09/14
+ * @(#)StopCourseAbstractDlg.java	2.8.x.2 18/09/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -18,14 +18,13 @@
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  * 
  */
-package net.algem.enrolment;
+package net.algem.planning.editing;
 
 import java.awt.Frame;
 import java.awt.event.ActionListener;
 import java.util.Calendar;
 import javax.swing.JDialog;
 import net.algem.planning.DateFr;
-import net.algem.planning.editing.StopCourseView;
 import net.algem.util.BundleUtil;
 import net.algem.util.MessageUtil;
 import net.algem.util.ui.GemButton;
@@ -35,7 +34,7 @@ import net.algem.util.ui.MessagePopup;
  * Abstract dialog used to stop courses or module.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.w
+ * @version 2.8.x.2
  * @since 2.6.w 03/09/14
  */
 public abstract class StopCourseAbstractDlg 

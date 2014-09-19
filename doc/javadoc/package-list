@@ -20,6 +20,7 @@ net.algem.room
 net.algem.security
 net.algem.util
 net.algem.util.event
+net.algem.util.help
 net.algem.util.jdesktop
 net.algem.util.menu
 net.algem.util.model

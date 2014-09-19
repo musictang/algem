@@ -25,7 +25,6 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import javax.swing.JPanel;
 import net.algem.enrolment.ModuleOrder;
-import net.algem.enrolment.StopCourseAbstractDlg;
 import net.algem.planning.DateFr;
 import net.algem.util.BundleUtil;
 import net.algem.util.GemCommand;

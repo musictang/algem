@@ -1,5 +1,5 @@
 /*
- * @(#)ModifPlanTeacherView.java	2.8.w 02/09/14
+ * @(#)ModifPlanTeacherView.java	2.8.x.1 18/09/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,6 +20,7 @@
  */
 package net.algem.planning.editing;
 
+import net.algem.planning.AbsenceNotification;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
@@ -47,7 +48,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.8.x.1
  */
 public class ModifPlanTeacherView
         extends ModifPlanView
@@ -155,28 +156,6 @@ public class ModifPlanTeacherView
     }
   }
   
-  public boolean getMemoAbs() {
-    if (checkAbsence.isSelected()) {
-      return true;
-    }
-    else {
-      return false;
-    }
-  }
-  
-  public boolean getMemoRepla() {
-    if (checkReplacement.isSelected()) {
-      return true;
-    }
-    else {
-      return false;
-    }
-  }
-  
-  public String getNoteAbs() {
-    return noteAbs.getText();
-  }
-
   void setTime(ScheduleObject s) {
     orig = s;
     hourRange.setStart(s.getStart());

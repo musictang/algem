@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileEditor 2.8.w 04/09/14
+ * @(#)PersonFileEditor 2.8.x.1 18/09/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -64,7 +64,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.8.x.1
  */
 public class PersonFileEditor
         extends FileEditor
@@ -499,12 +499,14 @@ public class PersonFileEditor
       GemLogger.log(ex.getMessage());
     }
   }
+  
   /**
    * Inserts or updates dossier.
    *
    * @return true if no errors
    */
   boolean save() {
+    int currentId = dossier.getId();
     try {
       dc.setAutoCommit(false);
       if (personFileView.isNewBank()) {
@@ -554,6 +556,7 @@ public class PersonFileEditor
       dc.commit();
     } catch (SQLException e1) {
       dc.rollback();
+      dossier.setId(currentId);
       GemLogger.logException(e1.getMessage(), e1);
       JOptionPane.showMessageDialog(personFileView,
               "identifiant = " + dossier.getId() + "<br>" + e1,

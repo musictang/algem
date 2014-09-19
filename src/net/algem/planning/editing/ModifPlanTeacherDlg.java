@@ -1,5 +1,5 @@
 /*
- * @(#)ModifPlanTeacherDlg.java	2.8.w 08/09/14
+ * @(#)ModifPlanTeacherDlg.java	2.8.x.1 18/09/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -109,18 +109,6 @@ public class ModifPlanTeacherDlg
     s.setStart(view.getHourStart());
     s.setEnd(view.getHourEnd());
     return s;
-  }
-
-  Boolean getMemoAbs() {
-    return view.getMemoAbs();    
-  }
-  
-  Boolean getMemoRepl() {
-    return view.getMemoRepla();
-  }
-  
-  String getNoteAbs() {
-    return view.getNoteAbs();
   }
 
   DateFr getStart() {

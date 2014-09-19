@@ -1,5 +1,5 @@
 /*
- * @(#)PlanModifCtrl.java	2.8.w 08/07/14
+ * @(#)PlanModifCtrl.java	2.8.x.1 18/09/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -50,7 +50,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.8.x.1
  * @since 1.0b 05/07/2002 lien salle et groupe
  */
 public class PlanModifCtrl
@@ -478,9 +478,6 @@ public class PlanModifCtrl
     ScheduleObject range = dlg.getSchedule();
     DateFr start = dlg.getStart();
     DateFr end = dlg.getEnd();
-    Boolean doAbs = dlg.getMemoAbs();
-    Boolean doRepla = dlg.getMemoRepl();
-    String NoteAbs = dlg.getNoteAbs();
     
     try {
       Vector<ScheduleTestConflict> v = service.testChangeTeacher(plan, range, start, end);

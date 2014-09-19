@@ -1,5 +1,5 @@
 /*
- * @(#)StopCourseDlg.java	2.6.w 04/09/14
+ * @(#)StopCourseDlg.java	2.8.x.2 18/09/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -31,7 +31,6 @@ import net.algem.enrolment.CourseOrder;
 import net.algem.enrolment.EnrolmentException;
 import net.algem.enrolment.EnrolmentService;
 import net.algem.enrolment.EnrolmentUpdateEvent;
-import net.algem.enrolment.StopCourseAbstractDlg;
 import net.algem.planning.DateFr;
 import net.algem.util.BundleUtil;
 import net.algem.util.GemCommand;
@@ -45,7 +44,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.8.x.2
  * @since 1.0a 27/09/2001
  */
 public class StopCourseDlg

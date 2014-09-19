@@ -1,5 +1,5 @@
 /*
- * @(#)AbsenceNotification.java	2.8.w 01/09/14
+ * @(#)AbsenceNotification.java	2.8.x.2 18/09/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -19,13 +19,13 @@
  * 
  */
 
-package net.algem.planning.editing;
+package net.algem.planning;
 
 /**
  * Absence notification handler.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.8.x.2
  * @since 2.8.w 01/09/14
  */
 public class AbsenceNotification {
