@@ -1,7 +1,7 @@
 /*
- * @(#)JournalAccountService.java	2.6.a 02/08/2012
+ * @(#)JournalAccountService.java	2.8.x.3 24/09/14
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -30,7 +30,7 @@ import net.algem.util.model.*;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.x.3
  * @since 2.2.a
  */
 public class JournalAccountService
@@ -63,14 +63,13 @@ public class JournalAccountService
     }
   }
 
-  public JournalAccount find(int account) throws ModelException {
+  public JournalAccount find(int account) throws ModelNotFoundException {
     try {
       return JournalAccountIO.find(account, dc);
     } catch (SQLException ex) {
       GemLogger.logException(ex);
       throw new ModelNotFoundException(
               MessageUtil.getMessage("journal.notfound.exception") + "\n(" + ex.getMessage() + ")");
-      //return null;
     }
   }
 

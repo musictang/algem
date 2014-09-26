@@ -1,7 +1,7 @@
 /*
- * @(#)CommunAccountExportService.java	2.8.r 30/12/13
+ * @(#)CommunAccountExportService.java	2.8.y 24/09/14
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -34,13 +34,12 @@ import net.algem.contact.Contact;
 import net.algem.contact.ContactIO;
 import net.algem.util.DataConnection;
 import net.algem.util.TextUtil;
-import net.algem.util.model.ModelException;
 import net.algem.util.model.ModelNotFoundException;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.r
+ * @version 2.8.y
  * @since 2.8.r 13/12/13
  */
 public abstract class CommunAccountExportService
@@ -85,19 +84,18 @@ public abstract class CommunAccountExportService
   /**
    * Retrieves the journal associated with the account {@code account}.
    *
-   * @param account
+   * @param account account id
    * @return journal code
-   * @throws ModelException if journal don't exist
+   * 
    */
   @Override
-  public String getCodeJournal(int account) throws ModelException {
+  public String getCodeJournal(int account) {
 
     String def = "NA";
     try {
       JournalAccount j = journalService.find(account);
       return j == null ? def : j.getValue();
     } catch (ModelNotFoundException e) {
-//      MessagePopup.warning(this, e.getMessage());
       return def;
     }
   }
@@ -172,7 +170,9 @@ public abstract class CommunAccountExportService
     int total = 0;
     OrderLine e = null;
     PrintWriter out = new PrintWriter(new FileWriter(path));
-    out.print("id;nom;date;reglement;piece;libelle;montant;analytique" + TextUtil.LINE_SEPARATOR);
+    // force Byte Order Mark (BOM) : windows compatibility
+    out.print("\ufeff");
+    out.print("id;nom;date;reglement;piece;libelle;montant;compte;analytique" + TextUtil.LINE_SEPARATOR);
     for (int i = 0, n = orderLines.size(); i < n; i++) {
       e = orderLines.elementAt(i);
       Contact c = ContactIO.findId(e.getPayer(), dbx);
@@ -185,6 +185,7 @@ public abstract class CommunAccountExportService
               + ";" + e.getDocument()
               + ";" + e.getLabel()
               + ";" + defaultNumberFormat.format(e.getAmount() / 100.0)
+              + ";" + e.getAccount().getNumber() + " : " + e.getAccount().getLabel()
               + ";" + e.getCostAccount().getNumber() + " : " + e.getCostAccount().getLabel()
               + TextUtil.LINE_SEPARATOR);
     }

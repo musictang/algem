@@ -1,7 +1,7 @@
 /*
- * @(#)CommunAccountTransferDlg.java	2.8.r 13/12/13
+ * @(#)CommunAccountTransferDlg.java	2.8.y 25/09/14
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -44,7 +44,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.r
+ * @version 2.8.y
  * @since 2.8.r 13/12/13
  */
 public class CommunAccountTransferDlg
@@ -122,8 +122,6 @@ public class CommunAccountTransferDlg
       System.err.println(ioe.getMessage());
     } catch (SQLException sqe) {
       GemLogger.logException(MessageUtil.getMessage("payment.transfer.exception"), sqe, this);
-    } catch (Exception ex) {
-      GemLogger.logException(MessageUtil.getMessage("payment.transfer.exception"), ex, this);
     } finally {
       setCursor(Cursor.getDefaultCursor());
     }

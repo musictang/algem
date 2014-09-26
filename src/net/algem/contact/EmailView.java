@@ -21,6 +21,7 @@
 package net.algem.contact;
 
 import java.util.Vector;
+import net.algem.util.BundleUtil;
 import net.algem.util.jdesktop.DesktopMailHandler;
 
 /**
@@ -34,11 +35,12 @@ public class EmailView extends InfoView
   private DesktopMailHandler mailHandler;
 
   public EmailView() {
-    super("Emails", true);
+    super(BundleUtil.getLabel("Email.label"), true);
     mailHandler = new DesktopMailHandler();
   }
 
   public void setEmails(Vector<Email> emails) {
+    clearAll();
     if (emails != null && emails.size() > 0) {
       for (Email e : emails) {
         MailPanel pm = new MailPanel(e, getLabel(), mailHandler);
@@ -46,11 +48,9 @@ public class EmailView extends InfoView
         add(pm);
       }
       revalidate();
-    }
-    else {
+    } else {
       addRow();
     }
-
   }
 
   public Vector<Email> getEmails() { 

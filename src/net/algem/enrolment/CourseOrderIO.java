@@ -1,5 +1,5 @@
 /*
- * @(#)CourseOrderIO.java	2.8.a 28/03/13
+ * @(#)CourseOrderIO.java	2.8.y 24/09/14
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -33,7 +33,7 @@ import net.algem.util.model.TableIO;
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.y
  * @since 1.0a 07/07/1999
  */
 public class CourseOrderIO
@@ -75,27 +75,45 @@ public class CourseOrderIO
     dc.executeUpdate(query);
   }
 
-  public static void deleteOID(CourseOrder c, DataConnection dc) throws SQLException {
-    String query = "DELETE FROM " + TABLE + " WHERE id = " + c.getId();
-
-    dc.executeUpdate(query);
-  }
-
-  public static void delete(int cmd, DataConnection dc) throws SQLException {
-    String query = "DELETE FROM " + TABLE + " WHERE idcmd = " + cmd;
-    dc.executeUpdate(query);
-  }
-  
-  public static void deleteByIdModule(int id, DataConnection dc) throws SQLException {
-    String query = "DELETE FROM " + TABLE + " WHERE module = " + id;
+  /**
+   * Deletes the course order with id {@code id}.
+   * @param id course order's id
+   * @param dc dataConnection
+   * @throws SQLException 
+   */
+  public static void deleteById(int id, DataConnection dc) throws SQLException {
+    String query = "DELETE FROM " + TABLE + " WHERE id = " + id;
     dc.executeUpdate(query);
   }
 
   /**
-   * Retrieves a list of course's orders from order {@code n}.
-   * @param orderId order id
-   * @param dc DataCache
-   * @return a list of course order
+   * Deletes course orders corresponding to the order with id {@code cmd}.
+   * @param orderId order's id
+   * @param dc dataConnection
+   * @throws SQLException 
+   */
+  public static void delete(int orderId, DataConnection dc) throws SQLException {
+    String query = "DELETE FROM " + TABLE + " WHERE idcmd = " + orderId;
+    dc.executeUpdate(query);
+  }
+  
+  /**
+   * Deletes course orders corresponding to the module order with id {@code id}.
+   * @param moduleId module order's id
+   * @param dc dataConnection
+   * @throws SQLException 
+   */
+  public static void deleteByIdModule(int moduleId, DataConnection dc) throws SQLException {
+    String query = "DELETE FROM " + TABLE + " WHERE module = " + moduleId;
+    dc.executeUpdate(query);
+  }
+
+  /**
+   * Retrieves a list of course's orders from order {@literal orderId}.
+   * @param orderId order's id
+   * @param dc dataConnection
+   * @return a list of course orders
+   * @throws java.sql.SQLException
    */
   public static Vector<CourseOrder> findId(int orderId, DataConnection dc) throws SQLException {
     String query = " AND cc.idcmd = " + orderId;
@@ -103,11 +121,9 @@ public class CourseOrderIO
   }
 
   public static Vector<CourseOrder> find(String where, DataConnection dc) throws SQLException {
-
     String query = "SELECT " + COLUMNS + ", cours.titre FROM " + TABLE + " cc,"
             + " action LEFT JOIN cours ON action.cours = cours.id"
-            + " WHERE cc.idaction = action.id";
-    
+            + " WHERE cc.idaction = action.id"; 
       return fillCourseOrder(query + where, dc);
   }
 

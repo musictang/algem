@@ -1,5 +1,5 @@
 /*
- * @(#)RoomFileEditor.java 2.8.w 23/07/14
+ * @(#)RoomFileEditor.java 2.8.y 25/09/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -38,12 +38,13 @@ import net.algem.util.model.Model;
 import net.algem.util.module.FileEditor;
 import net.algem.util.module.FileView;
 import net.algem.util.module.GemDesktopCtrl;
+import net.algem.util.module.GemModule;
 import net.algem.util.ui.*;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.8.y
  * @since 2.1.b
  */
 public class RoomFileEditor
@@ -63,10 +64,12 @@ public class RoomFileEditor
   private JMenuItem miHistoQuote;
   private JMenuItem miSchedule;
   private JMenuItem miTimes;
+  private JMenuItem miContact;
   private RoomFileView roomView;
   private RoomService service;
   private List<Equipment> oldEquip = new Vector<Equipment>();
   private int oldPayerId;
+  private int oldContactId;
   private PersonFile payerFile;
   private Date date;
 
@@ -86,7 +89,7 @@ public class RoomFileEditor
 
   @Override
   public void init() {
-    //super.init();
+    super.init();
     desktop.addGemEventListener(this);
     service = new RoomService(DataCache.getDataConnection());
     loadEquipment();
@@ -109,7 +112,8 @@ public class RoomFileEditor
     miTimes.setToolTipText(BundleUtil.getLabel("Room.times.tip"));
     miTimes.addActionListener(this);
     mOptions.add(miTimes);
-
+    mOptions.addSeparator();
+    mOptions.add(miContact = getMenuItem("Contact.change"));
     mBar.add(mFile);
     mBar.add(mOptions);
 
@@ -238,6 +242,11 @@ public class RoomFileEditor
     } else if ("CancelEditingTimes".equals(arg)) {
       roomView.removeTab((DailyTimesEditor) src);
       miTimes.setEnabled(true);
+    } else if("Contact.change".equals(arg)) {
+      System.out.println("modifier contact");
+      PersonFileSearchCtrl contactBrowser = new PersonFileSearchCtrl(desktop, BundleUtil.getLabel("Contact.browser.label"), this);
+    contactBrowser.init();
+    desktop.addPanel("Contact", contactBrowser, GemModule.S_SIZE);
     } else if (CloseableTab.CLOSE_CMD.equals(arg)) {// fermeture de l'onglet par le bouton de fermeture
       if (getClassName(OrderLineEditor.class).equals(src)) {
         btOrderLine.setEnabled(true);
@@ -267,6 +276,12 @@ public class RoomFileEditor
           ole.postEvent(evt);
         }
       }
+    }
+    else if (evt instanceof ContactSelectEvent) {
+      Contact c = ((ContactSelectEvent) evt).getContact();
+      room.setContact(c);
+      System.out.println(c + "selected");
+      roomView.setContact(c);
     }
 
   }
@@ -304,7 +319,8 @@ public class RoomFileEditor
 
     return !(r.isEqualOf(room))
             || !(r.getEquipment().equals(oldEquip))
-            || oldPayerId != r.getPayer().getId();
+            || oldPayerId != r.getPayer().getId()
+            || oldContactId != r.getContact().getId();
   }
 
   /**
@@ -356,6 +372,9 @@ public class RoomFileEditor
     }
     if (room.getPayer() != null) {
       oldPayerId = room.getPayer().getId();
+    }
+    if (room.getContact() != null) {
+      oldContactId = room.getContact().getId();
     }
   }
 

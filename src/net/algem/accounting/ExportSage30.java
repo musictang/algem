@@ -1,5 +1,5 @@
 /*
- * @(#)ExportSage30.java	2.8.w 09/07/14
+ * @(#)ExportSage30.java	2.8.x.3 24/09/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -35,14 +35,13 @@ import net.algem.config.ConfigUtil;
 import net.algem.util.DataConnection;
 import net.algem.util.MessageUtil;
 import net.algem.util.TextUtil;
-import net.algem.util.model.ModelException;
 import net.algem.util.ui.MessagePopup;
 
 /**
  * Utility class for exporting lines to CIEL accounting software.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.8.x.3
  * @since 2.8.r 17/12/13
  */
 public class ExportSage30
@@ -116,7 +115,7 @@ public class ExportSage30
   }
 
   @Override
-  public int tiersExport(String path, Vector<OrderLine> orderLines) throws IOException, SQLException, ModelException {
+  public int tiersExport(String path, Vector<OrderLine> orderLines) throws IOException, SQLException {
 
     OrderLine e = null;
     int errors = 0;

@@ -1,5 +1,5 @@
 /*
- * @(#)InvoiceView.java 2.8.w 08/09/14
+ * @(#)InvoiceView.java 2.8.y 25/09/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -65,7 +65,7 @@ import net.algem.util.ui.*;
  * Invoice / quotation view.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.8.y
  * @since 2.3.a 07/02/12
  */
 public class InvoiceView
@@ -121,7 +121,7 @@ public class InvoiceView
     invoiceId = new GemField(6);
     invoiceId.setEditable(false);
 
-    invoiceLabel = new GemField(20);
+    invoiceLabel = new GemField(25);
     date = new DateFrField();
     ref = new GemField(15);
     estab = new EstabChoice(dataCache.getList(Model.Establishment));
@@ -464,9 +464,9 @@ public class InvoiceView
     // nom établissement
     g.drawString(getEstabName(p) + ", le " + p.getDate(), left, top + 80);
     // numéro invoice
-    String nlabel = invoice.getClass() == Quote.class
+    String invoiceNumber = invoice.getClass() == Quote.class
             ? BundleUtil.getLabel("Quotation.label") : BundleUtil.getLabel("Invoice.label");
-    g.drawString(nlabel + " : " + p.getNumber(), margin, top + 100);
+    g.drawString(invoiceNumber + " : " + p.getNumber(), margin, top + 100);
     // référence
     g.drawString("Ref. : " + p.getReference(), left, top + 100);
     // émetteur
@@ -492,9 +492,9 @@ public class InvoiceView
     // encadrement du tableau d'items
     g.drawRect(margin, tabletop, InvoiceItemElement.TABLE_WIDTH, tablebottom - tabletop);
     // lignes séparatrices verticales des colonnes
-    g.drawLine(InvoiceItemElement.xColPrix, tabletop, InvoiceItemElement.xColPrix, tablebottom); // colonne prix
-    g.drawLine(InvoiceItemElement.xColTva, tabletop, InvoiceItemElement.xColTva, tablebottom); // colonne tva
-    g.drawLine(InvoiceItemElement.xColQte, tabletop, InvoiceItemElement.xColQte, tablebottom); // colonne quantité
+    g.drawLine(InvoiceItemElement.xColPrice, tabletop, InvoiceItemElement.xColPrice, tablebottom); // colonne prix
+    g.drawLine(InvoiceItemElement.xColVAT, tabletop, InvoiceItemElement.xColVAT, tablebottom); // colonne tva
+    g.drawLine(InvoiceItemElement.xColQty, tabletop, InvoiceItemElement.xColQty, tablebottom); // colonne quantité
     g.drawLine(InvoiceItemElement.xColHT, tabletop, InvoiceItemElement.xColHT, tablebottom); // colonne total HT
 
     // pied tableau

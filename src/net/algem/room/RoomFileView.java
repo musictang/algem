@@ -169,6 +169,13 @@ public class RoomFileView
       contactEditor.set(room.getContact());
     }
   }
+  
+  void setContact(Contact c) {
+     if (room != null && c != null) {
+       room.setContact(c);
+      contactEditor.set(c);
+    }
+  }
 
   private void initContact() {
     contactEditor = new ContactFileEditor(desktop);

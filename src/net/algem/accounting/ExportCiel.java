@@ -1,7 +1,7 @@
 /*
- * @(#)ExportCiel.java	2.8.r 13/12/13
+ * @(#)ExportCiel.java	2.8.x.3 24/09/14
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -33,14 +33,13 @@ import java.util.Vector;
 import net.algem.util.DataConnection;
 import net.algem.util.MessageUtil;
 import net.algem.util.TextUtil;
-import net.algem.util.model.ModelException;
 import net.algem.util.ui.MessagePopup;
 
 /**
  * Utility class for exporting lines to CIEL accounting software.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.r
+ * @version 2.8.x.3
  * @since 2.8.r 13/12/13
  */
 public class ExportCiel 
@@ -109,7 +108,7 @@ public class ExportCiel
   }
 
   @Override
-  public int tiersExport(String path, Vector<OrderLine> orderLines) throws IOException, SQLException, ModelException {
+  public int tiersExport(String path, Vector<OrderLine> orderLines) throws IOException, SQLException {
 
     OrderLine e = null;
     int errors = 0;

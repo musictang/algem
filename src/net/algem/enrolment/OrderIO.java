@@ -79,7 +79,7 @@ public class OrderIO
 
   /**
    * Deletes an order.
-   * The scheduled courses are also deleted.
+   * The scheduled courses are also deleteByIdd.
    *
    * @param c the order
    * @param dc dataConnection

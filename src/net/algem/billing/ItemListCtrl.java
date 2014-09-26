@@ -1,7 +1,7 @@
 /*
- * @(#)ItemListCtrl.java	2.8.o 08/10/13
+ * @(#)ItemListCtrl.java	2.8.y 25/09/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -43,7 +43,7 @@ import net.algem.util.ui.ListCtrl;
  * Item list controller.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.o
+ * @version 2.8.y
  * @since 2.3.a 30/01/12
  */
 public class ItemListCtrl
@@ -51,7 +51,6 @@ public class ItemListCtrl
 {
 
   private static NumberFormat nf = AccountUtil.getDefaultNumberFormat();
-//  private DataCache dataCache;
 
   public ItemListCtrl() {
     super(true);
@@ -74,8 +73,6 @@ public class ItemListCtrl
 
     super(withSearch);
     this.tableModel = tableModel;
-//    this.dataCache = dataCache;
-
     table = new JTable(tableModel) {
       @Override
       public String getToolTipText(MouseEvent e){
@@ -93,7 +90,7 @@ public class ItemListCtrl
     
     table.setAutoCreateRowSorter(true);
    
-    setColumns(400, 100, 40, 40, 120);
+    setColumns(560, 20, 30, 10, 40);
     setColumnsRenderer(1, 2, 3, 4);
     addScrollPane();
 
@@ -115,7 +112,6 @@ public class ItemListCtrl
     for (int i = 0; i < cols.length; i++) {
       cm.getColumn(cols[i]).setCellRenderer(nr);
     }
-
   }
 
   private void addScrollPane() {

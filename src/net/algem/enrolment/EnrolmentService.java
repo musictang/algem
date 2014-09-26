@@ -1,5 +1,5 @@
 /*
- * @(#)EnrolmentService.java	2.8.w 05/09/14
+ * @(#)EnrolmentService.java	2.8.y 24/09/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -41,7 +41,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.8.y
  * @since 2.4.a 20/04/12
  */
 public class EnrolmentService
@@ -74,7 +74,7 @@ public class EnrolmentService
   }
   
   /**
-   * Gets a list of courses(id, title) scheduled from {@code startDate} in {@code estab}.
+   * Gets a list of courses(id, title) scheduled from {@literal startDate} in {@literal estab}.
    * Depending course's code, schedule's type and length may be used to filter the results.
    *
    * @param estab estab id
@@ -112,7 +112,7 @@ public class EnrolmentService
 
   /**
    * Used for enrolment in {@link net.algem.enrolment.CourseEnrolmentDlg }.
-   * Gets all schedules for the course {@code c } in a week.
+   * Gets all schedules for the course {@literal c } in a week.
    *
    * @version 1.1d
    * @param c
@@ -144,7 +144,7 @@ public class EnrolmentService
   }
   
   /**
-   * Gets the date when the member {@code member} is scheduled for the action {@code action}.
+   * Gets the date when the member {@literal member} is scheduled for the action {@literal action}.
    *
    * @param action
    * @param start start date of enrolment
@@ -199,7 +199,7 @@ public class EnrolmentService
   }
 
   /**
-   * Gets the type of schedule corresponding to the {@code courseCode}.
+   * Gets the type of schedule corresponding to the {@literal courseCode}.
    *
    * @param courseCode course code
    * @return an integer representing the type constant
@@ -216,7 +216,7 @@ public class EnrolmentService
   }
 
   /**
-   * Gets the first course {@code courseId} scheduled from the {@code date} selected.
+   * Gets the first course {@literal courseId} scheduled from the {@literal date} selected.
    *
    * @param courseId course id
    * @param start start date
@@ -312,7 +312,7 @@ public class EnrolmentService
   }
   
   /**
-   * Gets the list of enrolments for the member {@code id}.
+   * Gets the list of enrolments for the member {@literal id}.
    *
    * @param id member id
    * @return a list of enrolments
@@ -331,8 +331,8 @@ public class EnrolmentService
   }
   
   /**
-   * Gets the list of course orders associated with the enrolment {@code i}
-   * and the module {@code m}.
+   * Gets the list of course orders associated with the enrolment {@literal i}
+   * and the module {@literal m}.
    *
    * @param i enrolment id
    * @param m module id
@@ -348,7 +348,7 @@ public class EnrolmentService
   }
 
   /**
-   * Gets the members scheduled for this {@code plan}.
+   * Gets the members scheduled for this {@literal plan}.
    * @param plan schedule
    * @return a list of person files
    */
@@ -393,7 +393,7 @@ public class EnrolmentService
   }
 
   /**
-   * Gets the undefined course corresponding to code {@code code}.
+   * Gets the undefined course corresponding to code {@literal code}.
    *
    * @param code integer code representation
    * @return a course with status undefined
@@ -413,7 +413,7 @@ public class EnrolmentService
   }
 
   /**
-   * Gets action id for the course {@code id}.
+   * Gets action id for the course {@literal id}.
    *
    * @param id course id
    * @return an integer
@@ -424,8 +424,8 @@ public class EnrolmentService
   }
 
   /**
-   * Gets the first scheduled course {@code c} from {@code start}
-   * in the establishment {@code estab}.
+   * Gets the first scheduled course {@literal c} from {@literal start}
+   * in the establishment {@literal estab}.
    *
    * @param idCours
    * @param start
@@ -457,7 +457,7 @@ public class EnrolmentService
   }
 
   /**
-   * Specifies if member {@code a} is already scheduled for {@code p} between the dates of enrolment.
+   * Specifies if member {@literal a} is already scheduled for {@literal p} between the dates of enrolment.
    *
    * @param m member id
    * @param p schedule
@@ -710,9 +710,21 @@ public class EnrolmentService
       dc.setAutoCommit(true);
     }
   }
+  
+  /**
+   * Removes the course order with id {@code id}.
+   * @param id course order's id
+   */
+  void stopCourse(int id)  {
+    try {
+      CourseOrderIO.deleteById(id, dc);
+    } catch (SQLException ex) {
+      GemLogger.logException(ex);
+    }
+  }
 
   /**
-   * Stops a member's course from a date {@code from}.
+   * Stops a member's course from a date {@literal from}.
    *
    * @param member id
    * @param co course order
@@ -811,7 +823,7 @@ public class EnrolmentService
   }
   
     /**
-   * Stops a module and delete (if exist) the schedule ranges after the date of {@code stop}.
+   * Stops a module and delete (if exist) the schedule ranges after the date of {@literal stop}.
    * 
    * @param mo module order
    * @param orders maps course order to course

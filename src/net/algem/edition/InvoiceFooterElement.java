@@ -1,5 +1,5 @@
 /*
- * @(#)InvoiceFooterElement.java 2.8.n 25/09/13
+ * @(#)InvoiceFooterElement.java 2.8.y 25/09/14
  *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -29,7 +29,7 @@ import net.algem.util.BundleUtil;
  * Invoice footer element.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.n
+ * @version 2.8.y
  * @since 2.3.a 23/02/12
  */
 public class InvoiceFooterElement
@@ -48,7 +48,8 @@ public class InvoiceFooterElement
 
     int xoffset = x;
     int sep1 = x + FIRST_COL_WIDTH;
-    int sep2 = sep1 + 100;
+//    int sep2 = sep1 + 100;
+    int sep2 = xColVAT;
     int acompteOffset = q.hasDownPayment() ? 40 : 0;
 
     g.drawString(BundleUtil.getLabel("Invoice.item.vat.label").toUpperCase(), x + 5, y + 30);

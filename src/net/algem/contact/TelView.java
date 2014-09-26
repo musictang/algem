@@ -41,11 +41,12 @@ public class TelView
   }
 
   public void setTels(Vector<Telephone> tels) {
+    clearAll();
     if (tels != null && tels.size() > 0) {
       for (Telephone t : tels) {
-        TelPanel pt = new TelPanel(vp, t);
-        rows.add(pt);
-        add(pt);
+        TelPanel tp = new TelPanel(vp, t);
+        rows.add(tp);
+        add(tp);
       }
       revalidate();
     } else {
@@ -86,9 +87,9 @@ public class TelView
   protected void addRow() {
     Telephone t = new Telephone();
     t.setTypeTel(Telephone.DEFAULT_TYPE);
-    TelPanel pt = new TelPanel(vp, t);
-    rows.add(pt);
-    add(pt);
+    TelPanel tp = new TelPanel(vp, t);
+    rows.add(tp);
+    add(tp);
     revalidate();
   }
 }

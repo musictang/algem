@@ -1,7 +1,7 @@
 /*
- * @(#)InvoiceItemTableModel.java 2.3.g 06/04/12
+ * @(#)InvoiceItemTableModel.java 2.8.y 25/09/14
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,7 +28,7 @@ import net.algem.util.ui.JTableModel;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.3.g
+ * @version 2.8.y
  * @since 2.3.a 07/02/12
  */
 public class InvoiceItemTableModel
@@ -38,9 +38,9 @@ public class InvoiceItemTableModel
   public InvoiceItemTableModel() {
     header = new String[]{
       BundleUtil.getLabel("Invoice.item.description.label"), 
+      BundleUtil.getLabel("Invoice.item.quantity.label"),
       BundleUtil.getLabel("Invoice.item.price.label"),
       BundleUtil.getLabel("Invoice.item.vat.label"),
-      BundleUtil.getLabel("Invoice.item.quantity.label"),
       BundleUtil.getLabel("Total.label") + " " + BundleUtil.getLabel("Invoice.et.label"),
     };
   }
@@ -53,37 +53,35 @@ public class InvoiceItemTableModel
   }
 
   @Override
-  public Object getValueAt(int ligne, int colonne) {
-    InvoiceItem a = (InvoiceItem) tuples.elementAt(ligne);
-    switch (colonne) {
-
+  public Object getValueAt(int line, int col) {
+    InvoiceItem a = (InvoiceItem) tuples.elementAt(line);
+    switch (col) {
       case 0:
         return a.getItem().getDesignation();
       case 1:
-        return a.getItem().getPrice();
-      case 2:
-        return a.getItem().getVat();
-      case 3:
         return a.getQuantity();
+      case 2:
+        return a.getItem().getPrice();
+      case 3:
+        return a.getItem().getVat();
       case 4:
         return a.getTotal(false);
-
     }
     return null;
   }
 
   @Override
-  public Class getColumnClass(int column)
+  public Class getColumnClass(int col)
   {
-    switch (column) {
+    switch (col) {
       case 0:
         return String.class;
-      case 1:
-        return Double.class;
-      case 2:
-        return Param.class;
-      case 3:
+     case 1:
         return Float.class;
+      case 2:
+        return Double.class;
+      case 3:
+        return Param.class;
       case 4:
         return Double.class;
       default:

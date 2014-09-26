@@ -1,7 +1,7 @@
 /*
- * @(#)InvoiceItemElement.java 2.6.a 17/09/12
+ * @(#)InvoiceItemElement.java 2.8.y 25/09/14
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -30,7 +30,7 @@ import net.algem.util.ImageUtil;
  * Invoice item element.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.y
  * @since 2.3.a 23/02/12
  */
 public class InvoiceItemElement
@@ -38,12 +38,11 @@ public class InvoiceItemElement
 {
 
   public static final int TABLE_WIDTH = ImageUtil.toPoints(180);
-  public static final int FIRST_COL_WIDTH = ImageUtil.toPoints(100);
-
-  public static final int xColPrix = InvoiceView.MARGIN + FIRST_COL_WIDTH;
-  public static final int xColTva = xColPrix + 60;
-  public static final int xColQte = xColTva + 30;
-  public static final int xColHT = xColQte + 45;
+  public static final int FIRST_COL_WIDTH = ImageUtil.toPoints(110);
+  public static final int xColQty = InvoiceView.MARGIN + FIRST_COL_WIDTH;
+  public static final int xColPrice = xColQty + 45;
+  public static final int xColVAT = xColPrice + 60;
+  public static final int xColHT = xColVAT + 30;
   
   private InvoiceItem af;
 
@@ -63,19 +62,17 @@ public class InvoiceItemElement
   public void draw(Graphics g) {
     setFont(g);
     String des = af.getItem().getDesignation();
-    
-    double prix = af.getItem().getPrice();
-    double tva = Double.parseDouble(af.getItem().getVat().getValue());
-    double qte = af.getQuantity();
+    double qty = af.getQuantity();
+    double price = af.getItem().getPrice();
+    double vat = Double.parseDouble(af.getItem().getVat().getValue());
     double totalHt = af.getTotal(false);
 
     int topOffset = 15;
 
     g.drawString(des, x + 5, y + topOffset);
-
-    rightAlign(g, prix, xColTva, y + topOffset);
-    rightAlign(g, tva, xColQte, y + topOffset);
-    rightAlign(g, qte, xColHT, y + topOffset);
+    rightAlign(g, qty, xColPrice, y + topOffset);
+    rightAlign(g, price, xColVAT, y + topOffset);
+    rightAlign(g, vat, xColHT, y + topOffset);
     rightAlign(g, totalHt, end, y + topOffset);
 
   }
@@ -86,12 +83,18 @@ public class InvoiceItemElement
       s = String.format("%,.2f", d);
     }
     int stringLen = (int) g.getFontMetrics().getStringBounds(s, g).getWidth();
-    int start = x - stringLen - 5;
+    int start = x - stringLen - 3;
     g.drawString(s, start, y);
   }
 
   @Override
   public void setFont(Graphics g) {
     g.setFont(serifSmall);
+  }
+  
+  protected void center(Graphics g2d, String s, int width, int x, int y) {
+    int stringLen = (int) g2d.getFontMetrics().getStringBounds(s, g2d).getWidth();
+    int start = width / 2 - stringLen / 2;
+    g2d.drawString(s, start + x, y);
   }
 }

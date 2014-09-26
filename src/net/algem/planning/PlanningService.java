@@ -1,5 +1,5 @@
 /*
- * @(#)PlanningService.java	2.8.v 16/06/14
+ * @(#)PlanningService.java	2.8.y 25/09/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -158,7 +158,7 @@ public class PlanningService
 //      dc.setAutoCommit(false);
 //      int r = ScheduleIO.deleteSchedule(action, dc);
 //      if (r > 0) {// des plages existent encore pour ce planning
-//        throw new PlanningException(MessageUtil.getMessage("ranges.delete.warning", new Object[]{r}));
+//        throw new PlanningException(MessageUtil.getMessage("ranges.deleteById.warning", new Object[]{r}));
 //      }
 //
 //      String query = null;
@@ -182,7 +182,7 @@ public class PlanningService
 
   /**
    * Removes all schedules sharing the same {@literal action}.
-   * Action is also deleted if there are no more schedules in this planning.
+   * Action is also deleteByIdd if there are no more schedules in this planning.
    *
    * @param action
    * @throws PlanningException
@@ -212,14 +212,14 @@ public class PlanningService
 
   /**
    * Deletes only the schedule {@literal s}.
-   * @param s schedule to delete
+   * @param s schedule to deleteById
    * @throws PlanningException if SQLException is catched
    */
   public void deleteSchedule(Schedule s) throws PlanningException {
     try {
 //      int r = ScheduleIO.containRanges(s, dc);
 //      if (r == 0) {
-//        ScheduleIO.delete(s, dc);
+//        ScheduleIO.deleteById(s, dc);
 //      } else {
 //        if (MessagePopup.confirm(null, MessageUtil.getMessage("schedule.suppression.warning", r))) {
           ScheduleIO.delete(s, dc);
@@ -870,6 +870,7 @@ public class PlanningService
    *
    * @param range the schedule range
    * @param t the note
+   * @throws net.algem.planning.PlanningException
    * @throws SQLException
    */
   public void updateFollowUp(ScheduleRangeObject range, String t) throws PlanningException, SQLException {

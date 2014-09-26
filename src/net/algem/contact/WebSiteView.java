@@ -22,6 +22,7 @@ package net.algem.contact;
 
 import java.util.Vector;
 import net.algem.config.Param;
+import net.algem.util.BundleUtil;
 import net.algem.util.jdesktop.DesktopBrowseHandler;
 
 /**
@@ -42,13 +43,13 @@ public class WebSiteView
   }
   
   public WebSiteView(Vector<Param> vp, boolean border) {
-    super("Sites Web", border);
+    super(BundleUtil.getLabel("Website.label"), border);
     this.vp = vp;
     browser = new DesktopBrowseHandler();
   }
 
   public void setSites(Vector<WebSite> sites) {
-
+    clearAll();
     if (sites != null && sites.size() > 0) {
       for (WebSite s : sites) {
         WebSitePanel ps = new WebSitePanel(vp, s, browser);

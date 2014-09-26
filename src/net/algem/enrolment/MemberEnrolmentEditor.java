@@ -1,5 +1,5 @@
 /*
- * @(#)MemberEnrolmentEditor.java 2.8.w 05/09/14
+ * @(#)MemberEnrolmentEditor.java 2.8.y 24/09/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -42,7 +42,6 @@ import net.algem.contact.PersonFile;
 import net.algem.course.*;
 import net.algem.planning.DateFr;
 import net.algem.planning.Hour;
-import net.algem.planning.PlanningService;
 import net.algem.planning.editing.ChangeHourCourseDlg;
 import net.algem.planning.editing.ModifPlanEvent;
 import net.algem.planning.editing.StopCourseDlg;
@@ -61,7 +60,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.8.y
  * @since 1.0b 06/09/2001
  */
 public class MemberEnrolmentEditor
@@ -97,12 +96,12 @@ public class MemberEnrolmentEditor
   private ModuleDlg moduleDlg;
 
 
-  public MemberEnrolmentEditor(GemDesktop _desktop, ActionListener _listener, PersonFile _dossier) {
+  public MemberEnrolmentEditor(GemDesktop desktop, ActionListener listener, PersonFile dossier) {
 
-    super(_desktop);
-    dossier = _dossier;
-    acListener = _listener;
-    service = new EnrolmentService(desktop.getDataCache());
+    super(desktop);
+    this.dossier = dossier;
+    acListener = listener;
+    this.service = new EnrolmentService(desktop.getDataCache());
 
     title = new GemLabel(BundleUtil.getLabel("Member.enrolment.label"));
 
@@ -431,12 +430,12 @@ public class MemberEnrolmentEditor
       return;
     }
     CourseOrder cc = ((CourseEnrolmentNode) path[i - 1]).getCourseOrder();
-//    Order cmd = ((EnrolmentNode) path[i - 3]).getOrder();
-    if (cc.getAction() == 0) {
+    if (cc.getAction() == 0 && MessagePopup.confirm(this, MessageUtil.getMessage("course.suppression.confirmation"))) {;
+      service.stopCourse(cc.getId());
+      desktop.postEvent(new EnrolmentUpdateEvent(this, dossier.getId()));
       return;
     }
     try {
-      PlanningService planningService = new PlanningService(dc);
       Course c = planningService.getCourseFromAction(cc.getAction());
       if (c.isUndefined()) {
         MessagePopup.information(this, MessageUtil.getMessage("course.invalid.choice"));
