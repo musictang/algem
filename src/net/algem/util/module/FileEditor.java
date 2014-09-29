@@ -1,5 +1,5 @@
 /*
- * @(#)FileEditor.java	2.8.w 04/09/14
+ * @(#)FileEditor.java	2.8.y 26/09/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -21,7 +21,6 @@
 package net.algem.util.module;
 
 import java.sql.SQLException;
-import java.util.List;
 import net.algem.accounting.OrderLineEditor;
 import net.algem.billing.*;
 import net.algem.config.ConfigKey;
@@ -100,9 +99,9 @@ public class FileEditor
   protected HistoInvoice addHistoInvoice(int idper) {
     HistoInvoice history = null;
     try {
-      List<Invoice> invoices = billingService.getInvoices(idper);
-      history = new HistoInvoice(desktop, invoices);
-      history.load();
+      history = new HistoInvoice(desktop, billingService);
+      history.setIdper(idper);
+      history.load(billingService.getInvoices(idper));
     } catch (SQLException ex) {
       GemLogger.logException(ex);
     }
@@ -118,9 +117,9 @@ public class FileEditor
   protected HistoQuote getHistoQuotation(int idper) {
     HistoQuote hq = null;
     try {
-      List<Quote> quotes = billingService.getQuotations(idper);
-      hq = new HistoQuote(desktop, quotes);
-
+      hq = new HistoQuote(desktop, billingService);
+      hq.setIdper(idper);
+      hq.load(billingService.getQuotations(idper));
     } catch (SQLException ex) {
       GemLogger.logException(ex);
     }

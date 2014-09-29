@@ -1,7 +1,7 @@
 /*
- * @(#)InvoiceIO.java 2.8.n 26/09/13
- * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * @(#)InvoiceIO.java 2.8.y 29/09/14
+ *
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.billing;
 
@@ -36,7 +36,7 @@ import net.algem.util.model.Model;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.n
+ * @version 2.8.y
  * @since 2.3.a 22/12/11
  */
 public class InvoiceIO
@@ -49,7 +49,7 @@ public class InvoiceIO
   private static final String KEY = "numero";
   private DataConnection dc;
   private ItemIO itemIO;
-  
+
   private static final String JOIN_COLUMNS = "id_echeancier, id_article, quantite";
 
   public InvoiceIO(DataConnection dc) {
@@ -113,7 +113,7 @@ public class InvoiceIO
    * Updates invoice order lines.
    * @param <T>
    * @param inv invoice instance
-   * @throws SQLException 
+   * @throws SQLException
    */
   protected <T extends Invoice> void setOrderLines(T inv) throws SQLException {
     Preference p = AccountPrefIO.find(AccountPrefIO.PERSONAL_ACCOUNT, dc);
@@ -217,10 +217,11 @@ public class InvoiceIO
    * @return a list of invoices
    * @throws SQLException
    */
-  public List<Invoice> findBy(int idper) throws SQLException {
-    //XXX problème si facture sans échéances
-//    String where = " WHERE numero IN (SELECT facture FROM echeancier2 WHERE payeur = " + payer + " OR adherent = " + idper + ")";
-    String where = "  WHERE debiteur = " + idper + " OR adherent = " + idper;
+  public List<Invoice> findBy(int idper, String andPeriod) throws SQLException {
+    String where = "  WHERE (debiteur = " + idper + " OR adherent = " + idper + ")";
+    if (andPeriod != null) {
+      where += andPeriod;
+    }
     return find(where);
   }
 
@@ -273,18 +274,17 @@ public class InvoiceIO
     //System.out.println(query);
     ResultSet rs = dc.executeQuery(query);
     while (rs.next()) {
-      
+
       OrderLine ol = (OrderLine) DataCache.findId(rs.getInt(1), Model.OrderLine);
       if (ol == null) {
         ol = OrderLineIO.find(rs.getInt(1), dc);
       }
-      int itemId = rs.getInt(2);//id_article
+      int itemId = rs.getInt(2);
       int qty = rs.getInt(3);
-      
+
       Item item = null;
       if (itemId > 0) {
         item = (Item) DataCache.findId(itemId, Model.Item);
-//        item = itemIO.findId(itemId);
       }
       if (item == null || itemId == 0) {
         item = new Item(ol, qty);
@@ -330,7 +330,7 @@ public class InvoiceIO
     }
     int id_echeancier = (invItem.getOrderLine() == null) ? 0 : invItem.getOrderLine().getId();
     query += id_echeancier + "," + a.getId() + "," + invItem.getQuantity() + ")";
-    dc.executeUpdate(query);//jointure
+    dc.executeUpdate(query);//joint
   }
-  
+
 }

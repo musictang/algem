@@ -1,6 +1,6 @@
 /*
- * @(#)DateRangePanel.java 2.8.t 14/04/14
- * 
+ * @(#)DateRangePanel.java 2.8.y 29/09/14
+ *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning;
 
@@ -44,7 +44,7 @@ import net.algem.util.ui.GemPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.8.y
  */
 public class DateRangePanel
         extends GemPanel
@@ -54,7 +54,7 @@ public class DateRangePanel
   //private static final long maxi = 60 * 60 * 24 * 365;
   public static final int SIMPLE_DATE = 1;
   public static final int RANGE_DATE = 2;
-  
+
   private static final Border DEFAULT_BORDER = BorderFactory.createBevelBorder(BevelBorder.LOWERED);
   private static final Insets NULL_INSETS = new Insets(0, 0, 0, 0);
   private int mode = SIMPLE_DATE;
@@ -73,7 +73,7 @@ public class DateRangePanel
    * @param border si null, la bordure par défaut est utilisée
    */
   public DateRangePanel(int mode, Border border) {
-    
+
     this.mode = mode;
     icon = ImageUtil.createImageIcon(ImageUtil.CAL_ICON);
     start = new DateFrField(new Date());
@@ -107,7 +107,7 @@ public class DateRangePanel
       d2.add(cal2);
 
       add(d2, BorderLayout.EAST);
-      
+
     }
     //dlg = new CalendarDlg(this, "calendrier");
   }
@@ -115,7 +115,7 @@ public class DateRangePanel
   public DateRangePanel() {
     this(new DateFr(new Date()), new DateFr(new Date()));
   }
-  
+
   /**
    * Creates a panel for one date only.
    * @param _start
@@ -149,8 +149,8 @@ public class DateRangePanel
 
   /**
    * Creates a panel for two dates, with border.
-   * @param _start 
-   * @param _end 
+   * @param _start
+   * @param _end
    * @param border
    */
   public DateRangePanel(DateFr _start, DateFr _end, Border border) {
@@ -158,7 +158,7 @@ public class DateRangePanel
     start.setDate(_start);
     end.setDate(_end);
   }
-  
+
   /**
    * Sets the inner and optionally the outer border of the current instance.
    * @param external external border or null if  none is required
@@ -168,7 +168,7 @@ public class DateRangePanel
     if (external != null) {
       super.setBorder(external);
     }
-    d1.setBorder(internal); 
+    d1.setBorder(internal);
     if (d2 != null) {
       d2.setBorder(internal);
     }
@@ -320,7 +320,7 @@ public class DateRangePanel
     Date dateFin = end.getDate();
     if (!newDate.before(dateFin)) {
       end.setDate(newDate);
-    } 
+    }
     start.setDate(newDate);
   }
 

@@ -1,7 +1,7 @@
 /*
- * @(#)QuoteIO.java 2.8.n 26/09/13
- * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * @(#)QuoteIO.java 2.8.y 29/09/14
+ *
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.billing;
 
@@ -33,9 +33,9 @@ import net.algem.util.model.Model;
 
 /**
  * Quote persistence {@link net.algem.billing.Quote}.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.n
+ * @version 2.8.y
  * @since 2.4.d 07/06/12
  */
 public class QuoteIO
@@ -89,7 +89,6 @@ public class QuoteIO
             + "','" + escape(f.getReference().trim())
             + "'," + f.getMember()
             + ")";
-    //System.out.println(query);
 
     try {
       dc.setAutoCommit(false);
@@ -103,7 +102,6 @@ public class QuoteIO
       dc.commit();
     } catch (SQLException sqe) {
       dc.rollback();
-      //System.err.println(sqe.getMessage());
       throw new BillingException(sqe.getMessage());
     } finally {
       dc.setAutoCommit(true);
@@ -133,7 +131,7 @@ public class QuoteIO
     //int id_echeancier = (it.getOrderLine() == null) ? 0 : it.getOrderLine().getOID();
     //query += a.getId() + "," + id_echeancier + "," + it.getQuantity() + ")";
     query += a.getId() + "," + it.getQuantity() + ")";
-    //System.out.println(query);
+
     dc.executeUpdate(query);//jointure
   }
 
@@ -213,9 +211,11 @@ public class QuoteIO
     return lf == null ? null : lf.get(0);
   }
 
-  public List<Quote> findBy(int idper) throws SQLException {
-//    String where = " WHERE debiteur = " + payer + " OR adherent = " + member;
-    String where = "  WHERE debiteur = " + idper + " OR adherent = " + idper;
+  public List<Quote> findBy(int idper, String andPeriod) throws SQLException {
+    String where = "  WHERE (debiteur = " + idper + " OR adherent = " + idper + ")";
+    if (andPeriod != null) {
+      where += andPeriod;
+    }
     return find(where);
 
   }
@@ -224,7 +224,6 @@ public class QuoteIO
 
     List<InvoiceItem> list = new ArrayList<InvoiceItem>();
     String query = "SELECT " + JOIN_COLUMNS + " FROM " + JOIN_TABLE + " WHERE id_devis = '" + d.getNumber() + "'";
-    //System.out.println(query);
     ResultSet rs = dc.executeQuery(query);
     while (rs.next()) {
       Item a = null;

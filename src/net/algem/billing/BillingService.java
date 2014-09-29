@@ -1,7 +1,7 @@
 /*
- * @(#)BillingService 2.8.n 26/09/13
+ * @(#)BillingService 2.8.y 29/09/14
  *
- * Copyright (c) 1999-2013 Musiques Tangentes All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -22,29 +22,99 @@ package net.algem.billing;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 import net.algem.accounting.Account;
 import net.algem.config.Param;
+import net.algem.planning.DateRange;
 import net.algem.util.model.GemList;
 
 /**
  * Service interface for billing.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.n
+ * @version 2.8.y
  * @since 2.3.a 06/02/12
  */
 public interface BillingService
 {
 
+  /**
+   * Get a list of invoices. By default, all invoices are returned.
+   * @return
+   * @throws SQLException
+   */
   public List<Invoice> getInvoices() throws SQLException;
 
+  /**
+   * Get a list of invoices between {@code start} and {@code end} date.
+   * @param start start date
+   * @param end end date
+   * @return a list of invoices
+   * @throws SQLException
+   */
+  public List<Invoice> getInvoices(Date start, Date end) throws SQLException;
+
+  /**
+   * Get a list of bills related to the person with id {@code idper}.
+   * @param idper person's id
+   * @return a list of invoices
+   * @throws SQLException
+   */
   public List<Invoice> getInvoices(int idper) throws SQLException;
 
+  /**
+   * Get a list of bills edited between {@code start} and {@code end} date
+   * and related to the person with id {@code idper}.
+   * @param idper person's id
+   * @param start start date
+   * @param end end date
+   * @return a list of invoices
+   * @throws SQLException
+   */
+  public List<Invoice> getInvoices(int idper, Date start, Date end) throws SQLException;
+
+  /**
+   * Get a list of quotes. By default, all quotes are returned.
+   * @return a list of quotes
+   * @throws SQLException
+   */
   public List<Quote> getQuotations() throws SQLException;
 
+  /**
+   * Get a list of quotes between {@code start} and {@code end} date.
+   * @param start start date
+   * @param end end date
+   * @return a list of quotes
+   * @throws SQLException
+   */
+  public List<Quote> getQuotations(Date start, Date end) throws SQLException;
+
+  /**
+   * Get a list of quotes related to the person with id {@code idper}.
+   * @param idper person's id
+   * @return a list of quotes
+   * @throws SQLException
+   */
   public List<Quote> getQuotations(int idper) throws SQLException;
+
+  /**
+   * Get a list of quotes edited between {@code start} and {@code end} date
+   * and related to the person with id {@code idper}.
+   * @param idper person's id
+   * @param start start date
+   * @param end end date
+   * @return a list of quotes
+   * @throws SQLException
+   */
+  public List<Quote> getQuotations(int idper,Date start, Date end) throws SQLException;
+
+  /**
+   * Find the period of the current financial year.
+   * @return a couple of dates
+   */
+  public DateRange getFinancialYear();
 
   public String getContact(int id);
 
@@ -62,12 +132,17 @@ public interface BillingService
 
   public Vector<Item> getItems(String where) throws SQLException;
 
+  /**
+   * Creates a standard invoice line.
+   * @param it standard line
+   * @throws SQLException
+   */
   public void create(Item it) throws SQLException;
 
   public void update(Item it) throws SQLException;
 
   public void delete(Item it) throws SQLException;
-  
+
   public Quote duplicate(Quote v);
 
   public Invoice createInvoiceFrom(Quote q) throws BillingException;

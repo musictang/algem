@@ -1,6 +1,6 @@
 /*
- * @(#)RoomFileEditor.java 2.8.y 25/09/14
- * 
+ * @(#)RoomFileEditor.java 2.8.y 26/09/14
+ *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.room;
 
@@ -26,6 +26,7 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
+import java.util.logging.Level;
 import javax.swing.*;
 import net.algem.accounting.OrderLineEditor;
 import net.algem.accounting.OrderLineTableModel;
@@ -64,7 +65,6 @@ public class RoomFileEditor
   private JMenuItem miHistoQuote;
   private JMenuItem miSchedule;
   private JMenuItem miTimes;
-  private JMenuItem miContact;
   private RoomFileView roomView;
   private RoomService service;
   private List<Equipment> oldEquip = new Vector<Equipment>();
@@ -113,7 +113,10 @@ public class RoomFileEditor
     miTimes.addActionListener(this);
     mOptions.add(miTimes);
     mOptions.addSeparator();
-    mOptions.add(miContact = getMenuItem("Contact.change"));
+    JMenuItem miContact = getMenuItem("Contact.change");
+    miContact.setEnabled(dataCache.authorize("Contact.modification.auth"));
+    mOptions.add(miContact);
+
     mBar.add(mFile);
     mBar.add(mOptions);
 
@@ -243,7 +246,7 @@ public class RoomFileEditor
       roomView.removeTab((DailyTimesEditor) src);
       miTimes.setEnabled(true);
     } else if("Contact.change".equals(arg)) {
-      System.out.println("modifier contact");
+//      System.out.println("modifier contact");
       PersonFileSearchCtrl contactBrowser = new PersonFileSearchCtrl(desktop, BundleUtil.getLabel("Contact.browser.label"), this);
     contactBrowser.init();
     desktop.addPanel("Contact", contactBrowser, GemModule.S_SIZE);
@@ -280,7 +283,7 @@ public class RoomFileEditor
     else if (evt instanceof ContactSelectEvent) {
       Contact c = ((ContactSelectEvent) evt).getContact();
       room.setContact(c);
-      System.out.println(c + "selected");
+//      System.out.println(c + "selected");
       roomView.setContact(c);
     }
 
@@ -294,6 +297,14 @@ public class RoomFileEditor
               MessageUtil.getMessage("room.update.confirmation", room.getName()),
               MessageUtil.getMessage("closing.label"))) {
         updateRoom(r);
+      } else {
+        try {
+          room.setContact(new Contact((Person) DataCache.findId(oldContactId, Model.Person)));
+          room.setPayer((Person) DataCache.findId(oldPayerId, Model.Person));
+        } catch (SQLException ex) {
+          GemLogger.log(Level.SEVERE, ex.getMessage());
+        }
+
       }
     }
     closeModule();
@@ -411,7 +422,7 @@ public class RoomFileEditor
       desktop.removeGemEventListener(this);
       desktop.removeModule(this);
     } catch (GemCloseVetoException ex) {
-      System.err.println(ex.getMessage());
+      GemLogger.log(Level.WARNING, ex.getMessage());
     }
   }
 

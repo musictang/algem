@@ -1,6 +1,6 @@
 /*
- * @(#)RoomFileView.java 2.8.w 17/07/14
- * 
+ * @(#)RoomFileView.java 2.8.y 26/09/14
+ *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.room;
 
@@ -39,7 +39,7 @@ import net.algem.util.ui.TabPanel;
  * Tab container for room file.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.8.y
  * @since 2.1.j
  */
 public class RoomFileView
@@ -91,7 +91,7 @@ public class RoomFileView
     setNote(note);
 
     if (room.getId() > 0) {
-      service.fillContact(room);
+      service.fillContact(room.getContact());
       initContact();
     } else {
       creation = true;
@@ -151,7 +151,7 @@ public class RoomFileView
         label = room.getPayer().getNameFirstname();
       } else if (room.getPayer().getOrganization() != null && room.getPayer().getOrganization().length() > 0) {
         label = room.getPayer().getOrganization();
-      } 
+      }
     }
     orderLineEditor.setLabel(label);
     orderLineEditor.addActionListener(listener);
@@ -169,7 +169,7 @@ public class RoomFileView
       contactEditor.set(room.getContact());
     }
   }
-  
+
   void setContact(Contact c) {
      if (room != null && c != null) {
        room.setContact(c);

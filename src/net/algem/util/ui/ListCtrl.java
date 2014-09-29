@@ -1,6 +1,6 @@
 /*
- * @(#)ListCtrl.java	2.8.w 05/09/14
- * 
+ * @(#)ListCtrl.java	2.8.y 26/09/14
+ *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.util.ui;
 
@@ -35,7 +35,7 @@ import net.algem.util.GemCommand;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.e
+ * @version 2.8.y
  * @since 1.0a 07/07/1999
  */
 public abstract class ListCtrl
@@ -53,8 +53,8 @@ public abstract class ListCtrl
 
   /**
    * Creates a list controller with optional search component.
-   * 
-   * @param searchFlag 
+   *
+   * @param searchFlag
    */
   public ListCtrl(boolean searchFlag) {
     //super();
@@ -91,9 +91,9 @@ public abstract class ListCtrl
     return tableModel.getIdFromIndex(table.convertRowIndexToModel(table.getSelectedRow()));
   }
 
-  public <E> void loadResult(List<E> liste) {
-    tableModel.clear();
-    addBlock(new Vector<E>(liste));
+  public <E> void loadResult(List<E> list) {
+    clear();
+    addBlock(new Vector<E>(list));
   }
 
   public int nbLines() {
@@ -143,13 +143,13 @@ public abstract class ListCtrl
   }
 
   /**
-   * Adds a "new search" button. 
+   * Adds a "new search" button.
    */
   private void addSearchComponent() {
     back = new GemButton(GemCommand.NEW_SEARCH_CMD);
     add(back, BorderLayout.SOUTH);
   }
-  
+
   @Override
   public String toString() {
     return getClass().getName();

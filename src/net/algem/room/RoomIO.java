@@ -1,7 +1,7 @@
 /*
- * @(#)RoomIO.java	2.8.q 09/12/13
+ * @(#)RoomIO.java	2.8.y 26/09/14
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -41,7 +41,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.q
+ * @version 2.8.y
  * @since 1.0a 07/07/1999
  */
 public class RoomIO
@@ -127,8 +127,9 @@ public class RoomIO
             + "',surf = " + n.getSurface()
             + ",npers = " + n.getNPers()
             + ",etablissement =" + n.getEstab()
-            + ",active = '" + (n.isActive() ? "t" : "f")           
+            + ",active = '" + (n.isActive() ? "t" : "f")
             + "',idtarif =" + n.getRate().getId()
+            + ",idper = " + n.getContact().getId()
             + ",payeur = " + n.getPayer().getId()
             + ",public = '" + (n.isAvailable() ? "t" : "f") + "'"
             + " WHERE id = " + n.getId();
@@ -174,15 +175,7 @@ public class RoomIO
     dc.executeUpdate(query);
   }
 
-  public Room findId(String n) {
-    return findId(new Integer(n));
-  }
-
   public Room findId(int n) {
-    return findId(new Integer(n));
-  }
-
-  public Room findId(Integer n) {
 
     String query = "WHERE id = " + n;
     Vector<Room> v = find(query);
@@ -235,7 +228,7 @@ public class RoomIO
         s.setSurface(rs.getInt(4));
         s.setNPers(rs.getInt(5));
         s.setEstab(rs.getInt(6));
-        s.setActive(rs.getBoolean(7));              
+        s.setActive(rs.getBoolean(7));
         RoomRate rt = loadRate(rs.getInt(8));
         s.setRate(rt);
         Contact c = loadContact(rs.getInt(9));
@@ -273,7 +266,7 @@ public class RoomIO
   }
 
   private Contact loadContact(int idper) throws SQLException {
-    
+
     Person p = (Person) DataCache.findId(idper, Model.Person);
     if (p != null) {
       return new Contact(p);

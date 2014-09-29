@@ -1,7 +1,7 @@
 /*
- * @(#)BasicBillingService 2.8.w 09/07/14
+ * @(#)BasicBillingService 2.8.y 27/09/14
  *
- * Copyright 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,6 +28,7 @@ import net.algem.config.ConfigUtil;
 import net.algem.config.Param;
 import net.algem.contact.Person;
 import net.algem.planning.DateFr;
+import net.algem.planning.DateRange;
 import net.algem.util.DataCache;
 import net.algem.util.GemLogger;
 import net.algem.util.GemService;
@@ -39,7 +40,7 @@ import net.algem.util.model.Model;
  * Service class for billing.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.8.y
  * @since 2.3.a 06/02/12
  */
 public class BasicBillingService
@@ -69,22 +70,61 @@ public class BasicBillingService
 
   @Override
   public List<Invoice> getInvoices(int idper) throws SQLException {
-    return invoiceIO.findBy(idper);
+    DateRange range = getFinancialYear();
+    return invoiceIO.findBy(idper, " AND date_emission BETWEEN '" + range.getStart() + "' AND '" + range.getEnd() + "'");
+  }
+
+  @Override
+  public List<Invoice> getInvoices(int idper, Date start, Date end) throws SQLException {
+    return invoiceIO.findBy(idper, " AND date_emission BETWEEN '" + start + "' AND '" + end + "'");
   }
 
   @Override
   public List<Invoice> getInvoices() throws SQLException {
-    return invoiceIO.find("");
+    //restrict to financial year
+    DateRange range = getFinancialYear();
+    return invoiceIO.find(" WHERE date_emission BETWEEN '" + range.getStart() + "' AND '" + range.getEnd() + "'");
+  }
+
+  @Override
+  public List<Invoice> getInvoices(Date start, Date end) throws SQLException {
+    return invoiceIO.find(" WHERE date_emission BETWEEN '" + start + "' AND '" + end + "'");
   }
 
   @Override
   public List<Quote> getQuotations() throws SQLException {
-    return quotationIO.find("");
+    DateRange range = getFinancialYear();
+    return quotationIO.find(" WHERE date_emission BETWEEN '" + range.getStart() + "' AND '" + range.getEnd() + "'");
+  }
+
+  @Override
+  public List<Quote> getQuotations(Date start, Date end) throws SQLException {
+    return quotationIO.find(" WHERE date_emission BETWEEN '" + start + "' AND '" + end + "'");
   }
 
   @Override
   public List<Quote> getQuotations(int idper) throws SQLException {
-    return quotationIO.findBy(idper);
+    DateRange range = getFinancialYear();
+    return quotationIO.findBy(idper, " AND date_emission BETWEEN '" + range.getStart() + "' AND '" + range.getEnd() + "'");
+  }
+
+  @Override
+  public List<Quote> getQuotations(int idper, Date start, Date end) throws SQLException {
+    return quotationIO.findBy(idper, " AND date_emission BETWEEN '" + start + "' AND '" + end + "'");
+  }
+
+  @Override
+  public DateRange getFinancialYear() {
+    Calendar cal = Calendar.getInstance();
+    cal.setTime(new Date());
+    cal.set(Calendar.MONTH, cal.getActualMinimum(Calendar.MONTH));
+    cal.set(Calendar.DAY_OF_YEAR, 1);
+    DateRange range = new DateRange();
+    range.setStart(new DateFr(cal.getTime()));
+    cal.set(Calendar.MONTH, cal.getActualMaximum(Calendar.MONTH));
+    cal.set(Calendar.DAY_OF_YEAR, cal.getActualMaximum(Calendar.DAY_OF_YEAR));
+    range.setEnd(new DateFr(cal.getTime()));
+    return range;
   }
 
   @Override
@@ -107,7 +147,7 @@ public class BasicBillingService
     } catch(SQLException ex) {
       throw new BillingException(MessageUtil.getMessage("invoicing.create.exception") + "\n" + ex.getMessage());
     }
-    
+
   }
 
   @Override
@@ -132,7 +172,7 @@ public class BasicBillingService
   /**
    * Optionnaly adds order lines when creating an invoice (from scratch or from order line selection).
    * @param inv invoice
-   * @throws SQLException 
+   * @throws SQLException
    */
   private void setOrderLine(Invoice inv) throws SQLException {
     Map<Integer,List<InvoiceItem>> map = mapInvoiceItemsByAccount(inv.getItems());
@@ -145,7 +185,7 @@ public class BasicBillingService
       inv.addOrderLine(getTotalOrderLine(inv));//ligne de paiement total
     }
   }
-  
+
   /**
    * Map invoice items by account.
    * Items with the same account are put together.
@@ -173,14 +213,14 @@ public class BasicBillingService
    * Adds order lines when creating an invoice.
    * @param inv invoice
    * @param items invoice items
-   * @throws SQLException 
+   * @throws SQLException
    */
   private void addOrderLines(Invoice inv, List<InvoiceItem> items) throws SQLException {
-    
+
     assert(items.size() > 0);
-    
+
     double total = getTotaByAccount(items);
-    
+
     InvoiceItem item = items.get(0);
     Account c = (Account) DataCache.findId(item.getItem().getAccount(), Model.Account);
     Account a = AccountPrefIO.getCostAccount(c.getId(), dc);//analytics
@@ -190,7 +230,7 @@ public class BasicBillingService
       p.setLabel(inv.getDescription());
       p.setAmount(-Math.abs(total));
       p.setModeOfPayment(ModeOfPayment.FAC.toString());
-      
+
       p.setSchool(DEFAULT_SCHOOL);
       p.setAccount(c);
       p.setCostAccount(a);
@@ -203,12 +243,12 @@ public class BasicBillingService
       }
       return;
     }
-    
+
     OrderLine n = new OrderLine(inv);
     n.setLabel(inv.getDescription());
     n.setAmount(-Math.abs(total));
     n.setModeOfPayment(ModeOfPayment.FAC.toString()); // F
-    
+
     n.setSchool(DEFAULT_SCHOOL);
     n.setAccount(c);
     n.setCostAccount(a);
@@ -229,9 +269,9 @@ public class BasicBillingService
 
     inv.addOrderLine(n);
 //    inv.addOrderLine(cp);
-    
+
   }
-  
+
   private OrderLine getTotalOrderLine(Invoice inv) {
     OrderLine cp = new OrderLine(inv);
     cp.setLabel("p" + cp.getPayer() + " a" + cp.getMember());
@@ -240,11 +280,11 @@ public class BasicBillingService
 //    cp.setAccount(n.getAccount());
 //    cp.setCostAccount(n.getCostAccount());
     cp.setSchool(DEFAULT_SCHOOL);
-    
+
     return cp;
 
   }
-  
+
   /**
    * Gets the total amount of items in the list.
    * @param items
@@ -259,7 +299,7 @@ public class BasicBillingService
   }
 
   /**
-   * 
+   *
    * @param inv
    * @param it
    * @throws SQLException
@@ -270,7 +310,7 @@ public class BasicBillingService
     Account a = AccountPrefIO.getCostAccount(c.getId(), dc);//analytics
     if (!AccountUtil.isPersonalAccount(c)) {
       // échéance de facturation pour les comptes de classe 7
-      
+
       OrderLine pe = new OrderLine(inv, it);
       pe.setSchool(DEFAULT_SCHOOL);
       pe.setAccount(c);
@@ -302,10 +342,9 @@ public class BasicBillingService
     inv.addOrderLine(ne);
     inv.addOrderLine(cp);
   }
-  
+
   @Override
   public void update(Invoice inv) throws BillingException {
-//      setOrderLine(inv);
       invoiceIO.update(inv);
   }
 
@@ -330,9 +369,6 @@ public class BasicBillingService
   }
 
   @Override
-  /**
-   * Création d'articles standards.
-   */
   public void create(Item it) throws SQLException {
     it.setStandard(true); // article standard par défaut
     itemIO.insert(it);
@@ -344,7 +380,7 @@ public class BasicBillingService
     itemIO.update(it);
     dataCache.update(it);
   }
-  
+
 
   @Override
   public Quote duplicate(Quote v){
@@ -365,9 +401,8 @@ public class BasicBillingService
       it.setItem(c);// replace item
     }
     return n;
-//    create(n);
   }
-  
+
    /**
    * Returns an item with the same properties that {@code i} except its id.
    * @param orig model
@@ -376,13 +411,13 @@ public class BasicBillingService
   private Item copy(final Item orig) {
 
       Item ni = new Item();
-      
+
       ni.setAccount(orig.getAccount());
       ni.setDesignation(orig.getDesignation());
       ni.setPrice(orig.getPrice());
       ni.setStandard(false);
       ni.setVat(orig.getVat());
-      
+
       return ni;
   }
 
@@ -391,12 +426,12 @@ public class BasicBillingService
     itemIO.delete(it);
     dataCache.remove(it);
   }
-	
+
   @Override
   public GemList<Account> getAccounts() {
     return dataCache.getList(Model.Account);
   }
-	
+
   @Override
 	public Collection<Param> getVat() {
       return dataCache.getList(Model.Vat).getData();

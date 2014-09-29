@@ -1,5 +1,5 @@
 /*
- * @(#)RoomService.java 2.8.w 24/07/14
+ * @(#)RoomService.java 2.8.y 26/09/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -43,7 +43,7 @@ import net.algem.util.ui.MessagePopup;
  * Service class for room operations.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.8.y
  * @since 2.2.b
  */
 public class RoomService
@@ -203,10 +203,12 @@ public class RoomService
    * @param r
    * @since 2.6.b
    */
-  void fillContact(Room r) {
-    ContactIO.complete(r.getContact(), dc);
+  void fillContact(Contact c) {
+    if (c != null) {
+      ContactIO.complete(c, dc);
+    }
   }
-  
+
   public DailyTimes[] findDailyTimes(int roomId) {
     try {
       return roomTimesIO.find(roomId);
@@ -215,27 +217,27 @@ public class RoomService
       return getDefaultDailyTimes();
     }
   }
-  
+
   /**
    * Default opening times.
    * @return an array of daily times
    */
   private DailyTimes[] getDefaultDailyTimes() {
     DailyTimes[] timesArray = new DailyTimes[7];
-    
+
     for (int i = 0 ; i < 7 ; i++) {
       DailyTimes dt = new DailyTimes(i+1);
       dt.setOpening(new Hour("00:00"));
       dt.setClosing(new Hour("24:00"));
-      timesArray[i] = dt;      
+      timesArray[i] = dt;
     }
     return timesArray;
   }
-  
+
   void updateTimes(int roomId, DailyTimes [] times) {
     roomTimesIO.update(roomId, times);
   }
-  
+
   public static boolean isClosed(int room, DateFr date, Hour hStart, Hour hEnd) {
     Hour closed = PlanificationUtil.isRoomClosed(room, date, hStart);
     if (new Hour().equals(closed)) {

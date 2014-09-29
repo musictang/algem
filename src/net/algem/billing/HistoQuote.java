@@ -1,5 +1,5 @@
 /*
- * @(#)HistoQuote 2.8.w 08/09/14
+ * @(#)HistoQuote 2.8.y 29/09/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -23,7 +23,10 @@ package net.algem.billing;
 
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
-import java.util.List;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import net.algem.util.BundleUtil;
+import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
 import net.algem.util.event.GemEvent;
 import net.algem.util.module.GemDesktop;
@@ -32,16 +35,16 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.8.y
  * @since 2.4.d 07/06/12
  */
-public class HistoQuote 
+public class HistoQuote
         extends HistoInvoice
 {
 
-  public <Q extends Quote> HistoQuote(GemDesktop desktop, List<Q> fcl) {
-    super(desktop, fcl);
-    load();
+  public <Q extends Quote> HistoQuote(GemDesktop desktop, BillingService service) throws SQLException {
+    super(desktop, service);
+//    load();
   }
 
    @Override
@@ -69,19 +72,38 @@ public class HistoQuote
 
   @Override
   public void actionPerformed(ActionEvent e) {
-    super.actionPerformed(e);
-    if (e.getActionCommand().equals("CtrlAbandonDevis")) {
+    Object src = e.getSource();
+    String cmd = e.getActionCommand();
+    if (src == btValidation) {
+      validation();
+    } else if (src == btCancel) {
+      cancel();
+    } else if (cmd.equals(BundleUtil.getLabel("Action.load.label"))) {
+      try {
+        if (idper > 0) {
+          load(service.getQuotations(idper, rangePanel.getStart(), rangePanel.getEnd()));
+        } else {
+          load(service.getQuotations(rangePanel.getStart(), rangePanel.getEnd()));
+        }
+      } catch (SQLException ex) {
+        GemLogger.log(Level.SEVERE, ex.getMessage());
+      }
+    } else if (cmd.equals("CtrlAbandonDevis")) {
       layout.show(this, card0);
     }
   }
-  
+
    @Override
   public void postEvent(GemEvent evt) {
     if (evt instanceof QuoteEvent) {
+      Quote q = ((QuoteEvent) evt).getQuote();
+      if (idper > 0 && !(q.getPayer() == idper || q.getMember() == idper)) {
+        return;
+      }
       if (evt.getOperation() == GemEvent.MODIFICATION) {
-        invoiceListCtrl.reload(((QuoteEvent) evt).getQuote());
+        invoiceListCtrl.reload(q);
       } else if (evt.getOperation() == GemEvent.CREATION) {
-        invoiceListCtrl.addRow(((QuoteEvent) evt).getQuote());
+        invoiceListCtrl.addRow(q);
       }
     }
   }

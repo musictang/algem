@@ -1,5 +1,5 @@
 /*
- * @(#)MenuAccounting.java 2.8.w 08/09/14
+ * @(#)MenuAccounting.java 2.8.y 26/09/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -33,11 +33,7 @@ import net.algem.config.ConfigUtil;
 import net.algem.config.ModeOfPaymentCtrl;
 import net.algem.edition.HourEmployeeDlg;
 import net.algem.room.RoomRateSearchCtrl;
-import net.algem.util.BundleUtil;
-import net.algem.util.DataCache;
-import net.algem.util.DataConnection;
-import net.algem.util.GemCommand;
-import net.algem.util.GemLogger;
+import net.algem.util.*;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.module.GemModule;
 import net.algem.util.ui.MessagePopup;
@@ -47,7 +43,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.8.w
+ * @version 2.8.y
  * @since 1.0a 07/07/1999
  */
 public class MenuAccounting
@@ -149,8 +145,8 @@ public class MenuAccounting
     } else if (menus.get("Menu.invoice.history.label").equals(arg)) {
       BillingService billService = new BasicBillingService(dataCache);
       try {
-        HistoInvoice hf = new HistoInvoice(desktop, billService.getInvoices());
-        hf.load();
+        HistoInvoice hf = new HistoInvoice(desktop, billService);
+        hf.load(billService.getInvoices());
         desktop.addPanel("Menu.invoice.history", hf, GemModule.XXL_SIZE);
         hf.addActionListener(this);
       } catch (SQLException ex) {
@@ -161,7 +157,8 @@ public class MenuAccounting
     } else if (menus.get("Menu.quotation.history.label").equals(arg)) {
       BillingService billingService = new BasicBillingService(dataCache);
       try {
-        HistoQuote hd = new HistoQuote(desktop, billingService.getQuotations());
+        HistoQuote hd = new HistoQuote(desktop, billingService);
+        hd.load(billingService.getQuotations());
         desktop.addPanel("Menu.quotation.history", hd, GemModule.XXL_SIZE);
         hd.addActionListener(this);
       } catch (SQLException ex) {
