@@ -57,7 +57,7 @@ public interface BillingService
   public List<Invoice> getInvoices(Date start, Date end) throws SQLException;
 
   /**
-   * Get a list of bills related to the person with id {@code idper}.
+   * Get the list of invoices related to the person with id {@code idper}.
    * @param idper person's id
    * @return a list of invoices
    * @throws SQLException
@@ -65,7 +65,7 @@ public interface BillingService
   public List<Invoice> getInvoices(int idper) throws SQLException;
 
   /**
-   * Get a list of bills edited between {@code start} and {@code end} date
+   * Get the list of bills edited between {@code start} and {@code end} date
    * and related to the person with id {@code idper}.
    * @param idper person's id
    * @param start start date
@@ -92,7 +92,7 @@ public interface BillingService
   public List<Quote> getQuotations(Date start, Date end) throws SQLException;
 
   /**
-   * Get a list of quotes related to the person with id {@code idper}.
+   * Get the list of quotes related to the person with id {@code idper}.
    * @param idper person's id
    * @return a list of quotes
    * @throws SQLException
@@ -100,7 +100,7 @@ public interface BillingService
   public List<Quote> getQuotations(int idper) throws SQLException;
 
   /**
-   * Get a list of quotes edited between {@code start} and {@code end} date
+   * Get the list of quotes edited between {@code start} and {@code end} date
    * and related to the person with id {@code idper}.
    * @param idper person's id
    * @param start start date

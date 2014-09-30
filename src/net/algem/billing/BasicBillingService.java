@@ -1,5 +1,5 @@
 /*
- * @(#)BasicBillingService 2.8.y 27/09/14
+ * @(#)BasicBillingService 2.8.y 29/09/14
  *
  * Copyright 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -70,8 +70,8 @@ public class BasicBillingService
 
   @Override
   public List<Invoice> getInvoices(int idper) throws SQLException {
-    DateRange range = getFinancialYear();
-    return invoiceIO.findBy(idper, " AND date_emission BETWEEN '" + range.getStart() + "' AND '" + range.getEnd() + "'");
+    // no filter by default for person's history
+    return invoiceIO.findBy(idper, null);
   }
 
   @Override
@@ -104,8 +104,8 @@ public class BasicBillingService
 
   @Override
   public List<Quote> getQuotations(int idper) throws SQLException {
-    DateRange range = getFinancialYear();
-    return quotationIO.findBy(idper, " AND date_emission BETWEEN '" + range.getStart() + "' AND '" + range.getEnd() + "'");
+    // no filter by default for person's history
+    return quotationIO.findBy(idper, null);
   }
 
   @Override
@@ -115,7 +115,7 @@ public class BasicBillingService
 
   @Override
   public DateRange getFinancialYear() {
-    Calendar cal = Calendar.getInstance();
+    /*Calendar cal = Calendar.getInstance();
     cal.setTime(new Date());
     cal.set(Calendar.MONTH, cal.getActualMinimum(Calendar.MONTH));
     cal.set(Calendar.DAY_OF_YEAR, 1);
@@ -123,7 +123,10 @@ public class BasicBillingService
     range.setStart(new DateFr(cal.getTime()));
     cal.set(Calendar.MONTH, cal.getActualMaximum(Calendar.MONTH));
     cal.set(Calendar.DAY_OF_YEAR, cal.getActualMaximum(Calendar.DAY_OF_YEAR));
-    range.setEnd(new DateFr(cal.getTime()));
+    range.setEnd(new DateFr(cal.getTime()));*/
+    DateRange range = new DateRange();
+    range.setStart(dataCache.getStartOfYear());
+    range.setEnd(dataCache.getEndOfYear());
     return range;
   }
 

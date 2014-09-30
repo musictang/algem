@@ -1,5 +1,5 @@
 /*
- * @(#)DateTimePanel.java	2.8.v 21/05/14
+ * @(#)DateTimePanel.java	2.8.y 29/09/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -31,7 +31,7 @@ import net.algem.util.ui.RemovablePanel;
  * Date and time selection panel with removing button.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.v
+ * @version 2.8.y
  * @since 2.8.t 11/04/14
  */
 public class DateTimePanel
@@ -56,7 +56,7 @@ public class DateTimePanel
 
     add(datePanel);
     add(rPanel);
-    setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1, true));  
+    setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1, false));  
   }
 
   public DateFr getDate() {

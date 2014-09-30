@@ -1,5 +1,5 @@
 /*
- * @(#)PlanningService.java	2.8.y 25/09/14
+ * @(#)PlanningService.java	2.8.y 29/09/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -58,14 +58,14 @@ public class PlanningService
   public List<DateFr> generationDate(Action a) {
     List<DateFr> v = new ArrayList<DateFr>();
 
-    int i = 0; // nombre de séances
+    int i = 0; // sessions number
     Calendar start = Calendar.getInstance(Locale.FRANCE);
     start.setTime(a.getDateStart().getDate());
     Calendar end = Calendar.getInstance(Locale.FRANCE);
     end.setTime(a.getDateEnd().getDate());
 
     while (start.get(Calendar.DAY_OF_WEEK) != a.getDay() + 1) {
-      start.add(Calendar.DATE, 1); // on incrémente d'un jour
+      start.add(Calendar.DATE, 1); // day increment
     }
     int dwm = start.get(Calendar.DAY_OF_WEEK_IN_MONTH);
     while (!start.after(end) && i < a.getNSessions()) {
@@ -77,10 +77,10 @@ public class PlanningService
 
       switch (a.getPeriodicity()) {
         case WEEK:
-          start.add(Calendar.WEEK_OF_YEAR, 1); // on incrémente d'une semaine
+          start.add(Calendar.WEEK_OF_YEAR, 1); // week increment
           break;
         case FORTNIGHT:
-          start.add(Calendar.WEEK_OF_YEAR, 2); // on incrémente de 2 semaines
+          start.add(Calendar.WEEK_OF_YEAR, 2); // 2-weeks increment
           break;
         case DAY:
           start.add(Calendar.DATE, 1);
@@ -94,7 +94,7 @@ public class PlanningService
           break;
       }
     }
-    //debug(v, vid);
+
     return v;
   }
 
@@ -154,6 +154,7 @@ public class PlanningService
    * @throws PlanningException
    */
   public void replanify(Action action, ScheduleObject plan) throws PlanningException {
+    // TODO reimplement
 //    try {
 //      dc.setAutoCommit(false);
 //      int r = ScheduleIO.deleteSchedule(action, dc);
@@ -277,11 +278,7 @@ public class PlanningService
    */
   public boolean hasSiblings(Schedule s) {
     List<Schedule> schedules = ScheduleIO.find("WHERE action = " + s.getIdAction() + " AND jour = '" + s.getDate() + "'", dc);
-    if (schedules == null || schedules.size() < 2) {
-      return false;
-    }
-
-    return true;
+    return schedules != null && schedules.size() >= 2;
   }
 
   /**
@@ -718,6 +715,7 @@ public class PlanningService
    * Finds the last scheduled date for an action {@literal action}.
    *
    * @param action action id
+   * @param dc data connection
    * @return a date
    * @throws SQLException
    */
@@ -733,9 +731,13 @@ public class PlanningService
   }
 
   /**
-   * Compression or extension of a schedule.
+   * Compress or extends a schedule.
    *
-   * @version 1.1b
+   * @param plan the schedule to change
+   * @param start start time
+   * @param end end time
+   * @param endDate last relevant date
+   * @throws net.algem.planning.PlanningException
    *
    */
   public void modifyPlanningLength(ScheduleObject plan, Hour start, Hour end, DateFr endDate) throws PlanningException {

@@ -179,7 +179,8 @@ I18N
 - Le fichier algem.properties (non inclus dans le jar) est destiné à la
 traduction des labels, des titres ou des menus.
 Ce fichier est placé dans le répertoire de travail (à l'extérieur du .jar) pour
-des raisons pratiques et historiques.
+des raisons pratiques et historiques. Le cas échéant, il est possible pour le client
+de modifier certains labels afin qu'ils correspondent aux besoins spécifiques de l'entreprise.
 Les clés sont en anglais et commencent arbitrairement par une majuscule.
 - Le fichier message.properties (inclus dans le jar) est utilisé, comme son nom
 l'indique pour les messages et les différents textes d'accompagnement : clés en

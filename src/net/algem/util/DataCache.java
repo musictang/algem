@@ -1,5 +1,5 @@
 /*
- * @(#)DataCache.java	2.8.w 05/09/14
+ * @(#)DataCache.java	2.8.y 29/09/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -65,7 +65,7 @@ import net.algem.util.model.Model;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.8.y
  * @since 1.0b 03/09/2001
  */
 public class DataCache
@@ -420,8 +420,14 @@ public class DataCache
       ROOM_LIST.addElement((Room) m);
       Collections.sort(ROOM_LIST.getData(), new RoomComparator());
     } else if (m instanceof Course) {
-      COURSE_LIST.addElement((Course) m);
-      Collections.sort(COURSE_LIST.getData(), new CourseComparator());
+      Course course = (Course)m;
+      if (course.isATP()) {
+        WORKSHOP_LIST.addElement(course);
+        Collections.sort(WORKSHOP_LIST.getData(), new CourseComparator());
+      } else {
+        COURSE_LIST.addElement(course);
+        Collections.sort(COURSE_LIST.getData(), new CourseComparator());
+      }
     } else if (m instanceof Teacher) {
       Teacher t = (Teacher) m;
       TEACHER_LIST.addElement(t);
@@ -479,7 +485,12 @@ public class DataCache
     } else if (m instanceof Establishment) {
       ESTAB_LIST.update((Establishment) m, null);
     } else if (m instanceof Course) {
-      COURSE_LIST.update((Course)m, new CourseComparator());
+      Course course = (Course)m;
+      if (course.isATP()) {
+        WORKSHOP_LIST.update(course, new CourseComparator());
+      } else {
+        COURSE_LIST.update(course, new CourseComparator());
+      }
     } else if (m instanceof Teacher) {
       Teacher t = (Teacher) m;
       TEACHER_LIST.update(t, new TeacherComparator());
@@ -538,7 +549,12 @@ public class DataCache
     } else if (m instanceof Establishment) {
       ESTAB_LIST.removeElement((Establishment) m);
     } else if (m instanceof Course) {
-      COURSE_LIST.removeElement((Course)m);
+      Course course = (Course)m;
+      if (course.isATP()) {
+        WORKSHOP_LIST.removeElement(course);
+      } else {
+        COURSE_LIST.removeElement(course);
+      }
     } else if (m instanceof Teacher) {
       TEACHER_INSTRUMENT_CACHE.remove(m.getId());
       TEACHER_LIST.removeElement((Teacher) m);

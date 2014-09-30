@@ -44,7 +44,6 @@ public class HistoQuote
 
   public <Q extends Quote> HistoQuote(GemDesktop desktop, BillingService service) throws SQLException {
     super(desktop, service);
-//    load();
   }
 
    @Override

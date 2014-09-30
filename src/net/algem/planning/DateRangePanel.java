@@ -165,9 +165,9 @@ public class DateRangePanel
    * @param internal internal border or null
    */
   public void setBorder(Border external, Border internal) {
-    if (external != null) {
-      super.setBorder(external);
-    }
+//    if (external != null) {
+      setBorder(external);
+//    }
     d1.setBorder(internal);
     if (d2 != null) {
       d2.setBorder(internal);

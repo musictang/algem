@@ -1,5 +1,5 @@
 /*
- * @(#)StudioScheduleView.java	2.8.w 09/07/14
+ * @(#)StudioScheduleView.java	2.8.y 29/09/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -51,7 +51,7 @@ import net.algem.util.ui.GridBagHelper;
  * when scheduling studio sessions.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.8.y
  * @since 2.8.v 21/05/14
  */
 class StudioScheduleView
@@ -68,7 +68,7 @@ class StudioScheduleView
    private JCheckBox onlyStudio;
 
   public StudioScheduleView(DataCache dataCache) {
-    onlyStudio = new JCheckBox("Réservation studio seul");
+    onlyStudio = new JCheckBox(BundleUtil.getLabel("Studio.booking.only"));
     onlyStudio.setBorder(null);
     onlyStudio.addItemListener(new ItemListener() {
 

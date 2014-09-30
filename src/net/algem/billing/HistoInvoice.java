@@ -91,7 +91,7 @@ public class HistoInvoice
 
   @Override
   public boolean isLoaded() {
-    return invoiceListCtrl != null;
+    return invoiceListCtrl != null && invoiceListCtrl.getData() != null && invoiceListCtrl.getData().size() > 0;
   }
 
   @Override
@@ -101,35 +101,7 @@ public class HistoInvoice
 
   @Override
   public <T extends Object> void load(Collection<T> c) {
-
-//    invoiceListCtrl = new InvoiceListCtrl(false, new BasicBillingService(dataCache));
-//    invoiceListCtrl.addMouseListener(new MouseAdapter()
-//    {
-//      @Override
-//      public void mouseClicked(MouseEvent e) {
-//        if (e.getClickCount() == 2) {
-//          int id = ((InvoiceListCtrl) invoiceListCtrl).getIdContact();
-//          if (id > 0) {
-//            PersonFileEditor m = ((GemDesktopCtrl) desktop).getPersonFileEditor(id);
-//            if (m == null) {
-//              try {
-//                desktop.setWaitCursor();
-//                PersonFile pf = (PersonFile) DataCache.findId(id, Model.PersonFile);
-//                PersonFileEditor editor = new PersonFileEditor(pf);
-//                desktop.addModule(editor);
-//              } catch (SQLException ex) {
-//                GemLogger.logException(ex);
-//              } finally {
-//                desktop.setDefaultCursor();
-//              }
-//            } else {
-//              desktop.setSelectedModule(m);
-//            }
-//          }
-//        }
-//      }
-//    });
-    if (c != null) {
+    if (invoiceListCtrl != null && c != null) {
       invoiceListCtrl.loadResult(new Vector<T>(c));
     }
   }

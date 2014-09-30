@@ -214,6 +214,7 @@ public class InvoiceIO
    * Search invoices by {@code payer} or {@code idper}.
    *
    * @param idper
+   * @param andPeriod optional period query
    * @return a list of invoices
    * @throws SQLException
    */

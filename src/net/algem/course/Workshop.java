@@ -1,7 +1,7 @@
 /*
- * @(#)Workshop.java	2.6.a 17/09/12
+ * @(#)Workshop.java	2.8.y 29/09/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,12 +20,14 @@
  */
 package net.algem.course;
 
+import net.algem.util.BundleUtil;
+
 /**
  * Workshop entity.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.8.y
  */
 public class Workshop
         implements java.io.Serializable
@@ -39,18 +41,18 @@ public class Workshop
   }
 
   public Workshop(int n) {
-    id = n;
-    name = "aucun";
+    this.id = n;
+    this.name = BundleUtil.getLabel("None.label");
   }
 
   public Workshop(String s) {
-    id = 0;
-    name = s;
+    this.id = 0;
+    this.name = s;
   }
 
   public Workshop(int i, String s) {
-    id = i;
-    name = s;
+    this.id = i;
+    this.name = s;
   }
 
   @Override

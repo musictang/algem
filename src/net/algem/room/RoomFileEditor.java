@@ -1,5 +1,5 @@
 /*
- * @(#)RoomFileEditor.java 2.8.y 26/09/14
+ * @(#)RoomFileEditor.java 2.8.y 29/09/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -203,19 +203,27 @@ public class RoomFileEditor
       if (payer <= 0) {
         return;
       }
-      HistoInvoice hf = addHistoInvoice(payer);
-      hf.addActionListener(this);
-      roomView.addTab(hf, FileView.HISTO_INVOICE_TAB_TITLE);
-      miHistoInvoice.setEnabled(false);
+      HistoInvoice hb = addHistoInvoice(payer);
+      if (hb != null) {
+        hb.addActionListener(this);
+        roomView.addTab(hb, FileView.HISTO_INVOICE_TAB_TITLE);
+        miHistoInvoice.setEnabled(false);
+      } else {
+        MessagePopup.information(view, MessageUtil.getMessage("no.invoice.recorded"));
+      }
     } else if ("Quotation.history".equals(arg)) {
       int payer = getPayer();
       if (payer <= 0) {
         return;
       }
-      HistoQuote hd = getHistoQuotation(payer);
-      hd.addActionListener(this);
-      roomView.addTab(hd, FileView.HISTO_ESTIMATE_TAB_TITLE);
-      miHistoQuote.setEnabled(false);
+      HistoQuote hq = getHistoQuotation(payer);
+      if (hq != null) {
+        hq.addActionListener(this);
+        roomView.addTab(hq, FileView.HISTO_ESTIMATE_TAB_TITLE);
+        miHistoQuote.setEnabled(false);
+      } else {
+        MessagePopup.information(view, MessageUtil.getMessage("no.quote.recorded"));
+      }
     } else if ("HistoFacture.Abandon".equals(arg)) {
       roomView.removeTab((HistoInvoice) src);
       miHistoInvoice.setEnabled(true);

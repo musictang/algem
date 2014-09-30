@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleDetailCtrl.java 2.8.w 27/08/14
+ * @(#)ScheduleDetailCtrl.java 2.8.y 30/09/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -31,6 +31,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Vector;
 import javax.swing.JDialog;
+import javax.swing.JRootPane;
 import net.algem.contact.*;
 import net.algem.contact.member.Member;
 import net.algem.contact.member.MemberService;
@@ -52,7 +53,6 @@ import net.algem.util.module.DefaultGemView;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.module.GemDesktopCtrl;
 import net.algem.util.module.GemModule;
-import net.algem.util.module.GemView;
 import net.algem.util.ui.*;
 
 /**
@@ -60,7 +60,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.8.y
  * @since 1.0a 07/07/1999
  */
 public class ScheduleDetailCtrl
@@ -442,7 +442,6 @@ public class ScheduleDetailCtrl
         if ((evt.getModifiers() & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK) {//ouverture du suivi élève touche MAJ
           //if (!c.isCollective()) { @since 2.4.a saisie suivi individuel activée pour les cours collectifs
           setFollowUp(range, c);
-//          setDefaultCursor();
           return;
         } else if ((evt.getModifiers() & InputEvent.CTRL_MASK) == InputEvent.CTRL_MASK) {
           deleteRange(range);
@@ -613,7 +612,6 @@ public class ScheduleDetailCtrl
   private void loadPersonFile(PersonFile dossier) {
     PersonFileEditor editor = new PersonFileEditor(dossier);
     desktop.addModule(editor);
-    setDefaultCursor();
     frame.setLocation(getOffset(editor.getView()));
   }
 
@@ -633,10 +631,14 @@ public class ScheduleDetailCtrl
   }
 
   private void setWaitCursor() {
-    frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+    JRootPane root = ((JRootPane) frame.getRootPane());
+    root.getGlassPane().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+    root.getGlassPane().setVisible(true);
   }
 
   private void setDefaultCursor() {
-    frame.setCursor(Cursor.getDefaultCursor());
+    JRootPane root = ((JRootPane) frame.getRootPane());
+    root.getGlassPane().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+    root.getGlassPane().setVisible(false);
   }
 }

@@ -1,5 +1,5 @@
 /*
- * @(#)CourseCtrl.java	2.8.w 08/07/14
+ * @(#)CourseCtrl.java	2.8.y 29/09/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -24,6 +24,7 @@ import java.awt.event.ActionEvent;
 import java.sql.SQLException;
 import net.algem.enrolment.CourseEnrolmentView;
 import net.algem.enrolment.EnrolmentService;
+import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
@@ -40,7 +41,7 @@ import net.algem.util.ui.SearchCtrl;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.8.y
  */
 public class CourseCtrl
         extends CardCtrl
@@ -68,7 +69,7 @@ public class CourseCtrl
     iv = new CourseEnrolmentView(enrolService);
 
     addCard("", cv);
-    addCard("Elèves inscrits", iv);
+    addCard(BundleUtil.getLabel("Course.enrolment.list.label"), iv);
 
     select(0);
   }

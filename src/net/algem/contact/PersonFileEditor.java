@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileEditor 2.8.x.1 18/09/14
+ * @(#)PersonFileEditor 2.8.y 29/09/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -64,7 +64,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.x.1
+ * @version 2.8.y
  */
 public class PersonFileEditor
         extends FileEditor
@@ -419,9 +419,13 @@ public class PersonFileEditor
       int payer = getPayer();
       if (payer > 0) {
         histoInvoice = addHistoInvoice(dossier.getId());
-        histoInvoice.addActionListener(this);
-        personFileView.addTab(histoInvoice, FileView.HISTO_INVOICE_TAB_TITLE);
-        miHistoInvoice.setEnabled(false);
+        if (histoInvoice != null) {
+          histoInvoice.addActionListener(this);
+          personFileView.addTab(histoInvoice, FileView.HISTO_INVOICE_TAB_TITLE);
+          miHistoInvoice.setEnabled(false);
+        } else {
+          MessagePopup.information(view, MessageUtil.getMessage("no.invoice.recorded"));
+        }
       }
     } else if (FileView.INVOICE_TAB_TITLE.equals(arg)) {
       addInvoice(src);
@@ -431,9 +435,13 @@ public class PersonFileEditor
       int payer = getPayer();
       if (payer > 0) {
         HistoQuote histoQuote = getHistoQuotation(dossier.getId());
-        histoQuote.addActionListener(this);
-        personFileView.addTab(histoQuote, FileView.HISTO_ESTIMATE_TAB_TITLE);
-        miHistoQuote.setEnabled(false);
+        if (histoQuote != null) {
+          histoQuote.addActionListener(this);
+          personFileView.addTab(histoQuote, FileView.HISTO_ESTIMATE_TAB_TITLE);
+          miHistoQuote.setEnabled(false);
+        } else {
+          MessagePopup.information(view, MessageUtil.getMessage("no.quote.recorded"));
+        }
       }
     } else if (CloseableTab.CLOSE_CMD.equals(arg)) {
       closeTab(src);

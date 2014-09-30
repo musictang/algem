@@ -1,7 +1,7 @@
 /*
- * @(#)WebSiteView.java	2.8.n 04/10/13
+ * @(#)WebSiteView.java	2.8.y 26/09/2014
  *
- * Copyright (c) 1998-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1998-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,7 +28,7 @@ import net.algem.util.jdesktop.DesktopBrowseHandler;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.n
+ * @version 2.8.y
  * @since 2.1.b
  */
 public class WebSiteView
