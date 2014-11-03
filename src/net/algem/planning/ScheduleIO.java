@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleIO.java	2.8.v 13/06/14
+ * @(#)ScheduleIO.java	2.8.y.1 08/10/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -41,7 +41,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.v
+ * @version 2.8.y.1
  */
 public class ScheduleIO
         extends TableIO
@@ -191,7 +191,7 @@ public class ScheduleIO
 
     Vector<Schedule> v = new Vector<Schedule>();
     String query = "SELECT " + COLUMNS + " FROM " + TABLE + " p " + where;
-
+    
     try {
       ResultSet rs = dc.executeQuery(query);
       while (rs.next()) {
@@ -236,9 +236,8 @@ public class ScheduleIO
           throws SQLException {
 
     Vector<ScheduleObject> v = new Vector<ScheduleObject>();
-
+    
     ResultSet rs = ps.executeQuery();
-
     while (!Thread.interrupted() && rs.next()) {
       ScheduleObject p = planningObjectFactory(rs, dc);
       v.addElement(p);
@@ -249,6 +248,7 @@ public class ScheduleIO
 
   private static ScheduleObject planningObjectFactory(ResultSet rs, DataConnection dc)
           throws SQLException {
+    
     ScheduleObject p = null;
 
     switch (rs.getInt(5)) {
@@ -298,8 +298,8 @@ public class ScheduleIO
         ((WorkshopSchedule) p).setWorkshop((Course) DataCache.findId(w.getCourse(), Model.Course));
         break;
     }
+    
     return p;
-
   }
 
   /**

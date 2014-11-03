@@ -1,7 +1,7 @@
 /*
- * @(#)ConflictService.java	2.8.h 03/06/13
+ * @(#)ConflictService.java	2.8.y.1 08/10/14
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -34,7 +34,7 @@ import net.algem.util.model.Model;
  * Service class for conflict verification.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.h
+ * @version 2.8.y.1
  * @since 2.4.a 08/05/12
  */
 public class ConflictService
@@ -43,7 +43,7 @@ public class ConflictService
   private DataConnection dc;
   private PreparedStatement testRoomPS;
   private PreparedStatement testRoomPS3;
-  private PreparedStatement testTeacherPS, testTeacherPS2;
+  private PreparedStatement testTeacherPS, testTeacherPS2, testTeacherPS3;
   private PreparedStatement testMemberPS;
   private PreparedStatement testMemberSchedulePS;
   private PreparedStatement testHourPS;
@@ -55,17 +55,20 @@ public class ConflictService
 			+ "AND ((debut >= ? AND debut < ?) "
 			+ "OR (fin > ? AND fin <= ?) "
 			+ "OR (debut <= ? AND fin >= ?)) and p.idper!=?");
+    
     testRoomPS = this.dc.prepareStatement("SELECT " + ScheduleIO.COLUMNS + " FROM planning p "
 			+ "WHERE jour = ? AND lieux = ? "
 			+ "AND ((debut >= ? AND debut < ?) "
 			+ "OR (fin > ? and fin <= ?) OR (debut <= ? AND fin >= ?))");
 //    testRoomPS2 = this.dc.prepareStatement("SELECT "+ScheduleIO.COLUMNS+" FROM planning p "
 //			+ "WHERE jour = ? AND lieux = ? AND debut = ? AND fin = ?");
+    
     testRoomPS3 = this.dc.prepareStatement("SELECT " + ScheduleIO.COLUMNS + " FROM planning p "
 			+ "WHERE jour = ? AND lieux = ?"
 			+ " AND ((debut >= ? AND debut < ?)"
 			+ " OR (fin > ? and fin <= ?) OR (debut <= ? AND fin >= ?))"
             + " AND p.id != ?");
+    
     testTeacherPS = this.dc.prepareStatement("SELECT " + ScheduleIO.COLUMNS + " FROM planning p "
 			+ "WHERE jour = ? AND idper = ?"
 			+ " AND ((debut >= ? AND debut < ?) OR (fin > ? AND fin <= ?) "
@@ -76,11 +79,20 @@ public class ConflictService
 			+ " AND ((debut >= ? AND debut < ?) OR (fin > ? AND fin <= ?)"
 			+ " OR (debut <= ? AND fin >= ?))"
             + " AND p.id != ?");
+    
+    testTeacherPS3 = this.dc.prepareStatement("SELECT " + ScheduleIO.COLUMNS + " FROM planning p "
+              + "WHERE jour BETWEEN ? AND ?"
+              + " AND date_part('dow', jour) = ?"
+              + " AND idper = ?"
+              + " AND lieux != ?"
+              + ConflictQueries.getSqlStatementOverlap());
+    
     testMemberPS = this.dc.prepareStatement("SELECT " + ScheduleIO.COLUMNS + " FROM planning p "
 			+ "WHERE (ptype = "+Schedule.COURSE+" OR ptype = "+Schedule.MEMBER+") "
 			+ "AND jour = ? AND idper = ? "
 			+ "AND ((debut >= ? AND debut < ?) "
 			+ "OR (fin > ? AND fin <= ?) OR (debut <= ? AND fin >= ?))");
+    
     testMemberSchedulePS = this.dc.prepareStatement("SELECT " + ScheduleIO.COLUMNS + " FROM planning p, plage pl "
 			+ "WHERE ptype = "+Schedule.COURSE
 			+ " AND p.id = pl.idplanning"
@@ -100,7 +112,7 @@ public class ConflictService
    * @return a list of conflicts
    * @throws SQLException
    */
-  public Vector<ScheduleTestConflict> testHourConflict(ScheduleObject plan, DateFr startDate, DateFr endDate, Hour hStart, Hour hEnd) throws SQLException {
+  Vector<ScheduleTestConflict> testHourConflict(ScheduleObject plan, DateFr startDate, DateFr endDate, Hour hStart, Hour hEnd) throws SQLException {
     Vector<ScheduleTestConflict> conflicts = new Vector<ScheduleTestConflict>();
 
     // tous les plannings entre 2 dates avec même action et même lieu (peu importe le date de la semaine ou le prof)
@@ -154,7 +166,7 @@ public class ConflictService
    * @return a list of conflicts
    * @throws java.sql.SQLException
    */
-  public Vector<ScheduleTestConflict> testRoomConflict(ScheduleObject plan, DateFr dateStart, DateFr dateEnd, int roomId) throws SQLException {
+  Vector<ScheduleTestConflict> testRoomConflict(ScheduleObject plan, DateFr dateStart, DateFr dateEnd, int roomId) throws SQLException {
     Vector<ScheduleTestConflict> conflicts = new Vector<ScheduleTestConflict>();
     Calendar cal = Calendar.getInstance(Locale.FRANCE);
     cal.setTime(plan.getDate().getDate());
@@ -235,7 +247,7 @@ public class ConflictService
    * @return a list of schedules
    * @throws SQLException 
    */
-  public Vector<ScheduleTestConflict> testRoomConflict(int origScheduleId, ScheduleObject newPlan) throws SQLException {
+  Vector<ScheduleTestConflict> testRoomConflict(int origScheduleId, ScheduleObject newPlan) throws SQLException {
     
     Vector<ScheduleTestConflict> conflicts = new Vector<ScheduleTestConflict>();
     Hour newHourEnd = newPlan.getEnd();
@@ -272,7 +284,7 @@ public class ConflictService
    * @return a list of conflicts
    * @throws SQLException
    */
-  public Vector<ScheduleTestConflict> testRoomConflict(ScheduleObject plan, Hour hStart, Hour hEnd, DateFr lastDate) throws SQLException {
+  Vector<ScheduleTestConflict> testRoomConflict(ScheduleObject plan, Hour hStart, Hour hEnd, DateFr lastDate) throws SQLException {
     Vector<ScheduleTestConflict> conflicts = new Vector<ScheduleTestConflict>();
     String query = "WHERE jour BETWEEN '" + plan.getDate() + "' AND '" + lastDate + "'"
             + " AND action = " + plan.getIdAction() + " AND lieux = " + plan.getIdRoom()
@@ -314,7 +326,7 @@ public class ConflictService
    * @return a list of conflicts
    * @throws SQLException 
    */
-  public Vector<ScheduleTestConflict> testRange(ScheduleObject plan, Hour hStart, Hour hEnd,  DateFr lastDate) 
+  Vector<ScheduleTestConflict> testRange(ScheduleObject plan, Hour hStart, Hour hEnd,  DateFr lastDate) 
           throws SQLException {
     Vector<ScheduleTestConflict> conflicts = new Vector<ScheduleTestConflict>();
     String where = "pg WHERE pg.idplanning IN ("
@@ -348,7 +360,7 @@ public class ConflictService
    * @return a list of conflicts
    * @throws SQLException
    */
-  public Vector<ScheduleTestConflict> testTeacherConflict(ScheduleObject orig, ScheduleObject newPlan, DateFr dateStart, DateFr dateEnd) throws SQLException {
+  Vector<ScheduleTestConflict> testTeacherConflict(ScheduleObject orig, ScheduleObject newPlan, DateFr dateStart, DateFr dateEnd) throws SQLException {
 
     Vector<ScheduleTestConflict> conflicts = new Vector<ScheduleTestConflict>();
     String query = "WHERE jour >= '" + dateStart + "' AND jour <= '" + dateEnd + "' AND action = " + orig.getIdAction() + " AND idper = " + orig.getIdPerson();
@@ -378,6 +390,103 @@ public class ConflictService
     // search schedule range overlap
     //conflicts.addAll(getRangeConflicts(orig, newPlan, dateStart, dateEnd));
     
+    return conflicts;
+  }
+  
+    /**
+   * Test teacher occupation for course postpone modification.
+   * @param plan orig schedule
+   * @param day new date of schedule
+   * @param nhStart new start time
+   * @param nhEnd new end time
+   * @return a list of conflicts
+   * @throws java.sql.SQLException
+   * @since 2.0je
+   */
+  Vector<ScheduleTestConflict> testTeacherConflict(ScheduleObject plan, DateFr day, Hour nhStart, Hour nhEnd) throws SQLException {
+
+    Vector<ScheduleTestConflict> conflicts = new Vector<ScheduleTestConflict>();
+
+    testTeacherPS2.setDate(1, new java.sql.Date(day.getTime()));
+    testTeacherPS2.setInt(2, plan.getIdPerson());
+    testTeacherPS2.setTime(3, java.sql.Time.valueOf(nhStart.toString() + ":00"));
+    testTeacherPS2.setTime(4, java.sql.Time.valueOf(nhEnd.toString() + ":00"));
+    testTeacherPS2.setTime(5, java.sql.Time.valueOf(nhStart.toString() + ":00"));
+    testTeacherPS2.setTime(6, java.sql.Time.valueOf(nhEnd.toString() + ":00"));
+    testTeacherPS2.setTime(7, java.sql.Time.valueOf(nhStart.toString() + ":00"));
+    testTeacherPS2.setTime(8, java.sql.Time.valueOf(nhEnd.toString() + ":00"));
+    testTeacherPS2.setInt(9, plan.getId());
+
+    Vector<ScheduleObject> v2 = ScheduleIO.getLoadRS(testTeacherPS2, dc);
+    for (int j = 0; j < v2.size(); j++) {
+      ScheduleObject pc = v2.elementAt(j);
+      ScheduleTestConflict conflict = new ScheduleTestConflict(pc.getDate(), pc.getStart(), pc.getEnd());
+      conflict.setTeacherFree(false);
+      conflict.setDetail(pc.getScheduleDetail());
+      conflicts.addElement(conflict);
+    }
+
+    return conflicts;
+  }
+  
+  /**
+   * Test teacher occupation for schedule copy.
+   *
+   * @param teacherId teacher id
+   * @param newPlan new schedule
+   * @return a list of conflicts
+   * @throws java.sql.SQLException
+   * @since 2.0je
+   */
+  Vector<ScheduleTestConflict> testTeacherConflict(int teacherId, ScheduleObject newPlan) throws SQLException {
+
+    Vector<ScheduleTestConflict> conflicts = new Vector<ScheduleTestConflict>();
+
+    testTeacherPS.setDate(1, new java.sql.Date(newPlan.getDate().getTime()));
+    testTeacherPS.setInt(2, teacherId);
+    testTeacherPS.setTime(3, java.sql.Time.valueOf(newPlan.getStart().toString() + ":00"));
+    testTeacherPS.setTime(4, java.sql.Time.valueOf(newPlan.getEnd().toString() + ":00"));
+    testTeacherPS.setTime(5, java.sql.Time.valueOf(newPlan.getStart().toString() + ":00"));
+    testTeacherPS.setTime(6, java.sql.Time.valueOf(newPlan.getEnd().toString() + ":00"));
+    testTeacherPS.setTime(7, java.sql.Time.valueOf(newPlan.getStart().toString() + ":00"));
+    testTeacherPS.setTime(8, java.sql.Time.valueOf(newPlan.getEnd().toString() + ":00"));
+
+    Vector<ScheduleObject> v2 = ScheduleIO.getLoadRS(testTeacherPS, dc);
+    for (int j = 0; j < v2.size(); j++) {
+      ScheduleObject pc = v2.elementAt(j);
+      ScheduleTestConflict conflict = new ScheduleTestConflict(pc.getDate(), pc.getStart(), pc.getEnd());
+      conflict.setTeacherFree(false);
+      conflict.setDetail(pc.getScheduleDetail());
+      conflicts.addElement(conflict);
+    }
+
+    return conflicts;
+  }
+  
+  Vector<ScheduleTestConflict> testTeacherConflictForScheduleLength(ScheduleObject plan, DateFr dateEnd, Hour hStart, Hour hEnd) throws SQLException {
+    testTeacherPS3.setDate(1, new java.sql.Date(plan.getDate().getTime()));
+    testTeacherPS3.setDate(2, new java.sql.Date(dateEnd.getTime()));
+    testTeacherPS3.setInt(3, (plan.getDate().getDayOfWeek() - 1));
+    testTeacherPS3.setInt(4, plan.getIdPerson());
+    testTeacherPS3.setInt(5, plan.getRoom().getId());
+    testTeacherPS3.setTime(6, java.sql.Time.valueOf(hStart.toString() + ":00"));
+    testTeacherPS3.setTime(7, java.sql.Time.valueOf(hEnd.toString() + ":00"));
+    testTeacherPS3.setTime(8, java.sql.Time.valueOf(hStart.toString() + ":00"));
+    testTeacherPS3.setTime(9, java.sql.Time.valueOf(hEnd.toString() + ":00"));
+    testTeacherPS3.setTime(10, java.sql.Time.valueOf(hStart.toString() + ":00"));
+    testTeacherPS3.setTime(11, java.sql.Time.valueOf(hEnd.toString() + ":00"));
+
+    Vector<ScheduleTestConflict> conflicts = null;
+    Vector<ScheduleObject> schedules = ScheduleIO.getLoadRS(testTeacherPS3, dc);
+    if (schedules.size() > 0) {
+      conflicts = new Vector<ScheduleTestConflict>();
+      for (ScheduleObject s : schedules) {
+        ScheduleTestConflict conflict = new ScheduleTestConflict(s.getDate(), s.getStart(), s.getEnd());
+        conflict.setTeacherFree(false);
+        conflict.setDetail(s.getScheduleDetail());
+        conflicts.addElement(conflict);
+      }
+    }
     return conflicts;
   }
   
@@ -425,92 +534,6 @@ public class ConflictService
     return conflicts;
   }
   
-  private Vector<ScheduleRange> getScheduleRanges(ScheduleObject schedule, DateFr dateStart, DateFr dateEnd) throws SQLException {
-    String query = "pg WHERE idplanning IN("
-            + "SELECT id FROM planning "
-            + "WHERE jour >= '" + dateStart + "' AND jour <= '" + dateEnd 
-            + "' AND action = " + schedule.getIdAction() 
-            + " AND idper = " + schedule.getIdPerson()
-            + ")";
-
-    return ScheduleRangeIO.find(query, dc);
-  }
-  
-  private Vector<ScheduleRange> getScheduleRanges(ScheduleObject schedule) throws SQLException {
-    String query = "pg WHERE idplanning = " + schedule.getId();
-    return ScheduleRangeIO.find(query, dc);
-  }
-
-  /**
-   * Test teacher occupation for course postpone modification.
-   * @param plan orig schedule
-   * @param day new date of schedule
-   * @param nhStart new start time
-   * @param nhEnd new end time
-   * @return a list of conflicts
-   * @throws java.sql.SQLException
-   * @since 2.0je
-   */
-  public Vector<ScheduleTestConflict> testTeacherConflict(ScheduleObject plan, DateFr day, Hour nhStart, Hour nhEnd) throws SQLException {
-
-    Vector<ScheduleTestConflict> conflicts = new Vector<ScheduleTestConflict>();
-
-    testTeacherPS2.setDate(1, new java.sql.Date(day.getTime()));
-    testTeacherPS2.setInt(2, plan.getIdPerson());
-    testTeacherPS2.setTime(3, java.sql.Time.valueOf(nhStart.toString() + ":00"));
-    testTeacherPS2.setTime(4, java.sql.Time.valueOf(nhEnd.toString() + ":00"));
-    testTeacherPS2.setTime(5, java.sql.Time.valueOf(nhStart.toString() + ":00"));
-    testTeacherPS2.setTime(6, java.sql.Time.valueOf(nhEnd.toString() + ":00"));
-    testTeacherPS2.setTime(7, java.sql.Time.valueOf(nhStart.toString() + ":00"));
-    testTeacherPS2.setTime(8, java.sql.Time.valueOf(nhEnd.toString() + ":00"));
-    testTeacherPS2.setInt(9, plan.getId());
-
-    Vector<ScheduleObject> v2 = ScheduleIO.getLoadRS(testTeacherPS2, dc);
-    for (int j = 0; j < v2.size(); j++) {
-      ScheduleObject pc = v2.elementAt(j);
-      ScheduleTestConflict conflict = new ScheduleTestConflict(pc.getDate(), pc.getStart(), pc.getEnd());
-      conflict.setTeacherFree(false);
-      conflict.setDetail(pc.getScheduleDetail());
-      conflicts.addElement(conflict);
-    }
-
-    return conflicts;
-  }
-  
-  /**
-   * Test teacher occupation for schedule copy.
-   *
-   * @param teacherId teacher id
-   * @param newPlan new schedule
-   * @return a list of conflicts
-   * @throws java.sql.SQLException
-   * @since 2.0je
-   */
-  public Vector<ScheduleTestConflict> testTeacherConflict(int teacherId, ScheduleObject newPlan) throws SQLException {
-
-    Vector<ScheduleTestConflict> conflicts = new Vector<ScheduleTestConflict>();
-
-    testTeacherPS.setDate(1, new java.sql.Date(newPlan.getDate().getTime()));
-    testTeacherPS.setInt(2, teacherId);
-    testTeacherPS.setTime(3, java.sql.Time.valueOf(newPlan.getStart().toString() + ":00"));
-    testTeacherPS.setTime(4, java.sql.Time.valueOf(newPlan.getEnd().toString() + ":00"));
-    testTeacherPS.setTime(5, java.sql.Time.valueOf(newPlan.getStart().toString() + ":00"));
-    testTeacherPS.setTime(6, java.sql.Time.valueOf(newPlan.getEnd().toString() + ":00"));
-    testTeacherPS.setTime(7, java.sql.Time.valueOf(newPlan.getStart().toString() + ":00"));
-    testTeacherPS.setTime(8, java.sql.Time.valueOf(newPlan.getEnd().toString() + ":00"));
-
-    Vector<ScheduleObject> v2 = ScheduleIO.getLoadRS(testTeacherPS, dc);
-    for (int j = 0; j < v2.size(); j++) {
-      ScheduleObject pc = v2.elementAt(j);
-      ScheduleTestConflict conflict = new ScheduleTestConflict(pc.getDate(), pc.getStart(), pc.getEnd());
-      conflict.setTeacherFree(false);
-      conflict.setDetail(pc.getScheduleDetail());
-      conflicts.addElement(conflict);
-    }
-
-    return conflicts;
-  }
-
   public Vector<ScheduleTestConflict> testMemberConflict(ScheduleObject plan, DateFr jour, Hour nhd, Hour nhf) throws SQLException {
 
     Vector<ScheduleTestConflict> conflicts = new Vector<ScheduleTestConflict>();
@@ -559,6 +582,22 @@ public class ConflictService
     }
 
     return conflicts;
+  }
+
+  private Vector<ScheduleRange> getScheduleRanges(ScheduleObject schedule, DateFr dateStart, DateFr dateEnd) throws SQLException {
+    String query = "pg WHERE idplanning IN("
+            + "SELECT id FROM planning "
+            + "WHERE jour >= '" + dateStart + "' AND jour <= '" + dateEnd 
+            + "' AND action = " + schedule.getIdAction() 
+            + " AND idper = " + schedule.getIdPerson()
+            + ")";
+
+    return ScheduleRangeIO.find(query, dc);
+  }
+  
+  private Vector<ScheduleRange> getScheduleRanges(ScheduleObject schedule) throws SQLException {
+    String query = "pg WHERE idplanning = " + schedule.getId();
+    return ScheduleRangeIO.find(query, dc);
   }
 
 }

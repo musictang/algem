@@ -712,7 +712,7 @@ public class EnrolmentService
   }
   
   /**
-   * Removes the course order with id {@code id}.
+   * Removes the course order with id {@literal id}.
    * @param id course order's id
    */
   void stopCourse(int id)  {

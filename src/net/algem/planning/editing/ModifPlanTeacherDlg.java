@@ -60,7 +60,7 @@ public class ModifPlanTeacherDlg
   }
 
   @Override
-  public void entry() {
+  public void show() {
     dlg.setVisible(true);
   }
 

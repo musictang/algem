@@ -1,7 +1,7 @@
 /*
- * @(#)ModifPlanDlg.java 2.8.a 26/04/13
+ * @(#)ModifPlanDlg.java 2.8.y.1 08/10/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -32,7 +32,7 @@ import net.algem.util.ui.GemPanel;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.y.1
  * @since 2.2.e 20/10/11
  */
 public abstract class ModifPlanDlg
@@ -78,7 +78,7 @@ public abstract class ModifPlanDlg
 
   public abstract boolean isValidate();
 
-  public void entry() {
+  public void show() {
     dlg.setVisible(true);
   }
 
@@ -86,7 +86,6 @@ public abstract class ModifPlanDlg
   public void actionPerformed(ActionEvent evt) {
     if (evt.getActionCommand().equals(GemCommand.OK_CMD)) {
       if (!isEntryValid()) {
-//        MessagePopup.warning(dlg, MessageUtil.getMessage("entry.error"));
         return;
       }
       validation = true;

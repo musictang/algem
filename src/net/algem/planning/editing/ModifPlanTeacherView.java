@@ -243,7 +243,7 @@ public class ModifPlanTeacherView
   }
   
   /**
-   * Adds or remove a note component depending on the state of {@code checkAbsence}.
+   * Adds or remove a note component depending on the state of {@literal checkAbsence}.
    */
   private void loadNoteAbsence() {
     if (checkAbsence.isSelected()) {

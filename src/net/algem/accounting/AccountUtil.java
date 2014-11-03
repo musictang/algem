@@ -149,8 +149,9 @@ public class AccountUtil {
    * If the account is of type personal, a complementary orderline is also created.
    * As a precaution, orderlines are marked not transfered.
    *
-   * @param dc
-   * @param e
+   * @param e the order to save
+   * @param dc data connection
+   * @return a new payment order line
    * @throws SQLException
    */
   public static OrderLine createEntry(OrderLine e, DataConnection dc) throws SQLException {

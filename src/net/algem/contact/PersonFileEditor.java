@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileEditor 2.8.y 29/09/14
+ * @(#)PersonFileEditor 2.8.y.1 03/11/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -64,7 +64,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.y
+ * @version 2.8.y.1
  */
 public class PersonFileEditor
         extends FileEditor
@@ -203,7 +203,20 @@ public class PersonFileEditor
           orderLineEditor.postEvent(evt);
         }
       }
-    }
+    } // TODO rehearsal orderline update
+    /*if (evt instanceof OrderLineEvent) {
+      OrderLine ol = ((OrderLineEvent) evt).getOrder();
+      if (dossier.getId() == ol.getPayer() || dossier.getId() == ol.getMember()) {
+        if (orderLineEditor == null) {
+          ((GemButton) evt.getSource()).setEnabled(false);
+        }
+        orderLineEditor = null;
+        personFileView.removeTab(orderLineEditor);
+
+        dlgSchedulePayment();
+      }
+
+    }*/
 
   }
 
@@ -625,7 +638,7 @@ public class PersonFileEditor
     }
 
     personFileView.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-    OrderLineTableModel tableEcheancier = new OrderLineTableModel();
+    OrderLineTableModel orderTableModel = new OrderLineTableModel();
     Person p = dossier.getContact();
 
     // chargement des échéances
@@ -637,15 +650,15 @@ public class PersonFileEditor
         if (p == null) {
           p = dossier.getContact();
         }
-        tableEcheancier.load(OrderLineIO.findByMember(dossier.getId(), p.getId(), dc));
+        orderTableModel.load(OrderLineIO.findByMember(dossier.getId(), p.getId(), dc));
       } else {
-        tableEcheancier.load(OrderLineIO.findByMemberOrPayer(dossier.getId(), p.getId(), dc));
+        orderTableModel.load(OrderLineIO.findByMemberOrPayer(dossier.getId(), p.getId(), dc));
       }
     } else {
-      tableEcheancier.load(OrderLineIO.findByMemberOrPayer(dossier.getId(), p.getId(), dc));
+      orderTableModel.load(OrderLineIO.findByMemberOrPayer(dossier.getId(), p.getId(), dc));
     }
 
-    addSchedulePayment(tableEcheancier, p);
+    addSchedulePayment(orderTableModel, p);
 
     personFileView.setCursor(Cursor.getDefaultCursor());
   }
@@ -871,10 +884,24 @@ public class PersonFileEditor
   /**
    * Checking homonyms.
    */
-  private boolean contactExists(String name, String firstName) {
-    String where = " WHERE lower(nom) = '" + name.toLowerCase() + "' AND lower(prenom) = '" + firstName.toLowerCase() + "'";
-    Contact c = ContactIO.findId(where, dc);
-    return c != null;
+  private boolean contactExists(Contact c) {
+    boolean found = false;
+    String where = "";
+    if (c.getName() != null && c.getName().length() > 0) {
+      where = " WHERE lower(nom) = '" + c.getName().toLowerCase() + "'";
+      if (c.getFirstName() != null && c.getFirstName().length() > 0) {
+        where +=  " AND lower(prenom) = '" + c.getFirstName().toLowerCase() + "'";
+      }
+      if (ContactIO.findId(where, dc) != null) {
+        return true;
+      }
+    }
+
+    if (c.getOrganization() != null && c.getOrganization().length() > 0) {
+      where = " WHERE lower(organisation) = '" + c.getOrganization().toLowerCase() + "'";
+      found = ContactIO.findId(where, dc) != null;
+    }
+    return found;
   }
 
   /**
@@ -884,8 +911,7 @@ public class PersonFileEditor
    * @return a message
    */
   private String checkContact(String message) {
-    if (dossier.getContact().getId() == 0
-            && contactExists(dossier.getContact().getName(), dossier.getContact().getFirstName())) {
+    if (dossier.getContact().getId() == 0 && contactExists(dossier.getContact())) {
       return MessageUtil.getMessage("contact.create.warning");
     }
     return message;
@@ -1036,7 +1062,7 @@ public class PersonFileEditor
       miMember.setEnabled(true);
     } else if (OrderLineEditor.class.getSimpleName().equals(classname)) {
       personFileView.activate(true, "Member.schedule.payment");
-      desktop.removeGemEventListener(orderLineEditor);
+      desktop.removeGemEventListener(orderLineEditor); //XXX unused
     } else if (SubscriptionCardEditor.class.getSimpleName().equals(classname)) {
       miCard.setEnabled(true);
     } else if (HistoRehearsalView.class.getSimpleName().equals(classname)) {

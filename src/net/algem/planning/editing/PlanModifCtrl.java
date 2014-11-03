@@ -1,5 +1,5 @@
 /*
- * @(#)PlanModifCtrl.java	2.8.x.1 18/09/14
+ * @(#)PlanModifCtrl.java	2.8.y.1 08/10/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -50,7 +50,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.x.1
+ * @version 2.8.y.1
  * @since 1.0b 05/07/2002 lien salle et groupe
  */
 public class PlanModifCtrl
@@ -278,7 +278,7 @@ public class PlanModifCtrl
     dlg.setDate(cal.getTime());
     dlg.setHour(plan.getStart(), plan.getEnd());
 
-    dlg.entry();
+    dlg.show();
     if (!dlg.isValidate()) {
       return;
     }
@@ -289,7 +289,7 @@ public class PlanModifCtrl
     Hour hEnd = dlg.getNewHourEnd();
 
     try {
-      Vector<ScheduleTestConflict> v = service.testHour(plan, start, end, hStart, hEnd);
+      Vector<ScheduleTestConflict> v = service.checkHour(plan, start, end, hStart, hEnd);
       if (v.size() > 0) {
         ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), "Conflits changement d'heure");
         for (int i = 0; i < v.size(); i++) {
@@ -347,7 +347,7 @@ public class PlanModifCtrl
     try {
       Action a = ((CourseSchedule) plan).getAction();
       ModifPlanActionDlg dlg = new ModifPlanActionDlg(desktop, a);
-      dlg.entry();
+      dlg.show();
       if (!dlg.isValidate()) {
         return;
       }
@@ -363,7 +363,7 @@ public class PlanModifCtrl
   }
 
   /**
-   * Gets the maximum number of places available for this {@code room}.
+   * Gets the maximum number of places available for this {@literal room}.
    *
    * @param np maximum number of places of the current action
    * @param room room instance
@@ -384,7 +384,7 @@ public class PlanModifCtrl
    */
   private void dialogChangeCourse() {
     ModifPlanCourseDlg dlg = new ModifPlanCourseDlg(desktop, plan);
-    dlg.entry();
+    dlg.show();
     if (!dlg.isValidate()) {
       return;
     }
@@ -422,7 +422,7 @@ public class PlanModifCtrl
     dlg.setDate(cal.getTime());
     dlg.setRoom(plan.getIdRoom());
 
-    dlg.entry();
+    dlg.show();
     if (!dlg.isValidate()) {
       return;
     }
@@ -432,7 +432,7 @@ public class PlanModifCtrl
     int roomId = dlg.getNewRoom();
 
     try {
-      Vector<ScheduleTestConflict> v = service.testChangeRoom(plan, start, end, roomId);
+      Vector<ScheduleTestConflict> v = service.checkChangeRoom(plan, start, end, roomId);
       if (v.size() > 0) {
         ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), "Conflits changement de salle");
         for (int i = 0; i < v.size(); i++) {
@@ -470,7 +470,7 @@ public class PlanModifCtrl
     dlg.setDate(cal.getTime());
     dlg.set(plan);
 
-    dlg.entry();
+    dlg.show();
     if (!dlg.isValidate()) {
       return;
     }
@@ -480,7 +480,7 @@ public class PlanModifCtrl
     DateFr end = dlg.getEnd();
     
     try {
-      Vector<ScheduleTestConflict> v = service.testChangeTeacher(plan, range, start, end);
+      Vector<ScheduleTestConflict> v = service.checkChangeTeacher(plan, range, start, end);
       if (v.size() > 0) {
         ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), BundleUtil.getLabel("Teacher.change.conflicts.label"));
         for (int i = 0; i < v.size(); i++) {
@@ -512,7 +512,7 @@ public class PlanModifCtrl
       throw new PlanningException("Aucun participant disponible");
     }
     AddParticipantDlg dlg = new AddParticipantDlg(desktop, plan, persons);
-    dlg.entry();
+    dlg.show();
     if (!dlg.isValidate()) {
       return;
     }
@@ -529,7 +529,7 @@ public class PlanModifCtrl
   private void dialogChangeSessionType() throws PlanningException {
     GemParam gp = (GemParam) plan.getActivity();
     ChangeSessionTypeDlg dlg = new ChangeSessionTypeDlg(desktop, gp.getId());
-    dlg.entry();
+    dlg.show();
     if (dlg.isEntryValid()) {
       try {
         plan.setNote(dlg.getType());
@@ -543,7 +543,7 @@ public class PlanModifCtrl
 
   private void dialogCopyCourse() {
     PostponeCourseDlg dlg = new PostponeCourseDlg(desktop, plan, service, "Schedule.course.copy.title");
-    dlg.entry();
+    dlg.show();
     if (!dlg.isValidate()) {
       return;
     }
@@ -577,7 +577,7 @@ public class PlanModifCtrl
    */
   private void dialogPostponeCourse() {
     PostponeCourseDlg dlg = new PostponeCourseDlg(desktop, plan, service, "Schedule.course.shifting.title");
-    dlg.entry();
+    dlg.show();
     if (!dlg.isValidate()) {
       return;
     }
@@ -619,7 +619,7 @@ public class PlanModifCtrl
   private boolean testConflictCourse(ScheduleObject plan, ScheduleObject newPlan, Hour [] range)
           throws SQLException {
 
-    Vector<ScheduleTestConflict> v = service.testRoomForSchedulePostpone(plan, newPlan);
+    Vector<ScheduleTestConflict> v = service.checkRoomForSchedulePostpone(plan, newPlan);
     // room conflict
     if (v.size() > 0) {
       ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), BundleUtil.getLabel("Room.conflict.label"));
@@ -631,7 +631,7 @@ public class PlanModifCtrl
     }
 
     // teacher conflict
-    v = service.testTeacherForSchedulePostpone(plan, newPlan);
+    v = service.checkTeacherForSchedulePostpone(plan, newPlan);
     if (v.size() > 0) {
       ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), BundleUtil.getLabel("Teacher.conflict.label"));
       for (int i = 0; i < v.size(); i++) {
@@ -649,10 +649,10 @@ public class PlanModifCtrl
   private boolean testConflictCopyCourse(ScheduleObject plan, ScheduleObject newPlan)
           throws SQLException {
 
-    Vector<ScheduleTestConflict> v = service.testRoomForScheduleCopy(newPlan);
+    Vector<ScheduleTestConflict> v = service.checkRoomForScheduleCopy(newPlan);
 
     if (v.size() > 0) {
-      ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), "Conflits changement de salle");
+      ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), BundleUtil.getLabel("Room.conflict.label"));
       for (int i = 0; i < v.size(); i++) {
         cfd.addConflict(v.elementAt(i));
       }
@@ -660,9 +660,9 @@ public class PlanModifCtrl
       return false;
     }
 
-    v = service.testTeacherForScheduleCopy(plan, newPlan);
+    v = service.checkTeacherForScheduleCopy(plan, newPlan);
     if (v.size() > 0) {
-      ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), "Conflit prof occupé");
+      ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), BundleUtil.getLabel("Teacher.conflict.label"));
       for (int i = 0; i < v.size(); i++) {
         cfd.addConflict(v.elementAt(i));
       }
@@ -688,8 +688,8 @@ public class PlanModifCtrl
    */
   private void dialogPlanningLength() {
 
-    ModifPlanRangeDlg dlg = new ModifPlanRangeDlg(desktop.getFrame(), "Etendre/Compresser planning", plan);
-    dlg.entry();
+    ModifPlanRangeDlg dlg = new ModifPlanRangeDlg(desktop.getFrame(), plan);
+    dlg.show();
     if (!dlg.isValidate()) {
       return;
     }
@@ -713,17 +713,27 @@ public class PlanModifCtrl
         }
       }
 
-      Vector<ScheduleTestConflict> v = service.testRoomForScheduleLengthModif(plan, hStart, hEnd, lastDay);
+      Vector<ScheduleTestConflict> v = service.checkRoomForScheduleLengthModif(plan, hStart, hEnd, lastDay);
       if (v.size() > 0) {
-        ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), "Conflits salle");
+        ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), BundleUtil.getLabel("Room.conflict.label"));
         for (int i = 0; i < v.size(); i++) {
           cfd.addConflict(v.elementAt(i));
         }
         cfd.show();
         return;
       }
+      
+      Vector<ScheduleTestConflict> conflicts = service.checkTeacherForScheduleLengthModif(plan, lastDay, hStart, hEnd);
+      if (conflicts != null) {
+        ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), BundleUtil.getLabel("Teacher.conflict.label"));
+        for (int i = 0; i < conflicts.size(); i++) {
+          cfd.addConflict(conflicts.elementAt(i));
+        }
+        cfd.show();
+        return;
+      }
     } catch (SQLException sqe) {
-      System.err.println(sqe.getMessage());
+      GemLogger.log(sqe.getMessage());
       return;
     }
 
@@ -743,7 +753,7 @@ public class PlanModifCtrl
   private void dialogCancelRehearsal() {
 
     RehearsalCancelDlg dlg = new RehearsalCancelDlg(desktop.getFrame(), plan);
-    dlg.entry();
+    dlg.show();
     if (dlg.isValidate()) {
       try {
         // suppression du planning
@@ -780,7 +790,7 @@ public class PlanModifCtrl
    */
   private void dialogPlanningSuppression(){
     SupprPlanningDlg dlg = new SupprPlanningDlg(desktop.getFrame(), plan);
-    dlg.entry();
+    dlg.show();
 
     if (dlg.isValidate()) {
       Action action = new Action();

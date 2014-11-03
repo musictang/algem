@@ -30,6 +30,7 @@ import net.algem.accounting.OrderLineTableModel;
 import net.algem.contact.Contact;
 import net.algem.contact.NoteException;
 import net.algem.contact.WebSite;
+import net.algem.planning.RehearsalEvent;
 import net.algem.planning.Schedule;
 import net.algem.planning.editing.ModifPlanEvent;
 import net.algem.util.BundleUtil;
@@ -37,6 +38,7 @@ import net.algem.util.DataCache;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
+import net.algem.util.event.GemEvent;
 import net.algem.util.model.GemCloseVetoException;
 import net.algem.util.module.GemModule;
 import net.algem.util.ui.*;
@@ -201,6 +203,7 @@ public class GroupFileEditor
       rehearsalCtrl.addActionListener(this);
       desktop.addPanel("Group.rehearsal", rehearsalCtrl, GemModule.S_SIZE);
       rehearsalCtrl.init();
+      rehearsalCtrl.addGemEventListener(this);
     } else if (GemCommand.NOTE_CMD.equals(arg)) {
       GroupNoteDlg nd = new GroupNoteDlg(desktop, service);
       nd.loadNote(group);
@@ -378,6 +381,15 @@ public class GroupFileEditor
       MessagePopup.warning(view, MessageUtil.getMessage("band.delete.info", ex.getMessage()));
     } catch (GemCloseVetoException i) {
       GemLogger.logException(i);
+    }
+  }
+  
+  @Override
+  public void postEvent(GemEvent evt) {
+    if (evt instanceof RehearsalEvent) {
+      groupFileTabView.remove(GroupOrderLineEditor.class);
+      closeTab(GroupOrderLineEditor.class);
+      loadPaymentSchedule();
     }
   }
 }

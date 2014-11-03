@@ -101,7 +101,7 @@ public class MemberCardService
   }
 
   /**
-   * Get the list of course order for the person {@code p} in current school year.
+   * Get the list of course order for the person {@literal p} in current school year.
    *
    * @param p the person file
    * @return a list of course order

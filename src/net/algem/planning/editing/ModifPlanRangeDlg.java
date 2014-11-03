@@ -1,7 +1,7 @@
 /*
- * @(#)ModifPlanRangeDlg.java	2.8.a 24/04/13
+ * @(#)ModifPlanRangeDlg.java	2.8.y.1 08/10/14
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -32,7 +32,7 @@ import net.algem.util.MessageUtil;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.8.y.1
  * @since 1.1b vendredi 27 mars 2009
  */
 public class ModifPlanRangeDlg
@@ -42,7 +42,7 @@ public class ModifPlanRangeDlg
   private ScheduleObject plan;
   private ModifPlanRangeView pv;
 
-  public ModifPlanRangeDlg(Frame f, String t, ScheduleObject plan) {
+  public ModifPlanRangeDlg(Frame f, ScheduleObject plan) {
     super(f);
     pv = new ModifPlanRangeView();
 
@@ -55,7 +55,7 @@ public class ModifPlanRangeDlg
   }
 
   @Override
-  public void entry() {
+  public void show() {
     dlg.setVisible(true);
   }
 

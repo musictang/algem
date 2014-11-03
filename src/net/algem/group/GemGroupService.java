@@ -1,5 +1,5 @@
 /*
- * @(#)GemGroupService.java	2.8.w 09/07/14
+ * @(#)GemGroupService.java	2.8.y.1 02/10/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -42,7 +42,7 @@ import net.algem.util.model.Model;
  * Service class for group operations.
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.8.y.1
  * @since 2.4.a 10/05/12
  */
 public class GemGroupService
@@ -72,7 +72,6 @@ public class GemGroupService
         WebSiteIO.insert(s, i, dc);
       }
     }
-
   }
 
   @Override
@@ -213,14 +212,14 @@ public class GemGroupService
   }
 
   /**
-   * Gets the payment schedules of the group {@code g}.
+   * Gets the payment schedules of the group {@literal g}.
    * @param g group instance
    * @return a list of order lines
    */
   Vector<OrderLine> getSchedulePayment(Group g)  {
     int membershipAccount = 0;
-    StringBuilder where = new StringBuilder("WHERE groupe = ");
-    where.append(g.getId());
+    StringBuilder where = new StringBuilder("WHERE (groupe > 0 AND groupe = ");
+    where.append(g.getId()).append(')');
     List<Musician> lm = g.getMusicians();
     if (lm != null) {
       try {
@@ -230,7 +229,7 @@ public class GemGroupService
       } catch (SQLException ex) {
         GemLogger.log(ex.getMessage());
       }
-      where.append("OR (adherent IN (");
+      where.append(" OR (adherent IN (");
       for (Musician m : lm) {
         where.append(m.getId()).append(",");
       }
@@ -243,7 +242,7 @@ public class GemGroupService
   }
   
   /**
-   * Gets the payment schedules of the persons in the group {@code g}.
+   * Gets the payment schedules of the persons in the group {@literal g}.
    * @param g group instance
    * @return a list of order lines
    */
@@ -262,7 +261,7 @@ public class GemGroupService
   }
   
   /**
-   * Changes the group number of the order lines with the selected {@code oids}.
+   * Changes the group number of the order lines with the selected {@literal oids}.
    * @param oids the list of lines to change
    * @param g group number
    * @throws SQLException 
@@ -286,9 +285,9 @@ public class GemGroupService
   }
 
   /**
-   * Test group occupation
+   * Test group occupation.
    *
-   * @param date
+   * @param date selected date
    * @param start start time
    * @param end end time
    * @param g group id
@@ -377,8 +376,8 @@ public class GemGroupService
   }
 
   /**
-   * Generates a list of dates for rehearsal between {@code startDate} and {@code endDate}.
-   * The date of week is the same for each date.
+   * Generates a list of dates of rehearsal between {@literal startDate} and {@literal endDate}.
+   * The day of week is the same for each date.
    *
    * @param date date of week
    * @param startDate start date
@@ -448,7 +447,7 @@ public class GemGroupService
   }
 
   /**
-   * Gets the preferred account and cost account for this {@code key}.
+   * Gets the preferred account and cost account corresponding to this {@literal key}.
    *
    * @param key category key (ex. ADHÉSIONS)
    * @return a preference

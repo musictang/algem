@@ -111,7 +111,7 @@ public class ScheduleRangeIO
   }
 
   /**
-   * Deletes all ranges scheduled with the action {@code a} and enclosed in the selected time slots.
+   * Deletes all ranges scheduled with the action {@literal a} and enclosed in the selected time slots.
    * @param a action
    * @param s schedule
    * @param dc data connection

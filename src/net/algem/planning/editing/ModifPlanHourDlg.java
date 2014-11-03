@@ -58,7 +58,7 @@ public class ModifPlanHourDlg
   }
 
   @Override
-  public void entry() {
+  public void show() {
     dlg.setVisible(true);
   }
 

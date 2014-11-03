@@ -24,11 +24,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import net.algem.planning.DateFr;
 import net.algem.planning.Hour;
+import net.algem.planning.RehearsalEvent;
 import net.algem.planning.editing.ModifPlanEvent;
 import net.algem.room.RoomService;
 import net.algem.util.DataCache;
 import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
+import net.algem.util.event.GemEvent;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.CardCtrl;
 import net.algem.util.ui.MessagePopup;
@@ -151,6 +153,9 @@ public class GroupRehearsalCreateCtrl
       desktop.postEvent(new ModifPlanEvent(this, rv.getDate(), rv.getDate()));
       clear();// L'ORDRE EST IMPORTANT : clear() avant d'afficher le message
       MessagePopup.information(rv,MessageUtil.getMessage("planning.update.info"), label);
+      if (gemListener != null) {
+        gemListener.postEvent(new RehearsalEvent(this, GemEvent.CREATION, GemEvent.REHEARSAL));
+      }
     } catch (GroupException ex) {
       GemLogger.logException(ex.getMessage(), ex, this);
       MessagePopup.warning(this, ex.getMessage());

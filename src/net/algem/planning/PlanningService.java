@@ -1,5 +1,5 @@
 /*
- * @(#)PlanningService.java	2.8.y 29/09/14
+ * @(#)PlanningService.java	2.8.y.1 03/11/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -38,7 +38,7 @@ import net.algem.util.ui.MessagePopup;
  * Service class for planning.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.v
+ * @version 2.8.y.1
  * @since 2.4.a 07/05/12
  */
 public class PlanningService
@@ -1026,43 +1026,48 @@ public class PlanningService
     dc.executeUpdate(query);
   }
 
-  public Vector<ScheduleTestConflict> testHour(ScheduleObject plan, DateFr dateStart, DateFr dateEnd, Hour hStart, Hour hEnd)
+  public Vector<ScheduleTestConflict> checkHour(ScheduleObject plan, DateFr dateStart, DateFr dateEnd, Hour hStart, Hour hEnd)
           throws SQLException {
     return conflictService.testHourConflict(plan, dateStart, dateEnd, hStart, hEnd);
   }
 
-  public Vector<ScheduleTestConflict> testChangeRoom(ScheduleObject plan, DateFr dateStart, DateFr dateEnd, int roomId)
+  public Vector<ScheduleTestConflict> checkChangeRoom(ScheduleObject plan, DateFr dateStart, DateFr dateEnd, int roomId)
           throws SQLException {
     return conflictService.testRoomConflict(plan, dateStart, dateEnd, roomId);
   }
 
-  public Vector<ScheduleTestConflict> testRoomForScheduleCopy(ScheduleObject newPlan)
+  public Vector<ScheduleTestConflict> checkRoomForScheduleCopy(ScheduleObject newPlan)
           throws SQLException {
     return conflictService.testRoomConflict(newPlan.getDate(), newPlan.getStart(), newPlan.getEnd(), newPlan.getIdRoom());
   }
 
-  public Vector<ScheduleTestConflict> testRoomForSchedulePostpone(ScheduleObject plan, ScheduleObject newPlan)
+  public Vector<ScheduleTestConflict> checkRoomForSchedulePostpone(ScheduleObject plan, ScheduleObject newPlan)
           throws SQLException {
     return conflictService.testRoomConflict(plan.getId(), newPlan);
     //return conflictService.testRoomConflict(newPlan.getIdRoom(), plan.getId(), newPlan.getDate(), newPlan.getStart(), newPlan.getEnd());
   }
 
-  public Vector<ScheduleTestConflict> testRoomForScheduleLengthModif(ScheduleObject plan, Hour hStart, Hour hEnd, DateFr lastDate)
+  public Vector<ScheduleTestConflict> checkRoomForScheduleLengthModif(ScheduleObject plan, Hour hStart, Hour hEnd, DateFr lastDate)
           throws SQLException {
     return conflictService.testRoomConflict(plan, hStart, hEnd, lastDate);
   }
+  
+  public Vector<ScheduleTestConflict> checkTeacherForScheduleLengthModif(ScheduleObject plan, DateFr lastDate, Hour hStart, Hour hEnd)
+          throws SQLException {
+    return conflictService.testTeacherConflictForScheduleLength(plan, lastDate, hStart, hEnd);
+  }
 
-  public Vector<ScheduleTestConflict> testTeacherForScheduleCopy(ScheduleObject plan, ScheduleObject newPlan)
+  public Vector<ScheduleTestConflict> checkTeacherForScheduleCopy(ScheduleObject plan, ScheduleObject newPlan)
           throws SQLException {
     return conflictService.testTeacherConflict(plan.getIdPerson(), newPlan);
   }
 
-  public Vector<ScheduleTestConflict> testTeacherForSchedulePostpone(ScheduleObject plan, ScheduleObject newPlan)
+  public Vector<ScheduleTestConflict> checkTeacherForSchedulePostpone(ScheduleObject plan, ScheduleObject newPlan)
           throws SQLException {
     return conflictService.testTeacherConflict(plan, newPlan.getDate(), newPlan.getStart(), newPlan.getEnd());
   }
 
-  public Vector<ScheduleTestConflict> testChangeTeacher(ScheduleObject orig, ScheduleObject range, DateFr dateStart, DateFr dateEnd)
+  public Vector<ScheduleTestConflict> checkChangeTeacher(ScheduleObject orig, ScheduleObject range, DateFr dateStart, DateFr dateEnd)
           throws PlanningException {
     try {
       return conflictService.testTeacherConflict(orig, range, dateStart, dateEnd);

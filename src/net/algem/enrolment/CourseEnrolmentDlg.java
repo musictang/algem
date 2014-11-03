@@ -364,7 +364,7 @@ public class CourseEnrolmentDlg
   }
 
   /**
-   * Sets the course characteristics for the course order {@code co}.
+   * Sets the course characteristics for the course order {@literal co}.
    *
    * @param co course order
    * @throws net.algem.enrolment.EnrolmentException
@@ -417,7 +417,7 @@ public class CourseEnrolmentDlg
   }
 
   /**
-   * Loads the selected course in the {@code estab}.
+   * Loads the selected course in the {@literal estab}.
    * @param id
    * @param estab
    */
@@ -435,7 +435,7 @@ public class CourseEnrolmentDlg
   }
 
   /**
-   * Loads the list of days when the course {@code c} is scheduled.
+   * Loads the list of days when the course {@literal c} is scheduled.
    *
    * @param c the course
    * @param estab estab id

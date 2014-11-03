@@ -66,6 +66,7 @@ public class GemEvent extends java.util.EventObject
   public static final int COST_ACCOUNT = 25;
   public static final int VAT = 26;
   public static final int COURSE_CODE = 27;
+  public static final int REHEARSAL = 28;
   
   protected int operation;
   protected int type;

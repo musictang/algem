@@ -210,6 +210,7 @@ public class CourseScheduleCtrl
   /**
    * Test room or teacher occupation.
    *
+   * @param a action to check
    * @return the number of conflicts
    */
   public int testConflict(Action a) {
@@ -222,21 +223,21 @@ public class CourseScheduleCtrl
 
     int conflicts = 0;
     for (DateFr d : a.getDates()) {
-      ScheduleTestConflict conflit = new ScheduleTestConflict(d, hStart, hEnd);
+      ScheduleTestConflict conflict = new ScheduleTestConflict(d, hStart, hEnd);
       // test salles
       String query = ConflictQueries.getRoomConflictSelection(d.toString(), hStart.toString(), hEnd.toString(), room);
 
       if (ScheduleIO.count(query, dc) > 0) {
-        conflit.setRoomFree(false);
+        conflict.setRoomFree(false);
         conflicts++;
       }
       // test prof
       query = ConflictQueries.getTeacherConflictSelection(d.toString(), hStart.toString(), hEnd.toString(), teacher);
       if (ScheduleIO.count(query, dc) > 0) {
-        conflit.setTeacherFree(false);
+        conflict.setTeacherFree(false);
         conflicts++;
       }
-      conflictsView.addConflict(conflit);
+      conflictsView.addConflict(conflict);
     }
     return conflicts;
   }

@@ -42,7 +42,7 @@ public interface BillingService
 
   /**
    * Get a list of invoices. By default, all invoices are returned.
-   * @return
+   * @return a list of invoices
    * @throws SQLException
    */
   public List<Invoice> getInvoices() throws SQLException;

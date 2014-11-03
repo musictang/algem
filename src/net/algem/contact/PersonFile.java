@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFile.java 2.8.p 17/10/13
+ * @(#)PersonFile.java 2.8.y.1 03/11/14
  *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -36,7 +36,7 @@ import net.algem.util.model.GemModel;
  * Person management.
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.p
+ * @version 2.8.y.1
  * @since 1.0a 12/08/2009
  */
 public class PersonFile
@@ -167,7 +167,7 @@ public class PersonFile
   }
 
   public boolean hasChanged() {
-    if (contact.getId() == 0 && contact.getName().length() > 0) {
+    if (contact.getId() == 0 && (contact.getName().length() > 0 || contact.getOrganization().length() > 0)) {
       return true;
     } else if (oldContact != null && !contact.equals(oldContact)) {
       return true;

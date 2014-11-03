@@ -55,7 +55,7 @@ public class ModifPlanRoomDlg
   }
 
   @Override
-  public void entry() {
+  public void show() {
     dlg.setVisible(true);
   }
 

@@ -1,5 +1,5 @@
 /*
- * @(#)ConflictQueries.java 2.8.v 03/06/14
+ * @(#)ConflictQueries.java 2.8.y.1 08/10/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -24,7 +24,7 @@ package net.algem.planning;
  * Set of requests used in conflict detection when schedule is busy.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.v
+ * @version 2.8.y.1
  */
 public class ConflictQueries
 {
@@ -87,4 +87,17 @@ public class ConflictQueries
             + " OR (fin > '" + hStart + "' AND fin <= '" + hEnd + "')"
             + " OR (debut <= '" + hStart + "' AND fin >= '" + hEnd + "'))";
   }
+   
+   public static String getSqlQueryOverlap(String hStart, String hEnd) {
+     return " AND ((debut >= '" + hStart + "' AND debut < '" + hEnd + "')"
+            + " OR (fin > '" + hStart + "' AND fin <= '" + hEnd + "')"
+            + " OR (debut <= '" + hStart + "' AND fin >= '" + hEnd + "'))";
+   }
+   
+   public static String getSqlStatementOverlap() {
+     return " AND ((debut >= ? AND debut < ?)"
+            + " OR (fin > ? AND fin <= ?)"
+            + " OR (debut <= ? AND fin >= ?))";
+   }
+   
 }
