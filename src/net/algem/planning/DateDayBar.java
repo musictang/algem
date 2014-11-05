@@ -55,11 +55,11 @@ public class DateDayBar
   private int currentMonth;
   private int currentDay;
 
-  /**
-   * Color for selection in buttons bar (for day and month).
-   */
-  private static final Color selectionColor = new Color(255, 225, 255);
-  private static final String dowColor = "#4c4c4c";
+  /** Color of selected button in bar (day or month). */
+  private static final Color selectedColor = Color.decode("#68d095");
+  //  private static final Color selectionColor = new Color(255, 225, 255);
+          
+  private static final String dowLabelColor = "#4c4c4c";
 
   public DateDayBar() {
     this(new Date());
@@ -81,7 +81,7 @@ public class DateDayBar
     for (int i = 0; i < 31; i++) {
       /* ajout 2.0j jean-marc initiales des jours */
       cal.set(Calendar.DAY_OF_MONTH, i + 1);
-      dayButtons[i] = new GemButton("<html><center><font color=" + dowColor + ">" + cal.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.FRANCE) + "</font><br />" + String.valueOf(i + 1) + "</center></html>");
+      dayButtons[i] = new GemButton("<html><center><font color=" + dowLabelColor + ">" + cal.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.FRANCE) + "</font><br />" + String.valueOf(i + 1) + "</center></html>");
       /* */
       dayButtons[i].setFont(new Font("Helvetica", Font.PLAIN, 10));
 
@@ -223,7 +223,7 @@ public class DateDayBar
     for (j = 0; j < maxDaysInMonth; j++) {
       cal.set(Calendar.DAY_OF_MONTH, j + 1);
       day = cal.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.FRANCE);
-      dayButtons[j].setText("<html><font color="+dowColor+">"+day+"</font><br /><center>"+(j + 1)+"</center></html>");
+      dayButtons[j].setText("<html><font color="+dowLabelColor+">"+day+"</font><br /><center>"+(j + 1)+"</center></html>");
       if (!dayButtons[j].isEnabled()) {
         dayButtons[j].setEnabled(true);
       }
@@ -241,17 +241,22 @@ public class DateDayBar
    * @param i day index
    */
   public void colorSelected(int i) {
+    // reset previous selected button
     if (btSelected != null) {
       btSelected.setBackground(null);
     }
+    // color selected button
     btSelected = dayButtons[i];
-    btSelected.setBackground(selectionColor);
+    btSelected.setBackground(selectedColor);
   }
   
+  /**
+   * Sets time to the selected index.
+   * @param i selected index
+   */
   private void setSelected(int i) {
     cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), i + 1);
     colorSelected(i);
   }
-
   
 }

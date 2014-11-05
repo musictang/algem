@@ -1,7 +1,7 @@
 /*
- * @(#)PersonView.java	2.8.p 03/12/13
+ * @(#)PersonView.java	2.9.1 04/11/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -30,6 +30,7 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.logging.Level;
 import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -48,7 +49,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.p
+ * @version 2.9.1
  */
 public class PersonView
         extends GemBorderPanel
@@ -61,6 +62,7 @@ public class PersonView
   private JCheckBox cbImgRights;
   private JCheckBox cbPartner;
   private GemField organization;
+  private GemField nickname;
   private JLabel photoField;
   private GemLabel cardLabel;
   /** Rest time on subscription card. */
@@ -82,7 +84,9 @@ public class PersonView
     organization = new GemField(true, 20);
     name = new GemField(true, 20);
     firstname = new GemField(true, 20);
+    nickname = new GemField(true, 20);
     civil = new CivilChoice();
+    
     
     cbImgRights = new JCheckBox(BundleUtil.getLabel("Person.img.rights.label"));
     cbImgRights.setToolTipText(BundleUtil.getLabel("Person.img.rights.tip"));
@@ -106,23 +110,26 @@ public class PersonView
     gb.add(new GemLabel(BundleUtil.getLabel("Organization.label")), 1, 1, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Name.label")), 1, 2, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("First.name.label")), 1, 3, 1, 1, GridBagHelper.WEST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Person.civility.label")), 1, 4, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Nick.name.label")), 1, 4, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Person.civility.label")), 1, 5, 1, 1, GridBagHelper.WEST);
 
     gb.add(no, 2, 0, 2, 1, GridBagHelper.WEST);
     gb.add(organization, 2, 1, 2, 1, GridBagHelper.WEST);
     gb.add(name, 2, 2, 2, 1, GridBagHelper.WEST);
     gb.add(firstname, 2, 3, 2, 1, GridBagHelper.WEST);
-    gb.add(civil, 2, 4, 2, 1, GridBagHelper.WEST);
-    gb.add(cbImgRights, 2, 5, 1, 1, GridBagHelper.WEST);
-    gb.add(cbPartner, 2, 6, 1, 1, GridBagHelper.WEST);
-    gb.add(cardLabel, 2, 7, 1, 1, GridBagHelper.WEST);
-    gb.add(cardInfo, 3, 7, 1, 1, GridBagHelper.WEST);
+    gb.add(nickname, 2, 4, 2, 1, GridBagHelper.WEST);
+    gb.add(civil, 2, 5, 2, 1, GridBagHelper.WEST);
+    gb.add(cbImgRights, 2, 6, 1, 1, GridBagHelper.WEST);
+    gb.add(cbPartner, 2, 7, 1, 1, GridBagHelper.WEST);
+    gb.add(cardLabel, 2, 8, 1, 1, GridBagHelper.WEST);
+    gb.add(cardInfo, 3, 9, 1, 1, GridBagHelper.WEST);
   }
 
   void set(Person p, String dir) {
     no.setText(String.valueOf(p.getId()));
     name.setText(p.getName());
     firstname.setText(p.getFirstName());
+    nickname.setText(p.getNickName());
     civil.setSelectedItem(p.getGender());
     cbImgRights.setSelected(p.hasImgRights());
     cbPartner.setSelected(p.isPartnerInfo());
@@ -286,12 +293,13 @@ public class PersonView
     Person pr = new Person();
     try {
       pr.setId(Integer.parseInt(no.getText()));
-    } catch (Exception e) {
+    } catch (NumberFormatException e) {
       pr.setId(0);
     }
     pr.setType(ptype);
     pr.setName(name.getText());
     pr.setFirstName(firstname.getText());
+    pr.setNickName(nickname.getText().isEmpty() ? null : nickname.getText().trim());
     pr.setGender((String) civil.getSelectedItem());
     pr.setImgRights(cbImgRights.isSelected());
     pr.setPartnerInfo(cbPartner.isSelected());
@@ -305,19 +313,19 @@ public class PersonView
   }
 
   public int getId() {
-    int id = 0;
     try {
-      id = Integer.parseInt(no.getText());
-    } catch (Exception e) {
+      return Integer.parseInt(no.getText());
+    } catch (NumberFormatException e) {
+      GemLogger.log(Level.WARNING, e.getMessage());
+      return 0;
     }
-
-    return id;
   }
 
   public void clear() {
     no.setText("");
     name.setText("");
     firstname.setText("");
+    nickname.setText("");
     civil.setSelectedIndex(0);
     cbImgRights.setSelected(false);
     cbPartner.setSelected(false);

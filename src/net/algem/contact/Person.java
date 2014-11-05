@@ -1,7 +1,7 @@
 /*
- * @(#)Person.java	2.8.p 03/12/13
+ * @(#)Person.java	2.9.1 04/11/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -30,7 +30,7 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.v
+ * @version 2.9.1
  *
  * @since 1.0a 07/07/1999
  */
@@ -47,6 +47,7 @@ public class Person
   protected short type = PERSON;
   protected String name;
   protected String firstName;
+  protected String nickName;
   protected String gender;
   protected boolean imgRights;
   protected String organization;
@@ -98,6 +99,9 @@ public class Person
     if ((this.organization == null) ? (other.organization != null) : !this.organization.equals(other.organization)) {
       return false;
     }
+    if ((this.nickName == null) ? (other.nickName != null) : !this.nickName.equals(other.nickName)) {
+      return false;
+    }
     return true;
   }
 
@@ -109,6 +113,7 @@ public class Person
     hash = 23 * hash + (this.name != null ? this.name.hashCode() : 0);
     hash = 23 * hash + (this.firstName != null ? this.firstName.hashCode() : 0);
     hash = 23 * hash + (this.gender != null ? this.gender.hashCode() : 0);
+    hash = 23 * hash + (this.nickName != null ? this.nickName.hashCode() : 0);
     return hash;
   }
 
@@ -156,11 +161,19 @@ public class Person
   }
   
   public String getCommunName() {
-    if (organization != null) {
-      return organization.isEmpty() ? getAbbrevFirstNameName() : organization;
+    if (nickName != null) {
+      return nickName.isEmpty() ? getAbbrevFirstNameName() : nickName;
     } else {
       return getAbbrevFirstNameName();
     }
+  }
+
+  public String getNickName() {
+    return nickName;
+  }
+
+  public void setNickName(String nickName) {
+    this.nickName = nickName;
   }
 
   public void setType(short i) {

@@ -1,5 +1,5 @@
 /*
- * @(#)EnrolmentService.java	2.8.y 24/09/14
+ * @(#)EnrolmentService.java	2.9.1 04/11/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -41,7 +41,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.y
+ * @version 2.9.1
  * @since 2.4.a 20/04/12
  */
 public class EnrolmentService
@@ -356,10 +356,10 @@ public class EnrolmentService
     //23092003 String query = "SELECT p.id,p.ptype,p.nom,p.prenom,p.civilite,p.note,e.instrument1 from personne p, eleve e, commande c, commande_cours cc WHERE cc.cours = "+cours+" AND c.id = cc.idcmd and cc.datedebut <= '"+date+"' and cc.datefin >= '"+date+"' AND p.id = c.adh and p.id = e.idper ORDER by p.nom";
     //String query = "SELECT p.id,p.ptype,p.nom,p.prenom,p.civilite,p.note,p.droit_img,e.idper,e.instrument1,e.instrument2,e.profession,e.datenais,e.payeur,e.nadhesions,e.pratique,e.niveau  from personne p, eleve e, plage pl WHERE pl.cours = " + cours + " AND pl.date = '" + date + "' AND pl.prof = " + idprof + " AND p.id = pl.adherent and p.id = e.idper ORDER by p.nom";
     String query = "SELECT " + PersonIO.COLUMNS + "," + MemberIO.COLUMNS
-            + " FROM " + PersonIO.TABLE + ", " + MemberIO.TABLE + ", plage pl "
+            + " FROM " + PersonIO.TABLE + " p, " + MemberIO.TABLE + ", " + ScheduleRangeIO.TABLE + " pl "
             + " WHERE pl.idplanning = " + plan.getId()
-            + " AND personne.id = pl.adherent "
-            + " AND personne.id = eleve.idper ORDER BY personne.nom";
+            + " AND p.id = pl.adherent "
+            + " AND p.id = " + MemberIO.TABLE + ".idper ORDER BY p.nom";
     return ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findRegistered(query);
 //    return ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findByIdOrder(query, false);
   }

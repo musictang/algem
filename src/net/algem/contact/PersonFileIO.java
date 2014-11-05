@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileIO.java  2.8.w 08/07/14
+ * @(#)PersonFileIO.java  2.9.1 04/11/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes All Rights Reserved.
  *
@@ -47,7 +47,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.1
  */
 public class PersonFileIO
         extends TableIO
@@ -224,14 +224,14 @@ public class PersonFileIO
     Vector<PersonFile> v = new Vector<PersonFile>();
     String query = 
             "SELECT " + PersonIO.COLUMNS + "," + MemberIO.COLUMNS
-            + " FROM " + PersonIO.TABLE + ", " + MemberIO.TABLE + " ";
+            + " FROM " + PersonIO.TABLE + " p, " + MemberIO.TABLE + " ";
     if (where != null) {
-      query += where + " AND personne.id = eleve.idper";
+      query += where + " AND p.id = " + MemberIO.TABLE + ".idper";
     } else {
-      query += " WHERE personne.id = eleve.idper";
+      query += " WHERE p.id = " + MemberIO.TABLE + ".idper";
     }
 
-    query += " ORDER BY personne.prenom,personne.nom";
+    query += " ORDER BY p.prenom,p.nom";
     try {
       ResultSet rs = dc.executeQuery(query);
       while (rs.next()) {

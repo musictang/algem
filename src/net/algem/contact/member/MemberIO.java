@@ -1,5 +1,5 @@
 /*
- * @(#)MemberIO.java	2.7.m 15/03/13
+ * @(#)MemberIO.java	2.9.1 04/11/14
  *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -92,7 +92,7 @@ public class MemberIO
    * @throws SQLException
    */
   public void update(Member m) throws SQLException {
-    String query = "UPDATE " + TABLE + " SET profession='" + m.getOccupation() + "'";
+    String query = "UPDATE " + TABLE + " SET profession = '" + m.getOccupation() + "'";
     if (!m.getBirth().bufferEquals(DateFr.NULLDATE)) {
       query += ",datenais='" + m.getBirth().toString() + "'";
     }

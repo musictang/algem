@@ -1,7 +1,7 @@
 /*
- * @(#)PersonIO.java 2.8.q 09/12/13
+ * @(#)PersonIO.java 2.9.1 04/11/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -36,7 +36,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.q
+ * @version 2.9.1
  */
 public class PersonIO
         extends TableIO
@@ -44,10 +44,12 @@ public class PersonIO
 {
 
   public static final String TABLE = "personne";
-  public static final String COLUMNS = TABLE + ".id," + TABLE + ".ptype," + TABLE + ".nom," +
-          TABLE + ".prenom," + TABLE + ".civilite," + TABLE + ".droit_img," + TABLE + ".organisation," + TABLE + ".partenaire";
+  public static final String ALIAS = "p";
+  public static final String COLUMNS = "p.id,p.ptype,p.nom,p.prenom,p.civilite,p.droit_img,p.organisation,p.partenaire,p.pseudo";
   public static final String SEQUENCE = "idper";
-  public static final int PERSON_COLUMNS_OFFSET = 9;
+  
+  /** Next column number in joined queries. */
+  public static final int PERSON_COLUMNS_OFFSET = 10;
 
   private DataConnection dc;
 
@@ -66,7 +68,8 @@ public class PersonIO
             + "','" + p.getGender()
             + "','" + (p.hasImgRights() ? "t" : "f") // t pour non autorisation, f pour autorisation image
             + (p.getOrganization() == null || p.getOrganization().isEmpty() ? "',NULL" : "','" + escape(p.getOrganization()) + "'")
-            + ",'" + (p.isPartnerInfo() ? "t" : "f") + "')";
+            + ",'" + (p.isPartnerInfo() ? "t" : "f") 
+            + (p.getNickName() == null || p.getNickName().isEmpty() ? "',NULL" : "','" + escape(p.getNickName()) + "'") + ")";
 
     dc.executeUpdate(query);
     p.setId(n);
@@ -81,7 +84,8 @@ public class PersonIO
             + "',civilite = '" + p.getGender() + "'"
             + ",droit_img = '" + (p.hasImgRights() ? "t" : "f")
             + "',organisation = " + (p.getOrganization() == null || p.getOrganization().isEmpty() ? "NULL" : "'" + escape(p.getOrganization()) + "'")
-            + ",partenaire = '" + (p.isPartnerInfo() ? "t" : "f") + "'"
+            + ",partenaire = '" + (p.isPartnerInfo() ? "t" : "f")
+            + "',pseudo = " + (p.getNickName() == null || p.getNickName().isEmpty() ? "NULL" : "'" + escape(p.getNickName()) + "'")
             + " WHERE id = " + p.getId();
 
     dc.executeUpdate(query);
@@ -122,6 +126,8 @@ public class PersonIO
     p.setImgRights(rs.getBoolean(6));
     p.setOrganization(unEscape(rs.getString(7)));
     p.setPartnerInfo(rs.getBoolean(8));
+    String nickname = rs.getString(9);
+    p.setNickName(nickname != null ? unEscape(nickname.trim()) : null);
 
     return p;
   }
@@ -157,9 +163,9 @@ public class PersonIO
   @Override
   public List<Person> load() throws SQLException {
     List<Person> lp = new ArrayList<Person>();
-    String query = "SELECT " + COLUMNS + " FROM  " + TABLE
-            + " WHERE " + TABLE + ".id IN (SELECT debiteur FROM " + InvoiceIO.TABLE + ")"
-            + " OR " + TABLE + ".id IN (SELECT adherent FROM " + InvoiceIO.TABLE + ")";
+    String query = "SELECT " + COLUMNS + " FROM  " + TABLE + " p"
+            + " WHERE p.id IN (SELECT debiteur FROM " + InvoiceIO.TABLE + ")"
+            + " OR p.id IN (SELECT adherent FROM " + InvoiceIO.TABLE + ")";
     ResultSet rs = dc.executeQuery(query);
     while(rs.next()) {
       lp.add(getFromRS(rs));

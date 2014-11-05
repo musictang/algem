@@ -1,5 +1,5 @@
 /*
- * @(#)DataCache.java	2.8.y 29/09/14
+ * @(#)DataCache.java	2.9.1 04/11/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -65,7 +65,7 @@ import net.algem.util.model.Model;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.y
+ * @version 2.9.1
  * @since 1.0b 03/09/2001
  */
 public class DataCache
@@ -762,8 +762,8 @@ public class DataCache
   }
 
   private void loadRoomContactCache() {
-    String query = "SELECT " + PersonIO.COLUMNS + " FROM " + PersonIO.TABLE + ", " + RoomIO.TABLE + " r "
-            + "WHERE r.idper = " + PersonIO.TABLE + ".id OR r.payeur = " + PersonIO.TABLE + ".id ORDER BY nom";
+    String query = "SELECT " + PersonIO.COLUMNS + " FROM " + PersonIO.TABLE + " p, " + RoomIO.TABLE + " r "
+            + "WHERE r.idper = p.id OR r.payeur = p.id ORDER BY nom";
     try {
       ResultSet rs = dc.executeQuery(query);
       while (rs.next()) {

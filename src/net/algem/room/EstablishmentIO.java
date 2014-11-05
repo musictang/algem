@@ -1,7 +1,7 @@
 /*
- * @(#)EstablishmentIO.java	2.8.f 23/05/13
+ * @(#)EstablishmentIO.java	2.9.1 04/11/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -38,7 +38,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.f
+ * @version 2.9.1
  */
 public class EstablishmentIO
         extends TableIO
@@ -203,8 +203,7 @@ public class EstablishmentIO
   public static Vector<Establishment> find(String where, DataConnection dc) throws SQLException {
 
     Vector<Establishment> v = new Vector<Establishment>();
-    String query = "SELECT " + PersonIO.COLUMNS + " FROM " + PersonIO.TABLE
-            + " WHERE ptype = " + Person.ESTABLISHMENT;
+    String query = "SELECT " + PersonIO.COLUMNS + " FROM " + PersonIO.TABLE + " p WHERE p.ptype = " + Person.ESTABLISHMENT;
     query += where;
 
     ResultSet rs = dc.executeQuery(query);
