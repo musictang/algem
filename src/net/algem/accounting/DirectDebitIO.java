@@ -50,7 +50,7 @@ public class DirectDebitIO
   }
 
   /**
-   * Find the last unlocked mandate for the payer {@code idper}.
+   * Find the last unlocked mandate for the payer {@literal idper}.
    *
    * @param idper payer's id
    * @return a mandate
@@ -88,7 +88,7 @@ public class DirectDebitIO
   }
 
   /**
-   * Find the list of all the mandates of the {@code payer}.
+   * Find the list of all the mandates of the {@literal payer}.
    *
    * @param payer payer's id
    * @return a list of mandates
@@ -130,7 +130,7 @@ public class DirectDebitIO
   }
 
   /**
-   * Gets SEPA transaction info for this {@code payer}.
+   * Gets SEPA transaction info for this {@literal payer}.
    *
    * @param payer payer's id
    * @return a result set
@@ -179,7 +179,7 @@ public class DirectDebitIO
   }
 
   /**
-   * Search the set of all payers will be charged to the next {@code datePrl}.
+   * Search the set of all payers will be charged to the next {@literal datePrl}.
    *
    * @param school
    * @param datePrl
@@ -242,7 +242,7 @@ public class DirectDebitIO
   }
 
   /**
-   * Updates the sequence type of all these {@code mandates} to {@code seqType}.
+   * Updates the sequence type of all these {@literal mandates} to {@literal seqType}.
    *
    * @param mandates
    * @param seqType

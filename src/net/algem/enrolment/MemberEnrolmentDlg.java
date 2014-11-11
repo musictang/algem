@@ -1,5 +1,5 @@
 /*
- * @(#)MemberEnrolmentDlg.java	2.8.t 16/04/14
+ * @(#)MemberEnrolmentDlg.java	2.9.1 10/11/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -40,7 +40,6 @@ import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
 import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
-import net.algem.util.ui.ErrorDlg;
 import net.algem.util.ui.FileTabDialog;
 import net.algem.util.ui.MessagePopup;
 
@@ -49,7 +48,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.9.1
  * @since 1.0a 07/07/1999
  * @see net.algem.contact.PersonFileEditor
  *
@@ -105,7 +104,7 @@ public class MemberEnrolmentDlg
   public void validation() {
 
     if (module_orders.isEmpty()) {
-      new ErrorDlg(this, MessageUtil.getMessage("enrolment.empty.list"));
+      MessagePopup.warning(this, MessageUtil.getMessage("enrolment.empty.list"));
       return;
     }
     try {
@@ -114,7 +113,7 @@ public class MemberEnrolmentDlg
         ModuleOrder m = module_orders.elementAt(i);
         Module mod = service.getModule(m.getModule());
         if (m.getModule() == 0 || mod == null) {// si module inexistant
-          new ErrorDlg(this, MessageUtil.getMessage("invalid.module.choice"));
+          MessagePopup.warning(this, MessageUtil.getMessage("invalid.module.choice"));
           return;
         }
       }
@@ -137,7 +136,8 @@ public class MemberEnrolmentDlg
       //premier parcours de boucle pour déterminer le prix total.
       for (int i = 0; i < module_orders.size(); i++) {
         m = module_orders.elementAt(i);
-        totalBase += m.getPrice();// prix calculé en fonction de la périodicité
+//        totalBase += m.getPrice();// prix calculé en fonction de la périodicité
+        totalBase += m.getPaymentAmount();// prix calculé en fonction de la périodicité
       }
 
       // enregistrement des modules
@@ -283,6 +283,8 @@ public class MemberEnrolmentDlg
     try {
       if (moduleDlg == null) {
         moduleDlg = new ModuleDlg(this, dossier, service, dataCache);
+      } else {
+        moduleDlg.reset();
       }
       moduleDlg.setTitle(BundleUtil.getLabel("Module.add.label"));
       moduleDlg.show();
@@ -318,10 +320,13 @@ public class MemberEnrolmentDlg
     mo.setSelectedModule((Integer) moduleDlg.getField(7));
     mo.setStart(new DateFr((DateFr) moduleDlg.getField(2)));
     mo.setEnd(new DateFr((DateFr) moduleDlg.getField(3)));
-    mo.setPrice((Double) moduleDlg.getField(4));
+    mo.setPrice(((Number) moduleDlg.getField(4)).doubleValue());
+    mo.setPaymentAmount(((Number) moduleDlg.getField(10)).doubleValue());
     mo.setModeOfPayment((String) moduleDlg.getField(5));
     mo.setPayment((PayFrequency) moduleDlg.getField(6));
     mo.setNOrderLines(1);
+    mo.setTotalTime(((Hour) moduleDlg.getField(8)).toMinutes());
+    mo.setPricing((PricingPeriod) moduleDlg.getField(9));
     mo.setId(module_orders.size());// id temporaire
     view.addModule(mo);
 
@@ -355,7 +360,9 @@ public class MemberEnrolmentDlg
     moduleDlg.setField(5, mo.getModeOfPayment());
     moduleDlg.setField(6, mo.getPayment());
     moduleDlg.setField(7, mo.getSelectedModule());
-
+    moduleDlg.setField(8, new Hour(mo.getTotalTime()));
+    moduleDlg.setField(9, mo.getPricing());
+    
     setCursor(Cursor.getDefaultCursor());
 
     moduleDlg.show();
@@ -365,11 +372,14 @@ public class MemberEnrolmentDlg
 //      mo.setSelectedModule(Integer.parseInt(moduleDlg.getField(7)));
       mo.setSelectedModule((Integer) moduleDlg.getField(7));
       mo.setTitle((String) moduleDlg.getField(1));
-      mo.setStart(new DateFr((String) moduleDlg.getField(2)));
-      mo.setEnd(new DateFr((String) moduleDlg.getField(3)));
-      mo.setPrice(Double.parseDouble((String) moduleDlg.getField(4)));
+      mo.setStart(new DateFr((DateFr) moduleDlg.getField(2)));
+      mo.setEnd(new DateFr((DateFr) moduleDlg.getField(3)));
+      mo.setPrice((Double) moduleDlg.getField(4));
+      mo.setPaymentAmount(((Number) moduleDlg.getField(10)).doubleValue());
       mo.setModeOfPayment((String) moduleDlg.getField(5));
       mo.setPayment((PayFrequency) moduleDlg.getField(6));
+      mo.setTotalTime(((Hour) moduleDlg.getField(8)).toMinutes());
+      mo.setPricing((PricingPeriod) moduleDlg.getField(9));
       view.changeModule(n, mo);
 
       if (mo.getModule() != oldModule) {

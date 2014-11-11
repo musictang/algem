@@ -1,7 +1,7 @@
 /*
- * @(#)CourseOrderIO.java	2.8.y 24/09/14
+ * @(#)CourseOrderIO.java	2.9.1 11/11/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -33,7 +33,7 @@ import net.algem.util.model.TableIO;
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.y
+ * @version 2.9.1
  * @since 1.0a 07/07/1999
  */
 public class CourseOrderIO
@@ -123,10 +123,19 @@ public class CourseOrderIO
   public static Vector<CourseOrder> find(String where, DataConnection dc) throws SQLException {
     String query = "SELECT " + COLUMNS + ", cours.titre FROM " + TABLE + " cc,"
             + " action LEFT JOIN cours ON action.cours = cours.id"
-            + " WHERE cc.idaction = action.id"; 
+            + " WHERE cc.idaction = action.id";
       return fillCourseOrder(query + where, dc);
   }
 
+  /**
+   * 
+   * @param where
+   * @param member
+   * @param dc
+   * @return
+   * @throws SQLException
+   * @deprecated 
+   */
   public static Vector<CourseOrder> find(String where, int member, DataConnection dc) throws SQLException {
     String query = "SELECT " + COLUMNS + ", cours.titre FROM " + TABLE + " cc, commande c, "
             + " action LEFT JOIN cours ON action.cours = cours.id"
@@ -138,7 +147,7 @@ public class CourseOrderIO
   }
 
   private static Vector<CourseOrder> fillCourseOrder(String query, DataConnection dc) throws SQLException {
-
+System.out.println(query);
     Vector<CourseOrder> v = new Vector<CourseOrder>();
     ResultSet rs = dc.executeQuery(query);
       while (rs.next()) {

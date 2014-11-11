@@ -1,5 +1,5 @@
 /*
- * @(#)ModuleOrderIO.java	2.8.w 05/09/14
+ * @(#)ModuleOrderIO.java	2.9.1 07/11/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -33,7 +33,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.1
  */
 public class ModuleOrderIO
         extends TableIO
@@ -56,7 +56,10 @@ public class ModuleOrderIO
             + "','" + c.getModeOfPayment()
             + "','" + c.getNOrderLines()
             + "','" + c.getPayment().getName()
-            + "')";
+            + "', " + c.isStopped()
+            + ",'" + c.getPricing().name()
+            + "'," + c.getTotalTime()
+            + ")";
     dc.executeUpdate(query);
     c.setId(next);
   }
@@ -72,6 +75,8 @@ public class ModuleOrderIO
             + "',necheance = '" + c.getNOrderLines()
             + "',paiement = '" + c.getPayment().getName()
             + "',arret = " + c.isStopped()
+            + ",tarification = '" + c.getPricing().name()
+            + "',duree = " + c.getTotalTime()
             + " WHERE id = " + c.getId();
 
     dc.executeUpdate(query);
@@ -89,7 +94,7 @@ public class ModuleOrderIO
   
   public static ModuleOrder findId(int id, DataConnection dc) throws SQLException {
     ModuleOrder mo = null;
-    String query = "SELECT FROM " + TABLE + " WHERE id = " + id;
+    String query = "SELECT * FROM " + TABLE + " WHERE id = " + id;
     ResultSet rs = dc.executeQuery(query);
     if (rs.next()) {
       mo = getFromRs(rs);
@@ -104,7 +109,7 @@ public class ModuleOrderIO
 
   public static Vector<ModuleOrder> find(String where, DataConnection dc) throws SQLException {
     Vector<ModuleOrder> v = new Vector<ModuleOrder>();
-    String query = "SELECT cm.id, cm.idcmd, cm.module, cm.prix, cm.debut, cm.fin, cm.reglement, cm.necheance, cm.paiement, cm.arret, m.titre"
+    String query = "SELECT cm.id, cm.idcmd, cm.module, cm.prix, cm.debut, cm.fin, cm.reglement, cm.necheance, cm.paiement, cm.arret, cm.tarification,cm.duree, m.titre"
             + " FROM " + TABLE + " cm, " + ModuleIO.TABLE + " m"
             + " WHERE cm.module = m.id " + where;
 
@@ -128,23 +133,13 @@ public class ModuleOrderIO
       m.setEnd(new DateFr(rs.getString(6)));
       m.setModeOfPayment(rs.getString(7));
       m.setNOrderLines(rs.getInt(8));
-      m.setPayment(getFrequencyByName(rs.getString(9)));
+      m.setPayment(PayFrequency.getValue(rs.getString(9)));
       m.setStopped(rs.getBoolean(10));
-      m.setTitle(rs.getString(11));
-
+      m.setPricing(PricingPeriod.valueOf(rs.getString(11)));
+      m.setTotalTime(rs.getInt(12));
+      m.setTitle(rs.getString(13));
+      
       return m;
   }
-  
-  public static PayFrequency getFrequencyByName(String f) {
-    if (PayFrequency.MONTH.getName().equals(f)) {
-      return PayFrequency.MONTH;
-    } else if (PayFrequency.QUARTER.getName().equals(f)) {
-      return PayFrequency.QUARTER;
-    } else if (PayFrequency.SEMESTER.getName().equals(f)) {
-      return PayFrequency.SEMESTER;
-    } else if (PayFrequency.YEAR.getName().equals(f)) {
-      return PayFrequency.YEAR;
-    }
-    return PayFrequency.QUARTER;//backward-compatible
-  }
+
 }

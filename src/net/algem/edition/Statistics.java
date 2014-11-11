@@ -508,7 +508,7 @@ public abstract class Statistics
   }
 
   /**
-   * Returns a query depending on {@code topic}.
+   * Returns a query depending on {@literal topic}.
    *
    * @param topic
    * @return a SQL query
@@ -667,7 +667,7 @@ public abstract class Statistics
   }
 
   /**
-   * Gets a sql query based on {@code topic} and two parameters {@code a1}, {@code a2}.
+   * Gets a sql query based on {@literal topic} and two parameters {@literal a1}, {@literal a2}.
    * @param topic
    * @param a1 first parameter
    * @param a2 second parameter

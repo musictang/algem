@@ -1,5 +1,5 @@
 /*
- * @(#)ModuleOrder.java	2.8.w 05/09/14
+ * @(#)ModuleOrder.java	2.9.1 10/11/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -29,7 +29,7 @@ import net.algem.planning.DateFr;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.1
  */
 public class ModuleOrder
         implements java.io.Serializable
@@ -58,6 +58,9 @@ public class ModuleOrder
   private PayFrequency payFrequency;
   private int nOrderLines;
   private String title;
+  private PricingPeriod pricing;
+  private int totalTime;
+  private double paymentAmount;
   
   private List<CourseOrder> courseOrders = new ArrayList<CourseOrder>();
 
@@ -144,6 +147,30 @@ public class ModuleOrder
 
   public void setPayment(PayFrequency p) {
     payFrequency = p;
+  }
+
+  public PricingPeriod getPricing() {
+    return pricing;
+  }
+
+  public void setPricing(PricingPeriod pricing) {
+    this.pricing = pricing;
+  }
+
+  public int getTotalTime() {
+    return totalTime;
+  }
+
+  public void setTotalTime(int minutes) {
+    this.totalTime = minutes;
+  }
+
+  public double getPaymentAmount() {
+    return paymentAmount;
+  }
+
+  public void setPaymentAmount(double p) {
+    this.paymentAmount = p;
   }
 
   public int getNOrderLines() {

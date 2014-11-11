@@ -239,8 +239,8 @@ public class MemberService
   }
 
   /**
-   * Searches collective or individual follow-up's notes for the member {@code memberId}
-   * and the {@code courseId}.
+   * Searches collective or individual follow-up's notes for the member {@literal memberId}
+   * and the {@literal courseId}.
    *
    * @param memberId member's id
    * @param courseId course's id
@@ -380,7 +380,7 @@ public class MemberService
   }
 
   /**
-   * Gets the preferred account for {@code key}.
+   * Gets the preferred account for {@literal key}.
    *
    * @param key preference key
    * @return a Preference

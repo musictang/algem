@@ -266,7 +266,7 @@ public class DataCache
   }
 
   /**
-   * Gets the correct DAO instance for model {@code m}.
+   * Gets the correct DAO instance for model {@literal m}.
    * @param m model type
    * @return an instance of {@link net.algem.util.model.Cacheable }
    */
@@ -412,7 +412,7 @@ public class DataCache
 
   /**
    * Adds a new element to the list in dataCache.
-   * @param <T> GemModel instance
+   * @param <>> GemModel instance
    * @param m model
    */
   public <T extends GemModel> void add(T m) {
@@ -703,7 +703,7 @@ public class DataCache
       loadRoomContactCache();
       Vector<Param> schools = ParamTableIO.find(SchoolCtrl.TABLE, SchoolCtrl.COLUMN_KEY, dc);
       SCHOOL_LIST = new GemList<Param>(schools);
-      ESTAB_LIST = new GemList<Establishment>(EstablishmentIO.find(" ORDER BY nom", dc));
+      ESTAB_LIST = new GemList<Establishment>(EstablishmentIO.find(" ORDER BY p.nom", dc));
 
       showMessage(frame, BundleUtil.getLabel("Room.label"));
       ROOM_LIST = new GemList<Room>(ROOM_IO.load());
@@ -968,7 +968,7 @@ public class DataCache
   }
 
   /**
-   * Gets the name of an instrument from its {@code id }.
+   * Gets the name of an instrument from its {@literal id }.
    * @param id
    * @return a string, possibly empty
    */

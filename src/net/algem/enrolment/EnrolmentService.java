@@ -23,6 +23,7 @@ package net.algem.enrolment;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.logging.Logger;
 import net.algem.config.*;
 import net.algem.contact.PersonFile;
 import net.algem.contact.PersonFileIO;
@@ -847,5 +848,23 @@ public class EnrolmentService
       dc.setAutoCommit(true);
     }
   }
+  
+  public int getCompletedTime(int member, int mo) {
+   String query = "SELECT sum(fin-debut) AS duree FROM " + ScheduleRangeIO.TABLE
+           + " WHERE adherent = " + member
+           + " AND idplanning in("
+           + "SELECT p.id FROM " + ScheduleIO.TABLE + " p, " + CourseOrderIO.TABLE + " cc, " + ModuleOrderIO.TABLE + " cm"
+           + " WHERE cm.id = " + mo + " and cm.id = cc.module AND cc.idaction = p.action)";
+    try {
+      ResultSet rs = dc.executeQuery(query);
+      while(rs.next()) {
+        Hour h = new Hour(rs.getString(1));
+        return h.toMinutes();
+      }
+    } catch (SQLException ex) {
+      GemLogger.log(ex.getMessage());
+    }
+    return 0;
+}
 
 }

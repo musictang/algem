@@ -99,38 +99,50 @@ public class EnrolmentOrderUtil {
   
   /**
    * Creates a list of order lines.
-   * @param moduleOrder
+   * @param mo
    * @param e a single order line
    * @return the size of order lines collection
    * @throws SQLException 
    */
-  List<OrderLine> getOrderLines(ModuleOrder moduleOrder, OrderLine e) throws SQLException {
-    
+  List<OrderLine> getOrderLines(ModuleOrder mo, OrderLine e) throws SQLException {
+
     List<OrderLine> orderLines = new ArrayList<OrderLine>();
-    if (!ModeOfPayment.NUL.toString().equals(moduleOrder.getModeOfPayment())) {
-      if (PayFrequency.QUARTER.equals(moduleOrder.getPayment())) {// echeance trimestrielle
-        List<DateFr> dates = getQuarterPaymentDates(moduleOrder.getStart(), moduleOrder.getEnd());
+    if (ModeOfPayment.NUL.toString().equals(mo.getModeOfPayment())) {
+      return orderLines;
+    }
+    if (PricingPeriod.HOUR.equals(mo.getPricing()) || PayFrequency.YEAR.equals(mo.getModeOfPayment())) {
+      e.setAmount(AccountUtil.getIntValue(totalBase));
+      DateFr de = mo.getStart();
+      de.incMonth(1);
+      de.setDay(15);
+      e.setDate(de);
+      //insertion echeances
+      orderLines.add(e);
+    } else {
+      if (PayFrequency.QUARTER.equals(mo.getPayment())) {// echeance trimestrielle
+        List<DateFr> dates = getQuarterPaymentDates(mo.getStart(), mo.getEnd());
         /*if (AccountUtil.isPersonalAccount(e.getAccount())) {
-          addPersonalOrderLine(e, dates);
-          setPaymentOrderLine(e, moduleOrder.getPayment());
-        }*/
-        orderLines = setQuarterOrderLines(moduleOrder, e, dates);       
-      } else if (PayFrequency.MONTH.equals(moduleOrder.getPayment())) {// echeance mensuelle
-        List<DateFr> dates = getMonthPaymentDates(moduleOrder.getStart(), moduleOrder.getEnd());
+         addPersonalOrderLine(e, dates);
+         setPaymentOrderLine(e, moduleOrder.getPayment());
+         }*/
+        orderLines = setQuarterOrderLines(mo, e, dates);
+      } else if (PayFrequency.MONTH.equals(mo.getPayment())) {// echeance mensuelle
+        List<DateFr> dates = getMonthPaymentDates(mo.getStart(), mo.getEnd());
         /*if (AccountUtil.isPersonalAccount(e.getAccount())) {
-          addPersonalOrderLine(e, dates);
-          setPaymentOrderLine(e, moduleOrder.getPayment());
-        }*/
-        orderLines = setMonthOrderLines(moduleOrder, e, dates);       
-      } else { // (ANNUEL)
+         addPersonalOrderLine(e, dates);
+         setPaymentOrderLine(e, moduleOrder.getPayment());
+         }*/
+        orderLines = setMonthOrderLines(mo, e, dates);
+      } 
+      /*else { // (ANNUEL)
         e.setAmount(AccountUtil.getIntValue(totalBase));
-        DateFr de = moduleOrder.getStart();
+        DateFr de = mo.getStart();
         de.incMonth(1);
         de.setDay(15);
         e.setDate(de);
         //insertion echeances
         orderLines.add(e);
-      }
+      }*/
     }
 
     return orderLines;

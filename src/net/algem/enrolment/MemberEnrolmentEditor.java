@@ -239,6 +239,10 @@ public class MemberEnrolmentEditor
         try {
           ModuleOrder mo = enu.nextElement();//probleme apres inscription
           ModuleEnrolmentNode mnode = new ModuleEnrolmentNode(mo);
+          if (mo.getTotalTime() > 0) {
+            mnode.setCompleted(service.getCompletedTime(dossier.getId(), mo.getId()));
+          }
+          
           if (mo.isStopped()) {
             mnode.setInfo(" -> [[" + mo.getEnd().toString() + "]]");
           }
@@ -625,8 +629,11 @@ public class MemberEnrolmentEditor
     mo.setStart(new DateFr((DateFr) moduleDlg.getField(2)));
     mo.setEnd(new DateFr((DateFr) moduleDlg.getField(3)));
     mo.setPrice((Double) moduleDlg.getField(4));
+    mo.setPaymentAmount(((Number) moduleDlg.getField(10)).doubleValue());
     mo.setModeOfPayment((String) moduleDlg.getField(5));
     mo.setPayment((PayFrequency) moduleDlg.getField(6));
+    mo.setTotalTime(((Hour) moduleDlg.getField(8)).toMinutes());
+    mo.setPricing((PricingPeriod) moduleDlg.getField(9));
     mo.setNOrderLines(1);
 
   }

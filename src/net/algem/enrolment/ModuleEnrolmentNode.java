@@ -1,5 +1,5 @@
 /*
- * @(#)ModuleEnrolmentNode.java 2.8.w 05/09/14
+ * @(#)ModuleEnrolmentNode.java 2.9.1 10/11/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,6 +20,7 @@
  */
 package net.algem.enrolment;
 
+import net.algem.planning.Hour;
 import net.algem.util.BundleUtil;
 
 /**
@@ -27,7 +28,7 @@ import net.algem.util.BundleUtil;
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.1
  */
 public class ModuleEnrolmentNode
         extends EnrolmentNode
@@ -35,6 +36,7 @@ public class ModuleEnrolmentNode
 
   private ModuleOrder mo;
   private String info;
+  private int completed;
 
   public ModuleEnrolmentNode(Object o) {
     super(o);
@@ -52,9 +54,22 @@ public class ModuleEnrolmentNode
     this.info = i;
   }
 
+  /**
+   * Sets the time corresponding to the sessions already consumed.
+   * @param m time completed in minutes
+   */
+  public void setCompleted(int m) {
+    this.completed = m;
+  }
+
   @Override
   public String toString() {
-    return BundleUtil.getLabel("Module.label") + " : " + mo.getTitle() + (info != null ? info : "");
+    return BundleUtil.getLabel("Module.label") + " : " + mo.getTitle()
+            + (mo.getTotalTime() > 0 
+            ? " [" + (completed > 0 ? Hour.format(completed) : 0) 
+            + "/" + Hour.format(mo.getTotalTime()) + " -> " + Hour.format(mo.getTotalTime() - completed) + "]"
+            : "")
+            + (info != null ? info : "");
   }
 
   @Override

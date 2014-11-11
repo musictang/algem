@@ -1,5 +1,5 @@
 /*
- * @(#)ModuleDlg.java	2.8.w 23/07/14
+ * @(#)ModuleDlg.java	2.9.1 10/11/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -22,8 +22,12 @@ package net.algem.enrolment;
 
 import java.awt.Component;
 import java.awt.GridBagLayout;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.util.Calendar;
@@ -38,6 +42,8 @@ import net.algem.course.Module;
 import net.algem.course.ModuleChoice;
 import net.algem.planning.DateFr;
 import net.algem.planning.DateFrField;
+import net.algem.planning.Hour;
+import net.algem.planning.HourField;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.GemLogger;
@@ -49,7 +55,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.1
  * @since 1.0a 07/07/1999
  */
 public class ModuleDlg
@@ -62,11 +68,16 @@ public class ModuleDlg
   private DateFrField dateStart;
   private DateFrField dateEnd;
   private JFormattedTextField price;
+  private JFormattedTextField calculatedPrice;
   private JComboBox payment;
   private JComboBox frequency;
+  private JComboBox pricing;
+  private HourField hours;
   private Module module;
   private PersonFile personFile;
   private EnrolmentService service;
+  private GridBagHelper gb;
+  private double basicPrice;
 
   public ModuleDlg() {
   }
@@ -84,6 +95,16 @@ public class ModuleDlg
     nf.setMinimumFractionDigits(2);
     price = new JFormattedTextField(nf);
     price.setColumns(8);
+    price.addFocusListener(new FocusAdapter() {
+      public void focusGained(FocusEvent e) {
+        calculatedPrice.setValue(calculatePayment(module, (String) getField(5), (PayFrequency) getField(6), (PricingPeriod) getField(9)));
+      }
+      public void focusLost(FocusEvent e) {
+        calculatedPrice.setValue(calculatePayment(module, (String) getField(5), (PayFrequency) getField(6), (PricingPeriod) getField(9)));
+      }
+    });
+    calculatedPrice = new JFormattedTextField(nf);
+    calculatedPrice.setColumns(8);
 
     Calendar deb = Calendar.getInstance(Locale.FRANCE);
     Calendar cal = Calendar.getInstance(Locale.FRANCE);
@@ -99,31 +120,48 @@ public class ModuleDlg
     payment = new JComboBox(service.getListOfPayment());
     payment.addItemListener(this);
     frequency = new JComboBox(new Enum[]{PayFrequency.MONTH, PayFrequency.QUARTER, PayFrequency.YEAR});
-
     frequency.addItemListener(this);
+    pricing = new JComboBox(PricingPeriod.values());
+    pricing.setSelectedItem(getDefaultPricingPeriod());
+    pricing.addItemListener(this);
+    hours = new HourField("01:00");
+    hours.setEditable(PricingPeriod.HOUR.equals(getDefaultPricingPeriod()));
+    hours.addKeyListener(new KeyAdapter()
+    {
+      public void keyReleased(KeyEvent e) {
+        calculatedPrice.setValue(calculatePayment(module, (String) getField(5), (PayFrequency) getField(6), (PricingPeriod) getField(9)));
+      }
+    });
 
     maskPanel = new GemPanel();
     maskPanel.setLayout(new GridBagLayout());
-    GridBagHelper gb = new GridBagHelper(maskPanel);
+    gb = new GridBagHelper(maskPanel);
     gb.insets = GridBagHelper.SMALL_INSETS;
-    
+
     gb.add(new GemLabel(BundleUtil.getLabel("Module.label")), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Start.label")), 0, 1, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("End.label")), 0, 2, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Module.basic.rate.label")), 0, 3, 1, 1, GridBagHelper.WEST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Mode.of.payment.label")), 0, 4, 1, 1, GridBagHelper.WEST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Payment.schedule.label")), 0, 5, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Payment.schedule.amount.label")), 0, 4, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Mode.of.payment.label")), 0, 5, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Payment.schedule.label")), 0, 6, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Pricing.period.label")), 0, 7, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Hours.label")), 0, 8, 1, 1, GridBagHelper.WEST);
 
     gb.add(moduleChoice, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(dateStart, 1, 1, 1, 1, GridBagHelper.WEST);
     gb.add(dateEnd, 1, 2, 1, 1, GridBagHelper.WEST);
     gb.add(price, 1, 3, 1, 1, GridBagHelper.WEST);
-    gb.add(payment, 1, 4, 1, 1, GridBagHelper.WEST);
-    gb.add(frequency, 1, 5, 1, 1, GridBagHelper.WEST);
+    gb.add(calculatedPrice, 1, 4, 1, 1, GridBagHelper.WEST);
+    gb.add(payment, 1, 5, 1, 1, GridBagHelper.WEST);
+    gb.add(frequency, 1, 6, 1, 1, GridBagHelper.WEST);
+    gb.add(pricing, 1, 7, 1, 1, GridBagHelper.WEST);
+    gb.add(hours, 1, 8, 1, 1, GridBagHelper.WEST);
 
     //pour faire apparaître le prix du premier module à l'ouverture
     module = service.getModule(moduleChoice.getKey());
-    price.setValue(initPrice(module));
+//    price.setValue(initPrice(module));
+    initPrice(module);
     init();
   }
 
@@ -158,6 +196,11 @@ public class ModuleDlg
       case 7:
         moduleChoice.setSelectedIndex((Integer) val);
         break;
+      case 8:
+        hours.set((Hour) val);
+      case 9:
+        pricing.setSelectedItem(val);
+        break;
     }
   }
 
@@ -182,6 +225,12 @@ public class ModuleDlg
       case 7:
 //        return String.valueOf(((ModuleChoice) moduleChoice).getSelectedKey());
         return ((ModuleChoice) moduleChoice).getSelectedKey();
+      case 8:
+        return hours.get();
+      case 9:
+        return pricing.getSelectedItem();
+      case 10:
+        return calculatedPrice.getValue();
     }
     return null;
   }
@@ -191,15 +240,20 @@ public class ModuleDlg
     if (evt.getSource() == moduleChoice) {
       try {
         module = service.getModule(moduleChoice.getKey());
+        price.setValue(module.getBasePrice());
       } catch (SQLException ex) {
         GemLogger.log(getClass().getName() + "#itemStateChanged " + ex.getMessage());
       }
       if (module == null || personFile == null) {
         return;
       }
+    } else if(evt.getSource() == pricing) {
+      hours.setEditable(PricingPeriod.HOUR.equals((PricingPeriod) getField(9)));
     }
-//    calculatePrice(module.getBasePrice()); // commenté 2.8.w
-    price.setValue(calculatePayment(module, (String) getField(5), (PayFrequency) getField(6), getDefaultFrequency()));
+//    price.setValue(calculatePayment(module, (String) getField(5), (PayFrequency) getField(6), getDefaultPricingPeriod()));
+//    price.setValue(calculatePayment(module, (String) getField(5), (PayFrequency) getField(6), (PricingPeriod) getField(9)));
+    calculatedPrice.setValue(calculatePayment(module, (String) getField(5), (PayFrequency) getField(6), (PricingPeriod) getField(9)));
+    
   }
 
   /**
@@ -232,9 +286,12 @@ public class ModuleDlg
     }
   }
   
-  double calculatePayment(Module m, String mp, PayFrequency pf, PayFrequency def) {
-    double price = m.getBasePrice();
-    double reduc = m.getBasePrice();
+  double calculatePayment(Module m, String mp, PayFrequency pf, PricingPeriod def) {
+//    double price = m.getBasePrice();
+//    double reduc = m.getBasePrice();
+//    Double p = () getField(4);
+    double price = getField(4) == null ? m.getBasePrice() : ((Number) getField(4)).doubleValue();
+    double reduc = price;
     if (ModeOfPayment.PRL.toString().equals(mp)) {
       switch (pf) {
         case YEAR:
@@ -247,10 +304,10 @@ public class ModuleDlg
         case MONTH:
           price = price - (price * m.getMonthReducRate() / 100);
           break;
-      }
+      } 
     }
     
-    if (def.equals(PayFrequency.YEAR)) {
+    if (def.equals(PricingPeriod.YEAR)) {
       switch (pf) {
         case YEAR:
           reduc = price;
@@ -265,7 +322,7 @@ public class ModuleDlg
           reduc = price / 9;
           break;
       }
-    } else if (def.equals(PayFrequency.SEMESTER)) {
+    } else if (def.equals(PricingPeriod.BIAN)) {
       switch (pf) {
         case YEAR:
           reduc = price;
@@ -280,7 +337,7 @@ public class ModuleDlg
           reduc = price / 6;
           break;
       }
-    } else if (def.equals(PayFrequency.QUARTER)) {
+    } else if (def.equals(PricingPeriod.QTER)) {
       switch (pf) {
         case YEAR:
           reduc = price * 3;
@@ -295,7 +352,7 @@ public class ModuleDlg
           reduc = price / 3;
           break;
       }
-    } else if (def.equals(PayFrequency.MONTH)) {
+    } else if (def.equals(PricingPeriod.MNTH)) {
       switch (pf) {
         case YEAR:
           reduc = price * 9;
@@ -310,14 +367,17 @@ public class ModuleDlg
           reduc = price;
           break;
       }
+    } else if (def.equals(PricingPeriod.HOUR)) {
+      return price * ((Hour) getField(8)).toMinutes() / 60;
     }
 
     return reduc;
   }
 
-  private Double initPrice(Module f) {
-//    return new Double((f.getBasePrice() - (f.getBasePrice() * (f.getMonthReducRate() / 100))) / 3);
-    return calculatePayment(f, ModeOfPayment.CHQ.toString(), PayFrequency.MONTH, getDefaultFrequency());
+  private void initPrice(Module m) {
+    price.setValue(m.getBasePrice());
+    basicPrice = m.getBasePrice();
+    calculatedPrice.setValue(calculatePayment(m, ModeOfPayment.CHQ.toString(), PayFrequency.MONTH, getDefaultPricingPeriod()));
   }
 
   @Override
@@ -329,8 +389,12 @@ public class ModuleDlg
     dlg.setTitle(t);
   }
   
-  private PayFrequency getDefaultFrequency() {
-    String conf = ConfigUtil.getConf(ConfigKey.BASIC_RATE_FREQUENCY.getKey());
-    return conf != null ? ModuleOrderIO.getFrequencyByName(conf) : PayFrequency.QUARTER;
+  private PricingPeriod getDefaultPricingPeriod() {
+    String conf = ConfigUtil.getConf(ConfigKey.DEFAULT_PRICING_PERIOD.getKey());
+    return conf != null ? PricingPeriod.valueOf(conf) : PricingPeriod.QTER;
+  }
+
+  void reset() {
+    initPrice(module);
   }
 }

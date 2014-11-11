@@ -1,5 +1,5 @@
 /*
- * @(#)ConfigKey.java 2.8.w 27/08/14
+ * @(#)ConfigKey.java 2.9.1 11/11/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -27,7 +27,7 @@ import net.algem.util.BundleUtil;
  * First arg represents key in the table, second arg represents the label.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.1
  * @since 2.1.k 07/07/11
  */
 public enum ConfigKey
@@ -146,7 +146,7 @@ public enum ConfigKey
 
   ORGANIZATION_DOMAIN("Organisation.domaine", BundleUtil.getLabel("ConfEditor.organization.domain.label")),
   
-  BASIC_RATE_FREQUENCY("Tarif.base", BundleUtil.getLabel("ConfEditor.basic.rate.frequency")),
+  DEFAULT_PRICING_PERIOD("Tarif.base", BundleUtil.getLabel("ConfEditor.default.module.pricing")),
   
   SCHEDULE_RANGE_NAMES("Afficher.noms.plages", BundleUtil.getLabel("ConfEditor.schedule.ranges.names"));
 

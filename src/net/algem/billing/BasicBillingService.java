@@ -407,7 +407,7 @@ public class BasicBillingService
   }
 
    /**
-   * Returns an item with the same properties that {@code i} except its id.
+   * Returns an item with the same properties that {@literal i} except its id.
    * @param orig model
    * @return a copy of model
    */

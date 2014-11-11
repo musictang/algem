@@ -1,7 +1,7 @@
 /*
- * @(#)Hour.java	2.8.a 26/04/13
+ * @(#)Hour.java	2.9.1 10/11/14
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -25,7 +25,7 @@ package net.algem.planning;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.9.1
  */
 public class Hour
         implements java.io.Serializable
@@ -291,5 +291,18 @@ public class Hour
   public String toSimpleString() {
     String min = getMinute() == 0 ? "" : String.valueOf(getMinute());
     return String.valueOf(getHour()) + "h " + min;
+  }
+  
+  /**
+   * Returns a time-formatted string in hours and minutes.
+   * @param min number of minutes
+   * @return a formatted-string
+   */
+  public static String format(int min) {
+    if (min < 60) {
+      return "0h"+min;
+    }
+    int m = min%60;
+    return (min/60) + "h" + (m > 0 ? m : "");
   }
 }

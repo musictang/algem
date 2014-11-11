@@ -322,7 +322,8 @@ public class DayPlanView
   private void textSubRange(ScheduleObject p, int x) {
     if (p instanceof CourseSchedule && p instanceof ScheduleRangeObject) { 
       Course crs = ((CourseSchedule) p).getCourse();
-      if (crs != null && !crs.isCollective()) {
+      // Displays the member's name if the time range is not shared between several persons.
+      if (crs != null && (!crs.isCollective() || ((ScheduleRangeObject) p).getAction().getPlaces() < 2)) {     
         showSubSubLabel((ScheduleRangeObject) p, x);
       }
     }

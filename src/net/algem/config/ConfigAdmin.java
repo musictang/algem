@@ -1,5 +1,5 @@
 /*
- * @(#)ConfigAdmin.java 2.8.w 23/07/14
+ * @(#)ConfigAdmin.java 2.9.1 07/11/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -31,6 +31,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.border.Border;
 import net.algem.enrolment.ModuleOrderIO;
+import net.algem.enrolment.PricingPeriod;
 import net.algem.enrolment.PayFrequency;
 import net.algem.room.EstabChoice;
 import net.algem.room.RoomActiveChoiceModel;
@@ -46,7 +47,7 @@ import net.algem.util.ui.GemPanel;
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.8.w
- * @since 2.1.k
+ * @since 2.9.1
  */
 public class ConfigAdmin
         extends ConfigPanel
@@ -57,7 +58,7 @@ public class ConfigAdmin
   private ParamChoice school;
   private EstabChoice estab;
   private RoomChoice studio;
-  private JComboBox rateFrequency;
+  private JComboBox modulePricing;
 
   public ConfigAdmin(String title, Map<String, Config> cm) {
     super(title, cm);
@@ -71,7 +72,7 @@ public class ConfigAdmin
     c4 = confs.get(ConfigKey.DEFAULT_SCHOOL.getKey());
     c5 = confs.get(ConfigKey.DEFAULT_ESTABLISHMENT.getKey());
     c6 = confs.get(ConfigKey.DEFAULT_STUDIO.getKey());
-    c7 = confs.get(ConfigKey.BASIC_RATE_FREQUENCY.getKey());
+    c7 = confs.get(ConfigKey.DEFAULT_PRICING_PERIOD.getKey());
 
     content = new GemPanel();
     
@@ -95,11 +96,12 @@ public class ConfigAdmin
     jc2.setSelected(isSelected(c2.getValue()));
 //    jc3.setSelected(isSelected(c3.getValue()));
     
-    rateFrequency = new JComboBox(new Enum[]{PayFrequency.MONTH, PayFrequency.QUARTER, PayFrequency.YEAR});
-    String frequencyTip = BundleUtil.getLabel("ConfEditor.basic.rate.frequency.tip");
-    rateFrequency.setToolTipText(frequencyTip);
-    String frequency = ConfigUtil.getConf(ConfigKey.BASIC_RATE_FREQUENCY.getKey());
-    rateFrequency.setSelectedItem(ModuleOrderIO.getFrequencyByName(frequency));
+//    rateFrequency = new JComboBox(new Enum[]{ModulePricing.MONTH, ModulePricing.QUARTER, ModulePricing.YEAR, ModulePricing.HOUR});
+    modulePricing = new JComboBox(PricingPeriod.values());
+    String frequencyTip = BundleUtil.getLabel("ConfEditor.default.module.pricing.tip");
+    modulePricing.setToolTipText(frequencyTip);
+    String period = ConfigUtil.getConf(ConfigKey.DEFAULT_PRICING_PERIOD.getKey());
+    modulePricing.setSelectedItem(PricingPeriod.valueOf(period));
 
     Box box1 = Box.createHorizontalBox();
     box1.add(jc1);
@@ -122,10 +124,10 @@ public class ConfigAdmin
 
     defs.add(new GemLabel(ConfigKey.DEFAULT_STUDIO.getLabel()));
     defs.add(studio);
-    GemLabel frequencyLabel = new GemLabel(ConfigKey.BASIC_RATE_FREQUENCY.getLabel());
+    GemLabel frequencyLabel = new GemLabel(ConfigKey.DEFAULT_PRICING_PERIOD.getLabel());
     frequencyLabel.setToolTipText(frequencyTip);
     defs.add(frequencyLabel);
-    defs.add(rateFrequency);
+    defs.add(modulePricing);
 
     content.add(defs);
     add(content);
@@ -140,7 +142,7 @@ public class ConfigAdmin
     c4.setValue(String.valueOf(school.getKey()));
     c5.setValue(String.valueOf(estab.getKey()));
     c6.setValue(String.valueOf(studio.getKey()));
-    c7.setValue(((PayFrequency) rateFrequency.getSelectedItem()).getName());
+    c7.setValue(((PayFrequency) modulePricing.getSelectedItem()).getName());
 
     conf.add(c1);
     conf.add(c2);

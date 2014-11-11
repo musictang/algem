@@ -1,7 +1,7 @@
 /*
- * @(#)ModuleOrderTableModel.java	2.8.a 12/04/13
+ * @(#)ModuleOrderTableModel.java	2.9.1 10/11/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -22,6 +22,7 @@ package net.algem.enrolment;
 
 import net.algem.accounting.GemAmount;
 import net.algem.planning.DateFr;
+import net.algem.planning.Hour;
 import net.algem.util.BundleUtil;
 import net.algem.util.ui.JTableModel;
 
@@ -30,7 +31,7 @@ import net.algem.util.ui.JTableModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.9.1
  */
 public class ModuleOrderTableModel
         extends JTableModel
@@ -43,7 +44,8 @@ public class ModuleOrderTableModel
       BundleUtil.getLabel("Start.label"),
       BundleUtil.getLabel("End.label"),
       BundleUtil.getLabel("Module.basic.rate.label"),
-      BundleUtil.getLabel("Mode.of.payment.label")
+      BundleUtil.getLabel("Mode.of.payment.label"),
+      BundleUtil.getLabel("Hours.label")
 //      "NbEch"
     };
   }
@@ -68,6 +70,8 @@ public class ModuleOrderTableModel
         return GemAmount.class;
       case 5:
         return String.class;
+      case 6:
+        return Hour.class;
       default:
         return Object.class;
     }
@@ -94,7 +98,9 @@ public class ModuleOrderTableModel
         return new GemAmount(m.getPrice());
       case 5:
         return m.getModeOfPayment();
-//      case 6:
+      case 6:
+        return new Hour(m.getTotalTime());
+//      case 7:
 //        return new Integer(m.getNOrderLines());
     }
     return null;
