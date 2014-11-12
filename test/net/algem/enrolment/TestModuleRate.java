@@ -1,5 +1,5 @@
 /*
- * @(#)TestModuleRate.java	2.8.w 23/07/14
+ * @(#)TestModuleRate.java	2.9.1 12/11/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -32,7 +32,7 @@ import static org.junit.Assert.*;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.1
  * @since 2.8.w 16/07/14
  */
 public class TestModuleRate
@@ -63,13 +63,13 @@ public class TestModuleRate
     m.setBasePrice(600.0);
     m.setMonthReducRate(7.0);
     m.setQuarterReducRate(10.0);
-    
+
     ModuleDlg dlg = new ModuleDlg();
     String check = ModeOfPayment.CHQ.toString();
     String ddebit = ModeOfPayment.PRL.toString();
 
     // rating periodicity : module rate is linked to this parameter (if YEAR, the module basic rate is based on year)
-    PayFrequency def = PayFrequency.YEAR;
+    PricingPeriod def = PricingPeriod.YEAR;
 
     double payment = dlg.calculatePayment(m, ddebit, PayFrequency.MONTH, def);
     double expected = 558.0 / 9;
@@ -81,12 +81,12 @@ public class TestModuleRate
     payment = dlg.calculatePayment(m, ddebit, PayFrequency.YEAR, def);
     expected = m.getBasePrice();
     assertTrue(expected == payment);
-    
+
     //
-    def = PayFrequency.QUARTER;
-    
+    def = PricingPeriod.QTER;
+
     payment = dlg.calculatePayment(m, ddebit, PayFrequency.MONTH, def);
-    
+
     expected = 558.0 / 3;
     assertTrue("payment == " + payment, expected == payment);
     payment = dlg.calculatePayment(m, ddebit, PayFrequency.QUARTER, def);
@@ -96,12 +96,12 @@ public class TestModuleRate
     payment = dlg.calculatePayment(m, check, PayFrequency.YEAR, def);
     expected = m.getBasePrice() * 3;
     assertTrue("payment == " + payment, expected == payment);
-    
+
     //
-    def = PayFrequency.SEMESTER;
-    
+    def = PricingPeriod.BIAN;
+
     payment = dlg.calculatePayment(m, ddebit, PayFrequency.MONTH, def);
-    
+
     expected = 558 / 6;
     assertTrue("payment == " + payment, expected == payment);
     payment = dlg.calculatePayment(m, ddebit, PayFrequency.QUARTER, def);

@@ -1,6 +1,6 @@
 /*
  * @(#)ModuleOrderTableModel.java	2.9.1 10/11/14
- * 
+ *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.enrolment;
 
@@ -99,7 +99,7 @@ public class ModuleOrderTableModel
       case 5:
         return m.getModeOfPayment();
       case 6:
-        return new Hour(m.getTotalTime());
+        return new Hour(m.getTotalTime(), true);
 //      case 7:
 //        return new Integer(m.getNOrderLines());
     }

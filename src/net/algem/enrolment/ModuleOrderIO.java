@@ -1,6 +1,6 @@
 /*
- * @(#)ModuleOrderIO.java	2.9.1 07/11/14
- * 
+ * @(#)ModuleOrderIO.java	2.9.1 12/11/14
+ *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.enrolment;
 
@@ -44,7 +44,7 @@ public class ModuleOrderIO
 
   public static void insert(ModuleOrder c, DataConnection dc) throws SQLException {
     int next = nextId(SEQUENCE, dc);
-    
+
     String query = "INSERT INTO " + TABLE + " VALUES("
             + next
             + ",'" + c.getIdOrder()
@@ -86,12 +86,12 @@ public class ModuleOrderIO
     String query = "DELETE FROM " + TABLE + " WHERE idcmd = " + order;
     dc.executeUpdate(query);
   }
-  
+
   public static void delete(int moduleOrder, DataConnection dc) throws SQLException {
     String query = "DELETE FROM " + TABLE + " WHERE id = " + moduleOrder;
     dc.executeUpdate(query);
   }
-  
+
   public static ModuleOrder findId(int id, DataConnection dc) throws SQLException {
     ModuleOrder mo = null;
     String query = "SELECT * FROM " + TABLE + " WHERE id = " + id;
@@ -121,14 +121,14 @@ public class ModuleOrderIO
     rs.close();
     return v;
   }
-  
+
   private static ModuleOrder getFromRs(ResultSet rs) throws SQLException {
 
       ModuleOrder m = new ModuleOrder();
       m.setId(rs.getInt(1));
       m.setIdOrder(rs.getInt(2));
       m.setModule(rs.getInt(3));
-      m.setPrice(rs.getInt(4));
+      m.setPrice(rs.getInt(4)/100d);
       m.setStart(new DateFr(rs.getString(5)));
       m.setEnd(new DateFr(rs.getString(6)));
       m.setModeOfPayment(rs.getString(7));
@@ -138,7 +138,7 @@ public class ModuleOrderIO
       m.setPricing(PricingPeriod.valueOf(rs.getString(11)));
       m.setTotalTime(rs.getInt(12));
       m.setTitle(rs.getString(13));
-      
+
       return m;
   }
 

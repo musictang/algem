@@ -1,6 +1,6 @@
 /*
- * @(#)ConfigFile.java 2.8.r 03/01/14
- * 
+ * @(#)ConfigFile.java 2.9.1 12/11/14
+ *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 
 package net.algem.config;
@@ -27,15 +27,14 @@ import java.util.Map;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import net.algem.util.BundleUtil;
-import net.algem.util.FileUtil;
 import net.algem.util.ui.FilePanel;
 import net.algem.util.ui.GemPanel;
 
 /**
  * Default paths config.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.r
+ * @version 2.9.1
  * @since 2.1.k
  */
 public class ConfigFile
@@ -57,14 +56,12 @@ public class ConfigFile
   @Override
   public List<Config> get() {
     List<Config> conf = new ArrayList<Config>();
-    //XXX this works only if standard_conforming_strings = off in postgresql.conf
-    // From 9.1 default is on.
-    c1.setValue(FileUtil.escapeBackSlashes(logFilePanel.getText()));
-    c2.setValue(FileUtil.escapeBackSlashes(exportFilePanel.getText()));
-    c3.setValue(FileUtil.escapeBackSlashes(photosFilePanel.getText()));
-    c4.setValue(FileUtil.escapeBackSlashes(groupsFilePanel.getText()));
-    c5.setValue(FileUtil.escapeBackSlashes(employeesFilePanel.getText()));
-    c6.setValue(FileUtil.escapeBackSlashes(invoiceFooterPanel.getText()));
+    c1.setValue(logFilePanel.getText());
+    c2.setValue(exportFilePanel.getText());
+    c3.setValue(photosFilePanel.getText());
+    c4.setValue(groupsFilePanel.getText());
+    c5.setValue(employeesFilePanel.getText());
+    c6.setValue(invoiceFooterPanel.getText());
 
     conf.add(c1);
     conf.add(c2);
@@ -83,7 +80,7 @@ public class ConfigFile
     c4 = confs.get(ConfigKey.GROUPS_PATH.getKey());
     c5 = confs.get(ConfigKey.EMPLOYEES_PATH.getKey());
     c6 = confs.get(ConfigKey.INVOICE_FOOTER.getKey());
-    
+
     content = new GemPanel();
     content.setLayout(new BoxLayout(content,BoxLayout.Y_AXIS));
 
@@ -99,7 +96,7 @@ public class ConfigFile
     employeesFilePanel.setToolTipText(BundleUtil.getLabel("ConfEditor.employees.path.tip"));
     invoiceFooterPanel = new FilePanel(ConfigKey.INVOICE_FOOTER.getLabel(),c6.getValue());
     invoiceFooterPanel.setToolTipText(BundleUtil.getLabel("ConfEditor.invoice.footer.tip"));
-		
+
     content.add(logFilePanel);
 		content.add(Box.createVerticalStrut(4));
     content.add(exportFilePanel);
@@ -111,7 +108,7 @@ public class ConfigFile
     content.add(employeesFilePanel);
 		content.add(Box.createVerticalStrut(4));
     content.add(invoiceFooterPanel);
-    
+
     add(content);
   }
 

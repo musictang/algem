@@ -1,7 +1,7 @@
 /*
- * @(#)HourField.java	2.6.a 25/09/12
- * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * @(#)HourField.java	2.9.1 12/11/14
+ *
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning;
 
@@ -29,7 +29,7 @@ import javax.swing.JTextField;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.1
  */
 public class HourField
         extends JTextField
@@ -39,9 +39,31 @@ public class HourField
   private int pos;
   private HourDocument buf;
 
+  /**
+   * Extended status.
+   * @see net.algem.planning.HourDocument
+   */
+  private boolean extended;
+
+  /**
+   * Creates a field below 25 hours.
+   * @param d time-formatted string
+   */
   public HourField(String d) {
     addKeyListener(this);
     buf = new HourDocument(this, d);
+    setDocument(buf);
+  }
+
+  /**
+   * Creates a field optionally above 24 hours.
+   * @param d time-formatted string
+   * @param extended timeout option
+   */
+  public HourField(String d, boolean extended) {
+    this.extended = extended;
+    addKeyListener(this);
+    buf = new HourDocument(this, d, extended);
     setDocument(buf);
   }
 
@@ -96,7 +118,7 @@ public class HourField
 
   public void set(Hour d) {
     if (d != null) {
-      buf = new HourDocument(this, d.toString());
+      buf = new HourDocument(this, d.toString(), extended);
       setDocument(buf);
       pos = 0;
     }
@@ -105,7 +127,7 @@ public class HourField
   @Override
   public void setText(String s) {
     if (s != null) {
-      buf = new HourDocument(this, s);
+      buf = new HourDocument(this, s, extended);
       setDocument(buf);
       pos = 0;
     }

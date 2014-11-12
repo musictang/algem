@@ -1,5 +1,5 @@
 /*
- * @(#)FileUtil.java	2.8.w 09/07/14
+ * @(#)FileUtil.java	2.9.1 12/11/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -42,7 +42,7 @@ import net.algem.util.ui.MessagePopup;
  * Utility class for file operations.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.1
  * @since 2.0q
  */
 public class FileUtil
@@ -57,7 +57,7 @@ public class FileUtil
   /** Default width in mm for printing. */
   private static int WIDTH = 210;
   /** Default heigth in mm for printing. */
-  private static int HEIGHT = 297;// 
+  private static int HEIGHT = 297;//
 
   /**
    * Gets a directory.
@@ -186,16 +186,6 @@ public class FileUtil
       return MessagePopup.confirm(parent, MessageUtil.getMessage("file.overwrite.confirmation", f.getName()));
     }
     return true;
-  }
-
-  /**
-   * Escape backslashes in a string.
-   *
-   * @param path
-   * @return a string
-   */
-  public static String escapeBackSlashes(String path) {
-    return path.replace("\\", "\\\\");
   }
 
   /**

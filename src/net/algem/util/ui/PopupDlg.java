@@ -1,6 +1,6 @@
 /*
  * @(#)PopupDlg.java	2.8.w 23/07/14
- * 
+ *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.util.ui;
 
@@ -43,7 +43,6 @@ public abstract class PopupDlg
 
   protected Frame parent;
   protected JDialog dlg;
-//  protected GemLabel title;
   protected String dlgTitle;
   protected boolean validation;
   protected GemButton btValid;
@@ -56,14 +55,12 @@ public abstract class PopupDlg
   public PopupDlg(Component c, String t) {
     parent = getTopFrame(c);
     dlgTitle = t;
-//    title = new GemLabel(t);
     validation = false;
   }
 
   public PopupDlg(Component c, String t, boolean modal) {
     parent = getTopFrame(c);
     dlgTitle = t;
-//    title = new GemLabel(t);
     validation = false;
     this.modal = modal;
   }
@@ -71,7 +68,7 @@ public abstract class PopupDlg
   public void init() {
     if (parent == null) {
       dlg = new JDialog((JDialog) null, modal);
-    } 
+    }
      else {
       dlg = new JDialog(parent, modal);
     }
@@ -87,9 +84,7 @@ public abstract class PopupDlg
 
     GemPanel panel = new GemPanel(new BorderLayout());
     panel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
-//    panel.add(title, BorderLayout.NORTH);
     panel.add(getMask(), BorderLayout.CENTER);
-//    panel.add(buttons, BorderLayout.SOUTH);
 
     dlg.add(panel, BorderLayout.CENTER);
     dlg.add(buttons, BorderLayout.SOUTH);
@@ -111,7 +106,7 @@ public abstract class PopupDlg
   public void setSize(int w, int h) {
     dlg.setSize(w, h);
   }
- 
+
   public void show() {
     if (dlg != null) {
       dlg.setVisible(true);
@@ -131,7 +126,7 @@ public abstract class PopupDlg
   }
 
   public abstract GemPanel getMask();
-  
+
   @Override
   public void actionPerformed(ActionEvent evt) {
     if (evt.getActionCommand().equals(GemCommand.OK_CMD)) {

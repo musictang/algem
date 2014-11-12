@@ -1,5 +1,5 @@
 /*
- * @(#)ModuleEnrolmentNode.java 2.9.1 10/11/14
+ * @(#)ModuleEnrolmentNode.java 2.9.1 12/11/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,12 +20,14 @@
  */
 package net.algem.enrolment;
 
+import java.text.NumberFormat;
+import net.algem.accounting.AccountUtil;
 import net.algem.planning.Hour;
 import net.algem.util.BundleUtil;
 
 /**
  * Tree node for module info.
- * 
+ *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.9.1
@@ -49,7 +51,7 @@ public class ModuleEnrolmentNode
   public ModuleOrder getModule() {
     return mo;
   }
-  
+
   void setInfo(String i) {
     this.info = i;
   }
@@ -65,9 +67,10 @@ public class ModuleEnrolmentNode
   @Override
   public String toString() {
     return BundleUtil.getLabel("Module.label") + " : " + mo.getTitle()
-            + (mo.getTotalTime() > 0 
-            ? " [" + (completed > 0 ? Hour.format(completed) : 0) 
+            + (mo.getTotalTime() > 0
+            ? " [" + (completed > 0 ? Hour.format(completed) : 0)
             + "/" + Hour.format(mo.getTotalTime()) + " -> " + Hour.format(mo.getTotalTime() - completed) + "]"
+            + " >> [ " + getPaymentInfo(completed) + "/" + getPaymentInfo(mo.getTotalTime()) + " -> " + getPaymentInfo(mo.getTotalTime() - completed)+ " ]"
             : "")
             + (info != null ? info : "");
   }
@@ -75,5 +78,10 @@ public class ModuleEnrolmentNode
   @Override
   public boolean isLeaf() {
     return false;
+  }
+
+  private String getPaymentInfo(int arg) {
+    NumberFormat nf = AccountUtil.getDefaultCurrencyFormat();
+    return nf.format(mo.getPrice() * arg / 60);
   }
 }

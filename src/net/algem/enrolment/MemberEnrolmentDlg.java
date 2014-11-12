@@ -1,5 +1,5 @@
 /*
- * @(#)MemberEnrolmentDlg.java	2.9.1 10/11/14
+ * @(#)MemberEnrolmentDlg.java	2.9.1 12/11/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -360,9 +360,9 @@ public class MemberEnrolmentDlg
     moduleDlg.setField(5, mo.getModeOfPayment());
     moduleDlg.setField(6, mo.getPayment());
     moduleDlg.setField(7, mo.getSelectedModule());
-    moduleDlg.setField(8, new Hour(mo.getTotalTime()));
+    moduleDlg.setField(8, new Hour(mo.getTotalTime(), true));
     moduleDlg.setField(9, mo.getPricing());
-    
+
     setCursor(Cursor.getDefaultCursor());
 
     moduleDlg.show();

@@ -1,5 +1,5 @@
 /*
- * @(#)MemberEnrolmentEditor.java 2.8.y 24/09/14
+ * @(#)MemberEnrolmentEditor.java 2.9.1 12/11/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -74,7 +74,7 @@ public class MemberEnrolmentEditor
   private final static String NEW_COURSE = BundleUtil.getLabel("New.course.label");
   private final static String NEW_MODULE = BundleUtil.getLabel("New.module.label");
   private final static String MODULE_DEL = BundleUtil.getLabel("Module.delete.label");
-  private final static String MODULE_STOP = BundleUtil.getLabel("Module.stop.label");  
+  private final static String MODULE_STOP = BundleUtil.getLabel("Module.stop.label");
   private final static String NONE_ENROLMENT = MessageUtil.getMessage("enrolment.empty.list");
   private final static String COURSE_DATE = BundleUtil.getLabel("Course.date.modification.label");
 
@@ -242,7 +242,7 @@ public class MemberEnrolmentEditor
           if (mo.getTotalTime() > 0) {
             mnode.setCompleted(service.getCompletedTime(dossier.getId(), mo.getId()));
           }
-          
+
           if (mo.isStopped()) {
             mnode.setInfo(" -> [[" + mo.getEnd().toString() + "]]");
           }
@@ -424,7 +424,7 @@ public class MemberEnrolmentEditor
     return co;
   }
 
-  
+
   private void stopCourse() {
 
     StopCourseDlg dlg2 = null;
@@ -565,6 +565,8 @@ public class MemberEnrolmentEditor
     try {
       if (moduleDlg == null) {
         moduleDlg = new ModuleDlg(this, dossier, service, dataCache);
+      } else {
+        moduleDlg.reset();
       }
       moduleDlg.show();
       if (!moduleDlg.isValidation()) {
@@ -675,9 +677,9 @@ public class MemberEnrolmentEditor
     tree.setSelectionRow(x - 1);
     tree.scrollRowToVisible(x - 1); // doesn't seem to work
   }
-  
+
   private void stopModule() {
-    
+
     Object[] path = currentSelection.getPath();
     int i = path.length;
     if (!(path[i - 1] instanceof ModuleEnrolmentNode)) {
@@ -690,10 +692,10 @@ public class MemberEnrolmentEditor
       if(n instanceof CourseEnrolmentNode) {
         orders.add(((CourseEnrolmentNode) n).getCourseOrder());
       }
-    } 
-    
+    }
+
     ModuleOrder moduleOrder = moduleNode.getModule();
-    
+
     StopCourseFromModuleDlg dlg2 = new StopCourseFromModuleDlg(desktop, moduleOrder);
     dlg2.setVisible(true);
     if (!dlg2.isValidation()) {

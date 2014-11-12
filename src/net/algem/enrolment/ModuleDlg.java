@@ -1,5 +1,5 @@
 /*
- * @(#)ModuleDlg.java	2.9.1 10/11/14
+ * @(#)ModuleDlg.java	2.9.1 12/11/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -22,18 +22,18 @@ package net.algem.enrolment;
 
 import java.awt.Component;
 import java.awt.GridBagLayout;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.sql.SQLException;
 import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Locale;
 import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
+import net.algem.accounting.AccountUtil;
 import net.algem.accounting.ModeOfPayment;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
@@ -77,11 +77,10 @@ public class ModuleDlg
   private PersonFile personFile;
   private EnrolmentService service;
   private GridBagHelper gb;
-  private double basicPrice;
 
   public ModuleDlg() {
   }
-  
+
   public ModuleDlg(Component c, PersonFile p, EnrolmentService service, DataCache dataCache) throws SQLException {
     super(c, BundleUtil.getLabel("Module.label"));
     this.service = service;
@@ -90,19 +89,22 @@ public class ModuleDlg
     moduleChoice = new ModuleChoice(dataCache.getList(Model.Module));
     moduleChoice.addItemListener(this);
 
-    NumberFormat nf = NumberFormat.getCurrencyInstance(Locale.FRANCE);
-    nf.setMaximumFractionDigits(2);
-    nf.setMinimumFractionDigits(2);
+    NumberFormat nf = AccountUtil.getDefaultCurrencyFormat();
     price = new JFormattedTextField(nf);
     price.setColumns(8);
-    price.addFocusListener(new FocusAdapter() {
-      public void focusGained(FocusEvent e) {
-        calculatedPrice.setValue(calculatePayment(module, (String) getField(5), (PayFrequency) getField(6), (PricingPeriod) getField(9)));
-      }
-      public void focusLost(FocusEvent e) {
-        calculatedPrice.setValue(calculatePayment(module, (String) getField(5), (PayFrequency) getField(6), (PricingPeriod) getField(9)));
+    price.addKeyListener(new KeyAdapter()
+    {
+      public void keyReleased(KeyEvent e) {
+        try {
+          price.commitEdit();
+          calculatedPrice.setValue(calculatePayment(module, (String) getField(5), (PayFrequency) getField(6), (PricingPeriod) getField(9)));
+        } catch (ParseException ex) {
+          System.err.println(ex.getMessage());
+        }
+
       }
     });
+
     calculatedPrice = new JFormattedTextField(nf);
     calculatedPrice.setColumns(8);
 
@@ -124,7 +126,9 @@ public class ModuleDlg
     pricing = new JComboBox(PricingPeriod.values());
     pricing.setSelectedItem(getDefaultPricingPeriod());
     pricing.addItemListener(this);
-    hours = new HourField("01:00");
+
+    hours = new HourField("01:00", true);
+    hours.setToolTipText(BundleUtil.getLabel("Pricing.period.hours.tip"));
     hours.setEditable(PricingPeriod.HOUR.equals(getDefaultPricingPeriod()));
     hours.addKeyListener(new KeyAdapter()
     {
@@ -146,7 +150,9 @@ public class ModuleDlg
     gb.add(new GemLabel(BundleUtil.getLabel("Mode.of.payment.label")), 0, 5, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Payment.schedule.label")), 0, 6, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Pricing.period.label")), 0, 7, 1, 1, GridBagHelper.WEST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Hours.label")), 0, 8, 1, 1, GridBagHelper.WEST);
+    GemLabel hoursLabel = new GemLabel(BundleUtil.getLabel("Hours.label"));
+    hoursLabel.setToolTipText(BundleUtil.getLabel("Pricing.period.hours.tip"));
+    gb.add(hoursLabel, 0, 8, 1, 1, GridBagHelper.WEST);
 
     gb.add(moduleChoice, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(dateStart, 1, 1, 1, 1, GridBagHelper.WEST);
@@ -158,9 +164,10 @@ public class ModuleDlg
     gb.add(pricing, 1, 7, 1, 1, GridBagHelper.WEST);
     gb.add(hours, 1, 8, 1, 1, GridBagHelper.WEST);
 
+    payment.setPreferredSize(pricing.getPreferredSize());
+    frequency.setPreferredSize(pricing.getPreferredSize());
     //pour faire apparaître le prix du premier module à l'ouverture
     module = service.getModule(moduleChoice.getKey());
-//    price.setValue(initPrice(module));
     initPrice(module);
     init();
   }
@@ -253,7 +260,7 @@ public class ModuleDlg
 //    price.setValue(calculatePayment(module, (String) getField(5), (PayFrequency) getField(6), getDefaultPricingPeriod()));
 //    price.setValue(calculatePayment(module, (String) getField(5), (PayFrequency) getField(6), (PricingPeriod) getField(9)));
     calculatedPrice.setValue(calculatePayment(module, (String) getField(5), (PayFrequency) getField(6), (PricingPeriod) getField(9)));
-    
+
   }
 
   /**
@@ -285,7 +292,7 @@ public class ModuleDlg
       price.setValue(new Double(0.0)); // si NUL
     }
   }
-  
+
   double calculatePayment(Module m, String mp, PayFrequency pf, PricingPeriod def) {
 //    double price = m.getBasePrice();
 //    double reduc = m.getBasePrice();
@@ -304,9 +311,9 @@ public class ModuleDlg
         case MONTH:
           price = price - (price * m.getMonthReducRate() / 100);
           break;
-      } 
+      }
     }
-    
+
     if (def.equals(PricingPeriod.YEAR)) {
       switch (pf) {
         case YEAR:
@@ -376,7 +383,6 @@ public class ModuleDlg
 
   private void initPrice(Module m) {
     price.setValue(m.getBasePrice());
-    basicPrice = m.getBasePrice();
     calculatedPrice.setValue(calculatePayment(m, ModeOfPayment.CHQ.toString(), PayFrequency.MONTH, getDefaultPricingPeriod()));
   }
 
@@ -384,17 +390,19 @@ public class ModuleDlg
   public boolean isEntryValid() {
     return moduleChoice.getKey() > 0;
   }
-  
+
   void setTitle(String t) {
     dlg.setTitle(t);
   }
-  
+
   private PricingPeriod getDefaultPricingPeriod() {
     String conf = ConfigUtil.getConf(ConfigKey.DEFAULT_PRICING_PERIOD.getKey());
     return conf != null ? PricingPeriod.valueOf(conf) : PricingPeriod.QTER;
   }
 
   void reset() {
+    hours.set(new Hour("01:00"));// important : set hour before initializing price
+    pricing.setSelectedItem(getDefaultPricingPeriod());
     initPrice(module);
   }
 }

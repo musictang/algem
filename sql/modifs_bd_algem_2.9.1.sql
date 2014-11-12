@@ -23,3 +23,5 @@ ALTER TABLE cours ALTER libelle TYPE varchar(32);
 --UPDATE commande_module SET paiement = 'TRIM' WHERE paiement = '1';
 --UPDATE commande_module SET paiement = 'ANNU' WHERE paiement = 'ANN';
 --UPDATE commande_module SET paiement = NULL WHERE paiement = '';
+
+UPDATE config SET clef = 'Periode.tarification' WHERE clef = 'Tarif.base';

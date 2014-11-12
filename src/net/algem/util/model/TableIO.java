@@ -1,7 +1,7 @@
 /*
- * @(#)TableIO.java	2.7.a 10/12/12
- * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * @(#)TableIO.java	2.9.1 12/11/14
+ *
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.util.model;
 
@@ -24,13 +24,14 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import net.algem.util.DataConnection;
+//import org.apache.commons.lang.StringEscapeUtils;
 
 /**
  * Abstract class for persistence.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.9.1
  */
 public abstract class TableIO
 {
@@ -39,9 +40,9 @@ public abstract class TableIO
   protected final static String LEFT_COL_SEPARATOR = ",'";
   protected final static String RIGHT_COL_SEPARATOR = "','";
   protected final static String END_OF_QUERY = "')";
-	
+
   /**
-   * Adds escape characters to the string {@code s}.
+   * Escapes quotes in the string {@code s}.
    * @param s
    * @return a string
    */
@@ -61,7 +62,7 @@ public abstract class TableIO
   }
 
   /**
-   * Suppress escape characters in the string {@code s}.
+   * Unescape quote characters in the string {@code s}.
    * @param s
    * @return a string
    */
@@ -78,7 +79,7 @@ public abstract class TableIO
     }
     return b.toString();
   }
-  
+
   /**
    * Replaces chars with accents in the string {@code s } with generic ascii characters.
    * @param s the string to replace
@@ -103,7 +104,7 @@ public abstract class TableIO
    * @param seq_name
    * @param dc
    * @return an integer
-   * @throws SQLException 
+   * @throws SQLException
    */
   public static int nextId(String seq_name, DataConnection dc) throws SQLException {
 

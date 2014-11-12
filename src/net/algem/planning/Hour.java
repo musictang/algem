@@ -1,5 +1,5 @@
 /*
- * @(#)Hour.java	2.9.1 10/11/14
+ * @(#)Hour.java	2.9.1 12/11/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -45,6 +45,11 @@ public class Hour
   public Hour(int m) {
     this();
     incMinute(m);
+  }
+
+  public Hour(int m, boolean extended) {
+    this();
+    incMinute(m, extended);
   }
 
   public Hour(String h) {
@@ -121,6 +126,13 @@ public class Hour
       incHour(1);
     }
     setMinute(m);
+  }
+
+  public void incMinute(int n, boolean extended){
+    int m = getMinute();
+    m += n;
+    setHour(m / 60);
+    setMinute(m % 60);
   }
 
   public void decMinute(int n) {
@@ -292,7 +304,7 @@ public class Hour
     String min = getMinute() == 0 ? "" : String.valueOf(getMinute());
     return String.valueOf(getHour()) + "h " + min;
   }
-  
+
   /**
    * Returns a time-formatted string in hours and minutes.
    * @param min number of minutes

@@ -1,5 +1,5 @@
 /*
- * @(#)ConfigKey.java 2.9.1 11/11/14
+ * @(#)ConfigKey.java 2.9.1 12/11/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -74,10 +74,10 @@ public enum ConfigKey
 
   /** End peak hour - start full rate for rehearsals. */
   OFFPEAK_HOUR("FinHeureCreuse", BundleUtil.getLabel("ConfEditor.offpeak.time.label")),
-  
+
   /** Default start time. */
   START_TIME("Heure.ouverture", BundleUtil.getLabel("ConfEditor.start.time.label")),
-  
+
   /** Teacher management. */
   TEACHER_MANAGEMENT("GestionProf", BundleUtil.getLabel("ConfEditor.teacher.management.label")),
 
@@ -145,9 +145,9 @@ public enum ConfigKey
   ACCOUNTING_DOSSIER_NAME("Compta.nom.dossier", BundleUtil.getLabel("ConfEditor.accounting.export.dossier.label")),
 
   ORGANIZATION_DOMAIN("Organisation.domaine", BundleUtil.getLabel("ConfEditor.organization.domain.label")),
-  
-  DEFAULT_PRICING_PERIOD("Tarif.base", BundleUtil.getLabel("ConfEditor.default.module.pricing")),
-  
+
+  DEFAULT_PRICING_PERIOD("Periode.tarification", BundleUtil.getLabel("ConfEditor.default.module.pricing")),
+
   SCHEDULE_RANGE_NAMES("Afficher.noms.plages", BundleUtil.getLabel("ConfEditor.schedule.ranges.names"));
 
   private final String key;

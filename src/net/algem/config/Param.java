@@ -1,6 +1,6 @@
 /*
  * @(#)Param.java	2.8.a 01/04/13
- * 
+ *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.config;
 
@@ -105,7 +105,7 @@ public class Param
     try {
       i = Integer.parseInt(key);
     } catch(NumberFormatException ex) {
-       
+
     }
     return i;
   }
@@ -114,5 +114,5 @@ public class Param
   public void setId(int id) {
     setKey(String.valueOf(id));
   }
-  
+
 }
