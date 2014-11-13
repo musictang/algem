@@ -70,7 +70,7 @@ public class TestEnrolmentOrderUtil {
       cleanUp(bdLines);
     }
 
-  @Test
+  @Ignore
   public void testOrderLineCreationForQuarterPayment() {
 
     int orderId = 50000;
@@ -142,7 +142,7 @@ public class TestEnrolmentOrderUtil {
     }
   }
 
-  @Test
+  @Ignore
   public void testOrderLineCreationForMonthPayment() {
 
     int orderId = 50000;

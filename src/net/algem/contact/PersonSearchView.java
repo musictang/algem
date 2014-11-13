@@ -1,7 +1,7 @@
 /*
- * @(#)PersonSearchView.java	2.7.k 04/03/13
+ * @(#)PersonSearchView.java	2.9.1 13/11/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,12 +27,12 @@ import net.algem.util.GemCommand;
 import net.algem.util.ui.*;
 
 /**
- * comment
- *
+ * View used to search a contact whose type is other than
+ * {@code  net.algem.contact.Person.BANK} and  {@code net.algem.contact.Person.ESTABLISHMENT}.
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.k
+ * @version 2.9.1
  * @since 1.0a 07/07/1999
  */
 public class PersonSearchView
@@ -43,6 +43,7 @@ public class PersonSearchView
   private GemField org;
   private GemField name;
   private GemField firstname;
+  private GemField pseudo;
   private GemField telephone;
   private GemField email;
   private GemField site;
@@ -62,6 +63,8 @@ public class PersonSearchView
     name.addActionListener(this);
     firstname = new GemField(15);
     firstname.addActionListener(this);
+    pseudo = new GemField(15);
+    pseudo.addActionListener(this);
     telephone = new GemField(15);
     telephone.addActionListener(this);
     email = new GemField(15);
@@ -81,18 +84,20 @@ public class PersonSearchView
     gb.add(new GemLabel(BundleUtil.getLabel("Organization.label")), 0, 1, 1, 1, GridBagHelper.EAST);
     gb.add(new GemLabel(BundleUtil.getLabel("Name.label")), 0, 2, 1, 1, GridBagHelper.EAST);
     gb.add(new GemLabel(BundleUtil.getLabel("First.name.label")), 0, 3, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Telephone.label")), 0, 4, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Email.label")), 0, 5, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Website.label")), 0, 6, 1, 1, GridBagHelper.EAST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Nickname.label")), 0, 4, 1, 1, GridBagHelper.EAST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Telephone.label")), 0, 5, 1, 1, GridBagHelper.EAST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Email.label")), 0, 6, 1, 1, GridBagHelper.EAST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Website.label")), 0, 7, 1, 1, GridBagHelper.EAST);
 
     gb.add(number, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(org, 1, 1, 1, 1, GridBagHelper.WEST);
     gb.add(name, 1, 2, 1, 1, GridBagHelper.WEST);
     gb.add(firstname, 1, 3, 1, 1, GridBagHelper.WEST);
-    gb.add(telephone, 1, 4, 1, 1, GridBagHelper.WEST);
-    gb.add(email, 1, 5, 1, 1, GridBagHelper.WEST);
-    gb.add(site, 1, 6, 1, 1, GridBagHelper.WEST);
-    gb.add(btErase, 2, 8, 1, 1, GridBagHelper.WEST);
+    gb.add(pseudo, 1, 4, 1, 1, GridBagHelper.WEST);
+    gb.add(telephone, 1, 5, 1, 1, GridBagHelper.WEST);
+    gb.add(email, 1, 6, 1, 1, GridBagHelper.WEST);
+    gb.add(site, 1, 7, 1, 1, GridBagHelper.WEST);
+    gb.add(btErase, 2, 9, 1, 1, GridBagHelper.WEST);
 
     return mask;
   }
@@ -108,6 +113,7 @@ public class PersonSearchView
             || evt.getSource() == number
             || evt.getSource() == telephone
             || evt.getSource() == firstname
+            || evt.getSource() == pseudo
             || evt.getSource() == email
             || evt.getSource() == site) {
       actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, GemCommand.SEARCH_CMD));
@@ -141,6 +147,9 @@ public class PersonSearchView
       case 6:
         s = site.getText();
         break;
+      case 7:
+        s = pseudo.getText();
+        break;
     }
     if (s != null && s.length() > 0) {
       return s;
@@ -155,6 +164,7 @@ public class PersonSearchView
     org.setText("");
     name.setText("");
     firstname.setText("");
+    pseudo.setText("");
     telephone.setText("");
     email.setText("");
     site.setText("");

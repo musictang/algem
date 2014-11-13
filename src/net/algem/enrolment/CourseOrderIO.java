@@ -1,5 +1,5 @@
 /*
- * @(#)CourseOrderIO.java	2.9.1 11/11/14
+ * @(#)CourseOrderIO.java	2.9.1 13/11/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -147,7 +147,6 @@ public class CourseOrderIO
   }
 
   private static Vector<CourseOrder> fillCourseOrder(String query, DataConnection dc) throws SQLException {
-System.out.println(query);
     Vector<CourseOrder> v = new Vector<CourseOrder>();
     ResultSet rs = dc.executeQuery(query);
       while (rs.next()) {

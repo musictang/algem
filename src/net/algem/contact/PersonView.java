@@ -1,5 +1,5 @@
 /*
- * @(#)PersonView.java	2.9.1 04/11/14
+ * @(#)PersonView.java	2.9.1 13/11/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -110,7 +110,7 @@ public class PersonView
     gb.add(new GemLabel(BundleUtil.getLabel("Organization.label")), 1, 1, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Name.label")), 1, 2, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("First.name.label")), 1, 3, 1, 1, GridBagHelper.WEST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Nick.name.label")), 1, 4, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Nickname.label")), 1, 4, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Person.civility.label")), 1, 5, 1, 1, GridBagHelper.WEST);
 
     gb.add(no, 2, 0, 2, 1, GridBagHelper.WEST);

@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileSearchCtrl.java 2.8.w 08/07/14
+ * @(#)PersonFileSearchCtrl.java 2.9.1 13/11/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -40,7 +40,7 @@ import net.algem.util.ui.SearchCtrl;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.1
  * @since 1.0a 07/07/1999
  */
 public class PersonFileSearchCtrl
@@ -84,7 +84,7 @@ public class PersonFileSearchCtrl
   @Override
   public void search() {
 
-    String org, name, firstname, telephone, email, site;
+    String org, name, firstname, pseudo, telephone, email, site;
     int id = getId();
     if (id > 0) {
       query = "WHERE id = " + id;
@@ -105,7 +105,10 @@ public class PersonFileSearchCtrl
     } // ajout 2.1a recherche site web
     else if ((site = searchView.getField(6)) != null) {
       query = ", "+WebSiteIO.TABLE+" s WHERE id = s.idper AND s.url ~* '"+site+"'";
-    } else {
+    } else if ((pseudo = searchView.getField(7)) != null) {
+      query = "WHERE translate(lower(pseudo),'" + TRANSLATE_FROM + "', '" + TRANSLATE_TO + "') ~* '"
+               + TableIO.normalize(pseudo) + "'";
+    }else {
       query = "";
     }
 
@@ -127,7 +130,7 @@ public class PersonFileSearchCtrl
         abort = true;
         try {
           thread.join();
-        } catch (Exception ignore) {
+        } catch (InterruptedException ignore) {
         }
       }
       abort = false;
