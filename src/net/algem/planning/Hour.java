@@ -1,5 +1,5 @@
 /*
- * @(#)Hour.java	2.9.1 12/11/14
+ * @(#)Hour.java	2.9.1 14/11/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -44,12 +44,17 @@ public class Hour
 
   public Hour(int m) {
     this();
-    incMinute(m);
+    if (m > 0) {
+      incMinute(m);
+    }
+    
   }
 
   public Hour(int m, boolean extended) {
     this();
-    incMinute(m, extended);
+    if (m > 0) {
+      incMinute(m, extended);
+    }
   }
 
   public Hour(String h) {
@@ -60,7 +65,9 @@ public class Hour
   public Hour(int h, int m) {
     this();
     setHour(h);
-    setMinute(m);
+    if (m > 0) {
+      setMinute(m);
+    }
   }
 
 	@Override

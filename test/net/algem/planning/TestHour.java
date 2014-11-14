@@ -1,5 +1,5 @@
 /*
- * @(#)TestHour.java	2.8.v 25/06/14
+ * @(#)TestHour.java	2.9.1 14/11/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -26,7 +26,7 @@ import org.junit.*;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.v
+ * @version 2.9.1
  * @since 2.7.a 11/06/2013
  */
 public class TestHour
@@ -86,6 +86,11 @@ public class TestHour
     hh = Integer.parseInt(s.substring(0, idx));
     hm = Integer.parseInt(s.substring(idx + 1, idx + 3));
     assertEquals("250:30", hh + ":" + hm);
+
+    hm = -10;
+    h = new Hour(hm);
+    //System.out.println(h);
+    assertEquals("00:00", h.toString());
   }
 
   @Test

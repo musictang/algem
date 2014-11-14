@@ -1,5 +1,5 @@
 /*
- * @(#)TestEnrolmentOrderUtil.java 2.8.w 22/07/14
+ * @(#)TestEnrolmentOrderUtil.java 2.9.1 14/11/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -36,7 +36,7 @@ import org.junit.*;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.1
  * @since 2.8.n 25/09/13
  */
 public class TestEnrolmentOrderUtil {
@@ -91,7 +91,7 @@ public class TestEnrolmentOrderUtil {
     EnrolmentOrderUtil util = new EnrolmentOrderUtil(null, dc);
     util.setTotalBase(600); // total des modules au trimestre
 
-    ModuleOrder mo = new ModuleOrder();
+    ModuleOrder mo = new ModuleOrder(); 
     mo.setStart(new DateFr("16-09-2013"));
     mo.setEnd(new DateFr("26-06-2014"));
     mo.setModeOfPayment(ModeOfPayment.FAC.toString());
@@ -162,7 +162,6 @@ public class TestEnrolmentOrderUtil {
     ol.setOrder(orderId);
     EnrolmentOrderUtil util = new EnrolmentOrderUtil(null, dc);
     util.setTotalBase(300); // total des modules au mois
-
     ModuleOrder mo = new ModuleOrder();
     mo.setStart(new DateFr("16-09-2013"));
     mo.setEnd(new DateFr("26-06-2014"));

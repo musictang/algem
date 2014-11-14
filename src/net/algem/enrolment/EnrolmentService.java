@@ -1,5 +1,5 @@
 /*
- * @(#)EnrolmentService.java	2.9.1 04/11/14
+ * @(#)EnrolmentService.java	2.9.1 14/11/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -23,7 +23,6 @@ package net.algem.enrolment;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.logging.Logger;
 import net.algem.config.*;
 import net.algem.contact.PersonFile;
 import net.algem.contact.PersonFileIO;
@@ -690,6 +689,10 @@ public class EnrolmentService
     CourseOrderIO.update(co, dc);
   }
   
+  public void update(ModuleOrder mo) throws SQLException {
+    ModuleOrderIO.update(mo, dc);
+  }
+  
   /**
    * Redefines a course to define.
    *
@@ -854,7 +857,11 @@ public class EnrolmentService
            + " WHERE adherent = " + member
            + " AND idplanning in("
            + "SELECT p.id FROM " + ScheduleIO.TABLE + " p, " + CourseOrderIO.TABLE + " cc, " + ModuleOrderIO.TABLE + " cm"
-           + " WHERE cm.id = " + mo + " and cm.id = cc.module AND cc.idaction = p.action)";
+           + " WHERE p.jour <= '" + dataCache.getEndOfYear() 
+           + "' AND p.action = cc.idaction"
+           + " AND cc.module = cm.id"
+           + " AND cm.id = " + mo + ")";
+
     try {
       ResultSet rs = dc.executeQuery(query);
       while(rs.next()) {

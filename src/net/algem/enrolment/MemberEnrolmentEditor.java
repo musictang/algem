@@ -1,5 +1,5 @@
 /*
- * @(#)MemberEnrolmentEditor.java 2.9.1 12/11/14
+ * @(#)MemberEnrolmentEditor.java 2.9.1 14/11/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -60,7 +60,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.y
+ * @version 2.9.1
  * @since 1.0b 06/09/2001
  */
 public class MemberEnrolmentEditor
@@ -75,6 +75,7 @@ public class MemberEnrolmentEditor
   private final static String NEW_MODULE = BundleUtil.getLabel("New.module.label");
   private final static String MODULE_DEL = BundleUtil.getLabel("Module.delete.label");
   private final static String MODULE_STOP = BundleUtil.getLabel("Module.stop.label");
+  private final static String MODULE_TIME_CHANGE = BundleUtil.getLabel("Module.time.change.label");
   private final static String NONE_ENROLMENT = MessageUtil.getMessage("enrolment.empty.list");
   private final static String COURSE_DATE = BundleUtil.getLabel("Course.date.modification.label");
 
@@ -87,7 +88,7 @@ public class MemberEnrolmentEditor
   private GemLabel title;
   private boolean loaded;
   private CourseEnrolmentDlg courseDlg;
-  private JMenuItem m1, m2, m3, m4, m5, m6, m7, m8;
+  private JMenuItem m1, m2, m3, m4, m5, m6, m7, m8, m9;
   /** New enrolment button. */
   private GemButton btEnrolment;
   private TreePath currentSelection;
@@ -114,6 +115,7 @@ public class MemberEnrolmentEditor
     popup.add(m5 = new JMenuItem(NEW_MODULE));
     popup.add(m6 = new JMenuItem(MODULE_DEL));
     popup.add(m8 = new JMenuItem (MODULE_STOP));
+    popup.add(m9 = new JMenuItem (MODULE_TIME_CHANGE));
 
     m1.addActionListener(this);
     m2.addActionListener(this);
@@ -123,6 +125,7 @@ public class MemberEnrolmentEditor
     m6.addActionListener(this);
     m7.addActionListener(this);
     m8.addActionListener(this);
+    m9.addActionListener(this);
 
     tree = new JTree(new DefaultMutableTreeNode(NONE_ENROLMENT));
     //tree.setCellRenderer(new MyRenderer());//XXX ne fonctionne pas
@@ -150,9 +153,9 @@ public class MemberEnrolmentEditor
           if (node.getClass() == ModuleEnrolmentNode.class) {
             setModulePopupMenu();
           } else if (node instanceof CourseEnrolmentNode) {
-            setEnabledPopupMenu(true);
+            setCoursePopupMenu(true);
           } else {
-            setEnabledPopupMenu(false);
+            setCoursePopupMenu(false);
           }
           super.maybeShowPopup(e);
         }
@@ -175,7 +178,7 @@ public class MemberEnrolmentEditor
    * Enable or disable some menus depending on the state of {@literal e}.
    * @param e true or false
    */
-  private void setEnabledPopupMenu(boolean e) {
+  private void setCoursePopupMenu(boolean e) {
     if (e) {
       m1.setEnabled(true);
       m2.setEnabled(true);
@@ -185,6 +188,7 @@ public class MemberEnrolmentEditor
       m6.setEnabled(false);
       m7.setEnabled(true);
       m8.setEnabled(false);
+      m9.setEnabled(false);
     } else {
       m1.setEnabled(false);
       m2.setEnabled(false);
@@ -194,6 +198,7 @@ public class MemberEnrolmentEditor
       m6.setEnabled(false);
       m7.setEnabled(false);
       m8.setEnabled(false);
+      m9.setEnabled(false);
     }
   }
 
@@ -209,6 +214,7 @@ public class MemberEnrolmentEditor
     m6.setEnabled(true);
     m7.setEnabled(false);
     m8.setEnabled(true);
+    m9.setEnabled(true);
   }
 
   @Override
@@ -327,6 +333,8 @@ public class MemberEnrolmentEditor
       addModule();
     } else if (s.equals(MODULE_DEL)) {
       deleteModuleOrder();
+    } else if (s.equals(MODULE_TIME_CHANGE)) {
+      changeModuleTime();
     }
 
   }
@@ -424,7 +432,6 @@ public class MemberEnrolmentEditor
     return co;
   }
 
-
   private void stopCourse() {
 
     StopCourseDlg dlg2 = null;
@@ -441,7 +448,7 @@ public class MemberEnrolmentEditor
     }
     try {
       Course c = planningService.getCourseFromAction(cc.getAction());
-      if (c.isUndefined()) {
+      if (c == null || c.isUndefined()) {
         MessagePopup.information(this, MessageUtil.getMessage("course.invalid.choice"));
         return;
       }
@@ -475,7 +482,6 @@ public class MemberEnrolmentEditor
         GemLogger.log(e.getMessage());
       }
     }
-
   }
 
   private void modifCourse() {
@@ -685,16 +691,16 @@ public class MemberEnrolmentEditor
     if (!(path[i - 1] instanceof ModuleEnrolmentNode)) {
       return;
     }
-    ModuleEnrolmentNode moduleNode = ((ModuleEnrolmentNode) path[i - 1]);
+    ModuleEnrolmentNode node = ((ModuleEnrolmentNode) path[i - 1]);
     List<CourseOrder> orders = new ArrayList<CourseOrder>();
-    for (Enumeration e = moduleNode.children(); e.hasMoreElements();) {
+    for (Enumeration e = node.children(); e.hasMoreElements();) {
       TreeNode n = (TreeNode) e.nextElement();
       if(n instanceof CourseEnrolmentNode) {
         orders.add(((CourseEnrolmentNode) n).getCourseOrder());
       }
     }
 
-    ModuleOrder moduleOrder = moduleNode.getModule();
+    ModuleOrder moduleOrder = node.getModule();
 
     StopCourseFromModuleDlg dlg2 = new StopCourseFromModuleDlg(desktop, moduleOrder);
     dlg2.setVisible(true);
@@ -717,7 +723,39 @@ public class MemberEnrolmentEditor
       MessagePopup.warning(this, ex.getMessage());
     }
   }
+  
+  private void changeModuleTime() {
+    Object[] path = currentSelection.getPath();
+    if (!isModuleNode(path)) {
+      return;
+    }
+    ModuleEnrolmentNode node = ((ModuleEnrolmentNode) path[path.length - 1]);
+    ModuleOrder mo = node.getModule();
+    if (!PricingPeriod.HOUR.equals(mo.getPricing())) {
+      MessagePopup.warning(this, MessageUtil.getMessage("module.time.change.warning"));
+      return;
+    }
+    ChangeModuleTimeDlg dlg = new ChangeModuleTimeDlg(desktop, BundleUtil.getLabel("Module.time.change.label"));
+    int oldTime = mo.getTotalTime();
+    dlg.set(new Hour(mo.getTotalTime()));
+    dlg.setVisible(true);
+    if (dlg.isValidation()) {
+      mo.setTotalTime(dlg.get());
+      try {
+        service.update(mo);
+      } catch (SQLException ex) {
+        mo.setTotalTime(oldTime);
+        GemLogger.log(ex.getMessage());
+        MessagePopup.warning(this, ex.getMessage());
+      }
+    }
+    
+  }
 
+  private boolean isModuleNode(Object[] path) {
+    return path[path.length - 1] instanceof ModuleEnrolmentNode;
+  }
+  
   class MyRenderer
           extends DefaultTreeCellRenderer
   {
