@@ -1,7 +1,7 @@
 /*
- * @(#)TeacherService.java	2.7.a 10/12/12
+ * @(#)TeacherService.java	2.9.1 21/11/14
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -32,7 +32,7 @@ import net.algem.util.GemLogger;
 /**
  * Service class for teachers.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.9.1
  * @since 2.4.a 22/05/12
  */
 public class TeacherService
@@ -60,7 +60,7 @@ public class TeacherService
    * @return a list of schedules
    */
   public Vector<Schedule> getSchedule(int teacher, String start, String end) {
-    String query = "WHERE ptype = "+Schedule.COURSE+" AND idper = " + teacher
+    String query = "WHERE ptype IN (" + Schedule.COURSE + "," + Schedule.TRAINING + "," + Schedule.WORKSHOP + ") AND idper = " + teacher
             + " AND jour >= '" + start + "' AND jour <= '" + end + "' ORDER BY jour,debut";
     return ScheduleIO.find(query, dc);
   }

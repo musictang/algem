@@ -1,5 +1,5 @@
 /*
- * @(#)ModuleEnrolmentNode.java 2.9.1 12/11/14
+ * @(#)ModuleEnrolmentNode.java 2.9.1 18/11/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -66,13 +66,15 @@ public class ModuleEnrolmentNode
 
   @Override
   public String toString() {
-    return BundleUtil.getLabel("Module.label") + " : " + mo.getTitle()
+    // TODO maybe display module type (L or P)
+    return "<html>" + BundleUtil.getLabel("Module.label") + " : " + mo.getTitle()
             + (mo.getTotalTime() > 0
             ? " [" + (completed > 0 ? Hour.format(completed) : 0)
             + "/" + Hour.format(mo.getTotalTime()) + " -> " + Hour.format(mo.getTotalTime() - completed) + "]"
-            + " >> [ " + getPaymentInfo(completed) + "/" + getPaymentInfo(mo.getTotalTime()) + " -> " + getPaymentInfo(mo.getTotalTime() - completed)+ " ]"
+            + " >> [ " + getPaymentInfo(completed) + "/" + getPaymentInfo(mo.getTotalTime()) + " -> <font color='red'>" + getPaymentInfo(mo.getTotalTime() - completed)+ "</font> ]"
             : "")
-            + (info != null ? info : "");
+            + (info != null ? info : "")
+            + "</html>";
   }
 
   @Override

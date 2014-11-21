@@ -826,8 +826,8 @@ public class EnrolmentService
     } 
   }
   
-    /**
-   * Stops a module and delete (if exist) the schedule ranges after the date of {@literal stop}.
+  /**
+   * Stops a module and delete (if exist) the schedule ranges after the date of {@code stop}.
    * 
    * @param mo module order
    * @param orders maps course order to course
@@ -852,12 +852,19 @@ public class EnrolmentService
     }
   }
   
+  /**
+   * Gets the time length of the sessions already performed by the member {@code m},
+   * corresponding to the module order {@code mo}.
+   * @param member member's id
+   * @param mo id of the module order corresponding to the training performed
+   * @return a length in minutes
+   */
   public int getCompletedTime(int member, int mo) {
    String query = "SELECT sum(fin-debut) AS duree FROM " + ScheduleRangeIO.TABLE
            + " WHERE adherent = " + member
            + " AND idplanning in("
            + "SELECT p.id FROM " + ScheduleIO.TABLE + " p, " + CourseOrderIO.TABLE + " cc, " + ModuleOrderIO.TABLE + " cm"
-           + " WHERE p.jour <= '" + dataCache.getEndOfYear() 
+           + " WHERE p.jour <= '" + dataCache.getEndOfYear()
            + "' AND p.action = cc.idaction"
            + " AND cc.module = cm.id"
            + " AND cm.id = " + mo + ")";

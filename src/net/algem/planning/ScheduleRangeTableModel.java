@@ -1,7 +1,7 @@
 /*
- * @(#)ScheduleRangeTableModel.java	2.6.a 19/09/12
+ * @(#)ScheduleRangeTableModel.java	2.9.1 18/11/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,22 +28,27 @@ import net.algem.util.ui.JTableModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.1
  */
 public class ScheduleRangeTableModel
         extends JTableModel {
 
-  private DataCache dc;
+  protected DataCache dataCache;
 
-  public ScheduleRangeTableModel(DataCache _dc) {
-    this.dc = _dc;
+  public ScheduleRangeTableModel(DataCache cache) {
+    this.dataCache = cache;
     header = new String[]{
       BundleUtil.getLabel("Date.label"), 
       BundleUtil.getLabel("Start.label"), 
       BundleUtil.getLabel("End.label"), 
-      BundleUtil.getLabel("Activity.label"), 
-      BundleUtil.getLabel("Follow.up.label")
+      BundleUtil.getLabel("Activity.label"),
+      BundleUtil.getLabel("Room.label"),
+      BundleUtil.getLabel("Teacher.label"),
+      BundleUtil.getLabel("Follow.up.label"),
+      BundleUtil.getLabel("Follow.up.label") + " " +  BundleUtil.getLabel("Collective.label")
+      
     };
+    
   }
 
   @Override
@@ -60,9 +65,11 @@ public class ScheduleRangeTableModel
         return DateFr.class;
       case 1:
       case 2:
-        return String.class;
       case 3:
       case 4:
+      case 5:
+      case 6:
+      case 7:
         return String.class;
       default:
         return Object.class;
@@ -76,18 +83,24 @@ public class ScheduleRangeTableModel
 
   @Override
   public Object getValueAt(int ligne, int colonne) {
-    ScheduleRangeObject p = (ScheduleRangeObject) tuples.elementAt(ligne);
+    ScheduleRangeObject sro = (ScheduleRangeObject) tuples.elementAt(ligne);
     switch (colonne) {
       case 0:
-        return p.getDate();
+        return sro.getDate();
       case 1:
-        return p.getStart().toString();
+        return sro.getStart().toString();
       case 2:
-        return p.getEnd().toString();
+        return sro.getEnd().toString();
       case 3:
-        return p.getCourse().getTitle() + p.getAction().getCodeLabel();
+        return sro.getCourse().getTitle() + sro.getAction().getCodeLabel();
       case 4:
-        return p.getFollowUp();
+        return sro.getRoom().getName();
+      case 5:
+        return sro.getPerson().getFirstnameName();
+      case 6:
+        return sro.getNote1() == null ? "" : sro.getNote1().replaceAll(System.lineSeparator(), " ");
+        case 7:
+        return sro.getNote2() == null ? "" : sro.getNote2().replaceAll(System.lineSeparator(), " ");
     }
     return null;
   }

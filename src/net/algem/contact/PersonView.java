@@ -1,5 +1,5 @@
 /*
- * @(#)PersonView.java	2.9.1 13/11/14
+ * @(#)PersonView.java	2.9.1 21/11/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -247,8 +247,8 @@ public class PersonView
   }*/
   
   /**
-   * Gets the photo {@code idper} image from photo {@code configDir}.
-   * @param configDir photo config dir
+   * Gets the photo of the person {@code idper} from {@code configDir}.
+   * @param configDir photo dir
    * @param idper person's id
    * @return a buffered image if a resource has been found or null otherwhise
    */

@@ -1,5 +1,5 @@
 /*
- * @(#)FileUtil.java	2.9.1 12/11/14
+ * @(#)FileUtil.java	2.9.1 21/11/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -150,6 +150,7 @@ public class FileUtil
   /**
    * Opens some file by java desktop.
    *
+   * @param handler
    * @param path the path of the file to open
    */
   public static void open(DesktopHandler handler, String path) {

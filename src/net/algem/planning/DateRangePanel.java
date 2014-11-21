@@ -34,6 +34,7 @@ import javax.swing.JOptionPane;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 import net.algem.util.BundleUtil;
+import net.algem.util.GemCommand;
 import net.algem.util.ImageUtil;
 import net.algem.util.ui.GemBorderPanel;
 import net.algem.util.ui.GemButton;
@@ -66,6 +67,7 @@ public class DateRangePanel
   private GemButton cal2;
   private CalendarDlg dlg;
   private GemBorderPanel d1, d2;
+  private ActionListener listener;
 
   /**
    *
@@ -313,9 +315,9 @@ public class DateRangePanel
           validDate2(dlg.getDate());
         }
       }
-    }
+    } 
   }
-
+  
   private void validDate1(Date newDate) {
     Date dateFin = end.getDate();
     if (!newDate.before(dateFin)) {

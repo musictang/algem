@@ -1,7 +1,7 @@
 /*
- * @(#)TeacherFollowUpEditor.java	2.6.a 18/09/12
+ * @(#)TeacherFollowUpEditor.java	2.9.1 18/11/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -47,7 +47,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.1
  */
 public class TeacherFollowUpEditor
         extends FileTab
@@ -127,7 +127,7 @@ public class TeacherFollowUpEditor
       for (int i = 0; i < v.size(); i++) {
         CourseSchedule pc = new CourseSchedule(v.elementAt(i));
         pc.setCourse(planningService.getCourseFromAction(pc.getIdAction()));
-        pc.setFollowUp(planningService.getCollectiveFollowUp(pc.getNote()));
+        pc.setNote1(planningService.getCollectiveFollowUp(pc.getNote()));
         courseTableModel.addItem(pc);
       }
     } catch (SQLException ex) {
@@ -169,7 +169,7 @@ public class TeacherFollowUpEditor
       return;
     }
 
-    p.setFollowUp(dlg.getText());
+    p.setNote1(dlg.getText());
     courseTableModel.modItem(n, p);
     dlg.exit();
   }

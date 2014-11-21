@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileTabView.java  2.8.w 08/07/14
+ * @(#)PersonFileTabView.java  2.9.1 18/11/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes All Rights Reserved.
  *
@@ -31,6 +31,7 @@ import java.util.Vector;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -63,7 +64,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.1
  */
 public class PersonFileTabView
         extends FileView
@@ -556,7 +557,12 @@ public class PersonFileTabView
     if (evt instanceof EnrolmentEvent) {
       int id = ((EnrolmentEvent) evt).getDossierId();
       if (id != 0 && id == dossier.getMember().getId()) {
-        enrolmentEditor.load();
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
+            enrolmentEditor.load();
+          }   
+        });
       }
     }
   }

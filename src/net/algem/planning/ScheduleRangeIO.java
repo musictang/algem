@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleRangeIO.java	2.8.w 08/07/14
+ * @(#)ScheduleRangeIO.java	2.9.1 18/11/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -38,7 +38,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.1
  * @since 1.0a 7/7/1999
  */
 public class ScheduleRangeIO
@@ -219,27 +219,28 @@ public class ScheduleRangeIO
     Vector<ScheduleRangeObject> v = new Vector<ScheduleRangeObject>();
     String query = getFollowUpRequest(action);
     query += where;
-
+System.out.println(query);
     PlanningService pService = new PlanningService(dc);
 
     ResultSet rs = dc.executeQuery(query);
     while (rs.next()) {
       ScheduleRangeObject p = rangeObjectFactory(rs, pService);
-      p.setFollowUp(rs.getString(11));
+      p.setNote1(rs.getString(11));
+      p.setNote2(rs.getString(12));
       v.addElement(p);
     }
     rs.close();
     return v;
   }
 
-  private static String getFollowUpRequest(boolean action) {
+  private static String getFollowUpRequest(boolean action) {//TODO !!!!
     if (action) {
-      return "SELECT " + COLUMNS + ", p.jour, p.action, p.idper, p.lieux, s.texte FROM " + TABLE + " pg, planning p, action a, suivi s"
+      return "SELECT " + COLUMNS + ", p.jour, p.action, p.idper, p.lieux, s1.texte, s2.texte FROM " + TABLE + " pg, planning p, action a, suivi s1, suivi s2"
         + " WHERE p.ptype IN (" + Schedule.COURSE + "," + Schedule.WORKSHOP + "," + Schedule.TRAINING
         + ") AND p.id = pg.idplanning";
 
     } else {
-      return "SELECT " + COLUMNS + ", p.jour, p.action, p.idper, p.lieux, s.texte FROM " + TABLE + " pg, planning p, suivi s"
+      return "SELECT " + COLUMNS + ", p.jour, p.action, p.idper, p.lieux, s1.texte, s2.texte FROM " + TABLE + " pg, planning p, suivi s1, suivi s2"
         + " WHERE p.ptype IN (" + Schedule.COURSE + "," + Schedule.WORKSHOP + "," + Schedule.TRAINING
         + ") AND p.id = pg.idplanning";
     }

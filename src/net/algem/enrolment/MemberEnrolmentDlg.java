@@ -325,8 +325,12 @@ public class MemberEnrolmentDlg
     mo.setModeOfPayment((String) moduleDlg.getField(5));
     mo.setPayment((PayFrequency) moduleDlg.getField(6));
     mo.setNOrderLines(1);
-    mo.setTotalTime(((Hour) moduleDlg.getField(8)).toMinutes());
     mo.setPricing((PricingPeriod) moduleDlg.getField(9));
+    if (PricingPeriod.HOUR.equals(mo.getPricing())) {
+      mo.setTotalTime(((Hour) moduleDlg.getField(8)).toMinutes());
+    } else {
+      mo.setTotalTime(0);
+    }
     mo.setId(module_orders.size());// id temporaire
     view.addModule(mo);
 

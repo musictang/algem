@@ -1,5 +1,5 @@
 /*
- * @(#)MemberFollowUpEditor.java	2.8.w 08/07/14
+ * @(#)MemberFollowUpEditor.java	2.9.1 18/11/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,10 +20,13 @@
  */
 package net.algem.contact.member;
 
+import java.awt.BorderLayout;
 import java.awt.Cursor;
-import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.SQLException;
 import java.util.Vector;
 import javax.swing.JScrollPane;
@@ -31,26 +34,29 @@ import javax.swing.JTable;
 import javax.swing.table.TableColumnModel;
 import net.algem.contact.PersonFile;
 import net.algem.course.Course;
+import net.algem.planning.DateRange;
+import net.algem.planning.DateRangePanel;
 import net.algem.planning.FollowUpDlg;
+import net.algem.planning.Hour;
 import net.algem.planning.PlanningException;
 import net.algem.planning.ScheduleRangeObject;
 import net.algem.planning.ScheduleRangeTableModel;
+import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
-import net.algem.util.MessageUtil;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.FileTab;
 import net.algem.util.ui.GemButton;
-import net.algem.util.ui.GridBagHelper;
-import net.algem.util.ui.MessagePopup;
+import net.algem.util.ui.GemLabel;
+import net.algem.util.ui.GemPanel;
 
 /**
  * Follow up list controller for a member.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.1
  */
 public class MemberFollowUpEditor
         extends FileTab
@@ -60,40 +66,89 @@ public class MemberFollowUpEditor
   private PersonFile personFile;
   private final GemButton btModify;
   private final GemButton btDelete;
-  private ScheduleRangeTableModel scheduleRange;
+  private final GemButton btLoad;
+  private ScheduleRangeTableModel tableModel;
   private JTable rangeTable;
   private final MemberService memberService;
+  private DateRangePanel dates;
+  private GemLabel totalTime;
 
-  public MemberFollowUpEditor(GemDesktop _desktop, PersonFile pf) {
-    super(_desktop);
+  public MemberFollowUpEditor(GemDesktop desktop, PersonFile pf) {
+    super(desktop);
     memberService = new MemberService(DataCache.getDataConnection());
     personFile = pf;
 
-    scheduleRange = new ScheduleRangeTableModel(dataCache);
-    rangeTable = new JTable(scheduleRange);
+    tableModel = new ScheduleRangeTableModel(dataCache);
+    rangeTable = new JTable(tableModel);
     rangeTable.setAutoCreateRowSorter(true);
+    
+    rangeTable.addMouseListener(new MouseAdapter()
+    {
+      @Override
+      public void mouseClicked(MouseEvent e) {
+        if (rangeTable.getSelectedRow() < 0) {
+          return;
+        }
+        int n = rangeTable.convertRowIndexToModel(rangeTable.getSelectedRow());
+        if (e.getClickCount() == 2) {
+          try {
+            modification(n);
+          } catch (SQLException sqe) {
+            GemLogger.log(sqe.getMessage());
+          } catch (PlanningException pe) {
+            GemLogger.log(pe.getMessage());
+          }
+        }
+      }
+    });
 
     TableColumnModel cm = rangeTable.getColumnModel();
-    cm.getColumn(0).setPreferredWidth(50);
-    cm.getColumn(1).setPreferredWidth(20);
-    cm.getColumn(2).setPreferredWidth(20);
-    cm.getColumn(3).setPreferredWidth(200);
-    cm.getColumn(4).setPreferredWidth(250);
-
-    JScrollPane pm = new JScrollPane(rangeTable);
+    cm.getColumn(0).setPreferredWidth(40);
+    cm.getColumn(1).setPreferredWidth(15);
+    cm.getColumn(2).setPreferredWidth(15);
+    cm.getColumn(3).setPreferredWidth(100);
+    cm.getColumn(4).setPreferredWidth(40);
+    cm.getColumn(5).setPreferredWidth(60);
+    cm.getColumn(6).setPreferredWidth(160);
+    cm.getColumn(7).setPreferredWidth(150);
+    
+    JScrollPane scroll = new JScrollPane(rangeTable);
 
     btModify = new GemButton(GemCommand.VIEW_EDIT_CMD);// consulter/modifier
     btDelete = new GemButton(GemCommand.DELETE_CMD);
-
+    btLoad = new GemButton(GemCommand.LOAD_CMD);
     btModify.addActionListener(this);
     btDelete.addActionListener(this);
+    btLoad.addActionListener(this);
 
-    setLayout(new GridBagLayout());
-    GridBagHelper gb = new GridBagHelper(this);
-
-    gb.add(pm, 0, 0, 3, 2, GridBagHelper.BOTH, 1.0, 1.0);
-    gb.add(btModify, 0, 2, 1, 1, GridBagHelper.HORIZONTAL, 1.0, 0.0);
-    gb.add(btDelete, 1, 2, 1, 1, GridBagHelper.HORIZONTAL, 1.0, 0.0);
+    GemPanel datesPanel = new GemPanel();
+    dates = new DateRangePanel();
+    dates.setStart(dataCache.getStartOfYear());
+    dates.setEnd(dataCache.getEndOfYear());
+    totalTime = new GemLabel();
+    GemPanel timePanel = new GemPanel();
+    
+    datesPanel.add(new GemLabel(BundleUtil.getLabel("Total.label") + " :"));
+    datesPanel.add(totalTime);
+    datesPanel.add(dates);
+    datesPanel.add(btLoad);
+    
+    GemPanel pDates = new GemPanel(new BorderLayout());
+    pDates.add(datesPanel, BorderLayout.CENTER);
+    pDates.add(timePanel, BorderLayout.SOUTH);
+    
+    GemPanel mainPanel = new GemPanel(new BorderLayout());
+    mainPanel.add(scroll, BorderLayout.CENTER);
+    mainPanel.add(pDates, BorderLayout.SOUTH);
+    
+    GemPanel buttons = new GemPanel(new GridLayout(1,2));
+    buttons.add(btModify);
+    buttons.add(btDelete);
+    
+    setLayout(new BorderLayout());
+    add(mainPanel, BorderLayout.CENTER);
+    add(buttons, BorderLayout.SOUTH);
+    
   }
 
   @Override
@@ -103,38 +158,45 @@ public class MemberFollowUpEditor
 
   @Override
   public void load() {
-    loaded = true;
-
+    clear();
     Vector<ScheduleRangeObject> v = null;
     try {
-      v = memberService.findFollowUp(personFile.getId());
+      v = memberService.findFollowUp(personFile.getId(), new DateRange(dates.getStartFr(), dates.getEndFr()));
     } catch (SQLException ex) {
       GemLogger.logException(ex);
     }
+    int min = 0;
     if (v != null) {
       for (int i = 0; i < v.size(); i++) {
-        scheduleRange.addItem(v.elementAt(i));
+        ScheduleRangeObject r = v.elementAt(i);
+        Hour hd = r.getStart();
+        Hour hf = r.getEnd();
+        min += hd.getLength(hf);
+        tableModel.addItem(r); 
       }
+      totalTime.setText(Hour.format(min));
     }
+    loaded = true;
   }
 
   @Override
   public void actionPerformed(ActionEvent evt) {
 
-    if (rangeTable.getSelectedRow() < 0) {
+    Object src = evt.getSource();
+    if(src == btLoad || src == dates) {
+      load();
+      return;
+    } else if (rangeTable.getSelectedRow() < 0) {
       return;
     }
     int n = rangeTable.convertRowIndexToModel(rangeTable.getSelectedRow());
-
-    Object src = evt.getSource();
-
     if (src == btModify) {
       try {
         modification(n);
       } catch (SQLException e) {
-        GemLogger.logException("modification suivi pédagogique", e, this);
+        GemLogger.log(e.getMessage());
       } catch (PlanningException pe) {
-        GemLogger.logException("modification suivi pédagogique", pe, this);
+        GemLogger.log(pe.getMessage());
       }
     } else if (src == btDelete) {
       try {
@@ -142,30 +204,30 @@ public class MemberFollowUpEditor
       } catch (SQLException e) {
         GemLogger.logException("suppression suivi pédagogique", e, this);
       }
-    }
+    } 
   }
 
   void modification(int n) throws PlanningException, SQLException {
     setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
-    ScheduleRangeObject p = (ScheduleRangeObject) scheduleRange.getItem(n);
+    ScheduleRangeObject sro = (ScheduleRangeObject) tableModel.getItem(n);
+    Course c = sro.getCourse();
 
-    Course c = p.getCourse();
-
-    if (c.isCollective() && p.getNote() <= 0) { // ?? <= 0
-      MessagePopup.error(this, MessageUtil.getMessage("follow.up.modification.warning"));
-    } else {
-      FollowUpDlg dlg = new FollowUpDlg(desktop, p, c.getTitle());
-      setCursor(Cursor.getDefaultCursor());
-      dlg.entry();
-      if (!dlg.isValidation()) {
-        return;
-      }
-      planningService.updateFollowUp(p, dlg.getText());
-      p.setFollowUp(dlg.getText());
-      scheduleRange.modItem(n, p);
+//    if (c.isCollective() && sro.getNote() <= 0 && (sro.getAction().getPlaces() == 0 || sro.getAction().getPlaces() > 1)) { // ?? <= 0
+//      MessagePopup.error(this, MessageUtil.getMessage("follow.up.modification.warning"));
+//    } else {
+    int col = rangeTable.getSelectedColumn();
+    FollowUpDlg dlg = new FollowUpDlg(desktop, sro, c.getTitle(), (col == 7));
+    setCursor(Cursor.getDefaultCursor());
+    dlg.entry();
+    if (!dlg.isValidation()) {
+      return;
     }
-
+    if (col != 7) {
+      planningService.updateFollowUp(sro, dlg.getText());
+      sro.setNote1(dlg.getText());
+      tableModel.modItem(n, sro);
+    } 
     setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
   }
 
@@ -177,20 +239,28 @@ public class MemberFollowUpEditor
 
     setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
-    ScheduleRangeObject p = (ScheduleRangeObject) scheduleRange.getItem(n);
+    ScheduleRangeObject p = (ScheduleRangeObject) tableModel.getItem(n);
     try {
       dc.setAutoCommit(false);
       planningService.deleteFollowUp(p);
       p.setNote(0);
-      p.setFollowUp(null);
-      scheduleRange.modItem(n, p);
+      p.setNote1(null);
+      tableModel.modItem(n, p);
       dc.commit();
-    } catch (Exception e1) {
+    } catch (SQLException e1) {
       GemLogger.logException("transaction update", e1);
       dc.rollback();
     } finally {
       dc.setAutoCommit(true);
+      setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     }
-    setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+    
+  }
+  
+  private void clear() {
+    if (tableModel.getRowCount() > 0) {
+      tableModel.clear();
+    }
+    totalTime.setText(null);
   }
 }

@@ -1,7 +1,7 @@
 /*
- * @(#)CourseEnrolmentNode.java 2.8.a 04/04/13
+ * @(#)CourseEnrolmentNode.java 2.9.1 18/11/14
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -25,31 +25,29 @@ import net.algem.planning.PlanningService;
 /**
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.9.1
  */
 public class CourseEnrolmentNode
         extends EnrolmentNode
 {
 
-  private String[] dayNames;
+  private final String[] dayNames = PlanningService.WEEK_DAYS;
   private CourseOrder cc;
   private int day;
 
   /**
    *
    * @param o
-   * @param _jj
+   * @param dayindex
    */
-  public CourseEnrolmentNode(Object o, int _jj) {
+  public CourseEnrolmentNode(Object o, int dayindex) {
     super(o);
-
-    day = _jj;
+    this.day = dayindex;
 
     if (o instanceof CourseOrder) {
       cc = (CourseOrder) o;
     }
 
-    dayNames = PlanningService.WEEK_DAYS;
   }
 
   /**
@@ -61,7 +59,7 @@ public class CourseEnrolmentNode
   }
 
   /**
-   * Used for displaying lines in tree.
+   * Used to displaying rows in tree.
    * @return a string representing a course order
    */
   @Override

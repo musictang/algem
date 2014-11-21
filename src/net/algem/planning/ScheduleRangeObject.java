@@ -1,7 +1,7 @@
 /*
- * @(#)ScheduleRangeObject.java	2.6.a 19/09/12
+ * @(#)ScheduleRangeObject.java	2.9.1 18/11/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,7 +27,7 @@ import net.algem.contact.Person;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.1
  * @since 1.0a 07/07/1999
  */
 public class ScheduleRangeObject
@@ -38,6 +38,7 @@ public class ScheduleRangeObject
   private Person member;
   protected int memberId;
   protected int scheduleId;
+  private String note2;
 
   public ScheduleRangeObject() {
   }
@@ -82,6 +83,14 @@ public class ScheduleRangeObject
 
   public void setScheduleId(int id) {
     this.scheduleId = id;
+  }
+
+  public String getNote2() {
+    return note2;
+  }
+
+  public void setNote2(String note2) {
+    this.note2 = note2;
   }
   
 }

@@ -1,5 +1,5 @@
 /*
- * @(#)ExportMemberRTF.java 2.8.x 16/09/14
+ * @(#)ExportMemberRTF.java 2.9.1 18/11/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -41,6 +41,7 @@ import net.algem.enrolment.ModuleOrder;
 import net.algem.planning.DateFr;
 import net.algem.planning.PlanningService;
 import net.algem.planning.ScheduleRangeObject;
+import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.FileUtil;
 import net.algem.util.GemLogger;
@@ -51,7 +52,7 @@ import net.algem.util.module.GemDesktop;
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.x
+ * @version 2.9.1
  * @since 1.0b 05/03/2002
  */
 public class ExportMemberRTF
@@ -115,7 +116,8 @@ public class ExportMemberRTF
     }
 
     Contact contact = member.getContact();
-    out.println("\\par }\\pard\\plain \\s3\\qc\\sa144\\slmult1\\brdrt0\\brdrl0\\brdrr0\\brdrb0\\brdrbtw0\\shading6000\\cfpat1\\cbpat2 \\f1\\fs24\\cf1 {\\b\\f2\\fs36 Dossier Adh\\'e9rent n\\'b0 " + memberId + "}");
+    out.println("\\par }\\pard\\plain \\s3\\qc\\sa144\\slmult1\\brdrt0\\brdrl0\\brdrr0\\brdrb0\\brdrbtw0\\shading6000\\cfpat1\\cbpat2 \\f1\\fs24\\cf1 {\\b\\f2\\fs36 "
+            + FileUtil.rtfReplaceChars(BundleUtil.getLabel("Member.file.tip")) + " n\\'b0 " + memberId + "}");
 
     out.println("\\par \\pard\\plain \\s3\\slmult1 \\f1\\fs24\\cf1 {\\b\\fs28 " + FileUtil.rtfReplaceChars(contact.getFirstName()) + " " + FileUtil.rtfReplaceChars(contact.getName()) + "}");
     // Ne pas faire figurer l'adresse
@@ -146,19 +148,24 @@ public class ExportMemberRTF
     emails = contact.getEmail();
     if (emails != null) {
       for (Email e : emails) {
-        out.print("\\par Mail : " + e.getEmail());
+        out.print("\\par " + BundleUtil.getLabel("Mail.label") + " : " + e.getEmail());
         out.println();
       }
     }
 
     out.println();
     Member m = member.getMember();
-    out.println("\\par N\\'e9 le : " + m.getBirth() + " - pratique " + m.getPractice() + " - niveau " + m.getLevel());
-    out.println("\\par Instruments : ");
+    out.println("\\par " + FileUtil.rtfReplaceChars(BundleUtil.getLabel("Date.of.birth.label")) + " : " + m.getBirth()
+            + " - " + BundleUtil.getLabel("Practical.experience.label").toLowerCase() + " " + m.getPractice() 
+            + " - " + BundleUtil.getLabel("Level.label").toLowerCase() + " " + m.getLevel());
+    out.println("\\par " + BundleUtil.getLabel("Instruments.label") + " : ");
     if (m.getInstruments() != null) {
+      StringBuilder sbi = new StringBuilder();
       for (Integer i : m.getInstruments()) {
-        out.println(FileUtil.rtfReplaceChars(dataCache.getInstrumentName(i)));
+        sbi.append(FileUtil.rtfReplaceChars(dataCache.getInstrumentName(i))).append(',');
       }
+      sbi.deleteCharAt(sbi.length() -1);
+      out.println(sbi.toString());
     }
     out.println("\\par ");
 
@@ -193,17 +200,24 @@ public class ExportMemberRTF
 
     for (int j = 0; j < ins.size(); j++) {
       Enrolment i = ins.elementAt(j);
-      out.println("\\par Inscription " + i.getId() + " du " + i.getOrder().getCreation());
+      out.println("\\par " + FileUtil.rtfReplaceChars(BundleUtil.getLabel("Enrolment.label")) 
+              + "  " + i.getId() + " " + BundleUtil.getLabel("Date.From.label").toLowerCase()
+              + " " + i.getOrder().getCreation()
+      );
       Enumeration<ModuleOrder> enu = i.getModule().elements();
       while (enu.hasMoreElements()) {
         try {
           ModuleOrder cm = enu.nextElement();
-          out.println("\\par \\tab Module " + cm.getTitle());
+          out.println("\\par \\tab " + BundleUtil.getLabel("Module.label") + " " + cm.getTitle());
           Vector<CourseOrder> v = enrolmentService.getCourseOrder(i.getId(), cm.getId());
           for (CourseOrder cc : v) {
             cc.setDay(enrolmentService.getCourseDayMember(cc.getAction(), cc.getDateStart(), i.getMember()));
             courseOrderList.addElement(cc);
-            out.println("\\par \\tab\\tab Cours " + cc.getTitle() + " " + dayNames[cc.getDay()] + " " + cc.getStart() + "-" + cc.getEnd());
+            out.println("\\par \\tab\\tab " + BundleUtil.getLabel("Course.label") 
+                    + "  " + (cc.getTitle() == null ? FileUtil.rtfReplaceChars(BundleUtil.getLabel("To.define.label")) : cc.getTitle())
+                    + " " + dayNames[cc.getDay()] 
+                    + " " + cc.getStart() + "-" + cc.getEnd()
+            );
           }
         } catch (SQLException ex) {
           GemLogger.log(getClass().getName()+"#editeInscription "+ex.getMessage());
@@ -244,9 +258,11 @@ public class ExportMemberRTF
         for (int j = 0; j < v.size(); j++) {
           ScheduleRangeObject p = v.elementAt(j);
 
-          String s = p.getFollowUp();
+          String s = p.getNote1();
           if (s != null) {
-            s = s.replace("\n", " - ").trim();
+            String s2 = p.getNote2();
+            if (s2 != null) s += " / " + s2;
+            s = s.replaceAll(System.lineSeparator(), " - ").trim();
 
             s = FileUtil.rtfReplaceChars(s);
             if (s.length() > 0) {

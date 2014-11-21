@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleDetailCtrl.java 2.8.y 30/09/14
+ * @(#)ScheduleDetailCtrl.java 2.9.1 18/11/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -60,7 +60,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.y
+ * @version 2.9.1
  * @since 1.0a 07/07/1999
  */
 public class ScheduleDetailCtrl
@@ -578,14 +578,14 @@ public class ScheduleDetailCtrl
    */
   private void setFollowUp(ScheduleRangeObject range, Course c) throws PlanningException, SQLException {
 
-    if (range.getNote() != 0 && range.getFollowUp() == null) {
-      range.setFollowUp(scheduleService.getFollowUp(range.getNote()));
+    if (range.getNote() != 0 && range.getNote1() == null) {
+      range.setNote1(scheduleService.getFollowUp(range.getNote()));
     }
-    FollowUpDlg dlg = new FollowUpDlg(desktop, range, c.getTitle());
+    FollowUpDlg dlg = new FollowUpDlg(desktop, range, c.getTitle(), false);
     dlg.entry();
     if (dlg.isValidation()) {
       scheduleService.updateFollowUp(range, dlg.getText());
-      range.setFollowUp(dlg.getText());
+      range.setNote1(dlg.getText());
     }
 
   }

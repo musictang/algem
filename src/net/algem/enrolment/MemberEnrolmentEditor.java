@@ -78,6 +78,7 @@ public class MemberEnrolmentEditor
   private final static String MODULE_TIME_CHANGE = BundleUtil.getLabel("Module.time.change.label");
   private final static String NONE_ENROLMENT = MessageUtil.getMessage("enrolment.empty.list");
   private final static String COURSE_DATE = BundleUtil.getLabel("Course.date.modification.label");
+  private final static String PRINT_ORDER = BundleUtil.getLabel("Action.print.label");
 
   private PersonFile dossier;
   private DefaultMutableTreeNode root;
@@ -88,13 +89,14 @@ public class MemberEnrolmentEditor
   private GemLabel title;
   private boolean loaded;
   private CourseEnrolmentDlg courseDlg;
-  private JMenuItem m1, m2, m3, m4, m5, m6, m7, m8, m9;
+  private JMenuItem m1, m2, m3, m4, m5, m6, m7, m8, m9, m10;
   /** New enrolment button. */
   private GemButton btEnrolment;
   private TreePath currentSelection;
   private ActionListener acListener;
   private EnrolmentService service;
   private ModuleDlg moduleDlg;
+  private DefaultTreeCellRenderer cellRenderer;
 
 
   public MemberEnrolmentEditor(GemDesktop desktop, ActionListener listener, PersonFile dossier) {
@@ -112,10 +114,13 @@ public class MemberEnrolmentEditor
     popup.add(m3 = new JMenuItem(HOUR_MODIF));
     popup.add(m7 = new JMenuItem(COURSE_DATE));
     popup.add(m4 = new JMenuItem(NEW_COURSE));
+    popup.addSeparator();
     popup.add(m5 = new JMenuItem(NEW_MODULE));
     popup.add(m6 = new JMenuItem(MODULE_DEL));
     popup.add(m8 = new JMenuItem (MODULE_STOP));
     popup.add(m9 = new JMenuItem (MODULE_TIME_CHANGE));
+    popup.addSeparator();
+    popup.add(m10 = new JMenuItem(PRINT_ORDER));
 
     m1.addActionListener(this);
     m2.addActionListener(this);
@@ -126,11 +131,11 @@ public class MemberEnrolmentEditor
     m7.addActionListener(this);
     m8.addActionListener(this);
     m9.addActionListener(this);
+    m10.addActionListener(this);
 
+    cellRenderer = new EnrolmentTreeCellRenderer();
     tree = new JTree(new DefaultMutableTreeNode(NONE_ENROLMENT));
-    //tree.setCellRenderer(new MyRenderer());//XXX ne fonctionne pas
     tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-
     tree.addTreeSelectionListener(new TreeSelectionListener()
     {
 
@@ -189,6 +194,7 @@ public class MemberEnrolmentEditor
       m7.setEnabled(true);
       m8.setEnabled(false);
       m9.setEnabled(false);
+      m10.setEnabled(false);
     } else {
       m1.setEnabled(false);
       m2.setEnabled(false);
@@ -199,6 +205,7 @@ public class MemberEnrolmentEditor
       m7.setEnabled(false);
       m8.setEnabled(false);
       m9.setEnabled(false);
+      m10.setEnabled(true);
     }
   }
 
@@ -215,6 +222,7 @@ public class MemberEnrolmentEditor
     m7.setEnabled(false);
     m8.setEnabled(true);
     m9.setEnabled(true);
+    m10.setEnabled(false);
   }
 
   @Override
@@ -235,7 +243,6 @@ public class MemberEnrolmentEditor
     }
 
     root = new DefaultMutableTreeNode(BundleUtil.getLabel("Person.enrolment.tab.label") + " : " + dossier.getContact().getFirstnameName());
-    //DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer) tree.getCellRenderer();
     for (int j = 0; j < ins.size(); j++) {
       Enrolment i = ins.elementAt(j);
       EnrolmentNode ni = new EnrolmentNode(i);
@@ -612,7 +619,7 @@ public class MemberEnrolmentEditor
     co.setTitle(cm.getCode().getLabel());
     co.setDay(0);//dimanche
     co.setModuleOrder(mo.getId());
-    co.setStart(new Hour("00:00"));
+    co.setStart(new Hour("01:00"));
     co.setEnd(new Hour(cm.getTimeLength()));
     co.setCourseModuleInfo(cm);
     co.setDateStart(mo.getStart());
@@ -640,8 +647,13 @@ public class MemberEnrolmentEditor
     mo.setPaymentAmount(((Number) moduleDlg.getField(10)).doubleValue());
     mo.setModeOfPayment((String) moduleDlg.getField(5));
     mo.setPayment((PayFrequency) moduleDlg.getField(6));
-    mo.setTotalTime(((Hour) moduleDlg.getField(8)).toMinutes());
     mo.setPricing((PricingPeriod) moduleDlg.getField(9));
+    if (PricingPeriod.HOUR.equals(mo.getPricing())) {
+      mo.setTotalTime(((Hour) moduleDlg.getField(8)).toMinutes());
+    } else {
+      mo.setTotalTime(0);
+    }
+    
     mo.setNOrderLines(1);
 
   }
@@ -662,26 +674,6 @@ public class MemberEnrolmentEditor
         MessagePopup.warning(this, ex.getMessage());
       }
     }
-  }
-
-  private void expand() {
-    tree.setCellRenderer(new CellRenderer());
-    // on récupère le nombre de lignes visibles
-    int x = tree.getRowCount();
-    // on récupère le dernier TreePath
-    TreePath tp = tree.getPathForRow(x - 1);
-    // on récupère le dernier node visible (la dernière inscription)
-    TreeNode node = (TreeNode) tp.getLastPathComponent();
-    // on expand le path pour tous ses enfants (les différents modules)
-    if (node.getChildCount() >= 0) {
-      for (Enumeration e = node.children(); e.hasMoreElements();) {
-        TreeNode n = (TreeNode) e.nextElement();
-        TreePath path = tp.pathByAddingChild(n);
-        tree.expandPath(path);
-      }
-    }
-    tree.setSelectionRow(x - 1);
-    tree.scrollRowToVisible(x - 1); // doesn't seem to work
   }
 
   private void stopModule() {
@@ -751,32 +743,55 @@ public class MemberEnrolmentEditor
     }
     
   }
+  
+  private void printOrder() {
+    Object[] path = currentSelection.getPath();
+    int i = path.length;
+    if ((path[i - 1] instanceof ModuleEnrolmentNode) || (path[i - 1] instanceof CourseEnrolmentNode)) {
+      return;
+    }
+    EnrolmentNode node = (EnrolmentNode) path[i - 1];
+    Order order = ((EnrolmentNode) path[i - 1]).getOrder();
+    if (node.getChildCount() >= 0) {
+    for (Enumeration e = node.children(); e.hasMoreElements();) {
+      TreeNode n = (TreeNode) e.nextElement();
+      if (n instanceof ModuleEnrolmentNode) {
+        // print info commmande module
+        if (n.getChildCount() >= 0)
+        for (Enumeration c = n.children(); c.hasMoreElements();) {
+           if (n instanceof ModuleEnrolmentNode) {
+             // print info commande cours
+           }
+          
+        }
+      } 
+    }
+  }
+    
+  }
 
+  private void expand() {
+  tree.setCellRenderer(cellRenderer);
+  // on récupère le nombre de lignes visibles
+  int x = tree.getRowCount();
+  // on récupère le dernier TreePath
+  TreePath tp = tree.getPathForRow(x - 1);
+  // on récupère le dernier node visible (la dernière inscription)
+  TreeNode node = (TreeNode) tp.getLastPathComponent();
+  // on expand le path pour tous ses enfants (les différents modules)
+  if (node.getChildCount() >= 0) {
+    for (Enumeration e = node.children(); e.hasMoreElements();) {
+      TreeNode n = (TreeNode) e.nextElement();
+      TreePath path = tp.pathByAddingChild(n);
+      tree.expandPath(path);
+    }
+  }
+    tree.setSelectionRow(x - 1);
+    tree.scrollRowToVisible(x - 1); // doesn't seem to work
+  }
+    
   private boolean isModuleNode(Object[] path) {
     return path[path.length - 1] instanceof ModuleEnrolmentNode;
   }
-  
-  class MyRenderer
-          extends DefaultTreeCellRenderer
-  {
-
-    public MyRenderer() {
-    }
-
-    @Override
-    public Component getTreeCellRendererComponent(JTree tree, Object value,
-            boolean sel, boolean exp, boolean leaf, int row, boolean hasFocus) {
-      JComponent c = (JComponent) super.getTreeCellRendererComponent(tree, value, selected, exp, leaf, row, hasFocus);
-      if (leaf && value instanceof CourseEnrolmentNode) {
-        CourseOrder co = ((CourseEnrolmentNode) value).getCourseOrder();
-        if (co != null && co.getAction() == 0) {
-          c.setOpaque(true);
-          c.setFont(getFont().deriveFont(Font.ITALIC));
-          c.setBackground(Color.RED);
-        }
-      }
-      return c;
-    }
-  }
-
+ 
 }

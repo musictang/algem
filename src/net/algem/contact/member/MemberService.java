@@ -1,5 +1,5 @@
 /*
- * @(#)MemberService.java	2.8.w 09/07/14
+ * @(#)MemberService.java	2.9.1 18/11/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -46,7 +46,7 @@ import net.algem.util.model.Model;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.1
  * @since 2.4.a 14/05/12
  */
 public class MemberService
@@ -249,10 +249,13 @@ public class MemberService
    * @throws SQLException
    */
   public Vector<ScheduleRangeObject> findFollowUp(int memberId, int courseId, boolean collective) throws SQLException {
-    String where = " AND pg.note = s.id";
-    if (collective) {
-      where = " AND p.note = s.id";
-    }
+    String where = " AND (pg.note >= 0 OR p.note > 0)"
+            + " AND pg.note = s1.id"
+            + " AND p.note = s2.id";
+//            + " ";
+//    if (collective) {
+//      where = " AND p.note = s2.id";
+//    }
     // TODO BUG note individuelle/collective
     where += " AND pg.adherent = " + memberId + " AND p.action = a.id AND a.cours = " + courseId + " ORDER BY p.jour, pg.debut";
     return ScheduleRangeIO.findFollowUp(where, true, dc);
@@ -262,14 +265,19 @@ public class MemberService
    * Gets the member's schedule ranges containing a follow up's note.
    *
    * @param memberId
+   * @param dates
    * @return a list of schedule ranges
    * @throws SQLException
    */
-  public Vector<ScheduleRangeObject> findFollowUp(int memberId) throws SQLException {
-    String where = " AND (pg.note > 0 OR p.note > 0)"
-            + " AND (pg.note = s.id OR p.note = s.id)"
+  public Vector<ScheduleRangeObject> findFollowUp(int memberId, DateRange dates) throws SQLException {
+    String where = " AND p.jour BETWEEN '" + dates.getStart() + "' AND '" + dates.getEnd()
+            + "' AND (pg.note >= 0 OR p.note > 0)"
+//            + " AND (pg.note = s.id OR p.note = s.id)"
+           // + " AND (pg.note = s.id OR (p.note = s.id AND p.note > 0 AND s.texte IS NOT NULL AND trim(s.texte) != ''))"
+            + " AND pg.note = s1.id"
+            + " AND p.note = s2.id"
             + " AND pg.adherent = " + memberId
-            + " ORDER BY p.jour DESC, pg.debut";
+            + " ORDER BY p.jour, pg.debut";
     return ScheduleRangeIO.findFollowUp(where, false, dc);
   }
 

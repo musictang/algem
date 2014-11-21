@@ -1,5 +1,5 @@
 /*
- * @(#)ModuleDlg.java	2.9.1 12/11/14
+ * @(#)ModuleDlg.java	2.9.1 18/11/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -127,7 +127,7 @@ public class ModuleDlg
     pricing.setSelectedItem(getDefaultPricingPeriod());
     pricing.addItemListener(this);
 
-    hours = new HourField("01:00", true);
+    hours = new HourField("00:00", true);
     hours.setToolTipText(BundleUtil.getLabel("Pricing.period.hours.tip"));
     hours.setEditable(PricingPeriod.HOUR.equals(getDefaultPricingPeriod()));
     hours.addKeyListener(new KeyAdapter()
