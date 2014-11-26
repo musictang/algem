@@ -1,6 +1,6 @@
 /*
- * @(#)DayScheduleCtrl.java 2.8.x 16/09/14
- * 
+ * @(#)DayScheduleCtrl.java 2.9.1 26/11/14
+ *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning.day;
 
@@ -26,6 +26,7 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.beans.PropertyChangeEvent;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -52,7 +53,7 @@ import net.algem.util.module.GemModule;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.x
+ * @version 2.9.1
  * @since 1.0b 06/10/2001
  */
 public class DayScheduleCtrl
@@ -64,12 +65,14 @@ public class DayScheduleCtrl
   private JMenuItem miPrint;
   private JMenuItem miQuit;
   private JMenu mOptions;
-  private JCheckBoxMenuItem mLinkMonth;
+  private JCheckBoxMenuItem miLinkMonth;
+  private JCheckBoxMenuItem miAllRoom;
   /*private JMenu mAide;
   private JMenuItem mAPropos;
   private JMenuItem mDoc;*/
   private DaySchedule daySchedule;
   private boolean monthLink = false;// false par défaut
+  private boolean allRoom = false;
   private Calendar cal;
 
   public DayScheduleCtrl() {
@@ -96,24 +99,34 @@ public class DayScheduleCtrl
     mFile = createJMenu("Menu.file");
     miQuit = getMenuItem("Menu.quit");
     mOptions = new JMenu("Options");
-    mLinkMonth = new JCheckBoxMenuItem(BundleUtil.getLabel("Day.schedule.link.label"), monthLink);
-    mLinkMonth.setSelected(false);
-    mLinkMonth.addItemListener(new ItemListener()
+    miLinkMonth = new JCheckBoxMenuItem(BundleUtil.getLabel("Day.schedule.link.label"), monthLink);
+    miLinkMonth.setSelected(false);
+    miLinkMonth.addItemListener(new ItemListener()
     {
       public void itemStateChanged(ItemEvent e) {
         monthLink = (e.getStateChange() == ItemEvent.SELECTED);
       }
     });
 
+    miAllRoom = new JCheckBoxMenuItem("Afficher toutes les salles");
+    miAllRoom.setSelected(false);
+    miAllRoom.addItemListener(new ItemListener()
+    {
+      public void itemStateChanged(ItemEvent e) {
+        ((DayScheduleView) view).propertyChange(new PropertyChangeEvent(daySchedule, "@all_rooms", null, e.getStateChange() == ItemEvent.SELECTED));
+      }
+    });
+
     miPrint = getMenuItem("Menu.print");
     mFile.add(miPrint);
     mFile.add(miQuit);
-    mOptions.add(mLinkMonth);
+    mOptions.add(miLinkMonth);
+    mOptions.add(miAllRoom);
     mBar.add(mFile);
     mBar.add(mOptions);
 
     miQuit.addActionListener(this);
-    mLinkMonth.addActionListener(this);
+    miLinkMonth.addActionListener(this);
     view.setJMenuBar(mBar);
     new Thread(new Runnable()
     {
@@ -135,14 +148,14 @@ public class DayScheduleCtrl
     cal.setTime(date);
     dataCache.setDaySchedule(date);
   }
-  
+
   /**
    * Maximizes the internal view to optimize name display in ranges.
    */
   public void mayBeMaximize() {
      if (ConfigUtil.getConf(ConfigKey.SCHEDULE_RANGE_NAMES.getKey()).equals("t")) {
         view.setSize(new Dimension(960,720));
-    } 
+    }
   }
 
   @Override

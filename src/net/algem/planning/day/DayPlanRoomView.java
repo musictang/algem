@@ -1,6 +1,6 @@
 /*
- * @(#)DayPlanRoomView.java	2.8.w 08/07/14
- * 
+ * @(#)DayPlanRoomView.java	2.9.1 26/11/14
+ *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,10 +16,11 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning.day;
 
+import java.beans.PropertyChangeEvent;
 import java.util.Vector;
 import net.algem.config.ConfigUtil;
 import net.algem.planning.ScheduleObject;
@@ -33,7 +34,7 @@ import net.algem.util.model.GemList;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.1
  * @since 1.0a 07/07/1999
  */
 public class DayPlanRoomView
@@ -42,6 +43,7 @@ public class DayPlanRoomView
 
   private int estab;
   private GemList<Room> roomList;
+  private boolean all;
 
   public DayPlanRoomView(GemList<Room> list, int e) {
     super(BundleUtil.getLabel("Room.label"));
@@ -75,6 +77,15 @@ public class DayPlanRoomView
 
         cpt++;
       }
+      // test affichage de toutes les salles mêmes vides
+      else if (all && s.getId() > 0 && s.getEstab() == estab && s.isActive()) {
+        DayPlan pj = new DayPlan();
+        pj.setId(s.getId());
+        pj.setLabel(s.getName());
+        pj.setSchedule(new Vector<ScheduleObject>());
+        pj.setScheduleRange(new Vector<ScheduleRangeObject>());
+        dayPlanView.addCol(pj);
+      }
     }
 
     dayPlanView.repaint();
@@ -92,5 +103,17 @@ public class DayPlanRoomView
       }
     }
     return v;
+  }
+
+  @Override
+  public void propertyChange(PropertyChangeEvent evt) {
+
+    if (evt.getPropertyName().equals("@all_rooms")) {
+      all = (Boolean) evt.getNewValue();
+      DaySchedule model = (DaySchedule) evt.getSource();
+      load(model.getDay(),model.getSchedules(), model.getRanges());
+    } else {
+      super.propertyChange(evt);
+    }
   }
 }

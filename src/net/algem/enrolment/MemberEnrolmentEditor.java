@@ -1,5 +1,5 @@
 /*
- * @(#)MemberEnrolmentEditor.java 2.9.1 25/11/14
+ * @(#)MemberEnrolmentEditor.java 2.9.1 26/11/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -668,7 +668,7 @@ public class MemberEnrolmentEditor
     } else {
       mo.setTotalTime(0);
     }
-    
+
     mo.setNOrderLines(1);
 
   }
@@ -730,7 +730,7 @@ public class MemberEnrolmentEditor
       MessagePopup.warning(this, ex.getMessage());
     }
   }
-  
+
   private void changeModuleTime() {
     Object[] path = currentSelection.getPath();
     if (!isModuleNode(path)) {
@@ -757,7 +757,7 @@ public class MemberEnrolmentEditor
       }
     }
   }
-  
+
   /**
    * Prints or browse selected enrolment information (including the list of activities).
    */
@@ -775,14 +775,18 @@ public class MemberEnrolmentEditor
       Order order = node.getOrder();
 
       if (node.getChildCount() >= 0) {
-        temp = File.createTempFile(BundleUtil.getLabel("Enrolment.label") + dossier.getId() + "_", extension);
+        temp = File.createTempFile(BundleUtil.getLabel("Enrolment.label") + "-" + order.getId() + "_", extension);
         pw = new PrintWriter(temp);
         pw.println(FileUtil.getHtmlHeader(BundleUtil.getLabel("Enrolment.label"), getCss()));
         pw.println(catchEnrolmentInfo(node));
         pw.println(catchActivity(order.getCreation(), dataCache.getEndOfYear()));
         pw.println("</body></html>");
       }
-      FileUtil.printFile(temp, DocFlavor.INPUT_STREAM.TEXT_HTML_UTF_8);
+      if (pw != null) {
+        pw.close();
+        FileUtil.printFile(temp, DocFlavor.INPUT_STREAM.AUTOSENSE);//XXX prints in plain text only
+      }
+
     } catch (FileNotFoundException ex) {
       GemLogger.log(ex.getMessage());
       MessagePopup.error(this, MessageUtil.getMessage("file.not.found.exception") + " :\n" + ex.getMessage());
@@ -798,14 +802,10 @@ public class MemberEnrolmentEditor
       } catch (DesktopHandlerException de) {
         GemLogger.log(de.getMessage());
       }
-    } finally {
-      if (pw != null) {
-        pw.close();
-      }
     }
 
   }
-  
+
   /**
    * Returns the list of activities performed by member between {@code start} and {@code end} dates.
    * @param start starting date
@@ -817,49 +817,53 @@ public class MemberEnrolmentEditor
       MemberService memberService = new MemberService(dc);
       StringBuilder sb = new StringBuilder();
       Vector<ScheduleRangeObject> ranges = memberService.findFollowUp(dossier.getId(), new DateRange(start, end));
-      sb.append("<table>");
+      sb.append("<table><thead>");
       sb.append("<tr><th>").append(BundleUtil.getLabel("Activity.label")).append("</th><th>")
               .append(BundleUtil.getLabel("Teacher.label")).append("</th><th>")
               .append(BundleUtil.getLabel("Room.label")).append("</th><th>")
+              .append(BundleUtil.getLabel("Follow.up.label")).append("</th><th>") // individual follow up
               .append(BundleUtil.getLabel("Date.label")).append("</th><th>")
               .append(BundleUtil.getLabel("Start.label")).append("</th><th>")
               .append(BundleUtil.getLabel("End.label")).append("</th><th>")
-              .append(BundleUtil.getLabel("Duration.label")).append("</th></tr>");
+              .append(BundleUtil.getLabel("Duration.label")).append("</th></tr></thead><tbody>");
       int min = 0;
       for (ScheduleRangeObject r : ranges) {
         Hour hs = r.getStart();
         Hour he = r.getEnd();
         min += hs.getLength(he);
+        String note = r.getNote1();
         sb.append("<tr><td>")
                 .append(r.getActivity()).append("</td><td>")
                 .append(r.getTeacher().getFirstnameName()).append("</td><td>")
                 .append(r.getRoom().getName()).append("</td><td>")
+                .append(note == null ? "" : note).append("</td><td>")
                 .append(r.getDate()).append("</td><td>")
                 .append(r.getStart()).append("</td><td>")
                 .append(r.getEnd()).append("</td><td>")
-                .append(Hour.format(hs.getLength(he))).append("</td></tr>");        
+                .append(Hour.format(hs.getLength(he))).append("</td></tr>");
       }
-      sb.append("<tr><td colspan=\"6\">" + "Total" + "</td><td> ").append(Hour.format(min)).append("</td></tr>");
-      sb.append("</table>");
+      sb.append("</tbody><tfoot><tr><td colspan=\"7\">" + "Total" + "</td><td> ").append(Hour.format(min)).append("</td></tr>");
+      sb.append("</tfoot></table>");
       return sb.toString();
     } catch (SQLException ex) {
       GemLogger.log(ex.getMessage());
       return "";
     }
   }
-  
+
   /**
-   * Returns main infos about this enrolment.
+   * Returns main infos about this enrolment {@code node}.
    * @param node enrolment node
    * @return a html-formatted string
    */
   private String catchEnrolmentInfo(EnrolmentNode node) {
     StringBuilder sb = new StringBuilder();
-    sb.append("<h1>").append(dossier.getContact().getFirstnameName()).append(" : ").append(dossier.getContact().getNickName()).append("</h1>");
+    String nickName = dossier.getContact().getNickName();
+    sb.append("<h1>").append(dossier.getContact().getFirstnameName()).append(" : ").append(nickName == null ? "" : nickName).append("</h1>");
     sb.append("<h2>")
             .append(BundleUtil.getLabel("Enrolment.label")).append(" n° ")
             .append(node.getOrder().getId()).append(' ')
-            .append(BundleUtil.getLabel("Date.From.label").toLowerCase())
+            .append(BundleUtil.getLabel("Date.From.label").toLowerCase()).append(' ')
             .append(node.getOrder().getCreation())
             .append("</h2>");
     for (Enumeration e = node.children(); e.hasMoreElements();) {
@@ -882,21 +886,24 @@ public class MemberEnrolmentEditor
         sb.append("</ul>");
       }
     }
-    
+
     return sb.toString();
 
   }
-  
+
   /**
    * Gets the css style used to print enrolment information.
    * @return a css-formatted string
    */
   private String getCss() {
     return "body {font-family: Arial, Helvetica, sans-serif}"
-            + " table {width: 100%;border-spacing: 0;border-collapse: collapse;border:1px solid #CCC;font-size: smaller}"
-            + " td, th { border-bottom: 1px solid #CCC;text-align :left }"
-            + " tr:nth-child(even) {background: #CCC !important}"
-            + " tr:nth-child(odd) {background: #FFF}"
+            + " table {width: 100%;border-spacing: 0;border-collapse: collapse;border:1px solid Gray;font-size: smaller}"
+            + " td, th { border-left: 1px solid Gray;text-align :left }"
+            + " tbody td, tbody th { border-bottom: 1px solid LightGray}"
+            + " tbody tr:last-child td {border-bottom: 1px solid Gray}"
+            + " thead td, thead th, tfoot td, tfoot th { border-bottom: 1px solid Gray}"
+            + " tbody tr:nth-child(even) {background-color: #E6E6E6 !important}"
+            + " tbody tr:nth-child(odd) {background-color: #FFF}"
             + " body  ul li {font-weight: bold}"
             + " body  ul ul li {font-weight: normal}"
             + " h1 {font-size: 1.5em}"
@@ -928,9 +935,9 @@ public class MemberEnrolmentEditor
     tree.setSelectionRow(x - 1);
     tree.scrollRowToVisible(x - 1); // doesn't seem to work
   }
-    
+
   private boolean isModuleNode(Object[] path) {
     return path[path.length - 1] instanceof ModuleEnrolmentNode;
   }
- 
+
 }

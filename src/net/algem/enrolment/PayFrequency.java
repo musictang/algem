@@ -1,5 +1,5 @@
 /*
- * @(#)PayFrequency.java	2.9.1 07/11/14
+ * @(#)PayFrequency.java	2.9.1 26/11/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -25,24 +25,24 @@ import net.algem.util.BundleUtil;
 
 /**
  * Enumeration of the available frequencies of payment.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.9.1
  * @since 2.8.w 22/07/14
  */
 public enum PayFrequency {
-  
+
   MONTH(BundleUtil.getLabel("Payment.frequency.month.label"), "MOIS"),
   QUARTER(BundleUtil.getLabel("Payment.frequency.quarter.label"), "TRIM"),
   SEMESTER(BundleUtil.getLabel("Payment.frequency.semester.label"), "SMST"),
   YEAR(BundleUtil.getLabel("Payment.frequency.year.label"), "ANNU"),
   NONE(BundleUtil.getLabel("Payment.frequency.none.label"), "NULL");
-  
+
   /**
    * Display names.
    */
   private String communName;
-  
+
   /**
    * 4-characters catalog names.
    * These names are used for persistence.
@@ -57,13 +57,16 @@ public enum PayFrequency {
   public String getName() {
     return catalogName;
   }
-  
+
   @Override
   public String toString() {
     return communName;
   }
-  
+
   public static PayFrequency getValue(String s) {
+    if (s == null || s.isEmpty()) {
+      return NONE;
+    }
     switch (s) {
       case "MOIS":
         return MONTH;

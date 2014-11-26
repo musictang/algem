@@ -1,5 +1,5 @@
 /*
- * @(#)MemberFollowUpEditor.java	2.9.1 18/11/14
+ * @(#)MemberFollowUpEditor.java	2.9.1 26/11/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -28,6 +28,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.Vector;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -81,7 +82,7 @@ public class MemberFollowUpEditor
     tableModel = new ScheduleRangeTableModel(dataCache);
     rangeTable = new JTable(tableModel);
     rangeTable.setAutoCreateRowSorter(true);
-    
+
     rangeTable.addMouseListener(new MouseAdapter()
     {
       @Override
@@ -111,7 +112,7 @@ public class MemberFollowUpEditor
     cm.getColumn(5).setPreferredWidth(60);
     cm.getColumn(6).setPreferredWidth(160);
     cm.getColumn(7).setPreferredWidth(150);
-    
+
     JScrollPane scroll = new JScrollPane(rangeTable);
 
     btModify = new GemButton(GemCommand.VIEW_EDIT_CMD);// consulter/modifier
@@ -124,31 +125,31 @@ public class MemberFollowUpEditor
     GemPanel datesPanel = new GemPanel();
     dates = new DateRangePanel();
     dates.setStart(dataCache.getStartOfYear());
-    dates.setEnd(dataCache.getEndOfYear());
+    dates.setEnd(new Date());// now by default
     totalTime = new GemLabel();
     GemPanel timePanel = new GemPanel();
-    
+
     datesPanel.add(new GemLabel(BundleUtil.getLabel("Total.label") + " :"));
     datesPanel.add(totalTime);
     datesPanel.add(dates);
     datesPanel.add(btLoad);
-    
+
     GemPanel pDates = new GemPanel(new BorderLayout());
     pDates.add(datesPanel, BorderLayout.CENTER);
     pDates.add(timePanel, BorderLayout.SOUTH);
-    
+
     GemPanel mainPanel = new GemPanel(new BorderLayout());
     mainPanel.add(scroll, BorderLayout.CENTER);
     mainPanel.add(pDates, BorderLayout.SOUTH);
-    
+
     GemPanel buttons = new GemPanel(new GridLayout(1,2));
     buttons.add(btModify);
     buttons.add(btDelete);
-    
+
     setLayout(new BorderLayout());
     add(mainPanel, BorderLayout.CENTER);
     add(buttons, BorderLayout.SOUTH);
-    
+
   }
 
   @Override
@@ -204,7 +205,7 @@ public class MemberFollowUpEditor
       } catch (SQLException e) {
         GemLogger.logException("suppression suivi pédagogique", e, this);
       }
-    } 
+    }
   }
 
   void modification(int n) throws PlanningException, SQLException {
@@ -227,7 +228,7 @@ public class MemberFollowUpEditor
       planningService.updateFollowUp(sro, dlg.getText());
       sro.setNote1(dlg.getText());
       tableModel.modItem(n, sro);
-    } 
+    }
     setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
   }
 
@@ -254,9 +255,9 @@ public class MemberFollowUpEditor
       dc.setAutoCommit(true);
       setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     }
-    
+
   }
-  
+
   private void clear() {
     if (tableModel.getRowCount() > 0) {
       tableModel.clear();

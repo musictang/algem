@@ -1,6 +1,6 @@
 /*
- * @(#)DayScheduleView.java	2.8.x 16/09/14
- * 
+ * @(#)DayScheduleView.java	2.9.1 26/11/14
+ *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning.day;
 
@@ -49,14 +49,14 @@ import net.algem.util.ui.TabPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.x
+ * @version 2.9.1
  * @version 1.0b 06/10/2001
  */
 public class DayScheduleView
         extends DefaultGemView
         implements PropertyChangeListener
 {
-  
+
   private DaySchedule daySchedule;
   private DayPlanTableView teacherView;
 
@@ -70,7 +70,7 @@ public class DayScheduleView
 
     this.daySchedule = daySchedule;
     this.daySchedule.addPropertyChangeListener(this);
-    
+
     tabPanel = new TabPanel();
     add(tabPanel, BorderLayout.CENTER);
 
@@ -79,7 +79,7 @@ public class DayScheduleView
       teacherView = new DayPlanTeacherView(dataCache.getList(Model.Teacher));
       tabPanel.addItem(teacherView, BundleUtil.getLabel("Day.schedule.teacher.tab"));
     }
-    
+
     // récupération de la liste des salles
     GemList<Room> vs = dataCache.getList(Model.Room);
     roomView = new DayPlanTableView[estabList.getSize()];
@@ -104,11 +104,11 @@ public class DayScheduleView
     tabPanel.setSelectedIndex(estabList.indexOf(estab) + offset);//+1 quand la gestion prof est activée car le premier onglet correspond aux profs
 
   }
-  
+
    @Override
   public void print() {
     DayPlanTableView v = (DayPlanTableView) tabPanel.getSelectedComponent();
-    
+
     PrinterJob job = PrinterJob.getPrinterJob();
     // A4 paper size in inches : 8.3 in × 11.7
     // A4 paper size in mm : 210 in × 297
@@ -161,7 +161,7 @@ public class DayScheduleView
 
   @Override
   public void propertyChange(PropertyChangeEvent evt) {
-    if (teacherView != null) {
+    if (teacherView != null && !evt.getPropertyName().equals("@all_rooms")) {
       teacherView.propertyChange(evt);
     }
 

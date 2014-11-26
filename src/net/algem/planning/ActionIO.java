@@ -1,5 +1,5 @@
 /*
- * @(#)ActionIO.java 2.8.v 13/06/14
+ * @(#)ActionIO.java 2.9.1 26/11/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -36,7 +36,7 @@ import net.algem.util.model.TableIO;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.v
+ * @version 2.9.1
  * @since 2.4.a 18/04/12
  */
 public class ActionIO
@@ -173,8 +173,10 @@ public class ActionIO
   }
 
   public void delete(int id) throws SQLException {
-    String query = "DELETE FROM " + TABLE + " WHERE id = " + id;
-    dc.executeUpdate(query);
+    if (id > 0) { // don't delete default action
+      String query = "DELETE FROM " + TABLE + " WHERE id = " + id;
+      dc.executeUpdate(query);
+    }
   }
 
   public static int getCourse(int idaction, DataConnection dc) throws SQLException {
