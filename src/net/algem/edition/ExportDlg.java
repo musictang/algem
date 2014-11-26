@@ -238,7 +238,7 @@ public abstract class ExportDlg
     dispose();
   }
 
-  private String getFileName() {
+  protected String getFileName() {
     String filename = "export";
     String title = getTitle();
     if (CONTACT_TITLE.equals(title)) {

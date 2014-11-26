@@ -172,7 +172,7 @@ public class MemberFollowUpEditor
         Hour hd = r.getStart();
         Hour hf = r.getEnd();
         min += hd.getLength(hf);
-        tableModel.addItem(r); 
+        tableModel.addItem(r);
       }
       totalTime.setText(Hour.format(min));
     }

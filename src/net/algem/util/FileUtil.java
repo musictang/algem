@@ -24,6 +24,16 @@ import java.awt.Component;
 import java.io.*;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.print.Doc;
+import javax.print.DocFlavor;
+import javax.print.DocPrintJob;
+import javax.print.PrintException;
+import javax.print.PrintService;
+import javax.print.PrintServiceLookup;
+import javax.print.ServiceUI;
+import javax.print.SimpleDoc;
 import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
 import javax.print.attribute.standard.MediaPrintableArea;
@@ -33,6 +43,7 @@ import javax.print.attribute.standard.OrientationRequested;
 import javax.swing.JFileChooser;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
+import net.algem.enrolment.MemberEnrolmentEditor;
 import net.algem.util.jdesktop.DesktopHandler;
 import net.algem.util.jdesktop.DesktopHandlerException;
 import net.algem.util.jdesktop.DesktopOpenHandler;
@@ -49,13 +60,20 @@ public class FileUtil
 {
 
   public final static String FILE_SEPARATOR = System.getProperty("file.separator");
+  
   /** Relative path for invoice footer file. */
   public final static String INVOICE_FOOTER_FILE = "/resources/doc/fact-pdp.txt";
+  
+  public final static String DEFAULT_CSS_DIR = "/resources/css/";
+  
 //  public final static String DOC_DIR = "/resources/doc/";
+  
   /** Default margin in mm for printing. */
   private static int MARGIN = 5; //
+  
   /** Default width in mm for printing. */
   private static int WIDTH = 210;
+  
   /** Default heigth in mm for printing. */
   private static int HEIGHT = 297;//
 
@@ -251,5 +269,34 @@ public class FileUtil
     attSet.add(new MediaPrintableArea(MARGIN, MARGIN, WIDTH - (MARGIN * 2), HEIGHT - (MARGIN * 2), MediaSize.MM));
 
     return attSet;
+  }
+  
+  public static String getHtmlHeader(String title, String css) {
+    return "<!DOCTYPE html>\n<html>\n\t<head>\n\t\t<title>" + title + "</title>\n\t\t<meta charset=\"utf-8\" />\n\t\t<style type=\"text/css\">" + css + "</style>\n\t</head>\n\t<body>";
+  }
+  
+    /**
+   * TODO java.lang.IllegalArgumentException: services must be non-null and non-empty at javax.print.ServiceUI.printDialog(ServiceUI.java:167).
+   * java.lang.NullPointerException at sun.print.ServiceDialog$PrintServicePanel.init(ServiceDialog.java:719)
+   * @param f file to print
+   * @param mimeType ex. DocFlavor.INPUT_STREAM.TEXT_HTML_UTF_8, DocFlavor.INPUT_STREAM.TEXT_HTML_UTF_8
+   * @throws PrintException if any exception is catched
+   */
+  public static void printFile(File f, DocFlavor mimeType) throws PrintException {
+    PrintRequestAttributeSet pras = new HashPrintRequestAttributeSet();
+    DocFlavor flavor = mimeType;
+    try {
+      InputStream in = new FileInputStream(f);
+//    PrintService printService1[] = PrintServiceLookup.lookupPrintServices(flavor, pras);
+      PrintService printService1[] = PrintServiceLookup.lookupPrintServices(null, null);
+      PrintService defaultService = PrintServiceLookup.lookupDefaultPrintService();
+      PrintService service = ServiceUI.printDialog(null, 200, 200, printService1, defaultService, flavor, pras);
+      Doc doc = new SimpleDoc(in, flavor, null);
+      DocPrintJob printJob = service.createPrintJob();
+      printJob.print(doc, pras);
+      in.close();
+    } catch (Exception ex) {
+      throw new PrintException(ex.getMessage());
+    }
   }
 }

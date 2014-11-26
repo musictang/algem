@@ -139,4 +139,9 @@ public class MemberExportDlg
     b.setDay(1);
     dateRange = new DateRangePanel(b,dataCache.getEndOfYear());
   }
+  
+  @Override
+  protected String getFileName() {
+    return BundleUtil.getLabel("Export.member.file");
+  }
 }

@@ -291,6 +291,7 @@ public class DateFr
 
   /**
    * Gets the date on 5 digits, year on one digit only.
+   * @return a short-formatted date
    */
   public String toStringShort() {
     String s = buf.toString();
@@ -310,7 +311,7 @@ public class DateFr
 
   @Override
   /**
-   * Used for sorting in table.
+   * Used to sorting in table.
    */
   public int compareTo(Object o) {
     if (before((DateFr) o)) {

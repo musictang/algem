@@ -1,5 +1,5 @@
 /*
- * @(#)MemberEnrolmentEditor.java 2.9.1 14/11/14
+ * @(#)MemberEnrolmentEditor.java 2.9.1 25/11/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -24,12 +24,18 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
+import javax.print.DocFlavor;
+import javax.print.PrintException;
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -39,17 +45,24 @@ import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
 import net.algem.config.GemParam;
 import net.algem.contact.PersonFile;
+import net.algem.contact.member.MemberService;
 import net.algem.course.*;
 import net.algem.planning.DateFr;
+import net.algem.planning.DateRange;
 import net.algem.planning.Hour;
+import net.algem.planning.ScheduleRangeObject;
 import net.algem.planning.editing.ChangeHourCourseDlg;
 import net.algem.planning.editing.ModifPlanEvent;
 import net.algem.planning.editing.StopCourseDlg;
 import net.algem.planning.editing.StopCourseFromModuleDlg;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
+import net.algem.util.FileUtil;
+import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
+import net.algem.util.jdesktop.DesktopBrowseHandler;
+import net.algem.util.jdesktop.DesktopHandlerException;
 import net.algem.util.menu.MenuPopupListener;
 import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
@@ -78,7 +91,7 @@ public class MemberEnrolmentEditor
   private final static String MODULE_TIME_CHANGE = BundleUtil.getLabel("Module.time.change.label");
   private final static String NONE_ENROLMENT = MessageUtil.getMessage("enrolment.empty.list");
   private final static String COURSE_DATE = BundleUtil.getLabel("Course.date.modification.label");
-  private final static String PRINT_ORDER = BundleUtil.getLabel("Action.print.label");
+  private final static String PRINT_ORDER = GemCommand.PRINT_CMD;
 
   private PersonFile dossier;
   private DefaultMutableTreeNode root;
@@ -342,6 +355,8 @@ public class MemberEnrolmentEditor
       deleteModuleOrder();
     } else if (s.equals(MODULE_TIME_CHANGE)) {
       changeModuleTime();
+    } else if (s.equals(GemCommand.PRINT_CMD)) {
+      printOrder();
     }
 
   }
@@ -741,35 +756,159 @@ public class MemberEnrolmentEditor
         MessagePopup.warning(this, ex.getMessage());
       }
     }
-    
   }
   
+  /**
+   * Prints or browse selected enrolment information (including the list of activities).
+   */
   private void printOrder() {
-    Object[] path = currentSelection.getPath();
-    int i = path.length;
-    if ((path[i - 1] instanceof ModuleEnrolmentNode) || (path[i - 1] instanceof CourseEnrolmentNode)) {
-      return;
+    PrintWriter pw = null;
+    File temp = null;
+    String extension = ".html";
+    try {
+      Object[] path = currentSelection.getPath();
+      int i = path.length;
+      if ((path[i - 1] instanceof ModuleEnrolmentNode) || (path[i - 1] instanceof CourseEnrolmentNode)) {
+        return;
+      }
+      EnrolmentNode node = (EnrolmentNode) path[i - 1];
+      Order order = node.getOrder();
+
+      if (node.getChildCount() >= 0) {
+        temp = File.createTempFile(BundleUtil.getLabel("Enrolment.label") + dossier.getId() + "_", extension);
+        pw = new PrintWriter(temp);
+        pw.println(FileUtil.getHtmlHeader(BundleUtil.getLabel("Enrolment.label"), getCss()));
+        pw.println(catchEnrolmentInfo(node));
+        pw.println(catchActivity(order.getCreation(), dataCache.getEndOfYear()));
+        pw.println("</body></html>");
+      }
+      FileUtil.printFile(temp, DocFlavor.INPUT_STREAM.TEXT_HTML_UTF_8);
+    } catch (FileNotFoundException ex) {
+      GemLogger.log(ex.getMessage());
+      MessagePopup.error(this, MessageUtil.getMessage("file.not.found.exception") + " :\n" + ex.getMessage());
+    } catch (IOException ex) {
+      GemLogger.log(ex.getMessage());
+    } catch (PrintException ex) {
+      GemLogger.log(ex.getMessage());
+      try {
+        if (temp != null) {
+          DesktopBrowseHandler browser = new DesktopBrowseHandler();
+          browser.browse(temp.toURI().toString());
+        }
+      } catch (DesktopHandlerException de) {
+        GemLogger.log(de.getMessage());
+      }
+    } finally {
+      if (pw != null) {
+        pw.close();
+      }
     }
-    EnrolmentNode node = (EnrolmentNode) path[i - 1];
-    Order order = ((EnrolmentNode) path[i - 1]).getOrder();
-    if (node.getChildCount() >= 0) {
+
+  }
+  
+  /**
+   * Returns the list of activities performed by member between {@code start} and {@code end} dates.
+   * @param start starting date
+   * @param end ending date
+   * @return a html-formatted string
+   */
+  private String catchActivity(DateFr start, DateFr end){
+    try {
+      MemberService memberService = new MemberService(dc);
+      StringBuilder sb = new StringBuilder();
+      Vector<ScheduleRangeObject> ranges = memberService.findFollowUp(dossier.getId(), new DateRange(start, end));
+      sb.append("<table>");
+      sb.append("<tr><th>").append(BundleUtil.getLabel("Activity.label")).append("</th><th>")
+              .append(BundleUtil.getLabel("Teacher.label")).append("</th><th>")
+              .append(BundleUtil.getLabel("Room.label")).append("</th><th>")
+              .append(BundleUtil.getLabel("Date.label")).append("</th><th>")
+              .append(BundleUtil.getLabel("Start.label")).append("</th><th>")
+              .append(BundleUtil.getLabel("End.label")).append("</th><th>")
+              .append(BundleUtil.getLabel("Duration.label")).append("</th></tr>");
+      int min = 0;
+      for (ScheduleRangeObject r : ranges) {
+        Hour hs = r.getStart();
+        Hour he = r.getEnd();
+        min += hs.getLength(he);
+        sb.append("<tr><td>")
+                .append(r.getActivity()).append("</td><td>")
+                .append(r.getTeacher().getFirstnameName()).append("</td><td>")
+                .append(r.getRoom().getName()).append("</td><td>")
+                .append(r.getDate()).append("</td><td>")
+                .append(r.getStart()).append("</td><td>")
+                .append(r.getEnd()).append("</td><td>")
+                .append(Hour.format(hs.getLength(he))).append("</td></tr>");        
+      }
+      sb.append("<tr><td colspan=\"6\">" + "Total" + "</td><td> ").append(Hour.format(min)).append("</td></tr>");
+      sb.append("</table>");
+      return sb.toString();
+    } catch (SQLException ex) {
+      GemLogger.log(ex.getMessage());
+      return "";
+    }
+  }
+  
+  /**
+   * Returns main infos about this enrolment.
+   * @param node enrolment node
+   * @return a html-formatted string
+   */
+  private String catchEnrolmentInfo(EnrolmentNode node) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("<h1>").append(dossier.getContact().getFirstnameName()).append(" : ").append(dossier.getContact().getNickName()).append("</h1>");
+    sb.append("<h2>")
+            .append(BundleUtil.getLabel("Enrolment.label")).append(" n° ")
+            .append(node.getOrder().getId()).append(' ')
+            .append(BundleUtil.getLabel("Date.From.label").toLowerCase())
+            .append(node.getOrder().getCreation())
+            .append("</h2>");
     for (Enumeration e = node.children(); e.hasMoreElements();) {
       TreeNode n = (TreeNode) e.nextElement();
       if (n instanceof ModuleEnrolmentNode) {
         // print info commmande module
-        if (n.getChildCount() >= 0)
-        for (Enumeration c = n.children(); c.hasMoreElements();) {
-           if (n instanceof ModuleEnrolmentNode) {
-             // print info commande cours
-           }
-          
+        sb.append("<ul>");
+        sb.append("<li>").append(((ModuleEnrolmentNode) n).toString()).append("</li>");
+        if (n.getChildCount() >= 0) {
+          sb.append("<ul>");
+          // print info commande cours
+          for (Enumeration c = n.children(); c.hasMoreElements();) {
+            TreeNode cn = (TreeNode) c.nextElement();
+            if (cn instanceof CourseEnrolmentNode) {
+              sb.append("<li>").append(((CourseEnrolmentNode) cn).toString()).append("</li>");
+            }
+          }
+          sb.append("</ul>");
         }
-      } 
+        sb.append("</ul>");
+      }
     }
-  }
     
+    return sb.toString();
+
+  }
+  
+  /**
+   * Gets the css style used to print enrolment information.
+   * @return a css-formatted string
+   */
+  private String getCss() {
+    return "body {font-family: Arial, Helvetica, sans-serif}"
+            + " table {width: 100%;border-spacing: 0;border-collapse: collapse;border:1px solid #CCC;font-size: smaller}"
+            + " td, th { border-bottom: 1px solid #CCC;text-align :left }"
+            + " tr:nth-child(even) {background: #CCC !important}"
+            + " tr:nth-child(odd) {background: #FFF}"
+            + " body  ul li {font-weight: bold}"
+            + " body  ul ul li {font-weight: normal}"
+            + " h1 {font-size: 1.5em}"
+            + " h2 {font-size : 1.2em}"
+            + " ul {font-size: 1em;line-height: 1.4em}"
+            + " h1, h2 {background-color: #CCC !important}"
+            + " -webkit-print-color-adjust:exact;print-color-adjust: exact;";
   }
 
+  /**
+   * Expands the last branch of the tree.
+   */
   private void expand() {
   tree.setCellRenderer(cellRenderer);
   // on récupère le nombre de lignes visibles
