@@ -1,5 +1,5 @@
 /*
- * @(#)MemberExportDlg.java	2.8.t 15/05/14
+ * @(#)MemberExportDlg.java	2.9.1 26/11/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -46,13 +46,14 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.k
+ * @version 2.9.1
  * @since 1.0a 14/12/1999
  */
 public class MemberExportDlg
         extends ExportDlg
 {
 
+  private static final String MEMBER_TITLE = BundleUtil.getLabel("Export.member.title");
   private GemPanel pCriterion;
   private GemChoice schoolChoice;
   private GemChoice account;

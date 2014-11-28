@@ -1,7 +1,7 @@
 /*
- * @(#)SearchCtrl.java	2.6.a 03/10/12
+ * @(#)SearchCtrl.java	2.9.1 27/11/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -35,7 +35,7 @@ import net.algem.util.MessageUtil;
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.6.a
+ * @version 2.9.1
  * @since 1.0a 07/07/1999
  * 
  */
@@ -97,11 +97,11 @@ public abstract class SearchCtrl
   public void actionPerformed(ActionEvent evt) {
     String cmd = evt.getActionCommand();
     if (GemCommand.SEARCH_CMD.equals(cmd)) {
-      setCursor(new Cursor(Cursor.WAIT_CURSOR));
+      setWaitCursor();
       searchView.setStatus("");
       list.clear();
       search();
-      setCursor(Cursor.getDefaultCursor());
+      setDefaultCursor();
     } else if (GemCommand.NEW_SEARCH_CMD.equals(cmd)) {
       abort = true;
       ((CardLayout) wCard.getLayout()).show(wCard, "cherche");
@@ -157,15 +157,27 @@ public abstract class SearchCtrl
    */
   @Override
   public void mouseClicked(MouseEvent e) {
-    int id = list.getSelectedID();//pourquoi
+    int id = list.getSelectedID();
     if (id > 0) {
+      setWaitCursor();
       load(id);
+      setDefaultCursor();
     }
   }
 
   @Override
   public String toString() {
     return getClass().getSimpleName();
+  }
+  
+  private void setWaitCursor() {
+    getRootPane().getGlassPane().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+    getRootPane().getGlassPane().setVisible(true);
+  }
+
+  private void setDefaultCursor() {
+    getRootPane().getGlassPane().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+    getRootPane().getGlassPane().setVisible(false);
   }
 }
 

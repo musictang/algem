@@ -134,7 +134,6 @@ public class FileUtil
     }
     Arrays.sort(files, new Comparator<File>()
     {
-
       @Override
       public int compare(File o1, File o2) {
         if (o1.lastModified() < o2.lastModified()) {
@@ -274,20 +273,19 @@ public class FileUtil
     return "<!DOCTYPE html>\n<html>\n\t<head>\n\t\t<title>" + title + "</title>\n\t\t<meta charset=\"utf-8\" />\n\t\t<style type=\"text/css\">" + css + "</style>\n\t</head>\n\t<body>";
   }
 
-    /**
-   * TODO java.lang.IllegalArgumentException: services must be non-null and non-empty at javax.print.ServiceUI.printDialog(ServiceUI.java:167).
-   * java.lang.NullPointerException at sun.print.ServiceDialog$PrintServicePanel.init(ServiceDialog.java:719)
+  /**
+   * 
    * @param f file to print
-   * @param mimeType ex. DocFlavor.INPUT_STREAM.TEXT_HTML_UTF_8, DocFlavor.INPUT_STREAM.TEXT_HTML_UTF_8
+   * @param flavor ex. DocFlavor.INPUT_STREAM.TEXT_HTML_UTF_8, DocFlavor.INPUT_STREAM.TEXT_HTML_UTF_8
    * @throws PrintException if any exception is catched
    */
   public static void printFile(File f, DocFlavor flavor) throws PrintException {
+    // TODO java.lang.IllegalArgumentException: services must be non-null and non-empty at javax.print.ServiceUI.printDialog(ServiceUI.java:167).
+    //java.lang.NullPointerException at sun.print.ServiceDialog$PrintServicePanel.init(ServiceDialog.java:719)
     PrintRequestAttributeSet pras = new HashPrintRequestAttributeSet();
-//    DocFlavor flavor = mimeType;
     try {
       InputStream in = new FileInputStream(f);
-    PrintService printService1[] = PrintServiceLookup.lookupPrintServices(flavor, pras);
-//      PrintService printService1[] = PrintServiceLookup.lookupPrintServices(null, null);
+      PrintService printService1[] = PrintServiceLookup.lookupPrintServices(flavor, pras);
       PrintService defaultService = PrintServiceLookup.lookupDefaultPrintService();
       PrintService service = ServiceUI.printDialog(null, 200, 200, printService1, defaultService, flavor, pras);
 

@@ -1,5 +1,5 @@
 /*
- * @(#)DirectDebitExportDlg.java	2.8.w 09/07/14
+ * @(#)DirectDebitExportDlg.java	2.9.1 27/11/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -42,7 +42,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.1
  */
 public class DirectDebitExportDlg
         extends JDialog
@@ -185,6 +185,7 @@ public class DirectDebitExportDlg
     add(buttons, BorderLayout.SOUTH);
 
     setSize(500, 300);
+    setLocation(200,100);
     pack();
   }
 

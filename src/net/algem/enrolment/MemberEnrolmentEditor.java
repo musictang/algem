@@ -34,8 +34,6 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
-import javax.print.DocFlavor;
-import javax.print.PrintException;
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -634,7 +632,7 @@ public class MemberEnrolmentEditor
     co.setTitle(cm.getCode().getLabel());
     co.setDay(0);//dimanche
     co.setModuleOrder(mo.getId());
-    co.setStart(new Hour("01:00"));
+    co.setStart(new Hour("00:00"));// XXX "00:00" ??
     co.setEnd(new Hour(cm.getTimeLength()));
     co.setCourseModuleInfo(cm);
     co.setDateStart(mo.getStart());
@@ -658,7 +656,7 @@ public class MemberEnrolmentEditor
     mo.setSelectedModule((Integer) moduleDlg.getField(7));
     mo.setStart(new DateFr((DateFr) moduleDlg.getField(2)));
     mo.setEnd(new DateFr((DateFr) moduleDlg.getField(3)));
-    mo.setPrice((Double) moduleDlg.getField(4));
+    mo.setPrice(((Number) moduleDlg.getField(4)).doubleValue());
     mo.setPaymentAmount(((Number) moduleDlg.getField(10)).doubleValue());
     mo.setModeOfPayment((String) moduleDlg.getField(5));
     mo.setPayment((PayFrequency) moduleDlg.getField(6));
@@ -771,6 +769,7 @@ public class MemberEnrolmentEditor
       if ((path[i - 1] instanceof ModuleEnrolmentNode) || (path[i - 1] instanceof CourseEnrolmentNode)) {
         return;
       }
+      desktop.setWaitCursor();
       EnrolmentNode node = (EnrolmentNode) path[i - 1];
       Order order = node.getOrder();
 
@@ -784,7 +783,15 @@ public class MemberEnrolmentEditor
       }
       if (pw != null) {
         pw.close();
-        FileUtil.printFile(temp, DocFlavor.INPUT_STREAM.AUTOSENSE);//XXX prints in plain text only
+        //FileUtil.printFile(temp, DocFlavor.INPUT_STREAM.AUTOSENSE);//XXX prints in plain text only
+        try {
+          if (temp != null) {
+            DesktopBrowseHandler browser = new DesktopBrowseHandler();
+            browser.browse(temp.toURI().toString());
+          }
+        } catch (DesktopHandlerException de) {
+          GemLogger.log(de.getMessage());
+        }
       }
 
     } catch (FileNotFoundException ex) {
@@ -792,18 +799,9 @@ public class MemberEnrolmentEditor
       MessagePopup.error(this, MessageUtil.getMessage("file.not.found.exception") + " :\n" + ex.getMessage());
     } catch (IOException ex) {
       GemLogger.log(ex.getMessage());
-    } catch (PrintException ex) {
-      GemLogger.log(ex.getMessage());
-      try {
-        if (temp != null) {
-          DesktopBrowseHandler browser = new DesktopBrowseHandler();
-          browser.browse(temp.toURI().toString());
-        }
-      } catch (DesktopHandlerException de) {
-        GemLogger.log(de.getMessage());
-      }
+    } finally {
+      desktop.setDefaultCursor();
     }
-
   }
 
   /**

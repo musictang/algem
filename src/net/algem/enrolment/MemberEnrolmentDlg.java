@@ -378,7 +378,7 @@ public class MemberEnrolmentDlg
       mo.setTitle((String) moduleDlg.getField(1));
       mo.setStart(new DateFr((DateFr) moduleDlg.getField(2)));
       mo.setEnd(new DateFr((DateFr) moduleDlg.getField(3)));
-      mo.setPrice((Double) moduleDlg.getField(4));
+      mo.setPrice(((Number) moduleDlg.getField(4)).doubleValue());
       mo.setPaymentAmount(((Number) moduleDlg.getField(10)).doubleValue());
       mo.setModeOfPayment((String) moduleDlg.getField(5));
       mo.setPayment((PayFrequency) moduleDlg.getField(6));

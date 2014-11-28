@@ -1,5 +1,5 @@
 /*
- * @(#)HourEmployeeDlg.java	2.8.w 08/07/14
+ * @(#)HourEmployeeDlg.java	2.9.1 27/11/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -61,7 +61,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.1
  * @since 2.8.v 10/06/14
  */
 public class HourEmployeeDlg
@@ -123,6 +123,7 @@ public class HourEmployeeDlg
 
     add(p, BorderLayout.CENTER);
     add(buttons, BorderLayout.SOUTH);
+    setLocation(200,100);
     pack();
   }
 
@@ -163,12 +164,19 @@ public class HourEmployeeDlg
 
         pm = new ProgressMonitor(view, MessageUtil.getMessage("active.search.label"), "", 1, 100);
         pm.setMillisToDecideToPopup(10);
-
-        teacherTask = new HourTeacherTask(out, plan, detail);
+        
+        // test csv detail
+        ResultSet rs = service.getDetailTeacher(start.toString(), end.toString());
+        teacherTask = new HourTeacherCSVTask(out, rs, detail);
         teacherTask.addPropertyChangeListener(this);
         teacherTask.execute();
+        // DETAIL TXT DECOMMENTER
+/*
+        teacherTask = new HourTeacherTask(out, plan, detail);
+        teacherTask.addPropertyChangeListener(this);
+        teacherTask.execute();*/
       } else if (EmployeeType.TECHNICIAN.ordinal() == type) {
-        ResultSet rs = service.getDetailEmployee(start.toString(), end.toString(), Schedule.TECH);
+        ResultSet rs = service.getDetailTechnician(start.toString(), end.toString(), Schedule.TECH);
         pm = new ProgressMonitor(view, MessageUtil.getMessage("active.search.label"), "", 1, 100);
         pm.setMillisToDecideToPopup(10);
         employeeTask = new HourTechnicianTask(out, rs, detail);
@@ -394,8 +402,6 @@ public class HourEmployeeDlg
     } // end write method
   } // end HourTeacherTask class
 
-
-
 class HourTechnicianTask
 extends SwingWorker<Void, Void>
 {
@@ -500,6 +506,134 @@ extends SwingWorker<Void, Void>
       out.println(tm + ";;;;" + nf.format(totalMonth / 60.0));
       totalPeriod += totalMonth;
       out.println(tp + ";;;;" + nf.format(totalPeriod / 60.0));
+      out.close();
+      return null;
+    } // end doInBackground
+
+    @Override
+    public void done() {
+      MessagePopup.information(view, MessageUtil.getMessage("export.hour.employee.done.info",path));
+      setCursor(null); //turn off the wait cursor
+      if (pm != null) {
+        pm.close();
+      }
+    }
+
+  } // end of HourTechnicianTask
+
+
+
+
+class HourTeacherCSVTask
+extends SwingWorker<Void, Void>
+{
+
+  private PrintWriter out;
+  private ResultSet rs;
+  private boolean detail;
+  private String tm = BundleUtil.getLabel("Total.label") + " " + BundleUtil.getLabel("Month.label");
+  private String tp = BundleUtil.getLabel("Total.label") + " " + BundleUtil.getLabel("Period.label");
+
+  public HourTeacherCSVTask(PrintWriter out, ResultSet rs, boolean detail) {
+    this.out = out;
+    this.rs = rs;
+    this.detail = detail;
+  }
+
+
+    @Override
+    protected Void doInBackground() throws Exception {
+      String tc = BundleUtil.getLabel("Total.label") + " " + BundleUtil.getLabel("Course.label");
+      int prevMember = -1;
+      int prevCourse = -1;
+      int prevMonth = -1;
+      int prevIdper = -1;
+      int totalDay = 0;
+      int totalMonth = 0;
+      int totalCourse = 0;
+      int totalPeriod = 0;
+      DateFr prevDate = null;
+
+      Format dmf = new SimpleDateFormat("MMM yyyy");
+      Format df = new SimpleDateFormat("EEE dd-MM-yyyy");
+
+      StringBuilder sb = new StringBuilder();
+      //header
+      out.println(BundleUtil.getLabel("Teacher.label")
+        + ";" + BundleUtil.getLabel("Course.label")
+        + ";" + BundleUtil.getLabel("Member.label")  
+        + ";" + BundleUtil.getLabel("Day.label")  
+        + ";" + BundleUtil.getLabel("Start.label")
+        + ";" + BundleUtil.getLabel("End.label")
+        + ";" + BundleUtil.getLabel("Duration.label"));
+
+      while (rs.next()) {
+        int idper = rs.getInt(1);
+        int memberId = rs.getInt(2);
+        String teacherName = rs.getString(3) + " " + rs.getString(4);
+        String courseName = rs.getString(6);
+        String memberName = rs.getString(7) + " " + rs.getString(8);
+        DateFr date = new DateFr(rs.getDate(9));
+        Hour start = new Hour(rs.getString(10));
+        Hour end = new Hour(rs.getString(11));
+        Hour duration = new Hour(rs.getString(12));
+        int idcourse = rs.getInt(5);
+
+        if (idper != prevIdper) {
+          if (prevIdper > 0) {
+            if (!detail) {
+              out.println("test non détaillé");
+//              out.println(";;;" + df.format(prevDate.getDate()) + ";;;" + nf.format(totalDay / 60.0));
+            }
+            out.println(tc + ";;;;;;" +  nf.format(totalCourse / 60.0));
+            totalPeriod += totalMonth;
+            out.println(tp + ";;;;;;" + nf.format(totalPeriod / 60.0));
+            out.println();
+          }
+
+          prevIdper = idper;
+          prevMember = memberId;
+          prevDate = null;
+          prevMonth = 0;
+          totalDay = 0;
+          totalMonth = 0;
+          totalPeriod = 0;
+          totalCourse = 0;
+        }
+        
+        if (memberId != prevMember) {
+          if (prevMember > 0) {
+            out.println(tc + ";;;;;;" +  nf.format(totalCourse / 60.0));
+            totalCourse = 0;
+            prevMember = memberId;
+          }
+        }
+
+        if (idcourse != prevCourse) {
+          if (prevCourse > 0 && totalCourse > 0) {
+            out.println(tc + ";;;;;;" + nf.format(totalCourse / 60.0));
+            totalCourse = 0;
+          }
+          prevCourse = idcourse;
+        }
+        totalMonth += duration.toMinutes();
+        totalDay += duration.toMinutes();
+        totalCourse += duration.toMinutes();
+        if (detail) {
+          sb.append(teacherName).append(';').append(courseName).append(';').append(memberName).append(';')
+                  .append(date).append(';').append(start).append(';').append(end).append(';').append(duration);
+          out.println(sb.toString());
+          sb.delete(0, sb.length());
+        }
+      } // end while
+
+      if (!detail && prevDate != null) {
+        out.println(";;;" + df.format(prevDate.getDate()) + ";;;" + nf.format(totalDay / 60.0));
+//        out.println(df.format(prevDate.getDate()) + ";;;;;;" + nf.format(totalDay / 60.0));
+      }
+      out.println(tm + ";;;;;;" + nf.format(totalCourse / 60.0));
+      totalPeriod += totalMonth;
+      out.println(tp + ";;;;;;" + nf.format(totalPeriod / 60.0));
       out.close();
       return null;
     } // end doInBackground

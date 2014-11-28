@@ -1,5 +1,5 @@
 /*
- * @(#)ExportDlg.java 2.8.x 16/09/14
+ * @(#)ExportDlg.java 2.9.1 27/11/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -42,7 +42,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.x
+ * @version 2.9.1
  * @since 1.0a 14/12/1999
  */
 public abstract class ExportDlg
@@ -50,6 +50,9 @@ public abstract class ExportDlg
         implements ActionListener
 {
 
+  public static final String TEXT_FILTER_LABEL = MessageUtil.getMessage("filechooser.text.filter.label");
+  protected static final int ITEM_DEF_WIDTH = 250;
+  
   protected DataConnection dc;
   protected DataCache dataCache;
   protected GemField fileName;
@@ -58,15 +61,6 @@ public abstract class ExportDlg
   protected JPanel buttons;
   protected JButton chooser;
   protected File file;
-  protected static final String CONTACT_TITLE = BundleUtil.getLabel("Export.contact.title");
-  protected static final String MEMBER_TITLE = BundleUtil.getLabel("Export.member.title");
-  protected static final String PAYER_TITLE = BundleUtil.getLabel("Export.payer.title");
-  protected static final String TEACHER_TITLE = BundleUtil.getLabel("Export.teacher.title");
-  protected static final String DEBITING_TITLE = BundleUtil.getLabel("Export.debiting.title");
-  protected static final String STUDENT_TITLE = BundleUtil.getLabel("Export.student.title");
-  protected static final String MUSICIAN_TITLE = BundleUtil.getLabel("Group.members.label");
-  protected static final int ITEM_DEF_WIDTH = 250;
-  public static final String TEXT_FILTER_LABEL = MessageUtil.getMessage("filechooser.text.filter.label");
 
   public ExportDlg(Frame _parent, String _title, DataCache dataCache) {
     super(_parent, _title);
@@ -238,24 +232,6 @@ public abstract class ExportDlg
     dispose();
   }
 
-  protected String getFileName() {
-    String filename = "export";
-    String title = getTitle();
-    if (CONTACT_TITLE.equals(title)) {
-      filename = BundleUtil.getLabel("Export.contact.file");
-    } else if (MEMBER_TITLE.equals(title)) {
-      filename = BundleUtil.getLabel("Export.member.file");
-    } else if (TEACHER_TITLE.equals(title)) {
-      filename = BundleUtil.getLabel("Export.teacher.file");
-    } else if (PAYER_TITLE.equals(title)) {
-      filename = BundleUtil.getLabel("Export.payer.file");
-    } else if (DEBITING_TITLE.equals(title)) {
-      filename = BundleUtil.getLabel("Export.debiting.file");
-    } else if (STUDENT_TITLE.equals(title)) {
-      filename = BundleUtil.getLabel("Export.student.file");
-    } else if (MUSICIAN_TITLE.equals(title)) {
-      filename = BundleUtil.getLabel("Export.musician.file");
-    }
-    return filename;
-  }
+  protected abstract String getFileName();
+
 }

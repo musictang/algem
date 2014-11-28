@@ -1,5 +1,5 @@
 /*
- * @(#)StudentExportDlg.java 2.8.w 08/07/14
+ * @(#)StudentExportDlg.java 2.9.1 27/11/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -44,7 +44,7 @@ import net.algem.util.ui.MessagePopup;
  * Abstract class for student export operations.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.1
  * @since 2.6.a 06/11/2012
  */
 public abstract class StudentExportDlg
@@ -139,4 +139,8 @@ public abstract class StudentExportDlg
     }
   }
   
+   @Override
+  protected String getFileName() {
+    return BundleUtil.getLabel("Export.student.file");
+  }
 }

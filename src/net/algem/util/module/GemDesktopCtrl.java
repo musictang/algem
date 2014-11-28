@@ -1,5 +1,5 @@
 /*
- * @(#)GemDesktopCtrl.java	2.8.x 16/09/14
+ * @(#)GemDesktopCtrl.java	2.9.1 27/11/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -65,7 +65,7 @@ import net.algem.util.ui.HtmlViewer;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.x
+ * @version 2.9.1
  * @since 1.0a 05/07/2002
  */
 public class GemDesktopCtrl
@@ -205,9 +205,10 @@ public class GemDesktopCtrl
           } else if (sid.getModuleClass().equals(DayScheduleCtrl.class.getSimpleName())) {
             DayScheduleCtrl dayScheduleCtrl = new DayScheduleCtrl();
             addModule(dayScheduleCtrl);
+            dayScheduleCtrl.setState(sid.getState());
             // location initiale du tableau jour.
             dayScheduleCtrl.getView().setLocation(110, 0);
-            dayScheduleCtrl.mayBeMaximize();
+            dayScheduleCtrl.mayBeMaximize();  
           }
         }
       }
@@ -282,7 +283,10 @@ public class GemDesktopCtrl
     java.util.List<GemModuleSID> lm = new ArrayList<GemModuleSID>();
     while (enu.hasMoreElements()) {
       GemModule m = (GemModule) enu.nextElement();
-      lm.add(new GemModuleSID(m.getClass().getSimpleName(), m.getSID(), m.getLabel()));
+      GemModuleSID moduleSID = new GemModuleSID(m.getClass().getSimpleName(), m.getSID(), m.getLabel());
+      // save optional state
+      moduleSID.setState(m.getState());
+      lm.add(moduleSID);
       m.close();
     }
     if (out != null) {

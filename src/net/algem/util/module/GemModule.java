@@ -1,5 +1,5 @@
 /*
- * @(#)GemModule.java	2.8.w 27/08/14
+ * @(#)GemModule.java	2.9.1 27/11/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -41,7 +41,7 @@ import net.algem.util.model.GemCloseVetoException;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.8.w
+ * @version 2.9.1
  * @since 1.0a 06/07/2002
  */
 public abstract class GemModule
@@ -218,5 +218,14 @@ public abstract class GemModule
 
   public static String getClassName(Class c) {
     return c == null ? "" : c.getSimpleName();
+  }
+  
+  /**
+   * Saves some state information.
+   * Subclasses may override this method to return specific information before serialization.
+   * @return an array of objects
+   */
+  public Object[] getState() {
+    return null;
   }
 }

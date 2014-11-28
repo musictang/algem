@@ -1,7 +1,7 @@
 /*
- * @(#)TeacherExportDlg.java	2.6.a 02/08/2012
+ * @(#)TeacherExportDlg.java	2.9.1 27/11/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -24,6 +24,7 @@ import java.awt.Dialog;
 import java.awt.Frame;
 import javax.swing.JComboBox;
 import net.algem.planning.Schedule;
+import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.MessageUtil;
 import net.algem.util.ui.GemPanel;
@@ -33,21 +34,22 @@ import net.algem.util.ui.GemPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.1
  * @since 1.0a 14/12/1999
  */
 public class TeacherExportDlg
         extends ExportDlg
 {
 
-  private GemPanel pCriterion;
-  private JComboBox cbCriterion;
+  private static final String TEACHER_TITLE = BundleUtil.getLabel("Export.teacher.title");
   private static Object[] criteria = {
     MessageUtil.getMessage("export.criterium.teacher.all"),
     MessageUtil.getMessage("export.criterium.teacher.active"),
     MessageUtil.getMessage("export.criterium.teacher.year")
   };
-
+  private GemPanel pCriterion;
+  private JComboBox cbCriterion;
+  
   public TeacherExportDlg(Frame _parent, DataCache _cache) {
     super(_parent, TEACHER_TITLE, _cache);
   }
@@ -86,5 +88,10 @@ public class TeacherExportDlg
     }
 
     return query;
+  }
+  
+  @Override
+  protected String getFileName() {
+    return BundleUtil.getLabel("Export.teacher.file");
   }
 }

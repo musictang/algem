@@ -1,7 +1,7 @@
 /*
- * @(#)AccountDocumentTransferDlg.java	2.8.r 13/12/13
+ * @(#)AccountDocumentTransferDlg.java	2.9.1 27/11/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -42,7 +42,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.r
+ * @version 2.9.1
  * @since 1.0a 27/09/2000
  */
 public class AccountDocumentTransferDlg
@@ -81,7 +81,7 @@ public class AccountDocumentTransferDlg
 
     add(p, BorderLayout.CENTER);
     add(buttons, BorderLayout.SOUTH);
-
+    setLocation(200, 100);
     pack();
   }
 

@@ -159,6 +159,7 @@ public class MemberFollowUpEditor
 
   @Override
   public void load() {
+    desktop.setWaitCursor();
     clear();
     Vector<ScheduleRangeObject> v = null;
     try {
@@ -178,6 +179,7 @@ public class MemberFollowUpEditor
       totalTime.setText(Hour.format(min));
     }
     loaded = true;
+    desktop.setDefaultCursor();
   }
 
   @Override
@@ -214,22 +216,21 @@ public class MemberFollowUpEditor
     ScheduleRangeObject sro = (ScheduleRangeObject) tableModel.getItem(n);
     Course c = sro.getCourse();
 
-//    if (c.isCollective() && sro.getNote() <= 0 && (sro.getAction().getPlaces() == 0 || sro.getAction().getPlaces() > 1)) { // ?? <= 0
-//      MessagePopup.error(this, MessageUtil.getMessage("follow.up.modification.warning"));
-//    } else {
     int col = rangeTable.getSelectedColumn();
     FollowUpDlg dlg = new FollowUpDlg(desktop, sro, c.getTitle(), (col == 7));
-    setCursor(Cursor.getDefaultCursor());
-    dlg.entry();
-    if (!dlg.isValidation()) {
-      return;
+    try {
+      dlg.entry();
+      if (!dlg.isValidation()) {
+        return;
+      }
+      if (col != 7) {
+        planningService.updateFollowUp(sro, dlg.getText());
+        sro.setNote1(dlg.getText());
+        tableModel.modItem(n, sro);
+      }
+    } finally {
+      setCursor(Cursor.getDefaultCursor());
     }
-    if (col != 7) {
-      planningService.updateFollowUp(sro, dlg.getText());
-      sro.setNote1(dlg.getText());
-      tableModel.modItem(n, sro);
-    }
-    setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
   }
 
   void insertion(int n) throws SQLException {

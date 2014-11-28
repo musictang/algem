@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleRangeIO.java	2.9.1 18/11/14
+ * @(#)ScheduleRangeIO.java	2.9.1 27/11/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -219,7 +219,7 @@ public class ScheduleRangeIO
     Vector<ScheduleRangeObject> v = new Vector<ScheduleRangeObject>();
     String query = getFollowUpRequest(action);
     query += where;
-System.out.println(query);
+
     PlanningService pService = new PlanningService(dc);
 
     ResultSet rs = dc.executeQuery(query);

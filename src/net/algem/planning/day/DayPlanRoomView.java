@@ -1,5 +1,5 @@
 /*
- * @(#)DayPlanRoomView.java	2.9.1 26/11/14
+ * @(#)DayPlanRoomView.java	2.9.1 27/11/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -95,11 +95,12 @@ public class DayPlanRoomView
   public <T extends ScheduleObject> Vector<T> getPlan(Vector<T> t, int roomId) {
 
     Vector<T> v = new Vector<T>();
-
-    for (int i = 0; i < t.size(); i++) {
-      Room s = t.elementAt(i).getRoom();
-      if (s.getId() == roomId && s.getEstab() == estab) {
-        v.addElement(t.elementAt(i));
+    if (t != null) {
+      for (int i = 0; i < t.size(); i++) {
+        Room s = t.elementAt(i).getRoom();
+        if (s.getId() == roomId && s.getEstab() == estab) {
+          v.addElement(t.elementAt(i));
+        }
       }
     }
     return v;

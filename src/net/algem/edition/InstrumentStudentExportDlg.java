@@ -63,5 +63,5 @@ public class InstrumentStudentExportDlg
   public String getRequest() {
     return service.getContactQueryByInstrument(instrument.getKey(), dateRange.getStart(), dateRange.getEnd());
   }
-  
+
 }

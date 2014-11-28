@@ -1,5 +1,5 @@
 /*
- * @(#)PersonView.java	2.9.1 21/11/14
+ * @(#)PersonView.java	2.9.1 27/11/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -122,7 +122,7 @@ public class PersonView
     gb.add(cbImgRights, 2, 6, 1, 1, GridBagHelper.WEST);
     gb.add(cbPartner, 2, 7, 1, 1, GridBagHelper.WEST);
     gb.add(cardLabel, 2, 8, 1, 1, GridBagHelper.WEST);
-    gb.add(cardInfo, 3, 9, 1, 1, GridBagHelper.WEST);
+    gb.add(cardInfo, 3, 8, 1, 1, GridBagHelper.WEST);
   }
 
   void set(Person p, String dir) {
@@ -283,7 +283,7 @@ public class PersonView
   void setRemainingHours(PersonSubscriptionCard cap) {
 
     if (cap != null) {
-      cardLabel.setText("Abonnement restant : ");
+      cardLabel.setText(BundleUtil.getLabel("Subscription.remaining.label") + " : ");
       cardInfo.setText(cap.displayRestTime());
     }
 

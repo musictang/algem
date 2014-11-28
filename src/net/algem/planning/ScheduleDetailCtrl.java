@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleDetailCtrl.java 2.9.1 18/11/14
+ * @(#)ScheduleDetailCtrl.java 2.9.1 27/11/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -638,7 +638,7 @@ public class ScheduleDetailCtrl
 
   private void setDefaultCursor() {
     JRootPane root = ((JRootPane) frame.getRootPane());
-    root.getGlassPane().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+    root.getGlassPane().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     root.getGlassPane().setVisible(false);
   }
 }

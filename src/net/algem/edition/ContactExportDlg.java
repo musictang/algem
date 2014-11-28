@@ -1,7 +1,7 @@
 /*
- * @(#)ContactExportDlg.java	2.6.a 02/10/12
+ * @(#)ContactExportDlg.java	2.9.1 27/11/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -24,6 +24,7 @@ import java.awt.Dialog;
 import java.awt.Frame;
 import javax.swing.JComboBox;
 import net.algem.contact.Person;
+import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.MessageUtil;
 import net.algem.util.ui.GemPanel;
@@ -33,18 +34,20 @@ import net.algem.util.ui.GemPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.1
  * @since 1.0a 14/12/1999
  */
 public class ContactExportDlg
         extends ExportDlg
 {
 
-  private GemPanel pCriterion;
-  private JComboBox criterion;
+  private static final String CONTACT_TITLE = BundleUtil.getLabel("Export.contact.title");
   private static Object[] criteria = {
     MessageUtil.getMessage("export.criterium.contact.all")
   };
+  private GemPanel pCriterion;
+  private JComboBox criterion;
+  
 
   public ContactExportDlg(Frame _parent, DataCache _cache) {
     super(_parent, CONTACT_TITLE, _cache);
@@ -78,5 +81,10 @@ public class ContactExportDlg
     }
 
     return query;
+  }
+
+  @Override
+  protected String getFileName() {
+    return BundleUtil.getLabel("Export.contact.file");
   }
 }

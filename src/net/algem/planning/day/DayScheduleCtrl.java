@@ -1,5 +1,5 @@
 /*
- * @(#)DayScheduleCtrl.java 2.9.1 26/11/14
+ * @(#)DayScheduleCtrl.java 2.9.1 27/11/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -60,20 +60,13 @@ public class DayScheduleCtrl
         extends GemModule
 {
 
-  private JMenuBar mBar;
-  private JMenu mFile;
   private JMenuItem miPrint;
   private JMenuItem miQuit;
-  private JMenu mOptions;
-  private JCheckBoxMenuItem miLinkMonth;
-  private JCheckBoxMenuItem miAllRoom;
-  /*private JMenu mAide;
-  private JMenuItem mAPropos;
-  private JMenuItem mDoc;*/
   private DaySchedule daySchedule;
-  private boolean monthLink = false;// false par défaut
-  private boolean allRoom = false;
+  private boolean monthLink = false;
   private Calendar cal;
+  private JCheckBoxMenuItem miAllRoom;
+  private boolean allRooms;
 
   public DayScheduleCtrl() {
     super("TableauJour");
@@ -95,11 +88,11 @@ public class DayScheduleCtrl
 
     desktop.addGemEventListener(this);
 
-    mBar = new JMenuBar();
-    mFile = createJMenu("Menu.file");
+    JMenuBar mBar = new JMenuBar();
+    JMenu mFile = createJMenu("Menu.file");
     miQuit = getMenuItem("Menu.quit");
-    mOptions = new JMenu("Options");
-    miLinkMonth = new JCheckBoxMenuItem(BundleUtil.getLabel("Day.schedule.link.label"), monthLink);
+    JMenu mOptions = new JMenu("Options");
+    JCheckBoxMenuItem miLinkMonth = new JCheckBoxMenuItem(BundleUtil.getLabel("Day.schedule.link.label"), monthLink);
     miLinkMonth.setSelected(false);
     miLinkMonth.addItemListener(new ItemListener()
     {
@@ -273,6 +266,20 @@ public class DayScheduleCtrl
     view.removeActionListener(this);
     desktop.removeGemEventListener(this);
     desktop.removeModule(this);
+  }
+  
+  public void setState(Object[] state) {
+    if (state != null && state.length > 0) {
+      if (state[0].getClass() == Boolean.class) {
+        miAllRoom.setSelected((Boolean) state[0]);
+      }
+    }
+    
+  }
+  
+  @Override
+  public Object[] getState() {
+    return new Object[]{miAllRoom.isSelected()};
   }
 }
 

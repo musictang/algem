@@ -1,0 +1,53 @@
+FORMULES
+- La période de tarification Horaire(Tarif base) a été ajoutée aux tarifications par défaut dans la rubrique Gestion du menu Configuration -> Paramètres -> Généraux
+
+FICHE PERSONNE
+- Un nouveau champ "Pseudo" est disponible dans l'onglet contact. Ce champ permet par exemple de renseigner un "nom d'artiste" différent du nom réel de la personne. Le champ "Organisation" reprend son rôle initial : indiquer le nom de l'organisation à laquelle est rattachée la personne.
+
+Conformément à cet ajout, on peut aussi rechercher par "Pseudo" dans la fenêtre de recherches de contact.
+
+Onglet Suivi
+------------
+L'onglet "Suivi" permet maintenant d'afficher toutes les séances de cours programmées entre deux dates, qu'il existe ou non une note de suivi. Auparavant, seules les séances ayant fait l'objet d'un suivi apparaissaient dans cette liste. Afin d'éviter les lignes en doublon, une nouvelle colonne "Suivi collectif" est maintenant présente et permet de visualiser la note de suivi collectif de la séance.
+En double-cliquant sur la cellule adéquate, vous pouvez consulter directement le détail de chaque suivi. Le suivi individuel peut être modifié, mais on doit toujours passer par le raccourci clavier CTRL(MAJ)-Clic Gauche sur le nom du cours dans la fenêtre de détail d'un planning pour éditer le suivi collectif (ou alternativement en utilisant l'onglet Suivi enseignant du professeur concerné).
+
+Par défaut, la date de début correspond à la date de début d'année scolaire et la date de fin correspond à la date du jour. On peut ainsi visualiser le nombre de séances auxquelles l'élève a participé depuis le début de l'année scolaire. Le champ total indique le nombre d'heures total des séances programmées entre les deux dates choisies.
+
+Onglet Inscription
+------------------
+Les formules dont la période de tarification est de type horaire sont affichées différemment des autres. Les informations horaires et tarifaires sont détaillées à la suite du nom de la formule. Dans l'ordre, de gauche à droite, on aura :
+
+- le nombre d'heures actuellement effectué
+- le nombre d'heures total (choisi pour cette formule, au moment de l'inscription)
+- le nombre d'heures restant
+- le montant actuellement consommé (tarif de la formule * nombre d'heures)
+- le montant total
+- le montant restant (équivalent au PCA : Produit Constaté d'Avance) et coloré
+en rouge.
+ex. Formule : Pratique vocale [11h/14h45 -> 3h45] >> [ 165,00 €/221,25 € -> 56,25 € ]
+
+Les lignes de cours à définir sont maintenant en italiques afin de bien les distinguer des autres.
+
+Un nouveau menu "Imprimer" est disponible lorsqu'on clique droit sur une inscription. Vous pourrez ainsi visualiser le récapitulatif d'une inscription et la liste des séances programmées correspondantes (accompagnée des notes de suivi individuel). Après ouverture dans votre navigateur par défaut, vous pourrez imprimer la page si vous le désirez (au format Paysage de préférence et en affichant les couleurs d'arrière plan).
+
+L'ajout d'une formule au moment de l'inscription s'est enrichi.
+Le champ "Tarif base" est maintenant éditable et permet de spécifier un tarif indépendamment du tarif initial de la formule sélectionnée. Le nouveau champ "Tarification" permet de spécifier le type de tarification choisi pour cette formule. Il permet d'outrepasser l'option de configuration générale "Tarif base" dans le menu Configuration -> Paramètres -> Généraux et d'utiliser un autre type que celui par défaut. Si l'on choisit "Horaire", le nombre d'heures devient éditable et permet de définir le nombre d'heures total de formation associé à cette formule. Ce type de tarification est surtout utilisé pour l'inscription des élèves en formation professionnelle qui bénéficient d'un quota d'heures bien défini.
+Ce nombre d'heures est d'ailleurs modifiable après inscription, dans le cas où il aurait été réduit/augmenté en cours d'année. La ligne d'informations détaillées de la formule tiendra compte des modifications éventuelles.
+
+PLANNING
+Le nom des élèves dans les plannings de type individuel (ou de type "Instrument collectif" mais dont le nombre de places est égal à 1) peut être affiché sous deux conditions :
+- l'option "Afficher le nom des élèves dans les plages de cours individuels" est cochée dans les Paramètres -> Généraux (menu Configuration)
+- la durée de la plage horaire est assez grande pour permettre l'affichage sans chevauchement de caractères
+Le planning affichera le pseudo de l'élève s'il existe, ou son nom dans le cas contraire.
+
+- Une nouvelle option "Afficher toutes les salles" est maintenant disponible dans le planning jour.
+En activant cette option, toutes les salles actives de l'établissement apparaîtront sur le planning même si elles ne comportent aucune réservation. Ce paramètre est mémorisé à la fermeture du logiciel et vous pouvez l'activer ou le désactiver à tout moment, suivant vos besoins. Il est parfois utile d'avoir sous les yeux le nom de toutes les salles, dans le cas où votre structure en comporte un nombre important par exemple.
+
+AUTRE
+L' icone animée d'attente n'était pas visible dans les fenêtres de recherche.
+Bug : il fallait déplacer ou repositionner les fenêtres de dialogue d'export dans Compta -> Transfert echéancier, Compta -> Transfert Pièce, Compta -> Prélèvement et Compta -> Heures salariés pour que le choix dans les diverses boîtes de sélection puisse se faire correctement.
+
+voir nombre de places (pendant la planification : forcer la saisie utilisateur).
+
+
+

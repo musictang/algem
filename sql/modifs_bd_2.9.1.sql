@@ -19,9 +19,9 @@ UPDATE config SET valeur = 'QTER' WHERE clef = 'Tarif.base';
 
 -- POUR LES BASES EN PRODUCTION (anciennement trimestre par défaut)
 UPDATE commande_module SET tarification = 'QTER';
-update commande_module set paiement = 'TRIM' where paiement is null and necheance = 3;
-update commande_module set paiement = 'MOIS' where paiement is null and necheance = 9;
-update commande_module set paiement = 'ANNU' where paiement is null and necheance = 1;
+--update commande_module set paiement = 'TRIM' where paiement is null and necheance = 3;
+--update commande_module set paiement = 'MOIS' where paiement is null and necheance = 9;
+--update commande_module set paiement = 'ANNU' where paiement is null and necheance = 1;
 
 ALTER TABLE cours ALTER libelle TYPE varchar(32);
 

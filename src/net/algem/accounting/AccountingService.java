@@ -65,13 +65,28 @@ public class AccountingService {
     return ScheduleRangeIO.find("pg WHERE pg.idplanning = " + idplanning + " AND pg.adherent != 0 ORDER BY pg.debut", dc);
   }
 
-  public ResultSet getDetailEmployee(String start, String end, int type) throws SQLException {
+  public ResultSet getDetailTechnician(String start, String end, int type) throws SQLException {
     String query = "SELECT p.jour, p.idper, p.debut, p.fin, (p.fin - p.debut) AS duree, pg.adherent"
             + " FROM " + ScheduleIO.TABLE + " p, " + ScheduleRangeIO.TABLE + " pg"
             + " WHERE pg.idplanning = p.id"
-            + " AND p.jour BETWEEN '" + start + "' and '" + end + "'"
+            + " AND p.jour BETWEEN '" + start + "' AND '" + end + "'"
             + " AND p.ptype = " + type
             + " ORDER BY pg.adherent,p.jour,p.debut";
+    return dc.executeQuery(query);
+  }
+  
+  public ResultSet getDetailTeacher(String start, String end) throws SQLException {
+    String query = "SELECT p.idper, pg.adherent, p1.prenom, p1.nom, c.id, c.titre, p2.prenom, p2.nom, p.jour, pg.debut, pg.fin,(pg.fin - pg.debut) AS duree"
+            + " FROM " + ScheduleIO.TABLE + " p, " + ScheduleRangeIO.TABLE + " pg, action a, cours c, personne p1, personne p2"
+            + " WHERE pg.idplanning = p.id"
+            + " AND p.jour BETWEEN '" + start + "' AND '" + end + "'"
+            + " AND p.ptype IN (1,5,6)"
+            + " AND p.idper = p1.id"
+            + " AND pg.adherent = p2.id"
+            + " AND p.action = a.id"
+            + " AND a.cours = c.id "
+            + " AND (c.collectif = false OR (c.collectif = TRUE AND (SELECT count(id) FROM plage WHERE idplanning = p.id) = 1))"
+            + " ORDER BY p1.nom, pg.adherent, a.cours, p.jour, p.debut";
     return dc.executeQuery(query);
   }
 }

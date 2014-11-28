@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileSearchCtrl.java 2.9.1 13/11/14
+ * @(#)PersonFileSearchCtrl.java 2.9.1 27/11/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -108,7 +108,7 @@ public class PersonFileSearchCtrl
     } else if ((pseudo = searchView.getField(7)) != null) {
       query = "WHERE translate(lower(pseudo),'" + TRANSLATE_FROM + "', '" + TRANSLATE_TO + "') ~* '"
                + TableIO.normalize(pseudo) + "'";
-    }else {
+    } else {
       query = "";
     }
 
@@ -125,7 +125,7 @@ public class PersonFileSearchCtrl
       ContactIO.complete(currentContact, dc);
       createModule();
     } else {
-      setStatus(MessageUtil.getMessage("search.list.status", new Object[]{nb}));
+      setStatus(MessageUtil.getMessage("search.list.status", nb));
       if (thread != null) {
         abort = true;
         try {

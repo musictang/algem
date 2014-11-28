@@ -1,5 +1,5 @@
 /*
- * @(#)PayerExportDlg.java	2.8.t 15/05/14
+ * @(#)PayerExportDlg.java	2.9.1 27/11/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -44,23 +44,25 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.9.1
  * @since 1.0a 14/12/1999
  */
 public class PayerExportDlg
         extends ExportDlg
 {
 
-  private GemPanel pCriterion;
-  private JComboBox cbCriterion;
-  private DateRangePanel dateRange;
-  private JComboBox payment;
+  private static final String PAYER_TITLE = BundleUtil.getLabel("Export.payer.title");
   private static Object[] criteria = {
     MessageUtil.getMessage("export.criterium.payer.uncollected"),
     MessageUtil.getMessage("export.criterium.payer.collected"),
     MessageUtil.getMessage("export.criterium.payer.all")
     //MessageUtil.getMessage("export.criterium.payer.uncollected.check")
   };
+  private GemPanel pCriterion;
+  private JComboBox cbCriterion;
+  private DateRangePanel dateRange;
+  private JComboBox payment;
+  
   private static String all_payment = MessageUtil.getMessage("all.payment.label");
 
   public PayerExportDlg(Frame _parent, DataCache _cache) {
@@ -133,6 +135,11 @@ public class PayerExportDlg
     e.incMonth(1);
     e.decDay(1);
     dateRange = new DateRangePanel(b,e);
+  }
+  
+  @Override
+  protected String getFileName() {
+    return BundleUtil.getLabel("Export.payer.file");
   }
   
 }
