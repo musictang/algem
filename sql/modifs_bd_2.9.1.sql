@@ -35,4 +35,6 @@ UPDATE commande_module SET paiement = NULL WHERE paiement = '';
 UPDATE config SET clef = 'Periode.tarification' WHERE clef = 'Tarif.base';
 -- alpha 5
 INSERT INTO  suivi VALUES ( 0,null);
-                                   
+
+-- alpha 8
+DELETE FROM categorie_salarie where id = 0; 

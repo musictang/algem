@@ -1,5 +1,5 @@
 /*
- * @(#)EmployeeTypePanel.java	2.8.v 09/06/14
+ * @(#)EmployeeTypePanel.java	2.9.1 02/12/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -21,6 +21,7 @@
 package net.algem.contact;
 
 import java.awt.BorderLayout;
+import java.awt.event.ItemListener;
 import net.algem.config.GemParam;
 import net.algem.util.model.GemList;
 import net.algem.util.ui.GemChoice;
@@ -29,7 +30,7 @@ import net.algem.util.ui.RemovablePanel;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.v
+ * @version 2.9.1
  * @since 2.8.v 28/05/14
  */
 public class EmployeeTypePanel
@@ -57,5 +58,9 @@ public class EmployeeTypePanel
 
   public void setType(int t) {
     type.setKey(t);
+  }
+  
+  public void addItemListener(ItemListener listener) {
+    type.addItemListener(listener);
   }
 }

@@ -24,7 +24,10 @@ package net.algem.accounting;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
+import net.algem.contact.PersonIO;
+import net.algem.course.CourseIO;
 import net.algem.planning.*;
+import net.algem.room.RoomIO;
 import net.algem.util.DataConnection;
 
 /**
@@ -75,18 +78,43 @@ public class AccountingService {
     return dc.executeQuery(query);
   }
   
-  public ResultSet getDetailTeacher(String start, String end) throws SQLException {
+  public ResultSet getDetailIndTeacherByMember(String start, String end, boolean catchup, int idper) throws SQLException {
     String query = "SELECT p.idper, pg.adherent, p1.prenom, p1.nom, c.id, c.titre, p2.prenom, p2.nom, p.jour, pg.debut, pg.fin,(pg.fin - pg.debut) AS duree"
-            + " FROM " + ScheduleIO.TABLE + " p, " + ScheduleRangeIO.TABLE + " pg, action a, cours c, personne p1, personne p2"
-            + " WHERE pg.idplanning = p.id"
+            + " FROM " + ScheduleIO.TABLE + " p, " + ScheduleRangeIO.TABLE + " pg, " + ActionIO.TABLE + " a, " + CourseIO.TABLE 
+            + " c, " + PersonIO.TABLE + " p1, " + PersonIO.TABLE + " p2, " + RoomIO.TABLE + " s";
+            query += (idper > 0) ? " WHERE p.idper = " + idper : " WHERE p.idper > 0";
+            query += " AND pg.idplanning = p.id"
             + " AND p.jour BETWEEN '" + start + "' AND '" + end + "'"
+            + " AND p.lieux = s.id"
             + " AND p.ptype IN (1,5,6)"
             + " AND p.idper = p1.id"
             + " AND pg.adherent = p2.id"
             + " AND p.action = a.id"
             + " AND a.cours = c.id "
-            + " AND (c.collectif = false OR (c.collectif = TRUE AND (SELECT count(id) FROM plage WHERE idplanning = p.id) = 1))"
-            + " ORDER BY p1.nom, pg.adherent, a.cours, p.jour, p.debut";
+            + " AND (c.collectif = FALSE OR (c.code = 1 AND (SELECT count(id) FROM plage WHERE idplanning = p.id) = 1))";
+            if(!catchup) {
+              query += " AND s.nom !~* 'rattrap'";
+            }
+            query += " ORDER BY p1.nom, a.cours, pg.adherent, p.jour, p.debut";
+    return dc.executeQuery(query);
+  }
+   
+  public ResultSet getDetailCoTeacherByMember(String start, String end, boolean catchup, int idper) throws SQLException {
+    String query = "SELECT p.idper, p1.prenom, p1.nom, c.id, c.titre, p.jour, p.debut, p.fin,(p.fin - p.debut) AS duree"
+            + " FROM " + ScheduleIO.TABLE + " p, " + ActionIO.TABLE + " a, " + CourseIO.TABLE  + " c, " + PersonIO.TABLE + " p1, " + RoomIO.TABLE + " s";
+            query += (idper > 0) ? " WHERE p.idper = " + idper : " WHERE p.idper > 0";
+            query += " AND p.jour BETWEEN '" + start + "' AND '" + end + "'"
+            + " AND p.lieux = s.id"
+            + " AND p.ptype IN (1,5,6)"
+            + " AND p.idper = p1.id"
+            + " AND p.action = a.id"
+            + " AND a.cours = c.id "
+            + " AND ((c.code IN(2,3,11,12) AND (SELECT count(id) FROM plage WHERE idplanning = p.id) > 0)"
+            + " OR (c.code = 1 AND (SELECT count(id) FROM plage WHERE idplanning = p.id) > 1))";
+            if(!catchup) {
+              query +=  " AND s.nom !~* 'rattrap'";
+            }
+            query += " ORDER BY p1.nom, a.cours, p.jour, p.debut";
     return dc.executeQuery(query);
   }
 }
