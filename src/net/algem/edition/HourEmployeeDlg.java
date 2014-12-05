@@ -106,7 +106,7 @@ public class HourEmployeeDlg
     setLocation(200, 100);
     pack();
   }
-  
+
   String getPath() {
     return path;
   }
@@ -166,27 +166,26 @@ public class HourEmployeeDlg
           } else {
             plan = service.getPlanningLib(start.toString(), end.toString(), school.getId(), catchup);
           }
-          employeeTask = new TeacherHoursByEstabTask(this, pm, out, plan, detail);
-          ((TeacherHoursByEstabTask) employeeTask).set(dataCache, service);
-          employeeTask.addPropertyChangeListener(this);
-          employeeTask.execute();
-        } else if (SORTING_CMD[2].equals(sorting)) {
-          employeeTask = new TeacherHoursByMemberTask(this, pm, out, detail);
+          employeeTask = new HoursTeacherByEstabTask(this, pm, out, plan, detail);
+          ((HoursTeacherByEstabTask) employeeTask).set(dataCache, service);
+        } else if (SORTING_CMD[1].equals(sorting)) {
+          ResultSet rs = service.getDetailTeacherByDate(start.toString(), end.toString(), catchup, employeeId);
+          employeeTask = new HoursTeacherByDateTask(this, pm, out, rs, detail);
+        }else if (SORTING_CMD[2].equals(sorting)) {
+          employeeTask = new HoursTeacherByMemberTask1(this, pm, out, detail);
           ResultSet rsInd = service.getDetailIndTeacherByMember(start.toString(), end.toString(), catchup, employeeId);
           ResultSet rsCo = service.getDetailCoTeacherByMember(start.toString(), end.toString(), catchup, employeeId);
-          ((TeacherHoursByMemberTask) employeeTask).setIndividualRS(rsInd);
-          ((TeacherHoursByMemberTask) employeeTask).setCollectiveRS(rsCo);
-          employeeTask.addPropertyChangeListener(this);
-          employeeTask.execute();
+          ((HoursTeacherByMemberTask1) employeeTask).setIndividualRS(rsInd);
+          ((HoursTeacherByMemberTask1) employeeTask).setCollectiveRS(rsCo);
         }
       } else if (EmployeeType.TECHNICIAN.ordinal() == type) {
         ResultSet rs = service.getDetailTechnician(start.toString(), end.toString(), Schedule.TECH);
         pm = new ProgressMonitor(view, MessageUtil.getMessage("active.search.label"), "", 1, 100);
         pm.setMillisToDecideToPopup(10);
-        employeeTask = new TechnicianHoursTask(this, pm, out, rs, detail);
-        employeeTask.addPropertyChangeListener(this);
-        employeeTask.execute();
+        employeeTask = new HoursTechnicianTask(this, pm, out, rs, detail);
       }
+      employeeTask.addPropertyChangeListener(this);
+      employeeTask.execute();
     } catch (IOException ex) {
       MessagePopup.warning(view, MessageUtil.getMessage("file.exception"));
       GemLogger.logException(ex);
@@ -211,5 +210,5 @@ public class HourEmployeeDlg
     }
   }
 
-  
+
 }

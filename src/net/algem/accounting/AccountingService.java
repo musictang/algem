@@ -1,5 +1,5 @@
 /*
- * @(#)AccountingService.java	2.8.v 10/06/14
+ * @(#)AccountingService.java	2.9.1 05/12/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -34,7 +34,7 @@ import net.algem.util.DataConnection;
  * Service class for accounting.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.v
+ * @version 2.9.1
  * @since 2.4.a 21/05/12
  */
 public class AccountingService {
@@ -65,7 +65,7 @@ public class AccountingService {
 
   public Vector<ScheduleRange> getCourseScheduleRange(int idplanning) throws SQLException {
     // on ne comptabilise pas les plages de pause (adherent = 0)
-    return ScheduleRangeIO.find("pg WHERE pg.idplanning = " + idplanning + " AND pg.adherent != 0 ORDER BY pg.debut", dc);
+    return ScheduleRangeIO.find("pg WHERE pg.idplanning = " + idplanning + " AND pg.adherent > 0 ORDER BY pg.debut", dc);
   }
 
   public ResultSet getDetailTechnician(String start, String end, int type) throws SQLException {
@@ -77,10 +77,10 @@ public class AccountingService {
             + " ORDER BY pg.adherent,p.jour,p.debut";
     return dc.executeQuery(query);
   }
-  
+
   public ResultSet getDetailIndTeacherByMember(String start, String end, boolean catchup, int idper) throws SQLException {
     String query = "SELECT p.idper, pg.adherent, p1.prenom, p1.nom, c.id, c.titre, p2.prenom, p2.nom, p.jour, pg.debut, pg.fin,(pg.fin - pg.debut) AS duree"
-            + " FROM " + ScheduleIO.TABLE + " p, " + ScheduleRangeIO.TABLE + " pg, " + ActionIO.TABLE + " a, " + CourseIO.TABLE 
+            + " FROM " + ScheduleIO.TABLE + " p, " + ScheduleRangeIO.TABLE + " pg, " + ActionIO.TABLE + " a, " + CourseIO.TABLE
             + " c, " + PersonIO.TABLE + " p1, " + PersonIO.TABLE + " p2, " + RoomIO.TABLE + " s";
             query += (idper > 0) ? " WHERE p.idper = " + idper : " WHERE p.idper > 0";
             query += " AND pg.idplanning = p.id"
@@ -89,6 +89,7 @@ public class AccountingService {
             + " AND p.ptype IN (1,5,6)"
             + " AND p.idper = p1.id"
             + " AND pg.adherent = p2.id"
+            + " AND pg.adherent > 0"
             + " AND p.action = a.id"
             + " AND a.cours = c.id "
             + " AND (c.collectif = FALSE OR (c.code = 1 AND (SELECT count(id) FROM plage WHERE idplanning = p.id) = 1))";
@@ -98,7 +99,7 @@ public class AccountingService {
             query += " ORDER BY p1.nom, a.cours, pg.adherent, p.jour, p.debut";
     return dc.executeQuery(query);
   }
-   
+
   public ResultSet getDetailCoTeacherByMember(String start, String end, boolean catchup, int idper) throws SQLException {
     String query = "SELECT p.idper, p1.prenom, p1.nom, c.id, c.titre, p.jour, p.debut, p.fin,(p.fin - p.debut) AS duree"
             + " FROM " + ScheduleIO.TABLE + " p, " + ActionIO.TABLE + " a, " + CourseIO.TABLE  + " c, " + PersonIO.TABLE + " p1, " + RoomIO.TABLE + " s";
@@ -110,11 +111,34 @@ public class AccountingService {
             + " AND p.action = a.id"
             + " AND a.cours = c.id "
             + " AND ((c.code IN(2,3,11,12) AND (SELECT count(id) FROM plage WHERE idplanning = p.id) > 0)"
-            + " OR (c.code = 1 AND (SELECT count(id) FROM plage WHERE idplanning = p.id) > 1))";
+            + " OR (c.code = 1 AND (SELECT count(id) FROM plage WHERE idplanning = p.id AND debut = p.debut) > 1))";//XXX
             if(!catchup) {
               query +=  " AND s.nom !~* 'rattrap'";
             }
             query += " ORDER BY p1.nom, a.cours, p.jour, p.debut";
     return dc.executeQuery(query);
   }
+
+  public ResultSet getDetailTeacherByDate(String start, String end, boolean catchup, int idper) throws SQLException {
+    String query = "SELECT DISTINCT ON (p1.nom, p1.prenom, p.jour, pg.debut)"
+      + " p.idper, pg.adherent, p1.prenom, p1.nom, c.id, c.titre, p2.prenom, p2.nom, p.jour, pg.debut, pg.fin, (pg.fin - pg.debut) AS duree"
+      + " FROM planning p, plage pg, action a, cours c, personne p1, personne p2, salle s";
+    query += (idper > 0) ? " WHERE p.idper = " + idper : " WHERE p.idper > 0";
+    query += " AND p.jour BETWEEN '01-11-2014' AND '31-12-2014'"
+      + " AND p.ptype IN (1,5,6)"
+      + " AND p.lieux = s.id"
+      + " AND p.action = a.id"
+      + " AND a.cours = c.id"
+      + " AND p.idper = p1.id"
+      + " AND pg.idplanning = p.id"
+      + " AND pg.adherent = p2.id"
+      + " AND pg.adherent > 0";
+    if (!catchup) {
+      query += " AND s.nom !~* 'rattrap'";
+    }
+    query += " ORDER BY p1.nom, p1.prenom,p.jour,pg.debut,a.cours";
+
+    return dc.executeQuery(query);
+  }
+
 }

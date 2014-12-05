@@ -1,5 +1,5 @@
 /*
- * @(#)TeacherHoursByEstabTask.java	2.9.1 03/12/14
+ * @(#)HoursTeacherByEstabTask.java	2.9.1 05/12/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Vector;
 import javax.swing.ProgressMonitor;
 import net.algem.accounting.AccountingService;
+import net.algem.accounting.OrderLineIO;
 import net.algem.course.Course;
 import net.algem.planning.DateFr;
 import net.algem.planning.Hour;
@@ -34,6 +35,7 @@ import net.algem.planning.PlanningLib;
 import net.algem.planning.ScheduleRange;
 import net.algem.room.Establishment;
 import net.algem.room.Room;
+import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.MessageUtil;
 import net.algem.util.TextUtil;
@@ -47,7 +49,7 @@ import net.algem.util.ui.MessagePopup;
  * @version 2.9.1
  * @since 2.9.1 03/12/14
  */
-class TeacherHoursByEstabTask
+class HoursTeacherByEstabTask
           extends HoursTask
   {
 
@@ -57,8 +59,15 @@ class TeacherHoursByEstabTask
     private DataCache dataCache;
     private AccountingService service;
     private ExportService exportService;
+    private String [] types = {
+      BundleUtil.getLabel("Leisure.label"),
+      BundleUtil.getLabel("Pro.label")
+    };
 
-    public TeacherHoursByEstabTask(HourEmployeeDlg dlg, ProgressMonitor pm, PrintWriter out, Vector<PlanningLib> plan, boolean detail) {
+    private char leisurePrefix = types[0].charAt(0);
+    private char proPrefix = types[1].charAt(0);
+
+    public HoursTeacherByEstabTask(HourEmployeeDlg dlg, ProgressMonitor pm, PrintWriter out, Vector<PlanningLib> plan, boolean detail) {
       super(dlg, pm, detail);
       this.out = out;
       this.plan = plan;
@@ -73,7 +82,7 @@ class TeacherHoursByEstabTask
       write(out, plan, detail);
       return null;
     }
-    
+
     void set(DataCache cache, AccountingService service) {
       this.dataCache = cache;
       this.service = service;
@@ -104,8 +113,12 @@ class TeacherHoursByEstabTask
 
       GemList<Establishment> estab = dataCache.getList(Model.Establishment);
       HashMap<Establishment, Integer> totalEstab = new HashMap<Establishment, Integer>();
+      HashMap<Establishment, Integer> totalEstabL = new HashMap<Establishment, Integer>();
+      HashMap<Establishment, Integer> totalEstabP = new HashMap<Establishment, Integer>();
       for (Establishment e : estab.getData()) {
         totalEstab.put(e, 0);
+        totalEstabL.put(e, 0);
+        totalEstabP.put(e, 0);
       }
 
       int nmin = 0;
@@ -113,31 +126,32 @@ class TeacherHoursByEstabTask
       for (int i = 0, size = plan.size(); i < size; i++) { // parcours des plannings
         PlanningLib p = plan.elementAt(i);
         if (p.getTeacherId() != oldTeacher) {//au changement de prof
-          if (oldTeacher != 0) {
+          if (oldTeacher > 0) {
             out.println(" " + this.totalDayLabel + " : " + new Hour(totalDay).toString());
             totalMonth += totalDay;
             totalPeriod += totalDay;
-            out.println(this.totalMonthLabel + " : " + numberFormat.format(totalMonth / 60.0) + " heures  ");
-            out.print(this.totalPeriodLabel + " : " + numberFormat.format(totalPeriod / 60.0) + " heures  ");
+            out.println(this.totalMonthLabel + " : " + numberFormat.format(totalMonth / 60.0) + " heures");
+            out.println(this.totalPeriodLabel + " : " + numberFormat.format(totalPeriod / 60.0) + " heures");
             if (detail) {
-              out.print("L:" + numberFormat.format(totalLeisure / 60.0));
-              out.print(" P:" + numberFormat.format(totalPro / 60.0));
-              for (Map.Entry<Establishment, Integer> entry : totalEstab.entrySet()) {
-                out.print(" " + entry.getKey().getName().charAt(0) + ":" + numberFormat.format(entry.getValue() / 60.0));
-              }
+              out.print(BundleUtil.getLabel("Total.label") + " " + types[0] + " : " + numberFormat.format(totalLeisure / 60.0));
+              out.println(", " + BundleUtil.getLabel("Total.label") + " " + types[1] + " : "+ numberFormat.format(totalPro / 60.0));
+              printTotalEstab(out, totalEstab, totalEstabL, totalEstabP);
+
             }
             out.println();
           }
-          //out.println("\n" + p.getTeacher());
           out.println(TextUtil.LINE_SEPARATOR + p.getTeacher()); // prénom et nom du prof
-          out.println(p.getDay().toString()); // date du jour
+          out.print(p.getDay().toString()); // date du jour
+          // reset
           totalDay = 0;
           totalMonth = 0;
           totalPeriod = 0;
           totalPro = 0;
           totalLeisure = 0;
           for (Establishment e : estab.getData()) {
-            totalEstab.put(e, 0);// reset
+            totalEstab.put(e, 0);
+            totalEstabL.put(e, 0);
+            totalEstabP.put(e, 0);
           }
 
           oldTeacher = p.getTeacherId();
@@ -157,45 +171,48 @@ class TeacherHoursByEstabTask
             totalMonth = 0;
             oldMonth = p.getDay().getMonth();
           }
-          out.println(oldDay.toString()); // affichage du nouveau jour
+          out.print(oldDay.toString()); // affichage du nouveau jour
         }
 
-//        Course c = ((CourseIO) DataCache.getDao(Model.Course)).findId(p.getCourseId());
         Course c = (Course) DataCache.findId(p.getCourseId(), Model.Course);
-//        Room s = ((RoomIO) DataCache.getDao(Model.Room)).findId(p.getRoomId());
         Room s = (Room) DataCache.findId(p.getRoomId(), Model.Room);
-//        Establishment ee = dataCache.getEstabFromId(s.getEstab());
         Establishment ee = (Establishment) DataCache.findId(s.getEstab(), Model.Establishment);
-//        Person e = ee.getPerson();
-        String type = "L";
+        char type = leisurePrefix;
 
         // Pour chaque planning, recherche des plages
         Vector<ScheduleRange> plage = service.getCourseScheduleRange(p.getID());
         if (c.isCollective()) {
           nmin = p.getStart().getLength(p.getEnd());
-          totalDay += nmin;
+          totalDay += nmin;//XXX compter plage horaire si planning vide ??
           // Affichage détaillé
           if (detail) {
             if (plage.size() > 0) {
               boolean pro = false;
               for (int j = 0; j < plage.size(); j++) {
                 ScheduleRange pl = plage.elementAt(j);
-                //if (OrderLineIO.isPro(pl.getMemberId(), dataCache)) { // TODO get schedule action status instead
-                if (exportService.isPro(p.getAction(), pl.getMemberId())) {
+                if (OrderLineIO.isPro(pl.getMemberId(), dataCache)) {
+                // TODO get schedule action/module status instead ?
+//                if (exportService.isPro(p.getAction(), pl.getMemberId())) {
                   pro = true;
                   break;
                 }
               }
               if (pro) {
-                type = "P";
+                type = proPrefix;
                 totalPro += nmin;
+                int tt = totalEstabP.get(ee);
+                totalEstabP.put(ee, tt + nmin);
               } else {
-                type = "L";
+                type = leisurePrefix;
                 totalLeisure += nmin;
+                int tt = totalEstabL.get(ee);
+                totalEstabL.put(ee, tt + nmin);
               }
             } else { // si pas de plage
-              type = "L";
+              type = leisurePrefix;
               totalLeisure += nmin;
+              int tt = totalEstabL.get(ee);
+              totalEstabL.put(ee, tt + nmin);
             }
 
             int tt = totalEstab.get(ee);
@@ -208,13 +225,18 @@ class TeacherHoursByEstabTask
             nmin = pl.getStart().getLength(pl.getEnd());
             totalDay += nmin;
             if (detail) {
-//              if (OrderLineIO.isPro(pl.getMemberId(), dataCache)) {
-              if (exportService.isPro(p.getAction(), pl.getMemberId())) {
-                type = "P";
+              if (OrderLineIO.isPro(pl.getMemberId(), dataCache)) {
+                 // TODO get schedule action/module status instead ?
+//              if (exportService.isPro(p.getAction(), pl.getMemberId())) {
+                type = proPrefix;
                 totalPro += nmin;
+                int tt = totalEstabP.get(ee);
+                totalEstabP.put(ee, tt + nmin);
               } else {
-                type = "L";
+                type = leisurePrefix;
                 totalLeisure += nmin;
+                int tt = totalEstabL.get(ee);
+                totalEstabL.put(ee, tt + nmin);
               }
               int tt = totalEstab.get(ee);
               totalEstab.put(ee, tt + nmin);
@@ -231,16 +253,53 @@ class TeacherHoursByEstabTask
       out.println(" total jour : " + new Hour(totalDay).toString());
       totalMonth += totalDay;
       totalPeriod += totalDay;
-      out.println(this.totalMonthLabel + " : " + numberFormat.format(totalMonth / 60.0) + " heures  ");
-      out.print(this.totalPeriodLabel + " : " + numberFormat.format(totalPeriod / 60.0) + " heures  ");
+      out.println(this.totalMonthLabel + " : " + numberFormat.format(totalMonth / 60.0) + " heures");
+      out.println(this.totalPeriodLabel + " : " + numberFormat.format(totalPeriod / 60.0) + " heures");
       if (detail) {
-        out.print("L:" + numberFormat.format(totalLeisure / 60.0));
-        out.print(" P:" + numberFormat.format(totalPro / 60.0));
-        for (Map.Entry<Establishment, Integer> entry : totalEstab.entrySet()) {
-          out.print(" " + entry.getKey().getName().charAt(0) + ":" + numberFormat.format(entry.getValue() / 60.0));
-        }
+        out.print(BundleUtil.getLabel("Total.label") + " " + types[0] + " : " + numberFormat.format(totalLeisure / 60.0));
+        out.println(", " + BundleUtil.getLabel("Total.label") + " " + types[1] + " : " + numberFormat.format(totalPro / 60.0));
+        printTotalEstab(out, totalEstab, totalEstabL, totalEstabP);
       }
       out.println();
       out.close();
     } // end write method
-  } // end HourTeacherTask class
+
+    private void printTotalEstab(PrintWriter out,
+    HashMap<Establishment, Integer> totalEstab,
+    HashMap<Establishment, Integer> totalEstabL,
+    HashMap<Establishment, Integer> totalEstabP) {
+      boolean empty = true;
+      for (Map.Entry<Establishment, Integer> entry : totalEstab.entrySet()) {
+        if (entry.getValue() > 0) {
+          empty = false;
+          out.print(entry.getKey().getName() + " : " + numberFormat.format(entry.getValue() / 60.0) + ", ");
+        }
+      }
+      if (!empty) {
+        out.println();
+        empty = true;
+      }
+
+      for (Map.Entry<Establishment, Integer> entry : totalEstabL.entrySet()) {
+        if (entry.getValue() > 0) {
+          empty = false;
+          out.print(entry.getKey().getName() + " " + types[0] + " : " + numberFormat.format(entry.getValue() / 60.0) + ", ");
+        }
+      }
+      if (!empty) {
+        out.println();
+        empty = true;
+      }
+      for (Map.Entry<Establishment, Integer> entry : totalEstabP.entrySet()) {
+        if (entry.getValue() > 0) {
+          empty = false;
+          out.print(entry.getKey().getName() + " " + types[1] + " : " + numberFormat.format(entry.getValue() / 60.0) + ", ");
+        }
+      }
+      if (!empty) {
+        out.println();
+        empty = true;
+      }
+  }
+
+} // end HourTeacherTask class

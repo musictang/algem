@@ -1,5 +1,5 @@
 /*
- * @(#)TeacherHoursByMemberTask.java	2.9.1 04/12/14
+ * @(#)HoursTeacherByMemberTask1.java	2.9.1 04/12/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -36,14 +36,14 @@ import net.algem.util.BundleUtil;
  * @version 2.9.1
  * @since 2.9.1 03/12/14
  */
-class TeacherHoursByMemberTask
+class HoursTeacherByMemberTask1
           extends HoursTask
   {
 
     private PrintWriter out;
     private ResultSet rs1, rs2;
 
-    public TeacherHoursByMemberTask(HourEmployeeDlg dlg, ProgressMonitor pm, PrintWriter out, boolean detail) {
+    public HoursTeacherByMemberTask1(HourEmployeeDlg dlg, ProgressMonitor pm, PrintWriter out, boolean detail) {
       super(dlg, pm, detail);
       this.out = out;
     }
