@@ -148,10 +148,11 @@ public class MemberEnrolmentDlg
         currentModule++;
       }
       //XXX if sessionsMax == 0 no order line is generated (this behavior is not necessarily the best)
-      if (module_orders != null && module_orders.size() > 0 && sessionsMax > 0) {
+//      if (module_orders != null && module_orders.size() > 0 && sessionsMax > 0) {
+      if (module_orders != null && module_orders.size() > 0) {
         try {
           EnrolmentOrderUtil orderUtil = new EnrolmentOrderUtil(dossier, dc);
-          orderUtil.setTotalBase(totalBase);
+          orderUtil.setTotalOrderLine(totalBase);
           int n = orderUtil.saveOrderLines(module_orders.elementAt(0), school);
           for(ModuleOrder mo : module_orders) {
             orderUtil.updateModuleOrder(n, mo);

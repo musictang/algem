@@ -1,7 +1,7 @@
 /*
- * @(#)EnrolmentListCtrl.java 2.7.a 26/11/12
+ * @(#)EnrolmentListCtrl.java 2.9.1 09/12/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,8 +21,9 @@
 package net.algem.enrolment;
 
 import java.awt.AWTEventMulticaster;
+import java.awt.BorderLayout;
 import java.awt.Cursor;
-import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
@@ -42,7 +43,6 @@ import net.algem.util.module.GemDesktop;
 import net.algem.util.module.GemDesktopCtrl;
 import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GemPanel;
-import net.algem.util.ui.GridBagHelper;
 import net.algem.util.ui.MessagePopup;
 
 /**
@@ -50,7 +50,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.9.1
  * @since 1.0a 07/07/1999
  */
 public class EnrolmentListCtrl
@@ -60,22 +60,19 @@ public class EnrolmentListCtrl
 
   private DataCache dataCache;
   private GemDesktop desktop;
-  private GemButton btModidy;
-  private GemButton btDelete;
-  private GemButton btClose;
-  private OrderTableModel enrolmentTableModel;
+  private OrderTableModel orderTableModel;
   private JTable enrolmentTable;
   private ActionListener actionListener;
   private EnrolmentService service;
 
-  public EnrolmentListCtrl(GemDesktop _desktop) {
-    desktop = _desktop;
+  public EnrolmentListCtrl(GemDesktop desktop) {
+    this.desktop = desktop;
     dataCache = desktop.getDataCache();
     service = new EnrolmentService(dataCache);
 
-    enrolmentTableModel = new OrderTableModel();
+    orderTableModel = new OrderTableModel();
 
-    enrolmentTable = new JTable(enrolmentTableModel);
+    enrolmentTable = new JTable(orderTableModel);
     enrolmentTable.setAutoCreateRowSorter(true);
     enrolmentTable.getTableHeader().setToolTipText("Cliquez sur une colonne pour trier)");
 
@@ -89,9 +86,9 @@ public class EnrolmentListCtrl
 
     JScrollPane pm = new JScrollPane(enrolmentTable);
 
-    btModidy = new GemButton(BundleUtil.getLabel("View.modify.label"));
-    btDelete = new GemButton(GemCommand.DELETE_CMD);
-    btClose = new GemButton(GemCommand.CLOSE_CMD);
+    GemButton btModidy = new GemButton(BundleUtil.getLabel("View.modify.label"));
+    GemButton btDelete = new GemButton(GemCommand.DELETE_CMD);
+    GemButton btClose = new GemButton(GemCommand.CLOSE_CMD);
 
     btModidy.addActionListener(this);
     btClose.addActionListener(this);
@@ -101,21 +98,23 @@ public class EnrolmentListCtrl
     } else {
       btDelete.setEnabled(false);
     }
+    
+    GemPanel buttons = new GemPanel(new GridLayout(1, 3));
+    buttons.add(btModidy);
+    buttons.add(btDelete);
+    buttons.add(btClose);
+    
+    setLayout(new BorderLayout());
+    add(pm, BorderLayout.CENTER);
+    add(buttons, BorderLayout.SOUTH);
 
-    setLayout(new GridBagLayout());
-    GridBagHelper gb = new GridBagHelper(this);
-
-    gb.add(pm, 0, 0, 3, 2, GridBagHelper.BOTH, 1.0, 1.0);
-    gb.add(btModidy, 0, 2, 1, 1, GridBagHelper.HORIZONTAL, 1.0, 0.0);
-    gb.add(btDelete, 1, 2, 1, 1, GridBagHelper.HORIZONTAL, 1.0, 0.0);
-    gb.add(btClose, 2, 2, 1, 1, GridBagHelper.HORIZONTAL, 1.0, 0.0);
     load();
   }
 
   public void load() {
     Vector<MemberOrder> v = service.getOrders();
     for (int i = 0; i < v.size(); i++) {
-      enrolmentTableModel.addItem(v.elementAt(i));
+      orderTableModel.addItem(v.elementAt(i));
     }
   }
 
@@ -144,14 +143,14 @@ public class EnrolmentListCtrl
     if (cmd.equals(BundleUtil.getLabel("View.modify.label"))) {
       try {
         modification(n);
-      } catch (Exception e) {
+      } catch (SQLException e) {
         GemLogger.logException("modification instrument", e, this);
       }
     } else if (cmd.equals(GemCommand.DELETE_CMD)) {
       try {
         suppression(n);
         clear();
-      } catch (Exception e) {
+      } catch (SQLException e) {
         GemLogger.logException("suppresion instrument", e, this);
       }
     }
@@ -165,7 +164,7 @@ public class EnrolmentListCtrl
   private void modification(int n) throws SQLException {
     setCursor(new Cursor(Cursor.WAIT_CURSOR));
 
-    MemberOrder mo = (MemberOrder) enrolmentTableModel.getItem(n);
+    MemberOrder mo = (MemberOrder) orderTableModel.getItem(n);
     PersonFileEditor editor = ((GemDesktopCtrl) desktop).getPersonFileEditor(mo.getMember());
     if (editor != null) {
       desktop.setSelectedModule(editor);
@@ -184,8 +183,7 @@ public class EnrolmentListCtrl
 
   private void suppression(int n) throws SQLException {
     try {
-      MemberOrder cmd = (MemberOrder) enrolmentTableModel.getItem(n);
-//      PersonFile adh = DataCache.getPersonFileIO().findId(cmd.getMember());
+      MemberOrder cmd = (MemberOrder) orderTableModel.getItem(n);
       Person p = ((PersonIO) DataCache.getDao(Model.Person)).findId(cmd.getMember());
       if (!MessagePopup.confirm(this,
               MessageUtil.getMessage("enrolment.delete.confirmation", new Object[]{cmd.getId(), p.getFirstnameName()}),
@@ -193,7 +191,7 @@ public class EnrolmentListCtrl
         return;
       }
       service.delete(cmd);
-      enrolmentTableModel.deleteItem(n);
+      orderTableModel.deleteItem(n);
       desktop.postEvent(new EnrolmentDeleteEvent(this, cmd));
       desktop.postEvent(new ModifPlanEvent(this, cmd.getCreation(), dataCache.getEndOfYear()));//XXX dlg.getStart/Fin
     } catch (Exception e) {

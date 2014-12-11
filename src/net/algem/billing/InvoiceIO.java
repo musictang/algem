@@ -1,5 +1,5 @@
 /*
- * @(#)InvoiceIO.java 2.8.y 29/09/14
+ * @(#)InvoiceIO.java 2.9.1 11/12/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -36,7 +36,7 @@ import net.algem.util.model.Model;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.y
+ * @version 2.9.1
  * @since 2.3.a 22/12/11
  */
 public class InvoiceIO
@@ -127,12 +127,6 @@ public class InvoiceIO
         ol.setDate(inv.getDate());// la date des échéances de facturation reprend celle de la facture
       }
       if (ol.getId() == 0) {
-        if (!billing) {
-          Account c = AccountPrefIO.getAccount(p, dc);//
-          ol.setAccount(c);//XXX compte de tiers par défaut //compte de l'article plutôt
-          Account a = AccountPrefIO.getCostAccount(p, dc);
-          ol.setCostAccount(a); // analytique par défaut
-        }
         OrderLineIO.insert(ol, dc);
       } else {
         OrderLineIO.update(ol, dc);// update echeancier

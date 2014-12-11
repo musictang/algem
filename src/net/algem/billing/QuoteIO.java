@@ -1,5 +1,5 @@
 /*
- * @(#)QuoteIO.java 2.8.y 29/09/14
+ * @(#)QuoteIO.java 2.9.1 08/12/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *

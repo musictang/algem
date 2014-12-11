@@ -8,3 +8,14 @@ AND a.cours = c.id
 AND p.idper = p1.id
 AND pg.adherent = p2.id
 ORDER BY p1.nom, p1.prenom,p.jour,pg.debut,a.cours;
+
+
+-- todo option planningvue
+SELECT pl.id, pl.jour, pl.debut, pl.fin, pl.action, p.id AS profid, p.prenom AS prenomprof, p.nom AS nomprof, s.id AS salleid, s.nom AS salle, c.id AS coursid, c.titre AS cours, c.ecole
+  FROM planning pl, personne p, salle s, cours c, action a
+   WHERE pl.ptype IN (1,5,6)
+-- and (select count(id) from plage where idplanning = pl.id) > 0 -- empty schedules not included
+AND pl.action = a.id 
+AND a.cours = c.id 
+AND pl.lieux = s.id 
+AND pl.idper = p.id;

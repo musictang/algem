@@ -1,5 +1,5 @@
 /*
- * @(#)MemberEnrolmentEditor.java 2.9.1 26/11/14
+ * @(#)MemberEnrolmentEditor.java 2.9.1 08/12/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -82,8 +82,8 @@ public class MemberEnrolmentEditor
   private final static String STOP = BundleUtil.getLabel("Course.stop.label");
   private final static String COURSE_MODIF = BundleUtil.getLabel("Course.define.label");
   private final static String HOUR_MODIF = BundleUtil.getLabel("Course.hour.modification.label");
-  private final static String NEW_COURSE = BundleUtil.getLabel("New.course.label");
-  private final static String NEW_MODULE = BundleUtil.getLabel("New.module.label");
+  private final static String COURSE_ADD = BundleUtil.getLabel("New.course.label");
+  private final static String MODULE_ADD = BundleUtil.getLabel("New.module.label");
   private final static String MODULE_DEL = BundleUtil.getLabel("Module.delete.label");
   private final static String MODULE_STOP = BundleUtil.getLabel("Module.stop.label");
   private final static String MODULE_TIME_CHANGE = BundleUtil.getLabel("Module.time.change.label");
@@ -124,9 +124,9 @@ public class MemberEnrolmentEditor
     popup.add(m2 = new JMenuItem(COURSE_MODIF));
     popup.add(m3 = new JMenuItem(HOUR_MODIF));
     popup.add(m7 = new JMenuItem(COURSE_DATE));
-    popup.add(m4 = new JMenuItem(NEW_COURSE));
+    popup.add(m4 = new JMenuItem(COURSE_ADD));
     popup.addSeparator();
-    popup.add(m5 = new JMenuItem(NEW_MODULE));
+    popup.add(m5 = new JMenuItem(MODULE_ADD));
     popup.add(m6 = new JMenuItem(MODULE_DEL));
     popup.add(m8 = new JMenuItem (MODULE_STOP));
     popup.add(m9 = new JMenuItem (MODULE_TIME_CHANGE));
@@ -345,9 +345,9 @@ public class MemberEnrolmentEditor
         return;
       }
       changeHour();
-    } else if (s.equals(NEW_COURSE)) {
+    } else if (s.equals(COURSE_ADD)) {
       addCourse();
-    } else if (s.equals(NEW_MODULE)) {
+    } else if (s.equals(MODULE_ADD)) {
       addModule();
     } else if (s.equals(MODULE_DEL)) {
       deleteModuleOrder();
@@ -579,7 +579,7 @@ public class MemberEnrolmentEditor
    * Adds a module.
    */
   public void addModule() {
-    EnrolmentOrderUtil enrolmentOrder = new EnrolmentOrderUtil(dossier, dc);
+    EnrolmentOrderUtil orderUtil = new EnrolmentOrderUtil(dossier, dc);
     Object[] path = currentSelection.getPath();
     int i = path.length;
     if ((path[i - 1] instanceof ModuleEnrolmentNode) || (path[i - 1] instanceof CourseEnrolmentNode)) {
@@ -610,13 +610,12 @@ public class MemberEnrolmentEditor
       for (CourseModuleInfo info : m.getCourses()) {
         addCourse(mo, info);
       }
-      // TODO désactiver l'ajout de lignes d'échéance à l'ajout d'un module
-      enrolmentOrder.setTotalBase(mo.getPrice());
-
+      orderUtil.setTotalOrderLine(mo.getPaymentAmount());
+      
       String school = ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey());
       try {
-        int n = enrolmentOrder.saveOrderLines(mo, Integer.parseInt(school));
-        enrolmentOrder.updateModuleOrder(n, mo);
+        int n = orderUtil.saveOrderLines(mo, Integer.parseInt(school));
+        orderUtil.updateModuleOrder(n, mo);
       } catch (NullAccountException ex) {
         GemLogger.logException(ex);
       }

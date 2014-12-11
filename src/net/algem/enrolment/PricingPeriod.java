@@ -1,5 +1,5 @@
 /*
- * @(#)ModulePricing.java	2.9.1 11/11/14
+ * @(#)ModulePricing.java	2.9.1 09/12/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -31,11 +31,17 @@ import net.algem.util.BundleUtil;
  * @since 2.9.1 07/11/14
  */
 public enum PricingPeriod {
+  /** Pricing is HOUR-based. */
   HOUR(BundleUtil.getLabel("Pricing.period.hour.label")),
+  /** Pricing is MONTH-based. */
   MNTH(BundleUtil.getLabel("Pricing.period.month.label")),
+  /** Pricing is QUARTER-based. */
   QTER(BundleUtil.getLabel("Pricing.period.quarter.label")),
+  /** Pricing is SEMESTER-based. */
   BIAN(BundleUtil.getLabel("Pricing.period.biannual.label")),
+  /** Pricing is YEAR-based. */
   YEAR(BundleUtil.getLabel("Pricing.period.year.label")),
+  /** NULL default to YEAR. */
   NULL(BundleUtil.getLabel("Pricing.period.none.label"));
   
   /** Display name. */

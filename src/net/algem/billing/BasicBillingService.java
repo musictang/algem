@@ -1,5 +1,5 @@
 /*
- * @(#)BasicBillingService 2.8.y 29/09/14
+ * @(#)BasicBillingService 2.9.1 11/12/14
  *
  * Copyright 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -40,7 +40,7 @@ import net.algem.util.model.Model;
  * Service class for billing.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.y
+ * @version 2.9.1
  * @since 2.3.a 06/02/12
  */
 public class BasicBillingService
@@ -272,7 +272,6 @@ public class BasicBillingService
 
     inv.addOrderLine(n);
 //    inv.addOrderLine(cp);
-
   }
 
   private OrderLine getTotalOrderLine(Invoice inv) {
@@ -280,12 +279,15 @@ public class BasicBillingService
     cp.setLabel("p" + cp.getPayer() + " a" + cp.getMember());
     cp.setModeOfPayment(ModeOfPayment.CHQ.toString());
     cp.setAmount(inv.getTotalATI());
-//    cp.setAccount(n.getAccount());
-//    cp.setCostAccount(n.getCostAccount());
+
+    if (inv.getOrderLines() != null && inv.getOrderLines().size() > 0) {
+      List<OrderLine> olines = new ArrayList<OrderLine>(inv.getOrderLines());
+      cp.setAccount(olines.get(0).getAccount());
+      cp.setCostAccount(olines.get(0).getCostAccount());
+    }
     cp.setSchool(DEFAULT_SCHOOL);
 
     return cp;
-
   }
 
   /**
@@ -397,11 +399,14 @@ public class BasicBillingService
     n.member = v.getMember();
     n.downPayment = v.getDownPayment();
 
-    n.items = new ArrayList<InvoiceItem>(v.getItems());
-    for(InvoiceItem it : n.getItems()) {
-      Item c = copy(it.getItem());
-      it.setOrderLine(null);// important
-      it.setItem(c);// replace item
+    n.items = new ArrayList<InvoiceItem>();
+
+    for(InvoiceItem it : v.getItems()) {
+      InvoiceItem vItem = new InvoiceItem(it.billingId); // orderLine is null
+      vItem.setQuantity(it.quantity);
+      Item c = copy(it.getItem()); 
+      vItem.setItem(c);
+      n.items.add(vItem);
     }
     return n;
   }

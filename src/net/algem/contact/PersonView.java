@@ -1,5 +1,5 @@
 /*
- * @(#)PersonView.java	2.9.1 27/11/14
+ * @(#)PersonView.java	2.9.1 11/12/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -40,6 +40,7 @@ import net.algem.group.GroupFileEditor;
 import net.algem.util.BundleUtil;
 import net.algem.util.GemLogger;
 import net.algem.util.ImageUtil;
+import net.algem.util.MessageUtil;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.module.GemModule;
 import net.algem.util.ui.*;
@@ -127,6 +128,9 @@ public class PersonView
 
   void set(Person p, String dir) {
     no.setText(String.valueOf(p.getId()));
+    if (p.getType() == Person.ROOM) {
+      no.setToolTipText(MessageUtil.getMessage("person.view.change.contact.tip"));
+    }
     name.setText(p.getName());
     firstname.setText(p.getFirstName());
     nickname.setText(p.getNickName());
@@ -134,16 +138,10 @@ public class PersonView
     cbImgRights.setSelected(p.hasImgRights());
     cbPartner.setSelected(p.isPartnerInfo());
     organization.setText(p.getOrganization());
-    if (p.getType() == Person.PERSON) {
+    if (p.getType() == Person.PERSON || p.getType() == Person.ROOM) {
       photoFilter = new PhotoFileFilter(p.getId());
       BufferedImage orig = getPhoto(dir,p.getId());
-//      ImageIcon icon = null;
-//      if (orig == null) {
-//        icon = new ImageIcon();
-//      }
-//      else  {
-       ImageIcon icon = (orig == null ? null : getImageIcon(orig));
-//      }
+      ImageIcon icon = (orig == null ? null : getImageIcon(orig));
       photoField.setIcon(icon);
     }
     ptype = p.getType();
@@ -191,7 +189,7 @@ public class PersonView
       //BufferedImage bi1 = ImageIO.read(is);
       BufferedImage buffered = orig;
       //if (ImageUtil.PHOTO_ID_WIDTH != bi1.getWidth() || ImageUtil.PHOTO_ID_HEIGHT != bi1.getHeight()) {
-      if (buffered.getHeight() > ImageUtil.PHOTO_ID_HEIGHT) {// && !isRunningJavaWebStart()) {
+      if (buffered.getHeight() > ImageUtil.PHOTO_ID_HEIGHT) {
         //System.out.println("rescaling !");
         buffered = ImageUtil.rescale(buffered);
         buffered = ImageUtil.formatPhoto(buffered);

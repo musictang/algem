@@ -1,5 +1,5 @@
 /*
- * @(#)MemberService.java	2.9.1 18/11/14
+ * @(#)MemberService.java	2.9.1 10/12/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -251,13 +251,8 @@ public class MemberService
   public Vector<ScheduleRangeObject> findFollowUp(int memberId, int courseId, boolean collective) throws SQLException {
     String where = " AND (pg.note >= 0 OR p.note > 0)"
             + " AND pg.note = s1.id"
-            + " AND p.note = s2.id";
-//            + " ";
-//    if (collective) {
-//      where = " AND p.note = s2.id";
-//    }
-    // TODO BUG note individuelle/collective
-    where += " AND pg.adherent = " + memberId + " AND p.action = a.id AND a.cours = " + courseId + " ORDER BY p.jour, pg.debut";
+            + " AND p.note = s2.id"
+            + " AND pg.adherent = " + memberId + " AND p.action = a.id AND a.cours = " + courseId + " ORDER BY p.jour, pg.debut";
     return ScheduleRangeIO.findFollowUp(where, true, dc);
   }
 

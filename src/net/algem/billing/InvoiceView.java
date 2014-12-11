@@ -1,5 +1,5 @@
 /*
- * @(#)InvoiceView.java 2.8.y 25/09/14
+ * @(#)InvoiceView.java 2.9.1 10/12/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -65,7 +65,7 @@ import net.algem.util.ui.*;
  * Invoice / quotation view.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.y
+ * @version 2.9.1
  * @since 2.3.a 07/02/12
  */
 public class InvoiceView
@@ -245,6 +245,7 @@ public class InvoiceView
 
     if (!isInvoice) {
       downPayment.setEditable(false);
+      // TODO set payer editable
     }
     downPayment.setValue(quote.getDownPayment());
     totalET.setValue(quote.getTotalET());
@@ -323,7 +324,7 @@ public class InvoiceView
           InvoiceItem updatedItem = dlg.get();
           // l'article à modifier pourrait être référencé dans un devis (on aurait créé une facture à partir de ce devis)
           try {
-            if (updatedItem.getItem() != null && QuoteIO.isQuotationItem(updatedItem.getItem().getId(), dc)) {
+            if (isInvoice && updatedItem.getItem() != null && QuoteIO.isQuotationItem(updatedItem.getItem().getId(), dc)) {
               if (!MessagePopup.confirm(this, MessageUtil.getMessage("existing.estimate.item"), BundleUtil.getLabel("Warning.label"))) {
                 return;
               }
@@ -343,7 +344,6 @@ public class InvoiceView
               }
             }
           }
-
           update(updatedItem);
           postEvent(new CancelEvent());
         }
@@ -356,11 +356,9 @@ public class InvoiceView
           orderLines.remove(item.getOrderLine());
         }
         updateTotal();
-
       } else if (GemCommand.CANCEL_CMD.equals(cmd)) {
         postEvent(new CancelEvent());
       }
-
     } catch (IndexOutOfBoundsException ix) {
       MessagePopup.warning(this, MessageUtil.getMessage("no.line.selected"));
     }

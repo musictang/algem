@@ -89,7 +89,7 @@ public class TestEnrolmentOrderUtil {
     ol.setModeOfPayment(ModeOfPayment.FAC.toString());
     ol.setOrder(orderId);
     EnrolmentOrderUtil util = new EnrolmentOrderUtil(null, dc);
-    util.setTotalBase(600); // total des modules au trimestre
+    util.setTotalOrderLine(600); // total des modules au trimestre
 
     ModuleOrder mo = new ModuleOrder(); 
     mo.setStart(new DateFr("16-09-2013"));
@@ -161,7 +161,7 @@ public class TestEnrolmentOrderUtil {
     ol.setModeOfPayment(ModeOfPayment.FAC.toString());
     ol.setOrder(orderId);
     EnrolmentOrderUtil util = new EnrolmentOrderUtil(null, dc);
-    util.setTotalBase(300); // total des modules au mois
+    util.setTotalOrderLine(300); // total des modules au mois
     ModuleOrder mo = new ModuleOrder();
     mo.setStart(new DateFr("16-09-2013"));
     mo.setEnd(new DateFr("26-06-2014"));

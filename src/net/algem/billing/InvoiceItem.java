@@ -1,7 +1,7 @@
 /*
- * @(#)InvoiceItem.java 2.7.a 09/01/13
+ * @(#)InvoiceItem.java 2.9.1 10/12/14
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -25,7 +25,7 @@ import net.algem.accounting.OrderLine;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.9.1
  * @since 2.3.a 27/12/11
  */
 public class InvoiceItem
@@ -46,13 +46,13 @@ public class InvoiceItem
   }
 
   /**
-   * @param f invoice number
+   * @param billingId invoice number
    * @param i item
    * @param ol order line
    * @param qty quantity
    */
-  public InvoiceItem(String f, Item i, int qty, OrderLine ol) {
-    super(f, i, qty);
+  public InvoiceItem(String billingId, Item i, int qty, OrderLine ol) {
+    super(billingId, i, qty);
     this.orderLine = ol;
   }
 

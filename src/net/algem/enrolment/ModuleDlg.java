@@ -1,5 +1,5 @@
 /*
- * @(#)ModuleDlg.java	2.9.1 18/11/14
+ * @(#)ModuleDlg.java	2.9.1 09/12/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -403,6 +403,7 @@ public class ModuleDlg
   void reset() {
     hours.set(new Hour("01:00"));// important : set hour before initializing price
     pricing.setSelectedItem(getDefaultPricingPeriod());
-    initPrice(module);
+    price.setValue(module.getBasePrice());
+    calculatedPrice.setValue(calculatePayment(module, (String) getField(5), (PayFrequency) getField(6), (PricingPeriod) getField(9)));
   }
 }

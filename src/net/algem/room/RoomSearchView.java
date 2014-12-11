@@ -1,7 +1,7 @@
 /*
- * @(#)RoomSearchView.java	2.8.n 27/09/13
+ * @(#)RoomSearchView.java	2.9.1 11/12/14
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -32,7 +32,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.n
+ * @version 2.9.1
  * @since 1.0a 07/07/1999
  */
 public class RoomSearchView
@@ -42,6 +42,7 @@ public class RoomSearchView
   private GemNumericField number;
   private GemField name;
   private GemField estab;
+  private GemField contact;
   private GemPanel mask;
 
   public RoomSearchView() {
@@ -53,10 +54,11 @@ public class RoomSearchView
     number.addActionListener(this);
     name = new GemField(15);
     name.addActionListener(this);
-    estab = new GemField(6);
+    estab = new GemNumericField(6);
     estab.addActionListener(this);
     estab.setToolTipText(MessageUtil.getMessage("establishment.number.tip"));
-    
+    contact = new GemNumericField(6);
+    contact.addActionListener(this);
     btErase = new GemButton(GemCommand.ERASE_CMD);
     btErase.addActionListener(this);
 
@@ -68,11 +70,12 @@ public class RoomSearchView
     gb.add(new GemLabel(BundleUtil.getLabel("Number.label")), 0, 0, 1, 1, GridBagHelper.EAST);
     gb.add(new GemLabel(BundleUtil.getLabel("Name.label")), 0, 1, 1, 1, GridBagHelper.EAST);
     gb.add(new GemLabel(BundleUtil.getLabel("Establishment.label")), 0, 2, 1, 1, GridBagHelper.EAST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Contact.label")), 0, 3, 1, 1, GridBagHelper.EAST);
 
     gb.add(number, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(name, 1, 1, 1, 1, GridBagHelper.WEST);
     gb.add(estab, 1, 2, 1, 1, GridBagHelper.WEST);
-    
+    gb.add(contact, 1, 3, 1, 1, GridBagHelper.WEST);
     gb.add(btErase, 2, 4, 1, 1, GridBagHelper.WEST);
 
     return mask;
@@ -80,11 +83,11 @@ public class RoomSearchView
 
   @Override
   public void actionPerformed(ActionEvent evt) {
-    Object source = evt.getSource();
+    Object src = evt.getSource();
     if (actionListener == null) {
       return;
     }
-    if (source == number || source == name || source == estab) {
+    if (src == number || src == name || src == estab || src == contact) {
       actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, GemCommand.SEARCH_CMD));
     } else {
       actionListener.actionPerformed(evt);
@@ -104,18 +107,17 @@ public class RoomSearchView
       case 2:
         s = estab.getText();
         break;
+      case 3:
+        s = contact.getText();
     }
-    if (s != null && s.length() > 0) {
-      return s;
-    } else {
-      return null;
-    }
+    return (s != null && s.length() > 0) ? s : null;
   }
 
   @Override
   public void clear() {
     number.setText("");
     name.setText("");
-    estab.setText("");
+    estab.setText(null);
+    contact.setText(null);
   }
 }

@@ -1,5 +1,5 @@
 /*
- * @(#)HourEmployeeView.java  2.9.1 02/12/14
+ * @(#)HourEmployeeView.java  2.9.1 08/12/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -107,6 +107,8 @@ public class HourEmployeeView
     schoolChoice = new ParamChoice(schools.getData());
     int defaultSchool = Integer.parseInt(ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey()));
     schoolChoice.setKey(defaultSchool);
+    //TODO ajouter option 'Autoriser les plannings vides' : cf. ateliers extérieurs)
+    
     gb.add(new JLabel(BundleUtil.getLabel("Type.label")), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(new JLabel(BundleUtil.getLabel("Period.label")), 0, 1, 1, 1, GridBagHelper.WEST);
     gb.add(new JLabel(BundleUtil.getLabel("School.label")), 0, 2, 1, 1, GridBagHelper.WEST);

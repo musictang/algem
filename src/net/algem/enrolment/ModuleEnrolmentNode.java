@@ -1,5 +1,5 @@
 /*
- * @(#)ModuleEnrolmentNode.java 2.9.1 18/11/14
+ * @(#)ModuleEnrolmentNode.java 2.9.1 10/12/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -67,11 +67,12 @@ public class ModuleEnrolmentNode
   @Override
   public String toString() {
     // TODO maybe display module type (L or P)
+    int timeLeft =  mo.getTotalTime() - completed;
     return "<html>" + BundleUtil.getLabel("Module.label") + " : " + mo.getTitle()
-            + (mo.getTotalTime() > 0
-            ? " [" + (completed > 0 ? Hour.format(completed) : 0)
-            + "/" + Hour.format(mo.getTotalTime()) + " -> " + Hour.format(mo.getTotalTime() - completed) + "]"
-            + " >> [ " + getPaymentInfo(completed) + "/" + getPaymentInfo(mo.getTotalTime()) + " -> <font color='red'>" + getPaymentInfo(mo.getTotalTime() - completed)+ "</font> ]"
+            + (mo.getTotalTime() > 0 ? " [" + (completed > 0 ? Hour.format(completed) : 0)
+            + "/" + Hour.format(mo.getTotalTime()) + " -> " + Hour.format(timeLeft) + "]"
+            + " >> [ " + getPaymentInfo(completed) + "/" + getPaymentInfo(mo.getTotalTime()) 
+            + " -> " + getPaymentInfo(timeLeft) + " ]"
             : "")
             + (info != null ? info : "")
             + "</html>";
@@ -84,6 +85,9 @@ public class ModuleEnrolmentNode
 
   private String getPaymentInfo(int arg) {
     NumberFormat nf = AccountUtil.getDefaultCurrencyFormat();
+    if (arg < 0) {
+      return "<font color=\"red\">" + nf.format(mo.getPrice() * arg / 60) + "</font>";
+    }
     return nf.format(mo.getPrice() * arg / 60);
   }
 }

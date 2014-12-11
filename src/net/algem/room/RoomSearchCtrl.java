@@ -1,5 +1,5 @@
 /*
- * @(#)RoomSearchCtrl.java	2.8.w 08/07/14
+ * @(#)RoomSearchCtrl.java	2.9.1 11/12/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -37,7 +37,7 @@ import net.algem.util.ui.SearchCtrl;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.1
  * @since 2.2.b
  */
 public class RoomSearchCtrl
@@ -69,21 +69,22 @@ public class RoomSearchCtrl
   @Override
   public void search() {
 
-    String query;
+    String query = "";
     String name;
     String estab;
+    String contact;
 
     int id = getId();
     if (id > 0) {
-      query = "WHERE id = " + id + " ORDER BY nom";
+      query = "WHERE id = " + id;
     } else if ((name = searchView.getField(1)) != null) {
-      query = "WHERE translate(lower(nom),'" + TRANSLATE_FROM + "', '" + TRANSLATE_TO + "') ~* '"
-      + TableIO.normalize(name) + "'";
+      query = "WHERE translate(lower(nom),'" + TRANSLATE_FROM + "', '" + TRANSLATE_TO + "') ~* '" + TableIO.normalize(name) + "'";
     } else if ((estab = searchView.getField(2)) != null) {
-      query = "WHERE etablissement =" + estab + " ORDER BY nom";
-    } else {
-      query = "ORDER BY nom";
+      query = "WHERE etablissement = " + estab;
+    } else if ((contact = searchView.getField(3)) != null) {
+      query = "WHERE idper = " + contact;
     }
+    query += " ORDER BY nom";
 
     Vector<Room> v = ((RoomIO) DataCache.getDao(Model.Room)).find(query);
     if (v == null || v.isEmpty()) {

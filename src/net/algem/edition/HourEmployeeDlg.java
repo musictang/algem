@@ -1,5 +1,5 @@
 /*
- * @(#)HourEmployeeDlg.java	2.9.1 03/12/14
+ * @(#)HourEmployeeDlg.java	2.9.1 08/12/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -169,12 +169,12 @@ public class HourEmployeeDlg
           employeeTask = new HoursTeacherByEstabTask(this, pm, out, plan, detail);
           ((HoursTeacherByEstabTask) employeeTask).set(dataCache, service);
         } else if (SORTING_CMD[1].equals(sorting)) {
-          ResultSet rs = service.getDetailTeacherByDate(start.toString(), end.toString(), catchup, employeeId);
+          ResultSet rs = service.getDetailTeacherByDate(start.toString(), end.toString(), catchup, employeeId, school.getId());
           employeeTask = new HoursTeacherByDateTask(this, pm, out, rs, detail);
         }else if (SORTING_CMD[2].equals(sorting)) {
           employeeTask = new HoursTeacherByMemberTask1(this, pm, out, detail);
-          ResultSet rsInd = service.getDetailIndTeacherByMember(start.toString(), end.toString(), catchup, employeeId);
-          ResultSet rsCo = service.getDetailCoTeacherByMember(start.toString(), end.toString(), catchup, employeeId);
+          ResultSet rsInd = service.getDetailIndTeacherByMember(start.toString(), end.toString(), catchup, employeeId, school.getId());
+          ResultSet rsCo = service.getDetailCoTeacherByMember(start.toString(), end.toString(), catchup, employeeId, school.getId());
           ((HoursTeacherByMemberTask1) employeeTask).setIndividualRS(rsInd);
           ((HoursTeacherByMemberTask1) employeeTask).setCollectiveRS(rsCo);
         }

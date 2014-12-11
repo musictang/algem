@@ -1,5 +1,5 @@
 /*
- * @(#)PayFrequency.java	2.9.1 26/11/14
+ * @(#)PayFrequency.java	2.9.1 08/12/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -69,12 +69,18 @@ public enum PayFrequency {
     }
     switch (s) {
       case "MOIS":
+      case "MONTH":
+      case "MNTH":
         return MONTH;
       case "TRIM":
+      case "QUARTER":
+      case "QTER":
         return QUARTER;
       case "SMST":
+      case "SEMESTER":
         return SEMESTER;
       case "ANNU":
+      case "YEAR":
         return YEAR;
       default:
         return NONE;

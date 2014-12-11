@@ -1,5 +1,5 @@
 /*
- * @(#)MenuCatalog.java	2.8.w 09/07/14
+ * @(#)MenuCatalog.java	2.9.1 09/12/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -28,7 +28,6 @@ import net.algem.course.CourseSearchCtrl;
 import net.algem.course.ModuleSearchCtrl;
 import net.algem.enrolment.EnrolmentListCtrl;
 import net.algem.util.BundleUtil;
-import net.algem.util.DataCache;
 import net.algem.util.GemCommand;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.module.GemModule;
@@ -38,7 +37,7 @@ import net.algem.util.module.GemModule;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.1
  * @since 1.0a 07/07/1999
  */
 public class MenuCatalog

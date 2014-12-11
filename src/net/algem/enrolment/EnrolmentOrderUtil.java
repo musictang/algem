@@ -1,5 +1,5 @@
 /*
- * @(#)EnrolmentOrderUtil.java	2.8.w 09/07/14
+ * @(#)EnrolmentOrderUtil.java	2.9.1 09/12/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -38,14 +38,14 @@ import net.algem.util.model.Model;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.1
  * @since 2.8.a 01/04/2013
  */
 public class EnrolmentOrderUtil {
   
   private static int LAST_MONTH_PRL = 6;
   private PersonFile dossier;
-  private double totalBase;
+  private double total;
   private DataConnection dc;
 
   public EnrolmentOrderUtil(PersonFile dossier, DataConnection dc) {
@@ -53,8 +53,8 @@ public class EnrolmentOrderUtil {
     this.dc = dc;
   }
 
-  public void setTotalBase(double totalBase) {
-    this.totalBase = totalBase;
+  public void setTotalOrderLine(double total) {
+    this.total = total;
   }
 
   /**
@@ -77,7 +77,7 @@ public class EnrolmentOrderUtil {
     //numero adherent
     orderLine.setMember(dossier.getId());
     //libelle
-    orderLine.setLabel(label); // 1.2c
+    orderLine.setLabel(label);
     //compte et analytique
     Account [] prefAccount = getPrefAccount(mod, dc);
     Account p = prefAccount[0];
@@ -110,8 +110,8 @@ public class EnrolmentOrderUtil {
     if (ModeOfPayment.NUL.toString().equals(mo.getModeOfPayment())) {
       return orderLines;
     }
-    if (PricingPeriod.HOUR.equals(mo.getPricing()) || PayFrequency.YEAR.equals(mo.getModeOfPayment())) {
-      e.setAmount(AccountUtil.getIntValue(totalBase));
+    if (PricingPeriod.NULL.equals(mo.getPricing()) || PricingPeriod.HOUR.equals(mo.getPricing()) || PayFrequency.YEAR.equals(mo.getPayment())) {
+      e.setAmount(AccountUtil.getIntValue(total));
       DateFr de = mo.getStart();
       de.incMonth(1);
       de.setDay(15);
@@ -134,17 +134,7 @@ public class EnrolmentOrderUtil {
          }*/
         orderLines = setMonthOrderLines(mo, e, dates);
       } 
-      /*else { // (ANNUEL)
-        e.setAmount(AccountUtil.getIntValue(totalBase));
-        DateFr de = mo.getStart();
-        de.incMonth(1);
-        de.setDay(15);
-        e.setDate(de);
-        //insertion echeances
-        orderLines.add(e);
-      }*/
     }
-
     return orderLines;
 
   }
@@ -175,16 +165,30 @@ public class EnrolmentOrderUtil {
     return (orderDateStart.getDay() > 10 || orderDateStart.getMonth() == 9);
   }
 
+  /**
+   * 
+   * @param e
+   * @param dates
+   * @throws SQLException 
+   * @deprecated 
+   */
   private void addPersonalOrderLine(OrderLine e, List<DateFr> dates) throws SQLException {
       e.setPaid(true);
-      e.setAmount(-(totalBase * dates.size()));
+      e.setAmount(-(total * dates.size()));
       e.setDate(dates.get(0));
       AccountUtil.createPersonalEntry(e, dc);
   }
   
+  /**
+   * 
+   * @param e
+   * @param payment
+   * @throws SQLException 
+   * @deprecated 
+   */
   private void setPaymentOrderLine(OrderLine e, String payment) throws SQLException {
     //payment line
-    e.setAmount(totalBase);
+    e.setAmount(total);
     e.setModeOfPayment(payment);
     e.setPaid(false);
     int pr = PersonalRevenueAccountIO.find(e.getAccount().getId(), dc);
@@ -308,7 +312,7 @@ public class EnrolmentOrderUtil {
     // DESACTIVATION CALCUL PRORATA
     // double montantPremiereEcheance = calcFirstOrderLineAmount(totalBase, maxCours, nombreEcheances, "TRIM");
     // e.setAmount(AccountUtil.getIntValue(montantPremiereEcheance));
-    e.setAmount(AccountUtil.getIntValue(totalBase));
+    e.setAmount(AccountUtil.getIntValue(total));
     e.setDate((DateFr) dates.get(0));
     if (moduleOrder.getModeOfPayment().equals("PRL")) {
       documentNumber = calcDocumentNumber(firstDocumentNumber, ((DateFr) dates.get(0)).getMonth());
@@ -325,7 +329,6 @@ public class EnrolmentOrderUtil {
       } else {
         e.setDocument(moduleOrder.getModeOfPayment() + (i + 1));
       }
-      e.setAmount(AccountUtil.getIntValue(totalBase));
       e.setDate((DateFr) dates.get(i)); 
       orderLines.add(new OrderLine(e)); // others
     }
@@ -377,7 +380,7 @@ public class EnrolmentOrderUtil {
     // DESACTIVATION CALCUL PRORATA
 //		double montantPremiereEcheance = calcFirstOrderLineAmount(totalBase, maxCours, nombreEcheances, "MOIS");
 //		e.setAmount(AccountUtil.getIntValue(montantPremiereEcheance));
-    e.setAmount(AccountUtil.getIntValue(totalBase));
+    e.setAmount(AccountUtil.getIntValue(total));
     e.setDate(dates.get(0));
     documentNumber = calcDocumentNumber(firstDocumentNumber, ((DateFr) dates.get(0)).getMonth());
     if ("PRL".equals(moduleOrder.getModeOfPayment())) {
@@ -388,7 +391,6 @@ public class EnrolmentOrderUtil {
     orderLines.add(new OrderLine(e));
 
     for (int i = 1; i < orderLinesNumber; i++) {
-      e.setAmount(AccountUtil.getIntValue(totalBase));
       e.setDate((DateFr) dates.get(i));
       if ("PRL".equals(moduleOrder.getModeOfPayment())) {
         documentNumber = calcDocumentNumber(firstDocumentNumber, ((DateFr) dates.get(i)).getMonth());

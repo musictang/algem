@@ -1,7 +1,7 @@
 /*
- * @(#)BillingItem.java 2.8.n 26/09/13
+ * @(#)BillingItem.java 2.9.1 10/12/14
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -23,7 +23,7 @@ package net.algem.billing;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.n 26/09/13
+ * @version 2.9.1
  * @since 2.4.d 07/06/12
  */
 public class BillingItem
@@ -41,17 +41,17 @@ public class BillingItem
     this(null, i, 1);
   }
 
-  public BillingItem(String id) {
-    this.billingId = id;
+  public BillingItem(String billingId) {
+    this.billingId = billingId;
   }
 
   /**
-   * @param f invoice number
+   * @param billingId invoice number
    * @param i item
    * @param qty quantity
    */
-  public BillingItem(String f, Item i, int qty) {
-    this.billingId = f;
+  public BillingItem(String billingId, Item i, int qty) {
+    this.billingId = billingId;
     this.item = i;
     this.quantity = qty;
   }
@@ -68,7 +68,10 @@ public class BillingItem
     return ati ? t + getTotalVat() : t;
   }
 
-  /** Total amount of VAT. */
+  /** 
+   * Total amount of VAT.
+   * @return total VAT
+   */
   public double getTotalVat() {
 
     double tva = 0.0;
@@ -79,8 +82,8 @@ public class BillingItem
     return (getTotalET() * tva) / 100;
   }
 
-  public void setBillingId(String idFacture) {
-    this.billingId = idFacture;
+  public void setBillingId(String billingId) {
+    this.billingId = billingId;
   }
 
   public Invoice getInvoice(int id) {
@@ -108,7 +111,10 @@ public class BillingItem
     return item + " " + quantity;
   }
 
-  /** Total amount without taxes. */
+  /** 
+   * Total amount without taxes.
+   * @return a number
+   */
   protected double getTotalET() {
     return item.getPrice() * quantity;
   }
@@ -138,6 +144,5 @@ public class BillingItem
     hash = 97 * hash + Float.floatToIntBits(this.quantity);
     return hash;
   }
-  
-  
+
 }

@@ -84,9 +84,10 @@ public class PlanModifCtrl
     cal.setTime(p.getDate().getDate());
   }
 
-  /** 
+  /**
    * Gets a list of buttons for course schedule modification.
-   * @return  a list of buttons
+   *
+   * @return a list of buttons
    */
   public Vector<GemMenuButton> getCourseMenu() {
     Vector<GemMenuButton> v = new Vector<GemMenuButton>();
@@ -107,12 +108,12 @@ public class PlanModifCtrl
     }
 
     /* v.add(new GemMenuButton("Replanifier ce cours", this, "Replanifier")); */
-
     return v;
   }
 
-  /** 
+  /**
    * Gets a list of buttons for rehearsal schedule.
+   *
    * @return a list of buttons
    */
   public Vector<GemMenuButton> getMenuMemberRehearsal() {
@@ -127,9 +128,10 @@ public class PlanModifCtrl
     return v;
   }
 
-  /** 
+  /**
    * Gets a list of buttons for group schedule modification.
-   * @return  a list of buttons
+   *
+   * @return a list of buttons
    */
   public Vector<GemMenuButton> getMenuGroupRehearsal() {
     Vector<GemMenuButton> v = new Vector<GemMenuButton>();
@@ -143,9 +145,9 @@ public class PlanModifCtrl
     return v;
   }
 
-  /** 
+  /**
    * Gets a list of buttons for workshop schedule modification.
-   * 
+   *
    * @return a list of buttons
    */
   public Vector<GemMenuButton> getMenuWorkshop() {
@@ -158,9 +160,10 @@ public class PlanModifCtrl
 
     return v;
   }
-  
-  /** 
+
+  /**
    * Gets a list of buttons for studio group schedule modification.
+   *
    * @param type studio type
    * @return a list of buttons
    */
@@ -172,16 +175,17 @@ public class PlanModifCtrl
     if (Schedule.TECH == type) {
       v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.add.participant.label"), this, "AddParticipant"));
     }
-    
+
     if (dataCache.authorize("Schedule.suppression.auth")) {
       v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.suppression.label"), this, "DeletePlanning"));
     }
     return v;
   }
 
-  /** 
+  /**
    * Gets a list of buttons for schedule creation.
-   * @return  a list of buttons
+   *
+   * @return a list of buttons
    */
   public Vector<GemMenuButton> getMenuPlanning() {
     Vector<GemMenuButton> v = new Vector<GemMenuButton>();
@@ -235,34 +239,34 @@ public class PlanModifCtrl
       } else if (arg.equals(GemCommand.CANCEL_CMD)) {
         desktop.removeCurrentModule();
       }
-    /*
-    else if (arg.bufferEquals("Replanifier")) {
-      dialogDeplacerCours();
-    } else if (arg.equalsIgnoreCase("Replanifier.Validation")) {
-      try {
-        dataCache.setAutoCommit(false);
-        Action upAction = updatePlanCtrl.get();
-        cal.setTime(plan.getDate().getDate());
-        Action action = getActionFrom(upAction, plan, cal.get(Calendar.DAY_OF_WEEK) - 1);
-        if (service.deletePlanning(action) == 0) {// aucune plage élève n'existe pour ce planning
-          updatePlanCtrl.save();
-          dataCache.commit();
-          desktop.postEvent(new ModifPlanEvent(this, action.getDateEnd(), action.getDateEnd()));
-          updatePlanCtrl.cancel();
-        }
-      } catch (Exception ex) {
-        System.err.println(ex.getMessage());
-        dataCache.logException("Replanification cours", ex);
-        dataCache.rollback();
-      } finally {
-        dataCache.setAutoCommit(true);
-      }
-    }
-    */
-    } catch(PlanningException ex) {
+      /*
+       else if (arg.bufferEquals("Replanifier")) {
+       dialogDeplacerCours();
+       } else if (arg.equalsIgnoreCase("Replanifier.Validation")) {
+       try {
+       dataCache.setAutoCommit(false);
+       Action upAction = updatePlanCtrl.get();
+       cal.setTime(plan.getDate().getDate());
+       Action action = getActionFrom(upAction, plan, cal.get(Calendar.DAY_OF_WEEK) - 1);
+       if (service.deletePlanning(action) == 0) {// aucune plage élève n'existe pour ce planning
+       updatePlanCtrl.save();
+       dataCache.commit();
+       desktop.postEvent(new ModifPlanEvent(this, action.getDateEnd(), action.getDateEnd()));
+       updatePlanCtrl.cancel();
+       }
+       } catch (Exception ex) {
+       System.err.println(ex.getMessage());
+       dataCache.logException("Replanification cours", ex);
+       dataCache.rollback();
+       } finally {
+       dataCache.setAutoCommit(true);
+       }
+       }
+       */
+    } catch (PlanningException ex) {
       GemLogger.log(ex.getMessage());
       MessagePopup.warning(desktop.getFrame(), ex.getMessage());
-    } catch(SQLException sqe) {
+    } catch (SQLException sqe) {
       GemLogger.log(sqe.getMessage());
     } finally {
       desktop.setDefaultCursor();
@@ -332,9 +336,9 @@ public class PlanModifCtrl
     }
     // Useless and query to rewrite ??
     /*if (plan instanceof CourseSchedule || plan instanceof WorkshopSchedule) {
-      query = "UPDATE plage SET debut = '" + hStart + "',fin = '" + hEnd + "' WHERE cours = " + plan.getIdAction() + " AND jour >= '" + start + "' AND jour <= '" + end + "'";
-      dc.executeUpdate(query);
-    }*/
+     query = "UPDATE plage SET debut = '" + hStart + "',fin = '" + hEnd + "' WHERE cours = " + plan.getIdAction() + " AND jour >= '" + start + "' AND jour <= '" + end + "'";
+     dc.executeUpdate(query);
+     }*/
   }
 
   /**
@@ -478,7 +482,7 @@ public class PlanModifCtrl
     ScheduleObject range = dlg.getSchedule();
     DateFr start = dlg.getStart();
     DateFr end = dlg.getEnd();
-    
+
     try {
       Vector<ScheduleTestConflict> v = service.checkChangeTeacher(plan, range, start, end);
       if (v.size() > 0) {
@@ -502,11 +506,11 @@ public class PlanModifCtrl
       MessagePopup.warning(null, e.getMessage());
     }
   }
-  
-  private void dialogAddParticipant(Enum cat) throws PlanningException  {
+
+  private void dialogAddParticipant(Enum cat) throws PlanningException {
 
     String where = ", " + EmployeeIO.TYPE_TABLE + " t  WHERE "
-      + PersonIO.TABLE + ".id = t.idper AND t.idcat = " + cat.ordinal();
+            + PersonIO.TABLE + ".id = t.idper AND t.idcat = " + cat.ordinal();
     List<Person> persons = PersonIO.find(where, DataCache.getDataConnection());
     if (persons.size() < 1) {
       throw new PlanningException("Aucun participant disponible");
@@ -525,7 +529,7 @@ public class PlanModifCtrl
     desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));
 
   }
-  
+
   private void dialogChangeSessionType() throws PlanningException {
     GemParam gp = (GemParam) plan.getActivity();
     ChangeSessionTypeDlg dlg = new ChangeSessionTypeDlg(desktop, gp.getId());
@@ -583,7 +587,7 @@ public class PlanModifCtrl
     }
 
     ScheduleObject newPlan = dlg.getSchedule();
-    Hour [] range = dlg.getRange();
+    Hour[] range = dlg.getRange();
 //     if (!((Course) plan.getActivity()).isCollective()) {
 //        Vector<ScheduleRange> ranges = ScheduleRangeIO.find("WHERE idplanning = " + plan.getId(), dc);
 //        PersonListCtrl list = new PersonListCtrl();
@@ -603,7 +607,7 @@ public class PlanModifCtrl
           service.postPoneCourseAfter(plan, newPlan, range[0]);
         }
       } else if (range[1].before(plan.getEnd())) {
-          service.postPoneCourseBefore(plan, newPlan, range[1]);
+        service.postPoneCourseBefore(plan, newPlan, range[1]);
       } else {
         service.postPoneCourse(plan, newPlan);
       }
@@ -616,7 +620,7 @@ public class PlanModifCtrl
     }
   }
 
-  private boolean testConflictCourse(ScheduleObject plan, ScheduleObject newPlan, Hour [] range)
+  private boolean testConflictCourse(ScheduleObject plan, ScheduleObject newPlan, Hour[] range)
           throws SQLException {
 
     Vector<ScheduleTestConflict> v = service.checkRoomForSchedulePostpone(plan, newPlan);
@@ -642,7 +646,6 @@ public class PlanModifCtrl
     }
 
     // TODO member conflict
-
     return true;
   }
 
@@ -671,7 +674,6 @@ public class PlanModifCtrl
     }
     return true;
   }
-
 
   /**
    * @deprecated
@@ -722,15 +724,18 @@ public class PlanModifCtrl
         cfd.show();
         return;
       }
-      
-      Vector<ScheduleTestConflict> conflicts = service.checkTeacherForScheduleLengthModif(plan, lastDay, hStart, hEnd);
-      if (conflicts != null) {
-        ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), BundleUtil.getLabel("Teacher.conflict.label"));
-        for (int i = 0; i < conflicts.size(); i++) {
-          cfd.addConflict(conflicts.elementAt(i));
+
+      //TODO check teacher occupation in studio schedules
+      if (plan.getType() != Schedule.TECH && plan.getType() != Schedule.STUDIO) {
+        Vector<ScheduleTestConflict> conflicts = service.checkTeacherForScheduleLengthModif(plan, lastDay, hStart, hEnd);
+        if (conflicts != null && conflicts.size() > 0) {
+          ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), BundleUtil.getLabel("Teacher.conflict.label"));
+          for (int i = 0; i < conflicts.size(); i++) {
+            cfd.addConflict(conflicts.elementAt(i));
+          }
+          cfd.show();
+          return;
         }
-        cfd.show();
-        return;
       }
     } catch (SQLException sqe) {
       GemLogger.log(sqe.getMessage());
@@ -788,7 +793,7 @@ public class PlanModifCtrl
    *
    * @since 1.1e
    */
-  private void dialogPlanningSuppression(){
+  private void dialogPlanningSuppression() {
     SupprPlanningDlg dlg = new SupprPlanningDlg(desktop.getFrame(), plan);
     dlg.show();
 
@@ -807,7 +812,7 @@ public class PlanModifCtrl
             }
           } else {
             service.deletePlanning(action);
-          }   
+          }
         } else {
           deletePlanning(plan, action);
         }
@@ -819,13 +824,14 @@ public class PlanModifCtrl
 
     }
   }
-  
+
   /**
    * Deletes the schedule [@code plan} on a given date.
    * Optionnaly deletes all shared instances of this schedule.
+   *
    * @param plan schedule to delete
    * @param a action schedule
-   * @throws PlanningException 
+   * @throws PlanningException
    */
   private void deleteSchedule(ScheduleObject plan, Action a) throws PlanningException {
     if (!MessagePopup.confirm(null, MessageUtil.getMessage("schedule.multi.suppression.confirmation"))) {
@@ -834,13 +840,14 @@ public class PlanModifCtrl
       service.deletePlanning(a);
     }
   }
-  
+
   /**
    * Deletes the studio schedule [@code plan} on a given date.
    * Optionnaly deletes all shared instances of this schedule.
+   *
    * @param plan schedule to delete
    * @param a action schedule
-   * @throws PlanningException 
+   * @throws PlanningException
    */
   private void deleteStudioSchedule(ScheduleObject plan, Action a) throws PlanningException {
     if (!MessagePopup.confirm(null, MessageUtil.getMessage("schedule.studio.suppression.confirmation"))) {
@@ -849,13 +856,14 @@ public class PlanModifCtrl
       service.deletePlanning(a);
     }
   }
-  
+
   /**
    * Deletes a set of schedules between two dates.
    * Optionnaly deletes all shared instances of these schedules.
+   *
    * @param plan specific schedule instance
    * @param a action schedule
-   * @throws PlanningException 
+   * @throws PlanningException
    */
   private void deletePlanning(ScheduleObject plan, Action a) throws PlanningException {
     if (service.hasSiblings(a) && !MessagePopup.confirm(null, MessageUtil.getMessage("schedule.multi.suppression.confirmation"))) {

@@ -1,5 +1,5 @@
 /*
- * @(#)DirectDebitService.java	2.8.r 21/01/14
+ * @(#)DirectDebitService.java	2.9.1 11/12/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -26,6 +26,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import net.algem.planning.DateFr;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
@@ -35,13 +36,13 @@ import net.algem.util.MessageUtil;
  * Direct debit service.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.r
+ * @version 2.9.1
  * @since 2.8.r 24/12/13
  */
 public class DirectDebitService
 {
 
-  private DateFormat df = new SimpleDateFormat("MMM");
+  private DateFormat df = new SimpleDateFormat("MMM yyyy", Locale.UK);// UK Locale (avoid accents)
   private DirectDebitIO dao;
   private static volatile DirectDebitService INSTANCE;
 

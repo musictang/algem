@@ -1,5 +1,5 @@
 /*
- * @(#)ConflictService.java	2.8.y.1 08/10/14
+ * @(#)ConflictService.java	2.9.1 11/12/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -34,7 +34,7 @@ import net.algem.util.model.Model;
  * Service class for conflict verification.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.y.1
+ * @version 2.9.1
  * @since 2.4.a 08/05/12
  */
 public class ConflictService
@@ -50,55 +50,55 @@ public class ConflictService
 
   public ConflictService(DataConnection dc) {
     this.dc = dc;
-    testHourPS = this.dc.prepareStatement("SELECT " + ScheduleIO.COLUMNS + " FROM planning p "
-			+ "WHERE jour=? AND lieux=? "
-			+ "AND ((debut >= ? AND debut < ?) "
-			+ "OR (fin > ? AND fin <= ?) "
-			+ "OR (debut <= ? AND fin >= ?)) and p.idper!=?");
+    testHourPS = this.dc.prepareStatement("SELECT " + ScheduleIO.COLUMNS + " FROM " + ScheduleIO.TABLE + " p"
+            + " WHERE jour = ? AND lieux = ?"
+            + " AND ((debut >= ? AND debut < ?)"
+            + " OR (fin > ? AND fin <= ?)"
+            + " OR (debut <= ? AND fin >= ?)) and p.idper != ?");
     
-    testRoomPS = this.dc.prepareStatement("SELECT " + ScheduleIO.COLUMNS + " FROM planning p "
-			+ "WHERE jour = ? AND lieux = ? "
-			+ "AND ((debut >= ? AND debut < ?) "
-			+ "OR (fin > ? and fin <= ?) OR (debut <= ? AND fin >= ?))");
+    testRoomPS = this.dc.prepareStatement("SELECT " + ScheduleIO.COLUMNS + " FROM " + ScheduleIO.TABLE + " p"
+			+ " WHERE jour = ? AND lieux = ? "
+			+ " AND ((debut >= ? AND debut < ?) "
+			+ " OR (fin > ? and fin <= ?) OR (debut <= ? AND fin >= ?))");
 //    testRoomPS2 = this.dc.prepareStatement("SELECT "+ScheduleIO.COLUMNS+" FROM planning p "
 //			+ "WHERE jour = ? AND lieux = ? AND debut = ? AND fin = ?");
     
-    testRoomPS3 = this.dc.prepareStatement("SELECT " + ScheduleIO.COLUMNS + " FROM planning p "
-			+ "WHERE jour = ? AND lieux = ?"
+    testRoomPS3 = this.dc.prepareStatement("SELECT " + ScheduleIO.COLUMNS + " FROM " + ScheduleIO.TABLE + " p"
+			+ " WHERE jour = ? AND lieux = ?"
 			+ " AND ((debut >= ? AND debut < ?)"
 			+ " OR (fin > ? and fin <= ?) OR (debut <= ? AND fin >= ?))"
             + " AND p.id != ?");
     
-    testTeacherPS = this.dc.prepareStatement("SELECT " + ScheduleIO.COLUMNS + " FROM planning p "
-			+ "WHERE jour = ? AND idper = ?"
+    testTeacherPS = this.dc.prepareStatement("SELECT " + ScheduleIO.COLUMNS + " FROM " + ScheduleIO.TABLE + " p"
+			+ " WHERE jour = ? AND idper = ?"
 			+ " AND ((debut >= ? AND debut < ?) OR (fin > ? AND fin <= ?) "
 			+ " OR (debut <= ? AND fin >= ?))");
 
-    testTeacherPS2 = this.dc.prepareStatement("SELECT " + ScheduleIO.COLUMNS + " FROM planning p "
-			+ "WHERE jour = ? AND idper = ?"
+    testTeacherPS2 = this.dc.prepareStatement("SELECT " + ScheduleIO.COLUMNS + " FROM " + ScheduleIO.TABLE + " p"
+			+ " WHERE jour = ? AND idper = ?"
 			+ " AND ((debut >= ? AND debut < ?) OR (fin > ? AND fin <= ?)"
 			+ " OR (debut <= ? AND fin >= ?))"
             + " AND p.id != ?");
     
-    testTeacherPS3 = this.dc.prepareStatement("SELECT " + ScheduleIO.COLUMNS + " FROM planning p "
-              + "WHERE jour BETWEEN ? AND ?"
-              + " AND date_part('dow', jour) = ?"
-              + " AND idper = ?"
-              + " AND lieux != ?"
+    testTeacherPS3 = this.dc.prepareStatement("SELECT " + ScheduleIO.COLUMNS + " FROM " + ScheduleIO.TABLE + " p"
+              + " WHERE p.jour BETWEEN ? AND ?"
+              + " AND date_part('dow', p.jour) = ?"
+              + " AND p.idper = ?"
+              + " AND p.lieux != ?"
               + ConflictQueries.getSqlStatementOverlap());
     
-    testMemberPS = this.dc.prepareStatement("SELECT " + ScheduleIO.COLUMNS + " FROM planning p "
-			+ "WHERE (ptype = "+Schedule.COURSE+" OR ptype = "+Schedule.MEMBER+") "
-			+ "AND jour = ? AND idper = ? "
-			+ "AND ((debut >= ? AND debut < ?) "
-			+ "OR (fin > ? AND fin <= ?) OR (debut <= ? AND fin >= ?))");
-    
-    testMemberSchedulePS = this.dc.prepareStatement("SELECT " + ScheduleIO.COLUMNS + " FROM planning p, plage pl "
-			+ "WHERE ptype = "+Schedule.COURSE
-			+ " AND p.id = pl.idplanning"
-			+ " AND p.jour = ? AND pl.adherent = ?"
-			+ " AND ((pl.debut >= ? AND pl.debut < ?)"
-			+ " OR (pl.fin > ? AND pl.fin <= ?) OR (pl.debut <= ? AND pl.fin >= ?))");
+    testMemberPS = this.dc.prepareStatement("SELECT " + ScheduleIO.COLUMNS + " FROM " + ScheduleIO.TABLE + " p"
+            + " WHERE (ptype = " + Schedule.COURSE + " OR ptype = " + Schedule.MEMBER + ")"
+            + " AND jour = ? AND idper = ?"
+            + " AND ((debut >= ? AND debut < ?)"
+            + " OR (fin > ? AND fin <= ?) OR (debut <= ? AND fin >= ?))");
+
+    testMemberSchedulePS = this.dc.prepareStatement("SELECT " + ScheduleIO.COLUMNS + " FROM " + ScheduleIO.TABLE + " p, " + ScheduleRangeIO.TABLE + " pl"
+            + " WHERE p.ptype = " + Schedule.COURSE
+            + " AND p.id = pl.idplanning"
+            + " AND p.jour = ? AND pl.adherent = ?"
+            + " AND ((pl.debut >= ? AND pl.debut < ?)"
+            + " OR (pl.fin > ? AND pl.fin <= ?) OR (pl.debut <= ? AND pl.fin >= ?))");
     
   }
 
@@ -481,12 +481,12 @@ public class ConflictService
     if (schedules.size() > 0) {
       conflicts = new Vector<ScheduleTestConflict>();
       for (ScheduleObject s : schedules) {
-        ScheduleTestConflict conflict = new ScheduleTestConflict(s.getDate(), s.getStart(), s.getEnd());
-        conflict.setTeacherFree(false);
-        conflict.setDetail(s.getScheduleDetail());
-        conflicts.addElement(conflict);
+          ScheduleTestConflict conflict = new ScheduleTestConflict(s.getDate(), s.getStart(), s.getEnd());
+          conflict.setTeacherFree(false);
+          conflict.setDetail(s.getScheduleDetail());
+          conflicts.addElement(conflict); 
+        }
       }
-    }
     return conflicts;
   }
   

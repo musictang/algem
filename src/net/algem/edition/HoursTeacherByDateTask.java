@@ -1,5 +1,5 @@
 /*
- * @(#)HoursTeacherByDateTask.java	2.9.1 05/12/14
+ * @(#)HoursTeacherByDateTask.java	2.9.1 08/12/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -24,9 +24,13 @@ package net.algem.edition;
 import java.io.PrintWriter;
 import java.sql.ResultSet;
 import javax.swing.ProgressMonitor;
+import net.algem.course.Course;
+import net.algem.planning.Action;
 import net.algem.planning.DateFr;
 import net.algem.planning.Hour;
 import net.algem.util.BundleUtil;
+import net.algem.util.DataCache;
+import net.algem.util.model.Model;
 
 /**
  *
@@ -77,6 +81,7 @@ extends HoursTask
         Hour start = new Hour(rs.getString(10));
         Hour end = new Hour(rs.getString(11));
         Hour length = new Hour(rs.getString(12));
+        int idaction = rs.getInt(13);
         int idper = rs.getInt(1);
         int memberId = rs.getInt(2);
         int idcourse = rs.getInt(5);
@@ -132,9 +137,16 @@ extends HoursTask
 
         totalMonth += length.toMinutes();
         totalDay += length.toMinutes();
+        Course course = (Course) DataCache.findId(idcourse, Model.Course);
+        Action action = (Action) DataCache.findId(idaction, Model.Action);
         if (detail) {
-          sb.append(teacherName).append(';').append(courseName).append(';').append(memberName).append(';')
-                  .append(date).append(';').append(start).append(';').append(end).append(';').append(length);
+          sb.append(teacherName).append(';')
+                  .append(courseName).append(';')
+                  .append((!course.isCollective() || action.getPlaces() <= 1) ? memberName : "").append(';')
+                  .append(date).append(';')
+                  .append(start).append(';')
+                  .append(end).append(';')
+                  .append(length);
           out.println(sb.toString());
           sb.delete(0, sb.length());
         }

@@ -1,5 +1,5 @@
 /*
- * @(#)PlanningLibIO.java	2.8.v 11/06/14
+ * @(#)PlanningLibIO.java	2.9.1 08/12/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -31,7 +31,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.v
+ * @version 2.9.1
  * @since 1.0a 07/07/1999
  * @see net.algem.planning.PlanningLib
  */
@@ -39,13 +39,15 @@ public class PlanningLibIO
         extends TableIO
 {
 
+  private final static String VIEW = "planningvue";
   /**
    * View is saved in database.
    * Any modification in source code must be reflected in the definition of the
    * view in database.
-   * SELECT pl.id, pl.jour, pl.debut, pl.end, pl.action, p.id AS profid, p.prenom AS prenomprof, p.nom AS nomprof, s.id AS salleid, s.nom AS salle, c.id AS coursid, c.titre AS cours, c.ecole
+   * SELECT pl.id, pl.jour, pl.debut, pl.fin, pl.action, p.id AS profid, p.prenom AS prenomprof, p.nom AS nomprof, s.id AS salleid, s.nom AS salle, c.id AS coursid, c.titre AS cours, c.ecole
    *  FROM planning pl, personne p, salle s, cours c, action a
    *  WHERE pl.ptype IN (1,5,6) AND pl.action = a.id AND a.cours = c.id AND pl.lieux = s.id AND pl.idper = p.id;
+   * -- and (select count(id) from plage where idplanning = pl.id) > 0 -- empty schedules not included
    *
    * @param dc dataCache
    * @param where
@@ -53,7 +55,7 @@ public class PlanningLibIO
    */
   public static Vector<PlanningLib> find(String where, DataConnection dc) throws SQLException {
     Vector<PlanningLib> v = new Vector<PlanningLib>();
-    String query = "SELECT id, jour, debut, fin, action, coursid, cours, profid, prenomprof, nomprof, salleid, salle FROM planningvue " + where;
+    String query = "SELECT id, jour, debut, fin, action, coursid, cours, profid, prenomprof, nomprof, salleid, salle FROM " + VIEW + " " + where;
     ResultSet rs = dc.executeQuery(query);
     while (rs.next()) {
       PlanningLib p = new PlanningLib();

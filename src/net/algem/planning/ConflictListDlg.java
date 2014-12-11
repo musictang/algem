@@ -1,7 +1,7 @@
 /*
- * @(#)ConflictListDlg.java	2.6.a 19/09/12
+ * @(#)ConflictListDlg.java	2.9.1 11/12/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,6 +20,7 @@
  */
 package net.algem.planning;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -34,7 +35,7 @@ import net.algem.util.ui.PopupDlg;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.1
  */
 public class ConflictListDlg
         implements ActionListener
@@ -55,9 +56,9 @@ public class ConflictListDlg
 
     listView = new ConflictListView();
 
-    dlg.getContentPane().add("North", title);
-    dlg.getContentPane().add("Center", listView);
-    dlg.getContentPane().add("South", btClose);
+    dlg.add(title, BorderLayout.NORTH);
+    dlg.add(listView, BorderLayout.CENTER);
+    dlg.add(btClose, BorderLayout.SOUTH);
     dlg.setSize(600, 300);
     dlg.setLocation(100, 100);
   }

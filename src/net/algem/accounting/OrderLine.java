@@ -1,5 +1,5 @@
 /*
- * @(#)OrderLine.java	2.8.t 10/05/14
+ * @(#)OrderLine.java	2.9.1 11/12/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -31,7 +31,7 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.9.1
  *
  */
 public class OrderLine
@@ -69,7 +69,7 @@ public class OrderLine
    */
   public OrderLine(ModuleOrder m) {
     payer = m.getPayer();
-    amount = AccountUtil.getIntValue(m.getPrice());
+    amount = AccountUtil.getIntValue(m.getPaymentAmount());
     modeOfPayment = m.getModeOfPayment();
     order = m.getIdOrder();
   }

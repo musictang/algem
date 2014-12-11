@@ -1,5 +1,5 @@
 /*
-* @(#)OrderLineDlg.java	2.8.w 08/07/14
+* @(#)OrderLineDlg.java	2.9.1 11/12/14
 *
 * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
 *
@@ -50,7 +50,7 @@ import net.algem.util.ui.MessagePopup;
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @author <a href="mailto:damien.loustau@gmail.com">Damien Loustau</a>
- * @version 2.8.w
+ * @version 2.9.1
  * @since 1.0a 07/07/1999
  */
 public class OrderLineDlg
@@ -238,7 +238,7 @@ implements ActionListener, TableModelListener {
     try {
       OrderLineIO.delete(e, dc);
       tableView.removeElementAt(n);
-    } catch (Exception ex) {
+    } catch (SQLException ex) {
       GemLogger.logException(MessageUtil.getMessage("delete.error"), ex, this);
     }
   }
