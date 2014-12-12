@@ -40,7 +40,7 @@ import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
 import net.algem.util.event.GemEvent;
 import net.algem.util.event.GemEventListener;
-import net.algem.util.module.FileView;
+import net.algem.util.module.FileTabView;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.*;
 
@@ -400,7 +400,7 @@ public class OrderLineEditor
     }
 
     if (actionListener != null) {
-      actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, FileView.INVOICE_TAB_TITLE));
+      actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, FileTabView.INVOICE_TAB_TITLE));
     }
   }
 
@@ -409,7 +409,7 @@ public class OrderLineEditor
    */
   private void createQuotation() {
     if (actionListener != null) {
-      actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, FileView.ESTIMATE_TAB_TITLE));
+      actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, FileTabView.ESTIMATE_TAB_TITLE));
     }
   }
 
@@ -438,7 +438,7 @@ public class OrderLineEditor
     // paiement seulement //OU paiement mais pas les deux
     if (!invoice) {
       if (actionListener != null) {
-        actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, FileView.ESTIMATE_TAB_TITLE));
+        actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, FileTabView.ESTIMATE_TAB_TITLE));
       }
     } else {
       MessagePopup.warning(this, MessageUtil.getMessage("estimate.payment.selection.error"));

@@ -1,6 +1,6 @@
 /*
  * @(#)CourseScheduleCtrl.java	2.8.w 08/07/14
- * 
+ *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning;
 
@@ -62,7 +62,7 @@ public class CourseScheduleCtrl
   public void init() {
     av = new ActionView(desktop);
     av.init();
-    
+
     conflictsView = new ConflictListView();
 
     addCard(MessageUtil.getMessage("planning.session.init"), av);
@@ -176,7 +176,7 @@ public class CourseScheduleCtrl
     conflictsView.clear();
     select(0);
   }
-  
+
    private void cleanUp() {
     desktop.removeGemEventListener(av);
     actions = null;
@@ -266,7 +266,7 @@ public class CourseScheduleCtrl
    * FRIDAY, and SATURDAY. SUNDAY is représented by 1, SATURDAY by 7.
    *
    * @param jour day of week
-   * @param _debut start date 
+   * @param _debut start date
    * @param _fin end date
    * @param _maxi max of sessions
    * @param vtype holydays type

@@ -1,6 +1,6 @@
 /*
- * @(#)EnrolmentListCtrl.java 2.9.1 09/12/14
- * 
+ * @(#)EnrolmentListCtrl.java 2.9.1 12/12/14
+ *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.enrolment;
 
@@ -74,7 +74,7 @@ public class EnrolmentListCtrl
 
     enrolmentTable = new JTable(orderTableModel);
     enrolmentTable.setAutoCreateRowSorter(true);
-    enrolmentTable.getTableHeader().setToolTipText("Cliquez sur une colonne pour trier)");
+    enrolmentTable.getTableHeader().setToolTipText(MessageUtil.getMessage("click.column.to.sort.tip"));
 
     TableColumnModel cm = enrolmentTable.getColumnModel();
     cm.getColumn(0).setPreferredWidth(40);
@@ -98,12 +98,12 @@ public class EnrolmentListCtrl
     } else {
       btDelete.setEnabled(false);
     }
-    
+
     GemPanel buttons = new GemPanel(new GridLayout(1, 3));
     buttons.add(btModidy);
     buttons.add(btDelete);
     buttons.add(btClose);
-    
+
     setLayout(new BorderLayout());
     add(pm, BorderLayout.CENTER);
     add(buttons, BorderLayout.SOUTH);
@@ -134,7 +134,12 @@ public class EnrolmentListCtrl
       }
       return;
     }
-    int n = enrolmentTable.convertRowIndexToModel(enrolmentTable.getSelectedRow());
+    int row = enrolmentTable.getSelectedRow();
+    if (row < 0) {
+      MessagePopup.warning(this, MessageUtil.getMessage("no.line.selected"));
+      return;
+    }
+    int n = enrolmentTable.convertRowIndexToModel(row);
     if (n < 0) {
       return;
     }
@@ -172,6 +177,7 @@ public class EnrolmentListCtrl
       PersonFile dossier = service.getMemberFile(mo.getMember());
       editor = new PersonFileEditor(dossier);
       desktop.addModule(editor);
+      editor.getPersonView().setSelectedTab(2);//supposed always to be index 2
     }
 
     setCursor(Cursor.getDefaultCursor());

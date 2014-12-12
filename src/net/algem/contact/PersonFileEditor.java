@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileEditor 2.8.y.1 03/11/14
+ * @(#)PersonFileEditor 2.9.1 12/11/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -55,7 +55,7 @@ import net.algem.util.menu.PersonFileMenuItem;
 import net.algem.util.model.GemCloseVetoException;
 import net.algem.util.model.Model;
 import net.algem.util.module.FileEditor;
-import net.algem.util.module.FileView;
+import net.algem.util.module.FileTabView;
 import net.algem.util.module.GemDesktopCtrl;
 import net.algem.util.ui.*;
 
@@ -64,7 +64,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.y.1
+ * @version 2.9.1
  */
 public class PersonFileEditor
         extends FileEditor
@@ -434,15 +434,15 @@ public class PersonFileEditor
         histoInvoice = addHistoInvoice(dossier.getId());
         if (histoInvoice != null) {
           histoInvoice.addActionListener(this);
-          personFileView.addTab(histoInvoice, FileView.HISTO_INVOICE_TAB_TITLE);
+          personFileView.addTab(histoInvoice, FileTabView.HISTO_INVOICE_TAB_TITLE);
           miHistoInvoice.setEnabled(false);
         } else {
           MessagePopup.information(view, MessageUtil.getMessage("no.invoice.recorded"));
         }
       }
-    } else if (FileView.INVOICE_TAB_TITLE.equals(arg)) {
+    } else if (FileTabView.INVOICE_TAB_TITLE.equals(arg)) {
       addInvoice(src);
-    } else if (FileView.ESTIMATE_TAB_TITLE.equals(arg)) {
+    } else if (FileTabView.ESTIMATE_TAB_TITLE.equals(arg)) {
       addQuotation(src);
     } else if ("Quotation.history".equals(arg)) {
       int payer = getPayer();
@@ -450,7 +450,7 @@ public class PersonFileEditor
         HistoQuote histoQuote = getHistoQuotation(dossier.getId());
         if (histoQuote != null) {
           histoQuote.addActionListener(this);
-          personFileView.addTab(histoQuote, FileView.HISTO_ESTIMATE_TAB_TITLE);
+          personFileView.addTab(histoQuote, FileTabView.HISTO_ESTIMATE_TAB_TITLE);
           miHistoQuote.setEnabled(false);
         } else {
           MessagePopup.information(view, MessageUtil.getMessage("no.quote.recorded"));
@@ -520,7 +520,7 @@ public class PersonFileEditor
       GemLogger.log(ex.getMessage());
     }
   }
-  
+
   /**
    * Inserts or updates dossier.
    *
@@ -707,6 +707,11 @@ public class PersonFileEditor
     });
   }
 
+  /**
+   * Adds schedule payment editor.
+   * @param t table model
+   * @param p payer
+   */
   private void addSchedulePayment(OrderLineTableModel t, Person p) {
 
     orderLineEditor = new OrderLineEditor(desktop, t);
@@ -718,13 +723,12 @@ public class PersonFileEditor
       orderLineEditor.setMemberId(dossier.getId());
       orderLineEditor.setPayerId(dossier.getMember().getPayer());
     }
-    /*
-     *
-     */
+
     if (dossier.getMember() == null || dossier.getMember().getPayer() == dossier.getId()) {
-      orderLineEditor.setLabel(dossier.getContact().getName() + " " + dossier.getContact().getFirstName());
+      orderLineEditor.setLabel(dossier.getContact().getFirstnameName());
     } else {
-      orderLineEditor.setLabel(p.getName() + " " + p.getFirstName());
+      String org = p.getOrganization();
+      orderLineEditor.setLabel(org != null && org.trim().length() > 0 ? org : p.getFirstnameName());
     }
     personFileView.addTab(orderLineEditor, BundleUtil.getLabel("Person.schedule.payment.tab.label"));
   }
@@ -1115,12 +1119,12 @@ public class PersonFileEditor
     InvoiceEditor editor = new InvoiceEditor(desktop, billingService, inv);
     editor.addActionListener(this);
     editor.load();
-    personFileView.addTab(editor, FileView.INVOICE_TAB_TITLE);
+    personFileView.addTab(editor, FileTabView.INVOICE_TAB_TITLE);
   }
 
   /**
    * Quote editing tab.
-   * 
+   *
    * @param source not used
    */
   private void addQuotation(Object source) {
@@ -1134,6 +1138,6 @@ public class PersonFileEditor
     QuoteEditor editor = new QuoteEditor(desktop, billingService, q);
     editor.addActionListener(this);
     editor.load();
-    personFileView.addTab(editor, FileView.ESTIMATE_TAB_TITLE);
+    personFileView.addTab(editor, FileTabView.ESTIMATE_TAB_TITLE);
   }
 }

@@ -37,7 +37,7 @@ import net.algem.util.event.GemEvent;
 import net.algem.util.model.GemCloseVetoException;
 import net.algem.util.model.Model;
 import net.algem.util.module.FileEditor;
-import net.algem.util.module.FileView;
+import net.algem.util.module.FileTabView;
 import net.algem.util.module.GemDesktopCtrl;
 import net.algem.util.module.GemModule;
 import net.algem.util.ui.*;
@@ -206,7 +206,7 @@ public class RoomFileEditor
       HistoInvoice hb = addHistoInvoice(payer);
       if (hb != null) {
         hb.addActionListener(this);
-        roomView.addTab(hb, FileView.HISTO_INVOICE_TAB_TITLE);
+        roomView.addTab(hb, FileTabView.HISTO_INVOICE_TAB_TITLE);
         miHistoInvoice.setEnabled(false);
       } else {
         MessagePopup.information(view, MessageUtil.getMessage("no.invoice.recorded"));
@@ -219,7 +219,7 @@ public class RoomFileEditor
       HistoQuote hq = getHistoQuotation(payer);
       if (hq != null) {
         hq.addActionListener(this);
-        roomView.addTab(hq, FileView.HISTO_ESTIMATE_TAB_TITLE);
+        roomView.addTab(hq, FileTabView.HISTO_ESTIMATE_TAB_TITLE);
         miHistoQuote.setEnabled(false);
       } else {
         MessagePopup.information(view, MessageUtil.getMessage("no.quote.recorded"));
@@ -227,17 +227,17 @@ public class RoomFileEditor
     } else if ("HistoFacture.Abandon".equals(arg)) {
       roomView.removeTab((HistoInvoice) src);
       miHistoInvoice.setEnabled(true);
-    } else if (FileView.INVOICE_TAB_TITLE.equals(arg)) {
+    } else if (FileTabView.INVOICE_TAB_TITLE.equals(arg)) {
       InvoiceEditor ef = addInvoice(src, room);
-      roomView.addTab(ef, FileView.INVOICE_TAB_TITLE);
+      roomView.addTab(ef, FileTabView.INVOICE_TAB_TITLE);
     } else if ("CtrlAbandonFacture".equals(arg)) {
       roomView.removeTab((InvoiceEditor) src);
     } else if ("HistoDevis.Abandon".equals(arg)) {
       roomView.removeTab((HistoQuote) src);
       miHistoQuote.setEnabled(true);
-    } else if (FileView.ESTIMATE_TAB_TITLE.equals(arg)) {
+    } else if (FileTabView.ESTIMATE_TAB_TITLE.equals(arg)) {
       QuoteEditor ed = addQuotation(src, room);
-      roomView.addTab(ed, FileView.ESTIMATE_TAB_TITLE);
+      roomView.addTab(ed, FileTabView.ESTIMATE_TAB_TITLE);
     } else if ("CtrlAbandonDevis".equals(arg)) {
       roomView.removeTab((QuoteEditor) src);
     } else if ("Menu.month.schedule".equals(arg)) {

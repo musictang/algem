@@ -1,6 +1,6 @@
 /*
- * @(#)ActionView.java	2.8.w 22/07/14
- * 
+ * @(#)ActionView.java	2.9.1 12/12/14
+ *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning;
 
@@ -38,6 +38,7 @@ import net.algem.room.Room;
 import net.algem.room.RoomChoice;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
+import net.algem.util.MessageUtil;
 import net.algem.util.event.GemEvent;
 import net.algem.util.event.GemEventListener;
 import net.algem.util.model.Model;
@@ -49,7 +50,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.1
  */
 public class ActionView
         extends GemPanel
@@ -68,14 +69,14 @@ public class ActionView
   protected GemNumericField places;
   protected ParamChoice vacancy;
   protected JComboBox periodicity;
-  protected HourField courseLength; 
+  protected HourField courseLength;
   protected GemNumericField intervall;
 
   public ActionView(GemDesktop desktop) {
 
     this.desktop = desktop;
     dataCache = desktop.getDataCache();
-    
+
     course = new CourseChoice(new CourseChoiceActiveModel(dataCache.getList(Model.Course), true));//modification 1.1d ajout d'un filtre
     course.addItemListener(new CourseCoItemListener());
     datePanel = new DateRangePanel(dataCache.getStartOfYear(), dataCache.getEndOfYear());
@@ -88,21 +89,22 @@ public class ActionView
     periodicity = new JComboBox(new Enum[]{Periodicity.WEEK, Periodicity.FORTNIGHT, Periodicity.DAY, Periodicity.MONTH});
     sessions = new GemNumericField(2);
     places = new GemNumericField(2);
-    places.setText(String.valueOf(((Room)room.getSelectedItem()).getNPers()));
+    //places.setText(String.valueOf(((Room)room.getSelectedItem()).getNPers()));
+
     vacancy = new ParamChoice(dataCache.getVacancyCat());
     courseLength = new HourField();
     intervall = new GemNumericField(2);
     load(((Course) course.getSelectedItem()));
   }
-  
+
   private void load(Course c) {
     courseLength.setEditable(c.isCourseCoInst());
     intervall.setEditable(c.isCourseCoInst());
     if (c.isCollective()) {
-      places.setText(String.valueOf(((Room)room.getSelectedItem()).getNPers()));
+      //places.setText(String.valueOf(((Room)room.getSelectedItem()).getNPers()));
       places.setEditable(true);
     } else {
-      places.setText("0");
+      places.setText("");
       places.setEditable(false);
     }
   }
@@ -110,7 +112,7 @@ public class ActionView
   public void init() {
 
     desktop.addGemEventListener(this);
-    
+
     this.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
     gb.insets = GridBagHelper.SMALL_INSETS;
@@ -121,7 +123,7 @@ public class ActionView
     gb.add(new GemLabel(BundleUtil.getLabel("Periodicity.label")), 0, 3, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Hour.label")), 0, 4, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Teacher.label")), 0, 5, 1, 1, GridBagHelper.WEST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Room.label")), 0, 6, 1, 1, GridBagHelper.WEST);    
+    gb.add(new GemLabel(BundleUtil.getLabel("Room.label")), 0, 6, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Sessions.label")), 0, 7, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Menu.holidays.label")), 0, 8, 1, 1, GridBagHelper.WEST);
 
@@ -133,7 +135,7 @@ public class ActionView
     GemPanel hp = new GemPanel(new BorderLayout());
     hp.setBorder(null);
     hp.add(hourPanel, BorderLayout.WEST);
-    
+
     GemPanel p = new GemPanel();
     p.add(new GemLabel(BundleUtil.getLabel("Course.length.label")));
     courseLength.setToolTipText(BundleUtil.getLabel("Course.length.tip"));
@@ -146,7 +148,7 @@ public class ActionView
     gb.add(hp, 1, 4, 2, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
     gb.add(teacher, 1, 5, 2, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
     gb.add(room, 1, 6, 2, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
-    
+
     GemPanel s = new GemPanel();
     s.setLayout(new BoxLayout(s, BoxLayout.X_AXIS));
     s.add(sessions);
@@ -154,7 +156,7 @@ public class ActionView
     s.add(new GemLabel(BundleUtil.getLabel("Place.number.label")));
     s.add(Box.createHorizontalStrut(4));
     s.add(places);
-    
+
     gb.add(s, 1, 7, 1, 1, GridBagHelper.WEST);
     gb.add(vacancy, 1, 8, 2, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
   }
@@ -179,7 +181,7 @@ public class ActionView
       a.setNSessions((short) 1);
     }
     a.setPlaces(getPlaces());
-    
+
     return a;
   }
 
@@ -213,7 +215,7 @@ public class ActionView
       return 0;
     }
   }
-  
+
   short getPlaces() {
     try {
       return Short.parseShort(places.getText());
@@ -224,12 +226,12 @@ public class ActionView
 
   /**
    * Checks if the time range is valid.
-   * 
+   *
    * @return true if range length >= 10
    */
   boolean hasValidLength() {
     int length = hourPanel.getStart().getLength(hourPanel.getEnd());
-    return length < 10 ? false : true;
+    return length >= 10;
   }
 
   public void clear() {
@@ -245,7 +247,7 @@ public class ActionView
     courseLength.set(new Hour());
     intervall.setText(null);
   }
-  
+
   @Override
   public String toString() {
     return getClass().getSimpleName();
@@ -257,7 +259,7 @@ public class ActionView
       ((GemChoiceFilterModel) teacher.getModel()).load(dataCache.getList(Model.Teacher));
     }
   }
-  
+
   class CourseCoItemListener implements ItemListener {
     // This method is called only if a new item has been selected.
 
@@ -272,23 +274,31 @@ public class ActionView
       }
     }
   }
-  
+
+  /**
+   * Room item state changed listener.
+   *
+   */
   class RoomItemListener implements ItemListener {
     /**
      * Gets and diplays the maximum capacity of this room.
-     * @param e 
+     * @param e
      */
     @Override
     public void itemStateChanged(ItemEvent e) {
-      
+
       if (e.getStateChange() == ItemEvent.SELECTED) {
         int n = ((Room) e.getItem()).getNPers();
         Course c = (Course) course.getSelectedItem();
-        places.setText(n == 0 || !c.isCollective() ? "0" : String.valueOf(n));
-      } else if (e.getStateChange() == ItemEvent.DESELECTED) {
-        places.setText(null);
+//        places.setText(n == 0 || !c.isCollective() ? "0" : String.valueOf(n));
+        int p = getPlaces();
+        if (c.isCollective() && p > 0 && n > 0 && p > n) {
+          if (!MessagePopup.confirm(null, MessageUtil.getMessage("max.room.place.planification.warning"))) {
+            places.setText(String.valueOf(n));
+          }
+        }
       }
     }
-    
+
   }
 }

@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileTabView.java  2.9.1 18/11/14
+ * @(#)PersonFileTabView.java  2.9.1 12/12/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes All Rights Reserved.
  *
@@ -54,7 +54,7 @@ import net.algem.util.*;
 import net.algem.util.event.GemEvent;
 import net.algem.util.model.Model;
 import net.algem.util.model.Reloadable;
-import net.algem.util.module.FileView;
+import net.algem.util.module.FileTabView;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.module.GemModule;
 import net.algem.util.ui.*;
@@ -67,7 +67,7 @@ import net.algem.util.ui.*;
  * @version 2.9.1
  */
 public class PersonFileTabView
-        extends FileView
+        extends FileTabView
         implements ChangeListener, ItemListener, PersonFileListener //GemEventListener
 {
 
@@ -266,8 +266,7 @@ public class PersonFileTabView
   }
 
   /**
-   * @see net.algem.contact.PersonFileListener
-   * Used only for subscription card.
+   * @see net.algem.contact.PersonFileListenerUsed only for subscription card.
    */
   @Override
   public void contentsChanged(PersonFileEvent _evt) {
@@ -316,7 +315,7 @@ public class PersonFileTabView
   GemButton addIcon(String command) {
     return mainToolbar.addIcon(BundleUtil.getLabel(command + ".icon"), command, BundleUtil.getLabel(command + ".tip"));
   }
-  
+
   /**
    * Adds a member tab.
    * If the member is a student, follow up and enrolment tabs are also added.
@@ -379,7 +378,7 @@ public class PersonFileTabView
       employeeEditor.update();
     }
   }
-    
+
   void deleteEmployee() {
     if (MessagePopup.confirm(this, MessageUtil.getMessage("employee.delete.confirmation"))) {
       employeeEditor.delete();
@@ -425,14 +424,14 @@ public class PersonFileTabView
         ddRequest.edit(dossier, getBranchBank(), BundleUtil.getLabel("Menu.debiting.label"), dataCache);
       }
     };
-    
+
     ddMandateCtrl.load();
     ddMandateCtrl.addActionListener(listener);
     wTab.addItem(ddMandateCtrl, BundleUtil.getLabel("Direct.debit.label"));
     addTab(ddMandateCtrl);
     activate(false, "Payer.debiting");
   }
-  
+
   void addBankTab() {
     if (ribView == null) {
       BankBranchIO branchIO = new BankBranchIO(DataCache.getDataConnection());
@@ -457,7 +456,7 @@ public class PersonFileTabView
             BundleUtil.getLabel("Payer.debiting.tip"));
     addTab(ribView);
   }
-    
+
   void addTeacherTab(ActionListener listener) {
     if (teacherEditor == null) {
       teacherEditor = new TeacherEditor(desktop, dossier);
@@ -483,8 +482,8 @@ public class PersonFileTabView
             "Teacher.presence",
             BundleUtil.getLabel("Teacher.presence.tip"));
     addTab(teacherEditor);
-  }  
-  
+  }
+
   /**
    * Activates or desactivates an icon.
    *
@@ -494,7 +493,7 @@ public class PersonFileTabView
   void activate(boolean b, String command) {
     mainToolbar.setEnabled(b, command);
   }
-  
+
   /**
    * Adds enrolment and follow-up tabs.
    *
@@ -561,7 +560,7 @@ public class PersonFileTabView
           @Override
           public void run() {
             enrolmentEditor.load();
-          }   
+          }
         });
       }
     }
@@ -738,7 +737,7 @@ public class PersonFileTabView
   Note getNote() {
     return note;
   }
-  
+
   @Override
   public String toString() {
     return getClass().getSimpleName() + " : " + dossier.getId();
@@ -750,7 +749,7 @@ public class PersonFileTabView
   }
 
   /**
-   * Gets the musician {@code idper} belonging to group {@code g}.
+   * Gets the musician {@literal idper} belonging to group {@literal g}.
    *
    * @param g the group
    * @param idper person id

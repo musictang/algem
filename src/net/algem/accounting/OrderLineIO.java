@@ -1,5 +1,5 @@
 /*
- * @(#)OrderLineIO.java	2.8.w 08/07/14
+ * @(#)OrderLineIO.java	2.9.1 12/12/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -39,7 +39,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.1
  *
  */
 public class OrderLineIO
@@ -137,22 +137,22 @@ public class OrderLineIO
 
     dc.executeUpdate(query);
   }
-  
+
   /**
    * Update paid.
    * Allow to update, in the databse, the colum 'paye' in the eheancier 2 table
    * @param e selected line
    * @param dc data connection
-   * @throws SQLException 
+   * @throws SQLException
    */
   public static void paid(OrderLine e, DataConnection dc) throws SQLException {
-    
+
     String query = "UPDATE " + TABLE + " SET paye = '" + (e.isPaid() ? "t" : "f") + "'";
     query += " WHERE oid = " +e.getId();
-    
+
     dc.executeUpdate(query);
   }
-  
+
   public static void setGroup(int [] oids, int g, DataConnection dc) throws SQLException {
     if (oids == null || oids.length == 0) {
       return;
@@ -267,7 +267,7 @@ public class OrderLineIO
       }
 
       rs.close();
-    } catch (Exception e) {
+    } catch (SQLException e) {
       GemLogger.logException(query, e);
     }
     return prl;
@@ -283,20 +283,22 @@ public class OrderLineIO
    * @deprecated use instead {@link net.algem.edition.ExportService#isPro(int, int) }
    */
   public static boolean isPro(int adh, DataCache dc) {
-    String query = "SELECT analytique FROM " + TABLE + " WHERE echeance >= '" + dc.getStartOfPeriod() + "' AND adherent=" + adh;
-    //String query = "SELECT analytique FROM echeancier2 WHERE echeance >= '"+dc.getStartOfYear()+"' AND adherent="+adh;
-    String a = "";
+    String query = "SELECT a.code, a.libelle FROM " + CostAccountCtrl.tableName + " a, " + TABLE + " e"
+      + " WHERE e.adherent=" + adh
+      + " AND e.analytique = a.code"
+      + " AND e.echeance >= '" + dc.getStartOfPeriod() + "'";
+    //String query = "SELECT analytique FROM " + TABLE + " WHERE echeance >= '" + dc.getStartOfPeriod() + "' AND adherent=" + adh;
     try {
       ResultSet rs = DataCache.getDataConnection().executeQuery(query);
-      //if (rs.next()) {
       while (rs.next()) {
-        a = rs.getString(1);
-        if (a.indexOf("PROFES") != -1) {
+        String code = rs.getString(1).toLowerCase();
+        String label = rs.getString(2).toLowerCase();
+        if (code.indexOf("pro") > -1 || label.indexOf("pro") > -1 ) {
           return true;
         }
       }
       rs.close();
-    } catch (Exception e) {
+    } catch (SQLException e) {
       GemLogger.logException(query, e);
     }
     return false;

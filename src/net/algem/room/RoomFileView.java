@@ -30,7 +30,7 @@ import net.algem.contact.*;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.GemLogger;
-import net.algem.util.module.FileView;
+import net.algem.util.module.FileTabView;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.module.GemModule;
 import net.algem.util.ui.TabPanel;
@@ -43,7 +43,7 @@ import net.algem.util.ui.TabPanel;
  * @since 2.1.j
  */
 public class RoomFileView
-        extends FileView
+        extends FileTabView
 {
 
   private Room room;

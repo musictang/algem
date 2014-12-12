@@ -1,6 +1,6 @@
 /*
- * @(#)Person.java	2.9.1 04/11/14
- * 
+ * @(#)Person.java	2.9.1 12/11/14
+ *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.contact;
 
@@ -123,12 +123,11 @@ public class Person
   }
 
   public String getFirstnameName() {
-    if (firstName == null || firstName.isEmpty()) {
-      return name;
-    } else {
-      StringBuilder b = new StringBuilder(firstName);
-      return b.append(" ").append(name).toString();
-    }
+    return ((firstName == null || firstName.isEmpty()) ? name : firstName + " " + name);
+  }
+
+  public String getNameFirstname() {
+    return name + (firstName == null ? "" : " " + firstName);
   }
 
   /**
@@ -155,11 +154,7 @@ public class Person
     return b.append(" ").append(n).toString();
   }
 
-  public String getNameFirstname() {
-    StringBuilder b = new StringBuilder(name);
-    return b.append(" ").append(firstName).toString();
-  }
-  
+
   public String getCommunName() {
     if (nickName != null) {
       return nickName.isEmpty() ? getAbbrevFirstNameName() : nickName;
@@ -255,8 +250,8 @@ public class Person
   public int compareTo(Person o) {
     return getFirstnameName().compareToIgnoreCase(o.getFirstnameName());
   }
-  
-  
+
+
   private boolean out(int n) {
     System.out.println("!Personne.equals " + n);
     return false;

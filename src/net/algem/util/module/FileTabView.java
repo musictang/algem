@@ -1,5 +1,5 @@
 /*
- * @(#)FileView.java	2.8.w 27/08/14
+ * @(#)FileTabView.java	2.9.1 12/12/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -28,12 +28,12 @@ import net.algem.util.ui.TabPanel;
 
 /**
  * Base class used to display dossiers.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.1
  * @since 2.3.c 21/03/12
  */
-public class FileView
+public class FileTabView
         extends DefaultGemView
 {
 
@@ -41,15 +41,15 @@ public class FileView
   public static final String INVOICE_TAB_TITLE = BundleUtil.getLabel("Invoice.label");
   public static final String ESTIMATE_TAB_TITLE = BundleUtil.getLabel("Quotation.label");
   public static final String HISTO_ESTIMATE_TAB_TITLE = BundleUtil.getLabel("Menu.quotation.history.label");
-  
+
   protected TabPanel wTab;
   protected ActionListener listener;
 
-  public FileView(GemDesktop desktop) {
+  public FileTabView(GemDesktop desktop) {
     super(desktop);
   }
 
-  public FileView(GemDesktop desktop, String label) {
+  public FileTabView(GemDesktop desktop, String label) {
     super(desktop, label);
   }
 
@@ -70,7 +70,7 @@ public class FileView
   /**
    * Adds a tab with closing button.
    * Tab is automatically selected after adding.
-   * @param tab 
+   * @param tab
    * @param label tab title
    */
   public void addTab(FileTab tab, String label) {
@@ -81,7 +81,7 @@ public class FileView
 
   /**
    * Adds a tab and selects the tab if <code>selectionFlag</code> is true.
-   * @param tab 
+   * @param tab
    * @param label tab title
    * @param selectionFlag if true, tab is selected
    */
@@ -92,11 +92,16 @@ public class FileView
     }
     wTab.addCloseButton(wTab.indexOfTab(label), listener);
   }
-  
+
 
   @Override
   public String toString() {
     return getClass().getSimpleName();
+  }
+
+  @Override
+  public void setSelectedTab(int idx) {
+    wTab.setSelectedIndex(idx);
   }
 
 }

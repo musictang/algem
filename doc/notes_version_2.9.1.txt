@@ -56,7 +56,11 @@ CORRECTION DE BUGS-DIVERS
 * Les photos des personnes enregistrées en tant que contact de salle n'étaient pas visibles lorsqu'on ouvrait leurs fiches.
 * Il est maintenant possible de rechercher une salle en fonction d'un numéro de contact.
 * L'ajout automatique du nom de mois abrégé dans les libellés du fichier xml de prélèvement SEPA entraînait un rejet à l'importation par l'établissement bancaire. Certains mois en effet comportent des accents en français (décembre, février) et la présence des accents est interdite dans ce fichier. Afin d'éviter ce problème, les noms de mois sont désormais au format anglo-saxon.
-* Le changement de durée d'un planning de type "studio" ou "technicien" n'était pas possible. C'est désormais autorisé, mais aucune vérification ne sera faite cependant si le techinicien est aussi occupé par ailleurs en tant que professeur.
+* Le changement de durée d'un planning de type "studio" ou "technicien" n'était pas possible. C'est désormais autorisé, mais aucune vérification ne sera faite cependant si le technicien est aussi occupé par ailleurs en tant que professeur.
 * Lorqu'une facture était créée sans sélection d'échéances, la ligne de paiement ajoutée dans l'échéancier après validation ne présentait pas les mêmes comptes comptable et analytique que la ligne de facturation. Les deux lignes générées correspondent maintenant aux mêmes numéros de compte. Note : s'il n'existe pas de correspondance entre le compte comptable et le compte analytique (voir menu Compta -> Comptes par défaut), la colonne analytique restera vide.
+* Lorsque le payeur est une organisation, c'est le nom de l'organisation qui figure en tête de l'onglet échéancier et pas les nom et prénom du payeur comme auparavant. Cette fonctionnalité était déjà activée pour les fiches salle, mais pas pour les fiches personne.
+* La consultation d'une inscription par l'intermédiaire du menu Catalogue ouvre maintenant la fiche adhérent directement sur l'onglet "Inscriptions".
+* Le nombre de places n'est plus mis à jour automatiquement après le choix d'une salle dans la fenêtre de planification de cours. Cependant, si le nombre de places saisi dépasse le nombre maximal autorisé pour la salle sélectionnée, un message vous en avertira. Rappel : chaque salle peut se voir attribuer un nombre de places maximal (voir fiche Salle).
+
 
 

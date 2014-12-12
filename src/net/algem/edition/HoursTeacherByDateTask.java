@@ -1,5 +1,5 @@
 /*
- * @(#)HoursTeacherByDateTask.java	2.9.1 08/12/14
+ * @(#)HoursTeacherByDateTask.java	2.9.1 12/12/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -154,7 +154,7 @@ extends HoursTask
       totalPeriod += totalMonth;
       if (!detail && prevDate != null) {
         out.println(teacherName + ";"+ prevDate + ";" + numberFormat.format(totalDay / 60.0));
-        out.println(simpleDateFmt.format(prevDate.getDate()).toUpperCase() + ";" + numberFormat.format(totalMonth / 60.0));
+        out.println(simpleDateFmt.format(prevDate.getDate()).toUpperCase() + ";;" + numberFormat.format(totalMonth / 60.0));
         out.println(totalPeriodLabel + ";;" + numberFormat.format(totalPeriod / 60.0));
       } else {
         out.println((prevDate == null ? "" : simpleDateFmt.format(prevDate.getDate()).toUpperCase())
