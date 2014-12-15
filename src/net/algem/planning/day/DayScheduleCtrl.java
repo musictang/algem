@@ -1,5 +1,5 @@
 /*
- * @(#)DayScheduleCtrl.java 2.9.1 27/11/14
+ * @(#)DayScheduleCtrl.java 2.9.1 15/12/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -66,7 +66,6 @@ public class DayScheduleCtrl
   private boolean monthLink = false;
   private Calendar cal;
   private JCheckBoxMenuItem miAllRoom;
-  private boolean allRooms;
 
   public DayScheduleCtrl() {
     super("TableauJour");
@@ -167,7 +166,7 @@ public class DayScheduleCtrl
       load(d);
       //((DayScheduleView) view).stateChanged(new ChangeEvent(cal));
       desktop.postEvent(new SelectDateEvent(this, d));
-    } else if (evt.getActionCommand().equals("Click")) {
+    } else if ("Click".equals(cmd)) {
       ScheduleView v = (ScheduleView) evt.getSource();
       Schedule p = v.getSchedule();
 
@@ -267,16 +266,16 @@ public class DayScheduleCtrl
     desktop.removeGemEventListener(this);
     desktop.removeModule(this);
   }
-  
+
   public void setState(Object[] state) {
     if (state != null && state.length > 0) {
       if (state[0].getClass() == Boolean.class) {
         miAllRoom.setSelected((Boolean) state[0]);
       }
     }
-    
+
   }
-  
+
   @Override
   public Object[] getState() {
     return new Object[]{miAllRoom.isSelected()};

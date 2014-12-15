@@ -1,7 +1,7 @@
 /*
- * @(#)DateFrField.java	2.6.a 21/09/12
- * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * @(#)DateFrField.java	2.9.1 15/12/14
+ *
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,13 +16,15 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning;
 
 import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.swing.JTextField;
 
@@ -31,7 +33,7 @@ import javax.swing.JTextField;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.6.a
+ * @version 2.9.1
  * @since 1.0a 02/09/2001
  */
 public class DateFrField extends JTextField
@@ -40,6 +42,8 @@ public class DateFrField extends JTextField
 
   private int pos;
   private DateDocument buf;
+  private final DateFormat mdf = DateFormat.getDateInstance(DateFormat.MEDIUM);
+  private final DateFormat sdf = new SimpleDateFormat("EEEE dd MMM yyyy");
 
   public DateFrField(String s) {
     addKeyListener(this);
@@ -144,6 +148,10 @@ public class DateFrField extends JTextField
   @Override
   public String toString() {
     return buf.getDateFr().toString();
+  }
+
+  public String toSimpleString() {
+    return sdf.format(buf.getDate());
   }
 
 

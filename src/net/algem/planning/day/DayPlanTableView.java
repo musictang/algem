@@ -1,5 +1,5 @@
 /*
- * @(#)DayPlanTableView.java	2.8.w 27/08/14
+ * @(#)DayPlanTableView.java	2.9.1 15/12/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.Vector;
 import javax.swing.JScrollBar;
 import net.algem.planning.DateDayBar;
+import net.algem.planning.DateFr;
 import net.algem.planning.DateFrField;
 import net.algem.planning.ScheduleObject;
 import net.algem.planning.ScheduleRangeObject;
@@ -59,19 +60,62 @@ public abstract class DayPlanTableView
   protected DateDayBar dayBar;
   protected DateFrField date;
   protected GemButton btNow;
+  protected GemButton btPrev;
+  protected GemButton btNext;
+  protected ActionListener mainActionListener;
 
   public DayPlanTableView(String label) {
 
     dayPlanView = new DayPlanView();
     date = new DateFrField();
+    final GemLabel dayLabel = new GemLabel();
+
+    date.addMouseListener(new MouseAdapter() {
+      public void mouseEntered(MouseEvent evt) {
+        dayLabel.setText(date.toSimpleString());
+      }
+      public void mouseExited(MouseEvent evt) {
+        dayLabel.setText(null);
+      }
+    });
+
     dayBar = new DateDayBar();
 
     GemPanel p = new GemPanel();
-    p.setLayout(new BorderLayout());
     p.add(new GemLabel(BundleUtil.getLabel("Day.schedule.prefix.label") + " " + label), BorderLayout.WEST);
-    p.add(date, BorderLayout.CENTER);
+
+    ActionListener prevNextListener = new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        String cmd = e.getActionCommand();
+        DateFr d = date.getDateFr();
+        if (cmd.equals("DayPlanTableView.prevDay")) {
+          d.decDay(1);
+        } else if (cmd.equals("DayPlanTableView.nextDay")){
+          d.incDay(1);
+        }
+        if (mainActionListener != null) {
+          date.set(d);
+          mainActionListener.actionPerformed(new ActionEvent(date, ActionEvent.ACTION_PERFORMED, "PrevNext"));
+        }
+      }
+    };
+    btPrev = new GemButton("<<");
+    btPrev.setToolTipText(BundleUtil.getLabel("Day.previous.label"));
+    btPrev.setActionCommand("DayPlanTableView.prevDay");
+    btPrev.addActionListener(prevNextListener);
     btNow = new GemButton(BundleUtil.getLabel("Action.today.label"));
-    p.add(btNow, BorderLayout.EAST);
+    btNext = new GemButton(">>");
+    btNext.setToolTipText(BundleUtil.getLabel("Day.next.label"));
+    btNext.setActionCommand("DayPlanTableView.nextDay");
+    btNext.addActionListener(prevNextListener);
+    p.add(btPrev);
+    p.add(date);
+    p.add(btNext);
+
+    p.add(btNow);
+    p.add(dayLabel);
+
     sb = new JScrollBar(JScrollBar.HORIZONTAL);
     sb.addAdjustmentListener(this);
 
@@ -103,6 +147,7 @@ public abstract class DayPlanTableView
   }
 
   public void addActionListener(ActionListener l) {
+    this.mainActionListener = l;
     dayBar.addActionListener(l);
     dayPlanView.addActionListener(l);
     date.addActionListener(l);
@@ -110,6 +155,7 @@ public abstract class DayPlanTableView
   }
 
   public void removeActionListener(ActionListener l) {
+    this.mainActionListener = null;
     dayBar.removeActionListener(l);
     dayPlanView.removeActionListener(l);
     date.removeActionListener(l);

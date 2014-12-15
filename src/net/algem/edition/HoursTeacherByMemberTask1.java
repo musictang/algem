@@ -1,5 +1,5 @@
 /*
- * @(#)HoursTeacherByMemberTask1.java	2.9.1 04/12/14
+ * @(#)HoursTeacherByMemberTask1.java	2.9.1 15/12/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -31,7 +31,7 @@ import net.algem.util.BundleUtil;
 
 /**
  * Task executed when editing hours of teachers. Sorting is performed by students, courses and dates.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.9.1
  * @since 2.9.1 03/12/14
@@ -70,7 +70,7 @@ class HoursTeacherByMemberTask1
       printDetailCollective();
       out.close();
       return null;
-    } 
+    }
 
     private void printDetailCollective() throws SQLException {
       String tc = BundleUtil.getLabel("Total.label") + " " + BundleUtil.getLabel("Course.label");
@@ -86,6 +86,7 @@ class HoursTeacherByMemberTask1
       String teacherName = "";
 
       StringBuilder sb = new StringBuilder();
+      out.print("\ufeff");// force Byte Order Mark (BOM) : windows compatibility
       out.println(";;;;;;");
       out.println(";;;;;;");
       out.println(BundleUtil.getLabel("Month.schedule.collective.course.tab").toUpperCase() + ";;;;;;");
@@ -110,7 +111,7 @@ class HoursTeacherByMemberTask1
             }
             out.println();
           }
-          
+
           prevIdper = idper;
           prevDate = null;
           prevMonth = 0;
@@ -243,7 +244,7 @@ class HoursTeacherByMemberTask1
                   .append(date).append(';').append(start).append(';').append(end).append(';').append(duration);
           out.println(sb.toString());
           sb.delete(0, sb.length());
-        } 
+        }
       } // end while
       totalPeriod += totalMonth;
       if (detail) {

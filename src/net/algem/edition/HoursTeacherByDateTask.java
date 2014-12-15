@@ -1,5 +1,5 @@
 /*
- * @(#)HoursTeacherByDateTask.java	2.9.1 12/12/14
+ * @(#)HoursTeacherByDateTask.java	2.9.1 15/12/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -63,6 +63,7 @@ extends HoursTask
       String memberName = "";
       String courseName = "";
 
+      out.print("\ufeff");// force Byte Order Mark (BOM) : windows compatibility
       //header
       StringBuilder sb = new StringBuilder(BundleUtil.getLabel("Teacher.label"));
       if (detail) {
