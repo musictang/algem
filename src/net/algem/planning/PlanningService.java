@@ -1,5 +1,5 @@
 /*
- * @(#)PlanningService.java	2.8.y.1 03/11/14
+ * @(#)PlanningService.java	2.9.1 16/12/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -38,7 +38,7 @@ import net.algem.util.ui.MessagePopup;
  * Service class for planning.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.y.1
+ * @version 2.9.1
  * @since 2.4.a 07/05/12
  */
 public class PlanningService
@@ -99,7 +99,22 @@ public class PlanningService
   }
 
   public void planify(Action a) throws PlanningException {
-    actionIO.planify(a);
+    try {
+      Course c = (Course) DataCache.findId(a.getCourse(), Model.Course);
+      int type = 0;
+      if (c == null) {
+        throw new PlanningException("Course is null");
+      }
+      switch(c.getCode()) {
+        case 11: type = Schedule.WORKSHOP; break;
+        case 12: type = Schedule.TRAINING; break;
+        default: type = Schedule.COURSE; break;
+      }
+      actionIO.planify(a, type);
+    } catch (SQLException ex) {
+      throw new PlanningException(ex.getMessage());
+    }
+    
   }
 
   public void planify(Action a, int type) throws PlanningException {

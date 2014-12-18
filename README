@@ -17,7 +17,6 @@ along with Algem. If not, see <http://www.gnu.org/licenses/>.
 ============================================================================
 NOTES POUR LE DEVELOPPEUR
 ============================================================================
-
 Si le projet vous intéresse, n'hésitez pas à nous contacter.
 Le projet est supporté par l'association Musiques Tangentes.
 Responsable du projet (Bruno Mauguil) :
@@ -207,17 +206,11 @@ dans certains tests faisant appel aux DAO).
 
 EN PROJET
 =========
-- Remaniement des tarifs pour les modules de cours.
-
-- L'export comptable vers les logiciels CIEL et SAGE est opérationnel mais
-encore en phase de test.
-
+- Planning administratif.
 - Gestion des acomptes dans l'échéancier après création de facture.
-
-- Rédaction d'une doc utilisateur.
-
-- Extension des tests unitaires et des tests d'intégration.
-
+- Optimisation des exports comptables vers les logiciels CIEL et SAGE.
 - Extension et amélioration des exportations de données.
-
+- Importation de données à partir d'un fichier CSV.
+- Extension des tests unitaires et des tests d'intégration.
+- Rédaction d'une doc utilisateur.
 

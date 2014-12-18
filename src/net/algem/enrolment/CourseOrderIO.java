@@ -132,7 +132,7 @@ public class CourseOrderIO
    * @param where
    * @param member
    * @param dc
-   * @return
+   * @return a vector of course order
    * @throws SQLException
    * @deprecated 
    */

@@ -1,5 +1,5 @@
 /*
-* @(#)OrderLineDlg.java	2.9.1 11/12/14
+* @(#)OrderLineDlg.java	2.9.1 17/12/14
 *
 * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
 *
@@ -75,6 +75,7 @@ implements ActionListener, TableModelListener {
   private GemField totalField;
   private NumberFormat nf = NumberFormat.getInstance(Locale.FRANCE);
   private JPopupMenu popup;
+  private JMenuItem miCancelTransfer;
   private JMenuItem miTransfer;
   private JMenuItem miCashing;
   private JCheckBoxMenuItem cbCheckPayment;
@@ -106,9 +107,12 @@ implements ActionListener, TableModelListener {
     }
     cbCheckPayment.addActionListener(this);
     popup = new JPopupMenu();
-    popup.add(miTransfer = new JMenuItem(BundleUtil.getLabel("Transfer.cancel.label")));
+    popup.add(miCancelTransfer = new JMenuItem(BundleUtil.getLabel("Transfer.cancel.label")));
+    popup.add(miTransfer = new JMenuItem(BundleUtil.getLabel("Transfer.set.label")));
+    miTransfer.setEnabled(false);
     popup.add(miCashing = new JMenuItem (BundleUtil.getLabel("Cashing.multiple.action.label")));
-    popup.getComponent(1).setEnabled(false);
+    miCashing.setEnabled(false);
+    miCancelTransfer.addActionListener(this);
     miTransfer.addActionListener(this);
     tableView.addPopupMenuListener(popup, dataCache);
     
@@ -190,8 +194,10 @@ implements ActionListener, TableModelListener {
       dialogModification();
     } else if (src == btSuppress) {
       dialogSuppression();
-    } else if (src == miTransfer && dataCache.authorize("Accounting.transfer.auth")) {
+    } else if (src == miCancelTransfer && dataCache.authorize("Accounting.transfer.auth")) {
       cancelTransfer();
+    } else if (src == miTransfer && dataCache.authorize("Accounting.transfer.auth")) {
+      setTransfer();
     } else if (src == miCashing && dataCache.authorize("Payment.multiple.modification.auth")){
       multipleCashing(); // encaissement multiple
     } else if (src == btLoad) {
@@ -263,6 +269,25 @@ implements ActionListener, TableModelListener {
       }
     } catch (SQLException e) {
       GemLogger.logException(e);
+    }
+  }
+  
+  /**
+   * Sets tranferred selected order line.
+   * In most cases, the status "transferred" should not be editable.
+   * This method allows to force this option for a single order line.
+   */
+  private void setTransfer() {
+    int row = tableView.getSelectedRow();
+    OrderLine ol = tableView.getElementAt(row);
+    try {
+    if (!ol.isTransfered()) {
+      ol.setTransfered(true);
+      OrderLineIO.transfer(ol, dc);
+      tableView.setElementAt(ol, row);
+    }
+    } catch (SQLException e) {
+      GemLogger.log(e.getMessage());
     }
   }
   

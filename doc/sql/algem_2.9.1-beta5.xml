@@ -2366,6 +2366,38 @@
             </listitem>
           </varlistentry>
 
+            <varlistentry>
+              <term><structfield>tarification</structfield></term>
+              <listitem><para>
+                <type>priperiod</type>
+
+
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+            <varlistentry>
+              <term><structfield>duree</structfield></term>
+              <listitem><para>
+                <type>integer</type>
+
+
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
         </variablelist>
 
 
@@ -6403,6 +6435,22 @@
             </listitem>
           </varlistentry>
 
+            <varlistentry>
+              <term><structfield>pseudo</structfield></term>
+              <listitem><para>
+                <type>character varying(64)</type>
+
+
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
         </variablelist>
 
 
@@ -7085,23 +7133,41 @@
          <title>Definition of view planningvue</title>
          <programlisting>
 SELECT pl.id
-, pl.jour
-, pl.debut
-, pl.fin
-, pl.action
-, p.id AS profid
-, p.prenom AS prenomprof
-, p.nom AS nomprof
-, s.id AS salleid
-, s.nom AS salle
-, c.id AS coursid
-, c.titre AS cours
-, c.ecole 
+,
+    pl.jour
+,
+    pl.debut
+,
+    pl.fin
+,
+    pl.action
+,
+    p.id AS profid
+,
+    p.prenom AS prenomprof
+,
+    p.nom AS nomprof
+,
+    s.id AS salleid
+,
+    s.nom AS salle
+,
+    c.id AS coursid
+,
+    c.titre AS cours
+,
+    c.ecole
+   
 FROM planning pl
-, personne p
-, salle s
-, cours c
-, action a 
+,
+    personne p
+,
+    salle s
+,
+    cours c
+,
+    action a
+  
 WHERE (
      (
            (

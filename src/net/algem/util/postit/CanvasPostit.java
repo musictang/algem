@@ -1,7 +1,7 @@
 /*
- * @(#)CanvasPostit.java	2.6.a 21/09/12
+ * @(#)CanvasPostit.java	2.9.1 17/12/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -33,7 +33,7 @@ import net.algem.util.ui.GemPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.1
  */
 public class CanvasPostit
         extends GemPanel
@@ -44,7 +44,7 @@ public class CanvasPostit
   int nextx = 50;
   int nexty = 40;
   int initialDragPos;
-	private Vector<PostitPosition> postits;
+  private Vector<PostitPosition> postits;
   private PostitPosition pick;
   private int clickx;
   private int clicky;
@@ -128,7 +128,7 @@ public class CanvasPostit
       p = pp.getPostit();
 
       int w = MAXW;
-      if (p.getReceiver() != 0) {
+      if (p.getReceiver() > 0) {
         g.setColor(new Color(230, 255, 68)); // couleur du postit si privé
       } else {
         g.setColor(Color.yellow); // jaune si public

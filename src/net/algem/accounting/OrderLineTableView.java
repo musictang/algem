@@ -1,5 +1,5 @@
 /*
-* @(#)OrderLineTableView.java 2.8.u 19/05/14
+* @(#)OrderLineTableView.java 2.9.1 17/12/14
 *
 * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
 *
@@ -45,7 +45,7 @@ import net.algem.util.model.Model;
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @author <a href="mailto:damien.loustau@gmail.com">Damien Loustau</a>
- * @version 2.8.u
+ * @version 2.9.1
  * @since 1.0a 07/07/1999
  *
  */
@@ -86,7 +86,6 @@ implements TableModelListener {
     this.tableModel = tableModel;
     table = new JTable(tableModel) {
       //Implements table header tool tips.
-      
       @Override
       protected JTableHeader createDefaultTableHeader() {
         return new JTableHeader(columnModel) {
@@ -136,7 +135,7 @@ implements TableModelListener {
     cm.getColumn(8).setPreferredWidth(160);//account
     cm.getColumn(9).setPreferredWidth(140);//cost account
     cm.getColumn(10).setPreferredWidth(30);//payed
-    cm.getColumn(11).setPreferredWidth(30);//transfered
+    cm.getColumn(11).setPreferredWidth(30);//transferred
     cm.getColumn(12).setPreferredWidth(40);//invoice
     //cm.getColumn(11).setPreferredWidth(20);// suppression devise de la vue
     //cm.getColumn(12).setPreferredWidth(50);
@@ -199,13 +198,13 @@ implements TableModelListener {
           }
         }
         popup.getComponent(0).setEnabled(t && dataCache.authorize("Accounting.transfer.auth"));
+        popup.getComponent(1).setEnabled(!t && dataCache.authorize("Accounting.transfer.auth"));
 
-        ActionListener[] listeners = popup.getComponent(1).getListeners(ActionListener.class);
+        ActionListener[] listeners = popup.getComponent(2).getListeners(ActionListener.class);
         if (listeners != null && listeners.length > 0) {
-          popup.getComponent(1).setEnabled(p && dataCache.authorize("Payment.multiple.modification.auth"));
+          popup.getComponent(2).setEnabled(p && dataCache.authorize("Payment.multiple.modification.auth"));
         }
         super.maybeShowPopup(e);
-
       }
     });
   }

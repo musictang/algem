@@ -112,7 +112,7 @@
   <body>
 
     <!-- Primary Index -->
-	<p><br><br>Dumped on 2014-11-03</p>
+	<p><br><br>Dumped on 2014-12-18</p>
 <h1><a name="index">Index of database - algem</a></h1>
 <ul>
     
@@ -2624,6 +2624,38 @@
 
 				
 				DEFAULT false
+				</i>
+				
+				</td>
+			 </tr>
+            
+            <tr class="tr0">
+				<td>
+                
+                </td>
+            	<td>tarification</td>
+            	<td>priperiod</td>
+                <td><i>
+				
+
+				
+				
+				</i>
+				
+				</td>
+			 </tr>
+            
+            <tr class="tr1">
+				<td>
+                
+                </td>
+            	<td>duree</td>
+            	<td>integer</td>
+                <td><i>
+				
+
+				
+				
 				</i>
 				
 				</td>
@@ -6941,6 +6973,22 @@
 				</td>
 			 </tr>
             
+            <tr class="tr0">
+				<td>
+                
+                </td>
+            	<td>pseudo</td>
+            	<td>character varying(64)</td>
+                <td><i>
+				
+
+				
+				
+				</i>
+				
+				</td>
+			 </tr>
+            
         </table>
 
         <!-- Inherits -->
@@ -7593,23 +7641,41 @@
 	
 	<pre>
 SELECT pl.id
-, pl.jour
-, pl.debut
-, pl.fin
-, pl.action
-, p.id AS profid
-, p.prenom AS prenomprof
-, p.nom AS nomprof
-, s.id AS salleid
-, s.nom AS salle
-, c.id AS coursid
-, c.titre AS cours
-, c.ecole 
+,
+    pl.jour
+,
+    pl.debut
+,
+    pl.fin
+,
+    pl.action
+,
+    p.id AS profid
+,
+    p.prenom AS prenomprof
+,
+    p.nom AS nomprof
+,
+    s.id AS salleid
+,
+    s.nom AS salle
+,
+    c.id AS coursid
+,
+    c.titre AS cours
+,
+    c.ecole
+   
 FROM planning pl
-, personne p
-, salle s
-, cours c
-, action a 
+,
+    personne p
+,
+    salle s
+,
+    cours c
+,
+    action a
+  
 WHERE (
      (
            (

@@ -1,7 +1,7 @@
 /*
- * @(#)PostitPosition.java	2.6.a 06/08/2012
+ * @(#)PostitPosition.java	2.9.1 17/12/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,11 +21,11 @@
 package net.algem.util.postit;
 
 /**
- * comment
+ * Postit at x,y position.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.1
  */
 public class PostitPosition {
 
@@ -36,18 +36,18 @@ public class PostitPosition {
 	public PostitPosition(int x, int y, Postit p) {
 		this.x = x;
 		this.y = y;
-		post = p;
+		this.post = p;
 	}
 
-	public int getX() {
+	int getX() {
 		return x;
 	}
 
-	public int getY() {
+	int getY() {
 		return y;
 	}
 
-	public Postit getPostit() {
+	Postit getPostit() {
 		return post;
 	}
 }

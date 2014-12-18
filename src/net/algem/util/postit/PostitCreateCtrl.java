@@ -1,5 +1,5 @@
 /*
- * @(#)PostitCreateCtrl.java	2.8.x 16/09/14
+ * @(#)PostitCreateCtrl.java	2.9.1 17/12/14
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -39,7 +39,7 @@ import net.algem.util.ui.GemPanel;
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.x
+ * @version 2.9.1
  */
 public class PostitCreateCtrl
         extends GemPanel
@@ -52,13 +52,13 @@ public class PostitCreateCtrl
   private GemButton btCancel;
   private GemButton btValidate;
   private ActionListener actionListener;
-	private UserService service;
+  private UserService service;
 
   public PostitCreateCtrl(GemDesktopCtrl desktop, UserService service) {
 
     this.setLayout(new BorderLayout());
     this.desktop = desktop;
-		this.service = service;
+    this.service = service;
     status = new GemField();
     status.setEditable(false);
 

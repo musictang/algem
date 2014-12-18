@@ -1,3 +1,16 @@
+CORRECTION DE BUGS-DIVERS
+* L'icone animée d'attente n'était pas visible dans les fenêtres de recherche.
+* Il fallait déplacer ou repositionner les fenêtres de dialogue d'export dans Compta -> Transfert echéancier, Compta -> Transfert Pièce, Compta -> Prélèvement et Compta -> Heures salariés pour que le choix dans les diverses boîtes de sélection puisse se faire correctement.
+* Après modification d'un devis (ou d'une facture) dupliqué(e), les modifications se reflétaient dans le devis ou la facture d'origine si la fenêtre d'historique n'avait pas été fermée.
+* Les photos des personnes enregistrées en tant que contact de salle n'étaient pas visibles lorsqu'on ouvrait leurs fiches.
+* Il est maintenant possible de rechercher une salle en fonction d'un numéro de contact.
+* L'ajout automatique du nom de mois abrégé dans les libellés du fichier xml de prélèvement SEPA entraînait un rejet à l'importation par l'établissement bancaire. Certains mois en effet comportent des accents en français (décembre, février) et la présence des accents est interdite dans ce fichier. Afin d'éviter ce problème, les noms de mois sont désormais au format anglo-saxon.
+* Le changement de durée d'un planning de type "studio" ou "technicien" n'était pas possible. C'est désormais autorisé, mais aucune vérification ne sera faite cependant si le technicien est aussi occupé par ailleurs en tant que professeur.
+* Lorqu'une facture était créée sans sélection d'échéances, la ligne de paiement ajoutée dans l'échéancier après validation ne présentait pas les mêmes comptes comptable et analytique que la ligne de facturation. Les deux lignes générées correspondent maintenant aux mêmes numéros de compte. Note : s'il n'existe pas de correspondance entre le compte comptable et le compte analytique (voir menu Compta -> Comptes par défaut), la colonne analytique restera vide.
+* Lorsque le payeur est une organisation, c'est le nom de l'organisation qui figure en tête de l'onglet échéancier et pas les nom et prénom du payeur comme auparavant. Cette fonctionnalité était déjà activée pour les fiches salle, mais pas pour les fiches personne.
+* La consultation d'une inscription par l'intermédiaire du menu Catalogue ouvre maintenant la fiche adhérent directement sur l'onglet "Inscriptions".
+* Le nombre de places n'est plus mis à jour automatiquement après le choix d'une salle dans la fenêtre de planification de cours. Cependant, si le nombre de places saisi dépasse le nombre maximal autorisé pour la salle sélectionnée, un message vous en avertira. Rappel : chaque salle peut se voir attribuer un nombre de places maximal (voir fiche Salle).
+
 FORMULES
 - La période de tarification Horaire(Tarif base) a été ajoutée aux tarifications par défaut dans la rubrique Gestion du menu Configuration -> Paramètres -> Généraux
 
@@ -41,6 +54,12 @@ Le planning affichera le pseudo de l'élève s'il existe, ou son nom dans le cas
 - Une nouvelle option "Afficher toutes les salles" est maintenant disponible dans le planning jour.
 En activant cette option, toutes les salles actives de l'établissement apparaîtront sur le planning même si elles ne comportent aucune réservation. Ce paramètre est mémorisé à la fermeture du logiciel et vous pouvez l'activer ou le désactiver à tout moment, suivant vos besoins. Il est parfois utile d'avoir sous les yeux le nom de toutes les salles, dans le cas où votre structure en comporte un nombre important par exemple.
 
+- Deux nouveaux boutons "Jour précédent" et "Jour suivant" symbolisés par "<<" et ">>" sont maintenant présents en haut de la fenêtre de Planning jour. Le survol à la souris de la zone de date permet d'afficher de manière plus explicite le jour actuellement sélectionné.
+
+- La planification des stages peut maintenant se faire de 2 manières :
+  Comme auparavant, en choisissant "Planification stage" dans le menu Planning, lorsque les horaires du stage sont variables. C'est en quelque sorte une planification à la carte. Avec cette méthode, seuls les cours de type "Stage" vous seront proposés dans la liste des cours à planifier.
+  En utilisant "Planification cours", lorsque les horaires du stage sont périodiques. Bien que la "Planification stage" soit toujours possible dans ce cas, il peut être préférable et plus rapide d'utiliser cette méthode quand un stage comporte de nombreuses séances identiques sur plusieurs jours d'affilée. Il faudra dans ce cas choisir une périodicité de type "Jour" et préciser comme à l'habitude le nombre de séances total (et optionnellement, le nombre de places maximal).
+
 HEURES PROFESSEUR
 Les heures professeurs, disponible à travers le menu Compta -> "Heures salariés", peuvent être maintenant exportées en fonction de plusieurs critères.
 Le premier type d'export est enregistré dans un fichier texte et permet de comptabiliser le nombre d'heures en fonction de l'établissement et du statut (Professionnel ou Loisir) du cours ayant été planifié. De nouveaux sous-totaux sont maintenant disponibles par établissement et par statut.
@@ -48,19 +67,4 @@ Le second, enregistré dans un fichier au format CSV, importable dans un tableur
 Le troisième, au format CSV, présente un classement par professeur/élève pour les cours individuels (plannings de type individuel ou plannings collectifs ne comportant qu'une seule plage horaire) et par professeur/cours pour les plannings collectifs (ateliers ou stages, par exemple).
 On peut ou non choisir un listing détaillé pour chacun de ces exports (case à cocher "Détail" dans la fenêtre d'exportation). Les listings non détaillés ne présenteront que les totaux par jour (ou par élève selon le cas), par mois et par période.
 Ces exports sont aussi disponibles au niveau individuel, en cliquant sur l'icone représentant une horloge "Heures professeur" dans la fiche de chaque enseignant.
-
-CORRECTION DE BUGS-DIVERS
-* L'icone animée d'attente n'était pas visible dans les fenêtres de recherche.
-* Il fallait déplacer ou repositionner les fenêtres de dialogue d'export dans Compta -> Transfert echéancier, Compta -> Transfert Pièce, Compta -> Prélèvement et Compta -> Heures salariés pour que le choix dans les diverses boîtes de sélection puisse se faire correctement.
-* Après modification d'un devis (ou d'une facture) dupliqué(e), les modifications se reflétaient dans le devis ou la facture d'origine si la fenêtre d'historique n'avait pas été fermée.
-* Les photos des personnes enregistrées en tant que contact de salle n'étaient pas visibles lorsqu'on ouvrait leurs fiches.
-* Il est maintenant possible de rechercher une salle en fonction d'un numéro de contact.
-* L'ajout automatique du nom de mois abrégé dans les libellés du fichier xml de prélèvement SEPA entraînait un rejet à l'importation par l'établissement bancaire. Certains mois en effet comportent des accents en français (décembre, février) et la présence des accents est interdite dans ce fichier. Afin d'éviter ce problème, les noms de mois sont désormais au format anglo-saxon.
-* Le changement de durée d'un planning de type "studio" ou "technicien" n'était pas possible. C'est désormais autorisé, mais aucune vérification ne sera faite cependant si le technicien est aussi occupé par ailleurs en tant que professeur.
-* Lorqu'une facture était créée sans sélection d'échéances, la ligne de paiement ajoutée dans l'échéancier après validation ne présentait pas les mêmes comptes comptable et analytique que la ligne de facturation. Les deux lignes générées correspondent maintenant aux mêmes numéros de compte. Note : s'il n'existe pas de correspondance entre le compte comptable et le compte analytique (voir menu Compta -> Comptes par défaut), la colonne analytique restera vide.
-* Lorsque le payeur est une organisation, c'est le nom de l'organisation qui figure en tête de l'onglet échéancier et pas les nom et prénom du payeur comme auparavant. Cette fonctionnalité était déjà activée pour les fiches salle, mais pas pour les fiches personne.
-* La consultation d'une inscription par l'intermédiaire du menu Catalogue ouvre maintenant la fiche adhérent directement sur l'onglet "Inscriptions".
-* Le nombre de places n'est plus mis à jour automatiquement après le choix d'une salle dans la fenêtre de planification de cours. Cependant, si le nombre de places saisi dépasse le nombre maximal autorisé pour la salle sélectionnée, un message vous en avertira. Rappel : chaque salle peut se voir attribuer un nombre de places maximal (voir fiche Salle).
-
-
 

@@ -1,5 +1,5 @@
 /*
- * @(#)DayScheduleCtrl.java 2.9.1 15/12/14
+ * @(#)DayScheduleCtrl.java 2.9.1 16/12/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -162,14 +162,15 @@ public class DayScheduleCtrl
       //((DayScheduleView) view).stateChanged(new ChangeEvent(cal));
       desktop.postEvent(new SelectDateEvent(this, d));
     } else if (src instanceof DateFrField) {
+      desktop.setWaitCursor();
       Date d = ((DateFrField) evt.getSource()).getDate();
       load(d);
+      desktop.setDefaultCursor();
       //((DayScheduleView) view).stateChanged(new ChangeEvent(cal));
       desktop.postEvent(new SelectDateEvent(this, d));
     } else if ("Click".equals(cmd)) {
       ScheduleView v = (ScheduleView) evt.getSource();
       Schedule p = v.getSchedule();
-
       ScheduleDetailEvent pde = new ScheduleDetailEvent(this, p);
       Point pos = v.getClickPosition();
       pos.translate(150, 0); // deplacement vers la droite
@@ -177,8 +178,10 @@ public class DayScheduleCtrl
       pde.setRanges(v.getScheduleRanges());
       desktop.postEvent(pde);
     } else if (BundleUtil.getLabel("Action.today.label").equals(cmd)) {
+      desktop.setWaitCursor();
       Date d = new Date();
       load(d);
+      desktop.setDefaultCursor();
       //((DayScheduleView) view).stateChanged(new ChangeEvent(cal));
       desktop.postEvent(new SelectDateEvent(this, d));
     } else if (src == miPrint) {

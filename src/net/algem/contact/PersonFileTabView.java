@@ -266,28 +266,29 @@ public class PersonFileTabView
   }
 
   /**
-   * @see net.algem.contact.PersonFileListenerUsed only for subscription card.
+   * @param evt event
+   * @see net.algem.contact.PersonFileListener (Used only for subscription card).
    */
   @Override
-  public void contentsChanged(PersonFileEvent _evt) {
-    if (_evt.getType() == PersonFileEvent.CONTENTS_CHANGED) {
-      PersonFile pf = ((PersonFile) _evt.getSource());
+  public void contentsChanged(PersonFileEvent evt) {
+    if (evt.getType() == PersonFileEvent.CONTENTS_CHANGED) {
+      PersonFile pf = ((PersonFile) evt.getSource());
       contactFileEditor.set(pf.getContact());
     }
-    if (_evt.getType() == PersonFileEvent.CONTACT_CHANGED) {
-      Contact c = ((Contact) _evt.getSource());
+    if (evt.getType() == PersonFileEvent.CONTACT_CHANGED) {
+      Contact c = ((Contact) evt.getSource());
       contactFileEditor.set(c);
-    } else if (_evt.getType() == PersonFileEvent.MEMBER_ADDED) {
-      Member m = ((Member) _evt.getSource());
+    } else if (evt.getType() == PersonFileEvent.MEMBER_ADDED) {
+      Member m = ((Member) evt.getSource());
       memberEditor.set(m);
-    } else if (_evt.getType() == PersonFileEvent.TEACHER_ADDED) {
-      Teacher t = ((Teacher) _evt.getSource());
+    } else if (evt.getType() == PersonFileEvent.TEACHER_ADDED) {
+      Teacher t = ((Teacher) evt.getSource());
 //      teacherEditor.set(t);
-    } else if (_evt.getType() == PersonFileEvent.BANK_ADDED) {
-      Rib b = ((Rib) _evt.getSource());
+    } else if (evt.getType() == PersonFileEvent.BANK_ADDED) {
+      Rib b = ((Rib) evt.getSource());
 //      ribView.setRib(b);
-    } else if (_evt.getType() == PersonFileEvent.SUBSCRIPTION_CARD_CHANGED) {
-      PersonSubscriptionCard card = (PersonSubscriptionCard) _evt.getSource();
+    } else if (evt.getType() == PersonFileEvent.SUBSCRIPTION_CARD_CHANGED) {
+      PersonSubscriptionCard card = (PersonSubscriptionCard) evt.getSource();
       dossier.setSubscriptionCard(card);
       contactFileEditor.setRemainingHours(card);
     }

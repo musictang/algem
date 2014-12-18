@@ -1,7 +1,7 @@
 /*
- * @(#)PostitView.java	2.6.a 21/09/12
+ * @(#)PostitView.java	2.9.1 17/12/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -22,9 +22,14 @@ package net.algem.util.postit;
 
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.sql.SQLException;
 import javax.swing.JComboBox;
 import net.algem.planning.DateFrField;
+import net.algem.security.User;
 import net.algem.util.BundleUtil;
+import net.algem.util.DataCache;
+import net.algem.util.GemLogger;
+import net.algem.util.model.Model;
 import net.algem.util.ui.*;
 
 /**
@@ -32,7 +37,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.1
  */
 public class PostitView
         extends GemBorderPanel
@@ -48,14 +53,11 @@ public class PostitView
       BundleUtil.getLabel("Notes.label"), 
       BundleUtil.getLabel("Urgent.label")
     });
-    type.setEditable(false);
 
     issuer = new GemField(20);
     issuer.setEditable(false);
 
     term = new DateFrField();
-    term.setEditable(false);
-
     textArea = new GemTextArea(2, 25);
     textArea.setLineWrap(true);
     textArea.setMargin(new Insets(0, 5, 0, 5));
@@ -74,17 +76,27 @@ public class PostitView
     gb.add(textArea, 0, 4, 2, 2, GridBagHelper.WEST);
   }
 
-  public String get() {
-    return textArea.getText();
+  public Postit get() {
+    Postit p = new Postit();
+    p.setText(textArea.getText());
+    p.setTerm(term.getDateFr());
+    p.setType(type.getSelectedIndex());
+    return p;
   }
 
-  public void set(Postit p) {
+  void set(Postit p) {
+    try {
+      User u = (User) DataCache.findId(p.getIssuer(), Model.User);
+      issuer.setText(u == null ? null : u.getFirstnameName());
+    } catch (SQLException ex) {
+      GemLogger.log(getClass().getName() + "#set :"+ ex.getMessage());
+    }
     type.setSelectedIndex(p.getType());
     term.set(p.getTerm());
     textArea.setText(p.getText());
   }
 
-  public void clear() {
+  void clear() {
     textArea.clear();
     type.setSelectedIndex(0);
   }

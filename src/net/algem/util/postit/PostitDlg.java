@@ -1,7 +1,7 @@
 /*
- * @(#)PostitDlg.java	2.6.a 06/08/2012
+ * @(#)PostitDlg.java	2.9.1 17/12/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,6 +20,7 @@
  */
 package net.algem.util.postit;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -37,7 +38,7 @@ import net.algem.util.ui.PopupDlg;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.1
  */
 public class PostitDlg
         implements ActionListener
@@ -75,31 +76,31 @@ public class PostitDlg
     buttons.add(btValid);
     buttons.add(btCancel);
 
-    dlg.getContentPane().add("North", title);
-    dlg.getContentPane().add("Center", pv);
-    dlg.getContentPane().add("South", buttons);
+    dlg.add(title, BorderLayout.NORTH);
+    dlg.add(pv, BorderLayout.CENTER);
+    dlg.add(buttons, BorderLayout.SOUTH);
     dlg.pack();
     dlg.setLocation(100, 100);
   }
 
-  public void setPost(Postit p) {
+  void setPost(Postit p) {
     post = p;
     pv.set(p);
   }
 
-  public void clear() {
+  void clear() {
     pv.clear();
   }
 
-  public void entry() {
+  void entry() {
     dlg.setVisible(true);
   }
 
-  public boolean isEntryValid() {
+  boolean isEntryValid() {
     return true;
   }
 
-  public boolean isSuppression() {
+  boolean isSuppression() {
     return suppression;
   }
 
@@ -119,16 +120,16 @@ public class PostitDlg
     }
   }
 
-  public String getText() {
+  Postit get() {
     return pv.get();
   }
-  
-  public void exit() {
+
+  void exit() {
     dlg.setVisible(false);
     dlg.dispose();
   }
 
-  public boolean isModif() {
+  boolean isModif() {
     return modification;
   }
 }

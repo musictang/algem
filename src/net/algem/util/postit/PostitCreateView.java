@@ -1,7 +1,7 @@
 /*
- * @(#)PostitCreateView.java	2.6.a 21/09/12
+ * @(#)PostitCreateView.java	2.9.1 17/12/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,8 +21,8 @@
 package net.algem.util.postit;
 
 import java.awt.GridBagLayout;
+import java.util.Date;
 import java.util.List;
-import java.util.Vector;
 import javax.swing.JComboBox;
 import net.algem.planning.DateFr;
 import net.algem.planning.DateFrField;
@@ -34,11 +34,11 @@ import net.algem.util.ui.GemTextArea;
 import net.algem.util.ui.GridBagHelper;
 
 /**
- * comment
+ * Editing view used to create a postit.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.1
  */
 public class PostitCreateView
         extends GemBorderPanel
@@ -66,7 +66,7 @@ public class PostitCreateView
     for (int i = 2; i < users.size(); i++) {
       receiver.addItem(((User) users.get(i)).getLogin());
     }
-    term = new DateFrField();
+    term = new DateFrField(new DateFr(new Date()));
     textArea = new GemTextArea();
 
     this.setLayout(new GridBagLayout());
@@ -86,8 +86,8 @@ public class PostitCreateView
     Postit p = new Postit();
     p.setType(type.getSelectedIndex());
     int i = receiver.getSelectedIndex();
-
-    if (i == 0) { // privé
+    p.setIssuer(userId);
+    if (i <= 0) { // privé
       p.setReceiver(userId); //id de l'utilisateur courant
     } else if (i == 1) { // public
       p.setReceiver(0);
