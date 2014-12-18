@@ -9825,7 +9825,7 @@ WHERE (
             <varlistentry>
               <term><structfield>version</structfield></term>
               <listitem><para>
-                <type>character(8)</type>
+                <type>character varying(16)</type>
 
 
 
