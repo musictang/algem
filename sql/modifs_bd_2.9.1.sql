@@ -37,3 +37,6 @@ INSERT INTO  suivi VALUES (0,null);
 
 -- alpha 8
 DELETE FROM categorie_salarie where id = 0; 
+-- beta 5
+ALTER TABLE version ALTER version TYPE varchar(16);
+
