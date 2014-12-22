@@ -149,7 +149,7 @@ public class ImageUtil
   }
 
   /**
-   * Gets the icon with name {@code file}.
+   * Gets the icon with name {@literal file}.
    * @param file file name
    * @return an imageicon
    */

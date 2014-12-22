@@ -205,7 +205,7 @@ public class InvoiceIO
   }
 
   /**
-   * Search invoices by {@code payer} or {@code idper}.
+   * Search invoices by {@literal payer} or {@literal idper}.
    *
    * @param idper
    * @param andPeriod optional period query

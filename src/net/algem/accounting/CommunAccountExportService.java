@@ -58,7 +58,7 @@ public abstract class CommunAccountExportService
   protected DateFormat defaultDateFormat = new SimpleDateFormat("ddMMyyyy");
 
   /**
-   * Retrieves the default account for the category {@code key}.
+   * Retrieves the default account for the category {@literal key}.
    *
    * @param key the category
    * @return an account
@@ -82,7 +82,7 @@ public abstract class CommunAccountExportService
   }
 
   /**
-   * Retrieves the journal associated with the account {@code account}.
+   * Retrieves the journal associated with the account {@literal account}.
    *
    * @param account account id
    * @return journal code
@@ -101,7 +101,7 @@ public abstract class CommunAccountExportService
   }
 
   /**
-   * Retrieves the default account associated with the mode of payment {@code mp}.
+   * Retrieves the default account associated with the mode of payment {@literal mp}.
    *
    * @param mp mode of payment
    * @return an account

@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileIO.java  2.9.1 04/11/14
+ * @(#)PersonFileIO.java  2.9.2 19/12/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes All Rights Reserved.
  *
@@ -47,7 +47,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.2
  */
 public class PersonFileIO
         extends TableIO
@@ -102,7 +102,7 @@ public class PersonFileIO
     }
     return logEvents;
   }
-  
+
   private void updateTeacher(PersonFile dossier, Vector<String> logEvents) throws SQLException {
     if (dossier.getTeacher() == null) {
       return;
@@ -128,9 +128,9 @@ public class PersonFileIO
         logEvents.addElement(TEACHER_UPDATE_EVENT);
       }
     }
-      
+
   }
-  
+
   private void updateRib(PersonFile dossier, Vector<String> logEvents) throws SQLException {
     if (dossier.getRib() == null) {
       return;
@@ -154,7 +154,7 @@ public class PersonFileIO
         logEvents.addElement("bic.update.event");
       }
     }
-      
+
   }
 
   public void delete(PersonFile dossier) throws Exception {
@@ -222,7 +222,7 @@ public class PersonFileIO
 
   public Vector<PersonFile> findMembers(String where) {
     Vector<PersonFile> v = new Vector<PersonFile>();
-    String query = 
+    String query =
             "SELECT " + PersonIO.COLUMNS + "," + MemberIO.COLUMNS
             + " FROM " + PersonIO.TABLE + " p, " + MemberIO.TABLE + " ";
     if (where != null) {
@@ -317,7 +317,7 @@ public class PersonFileIO
 //    pf.addTeacher((Teacher) DataCache.findId(pf.getId(), Model.Teacher));
     pf.loadTeacher((Teacher) DataCache.findId(pf.getId(), Model.Teacher));
     pf.addRib(RibIO.findId(pf.getId(), dc));
-    pf.setSubscriptionCard(new PersonSubscriptionCardIO(dc).find(pf.getId(), null));
+    pf.setSubscriptionCard(new PersonSubscriptionCardIO(dc).find(pf.getId(), null, false));//XXX TODO lasy loading
     pf.setGroups(((GroupIO) DataCache.getDao(Model.Group)).find(pf.getId()));
   }
 

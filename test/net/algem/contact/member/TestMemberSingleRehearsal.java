@@ -132,7 +132,7 @@ public class TestMemberSingleRehearsal
     PopupDlg dlg = new RehearsalCardDlg();
     ((RehearsalCardDlg) dlg).setCard(card);
     dlg.setValidation(true);
-    //montant = adhrepet.setRehearsalCard(duree, idper, pcr, dialog);
+    //montant = adhrepet.updatePersonalCard(duree, idper, pcr, dialog);
     PersonSubscriptionCard nc = io.find(idper, null);
     assertNull(nc);
 

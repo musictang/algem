@@ -1,7 +1,7 @@
 /*
- * @(#)ScheduleDTO.java	2.6.a 20/09/12
+ * @(#)ScheduleDTO.java	2.9.2 19/12/14
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -23,11 +23,13 @@ package net.algem.planning;
 /**
  * Data access object for schedule.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.2
+ * @since 2.6.a
  */
 public class ScheduleDTO
 {
 
+  private int id;
   private String day;
   private String start;
   private String end;
@@ -49,6 +51,14 @@ public class ScheduleDTO
     action = p.getIdAction();
     place = p.getIdRoom();
     note = p.getNote();
+  }
+
+  public int getId() {
+    return id;
+  }
+
+  public void setId(int id) {
+    this.id = id;
   }
 
   public int getAction() {

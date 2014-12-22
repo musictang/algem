@@ -1,5 +1,5 @@
 /*
- * @(#)MemberService.java	2.9.1 10/12/14
+ * @(#)MemberService.java	2.9.2 19/12/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -22,13 +22,13 @@ package net.algem.contact.member;
 
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 import net.algem.accounting.AccountPrefIO;
 import net.algem.accounting.AccountUtil;
 import net.algem.accounting.OrderLine;
 import net.algem.accounting.OrderLineIO;
-import net.algem.config.ConfigKey;
-import net.algem.config.ConfigUtil;
 import net.algem.config.Preference;
 import net.algem.contact.EmailIO;
 import net.algem.contact.PersonFile;
@@ -46,7 +46,7 @@ import net.algem.util.model.Model;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.2
  * @since 2.4.a 14/05/12
  */
 public class MemberService
@@ -70,6 +70,13 @@ public class MemberService
     return EmailIO.findId(id, dc);
   }
 
+  /**
+   * Method called when changing time or length of some rehearsal.
+   * @param plan schedule
+   * @param start start time
+   * @param end end time
+   * @throws SQLException
+   */
   public void checkSubscriptionCard(ScheduleObject plan, Hour start, Hour end) throws SQLException {
     PersonSubscriptionCard nc = null;
     PersonSubscriptionCard card = findSubscriptionCard(plan.getIdPerson());
@@ -79,7 +86,8 @@ public class MemberService
       if (newDuration >= oldDuration) {
         card.dec(newDuration - oldDuration);
         if (card.getRest() < 0) {
-          nc = createSubscriptionCard(card, plan.getDate());
+
+          nc = createSubscriptionCard(card, plan);
           sendPersonFileEvent(nc);
         } else {
           updateSubscriptionCard(card);
@@ -88,6 +96,7 @@ public class MemberService
         card.inc(oldDuration - newDuration);
         updateSubscriptionCard(card);
       }
+      // TODO refresh
     }
   }
 
@@ -98,7 +107,7 @@ public class MemberService
    * @param card
    * @param date
    */
-  public PersonSubscriptionCard createSubscriptionCard(PersonSubscriptionCard card, DateFr date) throws SQLException {
+  private PersonSubscriptionCard createSubscriptionCard(PersonSubscriptionCard card, ScheduleObject plan) throws SQLException {
     if (card == null) {
       return null;
     }
@@ -107,13 +116,13 @@ public class MemberService
     card.setRest(0);
     // création automatique d'une nouvelle carte d'abonnement
     RehearsalCard cr = RehearsalCardIO.find(card.getRehearsalCardId(), dc);
-    PersonSubscriptionCard nc = new PersonSubscriptionCard(card.getIdper(), card.getRehearsalCardId(), date, cr.getTotalLength() - offset);
+    PersonSubscriptionCard nc = new PersonSubscriptionCard(card.getIdper(), card.getRehearsalCardId(), new DateFr(new Date()), cr.getTotalLength() - offset);
+    nc.addSession(plan.getId());
     cardIO.insert(nc);
     cardIO.update(card);
     PersonFile pf = ((PersonFileIO)DataCache.getDao(Model.PersonFile)).findMember(card.getIdper(), false);
-    OrderLine e = AccountUtil.setOrderLine(pf, date, getPrefAccount(AccountPrefIO.REHEARSAL_KEY_PREF), cr.getAmount());
-    String s = ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey());
-    e.setSchool(Integer.parseInt(s));
+    OrderLine e = AccountUtil.setRehearsalOrderLine(pf, plan.getDate(), getPrefAccount(AccountPrefIO.REHEARSAL_KEY_PREF), cr.getAmount());
+
     AccountUtil.createEntry(e, dc);
 
     return nc;
@@ -124,9 +133,7 @@ public class MemberService
     cardIO.insert(card);
     RehearsalCard abo = RehearsalCardIO.find(card.getRehearsalCardId(), dc);
     Preference p = AccountPrefIO.find(AccountPrefIO.REHEARSAL_KEY_PREF, dc);
-    OrderLine e = AccountUtil.setOrderLine(pFile, new DateFr(new Date()), p, abo.getAmount());
-    String s = ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey());
-    e.setSchool(Integer.parseInt(s));
+    OrderLine e = AccountUtil.setRehearsalOrderLine(pFile, new DateFr(new Date()), p, abo.getAmount());
     AccountUtil.createEntry(e, dc);
   }
 
@@ -151,6 +158,15 @@ public class MemberService
     }
     int duree = plan.getStart().getLength(plan.getEnd());
     card.inc(duree);
+    Iterator<PersonalCardSession> iterator = card.getSessions().iterator();
+    while(iterator.hasNext()) {
+      PersonalCardSession s = iterator.next();
+      if (s.getScheduleId() == plan.getId()) {
+        iterator.remove();
+        break;
+      }
+
+    }
     updateSubscriptionCard(card);
   }
 
@@ -166,11 +182,11 @@ public class MemberService
     assert card != null : "Card should not be null here.";
     RehearsalCard rehearsalCard = RehearsalCardIO.find(card.getRehearsalCardId(), dc);
     // recherche d'une carte précédente
-    PersonSubscriptionCard lastCard = cardIO.find(card.getIdper(), " id < " + card.getId());
+    PersonSubscriptionCard lastCard = cardIO.find(card.getIdper(), " id < " + card.getId(), true);
     int rest = card.getRest();
-    int totalDuration = rehearsalCard.getTotalLength();
+    int max = rehearsalCard.getTotalLength();
     // si la durée restante sur la carte actuelle excède la durée totale possible
-    if (rest > totalDuration) {
+    if (rest > max) {
       if (lastCard != null) {
         lastCard.inc(card.getRest() - rehearsalCard.getTotalLength());
         cardIO.delete(card.getId());
@@ -182,7 +198,7 @@ public class MemberService
         card.setRest(rehearsalCard.getTotalLength());
         sendPersonFileEvent(card);
       }
-    } else if (card.getRest() < rehearsalCard.getTotalLength()) {
+    } else if (card.getRest() < max) {
       cardIO.update(card);
       sendPersonFileEvent(card);
     } else { // suppression d'une carte quand la durée restante est égale au max disponible
@@ -200,11 +216,15 @@ public class MemberService
 
   public PersonSubscriptionCard findSubscriptionCard(int idper) {
     try {
-      return cardIO.find(idper, null);
+      return cardIO.find(idper, null, true);
     } catch (SQLException ex) {
       GemLogger.logException("find carte repet", ex);
       return null;
     }
+  }
+
+  public List<PersonalCardSession> getSessions(int cardId) throws SQLException {
+    return cardIO.findSessions(cardId);
   }
 
   public void deleteOrderLine(DateFr date, int member) throws SQLException {
@@ -278,12 +298,12 @@ public class MemberService
 
   public void saveRehearsal(ScheduleDTO p) throws MemberException {
 
-    ActionIO ioAction = new ActionIO(dc);
+    ActionIO actionIO = new ActionIO(dc);
     Action a = new Action();
     a.setCourse(0);
     try {
       dc.setAutoCommit(false);
-      ioAction.insert(a);
+      actionIO.insert(a);
       p.setAction(a.getId());
       ScheduleIO.insert(p, dc);
       dc.commit();
@@ -332,12 +352,10 @@ public class MemberService
    * @param amount
    * @throws SQLException
    */
-  public void saveOrderLine(PersonFile pFile, DateFr date, double amount) throws SQLException {
+  public void saveRehearsalOrderLine(PersonFile pFile, DateFr date, double amount) throws SQLException {
 
     Preference p = AccountPrefIO.find(AccountPrefIO.REHEARSAL_KEY_PREF, dc);
-    OrderLine e = AccountUtil.setOrderLine(pFile, date, p, amount);
-    String s = ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey());
-    e.setSchool(Integer.parseInt(s));
+    OrderLine e = AccountUtil.setRehearsalOrderLine(pFile, date, p, amount);
     AccountUtil.createEntry(e, dc);
   }
 

@@ -1,5 +1,5 @@
 /*
- * @(#)AccountUtil.java	2.8.t 10/05/14
+ * @(#)AccountUtil.java	2.9.2 19/12/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -24,8 +24,11 @@ import java.awt.print.PrinterException;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
+import java.util.Date;
 import java.util.Locale;
 import javax.swing.JTable;
+import net.algem.config.ConfigKey;
+import net.algem.config.ConfigUtil;
 import net.algem.config.Preference;
 import net.algem.contact.PersonFile;
 import net.algem.contact.member.Member;
@@ -36,7 +39,7 @@ import net.algem.util.DataConnection;
  * Utility class for orderline operations.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.9.2
  * @since 2.0r
  */
 public class AccountUtil {
@@ -87,7 +90,7 @@ public class AccountUtil {
    * @param amount
    * @return un OrderLine
    */
-  public static OrderLine setOrderLine(PersonFile pf, DateFr date, Preference pref, double amount) {
+  public static OrderLine setRehearsalOrderLine(PersonFile pf, DateFr date, Preference pref, double amount) {
 
     OrderLine e = new OrderLine();
     e.setMember(pf.getId());
@@ -99,13 +102,13 @@ public class AccountUtil {
       payer = pf.getId();
     }
     e.setPayer(payer);
-    e.setDate(date);
+    e.setDate(new DateFr(new Date()));// current date may be different than schedule date
     e.setOrder(0);
-
+    String s = ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey());
+    e.setSchool(Integer.parseInt(s));
     e.setAccount(new Account((Integer) pref.getValues()[0]));
     e.setCostAccount(new Account((String) pref.getValues()[1]));
-    //e.setSchool("MT");//XXX on devrait pouvoir spécifier l'école
-    e.setLabel("p" + payer + " a" + pf.getId() + " " + date.toString()); // on ajoute la date au libellé
+    e.setLabel("p" + payer + " a" + pf.getId() + " " + date.toString()); // register schedule date
     e.setCurrency("E");
     e.setDocument("");
     e.setPaid(false);
@@ -117,7 +120,7 @@ public class AccountUtil {
   }
 
   public static OrderLine setGroupOrderLine(int group, PersonFile pf, DateFr date, Preference pref, double amount) {
-    OrderLine ol = setOrderLine(pf, date, pref, amount);
+    OrderLine ol = setRehearsalOrderLine(pf, date, pref, amount);
     ol.setGroup(group);
     return ol;
   }
@@ -188,7 +191,7 @@ public class AccountUtil {
   }
 
   /**
-   * Specifies if the account {@code c} is a personal account.
+   * Specifies if the account {@literal c} is a personal account.
    *
    * Personal account begins by digit {@link AccountUtil#PERSONAL_ACCOUNT_FIRST_DIGIT}.
    * @param c account
@@ -204,7 +207,7 @@ public class AccountUtil {
   }
 
   /**
-   * Specifies if the account {@code c} is a revenue account.
+   * Specifies if the account {@literal c} is a revenue account.
    * Revenue account begins by digit {@link AccountUtil#REVENUE_ACCOUNT_FIRST_DIGIT}.
    *
    * @param c account
@@ -218,7 +221,7 @@ public class AccountUtil {
   }
 
   /**
-   * Specifies if the account {@code c} is a customer account.
+   * Specifies if the account {@literal c} is a customer account.
    *
    * @param c account
    * @return true if client

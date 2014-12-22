@@ -1,7 +1,7 @@
 /*
- * @(#)PersonSubscriptionCard.java 2.6.a 18/09/12
- * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * @(#)PersonSubscriptionCard.java 2.9.2 19/12/14
+ *
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,18 +16,20 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.contact.member;
 
+import java.util.ArrayList;
+import java.util.List;
 import net.algem.planning.DateFr;
 import net.algem.planning.Hour;
 
 /**
  * Subscription card for single rehearsals.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.2
  */
 public class PersonSubscriptionCard
 {
@@ -37,6 +39,7 @@ public class PersonSubscriptionCard
   private int rehearsalCardId;
   private DateFr purchaseDate;
   private int rest;
+  private List<PersonalCardSession> sessions = new ArrayList<PersonalCardSession>();
 
   public PersonSubscriptionCard() {
   }
@@ -90,6 +93,34 @@ public class PersonSubscriptionCard
 
   public void setRest(int r) {
     this.rest = r;
+  }
+
+  List<PersonalCardSession> getSessions() {
+    return sessions;
+  }
+
+  void setSessions(List<PersonalCardSession> sessions) {
+    this.sessions = sessions;
+  }
+
+  /**
+   * Adds the session corresponding to {@code scheduleId} to this card.
+   * @param scheduleId
+   */
+  public void addSession(int scheduleId) {
+    if (scheduleId > 0) {
+      PersonalCardSession s = new PersonalCardSession();
+      s.setScheduleId(scheduleId);
+      sessions.add(s);
+      }
+  }
+
+  /**
+   * Adds a session to this card.
+   * @param s single session
+   */
+  void addSession(PersonalCardSession s) {
+    sessions.add(s);
   }
 
   /**

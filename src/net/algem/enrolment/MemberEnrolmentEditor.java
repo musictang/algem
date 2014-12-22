@@ -804,7 +804,7 @@ public class MemberEnrolmentEditor
   }
 
   /**
-   * Returns the list of activities performed by member between {@code start} and {@code end} dates.
+   * Returns the list of activities performed by member between {@literal start} and {@literal end} dates.
    * @param start starting date
    * @param end ending date
    * @return a html-formatted string
@@ -849,7 +849,7 @@ public class MemberEnrolmentEditor
   }
 
   /**
-   * Returns main infos about this enrolment {@code node}.
+   * Returns main infos about this enrolment {@literal node}.
    * @param node enrolment node
    * @return a html-formatted string
    */

@@ -1,7 +1,7 @@
 /*
- * @(#)PersonSubscriptionCardIO.java 2.6.a 18/09/12
- * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * @(#)PersonSubscriptionCardIO.java 2.9.2 19/12/14
+ *
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,20 +16,23 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.contact.member;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import net.algem.planning.DateFr;
 import net.algem.util.DataConnection;
+import net.algem.util.GemLogger;
 import net.algem.util.model.TableIO;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.2
  */
 public class PersonSubscriptionCardIO
         extends TableIO
@@ -37,7 +40,7 @@ public class PersonSubscriptionCardIO
 
   private final static String TABLE = "carteabopersonne";
   private final static String SEQUENCE = "carteabopersonne_id_seq";
-  private final static String COLUMNS = "id, idper, idcarte, date_achat, restant";
+  private final static String COLUMNS = "id, idper, idpass, date_achat, restant";
   private DataConnection dc;
 
   public PersonSubscriptionCardIO(DataConnection dc) {
@@ -51,13 +54,12 @@ public class PersonSubscriptionCardIO
    * @return a subscription card
    * @throws SQLException
    */
-  public PersonSubscriptionCard find(int idper, String conditions)
-          throws SQLException {
+  public PersonSubscriptionCard find(int idper, String conditions, boolean complete) throws SQLException {
     String query = "SELECT " + COLUMNS + " FROM " + TABLE + " WHERE idper = " + idper;
     if (conditions != null) {
       query += " AND " + conditions;
     }
-    query += " ORDER BY id desc LIMIT 1";
+    query += " ORDER BY id DESC LIMIT 1";
 
     ResultSet rs = dc.executeQuery(query);
 
@@ -71,11 +73,17 @@ public class PersonSubscriptionCardIO
     pc.setPurchaseDate(new DateFr(rs.getDate(4)));
     pc.setRest(rs.getInt(5));
 
+    if (complete) {
+      List<PersonalCardSession> sessions = findSessions(pc.getId());
+      for (PersonalCardSession s : sessions) {
+        pc.addSession(s);
+      }
+
+    }
     return pc;
   }
 
-  public PersonSubscriptionCard find(int id)
-          throws SQLException {
+  public PersonSubscriptionCard find(int id) throws SQLException {
     String query = "SELECT " + COLUMNS + " FROM " + TABLE + " WHERE id = " + id;
     ResultSet rs = dc.executeQuery(query);
 
@@ -92,26 +100,86 @@ public class PersonSubscriptionCardIO
     return c;
   }
 
-  public PersonSubscriptionCard insert(PersonSubscriptionCard card)
-          throws SQLException {
-    //System.out.println("cap == null ?? "+ (cap == null));
-    card.setId(nextId(SEQUENCE, dc));
-    dc.executeUpdate(getInsertQuery(card));
-    return card;
+  List<PersonalCardSession> findSessions(int cardId) throws SQLException {
+    List<PersonalCardSession> sessions = new ArrayList<PersonalCardSession>();
+    String query = "SELECT * FROM carteabopersessions WHERE idcarte = " +  cardId;
+    ResultSet rs = dc.executeQuery(query);
+    while(rs.next()) {
+      PersonalCardSession s = new PersonalCardSession();
+      s.setId(rs.getInt(1));
+      s.setCardId(rs.getInt(2));
+      s.setScheduleId(rs.getInt(3));
+      sessions.add(s);
+    }
+    return sessions;
   }
 
-  public int update(PersonSubscriptionCard pc)
-          throws SQLException {
-    String query = "UPDATE " + TABLE + " SET restant = " + pc.getRest() + " WHERE id = " + pc.getId();
-    return dc.executeUpdate(query);
+  public PersonSubscriptionCard insert(PersonSubscriptionCard card) {
+    try {
+      dc.setAutoCommit(false);
+      card.setId(nextId(SEQUENCE, dc));
+      dc.executeUpdate(getInsertQuery(card));
+      updateSessions(card);
+      dc.commit();
+      return card;
+    } catch (SQLException ex) {
+      dc.rollback();
+      GemLogger.log(ex.getMessage());
+      return null;
+    } finally {
+      dc.setAutoCommit(true);
+    }
   }
 
-  public void delete(int id)
-          throws SQLException {
+  private void updateSessions(PersonSubscriptionCard card) throws SQLException {
+    List<PersonalCardSession> currentSessions = card.getSessions();
+    List<PersonalCardSession> savedSessions = findSessions(card.getId());
+    if (currentSessions.size() > savedSessions.size()) {
+      for (int i = savedSessions.size(); i < currentSessions.size(); i++) {
+        PersonalCardSession s = currentSessions.get(i);
+        s.setCardId(card.getId());
+        insertSession(currentSessions.get(i));
+      }
+    } else if (currentSessions.size() < savedSessions.size()) {
+      for (int i = currentSessions.size(); i < savedSessions.size(); i++) {
+        deleteSession(savedSessions.get(i).getId());
+      }
+    }
+  }
+
+  private void insertSession(PersonalCardSession s) throws SQLException {
+    int nextId = nextId("carteabopersessions_id_seq", dc);
+    String query = "INSERT INTO carteabopersessions VALUES("+nextId+","+s.getCardId()+","+s.getScheduleId()+")";
+    dc.executeUpdate(query);
+    s.setId(nextId);
+  }
+
+  private void deleteSession(int id) throws SQLException {
+    String query = "DELETE FROM carteabopersessions WHERE id = " + id;
+    dc.executeUpdate(query);
+  }
+
+  public int update(PersonSubscriptionCard pc) {
+    try {
+      dc.setAutoCommit(false);
+      String query = "UPDATE " + TABLE + " SET restant = " + pc.getRest() + " WHERE id = " + pc.getId();
+      updateSessions(pc);
+      dc.commit();
+      return dc.executeUpdate(query);
+    } catch (SQLException ex) {
+      dc.rollback();
+      GemLogger.log(ex.getMessage());
+      return 0;
+    } finally {
+      dc.setAutoCommit(true);
+    }
+  }
+
+  public void delete(int id) throws SQLException {
     String query = "DELETE FROM " + TABLE + " WHERE id = " + id;
     dc.executeUpdate(query);
   }
-  
+
   public void deleteByIdper(int idper) throws SQLException {
     String query = "DELETE FROM " + TABLE + " WHERE idper = " + idper;
     dc.executeUpdate(query);
