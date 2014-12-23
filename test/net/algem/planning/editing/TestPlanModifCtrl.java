@@ -85,14 +85,14 @@ public class TestPlanModifCtrl
     abo1.setPurchaseDate(before);
     abo1.setIdper(idper);
     abo1.setRest(0);
-    abo1.setRehearsalCardId(card.getId());
+    abo1.setPassId(card.getId());
     io.insert(abo1);
 
     PersonSubscriptionCard abo2 = new PersonSubscriptionCard();
     abo2.setPurchaseDate(new DateFr(toDay));
     abo2.setIdper(idper);
     abo2.setRest(420);
-    abo2.setRehearsalCardId(card.getId());
+    abo2.setPassId(card.getId());
     io.insert(abo2);
     
     Schedule p = new Schedule();

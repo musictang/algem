@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import net.algem.planning.DateFr;
 import net.algem.planning.Hour;
+import net.algem.planning.ScheduleDTO;
+import net.algem.planning.ScheduleObject;
 
 /**
  * Subscription card for single rehearsals.
@@ -36,7 +38,7 @@ public class PersonSubscriptionCard
 
   private int id;
   private int idper;
-  private int rehearsalCardId;
+  private int idpass;
   private DateFr purchaseDate;
   private int rest;
   private List<PersonalCardSession> sessions = new ArrayList<PersonalCardSession>();
@@ -44,9 +46,9 @@ public class PersonSubscriptionCard
   public PersonSubscriptionCard() {
   }
 
-  public PersonSubscriptionCard(int idper, int cardId, DateFr date, int r) {
+  public PersonSubscriptionCard(int idper, int idpass, DateFr date, int r) {
     this.idper = idper;
-    this.rehearsalCardId = cardId;
+    this.idpass = idpass;
     this.purchaseDate = date;
     this.rest = r;
   }
@@ -71,12 +73,12 @@ public class PersonSubscriptionCard
     this.purchaseDate = date;
   }
 
-  public int getRehearsalCardId() {
-    return rehearsalCardId;
+  public int getPassId() {
+    return idpass;
   }
 
-  public void setRehearsalCardId(int cardId) {
-    this.rehearsalCardId = cardId;
+  public void setPassId(int passId) {
+    this.idpass = passId;
   }
 
   public int getIdper() {
@@ -105,12 +107,14 @@ public class PersonSubscriptionCard
 
   /**
    * Adds the session corresponding to {@code scheduleId} to this card.
-   * @param scheduleId
+   * @param dto
    */
-  public void addSession(int scheduleId) {
-    if (scheduleId > 0) {
+  public void addSession(ScheduleObject dto) {
+    if (dto.getId() > 0) {
       PersonalCardSession s = new PersonalCardSession();
-      s.setScheduleId(scheduleId);
+      s.setScheduleId(dto.getId());
+      s.setStart(dto.getStart());
+      s.setEnd(dto.getEnd());
       sessions.add(s);
       }
   }
@@ -174,7 +178,7 @@ public class PersonSubscriptionCard
     if (this.idper != other.idper) {
       return false;
     }
-    if (this.rehearsalCardId != other.rehearsalCardId) {
+    if (this.idpass != other.idpass) {
       return false;
     }
     if (this.purchaseDate != other.purchaseDate && (this.purchaseDate == null || !this.purchaseDate.equals(other.purchaseDate))) {
@@ -187,7 +191,7 @@ public class PersonSubscriptionCard
   public int hashCode() {
     int hash = 5;
     hash = 61 * hash + this.idper;
-    hash = 61 * hash + this.rehearsalCardId;
+    hash = 61 * hash + this.idpass;
     hash = 61 * hash + (this.purchaseDate != null ? this.purchaseDate.hashCode() : 0);
     return hash;
   }

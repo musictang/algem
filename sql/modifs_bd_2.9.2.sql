@@ -4,5 +4,9 @@ ALTER TABLE carteabopersonne RENAME idcarte TO idpass;
 CREATE TABLE carteabopersessions (
 	id serial PRIMARY KEY,
 	idcarte integer REFERENCES carteabopersonne(id) ON DELETE CASCADE,
-	idplanning integer
+	idplanning integer,
+	time debut,
+	time fin
 );
+
+ALTER TABLE absence OWNER TO nobody;

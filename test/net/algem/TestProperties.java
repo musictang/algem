@@ -1,7 +1,7 @@
 /*
- * @(#)TestProperties.java 2.7.h 20/02/13
+ * @(#)TestProperties.java 2.9.2 22/12/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -30,7 +30,7 @@ import net.algem.util.GemLogger;
  * Default values for database connection.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.h
+ * @version 2.9.2
  * @since 2.5.a 28/06/12
  */
 public class TestProperties 
@@ -40,7 +40,7 @@ public class TestProperties
   /** SGBD server. */
   public final static String HOST = "localhost";
 	/** Test database port. */
-  public final static int PORT = 5434;
+  public final static int PORT = 5432;
   /** User with profile 4. */
   public final static String ADMIN = System.getProperty("user.name");
    /** User with profile 1. */

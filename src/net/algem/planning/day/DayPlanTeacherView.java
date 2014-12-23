@@ -1,7 +1,7 @@
 /*
- * @(#)DayPlanTeacherView.java 2.7.a 26/11/12
+ * @(#)DayPlanTeacherView.java 2.9.2 22/12/14
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -33,7 +33,7 @@ import net.algem.util.model.GemList;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc Gobat</a>
- * @version 2.7.a
+ * @version 2.9.2
  * @since 1.0a 07/07/1999
  */
 public class DayPlanTeacherView
@@ -55,6 +55,7 @@ public class DayPlanTeacherView
     dayPlanView.clear();
     dayPlanView.setDate(d);
     date.set(d);
+    dayLabel.setText(date.getDayOfWeek());
 
     for (int i = 0; i < teacherList.getSize(); i++) {
       Teacher t = (Teacher) teacherList.getElementAt(i);

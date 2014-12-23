@@ -25,7 +25,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
 import net.algem.util.DataConnection;
-import net.algem.util.model.NullValueException;
 import net.algem.util.model.TableIO;
 
 /**
@@ -45,7 +44,6 @@ public class RehearsalCardIO
 
   public static RehearsalCard find(int id, DataConnection dc) throws SQLException {
     String query = "SELECT " + COLUMNS + " FROM " + TABLE + " WHERE id = " + id;
-    //System.out.println(query);
     ResultSet rs = dc.executeQuery(query);
 
     if (!rs.next()) {
@@ -64,7 +62,6 @@ public class RehearsalCardIO
   public static Vector<RehearsalCard> findAll(String where, DataConnection dc) throws SQLException {
     Vector<RehearsalCard> v = new Vector<RehearsalCard>();
     String query = "SELECT " + COLUMNS + " FROM " + TABLE + " " + where;
-//    System.out.println(query);
     ResultSet rs = dc.executeQuery(query);
     while (rs.next()) {
       RehearsalCard c = new RehearsalCard();
@@ -78,17 +75,14 @@ public class RehearsalCardIO
     return v.isEmpty() ? null : v;
   }
 
-  public static void insert(RehearsalCard card, DataConnection dc) throws SQLException, NullValueException {
+  public static void insert(RehearsalCard card, DataConnection dc) throws SQLException {
     card.setId(nextId(SEQUENCE, dc));
-    if (card.getLabel() == null || card.getLabel().trim().length() == 0) {
-      throw new NullValueException("Aucun libellé");
-    }
     dc.executeUpdate(getInsertQuery(card));
   }
 
   public static boolean delete(int id, DataConnection dc) throws SQLException {
     int deleted = dc.executeUpdate(getDeleteQuery(id));
-    return deleted == 0 ? false : true;
+    return deleted > 0;
   }
 
   public static int update(RehearsalCard card, DataConnection dc) throws SQLException {

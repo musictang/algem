@@ -1,5 +1,5 @@
 /*
- * @(#)DayPlanRoomView.java	2.9.1 27/11/14
+ * @(#)DayPlanRoomView.java	2.9.2 22/12/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -34,7 +34,7 @@ import net.algem.util.model.GemList;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.2
  * @since 1.0a 07/07/1999
  */
 public class DayPlanRoomView
@@ -60,6 +60,7 @@ public class DayPlanRoomView
     dayPlanView.clear();
     dayPlanView.setDate(d);
     date.set(d);
+    dayLabel.setText(date.getDayOfWeek());
 
     for (int i = 0; i < roomList.getSize(); i++) {
       Room s = (Room) roomList.getElementAt(i);
@@ -76,9 +77,7 @@ public class DayPlanRoomView
         dayPlanView.addCol(pj);
 
         cpt++;
-      }
-      // test affichage de toutes les salles mêmes vides
-      else if (all && s.getId() > 0 && s.getEstab() == estab && s.isActive()) {
+      } else if (all && s.getId() > 0 && s.getEstab() == estab && s.isActive()) { // display empty room
         DayPlan pj = new DayPlan();
         pj.setId(s.getId());
         pj.setLabel(s.getName());

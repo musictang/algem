@@ -115,13 +115,21 @@ public class MemberService
     int offset = Math.abs(card.getRest());//abo.getRest() devrait être négatif
     card.setRest(0);
     // création automatique d'une nouvelle carte d'abonnement
-    RehearsalCard cr = RehearsalCardIO.find(card.getRehearsalCardId(), dc);
-    PersonSubscriptionCard nc = new PersonSubscriptionCard(card.getIdper(), card.getRehearsalCardId(), new DateFr(new Date()), cr.getTotalLength() - offset);
-    nc.addSession(plan.getId());
-    cardIO.insert(nc);
+    RehearsalCard pass = RehearsalCardIO.find(card.getPassId(), dc);
+    PersonSubscriptionCard nc = new PersonSubscriptionCard(card.getIdper(), card.getPassId(), new DateFr(new Date()), pass.getTotalLength() - offset);
+    Hour endOffset = new Hour(plan.getStart());
+    Hour end = new Hour(plan.getEnd());
+    endOffset.incMinute(offset);
+    plan.setEnd(endOffset);
+    card.addSession(plan);
     cardIO.update(card);
+    plan.setStart(endOffset);
+    plan.setEnd(end);
+    nc.addSession(plan);
+    cardIO.insert(nc);
+    
     PersonFile pf = ((PersonFileIO)DataCache.getDao(Model.PersonFile)).findMember(card.getIdper(), false);
-    OrderLine e = AccountUtil.setRehearsalOrderLine(pf, plan.getDate(), getPrefAccount(AccountPrefIO.REHEARSAL_KEY_PREF), cr.getAmount());
+    OrderLine e = AccountUtil.setRehearsalOrderLine(pf, plan.getDate(), getPrefAccount(AccountPrefIO.REHEARSAL_KEY_PREF), pass.getAmount());
 
     AccountUtil.createEntry(e, dc);
 
@@ -131,7 +139,7 @@ public class MemberService
   public void create(PersonSubscriptionCard card, PersonFile pFile) throws SQLException {
 
     cardIO.insert(card);
-    RehearsalCard abo = RehearsalCardIO.find(card.getRehearsalCardId(), dc);
+    RehearsalCard abo = RehearsalCardIO.find(card.getPassId(), dc);
     Preference p = AccountPrefIO.find(AccountPrefIO.REHEARSAL_KEY_PREF, dc);
     OrderLine e = AccountUtil.setRehearsalOrderLine(pFile, new DateFr(new Date()), p, abo.getAmount());
     AccountUtil.createEntry(e, dc);
@@ -150,6 +158,7 @@ public class MemberService
    *
    * @param dc dataCache
    * @param plan schedule
+   * @throws java.sql.SQLException
    */
   public void editSubscriptionCard(DataCache dc, ScheduleObject plan) throws SQLException {
     PersonSubscriptionCard card = findSubscriptionCard(plan.getIdPerson());
@@ -180,22 +189,22 @@ public class MemberService
    */
   private void updateSubscriptionCard(PersonSubscriptionCard card) throws SQLException {
     assert card != null : "Card should not be null here.";
-    RehearsalCard rehearsalCard = RehearsalCardIO.find(card.getRehearsalCardId(), dc);
+    RehearsalCard pass = RehearsalCardIO.find(card.getPassId(), dc);
     // recherche d'une carte précédente
     PersonSubscriptionCard lastCard = cardIO.find(card.getIdper(), " id < " + card.getId(), true);
     int rest = card.getRest();
-    int max = rehearsalCard.getTotalLength();
+    int max = pass.getTotalLength();
     // si la durée restante sur la carte actuelle excède la durée totale possible
     if (rest > max) {
       if (lastCard != null) {
-        lastCard.inc(card.getRest() - rehearsalCard.getTotalLength());
+        lastCard.inc(card.getRest() - pass.getTotalLength());
         cardIO.delete(card.getId());
         cardIO.update(lastCard);
         //Suppression ligne échéancier
         deleteOrderLine(card.getPurchaseDate(), card.getIdper());
         sendPersonFileEvent(lastCard);
       } else {
-        card.setRest(rehearsalCard.getTotalLength());
+        card.setRest(pass.getTotalLength());// persistence is useless here
         sendPersonFileEvent(card);
       }
     } else if (card.getRest() < max) {
@@ -214,16 +223,16 @@ public class MemberService
     deleteOrderLine(abo.getPurchaseDate(), abo.getIdper());
   }
 
-  public PersonSubscriptionCard findSubscriptionCard(int idper) {
+  PersonSubscriptionCard findSubscriptionCard(int idper) {
     try {
       return cardIO.find(idper, null, true);
     } catch (SQLException ex) {
-      GemLogger.logException("find carte repet", ex);
+      GemLogger.logException(getClass().getName()+"#findSubscriptionCard", ex);
       return null;
     }
   }
 
-  public List<PersonalCardSession> getSessions(int cardId) throws SQLException {
+  List<PersonalCardSession> getSessions(int cardId) throws SQLException {
     return cardIO.findSessions(cardId);
   }
 
@@ -381,18 +390,6 @@ public class MemberService
       }
       start.incDay(1);
     }
-
-//    Calendar debut = Calendar.getInstance(Locale.FRANCE);
-//    debut.setTime(start.getDate());
-//    Calendar fin = Calendar.getInstance(Locale.FRANCE);
-//    fin.setTime(end.getDate());
-//
-//    while (!debut.after(fin)) {
-//      if (debut.get(Calendar.DAY_OF_WEEK) == day + 1) {
-//        v.addElement(new DateFr(debut.getTime()));
-//      }
-//      debut.add(Calendar.DATE, 1);
-//    }
     return v;
   }
 

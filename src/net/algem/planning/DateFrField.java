@@ -1,5 +1,5 @@
 /*
- * @(#)DateFrField.java	2.9.1 15/12/14
+ * @(#)DateFrField.java	2.9.2 22/12/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -42,8 +42,9 @@ public class DateFrField extends JTextField
 
   private int pos;
   private DateDocument buf;
-  private final DateFormat mdf = DateFormat.getDateInstance(DateFormat.MEDIUM);
-  private final DateFormat sdf = new SimpleDateFormat("EEEE dd MMM yyyy");
+  private final DateFormat mediumFormat = DateFormat.getDateInstance(DateFormat.MEDIUM);
+  private final DateFormat simpleFormat = new SimpleDateFormat("EEEE dd MMM yyyy");
+  private final DateFormat dayOfWeekFormat = new SimpleDateFormat("EEEE");
 
   public DateFrField(String s) {
     addKeyListener(this);
@@ -151,8 +152,19 @@ public class DateFrField extends JTextField
   }
 
   public String toSimpleString() {
-    return sdf.format(buf.getDate());
+    return simpleFormat.format(buf.getDate());
   }
 
+  public String getDayOfWeek() {
+    String dow = dayOfWeekFormat.format(buf.getDate());
+    if (dow.length() < 8) {
+      StringBuilder fill = new StringBuilder();
+      for (int i = 8; i > dow.length(); i--) {
+        fill.append(' ');
+      }
+      dow = fill.toString() + dow;
+    }
+    return dow;
+  }
 
 }

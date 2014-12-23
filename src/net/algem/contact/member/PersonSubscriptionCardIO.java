@@ -1,5 +1,5 @@
 /*
- * @(#)PersonSubscriptionCardIO.java 2.9.2 19/12/14
+ * @(#)PersonSubscriptionCardIO.java 2.9.2 22/12/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -51,34 +51,33 @@ public class PersonSubscriptionCardIO
    * Gets the last available card for the person {@code idper}.
    *
    * @param idper
+   * @param and
+   * @param complete
    * @return a subscription card
    * @throws SQLException
    */
-  public PersonSubscriptionCard find(int idper, String conditions, boolean complete) throws SQLException {
+  public PersonSubscriptionCard find(int idper, String and, boolean complete) throws SQLException {
     String query = "SELECT " + COLUMNS + " FROM " + TABLE + " WHERE idper = " + idper;
-    if (conditions != null) {
-      query += " AND " + conditions;
+    if (and != null) {
+      query += " AND " + and;
     }
     query += " ORDER BY id DESC LIMIT 1";
 
     ResultSet rs = dc.executeQuery(query);
-
-    if (!rs.next()) {
-      return null;
-    }
-    PersonSubscriptionCard pc = new PersonSubscriptionCard();
-    pc.setId(rs.getInt(1));
-    pc.setIdper(rs.getInt(2));
-    pc.setRehearsalCardId(rs.getInt(3));
-    pc.setPurchaseDate(new DateFr(rs.getDate(4)));
-    pc.setRest(rs.getInt(5));
-
-    if (complete) {
-      List<PersonalCardSession> sessions = findSessions(pc.getId());
-      for (PersonalCardSession s : sessions) {
-        pc.addSession(s);
+    PersonSubscriptionCard pc = null;
+    while(rs.next()) {
+      pc = new PersonSubscriptionCard();
+      pc.setId(rs.getInt(1));
+      pc.setIdper(rs.getInt(2));
+      pc.setPassId(rs.getInt(3));
+      pc.setPurchaseDate(new DateFr(rs.getDate(4)));
+      pc.setRest(rs.getInt(5));
+      if (complete) {
+        List<PersonalCardSession> sessions = findSessions(pc.getId());
+        for (PersonalCardSession s : sessions) {
+          pc.addSession(s);
+        }
       }
-
     }
     return pc;
   }
@@ -93,7 +92,7 @@ public class PersonSubscriptionCardIO
     PersonSubscriptionCard c = new PersonSubscriptionCard();
     c.setId(rs.getInt(1));
     c.setIdper(rs.getInt(2));
-    c.setRehearsalCardId(rs.getInt(3));
+    c.setPassId(rs.getInt(3));
     c.setPurchaseDate(new DateFr(rs.getDate(4)));
     c.setRest(rs.getInt(5));
 
@@ -131,6 +130,11 @@ public class PersonSubscriptionCardIO
     }
   }
 
+  /**
+   * Adds or remove sessions from database to reflect the actual sessions on this {@code card}.
+   * @param card personal subscription card
+   * @throws SQLException 
+   */
   private void updateSessions(PersonSubscriptionCard card) throws SQLException {
     List<PersonalCardSession> currentSessions = card.getSessions();
     List<PersonalCardSession> savedSessions = findSessions(card.getId());
@@ -149,7 +153,7 @@ public class PersonSubscriptionCardIO
 
   private void insertSession(PersonalCardSession s) throws SQLException {
     int nextId = nextId("carteabopersessions_id_seq", dc);
-    String query = "INSERT INTO carteabopersessions VALUES("+nextId+","+s.getCardId()+","+s.getScheduleId()+")";
+    String query = "INSERT INTO carteabopersessions VALUES(" + nextId + "," + s.getCardId() + "," + s.getScheduleId() + ")";
     dc.executeUpdate(query);
     s.setId(nextId);
   }
@@ -190,7 +194,7 @@ public class PersonSubscriptionCardIO
 
     query.append(pc.getId());
     query.append(LEFT_COL_SEPARATOR).append(pc.getIdper());
-    query.append(RIGHT_COL_SEPARATOR).append(pc.getRehearsalCardId());
+    query.append(RIGHT_COL_SEPARATOR).append(pc.getPassId());
     query.append(RIGHT_COL_SEPARATOR).append(pc.getPurchaseDate().toString());
     query.append(RIGHT_COL_SEPARATOR).append(pc.getRest());
     query.append(END_OF_QUERY);

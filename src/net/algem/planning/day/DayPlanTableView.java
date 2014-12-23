@@ -1,5 +1,5 @@
 /*
- * @(#)DayPlanTableView.java	2.9.1 15/12/14
+ * @(#)DayPlanTableView.java	2.9.2 22/12/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,8 +20,10 @@
  */
 package net.algem.planning.day;
 
-import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
@@ -29,6 +31,8 @@ import java.beans.PropertyChangeListener;
 import java.util.Date;
 import java.util.Vector;
 import javax.swing.JScrollBar;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import net.algem.planning.DateDayBar;
 import net.algem.planning.DateFr;
 import net.algem.planning.DateFrField;
@@ -47,7 +51,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.8.w
+ * @version 2.9.2
  * @since 1.0a 07/07/1999
  */
 public abstract class DayPlanTableView
@@ -55,35 +59,21 @@ public abstract class DayPlanTableView
         implements AdjustmentListener, PropertyChangeListener, KeyListener
 {
 
-  protected DayPlanView dayPlanView;
-  private JScrollBar sb;
+  protected DayPlanView dayPlanView; 
   protected DateDayBar dayBar;
   protected DateFrField date;
+  protected GemLabel dayLabel;
   protected GemButton btNow;
   protected GemButton btPrev;
   protected GemButton btNext;
   protected ActionListener mainActionListener;
+  private JScrollBar sb;
 
   public DayPlanTableView(String label) {
 
     dayPlanView = new DayPlanView();
     date = new DateFrField();
-    final GemLabel dayLabel = new GemLabel();
-
-    date.addMouseListener(new MouseAdapter() {
-      public void mouseEntered(MouseEvent evt) {
-        dayLabel.setText(date.toSimpleString());
-      }
-      public void mouseExited(MouseEvent evt) {
-        dayLabel.setText(null);
-      }
-    });
-
-    dayBar = new DateDayBar();
-
-    GemPanel p = new GemPanel();
-    p.add(new GemLabel(BundleUtil.getLabel("Day.schedule.prefix.label") + " " + label), BorderLayout.WEST);
-
+    
     ActionListener prevNextListener = new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -96,26 +86,38 @@ public abstract class DayPlanTableView
         }
         if (mainActionListener != null) {
           date.set(d);
+          dayLabel.setText(date.getDayOfWeek());
           mainActionListener.actionPerformed(new ActionEvent(date, ActionEvent.ACTION_PERFORMED, "PrevNext"));
         }
       }
     };
+    Insets prevNextInsets = new Insets(0, 2, 0, 2);
+    dayLabel = new GemLabel();
     btPrev = new GemButton("<<");
+    btPrev.setMargin(prevNextInsets);// IMPORTANT : call before setting preferredSize
+    date.setMargin(prevNextInsets);
+    date.setPreferredSize(new Dimension(date.getPreferredSize().width, btPrev.getPreferredSize().height));
     btPrev.setToolTipText(BundleUtil.getLabel("Day.previous.label"));
     btPrev.setActionCommand("DayPlanTableView.prevDay");
     btPrev.addActionListener(prevNextListener);
-    btNow = new GemButton(BundleUtil.getLabel("Action.today.label"));
     btNext = new GemButton(">>");
+    btNext.setMargin(prevNextInsets);
     btNext.setToolTipText(BundleUtil.getLabel("Day.next.label"));
     btNext.setActionCommand("DayPlanTableView.nextDay");
     btNext.addActionListener(prevNextListener);
+    btNow = new GemButton(BundleUtil.getLabel("Action.today.label"));
+    btNow.setMargin(prevNextInsets);
+    
+    GemPanel p = new GemPanel(new FlowLayout(FlowLayout.LEFT));
+    p.add(new GemLabel(BundleUtil.getLabel("Day.schedule.prefix.label") + " " + label.toLowerCase() + " : "));
+    p.add(dayLabel);
     p.add(btPrev);
     p.add(date);
     p.add(btNext);
-
     p.add(btNow);
-    p.add(dayLabel);
 
+    dayBar = new DateDayBar();
+    
     sb = new JScrollBar(JScrollBar.HORIZONTAL);
     sb.addAdjustmentListener(this);
 

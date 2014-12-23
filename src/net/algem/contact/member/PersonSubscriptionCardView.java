@@ -121,7 +121,7 @@ public class PersonSubscriptionCardView
     if (personCard.isNewCard()) {
       date.setDate(new Date());
     } else {
-      rehearsalCardChoice.setKey(personCard.getRehearsalCardId());
+      rehearsalCardChoice.setKey(personCard.getPassId());
       date.setDate(personCard.getPurchaseDate());
       date.getStartField().setEditable(false);
 
@@ -139,7 +139,7 @@ public class PersonSubscriptionCardView
   public PersonSubscriptionCard get() {
     if (personCard.isNewCard()) {
       personCard.setPurchaseDate(date.get());
-      personCard.setRehearsalCardId(getRehearsalCard().getId());
+      personCard.setPassId(getRehearsalCard().getId());
     }
     personCard.setRest(rest);
     return personCard;

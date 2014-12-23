@@ -133,27 +133,37 @@ public class MemberRehearsalCtrl
    * @return an amount
    * @throws SQLException
    */
-  PersonSubscriptionCard updatePersonalCard(PersonFile pFile, RehearsalCard pass, ScheduleDTO dto) throws SQLException {
+  PersonSubscriptionCard updatePersonalCard(PersonFile pFile, RehearsalCard pass, ScheduleObject dto) throws SQLException {
 
     PersonSubscriptionCard currentCard = pFile.getSubscriptionCard();
-    currentCard.setSessions(memberService.getSessions(currentCard.getId()));
+    
     PersonSubscriptionCard nc = null;
     PersonFileEvent event = null;
 
     int timeLength = new Hour(dto.getStart()).getLength(new Hour(dto.getEnd()));
     if (currentCard == null) {//aucune carte n'existe pour cette personne
-      nc = createNewCard(pass, timeLength, pFile.getId(), new DateFr(new Date()), dto.getId());//XXX choix peut etre null
+      nc = createNewCard(pass, timeLength, pFile.getId(), new DateFr(new Date()), dto);//XXX choix peut etre null
       event = new PersonFileEvent(nc, PersonFileEvent.SUBSCRIPTION_CARD_CHANGED);
     } else {
+      currentCard.setSessions(memberService.getSessions(currentCard.getId()));
       int remainder = calcRemainder(currentCard.getRest(), timeLength);
       if (remainder < 0) { // plus de place sur la carte
         currentCard.setRest(0);
-        nc = createNewCard(pass, Math.abs(remainder), currentCard.getIdper(), new DateFr(new Date()), dto.getId());
+        Hour start = new Hour(dto.getStart());
+        Hour offset = new Hour(start);
+        offset.incMinute(remainder);
+        Hour end = new Hour(dto.getEnd());
+        dto.setStart(offset);
+        dto.setEnd(end);
+        nc = createNewCard(pass, Math.abs(remainder), currentCard.getIdper(), new DateFr(new Date()), dto);
+        //current card session offset
+        dto.setStart(start);
+        dto.setEnd(offset);
       } else {
         currentCard.setRest(remainder);
       }
       // update abo
-      currentCard.addSession(dto.getId());
+      currentCard.addSession(dto);
       memberService.update(currentCard);
 
       if (currentCard.getRest() <= 0 && nc != null) {
@@ -200,14 +210,14 @@ public class MemberRehearsalCtrl
    * @param idper person's id
    * @throws SQLException
    */
-  PersonSubscriptionCard createNewCard(RehearsalCard card, int length, int idper, DateFr date, int scheduleId) throws SQLException {
+  PersonSubscriptionCard createNewCard(RehearsalCard card, int length, int idper, DateFr date, ScheduleObject dto) throws SQLException {
 
     PersonSubscriptionCard c = new PersonSubscriptionCard();
     c.setIdper(idper);
-    c.setRehearsalCardId(card.getId());
+    c.setPassId(card.getId());
     c.setPurchaseDate(date);
     c.setRest(calcRemainder(card, length));
-    c.addSession(scheduleId);
+    c.addSession(dto);
 
     memberService.create(c);
     return c;
@@ -260,6 +270,12 @@ public class MemberRehearsalCtrl
   }
 
   private boolean save() throws MemberException {
+ScheduleObject so = new MemberRehearsalSchedule();
+so.setDate(view.getDate());
+so.setIdPerson(personFile.getId());
+so.setStart(view.getHourStart());
+so.setEnd(view.getHourEnd());
+so.setIdRoom(view.getRoom());
 
     ScheduleDTO p = new ScheduleDTO();
 
@@ -269,14 +285,14 @@ public class MemberRehearsalCtrl
     p.setPersonId(personFile.getId());
     p.setPlace(view.getRoom());
 
-    if (!isFree(p)) {
+    if (!isFree(so)) {
       return false;
     }
 
     boolean subscription = view.withCard();
 
-    p.setType(Schedule.MEMBER);
-    p.setNote(0);
+    so.setType(Schedule.MEMBER);
+    so.setNote(0);
     try {
       memberService.saveRehearsal(p);
       //ajout échéance et mise à jour choix abonnement
@@ -285,7 +301,7 @@ public class MemberRehearsalCtrl
         PopupDlg dlg = new RehearsalCardDlg(view, memberService.getPassList());
         // recherche d'une choix d'abonnement pour cet adhérent
         RehearsalCard pass = chooseCard(dlg);
-        PersonSubscriptionCard newCard = updatePersonalCard(personFile, pass, p);
+        PersonSubscriptionCard newCard = updatePersonalCard(personFile, pass, so);
 //        float amount = pass.getAmount();
         if (newCard != null) {
 //        event = new PersonFileEvent(nc, PersonFileEvent.SUBSCRIPTION_CARD_CHANGED);
@@ -310,22 +326,22 @@ public class MemberRehearsalCtrl
     return true;
   }
 
-  private boolean isFree(ScheduleDTO p) {
+  private boolean isFree(ScheduleObject p) {
     // room checking
-    String query = ConflictQueries.getRoomConflictSelection(p.getDay(), p.getStart(), p.getEnd(), p.getPlace());
+    String query = ConflictQueries.getRoomConflictSelection(p.getDate().toString(), p.getStart().toString(), p.getEnd().toString(), p.getIdRoom());
     if (ScheduleIO.count(query, dc) > 0) {
       MessagePopup.error(view, BundleUtil.getLabel("Room.conflict.label"), BundleUtil.getLabel("Conflit.label"));
       return false;
     }
     // rehearsal member checking
-    query = ConflictQueries.getMemberRehearsalSelection(p.getDay(), p.getStart(), p.getEnd(), p.getPersonId());
+    query = ConflictQueries.getMemberRehearsalSelection(p.getDate().toString(), p.getStart().toString(), p.getEnd().toString(), p.getIdPerson());
     if (ScheduleIO.count(query, dc) > 0) {
       MessagePopup.error(view, BundleUtil.getLabel("Member.conflict.label"), BundleUtil.getLabel("Conflit.label"));
       return false;
     }
 
     // course member checking
-    query = ConflictQueries.getMemberScheduleSelection(p.getDay(), p.getStart(), p.getEnd(), p.getPersonId());
+    query = ConflictQueries.getMemberScheduleSelection(p.getDate().toString(), p.getStart().toString(), p.getEnd().toString(), p.getIdPerson());
     if (ScheduleIO.count(query, dc) > 0) {
       MessagePopup.error(view, BundleUtil.getLabel("Member.conflict.label"), BundleUtil.getLabel("Conflit.label"));
       return false;

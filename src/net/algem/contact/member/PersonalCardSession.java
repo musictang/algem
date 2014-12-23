@@ -21,6 +21,8 @@
 
 package net.algem.contact.member;
 
+import net.algem.planning.Hour;
+
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
@@ -33,6 +35,8 @@ class PersonalCardSession
     private int id;
     private int cardId;
     private int scheduleId;
+    private Hour start;
+    private Hour end;
 
   public int getId() {
     return id;
@@ -56,6 +60,22 @@ class PersonalCardSession
 
   public void setScheduleId(int scheduleId) {
     this.scheduleId = scheduleId;
+  }
+
+  public Hour getStart() {
+    return start;
+  }
+
+  public void setStart(Hour start) {
+    this.start = start;
+  }
+
+  public Hour getEnd() {
+    return end;
+  }
+
+  public void setEnd(Hour end) {
+    this.end = end;
   }
 
   @Override
@@ -87,8 +107,5 @@ class PersonalCardSession
     }
     return true;
   }
-
-
-
 
 }

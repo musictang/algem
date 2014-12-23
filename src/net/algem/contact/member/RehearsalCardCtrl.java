@@ -26,6 +26,7 @@ import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
+import net.algem.util.MessageUtil;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.CardCtrl;
 import net.algem.util.ui.MessagePopup;
@@ -78,17 +79,16 @@ public class RehearsalCardCtrl
     return false;
   }
 
-	@Override
+  @Override
   public boolean validation() {
-
     RehearsalCard edited = getCard();
-    if (edited.getLabel().isEmpty()) {
+    if (edited.getLabel() == null || edited.getLabel().trim().isEmpty()) {
+      MessagePopup.information(this, MessageUtil.getMessage("label.mandatory.warning"));
       return false;
     }
-    if (edited.getId() == -1 && !edited.getLabel().isEmpty()) {
+    if (edited.getId() < 0) {   
       return create(edited);
     }
-
     if (card.strictlyEquals(edited)) {
       return true;
     }
@@ -135,17 +135,13 @@ public class RehearsalCardCtrl
   }
 
   private boolean create(RehearsalCard edited) {
-    if (edited.getLabel() == null) {
-      MessagePopup.information(this, "Libellé obligatoire");
-      return false;
-    }
     try {
       RehearsalCardIO.insert(edited, dc);
       desktop.getDataCache().add(edited);
-    } catch (Exception e1) {
+    } catch (SQLException e1) {
       GemLogger.logException("insertion carte abonnement", e1, this);
       return false;
-    }
+    } 
     if (actionListener != null) {
       actionListener.actionPerformed(new ActionEvent(getCard(), ActionEvent.ACTION_PERFORMED, "CtrlValider"));
     }

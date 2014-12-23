@@ -20,12 +20,10 @@
  */
 package net.algem.contact.member;
 
-import java.sql.SQLException;
 import junit.framework.TestCase;
 import net.algem.TestProperties;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
-import net.algem.util.model.NullValueException;
 
 /**
  *
@@ -54,7 +52,6 @@ public class TestSubscriptionCardIO
   @Override
   protected void tearDown() throws Exception {
     super.tearDown();
-
   }
 
   public void testInsertQuery() throws Exception {
@@ -92,17 +89,6 @@ public class TestSubscriptionCardIO
 
     // clean up
     RehearsalCardIO.delete(card.getId(), dc);
-  }
-
-  public void testInsertWithNullLibelle() throws SQLException {
-    RehearsalCard card = new RehearsalCard(null, 22.0F, 10, 60);
-    try {
-      RehearsalCardIO.insert(card, dc);
-      fail("SQLException should be thrown");
-    } catch (NullValueException ex) {
-      assertNotNull(ex.getMessage());
-    }
-
   }
 
   public void testFindAll() {
