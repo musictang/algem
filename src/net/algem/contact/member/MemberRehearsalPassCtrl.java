@@ -179,7 +179,7 @@ public class MemberRehearsalPassCtrl
   }
 
   public void save() throws MemberException {
-    service.saveRehearsalPass(dateList, rehearsalView.getHourStart(), rehearsalView.getHourEnd(), personFile.getId(), rehearsalView.getRoom());
+    service.savePassRehearsal(dateList, rehearsalView.getHourStart(), rehearsalView.getHourEnd(), personFile.getId(), rehearsalView.getRoom());
   }
 
   public int testConflict(Vector<DateFr> dateList, Hour start, Hour end) {

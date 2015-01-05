@@ -1,5 +1,5 @@
 /*
- * @(#)PersonSubscriptionCardIO.java 2.9.2 22/12/14
+ * @(#)PersonSubscriptionCardIO.java 2.9.2 26/12/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -40,6 +40,8 @@ public class PersonSubscriptionCardIO
 
   private final static String TABLE = "carteabopersonne";
   private final static String SEQUENCE = "carteabopersonne_id_seq";
+  private final static String SESSION_TABLE = "carteabopersessions";
+  private final static String SESSION_SEQUENCE = "carteabopersessions_id_seq";
   private final static String COLUMNS = "id, idper, idpass, date_achat, restant";
   private DataConnection dc;
 
@@ -133,7 +135,7 @@ public class PersonSubscriptionCardIO
   /**
    * Adds or remove sessions from database to reflect the actual sessions on this {@code card}.
    * @param card personal subscription card
-   * @throws SQLException 
+   * @throws SQLException
    */
   private void updateSessions(PersonSubscriptionCard card) throws SQLException {
     List<PersonalCardSession> currentSessions = card.getSessions();
@@ -152,8 +154,14 @@ public class PersonSubscriptionCardIO
   }
 
   private void insertSession(PersonalCardSession s) throws SQLException {
-    int nextId = nextId("carteabopersessions_id_seq", dc);
-    String query = "INSERT INTO carteabopersessions VALUES(" + nextId + "," + s.getCardId() + "," + s.getScheduleId() + ")";
+    int nextId = nextId(SESSION_SEQUENCE, dc);
+    String query = "INSERT INTO " + SESSION_TABLE + " VALUES("
+      + nextId
+      + "," + s.getCardId()
+      + "," + s.getScheduleId()
+      + ",'" + s.getStart()
+      + "','" + s.getEnd()
+       + "')";
     dc.executeUpdate(query);
     s.setId(nextId);
   }

@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import net.algem.planning.DateFr;
 import net.algem.planning.Hour;
-import net.algem.planning.ScheduleDTO;
 import net.algem.planning.ScheduleObject;
 
 /**
@@ -116,7 +115,7 @@ public class PersonSubscriptionCard
       s.setStart(dto.getStart());
       s.setEnd(dto.getEnd());
       sessions.add(s);
-      }
+    }
   }
 
   /**

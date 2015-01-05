@@ -1,5 +1,5 @@
 /*
- * @(#)MemberService.java	2.9.2 19/12/14
+ * @(#)MemberService.java	2.9.2 02/01/15
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -70,6 +70,10 @@ public class MemberService
     return EmailIO.findId(id, dc);
   }
 
+  List<PersonalCardSession> getSessions(int cardId) throws SQLException {
+    return cardIO.findSessions(cardId);
+  }
+
   /**
    * Method called when changing time or length of some rehearsal.
    * @param plan schedule
@@ -77,7 +81,7 @@ public class MemberService
    * @param end end time
    * @throws SQLException
    */
-  public void checkSubscriptionCard(ScheduleObject plan, Hour start, Hour end) throws SQLException {
+  public void updatePersonalSession(ScheduleObject plan, Hour start, Hour end) throws SQLException {
     PersonSubscriptionCard nc = null;
     PersonSubscriptionCard card = findSubscriptionCard(plan.getIdPerson());
     if (card != null) {
@@ -93,10 +97,53 @@ public class MemberService
           updateSubscriptionCard(card);
         }
       } else { // on récupère des heures sinon
+        // TODO traiter chevauchement
         card.inc(oldDuration - newDuration);
         updateSubscriptionCard(card);
       }
       // TODO refresh
+    }
+  }
+
+  /**
+   * Updates the subscription card when a single rehearsal is cancelled.
+   *
+   * @param dc dataCache
+   * @param plan schedule
+   * @throws java.sql.SQLException
+   */
+  public void cancelPersonalSession(DataCache dc, ScheduleObject plan) throws SQLException {
+    PersonSubscriptionCard card = findSubscriptionCard(plan.getIdPerson());
+    if (card == null) {
+      return;
+    }
+    int duree = plan.getStart().getLength(plan.getEnd());
+
+    card.inc(duree);
+    // TODO si chevauchement entre 2 cartes
+    // si card.getRest() > max ??
+    // supprimer card ?? ou card.setRest(0) ??
+    // supprimer session(idplanning)
+    // ancienne carte inc(max-card.getRest) ??
+    // supprimer session(idplanning)
+    Iterator<PersonalCardSession> iterator = card.getSessions().iterator();
+    while(iterator.hasNext()) {
+      PersonalCardSession s = iterator.next();
+      if (s.getScheduleId() == plan.getId()) {
+        iterator.remove();
+        break;
+      }
+
+    }
+    updateSubscriptionCard(card);
+  }
+
+  PersonSubscriptionCard findSubscriptionCard(int idper) {
+    try {
+      return cardIO.find(idper, null, true);
+    } catch (SQLException ex) {
+      GemLogger.logException(getClass().getName()+"#findSubscriptionCard", ex);
+      return null;
     }
   }
 
@@ -127,7 +174,7 @@ public class MemberService
     plan.setEnd(end);
     nc.addSession(plan);
     cardIO.insert(nc);
-    
+
     PersonFile pf = ((PersonFileIO)DataCache.getDao(Model.PersonFile)).findMember(card.getIdper(), false);
     OrderLine e = AccountUtil.setRehearsalOrderLine(pf, plan.getDate(), getPrefAccount(AccountPrefIO.REHEARSAL_KEY_PREF), pass.getAmount());
 
@@ -143,40 +190,6 @@ public class MemberService
     Preference p = AccountPrefIO.find(AccountPrefIO.REHEARSAL_KEY_PREF, dc);
     OrderLine e = AccountUtil.setRehearsalOrderLine(pFile, new DateFr(new Date()), p, abo.getAmount());
     AccountUtil.createEntry(e, dc);
-  }
-
-  public void create(PersonSubscriptionCard card) throws SQLException {
-    cardIO.insert(card);
-  }
-
-  public void update(PersonSubscriptionCard card) throws SQLException {
-    cardIO.update(card);
-  }
-
-  /**
-   * Updates the subscription card when a single rehearsal is cancelled.
-   *
-   * @param dc dataCache
-   * @param plan schedule
-   * @throws java.sql.SQLException
-   */
-  public void editSubscriptionCard(DataCache dc, ScheduleObject plan) throws SQLException {
-    PersonSubscriptionCard card = findSubscriptionCard(plan.getIdPerson());
-    if (card == null) {
-      return;
-    }
-    int duree = plan.getStart().getLength(plan.getEnd());
-    card.inc(duree);
-    Iterator<PersonalCardSession> iterator = card.getSessions().iterator();
-    while(iterator.hasNext()) {
-      PersonalCardSession s = iterator.next();
-      if (s.getScheduleId() == plan.getId()) {
-        iterator.remove();
-        break;
-      }
-
-    }
-    updateSubscriptionCard(card);
   }
 
   /**
@@ -195,7 +208,8 @@ public class MemberService
     int rest = card.getRest();
     int max = pass.getTotalLength();
     // si la durée restante sur la carte actuelle excède la durée totale possible
-    if (rest > max) {
+    if (rest > max) {// TODO traiter chevauchement
+//      SELECT count(id) from carteabopersessions where idplanning = plan.getId();
       if (lastCard != null) {
         lastCard.inc(card.getRest() - pass.getTotalLength());
         cardIO.delete(card.getId());
@@ -223,17 +237,13 @@ public class MemberService
     deleteOrderLine(abo.getPurchaseDate(), abo.getIdper());
   }
 
-  PersonSubscriptionCard findSubscriptionCard(int idper) {
-    try {
-      return cardIO.find(idper, null, true);
-    } catch (SQLException ex) {
-      GemLogger.logException(getClass().getName()+"#findSubscriptionCard", ex);
-      return null;
-    }
+
+  public void create(PersonSubscriptionCard card) throws SQLException {
+    cardIO.insert(card);
   }
 
-  List<PersonalCardSession> getSessions(int cardId) throws SQLException {
-    return cardIO.findSessions(cardId);
+  public void update(PersonSubscriptionCard card) throws SQLException {
+    cardIO.update(card);
   }
 
   public void deleteOrderLine(DateFr date, int member) throws SQLException {
@@ -305,7 +315,7 @@ public class MemberService
     return ScheduleRangeIO.findFollowUp(where, false, dc);
   }
 
-  public void saveRehearsal(ScheduleDTO p) throws MemberException {
+  public void saveRehearsal(ScheduleObject p) throws MemberException {
 
     ActionIO actionIO = new ActionIO(dc);
     Action a = new Action();
@@ -313,7 +323,7 @@ public class MemberService
     try {
       dc.setAutoCommit(false);
       actionIO.insert(a);
-      p.setAction(a.getId());
+      p.setIdAction(a.getId());
       ScheduleIO.insert(p, dc);
       dc.commit();
     } catch (SQLException sqe) {
@@ -324,24 +334,24 @@ public class MemberService
     }
   }
 
-  public void saveRehearsalPass(Vector<DateFr> dates, Hour start, Hour end, int idper, int room) throws MemberException {
+  public void savePassRehearsal(Vector<DateFr> dates, Hour start, Hour end, int idper, int room) throws MemberException {
     try {
       dc.setAutoCommit(false);
       ActionIO actionIO = new ActionIO(dc);
       Action a = new Action();
       actionIO.insert(a);
-      ScheduleDTO dto = new ScheduleDTO();
+      ScheduleObject dto = new MemberRehearsalSchedule();
       dto.setType(Schedule.MEMBER);
-      dto.setPersonId(idper);
-      dto.setPlace(room);
+      dto.setIdPerson(idper);
+      dto.setIdRoom(room);
       dto.setNote(0);
-      dto.setStart(start.toString());
-      dto.setEnd(end.toString());
-      dto.setAction(a.getId());
+      dto.setStart(start);
+      dto.setEnd(end);
+      dto.setIdAction(a.getId());
 
       for (int i = 0; i < dates.size(); i++) {
         DateFr d = dates.elementAt(i);
-        dto.setDay(d.toString());
+        dto.setDate(d);
         ScheduleIO.insert(dto, dc);
       }
       dc.commit();

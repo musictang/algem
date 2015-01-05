@@ -1,0 +1,6 @@
+CARTE ABONNEMENT
+S'il n'existe qu'une seule carte d'abonnement, il n'est plus utile d'ouvrir une fenêtre de choix comme auparavant. La carte par défaut sera utilisée.
+Si encore aucune carte d'abonnement n'a été configurée, un message vous en avertira et l'option "Abonnement" ne sera pas prise en compte lors d'une réservation de répétition.
+Les séances réservées par l'adhérent en cours d'abonnement sont maintenant enregistrées avec une heure de début et de fin. Cet historique permet de tracer l'activité de l'élève pour chacune de ses cartes d'abonnement.
+L'historique des abonnements est maintenant disponible et permet de visualiser l'ensemble des cartes d'abonnement achetées au cours du temps par l'adhérent ainsi que le détail horaire de ses activités.
+Cette fonction permettra en outre de détailler les chevauchements horaires entre deux cartes (lorsque la durée de la réservation dépasse le nombre d'heures restant sur la carte en cours et qu'une nouvelle carte est créée pour la circonstance).

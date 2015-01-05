@@ -306,7 +306,7 @@ public class PlanModifCtrl
       dc.setAutoCommit(false);
       changeHour(start, end, hStart, hEnd);
       if (ScheduleObject.MEMBER == plan.getType()) {
-        memberService.checkSubscriptionCard(plan, hStart, hEnd);
+        memberService.updatePersonalSession(plan, hStart, hEnd);
 
       }
       dc.commit();
@@ -765,7 +765,7 @@ public class PlanModifCtrl
         // suppression du planning
         service.deleteRehearsal(dlg.getDateStart(), dlg.getDateEnd(), plan);
         if (ScheduleObject.MEMBER == plan.getType()) {
-          memberService.editSubscriptionCard(dataCache, plan);
+          memberService.cancelPersonalSession(dataCache, plan);
         } else if (ScheduleObject.GROUP == plan.getType()) {
           // annulation échéance
           Group g = new GemGroupService(dc).find(plan.getIdPerson());

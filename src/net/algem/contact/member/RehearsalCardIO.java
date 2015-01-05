@@ -1,7 +1,7 @@
 /*
- * @(#)RehearsalCardIO.java 2.6.a 18/09/12
- * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * @(#)RehearsalCardIO.java 2.9.2 26/12/14
+ *
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.contact.member;
 
@@ -31,7 +31,7 @@ import net.algem.util.model.TableIO;
  * Persistence for rehearsal card.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.2
  */
 public class RehearsalCardIO
         extends TableIO
@@ -72,7 +72,7 @@ public class RehearsalCardIO
       c.setLength(rs.getInt(5));
       v.addElement(c);
     }
-    return v.isEmpty() ? null : v;
+    return v;
   }
 
   public static void insert(RehearsalCard card, DataConnection dc) throws SQLException {

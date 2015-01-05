@@ -1,5 +1,5 @@
 /*
- * @(#)RehearsalUtil.java	2.8.w 09/07/14
+ * @(#)RehearsalUtil.java	2.9.2 26/12/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -28,7 +28,7 @@ import net.algem.util.DataConnection;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.w
+ * @version 2.9.2
  */
 public class RehearsalUtil
 {
@@ -104,7 +104,7 @@ public class RehearsalUtil
 
   /**
    * Calculates the total value of an order line for a Person rate.
-   * 
+   *
    * @param start
    * @param end
    * @param rate
@@ -128,10 +128,6 @@ public class RehearsalUtil
     int delay = 3600 * nhours * 1000; // en millisecondes
 
     DateFr today = new DateFr(new java.util.Date());
-    // la comparaison doit se faire entre 2 DateFr
-    if (today.getTime() + delay > date.getTime()) {
-      return false;
-    }
-    return true;
+    return today.getTime() + delay <= date.getTime();
   }
 }

@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleIO.java	2.9.2 19/12/14
+ * @(#)ScheduleIO.java	2.9.2 26/12/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -68,26 +68,6 @@ public class ScheduleIO
             + "," + p.getIdPerson()
             + "," + p.getIdAction()
             + "," + p.getIdRoom()
-            + "," + p.getNote()
-            + ")";
-
-    dc.executeUpdate(query);
-    p.setId(id);
-  }
-
-  public static void insert(ScheduleDTO p, DataConnection dc) throws SQLException {
-
-    int id = nextId(SEQUENCE, dc);
-
-    String query = "INSERT INTO " + TABLE + " VALUES("
-            + id
-            + ",'" + p.getDay().toString() + "'"
-            + ",'" + p.getStart() + "'"
-            + ",'" + p.getEnd() + "'"
-            + "," + p.getType()
-            + "," + p.getPersonId()
-            + "," + p.getAction()
-            + "," + p.getPlace()
             + "," + p.getNote()
             + ")";
 

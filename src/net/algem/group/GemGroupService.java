@@ -1,5 +1,5 @@
 /*
- * @(#)GemGroupService.java	2.8.y.1 02/10/14
+ * @(#)GemGroupService.java	2.9.2 26/12/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -42,7 +42,7 @@ import net.algem.util.model.Model;
  * Service class for group operations.
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.y.1
+ * @version 2.9.2
  * @since 2.4.a 10/05/12
  */
 public class GemGroupService
@@ -240,7 +240,7 @@ public class GemGroupService
 
     return OrderLineIO.find(where.toString(), dc);
   }
-  
+
   /**
    * Gets the payment schedules of the persons in the group {@literal g}.
    * @param g group instance
@@ -259,12 +259,12 @@ public class GemGroupService
     where.append(")");
     return OrderLineIO.find(where.toString(), dc);
   }
-  
+
   /**
    * Changes the group number of the order lines with the selected {@literal oids}.
    * @param oids the list of lines to change
    * @param g group number
-   * @throws SQLException 
+   * @throws SQLException
    */
   public void updateOrderLine(int oids [], int g) throws SQLException {
     OrderLineIO.setGroup(oids, g, dc);
@@ -309,20 +309,20 @@ public class GemGroupService
    * @throws GroupException if error SQL
    */
   void createRehearsal(DateFr date, Hour start, Hour end, Group g, int rn) throws GroupException {
-    ScheduleDTO dto = new ScheduleDTO();
+    ScheduleObject dto = new GroupRehearsalSchedule();
 
-    dto.setDay(date.toString());
-    dto.setStart(start.toString());
-    dto.setEnd(end.toString());
+    dto.setDate(date);
+    dto.setStart(start);
+    dto.setEnd(end);
     dto.setType(Schedule.GROUP);
-    dto.setPersonId(g.getId());
-    dto.setPlace(rn);
+    dto.setIdPerson(g.getId());
+    dto.setIdRoom(rn);
     dto.setNote(0);
     try {
       dc.setAutoCommit(false);
       Action a = new Action();
       actionIO.insert(a);
-      dto.setAction(a.getId());
+      dto.setIdAction(a.getId());
       ScheduleIO.insert(dto, dc);
 
       Room room = ((RoomIO) DataCache.getDao(Model.Room)).findId(rn);
@@ -351,18 +351,18 @@ public class GemGroupService
       dc.setAutoCommit(false);
       Action a = new Action();
       actionIO.insert(a);
-      ScheduleDTO dto = new ScheduleDTO();
+      ScheduleObject dto = new GroupRehearsalSchedule();
       dto.setType(Schedule.GROUP);
-      dto.setPersonId(g);
-      dto.setPlace(room);
+      dto.setIdPerson(g);
+      dto.setIdRoom(room);
       dto.setNote(0);
-      dto.setStart(start.toString());
-      dto.setEnd(end.toString());
-      dto.setAction(a.getId());
+      dto.setStart(start);
+      dto.setEnd(end);
+      dto.setIdAction(a.getId());
 
       for (int i = 0; i < dates.size(); i++) {
         DateFr d = dates.elementAt(i);
-        dto.setDay(d.toString());
+        dto.setDate(d);
         ScheduleIO.insert(dto, dc);
       }
       dc.commit();

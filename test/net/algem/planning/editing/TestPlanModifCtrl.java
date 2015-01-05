@@ -103,7 +103,7 @@ public class TestPlanModifCtrl
     p.setStart(new Hour("10:00"));
     p.setEnd(new Hour("12:00"));// ajout 2h sur la carte
     ScheduleObject plan = new MemberRehearsalSchedule(p);
-    memberService.editSubscriptionCard(dataCache, plan);
+    memberService.cancelPersonalSession(dataCache, plan);
     PersonSubscriptionCard c = io.find(abo2.getId());
     assertNotNull("abo2.getId = "+abo2.getId(), c);
     

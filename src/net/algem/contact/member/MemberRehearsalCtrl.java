@@ -1,5 +1,5 @@
 /*
- * @(#)MemberRehearsalCtrl.java	2.9.2 19/12/14
+ * @(#)MemberRehearsalCtrl.java	2.9.2 02/01/15
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -25,6 +25,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.List;
 import javax.swing.JOptionPane;
 import net.algem.contact.PersonFile;
 import net.algem.contact.PersonFileEditor;
@@ -136,22 +137,20 @@ public class MemberRehearsalCtrl
   PersonSubscriptionCard updatePersonalCard(PersonFile pFile, RehearsalCard pass, ScheduleObject dto) throws SQLException {
 
     PersonSubscriptionCard currentCard = pFile.getSubscriptionCard();
-    
     PersonSubscriptionCard nc = null;
-    PersonFileEvent event = null;
 
     int timeLength = new Hour(dto.getStart()).getLength(new Hour(dto.getEnd()));
     if (currentCard == null) {//aucune carte n'existe pour cette personne
       nc = createNewCard(pass, timeLength, pFile.getId(), new DateFr(new Date()), dto);//XXX choix peut etre null
-      event = new PersonFileEvent(nc, PersonFileEvent.SUBSCRIPTION_CARD_CHANGED);
     } else {
-      currentCard.setSessions(memberService.getSessions(currentCard.getId()));
+      currentCard.setSessions(memberService.getSessions(currentCard.getId()));//lasy loading
       int remainder = calcRemainder(currentCard.getRest(), timeLength);
+      // if (remainder > max).
       if (remainder < 0) { // plus de place sur la carte
         currentCard.setRest(0);
         Hour start = new Hour(dto.getStart());
         Hour offset = new Hour(start);
-        offset.incMinute(remainder);
+        offset.incMinute(Math.abs(remainder));
         Hour end = new Hour(dto.getEnd());
         dto.setStart(offset);
         dto.setEnd(end);
@@ -162,18 +161,9 @@ public class MemberRehearsalCtrl
       } else {
         currentCard.setRest(remainder);
       }
-      // update abo
+      // update current card
       currentCard.addSession(dto);
       memberService.update(currentCard);
-
-      if (currentCard.getRest() <= 0 && nc != null) {
-        event = new PersonFileEvent(nc, PersonFileEvent.SUBSCRIPTION_CARD_CHANGED);
-      } else {
-        event = new PersonFileEvent(currentCard, PersonFileEvent.SUBSCRIPTION_CARD_CHANGED);
-      }
-    }
-    if (actionListener != null) {
-      ((PersonFileEditor) actionListener).contentsChanged(event);
     }
     return nc;
   }
@@ -270,20 +260,13 @@ public class MemberRehearsalCtrl
   }
 
   private boolean save() throws MemberException {
-ScheduleObject so = new MemberRehearsalSchedule();
-so.setDate(view.getDate());
-so.setIdPerson(personFile.getId());
-so.setStart(view.getHourStart());
-so.setEnd(view.getHourEnd());
-so.setIdRoom(view.getRoom());
 
-    ScheduleDTO p = new ScheduleDTO();
-
-    p.setDay(view.getDate().toString());
-    p.setStart(view.getHourStart().toString());
-    p.setEnd(view.getHourEnd().toString());
-    p.setPersonId(personFile.getId());
-    p.setPlace(view.getRoom());
+    ScheduleObject so = new MemberRehearsalSchedule();
+    so.setDate(view.getDate());
+    so.setIdPerson(personFile.getId());
+    so.setStart(view.getHourStart());
+    so.setEnd(view.getHourEnd());
+    so.setIdRoom(view.getRoom());
 
     if (!isFree(so)) {
       return false;
@@ -294,29 +277,36 @@ so.setIdRoom(view.getRoom());
     so.setType(Schedule.MEMBER);
     so.setNote(0);
     try {
-      memberService.saveRehearsal(p);
+      memberService.saveRehearsal(so);
       //ajout échéance et mise à jour choix abonnement
       if (subscription) {
-        int length = view.getHourStart().getLength(view.getHourEnd());
-        PopupDlg dlg = new RehearsalCardDlg(view, memberService.getPassList());
         // recherche d'une choix d'abonnement pour cet adhérent
-        RehearsalCard pass = chooseCard(dlg);
+        RehearsalCard pass = null;
+        List<RehearsalCard> passList = memberService.getPassList();
+        if (passList.size() > 1) {
+          PopupDlg dlg = new RehearsalCardDlg(view, passList);
+          pass = chooseCard(dlg);
+        } else if (passList.size() == 1) {
+          pass = passList.get(0);
+        } else {
+          MessagePopup.warning(this, "aucune carte d'abonnement");
+          saveSinglePayment(view.getRoom());
+          return true;
+        }
+
         PersonSubscriptionCard newCard = updatePersonalCard(personFile, pass, so);
-//        float amount = pass.getAmount();
+        PersonFileEvent event = null;
         if (newCard != null) {
-//        event = new PersonFileEvent(nc, PersonFileEvent.SUBSCRIPTION_CARD_CHANGED);
-//      } else {
-//        event = new PersonFileEvent(currentCard, PersonFileEvent.SUBSCRIPTION_CARD_CHANGED);
-//      }
           memberService.saveRehearsalOrderLine(personFile, view.getDate(), pass.getAmount());
+          event = new PersonFileEvent(newCard, PersonFileEvent.SUBSCRIPTION_CARD_CHANGED);
+        } else {
+          event = new PersonFileEvent(personFile.getSubscriptionCard(), PersonFileEvent.SUBSCRIPTION_CARD_CHANGED);
+        }
+        if (actionListener != null) {
+          ((PersonFileEditor) actionListener).contentsChanged(event);
         }
       } else {
-        // calcul montant repet
-        Room s = ((RoomIO) DataCache.getDao(Model.Room)).findId(view.getRoom());
-        double amount = RehearsalUtil.calcSingleRehearsalAmount(view.getHourStart(), view.getHourEnd(), s.getRate(), 1, dc);
-        if (amount > 0.0) {
-          memberService.saveRehearsalOrderLine(personFile, view.getDate(), amount);
-        }
+        saveSinglePayment(view.getRoom());
       }
     } catch (MemberException e) {
       throw e;
@@ -324,6 +314,19 @@ so.setIdRoom(view.getRoom());
       throw new MemberException(sqe.getMessage());
     }
     return true;
+  }
+
+  /**
+   * Calculates the price of the session for this specific room {@literal roomId}
+   * and possibly save it.
+   * @throws SQLException
+   */
+  private void saveSinglePayment(int roomId) throws SQLException {
+    Room s = ((RoomIO) DataCache.getDao(Model.Room)).findId(roomId);
+    double amount = RehearsalUtil.calcSingleRehearsalAmount(view.getHourStart(), view.getHourEnd(), s.getRate(), 1, dc);
+    if (amount > 0.0) {
+      memberService.saveRehearsalOrderLine(personFile, view.getDate(), amount);
+    }
   }
 
   private boolean isFree(ScheduleObject p) {
