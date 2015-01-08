@@ -51,6 +51,7 @@ import net.algem.util.model.GemCloseVetoException;
 import net.algem.util.model.GemList;
 import net.algem.util.model.Model;
 import net.algem.util.module.GemModule;
+import net.algem.util.ui.SQLErrorDlg;
 
 /**
  * Day schedule main controller.
@@ -209,8 +210,8 @@ public class DayScheduleCtrl
           new PlanningExportService().exportPlanning(planning, destFile);
           new DesktopOpenHandler().open(destFile.getAbsolutePath());
         } catch (Exception e) {
-          //TODO display error message
           GemLogger.logException("Error while exporting planning", e);
+          SQLErrorDlg.displayException(view, "Erreur durant l'export", e);
         }
       }
     }

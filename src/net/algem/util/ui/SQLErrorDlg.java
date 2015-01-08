@@ -70,7 +70,8 @@ public class SQLErrorDlg
         sqle = sqle.getNextException();
       }
     } else {
-      pos.println("Exception: " + message);
+      pos.println(message +"\n" + ex.getMessage());
+      //ex.printStackTrace(pos);
     }
 
     /* FIXME que les premieres lignes net.algem (classfile+ligne)
@@ -105,5 +106,9 @@ public class SQLErrorDlg
       dlg.setVisible(false);
       //dlg.dispose();
     }
+  }
+
+  public static void displayException(Component parent, String message, Exception e) {
+    new SQLErrorDlg(parent, e, message);
   }
 }
