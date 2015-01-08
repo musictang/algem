@@ -27,22 +27,26 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
+import java.io.File;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
 import net.algem.planning.*;
 import net.algem.planning.editing.ModifPlanEvent;
+import net.algem.planning.export.PlanningExportService;
 import net.algem.room.Establishment;
 import net.algem.room.RoomUpdateEvent;
 import net.algem.util.BundleUtil;
+import net.algem.util.FileUtil;
 import net.algem.util.GemLogger;
 import net.algem.util.event.GemEvent;
+import net.algem.util.jdesktop.DesktopOpenHandler;
 import net.algem.util.model.GemCloseVetoException;
 import net.algem.util.model.GemList;
 import net.algem.util.model.Model;
@@ -62,6 +66,8 @@ public class DayScheduleCtrl
 
   private JMenuItem miPrint;
   private JMenuItem miQuit;
+  private JMenuItem miExport;
+
   private DaySchedule daySchedule;
   private boolean monthLink = false;
   private Calendar cal;
@@ -110,7 +116,9 @@ public class DayScheduleCtrl
     });
 
     miPrint = getMenuItem("Menu.print");
+    miExport = getMenuItem("Menu.export");
     mFile.add(miPrint);
+    mFile.add(miExport);
     mFile.add(miQuit);
     mOptions.add(miLinkMonth);
     mOptions.add(miAllRoom);
@@ -191,6 +199,19 @@ public class DayScheduleCtrl
         close();
       } catch (GemCloseVetoException ex) {
         GemLogger.logException(ex);
+      }
+    } else if (src == miExport) {
+      List<DayPlan> planning = ((DayScheduleView) view).getCurrentPlanning();
+      File destFile = FileUtil.getSaveFile(view, "xls", "Fichiers excel");
+//      File destFile = new File("export-test.xls");
+      if (destFile != null) {
+        try {
+          new PlanningExportService().exportPlanning(planning, destFile);
+          new DesktopOpenHandler().open(destFile.getAbsolutePath());
+        } catch (Exception e) {
+          //TODO display error message
+          GemLogger.logException("Error while exporting planning", e);
+        }
       }
     }
   }

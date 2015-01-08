@@ -40,9 +40,12 @@ import javax.print.attribute.standard.MediaPrintableArea;
 import javax.print.attribute.standard.MediaSize;
 import javax.print.attribute.standard.MediaSizeName;
 import javax.print.attribute.standard.OrientationRequested;
-import javax.swing.JFileChooser;
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
+import net.algem.planning.export.PlanningExportService;
 import net.algem.util.jdesktop.DesktopHandler;
 import net.algem.util.jdesktop.DesktopHandlerException;
 import net.algem.util.jdesktop.DesktopOpenHandler;
@@ -297,5 +300,45 @@ public class FileUtil
     } catch (Exception ex) {
       throw new PrintException(ex.getMessage());
     }
+  }
+
+  /**
+   * Helper method for opening a save file chooser dialog
+   *
+   * @param component the AWT parent of the chooser dialog
+   * @param extension the request extension (ex. "xls")
+   * @param extensionName the displayed name for files (ex. "Fichiers excel")
+   * @return the selected File (may be null)
+   */
+  public static File getSaveFile(Component component, String extension, String extensionName) {
+    JFileChooser jFileChooser = new JFileChooser() {
+      @Override
+      public void approveSelection(){
+        File f = getSelectedFile();
+        if(f.exists() && getDialogType() == SAVE_DIALOG){
+          int result = JOptionPane.showConfirmDialog(this,"Le fichier sélectionner existe, voulez vous l'écraser","Fichier existant",JOptionPane.YES_NO_CANCEL_OPTION);
+          switch(result){
+            case JOptionPane.YES_OPTION:
+              super.approveSelection();
+              return;
+            case JOptionPane.NO_OPTION:
+              return;
+            case JOptionPane.CLOSED_OPTION:
+              return;
+            case JOptionPane.CANCEL_OPTION:
+              cancelSelection();
+              return;
+          }
+        }
+        super.approveSelection();
+      }
+    };
+    jFileChooser.setFileFilter(new FileNameExtensionFilter(extensionName, extension));
+    if (jFileChooser.showSaveDialog(component) == JFileChooser.APPROVE_OPTION) {
+      File destFile = jFileChooser.getSelectedFile();
+      String path = destFile.getAbsolutePath();
+      return path.endsWith("." + extension) ? destFile : new File(path + "." + extension);
+    }
+    return null;
   }
 }

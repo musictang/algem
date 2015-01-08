@@ -29,6 +29,7 @@ import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Date;
+import java.util.List;
 import java.util.Vector;
 import javax.swing.JScrollBar;
 import javax.swing.event.DocumentEvent;
@@ -199,4 +200,8 @@ public abstract class DayPlanTableView
   }
 
   public abstract void load(java.util.Date d, Vector<ScheduleObject> schedules, Vector<ScheduleRangeObject> ranges);
+
+  public List<DayPlan> getCurrentPlanning() {
+    return dayPlanView.getCurrentPlanning();
+  }
 }
