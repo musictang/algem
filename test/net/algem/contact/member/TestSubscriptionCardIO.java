@@ -1,7 +1,7 @@
 /*
- * @(#)TestRehearsalCardIO.java 2.6.a 08/10/12
+ * @(#)TestRehearsalCardIO.java 2.9.2 06/01/15
  * 
- * Copyright (c) 1999-2011 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,7 +28,7 @@ import net.algem.util.DataConnection;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.2
  */
 public class TestSubscriptionCardIO
         extends TestCase
@@ -55,40 +55,37 @@ public class TestSubscriptionCardIO
   }
 
   public void testInsertQuery() throws Exception {
-    RehearsalCard card = new RehearsalCard("Ziktest", 22.0F, 10, 30);
+    RehearsalPass card = new RehearsalPass("Ziktest", 22.0F, 300);
     card.setId(1);
-    String query = RehearsalCardIO.getInsertQuery(card);
-    String expected = "INSERT INTO " + RehearsalCardIO.TABLE + " VALUES(1,'Ziktest','22.0','10','30')";
+    String query = RehearsalPassIO.getInsertQuery(card);
+    String expected = "INSERT INTO " + RehearsalPassIO.TABLE + " VALUES(1, 'Ziktest', 22.0, 30, 300)";
     assertEquals(expected, query);
-    card = new RehearsalCard("Ziktest", 0, 0, 0);
+    card = new RehearsalPass("Ziktest", 0, 0);
     card.setId(1);
-    query = RehearsalCardIO.getInsertQuery(card);
-    expected = "INSERT INTO " + RehearsalCardIO.TABLE + " VALUES(1,'Ziktest','0.0','0','0')";
+    query = RehearsalPassIO.getInsertQuery(card);
+    expected = "INSERT INTO " + RehearsalPassIO.TABLE + " VALUES(1, 'Ziktest', 0.0, 30, 0)";
     assertEquals(expected, query);
   }
 
   public void testInsertWithNullValues() throws Exception {
-    RehearsalCard card = new RehearsalCard("Ziktest", 0, 0, 0);
-    RehearsalCardIO.insert(card, dc);
+    RehearsalPass card = new RehearsalPass("Ziktest", 0, 0);
+    RehearsalPassIO.insert(card, dc);
     assertNotNull(card.getId());
     assertTrue(0.0 == card.getAmount());
-    assertTrue(0 == card.getSessionsNumber());
-    assertTrue(0 == card.getLength());
+    assertTrue(RehearsalPass.MIN_DEFAULT == card.getMin());
 
     // clean up
-    RehearsalCardIO.delete(card.getId(), dc);
+    RehearsalPassIO.delete(card.getId(), dc);
   }
 
   public void testInsertWithValidData() throws Exception {
-    RehearsalCard card = new RehearsalCard("Ziktest", 22.0F, 10, 60);
-    RehearsalCardIO.insert(card, dc);
+    RehearsalPass card = new RehearsalPass("Ziktest", 22.0F, 600);
+    RehearsalPassIO.insert(card, dc);
     assertNotNull(card.getId());
     assertTrue(22.0 == card.getAmount());
-    assertTrue(10 == card.getSessionsNumber());
-    assertTrue(60 == card.getLength());
-
+    assertTrue(RehearsalPass.MIN_DEFAULT == card.getMin());
     // clean up
-    RehearsalCardIO.delete(card.getId(), dc);
+    RehearsalPassIO.delete(card.getId(), dc);
   }
 
   public void testFindAll() {

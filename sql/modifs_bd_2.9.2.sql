@@ -5,8 +5,13 @@ CREATE TABLE carteabopersessions (
 	id serial PRIMARY KEY,
 	idcarte integer REFERENCES carteabopersonne(id) ON DELETE CASCADE,
 	idplanning integer,
-	time debut,
-	time fin
+	debut time,
+	fin time
 );
 
 ALTER TABLE absence OWNER TO nobody;
+
+-- Pass repetition individuelle
+ALTER TABLE carteaborepet ADD totalmin integer DEFAULT 60;
+UPDATE carteaborepet SET totalmin = (nbseances * dureemin);
+ALTER TABLE carteaborepet DROP nbseances;

@@ -1,7 +1,7 @@
 /*
- * @(#)PersonFileTabView.java  2.9.1 12/12/14
+ * @(#)PersonFileTabView.java  2.9.2 12/01/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -64,7 +64,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.2
  */
 public class PersonFileTabView
         extends FileTabView
@@ -79,6 +79,8 @@ public class PersonFileTabView
   private static final String BANK_TAB_TITLE = BundleUtil.getLabel("Person.bank.editing.label");
   private static final String BAND_TAB_TITLE = BundleUtil.getLabel("Groups.label");
   private static final String HISTO_REHEARSAL_TAB_TITLE = BundleUtil.getLabel("Person.rehearsal.history.tab.label");
+  private static final String HISTO_SUBSCRIPTIONS_TAB_TITLE = BundleUtil.getLabel("Subscriptions.label");
+  
   private PersonFile dossier, parent;
   private ContactFileEditor contactFileEditor;
   private JCheckBox cbTelAdresse;
@@ -89,20 +91,22 @@ public class PersonFileTabView
   private MemberFollowUpEditor memberFollowUpEditor;
   private TeacherFollowUpEditor teacherFollowUpEditor;
   private MemberEnrolmentEditor enrolmentEditor;
-  private SubscriptionCardEditor cardEditor;
-  private HistoRehearsalView HistoRehearsalView;
+  private HistoRehearsalView histoRehearsalView;
   private PersonFileGroupView groupView;
   private GemButton saveBt, closeBt;
   private Note note;
   private GemToolBar mainToolbar;
   private GemToolBar closeToolbar;
   private BankBranchIO bankBranchIO;
+  private HistoSubscriptionCard histoSubscriptionCard;
+  private final MemberService memberService;
 
   public PersonFileTabView(GemDesktop desktop, PersonFile dossier, ActionListener listener) {
     super(desktop, "Person");
     this.desktop.addGemEventListener(this);
     this.listener = listener;
     this.dossier = dossier;
+    this.memberService = new MemberService(DataCache.getDataConnection());
   }
 
   public MemberEnrolmentEditor getEnrolmentView() {
@@ -151,7 +155,7 @@ public class PersonFileTabView
     contactFileEditor.setCodePostalCtrl(new CodePostalCtrl(DataCache.getDataConnection()));
     if (dossier.getContact() != null) {
       contactFileEditor.set(dossier.getContact());
-      // Titre du module : name du contact suivi de son id
+      // Window title : name followed by member id
       setTitle(getTitle() + dossier.getContact().toString() + " " + dossier.getContact().getId());
       try {
         note = NoteIO.findId(dossier.getId(), dossier.getContact().getType(), DataCache.getDataConnection());
@@ -161,9 +165,10 @@ public class PersonFileTabView
       if (note != null) {
         contactFileEditor.setNote(note);
       }
-      // Affichage du nombre d'heures restantes sur la carte d'abonnement
-      contactFileEditor.setRemainingHours(dossier.getSubscriptionCard());
-
+      // Rest on last subscription
+      PersonSubscriptionCard lastCard = memberService.getLastSubscription(dossier.getId(), false);
+      dossier.setSubscriptionCard(lastCard);
+      contactFileEditor.setSubscriptionRest(lastCard);
     }
 
     wTab.addItem(contactFileEditor, CONTACT_TAB_TITLE);
@@ -289,28 +294,13 @@ public class PersonFileTabView
 //      ribView.setRib(b);
     } else if (evt.getType() == PersonFileEvent.SUBSCRIPTION_CARD_CHANGED) {
       PersonSubscriptionCard card = (PersonSubscriptionCard) evt.getSource();
-      dossier.setSubscriptionCard(card);
-      contactFileEditor.setRemainingHours(card);
-    }
-  }
-
-  void addSubscriptionCardTab(PersonFile dossier) {
-    if (dossier.getSubscriptionCard() == null) {
-      dossier.setSubscriptionCard(new PersonSubscriptionCard(dossier.getId()));
-    }
-
-    if (cardEditor == null) {
-      try {
-        cardEditor = new SubscriptionCardEditor(desktop, listener, dossier);
-      } catch (SQLException ex) {
-        GemLogger.logException(ex);
+      if (card != null) {
+        if (histoSubscriptionCard != null) {
+          histoSubscriptionCard.load();
+        }
+        contactFileEditor.setSubscriptionRest(card);
       }
-      cardEditor.addPersonFileListener(this);
-    } else {
-      cardEditor.setCard(dossier.getSubscriptionCard());
     }
-    wTab.addItem(cardEditor, "Carte d'abonnement");
-    addTab(cardEditor);
   }
 
   GemButton addIcon(String command) {
@@ -623,9 +613,6 @@ public class PersonFileTabView
     return ribView == null ? false : ribView.isNewBranch();
   }
 
-//  boolean hasBic() {
-//    return ribView == null ? true : ribView.hasBic();
-//  }
   Bank getBank() {
     return ribView == null ? null : ribView.getBank();
   }
@@ -679,18 +666,35 @@ public class PersonFileTabView
   }
 
   void addRehearsalHistoryTab() {
-    if (HistoRehearsalView == null) {
-      HistoRehearsalView = new HistoRehearsalView(desktop, listener, dossier.getId());
+    if (histoRehearsalView == null) {
+      histoRehearsalView = new HistoRehearsalView(desktop, listener, dossier.getId());
     }
-    HistoRehearsalView.load();
-    wTab.addItem(HistoRehearsalView, HISTO_REHEARSAL_TAB_TITLE);
-    addTab(HistoRehearsalView);
+    histoRehearsalView.load();
+    wTab.addItem(histoRehearsalView, HISTO_REHEARSAL_TAB_TITLE);
+    addTab(histoRehearsalView);
+  }
+  
+  boolean addHistoSubscriptionTab() {
+    if (histoSubscriptionCard == null) {
+      histoSubscriptionCard = new HistoSubscriptionCard(desktop, dossier.getId(), listener, memberService);
+    }
+    histoSubscriptionCard.load();
+    if (!histoSubscriptionCard.isLoaded()) {
+      MessagePopup.warning(this, MessageUtil.getMessage("no.subscription.warning"));
+      return false;
+    }
+    wTab.addItem(histoSubscriptionCard, HISTO_SUBSCRIPTIONS_TAB_TITLE);
+    addTab(histoSubscriptionCard);
+    return true;
+  }
+  
+  void removeSubscriptionTab() {
+    removeTab(histoSubscriptionCard);
   }
 
   /**
    * Adds a tab for groups the member belongs to.
-   * Only contacts of type
-   * <code>PERSON</code> may belong to a group.
+   * Only contacts of type <code>PERSON</code> may belong to a group.
    *
    * @param selectionFlag if true, tab is selected in view
    * @return true if tab opened

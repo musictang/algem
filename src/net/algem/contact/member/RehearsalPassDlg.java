@@ -1,7 +1,7 @@
 /*
- * @(#)RehearsalCardDlg.java 2.9.2 26/12/14
+ * @(#)RehearsalPassDlg.java 2.9.2 12/01/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -35,17 +35,17 @@ import net.algem.util.ui.PopupDlg;
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.9.2
  */
-public class RehearsalCardDlg
+public class RehearsalPassDlg
 	extends PopupDlg {
 
-	private RehearsalCard card;
+	private RehearsalPass card;
 	private JComboBox choice;
 	private GemBorderPanel background;
 
-	public RehearsalCardDlg() {
+	public RehearsalPassDlg() {
 	}
 
-	public RehearsalCardDlg(Component c, List<RehearsalCard> passList) {
+	public RehearsalPassDlg(Component c, List<RehearsalPass> passList) {
 		super(c, "Choix abonnement", true);
 		background = new GemBorderPanel();
 		choice = new JComboBox(new Vector(passList));
@@ -59,18 +59,18 @@ public class RehearsalCardDlg
 
 	}
 
-	public RehearsalCard get() {
+	public RehearsalPass get() {
 		if (choice != null) {
-			return (RehearsalCard) choice.getSelectedItem();
+			return (RehearsalPass) choice.getSelectedItem();
 		}
 		return card;
 	}
 
-	public void set(RehearsalCard c) {
+	public void set(RehearsalPass c) {
 		choice.setSelectedItem(c);
 	}
 
-	public void setCard(RehearsalCard c) {
+	public void setCard(RehearsalPass c) {
 		this.card = c;
 	}
 

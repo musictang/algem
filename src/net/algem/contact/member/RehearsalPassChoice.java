@@ -1,7 +1,7 @@
 /*
- * @(#)RehearsalCardModule.java 2.8.w 27/08/14
+ * @(#)RehearsalPassChoice.java 2.9.2 12/01/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,29 +20,29 @@
  */
 package net.algem.contact.member;
 
-import java.awt.Container;
-import java.awt.event.ActionEvent;
-import net.algem.util.module.DefaultGemModule;
-import net.algem.util.module.GemDesktopCtrl;
+import java.util.Vector;
+import net.algem.util.ui.GemChoice;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.2
  */
-public class RehearsalCardModule
-        extends DefaultGemModule
+public class RehearsalPassChoice
+        extends GemChoice
 {
 
-  public RehearsalCardModule(String label, Container p) {
-    super(label, p);
-    if (p instanceof RehearsalCardSearchCtrl) {
-      ((RehearsalCardSearchCtrl) p).addActionListener(this);
-    }
+  public RehearsalPassChoice(Vector<RehearsalPass> cartes) {
+    super(cartes);
   }
 
   @Override
-  public void actionPerformed(ActionEvent evt) {
-    ((GemDesktopCtrl) desktop).actionPerformed(evt);
+  public int getKey() {
+    return ((RehearsalPass) getSelectedItem()).getId();
+  }
+
+  @Override
+  public void setKey(int k) {
+    setSelectedItem(new RehearsalPass(k));
   }
 }

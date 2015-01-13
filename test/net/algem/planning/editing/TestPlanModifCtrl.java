@@ -1,7 +1,7 @@
 /*
- * @(#)TestPlanModifCtrl.java 2.7.h 20/02/13
+ * @(#)TestPlanModifCtrl.java 2.9.2 06/01/15
  * 
- * Copyright (c) 1999-2010 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -35,7 +35,7 @@ import net.algem.util.module.GemDesktopCtrl;
 
 /**
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.h
+ * @version 2.9.2
  */
 public class TestPlanModifCtrl
         extends TestCase
@@ -78,8 +78,8 @@ public class TestPlanModifCtrl
 
   public void failingtestUpdateCarteAbo() throws Exception {
     int idper = 2;
-    RehearsalCard card = new RehearsalCard(100, "Pass", 22.0f, 20, 30);
-    RehearsalCardIO.insert(card, dc);
+    RehearsalPass card = new RehearsalPass(100, "Pass", 22.0f, 600);
+    RehearsalPassIO.insert(card, dc);
     // ancienne carte
     PersonSubscriptionCard abo1 = new PersonSubscriptionCard();
     abo1.setPurchaseDate(before);
@@ -103,16 +103,15 @@ public class TestPlanModifCtrl
     p.setStart(new Hour("10:00"));
     p.setEnd(new Hour("12:00"));// ajout 2h sur la carte
     ScheduleObject plan = new MemberRehearsalSchedule(p);
-    memberService.cancelPersonalSession(dataCache, plan);
+    memberService.cancelSubscriptionCardSession(dataCache, plan);
     PersonSubscriptionCard c = io.find(abo2.getId());
     assertNotNull("abo2.getId = "+abo2.getId(), c);
     
     io.deleteByIdper(idper);
-    RehearsalCardIO.delete(card.getId(), dc);
+    RehearsalPassIO.delete(card.getId(), dc);
   }
   
-  public void testPostponeCourse() {
-    
+  public void testPostponeCourse() {   
     HourRangePanel hp = new HourRangePanel(new Hour("14:00"), new Hour("15:00"));
     HourField hf = new HourField("17:00");
     

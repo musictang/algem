@@ -35,7 +35,7 @@ public class DummySubscriptionCardDlg
         extends PopupDlg
 {
 
-  private RehearsalCard card;
+  private RehearsalPass card;
 
   public DummySubscriptionCardDlg(Component c, DataCache dc) {
     super(c, "Choix abonnement", true);
@@ -46,11 +46,11 @@ public class DummySubscriptionCardDlg
     return null;
   }
 
-  public void set(RehearsalCard c) {
+  public void set(RehearsalPass c) {
     this.card = c;
   }
 
-  public RehearsalCard get() {
+  public RehearsalPass get() {
     return card;
   }
 }

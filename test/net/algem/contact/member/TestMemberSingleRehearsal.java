@@ -1,7 +1,7 @@
 /*
- * @(#)TestMemberSingleRehearsal.java 2.9.2 22/12/14
+ * @(#)TestMemberSingleRehearsal.java 2.9.2 12/01/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -23,6 +23,7 @@ package net.algem.contact.member;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 import javax.swing.JFrame;
 import junit.framework.TestCase;
@@ -76,22 +77,19 @@ public class TestMemberSingleRehearsal
 
   public void testCalcRest() {
     int duration = 120; // en minutes
-    int nbs = 20;
-    int sessionDuration = 30;
+    RehearsalPass card = new RehearsalPass("ZikTest", 120.0F, 600);
 
-    RehearsalCard card = new RehearsalCard("ZikTest", 120.0F, nbs, sessionDuration);
+    int rest = rehearsalCtrl.calcRemainder(card.getTotalTime(), duration);
+    int expected = card.getTotalTime() - duration;
+    assertTrue(expected == rest);
 
-    int rest = rehearsalCtrl.calcRemainder(card, duration);
-    int expected = card.getTotalLength() - duration;
-    assertTrue(expected == rest); //duree totale > duree repet
-
-    card.setSessionsNumber(3);
-    rest = rehearsalCtrl.calcRemainder(card, duration);
+    duration = 600;
+    rest = rehearsalCtrl.calcRemainder(card.getTotalTime(), duration);
     expected = 0;
     assertTrue(expected == rest);
   }
 
-  public void testSetRehearsalCardWithRenewal() throws SQLException {
+  public void testSetRehearsalCardWithRenewal() throws SQLException, MemberException {
 
     int rest = 120; // duree restante sur la carte
     int idper = 2; // numéro d'adhérent arbitraire
@@ -99,7 +97,7 @@ public class TestMemberSingleRehearsal
     c.setId(idper);
     PersonFile dp = new PersonFile();
     dp.setContact(c);
-    RehearsalCard pass = new RehearsalCard("ZikTest", 120.0F, 20, 30);
+    RehearsalPass pass = new RehearsalPass("ZikTest", 120.0F, 600);
     pass.setId(1);
 
     ScheduleObject p = new MemberRehearsalSchedule();
@@ -119,24 +117,25 @@ public class TestMemberSingleRehearsal
     PersonSubscriptionCard newCard = rehearsalCtrl.updatePersonalCard(dp, pass, p);
     float amount = pass.getAmount();
     MemberService service = new MemberService(dc);
-    service.saveRehearsalOrderLine(dp, new DateFr(p.getDate()), amount);
-
-    PersonSubscriptionCard nc = io.find(idper, null, false); // dernière carte enregistrée
+    service.saveRehearsalOrderLine(dp, new DateFr(p.getDate()), amount, newCard.getId());
+    List<PersonSubscriptionCard> cardList = io.find(idper, null, false, 1);
+    PersonSubscriptionCard nc = cardList.get(0); // dernière carte enregistrée
     assertNotNull("carte repet introuvable ?", nc);
     assertEquals("erreur date ?", new DateFr(new Date()), nc.getPurchaseDate());
-    assertTrue(pass.getTotalLength() - 60 == nc.getRest());
+    assertTrue(pass.getTotalTime() - 60 == nc.getRest());
     // clean up
     io.deleteByIdper(idper);
   }
 
-  public void testSetRehearsalCardWithoutRenewal() throws SQLException {
+  
+  public void testSetRehearsalCardWithoutRenewal() throws SQLException, MemberException {
     int rest = 120; // duree restante sur la carte
     int idper = 2; // numéro d'adhérent arbitraire
     Contact c = new Contact();
     c.setId(idper);
     PersonFile dp = new PersonFile();
     dp.setContact(c);
-    RehearsalCard pass = new RehearsalCard("ZikTest", 120.0F, 20, 30);
+    RehearsalPass pass = new RehearsalPass("ZikTest", 120.0F, 600);
     pass.setId(1);
 
     ScheduleObject p = new MemberRehearsalSchedule();
@@ -166,14 +165,14 @@ public class TestMemberSingleRehearsal
   public void testCreateNewCard() throws Exception {
 
     int idper = 3;
-    RehearsalCard card = new RehearsalCard("ZikTest", 120.0F, 20, 30);
+    RehearsalPass card = new RehearsalPass("ZikTest", 120.0F, 600);
     //RehearsalCardIO.insert(card, dc);
     PersonSubscriptionCard pcr = new PersonSubscriptionCard(idper, card.getId(), new DateFr(cal.getTime()), 480);
     // clean up before inserting
     io.delete(idper);
     io.insert(pcr);
-
-    PersonSubscriptionCard nc = io.find(idper, null, false);
+    List<PersonSubscriptionCard> cardList = io.find(idper, null, false, 1);
+    PersonSubscriptionCard nc = cardList.get(0);
 
     assertNotNull(nc);
     assertTrue(480 == nc.getRest());

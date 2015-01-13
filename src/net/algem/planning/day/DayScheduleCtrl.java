@@ -100,7 +100,7 @@ public class DayScheduleCtrl
       }
     });
 
-    miAllRoom = new JCheckBoxMenuItem("Afficher toutes les salles");
+    miAllRoom = new JCheckBoxMenuItem(BundleUtil.getLabel("Room.show.all.label"));
     miAllRoom.setSelected(false);
     miAllRoom.addItemListener(new ItemListener()
     {

@@ -191,7 +191,7 @@ public class CourseEnrolmentDlg
     btCancel.addActionListener(this);
     btNext = new GemButton(GemCommand.NEXT_CMD);
     btNext.addActionListener(this);
-    GemButton btPrevious = new GemButton(GemCommand.BACK_CMD);
+    GemButton btPrevious = new GemButton(GemCommand.PREVIOUS_CMD);
     btPrevious.addActionListener(this);
 
     GemPanel buttons = new GemPanel();
@@ -269,7 +269,7 @@ public class CourseEnrolmentDlg
         ((CardLayout) bgPanel.getLayout()).show(bgPanel, "page2");
         btNext.setText(GemCommand.OK_CMD);
       }
-    } else if (GemCommand.BACK_CMD.equals(cmd)) {
+    } else if (GemCommand.PREVIOUS_CMD.equals(cmd)) {
       ((CardLayout) bgPanel.getLayout()).show(bgPanel, "page1");
       btNext.setText(GemCommand.NEXT_CMD);
     } else if (GemCommand.OK_CMD.equals(cmd)) {

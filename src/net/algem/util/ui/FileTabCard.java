@@ -64,7 +64,7 @@ public abstract class FileTabCard
 
     buttons = new GemPanel();
     buttons.setLayout(new GridLayout(1, 3));
-    buttons.add(btBack = new GemButton(GemCommand.BACK_CMD));
+    buttons.add(btBack = new GemButton(GemCommand.PREVIOUS_CMD));
     buttons.add(btCancel = new GemButton(GemCommand.CANCEL_CMD));
     buttons.add(btNext = new GemButton(GemCommand.NEXT_CMD));
     btBack.addActionListener(this);
@@ -136,7 +136,7 @@ public abstract class FileTabCard
     String cmd = evt.getActionCommand();
     if (cmd.equals(GemCommand.CANCEL_CMD)) {
       cancel();
-    } else if (cmd.equals(GemCommand.BACK_CMD)) {
+    } else if (cmd.equals(GemCommand.PREVIOUS_CMD)) {
       if (step > 0) {
         back();
       }

@@ -70,7 +70,7 @@ public abstract class CardCtrl
 
     buttons = new GemPanel();
     buttons.setLayout(new GridLayout(1, 3));
-    buttons.add(btPrev = new GemButton(GemCommand.BACK_CMD));
+    buttons.add(btPrev = new GemButton(GemCommand.PREVIOUS_CMD));
     buttons.add(btCancel = new GemButton(GemCommand.CANCEL_CMD));
     buttons.add(btNext = new GemButton(GemCommand.NEXT_CMD));
     btPrev.addActionListener(this);
@@ -159,7 +159,7 @@ public abstract class CardCtrl
     actionListener.actionPerformed(new ActionEvent(this,ActionEvent.ACTION_PERFORMED,GemCommand.CANCEL_CMD));
     }
      */
-    else if (cmd.equals(GemCommand.BACK_CMD)) {
+    else if (cmd.equals(GemCommand.PREVIOUS_CMD)) {
       if (step > 0) {
         prev();
       }

@@ -1,5 +1,5 @@
 /*
- * @(#)PersonalCardSession.java 2.9.2 19/12/14
+ * @(#)SubscriptionCardSession.java 2.9.2 19/12/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -29,7 +29,7 @@ import net.algem.planning.Hour;
  * @version 2.9.2
  * @since 2.9.2 19/12/14
  */
-class PersonalCardSession
+class SubscriptionCardSession
 {
 
     private int id;
@@ -95,7 +95,7 @@ class PersonalCardSession
     if (getClass() != obj.getClass()) {
       return false;
     }
-    final PersonalCardSession other = (PersonalCardSession) obj;
+    final SubscriptionCardSession other = (SubscriptionCardSession) obj;
     if (this.id != other.id) {
       return false;
     }

@@ -1,7 +1,7 @@
 /*
- * @(#)MemberRehearsalCtrl.java	2.9.2 02/01/15
+ * @(#)MemberRehearsalCtrl.java	2.9.2 12/01/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -134,79 +134,76 @@ public class MemberRehearsalCtrl
    * @return an amount
    * @throws SQLException
    */
-  PersonSubscriptionCard updatePersonalCard(PersonFile pFile, RehearsalCard pass, ScheduleObject dto) throws SQLException {
+  PersonSubscriptionCard updatePersonalCard(PersonFile pFile, RehearsalPass pass, ScheduleObject dto) throws SQLException, MemberException {
 
-    PersonSubscriptionCard currentCard = pFile.getSubscriptionCard();
+    PersonSubscriptionCard last = pFile.getSubscriptionCard();//XXX le pass peut être différent du pass courant
     PersonSubscriptionCard nc = null;
 
     int timeLength = new Hour(dto.getStart()).getLength(new Hour(dto.getEnd()));
-    if (currentCard == null) {//aucune carte n'existe pour cette personne
+    if (last == null) {//aucune carte n'existe pour cette personne
       nc = createNewCard(pass, timeLength, pFile.getId(), new DateFr(new Date()), dto);//XXX choix peut etre null
     } else {
-      currentCard.setSessions(memberService.getSessions(currentCard.getId()));//lasy loading
-      int remainder = calcRemainder(currentCard.getRest(), timeLength);
-      // if (remainder > max).
+      last.setSessions(memberService.getSessions(last.getId()));//lasy loading
+      int remainder = last.getRest() - timeLength;
       if (remainder < 0) { // plus de place sur la carte
-        currentCard.setRest(0);
+        last.setRest(0);
         Hour start = new Hour(dto.getStart());
         Hour offset = new Hour(start);
         offset.incMinute(Math.abs(remainder));
         Hour end = new Hour(dto.getEnd());
         dto.setStart(offset);
         dto.setEnd(end);
-        nc = createNewCard(pass, Math.abs(remainder), currentCard.getIdper(), new DateFr(new Date()), dto);
+        nc = createNewCard(pass, Math.abs(remainder), last.getIdper(), new DateFr(new Date()), dto);
         //current card session offset
         dto.setStart(start);
         dto.setEnd(offset);
       } else {
-        currentCard.setRest(remainder);
+        RehearsalPass currentPass = (RehearsalPass) DataCache.findId(last.getPassId(), Model.PassCard);
+        if (last.getRest() > currentPass.getTotalTime()) {// XXX current card pass
+          // restant positif généré par ex. par une annulation (ou un retrait d'heures)
+          Hour offset = new Hour(dto.getStart());
+          offset.incMinute(last.getRest() - currentPass.getTotalTime());
+          dto.setStart(offset);// on ampute la durée de la session de la partie positive
+        } 
+        last.setRest(remainder);
       }
       // update current card
-      currentCard.addSession(dto);
-      memberService.update(currentCard);
+      if (dto.getStart().lt(dto.getEnd())) {
+        last.addSession(dto);
+      }
+      memberService.update(last);
     }
     return nc;
   }
 
   /**
    *
-   * @param card selected card
-   * @param length rehearsal length
+   * @param max max time
+   * @param length time length of a session
    * @return 0 if length is longer than the total length
    */
-  int calcRemainder(RehearsalCard card, int length) {
-    int totalLength = card.getTotalLength();
-    if (totalLength > length) {
-      return totalLength - length;
+  int calcRemainder(int max, int length) {
+    if (max > length) {
+      return max - length;
     }
     return 0;
   }
 
   /**
-   *
-   * @param length rehearsal length
-   * @param remainder remainder length on the card
-   * @return the new remainder length
-   */
-  int calcRemainder(int length, int remainder) {
-    return length - remainder;
-  }
-
-  /**
    * Creates a new subscription card.
    *
-   * @param card selected card
+   * @param pass selected pass
    * @param length rehearsal length
    * @param idper person's id
    * @throws SQLException
    */
-  PersonSubscriptionCard createNewCard(RehearsalCard card, int length, int idper, DateFr date, ScheduleObject dto) throws SQLException {
+  PersonSubscriptionCard createNewCard(RehearsalPass pass, int length, int idper, DateFr date, ScheduleObject dto) throws SQLException {
 
     PersonSubscriptionCard c = new PersonSubscriptionCard();
     c.setIdper(idper);
-    c.setPassId(card.getId());
+    c.setPassId(pass.getId());
     c.setPurchaseDate(date);
-    c.setRest(calcRemainder(card, length));
+    c.setRest(calcRemainder(pass.getTotalTime(), length));
     c.addSession(dto);
 
     memberService.create(c);
@@ -216,13 +213,13 @@ public class MemberRehearsalCtrl
   /**
    * Selects a subscription.
    *
-   * @param dialog
-   * @return a rehearsal card
+   * @param dlg dialog
+   * @return a rehearsal pass
    */
-  private RehearsalCard chooseCard(PopupDlg dialog) {
-    dialog.show();
-    if (dialog.isValidation()) {
-      return ((RehearsalCardDlg) dialog).get();
+  private RehearsalPass choosePass(PopupDlg dlg) {
+    dlg.show();
+    if (dlg.isValidation()) {
+      return ((RehearsalPassDlg) dlg).get();
     }
     return null;
   }
@@ -281,11 +278,11 @@ public class MemberRehearsalCtrl
       //ajout échéance et mise à jour choix abonnement
       if (subscription) {
         // recherche d'une choix d'abonnement pour cet adhérent
-        RehearsalCard pass = null;
-        List<RehearsalCard> passList = memberService.getPassList();
+        RehearsalPass pass = null;
+        List<RehearsalPass> passList = memberService.getPassList();
         if (passList.size() > 1) {
-          PopupDlg dlg = new RehearsalCardDlg(view, passList);
-          pass = chooseCard(dlg);
+          PopupDlg dlg = new RehearsalPassDlg(view, passList);
+          pass = choosePass(dlg);
         } else if (passList.size() == 1) {
           pass = passList.get(0);
         } else {
@@ -297,7 +294,7 @@ public class MemberRehearsalCtrl
         PersonSubscriptionCard newCard = updatePersonalCard(personFile, pass, so);
         PersonFileEvent event = null;
         if (newCard != null) {
-          memberService.saveRehearsalOrderLine(personFile, view.getDate(), pass.getAmount());
+          memberService.saveRehearsalOrderLine(personFile, view.getDate(), pass.getAmount(), newCard.getId());
           event = new PersonFileEvent(newCard, PersonFileEvent.SUBSCRIPTION_CARD_CHANGED);
         } else {
           event = new PersonFileEvent(personFile.getSubscriptionCard(), PersonFileEvent.SUBSCRIPTION_CARD_CHANGED);
@@ -325,7 +322,7 @@ public class MemberRehearsalCtrl
     Room s = ((RoomIO) DataCache.getDao(Model.Room)).findId(roomId);
     double amount = RehearsalUtil.calcSingleRehearsalAmount(view.getHourStart(), view.getHourEnd(), s.getRate(), 1, dc);
     if (amount > 0.0) {
-      memberService.saveRehearsalOrderLine(personFile, view.getDate(), amount);
+      memberService.saveRehearsalOrderLine(personFile, view.getDate(), amount, 0);
     }
   }
 
