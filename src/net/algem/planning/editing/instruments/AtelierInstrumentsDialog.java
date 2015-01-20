@@ -3,6 +3,7 @@ package net.algem.planning.editing.instruments;
 import net.algem.config.Instrument;
 import net.algem.contact.Person;
 import net.algem.planning.editing.instruments.AtelierInstrumentsService.PersonInstrumentRow;
+import net.algem.util.BundleUtil;
 import net.algem.util.GemLogger;
 
 import javax.swing.*;
@@ -181,6 +182,8 @@ public class AtelierInstrumentsDialog extends JDialog {
                 onCancel();
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+
+        setTitle(BundleUtil.getLabel("workshop.instruments.label"));
     }
 
     public void setData(List<PersonInstrumentRow> data) {

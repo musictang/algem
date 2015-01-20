@@ -108,7 +108,7 @@ public class PlanModifCtrl
       v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.suppression.label"), this, "DeletePlanning"));
     }
 
-    v.add(new GemMenuButton(BundleUtil.getLabel("Atelier.instruments.label"), this, "AtelierInstruments"));
+    v.add(new GemMenuButton(BundleUtil.getLabel("workshop.instruments.label"), this, "AtelierInstruments"));
 
     /* v.add(new GemMenuButton("Replanifier ce cours", this, "Replanifier")); */
     return v;
