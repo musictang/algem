@@ -48,6 +48,9 @@ import net.algem.course.*;
 import net.algem.group.*;
 import net.algem.planning.*;
 import net.algem.planning.day.DaySchedule;
+import net.algem.planning.editing.instruments.AtelierInstrumentsDAO;
+import net.algem.planning.editing.instruments.AtelierInstrumentsService;
+import net.algem.planning.editing.instruments.AtelierInstrumentsServiceImpl;
 import net.algem.planning.month.MonthSchedule;
 import net.algem.room.*;
 import net.algem.security.DefaultUserService;
@@ -144,6 +147,8 @@ public class DataCache
   private static DataConnection dc;
   private UserService userService;
 
+  private AtelierInstrumentsService atelierInstrumentsService;
+
   private DataCache() {
 
   }
@@ -188,6 +193,7 @@ public class DataCache
     monthSchedule = new MonthSchedule();
     daySchedule = new DaySchedule();
 
+    atelierInstrumentsService = new AtelierInstrumentsServiceImpl(dc, new AtelierInstrumentsDAO(dc), PERSON_IO);
   }
 
   /**
@@ -205,6 +211,10 @@ public class DataCache
         }
       }
     }
+    return INSTANCE;
+  }
+
+  public static DataCache getInitializedInstance() {
     return INSTANCE;
   }
 
@@ -839,6 +849,10 @@ public class DataCache
 
   public UserService getUserService() {
     return userService;
+  }
+
+  public AtelierInstrumentsService getAtelierInstrumentsService() {
+    return atelierInstrumentsService;
   }
 
   public User getUser() {

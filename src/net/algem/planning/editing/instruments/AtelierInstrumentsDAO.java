@@ -4,16 +4,20 @@ import net.algem.util.DataConnection;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import static java.lang.String.format;
 
-class AtelierInstrumentsDAO {
+public class AtelierInstrumentsDAO {
     private final DataConnection dc;
 
     public static final String TABLE = "atelier_instruments";
     public static final String COLUMNS = "idaction, idpers, idinstru";
 
-    AtelierInstrumentsDAO(DataConnection dc) {
+    public AtelierInstrumentsDAO(DataConnection dc) {
         this.dc = dc;
     }
 
@@ -41,5 +45,37 @@ class AtelierInstrumentsDAO {
 
     public void delete(AtelierInstrument atelierInstrument) throws SQLException {
         delete(atelierInstrument.getIdAction(), atelierInstrument.getIdPerson());
+    }
+
+
+    public List<Integer> getPersonsIdsForAction(int idAction) throws SQLException {
+        String dateString = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+        String query = format(
+                "select distinct p.id, p.nom, p.prenom from personne p\n" +
+                "join commande c on c.adh = p.id\n" +
+                "join commande_cours cc on cc.idcmd = c.id\n" +
+                "join action a on cc.idaction = a.id\n" +
+                "where a.id=%d\n" +
+                "and cc.datedebut < '%s'\n" +
+                "and cc.datefin > '%s'\n" +
+                "order by p.nom, p.prenom", idAction, dateString, dateString
+        );
+
+        List<Integer> result = new ArrayList<>();
+        ResultSet resultSet = dc.executeQuery(query);
+        while (resultSet.next()) {
+            result.add(resultSet.getInt(1));
+        }
+        return result;
+    }
+
+    public List<Integer> getInstrumentIdsForPerson(int idPerson) throws SQLException {
+        String query = format("select instrument from person_instrument where idper=%d order by idx", idPerson);
+        List<Integer> result = new ArrayList<>();
+        ResultSet resultSet = dc.executeQuery(query);
+        while (resultSet.next()) {
+            result.add(resultSet.getInt(1));
+        }
+        return result;
     }
 }

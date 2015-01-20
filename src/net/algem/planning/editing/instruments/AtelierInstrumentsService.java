@@ -4,6 +4,7 @@ import net.algem.config.Instrument;
 import net.algem.contact.Person;
 import net.algem.planning.Action;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -18,7 +19,32 @@ public interface AtelierInstrumentsService {
         }
     }
 
+    /**
+     * Retrieve instruments allocation, for a workshop action
+     * The allocation is a list of pair (person, instrument) called rows.
+     * The implementation should make sure it returns a row for each participant of the workshop.
+     *
+     * @param action the action of the workshop
+     * @return the allocation of instrument played by participant
+     * @throws Exception
+     */
     public List<PersonInstrumentRow> getInstrumentsAllocation(Action action) throws Exception;
-    public void setInstrumentsAllocation(Action action, List<PersonInstrumentRow> rows);
-    public List<Instrument> getAvailableInstruments(Person person);
+
+    /**
+     * Sets the instrument allocation, for a workshop action
+     * The allocation is a list of pair (person, instrument) called rows.
+     *
+     * @param action the action of the workshop
+     * @param rows the rows to modify
+     * @throws Exception
+     */
+    public void setInstrumentsAllocation(Action action, List<PersonInstrumentRow> rows) throws Exception;
+
+    /**
+     * Retrieve available instruments for a given person
+     * @param person
+     * @return list of instrument played by this person
+     * @throws SQLException
+     */
+    public List<Instrument> getAvailableInstruments(Person person) throws Exception;
 }
