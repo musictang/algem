@@ -55,7 +55,12 @@ public class AtelierInstrumentsController {
         AtelierInstrumentsDialog dialog = new AtelierInstrumentsDialog(service);
         dialog.setLocationRelativeTo(desktop.getFrame());
         dialog.pack();
-        dialog.setData(service.getInstrumentsAllocation(courseAction));
+        try {
+            dialog.setData(service.getInstrumentsAllocation(courseAction));
+        } catch (Exception e) {
+            //TODO better error handling
+            e.printStackTrace();
+        }
         dialog.setVisible(true);
     }
 }

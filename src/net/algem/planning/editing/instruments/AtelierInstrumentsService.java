@@ -18,7 +18,7 @@ public interface AtelierInstrumentsService {
         }
     }
 
-    public List<PersonInstrumentRow> getInstrumentsAllocation(Action action);
+    public List<PersonInstrumentRow> getInstrumentsAllocation(Action action) throws Exception;
     public void setInstrumentsAllocation(Action action, List<PersonInstrumentRow> rows);
     public List<Instrument> getAvailableInstruments(Person person);
 }
