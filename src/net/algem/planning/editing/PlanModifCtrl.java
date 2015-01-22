@@ -27,6 +27,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
+
+import net.algem.Algem;
 import net.algem.config.GemParam;
 import net.algem.contact.EmployeeIO;
 import net.algem.contact.EmployeeType;
@@ -108,7 +110,9 @@ public class PlanModifCtrl
       v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.suppression.label"), this, "DeletePlanning"));
     }
 
-    v.add(new GemMenuButton(BundleUtil.getLabel("workshop.instruments.label"), this, "AtelierInstruments"));
+    if (Algem.isFeatureEnabled("course_instruments")) {
+      v.add(new GemMenuButton(BundleUtil.getLabel("course.instruments.label"), this, "AtelierInstruments"));
+    }
 
     /* v.add(new GemMenuButton("Replanifier ce cours", this, "Replanifier")); */
     return v;

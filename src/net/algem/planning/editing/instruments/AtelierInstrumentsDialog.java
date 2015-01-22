@@ -183,7 +183,7 @@ public class AtelierInstrumentsDialog extends JDialog {
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
-        setTitle(BundleUtil.getLabel("workshop.instruments.label"));
+        setTitle(BundleUtil.getLabel("course.instruments.label"));
     }
 
     public void setData(List<PersonInstrumentRow> data) {
