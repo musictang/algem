@@ -109,9 +109,19 @@ public class AtelierInstrumentsServiceImpl implements AtelierInstrumentsService 
 
     @Override
     public Instrument getAllocatedInstrument(Action action, Person person) throws Exception {
-        AtelierInstrument atelierInstrument = atelierInstrumentsDAO.find(action.getId(), person.getId());
+        return getAllocatedInstrument(action.getId(), person.getId());
+    }
+
+    @Override
+    public Instrument getAllocatedInstrument(int actionId, int personId) throws Exception {
+        AtelierInstrument atelierInstrument = atelierInstrumentsDAO.find(actionId, personId);
         if (atelierInstrument != null) {
             return InstrumentIO.findId(atelierInstrument.getIdInstrument(), dc);
+        } else {
+            List<Integer> ids = atelierInstrumentsDAO.getInstrumentIdsForPerson(personId);
+            if (ids.size() > 0) {
+                return InstrumentIO.findId(ids.get(0), dc);
+            }
         }
         return null;
     }

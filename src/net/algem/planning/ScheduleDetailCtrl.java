@@ -271,7 +271,7 @@ public class ScheduleDetailCtrl
               GemLogger.logException(ex);
             }
             if (m != null) {
-              String instrumentName = getInstrumentName(pl, per, m);
+              String instrumentName = getInstrumentName(pl, per);
               if (instrumentName != null) {
                 buf.append(" : ").append(instrumentName);
               }
@@ -286,21 +286,14 @@ public class ScheduleDetailCtrl
     }
   }
 
-  private String getInstrumentName(ScheduleRangeObject pl, Person per, Member m) {
-    String instrumentName;
+  private String getInstrumentName(ScheduleRangeObject pl, Person per) {
     Instrument instrument = null;
     try {
       instrument = atelierInstrumentsService.getAllocatedInstrument(pl.getAction(), per);
     } catch (Exception e) {
       GemLogger.logException(e);
     }
-    if (instrument != null) {
-      instrumentName = instrument.getName();
-    } else {
-      int instr = m.getFirstInstrument();
-      instrumentName = instr > 0 ? dataCache.getInstrumentName(instr) : "";
-    }
-    return instrumentName;
+    return instrument != null ? instrument.getName() : "";
   }
 
   private void loadMemberReahearsalSchedule(Schedule sched) {
@@ -395,7 +388,7 @@ public class ScheduleDetailCtrl
         GemLogger.logException(ex);
       }
       if (m != null && m.getFirstInstrument() > 0) {
-        String instrumentName = getInstrumentName(pg, per, m);
+        String instrumentName = getInstrumentName(pg, per);
         if (instrumentName != null) {
           buf.append(" : ").append(instrumentName);
         }

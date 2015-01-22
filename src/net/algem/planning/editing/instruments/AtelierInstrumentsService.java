@@ -52,7 +52,17 @@ public interface AtelierInstrumentsService {
      * Gets the allocated instrument for a given workshop action or person
      * @param action
      * @param person
-     * @return the instrument, or null if no specific Instrument is defined.
+     * @return the instrument speficically allocated for this action, otherwise the first instrument of the person,
+     * or null if no specific Instrument is defined.
      */
     public Instrument getAllocatedInstrument(Action action, Person person) throws Exception;
+
+    /**
+     * Gets the allocated instrument for a given workshop action or person
+     * @param actionId
+     * @param personId
+     * @return the instrument speficically allocated for this action, otherwise the first instrument of the person,
+     * or null if no specific Instrument is defined.
+     */
+    public Instrument getAllocatedInstrument(int actionId, int personId) throws Exception;
 }
