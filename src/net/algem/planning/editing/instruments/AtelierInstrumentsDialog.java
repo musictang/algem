@@ -165,7 +165,6 @@ public class AtelierInstrumentsDialog extends JDialog {
                 availableInstruments = instrumentsService.getAvailableInstruments(person);
                 DefaultComboBoxModel<Instrument> aModel = new DefaultComboBoxModel<>();
 
-                aModel.addElement(null);
                 for (Instrument availableInstrument : availableInstruments) {
                     aModel.addElement(availableInstrument);
                 }
