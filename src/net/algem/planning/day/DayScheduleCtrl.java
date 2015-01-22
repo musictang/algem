@@ -35,6 +35,7 @@ import java.util.Locale;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import net.algem.Algem;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
 import net.algem.planning.*;
@@ -119,7 +120,10 @@ public class DayScheduleCtrl
     miPrint = getMenuItem("Menu.print");
     miExport = getMenuItem("Menu.export");
     mFile.add(miPrint);
-    mFile.add(miExport);
+
+    if (Algem.isFeatureEnabled("export_planning_xls")) {
+      mFile.add(miExport);
+    }
     mFile.add(miQuit);
     mOptions.add(miLinkMonth);
     mOptions.add(miAllRoom);

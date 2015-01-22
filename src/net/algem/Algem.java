@@ -54,12 +54,17 @@ public class Algem
   private static final int DEF_WIDTH = 1080;// (850,650) => ancienne taille
   private static final int DEF_HEIGHT = 780;
   private static final Point DEF_LOCATION = new Point(70, 30);
+  private static final String[] ADDITIONAL_PROPERTIES = {
+          "local.properties",
+          System.getProperty("user.home") + FileUtil.FILE_SEPARATOR + ".algem" + FileUtil.FILE_SEPARATOR + "preferences"
+  };
+
   private JFrame frame;
   private DataCache cache;
   private String driverName = "org.postgresql.Driver";
   private String hostName = "localhost";
   private String baseName = "algem";
-  private Properties props;
+  private static Properties props;
   private DataConnection dc;
 
   public Algem() {
@@ -156,16 +161,17 @@ public class Algem
   }
 
   private void setUserProperties() {
-
-    try {
-      String prefix = System.getProperty("user.home") + FileUtil.FILE_SEPARATOR + ".algem" + FileUtil.FILE_SEPARATOR;
-      Properties p = new Properties();
-      p.load(new FileInputStream(prefix + "preferences"));
-      props.putAll(p);
-    } catch (FileNotFoundException e) {
-    } catch (IOException e) {
-      MessagePopup.error(null, e.toString());
-      System.exit(3);
+    for (String path : ADDITIONAL_PROPERTIES) {
+      try {
+        Properties p = new Properties();
+        p.load(new FileInputStream(path));
+        props.putAll(p);
+        GemLogger.info("Loaded properties " + path);
+      } catch (FileNotFoundException e) {
+      } catch (IOException e) {
+        MessagePopup.error(null, e.toString());
+        System.exit(3);
+      }
     }
   }
 
@@ -278,6 +284,18 @@ public class Algem
     }
     query = "UPDATE version SET version = '" + APP_VERSION + "'";
     dc.executeUpdate(query);
+  }
+
+  /**
+   * Check if a given feature is enabled in current configuration.
+   *
+   * <p>Feature keys are prefixed in properties files by <code>'feature.'</code></p>
+   *
+   * @param featureName The name of the feature to check
+   * @return whether this feature is enabled
+   */
+  public static boolean isFeatureEnabled(String featureName) {
+    return Boolean.parseBoolean(props.getProperty("feature." + featureName, "false"));
   }
 
   public class GemBoot
