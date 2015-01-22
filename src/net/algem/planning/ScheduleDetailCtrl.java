@@ -32,6 +32,8 @@ import java.util.Collections;
 import java.util.Vector;
 import javax.swing.JDialog;
 import javax.swing.JRootPane;
+
+import net.algem.config.Instrument;
 import net.algem.contact.*;
 import net.algem.contact.member.Member;
 import net.algem.contact.member.MemberService;
@@ -44,6 +46,7 @@ import net.algem.group.Musician;
 import net.algem.planning.editing.BreakSuppressionDlg;
 import net.algem.planning.editing.ModifPlanEvent;
 import net.algem.planning.editing.PlanModifCtrl;
+import net.algem.planning.editing.instruments.AtelierInstrumentsService;
 import net.algem.room.Room;
 import net.algem.room.RoomFileEditor;
 import net.algem.util.*;
@@ -91,6 +94,7 @@ public class ScheduleDetailCtrl
   private MemberService memberService;
   /** Presence indicator of the modification buttons. */
   private boolean allMenus;
+  private AtelierInstrumentsService atelierInstrumentsService;
 
   public ScheduleDetailCtrl(GemDesktop desktop, PlanModifCtrl pmCtrl, boolean all) {
     this.desktop = desktop;
@@ -99,6 +103,7 @@ public class ScheduleDetailCtrl
     scheduleService = new PlanningService(dc);
     groupService = new GemGroupService(dc);
     memberService = new MemberService(dc);
+    atelierInstrumentsService = dataCache.getAtelierInstrumentsService();
     MAIL_UTIL = new MailUtil(dataCache, memberService);
     modifCtrl = pmCtrl;
     frame = new JDialog(desktop.getFrame(), "détail planning");
@@ -183,17 +188,22 @@ public class ScheduleDetailCtrl
     frame.pack();
 
     Point pos = event.getPosition();
-    pos.x -= 100;
+    int x = pos.y - 100;
     int y = pos.y - frame.getHeight() - 15;
     if (y < desktop.getFrame().getY()) {
       y = desktop.getFrame().getY() + 110;
     }
-    pos.y = y;
 //    pos.y -= frame.getHeight() - 15;
-    frame.setLocation(pos);
+    frame.setLocation(new Point(x, y));
     frame.setSize(260, frame.getHeight());
     frame.setVisible(true);
 
+  }
+
+  public void reloadFromLastEvent() {
+    if (detailEvent != null) {
+      loadSchedule(detailEvent);
+    }
   }
 
   private void loadCourseSchedule(ScheduleDetailEvent de) {
@@ -261,8 +271,10 @@ public class ScheduleDetailCtrl
               GemLogger.logException(ex);
             }
             if (m != null) {
-              int instr = m.getFirstInstrument();
-              buf.append((instr > 0 ? " : " + dataCache.getInstrumentName(instr) : ""));
+              String instrumentName = getInstrumentName(pl, per, m);
+              if (instrumentName != null) {
+                buf.append(" : ").append(instrumentName);
+              }
             }
 
           } else {
@@ -272,6 +284,23 @@ public class ScheduleDetailCtrl
         }
       }
     }
+  }
+
+  private String getInstrumentName(ScheduleRangeObject pl, Person per, Member m) {
+    String instrumentName;
+    Instrument instrument = null;
+    try {
+      instrument = atelierInstrumentsService.getAllocatedInstrument(pl.getAction(), per);
+    } catch (Exception e) {
+      GemLogger.logException(e);
+    }
+    if (instrument != null) {
+      instrumentName = instrument.getName();
+    } else {
+      int instr = m.getFirstInstrument();
+      instrumentName = instr > 0 ? dataCache.getInstrumentName(instr) : "";
+    }
+    return instrumentName;
   }
 
   private void loadMemberReahearsalSchedule(Schedule sched) {
@@ -366,7 +395,10 @@ public class ScheduleDetailCtrl
         GemLogger.logException(ex);
       }
       if (m != null && m.getFirstInstrument() > 0) {
-        buf.append(" : ").append(dataCache.getInstrumentName(m.getFirstInstrument()));
+        String instrumentName = getInstrumentName(pg, per, m);
+        if (instrumentName != null) {
+          buf.append(" : ").append(instrumentName);
+        }
       }
       listPanel.add(new GemMenuButton(buf.toString(), this, "MemberLink", pg));
     }

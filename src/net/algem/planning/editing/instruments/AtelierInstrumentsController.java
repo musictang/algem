@@ -3,10 +3,12 @@ package net.algem.planning.editing.instruments;
 import net.algem.config.Instrument;
 import net.algem.contact.Person;
 import net.algem.planning.Action;
+import net.algem.planning.ReloadDetailEvent;
 import net.algem.util.DataCache;
 import net.algem.util.GemLogger;
 import net.algem.util.module.GemDesktop;
 
+import javax.swing.*;
 import java.util.Arrays;
 import java.util.List;
 
@@ -38,6 +40,7 @@ public class AtelierInstrumentsController implements AtelierInstrumentsDialog.Ca
     public void onOkSelected(List<AtelierInstrumentsService.PersonInstrumentRow> rows) {
         try {
             service.setInstrumentsAllocation(courseAction, rows);
+            desktop.postEvent(new ReloadDetailEvent(this));
         } catch (Exception e) {
             GemLogger.logException(e);
         }

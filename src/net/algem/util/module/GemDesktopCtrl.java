@@ -37,6 +37,7 @@ import javax.swing.event.EventListenerList;
 import net.algem.contact.*;
 import net.algem.edition.*;
 import net.algem.group.GroupFileEditor;
+import net.algem.planning.ReloadDetailEvent;
 import net.algem.planning.ScheduleDetailCtrl;
 import net.algem.planning.ScheduleDetailEvent;
 import net.algem.planning.SelectDateEvent;
@@ -420,6 +421,8 @@ public class GemDesktopCtrl
       detailCtrl.loadSchedule(pde);
       setDefaultCursor();
     } else if (evt instanceof SelectDateEvent) {
+    } else if (evt instanceof ReloadDetailEvent) {
+      detailCtrl.reloadFromLastEvent();
     } else {
       if (evt instanceof ModifPlanEvent) {
         detailCtrl.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "CloseLink"));

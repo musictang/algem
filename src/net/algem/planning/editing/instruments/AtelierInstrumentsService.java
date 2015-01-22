@@ -47,4 +47,12 @@ public interface AtelierInstrumentsService {
      * @throws SQLException
      */
     public List<Instrument> getAvailableInstruments(Person person) throws Exception;
+
+    /**
+     * Gets the allocated instrument for a given workshop action or person
+     * @param action
+     * @param person
+     * @return the instrument, or null if no specific Instrument is defined.
+     */
+    public Instrument getAllocatedInstrument(Action action, Person person) throws Exception;
 }
