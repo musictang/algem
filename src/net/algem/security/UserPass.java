@@ -1,7 +1,7 @@
 /*
- * @(#)UserPass 2.8.p 30/10/13
+ * @(#)UserPass 2.9.2 22/01/15
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,7 +28,7 @@ import java.util.Arrays;
  * Encrypted password is associated with its salt.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.p
+ * @version 2.9.2
  * @since 2.8.p 30/10/13
  */
 class UserPass 
@@ -67,19 +67,19 @@ class UserPass
 		return hash;
 	}
 
-	public byte[] getKey() {
+	byte[] getKey() {
 		return key;
 	}
 
-	public void setKey(byte[] key) {
+	void setKey(byte[] key) {
 		this.key = key;
 	}
 
-	public byte[] getPass() {
+	byte[] getPass() {
 		return pass;
 	}
 
-	public void setPass(byte[] pass) {
+	void setPass(byte[] pass) {
 		this.pass = pass;
 	}
 	

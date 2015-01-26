@@ -130,7 +130,7 @@ public class ModuleCtrl
 
   public void clear() {
     view.clear();
-    //btPrev.setActionCommand(GemCommand.BACK_CMD);
+    //btPrev.setActionCommand(GemCommand.PREVIOUS_CMD);
     btPrev.setEnabled(false);
   }
 

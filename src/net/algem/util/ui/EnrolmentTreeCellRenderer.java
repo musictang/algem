@@ -20,8 +20,7 @@
  */
 package net.algem.util.ui;
 
-import java.awt.Component;
-import java.awt.Font;
+import java.awt.*;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import net.algem.enrolment.CourseEnrolmentNode;
@@ -47,17 +46,18 @@ public class EnrolmentTreeCellRenderer extends DefaultTreeCellRenderer
                                                 boolean sel, boolean expanded, boolean leaf,
                                                 int row, boolean hasFocus) {
     super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
+    Color color = sel ? textSelectionColor : textNonSelectionColor;
     if (leaf && value instanceof CourseEnrolmentNode) {
       CourseOrder co = ((CourseEnrolmentNode) value).getCourseOrder();
       if (co != null && co.getAction() == 0) {
-        setForeground(textSelectionColor.brighter());
+        setForeground(color.brighter());
         setFont(leafFont.deriveFont(Font.ITALIC));
       } else {
-        setForeground(textSelectionColor);
+        setForeground(color);
         setFont(leafFont);
       }
     } else {
-      setForeground(textSelectionColor);
+      setForeground(color);
       setFont(nodeFont);
     }
 

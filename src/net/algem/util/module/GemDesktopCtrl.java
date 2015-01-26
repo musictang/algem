@@ -1,7 +1,7 @@
 /*
- * @(#)GemDesktopCtrl.java	2.9.1 27/11/14
+ * @(#)GemDesktopCtrl.java	2.9.2 22/01/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -65,7 +65,7 @@ import net.algem.util.ui.HtmlViewer;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.2
  * @since 1.0a 05/07/2002
  */
 public class GemDesktopCtrl
@@ -595,13 +595,13 @@ public class GemDesktopCtrl
     }
   }
   
-  public PersonFileEditor getPersonFileEditor(int _id) {
+  public PersonFileEditor getPersonFileEditor(int idper) {
     Enumeration<GemModule> mods = modules.elements();
     while (mods.hasMoreElements()) {
       GemModule m = mods.nextElement();
       if (m instanceof PersonFileEditor) {
         PersonFileEditor e = (PersonFileEditor) m;
-        if (e.getDossierID() == _id) {
+        if (e.getDossierID() == idper) {
           return e;
         }
       }
@@ -674,7 +674,7 @@ public class GemDesktopCtrl
    * @throws IOException
    */
   private void initDispatcher() throws UnknownHostException, IOException {
-    dispatcher = new Socket(props.getProperty("host"), DesktopDispatcher.DEFAULT_SOCKET_PORT);
+    dispatcher = new Socket(props.getProperty("hostdispatcher"), DesktopDispatcher.DEFAULT_SOCKET_PORT);
     // dispatcher.getPort() -> DEFAULT_SOCKET_PORT
     GemLogger.log(Level.INFO, "Connexion dispatcher ok");
     InetAddress ia = dispatcher.getLocalAddress();

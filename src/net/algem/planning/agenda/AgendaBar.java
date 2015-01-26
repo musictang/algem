@@ -66,7 +66,7 @@ public class AgendaBar
 
     setLayout(new GridLayout(1, 6));
 
-    prev = new GemButton(GemCommand.BACK_CMD);
+    prev = new GemButton(GemCommand.PREVIOUS_CMD);
     prev.addActionListener(this);
     next = new GemButton(GemCommand.NEXT_CMD);
     next.addActionListener(this);

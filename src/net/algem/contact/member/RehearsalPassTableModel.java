@@ -1,7 +1,7 @@
 /*
- * @(#)RehearsalCardTableModel.java 2.6.a 18/09/12
+ * @(#)RehearsalPassTableModel.java 2.9.2 12/01/15
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,35 +20,35 @@
  */
 package net.algem.contact.member;
 
+import net.algem.planning.Hour;
 import net.algem.util.BundleUtil;
 import net.algem.util.ui.JTableModel;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.2
  */
-public class RehearsalCardTableModel
+public class RehearsalPassTableModel
         extends JTableModel
 {
 
-  public RehearsalCardTableModel() {
+  public RehearsalPassTableModel() {
     header = new String[]{
       BundleUtil.getLabel("Id.label"),
       BundleUtil.getLabel("Label.label"), 
       BundleUtil.getLabel("Amount.label"), 
-      BundleUtil.getLabel("Sessions.number.label"), 
-      BundleUtil.getLabel("Duration.min.label")
+      BundleUtil.getLabel("Duration.min.label"), 
+      BundleUtil.getLabel("Total.label")
     };
   }
 
   @Override
   public int getIdFromIndex(int i) {
-    RehearsalCard c = (RehearsalCard) tuples.elementAt(i);
+    RehearsalPass c = (RehearsalPass) tuples.elementAt(i);
     return c.getId();
   }
 
-  // TableModel Interface
   @Override
   public Class getColumnClass(int column) {
     switch (column) {
@@ -60,7 +60,7 @@ public class RehearsalCardTableModel
         return Float.class;
       case 3:
       case 4:
-        return Integer.class;
+        return Hour.class;
       default:
         return Object.class;
     }
@@ -68,7 +68,7 @@ public class RehearsalCardTableModel
 
   @Override
   public Object getValueAt(int ligne, int colonne) {
-    RehearsalCard c = (RehearsalCard) tuples.elementAt(ligne);
+    RehearsalPass c = (RehearsalPass) tuples.elementAt(ligne);
     switch (colonne) {
       case 0:
         return c.getId();
@@ -77,9 +77,9 @@ public class RehearsalCardTableModel
       case 2:
         return c.getAmount();
       case 3:
-        return c.getSessionsNumber();
+        return new Hour(c.getMin());
       case 4:
-        return c.getLength();
+        return new Hour(c.getTotalTime());
     }
     return null;
   }

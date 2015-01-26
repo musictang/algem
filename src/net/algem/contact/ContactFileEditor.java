@@ -1,7 +1,7 @@
 /*
- * @(#)ContactFileEditor.java	2.8.w 09/07/14
+ * @(#)ContactFileEditor.java	2.9.2 12/01/15
  * 
- * Copyright (c) 1998-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1998-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -41,7 +41,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.2
  * @since 1.0a 09/07/2002
  */
 public class ContactFileEditor
@@ -161,8 +161,8 @@ public class ContactFileEditor
     }
   }
 
-  public void setRemainingHours(PersonSubscriptionCard cap) {
-    personView.setRemainingHours(cap);
+  public void setSubscriptionRest(PersonSubscriptionCard card) {
+    personView.showSubscriptionRest(card);
   }
 
   /**

@@ -1,5 +1,5 @@
 /*
- * @(#)OrderLineIO.java	2.9.1 12/12/14
+ * @(#)OrderLineIO.java	2.9.2 05/01/15
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -39,7 +39,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.2
  *
  */
 public class OrderLineIO
@@ -228,7 +228,7 @@ public class OrderLineIO
   public static OrderLine find(OrderLine e, DataConnection dc) {
 
     String fac = ModeOfPayment.FAC.toString();
-    String query = "SELECT * FROM " + TABLE + " WHERE reglement";
+    String query = "SELECT * FROM " + TABLE + " AND reglement";
     query += fac.equals(e.getModeOfPayment()) ? " != '" + fac + "'" : " = '" + fac + "'";
     query += " AND (commande >  0 AND commande = " + e.getOrder() + ")"
             + " AND payeur = " + e.getPayer()

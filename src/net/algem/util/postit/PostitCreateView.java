@@ -1,6 +1,6 @@
 /*
- * @(#)PostitCreateView.java	2.9.1 15/01/15
- *
+ * @(#)PostitCreateView.java	2.9.2 22/01/15
+ * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -38,7 +38,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.2
  */
 public class PostitCreateView
         extends GemBorderPanel

@@ -1,7 +1,7 @@
 /*
- * @(#)PersonSubscriptionCardIO.java 2.9.2 26/12/14
+ * @(#)PersonSubscriptionCardIO.java 2.9.2 07/01/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -25,6 +25,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import net.algem.planning.DateFr;
+import net.algem.planning.Hour;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
 import net.algem.util.model.TableIO;
@@ -38,7 +39,7 @@ public class PersonSubscriptionCardIO
         extends TableIO
 {
 
-  private final static String TABLE = "carteabopersonne";
+  public final static String TABLE = "carteabopersonne";
   private final static String SEQUENCE = "carteabopersonne_id_seq";
   private final static String SESSION_TABLE = "carteabopersessions";
   private final static String SESSION_SEQUENCE = "carteabopersessions_id_seq";
@@ -52,19 +53,23 @@ public class PersonSubscriptionCardIO
   /**
    * Gets the last available card for the person {@code idper}.
    *
-   * @param idper
-   * @param and
-   * @param complete
+   * @param idper person's id
+   * @param and and request
+   * @param complete complete with sessions
+   * @param limit limit of the request
    * @return a subscription card
    * @throws SQLException
    */
-  public PersonSubscriptionCard find(int idper, String and, boolean complete) throws SQLException {
+  public List<PersonSubscriptionCard> find(int idper, String and, boolean complete, int limit) throws SQLException {
     String query = "SELECT " + COLUMNS + " FROM " + TABLE + " WHERE idper = " + idper;
     if (and != null) {
       query += " AND " + and;
     }
-    query += " ORDER BY id DESC LIMIT 1";
-
+    query += " ORDER BY id DESC";
+    if (limit > 0) {
+      query += " LIMIT " + limit;
+    }
+    List<PersonSubscriptionCard> cards = new ArrayList<PersonSubscriptionCard>();
     ResultSet rs = dc.executeQuery(query);
     PersonSubscriptionCard pc = null;
     while(rs.next()) {
@@ -75,13 +80,14 @@ public class PersonSubscriptionCardIO
       pc.setPurchaseDate(new DateFr(rs.getDate(4)));
       pc.setRest(rs.getInt(5));
       if (complete) {
-        List<PersonalCardSession> sessions = findSessions(pc.getId());
-        for (PersonalCardSession s : sessions) {
+        List<SubscriptionCardSession> sessions = findSessions(pc.getId(), null);
+        for (SubscriptionCardSession s : sessions) {
           pc.addSession(s);
         }
       }
+      cards.add(pc);
     }
-    return pc;
+    return cards;
   }
 
   public PersonSubscriptionCard find(int id) throws SQLException {
@@ -101,32 +107,40 @@ public class PersonSubscriptionCardIO
     return c;
   }
 
-  List<PersonalCardSession> findSessions(int cardId) throws SQLException {
-    List<PersonalCardSession> sessions = new ArrayList<PersonalCardSession>();
+  List<SubscriptionCardSession> findSessions(int cardId, String where) throws SQLException {
+    List<SubscriptionCardSession> sessions = new ArrayList<SubscriptionCardSession>();
     String query = "SELECT * FROM carteabopersessions WHERE idcarte = " +  cardId;
+    query += (where == null ? "" : where);
     ResultSet rs = dc.executeQuery(query);
     while(rs.next()) {
-      PersonalCardSession s = new PersonalCardSession();
+      SubscriptionCardSession s = new SubscriptionCardSession();
       s.setId(rs.getInt(1));
       s.setCardId(rs.getInt(2));
       s.setScheduleId(rs.getInt(3));
+      s.setStart(new Hour(rs.getString(4)));
+      s.setEnd(new Hour(rs.getString(5)));
       sessions.add(s);
     }
     return sessions;
   }
 
-  public PersonSubscriptionCard insert(PersonSubscriptionCard card) {
+  public void insert(PersonSubscriptionCard c) {
     try {
       dc.setAutoCommit(false);
-      card.setId(nextId(SEQUENCE, dc));
-      dc.executeUpdate(getInsertQuery(card));
-      updateSessions(card);
+      c.setId(nextId(SEQUENCE, dc));
+      String query = "INSERT INTO " + TABLE + " VALUES("
+              + c.getId()
+              + ", " + c.getIdper()
+              + ", " + c.getPassId()
+              + ", '" + c.getPurchaseDate().toString()
+              + "', " + c.getRest()
+              + ")";
+      dc.executeUpdate(query);
+      updateSessions(c);
       dc.commit();
-      return card;
     } catch (SQLException ex) {
       dc.rollback();
       GemLogger.log(ex.getMessage());
-      return null;
     } finally {
       dc.setAutoCommit(true);
     }
@@ -138,22 +152,26 @@ public class PersonSubscriptionCardIO
    * @throws SQLException
    */
   private void updateSessions(PersonSubscriptionCard card) throws SQLException {
-    List<PersonalCardSession> currentSessions = card.getSessions();
-    List<PersonalCardSession> savedSessions = findSessions(card.getId());
-    if (currentSessions.size() > savedSessions.size()) {
-      for (int i = savedSessions.size(); i < currentSessions.size(); i++) {
-        PersonalCardSession s = currentSessions.get(i);
+    List<SubscriptionCardSession> currentSessions = card.getSessions();
+    List<SubscriptionCardSession> savedSessions = findSessions(card.getId(), null);
+    int min = Math.min(currentSessions.size(), savedSessions.size());
+    for (int i = 0; i < min; i++) {
+      updateSession(currentSessions.get(i));
+    }
+    if (currentSessions.size() > min) {
+      for (int j = min; j < currentSessions.size(); j++) {
+        SubscriptionCardSession s = currentSessions.get(j);
         s.setCardId(card.getId());
-        insertSession(currentSessions.get(i));
+        insertSession(currentSessions.get(j));
       }
-    } else if (currentSessions.size() < savedSessions.size()) {
-      for (int i = currentSessions.size(); i < savedSessions.size(); i++) {
-        deleteSession(savedSessions.get(i).getId());
+    } else if (savedSessions.size() > min) {
+      for (int j = min; j < savedSessions.size(); j++) {
+        deleteSession(savedSessions.get(j).getId());
       }
     }
   }
 
-  private void insertSession(PersonalCardSession s) throws SQLException {
+  private void insertSession(SubscriptionCardSession s) throws SQLException {
     int nextId = nextId(SESSION_SEQUENCE, dc);
     String query = "INSERT INTO " + SESSION_TABLE + " VALUES("
       + nextId
@@ -165,23 +183,31 @@ public class PersonSubscriptionCardIO
     dc.executeUpdate(query);
     s.setId(nextId);
   }
-
-  private void deleteSession(int id) throws SQLException {
-    String query = "DELETE FROM carteabopersessions WHERE id = " + id;
+  
+  private void updateSession(SubscriptionCardSession s) throws SQLException {
+    String query = "UPDATE " + SESSION_TABLE  
+            + " SET debut = '" + s.getStart() 
+            + "', fin = '" + s.getEnd() 
+            + "' WHERE id = " + s.getId();
     dc.executeUpdate(query);
   }
 
-  public int update(PersonSubscriptionCard pc) {
+  private void deleteSession(int id) throws SQLException {
+    String query = "DELETE FROM " + SESSION_TABLE + " WHERE id = " + id;
+    dc.executeUpdate(query);
+  }
+
+  public int update(PersonSubscriptionCard pc) throws MemberException {
     try {
       dc.setAutoCommit(false);
       String query = "UPDATE " + TABLE + " SET restant = " + pc.getRest() + " WHERE id = " + pc.getId();
       updateSessions(pc);
+      int n = dc.executeUpdate(query);
       dc.commit();
-      return dc.executeUpdate(query);
+      return n;
     } catch (SQLException ex) {
       dc.rollback();
-      GemLogger.log(ex.getMessage());
-      return 0;
+      throw new MemberException(ex.getMessage());
     } finally {
       dc.setAutoCommit(true);
     }
@@ -197,15 +223,4 @@ public class PersonSubscriptionCardIO
     dc.executeUpdate(query);
   }
 
-  private static String getInsertQuery(PersonSubscriptionCard pc) {
-    StringBuilder query = new StringBuilder("INSERT INTO " + TABLE + " VALUES(");
-
-    query.append(pc.getId());
-    query.append(LEFT_COL_SEPARATOR).append(pc.getIdper());
-    query.append(RIGHT_COL_SEPARATOR).append(pc.getPassId());
-    query.append(RIGHT_COL_SEPARATOR).append(pc.getPurchaseDate().toString());
-    query.append(RIGHT_COL_SEPARATOR).append(pc.getRest());
-    query.append(END_OF_QUERY);
-    return query.toString();
-  }
 }

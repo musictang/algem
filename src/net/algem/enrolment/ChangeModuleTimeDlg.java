@@ -1,5 +1,5 @@
 /*
- * @(#)ChangeModuleTimeDlg.java	2.9.1 14/11/14
+ * @(#)ChangeModuleTimeDlg.java	2.9.2 09/01/15
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -66,7 +66,7 @@ public class ChangeModuleTimeDlg
     GridBagHelper gb = new GridBagHelper(p);
     gb.insets = GridBagHelper.SMALL_INSETS;
 
-    gb.add(new JLabel(BundleUtil.getLabel("Action.back.label")), 0, 0, 1, 1, GridBagHelper.WEST);
+    gb.add(new JLabel(GemCommand.PREVIOUS_CMD), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(new JLabel(BundleUtil.getLabel("New.label")), 0, 1, 1, 1, GridBagHelper.WEST);
     gb.add(orig, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(hours, 1, 1, 1, 1, GridBagHelper.WEST);

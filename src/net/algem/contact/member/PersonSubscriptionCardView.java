@@ -55,7 +55,7 @@ public class PersonSubscriptionCardView
 {
 
   private DateRangePanel date;
-  private RehearsalCardChoice rehearsalCardChoice;
+  private RehearsalPassChoice rehearsalCardChoice;
   private GemLabel nhr; //nombre d'heures restantes
   private JSpinner sessions;
   private SpinnerModel spmodel = new SpinnerNumberModel(0, -10, 10, 1);
@@ -66,7 +66,7 @@ public class PersonSubscriptionCardView
   private AccountChoice account;
   private PersonSubscriptionCard personCard;
 
-  public PersonSubscriptionCardView(Vector<RehearsalCard> vc, GemList<Account> la) throws SQLException {
+  public PersonSubscriptionCardView(Vector<RehearsalPass> vc, GemList<Account> la) throws SQLException {
     date = new DateRangePanel(DateRangePanel.SIMPLE_DATE, null);
     //date.setEditable(false);
     date.setDate(new Date());
@@ -75,7 +75,7 @@ public class PersonSubscriptionCardView
     sessions.setPreferredSize(new Dimension(50, 20));
     sessions.addChangeListener(this);
 
-    rehearsalCardChoice = new RehearsalCardChoice(vc);
+    rehearsalCardChoice = new RehearsalPassChoice(vc);
     rehearsalCardChoice.addActionListener(this);
 
     durationChoice = new JComboBox(new Integer[]{30, 60});
@@ -145,8 +145,8 @@ public class PersonSubscriptionCardView
     return personCard;
   }
 
-  public RehearsalCard getRehearsalCard() {
-    return (RehearsalCard) rehearsalCardChoice.getSelectedItem();
+  public RehearsalPass getRehearsalCard() {
+    return (RehearsalPass) rehearsalCardChoice.getSelectedItem();
   }
 
   /**
@@ -206,7 +206,7 @@ public class PersonSubscriptionCardView
    * @param offset the duration to add or substract
    */
   public void setRest(int offset) {
-    int dureeCarte = getRehearsalCard().getTotalLength();
+    int dureeCarte = getRehearsalCard().getTotalTime();
     if (personCard.isNewCard()) {
       rest = dureeCarte - offset;
     } else {

@@ -69,8 +69,8 @@ public class EstabCtrl
     switch (step) {
       default:
         if (step >= 0) {
-           btPrev.setText(GemCommand.BACK_CMD);
-           btPrev.setActionCommand(GemCommand.BACK_CMD);
+           btPrev.setText(GemCommand.PREVIOUS_CMD);
+           btPrev.setActionCommand(GemCommand.PREVIOUS_CMD);
         }
         select(step + 1);
         break;

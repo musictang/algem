@@ -79,8 +79,8 @@ public class CourseCtrl
     switch (step) {
       default:
         select(step + 1);
-        btPrev.setText(GemCommand.BACK_CMD);
-        btPrev.setActionCommand(GemCommand.BACK_CMD);
+        btPrev.setText(GemCommand.PREVIOUS_CMD);
+        btPrev.setActionCommand(GemCommand.PREVIOUS_CMD);
         break;
     }
     return true;

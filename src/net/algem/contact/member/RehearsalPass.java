@@ -1,7 +1,7 @@
 /*
- * @(#)RehearsalCard.java 2.8.c 14/05/13
+ * @(#)RehearsalPass.java 2.9.2 12/01/15
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -26,26 +26,24 @@ import net.algem.util.model.GemModel;
  * Subscription pass option for rehearsals.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.c
+ * @version 2.9.2
  */
-public class RehearsalCard
+public class RehearsalPass
   implements GemModel
 {
 
+  public final static int MIN_DEFAULT = 30; // see DEFAULT value in database
   private int id;
   private String label;
   private float amount;
+   
+  /** Minimal time of a session. */
+  private int min;
   
-  /** Sessions number. */
-  private int nbSessions;
-  
-  /** Length in minutes for a session. */
-  private int length;
-  
-  public final static int NB_SESSIONS_DEFAULT = 10;
-  public final static int MIN_LENGTH_DEFAULT = 30;
+  /** Total time in minutes. */
+  private int totalMin;
 
-  public RehearsalCard() {
+  public RehearsalPass() {
   }
 
   /**
@@ -53,23 +51,23 @@ public class RehearsalCard
    *
    * @param id
    */
-  public RehearsalCard(int id) {
-    this(id, "", 0.0F, NB_SESSIONS_DEFAULT, MIN_LENGTH_DEFAULT);
+  public RehearsalPass(int id) {
+    this(id, "", 0.0F, MIN_DEFAULT);
   }
 
-  public RehearsalCard(String label, float amount, int sessions, int length) {
+  public RehearsalPass(String label, float amount, int total) {
     this.label = label;
     this.amount = amount;
-    this.nbSessions = sessions;
-    this.length = length;
+    this.min = MIN_DEFAULT;
+    this.totalMin = total;
   }
 
-  public RehearsalCard(int id, String label, float amount, int sessions, int length) {
+  public RehearsalPass(int id, String label, float amount, int total) {
     this.id = id;
     this.label = label;
     this.amount = amount;
-    this.nbSessions = sessions;
-    this.length = length;
+    this.min = MIN_DEFAULT;
+    this.totalMin = total;
   }
 
   @Override
@@ -86,7 +84,7 @@ public class RehearsalCard
     return label;
   }
 
-  public void setLabel(String label) {
+  void setLabel(String label) {
     this.label = label;
   }
 
@@ -94,27 +92,19 @@ public class RehearsalCard
     return amount;
   }
 
-  public void setAmount(float amount) {
+  void setAmount(float amount) {
     this.amount = amount;
   }
 
-  public int getSessionsNumber() {
-    return nbSessions;
+  public int getMin() {
+    return min;
   }
 
-  public void setSessionsNumber(int n) {
-    this.nbSessions = n;
+  void setMin(int d) {
+    this.min = d;
   }
 
-  public int getLength() {
-    return length;
-  }
-
-  public void setLength(int d) {
-    this.length = d;
-  }
-
-  public boolean strictlyEquals(RehearsalCard other) {
+  public boolean strictlyEquals(RehearsalPass other) {
     if (other == null) {
       return false;
     }
@@ -128,13 +118,10 @@ public class RehearsalCard
     if (this.amount != other.amount) {
       return false;
     }
-    if (this.nbSessions != other.nbSessions) {
+    if (this.min != other.min) {
       return false;
     }
-    if (this.length != other.length) {
-      return false;
-    }
-    return true;
+    return this.totalMin == other.totalMin;
   }
 
   @Override
@@ -145,7 +132,7 @@ public class RehearsalCard
     if (getClass() != obj.getClass()) {
       return false;
     }
-    final RehearsalCard other = (RehearsalCard) obj;
+    final RehearsalPass other = (RehearsalPass) obj;
     if (this.id != other.id) {
       return false;
     }
@@ -164,7 +151,11 @@ public class RehearsalCard
     return label;
   }
 
-  public int getTotalLength() {
-    return getSessionsNumber() * getLength();
+  void setTotalTime(int min) {
+    this.totalMin = min;
+  }
+  
+  public int getTotalTime() {
+    return totalMin;
   }
 }

@@ -1,7 +1,7 @@
 /*
- * @(#)MenuConfig.java 2.8.w 08/07/14
+ * @(#)MenuConfig.java 2.9.2 07/01/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -22,7 +22,9 @@
 package net.algem.util.menu;
 
 import java.awt.event.ActionEvent;
+import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.Vector;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import net.algem.bank.BankSearchCtrl;
@@ -30,8 +32,9 @@ import net.algem.bank.BranchCreateCtrl;
 import net.algem.bank.BranchSearchCtrl;
 import net.algem.config.*;
 import net.algem.contact.CityCtrl;
-import net.algem.contact.member.RehearsalCardModule;
-import net.algem.contact.member.RehearsalCardSearchCtrl;
+import net.algem.contact.member.RehearsalPass;
+import net.algem.contact.member.RehearsalPassIO;
+import net.algem.contact.member.RehearsalPassListCtrl;
 import net.algem.planning.VacationCtrl;
 import net.algem.room.EstabCreateCtrl;
 import net.algem.room.EstabSearchCtrl;
@@ -40,13 +43,15 @@ import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 import net.algem.util.GemCommand;
+import net.algem.util.GemLogger;
+import net.algem.util.module.DefaultGemModule;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.module.GemModule;
 
 /**
  * Configuration menu.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.2
  * @since 2.6.a 12/10/2012
  */
 public class MenuConfig 
@@ -189,10 +194,15 @@ public class MenuConfig
       desktop.addPanel("Establishment.browser", estabBrowse);
       desktop.getSelectedModule().setSize(GemModule.XXL_SIZE);
     } else if (menus.get("Menu.card.label").equals(arg)) {
-      RehearsalCardSearchCtrl rehearsalCardSearch = new RehearsalCardSearchCtrl(desktop);
-      rehearsalCardSearch.init();
-      GemModule m = new RehearsalCardModule("Menu.card", rehearsalCardSearch);
-      desktop.addModule(m);
+      RehearsalPassListCtrl ctrl = new RehearsalPassListCtrl(desktop, false);
+      try {
+        Vector<RehearsalPass> v = RehearsalPassIO.findAll(" ORDER BY libelle", dc);
+        ctrl.loadResult(v);
+        GemModule m = new DefaultGemModule("Menu.card", ctrl);
+        desktop.addModule(m);
+      } catch (SQLException ex) {
+        GemLogger.log(ex.getMessage());
+      }
     } else if (menus.get("Menu.bank.label").equals(arg)) {
       BankSearchCtrl bankCtrl = new BankSearchCtrl(dc);
       bankCtrl.addActionListener(this);
