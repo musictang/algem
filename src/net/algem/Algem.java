@@ -1,7 +1,7 @@
 /*
- * @(#)Algem.java	2.9.1 18/12/14
+ * @(#)Algem.java	2.9.1 15/01/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -45,12 +45,12 @@ import org.apache.commons.codec.binary.Base64;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1-beta5
+ * @version 2.9.1
  */
 public class Algem
 {
 
-  public static final String APP_VERSION = "2.9.1-beta5";//experimental
+  public static final String APP_VERSION = "2.9.1";//experimental
   private static final int DEF_WIDTH = 1080;// (850,650) => ancienne taille
   private static final int DEF_HEIGHT = 780;
   private static final Point DEF_LOCATION = new Point(70, 30);

@@ -1,7 +1,7 @@
 /*
- * @(#)PostitCreateView.java	2.9.1 17/12/14
- * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * @(#)PostitCreateView.java	2.9.1 15/01/15
+ *
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.util.postit;
 
@@ -55,15 +55,15 @@ public class PostitCreateView
     userId = _userId;
     users = _users;
     type = new JComboBox(new String[]{
-      BundleUtil.getLabel("Notes.label"), 
+      BundleUtil.getLabel("Notes.label"),
       BundleUtil.getLabel("Urgent.label")
     });
     receiver = new JComboBox(new String[]{
-      BundleUtil.getLabel("Private.label"), 
+      BundleUtil.getLabel("Private.label"),
       BundleUtil.getLabel("Public.label")
     });
 
-    for (int i = 2; i < users.size(); i++) {
+    for (int i = 0; i < users.size(); i++) {
       receiver.addItem(((User) users.get(i)).getLogin());
     }
     term = new DateFrField(new DateFr(new Date()));
