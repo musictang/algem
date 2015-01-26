@@ -15,3 +15,5 @@ ALTER TABLE absence OWNER TO nobody;
 ALTER TABLE carteaborepet ADD totalmin integer DEFAULT 60;
 UPDATE carteaborepet SET totalmin = (nbseances * dureemin);
 ALTER TABLE carteaborepet DROP nbseances;
+
+ALTER TABLE version ALTER version TYPE varchar(16);

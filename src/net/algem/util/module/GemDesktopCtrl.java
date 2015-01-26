@@ -1,5 +1,5 @@
 /*
- * @(#)GemDesktopCtrl.java	2.9.2 12/01/15
+ * @(#)GemDesktopCtrl.java	2.9.2 22/01/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -674,7 +674,7 @@ public class GemDesktopCtrl
    * @throws IOException
    */
   private void initDispatcher() throws UnknownHostException, IOException {
-    dispatcher = new Socket(props.getProperty("host"), DesktopDispatcher.DEFAULT_SOCKET_PORT);
+    dispatcher = new Socket(props.getProperty("hostdispatcher"), DesktopDispatcher.DEFAULT_SOCKET_PORT);
     // dispatcher.getPort() -> DEFAULT_SOCKET_PORT
     GemLogger.log(Level.INFO, "Connexion dispatcher ok");
     InetAddress ia = dispatcher.getLocalAddress();

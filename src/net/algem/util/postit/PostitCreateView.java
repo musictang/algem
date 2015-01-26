@@ -1,7 +1,7 @@
 /*
- * @(#)PostitCreateView.java	2.9.1 17/12/14
+ * @(#)PostitCreateView.java	2.9.2 22/01/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -38,7 +38,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.2
  */
 public class PostitCreateView
         extends GemBorderPanel
@@ -63,7 +63,7 @@ public class PostitCreateView
       BundleUtil.getLabel("Public.label")
     });
 
-    for (int i = 2; i < users.size(); i++) {
+    for (int i = 0; i < users.size(); i++) {
       receiver.addItem(((User) users.get(i)).getLogin());
     }
     term = new DateFrField(new DateFr(new Date()));
