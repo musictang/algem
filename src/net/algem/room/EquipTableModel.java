@@ -1,7 +1,7 @@
 /*
- * @(#)EquipTableModel.java	2.8.m 06/09/13
- * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * @(#)EquipTableModel.java	2.9.2 26/01/15
+ *
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.room;
 
@@ -24,15 +24,15 @@ import net.algem.util.BundleUtil;
 import net.algem.util.ui.JTableModel;
 
 /**
- * 
+ *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.m
+ * @version 2.9.2
  *
  * @since 1.0a 07/07/1999
  */
 public class EquipTableModel
-        extends JTableModel
+        extends JTableModel<Equipment>
 {
 
   public EquipTableModel() {
@@ -65,29 +65,29 @@ public class EquipTableModel
   }
 
   @Override
-  public Object getValueAt(int ligne, int colonne) {
+  public Object getValueAt(int line, int col) {
 
-    Equipment v = (Equipment) tuples.elementAt(ligne);
-    switch (colonne) {
+    Equipment e = tuples.elementAt(line);
+    switch (col) {
       case 0:
-        return new Integer(v.getQuantity());
+        return new Integer(e.getQuantity());
       case 1:
-        return v.getLabel();
+        return e.getLabel();
     }
     return null;
   }
 
   @Override
   public void setValueAt(Object e, int line, int col) {
-    Equipment v = (Equipment) tuples.elementAt(line);
+    Equipment equip = tuples.elementAt(line);
     switch (col) {
       case 0:
-        v.setQuantity((Integer) e);
+        equip.setQuantity((Integer) e);
         break;
       case 1:
-        v.setLabel((String) e);
+        equip.setLabel((String) e);
         break;
     }
-    modItem(line, v);
+    modItem(line, equip);
   }
 }

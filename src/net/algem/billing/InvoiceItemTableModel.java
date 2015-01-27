@@ -1,7 +1,7 @@
 /*
- * @(#)InvoiceItemTableModel.java 2.8.y 25/09/14
+ * @(#)InvoiceItemTableModel.java 2.9.2 26/01/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,16 +28,16 @@ import net.algem.util.ui.JTableModel;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.y
+ * @version 2.9.2
  * @since 2.3.a 07/02/12
  */
 public class InvoiceItemTableModel
-        extends JTableModel
+        extends JTableModel<InvoiceItem>
 {
 
   public InvoiceItemTableModel() {
     header = new String[]{
-      BundleUtil.getLabel("Invoice.item.description.label"), 
+      BundleUtil.getLabel("Invoice.item.description.label"),
       BundleUtil.getLabel("Invoice.item.quantity.label"),
       BundleUtil.getLabel("Invoice.item.price.label"),
       BundleUtil.getLabel("Invoice.item.vat.label"),
@@ -48,24 +48,24 @@ public class InvoiceItemTableModel
 
   @Override
   public int getIdFromIndex(int i) {
-    InvoiceItem a = (InvoiceItem) tuples.elementAt(i);
-    return a.getItem().getId();
+    InvoiceItem ivItem = tuples.elementAt(i);
+    return ivItem.getItem().getId();
   }
 
   @Override
   public Object getValueAt(int line, int col) {
-    InvoiceItem a = (InvoiceItem) tuples.elementAt(line);
+    InvoiceItem ivItem = tuples.elementAt(line);
     switch (col) {
       case 0:
-        return a.getItem().getDesignation();
+        return ivItem.getItem().getDesignation();
       case 1:
-        return a.getQuantity();
+        return ivItem.getQuantity();
       case 2:
-        return a.getItem().getPrice();
+        return ivItem.getItem().getPrice();
       case 3:
-        return a.getItem().getVat();
+        return ivItem.getItem().getVat();
       case 4:
-        return a.getTotal(false);
+        return ivItem.getTotal(false);
     }
     return null;
   }

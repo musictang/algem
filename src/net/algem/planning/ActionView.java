@@ -1,7 +1,7 @@
 /*
- * @(#)ActionView.java	2.9.1 12/12/14
+ * @(#)ActionView.java	2.9.2 27/01/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,6 +28,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JComboBox;
 import net.algem.config.ParamChoice;
+import net.algem.contact.teacher.Teacher;
 import net.algem.contact.teacher.TeacherChoice;
 import net.algem.contact.teacher.TeacherEvent;
 import net.algem.course.Course;
@@ -41,6 +42,7 @@ import net.algem.util.DataCache;
 import net.algem.util.MessageUtil;
 import net.algem.util.event.GemEvent;
 import net.algem.util.event.GemEventListener;
+import net.algem.util.model.GemList;
 import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.*;
@@ -50,7 +52,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.2
  */
 public class ActionView
         extends GemPanel
@@ -76,13 +78,16 @@ public class ActionView
 
     this.desktop = desktop;
     dataCache = desktop.getDataCache();
-
-    course = new CourseChoice(new CourseChoiceActiveModel(dataCache.getList(Model.Course), true));//modification 1.1d ajout d'un filtre
+    GemList<Course> courseList = dataCache.getList(Model.Course);
+    course = new CourseChoice(new CourseChoiceActiveModel(courseList, true));//modification 1.1d ajout d'un filtre
     course.addItemListener(new CourseCoItemListener());
     datePanel = new DateRangePanel(dataCache.getStartOfYear(), dataCache.getEndOfYear());
     hourPanel = new HourRangePanel();
-    teacher = new TeacherChoice(dataCache.getList(Model.Teacher), true);
-    teacher.setSelectedIndex(0);
+    GemList<Teacher> teacherList = dataCache.getList(Model.Teacher);
+    teacher = new TeacherChoice(teacherList, true);
+    if (teacherList.getSize() > 0) {
+      teacher.setSelectedIndex(0);
+    }
     room = new RoomChoice(dataCache.getList(Model.Room));//salles actives par défaut
     room.addItemListener(new RoomItemListener());
     day = new DayChoice();
@@ -94,7 +99,9 @@ public class ActionView
     vacancy = new ParamChoice(dataCache.getVacancyCat());
     courseLength = new HourField();
     intervall = new GemNumericField(2);
-    load(((Course) course.getSelectedItem()));
+    if (courseList.getSize() > 0) {
+      load(((Course) course.getSelectedItem()));
+    }
   }
 
   private void load(Course c) {

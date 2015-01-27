@@ -1,7 +1,7 @@
 /*
- * @(#)GroupTableModel.java	2.6.a 31/07/12
- * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * @(#)GroupTableModel.java	2.9.2 26/01/15
+ *
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.group;
 
@@ -25,27 +25,27 @@ import net.algem.util.ui.JTableModel;
 
 /**
  * Table model for groups.
- * 
+ *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.2
  *
  */
 public class GroupTableModel
-        extends JTableModel
+        extends JTableModel<Group>
 {
 
   public GroupTableModel() {
     header = new String[]{
-      BundleUtil.getLabel("Id.label"), 
-      BundleUtil.getLabel("Name.label"), 
+      BundleUtil.getLabel("Id.label"),
+      BundleUtil.getLabel("Name.label"),
       BundleUtil.getLabel("Style.label")
     };
   }
 
   @Override
   public int getIdFromIndex(int i) {
-    Group m = (Group) tuples.elementAt(i);
+    Group m = tuples.elementAt(i);
     return m.getId();
   }
 
@@ -68,9 +68,9 @@ public class GroupTableModel
   }
 
   @Override
-  public Object getValueAt(int ligne, int colonne) {
-    Group g = (Group) tuples.elementAt(ligne);
-    switch (colonne) {
+  public Object getValueAt(int line, int col) {
+    Group g = tuples.elementAt(line);
+    switch (col) {
       case 0:
         return new Integer(g.getId());
       case 1:
@@ -82,6 +82,6 @@ public class GroupTableModel
   }
 
   @Override
-  public void setValueAt(Object value, int ligne, int column) {
+  public void setValueAt(Object value, int line, int column) {
   }
 }

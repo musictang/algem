@@ -4,3 +4,14 @@ Si encore aucune carte d'abonnement n'a été configurée, un message vous en av
 Les séances réservées par l'adhérent en cours d'abonnement sont maintenant enregistrées avec une heure de début et de fin. Cet historique permet de tracer l'activité de l'élève pour chacune de ses cartes d'abonnement.
 L'historique des abonnements est maintenant disponible et permet de visualiser l'ensemble des cartes d'abonnement achetées au cours du temps par l'adhérent ainsi que le détail horaire de ses activités.
 Cette fonction permettra en outre de détailler les chevauchements horaires entre deux cartes (lorsque la durée de la réservation dépasse le nombre d'heures restant sur la carte en cours et qu'une nouvelle carte est créée pour la circonstance).
+Par principe, une nouvelle carte achetée n'est plus supprimée. Dès lors, le total des heures restantes pourra dans certains cas dépasser le montant total de la carte, après l'annulation d'une répétition par exemple. Ce comportement est désiré et il n'y a pas lieu de corriger ce décompte positif.
+
+BUGS
+* Le planning mois ne s'affichait pas quand aucun enseignant n'avait été créé.
+* Il était impossible d'ouvrir la fenêtre de planification de cours lorsqu'aucun cours ou aucun enseignant n'existait.
+* Les lignes d'inscription étaient affichées en blanc sur blanc lorsque le look & feel Windows était sélectionnné.
+* La liste des utilisateurs était incomplète au moment du choix d'un postit privé.
+
+DISPATCHER
+- Le dispatcher était jusqu'alors censé fonctionner sur la même machine que celle sur laquelle était installée la base de données.
+Désormais, le paramètre hostdispatcher dans algem.conf permet d'indiquer une adresse réseau différente de celle du serveur de base de données. C'est particulièrement utile dans le cas où la base de données est hébergée sur un serveur distant mais que vous vouliez utiliser le dispatcher sur le réseau local.

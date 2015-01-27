@@ -1,6 +1,6 @@
 /*
- * @(#)SubscriptionCardSessionTableModel.java 2.9.2 12/01/15
- * 
+ * @(#)SubscriptionCardSessionTableModel.java 2.9.2 26/01/15
+ *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -31,29 +31,29 @@ import net.algem.util.ui.JTableModel;
 
 /**
  * Table model for the history of sessions taken on a subscription card.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.9.2
  * @since 2.9.2 08/01/15
  */
-public class SubscriptionCardSessionTableModel 
-  extends JTableModel
+public class SubscriptionCardSessionTableModel
+  extends JTableModel<SubscriptionCardSession>
 {
 
    public SubscriptionCardSessionTableModel() {
-    header = new String[] { 
+    header = new String[] {
       BundleUtil.getLabel("Date.label"),
       BundleUtil.getLabel("Start.label"),
       BundleUtil.getLabel("End.label"),
       BundleUtil.getLabel("Duration.label")
     };
   }
-   
+
   @Override
   public int getIdFromIndex(int i) {
     return 0;
   }
-  
+
   @Override
   public Class getColumnClass(int col) {
     switch (col) {
@@ -70,7 +70,7 @@ public class SubscriptionCardSessionTableModel
 
   @Override
   public Object getValueAt(int line, int col) {
-    SubscriptionCardSession session = (SubscriptionCardSession) tuples.elementAt(line);
+    SubscriptionCardSession session = tuples.elementAt(line);
     Hour start = session.getStart();
     Hour end = session.getEnd();
     switch (col) {
@@ -90,7 +90,7 @@ public class SubscriptionCardSessionTableModel
 
   @Override
   public void setValueAt(Object value, int line, int column) {
-    
+
   }
 
 }

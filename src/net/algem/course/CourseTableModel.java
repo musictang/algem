@@ -1,7 +1,7 @@
 /*
- * @(#)CourseTableModel.java	2.8.a 18/03/13
- * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * @(#)CourseTableModel.java	2.9.2 26/01/15
+ *
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.course;
 
@@ -31,10 +31,10 @@ import net.algem.util.ui.JTableModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.9.2
  */
 public class CourseTableModel
-        extends JTableModel
+        extends JTableModel<Course>
 {
 
   public CourseTableModel() {
@@ -47,7 +47,7 @@ public class CourseTableModel
 
   @Override
   public int getIdFromIndex(int i) {
-    Course p = (Course) tuples.elementAt(i);
+    Course p = tuples.elementAt(i);
     return p.getId();
   }
 
@@ -71,7 +71,7 @@ public class CourseTableModel
 
   @Override
   public Object getValueAt(int line, int col) {
-    Course c = (Course) tuples.elementAt(line);
+    Course c = tuples.elementAt(line);
     switch (col) {
       case 0:
         return c.getId();
@@ -88,6 +88,6 @@ public class CourseTableModel
   }
 
   @Override
-  public void setValueAt(Object value, int ligne, int column) {
+  public void setValueAt(Object value, int line, int column) {
   }
 }

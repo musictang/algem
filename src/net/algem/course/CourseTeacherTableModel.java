@@ -1,7 +1,7 @@
 /*
- * @(#)CourseTeacherTableModel.java	2.9.1 18/11/14
+ * @(#)CourseTeacherTableModel.java	2.9.2 26/01/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,19 +27,19 @@ import net.algem.util.ui.JTableModel;
 
 /**
  * Table model for teacher follow-up.
- * 
+ *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.2
  */
 public class CourseTeacherTableModel
-        extends JTableModel
+        extends JTableModel<CourseSchedule>
 {
   public CourseTeacherTableModel() {
     header = new String[]{
-      BundleUtil.getLabel("Date.label"), 
-      BundleUtil.getLabel("Start.label"), 
-      BundleUtil.getLabel("End.label"), 
+      BundleUtil.getLabel("Date.label"),
+      BundleUtil.getLabel("Start.label"),
+      BundleUtil.getLabel("End.label"),
       BundleUtil.getLabel("Course.label"),
       BundleUtil.getLabel("Follow.up.label")
     };
@@ -52,7 +52,6 @@ public class CourseTeacherTableModel
     return -1;
   }
 
-  // TableModel Interface
   @Override
   public Class getColumnClass(int column) {
     switch (column) {
@@ -75,9 +74,9 @@ public class CourseTeacherTableModel
   }
 
   @Override
-  public Object getValueAt(int ligne, int colonne) {
-    CourseSchedule p = (CourseSchedule) tuples.elementAt(ligne);
-    switch (colonne) {
+  public Object getValueAt(int line, int col) {
+    CourseSchedule p = tuples.elementAt(line);
+    switch (col) {
       case 0:
         return p.getDate();
       case 1:
@@ -93,6 +92,6 @@ public class CourseTeacherTableModel
   }
 
   @Override
-  public void setValueAt(Object value, int ligne, int column) {
+  public void setValueAt(Object value, int line, int column) {
   }
 }

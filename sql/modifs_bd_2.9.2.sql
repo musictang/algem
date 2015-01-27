@@ -9,7 +9,7 @@ CREATE TABLE carteabopersessions (
 	fin time
 );
 
-ALTER TABLE absence OWNER TO nobody;
+-- ALTER TABLE absence OWNER TO nobody;
 
 -- Pass repetition individuelle
 ALTER TABLE carteaborepet ADD totalmin integer DEFAULT 60;

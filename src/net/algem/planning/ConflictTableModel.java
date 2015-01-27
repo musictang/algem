@@ -1,7 +1,7 @@
 /*
- * @(#)ConflictTableModel.java	2.8.v 04/06/14
- * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * @(#)ConflictTableModel.java	2.9.2 26/01/15
+ *
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning;
 
@@ -30,22 +30,22 @@ import net.algem.util.ui.JTableModel;
  * Conflict table model.
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.v
+ * @version 2.9.2
  */
 public class ConflictTableModel
-        extends JTableModel
+        extends JTableModel<ScheduleTestConflict>
 {
 
   private ImageIcon iconOK;
   private ImageIcon iconERR;
 
   public ConflictTableModel() {
-		
+
     header = new String[]{
-      BundleUtil.getLabel("Date.label"), 
-      BundleUtil.getLabel("Start.label"), 
+      BundleUtil.getLabel("Date.label"),
+      BundleUtil.getLabel("Start.label"),
       BundleUtil.getLabel("End.label"),
-      BundleUtil.getLabel("Verification.label"), 
+      BundleUtil.getLabel("Verification.label"),
       BundleUtil.getLabel("Conflict.label")
     };
     iconOK = ImageUtil.createImageIcon(ImageUtil.NO_CONFLICT_ICON);
@@ -81,7 +81,7 @@ public class ConflictTableModel
 
   @Override
   public Object getValueAt(int ligne, int colonne) {
-    ScheduleTestConflict p = (ScheduleTestConflict) tuples.elementAt(ligne);
+    ScheduleTestConflict p = tuples.elementAt(ligne);
     switch (colonne) {
       case 0:
         return p.getDate().toString();
@@ -118,6 +118,6 @@ public class ConflictTableModel
   }
 
   @Override
-  public void setValueAt(Object value, int ligne, int column) {
+  public void setValueAt(Object value, int line, int column) {
   }
 }

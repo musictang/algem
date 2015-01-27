@@ -1,6 +1,6 @@
 /*
- * @(#)HistoSubscriptionCardTableModel.java 2.9.2 07/01/15
- * 
+ * @(#)HistoSubscriptionCardTableModel.java 2.9.2 26/01/15
+ *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -35,8 +35,8 @@ import net.algem.util.ui.JTableModel;
  * @version 2.9.2
  * @since 2.9.2 07/01/15
  */
-public class HistoSubscriptionCardTableModel 
-  extends JTableModel 
+public class HistoSubscriptionCardTableModel
+  extends JTableModel<PersonSubscriptionCard>
 {
 
 
@@ -79,7 +79,7 @@ public class HistoSubscriptionCardTableModel
 
   @Override
   public Object getValueAt(int line, int col) {
-    PersonSubscriptionCard pc = (PersonSubscriptionCard) tuples.elementAt(line);
+    PersonSubscriptionCard pc = tuples.elementAt(line);
     switch (col) {
       case 0:
         return pc.getId();
@@ -104,7 +104,7 @@ public class HistoSubscriptionCardTableModel
     if (col != 3) {
       return;
     }
-    PersonSubscriptionCard c = (PersonSubscriptionCard) tuples.elementAt(line);
+    PersonSubscriptionCard c = tuples.elementAt(line);
     int oldRest = c.getRest();
     try {
       c.setRest(((Hour) value).toMinutes());
@@ -114,7 +114,7 @@ public class HistoSubscriptionCardTableModel
       c.setRest(oldRest);
       GemLogger.log(ex.getMessage());
     }
-    
+
   }
 
 }

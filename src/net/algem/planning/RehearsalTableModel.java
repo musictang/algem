@@ -1,7 +1,7 @@
 /*
- * @(#)RehearsalTableModel.java	2.8.w 16/07/14
- * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * @(#)RehearsalTableModel.java	2.9.2 26/01/15
+ *
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning;
 
@@ -30,10 +30,10 @@ import net.algem.util.ui.JTableModel;
 /**
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.2
  */
 public class RehearsalTableModel
-        extends JTableModel
+        extends JTableModel<Schedule>
 {
 
   public RehearsalTableModel() {
@@ -75,7 +75,7 @@ public class RehearsalTableModel
 
   @Override
   public Object getValueAt(int line, int col) {
-    Schedule p = (Schedule) tuples.elementAt(line);
+    Schedule p = tuples.elementAt(line);
     switch (col) {
       case 0:
         return p.getDate();
@@ -94,6 +94,6 @@ public class RehearsalTableModel
   }
 
   @Override
-  public void setValueAt(Object value, int ligne, int column) {
+  public void setValueAt(Object value, int line, int column) {
   }
 }

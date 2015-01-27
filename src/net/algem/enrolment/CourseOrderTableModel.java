@@ -1,7 +1,7 @@
 /*
- * @(#)CourseOrderTableModel.java	2.6.a 17/09/12
- * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * @(#)CourseOrderTableModel.java	2.9.2 26/01/15
+ *
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.enrolment;
 
@@ -26,19 +26,19 @@ import net.algem.util.BundleUtil;
 import net.algem.util.ui.JTableModel;
 
 /**
- * 
+ *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.6.a
+ * @version 2.9.2
  */
 public class CourseOrderTableModel
-        extends JTableModel
+        extends JTableModel<CourseOrder>
 {
 
-  String[] journom;
+  String[] weekDays;
 
   public CourseOrderTableModel() {
-    journom = PlanningService.WEEK_DAYS;
+    weekDays = PlanningService.WEEK_DAYS;
     header = new String[]{
       BundleUtil.getLabel("Type.label"),
       BundleUtil.getLabel("Course.label"),
@@ -54,7 +54,6 @@ public class CourseOrderTableModel
     return m.getIdOrder();
   }
 
-  // TableModel Interface
   @Override
   public Class getColumnClass(int column) {
     switch (column) {
@@ -76,14 +75,14 @@ public class CourseOrderTableModel
 
   @Override
   public Object getValueAt(int ligne, int colonne) {
-    CourseOrder m = (CourseOrder) tuples.elementAt(ligne);
+    CourseOrder m = tuples.elementAt(ligne);
     switch (colonne) {
       case 0:
         return m.getCourseModuleInfo().getCode().getLabel();
       case 1:
         return m.getTitle();
       case 2:
-        return journom[m.getDay() + 1];
+        return weekDays[m.getDay() + 1];
       case 3:
         return m.getStart().toString();
       case 4:
@@ -93,6 +92,6 @@ public class CourseOrderTableModel
   }
 
   @Override
-  public void setValueAt(Object value, int ligne, int column) {
+  public void setValueAt(Object value, int line, int column) {
   }
 }

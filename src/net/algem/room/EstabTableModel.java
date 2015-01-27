@@ -1,7 +1,7 @@
 /*
- * @(#)EstabTableModel.java	2.6.a 03/10/12
- * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * @(#)EstabTableModel.java	2.9.2 26/01/15
+ *
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.room;
 
@@ -27,10 +27,10 @@ import net.algem.util.ui.JTableModel;
 /**
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.2
  */
 public class EstabTableModel
-        extends JTableModel
+        extends JTableModel<Person>
 {
 
   public EstabTableModel() {
@@ -44,7 +44,7 @@ public class EstabTableModel
 
   @Override
   public int getIdFromIndex(int i) {
-    Person p = (Person) tuples.elementAt(i);
+    Person p = tuples.elementAt(i);
     return p.getId();
   }
 
@@ -68,7 +68,7 @@ public class EstabTableModel
 
   @Override
   public Object getValueAt(int line, int col) {
-    Person p = (Person) tuples.elementAt(line);
+    Person p = tuples.elementAt(line);
     switch (col) {
       case 0:
         return new Integer(p.getId());

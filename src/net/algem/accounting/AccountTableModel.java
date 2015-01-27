@@ -1,7 +1,7 @@
 /*
- * @(#)AccountTableModel.java	2.6.a 13/09/12
+ * @(#)AccountTableModel.java	2.9.2 26/01/15
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,11 +27,11 @@ import net.algem.util.ui.JTableModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.2
  * @since 2.3.c 09/03/12
  */
 public class AccountTableModel
-        extends JTableModel
+        extends JTableModel<Account>
 {
 
   public AccountTableModel() {
@@ -39,7 +39,7 @@ public class AccountTableModel
                           BundleUtil.getLabel("Account.number.label"),
                           BundleUtil.getLabel("Label.label"),
                           BundleUtil.getLabel("Active.label"),};
-    
+
   }
 
   @Override
@@ -80,6 +80,6 @@ public class AccountTableModel
 
   @Override
   public void setValueAt(Object value, int line, int col) {
-    
+
   }
 }

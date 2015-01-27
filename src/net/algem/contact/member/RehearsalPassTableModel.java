@@ -1,6 +1,6 @@
 /*
- * @(#)RehearsalPassTableModel.java 2.9.2 12/01/15
- * 
+ * @(#)RehearsalPassTableModel.java 2.9.2 26/01/15
+ *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.contact.member;
 
@@ -30,23 +30,23 @@ import net.algem.util.ui.JTableModel;
  * @version 2.9.2
  */
 public class RehearsalPassTableModel
-        extends JTableModel
+        extends JTableModel<RehearsalPass>
 {
 
   public RehearsalPassTableModel() {
     header = new String[]{
       BundleUtil.getLabel("Id.label"),
-      BundleUtil.getLabel("Label.label"), 
-      BundleUtil.getLabel("Amount.label"), 
-      BundleUtil.getLabel("Duration.min.label"), 
+      BundleUtil.getLabel("Label.label"),
+      BundleUtil.getLabel("Amount.label"),
+      BundleUtil.getLabel("Duration.min.label"),
       BundleUtil.getLabel("Total.label")
     };
   }
 
   @Override
   public int getIdFromIndex(int i) {
-    RehearsalPass c = (RehearsalPass) tuples.elementAt(i);
-    return c.getId();
+    RehearsalPass pass = tuples.elementAt(i);
+    return pass.getId();
   }
 
   @Override
@@ -68,18 +68,18 @@ public class RehearsalPassTableModel
 
   @Override
   public Object getValueAt(int ligne, int colonne) {
-    RehearsalPass c = (RehearsalPass) tuples.elementAt(ligne);
+    RehearsalPass pass = tuples.elementAt(ligne);
     switch (colonne) {
       case 0:
-        return c.getId();
+        return pass.getId();
       case 1:
-        return c.getLabel();
+        return pass.getLabel();
       case 2:
-        return c.getAmount();
+        return pass.getAmount();
       case 3:
-        return new Hour(c.getMin());
+        return new Hour(pass.getMin());
       case 4:
-        return new Hour(c.getTotalTime());
+        return new Hour(pass.getTotalTime());
     }
     return null;
   }

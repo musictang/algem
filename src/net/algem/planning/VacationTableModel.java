@@ -1,7 +1,7 @@
 /*
- * @(#)VacationTableModel.java	2.6.a 20/09/12
+ * @(#)VacationTableModel.java	2.9.2 26/01/15
  *
- * Copyright (c) 1999 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -26,16 +26,16 @@ import net.algem.util.ui.JTableModel;
 /**
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
- * 
+ * @version 2.9.2
+ *
  */
 public class VacationTableModel
-        extends JTableModel
+        extends JTableModel<Vacation>
 {
 
   public VacationTableModel() {
     header = new String[]{
-      BundleUtil.getLabel("Day.label"), 
+      BundleUtil.getLabel("Day.label"),
       BundleUtil.getLabel("Label.label"),
       BundleUtil.getLabel("Type.label")
     };
@@ -67,7 +67,7 @@ public class VacationTableModel
 
   @Override
   public Object getValueAt(int line, int col) {
-    Vacation v = (Vacation) tuples.elementAt(line);
+    Vacation v = tuples.elementAt(line);
     switch (col) {
       case 0:
         return v.getDay();

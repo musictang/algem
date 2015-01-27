@@ -1,7 +1,7 @@
 /*
- * @(#)MemberIO.java	2.9.1 04/11/14
+ * @(#)MemberIO.java	2.9.2 26/01/15
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -37,7 +37,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.m
+ * @version 2.9.2
  * @since 1.0a 07/07/1999
  */
 public class MemberIO
@@ -134,7 +134,7 @@ public class MemberIO
 
   public Member getFromRS(ResultSet rs, int col) throws SQLException {
     Member member = new Member(rs.getInt(col++));
-    member.setOccupation(rs.getString(col++).trim());
+    member.setOccupation(rs.getString(col++).trim());// TODO check NULL value
     member.setBirth(new DateFr(rs.getString(col++)));
     member.setPayer(rs.getInt(col++));
     member.setMembershipCount(rs.getInt(col++));

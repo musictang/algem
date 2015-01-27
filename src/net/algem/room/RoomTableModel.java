@@ -1,7 +1,7 @@
 /*
- * @(#)RoomTableModel.java	2.6.a 24/09/12
- * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * @(#)RoomTableModel.java	2.9.2 26/01/15
+ *
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.room;
 
@@ -26,10 +26,10 @@ import net.algem.util.ui.JTableModel;
 /**
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.2
  */
 public class RoomTableModel
-        extends JTableModel
+        extends JTableModel<Room>
 {
 
   public RoomTableModel() {
@@ -43,7 +43,7 @@ public class RoomTableModel
 
   @Override
   public int getIdFromIndex(int i) {
-    Room s = (Room) tuples.elementAt(i);
+    Room s = tuples.elementAt(i);
     return s.getId();
   }
 
@@ -68,7 +68,7 @@ public class RoomTableModel
 
   @Override
   public Object getValueAt(int ligne, int colonne) {
-    Room s = (Room) tuples.elementAt(ligne);
+    Room s = tuples.elementAt(ligne);
     switch (colonne) {
       case 0:
         return new Integer(s.getId());
