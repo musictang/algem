@@ -1,5 +1,5 @@
 /*
- * @(#)TestDateFr.java 2.9.2 27/01/15
+ * @(#)TestDateFr.java 2.9.2 28/01/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -89,11 +89,16 @@ public class TestDateFr
     assertTrue(fmt2, fmt2.equals("mercredi 11 juin 2014"));
   }
   
+  @Test
   public void testTimeOffset() {
-    Hour start = new Hour("22:00");
-    Hour end = new Hour("23:00");
-    int offset = start.getLength(end);
+    Hour startTime = new Hour("22:00");
+    Hour endTime = new Hour("23:00");
+    int offset = startTime.getLength(endTime);
     assertTrue(offset == 60);
+
+    HourRangePanel rangePanel = new HourRangePanel(startTime, endTime);
+    Hour end2 = endTime.end(rangePanel.getLength());
+    assertEquals("24:00", end2.toString());
   }
   
 }

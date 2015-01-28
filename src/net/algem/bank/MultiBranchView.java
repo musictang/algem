@@ -1,7 +1,7 @@
 /*
- * @(#)MultiBranchView.java	2.8.i 08/07/13
+ * @(#)MultiBranchView.java	2.9.2 28/01/15
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -33,7 +33,6 @@ import java.util.Vector;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.TableColumnModel;
-import net.algem.contact.Address;
 import net.algem.util.BundleUtil;
 import net.algem.util.GemCommand;
 import net.algem.util.ui.*;
@@ -43,7 +42,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.i
+ * @version 2.9.2
  */
 public class MultiBranchView
         extends GemBorderPanel
@@ -131,18 +130,6 @@ public class MultiBranchView
       //addAdresse(a.getAdresse());//remplissage du table model
       branchTableModel.addItem(a);
     }
-  }
-
-  void addAddress(Address adr) {
-    branchTableModel.addItem(adr);
-  }
-
-  void changeAddress(int i, Address adr) {
-    branchTableModel.modItem(i, adr);
-  }
-
-  void removeAddress(int i) {
-    branchTableModel.deleteItem(i);
   }
 
   void setBankCode(String s) {

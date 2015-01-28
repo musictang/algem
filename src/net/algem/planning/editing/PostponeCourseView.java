@@ -146,7 +146,7 @@ public class PostponeCourseView
     postPoneRange.setMax(end.toMinutes());
   }
 
-  Hour getHourEnd() {//XXX
+  Hour getHourEnd() {
     return newStartTime.get().end(postPoneRange.getLength());
   }
 

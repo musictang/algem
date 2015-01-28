@@ -1,7 +1,7 @@
 /*
- * @(#)ConflictService.java	2.9.1 11/12/14
+ * @(#)ConflictService.java	2.9.2 28/01/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -184,16 +184,16 @@ public class ConflictService
     // pour chaque instance de planning, vérifier l'occupation
     for (int i = 0; i < v.size(); i++) {
       Schedule p = v.elementAt(i);
-      Hour hfin = p.getEnd();
-      hfin.decMidnight();
+      Hour endTime = new Hour(p.getEnd());
+      endTime.maybeDecMidnight();
       testRoomPS.setDate(1, new java.sql.Date(p.getDate().getTime()));
       testRoomPS.setInt(2, roomId);
       testRoomPS.setTime(3, java.sql.Time.valueOf(p.getStart().toString() + ":00"));
-      testRoomPS.setTime(4, java.sql.Time.valueOf(hfin.toString() + ":00"));
+      testRoomPS.setTime(4, java.sql.Time.valueOf(endTime.toString() + ":00"));
       testRoomPS.setTime(5, java.sql.Time.valueOf(p.getStart().toString() + ":00"));
-      testRoomPS.setTime(6, java.sql.Time.valueOf(hfin.toString() + ":00"));
+      testRoomPS.setTime(6, java.sql.Time.valueOf(endTime.toString() + ":00"));
       testRoomPS.setTime(7, java.sql.Time.valueOf(p.getStart().toString() + ":00"));
-      testRoomPS.setTime(8, java.sql.Time.valueOf(hfin.toString() + ":00"));
+      testRoomPS.setTime(8, java.sql.Time.valueOf(endTime.toString() + ":00"));
       // Stocker les conflits dans un vecteur
       Vector<ScheduleObject> v2 = ScheduleIO.getLoadRS(testRoomPS, dc);
       for (int j = 0; j < v2.size(); j++) {
@@ -218,15 +218,17 @@ public class ConflictService
    */
   public Vector<ScheduleTestConflict> testRoomConflict(DateFr dateStart, Hour newHourStart, Hour newHourEnd, int roomId) throws SQLException {
     Vector<ScheduleTestConflict> conflicts = new Vector<ScheduleTestConflict>();
-    newHourEnd.decMidnight();
+    Hour endTime = new Hour(newHourEnd);
+    
+    endTime.maybeDecMidnight();
     testRoomPS.setDate(1, new java.sql.Date(dateStart.getTime()));
     testRoomPS.setInt(2, roomId);
     testRoomPS.setTime(3, java.sql.Time.valueOf(newHourStart.toString() + ":00"));
-    testRoomPS.setTime(4, java.sql.Time.valueOf(newHourEnd.toString() + ":00"));
+    testRoomPS.setTime(4, java.sql.Time.valueOf(endTime.toString() + ":00"));
     testRoomPS.setTime(5, java.sql.Time.valueOf(newHourStart.toString() + ":00"));
-    testRoomPS.setTime(6, java.sql.Time.valueOf(newHourEnd.toString() + ":00"));
+    testRoomPS.setTime(6, java.sql.Time.valueOf(endTime.toString() + ":00"));
     testRoomPS.setTime(7, java.sql.Time.valueOf(newHourStart.toString() + ":00"));
-    testRoomPS.setTime(8, java.sql.Time.valueOf(newHourEnd.toString() + ":00"));
+    testRoomPS.setTime(8, java.sql.Time.valueOf(endTime.toString() + ":00"));
 
     Vector<ScheduleObject> v2 = ScheduleIO.getLoadRS(testRoomPS, dc);
     for (int j = 0; j < v2.size(); j++) {
@@ -250,16 +252,16 @@ public class ConflictService
   Vector<ScheduleTestConflict> testRoomConflict(int origScheduleId, ScheduleObject newPlan) throws SQLException {
     
     Vector<ScheduleTestConflict> conflicts = new Vector<ScheduleTestConflict>();
-    Hour newHourEnd = newPlan.getEnd();
-    newHourEnd.decMidnight();
+    Hour newEndTime = new Hour(newPlan.getEnd());
+    newEndTime.maybeDecMidnight();
     testRoomPS3.setDate(1, new java.sql.Date(newPlan.getDate().getTime()));
     testRoomPS3.setInt(2, newPlan.getIdRoom());
     testRoomPS3.setTime(3, java.sql.Time.valueOf(newPlan.getStart().toString() + ":00"));
-    testRoomPS3.setTime(4, java.sql.Time.valueOf(newHourEnd.toString() + ":00"));
+    testRoomPS3.setTime(4, java.sql.Time.valueOf(newEndTime.toString() + ":00"));
     testRoomPS3.setTime(5, java.sql.Time.valueOf(newPlan.getStart().toString() + ":00"));
-    testRoomPS3.setTime(6, java.sql.Time.valueOf(newHourEnd.toString() + ":00"));
+    testRoomPS3.setTime(6, java.sql.Time.valueOf(newEndTime.toString() + ":00"));
     testRoomPS3.setTime(7, java.sql.Time.valueOf(newPlan.getStart().toString() + ":00"));
-    testRoomPS3.setTime(8, java.sql.Time.valueOf(newHourEnd.toString() + ":00"));
+    testRoomPS3.setTime(8, java.sql.Time.valueOf(newEndTime.toString() + ":00"));
     testRoomPS3.setInt(9, origScheduleId);
 
     Vector<ScheduleObject> v2 = ScheduleIO.getLoadRS(testRoomPS3, dc);
@@ -291,18 +293,19 @@ public class ConflictService
             + " AND debut = '" + plan.getStart() + "' AND fin = '" + plan.getEnd() + "'";
 
     Vector<Schedule> v = ScheduleIO.find(query, dc);
-    hEnd.decMidnight();
+    Hour endTime = new Hour(hEnd);
+    endTime.maybeDecMidnight();
     for (int i = 0; i < v.size(); i++) {
       Schedule p = v.elementAt(i);
 
       testRoomPS3.setDate(1, new java.sql.Date(p.getDate().getTime()));
       testRoomPS3.setInt(2, plan.getIdRoom());
       testRoomPS3.setTime(3, java.sql.Time.valueOf(hStart.toString() + ":00"));
-      testRoomPS3.setTime(4, java.sql.Time.valueOf(hEnd.toString() + ":00"));
+      testRoomPS3.setTime(4, java.sql.Time.valueOf(endTime.toString() + ":00"));
       testRoomPS3.setTime(5, java.sql.Time.valueOf(hStart.toString() + ":00"));
-      testRoomPS3.setTime(6, java.sql.Time.valueOf(hEnd.toString() + ":00"));
+      testRoomPS3.setTime(6, java.sql.Time.valueOf(endTime.toString() + ":00"));
       testRoomPS3.setTime(7, java.sql.Time.valueOf(hStart.toString() + ":00"));
-      testRoomPS3.setTime(8, java.sql.Time.valueOf(hEnd.toString() + ":00"));
+      testRoomPS3.setTime(8, java.sql.Time.valueOf(endTime.toString() + ":00"));
       testRoomPS3.setInt(9, p.getId());
 
       Vector<ScheduleObject> v2 = ScheduleIO.getLoadRS(testRoomPS3, dc);
@@ -366,17 +369,19 @@ public class ConflictService
     String query = "WHERE jour >= '" + dateStart + "' AND jour <= '" + dateEnd + "' AND action = " + orig.getIdAction() + " AND idper = " + orig.getIdPerson();
     Vector<Schedule> v = ScheduleIO.find(query, dc);
 
+    Hour endTime = new Hour(newPlan.getEnd());
+    endTime.maybeDecMidnight();
     for (int i = 0; i < v.size(); i++) {
       Schedule p = v.elementAt(i);
 
       testTeacherPS.setDate(1, new java.sql.Date(p.getDate().getTime()));
       testTeacherPS.setInt(2, newPlan.getIdPerson());
       testTeacherPS.setTime(3, java.sql.Time.valueOf(newPlan.getStart().toString() + ":00"));
-      testTeacherPS.setTime(4, java.sql.Time.valueOf(newPlan.getEnd().toString() + ":00"));
+      testTeacherPS.setTime(4, java.sql.Time.valueOf(endTime.toString() + ":00"));
       testTeacherPS.setTime(5, java.sql.Time.valueOf(newPlan.getStart().toString() + ":00"));
-      testTeacherPS.setTime(6, java.sql.Time.valueOf(newPlan.getEnd().toString() + ":00"));
+      testTeacherPS.setTime(6, java.sql.Time.valueOf(endTime.toString() + ":00"));
       testTeacherPS.setTime(7, java.sql.Time.valueOf(newPlan.getStart().toString() + ":00"));
-      testTeacherPS.setTime(8, java.sql.Time.valueOf(newPlan.getEnd().toString() + ":00"));    
+      testTeacherPS.setTime(8, java.sql.Time.valueOf(endTime.toString() + ":00"));    
 
       Vector<ScheduleObject> v2 = ScheduleIO.getLoadRS(testTeacherPS, dc);
       for (int j = 0; j < v2.size(); j++) {
@@ -407,14 +412,16 @@ public class ConflictService
 
     Vector<ScheduleTestConflict> conflicts = new Vector<ScheduleTestConflict>();
 
+    Hour endTime = new Hour(nhEnd);
+    endTime.maybeDecMidnight();
     testTeacherPS2.setDate(1, new java.sql.Date(day.getTime()));
     testTeacherPS2.setInt(2, plan.getIdPerson());
     testTeacherPS2.setTime(3, java.sql.Time.valueOf(nhStart.toString() + ":00"));
-    testTeacherPS2.setTime(4, java.sql.Time.valueOf(nhEnd.toString() + ":00"));
+    testTeacherPS2.setTime(4, java.sql.Time.valueOf(endTime.toString() + ":00"));
     testTeacherPS2.setTime(5, java.sql.Time.valueOf(nhStart.toString() + ":00"));
-    testTeacherPS2.setTime(6, java.sql.Time.valueOf(nhEnd.toString() + ":00"));
+    testTeacherPS2.setTime(6, java.sql.Time.valueOf(endTime.toString() + ":00"));
     testTeacherPS2.setTime(7, java.sql.Time.valueOf(nhStart.toString() + ":00"));
-    testTeacherPS2.setTime(8, java.sql.Time.valueOf(nhEnd.toString() + ":00"));
+    testTeacherPS2.setTime(8, java.sql.Time.valueOf(endTime.toString() + ":00"));
     testTeacherPS2.setInt(9, plan.getId());
 
     Vector<ScheduleObject> v2 = ScheduleIO.getLoadRS(testTeacherPS2, dc);
@@ -442,14 +449,16 @@ public class ConflictService
 
     Vector<ScheduleTestConflict> conflicts = new Vector<ScheduleTestConflict>();
 
+    Hour endTime = new Hour(newPlan.getEnd());
+    endTime.maybeDecMidnight();
     testTeacherPS.setDate(1, new java.sql.Date(newPlan.getDate().getTime()));
     testTeacherPS.setInt(2, teacherId);
     testTeacherPS.setTime(3, java.sql.Time.valueOf(newPlan.getStart().toString() + ":00"));
-    testTeacherPS.setTime(4, java.sql.Time.valueOf(newPlan.getEnd().toString() + ":00"));
+    testTeacherPS.setTime(4, java.sql.Time.valueOf(endTime.toString() + ":00"));
     testTeacherPS.setTime(5, java.sql.Time.valueOf(newPlan.getStart().toString() + ":00"));
-    testTeacherPS.setTime(6, java.sql.Time.valueOf(newPlan.getEnd().toString() + ":00"));
+    testTeacherPS.setTime(6, java.sql.Time.valueOf(endTime.toString() + ":00"));
     testTeacherPS.setTime(7, java.sql.Time.valueOf(newPlan.getStart().toString() + ":00"));
-    testTeacherPS.setTime(8, java.sql.Time.valueOf(newPlan.getEnd().toString() + ":00"));
+    testTeacherPS.setTime(8, java.sql.Time.valueOf(endTime.toString() + ":00"));
 
     Vector<ScheduleObject> v2 = ScheduleIO.getLoadRS(testTeacherPS, dc);
     for (int j = 0; j < v2.size(); j++) {
@@ -464,17 +473,21 @@ public class ConflictService
   }
   
   Vector<ScheduleTestConflict> testTeacherConflictForScheduleLength(ScheduleObject plan, DateFr dateEnd, Hour hStart, Hour hEnd) throws SQLException {
+    
+    Hour endTime = new Hour(hEnd);
+    endTime.maybeDecMidnight();
+    
     testTeacherPS3.setDate(1, new java.sql.Date(plan.getDate().getTime()));
     testTeacherPS3.setDate(2, new java.sql.Date(dateEnd.getTime()));
     testTeacherPS3.setInt(3, (plan.getDate().getDayOfWeek() - 1));
     testTeacherPS3.setInt(4, plan.getIdPerson());
     testTeacherPS3.setInt(5, plan.getRoom().getId());
     testTeacherPS3.setTime(6, java.sql.Time.valueOf(hStart.toString() + ":00"));
-    testTeacherPS3.setTime(7, java.sql.Time.valueOf(hEnd.toString() + ":00"));
+    testTeacherPS3.setTime(7, java.sql.Time.valueOf(endTime.toString() + ":00"));
     testTeacherPS3.setTime(8, java.sql.Time.valueOf(hStart.toString() + ":00"));
-    testTeacherPS3.setTime(9, java.sql.Time.valueOf(hEnd.toString() + ":00"));
+    testTeacherPS3.setTime(9, java.sql.Time.valueOf(endTime.toString() + ":00"));
     testTeacherPS3.setTime(10, java.sql.Time.valueOf(hStart.toString() + ":00"));
-    testTeacherPS3.setTime(11, java.sql.Time.valueOf(hEnd.toString() + ":00"));
+    testTeacherPS3.setTime(11, java.sql.Time.valueOf(endTime.toString() + ":00"));
 
     Vector<ScheduleTestConflict> conflicts = null;
     Vector<ScheduleObject> schedules = ScheduleIO.getLoadRS(testTeacherPS3, dc);
@@ -534,18 +547,30 @@ public class ConflictService
     return conflicts;
   }
   
-  public Vector<ScheduleTestConflict> testMemberConflict(ScheduleObject plan, DateFr jour, Hour nhd, Hour nhf) throws SQLException {
+  /**
+   * 
+   * @param plan schedule
+   * @param date
+   * @param start start time
+   * @param end end time
+   * @return a list of conflicts
+   * @throws SQLException 
+   */
+  public Vector<ScheduleTestConflict> testMemberConflict(ScheduleObject plan, DateFr date, Hour start, Hour end) throws SQLException {
 
     Vector<ScheduleTestConflict> conflicts = new Vector<ScheduleTestConflict>();
 
-    testMemberPS.setDate(1, new java.sql.Date(jour.getTime()));
+    Hour endTime = new Hour(end);
+    endTime.maybeDecMidnight();
+    
+    testMemberPS.setDate(1, new java.sql.Date(date.getTime()));
     testMemberPS.setInt(2, plan.getIdPerson());
-    testMemberPS.setTime(3, java.sql.Time.valueOf(nhd.toString() + ":00"));
-    testMemberPS.setTime(4, java.sql.Time.valueOf(nhf.toString() + ":00"));
-    testMemberPS.setTime(5, java.sql.Time.valueOf(nhd.toString() + ":00"));
-    testMemberPS.setTime(6, java.sql.Time.valueOf(nhf.toString() + ":00"));
-    testMemberPS.setTime(7, java.sql.Time.valueOf(nhd.toString() + ":00"));
-    testMemberPS.setTime(8, java.sql.Time.valueOf(nhf.toString() + ":00"));
+    testMemberPS.setTime(3, java.sql.Time.valueOf(start.toString() + ":00"));
+    testMemberPS.setTime(4, java.sql.Time.valueOf(endTime.toString() + ":00"));
+    testMemberPS.setTime(5, java.sql.Time.valueOf(start.toString() + ":00"));
+    testMemberPS.setTime(6, java.sql.Time.valueOf(endTime.toString() + ":00"));
+    testMemberPS.setTime(7, java.sql.Time.valueOf(start.toString() + ":00"));
+    testMemberPS.setTime(8, java.sql.Time.valueOf(endTime.toString() + ":00"));
 
     Vector<ScheduleObject> v2 = ScheduleIO.getLoadRS(testMemberPS, dc);
     for (int j = 0; j < v2.size(); j++) {
@@ -562,15 +587,18 @@ public class ConflictService
 	public Vector<ScheduleTestConflict> testMemberScheduleConflict(ScheduleObject plan, DateFr day, Hour nhStart, Hour nhEnd) throws SQLException {
 
     Vector<ScheduleTestConflict> conflicts = new Vector<ScheduleTestConflict>();
+    
+    Hour endTime = new Hour(nhEnd);
+    endTime.maybeDecMidnight();
 
     testMemberSchedulePS.setDate(1, new java.sql.Date(day.getTime()));
     testMemberSchedulePS.setInt(2, plan.getIdPerson());
     testMemberSchedulePS.setTime(3, java.sql.Time.valueOf(nhStart.toString() + ":00"));
-    testMemberSchedulePS.setTime(4, java.sql.Time.valueOf(nhEnd.toString() + ":00"));
+    testMemberSchedulePS.setTime(4, java.sql.Time.valueOf(endTime.toString() + ":00"));
     testMemberSchedulePS.setTime(5, java.sql.Time.valueOf(nhStart.toString() + ":00"));
-    testMemberSchedulePS.setTime(6, java.sql.Time.valueOf(nhEnd.toString() + ":00"));
+    testMemberSchedulePS.setTime(6, java.sql.Time.valueOf(endTime.toString() + ":00"));
     testMemberSchedulePS.setTime(7, java.sql.Time.valueOf(nhStart.toString() + ":00"));
-    testMemberSchedulePS.setTime(8, java.sql.Time.valueOf(nhEnd.toString() + ":00"));
+    testMemberSchedulePS.setTime(8, java.sql.Time.valueOf(endTime.toString() + ":00"));
 
     Vector<ScheduleObject> v2 = ScheduleIO.getLoadRS(testMemberSchedulePS, dc);
     for (int j = 0; j < v2.size(); j++) {

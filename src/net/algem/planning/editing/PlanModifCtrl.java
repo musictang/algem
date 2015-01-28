@@ -1,5 +1,5 @@
 /*
- * @(#)PlanModifCtrl.java	2.9.2 12/01/15
+ * @(#)PlanModifCtrl.java	2.9.2 28/01/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -601,6 +601,7 @@ public class PlanModifCtrl
       if (!testConflictCourse(plan, newPlan, range)) {
         return;
       }
+      // TODO permettre le découpage pour les cours collectifs (instrument co/atelier/at. ponctuel/stage)
       if (range[0].after(plan.getStart())) {
         if (range[1].before(plan.getEnd())) {
           service.postPoneCourseBetween(plan, newPlan, range);

@@ -1,7 +1,7 @@
 /*
- * @(#)PostponeCourseDlg.java	2.8.x 16/09/14
+ * @(#)PostponeCourseDlg.java	2.9.2 28/01/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,6 +28,8 @@ import net.algem.planning.CourseSchedule;
 import net.algem.planning.Hour;
 import net.algem.planning.PlanningService;
 import net.algem.planning.ScheduleObject;
+import net.algem.planning.TrainingCourseSchedule;
+import net.algem.planning.WorkshopSchedule;
 import net.algem.room.Room;
 import net.algem.room.RoomIO;
 import net.algem.util.DataCache;
@@ -39,7 +41,7 @@ import net.algem.util.module.GemDesktop;
  * Dialog for course time modification.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.x
+ * @version 2.9.2
  *
  */
 public class PostponeCourseDlg
@@ -53,8 +55,10 @@ public class PostponeCourseDlg
     super(desktop.getFrame());
     schedule = _plan;
     pv = new PostponeCourseView(desktop.getDataCache().getList(Model.Room), service);
-    boolean noRange = titleKey.equals("Schedule.course.copy.title") ||
-            (schedule instanceof CourseSchedule && ((Course) schedule.getActivity()).isCollective());
+    boolean noRange = titleKey.equals("Schedule.course.copy.title")
+            || (schedule instanceof CourseSchedule && ((Course) schedule.getActivity()).isCollective())
+            || schedule instanceof WorkshopSchedule 
+            || schedule instanceof TrainingCourseSchedule;
     pv.set(schedule, noRange);
     validation = false;
     dlg = new JDialog(desktop.getFrame(), true);
