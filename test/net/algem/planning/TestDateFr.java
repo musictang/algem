@@ -1,7 +1,7 @@
 /*
- * @(#)TestDateFr.java 2.8.v 11/06/14
+ * @(#)TestDateFr.java 2.9.2 27/01/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -30,7 +30,7 @@ import org.junit.*;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.v
+ * @version 2.9.2
  */
 public class TestDateFr
 
@@ -69,22 +69,31 @@ public class TestDateFr
     d2.decYear(1);
     assertEquals("10-10-2009", d2.toString());
     assertFalse("datefr equals ?", d1.equals(d2));
-
   }
 
   @Test
   public void testDateFormat() {
-    Format f1 = new SimpleDateFormat("MMM yyyy");
-    Format f2 = new SimpleDateFormat("EEEE dd-MM-yyyy");
+    Format f1 = new SimpleDateFormat("MMM yyyy", Locale.FRANCE);
+    Format f2 = new SimpleDateFormat("EEEE dd-MM-yyyy", Locale.FRANCE);
     DateFr d1 = new DateFr("11-06-2014");
-    String formatted = f2.format(d1.getDate());
-
-    assertTrue(formatted, formatted.equals("mercredi 11-06-2014"));
+    String fmt1 = f1.format(d1.getDate());
+    String fmt2 = f2.format(d1.getDate());
+    System.out.println(fmt1);
+    assertTrue(fmt1, fmt1.equals("juin 2014"));
+    assertTrue(fmt2, fmt2.equals("mercredi 11-06-2014"));
     f2 = new SimpleDateFormat("EEE dd/MM/yyyy");
-    formatted = f2.format(d1.getDate());
-    assertTrue(formatted, formatted.equals("mer. 11/06/2014"));
+    fmt2 = f2.format(d1.getDate());
+    assertTrue(fmt2, fmt2.equals("mer. 11/06/2014"));
     f2 = new SimpleDateFormat("EEEE dd MMM yyyy");
-    formatted = f2.format(d1.getDate());
-    assertTrue(formatted, formatted.equals("mercredi 11 juin 2014"));
+    fmt2 = f2.format(d1.getDate());
+    assertTrue(fmt2, fmt2.equals("mercredi 11 juin 2014"));
   }
+  
+  public void testTimeOffset() {
+    Hour start = new Hour("22:00");
+    Hour end = new Hour("23:00");
+    int offset = start.getLength(end);
+    assertTrue(offset == 60);
+  }
+  
 }

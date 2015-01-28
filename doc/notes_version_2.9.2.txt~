@@ -15,5 +15,7 @@ L'historique des abonnements est maintenant disponible et permet de visualiser l
 Cette fonction permettra en outre de détailler les chevauchements horaires entre deux cartes (lorsque la durée de la réservation dépasse le nombre d'heures restant sur la carte en cours et qu'une nouvelle carte est créée pour la circonstance).
 Par principe, une nouvelle carte achetée n'est plus supprimée. Dès lors, le total des heures restantes pourra dans certains cas dépasser le montant total de la carte, après l'annulation d'une répétition par exemple. Ce comportement est désiré et il n'y a pas lieu de corriger ce décompte positif.
 
+
+
 DISPATCHER
 - Le dispatcher était jusqu'alors censé fonctionner sur la même machine que celle sur laquelle était installée la base de données. Désormais, le paramètre hostdispatcher dans algem.conf permet d'indiquer une adresse réseau différente de celle du serveur de base de données. C'est particulièrement utile dans le cas où la base de données est hébergée sur un serveur distant mais que vous vouliez utiliser le dispatcher sur le réseau local.

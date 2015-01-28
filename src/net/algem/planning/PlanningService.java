@@ -522,7 +522,7 @@ public class PlanningService
    * @throws PlanningException if sql exception
    */
   public void postPoneCourse(ScheduleObject plan, ScheduleObject newPlan) throws PlanningException {
-    // probleme avec les heures de end = 24:00 l'update les transforme en 00:00 / erreurs futures dans le décompte des heures
+    // probleme avec les heures de fin = 24:00 l'update les transforme en 23:59 / erreurs futures dans le décompte des heures
     String query = "UPDATE " + ScheduleIO.TABLE
             + " SET jour = '" + newPlan.getDate()
             + "', debut = '" + newPlan.getStart()
@@ -533,7 +533,6 @@ public class PlanningService
       dc.setAutoCommit(false);
       dc.executeUpdate(query); // update schedule
       int offset = plan.getStart().getLength(newPlan.getStart()); // getLength en minutes entre l'ancienne heure et la nouvelle passée en paramètre.
-      //XXX probleme avec les heures de fin = 24:00 l'update les transforme en 00:00 / erreurs futures dans le décompte des heures
       query = "UPDATE " + ScheduleRangeIO.TABLE
               + " SET debut = debut + interval '" + offset + " min', fin = fin + interval '" + offset + " min'"
               + " WHERE idplanning = " + plan.getId();

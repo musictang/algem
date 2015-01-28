@@ -577,7 +577,7 @@ public class PlanModifCtrl
 
   /**
    * Calls course time modification dialog.
-   * This dialog is runned when date or hour must be changed. If not, it is
+   * This dialog is run when date or hour must be changed. If not, it is
    * preferable to call the dialog for room modification.
    */
   private void dialogPostponeCourse() {

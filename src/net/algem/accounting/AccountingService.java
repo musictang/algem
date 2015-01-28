@@ -1,7 +1,7 @@
 /*
- * @(#)AccountingService.java	2.9.1 08/12/14
+ * @(#)AccountingService.java	2.9.2 27/01/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -122,7 +122,7 @@ public class AccountingService {
             + " AND a.cours = c.id "
             + " AND c.ecole = " + school
             + " AND ((c.code IN(2,3,11,12) AND (SELECT count(id) FROM " + ScheduleRangeIO.TABLE + " WHERE idplanning = p.id) > 0)"
-            + " OR (c.code = 1 AND (SELECT count(id) FROM plage WHERE idplanning = p.id AND debut = p.debut) > 1))";
+            + " OR (c.code = 1 AND (SELECT count(id) FROM " + ScheduleRangeIO.TABLE + " WHERE idplanning = p.id AND debut = p.debut) > 1))";
             if(!catchup) {
               query +=  " AND s.nom !~* 'rattrap'";
             }
@@ -140,7 +140,7 @@ public class AccountingService {
             + PersonIO.TABLE + " p1, " + PersonIO.TABLE + " p2, "
             + RoomIO.TABLE + " s";
     query += (idper > 0) ? " WHERE p.idper = " + idper : " WHERE p.idper > 0";
-    query += " AND p.jour BETWEEN '01-11-2014' AND '31-12-2014'"
+    query += " AND p.jour BETWEEN '" + start + "' AND '" + end + "'"
       + " AND p.ptype IN (1,5,6)"
       + " AND p.lieux = s.id"
       + " AND p.action = a.id"

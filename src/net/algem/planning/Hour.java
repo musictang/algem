@@ -179,7 +179,7 @@ public class Hour
    * @param duration
    * @return an hour
    */
-  public Hour end(int duration) {
+  public Hour end(int duration) {//XXX
     Hour f = new Hour(this);
     f.incHour(duration / 60);
     f.incMinute(duration % 60);
