@@ -140,7 +140,7 @@ public class AccountingService {
             + PersonIO.TABLE + " p1, " + PersonIO.TABLE + " p2, "
             + RoomIO.TABLE + " s";
     query += (idper > 0) ? " WHERE p.idper = " + idper : " WHERE p.idper > 0";
-    query += " AND p.jour BETWEEN '01-11-2014' AND '31-12-2014'"
+    query += " AND p.jour BETWEEN '" + start + "' AND '" + end + "'"
       + " AND p.ptype IN (1,5,6)"
       + " AND p.lieux = s.id"
       + " AND p.action = a.id"
