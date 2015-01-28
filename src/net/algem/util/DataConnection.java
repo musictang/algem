@@ -296,14 +296,19 @@ public class DataConnection
   }
 
   public <T> T withTransaction(SQLRunnable<T> block) throws Exception {
-    try {
-      setAutoCommit(false);
+    boolean inTransaction = !cnx.getAutoCommit();
+    if (inTransaction) {
       return block.run(this);
-    } catch (Exception e) {
-      rollback();
-      throw e;
-    } finally {
-      setAutoCommit(true);
+    } else {
+      try {
+        setAutoCommit(false);
+        return block.run(this);
+      } catch (Exception e) {
+        rollback();
+        throw e;
+      } finally {
+        setAutoCommit(true);
+      }
     }
   }
 }
