@@ -1,7 +1,7 @@
 /*
- * @(#)CourseChoiceActiveModel.java	2.7.a 28/11/12
+ * @(#)CourseChoiceActiveModel.java	2.9.2 27/01/15
  *
- * Copyright (c) 1998 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -30,7 +30,7 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.9.2
  */
 public class CourseChoiceActiveModel
         extends CourseChoiceFilterModel {
@@ -42,7 +42,9 @@ public class CourseChoiceActiveModel
 
     this.active = active;
     load(list);
-    selected = this.list.getElementAt(indices.get(0));
+    if (list.getSize() > 0) {
+      selected = this.list.getElementAt(indices.get(0));
+    }
   }
 
   public CourseChoiceActiveModel(Vector<Course> list, boolean active) {

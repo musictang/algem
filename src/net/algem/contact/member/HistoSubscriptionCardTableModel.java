@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileMusicianTableModel.java 2.9.2 26/01/15
+ * @(#)HistoSubscriptionCardTableModel.java 2.9.2 26/01/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -16,12 +16,13 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- *
  */
-package net.algem.group;
+
+package net.algem.contact.member;
 
 import java.sql.SQLException;
-import net.algem.config.Instrument;
+import net.algem.planning.DateFr;
+import net.algem.planning.Hour;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.GemLogger;
@@ -29,43 +30,43 @@ import net.algem.util.model.Model;
 import net.algem.util.ui.JTableModel;
 
 /**
- *
- * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
+ * Table model for subscription card.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.9.2
+ * @since 2.9.2 07/01/15
  */
-public class PersonFileMusicianTableModel
-        extends JTableModel<Musician>
+public class HistoSubscriptionCardTableModel
+  extends JTableModel<PersonSubscriptionCard>
 {
 
-  public PersonFileMusicianTableModel() {
-    super();
+
+  /**
+   * Creates a model with header.
+   */
+  public HistoSubscriptionCardTableModel() {
     header = new String[]{
       BundleUtil.getLabel("Id.label"),
-      BundleUtil.getLabel("Group.label"),
-      BundleUtil.getLabel("Instrument.label")
+      BundleUtil.getLabel("Date.label"),
+      BundleUtil.getLabel("Module.label"),
+      BundleUtil.getLabel("Subscription.remaining.label"),
     };
   }
 
-	@Override
-  public int getIdFromIndex(int i) {
-    Musician m = tuples.elementAt(i);
-    return m.getGroup().getId();
-  }
-
-  public Musician getMusician(int i) {
-    return tuples.elementAt(i);
-  }
-
   @Override
-  public Class getColumnClass(int column) {
-    switch (column) {
+  public int getIdFromIndex(int i) {
+    return 0;
+  }
+
+   @Override
+  public Class getColumnClass(int col) {
+    switch (col) {
       case 0:
         return Integer.class;
       case 1:
-        return String.class;
       case 2:
-        return Integer.class;
+        return DateFr.class;
+      case 3:
+        return Hour.class;
       default:
         return Object.class;
     }
@@ -73,30 +74,47 @@ public class PersonFileMusicianTableModel
 
   @Override
   public boolean isCellEditable(int row, int column) {
-    return false;
+    return column == 3;
   }
 
   @Override
   public Object getValueAt(int line, int col) {
-    Musician m = tuples.elementAt(line);
+    PersonSubscriptionCard pc = tuples.elementAt(line);
     switch (col) {
       case 0:
-        return m.getGroup().getId();
+        return pc.getId();
       case 1:
-        return m.getGroup().getName();
+        return pc.getPurchaseDate();
       case 2:
         try {
-          Instrument i = (Instrument) DataCache.findId(m.getInstrument(), Model.Instrument);
-          return i == null ? "" : i.getName();
+          RehearsalPass c = (RehearsalPass) DataCache.findId(pc.getPassId(), Model.PassCard);
+          return c == null ? BundleUtil.getLabel("Unknown.label") : c.getLabel();
         } catch (SQLException ex) {
-          GemLogger.logException(ex);
+          GemLogger.log(ex.getMessage());
+          return null;
         }
+      case 3:
+        return new Hour(pc.getRest());
     }
     return null;
-
   }
 
-	@Override
+  @Override
   public void setValueAt(Object value, int line, int col) {
+    if (col != 3) {
+      return;
+    }
+    PersonSubscriptionCard c = tuples.elementAt(line);
+    int oldRest = c.getRest();
+    try {
+      c.setRest(((Hour) value).toMinutes());
+      new PersonSubscriptionCardIO(DataCache.getDataConnection()).update(c);
+      modItem(line, c);
+    } catch (MemberException ex) {
+      c.setRest(oldRest);
+      GemLogger.log(ex.getMessage());
+    }
+
   }
+
 }

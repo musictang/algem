@@ -1,7 +1,7 @@
 /*
- * @(#)HoursTeacherByDateTask.java	2.9.1 15/12/14
+ * @(#)HoursTeacherByDateTask.java	2.9.2 27/01/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -35,7 +35,7 @@ import net.algem.util.model.Model;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.2
  * @since 2.9.1 05/12/14
  */
 public class HoursTeacherByDateTask
@@ -62,8 +62,6 @@ extends HoursTask
       String teacherName = "";
       String memberName = "";
       String courseName = "";
-
-      out.print("\ufeff");// force Byte Order Mark (BOM) : windows compatibility
       //header
       StringBuilder sb = new StringBuilder(BundleUtil.getLabel("Teacher.label"));
       if (detail) {

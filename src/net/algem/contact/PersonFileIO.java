@@ -1,7 +1,7 @@
 /*
- * @(#)PersonFileIO.java  2.9.2 19/12/14
+ * @(#)PersonFileIO.java  2.9.2 12/01/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -29,7 +29,6 @@ import net.algem.bank.Rib;
 import net.algem.bank.RibIO;
 import net.algem.contact.member.Member;
 import net.algem.contact.member.MemberIO;
-import net.algem.contact.member.PersonSubscriptionCardIO;
 import net.algem.contact.teacher.Teacher;
 import net.algem.contact.teacher.TeacherIO;
 import net.algem.group.GroupIO;
@@ -314,10 +313,9 @@ public class PersonFileIO
 
   public void complete(PersonFile pf) throws SQLException {
     pf.setMember((Member) DataCache.findId(pf.getId(), Model.Member));
-//    pf.addTeacher((Teacher) DataCache.findId(pf.getId(), Model.Teacher));
     pf.loadTeacher((Teacher) DataCache.findId(pf.getId(), Model.Teacher));
     pf.addRib(RibIO.findId(pf.getId(), dc));
-    pf.setSubscriptionCard(new PersonSubscriptionCardIO(dc).find(pf.getId(), null, false));//XXX TODO lasy loading
+//    pf.setSubscriptionCard(new PersonSubscriptionCardIO(dc).find(pf.getId(), null, false, 1));//XXX TODO lasy loading
     pf.setGroups(((GroupIO) DataCache.getDao(Model.Group)).find(pf.getId()));
   }
 

@@ -1,7 +1,7 @@
 /*
- * @(#)RehearsalCardIO.java 2.9.2 26/12/14
+ * @(#)RehearsalPassIO.java 2.9.2 12/01/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,54 +28,64 @@ import net.algem.util.DataConnection;
 import net.algem.util.model.TableIO;
 
 /**
- * Persistence for rehearsal card.
+ * Rehearsal pass persistence.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.9.2
  */
-public class RehearsalCardIO
+public class RehearsalPassIO
         extends TableIO
 {
 
   public final static String TABLE = "carteaborepet";
   public final static String SEQUENCE = "carteaborepet_id_seq";
-  public final static String COLUMNS = "id, libelle, montant, nbseances, dureemin";
-  public final static String UPDATE_STATEMENT = "UPDATE " + TABLE + " SET libelle = ?, montant = ?, nbseances = ?, dureemin = ? WHERE id = ?";
+  public final static String COLUMNS = "id, libelle, montant, dureemin, totalmin";
+  public final static String UPDATE_STATEMENT = "UPDATE " + TABLE + " SET libelle = ?, montant = ?, dureemin = ?, totalmin = ? WHERE id = ?";
 
-  public static RehearsalCard find(int id, DataConnection dc) throws SQLException {
+  public static RehearsalPass find(int id, DataConnection dc) throws SQLException {
     String query = "SELECT " + COLUMNS + " FROM " + TABLE + " WHERE id = " + id;
     ResultSet rs = dc.executeQuery(query);
 
     if (!rs.next()) {
       return null;
     }
-    RehearsalCard c = new RehearsalCard();
+    RehearsalPass c = new RehearsalPass();
     c.setId(rs.getInt(1));
-    c.setLabel(rs.getString(2));
+    c.setLabel(unEscape(rs.getString(2)));
     c.setAmount(rs.getFloat(3));
-    c.setSessionsNumber(rs.getInt(4));
-    c.setLength(rs.getInt(5));
+    c.setMin(rs.getInt(4));
+    c.setTotalTime(rs.getInt(5));
 
     return c;
   }
 
-  public static Vector<RehearsalCard> findAll(String where, DataConnection dc) throws SQLException {
-    Vector<RehearsalCard> v = new Vector<RehearsalCard>();
+  public static Vector<RehearsalPass> findAll(String where, DataConnection dc) throws SQLException {
+    Vector<RehearsalPass> v = new Vector<RehearsalPass>();
     String query = "SELECT " + COLUMNS + " FROM " + TABLE + " " + where;
     ResultSet rs = dc.executeQuery(query);
     while (rs.next()) {
-      RehearsalCard c = new RehearsalCard();
+      RehearsalPass c = new RehearsalPass();
       c.setId(rs.getInt(1));
-      c.setLabel(rs.getString(2));
+      c.setLabel(unEscape(rs.getString(2)));
       c.setAmount(rs.getFloat(3));
-      c.setSessionsNumber(rs.getInt(4));
-      c.setLength(rs.getInt(5));
+      c.setMin(rs.getInt(4));
+      c.setTotalTime(rs.getInt(5));
       v.addElement(c);
     }
     return v;
   }
+  
+  public static boolean isActive(int id, DataConnection dc) throws SQLException {
+    String query = "SELECT count(DISTINCT id) FROM " + PersonSubscriptionCardIO.TABLE + " WHERE idpass = " + id;
+    int n = 0;
+    ResultSet rs = dc.executeQuery(query);
+    while (rs.next()) {
+      n = rs.getInt(1);
+    }   
+    return n > 0;
+  }
 
-  public static void insert(RehearsalCard card, DataConnection dc) throws SQLException {
+  public static void insert(RehearsalPass card, DataConnection dc) throws SQLException {
     card.setId(nextId(SEQUENCE, dc));
     dc.executeUpdate(getInsertQuery(card));
   }
@@ -85,22 +95,25 @@ public class RehearsalCardIO
     return deleted > 0;
   }
 
-  public static int update(RehearsalCard card, DataConnection dc) throws SQLException {
+  public static int update(RehearsalPass card, DataConnection dc) throws SQLException {
     PreparedStatement ps = dc.prepareStatement(UPDATE_STATEMENT);
-    ps.setString(1, unEscape(card.getLabel()));
+    ps.setString(1, escape(card.getLabel()));
     ps.setFloat(2, card.getAmount());
-    ps.setInt(3, card.getSessionsNumber());
-    ps.setInt(4, card.getLength());
+    ps.setInt(3, card.getMin());
+    ps.setInt(4, card.getTotalTime());
     ps.setInt(5, card.getId());
     return ps.executeUpdate();
   }
 
-  public static String getInsertQuery(RehearsalCard card) {
-    StringBuilder query = new StringBuilder("INSERT INTO " + TABLE + " VALUES(");
-    query.append(card.getId());
-    query.append(LEFT_COL_SEPARATOR).append(escape(card.getLabel())).append(RIGHT_COL_SEPARATOR).append(card.getAmount()).append(RIGHT_COL_SEPARATOR).append(card.getSessionsNumber()).append(RIGHT_COL_SEPARATOR).append(card.getLength()).append(END_OF_QUERY);
-    return query.toString();
-  }
+  public static String getInsertQuery(RehearsalPass card) {
+    return "INSERT INTO " + TABLE + " VALUES("
+            + card.getId()
+            + ", '" + escape(card.getLabel())
+            + "', " + card.getAmount()
+            + ", " + card.getMin()
+            + ", " + card.getTotalTime()
+            + ")";
+   }
 
   public static String getDeleteQuery(int id) {
     return "DELETE FROM " + TABLE + " WHERE id = " + id;

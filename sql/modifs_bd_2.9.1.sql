@@ -1,7 +1,7 @@
 ALTER TABLE personne ADD pseudo varchar(64);
 
-ALTER SEQUENCE action_id_seq MINVALUE 0;
-INSERT INTO action VALUES(0,0,0,0,0,0);
+-- ALTER SEQUENCE action_id_seq MINVALUE 0;
+-- INSERT INTO action VALUES(0,0,0,0,0,0);
 
 CREATE TYPE priperiod AS ENUM(
   'HOUR',
@@ -33,10 +33,11 @@ UPDATE commande_module SET paiement = NULL WHERE paiement = '';
 
 UPDATE config SET clef = 'Periode.tarification' WHERE clef = 'Tarif.base';
 -- alpha 5
-INSERT INTO  suivi VALUES (0,null);
+INSERT INTO suivi VALUES (0,null);
 
 -- alpha 8
 DELETE FROM categorie_salarie where id = 0; 
 -- beta 5
 ALTER TABLE version ALTER version TYPE varchar(16);
+UPDATE version SET version = '2.9.1';
 

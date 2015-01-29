@@ -1,7 +1,7 @@
 /*
- * @(#)PersonneTableModel.java	2.6.a 18/09/12
+ * @(#)PersonneTableModel.java	2.9.2 26/01/15
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -25,11 +25,11 @@ import net.algem.util.ui.JTableModel;
 
 /**
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.2
  * @since 2.0ma
  */
 public class PersonFileTableModel
-        extends JTableModel
+        extends JTableModel<PersonFile>
 {
 
   public PersonFileTableModel() {
@@ -44,12 +44,12 @@ public class PersonFileTableModel
 
   @Override
   public int getIdFromIndex(int i) {
-    PersonFile p = (PersonFile) tuples.elementAt(i);
+    PersonFile p = tuples.elementAt(i);
     return p.getId();
   }
 
   public PersonFile getPersonFile(int i) {
-    return (PersonFile) tuples.elementAt(i);
+    return tuples.elementAt(i);
   }
 
   @Override
@@ -72,9 +72,9 @@ public class PersonFileTableModel
   }
 
   @Override
-  public Object getValueAt(int ligne, int colonne) {
-    PersonFile p = (PersonFile) tuples.elementAt(ligne);
-    switch (colonne) {
+  public Object getValueAt(int line, int col) {
+    PersonFile p = tuples.elementAt(line);
+    switch (col) {
       case 0:
         return new Integer(p.getId());
       case 1:
@@ -89,6 +89,6 @@ public class PersonFileTableModel
   }
 
   @Override
-  public void setValueAt(Object value, int ligne, int column) {
+  public void setValueAt(Object value, int line, int column) {
   }
 }

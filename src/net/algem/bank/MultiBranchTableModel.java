@@ -1,7 +1,7 @@
 /*
- * @(#)MultiBranchTableModel.java	2.8.i 08/07/13
- * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * @(#)MultiBranchTableModel.java	2.9.2 26/01/15
+ *
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.bank;
 
@@ -28,16 +28,16 @@ import net.algem.util.ui.JTableModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.i
+ * @version 2.9.2
  */
 public class MultiBranchTableModel
-        extends JTableModel
+        extends JTableModel<BankBranch>
 {
 
   public MultiBranchTableModel() {
     header = new String[]{
       BundleUtil.getLabel("Id.label"),
-      BundleUtil.getLabel("Bank.branch.address.label"), 
+      BundleUtil.getLabel("Bank.branch.address.label"),
       BundleUtil.getLabel("Bank.label"),
       BundleUtil.getLabel("Bic.code.label"),
       "Multi"
@@ -54,7 +54,7 @@ public class MultiBranchTableModel
     switch (column) {
       case 0:
         return Integer.class;
-      case 1:     
+      case 1:
       case 2:
       case 3:
         return String.class;
@@ -73,7 +73,7 @@ public class MultiBranchTableModel
   @Override
   public Object getValueAt(int line, int col) {
 
-    BankBranch bb = (BankBranch) tuples.elementAt(line);
+    BankBranch bb = tuples.elementAt(line);
     Address adr = bb.getAddress();
     switch (col) {
       case 0:

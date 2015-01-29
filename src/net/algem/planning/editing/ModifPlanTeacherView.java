@@ -160,7 +160,8 @@ public class ModifPlanTeacherView
     orig = s;
     hourRange.setStart(s.getStart());
     hourRange.setEnd(s.getEnd());
-    if (s instanceof CourseSchedule && ((Course) s.getActivity()).isCollective()) {
+    if (s instanceof CourseSchedule && ((Course) s.getActivity()).isCollective()
+            || s instanceof WorkshopSchedule || s instanceof TrainingCourseSchedule) {
       hourRange.setEditable(false);
     }
   }

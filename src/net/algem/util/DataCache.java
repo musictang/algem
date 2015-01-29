@@ -1,7 +1,7 @@
 /*
- * @(#)DataCache.java	2.9.1 04/11/14
+ * @(#)DataCache.java	2.9.2 07/01/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -40,6 +40,8 @@ import net.algem.contact.PersonFileIO;
 import net.algem.contact.PersonIO;
 import net.algem.contact.member.Member;
 import net.algem.contact.member.MemberIO;
+import net.algem.contact.member.RehearsalPass;
+import net.algem.contact.member.RehearsalPassIO;
 import net.algem.contact.teacher.Teacher;
 import net.algem.contact.teacher.TeacherComparator;
 import net.algem.contact.teacher.TeacherEvent;
@@ -68,7 +70,7 @@ import net.algem.util.model.Model;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.2
  * @since 1.0b 03/09/2001
  */
 public class DataCache
@@ -104,6 +106,7 @@ public class DataCache
   private static Hashtable<Integer, Action> ACTION_CACHE = new Hashtable<Integer, Action>();
   private static Hashtable<Integer, Item> ITEM_CACHE = new Hashtable<Integer, Item>();
   private static Hashtable<Integer, OrderLine> ORDER_LINE_CACHE = new Hashtable<Integer, OrderLine>();
+  private static Hashtable<Integer, RehearsalPass> PASS_CARD = new Hashtable<Integer, RehearsalPass>();
 
   private static GemList<Course> COURSE_LIST;
   private static GemList<Course> WORKSHOP_LIST;
@@ -411,6 +414,13 @@ public class DataCache
       case StudioType:
         GemParam stype = (GemParam) STUDIO_TYPE_LIST.getItem(id);
         return stype != null ? stype : STUDIO_TYPE_IO.find(id);
+      case PassCard:
+        RehearsalPass pc = PASS_CARD.get(id);
+        if (pc == null) {
+          pc = RehearsalPassIO.find(id, dc);
+          PASS_CARD.put(pc.getId(), pc);
+        }
+      return pc;
       default:
         return null;
     }
@@ -480,6 +490,8 @@ public class DataCache
       VAT_LIST.addElement((Vat) m);
     } else if (m instanceof CourseCode) {
       COURSE_CODE_LIST.addElement((CourseCode) m);
+    } else if (m instanceof RehearsalPass) {
+      PASS_CARD.put(m.getId(), (RehearsalPass) m);
     }
   }
 
@@ -543,8 +555,10 @@ public class DataCache
       VAT_LIST.update((Vat) m, null);
     } else if (m instanceof CourseCode) {
       COURSE_CODE_LIST.update((CourseCode) m, null);
-    } if (m instanceof Item) {
+    } else if (m instanceof Item) {
       ITEM_CACHE.put(m.getId(), (Item) m);
+    } else if (m instanceof RehearsalPass) {
+      PASS_CARD.put(m.getId(), (RehearsalPass) m);
     }
 
   }
@@ -594,6 +608,8 @@ public class DataCache
       VAT_LIST.removeElement((Vat) m);
     } else if (m instanceof CourseCode) {
       COURSE_CODE_LIST.removeElement((CourseCode) m);
+    } else if (m instanceof RehearsalPass) {
+      PASS_CARD.remove(m.getId());
     }
 
   }
@@ -761,6 +777,10 @@ public class DataCache
 
       EMPLOYEE_TYPE_LIST = new GemList<GemParam>(EMPLOYEE_TYPE_IO.load());
       STUDIO_TYPE_LIST = new GemList<GemParam>(STUDIO_TYPE_IO.load());
+      PASS_CARD = new Hashtable<Integer,RehearsalPass>();
+      for (RehearsalPass c : RehearsalPassIO.findAll("ORDER BY id", dc)) {
+        PASS_CARD.put(c.getId(), c);
+      }
 
     } catch (SQLException ex) {
       String m = MessageUtil.getMessage("cache.loading.exception");

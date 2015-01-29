@@ -1,7 +1,7 @@
 /*
- * @(#)HoursTeacherByMemberTask1.java	2.9.1 15/12/14
+ * @(#)HoursTeacherByMemberTask1.java	2.9.2 27/01/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -33,7 +33,7 @@ import net.algem.util.BundleUtil;
  * Task executed when editing hours of teachers. Sorting is performed by students, courses and dates.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.2
  * @since 2.9.1 03/12/14
  */
 class HoursTeacherByMemberTask1
@@ -86,7 +86,6 @@ class HoursTeacherByMemberTask1
       String teacherName = "";
 
       StringBuilder sb = new StringBuilder();
-      out.print("\ufeff");// force Byte Order Mark (BOM) : windows compatibility
       out.println(";;;;;;");
       out.println(";;;;;;");
       out.println(BundleUtil.getLabel("Month.schedule.collective.course.tab").toUpperCase() + ";;;;;;");

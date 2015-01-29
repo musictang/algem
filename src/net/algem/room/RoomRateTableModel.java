@@ -1,7 +1,7 @@
 /*
- * @(#)RoomRateTableModel.java	2.6.a 24/09/12
+ * @(#)RoomRateTableModel.java	2.9.2 26/01/15
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -25,11 +25,11 @@ import net.algem.util.ui.JTableModel;
 
 /**
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.2
  * @since 2.1a
  */
 public class RoomRateTableModel
-        extends JTableModel
+        extends JTableModel<RoomRate>
 {
 
   public RoomRateTableModel()
@@ -37,8 +37,8 @@ public class RoomRateTableModel
     header = new String[]{
               BundleUtil.getLabel("Id.label"),
               BundleUtil.getLabel("Label.label"),
-              BundleUtil.getLabel("Type.label"), 
-              "HC", 
+              BundleUtil.getLabel("Type.label"),
+              "HC",
               "HP",
               "Plafond",
               "Forfait HC",
@@ -49,7 +49,7 @@ public class RoomRateTableModel
   @Override
   public int getIdFromIndex(int i)
   {
-    RoomRate t = (RoomRate)tuples.elementAt(i);
+    RoomRate t = tuples.elementAt(i);
 		return t.getId();
   }
 
@@ -59,7 +59,7 @@ public class RoomRateTableModel
     switch (column) {
       case 0:
         return Integer.class;
-      case 1:   
+      case 1:
         return String.class;
       case 2:
         return RoomRateEnum.class;
@@ -81,10 +81,10 @@ public class RoomRateTableModel
   }
 
   @Override
-  public Object getValueAt(int ligne, int colonne)
+  public Object getValueAt(int line, int col)
   {
-    RoomRate t = (RoomRate)tuples.elementAt(ligne);
-		switch (colonne)
+    RoomRate t = tuples.elementAt(line);
+		switch (col)
 		{
 			case 0:
 				return t.getId();
@@ -110,8 +110,8 @@ public class RoomRateTableModel
   @Override
   public void setValueAt(Object value, int ligne, int column)
   {
-    
+
   }
 
- 
+
 }

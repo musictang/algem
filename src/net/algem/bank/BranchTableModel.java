@@ -1,7 +1,7 @@
 /*
- * @(#)BranchTableModel.java	2.8.i 08/07/13
- * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * @(#)BranchTableModel.java	2.9.2 26/01/15
+ *
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.bank;
 
@@ -27,15 +27,15 @@ import net.algem.util.ui.JTableModel;
 /**
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.i
+ * @version 2.9.2
  */
 public class BranchTableModel
-        extends JTableModel
+        extends JTableModel<BankBranch>
 {
 
   public BranchTableModel() {
     header = new String[]{
-      BundleUtil.getLabel("Id.label"), 
+      BundleUtil.getLabel("Id.label"),
       BundleUtil.getLabel("Bank.label"),
       BundleUtil.getLabel("Bank.branch.label"),
       "Domiciliation",
@@ -46,8 +46,8 @@ public class BranchTableModel
 
   @Override
   public int getIdFromIndex(int i) {
-    BankBranch p = (BankBranch) tuples.elementAt(i);
-    return p.getId();
+    BankBranch bb = tuples.elementAt(i);
+    return bb.getId();
   }
 
   @Override
@@ -72,27 +72,27 @@ public class BranchTableModel
   }
 
   @Override
-  public Object getValueAt(int ligne, int colonne) {
-    BankBranch a = (BankBranch) tuples.elementAt(ligne);
-    switch (colonne) {
+  public Object getValueAt(int line ,int col) {
+    BankBranch bb = tuples.elementAt(line);
+    switch (col) {
       case 0:
-        return new Integer(a.getId());
+        return new Integer(bb.getId());
       case 1:
-        return a.getBank().getCode();
+        return bb.getBank().getCode();
       case 2:
-        return a.getCode();
+        return bb.getCode();
       case 3:
-        return a.getDomiciliation();
+        return bb.getDomiciliation();
       case 4:
-        return a.getBicCode();
+        return bb.getBicCode();
       case 5:
-        Address adr = a.getAddress();
+        Address adr = bb.getAddress();
         return adr == null ? "Pas d'adresse !!" : adr;
     }
     return null;
   }
 
   @Override
-  public void setValueAt(Object value, int ligne, int column) {
+  public void setValueAt(Object value, int line, int column) {
   }
 }

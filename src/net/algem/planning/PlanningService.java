@@ -1,7 +1,7 @@
 /*
- * @(#)PlanningService.java	2.9.1 16/12/14
+ * @(#)PlanningService.java	2.9.2 28/01/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -38,7 +38,7 @@ import net.algem.util.ui.MessagePopup;
  * Service class for planning.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.2
  * @since 2.4.a 07/05/12
  */
 public class PlanningService
@@ -522,7 +522,7 @@ public class PlanningService
    * @throws PlanningException if sql exception
    */
   public void postPoneCourse(ScheduleObject plan, ScheduleObject newPlan) throws PlanningException {
-    // probleme avec les heures de end = 24:00 l'update les transforme en 00:00 / erreurs futures dans le décompte des heures
+    // probleme avec les heures de fin = 24:00 l'update les transforme en 23:59 / erreurs futures dans le décompte des heures
     String query = "UPDATE " + ScheduleIO.TABLE
             + " SET jour = '" + newPlan.getDate()
             + "', debut = '" + newPlan.getStart()
@@ -533,9 +533,11 @@ public class PlanningService
       dc.setAutoCommit(false);
       dc.executeUpdate(query); // update schedule
       int offset = plan.getStart().getLength(newPlan.getStart()); // getLength en minutes entre l'ancienne heure et la nouvelle passée en paramètre.
-      //XXX probleme avec les heures de fin = 24:00 l'update les transforme en 00:00 / erreurs futures dans le décompte des heures
       query = "UPDATE " + ScheduleRangeIO.TABLE
-              + " SET debut = debut + interval '" + offset + " min', fin = fin + interval '" + offset + " min'"
+              + " SET debut = debut + interval '" + offset + " min'"
+              // forcer les heures de fin à 24:00 si calcul résultant = 00:00
+              + ", fin = (CASE WHEN fin + interval '" + offset + " min' = '00:00:00' THEN '24:00:00' ELSE fin + interval '" + offset + " min' END)"
+              //+ ", fin = fin + interval '" + offset + " min'"
               + " WHERE idplanning = " + plan.getId();
       dc.executeUpdate(query); // plage update
       // pour les ateliers ponctuels d'un jour seulement
@@ -568,7 +570,9 @@ public class PlanningService
       int offset = plan.getStart().getLength(newPlan.getStart());
       query = "UPDATE " + ScheduleRangeIO.TABLE
               + " SET idplanning = " + newPlan.getId()
-              + " , debut = debut + interval '" + offset + " min', fin = fin + interval '" + offset + " min'"
+              + " , debut = debut + interval '" + offset + " min'"
+              //+ ", fin = fin + interval '" + offset + " min'"
+              + ", fin = (CASE WHEN fin + interval '" + offset + " min' = '00:00:00' THEN '24:00:00' ELSE fin + interval '" + offset + " min' END)"
               + " WHERE idplanning = " + plan.getId()
               + " AND fin <= '" + rangeEnd + "'";
 
@@ -596,7 +600,9 @@ public class PlanningService
       int offset = rangeStart.getLength(newPlan.getStart());
       query = "UPDATE " + ScheduleRangeIO.TABLE
               + " SET idplanning = " + newPlan.getId()
-              + " , debut = debut + interval '" + offset + " min', fin = fin + interval '" + offset + " min'"
+              + " , debut = debut + interval '" + offset + " min'"
+              //+ ", fin = fin + interval '" + offset + " min'"
+              + ", fin = (CASE WHEN fin + interval '" + offset + " min' = '00:00:00' THEN '24:00:00' ELSE fin + interval '" + offset + " min' END)"
               + " WHERE idplanning = " + plan.getId()
               + " AND debut >= '" + rangeStart + "'";
       dc.executeUpdate(query);
@@ -622,7 +628,8 @@ public class PlanningService
       ScheduleIO.insert(newPlan, dc); // create postpone schedule
       query = "UPDATE " + ScheduleRangeIO.TABLE
               + " SET idplanning = " + newPlan.getId()
-              + " , debut = debut + interval '" + offset + " min', fin = fin + interval '" + offset + " min'"
+              + " , debut = debut + interval '" + offset + " min'"
+              + ", fin = fin + interval '" + offset + " min'"
               + " WHERE idplanning = " + plan.getId()
               + " AND debut >= '" + range[0] + "' AND fin <= '" + range[1] + "'";
       dc.executeUpdate(query);

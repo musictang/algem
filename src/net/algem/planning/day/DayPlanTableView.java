@@ -1,7 +1,7 @@
 /*
- * @(#)DayPlanTableView.java	2.9.2 22/12/14
+ * @(#)DayPlanTableView.java	2.9.2 12/01/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -32,8 +32,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 import javax.swing.JScrollBar;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import net.algem.planning.DateDayBar;
 import net.algem.planning.DateFr;
 import net.algem.planning.DateFrField;
@@ -112,8 +110,8 @@ public abstract class DayPlanTableView
     GemPanel p = new GemPanel(new FlowLayout(FlowLayout.LEFT));
     p.add(new GemLabel(BundleUtil.getLabel("Day.schedule.prefix.label") + " " + label.toLowerCase() + " : "));
     p.add(dayLabel);
-    p.add(btPrev);
     p.add(date);
+    p.add(btPrev);
     p.add(btNext);
     p.add(btNow);
 

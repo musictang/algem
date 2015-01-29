@@ -1,6 +1,6 @@
 /*
- * @(#)ItemTableModel.java	2.3.g 06/04/12
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * @(#)ItemTableModel.java	2.9.2 26/01/15
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,11 +27,11 @@ import net.algem.util.ui.JTableModel;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.3.g
+ * @version 2.9.2
  * @since 2.3.a 30/01/12
  */
 public class ItemTableModel
-        extends JTableModel
+        extends JTableModel<Item>
 {
 
   public ItemTableModel()
@@ -47,25 +47,25 @@ public class ItemTableModel
 
   @Override
   public int getIdFromIndex(int i) {
-    Item a = (Item)tuples.elementAt(i);
-		return a.getId();
+    Item it = tuples.elementAt(i);
+		return it.getId();
   }
 
   @Override
   public Object getValueAt(int ligne, int colonne) {
-    Item a = (Item)tuples.elementAt(ligne);
+    Item it = tuples.elementAt(ligne);
 		switch (colonne)
 		{
 			case 0:
-				return a.getId();
+				return it.getId();
 			case 1:
-				return a.getDesignation();
+				return it.getDesignation();
 			case 2:
-				return a.getPrice();
+				return it.getPrice();
 			case 3:
-				return a.getAccount();
+				return it.getAccount();
       case 4:
-				return a.getVat();
+				return it.getVat();
 
 		}
 		return null;

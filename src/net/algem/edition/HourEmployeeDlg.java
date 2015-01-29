@@ -1,7 +1,7 @@
 /*
- * @(#)HourEmployeeDlg.java	2.9.1 08/12/14
+ * @(#)HourEmployeeDlg.java	2.9.2 27/01/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -49,7 +49,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.2
  * @since 2.8.v 10/06/14
  */
 public class HourEmployeeDlg
@@ -153,6 +153,7 @@ public class HourEmployeeDlg
       String sorting = view.getSorting();
       setPath(type, sorting);
       out = new PrintWriter(new FileWriter(path));
+      out.print("\ufeff");// force Byte Order Mark (BOM) : windows/mac excel utf8 compatibility ! must be the first character in file
       if (EmployeeType.TEACHER.ordinal() == type) {
         out.println(MessageUtil.getMessage("export.hour.teacher.header", new Object[]{school.getValue(), start, end}) + lf);
 

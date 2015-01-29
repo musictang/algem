@@ -35,7 +35,8 @@ import net.algem.util.module.GemDesktop;
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.8.o
  */
-public class HistoRehearsalView extends AbstractHistoRehearsal
+public class HistoRehearsalView 
+  extends AbstractHistoRehearsal
 {
 
   public HistoRehearsalView(GemDesktop desktop, ActionListener listener, int pf) {

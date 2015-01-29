@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Vector;
 import net.algem.config.GemParam;
 import net.algem.config.GemParamIO;
+import net.algem.util.BundleUtil;
 import net.algem.util.DataConnection;
 import net.algem.util.model.Cacheable;
 
@@ -76,9 +77,24 @@ public class EmployeeTypeIO
     while (rs.next()) {
       GemParam n = new GemParam(rs.getInt(1));
       n.setLabel(rs.getString(2));
+      n.setLabel(getLocalizedLabel(rs.getInt(1)));
       vn.addElement(n);
     }
     return vn;
+  }
+  
+  private String getLocalizedLabel(int idx) {
+    switch (idx) {
+      case 0:
+        return BundleUtil.getLabel("None.label");
+      case 1:
+        return BundleUtil.getLabel("Teacher.label");
+      case 2:
+        return BundleUtil.getLabel("Technician.label");
+      case 3:
+        return BundleUtil.getLabel("Administrative.label");
+    }
+    return BundleUtil.getLabel("To.define.label");
   }
 
 }

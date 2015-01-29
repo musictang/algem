@@ -1,7 +1,7 @@
 /*
- * @(#)InvoiceTableModel.java 2.8.w 08/09/14
+ * @(#)InvoiceTableModel.java 2.9.2 26/01/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,11 +28,11 @@ import net.algem.util.ui.JTableModel;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.h
+ * @version 2.9.2
  * @since 2.3.a 14/02/12
  */
 public class InvoiceTableModel
-        extends JTableModel
+        extends JTableModel<Quote>
 {
 
   private BillingService service;
@@ -55,7 +55,7 @@ public class InvoiceTableModel
       modItem(idx, q);
     }
   }
-  
+
   @Override
   public int getIdFromIndex(int i) {
     return 0;
@@ -63,7 +63,7 @@ public class InvoiceTableModel
 
   @Override
   public Object getValueAt(int line, int col) {
-    Quote q = (Quote) tuples.elementAt(line);
+    Quote q = tuples.elementAt(line);
     switch (col) {
       case 0:
         return q.getNumber();
@@ -85,7 +85,7 @@ public class InvoiceTableModel
   @Override
   public Class getColumnClass(int column) {
     switch (column) {
-      case 0:       
+      case 0:
       case 1:
       case 2:
         return String.class;

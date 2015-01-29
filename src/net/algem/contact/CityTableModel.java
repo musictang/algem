@@ -1,7 +1,7 @@
 /*
- * @(#)CityTableModel.java	2.6.a 17/09/12
- * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * @(#)CityTableModel.java	2.9.2 26/01/15
+ *
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.contact;
 
@@ -26,10 +26,10 @@ import net.algem.util.ui.JTableModel;
 /**
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.2
  */
 public class CityTableModel
-        extends JTableModel
+        extends JTableModel<City>
 {
 
   public CityTableModel() {
@@ -61,18 +61,18 @@ public class CityTableModel
   }
 
   @Override
-  public Object getValueAt(int ligne, int colonne) {
-    City v = (City) tuples.elementAt(ligne);
-    switch (colonne) {
+  public Object getValueAt(int line, int col) {
+    City c = tuples.elementAt(line);
+    switch (col) {
       case 0:
-        return v.getCdp();
+        return c.getCdp();
       case 1:
-        return v.getCity();
+        return c.getCity();
     }
     return null;
   }
 
   @Override
-  public void setValueAt(Object value, int ligne, int column) {
+  public void setValueAt(Object value, int line, int col) {
   }
 }

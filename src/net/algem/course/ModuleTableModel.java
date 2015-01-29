@@ -1,7 +1,7 @@
 /*
- * @(#)ModuleTableModel.java	2.5.a 03/07/12
- * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * @(#)ModuleTableModel.java	2.9.2 26/01/15
+ *
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.course;
 
@@ -25,17 +25,18 @@ import net.algem.util.ui.JTableModel;
 
 /**
  * Table model for modules.
- * 
+ *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.5.a
+ * @version 2.9.2
  */
 public class ModuleTableModel
-        extends JTableModel {
+        extends JTableModel<Module>
+{
 
   public ModuleTableModel() {
     header = new String[]{
-      BundleUtil.getLabel("Id.label"), 
+      BundleUtil.getLabel("Id.label"),
       BundleUtil.getLabel("Code.label"),
       BundleUtil.getLabel("Name.label")
     };
@@ -43,7 +44,7 @@ public class ModuleTableModel
 
   @Override
   public int getIdFromIndex(int i) {
-    Module m = (Module) tuples.elementAt(i);
+    Module m = tuples.elementAt(i);
     return m.getId();
   }
 
@@ -66,20 +67,20 @@ public class ModuleTableModel
   }
 
   @Override
-  public Object getValueAt(int ligne, int colonne) {
-    Module f = (Module) tuples.elementAt(ligne);
-    switch (colonne) {
+  public Object getValueAt(int line, int col) {
+    Module m = tuples.elementAt(line);
+    switch (col) {
       case 0:
-        return new Integer(f.getId());
+        return new Integer(m.getId());
       case 1:
-        return f.getCode();
+        return m.getCode();
       case 2:
-        return f.getTitle();
+        return m.getTitle();
     }
     return null;
   }
 
   @Override
-  public void setValueAt(Object value, int ligne, int column) {
+  public void setValueAt(Object value, int line, int column) {
   }
 }

@@ -1,7 +1,7 @@
 /*
- * @(#)PersonView.java	2.9.1 11/12/14
+ * @(#)PersonView.java	2.9.2 12/01/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -50,7 +50,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.2
  */
 public class PersonView
         extends GemBorderPanel
@@ -278,11 +278,10 @@ public class PersonView
   }
 
 
-  void setRemainingHours(PersonSubscriptionCard cap) {
-
-    if (cap != null) {
+  void showSubscriptionRest(PersonSubscriptionCard card) {
+    if (card != null) {
       cardLabel.setText(BundleUtil.getLabel("Subscription.remaining.label") + " : ");
-      cardInfo.setText(cap.displayRestTime());
+      cardInfo.setText(card.displayRestTime());
     }
 
   }

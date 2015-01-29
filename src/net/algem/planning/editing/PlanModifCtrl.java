@@ -1,7 +1,7 @@
 /*
- * @(#)PlanModifCtrl.java	2.9.2 19/12/14
+ * @(#)PlanModifCtrl.java	2.9.2 28/01/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -34,6 +34,7 @@ import net.algem.contact.EmployeeIO;
 import net.algem.contact.EmployeeType;
 import net.algem.contact.Person;
 import net.algem.contact.PersonIO;
+import net.algem.contact.member.MemberException;
 import net.algem.contact.member.MemberService;
 import net.algem.contact.teacher.SubstituteTeacherList;
 import net.algem.contact.teacher.TeacherService;
@@ -323,8 +324,7 @@ public class PlanModifCtrl
       dc.setAutoCommit(false);
       changeHour(start, end, hStart, hEnd);
       if (ScheduleObject.MEMBER == plan.getType()) {
-        memberService.updatePersonalSession(plan, hStart, hEnd);
-
+        memberService.updateSubscriptionCardSession(plan, hStart, hEnd);
       }
       dc.commit();
       desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));//XXX dlg.getDateEnd/Fin
@@ -339,8 +339,8 @@ public class PlanModifCtrl
   }
 
   /**
-   * Changes time schedule start.
-   * Only for members and groups rehearsals ???
+   * Changes the start and/or the end of a schedule.
+   * Used for members and groups rehearsals.
    */
   private void changeHour(DateFr start, DateFr end, Hour hStart, Hour hEnd) throws Exception {
     String query = "UPDATE planning SET debut = '" + hStart + "', fin='" + hEnd + "'"
@@ -594,7 +594,7 @@ public class PlanModifCtrl
 
   /**
    * Calls course time modification dialog.
-   * This dialog is runned when date or hour must be changed. If not, it is
+   * This dialog is run when date or hour must be changed. If not, it is
    * preferable to call the dialog for room modification.
    */
   private void dialogPostponeCourse() {
@@ -618,6 +618,7 @@ public class PlanModifCtrl
       if (!testConflictCourse(plan, newPlan, range)) {
         return;
       }
+      // TODO permettre le découpage pour les cours collectifs (instrument co/atelier/at. ponctuel/stage)
       if (range[0].after(plan.getStart())) {
         if (range[1].before(plan.getEnd())) {
           service.postPoneCourseBetween(plan, newPlan, range);
@@ -782,7 +783,7 @@ public class PlanModifCtrl
         // suppression du planning
         service.deleteRehearsal(dlg.getDateStart(), dlg.getDateEnd(), plan);
         if (ScheduleObject.MEMBER == plan.getType()) {
-          memberService.cancelPersonalSession(dataCache, plan);
+          memberService.cancelSubscriptionCardSession(dataCache, plan);
         } else if (ScheduleObject.GROUP == plan.getType()) {
           // annulation échéance
           Group g = new GemGroupService(dc).find(plan.getIdPerson());
@@ -802,6 +803,8 @@ public class PlanModifCtrl
         desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));
       } catch (SQLException ex) {
         GemLogger.logException("rehearsal.delete.exception", ex);
+      } catch (MemberException ex) {
+        GemLogger.log(ex.getMessage());
       }
     }
   }

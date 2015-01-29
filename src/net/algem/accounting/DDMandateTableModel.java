@@ -1,7 +1,7 @@
 /*
- * @(#)DDMandateTableModel.java 2.8.r 14/01/14
- * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * @(#)DDMandateTableModel.java 2.9.2 26/01/15
+ *
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.accounting;
 
@@ -28,11 +28,11 @@ import net.algem.util.ui.JTableModel;
  * Direct debit mandate table model.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.8.r
+ * @version 2.9.2
  * @since 2.8.r 08/01/14
  */
 public class DDMandateTableModel
-        extends JTableModel
+        extends JTableModel<DDMandate>
 {
 
   public DDMandateTableModel() {
@@ -74,7 +74,7 @@ public class DDMandateTableModel
 
   @Override
   public Object getValueAt(int line, int col) {
-    DDMandate dd = (DDMandate) tuples.elementAt(line);
+    DDMandate dd = tuples.elementAt(line);
     switch (col) {
       case 0:
         return dd.getIdper();

@@ -54,7 +54,7 @@ public class PersonFileGroupListCtrl
    * @return un groupe
    */
   public Group getGroup() {
-    Musician m = ((PersonFileMusicianTableModel) tableModel).getMusicien(table.getSelectedRow());
+    Musician m = ((PersonFileMusicianTableModel) tableModel).getMusician(table.getSelectedRow());
     return m.getGroup();
   }
 }

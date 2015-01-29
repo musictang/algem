@@ -1,7 +1,7 @@
 /*
- * @(#)SubstituteTeacherTableModel.java	2.7.n 22/03/13
+ * @(#)SubstituteTeacherTableModel.java	2.9.2 26/01/15
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -33,11 +33,11 @@ import net.algem.util.ui.JTableModel;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.n
+ * @version 2.9.2
  * @since 2.0n
  */
 public class SubstituteTeacherTableModel
-        extends JTableModel
+        extends JTableModel<SubstituteTeacher>
 {
 
   public SubstituteTeacherTableModel() {
@@ -76,11 +76,10 @@ public class SubstituteTeacherTableModel
     if (tuples.isEmpty()) {
       return null;
     }
-    SubstituteTeacher r = (SubstituteTeacher) tuples.elementAt(line);
+    SubstituteTeacher r = tuples.elementAt(line);
     boolean days[] = r.daysToArray();
     switch (col) {
       case 0:
-//        Person p = ((PersonIO) DataCache.getDao(Model.Person)).findId(r.getEstablishment());
         Establishment e;
         try {
           e = (Establishment) DataCache.findId(r.getEstablishment(), Model.Establishment);

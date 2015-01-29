@@ -1,7 +1,7 @@
 /*
- * @(#)ModuleOrderTableModel.java	2.9.1 10/11/14
+ * @(#)ModuleOrderTableModel.java	2.9.2 26/01/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -31,10 +31,10 @@ import net.algem.util.ui.JTableModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.2
  */
 public class ModuleOrderTableModel
-        extends JTableModel
+        extends JTableModel<ModuleOrder>
 {
 
   public ModuleOrderTableModel() {
@@ -52,7 +52,7 @@ public class ModuleOrderTableModel
 
   @Override
   public int getIdFromIndex(int i) {
-    ModuleOrder m = (ModuleOrder) tuples.elementAt(i);
+    ModuleOrder m = tuples.elementAt(i);
     return m.getIdOrder();
   }
 
@@ -84,7 +84,7 @@ public class ModuleOrderTableModel
 
   @Override
   public Object getValueAt(int ligne, int colonne) {
-    ModuleOrder m = (ModuleOrder) tuples.elementAt(ligne);
+    ModuleOrder m = tuples.elementAt(ligne);
     switch (colonne) {
       case 0:
         return new Integer(m.getModule());//id du module
@@ -107,6 +107,6 @@ public class ModuleOrderTableModel
   }
 
   @Override
-  public void setValueAt(Object value, int ligne, int column) {
+  public void setValueAt(Object value, int line, int column) {
   }
 }

@@ -1,7 +1,7 @@
 /*
- * @(#)RehearsalCardTableModel.java 2.6.a 18/09/12
- * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * @(#)RehearsalPassTableModel.java 2.9.2 26/01/15
+ *
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,39 +16,39 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.contact.member;
 
+import net.algem.planning.Hour;
 import net.algem.util.BundleUtil;
 import net.algem.util.ui.JTableModel;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.2
  */
-public class RehearsalCardTableModel
-        extends JTableModel
+public class RehearsalPassTableModel
+        extends JTableModel<RehearsalPass>
 {
 
-  public RehearsalCardTableModel() {
+  public RehearsalPassTableModel() {
     header = new String[]{
       BundleUtil.getLabel("Id.label"),
-      BundleUtil.getLabel("Label.label"), 
-      BundleUtil.getLabel("Amount.label"), 
-      BundleUtil.getLabel("Sessions.number.label"), 
-      BundleUtil.getLabel("Duration.min.label")
+      BundleUtil.getLabel("Label.label"),
+      BundleUtil.getLabel("Amount.label"),
+      BundleUtil.getLabel("Duration.min.label"),
+      BundleUtil.getLabel("Total.label")
     };
   }
 
   @Override
   public int getIdFromIndex(int i) {
-    RehearsalCard c = (RehearsalCard) tuples.elementAt(i);
-    return c.getId();
+    RehearsalPass pass = tuples.elementAt(i);
+    return pass.getId();
   }
 
-  // TableModel Interface
   @Override
   public Class getColumnClass(int column) {
     switch (column) {
@@ -60,7 +60,7 @@ public class RehearsalCardTableModel
         return Float.class;
       case 3:
       case 4:
-        return Integer.class;
+        return Hour.class;
       default:
         return Object.class;
     }
@@ -68,18 +68,18 @@ public class RehearsalCardTableModel
 
   @Override
   public Object getValueAt(int ligne, int colonne) {
-    RehearsalCard c = (RehearsalCard) tuples.elementAt(ligne);
+    RehearsalPass pass = tuples.elementAt(ligne);
     switch (colonne) {
       case 0:
-        return c.getId();
+        return pass.getId();
       case 1:
-        return c.getLabel();
+        return pass.getLabel();
       case 2:
-        return c.getAmount();
+        return pass.getAmount();
       case 3:
-        return c.getSessionsNumber();
+        return new Hour(pass.getMin());
       case 4:
-        return c.getLength();
+        return new Hour(pass.getTotalTime());
     }
     return null;
   }

@@ -40,7 +40,7 @@ public class PersonSubscriptionCard
   private int idpass;
   private DateFr purchaseDate;
   private int rest;
-  private List<PersonalCardSession> sessions = new ArrayList<PersonalCardSession>();
+  private List<SubscriptionCardSession> sessions = new ArrayList<SubscriptionCardSession>();
 
   public PersonSubscriptionCard() {
   }
@@ -96,11 +96,11 @@ public class PersonSubscriptionCard
     this.rest = r;
   }
 
-  List<PersonalCardSession> getSessions() {
+  List<SubscriptionCardSession> getSessions() {
     return sessions;
   }
 
-  void setSessions(List<PersonalCardSession> sessions) {
+  void setSessions(List<SubscriptionCardSession> sessions) {
     this.sessions = sessions;
   }
 
@@ -110,7 +110,7 @@ public class PersonSubscriptionCard
    */
   public void addSession(ScheduleObject dto) {
     if (dto.getId() > 0) {
-      PersonalCardSession s = new PersonalCardSession();
+      SubscriptionCardSession s = new SubscriptionCardSession();
       s.setScheduleId(dto.getId());
       s.setStart(dto.getStart());
       s.setEnd(dto.getEnd());
@@ -122,7 +122,7 @@ public class PersonSubscriptionCard
    * Adds a session to this card.
    * @param s single session
    */
-  void addSession(PersonalCardSession s) {
+  void addSession(SubscriptionCardSession s) {
     sessions.add(s);
   }
 

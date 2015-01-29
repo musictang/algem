@@ -1,7 +1,7 @@
 /*
- * @(#)DailyTimesTableModel.java	2.8.w 16/07/14
- * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * @(#)DailyTimesTableModel.java	2.9.2 26/01/15
+ *
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 
 package net.algem.room;
@@ -30,22 +30,22 @@ import net.algem.util.ui.JTableModel;
 /**
  * Daily times table model.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.2
  * @since 2.8.w 16/07/14
  */
-public class DailyTimesTableModel 
-  extends JTableModel
+public class DailyTimesTableModel
+  extends JTableModel<DailyTimes>
 {
 
   private static final String [] WEEKDAYS = new DateFormatSymbols(Locale.getDefault()).getWeekdays();
-  
+
   public DailyTimesTableModel() {
     header = new String[]{
       BundleUtil.getLabel("Day.label"),
       BundleUtil.getLabel("Opening.label"),
       BundleUtil.getLabel("Closing.label"),
     };
-    
+
   }
 
    @Override
@@ -66,10 +66,10 @@ public class DailyTimesTableModel
         return Object.class;
     }
   }
-  
+
   @Override
   public Object getValueAt(int line, int col) {
-    DailyTimes dt = (DailyTimes) tuples.elementAt(line);
+    DailyTimes dt = tuples.elementAt(line);
     if (dt == null) {
       return null;
     }
@@ -83,7 +83,7 @@ public class DailyTimesTableModel
     }
     return null;
   }
-  
+
   @Override
   public int getIdFromIndex(int i) {
     return 0;
@@ -91,7 +91,7 @@ public class DailyTimesTableModel
 
   @Override
   public void setValueAt(Object value, int row, int col) {
-    DailyTimes dt = (DailyTimes) tuples.elementAt(row);
+    DailyTimes dt = tuples.elementAt(row);
     Hour h = (Hour) value;
     if (col == 1) {
       dt.setOpening(h);

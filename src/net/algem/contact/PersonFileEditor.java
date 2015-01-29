@@ -1,7 +1,7 @@
 /*
- * @(#)PersonFileEditor 2.9.1 12/11/14
+ * @(#)PersonFileEditor 2.9.2 12/01/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -64,7 +64,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.2
  */
 public class PersonFileEditor
         extends FileEditor
@@ -80,9 +80,9 @@ public class PersonFileEditor
   private JMenuItem miDelete;
   private JMenuItem miLogin;
   private JMenuItem miMember, miTeacher, miBank, miEmployee;
-  private JMenuItem miPassRehearsal, miRehearsal;
+  private JMenuItem miPassRehearsal, miRehearsal, miHistoPass;
   private JMenuItem miHistoRehearsal;
-  private JMenuItem miCard;
+//  private JMenuItem miCard;
   private JMenuItem miHistoInvoice;
   private JMenuItem miHistoQuote;
   private JMenuItem miMonthPlanning;
@@ -195,7 +195,6 @@ public class PersonFileEditor
    */
   @Override
   public void postEvent(GemEvent evt) {
-    //System.out.println("PersonFileEditor.postEvent:" + evt);
     if (evt instanceof InvoiceEvent) {
       Invoice f = ((InvoiceEvent) evt).getInvoice();
       if (dossier.getId() == f.getPayer() || dossier.getId() == f.getMember()) {
@@ -225,7 +224,7 @@ public class PersonFileEditor
     String arg = evt.getActionCommand();
 
     Object src = evt.getSource();
-    // On save au préalable l'éventuel nouveau contact avant d'executer les actions des menus.
+    // On suave au préalable l'éventuel nouveau contact avant d'executer les actions des menus.
     if (dossier.getId() == 0
             && !arg.equals(GemCommand.SAVE_CMD)
             && !arg.equals(GemCommand.CLOSE_CMD)) {
@@ -241,19 +240,15 @@ public class PersonFileEditor
         dossier.setOldValues();// important
         save();
         personFileView.setID(dossier.getId());
-
       } else {
         return;
       }
-
     }
     if ("Member.reading".equals(arg)) {
       personFileView.addMemberTab();
       miMember.setEnabled(false);
-    } else if ("Rehearsal.card.editing".equals(arg)) {
-      personFileView.addSubscriptionCardTab(dossier);
-      miCard.setEnabled(false);
-    } else if ("Teacher".equals(arg)) {
+    } 
+    else if ("Teacher".equals(arg)) {
       personFileView.addTeacherTab(this);
       miTeacher.setEnabled(false);
     } else if ("TeacherDelete".equals(arg)) {
@@ -261,20 +256,9 @@ public class PersonFileEditor
         MessagePopup.warning(view, MessageUtil.getMessage("teacher.delete.authorization.warning"));
         return;
       }
-      TeacherIO dao = (TeacherIO) DataCache.getDao(Model.Teacher);
       try {
-        int c = dao.hasSchedules(dossier.getId());
-        if (c > 0) {
-          MessagePopup.warning(view, MessageUtil.getMessage("teacher.delete.warning", c));
-        } else {
-          dao.delete(dossier.getId());
-          dataCache.remove(dossier.getTeacher());
-          desktop.postEvent(new TeacherEvent(this, GemEvent.SUPPRESSION, dossier.getTeacher()));
-          dossier.removeTeacher();
-          personFileView.removeTeacher();
-          miTeacher.setEnabled(true);
-        }
-      } catch (SQLException ex) {
+        deleteTeacher();
+       } catch (SQLException ex) {
         GemLogger.logException(ex);
       }
     } else if ("Person.group.tab".equals(arg) || "Groups".equals(arg)) {
@@ -303,44 +287,13 @@ public class PersonFileEditor
       miEmployee.setEnabled(dataCache.authorize("Employee.editing.auth"));
     } else if ("Technician".equals(arg)) {
       updateTechnician(dossier.getId());
-    }/*
-     * else if (evt.getActionCommand().equals("Payeur")) { view.setCursor(new
-     * Cursor(Cursor.WAIT_CURSOR)); PersonFile payeur =
-     * PersonFileIO.findPayer(dataCache, dossier.getMember().getPayer());
-     *
-     * PersonFileIO.complete(dataCache, dossier); PersonFileEditor editeur = new
-     * PersonFileEditor(dossier); desktop.addModule(editeur);
-     *
-     * view.setCursor(new Cursor(Cursor.DEFAULT_CURSOR)); }
-     */
-    else if ("Member.schedule.payment".equals(arg)) {
-      // jm interdire l'ouverture multiple de l'échéancier
+    } else if ("Member.schedule.payment".equals(arg)) {
       ((GemButton) evt.getSource()).setEnabled(false);
       dlgSchedulePayment();
     } else if ("Payer.debiting".equals(arg)) {
-      if (dossier == null || dossier.getRib() == null) {
-        MessagePopup.error(personFileView, MessageUtil.getMessage("payer.invalid.warning"));
-        return;
-      }
-      dossier.setRib(personFileView.getRibFile());// get rib from view
-      if (dossier.hasChanged()) {// non enregistrement éventuel du rib
-        MessagePopup.warning(personFileView, MessageUtil.getMessage("rib.error.printing"));
-        return;
-      }
-      // Ouverture de l'onglet prélèvement
-      DirectDebitService ddService = DirectDebitService.getInstance(dc);
       try {
-        int payer = dossier.getMember() == null ? dossier.getId() : dossier.getMember().getPayer();
-        DDMandate dd = ddService.getMandate(payer);
-        if (dd == null) {
-          if (payer > 0 && MessagePopup.confirm(view, MessageUtil.getMessage("direct.debit.create.mandate.confirmation", payer))) {
-            ddService.createMandate(payer);
-          } else {
-            return;
-          }
-        }
-        personFileView.addMandates(ddService, payer);
-      } catch (DDMandateException ex) {
+        showMandates();
+      }  catch (DDMandateException ex) {
         MessagePopup.error(view, ex.getMessage());
       }
     } else if ("Login.creation".equals(arg)) {
@@ -363,8 +316,8 @@ public class PersonFileEditor
       AttendanceSheetDlg dlg = new AttendanceSheetDlg(personFileView, dataCache, dossier.getTeacher());
     } else if ("Teacher.hour".equals(arg)) {
       String file = "heures_" + dossier.getContact().getFirstName() + "_" + dossier.getContact().getName() + ".txt";
-      HourEmployeeDlg heureProf = new HourEmployeeDlg(desktop.getFrame(), file, dossier.getId(), dataCache);
-      heureProf.setVisible(true);
+      HourEmployeeDlg hoursDlg = new HourEmployeeDlg(desktop.getFrame(), file, dossier.getId(), dataCache);
+      hoursDlg.setVisible(true);
     } // clic sur le bouton/icone Fermer la fiche
     else if (GemCommand.CLOSE_CMD.equals(arg)) { // GemCommand.
       try {
@@ -375,7 +328,7 @@ public class PersonFileEditor
     } // clic sur le bouton Enregistrer
     else if (GemCommand.SAVE_CMD.equals(arg)) {
       savePersonFile();
-    } //SUPPRESSION CONTACT ajout 2.0c
+    } 
     else if ("Contact.suppression".equals(arg)) {
       suppressPerson();
     } else if ("Person.pass.scheduling".equals(arg)) {
@@ -390,6 +343,13 @@ public class PersonFileEditor
     } else if ("Rehearsal.history".equals(arg)) {
       personFileView.addRehearsalHistoryTab();
       miHistoRehearsal.setEnabled(false);
+    } else if ("Histo.pass".equals(arg)) {
+      if (personFileView.addHistoSubscriptionTab()) {
+        miHistoPass.setEnabled(false);
+      }
+    } else if (HistoSubscriptionCard.CLOSE_CMD.equals(arg)) {
+      personFileView.removeSubscriptionTab();
+      miHistoPass.setEnabled(true);
     } else if ("Menu.month.schedule".equals(arg)) {
       MonthScheduleTab dlg = new MonthScheduleTab(desktop, this, dossier);
       personFileView.addTab(dlg, BundleUtil.getLabel("Menu.month.schedule.label"));
@@ -408,9 +368,6 @@ public class PersonFileEditor
     } else if ("MemberEnrolmentCancel".equals(arg) || "MemberEnrolmentValidation".equals(arg)) {
       personFileView.removeTab((MemberEnrolmentDlg) src);
       personFileView.activateEnrolment(true);//réactivation du bouton de nouvelle inscription
-    } else if ("EditionCarteAbo.Abandon".equals(arg) || "EditionCarteAbo.Validation".equals(arg)) {
-      personFileView.removeTab((SubscriptionCardEditor) src);
-      miCard.setEnabled(true);
     } else if ("HistoFacture.Abandon".equals(arg)) {
       personFileView.removeTab((HistoInvoice) src);
       miHistoInvoice.setEnabled(true);
@@ -427,8 +384,7 @@ public class PersonFileEditor
     } else if (DDPrivateMandateCtrl.CLOSE_COMMAND.equals(arg)) {
       personFileView.removeTab((DDPrivateMandateCtrl) src);
       personFileView.activate(true, "Payer.debiting");
-    }
-      else if ("Invoice.history".equals(arg)) {
+    } else if ("Invoice.history".equals(arg)) {
       int payer = getPayer();
       if (payer > 0) {
         histoInvoice = addHistoInvoice(dossier.getId());
@@ -465,6 +421,53 @@ public class PersonFileEditor
   }
 
   /**
+   * Deletes this contact as a teacher.
+   * Only teachers who have had no course should be removed.
+   * @throws SQLException 
+   */
+  private void deleteTeacher() throws SQLException {
+    TeacherIO dao = (TeacherIO) DataCache.getDao(Model.Teacher);
+    int c = dao.hasSchedules(dossier.getId());
+    if (c > 0) {
+      MessagePopup.warning(view, MessageUtil.getMessage("teacher.delete.warning", c));
+    } else {
+      dao.delete(dossier.getId());
+      dataCache.remove(dossier.getTeacher());
+      desktop.postEvent(new TeacherEvent(this, GemEvent.SUPPRESSION, dossier.getTeacher()));
+      dossier.removeTeacher();
+      personFileView.removeTeacher();
+      miTeacher.setEnabled(true);
+    }
+  }
+  
+  /**
+   * Opens if exist the list of direct debit mandates of the payer.
+   * @throws DDMandateException 
+   */
+  private void showMandates() throws DDMandateException {
+    if (dossier == null || dossier.getRib() == null) {
+      MessagePopup.error(personFileView, MessageUtil.getMessage("payer.invalid.warning"));
+      return;
+    }
+    dossier.setRib(personFileView.getRibFile());// get rib from view
+    if (dossier.hasChanged()) {// non enregistrement éventuel du rib
+      MessagePopup.warning(personFileView, MessageUtil.getMessage("rib.error.printing"));
+      return;
+    }
+    DirectDebitService ddService = DirectDebitService.getInstance(dc);
+    int payer = dossier.getMember() == null ? dossier.getId() : dossier.getMember().getPayer();
+    DDMandate dd = ddService.getMandate(payer);
+    if (dd == null) {
+      if (payer > 0 && MessagePopup.confirm(view, MessageUtil.getMessage("direct.debit.create.mandate.confirmation", payer))) {
+        ddService.createMandate(payer);
+      } else {
+        return;
+      }
+    }
+    personFileView.addMandates(ddService, payer);
+  }
+  
+  /**
    * Gets the payer id.
    *
    * @return an integer representing the payer
@@ -491,12 +494,7 @@ public class PersonFileEditor
     }
 
     dossier.setTeacher(personFileView.getTeacher());
-
-//    if (dossier.getRib() == null) {
-//      dossier.addRib(personFileView.getRibFile());
-//    } else {
     dossier.setRib(personFileView.getRibFile());
-//    }
 
     BankBranch a = personFileView.getBranchBank();
     if (a != null && a.getBicCode() != null && !a.getBicCode().isEmpty()) {
@@ -596,10 +594,7 @@ public class PersonFileEditor
   }
 
   void dlgLogin() {
-
-//    DataConnection dc = dataCache.getDataConnection();
     UserService service = dataCache.getUserService();
-//    UserIO dao = (UserIO) DataCache.getDao(Model.User);
     personFileView.setCursor(new Cursor(Cursor.WAIT_CURSOR));
     UserCreateDlg dlg = new UserCreateDlg(personFileView, "login", dossier.getContact());
     User u = service.findId(dossier.getId());
@@ -765,6 +760,11 @@ public class PersonFileEditor
     mOptions.addSeparator();
     mOptions.add(miRehearsal = getMenuItem("Person.rehearsal.scheduling"));
     mOptions.add(miPassRehearsal = getMenuItem("Person.pass.scheduling"));
+    miHistoPass = new JMenuItem(BundleUtil.getLabel("Subscriptions.label"));
+    
+    miHistoPass.setActionCommand("Histo.pass");
+    miHistoPass.addActionListener(this);
+    mOptions.add(miHistoPass);
 
     mOptions.addSeparator();
     mOptions.add(miHistoRehearsal = getMenuItem("Rehearsal.history"));
@@ -779,8 +779,6 @@ public class PersonFileEditor
     if (dossier.getRib() != null) {
       miBank.setEnabled(false);
     }
-    mOptions.add(miCard = getMenuItem("Rehearsal.card.editing"));
-
     mOptions.addSeparator();
     mOptions.add(miLogin = getMenuItem("Login.creation"));
 
@@ -1067,8 +1065,6 @@ public class PersonFileEditor
     } else if (OrderLineEditor.class.getSimpleName().equals(classname)) {
       personFileView.activate(true, "Member.schedule.payment");
       desktop.removeGemEventListener(orderLineEditor); //XXX unused
-    } else if (SubscriptionCardEditor.class.getSimpleName().equals(classname)) {
-      miCard.setEnabled(true);
     } else if (HistoRehearsalView.class.getSimpleName().equals(classname)) {
       miHistoRehearsal.setEnabled(true);
     } else if (PersonFileGroupView.class.getSimpleName().equals(classname)) {
@@ -1090,8 +1086,9 @@ public class PersonFileEditor
       miEmployee.setEnabled(dataCache.authorize("Employee.editing.auth"));
     } else if ("net.algem.contact.PersonFileTabView$1".equals(classname)) {
       personFileView.activate(true, "Payer.debiting");
+    } else if (HistoSubscriptionCard.class.getSimpleName().equals(classname)) {
+      miHistoPass.setEnabled(true);
     }
-
   }
 
   private void closeModule() throws GemCloseVetoException {

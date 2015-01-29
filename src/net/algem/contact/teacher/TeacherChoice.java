@@ -1,7 +1,7 @@
 /*
- * @(#)TeacherChoice.java	2.7.c 23/01/13
- * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * @(#)TeacherChoice.java	2.9.2 27/01/15
+ *
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.contact.teacher;
 
@@ -29,14 +29,16 @@ import net.algem.util.ui.GemChoiceModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.c
+ * @version 2.9.2
  */
 public class TeacherChoice
         extends GemChoice {
 
   public TeacherChoice(GemChoiceModel model) {
     super(model);
-    setSelectedIndex(0);
+    if (model.getSize() > 0) {
+      setSelectedIndex(0);
+    }
   }
 
   /**

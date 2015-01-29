@@ -1,5 +1,5 @@
 /*
- * @(#)CourseTeacherTableModel.java	2.9.2 26/01/15
+ * @(#)SubscriptionCardSessionTableModel.java 2.9.2 26/01/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -16,82 +16,81 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- *
  */
-package net.algem.course;
 
-import net.algem.planning.CourseSchedule;
+
+package net.algem.contact.member;
+
 import net.algem.planning.DateFr;
+import net.algem.planning.Hour;
+import net.algem.planning.Schedule;
+import net.algem.planning.ScheduleIO;
 import net.algem.util.BundleUtil;
+import net.algem.util.DataCache;
 import net.algem.util.ui.JTableModel;
 
 /**
- * Table model for teacher follow-up.
+ * Table model for the history of sessions taken on a subscription card.
  *
- * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.9.2
+ * @since 2.9.2 08/01/15
  */
-public class CourseTeacherTableModel
-        extends JTableModel<CourseSchedule>
+public class SubscriptionCardSessionTableModel
+  extends JTableModel<SubscriptionCardSession>
 {
-  public CourseTeacherTableModel() {
-    header = new String[]{
+
+   public SubscriptionCardSessionTableModel() {
+    header = new String[] {
       BundleUtil.getLabel("Date.label"),
       BundleUtil.getLabel("Start.label"),
       BundleUtil.getLabel("End.label"),
-      BundleUtil.getLabel("Course.label"),
-      BundleUtil.getLabel("Follow.up.label")
+      BundleUtil.getLabel("Duration.label")
     };
   }
 
   @Override
   public int getIdFromIndex(int i) {
-    //Plage m = (Plage)tuples.elementAt(i);
-    //return m.getId();
-    return -1;
+    return 0;
   }
 
   @Override
-  public Class getColumnClass(int column) {
-    switch (column) {
+  public Class getColumnClass(int col) {
+    switch (col) {
       case 0:
         return DateFr.class;
       case 1:
       case 2:
-        return String.class;
       case 3:
-      case 4:
-        return String.class;
+        return Hour.class;
       default:
         return Object.class;
     }
   }
 
   @Override
-  public boolean isCellEditable(int row, int column) {
-    return false;
-  }
-
-  @Override
   public Object getValueAt(int line, int col) {
-    CourseSchedule p = tuples.elementAt(line);
+    SubscriptionCardSession session = tuples.elementAt(line);
+    Hour start = session.getStart();
+    Hour end = session.getEnd();
     switch (col) {
       case 0:
-        return p.getDate();
+        Schedule s = ScheduleIO.findId(session.getScheduleId(), DataCache.getDataConnection());
+        return s != null ? s.getDate() : new DateFr();
       case 1:
-        return p.getStart().toString();
+        return start != null ? start : new Hour();
       case 2:
-        return p.getEnd().toString();
+        return end != null ? end : new Hour();
       case 3:
-          return p.getCourse();
-      case 4:
-        return p.getNote1();
+        return start != null && end != null ? new Hour(start.getLength(end)) : new Hour();
+      default:
+        return Object.class;
     }
-    return null;
   }
 
   @Override
   public void setValueAt(Object value, int line, int column) {
+
   }
+
 }

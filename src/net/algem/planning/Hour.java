@@ -1,7 +1,7 @@
 /*
- * @(#)Hour.java	2.9.1 14/11/14
+ * @(#)Hour.java	2.9.2 28/01/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -25,7 +25,7 @@ package net.algem.planning;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.2
  */
 public class Hour
         implements java.io.Serializable
@@ -179,7 +179,7 @@ public class Hour
    * @param duration
    * @return an hour
    */
-  public Hour end(int duration) {
+  public Hour end(int duration) {//XXX
     Hour f = new Hour(this);
     f.incHour(duration / 60);
     f.incMinute(duration % 60);
@@ -208,7 +208,7 @@ public class Hour
    * Convert 24:00 to 23:59.
    * Used to by-pass default jdbc value for midnight (00:00).
    */
-  public void decMidnight() {
+  public void maybeDecMidnight() {
     if ("24:00".equals(this.toString())) {
       decMinute(1);
     }

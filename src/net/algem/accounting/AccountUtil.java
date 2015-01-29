@@ -1,5 +1,5 @@
 /*
- * @(#)AccountUtil.java	2.9.2 19/12/14
+ * @(#)AccountUtil.java	2.9.2 05/01/15
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -86,11 +86,14 @@ public class AccountUtil {
   /**
    * Sets an orderline for a single rehearsal.
    *
-   * @param pf
-   * @param amount
-   * @return un OrderLine
+   * @param pf person file
+   * @param date schedule date
+   * @param pref accounts preference
+   * @param amount order amount
+   * @param idCard order id == card id
+   * @return a single orderline
    */
-  public static OrderLine setRehearsalOrderLine(PersonFile pf, DateFr date, Preference pref, double amount) {
+  public static OrderLine setRehearsalOrderLine(PersonFile pf, DateFr date, Preference pref, double amount, int idCard) {
 
     OrderLine e = new OrderLine();
     e.setMember(pf.getId());
@@ -101,9 +104,10 @@ public class AccountUtil {
     } else {
       payer = pf.getId();
     }
+    
     e.setPayer(payer);
     e.setDate(new DateFr(new Date()));// current date may be different than schedule date
-    e.setOrder(0);
+    e.setOrder(idCard);
     String s = ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey());
     e.setSchool(Integer.parseInt(s));
     e.setAccount(new Account((Integer) pref.getValues()[0]));
@@ -120,7 +124,7 @@ public class AccountUtil {
   }
 
   public static OrderLine setGroupOrderLine(int group, PersonFile pf, DateFr date, Preference pref, double amount) {
-    OrderLine ol = setRehearsalOrderLine(pf, date, pref, amount);
+    OrderLine ol = setRehearsalOrderLine(pf, date, pref, amount, 0);
     ol.setGroup(group);
     return ol;
   }
@@ -139,11 +143,17 @@ public class AccountUtil {
 
     OrderLine n = new OrderLine(e);
     n.setPaid(false);
-    n.setModeOfPayment(ModeOfPayment.CHQ.toString());// règlement par défaut before paiement
+    
+    if (!ModeOfPayment.FAC.toString().equals(e.getModeOfPayment())) {
+      n.setModeOfPayment(e.getModeOfPayment());
+    } else {
+      n.setModeOfPayment(ModeOfPayment.CHQ.toString());// règlement par défaut
+    }
 
-    e.setAmount(-(n.getAmount()));// montant à créditer
-    e.setModeOfPayment(ModeOfPayment.FAC.toString());
-
+    if (e.getAmount() > 0) {
+      e.setAmount(-(n.getAmount()));// montant à créditer 
+      e.setModeOfPayment(ModeOfPayment.FAC.toString());
+    }
     return n;
   }
 

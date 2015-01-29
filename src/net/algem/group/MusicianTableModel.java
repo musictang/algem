@@ -1,7 +1,7 @@
 /*
- * @(#)MusicianTableModel.java	2.7.a 22/11/12
- * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * @(#)MusicianTableModel.java	2.9.2 26/01/15
+ *
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.group;
 
@@ -25,33 +25,33 @@ import net.algem.util.DataCache;
 import net.algem.util.ui.JTableModel;
 
 /**
- * 
+ *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.9.2
  */
 public class MusicianTableModel
-        extends JTableModel
+        extends JTableModel<Musician>
 {
 
   private DataCache dataCache;
-  
+
   public MusicianTableModel(DataCache dataCache) {
     this.dataCache = dataCache;
     header = new String[]{
-            BundleUtil.getLabel("Id.label"), 
-			BundleUtil.getLabel("Name.label"), 
-			BundleUtil.getLabel("First.name.label"), 
+            BundleUtil.getLabel("Id.label"),
+			BundleUtil.getLabel("Name.label"),
+			BundleUtil.getLabel("First.name.label"),
 			BundleUtil.getLabel("Instrument.label")
 		};
   }
 
   @Override
   public int getIdFromIndex(int i) {
-    Musician p = (Musician) tuples.elementAt(i);
+    Musician p = tuples.elementAt(i);
     return p.getId();
   }
-  
+
   @Override
   public Class getColumnClass(int column) {
     switch (column) {
@@ -73,7 +73,7 @@ public class MusicianTableModel
 
   @Override
   public Object getValueAt(int ligne, int colonne) {
-    Musician p = (Musician) tuples.elementAt(ligne);
+    Musician p = tuples.elementAt(ligne);
     switch (colonne) {
       case 0:
         return new Integer(p.getId());
