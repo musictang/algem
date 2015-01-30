@@ -1,12 +1,30 @@
+/*
+ * @(#)AtelierInstrumentsService.java 2.9.2 30/01/15
+ *
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ *
+ * This file is part of Algem.
+ * Algem is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Algem is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with Algem. If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package net.algem.planning.editing.instruments;
 
 import net.algem.config.Instrument;
 import net.algem.contact.Person;
 import net.algem.planning.Action;
-
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
 
 public interface AtelierInstrumentsService {
     static class PersonInstrumentRow {
@@ -54,6 +72,7 @@ public interface AtelierInstrumentsService {
      * @param person
      * @return the instrument speficically allocated for this action, otherwise the first instrument of the person,
      * or null if no specific Instrument is defined.
+   * @throws java.lang.Exception
      */
     public Instrument getAllocatedInstrument(Action action, Person person) throws Exception;
 
@@ -63,6 +82,7 @@ public interface AtelierInstrumentsService {
      * @param personId
      * @return the instrument speficically allocated for this action, otherwise the first instrument of the person,
      * or null if no specific Instrument is defined.
+   * @throws java.lang.Exception
      */
     public Instrument getAllocatedInstrument(int actionId, int personId) throws Exception;
 }

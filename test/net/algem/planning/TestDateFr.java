@@ -1,5 +1,5 @@
 /*
- * @(#)TestDateFr.java 2.9.2 28/01/15
+ * @(#)TestDateFr.java 2.9.2 30/01/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -24,6 +24,8 @@ import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
+import net.algem.config.ConfigKey;
+import net.algem.config.ConfigUtil;
 import static org.junit.Assert.*;
 import org.junit.*;
 
@@ -99,6 +101,13 @@ public class TestDateFr
     HourRangePanel rangePanel = new HourRangePanel(startTime, endTime);
     Hour end2 = endTime.end(rangePanel.getLength());
     assertEquals("24:00", end2.toString());
+    
+    Hour defStartTime = new Hour("09:00");
+
+    int startPlan = defStartTime.getHour();
+    int totalh = 24 - startPlan;
+    assertTrue(startPlan == 9);
+    assertTrue(totalh == 15);
   }
   
 }

@@ -1,7 +1,7 @@
 /*
- * @(#)DayScheduleCtrl.java 2.9.1 16/12/14
+ * @(#)DayScheduleCtrl.java 2.9.2 30/01/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,13 +28,12 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.io.File;
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
-
 import net.algem.Algem;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
@@ -47,19 +46,19 @@ import net.algem.util.BundleUtil;
 import net.algem.util.FileUtil;
 import net.algem.util.GemLogger;
 import net.algem.util.event.GemEvent;
+import net.algem.util.jdesktop.DesktopHandlerException;
 import net.algem.util.jdesktop.DesktopOpenHandler;
 import net.algem.util.model.GemCloseVetoException;
 import net.algem.util.model.GemList;
 import net.algem.util.model.Model;
 import net.algem.util.module.GemModule;
-import net.algem.util.ui.SQLErrorDlg;
 
 /**
  * Day schedule main controller.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.2
  * @since 1.0b 06/10/2001
  */
 public class DayScheduleCtrl
@@ -140,7 +139,6 @@ public class DayScheduleCtrl
         load(new java.util.Date());
       }
     }).start();
-    //load(new java.util.Date());
   }
 
   @Override
@@ -208,14 +206,14 @@ public class DayScheduleCtrl
     } else if (src == miExport) {
       List<DayPlan> planning = ((DayScheduleView) view).getCurrentPlanning();
       File destFile = FileUtil.getSaveFile(view, "xls", "Fichiers excel");
-//      File destFile = new File("export-test.xls");
       if (destFile != null) {
         try {
           new PlanningExportService().exportPlanning(planning, destFile);
           new DesktopOpenHandler().open(destFile.getAbsolutePath());
-        } catch (Exception e) {
-          GemLogger.logException("Error while exporting planning", e);
-          SQLErrorDlg.displayException(view, "Erreur durant l'export", e);
+        } catch (IOException e) {
+          GemLogger.log(e.getMessage());
+        } catch (DesktopHandlerException e) {
+          GemLogger.log(e.getMessage());
         }
       }
     }
