@@ -12,6 +12,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.sql.SQLException;
 import java.util.List;
+import net.algem.util.GemCommand;
 
 public class AtelierInstrumentsDialog extends JDialog {
 
@@ -47,8 +48,9 @@ public class AtelierInstrumentsDialog extends JDialog {
         gbc.fill = GridBagConstraints.VERTICAL;
         contentPane.add(panel1, gbc);
         final JPanel panel2 = new JPanel();
-        panel2.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-        panel2.setAlignmentX(0.5f);
+        panel2.setLayout(new GridLayout(1,2));
+//        panel2.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+//        panel2.setAlignmentX(0.5f);
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.gridy = 0;
@@ -56,10 +58,10 @@ public class AtelierInstrumentsDialog extends JDialog {
         gbc.fill = GridBagConstraints.BOTH;
         panel1.add(panel2, gbc);
         buttonOK = new JButton();
-        buttonOK.setText("OK");
+        buttonOK.setText(GemCommand.OK_CMD);
         panel2.add(buttonOK);
         buttonCancel = new JButton();
-        buttonCancel.setText("Cancel");
+        buttonCancel.setText(GemCommand.CANCEL_CMD);
         panel2.add(buttonCancel);
         final JPanel panel3 = new JPanel();
         panel3.setLayout(new GridBagLayout());
