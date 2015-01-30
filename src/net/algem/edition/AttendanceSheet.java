@@ -27,6 +27,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Vector;
+
+import net.algem.config.Instrument;
 import net.algem.contact.Person;
 import net.algem.contact.PersonFile;
 import net.algem.contact.PersonIO;
@@ -266,8 +268,16 @@ public class AttendanceSheet
         line += 10;
         g.setFont(smallFont);
       }
-      int instrument = d.getMember().getFirstInstrument();
-      g.drawString(d.getContact().getFirstnameName() + " " + dataCache.getInstrumentName(instrument), 25, line);
+
+      String instrumentName = "";
+      try {
+        Instrument instrument = dataCache.getAtelierInstrumentsService().getAllocatedInstrument(plt.getIdAction(), d.getContact().getId());
+        if (instrument != null) instrumentName = " - " + instrument.getName();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+
+      g.drawString(d.getContact().getFirstnameName() + instrumentName, 25, line);
       col = 160;
       for (int j = 0; j < 5; j++, col += 120) {
         g.drawLine(col, line + 5, col + 10, line + 5);

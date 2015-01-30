@@ -290,4 +290,25 @@ public class DataConnection
       connected = false;
     }
   }
+
+  public interface SQLRunnable<T> {
+    public T run(DataConnection conn) throws Exception;
+  }
+
+  public <T> T withTransaction(SQLRunnable<T> block) throws Exception {
+    boolean inTransaction = !cnx.getAutoCommit();
+    if (inTransaction) {
+      return block.run(this);
+    } else {
+      try {
+        setAutoCommit(false);
+        return block.run(this);
+      } catch (Exception e) {
+        rollback();
+        throw e;
+      } finally {
+        setAutoCommit(true);
+      }
+    }
+  }
 }

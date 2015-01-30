@@ -27,6 +27,7 @@ import java.awt.print.PrinterJob;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.sql.SQLException;
+import java.util.List;
 import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
 import javax.print.attribute.standard.*;
@@ -177,6 +178,11 @@ public class DayScheduleView
     daySchedule.removePropertyChangeListener(this);
     setVisible(false);
     dispose();
+  }
+
+  public List<DayPlan> getCurrentPlanning() {
+    DayPlanTableView v = (DayPlanTableView) tabPanel.getSelectedComponent();
+    return v.getCurrentPlanning();
   }
 }
 

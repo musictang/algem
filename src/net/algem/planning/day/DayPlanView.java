@@ -25,6 +25,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.print.Printable;
 import java.util.*;
+import java.util.List;
+
 import net.algem.config.ColorPlan;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
@@ -117,6 +119,9 @@ public class DayPlanView
   @Override
   public void drawBackground() {
     ncols = dim.width / step_x;
+    if (bg instanceof Graphics2D) {
+      ((Graphics2D) bg).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    }
     drawGrid();
 
     if (cols == null) {
@@ -535,4 +540,7 @@ public class DayPlanView
     return new Rectangle(top, r == 0 ? 1 : r, 0, c < 0 ? 0 : c);
   }
 
+  public List<DayPlan> getCurrentPlanning() {
+    return cols;
+  }
 }

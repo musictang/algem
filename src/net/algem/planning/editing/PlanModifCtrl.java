@@ -27,6 +27,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
+
+import net.algem.Algem;
 import net.algem.config.GemParam;
 import net.algem.contact.EmployeeIO;
 import net.algem.contact.EmployeeType;
@@ -40,6 +42,7 @@ import net.algem.course.Course;
 import net.algem.group.GemGroupService;
 import net.algem.group.Group;
 import net.algem.planning.*;
+import net.algem.planning.editing.instruments.AtelierInstrumentsController;
 import net.algem.room.Room;
 import net.algem.util.*;
 import net.algem.util.module.GemDesktop;
@@ -106,6 +109,10 @@ public class PlanModifCtrl
     }
     if (dataCache.authorize("Schedule.suppression.auth")) {
       v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.suppression.label"), this, "DeletePlanning"));
+    }
+
+    if (Algem.isFeatureEnabled("course_instruments")) {
+      v.add(new GemMenuButton(BundleUtil.getLabel("course.instruments.label"), this, "AtelierInstruments"));
     }
 
     /* v.add(new GemMenuButton("Replanifier ce cours", this, "Replanifier")); */
@@ -239,6 +246,8 @@ public class PlanModifCtrl
         desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));
       } else if (arg.equals(GemCommand.CANCEL_CMD)) {
         desktop.removeCurrentModule();
+      } else if (arg.equals("AtelierInstruments")) {
+        dialogAtelierInstruments();
       }
       /*
        else if (arg.bufferEquals("Replanifier")) {
@@ -272,6 +281,14 @@ public class PlanModifCtrl
     } finally {
       desktop.setDefaultCursor();
     }
+  }
+
+  private void dialogAtelierInstruments() {
+    if (!(plan instanceof CourseSchedule)) {
+      return;
+    }
+    Action action = ((CourseSchedule) plan).getAction();
+    new AtelierInstrumentsController(desktop, action).run();
   }
 
   /** Calls hour modification dialog. */
