@@ -24,6 +24,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormatSymbols;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.algem.contact.Person;
 import net.algem.course.Course;
 import net.algem.course.CourseIO;
