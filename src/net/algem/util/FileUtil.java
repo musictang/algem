@@ -1,7 +1,7 @@
 /*
- * @(#)FileUtil.java	2.9.1 26/11/14
+ * @(#)FileUtil.java	2.9.2 02/02/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -42,10 +42,8 @@ import javax.print.attribute.standard.MediaSizeName;
 import javax.print.attribute.standard.OrientationRequested;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
-import net.algem.planning.export.PlanningExportService;
 import net.algem.util.jdesktop.DesktopHandler;
 import net.algem.util.jdesktop.DesktopHandlerException;
 import net.algem.util.jdesktop.DesktopOpenHandler;
@@ -55,7 +53,7 @@ import net.algem.util.ui.MessagePopup;
  * Utility class for file operations.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.2
  * @since 2.0q
  */
 public class FileUtil
@@ -307,7 +305,7 @@ public class FileUtil
    *
    * @param component the AWT parent of the chooser dialog
    * @param extension the request extension (ex. "xls")
-   * @param extensionName the displayed name for files (ex. "Fichiers excel")
+   * @param extensionName the displayed name for files (ex. "Excel files")
    * @return the selected File (may be null)
    */
   public static File getSaveFile(Component component, String extension, String extensionName) {
@@ -316,7 +314,7 @@ public class FileUtil
       public void approveSelection(){
         File f = getSelectedFile();
         if(f.exists() && getDialogType() == SAVE_DIALOG){
-          int result = JOptionPane.showConfirmDialog(this,"Le fichier sélectionner existe, voulez vous l'écraser","Fichier existant",JOptionPane.YES_NO_CANCEL_OPTION);
+          int result = JOptionPane.showConfirmDialog(this,MessageUtil.getMessage("file.overwrite.confirmation", f.getName()),MessageUtil.getMessage("file.existing"),JOptionPane.YES_NO_CANCEL_OPTION);
           switch(result){
             case JOptionPane.YES_OPTION:
               super.approveSelection();

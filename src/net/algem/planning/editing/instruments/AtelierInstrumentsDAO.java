@@ -1,3 +1,24 @@
+/*
+ * @(#)AtelierInstrumentsDAO.java 2.9.2 02/02/15
+ *
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ *
+ * This file is part of Algem.
+ * Algem is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Algem is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with Algem. If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
 package net.algem.planning.editing.instruments;
 
 import net.algem.util.DataConnection;
@@ -15,18 +36,24 @@ import net.algem.enrolment.CourseOrderIO;
 import net.algem.enrolment.OrderIO;
 import net.algem.planning.ActionIO;
 
+/**
+ * 
+ * @author <a href="mailto:alexandre.delattre.biz@gmail.com">Alexd</a>
+ * @version 2.9.2
+ * @since 2.9.2
+ */
 public class AtelierInstrumentsDAO {
-    private final DataConnection dc;
 
     public static final String TABLE = "atelier_instruments";
-    public static final String COLUMNS = "idaction, idpers, idinstru";
+    public static final String COLUMNS = "idaction, idper, idinstru";
+    private final DataConnection dc;
 
     public AtelierInstrumentsDAO(DataConnection dc) {
         this.dc = dc;
     }
 
     public AtelierInstrument find(int idAction, int idPerson) throws SQLException {
-        String query = "select " + COLUMNS + " from " + TABLE + " where idaction = " + idAction + " and idpers = " + idPerson;
+        String query = "SELECT " + COLUMNS + " FROM " + TABLE + " WHERE idaction = " + idAction + " AND idper = " + idPerson;
         ResultSet resultSet = dc.executeQuery(query);
         if (resultSet.next()) {
             return new AtelierInstrument(resultSet.getInt(1), resultSet.getInt(2), resultSet.getInt(3));
@@ -39,12 +66,12 @@ public class AtelierInstrumentsDAO {
         if (existing != null) {
             delete(a.getIdAction(), a.getIdPerson());
         }
-        dc.executeUpdate(format("insert into %s values (%d, %d, %d)",
+        dc.executeUpdate(format("INSERT INTO %s VALUES (%d, %d, %d)",
                 TABLE, a.getIdAction(), a.getIdPerson(), a.getIdInstrument()));
     }
 
     public void delete(int idAction, int idPerson) throws SQLException {
-        dc.executeUpdate(format("delete from %s where idaction=%d and idpers=%d", TABLE, idAction, idPerson));
+        dc.executeUpdate(format("DELETE FROM %s WHERE idaction = %d AND idper = %d", TABLE, idAction, idPerson));
     }
 
     public void delete(AtelierInstrument atelierInstrument) throws SQLException {
@@ -53,28 +80,28 @@ public class AtelierInstrumentsDAO {
 
 
     public List<Integer> getPersonsIdsForAction(int idAction) throws SQLException {
-        String dateString = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-        String query = format(
-                "SELECT DISTINCT p.id, p.nom, p.prenom FROM " + PersonIO.TABLE + " p\n" +
-                "JOIN " + OrderIO.TABLE + " c ON c.adh = p.id\n" +
-                "JOIN " + CourseOrderIO.TABLE + " cc ON cc.idcmd = c.id\n" +
-                "JOIN " + ActionIO.TABLE + " a ON cc.idaction = a.id\n" +
-                "WHERE a.id=%d\n" +
-                "AND cc.datedebut < '%s'\n" +
-                "AND cc.datefin > '%s'\n" +
-                "ORDER BY p.nom, p.prenom", idAction, dateString, dateString
-        );
+    String dateString = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+    String query = format(
+            "SELECT DISTINCT p.id, p.nom, p.prenom FROM " + PersonIO.TABLE + " p\n"
+            + "JOIN " + OrderIO.TABLE + " c ON c.adh = p.id\n"
+            + "JOIN " + CourseOrderIO.TABLE + " cc ON cc.idcmd = c.id\n"
+            + "JOIN " + ActionIO.TABLE + " a ON cc.idaction = a.id\n"
+            + "WHERE a.id = %d\n"
+            + "AND cc.datedebut < '%s'\n"
+            + "AND cc.datefin > '%s'\n"
+            + "ORDER BY p.nom, p.prenom", idAction, dateString, dateString
+    );
 
-        List<Integer> result = new ArrayList<>();
-        ResultSet resultSet = dc.executeQuery(query);
-        while (resultSet.next()) {
-            result.add(resultSet.getInt(1));
-        }
-        return result;
+    List<Integer> result = new ArrayList<>();
+    ResultSet resultSet = dc.executeQuery(query);
+    while (resultSet.next()) {
+      result.add(resultSet.getInt(1));
     }
+    return result;
+  }
 
     public List<Integer> getInstrumentIdsForPerson(int idPerson) throws SQLException {
-        String query = format("SELECT instrument FROM person_instrument WHERE idper=%d ORDER BY idx", idPerson);
+        String query = format("SELECT instrument FROM person_instrument WHERE idper = %d ORDER BY idx", idPerson);
         List<Integer> result = new ArrayList<>();
         ResultSet resultSet = dc.executeQuery(query);
         while (resultSet.next()) {

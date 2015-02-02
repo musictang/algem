@@ -1,5 +1,5 @@
 /*
- * @(#)PlanningService.java	2.9.2 28/01/15
+ * @(#)PlanningService.java	2.9.2 02/02/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -24,8 +24,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormatSymbols;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import net.algem.contact.Person;
 import net.algem.course.Course;
 import net.algem.course.CourseIO;
@@ -143,21 +141,21 @@ public class PlanningService
     }
   }
 
-  public void planify(List<Action> actions) throws PlanningException {
+  public void planify(final List<Action> actions) throws PlanningException {
     try {
-      dc.setAutoCommit(false);
-      for (Action a : actions) {
-        planify(a);
-      }
-      dc.commit();
-    } catch (PlanningException pe) {
-      dc.rollback();
-      throw pe;
-    } catch (SQLException sqe) {
-      dc.rollback();
-      throw new PlanningException(sqe.getMessage());
-    } finally {
-      dc.setAutoCommit(true);
+      dc.withTransaction(new DataConnection.SQLRunnable<Void>()
+      {
+        @Override
+        public Void run(DataConnection conn) throws Exception {
+          for (Action a : actions) {
+            planify(a);
+          }
+          return null;
+        }
+
+      });
+    } catch (Exception e) {
+      throw new PlanningException(e.getMessage());
     }
   }
 
@@ -999,7 +997,6 @@ public class PlanningService
 
   public Action getAction(int id) throws SQLException {
     return (Action) DataCache.findId(id, Model.Action);
-//    return actionIO.findId(id);
   }
 
   public void updateAction(Action a) throws SQLException {

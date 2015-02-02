@@ -1,7 +1,7 @@
 /*
- * @(#)ActionIO.java 2.9.1 26/11/14
+ * @(#)ActionIO.java 2.9.2 02/02/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -36,7 +36,7 @@ import net.algem.util.model.TableIO;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.2
  * @since 2.4.a 18/04/12
  */
 public class ActionIO
@@ -53,27 +53,29 @@ public class ActionIO
     this.dc = dc;
   }
 
-  public void planify(Action a, int type) throws PlanningException {
+  public void planify(final Action a, final int type) throws PlanningException {
     try {
-      dc.setAutoCommit(false);
-      insert(a);
-      for (DateFr d : a.getDates()) {
-        String query = "INSERT INTO planning VALUES (DEFAULT"
-                + ",'" + d.toString()
-                + "','" + a.getHourStart() + "','" + a.getHourEnd() + "',"
-                + type + ","
-                + a.getTeacher() + ","
-                + a.getId() + ","
-                + a.getRoom() + ",0)";
-        dc.executeUpdate(query);
-      }
-      dc.commit();
-    } catch (SQLException ex) {
-      dc.rollback();
-      GemLogger.log(ex.getMessage());
-      throw new PlanningException(ex.getMessage());
-    } finally {
-      dc.setAutoCommit(true);
+      dc.withTransaction(new DataConnection.SQLRunnable<Void>()
+      {
+        @Override
+        public Void run(DataConnection conn) throws Exception {
+          insert(a);
+          for (DateFr d : a.getDates()) {
+            String query = "INSERT INTO planning VALUES (DEFAULT"
+                    + ",'" + d.toString()
+                    + "','" + a.getHourStart() + "','" + a.getHourEnd() + "',"
+                    + type + ","
+                    + a.getTeacher() + ","
+                    + a.getId() + ","
+                    + a.getRoom() + ",0)";
+            dc.executeUpdate(query);
+          }
+          return null;
+        }
+      });
+    } catch (Exception e) {
+      GemLogger.log(e.getMessage());
+      throw new PlanningException(e.getMessage());
     }
   }
 

@@ -22,7 +22,6 @@ package net.algem.planning.editing.instruments;
 
 import net.algem.planning.Action;
 import net.algem.planning.ReloadDetailEvent;
-import net.algem.util.DataCache;
 import net.algem.util.GemLogger;
 import net.algem.util.module.GemDesktop;
 
@@ -42,7 +41,7 @@ public class AtelierInstrumentsController implements AtelierInstrumentsDialog.Ca
     public AtelierInstrumentsController(GemDesktop desktop, Action courseAction) {
         this.desktop = desktop;
         this.courseAction = courseAction;
-        this.service = DataCache.getInitializedInstance().getAtelierInstrumentsService();
+        this.service = desktop.getDataCache().getAtelierInstrumentsService();
     }
 
     public void run() {

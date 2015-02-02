@@ -1,7 +1,7 @@
 /*
- * @(#)ExportService.java 2.8.w 09/07/14
+ * @(#)ExportService.java 2.9.2 30/01/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -45,7 +45,7 @@ import net.algem.util.model.Model;
 /**
  * Service class for export operations.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.2
  * @since 2.6.d 06/11/2012
  */
 public class ExportService {
@@ -91,6 +91,7 @@ public class ExportService {
   }
   
   int printCSV(PrintWriter out, List<Person> list) throws SQLException {
+    out.print("\ufeff");// force Byte Order Mark (BOM)
     out.println(getHeader(CSV_HEADER));
     for (Person p : list) {
       Address a = getAddress(p.getId());

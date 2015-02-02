@@ -1,7 +1,7 @@
 /*
- * @(#)DataConnection.java	2.8.x 16/09/14
+ * @(#)DataConnection.java	2.9.2 02/02/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,7 +28,7 @@ import java.util.logging.Level;
  * Utility class for database connection.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.x
+ * @version 2.9.2
  * @since 2.6.a 01/08/2012
  */
 public class DataConnection

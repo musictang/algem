@@ -1,5 +1,5 @@
 /*
- * @(#)DayScheduleCtrl.java 2.9.2 30/01/15
+ * @(#)DayScheduleCtrl.java 2.9.2 02/02/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -205,7 +205,7 @@ public class DayScheduleCtrl
       }
     } else if (src == miExport) {
       List<DayPlan> planning = ((DayScheduleView) view).getCurrentPlanning();
-      File destFile = FileUtil.getSaveFile(view, "xls", "Fichiers excel");
+      File destFile = FileUtil.getSaveFile(view, "xls", BundleUtil.getLabel("Excel.file.label"));
       if (destFile != null) {
         try {
           new PlanningExportService().exportPlanning(planning, destFile);

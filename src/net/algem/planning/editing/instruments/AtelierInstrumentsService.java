@@ -26,6 +26,12 @@ import net.algem.planning.Action;
 import java.sql.SQLException;
 import java.util.List;
 
+/**
+ * 
+ * @author <a href="mailto:alexandre.delattre.biz@gmail.com">Alexd</a>
+ * @version 2.9.2
+ * @since 2.9.2
+ */
 public interface AtelierInstrumentsService {
     static class PersonInstrumentRow {
         public final Person person;
@@ -38,7 +44,7 @@ public interface AtelierInstrumentsService {
     }
 
     /**
-     * Retrieve instruments allocation, for a workshop action
+     * Retrieve instruments allocation, for a workshop action.
      * The allocation is a list of pair (person, instrument) called rows.
      * The implementation should make sure it returns a row for each participant of the workshop.
      *
@@ -49,7 +55,7 @@ public interface AtelierInstrumentsService {
     public List<PersonInstrumentRow> getInstrumentsAllocation(Action action) throws Exception;
 
     /**
-     * Sets the instrument allocation, for a workshop action
+     * Sets the instrument allocation, for a workshop action.
      * The allocation is a list of pair (person, instrument) called rows.
      *
      * @param action the action of the workshop
@@ -59,7 +65,7 @@ public interface AtelierInstrumentsService {
     public void setInstrumentsAllocation(Action action, List<PersonInstrumentRow> rows) throws Exception;
 
     /**
-     * Retrieve available instruments for a given person
+     * Retrieve available instruments for a given person.
      * @param person
      * @return list of instrument played by this person
      * @throws SQLException
@@ -67,7 +73,7 @@ public interface AtelierInstrumentsService {
     public List<Instrument> getAvailableInstruments(Person person) throws Exception;
 
     /**
-     * Gets the allocated instrument for a given workshop action or person
+     * Gets the allocated instrument for a given workshop action or person.
      * @param action
      * @param person
      * @return the instrument speficically allocated for this action, otherwise the first instrument of the person,
@@ -77,7 +83,7 @@ public interface AtelierInstrumentsService {
     public Instrument getAllocatedInstrument(Action action, Person person) throws Exception;
 
     /**
-     * Gets the allocated instrument for a given workshop action or person
+     * Gets the allocated instrument for a given workshop action or person.
      * @param actionId
      * @param personId
      * @return the instrument speficically allocated for this action, otherwise the first instrument of the person,

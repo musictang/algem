@@ -112,7 +112,7 @@ public class PlanModifCtrl
     }
 
     if (Algem.isFeatureEnabled("course_instruments")) {
-      v.add(new GemMenuButton(BundleUtil.getLabel("course.instruments.label"), this, "AtelierInstruments"));
+      v.add(new GemMenuButton(BundleUtil.getLabel("Course.instrument.allocation.label"), this, "AtelierInstruments"));
     }
 
     /* v.add(new GemMenuButton("Replanifier ce cours", this, "Replanifier")); */
