@@ -1,6 +1,6 @@
 /*
  * @(#)AttendanceSheet.java	2.8.w 08/07/14
- * 
+ *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.edition;
 
@@ -27,6 +27,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Vector;
+import net.algem.Algem;
 
 import net.algem.config.Instrument;
 import net.algem.contact.Person;
@@ -270,11 +271,13 @@ public class AttendanceSheet
       }
 
       String instrumentName = "";
-      try {
-        Instrument instrument = dataCache.getAtelierInstrumentsService().getAllocatedInstrument(plt.getIdAction(), d.getContact().getId());
-        if (instrument != null) instrumentName = " - " + instrument.getName();
-      } catch (Exception e) {
-        e.printStackTrace();
+      if (Algem.isFeatureEnabled("course_instruments")) {
+        try {
+          Instrument instrument = dataCache.getAtelierInstrumentsService().getAllocatedInstrument(plt.getIdAction(), d.getContact().getId());
+          if (instrument != null) instrumentName = " - " + instrument.getName();
+        } catch (Exception e) {
+          GemLogger.log(e.getMessage());
+        }
       }
 
       g.drawString(d.getContact().getFirstnameName() + instrumentName, 25, line);

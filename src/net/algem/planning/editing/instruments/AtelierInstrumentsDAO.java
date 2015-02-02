@@ -10,6 +10,10 @@ import java.util.Date;
 import java.util.List;
 
 import static java.lang.String.format;
+import net.algem.contact.PersonIO;
+import net.algem.enrolment.CourseOrderIO;
+import net.algem.enrolment.OrderIO;
+import net.algem.planning.ActionIO;
 
 public class AtelierInstrumentsDAO {
     private final DataConnection dc;
@@ -51,14 +55,14 @@ public class AtelierInstrumentsDAO {
     public List<Integer> getPersonsIdsForAction(int idAction) throws SQLException {
         String dateString = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
         String query = format(
-                "select distinct p.id, p.nom, p.prenom from personne p\n" +
-                "join commande c on c.adh = p.id\n" +
-                "join commande_cours cc on cc.idcmd = c.id\n" +
-                "join action a on cc.idaction = a.id\n" +
-                "where a.id=%d\n" +
-                "and cc.datedebut < '%s'\n" +
-                "and cc.datefin > '%s'\n" +
-                "order by p.nom, p.prenom", idAction, dateString, dateString
+                "SELECT DISTINCT p.id, p.nom, p.prenom FROM " + PersonIO.TABLE + " p\n" +
+                "JOIN " + OrderIO.TABLE + " c ON c.adh = p.id\n" +
+                "JOIN " + CourseOrderIO.TABLE + " cc ON cc.idcmd = c.id\n" +
+                "JOIN " + ActionIO.TABLE + " a ON cc.idaction = a.id\n" +
+                "WHERE a.id=%d\n" +
+                "AND cc.datedebut < '%s'\n" +
+                "AND cc.datefin > '%s'\n" +
+                "ORDER BY p.nom, p.prenom", idAction, dateString, dateString
         );
 
         List<Integer> result = new ArrayList<>();
@@ -70,7 +74,7 @@ public class AtelierInstrumentsDAO {
     }
 
     public List<Integer> getInstrumentIdsForPerson(int idPerson) throws SQLException {
-        String query = format("select instrument from person_instrument where idper=%d order by idx", idPerson);
+        String query = format("SELECT instrument FROM person_instrument WHERE idper=%d ORDER BY idx", idPerson);
         List<Integer> result = new ArrayList<>();
         ResultSet resultSet = dc.executeQuery(query);
         while (resultSet.next()) {

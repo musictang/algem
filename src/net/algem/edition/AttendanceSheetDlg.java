@@ -1,6 +1,6 @@
 /*
  * @(#)AttendanceSheetDlg.java	2.8.k 25/07/13
- * 
+ *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.edition;
 
@@ -55,7 +55,6 @@ public class AttendanceSheetDlg
   private DateFrField endDate;
   private GemButton btCancel;
   private GemButton btEdition;
-//  private JPanel boutons;
   private Teacher teacher;
   private GemChoice estabChoice;
 
@@ -70,12 +69,12 @@ public class AttendanceSheetDlg
 
     dialog = new JDialog((Frame) null, title, true);
     dialog.setLayout(new BorderLayout());
-    
+
     GemPanel panel = new GemPanel(new GridBagLayout());
     panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
     GridBagHelper gb = new GridBagHelper(panel);
     gb.insets = GridBagHelper.SMALL_INSETS;
-    
+
     estabChoice = new EstabChoice(dataCache.getList(Model.Establishment));
     startDate = new DateFrField();
     endDate = new DateFrField();
@@ -101,9 +100,9 @@ public class AttendanceSheetDlg
     dialog.add(buttons, BorderLayout.SOUTH);
     dialog.setSize(400, 200);
     dialog.pack();
-    
+
     dialog.setVisible(true);
-    
+
   }
 
   public AttendanceSheetDlg(Component _parent, DataCache _cache) {
@@ -111,7 +110,6 @@ public class AttendanceSheetDlg
   }
 
   public int getEstab() {
-    //return 3501 + etabChoix.getSelectedIndex() ;
     return estabChoice.getKey();
   }
 
