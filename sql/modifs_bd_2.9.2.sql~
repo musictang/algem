@@ -9,8 +9,6 @@ CREATE TABLE carteabopersessions (
 	fin time
 );
 
-ALTER TABLE carteabopersessions OWNER TO nobody;
-
 -- ALTER TABLE absence OWNER TO nobody;
 
 -- Pass repetition individuelle

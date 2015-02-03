@@ -1,0 +1,13 @@
+DROP TABLE atelier_instruments;
+CREATE TABLE atelier_instruments (
+	idaction integer REFERENCES action(id) ON DELETE CASCADE,
+	idper integer REFERENCES personne(id) ON DELETE CASCADE,
+	idinstru integer,
+PRIMARY KEY (idaction,idper)
+);
+
+alter table atelier_instruments rename idpers to idper;
+drop index atelier_instruments_idx;
+ALTER TABLE atelier_instruments ADD CONSTRAINT atelier_instruments_pk PRIMARY KEY(idaction,idper);
+alter table atelier_instruments add CONSTRAINT atelier_instruments_idaction_fkey FOREIGN KEY(idaction) REFERENCES action(id) ON DELETE CASCADE;
+alter table atelier_instruments add CONSTRAINT atelier_instruments_idper_fkey FOREIGN KEY(idper) REFERENCES personne(id) ON DELETE CASCADE;
