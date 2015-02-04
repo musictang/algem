@@ -1,5 +1,5 @@
 /*
- * @(#)AtelierInstrumentsDAO.java 2.9.2 02/02/15
+ * @(#)AtelierInstrumentsDAO.java 2.9.2 04/02/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -25,9 +25,7 @@ import net.algem.util.DataConnection;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import static java.lang.String.format;
@@ -61,7 +59,6 @@ public class AtelierInstrumentsDAO {
     }
 
     public void save(AtelierInstrument a) throws SQLException {
-
         AtelierInstrument existing = find(a.getIdAction(), a.getIdPerson());
         if (existing != null) {
             delete(a.getIdAction(), a.getIdPerson());
@@ -80,16 +77,13 @@ public class AtelierInstrumentsDAO {
 
 
     public List<Integer> getPersonsIdsForAction(int idAction) throws SQLException {
-    String dateString = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
     String query = format(
             "SELECT DISTINCT p.id, p.nom, p.prenom FROM " + PersonIO.TABLE + " p\n"
             + "JOIN " + OrderIO.TABLE + " c ON c.adh = p.id\n"
             + "JOIN " + CourseOrderIO.TABLE + " cc ON cc.idcmd = c.id\n"
             + "JOIN " + ActionIO.TABLE + " a ON cc.idaction = a.id\n"
             + "WHERE a.id = %d\n"
-            + "AND cc.datedebut < '%s'\n"
-            + "AND cc.datefin > '%s'\n"
-            + "ORDER BY p.nom, p.prenom", idAction, dateString, dateString
+            + "ORDER BY p.prenom, p.nom ", idAction
     );
 
     List<Integer> result = new ArrayList<>();

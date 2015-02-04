@@ -6,6 +6,7 @@ BUGS CORRIGES
 * Lorsqu'on choisissait "Tri par date" dans le récapitulatif des heures professeurs, les dates de période sélectionnées n'étaient pas prises en compte.
 Note : sous Open Office, il est possible au moment de l'import de cocher l'option "Détecter les nombres spéciaux". Cela permet notamment de formater correctement les champs de type Heure dans le tableur. Les dates sous forme abrégée comme Janv. 2015 seront formatées sous forme de chiffres par défaut.
 * Les caractères accentués ne s'affichaient pas correctement sous Excel lors de l'ouverture des documents csv générés après exportation des heures professeur (Menu Compta -> Heures salariés).
+De même pour les différents exports csv du menu Fichier -> Export.
 * Lorsqu'un cours était différé pour se terminer à minuit, son heure de fin était de 23:59 au lieu de 24:00. Les cours différés ou étirés (Etirer/compresser planning) ont maintenant une heure de fin rigoureusement égale à l'heure saisie dans la fenêtre de dialogue de modification.
 * La plage horaire des cours de type Atelier découverte (Atelier ponctuel) ou Stage était modifiable dans la fenêtre de dialogue "Différer cours". Sachant que le découpage d'un planning ne fonctionne correctement pour l'instant que pour les cours de type individuel (réservation plage verte) l'édition de la plage horaire a été désactivée pour l'ensemble des cours collectifs. De même, pour la fenêtre de dialogue "Changer prof".
 
@@ -14,9 +15,19 @@ S'il n'existe qu'une seule carte d'abonnement, il n'est plus utile d'ouvrir une 
 Si encore aucune carte d'abonnement n'a été configurée, un message vous en avertira et l'option "Abonnement" ne sera pas prise en compte lors d'une réservation de répétition.
 Les séances réservées par l'adhérent en cours d'abonnement sont maintenant enregistrées avec une heure de début et de fin. Cet historique permet de tracer l'activité de l'élève pour chacune de ses cartes d'abonnement.
 L'historique des abonnements est maintenant disponible et permet de visualiser l'ensemble des cartes d'abonnement achetées au cours du temps par l'adhérent ainsi que le détail horaire de ses activités.
-Note : le détail des sessions ne sera disponible que pour les sessions prises après la mise à jour de la version 2.9.2.
+Note : le détail des sessions ne sera disponible que pour les sessions prises après la mise à jour en version 2.9.2.
 Cette fonction permettra en outre de détailler les chevauchements horaires entre deux cartes (lorsque la durée de la réservation dépasse le nombre d'heures restant sur la carte en cours et qu'une nouvelle carte est créée pour la circonstance).
 Par principe, une nouvelle carte achetée n'est plus supprimée. Dès lors, le total des heures restantes pourra dans certains cas dépasser le montant total de la carte, après l'annulation d'une répétition par exemple. Ce comportement est désiré et il n'y a pas lieu de corriger ce décompte positif.
 
 DISPATCHER
 Le dispatcher était jusqu'alors censé fonctionner sur la même machine que celle sur laquelle était installée la base de données. Désormais, le paramètre hostdispatcher dans algem.conf permet d'indiquer une adresse réseau différente de celle du serveur de base de données. C'est particulièrement utile dans le cas où la base de données est hébergée sur un serveur distant mais que vous vouliez utiliser le dispatcher sur le réseau local.
+
+PLANNING
+- Il est maintenant possible de spécifier un instrument autre que celui par défaut pour chaque élève d'un planning de type atelier. Cette option ne sera disponible que si elle a été activée dans l'un des fichiers de configuration .algem/preferences ou local.properties. Le menu "Affectation instruments" dans la fenêtre de détail du planning vous permettra de sélectionner un instrument spécifique pour chaque élève. De même, ces instruments s'afficheront dans les feuilles de présence en face du nom des élèves.
+- Un nouveau menu "Exporter" est disponible dans le planning jour. Il vous permettra d'exporter la vue actuellement sélectionnée sous forme de tableau Excel. Quelques limitations cependant :
+  seuls les intervalles multiples de 30 minutes seront affichés correctement
+  les plages horaires des élèves des cours individuels (plage verte de réservation professeur) ne seront pas visibles. 
+Ce menu ne sera visible que s'il a été activé dans l'un ou l'autre des fichiers de configuration cités plus haut.
+- La disposition des boutons Aujourd'hui et jour précédent/suivant a été légèrement modifiée pour laisser apparaître le nom du jour de la semaine à gauche du champ date.
+
+

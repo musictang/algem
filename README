@@ -127,7 +127,7 @@ lesquelles la mise en cache se révèle la plus efficace.
 Depuis sa création, Algem a connu de multiples changements de cap. La gestion du
 cache et les appels aux méthodes du cache dans les différents services 
 n'est pas rigoureusement uniforme. Le cas échéant, des caches locaux peuvent être
-encore présents danscertains DAO, pour des raisons pratiques.
+encore présents dans certains DAO, pour des raisons pratiques.
 Du travail reste à faire à ce niveau.
 
 DISPATCHER
@@ -181,7 +181,7 @@ Ce fichier est placé dans le répertoire de travail (à l'extérieur du .jar) p
 des raisons pratiques et historiques. Le cas échéant, il est possible pour le client
 de modifier certains labels afin qu'ils correspondent aux besoins spécifiques de l'entreprise.
 Les clés sont en anglais et commencent arbitrairement par une majuscule.
-- Le fichier message.properties (inclus dans le jar) est utilisé, comme son nom
+- Le fichier messages.properties (inclus dans le jar) est utilisé, comme son nom
 l'indique pour les messages et les différents textes d'accompagnement : clés en
 minuscules et mots séparés par des points.
 

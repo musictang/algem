@@ -12,6 +12,7 @@ CREATE TABLE carteabopersessions (
 ALTER TABLE carteabopersessions OWNER TO nobody;
 
 -- ALTER TABLE absence OWNER TO nobody;
+DROP TABLE IF EXISTS absence;
 
 -- Pass repetition individuelle
 ALTER TABLE carteaborepet ADD totalmin integer DEFAULT 60;
@@ -29,3 +30,4 @@ PRIMARY KEY (idaction,idper)
 );
 
 ALTER TABLE atelier_instruments OWNER TO nobody;
+
