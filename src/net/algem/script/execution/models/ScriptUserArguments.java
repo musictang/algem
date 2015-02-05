@@ -8,4 +8,8 @@ public class ScriptUserArguments {
     public ScriptUserArguments(Map<String, Object> arguments) {
         this.arguments = arguments;
     }
+
+    public Map<String, Object> getArguments() {
+        return arguments;
+    }
 }
