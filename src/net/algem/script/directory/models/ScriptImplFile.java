@@ -24,6 +24,14 @@ public class ScriptImplFile extends ScriptFile {
         return true;
     }
 
+    public File getManifestFile() {
+        return manifestFile;
+    }
+
+    public File getCodeFile() {
+        return codeFile;
+    }
+
     @Override
     public int hashCode() {
         int result = manifestFile.hashCode();

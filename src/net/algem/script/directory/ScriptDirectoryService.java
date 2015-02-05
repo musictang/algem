@@ -1,8 +1,8 @@
 package net.algem.script.directory;
 
-import net.algem.script.Script;
+import net.algem.script.common.Script;
 import net.algem.script.directory.models.ScriptDirectory;
-import net.algem.script.directory.models.ScriptFile;
+import net.algem.script.directory.models.ScriptImplFile;
 
 public interface ScriptDirectoryService {
     /**
@@ -16,5 +16,5 @@ public interface ScriptDirectoryService {
      * @param scriptFile the script file to load
      * @return a script object
      */
-    Script loadScript(ScriptFile scriptFile);
+    Script loadScript(ScriptImplFile scriptFile) throws Exception;
 }
