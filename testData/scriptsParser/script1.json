@@ -1,0 +1,14 @@
+{
+  "description": "Simple test script",
+  "args": [{
+    "name" : "text1", "label": "A text input", "type": "text"
+  }, {
+    "name" : "int1", "label": "A int", "type": "int"
+  }, {
+    "name" : "bool1", "label": "A bool", "type": "bool"
+  }, {
+    "name" : "date1", "label": "A date", "type": "date"
+  }, {
+    "name" : "float1", "label": "A float", "type": "float"
+  }]
+}

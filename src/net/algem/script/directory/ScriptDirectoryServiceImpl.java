@@ -60,7 +60,8 @@ public class ScriptDirectoryServiceImpl implements ScriptDirectoryService {
     @Override
     public Script loadScript(ScriptImplFile scriptFile) throws Exception {
         String manifestData = fileReader.readFile(scriptFile.getManifestFile());
-        ScriptManifest manifest = manifestParser.parseManifest(manifestData);
+        String name = scriptFile.getManifestFile().getName().replace(".json", "");
+        ScriptManifest manifest = manifestParser.parseManifest(name, manifestData);
         String codeData = fileReader.readFile(scriptFile.getCodeFile());
         return new Script(manifest.getName(), manifest.getArguments(), manifest.getDescription(), codeData);
     }

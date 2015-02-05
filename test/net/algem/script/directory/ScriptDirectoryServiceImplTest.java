@@ -59,7 +59,7 @@ public class ScriptDirectoryServiceImplTest extends TestCase {
         List<ScriptArgument> arguments = Arrays.asList(new ScriptArgument("test", "Test", ArgType.TEXT));
         String scriptDescription = "description";
 
-        when(scriptManifestParser.parseManifest(manifestData)).thenReturn(new ScriptManifestParser.ScriptManifest(
+        when(scriptManifestParser.parseManifest(scriptName, manifestData)).thenReturn(new ScriptManifestParser.ScriptManifest(
                 scriptName, arguments, scriptDescription
         ));
 
