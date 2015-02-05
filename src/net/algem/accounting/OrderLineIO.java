@@ -1,7 +1,7 @@
 /*
- * @(#)OrderLineIO.java	2.9.2 05/01/15
+ * @(#)OrderLineIO.java	2.9.2-b5 05/02/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -228,9 +228,9 @@ public class OrderLineIO
   public static OrderLine find(OrderLine e, DataConnection dc) {
 
     String fac = ModeOfPayment.FAC.toString();
-    String query = "SELECT * FROM " + TABLE + " AND reglement";
+    String query = "SELECT * FROM " + TABLE + " WHERE reglement";
     query += fac.equals(e.getModeOfPayment()) ? " != '" + fac + "'" : " = '" + fac + "'";
-    query += " AND (commande >  0 AND commande = " + e.getOrder() + ")"
+    query += " AND commande >  0 AND commande = " + e.getOrder()
             + " AND payeur = " + e.getPayer()
             + " AND echeance = '" + e.getDate() + "'";
     Vector<OrderLine> r = getResult(query, dc);

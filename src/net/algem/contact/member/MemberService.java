@@ -1,7 +1,7 @@
 /*
- * @(#)MemberService.java	2.9.2 12/01/15
+ * @(#)MemberService.java	2.9.2-b5 05/02/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -32,7 +32,6 @@ import net.algem.accounting.OrderLineIO;
 import net.algem.config.Preference;
 import net.algem.contact.EmailIO;
 import net.algem.contact.PersonFile;
-import net.algem.contact.PersonFileEditor;
 import net.algem.contact.PersonFileEvent;
 import net.algem.contact.PersonFileIO;
 import net.algem.enrolment.Enrolment;
@@ -43,7 +42,6 @@ import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
 import net.algem.util.model.Model;
-import net.algem.util.module.GemDesktopCtrl;
 
 /**
  *
@@ -96,10 +94,13 @@ public class MemberService
     if (card != null) {
       int oldDuration = plan.getStart().getLength(plan.getEnd());
       int newDuration = start.getLength(end);
-      SubscriptionCardSession lastSession = card.getSessions().get(card.getSessions().size()-1);
-      if (lastSession != null) {
-        lastSession.setStart(new Hour(start));
-        lastSession.setEnd(new Hour(end));
+      List<SubscriptionCardSession> sessions = card.getSessions();
+      if (sessions != null && sessions.size() > 0) {
+        SubscriptionCardSession lastSession = sessions.get(sessions.size()-1);
+        if (lastSession != null) {
+          lastSession.setStart(new Hour(start));
+          lastSession.setEnd(new Hour(end));
+        }
       }
       if (newDuration >= oldDuration) {
         int sup = newDuration - oldDuration;
