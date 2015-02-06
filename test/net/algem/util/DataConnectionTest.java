@@ -73,10 +73,10 @@ public class DataConnectionTest extends TestCase {
     }
 
 
-    static class SimpleService {
+    public static class SimpleService {
         final DataConnection dc;
 
-        SimpleService(DataConnection dc) {
+        public SimpleService(DataConnection dc) {
             this.dc = dc;
         }
 
