@@ -1,7 +1,7 @@
 /*
- * @(#)GemDesktop.java	2.6.a 18/09/12
+ * @(#)GemDesktop.java	2.9.2.1 16/02/15
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -31,7 +31,7 @@ import net.algem.util.event.GemRemoteEvent;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.2.1
  * @since 1.0a 06/07/2002
  */
 public interface GemDesktop
@@ -43,10 +43,25 @@ public interface GemDesktop
   @Override
   public void postEvent(GemEvent evt);
 
+  /**
+   * Add new internal window module on the desktop.
+   * @param module module to add
+   */
   public void addModule(GemModule module);
 
+  /**
+   * Adds new internal window on the desktop.
+   * @param label title key (without .label extension)
+   * @param panel container
+   */
   public void addPanel(String label, java.awt.Container panel);
 
+  /**
+   * Adds new internal window on the desktop with preferred size.
+   * @param s title key (without .label extension)
+   * @param p container
+   * @param size preferred size
+   */
   public void addPanel(String s, java.awt.Container p, Dimension size);
 
   public boolean hasModule(String key);

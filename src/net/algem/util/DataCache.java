@@ -27,6 +27,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.logging.Logger;
 import javax.swing.JMenuItem;
 import net.algem.Algem.GemBoot;
 import net.algem.accounting.*;
@@ -331,7 +332,12 @@ public class DataCache
   public static GemModel findId(int id, Model m) throws SQLException {
     switch (m) {
       case Account:
-        return   ACCOUNT_LIST.getItem(id);
+        Account account = (Account) ACCOUNT_LIST.getItem(id);
+        if (account == null) {
+          account = AccountIO.find(id, dc);
+          ACCOUNT_LIST.addElement(account);
+        }
+        return  account;
       case Action:
         Action a = ACTION_CACHE.get(id);
         if (a == null) {
@@ -714,7 +720,7 @@ public class DataCache
       remove(obj);
     }
   }
-
+  
   /**
    * Initial loading.
    * @param frame (optional) to display messages
@@ -768,8 +774,8 @@ public class DataCache
       showMessage(frame, BundleUtil.getLabel("Accounting.label"));
       loadAccountingCache();
 
-      showMessage(frame, BundleUtil.getLabel("Billing.label"));
-      loadBillingCache();
+//      showMessage(frame, BundleUtil.getLabel("Billing.label"));
+//      loadBillingCache();
 
       for(User u : USER_IO.load()) {
         USER_CACHE.put(u.getId(), u);
@@ -786,9 +792,9 @@ public class DataCache
       String m = MessageUtil.getMessage("cache.loading.exception");
       GemLogger.logException(m, ex);
     } finally {
-      showMessage(frame, "<html>" + MessageUtil.getMessage("cache.loading.completed") +"</html>");
+      showMessage(frame, MessageUtil.getMessage("cache.loading.completed"));
       cacheInit = true;
-    }
+    } 
   }
 
   private void loadRoomContactCache() {
@@ -829,6 +835,13 @@ public class DataCache
         lo.add(ol);
       }
     }
+    if (lo.isEmpty()) {
+      String query = "WHERE facture = '" + invoiceId + "'";
+      lo =  OrderLineIO.find(query, dc);
+      for(OrderLine ol : lo) {
+        ORDER_LINE_CACHE.put(ol.getId(), ol);
+      }
+    } 
     return lo;
   }
 

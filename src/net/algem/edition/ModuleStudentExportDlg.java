@@ -1,7 +1,7 @@
 /*
- * @(#)ModuleStudentExportDlg.java 2.8.o 09/10/13
+ * @(#)ModuleStudentExportDlg.java 2.9.2.1 18/02/15
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,19 +21,18 @@
 
 package net.algem.edition;
 
-import java.awt.Frame;
 import javax.swing.JLabel;
 import net.algem.course.ModuleChoice;
 import net.algem.util.BundleUtil;
-import net.algem.util.DataCache;
 import net.algem.util.model.Model;
+import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.GemChoice;
 import net.algem.util.ui.GridBagHelper;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.o
+ * @version 2.9.2.1
  * @since 2.8.o 09/10/13
  */
 public class ModuleStudentExportDlg 
@@ -41,26 +40,28 @@ extends StudentExportDlg
 {
   private GemChoice module;
 
-  public ModuleStudentExportDlg(Frame parent, DataCache dc) {
-    super(parent, dc);
+  public ModuleStudentExportDlg(GemDesktop desktop) {
+    super(desktop);
   }
 
   @Override
   protected void setPanel() {
     
-    module = new ModuleChoice(dataCache.getList(Model.Module));
+    module = new ModuleChoice(desktop.getDataCache().getList(Model.Module));
+    module.setPreferredSize(typeContact.getPreferredSize());
     
-    gb.add(new JLabel(BundleUtil.getLabel("Module.label")), 0, 0, 1, 1, GridBagHelper.EAST);
+    gb.add(new JLabel(BundleUtil.getLabel("Module.label")), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(module, 1, 0, 1, 1, GridBagHelper.WEST);
-    gb.add(new JLabel(BundleUtil.getLabel("Date.From.label")), 0, 1, 1, 1, GridBagHelper.EAST);
+    gb.add(new JLabel(BundleUtil.getLabel("Date.From.label")), 0, 1, 1, 1, GridBagHelper.WEST);
     gb.add(dateRange, 1, 1, 1, 1, GridBagHelper.WEST);
-    gb.add(new JLabel(BundleUtil.getLabel("Type.label")), 0, 2, 1, 1, GridBagHelper.EAST);
+    gb.add(new JLabel(BundleUtil.getLabel("Type.label")), 0, 2, 1, 1, GridBagHelper.WEST);
     gb.add(typeContact, 1, 2, 1, 1, GridBagHelper.WEST);
+//    nextRow = 3;
   }
 
   @Override
   public String getRequest() {
-    return service.getContactQueryByModule(module.getKey(), dateRange.getStart(), dateRange.getEnd());
+    return service.getContactQueryByModule(module.getKey(), dateRange.getStart(), dateRange.getEnd(), rdPro.isSelected());
   }
 
 }

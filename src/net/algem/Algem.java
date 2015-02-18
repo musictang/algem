@@ -1,5 +1,5 @@
 /*
- * @(#)Algem.java	2.9.2-b5 05/02/15
+ * @(#)Algem.java	2.9.2.1 18/02/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -45,12 +45,12 @@ import org.apache.commons.codec.binary.Base64;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2-b5
+ * @version 2.9.2.1
  */
 public class Algem
 {
 
-  public static final String APP_VERSION = "2.9.2-b5";//experimental
+  public static final String APP_VERSION = "2.9.2.1";//experimental
   private static final int DEF_WIDTH = 1080;// (850,650) => ancienne taille
   private static final int DEF_HEIGHT = 780;
   private static final Point DEF_LOCATION = new Point(70, 30);
@@ -132,16 +132,14 @@ public class Algem
     /* ------------------------ */
     /* Test login user validity */
     /* ------------------------ */
-
     checkUser(login, pass, auth);
-
+    
     cache.load(gemBoot);
 
     /* ------------------------------------------------ */
     /* Creates the frame of the application */
     /* ------------------------------------------------ */
     setDesktop();
-
     gemBoot.close();
 
   }

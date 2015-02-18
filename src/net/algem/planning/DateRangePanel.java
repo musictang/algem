@@ -1,7 +1,7 @@
 /*
- * @(#)DateRangePanel.java 2.8.y 29/09/14
+ * @(#)DateRangePanel.java 2.9.2.1 16/02/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -34,7 +34,6 @@ import javax.swing.JOptionPane;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 import net.algem.util.BundleUtil;
-import net.algem.util.GemCommand;
 import net.algem.util.ImageUtil;
 import net.algem.util.ui.GemBorderPanel;
 import net.algem.util.ui.GemButton;
@@ -45,7 +44,7 @@ import net.algem.util.ui.GemPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.y
+ * @version 2.9.2.1
  */
 public class DateRangePanel
         extends GemPanel
@@ -316,6 +315,11 @@ public class DateRangePanel
         }
       }
     } 
+  }
+  
+  @Override
+  public String toString() {
+    return mode == SIMPLE_DATE ? getStartFr().toString() : (getStartFr().toString() + "_" + getEndFr().toString());
   }
   
   private void validDate1(Date newDate) {

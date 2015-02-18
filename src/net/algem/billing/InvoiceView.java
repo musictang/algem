@@ -1,7 +1,7 @@
 /*
- * @(#)InvoiceView.java 2.9.1 10/12/14
+ * @(#)InvoiceView.java 2.9.2.1 09/02/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -65,7 +65,7 @@ import net.algem.util.ui.*;
  * Invoice / quotation view.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.2.1
  * @since 2.3.a 07/02/12
  */
 public class InvoiceView
@@ -272,7 +272,16 @@ public class InvoiceView
    * @return a quote/invoice
    */
    Quote get() {
-    Quote inv = new Invoice(invoiceId.getText());
+      Quote inv;
+      try {
+        inv = invoice.getClass().newInstance();
+        inv.setNumber(invoiceId.getText());
+        //Quote inv = new Invoice(invoiceId.getText());
+      } catch (ReflectiveOperationException ex) {
+        GemLogger.log(ex.getMessage());
+        inv = new Invoice(invoiceId.getText());
+      } 
+    
       inv.setDescription(invoiceLabel.getText());
       inv.setDate(new DateFr(date.getText()));
       inv.setReference(ref.getText());
@@ -436,7 +445,7 @@ public class InvoiceView
   @Override
   public int print(Graphics g, PageFormat pageFormat, int pageIndex) throws PrinterException {
 
-    Quote p = get();
+    Quote quote = get();
     
     if (pageIndex > 0) { /* We have only one page, and 'page' is zero-based */
       return NO_SUCH_PAGE;
@@ -446,7 +455,7 @@ public class InvoiceView
     int bottom = ImageUtil.toPoints(297 - 20);// hauteur de page - 20 mm de marge
     int margin = ImageUtil.toPoints(15);
 
-    Contact c = ContactIO.findId(p.getPayer(), dc);
+    Contact c = ContactIO.findId(quote.getPayer(), dc);
     Address a = null;
     if (c != null) {
       a = c.getAddress();
@@ -460,17 +469,17 @@ public class InvoiceView
 
     g.setFont(serif);
     // nom établissement
-    g.drawString(getEstabName(p) + ", le " + p.getDate(), left, top + 80);
+    g.drawString(getEstabName(quote) + ", le " + quote.getDate(), left, top + 80);
     // numéro invoice
     String invoiceNumber = invoice.getClass() == Quote.class
             ? BundleUtil.getLabel("Quotation.label") : BundleUtil.getLabel("Invoice.label");
-    g.drawString(invoiceNumber + " : " + p.getNumber(), margin, top + 100);
+    g.drawString(invoiceNumber + " : " + quote.getNumber(), margin, top + 100);
     // référence
-    g.drawString("Ref. : " + p.getReference(), left, top + 100);
+    g.drawString("Ref. : " + quote.getReference(), left, top + 100);
     // émetteur
-    g.drawString(BundleUtil.getLabel("Issuer.label") + " : " + p.getUser().getFirstnameName(), margin, top + 120);
+    g.drawString(BundleUtil.getLabel("Issuer.label") + " : " + quote.getUser().getFirstnameName(), margin, top + 120);
     // description
-    g.drawString(BundleUtil.getLabel("Invoice.description.label") + " : " + p.getDescription(), margin, top + 140);
+    g.drawString(BundleUtil.getLabel("Invoice.description.label") + " : " + quote.getDescription(), margin, top + 140);
 
     int tableY = top + 160;
     int tabletop = tableY;
@@ -480,7 +489,7 @@ public class InvoiceView
     g.drawLine(margin, tableY + 20, margin + InvoiceItemElement.TABLE_WIDTH, tableY + 20);
     // items
     tableY += 5;
-    for (InvoiceItem invoiceItem : p.getItems()) {
+    for (InvoiceItem invoiceItem : quote.getItems()) {
       InvoiceItemElement item = new InvoiceItemElement(margin, tableY + 20, invoiceItem);
       item.draw(g);
       tableY += 20;
@@ -496,7 +505,7 @@ public class InvoiceView
     g.drawLine(InvoiceItemElement.xColHT, tabletop, InvoiceItemElement.xColHT, tablebottom); // colonne total HT
 
     // pied tableau
-    new InvoiceFooterElement(margin, tablebottom + 20, p).draw(g);
+    new InvoiceFooterElement(margin, tablebottom + 20, quote).draw(g);
     // infos légales
     drawFooter(g, margin, bottom);
 

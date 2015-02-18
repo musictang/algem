@@ -1,7 +1,7 @@
 /*
- * @(#)ExportDlg.java 2.9.1 27/11/14
+ * @(#)ExportDlg.java 2.9.2.1 18/02/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -25,6 +25,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Vector;
 import javax.swing.*;
@@ -32,6 +33,10 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import net.algem.config.ConfigUtil;
 import net.algem.contact.*;
 import net.algem.util.*;
+import net.algem.util.jdesktop.DesktopHandler;
+import net.algem.util.jdesktop.DesktopHandlerException;
+import net.algem.util.jdesktop.DesktopOpenHandler;
+import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GemField;
 import net.algem.util.ui.GemPanel;
@@ -42,7 +47,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.2.1
  * @since 1.0a 14/12/1999
  */
 public abstract class ExportDlg
@@ -51,10 +56,9 @@ public abstract class ExportDlg
 {
 
   public static final String TEXT_FILTER_LABEL = MessageUtil.getMessage("filechooser.text.filter.label");
-  protected static final int ITEM_DEF_WIDTH = 250;
   
   protected DataConnection dc;
-  protected DataCache dataCache;
+  protected GemDesktop desktop;
   protected GemField fileName;
   protected GemButton btValidation;
   protected GemButton btCancel;
@@ -62,19 +66,18 @@ public abstract class ExportDlg
   protected JButton chooser;
   protected File file;
 
-  public ExportDlg(Frame _parent, String _title, DataCache dataCache) {
-    super(_parent, _title);
-    this.dataCache = dataCache;
+  public ExportDlg(GemDesktop desktop, String _title) {
+    super(desktop.getFrame(), _title);
+    this.desktop = desktop;
     init(DataCache.getDataConnection());
   }
 
-  public ExportDlg(Dialog parent, String title, DataCache dataCache) {
+  public ExportDlg(Dialog parent, String title) {
     super(parent, title);
-    this.dataCache = dataCache;
     init(DataCache.getDataConnection());
   }
 
-  public void init(DataConnection dc) {
+  public final void init(DataConnection dc) {
     this.dc = dc;
 
     btValidation = new GemButton(GemCommand.VALIDATION_CMD);
@@ -86,12 +89,13 @@ public abstract class ExportDlg
     buttons.setLayout(new GridLayout(1, 1));
     buttons.add(btValidation);
     buttons.add(btCancel);
-
+    
     fileName = new GemField(ConfigUtil.getExportPath() + FileUtil.FILE_SEPARATOR + getFileName() + ".csv", 30);
     GemPanel pFile = new GemPanel();
     pFile.add(new Label(BundleUtil.getLabel("Menu.file.label")));
     pFile.add(fileName);
     chooser = new JButton(GemCommand.BROWSE_CMD);
+    chooser.setPreferredSize(new Dimension(chooser.getPreferredSize().width, fileName.getPreferredSize().height));
     chooser.addActionListener(this);
     pFile.add(chooser);
     
@@ -103,6 +107,8 @@ public abstract class ExportDlg
     setLayout(new BorderLayout());
     add(body, BorderLayout.CENTER);
     add(buttons, BorderLayout.SOUTH);
+    setLocation(100,100);
+    //setPreferredSize(new Dimension(520,260));
     pack();
   }
 
@@ -119,8 +125,17 @@ public abstract class ExportDlg
       if (!writeFile()) {
         return;
       }
-      validation();
-      close();
+      new Thread(new Runnable()
+      {
+        @Override
+        public void run() {
+          btValidation.setEnabled(false);
+          btCancel.setEnabled(false);
+          validation();
+          close();
+        }
+      }).start();
+      
     } else if (evt.getSource() == chooser) {
       JFileChooser fileChooser = getFileChooser(fileName.getText());
       int ret = fileChooser.showDialog(this, BundleUtil.getLabel("FileChooser.selection"));
@@ -129,7 +144,7 @@ public abstract class ExportDlg
         fileName.setText(file.getPath());
       }
     }
-
+    
   }
   
   protected boolean writeFile() {
@@ -175,9 +190,11 @@ public abstract class ExportDlg
         Contact c = v.elementAt(i);
         cpt++;
         out.print(c.getId() + ";");
+        out.print(c.getOrganization() == null ? ";" : c.getOrganization() + ";");
         out.print(c.getGender() + ";");
         out.print(c.getName() + ";");
         out.print(c.getFirstName() + ";");
+        out.print(c.getNickName() == null ? ";" : c.getNickName() + ";");
         Address a = c.getAddress();
         if (a != null && !a.isArchive()) {//on tient compte de l'attribut archive
           out.print(a.getAdr1() + ";");
@@ -220,14 +237,21 @@ public abstract class ExportDlg
         out.println();
       }
       out.close();
-    } catch (Exception e) {
+      MessagePopup.information(this, MessageUtil.getMessage("export.success.info", new Object[]{cpt, path}));
+      DesktopHandler handler = new DesktopOpenHandler();
+      ((DesktopOpenHandler) handler).open(path);
+    } catch (IOException e) {
       GemLogger.logException(query, e, this);
+    } catch (DesktopHandlerException ex) {
+      GemLogger.log(ex.getMessage());
+      MessagePopup.warning(this, ex.getMessage());
+    } finally {
+      setCursor(Cursor.getDefaultCursor());
     }
-    setCursor(Cursor.getDefaultCursor());
-    MessagePopup.information(this, MessageUtil.getMessage("export.success.info", new Object[]{cpt, path}));
+    
   }
 
-  private void close() {
+  protected void close() {
     setVisible(false);
     dispose();
   }

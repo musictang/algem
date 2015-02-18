@@ -1,5 +1,5 @@
 /*
- * @(#)GemDesktopCtrl.java	2.9.2 22/01/15
+ * @(#)GemDesktopCtrl.java	2.9.2.1 18/02/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -66,7 +66,7 @@ import net.algem.util.ui.HtmlViewer;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.9.2.1
  * @since 1.0a 05/07/2002
  */
 public class GemDesktopCtrl
@@ -344,31 +344,36 @@ public class GemDesktopCtrl
       postitCreate.addActionListener(this);
       addPanel(GemModule.POSTIT_CREATE_KEY, postitCreate);
     } else if (BundleUtil.getLabel("Menu.contact.label").equals(arg)) {
-      ContactExportDlg dlg = new ContactExportDlg(getFrame(), dataCache);
+      ContactExportDlg dlg = new ContactExportDlg(this);
       dlg.setVisible(true);
     } else if (BundleUtil.getLabel("Menu.member.label").equals(arg)) {
-      MemberExportDlg dlg = new MemberExportDlg(getFrame(), dataCache);
+      MemberExportDlg dlg = new MemberExportDlg(this);
       dlg.setVisible(true);
     } else if (BundleUtil.getLabel("Menu.teacher.label").equals(arg)) {
-      TeacherExportDlg dlg = new TeacherExportDlg(getFrame(), dataCache);
+      TeacherExportDlg dlg = new TeacherExportDlg(this);
       dlg.setVisible(true);
     } else if (BundleUtil.getLabel("Menu.payer.label").equals(arg)) {
-      PayerExportDlg dlg = new PayerExportDlg(getFrame(), dataCache);
+      PayerExportDlg dlg = new PayerExportDlg(this);
       dlg.setVisible(true);
     } else if (BundleUtil.getLabel("Group.members.label").equals(arg)) {
-      MusicianExportDlg dlg = new MusicianExportDlg(getFrame(), dataCache);
+      MusicianExportDlg dlg = new MusicianExportDlg(this);
       dlg.setVisible(true);
-    } else if (BundleUtil.getLabel("Menu.student.by.teacher.label").equals(arg)) {
-      TeacherStudentExportDlg dlg = new TeacherStudentExportDlg(getFrame(), dataCache);
+      
+    } else if (BundleUtil.getLabel("Menu.student.all.label").equals(arg)) {
+      AllStudentExportDlg dlg = new AllStudentExportDlg(this);
+      dlg.setVisible(true);
+    }
+    else if (BundleUtil.getLabel("Menu.student.by.teacher.label").equals(arg)) {
+      TeacherStudentExportDlg dlg = new TeacherStudentExportDlg(this);
       dlg.setVisible(true);
     } else if (BundleUtil.getLabel("Menu.student.by.course.label").equals(arg)) {
-      CourseStudentExportDlg dlg = new CourseStudentExportDlg(getFrame(), dataCache);
+      CourseStudentExportDlg dlg = new CourseStudentExportDlg(this);
       dlg.setVisible(true);
     } else if (BundleUtil.getLabel("Menu.student.by.module.label").equals(arg)) {
-      ModuleStudentExportDlg dlg = new ModuleStudentExportDlg(getFrame(), dataCache);
+      ModuleStudentExportDlg dlg = new ModuleStudentExportDlg(this);
       dlg.setVisible(true);
     } else if (BundleUtil.getLabel("Menu.student.by.instrument.label").equals(arg)) {
-      InstrumentStudentExportDlg dlg = new InstrumentStudentExportDlg(getFrame(), dataCache);
+      InstrumentStudentExportDlg dlg = new InstrumentStudentExportDlg(this);
       dlg.setVisible(true);
     } else if (BundleUtil.getLabel("Menu.hour.stat.label").equals(arg)) {
       HourStatDlg hourStatDlg = new HourStatDlg(getFrame(), dataCache);
@@ -742,6 +747,8 @@ public class GemDesktopCtrl
     menu = mExport.add(new JMenuItem(BundleUtil.getLabel("Group.members.label")));
     menu.addActionListener(this);
     mExport.addSeparator();
+    menu = mExport.add(new JMenuItem(BundleUtil.getLabel("Menu.student.all.label")));
+    menu.addActionListener(this);
     menu = mExport.add(new JMenuItem(BundleUtil.getLabel("Menu.student.by.teacher.label")));
     menu.addActionListener(this);
     menu = mExport.add(new JMenuItem(BundleUtil.getLabel("Menu.student.by.course.label")));

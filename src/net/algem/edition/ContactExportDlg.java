@@ -1,7 +1,7 @@
 /*
- * @(#)ContactExportDlg.java	2.9.1 27/11/14
+ * @(#)ContactExportDlg.java	2.9.2.1 18/02/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,12 +21,13 @@
 package net.algem.edition;
 
 import java.awt.Dialog;
-import java.awt.Frame;
 import javax.swing.JComboBox;
 import net.algem.contact.Person;
+import net.algem.contact.member.MemberIO;
+import net.algem.room.RoomIO;
 import net.algem.util.BundleUtil;
-import net.algem.util.DataCache;
 import net.algem.util.MessageUtil;
+import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.GemPanel;
 
 /**
@@ -34,7 +35,7 @@ import net.algem.util.ui.GemPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.2.1
  * @since 1.0a 14/12/1999
  */
 public class ContactExportDlg
@@ -43,18 +44,23 @@ public class ContactExportDlg
 
   private static final String CONTACT_TITLE = BundleUtil.getLabel("Export.contact.title");
   private static Object[] criteria = {
-    MessageUtil.getMessage("export.criterium.contact.all")
+    MessageUtil.getMessage("export.criterium.contact.all"), 
+    MessageUtil.getMessage("export.criterium.contact.organization"), 
+    MessageUtil.getMessage("export.criterium.contact.not.member"),
+    MessageUtil.getMessage("export.criterium.contact.room")
   };
   private GemPanel pCriterion;
   private JComboBox criterion;
+
   
 
-  public ContactExportDlg(Frame _parent, DataCache _cache) {
-    super(_parent, CONTACT_TITLE, _cache);
+  public ContactExportDlg(GemDesktop desktop) {
+    super(desktop, CONTACT_TITLE);
+    this.desktop = desktop;
   }
 
-  public ContactExportDlg(Dialog _parent, DataCache _cache) {
-    super(_parent, CONTACT_TITLE, _cache);
+  public ContactExportDlg(Dialog _parent) {
+    super(_parent, CONTACT_TITLE);
   }
 
 	@Override
@@ -69,18 +75,16 @@ public class ContactExportDlg
 
 	@Override
   public String getRequest() {
-    String query = null;
-     // L'export est volontairement permissif. On sélectionne un contact indépendemment de 
-     // l'existence d'une adresse, d'un numéro de téléphone ou d'un email.
-     // On ne tient pas compte non plus du critère "archive" de l'adresse, si elle existe.
     switch (criterion.getSelectedIndex()) {
-      case 0: // tous les contacts
-        //query = "where id in (SELECT p.id from personne p,adresse a where p.ptype=1 and arch='f' and p.id=a.idper)";
-        query = "WHERE id IN (SELECT DISTINCT id FROM personne WHERE ptype = " + Person.PERSON + " AND id > 0)";
-        break;
+      case 1: 
+        return "WHERE id > 0 AND ptype = " + Person.PERSON + " AND (organisation IS NOT NULL OR length(organisation) > 0)";
+      case 2:
+        return "WHERE id > 0 AND ptype = " + Person.PERSON + " AND id NOT IN(SELECT idper FROM " + MemberIO.TABLE + ")";
+      case 3:
+        return "WHERE id > 0 AND id IN(SELECT idper FROM " + RoomIO.TABLE + " WHERE nom !~* 'RATTRAP')";
+      default:
+        return "WHERE id > 0 AND ptype = " + Person.PERSON;
     }
-
-    return query;
   }
 
   @Override

@@ -1,7 +1,7 @@
 /*
- * @(#)InstrumentStudentExportDlg.java 2.8.k 25/07/13
+ * @(#)InstrumentStudentExportDlg.java 2.9.2.1 17/02/15
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,11 +21,10 @@
 
 package net.algem.edition;
 
-import java.awt.Frame;
 import javax.swing.JLabel;
 import net.algem.config.InstrumentChoice;
 import net.algem.util.BundleUtil;
-import net.algem.util.DataCache;
+import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.GemChoice;
 import net.algem.util.ui.GridBagHelper;
 
@@ -33,7 +32,7 @@ import net.algem.util.ui.GridBagHelper;
  * Export dialog for contact infos of students playing the instrument selected.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.k
+ * @version 2.9.2.1
  * @since 2.6.d 06/11/2012
  */
 public class InstrumentStudentExportDlg
@@ -42,26 +41,34 @@ public class InstrumentStudentExportDlg
 
   private GemChoice instrument;
   
-  public InstrumentStudentExportDlg(Frame _parent, DataCache dc) {
-    super(_parent, dc);
+  public InstrumentStudentExportDlg(GemDesktop desktop) {
+    super(desktop);
   }
 
   @Override
   protected void setPanel() {
     
-    instrument = new InstrumentChoice(dataCache.getInstruments());
+    instrument = new InstrumentChoice(desktop.getDataCache().getInstruments());
+    instrument.setPreferredSize(typeContact.getPreferredSize());
     
-    gb.add(new JLabel(BundleUtil.getLabel("Instrument.label")), 0, 0, 1, 1, GridBagHelper.EAST);
+    gb.add(new JLabel(BundleUtil.getLabel("Instrument.label")), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(instrument, 1, 0, 1, 1, GridBagHelper.WEST);
-    gb.add(new JLabel(BundleUtil.getLabel("Date.From.label")), 0, 1, 1, 1, GridBagHelper.EAST);
+    gb.add(new JLabel(BundleUtil.getLabel("Date.From.label")), 0, 1, 1, 1, GridBagHelper.WEST);
     gb.add(dateRange, 1, 1, 1, 1, GridBagHelper.WEST);
-    gb.add(new JLabel(BundleUtil.getLabel("Type.label")), 0, 2, 1, 1, GridBagHelper.EAST);
+    gb.add(new JLabel(BundleUtil.getLabel("Type.label")), 0, 2, 1, 1, GridBagHelper.WEST);
     gb.add(typeContact, 1, 2, 1, 1, GridBagHelper.WEST);
+    
+    nextRow = 3;
   }
 
+  /**
+   * The query is about the people practicing the selected instrument,
+   * regardless of the courses they are registered during the period.
+   * @return a SQL-string
+   */
   @Override
   public String getRequest() {
-    return service.getContactQueryByInstrument(instrument.getKey(), dateRange.getStart(), dateRange.getEnd());
+    return service.getContactQueryByInstrument(instrument.getKey(), dateRange.getStart(), dateRange.getEnd(), rdPro.isSelected());
   }
 
 }

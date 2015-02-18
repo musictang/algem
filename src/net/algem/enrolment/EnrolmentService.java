@@ -1,7 +1,7 @@
 /*
- * @(#)EnrolmentService.java	2.9.1 14/11/14
+ * @(#)EnrolmentService.java	2.9.2.1 16/02/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -24,6 +24,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 import net.algem.config.*;
+import net.algem.contact.Person;
 import net.algem.contact.PersonFile;
 import net.algem.contact.PersonFileIO;
 import net.algem.contact.PersonIO;
@@ -41,7 +42,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.2.1
  * @since 2.4.a 20/04/12
  */
 public class EnrolmentService
@@ -855,23 +856,31 @@ public class EnrolmentService
   /**
    * Gets the time length of the sessions already performed by the member {@code m},
    * corresponding to the module order {@code mo}.
-   * @param member member's id
-   * @param mo id of the module order corresponding to the training performed
+   * @param idper member's id
+   * @param mOrderId id of the module order corresponding to the training performed
+   * @param start start date
+   * @param end end date
    * @return a length in minutes
    */
-  public int getCompletedTime(int member, int mo) {
-   String query = "SELECT sum(fin-debut) AS duree FROM " + ScheduleRangeIO.TABLE
-           + " WHERE adherent = " + member
-           + " AND idplanning in("
-           + "SELECT p.id FROM " + ScheduleIO.TABLE + " p, " + CourseOrderIO.TABLE + " cc, " + ModuleOrderIO.TABLE + " cm"
-           + " WHERE p.jour <= '" + dataCache.getEndOfYear()
-           + "' AND p.action = cc.idaction"
-           + " AND cc.module = cm.id"
-           + " AND cm.id = " + mo + ")";
-
+  public int getCompletedTime(int idper, int mOrderId, Date start, Date end) {
+    String query = "SELECT sum(fin-debut) AS duree FROM " + ScheduleRangeIO.TABLE + " pl"
+            + " WHERE adherent = " + idper
+            + " AND idplanning IN("
+            + "SELECT p.id FROM " + ScheduleIO.TABLE + " p, " + CourseOrderIO.TABLE + " cc, " + ActionIO.TABLE + " a, " + CourseIO.TABLE + " c"
+            + " WHERE p.jour BETWEEN '" + start + "' AND '" + end
+            + "' AND p.action = cc.idaction"
+            + " AND cc.idaction = a.id"
+            + " AND a.cours = c.id"
+            + " AND cc.datedebut <= p.jour"
+            + " AND cc.datefin >= p.jour"
+            + " AND cc.module = " + mOrderId
+            + " AND CASE" // if not collective, filter by time length
+            + " WHEN c.collectif = false THEN (cc.fin - cc.debut) = (pl.fin - pl.debut)"
+            + " ELSE TRUE"
+            + " END)";
     try {
       ResultSet rs = dc.executeQuery(query);
-      while(rs.next()) {
+      while (rs.next()) {
         Hour h = new Hour(rs.getString(1));
         return h.toMinutes();
       }
@@ -879,6 +888,25 @@ public class EnrolmentService
       GemLogger.log(ex.getMessage());
     }
     return 0;
-}
+  }
+  
+  private List<ModuleOrder> getCurrentModuleList(Date startTime, Date endTime) throws SQLException {
+    String where = "" + " AND cm.debut BETWEEN '" + startTime + "' AND '" + endTime + "'";
+    return ModuleOrderIO.find(where, dc);
+  }
+  
+  public List<ExtendedModuleOrder> getExtendedModuleList(Date startTime, Date endTime) throws SQLException {
+    List<ModuleOrder> modules = getCurrentModuleList(startTime, endTime);
+    List<ExtendedModuleOrder> extended = new ArrayList<ExtendedModuleOrder>();
+    for (ModuleOrder m : modules) {
+      ExtendedModuleOrder hm = new ExtendedModuleOrder(m);
+      Order order = OrderIO.findId(m.getIdOrder(), dc);
+      Person p = (Person) DataCache.findId(order.getMember(), Model.Person);
+      hm.setIdper(p.getId());
+      hm.setCompleted(getCompletedTime(p.getId(), m.getId(), startTime, endTime));
+      extended.add(hm);
+    }
+    return extended;
+  }
 
 }

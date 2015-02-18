@@ -1,7 +1,7 @@
 /*
- * @(#)MemberExportDlg.java	2.9.1 26/11/14
+ * @(#)MemberExportDlg.java	2.9.2.1 17/02/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,7 +20,7 @@
 package net.algem.edition;
 
 import java.awt.Dialog;
-import java.awt.Frame;
+import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.sql.SQLException;
 import javax.swing.JLabel;
@@ -35,6 +35,7 @@ import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
+import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.GemChoice;
 import net.algem.util.ui.GemLabel;
 import net.algem.util.ui.GemPanel;
@@ -46,7 +47,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.2.1
  * @since 1.0a 14/12/1999
  */
 public class MemberExportDlg
@@ -60,12 +61,12 @@ public class MemberExportDlg
   private ParamChoice costAccount;
   private DateRangePanel dateRange;
 
-  public MemberExportDlg(Frame _parent, DataCache dc) {
-    super(_parent, MEMBER_TITLE, dc);
+  public MemberExportDlg(GemDesktop desktop) {
+    super(desktop, MEMBER_TITLE);
   }
 
   public MemberExportDlg(Dialog _parent, DataCache dc) {
-    super(_parent, MEMBER_TITLE, dc);
+    super(_parent, MEMBER_TITLE);
   }
 
   @Override
@@ -90,14 +91,18 @@ public class MemberExportDlg
 
     initDateRange();
 
-    gb.add(new JLabel(BundleUtil.getLabel("Export.school.label")), 0, 0, 1, 1, GridBagHelper.EAST);
+    gb.add(new JLabel(BundleUtil.getLabel("Export.school.label")), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(schoolChoice, 1, 0, 1, 1, GridBagHelper.WEST);
-    gb.add(new JLabel(BundleUtil.getLabel("Export.account.label")), 0, 1, 1, 1, GridBagHelper.EAST);
+    gb.add(new JLabel(BundleUtil.getLabel("Export.account.label")), 0, 1, 1, 1, GridBagHelper.WEST);
     gb.add(account, 1, 1, 1, 1, GridBagHelper.WEST);
-    gb.add(new JLabel(BundleUtil.getLabel("Export.cost.account.label")), 0, 2, 1, 1, GridBagHelper.EAST);
+    gb.add(new JLabel(BundleUtil.getLabel("Export.cost.account.label")), 0, 2, 1, 1, GridBagHelper.WEST);
     gb.add(costAccount, 1, 2, 1, 1, GridBagHelper.WEST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Date.From.label")), 0, 3, 1, 1, GridBagHelper.EAST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Date.From.label")), 0, 3, 1, 1, GridBagHelper.WEST);
     gb.add(dateRange, 1, 3, 1, 1, GridBagHelper.WEST);
+    
+    schoolChoice.setPreferredSize(new Dimension(dateRange.getPreferredSize().width, schoolChoice.getPreferredSize().height));
+    account.setPreferredSize(schoolChoice.getPreferredSize());
+    costAccount.setPreferredSize(schoolChoice.getPreferredSize());
     return pCriterion;
 
   }
@@ -116,7 +121,8 @@ public class MemberExportDlg
     a = (n == null) ? new Account(0) : new Account(n);
 
     String query = "WHERE id IN (SELECT DISTINCT p.id FROM personne p, eleve e, " + OrderLineIO.TABLE + " c"
-            + " WHERE e.idper = p.id AND p.id = c.adherent"
+            + " WHERE e.idper = p.id "
+            + " AND p.id = c.adherent"
             + " AND c.echeance BETWEEN '" + dateRange.getStartFr().toString() + "' AND '" + dateRange.getEndFr().toString() + "'"
             + " AND c.ecole = '" + getSchool() + "'";
     //+" AND (p.id=a.idper OR e.payeur=a.idper)";
@@ -136,9 +142,9 @@ public class MemberExportDlg
    * to the end of school year. 
    */
   private void initDateRange() {
-    DateFr b = new DateFr(dataCache.getStartOfYear());
+    DateFr b = new DateFr(desktop.getDataCache().getStartOfYear());
     b.setDay(1);
-    dateRange = new DateRangePanel(b,dataCache.getEndOfYear());
+    dateRange = new DateRangePanel(b,desktop.getDataCache().getEndOfYear());
   }
   
   @Override

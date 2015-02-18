@@ -1,7 +1,7 @@
 /*
- * @(#)MemberEnrolmentEditor.java 2.9.1 08/12/14
+ * @(#)MemberEnrolmentEditor.java 2.9.2.1 16/02/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -71,7 +71,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.2.1
  * @since 1.0b 06/09/2001
  */
 public class MemberEnrolmentEditor
@@ -264,7 +264,7 @@ public class MemberEnrolmentEditor
           ModuleOrder mo = enu.nextElement();//probleme apres inscription
           ModuleEnrolmentNode mnode = new ModuleEnrolmentNode(mo);
           if (mo.getTotalTime() > 0) {
-            mnode.setCompleted(service.getCompletedTime(dossier.getId(), mo.getId()));
+            mnode.setCompleted(service.getCompletedTime(dossier.getId(), mo.getId(), dataCache.getStartOfYear().getDate(), dataCache.getEndOfYear().getDate()));
           }
 
           if (mo.isStopped()) {

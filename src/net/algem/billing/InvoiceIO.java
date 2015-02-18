@@ -1,7 +1,7 @@
 /*
- * @(#)InvoiceIO.java 2.9.1 11/12/14
+ * @(#)InvoiceIO.java 2.9.2.1 18/02/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -36,7 +36,7 @@ import net.algem.util.model.Model;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.2.1
  * @since 2.3.a 22/12/11
  */
 public class InvoiceIO
@@ -296,12 +296,13 @@ public class InvoiceIO
   }
 
   private Collection<OrderLine> findOrderLines(Invoice inv) {
-    Collection<OrderLine> cl = DataCache.findOrderLines(inv.getNumber());
+    /*Collection<OrderLine> cl = DataCache.findOrderLines(inv.getNumber());
     if (cl.isEmpty()) {
       String query = "WHERE facture = '" + inv.getNumber() + "'";
       cl =  OrderLineIO.find(query, dc);
-    }
-    return cl;
+    } 
+    return cl;*/
+    return DataCache.findOrderLines(inv.getNumber());
   }
 
   /**

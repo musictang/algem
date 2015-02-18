@@ -1,5 +1,5 @@
 /*
- * @(#)DayScheduleCtrl.java 2.9.2 02/02/15
+ * @(#)DayScheduleCtrl.java 2.9.2.1 16/02/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -58,7 +58,7 @@ import net.algem.util.module.GemModule;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.9.2.1
  * @since 1.0b 06/10/2001
  */
 public class DayScheduleCtrl
@@ -132,13 +132,15 @@ public class DayScheduleCtrl
     miQuit.addActionListener(this);
     miLinkMonth.addActionListener(this);
     view.setJMenuBar(mBar);
-    new Thread(new Runnable()
+    //new Thread(new Runnable()
+    SwingUtilities.invokeLater(new Runnable()
     {
       @Override
       public void run() {
         load(new java.util.Date());
       }
-    }).start();
+    });
+            //.start();
   }
 
   @Override
@@ -205,7 +207,7 @@ public class DayScheduleCtrl
       }
     } else if (src == miExport) {
       List<DayPlan> planning = ((DayScheduleView) view).getCurrentPlanning();
-      File destFile = FileUtil.getSaveFile(view, "xls", BundleUtil.getLabel("Excel.file.label"));
+      File destFile = FileUtil.getSaveFile(view, "xls", BundleUtil.getLabel("Excel.file.label"), null);
       if (destFile != null) {
         try {
           new PlanningExportService().exportPlanning(planning, destFile);

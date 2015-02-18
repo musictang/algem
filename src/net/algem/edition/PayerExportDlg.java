@@ -1,7 +1,7 @@
 /*
- * @(#)PayerExportDlg.java	2.9.1 27/11/14
+ * @(#)PayerExportDlg.java	2.9.2.1 17/02/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,7 +21,6 @@ package net.algem.edition;
 
 import java.awt.Dialog;
 import java.awt.Dimension;
-import java.awt.Frame;
 import java.awt.GridBagLayout;
 import java.util.Date;
 import javax.swing.JComboBox;
@@ -34,6 +33,7 @@ import net.algem.planning.DateRangePanel;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.MessageUtil;
+import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.GemPanel;
 import net.algem.util.ui.GridBagHelper;
 
@@ -44,7 +44,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.2.1
  * @since 1.0a 14/12/1999
  */
 public class PayerExportDlg
@@ -56,7 +56,6 @@ public class PayerExportDlg
     MessageUtil.getMessage("export.criterium.payer.uncollected"),
     MessageUtil.getMessage("export.criterium.payer.collected"),
     MessageUtil.getMessage("export.criterium.payer.all")
-    //MessageUtil.getMessage("export.criterium.payer.uncollected.check")
   };
   private GemPanel pCriterion;
   private JComboBox cbCriterion;
@@ -65,12 +64,12 @@ public class PayerExportDlg
   
   private static String all_payment = MessageUtil.getMessage("all.payment.label");
 
-  public PayerExportDlg(Frame _parent, DataCache _cache) {
-    super(_parent, PAYER_TITLE, _cache);
+  public PayerExportDlg(GemDesktop desktop) {
+    super(desktop, PAYER_TITLE);
   }
 
   public PayerExportDlg(Dialog _parent, DataCache _cache) {
-    super(_parent, PAYER_TITLE, _cache);
+    super(_parent, PAYER_TITLE);
   }
 
   @Override
@@ -81,18 +80,19 @@ public class PayerExportDlg
     gb.insets = GridBagHelper.SMALL_INSETS;
 
     cbCriterion = new JComboBox(criteria);
-    cbCriterion.setMaximumSize(new Dimension(ITEM_DEF_WIDTH,cbCriterion.getHeight()));
     payment = new JComboBox(ParamTableIO.getValues(ModeOfPaymentCtrl.TABLE, ModeOfPaymentCtrl.COLUMN_NAME, dc));
     payment.addItem(all_payment);
-    payment.setMaximumSize(new Dimension(ITEM_DEF_WIDTH,payment.getHeight()));
-
+    
     initDateRange();
-    gb.add(new JLabel(BundleUtil.getLabel("Type.label")), 0, 0, 1, 1, GridBagHelper.EAST);
+    gb.add(new JLabel(BundleUtil.getLabel("Type.label")), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(cbCriterion, 1, 0, 1, 1, GridBagHelper.WEST);
-    gb.add(new JLabel(BundleUtil.getLabel("Mode.of.payment.label")), 0, 1, 1, 1, GridBagHelper.EAST);
+    gb.add(new JLabel(BundleUtil.getLabel("Mode.of.payment.label")), 0, 1, 1, 1, GridBagHelper.WEST);
     gb.add(payment, 1, 1, 1, 1, GridBagHelper.WEST);
-    gb.add(new JLabel(BundleUtil.getLabel("Date.From.label")), 0, 2, 1, 1, GridBagHelper.EAST);
+    gb.add(new JLabel(BundleUtil.getLabel("Date.From.label")), 0, 2, 1, 1, GridBagHelper.WEST);
     gb.add(dateRange, 1, 2, 1, 1, GridBagHelper.WEST);
+    
+    cbCriterion.setPreferredSize(new Dimension(dateRange.getPreferredSize().width, cbCriterion.getPreferredSize().height));
+    payment.setPreferredSize(cbCriterion.getPreferredSize());
 
     return pCriterion;
   }

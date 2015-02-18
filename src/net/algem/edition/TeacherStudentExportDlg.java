@@ -1,7 +1,7 @@
 /*
- * @(#)TeacherStudentExportDlg.java 2.8.k 25/07/13
+ * @(#)TeacherStudentExportDlg.java 2.9.2.1 18/02/15
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,12 +21,11 @@
 
 package net.algem.edition;
 
-import java.awt.Frame;
 import javax.swing.JLabel;
 import net.algem.contact.teacher.TeacherChoice;
 import net.algem.util.BundleUtil;
-import net.algem.util.DataCache;
 import net.algem.util.model.Model;
+import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.GemChoice;
 import net.algem.util.ui.GridBagHelper;
 
@@ -34,7 +33,7 @@ import net.algem.util.ui.GridBagHelper;
  * Export dialog for contact infos of the selected teacher's students.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.k
+ * @version 2.9.2.1
  * @since 2.6.d 05/11/2012
  */
 public class TeacherStudentExportDlg 
@@ -42,26 +41,28 @@ public class TeacherStudentExportDlg
 {
   private GemChoice teacher;
 
-  public TeacherStudentExportDlg(Frame _parent, DataCache dc) {
-    super(_parent, dc);
+  public TeacherStudentExportDlg(GemDesktop desktop) {
+    super(desktop);
   }
 
   @Override
   protected void setPanel() {
     
-    teacher = new TeacherChoice(dataCache.getList(Model.Teacher), true);
+    teacher = new TeacherChoice(desktop.getDataCache().getList(Model.Teacher), true);
+    teacher.setPreferredSize(typeContact.getPreferredSize());
 
-    gb.add(new JLabel(BundleUtil.getLabel("Teacher.label")), 0, 0, 1, 1, GridBagHelper.EAST);
+    gb.add(new JLabel(BundleUtil.getLabel("Teacher.label")), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(teacher, 1, 0, 1, 1, GridBagHelper.WEST);
-    gb.add(new JLabel(BundleUtil.getLabel("Date.From.label")), 0, 1, 1, 1, GridBagHelper.EAST);
+    gb.add(new JLabel(BundleUtil.getLabel("Date.From.label")), 0, 1, 1, 1, GridBagHelper.WEST);
     gb.add(dateRange, 1, 1, 1, 1, GridBagHelper.WEST);
-    gb.add(new JLabel(BundleUtil.getLabel("Type.label")), 0, 2, 1, 1, GridBagHelper.EAST);
+    gb.add(new JLabel(BundleUtil.getLabel("Type.label")), 0, 2, 1, 1, GridBagHelper.WEST);
     gb.add(typeContact, 1, 2, 1, 1, GridBagHelper.WEST);
+    nextRow = 3;
   }
 
   @Override
   public String getRequest() {
-    return service.getContactQueryByTeacher(teacher.getKey(), dateRange.getStart(), dateRange.getEnd());
+    return service.getContactQueryByTeacher(teacher.getKey(), dateRange.getStart(), dateRange.getEnd(), rdPro.isSelected());
   }
 
 }

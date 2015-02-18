@@ -1,7 +1,7 @@
 /*
- * @(#)StudentExportDlg.java 2.9.1 27/11/14
+ * @(#)StudentExportDlg.java 2.9.2.1 18/02/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,14 +21,19 @@
 
 package net.algem.edition;
 
-import java.awt.Frame;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.List;
+import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JRadioButton;
 import net.algem.contact.Person;
 import net.algem.planning.DateRangePanel;
 import net.algem.util.BundleUtil;
@@ -36,6 +41,7 @@ import net.algem.util.DataCache;
 import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
 import net.algem.util.jdesktop.DesktopMailHandler;
+import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.GemPanel;
 import net.algem.util.ui.GridBagHelper;
 import net.algem.util.ui.MessagePopup;
@@ -44,7 +50,7 @@ import net.algem.util.ui.MessagePopup;
  * Abstract class for student export operations.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.2.1
  * @since 2.6.a 06/11/2012
  */
 public abstract class StudentExportDlg
@@ -53,39 +59,61 @@ public abstract class StudentExportDlg
  
   /** Type of info (all, mail only). */
   protected JComboBox typeContact;
-  
+  protected JRadioButton rdLeisure, rdPro;
   protected DateRangePanel dateRange; 
   protected GridBagHelper gb;
   protected ExportService service;
+  protected int nextRow;
+  protected DataCache dataCache;
 
-  public StudentExportDlg(Frame frame, DataCache dataCache) {
-    this(frame, BundleUtil.getLabel("Export.student.title"), dataCache);
+  public StudentExportDlg(GemDesktop desktop) {
+    this(desktop, BundleUtil.getLabel("Export.student.title"));
   }
   
-  public StudentExportDlg(Frame frame, String title, DataCache dataCache) {
-    super(frame, title, dataCache);
+  public StudentExportDlg(GemDesktop desktop, String title) {
+    super(desktop, title);
+    this.dataCache = desktop.getDataCache();
     service = new ExportService(DataCache.getDataConnection());
   }
   
   @Override
   public GemPanel getCriterion() {
+    GemPanel outerPanel = new GemPanel();
+    //outerPanel.setBorder(BorderFactory.createLineBorder(UIManager.getColor("Separator.foreground")));
+    outerPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
     GemPanel pCriterion = new GemPanel();
     pCriterion.setLayout(new GridBagLayout());
-//    pCriterion.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+    pCriterion.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+    outerPanel.add(pCriterion);
 
     gb = new GridBagHelper(pCriterion);
     gb.insets = GridBagHelper.SMALL_INSETS;
-    
-    
-    dateRange = new DateRangePanel(dataCache.getStartOfYear(), dataCache.getEndOfYear());
+
+    dateRange = new DateRangePanel(desktop.getDataCache().getStartOfYear(), desktop.getDataCache().getEndOfYear());
     String[] category = {
       BundleUtil.getLabel("Contact.full.information.label"),
       BundleUtil.getLabel("Email.label")
     };
     typeContact = new JComboBox(category);
-    setPanel();
+    typeContact.setPreferredSize(new Dimension(dateRange.getPreferredSize().width, typeContact.getPreferredSize().height));
+    ButtonGroup status = new ButtonGroup();
+    rdLeisure = new JRadioButton(BundleUtil.getLabel("Leisure.label"));
+    rdLeisure.setBorder(null);
+    rdPro = new JRadioButton(BundleUtil.getLabel("Pro.label"));
+    status.add(rdLeisure);
+    status.add(rdPro);
     
-    return pCriterion;
+    GemPanel statusPanel = new GemPanel();
+    statusPanel.add(rdLeisure);
+    statusPanel.add(rdPro);
+
+    setPanel();
+    if (nextRow > 0) {
+      gb.add(new JLabel(BundleUtil.getLabel("Status.label")), 0, nextRow, 1, 1, GridBagHelper.WEST);
+      gb.add(statusPanel, 1, nextRow, 1, 1, GridBagHelper.WEST);
+    }
+    
+    return outerPanel;
   }
   
   /**

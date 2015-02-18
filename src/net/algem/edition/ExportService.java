@@ -1,5 +1,5 @@
 /*
- * @(#)ExportService.java 2.9.2 30/01/15
+ * @(#)ExportService.java 2.9.2.1 18/02/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -36,6 +36,7 @@ import net.algem.enrolment.ModuleOrderIO;
 import net.algem.enrolment.OrderIO;
 import net.algem.group.GroupIO;
 import net.algem.planning.*;
+import net.algem.room.RoomIO;
 import net.algem.security.User;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
@@ -45,7 +46,7 @@ import net.algem.util.model.Model;
 /**
  * Service class for export operations.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.9.2.1
  * @since 2.6.d 06/11/2012
  */
 public class ExportService {
@@ -165,62 +166,116 @@ public class ExportService {
     return bcc.toString();
   }
   
-  String getContactQueryByTeacher(int teacher, Date start, Date end) {
-    return "SELECT DISTINCT m.idper, p.nom, p.prenom FROM "
-         + MemberIO.TABLE + " m, "
-         + ScheduleIO.TABLE + " s, "
-         + ScheduleRangeIO.TABLE + " r, "
-         + PersonIO.TABLE + " p"
-         + " WHERE s.jour >= '"+ start + "' AND s.jour <= '" + end + "'"
-         + " AND s.idper = " + teacher
-         + " AND s.id = r.idplanning AND r.adherent = m.idper AND m.idper = p.id"
-         + " ORDER BY p.nom, p.prenom";
-  }
-  
-  String getContactQueryByCourse(int course, Date start, Date end) {
+  String getContactQueryByTeacher(int teacher, Date start, Date end, boolean pro) {
     return "SELECT DISTINCT p.id, p.nom, p.prenom FROM "
-            + PersonIO.TABLE + " p, "
-            + MemberIO.TABLE + " m, "
-            + ScheduleIO.TABLE + " s, "
-            + ScheduleRangeIO.TABLE + " r, "
-            + ActionIO.TABLE + " a"
+            + ScheduleIO.TABLE + " s,"
+            + PersonIO.TABLE + " p,"
+            + CourseOrderIO.TABLE + " cc,"
+            + OrderIO.TABLE + " c,"
+            + ModuleOrderIO.TABLE + " cm,"
+            + ModuleIO.TABLE + " m"
             + " WHERE s.jour >= '" + start + "' AND s.jour <= '" + end + "'"
-            + " AND s.action = a.id AND a.cours = " + course
-            + " AND s.id = r.idplanning AND r.adherent = m.idper AND m.idper = p.id"
+            + " AND s.idper = " + teacher
+            + " AND s.action = cc.idaction"
+            + " AND cc.idcmd = c.id"
+            + " AND c.adh = p.id"
+            + " AND cc.module = cm.id"
+            + " AND cm.module = m.id"
+            + " AND m.code LIKE '" + (pro ? "P%'" : "L%'")
             + " ORDER BY p.nom, p.prenom";
   }
   
-  String getContactQueryByModule(int module, Date start, Date end) {
+  String getContactQueryByCourse(int course, Date start, Date end, boolean pro) {
+    return "SELECT DISTINCT p.id, p.nom, p.prenom FROM "
+            + PersonIO.TABLE + " p,"
+            + ActionIO.TABLE + " a,"
+            + ScheduleIO.TABLE + " s,"
+            + CourseOrderIO.TABLE + " cc,"
+            + OrderIO.TABLE + " c,"
+            + ModuleOrderIO.TABLE + " cm,"
+            + ModuleIO.TABLE + " m"
+            + " WHERE s.jour >= '" + start + "' AND s.jour <= '" + end + "'"
+            + " AND s.action = a.id"
+            + " AND a.cours = " + course
+            + " AND a.id = cc.idaction"
+            + " AND cc.idcmd = c.id"
+            + " AND c.adh = p.id"
+            + " AND cc.module = cm.id"
+            + " AND cm.module = m.id"
+            + " AND m.code LIKE '" + (pro ? "P%'" : "L%'")
+            + " ORDER BY p.nom, p.prenom";
+  }
+  
+  String getContactQueryByModule(int module, Date start, Date end, boolean pro) {
     return "SELECT DISTINCT p.id, p.nom, p.prenom FROM "
             + PersonIO.TABLE + " p, "
             + ScheduleIO.TABLE + " s, "
             + OrderIO.TABLE + " c, "
             + CourseOrderIO.TABLE + " cc, "
-            + ModuleOrderIO.TABLE + " cm"
+            + ModuleOrderIO.TABLE + " cm,"
+            + ModuleIO.TABLE + " m"
             + " WHERE s.jour >= '" + start + "' AND s.jour <= '" + end + "'"
             + " AND s.action = cc.idaction"
             + " AND cc.module = cm.id"
             + " AND cm.module = " + module
+            + " AND cm.module = m.id"
+            + " AND m.code LIKE '" + (pro ? "P%'" : "L%'")
             + " AND cc.idcmd = c.id"
             + " AND c.adh = p.id"
             + " ORDER BY p.nom, p.prenom";
   }
   
-  String getContactQueryByInstrument(int instrument, Date start, Date end) {  
-    return "SELECT DISTINCT m.idper, p.nom, p.prenom FROM "
-         + PersonIO.TABLE + " p, "
-         + MemberIO.TABLE + " m, "
-         + OrderIO.TABLE + " o, "
-         + CourseOrderIO.TABLE + " c, "   
-         + InstrumentIO.PERSON_INSTRUMENT_TABLE + " i"   
-         + " WHERE m.idper = o.adh"
-         + " AND o.id = c.idcmd"
-         + " AND c.datedebut >= '"+ start + "' AND c.datefin <= '" + end + "'"
-         + " AND m.idper = i.idper AND i.instrument = " + instrument + " AND i.ptype = " + Instrument.MEMBER
-         + " AND m.idper = p.id"
-         + " ORDER BY p.nom, p.prenom";
+  /**
+   * Search query of people practicing the instrument {@code instId}.
+   * @param instId instrument id
+   * @param start start date
+   * @param end end date
+   * @param pro status
+   * @return a SQL-string
+   */
+  String getContactQueryByInstrument(int instId, Date start, Date end, boolean pro) {
+    return "SELECT DISTINCT p.id, p.nom, p.prenom FROM "
+            + OrderIO.TABLE + " c,"
+            + InstrumentIO.PERSON_INSTRUMENT_TABLE + " i,"
+            + CourseOrderIO.TABLE + " cc,"
+            + ModuleOrderIO.TABLE + " cm,"
+            + ModuleIO.TABLE + " m,"
+            + PersonIO.TABLE + " p"   
+            + " WHERE c.adh = i.idper"
+            + " AND i.instrument = " + instId + " AND i.ptype = " + Instrument.MEMBER
+            + " AND c.id = cc.idcmd"
+            + " AND cc.datedebut >= '" + start + "' AND cc.datefin <= '" + end + "'"
+            + " AND cc.module = cm.id"
+            + " AND cm.module = m.id"
+            + " AND m.code LIKE '" + (pro ? "P%'" : "L%'")
+            + " AND c.adh = p.id"
+            + " ORDER BY p.nom, p.prenom";
   }
   
+  String getStudent(Date start, Date end, Boolean pro, int estab) {
+    String query = "SELECT DISTINCT p.id, p.nom, p.prenom FROM "
+            + OrderIO.TABLE + " c,"
+            + CourseOrderIO.TABLE + " cc,"
+            + ModuleOrderIO.TABLE + " cm,"
+            + ModuleIO.TABLE + " m,"
+            + PersonIO.TABLE + " p,"
+            + ScheduleIO.TABLE + " pl,"
+            + RoomIO.TABLE + " s"
+            + " WHERE cc.datedebut >= '" + start + "' AND cc.datefin <= '" + end + "'"
+            + " AND c.id = cc.idcmd"
+            + " AND cc.module = cm.id"
+            + " AND cm.module = m.id"
+            + " AND pl.lieux = s.id";
+    if (pro != null) {
+      query += " AND m.code LIKE '" + (pro.booleanValue() ? "P%'" : "L%'");
+    }
+    if (estab > 0) {
+      query += " AND cc.idaction = pl.action AND s.etablissement = " + estab;
+    }
+    query += " AND c.adh = p.id ORDER BY p.nom, p.prenom";
+    return query;
+  }
+
   List<Person> getContacts(String query) throws SQLException {
     List<Person> list = new ArrayList<Person>();
     ResultSet rs = dc.executeQuery(query);
@@ -299,8 +354,7 @@ public class ExportService {
 
   String getMusicianByInstrument(int instrument, Date start, Date end) {
     String query = "SELECT DISTINCT p.id, p.nom, p.prenom"
-            + " FROM " 
-            + PersonIO.TABLE + " p, " 
+            + " FROM " + PersonIO.TABLE + " p, " 
             + ScheduleIO.TABLE + " s, "
             + GroupIO.TABLE + " g, " 
             + GroupIO.TABLE_DETAIL + " d, "

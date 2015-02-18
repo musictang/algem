@@ -1,5 +1,5 @@
 /*
- * @(#)FileUtil.java	2.9.2 02/02/15
+ * @(#)FileUtil.java	2.9.2.1 16/02/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -53,7 +53,7 @@ import net.algem.util.ui.MessagePopup;
  * Utility class for file operations.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.9.2.1
  * @since 2.0q
  */
 public class FileUtil
@@ -301,14 +301,15 @@ public class FileUtil
   }
 
   /**
-   * Helper method for opening a save file chooser dialog
+   * Helper method for opening a save file chooser dialog.
    *
    * @param component the AWT parent of the chooser dialog
    * @param extension the request extension (ex. "xls")
    * @param extensionName the displayed name for files (ex. "Excel files")
+   * @param proposed suggested file name (may be null)
    * @return the selected File (may be null)
    */
-  public static File getSaveFile(Component component, String extension, String extensionName) {
+  public static File getSaveFile(Component component, String extension, String extensionName, String proposed) {
     JFileChooser jFileChooser = new JFileChooser() {
       @Override
       public void approveSelection(){
@@ -331,6 +332,9 @@ public class FileUtil
         super.approveSelection();
       }
     };
+    if (proposed != null && proposed.trim().length() > 0) {
+      jFileChooser.setSelectedFile(new File(proposed.endsWith("." + extension) ? proposed : proposed + "." + extension));
+    }
     jFileChooser.setFileFilter(new FileNameExtensionFilter(extensionName, extension));
     if (jFileChooser.showSaveDialog(component) == JFileChooser.APPROVE_OPTION) {
       File destFile = jFileChooser.getSelectedFile();

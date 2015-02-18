@@ -1,7 +1,7 @@
 /*
- * @(#)BasicBillingService 2.9.1 11/12/14
+ * @(#)BasicBillingService 2.9.2.1 09/02/15
  *
- * Copyright 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -40,7 +40,7 @@ import net.algem.util.model.Model;
  * Service class for billing.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.2.1
  * @since 2.3.a 06/02/12
  */
 public class BasicBillingService
@@ -388,8 +388,17 @@ public class BasicBillingService
 
 
   @Override
-  public Quote duplicate(Quote v){
-    Invoice n = new Invoice();
+  public Quote duplicate(Quote v) {
+    
+    //Invoice n = new Invoice();
+    Quote n;    
+    try {
+      n = v.getClass().newInstance();
+    } catch (ReflectiveOperationException ex) {
+      GemLogger.log(ex.getMessage());
+      return null;
+    }
+    
     n.date = new DateFr(new Date());
     n.estab = v.getEstablishment();
     n.issuer = dataCache.getUser().getId();

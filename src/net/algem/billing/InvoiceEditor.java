@@ -1,7 +1,7 @@
 /*
- * @(#)InvoiceEditor.java 2.8.w 05/09/14
+ * @(#)InvoiceEditor.java 2.9.2.1 09/02/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -42,7 +42,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.2.1
  * @since 2.3.a 07/02/12
  */
 public class InvoiceEditor
@@ -243,11 +243,15 @@ public class InvoiceEditor
       view.print();
     } else if(evt.getSource() == btDuplicate) {
         Quote n = service.duplicate(view.get());
-        n.setUser(dataCache.getUser());
-        n.setEditable(true);
-        view.set(n, service.getContact(n.getMember()), service.getContact(n.getPayer()));
-        view.setId("");
-        btDuplicate.setEnabled(false);
+        if (n != null) {
+          n.setUser(dataCache.getUser());
+          n.setEditable(true);
+          view.set(n, service.getContact(n.getMember()), service.getContact(n.getPayer()));
+          view.setId("");
+          btDuplicate.setEnabled(false);
+        } else {
+          MessagePopup.error(this, MessageUtil.getMessage("billing.duplication.error"));
+        }
     }
   }
   

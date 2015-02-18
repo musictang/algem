@@ -1,7 +1,7 @@
 /*
- * @(#)ModuleOrder.java	2.9.1 10/11/14
+ * @(#)ModuleOrder.java	2.9.2.1 16/02/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -29,38 +29,38 @@ import net.algem.planning.DateFr;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.2.1
  */
 public class ModuleOrder
         implements java.io.Serializable
 {
 
-  private int id;
-  private int idcmd;
-  private int payer;
-  private boolean stopped;
+  protected int id;
+  protected int idcmd;
+  protected int payer;
+  protected boolean stopped;
   
   /** Module id. */
-  private int module;
+  protected int module;
   
   /** Module index. */
-  private int index_module;
+  protected int index_module;
   
   /**
    * Amount of the order.
    * TODO : s'agit-il du prix de base, du prix total ?
    * Actuellement, aligné sur le montant d'une échéance.
    */
-  private double price;
-  private DateFr start;
-  private DateFr end;
-  private String modeOfPayment;
-  private PayFrequency payFrequency;
-  private int nOrderLines;
-  private String title;
-  private PricingPeriod pricing;
-  private int totalTime;
-  private double paymentAmount;
+  protected double price;
+  protected DateFr start;
+  protected DateFr end;
+  protected String modeOfPayment;
+  protected PayFrequency payFrequency;
+  protected int nOrderLines;
+  protected String title;
+  protected PricingPeriod pricing;
+  protected int totalTime;
+  protected double paymentAmount;
   
   private List<CourseOrder> courseOrders = new ArrayList<CourseOrder>();
 

@@ -1,7 +1,7 @@
 /*
- * @(#)QuoteIO.java 2.9.1 08/12/14
+ * @(#)QuoteIO.java 2.9.2.1 09/02/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -35,7 +35,7 @@ import net.algem.util.model.Model;
  * Quote persistence {@link net.algem.billing.Quote}.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.y
+ * @version 2.9.2.1
  * @since 2.4.d 07/06/12
  */
 public class QuoteIO
@@ -67,27 +67,27 @@ public class QuoteIO
    * Transaction for quote creation.
    *
    * @param <T>
-   * @param f
+   * @param q
    * @throws SQLException
    * @throws BillingException
    */
-  public <T extends Quote> void insert(T f) throws SQLException, BillingException {
+  public <T extends Quote> void insert(T q) throws SQLException, BillingException {
 
     int last = getLastId(TABLE, dc);
 
     if (last == -1) {
       throw new BillingException("NULL INVOICE LAST ID");
     }
-    f.inc(last);
+    q.inc(last);
     // la colonne editable prend la valeur true par défaut
-    String query = "INSERT INTO " + TABLE + " VALUES('" + f.getNumber()
-            + "','" + f.getDate()
-            + "'," + f.getEstablishment()
-            + "," + f.getIssuer()
-            + "," + f.getPayer()
-            + ",'" + escape(f.getDescription().trim())
-            + "','" + escape(f.getReference().trim())
-            + "'," + f.getMember()
+    String query = "INSERT INTO " + TABLE + " VALUES('" + q.getNumber()
+            + "','" + q.getDate()
+            + "'," + q.getEstablishment()
+            + "," + q.getIssuer()
+            + "," + q.getPayer()
+            + ",'" + escape(q.getDescription().trim())
+            + "','" + escape(q.getReference().trim())
+            + "'," + q.getMember()
             + ")";
 
     try {
@@ -95,8 +95,8 @@ public class QuoteIO
       dc.executeUpdate(query);// insertion facture
 
       // insertion lignes facture
-      for (InvoiceItem af : f.getItems()) {
-        insert(af, f.getNumber());
+      for (InvoiceItem vItem : q.getItems()) {
+        insert(vItem, q.getNumber());
       }
 
       dc.commit();

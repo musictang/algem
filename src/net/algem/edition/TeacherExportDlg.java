@@ -1,7 +1,7 @@
 /*
- * @(#)TeacherExportDlg.java	2.9.1 27/11/14
+ * @(#)TeacherExportDlg.java	2.9.2.1 18/02/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,12 +21,16 @@
 package net.algem.edition;
 
 import java.awt.Dialog;
-import java.awt.Frame;
 import javax.swing.JComboBox;
+import net.algem.contact.Person;
 import net.algem.planning.Schedule;
+import net.algem.room.EstabChoice;
+import net.algem.room.Establishment;
 import net.algem.util.BundleUtil;
-import net.algem.util.DataCache;
 import net.algem.util.MessageUtil;
+import net.algem.util.model.GemList;
+import net.algem.util.model.Model;
+import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.GemPanel;
 
 /**
@@ -34,7 +38,7 @@ import net.algem.util.ui.GemPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.2.1
  * @since 1.0a 14/12/1999
  */
 public class TeacherExportDlg
@@ -49,41 +53,62 @@ public class TeacherExportDlg
   };
   private GemPanel pCriterion;
   private JComboBox cbCriterion;
+  private EstabChoice estab;
+  private GemList<Establishment> allEstabList;
   
-  public TeacherExportDlg(Frame _parent, DataCache _cache) {
-    super(_parent, TEACHER_TITLE, _cache);
+  public TeacherExportDlg(GemDesktop desktop) {
+    super(desktop, TEACHER_TITLE);
   }
 
-  public TeacherExportDlg(Dialog _parent, DataCache _cache) {
-    super(_parent, TEACHER_TITLE, _cache);
+  public TeacherExportDlg(Dialog _parent) {
+    super(_parent, TEACHER_TITLE);
   }
 
 	@Override
   public GemPanel getCriterion() {
     pCriterion = new GemPanel();
-
     cbCriterion = new JComboBox(criteria);
     pCriterion.add(cbCriterion);
-
+    allEstabList = desktop.getDataCache().getList(Model.Establishment);
+    allEstabList.addElement(new Establishment(new Person(0, BundleUtil.getLabel("All.label"))));
+    estab = new EstabChoice(allEstabList);
+    pCriterion.add(estab);
     return pCriterion;
   }
 
 	@Override
   public String getRequest() {
     String query = null;
-
+    int e = estab.getKey();
     switch (cbCriterion.getSelectedIndex()) {
       case 0: // tous les profs
-        //query = "where id in (SELECT p.id from personne p,adresse a,prof e where e.idper=p.id and p.id=a.idper and a.archive='f')";
-        query = "where id in (SELECT idper FROM prof)";// tous les profs
+        query = "WHERE id > 0 AND id IN (SELECT idper FROM prof)";
+        if (e > 0) {
+          query += " AND id IN (SELECT DISTINCT e.idper FROM prof e, planning p, salle s"
+                  + " WHERE e.idper = p.idper"
+                  + " AND p.ptype IN (" + Schedule.COURSE + "," + Schedule.WORKSHOP + "," + Schedule.TRAINING + ")"
+                  + " AND p.lieux = s.id AND s.etablissement = " + e + ")";
+        }
         break;
       case 1: // tous les profs actifs
-        //query = "where id in (SELECT p.id from personne p,adresse a,prof e where e.idper=p.id and p.id=a.idper and e.actif='t')";
-        query = "where id in (SELECT idper FROM prof WHERE actif = 't')";// tous les profs actifs
+        query = "WHERE id > 0 AND id IN (SELECT idper FROM prof WHERE actif = 't')";
+        if (e > 0) {
+          query += " AND id IN (SELECT DISTINCT e.idper FROM prof e, planning p, salle s"
+                  + " WHERE e.idper = p.idper"
+                  + " AND p.ptype IN (" + Schedule.COURSE + "," + Schedule.WORKSHOP + "," + Schedule.TRAINING + ")"
+                  + " AND p.lieux = s.id AND s.etablissement = " + e + ")";
+        }
         break;
       case 2: // les intervenants de l'année
-        //query = "where id in (SELECT distinct p.id from personne p,adresse a,prof e, cours c where e.idper=p.id and p.id=a.idper and c.prof=p.id and c.start >='" + dc.getStartOfYear() + "')";
-        query = "where id in (SELECT DISTINCT e.idper FROM prof e, planning p WHERE e.idper=p.idper AND (p.ptype = " + Schedule.COURSE + " OR p.ptype = " + Schedule.WORKSHOP + ") AND p.jour >='" + dataCache.getStartOfYear() + "')";
+        query = "WHERE id > 0 AND id IN (SELECT DISTINCT e.idper FROM prof e, planning p, salle s"
+                + " WHERE e.idper = p.idper"
+                + " AND p.lieux = s.id"
+                + " AND p.ptype IN (" + Schedule.COURSE + "," + Schedule.WORKSHOP + "," + Schedule.TRAINING + ")"
+                + " AND p.jour >= '" + desktop.getDataCache().getStartOfYear() + "'";
+        if (e > 0) {
+          query += " AND s.etablissement = " + e;
+        }
+        query += ")";
         break;
     }
 
@@ -93,5 +118,11 @@ public class TeacherExportDlg
   @Override
   protected String getFileName() {
     return BundleUtil.getLabel("Export.teacher.file");
+  }
+  
+  @Override
+  protected void close() {
+    allEstabList.removeElement((Establishment) allEstabList.getItem(0));
+    super.close();
   }
 }
