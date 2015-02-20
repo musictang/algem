@@ -1,5 +1,5 @@
 /*
- * @(#)ExtendeModuleOrderListCtrl.java	2.9.2.1 16/02/15
+ * @(#)ExtendeModuleOrderListCtrl.java	2.9.2.1 19/02/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -25,6 +25,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -48,6 +49,8 @@ import net.algem.util.FileUtil;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
 import net.algem.util.TextUtil;
+import net.algem.util.jdesktop.DesktopHandlerException;
+import net.algem.util.jdesktop.DesktopOpenHandler;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.GemBorderPanel;
 import net.algem.util.ui.GemButton;
@@ -203,7 +206,11 @@ public class ExtendeModuleOrderListCtrl
    */
   private void print() {
     String filename = "pca_" + datePanel.toString() + ".csv";
-    try (PrintWriter out = new PrintWriter(new FileWriter(FileUtil.getSaveFile(this, "csv", "Documents csv (tableur)", filename)))) {
+    File f = FileUtil.getSaveFile(this, "csv", "Documents csv (tableur)", filename);
+    if (f == null) {
+      return;
+    }
+    try (PrintWriter out = new PrintWriter(new FileWriter(f))) {
       StringBuilder sb = new StringBuilder("\ufeff");
       for (int i = 0; i < tableModel.getColumnCount(); i++) {
         sb.append(tableModel.getColumnName(i)).append(';');
@@ -230,9 +237,12 @@ public class ExtendeModuleOrderListCtrl
         sb.append(tableModel.getValueAt(idx, 8)).append(TextUtil.LINE_SEPARATOR);
       }
       out.println(sb.toString());
+      new DesktopOpenHandler().open(f.getAbsolutePath());
     } catch (IOException ex) {
       GemLogger.log(ex.getMessage());
-    }
+    } catch (DesktopHandlerException ex) {
+      GemLogger.log(ex.getMessage());
+    } 
   }
   
   /**

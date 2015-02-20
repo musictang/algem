@@ -1,5 +1,5 @@
 /*
- * @(#)EnrolmentService.java	2.9.2.1 16/02/15
+ * @(#)EnrolmentService.java	2.9.2.1 20/02/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -856,6 +856,7 @@ public class EnrolmentService
   /**
    * Gets the time length of the sessions already performed by the member {@code m},
    * corresponding to the module order {@code mo}.
+   * A session is seen as completed if it was scheduled, even though it has not actually occurred.
    * @param idper member's id
    * @param mOrderId id of the module order corresponding to the training performed
    * @param start start date
@@ -890,20 +891,34 @@ public class EnrolmentService
     return 0;
   }
   
-  private List<ModuleOrder> getCurrentModuleList(Date startTime, Date endTime) throws SQLException {
-    String where = "" + " AND cm.debut BETWEEN '" + startTime + "' AND '" + endTime + "'";
+  /**
+   * Gets the list of module orders created between {@code start} and {@code end} dates.
+   * @param start start date
+   * @param end end date
+   * @return a list of module orders
+   * @throws SQLException 
+   */
+  private List<ModuleOrder> getCurrentModuleList(Date start, Date end) throws SQLException {
+    String where = "" + " AND cm.debut BETWEEN '" + start + "' AND '" + end + "'";
     return ModuleOrderIO.find(where, dc);
   }
   
-  public List<ExtendedModuleOrder> getExtendedModuleList(Date startTime, Date endTime) throws SQLException {
-    List<ModuleOrder> modules = getCurrentModuleList(startTime, endTime);
+  /**
+   * Gets the extended list of module orders created between {@code start} and {@code end} dates.
+   * @param start date
+   * @param end date
+   * @return
+   * @throws SQLException 
+   */
+  public List<ExtendedModuleOrder> getExtendedModuleList(Date start, Date end) throws SQLException {
+    List<ModuleOrder> modules = getCurrentModuleList(start, end);
     List<ExtendedModuleOrder> extended = new ArrayList<ExtendedModuleOrder>();
     for (ModuleOrder m : modules) {
       ExtendedModuleOrder hm = new ExtendedModuleOrder(m);
       Order order = OrderIO.findId(m.getIdOrder(), dc);
       Person p = (Person) DataCache.findId(order.getMember(), Model.Person);
       hm.setIdper(p.getId());
-      hm.setCompleted(getCompletedTime(p.getId(), m.getId(), startTime, endTime));
+      hm.setCompleted(getCompletedTime(p.getId(), m.getId(), start, end));
       extended.add(hm);
     }
     return extended;

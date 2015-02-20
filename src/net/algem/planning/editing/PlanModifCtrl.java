@@ -1,5 +1,5 @@
 /*
- * @(#)PlanModifCtrl.java	2.9.2 28/01/15
+ * @(#)PlanModifCtrl.java	2.9.2.1 19/02/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -54,7 +54,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.9.2.1
  * @since 1.0b 05/07/2002 lien salle et groupe
  */
 public class PlanModifCtrl
@@ -324,7 +324,9 @@ public class PlanModifCtrl
       dc.setAutoCommit(false);
       changeHour(start, end, hStart, hEnd);
       if (ScheduleObject.MEMBER == plan.getType()) {
-        memberService.updateSubscriptionCardSession(plan, hStart, hEnd);
+        if (memberService.updateSubscriptionCardSession(plan, hStart, hEnd)) {
+          MessagePopup.information(desktop.getFrame(), MessageUtil.getMessage("subscription.card.create.info"));
+        }
       }
       dc.commit();
       desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));//XXX dlg.getDateEnd/Fin

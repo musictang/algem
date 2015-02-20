@@ -1,5 +1,5 @@
 /*
- * @(#)MemberRehearsalCtrl.java	2.9.2 12/01/15
+ * @(#)MemberRehearsalCtrl.java	2.9.2.1 19/02/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -50,7 +50,7 @@ import net.algem.util.ui.PopupDlg;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.9.2.1
  * @since 1.0a 12/12/2001
  */
 public class MemberRehearsalCtrl
@@ -149,7 +149,8 @@ public class MemberRehearsalCtrl
         last.setRest(0);
         Hour start = new Hour(dto.getStart());
         Hour offset = new Hour(start);
-        offset.incMinute(Math.abs(remainder));
+        //offset.incMinute(Math.abs(remainder));
+        offset.incMinute(timeLength - Math.abs(remainder));
         Hour end = new Hour(dto.getEnd());
         dto.setStart(offset);
         dto.setEnd(end);
@@ -286,7 +287,7 @@ public class MemberRehearsalCtrl
         } else if (passList.size() == 1) {
           pass = passList.get(0);
         } else {
-          MessagePopup.warning(this, "aucune carte d'abonnement");
+          MessagePopup.warning(this, MessageUtil.getMessage("no.subscription.pass.warning"));
           saveSinglePayment(view.getRoom());
           return true;
         }
@@ -296,6 +297,7 @@ public class MemberRehearsalCtrl
         if (newCard != null) {
           memberService.saveRehearsalOrderLine(personFile, view.getDate(), pass.getAmount(), newCard.getId());
           event = new PersonFileEvent(newCard, PersonFileEvent.SUBSCRIPTION_CARD_CHANGED);
+          MessagePopup.information(this, MessageUtil.getMessage("subscription.card.create.info"));
         } else {
           event = new PersonFileEvent(personFile.getSubscriptionCard(), PersonFileEvent.SUBSCRIPTION_CARD_CHANGED);
         }

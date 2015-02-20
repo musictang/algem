@@ -1,5 +1,5 @@
 /*
- * @(#)HistoSubscriptionCard.java 2.9.2 12/01/15
+ * @(#)HistoSubscriptionCard.java 2.9.2.1 19/02/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -43,7 +43,7 @@ import net.algem.util.ui.GemPanel;
 /**
  * History of passes purchased by the member.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.9.2.1
  * @since 2.9.2 07/01/15
  */
 public class HistoSubscriptionCard 
@@ -178,6 +178,9 @@ public class HistoSubscriptionCard
   private void clear() {
     histoTableModel.clear();
     sessionTableModel.clear();
+    btValidation.setText(DETAIL_CMD);
+    first = true;
+    //btCancel.setText(GemCommand.CLOSE_CMD);
   }
 
 }

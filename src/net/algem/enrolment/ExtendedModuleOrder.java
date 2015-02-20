@@ -1,5 +1,5 @@
 /*
- * @(#)ExtendedModuleOrder.java	2.9.2.1 16/02/15
+ * @(#)ExtendedModuleOrder.java	2.9.2.1 19/02/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -27,7 +27,7 @@ import net.algem.util.DataCache;
 import net.algem.util.model.Model;
 
 /**
- *
+ * Module order with additional information. 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.9.2.1
  * @since 2.9.2.1 16/02/15

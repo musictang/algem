@@ -1,7 +1,7 @@
 /*
- * @(#)TableIO.java	2.9.1 12/11/14
+ * @(#)TableIO.java	2.9.2.1 20/02/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -31,7 +31,7 @@ import net.algem.util.DataConnection;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.2.1
  */
 public abstract class TableIO
 {
@@ -42,32 +42,37 @@ public abstract class TableIO
   protected final static String END_OF_QUERY = "')";
 
   /**
-   * Escapes quotes in the string {@code s}.
+   * Escapes quotes and backslashes in the string {@code s}.
    * @param s
    * @return a string
    */
   public static String escape(String s) {
-    if (s == null || s.indexOf('\'') < 0) {
+    if (s == null || (s.indexOf('\'') < 0 && s.indexOf('\\') < 0)) {
       return s;
     }
 
-    StringBuilder b = new StringBuilder(s);
+    /*StringBuilder b = new StringBuilder(s);
     for (int i = 0; i < b.length(); i++) {
-      if (b.charAt(i) == '\'') {
-        b.insert(i, '\\');
+      if (b.charAt(i) == '\'' || b.charAt(i) == '\\') {
+        b.insert(i++, '\\');
         i++;
       }
     }
-    return b.toString();
+    return b.toString();*/
+    s = s.replace("\\", "\\\\");
+    s = s.replace("\'", "\\'");
+    return s;
+
   }
 
   /**
    * Unescape quote characters in the string {@code s}.
    * @param s
    * @return a string
+   * @deprecated 
    */
   public static String unEscape(String s) {
-    if (s == null || s.indexOf('\'') < 0) {
+    /*if (s == null || s.indexOf('\'') < 0) {
       return s;
     }
     StringBuilder b = new StringBuilder(s);
@@ -78,6 +83,8 @@ public abstract class TableIO
       }
     }
     return b.toString();
+    */
+    return s;
   }
 
   /**

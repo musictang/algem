@@ -1,5 +1,5 @@
 /*
- * @(#)MemberService.java	2.9.2-b5 05/02/15
+ * @(#)MemberService.java	2.9.2.1 19/02/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -46,7 +46,7 @@ import net.algem.util.model.Model;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.9.2.1
  * @since 2.4.a 14/05/12
  */
 public class MemberService
@@ -85,10 +85,11 @@ public class MemberService
    * @param plan schedule
    * @param start start time
    * @param end end time
+   * @return true if a new card was created
    * @throws SQLException
    * @throws net.algem.contact.member.MemberException
    */
-  public void updateSubscriptionCardSession(ScheduleObject plan, Hour start, Hour end) throws SQLException, MemberException {
+  public boolean updateSubscriptionCardSession(ScheduleObject plan, Hour start, Hour end) throws SQLException, MemberException {
     PersonSubscriptionCard nc = null;
     PersonSubscriptionCard card = getLastSubscription(plan.getIdPerson(), true);
     if (card != null) {
@@ -107,6 +108,7 @@ public class MemberService
         card.dec(sup);
         if (card.getRest() < 0) {
           nc = createSubscriptionCard(card, plan);
+          return true;
         } else {
           updateSubscriptionCard(card);
         }
@@ -115,9 +117,11 @@ public class MemberService
         card.inc(sub);
         updateSubscriptionCard(card);
       }
-      // TODO possibly refresh
-      sendPersonFileEvent(nc == null ? card : nc);
+      
+      // TODO possibly refresh in controller
+      //sendPersonFileEvent(nc == null ? card : nc);
     }
+    return false;
   }
 
   /**

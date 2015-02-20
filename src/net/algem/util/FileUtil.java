@@ -1,5 +1,5 @@
 /*
- * @(#)FileUtil.java	2.9.2.1 16/02/15
+ * @(#)FileUtil.java	2.9.2.1 19/02/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -295,7 +295,7 @@ public class FileUtil
       Doc doc = new SimpleDoc(in, flavor, das);
       printJob.print(doc, pras);
       in.close();
-    } catch (Exception ex) {
+    } catch (IOException ex) {
       throw new PrintException(ex.getMessage());
     }
   }

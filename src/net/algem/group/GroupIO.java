@@ -1,7 +1,7 @@
 /*
- * @(#)GroupIO.java	2.8.p 06/12/13
+ * @(#)GroupIO.java	2.9.2.1 20/02/15
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -42,7 +42,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.p
+ * @version 2.9.2.1
  * @since 1.0a 07/07/1999
  */
 public class GroupIO
@@ -86,7 +86,7 @@ public class GroupIO
             + ",tourneur = ?";
     query += " WHERE id = " + g.getId();
     PreparedStatement pst = dc.prepareStatement(query);
-    pst.setString(1, escape(g.getName()));
+    pst.setString(1, g.getName());
     pst.setInt(2, g.getStyle().getId());
     pst.setInt(3, g.getIdref());
     pst.setInt(4, g.getIdman());
@@ -96,7 +96,6 @@ public class GroupIO
   }
 
   public void delete(Group g) throws SQLException {
-    // group suppression
     String query = "DELETE FROM " + TABLE + " WHERE id = " + g.getId();
     dc.executeUpdate(query);
   }
@@ -104,6 +103,9 @@ public class GroupIO
   /** 
    * Gets the group with id {@code n}.
    * If the group is not in cache, it is searched in database.
+   * @param n id of the group
+   * @return a group instance or null if not found
+   * @throws java.sql.SQLException
    */
   public Group findId(Integer n) throws SQLException {
     String query = "WHERE id = " + n;
@@ -116,6 +118,9 @@ public class GroupIO
 
   /**
    * Finds a group by criterion {@code where}.
+   * @param where 
+   * @return a list of groups
+   * @throws java.sql.SQLException
    */
   public Vector<Group> find(String where) throws SQLException {
 
@@ -143,7 +148,7 @@ public class GroupIO
   }
 
   public Vector<Group> find(int idper) throws SQLException {
-    String where = "WHERE id in(SELECT id FROM groupe_det WHERE musicien = " + idper + ")";
+    String where = "WHERE id in(SELECT id FROM " + TABLE_DETAIL + " WHERE musicien = " + idper + ")";
     return find(where);
   }
 
@@ -158,17 +163,18 @@ public class GroupIO
   }
 
   /**
-   * Finds the list of musicians for the group <code>id</code>.
+   * Finds the list of musicians of the group <code>id</code>.
    *
    * @param id group id
    * @return a list of musicians
+   * @throws java.sql.SQLException
    */
   public Vector<Musician> findMusicians(int id) throws SQLException {
     Vector<Musician> v = new Vector<Musician>();
-    String query = "SELECT * FROM groupe_det WHERE id = " + id;
+    String query = "SELECT musicien FROM " + TABLE_DETAIL + " WHERE id = " + id;
     ResultSet rs = dc.executeQuery(query);
     while (rs.next()) {
-      Person p = ((PersonIO) DataCache.getDao(Model.Person)).findId(rs.getInt(2));//musicien
+      Person p = ((PersonIO) DataCache.getDao(Model.Person)).findId(rs.getInt(1));//musicien
       if (p != null) {
         Musician m = new Musician(p);//personne, instrument
         List<Integer> li = InstrumentIO.find(p.getId(), Instrument.MUSICIAN, dc);
@@ -195,7 +201,6 @@ public class GroupIO
   }
 
   private MusicStyle findStyle(int id) throws SQLException {
-//    return ((MusicStyleIO) DataCache.getDao(Model.MusicStyle)).findId(id);//XXX
     return (MusicStyle) DataCache.findId(id, Model.MusicStyle);
   }
   

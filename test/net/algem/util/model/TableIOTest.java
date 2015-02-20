@@ -1,7 +1,7 @@
 /*
- * @(#)TableIOTest.java	2.9.1 12/11/14
+ * @(#)TableIOTest.java	2.9.2.1 20/02/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,6 +21,10 @@
 
 package net.algem.util.model;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.JTextField;
+import net.algem.TestProperties;
 import net.algem.util.DataConnection;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -33,11 +37,12 @@ import org.junit.Ignore;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.2.1
  * @since 2.9.1 12/11/14
  */
 public class TableIOTest {
 
+  private DataConnection dc;
   public TableIOTest() {
   }
 
@@ -51,6 +56,8 @@ public class TableIOTest {
 
   @Before
   public void setUp() {
+    dc = TestProperties.getDataConnection();
+    
   }
 
   @After
@@ -67,10 +74,33 @@ public class TableIOTest {
 
   /**
    * Test of unEscape method, of class TableIO.
+   * @throws java.sql.SQLException
    */
-  @Ignore
-  public void testUnEscape() {
-    fail("The test case is a prototype.");
+  @Test
+  public void testUnEscape() throws SQLException {
+    JTextField tx = new JTextField("c:\\Algem\\Journaux");
+    String s = tx.getText();
+    String se = TableIO.escape(s);
+    String query = "UPDATE config SET valeur = '" + se + "' WHERE clef = 'LogPath'";
+    dc.executeUpdate(query);
+    query = "SELECT valeur FROM config WHERE clef = 'LogPath'";
+    ResultSet rs = dc.executeQuery(query);
+    String e = "";
+    while(rs.next()) {
+      e = TableIO.unEscape(rs.getString(1)); 
+    }
+    assertEquals("c:\\Algem\\Journaux", e);
+    s = "Un' deux ' trois";
+    se = TableIO.escape(s);
+    query = "UPDATE config SET valeur = '" + se + "' WHERE clef = 'LogPath'";
+    dc.executeUpdate(query);
+    query = "SELECT valeur FROM config WHERE clef = 'LogPath'";
+    rs = dc.executeQuery(query);
+    e = "";
+    while(rs.next()) {
+      e = TableIO.unEscape(rs.getString(1)); 
+    }
+    assertEquals("Un' deux ' trois", e);
   }
 
   /**
