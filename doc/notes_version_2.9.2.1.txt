@@ -31,3 +31,7 @@ Un message d'info vous informera désormais de la création éventuelle d'une no
 RAPPEL : dans l'échéance générée après création d'une nouvelle carte, la date de création (date du jour) figure dans la colonne Date et la date de répétition proprement dite figure dans le libellé.
 Ce comportement est identique pour les répétitions sans abonnement ou les répétitions de groupe.
 
+INTERFACE UTILISATEUR
+Le nouveau paramètre "feature.native_fonts" dans le fichier local.properties permet d'activer ou pas les polices natives. RAPPEL : ce fichier est optionnel et doit être placé dans le répertoire de travail de l'utilisateur (emplacement dépendant du système d'exploitation).
+Pour l'activer, indiquer le mot true après le signe =
+

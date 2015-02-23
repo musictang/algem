@@ -1,5 +1,5 @@
 /*
- * @(#)Algem.java	2.9.2.1 20/02/15
+ * @(#)Algem.java	2.9.2.1 23/02/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -71,6 +71,18 @@ public class Algem
     Locale.setDefault(Locale.FRENCH);
     props = new Properties();
   }
+  
+  /**
+   * Check if a given feature is enabled in current configuration.
+   *
+   * <p>Feature keys are prefixed in properties files by <code>'feature.'</code></p>
+   *
+   * @param featureName The name of the feature to check
+   * @return whether this feature is enabled
+   */
+  public static boolean isFeatureEnabled(String featureName) {
+    return Boolean.parseBoolean(props.getProperty("feature." + featureName, "false"));
+  }
 
   private void init(String configFile, final String host, final String base, String login) throws IOException {
 
@@ -93,6 +105,10 @@ public class Algem
     setUserProperties();
 
     setLocale(props);
+    
+    if (!isFeatureEnabled("native_fonts")) {
+      initUIFonts();
+    }
 
     /* -------------------------- */
     /* Initialisation driver JDBC */
@@ -283,17 +299,23 @@ public class Algem
     query = "UPDATE version SET version = '" + APP_VERSION + "'";
     dc.executeUpdate(query);
   }
+  
+  private void initUIFonts() {
+    Font fsans = new Font("Lucida Sans", Font.BOLD, 12);
+    Font fserif = new Font(Font.SERIF, Font.BOLD + Font.ITALIC, 12);
 
-  /**
-   * Check if a given feature is enabled in current configuration.
-   *
-   * <p>Feature keys are prefixed in properties files by <code>'feature.'</code></p>
-   *
-   * @param featureName The name of the feature to check
-   * @return whether this feature is enabled
-   */
-  public static boolean isFeatureEnabled(String featureName) {
-    return Boolean.parseBoolean(props.getProperty("feature." + featureName, "false"));
+    UIManager.put("Menu.font", fsans);
+    UIManager.put("MenuBar.font", fsans);
+    UIManager.put("MenuItem.font", fsans);
+    UIManager.put("Label.font", fsans);
+    UIManager.put("Button.font", fsans);
+    UIManager.put("ToggleButton.font", fsans);
+    UIManager.put("ComboBox.font", fsans);
+    UIManager.put("TabbedPane.font", fsans);
+    UIManager.put("CheckBox.font", fsans);
+    UIManager.put("CheckBoxMenuItem.font", fsans);
+    UIManager.put("TitledBorder.font", fsans.deriveFont(Font.BOLD + Font.ITALIC));
+    UIManager.put("RadioButton.font", fsans);
   }
 
   public class GemBoot
@@ -352,24 +374,11 @@ public class Algem
       baseArg = args[3];
     }
 
-    Font fsans = new Font("Lucida Sans", Font.BOLD, 12);
-    Font fserif = new Font(Font.SERIF, Font.BOLD + Font.ITALIC, 12);
-
-    UIManager.put("Menu.font", fsans);
-    UIManager.put("MenuBar.font", fsans);
-    UIManager.put("MenuItem.font", fsans);
-    UIManager.put("Label.font", fsans);
-    UIManager.put("Button.font", fsans);
-    UIManager.put("ToggleButton.font", fsans);
-    UIManager.put("ComboBox.font", fsans);
-    UIManager.put("TabbedPane.font", fsans);
-    UIManager.put("CheckBox.font", fsans);
-    UIManager.put("CheckBoxMenuItem.font", fsans);
-    UIManager.put("TitledBorder.font", fsans.deriveFont(Font.BOLD + Font.ITALIC));
-    UIManager.put("RadioButton.font", fsans);
-
+    
+    
     try {
       appli = new Algem();
+     
       appli.init(confArg, hostArg, baseArg, userArg);
     } catch (Exception ex) {
       JOptionPane.showMessageDialog(null,
