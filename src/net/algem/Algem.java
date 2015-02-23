@@ -94,6 +94,9 @@ public class Algem
 
     setLocale(props);
 
+    if (!isFeatureEnabled("native_fonts")) {
+      initUIFonts();
+    }
     /* -------------------------- */
     /* Initialisation driver JDBC */
     /* -------------------------- */
@@ -352,6 +355,21 @@ public class Algem
       baseArg = args[3];
     }
 
+
+    try {
+      appli = new Algem();
+      appli.init(confArg, hostArg, baseArg, userArg);
+    } catch (Exception ex) {
+      JOptionPane.showMessageDialog(null,
+              ex.getMessage(),
+              MessageUtil.getMessage("application.create.error"),
+              JOptionPane.ERROR_MESSAGE);
+      ex.printStackTrace();
+      System.exit(7);
+    }
+  }
+
+  private void initUIFonts() {
     Font fsans = new Font("Lucida Sans", Font.BOLD, 12);
     Font fserif = new Font(Font.SERIF, Font.BOLD + Font.ITALIC, 12);
 
@@ -367,18 +385,6 @@ public class Algem
     UIManager.put("CheckBoxMenuItem.font", fsans);
     UIManager.put("TitledBorder.font", fsans.deriveFont(Font.BOLD + Font.ITALIC));
     UIManager.put("RadioButton.font", fsans);
-
-    try {
-      appli = new Algem();
-      appli.init(confArg, hostArg, baseArg, userArg);
-    } catch (Exception ex) {
-      JOptionPane.showMessageDialog(null,
-              ex.getMessage(),
-              MessageUtil.getMessage("application.create.error"),
-              JOptionPane.ERROR_MESSAGE);
-      ex.printStackTrace();
-      System.exit(7);
-    }
   }
 }
 
