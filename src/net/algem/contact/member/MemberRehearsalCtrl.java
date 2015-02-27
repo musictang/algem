@@ -1,5 +1,5 @@
 /*
- * @(#)MemberRehearsalCtrl.java	2.9.2.1 19/02/15
+ * @(#)MemberRehearsalCtrl.java	2.9.3 25/02/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -50,7 +50,7 @@ import net.algem.util.ui.PopupDlg;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2.1
+ * @version 2.9.3
  * @since 1.0a 12/12/2001
  */
 public class MemberRehearsalCtrl
@@ -142,6 +142,7 @@ public class MemberRehearsalCtrl
     int timeLength = new Hour(dto.getStart()).getLength(new Hour(dto.getEnd()));
     if (last == null) {//aucune carte n'existe pour cette personne
       nc = createNewCard(pass, timeLength, pFile.getId(), new DateFr(new Date()), dto);//XXX choix peut etre null
+      pFile.setSubscriptionCard(nc);
     } else {
       last.setSessions(memberService.getSessions(last.getId()));//lasy loading
       int remainder = last.getRest() - timeLength;
@@ -155,20 +156,21 @@ public class MemberRehearsalCtrl
         dto.setStart(offset);
         dto.setEnd(end);
         nc = createNewCard(pass, Math.abs(remainder), last.getIdper(), new DateFr(new Date()), dto);
+        pFile.setSubscriptionCard(nc);
         //current card session offset
         dto.setStart(start);
         dto.setEnd(offset);
       } else {
         RehearsalPass currentPass = (RehearsalPass) DataCache.findId(last.getPassId(), Model.PassCard);
         if (last.getRest() > currentPass.getTotalTime()) {// XXX current card pass
-          // restant positif généré par ex. par une annulation (ou un retrait d'heures)
+          // excedent généré par ex. par une annulation (ou un retrait d'heures)
           Hour offset = new Hour(dto.getStart());
           offset.incMinute(last.getRest() - currentPass.getTotalTime());
           dto.setStart(offset);// on ampute la durée de la session de la partie positive
         } 
         last.setRest(remainder);
       }
-      // update current card
+      // update last card
       if (dto.getStart().lt(dto.getEnd())) {
         last.addSession(dto);
       }

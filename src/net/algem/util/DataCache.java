@@ -1,5 +1,5 @@
 /*
- * @(#)DataCache.java	2.9.2 07/01/15
+ * @(#)DataCache.java	2.9.3 26/02/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -27,7 +27,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.logging.Logger;
 import javax.swing.JMenuItem;
 import net.algem.Algem.GemBoot;
 import net.algem.accounting.*;
@@ -71,7 +70,7 @@ import net.algem.util.model.Model;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.9.3
  * @since 1.0b 03/09/2001
  */
 public class DataCache
@@ -97,6 +96,7 @@ public class DataCache
   private static ItemIO ITEM_IO;
   private static EmployeeTypeIO EMPLOYEE_TYPE_IO;
   private static StudioTypeIO STUDIO_TYPE_IO;
+  private static GemParamIO MARITAL_STATUS_IO;
 
   // Cache data
   private static Hashtable<Integer, List<Integer>> TEACHER_INSTRUMENT_CACHE = new Hashtable<Integer, List<Integer>>();
@@ -127,6 +127,7 @@ public class DataCache
   private static GemList<GemParam> COURSE_CODE_LIST;
   private static GemList<GemParam> EMPLOYEE_TYPE_LIST;
   private static GemList<GemParam> STUDIO_TYPE_LIST;
+  private static GemList<GemParam> MARITAL_STATUS_LIST;
 
   private static Vector<Instrument> instruments;//TODO manage list
   private Vector<CategoryOccup> occupCat;
@@ -185,6 +186,7 @@ public class DataCache
     COURSE_CODE_IO = new CourseCodeIO(dc);
     EMPLOYEE_TYPE_IO = new EmployeeTypeIO(dc);
     STUDIO_TYPE_IO = new StudioTypeIO(dc);
+    MARITAL_STATUS_IO = new MaritalStatusIO(dc);
 
     loadMonthStmt = dc.prepareStatement("SELECT " + ScheduleIO.COLUMNS + " FROM planning p WHERE jour >= ? AND jour <= ? ORDER BY p.jour,p.debut");
     loadMonthRangeStmt = dc.prepareStatement(ScheduleRangeIO.getMonthRangeStmt());
@@ -274,6 +276,8 @@ public class DataCache
         return EMPLOYEE_TYPE_LIST;
       case StudioType:
         return STUDIO_TYPE_LIST;
+      case MaritalStatus:
+        return MARITAL_STATUS_LIST;
       default: return null;
     }
 
@@ -498,6 +502,8 @@ public class DataCache
       COURSE_CODE_LIST.addElement((CourseCode) m);
     } else if (m instanceof RehearsalPass) {
       PASS_CARD.put(m.getId(), (RehearsalPass) m);
+    } else if (m instanceof MaritalStatus) {
+      MARITAL_STATUS_LIST.addElement((MaritalStatus) m);
     }
   }
 
@@ -565,6 +571,8 @@ public class DataCache
       ITEM_CACHE.put(m.getId(), (Item) m);
     } else if (m instanceof RehearsalPass) {
       PASS_CARD.put(m.getId(), (RehearsalPass) m);
+    } else if (m instanceof MaritalStatus) {
+      MARITAL_STATUS_LIST.update((MaritalStatus) m, null);
     }
 
   }
@@ -616,6 +624,8 @@ public class DataCache
       COURSE_CODE_LIST.removeElement((CourseCode) m);
     } else if (m instanceof RehearsalPass) {
       PASS_CARD.remove(m.getId());
+    } else if (m instanceof MaritalStatus) {
+      MARITAL_STATUS_LIST.removeElement((MaritalStatus) m);
     }
 
   }
@@ -782,6 +792,8 @@ public class DataCache
       }
 
       EMPLOYEE_TYPE_LIST = new GemList<GemParam>(EMPLOYEE_TYPE_IO.load());
+      MARITAL_STATUS_LIST = new GemList<>(MARITAL_STATUS_IO.find());
+      
       STUDIO_TYPE_LIST = new GemList<GemParam>(STUDIO_TYPE_IO.load());
       PASS_CARD = new Hashtable<Integer,RehearsalPass>();
       for (RehearsalPass c : RehearsalPassIO.findAll("ORDER BY id", dc)) {

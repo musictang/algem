@@ -1,5 +1,5 @@
 /*
- * @(#)EnrolmentService.java	2.9.2.1 20/02/15
+ * @(#)EnrolmentService.java	2.9.3 23/02/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -42,7 +42,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2.1
+ * @version 2.9.3
  * @since 2.4.a 20/04/12
  */
 public class EnrolmentService
@@ -917,9 +917,14 @@ public class EnrolmentService
       ExtendedModuleOrder hm = new ExtendedModuleOrder(m);
       Order order = OrderIO.findId(m.getIdOrder(), dc);
       Person p = (Person) DataCache.findId(order.getMember(), Model.Person);
-      hm.setIdper(p.getId());
-      hm.setCompleted(getCompletedTime(p.getId(), m.getId(), start, end));
-      extended.add(hm);
+      //TODO check p null
+      if (p != null) {
+        hm.setIdper(p.getId());
+        hm.setCompleted(getCompletedTime(p.getId(), m.getId(), start, end));
+        extended.add(hm);
+      } else {
+        GemLogger.log("getExtendedModuleList null person :" + order.getMember());
+      }
     }
     return extended;
   }

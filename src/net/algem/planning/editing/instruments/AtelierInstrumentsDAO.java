@@ -1,5 +1,5 @@
 /*
- * @(#)AtelierInstrumentsDAO.java 2.9.2 04/02/15
+ * @(#)AtelierInstrumentsDAO.java 2.9.3 23/02/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -37,7 +37,8 @@ import net.algem.planning.ActionIO;
 /**
  * 
  * @author <a href="mailto:alexandre.delattre.biz@gmail.com">Alexd</a>
- * @version 2.9.2
+ * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
+ * @version 2.9.3
  * @since 2.9.2
  */
 public class AtelierInstrumentsDAO {
@@ -95,7 +96,7 @@ public class AtelierInstrumentsDAO {
   }
 
     public List<Integer> getInstrumentIdsForPerson(int idPerson) throws SQLException {
-        String query = format("SELECT instrument FROM person_instrument WHERE idper = %d ORDER BY idx", idPerson);
+        String query = format("SELECT DISTINCT ON(instrument) instrument,idx FROM person_instrument WHERE idper = %d ORDER BY instrument,idx", idPerson);
         List<Integer> result = new ArrayList<>();
         ResultSet resultSet = dc.executeQuery(query);
         while (resultSet.next()) {

@@ -1,7 +1,7 @@
 /*
- * @(#)MenuAccounting.java 2.8.y 26/09/14
+ * @(#)MenuAccounting.java 2.9.2.3 24/02/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -43,7 +43,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.8.y
+ * @version 2.9.2.3
  * @since 1.0a 07/07/1999
  */
 public class MenuAccounting
@@ -176,9 +176,12 @@ public class MenuAccounting
       desktop.addPanel("Menu.invoice.footer", pdpFactEditor);
     } else if (menus.get("Menu.account.label").equals(arg)) {
       AccountCtrl accountCtrl = new AccountCtrl(desktop);
+      accountCtrl.load();
       desktop.addPanel("Menu.account", accountCtrl);
+      
     } else if (menus.get("Menu.cost.account.label").equals(arg)) {
       CostAccountCtrl costAccountCtrl = new CostAccountCtrl(desktop);
+      costAccountCtrl.load();
       desktop.addPanel("Menu.cost.account", costAccountCtrl);
     } else if (menus.get("Menu.default.account.label").equals(arg)) {
       AccountPrefCtrl prefsComptes = new AccountPrefCtrl(desktop);
@@ -192,9 +195,11 @@ public class MenuAccounting
       desktop.addPanel("Menu.account.link", accountMatchingCfg, GemModule.L_SIZE);
     }  else if (menus.get("Menu.mode.of.payment.label").equals(arg)) {
       ModeOfPaymentCtrl modeOfPaymentCtrl = new ModeOfPaymentCtrl(desktop);
+      modeOfPaymentCtrl.load();
       desktop.addPanel("Menu.mode.of.payment", modeOfPaymentCtrl);
     } else if (menus.get("Menu.vat.label").equals(arg)) {
       VATCtrl vatCtrl = new VATCtrl(desktop);
+      vatCtrl.load();
       desktop.addPanel("Menu.vat", vatCtrl);
     } else if (src == miRoomRate) {
       RoomRateSearchCtrl roomRateBrowse = new RoomRateSearchCtrl(desktop);

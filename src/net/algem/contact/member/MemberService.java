@@ -1,5 +1,5 @@
 /*
- * @(#)MemberService.java	2.9.2.1 19/02/15
+ * @(#)MemberService.java	2.9.3 25/02/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -46,7 +46,7 @@ import net.algem.util.model.Model;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2.1
+ * @version 2.9.3
  * @since 2.4.a 14/05/12
  */
 public class MemberService
@@ -192,9 +192,10 @@ public class MemberService
     plan.setStart(endOffset);
     plan.setEnd(end);
     nc.addSession(plan);
-    cardIO.insert(nc);
+    create(nc);
 
     PersonFile pf = ((PersonFileIO)DataCache.getDao(Model.PersonFile)).findMember(card.getIdper(), false);
+    pf.setSubscriptionCard(nc);
     OrderLine e = AccountUtil.setRehearsalOrderLine(pf, plan.getDate(), getPrefAccount(AccountPrefIO.REHEARSAL_KEY_PREF), pass.getAmount(), nc.getId());
 
     AccountUtil.createEntry(e, dc);
@@ -203,8 +204,7 @@ public class MemberService
   }
 
   public void create(PersonSubscriptionCard card, PersonFile pFile) throws SQLException {
-
-    cardIO.insert(card);
+    create(card);
     RehearsalPass abo = RehearsalPassIO.find(card.getPassId(), dc);
     Preference p = AccountPrefIO.find(AccountPrefIO.REHEARSAL_KEY_PREF, dc);
     OrderLine e = AccountUtil.setRehearsalOrderLine(pFile, new DateFr(new Date()), p, abo.getAmount(), card.getId());

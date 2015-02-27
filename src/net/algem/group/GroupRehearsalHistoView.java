@@ -1,7 +1,7 @@
 /*
- * @(#)GroupRehearsalHistoView.java 2.8.o 08/10/13
+ * @(#)GroupRehearsalHistoView.java 2.9.3 27/02/15
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,17 +20,19 @@
  */
 package net.algem.group;
 
+import java.awt.event.ActionEvent;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Vector;
 import net.algem.planning.AbstractHistoRehearsal;
 import net.algem.planning.Schedule;
 import net.algem.util.BundleUtil;
-import net.algem.util.GemCommand;
 import net.algem.util.module.GemDesktop;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.o
+ * @version 2.9.3
  */
 public class GroupRehearsalHistoView
         extends AbstractHistoRehearsal
@@ -41,15 +43,37 @@ public class GroupRehearsalHistoView
   public GroupRehearsalHistoView(GemDesktop desktop, GemGroupService service, int id) {
     super(desktop, null, id);
     this.service = service;
-    btValidation.setText(BundleUtil.getLabel("Selection.label"));
+    btValidation.setText(BundleUtil.getLabel("Period.label"));
     btValidation.setToolTipText(BundleUtil.getLabel("Rehearsal.list.selection.tip"));
-    btCancel.setText(GemCommand.ERASE_CMD);
-    btCancel.setToolTipText(BundleUtil.getLabel("Rehearsal.list.erase.tip"));
+    btCancel.setText(BundleUtil.getLabel("Action.current.month.label"));
   }
 
   @Override
   public Vector<Schedule> getSchedule(boolean all) {
-    return service.getRehearsalHisto(idper, datePanel.getStartFr(), datePanel.getEndFr(), all);
+    if (all) {
+      return service.getRehearsalHisto(idper,null,null);
+    }
+    return service.getRehearsalHisto(idper, datePanel.getStartFr(), datePanel.getEndFr());
+  }
+  
+  private void setCurrentMonth() {
+    Calendar c = Calendar.getInstance();
+    c.setTime(new Date());
+    c.set(Calendar.DAY_OF_MONTH, 1);
+    datePanel.setStart(c.getTime());
+    c.set(Calendar.DAY_OF_MONTH, c.getActualMaximum(Calendar.DAY_OF_MONTH));
+    datePanel.setEnd(c.getTime());
+  }
+
+  @Override
+  public void actionPerformed(ActionEvent evt) {
+    if (evt.getSource() == btCancel) {
+      clear();
+      setCurrentMonth();
+      load();
+    } else {
+      super.actionPerformed(evt);
+    }
   }
 
 }

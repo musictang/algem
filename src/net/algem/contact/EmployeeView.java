@@ -1,7 +1,7 @@
 /*
- * @(#)EmployeeView.java 2.8.v 29/05/14
+ * @(#)EmployeeView.java 2.9.3 26/02/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,7 +20,10 @@
  */
 package net.algem.contact;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
@@ -30,10 +33,15 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.io.File;
 import java.text.ParseException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.logging.Level;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JFormattedTextField;
 import javax.swing.text.MaskFormatter;
 import net.algem.config.ColorPrefs;
+import net.algem.config.GemParamChoice;
 import net.algem.planning.DateFr;
 import net.algem.planning.DateFrField;
 import net.algem.util.BundleUtil;
@@ -43,12 +51,13 @@ import net.algem.util.GemLogger;
 import net.algem.util.jdesktop.DesktopHandler;
 import net.algem.util.jdesktop.DesktopHandlerException;
 import net.algem.util.jdesktop.DesktopOpenHandler;
+import net.algem.util.model.Model;
 import net.algem.util.ui.*;
 
 /**
  * Employee view.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.v
+ * @version 2.9.3
  * @since 2.8.m 02/09/13
  */
 public class EmployeeView
@@ -58,8 +67,6 @@ public class EmployeeView
   /** Default format for NIR. */
   private static final String NIR_FORMAT = "# ## ## AA AAA ### ##";
 
-//  private static final String PARENT_DIR = "salaries/";
-
    /** Default CV dir name. */
   private static final String CV_DIR = "cv";
 
@@ -68,6 +75,9 @@ public class EmployeeView
 
   /** Default DUE dir name. */
   static final String DUE_DIR = "due";
+  
+  /** Default Work Contract dir name. */
+  static final String WC_DIR = "ct";
 
   private GemNumericField idper;
 
@@ -84,14 +94,22 @@ public class EmployeeView
   private GemField guso;
 
   private GemField nationality;
+  
+  private GemChoice maritalStatus;
+  
+  private final GemPanel childrenPanel;
 
   private DesktopHandler handler = new DesktopOpenHandler();
 
   private GemButton cvBt;
+  private GemButton wcBt;
   private GemButton dueBt;
   private GemButton residenceBt;
+  
 
+  
   private File cvFile;
+  private File wcFile;
   private File dueFile;
   private File residenceFile;
 
@@ -102,7 +120,6 @@ public class EmployeeView
     idper = new GemNumericField(6);
     idper.setEditable(false);
 
-      //    insee = new GemField(13, 15);
     nir = new JFormattedTextField(getMask());
     nir.setColumns(13);
     nir.setToolTipText(BundleUtil.getLabel("Nir.tip"));
@@ -138,11 +155,49 @@ public class EmployeeView
     guso = new GemField(13, 10);
 
     nationality = new GemField(true, 20);
+    maritalStatus = new GemParamChoice(dataCache.getList(Model.MaritalStatus));
+    maritalStatus.setPreferredSize(new Dimension(guso.getPreferredSize().width, maritalStatus.getPreferredSize().height));
+    
+    GemButton btAddChild = new GemButton("+");
+    btAddChild.setMargin(new Insets(0, 4, 0, 4));
+    btAddChild.setToolTipText(BundleUtil.getLabel("Add.child.tip"));
+    
+    btAddChild.addActionListener(new ActionListener()
+    {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        childrenPanel.add(new DateFrField());
+        childrenPanel.revalidate();
+      }
+    });
+    GemButton btDelChild = new GemButton("-");
+    btDelChild.setToolTipText(BundleUtil.getLabel("Delete.child.tip"));
+    btDelChild.setMargin(new Insets(0, 4, 0, 4));
+    btDelChild.addActionListener(new ActionListener()
+    {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        int cc = childrenPanel.getComponentCount();
+        if (cc > 0) {
+          childrenPanel.remove(cc-1);
+          childrenPanel.revalidate();
+        }
+        
+      }
+    });
+    GemPanel buttonChildPanel = new GemPanel(new BorderLayout(15,0));
+    buttonChildPanel.add(btAddChild, BorderLayout.WEST);
+    buttonChildPanel.add(btDelChild, BorderLayout.EAST);
+
+    childrenPanel = new GemPanel();
+    childrenPanel.setLayout(new BoxLayout(childrenPanel, BoxLayout.Y_AXIS));
+
     typeCtrl = new EmployeeTypePanelCtrl(dataCache);
 
-
-    this.setLayout(new GridBagLayout());
-    GridBagHelper gb = new GridBagHelper(this);
+    GemPanel centerPanel = new GemPanel();
+    
+    centerPanel.setLayout(new GridBagLayout());
+    GridBagHelper gb = new GridBagHelper(centerPanel);
 
     gb.insets = GridBagHelper.SMALL_INSETS;
 
@@ -150,29 +205,40 @@ public class EmployeeView
     nirLabel.setToolTipText(BundleUtil.getLabel("Nir.tip"));
     GemLabel placeLabel = new GemLabel(BundleUtil.getLabel("Place.of.birth.label"));
     placeLabel.setToolTipText(BundleUtil.getLabel("Place.of.birth.tip"));
-    gb.add(new GemLabel(BundleUtil.getLabel("Id.label")), 0, 0, 1, 1, GridBagHelper.WEST);
+    
+    gb.add(new GemLabel(BundleUtil.getLabel("Id.label")), 0, 0, 1, 1, GridBagHelper.NORTHWEST);
     gb.add(nirLabel, 0, 1, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Guso.label")), 0, 2, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Date.of.birth.label")), 0, 3, 1, 1, GridBagHelper.WEST);
     gb.add(placeLabel, 0, 4, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Nationality.label")), 0, 5, 1, 1, GridBagHelper.WEST);
-//    gb.add(new GemLabel(BundleUtil.getLabel("Category.label")), 0, 6, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Marital.status.label")), 0, 6, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Children.label")), 0, 7, 1, 1, GridBagHelper.WEST);
 
-    gb.add(idper, 1, 0, 1, 1, GridBagHelper.WEST);
+    gb.add(idper, 1, 0, 1, 1, GridBagHelper.NORTHWEST);
     gb.add(nir, 1, 1, 1, 1, GridBagHelper.WEST);
     gb.add(guso, 1, 2, 1, 1, GridBagHelper.WEST);
     gb.add(birth, 1, 3, 1, 1, GridBagHelper.WEST);
     gb.add(place, 1, 4, 1, 1, GridBagHelper.WEST);
     gb.add(nationality, 1, 5, 1, 1, GridBagHelper.WEST);
-    gb.add(typeCtrl, 0, 6, 2, 1, GridBagHelper.BOTH, GridBagHelper.WEST);
+    gb.add(maritalStatus, 1, 6, 1, 1, GridBagHelper.WEST);
+    gb.add(buttonChildPanel, 1, 7, 1, 1, GridBagHelper.WEST);
+    gb.add(childrenPanel, 1, 8, 1, 1, GridBagHelper.WEST);
+
+    gb.add(typeCtrl, 0, 9, 2, 1, GridBagHelper.BOTH, GridBagHelper.WEST);
 
     ActionListener fileListener = new EmployeeDocListener();
-    GemPanel buttons = new GemPanel(new GridLayout(1,3));
+    GemPanel buttons = new GemPanel(new GridLayout(1,4));
 
     cvBt = new GemButton(BundleUtil.getLabel("CV.label"));
     cvBt.setToolTipText(BundleUtil.getLabel("CV.tip"));
     cvBt.setEnabled(false);
     cvBt.addActionListener(fileListener);
+    
+    wcBt = new GemButton(BundleUtil.getLabel("Work.contract.label"));
+    wcBt.setToolTipText(BundleUtil.getLabel("Work.contract.tip"));
+    wcBt.setEnabled(false);
+    wcBt.addActionListener(fileListener);
 
     dueBt = new GemButton(BundleUtil.getLabel("Hiring.declaration.label"));
     dueBt.setToolTipText(BundleUtil.getLabel("Hiring.declaration.tip"));
@@ -185,10 +251,14 @@ public class EmployeeView
     residenceBt.addActionListener(fileListener);
 
     buttons.add(cvBt);
+    buttons.add(wcBt);
     buttons.add(dueBt);
     buttons.add(residenceBt);
-    gb.insets = new Insets(10, 0, 0, 0);
-    gb.add(buttons, 0, 7, 2, 1, GridBagHelper.BOTH, GridBagHelper.WEST);
+    gb.add(buttons, 0, 10, 3, 1, GridBagHelper.BOTH, GridBagHelper.WEST);
+
+    setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+    setLayout(new BorderLayout());
+    add(centerPanel, BorderLayout.CENTER);
 
   }
 
@@ -216,7 +286,13 @@ public class EmployeeView
     place.setText(e.getPlaceBirth());
     guso.setText(e.getGuso() == null ? null : e.getGuso().trim());
     nationality.setText(e.getNationality());
-
+    maritalStatus.setKey(e.getMaritalStatus());
+    if (e.getBirthDatesOfChildren() != null) {
+      for (Date d : e.getBirthDatesOfChildren()) {
+        childrenPanel.add(new DateFrField(d));
+      }
+      childrenPanel.revalidate();
+    }
     if (e.getTypes() != null) {
       for(Integer t : e.getTypes()) {
         typeCtrl.addPanel(t);
@@ -238,6 +314,9 @@ public class EmployeeView
 
     cvFile = FileUtil.findLastFile(parent, CV_DIR, idper);
     cvBt.setEnabled(cvFile != null && cvFile.canRead());
+    
+    wcFile = FileUtil.findLastFile(parent, WC_DIR, idper);
+    wcBt.setEnabled(wcFile != null && wcFile.canRead());
 
     dueFile = FileUtil.findLastFile(parent, DUE_DIR, idper);
     dueBt.setEnabled(dueFile != null && dueFile.canRead());
@@ -271,10 +350,34 @@ public class EmployeeView
     e.setPlaceBirth(place.getText().trim().toUpperCase());
     e.setGuso(guso.getText().trim().toUpperCase());
     e.setNationality(nationality.getText().trim().toUpperCase());
+    e.setMaritalStatus(maritalStatus.getKey());
+    int cc = childrenPanel.getComponentCount();
+    if (cc == 0) {
+      e.setBirthDatesOfChildren(null);
+    } else {
+      Date[] dates = new Date[cc];
+      Calendar cal = Calendar.getInstance();
 
+      for (int i = 0 ; i < cc; i++) {
+        Component c = childrenPanel.getComponent(i);
+        if (c instanceof DateFrField) {
+          dates[i] = getDateWithoutTimeStamp(cal, ((DateFrField) c).getDate());
+        }
+      }
+      e.setBirthDatesOfChildren(dates);
+    }
     e.setTypes(typeCtrl.getTypes());
 
     return e;
+  }
+  
+  private Date getDateWithoutTimeStamp(Calendar cal, Date d) {
+    cal.setTime(d);
+    cal.set(Calendar.HOUR_OF_DAY, 0);
+    cal.set(Calendar.MINUTE, 0);
+    cal.set(Calendar.SECOND, 0);
+    cal.set(Calendar.MILLISECOND, 0);
+    return cal.getTime();
   }
 
   /**
@@ -311,6 +414,10 @@ public class EmployeeView
       if (src == dueBt) {
         if (dueFile != null) {
           open(dueFile.getPath());
+        }
+      } else if (src == wcBt) {
+        if (wcFile != null) {
+          open(wcFile.getPath());
         }
       } else if (src == residenceBt) {
          if (residenceFile != null) {

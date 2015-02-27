@@ -1,5 +1,5 @@
 /*
- * @(#)EmployeeEditor.java 2.8.n 03/10/13
+ * @(#)EmployeeEditor.java 2.9.3 25/02/15
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -23,8 +23,10 @@ package net.algem.contact;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
+import javax.swing.JScrollPane;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
+import net.algem.util.MessageUtil;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.FileTab;
 import net.algem.util.ui.GemButton;
@@ -33,7 +35,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.n
+ * @version 2.9.3
  * @since 2.8.m 02/09/13
  */
 public class EmployeeEditor 
@@ -51,7 +53,8 @@ public class EmployeeEditor
     view = new EmployeeView(service, dataCache);
     
     this.setLayout(new BorderLayout());
-    add(view, BorderLayout.CENTER);
+    JScrollPane scroll = new JScrollPane(view);
+    add(scroll, BorderLayout.CENTER);
     GemButton deleteBt = new GemButton(GemCommand.DELETE_CMD);
     deleteBt.setActionCommand("EmployeeDelete");
     deleteBt.addActionListener(listener);
@@ -90,7 +93,7 @@ public class EmployeeEditor
         old = e;
       }
     } catch (EmployeeException ex) {
-      MessagePopup.warning(this, "Mise à jour salarié impossible");
+      MessagePopup.warning(this, MessageUtil.getMessage("employee.update.warning") + ":\n" + ex.getMessage());
       GemLogger.logException(ex);
     }
   }

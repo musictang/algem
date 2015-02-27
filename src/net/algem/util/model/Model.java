@@ -1,5 +1,5 @@
 /*
- * @(#)Model.java	2.9.2 07/01/15
+ * @(#)Model.java	2.9.3 25/02/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -24,7 +24,7 @@ package net.algem.util.model;
 /**
  * Enumeration of {@link net.algem.util.model.GemModel } objects.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.9.3
  * @since 2.7.a 22/11/12
  */
 public enum Model {
@@ -40,6 +40,7 @@ public enum Model {
   Instrument,
   Item,
   Level,
+  MaritalStatus,
   Member,
   Module,
   MusicStyle,

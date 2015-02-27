@@ -1,7 +1,7 @@
 /*
- * @(#)AbstractHistoRehearsal.java 2.8.o 08/10/13
+ * @(#)AbstractHistoRehearsal.java 2.9.3 27/02/15
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -39,7 +39,7 @@ import net.algem.util.ui.GemPanel;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.o
+ * @version 2.9.3
  * @since 2.1.j
  */
 public abstract class AbstractHistoRehearsal 
@@ -83,9 +83,6 @@ public abstract class AbstractHistoRehearsal
     GemPanel hoursPanel = new GemPanel();
     nbHours = new GemLabel();
     datePanel = new DateRangePanel(DateRangePanel.RANGE_DATE, null);
-    DateFr d = datePanel.getStartFr();
-    d.decMonth(1);// repets sur un mois par défaut
-    datePanel.setStart(d);
     datesPanel.add(datePanel);
 
     bottomPanel.setLayout(new BorderLayout());
@@ -106,7 +103,6 @@ public abstract class AbstractHistoRehearsal
     setLayout(new BorderLayout());
     add(pm, BorderLayout.CENTER);
     add(bottomPanel, BorderLayout.SOUTH);
-    //load();
 
   }
 
@@ -131,7 +127,7 @@ public abstract class AbstractHistoRehearsal
 
   /**
    * Loads the schedules.
-   * @param all transmitted to method #getSchedule
+   * @param all all schedules if true
    */
   public void load(boolean all) {
     int min = 0;
@@ -140,7 +136,6 @@ public abstract class AbstractHistoRehearsal
     if (vp != null && vp.size() > 0) {
       loaded = true;
     }
-    //Vector vp = PlanningIO.find(dc, " WHERE p.ptype="+Schedule.PLANREPETGROUPE+" AND p.idper="+groupe.getId()+" ORDER BY jour,debut");
     for (int i = 0; i < vp.size(); i++) {
       Schedule p = vp.elementAt(i);
       Hour hd = p.getStart();
@@ -169,13 +164,14 @@ public abstract class AbstractHistoRehearsal
 
   @Override
   public void actionPerformed(ActionEvent evt) {
+    desktop.setWaitCursor();
     if (evt.getSource() == btAll) {
       clear();
-      load(true);
-    }
-    else {
+      load(true);    
+    } else {
       super.actionPerformed(evt);
     }
+    desktop.setDefaultCursor();
   }
 
   /**

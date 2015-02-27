@@ -1,7 +1,7 @@
 /*
- * @(#)GemGroupService.java	2.9.2 26/12/14
+ * @(#)GemGroupService.java	2.9.3 27/02/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -42,7 +42,7 @@ import net.algem.util.model.Model;
  * Service class for group operations.
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.9.3
  * @since 2.4.a 10/05/12
  */
 public class GemGroupService
@@ -202,12 +202,12 @@ public class GemGroupService
     return ParamTableIO.find(Category.SITEWEB.getTable(), Category.SITEWEB.getCol(), dc);
   }
 
-  Vector<Schedule> getRehearsalHisto(int g, DateFr start, DateFr end, boolean all) {
+  Vector<Schedule> getRehearsalHisto(int g, DateFr start, DateFr end) {
     String query = " WHERE p.ptype = " + Schedule.GROUP + " AND p.idper = " + g;
-    if (!all) {
-      query += " AND jour BETWEEN '" + start + "' AND '" + end + "'";
+    if (start != null && end != null) {
+      query += " AND p.jour BETWEEN '" + start + "' AND '" + end + "'";
     }
-    query += " ORDER BY jour,debut";
+    query += " ORDER BY p.jour DESC, p.debut";
     return ScheduleIO.find(query, dc);
   }
 

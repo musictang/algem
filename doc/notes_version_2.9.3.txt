@@ -1,0 +1,14 @@
+BUGS CORRIGES
+* Lorsqu'on prenait plusieurs répétitions d'affilée avec abonnement SANS REFERMER LA FICHE PERSONNE, et qu'une nouvelle carte était créée pour l'occasion, cette nouvelle carte n'était prise en compte que pour la première répétition planifiée. Le mécanisme de création d'une nouvelle carte se redéclenchait pour les répétitions suivantes et entraînait des doublons dans la liste des cartes d'abonnement et des échéances.
+* Certains instruments apparaissaient en double dans la liste des instruments à affecter pour les plannings de type atelier (voir bouton Affectation instruments sur les ateliers).
+
+ONGLET SALARIE
+De nouvelles rubriques sont disponibles dans l'onglet salarié :
+- la situation familiale, à choisir parmi une liste de situations prédéfinies. Les différents types de situation familiale sont éditables en allant dans le menu Configuration -> Paramètres -> Situation familiale.
+- enfants : en cliquant sur le bouton (+), vous pouvez ajouter un enfant et indiquer sa date de naissance. Le bouton (-) vous permet de supprimer le dernier enfant ajouté.
+- un bouton d'accès au dernier Contrat de Travail est désormais disponible. Les contrats de travail doivent être placés dans le sous-dossier "ct" du dossier par défaut des documents salariés (Rappel : les dossiers par défaut sont paramétrables dans le menu Configuration -> Paramètres -> Généraux dans la rubrique Fichiers).
+
+REPETITIONS
+Quelques modifications ont été faites dans l'historique des répétitions de groupe ou de personne.
+A l'ouverture de la fiche, c'est maintenant l'historique de toutes les répétitions qui s'affiche, de la plus récente à la plus ancienne. Auparavant, l'affichage par défaut présentait l'historique du dernier mois précédent la date du jour.
+Le bouton de chargement de la période sélectionnée (champs dates) a été renommé et un nouveau bouton "Mois courant" est disponible dans l'onglet du groupe afin de charger toutes les répétitions du mois en cours.

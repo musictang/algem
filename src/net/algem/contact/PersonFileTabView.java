@@ -669,15 +669,18 @@ public class PersonFileTabView
     if (histoRehearsalView == null) {
       histoRehearsalView = new HistoRehearsalView(desktop, listener, dossier.getId());
     }
-    histoRehearsalView.load();
+    desktop.setWaitCursor();
+    histoRehearsalView.load(true);
     wTab.addItem(histoRehearsalView, HISTO_REHEARSAL_TAB_TITLE);
     addTab(histoRehearsalView);
+    desktop.setDefaultCursor();
   }
   
   boolean addHistoSubscriptionTab() {
     if (histoSubscriptionCard == null) {
       histoSubscriptionCard = new HistoSubscriptionCard(desktop, dossier.getId(), listener, memberService);
     }
+    desktop.setWaitCursor();
     histoSubscriptionCard.load();
     if (!histoSubscriptionCard.isLoaded()) {
       MessagePopup.warning(this, MessageUtil.getMessage("no.subscription.warning"));
@@ -685,6 +688,7 @@ public class PersonFileTabView
     }
     wTab.addItem(histoSubscriptionCard, HISTO_SUBSCRIPTIONS_TAB_TITLE);
     addTab(histoSubscriptionCard);
+    desktop.setDefaultCursor();
     return true;
   }
   

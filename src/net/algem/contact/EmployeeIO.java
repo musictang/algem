@@ -1,7 +1,7 @@
 /*
- * @(#)EmployeeIO.java 2.8.n 03/10/13
+ * @(#)EmployeeIO.java 2.9.3 25/02/15
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,14 +21,12 @@
 
 package net.algem.contact;
 
+import java.sql.Array;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import net.algem.config.GemParam;
 import net.algem.planning.DateFr;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
@@ -37,7 +35,7 @@ import net.algem.util.model.TableIO;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.n
+ * @version 2.9.3
  * @since 2.8.m 02/09/13
  */
 public class EmployeeIO
@@ -45,7 +43,7 @@ public class EmployeeIO
   public static final String TABLE = "salarie";
   public static final String TYPE_TABLE = "salarie_type";
   public static final String CAT_TABLE = "categorie_salarie";
-  public static final String COLUMNS = "idper,insee,datenais,lieunais,guso,nationalite";
+  public static final String COLUMNS = "idper,insee,datenais,lieunais,guso,nationalite,sitfamiliale,enfants";
   
   private DataConnection dc;
 
@@ -60,11 +58,25 @@ public class EmployeeIO
             + ",'" + TableIO.escape(e.getPlaceBirth())
             + "','" + TableIO.escape(e.getGuso())
             + "','" + TableIO.escape(e.getNationality())
-            + "')";
-    
+            + "', " + e.getMaritalStatus()
+            + ", " + getBirthDateValues(e)
+            + ")";
+
     dc.executeUpdate(query);
     updateType(e);
-    
+
+  }
+  
+  private String getBirthDateValues(Employee e) {
+    if (e.getBirthDatesOfChildren() == null || e.getBirthDatesOfChildren().length == 0) {
+      return "NULL";
+    }
+    StringBuilder sb = new StringBuilder("'{");
+    for (Date d : e.getBirthDatesOfChildren()) {
+      sb.append(new DateFr(d).toString()).append(',');
+    }
+    sb.replace(sb.length() - 1, sb.length(), "}'");
+    return sb.toString();
   }
   
   public void update(Employee e) throws SQLException {
@@ -74,11 +86,13 @@ public class EmployeeIO
             + ", lieunais = '" + TableIO.escape(e.getPlaceBirth())
             + "', guso = '" + TableIO.escape(e.getGuso())
             + "', nationalite = '" + TableIO.escape(e.getNationality())
-            + "' WHERE idper = " + e.getIdPer();
+            + "', sitfamiliale = " + e.getMaritalStatus()
+            + ", enfants = " + getBirthDateValues(e)
+            + " WHERE idper = " + e.getIdPer();
 
     dc.executeUpdate(query);
     updateType(e);
-    
+
   }
   
   private void updateType(Employee e) {
@@ -122,6 +136,11 @@ public class EmployeeIO
       String guso = TableIO.unEscape(rs.getString(5));
       e.setGuso(guso == null ? null : guso.trim());
       e.setNationality(TableIO.unEscape(rs.getString(6)));
+      e.setMaritalStatus(rs.getInt(7));
+      Array dates = rs.getArray(8);
+      if (dates != null) {
+        e.setBirthDatesOfChildren((Date[]) rs.getArray(8).getArray());
+      }
     }
     
     if (e != null) {

@@ -1,7 +1,7 @@
 /*
- * @(#)Employee.java 2.8.v 29/05/14
+ * @(#)Employee.java 2.9.3 26/02/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,6 +21,8 @@
 
 package net.algem.contact;
 
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import net.algem.planning.DateFr;
@@ -28,7 +30,7 @@ import net.algem.planning.DateFr;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.v
+ * @version 2.9.3
  * @since 2.8.m 04/09/13
  */
 public class Employee {
@@ -40,6 +42,8 @@ public class Employee {
   private String guso;
   private String nationality;
   private List<Integer> types;
+  private int maritalStatus;
+  private Date[] children;
 
   public Employee(int idper) {
     this.idper = idper;
@@ -93,6 +97,22 @@ public class Employee {
     this.nationality = nationality;
   }
 
+  public int getMaritalStatus() {
+    return maritalStatus;
+  }
+
+  public void setMaritalStatus(int maritalStatus) {
+    this.maritalStatus = maritalStatus;
+  }
+
+  public Date[] getBirthDatesOfChildren() {
+    return children;
+  }
+
+  public void setBirthDatesOfChildren(Date[] dates) {
+    this.children = dates;
+  }
+
   public List<Integer> getTypes() {
     return types;
   }
@@ -133,6 +153,9 @@ public class Employee {
     if ((this.nationality == null) ? (other.nationality != null) : !this.nationality.equals(other.nationality)) {
       return false;
     }
+    if (this.maritalStatus != other.maritalStatus) {
+      return false;
+    }
     if ((this.types == null) ? (other.types != null) : this.types.size() != other.types.size()) {
       return false;
     }
@@ -141,6 +164,10 @@ public class Employee {
         return false;
       }
     }
+    if (!Arrays.deepEquals(this.children, other.children)) {
+      return false;
+    }
+    
     return true;
   }
 
@@ -154,6 +181,8 @@ public class Employee {
     hash = 31 * hash + Objects.hashCode(this.guso);
     hash = 31 * hash + Objects.hashCode(this.nationality);
     hash = 31 * hash + Objects.hashCode(this.types);
+    hash = 31 * hash + this.maritalStatus;
+    hash = 31 * hash + Arrays.hashCode(this.children);
     return hash;
   }
 
@@ -166,7 +195,8 @@ public class Employee {
             && (dateBirth == null || dateBirth.toString().equals(DateFr.NULLDATE))
             && (placeBirth == null || placeBirth.isEmpty())
             && (guso == null || guso.isEmpty())
-            && (nationality == null || nationality.isEmpty());
+            && (nationality == null || nationality.isEmpty())
+            && (maritalStatus <= 0);
   }
 
 }

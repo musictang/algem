@@ -1,7 +1,7 @@
 /*
- * @(#)ParamTableCtrl  2.8.w 08/07/14
+ * @(#)ParamTableCtrl  2.9.3 25/02/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -41,7 +41,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.3
  * @since 1.0a 21/08/2009
  */
 public abstract class ParamTableCtrl
@@ -123,7 +123,7 @@ public abstract class ParamTableCtrl
     setLayout(new BorderLayout());
     add(wCard, BorderLayout.CENTER);
 
-    load();
+    //load();
   }
   
   /**
@@ -205,6 +205,13 @@ public abstract class ParamTableCtrl
 
   public abstract void load();
 
+  /**
+   * 
+   * @param current actual 
+   * @param p updated
+   * @throws SQLException
+   * @throws ParamException 
+   */
   public abstract void modification(Param current, Param p) throws SQLException, ParamException;
 
   public abstract void insertion(Param p) throws SQLException, ParamException;

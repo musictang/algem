@@ -1,7 +1,7 @@
 /*
- * @(#)HistoRehearsalView.java 2.8.o 08/10/13
+ * @(#)HistoRehearsalView.java 2.9.3 27/02/15
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -31,9 +31,9 @@ import net.algem.util.module.GemDesktop;
 
 /**
  * Rehearsal history tab.
- * The rehearsals of the last 30 days are loaded by default.
+ * All the rehearsals are loaded by default.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.o
+ * @version 2.9.3
  */
 public class HistoRehearsalView 
   extends AbstractHistoRehearsal
@@ -41,7 +41,7 @@ public class HistoRehearsalView
 
   public HistoRehearsalView(GemDesktop desktop, ActionListener listener, int pf) {
     super(desktop, listener, pf);
-    btValidation.setText(BundleUtil.getLabel("Selection.label"));
+    btValidation.setText(BundleUtil.getLabel("Period.label"));
     btValidation.setToolTipText(BundleUtil.getLabel("Rehearsal.list.selection.tip"));
     btCancel.setText(GemCommand.CLOSE_CMD);
   }
@@ -53,7 +53,7 @@ public class HistoRehearsalView
     if (!all) {
       query += " AND jour BETWEEN '" + datePanel.getStartFr() + "' AND '" + datePanel.getEndFr() + "'";
     }
-    query += " ORDER BY jour,debut";
+    query += " ORDER BY jour DESC,debut";
 
     return ScheduleIO.find(query, dc);
 

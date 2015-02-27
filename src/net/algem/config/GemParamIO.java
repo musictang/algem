@@ -1,7 +1,7 @@
 /*
- * @(#)GemParamIO.java 2.8.a 15/04/13
+ * @(#)GemParamIO.java 2.9.3 25/02/15
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -30,7 +30,7 @@ import net.algem.util.model.TableIO;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.9.3
  * @since 2.5.a 05/07/12
  */
 public abstract class GemParamIO 
@@ -87,7 +87,7 @@ public abstract class GemParamIO
     }
     return vn;
   }
-  
+
   protected abstract String getSequence();
   
   protected abstract String getTable();

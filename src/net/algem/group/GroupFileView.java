@@ -1,5 +1,5 @@
 /*
- * @(#)GroupFileView.java 2.8.w 27/08/14
+ * @(#)GroupFileView.java 2.9.3 27/02/15
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -36,7 +36,7 @@ import net.algem.util.ui.TabPanel;
  * View is divided in 4 tabs (group, musicians, history, schedule payment).
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.3
  */
 public class GroupFileView
         extends DefaultGemView
@@ -73,7 +73,7 @@ public class GroupFileView
     tabPanel.addItem(musiciansEditor, BundleUtil.getLabel("Group.members.label"));
 
     rehearsalHistoView = new GroupRehearsalHistoView(desktop, service, group.getId());
-    rehearsalHistoView.load();
+    rehearsalHistoView.load(true);
     tabPanel.addItem(rehearsalHistoView, BundleUtil.getLabel("Rehearsal.tab.label"));
     tabPanel.setSelectedIndex(0);
     add(tabPanel, BorderLayout.CENTER);
