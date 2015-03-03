@@ -1,5 +1,5 @@
 /*
- * @(#)BasicBillingService 2.9.2.1 09/02/15
+ * @(#)BasicBillingService 2.9.3.1 03/03/15
  *
  * Copyright 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -40,7 +40,7 @@ import net.algem.util.model.Model;
  * Service class for billing.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2.1
+ * @version 2.9.3.1
  * @since 2.3.a 06/02/12
  */
 public class BasicBillingService
@@ -140,6 +140,7 @@ public class BasicBillingService
   public Invoice createInvoiceFrom(Quote q) throws BillingException {
 
     Invoice iv = new Invoice(q);
+    iv.setUser(dataCache.getUser());//change to current issuer
     iv.setDate(new DateFr(new Date()));// important
     iv.setItems(q.getItems());
     try {
