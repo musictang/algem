@@ -1,5 +1,5 @@
 /*
- * @(#)FileUtil.java	2.9.2.1 19/02/15
+ * @(#)FileUtil.java	2.9.3.1 03/03/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -53,7 +53,7 @@ import net.algem.util.ui.MessagePopup;
  * Utility class for file operations.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2.1
+ * @version 2.9.3.1
  * @since 2.0q
  */
 public class FileUtil
@@ -97,14 +97,26 @@ public class FileUtil
    *
    * @param parent parent
    * @param command text of command
-   * @param path default path
+   * @param options array of options (path, extension name, extension, ...)
+   * 
    * @return file path
    */
-  public static String getFile(Component parent, String command, String path) {
-
-    JFileChooser chooser = getChooser(JFileChooser.FILES_ONLY, path);
+  public static String getFile(Component parent, String command, String... options) {
+    JFileChooser chooser = getChooser(JFileChooser.FILES_ONLY, options[0]);
+    if (options[1] != null && options[2] != null) {
+      chooser.setFileFilter(new FileNameExtensionFilter(options[1], options[2]));
+    }
     File file = getFile(chooser, parent, command);
     return file == null ? null : file.getPath();
+  }
+  
+  private static File getFile(JFileChooser fc, Component parent, String command) {
+    File file = null;
+    int ret = fc.showDialog(parent, command);
+    if (ret == JFileChooser.APPROVE_OPTION) {
+      file = fc.getSelectedFile();
+    }
+    return file;
   }
 
   /**
@@ -188,15 +200,6 @@ public class FileUtil
     JFileChooser fc = new JFileChooser(path);
     fc.setFileSelectionMode(mode);
     return fc;
-  }
-
-  private static File getFile(JFileChooser fc, Component parent, String command) {
-    File file = null;
-    int ret = fc.showDialog(parent, command);
-    if (ret == JFileChooser.APPROVE_OPTION) {
-      file = fc.getSelectedFile();
-    }
-    return file;
   }
 
   public static boolean confirmOverWrite(Component parent, File f) {

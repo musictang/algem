@@ -1,7 +1,7 @@
 /*
- * @(#)ConfigFile.java 2.9.1 12/11/14
+ * @(#)ConfigFile.java 2.9.3.1 03/03/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -34,7 +34,7 @@ import net.algem.util.ui.GemPanel;
  * Default paths config.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.3.1
  * @since 2.1.k
  */
 public class ConfigFile
@@ -94,7 +94,7 @@ public class ConfigFile
     groupsFilePanel.setToolTipText(BundleUtil.getLabel("ConfEditor.groups.path.tip"));
     employeesFilePanel = new FilePanel(ConfigKey.EMPLOYEES_PATH.getLabel(),c5.getValue());
     employeesFilePanel.setToolTipText(BundleUtil.getLabel("ConfEditor.employees.path.tip"));
-    invoiceFooterPanel = new FilePanel(ConfigKey.INVOICE_FOOTER.getLabel(),c6.getValue());
+    invoiceFooterPanel = new FilePanel(ConfigKey.INVOICE_FOOTER.getLabel(),c6.getValue(), false);
     invoiceFooterPanel.setToolTipText(BundleUtil.getLabel("ConfEditor.invoice.footer.tip"));
 
     content.add(logFilePanel);

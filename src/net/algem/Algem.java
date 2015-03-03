@@ -1,5 +1,5 @@
 /*
- * @(#)Algem.java	2.9.3 27/02/15
+ * @(#)Algem.java	2.9.3.1 03/03/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -25,13 +25,16 @@ import java.awt.Font;
 import java.awt.Point;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 import net.algem.security.AuthDlg;
 import net.algem.security.User;
@@ -45,12 +48,12 @@ import org.apache.commons.codec.binary.Base64;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.3
+ * @version 2.9.3.1
  */
 public class Algem
 {
 
-  public static final String APP_VERSION = "2.9.3";//experimental
+  public static final String APP_VERSION = "2.9.3.1";//experimental
   private static final int DEF_WIDTH = 1080;// (850,650) => ancienne taille
   private static final int DEF_HEIGHT = 780;
   private static final Point DEF_LOCATION = new Point(70, 30);
@@ -170,16 +173,32 @@ public class Algem
     frame.setVisible(true);
   }
 
+  /**
+   * Sets additional user properties.
+   * If the file does not exist, the relevant resource is loaded from the jar.
+   */
   private void setUserProperties() {
     for (String path : ADDITIONAL_PROPERTIES) {
+      Properties p = new Properties();
       try {
-        Properties p = new Properties();
         p.load(new FileInputStream(path));
         props.putAll(p);
         GemLogger.info("Loaded properties " + path);
       } catch (FileNotFoundException e) {
+        GemLogger.log(e.getMessage());
+        InputStream input = getClass().getResourceAsStream(path);
+        if (input != null) {
+          try {
+            p.load(input);
+            props.putAll(p);
+            GemLogger.info("Loaded internal properties " + path);
+          } catch (IOException ex) {
+            GemLogger.log(ex.getMessage());
+          }
+        }
       } catch (IOException e) {
-        MessagePopup.error(null, e.toString());
+        GemLogger.logException(e);
+        MessagePopup.error(null, e.getMessage());
         System.exit(3);
       }
     }

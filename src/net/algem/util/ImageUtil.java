@@ -1,7 +1,7 @@
 /*
- * @(#)ImageUtil.java	2.8.p 06/12/13
+ * @(#)ImageUtil.java	2.9.3.1 02/03/15
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -31,7 +31,7 @@ import net.algem.accounting.AccountUtil;
  * Utility class for image operations.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.p
+ * @version 2.9.3.1
  */
 public class ImageUtil
 {
@@ -68,6 +68,7 @@ public class ImageUtil
    * @param img 
    * @param nw new width
    * @param nh new heigth
+   * @return a buffered image
    */
   public static BufferedImage rescale(BufferedImage img, int nw, int nh) {
   	int w = img.getWidth();

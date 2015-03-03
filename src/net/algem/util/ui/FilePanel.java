@@ -1,5 +1,5 @@
 /*
- * @(#)FilePanel.java 2.8.r 03/01/14
+ * @(#)FilePanel.java 2.9.3.1 03/03/15
  * 
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -29,12 +29,13 @@ import javax.swing.JButton;
 import net.algem.util.BundleUtil;
 import net.algem.util.FileUtil;
 import net.algem.util.GemCommand;
+import net.algem.util.MessageUtil;
 
 /**
  * Panel controller for selecting directories or opening files.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.r
+ * @version 2.9.3.1
  */
 public class FilePanel
   extends GemPanel implements ActionListener
@@ -42,6 +43,12 @@ public class FilePanel
 
   private GemField path;
   private JButton btBrowse;
+  private boolean dirOnly = true;
+  
+  public FilePanel(String label, String defaultPath, boolean dirOnly) {
+    this(label,defaultPath);
+    this.dirOnly = dirOnly;
+  }
 
   public FilePanel(String label, String defaultPath) {
     setLayout(new GridLayout(1,3));
@@ -56,10 +63,9 @@ public class FilePanel
     add(fileLabel);
     add(path);
     btBrowse = new JButton(GemCommand.BROWSE_CMD);
-		btBrowse.setPreferredSize(new Dimension(100,btBrowse.getHeight()));
+    btBrowse.setPreferredSize(new Dimension(100, btBrowse.getHeight()));
     btBrowse.addActionListener(this);
     add(btBrowse);
-
   }
 
   public String getText() {
@@ -77,12 +83,18 @@ public class FilePanel
 
   @Override
   public void actionPerformed(ActionEvent e) {
-
     if (e.getSource() == btBrowse) {
-      String p = FileUtil.getDir(this,
-                                  BundleUtil.getLabel("FileChooser.selection"),
-                                  path.getText());
-      
+      String p = null;
+      if (dirOnly) {
+        p = FileUtil.getDir(this, BundleUtil.getLabel("FileChooser.selection"), path.getText());
+      } else {
+        p = FileUtil.getFile(this,
+                BundleUtil.getLabel("FileChooser.selection"), 
+                path.getText(), 
+                MessageUtil.getMessage("filechooser.raw.text.filter.label"),
+                "txt"
+        );
+      }
       if (p != null) {
         setText(p);
       }

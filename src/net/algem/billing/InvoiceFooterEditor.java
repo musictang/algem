@@ -1,7 +1,7 @@
 /*
- * @(#)InvoiceFooterEditor.java 2.8.t 16/05/14
+ * @(#)InvoiceFooterEditor.java 2.9.3.1 03/03/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -26,11 +26,12 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JTextArea;
+import net.algem.config.ConfigKey;
+import net.algem.config.ConfigUtil;
 import net.algem.util.*;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.*;
@@ -39,7 +40,7 @@ import net.algem.util.ui.*;
  * Reading and updating of invoice footer.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.9.3.1
  * @since 2.3.a 27/02/12
  */
 public class InvoiceFooterEditor
@@ -49,14 +50,14 @@ public class InvoiceFooterEditor
 
   private GemLabel label;
   private JTextArea area;
-  private GemButton ok;
-  private GemButton cancel;
+  private GemButton btOk;
+  private GemButton btCancel;
   private GemDesktop desktop;
   
-  /** Clé de fermeture du module */
+  /** Module key. */
   private String key;
 
-  /** Espacement de la bordure */
+  /** Border spacing. */
   private static final int bp = 10;
 
 
@@ -74,21 +75,22 @@ public class InvoiceFooterEditor
     label = new GemLabel(MessageUtil.getMessage("invoice.footer.editor"));
     area = new JTextArea();
     area.setMargin(new Insets(bp, bp, bp, bp));
+    area.setLineWrap(true);
+    area.setWrapStyleWord(true);
     area.setText(read());
     content.add(label, BorderLayout.NORTH);
     content.add(area, BorderLayout.CENTER);
 
-    ok = new GemButton(GemCommand.VALIDATION_CMD);
-    ok.addActionListener(this);
-    cancel = new GemButton(GemCommand.CANCEL_CMD);
-    cancel.addActionListener(this);
+    btOk = new GemButton(GemCommand.VALIDATION_CMD);
+    btOk.addActionListener(this);
+    btCancel = new GemButton(GemCommand.CANCEL_CMD);
+    btCancel.addActionListener(this);
 
     GemPanel boutons = new GemPanel(new GridLayout(1, 2));
-    boutons.add(ok);
-    boutons.add(cancel);
+    boutons.add(btOk);
+    boutons.add(btCancel);
 
     setLayout(new BorderLayout());
-    //add(label, BorderLayout.NORTH);
     add(content, BorderLayout.CENTER);
     add(boutons, BorderLayout.SOUTH);
   }
@@ -104,13 +106,18 @@ public class InvoiceFooterEditor
     String s = null;
 
     try {
-      URL url = new Object().getClass().getResource(FileUtil.INVOICE_FOOTER_FILE);
-      br = new BufferedReader(new FileReader(url.getPath()));
+      File f = getFile();
+      if (f == null) {
+        throw new IOException(MessageUtil.getMessage("file.not.found.exception", ""));
+      }
+      FileReader reader = new FileReader(f);
+      br = new BufferedReader(reader);
       while ((s = br.readLine()) != null) {
         lines.add(s);
       }
-    } catch (Exception ex) {
+    } catch (IOException ex) {
       GemLogger.logException(ex);
+      lines.add(ex.getMessage());
     } finally {
       try {
         if (br != null) {
@@ -125,7 +132,7 @@ public class InvoiceFooterEditor
 
   @Override
   public void actionPerformed(ActionEvent e) {
-    if (ok == e.getSource()) {
+    if (btOk == e.getSource()) {
       write();
     }
     desktop.removeModule(key);
@@ -158,16 +165,12 @@ public class InvoiceFooterEditor
 
     BufferedWriter bw = null;
     try {
-      URL url = new Object().getClass().getResource(FileUtil.INVOICE_FOOTER_FILE);
-      if (url == null) {
-        throw new FileNotFoundException(MessageUtil.getMessage("file.not.found.exception", FileUtil.INVOICE_FOOTER_FILE));
-      }
-      File f = new File(url.getPath());
+      File f = getFile();
       if (f != null && f.canWrite()) {
         bw = new BufferedWriter(new FileWriter(f));
         bw.append(area.getText());
       } else {
-        throw new IOException(MessageUtil.getMessage("file.writing.exception", FileUtil.INVOICE_FOOTER_FILE));
+        throw new IOException(MessageUtil.getMessage("file.writing.exception", (f == null ? "" : f.getAbsolutePath())));
       }
     } catch(FileNotFoundException f) {
       GemLogger.logException(f);
@@ -185,6 +188,14 @@ public class InvoiceFooterEditor
       }
     }
 
+  }
+  
+  private static File getFile() {
+    String filePath = ConfigUtil.getConf(ConfigKey.INVOICE_FOOTER.getKey());
+    if (filePath != null) {
+      return new File(filePath);
+    }
+    return null;
   }
   
 }
