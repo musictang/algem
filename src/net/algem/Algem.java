@@ -1,5 +1,5 @@
 /*
- * @(#)Algem.java	2.9.3.1 03/03/15
+ * @(#)Algem.java	2.9.3.1 04/03/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -184,7 +184,7 @@ public class Algem
         GemLogger.info("Loaded properties " + path);
       } catch (FileNotFoundException e) {
         GemLogger.log(e.getMessage());
-        InputStream input = getClass().getResourceAsStream(path);
+        InputStream input = getClass().getClassLoader().getResourceAsStream(path);
         if (input != null) {
           try {
             p.load(input);
