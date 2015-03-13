@@ -1,5 +1,5 @@
 /*
- * @(#)QuoteIO.java 2.9.2.1 09/02/15
+ * @(#)QuoteIO.java 2.9.3.2 11/03/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -35,7 +35,7 @@ import net.algem.util.model.Model;
  * Quote persistence {@link net.algem.billing.Quote}.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2.1
+ * @version 2.9.3.2
  * @since 2.4.d 07/06/12
  */
 public class QuoteIO
@@ -167,7 +167,7 @@ public class QuoteIO
             + " date_emission = '" + d.getDate()
             + "', etablissement = " + d.getEstablishment()
             //+ ", emetteur = " + d.getIssuer()
-            //+ ", debiteur = " + d.getPayer()
+            + ", debiteur = " + d.getPayer()
             + ", prestation = '" + escape(d.getDescription().trim())
             + "', reference = '" + escape(d.getReference().trim())
             + "', editable = " + d.isEditable()

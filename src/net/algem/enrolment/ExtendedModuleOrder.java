@@ -80,7 +80,7 @@ public class ExtendedModuleOrder
    * @return 
    */
   double getPaymentInfo(int min) {
-    if (min > 0) {
+    if (min >= 0 && PricingPeriod.HOUR.equals(getPricing())) {
       return getPrice() * min / 60;
     }
     double total = getPrice() * nOrderLines;

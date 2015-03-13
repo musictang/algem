@@ -1,7 +1,7 @@
 /*
- * @(#)TestMemberEnrolment.java	2.8.a 17/04/13
+ * @(#)TestMemberEnrolment.java	2.9.3.2 10/03/15
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -24,6 +24,7 @@ import java.util.Vector;
 import net.algem.TestProperties;
 import net.algem.accounting.AccountUtil;
 import net.algem.planning.DateFr;
+import net.algem.planning.Hour;
 import net.algem.util.DataConnection;
 import org.junit.After;
 import static org.junit.Assert.*;
@@ -33,7 +34,7 @@ import org.junit.Test;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.9.3.2
  */
 public class TestMemberEnrolment {
 
@@ -76,6 +77,7 @@ public class TestMemberEnrolment {
   }
 
 
+  @Test
   public void testOrderQuarterDates()
   {
 
@@ -158,7 +160,7 @@ public class TestMemberEnrolment {
     dates.clear();
   }
 
-
+  @Test
   public void testIncMonth()
   {
     DateFr df = new DateFr("15-12-2008");
@@ -168,7 +170,7 @@ public class TestMemberEnrolment {
 
   }
 
-
+  @Test
   public void testCalcNumberOfMonths() {
     int expected = 8;
     int n = 0;
@@ -196,6 +198,7 @@ public class TestMemberEnrolment {
     assertTrue("Attendu : "+expected+" retourné : "+n, expected == n);
   }
 
+  @Test
   public void testOrderMonthDates() {
     int expected = 9;
     Vector<DateFr> dates = util.getMonthPaymentDates(new DateFr("12-09-2008"), new DateFr("28-06-2009"));
@@ -242,6 +245,7 @@ public class TestMemberEnrolment {
   }
 
 
+  @Test
   public void testCalcFirstOrderLineAmount()
   {
 
@@ -259,4 +263,47 @@ public class TestMemberEnrolment {
     assertTrue("expected = "+expected+", res="+montant, expected == AccountUtil.round(montant));
 
   }
+  
+  @Test
+  public void testModuleTime() {
+    int min = 105;
+    double expected = 1.75;
+    double time = Hour.minutesToDecimal(min);
+    assertTrue("result = " + time, expected == time);
+    min = 106;
+    expected = 1.77;
+    time = Hour.minutesToDecimal(min);
+    assertTrue("result = " + time, expected == time);
+    
+    min = 107;
+    expected = 1.78;
+    time = Hour.minutesToDecimal(min);
+    assertTrue("result = " + time, expected == time);
+    
+    min = 109;
+    expected = 1.82;
+    time = Hour.minutesToDecimal(min);
+    assertTrue("result = " + time, expected == time);
+    
+    min = 30;
+    expected = 0.5;
+    time = Hour.minutesToDecimal(min);
+    assertTrue("result = " + time, expected == time);
+    
+    min = 45;
+    expected = 0.75;
+    time = Hour.minutesToDecimal(min);
+    assertTrue("result = " + time, expected == time);
+
+    time = 0.75;
+    min = Hour.decimalToMinutes(time);
+    expected = 45;
+    assertTrue("result = " + time, expected == min);
+    
+    time = 1.78;
+    expected = 107;
+    min = Hour.decimalToMinutes(time);
+    assertTrue("result = " + time, expected == min);
+  }
+  
 }

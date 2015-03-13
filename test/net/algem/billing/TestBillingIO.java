@@ -1,7 +1,7 @@
 /*
- * @(#)TestBillingIO.java 2.6.a 08/10/12
+ * @(#)TestBillingIO.java 2.9.3.2 12/03/15
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -35,7 +35,7 @@ import org.junit.*;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.3.2
  * @since 2.5.a 09/07/12
  */
 public class TestBillingIO 
@@ -111,7 +111,6 @@ public class TestBillingIO
      assertEquals("12091000", f.getNumber());
    }
    
-   @Test
    @Ignore
    public void testGetLastId() throws SQLException {
      String query = "DROP TABLE IF EXISTS fact"; 

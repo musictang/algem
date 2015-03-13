@@ -1,7 +1,7 @@
 /*
- * @(#)WebSite.java	2.8.t 16/05/14
+ * @(#)WebSite.java	2.9.3.2 09/03/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -23,7 +23,7 @@ package net.algem.contact;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.9.3.2
  * @since 2.0r
  */
 public class WebSite
@@ -34,7 +34,8 @@ public class WebSite
   public static final String FACEBOOK_PREFIX = "https://www.facebook.com/";
   public static final String MYSPACE_PREFIX = "https://www.myspace.com/";
   public static final String TWITTER_PREFIX = "https://twitter.com/";
-  private static final String HTTP_PREFIX = "http://";
+  public static final String HTTP_PREFIX = "http://";
+  public static final String HTTPS_PREFIX = "https://";
   private int idx;
   private int idper;
   private String url;
@@ -86,12 +87,7 @@ public class WebSite
   }
 
   public void setUrl(String url) {
-    if (url != null && url.length() > 0 && !url.startsWith(HTTP_PREFIX)) {
-      this.url = HTTP_PREFIX + url;
-    }
-    else {
-      this.url = url;
-    }
+    this.url = url;
   }
 
   @Override

@@ -1,7 +1,7 @@
 /*
- * @(#)ModuleView.java	2.8.t 16/04/14
+ * @(#)ModuleView.java	2.9.3.2 12/03/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -38,7 +38,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.9.3.2
  */
 public class ModuleView
         extends GemPanel {
@@ -52,7 +52,7 @@ public class ModuleView
   private GemDecimalField quarterRateReduc;
   private CourseModuleView courseView;
 
-  public ModuleView(DataCache dataCache) {
+  public ModuleView(DataCache dataCache) {   
     no = new GemNumericField(6);
     no.setEditable(false);
     title = new GemField(ModuleIO.TITLE_MAX_LEN);

@@ -1,5 +1,5 @@
 /*
- * @(#)ExtendedModuleOrderTableModel.java	2.9.2.1 16/02/15
+ * @(#)ExtendedModuleOrderTableModel.java	2.9.3.2 10/03/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -36,10 +36,11 @@ import net.algem.util.ui.JTableModel;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2.1
+ * @version 2.9.3.2
  * @since 2.9.2.1 16/02/15
  */
-public class ExtendedModuleOrderTableModel extends JTableModel<ExtendedModuleOrder>
+public class ExtendedModuleOrderTableModel 
+  extends JTableModel<ExtendedModuleOrder>
 {
 
   private final NumberFormat nf;
@@ -84,7 +85,7 @@ public class ExtendedModuleOrderTableModel extends JTableModel<ExtendedModuleOrd
         return String.class;
       case 5:
       case 6:
-        return Hour.class;
+        return Double.class;
       case 7:
       case 8:
         return GemAmount.class;
@@ -115,9 +116,9 @@ public class ExtendedModuleOrderTableModel extends JTableModel<ExtendedModuleOrd
       case 4:
         return m.getTitle();
       case 5:
-        return PricingPeriod.HOUR.equals(m.getPricing()) ? new Hour(m.getTotalTime(), true) : new Hour(m.getCompleted(), true);
+        return PricingPeriod.HOUR.equals(m.getPricing()) ? Hour.minutesToDecimal(m.getTotalTime()) : Hour.minutesToDecimal(m.getCompleted());
       case 6:
-        return new Hour(rest, true);
+        return rest <= 0 ? 0.0 : Hour.minutesToDecimal(rest);
       case 7:
         return nf.format(AccountUtil.round(m.getPaymentInfo(m.getTotalTime())));
       case 8:

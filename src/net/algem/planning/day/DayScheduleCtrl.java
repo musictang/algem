@@ -1,5 +1,5 @@
 /*
- * @(#)DayScheduleCtrl.java 2.9.2.1 16/02/15
+ * @(#)DayScheduleCtrl.java 2.9.3.2 10/03/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -43,6 +43,7 @@ import net.algem.planning.export.PlanningExportService;
 import net.algem.room.Establishment;
 import net.algem.room.RoomUpdateEvent;
 import net.algem.util.BundleUtil;
+import net.algem.util.DataCache;
 import net.algem.util.FileUtil;
 import net.algem.util.GemLogger;
 import net.algem.util.event.GemEvent;
@@ -58,7 +59,7 @@ import net.algem.util.module.GemModule;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2.1
+ * @version 2.9.3.2
  * @since 1.0b 06/10/2001
  */
 public class DayScheduleCtrl
@@ -210,7 +211,7 @@ public class DayScheduleCtrl
       File destFile = FileUtil.getSaveFile(view, "xls", BundleUtil.getLabel("Excel.file.label"), null);
       if (destFile != null) {
         try {
-          new PlanningExportService().exportPlanning(planning, destFile);
+          new PlanningExportService(new PlanningService(DataCache.getDataConnection())).exportPlanning(planning, destFile);
           new DesktopOpenHandler().open(destFile.getAbsolutePath());
         } catch (IOException e) {
           GemLogger.log(e.getMessage());

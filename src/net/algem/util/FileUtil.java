@@ -1,5 +1,5 @@
 /*
- * @(#)FileUtil.java	2.9.3.1 03/03/15
+ * @(#)FileUtil.java	2.9.3.2 13/03/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -53,7 +53,7 @@ import net.algem.util.ui.MessagePopup;
  * Utility class for file operations.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.3.1
+ * @version 2.9.3.2
  * @since 2.0q
  */
 public class FileUtil

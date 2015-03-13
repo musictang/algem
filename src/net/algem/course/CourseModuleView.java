@@ -1,7 +1,7 @@
 /*
- * @(#)CourseModuleView.java	2.8.k 23/07/13
+ * @(#)CourseModuleView.java	2.9.3.2 12/03/15
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -39,7 +39,7 @@ import net.algem.util.ui.GemPanel;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.k
+ * @version 2.9.3.2
  * @since 2.8.a 13/03/2013
  */
 public class CourseModuleView
@@ -56,25 +56,24 @@ public class CourseModuleView
     this.codeList = codeList;
     
     setLayout(new BorderLayout());
-
+    
+    rowsPanel = new GemPanel();
+    rowsPanel.setBorder(BorderFactory.createTitledBorder(BundleUtil.getLabel("Course.label")));
+    rowsPanel.setLayout(new BoxLayout(rowsPanel, BoxLayout.Y_AXIS));
+    
     GemPanel footer = new GemPanel();
     footer.setLayout(new BorderLayout());
     footer.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 2));
 
     plus = new GemButton(BundleUtil.getLabel("Course.add.label"));
     plus.addActionListener(this); 
-//    plus.setMargin(new Insets(0, 5, 0, 5)); //reduction de la taille du bouton
     footer.add(plus);
-  
-    add(footer, BorderLayout.SOUTH);
-    rowsPanel = new GemPanel();
-    rowsPanel.setBorder(BorderFactory.createTitledBorder(BundleUtil.getLabel("Course.label")));
-    rowsPanel.setLayout(new BoxLayout(rowsPanel, BoxLayout.Y_AXIS));
+
     add(rowsPanel, BorderLayout.CENTER);
+    add(footer, BorderLayout.SOUTH);
   }
 
   protected void addRow() {
-    
     CourseModuleInfo info = new CourseModuleInfo();
     info.setTimeLength(0);
     CourseModulePanel p = new CourseModulePanel(info, codeList, this);
@@ -83,7 +82,6 @@ public class CourseModuleView
   }
   
    protected void addRow(CourseModuleInfo info) {
-     
     CourseModulePanel p = new CourseModulePanel(info, codeList, this);
     rowsPanel.add(p); 
   }

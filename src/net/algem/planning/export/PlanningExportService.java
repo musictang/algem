@@ -1,5 +1,5 @@
 /*
- * @(#)PlanningExportService.java 2.9.2 30/01/15
+ * @(#)PlanningExportService.java 2.9.3.2 11/03/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -33,25 +33,30 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
+import net.algem.contact.Person;
+import org.apache.poi.hssf.util.HSSFColor;
 
 /**
  * @author <a href="mailto:alexandre.delattre.biz@gmail.com">Alexd</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.9.3.2
  * @since 2.9.2
  */
 public class PlanningExportService
 {
 
   private ColorPrefs colorPrefs;
+  private PlanningService planningService;
 
-  public PlanningExportService() {
+  public PlanningExportService(PlanningService service) {
+    this.planningService = service;
     colorPrefs = new ColorPrefs();
   }
 
@@ -166,21 +171,46 @@ public class PlanningExportService
       style.setBorderTop(CellStyle.BORDER_THIN);
       style.setBorderBottom(CellStyle.BORDER_THIN);
       style.setFillPattern(CellStyle.SOLID_FOREGROUND);
-      style.setFillForegroundColor(wb.getCustomPalette().findSimilarColor(color.getRed(), color.getGreen(), color.getBlue()).getIndex());
+      HSSFColor hffsColor = wb.getCustomPalette().findColor((byte) color.getRed(), (byte)color.getGreen(), (byte)color.getBlue());
+      short index = -1;
+      if (hffsColor == null) {
+        index = wb.getCustomPalette().findSimilarColor((byte) color.getRed(), (byte)color.getGreen(), (byte)color.getBlue()).getIndex();
+        wb.getCustomPalette().setColorAtIndex(index, (byte) color.getRed(), (byte)color.getGreen(), (byte)color.getBlue());
+      } else {
+        index = hffsColor.getIndex();
+      }
+      style.setFillForegroundColor(index);
       cache.put(color, style);
       return style;
     }
   }
 
   private String getLabel(ScheduleObject p) {
+    StringBuilder sb = new StringBuilder();
     switch (p.getType()) {
       case Schedule.COURSE:
-        Room s = ((CourseSchedule) p).getRoom();
+      case Schedule.WORKSHOP:
+      case Schedule.TRAINING:
         Course c = ((CourseSchedule) p).getCourse();
-        return c.getLabel() + "\n" + p.getPerson().getAbbrevFirstNameName();
+        sb.append(c.getLabel() != null && c.getLabel().length() > 0 ? c.getLabel() : c.getTitle());
+        sb.append('\n');
+        sb.append(p.getPerson().getAbbrevFirstNameName());
+        if (p.getLength() > 30) {
+          try {
+            List<Person> members = planningService.getPersons(p.getId());
+            if (members.size() == 1) {
+              Person per = members.get(0);
+              sb.append('\n').append(per.getNickName() != null && per.getNickName().length() > 0 ? per.getNickName() : per.getAbbrevFirstNameName());
+            }
+          } catch (SQLException ex) {
+            GemLogger.log(ex.getMessage());
+          }
+        }
+        break;
       default:
-        return p.getScheduleLabel();
+        sb.append(p.getScheduleLabel());
     }
+    return sb.toString();
   }
 
   protected java.awt.Color getScheduleColor(ScheduleObject p) {

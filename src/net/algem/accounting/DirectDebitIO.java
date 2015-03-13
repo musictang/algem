@@ -1,7 +1,7 @@
 /*
- * @(#)DirectDebitIO.java 2.8.w 09/07/14
+ * @(#)DirectDebitIO.java 2.9.3.2 13/03/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -24,8 +24,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import net.algem.bank.BranchIO;
+import net.algem.bank.RibIO;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
+import net.algem.contact.AddressIO;
 import net.algem.contact.PersonIO;
 import net.algem.planning.DateFr;
 import net.algem.util.DataConnection;
@@ -34,7 +37,7 @@ import net.algem.util.model.TableIO;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.8.w
+ * @version 2.9.3.2
  * @since 2.8.r 08/01/14
  */
 public class DirectDebitIO
@@ -75,7 +78,8 @@ public class DirectDebitIO
    */
   List<DDMandate> getMandates() throws SQLException {
     List<DDMandate> mandates = new ArrayList<DDMandate>();
-    String query = "SELECT s.*, p.nom FROM " + TABLE + " s, " + PersonIO.TABLE + " p"
+    String query = "SELECT s.*, CASE WHEN p.organisation IS NOT NULL AND trim(p.organisation) != '' THEN p.organisation ELSE p.nom END FROM "
+            + TABLE + " s, " + PersonIO.TABLE + " p"
             + " WHERE s.payeur = p.id"
             + " AND s.seqtype != '" + DDSeqType.LOCK.name()
             + "' ORDER BY s.payeur";
@@ -99,7 +103,6 @@ public class DirectDebitIO
     String query = "SELECT s.*, p.nom FROM " + TABLE + " s, " + PersonIO.TABLE + " p"
             + " WHERE s.payeur = " + payer
             + " AND s.payeur = p.id"
-            //            + " AND s.seqtype != '" + DDSeqType.LOCK.name()
             + " ORDER BY s.signature";
     ResultSet rs = dc.executeQuery(query);
     while (rs.next()) {
@@ -137,9 +140,11 @@ public class DirectDebitIO
    * @throws SQLException
    */
   ResultSet getDDTransaction(int payer) throws SQLException {
-    String query = "SELECT p.id, p.civilite, p.nom, p.prenom, a.adr1, a.adr2, a.cdp, a.ville,"
+    String query = "SELECT p.id, p.civilite, CASE WHEN p.organisation IS NOT NULL AND trim(p.organisation) != '' THEN p.organisation ELSE p.nom END"
+            + ", p.prenom, a.adr1, a.adr2, a.cdp, a.ville,"
             + " s.id, s.rum, s.signature, s.seqtype, r.iban, g.bic"
-            + " FROM personne p LEFT JOIN adresse a ON p.id = a.idper, rib r, guichet g, prlsepa s"
+            + " FROM " + PersonIO.TABLE + " p LEFT JOIN " + AddressIO.TABLE + " a ON p.id = a.idper, "
+            + RibIO.TABLE + " r, " + BranchIO.TABLE + " g, " + TABLE + " s"
             + " WHERE p.id = " + payer
             + " AND p.id = r.idper AND r.guichetid = g.id"
             + " AND p.id = s.payeur"

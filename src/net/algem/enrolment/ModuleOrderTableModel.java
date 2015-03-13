@@ -1,5 +1,5 @@
 /*
- * @(#)ModuleOrderTableModel.java	2.9.2 26/01/15
+ * @(#)ModuleOrderTableModel.java	2.9.3.2 10/03/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -31,7 +31,7 @@ import net.algem.util.ui.JTableModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.9.3.2
  */
 public class ModuleOrderTableModel
         extends JTableModel<ModuleOrder>
@@ -71,7 +71,7 @@ public class ModuleOrderTableModel
       case 5:
         return String.class;
       case 6:
-        return Hour.class;
+        return Double.class;
       default:
         return Object.class;
     }
@@ -99,7 +99,7 @@ public class ModuleOrderTableModel
       case 5:
         return m.getModeOfPayment();
       case 6:
-        return new Hour(m.getTotalTime(), true);
+        return Hour.minutesToDecimal(m.getTotalTime());
 //      case 7:
 //        return new Integer(m.getNOrderLines());
     }

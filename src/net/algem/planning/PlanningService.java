@@ -1,5 +1,5 @@
 /*
- * @(#)PlanningService.java	2.9.2 02/02/15
+ * @(#)PlanningService.java	2.9.3.2 10/03/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -38,7 +38,7 @@ import net.algem.util.ui.MessagePopup;
  * Service class for planning.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.9.3.2
  * @since 2.4.a 07/05/12
  */
 public class PlanningService
@@ -982,7 +982,7 @@ public class PlanningService
    * @return a list of persons or an empty list if no one was found
    * @throws SQLException
    */
-  List<Person> getPersons(int id) throws SQLException {
+  public List<Person> getPersons(int id) throws SQLException {
     List<Person> persons = new ArrayList<Person>();
     String query =  "SELECT adherent FROM " + ScheduleRangeIO.TABLE + " WHERE idplanning = " + id;
     ResultSet rs = dc.executeQuery(query);

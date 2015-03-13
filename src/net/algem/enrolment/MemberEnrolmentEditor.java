@@ -1,5 +1,5 @@
 /*
- * @(#)MemberEnrolmentEditor.java 2.9.2.1 16/02/15
+ * @(#)MemberEnrolmentEditor.java 2.9.3.2 10/03/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -71,7 +71,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2.1
+ * @version 2.9.3.2
  * @since 1.0b 06/09/2001
  */
 public class MemberEnrolmentEditor
@@ -661,7 +661,7 @@ public class MemberEnrolmentEditor
     mo.setPayment((PayFrequency) moduleDlg.getField(6));
     mo.setPricing((PricingPeriod) moduleDlg.getField(9));
     if (PricingPeriod.HOUR.equals(mo.getPricing())) {
-      mo.setTotalTime(((Hour) moduleDlg.getField(8)).toMinutes());
+      mo.setTotalTime(Hour.decimalToMinutes((Double)moduleDlg.getField(8)));
     } else {
       mo.setTotalTime(0);
     }
@@ -741,7 +741,7 @@ public class MemberEnrolmentEditor
     }
     ChangeModuleTimeDlg dlg = new ChangeModuleTimeDlg(desktop, BundleUtil.getLabel("Module.time.change.label"));
     int oldTime = mo.getTotalTime();
-    dlg.set(new Hour(mo.getTotalTime()));
+    dlg.set(mo.getTotalTime());
     dlg.setVisible(true);
     if (dlg.isValidation()) {
       mo.setTotalTime(dlg.get());
@@ -914,21 +914,21 @@ public class MemberEnrolmentEditor
    * Expands the last branch of the tree.
    */
   private void expand() {
-  tree.setCellRenderer(cellRenderer);
-  // on récupère le nombre de lignes visibles
-  int x = tree.getRowCount();
-  // on récupère le dernier TreePath
-  TreePath tp = tree.getPathForRow(x - 1);
-  // on récupère le dernier node visible (la dernière inscription)
-  TreeNode node = (TreeNode) tp.getLastPathComponent();
-  // on expand le path pour tous ses enfants (les différents modules)
-  if (node.getChildCount() >= 0) {
-    for (Enumeration e = node.children(); e.hasMoreElements();) {
-      TreeNode n = (TreeNode) e.nextElement();
-      TreePath path = tp.pathByAddingChild(n);
-      tree.expandPath(path);
+    tree.setCellRenderer(cellRenderer);
+    // on récupère le nombre de lignes visibles
+    int x = tree.getRowCount();
+    // on récupère le dernier TreePath
+    TreePath tp = tree.getPathForRow(x - 1);
+    // on récupère le dernier node visible (la dernière inscription)
+    TreeNode node = (TreeNode) tp.getLastPathComponent();
+    // on expand le path pour tous ses enfants (les différents modules)
+    if (node.getChildCount() >= 0) {
+      for (Enumeration e = node.children(); e.hasMoreElements();) {
+        TreeNode n = (TreeNode) e.nextElement();
+        TreePath path = tp.pathByAddingChild(n);
+        tree.expandPath(path);
+      }
     }
-  }
     tree.setSelectionRow(x - 1);
     tree.scrollRowToVisible(x - 1); // doesn't seem to work
   }

@@ -1,7 +1,7 @@
 /*
- * @(#)WebSitePanel.java	2.8.t 16/05/14
+ * @(#)WebSitePanel.java	2.9.3.2 10/03/15
  *
- * Copyright (c) 1998-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1998-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -35,7 +35,7 @@ import net.algem.util.jdesktop.DesktopHandlerException;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.9.3.2
  */
 public class WebSitePanel extends InfoPanel implements ActionListener, ItemListener {
 
@@ -53,8 +53,8 @@ public class WebSitePanel extends InfoPanel implements ActionListener, ItemListe
 
   public WebSite getSite() {
     WebSite s = new WebSite();
-    s.setUrl(iField.getText().trim());
     s.setType(iChoice.getKey());
+    s.setUrl(maybePrefixURL(iField.getText().trim()));
     return s;
   }
 
@@ -68,26 +68,28 @@ public class WebSitePanel extends InfoPanel implements ActionListener, ItemListe
 
   @Override
   public void itemStateChanged(ItemEvent e) {
-    String orig = iField.getText();
-    String val = iChoice.getValue();
-    if ("facebook".equalsIgnoreCase(val)) {
-      if (!orig.contains(WebSite.FACEBOOK_PREFIX)) {
-        iField.setText(WebSite.FACEBOOK_PREFIX);
+    iField.setText(maybePrefixURL(iField.getText()));
+  }
+  
+  /**
+   * Adds the prefix http or https at the beginning of the url if not present.
+   * @param url current url
+   * @return formatted-url
+   */
+  private String maybePrefixURL(String url) {
+    String val = iChoice.getValue().toLowerCase();
+    if (url.trim().length() > 0 && !(url.toLowerCase().startsWith(WebSite.HTTP_PREFIX) || url.toLowerCase().startsWith(WebSite.HTTPS_PREFIX))) {
+      switch (val) {
+        case "facebook":
+        case "myspace":
+        case "twitter":
+          url = WebSite.HTTPS_PREFIX + url;
+          break;
+        default:
+          url = WebSite.HTTP_PREFIX + url;
       }
     }
-    else if ("myspace".equalsIgnoreCase(val)) {
-      if (!orig.contains(WebSite.MYSPACE_PREFIX)) {
-        iField.setText(WebSite.MYSPACE_PREFIX);
-      }
-    }
-    else if ("twitter".equalsIgnoreCase(val)) {
-      if (!orig.contains(WebSite.TWITTER_PREFIX)) {
-        iField.setText(WebSite.TWITTER_PREFIX);
-      }
-    }
-    else {
-      iField.setText(orig);
-    }
+    return url.toLowerCase();
   }
 
   @Override

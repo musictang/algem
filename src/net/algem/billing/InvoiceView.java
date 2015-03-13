@@ -1,5 +1,5 @@
 /*
- * @(#)InvoiceView.java 2.9.2.1 09/02/15
+ * @(#)InvoiceView.java 2.9.3.2 11/03/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -46,6 +46,7 @@ import net.algem.accounting.OrderLine;
 import net.algem.contact.Address;
 import net.algem.contact.Contact;
 import net.algem.contact.ContactIO;
+import net.algem.contact.Person;
 import net.algem.edition.*;
 import net.algem.planning.DateFr;
 import net.algem.planning.DateFrField;
@@ -65,7 +66,7 @@ import net.algem.util.ui.*;
  * Invoice / quotation view.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2.1
+ * @version 2.9.3.2
  * @since 2.3.a 07/02/12
  */
 public class InvoiceView
@@ -84,6 +85,7 @@ public class InvoiceView
   private GemField ref;
   private EstabChoice estab;
   private GemField payer;
+  private GemNumericField payerId;
   private GemField member;
   private JFormattedTextField downPayment;
   private JFormattedTextField totalET;
@@ -104,7 +106,6 @@ public class InvoiceView
   private boolean isInvoice;
 
   public InvoiceView(GemDesktop desktop, BillingService service) {
-
     this.desktop = desktop;
     this.dataCache = desktop.getDataCache();
     this.dc = DataCache.getDataConnection();
@@ -125,6 +126,21 @@ public class InvoiceView
     date = new DateFrField();
     ref = new GemField(15);
     estab = new EstabChoice(dataCache.getList(Model.Establishment));
+    payerId = new GemNumericField(5);
+    payerId.addActionListener(new ActionListener()
+    {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        try {
+          int id = Integer.parseInt(payerId.getText());
+          Person p = (Person) DataCache.findId(id, Model.Person);
+          payer.setText(p.getOrganization() != null && p.getOrganization().length() > 0 ? p.getOrganization() : p.getFirstnameName());
+        } catch (Exception ex) {
+          GemLogger.log(ex.getMessage());
+        }
+      }
+
+    });
     payer = new GemField(20);
     payer.setEditable(false);
     member = new GemField(20);
@@ -160,6 +176,7 @@ public class InvoiceView
     head2.add(new GemLabel(BundleUtil.getLabel("Establishment.label")));
     head2.add(estab);
     head2.add(new GemLabel(BundleUtil.getLabel("Payer.label")));
+    head2.add(payerId);
     head2.add(payer);
     head2.add(new GemLabel(BundleUtil.getLabel("Member.label")));
     head2.add(member);
@@ -236,6 +253,7 @@ public class InvoiceView
     date.setText(quote.getDate().toString());
     ref.setText(quote.getReference());
     estab.setKey(quote.getEstablishment());
+    payerId.setText(String.valueOf(quote.getPayer()));
     payer.setText(p);
     member.setText(m);
 
@@ -286,6 +304,11 @@ public class InvoiceView
       inv.setDate(new DateFr(date.getText()));
       inv.setReference(ref.getText());
       inv.setEstablishment(estab.getKey());
+      try {
+         inv.setPayer(Integer.parseInt(payerId.getText()));
+       } catch (NumberFormatException ex) {
+         GemLogger.log(ex.getMessage());
+       }
       double a = ((Number) downPayment.getValue()).doubleValue();
       inv.setDownPayment(Math.abs(a));
       
@@ -293,7 +316,7 @@ public class InvoiceView
       inv.setOrderLines(orderLines);
       
       if (invoice != null) {
-        inv.setPayer(invoice.getPayer());
+//        inv.setPayer(invoice.getPayer());
         inv.setMember(invoice.getMember());
         inv.setEstablishment(invoice.getEstablishment());
         inv.setIssuer(invoice.getIssuer());

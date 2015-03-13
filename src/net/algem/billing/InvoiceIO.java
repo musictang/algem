@@ -1,5 +1,5 @@
 /*
- * @(#)InvoiceIO.java 2.9.2.1 18/02/15
+ * @(#)InvoiceIO.java 2.9.3.2 11/03/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -36,7 +36,7 @@ import net.algem.util.model.Model;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2.1
+ * @version 2.9.3.2
  * @since 2.3.a 22/12/11
  */
 public class InvoiceIO
@@ -143,7 +143,7 @@ public class InvoiceIO
             + " date_emission = '" + inv.getDate()
             + "', etablissement = " + inv.getEstablishment()
             //+ ", emetteur = " + f.getIssuer()
-            //+ ", debiteur = " + f.getPayer()
+            + ", debiteur = " + inv.getPayer()
             + ", prestation = '" + escape(inv.getDescription().trim())
             + "', reference = '" + escape(inv.getReference().trim())
             + "', acompte = " + inv.getDownPayment()

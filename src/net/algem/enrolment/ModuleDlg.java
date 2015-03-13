@@ -1,7 +1,7 @@
 /*
- * @(#)ModuleDlg.java	2.9.1 09/12/14
+ * @(#)ModuleDlg.java	2.9.3.2 11/03/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -43,7 +43,6 @@ import net.algem.course.ModuleChoice;
 import net.algem.planning.DateFr;
 import net.algem.planning.DateFrField;
 import net.algem.planning.Hour;
-import net.algem.planning.HourField;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.GemLogger;
@@ -55,7 +54,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.3.2
  * @since 1.0a 07/07/1999
  */
 public class ModuleDlg
@@ -72,7 +71,7 @@ public class ModuleDlg
   private JComboBox payment;
   private JComboBox frequency;
   private JComboBox pricing;
-  private HourField hours;
+  private JFormattedTextField hours;
   private Module module;
   private PersonFile personFile;
   private EnrolmentService service;
@@ -99,7 +98,7 @@ public class ModuleDlg
           price.commitEdit();
           calculatedPrice.setValue(calculatePayment(module, (String) getField(5), (PayFrequency) getField(6), (PricingPeriod) getField(9)));
         } catch (ParseException ex) {
-          System.err.println(ex.getMessage());
+          GemLogger.log(ex.getMessage());
         }
 
       }
@@ -127,7 +126,9 @@ public class ModuleDlg
     pricing.setSelectedItem(getDefaultPricingPeriod());
     pricing.addItemListener(this);
 
-    hours = new HourField("00:00", true);
+    hours = new JFormattedTextField(AccountUtil.getDefaultNumberFormat());
+    hours.setColumns(5);
+    hours.setValue(1d);
     hours.setToolTipText(BundleUtil.getLabel("Pricing.period.hours.tip"));
     hours.setEditable(PricingPeriod.HOUR.equals(getDefaultPricingPeriod()));
     hours.addKeyListener(new KeyAdapter()
@@ -204,11 +205,15 @@ public class ModuleDlg
         moduleChoice.setSelectedIndex((Integer) val);
         break;
       case 8:
-        hours.set((Hour) val);
+        hours.setValue(Hour.minutesToDecimal((Integer) val));
       case 9:
         pricing.setSelectedItem(val);
         break;
     }
+  }
+  
+  private double minutesToDecimal(int min) {
+    return min/60;
   }
 
   public Object getField(int n) {
@@ -230,10 +235,14 @@ public class ModuleDlg
         return frequency.getSelectedItem();
       // ajout d'un case pour l'index sélectionné dans la ComboBox choixModule
       case 7:
-//        return String.valueOf(((ModuleChoice) moduleChoice).getSelectedKey());
         return ((ModuleChoice) moduleChoice).getSelectedKey();
       case 8:
-        return hours.get();
+        try {
+          hours.commitEdit();
+        } catch (ParseException ex) {
+          GemLogger.log(ex.getMessage());
+        }
+        return ((Number) hours.getValue()).doubleValue();
       case 9:
         return pricing.getSelectedItem();
       case 10:
@@ -257,8 +266,6 @@ public class ModuleDlg
     } else if(evt.getSource() == pricing) {
       hours.setEditable(PricingPeriod.HOUR.equals((PricingPeriod) getField(9)));
     }
-//    price.setValue(calculatePayment(module, (String) getField(5), (PayFrequency) getField(6), getDefaultPricingPeriod()));
-//    price.setValue(calculatePayment(module, (String) getField(5), (PayFrequency) getField(6), (PricingPeriod) getField(9)));
     calculatedPrice.setValue(calculatePayment(module, (String) getField(5), (PayFrequency) getField(6), (PricingPeriod) getField(9)));
 
   }
@@ -294,9 +301,6 @@ public class ModuleDlg
   }
 
   double calculatePayment(Module m, String mp, PayFrequency pf, PricingPeriod def) {
-//    double price = m.getBasePrice();
-//    double reduc = m.getBasePrice();
-//    Double p = () getField(4);
     double price = getField(4) == null ? m.getBasePrice() : ((Number) getField(4)).doubleValue();
     double reduc = price;
     if (ModeOfPayment.PRL.toString().equals(mp)) {
@@ -375,7 +379,7 @@ public class ModuleDlg
           break;
       }
     } else if (def.equals(PricingPeriod.HOUR)) {
-      return price * ((Hour) getField(8)).toMinutes() / 60;
+      return price * (double) getField(8);
     }
 
     return reduc;
@@ -401,7 +405,7 @@ public class ModuleDlg
   }
 
   void reset() {
-    hours.set(new Hour("01:00"));// important : set hour before initializing price
+    hours.setValue(1d);
     pricing.setSelectedItem(getDefaultPricingPeriod());
     price.setValue(module.getBasePrice());
     calculatedPrice.setValue(calculatePayment(module, (String) getField(5), (PayFrequency) getField(6), (PricingPeriod) getField(9)));

@@ -1,7 +1,7 @@
 /*
- * @(#)CardCtrl.java	2.6.a 04/08/12
+ * @(#)CardCtrl.java	2.9.3.2 12/03/15
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -33,7 +33,7 @@ import net.algem.util.event.GemEventListener;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.3.2
  */
 public abstract class CardCtrl
         extends GemPanel
@@ -62,7 +62,7 @@ public abstract class CardCtrl
 
     title = new GemLabel("", GemLabel.CENTER);
     title.setFont(new Font("Helvetica", Font.PLAIN, 12));
-
+ 
     wCard = new GemPanel();
     wCard.setLayout(new CardLayout());
 
@@ -94,14 +94,6 @@ public abstract class CardCtrl
     actionListener = AWTEventMulticaster.add(actionListener, l);
   }
 
-  /*
-
-  public void addIco(Image img, boolean stick, String label)
-
-  {
-  bar.addIcon(img,label);
-  }
-   */
   public abstract boolean next();
 
   public abstract boolean cancel();

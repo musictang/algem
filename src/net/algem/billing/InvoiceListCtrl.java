@@ -1,7 +1,7 @@
 /*
- * @(#)InvoiceListCtrl.java 2.8.n 26/09/13
+ * @(#)InvoiceListCtrl.java 2.9.3.2 13/03/15
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -23,14 +23,17 @@ package net.algem.billing;
 import java.awt.BorderLayout;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.RowSorter;
 import javax.swing.border.BevelBorder;
 import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 import net.algem.util.ui.ListCtrl;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.n
+ * @version 2.9.3.2
  * @since 2.3.a 14/02/12
  */
 public class InvoiceListCtrl
@@ -44,6 +47,10 @@ public class InvoiceListCtrl
 
     table = new JTable(tableModel);
     table.setAutoCreateRowSorter(true);
+    RowSorter<? extends TableModel> sorter = table.getRowSorter();
+    if (sorter instanceof TableRowSorter) {
+      ((TableRowSorter) sorter).setComparator(0, new InvoiceComparator());
+    }
 
     TableColumnModel cm = table.getColumnModel();
     cm.getColumn(0).setPreferredWidth(14);

@@ -1,7 +1,7 @@
 /*
- * @(#)ContactFileNameFilter.java 2.8.p 08/11/13
+ * @(#)ContactFileNameFilter.java 2.9.3.2 13/03/15
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,24 +27,22 @@ import java.io.FilenameFilter;
  * File name filter by contact's id.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.p
+ * @version 2.9.3.2
  * @since 2.8.p 08/11/13
  */
 class ContactFileNameFilter
         implements FilenameFilter
 {
 
-  private int id;
+  private String regex;
+  
+  public ContactFileNameFilter(int id) {
+    regex = "^(.*[^0-9])?" + id + "[ ]?\\..*$";
+  }
 
   @Override
   public boolean accept(File dir, String name) {
-    String lower = name.toLowerCase();
-    int idx = lower.lastIndexOf('.');
-//        return lower.startsWith(dirName) && lower.substring(0,idx).endsWith(String.valueOf(id));
-    return lower.substring(0, idx).endsWith(String.valueOf(id));
+    return name.matches(regex);
   }
 
-  public ContactFileNameFilter(int id) {
-    this.id = id;
-  }
 }

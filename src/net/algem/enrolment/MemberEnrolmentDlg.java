@@ -1,7 +1,7 @@
 /*
- * @(#)MemberEnrolmentDlg.java	2.9.1 12/11/14
+ * @(#)MemberEnrolmentDlg.java	2.9.3.2 11/03/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -48,7 +48,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.3.2
  * @since 1.0a 07/07/1999
  * @see net.algem.contact.PersonFileEditor
  *
@@ -328,7 +328,7 @@ public class MemberEnrolmentDlg
     mo.setNOrderLines(1);
     mo.setPricing((PricingPeriod) moduleDlg.getField(9));
     if (PricingPeriod.HOUR.equals(mo.getPricing())) {
-      mo.setTotalTime(((Hour) moduleDlg.getField(8)).toMinutes());
+      mo.setTotalTime(Hour.decimalToMinutes((Double)moduleDlg.getField(8)) );
     } else {
       mo.setTotalTime(0);
     }
@@ -365,16 +365,14 @@ public class MemberEnrolmentDlg
     moduleDlg.setField(5, mo.getModeOfPayment());
     moduleDlg.setField(6, mo.getPayment());
     moduleDlg.setField(7, mo.getSelectedModule());
-    moduleDlg.setField(8, new Hour(mo.getTotalTime(), true));
+    moduleDlg.setField(8, mo.getTotalTime());
     moduleDlg.setField(9, mo.getPricing());
 
     setCursor(Cursor.getDefaultCursor());
 
     moduleDlg.show();
     if (moduleDlg.isValidation()) {
-//      mo.setModule(Integer.parseInt(moduleDlg.getField(0)));
       mo.setModule((Integer) moduleDlg.getField(0));
-//      mo.setSelectedModule(Integer.parseInt(moduleDlg.getField(7)));
       mo.setSelectedModule((Integer) moduleDlg.getField(7));
       mo.setTitle((String) moduleDlg.getField(1));
       mo.setStart(new DateFr((DateFr) moduleDlg.getField(2)));
@@ -383,7 +381,7 @@ public class MemberEnrolmentDlg
       mo.setPaymentAmount(((Number) moduleDlg.getField(10)).doubleValue());
       mo.setModeOfPayment((String) moduleDlg.getField(5));
       mo.setPayment((PayFrequency) moduleDlg.getField(6));
-      mo.setTotalTime(((Hour) moduleDlg.getField(8)).toMinutes());
+      mo.setTotalTime(Hour.decimalToMinutes((Double)moduleDlg.getField(8)));
       mo.setPricing((PricingPeriod) moduleDlg.getField(9));
       view.changeModule(n, mo);
 

@@ -1,5 +1,5 @@
 /*
- * @(#)ChangeModuleTimeDlg.java	2.9.2 09/01/15
+ * @(#)ChangeModuleTimeDlg.java	2.9.3.2 11/03/15
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -25,13 +25,16 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.ParseException;
 import javax.swing.JDialog;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import net.algem.accounting.AccountUtil;
 import net.algem.planning.Hour;
-import net.algem.planning.HourField;
 import net.algem.util.BundleUtil;
 import net.algem.util.GemCommand;
+import net.algem.util.GemLogger;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.module.GemModule;
 import net.algem.util.ui.GemButton;
@@ -50,8 +53,8 @@ public class ChangeModuleTimeDlg
         implements ActionListener
 {
 
-  private final HourField orig;
-  private final HourField hours;
+  private final JFormattedTextField orig;
+  private final JFormattedTextField hours;
   private boolean validation;
   private final GemButton btOk;
   private final GemButton btCancel;
@@ -59,9 +62,11 @@ public class ChangeModuleTimeDlg
   public ChangeModuleTimeDlg(GemDesktop desktop, String title) {
     super(desktop.getFrame(), title, true);
     
-    orig = new HourField("01:00", true);
+    orig = new JFormattedTextField(AccountUtil.getDefaultNumberFormat());
+    orig.setColumns(4);
     orig.setEnabled(false);
-    hours = new HourField("01:00", true);
+    hours = new JFormattedTextField(AccountUtil.getDefaultNumberFormat());
+    hours.setColumns(4);
     JPanel p = new JPanel(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(p);
     gb.insets = GridBagHelper.SMALL_INSETS;
@@ -91,9 +96,10 @@ public class ChangeModuleTimeDlg
    * Sets the actual time.
    * @param h actual time
    */
-  void set(Hour h) {
-    orig.set(h);
-    hours.set(h);
+  void set(int min) {
+    double val = Hour.minutesToDecimal(min);
+    orig.setValue(val);
+    hours.setValue(val);
   }
 
   /**
@@ -101,7 +107,12 @@ public class ChangeModuleTimeDlg
    * @return a length in minutes
    */
   int get() {
-    return hours.getHour().toMinutes();
+    try {
+      hours.commitEdit();
+    } catch (ParseException ex) {
+      GemLogger.log(ex.getMessage());
+    }
+    return Hour.decimalToMinutes(((Number) hours.getValue()).doubleValue());
   }
 
   @Override
