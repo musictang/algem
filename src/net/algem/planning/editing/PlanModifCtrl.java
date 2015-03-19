@@ -908,7 +908,7 @@ public class PlanModifCtrl
     Action action = new Action();
     action.setDay(jour);
     action.setCourse(plan.getIdAction());
-    action.setTeacher(plan.getIdPerson());
+    action.setIdper(plan.getIdPerson());
     action.setDateStart(a.getDateStart());
     action.setDateEnd(a.getDateEnd());
     action.setHourStart(plan.getStart());

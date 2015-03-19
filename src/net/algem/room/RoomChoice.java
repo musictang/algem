@@ -66,5 +66,9 @@ public class RoomChoice
   public void setKey(int k) {
     ((GemChoiceModel)getModel()).setSelectedItem(k);
   }
+  
+//  public String toString() {
+//    return getKey() > 0 ? ((Room) getSelectedItem()).getName() : "";
+//  }
 
 }

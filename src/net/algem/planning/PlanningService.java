@@ -129,7 +129,7 @@ public class PlanningService
     try {
       dc.setAutoCommit(false);
       Action a = new Action();
-      a.setTeacher(session.getGroup());
+      a.setIdper(session.getGroup());
       actionIO.insert(a);
       actionIO.planify(a, Schedule.STUDIO, session.getRooms(), session);
       actionIO.planify(a, Schedule.TECH, new int[] {session.getStudio()}, session);
@@ -184,7 +184,7 @@ public class PlanningService
 //                + ",'" + d.toString()
 //                + "','" + action.getHourStart() + "','" + action.getHourEnd() + "',"
 //                + plan.getType() + ","// on ne change pas le type
-//                + action.getTeacher() + ","
+//                + action.getIdper() + ","
 //                + action.getId() + ","
 //                + action.getRoom() + ",0)";
 //        dc.executeUpdate(query);
@@ -828,7 +828,7 @@ public class PlanningService
             + " AND a.cours = " + cours
             + " AND p.jour >='" + dateDebut + "' AND p.jour <='" + dateFin + "'"
             + " AND extract(dow from timestamp '" + dateDebut + "') = date_part('dow',jour)"
-            + " AND p.idper=" + a.getTeacher()
+            + " AND p.idper=" + a.getIdper()
             + " AND p.debut <='" + heureDebut + "' AND p.fin >='" + heureFin + "'"
             + " AND p.lieux=" + salle;
 

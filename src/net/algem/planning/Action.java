@@ -47,9 +47,7 @@ public class Action
   private DateFr dateEnd;
   private Hour hourStart;
   private Hour hourEnd;
-  private String teacherName;
-  private int teacherId;
-  private String room;
+  private int idper;
   private int roomId;
   private short day;
   private int vacancy;
@@ -77,7 +75,7 @@ public class Action
     this.courseId = a.getCourse();
     this.dateStart = a.getDateStart();
     this.dateEnd = a.getDateEnd();
-    this.teacherId = a.getTeacher();
+    this.idper = a.getIdper();
     this.roomId = a.getRoom();
     this.day = (short) a.getDay();
     this.nsessions = a.getNSessions();
@@ -116,23 +114,13 @@ public class Action
     nsessions = n;
   }
 
-  public int getTeacher() {
-    return teacherId;
+  public int getIdper() {
+    return idper;
   }
 
-  public void setTeacher(int i) {
-    teacherId = i;
+  public void setIdper(int i) {
+    idper = i;
   }
-
-//  public void setTeacher(int i, String n) {
-//    teacherId = i;
-//    teacherName = n;
-//  }
-//
-//  public void setTeacher(Person p) {
-//    teacherId = p.getId();
-//    teacherName = p.getFirstnameName();
-//  }
 
   public int getRoom() {
     return roomId;
@@ -205,14 +193,14 @@ public class Action
   public void setPeriodicity(Periodicity p) {
     this.periodicity = p;
   }
-
-  public int getMember() {
-    return memberId;
-  }
-
-  public void setMember(int member) {
-    this.memberId = member;
-  }
+//
+//  public int getMember() {
+//    return memberId;
+//  }
+//
+//  public void setMember(int member) {
+//    this.memberId = member;
+//  }
 
   public GemParam getLevel() {
     return level;
@@ -256,7 +244,7 @@ public class Action
 
   @Override
   public String toString() {
-    return id + " " + hourStart + " " + hourEnd + " " + teacherId + " " + memberId + " " + roomId;
+    return id + " " + hourStart + " " + hourEnd + " " + idper + " " + memberId + " " + roomId;
   }
 
   public String getCodeLabel() {

@@ -177,7 +177,7 @@ public class ActionView
     a.setHourStart(hourPanel.getStart());
     a.setHourEnd(hourPanel.getEnd());
     a.setLength(getCourseLength());
-    a.setTeacher(teacher.getKey());
+    a.setIdper(teacher.getKey());
     a.setRoom(room.getKey());
     a.setDay(day.getDay());
     a.setVacancy(vacancy.getKey());

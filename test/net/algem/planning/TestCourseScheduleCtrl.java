@@ -85,7 +85,7 @@ public class TestCourseScheduleCtrl
     a.setPeriodicity(Periodicity.WEEK);
     a.setNSessions((short) 1);
     a.setRoom(1);
-    a.setTeacher(16094);
+    a.setIdper(16094);
 
     List<Action> la = ctrl.getPlanification(a, 0);
     assertTrue(la.size() == 4);

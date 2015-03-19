@@ -65,7 +65,7 @@ public class ActionIO
                     + ",'" + d.toString()
                     + "','" + a.getHourStart() + "','" + a.getHourEnd() + "',"
                     + type + ","
-                    + a.getTeacher() + ","
+                    + a.getIdper() + ","
                     + a.getId() + ","
                     + a.getRoom() + ",0)";
             dc.executeUpdate(query);
@@ -95,7 +95,7 @@ public class ActionIO
                 + ",'" + dt.getDate()
                 + "','" + dt.getTimeRange().getStart() + "','" + dt.getTimeRange().getEnd() + "',"
                 + type + ","
-                + a.getTeacher() + ","
+                + a.getIdper() + ","
                 + a.getId() + ","
                 + a.getRoom() + ", 0)";
         dc.executeUpdate(query);
@@ -121,7 +121,7 @@ public class ActionIO
         s.setStart(dt.getTimeRange().getStart());
         s.setEnd(dt.getTimeRange().getEnd());
         s.setType(type);
-        s.setIdPerson(a.getTeacher());
+        s.setIdPerson(a.getIdper());
         s.setIdAction(a.getId());
         s.setIdRoom(r);
         if (session.getCategory() != null) {

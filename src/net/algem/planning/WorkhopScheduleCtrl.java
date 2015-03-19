@@ -149,7 +149,7 @@ public class WorkhopScheduleCtrl
 		Action a = new Action();
 		a.setHourStart(hStart);
 		a.setHourEnd(hEnd);
-		a.setTeacher(t);
+		a.setIdper(t);
 		a.setRoom(r);
 		a.setCourse(w);
 

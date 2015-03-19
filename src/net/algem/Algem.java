@@ -387,8 +387,6 @@ public class Algem
       baseArg = args[3];
     }
 
-    
-    
     try {
       appli = new Algem();
       if (!isFeatureEnabled("native_fonts")) {

@@ -109,7 +109,7 @@ public class TestConflictService
     a.setDateEnd(f);
     a.setHourStart(hd);
     a.setHourEnd(hf);
-    a.setTeacher(prof);
+    a.setIdper(prof);
     a.setRoom(salle);
     a.setDay(1);
     a.setVacancy(3);// sans vacances

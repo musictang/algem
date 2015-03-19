@@ -27,6 +27,7 @@ import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
 import net.algem.contact.teacher.SubstituteTeacherCtrl;
 import net.algem.edition.AttendanceSheetDlg;
+import net.algem.planning.AdministrativeScheduleCtrl;
 import net.algem.planning.CourseScheduleCtrl;
 import net.algem.planning.StudioScheduleCtrl;
 import net.algem.planning.TrainingScheduleCtrl;
@@ -60,6 +61,7 @@ public class MenuPlanning
   private JMenuItem miTraining;
   private JMenuItem miStudio;
   private JMenuItem miReplacement;
+  private JMenuItem miAdministrative;
 
   public MenuPlanning(GemDesktop desktop) {
 
@@ -84,6 +86,7 @@ public class MenuPlanning
       add(miAttendanceSheet = new JMenuItem(BundleUtil.getLabel("Menu.presence.file.label")));
       add(miReplacement = dataCache.getMenu2("Menu.replacement", true));
     }
+    add(miAdministrative = new JMenuItem(BundleUtil.getLabel("Administrative.label")));
 
     setListener(this);
   }
@@ -127,7 +130,11 @@ public class MenuPlanning
       SubstituteTeacherCtrl rCtrl = new SubstituteTeacherCtrl(desktop);
       desktop.addPanel("Replacement", rCtrl);
       desktop.getSelectedModule().setSize(GemModule.L_SIZE);
-    } else if (GemCommand.CANCEL_CMD.equals(arg)) {
+    } else if (src == miAdministrative) {
+      AdministrativeScheduleCtrl adminScheduleCtrl = new AdministrativeScheduleCtrl(desktop);
+      
+      desktop.addPanel("Planification administrative", adminScheduleCtrl);
+    }else if (GemCommand.CANCEL_CMD.equals(arg)) {
       desktop.removeCurrentModule();
     }
     desktop.setDefaultCursor();

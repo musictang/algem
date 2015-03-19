@@ -90,7 +90,7 @@ public class CourseScheduleCtrl
       msg += "\n" + MessageUtil.getMessage("hour.range.error");
     }
     Action a = v.get();
-    if (a.getTeacher() == 0) {
+    if (a.getIdper() == 0) {
       msg += "\n" + MessageUtil.getMessage("teacher.invalid.choice");
     }
     if (a.getRoom() == 0) {
@@ -216,7 +216,7 @@ public class CourseScheduleCtrl
   public int testConflict(Action a) {
 
     int room = a.getRoom();
-    int teacher = a.getTeacher();
+    int teacher = a.getIdper();
 
     Hour hStart = a.getHourStart();
     Hour hEnd = a.getHourEnd();

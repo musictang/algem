@@ -141,7 +141,7 @@ public class TeacherBreakDlg
     a.setHourEnd(pv.getHourEnd());
     a.setCourse(pv.getCourse());
     a.setRoom(pv.getRoom());
-    a.setTeacher(teacher);
+    a.setIdper(teacher);
     try {
       service.createBreak(a);
       desktop.postEvent(new ModifPlanEvent(this, pv.getDateStart(), pv.getDateEnd()));

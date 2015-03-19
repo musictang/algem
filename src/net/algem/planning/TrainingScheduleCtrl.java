@@ -185,7 +185,7 @@ public class TrainingScheduleCtrl
       throw new PlanningException(MessageUtil.getMessage("invalid.teacher"));
     }
     Action a = new Action();
-    a.setTeacher(teacher);
+    a.setIdper(teacher);
     a.setRoom(room);
     a.setCourse(course);
 
@@ -206,7 +206,7 @@ public class TrainingScheduleCtrl
         conflicts++;
       }
       // test prof
-      query = ConflictQueries.getTeacherConflictSelection(d.toString(), start.toString(), end.toString(), a.getTeacher());
+      query = ConflictQueries.getTeacherConflictSelection(d.toString(), start.toString(), end.toString(), a.getIdper());
       if (ScheduleIO.count(query, dc) > 0) {
         testConflict.setTeacherFree(false);
         conflicts++;
