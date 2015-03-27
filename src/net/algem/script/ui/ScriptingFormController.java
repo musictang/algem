@@ -37,7 +37,7 @@ public class ScriptingFormController {
                     if (selPath != null) {
                         Object selectedComponent = selPath.getLastPathComponent();
                         if (selectedComponent instanceof ScriptImplFile) {
-                          openScript((ScriptImplFile)selectedComponent) ;
+                            openScript((ScriptImplFile) selectedComponent);
                         }
                     }
                 }
@@ -72,6 +72,8 @@ public class ScriptingFormController {
                     return ((ScriptDirectory) value).getDirectory().getName();
                 } else if (value instanceof ScriptImplFile) {
                     return ((ScriptImplFile) value).getCodeFile().getName();
+                } else {
+                    return super.convertValueToText(value, selected, expanded, leaf, row, hasFocus);
                 }
             }
         };
