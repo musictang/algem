@@ -1,5 +1,5 @@
 /*
- * @(#)PostponeCourseDlg.java	2.9.2 28/01/15
+ * @(#)PostponeScheduleDlg.java	2.9.4.0 26/03/2015
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -27,6 +27,7 @@ import net.algem.course.Course;
 import net.algem.planning.CourseSchedule;
 import net.algem.planning.Hour;
 import net.algem.planning.PlanningService;
+import net.algem.planning.Schedule;
 import net.algem.planning.ScheduleObject;
 import net.algem.planning.TrainingCourseSchedule;
 import net.algem.planning.WorkshopSchedule;
@@ -41,20 +42,21 @@ import net.algem.util.module.GemDesktop;
  * Dialog for course time modification.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.9.4.0
+ * @since 2.9.4.0 26/03/2015
  *
  */
-public class PostponeCourseDlg
+public class PostponeScheduleDlg
         extends ModifPlanDlg
 {
 
-  private PostponeCourseView pv;
+  private PostponeScheduleView pv;
   private ScheduleObject schedule;
 
-  public PostponeCourseDlg(GemDesktop desktop, ScheduleObject _plan, PlanningService service, String titleKey) {
+  public PostponeScheduleDlg(GemDesktop desktop, ScheduleObject _plan, PlanningService service, String titleKey) {
     super(desktop.getFrame());
     schedule = _plan;
-    pv = new PostponeCourseView(desktop.getDataCache().getList(Model.Room), service);
+    pv = new PostponeScheduleView(desktop.getDataCache().getList(Model.Room), service);
     boolean noRange = titleKey.equals("Schedule.course.copy.title")
             || (schedule instanceof CourseSchedule && ((Course) schedule.getActivity()).isCollective())
             || schedule instanceof WorkshopSchedule 
@@ -98,12 +100,11 @@ public class PostponeCourseDlg
     }
 
     int room = ns.getIdRoom();
-    /* 1.1c Ajout d'une condition pour les salles de type exterieur */
     RoomIO roomIO = (RoomIO) DataCache.getDao(Model.Room);
-    Room r = roomIO.findId(schedule.getIdRoom()); //salle habituelle du planning
-    Room n = roomIO.findId(room); //nouvelle salle
-    // SEULEMENT POUR MUSIQUES TANGENTES
-    if (r.getEstab() > 13000 && n.getName().toLowerCase().startsWith("rattrap")) {
+    Room r = roomIO.findId(schedule.getIdRoom()); // room to change
+    Room n = roomIO.findId(room); // new room
+    // 1.1c IGNORE this block : SEULEMENT POUR MUSIQUES TANGENTES
+    if (Schedule.COURSE == ns.getType() && r.getEstab() > 13000 && n.getName().toLowerCase().startsWith("rattrap")) {
       JOptionPane.showMessageDialog(dlg,
                                     "La salle de rattrapage n'est pas valide pour les cours à l'extérieur.",
                                     MessageUtil.getMessage("room.invalid.choice"),

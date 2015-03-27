@@ -1,7 +1,7 @@
 /*
- * @(#)ScheduleIO.java	2.9.2 26/12/14
+ * @(#)ScheduleIO.java	2.9.4.0 25/03/2015
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -41,7 +41,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.9.4.0
  */
 public class ScheduleIO
         extends TableIO
@@ -277,6 +277,11 @@ public class ScheduleIO
         ((WorkshopSchedule) p).setTeacher((Person) DataCache.findId(p.getIdPerson(), Model.Teacher));
         Action w = (Action) DataCache.findId(p.getIdAction(), Model.Action);
         ((WorkshopSchedule) p).setWorkshop((Course) DataCache.findId(w.getCourse(), Model.Course));
+        break;
+      case Schedule.ADMINISTRATIVE:
+        p = new AdministrativeSchedule();
+        fillPlanning(rs, p);
+        p.setPerson((Person) DataCache.findId(p.getIdPerson(), Model.Person));
         break;
     }
 

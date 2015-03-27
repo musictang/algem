@@ -1,5 +1,5 @@
 /*
- * @(#)PlanModifCtrl.java	2.9.2.1 19/02/15
+ * @(#)PlanModifCtrl.java	2.9.4.0 24/03/2015
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -30,10 +30,8 @@ import java.util.Vector;
 
 import net.algem.Algem;
 import net.algem.config.GemParam;
-import net.algem.contact.EmployeeIO;
 import net.algem.contact.EmployeeType;
 import net.algem.contact.Person;
-import net.algem.contact.PersonIO;
 import net.algem.contact.member.MemberException;
 import net.algem.contact.member.MemberService;
 import net.algem.contact.teacher.SubstituteTeacherList;
@@ -54,7 +52,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2.1
+ * @version 2.9.4.0
  * @since 1.0b 05/07/2002 lien salle et groupe
  */
 public class PlanModifCtrl
@@ -93,7 +91,7 @@ public class PlanModifCtrl
    *
    * @return a list of buttons
    */
-  public Vector<GemMenuButton> getCourseMenu() {
+  public Vector<GemMenuButton> getMenuCourse() {
     Vector<GemMenuButton> v = new Vector<GemMenuButton>();
 
     v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.room.modification.label"), this, "ChangeRoom"));
@@ -189,6 +187,19 @@ public class PlanModifCtrl
     }
     return v;
   }
+  
+  public Vector<GemMenuButton> getMenuAdministrative() {
+    Vector<GemMenuButton> v = new Vector<GemMenuButton>();
+    v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.room.modification.label"), this, "ChangeRoom"));
+    v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.course.shifting.label"), this, "PutOffCourse"));
+    v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.time.modification.label"), this, "ChangeScheduleLength"));
+    v.add(new GemMenuButton(BundleUtil.getLabel("Copy.label"), this, "CopyCourse"));
+    v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.add.event.label"), this, "AddEvent"));
+    //if (dataCache.authorize("Schedule.suppression.auth")) { //TODO authorise default profil 1 ?
+      v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.suppression.label"), this, "DeletePlanning"));
+    //}
+    return v;
+  }
 
   /**
    * Gets a list of buttons for schedule creation.
@@ -213,7 +224,7 @@ public class PlanModifCtrl
       } else if (arg.equals("PutOffCourse")) {
         dialogPostponeCourse();
       } else if (arg.equals("CopyCourse")) {
-        dialogCopyCourse();
+        dialogCopy();
       } else if (arg.equals("ChangeScheduleLength")) {
         dialogPlanningLength();
       } else if (arg.equals("ChangeCourse")) {
@@ -248,6 +259,8 @@ public class PlanModifCtrl
         desktop.removeCurrentModule();
       } else if (arg.equals("AtelierInstruments")) {
         dialogAtelierInstruments();
+      } else if(arg.equals("AddEvent")) {
+        dialogAddEvent();
       }
       /*
        else if (arg.bufferEquals("Replanifier")) {
@@ -289,6 +302,31 @@ public class PlanModifCtrl
     }
     Action action = ((CourseSchedule) plan).getAction();
     new AtelierInstrumentsController(desktop, action).run();
+  }
+  
+  private void dialogAddEvent() throws PlanningException {
+    AddEventDlg dlg = new AddEventDlg(desktop, plan);
+    dlg.show();
+    if (!dlg.isValidate()) {
+      return;
+    }
+    ScheduleRange range = new ScheduleRange();
+    range.setScheduleId(plan.getId());
+    System.out.println(dlg.getRange());
+    System.out.println(dlg.getNote());
+    range.setStart(dlg.getRange().getStart());
+    range.setEnd(dlg.getRange().getEnd());
+
+    try {
+      ScheduleRangeObject rv = new ScheduleRangeObject(range);
+      rv.setMember(plan.getPerson());
+      service.updateFollowUp(rv, dlg.getNote());
+      range.setNote(rv.getNote());
+      service.addScheduleRange(range);
+      desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));
+    } catch (SQLException ex) {
+      throw new PlanningException(ex.getMessage());
+    }
   }
 
   /** Calls hour modification dialog. */
@@ -528,10 +566,11 @@ public class PlanModifCtrl
   }
 
   private void dialogAddParticipant(Enum cat) throws PlanningException {
-
-    String where = ", " + EmployeeIO.TYPE_TABLE + " t  WHERE "
-            + PersonIO.TABLE + ".id = t.idper AND t.idcat = " + cat.ordinal();
-    List<Person> persons = PersonIO.find(where, DataCache.getDataConnection());
+//
+//    String where = ", " + EmployeeIO.TYPE_TABLE + " t  WHERE "
+//            + PersonIO.TABLE + ".id = t.idper AND t.idcat = " + cat.ordinal();
+//    List<Person> persons = PersonIO.find(where, DataCache.getDataConnection());
+    List<Person> persons = service.getEmployees(cat);
     if (persons.size() < 1) {
       throw new PlanningException("Aucun participant disponible");
     }
@@ -565,8 +604,8 @@ public class PlanModifCtrl
     }
   }
 
-  private void dialogCopyCourse() {
-    PostponeCourseDlg dlg = new PostponeCourseDlg(desktop, plan, service, "Schedule.course.copy.title");
+  private void dialogCopy() {
+    PostponeScheduleDlg dlg = new PostponeScheduleDlg(desktop, plan, service, "Schedule.course.copy.title");
     dlg.show();
     if (!dlg.isValidate()) {
       return;
@@ -578,7 +617,19 @@ public class PlanModifCtrl
       if (!testConflictCopyCourse(plan, newPlan)) {
         return;
       }
-      ScheduleObject copy = new CourseSchedule(plan);
+      ScheduleObject copy;
+      switch (plan.getType()) {
+        case Schedule.COURSE:
+          copy = new CourseSchedule(plan);
+          break;
+        case Schedule.ADMINISTRATIVE:
+          copy = new AdministrativeSchedule(plan);
+          break;
+        default:
+          copy = new CourseSchedule(plan);
+          break;
+      }
+
       copy.setDate(newPlan.getDate());
       copy.setStart(newPlan.getStart());
       copy.setEnd(newPlan.getEnd());
@@ -600,7 +651,7 @@ public class PlanModifCtrl
    * preferable to call the dialog for room modification.
    */
   private void dialogPostponeCourse() {
-    PostponeCourseDlg dlg = new PostponeCourseDlg(desktop, plan, service, "Schedule.course.shifting.title");
+    PostponeScheduleDlg dlg = new PostponeScheduleDlg(desktop, plan, service, "Schedule.course.shifting.title");
     dlg.show();
     if (!dlg.isValidate()) {
       return;
@@ -923,6 +974,8 @@ public class PlanModifCtrl
         return BundleUtil.getLabel("Schedule.person.modification.label");
       case ScheduleObject.GROUP:
         return BundleUtil.getLabel("Schedule.group.modification.label");
+      case ScheduleObject.ADMINISTRATIVE:
+        return BundleUtil.getLabel("Diary.label");
       default:
         return BundleUtil.getLabel("Schedule.default.modification.label");
     }

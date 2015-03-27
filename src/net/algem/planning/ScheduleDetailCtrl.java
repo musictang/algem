@@ -165,6 +165,8 @@ public class ScheduleDetailCtrl
        loadStudioSchedule(schedule);
     } else if (schedule instanceof TechStudioSchedule) {
        loadTechnicianSchedule(event);
+    } else if (schedule instanceof AdministrativeSchedule) {
+       loadAdministrativeSchedule(event);
     } else if (schedule instanceof Schedule) {
       Schedule p = (Schedule) schedule;
       headPanel.add(new GemLabel("Saisie sur planning"));
@@ -220,7 +222,7 @@ public class ScheduleDetailCtrl
     boolean collective = p.getCourse().isCollective();
     loadRanges(de.getRanges(), collective);
     if (allMenus) {
-      Vector<GemMenuButton> v = modifCtrl.getCourseMenu(); // ajout des boutons de modification de planning (@see PlanModifCtrl)
+      Vector<GemMenuButton> v = modifCtrl.getMenuCourse(); // ajout des boutons de modification de planning (@see PlanModifCtrl)
       for (int i = 0; i < v.size(); i++) {
         menuPanel.add(v.elementAt(i));
       }
@@ -395,11 +397,26 @@ public class ScheduleDetailCtrl
       }
       listPanel.add(new GemMenuButton(buf.toString(), this, "MemberLink", pg));
     }
-    Vector<GemMenuButton> vb = modifCtrl.getCourseMenu(); // ajout des boutons de PlanModifCtrl
+    Vector<GemMenuButton> vb = modifCtrl.getMenuCourse(); // ajout des boutons de PlanModifCtrl
     for (int j = 0; j < vb.size(); j++) {
       menuPanel.add((GemMenuButton) vb.elementAt(j));
     }
     menuPanel.add(btWrite);//mailing button
+  }
+  
+  
+  private void loadAdministrativeSchedule(ScheduleDetailEvent event) {
+    AdministrativeSchedule p = (AdministrativeSchedule) event.getSchedule();
+    headPanel.add(new GemLabel(BundleUtil.getLabel("Diary.label")));
+
+    StringBuilder buf = new StringBuilder(BundleUtil.getLabel("Person.label")).append(" ");
+    buf.append(p.getPerson().getFirstnameName());// unescape
+    GemMenuButton b = new GemMenuButton(buf.toString(), this, "PersonLink", p.getPerson());
+    headPanel.add(b);
+    Vector<GemMenuButton> vb = modifCtrl.getMenuAdministrative(); // ajout des boutons de PlanModifCtrl
+    for (int j = 0; j < vb.size(); j++) {
+      menuPanel.add((GemMenuButton) vb.elementAt(j));
+    }
   }
 
   /**
@@ -666,4 +683,5 @@ public class ScheduleDetailCtrl
     root.getGlassPane().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     root.getGlassPane().setVisible(false);
   }
+
 }

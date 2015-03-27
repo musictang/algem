@@ -1,7 +1,7 @@
 /*
- * @(#)ColorPreview.java	2.8.v 02/06/14
+ * @(#)ColorPreview.java	2.9.4.0 24/03/2015
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -36,7 +36,7 @@ import net.algem.util.ui.GemPanel;
  * Display and modification panel of the planning colors.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.v
+ * @version 2.9.4.0
  */
 public class ColorPreview extends GemPanel {
 
@@ -53,6 +53,7 @@ public class ColorPreview extends GemPanel {
   private final JLabel trainingLabel = new JLabel(BundleUtil.getLabel("Training.course.label"));
   private final JLabel catchUpLabel = new JLabel(BundleUtil.getLabel("Catching.up.label"));
   private final JLabel studioLabel = new JLabel(BundleUtil.getLabel("Studio.label"));
+  private final JLabel administrativeLabel = new JLabel(BundleUtil.getLabel("Administrative.label"));
 
   private JPanel coursePanel;
   private JPanel memberRangePanel;
@@ -64,6 +65,7 @@ public class ColorPreview extends GemPanel {
   private JPanel catchUpPanel;
   private JPanel trainingPanel;
   private JPanel studioPanel;
+  private JPanel administrativePanel;
 
   private Font f;
   private ColorPlanListener pColorListener;
@@ -121,10 +123,12 @@ public class ColorPreview extends GemPanel {
 
     JPanel p4 = new JPanel();
     p4.setLayout(new BoxLayout(p4, BoxLayout.Y_AXIS));
-    studioPanel = initPanel(studioLabel, ColorPlan.STUDIO, 40);
-    catchUpPanel = initPanel(catchUpLabel, ColorPlan.CATCHING_UP, 60);
+    studioPanel = initPanel(studioLabel, ColorPlan.STUDIO, 30);
+    catchUpPanel = initPanel(catchUpLabel, ColorPlan.CATCHING_UP, 30);
+    administrativePanel = initPanel(administrativeLabel, ColorPlan.ADMINISTRATIVE, 40);
     p4.add(studioPanel);
     p4.add(catchUpPanel);
+    p4.add(administrativePanel);
 
     add(p1);
     add(p2);
@@ -152,6 +156,7 @@ public class ColorPreview extends GemPanel {
     colors.put(ColorPlan.GROUP_REHEARSAL, groupRehearsalPanel.getBackground());
     colors.put(ColorPlan.MEMBER_REHEARSAL, memberRehearsalPanel.getBackground());
     colors.put(ColorPlan.STUDIO, studioPanel.getBackground());
+    colors.put(ColorPlan.ADMINISTRATIVE, administrativePanel.getBackground());
 
     colors.put(ColorPlan.COURSE_INDIVIDUAL_LABEL, courseLabel.getForeground());
     colors.put(ColorPlan.COURSE_CO_LABEL, courseCoLabel.getForeground());
@@ -162,39 +167,11 @@ public class ColorPreview extends GemPanel {
     colors.put(ColorPlan.GROUP_LABEL, groupRehearsalLabel.getForeground());
     colors.put(ColorPlan.MEMBER_LABEL, memberRehearsalLabel.getForeground());
     colors.put(ColorPlan.STUDIO_LABEL, studioLabel.getForeground());
+    colors.put(ColorPlan.ADMINISTRATIVE_LABEL, administrativeLabel.getForeground());
 
     return colors;
   }
 
-  /*@Override
-   public void paint(Graphics g) {
-   super.paint(g);
-   g.setFont(f);
-   texte = "";
-   int x = 0;
-   int y = 0;
-   int h = 100;
-   Color c = g.getColor();
-   g.setColor(prefs.getColor(ColorPlan.COURSE_INDIVIDUAL));
-   g.fillRect(x,y,w,h);
-   g.setColor(prefs.getColor(ColorPlan.COURS_LABEL));
-   f = g.getFontMetrics();
-   texte = "Cours individuel";
-
-   g.drawString(texte, getXpos(x), 25);
-   g.setColor(prefs.getColor(ColorPlan.COURSE_CO));
-   x += w;
-   g.fillRect(x,y,w,h);
-   g.setColor(prefs.getColor(ColorPlan.COURS_LABEL));
-   texte = "Cours collectif";
-   g.drawString(texte, getXpos(x), 25);
-   g.setColor(c);
-
-   }
-
-   private int getXpos(int offset) {
-   return offset + ((w - f.stringWidth(texte)) / 2);
-   }*/
   /**
    * Gets the differents color areas and labels.
    *
@@ -251,6 +228,10 @@ public class ColorPreview extends GemPanel {
       case STUDIO:
         bg = prefs.getColor(ColorPlan.STUDIO);
         fg = prefs.getColor(ColorPlan.STUDIO_LABEL);
+        break;
+      case ADMINISTRATIVE:
+        bg = prefs.getColor(ColorPlan.ADMINISTRATIVE);
+        fg = prefs.getColor(ColorPlan.ADMINISTRATIVE_LABEL);
         break;
       default:
         bg = Color.GRAY;

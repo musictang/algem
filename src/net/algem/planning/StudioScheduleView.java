@@ -1,7 +1,7 @@
 /*
- * @(#)StudioScheduleView.java	2.8.y 29/09/14
+ * @(#)StudioScheduleView.java	2.9.4.0 26/03/2015
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -51,7 +51,7 @@ import net.algem.util.ui.GridBagHelper;
  * when scheduling studio sessions.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.y
+ * @version 2.9.4.0
  * @since 2.8.v 21/05/14
  */
 class StudioScheduleView
@@ -88,7 +88,7 @@ class StudioScheduleView
     separator.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY));
     category = new GemParamChoice(new GemParamModel(dataCache.getList(Model.StudioType)));
     category.setKey(0);
-    employeePanelCtrl = new EmployeePanelCtrl(dataCache, BundleUtil.getLabel("Technician.label"));
+    employeePanelCtrl = new EmployeePanelCtrl(BundleUtil.getLabel("Technician.label"));
     studio = new RoomChoice(new RoomActiveChoiceModel(dataCache.getList(Model.Room), true));
     defStudio = Integer.parseInt(ConfigUtil.getConf(ConfigKey.DEFAULT_STUDIO.getKey()));
     studio.setKey(defStudio);

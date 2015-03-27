@@ -1,5 +1,5 @@
 /*
- * @(#)ActionView.java	2.9.2 27/01/15
+ * @(#)ActionView.java	2.9.4.0 24/03/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -52,7 +52,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.9.4.0
  */
 public class ActionView
         extends GemPanel
@@ -179,7 +179,7 @@ public class ActionView
     a.setLength(getCourseLength());
     a.setIdper(teacher.getKey());
     a.setRoom(room.getKey());
-    a.setDay(day.getDay());
+    a.setDay(day.getSelectedIndex());
     a.setVacancy(vacancy.getKey());
     a.setPeriodicity((Periodicity) periodicity.getSelectedItem());
     try {

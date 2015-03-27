@@ -22,6 +22,7 @@ package net.algem.planning.month;
 
 import net.algem.contact.Person;
 import net.algem.contact.teacher.Teacher;
+import net.algem.planning.Schedule;
 import net.algem.planning.ScheduleDetailEvent;
 import net.algem.planning.ScheduleObject;
 import net.algem.util.model.GemList;
@@ -48,12 +49,13 @@ public class MonthPlanTeacherView
   }
   
   @Override
-  public boolean isFiltered(ScheduleObject p) {
+  public boolean isConsistent(ScheduleObject p) {
     if (choice == null) {
-      return true;
+      return false;
     }
-    Teacher t = (Teacher) choice.getSelectedItem();
-    return t != null && p.getPerson() != null && p.getPerson().getId() == t.getId();
+
+    int id = choice.getKey();
+    return Schedule.ADMINISTRATIVE != p.getType() && id > 0 && p.getPerson() != null && p.getPerson().getId() == id;
   }
 
   @Override

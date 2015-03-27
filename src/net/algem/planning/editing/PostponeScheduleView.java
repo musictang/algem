@@ -1,7 +1,7 @@
 /*
- * @(#)PostponeCourseView.java	2.8.w 02/09/14
+ * @(#)PostponeScheduleView.java	2.9.4.0 26/03/2015
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -39,15 +39,16 @@ import net.algem.util.ui.*;
 /**
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.4.0
+ * @since 2.9.4.0 26/03/2015
  * @since 1.0a 07/07/1999
  */
-public class PostponeCourseView
+public class PostponeScheduleView
         extends GemPanel
 {
 
   private int roomId; // room id
-  private GemField courseLabel;
+  private GemField scheduleLabel;
   private DateFrField currentDate;
   private DateFrField newDate;
   private HourRangePanel currentTime; 
@@ -60,7 +61,7 @@ public class PostponeCourseView
   private PlanningService service;
   private ScheduleObject orig;
 
-  public PostponeCourseView(GemList<Room> roomList, PlanningService service) 
+  public PostponeScheduleView(GemList<Room> roomList, PlanningService service) 
     {
 
     this.service = service;
@@ -68,8 +69,8 @@ public class PostponeCourseView
     this.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
 
-    courseLabel = new GemField(ModifPlanView.DEF_FIELD_WIDTH);
-    courseLabel.setEditable(false);
+    scheduleLabel = new GemField(ModifPlanView.DEF_FIELD_WIDTH);
+    scheduleLabel.setEditable(false);
     currentDate = new DateFrField();
     currentDate.setEditable(false);
     newDate = new DateFrField();
@@ -90,12 +91,12 @@ public class PostponeCourseView
     currentRoom = new GemField(ModifPlanView.DEF_FIELD_WIDTH);
     currentRoom.setEditable(false);
     newRoom = new RoomChoice(roomList);
-    Dimension prefSize = new Dimension(courseLabel.getPreferredSize().width, newRoom.getPreferredSize().height);
+    Dimension prefSize = new Dimension(scheduleLabel.getPreferredSize().width, newRoom.getPreferredSize().height);
     newRoom.setPreferredSize(prefSize);
     padding = new Insets(2, 2, 2, 2);
 
-    gb.add(new GemLabel(BundleUtil.getLabel("Course.label")), 0, 0, 1, 1, padding, GridBagHelper.WEST);
-    gb.add(courseLabel, 1, 0, 1, 1, padding, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Heading.label")), 0, 0, 1, 1, GridBagHelper.WEST);
+    gb.add(scheduleLabel, 1, 0, 1, 1, padding, GridBagHelper.WEST);
 
     gb.add(new GemLabel(BundleUtil.getLabel("Current.date.label")), 0, 1, 1, 1, GridBagHelper.WEST);
     gb.add(currentDate, 1, 1, 1, 1, padding, GridBagHelper.WEST);
@@ -126,7 +127,7 @@ public class PostponeCourseView
    */
   void set(ScheduleObject s, boolean noRange) {
     orig = s;
-    courseLabel.setText(s.getScheduleLabel());
+    scheduleLabel.setText(s.getScheduleLabel());
     currentDate.set(s.getDate().getDate());
     newDate.set(s.getDate().getDate());
     setHour(s.getStart(), s.getEnd());

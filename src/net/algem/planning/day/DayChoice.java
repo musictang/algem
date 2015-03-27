@@ -49,19 +49,38 @@ public class DayChoice
     addItem(dayLabel[1]); // au dimanche
   }
 
-  /**
-   * Gets day of week.
-   * @return an integer
-   */
-  public int getDay() {
+//  /**
+//   * Gets day of week.
+//   * @return an integer
+//   */
+//  public int getDay() {
+//    int i = getSelectedIndex();
+//    if (i == 6) {
+//      return 0;
+//    }
+//    return i + 1; // si lundi retourne 1, si dimanche retourne 0
+//  }
+
+
+//  public void setDay(int i) {
+//    setSelectedIndex(i - 1);
+//  }
+
+  @Override
+  public int getSelectedIndex() {
     int i = super.getSelectedIndex();
     if (i == 6) {
       return 0;
     }
     return i + 1; // si lundi retourne 1, si dimanche retourne 0
   }
-
-  public void setDay(int i) {
-    super.setSelectedIndex(i - 1);
+  
+  @Override
+  public void setSelectedIndex(int i) {
+    if (i == 0) {
+      super.setSelectedIndex(6);
+    } else {
+      super.setSelectedIndex(i-1);
+    }
   }
 }

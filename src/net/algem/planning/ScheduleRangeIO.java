@@ -171,6 +171,7 @@ public class ScheduleRangeIO
     p.setIdAction(rs.getInt(8));
     p.setIdPerson(rs.getInt(9));// id prof
     p.setIdRoom(rs.getInt(10));
+    p.setType(rs.getInt(11));
 
     p.setRoom((Room) DataCache.findId(p.getIdRoom(), Model.Room));
     p.setTeacher((Person) DataCache.findId(p.getIdPerson(), Model.Teacher));
@@ -246,15 +247,15 @@ public class ScheduleRangeIO
     }
   }
 
-  public static void createNote(ScheduleRangeObject plage, String texte, DataConnection dc) throws PlanningException {
+  public static void createNote(ScheduleRangeObject range, String text, DataConnection dc) throws PlanningException {
     try {
       dc.setAutoCommit(false);
       int id = nextId("idsuivi", dc);
-      String query = "INSERT INTO suivi VALUES(" + id + ",'" + escape(texte) + "')";
+      String query = "INSERT INTO suivi VALUES(" + id + ",'" + escape(text) + "')";
       dc.executeUpdate(query);
 
-      plage.setNote(id);
-      update(plage, dc);
+      range.setNote(id);
+      update(range, dc);
     } catch (SQLException sqe) {
       dc.rollback();
       throw new PlanningException(sqe.getMessage());
@@ -263,8 +264,8 @@ public class ScheduleRangeIO
     }
   }
 
-  public static void updateNote(int note, String texte, DataConnection dc) throws SQLException {
-    String query = "UPDATE suivi SET texte = '" + escape(texte) + "' WHERE id = " + note;
+  public static void updateNote(int note, String text, DataConnection dc) throws SQLException {
+    String query = "UPDATE suivi SET texte = '" + escape(text) + "' WHERE id = " + note;
     dc.executeUpdate(query);
   }
 
@@ -293,7 +294,7 @@ public class ScheduleRangeIO
   }
 
   public static String getDayRangeStmt() {
-    return "SELECT " + COLUMNS + ", p.jour, p.action, p.idper, p.lieux FROM " + TABLE + " pg, " + ScheduleIO.TABLE + " p"
+    return "SELECT " + COLUMNS + ", p.jour, p.action, p.idper, p.lieux, p.ptype FROM " + TABLE + " pg, " + ScheduleIO.TABLE + " p"
       + " WHERE pg.idplanning = p.id"
       + " AND p.jour = ? ORDER BY p.debut, pg.debut"; //?? ou p.action, p.start
   }

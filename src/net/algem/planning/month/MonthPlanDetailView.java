@@ -70,7 +70,7 @@ public abstract class MonthPlanDetailView
   public MonthPlanDetailView(GemChoice _choix) {
     choice = _choix;
     cal = Calendar.getInstance(Locale.FRANCE);
-     status = new GemField();
+    status = new GemField();
     status.setFont(new Font("Helvetica", Font.BOLD, 12));
     status.setEditable(false);
     view = new MonthPlanView(status);
@@ -168,14 +168,14 @@ public abstract class MonthPlanDetailView
         Vector<ScheduleObject> v1 = new Vector<ScheduleObject>();
         for (int i = 0; i < schedules.size(); i++) {
           ScheduleObject p = schedules.elementAt(i);
-          if (isFiltered(p)) {
+          if (isConsistent(p)) {
             v1.addElement(p);
           }
         }
         Vector<ScheduleRangeObject> v2 = new Vector<ScheduleRangeObject>();
         for (int i = 0; i < ranges.size(); i++) {
           ScheduleRangeObject p = (ScheduleRangeObject) ranges.elementAt(i);
-          if (isFiltered(p)) {
+          if (isConsistent(p)) {
             v2.addElement(p);
           }
         }
@@ -189,7 +189,7 @@ public abstract class MonthPlanDetailView
     return view;
   }
 
-  public abstract boolean isFiltered(ScheduleObject p);
+  public abstract boolean isConsistent(ScheduleObject p);
 
   public abstract void detailChange(ScheduleDetailEvent evt);
 }

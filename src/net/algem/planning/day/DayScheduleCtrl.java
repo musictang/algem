@@ -1,5 +1,5 @@
 /*
- * @(#)DayScheduleCtrl.java 2.9.3.2 10/03/15
+ * @(#)DayScheduleCtrl.java 2.9.4.0 26/03/2015
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -59,7 +59,7 @@ import net.algem.util.module.GemModule;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.3.2
+ * @version 2.9.4.0
  * @since 1.0b 06/10/2001
  */
 public class DayScheduleCtrl
@@ -133,7 +133,6 @@ public class DayScheduleCtrl
     miQuit.addActionListener(this);
     miLinkMonth.addActionListener(this);
     view.setJMenuBar(mBar);
-    //new Thread(new Runnable()
     SwingUtilities.invokeLater(new Runnable()
     {
       @Override
@@ -141,7 +140,6 @@ public class DayScheduleCtrl
         load(new java.util.Date());
       }
     });
-            //.start();
   }
 
   @Override
@@ -236,7 +234,6 @@ public class DayScheduleCtrl
       }
       EventQueue.invokeLater(new Runnable()
       {
-
         public void run() {
           load(d);
         }
@@ -247,7 +244,6 @@ public class DayScheduleCtrl
       }
 
       ScheduleDetailEvent e = (ScheduleDetailEvent) _evt;
-      //vue.postEvent(e);
 
       final Date d = e.getDate();
       if (d.equals(cal.getTime())) {
@@ -255,7 +251,6 @@ public class DayScheduleCtrl
       }
       EventQueue.invokeLater(new Runnable()
       {
-
         public void run() {
           load(d);
         }

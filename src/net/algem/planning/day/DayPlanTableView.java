@@ -1,5 +1,5 @@
 /*
- * @(#)DayPlanTableView.java	2.9.2 12/01/15
+ * @(#)DayPlanTableView.java	2.9.4.0 25/03/2015
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -50,7 +50,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.9.2
+ * @version 2.9.4.0
  * @since 1.0a 07/07/1999
  */
 public abstract class DayPlanTableView
@@ -165,7 +165,6 @@ public abstract class DayPlanTableView
 
   @Override
   public void propertyChange(PropertyChangeEvent evt) {
-
     if (evt.getSource() instanceof DaySchedule) {
       DaySchedule model = (DaySchedule) evt.getSource();
       Date d = (Date) evt.getNewValue();

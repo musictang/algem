@@ -72,6 +72,10 @@ public class ScheduleRangeObject
   public Person getMember() {
     return member;
   }
+  
+  public void setMemberId(int id) {
+    this.memberId = id;
+  }
 
   public int getMemberId() {
     return memberId;

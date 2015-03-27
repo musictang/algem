@@ -1,5 +1,5 @@
 /*
- * @(#)PlanningService.java	2.9.3.2 10/03/15
+ * @(#)PlanningService.java	2.9.4.0 24/03/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -24,7 +24,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormatSymbols;
 import java.util.*;
+import net.algem.contact.EmployeeIO;
+import net.algem.contact.EmployeeType;
 import net.algem.contact.Person;
+import net.algem.contact.PersonIO;
 import net.algem.course.Course;
 import net.algem.course.CourseIO;
 import net.algem.enrolment.CourseOrder;
@@ -38,13 +41,13 @@ import net.algem.util.ui.MessagePopup;
  * Service class for planning.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.3.2
+ * @version 2.9.4.0
  * @since 2.4.a 07/05/12
  */
 public class PlanningService
 {
 
-  public final static String[] WEEK_DAYS = new DateFormatSymbols(Locale.FRANCE).getWeekdays();
+  public final static String[] WEEK_DAYS = new DateFormatSymbols().getWeekdays();
   private DataConnection dc;
   private ActionIO actionIO;
   private ConflictService conflictService;
@@ -158,6 +161,44 @@ public class PlanningService
       throw new PlanningException(e.getMessage());
     }
   }
+  
+  String planAdministrative(final List<Action> actions) throws PlanningException {
+    final StringBuilder sb = new StringBuilder();
+    final String roomLabel = BundleUtil.getLabel("Room.label");
+    try {
+      dc.withTransaction(new DataConnection.SQLRunnable<Void>()
+      {
+        @Override
+        public Void run(DataConnection conn) throws Exception {
+          for (final Action a : actions) {
+            List<DateFr> dates = generationDate(a);
+            for (Iterator<DateFr> it = dates.iterator(); it.hasNext();) {
+              DateFr d = it.next();
+              if (!isOfficeFree(d, a)) {
+                sb.append(d).append(' ').append(a.getHourStart()).append('-').append(a.getHourEnd())
+                        .append(" ").append(roomLabel).append(' ').append(a.getRoom()).append('\n');
+                it.remove();
+              }
+            }
+            a.setDates(dates);
+            planify(a, Schedule.ADMINISTRATIVE);
+          }
+          return null;
+        }
+      });
+    } catch (Exception e) {
+      throw new PlanningException(e.getMessage());
+    } 
+    return sb.toString();
+    
+  }
+  
+  public List<Person> getEmployees(Enum type) {
+    String where = ", " + EmployeeIO.TYPE_TABLE + " t  WHERE "
+      + PersonIO.TABLE + ".id = t.idper AND t.idcat = " + type.ordinal();
+    return  PersonIO.find(where, dc);
+  }
+
 
   /**
    * Replanify a course.
@@ -198,7 +239,7 @@ public class PlanningService
 
   /**
    * Removes all schedules sharing the same {@literal action}.
-   * Action is also deleteByIdd if there are no more schedules in this planning.
+   * Action is also deleted if there are no more schedules in this planning.
    *
    * @param action
    * @throws PlanningException
@@ -227,21 +268,14 @@ public class PlanningService
   }
 
   /**
-   * Deletes only the schedule {@literal s}.
-   * @param s schedule to deleteById
-   * @throws PlanningException if SQLException is catched
+   * Deletes the schedule {@code s}.
+   * @param s schedule to delete
+   * @throws PlanningException if SQLException is caught
    */
   public void deleteSchedule(Schedule s) throws PlanningException {
     try {
-//      int r = ScheduleIO.containRanges(s, dc);
-//      if (r == 0) {
-//        ScheduleIO.deleteById(s, dc);
-//      } else {
-//        if (MessagePopup.confirm(null, MessageUtil.getMessage("schedule.suppression.warning", r))) {
-          ScheduleIO.delete(s, dc);
-          ScheduleRangeIO.delete("idplanning = " + s.getId(), dc);
-//        } else throw new PlanningException(GemCommand.CANCEL_CMD);
-//      }
+      ScheduleIO.delete(s, dc);
+      ScheduleRangeIO.delete("idplanning = " + s.getId(), dc);
     } catch (SQLException ex) {
       throw new PlanningException(ex.getMessage());
     }
@@ -336,9 +370,6 @@ public class PlanningService
       if (dc.executeUpdate(query) < 1) {
         throw new PlanningException("PLANNING UPDATE = 0 " + query);
       }
-//      if (planCopy instanceof PlanningCours || planCopy instanceof PlanningAtelier) {
-//        where = "UPDATE " + ScheduleRangeIO.TABLE + "SET start='" + hdeb + "', end='" + hfin + "' WHERE idplanning = "+planCopy.getId();
-//      }
     } catch (SQLException ex) {
       throw new PlanningException(ex.getMessage());
     }
@@ -480,16 +511,6 @@ public class PlanningService
   public void updateSessionType(Schedule s) throws SQLException {
     ScheduleIO.update(s, dc);
   }
-
-//  public Vector<ScheduleTestConflict> testRange(ScheduleObject orig, ScheduleObject range)
-//          throws SQLException {
-//    return conflictService.getRangeConflicts(orig, range, orig.getDate(), orig.getDate());
-//  }
-//
-//  public Vector<ScheduleTestConflict> testCollectiveRange(ScheduleObject dest, ScheduleObject range)
-//          throws SQLException {
-//    return conflictService.getRangeConflicts(dest, range, dest.getDate(), dest.getDate());
-//  }
 
   public Vector<ScheduleTestConflict> checkRange(ScheduleObject orig, ScheduleObject range)
           throws SQLException {
@@ -653,19 +674,19 @@ public class PlanningService
     }
   }
 
-  public void copyCourse(ScheduleObject planModel, ScheduleObject planCopy) throws PlanningException {
+  public void copyCourse(ScheduleObject model, ScheduleObject copy) throws PlanningException {
     //XXX probleme avec les heures de fin = 24:00 l'update les transforme en 00:00 / erreurs futures dans le décompte des heures
     try {
       dc.setAutoCommit(false);
-      ScheduleIO.insert(planCopy, dc);
+      ScheduleIO.insert(copy, dc);
       // getLength en minutes entre l'ancienne heure et la nouvelle passée en paramètre.
-      int offset = planModel.getStart().getLength(planCopy.getStart());
+      int offset = model.getStart().getLength(copy.getStart());
 
-      String where = "pg WHERE pg.idplanning = " + planModel.getId();
+      String where = "pg WHERE pg.idplanning = " + model.getId();
       Vector<ScheduleRange> vpg = ScheduleRangeIO.find(where, dc);
       for (ScheduleRange pl : vpg) {
         ScheduleRange pg = new ScheduleRange();
-        pg.setScheduleId(planCopy.getId());
+        pg.setScheduleId(copy.getId());
         pg.setStart(pl.getStart());
         pg.setEnd(pl.getEnd());
         pg.setMemberId(pl.getMemberId());
@@ -1097,7 +1118,10 @@ public class PlanningService
       throw new PlanningException(ex.getMessage());
     }
   }
-
+  
+  boolean isOfficeFree(DateFr d, Action a) throws SQLException {
+    return conflictService.testOfficeConflicts(d, a);
+  }
 
   private void debug(Vector<DateFr> sessions, int hId) {
     Vector<DateFr> v = new Vector<DateFr>();

@@ -1,6 +1,6 @@
 /*
- * @(#)MonthPlanRoomView.java	2.9.4.0 26/03/2015
- * 
+ * @(#)DayOfWeek.java	2.9.4.0 19/03/15
+ *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,41 +16,63 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
-package net.algem.planning.month;
 
-import net.algem.planning.ScheduleDetailEvent;
-import net.algem.planning.ScheduleObject;
-import net.algem.room.Room;
-import net.algem.util.ui.GemChoice;
+package net.algem.planning;
 
 /**
- * comment
- *
- * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
+ * Representation of a day of the week.
+ * Each day is associated with a name and an index.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.9.4.0
+ * @since 2.9.4.0 18/03/15
  */
-public class MonthPlanRoomView
-        extends MonthPlanDetailView
-{
+public class DayOfWeek {
 
-  public MonthPlanRoomView(GemChoice roomChoice) {
-    super(roomChoice);
+  private int index;
+  private String name;
+
+  public DayOfWeek(int index, String name) {
+    this.index = index;
+    this.name = name;
+  }
+
+  public int getIndex() {
+    return index;
+  }
+
+  public String getName() {
+    return name;
   }
 
   @Override
-  public boolean isConsistent(ScheduleObject p) {
-    if (choice == null) {
-      return true;
+  public String toString() {
+    return name;
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 5;
+    hash = 83 * hash + this.index;
+    return hash;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
     }
-    Room r = (Room) choice.getSelectedItem();
-    return r != null && p.getRoom() != null && p.getRoom().getId() == r.getId();
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final DayOfWeek other = (DayOfWeek) obj;
+    if (this.index != other.index) {
+      return false;
+    }
+    return true;
   }
+  
+  
 
-  @Override
-  public void detailChange(ScheduleDetailEvent evt) {
-    choice.setKey(((ScheduleObject) evt.getSchedule()).getRoom().getId());
-  }
 }

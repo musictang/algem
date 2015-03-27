@@ -275,7 +275,7 @@ public class DayPlanView
     // individual schedule ranges
     for (ScheduleRangeObject p : vp) {
       Course cc = p.getCourse();
-      if (cc != null && !cc.isCollective()) {
+      if (cc != null && !cc.isCollective() || Schedule.ADMINISTRATIVE == p.getType()) {
         drawRange(i, p, c, step_x);
       }
     }
@@ -303,6 +303,12 @@ public class DayPlanView
     w = getScheduleRangeWidth(vpci.get(idx).getAction().getPlaces(), n);
     drawRange(i, vpci.get(idx), c, w);
   }
+  
+  protected void drawAgenda(int i, Vector<ScheduleRangeObject> vpl) {
+    for (ScheduleRangeObject p : vpl) {
+        drawRange(i, p, colorPrefs.getColor(ColorPlan.ADMINISTRATIVE).darker(), step_x);
+    }
+  }
 
   protected void drawRange(int col, ScheduleObject p, Color c, int w) {
     int pStart = p.getStart().toMinutes();
@@ -319,7 +325,7 @@ public class DayPlanView
     if (p instanceof CourseSchedule && p.getClass() != ScheduleRangeObject.class) {
       bg.drawLine(x, y - 1, (x + w) - 1, y - 1);
     }
-    if (showRangeNames) {
+    if (showRangeNames || Schedule.ADMINISTRATIVE == p.getType()) {
       textSubRange(p, x);
     }
   }
@@ -329,6 +335,8 @@ public class DayPlanView
       Course crs = ((CourseSchedule) p).getCourse();
       // Displays the member's name if the time range is not shared between several persons.
       if (crs != null && (!crs.isCollective() || ((ScheduleRangeObject) p).getAction().getPlaces() < 2)) {     
+        showSubSubLabel((ScheduleRangeObject) p, x);
+      } else if (Schedule.ADMINISTRATIVE == p.getType()) {
         showSubSubLabel((ScheduleRangeObject) p, x);
       }
     }
@@ -385,7 +393,10 @@ public class DayPlanView
           subLabel = ((GroupStudioSchedule) p).getActivityLabel();
         } else if (p instanceof TechStudioSchedule) {
           subLabel = ((TechStudioSchedule) p).getTechnicianLabel();
-        } else {
+        } else if (Schedule.ADMINISTRATIVE == p.getType()) {
+          subLabel = String.valueOf(p.getNote());
+        }
+          else {
           subLabel = p.getPerson().getAbbrevFirstNameName();
         }
         if (subLabel != null) {

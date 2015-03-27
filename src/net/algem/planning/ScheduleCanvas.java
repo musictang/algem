@@ -1,7 +1,7 @@
 /*
- * @(#)ScheduleCanvas.java 2.8.w 09/07/14
+ * @(#)ScheduleCanvas.java 2.9.4.0 25/03/2015
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -44,7 +44,7 @@ import net.algem.util.ui.GemPanel;
  * Abstract class for planning layout.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.4.0
  * @since 2.5.a 10/07/12
  */
 public abstract class ScheduleCanvas
@@ -98,54 +98,41 @@ public abstract class ScheduleCanvas
    * @return a color
    */
   protected Color getScheduleColor(ScheduleObject p) {
-    Color c = Color.white;
     switch (p.getType()) {
       case Schedule.COURSE:
         Room s = ((CourseSchedule) p).getRoom();
         Course cc = ((CourseSchedule) p).getCourse();
         if (s.isCatchingUp()) {
-          //c = Color.black; // salles de rattrapages
-          c = colorPrefs.getColor(ColorPlan.CATCHING_UP);
+          return colorPrefs.getColor(ColorPlan.CATCHING_UP);
         } else {
           if (cc != null && !cc.isCollective()) {
-            //c = DARK_GREEN; // couleur plannings cours individuels
-            c = colorPrefs.getColor(ColorPlan.COURSE_INDIVIDUAL);
+            return colorPrefs.getColor(ColorPlan.COURSE_INDIVIDUAL);
           } else {
-            //c = Color.red; // couleur cours collectif
             if (cc != null && cc.isInstCode()) {
-              c = colorPrefs.getColor(ColorPlan.INSTRUMENT_CO);
+              return colorPrefs.getColor(ColorPlan.INSTRUMENT_CO);
             } else {
-              c = colorPrefs.getColor(ColorPlan.COURSE_CO);
+              return colorPrefs.getColor(ColorPlan.COURSE_CO);
             }
           }
         }
-        break;
       case Schedule.ACTION:
-        //c = Color.green;
-        c = colorPrefs.getColor(ColorPlan.ACTION);
-        break;
+        return colorPrefs.getColor(ColorPlan.ACTION);
       case Schedule.MEMBER:
-        c = colorPrefs.getColor(ColorPlan.MEMBER_REHEARSAL);
-        break;
+        return  colorPrefs.getColor(ColorPlan.MEMBER_REHEARSAL);
       case Schedule.GROUP:
-        //c= DARK_BLUE; // couleur groupe et repetiteurs
-        c = colorPrefs.getColor(ColorPlan.GROUP_REHEARSAL);
-        break;
+        return  colorPrefs.getColor(ColorPlan.GROUP_REHEARSAL);
       case Schedule.WORKSHOP:
-        //c = Color.white; // couleur atelier ponctuel
-        c = colorPrefs.getColor(ColorPlan.WORKSHOP);
-        break;
+        return  colorPrefs.getColor(ColorPlan.WORKSHOP);
       case Schedule.TRAINING:
-        //c = Color.white; // couleur atelier ponctuel
-        c = colorPrefs.getColor(ColorPlan.TRAINING);
-        break;
+        return  colorPrefs.getColor(ColorPlan.TRAINING);
       case Schedule.STUDIO:
       case Schedule.TECH:
-        //c = Color.white; // couleur atelier ponctuel
-        c = colorPrefs.getColor(ColorPlan.STUDIO);
-        break;
+        return  colorPrefs.getColor(ColorPlan.STUDIO);
+      case Schedule.ADMINISTRATIVE:
+        return colorPrefs.getColor(ColorPlan.ADMINISTRATIVE);
+      default:
+        return Color.WHITE;
     } // end switch couleurs
-    return c;
   }
 
   /**
@@ -155,30 +142,31 @@ public abstract class ScheduleCanvas
    * @return a color
    */
   protected Color getTextColor(ScheduleObject p) {
-
-    if (p instanceof CourseSchedule) {
-      Room r = p.getRoom();
-      if (r.isCatchingUp()) {
-        return colorPrefs.getColor(ColorPlan.CATCHING_UP_LABEL);
-      } else if (((CourseSchedule) p).getCourse().isCollective()) {
-        return colorPrefs.getColor(ColorPlan.COURSE_CO_LABEL);
-      } else {
-        return colorPrefs.getColor(ColorPlan.COURSE_INDIVIDUAL_LABEL);
-      }
-    } else if (p instanceof WorkshopSchedule) {
-      return colorPrefs.getColor(ColorPlan.WORKSHOP_LABEL);
-    } else if (p.getType() == Schedule.TRAINING) {
-      return colorPrefs.getColor(ColorPlan.TRAINING_LABEL);
-    } else if (p instanceof GroupRehearsalSchedule) {
-      return colorPrefs.getColor(ColorPlan.GROUP_LABEL);
-    } else if (p instanceof MemberRehearsalSchedule) {
-      return colorPrefs.getColor(ColorPlan.MEMBER_LABEL);
-    } else if (p instanceof GroupStudioSchedule || p instanceof TechStudioSchedule) {
-      return colorPrefs.getColor(ColorPlan.STUDIO_LABEL);
-    } else {
-      return colorPrefs.getColor(ColorPlan.LABEL);
+    switch (p.getType()) {
+      case Schedule.COURSE:
+        Room r = p.getRoom();
+        if (r.isCatchingUp()) {
+          return colorPrefs.getColor(ColorPlan.CATCHING_UP_LABEL);
+        } else if (((CourseSchedule) p).getCourse().isCollective()) {
+          return colorPrefs.getColor(ColorPlan.COURSE_CO_LABEL);
+        } else {
+          return colorPrefs.getColor(ColorPlan.COURSE_INDIVIDUAL_LABEL);
+        }
+      case Schedule.WORKSHOP:
+        return colorPrefs.getColor(ColorPlan.WORKSHOP_LABEL);
+      case Schedule.TRAINING:
+        return colorPrefs.getColor(ColorPlan.TRAINING_LABEL);
+      case Schedule.GROUP:
+        return colorPrefs.getColor(ColorPlan.GROUP_LABEL);
+      case Schedule.MEMBER:
+        return colorPrefs.getColor(ColorPlan.MEMBER_LABEL);
+      case Schedule.STUDIO:
+        return colorPrefs.getColor(ColorPlan.STUDIO_LABEL);
+      case Schedule.ADMINISTRATIVE:
+        return colorPrefs.getColor(ColorPlan.ADMINISTRATIVE_LABEL);
+      default:
+        return colorPrefs.getColor(ColorPlan.LABEL);
     }
-
   }
 
   /**

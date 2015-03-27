@@ -1,5 +1,5 @@
 /*
- * @(#)ConflictService.java	2.9.2 28/01/15
+ * @(#)ConflictService.java	2.9.4.0 24/03/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -21,6 +21,7 @@
 package net.algem.planning;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Locale;
@@ -34,7 +35,7 @@ import net.algem.util.model.Model;
  * Service class for conflict verification.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.4.0
  * @since 2.4.a 08/05/12
  */
 public class ConflictService
@@ -47,6 +48,7 @@ public class ConflictService
   private PreparedStatement testMemberPS;
   private PreparedStatement testMemberSchedulePS;
   private PreparedStatement testHourPS;
+  private PreparedStatement testOfficePS;
 
   public ConflictService(DataConnection dc) {
     this.dc = dc;
@@ -99,6 +101,13 @@ public class ConflictService
             + " AND p.jour = ? AND pl.adherent = ?"
             + " AND ((pl.debut >= ? AND pl.debut < ?)"
             + " OR (pl.fin > ? AND pl.fin <= ?) OR (pl.debut <= ? AND pl.fin >= ?))");
+    
+    testOfficePS = this.dc.prepareStatement("SELECT id,jour,debut,fin FROM " + ScheduleIO.TABLE + " p "
+            + " WHERE jour = ?"
+            + " AND (lieux = ? OR idper = ?)"
+                + " AND ((debut >= ? AND debut < ?)"
+                + " OR (fin > ? and fin <= ?)"
+                + " OR (debut <= ? AND fin >= ?))");
     
   }
 
@@ -610,6 +619,26 @@ public class ConflictService
     }
 
     return conflicts;
+  }
+    
+  boolean testOfficeConflicts(DateFr d, Action a) throws SQLException {
+    testOfficePS.setDate(1, new java.sql.Date(d.getTime()));
+    testOfficePS.setInt(2, a.getRoom());
+    testOfficePS.setInt(3, a.getIdper());
+    testOfficePS.setTime(4, java.sql.Time.valueOf(a.getHourStart().toString() + ":00"));
+    testOfficePS.setTime(5, java.sql.Time.valueOf(a.getHourEnd().toString() + ":00"));
+    testOfficePS.setTime(6, java.sql.Time.valueOf(a.getHourStart().toString() + ":00"));
+    testOfficePS.setTime(7, java.sql.Time.valueOf(a.getHourEnd().toString() + ":00"));
+    testOfficePS.setTime(8, java.sql.Time.valueOf(a.getHourStart().toString() + ":00"));
+    testOfficePS.setTime(9, java.sql.Time.valueOf(a.getHourEnd().toString() + ":00"));
+    
+//    Vector<ScheduleObject> v2 = ScheduleIO.getLoadRS(testMemberSchedulePS, dc);
+    ResultSet rs = testOfficePS.executeQuery();
+    while (!Thread.interrupted() && rs.next()) {
+      return false;
+    }
+    return true;
+
   }
 
   private Vector<ScheduleRange> getScheduleRanges(ScheduleObject schedule, DateFr dateStart, DateFr dateEnd) throws SQLException {

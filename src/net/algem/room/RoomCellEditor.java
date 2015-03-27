@@ -36,10 +36,6 @@ extends AbstractCellEditor
   public Object getCellEditorValue() {
     return ((RoomChoice) component).getKey();
   }
-  
-  public void setCellEditorValue() {
-    
-  }
 
   @Override
   public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {

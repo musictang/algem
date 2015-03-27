@@ -88,7 +88,7 @@ public class MemberPassRehearsalView
   }
 
   int getDay() {
-    return dayChoice.getDay();
+    return dayChoice.getSelectedIndex();
   }
 
   DateFr getDateStart() {

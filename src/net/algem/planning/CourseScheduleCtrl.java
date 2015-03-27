@@ -53,7 +53,6 @@ public class CourseScheduleCtrl
   protected PlanningService service;
 
   public CourseScheduleCtrl(GemDesktop desktop) {
-
     this.desktop = desktop;
     dc = DataCache.getDataConnection();
     service = new PlanningService(dc);

@@ -1,7 +1,7 @@
 /*
- * @(#)EmployeePanelCtrl.java	2.8.w 08/07/14
+ * @(#)EmployeePanelCtrl.java	2.9.4.0 26/03/2015
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,6 +27,7 @@ import java.util.List;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ToolTipManager;
+import net.algem.planning.PlanningService;
 import net.algem.util.DataCache;
 import net.algem.util.GemCommand;
 import net.algem.util.ui.AbstractGemPanelCtrl;
@@ -37,7 +38,7 @@ import net.algem.util.ui.GemPanel;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.4.0
  * @since 2.8.v 29/05/14
  */
 public class EmployeePanelCtrl
@@ -46,11 +47,9 @@ public class EmployeePanelCtrl
 
   private List<EmployeePanel> panels;
   private final static int SPACING = 4;
-  private DataCache dataCache;
   private List<Person> employees;
 
-  public EmployeePanelCtrl(DataCache dataCache, String label) {
-    this.dataCache = dataCache;
+  public EmployeePanelCtrl(String label) {
     plus = new GemButton("+");
     plus.setMargin(new Insets(0, 4, 0, 4)); //reduction de la taille du bouton
     plus.addActionListener(this);
@@ -60,7 +59,6 @@ public class EmployeePanelCtrl
     top.add(new GemLabel(label), BorderLayout.WEST);
     top.add(plus, BorderLayout.EAST);
 
-    this.dataCache = dataCache;
     setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
     add(top);
     add(Box.createVerticalStrut(SPACING));
@@ -107,11 +105,8 @@ public class EmployeePanelCtrl
   }
 
   private List<Person> setEmployees(Enum cat) {
-
     if (employees == null) {
-      String where = ", " + EmployeeIO.TYPE_TABLE + " t  WHERE "
-      + PersonIO.TABLE + ".id = t.idper AND t.idcat = " + cat.ordinal();
-    employees =  PersonIO.find(where, DataCache.getDataConnection());
+      return new PlanningService(DataCache.getDataConnection()).getEmployees(cat);
     }
     return employees;
   }

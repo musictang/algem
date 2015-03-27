@@ -1,7 +1,7 @@
 /*
- * @(#)Schedule.java	2.8.t 11/04/14
+ * @(#)Schedule.java	2.9.4.0 26/03/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -25,7 +25,7 @@ package net.algem.planning;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.9.4.0
  */
 public class Schedule
         implements java.io.Serializable
@@ -39,6 +39,7 @@ public class Schedule
   public static final int TRAINING = 6;
   public static final int STUDIO = 7;
   public static final int TECH = 8;
+  public static final int ADMINISTRATIVE = 9;
   
   protected int id;
   protected DateFr date;
@@ -150,6 +151,7 @@ public class Schedule
   
   /**
    * Gets the schedule length in minutes.
+   * @return a length in minutes
    */
   public int getLength() {
     return start.getLength(end);
@@ -162,22 +164,31 @@ public class Schedule
 
   public static String attribFromLabel(String label) {
     String attrib = label;
-    if (label.equals("prof")) {
-      attrib = "idper";
-    } else if (label.equals("d.prof")) {
-      attrib = "d.idper";
-    } else if (label.equals("salle")) {
-      attrib = "lieux";
-    } else if (label.equals("d.salle")) {
-      attrib = "d.lieux";
-    } else if (label.equals("cours")) {
-      attrib = "action";
-    } else if (label.equals("d.cours")) {
-      attrib = "d.action";
-    } else if (label.equals("atelier")) {
-      attrib = "atelier";
-    } else if (label.equals("d.atelier")) {
-      attrib = "d.atelier";
+    switch (label) {
+      case "prof":
+        attrib = "idper";
+        break;
+      case "d.prof":
+        attrib = "d.idper";
+        break;
+      case "salle":
+        attrib = "lieux";
+        break;
+      case "d.salle":
+        attrib = "d.lieux";
+        break;
+      case "cours":
+        attrib = "action";
+        break;
+      case "d.cours":
+        attrib = "d.action";
+        break;
+      case "atelier":
+        attrib = "atelier";
+        break;
+      case "d.atelier":
+        attrib = "d.atelier";
+        break;
     }
     return attrib;
   }

@@ -1,7 +1,7 @@
 /*
- * @(#)ModifPlanRangeView.java	2.8.w 03/09/14
+ * @(#)ModifPlanRangeView.java	2.9.4.0 26/03/2015
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -33,7 +33,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.4.0
  * @since 1.0a 07/07/1999
  */
 public class ModifPlanRangeView
@@ -41,7 +41,7 @@ public class ModifPlanRangeView
 {
 
   private int roomId;
-  private GemField courseLabel;
+  private GemField scheduleLabel;
   private Hour hStart, hEnd;
   private DateRangePanel dateRange;
   private HourRangePanel currentRange; // time before
@@ -53,16 +53,16 @@ public class ModifPlanRangeView
     setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
     dateRange = new DateRangePanel();
-    courseLabel = new GemField(ModifPlanView.DEF_FIELD_WIDTH);
-    courseLabel.setEditable(false);
+    scheduleLabel = new GemField(ModifPlanView.DEF_FIELD_WIDTH);
+    scheduleLabel.setEditable(false);
     currentRange = new HourRangePanel();
     currentRange.setBorder(GemField.getDefaultBorder());
     currentRange.setEditable(false);
     newRange = new HourRangePanel();
 
     gb.insets = GridBagHelper.SMALL_INSETS;
-    gb.add(new GemLabel(BundleUtil.getLabel("Course.label")), 0, 0, 1, 1, GridBagHelper.WEST);
-    gb.add(courseLabel, 1, 0, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Heading.label")), 0, 0, 1, 1, GridBagHelper.WEST);
+    gb.add(scheduleLabel, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Date.From.label")), 0, 1, 1, 1, GridBagHelper.WEST);
     gb.add(dateRange, 1, 1, 1, 1, GridBagHelper.WEST);
 
@@ -124,7 +124,7 @@ public class ModifPlanRangeView
   }
 
   void setTitle(String s) {
-    courseLabel.setText(s);
+    scheduleLabel.setText(s);
   }
 
 }

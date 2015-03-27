@@ -1,7 +1,7 @@
 /*
- * @(#)MonthScheduleView.java	2.8.w 27/08/14
+ * @(#)MonthScheduleView.java	2.9.4.0 26/03/2015
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -31,14 +31,18 @@ import javax.print.attribute.PrintRequestAttributeSet;
 import javax.print.attribute.standard.*;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
+import net.algem.contact.EmployeeSelector;
+import net.algem.contact.EmployeeType;
 import net.algem.contact.teacher.TeacherChoice;
 import net.algem.course.CourseChoice;
 import net.algem.course.CourseChoiceTypeActiveModel;
 import net.algem.course.CourseChoiceTypeModel;
+import net.algem.planning.PlanningService;
 import net.algem.planning.ScheduleDetailEvent;
 import net.algem.room.Establishment;
 import net.algem.room.RoomChoice;
 import net.algem.util.BundleUtil;
+import net.algem.util.DataCache;
 import net.algem.util.GemLogger;
 import net.algem.util.event.GemEvent;
 import net.algem.util.model.GemCloseVetoException;
@@ -54,7 +58,7 @@ import net.algem.util.ui.TabPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.4.0
  */
 public class MonthScheduleView
         extends DefaultGemView
@@ -66,6 +70,7 @@ public class MonthScheduleView
   private GemList<Establishment> estabList;
   private MonthSchedule monthSchedule;
   private MonthPlanDetailView teacherView;
+  private MonthPlanDetailView adminView;
   private MonthPlanDetailView roomView[];
   private MonthPlanDetailView collectiveView;
   private MonthPlanDetailView privateView;
@@ -94,7 +99,10 @@ public class MonthScheduleView
       teacherView = new MonthPlanTeacherView(teacherChoice);
       tabPanel.addItem(teacherView, BundleUtil.getLabel("Month.schedule.teacher.tab"));
     }
-
+    
+    adminView = new MonthPlanAdminView(new EmployeeSelector(new PlanningService(DataCache.getDataConnection()).getEmployees(EmployeeType.ADMINISTRATOR)));
+    tabPanel.addItem(adminView, BundleUtil.getLabel("Staff.label"));
+    
     roomChoice = new RoomChoice[estabList.getSize()];
     roomView = new MonthPlanDetailView[estabList.getSize()];
 
@@ -102,7 +110,7 @@ public class MonthScheduleView
       Establishment e = (Establishment) estabList.getElementAt(i);
       roomChoice[i] = new RoomChoice(dataCache.getList(Model.Room), e.getId());
       roomView[i] = new MonthPlanRoomView(roomChoice[i]);
-      tabPanel.addItem(roomView[i], BundleUtil.getLabel("Rooms.label") + " " + e.getName());
+      tabPanel.addItem(roomView[i], e.getName());
     }
 
     if ((s = ConfigUtil.getConf(ConfigKey.COURSE_MANAGEMENT.getKey())) != null && s.startsWith("t")) {
@@ -122,6 +130,9 @@ public class MonthScheduleView
     if (teacherView != null) {
       teacherView.addActionListener(l);
     }
+    if (adminView != null) {
+      adminView.addActionListener(l);
+    }
     if (collectiveView != null) {
       collectiveView.addActionListener(l);
     }
@@ -139,6 +150,9 @@ public class MonthScheduleView
     if (teacherView != null) {
       teacherView.removeActionListener(l);
     }
+    if (adminView != null) {
+      adminView.removeActionListener(l);
+    }
     if (collectiveView != null) {
       collectiveView.removeActionListener(l);
     }
@@ -155,6 +169,9 @@ public class MonthScheduleView
   public void propertyChange(PropertyChangeEvent evt) {
     if (teacherView != null) {
       teacherView.propertyChange(evt);
+    }
+    if (adminView != null) {
+      adminView.propertyChange(evt);
     }
     if (collectiveView != null) {
       collectiveView.propertyChange(evt);
@@ -175,13 +192,15 @@ public class MonthScheduleView
       if (teacherView != null) {
         teacherView.detailChange(e);
       }
+      if (adminView != null) {
+        adminView.detailChange(e);
+      }
       if (collectiveView != null) {
         collectiveView.detailChange(e);
       }
       if (privateView != null) {
         privateView.detailChange(e);
       }
-
       for (int i = 0; i < roomView.length; i++) {
         roomView[i].detailChange(e);
       }

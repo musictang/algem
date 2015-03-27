@@ -1,7 +1,7 @@
 /*
- * @(#)DayScheduleView.java	2.9.1 26/11/14
+ * @(#)DayScheduleView.java	2.9.4.0 26/03/2015
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -33,6 +33,8 @@ import javax.print.attribute.PrintRequestAttributeSet;
 import javax.print.attribute.standard.*;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
+import net.algem.contact.EmployeeType;
+import net.algem.planning.PlanningService;
 import net.algem.room.Establishment;
 import net.algem.room.Room;
 import net.algem.util.BundleUtil;
@@ -50,7 +52,7 @@ import net.algem.util.ui.TabPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.4.0
  * @version 1.0b 06/10/2001
  */
 public class DayScheduleView
@@ -60,6 +62,7 @@ public class DayScheduleView
 
   private DaySchedule daySchedule;
   private DayPlanTableView teacherView;
+  private DayPlanTableView adminView;
 
   /** Room view array with default size. Actual size is calculated in constructor. */
   private DayPlanTableView roomView[] = new DayPlanTableView[3];
@@ -81,6 +84,9 @@ public class DayScheduleView
       tabPanel.addItem(teacherView, BundleUtil.getLabel("Day.schedule.teacher.tab"));
     }
 
+    adminView = new DayPlanAdminView(new PlanningService(DataCache.getDataConnection()).getEmployees(EmployeeType.ADMINISTRATOR));
+    tabPanel.addItem(adminView, BundleUtil.getLabel("Staff.label"));
+    
     // récupération de la liste des salles
     GemList<Room> vs = dataCache.getList(Model.Room);
     roomView = new DayPlanTableView[estabList.getSize()];
@@ -88,7 +94,7 @@ public class DayScheduleView
     for (int i = 0; i < estabList.getSize() && i < roomView.length; i++) {
       Establishment e = (Establishment) estabList.getElementAt(i);
       roomView[i] = new DayPlanRoomView(vs, e.getId());
-      tabPanel.addItem(roomView[i], BundleUtil.getLabel("Rooms.label") + " " + e.getName());
+      tabPanel.addItem(roomView[i], e.getName());
     }
     int e = 0;
     Establishment estab = null;
@@ -103,7 +109,6 @@ public class DayScheduleView
     String teacherManaged = ConfigUtil.getConf(ConfigKey.TEACHER_MANAGEMENT.getKey());
     int offset = (teacherManaged.equals("t")) ? 1 : 0;
     tabPanel.setSelectedIndex(estabList.indexOf(estab) + offset);//+1 quand la gestion prof est activée car le premier onglet correspond aux profs
-
   }
 
    @Override
@@ -143,9 +148,11 @@ public class DayScheduleView
     if (teacherView != null) {
       teacherView.addActionListener(l);
     }
-
-    for (int i = 0; i < roomView.length; i++) {
-      roomView[i].addActionListener(l);
+    if (adminView != null) {
+      adminView.addActionListener(l);
+    }
+    for (DayPlanTableView roomView1 : roomView) {
+      roomView1.addActionListener(l);
     }
   }
 
@@ -154,9 +161,11 @@ public class DayScheduleView
     if (teacherView != null) {
       teacherView.removeActionListener(l);
     }
-
-    for (int i = 0; i < roomView.length; i++) {
-      roomView[i].removeActionListener(l);
+    if (adminView != null) {
+      adminView.removeActionListener(l);
+    }
+    for (DayPlanTableView roomView1 : roomView) {
+      roomView1.removeActionListener(l);
     }
   }
 
@@ -164,6 +173,10 @@ public class DayScheduleView
   public void propertyChange(PropertyChangeEvent evt) {
     if (teacherView != null && !evt.getPropertyName().equals("@all_rooms")) {
       teacherView.propertyChange(evt);
+    }
+    
+    if (adminView != null && !evt.getPropertyName().equals("@all_rooms")) {
+      adminView.propertyChange(evt);
     }
 
     for (int i = 0; i < roomView.length; i++) {

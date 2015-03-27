@@ -1,5 +1,5 @@
 /*
- * @(#)AdministrativeActionTableModel.java	2.9.3.3 18/03/15
+ * @(#)AdministrativeActionTableModel.java	2.9.4.0 18/03/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -29,11 +29,11 @@ import net.algem.util.ui.JTableModel;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.3.3
- * @since 2.9.3.3 18/03/15
+ * @version 2.9.4.0
+ * @since 2.9.4.0 18/03/15
  */
 public class AdministrativeActionTableModel 
-extends JTableModel<ActionTableModel>
+extends JTableModel<AdministrativeActionModel>
 {
 
   public AdministrativeActionTableModel() {
@@ -53,7 +53,7 @@ extends JTableModel<ActionTableModel>
   public Class getColumnClass(int col) {
    switch (col) {
       case 0:
-        return String.class;
+        return DayOfWeek.class;
       case 1: 
       case 2:
         return Hour.class;
@@ -66,13 +66,13 @@ extends JTableModel<ActionTableModel>
   
   @Override
   public int getIdFromIndex(int i) {
-    ActionTableModel a = tuples.elementAt(i);
+    AdministrativeActionModel a = tuples.elementAt(i);
     return Arrays.asList(PlanningService.WEEK_DAYS).indexOf(a.getDay());
   }
 
   @Override
   public Object getValueAt(int line, int col) {
-    ActionTableModel a = tuples.elementAt(line);
+    AdministrativeActionModel a = tuples.elementAt(line);
     switch (col) {
       case 0:
         return a.getDay();
@@ -81,26 +81,32 @@ extends JTableModel<ActionTableModel>
       case 2:
         return a.getEnd();
       case 3:
-      return a.getRoom();
+        return a.getRoom();
+      default:
+        return null;
     }
-    return null;
   }
 
   @Override
   public void setValueAt(Object value, int line, int column) {
-    ActionTableModel a = tuples.elementAt(line);
+    AdministrativeActionModel a = tuples.elementAt(line);
     switch(column) {
       case 0:
-        a.setDay((String) value);
+        a.setDay((DayOfWeek) value);
         break;
       case 1:
         a.setStart((Hour) value);
         break;
       case 2:
-        a.setEnd((Hour) value);
+        Hour end = (Hour) value;
+         if (a.getStart() != null && end.le(a.getStart())) {
+          end = new Hour(a.getStart());
+        }
+        a.setEnd(end);
         break;
       case 3:
         a.setRoom((Room) value);
+        break;
     }
   }
 

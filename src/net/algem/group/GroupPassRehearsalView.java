@@ -79,7 +79,7 @@ public class GroupPassRehearsalView
   }
 
   public int getDay() {
-    return day.getDay();
+    return day.getSelectedIndex();
   }
 
   public DateFr getDateStart() {
