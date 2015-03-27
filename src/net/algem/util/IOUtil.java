@@ -33,7 +33,7 @@ public class IOUtil {
     /**
      * Class version of readFile, for easy mocking in service
      */
-    public class FileReaderHelper {
+    public static class FileReaderHelper {
         public String readFile(File file) throws IOException {
             return IOUtil.readFile(file);
         }

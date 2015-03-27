@@ -12,6 +12,10 @@ public class ScriptDirectory extends ScriptFile {
         this.children = children;
     }
 
+    public File getDirectory() {
+        return directory;
+    }
+
     public List<ScriptFile> getChildren() {
         return children;
     }

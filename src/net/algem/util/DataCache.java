@@ -20,6 +20,7 @@
  */
 package net.algem.util;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -55,6 +56,9 @@ import net.algem.planning.editing.instruments.AtelierInstrumentsService;
 import net.algem.planning.editing.instruments.AtelierInstrumentsServiceImpl;
 import net.algem.planning.month.MonthSchedule;
 import net.algem.room.*;
+import net.algem.script.directory.ScriptDirectoryService;
+import net.algem.script.directory.ScriptDirectoryServiceImpl;
+import net.algem.script.directory.ScriptManifestParserImpl;
 import net.algem.security.DefaultUserService;
 import net.algem.security.User;
 import net.algem.security.UserIO;
@@ -153,6 +157,7 @@ public class DataCache
   private UserService userService;
 
   private AtelierInstrumentsService atelierInstrumentsService;
+  private ScriptDirectoryService scriptDirectoryService;
 
   private DataCache() {
 
@@ -200,6 +205,7 @@ public class DataCache
     daySchedule = new DaySchedule();
 
     atelierInstrumentsService = new AtelierInstrumentsServiceImpl(dc, new AtelierInstrumentsDAO(dc), PERSON_IO);
+    scriptDirectoryService = new ScriptDirectoryServiceImpl(new File("./scripts").getAbsoluteFile(), new IOUtil.FileReaderHelper(), new ScriptManifestParserImpl());
   }
 
   /**
@@ -900,7 +906,11 @@ public class DataCache
     return atelierInstrumentsService;
   }
 
-  public User getUser() {
+  public ScriptDirectoryService getScriptDirectoryService() {
+     return scriptDirectoryService;
+  }
+
+    public User getUser() {
     return user;
   }
 

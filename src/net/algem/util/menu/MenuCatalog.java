@@ -31,6 +31,7 @@ import net.algem.enrolment.EnrolmentListCtrl;
 import net.algem.enrolment.EnrolmentService;
 import net.algem.enrolment.ExtendeModuleOrderListCtrl;
 import net.algem.enrolment.ExtendedModuleOrderTableModel;
+import net.algem.script.ui.ScriptingFormController;
 import net.algem.util.BundleUtil;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
@@ -53,6 +54,7 @@ public class MenuCatalog
   private JMenuItem miModuleOrder;
   private JMenuItem miCoursBrowse;
   private JMenuItem miEnrolment;
+  private final JMenuItem scriptItem;
 
   public MenuCatalog(GemDesktop desktop) {
     super(BundleUtil.getLabel("Menu.catalog.label"), desktop);
@@ -67,6 +69,10 @@ public class MenuCatalog
       miModuleOrder = new JMenuItem(BundleUtil.getLabel("Modules.ordered.label"));
       add(miModuleOrder);
     }
+
+    scriptItem = new JMenuItem("SCRIPT");
+    add(scriptItem);
+
     setListener(this);
   }
 
@@ -102,6 +108,8 @@ public class MenuCatalog
       desktop.addPanel(GemModule.ENROLMENT_BROWSER_KEY, enrolmentList);
     } else if (arg.equals(GemCommand.CANCEL_CMD)) {
       desktop.removeCurrentModule();
+    } else if (src == scriptItem) {
+        desktop.addPanel("Scripts", new ScriptingFormController(desktop).getPanel());
     }
     desktop.setDefaultCursor();
   }

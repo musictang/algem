@@ -1,0 +1,8 @@
+{
+  "description": "Simple test script",
+  "args": [{
+    "name" : "text1", "label": "A text input", "type": "text"
+  }, {
+    "name" : "int1", "label": "An int", "type": "int"
+  }]
+}

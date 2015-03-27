@@ -4,13 +4,13 @@ import java.util.List;
 
 public class Script {
     private final String name;
-    private final List<ScriptArgument> argument;
+    private final List<ScriptArgument> arguments;
     private final String description;
     private final String code;
 
-    public Script(String name, List<ScriptArgument> argument, String description, String code) {
+    public Script(String name, List<ScriptArgument> arguments, String description, String code) {
         this.name = name;
-        this.argument = argument;
+        this.arguments = arguments;
         this.description = description;
         this.code = code;
     }
@@ -19,8 +19,8 @@ public class Script {
         return name;
     }
 
-    public List<ScriptArgument> getArgument() {
-        return argument;
+    public List<ScriptArgument> getArguments() {
+        return arguments;
     }
 
     public String getDescription() {
@@ -38,7 +38,7 @@ public class Script {
 
         Script script = (Script) o;
 
-        if (!argument.equals(script.argument)) return false;
+        if (!arguments.equals(script.arguments)) return false;
         if (!code.equals(script.code)) return false;
         if (!description.equals(script.description)) return false;
         if (!name.equals(script.name)) return false;
@@ -49,7 +49,7 @@ public class Script {
     @Override
     public int hashCode() {
         int result = name.hashCode();
-        result = 31 * result + argument.hashCode();
+        result = 31 * result + arguments.hashCode();
         result = 31 * result + description.hashCode();
         result = 31 * result + code.hashCode();
         return result;
@@ -59,7 +59,7 @@ public class Script {
     public String toString() {
         return "Script{" +
                 "name='" + name + '\'' +
-                ", argument=" + argument +
+                ", argument=" + arguments +
                 ", description='" + description + '\'' +
                 ", code='" + code + '\'' +
                 '}';
