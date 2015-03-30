@@ -1,30 +1,44 @@
 package net.algem.script.ui;
 
 import net.algem.script.common.Script;
+import net.algem.script.common.ScriptArgument;
 import net.algem.script.directory.ScriptDirectoryService;
 import net.algem.script.directory.models.ScriptDirectory;
 import net.algem.script.directory.models.ScriptImplFile;
+import net.algem.script.execution.ScriptExecutorService;
+import net.algem.script.execution.models.ScriptResult;
+import net.algem.script.execution.models.ScriptUserArguments;
 import net.algem.util.module.GemDesktop;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.*;
+import java.util.List;
 
 public class ScriptingFormController {
     private JPanel panel1;
     private JTree tree1;
     private JButton runButton;
-    private JTable table1;
+    private JTable resultTable;
+    private JTableX argumentsTable;
+    private JPanel rightPanel;
 
     private final GemDesktop desktop;
     private ScriptDirectoryService scriptDirectoryService;
+    private ScriptExecutorService scriptExecutorService;
     private Script script;
+    private ScriptArgumentTableModel argumentTableModel;
 
     public ScriptingFormController(GemDesktop desktop) {
         this.desktop = desktop;
         scriptDirectoryService = desktop.getDataCache().getScriptDirectoryService();
+        scriptExecutorService = desktop.getDataCache().getScriptExecutorService();
 
         $$$setupUI$$$();
         loadScripts();
@@ -43,11 +57,32 @@ public class ScriptingFormController {
                 }
             }
         });
+
+        runButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (script != null && argumentTableModel != null) {
+                    ScriptUserArguments userArguments = argumentTableModel.getUserArguments();
+                    try {
+                        ScriptResult scriptResult = scriptExecutorService.executeScript(script, userArguments);
+                        resultTable.setModel(new ScriptResultTableModel(scriptResult));
+                    } catch (Exception e1) {
+                        e1.printStackTrace(); // TODO show error message
+                    }
+                }
+
+            }
+        });
     }
 
     private void openScript(ScriptImplFile scriptFile) {
         try {
             script = scriptDirectoryService.loadScript(scriptFile);
+            List<ScriptArgument> arguments = script.getArguments();
+            argumentTableModel = new ScriptArgumentTableModel(arguments);
+            argumentsTable.setModel(argumentTableModel);
+            argumentsTable.setCellEditorFactory(new ScriptArgumentTableModel.MyCellEditorFactory(arguments));
+            resultTable.setModel(new DefaultTableModel());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -59,7 +94,6 @@ public class ScriptingFormController {
     }
 
     private void loadScripts() {
-
         ScriptDirectory availableScripts = scriptDirectoryService.getAvailableScripts();
         tree1.setModel(new ScriptDirectoryTreeModel(availableScripts));
     }
@@ -91,30 +125,86 @@ public class ScriptingFormController {
         createUIComponents();
         panel1 = new JPanel();
         panel1.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        panel1.setMinimumSize(new Dimension(1024, 768));
         panel1.setOpaque(true);
         panel1.setPreferredSize(new Dimension(1024, 768));
         final JSplitPane splitPane1 = new JSplitPane();
         splitPane1.setDividerLocation(250);
         panel1.add(splitPane1, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(200, 200), null, 0, false));
         final JPanel panel2 = new JPanel();
-        panel2.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
+        panel2.setLayout(new GridBagLayout());
         splitPane1.setLeftComponent(panel2);
+        panel2.setBorder(BorderFactory.createTitledBorder("Scripts disponible"));
         tree1.setMaximumSize(new Dimension(250, 100));
         tree1.setPreferredSize(new Dimension(250, 100));
         tree1.setRequestFocusEnabled(true);
-        panel2.add(tree1, new com.intellij.uiDesigner.core.GridConstraints(1, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
-        final JToolBar toolBar1 = new JToolBar();
-        panel2.add(toolBar1, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(-1, 20), null, 0, false));
+        GridBagConstraints gbc;
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
+        panel2.add(tree1, gbc);
+        rightPanel = new JPanel();
+        rightPanel.setLayout(new GridBagLayout());
+        rightPanel.setPreferredSize(new Dimension(800, 800));
+        splitPane1.setRightComponent(rightPanel);
         final JPanel panel3 = new JPanel();
-        panel3.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(2, 2, new Insets(0, 0, 0, 0), -1, -1));
-        splitPane1.setRightComponent(panel3);
+        panel3.setLayout(new GridBagLayout());
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.ipadx = 6;
+        gbc.ipady = 6;
+        gbc.insets = new Insets(6, 6, 6, 6);
+        rightPanel.add(panel3, gbc);
+        panel3.setBorder(BorderFactory.createTitledBorder("Résultats"));
         final JScrollPane scrollPane1 = new JScrollPane();
-        panel3.add(scrollPane1, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.ipadx = 6;
+        gbc.ipady = 6;
+        gbc.insets = new Insets(6, 6, 6, 6);
+        panel3.add(scrollPane1, gbc);
+        resultTable = new JTable();
+        scrollPane1.setViewportView(resultTable);
+        final JPanel panel4 = new JPanel();
+        panel4.setLayout(new GridBagLayout());
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.ipadx = 6;
+        gbc.ipady = 6;
+        gbc.insets = new Insets(6, 6, 6, 6);
+        rightPanel.add(panel4, gbc);
+        panel4.setBorder(BorderFactory.createTitledBorder("Paramètres"));
+        argumentsTable = new JTableX();
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.ipadx = 6;
+        gbc.ipady = 6;
+        gbc.insets = new Insets(6, 6, 6, 6);
+        panel4.add(argumentsTable, gbc);
         runButton = new JButton();
         runButton.setText("Executer");
-        panel3.add(runButton, new com.intellij.uiDesigner.core.GridConstraints(0, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        table1 = new JTable();
-        panel3.add(table1, new com.intellij.uiDesigner.core.GridConstraints(1, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
+        gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        rightPanel.add(runButton, gbc);
     }
 
     /**

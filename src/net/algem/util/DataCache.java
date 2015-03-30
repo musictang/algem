@@ -59,6 +59,8 @@ import net.algem.room.*;
 import net.algem.script.directory.ScriptDirectoryService;
 import net.algem.script.directory.ScriptDirectoryServiceImpl;
 import net.algem.script.directory.ScriptManifestParserImpl;
+import net.algem.script.execution.ScriptExecutorService;
+import net.algem.script.execution.ScriptExecutorServiceImpl;
 import net.algem.security.DefaultUserService;
 import net.algem.security.User;
 import net.algem.security.UserIO;
@@ -158,6 +160,7 @@ public class DataCache
 
   private AtelierInstrumentsService atelierInstrumentsService;
   private ScriptDirectoryService scriptDirectoryService;
+  private ScriptExecutorService scriptExecutorService;
 
   private DataCache() {
 
@@ -206,6 +209,7 @@ public class DataCache
 
     atelierInstrumentsService = new AtelierInstrumentsServiceImpl(dc, new AtelierInstrumentsDAO(dc), PERSON_IO);
     scriptDirectoryService = new ScriptDirectoryServiceImpl(new File("./scripts").getAbsoluteFile(), new IOUtil.FileReaderHelper(), new ScriptManifestParserImpl());
+    scriptExecutorService = new ScriptExecutorServiceImpl(dc);
   }
 
   /**
@@ -621,7 +625,7 @@ public class DataCache
     } else if (m instanceof Account) {
       ACCOUNT_LIST.removeElement((Account) m);
     } else if (m instanceof CostAccount) {
-      COST_ACCOUNT_CACHE.remove(((CostAccount)m).getKey());
+      COST_ACCOUNT_CACHE.remove(((CostAccount) m).getKey());
     } else if (m instanceof User) {
       USER_CACHE.remove(m.getId());
     } else if (m instanceof Vat) {
@@ -908,6 +912,10 @@ public class DataCache
 
   public ScriptDirectoryService getScriptDirectoryService() {
      return scriptDirectoryService;
+  }
+
+  public ScriptExecutorService getScriptExecutorService() {
+    return scriptExecutorService;
   }
 
     public User getUser() {
