@@ -1,7 +1,7 @@
 /*
- * @(#)ScheduleRangeIO.java	2.9.1 27/11/14
+ * @(#)ScheduleRangeIO.java	2.9.4.0 31/03/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -38,7 +38,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.4.0
  * @since 1.0a 7/7/1999
  */
 public class ScheduleRangeIO
@@ -76,7 +76,7 @@ public class ScheduleRangeIO
       + "', fin = '" + p.getEnd()
       + "', adherent = " + p.getMember().getId()
       + ", note = " + p.getNote()
-      + " WHERE id=" + p.getId();
+      + " WHERE id = " + p.getId();
     dc.executeUpdate(query);
   }
 
@@ -169,7 +169,7 @@ public class ScheduleRangeIO
 
     p.setDate(new DateFr(rs.getString(7)));
     p.setIdAction(rs.getInt(8));
-    p.setIdPerson(rs.getInt(9));// id prof
+    p.setIdPerson(rs.getInt(9));// idper in schedule
     p.setIdRoom(rs.getInt(10));
     p.setType(rs.getInt(11));
 
@@ -183,7 +183,7 @@ public class ScheduleRangeIO
   }
 
   public static Vector<ScheduleRangeObject> findObject(String and, PlanningService service, DataConnection dc) throws SQLException {
-    String query = "SELECT " + COLUMNS + ", p.jour, p.action, p.idper, p.lieux"
+    String query = "SELECT " + COLUMNS + ", p.jour, p.action, p.idper, p.lieux, p.ptype"
       + " FROM " + TABLE + " pg, " + ScheduleIO.TABLE + " p"
       + " WHERE pg.idplanning = p.id " + and;
 
@@ -226,8 +226,8 @@ public class ScheduleRangeIO
     ResultSet rs = dc.executeQuery(query);
     while (rs.next()) {
       ScheduleRangeObject p = rangeObjectFactory(rs, pService);
-      p.setNote1(rs.getString(11));
-      p.setNote2(rs.getString(12));
+      p.setNote1(rs.getString(12));
+      p.setNote2(rs.getString(13));
       v.addElement(p);
     }
     rs.close();
@@ -236,12 +236,14 @@ public class ScheduleRangeIO
 
   private static String getFollowUpRequest(boolean action) {//TODO !!!!
     if (action) {
-      return "SELECT " + COLUMNS + ", p.jour, p.action, p.idper, p.lieux, s1.texte, s2.texte FROM " + TABLE + " pg, planning p, action a, suivi s1, suivi s2"
+      return "SELECT " + COLUMNS + ", p.jour, p.action, p.idper, p.lieux, p.ptype, s1.texte, s2.texte"
+              + " FROM " + TABLE + " pg, planning p, action a, " + ScheduleIO.FOLLOW_UP_TABLE + " s1, " + ScheduleIO.FOLLOW_UP_TABLE + " s2"
         + " WHERE p.ptype IN (" + Schedule.COURSE + "," + Schedule.WORKSHOP + "," + Schedule.TRAINING
         + ") AND p.id = pg.idplanning";
 
     } else {
-      return "SELECT " + COLUMNS + ", p.jour, p.action, p.idper, p.lieux, s1.texte, s2.texte FROM " + TABLE + " pg, planning p, suivi s1, suivi s2"
+      return "SELECT " + COLUMNS + ", p.jour, p.action, p.idper, p.lieux, p.ptype, s1.texte, s2.texte"
+              + " FROM " + TABLE + " pg, planning p, " + ScheduleIO.FOLLOW_UP_TABLE + " s1, " + ScheduleIO.FOLLOW_UP_TABLE + " s2"
         + " WHERE p.ptype IN (" + Schedule.COURSE + "," + Schedule.WORKSHOP + "," + Schedule.TRAINING
         + ") AND p.id = pg.idplanning";
     }
@@ -250,12 +252,14 @@ public class ScheduleRangeIO
   public static void createNote(ScheduleRangeObject range, String text, DataConnection dc) throws PlanningException {
     try {
       dc.setAutoCommit(false);
-      int id = nextId("idsuivi", dc);
-      String query = "INSERT INTO suivi VALUES(" + id + ",'" + escape(text) + "')";
+      int id = nextId(ScheduleIO.FOLLOW_UP_SEQUENCE, dc);
+      String query = "INSERT INTO " + ScheduleIO.FOLLOW_UP_TABLE + " VALUES(" + id + ",'" + escape(text) + "')";
       dc.executeUpdate(query);
-
       range.setNote(id);
-      update(range, dc);
+      if (range.getId() > 0) {
+        update(range, dc);
+      }
+      dc.commit();
     } catch (SQLException sqe) {
       dc.rollback();
       throw new PlanningException(sqe.getMessage());
@@ -265,19 +269,19 @@ public class ScheduleRangeIO
   }
 
   public static void updateNote(int note, String text, DataConnection dc) throws SQLException {
-    String query = "UPDATE suivi SET texte = '" + escape(text) + "' WHERE id = " + note;
+    String query = "UPDATE " + ScheduleIO.FOLLOW_UP_TABLE + " SET texte = '" + escape(text) + "' WHERE id = " + note;
     dc.executeUpdate(query);
   }
 
   public static void deleteNote(int note, DataConnection dc) throws SQLException {
-    String query = "DELETE FROM suivi WHERE id = " + note;
+    String query = "DELETE FROM " + ScheduleIO.FOLLOW_UP_TABLE + " WHERE id = " + note;
     dc.executeUpdate(query);
   }
 
   public static String findNote(int note, DataConnection dc) throws SQLException {
 
     String texte = "";
-    String query = "SELECT texte FROM suivi WHERE id = " + note;
+    String query = "SELECT texte FROM " + ScheduleIO.FOLLOW_UP_TABLE + " WHERE id = " + note;
 
     ResultSet rs = dc.executeQuery(query);
     if (rs.next()) {
@@ -288,7 +292,7 @@ public class ScheduleRangeIO
   }
 
   public static String getMonthRangeStmt() {
-    return "SELECT " + COLUMNS + ", p.jour, p.action, p.idper, p.lieux  FROM " + TABLE + " pg, " + ScheduleIO.TABLE + " p"
+    return "SELECT " + COLUMNS + ", p.jour, p.action, p.idper, p.lieux, p.ptype  FROM " + TABLE + " pg, " + ScheduleIO.TABLE + " p"
       + " WHERE pg.idplanning = p.id"
       + " AND p.jour >= ? AND p.jour <= ? ORDER BY p.jour, pg.debut";
   }

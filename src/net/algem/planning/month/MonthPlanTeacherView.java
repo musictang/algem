@@ -1,7 +1,7 @@
 /*
- * @(#)MonthPlanTeacherView.java	2.8.m 11/09/13
+ * @(#)MonthPlanTeacherView.java	2.9.4.0 31/03/2015
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -34,7 +34,7 @@ import net.algem.util.ui.GemChoiceFilterModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.m
+ * @version 2.9.4.0
  */
 public class MonthPlanTeacherView
         extends MonthPlanDetailView
@@ -49,9 +49,9 @@ public class MonthPlanTeacherView
   }
   
   @Override
-  public boolean isConsistent(ScheduleObject p) {
+  public boolean isNotFiltered(ScheduleObject p) {
     if (choice == null) {
-      return false;
+      return Schedule.ADMINISTRATIVE != p.getType();
     }
 
     int id = choice.getKey();

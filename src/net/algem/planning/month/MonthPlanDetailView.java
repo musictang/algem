@@ -1,7 +1,7 @@
 /*
- * @(#)MonthPlanDetailView.java	2.6.a 21/09/12
+ * @(#)MonthPlanDetailView.java	2.9.4.0 31/03/2015
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -49,7 +49,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.5.a
+ * @version 2.9.4.0
  */
 public abstract class MonthPlanDetailView
         extends GemPanel
@@ -67,8 +67,8 @@ public abstract class MonthPlanDetailView
   private Vector<ScheduleObject> schedules = new Vector<ScheduleObject>();
   private Vector<ScheduleRangeObject> ranges = new Vector<ScheduleRangeObject>();
 
-  public MonthPlanDetailView(GemChoice _choix) {
-    choice = _choix;
+  public MonthPlanDetailView(GemChoice choice) {
+    this.choice = choice;
     cal = Calendar.getInstance(Locale.FRANCE);
     status = new GemField();
     status.setFont(new Font("Helvetica", Font.BOLD, 12));
@@ -159,8 +159,8 @@ public abstract class MonthPlanDetailView
 
     dateLabel.setText(monthNames[mois - 1] + " " + an);
     dateBar.setDate(date);
-    schedules = _plannings;
-    ranges = _plages;
+    this.schedules = _plannings;
+    this.ranges = _plages;
 
     EventQueue.invokeLater(new Runnable()
     {
@@ -168,14 +168,14 @@ public abstract class MonthPlanDetailView
         Vector<ScheduleObject> v1 = new Vector<ScheduleObject>();
         for (int i = 0; i < schedules.size(); i++) {
           ScheduleObject p = schedules.elementAt(i);
-          if (isConsistent(p)) {
+          if (isNotFiltered(p)) {
             v1.addElement(p);
           }
         }
         Vector<ScheduleRangeObject> v2 = new Vector<ScheduleRangeObject>();
         for (int i = 0; i < ranges.size(); i++) {
           ScheduleRangeObject p = (ScheduleRangeObject) ranges.elementAt(i);
-          if (isConsistent(p)) {
+          if (isNotFiltered(p)) {
             v2.addElement(p);
           }
         }
@@ -189,7 +189,7 @@ public abstract class MonthPlanDetailView
     return view;
   }
 
-  public abstract boolean isConsistent(ScheduleObject p);
+  public abstract boolean isNotFiltered(ScheduleObject p);
 
   public abstract void detailChange(ScheduleDetailEvent evt);
 }

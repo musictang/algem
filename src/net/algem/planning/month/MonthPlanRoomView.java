@@ -41,7 +41,7 @@ public class MonthPlanRoomView
   }
 
   @Override
-  public boolean isConsistent(ScheduleObject p) {
+  public boolean isNotFiltered(ScheduleObject p) {
     if (choice == null) {
       return true;
     }

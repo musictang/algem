@@ -25,7 +25,6 @@ import java.sql.SQLException;
 import java.text.DateFormatSymbols;
 import java.util.*;
 import net.algem.contact.EmployeeIO;
-import net.algem.contact.EmployeeType;
 import net.algem.contact.Person;
 import net.algem.contact.PersonIO;
 import net.algem.course.Course;
@@ -359,7 +358,7 @@ public class PlanningService
    * @param end end date
    * @param hStart new start time
    * @param hEnd new end time
-   * @throws PlanningException if SQLException or if there is no update
+   * @throws PlanningException if SQLException or if there is no updateAdministrativeEvent
    */
   public void changeHour(ScheduleObject plan, DateFr start, DateFr end, Hour hStart, Hour hEnd) throws PlanningException {
     String query = "UPDATE planning SET debut = '" + hStart + "', fin='" + hEnd + "'"
@@ -543,7 +542,7 @@ public class PlanningService
    * @throws PlanningException if sql exception
    */
   public void postPoneCourse(ScheduleObject plan, ScheduleObject newPlan) throws PlanningException {
-    // probleme avec les heures de fin = 24:00 l'update les transforme en 23:59 / erreurs futures dans le décompte des heures
+    // probleme avec les heures de fin = 24:00 l'updateAdministrativeEvent les transforme en 23:59 / erreurs futures dans le décompte des heures
     String query = "UPDATE " + ScheduleIO.TABLE
             + " SET jour = '" + newPlan.getDate()
             + "', debut = '" + newPlan.getStart()
@@ -552,7 +551,7 @@ public class PlanningService
             + " WHERE id = " + plan.getId();
     try {
       dc.setAutoCommit(false);
-      dc.executeUpdate(query); // update schedule
+      dc.executeUpdate(query); // updateAdministrativeEvent schedule
       int offset = plan.getStart().getLength(newPlan.getStart()); // getLength en minutes entre l'ancienne heure et la nouvelle passée en paramètre.
       query = "UPDATE " + ScheduleRangeIO.TABLE
               + " SET debut = debut + interval '" + offset + " min'"
@@ -560,14 +559,14 @@ public class PlanningService
               + ", fin = (CASE WHEN fin + interval '" + offset + " min' = '00:00:00' THEN '24:00:00' ELSE fin + interval '" + offset + " min' END)"
               //+ ", fin = fin + interval '" + offset + " min'"
               + " WHERE idplanning = " + plan.getId();
-      dc.executeUpdate(query); // plage update
+      dc.executeUpdate(query); // plage updateAdministrativeEvent
       // pour les ateliers ponctuels d'un jour seulement
       if (Schedule.WORKSHOP == plan.getType()) {
         query = "UPDATE " + CourseOrderIO.TABLE
                 + " SET debut = '" + newPlan.getStart() + "', fin = '" + newPlan.getEnd()
                 + "', datedebut = '" + newPlan.getDate() + "', datefin = '" + newPlan.getDate()
                 + "' WHERE idaction = " + plan.getIdAction();
-        dc.executeUpdate(query); // commande_cours update
+        dc.executeUpdate(query); // commande_cours updateAdministrativeEvent
       }
       dc.commit();
     } catch (SQLException ex) {
@@ -586,7 +585,7 @@ public class PlanningService
     newPlan.setType(plan.getType());
     try {
       dc.setAutoCommit(false);
-      dc.executeUpdate(query); // update schedule
+      dc.executeUpdate(query); // updateAdministrativeEvent schedule
       ScheduleIO.insert(newPlan, dc); // create postpone schedule
       int offset = plan.getStart().getLength(newPlan.getStart());
       query = "UPDATE " + ScheduleRangeIO.TABLE
@@ -616,7 +615,7 @@ public class PlanningService
     newPlan.setType(plan.getType());
     try {
       dc.setAutoCommit(false);
-      dc.executeUpdate(query); // update schedule
+      dc.executeUpdate(query); // updateAdministrativeEvent schedule
       ScheduleIO.insert(newPlan, dc); // create postpone schedule
       int offset = rangeStart.getLength(newPlan.getStart());
       query = "UPDATE " + ScheduleRangeIO.TABLE
@@ -645,7 +644,7 @@ public class PlanningService
     int offset = range[0].getLength(newPlan.getStart());
     try {
       dc.setAutoCommit(false);
-      dc.executeUpdate(query); // update schedule
+      dc.executeUpdate(query); // updateAdministrativeEvent schedule
       ScheduleIO.insert(newPlan, dc); // create postpone schedule
       query = "UPDATE " + ScheduleRangeIO.TABLE
               + " SET idplanning = " + newPlan.getId()
@@ -675,7 +674,7 @@ public class PlanningService
   }
 
   public void copyCourse(ScheduleObject model, ScheduleObject copy) throws PlanningException {
-    //XXX probleme avec les heures de fin = 24:00 l'update les transforme en 00:00 / erreurs futures dans le décompte des heures
+    //XXX probleme avec les heures de fin = 24:00 l'updateAdministrativeEvent les transforme en 00:00 / erreurs futures dans le décompte des heures
     try {
       dc.setAutoCommit(false);
       ScheduleIO.insert(copy, dc);
@@ -725,7 +724,7 @@ public class PlanningService
       for (CourseOrder cc : vcc) {
 
         if (a.getDateStart().after(cc.getDateStart())) {
-          // update ancienne commande
+          // updateAdministrativeEvent ancienne commande
           cc.setDateEnd(a.getDateStart());
           CourseOrderIO.update(cc, dc);
           // creation nouvelle commande
@@ -933,6 +932,25 @@ public class PlanningService
       ScheduleRangeIO.deleteNote(range.getNote(), dc);
     }
   }
+  
+  public void createAdministrativeEvent(final ScheduleRange range, final String info) throws PlanningException {
+    try {
+      dc.withTransaction(new DataConnection.SQLRunnable<Void>()
+      {
+        @Override
+        public Void run(DataConnection conn) throws Exception {
+          ScheduleRangeObject rv = new ScheduleRangeObject(range);
+          updateFollowUp(rv, info);
+          range.setNote(rv.getNote());
+          addScheduleRange(range);
+          return null;
+        }
+      });
+    } catch (Exception e) {
+      throw new PlanningException(e.getMessage());
+    }
+
+  }
 
   /**
    * Gets a collective follow-up note.
@@ -1022,8 +1040,40 @@ public class PlanningService
 
   public void updateAction(Action a) throws SQLException {
     actionIO.update(a);
-
   }
+  
+  public void updateAdministrativeEvent(final ScheduleRangeObject range, final String note) throws PlanningException {
+    try {
+      dc.withTransaction(new DataConnection.SQLRunnable<Void>()
+      {
+        @Override
+        public Void run(DataConnection conn) throws Exception {
+          ScheduleRangeIO.update(range, dc);
+          updateFollowUp(range, note);
+          return null;
+        }
+      });
+    } catch (Exception e) {
+      throw new PlanningException(e.getMessage());
+    }
+  }
+  
+  public void deleteAdministrativeEvent(final ScheduleRangeObject range) throws PlanningException {
+    try {
+      dc.withTransaction(new DataConnection.SQLRunnable<Void>()
+      {
+        @Override
+        public Void run(DataConnection conn) throws Exception {
+          deleteFollowUp(range);
+          deleteScheduleRange(range);
+          return null;
+        }
+      });
+    } catch (Exception e) {
+      throw new PlanningException(e.getMessage());
+    }
+  }
+  
 
   public Vector<ScheduleObject> getSchedule(String where) throws SQLException {
     return ScheduleIO.findObject(where, dc);

@@ -312,21 +312,11 @@ public class PlanModifCtrl
     }
     ScheduleRange range = new ScheduleRange();
     range.setScheduleId(plan.getId());
-    System.out.println(dlg.getRange());
-    System.out.println(dlg.getNote());
     range.setStart(dlg.getRange().getStart());
     range.setEnd(dlg.getRange().getEnd());
-
-    try {
-      ScheduleRangeObject rv = new ScheduleRangeObject(range);
-      rv.setMember(plan.getPerson());
-      service.updateFollowUp(rv, dlg.getNote());
-      range.setNote(rv.getNote());
-      service.addScheduleRange(range);
-      desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));
-    } catch (SQLException ex) {
-      throw new PlanningException(ex.getMessage());
-    }
+    range.setMemberId(plan.getIdPerson());
+    service.createAdministrativeEvent(range, dlg.getNote());
+    desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));
   }
 
   /** Calls hour modification dialog. */

@@ -757,7 +757,7 @@ public class EnrolmentService
       if (from.after(co.getDateStart())) {
         if (!c.isATP()) {
           co.setDateEnd(from);	// on change la date de fin de l'ancienne commande_cours
-          CourseOrderIO.update(co, dc);// on update l'ancienne commande
+          CourseOrderIO.update(co, dc);// on updateAdministrativeEvent l'ancienne commande
         }
         co.setDateStart(from);
         co.setDateEnd(dataCache.getEndOfYear());
@@ -820,7 +820,7 @@ public class EnrolmentService
         co.setDateStart(from);
         co.setDateEnd(from);
       }
-      // on update la commande_cours
+      // on updateAdministrativeEvent la commande_cours
       CourseOrderIO.update(co, dc);
     } catch (SQLException sqe) {
       throw new EnrolmentException(sqe.getMessage());

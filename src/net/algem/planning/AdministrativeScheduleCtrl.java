@@ -1,5 +1,5 @@
 /*
- * @(#)AdministrativeScheduleCtrl.java	2.9.4.0 24/03/15
+ * @(#)AdministrativeScheduleCtrl.java	2.9.4.0 31/03/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -35,11 +35,8 @@ import java.util.Set;
 import javax.swing.BorderFactory;
 import javax.swing.JTextField;
 import net.algem.config.ParamChoice;
-import net.algem.contact.EmployeeIO;
 import net.algem.contact.EmployeeSelector;
 import net.algem.contact.EmployeeType;
-import net.algem.contact.Person;
-import net.algem.contact.PersonIO;
 import net.algem.room.EstabChoice;
 import net.algem.room.Room;
 import net.algem.util.BundleUtil;

@@ -207,9 +207,9 @@ public class MonthPlanView
     // tracé des plages de cours individuels
     for (ScheduleRangeObject p : regular) {
       Course cc = p.getCourse();
-      if (cc != null && !cc.isCollective()) {
+      if ((cc != null && !cc.isCollective()) || Schedule.ADMINISTRATIVE == p.getType()) {
         drawRange(p, cp, step_x);
-      }
+      } 
     }
     if (collective == null || collective.isEmpty()) {
       return;
@@ -249,7 +249,7 @@ public class MonthPlanView
     bg.setColor(Color.black);
   }
 
-  public void drawRange(ScheduleObject p, Color c, int w) {
+  private void drawRange(ScheduleObject p, Color c, int w) {
     int pStart = p.getStart().toMinutes();
     int pEnd = p.getEnd().toMinutes();
     int day = p.getDate().getDay();

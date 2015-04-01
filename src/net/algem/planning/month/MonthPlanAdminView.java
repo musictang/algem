@@ -43,11 +43,15 @@ public class MonthPlanAdminView
   }
 
   @Override
-  public boolean isConsistent(ScheduleObject p) {
-     if (p instanceof ScheduleRangeObject) { 
-      return false;
-    }
+  public boolean isNotFiltered(ScheduleObject p) {
     int id = choice.getKey();
+    if (p instanceof ScheduleRangeObject) {
+      if (Schedule.ADMINISTRATIVE == ((ScheduleRangeObject) p).getType()) {
+       return  id > 0 && p.getIdPerson() == id;
+      }
+//      return Schedule.ADMINISTRATIVE == ((ScheduleRangeObject) p).getType() && id > 0 && p.getIdPerson() == id;
+    }
+
     return Schedule.ADMINISTRATIVE == p.getType() && id > 0 && p.getPerson() != null && p.getPerson().getId() == id;
   }
 

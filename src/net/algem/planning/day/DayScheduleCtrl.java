@@ -298,7 +298,6 @@ public class DayScheduleCtrl
         miAllRoom.setSelected((Boolean) state[0]);
       }
     }
-
   }
 
   @Override

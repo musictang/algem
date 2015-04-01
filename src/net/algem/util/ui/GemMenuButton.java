@@ -1,7 +1,7 @@
 /*
- * @(#)GemMenuButton.java	2.6.a 31/07/12
+ * @(#)GemMenuButton.java	2.9.4.0 31/03/15
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -33,7 +33,7 @@ import javax.swing.SwingConstants;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.4.0
  */
 public class GemMenuButton
         extends GemButton
@@ -47,6 +47,12 @@ public class GemMenuButton
   private Color overColor = new Color(255, 225, 255);
   private ActionListener al;
 
+  /**
+   * 
+   * @param s label
+   * @param l action listener
+   * @param k action command string
+   */
   public GemMenuButton(String s, ActionListener l, String k) {
     super(s);
 

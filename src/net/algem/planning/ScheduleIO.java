@@ -378,7 +378,7 @@ public class ScheduleIO
   }
 
   /**
-   * Gets the number of schedule ranges for the planification  {@code a}.
+   * Gets the number of schedule ranges in planning {@code a}.
    *
    * @param a action
    * @param dc dataConnection

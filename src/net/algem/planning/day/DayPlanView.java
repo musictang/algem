@@ -56,6 +56,11 @@ public class DayPlanView
   private Calendar cal;
   private Vector<DayPlan> cols;
   private boolean showRangeNames;
+  
+  /** Schedule type info used to differenciate label.
+   *  @see Schedule
+   */
+  private int type;
 
   public DayPlanView(Date d) {
     cols = new Vector<DayPlan>();
@@ -82,6 +87,14 @@ public class DayPlanView
 
   public Date getDate() {
     return date;
+  }
+
+  public int getType() {
+    return type;
+  }
+
+  public void setType(int type) {
+    this.type = type;
   }
 
   public void load(Date d, Vector<DayPlan> cols) {
@@ -332,14 +345,13 @@ public class DayPlanView
   
   private void textSubRange(ScheduleObject p, int x) {
     if (p instanceof CourseSchedule && p instanceof ScheduleRangeObject) { 
-      Course crs = ((CourseSchedule) p).getCourse();
-      // Displays the member's name if the time range is not shared between several persons.
-      if (crs != null && (!crs.isCollective() || ((ScheduleRangeObject) p).getAction().getPlaces() < 2)) {     
-        showSubSubLabel((ScheduleRangeObject) p, x);
-      } else if (Schedule.ADMINISTRATIVE == p.getType()) {
-        showSubSubLabel((ScheduleRangeObject) p, x);
-      }
-    }
+        Course crs = ((CourseSchedule) p).getCourse();
+        // Displays the member's name if the time range is not shared between several persons.
+        if (crs != null && (!crs.isCollective() || ((ScheduleRangeObject) p).getAction().getPlaces() < 2) || Schedule.ADMINISTRATIVE == p.getType()) {
+          showSubSubLabel((ScheduleRangeObject) p, x);
+        }
+      } 
+    
   }
 
   /**
@@ -366,12 +378,17 @@ public class DayPlanView
     String code = getCode(p);
     String label = null;
     int offset = (step_x / 2);
-    if (!p.getScheduleLabel().equals(prev.getScheduleLabel())) {
-      label = p.getScheduleLabel() + (code == null ? "" : code);
+    if (p instanceof AdministrativeSchedule && Schedule.ADMINISTRATIVE == type) {
+      label = ((AdministrativeSchedule) p).getRoomLabel();
     } else {
-      label = code;
-      offset = (step_x - 15);
+      if (!p.getScheduleLabel().equals(prev.getScheduleLabel())) {
+        label = p.getScheduleLabel() + (code == null ? "" : code);
+      } else {
+        label = code;
+        offset = (step_x - 15);
+      }
     }
+
     if (label != null && !label.isEmpty()) {
       int w = fm.stringWidth(label) + 4;// largeur du texte
 
@@ -383,6 +400,13 @@ public class DayPlanView
     }
   }
 
+  /**
+   * Subtitle info on schedule.
+   * @param p
+   * @param prev
+   * @param x
+   * @param y 
+   */
   private void showSubLabel(ScheduleObject p, ScheduleObject prev, int x, int y) {
 
     String subLabel = null;
@@ -393,15 +417,14 @@ public class DayPlanView
           subLabel = ((GroupStudioSchedule) p).getActivityLabel();
         } else if (p instanceof TechStudioSchedule) {
           subLabel = ((TechStudioSchedule) p).getTechnicianLabel();
-        } else if (Schedule.ADMINISTRATIVE == p.getType()) {
-          subLabel = String.valueOf(p.getNote());
-        }
-          else {
+        } else {
           subLabel = p.getPerson().getAbbrevFirstNameName();
         }
+        
         if (subLabel != null) {
           bg.setFont(SMALL_FONT);
           drawSubLabel(subLabel, x, y + (18), step_x);
+          //supplement info line
           if (p instanceof TechStudioSchedule) {
             subLabel = ((TechStudioSchedule) p).getActivityLabel();
             drawSubLabel(subLabel, x, y + (28), step_x);
@@ -411,11 +434,21 @@ public class DayPlanView
     }
   }
   
+  /**
+   * 
+   * @param p range object
+   * @param x horizontal position
+   */
   private void showSubSubLabel(ScheduleRangeObject p, int x) {
     int length = p.getStart().getLength(p.getEnd());
     if (length > 56) {
       int y = setY(p.getEnd().toMinutes()) - (fm.getHeight() /2);
-      String subSubLabel = p.getMember() != null ? p.getMember().getCommunName() : "";
+      String subSubLabel = null;
+      if (Schedule.ADMINISTRATIVE == p.getType()) {
+        subSubLabel = String.valueOf(p.getNote1());
+      } else {
+        subSubLabel = p.getMember() != null ? p.getMember().getCommunName() : "";
+      }
       drawSubLabel(subSubLabel, x, y , step_x);
     }
   }

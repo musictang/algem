@@ -1,5 +1,5 @@
 /*
- * @(#)ConflictService.java	2.9.4.0 24/03/15
+ * @(#)ConflictService.java	2.9.4.0 31/03/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -622,19 +622,23 @@ public class ConflictService
   }
     
   boolean testOfficeConflicts(DateFr d, Action a) throws SQLException {
+    Hour endTime = new Hour(a.getHourEnd());
+    endTime.maybeDecMidnight();
     testOfficePS.setDate(1, new java.sql.Date(d.getTime()));
     testOfficePS.setInt(2, a.getRoom());
     testOfficePS.setInt(3, a.getIdper());
     testOfficePS.setTime(4, java.sql.Time.valueOf(a.getHourStart().toString() + ":00"));
-    testOfficePS.setTime(5, java.sql.Time.valueOf(a.getHourEnd().toString() + ":00"));
+    testOfficePS.setTime(5, java.sql.Time.valueOf(endTime.toString() + ":00"));
     testOfficePS.setTime(6, java.sql.Time.valueOf(a.getHourStart().toString() + ":00"));
-    testOfficePS.setTime(7, java.sql.Time.valueOf(a.getHourEnd().toString() + ":00"));
+    testOfficePS.setTime(7, java.sql.Time.valueOf(endTime.toString() + ":00"));
     testOfficePS.setTime(8, java.sql.Time.valueOf(a.getHourStart().toString() + ":00"));
-    testOfficePS.setTime(9, java.sql.Time.valueOf(a.getHourEnd().toString() + ":00"));
+    testOfficePS.setTime(9, java.sql.Time.valueOf(endTime.toString() + ":00"));
     
 //    Vector<ScheduleObject> v2 = ScheduleIO.getLoadRS(testMemberSchedulePS, dc);
     ResultSet rs = testOfficePS.executeQuery();
     while (!Thread.interrupted() && rs.next()) {
+      System.out.println(testOfficePS.toString());
+      System.out.println(rs.getString(2) + " " + rs.getString(3) + " " + rs.getString(4));
       return false;
     }
     return true;

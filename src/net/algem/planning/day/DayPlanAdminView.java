@@ -21,13 +21,18 @@
 
 package net.algem.planning.day;
 
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 import net.algem.contact.Person;
+import net.algem.planning.Schedule;
 import net.algem.planning.ScheduleObject;
+import net.algem.planning.ScheduleRangeIO;
 import net.algem.planning.ScheduleRangeObject;
 import net.algem.util.BundleUtil;
+import net.algem.util.DataCache;
+import net.algem.util.GemLogger;
 
 /**
  *
@@ -50,6 +55,7 @@ public class DayPlanAdminView
   public void load(Date d, Vector<ScheduleObject> schedules, Vector<ScheduleRangeObject> ranges) {
     dayPlanView.clear();
     dayPlanView.setDate(d);
+    dayPlanView.setType(Schedule.ADMINISTRATIVE);
     date.set(d);
     dayLabel.setText(date.getDayOfWeek());
     for (Person p : staff) {
@@ -79,6 +85,11 @@ public class DayPlanAdminView
         ScheduleRangeObject range = (ScheduleRangeObject) plan;
         if (range.getMember() != null && range.getMember().getId() == personId) {
           v.addElement(t.elementAt(i));
+          try {
+            range.setNote1(ScheduleRangeIO.findNote(range.getNote(), DataCache.getDataConnection()));
+          } catch (SQLException ex) {
+            GemLogger.log(ex.getMessage());
+          }
         }
       } else {
         Person p = plan.getPerson();

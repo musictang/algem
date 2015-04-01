@@ -1,7 +1,7 @@
 /*
- * @(#)MonthScheduleTab.java	2.8.s 17/02/14
+ * @(#)MonthScheduleTab.java	2.9.4.0 31/03/2015
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -42,7 +42,7 @@ import net.algem.util.module.GemDesktop;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.s
+ * @version 2.9.4.0
  */
 public class MonthScheduleTab
         extends AbstractMonthScheduleCtrl
@@ -91,8 +91,6 @@ public class MonthScheduleTab
 
     try {
       int type = pFile.getContact().getType();
-      
-//      boolean isTeacher = pFile.getTeacher() != null;
       if (type != Contact.PERSON) {
         return;
       }

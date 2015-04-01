@@ -1,5 +1,5 @@
 /*
- * @(#)AdministrativeSchedule.java 2.9.4.0 24/03/2015
+ * @(#)AdministrativeSchedule.java 2.9.4.0 30/03/2015
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  * 
@@ -42,12 +42,16 @@ public class AdministrativeSchedule
 
   @Override
   public String getScheduleLabel() {
-    return person.getFirstnameName();
+    return person != null ? person.getFirstnameName() : "";
+  }
+  
+  public String getRoomLabel() {
+    return room != null ? room.getName() : getScheduleLabel();
   }
 
   @Override
   public String getScheduleDetail() {
-    return BundleUtil.getLabel("Diary.label") + " " + person.getFirstnameName();
+    return BundleUtil.getLabel("Diary.label") + " " + getScheduleLabel();
   }
 
 }

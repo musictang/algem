@@ -30,6 +30,7 @@ import java.awt.event.InputEvent;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Vector;
+import java.util.logging.Level;
 import javax.swing.JDialog;
 import javax.swing.JRootPane;
 
@@ -43,7 +44,9 @@ import net.algem.group.GemGroupService;
 import net.algem.group.Group;
 import net.algem.group.GroupFileEditor;
 import net.algem.group.Musician;
+import net.algem.planning.editing.AddEventDlg;
 import net.algem.planning.editing.BreakSuppressionDlg;
+import net.algem.planning.editing.EditEventDlg;
 import net.algem.planning.editing.ModifPlanEvent;
 import net.algem.planning.editing.PlanModifCtrl;
 import net.algem.planning.editing.instruments.AtelierInstrumentsService;
@@ -417,6 +420,15 @@ public class ScheduleDetailCtrl
     for (int j = 0; j < vb.size(); j++) {
       menuPanel.add((GemMenuButton) vb.elementAt(j));
     }
+
+    Vector<ScheduleRangeObject> ranges = event.getRanges();
+    StringBuilder sb = new StringBuilder();
+    for (ScheduleRangeObject sr : ranges) {
+      sb.append(sr.getStart()).append("-").append(sr.getEnd());
+      sb.append(sr.getNote1() != null ? " " + sr.getNote1() : "");
+      listPanel.add(new GemMenuButton(sb.toString(), this, "AdminEvent", sr));
+      sb.delete(0, sb.length());
+    }
   }
 
   /**
@@ -601,6 +613,9 @@ public class ScheduleDetailCtrl
             GemLogger.logException(ex);
           }
         }
+      } else if ("AdminEvent".equals(arg)) {
+        GemLogger.log(Level.INFO, arg);
+        EditEventDlg dlg = new EditEventDlg(desktop, (ScheduleRangeObject) ((GemMenuButton) evt.getSource()).getObject(), scheduleService);
       }
     } catch (SQLException sqe) {
       GemLogger.logException(sqe);
@@ -645,6 +660,18 @@ public class ScheduleDetailCtrl
       frame.setVisible(false);
     }
   }
+  
+  private void modifyEvent(ScheduleRangeObject range) {
+//    EditEventDlg dlg = new EditEventDlg(desktop, range);
+////    ScheduleRange range = new ScheduleRange();
+//    range.setScheduleId(plan.getId());
+////    range.setStart(dlg.getRange().getStart());
+////    range.setEnd(dlg.getRange().getEnd());
+//    range.setMemberId(plan.getIdPerson());
+//    service.createAdministrativeEvent(range, dlg.getNote());
+//    desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));
+  }
+  
 
   /**
    * Loads the person file's editor.
