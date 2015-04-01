@@ -1,6 +1,6 @@
 /*
- * @(#)DataConnection.java	2.9.2 02/02/15
- * 
+ * @(#)DataConnection.java	2.9.4.0 01/04/2015
+ *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.util;
 
@@ -28,22 +28,22 @@ import java.util.logging.Level;
  * Utility class for database connection.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.9.4.0
  * @since 2.6.a 01/08/2012
  */
 public class DataConnection
 {
 
   public static final int DEFAULT_DB_PORT = 5432;
-  
+
   static final String DEFAULT_DB_USER = "nobody";
-  
-  /** 
-   * Default database pass. 
+
+  /**
+   * Default database pass.
    * Users must change it in Postgre database (ex. ALTER USER nobody ENCRYPTED PASSWORD 'mypass').
-   * Set auth-method to password or md5 in pg_hba.conf 
+   * Set auth-method to password or md5 in pg_hba.conf
    */
-  private static final String DEFAULT_DB_PASS = "Pigfy!"; // PigG8fy!  
+  private static final String DEFAULT_DB_PASS = "Pigfy!"; // PigG8fy!
   private static final String DEFAULT_DB_NAME = "algem";
   private static final String DEFAULT_HOST = "localhost";
   private final String DEFAULT_DRIVER_NAME = "org.postgresql.Driver";
@@ -74,7 +74,7 @@ public class DataConnection
 
   /**
    * Creates an instance with default port, base and password.
-   * @param host 
+   * @param host
    */
   public DataConnection(String host) {
     this(host, DEFAULT_DB_PORT, DEFAULT_DB_NAME, DEFAULT_DB_PASS);
@@ -83,7 +83,7 @@ public class DataConnection
   /**
    * Creates an instance with default port.
    * @param host
-   * @param dbname 
+   * @param dbname
    */
   public DataConnection(String host, String dbname) {
     this(host, DEFAULT_DB_PORT, dbname, DEFAULT_DB_PASS);
@@ -106,12 +106,12 @@ public class DataConnection
   }
 
   /**
-   * 
+   *
    * @param h host
    * @param p port
    * @param b base
    * @return true if connected
-   * @throws SQLException 
+   * @throws SQLException
    */
   public boolean connect(String h, int p, String b) throws SQLException {
     dbhost = h;
@@ -131,7 +131,7 @@ public class DataConnection
 
     return connected;
   }
-  
+
   public Properties getConnectionProperties() {
     Properties props = new Properties();
     props.setProperty("user", DEFAULT_DB_USER);
@@ -257,9 +257,11 @@ public class DataConnection
     return rs;
   }
 
-  public void commit() throws SQLException {  
-    cnx.commit();
-    GemLogger.log(Level.INFO, "commit");
+  public void commit() throws SQLException {
+    if (!cnx.getAutoCommit()) {
+      cnx.commit();
+      GemLogger.log(Level.INFO, "commit");
+    }
   }
 
   public void rollback() {

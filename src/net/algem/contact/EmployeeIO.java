@@ -1,6 +1,6 @@
 /*
- * @(#)EmployeeIO.java 2.9.3 25/02/15
- * 
+ * @(#)EmployeeIO.java 2.9.4.0 01/04/2015
+ *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 
 package net.algem.contact;
@@ -29,13 +29,12 @@ import java.util.Date;
 import java.util.List;
 import net.algem.planning.DateFr;
 import net.algem.util.DataConnection;
-import net.algem.util.GemLogger;
 import net.algem.util.model.TableIO;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.3
+ * @version 2.9.4.0
  * @since 2.8.m 02/09/13
  */
 public class EmployeeIO
@@ -44,13 +43,13 @@ public class EmployeeIO
   public static final String TYPE_TABLE = "salarie_type";
   public static final String CAT_TABLE = "categorie_salarie";
   public static final String COLUMNS = "idper,insee,datenais,lieunais,guso,nationalite,sitfamiliale,enfants";
-  
+
   private DataConnection dc;
 
   public EmployeeIO(DataConnection dc) {
     this.dc = dc;
   }
-  
+
   public void insert(Employee e) throws SQLException {
     String query = "INSERT INTO " + TABLE + " VALUES(" + e.getIdPer()
             + ",'" + TableIO.escape(e.getNir())
@@ -66,7 +65,7 @@ public class EmployeeIO
     updateType(e);
 
   }
-  
+
   private String getBirthDateValues(Employee e) {
     if (e.getBirthDatesOfChildren() == null || e.getBirthDatesOfChildren().length == 0) {
       return "NULL";
@@ -78,7 +77,7 @@ public class EmployeeIO
     sb.replace(sb.length() - 1, sb.length(), "}'");
     return sb.toString();
   }
-  
+
   public void update(Employee e) throws SQLException {
     String query = "UPDATE " + TABLE + " SET"
             + " insee = '" + TableIO.escape(e.getNir())
@@ -94,36 +93,27 @@ public class EmployeeIO
     updateType(e);
 
   }
-  
-  private void updateType(Employee e) {
+
+  private void updateType(Employee e) throws SQLException {
     List<Integer> types = e.getTypes();
     String query = null;
-    try {
-      if (types != null && types.size() > 0) {
-        dc.setAutoCommit(false);
-        query = "DELETE FROM " + TYPE_TABLE + " WHERE idper = " + e.getIdPer();
-        dc.executeUpdate(query);
-        for (int i = 0; i < types.size(); i++) {
-          int t = types.get(i);
-          query = "INSERT INTO " + TYPE_TABLE + " VALUES(" + e.getIdPer() + ", " + t + ", " + i + ")";
-          dc.executeUpdate(query);
-        }
-      } else {
-        query = "DELETE FROM " + TYPE_TABLE + " WHERE idper = " + e.getIdPer();
+    if (types != null && types.size() > 0) {
+      query = "DELETE FROM " + TYPE_TABLE + " WHERE idper = " + e.getIdPer();
+      dc.executeUpdate(query);
+      for (int i = 0; i < types.size(); i++) {
+        int t = types.get(i);
+        query = "INSERT INTO " + TYPE_TABLE + " VALUES(" + e.getIdPer() + ", " + t + ", " + i + ")";
         dc.executeUpdate(query);
       }
-      dc.commit();
-    } catch (SQLException ex) {
-      GemLogger.log(ex.getMessage());
-      dc.rollback();
-    } finally {
-      dc.setAutoCommit(true);
+    } else {
+      query = "DELETE FROM " + TYPE_TABLE + " WHERE idper = " + e.getIdPer();
+      dc.executeUpdate(query);
     }
   }
-  
+
   public Employee findId(int idper) throws SQLException {
     String query = "SELECT * FROM "  + TABLE + " WHERE idper = " + idper;
-    
+
     ResultSet rs = dc.executeQuery(query);
     Employee e = null;
     while (rs.next()) {
@@ -142,7 +132,7 @@ public class EmployeeIO
         e.setBirthDatesOfChildren((Date[]) rs.getArray(8).getArray());
       }
     }
-    
+
     if (e != null) {
       query = "SELECT c.id FROM " + CAT_TABLE + " c, " + TYPE_TABLE + " t WHERE t.idper = " + idper + " AND t.idcat = c.id ORDER BY t.idx";
       rs = dc.executeQuery(query);
@@ -154,7 +144,7 @@ public class EmployeeIO
     }
     return e;
   }
- 
+
   public void delete(int idper) throws SQLException {
     String query = "DELETE FROM " + TABLE + " WHERE idper = " + idper;
     dc.executeUpdate(query);

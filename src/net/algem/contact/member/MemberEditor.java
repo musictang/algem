@@ -1,7 +1,7 @@
 /*
- * @(#)MemberEditor.java	2.8.c 14/05/13
- * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * @(#)MemberEditor.java	2.9.4.0 01/04/2015
+ *
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.contact.member;
 
@@ -48,7 +48,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.c
+ * @version 2.9.4.0
  */
 public class MemberEditor
         extends FileTab
@@ -108,7 +108,7 @@ public class MemberEditor
     gb.add(level, 1, 6, 2, 1, GridBagHelper.WEST);
     gb.add(payer, 1, 7, 1, 1, GridBagHelper.WEST);
     gb.add(payerName, 2, 7, 1, 1, GridBagHelper.WEST);
-    
+
     this.setLayout(new BorderLayout());
     add(p, BorderLayout.CENTER);
   }
@@ -116,9 +116,9 @@ public class MemberEditor
   public void searchPayer() {
     try {
       loadPayeur(Integer.parseInt(payer.getText()));
-    } catch (Exception e) {
+    } catch (NumberFormatException e) {
       payer.setText("");
-      payerName.setText("inconnu !");
+      payerName.setText(BundleUtil.getLabel("Unknown.label"));
     }
   }
 
@@ -155,22 +155,22 @@ public class MemberEditor
     m.setBirth(new DateFr(birth.getDateFr()));
     try {
       m.setMembershipCount(Integer.parseInt(nMemberships.getText()));
-    } catch (Exception e) {
+    } catch (NumberFormatException e) {
       m.setMembershipCount(0);
     }
     try {
       m.setPractice(Integer.parseInt(practice.getText()));
-    } catch (Exception e) {
+    } catch (NumberFormatException e) {
       m.setPractice(0);
     }
     try {
       m.setLevel(Integer.parseInt(level.getText()));
-    } catch (Exception e) {
+    } catch (NumberFormatException e) {
       m.setLevel(0);
     }
     try {
       m.setPayer(Integer.parseInt(payer.getText()));
-    } catch (Exception e) {
+    } catch (NumberFormatException e) {
       m.setPayer(0);
     }
     m.setInstruments(instrument.get());
@@ -179,10 +179,7 @@ public class MemberEditor
 
   public void set(Member m) {
     id = m.getId();
-//    member = m;
     instrument.set(m.getInstruments());
-//    instrument1.setSelectedItem((String) m.getInstrument1());
-//    instrument2.setSelectedItem((String) m.getInstrument2());
     occupation.setSelectedItem((String) m.getOccupation());
     if (m.getBirth() != null) {
       birth.set(m.getBirth());
@@ -229,9 +226,6 @@ public class MemberEditor
 
   public void clear() {
     id = 0;
-//    member = null;
-//    instrument1.setSelectedIndex(0);
-//    instrument2.setSelectedIndex(0);
     occupation.setSelectedIndex(0);
     birth.setText(DateFr.NULLDATE);
     age.setText("");
@@ -242,12 +236,12 @@ public class MemberEditor
 
   @Override
   public boolean isLoaded() {
-    return id != 0;
+    return id > 0;
   }
 
   @Override
   public void load() {
-  }
+    }
 
   @Override
   public void reload(PersonFile d) {

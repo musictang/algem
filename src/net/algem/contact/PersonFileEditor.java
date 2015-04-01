@@ -247,7 +247,7 @@ public class PersonFileEditor
     if ("Member.reading".equals(arg)) {
       personFileView.addMemberTab();
       miMember.setEnabled(false);
-    } 
+    }
     else if ("Teacher".equals(arg)) {
       personFileView.addTeacherTab(this);
       miTeacher.setEnabled(false);
@@ -328,7 +328,7 @@ public class PersonFileEditor
     } // clic sur le bouton Enregistrer
     else if (GemCommand.SAVE_CMD.equals(arg)) {
       savePersonFile();
-    } 
+    }
     else if ("Contact.suppression".equals(arg)) {
       suppressPerson();
     } else if ("Person.pass.scheduling".equals(arg)) {
@@ -423,7 +423,7 @@ public class PersonFileEditor
   /**
    * Deletes this contact as a teacher.
    * Only teachers who have had no course should be removed.
-   * @throws SQLException 
+   * @throws SQLException
    */
   private void deleteTeacher() throws SQLException {
     TeacherIO dao = (TeacherIO) DataCache.getDao(Model.Teacher);
@@ -439,10 +439,10 @@ public class PersonFileEditor
       miTeacher.setEnabled(true);
     }
   }
-  
+
   /**
    * Opens if exist the list of direct debit mandates of the payer.
-   * @throws DDMandateException 
+   * @throws DDMandateException
    */
   private void showMandates() throws DDMandateException {
     if (dossier == null || dossier.getRib() == null) {
@@ -466,7 +466,7 @@ public class PersonFileEditor
     }
     personFileView.addMandates(ddService, payer);
   }
-  
+
   /**
    * Gets the payer id.
    *
@@ -761,7 +761,7 @@ public class PersonFileEditor
     mOptions.add(miRehearsal = getMenuItem("Person.rehearsal.scheduling"));
     mOptions.add(miPassRehearsal = getMenuItem("Person.pass.scheduling"));
     miHistoPass = new JMenuItem(BundleUtil.getLabel("Subscriptions.label"));
-    
+
     miHistoPass.setActionCommand("Histo.pass");
     miHistoPass.addActionListener(this);
     mOptions.add(miHistoPass);

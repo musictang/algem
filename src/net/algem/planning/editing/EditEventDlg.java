@@ -1,22 +1,22 @@
 /*
- * @(#)EditEventDlg.java 2.9.4.0 31/03/2015
- * 
+ * @(#)EditEventDlg.java 2.9.4.0 01/04/2015
+ *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
- * 
+ *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Algem is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see http://www.gnu.org/licenses.
- * 
+ *
  */
 package net.algem.planning.editing;
 
@@ -25,22 +25,28 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JDialog;
 import javax.swing.JTextArea;
+import net.algem.planning.Hour;
 import net.algem.planning.HourRangePanel;
 import net.algem.planning.PlanningException;
 import net.algem.planning.PlanningService;
+import net.algem.planning.Schedule;
 import net.algem.planning.ScheduleRangeObject;
 import net.algem.util.BundleUtil;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
+import net.algem.util.MessageUtil;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.module.GemModule;
 import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GemLabel;
 import net.algem.util.ui.GemPanel;
 import net.algem.util.ui.GridBagHelper;
+import net.algem.util.ui.MessagePopup;
 
 /**
  *
@@ -58,12 +64,14 @@ public class EditEventDlg
   private PlanningService service;
   private HourRangePanel timePanel;
   private JTextArea note;
+  private Schedule schedule;
 
-  public EditEventDlg(GemDesktop desktop, ScheduleRangeObject range, PlanningService service) {
+  public EditEventDlg(GemDesktop desktop, ScheduleRangeObject range, Schedule schedule, PlanningService service) {
     super(desktop.getFrame());
     setTitle(BundleUtil.getLabel("Diary.modification.label"));
     this.desktop = desktop;
     this.range = range;
+    this.schedule = schedule;
     this.service = service;
     setLayout(new BorderLayout());
     GemPanel p = new GemPanel(new GridBagLayout());
@@ -101,15 +109,35 @@ public class EditEventDlg
     setVisible(true);
   }
 
+  private String logErrors() {
+    StringBuilder sb = new StringBuilder();
+    if (timePanel.getEnd().le(timePanel.getStart())) {
+      sb.append(MessageUtil.getMessage("hour.range.error"));
+    }
+    if (!(timePanel.getStart().between(schedule.getStart(), schedule.getEnd())
+      && timePanel.getEnd().between(schedule.getStart(), schedule.getEnd()))) {
+       sb.append('\n').append(MessageUtil.getMessage("invalid.range.warning"));
+     }
+     return sb.toString();
+  }
+
   @Override
   public void actionPerformed(ActionEvent e) {
     String cmd = e.getActionCommand();
+    int minTime = 15;
     try {
       if (GemCommand.OK_CMD.equals(cmd)) {
-        range.setStart(timePanel.getStart());
-        range.setEnd(timePanel.getEnd());
-        service.updateAdministrativeEvent(range, note.getText().trim());
-        desktop.postEvent(new ModifPlanEvent(this, range.getDate(), range.getDate()));
+        if (logErrors() == null || logErrors().isEmpty()) {
+          if (timePanel.getStart().getLength(timePanel.getEnd()) > minTime
+            || MessagePopup.confirm(this, MessageUtil.getMessage("invalid.range.length.confirmation"))) {
+            range.setStart(timePanel.getStart());
+            range.setEnd(timePanel.getEnd());
+            service.updateAdministrativeEvent(range, note.getText().trim());
+            desktop.postEvent(new ModifPlanEvent(this, range.getDate(), range.getDate()));
+          }
+        } else {
+          MessagePopup.warning(this, logErrors());
+        }
       } else if (GemCommand.DELETE_CMD.equals(cmd)) {
         service.deleteAdministrativeEvent(range);
         desktop.postEvent(new ModifPlanEvent(this, range.getDate(), range.getDate()));

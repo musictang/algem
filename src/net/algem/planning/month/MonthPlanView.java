@@ -74,8 +74,8 @@ public class MonthPlanView
     cal.setTime(d);
     year = cal.get(Calendar.YEAR);
     month = cal.get(Calendar.MONTH) + 1;
-    schedules = pl;
-    ranges = pg;
+    this.schedules = pl;
+    this.ranges = pg;
     clickSchedule = null;
     clickRange = null;
     img = null;
@@ -129,7 +129,7 @@ public class MonthPlanView
       bg.drawString(dayNames[dow], x - (w - 10) / 2, y);
       // draw sunday column
       if (dow == Calendar.SUNDAY) {
-        drawRange(i, H_START, H_END, Color.gray);    
+        drawRange(i, H_START, H_END, Color.gray);
       }
       if (++dow > 7) {
         dow = 1;
@@ -142,7 +142,7 @@ public class MonthPlanView
       bg.drawLine(x - (step_x / 2), 2, x - (step_x / 2), TOP_MARGIN + (step_y * GRID_Y));
       x += step_x;
     }
-    
+
     bg.drawLine(x - (step_x / 2), 2, x - (step_x / 2), TOP_MARGIN + (step_y * GRID_Y));
     x = 5;
 //    y = TOP_MARGIN + step_y;
@@ -155,18 +155,18 @@ public class MonthPlanView
       y += step_y;
     }
     x = 5 + fm.stringWidth(hour.toString()) + 2;
-    
+
     bg.drawLine(x, TOP_MARGIN + 1, RIGHT_MARGIN + (step_x * maxd) - (step_x / 2), TOP_MARGIN + 1);
     bg.setColor(Color.gray);
 
 //    y = TOP_MARGIN + (step_y * 2);
     y = TOP_MARGIN + (step_y);
-    
+
     // horizontal lines (one by half hour)
     Graphics2D g2d = (Graphics2D) bg.create();
     Stroke dotted = new BasicStroke(0.1f,BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 10, new float[]{1f,3f}, 0);
     g2d.setStroke(dotted);
-    
+
     int x2 = RIGHT_MARGIN + (step_x * maxd) - (step_x / 2);
 //    for (int i = 0; i < GRID_Y; i += 2, y += (step_y * 2)) {
     for (int i = 0; i < GRID_Y; i += 1, y += (step_y)) {
@@ -209,7 +209,7 @@ public class MonthPlanView
       Course cc = p.getCourse();
       if ((cc != null && !cc.isCollective()) || Schedule.ADMINISTRATIVE == p.getType()) {
         drawRange(p, cp, step_x);
-      } 
+      }
     }
     if (collective == null || collective.isEmpty()) {
       return;
@@ -257,7 +257,7 @@ public class MonthPlanView
     int x = setX(day, 2);
     int y = setY(pStart);
     int ht = setY(pEnd) - y;
-    
+
     bg.setColor(c);
     bg.fillRect(x, y, w - 1, ht - 1);
     bg.setColor(Color.black);
@@ -276,7 +276,7 @@ public class MonthPlanView
   protected int setX(int col, int spacing) {
     return RIGHT_MARGIN + spacing + ((col - 1) * step_x) - (step_x / 2);
   }
-  
+
   private void textRange(Vector<ScheduleObject> plans) {
     for (int i = 0; i < plans.size(); i++) {
       ScheduleObject p = (ScheduleObject) plans.elementAt(i);

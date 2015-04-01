@@ -1,22 +1,22 @@
 /*
  * @(#)MonthPlanAdminView.java 2.9.4.0 26/03/2015
- * 
+ *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
- * 
+ *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Algem is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see http://www.gnu.org/licenses.
- * 
+ *
  */
 
 package net.algem.planning.month;
@@ -34,7 +34,7 @@ import net.algem.util.ui.GemChoice;
  * @version 2.9.4.0
  * @since 2.9.4.0 26/03/2015
  */
-public class MonthPlanAdminView 
+public class MonthPlanAdminView
   extends MonthPlanDetailView
 {
 
@@ -47,7 +47,8 @@ public class MonthPlanAdminView
     int id = choice.getKey();
     if (p instanceof ScheduleRangeObject) {
       if (Schedule.ADMINISTRATIVE == ((ScheduleRangeObject) p).getType()) {
-       return  id > 0 && p.getIdPerson() == id;
+        ScheduleRangeObject range = (ScheduleRangeObject) p;
+        return  id > 0 && range.getMember() != null && range.getMember().getId() == id;
       }
 //      return Schedule.ADMINISTRATIVE == ((ScheduleRangeObject) p).getType() && id > 0 && p.getIdPerson() == id;
     }

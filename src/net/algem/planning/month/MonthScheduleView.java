@@ -1,6 +1,6 @@
 /*
  * @(#)MonthScheduleView.java	2.9.4.0 26/03/2015
- * 
+ *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning.month;
 
@@ -83,10 +83,10 @@ public class MonthScheduleView
   public MonthScheduleView(GemDesktop desktop, MonthSchedule schedule, GemList<Establishment> list) {
     super(desktop, "Menu.month.schedule");
 
-    monthSchedule = schedule;
-    estabList = list;
+    this.monthSchedule = schedule;
+    this.estabList = list;
 
-    monthSchedule.addPropertyChangeListener(this);
+    this.monthSchedule.addPropertyChangeListener(this);
 
     tabPanel = new TabPanel();
 
@@ -99,10 +99,10 @@ public class MonthScheduleView
       teacherView = new MonthPlanTeacherView(teacherChoice);
       tabPanel.addItem(teacherView, BundleUtil.getLabel("Month.schedule.teacher.tab"));
     }
-    
+
     adminView = new MonthPlanAdminView(new EmployeeSelector(new PlanningService(DataCache.getDataConnection()).getEmployees(EmployeeType.ADMINISTRATOR)));
     tabPanel.addItem(adminView, BundleUtil.getLabel("Staff.label"));
-    
+
     roomChoice = new RoomChoice[estabList.getSize()];
     roomView = new MonthPlanDetailView[estabList.getSize()];
 
@@ -204,14 +204,14 @@ public class MonthScheduleView
       for (int i = 0; i < roomView.length; i++) {
         roomView[i].detailChange(e);
       }
-    } else if (teacherView != null && teacherView instanceof MonthPlanTeacherView) {        
+    } else if (teacherView != null && teacherView instanceof MonthPlanTeacherView) {
         ((MonthPlanTeacherView) teacherView).reload(dataCache.getList(Model.Teacher));
     }
   }
 
   @Override
   public void print() {
-  
+
     MonthPlanDetailView v = (MonthPlanDetailView) tabPanel.getSelectedComponent();
 
     PrinterJob job = PrinterJob.getPrinterJob();

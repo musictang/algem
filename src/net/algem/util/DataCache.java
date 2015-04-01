@@ -1,5 +1,5 @@
 /*
- * @(#)DataCache.java	2.9.3 26/02/15
+ * @(#)DataCache.java	2.9.4.0 01/04/2015
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -70,7 +70,7 @@ import net.algem.util.model.Model;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.3
+ * @version 2.9.4.0
  * @since 1.0b 03/09/2001
  */
 public class DataCache
@@ -730,7 +730,7 @@ public class DataCache
       remove(obj);
     }
   }
-  
+
   /**
    * Initial loading.
    * @param frame (optional) to display messages
@@ -793,7 +793,7 @@ public class DataCache
 
       EMPLOYEE_TYPE_LIST = new GemList<GemParam>(EMPLOYEE_TYPE_IO.load());
       MARITAL_STATUS_LIST = new GemList<>(MARITAL_STATUS_IO.find());
-      
+
       STUDIO_TYPE_LIST = new GemList<GemParam>(STUDIO_TYPE_IO.load());
       PASS_CARD = new Hashtable<Integer,RehearsalPass>();
       for (RehearsalPass c : RehearsalPassIO.findAll("ORDER BY id", dc)) {
@@ -806,7 +806,7 @@ public class DataCache
     } finally {
       showMessage(frame, MessageUtil.getMessage("cache.loading.completed"));
       cacheInit = true;
-    } 
+    }
   }
 
   private void loadRoomContactCache() {
@@ -853,7 +853,7 @@ public class DataCache
       for(OrderLine ol : lo) {
         ORDER_LINE_CACHE.put(ol.getId(), ol);
       }
-    } 
+    }
     return lo;
   }
 
@@ -967,7 +967,7 @@ public class DataCache
         try {
           loadMonthStmt.setDate(1, new java.sql.Date(start.getTime()));
           loadMonthStmt.setDate(2, new java.sql.Date(end.getTime()));
-          Vector<ScheduleObject> vpl = ScheduleIO.getLoadRS(loadMonthStmt, DataCache.this.dc);
+          Vector<ScheduleObject> vpl = ScheduleIO.getLoadRS(loadMonthStmt, dc);
 
           //dump("planningmois.ser",vpl);
           if (Thread.interrupted()) {
@@ -977,7 +977,7 @@ public class DataCache
 
           loadMonthRangeStmt.setDate(1, new java.sql.Date(start.getTime()));
           loadMonthRangeStmt.setDate(2, new java.sql.Date(end.getTime()));
-          Vector<ScheduleRangeObject> vpg = ScheduleRangeIO.getLoadRS(loadMonthRangeStmt, DataCache.this);
+          Vector<ScheduleRangeObject> vpg = ScheduleRangeIO.getLoadRS(loadMonthRangeStmt, dc);
           //dump("plagemois.ser",vpg);
           if (Thread.interrupted()) {
             return;
@@ -1000,7 +1000,7 @@ public class DataCache
       loadDayRangeStmt.setDate(1, new java.sql.Date(date.getTime()));
       daySchedule.setDay(date,
               ScheduleIO.getLoadRS(loadDayStmt, dc),
-              ScheduleRangeIO.getLoadRS(loadDayRangeStmt, this));
+              ScheduleRangeIO.getLoadRS(loadDayRangeStmt, dc));
     } catch (SQLException e) {
       GemLogger.logException(e);
     }

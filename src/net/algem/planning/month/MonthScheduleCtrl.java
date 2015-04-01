@@ -1,7 +1,7 @@
 /*
- * @(#)MonthScheduleCtrl.java	2.8.m 12/09/13
- * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * @(#)MonthScheduleCtrl.java	2.9.4.0 01/04/2015
+ *
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning.month;
 
@@ -45,10 +45,10 @@ import net.algem.util.module.GemModule;
 
 /**
  * Month schedule controller.
- * 
+ *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.m
+ * @version 2.9.4.0
  * @since 1.0b 06/10/2001
  */
 public class MonthScheduleCtrl
@@ -113,7 +113,7 @@ public class MonthScheduleCtrl
     mBar.add(mFile);
     mBar.add(mOptions);
     mQuit.addActionListener(this);
-    
+
     view.setJMenuBar(mBar);
 
     load(new java.util.Date());
@@ -124,14 +124,14 @@ public class MonthScheduleCtrl
     return cal.getTime().toString();
   }
 
-  public void load(Date date) {
+  private void load(Date date) {
 
     cal.setTime(date);
     cal.set(Calendar.DAY_OF_MONTH, 1);
     start = cal.getTime();
     cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
     end = cal.getTime();
-    
+
     dataCache.setMonthSchedule(start, end);
   }
 
@@ -139,7 +139,7 @@ public class MonthScheduleCtrl
   public void actionPerformed(ActionEvent evt) {
     Object src = evt.getSource();
     String cmd = evt.getActionCommand();
-    
+
     if (src instanceof DateBar) {
       Date d = ((DateBar) src).getDate();
       load(d);

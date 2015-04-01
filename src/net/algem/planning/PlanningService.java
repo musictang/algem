@@ -1,5 +1,5 @@
 /*
- * @(#)PlanningService.java	2.9.4.0 24/03/15
+ * @(#)PlanningService.java	2.9.4.0 01/04/2015
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -116,7 +116,7 @@ public class PlanningService
     } catch (SQLException ex) {
       throw new PlanningException(ex.getMessage());
     }
-    
+
   }
 
   public void planify(Action a, int type) throws PlanningException {
@@ -160,7 +160,7 @@ public class PlanningService
       throw new PlanningException(e.getMessage());
     }
   }
-  
+
   String planAdministrative(final List<Action> actions) throws PlanningException {
     final StringBuilder sb = new StringBuilder();
     final String roomLabel = BundleUtil.getLabel("Room.label");
@@ -187,11 +187,11 @@ public class PlanningService
       });
     } catch (Exception e) {
       throw new PlanningException(e.getMessage());
-    } 
+    }
     return sb.toString();
-    
+
   }
-  
+
   public List<Person> getEmployees(Enum type) {
     String where = ", " + EmployeeIO.TYPE_TABLE + " t  WHERE "
       + PersonIO.TABLE + ".id = t.idper AND t.idcat = " + type.ordinal();
@@ -690,6 +690,8 @@ public class PlanningService
         pg.setEnd(pl.getEnd());
         pg.setMemberId(pl.getMemberId());
 
+        //pg.setNote(pl.getNote());
+
         if (offset >= 0) {
           pg.getStart().incMinute(offset);
           pg.getEnd().incMinute(offset);
@@ -837,20 +839,20 @@ public class PlanningService
    * @throws PlanningException if error SQL
    */
   public void createBreak(Action a) throws PlanningException {
-    DateFr dateDebut = a.getDateStart();
-    DateFr dateFin = a.getDateEnd();
-    Hour heureDebut = a.getHourStart();
-    Hour heureFin = a.getHourEnd();
-    int cours = a.getCourse();
-    int salle = a.getRoom();
+    DateFr startDate = a.getDateStart();
+    DateFr endDate = a.getDateEnd();
+    Hour startTime = a.getHourStart();
+    Hour endTime = a.getHourEnd();
+    int course = a.getCourse();
+    int room = a.getRoom();
     String where = ", action a WHERE ptype = " + Schedule.COURSE
             + " AND p.action = a.id"
-            + " AND a.cours = " + cours
-            + " AND p.jour >='" + dateDebut + "' AND p.jour <='" + dateFin + "'"
-            + " AND extract(dow from timestamp '" + dateDebut + "') = date_part('dow',jour)"
+            + " AND a.cours = " + course
+            + " AND p.jour >='" + startDate + "' AND p.jour <='" + endDate + "'"
+            + " AND extract(dow from timestamp '" + startDate + "') = date_part('dow',jour)"
             + " AND p.idper=" + a.getIdper()
-            + " AND p.debut <='" + heureDebut + "' AND p.fin >='" + heureFin + "'"
-            + " AND p.lieux=" + salle;
+            + " AND p.debut <='" + startTime + "' AND p.fin >='" + endTime + "'"
+            + " AND p.lieux=" + room;
 
     Vector<Schedule> v = ScheduleIO.find(where, dc);
     try {
@@ -862,8 +864,8 @@ public class PlanningService
         pl.setEnd(a.getHourEnd());
 
         String j = p.getDate().toString();
-        String hd = heureDebut.toString();
-        String hf = heureFin.toString();
+        String hd = startTime.toString();
+        String hf = endTime.toString();
         String query = ConflictQueries.getBreakConflict(p.getId(), hd, hf);
 
         if (ScheduleRangeIO.find(query, dc).size() > 0) {
@@ -932,7 +934,7 @@ public class PlanningService
       ScheduleRangeIO.deleteNote(range.getNote(), dc);
     }
   }
-  
+
   public void createAdministrativeEvent(final ScheduleRange range, final String info) throws PlanningException {
     try {
       dc.withTransaction(new DataConnection.SQLRunnable<Void>()
@@ -1041,7 +1043,7 @@ public class PlanningService
   public void updateAction(Action a) throws SQLException {
     actionIO.update(a);
   }
-  
+
   public void updateAdministrativeEvent(final ScheduleRangeObject range, final String note) throws PlanningException {
     try {
       dc.withTransaction(new DataConnection.SQLRunnable<Void>()
@@ -1057,7 +1059,7 @@ public class PlanningService
       throw new PlanningException(e.getMessage());
     }
   }
-  
+
   public void deleteAdministrativeEvent(final ScheduleRangeObject range) throws PlanningException {
     try {
       dc.withTransaction(new DataConnection.SQLRunnable<Void>()
@@ -1073,7 +1075,7 @@ public class PlanningService
       throw new PlanningException(e.getMessage());
     }
   }
-  
+
 
   public Vector<ScheduleObject> getSchedule(String where) throws SQLException {
     return ScheduleIO.findObject(where, dc);
@@ -1143,7 +1145,7 @@ public class PlanningService
           throws SQLException {
     return conflictService.testRoomConflict(plan, hStart, hEnd, lastDate);
   }
-  
+
   public Vector<ScheduleTestConflict> checkTeacherForScheduleLengthModif(ScheduleObject plan, DateFr lastDate, Hour hStart, Hour hEnd)
           throws SQLException {
     return conflictService.testTeacherConflictForScheduleLength(plan, lastDate, hStart, hEnd);
@@ -1168,7 +1170,7 @@ public class PlanningService
       throw new PlanningException(ex.getMessage());
     }
   }
-  
+
   boolean isOfficeFree(DateFr d, Action a) throws SQLException {
     return conflictService.testOfficeConflicts(d, a);
   }

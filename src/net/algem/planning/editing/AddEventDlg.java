@@ -1,22 +1,22 @@
 /*
- * @(#)AddEventDlg.java 2.9.4.0 26/03/2015
- * 
+ * @(#)AddEventDlg.java 2.9.4.0 01/04/2015
+ *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
- * 
+ *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Algem is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see http://www.gnu.org/licenses.
- * 
+ *
  */
 
 package net.algem.planning.editing;
@@ -49,7 +49,7 @@ public class AddEventDlg
   private HourRangePanel timePanel;
   private JTextArea note;
   private ScheduleObject plan;
-  
+
   public AddEventDlg(GemDesktop desktop, ScheduleObject plan) {
     super(desktop.getFrame());
     this.plan = plan;
@@ -81,11 +81,11 @@ public class AddEventDlg
   public boolean isValidate() {
     return validation;
   }
-  
+
   HourRange getRange() {
     return new HourRange(timePanel.getStart(), timePanel.getEnd());
   }
-  
+
   String getNote() {
     return note.getText().trim();
   }

@@ -1,7 +1,7 @@
 /*
- * @(#)ScheduleDetailCtrl.java 2.9.1 27/11/14
+ * @(#)ScheduleDetailCtrl.java 2.9.4.0 01/04/2015
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -44,7 +44,6 @@ import net.algem.group.GemGroupService;
 import net.algem.group.Group;
 import net.algem.group.GroupFileEditor;
 import net.algem.group.Musician;
-import net.algem.planning.editing.AddEventDlg;
 import net.algem.planning.editing.BreakSuppressionDlg;
 import net.algem.planning.editing.EditEventDlg;
 import net.algem.planning.editing.ModifPlanEvent;
@@ -66,7 +65,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.4.0
  * @since 1.0a 07/07/1999
  */
 public class ScheduleDetailCtrl
@@ -251,7 +250,9 @@ public class ScheduleDetailCtrl
         buf.append("-").append(pl.getEnd());
       }
       if (per == null) {
-        Vector<ScheduleRange> vp = null;
+         buf.append(" ").append(pl.getMemberId());
+         listPanel.add(new GemMenuButton(buf.toString(), this, "NullMember", pl));
+        /*Vector<ScheduleRange> vp = null;
         try {
           vp = ScheduleRangeIO.find("pg WHERE pg.id = " + pl.getId(), dc);
         } catch (SQLException ex) {
@@ -261,7 +262,7 @@ public class ScheduleDetailCtrl
           ScheduleRange g = vp.elementAt(0);
           buf.append(" ").append(g.getMemberId());
           listPanel.add(new GemMenuButton(buf.toString(), this, "NullMember", g));
-        }
+        }*/
       } else {
         if (per.getId() == 0) {
           buf.append(" ").append(BundleUtil.getLabel("Teacher.break.label"));
@@ -406,8 +407,8 @@ public class ScheduleDetailCtrl
     }
     menuPanel.add(btWrite);//mailing button
   }
-  
-  
+
+
   private void loadAdministrativeSchedule(ScheduleDetailEvent event) {
     AdministrativeSchedule p = (AdministrativeSchedule) event.getSchedule();
     headPanel.add(new GemLabel(BundleUtil.getLabel("Diary.label")));
@@ -424,6 +425,13 @@ public class ScheduleDetailCtrl
     Vector<ScheduleRangeObject> ranges = event.getRanges();
     StringBuilder sb = new StringBuilder();
     for (ScheduleRangeObject sr : ranges) {
+      if (sr.getNote() > 0) {
+        try {
+          sr.setNote1(scheduleService.getFollowUp(sr.getNote()));
+        } catch (SQLException ex) {
+          GemLogger.log(ex.getMessage());
+        }
+      }
       sb.append(sr.getStart()).append("-").append(sr.getEnd());
       sb.append(sr.getNote1() != null ? " " + sr.getNote1() : "");
       listPanel.add(new GemMenuButton(sb.toString(), this, "AdminEvent", sr));
@@ -615,7 +623,8 @@ public class ScheduleDetailCtrl
         }
       } else if ("AdminEvent".equals(arg)) {
         GemLogger.log(Level.INFO, arg);
-        EditEventDlg dlg = new EditEventDlg(desktop, (ScheduleRangeObject) ((GemMenuButton) evt.getSource()).getObject(), scheduleService);
+        ScheduleRangeObject range = (ScheduleRangeObject) ((GemMenuButton) evt.getSource()).getObject();
+        new EditEventDlg(desktop, range, schedule, scheduleService);
       }
     } catch (SQLException sqe) {
       GemLogger.logException(sqe);
@@ -660,18 +669,6 @@ public class ScheduleDetailCtrl
       frame.setVisible(false);
     }
   }
-  
-  private void modifyEvent(ScheduleRangeObject range) {
-//    EditEventDlg dlg = new EditEventDlg(desktop, range);
-////    ScheduleRange range = new ScheduleRange();
-//    range.setScheduleId(plan.getId());
-////    range.setStart(dlg.getRange().getStart());
-////    range.setEnd(dlg.getRange().getEnd());
-//    range.setMemberId(plan.getIdPerson());
-//    service.createAdministrativeEvent(range, dlg.getNote());
-//    desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));
-  }
-  
 
   /**
    * Loads the person file's editor.

@@ -80,7 +80,7 @@ public class PersonFileTabView
   private static final String BAND_TAB_TITLE = BundleUtil.getLabel("Groups.label");
   private static final String HISTO_REHEARSAL_TAB_TITLE = BundleUtil.getLabel("Person.rehearsal.history.tab.label");
   private static final String HISTO_SUBSCRIPTIONS_TAB_TITLE = BundleUtil.getLabel("Subscriptions.label");
-  
+
   private PersonFile dossier, parent;
   private ContactFileEditor contactFileEditor;
   private JCheckBox cbTelAdresse;
@@ -176,7 +176,7 @@ public class PersonFileTabView
     if (dossier.getMember() != null) {
       try {
         addMemberTab();
-        memberEditor.set(dossier.getMember());
+//        memberEditor.set(dossier.getMember());
         if (dossier.getContact().getAddress() == null && dossier.getContact().getTele() == null) {
           Vector<Address> addressLink = AddressIO.findId(dossier.getMember().getPayer(), DataCache.getDataConnection());
           Vector<Telephone> phoneLink = TeleIO.findId(dossier.getMember().getPayer(), DataCache.getDataConnection());
@@ -251,6 +251,14 @@ public class PersonFileTabView
   @Override
   public void stateChanged(ChangeEvent _evt) {
     FileTab tab = (FileTab) wTab.getSelectedComponent();
+    System.out.println(tab);
+    if (teacherEditor == tab) {
+      System.out.println("ONglet prof");
+    } else if (memberEditor == tab) {
+      System.out.println("ONglet adhérent");
+    }  else if (teacherFollowUpEditor == tab) {
+      System.out.println("ONglet suivi prof");
+    }
     if (!tab.isLoaded()) {
       tab.load();
     }
@@ -675,7 +683,7 @@ public class PersonFileTabView
     addTab(histoRehearsalView);
     desktop.setDefaultCursor();
   }
-  
+
   boolean addHistoSubscriptionTab() {
     if (histoSubscriptionCard == null) {
       histoSubscriptionCard = new HistoSubscriptionCard(desktop, dossier.getId(), listener, memberService);
@@ -691,7 +699,7 @@ public class PersonFileTabView
     desktop.setDefaultCursor();
     return true;
   }
-  
+
   void removeSubscriptionTab() {
     removeTab(histoSubscriptionCard);
   }

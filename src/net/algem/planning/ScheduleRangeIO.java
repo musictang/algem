@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleRangeIO.java	2.9.4.0 31/03/15
+ * @(#)ScheduleRangeIO.java	2.9.4.0 01/04/2015
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -199,10 +199,10 @@ public class ScheduleRangeIO
     return v;
   }
 
-  public static Vector<ScheduleRangeObject> getLoadRS(PreparedStatement ps, DataCache dataCache) {
+  public static Vector<ScheduleRangeObject> getLoadRS(PreparedStatement ps, DataConnection dc) {
 
     Vector<ScheduleRangeObject> v = new Vector<ScheduleRangeObject>();
-    PlanningService service = new PlanningService(DataCache.getDataConnection());
+    PlanningService service = new PlanningService(dc);
     try {
       ResultSet rs = ps.executeQuery();
       while (!Thread.interrupted() && rs.next()) {
