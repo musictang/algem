@@ -4,6 +4,8 @@ import javax.swing.*;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Vector;
 
 public class JTableX extends JTable {
@@ -47,7 +49,6 @@ public class JTableX extends JTable {
 
     @Override
     public TableCellEditor getCellEditor(int row, int column) {
-        System.out.println("JTableX.getCellEditor");
         if (cellEditorFactory != null) {
             return cellEditorFactory.getCellEditor(row, column);
         }

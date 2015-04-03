@@ -8,15 +8,15 @@ import javax.swing.*;
 import javax.swing.event.CellEditorListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.text.NumberFormatter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.text.NumberFormat;
-import java.util.EventObject;
-import java.util.HashMap;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 public class ScriptArgumentTableModel extends AbstractTableModel {
 
@@ -55,8 +55,6 @@ public class ScriptArgumentTableModel extends AbstractTableModel {
 
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-        System.out.println("ScriptArgumentTableModel.setValueAt");
-        System.out.println("aValue = [" + aValue + "], rowIndex = [" + rowIndex + "], columnIndex = [" + columnIndex + "]");
         ScriptArgument scriptArgument = arguments.get(rowIndex);
         values.put(scriptArgument.getName(), aValue);
         super.setValueAt(aValue, rowIndex, columnIndex);//TODO
@@ -75,7 +73,6 @@ public class ScriptArgumentTableModel extends AbstractTableModel {
 
         @Override
         public TableCellEditor getCellEditor(int row, int column) {
-            System.out.println("MyCellEditorFactory.getCellEditor");
             ScriptArgument scriptArgument = arguments.get(row);
             TableCellEditor editor = new DefaultCellEditor(new JTextField());
             switch (scriptArgument.getType()) {
@@ -93,6 +90,9 @@ public class ScriptArgumentTableModel extends AbstractTableModel {
                         public Object getCellEditorValue() {
                             Object cellEditorValue = super.getCellEditorValue();
                             if (cellEditorValue != null && cellEditorValue instanceof String) {
+                                if (((String) cellEditorValue).isEmpty()) {
+                                    return null;
+                                }
                                 return Integer.parseInt((String) cellEditorValue);
                             }
                             return cellEditorValue;
@@ -103,9 +103,38 @@ public class ScriptArgumentTableModel extends AbstractTableModel {
                 case BOOL:
                     return new DefaultCellEditor(new JCheckBox());
                 case DATE:
-                    return new DatePickerCellEditor();
+                    return new DatePickerCellEditor(new SimpleDateFormat("dd/MM/yyyy"));
             }
             return editor;
+        }
+    }
+
+    public static class MyCellRenderer implements TableCellRenderer {
+        private final List<ScriptArgument> arguments;
+
+        public MyCellRenderer(List<ScriptArgument> arguments) {
+            this.arguments = arguments;
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            ScriptArgument scriptArgument = arguments.get(row);
+            switch (scriptArgument.getType()) {
+                case TEXT:
+                case INT:
+                case FLOAT:
+                    return new JLabel(value != null ?value.toString() : "");
+                case BOOL:
+                    return new JCheckBox("", value != null && (boolean) value);
+                case DATE:
+                    if (value != null) {
+                        String dateText = new SimpleDateFormat("dd/MM/yyyy").format((Date) value);
+                        return new JLabel(dateText);
+                    } else {
+                        return new JLabel("");
+                    }
+            }
+            return null;
         }
     }
 }

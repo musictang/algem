@@ -6,9 +6,13 @@ import net.algem.script.directory.ScriptDirectoryService;
 import net.algem.script.directory.models.ScriptDirectory;
 import net.algem.script.directory.models.ScriptImplFile;
 import net.algem.script.execution.ScriptExecutorService;
+import net.algem.script.execution.ScriptExportService;
 import net.algem.script.execution.models.ScriptResult;
 import net.algem.script.execution.models.ScriptUserArguments;
+import net.algem.util.DataCache;
+import net.algem.util.FileUtil;
 import net.algem.util.module.GemDesktop;
+import net.algem.util.ui.SQLErrorDlg;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -18,7 +22,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.*;
+import java.io.File;
 import java.util.List;
 
 public class ScriptingFormController {
@@ -28,17 +32,22 @@ public class ScriptingFormController {
     private JTable resultTable;
     private JTableX argumentsTable;
     private JPanel rightPanel;
+    private JProgressBar progressBar1;
+    private JButton buttonExport;
+    private JProgressBar progressBar2;
 
-    private final GemDesktop desktop;
     private ScriptDirectoryService scriptDirectoryService;
     private ScriptExecutorService scriptExecutorService;
     private Script script;
     private ScriptArgumentTableModel argumentTableModel;
+    private ScriptResult scriptResult;
+    private final ScriptExportService scriptExportService;
 
     public ScriptingFormController(GemDesktop desktop) {
-        this.desktop = desktop;
-        scriptDirectoryService = desktop.getDataCache().getScriptDirectoryService();
-        scriptExecutorService = desktop.getDataCache().getScriptExecutorService();
+        DataCache dataCache = desktop.getDataCache();
+        scriptDirectoryService = dataCache.getScriptDirectoryService();
+        scriptExecutorService = dataCache.getScriptExecutorService();
+        scriptExportService = dataCache.getScriptExportService();
 
         $$$setupUI$$$();
         loadScripts();
@@ -61,18 +70,56 @@ public class ScriptingFormController {
         runButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (script != null && argumentTableModel != null) {
-                    ScriptUserArguments userArguments = argumentTableModel.getUserArguments();
-                    try {
-                        ScriptResult scriptResult = scriptExecutorService.executeScript(script, userArguments);
-                        resultTable.setModel(new ScriptResultTableModel(scriptResult));
-                    } catch (Exception e1) {
-                        e1.printStackTrace(); // TODO show error message
-                    }
-                }
-
+                runScript();
             }
         });
+
+        buttonExport.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                exportScriptResult();
+            }
+        });
+    }
+
+    private void runScript() {
+        if (script != null && argumentTableModel != null) {
+            final ScriptUserArguments userArguments = argumentTableModel.getUserArguments();
+            progressBar1.setVisible(true);
+            new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        scriptResult = scriptExecutorService.executeScript(script, userArguments);
+                        resultTable.setModel(new ScriptResultTableModel(scriptResult));
+                    } catch (Exception e) {
+                        e.printStackTrace(); // TODO show error message
+                        SQLErrorDlg.displayException(getPanel(), "Erreur durant l'éxécution du script", e);
+                    }
+                    progressBar1.setVisible(false);
+                }
+            }.start();
+
+        }
+    }
+
+    private void exportScriptResult() {
+        if (scriptResult != null) {
+            final File outFile = FileUtil.getSaveFile(getPanel(), "csv", "Fichiers CSV", "export.csv");
+            progressBar2.setVisible(true);
+            new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        scriptExportService.exportScriptResult(scriptResult, outFile);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        SQLErrorDlg.displayException(getPanel(), "Erreur durant l'exportation du script", e);
+                    }
+                    progressBar2.setVisible(false);
+                }
+            }.start();
+        }
     }
 
     private void openScript(ScriptImplFile scriptFile) {
@@ -82,6 +129,7 @@ public class ScriptingFormController {
             argumentTableModel = new ScriptArgumentTableModel(arguments);
             argumentsTable.setModel(argumentTableModel);
             argumentsTable.setCellEditorFactory(new ScriptArgumentTableModel.MyCellEditorFactory(arguments));
+            argumentsTable.getColumnModel().getColumn(1).setCellRenderer(new ScriptArgumentTableModel.MyCellRenderer(arguments));
             resultTable.setModel(new DefaultTableModel());
         } catch (Exception e) {
             e.printStackTrace();
@@ -154,7 +202,8 @@ public class ScriptingFormController {
         panel3.setLayout(new GridBagLayout());
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 1;
+        gbc.gridy = 4;
+        gbc.gridheight = 3;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
@@ -162,7 +211,7 @@ public class ScriptingFormController {
         gbc.ipady = 6;
         gbc.insets = new Insets(6, 6, 6, 6);
         rightPanel.add(panel3, gbc);
-        panel3.setBorder(BorderFactory.createTitledBorder("R�sultats"));
+        panel3.setBorder(BorderFactory.createTitledBorder("Résultats"));
         final JScrollPane scrollPane1 = new JScrollPane();
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -181,13 +230,14 @@ public class ScriptingFormController {
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
+        gbc.gridheight = 4;
         gbc.weightx = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
         gbc.ipadx = 6;
         gbc.ipady = 6;
         gbc.insets = new Insets(6, 6, 6, 6);
         rightPanel.add(panel4, gbc);
-        panel4.setBorder(BorderFactory.createTitledBorder("Param�tres"));
+        panel4.setBorder(BorderFactory.createTitledBorder("Paramètres"));
         argumentsTable = new JTableX();
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -202,9 +252,50 @@ public class ScriptingFormController {
         runButton.setText("Executer");
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
-        gbc.gridy = 0;
+        gbc.gridy = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         rightPanel.add(runButton, gbc);
+        final JPanel spacer1 = new JPanel();
+        gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.VERTICAL;
+        rightPanel.add(spacer1, gbc);
+        progressBar1 = new JProgressBar();
+        progressBar1.setIndeterminate(true);
+        progressBar1.setPreferredSize(new Dimension(40, 12));
+        progressBar1.setString("En cours");
+        progressBar1.setStringPainted(true);
+        progressBar1.setVisible(false);
+        gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        rightPanel.add(progressBar1, gbc);
+        buttonExport = new JButton();
+        buttonExport.setText("Exporter");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.gridy = 6;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(0, 0, 10, 0);
+        rightPanel.add(buttonExport, gbc);
+        final JPanel spacer2 = new JPanel();
+        gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.gridy = 4;
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.VERTICAL;
+        rightPanel.add(spacer2, gbc);
+        progressBar2 = new JProgressBar();
+        progressBar2.setIndeterminate(true);
+        progressBar2.setPreferredSize(new Dimension(40, 12));
+        progressBar2.setVisible(false);
+        gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.gridy = 5;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        rightPanel.add(progressBar2, gbc);
     }
 
     /**

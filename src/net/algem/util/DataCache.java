@@ -61,6 +61,8 @@ import net.algem.script.directory.ScriptDirectoryServiceImpl;
 import net.algem.script.directory.ScriptManifestParserImpl;
 import net.algem.script.execution.ScriptExecutorService;
 import net.algem.script.execution.ScriptExecutorServiceImpl;
+import net.algem.script.execution.ScriptExportService;
+import net.algem.script.execution.ScriptExportServiceImpl;
 import net.algem.security.DefaultUserService;
 import net.algem.security.User;
 import net.algem.security.UserIO;
@@ -161,6 +163,7 @@ public class DataCache
   private AtelierInstrumentsService atelierInstrumentsService;
   private ScriptDirectoryService scriptDirectoryService;
   private ScriptExecutorService scriptExecutorService;
+  private ScriptExportService scriptExportService;
 
   private DataCache() {
 
@@ -210,6 +213,7 @@ public class DataCache
     atelierInstrumentsService = new AtelierInstrumentsServiceImpl(dc, new AtelierInstrumentsDAO(dc), PERSON_IO);
     scriptDirectoryService = new ScriptDirectoryServiceImpl(new File("./scripts").getAbsoluteFile(), new IOUtil.FileReaderHelper(), new ScriptManifestParserImpl());
     scriptExecutorService = new ScriptExecutorServiceImpl(dc);
+    scriptExportService = new ScriptExportServiceImpl();
   }
 
   /**
@@ -918,7 +922,11 @@ public class DataCache
     return scriptExecutorService;
   }
 
-    public User getUser() {
+  public ScriptExportService getScriptExportService() {
+    return scriptExportService;
+  }
+
+  public User getUser() {
     return user;
   }
 
