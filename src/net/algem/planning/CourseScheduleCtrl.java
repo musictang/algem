@@ -250,7 +250,7 @@ public class CourseScheduleCtrl
       }
     }
     try {
-      service.planify(actions);
+      service.plan(actions);
       return true;
     } catch (PlanningException ex) {
       MessagePopup.warning(this,

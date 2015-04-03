@@ -1,0 +1,7 @@
+Bugs
+
+PLANNING ADMINISTRATIF
+On peut maintenant planifier les heures de travail du personnel administratif. C'est le rôle du nouveau sous-menu "Administratif" dans Planning.
+Il faut auparavant avoir déclaré une ou plusieurs personnes comme faisant partie de l'équipe administrative. Dans l'onglet Salarié (que l'on ouvre après avoir cliqué sur "Salarié" dans le menu Options de la fiche personne) permet de spécifier les catégories auxquelles appartient le salarié. A l'heure actuelle, il en exite 3 : professeur, technicien, administratif.
+Afin de bien différencier les postes de travail des salariés des salles usuelles de l'établissement, il est conseillé de créer un nouvel établissement, appelé par exemple Administration, regroupant tous ces postes. On créera par la suite autant de salles que de postes nécessaires en les nommant de manière à représenter l'activité en question et si possible le lieu de travail : ACCUEIL EXT, par exemple pour symboliser le poste d'accueil dans l'établissement extérieur. Ces règles d'organisation et de nommage peuvent cependant varier suivant les organisations.
+

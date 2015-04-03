@@ -144,7 +144,7 @@ public class TrainingScheduleCtrl
   }
 
   private void save() throws PlanningException {
-    service.planify(action, Schedule.TRAINING, dates);
+    service.plan(action, Schedule.TRAINING, dates);
   }
 
   private Action checkAction() throws PlanningException {

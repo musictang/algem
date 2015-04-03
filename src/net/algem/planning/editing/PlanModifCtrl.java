@@ -625,7 +625,7 @@ public class PlanModifCtrl
       copy.setEnd(newPlan.getEnd());
       copy.setIdRoom(newPlan.getIdRoom());
       copy.setNote(0);
-      service.copyCourse(plan, copy);
+      service.copySchedule(plan, copy);
       desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));
     } catch (SQLException sqe) {
       GemLogger.logException(sqe);

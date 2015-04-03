@@ -83,7 +83,8 @@ public class DayPlanAdminView
       ScheduleObject plan = t.elementAt(i);
       if (plan instanceof ScheduleRangeObject) {
         ScheduleRangeObject range = (ScheduleRangeObject) plan;
-        if (range.getMember() != null && range.getMember().getId() == personId) {
+        // include course range if any
+        if ((range.getMember() != null && range.getMember().getId() == personId)) {
           v.addElement(t.elementAt(i));
           try {
             range.setNote1(ScheduleRangeIO.findNote(range.getNote(), DataCache.getDataConnection()));
@@ -91,6 +92,9 @@ public class DayPlanAdminView
             GemLogger.log(ex.getMessage());
           }
         }
+        else if (range.getPerson() != null && range.getPerson().getId() == personId) {
+          v.addElement(t.elementAt(i)); 
+        } 
       } else {
         Person p = plan.getPerson();
         if (p != null && p.getId() == personId) {

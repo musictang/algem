@@ -144,8 +144,8 @@ public class ScheduleRangeIO
       ScheduleRange p = new ScheduleRange();
       p.setId(rs.getInt(1));
       p.setScheduleId(rs.getInt(2));
-      p.setStart(new Hour(rs.getString(3)));
-      p.setEnd(new Hour(rs.getString(4)));
+      p.setStart(new Hour(PlanningService.getTime(rs.getString(3))));
+      p.setEnd(new Hour(PlanningService.getTime(rs.getString(4))));
       p.setMemberId(rs.getInt(5));
       p.setNote(rs.getInt(6));
 
@@ -162,8 +162,8 @@ public class ScheduleRangeIO
     ScheduleRangeObject p = new ScheduleRangeObject();
     p.setId(rs.getInt(1));
     p.setScheduleId(rs.getInt(2));
-    p.setStart(new Hour(rs.getString(3)));
-    p.setEnd(new Hour(rs.getString(4)));
+    p.setStart(new Hour(PlanningService.getTime(rs.getString(3))));
+    p.setEnd(new Hour(PlanningService.getTime(rs.getString(4))));
     p.setMember((Person) DataCache.findId(rs.getInt(5), Model.Person));
     p.setNote(rs.getInt(6));
 

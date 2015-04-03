@@ -153,8 +153,8 @@ public class ScheduleIO
         p = new Schedule();
         p.setId(rs.getInt(1));
         p.setDate(new DateFr(rs.getString(2)));
-        p.setStart(new Hour(rs.getString(3)));
-        p.setEnd(new Hour(rs.getString(4)));
+        p.setStart(new Hour(PlanningService.getTime(rs.getString(3))));
+        p.setEnd(new Hour(PlanningService.getTime(rs.getString(4))));
         p.setType(rs.getInt(5));
         p.setIdPerson(rs.getInt(6));
         p.setIdAction(rs.getInt(7));
@@ -179,8 +179,8 @@ public class ScheduleIO
         Constructor ct = c.getConstructor();
         Schedule p = (Schedule) ct.newInstance();
         p.setId(rs.getInt(1));
-        p.setDate(new DateFr(rs.getString(2)));
-        p.setStart(new Hour(rs.getString(3)));
+        p.setDate(new DateFr(PlanningService.getTime(rs.getString(2))));
+        p.setStart(new Hour(PlanningService.getTime(rs.getString(3))));
         p.setEnd(new Hour(rs.getString(4)));
         p.setType(rs.getInt(5));
         p.setIdPerson(rs.getInt(6));
@@ -201,8 +201,8 @@ public class ScheduleIO
           throws SQLException {
     p.setId(rs.getInt(1));
     p.setDate(new DateFr(rs.getString(2)));
-    p.setStart(new Hour(rs.getString(3)));
-    p.setEnd(new Hour(rs.getString(4)));
+    p.setStart(new Hour(PlanningService.getTime(rs.getString(3))));
+    p.setEnd(new Hour(PlanningService.getTime(rs.getString(4))));
     p.setType(rs.getInt(5));
     p.setIdPerson(rs.getInt(6));
     p.setIdAction(rs.getInt(7));

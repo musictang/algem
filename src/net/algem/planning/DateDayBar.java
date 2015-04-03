@@ -46,8 +46,8 @@ public class DateDayBar
   private String[] monthLabels;
   private GemButton[] dayButtons;
   private GemButton[] mounthButtons;
-  private GemButton btBefore;
-  private GemButton btAfter;
+  private GemButton btPrevYear;
+  private GemButton btNextYear;
   private Calendar cal;
   private ActionListener actionListener;
   private GemButton btSelected;
@@ -102,10 +102,10 @@ public class DateDayBar
     monthPanel.setLayout(new GridLayout(1, 14));
 
     monthLabels = new DateFormatSymbols(Locale.FRANCE).getShortMonths();
-    btBefore = new GemButton("<<<");
-    btBefore.setMargin(new Insets(2, 2, 2, 2));
-    monthPanel.add(btBefore);
-    btBefore.addActionListener(this);
+    btPrevYear = new GemButton("<<<");
+    btPrevYear.setMargin(new Insets(2, 2, 2, 2));
+    monthPanel.add(btPrevYear);
+    btPrevYear.addActionListener(this);
 
     /** The 12 months. */
     mounthButtons = new GemButton[12];
@@ -116,10 +116,10 @@ public class DateDayBar
       monthPanel.add(mounthButtons[i]);
       mounthButtons[i].addActionListener(this);
     }
-    btAfter = new GemButton(">>>");
-    btAfter.setMargin(new Insets(2, 2, 2, 2));
-    monthPanel.add(btAfter);
-    btAfter.addActionListener(this);
+    btNextYear = new GemButton(">>>");
+    btNextYear.setMargin(new Insets(2, 2, 2, 2));
+    monthPanel.add(btNextYear);
+    btNextYear.addActionListener(this);
 
     setLayout(new BorderLayout());
     add(dayPanel, BorderLayout.NORTH);
@@ -177,13 +177,13 @@ public class DateDayBar
   @Override
   public void actionPerformed(ActionEvent evt) {
     Object c = evt.getSource();
-    if (c == btBefore) { // on recule d'une année
+    if (c == btPrevYear) { // on recule d'une année
       cal.set(Calendar.YEAR, cal.get(Calendar.YEAR) - 1);
       //
       cal.set(Calendar.MONTH, 11); // calé sur le dernier mois de l'année
       setDayLabel(); // calé sur le dernier jour du mois
       colorSelected(30);
-    } else if (c == btAfter) {
+    } else if (c == btNextYear) {
       cal.set(Calendar.YEAR, cal.get(Calendar.YEAR) + 1);
       //
       cal.set(Calendar.MONTH, 0); // calé sur le premier mois

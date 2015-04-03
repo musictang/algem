@@ -44,7 +44,7 @@ import net.algem.util.ui.GemScrollPane;
 import net.algem.util.ui.MessagePopup;
 
 /**
- * This controller is used to planify one or more rooms at differents times and for different technicians.
+ * This controller is used to plan one or more rooms at differents times and for different technicians.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.8.w
@@ -130,7 +130,7 @@ public class StudioScheduleCtrl
     session.setDates(dates);
     session.setCategory(studioView.getCategory());
     try {
-      service.planifyStudio(session);
+      service.planStudio(session);
       GemDateTime dts = dates.get(0);
       GemDateTime dte = dates.get(dates.size() - 1);
       desktop.postEvent(new ModifPlanEvent(this, dts.getDate(), dte.getDate()));

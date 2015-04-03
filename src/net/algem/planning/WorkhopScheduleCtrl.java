@@ -157,7 +157,7 @@ public class WorkhopScheduleCtrl
 		dates.add(rv.getDate());
 		a.setDates(dates);
 
-		service.planify(a, Schedule.WORKSHOP);
+		service.plan(a, Schedule.WORKSHOP);
 
 	}
 }

@@ -86,8 +86,8 @@ public class TestConflictService
     dates.add(end);
     a1.setDates(dates);
     a2.setDates(dates);
-    planningService.planify(a1);
-    planningService.planify(a2);
+    planningService.plan(a1);
+    planningService.plan(a2);
     Vector<Schedule> vp = ScheduleIO.findCourse("WHERE jour = '" + start + "' AND lieux = " + room1, dc);
     Schedule p = vp.elementAt(0);
     CourseSchedule pc = new CourseSchedule(p);

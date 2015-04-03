@@ -22,7 +22,6 @@
 package net.algem.planning.month;
 
 import net.algem.contact.Person;
-import net.algem.planning.Schedule;
 import net.algem.planning.ScheduleDetailEvent;
 import net.algem.planning.ScheduleObject;
 import net.algem.planning.ScheduleRangeObject;
@@ -46,14 +45,14 @@ public class MonthPlanAdminView
   public boolean isNotFiltered(ScheduleObject p) {
     int id = choice.getKey();
     if (p instanceof ScheduleRangeObject) {
-      if (Schedule.ADMINISTRATIVE == ((ScheduleRangeObject) p).getType()) {
-        ScheduleRangeObject range = (ScheduleRangeObject) p;
-        return  id > 0 && range.getMember() != null && range.getMember().getId() == id;
-      }
-//      return Schedule.ADMINISTRATIVE == ((ScheduleRangeObject) p).getType() && id > 0 && p.getIdPerson() == id;
+      ScheduleRangeObject range = (ScheduleRangeObject) p;
+       return (range.getMember() != null && range.getMember().getId() == id) 
+               || (range.getPerson() != null && range.getPerson().getId() == id);
     }
-
-    return Schedule.ADMINISTRATIVE == p.getType() && id > 0 && p.getPerson() != null && p.getPerson().getId() == id;
+    else {
+      return id > 0 && p.getPerson() != null && p.getPerson().getId() == id;
+//    return Schedule.ADMINISTRATIVE == p.getType() && id > 0 && p.getPerson() != null && p.getPerson().getId() == id;
+    }
   }
 
   @Override

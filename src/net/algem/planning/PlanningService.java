@@ -56,6 +56,19 @@ public class PlanningService
     actionIO = (ActionIO) DataCache.getDao(Model.Action);
     conflictService = new ConflictService(dc);
   }
+  
+  /**
+   * Utility method to reformat midnight.
+   * Postgresql usually represents midnight as "00:00".
+   * @param time string-formatted time (hh:mm)
+   * @return a string
+   */
+  public static String getTime(String time) {
+    if (time.startsWith("00:00")) {
+      return "24:00:00";
+    }
+    return time;
+  }
 
   public List<DateFr> generationDate(Action a) {
     List<DateFr> v = new ArrayList<DateFr>();
@@ -100,7 +113,7 @@ public class PlanningService
     return v;
   }
 
-  public void planify(Action a) throws PlanningException {
+  void plan(Action a) throws PlanningException {
     try {
       Course c = (Course) DataCache.findId(a.getCourse(), Model.Course);
       int type = 0;
@@ -119,15 +132,15 @@ public class PlanningService
 
   }
 
-  public void planify(Action a, int type) throws PlanningException {
+  void plan(Action a, int type) throws PlanningException {
     actionIO.planify(a, type);
   }
 
-  public void planify(Action a, int type, List<GemDateTime> dates) throws PlanningException {
+  void plan(Action a, int type, List<GemDateTime> dates) throws PlanningException {
     actionIO.planify(a, type, dates);
   }
 
-  public void planifyStudio(StudioSession session) throws PlanningException {
+  void planStudio(StudioSession session) throws PlanningException {
     try {
       dc.setAutoCommit(false);
       Action a = new Action();
@@ -143,14 +156,14 @@ public class PlanningService
     }
   }
 
-  public void planify(final List<Action> actions) throws PlanningException {
+  void plan(final List<Action> actions) throws PlanningException {
     try {
       dc.withTransaction(new DataConnection.SQLRunnable<Void>()
       {
         @Override
         public Void run(DataConnection conn) throws Exception {
           for (Action a : actions) {
-            planify(a);
+            plan(a);
           }
           return null;
         }
@@ -180,7 +193,7 @@ public class PlanningService
               }
             }
             a.setDates(dates);
-            planify(a, Schedule.ADMINISTRATIVE);
+            plan(a, Schedule.ADMINISTRATIVE);
           }
           return null;
         }
@@ -200,7 +213,7 @@ public class PlanningService
 
 
   /**
-   * Replanify a course.
+   * Replan a course.
    * Planification is allowed only if there are not any members scheduled for
    * this course.
    *
@@ -673,33 +686,34 @@ public class PlanningService
     }
   }
 
-  public void copyCourse(ScheduleObject model, ScheduleObject copy) throws PlanningException {
+  public void copySchedule(ScheduleObject model, ScheduleObject copy) throws PlanningException {
     //XXX probleme avec les heures de fin = 24:00 l'updateAdministrativeEvent les transforme en 00:00 / erreurs futures dans le décompte des heures
     try {
       dc.setAutoCommit(false);
       ScheduleIO.insert(copy, dc);
-      // getLength en minutes entre l'ancienne heure et la nouvelle passée en paramètre.
-      int offset = model.getStart().getLength(copy.getStart());
+      if (Schedule.ADMINISTRATIVE != model.getType()) {
+        // getLength en minutes entre l'ancienne heure et la nouvelle passée en paramètre.
+        int offset = model.getStart().getLength(copy.getStart());
 
-      String where = "pg WHERE pg.idplanning = " + model.getId();
-      Vector<ScheduleRange> vpg = ScheduleRangeIO.find(where, dc);
-      for (ScheduleRange pl : vpg) {
-        ScheduleRange pg = new ScheduleRange();
-        pg.setScheduleId(copy.getId());
-        pg.setStart(pl.getStart());
-        pg.setEnd(pl.getEnd());
-        pg.setMemberId(pl.getMemberId());
+        String where = "pg WHERE pg.idplanning = " + model.getId();
+        Vector<ScheduleRange> vpg = ScheduleRangeIO.find(where, dc);
 
-        //pg.setNote(pl.getNote());
+        for (ScheduleRange pl : vpg) {
+          ScheduleRange pg = new ScheduleRange();
+          pg.setScheduleId(copy.getId());
+          pg.setStart(pl.getStart());
+          pg.setEnd(pl.getEnd());
+          pg.setMemberId(pl.getMemberId());
 
-        if (offset >= 0) {
-          pg.getStart().incMinute(offset);
-          pg.getEnd().incMinute(offset);
-        } else {
-          pg.getStart().decMinute(Math.abs(offset));
-          pg.getEnd().decMinute(Math.abs(offset));
+          if (offset >= 0) {
+            pg.getStart().incMinute(offset);
+            pg.getEnd().incMinute(offset);
+          } else {
+            pg.getStart().decMinute(Math.abs(offset));
+            pg.getEnd().decMinute(Math.abs(offset));
+          }
+          ScheduleRangeIO.insert(pg, dc);
         }
-        ScheduleRangeIO.insert(pg, dc);
       }
       dc.commit();
     } catch (SQLException ex) {
@@ -1075,7 +1089,6 @@ public class PlanningService
       throw new PlanningException(e.getMessage());
     }
   }
-
 
   public Vector<ScheduleObject> getSchedule(String where) throws SQLException {
     return ScheduleIO.findObject(where, dc);
