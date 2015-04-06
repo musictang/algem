@@ -1,7 +1,7 @@
 /*
- * @(#)ConflictListView.java	2.8.a 24/04/13
- * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * @(#)ConflictListView.java	2.9.4.0 06/04/15
+ *
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning;
 
@@ -24,6 +24,7 @@ import java.awt.BorderLayout;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.TableColumnModel;
+import net.algem.util.BundleUtil;
 import net.algem.util.ui.GemLabel;
 import net.algem.util.ui.GemPanel;
 
@@ -33,7 +34,7 @@ import net.algem.util.ui.GemPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.9.4.0
  */
 public class ConflictListView
         extends GemPanel
@@ -71,6 +72,12 @@ public class ConflictListView
 
   public void addConflict(ScheduleTestConflict p) {
     tableModel.addItem(p);
-    status.setText("Plannings : " + tableModel.getRowCount());
+
+  }
+
+  public void setStatus(String s) {
+    status.setText(tableModel.getRowCount() + " "
+      + (s == null ? BundleUtil.getLabel("Conflicts.label").toLowerCase() : s)
+    );
   }
 }

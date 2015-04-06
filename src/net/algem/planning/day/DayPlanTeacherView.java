@@ -1,6 +1,6 @@
 /*
- * @(#)DayPlanTeacherView.java 2.9.4.0 25/03/2015
- * 
+ * @(#)DayPlanTeacherView.java 2.9.4.0 06/04/15
+ *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,17 +16,22 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning.day;
 
+import java.sql.SQLException;
 import java.util.Vector;
 import net.algem.contact.Person;
 import net.algem.contact.teacher.Teacher;
 import net.algem.planning.CourseSchedule;
+import net.algem.planning.Schedule;
 import net.algem.planning.ScheduleObject;
+import net.algem.planning.ScheduleRangeIO;
 import net.algem.planning.ScheduleRangeObject;
 import net.algem.util.BundleUtil;
+import net.algem.util.DataCache;
+import net.algem.util.GemLogger;
 import net.algem.util.model.GemList;
 
 /**
@@ -85,9 +90,9 @@ public class DayPlanTeacherView
 
     for (int i = 0; i < t.size(); i++) {
       ScheduleObject plan = t.elementAt(i);
-      if (!(plan instanceof CourseSchedule)) {
+      if (!(plan instanceof CourseSchedule && Schedule.ADMINISTRATIVE != plan.getType())) {
         continue;
-      } 
+      }
       Person p = plan.getPerson();
       if (p != null && p.getId() == teacherId) {
         v.addElement(t.elementAt(i));

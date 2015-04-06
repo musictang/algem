@@ -1,7 +1,7 @@
 /*
- * @(#)DayChoice.java	2.8.j 12/07/13
- * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * @(#)DayChoice.java	2.9.4.0 06/04/15
+ *
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,21 +16,24 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning.day;
 
+import java.util.Calendar;
+import net.algem.planning.DayOfWeek;
 import net.algem.planning.PlanningService;
+import net.algem.util.ui.GemChoice;
 
 /**
  * comment
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.8.j
+ * @version 2.9.4.0
  */
 public class DayChoice
-        extends javax.swing.JComboBox
+        extends GemChoice
 {
 
   static final String[] dayLabel = PlanningService.WEEK_DAYS;
@@ -40,47 +43,44 @@ public class DayChoice
    * dayLabel[0] is empty.
    */
   public DayChoice() {
-    addItem(dayLabel[2]); // du lundi
-    addItem(dayLabel[3]);
-    addItem(dayLabel[4]);
-    addItem(dayLabel[5]);
-    addItem(dayLabel[6]);
-    addItem(dayLabel[7]);
-    addItem(dayLabel[1]); // au dimanche
+     addItem(new DayOfWeek(Calendar.MONDAY, dayLabel[Calendar.MONDAY]));
+     addItem(new DayOfWeek(Calendar.TUESDAY, dayLabel[Calendar.TUESDAY]));
+     addItem(new DayOfWeek(Calendar.WEDNESDAY, dayLabel[Calendar.WEDNESDAY]));
+     addItem(new DayOfWeek(Calendar.THURSDAY, dayLabel[Calendar.THURSDAY]));
+     addItem(new DayOfWeek(Calendar.FRIDAY, dayLabel[Calendar.FRIDAY]));
+     addItem(new DayOfWeek(Calendar.SATURDAY, dayLabel[Calendar.SATURDAY]));
+     addItem(new DayOfWeek(Calendar.SUNDAY, dayLabel[Calendar.SUNDAY]));
   }
 
-//  /**
-//   * Gets day of week.
-//   * @return an integer
-//   */
-//  public int getDay() {
-//    int i = getSelectedIndex();
-//    if (i == 6) {
-//      return 0;
-//    }
-//    return i + 1; // si lundi retourne 1, si dimanche retourne 0
-//  }
-
-
-//  public void setDay(int i) {
-//    setSelectedIndex(i - 1);
-//  }
-
   @Override
-  public int getSelectedIndex() {
-    int i = super.getSelectedIndex();
-    if (i == 6) {
-      return 0;
-    }
-    return i + 1; // si lundi retourne 1, si dimanche retourne 0
+  public int getKey() {
+    return ((DayOfWeek) getSelectedItem()).getIndex();
   }
-  
+
   @Override
-  public void setSelectedIndex(int i) {
-    if (i == 0) {
-      super.setSelectedIndex(6);
-    } else {
-      super.setSelectedIndex(i-1);
+  public void setKey(int k) {
+    switch (k) {
+      case Calendar.MONDAY:
+        setSelectedIndex(0);
+        break;
+      case Calendar.TUESDAY:
+        setSelectedIndex(1);
+        break;
+      case Calendar.WEDNESDAY:
+        setSelectedIndex(2);
+        break;
+      case Calendar.THURSDAY:
+        setSelectedIndex(3);
+        break;
+      case Calendar.FRIDAY:
+        setSelectedIndex(4);
+        break;
+      case Calendar.SATURDAY:
+        setSelectedIndex(5);
+        break;
+      case Calendar.SUNDAY:
+        setSelectedIndex(6);
+        break;
     }
   }
 }

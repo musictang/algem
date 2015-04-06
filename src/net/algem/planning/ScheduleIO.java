@@ -153,7 +153,7 @@ public class ScheduleIO
         p = new Schedule();
         p.setId(rs.getInt(1));
         p.setDate(new DateFr(rs.getString(2)));
-        p.setStart(new Hour(PlanningService.getTime(rs.getString(3))));
+        p.setStart(new Hour(rs.getString(3)));
         p.setEnd(new Hour(PlanningService.getTime(rs.getString(4))));
         p.setType(rs.getInt(5));
         p.setIdPerson(rs.getInt(6));
@@ -179,9 +179,9 @@ public class ScheduleIO
         Constructor ct = c.getConstructor();
         Schedule p = (Schedule) ct.newInstance();
         p.setId(rs.getInt(1));
-        p.setDate(new DateFr(PlanningService.getTime(rs.getString(2))));
-        p.setStart(new Hour(PlanningService.getTime(rs.getString(3))));
-        p.setEnd(new Hour(rs.getString(4)));
+        p.setDate(new DateFr(rs.getString(2)));
+        p.setStart(new Hour(rs.getString(3)));
+        p.setEnd(new Hour(PlanningService.getTime(rs.getString(4))));
         p.setType(rs.getInt(5));
         p.setIdPerson(rs.getInt(6));
         p.setIdAction(rs.getInt(7));
@@ -201,7 +201,7 @@ public class ScheduleIO
           throws SQLException {
     p.setId(rs.getInt(1));
     p.setDate(new DateFr(rs.getString(2)));
-    p.setStart(new Hour(PlanningService.getTime(rs.getString(3))));
+    p.setStart(new Hour(rs.getString(3)));
     p.setEnd(new Hour(PlanningService.getTime(rs.getString(4))));
     p.setType(rs.getInt(5));
     p.setIdPerson(rs.getInt(6));
@@ -289,7 +289,7 @@ public class ScheduleIO
   }
 
   /**
-   * Gets the first person's id stored in this schedule {@code id}.
+   * Gets the first person's id stored in this schedule {@literal id}.
    *
    * @param id schedule id
    * @param dc data connection
@@ -378,7 +378,7 @@ public class ScheduleIO
   }
 
   /**
-   * Gets the number of schedule ranges in planning {@code a}.
+   * Gets the number of schedule ranges in planning {@literal a}.
    *
    * @param a action
    * @param dc dataConnection
@@ -414,7 +414,7 @@ public class ScheduleIO
 
   /**
    * Gets a result set listing start and end time of all schedules
-   * which type, date and action equal to model {@code p}.
+   * which type, date and action equal to model {@literal p}.
    * @param p schedule
    * @param dc dataConnection
    * @return a resultSet

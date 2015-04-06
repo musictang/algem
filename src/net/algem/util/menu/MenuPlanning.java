@@ -1,5 +1,5 @@
 /*
- * @(#)MenuPlanning.java	2.9.4.0 24/03/15
+ * @(#)MenuPlanning.java	2.9.4.0 06/04/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -86,7 +86,8 @@ public class MenuPlanning
       add(miAttendanceSheet = new JMenuItem(BundleUtil.getLabel("Menu.presence.file.label")));
       add(miReplacement = dataCache.getMenu2("Menu.replacement", true));
     }
-    add(miAdministrative = new JMenuItem(BundleUtil.getLabel("Administrative.label")));
+    addSeparator();
+    add(miAdministrative = new JMenuItem(BundleUtil.getLabel("Administrative.scheduling.label")));
 
     setListener(this);
   }

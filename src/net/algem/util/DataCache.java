@@ -1,5 +1,5 @@
 /*
- * @(#)DataCache.java	2.9.4.0 01/04/2015
+ * @(#)DataCache.java	2.9.4.0 06/04/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -461,7 +461,7 @@ public class DataCache
     } else if (m instanceof Teacher) {
       Teacher t = (Teacher) m;
       TEACHER_LIST.addElement(t);
-      Collections.sort(TEACHER_LIST.getData(), new TeacherComparator());
+      Collections.sort(TEACHER_LIST.getData(), new TeacherComparator(ConfigUtil.getConf(ConfigKey.PERSON_SORT_ORDER.getKey())));
       if(t.getInstruments() != null) {
         TEACHER_INSTRUMENT_CACHE.put(t.getId(), t.getInstruments());
       }
@@ -527,7 +527,7 @@ public class DataCache
       }
     } else if (m instanceof Teacher) {
       Teacher t = (Teacher) m;
-      TEACHER_LIST.update(t, new TeacherComparator());
+      TEACHER_LIST.update(t, new TeacherComparator(ConfigUtil.getConf(ConfigKey.PERSON_SORT_ORDER.getKey())));
       if(t.getInstruments() != null) {
         TEACHER_INSTRUMENT_CACHE.put(t.getId(), t.getInstruments());
       }
@@ -539,7 +539,7 @@ public class DataCache
       if (t != null) {
         t.setFirstName(((Person) m).getFirstName());
         t.setName(((Person) m).getName());
-        TEACHER_LIST.update(t, new TeacherComparator());
+        TEACHER_LIST.update(t, new TeacherComparator(ConfigUtil.getConf(ConfigKey.PERSON_SORT_ORDER.getKey())));
       }
     } else if (m instanceof Group) {
       GROUP_LIST.update((Group) m, new GroupComparator());

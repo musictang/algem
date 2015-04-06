@@ -1,7 +1,7 @@
 /*
- * @(#)ConfigKey.java 2.9.1 12/11/14
+ * @(#)ConfigKey.java 2.9.4.0 06/04/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,7 +27,7 @@ import net.algem.util.BundleUtil;
  * First arg represents key in the table, second arg represents the label.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.4.0
  * @since 2.1.k 07/07/11
  */
 public enum ConfigKey
@@ -148,7 +148,9 @@ public enum ConfigKey
 
   DEFAULT_PRICING_PERIOD("Periode.tarification", BundleUtil.getLabel("ConfEditor.default.module.pricing")),
 
-  SCHEDULE_RANGE_NAMES("Afficher.noms.plages", BundleUtil.getLabel("ConfEditor.schedule.ranges.names"));
+  SCHEDULE_RANGE_NAMES("Afficher.noms.plages", BundleUtil.getLabel("ConfEditor.schedule.ranges.names")),
+
+  PERSON_SORT_ORDER("Ordre.tri.personne", BundleUtil.getLabel("Person.sort.order.label"));
 
   private final String key;
   private final String label;

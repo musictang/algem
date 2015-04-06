@@ -1,7 +1,7 @@
 /*
- * @(#)ConflictListDlg.java	2.9.1 11/12/14
- * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * @(#)ConflictListDlg.java	2.9.4.0 06/04/15
+ *
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning;
 
@@ -35,7 +35,7 @@ import net.algem.util.ui.PopupDlg;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.4.0
  */
 public class ConflictListDlg
         implements ActionListener
@@ -45,11 +45,27 @@ public class ConflictListDlg
   private GemLabel title;
   private GemButton btClose;
   private ConflictListView listView;
+  private String info;
+
+  /**
+   *
+   * @param c parent
+   * @param t label
+   * @param info additional information
+   */
+  public ConflictListDlg(Component c, String t, String info) {
+    this(c, t, false);
+    this.info = info;
+  }
 
   public ConflictListDlg(Component c, String t) {
+    this(c, t, true);
+  }
+
+  public ConflictListDlg(Component c, String t, boolean modal) {
     title = new GemLabel(t);
 
-    dlg = new JDialog(PopupDlg.getTopFrame(c), true);
+    dlg = new JDialog(PopupDlg.getTopFrame(c), modal);
 
     btClose = new GemButton(GemCommand.OK_CMD);
     btClose.addActionListener(this);
@@ -64,6 +80,7 @@ public class ConflictListDlg
   }
 
   public void show() {
+    listView.setStatus(info);
     dlg.setVisible(true);
   }
 
@@ -74,6 +91,7 @@ public class ConflictListDlg
   public void addConflict(ScheduleTestConflict p) {
     listView.addConflict(p);
   }
+
 
   @Override
   public void actionPerformed(ActionEvent evt) {

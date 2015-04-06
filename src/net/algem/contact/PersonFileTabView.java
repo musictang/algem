@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileTabView.java  2.9.2 12/01/15
+ * @(#)PersonFileTabView.java  2.9.4.0 06/04/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes All Rights Reserved.
  *
@@ -64,7 +64,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.9.4.0
  */
 public class PersonFileTabView
         extends FileTabView
@@ -251,14 +251,6 @@ public class PersonFileTabView
   @Override
   public void stateChanged(ChangeEvent _evt) {
     FileTab tab = (FileTab) wTab.getSelectedComponent();
-    System.out.println(tab);
-    if (teacherEditor == tab) {
-      System.out.println("ONglet prof");
-    } else if (memberEditor == tab) {
-      System.out.println("ONglet adhérent");
-    }  else if (teacherFollowUpEditor == tab) {
-      System.out.println("ONglet suivi prof");
-    }
     if (!tab.isLoaded()) {
       tab.load();
     }

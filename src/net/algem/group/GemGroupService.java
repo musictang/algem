@@ -1,5 +1,5 @@
 /*
- * @(#)GemGroupService.java	2.9.3 27/02/15
+ * @(#)GemGroupService.java	2.9.4.0 06/04/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -42,7 +42,7 @@ import net.algem.util.model.Model;
  * Service class for group operations.
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.3
+ * @version 2.9.4.0
  * @since 2.4.a 10/05/12
  */
 public class GemGroupService
@@ -387,16 +387,16 @@ public class GemGroupService
   Vector<DateFr> generateDates(int day, DateFr startDate, DateFr endDate) {
     Vector<DateFr> v = new Vector<DateFr>();
 
-    Calendar debut = Calendar.getInstance(Locale.FRANCE);
-    debut.setTime(startDate.getDate());
-    Calendar fin = Calendar.getInstance(Locale.FRANCE);
-    fin.setTime(endDate.getDate());
+    Calendar start = Calendar.getInstance(Locale.FRANCE);
+    start.setTime(startDate.getDate());
+    Calendar end = Calendar.getInstance(Locale.FRANCE);
+    end.setTime(endDate.getDate());
 
-    while (!debut.after(fin)) {
-      if (debut.get(Calendar.DAY_OF_WEEK) == day + 1) {
-        v.addElement(new DateFr(debut.getTime()));
+    while (!start.after(end)) {
+      if (start.get(Calendar.DAY_OF_WEEK) == day) {
+        v.addElement(new DateFr(start.getTime()));
       }
-      debut.add(Calendar.DATE, 1);
+      start.add(Calendar.DATE, 1);
     }
     return v;
   }

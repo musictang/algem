@@ -1,5 +1,5 @@
 /*
- * @(#)MemberService.java	2.9.3 25/02/15
+ * @(#)MemberService.java	2.9.4.0 06/04/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -46,7 +46,7 @@ import net.algem.util.model.Model;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.3
+ * @version 2.9.4.0
  * @since 2.4.a 14/05/12
  */
 public class MemberService
@@ -73,9 +73,9 @@ public class MemberService
   List<SubscriptionCardSession> getSessions(int cardId) throws SQLException {
     return cardIO.findSessions(cardId, null);
   }
-  
+
   SubscriptionCardSession getSessionBySchedule(int card, int schedule) throws SQLException {
-    
+
     List<SubscriptionCardSession> cards = cardIO.findSessions(card, "AND idplanning = " + schedule + " ORDER BY id DESC LIMIT 1");
     return cards.isEmpty() ? null : cards.get(0);
   }
@@ -117,7 +117,7 @@ public class MemberService
         card.inc(sub);
         updateSubscriptionCard(card);
       }
-      
+
       // TODO possibly refresh in controller
       //sendPersonFileEvent(nc == null ? card : nc);
     }
@@ -159,9 +159,9 @@ public class MemberService
     } catch (SQLException ex) {
       GemLogger.logException(getClass().getName()+"#findSubscriptionCard", ex);
       return null;
-    } 
+    }
   }
-  
+
   List<PersonSubscriptionCard> getSubscriptions(int idper, boolean complete) throws SQLException {
       return cardIO.find(idper, null, complete, 0);
   }
@@ -364,7 +364,7 @@ public class MemberService
 
     Preference p = AccountPrefIO.find(AccountPrefIO.REHEARSAL_KEY_PREF, dc);
     OrderLine e = AccountUtil.setRehearsalOrderLine(pFile, date, p, amount, idCard);
-    
+
     AccountUtil.createEntry(e, dc);
   }
 
@@ -372,8 +372,8 @@ public class MemberService
     return conflictService.testRoomConflict(debut, hd, hf, salle);
   }
 
-  public Vector<ScheduleTestConflict> testMemberSchedule(ScheduleObject plan, DateFr debut, Hour hd, Hour hf) throws SQLException {
-    return conflictService.testMemberConflict(plan, debut, hd, hf);
+  public List<ScheduleTestConflict> testMemberSchedule(DateFr debut, Action a) throws SQLException {
+    return conflictService.testRoomAndPersonConflicts(debut, a);
   }
 
   public Vector<ScheduleTestConflict> testRangeSchedule(ScheduleObject plan, DateFr debut, Hour hd, Hour hf) throws SQLException {
@@ -383,12 +383,12 @@ public class MemberService
   public Vector<DateFr> generationDate(int day, DateFr start, DateFr end) {
 
     Vector<DateFr> v = new Vector<DateFr>();
-
-    while(!start.after(end)) {
-      if (start.getDayOfWeek() == day + 1) {
-        v.addElement(new DateFr(start));
+    DateFr s = new DateFr(start);
+    while(!s.after(end)) {
+      if (s.getDayOfWeek() == day) {
+        v.addElement(new DateFr(s));
       }
-      start.incDay(1);
+      s.incDay(1);
     }
     return v;
   }

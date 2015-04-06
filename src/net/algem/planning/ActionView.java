@@ -1,5 +1,5 @@
 /*
- * @(#)ActionView.java	2.9.4.0 24/03/15
+ * @(#)ActionView.java	2.9.4.0 06/04/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -21,6 +21,7 @@
 package net.algem.planning;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -134,10 +135,14 @@ public class ActionView
     gb.add(new GemLabel(BundleUtil.getLabel("Sessions.label")), 0, 7, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Menu.holidays.label")), 0, 8, 1, 1, GridBagHelper.WEST);
 
-    gb.add(course, 1, 0, 2, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
+    Dimension d = new Dimension(datePanel.getPreferredSize().width, course.getPreferredSize().height);
+    course.setPreferredSize(d);
+    gb.add(course, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(datePanel, 1, 1, 1, 1, GridBagHelper.NORTHWEST);
-    gb.add(day, 1, 2, 2, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
-    gb.add(periodicity, 1, 3, 2, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
+    day.setPreferredSize(d);
+    gb.add(day, 1, 2, 1, 1, GridBagHelper.WEST);
+    periodicity.setPreferredSize(d);
+    gb.add(periodicity, 1, 3, 1, 1, GridBagHelper.WEST);
 
     GemPanel hp = new GemPanel(new BorderLayout());
     hp.setBorder(null);
@@ -152,9 +157,11 @@ public class ActionView
     p.add(intervall);
     hp.add(p, BorderLayout.EAST);
 
-    gb.add(hp, 1, 4, 2, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
-    gb.add(teacher, 1, 5, 2, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
-    gb.add(room, 1, 6, 2, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
+    gb.add(hp, 1, 4, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
+    teacher.setPreferredSize(d);
+    gb.add(teacher, 1, 5, 1, 1, GridBagHelper.WEST);
+    room.setPreferredSize(d);
+    gb.add(room, 1, 6, 2, 1, GridBagHelper.WEST);
 
     GemPanel s = new GemPanel();
     s.setLayout(new BoxLayout(s, BoxLayout.X_AXIS));
@@ -165,7 +172,8 @@ public class ActionView
     s.add(places);
 
     gb.add(s, 1, 7, 1, 1, GridBagHelper.WEST);
-    gb.add(vacancy, 1, 8, 2, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
+    vacancy.setPreferredSize(d);
+    gb.add(vacancy, 1, 8, 1, 1, GridBagHelper.WEST);
   }
 
   public Action get() {
@@ -179,7 +187,7 @@ public class ActionView
     a.setLength(getCourseLength());
     a.setIdper(teacher.getKey());
     a.setRoom(room.getKey());
-    a.setDay(day.getSelectedIndex());
+    a.setDay(day.getKey());
     a.setVacancy(vacancy.getKey());
     a.setPeriodicity((Periodicity) periodicity.getSelectedItem());
     try {

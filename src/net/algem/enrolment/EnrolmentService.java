@@ -828,7 +828,7 @@ public class EnrolmentService
   }
   
   /**
-   * Stops a module and delete (if exist) the schedule ranges after the date of {@code stop}.
+   * Stops a module and delete (if exist) the schedule ranges after the date of {@literal stop}.
    * 
    * @param mo module order
    * @param orders maps course order to course
@@ -854,8 +854,8 @@ public class EnrolmentService
   }
   
   /**
-   * Gets the time length of the sessions already performed by the member {@code m},
-   * corresponding to the module order {@code mo}.
+   * Gets the time length of the sessions already performed by the member {@literal m},
+   * corresponding to the module order {@literal mo}.
    * A session is seen as completed if it was scheduled, even though it has not actually occurred.
    * @param idper member's id
    * @param mOrderId id of the module order corresponding to the training performed
@@ -892,7 +892,7 @@ public class EnrolmentService
   }
   
   /**
-   * Gets the list of module orders created between {@code start} and {@code end} dates.
+   * Gets the list of module orders created between {@literal start} and {@literal end} dates.
    * @param start start date
    * @param end end date
    * @return a list of module orders
@@ -904,7 +904,7 @@ public class EnrolmentService
   }
   
   /**
-   * Gets the extended list of module orders created between {@code start} and {@code end} dates.
+   * Gets the extended list of module orders created between {@literal start} and {@literal end} dates.
    * @param start date
    * @param end date
    * @return

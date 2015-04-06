@@ -1,5 +1,5 @@
 /*
- * @(#)AdministrativeScheduleCtrl.java	2.9.4.0 31/03/15
+ * @(#)AdministrativeScheduleCtrl.java	2.9.4.0 06/04/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -37,6 +37,7 @@ import javax.swing.JTextField;
 import net.algem.config.ParamChoice;
 import net.algem.contact.EmployeeSelector;
 import net.algem.contact.EmployeeType;
+import net.algem.planning.editing.ModifPlanEvent;
 import net.algem.room.EstabChoice;
 import net.algem.room.Room;
 import net.algem.util.BundleUtil;
@@ -74,15 +75,17 @@ public class AdministrativeScheduleCtrl
   private GemButton btValidation;
   private PlanningService service;
   private GemList<Room> roomList;
-  
+  private final EstabChoice estab;
+  private ParamChoice vacancy;
+
   public AdministrativeScheduleCtrl(GemDesktop desktop) {
-    
+
     GemPanel mainPanel = new GemPanel();
     this.desktop = desktop;
     this.dataCache = desktop.getDataCache();
     service = new PlanningService(DataCache.getDataConnection());
 
-    final EstabChoice estab = new EstabChoice(dataCache.getList(Model.Establishment));
+    estab = new EstabChoice(dataCache.getList(Model.Establishment));
     estab.setSelectedIndex(0);
     roomList = dataCache.getList(Model.Room);
     datePanel = new DateRangePanel(dataCache.getStartOfYear(), dataCache.getEndOfYear());
@@ -97,14 +100,14 @@ public class AdministrativeScheduleCtrl
       }
     });
     employee = new EmployeeSelector(service.getEmployees(EmployeeType.ADMINISTRATOR));
-    ParamChoice vacancy = new ParamChoice(dataCache.getVacancyCat());
+    vacancy = new ParamChoice(dataCache.getVacancyCat());
     vacancy.setPreferredSize(employee.getPreferredSize());
-    
+
     JTextField helpLabel = new JTextField();
     helpLabel.setText(MessageUtil.getMessage("help.administrative.schedule.ctrl"));
     helpLabel.setEditable(false);
     helpLabel.setBorder(BorderFactory.createCompoundBorder(helpLabel.getBorder(), BorderFactory.createEmptyBorder(5, 5, 5, 5)));
-    
+
     mainPanel.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(mainPanel);
     gb.insets = GridBagHelper.SMALL_INSETS;
@@ -112,33 +115,33 @@ public class AdministrativeScheduleCtrl
     gb.add(new GemLabel(BundleUtil.getLabel("Date.label")), 0, 1, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Person.label")), 0, 3, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Menu.holidays.label")), 0, 4, 1, 1, GridBagHelper.WEST);
-    
+
     gb.add(estab, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(datePanel, 1, 1, 1, 1, GridBagHelper.WEST);
     gb.add(tableView, 1, 2, 1, 1, GridBagHelper.BOTH, GridBagHelper.WEST);
     gb.add(employee, 1, 3, 1, 1, GridBagHelper.WEST);
     gb.add(vacancy, 1, 4, 1, 1, GridBagHelper.WEST);
     gb.add(helpLabel, 0, 5, 2, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
-    
+
     btCancel = new GemButton(GemCommand.CANCEL_CMD);
     btCancel.addActionListener(this);
     btValidation = new GemButton(GemCommand.VALIDATE_CMD);
     btValidation.addActionListener(this);
-    
+
     GemPanel buttons = new GemPanel(new GridLayout(1,2));
     buttons.add(btCancel);
     buttons.add(btValidation);
-    
+
     setLayout(new BorderLayout());
     add(mainPanel, BorderLayout.CENTER);
     add(buttons, BorderLayout.SOUTH);
   }
-  
+
   private List<AdministrativeActionModel> getEdited() {
     return tableView.getRows();
   }
-  
-  private String checked() {
+
+  private String logErrors() {
     for (AdministrativeActionModel a : getEdited()) {
       if (a.getStart().equals(a.getEnd())) {
         continue;
@@ -154,21 +157,21 @@ public class AdministrativeScheduleCtrl
   public void actionPerformed(ActionEvent e) {
     Object src = e.getSource();
     if (src == btCancel) {
-      desktop.removeModule("Administrative.scheduling");
+      close();
     } else if (src == btValidation) {
-      String notOk = checked();
+      String errors = logErrors();
       List<Action> actions;
-      if (notOk == null) {
-        actions = createActions(getEdited(), employee.getKey(), datePanel.getStartFr(), datePanel.getEndFr());
+      if (errors == null) {
+        actions = createActions(getEdited(), employee.getKey(), datePanel.getStartFr(), datePanel.getEndFr(), vacancy.getKey());
       } else {
-        MessagePopup.warning(this, MessageUtil.getMessage(notOk));
+        MessagePopup.warning(this, MessageUtil.getMessage(errors));
         return;
       }
       save(actions);
     }
   }
-  
-  static List<Action> createActions(List<AdministrativeActionModel> result, int idper, DateFr start, DateFr end) {
+
+  static List<Action> createActions(List<AdministrativeActionModel> result, int idper, DateFr start, DateFr end, int vacancy) {
     List<Action> actions = new ArrayList<Action>();
     Set<AdministrativeActionModel> set = new LinkedHashSet<>(result); // remove duplicates but preserve order
     for (AdministrativeActionModel aa : set) {
@@ -182,25 +185,45 @@ public class AdministrativeScheduleCtrl
       a.setDateEnd(end);
       a.setIdper(idper);
 
-      a.setDay(aa.getDay().getIndex() -1);
+      a.setDay(aa.getDay().getIndex());
       a.setPeriodicity(Periodicity.WEEK);
       a.setRoom(aa.getRoom().getId());
       a.setNSessions((short) 52);
+      a.setVacancy(vacancy);
       actions.add(a);
     }
     return actions;
   }
-  
+
   private void save(final List<Action> actions) {
     try {
-      String log = service.planAdministrative(actions);
-      if (log.length() > 0) {
-        log = "Séances non planifiées en raison de\nl'occupation de la personne ou de la salle :\n\n" + log;
-        MessagePopup.information(this, log);
+      List<ScheduleTestConflict> conflicts = service.planAdministrative(actions);
+      if (conflicts.size() > 0) {
+        ConflictListDlg cfd = new ConflictListDlg(
+          desktop.getFrame(),
+          BundleUtil.getLabel("Conflict.verification.label"),
+          MessageUtil.getMessage("sessions.unscheduled")
+        );
+        for (ScheduleTestConflict c : conflicts) {
+          cfd.addConflict(c);
+        }
+
+        cfd.show();
+//        log = "Séances non planifiées en raison de\nl'occupation de la personne ou de la salle :\n\n" + log;
+//        MessagePopup.information(this, log);
       }
+      desktop.postEvent(new ModifPlanEvent(this,
+        actions.get(0).getDateStart(),
+        actions.get(actions.size() - 1).getDateEnd()));
+      tableView.clear();
+
     } catch (PlanningException e) {
       GemLogger.log(e.getMessage());
     }
+  }
+
+  private void close() {
+    desktop.removeModule("Administrative.scheduling");
   }
 
 }

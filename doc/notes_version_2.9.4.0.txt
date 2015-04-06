@@ -1,7 +1,25 @@
 Bugs
+* Lors d'une planification de forfait répétition adhérent, aucun planning n'était détecté après réouverture de la fenêtre de vérification des conflits (appui sur bouton "Précédent" pour correction suivi d'un appui sur le bouton "Suivant" pour revalidation.
 
 PLANNING ADMINISTRATIF
-On peut maintenant planifier les heures de travail du personnel administratif. C'est le rôle du nouveau sous-menu "Administratif" dans Planning.
-Il faut auparavant avoir déclaré une ou plusieurs personnes comme faisant partie de l'équipe administrative. Dans l'onglet Salarié (que l'on ouvre après avoir cliqué sur "Salarié" dans le menu Options de la fiche personne) permet de spécifier les catégories auxquelles appartient le salarié. A l'heure actuelle, il en exite 3 : professeur, technicien, administratif.
-Afin de bien différencier les postes de travail des salariés des salles usuelles de l'établissement, il est conseillé de créer un nouvel établissement, appelé par exemple Administration, regroupant tous ces postes. On créera par la suite autant de salles que de postes nécessaires en les nommant de manière à représenter l'activité en question et si possible le lieu de travail : ACCUEIL EXT, par exemple pour symboliser le poste d'accueil dans l'établissement extérieur. Ces règles d'organisation et de nommage peuvent cependant varier suivant les organisations.
+On peut maintenant planifier les heures de travail du personnel administratif. C'est le rôle du nouveau sous-menu "Planification administrative" dans le menu Planning.
+Etape 1
+Il faut auparavant avoir déclaré une ou plusieurs personnes comme faisant partie de l'équipe administrative. Dans l'onglet Salarié (que l'on ouvre après avoir cliqué sur "Salarié" dans le menu Options de la fiche personne) on peut spécifier les catégories auxquelles appartient le salarié. A l'heure actuelle, il en exite 3 : professeur, technicien, administratif.
+Etape 2
+Afin de bien différencier les postes de travail des salariés des salles usuelles de l'établissement, il est conseillé de créer un nouvel établissement, appelé par exemple Administration, regroupant tous ces postes. On créera par la suite autant de salles que de postes nécessaires en les nommant de manière à représenter l'activité en question et si possible le lieu de travail : ACCUEIL EXT, par exemple pour symboliser le poste d'accueil dans l'établissement extérieur. Ces règles d'organisation et de nommage peuvent cependant varier suivant les organisations. La création d'un poste de travail ne diffère en rien de celle d'une salle. Il faudra veiller néanmoins à bien rattacher cette salle à l'établissement dédié à l'administration au moment de la création et marquer cette salle active.
+Etape 3
+Il est également conseillé de créer une nouvelle catégorie de vacances, intitulée par exemple "Administratives" afin de spécifier des périodes de vacances spécifiques à l'administration et différentes de celles correspondantes aux différentes zones académiques.
+Après création de cette nouvelle catégorie, il vous faudra définir les périodes de congé à l'aide du menu Configuration -> Vacances -> Périodes.
+Etape 4
+On peut planifier l'ensemble des dates de présence administrative d'une personne en une seule fois en cliquant sur "Planification administrative" dans le menu Planning.
+Il est possible de spécifier un établissement afin de filtrer la liste des salles qui le composent. Chaque ligne du tableau correspond à un jour de la semaine. On peut ajouter autant de lignes que l'on veut afin de spécifier par exemple différents horaires ou différentes postes de travail pour une même journée. Les lignes dont les heures de début et de fin sont nulles ou égales ne seront pas prises en compte.
+Après validation, la planification s'effectuera pour chaque jour de la semaine spécifié entre les 2 dates sélectionnées. Les plannings déjà occupés (salle occupée ou personne occupée) ne seront pas pris en compte. Une fenêtre de conflits vous permettra de visualiser les dates non planifiées, s'il y a lieu.
+Ces plannings sont éditables après création et on peut entre autres les copier, les différer, changer leur durée ou bien sûr les supprimer.
+
+Le tableau jour comprend un nouvel onglet "Personnel" permettant de visualiser l'occupation des postes de travail de chaque membre de l'équipe administrative. Si vous avez créé un établissement dédié à l'administration, cette vue sera complétée par un onglet représentant l'occupation du personnel par poste de travail (salle).
+Dans la vue "Personnel", les répétitions ou les cours donnés par la personne à titre de professeur sont également représentés afin de ne pas jongler entre plusieurs onglets pour voir l'emploi du temps de cette personne.
+Le tableau mois reprend ces deux vues avec la possibilité de spécifier une personne ou une salle.
+Les plannings administratifs ne sont pas représentés dans le planning mois individuel de la fiche Personne.
+
+Dans la fenêtre de détail des plannings de type administratif, un nouveau menu "Ajouter rendez-vous" vous permettra d'insérer des plages horaires correspondant à des activités plus spécifiques ou des événements de type réunion, rendez-vous ou apparenté. Ces rendez-vous sont éditables après création et on peut modifier le libellé ou les heures de début et de fin. On peut aussi les supprimer.
 

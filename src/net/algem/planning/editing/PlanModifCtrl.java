@@ -187,7 +187,7 @@ public class PlanModifCtrl
     }
     return v;
   }
-  
+
   public Vector<GemMenuButton> getMenuAdministrative() {
     Vector<GemMenuButton> v = new Vector<GemMenuButton>();
     v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.room.modification.label"), this, "ChangeRoom"));
@@ -303,7 +303,7 @@ public class PlanModifCtrl
     Action action = ((CourseSchedule) plan).getAction();
     new AtelierInstrumentsController(desktop, action).run();
   }
-  
+
   private void dialogAddEvent() throws PlanningException {
     AddEventDlg dlg = new AddEventDlg(desktop, plan);
     dlg.show();

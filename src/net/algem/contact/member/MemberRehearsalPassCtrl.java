@@ -1,7 +1,7 @@
 /*
- * @(#)MemberRehearsalPassCtrl.java	2.8.w 24/07/14
+ * @(#)MemberRehearsalPassCtrl.java	2.9.4.0 06/04/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -23,6 +23,8 @@ package net.algem.contact.member;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 import net.algem.contact.PersonFile;
 import net.algem.planning.*;
@@ -40,7 +42,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.4.0
  */
 public class MemberRehearsalPassCtrl
         extends FileTabCard
@@ -119,10 +121,10 @@ public class MemberRehearsalPassCtrl
       MessagePopup.error(this, MessageUtil.getMessage("end.date.out.of.period"), wt);
       return false;
     }
-    
+
     Hour hStart = rehearsalView.getHourStart();
     Hour hEnd = rehearsalView.getHourEnd();
-    
+
     if (hStart.toString().equals("00:00")
             || hEnd.toString().equals("00:00")
             || !(hEnd.after(hStart))) {
@@ -133,7 +135,7 @@ public class MemberRehearsalPassCtrl
     if (!RoomService.isClosed(rehearsalView.getRoom(), rehearsalView.getDateStart(), hStart, hEnd)) {
       return false;
     }
-    
+
     return true;
   }
 
@@ -142,7 +144,7 @@ public class MemberRehearsalPassCtrl
     listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "AdherentForfaitRepetition.Abandon"));
   }
 
-  public void clear() {
+  private void clear() {
     rehearsalView.clear();
     cfv.clear();
     select(0);
@@ -182,49 +184,47 @@ public class MemberRehearsalPassCtrl
     service.savePassRehearsal(dateList, rehearsalView.getHourStart(), rehearsalView.getHourEnd(), personFile.getId(), rehearsalView.getRoom());
   }
 
-  public int testConflict(Vector<DateFr> dateList, Hour start, Hour end) {
+  int testConflict(Vector<DateFr> dateList, Hour start, Hour end) {
     cfv.clear();
 
-    int conflicts = 0;
-    Vector<ScheduleTestConflict> vc = new Vector<ScheduleTestConflict>();
+    int nc = 0;
+
+    List<ScheduleTestConflict> conflicts = new ArrayList<ScheduleTestConflict>();
     try {
       for (int i = 0; i < dateList.size(); i++) {
         DateFr d = dateList.elementAt(i);
         ScheduleTestConflict conflict = new ScheduleTestConflict(d, start, end);
-        
-        vc = service.testRoom(d, start, end, rehearsalView.getRoom());
-        if (vc.size() > 0) {
-          for (ScheduleTestConflict c : vc) {
-            conflicts++;
-            conflict.setRoomFree(false);
-          }
-        }
 
-        ScheduleObject plan = new MemberRehearsalSchedule();
-        plan.setIdPerson(personFile.getId());
-
-        // test conflits répétitions adhérent (ou cours prof)
-        vc = service.testMemberSchedule(plan, d, rehearsalView.getHourStart(), rehearsalView.getHourEnd());
-        if (vc.size() > 0) {
-          for (ScheduleTestConflict c : vc) {
-            conflicts++;
-            conflict.setMemberFree(false);
+        Action a = new Action();
+        a.setIdper(personFile.getId());
+        a.setHourStart(rehearsalView.getHourStart());
+        a.setHourEnd(rehearsalView.getHourEnd());
+        a.setRoom(rehearsalView.getRoom());
+        conflicts = service.testMemberSchedule(d, a);
+        if (conflicts.size() > 0) {
+          for (ScheduleTestConflict c : conflicts) {
+            nc++;
+            conflict.setRoomFree(c.isRoomFree());
+            conflict.setTeacherFree(c.isTeacherFree());
           }
         }
         // test conflits plage adhérent
-        vc = service.testRangeSchedule(plan, d, rehearsalView.getHourStart(), rehearsalView.getHourEnd());
-        if (vc.size() > 0) {
-          for (ScheduleTestConflict c : vc) {
-            conflicts++;
+        ScheduleObject plan = new MemberRehearsalSchedule();
+        plan.setIdPerson(personFile.getId());
+        conflicts = service.testRangeSchedule(plan, d, rehearsalView.getHourStart(), rehearsalView.getHourEnd());
+        if (conflicts.size() > 0) {
+          for (ScheduleTestConflict c : conflicts) {
+            nc++;
             conflict.setMemberFree(false);
           }
         }
         cfv.addConflict(conflict);
+
       }
     } catch (SQLException e) {
       GemLogger.logException(e);
     }
 
-    return conflicts;
+    return nc;
   }
 }

@@ -1,7 +1,7 @@
 /*
- * @(#)PersonScheduleComparator.java	2.8.a 11/04/13
+ * @(#)PersonScheduleComparator.java	2.9.4.0 06/04/2015
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,20 +27,35 @@ import net.algem.planning.ScheduleRangeObject;
 /**
  * Person's comparator.
  * Usually, 2 persons are compared by their firstnames.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.9.4.0
  * @since 2.8.a 11/04/13
  */
 public class PersonScheduleComparator
-  implements Comparator<ScheduleRangeObject> 
+  implements Comparator<ScheduleRangeObject>
 {
+
+  private char sort = 'n';
+
+  public PersonScheduleComparator() {
+  }
+
+  public PersonScheduleComparator(String sort) {
+    if (sort != null && sort.length() > 0) {
+      this.sort = sort.toLowerCase().charAt(0);
+    }
+  }
 
   @Override
   public int compare(ScheduleRangeObject o1, ScheduleRangeObject o2) {
     Person p1 = o1.getMember();
     Person p2 = o2.getMember();
-    return p1 == null ? (p2 == null ? 0 : -1) : (p2 == null ? 1 : p1.compareTo(p2));
+    if (p1 == null) {
+      return p2 == null ? 0 : -1;
+    } else {
+      return p2 == null ? 1 : ('n' == sort ? p1.getName().compareTo(p2.getName()) : p1.compareTo(p2));
+    }
 
   }
 

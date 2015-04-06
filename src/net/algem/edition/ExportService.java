@@ -226,7 +226,7 @@ public class ExportService {
   }
   
   /**
-   * Search query of people practicing the instrument {@code instId}.
+   * Search query of people practicing the instrument {@literal instId}.
    * @param instId instrument id
    * @param start start date
    * @param end end date

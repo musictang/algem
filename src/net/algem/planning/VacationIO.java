@@ -1,6 +1,6 @@
 /*
- * @(#)VacationIO.java	2.6.a 03/10/12
- * 
+ * @(#)VacationIO.java	2.9.4.0 06/04/2015
+ *
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning;
 
@@ -33,7 +33,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 	2.9.4.0
  * @since 1.0a 07/07/1999
  */
 public class VacationIO
@@ -69,8 +69,7 @@ public class VacationIO
   }
 
   public static Vacation findDay(Date day, int id, DataConnection dc) {
-    DateFr d = new DateFr();
-    d.set(day);
+    DateFr d = new DateFr(day);
     String query = "WHERE jour = '" + d + "' AND vid = " + id;
     Vector<Vacation> v = find(query, dc);
     if (v.size() > 0) {

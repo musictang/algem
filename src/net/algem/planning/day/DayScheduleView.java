@@ -1,5 +1,5 @@
 /*
- * @(#)DayScheduleView.java	2.9.4.0 26/03/2015
+ * @(#)DayScheduleView.java	2.9.4.0 06/04/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -86,7 +86,7 @@ public class DayScheduleView
 
     adminView = new DayPlanAdminView(new PlanningService(DataCache.getDataConnection()).getEmployees(EmployeeType.ADMINISTRATOR));
     tabPanel.addItem(adminView, BundleUtil.getLabel("Staff.label"));
-    
+
     // récupération de la liste des salles
     GemList<Room> vs = dataCache.getList(Model.Room);
     roomView = new DayPlanTableView[estabList.getSize()];
@@ -107,8 +107,10 @@ public class DayScheduleView
       GemLogger.log(sqe.getMessage());
     }
     String teacherManaged = ConfigUtil.getConf(ConfigKey.TEACHER_MANAGEMENT.getKey());
-    int offset = (teacherManaged.equals("t")) ? 1 : 0;
-    tabPanel.setSelectedIndex(estabList.indexOf(estab) + offset);//+1 quand la gestion prof est activée car le premier onglet correspond aux profs
+    // First tab depends on the status "managed" of the teachers in the general configuration
+    // The second tab refers to the administrative team
+    int offset = (teacherManaged.equals("t")) ? 2 : 1;
+    tabPanel.setSelectedIndex(estabList.indexOf(estab) + offset);
   }
 
    @Override
@@ -174,7 +176,7 @@ public class DayScheduleView
     if (teacherView != null && !evt.getPropertyName().equals("@all_rooms")) {
       teacherView.propertyChange(evt);
     }
-    
+
     if (adminView != null && !evt.getPropertyName().equals("@all_rooms")) {
       adminView.propertyChange(evt);
     }

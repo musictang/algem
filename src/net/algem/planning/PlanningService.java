@@ -1,5 +1,5 @@
 /*
- * @(#)PlanningService.java	2.9.4.0 01/04/2015
+ * @(#)PlanningService.java	2.9.4.0 06/04/2015
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -56,7 +56,7 @@ public class PlanningService
     actionIO = (ActionIO) DataCache.getDao(Model.Action);
     conflictService = new ConflictService(dc);
   }
-  
+
   /**
    * Utility method to reformat midnight.
    * Postgresql usually represents midnight as "00:00".
@@ -79,7 +79,7 @@ public class PlanningService
     Calendar end = Calendar.getInstance(Locale.FRANCE);
     end.setTime(a.getDateEnd().getDate());
 
-    while (start.get(Calendar.DAY_OF_WEEK) != a.getDay() + 1) {
+    while (start.get(Calendar.DAY_OF_WEEK) != a.getDay()) {
       start.add(Calendar.DATE, 1); // day increment
     }
     int dwm = start.get(Calendar.DAY_OF_WEEK_IN_MONTH);
@@ -174,9 +174,8 @@ public class PlanningService
     }
   }
 
-  String planAdministrative(final List<Action> actions) throws PlanningException {
-    final StringBuilder sb = new StringBuilder();
-    final String roomLabel = BundleUtil.getLabel("Room.label");
+  List<ScheduleTestConflict> planAdministrative(final List<Action> actions) throws PlanningException {
+    final List<ScheduleTestConflict> allConflicts = new ArrayList<ScheduleTestConflict>();
     try {
       dc.withTransaction(new DataConnection.SQLRunnable<Void>()
       {
@@ -186,14 +185,17 @@ public class PlanningService
             List<DateFr> dates = generationDate(a);
             for (Iterator<DateFr> it = dates.iterator(); it.hasNext();) {
               DateFr d = it.next();
-              if (!isOfficeFree(d, a)) {
-                sb.append(d).append(' ').append(a.getHourStart()).append('-').append(a.getHourEnd())
-                        .append(" ").append(roomLabel).append(' ').append(a.getRoom()).append('\n');
+              List<ScheduleTestConflict> conflicts = getOfficeConflicts(d, a);
+              if (conflicts.size() > 0) {
+                allConflicts.addAll(conflicts);
                 it.remove();
               }
             }
-            a.setDates(dates);
-            plan(a, Schedule.ADMINISTRATIVE);
+
+            if (dates.size() > 0) {
+              a.setDates(dates);
+              plan(a, Schedule.ADMINISTRATIVE);
+            }
           }
           return null;
         }
@@ -201,7 +203,7 @@ public class PlanningService
     } catch (Exception e) {
       throw new PlanningException(e.getMessage());
     }
-    return sb.toString();
+    return allConflicts;
 
   }
 
@@ -280,7 +282,7 @@ public class PlanningService
   }
 
   /**
-   * Deletes the schedule {@code s}.
+   * Deletes the schedule {@literal s}.
    * @param s schedule to delete
    * @throws PlanningException if SQLException is caught
    */
@@ -1184,8 +1186,8 @@ public class PlanningService
     }
   }
 
-  boolean isOfficeFree(DateFr d, Action a) throws SQLException {
-    return conflictService.testOfficeConflicts(d, a);
+  List<ScheduleTestConflict> getOfficeConflicts(DateFr d, Action a) throws SQLException {
+    return conflictService.testRoomAndPersonConflicts(d, a);
   }
 
   private void debug(Vector<DateFr> sessions, int hId) {

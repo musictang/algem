@@ -1,7 +1,7 @@
 /*
- * @(#)MemberPassRehearsalView.java	2.8.w 21/07/14
- * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * @(#)MemberPassRehearsalView.java	2.9.4.0 06/04/15
+ *
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.contact.member;
 
@@ -41,7 +41,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.4.0
  */
 public class MemberPassRehearsalView
         extends GemPanel
@@ -88,7 +88,7 @@ public class MemberPassRehearsalView
   }
 
   int getDay() {
-    return dayChoice.getSelectedIndex();
+    return dayChoice.getKey();
   }
 
   DateFr getDateStart() {

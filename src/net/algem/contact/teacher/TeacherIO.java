@@ -1,7 +1,7 @@
 /*
- * @(#)TeacherIO.java	2.8.m 06/09/13
- * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * @(#)TeacherIO.java	2.9.4.0 06/04/15
+ *
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.contact.teacher;
 
@@ -24,6 +24,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Vector;
+import net.algem.config.ConfigKey;
+import net.algem.config.ConfigUtil;
 import net.algem.config.Instrument;
 import net.algem.config.InstrumentIO;
 import net.algem.contact.PersonIO;
@@ -40,7 +42,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.m
+ * @version 2.9.4.0
  */
 public class TeacherIO
         extends TableIO
@@ -96,16 +98,16 @@ public class TeacherIO
     InstrumentIO.delete(t.getId(), Instrument.TEACHER, dc);
     InstrumentIO.insert(t.getInstruments(), t.getId(), Instrument.TEACHER, dc);
   }
-  
+
   /**
    * Gets the number of schedules occupied by a teacher.
    * @param id teacher id
    * @return 0 or an integer > 0
-   * @throws SQLException 
+   * @throws SQLException
    */
   public int hasSchedules(int id) throws SQLException {
     String query = "SELECT count(idper) FROM " + ScheduleIO.TABLE
-            + " WHERE idper = " + id 
+            + " WHERE idper = " + id
             + " AND ptype IN (" + Schedule.COURSE + ", " + Schedule.WORKSHOP +")";
     ResultSet rs = dc.executeQuery(query);
     int count = 0;
@@ -149,7 +151,9 @@ public class TeacherIO
   public Vector<Teacher> find(String where) throws SQLException {
     Vector<Teacher> v = new Vector<Teacher>();
     String query = "SELECT " + COLUMNS + ", nom, prenom FROM " + TABLE + " t, " + PersonIO.TABLE + " p WHERE t.idper = p.id " + where;
-    query += " ORDER by p.prenom, p.nom";
+    String order = ConfigUtil.getConf(ConfigKey.PERSON_SORT_ORDER.getKey());
+
+    query += " ORDER BY " + (order == null || order.toLowerCase().startsWith("n") ? "p.nom, p.prenom" : "p.prenom, p.nom");
 
     ResultSet rs = dc.executeQuery(query);
     while (rs.next()) {

@@ -1,5 +1,5 @@
 /*
- * @(#)AdministrativeTableView.java	2.9.4.0 23/03/15
+ * @(#)AdministrativeTableView.java		2.9.4.0 06/04/2015
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -79,9 +79,9 @@ public class AdministrativeTableView
     days[4] = new DayOfWeek(Calendar.FRIDAY, weekDays[Calendar.FRIDAY]);
     days[5] = new DayOfWeek(Calendar.SATURDAY, weekDays[Calendar.SATURDAY]);
     days[6] = new DayOfWeek(Calendar.SUNDAY, weekDays[Calendar.SUNDAY]);
-    
+
     cm.getColumn(0).setCellEditor(new DefaultCellEditor(new JComboBox(days)));
-    
+
     HourCellEditor cellEditor = new HourCellEditor();
     cm.getColumn(1).setCellEditor(cellEditor);
     cm.getColumn(2).setCellEditor(cellEditor);
@@ -136,7 +136,7 @@ public class AdministrativeTableView
     setPreferredSize(new Dimension(480, 200));//! IMPORTANT
 
   }
-  
+
   void setEstab(GemList<Room> list, int estab) {
     roomChoice = new RoomChoice(new RoomChoiceEstabModel(list, estab));
     roomTableColumn.setCellEditor(new DefaultCellEditor(roomChoice));
@@ -160,9 +160,15 @@ public class AdministrativeTableView
     a.setRoom(new Room(0, ""));
     return a;
   }
-  
+
   List<AdministrativeActionModel> getRows() {
     return tableModel.getData();
+  }
+
+  void clear() {
+    tableModel.clear();
+    load();
+    tableModel.fireTableDataChanged();
   }
 
 }

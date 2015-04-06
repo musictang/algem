@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleDetailCtrl.java 2.9.4.0 01/04/2015
+ * @(#)ScheduleDetailCtrl.java 2.9.4.0 06/04/2015
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -33,6 +33,8 @@ import java.util.Vector;
 import java.util.logging.Level;
 import javax.swing.JDialog;
 import javax.swing.JRootPane;
+import net.algem.config.ConfigKey;
+import net.algem.config.ConfigUtil;
 
 import net.algem.config.Instrument;
 import net.algem.contact.*;
@@ -72,7 +74,7 @@ public class ScheduleDetailCtrl
         implements ActionListener
 {
 
-  private static PersonScheduleComparator psComparator = new PersonScheduleComparator();
+  private static PersonScheduleComparator psComparator = new PersonScheduleComparator(ConfigUtil.getConf(ConfigKey.PERSON_SORT_ORDER.getKey()));
   private static PersonComparator personComparator = new PersonComparator();
   private static MailUtil MAIL_UTIL;
 
