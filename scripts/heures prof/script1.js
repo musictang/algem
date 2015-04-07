@@ -3,7 +3,7 @@ var dateFin = utils.sqlDate(args.dateFin);
 
 var query;
 if (args.showDetail) {
-    query = "select per.id, per.nom, per.prenom, plan.jour, plan.debut, plan.fin, sal.nom, act.statut, act.niveau, act.places from prof prof " +
+    query = "select per.id, per.nom, per.prenom, plan.jour, plan.debut, plan.fin, sal.nom, act.statut, act.niveau from prof prof " +
     "join personne per on prof.idper = per.id " +
     "join planning plan on plan.idper = per.id " +
     "join action act on plan.action = act.id " +
