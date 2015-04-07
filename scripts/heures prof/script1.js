@@ -10,8 +10,8 @@ if (args.showDetail) {
     "join salle sal on plan.lieux = sal.id " +
     "where " +
     "prof.actif is true " +
-    "and plan.jour >= '2015-02-01' " +
-    "and plan.jour <= '2015-02-28' " +
+    "and plan.jour >= '" + dateDebut + "' " +
+    "and plan.jour <= '" + dateFin + "' " +
     "and sal.nom not like 'RATTRAPAGE%' " +
     "and act.cours != 0 " +
     "order by per.nom, per.prenom, plan.jour asc";
