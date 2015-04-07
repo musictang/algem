@@ -10,7 +10,9 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class ScriptExecutorServiceImpl implements ScriptExecutorService {
@@ -33,7 +35,7 @@ public class ScriptExecutorServiceImpl implements ScriptExecutorService {
                 bindings.put("out", out);
                 bindings.put("args", arguments.getArguments());
                 bindings.put("dc", conn);
-
+                bindings.put("utils", new Utils());
                 engine.eval(script.getCode(), bindings);
                 return out.getResult();
             }
@@ -83,6 +85,16 @@ public class ScriptExecutorServiceImpl implements ScriptExecutorService {
                     "_header=" + _header +
                     ", rows=" + rows +
                     '}';
+        }
+    }
+
+    public static class Utils {
+        public String sqlDate(Date date) {
+            return new SimpleDateFormat("yyyy-MM-dd").format(date);
+        }
+
+        public void print(Object o) {
+            System.out.println(o);
         }
     }
 }
