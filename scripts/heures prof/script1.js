@@ -13,6 +13,7 @@ if (args.showDetail) {
     "and plan.jour >= '2015-02-01' " +
     "and plan.jour <= '2015-02-28' " +
     "and sal.nom not like 'RATTRAPAGE%' " +
+    "and act.cours != 0 " +
     "order by per.nom, per.prenom, plan.jour asc";
 } else {
     query = "select per.id, per.nom, per.prenom, act.statut, ( case when act.statut = 2 then act.niveau else null end) as niv" +
@@ -26,6 +27,7 @@ if (args.showDetail) {
     "and plan.jour >= '" + dateDebut + "' " +
     "and plan.jour <= '" + dateFin + "' " +
     "and sal.nom not like 'RATTRAPAGE%' " +
+    "and act.cours != 0 " +
     "GROUP BY per.id, per.nom, per.prenom, act.statut, niv " +
     "order by per.nom, per.prenom, act.statut, niv";
 }
