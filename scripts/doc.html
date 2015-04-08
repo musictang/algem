@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>doc</title>
+<link rel="stylesheet" href="https://stackedit.io/res-min/themes/base.css" />
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body><div class="container"><h1 id="moteur-de-script">Moteur de script</h1>
+
+<p>Le moteur de script est basé sur le moteur Javascript Nashorn, qui permet l’éxécution de code javascript au sein de la JVM, et offre une intéropérabilité complète entre le code Javascript et Java. Le moteur Nashorn est inclus de base dans le JRE7. Le formalisme Typescript sera employé pour expliciter le type des objets.</p>
+
+<p>Un script est composé :</p>
+
+<ul>
+<li>d’un fichier de description script.json, qui décrit les métadonnées et arguments du script</li>
+<li>d’un fichier d’implémentation script.js, qui effectue le travail de requêtage et d’export.</li>
+</ul>
+
+
+
+<h2 id="description-des-scripts">Description des scripts</h2>
+
+<p>Chaque script est accompanié d’un fichier JSON qui décrit les méta données du script.</p>
+
+
+
+<h3 id="exemple">Exemple</h3>
+
+<p>Un exemple de fichier JSON : </p>
+
+
+
+<pre class="prettyprint"><code class=" hljs json">{
+  "<span class="hljs-attribute">description</span>": <span class="hljs-value"><span class="hljs-string">"Un script de test"</span></span>,
+  "<span class="hljs-attribute">args</span>": <span class="hljs-value">[{
+    "<span class="hljs-attribute">name</span>" : <span class="hljs-value"><span class="hljs-string">"text1"</span></span>, "<span class="hljs-attribute">label</span>": <span class="hljs-value"><span class="hljs-string">"Un text"</span></span>, "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"text"</span>
+  </span>}, {
+    "<span class="hljs-attribute">name</span>" : <span class="hljs-value"><span class="hljs-string">"int1"</span></span>, "<span class="hljs-attribute">label</span>": <span class="hljs-value"><span class="hljs-string">"Un entier"</span></span>, "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"int"</span>
+  </span>}, {
+    "<span class="hljs-attribute">name</span>" : <span class="hljs-value"><span class="hljs-string">"bool1"</span></span>, "<span class="hljs-attribute">label</span>": <span class="hljs-value"><span class="hljs-string">"Vrai / faux"</span></span>, "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"bool"</span>
+  </span>},{
+    "<span class="hljs-attribute">name</span>" : <span class="hljs-value"><span class="hljs-string">"date1"</span></span>, "<span class="hljs-attribute">label</span>": <span class="hljs-value"><span class="hljs-string">"Date"</span></span>, "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"date"</span>
+  </span>}]
+</span>}</code></pre>
+
+
+
+<h3 id="description">Description</h3>
+
+<p>Une description user friendly du script peut être donné dans le champ <code>description</code></p>
+
+
+
+<h3 id="paramètres">Paramètres</h3>
+
+<p><code>args</code> est la liste des arguments que peut prendre le script, pour par exemple, laisser l’utilisateur saisir une date sur laquelle doit s’éxécuter le script, chercher par du texte, ou activer certains paramètres d’affichage.</p>
+
+<p>Chaque argument est un objet json:</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs json">{
+    "<span class="hljs-attribute">name</span>" : <span class="hljs-value"><span class="hljs-string">"text1"</span></span>, "<span class="hljs-attribute">label</span>": <span class="hljs-value"><span class="hljs-string">"Un text"</span></span>, "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"text"</span>
+</span>}</code></pre>
+
+<ul>
+<li><code>name: string</code> : le nom technique du paramètre</li>
+<li><code>label: string</code> : le nom affiché du paramètre</li>
+<li><code>type</code> : le type du paramètre <br>
+<ul><li><code>text</code> : entrée textuelle</li>
+<li><code>int</code> : entrée d’un nombre entier</li>
+<li><code>bool</code> : entrée boolean, représenté par une case à cocher</li>
+<li><code>date</code> : entrée date, représenté par un date picker</li></ul></li>
+</ul>
+
+
+
+<h2 id="implémentation-des-scripts">Implémentation des scripts</h2>
+
+
+
+<h3 id="argument-args">Argument <code>args</code></h3>
+
+<ul>
+<li><code>args: object</code> </li>
+</ul>
+
+<p>Les valeurs des arguments passés au script sont disponibles sous forme de paire de clef/valeurs dans l’objet args.  <br>
+En fonction du type de paramètre, la valeur est typé selon la correspondance suivante : </p>
+
+<ul>
+<li><code>text</code> -&gt; <code>string</code> </li>
+<li><code>int</code> -&gt; <code>number</code></li>
+<li><code>bool</code> -&gt; <code>bool</code></li>
+<li><code>date</code> -&gt; <code>java.util.Date</code></li>
+</ul>
+
+
+
+<h3 id="objet-de-sortie-out">Objet de sortie <code>out</code></h3>
+
+<p>L’objet de sortie permet au script d’écrire des résultats sous forme tabulaire</p>
+
+<ul>
+<li><code>out.header(header: string[])</code> : écriture de l’en-tête, doit être appelé au moins une fois par le script</li>
+<li><code>out.line(line: string[])</code> : écriture d’une ligne</li>
+<li><code>out.resultSet(rs: resultSet)</code> : écriture de l’en-tête et des lignes comprises dans le resultSet</li>
+</ul>
+
+
+
+<h3 id="objet-de-connexion-conn">Objet de connexion <code>conn</code></h3>
+
+<ul>
+<li><code>conn: DataConnection</code> </li>
+</ul>
+
+<p>Une instance de DataConnection est accessible au script, les requêtes effectuées par le script sont englobées dans une transaction.</p>
+
+
+
+<h3 id="objet-utilitaire-utils">Objet utilitaire <code>utils</code></h3>
+
+<p>L’objets <code>utils</code> contient des fonctions utilisées fréquemment dans les scripts</p>
+
+<ul>
+<li><code>utils.print(message: string)</code> : affichage d’un message dans la console.</li>
+<li><code>utils.sqlDate(date: java.util.Date): string</code> : transforme une date java en une date postgres</li>
+</ul></div></body>
+</html>

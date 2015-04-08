@@ -1,8 +1,6 @@
 # Moteur de script
 
-Le moteur de script est basé sur le moteur Javascript Nashorn, qui permet l'éxécution de code javascript au sein de la
-JVM, et offre une intéropérabilité complète entre le code Javascript et Java. 
-Le moteur Nashorn est inclus de base dans le JRE7. Le formalisme Typescript sera employé pour expliciter le type des objets.
+Le moteur de script est basé sur le moteur Javascript Nashorn, qui permet l'éxécution de code javascript au sein de la JVM, et offre une intéropérabilité complète entre le code Javascript et Java. Le moteur Nashorn est inclus de base dans le JRE7. Le formalisme Typescript sera employé pour expliciter le type des objets.
 
 Un script est composé :
 
@@ -34,9 +32,8 @@ Un exemple de fichier JSON :
 Une description user friendly du script peut être donné dans le champ `description`
 
 ### Paramètres
-`args` est la liste des arguments que peut prendre le script, pour par exemple, 
-laisser l'utilisateur saisir une date sur laquelle doit s'éxécuter le script, chercher par du texte, 
-ou activer certains paramètres d'affichage.
+`args` est la liste des arguments que peut prendre le script, pour par exemple, laisser l'utilisateur saisir une date sur laquelle doit s'éxécuter le script, chercher par du texte, ou activer certains paramètres d'affichage.
+
 Chaque argument est un objet json:
 
 ```
@@ -58,7 +55,7 @@ Chaque argument est un objet json:
 ###Argument `args`
 - `args: object` 
 
-Les valeurs des arguments passés au script sont disponibles sous forme de paire de clef/valeurs dans l'objet args.
+Les valeurs des arguments passés au script sont disponibles sous forme de paire de clef/valeurs dans l'objet args. 
 En fonction du type de paramètre, la valeur est typé selon la correspondance suivante : 
 
 - `text` -> `string` 
@@ -76,8 +73,7 @@ L'objet de sortie permet au script d'écrire des résultats sous forme tabulaire
 ###Objet de connexion `conn`
 - `conn: DataConnection` 
 
-Une instance de DataConnection est accessible au script, 
-les requêtes effectuées par le script sont englobées dans une transaction.
+Une instance de DataConnection est accessible au script, les requêtes effectuées par le script sont englobées dans une transaction.
 
 ###Objet utilitaire `utils`
 L'objets `utils` contient des fonctions utilisées fréquemment dans les scripts
