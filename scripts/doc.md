@@ -1,6 +1,7 @@
 # Moteur de script
 
-Le moteur de script est basé sur le moteur Javascript Nashorn, qui permet l'éxécution de code javascript au sein de la JVM, et offre une intéropérabilité complète entre le code Javascript et Java. Le moteur Nashorn est inclus de base dans le JRE7. Le formalisme Typescript sera employé pour expliciter le type des objets.
+Le moteur de script est basé sur le moteur Javascript Nashorn, qui permet l'éxécution de code javascript au sein de la JVM, et offre une intéropérabilité complète entre le code Javascript et Java. 
+Le moteur Nashorn est inclus de base dans le JRE7. Le formalisme Typescript sera employé pour expliciter le type des objets.
 
 Un script est composé :
 
@@ -73,10 +74,21 @@ L'objet de sortie permet au script d'écrire des résultats sous forme tabulaire
 ###Objet de connexion `conn`
 - `conn: DataConnection` 
 
-Une instance de DataConnection est accessible au script, les requêtes effectuées par le script sont englobées dans une transaction.
+Une instance de DataConnection est accessible au script, les requêtes effectuées par le script sont englobées dans une transaction pour la durée d'éxécution du script.
 
 ###Objet utilitaire `utils`
 L'objets `utils` contient des fonctions utilisées fréquemment dans les scripts
 
 - `utils.print(message: string)` : affichage d'un message dans la console.
 - `utils.sqlDate(date: java.util.Date): string` : transforme une date java en une date postgres
+
+## Configuration du dossier de script
+
+La racine des dossiers de scripts est configurable dans les propriétés Java avec la clef `scripts_path`.
+
+Par ex.
+```
+scripts_path=\\\\192.168.1.202\\Algem-Serveur\\scripts\\
+```
+
+Les dossiers sont scannés récursivement en recherchant des pairs de fichier `.js / .json`, par ex. si le dossier contient `monscript.js` et `monscript.json` dans le même dossier, alors le script **monscript** apparaitra dans l'IHM des scripts.
