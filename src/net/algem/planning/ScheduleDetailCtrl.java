@@ -415,8 +415,7 @@ public class ScheduleDetailCtrl
     AdministrativeSchedule p = (AdministrativeSchedule) event.getSchedule();
     headPanel.add(new GemLabel(BundleUtil.getLabel("Diary.label")));
 
-    StringBuilder buf = new StringBuilder(BundleUtil.getLabel("Person.label")).append(" ");
-    buf.append(p.getPerson().getFirstnameName());// unescape
+    StringBuilder buf = new StringBuilder(p.getPerson().getFirstnameName());
     GemMenuButton b = new GemMenuButton(buf.toString(), this, "PersonLink", p.getPerson());
     headPanel.add(b);
     Vector<GemMenuButton> vb = modifCtrl.getMenuAdministrative(); // ajout des boutons de PlanModifCtrl

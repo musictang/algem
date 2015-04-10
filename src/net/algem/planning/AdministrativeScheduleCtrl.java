@@ -1,5 +1,5 @@
 /*
- * @(#)AdministrativeScheduleCtrl.java	2.9.4.0 06/04/15
+ * @(#)AdministrativeScheduleCtrl.java	2.9.4.2 10/04/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -58,7 +58,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.0
+ * @version 2.9.4.2
  * @since 2.9.4.0 18/03/15
  */
 public class AdministrativeScheduleCtrl
@@ -113,7 +113,7 @@ public class AdministrativeScheduleCtrl
     gb.insets = GridBagHelper.SMALL_INSETS;
     gb.add(new GemLabel(BundleUtil.getLabel("Establishment.label")), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Date.label")), 0, 1, 1, 1, GridBagHelper.WEST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Person.label")), 0, 3, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Employee.label")), 0, 3, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Menu.holidays.label")), 0, 4, 1, 1, GridBagHelper.WEST);
 
     gb.add(estab, 1, 0, 1, 1, GridBagHelper.WEST);
@@ -196,8 +196,15 @@ public class AdministrativeScheduleCtrl
   }
 
   private void save(final List<Action> actions) {
+    if (actions.size() <= 0) {
+      MessagePopup.warning(this, MessageUtil.getMessage("no.schedule.to.plan"));
+      return;
+    }
     try {
       List<ScheduleTestConflict> conflicts = service.planAdministrative(actions);
+      desktop.postEvent(new ModifPlanEvent(this,
+        actions.get(0).getDateStart(),
+        actions.get(actions.size() - 1).getDateEnd()));
       if (conflicts.size() > 0) {
         ConflictListDlg cfd = new ConflictListDlg(
           desktop.getFrame(),
@@ -207,16 +214,11 @@ public class AdministrativeScheduleCtrl
         for (ScheduleTestConflict c : conflicts) {
           cfd.addConflict(c);
         }
-
         cfd.show();
-//        log = "Séances non planifiées en raison de\nl'occupation de la personne ou de la salle :\n\n" + log;
-//        MessagePopup.information(this, log);
-      }
-      desktop.postEvent(new ModifPlanEvent(this,
-        actions.get(0).getDateStart(),
-        actions.get(actions.size() - 1).getDateEnd()));
+      } else if (!MessagePopup.confirm(this, MessageUtil.getMessage("planning.keep.on.confirmation"))) {
+        close();
+      } 
       tableView.clear();
-
     } catch (PlanningException e) {
       GemLogger.log(e.getMessage());
     }

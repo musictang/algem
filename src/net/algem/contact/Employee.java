@@ -1,5 +1,5 @@
 /*
- * @(#)Employee.java 2.9.3 26/02/15
+ * @(#)Employee.java 2.9.4.2 10/04/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -30,7 +30,7 @@ import net.algem.planning.DateFr;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.3
+ * @version 2.9.4.2
  * @since 2.8.m 04/09/13
  */
 public class Employee {
@@ -196,7 +196,9 @@ public class Employee {
             && (placeBirth == null || placeBirth.isEmpty())
             && (guso == null || guso.isEmpty())
             && (nationality == null || nationality.isEmpty())
-            && (maritalStatus <= 0);
+            && (maritalStatus <= 0)
+            && (types == null || types.size() <= 0)
+            && (children == null || children.length <= 0);
   }
 
 }

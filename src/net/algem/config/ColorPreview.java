@@ -152,7 +152,7 @@ public class ColorPreview extends GemPanel {
     colors.put(ColorPlan.CATCHING_UP, catchUpPanel.getBackground());
     colors.put(ColorPlan.RANGE, memberRangePanel.getBackground());
     colors.put(ColorPlan.WORKSHOP, workshopPanel.getBackground());
-    colors.put(ColorPlan.TRAINING, workshopPanel.getBackground());
+    colors.put(ColorPlan.TRAINING, trainingPanel.getBackground());
     colors.put(ColorPlan.GROUP_REHEARSAL, groupRehearsalPanel.getBackground());
     colors.put(ColorPlan.MEMBER_REHEARSAL, memberRehearsalPanel.getBackground());
     colors.put(ColorPlan.STUDIO, studioPanel.getBackground());
@@ -163,7 +163,7 @@ public class ColorPreview extends GemPanel {
     colors.put(ColorPlan.INSTRUMENT_CO_LABEL, courseCoInstrLabel.getForeground());
     colors.put(ColorPlan.CATCHING_UP_LABEL, catchUpLabel.getForeground());
     colors.put(ColorPlan.WORKSHOP_LABEL, workshopLabel.getForeground());
-    colors.put(ColorPlan.TRAINING_LABEL, workshopLabel.getForeground());
+    colors.put(ColorPlan.TRAINING_LABEL, trainingLabel.getForeground());
     colors.put(ColorPlan.GROUP_LABEL, groupRehearsalLabel.getForeground());
     colors.put(ColorPlan.MEMBER_LABEL, memberRehearsalLabel.getForeground());
     colors.put(ColorPlan.STUDIO_LABEL, studioLabel.getForeground());

@@ -1,5 +1,5 @@
 /*
- * @(#)EquipTableView.java	2.9.2 28/01/15
+ * @(#)EquipTableView.java	2.9.4.2 10/04/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -26,6 +26,7 @@ import java.awt.event.ActionListener;
 import java.util.Vector;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumnModel;
 import net.algem.util.BundleUtil;
 import net.algem.util.ui.GemButton;
@@ -39,7 +40,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.9.4.2
  *
  * @since 1.0a 07/07/1999
  */
@@ -86,6 +87,10 @@ public class EquipTableView
   }
 
   public Vector<Equipment> getData() {
+    TableCellEditor cellEditor = table.getCellEditor();
+    if (cellEditor != null) {
+      table.getCellEditor().stopCellEditing();
+    }
     return model.getData();
   }
 

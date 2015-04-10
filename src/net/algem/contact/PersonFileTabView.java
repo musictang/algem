@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileTabView.java  2.9.4.0 06/04/15
+ * @(#)PersonFileTabView.java  2.9.4.2 10/04/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes All Rights Reserved.
  *
@@ -64,7 +64,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.0
+ * @version 2.9.4.2
  */
 public class PersonFileTabView
         extends FileTabView
@@ -176,13 +176,12 @@ public class PersonFileTabView
     if (dossier.getMember() != null) {
       try {
         addMemberTab();
-//        memberEditor.set(dossier.getMember());
+        memberEditor.set(dossier.getMember());
         if (dossier.getContact().getAddress() == null && dossier.getContact().getTele() == null) {
           Vector<Address> addressLink = AddressIO.findId(dossier.getMember().getPayer(), DataCache.getDataConnection());
           Vector<Telephone> phoneLink = TeleIO.findId(dossier.getMember().getPayer(), DataCache.getDataConnection());
 
           if (addressLink.size() > 0 || phoneLink.size() > 0) {
-            //cbTelAdresse = new JCheckBox("Address/téléphone liés au payeur N° " + dossier.getMember().getPayer(), true);
             cbTelAdresse = new JCheckBox(MessageUtil.getMessage("payer.link.info", dossier.getMember().getPayer()),
                     true);
             cbTelAdresse.addItemListener(this);
@@ -194,7 +193,6 @@ public class PersonFileTabView
         GemLogger.log(getClass().getName(), "init", ex);
       }
     } else if (parent != null) {
-      //cbTelAdresse = new JCheckBox("Address/téléphone liés au payeur N° " + parent.getId(), true);
       cbTelAdresse = new JCheckBox(MessageUtil.getMessage("payer.link.info", parent.getId()), true);
       cbTelAdresse.addItemListener(this);
       contactFileEditor.setLinkTelAddress(parent.getContact().getAddressAll(), parent.getContact().getTele(), cbTelAdresse);
@@ -207,11 +205,6 @@ public class PersonFileTabView
 
     if (dossier.getRib() != null) {
       addBankTab();
-      /* ribView.setRib(dossier.getRib());
-       * BankBranch bb = new BankBranchIO(dataCache.getDataConnection()).findId(dossier.getRib().getBranchId());
-       * if (bb != null) {
-       * ribView.setBankBranch(bb);
-       * } */
     }
 
     saveBt = closeToolbar.addIcon(BundleUtil.getLabel("Contact.save.icon"),
@@ -329,18 +322,12 @@ public class PersonFileTabView
         memberEditor.setPayer(dossier.getId(), BundleUtil.getLabel("Himself.label"));
       }
       wTab.addItem(memberEditor, MEMBER_TAB_TITLE);
-
-      /*
-       * if (MemberIO.findId(dataCache,dossier.getId()) != null) {
-       * completeMember(); }
-       */
     } else {
       wTab.addItem(memberEditor, MEMBER_TAB_TITLE);//"Fiche Adherent"
     }
     try {
       //les vues inscription et suivi ne sont pas ajoutées si l'adhérent n'existe pas encore
       if ((Member) DataCache.findId(dossier.getId(), Model.Member) != null) {
-//      if (MemberIO.findId(dossier.getId(), dataCache.getDataConnection()) != null) {
         completeMember();
       }
     } catch (SQLException ex) {
@@ -432,7 +419,6 @@ public class PersonFileTabView
       ribView.setPostalCodeCtrl(new CodePostalCtrl(DataCache.getDataConnection()));
       if (dossier.getRib() != null) {
         BankBranch bb = branchIO.findId(dossier.getRib().getBranchId());
-//        BankBranch bb = branchIO.findId(ribView.getBranchCode());
         if (bb != null) {
           ribView.setBankBranch(bb);
         }
@@ -497,7 +483,7 @@ public class PersonFileTabView
     if (memberFollowUpEditor == null) {
       memberFollowUpEditor = new MemberFollowUpEditor(desktop, dossier);
     }
-    wTab.addItem(enrolmentEditor, "Inscriptions");//inscription
+    wTab.addItem(enrolmentEditor, BundleUtil.getLabel("Person.enrolment.tab.label"));//inscription
     wTab.addItem(memberFollowUpEditor, MEMBER_TAB_F_TITLE);//suivi
 
     mainToolbar.addIcon(listener,

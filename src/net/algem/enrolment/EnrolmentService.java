@@ -907,7 +907,7 @@ public class EnrolmentService
    * Gets the extended list of module orders created between {@literal start} and {@literal end} dates.
    * @param start date
    * @param end date
-   * @return
+   * @return a list of ExtendedModuleOrder
    * @throws SQLException 
    */
   public List<ExtendedModuleOrder> getExtendedModuleList(Date start, Date end) throws SQLException {

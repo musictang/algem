@@ -1,5 +1,5 @@
 /*
- * @(#)AdministrativeTableView.java		2.9.4.0 06/04/2015
+ * @(#)AdministrativeTableView.java		2.9.4.2 10/04/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -49,7 +49,7 @@ import net.algem.util.ui.JTableModel;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.0
+ * @version 2.9.4.2
  * @since 2.9.4.0 18/03/15
  */
 public class AdministrativeTableView
@@ -60,11 +60,12 @@ public class AdministrativeTableView
   private final String weekDays[] = PlanningService.WEEK_DAYS;
   private DayOfWeek[] days = new DayOfWeek[7];
   private RoomChoice roomChoice;
+  private final JTable table;
   private TableColumn roomTableColumn;
 
   public AdministrativeTableView(GemList<Room> roomList, int estab) {
     tableModel = new AdministrativeActionTableModel();
-    final JTable table = new JTable(tableModel);
+    table = new JTable(tableModel);
     table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     final TableColumnModel cm = table.getColumnModel();
     cm.getColumn(0).setPreferredWidth(40);
@@ -104,28 +105,20 @@ public class AdministrativeTableView
       public void actionPerformed(ActionEvent e) {
         Object src = e.getSource();
         if (src == btAdd) {
-          TableCellEditor tce = table.getCellEditor();
-          if (tce != null) {
-            tce.stopCellEditing();
-          }
+          stopCellEditing();
           int idx = table.getSelectedRow();
           if (idx >= 0) {
             AdministrativeActionModel a = (AdministrativeActionModel) tableModel.getItem(idx);
             tableModel.getData().add(idx, createAction(a.getDay()));
             tableModel.fireTableRowsInserted(idx, idx);
           }
-
         } else if (src == btRemove) {
-          TableCellEditor tce = table.getCellEditor();
-          if (tce != null) {
-            tce.stopCellEditing();
-          }
+          stopCellEditing();
           int idx = table.getSelectedRow();
           if (idx >= 0) {
             tableModel.deleteItem(idx);
           }
         }
-
       }
     };
     buttons.add(btRemove);
@@ -136,8 +129,16 @@ public class AdministrativeTableView
     setPreferredSize(new Dimension(480, 200));//! IMPORTANT
 
   }
+  
+  private void stopCellEditing() {
+    TableCellEditor tce = table.getCellEditor();
+    if (tce != null) {
+      tce.stopCellEditing();
+    }
+  }
 
   void setEstab(GemList<Room> list, int estab) {
+    stopCellEditing();
     roomChoice = new RoomChoice(new RoomChoiceEstabModel(list, estab));
     roomTableColumn.setCellEditor(new DefaultCellEditor(roomChoice));
   }
@@ -162,6 +163,7 @@ public class AdministrativeTableView
   }
 
   List<AdministrativeActionModel> getRows() {
+    stopCellEditing();
     return tableModel.getData();
   }
 

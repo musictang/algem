@@ -1,7 +1,7 @@
 /*
- * @(#)GroupView.java	2.8.p 08/11/13
+ * @(#)GroupView.java	2.9.4.2 10/04/15
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -47,7 +47,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.p
+ * @version 2.9.4.2
  * @since 1.1aa mardi 24 février 2009
  *
  */
@@ -210,19 +210,31 @@ public class GroupView
   /** Sets the referent. */
   private void setRef(Contact c) {
     idref = c.getId();
-    ref.setText(c.getFirstnameName());
+    ref.setText(getContactName(c));
   }
 
   /** Sets the manager. */
   private void setMan(Contact c) {
     idman = c.getId();
-    man.setText(c.getFirstnameName());
+    man.setText(getContactName(c));
   }
 
   /** Sets the booker. */
   private void setBook(Contact c) {
     idbook = c.getId();
-    book.setText(c.getFirstnameName());
+    book.setText(getContactName(c));
+  }
+  
+  private String getContactName(Contact c) {
+    String n = c.getFirstnameName();
+    if (n != null && n.length() > 0 ) {
+      return n;
+    }
+    n = c.getOrganization();
+    if (n != null && n.length() > 0) {
+      return n;
+    }
+    return String.valueOf(c.getId());
   }
   
   /**
