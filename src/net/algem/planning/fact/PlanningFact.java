@@ -2,6 +2,9 @@ package net.algem.planning.fact;
 
 import java.util.Date;
 
+/**
+ * Represents a planning fact, ie, a factual event that happened to a planning.
+ */
 public class PlanningFact {
     enum Type {
         ABSENCE,

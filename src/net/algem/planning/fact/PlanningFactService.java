@@ -2,30 +2,38 @@ package net.algem.planning.fact;
 
 import net.algem.planning.*;
 import net.algem.room.Room;
-import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
-import net.algem.util.model.GemModel;
-import net.algem.util.model.Model;
 
-import java.sql.SQLException;
-import java.util.Date;
-
+/**
+ * Service class, to perform auditable operation on planning (schedule) instances.
+ * Each operation will modify the state of the planning, and stores one or serveral facts according to the operation
+ */
 public class PlanningFactService {
     private final DataConnection dc;
     private final PlanningService planningService;
+    private final PlanningFactCreator factCreator;
 
-    public PlanningFactService(DataConnection dc, PlanningService planningService) {
+    public PlanningFactService(DataConnection dc, PlanningService planningService, PlanningFactCreator factCreator) {
         this.dc = dc;
         this.planningService = planningService;
+        this.factCreator = factCreator;
     }
 
+    /**
+     * Move a schedule in a catch up room, and save an ABSENCE for the related prof.
+     *
+     * @param schedule the schedule to
+     * @param room the catchup room
+     * @param commentaire user comment
+     * @throws Exception
+     */
     public void scheduleCatchUp(final Schedule schedule, final Room room, final String commentaire) throws Exception {
         if (!room.isCatchingUp()) throw new IllegalArgumentException("Room " + room + " is not for catching up");
 
         dc.withTransaction(new DataConnection.SQLRunnable<Void>() {
             @Override
             public Void run(DataConnection conn) throws Exception {
-                PlanningFact planningFact = createFactForPlanning(schedule, PlanningFact.Type.ABSENCE, commentaire);
+                PlanningFact planningFact = factCreator.createFactForPlanning(schedule, PlanningFact.Type.ABSENCE, commentaire);
                 planningService.changeRoom(schedule.getId(), room.getId());
                 PlanningFactIO.insert(planningFact, conn);
                 return null;
@@ -37,29 +45,11 @@ public class PlanningFactService {
         dc.withTransaction(new DataConnection.SQLRunnable<Void>() {
             @Override
             public Void run(DataConnection conn) throws Exception {
-                PlanningFact planningFact = createFactForPlanning(schedule, PlanningFact.Type.ACTIVITE_BAISSE, commentaire);
+                PlanningFact planningFact = factCreator.createFactForPlanning(schedule, PlanningFact.Type.ACTIVITE_BAISSE, commentaire);
                 planningService.deleteSchedule(schedule);
                 PlanningFactIO.insert(planningFact, conn);
                 return null;
             }
         });
-    }
-
-
-    private PlanningFact createFactForPlanning(Schedule schedule, PlanningFact.Type type, String commentaire) throws SQLException {
-        Action action = (Action) DataCache.findId(schedule.getId(), Model.Action);
-        if (action == null) {
-            throw new IllegalArgumentException("Schedule " + schedule + " has no action");
-        }
-        return new PlanningFact(
-                new Date(),
-                type,
-                schedule.getId(),
-                schedule.getIdPerson(),
-                commentaire,
-                schedule.getStart().getLength(schedule.getEnd()),
-                action.getStatus().getId(),
-                action.getLevel().getId()
-        );
     }
 }
