@@ -53,6 +53,9 @@ import net.algem.planning.day.DaySchedule;
 import net.algem.planning.editing.instruments.AtelierInstrumentsDAO;
 import net.algem.planning.editing.instruments.AtelierInstrumentsService;
 import net.algem.planning.editing.instruments.AtelierInstrumentsServiceImpl;
+import net.algem.planning.fact.services.PlanningFactCreator;
+import net.algem.planning.fact.services.PlanningFactDAO;
+import net.algem.planning.fact.services.PlanningFactService;
 import net.algem.planning.month.MonthSchedule;
 import net.algem.room.*;
 import net.algem.security.DefaultUserService;
@@ -153,6 +156,7 @@ public class DataCache
   private UserService userService;
 
   private AtelierInstrumentsService atelierInstrumentsService;
+  private PlanningFactService planningFactService;
 
   private DataCache() {
 
@@ -200,6 +204,7 @@ public class DataCache
     daySchedule = new DaySchedule();
 
     atelierInstrumentsService = new AtelierInstrumentsServiceImpl(dc, new AtelierInstrumentsDAO(dc), PERSON_IO);
+    planningFactService = new PlanningFactService(dc, new PlanningService(dc), new PlanningFactDAO(dc), new PlanningFactCreator());
   }
 
   /**
@@ -615,7 +620,7 @@ public class DataCache
     } else if (m instanceof Account) {
       ACCOUNT_LIST.removeElement((Account) m);
     } else if (m instanceof CostAccount) {
-      COST_ACCOUNT_CACHE.remove(((CostAccount)m).getKey());
+      COST_ACCOUNT_CACHE.remove(((CostAccount) m).getKey());
     } else if (m instanceof User) {
       USER_CACHE.remove(m.getId());
     } else if (m instanceof Vat) {
@@ -1165,5 +1170,9 @@ public class DataCache
     } catch (IOException e) {
       GemLogger.log("serializ err :" + e);
     }
+  }
+
+  public PlanningFactService getPlanningFactService() {
+    return planningFactService;
   }
 }

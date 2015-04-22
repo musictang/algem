@@ -1,8 +1,10 @@
-package net.algem.planning.fact;
+package net.algem.planning.fact.services;
 
 import net.algem.planning.*;
 import net.algem.room.Room;
+import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
+import net.algem.util.model.Model;
 
 /**
  * Service class, to perform auditable operation on planning (schedule) instances.
@@ -31,6 +33,9 @@ public class PlanningFactService {
      */
     public void scheduleCatchUp(final Schedule schedule, final Room room, final String commentaire) throws Exception {
         if (!room.isCatchingUp()) throw new IllegalArgumentException("Room " + room + " is not for catching up");
+        Room currentRoom = (Room) DataCache.findId(schedule.getIdRoom(), Model.Room);
+        if (currentRoom != null && currentRoom.isCatchingUp())
+            throw new IllegalArgumentException("Schedule " + schedule + " is already catching up");
 
         dc.withTransaction(new DataConnection.SQLRunnable<Void>() {
             @Override

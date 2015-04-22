@@ -2,6 +2,8 @@ package net.algem.planning.fact;
 
 import junit.framework.TestCase;
 import net.algem.TestProperties;
+import net.algem.planning.fact.services.PlanningFact;
+import net.algem.planning.fact.services.PlanningFactDAO;
 import net.algem.util.DataConnection;
 import org.postgresql.util.PGInterval;
 

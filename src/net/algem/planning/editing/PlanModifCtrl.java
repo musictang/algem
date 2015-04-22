@@ -41,6 +41,7 @@ import net.algem.group.GemGroupService;
 import net.algem.group.Group;
 import net.algem.planning.*;
 import net.algem.planning.editing.instruments.AtelierInstrumentsController;
+import net.algem.planning.fact.ui.AbsenceToCatchUpCtrl;
 import net.algem.room.Room;
 import net.algem.util.*;
 import net.algem.util.module.GemDesktop;
@@ -113,6 +114,11 @@ public class PlanModifCtrl
       v.add(new GemMenuButton(BundleUtil.getLabel("Course.instrument.allocation.label"), this, "AtelierInstruments"));
     }
 
+
+    if (true) {
+      v.add(new GemMenuButton("ABSENCETOCATCHUP", this, "AbsenceToCatchUp"));
+      v.add(new GemMenuButton("ABSENCELOWACTIVITY", this, "AbsenceLowActivity"));
+    }
     /* v.add(new GemMenuButton("Replanifier ce cours", this, "Replanifier")); */
     return v;
   }
@@ -261,6 +267,8 @@ public class PlanModifCtrl
         dialogAtelierInstruments();
       } else if(arg.equals("AddEvent")) {
         dialogAddEvent();
+      } else if(arg.equals("AbsenceToCatchUp")) {
+        new AbsenceToCatchUpCtrl(desktop, plan).run();
       }
       /*
        else if (arg.bufferEquals("Replanifier")) {

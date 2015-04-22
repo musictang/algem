@@ -1,4 +1,4 @@
-package net.algem.planning.fact;
+package net.algem.planning.fact.services;
 
 import net.algem.util.DataConnection;
 import net.algem.util.model.TableIO;

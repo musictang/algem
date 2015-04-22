@@ -1,4 +1,4 @@
-package net.algem.planning.fact;
+package net.algem.planning.fact.services;
 
 import net.algem.planning.Action;
 import net.algem.planning.Schedule;
@@ -13,7 +13,7 @@ import java.util.Date;
  */
 public class PlanningFactCreator {
     public PlanningFact createFactForPlanning(Schedule schedule, int idProf, PlanningFact.Type type, String commentaire) throws SQLException {
-        Action action = (Action) DataCache.findId(schedule.getId(), Model.Action);
+        Action action = (Action) DataCache.findId(schedule.getIdAction(), Model.Action);
         if (action == null) {
             throw new IllegalArgumentException("Schedule " + schedule + " has no action");
         }
