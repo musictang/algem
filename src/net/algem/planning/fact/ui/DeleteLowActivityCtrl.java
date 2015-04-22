@@ -9,8 +9,6 @@ import net.algem.util.ui.MessagePopup;
 import net.algem.util.ui.SQLErrorDlg;
 import net.algem.util.ui.Toast;
 
-import javax.swing.*;
-
 public class DeleteLowActivityCtrl {
     private final GemDesktop desktop;
     private final Schedule schedule;
