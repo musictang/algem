@@ -116,9 +116,9 @@ public class PlanModifCtrl
     }
 
 
-    if (true) {
-      v.add(new GemMenuButton("ABSENCETOCATCHUP", this, "AbsenceToCatchUp"));
-      v.add(new GemMenuButton("DELETELOWACTIVITY", this, "DeleteLowActivity"));
+    if (Algem.isFeatureEnabled("planning_fact")) {
+      v.add(new GemMenuButton(BundleUtil.getLabel("PlanningFact.AbsenceToCatchUp.label"), this, "AbsenceToCatchUp"));
+      v.add(new GemMenuButton(BundleUtil.getLabel("PlanningFact.DeleteLowActivity.label"), this, "DeleteLowActivity"));
     }
     /* v.add(new GemMenuButton("Replanifier ce cours", this, "Replanifier")); */
     return v;
