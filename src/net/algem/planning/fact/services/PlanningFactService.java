@@ -48,6 +48,12 @@ public class PlanningFactService {
         });
     }
 
+    /**
+     * Delete a schedule, and save a ACTIVITE_BAISSE fact for this event.
+     * @param schedule
+     * @param commentaire
+     * @throws Exception
+     */
     public void scheduleDeletedLowActivity(final Schedule schedule, final String commentaire) throws Exception {
         dc.withTransaction(new DataConnection.SQLRunnable<Void>() {
             @Override
