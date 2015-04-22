@@ -24,7 +24,7 @@ public class DeleteLowActivityCtrl {
 
     public void run() {
         boolean confirmation = MessagePopup.confirm(desktop.getFrame(), "<html><b>Voulez vous supprimer ce planning ?</b>\n" +
-                "Un événement de baisse d'activité sera enregistré.</html>", "Confirmation de suppression");
+                "Un événement de baisse d'activité sera enregistré.", "Confirmation de suppression");
 
         if (confirmation) {
             try {
