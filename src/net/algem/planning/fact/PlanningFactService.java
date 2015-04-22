@@ -11,11 +11,13 @@ import net.algem.util.DataConnection;
 public class PlanningFactService {
     private final DataConnection dc;
     private final PlanningService planningService;
+    private final PlanningFactDAO planningFactDAO;
     private final PlanningFactCreator factCreator;
 
-    public PlanningFactService(DataConnection dc, PlanningService planningService, PlanningFactCreator factCreator) {
+    public PlanningFactService(DataConnection dc, PlanningService planningService, PlanningFactDAO planningFactDAO, PlanningFactCreator factCreator) {
         this.dc = dc;
         this.planningService = planningService;
+        this.planningFactDAO = planningFactDAO;
         this.factCreator = factCreator;
     }
 
@@ -35,7 +37,7 @@ public class PlanningFactService {
             public Void run(DataConnection conn) throws Exception {
                 PlanningFact planningFact = factCreator.createFactForPlanning(schedule, PlanningFact.Type.ABSENCE, commentaire);
                 planningService.changeRoom(schedule.getId(), room.getId());
-                PlanningFactIO.insert(planningFact, conn);
+                planningFactDAO.insert(planningFact);
                 return null;
             }
         });
@@ -47,7 +49,7 @@ public class PlanningFactService {
             public Void run(DataConnection conn) throws Exception {
                 PlanningFact planningFact = factCreator.createFactForPlanning(schedule, PlanningFact.Type.ACTIVITE_BAISSE, commentaire);
                 planningService.deleteSchedule(schedule);
-                PlanningFactIO.insert(planningFact, conn);
+                planningFactDAO.insert(planningFact);
                 return null;
             }
         });

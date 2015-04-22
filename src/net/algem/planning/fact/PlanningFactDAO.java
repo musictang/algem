@@ -6,8 +6,14 @@ import net.algem.util.model.TableIO;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class PlanningFactIO extends TableIO {
+public class PlanningFactDAO extends TableIO {
     public final static String TABLE = "planning_fact";
+
+    private final DataConnection dataConnection;
+
+    public PlanningFactDAO(DataConnection dataConnection) {
+        this.dataConnection = dataConnection;
+    }
 
     private static String minutesToPGInterval(int minutes) {
         return minutes + " minutes";
@@ -17,7 +23,7 @@ public class PlanningFactIO extends TableIO {
         return new SimpleDateFormat("yyyy-MM-dd HH:mm").format(date);
     }
 
-    public static void insert(PlanningFact fact, DataConnection dc) throws Exception {
+    public void insert(PlanningFact fact) throws Exception {
         String query = String.format("INSERT INTO planning_fact VALUES ('%s', '%s', %d, %d, '%s', '%s', %d, %d)",
                 toTimeStamp(fact.getDate()),
                 fact.getType().toDBType(),
@@ -28,6 +34,6 @@ public class PlanningFactIO extends TableIO {
                 fact.getStatut(),
                 fact.getNiveau()
         );
-        dc.executeQuery(query);
+        dataConnection.executeUpdate(query);
     }
 }
