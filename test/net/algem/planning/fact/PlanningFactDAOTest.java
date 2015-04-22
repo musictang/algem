@@ -38,7 +38,7 @@ public class PlanningFactDAOTest extends TestCase {
                 PlanningFact.Type.ABSENCE,
                 45,
                 3301,
-                "test commentaire",
+                "test'commentaire",
                 90, 1, 2
         );
 
@@ -52,7 +52,7 @@ public class PlanningFactDAOTest extends TestCase {
         assertEquals("absence", resultSet.getString(2));
         assertEquals(45, resultSet.getInt(3));
         assertEquals(3301, resultSet.getInt(4));
-        assertEquals("test commentaire", resultSet.getString(5));
+        assertEquals("test'commentaire", resultSet.getString(5));
         assertEquals(new PGInterval(0, 0, 0, 1, 30, 0), resultSet.getObject(6));
         assertEquals(1, resultSet.getInt(7));
         assertEquals(2, resultSet.getInt(8));

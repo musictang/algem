@@ -29,7 +29,7 @@ public class PlanningFactDAO extends TableIO {
                 fact.getType().toDBType(),
                 fact.getPlanning(),
                 fact.getProf(),
-                fact.getCommentaire(),
+                escape(fact.getCommentaire()),
                 minutesToPGInterval(fact.getDureeMinutes()),
                 fact.getStatut(),
                 fact.getNiveau()
