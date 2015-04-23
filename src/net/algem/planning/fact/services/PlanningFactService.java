@@ -126,7 +126,7 @@ public class PlanningFactService {
 
     private void checkRoom(ReplanifyCommand cmd) throws SQLException {
         for (int salle : cmd.getRoomId()) {
-            Room room = (Room) DataCache.findId(cmd.getSchedule().getIdRoom(), Model.Room);
+            Room room = (Room) DataCache.findId(salle, Model.Room);
             if (room != null && room.isCatchingUp()) {
                 throw new IllegalArgumentException("Cannot replanify to a catching up room");
             }
