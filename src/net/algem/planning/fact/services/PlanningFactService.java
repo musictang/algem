@@ -23,12 +23,14 @@ public class PlanningFactService {
     private final PlanningService planningService;
     private final PlanningFactDAO planningFactDAO;
     private final PlanningFactCreator factCreator;
+    private final RoomFinder roomFinder;
 
-    public PlanningFactService(DataConnection dc, PlanningService planningService, PlanningFactDAO planningFactDAO, PlanningFactCreator factCreator) {
+    public PlanningFactService(DataConnection dc, PlanningService planningService, PlanningFactDAO planningFactDAO, PlanningFactCreator factCreator, RoomFinder roomFinder) {
         this.dc = dc;
         this.planningService = planningService;
         this.planningFactDAO = planningFactDAO;
         this.factCreator = factCreator;
+        this.roomFinder = roomFinder;
     }
 
     /**
@@ -41,7 +43,7 @@ public class PlanningFactService {
      */
     public void scheduleCatchUp(final Schedule schedule, final Room room, final String commentaire) throws Exception {
         if (!room.isCatchingUp()) throw new IllegalArgumentException("Room " + room + " is not for catching up");
-        Room currentRoom = (Room) DataCache.findId(schedule.getIdRoom(), Model.Room);
+        Room currentRoom = roomFinder.findRoom(schedule.getIdRoom());
         if (currentRoom != null && currentRoom.isCatchingUp())
             throw new IllegalArgumentException("Schedule " + schedule + " is already catching up");
 
@@ -75,7 +77,7 @@ public class PlanningFactService {
     }
 
     public boolean isInAbsence(Schedule schedule) throws SQLException {
-        Room room = (Room) DataCache.findId(schedule.getIdRoom(), Model.Room);
+        Room room = roomFinder.findRoom(schedule.getIdRoom());
         return room != null && room.isCatchingUp();
     }
 
@@ -126,7 +128,7 @@ public class PlanningFactService {
 
     private void checkRoom(ReplanifyCommand cmd) throws SQLException {
         for (int salle : cmd.getRoomId()) {
-            Room room = (Room) DataCache.findId(salle, Model.Room);
+            Room room = roomFinder.findRoom(salle);
             if (room != null && room.isCatchingUp()) {
                 throw new IllegalArgumentException("Cannot replanify to a catching up room");
             }
@@ -154,5 +156,12 @@ public class PlanningFactService {
 
         String setPart = StringUtils.join(updates, ", ");
         dc.executeQuery("UPDATE planning SET " + setPart + " WHERE id = " + cmd.getSchedule().getId());
+    }
+
+
+    public static class RoomFinder {
+        public Room findRoom(int id) throws SQLException {
+            return (Room) DataCache.findId(id, Model.Room);
+        }
     }
 }

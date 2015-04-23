@@ -1,4 +1,4 @@
-package net.algem.planning.fact;
+package net.algem.planning.fact.services;
 
 import junit.framework.TestCase;
 import net.algem.TestProperties;
