@@ -8,8 +8,11 @@ import net.algem.planning.PlanningService;
 import net.algem.planning.Schedule;
 import net.algem.room.Room;
 import net.algem.util.DataConnection;
+import net.algem.util.Option;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import static org.mockito.Mockito.*;
 
@@ -22,6 +25,8 @@ public class PlanningFactServiceTest extends TestCase {
     private Schedule schedule;
     private PlanningFact absence404Fact;
     private PlanningFact lowActivity404Fact;
+    private PlanningFact catchupFact;
+    private PlanningFact remplacementFact;
 
     public void setUp() throws Exception {
         super.setUp();
@@ -58,6 +63,14 @@ public class PlanningFactServiceTest extends TestCase {
                 "low activity", 90, 0, 0, "");
         when(planningFactCreator.createFactForPlanning(schedule, PlanningFact.Type.ACTIVITE_BAISSE, "low activity"))
                 .thenReturn(lowActivity404Fact);
+
+        catchupFact = new PlanningFact(new Date(), PlanningFact.Type.RATTRAPAGE, 1234, 3301, "commentaire", 90, 0, 0, "");
+        when(planningFactCreator.createFactForPlanning(schedule, PlanningFact.Type.RATTRAPAGE, "commentaire"))
+                .thenReturn(catchupFact);
+
+        remplacementFact = new PlanningFact(new Date(), PlanningFact.Type.REMPLACEMENT, 1234, 3302, "commentaire", 90, 0, 0, "");
+        when(planningFactCreator.createFactForPlanning(schedule, 3302, PlanningFact.Type.REMPLACEMENT, "commentaire"))
+                .thenReturn(remplacementFact);
 
         planningFactService = new PlanningFactService(dc, planningService, planningFactDAO, planningFactCreator, roomFinder);
     }
@@ -105,6 +118,78 @@ public class PlanningFactServiceTest extends TestCase {
         //  a low activity fact is created
         verify(planningFactDAO).insert(lowActivity404Fact);
     }
+
+    public void testCreateReplanifyFactsChangeDate() throws Exception {
+        //Given a replanification command to change the date of the schedule
+        ReplanifyCommand replanifyCommand = new ReplanifyCommand(
+                schedule,
+                Option.<Integer>none(),
+                Option.<Integer>none(),
+                Option.of(new DateFr(2, 1, 2015)),
+                Option.<Hour>none()
+        );
+
+        //When I create the related facts
+        List<PlanningFact> facts = planningFactService.createReplanifyFacts(replanifyCommand, "commentaire");
+
+        //Then it should create an ABSENCE and a RATTRAPAGE fact for the same prof
+        assertEquals(Arrays.asList(absence404Fact, catchupFact), facts);
+    }
+
+    public void testCreateReplanifyFactsChangeDateAlreadyAbsent() throws Exception {
+        //Given a replanification command to change the date of the schedule, already in catchup room
+        schedule.setIdRoom(405);
+        ReplanifyCommand replanifyCommand = new ReplanifyCommand(
+                schedule,
+                Option.<Integer>none(),
+                Option.<Integer>none(),
+                Option.of(new DateFr(2, 1, 2015)),
+                Option.<Hour>none()
+        );
+
+        //When I create the related facts
+        List<PlanningFact> facts = planningFactService.createReplanifyFacts(replanifyCommand, "commentaire");
+
+        //Then it should create only a RATTRAPAGE fact for the same prof
+        assertEquals(Arrays.asList(catchupFact), facts);
+    }
+
+    public void testCreateReplanifyFactsChangeProf() throws Exception {
+        //Given a replanification command to change the prof, and the date of the schedule
+        ReplanifyCommand replanifyCommand = new ReplanifyCommand(
+                schedule,
+                Option.of(3302),
+                Option.<Integer>none(),
+                Option.of(new DateFr(2, 1, 2015)),
+                Option.<Hour>none()
+        );
+
+        //When I create the related facts
+        List<PlanningFact> facts = planningFactService.createReplanifyFacts(replanifyCommand, "commentaire");
+
+        //Then it should create an ABSENCE for the current prof 3301
+        //and a REMPLACEMENT for the prof 3302
+        assertEquals(Arrays.asList(absence404Fact, remplacementFact), facts);
+    }
+
+    public void testCreateReplanifyFactsChangeProfAlreadyAbsent() throws Exception {
+        //Given a replanification command to change the prof, and the date of the schedule, already in catchup room
+        schedule.setIdRoom(405);
+        ReplanifyCommand replanifyCommand = new ReplanifyCommand(
+                schedule,
+                Option.of(3302),
+                Option.<Integer>none(),
+                Option.of(new DateFr(2, 1, 2015)),
+                Option.<Hour>none()
+        );
+
+        //When I create the related facts
+        List<PlanningFact> facts = planningFactService.createReplanifyFacts(replanifyCommand, "commentaire");
+
+        //Then it should create only a REMPLACEMENT fact for the prof 3302
+        assertEquals(Arrays.asList(remplacementFact), facts);
+    }
+
 
     public void testReplanify() throws Exception {
 

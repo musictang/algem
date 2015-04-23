@@ -105,7 +105,7 @@ public class PlanningFactService {
         });
     }
 
-    private List<PlanningFact> createReplanifyFacts(ReplanifyCommand cmd, String comment) throws SQLException {
+    public List<PlanningFact> createReplanifyFacts(ReplanifyCommand cmd, String comment) throws SQLException {
         List<PlanningFact> facts = new ArrayList<>();
         Schedule schedule = cmd.getSchedule();
         boolean scheduleInAbsence = isInAbsence(schedule);
