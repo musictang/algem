@@ -50,12 +50,12 @@ public class PlanningFactServiceTest extends TestCase {
 
 
         //Expected facts
-        absence404Fact = new PlanningFact(new Date(), PlanningFact.Type.ABSENCE, 1234, 3301, "commentaire", 90, 0, 0);
+        absence404Fact = new PlanningFact(new Date(), PlanningFact.Type.ABSENCE, 1234, 3301, "commentaire", 90, 0, 0, "");
         when(planningFactCreator.createFactForPlanning(schedule, PlanningFact.Type.ABSENCE, "commentaire"))
                 .thenReturn(absence404Fact);
 
         lowActivity404Fact = new PlanningFact(new Date(), PlanningFact.Type.ACTIVITE_BAISSE, 1234, 3301,
-                "low activity", 90, 0, 0);
+                "low activity", 90, 0, 0, "");
         when(planningFactCreator.createFactForPlanning(schedule, PlanningFact.Type.ACTIVITE_BAISSE, "low activity"))
                 .thenReturn(lowActivity404Fact);
 

@@ -6,6 +6,14 @@ import java.util.Date;
  * Represents a planning fact, ie, a factual event that happened to a planning.
  */
 public class PlanningFact {
+    public String getPlanningDescription() {
+        return planningDescription;
+    }
+
+    public void setPlanningDescription(String planningDescription) {
+        this.planningDescription = planningDescription;
+    }
+
     public enum Type {
         ABSENCE,
         REMPLACEMENT,
@@ -26,8 +34,9 @@ public class PlanningFact {
     private int dureeMinutes;
     private int statut;
     private int niveau;
+    private String planningDescription;
 
-    public PlanningFact(Date date, Type type, int planning, int prof, String commentaire, int dureeMinutes, int statut, int niveau) {
+    public PlanningFact(Date date, Type type, int planning, int prof, String commentaire, int dureeMinutes, int statut, int niveau, String planningDescription) {
         this.date = date;
         this.type = type;
         this.planning = planning;
@@ -36,6 +45,7 @@ public class PlanningFact {
         this.dureeMinutes = dureeMinutes;
         this.statut = statut;
         this.niveau = niveau;
+        this.planningDescription = planningDescription;
     }
 
     public Date getDate() {
@@ -105,13 +115,15 @@ public class PlanningFact {
     @Override
     public String toString() {
         return "PlanningFact{" +
-                "type=" + type +
+                "date=" + date +
+                ", type=" + type +
                 ", planning=" + planning +
                 ", prof=" + prof +
                 ", commentaire='" + commentaire + '\'' +
-                ", duree=" + dureeMinutes +
+                ", dureeMinutes=" + dureeMinutes +
                 ", statut=" + statut +
                 ", niveau=" + niveau +
+                ", planningDescription='" + planningDescription + '\'' +
                 '}';
     }
 
@@ -127,20 +139,24 @@ public class PlanningFact {
         if (dureeMinutes != that.dureeMinutes) return false;
         if (statut != that.statut) return false;
         if (niveau != that.niveau) return false;
+        if (date != null ? !date.equals(that.date) : that.date != null) return false;
         if (type != that.type) return false;
-        return !(commentaire != null ? !commentaire.equals(that.commentaire) : that.commentaire != null);
+        if (commentaire != null ? !commentaire.equals(that.commentaire) : that.commentaire != null) return false;
+        return !(planningDescription != null ? !planningDescription.equals(that.planningDescription) : that.planningDescription != null);
 
     }
 
     @Override
     public int hashCode() {
-        int result = type != null ? type.hashCode() : 0;
+        int result = date != null ? date.hashCode() : 0;
+        result = 31 * result + (type != null ? type.hashCode() : 0);
         result = 31 * result + planning;
         result = 31 * result + prof;
         result = 31 * result + (commentaire != null ? commentaire.hashCode() : 0);
-        result = 31 * result + (int) (dureeMinutes ^ (dureeMinutes >>> 32));
+        result = 31 * result + dureeMinutes;
         result = 31 * result + statut;
         result = 31 * result + niveau;
+        result = 31 * result + (planningDescription != null ? planningDescription.hashCode() : 0);
         return result;
     }
 }

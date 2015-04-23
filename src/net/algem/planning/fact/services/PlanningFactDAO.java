@@ -24,7 +24,7 @@ public class PlanningFactDAO extends TableIO {
     }
 
     public void insert(PlanningFact fact) throws Exception {
-        String query = String.format("INSERT INTO planning_fact VALUES ('%s', '%s', %d, %d, '%s', '%s', %d, %d)",
+        String query = String.format("INSERT INTO planning_fact VALUES ('%s', '%s', %d, %d, '%s', '%s', %d, %d, '%s')",
                 toTimeStamp(fact.getDate()),
                 fact.getType().toDBType(),
                 fact.getPlanning(),
@@ -32,7 +32,8 @@ public class PlanningFactDAO extends TableIO {
                 escape(fact.getCommentaire()),
                 minutesToPGInterval(fact.getDureeMinutes()),
                 fact.getStatut(),
-                fact.getNiveau()
+                fact.getNiveau(),
+                escape(fact.getPlanningDescription())
         );
         dataConnection.executeUpdate(query);
     }

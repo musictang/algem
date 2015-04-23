@@ -10,7 +10,8 @@ CREATE TABLE planning_fact (
   commentaire TEXT,
   duree INTERVAL,
   statut SMALLINT,
-  niveau SMALLINT
+  niveau SMALLINT,
+  planning_desc TEXT
 );
 
 CREATE INDEX planning_fact_planning_idx ON planning_fact (planning);

@@ -25,8 +25,8 @@ public class PlanningFactCreator {
                 commentaire,
                 schedule.getStart().getLength(schedule.getEnd()),
                 action.getStatus().getId(),
-                action.getLevel().getId()
-        );
+                action.getLevel().getId(),
+                schedule.toString());
     }
 
     public PlanningFact createFactForPlanning(Schedule schedule, PlanningFact.Type type, String commentaire) throws SQLException {

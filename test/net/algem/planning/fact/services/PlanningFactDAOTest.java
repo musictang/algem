@@ -2,8 +2,6 @@ package net.algem.planning.fact.services;
 
 import junit.framework.TestCase;
 import net.algem.TestProperties;
-import net.algem.planning.fact.services.PlanningFact;
-import net.algem.planning.fact.services.PlanningFactDAO;
 import net.algem.util.DataConnection;
 import org.postgresql.util.PGInterval;
 
@@ -41,8 +39,8 @@ public class PlanningFactDAOTest extends TestCase {
                 45,
                 3301,
                 "test'commentaire",
-                90, 1, 2
-        );
+                90, 1, 2,
+                "description du planning lors du fait");
 
         //When I insert it in the PlanningFactDAO
         planningFactDAO.insert(fact);
@@ -58,5 +56,6 @@ public class PlanningFactDAOTest extends TestCase {
         assertEquals(new PGInterval(0, 0, 0, 1, 30, 0), resultSet.getObject(6));
         assertEquals(1, resultSet.getInt(7));
         assertEquals(2, resultSet.getInt(8));
+        assertEquals("description du planning lors du fait", resultSet.getString(9));
     }
 }
