@@ -43,6 +43,7 @@ import net.algem.planning.*;
 import net.algem.planning.editing.instruments.AtelierInstrumentsController;
 import net.algem.planning.fact.ui.DeleteLowActivityCtrl;
 import net.algem.planning.fact.ui.AbsenceToCatchUpCtrl;
+import net.algem.planning.fact.ui.ReplanifyCtrl;
 import net.algem.room.Room;
 import net.algem.util.*;
 import net.algem.util.module.GemDesktop;
@@ -119,6 +120,7 @@ public class PlanModifCtrl
     if (Algem.isFeatureEnabled("planning_fact")) {
       v.add(new GemMenuButton(BundleUtil.getLabel("PlanningFact.AbsenceToCatchUp.label"), this, "AbsenceToCatchUp"));
       v.add(new GemMenuButton(BundleUtil.getLabel("PlanningFact.DeleteLowActivity.label"), this, "DeleteLowActivity"));
+      v.add(new GemMenuButton(BundleUtil.getLabel("PlanningFact.Replanify.label"), this, "Replanify"));
     }
     /* v.add(new GemMenuButton("Replanifier ce cours", this, "Replanifier")); */
     return v;
@@ -272,6 +274,8 @@ public class PlanModifCtrl
         new AbsenceToCatchUpCtrl(desktop, plan).run();
       } else if(arg.equals("DeleteLowActivity")) {
         new DeleteLowActivityCtrl(desktop, plan).run();
+      } else if (arg.equals("Replanify")) {
+        new ReplanifyCtrl(desktop, plan).run();
       }
       /*
        else if (arg.bufferEquals("Replanifier")) {

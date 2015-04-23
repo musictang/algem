@@ -46,7 +46,7 @@ public class TestProperties
    /** User with profile 1. */
   public final static String USER = "lm"; // a modifier suivant le contexte
 	 /** Pass. */
-  public final static String PASS = "Pigfy!"; // a modifier suivant le contexte
+  public final static String PASS = "nobody"; // a modifier suivant le contexte
   /** JDBC driver. */
   public final static String DRIVER = "org.postgresql.Driver";
   

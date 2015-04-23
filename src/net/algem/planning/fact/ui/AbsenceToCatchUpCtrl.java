@@ -5,6 +5,7 @@ import net.algem.planning.Schedule;
 import net.algem.planning.editing.ModifPlanEvent;
 import net.algem.planning.fact.services.PlanningFactService;
 import net.algem.room.Room;
+import net.algem.util.GemLogger;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.SQLErrorDlg;
 import net.algem.util.ui.Toast;
@@ -36,7 +37,7 @@ public class AbsenceToCatchUpCtrl implements AbsenceToCatchUpDialog.RoomSelected
             Toast.showToast(desktop, "Le planning a été mis en rattrapage");
         } catch (Exception e) {
             SQLErrorDlg.displayException(desktop.getFrame(), "Erreur", e);
-            e.printStackTrace();
+            GemLogger.logException(e);
         }
     }
 }

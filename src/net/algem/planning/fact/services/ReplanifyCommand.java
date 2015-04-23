@@ -42,5 +42,16 @@ public class ReplanifyCommand {
     public Option<Hour> getStartHour() {
         return startHour;
     }
+
+    @Override
+    public String toString() {
+        return "ReplanifyCommand{" +
+                "schedule=" + schedule +
+                ", profId=" + profId +
+                ", roomId=" + roomId +
+                ", date=" + date +
+                ", startHour=" + startHour +
+                '}';
+    }
 }
 

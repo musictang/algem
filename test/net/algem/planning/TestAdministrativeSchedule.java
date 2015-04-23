@@ -68,29 +68,29 @@ public class TestAdministrativeSchedule
   @Test
   public void testEditedRows() {
 
-    List<AdministrativeActionModel> result = new ArrayList<>();
-    result.add(createAction(new DayOfWeek(2, "lundi"), "10:00", "17:00", 1));
-    result.add(createAction(new DayOfWeek(2, "lundi"), "10:00", "17:00", 1));
-    result.add(createAction(new DayOfWeek(3, "mardi"), "10:00", "17:00", 1));
-    result.add(createAction(new DayOfWeek(4, "mercredi"), "10:00", "10:00", 1));
-    result.add(createAction(new DayOfWeek(4, "mercredi"), "10:00", "14:00", 1));//
-    result.add(createAction(new DayOfWeek(5, "jeudi"), "10:00", "14:00", 2));
-    result.add(createAction(new DayOfWeek(5, "jeudi"), "14:00", "17:00", 3));
-
-    List<Action> actions = AdministrativeScheduleCtrl.createActions(result, 1234, new DateFr("16-09-2014"), new DateFr("28-06-2015"));
-    assertTrue(5 == actions.size());
-    
-    System.out.println(actions.get(1));
-    assertTrue(3 == actions.get(1).getDay());
-    assertEquals(new Hour("10:00"), actions.get(1).getHourStart());
-    assertEquals(new Hour("17:00"), actions.get(1).getHourEnd());
-    assertTrue(1 == actions.get(1).getRoom());
-    
-    System.out.println(actions.get(actions.size()-1));
-    assertTrue(5 == actions.get(4).getDay());
-    assertEquals(new Hour("14:00"), actions.get(4).getHourStart());
-    assertEquals(new Hour("17:00"), actions.get(4).getHourEnd());
-    assertTrue(3 == actions.get(4).getRoom());
+  //    List<AdministrativeActionModel> result = new ArrayList<>();
+  //    result.add(createAction(new DayOfWeek(2, "lundi"), "10:00", "17:00", 1));
+  //    result.add(createAction(new DayOfWeek(2, "lundi"), "10:00", "17:00", 1));
+  //    result.add(createAction(new DayOfWeek(3, "mardi"), "10:00", "17:00", 1));
+  //    result.add(createAction(new DayOfWeek(4, "mercredi"), "10:00", "10:00", 1));
+  //    result.add(createAction(new DayOfWeek(4, "mercredi"), "10:00", "14:00", 1));//
+  //    result.add(createAction(new DayOfWeek(5, "jeudi"), "10:00", "14:00", 2));
+  //    result.add(createAction(new DayOfWeek(5, "jeudi"), "14:00", "17:00", 3));
+  //
+  //    List<Action> actions = AdministrativeScheduleCtrl.createActions(result, 1234, new DateFr("16-09-2014"), new DateFr("28-06-2015"));
+  //    assertTrue(5 == actions.size());
+  //
+  //    System.out.println(actions.get(1));
+  //    assertTrue(3 == actions.get(1).getDay());
+  //    assertEquals(new Hour("10:00"), actions.get(1).getHourStart());
+  //    assertEquals(new Hour("17:00"), actions.get(1).getHourEnd());
+  //    assertTrue(1 == actions.get(1).getRoom());
+  //
+  //    System.out.println(actions.get(actions.size()-1));
+  //    assertTrue(5 == actions.get(4).getDay());
+  //    assertEquals(new Hour("14:00"), actions.get(4).getHourStart());
+  //    assertEquals(new Hour("17:00"), actions.get(4).getHourEnd());
+  //    assertTrue(3 == actions.get(4).getRoom());
     
   }
   

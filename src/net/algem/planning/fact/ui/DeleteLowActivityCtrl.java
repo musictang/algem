@@ -4,6 +4,7 @@ import net.algem.planning.DateFr;
 import net.algem.planning.Schedule;
 import net.algem.planning.editing.ModifPlanEvent;
 import net.algem.planning.fact.services.PlanningFactService;
+import net.algem.util.GemLogger;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.MessagePopup;
 import net.algem.util.ui.SQLErrorDlg;
@@ -32,6 +33,7 @@ public class DeleteLowActivityCtrl {
                 Toast.showToast(desktop, "Planning supprimé");
             } catch (Exception e) {
                 SQLErrorDlg.displayException(desktop.getFrame(), "Erreur", e);
+                GemLogger.logException(e);
             }
         }
     }

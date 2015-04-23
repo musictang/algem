@@ -88,4 +88,14 @@ public class Option<T> implements Iterable<T> {
     public int hashCode() {
         return data != null ? data.hashCode() : 0;
     }
+
+    @Override
+    public String toString() {
+        if (data != null) {
+            return "Some(" + data + ")";
+        } else {
+            return "None";
+        }
+
+    }
 }
