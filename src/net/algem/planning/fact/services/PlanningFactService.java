@@ -90,8 +90,8 @@ public class PlanningFactService {
      * Absence, catchup and replacement facts, will be automatically created from the command,
      * according to the <a href="https://trello.com/c/3WmPBMdy">specification</a>
      *
-     * @param cmd a command that describes which part
-     * @param comment user
+     * @param cmd a command that describes which part of the schedule should be updated
+     * @param comment user comment
      * @throws Exception
      */
     public void replanify(final ReplanifyCommand cmd, final String comment) throws Exception {
@@ -109,6 +109,14 @@ public class PlanningFactService {
         });
     }
 
+    /**
+     * Create facts (not persisted) based on a replanification command,
+     * according to the <a href="https://trello.com/c/3WmPBMdy">specification</a>
+     * @param cmd a command that describes which part of the schedule should be updated
+     * @param comment user comment
+     * @return planning facts corresponding to a replanification
+     * @throws SQLException
+     */
     public List<PlanningFact> createReplanifyFacts(ReplanifyCommand cmd, String comment) throws SQLException {
         List<PlanningFact> facts = new ArrayList<>();
         Schedule schedule = cmd.getSchedule();
