@@ -12,7 +12,9 @@ import net.algem.util.model.Model;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Service class, to perform auditable operation on planning (schedule) instances.
@@ -24,13 +26,15 @@ public class PlanningFactService {
     private final PlanningFactDAO planningFactDAO;
     private final PlanningFactCreator factCreator;
     private final RoomFinder roomFinder;
+    private final ScheduleUpdater scheduleUpdater;
 
-    public PlanningFactService(DataConnection dc, PlanningService planningService, PlanningFactDAO planningFactDAO, PlanningFactCreator factCreator, RoomFinder roomFinder) {
+    public PlanningFactService(DataConnection dc, PlanningService planningService, PlanningFactDAO planningFactDAO, PlanningFactCreator factCreator, RoomFinder roomFinder, ScheduleUpdater scheduleUpdater) {
         this.dc = dc;
         this.planningService = planningService;
         this.planningFactDAO = planningFactDAO;
         this.factCreator = factCreator;
         this.roomFinder = roomFinder;
+        this.scheduleUpdater = scheduleUpdater;
     }
 
     /**
@@ -136,26 +140,25 @@ public class PlanningFactService {
     }
 
     private void executeReplanifyUpdate(ReplanifyCommand cmd) throws SQLException {
-        List<String> updates = new ArrayList<>();
+        Map<String, String> updates = new LinkedHashMap<>();
         for (int prof : cmd.getProfId()) {
-            updates.add("idper = " + prof);
+            updates.put("idper", ""+prof);
         }
         for (DateFr dateFr : cmd.getDate()) {
-            updates.add("jour = '" + dateFr + "'");
+            updates.put("jour", "'" + dateFr + "'");
         }
         for (Hour hour : cmd.getStartHour()) {
             int durationMinutes = cmd.getSchedule().getStart().getLength(cmd.getSchedule().getEnd());
-            updates.add("debut = '" + hour + "'");
+            updates.put("debut", "'" + hour + "'");
             Hour endHour = new Hour(hour);
             endHour.incMinute(durationMinutes);
-            updates.add("fin = '" + endHour + "'");
+            updates.put("fin", "'" + endHour + "'");
         }
         for (int salle : cmd.getRoomId()) {
-            updates.add("lieux = " + salle);
+            updates.put("lieux", "" + salle);
         }
 
-        String setPart = StringUtils.join(updates, ", ");
-        dc.executeUpdate("UPDATE planning SET " + setPart + " WHERE id = " + cmd.getSchedule().getId());
+        scheduleUpdater.updateSchedule(cmd.getSchedule(), updates);
     }
 
 
@@ -163,5 +166,24 @@ public class PlanningFactService {
         public Room findRoom(int id) throws SQLException {
             return (Room) DataCache.findId(id, Model.Room);
         }
+    }
+
+    public static class ScheduleUpdater {
+        private final DataConnection dc;
+
+        public ScheduleUpdater(DataConnection dc) {
+            this.dc = dc;
+        }
+
+        public void updateSchedule(Schedule schedule, Map<String, String> updates) throws SQLException {
+            List<String> parts = new ArrayList<>();
+            for (Map.Entry<String, String> entry : updates.entrySet()) {
+                parts.add(entry.getKey() + " = " + entry.getValue());
+            }
+            String setPart = StringUtils.join(parts, ", ");
+            dc.executeUpdate("UPDATE planning SET " + setPart + " WHERE id = " + schedule.getId());
+        }
+
+
     }
 }

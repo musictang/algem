@@ -10,9 +10,7 @@ import net.algem.room.Room;
 import net.algem.util.DataConnection;
 import net.algem.util.Option;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static org.mockito.Mockito.*;
 
@@ -28,6 +26,7 @@ public class PlanningFactServiceTest extends TestCase {
     private PlanningFact catchupFact;
     private PlanningFact remplacementFact;
     private DataConnection dc;
+    private PlanningFactService.ScheduleUpdater scheduleUpdater;
 
     public void setUp() throws Exception {
         super.setUp();
@@ -73,7 +72,8 @@ public class PlanningFactServiceTest extends TestCase {
         when(planningFactCreator.createFactForPlanning(schedule, 3302, PlanningFact.Type.REMPLACEMENT, "commentaire"))
                 .thenReturn(remplacementFact);
 
-        planningFactService = new PlanningFactService(dc, planningService, planningFactDAO, planningFactCreator, roomFinder);
+        scheduleUpdater = spy(new PlanningFactService.ScheduleUpdater(dc));
+        planningFactService = new PlanningFactService(dc, planningService, planningFactDAO, planningFactCreator, roomFinder, scheduleUpdater);
     }
 
 
@@ -210,7 +210,19 @@ public class PlanningFactServiceTest extends TestCase {
         verify(planningFactDAO).insert(absence404Fact);
         //  a replacement fact should be saved for prof 3302
         verify(planningFactDAO).insert(remplacementFact);
-        // an update should be peformed on the dataconnection
+        verifyNoMoreInteractions(planningFactDAO);
+
+
+        //  an update should be peformed on the dataconnection through the schedule updater
+        Map<String, String> expectedUpdates = new HashMap<>();
+        expectedUpdates.put("idper", "3302");
+        expectedUpdates.put("lieux", "407");
+        expectedUpdates.put("jour", "'02-01-2015'");
+        expectedUpdates.put("debut", "'09:00'");
+        expectedUpdates.put("fin", "'10:30'");
+
+        verify(scheduleUpdater).updateSchedule(schedule, expectedUpdates);
+        //LATER move that to ScheduleUpdater test
         verify(dc).executeUpdate("UPDATE planning SET idper = 3302, jour = '02-01-2015', debut = '09:00', fin = '10:30', lieux = 407 WHERE id = 1234");
     }
 }

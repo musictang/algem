@@ -204,7 +204,9 @@ public class DataCache
     daySchedule = new DaySchedule();
 
     atelierInstrumentsService = new AtelierInstrumentsServiceImpl(dc, new AtelierInstrumentsDAO(dc), PERSON_IO);
-    planningFactService = new PlanningFactService(dc, new PlanningService(dc), new PlanningFactDAO(dc), new PlanningFactCreator(), new PlanningFactService.RoomFinder());
+    planningFactService = new PlanningFactService(dc, new PlanningService(dc), new PlanningFactDAO(dc),
+            new PlanningFactCreator(), new PlanningFactService.RoomFinder(),
+            new PlanningFactService.ScheduleUpdater(dc));
   }
 
   /**
