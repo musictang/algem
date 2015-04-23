@@ -12,7 +12,7 @@ public class Option<T> implements Iterable<T> {
     public Iterator<T> iterator() {
         if (data != null) {
             return new Iterator<T>() {
-                boolean hasNext;
+                boolean hasNext = true;
                 @Override
                 public boolean hasNext() {
                     return hasNext;
@@ -20,6 +20,10 @@ public class Option<T> implements Iterable<T> {
 
                 @Override
                 public T next() {
+                    if (hasNext) {
+                        hasNext = false;
+                        return data;
+                    }
                     return null;
                 }
 
