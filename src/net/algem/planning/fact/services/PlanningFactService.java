@@ -138,24 +138,24 @@ public class PlanningFactService {
     private void executeReplanifyUpdate(ReplanifyCommand cmd) throws SQLException {
         List<String> updates = new ArrayList<>();
         for (int prof : cmd.getProfId()) {
-            updates.add("prof = " + prof);
+            updates.add("idper = " + prof);
         }
         for (DateFr dateFr : cmd.getDate()) {
-            updates.add("date = " + dateFr);
+            updates.add("jour = '" + dateFr + "'");
         }
         for (Hour hour : cmd.getStartHour()) {
             int durationMinutes = cmd.getSchedule().getStart().getLength(cmd.getSchedule().getEnd());
-            updates.add("debut = " + hour);
+            updates.add("debut = '" + hour + "'");
             Hour endHour = new Hour(hour);
             endHour.incMinute(durationMinutes);
-            updates.add("fin = " + endHour);
+            updates.add("fin = '" + endHour + "'");
         }
         for (int salle : cmd.getRoomId()) {
             updates.add("lieux = " + salle);
         }
 
         String setPart = StringUtils.join(updates, ", ");
-        dc.executeQuery("UPDATE planning SET " + setPart + " WHERE id = " + cmd.getSchedule().getId());
+        dc.executeUpdate("UPDATE planning SET " + setPart + " WHERE id = " + cmd.getSchedule().getId());
     }
 
 

@@ -27,11 +27,12 @@ public class PlanningFactServiceTest extends TestCase {
     private PlanningFact lowActivity404Fact;
     private PlanningFact catchupFact;
     private PlanningFact remplacementFact;
+    private DataConnection dc;
 
     public void setUp() throws Exception {
         super.setUp();
 
-        DataConnection dc = spy(TestProperties.getDataConnection());
+        dc = spy(TestProperties.getDataConnection());
         planningService = mock(PlanningService.class);
         planningFactDAO = mock(PlanningFactDAO.class);
         PlanningFactCreator planningFactCreator = mock(PlanningFactCreator.class);
@@ -192,6 +193,24 @@ public class PlanningFactServiceTest extends TestCase {
 
 
     public void testReplanify() throws Exception {
+        //Given a replanification command to change the prof, the room and the date / hours
+        ReplanifyCommand replanifyCommand = new ReplanifyCommand(
+                schedule,
+                Option.of(3302),
+                Option.of(407),
+                Option.of(new DateFr(2, 1, 2015)),
+                Option.of(new Hour(9, 0))
+        );
 
+        //When I execute that command
+        planningFactService.replanify(replanifyCommand, "commentaire");
+
+        //Then
+        //  an absence fact should be saved for the schedule
+        verify(planningFactDAO).insert(absence404Fact);
+        //  a replacement fact should be saved for prof 3302
+        verify(planningFactDAO).insert(remplacementFact);
+        // an update should be peformed on the dataconnection
+        verify(dc).executeUpdate("UPDATE planning SET idper = 3302, jour = '02-01-2015', debut = '09:00', fin = '10:30', lieux = 407 WHERE id = 1234");
     }
 }
