@@ -1,7 +1,7 @@
 /*
- * @(#)VacationIO.java	2.9.4.0 06/04/2015
+ * @(#)VacationIO.java	2.9.4.3 22/04/15
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -23,6 +23,7 @@ package net.algem.planning;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.List;
 import java.util.Vector;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
@@ -33,7 +34,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 	2.9.4.0
+ * @version 	2.9.4.3
  * @since 1.0a 07/07/1999
  */
 public class VacationIO
@@ -63,8 +64,26 @@ public class VacationIO
   }
 
   public static void delete(Vacation v, DataConnection dc) throws SQLException {
-    String query = "DELETE FROM " + TABLE + " WHERE jour = '" + v.getDay() + "' AND vid = " + v.getVid();// todo ->vid= getId
-
+    String query = "DELETE FROM " + TABLE + " WHERE jour = '" + v.getDay() + "' AND vid = " + v.getVid();
+    dc.executeUpdate(query);
+  }
+  
+  /**
+   * Multiple deletion: more efficient on remote connexions.
+   * @param dates list of dates
+   * @param vid type
+   * @param dc data connection
+   * @throws SQLException 
+   */
+  public static void delete(List<DateFr> dates, int vid, DataConnection dc) throws SQLException {
+    StringBuilder sb = new StringBuilder();
+    for (DateFr d : dates) {
+      sb.append('\'').append(d).append('\'').append(',');
+    }
+    if (sb.length() > 0 ) {
+      sb.deleteCharAt(sb.length() -1);
+    }
+    String query = "DELETE FROM " + TABLE + " WHERE jour IN (" + sb.toString() + ") AND vid = " + vid;
     dc.executeUpdate(query);
   }
 

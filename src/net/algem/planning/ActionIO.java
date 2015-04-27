@@ -1,5 +1,5 @@
 /*
- * @(#)ActionIO.java 2.9.2 02/02/15
+ * @(#)ActionIO.java 2.9.4.3 21/04/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,6 +20,8 @@
  */
 package net.algem.planning;
 
+import java.awt.Color;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -36,7 +38,7 @@ import net.algem.util.model.TableIO;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.9.4.3
  * @since 2.4.a 18/04/12
  */
 public class ActionIO
@@ -47,10 +49,14 @@ public class ActionIO
   public static final String TABLE = "action";
   public static final String COLUMNS = "id, cours, niveau, places, tage, statut";
   public static final String SEQUENCE = "action_id_seq";
+  private static final String ACTION_COLOR_TABLE = "action_color";
   private DataConnection dc;
+  private String actionColorQuery = "SELECT color FROM " + ACTION_COLOR_TABLE + " WHERE idaction = ?";
+  private PreparedStatement colorStatement;
 
   public ActionIO(DataConnection dc) {
     this.dc = dc;
+    this.colorStatement = dc.prepareStatement(actionColorQuery);
   }
 
   public void planify(final Action a, final int type) throws PlanningException {
@@ -60,14 +66,19 @@ public class ActionIO
         @Override
         public Void run(DataConnection conn) throws Exception {
           insert(a);
+          String query = null;
           for (DateFr d : a.getDates()) {
-            String query = "INSERT INTO planning VALUES (DEFAULT"
+            query = "INSERT INTO planning VALUES (DEFAULT"
                     + ",'" + d.toString()
                     + "','" + a.getHourStart() + "','" + a.getHourEnd() + "',"
                     + type + ","
                     + a.getIdper() + ","
                     + a.getId() + ","
                     + a.getRoom() + ",0)";
+            dc.executeUpdate(query);
+          }
+          if (a.getColor() != 0) {
+            query = "INSERT INTO " + ACTION_COLOR_TABLE + " VALUES(" + a.getId() + "," + a.getColor() + ")";
             dc.executeUpdate(query);
           }
           return null;
@@ -172,6 +183,17 @@ public class ActionIO
             + ", statut = " + (a.getStatus() == null ? 0 : a.getStatus().getId())
             + " WHERE id = " + a.getId();
     dc.executeUpdate(query);
+    if (a.getColor() != 0) {
+      if (getColor(a.getId()) != null) {       
+        query = "UPDATE " + ACTION_COLOR_TABLE + " SET color = " + a.getColor() + " WHERE idaction = " + a.getId();
+      } else {
+        query = "INSERT INTO " + ACTION_COLOR_TABLE + " VALUES(" + a.getId() + "," + a.getColor() + ")";
+      }
+      dc.executeUpdate(query);
+    } else {
+      query = "DELETE FROM " + ACTION_COLOR_TABLE + " WHERE idaction = " + a.getId();
+      dc.executeUpdate(query);
+    }
   }
 
   public void delete(int id) throws SQLException {
@@ -276,5 +298,23 @@ public class ActionIO
     String where = ", " + ScheduleIO.TABLE + " p WHERE p.action = " + TABLE
             + ".id AND p.jour BETWEEN date_trunc('week', current_date)::date AND date_trunc('week', current_date)::date + 6";
     return find(where);
+  }
+  
+  /**
+   * Retrieves the possible color associated with this action {@code id}.
+   * @param id action id
+   * @return a color or null if no color was defined
+   */
+  public Color getColor(int id) {
+    try {
+      colorStatement.setInt(1, id);
+      ResultSet rs = colorStatement.executeQuery();
+      if (rs.next()) {
+        return new Color(rs.getInt(1));
+      }
+    } catch (SQLException ex) {
+      GemLogger.log(ex.getMessage());
+    }
+    return null;
   }
 }

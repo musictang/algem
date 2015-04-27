@@ -1,7 +1,7 @@
 /*
- * @(#)ModifPlanActionView.java 2.8.w 02/09/14
+ * @(#)ModifPlanActionView.java 2.9.4.3 22/04/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,10 +21,15 @@
 
 package net.algem.planning.editing;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.SQLException;
+import javax.swing.JCheckBox;
 import net.algem.config.*;
 import net.algem.planning.Action;
 import net.algem.util.BundleUtil;
@@ -37,7 +42,7 @@ import net.algem.util.ui.*;
  * Modification of status, level, age range and number of places.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.4.3
  * @since 2.5.a 22/06/12
  */
 class ModifPlanActionView
@@ -47,8 +52,11 @@ class ModifPlanActionView
   private GemParamChoice level;
   private GemParamChoice ageRange;
   private GemNumericField places;
+  private GemPanel bgColorPanel;
+  private int initialColor;
+  private Color defaultBgColor;
 
-  public ModifPlanActionView(DataCache dataCache, Action a) throws SQLException {
+  public ModifPlanActionView(DataCache dataCache, Action a, Color defaultColor) throws SQLException {
     status = new GemParamChoice(new GemChoiceModel<Status>(dataCache.getList(Model.Status))); 
     status.setKey(a.getStatus().getId());
     level = new GemParamChoice(new GemChoiceModel<Level>(dataCache.getList(Model.Level)));
@@ -64,6 +72,36 @@ class ModifPlanActionView
     status.setPreferredSize(prefSize);
     level.setPreferredSize(prefSize);
     ageRange.setPreferredSize(prefSize);
+    
+    this.defaultBgColor = defaultColor;
+    
+    GemPanel colorPanel = new GemPanel(new BorderLayout());
+    
+        
+    bgColorPanel = new GemPanel();
+    bgColorPanel.addMouseListener(new ColorPlanListener());
+    bgColorPanel.setPreferredSize(places.getPreferredSize());
+    bgColorPanel.setBorder(places.getBorder());
+
+    if (a.getColor() != 0) {
+      initialColor = a.getColor();
+      setBgColor(new Color(a.getColor()));
+    } else {
+      initialColor = defaultBgColor.getRGB();
+      setBgColor(defaultBgColor);
+    }
+    
+    colorPanel.add(bgColorPanel, BorderLayout.WEST);
+    JCheckBox bgRestore = new JCheckBox(BundleUtil.getLabel("Color.default.label"));
+    bgRestore.addActionListener(new ActionListener()
+    {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        JCheckBox src = (JCheckBox) e.getSource();
+        setBgColor(src.isSelected() ? defaultBgColor : new Color(initialColor));
+      }
+    });
+    colorPanel.add(bgRestore, BorderLayout.EAST);
 
     GemPanel p = new GemPanel(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(p);
@@ -76,31 +114,43 @@ class ModifPlanActionView
     gb.add(ageRange, 1, 2, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Place.number.label")), 0, 3, 1, 1, GridBagHelper.WEST);
     gb.add(places, 1, 3, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Color.label")), 0, 4, 1, 1, GridBagHelper.WEST);
+    colorPanel.setPreferredSize(new Dimension(colorPanel.getPreferredSize().width, places.getPreferredSize().height));
+    gb.add(colorPanel, 1, 4, 1, 1, GridBagHelper.NORTHWEST);
 
     add(p);
   }
+  
+  private void setBgColor(Color color) {
+    bgColorPanel.setBackground(color);
+  }
 
-  public GemParam getLevel() {
+  GemParam getLevel() {
     return (GemParam) level.getSelectedItem();
   }
 
-  public GemParam getStatus() {
+  GemParam getStatus() {
     return (GemParam) status.getSelectedItem();
   }
 
-  public AgeRange getRange() {
+  AgeRange getRange() {
     return (AgeRange) ageRange.getSelectedItem();
   }
 
-  public short getPlaces() {
+  short getPlaces() {
     try {
       return Short.parseShort(places.getText());
     } catch (NumberFormatException nfe) {
       return 0;
     }
   }
+  
+  int getColor() {
+    int c = bgColorPanel.getBackground().getRGB();
+    return c != initialColor ? c : 0;
+  }
 
-  public boolean isEntryValid() {
+  boolean isEntryValid() {
     short p = getPlaces();
     return getLevel().getId() >= 0 && getStatus().getId() >= 0 && p >= 0 && p < 500;
   }

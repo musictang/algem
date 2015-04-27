@@ -156,8 +156,16 @@
 
         <itemizedlist>
           <title>
-            Tables referencing atelier_instruments via Foreign Key Constraints
+            Tables referencing action_color via Foreign Key Constraints
           </title>
+
+          <listitem>
+            <para>
+              <xref linkend="public.table.action-color"/>
+            </para>
+          </listitem>
+
+
 
           <listitem>
             <para>
@@ -166,6 +174,88 @@
           </listitem>
 
         </itemizedlist>
+
+
+
+
+
+
+      </para>
+    </section>
+
+      <section id="public.table.action-color"
+               xreflabel="public.action_color">
+        <title id="public.table.action-color-title">
+         Table:
+         
+         <structname>action_color</structname>
+        </title>
+ 
+
+
+        <para>
+          <variablelist>
+            <title>
+              Structure of <structname>action_color</structname>
+            </title>
+
+
+            <varlistentry>
+              <term><structfield>idaction</structfield></term>
+              <listitem><para>
+                <type>integer</type>
+
+
+
+
+
+
+                <literal>PRIMARY KEY</literal>
+
+
+
+
+
+
+
+
+
+
+
+
+                <literal>REFERENCES</literal> <xref linkend="public.table.action"/>
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+            <varlistentry>
+              <term><structfield>color</structfield></term>
+              <listitem><para>
+                <type>integer</type>
+
+
+
+
+
+                <literal>DEFAULT (-1)</literal>
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+        </variablelist>
+
+
+
+
 
 
 
@@ -762,85 +852,6 @@
 
 
                 <literal>DEFAULT 1.0</literal>
-
-
-
-              </para>
-
-            </listitem>
-          </varlistentry>
-
-        </variablelist>
-
-
-
-
-
-
-
-
-
-
-      </para>
-    </section>
-
-      <section id="public.table.atelier-ins"
-               xreflabel="public.atelier_ins">
-        <title id="public.table.atelier-ins-title">
-         Table:
-         
-         <structname>atelier_ins</structname>
-        </title>
- 
-
-
-        <para>
-          <variablelist>
-            <title>
-              Structure of <structname>atelier_ins</structname>
-            </title>
-
-
-            <varlistentry>
-              <term><structfield>id</structfield></term>
-              <listitem><para>
-                <type>integer</type>
-
-
-
-
-
-
-
-              </para>
-
-            </listitem>
-          </varlistentry>
-
-            <varlistentry>
-              <term><structfield>adherent</structfield></term>
-              <listitem><para>
-                <type>integer</type>
-
-
-
-
-
-
-
-              </para>
-
-            </listitem>
-          </varlistentry>
-
-            <varlistentry>
-              <term><structfield>instrument</structfield></term>
-              <listitem><para>
-                <type>character varying(25)</type>
-
-
-
-
 
 
 
@@ -5275,196 +5286,6 @@
               <term><structfield>clef</structfield></term>
               <listitem><para>
                 <type>character varying(32)</type>
-
-
-
-
-
-
-
-              </para>
-
-            </listitem>
-          </varlistentry>
-
-        </variablelist>
-
-
-
-
-
-
-
-
-
-
-      </para>
-    </section>
-
-      <section id="public.table.maintenance"
-               xreflabel="public.maintenance">
-        <title id="public.table.maintenance-title">
-         Table:
-         
-         <structname>maintenance</structname>
-        </title>
- 
-
-
-        <para>
-          <variablelist>
-            <title>
-              Structure of <structname>maintenance</structname>
-            </title>
-
-
-            <varlistentry>
-              <term><structfield>jour</structfield></term>
-              <listitem><para>
-                <type>date</type>
-
-
-
-
-
-
-
-              </para>
-
-            </listitem>
-          </varlistentry>
-
-            <varlistentry>
-              <term><structfield>personne</structfield></term>
-              <listitem><para>
-                <type>character varying(16)</type>
-
-
-
-
-
-
-
-              </para>
-
-            </listitem>
-          </varlistentry>
-
-            <varlistentry>
-              <term><structfield>niveau</structfield></term>
-              <listitem><para>
-                <type>integer</type>
-
-
-
-
-
-
-
-              </para>
-
-            </listitem>
-          </varlistentry>
-
-            <varlistentry>
-              <term><structfield>texte</structfield></term>
-              <listitem><para>
-                <type>text</type>
-
-
-
-
-
-
-
-              </para>
-
-            </listitem>
-          </varlistentry>
-
-            <varlistentry>
-              <term><structfield>fait</structfield></term>
-              <listitem><para>
-                <type>boolean</type>
-
-
-
-
-
-
-
-              </para>
-
-            </listitem>
-          </varlistentry>
-
-        </variablelist>
-
-
-
-
-
-
-
-
-
-
-      </para>
-    </section>
-
-      <section id="public.table.majoration"
-               xreflabel="public.majoration">
-        <title id="public.table.majoration-title">
-         Table:
-         
-         <structname>majoration</structname>
-        </title>
- 
-
-
-        <para>
-          <variablelist>
-            <title>
-              Structure of <structname>majoration</structname>
-            </title>
-
-
-            <varlistentry>
-              <term><structfield>id</structfield></term>
-              <listitem><para>
-                <type>integer</type>
-
-
-
-
-
-
-
-              </para>
-
-            </listitem>
-          </varlistentry>
-
-            <varlistentry>
-              <term><structfield>mode</structfield></term>
-              <listitem><para>
-                <type>character(32)</type>
-
-
-
-
-
-
-
-              </para>
-
-            </listitem>
-          </varlistentry>
-
-            <varlistentry>
-              <term><structfield>pcent</structfield></term>
-              <listitem><para>
-                <type>integer</type>
 
 
 
@@ -10128,6 +9949,15 @@ WHERE (
                 <type>date</type>
 
 
+                <literal>PRIMARY KEY</literal>
+
+
+
+
+
+
+
+
 
 
 
@@ -10160,6 +9990,15 @@ WHERE (
                 <type>integer</type>
 
 
+                <literal>PRIMARY KEY</literal>
+
+
+
+
+
+
+
+
 
 
 
@@ -10189,25 +10028,6 @@ WHERE (
         </variablelist>
 
 
-
-
-
-        <variablelist>
-          <title>Indexes on vacance</title>
-
-          <varlistentry>
-            <term>vacance_id_idx</term>
-            <listitem><para>vid</para></listitem>
-          </varlistentry>
-
-
-
-          <varlistentry>
-            <term>vax1</term>
-            <listitem><para>jour</para></listitem>
-          </varlistentry>
-
-        </variablelist>
 
 
 

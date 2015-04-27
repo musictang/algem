@@ -1,5 +1,5 @@
 /*
- * @(#)MultiBranchTableModel.java	2.9.2 26/01/15
+ * @(#)MultiBranchTableModel.java	2.9.4.3 23/04/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -28,7 +28,7 @@ import net.algem.util.ui.JTableModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.9.4.3
  */
 public class MultiBranchTableModel
         extends JTableModel<BankBranch>
@@ -67,7 +67,7 @@ public class MultiBranchTableModel
 
   @Override
   public boolean isCellEditable(int row, int column) {
-    return false;
+    return column == 3;
   }
 
   @Override
@@ -96,5 +96,11 @@ public class MultiBranchTableModel
 
   @Override
   public void setValueAt(Object value, int line, int column) {
+    BankBranch bb = tuples.elementAt(line);
+    switch(column) {
+      case 3:
+        bb.setBicCode((String)value);
+        break;
+    }
   }
 }

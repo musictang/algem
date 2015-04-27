@@ -1,5 +1,5 @@
 /*
- * @(#)InvoiceEditor.java 2.9.2.1 09/02/15
+ * @(#)InvoiceEditor.java 2.9.4.3 23/04/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -42,7 +42,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2.1
+ * @version 2.9.4.3
  * @since 2.3.a 07/02/12
  */
 public class InvoiceEditor
@@ -158,8 +158,8 @@ public class InvoiceEditor
   }
 
   /**
-   * Marquage des échéances de facturation dont le compte est de classe 7.
-   * @param inv facture
+   * Marks transfered billing order lines whose account is Class 7.
+   * @param inv invoice
    */
   private void setTransfer(Invoice inv) {
     Collection<OrderLine> ol = inv.getInvoiceOrderLines();

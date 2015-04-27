@@ -1,5 +1,5 @@
 /*
- * @(#)MonthPlanAdminView.java 2.9.4.0 26/03/2015
+ * @(#)MonthPlanAdminView.java 2.9.4.3 27/04/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -30,7 +30,7 @@ import net.algem.util.ui.GemChoice;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.0
+ * @version 2.9.4.3
  * @since 2.9.4.0 26/03/2015
  */
 public class MonthPlanAdminView
@@ -51,7 +51,6 @@ public class MonthPlanAdminView
     }
     else {
       return id > 0 && p.getPerson() != null && p.getPerson().getId() == id;
-//    return Schedule.ADMINISTRATIVE == p.getType() && id > 0 && p.getPerson() != null && p.getPerson().getId() == id;
     }
   }
 

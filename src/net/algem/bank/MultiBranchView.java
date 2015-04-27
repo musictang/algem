@@ -1,5 +1,5 @@
 /*
- * @(#)MultiBranchView.java	2.9.2 28/01/15
+ * @(#)MultiBranchView.java	2.9.4.3 23/04/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -32,6 +32,7 @@ import java.util.Enumeration;
 import java.util.Vector;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumnModel;
 import net.algem.util.BundleUtil;
 import net.algem.util.GemCommand;
@@ -42,7 +43,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.9.4.3
  */
 public class MultiBranchView
         extends GemBorderPanel
@@ -67,10 +68,10 @@ public class MultiBranchView
 
     branchTableModel = new MultiBranchTableModel();
     branchTable = new JTable(branchTableModel);
+
     branchTable.setAutoCreateRowSorter(true);
     branchTable.addMouseListener(new MouseAdapter()
     {
-
       public void mouseClicked(MouseEvent e) {
         int n = branchTable.convertRowIndexToModel(branchTable.getSelectedRow());
         if (actionListener != null) {
@@ -78,7 +79,6 @@ public class MultiBranchView
         }
       }
     });
-
 
     TableColumnModel cm = branchTable.getColumnModel();
     
@@ -112,6 +112,10 @@ public class MultiBranchView
   }
 
   BankBranch getSelectedBranch() {
+    TableCellEditor tce = branchTable.getCellEditor();
+    if (tce != null) {
+      tce.stopCellEditing();
+    }
     int n = branchTable.getSelectedRow();
     return (BankBranch) branches.elementAt(n);
   }

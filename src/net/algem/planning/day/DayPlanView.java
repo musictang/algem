@@ -1,5 +1,5 @@
 /*
- * @(#)DayPlanView.java 2.9.2-b5 05/02/15
+ * @(#)DayPlanView.java 2.9.4.3 21/04/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -39,7 +39,7 @@ import net.algem.room.DailyTimes;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2-b5
+ * @version 2.9.4.3
  * @since 1.0a 07/07/1999
  */
 public class DayPlanView
@@ -284,10 +284,11 @@ public class DayPlanView
     if (vpci != null) {
       vp.removeAll(vpci);
     }
-    Color c = colorPrefs.getColor(ColorPlan.RANGE);
+    Color c = null;
     // individual schedule ranges
     for (ScheduleRangeObject p : vp) {
       Course cc = p.getCourse();
+      c = getScheduleColor(p);
       if (cc != null && !cc.isCollective() || Schedule.ADMINISTRATIVE == p.getType()) {
         drawRange(i, p, c, step_x);
       }
@@ -308,11 +309,14 @@ public class DayPlanView
         continue;
       }
       w = getScheduleRangeWidth(vpci.get(idx).getAction().getPlaces(), n);
+      c = getScheduleColor(p);
       drawRange(i, vpci.get(idx), c, w);
       idp = p.getScheduleId();
       n = 1;
       idx = j;
     }
+    // last schedule of the column
+    c = getScheduleColor(vpci.get(idx));
     w = getScheduleRangeWidth(vpci.get(idx).getAction().getPlaces(), n);
     drawRange(i, vpci.get(idx), c, w);
   }

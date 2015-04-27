@@ -1,5 +1,5 @@
 /*
- * @(#)DayScheduleView.java	2.9.4.0 06/04/15
+ * @(#)DayScheduleView.java	2.9.4.3 27/04/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -52,7 +52,7 @@ import net.algem.util.ui.TabPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.0
+ * @version 2.9.4.3
  * @version 1.0b 06/10/2001
  */
 public class DayScheduleView
@@ -83,10 +83,11 @@ public class DayScheduleView
       teacherView = new DayPlanTeacherView(dataCache.getList(Model.Teacher));
       tabPanel.addItem(teacherView, BundleUtil.getLabel("Day.schedule.teacher.tab"));
     }
-
-    adminView = new DayPlanAdminView(new PlanningService(DataCache.getDataConnection()).getEmployees(EmployeeType.ADMINISTRATOR));
-    tabPanel.addItem(adminView, BundleUtil.getLabel("Staff.label"));
-
+    
+    if ((s = ConfigUtil.getConf(ConfigKey.ADMINISTRATIVE_MANAGEMENT.getKey())) != null && s.toLowerCase().startsWith("t")) {
+      adminView = new DayPlanAdminView(new PlanningService(DataCache.getDataConnection()).getEmployees(EmployeeType.ADMINISTRATOR));
+      tabPanel.addItem(adminView, BundleUtil.getLabel("Staff.label"));
+    }
     // récupération de la liste des salles
     GemList<Room> vs = dataCache.getList(Model.Room);
     roomView = new DayPlanTableView[estabList.getSize()];
@@ -109,7 +110,11 @@ public class DayScheduleView
     String teacherManaged = ConfigUtil.getConf(ConfigKey.TEACHER_MANAGEMENT.getKey());
     // First tab depends on the status "managed" of the teachers in the general configuration
     // The second tab refers to the administrative team
-    int offset = (teacherManaged.equals("t")) ? 2 : 1;
+    
+    int offset = (teacherManaged.equals("t")) ? 1 : 0;
+    if (s != null && s.toLowerCase().startsWith("t")) {
+      offset++;
+    }
     tabPanel.setSelectedIndex(estabList.indexOf(estab) + offset);
   }
 

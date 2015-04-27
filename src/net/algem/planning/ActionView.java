@@ -1,5 +1,5 @@
 /*
- * @(#)ActionView.java	2.9.4.0 06/04/15
+ * @(#)ActionView.java	2.9.4.3 21/04/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -21,6 +21,7 @@
 package net.algem.planning;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.event.ItemEvent;
@@ -28,6 +29,9 @@ import java.awt.event.ItemListener;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JComboBox;
+import net.algem.config.ColorPlan;
+import net.algem.config.ColorPlanListener;
+import net.algem.config.ColorPrefs;
 import net.algem.config.ParamChoice;
 import net.algem.contact.teacher.Teacher;
 import net.algem.contact.teacher.TeacherChoice;
@@ -35,6 +39,7 @@ import net.algem.contact.teacher.TeacherEvent;
 import net.algem.course.Course;
 import net.algem.course.CourseChoice;
 import net.algem.course.CourseChoiceActiveModel;
+import net.algem.course.CourseCodeType;
 import net.algem.planning.day.DayChoice;
 import net.algem.room.Room;
 import net.algem.room.RoomChoice;
@@ -53,7 +58,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.0
+ * @version 2.9.4.3
  */
 public class ActionView
         extends GemPanel
@@ -74,14 +79,18 @@ public class ActionView
   protected JComboBox periodicity;
   protected HourField courseLength;
   protected GemNumericField intervall;
+  protected GemPanel colorPanel;
+  protected int defaultBgColor;
+  protected ColorPrefs colorPrefs;
 
   public ActionView(GemDesktop desktop) {
 
     this.desktop = desktop;
+    this.colorPrefs = new ColorPrefs();
     dataCache = desktop.getDataCache();
     GemList<Course> courseList = dataCache.getList(Model.Course);
-    course = new CourseChoice(new CourseChoiceActiveModel(courseList, true));//modification 1.1d ajout d'un filtre
-    course.addItemListener(new CourseCoItemListener());
+    course = new CourseChoice(new CourseChoiceActiveModel(courseList, true));
+    course.addItemListener(new CourseScheduleItemListener());
     datePanel = new DateRangePanel(dataCache.getStartOfYear(), dataCache.getEndOfYear());
     hourPanel = new HourRangePanel();
     GemList<Teacher> teacherList = dataCache.getList(Model.Teacher);
@@ -95,8 +104,10 @@ public class ActionView
     periodicity = new JComboBox(new Enum[]{Periodicity.WEEK, Periodicity.FORTNIGHT, Periodicity.DAY, Periodicity.MONTH});
     sessions = new GemNumericField(2);
     places = new GemNumericField(2);
-    //places.setText(String.valueOf(((Room)room.getSelectedItem()).getNPers()));
-
+    colorPanel = new GemPanel();
+    colorPanel.setToolTipText(BundleUtil.getLabel("Scheduling.color.tip"));
+    defaultBgColor = colorPanel.getBackground().getRGB();
+    colorPanel.addMouseListener(new ColorPlanListener());
     vacancy = new ParamChoice(dataCache.getVacancyCat());
     courseLength = new HourField();
     intervall = new GemNumericField(2);
@@ -115,6 +126,7 @@ public class ActionView
       places.setText("");
       places.setEditable(false);
     }
+    setColor(getColor(c));
   }
 
   public void init() {
@@ -170,6 +182,12 @@ public class ActionView
     s.add(new GemLabel(BundleUtil.getLabel("Place.number.label")));
     s.add(Box.createHorizontalStrut(4));
     s.add(places);
+    s.add(Box.createHorizontalStrut(4));
+    s.add(new GemLabel(BundleUtil.getLabel("Color.label")));
+    s.add(Box.createHorizontalStrut(4));
+    colorPanel.setPreferredSize(places.getPreferredSize());
+    colorPanel.setBorder(places.getBorder());
+    s.add(colorPanel);
 
     gb.add(s, 1, 7, 1, 1, GridBagHelper.WEST);
     vacancy.setPreferredSize(d);
@@ -196,6 +214,10 @@ public class ActionView
       a.setNSessions((short) 1);
     }
     a.setPlaces(getPlaces());
+    int color = colorPanel.getBackground().getRGB();
+    if (defaultBgColor != color) {
+      a.setColor(color);
+    }
 
     return a;
   }
@@ -275,7 +297,7 @@ public class ActionView
     }
   }
 
-  class CourseCoItemListener implements ItemListener {
+  class CourseScheduleItemListener implements ItemListener {
     // This method is called only if a new item has been selected.
 
     @Override
@@ -286,7 +308,39 @@ public class ActionView
         load(c);
       } else if (evt.getStateChange() == ItemEvent.DESELECTED) {
         courseLength.setText(null);
+      } 
+      setColor(getColor(c));
+    }
+  }
+  
+  private Color getColor(Course c) {
+    int code = c.getCode();
+    if (CourseCodeType.INS.getId() == code) {
+      if (c.isCollective()) {
+        return colorPrefs.getColor(ColorPlan.INSTRUMENT_CO);
+      } else {
+        return colorPrefs.getColor(ColorPlan.COURSE_INDIVIDUAL);
       }
+    }
+    if (CourseCodeType.ATL.getId() == code) {
+      return colorPrefs.getColor(ColorPlan.COURSE_CO);
+    }
+     if (CourseCodeType.FMU.getId() == code) {
+      return colorPrefs.getColor(ColorPlan.COURSE_CO);
+    }
+    if (CourseCodeType.ATP.getId() == code) {
+      return colorPrefs.getColor(ColorPlan.WORKSHOP);
+    }
+    if (CourseCodeType.STG.getId() == code) {
+      return colorPrefs.getColor(ColorPlan.TRAINING);
+    }
+    return null;
+
+  }
+  
+  private void setColor(Color c) {
+    if (c != null) {
+      colorPanel.setBackground(c);
     }
   }
 

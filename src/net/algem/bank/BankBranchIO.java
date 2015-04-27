@@ -89,6 +89,10 @@ public class BankBranchIO
       dc.setAutoCommit(true);
     }
   }
+  
+  public void updateBIC(BankBranch bb) throws SQLException {
+    BranchIO.update(bb, dc);
+  }
 
   public void update(int branchId, String bicCode) throws SQLException {
     BranchIO.update(branchId, bicCode, dc);

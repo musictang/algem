@@ -1,5 +1,5 @@
 /*
- * @(#)AdministrativeScheduleCtrl.java	2.9.4.2 10/04/15
+ * @(#)AdministrativeScheduleCtrl.java	2.9.4.3 23/04/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -58,7 +58,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.2
+ * @version 2.9.4.3
  * @since 2.9.4.0 18/03/15
  */
 public class AdministrativeScheduleCtrl
@@ -104,7 +104,7 @@ public class AdministrativeScheduleCtrl
     vacancy.setPreferredSize(employee.getPreferredSize());
 
     JTextField helpLabel = new JTextField();
-    helpLabel.setText(MessageUtil.getMessage("help.administrative.schedule.ctrl"));
+    helpLabel.setText(MessageUtil.getMessage("administrative.schedule.ctrl.help"));
     helpLabel.setEditable(false);
     helpLabel.setBorder(BorderFactory.createCompoundBorder(helpLabel.getBorder(), BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 
@@ -220,6 +220,7 @@ public class AdministrativeScheduleCtrl
       } 
       tableView.clear();
     } catch (PlanningException e) {
+      MessagePopup.warning(this, e.getMessage());
       GemLogger.log(e.getMessage());
     }
   }

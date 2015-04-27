@@ -1,5 +1,5 @@
 /*
- * @(#)ConfigKey.java 2.9.4.0 06/04/15
+ * @(#)ConfigKey.java 2.9.4.3 27/04/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -27,7 +27,7 @@ import net.algem.util.BundleUtil;
  * First arg represents key in the table, second arg represents the label.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.0
+ * @version 2.9.4.3
  * @since 2.1.k 07/07/11
  */
 public enum ConfigKey
@@ -150,7 +150,9 @@ public enum ConfigKey
 
   SCHEDULE_RANGE_NAMES("Afficher.noms.plages", BundleUtil.getLabel("ConfEditor.schedule.ranges.names")),
 
-  PERSON_SORT_ORDER("Ordre.tri.personne", BundleUtil.getLabel("Person.sort.order.label"));
+  PERSON_SORT_ORDER("Ordre.tri.personne", BundleUtil.getLabel("Person.sort.order.label")),
+
+  ADMINISTRATIVE_MANAGEMENT("Planification.administrative", BundleUtil.getLabel("Administrative.scheduling.label"));
 
   private final String key;
   private final String label;

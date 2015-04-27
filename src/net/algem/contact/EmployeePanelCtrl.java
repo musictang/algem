@@ -1,5 +1,5 @@
 /*
- * @(#)EmployeePanelCtrl.java	2.9.4.0 26/03/2015
+ * @(#)EmployeePanelCtrl.java	2.9.4.3 22/04/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.ToolTipManager;
 import net.algem.planning.PlanningService;
 import net.algem.util.DataCache;
 import net.algem.util.GemCommand;
@@ -38,7 +37,7 @@ import net.algem.util.ui.GemPanel;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.0
+ * @version 2.9.4.3
  * @since 2.8.v 29/05/14
  */
 public class EmployeePanelCtrl
@@ -54,7 +53,6 @@ public class EmployeePanelCtrl
     plus.setMargin(new Insets(0, 4, 0, 4)); //reduction de la taille du bouton
     plus.addActionListener(this);
     plus.setToolTipText(GemCommand.ADD_CMD);
-    ToolTipManager.sharedInstance().setInitialDelay(20);
     GemPanel top = new GemPanel(new BorderLayout());
     top.add(new GemLabel(label), BorderLayout.WEST);
     top.add(plus, BorderLayout.EAST);

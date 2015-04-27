@@ -1,0 +1,26 @@
+BUGS CORRIGES
+* Les doublons n'étaient pas pris en compte dans les périodes de vacances : on pouvait ajouter plusieurs fois le même jour pour la même catégorie de vacances.
+* Dans le rib d'une personne, l'accès à la liste des agences bancaires était désactivé si l'agence détectée était unique et la banque associée n'était pas multi-guichet. On peut maintenant y accéder en cliquant sur l'icone de recherche ou en appuyant sur la touche Entrée dans le champ de saisie pour modifier par exemple le numéro de BIC, qui est maintenant éditable.
+* En planification administrative, aucun message ne nous informait si aucune des dates choisies n'avait été enregistrée, en raison par exemple d'un mauvais choix de période de vacances.
+
+PLANNING
+Chaque planification peut désormais prendre une couleur personnalisée. Jusqu'alors, il fallait se contenter des couleurs par défaut définies dans Configuration -> Paramètres -> Couleurs. On peut maintenant attribuer une couleur personnalisée à un ensemble de plannings dès sa constitution : Planning -> Planification cours.
+La couleur initiale est celle correspondant au type de cours sélectionné (instrument, instrument collectif, atelier ou stage) : voir Configuration -> Paramètres -> Couleurs pour les différentes couleurs par défaut disponibles.
+Il est également possible de modifier la couleur d'une planification après sa création en cliquant sur le bouton "Paramètres planification" dans le détail d'un planning. Tous les plannings liés prendront la couleur sélectionnée, ainsi que leurs éventuelles copies.
+Il est enfin possible de revenir à tout moment à la couleur par défaut en cliquant sur la case à cocher "Couleur par défaut" dans les paramètres de planification et en validant cette modification.
+Si vous avez modifié la couleur d'une planification, cette modification sera également reflétée dans la couleur du texte de premier plan, qui prendra des tons plus ou moins foncés suivant la couleur d'arrière plan sélectionnée. De même, afin de pouvoir distinguer clairement ces personnalisations de couleurs, les plages horaires des élèves reprendront la couleur sélectionnée, dans une teinte plus claire.
+Rappel : par défaut, les plages horaires occupées prennent la couleur jaune. Lorsqu'on paramètre le nombre de places d'un planning de type cours collectif d'instrument, on ne peut plus distinguer la couleur initiale de l'arrière plan si toutes les places sont occupées.
+Contrairement aux couleurs par défaut, qui, après modification, sont enregistrées dans les préférences du système (sur chaque poste de travail), les couleurs personnalisées sont enregistrées en base de données et sont donc communes à tous les utilisateurs du réseau local.
+
+VACANCES
+Les catégories de vacances sont maintenant clairement identifiables dans la liste des jours de congés : Configuration -> Vacances -> Périodes. Auparavant, les types de vacances étaient représentés dans la colonne de droite par un simple numéro.
+La suppression d'une liste de jours dans les périodes de vacances pouvait prendre un certain temps en mode Webstart. Cette suppression est maintenant plus rapide.
+
+RIB
+Le BIC est maintenant directement éditable dans la fenêtre d'édition des agences bancaires. On peut ouvrir cette fenêtre en cliquant sur l'icone de recherche à droite du champ de saisie ou en appuyant sur la touche Entrée. Une fois la liste des agences ouverte, double-cliquez à l'intérieur de la colonne BIC pour modifier l'agence sélectionnée.
+Il fallait auparavant passer obligatoirement par le menu Configuration -> Agence bancaire -> Consulter/Modifier pour modifier ce BIC.
+
+CONFIG
+Un nouveau paramètre de configuration est maintenant disponible dans la rubrique "Gestion" des paramètres généraux : Configuration -> Paramètres -> Généraux : "Planification administrative".
+L'activation de ce paramètre entraînera l'ajout de l'onglet "Personnel" (personnel adminstratif) dans le planning jour et le planning mois. En cas de désactivation, cet onglet ne sera plus visible. Cependant, si un établissement dédié à l'administration a été créé pour la circonstance, les salles de cet établissement resteront disponibles à la consultation.
+

@@ -1,7 +1,7 @@
 /*
- * @(#)GemModule.java	2.9.1 27/11/14
+ * @(#)GemModule.java	2.9.4.3 22/04/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,7 +27,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.ToolTipManager;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 import net.algem.util.BundleUtil;
@@ -41,7 +40,7 @@ import net.algem.util.model.GemCloseVetoException;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.9.1
+ * @version 2.9.4.3
  * @since 1.0a 06/07/2002
  */
 public abstract class GemModule
@@ -196,8 +195,6 @@ public abstract class GemModule
     /*m.setMnemonic(dataCache.getLabel(menu+".mnemo").charAt(0));
     m.getAccessibleContext().setAccessibleDescription(dataCache.getLabel(menu+".info"));
     m.setToolTipText(dataCache.getLabel(menu+".bulle"));*/
-    //int initialDelay = ToolTipManager.sharedInstance().getInitialDelay();
-    ToolTipManager.sharedInstance().setInitialDelay(50);
     //m.setEnabled((dataCache.authorize(menu)));
     m.setActionCommand(menu);
     m.addActionListener(this);

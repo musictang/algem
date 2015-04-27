@@ -1,7 +1,7 @@
 /*
- * @(#)MemberCardEditor.java 2.6.a 17/09/12
+ * @(#)MemberCardEditor.java 2.9.4.3 21/04/15
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -54,7 +54,7 @@ import net.algem.util.module.GemDesktop;
  * Member card editor.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.4.3
  * @since 2.2.p
  */
 public class MemberCardEditor implements Printable {
@@ -72,8 +72,8 @@ public class MemberCardEditor implements Printable {
   static Stroke LINE = new BasicStroke();
   //private DrawableElement titleBlock, addressBlock, identityBlock;
   private Contact contact;
-  private Member adherent;
-  private Address adresse;
+  private Member member;
+  private Address address;
   private List<Telephone> tels;
   private BufferedImage photo;
   private List<PlanningInfo> infos;
@@ -137,9 +137,9 @@ public class MemberCardEditor implements Printable {
 
   private void load() {
     contact = dossier.getContact();
-    adherent = dossier.getMember();
+    member = dossier.getMember();
     try {
-      adresse = service.getAddress(dossier);
+      address = service.getAddress(dossier);
       tels = service.getTels(dossier);
       photo = null;
       photo = service.getPhoto(dossier);
@@ -168,10 +168,10 @@ public class MemberCardEditor implements Printable {
     }
 
     // instrument
-    addBlock(new InstrumentElement(service.getInstrument(adherent), x, y + vOffset + 10));
+    addBlock(new InstrumentElement(service.getInstrument(member), x, y + vOffset + 10));
     // adresse
-    if (adresse != null) {
-      addBlock(new AddressElement(adresse, x, y + vOffset + 25));
+    if (address != null) {
+      addBlock(new AddressElement(address, x, y + vOffset + 25));
     }
     // telephones
     if (tels != null) {
@@ -204,10 +204,10 @@ public class MemberCardEditor implements Printable {
     }
 
     // instrument
-    addBlock(new InstrumentElement(service.getInstrument(adherent), x, y + vOffset + 10));
+    addBlock(new InstrumentElement(service.getInstrument(member), x, y + vOffset + 10));
     // adresse
-    if (adresse != null) {
-      addBlock(new AddressElement(adresse, x, y + vOffset + 25));
+    if (address != null) {
+      addBlock(new AddressElement(address, x, y + vOffset + 25));
     }
     // cours
     for (int i = 0, yoffset = vOffset; i < infos.size(); i++, yoffset += 15) {
