@@ -96,10 +96,11 @@ public class ReplanifyDialog extends JDialog {
         contentPane.add(spacer2, new com.intellij.uiDesigner.core.GridConstraints(2, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_VERTICAL, 1, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, new Dimension(-1, 8), null, null, 1, false));
         textAreaMessage = new JTextArea();
         textAreaMessage.setEditable(false);
+        textAreaMessage.setFont(new Font(textAreaMessage.getFont().getName(), textAreaMessage.getFont().getStyle(), textAreaMessage.getFont().getSize()));
         textAreaMessage.setLineWrap(true);
         textAreaMessage.setText("");
         textAreaMessage.setWrapStyleWord(true);
-        contentPane.add(textAreaMessage, new com.intellij.uiDesigner.core.GridConstraints(1, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
+        contentPane.add(textAreaMessage, new com.intellij.uiDesigner.core.GridConstraints(1, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, new Dimension(-1, 100), new Dimension(150, 50), null, 0, false));
     }
 
     /**
@@ -112,7 +113,7 @@ public class ReplanifyDialog extends JDialog {
     public interface ControllerCallbacks {
         String getMessageForReplanifyCommand(ReplanifyCommand cmd);
 
-        void onReplanifyCommandSelected(ReplanifyCommand cmd, String comment);
+        boolean onReplanifyCommandSelected(ReplanifyCommand cmd, String comment);
     }
 
     public ReplanifyDialog(ControllerCallbacks callbacks, Schedule schedule) {
@@ -220,13 +221,12 @@ public class ReplanifyDialog extends JDialog {
     }
 
     private void onOK() {
-// add your code here
-        callbacks.onReplanifyCommandSelected(getReplanifyCommand(), textAreaComment.getText());
-        dispose();
+        if (callbacks.onReplanifyCommandSelected(getReplanifyCommand(), textAreaComment.getText())) {
+            dispose();
+        }
     }
 
     private void onCancel() {
-// add your code here if necessary
         dispose();
     }
 

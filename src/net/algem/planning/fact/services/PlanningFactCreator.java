@@ -8,6 +8,8 @@ import net.algem.util.DataCache;
 import net.algem.util.model.Model;
 
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -39,7 +41,13 @@ public class PlanningFactCreator {
 
     public static Date dateForSchedule(DateFr dateFr, Hour hour) {
         GregorianCalendar cal = new GregorianCalendar();
-        cal.setTime(dateFr.getDate());
+        Date date;
+        try {
+            date = new SimpleDateFormat("dd-MM-yyyy").parse(dateFr.toString());
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        cal.setTime(date);
         cal.add(Calendar.HOUR_OF_DAY, hour.getHour());
         cal.add(Calendar.MINUTE, hour.getMinute());
         return cal.getTime();

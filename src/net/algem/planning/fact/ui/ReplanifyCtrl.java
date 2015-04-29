@@ -59,9 +59,9 @@ public class ReplanifyCtrl implements ReplanifyDialog.ControllerCallbacks {
                 sb.append(" ");
                 sb.append(teacher);
                 String date = new SimpleDateFormat("dd/MM/yyyy").format(replanifyFact.getDate());
-                sb.append(" ( ");
+                sb.append(" (");
                 sb.append(date);
-                sb.append(" )");
+                sb.append(")");
                 parts.add(sb.toString());
             }
             return StringUtils.join(parts, "\n");
@@ -72,15 +72,17 @@ public class ReplanifyCtrl implements ReplanifyDialog.ControllerCallbacks {
     }
 
     @Override
-    public void onReplanifyCommandSelected(ReplanifyCommand cmd, String comment) {
+    public boolean onReplanifyCommandSelected(ReplanifyCommand cmd, String comment) {
 
         try {
             planningFactService.replanify(cmd, comment);
             Toast.showToast(desktop, "La replanification a bien été effectuée");
             DateFr date = schedule.getDate();
             desktop.postEvent(new ModifPlanEvent(this, date, cmd.getDate().getOrElse(date)));
+            return true;
         } catch (Exception e) {
             SQLErrorDlg.displayException(desktop.getFrame(), "Erreur durant la replanification", e);
         }
+        return false;
     }
 }

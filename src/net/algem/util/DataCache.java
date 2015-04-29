@@ -56,6 +56,7 @@ import net.algem.planning.editing.instruments.AtelierInstrumentsServiceImpl;
 import net.algem.planning.fact.services.PlanningFactCreator;
 import net.algem.planning.fact.services.PlanningFactDAO;
 import net.algem.planning.fact.services.PlanningFactService;
+import net.algem.planning.fact.services.SimpleConflictService;
 import net.algem.planning.month.MonthSchedule;
 import net.algem.room.*;
 import net.algem.security.DefaultUserService;
@@ -206,7 +207,7 @@ public class DataCache
     atelierInstrumentsService = new AtelierInstrumentsServiceImpl(dc, new AtelierInstrumentsDAO(dc), PERSON_IO);
     planningFactService = new PlanningFactService(dc, new PlanningService(dc), new PlanningFactDAO(dc),
             new PlanningFactCreator(), new PlanningFactService.RoomFinder(),
-            new PlanningFactService.ScheduleUpdater(dc));
+            new PlanningFactService.ScheduleUpdater(dc), new SimpleConflictService(dc));
   }
 
   /**

@@ -28,6 +28,7 @@ public class PlanningFactServiceTest extends TestCase {
     private PlanningFact remplacementFact;
     private DataConnection dc;
     private PlanningFactService.ScheduleUpdater scheduleUpdater;
+    private PlanningFact catchupFactSameDay;
 
     public void setUp() throws Exception {
         super.setUp();
@@ -72,12 +73,21 @@ public class PlanningFactServiceTest extends TestCase {
         when(planningFactCreator.createFactForPlanning(schedule, 3301, catchupDate, PlanningFact.Type.RATTRAPAGE, "commentaire"))
                 .thenReturn(catchupFact);
 
+        Date catchupSameDayDate = PlanningFactCreator.dateForSchedule(new DateFr(1, 1, 2015), new Hour(8, 0));
+        catchupFactSameDay = new PlanningFact(catchupSameDayDate, PlanningFact.Type.RATTRAPAGE, 1234, 3301, "commentaire", 90, 0, 0, "");
+        when(planningFactCreator.createFactForPlanning(schedule, 3301, catchupSameDayDate, PlanningFact.Type.RATTRAPAGE, "commentaire"))
+                .thenReturn(catchupFactSameDay);
+
         remplacementFact = new PlanningFact(catchupDate, PlanningFact.Type.REMPLACEMENT, 1234, 3302, "commentaire", 90, 0, 0, "");
         when(planningFactCreator.createFactForPlanning(schedule, 3302, catchupDate, PlanningFact.Type.REMPLACEMENT, "commentaire"))
                 .thenReturn(remplacementFact);
 
         scheduleUpdater = spy(new PlanningFactService.ScheduleUpdater(dc));
-        planningFactService = new PlanningFactService(dc, planningService, planningFactDAO, planningFactCreator, roomFinder, scheduleUpdater);
+
+        SimpleConflictService conflictService = mock(SimpleConflictService.class);
+        when(conflictService.testConflict(any(Schedule.class), any(Integer.class), any(Integer.class), any(DateFr.class), any(Hour.class), any(Hour.class)))
+                .thenReturn(Option.<Schedule>none());
+        planningFactService = new PlanningFactService(dc, planningService, planningFactDAO, planningFactCreator, roomFinder, scheduleUpdater, conflictService);
     }
 
 
@@ -159,6 +169,25 @@ public class PlanningFactServiceTest extends TestCase {
         assertEquals(Arrays.asList(catchupFact), facts);
     }
 
+    public void testCreateReplanifyFactsChangeRoomAlreadyAbsent() throws Exception {
+        //Given a replanification command to change the date of the schedule, already in catchup room
+        schedule.setIdRoom(405);
+        ReplanifyCommand replanifyCommand = new ReplanifyCommand(
+                schedule,
+                Option.<Integer>none(),
+                Option.of(404),
+                Option.<DateFr>none(),
+                Option.<Hour>none()
+        );
+
+        //When I create the related facts
+        List<PlanningFact> facts = planningFactService.createReplanifyFacts(replanifyCommand, "commentaire");
+
+        //Then it should create only a RATTRAPAGE fact for the same prof
+        assertEquals(Arrays.asList(catchupFactSameDay), facts);
+    }
+
+
     public void testCreateReplanifyFactsChangeProf() throws Exception {
         //Given a replanification command to change the prof, and the date of the schedule
         ReplanifyCommand replanifyCommand = new ReplanifyCommand(
@@ -223,15 +252,16 @@ public class PlanningFactServiceTest extends TestCase {
 
 
         //  an update should be peformed on the dataconnection through the schedule updater
-        Map<String, String> expectedUpdates = new HashMap<>();
-        expectedUpdates.put("idper", "3302");
-        expectedUpdates.put("lieux", "407");
-        expectedUpdates.put("jour", "'02-01-2015'");
-        expectedUpdates.put("debut", "'09:00'");
-        expectedUpdates.put("fin", "'10:30'");
+        Map<String, Object> expectedUpdates = new HashMap<>();
+        expectedUpdates.put("idper", 3302);
+        expectedUpdates.put("lieux", 407);
+        expectedUpdates.put("jour", new DateFr(2, 1, 2015));
+        expectedUpdates.put("debut", new Hour(9, 0));
+        expectedUpdates.put("fin", new Hour(10, 30));
 
         verify(scheduleUpdater).updateSchedule(schedule, expectedUpdates);
         //LATER move that to ScheduleUpdater test
         verify(dc).executeUpdate("UPDATE planning SET idper = 3302, jour = '02-01-2015', debut = '09:00', fin = '10:30', lieux = 407 WHERE id = 1234");
+        verify(dc).executeUpdate("UPDATE plage SET debut = debut + INTERVAL '60 min', fin = (CASE WHEN fin + INTERVAL '60 min' = '00:00:00' THEN '24:00:00' ELSE fin + INTERVAL '60 min' END) WHERE idplanning = 1234");
     }
 }

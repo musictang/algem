@@ -1,12 +1,10 @@
 package net.algem.planning.fact.services;
 
-import net.algem.planning.DateFr;
-import net.algem.planning.Hour;
-import net.algem.planning.PlanningService;
-import net.algem.planning.Schedule;
+import net.algem.planning.*;
 import net.algem.room.Room;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
+import net.algem.util.Option;
 import net.algem.util.StringUtils;
 import net.algem.util.model.Model;
 
@@ -24,14 +22,16 @@ public class PlanningFactService {
     private final PlanningFactCreator factCreator;
     private final RoomFinder roomFinder;
     private final ScheduleUpdater scheduleUpdater;
+    private final SimpleConflictService conflictService;
 
-    public PlanningFactService(DataConnection dc, PlanningService planningService, PlanningFactDAO planningFactDAO, PlanningFactCreator factCreator, RoomFinder roomFinder, ScheduleUpdater scheduleUpdater) {
+    public PlanningFactService(DataConnection dc, PlanningService planningService, PlanningFactDAO planningFactDAO, PlanningFactCreator factCreator, RoomFinder roomFinder, ScheduleUpdater scheduleUpdater, SimpleConflictService conflictService) {
         this.dc = dc;
         this.planningService = planningService;
         this.planningFactDAO = planningFactDAO;
         this.factCreator = factCreator;
         this.roomFinder = roomFinder;
         this.scheduleUpdater = scheduleUpdater;
+        this.conflictService = conflictService;
     }
 
     /**
@@ -96,6 +96,7 @@ public class PlanningFactService {
             @Override
             public Void run(DataConnection conn) throws Exception {
                 checkRoom(cmd);
+                checkConflict(cmd);
                 List<PlanningFact> facts = createReplanifyFacts(cmd, comment);
                 for (PlanningFact fact : facts) {
                     planningFactDAO.insert(fact);
@@ -104,6 +105,41 @@ public class PlanningFactService {
                 return null;
             }
         });
+    }
+
+
+    public static class ConflictException extends Exception {
+        private final Schedule schedule;
+
+        public ConflictException(Schedule schedule) {
+            super("Conflit avec " + schedule);
+            this.schedule = schedule;
+        }
+
+        public Schedule getSchedule() {
+            return schedule;
+        }
+    }
+
+    public void checkConflict(ReplanifyCommand cmd) throws Exception {
+        Schedule s = cmd.getSchedule();
+
+        Hour startHour = cmd.getStartHour().getOrElse(s.getStart());
+        int durationMinutes = cmd.getSchedule().getStart().getLength(cmd.getSchedule().getEnd());
+        Hour endHour = new Hour(startHour);
+        endHour.incMinute(durationMinutes);
+
+        Option<Schedule> maybeConflict = conflictService.testConflict(s,
+                cmd.getProfId().getOrElse(s.getIdPerson()),
+                cmd.getRoomId().getOrElse(s.getIdRoom()),
+                cmd.getDate().getOrElse(s.getDate()),
+                startHour, endHour);
+
+        //noinspection LoopStatementThatDoesntLoop
+        for (Schedule schedule : maybeConflict) {
+            throw new ConflictException(schedule);
+        }
+
     }
 
     /**
@@ -131,6 +167,8 @@ public class PlanningFactService {
                 facts.add(factCreator.createFactForPlanning(schedule, PlanningFact.Type.ABSENCE, comment));
             }
             facts.add(factCreator.createFactForPlanning(schedule, schedule.getIdPerson(), replanificationDate, PlanningFact.Type.RATTRAPAGE, comment));
+        } else if (cmd.getRoomId().isPresent() && scheduleInAbsence) {
+            facts.add(factCreator.createFactForPlanning(schedule, schedule.getIdPerson(), replanificationDate, PlanningFact.Type.RATTRAPAGE, comment));
         }
         return facts;
     }
@@ -150,22 +188,22 @@ public class PlanningFactService {
     }
 
     private void executeReplanifyUpdate(ReplanifyCommand cmd) throws SQLException {
-        Map<String, String> updates = new LinkedHashMap<>();
+        Map<String, Object> updates = new LinkedHashMap<>();
         for (int prof : cmd.getProfId()) {
-            updates.put("idper", ""+prof);
+            updates.put("idper", prof);
         }
         for (DateFr dateFr : cmd.getDate()) {
-            updates.put("jour", "'" + dateFr + "'");
+            updates.put("jour", dateFr);
         }
         for (Hour hour : cmd.getStartHour()) {
             int durationMinutes = cmd.getSchedule().getStart().getLength(cmd.getSchedule().getEnd());
-            updates.put("debut", "'" + hour + "'");
+            updates.put("debut", hour);
             Hour endHour = new Hour(hour);
             endHour.incMinute(durationMinutes);
-            updates.put("fin", "'" + endHour + "'");
+            updates.put("fin", endHour);
         }
         for (int salle : cmd.getRoomId()) {
-            updates.put("lieux", "" + salle);
+            updates.put("lieux", salle);
         }
 
         scheduleUpdater.updateSchedule(cmd.getSchedule(), updates);
@@ -185,13 +223,30 @@ public class PlanningFactService {
             this.dc = dc;
         }
 
-        public void updateSchedule(Schedule schedule, Map<String, String> updates) throws SQLException {
+        private String quoteIfNecessary(Object obj) {
+            if (obj instanceof DateFr || obj instanceof Hour) {
+                return "'" + obj + "'";
+            }
+            return obj.toString();
+        }
+
+        public void updateSchedule(Schedule schedule, Map<String, Object> updates) throws SQLException {
             List<String> parts = new ArrayList<>();
-            for (Map.Entry<String, String> entry : updates.entrySet()) {
-                parts.add(entry.getKey() + " = " + entry.getValue());
+            for (Map.Entry<String, Object> entry : updates.entrySet()) {
+                parts.add(entry.getKey() + " = " + quoteIfNecessary(entry.getValue()));
             }
             String setPart = StringUtils.join(parts, ", ");
             dc.executeUpdate("UPDATE planning SET " + setPart + " WHERE id = " + schedule.getId());
+
+            if (updates.containsKey("debut")) {
+                int offset = schedule.getStart().getLength((Hour) updates.get("debut"));
+                String query = "UPDATE " + ScheduleRangeIO.TABLE
+                        + " SET debut = debut + INTERVAL '" + offset + " min'"
+                        + ", fin = (CASE WHEN fin + INTERVAL '" + offset + " min' = '00:00:00' THEN '24:00:00' ELSE fin + INTERVAL '" + offset + " min' END)"
+                        + " WHERE idplanning = " + schedule.getId();
+
+                dc.executeUpdate(query);
+            }
         }
 
 
