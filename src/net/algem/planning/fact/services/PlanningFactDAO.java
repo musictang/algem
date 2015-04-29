@@ -1,10 +1,17 @@
 package net.algem.planning.fact.services;
 
+import net.algem.planning.DateFr;
 import net.algem.util.DataConnection;
+import net.algem.util.Option;
+import net.algem.util.StringUtils;
 import net.algem.util.model.TableIO;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class PlanningFactDAO extends TableIO {
     public final static String TABLE = "planning_fact";
@@ -36,5 +43,39 @@ public class PlanningFactDAO extends TableIO {
                 escape(fact.getPlanningDescription())
         );
         dataConnection.executeUpdate(query);
+    }
+
+    public static class Query {
+        public final Option<Integer> idPlanning;
+        public final Option<Integer> idProf;
+        public final Option<DateFr> start;
+        public final Option<DateFr> end;
+
+        public Query(Option<Integer> idPlanning, Option<Integer> idProf, Option<DateFr> start, Option<DateFr> end) {
+            this.idPlanning = idPlanning;
+            this.idProf = idProf;
+            this.start = start;
+            this.end = end;
+        }
+    }
+
+    public ResultSet find(Query q) throws SQLException {
+        List<String> criteria = new ArrayList<>();
+        for (Integer id : q.idPlanning) {
+            criteria.add("planning = " + id);
+        }
+        for (DateFr dateFr : q.start) {
+            criteria.add("date >= '" + dateFr  + "'");
+        }
+        for (DateFr dateFr : q.end) {
+            DateFr endDate = new DateFr(dateFr);
+            endDate.incDay(1);
+            criteria.add("date < '" + endDate + "'");
+        }
+        String whereClause = criteria.size() > 0 ? StringUtils.join(criteria, " AND ") : "1 = 1";
+        String query = "SELECT * FROM " + TABLE + " WHERE " + whereClause + " ORDER BY date ASC";
+
+        System.out.println(query);
+        return dataConnection.executeQuery(query);
     }
 }

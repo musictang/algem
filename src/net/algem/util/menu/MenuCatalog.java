@@ -31,6 +31,7 @@ import net.algem.enrolment.EnrolmentListCtrl;
 import net.algem.enrolment.EnrolmentService;
 import net.algem.enrolment.ExtendeModuleOrderListCtrl;
 import net.algem.enrolment.ExtendedModuleOrderTableModel;
+import net.algem.planning.fact.ui.PlanningFactCRUDController;
 import net.algem.script.ui.ScriptingFormController;
 import net.algem.util.BundleUtil;
 import net.algem.util.GemCommand;
@@ -55,6 +56,7 @@ public class MenuCatalog
   private JMenuItem miCoursBrowse;
   private JMenuItem miEnrolment;
   private final JMenuItem scriptItem;
+  private final JMenuItem factsItem;
 
   public MenuCatalog(GemDesktop desktop) {
     super(BundleUtil.getLabel("Menu.catalog.label"), desktop);
@@ -72,6 +74,9 @@ public class MenuCatalog
 
     scriptItem = new JMenuItem("SCRIPT");
     add(scriptItem);
+
+    factsItem = new JMenuItem("FACTS");
+    add(factsItem);
 
     setListener(this);
   }
@@ -110,6 +115,8 @@ public class MenuCatalog
       desktop.removeCurrentModule();
     } else if (src == scriptItem) {
         desktop.addPanel("Scripts", new ScriptingFormController(desktop).getPanel());
+    } else if (src == factsItem) {
+      desktop.addPanel("Absences & remplacement", new PlanningFactCRUDController(desktop).getPanel());
     }
     desktop.setDefaultCursor();
   }
