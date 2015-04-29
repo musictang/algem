@@ -64,6 +64,10 @@ public class PlanningFactDAO extends TableIO {
         for (Integer id : q.idPlanning) {
             criteria.add("planning = " + id);
         }
+        for (Integer id : q.idProf) {
+            criteria.add("prof = " + id);
+        }
+
         for (DateFr dateFr : q.start) {
             criteria.add("date >= '" + dateFr  + "'");
         }

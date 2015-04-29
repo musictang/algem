@@ -61,15 +61,27 @@ public class PlanningFactCRUDController {
     }
 
     private PlanningFactDAO.Query getQuery() {
-        Option<DateFr> startDate = getDateFr(datePickerStart);
-        Option<DateFr> endDate = getDateFr(datePickerEnd);
-
-        return new PlanningFactDAO.Query(Option.<Integer>none(), Option.<Integer>none(),
-                startDate, endDate);
+        return new PlanningFactDAO.Query(
+                parseInt(textFieldIdPlanning), parseInt(textFieldIdProf),
+                getDateFr(datePickerStart), getDateFr(datePickerEnd)
+        );
     }
 
     private static Option<DateFr> getDateFr(JXDatePicker datePickerStart) {
         return datePickerStart.getDate() != null ? Option.of(new DateFr(datePickerStart.getDate())) : Option.<DateFr>none();
+    }
+
+    private static Option<Integer> parseInt(JTextField textField) {
+        String text = textField.getText();
+        if (text != null && text.trim().length() > 0) {
+            try {
+                return Option.of(Integer.parseInt(text));
+            } catch (NumberFormatException e) {
+                return Option.none();
+            }
+        } else {
+            return Option.none();
+        }
     }
 
 
