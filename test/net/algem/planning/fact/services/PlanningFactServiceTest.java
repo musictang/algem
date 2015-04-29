@@ -29,6 +29,7 @@ public class PlanningFactServiceTest extends TestCase {
     private DataConnection dc;
     private PlanningFactService.ScheduleUpdater scheduleUpdater;
     private PlanningFact catchupFactSameDay;
+    private SimpleConflictService conflictService;
 
     public void setUp() throws Exception {
         super.setUp();
@@ -84,7 +85,7 @@ public class PlanningFactServiceTest extends TestCase {
 
         scheduleUpdater = spy(new PlanningFactService.ScheduleUpdater(dc));
 
-        SimpleConflictService conflictService = mock(SimpleConflictService.class);
+        conflictService = mock(SimpleConflictService.class);
         when(conflictService.testConflict(any(Schedule.class), any(Integer.class), any(Integer.class), any(DateFr.class), any(Hour.class), any(Hour.class)))
                 .thenReturn(Option.<Schedule>none());
         planningFactService = new PlanningFactService(dc, planningService, planningFactDAO, planningFactCreator, roomFinder, scheduleUpdater, conflictService);
@@ -222,6 +223,31 @@ public class PlanningFactServiceTest extends TestCase {
 
         //Then it should create only a REMPLACEMENT fact for the prof 3302
         assertEquals(Arrays.asList(remplacementFact), facts);
+    }
+
+    public void testReplanifyConflict() throws Exception {
+        //Given a replanification command that will conflict
+        Schedule conflict = new Schedule();
+        when(conflictService.testConflict(schedule, 3302, 404, new DateFr(2, 1, 2015), new Hour(8, 0), new Hour(9, 30)))
+                .thenReturn(Option.of(conflict));
+
+        ReplanifyCommand replanifyCommand = new ReplanifyCommand(
+                schedule,
+                Option.of(3302),
+                Option.<Integer>none(),
+                Option.of(new DateFr(2, 1, 2015)),
+                Option.<Hour>none()
+        );
+
+        //When I try to execute the command
+        try {
+            planningFactService.replanify(replanifyCommand, "commentaire");
+            assertFalse("A conflict exception should be raised", true);
+        } catch (PlanningFactService.ConflictException e) {
+        //Then a conflict exception is thrown
+            assertEquals(conflict, e.getSchedule());
+        }
+
     }
 
 

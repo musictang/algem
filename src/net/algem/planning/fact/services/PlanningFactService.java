@@ -121,7 +121,12 @@ public class PlanningFactService {
         }
     }
 
-    public void checkConflict(ReplanifyCommand cmd) throws Exception {
+    /**
+     * Checks potential conflict for a replanification
+     * @param cmd the replanification command
+     * @throws ConflictException if there is a conflict
+     */
+    public void checkConflict(ReplanifyCommand cmd) throws ConflictException {
         Schedule s = cmd.getSchedule();
 
         Hour startHour = cmd.getStartHour().getOrElse(s.getStart());

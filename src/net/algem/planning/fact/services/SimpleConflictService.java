@@ -17,6 +17,16 @@ public class SimpleConflictService {
         this.dc = dc;
     }
 
+    /**
+     * Check conflict with existing plannings, for a replanification
+     * @param s the schedule, unmodified
+     * @param newProf the new teacher
+     * @param newRoom the new room
+     * @param newDate the new date
+     * @param startHour the new start hour
+     * @param endHour the new end hour
+     * @return the conflicting schedule if there is a conflict.
+     */
     public Option<Schedule> testConflict(Schedule s, int newProf, int newRoom, DateFr newDate, Hour startHour, Hour endHour) {
         Vector<Schedule> schedules = ScheduleIO.find("WHERE jour = '" + newDate + "' AND lieux = " + newRoom + " AND id !=" + s.getId(), dc);
         for (Schedule schedule : schedules) {
