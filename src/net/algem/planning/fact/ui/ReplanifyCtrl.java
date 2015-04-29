@@ -1,7 +1,9 @@
 package net.algem.planning.fact.ui;
 
 import net.algem.contact.teacher.Teacher;
+import net.algem.planning.DateFr;
 import net.algem.planning.Schedule;
+import net.algem.planning.editing.ModifPlanEvent;
 import net.algem.planning.fact.services.PlanningFact;
 import net.algem.planning.fact.services.PlanningFactService;
 import net.algem.planning.fact.services.ReplanifyCommand;
@@ -9,8 +11,11 @@ import net.algem.util.DataCache;
 import net.algem.util.StringUtils;
 import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
+import net.algem.util.ui.SQLErrorDlg;
+import net.algem.util.ui.Toast;
 
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,6 +58,10 @@ public class ReplanifyCtrl implements ReplanifyDialog.ControllerCallbacks {
                 Teacher teacher = (Teacher) DataCache.findId(replanifyFact.getProf(), Model.Teacher);
                 sb.append(" ");
                 sb.append(teacher);
+                String date = new SimpleDateFormat("dd/MM/yyyy").format(replanifyFact.getDate());
+                sb.append(" ( ");
+                sb.append(date);
+                sb.append(" )");
                 parts.add(sb.toString());
             }
             return StringUtils.join(parts, "\n");
@@ -63,7 +72,15 @@ public class ReplanifyCtrl implements ReplanifyDialog.ControllerCallbacks {
     }
 
     @Override
-    public void onReplanifyCommandSelected(ReplanifyCommand cmd) {
-        //TODO implement this
+    public void onReplanifyCommandSelected(ReplanifyCommand cmd, String comment) {
+
+        try {
+            planningFactService.replanify(cmd, comment);
+            Toast.showToast(desktop, "La replanification a bien été effectuée");
+            DateFr date = schedule.getDate();
+            desktop.postEvent(new ModifPlanEvent(this, date, cmd.getDate().getOrElse(date)));
+        } catch (Exception e) {
+            SQLErrorDlg.displayException(desktop.getFrame(), "Erreur durant la replanification", e);
+        }
     }
 }

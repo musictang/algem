@@ -1,24 +1,28 @@
 package net.algem.planning.fact.services;
 
 import net.algem.planning.Action;
+import net.algem.planning.DateFr;
+import net.algem.planning.Hour;
 import net.algem.planning.Schedule;
 import net.algem.util.DataCache;
 import net.algem.util.model.Model;
 
 import java.sql.SQLException;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 /**
  * Factory class, to help create a planning fact, based on a planning
  */
 public class PlanningFactCreator {
-    public PlanningFact createFactForPlanning(Schedule schedule, int idProf, PlanningFact.Type type, String commentaire) throws SQLException {
+    public PlanningFact createFactForPlanning(Schedule schedule, int idProf, Date factDate, PlanningFact.Type type, String commentaire) throws SQLException {
         Action action = (Action) DataCache.findId(schedule.getIdAction(), Model.Action);
         if (action == null) {
             throw new IllegalArgumentException("Schedule " + schedule + " has no action");
         }
         return new PlanningFact(
-                new Date(),
+                factDate,
                 type,
                 schedule.getId(),
                 idProf,
@@ -30,6 +34,19 @@ public class PlanningFactCreator {
     }
 
     public PlanningFact createFactForPlanning(Schedule schedule, PlanningFact.Type type, String commentaire) throws SQLException {
-        return createFactForPlanning(schedule, schedule.getIdPerson(), type, commentaire);
+        return createFactForPlanning(schedule, schedule.getIdPerson(), dateForSchedule(schedule), type, commentaire);
     }
+
+    public static Date dateForSchedule(DateFr dateFr, Hour hour) {
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.setTime(dateFr.getDate());
+        cal.add(Calendar.HOUR_OF_DAY, hour.getHour());
+        cal.add(Calendar.MINUTE, hour.getMinute());
+        return cal.getTime();
+    }
+
+    public static Date dateForSchedule(Schedule schedule) {
+        return dateForSchedule(schedule.getDate(), schedule.getStart());
+    }
+
 }

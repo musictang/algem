@@ -20,6 +20,7 @@ public class PlanningFactServiceTest extends TestCase {
     private PlanningFactDAO planningFactDAO;
     private PlanningFactService planningFactService;
     private PlanningFactService.RoomFinder roomFinder;
+    private PlanningFactCreator planningFactCreator;
     private Schedule schedule;
     private PlanningFact absence404Fact;
     private PlanningFact lowActivity404Fact;
@@ -34,7 +35,7 @@ public class PlanningFactServiceTest extends TestCase {
         dc = spy(TestProperties.getDataConnection());
         planningService = mock(PlanningService.class);
         planningFactDAO = mock(PlanningFactDAO.class);
-        PlanningFactCreator planningFactCreator = mock(PlanningFactCreator.class);
+        planningFactCreator = mock(PlanningFactCreator.class);
 
         // Two rooms : 404 (normal) and 405 catchup
         roomFinder = mock(PlanningFactService.RoomFinder.class);
@@ -64,12 +65,15 @@ public class PlanningFactServiceTest extends TestCase {
         when(planningFactCreator.createFactForPlanning(schedule, PlanningFact.Type.ACTIVITE_BAISSE, "low activity"))
                 .thenReturn(lowActivity404Fact);
 
-        catchupFact = new PlanningFact(new Date(), PlanningFact.Type.RATTRAPAGE, 1234, 3301, "commentaire", 90, 0, 0, "");
-        when(planningFactCreator.createFactForPlanning(schedule, PlanningFact.Type.RATTRAPAGE, "commentaire"))
+
+        Date catchupDate = PlanningFactCreator.dateForSchedule(new DateFr(2, 1, 2015), new Hour(8, 0));
+
+        catchupFact = new PlanningFact(catchupDate, PlanningFact.Type.RATTRAPAGE, 1234, 3301, "commentaire", 90, 0, 0, "");
+        when(planningFactCreator.createFactForPlanning(schedule, 3301, catchupDate, PlanningFact.Type.RATTRAPAGE, "commentaire"))
                 .thenReturn(catchupFact);
 
-        remplacementFact = new PlanningFact(new Date(), PlanningFact.Type.REMPLACEMENT, 1234, 3302, "commentaire", 90, 0, 0, "");
-        when(planningFactCreator.createFactForPlanning(schedule, 3302, PlanningFact.Type.REMPLACEMENT, "commentaire"))
+        remplacementFact = new PlanningFact(catchupDate, PlanningFact.Type.REMPLACEMENT, 1234, 3302, "commentaire", 90, 0, 0, "");
+        when(planningFactCreator.createFactForPlanning(schedule, 3302, catchupDate, PlanningFact.Type.REMPLACEMENT, "commentaire"))
                 .thenReturn(remplacementFact);
 
         scheduleUpdater = spy(new PlanningFactService.ScheduleUpdater(dc));
@@ -193,6 +197,11 @@ public class PlanningFactServiceTest extends TestCase {
 
 
     public void testReplanify() throws Exception {
+        Date replanifyDate = PlanningFactCreator.dateForSchedule(new DateFr(2, 1, 2015), new Hour(9, 0));
+        PlanningFact replanifyFact = new PlanningFact(replanifyDate, PlanningFact.Type.REMPLACEMENT, 1234, 3302, "commentaire", 90, 0, 0, "");
+        when(planningFactCreator.createFactForPlanning(schedule, 3302, replanifyDate, PlanningFact.Type.REMPLACEMENT, "commentaire"))
+                .thenReturn(replanifyFact);
+
         //Given a replanification command to change the prof, the room and the date / hours
         ReplanifyCommand replanifyCommand = new ReplanifyCommand(
                 schedule,
@@ -208,8 +217,8 @@ public class PlanningFactServiceTest extends TestCase {
         //Then
         //  an absence fact should be saved for the schedule
         verify(planningFactDAO).insert(absence404Fact);
-        //  a replacement fact should be saved for prof 3302
-        verify(planningFactDAO).insert(remplacementFact);
+        //  a replacement fact should be saved for prof 3302 the day after
+        verify(planningFactDAO).insert(replanifyFact);
         verifyNoMoreInteractions(planningFactDAO);
 
 

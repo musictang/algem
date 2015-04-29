@@ -11,10 +11,7 @@ import net.algem.util.StringUtils;
 import net.algem.util.model.Model;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Service class, to perform auditable operation on planning (schedule) instances.
@@ -122,28 +119,33 @@ public class PlanningFactService {
         Schedule schedule = cmd.getSchedule();
         boolean scheduleInAbsence = isInAbsence(schedule);
 
+        Date replanificationDate = getReplanificationDate(cmd, schedule);
         if (cmd.getProfId().isPresent()) {
             if (!scheduleInAbsence) {
                 facts.add(factCreator.createFactForPlanning(schedule, PlanningFact.Type.ABSENCE, comment));
             }
-            facts.add(factCreator.createFactForPlanning(schedule, cmd.getProfId().get(), PlanningFact.Type.REMPLACEMENT, comment));
+            facts.add(factCreator.createFactForPlanning(schedule, cmd.getProfId().get(), replanificationDate, PlanningFact.Type.REMPLACEMENT, comment));
         }
         else if (cmd.getDate().isPresent()) {
             if (!scheduleInAbsence) {
                 facts.add(factCreator.createFactForPlanning(schedule, PlanningFact.Type.ABSENCE, comment));
             }
-            facts.add(factCreator.createFactForPlanning(schedule, PlanningFact.Type.RATTRAPAGE, comment));
+            facts.add(factCreator.createFactForPlanning(schedule, schedule.getIdPerson(), replanificationDate, PlanningFact.Type.RATTRAPAGE, comment));
         }
         return facts;
     }
 
+    private Date getReplanificationDate(ReplanifyCommand cmd, Schedule schedule) {
+        return PlanningFactCreator.dateForSchedule(cmd.getDate().getOrElse(schedule.getDate()),
+                cmd.getStartHour().getOrElse(schedule.getStart()));
+    }
+
 
     private void checkRoom(ReplanifyCommand cmd) throws SQLException {
-        for (int salle : cmd.getRoomId()) {
-            Room room = roomFinder.findRoom(salle);
-            if (room != null && room.isCatchingUp()) {
-                throw new IllegalArgumentException("Cannot replanify to a catching up room");
-            }
+        int salle = cmd.getRoomId().getOrElse(cmd.getSchedule().getIdRoom());
+        Room room = roomFinder.findRoom(salle);
+        if (room != null && room.isCatchingUp()) {
+            throw new IllegalArgumentException("Cannot replanify to a catching up room");
         }
     }
 

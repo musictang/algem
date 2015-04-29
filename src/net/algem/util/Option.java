@@ -1,7 +1,5 @@
 package net.algem.util;
 
-import net.algem.planning.fact.services.ReplanifyCommand;
-
 import java.util.Iterator;
 
 /**
@@ -58,6 +56,10 @@ public class Option<T> implements Iterable<T> {
 
     public T get() {
         return data;
+    }
+
+    public T getOrElse(T defaultVal) {
+        return data != null ? data : defaultVal;
     }
 
     private T data;
