@@ -2,6 +2,7 @@ package net.algem.planning.fact.ui;
 
 import net.algem.planning.DateFr;
 import net.algem.planning.DateFrField;
+import net.algem.planning.fact.services.PlanningFact;
 import net.algem.planning.fact.services.PlanningFactDAO;
 import net.algem.util.Option;
 import net.algem.util.module.GemDesktop;
@@ -17,7 +18,8 @@ import java.awt.event.ActionListener;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.text.SimpleDateFormat;
-import java.util.Vector;
+import java.util.*;
+import java.util.List;
 
 public class PlanningFactCRUDController {
     private JTable table1;
@@ -51,8 +53,8 @@ public class PlanningFactCRUDController {
 
     private void refresh() {
         try {
-            ResultSet rs = dao.find(getQuery());
-            TableModel model = resultSetToTableModel(rs);
+            List<PlanningFact> data = dao.findAsList(getQuery());
+            TableModel model = new FactTableModel(data);
             table1.setModel(model);
             table1.setRowSorter(new TableRowSorter<>(model));
         } catch (Exception e) {

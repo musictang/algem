@@ -26,6 +26,10 @@ public class PlanningFact {
         }
     }
 
+    public static Type getType(String dbType) {
+        return Type.valueOf(dbType.toUpperCase());
+    }
+
     private Date date;
     private Type type;
     private int planning;

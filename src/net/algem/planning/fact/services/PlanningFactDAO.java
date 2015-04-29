@@ -1,10 +1,12 @@
 package net.algem.planning.fact.services;
 
 import net.algem.planning.DateFr;
+import net.algem.util.DBUtil;
 import net.algem.util.DataConnection;
 import net.algem.util.Option;
 import net.algem.util.StringUtils;
 import net.algem.util.model.TableIO;
+import org.postgresql.util.PGInterval;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -79,7 +81,29 @@ public class PlanningFactDAO extends TableIO {
         String whereClause = criteria.size() > 0 ? StringUtils.join(criteria, " AND ") : "1 = 1";
         String query = "SELECT * FROM " + TABLE + " WHERE " + whereClause + " ORDER BY date ASC";
 
-        System.out.println(query);
         return dataConnection.executeQuery(query);
+    }
+
+    private static int intervalToMinutes(PGInterval interval) {
+        return interval.getHours() * 60 + interval.getMinutes();
+    }
+
+    public List<PlanningFact> findAsList(Query q) throws SQLException {
+        return DBUtil.resultSetAsList(find(q), new DBUtil.Mapper<PlanningFact>() {
+            @Override
+            public PlanningFact toObj(ResultSet rs) throws SQLException {
+                return new PlanningFact(
+                        rs.getTimestamp(1),
+                        PlanningFact.getType(rs.getString(2)),
+                        rs.getInt(3),
+                        rs.getInt(4),
+                        rs.getString(5),
+                        intervalToMinutes((PGInterval) rs.getObject(6)),
+                        rs.getInt(7),
+                        rs.getInt(8),
+                        rs.getString(9)
+                );
+            }
+        });
     }
 }
