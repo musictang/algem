@@ -23,10 +23,7 @@ package net.algem;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.Point;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.SQLException;
@@ -83,6 +80,10 @@ public class Algem
    */
   public static boolean isFeatureEnabled(String featureName) {
     return Boolean.parseBoolean(props.getProperty("feature." + featureName, "false"));
+  }
+
+  public static File getScriptsPath() {
+    return new File(props.getProperty("scripts_path", "./scripts")).getAbsoluteFile();
   }
 
   private void init(String configFile, final String host, final String base, String login) throws IOException {

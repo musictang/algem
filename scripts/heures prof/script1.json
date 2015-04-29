@@ -1,0 +1,10 @@
+{
+  "description": "Un script de test",
+  "args": [{
+    "name" : "dateDebut", "label": "Date début", "type": "date"
+  }, {
+    "name" : "dateFin", "label": "Date fin", "type": "date"
+  }, {
+    "name" : "showDetail", "label": "Afficher les détails", "type": "bool"
+  }]
+}

@@ -44,7 +44,7 @@ public class TestProperties
   /** User with profile 4. */
   public final static String ADMIN = System.getProperty("user.name");
    /** User with profile 1. */
-  public final static String USER = "lm"; // a modifier suivant le contexte
+  public final static String USER = "nobody"; // a modifier suivant le contexte
 	 /** Pass. */
   public final static String PASS = "nobody"; // a modifier suivant le contexte
   /** JDBC driver. */
