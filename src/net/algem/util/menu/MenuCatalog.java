@@ -70,7 +70,7 @@ public class MenuCatalog
       add(miModuleOrder);
     }
 
-    scriptItem = new JMenuItem("SCRIPT");
+    scriptItem = new JMenuItem(BundleUtil.getLabel("Scripts.label"));
     add(scriptItem);
 
     setListener(this);
