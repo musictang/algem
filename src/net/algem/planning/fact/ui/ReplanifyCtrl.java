@@ -7,7 +7,9 @@ import net.algem.planning.editing.ModifPlanEvent;
 import net.algem.planning.fact.services.PlanningFact;
 import net.algem.planning.fact.services.PlanningFactService;
 import net.algem.planning.fact.services.ReplanifyCommand;
+import net.algem.room.Room;
 import net.algem.util.DataCache;
+import net.algem.util.Option;
 import net.algem.util.StringUtils;
 import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
@@ -35,6 +37,21 @@ public class ReplanifyCtrl implements ReplanifyDialog.ControllerCallbacks {
         dialog.setLocationRelativeTo(desktop.getFrame());
         dialog.pack();
         dialog.setVisible(true);
+    }
+
+    @Override
+    public Option<String> validateCommand(ReplanifyCommand cmd) {
+        try {
+            planningFactService.checkRoom(cmd);
+        } catch (Exception e) {
+            return Option.of("Veuillez choisir une nouvelle salle");
+        }
+        try {
+            planningFactService.checkConflict(cmd);
+        } catch (PlanningFactService.ConflictException e) {
+            return Option.of("Conflit avec un planning existant :\n" + reprSchedule(e.getSchedule()));
+        }
+        return Option.none();
     }
 
     @Override
@@ -84,5 +101,17 @@ public class ReplanifyCtrl implements ReplanifyDialog.ControllerCallbacks {
             SQLErrorDlg.displayException(desktop.getFrame(), "Erreur durant la replanification", e);
         }
         return false;
+    }
+
+
+    private static String reprSchedule(Schedule s) {
+        try {
+            Room room = (Room) DataCache.findId(s.getIdRoom(), Model.Room);
+            Teacher teacher = (Teacher) DataCache.findId(s.getIdPerson(), Model.Teacher);
+            return String.format("Salle %s / %s / %s - %s", room, teacher, s.getStart(), s.getEnd());
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

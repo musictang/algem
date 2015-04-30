@@ -111,6 +111,7 @@ public class ReplanifyDialog extends JDialog {
     }
 
     public interface ControllerCallbacks {
+        Option<String> validateCommand(ReplanifyCommand cmd);
         String getMessageForReplanifyCommand(ReplanifyCommand cmd);
 
         boolean onReplanifyCommandSelected(ReplanifyCommand cmd, String comment);
@@ -201,11 +202,23 @@ public class ReplanifyDialog extends JDialog {
         };
         fieldDate.getDocument().addDocumentListener(documentListener);
         fieldHour.getDocument().addDocumentListener(documentListener);
+
+        refresh();
     }
 
     private void refresh() {
-        String message = callbacks.getMessageForReplanifyCommand(getReplanifyCommand());
-        textAreaMessage.setText(message);
+        ReplanifyCommand replanifyCommand = getReplanifyCommand();
+
+        Option<String> error = callbacks.validateCommand(replanifyCommand);
+        if (error.isPresent()) {
+            textAreaMessage.setText(error.get());
+            buttonOK.setEnabled(false);
+        } else {
+            String message = callbacks.getMessageForReplanifyCommand(replanifyCommand);
+            textAreaMessage.setText(message);
+            buttonOK.setEnabled(true);
+        }
+
     }
 
     public ReplanifyCommand getReplanifyCommand() {

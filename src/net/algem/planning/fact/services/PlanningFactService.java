@@ -184,7 +184,7 @@ public class PlanningFactService {
     }
 
 
-    private void checkRoom(ReplanifyCommand cmd) throws SQLException {
+    public void checkRoom(ReplanifyCommand cmd) throws SQLException {
         int salle = cmd.getRoomId().getOrElse(cmd.getSchedule().getIdRoom());
         Room room = roomFinder.findRoom(salle);
         if (room != null && room.isCatchingUp()) {
