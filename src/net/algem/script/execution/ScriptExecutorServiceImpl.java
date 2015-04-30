@@ -1,15 +1,15 @@
 package net.algem.script.execution;
 
+import net.algem.scripthelper.ScriptHelperFactory;
 import net.algem.script.common.Script;
-import net.algem.script.execution.models.ScriptUserArguments;
 import net.algem.script.execution.models.ScriptResult;
+import net.algem.script.execution.models.ScriptUserArguments;
 import net.algem.util.DataConnection;
 
 import javax.script.Bindings;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -33,7 +33,7 @@ public class ScriptExecutorServiceImpl implements ScriptExecutorService {
                 Bindings bindings = engine.createBindings();
                 OutInterface out = new OutInterface();
                 bindings.put("out", out);
-                bindings.put("args", arguments.getArguments());
+                bindings.put("args", ScriptHelperFactory.getScriptHelper().convertArgumentsToJs(arguments.getArguments()));
                 bindings.put("dc", conn);
                 bindings.put("utils", new Utils());
                 engine.eval(script.getCode(), bindings);
