@@ -121,7 +121,6 @@ public class ReplanifyDialog extends JDialog {
         this.callbacks = callbacks;
         this.schedule = schedule;
         setContentPane(contentPane);
-        setModal(true);
         setTitle("Replanification");
         getRootPane().setDefaultButton(buttonOK);
 
