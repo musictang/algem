@@ -47,6 +47,10 @@ public class PlanningFactDAO extends TableIO {
         dataConnection.executeUpdate(query);
     }
 
+    public void delete(long id) throws Exception {
+        dataConnection.executeUpdate("DELETE FROM planning_fact WHERE id = " + id);
+    }
+
     public static class Query {
         public final Option<Integer> idPlanning;
         public final Option<Integer> idProf;

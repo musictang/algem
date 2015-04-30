@@ -4,9 +4,11 @@ import net.algem.planning.DateFr;
 import net.algem.planning.DateFrField;
 import net.algem.planning.fact.services.PlanningFact;
 import net.algem.planning.fact.services.PlanningFactDAO;
+import net.algem.util.GemLogger;
 import net.algem.util.Option;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.MessagePopup;
+import net.algem.util.ui.SQLErrorDlg;
 import org.jdesktop.swingx.JXDatePicker;
 
 import javax.swing.*;
@@ -133,12 +135,17 @@ public class PlanningFactCRUDController {
         int selectedRow = table1.getSelectedRow();
         if (selectedRow != -1 && data != null) {
             PlanningFact fact = data.get(table1.convertRowIndexToModel(selectedRow));
-            System.out.println(fact);
-
             boolean confirmation = MessagePopup.confirm(getPanel(), "<html><b>Voulez vous supprimer cet événement ?</b>\n" +
                     "L'événement sera définitivement supprimé.", "Confirmation de suppression");
 
             if (confirmation) {
+                try {
+                    dao.delete(fact.getId());
+                    refresh();
+                } catch (Exception e) {
+                    GemLogger.logException(e);
+                    SQLErrorDlg.displayException(getPanel(), "Erreur de suppression", e);
+                }
             }
         }
     }
