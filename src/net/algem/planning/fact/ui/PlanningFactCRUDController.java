@@ -18,6 +18,8 @@ import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.text.SimpleDateFormat;
@@ -49,12 +51,99 @@ public class PlanningFactCRUDController {
                 refresh();
             }
         });
+        ajouterButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showCreateDialog();
+            }
+        });
+        modifierButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showModifyDialog();
+            }
+        });
         supprimerButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 deleteSelectedFact();
             }
         });
+
+        table1.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    showModifyDialog();
+                }
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+
+            }
+        });
+    }
+
+    private void showCreateDialog() {
+        PlanningFactDialog dialog = new PlanningFactDialog(new PlanningFactDialog.Listener() {
+
+            @Override
+            public boolean onPlanningFactValidated(PlanningFact fact) {
+                try {
+                    dao.insert(fact);
+                    refresh();
+                    return true;
+                } catch (Exception e) {
+                    GemLogger.logException(e);
+                    SQLErrorDlg.displayException(getPanel(), "Erreur", e);
+                }
+                return false;
+            }
+        }, Option.<PlanningFact>none());
+        dialog.setLocationRelativeTo(getPanel());
+        dialog.pack();
+        dialog.setVisible(true);
+    }
+
+    private void showModifyDialog() {
+        int selectedRow = table1.getSelectedRow();
+        if (selectedRow != -1 && data != null) {
+            PlanningFact fact = data.get(table1.convertRowIndexToModel(selectedRow));
+            PlanningFactDialog dialog = new PlanningFactDialog(new PlanningFactDialog.Listener() {
+
+                @Override
+                public boolean onPlanningFactValidated(PlanningFact fact) {
+                    try {
+                        dao.update(fact);
+                        refresh();
+                        return true;
+                    } catch (Exception e) {
+                        GemLogger.logException(e);
+                        SQLErrorDlg.displayException(getPanel(), "Erreur", e);
+                    }
+                    return false;
+                }
+            }, Option.of(fact));
+            dialog.setLocationRelativeTo(getPanel());
+            dialog.pack();
+            dialog.setVisible(true);
+        }
     }
 
     public JPanel getPanel() {
@@ -83,7 +172,7 @@ public class PlanningFactCRUDController {
         return datePickerStart.getDate() != null ? Option.of(new DateFr(datePickerStart.getDate())) : Option.<DateFr>none();
     }
 
-    private static Option<Integer> parseInt(JTextField textField) {
+    public static Option<Integer> parseInt(JTextField textField) {
         String text = textField.getText();
         if (text != null && text.trim().length() > 0) {
             try {
@@ -94,33 +183,6 @@ public class PlanningFactCRUDController {
         } else {
             return Option.none();
         }
-    }
-
-
-    public static TableModel resultSetToTableModel(ResultSet rs) throws Exception {
-        ResultSetMetaData metaData = rs.getMetaData();
-        int numberOfColumns = metaData.getColumnCount();
-        Vector columnNames = new Vector();
-
-        // Get the column names
-        for (int column = 0; column < numberOfColumns; column++) {
-            columnNames.addElement(metaData.getColumnLabel(column + 1));
-        }
-
-        // Get all rows.
-        Vector rows = new Vector();
-
-        while (rs.next()) {
-            Vector newRow = new Vector();
-
-            for (int i = 1; i <= numberOfColumns; i++) {
-                newRow.addElement(rs.getObject(i));
-            }
-
-            rows.addElement(newRow);
-        }
-
-        return new DefaultTableModel(rows, columnNames);
     }
 
     private void createUIComponents() {
@@ -199,6 +261,8 @@ public class PlanningFactCRUDController {
         appliquerButton = new JButton();
         appliquerButton.setText("Appliquer");
         panel.add(appliquerButton, new com.intellij.uiDesigner.core.GridConstraints(3, 2, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final com.intellij.uiDesigner.core.Spacer spacer1 = new com.intellij.uiDesigner.core.Spacer();
+        panel.add(spacer1, new com.intellij.uiDesigner.core.GridConstraints(3, 3, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
     }
 
     /**

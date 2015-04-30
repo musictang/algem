@@ -47,6 +47,24 @@ public class PlanningFactDAO extends TableIO {
         dataConnection.executeUpdate(query);
     }
 
+    public void update(PlanningFact fact) throws Exception {
+        if (fact.getId() == -1) throw new IllegalArgumentException("Cannot save transient fact " + fact);
+        String query = String.format("UPDATE planning_fact " +
+                        "SET date = '%s', type = '%s', planning = %d, prof =  %d, commentaire = '%s', duree = '%s', statut = %d, niveau = %d, planning_desc = '%s' " +
+                        "WHERE id = " + fact.getId(),
+                toTimeStamp(fact.getDate()),
+                fact.getType().toDBType(),
+                fact.getPlanning(),
+                fact.getProf(),
+                escape(fact.getCommentaire()),
+                minutesToPGInterval(fact.getDureeMinutes()),
+                fact.getStatut(),
+                fact.getNiveau(),
+                escape(fact.getPlanningDescription())
+        );
+        dataConnection.executeUpdate(query);
+    }
+
     public void delete(long id) throws Exception {
         dataConnection.executeUpdate("DELETE FROM planning_fact WHERE id = " + id);
     }
