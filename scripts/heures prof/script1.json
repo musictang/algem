@@ -1,5 +1,5 @@
 {
-  "description": "Un script de test",
+  "description": "Ce script permet de comptabiliser les heures effectuées des profs sur une période de temps donné, par cycle et niveau. Afficher détails permet de lister individuellement les planning.",
   "args": [{
     "name" : "dateDebut", "label": "Date début", "type": "date"
   }, {

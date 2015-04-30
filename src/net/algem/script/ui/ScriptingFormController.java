@@ -35,6 +35,7 @@ public class ScriptingFormController {
     private JProgressBar progressBar1;
     private JButton buttonExport;
     private JProgressBar progressBar2;
+    private JTextArea labelDescription;
 
     private ScriptDirectoryService scriptDirectoryService;
     private ScriptExecutorService scriptExecutorService;
@@ -125,6 +126,7 @@ public class ScriptingFormController {
     private void openScript(ScriptImplFile scriptFile) {
         try {
             script = scriptDirectoryService.loadScript(scriptFile);
+            labelDescription.setText(script.getDescription());
             List<ScriptArgument> arguments = script.getArguments();
             argumentTableModel = new ScriptArgumentTableModel(arguments);
             argumentsTable.setModel(argumentTableModel);
@@ -202,7 +204,7 @@ public class ScriptingFormController {
         panel3.setLayout(new GridBagLayout());
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 4;
+        gbc.gridy = 5;
         gbc.gridheight = 3;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
@@ -229,7 +231,7 @@ public class ScriptingFormController {
         panel4.setLayout(new GridBagLayout());
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 0;
+        gbc.gridy = 1;
         gbc.gridheight = 4;
         gbc.weightx = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
@@ -252,13 +254,13 @@ public class ScriptingFormController {
         runButton.setText("Executer");
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
-        gbc.gridy = 1;
+        gbc.gridy = 2;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         rightPanel.add(runButton, gbc);
         final JPanel spacer1 = new JPanel();
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
-        gbc.gridy = 0;
+        gbc.gridy = 1;
         gbc.fill = GridBagConstraints.VERTICAL;
         rightPanel.add(spacer1, gbc);
         progressBar1 = new JProgressBar();
@@ -269,21 +271,21 @@ public class ScriptingFormController {
         progressBar1.setVisible(false);
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
-        gbc.gridy = 2;
+        gbc.gridy = 3;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         rightPanel.add(progressBar1, gbc);
         buttonExport = new JButton();
         buttonExport.setText("Exporter");
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
-        gbc.gridy = 6;
+        gbc.gridy = 7;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(0, 0, 10, 0);
         rightPanel.add(buttonExport, gbc);
         final JPanel spacer2 = new JPanel();
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
-        gbc.gridy = 4;
+        gbc.gridy = 5;
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.VERTICAL;
         rightPanel.add(spacer2, gbc);
@@ -293,9 +295,26 @@ public class ScriptingFormController {
         progressBar2.setVisible(false);
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
-        gbc.gridy = 5;
+        gbc.gridy = 6;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         rightPanel.add(progressBar2, gbc);
+        final JPanel panel5 = new JPanel();
+        panel5.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(1, 1, new Insets(6, 6, 6, 6), -1, -1));
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.insets = new Insets(6, 6, 6, 6);
+        rightPanel.add(panel5, gbc);
+        panel5.setBorder(BorderFactory.createTitledBorder("Description"));
+        labelDescription = new JTextArea();
+        labelDescription.setEditable(false);
+        labelDescription.setFont(UIManager.getFont("Label.font"));
+        labelDescription.setLineWrap(true);
+        labelDescription.setRows(0);
+        labelDescription.setText("");
+        labelDescription.setWrapStyleWord(true);
+        panel5.add(labelDescription, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
     }
 
     /**
