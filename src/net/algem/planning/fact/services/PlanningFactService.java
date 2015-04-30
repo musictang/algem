@@ -1,6 +1,7 @@
 package net.algem.planning.fact.services;
 
 import net.algem.planning.*;
+import net.algem.planning.fact.services.PlanningFactDAO.Query;
 import net.algem.room.Room;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
@@ -214,6 +215,32 @@ public class PlanningFactService {
         scheduleUpdater.updateSchedule(cmd.getSchedule(), updates);
     }
 
+    public static class ActivitySupAlreadyExistingException extends Exception {
+        public ActivitySupAlreadyExistingException() {
+            super("Une activité supplémentaire existe déjà pour ce planning et ce professeur");
+        }
+    }
+
+    public void markAsAdditionalActivity(final Schedule schedule, final String comment) throws Exception {
+        dc.withTransaction(new DataConnection.SQLRunnable<Void>() {
+            @Override
+            public Void run(DataConnection conn) throws Exception {
+                checkActivitySupExisting(schedule);
+                PlanningFact fact = factCreator.createFactForPlanning(schedule, PlanningFact.Type.ACTIVITE_SUP, comment);
+                planningFactDAO.insert(fact);
+                return null;
+            }
+        });
+    }
+
+    public void checkActivitySupExisting(Schedule schedule) throws SQLException, ActivitySupAlreadyExistingException {
+        List<PlanningFact> facts = planningFactDAO.findAsList(new Query(Option.of(schedule.getId()), Option.of(schedule.getIdPerson()),
+                Option.<DateFr>none(), Option.<DateFr>none(), Option.of(PlanningFact.Type.ACTIVITE_SUP)));
+
+        if (facts.size() > 0) {
+            throw new ActivitySupAlreadyExistingException();
+        }
+    }
 
     public static class RoomFinder {
         public Room findRoom(int id) throws SQLException {

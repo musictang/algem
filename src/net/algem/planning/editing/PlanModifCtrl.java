@@ -42,6 +42,7 @@ import net.algem.group.Group;
 import net.algem.planning.*;
 import net.algem.planning.day.DayPlanView;
 import net.algem.planning.editing.instruments.AtelierInstrumentsController;
+import net.algem.planning.fact.ui.ActivitySupCtrl;
 import net.algem.planning.fact.ui.DeleteLowActivityCtrl;
 import net.algem.planning.fact.ui.AbsenceToCatchUpCtrl;
 import net.algem.planning.fact.ui.ReplanifyCtrl;
@@ -121,6 +122,7 @@ public class PlanModifCtrl
     if (Algem.isFeatureEnabled("planning_fact")) {
       v.add(new GemMenuButton(BundleUtil.getLabel("PlanningFact.AbsenceToCatchUp.label"), this, "AbsenceToCatchUp"));
       v.add(new GemMenuButton(BundleUtil.getLabel("PlanningFact.DeleteLowActivity.label"), this, "DeleteLowActivity"));
+      v.add(new GemMenuButton(BundleUtil.getLabel("PlanningFact.ActivitySup.label"), this, "ActivitySup"));
       v.add(new GemMenuButton(BundleUtil.getLabel("PlanningFact.Replanify.label"), this, "Replanify"));
     }
     /* v.add(new GemMenuButton("Replanifier ce cours", this, "Replanifier")); */
@@ -277,6 +279,8 @@ public class PlanModifCtrl
         new DeleteLowActivityCtrl(desktop, plan).run();
       } else if (arg.equals("Replanify")) {
         new ReplanifyCtrl(desktop, plan).run();
+      } else if (arg.equals("ActivitySup")) {
+        new ActivitySupCtrl(desktop, plan).run();
       }
       /*
        else if (arg.bufferEquals("Replanifier")) {

@@ -74,12 +74,14 @@ public class PlanningFactDAO extends TableIO {
         public final Option<Integer> idProf;
         public final Option<DateFr> start;
         public final Option<DateFr> end;
+        public final Option<PlanningFact.Type> type;
 
-        public Query(Option<Integer> idPlanning, Option<Integer> idProf, Option<DateFr> start, Option<DateFr> end) {
+        public Query(Option<Integer> idPlanning, Option<Integer> idProf, Option<DateFr> start, Option<DateFr> end, Option<PlanningFact.Type> type) {
             this.idPlanning = idPlanning;
             this.idProf = idProf;
             this.start = start;
             this.end = end;
+            this.type = type;
         }
     }
 
@@ -100,6 +102,10 @@ public class PlanningFactDAO extends TableIO {
             endDate.incDay(1);
             criteria.add("date < '" + endDate + "'");
         }
+        for (PlanningFact.Type type : q.type) {
+            criteria.add("type = '" + type.toDBType() + "'");
+        }
+
         String whereClause = criteria.size() > 0 ? StringUtils.join(criteria, " AND ") : "1 = 1";
         String query = "SELECT * FROM " + TABLE + " WHERE " + whereClause + " ORDER BY date ASC";
 

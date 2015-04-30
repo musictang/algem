@@ -1,7 +1,6 @@
 package net.algem.planning.fact.ui;
 
 import net.algem.planning.DateFr;
-import net.algem.planning.DateFrField;
 import net.algem.planning.fact.services.PlanningFact;
 import net.algem.planning.fact.services.PlanningFactDAO;
 import net.algem.util.GemLogger;
@@ -12,7 +11,6 @@ import net.algem.util.ui.SQLErrorDlg;
 import org.jdesktop.swingx.JXDatePicker;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
@@ -20,10 +18,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.text.SimpleDateFormat;
-import java.util.*;
 import java.util.List;
 
 public class PlanningFactCRUDController {
@@ -164,8 +159,8 @@ public class PlanningFactCRUDController {
     private PlanningFactDAO.Query getQuery() {
         return new PlanningFactDAO.Query(
                 parseInt(textFieldIdPlanning), parseInt(textFieldIdProf),
-                getDateFr(datePickerStart), getDateFr(datePickerEnd)
-        );
+                getDateFr(datePickerStart), getDateFr(datePickerEnd),
+                Option.<PlanningFact.Type>none());
     }
 
     private static Option<DateFr> getDateFr(JXDatePicker datePickerStart) {
