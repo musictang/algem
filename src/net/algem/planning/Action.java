@@ -1,7 +1,7 @@
 /*
- * @(#)Action.java	2.8.w 22/07/14
+ * @(#)Action.java	2.9.4.3 21/04/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -34,7 +34,7 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.4.3
  * @since 1.0a 07/07/1999
  */
 public class Action
@@ -51,6 +51,7 @@ public class Action
   private int roomId;
   private short day;
   private int vacancy;
+  private int color = 0;
 
   private int memberId;
   private Periodicity periodicity;
@@ -193,15 +194,7 @@ public class Action
   public void setPeriodicity(Periodicity p) {
     this.periodicity = p;
   }
-//
-//  public int getMember() {
-//    return memberId;
-//  }
-//
-//  public void setMember(int member) {
-//    this.memberId = member;
-//  }
-
+  
   public GemParam getLevel() {
     return level;
   }
@@ -234,6 +227,21 @@ public class Action
     this.tage = tage;
   }
 
+  public int getColor() {
+    return color;
+  }
+
+  public void setColor(int color) {
+    this.color = color == 0 ? -1 : color;
+  }
+  
+  /**
+   * Switchs to null color.
+   */
+  public void resetColor() {
+    this.color = 0;
+  }
+  
   public List<DateFr> getDates() {
     return dates;
   }
@@ -241,7 +249,7 @@ public class Action
   public void setDates(List<DateFr> dates) {
     this.dates = dates;
   }
-
+  
   @Override
   public String toString() {
     return id + " " + hourStart + " " + hourEnd + " " + idper + " " + memberId + " " + roomId;

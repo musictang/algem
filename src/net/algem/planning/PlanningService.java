@@ -1,5 +1,5 @@
 /*
- * @(#)PlanningService.java	2.9.4.0 06/04/2015
+ * @(#)PlanningService.java	2.9.4.3 21/04/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -40,7 +40,7 @@ import net.algem.util.ui.MessagePopup;
  * Service class for planning.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.0
+ * @version 2.9.4.3
  * @since 2.4.a 07/05/12
  */
 public class PlanningService
@@ -191,10 +191,11 @@ public class PlanningService
                 it.remove();
               }
             }
-
             if (dates.size() > 0) {
               a.setDates(dates);
               plan(a, Schedule.ADMINISTRATIVE);
+            } else {
+              throw new PlanningException(MessageUtil.getMessage("administrative.schedule.ctrl.no.scheduled.dates"));
             }
           }
           return null;

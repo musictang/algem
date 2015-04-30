@@ -1,5 +1,5 @@
 /*
- * @(#)PlanModifCtrl.java	2.9.4.0 24/03/2015
+ * @(#)PlanModifCtrl.java	2.9.4.3 21/04/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -40,6 +40,7 @@ import net.algem.course.Course;
 import net.algem.group.GemGroupService;
 import net.algem.group.Group;
 import net.algem.planning.*;
+import net.algem.planning.day.DayPlanView;
 import net.algem.planning.editing.instruments.AtelierInstrumentsController;
 import net.algem.planning.fact.ui.DeleteLowActivityCtrl;
 import net.algem.planning.fact.ui.AbsenceToCatchUpCtrl;
@@ -106,7 +107,7 @@ public class PlanModifCtrl
     }
     v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.time.modification.label"), this, "ChangeScheduleLength"));
     if (dataCache.authorize("Course.schedule.modification.auth")) {
-      v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.action.modification.label"), this, "ModifiyAction"));
+      v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.action.modification.label"), this, "ModifAction"));
     }
     if (dataCache.authorize("Schedule.suppression.auth")) {
       v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.suppression.label"), this, "DeletePlanning"));
@@ -244,7 +245,7 @@ public class PlanModifCtrl
         } else {
           MessagePopup.information(desktop.getFrame(), MessageUtil.getMessage("delete.exception") + MessageUtil.getMessage("rights.exception"));
         }
-      } else if ("ModifiyAction".equals(arg)) {
+      } else if ("ModifAction".equals(arg)) {
         dialogModifyAction();
       } else if (arg.equals("ChangeHour")) {
         dialogChangeHour();
@@ -413,7 +414,7 @@ public class PlanModifCtrl
     }
     try {
       Action a = ((CourseSchedule) plan).getAction();
-      ModifPlanActionDlg dlg = new ModifPlanActionDlg(desktop, a);
+      ModifPlanActionDlg dlg = new ModifPlanActionDlg(desktop, a, new DayPlanView().getDefaultScheduleColor(plan));
       dlg.show();
       if (!dlg.isValidate()) {
         return;

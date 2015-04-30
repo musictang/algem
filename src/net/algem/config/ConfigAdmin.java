@@ -1,7 +1,7 @@
 /*
- * @(#)ConfigAdmin.java 2.9.1 12/11/14
+ * @(#)ConfigAdmin.java 2.9.4.3 27/04/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -44,7 +44,7 @@ import net.algem.util.ui.GemPanel;
  * Panel for config and administrative tasks.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.4.3
  */
 public class ConfigAdmin
         extends ConfigPanel
@@ -65,6 +65,7 @@ public class ConfigAdmin
 
     c1 = confs.get(ConfigKey.TEACHER_MANAGEMENT.getKey());
     c2 = confs.get(ConfigKey.COURSE_MANAGEMENT.getKey());
+    c3 = confs.get(ConfigKey.ADMINISTRATIVE_MANAGEMENT.getKey());
 //    c3 = confs.get(ConfigKey.WORKSHOP_MANAGEMENT.getKey());
     c4 = confs.get(ConfigKey.DEFAULT_SCHOOL.getKey());
     c5 = confs.get(ConfigKey.DEFAULT_ESTABLISHMENT.getKey());
@@ -78,7 +79,8 @@ public class ConfigAdmin
     jc1.setBorder(checkBorder);
     jc2 = new JCheckBox(ConfigKey.COURSE_MANAGEMENT.getLabel());
     jc2.setBorder(checkBorder);
-//    jc3 = new JCheckBox(ConfigKey.WORKSHOP_MANAGEMENT.getLabel());
+    jc3 = new JCheckBox(ConfigKey.ADMINISTRATIVE_MANAGEMENT.getLabel());
+    jc3.setBorder(checkBorder);
 
     school = new ParamChoice(dataCache.getList(Model.School).getData());
     school.setKey(Integer.parseInt(c4.getValue()));
@@ -91,7 +93,7 @@ public class ConfigAdmin
 
     jc1.setSelected(isSelected(c1.getValue()));
     jc2.setSelected(isSelected(c2.getValue()));
-//    jc3.setSelected(isSelected(c3.getValue()));
+    jc3.setSelected(isSelected(c3.getValue()));
 
     pricingPeriod = new JComboBox(PricingPeriod.values());
     String frequencyTip = BundleUtil.getLabel("ConfEditor.default.module.pricing.tip");
@@ -105,10 +107,15 @@ public class ConfigAdmin
     Box box2 = Box.createHorizontalBox();
     box2.add(jc2);
     box2.add(Box.createHorizontalGlue());
+    
+    Box box3 = Box.createHorizontalBox();
+    box3.add(jc3);
+    box3.add(Box.createHorizontalGlue());
 
     content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
     content.add(box1);
     content.add(box2);
+    content.add(box3);
 
     GemPanel defs = new GemPanel(new GridLayout(4,2,0,5));
 
@@ -134,7 +141,7 @@ public class ConfigAdmin
     List<Config> conf = new ArrayList<Config>();
     c1.setValue(getValue(jc1));
     c2.setValue(getValue(jc2));
-//    c3.setValue(getValue(jc3));
+    c3.setValue(getValue(jc3));
     c4.setValue(String.valueOf(school.getKey()));
     c5.setValue(String.valueOf(estab.getKey()));
     c6.setValue(String.valueOf(studio.getKey()));
@@ -142,7 +149,7 @@ public class ConfigAdmin
 
     conf.add(c1);
     conf.add(c2);
-//    conf.add(c3);
+    conf.add(c3);
     conf.add(c4);
     conf.add(c5);
     conf.add(c6);

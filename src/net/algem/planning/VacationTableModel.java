@@ -1,5 +1,5 @@
 /*
- * @(#)VacationTableModel.java	2.9.2 26/01/15
+ * @(#)VacationTableModel.java	2.9.4.3 22/04/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,20 +20,25 @@
  */
 package net.algem.planning;
 
+import java.util.Collection;
+import net.algem.config.Param;
 import net.algem.util.BundleUtil;
 import net.algem.util.ui.JTableModel;
 
 /**
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.9.4.3
  *
  */
 public class VacationTableModel
         extends JTableModel<Vacation>
 {
 
-  public VacationTableModel() {
+  private Collection<Param> categories;
+  
+  public VacationTableModel(Collection<Param> categories) {
+    this.categories = categories;
     header = new String[]{
       BundleUtil.getLabel("Day.label"),
       BundleUtil.getLabel("Label.label"),
@@ -54,7 +59,7 @@ public class VacationTableModel
       case 1:
         return String.class;
       case 2:
-        return Integer.class;
+        return String.class;
       default:
         return Object.class;
     }
@@ -74,9 +79,19 @@ public class VacationTableModel
       case 1:
         return v.getLabel();
       case 2:
-        return new Integer(v.getVid());
+        return getType(v);
+//        return new Integer(v.getVid());
     }
     return null;
+  }
+  
+  private String getType(Vacation v) {
+    for (Param p : categories) {
+      if (p.getId() == v.getVid()) {
+        return p.getValue();
+      }
+    }
+    return String.valueOf(v.getVid());
   }
 
   @Override

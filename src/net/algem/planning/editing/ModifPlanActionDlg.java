@@ -1,7 +1,7 @@
 /*
- * @(#)ModifPlanActionDlg.java 2.8.w 02/09/14
+ * @(#)ModifPlanActionDlg.java 2.9.4.3 21/04/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,16 +21,20 @@
 
 package net.algem.planning.editing;
 
+import java.awt.Color;
 import java.sql.SQLException;
 import javax.swing.JDialog;
 import net.algem.planning.Action;
+import net.algem.planning.ActionIO;
+import net.algem.util.DataCache;
+import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
 
 /**
  * Dialog for changing planification parameters.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.4.3
  * @since 2.5.a 22/06/12
  */
 class ModifPlanActionDlg
@@ -40,15 +44,21 @@ class ModifPlanActionDlg
   private ModifPlanActionView pv;
   private int id;
   private int courseId;
+  private Color defaultColor;
 
-  public ModifPlanActionDlg(GemDesktop desktop, Action a) throws SQLException {
+  public ModifPlanActionDlg(GemDesktop desktop, Action a, Color defaultColor) throws SQLException {
     super(desktop.getFrame());
     id = a.getId();
     courseId = a.getCourse();
-    pv = new ModifPlanActionView(desktop.getDataCache(), a);
+    this.defaultColor = defaultColor;
+    Color c = ((ActionIO) DataCache.getDao(Model.Action)).getColor(a.getId());
+    if (c != null) {
+      a.setColor(c.getRGB());
+    }
+    pv = new ModifPlanActionView(desktop.getDataCache(), a, defaultColor);
     dlg = new JDialog(parent, true);
     addContent(pv, null);
-    dlg.setSize(320, 200);
+    dlg.setSize(320, 240);
   }
 
   @Override
@@ -69,9 +79,15 @@ class ModifPlanActionDlg
     a.setPlaces(pv.getPlaces());
     a.setAgeRange(pv.getRange());
     a.setStatus(pv.getStatus());
-
+    int c = pv.getColor();
+    if (c != 0) {
+      if (c == defaultColor.getRGB()) {
+        a.resetColor();
+      } else {
+        a.setColor(c);
+      }
+    } 
     return a;
   }
-
 
 }

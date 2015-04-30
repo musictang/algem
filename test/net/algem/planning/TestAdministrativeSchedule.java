@@ -1,5 +1,5 @@
 /*
- * @(#)TestAdministrativeSchedule.java 2.9.4.0 20/03/2015
+ * @(#)TestAdministrativeSchedule.java 2.9.4.3 16/04/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  * 
@@ -22,9 +22,9 @@
 package net.algem.planning;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import net.algem.room.Room;
-import net.algem.util.module.GemDesktop;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -35,10 +35,12 @@ import static org.junit.Assert.*;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
+ * @version 2.9.4.3
+ * @since 2.9.4.1
  */
 public class TestAdministrativeSchedule
 {
-  private GemDesktop desktop;
+
   public TestAdministrativeSchedule() {
   }
   
@@ -54,11 +56,6 @@ public class TestAdministrativeSchedule
   
   @Before
   public void setUp() {
-//    try {
-//      desktop = new GemDesktopCtrl(new JFrame(), TestProperties.getDataCache(TestProperties.getDataConnection()), new Properties());
-//    } catch (Exception ex) {
-//      GemLogger.log(ex.getMessage());
-//    }
   }
   
   @After
@@ -68,29 +65,30 @@ public class TestAdministrativeSchedule
   @Test
   public void testEditedRows() {
 
-  //    List<AdministrativeActionModel> result = new ArrayList<>();
-  //    result.add(createAction(new DayOfWeek(2, "lundi"), "10:00", "17:00", 1));
-  //    result.add(createAction(new DayOfWeek(2, "lundi"), "10:00", "17:00", 1));
-  //    result.add(createAction(new DayOfWeek(3, "mardi"), "10:00", "17:00", 1));
-  //    result.add(createAction(new DayOfWeek(4, "mercredi"), "10:00", "10:00", 1));
-  //    result.add(createAction(new DayOfWeek(4, "mercredi"), "10:00", "14:00", 1));//
-  //    result.add(createAction(new DayOfWeek(5, "jeudi"), "10:00", "14:00", 2));
-  //    result.add(createAction(new DayOfWeek(5, "jeudi"), "14:00", "17:00", 3));
-  //
-  //    List<Action> actions = AdministrativeScheduleCtrl.createActions(result, 1234, new DateFr("16-09-2014"), new DateFr("28-06-2015"));
-  //    assertTrue(5 == actions.size());
-  //
-  //    System.out.println(actions.get(1));
-  //    assertTrue(3 == actions.get(1).getDay());
-  //    assertEquals(new Hour("10:00"), actions.get(1).getHourStart());
-  //    assertEquals(new Hour("17:00"), actions.get(1).getHourEnd());
-  //    assertTrue(1 == actions.get(1).getRoom());
-  //
-  //    System.out.println(actions.get(actions.size()-1));
-  //    assertTrue(5 == actions.get(4).getDay());
-  //    assertEquals(new Hour("14:00"), actions.get(4).getHourStart());
-  //    assertEquals(new Hour("17:00"), actions.get(4).getHourEnd());
-  //    assertTrue(3 == actions.get(4).getRoom());
+    int vacancy = 0;
+    List<AdministrativeActionModel> result = new ArrayList<>();
+    result.add(createAction(new DayOfWeek(Calendar.MONDAY, PlanningService.WEEK_DAYS[Calendar.MONDAY]), "10:00", "17:00", 1));
+    result.add(createAction(new DayOfWeek(Calendar.MONDAY, PlanningService.WEEK_DAYS[Calendar.MONDAY]), "10:00", "17:00", 1));
+    result.add(createAction(new DayOfWeek(Calendar.TUESDAY, PlanningService.WEEK_DAYS[Calendar.TUESDAY]), "10:00", "17:00", 1));
+    result.add(createAction(new DayOfWeek(Calendar.WEDNESDAY, PlanningService.WEEK_DAYS[Calendar.WEDNESDAY]), "10:00", "10:00", 1));
+    result.add(createAction(new DayOfWeek(Calendar.WEDNESDAY, PlanningService.WEEK_DAYS[Calendar.WEDNESDAY]), "10:00", "14:00", 1));//
+    result.add(createAction(new DayOfWeek(Calendar.THURSDAY, PlanningService.WEEK_DAYS[Calendar.THURSDAY]), "10:00", "14:00", 2));
+    result.add(createAction(new DayOfWeek(Calendar.THURSDAY, PlanningService.WEEK_DAYS[Calendar.THURSDAY]), "14:00", "17:00", 3));
+
+    List<Action> actions = AdministrativeScheduleCtrl.createActions(result, 1234, new DateFr("16-09-2014"), new DateFr("28-06-2015"), vacancy);
+    assertTrue(5 == actions.size());
+    for (Action a : actions) {
+      System.out.println(a + " : " + PlanningService.WEEK_DAYS[a.getDay()]);
+    }
+    assertTrue(new DayOfWeek(Calendar.TUESDAY, PlanningService.WEEK_DAYS[Calendar.TUESDAY]).getIndex() == actions.get(1).getDay());
+    assertEquals(new Hour("10:00"), actions.get(1).getHourStart());
+    assertEquals(new Hour("17:00"), actions.get(1).getHourEnd());
+    assertTrue(1 == actions.get(1).getRoom());
+
+    assertTrue(new DayOfWeek(Calendar.THURSDAY, PlanningService.WEEK_DAYS[Calendar.THURSDAY]).getIndex() == actions.get(4).getDay());
+    assertEquals(new Hour("14:00"), actions.get(4).getHourStart());
+    assertEquals(new Hour("17:00"), actions.get(4).getHourEnd());
+    assertTrue(3 == actions.get(4).getRoom());
     
   }
   

@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleCanvas.java 2.9.4.0 25/03/2015
+ * @(#)ScheduleCanvas.java 2.9.4.3 21/04/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -38,13 +38,16 @@ import net.algem.config.GemParam;
 import net.algem.contact.Person;
 import net.algem.course.Course;
 import net.algem.room.Room;
+import net.algem.util.DataCache;
+import net.algem.util.model.Cacheable;
+import net.algem.util.model.Model;
 import net.algem.util.ui.GemPanel;
 
 /**
  * Abstract class for planning layout.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.0
+ * @version 2.9.4.3
  * @since 2.5.a 10/07/12
  */
 public abstract class ScheduleCanvas
@@ -81,7 +84,7 @@ public abstract class ScheduleCanvas
   protected int clickY;
   protected Image img;
   protected ColorPrefs colorPrefs = new ColorPrefs();
-  
+  protected Cacheable actionIO = DataCache.getDao(Model.Action);
 
   public void removeActionListener(ActionListener l) {
     listener = AWTEventMulticaster.remove(listener, l);
@@ -98,6 +101,22 @@ public abstract class ScheduleCanvas
    * @return a color
    */
   protected Color getScheduleColor(ScheduleObject p) {
+    Color ac = null;
+    if (p instanceof ScheduleRangeObject) {
+      ac = getActionColor(((ScheduleRangeObject)p).getAction().getId());
+    } else {
+      ac = getActionColor(p.getIdAction());
+    }
+    if (ac != null) {
+      return (p instanceof ScheduleRangeObject ? ColorPrefs.brighten(ac) : ac);
+    }
+    return getDefaultScheduleColor(p);
+  }
+  
+  public Color getDefaultScheduleColor(ScheduleObject p) {
+    if (p instanceof ScheduleRangeObject) {
+      return colorPrefs.getColor(ColorPlan.RANGE);
+    }
     switch (p.getType()) {
       case Schedule.COURSE:
         Room s = ((CourseSchedule) p).getRoom();
@@ -134,6 +153,10 @@ public abstract class ScheduleCanvas
         return Color.WHITE;
     } // end switch couleurs
   }
+  
+  private Color getActionColor(int action) {
+    return ((ActionIO) actionIO).getColor(action);
+  }
 
   /**
    * Gets the text color for headers.
@@ -142,6 +165,10 @@ public abstract class ScheduleCanvas
    * @return a color
    */
   protected Color getTextColor(ScheduleObject p) {
+    Color ac = getActionColor(p.getIdAction());
+    if (ac != null) {
+      return ColorPrefs.getForeground(ac);
+    }
     switch (p.getType()) {
       case Schedule.COURSE:
         Room r = p.getRoom();

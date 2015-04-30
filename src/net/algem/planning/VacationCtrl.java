@@ -1,7 +1,7 @@
 /*
- * @(#)VacationCtrl.java	2.8.w 08/07/14
+ * @(#)VacationCtrl.java	2.9.4.3 22/04/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -29,10 +29,16 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.TableColumnModel;
+import net.algem.config.Param;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.GemCommand;
@@ -44,7 +50,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.4.3
  */
 public class VacationCtrl
         extends GemPanel
@@ -62,10 +68,10 @@ public class VacationCtrl
   private GemButton btModify;
   private GemButton btDelete;
 
-  public VacationCtrl(DataCache _dc) {
-    dataCache = _dc;
-
-    vacationModel = new VacationTableModel();
+  public VacationCtrl(DataCache dataCache) {
+    this.dataCache = dataCache;
+    Collection<Param> categories = dataCache.getVacancyCat();
+    vacationModel = new VacationTableModel(categories);
     vacationTable = new JTable(vacationModel);
     vacationTable.setAutoCreateRowSorter(true);
     vacationTable.addMouseListener(new MouseAdapter()
@@ -110,7 +116,8 @@ public class VacationCtrl
     bottom.add(new GemLabel(" "));
     bottom.add(label);
     bottom.add(new GemLabel(BundleUtil.getLabel("Type.label")));
-    vChoice = new ParamChoice(dataCache.getVacancyCat());
+
+    vChoice = new ParamChoice(categories);
     bottom.add(vChoice);
     this.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
@@ -180,10 +187,31 @@ public class VacationCtrl
 
   void suppression() throws SQLException {
     int[] rows = vacationTable.getSelectedRows();
+
+    Map<Integer, List<Vacation>> vmap = new HashMap<Integer, List<Vacation>>();
     for (int i = rows.length - 1; i >= 0; i--) {
       int n = vacationTable.convertRowIndexToModel(rows[i]);
       Vacation v = (Vacation) vacationModel.getItem(n);
-      VacationIO.delete(v, DataCache.getDataConnection());
+      List<Vacation> actualList = vmap.get(v.getVid());
+      if (actualList == null) {
+        actualList = new ArrayList<Vacation>();
+      }
+      actualList.add(v);
+      vmap.put(v.getVid(), actualList);
+    }
+
+    for (Map.Entry<Integer, List<Vacation>> lv : vmap.entrySet()) {
+      int key = lv.getKey();
+      List<Vacation> vv = lv.getValue();
+      List<DateFr> dates = new ArrayList<DateFr>();
+      for (Vacation v : vv) {
+        dates.add(v.getDay());
+      }
+      VacationIO.delete(dates, key, DataCache.getDataConnection());
+    }
+    // delete entries in model (after sql removing)
+    for (int i = rows.length - 1; i >= 0; i--) {
+      int n = vacationTable.convertRowIndexToModel(rows[i]);
       vacationModel.deleteItem(n);
     }
     clear();

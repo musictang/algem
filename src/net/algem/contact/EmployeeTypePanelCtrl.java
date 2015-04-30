@@ -1,7 +1,7 @@
 /*
- * @(#)EmployeeTypePanelCtrl.java	2.8.v 29/05/14
+ * @(#)EmployeeTypePanelCtrl.java	2.9.4.3 22/04/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.ToolTipManager;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.GemCommand;
@@ -41,7 +40,7 @@ import net.algem.util.ui.GemPanel;
  * Controller used to add or remove panels for selecting categories of employee.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.v
+ * @version 2.9.4.3
  * @since 2.8.v 28/05/14
  */
 public class EmployeeTypePanelCtrl
@@ -58,7 +57,6 @@ public class EmployeeTypePanelCtrl
     plus.setMargin(new Insets(0, 4, 0, 4)); //reduction de la taille du bouton
     plus.addActionListener(this);
     plus.setToolTipText(GemCommand.ADD_CMD);
-    ToolTipManager.sharedInstance().setInitialDelay(20);
     GemPanel top = new GemPanel(new BorderLayout());
     top.add(new GemLabel(BundleUtil.getLabel("Category.label")), BorderLayout.WEST);
     top.add(plus, BorderLayout.EAST);

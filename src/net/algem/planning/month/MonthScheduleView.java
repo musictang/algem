@@ -1,5 +1,5 @@
 /*
- * @(#)MonthScheduleView.java	2.9.4.0 26/03/2015
+ * @(#)MonthScheduleView.java	2.9.4.3 27/04/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -58,7 +58,7 @@ import net.algem.util.ui.TabPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.0
+ * @version 2.9.4.3
  */
 public class MonthScheduleView
         extends DefaultGemView
@@ -99,9 +99,10 @@ public class MonthScheduleView
       teacherView = new MonthPlanTeacherView(teacherChoice);
       tabPanel.addItem(teacherView, BundleUtil.getLabel("Month.schedule.teacher.tab"));
     }
-
-    adminView = new MonthPlanAdminView(new EmployeeSelector(new PlanningService(DataCache.getDataConnection()).getEmployees(EmployeeType.ADMINISTRATOR)));
-    tabPanel.addItem(adminView, BundleUtil.getLabel("Staff.label"));
+    if ((s = ConfigUtil.getConf(ConfigKey.ADMINISTRATIVE_MANAGEMENT.getKey())) != null && s.toLowerCase().startsWith("t")) {
+      adminView = new MonthPlanAdminView(new EmployeeSelector(new PlanningService(DataCache.getDataConnection()).getEmployees(EmployeeType.ADMINISTRATOR)));
+      tabPanel.addItem(adminView, BundleUtil.getLabel("Staff.label"));
+    }
 
     roomChoice = new RoomChoice[estabList.getSize()];
     roomView = new MonthPlanDetailView[estabList.getSize()];
@@ -205,7 +206,7 @@ public class MonthScheduleView
         roomView[i].detailChange(e);
       }
     } else if (teacherView != null && teacherView instanceof MonthPlanTeacherView) {
-        ((MonthPlanTeacherView) teacherView).reload(dataCache.getList(Model.Teacher));
+      ((MonthPlanTeacherView) teacherView).reload(dataCache.getList(Model.Teacher));
     }
   }
 
@@ -244,4 +245,3 @@ public class MonthScheduleView
   }
 
 }
-

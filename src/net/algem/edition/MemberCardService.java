@@ -1,7 +1,7 @@
 /*
- * @(#)MemberCardService.java 2.8.w 09/07/14
+ * @(#)MemberCardService.java 2.9.4.3 21/04/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -49,7 +49,7 @@ import net.algem.util.module.GemDesktop;
  * Service class for member card edition.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.4.3
  * @since 2.4.a 16/05/12
  */
 public class MemberCardService
@@ -110,10 +110,10 @@ public class MemberCardService
 
     Vector<CourseOrder> vcc = new Vector<CourseOrder>();
     // on commence au 1er mai en raison des préinscriptions possibles
-    String debut = "01-05-" + dataCache.getStartOfYear().getYear();
+    String start = "01-05-" + dataCache.getStartOfYear().getYear();
     Vector<Enrolment> vi = null;
     try {
-      vi = memberService.getEnrolments(p.getId(), debut); // recherche des inscriptions
+      vi = memberService.getEnrolments(p.getId(), start); // recherche des inscriptions
     } catch (SQLException ex) {
       GemLogger.logException(ex);
     }

@@ -1,7 +1,7 @@
 /*
- * @(#)BranchView.java	2.8.r 15/01/14
+ * @(#)BranchView.java	2.9.4.3 23/04/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -37,7 +37,7 @@ import net.algem.util.ui.GridBagHelper;
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.r
+ * @version 2.9.4.3
  */
 public class BranchView
         extends GemBorderPanel
@@ -134,7 +134,8 @@ public class BranchView
       branchCode.setText(a.getCode());
       
       domiciliation.setText(a.getDomiciliation());
-      bicCode.setText(a.getBicCode());
+      bicCode.setText(a.getBicCode());//XXX efface saisie si bic null
+      
       Address adr = a.getAddress();
       if (adr != null) {
         addressView.set(adr);
