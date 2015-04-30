@@ -3,6 +3,7 @@ CREATE TYPE planning_fact_type as ENUM (
 );
 
 CREATE TABLE planning_fact (
+  id SERIAL PRIMARY KEY,
   date TIMESTAMP,
   type planning_fact_type,
   planning INT, --REFERENCES planning(id) ON DELETE CASCADE,

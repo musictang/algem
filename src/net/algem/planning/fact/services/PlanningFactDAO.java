@@ -33,7 +33,7 @@ public class PlanningFactDAO extends TableIO {
     }
 
     public void insert(PlanningFact fact) throws Exception {
-        String query = String.format("INSERT INTO planning_fact VALUES ('%s', '%s', %d, %d, '%s', '%s', %d, %d, '%s')",
+        String query = String.format("INSERT INTO planning_fact VALUES (DEFAULT, '%s', '%s', %d, %d, '%s', '%s', %d, %d, '%s')",
                 toTimeStamp(fact.getDate()),
                 fact.getType().toDBType(),
                 fact.getPlanning(),
@@ -93,15 +93,16 @@ public class PlanningFactDAO extends TableIO {
             @Override
             public PlanningFact toObj(ResultSet rs) throws SQLException {
                 return new PlanningFact(
-                        rs.getTimestamp(1),
-                        PlanningFact.getType(rs.getString(2)),
-                        rs.getInt(3),
+                        rs.getLong(1),
+                        rs.getTimestamp(2),
+                        PlanningFact.getType(rs.getString(3)),
                         rs.getInt(4),
-                        rs.getString(5),
-                        intervalToMinutes((PGInterval) rs.getObject(6)),
-                        rs.getInt(7),
+                        rs.getInt(5),
+                        rs.getString(6),
+                        intervalToMinutes((PGInterval) rs.getObject(7)),
                         rs.getInt(8),
-                        rs.getString(9)
+                        rs.getInt(9),
+                        rs.getString(10)
                 );
             }
         });

@@ -30,6 +30,7 @@ public class PlanningFact {
         return Type.valueOf(dbType.toUpperCase());
     }
 
+    private long id;
     private Date date;
     private Type type;
     private int planning;
@@ -40,7 +41,8 @@ public class PlanningFact {
     private int niveau;
     private String planningDescription;
 
-    public PlanningFact(Date date, Type type, int planning, int prof, String commentaire, int dureeMinutes, int statut, int niveau, String planningDescription) {
+    public PlanningFact(long id, Date date, Type type, int planning, int prof, String commentaire, int dureeMinutes, int statut, int niveau, String planningDescription) {
+        this.id = id;
         this.date = date;
         this.type = type;
         this.planning = planning;
@@ -50,6 +52,14 @@ public class PlanningFact {
         this.statut = statut;
         this.niveau = niveau;
         this.planningDescription = planningDescription;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public Date getDate() {
@@ -119,7 +129,8 @@ public class PlanningFact {
     @Override
     public String toString() {
         return "PlanningFact{" +
-                "date=" + date +
+                "id=" + id +
+                ", date=" + date +
                 ", type=" + type +
                 ", planning=" + planning +
                 ", prof=" + prof +
@@ -138,6 +149,7 @@ public class PlanningFact {
 
         PlanningFact that = (PlanningFact) o;
 
+        if (id != that.id) return false;
         if (planning != that.planning) return false;
         if (prof != that.prof) return false;
         if (dureeMinutes != that.dureeMinutes) return false;
@@ -152,7 +164,8 @@ public class PlanningFact {
 
     @Override
     public int hashCode() {
-        int result = date != null ? date.hashCode() : 0;
+        int result = (int) (id ^ (id >>> 32));
+        result = 31 * result + (date != null ? date.hashCode() : 0);
         result = 31 * result + (type != null ? type.hashCode() : 0);
         result = 31 * result + planning;
         result = 31 * result + prof;

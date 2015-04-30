@@ -34,7 +34,7 @@ public class PlanningFactDAOTest extends TestCase {
         //Given a planning fact
         Date factDate = new SimpleDateFormat("dd/MM/yyyy HH:mm").parse("01/04/2015 12:34");
         PlanningFact fact = new PlanningFact(
-                factDate,
+                -1, factDate,
                 PlanningFact.Type.ABSENCE,
                 45,
                 3301,
@@ -48,14 +48,14 @@ public class PlanningFactDAOTest extends TestCase {
         //Then I can retrieve the same data in the DB
         ResultSet resultSet = dc.executeQuery("SELECT * from planning_fact");
         resultSet.next();
-        assertEquals(factDate, resultSet.getTimestamp(1));
-        assertEquals("absence", resultSet.getString(2));
-        assertEquals(45, resultSet.getInt(3));
-        assertEquals(3301, resultSet.getInt(4));
-        assertEquals("test'commentaire", resultSet.getString(5));
-        assertEquals(new PGInterval(0, 0, 0, 1, 30, 0), resultSet.getObject(6));
-        assertEquals(1, resultSet.getInt(7));
-        assertEquals(2, resultSet.getInt(8));
-        assertEquals("description du planning lors du fait", resultSet.getString(9));
+        assertEquals(factDate, resultSet.getTimestamp(2));
+        assertEquals("absence", resultSet.getString(3));
+        assertEquals(45, resultSet.getInt(4));
+        assertEquals(3301, resultSet.getInt(5));
+        assertEquals("test'commentaire", resultSet.getString(6));
+        assertEquals(new PGInterval(0, 0, 0, 1, 30, 0), resultSet.getObject(7));
+        assertEquals(1, resultSet.getInt(8));
+        assertEquals(2, resultSet.getInt(9));
+        assertEquals("description du planning lors du fait", resultSet.getString(10));
     }
 }

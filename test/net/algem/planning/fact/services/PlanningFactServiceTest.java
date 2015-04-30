@@ -58,11 +58,11 @@ public class PlanningFactServiceTest extends TestCase {
 
 
         //Expected facts
-        absence404Fact = new PlanningFact(new Date(), PlanningFact.Type.ABSENCE, 1234, 3301, "commentaire", 90, 0, 0, "");
+        absence404Fact = new PlanningFact(1, new Date(), PlanningFact.Type.ABSENCE, 1234, 3301, "commentaire", 90, 0, 0, "");
         when(planningFactCreator.createFactForPlanning(schedule, PlanningFact.Type.ABSENCE, "commentaire"))
                 .thenReturn(absence404Fact);
 
-        lowActivity404Fact = new PlanningFact(new Date(), PlanningFact.Type.ACTIVITE_BAISSE, 1234, 3301,
+        lowActivity404Fact = new PlanningFact(2, new Date(), PlanningFact.Type.ACTIVITE_BAISSE, 1234, 3301,
                 "low activity", 90, 0, 0, "");
         when(planningFactCreator.createFactForPlanning(schedule, PlanningFact.Type.ACTIVITE_BAISSE, "low activity"))
                 .thenReturn(lowActivity404Fact);
@@ -70,16 +70,16 @@ public class PlanningFactServiceTest extends TestCase {
 
         Date catchupDate = PlanningFactCreator.dateForSchedule(new DateFr(2, 1, 2015), new Hour(8, 0));
 
-        catchupFact = new PlanningFact(catchupDate, PlanningFact.Type.RATTRAPAGE, 1234, 3301, "commentaire", 90, 0, 0, "");
+        catchupFact = new PlanningFact(3, catchupDate, PlanningFact.Type.RATTRAPAGE, 1234, 3301, "commentaire", 90, 0, 0, "");
         when(planningFactCreator.createFactForPlanning(schedule, 3301, catchupDate, PlanningFact.Type.RATTRAPAGE, "commentaire"))
                 .thenReturn(catchupFact);
 
         Date catchupSameDayDate = PlanningFactCreator.dateForSchedule(new DateFr(1, 1, 2015), new Hour(8, 0));
-        catchupFactSameDay = new PlanningFact(catchupSameDayDate, PlanningFact.Type.RATTRAPAGE, 1234, 3301, "commentaire", 90, 0, 0, "");
+        catchupFactSameDay = new PlanningFact(4, catchupSameDayDate, PlanningFact.Type.RATTRAPAGE, 1234, 3301, "commentaire", 90, 0, 0, "");
         when(planningFactCreator.createFactForPlanning(schedule, 3301, catchupSameDayDate, PlanningFact.Type.RATTRAPAGE, "commentaire"))
                 .thenReturn(catchupFactSameDay);
 
-        remplacementFact = new PlanningFact(catchupDate, PlanningFact.Type.REMPLACEMENT, 1234, 3302, "commentaire", 90, 0, 0, "");
+        remplacementFact = new PlanningFact(5, catchupDate, PlanningFact.Type.REMPLACEMENT, 1234, 3302, "commentaire", 90, 0, 0, "");
         when(planningFactCreator.createFactForPlanning(schedule, 3302, catchupDate, PlanningFact.Type.REMPLACEMENT, "commentaire"))
                 .thenReturn(remplacementFact);
 
@@ -253,7 +253,7 @@ public class PlanningFactServiceTest extends TestCase {
 
     public void testReplanify() throws Exception {
         Date replanifyDate = PlanningFactCreator.dateForSchedule(new DateFr(2, 1, 2015), new Hour(9, 0));
-        PlanningFact replanifyFact = new PlanningFact(replanifyDate, PlanningFact.Type.REMPLACEMENT, 1234, 3302, "commentaire", 90, 0, 0, "");
+        PlanningFact replanifyFact = new PlanningFact(6, replanifyDate, PlanningFact.Type.REMPLACEMENT, 1234, 3302, "commentaire", 90, 0, 0, "");
         when(planningFactCreator.createFactForPlanning(schedule, 3302, replanifyDate, PlanningFact.Type.REMPLACEMENT, "commentaire"))
                 .thenReturn(replanifyFact);
 

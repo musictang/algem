@@ -6,6 +6,7 @@ import net.algem.planning.fact.services.PlanningFact;
 import net.algem.planning.fact.services.PlanningFactDAO;
 import net.algem.util.Option;
 import net.algem.util.module.GemDesktop;
+import net.algem.util.ui.MessagePopup;
 import org.jdesktop.swingx.JXDatePicker;
 
 import javax.swing.*;
@@ -34,6 +35,7 @@ public class PlanningFactCRUDController {
     private JXDatePicker datePickerEnd;
 
     private final PlanningFactDAO dao;
+    private List<PlanningFact> data;
 
     public PlanningFactCRUDController(GemDesktop desktop) {
         $$$setupUI$$$();
@@ -45,6 +47,12 @@ public class PlanningFactCRUDController {
                 refresh();
             }
         });
+        supprimerButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                deleteSelectedFact();
+            }
+        });
     }
 
     public JPanel getPanel() {
@@ -53,7 +61,7 @@ public class PlanningFactCRUDController {
 
     private void refresh() {
         try {
-            List<PlanningFact> data = dao.findAsList(getQuery());
+            data = dao.findAsList(getQuery());
             TableModel model = new FactTableModel(data);
             table1.setModel(model);
             table1.setRowSorter(new TableRowSorter<>(model));
@@ -119,6 +127,20 @@ public class PlanningFactCRUDController {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         datePickerStart.setFormats(dateFormat);
         datePickerEnd.setFormats(new SimpleDateFormat("dd/MM/yyyy"));
+    }
+
+    private void deleteSelectedFact() {
+        int selectedRow = table1.getSelectedRow();
+        if (selectedRow != -1 && data != null) {
+            PlanningFact fact = data.get(table1.convertRowIndexToModel(selectedRow));
+            System.out.println(fact);
+
+            boolean confirmation = MessagePopup.confirm(getPanel(), "<html><b>Voulez vous supprimer cet événement ?</b>\n" +
+                    "L'événement sera définitivement supprimé.", "Confirmation de suppression");
+
+            if (confirmation) {
+            }
+        }
     }
 
     /**

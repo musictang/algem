@@ -24,7 +24,7 @@ public class PlanningFactCreator {
             throw new IllegalArgumentException("Schedule " + schedule + " has no action");
         }
         return new PlanningFact(
-                factDate,
+                -1, factDate,
                 type,
                 schedule.getId(),
                 idProf,
