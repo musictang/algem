@@ -1,7 +1,7 @@
 /*
- * @(#)AccountUtil.java	2.9.2 05/01/15
+ * @(#)AccountUtil.java	2.9.4.4 06/05/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -33,13 +33,14 @@ import net.algem.config.Preference;
 import net.algem.contact.PersonFile;
 import net.algem.contact.member.Member;
 import net.algem.planning.DateFr;
+import net.algem.util.BundleUtil;
 import net.algem.util.DataConnection;
 
 /**
  * Utility class for orderline operations.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.9.4.4
  * @since 2.0r
  */
 public class AccountUtil {
@@ -106,13 +107,17 @@ public class AccountUtil {
     }
     
     e.setPayer(payer);
-    e.setDate(new DateFr(new Date()));// current date may be different than schedule date
+    //e.setDate(new DateFr(new Date()));// current date may be different than schedule date
+    // Il est préférable que la date d'échéance corresponde à la date de répétition
+    // La plupart du temps, l'échéance est encaissée le jour de la répétition
+    e.setDate(date);
     e.setOrder(idCard);
     String s = ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey());
     e.setSchool(Integer.parseInt(s));
     e.setAccount(new Account((Integer) pref.getValues()[0]));
     e.setCostAccount(new Account((String) pref.getValues()[1]));
-    e.setLabel("p" + payer + " a" + pf.getId() + " " + date.toString()); // register schedule date
+    String reservation = " (" + BundleUtil.getLabel("Reserved.label").substring(0,3).toLowerCase() + ". " + new DateFr(new Date()) + ")";
+    e.setLabel("p" + payer + " a" + pf.getId() +  reservation);
     e.setCurrency("E");
     e.setDocument("");
     e.setPaid(false);

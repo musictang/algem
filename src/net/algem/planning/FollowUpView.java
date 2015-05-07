@@ -1,7 +1,7 @@
 /*
- * @(#)FollowUpView.java	2.8.v 13/06/14
+ * @(#)FollowUpView.java	2.9.4.4 06/05/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -32,7 +32,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.8.v
+ * @version 2.9.4.4
  */
 public class FollowUpView
         extends GemBorderPanel
@@ -46,6 +46,8 @@ public class FollowUpView
     JLabel detail = new JLabel(date + " " + start + "-" + end);
 
     textArea = new GemTextArea(3, 30);
+    textArea.setLineWrap(true);
+    textArea.setWrapStyleWord(true);
 
     this.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);

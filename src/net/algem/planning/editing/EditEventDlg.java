@@ -1,5 +1,5 @@
 /*
- * @(#)EditEventDlg.java 2.9.4.0 01/04/2015
+ * @(#)EditEventDlg.java 2.9.4.4 06/05/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -25,12 +25,9 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
-import javax.swing.BorderFactory;
 import javax.swing.JDialog;
 import javax.swing.JTextArea;
-import net.algem.planning.Hour;
+import javax.swing.JTextField;
 import net.algem.planning.HourRangePanel;
 import net.algem.planning.PlanningException;
 import net.algem.planning.PlanningService;
@@ -51,7 +48,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.0
+ * @version 2.9.4.4
  * @since 2.9.4.0 31/03/2015
  */
 public class EditEventDlg
@@ -79,9 +76,9 @@ public class EditEventDlg
     gb.insets = GridBagHelper.SMALL_INSETS;
     timePanel = new HourRangePanel(range.getStart(), range.getEnd());
     note = new JTextArea(5, 20);
+    note.setBorder(new JTextField().getBorder());
     note.setLineWrap(true);
     note.setWrapStyleWord(true);
-    note.setBorder(BorderFactory.createEtchedBorder());
     note.setText(range.getNote1());
     gb.add(new GemLabel(BundleUtil.getLabel("Hour.label")), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(timePanel, 1, 0, 1, 1, GridBagHelper.WEST);

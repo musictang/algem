@@ -1,0 +1,10 @@
+BUGS CORRIGES
+* La couleur du texte de premier plan des plannings de type "Technicien" (salle régie) ne reprenait pas celle des plannings de type "Studio". Ces 2 types de plannings sont généralement apparentés, la réservation d'une séance de studio impliquant celle d'une salle de régie.
+* En saisie de rendez-vous, à la création ou à la modification, le texte sous le clavier disparaissait à l'écran lors de l'utilisation d'Algem à travers une connexion distante.
+
+ECHEANCIER REPETITION INDIVIDUELLE
+La prise de répétition entraîne souvent la saisie automatisée d'une échéance de paiement. La date de cette échéance correspondait à la date de réservation dans les dernières versions d'Algem. Or, la plupart du temps, les personnes effectuent le règlement le jour même de la répétition. Il est donc préférable que cette date soit celle du jour de répétition. La date de réservation sera quant à elle enregistrée dans le libellé, précédée de l'abbréviation "rés.".
+
+PLANNING - SUIVI
+Le changement de ligne est maintenant automatique en saisie de suivi individuel sur une plage du planning.
+Rappel : on ouvre la fenêtre de suivi en Maj-cliquant sur le nom de l'élève dans un planning (ou en cliquant sur la cellule correspondante dans l'onglet suivi de l'élève). 
