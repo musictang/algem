@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+  <head>
+    <title>TODO supply a title</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="css/smoothness/jquery-ui-1.10.0.custom.css" />
+    <script type="text/javascript" src="js/jquery-1.9.0.min.js"></script>
+    <script type="text/javascript" src="js/algem.js"></script>
+    <script type="text/javascript" src="js/jquery-ui-1.10.0.custom.min.js"></script>
+    <script type="text/javascript" src="js/jquery-ui.datepicker-fr.js"></script>
+    <style>
+      /*
+  CSS Reset by Eric Meyer - Released under Public Domain
+    http://meyerweb.com/eric/tools/css/reset/
+      */
+      html, body, div, span, applet, object, iframe,
+      h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+      a, abbr, acronym, address, big, cite, code,
+      del, dfn, em, font, img, ins, kbd, q, s, samp,
+      small, strike, strong, sub, sup, tt, var,
+      b, u, i, center, dl, dt, dd, ol, ul, li,
+      fieldset, form, label, legend, table,
+      caption, tbody, tfoot, thead, tr, th, td
+      {margin: 0;padding: 0;border: 0;outline: 0;
+       font-size: 100%;vertical-align: baseline;
+       background: transparent;}
+      body              {line-height: 1em;}
+      ol, ul            {list-style: none;}
+      blockquote, q     {quotes: none;}
+      blockquote:before, blockquote:after,
+      q:before, q:after {content: '';	content: none;}
+      :focus            {outline: 0;}
+      ins               {text-decoration: none;}
+      del               {text-decoration: line-through;}
+      table             {border-collapse: collapse;border-spacing: 0;}
+
+      body {
+        font-size: 100%;
+        max-height:  100%;
+        background-color: cornsilk;
+        font-family: Arial, Helvetica, sans-serif;
+        color: #111;
+      }
+
+      header {
+        position: relative;
+        /*height: 50px;*/
+      }
+      #grid {
+        position: absolute;
+        /*top: 5%;*/
+        top: 50px;
+        border-collapse:collapse;
+        border-spacing: 0;
+        width: 100%;
+        height: 640px;
+        font-size: x-small;
+        text-align: left;
+        background-color: ivory;
+        border:1px solid gray;
+        z-index: 1000;
+      }
+
+      #grid tr {
+        height:20px; /* 640/32 */
+      }
+
+      #grid th{
+        padding-left: 0.1em;
+        text-align: left;
+        vertical-align: top;
+        /*  border-bottom: 1px solid gray;*/
+      }
+      #grid tr:nth-child(even) {border-bottom: 1px solid gray;}
+      #grid tr:nth-child(odd) {border-bottom: 1px dotted gray;}
+      #canvas {
+        background-color: ivory;
+        position:absolute;
+        top: 50px;
+        left:2.2em;
+        height:640px;
+      }
+
+      .schedule_col {
+        position: relative;
+        width: 100px;
+        height:640px;
+        float:left;
+        border-right:1px solid gray;
+        z-index: 1001;
+      }
+
+      .schedule_col:nth-child(1) {
+        border-left:1px solid gray;
+      }
+
+      .title_col {
+        position: absolute;
+        top:-1.2em;
+        width: 98%;
+        font-size: x-small;
+        font-weight: bold;
+        text-align: center;
+        /*background: linear-gradient(to bottom,  #FFF8DC 0%,#FFFFF0 100%);  W3C */
+      }
+
+      .schedule {
+        position: absolute;
+        width:100%;
+        font-size: x-small;
+        text-align: center;
+        text-wrap: normal;
+        border-bottom: 1px solid gray;
+        z-index: 1001
+      }
+
+      .range {
+        position: absolute;
+        background-color:yellow;
+        opacity:0.5;
+        z-index: 1002;
+      }
+
+      #dow {
+        display: inline-block;
+        text-align: right;
+        padding: 0 0.1em;
+      }
+
+      #datepicker {
+        position: relative;
+        /*width:10em;*/
+        text-align: center;
+        font-size: small;
+        z-index: 3000;
+      }
+
+      #info {
+        position: absolute;
+        right:0;
+      }
+
+      #help-content, #tel-content {
+        position: absolute;
+        top:50px;
+        right:0;
+        display: none;
+        background-color: #fcefa1;
+        border: 1px dotted gray;
+        padding: 1em;
+        font-family: Verdana, sans-serif;
+        line-height: 1.5em;
+        height:auto;
+        z-index:3001;
+
+      }
+      .colorHelp {
+        /*color: black;*/
+        text-align: center;
+        font-size: larger;
+        font-weight: bold
+      }
+
+      .tip {
+        position: absolute;
+        top: 1.2em;
+        padding:0.2em;
+        display: none;
+        background-color: #FCD300;
+        color:black;
+        font-size: larger;
+        z-index: 1010;
+      }
+      .colorSquare {
+        width:16px;
+        height:16px;
+        display: inline-block;
+        vertical-align: middle;
+      }
+
+      a:link,a:visited, a:active {
+        color: green;
+      }
+      a:hover {
+        color: gray;
+      }
+
+      footer {
+        position: absolute;
+        top: 690px;
+        /*bottom:0;*/
+        height: 2em;
+      }
+
+      footer > address {
+        font-style: normal;
+        font-size: smaller;
+      }
+
+      #previous:link, #previous:visited, #previous:hover, #previous:active,
+      #next:link, #next:visited, #next:hover, #next:active {
+        text-decoration: none;
+      }
+
+      @media only screen and (min-width:521px) and (max-width: 1024px) {
+        .schedule_col {
+          width: 75px;
+        }
+
+        .schedule {
+          font-size: xx-small;
+        }
+      }
+      @media only screen and (max-width : 520px) {
+        .schedule_col {
+          width: 50px;
+        }
+        .schedule {
+          font-size: xx-small;
+        }
+      }
+
+    </style>
+    <script type="text/javascript">
+      var estabId = 3501;
+      var currentDate = '08-05-2015';
+      $(function() {
+//        init();
+        var picker = $("#datepicker");
+        //picker.datepicker({ appendText: "(jj-mm-yyyy)", changeMonth: true, changeYear: true })
+        picker.datepicker({changeMonth: true, changeYear: true, autoSize: true});
+        picker.datepicker('setDate', currentDate);
+        picker.datepicker("refresh");
+        $('#estabSelection').val(estabId);
+        document.title = 'Agenda ' + $('#estabSelection option:selected').text();
+        picker.change(function() {
+          window.location = 'today.html?d=' + this.value + '&e=' + estabId;
+        });
+        // Next Day Link
+        $('a#next').click(function() {
+          var date = new Date(picker.datepicker('getDate'));
+          date.setDate(date.getDate() + 1);
+          picker.datepicker('setDate', date).change();
+          return false;
+        });
+        // Previous Day Link
+        $('a#previous').click(function() {
+          var date = new Date(picker.datepicker('getDate'));
+          date.setDate(date.getDate() - 1);
+          picker.datepicker('setDate', date).change();
+          return false;
+        });
+        $('#estabSelection').change(function() {
+          var eId = $('#estabSelection option:selected').val();
+          window.location = 'today.html?d=' + $("#datepicker").val() + '&e=' + eId;
+        })
+        $('#help').hover(function() {
+          $(this).css('cursor', 'pointer');
+          $('#help-content').toggle()
+        })
+        $('#tel').hover(function() {
+          $(this).css('cursor', 'pointer');
+          $('#tel-content').toggle()
+        })
+        var cols = 6;
+
+//      $('.schedule_col').width($('#grid').width()/(cols +1) + "px")
+//      alert(w)
+      });
+
+
+    </script>
+  </head>
+  <body>
+    <header>
+      <nav style="float: left">
+        <select id="estabSelection" name="estabId" tabindex="4">
+          <option value="3502">Chaville</option>
+          <option value="3501">Malakoff</option>
+        </select>
+        <label id="dow" for="datepicker">ven.</label><input type="text" id="datepicker" tabindex="3"/>
+        &nbsp;&nbsp;<a href="" title="Jour précédent" id="previous" tabindex="2">&lt;&lt;&nbsp;</a>&nbsp;|&nbsp;<a href="" title="Jour suivant" id="next" tabindex="1">&nbsp;&gt;&gt;</a>
+      </nav>
+    </header>
+    <aside id="info">
+      <img src="img/help-contents.png" id="help" alt="Aide"/>
+      <img src="img/tel.png" id="tel" alt="Tel."/>
+    </aside>
+    <aside id="help-content">
+      <ul>
+        <li><span class="colorSquare" title="Cours collectif" style="background-color:#FF3333"></span>&nbsp;Cours collectif</li>
+        <li><span class="colorSquare colorHelp" style="background-color:#00D059;"></span>&nbsp;Cours disponible
+          <span style="font-size: smaller">(place momentanément disponible pour les répétitions)</span></li>
+
+        <li><span class="colorSquare" title="Cours occupé" style="background-color:#80e82c"></span>&nbsp;Cours occupé</li>
+        <li><span class="colorSquare" title="Répétition groupe" style="background-color:#2158FF"></span>&nbsp;Répétition groupe</li>
+        <li><span class="colorSquare" title="Répétition adhérent" style="background-color:#3399FF"></span>&nbsp;Répétition adhérent</li>
+      </ul>
+    </aside>
+    <aside id="tel-content">
+      <ul>
+        <li>Malakoff&nbsp;:&nbsp;01 40 84 80 09 (lundi au vendredi 10h-22h - samedi 11h-18h)</li>
+        <li>Chaville&nbsp;:&nbsp;01 47 50 66 63 (lundi au jeudi 14h-20h)</li>
+      </ul>
+    </aside>
+    <table id="grid">
+      <tr><th>09:00</th></tr>
+      <tr><th>09:30</th></tr>
+      <tr><th>10:00</th></tr>
+      <tr><th>10:30</th></tr>
+      <tr><th>11:00</th></tr>
+      <tr><th>11:30</th></tr>
+      <tr><th>12:00</th></tr>
+      <tr><th>12:30</th></tr>
+      <tr><th>13:00</th></tr>
+      <tr><th>13:30</th></tr>
+      <tr><th>14:00</th></tr>
+      <tr><th>14:30</th></tr>
+      <tr><th>15:00</th></tr>
+      <tr><th>15:30</th></tr>
+      <tr><th>16:00</th></tr>
+      <tr><th>16:30</th></tr>
+      <tr><th>17:00</th></tr>
+      <tr><th>17:30</th></tr>
+      <tr><th>18:00</th></tr>
+      <tr><th>18:30</th></tr>
+      <tr><th>19:00</th></tr>
+      <tr><th>19:30</th></tr>
+      <tr><th>20:00</th></tr>
+      <tr><th>20:30</th></tr>
+      <tr><th>21:00</th></tr>
+      <tr><th>21:30</th></tr>
+      <tr><th>22:00</th></tr>
+      <tr><th>22:30</th></tr>
+      <tr><th>23:00</th></tr>
+      <tr><th>23:30</th></tr>
+    </table>
+    <!--    <table id="grid">
+            <tr><td></td></tr>
+            <tr><td></td></tr>
+            <tr><td></td></tr>
+            <tr><td></td></tr>
+            <tr><td></td></tr>
+            <tr><td></td></tr>
+            <tr><td></td></tr>
+            <tr><td></td></tr>
+            <tr><td></td></tr>
+            <tr><td></td></tr>
+            <tr><td></td></tr>
+            <tr><td></td></tr>
+            <tr><td></td></tr>
+            <tr><td></td></tr>
+            <tr><td></td></tr>
+            <tr><td></td></tr>
+            <tr><td></td></tr>
+            <tr><td></td></tr>
+            <tr><td></td></tr>
+            <tr><td></td></tr>
+            <tr><td></td></tr>
+            <tr><td></td></tr>
+            <tr><td></td></tr>
+            <tr><td></td></tr>
+            <tr><td></td></tr>
+            <tr><td></td></tr>
+            <tr><td></td></tr>
+            <tr><td></td></tr>
+            <tr><td></td></tr>
+            <tr><td></td></tr>
+          </table>-->
+    <!--<div style="background-color: gray;position:absolute;top: 5%;left:2em;height:640px;width:100%">-->
+    <section id="canvas">
+      <div class="schedule_col">
+        <p class="title_col">BLEUE</p>
+        <div class="schedule" style="top:46.666666666666664%;height:33.111111111111114%;background-color:#00D059">GUITARE<br />16:00-21:00</div>
+        <div class="schedule range" style="top:60.0%;height:3.111111111111111%;"></div>
+        <div class="schedule range" style="top:56.666666666666664%;height:3.111111111111111%;"></div>
+        <div class="schedule range" style="top:63.333333333333336%;height:3.111111111111111%;"></div>
+        <div class="schedule range" style="top:66.66666666666667%;height:3.111111111111111%;"></div>
+      </div>
+
+      <div class="schedule_col">
+        <p class="title_col">VERTE</p>
+        <div class="schedule" style="top:30.0%;height:6.444444444444445%;background-color:#3399FF">REPET ADHÉRENT<br />13:30-14:30</div>
+        <div class="schedule" style="top:48.333333333333336%;height:11.444444444444445%;background-color:#00D059">PIANO<br />16:15-18:00</div>
+        <div class="schedule" style="top:60.0%;height:8.11111111111111%;background-color:#FF3333">PIANO CO<br />18:00-19:15</div>
+        <div class="schedule" style="top:68.33333333333333%;height:18.11111111111111%;background-color:#00D059">PIANO<br />19:15-22:00</div>
+        <div class="schedule range" style="top:53.333333333333336%;height:3.111111111111111%;"></div>
+        <div class="schedule range" style="top:50.0%;height:3.111111111111111%;"></div>
+        <div class="schedule range" style="top:56.666666666666664%;height:3.111111111111111%;"></div>
+        <div class="schedule range" style="top:71.66666666666667%;height:3.111111111111111%;"></div>
+        <div class="schedule range" style="top:75.0%;height:4.777777777777778%;"></div>
+        <div class="schedule range" style="top:80.0%;height:3.111111111111111%;"></div>
+        <div class="schedule range" style="top:83.33333333333333%;height:3.111111111111111%;"></div>
+        <div class="schedule range" style="top:68.33333333333333%;height:3.111111111111111%;"></div>
+      </div>
+      <div class="schedule_col">
+        <p class="title_col">ROUGE</p>
+        <div class="schedule" style="top:53.333333333333336%;height:9.777777777777779%;background-color:#3399FF">REPET ADHÉRENT<br />17:00-18:30</div>
+        <div class="schedule" style="top:63.333333333333336%;height:6.444444444444445%;background-color:#3399FF">REPET ADHÉRENT<br />18:30-19:30</div>
+      </div>
+      <div class="schedule_col">
+        <p class="title_col">JAUNE</p>
+        <div class="schedule" style="top:55.0%;height:8.11111111111111%;background-color:#FF3333">CLARINETTE CO<br />17:15-18:30</div>
+        <div class="schedule" style="top:63.333333333333336%;height:3.111111111111111%;background-color:#00D059">SAX<br />18:30-19:00</div>
+        <div class="schedule" style="top:66.66666666666667%;height:9.777777777777779%;background-color:#FF3333">CLARINETTE CO<br />19:00-20:30</div>
+        <div class="schedule range" style="top:63.333333333333336%;height:3.111111111111111%;"></div>
+      </div>
+      <div class="schedule_col">
+        <p class="title_col">RASTA</p>
+        <div class="schedule" style="top:6.666666666666667%;height:13.11111111111111%;background-color:#3399FF">REPET ADHÉRENT<br />10:00-12:00</div>
+        <div class="schedule" style="top:20.0%;height:13.11111111111111%;background-color:#3399FF">REPET ADHÉRENT<br />12:00-14:00</div>
+        <div class="schedule" style="top:43.333333333333336%;height:6.444444444444445%;background-color:#3399FF">REPET ADHÉRENT<br />15:30-16:30</div>
+        <div class="schedule" style="top:50.0%;height:3.111111111111111%;background-color:#00D059">BATTERIE<br />16:30-17:00</div>
+        <div class="schedule" style="top:60.0%;height:8.11111111111111%;background-color:#00D059">BATTERIE<br />18:00-19:15</div>
+        <div class="schedule" style="top:68.33333333333333%;height:9.777777777777779%;background-color:#FF3333">BATTERIE CO<br />19:15-20:45</div>
+        <div class="schedule" style="top:78.33333333333333%;height:8.11111111111111%;background-color:#00D059">BATTERIE<br />20:45-22:00</div>
+        <div class="schedule range" style="top:50.0%;height:3.111111111111111%;"></div>
+        <div class="schedule range" style="top:65.0%;height:3.111111111111111%;"></div>
+        <div class="schedule range" style="top:60.0%;height:4.777777777777778%;"></div>
+        <div class="schedule range" style="top:78.33333333333333%;height:3.111111111111111%;"></div>
+        <div class="schedule range" style="top:81.66666666666667%;height:3.111111111111111%;"></div>
+      </div>
+      <div class="schedule_col">
+        <p class="title_col">ORCHESTRA</p>
+        <div class="schedule" style="top:13.333333333333334%;height:19.77777777777778%;background-color:#2158FF">REPET GROUPE<br />11:00-14:00</div>
+        <div class="schedule" style="top:33.333333333333336%;height:19.77777777777778%;background-color:#2158FF">REPET GROUPE<br />14:00-17:00</div>
+        <div class="schedule" style="top:53.333333333333336%;height:6.444444444444445%;background-color:#FF3333">EVEIL RYTHMIQUE<br />17:00-18:00</div>
+        <div class="schedule" style="top:66.66666666666667%;height:6.444444444444445%;background-color:#FF3333">ATELIER ROCK<br />19:00-20:00</div>
+        <div class="schedule" style="top:73.33333333333333%;height:19.77777777777778%;background-color:#2158FF">REPET GROUPE<br />20:00-23:00</div>
+      </div>
+    </section>
+    <!--</div>-->
+    <footer>
+      <address>
+        ©&nbsp;2014&nbsp;Musiques&nbsp;Tangentes&nbsp;AGPL&nbsp;v.3&nbsp;| <a href="http://www.algem.net" target="_blank">http://www.algem.net</a>
+      </address>
+    </footer>
+  </body>
+</html>

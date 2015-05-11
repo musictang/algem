@@ -1,0 +1,264 @@
+/*
+    Created on : 9 mai 2015, 09:23:44
+    Author     : <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
+*/
+
+/*
+ CSS Reset by Eric Meyer - Released under Public Domain
+   http://meyerweb.com/eric/tools/css/reset/
+*/
+@font-face {
+    font-family: 'droid_sans_monoregular';
+    src: url('../fonts/DroidSansMono-webfont.eot');
+    src: url('../fonts/DroidSansMono-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/DroidSansMono-webfont.woff') format('woff'),
+         url('../fonts/DroidSansMono-webfont.ttf') format('truetype'),
+         url('../fonts/DroidSansMono-webfont.svg#droid_sans_monoregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center, dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend, table,
+caption, tbody, tfoot, thead, tr, th, td
+{margin: 0;padding: 0;border: 0;outline: 0;
+ font-size: 100%;vertical-align: baseline;
+ background: transparent;}
+body              {line-height: 1em;}
+ol, ul            {list-style: none;}
+blockquote, q     {quotes: none;}
+blockquote:before, blockquote:after,
+q:before, q:after {content: '';	content: none;}
+:focus            {outline: 0;}
+ins               {text-decoration: none;}
+del               {text-decoration: line-through;}
+table             {border-collapse: collapse;border-spacing: 0;}
+
+body {
+  height:100%;
+  background-color: cornsilk;
+  font-family: Arial, Helvetica, sans-serif;
+  /*color: #111;*/
+  color:#042279;
+  background-image:url('../img/personas-header-1280x1024.png');
+  background-attachment: fixed;
+  background-position: left bottom;
+  background-repeat: no-repeat;
+}
+
+header {
+  position: relative;
+  height: 50px;
+  background-image:url('../img/personas-footer-1280x1024.png');
+  background-attachment: fixed;
+  background-position: left top;
+  background-repeat: no-repeat;
+/*
+   background: #fffbe9;  Old browsers
+background: -moz-linear-gradient(top,  #fffbe9 0%, #ffc65d 100%);  FF3.6+
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#fffbe9), color-stop(100%,#ffc65d));  Chrome,Safari4+
+background: -webkit-linear-gradient(top,  #fffbe9 0%,#ffc65d 100%);  Chrome10+,Safari5.1+
+background: -o-linear-gradient(top,  #fffbe9 0%,#ffc65d 100%);  Opera 11.10+
+background: -ms-linear-gradient(top,  #fffbe9 0%,#ffc65d 100%);  IE10+
+background: linear-gradient(to bottom,  #fffbe9 0%,#ffc65d 100%);  W3C
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fffbe9', endColorstr='#ffc65d',GradientType=0 );  IE6-9 */
+}
+
+header > nav {
+  float: left;
+  padding:0.5em 0 0.5em 2.2em;
+}
+
+#grid {
+  position: absolute;
+  top: 50px;
+  border-collapse:collapse;
+  border-spacing: 0;
+  width: 100%;
+  height: 640px;
+  font-size: x-small;
+  text-align: left;
+  background-color: ivory;
+  border:1px solid gray;
+  z-index: 1000;
+}
+
+#grid tr {
+  height:20px; /* 640/32 */
+}
+
+#grid th {
+  padding-left: 0.1em;
+  text-align: left;
+  vertical-align: top;
+  font-family: droid_sans_monoregular,monospace, sans-serif;
+}
+
+#grid th > p{
+  margin-top:-0.2em;
+}
+
+#grid tr:nth-child(even) {border-bottom: 1px solid gray;}
+#grid tr:nth-child(odd) {border-bottom: 1px dotted gray;}
+
+#canvas {
+  background-color: ivory;
+  position:absolute;
+  top: 50px;
+  left:2.2em;
+  height:640px;
+}
+
+.schedule_col {
+  position: relative;
+  width: 100px;
+  height:640px;
+  float:left;
+  border-right:1px solid gray;
+  z-index: 1001;
+}
+
+.schedule_col:nth-child(1) {
+  border-left:1px solid gray;
+}
+
+.title_col {
+  position: absolute;
+  top:-1.2em;
+  width: 98%;
+  font-size: x-small;
+  font-weight: bold;
+  text-align: center;
+  /*background: linear-gradient(to bottom,  #FFF8DC 0%,#FFFFF0 100%);  W3C */
+}
+
+.schedule {
+  position: absolute;
+  width:100%;
+  font-size: x-small;
+  text-align: center;
+  text-wrap: normal;
+  border-bottom: 1px solid gray;
+  z-index: 1001
+}
+
+.range {
+  position: absolute;
+  background-color:yellow;
+  opacity:0.5;
+  z-index: 1002;
+}
+
+#dow {
+  display: inline-block;
+  text-align: right;
+  padding: 0 0.1em;
+  font-family: droid_sans_monoregular,monospace,sans-serif;
+}
+
+#datepicker {
+  position: relative;
+  /*width:10em;*/
+  text-align: center;
+  font-size: small;
+  z-index: 3000;
+}
+
+#info-bar {
+  position: absolute;
+  top:0.2em;
+  right:0;
+  z-index: 3000;
+}
+
+#help-content, #tel-content {
+  position: absolute;
+  top:50px;
+  right:0;
+  display: none;
+  background-color: #fcefa1;
+  border: 1px dotted gray;
+  padding: 1em;
+  font-family: Verdana, sans-serif;
+  line-height: 1.5em;
+  height:auto;
+  z-index:3001;
+
+}
+
+.colorHelp {
+  text-align: center;
+  font-size: larger;
+  font-weight: bold
+}
+
+.tip {
+  position: absolute;
+  top: 1.2em;
+  padding:0.2em;
+  display: none;
+  background-color: #FCD300;
+  color:black;
+  font-size: larger;
+  z-index: 1010;
+}
+
+.colorSquare {
+  width:16px;
+  height:16px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+a:link,a:visited, a:active {
+  /*color: green;*/
+  color: #008335;
+}
+a:hover {
+  color: gray;
+}
+
+footer {
+  position: absolute;
+  left: 2.2em;
+  top: 690px;
+  height: 2em;
+
+}
+
+footer > address {
+  font-style: normal;
+  font-size: smaller;
+}
+
+#previous:link, #previous:visited, #previous:hover, #previous:active,
+#next:link, #next:visited, #next:hover, #next:active {
+  text-decoration: none;
+  font-weight: bold;
+}
+
+@media only screen and (min-width:521px) and (max-width: 1024px) {
+  .schedule_col {
+    width: 75px;
+  }
+  .schedule {
+    font-size: xx-small;
+  }
+}
+
+@media only screen and (max-width : 520px) {
+  header > nav {
+    padding:0.5em 0;
+  }
+  .schedule_col {
+    width: 50px;
+  }
+  .schedule {
+    font-size: xx-small;
+  }
+}

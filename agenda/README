@@ -54,3 +54,6 @@ N'oubliez pas dans ce cas de modifier le nom jndi par défaut dans le fichier
 application-context.xml :
 <jee:jndi-lookup id="dataSource" jndi-name="jdbc/algem"/>
 
+
+Dans <apache-home>/conf/catalina.properties, spécifier les librairies :
+shared.loader=/<path_to_lib>/lib/*.jar
