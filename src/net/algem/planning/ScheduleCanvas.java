@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleCanvas.java 2.9.4.3 21/04/15
+ * @(#)ScheduleCanvas.java 2.9.4.4 06/05/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -188,6 +188,7 @@ public abstract class ScheduleCanvas
       case Schedule.MEMBER:
         return colorPrefs.getColor(ColorPlan.MEMBER_LABEL);
       case Schedule.STUDIO:
+      case Schedule.TECH:
         return colorPrefs.getColor(ColorPlan.STUDIO_LABEL);
       case Schedule.ADMINISTRATIVE:
         return colorPrefs.getColor(ColorPlan.ADMINISTRATIVE_LABEL);

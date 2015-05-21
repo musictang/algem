@@ -25,6 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -45,7 +46,7 @@ public class PlanningCtrl
 
   @Autowired
   private PlanningService service;
-  
+
   private String estabFilter = " AND id IN (SELECT DISTINCT etablissement FROM salle WHERE public = TRUE)";
 
   public void setService(PlanningService service) {
@@ -62,10 +63,10 @@ public class PlanningCtrl
    */
   @RequestMapping(method = RequestMethod.GET, value = "/today.html")
   String loadDaySchedule(HttpServletRequest request, Model model) throws ParseException {
-    
+
     String dateParam = request.getParameter("d");
-    SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
-    SimpleDateFormat dayNameFormat = new SimpleDateFormat("EEEE");
+    SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.FRANCE);
+    SimpleDateFormat dayNameFormat = new SimpleDateFormat("EEE");
     Date date = dateFormat.parse(request.getParameter("d"));
     String dayName = dayNameFormat.format(date);
     int estab = Integer.parseInt(request.getParameter("e"));

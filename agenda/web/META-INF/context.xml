@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context antiJARLocking="true" path="/mustang/agenda">
+<Resource auth="Container"
+driverClassName="org.postgresql.Driver"
+maxActive="20" maxIdle="30" maxWait="10000"
+name="jdbc/mustang" password="Pigfy!"
+type="javax.sql.DataSource"
+url="jdbc:postgresql://localhost:5432/algem"
+username="nobody"/>
+</Context>
