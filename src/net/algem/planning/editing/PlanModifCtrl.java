@@ -120,7 +120,7 @@ public class PlanModifCtrl
     }
 
     if (true) { //TODO add feature flag
-      v.add(new GemMenuButton("DIPATCH", this, "ScheduleDispatch"));
+      v.add(new GemMenuButton(BundleUtil.getLabel("ScheduleDispatch.label"), this, "ScheduleDispatch"));
     }
 
     if (Algem.isFeatureEnabled("planning_fact")) {
@@ -287,7 +287,7 @@ public class PlanModifCtrl
         new ActivitySupCtrl(desktop, plan).run();
       } else if (arg.equals("ScheduleDispatch")) {
         Action action = ((CourseSchedule) plan).getAction();
-        desktop.addPanel("dispatch", new ScheduleDispatchController(desktop, action).getPanel());
+        new ScheduleDispatchController(desktop, action).run();
       }
       /*
        else if (arg.bufferEquals("Replanifier")) {

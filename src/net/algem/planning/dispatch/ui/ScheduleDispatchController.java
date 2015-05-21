@@ -5,11 +5,13 @@ import net.algem.course.Course;
 import net.algem.planning.Action;
 import net.algem.planning.dispatch.model.ScheduleDispatch;
 import net.algem.planning.dispatch.model.ScheduleDispatchService;
+import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.GemLogger;
 import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.SQLErrorDlg;
+import net.algem.util.ui.Toast;
 
 import javax.swing.*;
 import java.awt.*;
@@ -31,6 +33,7 @@ public class ScheduleDispatchController implements SubscriptionPatternDialog.OnS
     private final ScheduleDispatchService scheduleDispatchService;
     private ScheduleDispatch scheduleDispatch;
     private final ScheduleDispatchTableModel dataModel;
+    private JDialog dialog;
 
     public ScheduleDispatchController(GemDesktop desktop, Action courseAction) {
         this.desktop = desktop;
@@ -48,7 +51,6 @@ public class ScheduleDispatchController implements SubscriptionPatternDialog.OnS
                     Point p = me.getPoint();
                     int row = rowHeader.locationToIndex(p);
                     if (me.getClickCount() == 2) {
-                        System.out.println("double click " + row);
                         Person person = scheduleDispatch.getPersons().get(row);
                         showSubscriptionPatternDialog(person);
                     }
@@ -73,6 +75,15 @@ public class ScheduleDispatchController implements SubscriptionPatternDialog.OnS
         });
     }
 
+    public void run() {
+        dialog = new JDialog(desktop.getFrame());
+        dialog.setTitle(BundleUtil.getLabel("ScheduleDispatch.label"));
+        dialog.getContentPane().add(getPanel());
+        dialog.pack();
+        dialog.setLocationRelativeTo(desktop.getFrame());
+        dialog.setVisible(true);
+    }
+
     public void showSubscriptionPatternDialog(Person person) {
         SubscriptionPatternDialog dialog = new SubscriptionPatternDialog(this, person, scheduleDispatch.getSchedules());
         dialog.pack();
@@ -90,6 +101,8 @@ public class ScheduleDispatchController implements SubscriptionPatternDialog.OnS
     private void saveScheduleDispatch() {
         try {
             scheduleDispatchService.saveScheduleDispatch(courseAction, scheduleDispatch);
+            Toast.showToast(desktop, "Affectations des planning enregistrées");
+            dialog.dispose();
         } catch (Exception e) {
             GemLogger.logException(e);
             SQLErrorDlg.displayException(getPanel(), "Erreur", e);
