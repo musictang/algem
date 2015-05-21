@@ -111,6 +111,15 @@ public class ScheduleDispatch {
             result = 31 * result + sessionFrequency;
             return result;
         }
+
+        @Override
+        public String toString() {
+            return "SubscriptionPattern{" +
+                    "action=" + action +
+                    ", from=" + from +
+                    ", sessionFrequency=" + sessionFrequency +
+                    '}';
+        }
     }
 
     @Override

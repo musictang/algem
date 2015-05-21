@@ -52,6 +52,7 @@ import net.algem.group.*;
 import net.algem.planning.Action;
 import net.algem.planning.*;
 import net.algem.planning.day.DaySchedule;
+import net.algem.planning.dispatch.model.ScheduleDispatchService;
 import net.algem.planning.editing.instruments.AtelierInstrumentsDAO;
 import net.algem.planning.editing.instruments.AtelierInstrumentsService;
 import net.algem.planning.editing.instruments.AtelierInstrumentsServiceImpl;
@@ -181,6 +182,7 @@ public class DataCache
   private ScriptExecutorService scriptExecutorService;
   private ScriptExportService scriptExportService;
   private PlanningFactDAO planningFactDAO;
+  private ScheduleDispatchService scheduleDispatchService;
 
   private DataCache() {
 
@@ -238,6 +240,8 @@ public class DataCache
     scriptDirectoryService = new ScriptDirectoryServiceImpl(scriptsPath, new IOUtil.FileReaderHelper(), new ScriptManifestParserImpl());
     scriptExecutorService = new ScriptExecutorServiceImpl(dc);
     scriptExportService = new ScriptExportServiceImpl();
+
+    scheduleDispatchService = new ScheduleDispatchService(dc, PERSON_IO);
   }
 
   /**
@@ -1223,5 +1227,9 @@ public class DataCache
 
   public PlanningFactDAO getPlanningFactDAO() {
     return planningFactDAO;
+  }
+
+  public ScheduleDispatchService getScheduleDispatchService() {
+    return scheduleDispatchService;
   }
 }

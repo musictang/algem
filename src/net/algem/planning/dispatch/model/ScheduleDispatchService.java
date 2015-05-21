@@ -17,7 +17,7 @@ public class ScheduleDispatchService {
     }
 
     public ScheduleDispatch loadScheduleDispatch(Action action) throws Exception {
-        List<Schedule> schedules = ScheduleIO.find("WHERE action = " + action.getId(), dc);
+        List<Schedule> schedules = ScheduleIO.find("WHERE action = " + action.getId() + " ORDER BY jour", dc);
         List<Person> persons = personIO.getPersonsForAction(action);
         Map<Integer, Set<Integer>> dispatchMap = new HashMap<>();
 
@@ -27,8 +27,8 @@ public class ScheduleDispatchService {
 
         for (Schedule schedule : schedules) {
             for (Person person : persons) {
-                Vector<ScheduleRange> ranges = ScheduleRangeIO.find("WHERE idplanning = " + schedule.getId()
-                                                                     + " AND adherent = " + person.getId(), dc);
+                Vector<ScheduleRange> ranges = ScheduleRangeIO.find("pg WHERE pg.idplanning = " + schedule.getId()
+                                                                     + " AND pg.adherent = " + person.getId(), dc);
                 if (ranges != null && ranges.size() > 0) {
                     dispatchMap.get(person.getId()).add(schedule.getId());
                 }
@@ -53,7 +53,7 @@ public class ScheduleDispatchService {
                         range.setMemberId(personId);
                         ScheduleRangeIO.insert(range, dc);
                     } else {
-                        ScheduleRangeIO.delete("WHERE idplanning = " + schedule.getId() + " AND adherent = " + personId, dc);
+                        ScheduleRangeIO.delete("idplanning = " + schedule.getId() + " AND adherent = " + personId, dc);
                     }
                 }
             }

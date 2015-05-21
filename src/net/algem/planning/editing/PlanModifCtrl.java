@@ -41,6 +41,7 @@ import net.algem.group.GemGroupService;
 import net.algem.group.Group;
 import net.algem.planning.*;
 import net.algem.planning.day.DayPlanView;
+import net.algem.planning.dispatch.ui.ScheduleDispatchController;
 import net.algem.planning.editing.instruments.AtelierInstrumentsController;
 import net.algem.planning.fact.ui.ActivitySupCtrl;
 import net.algem.planning.fact.ui.DeleteLowActivityCtrl;
@@ -118,6 +119,9 @@ public class PlanModifCtrl
       v.add(new GemMenuButton(BundleUtil.getLabel("Course.instrument.allocation.label"), this, "AtelierInstruments"));
     }
 
+    if (true) { //TODO add feature flag
+      v.add(new GemMenuButton("DIPATCH", this, "ScheduleDispatch"));
+    }
 
     if (Algem.isFeatureEnabled("planning_fact")) {
       v.add(new GemMenuButton(BundleUtil.getLabel("PlanningFact.AbsenceToCatchUp.label"), this, "AbsenceToCatchUp"));
@@ -281,6 +285,9 @@ public class PlanModifCtrl
         new ReplanifyCtrl(desktop, plan).run();
       } else if (arg.equals("ActivitySup")) {
         new ActivitySupCtrl(desktop, plan).run();
+      } else if (arg.equals("ScheduleDispatch")) {
+        Action action = ((CourseSchedule) plan).getAction();
+        desktop.addPanel("dispatch", new ScheduleDispatchController(desktop, action).getPanel());
       }
       /*
        else if (arg.bufferEquals("Replanifier")) {
