@@ -41,7 +41,6 @@ public class ScheduleDispatchTableModel extends AbstractTableModel {
 
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-        super.setValueAt(aValue, rowIndex, columnIndex);//TODO
         Person person = scheduleDispatch.getPersons().get(rowIndex);
         Schedule schedule = scheduleDispatch.getSchedules().get(columnIndex);
         boolean isSubscribed = scheduleDispatch.isSubscribed(person, schedule);
