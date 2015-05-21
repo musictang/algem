@@ -77,23 +77,7 @@ public class AtelierInstrumentsDAO {
     }
 
 
-    public List<Integer> getPersonsIdsForAction(int idAction) throws SQLException {
-    String query = format(
-            "SELECT DISTINCT p.id, p.nom, p.prenom FROM " + PersonIO.TABLE + " p\n"
-            + "JOIN " + OrderIO.TABLE + " c ON c.adh = p.id\n"
-            + "JOIN " + CourseOrderIO.TABLE + " cc ON cc.idcmd = c.id\n"
-            + "JOIN " + ActionIO.TABLE + " a ON cc.idaction = a.id\n"
-            + "WHERE a.id = %d\n"
-            + "ORDER BY p.prenom, p.nom ", idAction
-    );
 
-    List<Integer> result = new ArrayList<>();
-    ResultSet resultSet = dc.executeQuery(query);
-    while (resultSet.next()) {
-      result.add(resultSet.getInt(1));
-    }
-    return result;
-  }
 
     public List<Integer> getInstrumentIdsForPerson(int idPerson) throws SQLException {
         String query = format("SELECT DISTINCT ON(instrument) instrument,idx FROM person_instrument WHERE idper = %d ORDER BY instrument,idx", idPerson);

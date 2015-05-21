@@ -297,6 +297,16 @@ public class DataConnection
     public T run(DataConnection conn) throws Exception;
   }
 
+  public static abstract class SQLProc implements SQLRunnable<Void> {
+    protected abstract void run() throws Exception;
+
+    @Override
+    public Void run(DataConnection conn) throws Exception {
+      run();
+      return null;
+    }
+  }
+
   public <T> T withTransaction(SQLRunnable<T> block) throws Exception {
     boolean inTransaction = !cnx.getAutoCommit();
     if (inTransaction) {
