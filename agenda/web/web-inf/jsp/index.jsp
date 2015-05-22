@@ -29,23 +29,26 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<spring:eval var="org" expression="@organisation" />
 <!DOCTYPE html>
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>Agenda Algem</title>
+    <title>planning ${org['nom']}</title>
     <meta name="viewport" content="width=device-width"> <!-- important -->
     <link rel="shortcut icon" href="img/favicon.ico">
     <link rel="stylesheet" href="css/planning-algem.css" />
     <!--    <script type="text/javascript" src="js/jquery-1.9.0.min.js"></script>
         <script type="text/javascript" src="js/algem.js"></script>-->
     <style>
-      body {background-position: left 690px;}
+      /*body {background-position: left 690px;}*/
       h1 {
         font-family: Verdana,Arial,sans-serif;
         font-size: 2.5em;
         padding: 0.4em;
-        color: #b66000;
+        /*color: #b66000;*/
+        color: ivory;
+        text-shadow: 1px 1px 1px rgba(0, 0, 0, 1);
       }
 
       h1 > span {
@@ -56,7 +59,7 @@
 
       div.page {
         margin: 0 auto;
-        width:80%;
+        width:100%;
         text-align: center;
         height:640px;
         background: #fff8dc; /* Old browsers */
@@ -84,7 +87,8 @@
   <body>
     <jsp:useBean id="now" scope="request" class="java.util.Date" />
     <fmt:formatDate scope="request" pattern="dd-MM-yyyy" var="today" value="${now}" />
-    <header class="center"><h1>ALGEM&nbsp;<span>agenda</span></h1></header>
+    
+    <header class="center"><h1><span>planning</span>&nbsp;${org['nom']}</h1></header>
     <div class="page">
       <c:forEach var="estab" items="${estabList}">
         <c:url value="today.html" var="todayUrl">

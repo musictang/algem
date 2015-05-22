@@ -86,6 +86,7 @@
         <li><span class="colorSquare" title="${msg_group_rehearsal}" style="background-color:#2158FF"></span>&nbsp;${msg_group_rehearsal}</li>
         <li><span class="colorSquare" title="${msg_member_rehearsal}" style="background-color:#3399FF"></span>&nbsp;${msg_member_rehearsal}</li>
       </ul>
+      <img id="help-close" class="bt-close" alt="Fermer" src="img/close.png"/>
     </aside>
     <aside id="tel-content">
       <ul>
@@ -99,7 +100,7 @@
           </li>
         </c:forEach>
       </ul>
-      <img id="tel-close" alt="Fermer" style="position:absolute;bottom:0;right:1em" src="img/close.png"/>
+      <img id="tel-close" class="bt-close" alt="Fermer" src="img/close.png"/>
     </aside>
     <div id="colorInfo">
       <div id="contact">

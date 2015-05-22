@@ -1,7 +1,7 @@
 /*
- * @(#)Schedule.java	1.0.2 28/01/14
+ * @(#)Schedule.java	1.0.4 22/05/15
  *
- * Copyright (c) 2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem Agenda.
  * Algem Agenda is free software: you can redistribute it and/or modify it
@@ -26,18 +26,22 @@ import java.util.List;
  * Schedule object model.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 1.0.2
+ * @version 1.0.4
  * @since 1.0.0 11/02/13
  */
 public class Schedule
         implements java.io.Serializable
 {
 
-  public static final int COURSE_SCHEDULE = 1;
-  public static final int ACTION_SCHEDULE = 2;
-  public static final int GROUP_SCHEDULE = 3;
-  public static final int MEMBER_SCHEDULE = 4;
-  public static final int WORKSHOP_SCHEDULE = 5;
+  public static final int COURSE = 1;
+  public static final int ACTION = 2;
+  public static final int GROUP = 3;
+  public static final int MEMBER = 4;
+  public static final int WORKSHOP = 5;
+  public static final int TRAINING = 6;
+  public static final int STUDIO = 7;
+  public static final int TECH = 8;
+  
   protected int id;
   protected DateFr date;
   protected Hour start;
@@ -47,7 +51,7 @@ public class Schedule
   protected int idAction;
   protected int place;
   protected int note;
-	protected List<ScheduleRange> items;
+  protected List<ScheduleRange> items;
 
   @Override
   public boolean equals(Object obj) {

@@ -108,14 +108,14 @@ public class PlanningService
     Locale locale = LocaleContextHolder.getLocale();
     String t = "";
     switch (e.getType()) {
-      case Schedule.COURSE_SCHEDULE:
-      case Schedule.WORKSHOP_SCHEDULE:
+      case Schedule.COURSE:
+      case Schedule.WORKSHOP:
         t = e.getCourseName();
         break;
-      case Schedule.GROUP_SCHEDULE:
+      case Schedule.GROUP:
         t = messageSource.getMessage("group.rehearsal.title", null, locale);
         break;
-      case Schedule.MEMBER_SCHEDULE:
+      case Schedule.MEMBER:
         t = messageSource.getMessage("member.rehearsal.title", null, locale);
         break;
       default:

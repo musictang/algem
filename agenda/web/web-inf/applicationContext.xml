@@ -40,20 +40,28 @@
   </bean>
 
   <util:map id="horaires" key-type="java.lang.String" >
-    <entry key="Malakoff">
+    <entry key="Etablissement 1">
       <util:list>
-          <value>01 40 84 80 09</value>
+          <value>01 02 03 04 05</value>
           <value>(lundi au vendredi 10h-22h - samedi 11h-18h)</value>
         </util:list>
     </entry>
-    <entry key="Chaville">
+    <entry key="Etablissement 1">
       <util:list>
-          <value>01 47 50 66 63</value>
+          <value>01 02 03 04 05</value>
           <value>(mercredi au jeudi 14h-20h)</value>
         </util:list>
     </entry>
   </util:map>
+  
+  <util:map id="organisation" key-type="java.lang.String" >
+    <entry key="nom" value="Mon organisation" />
+  </util:map>
 
   <bean id="localeResolver" class="org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver" />
+  <!-- Load in application properties reference -->
+<!--<bean id="organisation" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+    <property name="org" value="Musiques Tangentes"/>
+</bean>-->
 
 </beans>

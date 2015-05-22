@@ -1,7 +1,7 @@
 /*
- * @(#)ScheduleIO.java	1.0.2 28/01/14
+ * @(#)ScheduleIO.java	1.0.4 22/05/15
  *
- * Copyright (c) 2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem Agenda.
  * Algem Agenda is free software: you can redistribute it and/or modify it
@@ -34,7 +34,7 @@ import org.springframework.stereotype.Repository;
  * IO methods for class {@link net.algem.planning.Schedule}.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 1.0.2
+ * @version 1.0.4
  * @since 1.0.0 11/02/13
  */
 @Repository
@@ -89,7 +89,7 @@ public class ScheduleIO
    * @param estab establishment number
    * @return a list of schedule elements
    */
-  public List<ScheduleElement> find(Date day, int estab) {
+  public List<ScheduleElement> find(Date date, int estab) {
     String query = " SELECT p.*, c.titre, c.collectif, s.nom, t.prenom, t.nom"
             + " FROM " + TABLE + " p INNER JOIN action a LEFT OUTER JOIN cours c ON (a.cours = c.id)"
             + " ON (p.action = a.id) LEFT OUTER JOIN personne t ON (t.id = p.idper)"
@@ -118,12 +118,12 @@ public class ScheduleIO
         d.setCollective(rs.getBoolean(11));
         d.setRoomName(rs.getString(12));
         d.setPersonName(rs.getString(13), rs.getString(14));
-        if (d.type == Schedule.COURSE_SCHEDULE && !d.isCollective()) {
+        if (d.type == Schedule.COURSE && !d.isCollective()) {
           d.setRanges(getTimeSlots(d.getId()));
         }
         return d;
       }
-    }, day, estab);
+    }, date, estab);
   }
 
   /**
@@ -133,12 +133,12 @@ public class ScheduleIO
    * @param estab establishment number
    * @return a list of rooms
    */
-  public List<Room> getFreeRoom(Date day, int estab) {
+  public List<Room> getFreeRoom(Date date, int estab) {
     String query = "SELECT id, nom FROM salle s"
             + " WHERE s.public = true"
             + " AND s.etablissement = " + estab
             + " AND s.id NOT IN ("
-            + " SELECT lieux FROM " + TABLE + " WHERE jour = '" + day + "') ORDER BY id";
+            + " SELECT lieux FROM " + TABLE + " WHERE jour = '" + date + "') ORDER BY id";
     return jdbcTemplate.query(query, new RowMapper<Room>()
     {
 
