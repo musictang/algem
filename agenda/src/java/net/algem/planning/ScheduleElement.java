@@ -1,7 +1,7 @@
 /*
- * @(#)ScheduleElement.java	1.0.2 28/01/14
+ * @(#)ScheduleElement.java	1.0.4 25/05/15
  *
- * Copyright (c) 2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem Agenda.
  * Algem Agenda is free software: you can redistribute it and/or modify it
@@ -175,19 +175,22 @@ public class ScheduleElement
     //plage rgb(252,211,0)
     //instrument collectif	rgb(255,128,25)
     switch (type) {
-      case Schedule.COURSE_SCHEDULE:
+      case Schedule.ROOM:
+        return prefix + "CCCCCC";
+      case Schedule.COURSE:
         if (isCollective()) {
-//					return prefix + Integer.toHexString(Color.RED.getRGB()).substring(2);
-          return prefix + "FF3333"; //#FF3333 rgb(255,51,51)
+          return prefix + "FF5252"; //#FF3333 rgb(255,51,51)
         } else {
           return prefix + "00D059"; //#00D059 rgb(0,208,89)
         }
-      case Schedule.GROUP_SCHEDULE:
+      case Schedule.GROUP:
         return prefix + "2158FF"; //#2158FF rgb(33,88,255)
-      case Schedule.MEMBER_SCHEDULE:
+      case Schedule.MEMBER:
         return prefix + "3399FF"; //#3399FF rgb(51,153,255)
-      case Schedule.WORKSHOP_SCHEDULE:
+      case Schedule.WORKSHOP:
         return prefix + "F7F7AC"; //#F7F7AC rgb(247,247,172)
+      case Schedule.TRAINING:
+        return prefix + "F7F77C"; //#F7F7AC rgb(247,247,172)
       default:
         return "#FFFFFF";
 

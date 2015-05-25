@@ -1,6 +1,6 @@
 <%--
 /*
- * @(#)day.jsp	1.0.4 11/05/15
+ * @(#)day.jsp	1.0.4 25/05/15
  *
  * Copyright (c) 2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -60,6 +60,7 @@
     <spring:message code="member.rehearsal.label" var="msg_member_rehearsal"/>
     <spring:message code="next.day.label" var="msg_next_day"/>
     <spring:message code="prev.day.label" var="msg_prev_day"/>
+    <spring:message code="room.closed.label" var="msg_room_closed"/>
 
     <header>
       <nav>
@@ -85,7 +86,9 @@
         <li><span class="colorSquare" title="${msg_course_used}" style="background-color:#80e82c"></span>&nbsp;${msg_course_used}</li>
         <li><span class="colorSquare" title="${msg_group_rehearsal}" style="background-color:#2158FF"></span>&nbsp;${msg_group_rehearsal}</li>
         <li><span class="colorSquare" title="${msg_member_rehearsal}" style="background-color:#3399FF"></span>&nbsp;${msg_member_rehearsal}</li>
+        <li><span class="colorSquare" title="${msg_room_closed}" style="background-color:#ccc"></span>&nbsp;${msg_room_closed}</li>
       </ul>
+      <img id="help-close" class="bt-close" alt="Fermer" src="img/close.png"/>
     </aside>
     <aside id="tel-content">
       <ul>
@@ -99,7 +102,7 @@
           </li>
         </c:forEach>
       </ul>
-      <img id="tel-close" alt="Fermer" style="position:absolute;bottom:0;right:1em" src="img/close.png"/>
+      <img id="tel-close" class="bt-close" alt="Fermer" src="img/close.png"/>
     </aside>
     <div id="colorInfo">
       <div id="contact">
@@ -175,11 +178,23 @@
 
       </c:forEach>
       <%-- salles libres --%>
-      <c:forEach var="room" items="${freeroom}" >
+      <%--<c:forEach var="room" items="${freeroom}" >
         <div class="schedule_col">
           <p class="title_col">${room.name}</p>
         </div>
+      </c:forEach>--%>
+      <%-- salles et horaires non libres --%>
+      <c:forEach var="entry" items="${freeplace}" >
+        <div class="schedule_col">
+          <p class="title_col">${entry.key}</p>
+          <c:forEach var="p" items="${entry.value}">
+            <c:set var="pos" value="${(p.minutes - timeOffset) * 100 / totalTime}%"/>
+            <c:set var="h" value="${(p.length -2) * 100 / totalTime}%"/>
+            <div class="schedule" style="top:${pos};height:${h};background-color:${p.htmlColor}"></div>
+          </c:forEach>
+        </div>
       </c:forEach>
+
     </section>
     <footer>
       <address>

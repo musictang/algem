@@ -2,7 +2,7 @@
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @since 09/05/15 09:33
- * @version 1.0.6
+ * @version 1.0.4
  * @returns {void}
  */
 
@@ -42,10 +42,15 @@ var picker = $("#datepicker");
     var eId = $('#estabSelection option:selected').val();
     window.location = 'today.html?d=' + $("#datepicker").val() + '&e=' + eId;
   });
-  $('#help').hover(function() {
+  $('#help').click(function() {
     $(this).css('cursor', 'pointer');
     $('#help-content').toggle();
   });
+   $('#help-close').click(function() {
+    $(this).css('cursor', 'pointer');
+    $('#help-content').hide();
+  });
+  
   $('#tel').click(function() {
     $(this).css('cursor', 'pointer');
     $('#tel-content').toggle();

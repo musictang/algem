@@ -1,7 +1,7 @@
 /*
- * @(#)PlanningCtrl.java	1.0.1 06/03/13
+ * @(#)PlanningCtrl.java	1.0.4 25/05/15
  *
- * Copyright (c) 2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem Agenda.
  * Algem Agenda is free software: you can redistribute it and/or modify it
@@ -37,7 +37,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
  * MVC Controller for planning view.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 1.0.1
+ * @version 1.0.4
  * @since 1.0.0 11/02/13
  */
 @Controller
@@ -78,7 +78,8 @@ public class PlanningCtrl
     model.addAttribute("dayName", dayName);
     model.addAttribute("planning", schedules);
     model.addAttribute("estabList", service.getEstablishments(estabFilter));
-    model.addAttribute("freeroom", service.getFreeRoom(date, estab));
+//    model.addAttribute("freeroom", service.getFreeRoom(date, estab));
+    model.addAttribute("freeplace", service.getFreePlace(date, estab));
 
     return "day";
   }

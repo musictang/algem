@@ -1,7 +1,7 @@
 /*
- * @(#)PlanningService.java	1.0.2 28/01/14
+ * @(#)PlanningService.java	1.0.4 25/05/15
  *
- * Copyright (c) 2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem Agenda.
  * Algem Agenda is free software: you can redistribute it and/or modify it
@@ -20,6 +20,7 @@
  */
 package net.algem.planning;
 
+import java.sql.SQLException;
 import java.util.*;
 import net.algem.contact.Person;
 import net.algem.contact.PersonIO;
@@ -33,7 +34,7 @@ import org.springframework.stereotype.Component;
  * Service class for schedule operations.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 1.0.2
+ * @version 1.0.4
  * @since 1.0.0 11/02/13
  */
 @Component
@@ -71,6 +72,11 @@ public class PlanningService
         place = d.getPlace();
         List<ScheduleElement> elements = new ArrayList<ScheduleElement>();
         elements.add(d);
+
+        List<ScheduleElement> closed = getClosed(place, date);
+        if (closed.size() > 0) {
+          elements.addAll(closed);
+        }
         map.put(place, elements);
       } else {
         map.get(place).add(d);
@@ -87,6 +93,80 @@ public class PlanningService
 	 */
   public List<Room> getFreeRoom(Date date, int estab) {
     return scheduleIO.getFreeRoom(date, estab);
+  }
+
+  public HashMap<String, Collection<ScheduleElement>> getFreePlace(Date date, int estab) {
+    HashMap<String, Collection<ScheduleElement>> map = new HashMap<String, Collection<ScheduleElement>>();
+    List<Room> rooms = scheduleIO.getFreeRoom(date, estab);
+    for (Room r : rooms) {
+      List<ScheduleElement> closed = getClosed(r.getId(), date);
+      map.put(r.getName(), closed);
+    }
+    return map;
+  }
+
+  private DailyTimes[] findDailyTimes(int roomId) {
+    try {
+      return scheduleIO.find(roomId);
+    } catch (SQLException ex) {
+      return getDefaultDailyTimes();
+    }
+  }
+
+  private List<ScheduleElement> getClosed(int room, int dow) {
+    List<ScheduleElement> closed = new ArrayList<ScheduleElement>();
+    Hour first = new Hour("09:00");
+    Hour last = new Hour("24:00");
+
+    DailyTimes dt = getDailyTimes(room, dow);
+    Hour start = dt.getOpening();
+    Hour end = dt.getClosing();
+
+    if (start != null && start.toMinutes() > first.toMinutes()) {
+      ScheduleElement s = new ScheduleElement();
+      s.setType(Schedule.ROOM);
+      s.setStart(first);
+      s.setEnd(start);
+      closed.add(s);
+    }
+
+    if (end != null && end.toMinutes() < 1440) {
+      ScheduleElement e = new ScheduleElement();
+      e.setType(Schedule.ROOM);
+      e.setStart(end.toString().equals(Hour.NULL_HOUR) ? first : end);
+      e.setEnd(last);
+      closed.add(e);
+    }
+
+    return closed;
+  }
+
+  private List<ScheduleElement> getClosed(int room, Date date) {
+    Calendar cal = Calendar.getInstance();
+    cal.setTime(date);
+    int dow = cal.get(Calendar.DAY_OF_WEEK);
+    return getClosed(room, dow);
+  }
+
+  private DailyTimes getDailyTimes(int room, int dow) {
+    DailyTimes[] dailyTimes = findDailyTimes(room);
+    return dailyTimes == null || dailyTimes.length == 0 ? null : dailyTimes[dow-1];
+  }
+
+  /**
+   * Default opening times.
+   * @return an array of daily times
+   */
+  private DailyTimes[] getDefaultDailyTimes() {
+    DailyTimes[] timesArray = new DailyTimes[7];
+
+    for (int i = 0 ; i < 7 ; i++) {
+      DailyTimes dt = new DailyTimes(i+1);
+      dt.setOpening(new Hour("00:00"));
+      dt.setClosing(new Hour("24:00"));
+      timesArray[i] = dt;
+    }
+    return timesArray;
   }
 
   /**
@@ -108,14 +188,15 @@ public class PlanningService
     Locale locale = LocaleContextHolder.getLocale();
     String t = "";
     switch (e.getType()) {
-      case Schedule.COURSE_SCHEDULE:
-      case Schedule.WORKSHOP_SCHEDULE:
+      case Schedule.COURSE:
+      case Schedule.WORKSHOP:
+      case Schedule.TRAINING:
         t = e.getCourseName();
         break;
-      case Schedule.GROUP_SCHEDULE:
+      case Schedule.GROUP:
         t = messageSource.getMessage("group.rehearsal.title", null, locale);
         break;
-      case Schedule.MEMBER_SCHEDULE:
+      case Schedule.MEMBER:
         t = messageSource.getMessage("member.rehearsal.title", null, locale);
         break;
       default:
