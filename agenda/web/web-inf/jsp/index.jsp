@@ -40,7 +40,7 @@
     <!--    <script type="text/javascript" src="js/jquery-1.9.0.min.js"></script>
         <script type="text/javascript" src="js/algem.js"></script>-->
     <style>
-      body {background-position: left 690px;}
+      body {background-position: right 690px;}
       h1 {
         font-family: Verdana,Arial,sans-serif;
         font-size: 2.5em;
@@ -56,7 +56,7 @@
 
       div.page {
         margin: 0 auto;
-        width:80%;
+        width:100%;
         text-align: center;
         height:640px;
         background: #fff8dc; /* Old browsers */

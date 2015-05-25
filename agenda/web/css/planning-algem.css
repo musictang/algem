@@ -45,9 +45,10 @@ body {
   font-family: Arial, Helvetica, sans-serif;
   /*color: #111;*/
   color:#042279;
+  background-color: #ffaa11;
   background-image:url('../img/personas-header-1280x1024.png');
   background-attachment: fixed;
-  background-position: left bottom;
+  background-position: right 690px;
   background-repeat: no-repeat;
 }
 
