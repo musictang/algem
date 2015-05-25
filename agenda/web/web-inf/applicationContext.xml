@@ -53,6 +53,10 @@
         </util:list>
     </entry>
   </util:map>
+  
+  <util:map id="organisation" key-type="java.lang.String" >
+    <entry key="nom" value="Mon organisation" />
+  </util:map>
 
   <util:map id="organisation" key-type="java.lang.String" >
     <entry key="nom" value="Mon organisation" />
