@@ -61,6 +61,8 @@
     <spring:message code="next.day.label" var="msg_next_day"/>
     <spring:message code="prev.day.label" var="msg_prev_day"/>
     <spring:message code="room.closed.label" var="msg_room_closed"/>
+    <spring:message code="workshop.label" var="msg_workshop"/>
+    <spring:message code="training.label" var="msg_training"/>
 
     <header>
       <nav>
@@ -84,6 +86,8 @@
         <li><span class="colorSquare colorHelp" style="background-color:#00D059;"></span>&nbsp;<spring:message code="course.available.label" />
           <span style="font-size: smaller">(<spring:message code="course.available.tip" />)</span></li>
         <li><span class="colorSquare" title="${msg_course_used}" style="background-color:#80e82c"></span>&nbsp;${msg_course_used}</li>
+        <li><span class="colorSquare" title="${msg_workshop}" style="background-color:#F7F7AC"></span>&nbsp;${msg_workshop}</li>
+        <li><span class="colorSquare" title="${msg_training}" style="background-color:#F7F77C"></span>&nbsp;${msg_training}</li>
         <li><span class="colorSquare" title="${msg_group_rehearsal}" style="background-color:#2158FF"></span>&nbsp;${msg_group_rehearsal}</li>
         <li><span class="colorSquare" title="${msg_member_rehearsal}" style="background-color:#3399FF"></span>&nbsp;${msg_member_rehearsal}</li>
         <li><span class="colorSquare" title="${msg_room_closed}" style="background-color:#ccc"></span>&nbsp;${msg_room_closed}</li>
@@ -198,7 +202,7 @@
     </section>
     <footer>
       <address>
-        ©&nbsp;2014&nbsp;Musiques&nbsp;Tangentes&nbsp;AGPL&nbsp;v.3&nbsp;| <a href="http://www.algem.net" target="_blank">http://www.algem.net</a>
+        ©&nbsp;2015&nbsp;Musiques&nbsp;Tangentes&nbsp;AGPL&nbsp;v.3&nbsp;| <a href="http://www.algem.net" target="_blank">http://www.algem.net</a>
       </address>
     </footer>
   </body>

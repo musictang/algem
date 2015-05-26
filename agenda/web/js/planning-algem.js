@@ -20,7 +20,7 @@ var picker = $("#datepicker");
   picker.datepicker('setDate', currentDate);
   picker.datepicker("refresh");
   $('#estabSelection').val(estabId);
-  document.title = 'Agenda ' + $('#estabSelection option:selected').text();
+  document.title = 'Planning ' + $('#estabSelection option:selected').text();
   picker.change(function() {
     window.location = 'today.html?d=' + this.value + '&e=' + estabId;
   });
@@ -50,7 +50,7 @@ var picker = $("#datepicker");
     $(this).css('cursor', 'pointer');
     $('#help-content').hide();
   });
-  
+
   $('#tel').click(function() {
     $(this).css('cursor', 'pointer');
     $('#tel-content').toggle();

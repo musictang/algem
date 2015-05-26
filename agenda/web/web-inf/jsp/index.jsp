@@ -1,6 +1,6 @@
 <%--
 /*
- * @(#)index.jsp	1.0.4 11/05/15
+ * @(#)index.jsp	1.0.4 26/05/15
  *
  * Copyright (c) 2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -38,8 +38,6 @@
     <meta name="viewport" content="width=device-width"> <!-- important -->
     <link rel="shortcut icon" href="img/favicon.ico">
     <link rel="stylesheet" href="css/planning-algem.css" />
-    <!--    <script type="text/javascript" src="js/jquery-1.9.0.min.js"></script>
-        <script type="text/javascript" src="js/algem.js"></script>-->
     <style>
       /*body {background-position: left 690px;}*/
       h1 {
@@ -87,7 +85,7 @@
   <body>
     <jsp:useBean id="now" scope="request" class="java.util.Date" />
     <fmt:formatDate scope="request" pattern="dd-MM-yyyy" var="today" value="${now}" />
-    
+
     <header class="center"><h1><span>planning</span>&nbsp;${org['nom']}</h1></header>
     <div class="page">
       <c:forEach var="estab" items="${estabList}">
@@ -106,7 +104,7 @@
     </div>
     <footer style="height:3em">
       <address>
-        ©&nbsp;2014&nbsp;Musiques&nbsp;Tangentes&nbsp;AGPL&nbsp;v.3&nbsp;| <a href="http://www.algem.net" target="_blank">http://www.algem.net</a>
+        ©&nbsp;2015&nbsp;Musiques&nbsp;Tangentes&nbsp;AGPL&nbsp;v.3&nbsp;| <a href="http://www.algem.net" target="_blank">http://www.algem.net</a>
       </address>
     </footer>
   </body>

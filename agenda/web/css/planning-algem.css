@@ -1,6 +1,7 @@
 /*
     Created on : 9 mai 2015, 09:23:44
     Author     : <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
+    Last       : 26/05/15
 */
 
 /*
@@ -41,34 +42,21 @@ table             {border-collapse: collapse;border-spacing: 0;}
 
 body {
   height:100%;
-  background-color: cornsilk;
   font-family: Arial, Helvetica, sans-serif;
   color: #111;
-  /*color:#042279;*/
   background-color: #ffab11;
-  background-image:url('../img/personas-header-1280x1024.png');
+  /*background-color:#ff8d08;*/
+  /*Personnalisation*/
+/*  background-image:url('../img/personas-header-1280x1024.png');
   background-position: right 690px;
-  background-repeat: no-repeat;
- 
+  background-repeat: no-repeat;*/
 }
 
 header {
   position: relative;
   height: 50px;
-  background-color: #ff8d08;
-/*  background-image:url('../img/personas-footer-1280x1024.png');
-  background-attachment: fixed;
-  background-position: left top;
-  background-repeat: repeat-x;*/
-/*
-   background: #fffbe9;  Old browsers
-background: -moz-linear-gradient(top,  #fffbe9 0%, #ffc65d 100%);  FF3.6+
-background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#fffbe9), color-stop(100%,#ffc65d));  Chrome,Safari4+
-background: -webkit-linear-gradient(top,  #fffbe9 0%,#ffc65d 100%);  Chrome10+,Safari5.1+
-background: -o-linear-gradient(top,  #fffbe9 0%,#ffc65d 100%);  Opera 11.10+
-background: -ms-linear-gradient(top,  #fffbe9 0%,#ffc65d 100%);  IE10+
-background: linear-gradient(to bottom,  #fffbe9 0%,#ffc65d 100%);  W3C
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fffbe9', endColorstr='#ffc65d',GradientType=0 );  IE6-9 */
+  /*background-color: #ff8d08;*/
+  background-color: #ffab11;
 }
 
 header > nav {
@@ -136,7 +124,6 @@ header > nav {
   font-size: x-small;
   font-weight: bold;
   text-align: center;
-  /*background: linear-gradient(to bottom,  #FFF8DC 0%,#FFFFF0 100%);  W3C */
 }
 
 .schedule {
@@ -183,14 +170,15 @@ header > nav {
   top:50px;
   right:0;
   display: none;
-  background-color: #fcefa1;
+  /*background-color: #fcefa1;*/
+  background-color: #ffd280;
+  /*background-color: ivory;*/
   border: 1px dotted gray;
   padding: 1em;
   font-family: Verdana, sans-serif;
   line-height: 1.5em;
   height:auto;
   z-index:3001;
-
 }
 
 .colorHelp {
@@ -215,6 +203,9 @@ header > nav {
   height:16px;
   display: inline-block;
   vertical-align: middle;
+  border-width: 1px;
+  border-style: solid;
+  border-color: black;
 }
 
 .bt-close {
@@ -256,6 +247,7 @@ footer > address {
   }
   .schedule {
     font-size: xx-small;
+    line-height: 1em;
   }
 }
 
@@ -268,5 +260,6 @@ footer > address {
   }
   .schedule {
     font-size: xx-small;
+    line-height: 1em;
   }
 }
