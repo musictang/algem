@@ -140,7 +140,7 @@ header > nav {
 .range {
   position: absolute;
   background-color: #FCD300;
-  opacity:0.5;
+  opacity:0.4;
   z-index: 1002;
 }
 
@@ -258,6 +258,39 @@ footer > address {
   }
   .schedule_col {
     width: 50px;
+  }
+  .schedule {
+    font-size: xx-small;
+    line-height: 1em;
+  }
+}
+
+/*iPhone 2G, 3G, 4, 4S Media Queries : Portrait*/
+@media only screen 
+and (min-device-width : 320px) 
+and (max-device-width : 480px) { 
+  header > nav {
+    padding:0.5em 0;
+  }
+  .schedule_col {
+    width: 40px;
+  }
+  .schedule {
+    font-size: xx-small;
+    line-height: 1em;
+  }
+}
+/*iPhone 2G, 3G, 4, 4S Media Queries : landscape*/
+@media only screen 
+and (min-device-width : 320px) 
+and (max-device-width : 480px) 
+and (orientation : landscape) {
+  /* STYLES GO HERE */
+   header > nav {
+    padding:0.5em 0;
+  }
+  .schedule_col {
+    width: 60px;
   }
   .schedule {
     font-size: xx-small;

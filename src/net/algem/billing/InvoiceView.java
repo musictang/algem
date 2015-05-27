@@ -1,5 +1,5 @@
 /*
- * @(#)InvoiceView.java 2.9.3.2 11/03/15
+ * @(#)InvoiceView.java 2.9.4.5 27/05/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -66,7 +66,7 @@ import net.algem.util.ui.*;
  * Invoice / quotation view.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.3.2
+ * @version 2.9.4.5
  * @since 2.3.a 07/02/12
  */
 public class InvoiceView
@@ -499,8 +499,14 @@ public class InvoiceView
     g.drawString(invoiceNumber + " : " + quote.getNumber(), margin, top + 100);
     // référence
     g.drawString("Ref. : " + quote.getReference(), left, top + 100);
-    // émetteur
-    g.drawString(BundleUtil.getLabel("Issuer.label") + " : " + quote.getUser().getFirstnameName(), margin, top + 120);
+    Person issuer = null;
+    try {
+      // émetteur
+      issuer = (Person) DataCache.findId(quote.getIssuer(), Model.Person);
+    } catch (SQLException ex) {
+      GemLogger.log(ex.getMessage());
+    }
+    g.drawString(BundleUtil.getLabel("Issuer.label") + " : " + (issuer != null && issuer.getId() > 0 ? issuer.getFirstnameName(): ""), margin, top + 120);
     // description
     g.drawString(BundleUtil.getLabel("Invoice.description.label") + " : " + quote.getDescription(), margin, top + 140);
 
