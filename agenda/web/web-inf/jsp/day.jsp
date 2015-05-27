@@ -165,7 +165,8 @@
           <p class="title_col">${entry.value[0].roomName}</p>
           <c:forEach var="p" items="${entry.value}">
             <%-- calculer position et hauteur planning --%>
-            <%-- <c:set var="position" value="${(p.minutes - 480)/30 *  3.125}%"/> --%>
+            <%-- ne pas utiliser ligne ci-dessous : calcul approximatif --%>
+            <%-- <c:set var="position" value="${(p.minutes - 540)/30 *  3.125}%"/> --%>
             <c:set var="pos" value="${(p.minutes - timeOffset) * 100 / totalTime}%"/>
             <c:set var="h" value="${(p.length -2) * 100 / totalTime}%"/>
             <div class="schedule" style="top:${pos};height:${h};background-color:${p.htmlColor}">${p.label}</div>
