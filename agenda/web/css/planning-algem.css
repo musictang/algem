@@ -1,7 +1,7 @@
 /*
     Created on : 9 mai 2015, 09:23:44
     Author     : <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
-    Last       : 26/05/15
+    Last       : 28/05/15
 */
 
 /*
@@ -48,7 +48,7 @@ body {
   /*background-color:#ff8d08;*/
   /*Personnalisation*/
 /*  background-image:url('../img/personas-header-1280x1024.png');
-  background-position: right 690px;
+  background-position: right 710px;
   background-repeat: no-repeat;*/
 }
 
@@ -226,7 +226,7 @@ a:hover {
 footer {
   position: absolute;
   left: 2.2em;
-  top: 690px;
+  top: 710px; /*660+50*/
   height: 2em;
 
 }
