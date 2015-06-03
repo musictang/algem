@@ -1,7 +1,7 @@
 /*
- * @(#)CityCtrl.java	2.8.w 08/07/14
+ * @(#)CityCtrl.java	2.9.4.6 01/06/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -37,7 +37,6 @@ import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
 import net.algem.util.module.GemDesktop;
-import net.algem.util.module.GemModule;
 import net.algem.util.ui.*;
 
 /**
@@ -45,7 +44,7 @@ import net.algem.util.ui.*;
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.4.6
  * @since 1.0a 02/09/2001
  */
 public class CityCtrl
@@ -53,6 +52,7 @@ public class CityCtrl
         implements ActionListener
 {
 
+  private static final String CITY_KEY = "Menu.city";
   private CodePostalField cdp;
   private GemField city;
   private GemButton btAdd;
@@ -216,6 +216,6 @@ public class CityCtrl
   }
 
   private void close() {
-    desktop.removeModule(GemModule.CITY_KEY);
+    desktop.removeModule(CITY_KEY);
   }
 }

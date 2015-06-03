@@ -1,5 +1,5 @@
 /*
- * @(#)GemDesktopCtrl.java	2.9.2.1 18/02/15
+ * @(#)GemDesktopCtrl.java	2.9.4.6 02/06/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -66,7 +66,7 @@ import net.algem.util.ui.HtmlViewer;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2.1
+ * @version 2.9.4.6
  * @since 1.0a 05/07/2002
  */
 public class GemDesktopCtrl
@@ -342,7 +342,7 @@ public class GemDesktopCtrl
     } else if (BundleUtil.getLabel("Menu.postit.label").equals(arg)) {
       postitCreate = new PostitCreateCtrl(this, userService);
       postitCreate.addActionListener(this);
-      addPanel(GemModule.POSTIT_CREATE_KEY, postitCreate);
+      addPanel(PostitCreateCtrl.POSTIT_CREATE_KEY, postitCreate);
     } else if (BundleUtil.getLabel("Menu.contact.label").equals(arg)) {
       ContactExportDlg dlg = new ContactExportDlg(this);
       dlg.setVisible(true);

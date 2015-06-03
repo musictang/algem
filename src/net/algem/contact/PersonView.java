@@ -1,5 +1,5 @@
 /*
- * @(#)PersonView.java	2.9.2 12/01/15
+ * @(#)PersonView.java	2.9.4.6 03/06/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -42,7 +42,6 @@ import net.algem.util.GemLogger;
 import net.algem.util.ImageUtil;
 import net.algem.util.MessageUtil;
 import net.algem.util.module.GemDesktop;
-import net.algem.util.module.GemModule;
 import net.algem.util.ui.*;
 
 /**
@@ -50,7 +49,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.9.4.6
  */
 public class PersonView
         extends GemBorderPanel
@@ -321,6 +320,7 @@ public class PersonView
   public void clear() {
     no.setText("");
     name.setText("");
+    organization.setText(null);
     firstname.setText("");
     nickname.setText("");
     civil.setSelectedIndex(0);
@@ -336,6 +336,7 @@ public class PersonView
       civil.setEnabled(false);
       cbImgRights.setEnabled(false);
       cbPartner.setEnabled(false);
+      nickname.setEnabled(false);
     }
   }
 
@@ -350,7 +351,7 @@ public class PersonView
       {
 
         public void actionPerformed(ActionEvent e) {
-          GroupFileEditor groupEditor = new GroupFileEditor(g, GemModule.GROUPE_DOSSIER_KEY);
+          GroupFileEditor groupEditor = new GroupFileEditor(g);
           desktop.addModule(groupEditor);
         }
       });

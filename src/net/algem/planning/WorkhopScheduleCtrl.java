@@ -1,7 +1,7 @@
 /*
- * @(#)WorkhopScheduleCtrl.java	2.8.w 08/07/14
+ * @(#)WorkhopScheduleCtrl.java	2.9.4.6 02/06/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -37,127 +37,128 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.4.6
  * @since 1.0a 07/07/1999
  */
 public class WorkhopScheduleCtrl
-	extends CardCtrl 
+        extends CardCtrl
 {
 
+  public static final String WORKSHOP_SCHEDULING_KEY = "Workshop.scheduling";
   private WorkshopScheduleView rv;
-	private final GemDesktop desktop;
-	private final DataConnection dc;
-	private final PlanningService service;
+  private final GemDesktop desktop;
+  private final DataConnection dc;
+  private final PlanningService service;
 
-	public WorkhopScheduleCtrl(GemDesktop desktop) {
-		this.desktop = desktop;
-		dc = DataCache.getDataConnection();
-		service = new PlanningService(dc);
-	}
+  public WorkhopScheduleCtrl(GemDesktop desktop) {
+    this.desktop = desktop;
+    dc = DataCache.getDataConnection();
+    service = new PlanningService(dc);
+  }
 
-	public void init() {
-		rv = new WorkshopScheduleView(desktop.getDataCache());
-		addCard(MessageUtil.getMessage("workshop.planification"), rv);
-		select(0);
-	}
+  public void init() {
+    rv = new WorkshopScheduleView(desktop.getDataCache());
+    addCard(MessageUtil.getMessage("workshop.planification"), rv);
+    select(0);
+  }
 
-	@Override
-	public boolean prev() {
-		select(step - 1);
-		return true;
-	}
+  @Override
+  public boolean prev() {
+    select(step - 1);
+    return true;
+  }
 
-	@Override
-	public boolean next() {
-		select(step + 1);
-		return true;
-	}
+  @Override
+  public boolean next() {
+    select(step + 1);
+    return true;
+  }
 
-	@Override
-	public boolean cancel() {
-		clear();
-		if (actionListener != null) {
-			actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, GemCommand.CANCEL_CMD));
-		}
-		return true;
-	}
+  @Override
+  public boolean cancel() {
+    clear();
+    if (actionListener != null) {
+      actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, GemCommand.CANCEL_CMD));
+    }
+    return true;
+  }
 
-	public void clear() {
-		rv.clear();
-		select(0);
-	}
+  public void clear() {
+    rv.clear();
+    select(0);
+  }
 
-	@Override
-	public boolean loadCard(Object c) {
-		return false;
-	}
+  @Override
+  public boolean loadCard(Object c) {
+    return false;
+  }
 
-	@Override
-	public boolean loadId(int id) {
-		return false;
-	}
+  @Override
+  public boolean loadId(int id) {
+    return false;
+  }
 
-	@Override
-	public boolean validation() {
+  @Override
+  public boolean validation() {
 
-		boolean v = false;
-		try {
-			save();
-			desktop.postEvent(new ModifPlanEvent(this, rv.getDate(), rv.getDate()));
-			v = true;
-		} catch (PlanningException ex) {
-			MessagePopup.warning(this, ex.getMessage());
-            return false;
-		}
-		clear();
-		return cancel();
+    boolean v = false;
+    try {
+      save();
+      desktop.postEvent(new ModifPlanEvent(this, rv.getDate(), rv.getDate()));
+      v = true;
+    } catch (PlanningException ex) {
+      MessagePopup.warning(this, ex.getMessage());
+      return false;
+    }
+    clear();
+    return cancel();
 
-	}
+  }
 
-	public void save() throws PlanningException {
-		int w = rv.getWorkshop();
-		int r = rv.getRoom();
-		int t = rv.getTeacher();
-		Hour hStart = rv.getHourStart();
-		Hour hEnd = rv.getHourEnd();
-        Course c = null;
-        try {
-          c = (Course) DataCache.findId(w, Model.Course);
-        } catch (SQLException ex) {
-        GemLogger.logException(ex);
-        }
-        if (c == null || c.isUndefined() || c.getId() == 0) {
-          throw new PlanningException(MessageUtil.getMessage("invalid.course.selection"));
-        }
-        if (hStart.equals(hEnd) || hEnd.before(hStart)) {
-          throw new PlanningException(MessageUtil.getMessage("hour.range.error"));
-        }
-        if (r == 0) {
-          throw new PlanningException(MessageUtil.getMessage("room.invalid.choice"));
-        }
-        if (t == 0) {
-          throw new PlanningException(MessageUtil.getMessage("invalid.teacher"));
-        }
-      
-		String query =
-			ConflictQueries.getRoomTeacherConflictSelection(rv.getDate().toString(), hStart.toString(), hEnd.toString(), r, t);
+  public void save() throws PlanningException {
+    int w = rv.getWorkshop();
+    int r = rv.getRoom();
+    int t = rv.getTeacher();
+    Hour hStart = rv.getHourStart();
+    Hour hEnd = rv.getHourEnd();
+    Course c = null;
+    try {
+      c = (Course) DataCache.findId(w, Model.Course);
+    } catch (SQLException ex) {
+      GemLogger.logException(ex);
+    }
+    if (c == null || c.isUndefined() || c.getId() == 0) {
+      throw new PlanningException(MessageUtil.getMessage("invalid.course.selection"));
+    }
+    if (hStart.equals(hEnd) || hEnd.before(hStart)) {
+      throw new PlanningException(MessageUtil.getMessage("hour.range.error"));
+    }
+    if (r == 0) {
+      throw new PlanningException(MessageUtil.getMessage("room.invalid.choice"));
+    }
+    if (t == 0) {
+      throw new PlanningException(MessageUtil.getMessage("invalid.teacher"));
+    }
 
-		if (ScheduleIO.count(query, dc) > 0) {
-          throw new PlanningException(MessageUtil.getMessage("busy.room.teacher.warning"));
-		}
+    String query
+            = ConflictQueries.getRoomTeacherConflictSelection(rv.getDate().toString(), hStart.toString(), hEnd.toString(), r, t);
 
-		Action a = new Action();
-		a.setHourStart(hStart);
-		a.setHourEnd(hEnd);
-		a.setIdper(t);
-		a.setRoom(r);
-		a.setCourse(w);
+    if (ScheduleIO.count(query, dc) > 0) {
+      throw new PlanningException(MessageUtil.getMessage("busy.room.teacher.warning"));
+    }
 
-		Vector<DateFr> dates = new Vector<DateFr>();
-		dates.add(rv.getDate());
-		a.setDates(dates);
+    Action a = new Action();
+    a.setHourStart(hStart);
+    a.setHourEnd(hEnd);
+    a.setIdper(t);
+    a.setRoom(r);
+    a.setCourse(w);
 
-		service.plan(a, Schedule.WORKSHOP);
+    Vector<DateFr> dates = new Vector<DateFr>();
+    dates.add(rv.getDate());
+    a.setDates(dates);
 
-	}
+    service.plan(a, Schedule.WORKSHOP);
+
+  }
 }

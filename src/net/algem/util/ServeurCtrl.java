@@ -1,7 +1,7 @@
 /*
- * @(#)ServeurCtrl.java	2.8.p 24/10/13
+ * @(#)ServeurCtrl.java	2.9.4.6 03/06/15
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,9 +21,9 @@
 package net.algem.util;
 
 import java.awt.BorderLayout;
-import net.algem.util.DataConnection;
 import net.algem.util.ui.GemPanel;
 import net.algem.util.ui.GemTextArea;
+import net.algem.util.ui.MessagePopup;
 import net.algem.util.ui.SQLView;
 import net.algem.util.ui.TabPanel;
 import net.algem.util.ui.TableSGBDView;
@@ -36,7 +36,7 @@ import net.algem.util.ui.TableSGBDView;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.p
+ * @version 2.9.4.6
  * @deprecated 
  */
 public class ServeurCtrl
@@ -76,4 +76,26 @@ public class ServeurCtrl
 		setLayout(new BorderLayout());
 		add("Center", wCard);
 	}
+    
+    /**
+   * @deprecated
+   */
+  private void jmvLog() {
+    Runtime r = Runtime.getRuntime();
+    StringBuilder message = new StringBuilder("Mémoire utilisée avant réinitialisation : \n");
+    message.append("Mémoire totale jvm : ").append(r.totalMemory() / 1024).append(" ko\n");
+    message.append("Mémoire libre jvm : ").append(r.freeMemory() / 1024).append(" ko\n\n");
+    System.out.println("Total Memory : " + r.totalMemory());
+    System.out.println("Free  Memory : " + r.freeMemory());
+    System.gc();
+    System.runFinalization();
+    System.out.println("gc+finalize");
+    System.out.println("Total Memory : " + r.totalMemory());
+    System.out.println("Free  Memory : " + r.freeMemory());
+    message.append("Mémoire utilisée après réinitialisation :\n");
+    message.append("Mémoire totale jvm : ").append(r.totalMemory() / 1024).append(" ko\n");
+    message.append("Mémoire libre jvm : ").append(r.freeMemory() / 1024).append(" ko");
+    System.out.println();
+    MessagePopup.information(null, message.toString());
+  }
 }

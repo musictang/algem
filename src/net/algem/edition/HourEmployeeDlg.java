@@ -173,11 +173,11 @@ public class HourEmployeeDlg
           ResultSet rs = service.getDetailTeacherByDate(start.toString(), end.toString(), catchup, employeeId, school.getId());
           employeeTask = new HoursTeacherByDateTask(this, pm, out, rs, detail);
         }else if (SORTING_CMD[2].equals(sorting)) {
-          employeeTask = new HoursTeacherByMemberTask1(this, pm, out, detail);
+          employeeTask = new HoursTeacherByMemberTask(this, pm, out, detail);
           ResultSet rsInd = service.getDetailIndTeacherByMember(start.toString(), end.toString(), catchup, employeeId, school.getId());
           ResultSet rsCo = service.getDetailCoTeacherByMember(start.toString(), end.toString(), catchup, employeeId, school.getId());
-          ((HoursTeacherByMemberTask1) employeeTask).setIndividualRS(rsInd);
-          ((HoursTeacherByMemberTask1) employeeTask).setCollectiveRS(rsCo);
+          ((HoursTeacherByMemberTask) employeeTask).setIndividualRS(rsInd);
+          ((HoursTeacherByMemberTask) employeeTask).setCollectiveRS(rsCo);
         }
       } else if (EmployeeType.TECHNICIAN.ordinal() == type) {
         ResultSet rs = service.getDetailTechnician(start.toString(), end.toString(), Schedule.TECH);

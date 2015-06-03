@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleDetailCtrl.java 2.9.4.0 06/04/2015
+ * @(#)ScheduleDetailCtrl.java 2.9.4.6 02/06/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -67,7 +67,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.0
+ * @version 2.9.4.6
  * @since 1.0a 07/07/1999
  */
 public class ScheduleDetailCtrl
@@ -557,13 +557,13 @@ public class ScheduleDetailCtrl
       } else if ("GroupLink".equals(arg)) {// ouverture fiche groupe
         setWaitCursor();
         Group g = (Group) ((GemMenuButton) evt.getSource()).getObject();
-        GroupFileEditor groupEditor = new GroupFileEditor(g, GemModule.GROUPE_DOSSIER_KEY, schedule);
+        GroupFileEditor groupEditor = new GroupFileEditor(g, schedule);
         desktop.addModule(groupEditor);
         frame.setLocation(getOffset(groupEditor.getView()));
       } else if ("RoomLink".equals(arg)) { // ouverture fiche salle
         setWaitCursor();
         Room s = (Room) ((GemMenuButton) evt.getSource()).getObject();
-        RoomFileEditor roomEditor = new RoomFileEditor(s, GemModule.SALLE_DOSSIER_KEY);
+        RoomFileEditor roomEditor = new RoomFileEditor(s);
         roomEditor.setDate(schedule.getDate().getDate());
         desktop.addModule(roomEditor);
         frame.setLocation(getOffset(roomEditor.getView()));

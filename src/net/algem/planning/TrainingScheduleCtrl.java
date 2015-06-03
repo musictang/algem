@@ -1,7 +1,7 @@
 /*
- * @(#)TrainingScheduleCtrl.java	2.8.w 08/07/14
+ * @(#)TrainingScheduleCtrl.java	2.9.4.6 02/06/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -41,13 +41,14 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.4.6
  * @since 2.8.t 11/04/14
  */
 public class TrainingScheduleCtrl
         extends CardCtrl
 {
 
+  public static final String TRAINING_SCHEDULING_KEY="Training.course.scheduling";
   private final GemDesktop desktop;
   private final DataConnection dc;
   private final PlanningService service;

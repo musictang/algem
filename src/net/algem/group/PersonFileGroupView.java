@@ -1,7 +1,7 @@
 /*
- * @(#)PersonFileGroupView.java 2.6.a 31/07/12
+ * @(#)PersonFileGroupView.java 2.9.4.6 02/06/15
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -26,7 +26,6 @@ import java.awt.event.MouseEvent;
 import net.algem.contact.PersonFileGroupListCtrl;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.module.GemDesktopCtrl;
-import net.algem.util.module.GemModule;
 import net.algem.util.ui.FileTab;
 import net.algem.util.ui.ListCtrl;
 
@@ -34,7 +33,7 @@ import net.algem.util.ui.ListCtrl;
  * Groups tab in person file.
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.4.6
  */
 public class PersonFileGroupView
         extends FileTab
@@ -74,7 +73,7 @@ public class PersonFileGroupView
   private void loadModule(Group g) {
     GroupFileEditor m = ((GemDesktopCtrl) desktop).getGroupFileEditor(g.getId());
     if (m == null) {
-      m = new GroupFileEditor(g, GemModule.GROUPE_DOSSIER_KEY);
+      m = new GroupFileEditor(g);
       desktop.addModule(m);
     } else {
       desktop.setSelectedModule(m);

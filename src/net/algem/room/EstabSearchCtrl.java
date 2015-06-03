@@ -1,7 +1,7 @@
 /*
- * @(#)EstabSearchCtrl.java	2.8.w 08/07/14
+ * @(#)EstabSearchCtrl.java	2.9.4.6 28/05/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -34,7 +34,7 @@ import net.algem.util.ui.SearchCtrl;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.4.6
  * @since 1.0a 07/07/1999
  */
 public class EstabSearchCtrl
@@ -65,7 +65,7 @@ public class EstabSearchCtrl
     wCard.add("masque", mask);
     wCard.add("liste", list);
 
-    ((CardLayout) wCard.getLayout()).show(wCard, "cherche");
+//    ((CardLayout) wCard.getLayout()).show(wCard, "cherche");
   }
 
   @Override
@@ -98,6 +98,13 @@ public class EstabSearchCtrl
       ((CardLayout) wCard.getLayout()).show(wCard, "liste");
       list.loadResult(v);
     }
+  }
+  
+  public void load() {
+    String query = "WHERE ptype = " + Person.ESTABLISHMENT;
+    Vector<Person> v = PersonIO.find(query, dc);
+    ((CardLayout) wCard.getLayout()).show(wCard, "liste");
+    list.loadResult(v);
   }
   
 }

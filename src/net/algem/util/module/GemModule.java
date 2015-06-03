@@ -1,5 +1,5 @@
 /*
- * @(#)GemModule.java	2.9.4.3 22/04/15
+ * @(#)GemModule.java	2.9.4.6 03/06/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -40,7 +40,7 @@ import net.algem.util.model.GemCloseVetoException;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.9.4.3
+ * @version 2.9.4.6
  * @since 1.0a 06/07/2002
  */
 public abstract class GemModule
@@ -56,39 +56,6 @@ public abstract class GemModule
   public static final Dimension XL_SIZE = new Dimension(870, 500);
   public static final Dimension XXL_SIZE = new Dimension(905, 500);
 
-  public static final Dimension POSTIT_SIZE = new Dimension(110, 500);
-  public static final Dimension PLANNING_ITEM_SIZE = new Dimension(110, 500);
-  public static final Dimension DAY_PLANNING_SIZE = new Dimension(920, 520);
-  public static final Dimension MONTH_PLANNING_SIZE = new Dimension(700, 520);
-
-  public static final String CONTACT_BROWSER_KEY = "Contact.browser";
-  public static final String GROUP_BROWSER_KEY = "Group.browser";
-  public static final String GROUPE_DOSSIER_KEY = "ModuleGroupe";
-  public static final String GROUP_VIEW_KEY = "Group";
-  public static final String ROOM_BROWSER_KEY = "Room.browser";
-  public static final String ENROLMENT_BROWSER_KEY="Enrolment.browser";
-  public static final String SALLE_DOSSIER_KEY = "ModuleSalle";
-  public static final String ROOM_VIEW_KEY = "Room";
-  public static final String GLOBAL_CONFIG_KEY = "Menu.configuration";
-  public static final String CITY_KEY = "Menu.city";
-  public static final String INVOICE_ITEM_BROWSER_KEY = BundleUtil.getLabel("Invoice.item.search.label");
-  public static final String BOOKING_JOURNAL_KEY = "Menu.booking.journal";
-  public static final String DEFAULT_ACCOUNT_KEY = "Menu.default.account";
-  public static final String MODULE_BROWSER_KEY="Module.browser";
-  public static final String MODULE_CREATE_KEY="Module.create";
-  public static final String MODULE_DELETE_KEY="Module.delete";
-  public static final String COURSE_BROWSER_KEY="Course.browser";
-  public static final String COURSE_CREATE_KEY="Course.creation";
-  public static final String COURSE_DELETE_KEY="Course.suppression";
-  public static final String COURSE_SCHEDULING_KEY="Course.scheduling";
-  public static final String WORKSHOP_BROWSER_KEY="Workshop.browser";
-  public static final String WORKSHOP_SCHEDULING_KEY="Workshop.scheduling";
-  public static final String POSTIT_CREATE_KEY="Postit.create";
-  public static final String REPLACEMENT_KEY="Replacement";
-  public static final String TRAINING_SCHEDULING_KEY="Training.course.scheduling";
-  public static final String STUDIO_SCHEDULING_KEY="Studio.scheduling";
-  
-	
   protected String label;
   protected DefaultGemView view;
   protected GemDesktop desktop;

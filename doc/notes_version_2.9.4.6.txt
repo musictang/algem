@@ -1,0 +1,24 @@
+2.9.4.6
+BUGS CORRIGES
+* La fenêtre de configuration d'un établissement restait ouverte après validation ou création et l'on pouvait croire que l'opération ne s'était pas correctement déroulée.
+* L'impression d'une facture ne fonctionnait pas quand le numéro d'émetteur avait été modifié directement en base de données et ne correspondait pas à l'utilisateur courant.
+* Dans la configuration des périodes de vacances, l'ajout ou la modification d'un jour était impossible si le libellé comportait des apostrophes.
+* Lors de la création d'un établissement, l'organisme n'était pas enregistré, même s'il avait été spécifié.
+* Les sites web d'un établissement n'étaient pas non plus enregistrés, après création ou modification, même s'ils avaient été spécifiés.
+* Lorqu'on supprimait un établissement, les éventuels sites web qui lui étaient associés n'étaient pas supprimés, contrairement aux mails, adresse et téléphones.
+
+FACTURATION
+L'émetteur n'apparaît plus désormais à l'impression d'une facture. Cependant, cette information est maintenant présente à l'édition de la facture. Cet item ne peut être modifié (et ne doit pas l'être a priori) et permet d'identifier en interne la personne ayant créé le devis ou la facture.
+Les différentes informations présentes en haut de facture dans la fenêtre d'édition ont été réorganisées graphiquement afin qu'elles soient plus clairement identifiables.
+
+CONFIGURATION
+La liste des établissements de l'organisation est désormais ouverte directement à partir du menu Configuration -> Etablissements -> Consulter/Modifier. Il fallait auparavant passer par une fenêtre de recherche pour y avoir accès.
+Le pseudo d'un établissement n'est plus éditable, ce champ n'ayant pas d'intérêt pour un contact de type "Etablissement".
+
+COMPTABILITE
+Heures salariés
+Dans la vue détaillée des heures salariés (par établissement), la virgule qui séparait les champs des sous-totaux prêtait à confusion. Elle a été remplacée par un espace afin de ne pas la confondre avec le séparateur décimal du nombre d'heures.
+Comptes par défaut
+La présentation de la liste des comptes par défaut a été entièrement revue afin de les rendre plus facilement éditables et de les rendre plus lisibles : Compta -> Comptes par défaut. Seuls les comptes actifs (comptable et analytique) sont désormais présents dans les différentes boites de sélection.
+Rappel : Les différentes activités disponibles sont pré-programmées dans Algem et ne peuvent être éditées. 
+

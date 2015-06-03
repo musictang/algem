@@ -1,7 +1,7 @@
 /*
- * @(#)GroupFileView.java 2.9.3 27/02/15
+ * @(#)GroupFileView.java 2.9.4.6 02/06/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -36,12 +36,13 @@ import net.algem.util.ui.TabPanel;
  * View is divided in 4 tabs (group, musicians, history, schedule payment).
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.3
+ * @version 2.9.4.6
  */
 public class GroupFileView
         extends DefaultGemView
 {
 
+  private static final String GROUP_VIEW_KEY = "Group";
   private Group group;
   private GemGroupService service;
   private TabPanel tabPanel;
@@ -51,7 +52,7 @@ public class GroupFileView
   private ActionListener listener;
 
   public GroupFileView(GemDesktop _desktop, GemGroupService service, Group group) {
-    super(_desktop, GemModule.GROUP_VIEW_KEY);
+    super(_desktop, GROUP_VIEW_KEY);
     this.service = service;
     if (group != null && group.getId() > 0) {
       setTitle(group.getName() + " " + group.getId());

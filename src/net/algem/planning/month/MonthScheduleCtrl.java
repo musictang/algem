@@ -1,5 +1,5 @@
 /*
- * @(#)MonthScheduleCtrl.java	2.9.4.0 01/04/2015
+ * @(#)MonthScheduleCtrl.java	2.9.4.6 03/06/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,6 +20,7 @@
  */
 package net.algem.planning.month;
 
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
@@ -48,13 +49,14 @@ import net.algem.util.module.GemModule;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.0
+ * @version 2.9.4.6
  * @since 1.0b 06/10/2001
  */
 public class MonthScheduleCtrl
         extends GemModule
 {
 
+  static final Dimension MONTH_SIZE = new Dimension(700, 520);
   private JMenuBar mBar;
   private JMenu mFile;
   private JMenuItem mPrint;
@@ -86,7 +88,7 @@ public class MonthScheduleCtrl
     GemList<Establishment> v = dataCache.getList(Model.Establishment);
 
     view = new MonthScheduleView(desktop, monthSchedule, v);
-    view.setSize(GemModule.MONTH_PLANNING_SIZE);
+    view.setSize(MONTH_SIZE);
     view.addActionListener(this);
 
     desktop.addGemEventListener(this);

@@ -1,7 +1,7 @@
 /*
- * @(#)CanvasPostit.java	2.9.1 17/12/14
+ * @(#)PostitCanvas.java	2.9.4.6 03/06/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -25,7 +25,6 @@ import java.awt.event.*;
 import java.util.Enumeration;
 import java.util.StringTokenizer;
 import java.util.Vector;
-import net.algem.util.module.GemModule;
 import net.algem.util.ui.GemPanel;
 
 /**
@@ -33,13 +32,12 @@ import net.algem.util.ui.GemPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.4.6
  */
-public class CanvasPostit
+public class PostitCanvas
         extends GemPanel
         implements MouseListener, MouseMotionListener
 {
-
 
   int nextx = 50;
   int nexty = 40;
@@ -52,7 +50,7 @@ public class CanvasPostit
   private ActionListener actionListener;
   private Font font = new Font("Helvetica",Font.PLAIN,11);
 
-  public CanvasPostit() {
+  public PostitCanvas() {
     postits = new Vector<PostitPosition>();
     addMouseListener(this);
     addMouseMotionListener(this);
@@ -249,15 +247,15 @@ public class CanvasPostit
       if (pick.x < 50) {
         pick.x = 50;
       }
-      if (pick.x > GemModule.POSTIT_SIZE.width) {// largeur de la fenetre du module
-        pick.x = GemModule.POSTIT_SIZE.width - 10;
+      if (pick.x > PostitModule.POSTIT_SIZE.width) {// largeur de la fenetre du module
+        pick.x = PostitModule.POSTIT_SIZE.width - 10;
       }
       pick.y = e.getY();
       if (pick.y < 10) {
         pick.y = 10;
       }
-      if (pick.y > GemModule.POSTIT_SIZE.height) {// hauteur de la fenetre du module
-        pick.y = GemModule.POSTIT_SIZE.height - 50;
+      if (pick.y > PostitModule.POSTIT_SIZE.height) {// hauteur de la fenetre du module
+        pick.y = PostitModule.POSTIT_SIZE.height - 50;
       }
       repaint();
     }

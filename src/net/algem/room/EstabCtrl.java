@@ -1,7 +1,7 @@
 /*
- * @(#)EstabCtrl.java	2.8.w 08/07/14
+ * @(#)EstabCtrl.java	2.9.4.6 03/06/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -22,6 +22,7 @@ package net.algem.room;
 
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Vector;
 import net.algem.contact.*;
 import net.algem.util.*;
@@ -37,7 +38,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.4.6
  */
 public class EstabCtrl
         extends CardCtrl
@@ -83,6 +84,7 @@ public class EstabCtrl
     if (actionListener != null) {
       actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "CtrlAbandon"));
     }
+    //    removeGemEventListener();
     return true;
   }
 
@@ -135,7 +137,7 @@ public class EstabCtrl
       GemLogger.logException("update etablissement", e1, this);
       return false;
     }
-    removeGemEventListener();
+    
     if (actionListener != null) {
       actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "CtrlValider"));
     }
@@ -172,6 +174,9 @@ public class EstabCtrl
       }
       if (estab.getEmail() != null) {
         contactEditor.setEmail(estab.getEmail());
+      }
+      if (estab.getSites()!= null) {
+        contactEditor.setSites(estab.getSites());
       }
       select(0);
     } catch (Exception e) {
@@ -228,7 +233,20 @@ public class EstabCtrl
       }
       e.setEmail(emails);
     }
-    return e;
+   
+    i = 0;
+    List<WebSite> sites = contactEditor.getSites();
+    if (sites != null) {
+      for (WebSite w : sites) {
+        w.setIdper(e.getId());
+        w.setIdx(i);
+        w.setPtype(Person.ESTABLISHMENT);
+        i++;
+      }
+      e.setSites(sites);
+    }
+    
+     return e;
   }
   
   @Override

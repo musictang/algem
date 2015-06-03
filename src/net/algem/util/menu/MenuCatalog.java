@@ -1,5 +1,5 @@
 /*
- * @(#)MenuCatalog.java	2.9.2.1 16/02/15
+ * @(#)MenuCatalog.java	2.9.4.6 02/06/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -42,13 +42,16 @@ import net.algem.util.module.GemModule;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2.1
+ * @version 2.9.4.6
  * @since 1.0a 07/07/1999
  */
 public class MenuCatalog
         extends GemMenu
 {
 
+  private static final String ENROLMENT_BROWSER_KEY="Enrolment.browser";
+  private static final String MODULE_BROWSER_KEY="Module.browser";
+  private static final String COURSE_BROWSER_KEY="Course.browser";
   private JMenuItem miModule;
   private JMenuItem miModuleOrder;
   private JMenuItem miCoursBrowse;
@@ -81,7 +84,7 @@ public class MenuCatalog
       ModuleSearchCtrl moduleBrowser = new ModuleSearchCtrl(desktop);
       moduleBrowser.addActionListener(this);
       moduleBrowser.init();
-      desktop.addPanel(GemModule.MODULE_BROWSER_KEY, moduleBrowser);
+      desktop.addPanel(MODULE_BROWSER_KEY, moduleBrowser);
     } else if (src == miModuleOrder) {
       EnrolmentService service = new EnrolmentService(dataCache);
       ExtendeModuleOrderListCtrl orderListCtrl = new ExtendeModuleOrderListCtrl(desktop, service, new ExtendedModuleOrderTableModel());
@@ -95,11 +98,11 @@ public class MenuCatalog
       CourseSearchCtrl coursCtrl = new CourseSearchCtrl(desktop);
       coursCtrl.addActionListener(this);
       coursCtrl.init();
-      desktop.addPanel(GemModule.COURSE_BROWSER_KEY, coursCtrl);
+      desktop.addPanel(COURSE_BROWSER_KEY, coursCtrl);
     } else if (src == miEnrolment) {
       EnrolmentListCtrl enrolmentList = new EnrolmentListCtrl(desktop);
       enrolmentList.addActionListener(this);
-      desktop.addPanel(GemModule.ENROLMENT_BROWSER_KEY, enrolmentList);
+      desktop.addPanel(ENROLMENT_BROWSER_KEY, enrolmentList);
     } else if (arg.equals(GemCommand.CANCEL_CMD)) {
       desktop.removeCurrentModule();
     }

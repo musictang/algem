@@ -1,7 +1,7 @@
 /*
- * @(#)HoursTeacherByEstabTask.java	2.9.1 05/12/14
+ * @(#)HoursTeacherByEstabTask.java	2.9.4.6 01/06/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -46,7 +46,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  * Task executed when editing hours of teachers. Sorting is performed by establisment.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.4.6
  * @since 2.9.1 03/12/14
  */
 class HoursTeacherByEstabTask
@@ -134,7 +134,7 @@ class HoursTeacherByEstabTask
             out.println(this.totalPeriodLabel + " : " + numberFormat.format(totalPeriod / 60.0) + " heures");
             if (detail) {
               out.print(BundleUtil.getLabel("Total.label") + " " + types[0] + " : " + numberFormat.format(totalLeisure / 60.0));
-              out.println(", " + BundleUtil.getLabel("Total.label") + " " + types[1] + " : "+ numberFormat.format(totalPro / 60.0));
+              out.println(" " + BundleUtil.getLabel("Total.label") + " " + types[1] + " : "+ numberFormat.format(totalPro / 60.0));
               printTotalEstab(out, totalEstab, totalEstabL, totalEstabP);
 
             }
@@ -217,7 +217,7 @@ class HoursTeacherByEstabTask
 
             int tt = totalEstab.get(ee);
             totalEstab.put(ee, tt + nmin);
-            out.print(" [" + ee.getName().charAt(0) + type + "] " + p.getStart() + " " + p.getEnd() + ",");
+            out.print(" [" + ee.getName().charAt(0) + type + "] " + p.getStart() + "-" + p.getEnd());
           }
         } else { // si cours individuel
           for (int j = 0; j < plage.size(); j++) {
@@ -240,7 +240,7 @@ class HoursTeacherByEstabTask
               }
               int tt = totalEstab.get(ee);
               totalEstab.put(ee, tt + nmin);
-              out.print(" [" + ee.getName().charAt(0) + type + "] " + pl.getStart() + " " + pl.getEnd() + ",");
+              out.print(" [" + ee.getName().charAt(0) + type + "] " + pl.getStart() + "-" + pl.getEnd());
             } // end detail individuel
           } // end for plage.size()
         } // end si cours individuel
@@ -257,7 +257,7 @@ class HoursTeacherByEstabTask
       out.println(this.totalPeriodLabel + " : " + numberFormat.format(totalPeriod / 60.0) + " heures");
       if (detail) {
         out.print(BundleUtil.getLabel("Total.label") + " " + types[0] + " : " + numberFormat.format(totalLeisure / 60.0));
-        out.println(", " + BundleUtil.getLabel("Total.label") + " " + types[1] + " : " + numberFormat.format(totalPro / 60.0));
+        out.println(" " + BundleUtil.getLabel("Total.label") + " " + types[1] + " : " + numberFormat.format(totalPro / 60.0));
         printTotalEstab(out, totalEstab, totalEstabL, totalEstabP);
       }
       out.println();
@@ -272,7 +272,7 @@ class HoursTeacherByEstabTask
       for (Map.Entry<Establishment, Integer> entry : totalEstab.entrySet()) {
         if (entry.getValue() > 0) {
           empty = false;
-          out.print(entry.getKey().getName() + " : " + numberFormat.format(entry.getValue() / 60.0) + ", ");
+          out.print(entry.getKey().getName() + " : " + numberFormat.format(entry.getValue() / 60.0) + " ");
         }
       }
       if (!empty) {
@@ -283,7 +283,7 @@ class HoursTeacherByEstabTask
       for (Map.Entry<Establishment, Integer> entry : totalEstabL.entrySet()) {
         if (entry.getValue() > 0) {
           empty = false;
-          out.print(entry.getKey().getName() + " " + types[0] + " : " + numberFormat.format(entry.getValue() / 60.0) + ", ");
+          out.print(entry.getKey().getName() + " " + types[0] + " : " + numberFormat.format(entry.getValue() / 60.0) + " ");
         }
       }
       if (!empty) {
@@ -293,7 +293,7 @@ class HoursTeacherByEstabTask
       for (Map.Entry<Establishment, Integer> entry : totalEstabP.entrySet()) {
         if (entry.getValue() > 0) {
           empty = false;
-          out.print(entry.getKey().getName() + " " + types[1] + " : " + numberFormat.format(entry.getValue() / 60.0) + ", ");
+          out.print(entry.getKey().getName() + " " + types[1] + " : " + numberFormat.format(entry.getValue() / 60.0) + " ");
         }
       }
       if (!empty) {

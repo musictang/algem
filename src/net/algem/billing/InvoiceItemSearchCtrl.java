@@ -1,7 +1,7 @@
 /*
- * @(#)InvoiceItemSearchCtrl.java 2.8.o 08/10/13
+ * @(#)InvoiceItemSearchCtrl.java 2.9.4.6 01/06/15
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -23,14 +23,14 @@ package net.algem.billing;
 import java.awt.CardLayout;
 import java.sql.SQLException;
 import java.util.Vector;
+import net.algem.util.BundleUtil;
 import net.algem.util.event.GemEventListener;
 import net.algem.util.module.GemDesktop;
-import net.algem.util.module.GemModule;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.o
+ * @version 2.9.4.6
  * @since 2.3.a 15/02/12
  */
 public class InvoiceItemSearchCtrl
@@ -38,6 +38,8 @@ public class InvoiceItemSearchCtrl
 
 {
 
+  static final String INVOICE_ITEM_BROWSER_KEY = BundleUtil.getLabel("Invoice.item.search.label");
+  
   public InvoiceItemSearchCtrl(GemDesktop desktop) {
     super(desktop);
   }
@@ -87,7 +89,7 @@ public class InvoiceItemSearchCtrl
   }
 
   public void close() {
-    desktop.removeModule(GemModule.INVOICE_ITEM_BROWSER_KEY);
+    desktop.removeModule(INVOICE_ITEM_BROWSER_KEY);
   }
 
 }

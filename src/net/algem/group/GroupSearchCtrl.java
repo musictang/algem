@@ -51,6 +51,7 @@ public class GroupSearchCtrl
         implements GemEventListener
 {
 
+  public static final String GROUP_BROWSER_KEY = "Group.browser";
   private final GemDesktop desktop;
   private final GemGroupService service;
 
@@ -119,7 +120,7 @@ public class GroupSearchCtrl
     if (GemCommand.CREATE_CMD.equals(ev.getActionCommand())) {
       create();
     } else if (GemCommand.CANCEL_CMD.equals(ev.getActionCommand())) {
-      desktop.removeModule(GemModule.GROUP_BROWSER_KEY);
+      desktop.removeModule(GROUP_BROWSER_KEY);
       desktop.removeGemEventListener(this);
     } else {
       super.actionPerformed(ev);
@@ -137,7 +138,7 @@ public class GroupSearchCtrl
   }
 
   private void loadGroupFileEditor(Group g) {
-    GroupFileEditor editor = new GroupFileEditor(g, GemModule.GROUPE_DOSSIER_KEY);
+    GroupFileEditor editor = new GroupFileEditor(g);
     desktop.addModule(editor);
   }
 
@@ -154,6 +155,6 @@ public class GroupSearchCtrl
 
   @Override
   public String toString() {
-    return GemModule.GROUP_BROWSER_KEY;
+    return GROUP_BROWSER_KEY;
   }
 }

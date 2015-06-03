@@ -1,5 +1,5 @@
 /*
- * @(#)CourseScheduleCtrl.java	2.9.4.0 06/04/15
+ * @(#)CourseScheduleCtrl.java	2.9.4.6 02/06/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -39,12 +39,13 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.0
+ * @version 2.9.4.6
  * @since 1.0a 07/07/1999
  */
 public class CourseScheduleCtrl
         extends CardCtrl {
 
+  public static final String COURSE_SCHEDULING_KEY="Course.scheduling";
   protected GemDesktop desktop;
   protected DataConnection dc;
   protected ActionView av;

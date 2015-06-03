@@ -1,5 +1,5 @@
 /*
- * @(#)MenuConfig.java 2.9.3 25/02/15
+ * @(#)MenuConfig.java 2.9.4.6 02/06/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -51,7 +51,7 @@ import net.algem.util.module.GemModule;
 /**
  * Configuration menu.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.3
+ * @version 2.9.4.6
  * @since 2.6.a 12/10/2012
  */
 public class MenuConfig 
@@ -146,7 +146,7 @@ public class MenuConfig
     desktop.setWaitCursor();
     if (menus.get("Menu.general.parameters.label").equals(arg)) {
       ConfigEditor confEditor = new ConfigEditor(desktop);
-      desktop.addPanel(GemModule.GLOBAL_CONFIG_KEY, confEditor);
+      desktop.addPanel(ConfigEditor.GLOBAL_CONFIG_KEY, confEditor);
     } else if (menus.get("Menu.instrument.label").equals(arg)) {
       InstrumentCtrl instrumentCtrl = new InstrumentCtrl(desktop);
       instrumentCtrl.load();
@@ -208,6 +208,7 @@ public class MenuConfig
       EstabSearchCtrl estabBrowse = new EstabSearchCtrl(desktop, BundleUtil.getLabel("Establishment.browser.label"));
       estabBrowse.addActionListener(this);
       estabBrowse.init();
+      estabBrowse.load();
       desktop.addPanel("Establishment.browser", estabBrowse);
       desktop.getSelectedModule().setSize(GemModule.XXL_SIZE);
     } else if (menus.get("Menu.card.label").equals(arg)) {

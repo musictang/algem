@@ -1,7 +1,7 @@
 /*
- * @(#)JournalAccountCtrl.java	2.3.c 09/03/12
+ * @(#)JournalAccountCtrl.java	2.9.4.6 01/06/15
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -29,7 +29,6 @@ import net.algem.util.ui.GemField;
 import net.algem.util.ui.GemLabel;
 import net.algem.util.model.ModelException;
 import net.algem.util.module.GemDesktop;
-import net.algem.util.module.GemModule;
 import net.algem.util.BundleUtil;
 import net.algem.util.ui.JTableModel;
 import net.algem.util.MessageUtil;
@@ -39,13 +38,14 @@ import net.algem.util.ui.GemChoice;
  * Management of journal.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.3.c
+ * @version 2.9.4.6
  * @since 2.2.a
  */
 public class JournalAccountCtrl
         extends GenericTableCtrl
 {
 
+  private static final String BOOKING_JOURNAL_KEY = "Menu.booking.journal";
   private JournalAccountService service;
   private GemChoice account;
   private GemField code;
@@ -163,7 +163,7 @@ public class JournalAccountCtrl
   @Override
   public void close() {
     clear();
-    desktop.removeModule(GemModule.BOOKING_JOURNAL_KEY);
+    desktop.removeModule(BOOKING_JOURNAL_KEY);
   }
 
   private JournalAccount getSelected() {

@@ -1,5 +1,5 @@
 /*
- * @(#)InvoiceEditor.java 2.9.4.3 23/04/15
+ * @(#)InvoiceEditor.java 2.9.4.6 28/05/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -42,7 +42,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.3
+ * @version 2.9.4.6
  * @since 2.3.a 07/02/12
  */
 public class InvoiceEditor
@@ -205,7 +205,7 @@ public class InvoiceEditor
       btDuplicate.setEnabled(false);
     } 
     if (old != null) {
-      view.set(old, service.getContact(old.getMember()), service.getContact(old.getPayer()));
+      view.set(old, service.getContact(old.getMember()), service.getContact(old.getPayer()), service.getContact(old.getIssuer()));
       backup(old);
     }
   }
@@ -246,7 +246,7 @@ public class InvoiceEditor
         if (n != null) {
           n.setUser(dataCache.getUser());
           n.setEditable(true);
-          view.set(n, service.getContact(n.getMember()), service.getContact(n.getPayer()));
+          view.set(n, service.getContact(n.getMember()), service.getContact(n.getPayer()), service.getContact(n.getIssuer()));
           view.setId("");
           btDuplicate.setEnabled(false);
         } else {

@@ -1,7 +1,7 @@
 /*
- * @(#)Establishment.java	2.8.e 20/05/13
+ * @(#)Establishment.java	2.9.4.6 03/06/15
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,11 +20,13 @@
  */
 package net.algem.room;
 
+import java.util.List;
 import java.util.Vector;
 import net.algem.contact.Address;
 import net.algem.contact.Email;
 import net.algem.contact.Person;
 import net.algem.contact.Telephone;
+import net.algem.contact.WebSite;
 import net.algem.util.model.GemModel;
 
 /**
@@ -33,7 +35,7 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.e
+ * @version 2.9.4.6
  */
 public class Establishment
         implements GemModel {
@@ -42,6 +44,7 @@ public class Establishment
   private Vector<Address> a;
   private Vector<Telephone> t;
   private Vector<Email> emails;
+  private List<WebSite> sites;
 
   public Establishment() {
   }
@@ -119,8 +122,15 @@ public class Establishment
   public void setEmail(Vector<Email> _emails) {
     emails = _emails;
   }
-  
-  
+
+  public List<WebSite> getSites() {
+    return sites;
+  }
+
+  public void setSites(List<WebSite> sites) {
+    this.sites = sites;
+  }
+
   @Override
   public void setId(int id) {
     p.setId(id);

@@ -1,5 +1,5 @@
 /*
- * @(#)MenuPlanning.java	2.9.4.0 06/04/15
+ * @(#)MenuPlanning.java	2.9.4.6 02/06/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -46,7 +46,7 @@ import net.algem.util.module.GemModule;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.0
+ * @version 2.9.4.6
  * @since 1.0a 07/07/1999
  */
 public class MenuPlanning
@@ -109,22 +109,22 @@ public class MenuPlanning
       CourseScheduleCtrl csCtrl = new CourseScheduleCtrl(desktop);
       csCtrl.addActionListener(this);
       csCtrl.init();
-      desktop.addPanel(GemModule.COURSE_SCHEDULING_KEY, csCtrl);
+      desktop.addPanel(CourseScheduleCtrl.COURSE_SCHEDULING_KEY, csCtrl);
     } else if (src == miWorkshop) {
       WorkhopScheduleCtrl wsCtrl = new WorkhopScheduleCtrl(desktop);
       wsCtrl.addActionListener(this);
       wsCtrl.init();
-      desktop.addPanel(GemModule.WORKSHOP_SCHEDULING_KEY, wsCtrl);
+      desktop.addPanel(WorkhopScheduleCtrl.WORKSHOP_SCHEDULING_KEY, wsCtrl);
     } else if (src == miTraining) {
       TrainingScheduleCtrl tsCtrl = new TrainingScheduleCtrl(desktop);
       tsCtrl.addActionListener(this);
       tsCtrl.init();
-      desktop.addPanel(GemModule.TRAINING_SCHEDULING_KEY, tsCtrl);
+      desktop.addPanel(TrainingScheduleCtrl.TRAINING_SCHEDULING_KEY, tsCtrl);
     } else if (src == miStudio) {
       StudioScheduleCtrl studioCtrl = new StudioScheduleCtrl(desktop);
       studioCtrl.addActionListener(this);
       studioCtrl.init();
-      desktop.addPanel(GemModule.STUDIO_SCHEDULING_KEY, studioCtrl, new Dimension(650, 480));
+      desktop.addPanel(StudioScheduleCtrl.STUDIO_SCHEDULING_KEY, studioCtrl, new Dimension(650, 480));
     } else if (src == miAttendanceSheet) {
        new AttendanceSheetDlg(desktop.getFrame(), dataCache);
     } else if (src == miReplacement) {

@@ -1,7 +1,7 @@
 /*
- * @(#)PostitModule.java	2.9.1 17/12/14
+ * @(#)PostitModule.java	2.9.4.6 03/06/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,6 +21,7 @@
 package net.algem.util.postit;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
@@ -40,15 +41,16 @@ import net.algem.util.module.GemModule;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.4.6
  */
 public class PostitModule
         extends GemModule
         implements VetoableChangeListener
 {
 
+  static final Dimension POSTIT_SIZE = new Dimension(110, 500);
   private int lus;
-  private CanvasPostit postit;
+  private PostitCanvas postit;
   private UserService service;
 
   public PostitModule(UserService service) {
@@ -60,7 +62,7 @@ public class PostitModule
   public void init() {
     view = new DefaultGemView(desktop, "Postit");
 
-    postit = new CanvasPostit();
+    postit = new PostitCanvas();
     postit.addActionListener(this);
     lus = 0;
     view.add(postit, BorderLayout.CENTER);
@@ -68,7 +70,7 @@ public class PostitModule
     view.setClosable(false);
     view.setIconifiable(false);
     view.addVetoableChangeListener(this);
-    view.setSize(GemModule.POSTIT_SIZE);
+    view.setSize(POSTIT_SIZE);
   }
 
   @Override

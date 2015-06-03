@@ -1,7 +1,7 @@
 /*
- * @(#)RoomSearchCtrl.java	2.9.1 11/12/14
+ * @(#)RoomSearchCtrl.java	2.9.4.6 02/06/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -29,7 +29,6 @@ import net.algem.util.GemCommand;
 import net.algem.util.model.Model;
 import net.algem.util.model.TableIO;
 import net.algem.util.module.GemDesktop;
-import net.algem.util.module.GemModule;
 import net.algem.util.ui.SearchCtrl;
 
 /**
@@ -37,13 +36,14 @@ import net.algem.util.ui.SearchCtrl;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.4.6
  * @since 2.2.b
  */
 public class RoomSearchCtrl
         extends SearchCtrl
 {
 
+  public static final String ROOM_BROWSER_KEY = "Room.browser";
   private final GemDesktop desktop;
 
   public RoomSearchCtrl(GemDesktop desktop) {
@@ -102,7 +102,7 @@ public class RoomSearchCtrl
     if (GemCommand.CREATE_CMD.equals(ev.getActionCommand())) {
       create();
     } else if (GemCommand.CANCEL_CMD.equals(ev.getActionCommand())) {
-      desktop.removeModule(GemModule.ROOM_BROWSER_KEY);
+      desktop.removeModule(ROOM_BROWSER_KEY);
     } else {
       super.actionPerformed(ev);
     }
@@ -120,14 +120,14 @@ public class RoomSearchCtrl
     loadRoomFile(s);
   }
 
-  private void loadRoomFile(Room s) {
-    RoomFileEditor roomFile = new RoomFileEditor(s, GemModule.SALLE_DOSSIER_KEY);
+  private void loadRoomFile(Room r) {
+    RoomFileEditor roomFile = new RoomFileEditor(r);
     desktop.addModule(roomFile);
   }
 
   @Override
   public String toString() {
-    return GemModule.ROOM_BROWSER_KEY;
+    return ROOM_BROWSER_KEY;
   }
 }
 

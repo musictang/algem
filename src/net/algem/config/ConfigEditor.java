@@ -1,7 +1,7 @@
 /*
- * @(#)ConfigEditor.java 2.8.w 08/07/14
+ * @(#)ConfigEditor.java 2.9.4.6 02/06/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -41,12 +41,13 @@ import net.algem.util.ui.GemScrollPane;
  * General config editor.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.v
+ * @version 2.9.4.6
  * @since 2.1.k
  */
 public class ConfigEditor
   extends GemPanel implements ActionListener {
 
+  public static final String GLOBAL_CONFIG_KEY = "Menu.configuration";
   private ConfigOrganization orgPanel;
   private ConfigPlanning activityPanel;
   private ConfigPanel adminPanel;
@@ -54,7 +55,7 @@ public class ConfigEditor
   private ConfigPanel ribPanel;
   private Map<String,Config> confs;
   private DataConnection dc;
-	private DataCache dataCache;
+  private DataCache dataCache;
   private GemPanel btPanel;
   private GemButton btValidation;
   private GemButton btClose;
@@ -143,7 +144,7 @@ public class ConfigEditor
 
    private void close() {
      confs.clear();
-     desktop.removeModule(GemModule.GLOBAL_CONFIG_KEY);
+     desktop.removeModule(GLOBAL_CONFIG_KEY);
    }
 
 }

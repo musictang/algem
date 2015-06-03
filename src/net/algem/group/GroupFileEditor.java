@@ -1,7 +1,7 @@
 /*
- * @(#)GroupFileEditor.java 2.8.w 08/07/14
+ * @(#)GroupFileEditor.java 2.9.4.6 02/06/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -46,12 +46,13 @@ import net.algem.util.ui.*;
 /**
  * Group file main editor.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.4.6
  */
 public class GroupFileEditor
         extends GemModule
 {
 
+  private static final String GROUP_DOSSIER_KEY = "ModuleGroupe";
   private Group group, oldGroup;
   private Vector<Musician> musicians;
   private GroupFileView groupFileTabView;
@@ -75,13 +76,13 @@ public class GroupFileEditor
     super(BundleUtil.getLabel("New.group.label"));
   }
 
-  public GroupFileEditor(Group g, String key, Schedule plan) {
-    this(g, key);
+  public GroupFileEditor(Group g, Schedule plan) {
+    this(g);
     this.plan = plan;
   }
 
-  public GroupFileEditor(Group g, String key) {
-    super(key);
+  public GroupFileEditor(Group g) {
+    super(GROUP_DOSSIER_KEY);
     this.group = g;
     if (g != null) {
       label += " " + g.getName();

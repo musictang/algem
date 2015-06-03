@@ -1,7 +1,7 @@
 /*
- * @(#)MenuSearch.java 2.6.a 12/10/12
+ * @(#)MenuSearch.java 2.9.4.6 02/06/15
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -35,18 +35,21 @@ import net.algem.util.module.GemModule;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.4.6
  * @since 1.0a 07/07/1999
  */
 public class MenuSearch
         extends GemMenu
 {
 
+  public static final String CONTACT_BROWSER_KEY = "Contact.browser";
+  
   private PersonFileSearchCtrl contact;
   private GroupSearchCtrl group;
   private JMenuItem miGroupBrowse;
   private JMenuItem miSearchPerson;
   private JMenuItem miRoomBrowse;
+  
 
   public MenuSearch(GemDesktop _desktop) {
     super(BundleUtil.getLabel("Search.label"), _desktop);
@@ -66,26 +69,26 @@ public class MenuSearch
     desktop.setWaitCursor();
 
     if (src == miSearchPerson) {
-      if (!desktop.hasModule(GemModule.CONTACT_BROWSER_KEY)) {
+      if (!desktop.hasModule(CONTACT_BROWSER_KEY)) {
         contact = new PersonFileSearchCtrl(desktop, null);
         contact.addActionListener(this);
         contact.init();
-        desktop.addPanel(GemModule.CONTACT_BROWSER_KEY, contact);
+        desktop.addPanel(CONTACT_BROWSER_KEY, contact);
         desktop.getSelectedModule().setSize(GemModule.S_SIZE);
       }
     } else if (src == miGroupBrowse) {
-      if (!desktop.hasModule(GemModule.GROUP_BROWSER_KEY)) {
+      if (!desktop.hasModule(GroupSearchCtrl.GROUP_BROWSER_KEY)) {
         group = new GroupSearchCtrl(desktop);
         group.addActionListener(this);
         group.init();
-        desktop.addPanel(GemModule.GROUP_BROWSER_KEY, group, GemModule.S_SIZE);
+        desktop.addPanel(GroupSearchCtrl.GROUP_BROWSER_KEY, group, GemModule.S_SIZE);
       }
     } else if (src == miRoomBrowse) {
-      if (!desktop.hasModule(GemModule.ROOM_BROWSER_KEY)) {
+      if (!desktop.hasModule(RoomSearchCtrl.ROOM_BROWSER_KEY)) {
         RoomSearchCtrl sb = new RoomSearchCtrl(desktop);
         sb.addActionListener(this);
         sb.init();
-        desktop.addPanel(GemModule.ROOM_BROWSER_KEY, sb, GemModule.S_SIZE);
+        desktop.addPanel(RoomSearchCtrl.ROOM_BROWSER_KEY, sb, GemModule.S_SIZE);
       }
     } else if (arg.equals(GemCommand.CANCEL_CMD)) {
       desktop.removeCurrentModule();

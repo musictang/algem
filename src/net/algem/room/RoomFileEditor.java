@@ -1,7 +1,7 @@
 /*
- * @(#)RoomFileEditor.java 2.8.y 29/09/14
+ * @(#)RoomFileEditor.java 2.9.4.6 02/06/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -45,13 +45,14 @@ import net.algem.util.ui.*;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.y
+ * @version 2.9.4.6
  * @since 2.1.b
  */
 public class RoomFileEditor
         extends FileEditor
 {
 
+  private static final String ROOM_DOSSIER_KEY = "ModuleSalle";
   private Room room;
   private GemToolBar mainToolbar;
   private GemToolBar closeToolbar;
@@ -73,8 +74,8 @@ public class RoomFileEditor
   private PersonFile payerFile;
   private Date date;
 
-  public RoomFileEditor(Room r, String key) {
-    super(key);
+  public RoomFileEditor(Room r) {
+    super(ROOM_DOSSIER_KEY);
     this.room = r;
   }
 

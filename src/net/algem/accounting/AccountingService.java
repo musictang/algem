@@ -1,5 +1,5 @@
 /*
- * @(#)AccountingService.java	2.9.2 27/01/15
+ * @(#)AccountingService.java	2.9.4.6 03/06/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -23,23 +23,30 @@ package net.algem.accounting;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
+import net.algem.config.ActivableParam;
+import net.algem.config.ActivableParamTableIO;
+import net.algem.config.Param;
+import net.algem.config.Preference;
 import net.algem.contact.PersonIO;
 import net.algem.course.CourseIO;
 import net.algem.planning.*;
 import net.algem.room.RoomIO;
+import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 
 /**
  * Service class for accounting.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.4.6
  * @since 2.4.a 21/05/12
  */
 public class AccountingService {
 
-  private DataConnection dc;
+  private final DataConnection dc;
 
   public AccountingService(DataConnection dc) {
     this.dc = dc;
@@ -156,6 +163,42 @@ public class AccountingService {
     query += " ORDER BY p1.nom, p1.prenom,p.jour,pg.debut,a.cours";
 
     return dc.executeQuery(query);
+  }
+  
+  /**
+   * Gets active accounts.
+   * @return a list of accounts
+   * @throws SQLException 
+   */
+  public List<Account> getAccounts() throws SQLException {
+    return AccountIO.find(true, dc);
+  }
+  
+  /**
+   * Gets active cost accounts.
+   * @return a list of cost accounts
+   */
+  public List<Param> getActiveCostAccounts() {
+    List<ActivableParam> actives = ActivableParamTableIO.find(CostAccountCtrl.tableName, CostAccountCtrl.columnName, " WHERE " + CostAccountCtrl.columnFilter + " = TRUE", dc);
+    return new ArrayList<Param>(actives);
+  }
+  
+  /**
+   * Gets categories of accounts.
+   * @return a list of strings
+   * @throws SQLException 
+   */
+  public String[] getAccountTypes() throws SQLException {
+    return AccountPrefIO.findKeys(dc);
+  }
+  
+  /**
+   * Updates a preferred account.
+   * @param pref the preference's key is the category to be updated
+   * @throws SQLException 
+   */
+  public void updateAccountPref(Preference pref) throws SQLException {
+    AccountPrefIO.update(pref, DataCache.getDataConnection());
   }
 
 }

@@ -1,5 +1,5 @@
 /*
- * @(#)VacationIO.java	2.9.4.3 22/04/15
+ * @(#)VacationIO.java	2.9.4.6 02/06/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -34,7 +34,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 	2.9.4.3
+ * @version 	2.9.4.6
  * @since 1.0a 07/07/1999
  */
 public class VacationIO
@@ -49,7 +49,7 @@ public class VacationIO
             + "'" + v.getDay()
             + "','" + v.getType()
             + "','" + v.getVid()
-            + "','" + v.getLabel()
+            + "','" + escape(v.getLabel())
             + "')";
 
     dc.executeUpdate(query);
@@ -57,7 +57,7 @@ public class VacationIO
 
   public static void update(Vacation v, DataConnection dc) throws SQLException {
     String query = "UPDATE " + TABLE + " SET "
-            + "libelle = '" + v.getLabel() + "'";
+            + "libelle = '" + escape(v.getLabel()) + "'";
     query += " WHERE jour = '" + v.getDay() + "' AND vid = " + v.getVid();
 
     dc.executeUpdate(query);
@@ -107,7 +107,7 @@ public class VacationIO
         j.setDay(new DateFr(rs.getString(1)));
         j.setType(rs.getInt(2));
         j.setVid(rs.getInt(3));
-        j.setLabel(rs.getString(4).trim());
+        j.setLabel(unEscape(rs.getString(4).trim()));
 
         v.addElement(j);
       }

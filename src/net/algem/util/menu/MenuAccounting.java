@@ -1,5 +1,5 @@
 /*
- * @(#)MenuAccounting.java 2.9.2.3 24/02/15
+ * @(#)MenuAccounting.java 2.9.4.6 03/06/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -24,6 +24,7 @@ import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import net.algem.accounting.*;
@@ -31,6 +32,7 @@ import net.algem.billing.*;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
 import net.algem.config.ModeOfPaymentCtrl;
+import net.algem.config.Param;
 import net.algem.edition.HourEmployeeDlg;
 import net.algem.room.RoomRateSearchCtrl;
 import net.algem.util.*;
@@ -43,7 +45,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.9.2.3
+ * @version 2.9.4.6
  * @since 1.0a 07/07/1999
  */
 public class MenuAccounting
@@ -184,8 +186,20 @@ public class MenuAccounting
       costAccountCtrl.load();
       desktop.addPanel("Menu.cost.account", costAccountCtrl);
     } else if (menus.get("Menu.default.account.label").equals(arg)) {
-      AccountPrefCtrl prefsComptes = new AccountPrefCtrl(desktop);
-      desktop.addPanel("Menu.default.account", prefsComptes, GemModule.L_SIZE);
+      String[] keys = null;
+      List<Account> accounts = null;
+      List<Param> costAccounts = null;
+      AccountingService service = new AccountingService(dc);
+      try {
+        keys = service.getAccountTypes();
+        accounts = service.getAccounts();
+        costAccounts = service.getActiveCostAccounts();
+      } catch (SQLException ex) {
+        GemLogger.log(ex.getMessage());
+      }
+      AccountPrefListCtrl prefAccountList = new AccountPrefListCtrl(desktop, service, accounts, costAccounts);      
+      prefAccountList.load(keys);
+      desktop.addPanel("Menu.default.account", prefAccountList, GemModule.L_SIZE);
     } else if (menus.get("Menu.booking.journal.label").equals(arg)) {
       JournalAccountService jcs = new JournalAccountService(dc);
       JournalAccountCtrl jcc = new JournalAccountCtrl(new JournalAccountTableModel(), jcs, desktop);
@@ -253,25 +267,4 @@ public class MenuAccounting
     menus.put("Menu.room.rate.label", BundleUtil.getLabel("Menu.room.rate.label"));
   }
 
-  /**
-   * @deprecated
-   */
-  private void jmvLog() {
-    Runtime r = Runtime.getRuntime();
-    StringBuilder message = new StringBuilder("Mémoire utilisée avant réinitialisation : \n");
-    message.append("Mémoire totale jvm : ").append(r.totalMemory() / 1024).append(" ko\n");
-    message.append("Mémoire libre jvm : ").append(r.freeMemory() / 1024).append(" ko\n\n");
-    System.out.println("Total Memory : " + r.totalMemory());
-    System.out.println("Free  Memory : " + r.freeMemory());
-    System.gc();
-    System.runFinalization();
-    System.out.println("gc+finalize");
-    System.out.println("Total Memory : " + r.totalMemory());
-    System.out.println("Free  Memory : " + r.freeMemory());
-    message.append("Mémoire utilisée après réinitialisation :\n");
-    message.append("Mémoire totale jvm : ").append(r.totalMemory() / 1024).append(" ko\n");
-    message.append("Mémoire libre jvm : ").append(r.freeMemory() / 1024).append(" ko");
-    System.out.println();
-    MessagePopup.information(desktop.getFrame(), message.toString());
-  }
 }

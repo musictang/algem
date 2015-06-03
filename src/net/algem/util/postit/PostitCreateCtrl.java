@@ -1,7 +1,7 @@
 /*
- * @(#)PostitCreateCtrl.java	2.9.1 17/12/14
+ * @(#)PostitCreateCtrl.java	2.9.4.6 02/06/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -39,13 +39,14 @@ import net.algem.util.ui.GemPanel;
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.4.6
  */
 public class PostitCreateCtrl
         extends GemPanel
         implements ActionListener
 {
 
+  public static final String POSTIT_CREATE_KEY="Postit.create";
   private GemDesktopCtrl desktop;
   private PostitCreateView postit;
   private GemField status;

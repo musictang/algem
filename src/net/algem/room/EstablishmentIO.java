@@ -1,7 +1,7 @@
 /*
- * @(#)EstablishmentIO.java	2.9.1 04/11/14
+ * @(#)EstablishmentIO.java	2.9.4.6 03/06/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -23,6 +23,7 @@ package net.algem.room;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Vector;
 import net.algem.bank.RibIO;
 import net.algem.contact.*;
@@ -38,27 +39,28 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.4.6
  */
 public class EstablishmentIO
         extends TableIO
 {
 
   public static void trans_insert(Establishment e, short type, DataConnection dc) throws SQLException {
-    int numero = nextId(PersonIO.SEQUENCE, dc);
+    int number = nextId(PersonIO.SEQUENCE, dc);
 
     Person p = e.getPerson();
     String query = "INSERT INTO " + PersonIO.TABLE + "  VALUES("
-            + numero
-            + "," + String.valueOf((int) type)
+            + number
+            + "," + type
             + ",'" + escape(p.getName().toUpperCase())
-            + "','" + p.getFirstName()
+            + "','" + escape(p.getFirstName())
             + "','" + p.getGender()
-            //+ "'," + p.getNote()
+            + "', FALSE"
+            + ", '" + escape(p.getOrganization())
             + "')";
 
     dc.executeUpdate(query);
-    p.setId(numero);
+    p.setId(number);
 
     Address a = e.getAddress();
     if (a != null && a.getAdr1().length() > 0) {
@@ -83,6 +85,17 @@ public class EstablishmentIO
         }
       }
     }
+
+    List<WebSite> sites = e.getSites();
+    if (sites != null) {
+      for (int j = 0; j < sites.size(); j++) {
+        WebSite w = sites.get(j);
+        w.setIdper(e.getId());
+        w.setPtype(Person.ESTABLISHMENT);
+        WebSiteIO.insert(w, j, dc);
+      }
+    }
+
   }
 
   public static void insert(Establishment e, short type, DataConnection dc) throws SQLException {
@@ -100,7 +113,6 @@ public class EstablishmentIO
   }
 
   public static void update(Establishment e, Establishment n, DataConnection dc) throws SQLException {
-
 
     try {
       dc.setAutoCommit(false);
@@ -168,6 +180,15 @@ public class EstablishmentIO
     for (; oldmails != null && i < oldmails.size(); i++) {
       EmailIO.delete(e.getId(), i, dc);
     }
+
+    WebSiteIO.delete(e.getId(), Person.ESTABLISHMENT, dc);
+    i = 0;
+    List<WebSite> newsites = n.getSites();
+    for(; newsites != null && i < newsites.size(); i++) {
+      WebSite w = newsites.get(i);
+      WebSiteIO.insert(w, i, dc);
+    }
+
   }
 
   public static void delete(Establishment e, DataConnection dc) throws EstablishmentException {
@@ -183,7 +204,7 @@ public class EstablishmentIO
       AddressIO.delete(e.getId(), dc);
       TeleIO.delete(e.getId(), dc);
       EmailIO.delete(e.getId(), dc);
-      WebSiteIO.delete(e.getId(), Person.PERSON, dc);
+      WebSiteIO.delete(e.getId(), Person.ESTABLISHMENT, dc);
       RibIO.delete(e.getId(), dc);
     } catch (SQLException sqe) {
       throw new EstablishmentException("SQL : " + sqe.getMessage());
@@ -223,6 +244,7 @@ public class EstablishmentIO
       e.setAddress(AddressIO.findId(p.getId(), dc));
       e.setTele(TeleIO.findId(p.getId(), dc));
       e.setEmail(EmailIO.find(p.getId(), dc));
+      e.setSites(WebSiteIO.find(p.getId(), Person.ESTABLISHMENT, dc));
 
       v.addElement(e);
     }

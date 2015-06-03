@@ -1,5 +1,5 @@
 /*
- * @(#)ContactFileEditor.java	2.9.2 12/01/15
+ * @(#)ContactFileEditor.java	2.9.4.6 03/06/15
  * 
  * Copyright (c) 1998-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -24,6 +24,7 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.List;
 import java.util.Vector;
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
@@ -41,7 +42,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.9.4.6
  * @since 1.0a 09/07/2002
  */
 public class ContactFileEditor
@@ -72,7 +73,6 @@ public class ContactFileEditor
     teleView = new TelView(ParamTableIO.find(Category.TELEPHONE.getTable(), Category.TELEPHONE.getCol(), dc));
     emailView = new EmailView();
 
-    //vueSiteWeb = new SiteWebViewOld(dc);
     websiteView = new WebSiteView(ParamTableIO.find(Category.SITEWEB.getTable(), Category.SITEWEB.getCol(), dc));
 
     infosView.setLayout(new BoxLayout(infosView, BoxLayout.Y_AXIS));
@@ -156,7 +156,6 @@ public class ContactFileEditor
       setAddress(c.getAddress());
       setTele(c.getTele());
       setEmail(c.getEmail());
-      //vueSiteWeb.load(c.getSites());
       websiteView.setSites(c.getSites());
     }
   }
@@ -236,24 +235,26 @@ public class ContactFileEditor
   public void setTele(Vector<Telephone> t) {
     teleView.setTels(t);
   }
-
-  public void setEmail(Vector<Email> ve) {
-    //vueTele.setEmail(ve);
-    emailView.setEmails(ve);
-  }
-
-  public Vector<Email> getEmail() {
-    //return vueTele.getEmail();
-    return emailView.getEmails();
-  }
-
-  public Vector<Telephone> getTele() {
+  
+    public Vector<Telephone> getTele() {
     if (linkTelAddress == false) {
       return teleView.getTels();
     }
     return null;
   }
 
+  public void setEmail(Vector<Email> ve) {
+    emailView.setEmails(ve);
+  }
+
+  public Vector<Email> getEmail() {
+    return emailView.getEmails();
+  }
+  
+  public void setSites(List<WebSite> sites) {
+    websiteView.setSites(new Vector<WebSite>(sites));
+  }
+  
   public Vector<WebSite> getSites() {
     return websiteView.getSites();
   }

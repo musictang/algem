@@ -1,7 +1,7 @@
 /*
- * @(#)WebSiteIO.java	2.8.p 06/12/13
+ * @(#)WebSiteIO.java	2.9.4.6 03/06/15
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -29,7 +29,7 @@ import net.algem.util.model.TableIO;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.p
+ * @version 2.9.4.6
  */
 public class WebSiteIO
         extends TableIO
@@ -38,6 +38,13 @@ public class WebSiteIO
   public final static String TABLE = "siteweb";
   public final static String COLUMNS = "idx, ipder, url, type, ptype";
 
+  /**
+   * 
+   * @param w web site
+   * @param idx index
+   * @param dc data connection
+   * @throws SQLException 
+   */
   public static void insert(WebSite w, int idx, DataConnection dc) throws SQLException {
     String query = "INSERT INTO " + TABLE + " VALUES("
             + idx
@@ -50,6 +57,13 @@ public class WebSiteIO
     dc.executeUpdate(query);
   }
 
+  /**
+   * 
+   * @param s site
+   * @param idx index
+   * @param dc data connection
+   * @throws SQLException 
+   */
   public static void update(WebSite s, int idx, DataConnection dc) throws SQLException {
     String query = "UPDATE " + TABLE
             + " SET url = '" + s.getUrl()
@@ -59,11 +73,25 @@ public class WebSiteIO
     dc.executeUpdate(query);
   }
 
-  public static void delete(int c, int ptype, DataConnection dc) throws SQLException {
-    String query = "DELETE FROM " + TABLE + " WHERE idper = " + c + " AND ptype = " + ptype;
+  /**
+   * 
+   * @param idper contact id
+   * @param ptype person type
+   * @param dc data connection
+   * @throws SQLException 
+   */
+  public static void delete(int idper, int ptype, DataConnection dc) throws SQLException {
+    String query = "DELETE FROM " + TABLE + " WHERE idper = " + idper + " AND ptype = " + ptype;
     dc.executeUpdate(query);
   }
 
+  /**
+   * 
+   * @param s url
+   * @param idx index
+   * @param dc data connection
+   * @throws SQLException 
+   */
   public static void delete(WebSite s, int idx, DataConnection dc) throws SQLException {
     String query = "DELETE FROM " + TABLE + " WHERE idper = " + s.getIdper() + " AND idx = " + idx
             + " AND ptype = " + s.getPtype();
@@ -93,7 +121,7 @@ public class WebSiteIO
   /**
    * Find by type.
    * @param type category
-   * @param dc dataConnection
+   * @param dc data connection
    * @return the number of results or 0 if no site found.
    * @throws SQLException 
    */
