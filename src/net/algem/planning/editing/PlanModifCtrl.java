@@ -119,7 +119,7 @@ public class PlanModifCtrl
       v.add(new GemMenuButton(BundleUtil.getLabel("Course.instrument.allocation.label"), this, "AtelierInstruments"));
     }
 
-    if (true) { //TODO add feature flag
+    if (Algem.isFeatureEnabled("schedule_dispatch")) {
       v.add(new GemMenuButton(BundleUtil.getLabel("ScheduleDispatch.label"), this, "ScheduleDispatch"));
     }
 

@@ -23,6 +23,8 @@ package net.algem.util.menu;
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
 import javax.swing.JMenuItem;
+
+import net.algem.Algem;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
 import net.algem.course.CourseSearchCtrl;
@@ -73,10 +75,14 @@ public class MenuCatalog
     }
 
     scriptItem = new JMenuItem(BundleUtil.getLabel("Scripts.label"));
-    add(scriptItem);
+    if (Algem.isFeatureEnabled("scripting")) {
+      add(scriptItem);
+    }
 
-    factsItem = new JMenuItem("FACTS");
-    add(factsItem);
+    factsItem = new JMenuItem(BundleUtil.getLabel("PlanningFact.label"));
+    if (Algem.isFeatureEnabled("planning_fact")) {
+      add(factsItem);
+    }
 
     setListener(this);
   }
