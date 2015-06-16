@@ -1,7 +1,7 @@
 /*
- * @(#)HistoInvoice 2.8.y 29/09/14
+ * @(#)HistoInvoice 2.9.4.7 15/06/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -46,7 +46,7 @@ import net.algem.util.ui.*;
  * Controller for a list of invoices.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.y
+ * @version 2.9.4.7
  * @since 2.3.a 14/02/12
  */
 public class HistoInvoice
@@ -103,6 +103,9 @@ public class HistoInvoice
   public <T extends Object> void load(Collection<T> c) {
     if (invoiceListCtrl != null && c != null) {
       invoiceListCtrl.loadResult(new Vector<T>(c));
+    }
+    if (isLoaded()) {
+      rangePanel.setStart(invoiceListCtrl.getElementAt(0).getDate());
     }
   }
 

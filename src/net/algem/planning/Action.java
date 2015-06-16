@@ -1,5 +1,5 @@
 /*
- * @(#)Action.java	2.9.4.3 21/04/15
+ * @(#)Action.java	2.9.4.7 12/06/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -34,7 +34,7 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.3
+ * @version 2.9.4.7
  * @since 1.0a 07/07/1999
  */
 public class Action
@@ -52,7 +52,7 @@ public class Action
   private short day;
   private int vacancy;
   private int color = 0;
-
+  private boolean resetDefaultColor;
   private int memberId;
   private Periodicity periodicity;
 
@@ -231,6 +231,11 @@ public class Action
     return color;
   }
 
+  /**
+   * Black color offset.
+   * Color 0 represents null color or no change and must not be used to set pure black.
+   * @param color 
+   */
   public void setColor(int color) {
     this.color = color == 0 ? -1 : color;
   }
@@ -239,7 +244,11 @@ public class Action
    * Switchs to null color.
    */
   public void resetColor() {
-    this.color = 0;
+    resetDefaultColor = true;
+  }
+  
+  boolean hasResetDefaultColor() {
+    return resetDefaultColor;
   }
   
   public List<DateFr> getDates() {

@@ -1,7 +1,7 @@
 /*
- * @(#)HistoQuote 2.8.y 29/09/14
+ * @(#)HistoQuote 2.9.4.7 15/06/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -18,7 +18,6 @@
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 package net.algem.billing;
 
 import java.awt.CardLayout;
@@ -26,32 +25,37 @@ import java.awt.event.ActionEvent;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import net.algem.util.BundleUtil;
+import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
 import net.algem.util.event.GemEvent;
 import net.algem.util.module.GemDesktop;
+import net.algem.util.ui.GemButton;
 import net.algem.util.ui.MessagePopup;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.y
+ * @version 2.9.4.7
  * @since 2.4.d 07/06/12
  */
 public class HistoQuote
         extends HistoInvoice
 {
 
+  private GemButton btDelete;
+
   public <Q extends Quote> HistoQuote(GemDesktop desktop, BillingService service) throws SQLException {
     super(desktop, service);
+    btDelete = new GemButton(GemCommand.DELETE_CMD);
+    btDelete.addActionListener(this);
+    buttons.add(btDelete, 0);
   }
 
-   @Override
+  @Override
   public void validation() {
-    int n = 0;
-    try {
-      n = invoiceListCtrl.getSelectedIndex();
-    } catch(IndexOutOfBoundsException ix) {
+    int n = getSelectedQuoteIndex();
+    if (n < 0) {
       MessagePopup.warning(this, MessageUtil.getMessage("no.line.selected"));
       return;
     }
@@ -62,9 +66,17 @@ public class HistoQuote
     add(qeditor, card1);
     layout = (CardLayout) getLayout();
     layout.show(this, card1);
-   }
+  }
 
-    @Override
+  private int getSelectedQuoteIndex() {
+    try {
+      return invoiceListCtrl.getSelectedIndex();
+    } catch (IndexOutOfBoundsException ix) {
+      return -1;
+    }
+  }
+
+  @Override
   public void cancel() {
     actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "HistoDevis.Abandon"));
   }
@@ -77,22 +89,38 @@ public class HistoQuote
       validation();
     } else if (src == btCancel) {
       cancel();
-    } else if (cmd.equals(BundleUtil.getLabel("Action.load.label"))) {
-      try {
-        if (idper > 0) {
-          load(service.getQuotations(idper, rangePanel.getStart(), rangePanel.getEnd()));
-        } else {
-          load(service.getQuotations(rangePanel.getStart(), rangePanel.getEnd()));
+    } else if (src == btDelete) {
+      int n = getSelectedQuoteIndex();
+      if (n >= 0) {
+        try {
+          service.delete((Quote) invoiceListCtrl.getElementAt(n));
+          load(idper);
+        } catch (SQLException ex) {
+          GemLogger.logException(ex);
         }
-      } catch (SQLException ex) {
-        GemLogger.log(Level.SEVERE, ex.getMessage());
+      } else {
+        MessagePopup.warning(this, MessageUtil.getMessage("no.line.selected"));
       }
+    } else if (cmd.equals(BundleUtil.getLabel("Action.load.label"))) {
+      load(idper);
     } else if (cmd.equals("CtrlAbandonDevis")) {
       layout.show(this, card0);
     }
   }
 
-   @Override
+  private void load(int idper) {
+    try {
+      if (idper > 0) {
+        load(service.getQuotations(idper, rangePanel.getStart(), rangePanel.getEnd()));
+      } else {
+        load(service.getQuotations(rangePanel.getStart(), rangePanel.getEnd()));
+      }
+    } catch (SQLException ex) {
+      GemLogger.log(Level.SEVERE, ex.getMessage());
+    }
+  }
+
+  @Override
   public void postEvent(GemEvent evt) {
     if (evt instanceof QuoteEvent) {
       Quote q = ((QuoteEvent) evt).getQuote();

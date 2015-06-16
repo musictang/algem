@@ -1,5 +1,5 @@
 /*
- * @(#)DataConnection.java	2.9.4.0 01/04/2015
+ * @(#)DataConnection.java	2.9.4.7 08/06/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -28,7 +28,7 @@ import java.util.logging.Level;
  * Utility class for database connection.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.0
+ * @version 2.9.4.7
  * @since 2.6.a 01/08/2012
  */
 public class DataConnection
@@ -174,27 +174,29 @@ public class DataConnection
     try {
       pstmt = cnx.prepareStatement(query);
     } catch (Exception other) {
-      GemLogger.logException("Exception prepapeStatement", other);
+      GemLogger.logException("Exception preparedStatement", other);
+      try {
+        connect();
+        pstmt = cnx.prepareStatement(query);
+      } catch (SQLException sqe) {
+        GemLogger.log("Reconnection error " + sqe);
+      }
     }
     return pstmt;
-
   }
 
   Statement createStatement() {
     Statement stmt = null;
     try {
       stmt = cnx.createStatement();
-    } catch (NullPointerException nulcnx) {
-      GemLogger.log("Exception createStatement " + nulcnx);
+    } catch (Exception other) {
+      GemLogger.logException("Exception createStatement", other);
       try {
         connect();
         stmt = cnx.createStatement();
       } catch (SQLException sqe) {
         GemLogger.log("Reconnection error " + sqe);
-        return null;
       }
-    } catch (Exception other) {
-      GemLogger.logException("Exception createStatement", other);
     }
     return stmt;
   }
@@ -203,17 +205,14 @@ public class DataConnection
     Statement stmt = null;
     try {
       stmt = cnx.createStatement(resultSetType, resultSetConcurrency);
-    } catch (NullPointerException nulcnx) {
-      GemLogger.log("Exception createStatement " + nulcnx);
-      try {
-        connect();
-        stmt = cnx.createStatement();
-      } catch (SQLException sqe) {
-        GemLogger.log("Reconnection error " + sqe);
-        return null;
-      }
     } catch (Exception other) {
       GemLogger.logException("Exception createStatement", other);
+      try {
+        connect();
+        stmt = cnx.createStatement(resultSetType, resultSetConcurrency);
+      } catch (SQLException sqe) {
+        GemLogger.log("Reconnection error " + sqe);
+      }
     }
     return stmt;
   }
@@ -229,12 +228,8 @@ public class DataConnection
     if (debugSQL) {
       GemLogger.log(Level.INFO, query);
     }
-
     Statement stmt = createStatement();
     ResultSet rs = stmt.executeQuery(query);
-    //01/04/2004 postgresql7.4
-    //stmt.close();
-
     return rs;
   }
 

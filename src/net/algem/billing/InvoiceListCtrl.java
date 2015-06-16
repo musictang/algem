@@ -1,5 +1,5 @@
 /*
- * @(#)InvoiceListCtrl.java 2.9.3.2 13/03/15
+ * @(#)InvoiceListCtrl.java 2.9.4.7 12/06/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -29,11 +29,12 @@ import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import net.algem.util.ui.ListCtrl;
+import net.algem.util.ui.PriceCellRenderer;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.3.2
+ * @version 2.9.4.7
  * @since 2.3.a 14/02/12
  */
 public class InvoiceListCtrl
@@ -59,7 +60,8 @@ public class InvoiceListCtrl
     cm.getColumn(3).setPreferredWidth(18);
     cm.getColumn(4).setPreferredWidth(280);
     cm.getColumn(5).setPreferredWidth(30);
-
+    
+    cm.getColumn(5).setCellRenderer(new PriceCellRenderer());
     JScrollPane p = new JScrollPane(table);
     p.setBorder(new BevelBorder(BevelBorder.LOWERED));
 

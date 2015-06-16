@@ -1,5 +1,5 @@
 /*
- * @(#)QuoteIO.java 2.9.3.2 11/03/15
+ * @(#)QuoteIO.java 2.9.4.7 15/06/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -35,7 +35,7 @@ import net.algem.util.model.Model;
  * Quote persistence {@link net.algem.billing.Quote}.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.3.2
+ * @version 2.9.4.7
  * @since 2.4.d 07/06/12
  */
 public class QuoteIO
@@ -158,7 +158,7 @@ public class QuoteIO
 
       ld.add(d);
     }
-    return ld.isEmpty() ? null : ld;
+    return ld;
   }
 
   public void update(Quote d) throws BillingException {

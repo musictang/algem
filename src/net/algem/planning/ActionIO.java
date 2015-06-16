@@ -1,5 +1,5 @@
 /*
- * @(#)ActionIO.java 2.9.4.3 21/04/15
+ * @(#)ActionIO.java 2.9.4.7 12/06/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -38,7 +38,7 @@ import net.algem.util.model.TableIO;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.3
+ * @version 2.9.4.7
  * @since 2.4.a 18/04/12
  */
 public class ActionIO
@@ -190,7 +190,7 @@ public class ActionIO
         query = "INSERT INTO " + ACTION_COLOR_TABLE + " VALUES(" + a.getId() + "," + a.getColor() + ")";
       }
       dc.executeUpdate(query);
-    } else {
+    } else if (a.hasResetDefaultColor()) {
       query = "DELETE FROM " + ACTION_COLOR_TABLE + " WHERE idaction = " + a.getId();
       dc.executeUpdate(query);
     }

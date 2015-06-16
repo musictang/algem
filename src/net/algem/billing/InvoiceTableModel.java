@@ -1,5 +1,5 @@
 /*
- * @(#)InvoiceTableModel.java 2.9.2 26/01/15
+ * @(#)InvoiceTableModel.java 2.9.4.7 12/06/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -28,7 +28,7 @@ import net.algem.util.ui.JTableModel;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.9.4.7
  * @since 2.3.a 14/02/12
  */
 public class InvoiceTableModel

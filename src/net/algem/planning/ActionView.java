@@ -1,5 +1,5 @@
 /*
- * @(#)ActionView.java	2.9.4.3 21/04/15
+ * @(#)ActionView.java	2.9.4.7 12/06/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -58,7 +58,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.3
+ * @version 2.9.4.7
  */
 public class ActionView
         extends GemPanel
@@ -106,7 +106,7 @@ public class ActionView
     places = new GemNumericField(2);
     colorPanel = new GemPanel();
     colorPanel.setToolTipText(BundleUtil.getLabel("Scheduling.color.tip"));
-    defaultBgColor = colorPanel.getBackground().getRGB();
+    
     colorPanel.addMouseListener(new ColorPlanListener());
     vacancy = new ParamChoice(dataCache.getVacancyCat());
     courseLength = new HourField();
@@ -114,6 +114,7 @@ public class ActionView
     if (courseList.getSize() > 0) {
       load(((Course) course.getSelectedItem()));
     }
+    
   }
 
   private void load(Course c) {
@@ -341,6 +342,7 @@ public class ActionView
   private void setColor(Color c) {
     if (c != null) {
       colorPanel.setBackground(c);
+      defaultBgColor = colorPanel.getBackground().getRGB();
     }
   }
 

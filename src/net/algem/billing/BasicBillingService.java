@@ -1,5 +1,5 @@
 /*
- * @(#)BasicBillingService 2.9.3.1 03/03/15
+ * @(#)BasicBillingService 2.9.4.7 15/06/15
  *
  * Copyright 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -40,7 +40,7 @@ import net.algem.util.model.Model;
  * Service class for billing.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.3.1
+ * @version 2.9.4.7
  * @since 2.3.a 06/02/12
  */
 public class BasicBillingService
@@ -360,8 +360,8 @@ public class BasicBillingService
   }
 
   @Override
-  public void delete(Invoice inv) throws SQLException {
-    invoiceIO.delete(inv);
+  public void delete(Quote q) throws SQLException {
+    quotationIO.delete(q);
   }
 
   @Override

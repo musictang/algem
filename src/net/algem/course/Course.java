@@ -1,7 +1,7 @@
 /*
- * @(#)Course.java	2.8.t 15/04/14
+ * @(#)Course.java	2.9.4.7 05/06/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -37,12 +37,6 @@ public class Course
   /** Break identification. */
   public static final int BREAK = 0;
 
-//  /** Instrument code. */
-//  public static final int PRIVATE_INSTRUMENT_CODE = 1;
-//
-//  /** Single workshop code. */
-//  public static final int ATP_CODE = 11;
-
   /** Minimum length of title. */
   public static final int MIN_TITLE_LENGTH = 1;
 
@@ -50,7 +44,7 @@ public class Course
   public static final int MAX_TITLE_LENGTH = 32;
 
   /** Maximum length of label. */
-  public static final int MAX_LABEL_LENGTH = 16;
+  public static final int MAX_LABEL_LENGTH = 32;
 
   protected int id;
   protected String title;

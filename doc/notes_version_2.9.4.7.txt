@@ -1,0 +1,11 @@
+2.9.4.7
+BUGS CORRIGES
+* La longueur du libellé d'un cours était limitée à 16 caractères bien que le nombre maximal autorisé en base de données soit de 32.
+* Lors de la planification d'un cours, la personnalisation de couleur était enregistrée même si l'on n'avait pas changé la couleur par défaut. Les couleurs par défaut du libellé des plannings n'étaient plus respectées dans ce cas (texte en blanc plutôt que noir, etc.). Parallèlement, les plages horaires des cours individuels n'étaient plus affichées dans leur couleur d'origine.
+* Si l'on avait modifié la couleur d'un planning, celle-ci était effacée après modification des paramètres de planification, même si l'on n'avait pas cliqué sur la case à cocher "Couleur par défaut".
+* En mode Webstart, l'inutilisation prolongée du logiciel entraînait des pertes de connexion obligeant l'utilisateur à redémarrer Algem. La reconnexion automatique est maintenant systématisée en cas d'erreurs.
+
+FACTURATION
+- L'affichage des montants (totaux, quantité, tva) est maintenant homogène dans les devis et factures. Ces nombres sont formatés avec 2 chiffres après la virgule.
+- Il est maintenant possible de supprimer un devis. Par principe, une facture, une fois créée ne peut être supprimée. Cependant, cette précaution ne s'applique pas pour les devis et leur suppression est maintenant autorisée.
+- Dans l'historique des devis (ou factures), le champ Date de début est automatiquement mis à jour à la date du premier devis de la liste, après chargement.

@@ -1,5 +1,5 @@
 /*
- * @(#)ModifPlanActionView.java 2.9.4.3 22/04/15
+ * @(#)ModifPlanActionView.java 2.9.4.7 12/06/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -42,7 +42,7 @@ import net.algem.util.ui.*;
  * Modification of status, level, age range and number of places.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.3
+ * @version 2.9.4.7
  * @since 2.5.a 22/06/12
  */
 class ModifPlanActionView
@@ -76,7 +76,6 @@ class ModifPlanActionView
     this.defaultBgColor = defaultColor;
     
     GemPanel colorPanel = new GemPanel(new BorderLayout());
-    
         
     bgColorPanel = new GemPanel();
     bgColorPanel.addMouseListener(new ColorPlanListener());
@@ -149,7 +148,7 @@ class ModifPlanActionView
     int c = bgColorPanel.getBackground().getRGB();
     return c != initialColor ? c : 0;
   }
-
+  
   boolean isEntryValid() {
     short p = getPlaces();
     return getLevel().getId() >= 0 && getStatus().getId() >= 0 && p >= 0 && p < 500;

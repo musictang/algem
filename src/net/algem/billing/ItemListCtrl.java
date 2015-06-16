@@ -1,7 +1,7 @@
 /*
- * @(#)ItemListCtrl.java	2.8.y 25/09/14
+ * @(#)ItemListCtrl.java	2.9.4.7 12/06/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -43,14 +43,14 @@ import net.algem.util.ui.ListCtrl;
  * Item list controller.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.y
+ * @version 2.9.4.7
  * @since 2.3.a 30/01/12
  */
 public class ItemListCtrl
         extends ListCtrl
 {
 
-  private static NumberFormat nf = AccountUtil.getDefaultNumberFormat();
+  private static NumberFormat nf = AccountUtil.getNumberFormat(2, 2);
 
   public ItemListCtrl() {
     super(true);
@@ -134,12 +134,12 @@ public class ItemListCtrl
         setText((p.getValue() == null) ? "" : nf.format(Float.parseFloat(p.getValue())));
       } else if (value instanceof Number) {
         if (value instanceof Integer || value instanceof Short) {
-          setText((value == null) ? "" : String.valueOf(value));
+          setText(String.valueOf(value));
         } else {
-          setText((value == null) ? "" : nf.format(value));
+          setText(nf.format(value));
         }
       } else if (value instanceof String) {
-        setText((String) ((value == null) ? "" : value));
+        setText((String) value);
       }
       setHorizontalAlignment(SwingConstants.RIGHT);
     }

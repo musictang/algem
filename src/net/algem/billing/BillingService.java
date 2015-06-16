@@ -126,7 +126,7 @@ public interface BillingService
 
   public void update(Quote d) throws BillingException;
 
-  public void delete(Invoice inv) throws SQLException;
+  public void delete(Quote q) throws SQLException;
 
   public Item getItem(int id) throws SQLException;
 

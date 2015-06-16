@@ -1,5 +1,5 @@
 /*
- * @(#)AccountUtil.java	2.9.4.4 06/05/15
+ * @(#)AccountUtil.java	2.9.4.7 12/06/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -40,7 +40,7 @@ import net.algem.util.DataConnection;
  * Utility class for orderline operations.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.4
+ * @version 2.9.4.7
  * @since 2.0r
  */
 public class AccountUtil {
@@ -284,6 +284,21 @@ public class AccountUtil {
     NumberFormat nf = NumberFormat.getNumberInstance();
     //nf.setMinimumFractionDigits(2);
     nf.setMaximumFractionDigits(2);
+
+    return nf;
+  }
+  
+  /**
+   * Gets a format depending on {@code minFraction} digits and {@code maxFraction} digits.
+   * @param minFraction min fraction digits
+   * @param maxFraction max fraction digits
+   * @return a format
+   */
+  public static NumberFormat getNumberFormat(int minFraction, int maxFraction) {
+
+    NumberFormat nf = NumberFormat.getNumberInstance();
+    nf.setMinimumFractionDigits(minFraction);
+    nf.setMaximumFractionDigits(maxFraction);
 
     return nf;
   }
