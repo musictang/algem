@@ -1,5 +1,5 @@
 /*
- * @(#)DayPlanTableView.java	2.9.4.0 25/03/2015
+ * @(#)DayPlanTableView.java	2.9.4.8 18/06/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -50,7 +50,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.9.4.0
+ * @version 2.9.4.8
  * @since 1.0a 07/07/1999
  */
 public abstract class DayPlanTableView

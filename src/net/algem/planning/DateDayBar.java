@@ -1,7 +1,7 @@
 /*
- * @(#)DateDayBar.java	2.6.a 21/09/12
+ * @(#)DateDayBar.java	2.9.4.8 18/06/15
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -35,7 +35,7 @@ import net.algem.util.ui.GemPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.6.a
+ * @version 2.9.4.8
  * @since 1.0a 07/07/1999
  */
 public class DateDayBar
@@ -45,12 +45,12 @@ public class DateDayBar
 
   private String[] monthLabels;
   private GemButton[] dayButtons;
-  private GemButton[] mounthButtons;
+  private GemButton[] monthButtons;
   private GemButton btPrevYear;
   private GemButton btNextYear;
   private Calendar cal;
   private ActionListener actionListener;
-  private GemButton btSelected;
+  private GemButton daySelected;
   private GemButton monthSelected;
   private int currentMonth;
   private int currentDay;
@@ -108,13 +108,13 @@ public class DateDayBar
     btPrevYear.addActionListener(this);
 
     /** The 12 months. */
-    mounthButtons = new GemButton[12];
+    monthButtons = new GemButton[12];
     for (int i = 0; i < 12; i++) {
-      mounthButtons[i] = new GemButton(monthLabels[i]);
-      mounthButtons[i].setFont(new Font("Helvetica", Font.PLAIN, 10));
-      mounthButtons[i].setMargin(new Insets(2, 2, 2, 2));
-      monthPanel.add(mounthButtons[i]);
-      mounthButtons[i].addActionListener(this);
+      monthButtons[i] = new GemButton(monthLabels[i]);
+      monthButtons[i].setFont(new Font("Helvetica", Font.PLAIN, 10));
+      monthButtons[i].setMargin(new Insets(2, 2, 2, 2));
+      monthPanel.add(monthButtons[i]);
+      monthButtons[i].addActionListener(this);
     }
     btNextYear = new GemButton(">>>");
     btNextYear.setMargin(new Insets(2, 2, 2, 2));
@@ -126,39 +126,13 @@ public class DateDayBar
     add(monthPanel, BorderLayout.SOUTH);
 
     currentMonth = cal.get(Calendar.MONTH);
-    colorSelected(currentDay-1);
-    
-    /*initSelectionMois();*/
-    //initSelectionJour();
+    colorSelected(currentDay-1, currentMonth);
+
   }
-
-  /*public void initSelectionJour() {
-    if (btSelected == null) {
-      for (int j = 0; j < bjours.length; j++) {
-        if (j == currentDay - 1) {
-          btSelected = bjours[j];
-          btSelected.setBackground(selectionColor);
-          break;
-        }
-      }
-    }
-  }*/
-
-  /*public void initSelectionMois() {
-    if (moisSelect == null) {
-      for (int i = 0; i < bmois.length; i++) {
-        if (i == moisCourant) {
-          moisSelect = bmois[i];
-          moisSelect.setBackground(selectionColor);
-          break;
-        }
-      }
-    }
-  }*/
 
   public void setDate(Date d) {
     cal.setTime(d);
-    colorSelected(cal.get(Calendar.DAY_OF_MONTH)-1);
+    colorSelected(cal.get(Calendar.DAY_OF_MONTH)-1, cal.get(Calendar.MONTH));
     setDayLabel();
   }
 
@@ -182,21 +156,21 @@ public class DateDayBar
       //
       cal.set(Calendar.MONTH, 11); // calé sur le dernier mois de l'année
       setDayLabel(); // calé sur le dernier jour du mois
-      colorSelected(30);
+      colorSelected(30,11);
     } else if (c == btNextYear) {
       cal.set(Calendar.YEAR, cal.get(Calendar.YEAR) + 1);
       //
       cal.set(Calendar.MONTH, 0); // calé sur le premier mois
       setDayLabel();
       cal.set(Calendar.DAY_OF_MONTH, 1);
-      colorSelected(0);
+      colorSelected(0,0);
     } else if (c instanceof GemButton) {
         for (int i = 0; i < 12; i++) {
-          if (c == mounthButtons[i]) {
+          if (c == monthButtons[i]) {
             cal.set(cal.get(Calendar.YEAR), i, 1); // le premier jour du mois
             setDayLabel();
             cal.set(cal.get(Calendar.YEAR), i, 1); // on réinitialise au premier jour du mois
-            colorSelected(0);
+            colorSelected(0,i);
             break;
           }
         }
@@ -238,16 +212,32 @@ public class DateDayBar
 
   /**
    * Emphasize the selected day.
-   * @param i day index
+   * @param d day index
+   * @param m month index
    */
-  public void colorSelected(int i) {
+  public void colorSelected(int d, int m) {
     // reset previous selected button
-    if (btSelected != null) {
-      btSelected.setBackground(null);
+    if (daySelected != null) {
+      daySelected.setBackground(null);
+      daySelected.setContentAreaFilled(true);
+      daySelected.setOpaque(false);
     }
-    // color selected button
-    btSelected = dayButtons[i];
-    btSelected.setBackground(selectedColor);
+    if (monthSelected != null) {
+      monthSelected.setBackground(null);
+      monthSelected.setContentAreaFilled(true);
+      monthSelected.setOpaque(false);
+    }
+    daySelected = dayButtons[d];
+    //windows L&F workaround
+    daySelected.setContentAreaFilled(false);
+    daySelected.setOpaque(true);
+    //
+    daySelected.setBackground(selectedColor);
+    
+    monthSelected = monthButtons[m];
+    monthSelected.setContentAreaFilled(false);
+    monthSelected.setOpaque(true);
+    monthSelected.setBackground(selectedColor);
   }
   
   /**
@@ -256,7 +246,7 @@ public class DateDayBar
    */
   private void setSelected(int i) {
     cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), i + 1);
-    colorSelected(i);
+    colorSelected(i,cal.get(Calendar.MONTH));
   }
   
 }

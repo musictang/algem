@@ -1,7 +1,7 @@
 /*
- * @(#)MonthPlanView.java	2.8.w 10/07/14
+ * @(#)MonthPlanView.java	2.9.4.8 18/06/15
  *
- * Copyright (cp) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (cp) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -36,7 +36,7 @@ import net.algem.util.ui.GemField;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.4.8
  */
 public class MonthPlanView
         extends ScheduleCanvas
@@ -90,7 +90,9 @@ public class MonthPlanView
       img = createImage(d.width, d.height);
       step_y = (d.height - TOP_MARGIN) / GRID_Y;
       bg = img.getGraphics();
-      bg.setFont(new Font("Helvetica", Font.PLAIN, 8));
+//      bg.setFont(new Font("Helvetica", Font.PLAIN, 10));
+      bg.setFont(new Font(Font.SANS_SERIF,Font.PLAIN,10));
+              
       fm = bg.getFontMetrics();
       lineHeight = fm.getHeight() + 4;
       drawBackground();

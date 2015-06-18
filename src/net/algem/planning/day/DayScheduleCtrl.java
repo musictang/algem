@@ -1,5 +1,5 @@
 /*
- * @(#)DayScheduleCtrl.java 2.9.4.6 03/06/15
+ * @(#)DayScheduleCtrl.java 2.9.4.8 18/06/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -59,14 +59,14 @@ import net.algem.util.module.GemModule;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.6
+ * @version 2.9.4.8
  * @since 1.0b 06/10/2001
  */
 public class DayScheduleCtrl
         extends GemModule
 {
 
-  static final Dimension DAY_SIZE = new Dimension(920, 520);
+  static final Dimension DAY_SIZE = new Dimension(920, 550);
   private JMenuItem miPrint;
   private JMenuItem miQuit;
   private JMenuItem miExport;

@@ -1,5 +1,5 @@
 /*
- * @(#)Algem.java	2.9.4.7 15/06/15
+ * @(#)Algem.java	2.9.4.8 18/06/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -23,6 +23,7 @@ package net.algem;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.Point;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -34,6 +35,8 @@ import java.util.Locale;
 import java.util.Properties;
 import java.util.logging.Level;
 import javax.swing.*;
+import net.algem.config.ConfigKey;
+import net.algem.config.ConfigUtil;
 import net.algem.security.AuthDlg;
 import net.algem.security.User;
 import net.algem.util.*;
@@ -46,12 +49,12 @@ import org.apache.commons.codec.binary.Base64;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.7
+ * @version 2.9.4.8
  */
 public class Algem
 {
 
-  public static final String APP_VERSION = "2.9.4.7";//experimental
+  public static final String APP_VERSION = "2.9.4.8";//experimental
   private static final int DEF_WIDTH = 1080;// (850,650) => ancienne taille
   private static final int DEF_HEIGHT = 780;
   private static final Point DEF_LOCATION = new Point(70, 30);
@@ -116,20 +119,26 @@ public class Algem
       MessagePopup.error(frame, ex.getMessage());
       System.exit(2);
     }
+    cache = DataCache.getInstance(dc, login);
     /* -------------------------- */
     /* Logger initialisation */
     /* -------------------------- */
-    //String logPath = ConfigUtil.getConf(ConfigKey.LOG_PATH.getKey(), dc);
-    URL url = getClass().getResource("/Journaux/algem.log");
+    String logPath = ConfigUtil.getConf(ConfigKey.LOG_PATH.getKey()) + "/algem.log";
     String msg = "Algem version " + APP_VERSION + "\nJava version " + System.getProperty("java.version");
-    try {
-      if (url != null) {
-        GemLogger.set(url.getPath());
-        GemLogger.log(Level.INFO, "net.algem.Algem", "main", msg);
+    if (logPath != null) {
+      try {
+        GemLogger.set(new File(logPath).getPath());
+      } catch (IOException ex1) {
+        ex1.printStackTrace();
+        try {
+          setDefaultLogFile();
+        } catch (IOException ex2) {
+          ex2.printStackTrace();
+        }
       }
-    } catch (IOException ex) {
-      System.err.println(ex.getMessage());
     }
+    GemLogger.log(Level.INFO, "net.algem.Algem", "main", msg);
+    
     String pass = null;
     boolean auth = "true".equalsIgnoreCase(props.getProperty("auth"));
     if (auth || login == null) {//authentification requise
@@ -139,8 +148,6 @@ public class Algem
         pass = dlg.getPass();
       }
     }
-
-    cache = DataCache.getInstance(dc, login);
 
     /* ------------------------ */
     /* Test login user validity */
@@ -156,7 +163,15 @@ public class Algem
     gemBoot.close();
 
   }
-
+  
+  /**
+   * Creates a log file into temp folder.
+   * @throws IOException 
+   */
+  private void setDefaultLogFile () throws IOException {
+    GemLogger.set("%t/algem.log");
+  }
+  
   private void setDesktop() {
     String title = "Algem" + "(" + APP_VERSION + ")/" + props.getProperty("appClient")
             //			+ " - Utilisateur système " +System.getProperty("user.name")

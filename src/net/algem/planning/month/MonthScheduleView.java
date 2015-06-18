@@ -1,5 +1,5 @@
 /*
- * @(#)MonthScheduleView.java	2.9.4.3 27/04/15
+ * @(#)MonthScheduleView.java	2.9.4.8 18/06/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -58,15 +58,15 @@ import net.algem.util.ui.TabPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.3
+ * @version 2.9.4.8
  */
 public class MonthScheduleView
         extends DefaultGemView
         implements PropertyChangeListener
 {
 
-  private final static int PREF_WIDTH = 700;
-  private final static int PREF_HEIGHT = 500;
+  private final static int PREF_WIDTH = 800;
+  private final static int PREF_HEIGHT = 600;
   private GemList<Establishment> estabList;
   private MonthSchedule monthSchedule;
   private MonthPlanDetailView teacherView;
@@ -92,7 +92,7 @@ public class MonthScheduleView
 
     getContentPane().add(tabPanel, BorderLayout.CENTER);
 
-    setSize(PREF_WIDTH, PREF_HEIGHT);
+//    setSize(PREF_WIDTH, PREF_HEIGHT);
     String s = "";
     if ((s = ConfigUtil.getConf(ConfigKey.TEACHER_MANAGEMENT.getKey())) != null && s.startsWith("t")) {
       teacherChoice = new TeacherChoice(dataCache.getList(Model.Teacher));

@@ -1,5 +1,5 @@
 /*
- * @(#)FileUtil.java	2.9.3.2 13/03/15
+ * @(#)FileUtil.java	2.9.4.8 18/06/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,10 +20,16 @@
  */
 package net.algem.util;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
 import javax.print.Doc;
 import javax.print.DocFlavor;
 import javax.print.DocPrintJob;
@@ -53,7 +59,7 @@ import net.algem.util.ui.MessagePopup;
  * Utility class for file operations.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.3.2
+ * @version 2.9.4.8
  * @since 2.0q
  */
 public class FileUtil
@@ -345,5 +351,27 @@ public class FileUtil
       return path.endsWith("." + extension) ? destFile : new File(path + "." + extension);
     }
     return null;
+  }
+  
+  /**
+   * Prints Look & Feel default colors.
+   */
+  public static void printUIColors() {
+    List<String> colorKeys = new ArrayList<>();
+    Set<Entry<Object, Object>> entries = UIManager.getLookAndFeelDefaults().entrySet();
+    for (Entry entry : entries) {
+      if (entry.getValue() instanceof Color) {
+        colorKeys.add((String) entry.getKey());
+      }
+    }
+    // sort the color keys
+    Collections.sort(colorKeys);
+
+    // print the color keys
+    for (String colorKey : colorKeys) {
+      System.out.println(colorKey);
+      System.out.println(UIManager.getColor(colorKey));
+    }
+
   }
 }
