@@ -1,5 +1,5 @@
 /*
- * @(#)Algem.java	2.9.4.8 18/06/15
+ * @(#)Algem.java	2.9.4.8 25/06/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -21,6 +21,7 @@
 package net.algem;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Point;
 import java.io.File;
@@ -35,6 +36,7 @@ import java.util.Locale;
 import java.util.Properties;
 import java.util.logging.Level;
 import javax.swing.*;
+import javax.swing.plaf.InsetsUIResource;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
 import net.algem.security.AuthDlg;
@@ -89,8 +91,7 @@ public class Algem
   }
 
   private void init(String configFile, final String host, final String base, String login) throws IOException {
-
-    final GemBoot gemBoot = new GemBoot();
+    
     // opening configuration file
     try { // local file
       props.load(new FileInputStream(configFile));
@@ -101,13 +102,13 @@ public class Algem
         System.err.println(ex);
       }
     } catch (IOException e) {
-      MessagePopup.error(gemBoot.getFrame(), e.getMessage() + ">>" + configFile);
+      MessagePopup.error(null, e.getMessage() + ">>" + configFile);
       System.exit(1);
     }
 
     // optional properties file $HOME/.algem/preferences
     setUserProperties();
-
+    setUIProperties();
     setLocale(props);
 
     /* -------------------------- */
@@ -119,7 +120,7 @@ public class Algem
       MessagePopup.error(frame, ex.getMessage());
       System.exit(2);
     }
-    cache = DataCache.getInstance(dc, login);
+    cache = DataCache.getInstance(dc, login);// !important before Logger
     /* -------------------------- */
     /* Logger initialisation */
     /* -------------------------- */
@@ -138,7 +139,8 @@ public class Algem
       }
     }
     GemLogger.log(Level.INFO, "net.algem.Algem", "main", msg);
-    
+   
+    final GemBoot gemBoot = new GemBoot();
     String pass = null;
     boolean auth = "true".equalsIgnoreCase(props.getProperty("auth"));
     if (auth || login == null) {//authentification requise
@@ -148,20 +150,18 @@ public class Algem
         pass = dlg.getPass();
       }
     }
-
     /* ------------------------ */
     /* Test login user validity */
     /* ------------------------ */
+    cache.setUser(login);// important !
     checkUser(login, pass, auth);
     
     cache.load(gemBoot);
-
     /* ------------------------------------------------ */
     /* Creates the frame of the application */
     /* ------------------------------------------------ */
     setDesktop();
     gemBoot.close();
-
   }
   
   /**
@@ -328,6 +328,43 @@ public class Algem
     dc.executeUpdate(query);
   }
   
+  private void setUIProperties() {
+    String laf = props.getProperty("lookandfeel");
+    if (laf != null) {
+      try {
+        UIManager.setLookAndFeel(laf);
+        if ("Nimbus".equals(UIManager.getLookAndFeel().getName())) {
+          UIDefaults def = UIManager.getLookAndFeelDefaults();
+          def.put("Button.contentMargins", new InsetsUIResource(4,4,4,4)); //  default : (6,14,6,14)
+          def.put("TextField.contentMargins", new InsetsUIResource(4,4,4,4)); //  default : (6,6,6,6)
+//          def.put("Table.alternateRowColor", new Color(224,224,224));// default :  #f2f2f2 (242,242,242)
+          def.put("TableHeader.font",new Font(Font.SANS_SERIF,Font.PLAIN,11)); // default : Font SansSerif 12
+          def.put("TableHeader:\"TableHeader.renderer\".contentMargins", new InsetsUIResource(2,2,2,2)); // default: (2,5,4,5)
+          def.put("Table.font", new Font(Font.SANS_SERIF,Font.PLAIN,11)); // default : Font SansSerif 12
+          def.put("Table.showGrid",true); // default: false
+          def.put("Table.cellNoFocusBorder", new InsetsUIResource(2,2,2,2)); // Border Insets(2,5,2,5)
+        }
+      } catch (Exception ignore) {
+        GemLogger.log("look&feel exception : " + ignore.getMessage());
+      }
+    }
+
+    String s = props.getProperty("couleur.fond");
+    if (s != null) {
+      frame.setBackground(Color.decode(s));
+    }
+
+    s = props.getProperty("couleur.char");
+    if (s != null) {
+      frame.setForeground(Color.decode(s));
+    }
+    
+    if (!isFeatureEnabled("native_fonts")) {
+        initUIFonts();
+      }
+    ToolTipManager.sharedInstance().setInitialDelay(20);
+  }
+    
   private void initUIFonts() {
     Font fsans = new Font("Lucida Sans", Font.BOLD, 12);
     Font fserif = new Font(Font.SERIF, Font.BOLD + Font.ITALIC, 12);
@@ -404,11 +441,7 @@ public class Algem
 
     try {
       appli = new Algem();
-      if (!isFeatureEnabled("native_fonts")) {
-        appli.initUIFonts();
-      }
-      ToolTipManager.sharedInstance().setInitialDelay(20);
-      appli.init(confArg, hostArg, baseArg, userArg);
+      appli.init(confArg, hostArg, baseArg, userArg);     
     } catch (Exception ex) {
       JOptionPane.showMessageDialog(null,
               ex.getMessage(),

@@ -1,5 +1,5 @@
 /*
- * @(#)GroupFileEditor.java 2.9.4.6 02/06/15
+ * @(#)GroupFileEditor.java 2.9.4.8 23/06/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -46,7 +46,7 @@ import net.algem.util.ui.*;
 /**
  * Group file main editor.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.6
+ * @version 2.9.4.8
  */
 public class GroupFileEditor
         extends GemModule
@@ -160,15 +160,14 @@ public class GroupFileEditor
     btRehearsal.addActionListener(this);
 
     closeToolbar = new GemToolBar(false);
-    //closeToolbar.setAlignmentX(JToolBar.RIGHT_ALIGNMENT);
 
     GemBorderPanel toolbar = new GemBorderPanel();
     toolbar.setLayout(new BoxLayout(toolbar, BoxLayout.X_AXIS));
     toolbar.add(mainToolbar);
-    toolbar.add(Box.createHorizontalGlue());
-    toolbar.add(closeToolbar);
-
-    groupFileTabView.add(toolbar, BorderLayout.NORTH);
+    JPanel right = new JPanel(new BorderLayout());
+    right.add(Box.createHorizontalGlue(), BorderLayout.WEST);
+    right.add(closeToolbar, BorderLayout.EAST);
+    toolbar.add(right);
 
     btSave = closeToolbar.addIcon(
             BundleUtil.getLabel("Contact.save.icon"),
@@ -181,6 +180,8 @@ public class GroupFileEditor
 
     btSave.addActionListener(this);
     btClose.addActionListener(this);
+    
+    groupFileTabView.add(toolbar, BorderLayout.NORTH);
 
     loadPaymentSchedule();
     groupFileTabView.setSelectedTab(0);

@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileTabView.java  2.9.4.2 10/04/15
+ * @(#)PersonFileTabView.java  2.9.4.8 24/06/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes All Rights Reserved.
  *
@@ -21,6 +21,7 @@
 package net.algem.contact;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -28,9 +29,11 @@ import java.awt.event.ItemListener;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Vector;
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
@@ -64,7 +67,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.2
+ * @version 2.9.4.8
  */
 public class PersonFileTabView
         extends FileTabView
@@ -182,8 +185,7 @@ public class PersonFileTabView
           Vector<Telephone> phoneLink = TeleIO.findId(dossier.getMember().getPayer(), DataCache.getDataConnection());
 
           if (addressLink.size() > 0 || phoneLink.size() > 0) {
-            cbTelAdresse = new JCheckBox(MessageUtil.getMessage("payer.link.info", dossier.getMember().getPayer()),
-                    true);
+            cbTelAdresse = new JCheckBox(MessageUtil.getMessage("payer.link.info", dossier.getMember().getPayer()), true);
             cbTelAdresse.addItemListener(this);
             // adherent lié info
             contactFileEditor.setLinkTelAddress(addressLink, phoneLink, cbTelAdresse);
@@ -206,7 +208,7 @@ public class PersonFileTabView
     if (dossier.getRib() != null) {
       addBankTab();
     }
-
+    
     saveBt = closeToolbar.addIcon(BundleUtil.getLabel("Contact.save.icon"),
             GemCommand.SAVE_CMD,
             BundleUtil.getLabel("Save.tip"));
@@ -221,8 +223,10 @@ public class PersonFileTabView
 
     toolbar.setLayout(new BoxLayout(toolbar, BoxLayout.X_AXIS));
     toolbar.add(mainToolbar);
-    toolbar.add(Box.createHorizontalGlue());
-    toolbar.add(closeToolbar);
+    JPanel right = new JPanel(new BorderLayout());
+    right.add(Box.createHorizontalGlue(), BorderLayout.WEST);
+    right.add(closeToolbar, BorderLayout.EAST);
+    toolbar.add(right);
 
     add(toolbar, BorderLayout.NORTH);
     wTab.setSelectedIndex(0);

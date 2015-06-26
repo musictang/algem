@@ -1,5 +1,5 @@
 /*
- * @(#)HoursTeacherByEstabTask.java	2.9.4.6 01/06/15
+ * @(#)HoursTeacherByEstabTask.java	2.9.4.8 25/06/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -46,7 +46,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  * Task executed when editing hours of teachers. Sorting is performed by establisment.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.6
+ * @version 2.9.4.8
  * @since 2.9.1 03/12/14
  */
 class HoursTeacherByEstabTask
@@ -130,11 +130,11 @@ class HoursTeacherByEstabTask
             out.println(" " + this.totalDayLabel + " : " + new Hour(totalDay).toString());
             totalMonth += totalDay;
             totalPeriod += totalDay;
-            out.println(this.totalMonthLabel + " : " + numberFormat.format(totalMonth / 60.0) + " heures");
-            out.println(this.totalPeriodLabel + " : " + numberFormat.format(totalPeriod / 60.0) + " heures");
+            out.print(this.totalMonthLabel + " : " + numberFormat.format(totalMonth / 60.0) + " h; ");
+            out.print(this.totalPeriodLabel + " : " + numberFormat.format(totalPeriod / 60.0) + " h; ");
             if (detail) {
               out.print(BundleUtil.getLabel("Total.label") + " " + types[0] + " : " + numberFormat.format(totalLeisure / 60.0));
-              out.println(" " + BundleUtil.getLabel("Total.label") + " " + types[1] + " : "+ numberFormat.format(totalPro / 60.0));
+              out.println("; " + BundleUtil.getLabel("Total.label") + " " + types[1] + " : "+ numberFormat.format(totalPro / 60.0));
               printTotalEstab(out, totalEstab, totalEstabL, totalEstabP);
 
             }
@@ -253,11 +253,11 @@ class HoursTeacherByEstabTask
       out.println(" total jour : " + new Hour(totalDay).toString());
       totalMonth += totalDay;
       totalPeriod += totalDay;
-      out.println(this.totalMonthLabel + " : " + numberFormat.format(totalMonth / 60.0) + " heures");
-      out.println(this.totalPeriodLabel + " : " + numberFormat.format(totalPeriod / 60.0) + " heures");
+      out.print(this.totalMonthLabel + " : " + numberFormat.format(totalMonth / 60.0) + " h; ");
+      out.print(this.totalPeriodLabel + " : " + numberFormat.format(totalPeriod / 60.0) + " h; ");
       if (detail) {
         out.print(BundleUtil.getLabel("Total.label") + " " + types[0] + " : " + numberFormat.format(totalLeisure / 60.0));
-        out.println(" " + BundleUtil.getLabel("Total.label") + " " + types[1] + " : " + numberFormat.format(totalPro / 60.0));
+        out.println("; " + BundleUtil.getLabel("Total.label") + " " + types[1] + " : " + numberFormat.format(totalPro / 60.0));
         printTotalEstab(out, totalEstab, totalEstabL, totalEstabP);
       }
       out.println();
@@ -272,32 +272,31 @@ class HoursTeacherByEstabTask
       for (Map.Entry<Establishment, Integer> entry : totalEstab.entrySet()) {
         if (entry.getValue() > 0) {
           empty = false;
-          out.print(entry.getKey().getName() + " : " + numberFormat.format(entry.getValue() / 60.0) + " ");
+          out.print(entry.getKey().getName() + " : " + numberFormat.format(entry.getValue() / 60.0) + "; ");
         }
       }
       if (!empty) {
-        out.println();
+        out.print("; ");
         empty = true;
       }
 
       for (Map.Entry<Establishment, Integer> entry : totalEstabL.entrySet()) {
         if (entry.getValue() > 0) {
           empty = false;
-          out.print(entry.getKey().getName() + " " + types[0] + " : " + numberFormat.format(entry.getValue() / 60.0) + " ");
+          out.print(entry.getKey().getName() + " " + types[0] + " : " + numberFormat.format(entry.getValue() / 60.0) + "; ");
         }
       }
       if (!empty) {
-        out.println();
+        out.print("; ");
         empty = true;
       }
       for (Map.Entry<Establishment, Integer> entry : totalEstabP.entrySet()) {
         if (entry.getValue() > 0) {
           empty = false;
-          out.print(entry.getKey().getName() + " " + types[1] + " : " + numberFormat.format(entry.getValue() / 60.0) + " ");
+          out.print(entry.getKey().getName() + " " + types[1] + " : " + numberFormat.format(entry.getValue() / 60.0) + "; ");
         }
       }
       if (!empty) {
-        out.println();
         empty = true;
       }
   }

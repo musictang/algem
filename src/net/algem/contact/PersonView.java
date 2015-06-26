@@ -1,5 +1,5 @@
 /*
- * @(#)PersonView.java	2.9.4.6 03/06/15
+ * @(#)PersonView.java	2.9.4.8 24/06/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -21,6 +21,7 @@
 package net.algem.contact;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -49,10 +50,10 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.6
+ * @version 2.9.4.8
  */
 public class PersonView
-        extends GemBorderPanel
+        extends GemPanel
 {
 
   private GemNumericField no;
@@ -81,12 +82,18 @@ public class PersonView
     no = new GemNumericField(6);
     no.setEditable(false);
     no.setBackground(Color.lightGray);
-    organization = new GemField(true, 20);
-    name = new GemField(true, 20);
-    firstname = new GemField(true, 20);
-    nickname = new GemField(true, 20);
-    civil = new CivilChoice();
+    no.setMinimumSize(new Dimension(60, no.getPreferredSize().height));
     
+    organization = new GemField(true, 20);
+    organization.setMinimumSize(new Dimension(200, organization.getPreferredSize().height));
+    
+    name = new GemField(true, 20);
+    name.setMinimumSize(organization.getMinimumSize());
+    firstname = new GemField(true, 20);
+    firstname.setMinimumSize(organization.getMinimumSize());
+    nickname = new GemField(true, 20);
+    nickname.setMinimumSize(organization.getMinimumSize());
+    civil = new CivilChoice();
     
     cbImgRights = new JCheckBox(BundleUtil.getLabel("Person.img.rights.label"));
     cbImgRights.setToolTipText(BundleUtil.getLabel("Person.img.rights.tip"));
@@ -94,16 +101,18 @@ public class PersonView
     cbPartner = new JCheckBox(BundleUtil.getLabel("Partner.info.label"));
     cbPartner.setToolTipText(BundleUtil.getLabel("Partner.info.tip"));
     cbPartner.setBorder(null);
-    
+    GemPanel cardPanel = new GemPanel();
     cardLabel = new GemLabel();
     cardInfo = new GemLabel();
+    cardPanel.add(cardLabel);
+    cardPanel.add(cardInfo);
 
     this.setLayout(new GridBagLayout());
     gb = new GridBagHelper(this);
     GemBorderPanel photoPanel = new GemBorderPanel(BorderFactory.createEmptyBorder(0, 10, 0, 10));
     photoField = new JLabel();
     photoPanel.add(photoField);
-//    photoField.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+
     gb.insets = GridBagHelper.SMALL_INSETS;
     gb.add(photoPanel, 0, 0, 1, 6, GridBagHelper.NORTHWEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Number.label")), 1, 0, 1, 1, GridBagHelper.WEST);
@@ -113,16 +122,15 @@ public class PersonView
     gb.add(new GemLabel(BundleUtil.getLabel("Nickname.label")), 1, 4, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Person.civility.label")), 1, 5, 1, 1, GridBagHelper.WEST);
 
-    gb.add(no, 2, 0, 2, 1, GridBagHelper.WEST);
-    gb.add(organization, 2, 1, 2, 1, GridBagHelper.WEST);
-    gb.add(name, 2, 2, 2, 1, GridBagHelper.WEST);
-    gb.add(firstname, 2, 3, 2, 1, GridBagHelper.WEST);
-    gb.add(nickname, 2, 4, 2, 1, GridBagHelper.WEST);
-    gb.add(civil, 2, 5, 2, 1, GridBagHelper.WEST);
+    gb.add(no, 2, 0, 1, 1, GridBagHelper.WEST);
+    gb.add(organization, 2, 1, 1, 1, GridBagHelper.WEST);
+    gb.add(name, 2, 2, 1, 1, GridBagHelper.WEST);
+    gb.add(firstname, 2, 3, 1, 1, GridBagHelper.WEST);
+    gb.add(nickname, 2, 4, 1, 1, GridBagHelper.WEST);
+    gb.add(civil, 2, 5, 1, 1, GridBagHelper.WEST);
     gb.add(cbImgRights, 2, 6, 1, 1, GridBagHelper.WEST);
     gb.add(cbPartner, 2, 7, 1, 1, GridBagHelper.WEST);
-    gb.add(cardLabel, 2, 8, 1, 1, GridBagHelper.WEST);
-    gb.add(cardInfo, 3, 8, 1, 1, GridBagHelper.WEST);
+    gb.add(cardPanel, 2, 8, 1, 1, GridBagHelper.WEST);
   }
 
   void set(Person p, String dir) {
@@ -146,35 +154,6 @@ public class PersonView
     ptype = p.getType();
     
   }
-
-  /*private ImageIcon setPhoto(URL url) {
-    ImageIcon icon = null;
-    try {
-      //InputStream is = getClass().getResourceAsStream(url.getPath());
-      //BufferedImage bi1 = ImageIO.read(is);
-      BufferedImage bi1 = ImageIO.read(url);
-      //if (ImageUtil.PHOTO_ID_WIDTH != bi1.getWidth() || ImageUtil.PHOTO_ID_HEIGHT != bi1.getHeight()) {
-      if (bi1.getHeight() > ImageUtil.PHOTO_ID_HEIGHT && !isRunningJavaWebStart()) {
-        //System.out.println("rescaling !");
-        BufferedImage bi2 = ImageUtil.rescale(bi1);
-        BufferedImage bi3 = ImageUtil.formatPhoto(bi2);
-
-        String dest = url.getFile();
-        File oldFile = new File(dest);
-        int index = dest.lastIndexOf(".");
-        dest = dest.substring(0, index);
-        oldFile.renameTo(new File(dest + "_" + System.currentTimeMillis() + ".jpg"));
-        File newFile = new File(url.getPath());
-        ImageIO.write(bi3, "jpg", newFile);
-      }
-      icon = new ImageIcon(url);
-
-    } catch (Exception e) {
-      GemLogger.logException(e);
-    }
-    return icon;
-
-  }*/
   
   /**
    * Gets an image icon with photo id of the current contact.
@@ -209,39 +188,6 @@ public class PersonView
     return icon;
 
   }
-  
-  /*private URL getPhotoURL(int idper, String dir) {
-    URL url = null;
-//    if (dir.endsWith("/") || dir.endsWith("\\")) {
-//      dir = dir.substring(0, dir.length() -1);
-//    }
-    String suffix = FileUtil.FILE_SEPARATOR + idper + ".jpg";
-    
-
-    File dirp = new File(dir);
-    File[] files = null;
-    if (dirp.isDirectory() && dirp.canRead()) {
-     files = dirp.listFiles(photoFilter);
-    }
-    if (files != null && files.length > 0) {
-      try {
-        url = files[0].toURI().toURL();
-      } catch (MalformedURLException ex) {
-        GemLogger.logException(ex);
-      }
-    } else { // default resource path
-      File defaultDir = new File(ImageUtil.PHOTO_PATH);
-      files = defaultDir.listFiles(photoFilter);
-      try {
-        url = files[0].toURI().toURL();
-      } catch (MalformedURLException ex) {
-        GemLogger.logException(ex);
-      }
-//      String path = ImageUtil.PHOTO_PATH + suffix;
-//      url = getClass().getResource(path);
-    }
-    return url;
-  }*/
   
   /**
    * Gets the photo of the person {@code idper} from {@code configDir}.
@@ -282,7 +228,6 @@ public class PersonView
       cardLabel.setText(BundleUtil.getLabel("Subscription.remaining.label") + " : ");
       cardInfo.setText(card.displayRestTime());
     }
-
   }
 
   public Person get() {
@@ -300,7 +245,7 @@ public class PersonView
     pr.setImgRights(cbImgRights.isSelected());
     pr.setPartnerInfo(cbPartner.isSelected());
     pr.setOrganization(organization.getText().isEmpty() ? null : organization.getText().trim());
-    //pr.setNote(note);
+    
     return pr;
   }
 
@@ -327,7 +272,6 @@ public class PersonView
     cbImgRights.setSelected(false);
     cbPartner.setSelected(false);
     photoField.setText("");
-    //note=0;
   }
 
   public void filter(int f) {

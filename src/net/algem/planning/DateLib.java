@@ -1,7 +1,7 @@
 /*
- * @(#)DateLib.java	2.6.a 21/09/12
+ * @(#)DateLib.java	2.9.4.8 23/06/15
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,7 +27,7 @@ import java.util.Date;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.6.a
+ * @version 2.9.4.8
  */
 public class DateLib
 {
@@ -38,7 +38,7 @@ public class DateLib
   final public static long MinuteMillis = 60000L;
 
   public static int daysInMonth(Calendar d) {
-    return daysInMonth(d.get(Calendar.MONTH) + 1, d.get(Calendar.YEAR));
+    return daysInMonth(d.get(Calendar.MONTH), d.get(Calendar.YEAR));
   }
 
   public static int daysInMonth(Date d) {
@@ -47,17 +47,28 @@ public class DateLib
     return daysInMonth(cal);
   }
 
-  public static int daysInMonth(int mn, int ye) {
-    int mof = 0;
-    if ((mn < 1) || (mn > 12)) {
+  /**
+   * Gets the number of days of the month {@code m} in year {@code y}.
+   * @param m month
+   * @param y year
+   * @return a number of days
+   */
+  public static int daysInMonth(int m, int y) {
+    int extra = 0;
+    if ((m < 0) || (m > 11)) {
       return 0;
     }
-    if ((mn == 2) && (isLeapYear(ye))) {
-      mof = 1;
+    if ((m == 1) && (isLeapYear(y))) {
+      extra = 1;
     }
-    return MonthLen[mn - 1] + mof;
+    return MonthLen[m] + extra;
   }
 
+  /**
+   * Indicates if the {@code year} is leap.
+   * @param year
+   * @return true if leap
+   */
   public static boolean isLeapYear(int year) {
     if (year % 400 == 0) {
       return true;

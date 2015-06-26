@@ -1,5 +1,5 @@
 /*
- * @(#)PersonScheduleComparator.java	2.9.4.0 06/04/2015
+ * @(#)PersonScheduleComparator.java	2.9.4.8 24/06/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -29,7 +29,7 @@ import net.algem.planning.ScheduleRangeObject;
  * Usually, 2 persons are compared by their firstnames.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.0
+ * @version 2.9.4.8
  * @since 2.8.a 11/04/13
  */
 public class PersonScheduleComparator
@@ -54,7 +54,7 @@ public class PersonScheduleComparator
     if (p1 == null) {
       return p2 == null ? 0 : -1;
     } else {
-      return p2 == null ? 1 : ('n' == sort ? p1.getName().compareTo(p2.getName()) : p1.compareTo(p2));
+      return p2 == null ? 1 : ('n' == sort ? p1.getNameFirstname().compareToIgnoreCase(p2.getNameFirstname()) : p1.compareTo(p2));
     }
 
   }

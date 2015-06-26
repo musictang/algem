@@ -1,7 +1,7 @@
 /*
- * @(#)DateBar.java	2.6.a 21/09/12
+ * @(#)DateBar.java	2.9.4.8 18/06/15
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,6 +21,7 @@
 package net.algem.planning;
 
 import java.awt.AWTEventMulticaster;
+import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -37,19 +38,22 @@ import net.algem.util.ui.GemPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.4.8
  */
 public class DateBar
         extends GemPanel
         implements ActionListener
 {
 
+    /** Color of selected button in bar (day or month). */
+  static final Color CALENDAR_BAR_SELECTED = Color.decode("#68d095");
   private String[] monthLabels;
   private GemButton[] monthButtons;
   private GemButton btBefore;
   private GemButton btAfter;
   private Calendar cal;
   private ActionListener actionListener;
+  private GemButton monthSelected;
 
   public DateBar(Date d) {
     cal = Calendar.getInstance(Locale.FRANCE);
@@ -86,6 +90,7 @@ public class DateBar
 
   public void setDate(Date d) {
     cal.setTime(d);
+    colorSelected(cal.get(Calendar.MONTH));
   }
 
   public void removeActionListener(ActionListener l) {
@@ -114,5 +119,17 @@ public class DateBar
     if (actionListener != null) {
       actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "date"));
     }
+  }
+  
+  private void colorSelected(int idx) {
+    if (monthSelected != null) {
+      monthSelected.setBackground(null);
+      monthSelected.setContentAreaFilled(true);
+      monthSelected.setOpaque(false);
+    }
+    monthSelected = monthButtons[idx];
+    monthSelected.setContentAreaFilled(false);
+    monthSelected.setOpaque(true);
+    monthSelected.setBackground(CALENDAR_BAR_SELECTED);
   }
 }

@@ -1,5 +1,5 @@
 /*
- * @(#)ContactFileEditor.java	2.9.4.6 03/06/15
+ * @(#)ContactFileEditor.java	2.9.4.8 24/06/15
  * 
  * Copyright (c) 1998-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,8 +20,10 @@
  */
 package net.algem.contact;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.List;
@@ -42,7 +44,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.6
+ * @version 2.9.4.8
  * @since 1.0a 09/07/2002
  */
 public class ContactFileEditor
@@ -57,7 +59,6 @@ public class ContactFileEditor
   private boolean linkTelAddress;
   private JCheckBox cbTelAddress;
   private GridBagHelper gb;
-
   private GemPanel infosView;
   private EmailView emailView;
   private WebSiteView websiteView;
@@ -68,36 +69,40 @@ public class ContactFileEditor
     note = new GemLabel();
     note.setForeground(java.awt.Color.red);
     personView = new PersonView();
-    infosView = new GemBorderPanel();
-    //vueTele = new TeleViewOld(dc);
+    infosView = new GemPanel();
+    
+    infosView.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.lightGray));
     teleView = new TelView(ParamTableIO.find(Category.TELEPHONE.getTable(), Category.TELEPHONE.getCol(), dc));
+    
     emailView = new EmailView();
-
     websiteView = new WebSiteView(ParamTableIO.find(Category.SITEWEB.getTable(), Category.SITEWEB.getCol(), dc));
 
     infosView.setLayout(new BoxLayout(infosView, BoxLayout.Y_AXIS));
     infosView.add(teleView);
     infosView.add(emailView);
     infosView.add(websiteView);
-
+    
     JScrollPane scp = new JScrollPane(infosView);
     scp.setBorder(null);
-
+    scp.setPreferredSize(new Dimension(400, scp.getPreferredSize().height));
+    
     GemPanel addressPanel = new GemPanel();
     addressPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
     addressView = new AddressView();
     addressView.setBorder(null);
-    addressPanel.add(addressView);
+    addressPanel.add(addressView, BorderLayout.SOUTH);
 
     this.setLayout(new GridBagLayout());
     gb = new GridBagHelper(this);
-    GemPanel gp = new GemPanel(new GridLayout(1,1));
-    gp.add(personView);
-    gp.add(scp);
-    gb.add(gp, 1, 0, 1, 1, GridBagHelper.BOTH, 1.0, 1.0);
-    gb.add(new JLabel(" "), 0, 2, 1, 1, GridBagHelper.WEST);
-    gb.add(addressPanel, 0, 3, 2, 1, GridBagHelper.BOTH, GridBagHelper.WEST);
-    gb.add(note, 0, 4, 2, 1, GridBagHelper.WEST);
+//    GemPanel gp = new GemPanel(new GridLayout(1,1));
+    GemBorderPanel gp = new GemBorderPanel(new BorderLayout());
+
+    gp.add(personView, BorderLayout.WEST);
+    gp.add(scp, BorderLayout.EAST);
+
+    gb.add(gp, 0, 0, 1, 1, GridBagHelper.BOTH, 1.0, 1.0);
+    gb.add(addressPanel, 0, 2, 1, 1, GridBagHelper.BOTH, GridBagHelper.WEST);
+    gb.add(note, 0, 3, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
 
   }
 
@@ -119,7 +124,7 @@ public class ContactFileEditor
     if (cbTelAddress != null) {
       cbTelAddress.removeItemListener(this);
       remove(cbTelAddress);
-      validate();
+      revalidate();
       cbTelAddress = null;
     }
     linkTelAddress = false;
@@ -204,7 +209,7 @@ public class ContactFileEditor
     addressView.getArchive().setEnabled(false);
     teleView.setLien(t);
     teleView.setEditable(false);
-    gb.add(cb, 0, 2, 2, 1, GridBagHelper.CENTER);
+    gb.add(cb, 0, 1, 1, 1, GridBagHelper.WEST);
     cbTelAddress = cb;
     linkTelAddress = true;
     revalidate();

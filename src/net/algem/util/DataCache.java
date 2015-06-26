@@ -1,5 +1,5 @@
 /*
- * @(#)DataCache.java	2.9.4.0 06/04/15
+ * @(#)DataCache.java	2.9.4.8 25/06/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -70,7 +70,7 @@ import net.algem.util.model.Model;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.0
+ * @version 2.9.4.8
  * @since 1.0b 03/09/2001
  */
 public class DataCache
@@ -194,12 +194,16 @@ public class DataCache
     loadDayRangeStmt = dc.prepareStatement(ScheduleRangeIO.getDayRangeStmt());
 
     userService = new DefaultUserService(this);
-    user = ((DefaultUserService) userService).find(login);
+//    user = ((DefaultUserService) userService).find(login);
 
     monthSchedule = new MonthSchedule();
     daySchedule = new DaySchedule();
 
     atelierInstrumentsService = new AtelierInstrumentsServiceImpl(dc, new AtelierInstrumentsDAO(dc), PERSON_IO);
+  }
+  
+  public void setUser(String login) {
+    user = ((DefaultUserService) userService).find(login);
   }
 
   /**

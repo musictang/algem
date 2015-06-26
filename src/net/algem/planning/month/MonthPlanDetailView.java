@@ -1,5 +1,5 @@
 /*
- * @(#)MonthPlanDetailView.java	2.9.4.0 31/03/2015
+ * @(#)MonthPlanDetailView.java	2.9.4.8 18/06/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -49,7 +49,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.0
+ * @version 2.9.4.8
  */
 public abstract class MonthPlanDetailView
         extends GemPanel
@@ -81,6 +81,7 @@ public abstract class MonthPlanDetailView
 
     dateLabel = new GemField(24);
     dateLabel.setEditable(false);
+    dateLabel.setFont(dateLabel.getFont().deriveFont(Font.BOLD));
 
     cal.setTime(new Date());
 
@@ -127,18 +128,9 @@ public abstract class MonthPlanDetailView
 
     Vector<? extends ScheduleObject> v = (Vector<? extends ScheduleObject>) evt.getNewValue();
     //System.out.println("MonthPlanDetailView.propertyChange: "+evt.getPropertyName()+"  v.size:"+v.size());
-
     if ("planning".equals(evt.getPropertyName())) {
       schedules = (Vector<ScheduleObject>) v;
-      //plages = new Vector();
       cal.setTime(((MonthSchedule) evt.getSource()).getStart());
-      /*
-      if (plannings.size() > 0)
-      {
-      ScheduleObject p = (ScheduleObject)v.elementAt(0);
-      cal.setTime(p.getJour().getDate());
-      }
-       */
       load();
     } else if ("plage".equals(evt.getPropertyName())) {
       ranges = (Vector<ScheduleRangeObject>) v;
@@ -151,16 +143,16 @@ public abstract class MonthPlanDetailView
     load(cal.getTime(), schedules, ranges);
   }
 
-  public void load(Date date, Vector<ScheduleObject> _plannings, Vector<ScheduleRangeObject> _plages) {
+  public void load(Date date, Vector<ScheduleObject> _schedules, Vector<ScheduleRangeObject> _ranges) {
     //System.out.println("MonthPlanDetailView.load: PL:"+_plannings.size()+" PG:"+plages.size());
     cal.setTime(date);
-    int an = cal.get(Calendar.YEAR);
-    int mois = cal.get(Calendar.MONTH) + 1;
+    int year = cal.get(Calendar.YEAR);
+    int month = cal.get(Calendar.MONTH);
 
-    dateLabel.setText(monthNames[mois - 1] + " " + an);
+    dateLabel.setText(monthNames[month] + " " + year);
     dateBar.setDate(date);
-    this.schedules = _plannings;
-    this.ranges = _plages;
+    this.schedules = _schedules;
+    this.ranges = _ranges;
 
     EventQueue.invokeLater(new Runnable()
     {

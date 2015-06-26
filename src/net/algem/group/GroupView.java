@@ -1,5 +1,5 @@
 /*
- * @(#)GroupView.java	2.9.4.2 10/04/15
+ * @(#)GroupView.java	2.9.4.8 23/06/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -47,7 +47,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.2
+ * @version 2.9.4.8
  * @since 1.1aa mardi 24 février 2009
  *
  */
@@ -115,7 +115,9 @@ public class GroupView
     
     resetIcon = ImageUtil.createImageIcon(ImageUtil.DELETE_ICON);
     noteLabel = new GemLabel();
+    
     noteLabel.setForeground(java.awt.Color.red);
+    noteLabel.setFont(noteLabel.getFont().deriveFont(Font.BOLD));
 
     cbStyle = new GemParamChoice(desktop.getDataCache().getList(Model.MusicStyle));
     cbStyle.setBackground(Color.WHITE);
@@ -167,7 +169,9 @@ public class GroupView
     
     this.setLayout(new BorderLayout());
     add(contactPanel, BorderLayout.CENTER);
-    add(noteLabel, BorderLayout.SOUTH);
+    GemBorderPanel labelBox = new GemBorderPanel(new FlowLayout(FlowLayout.LEFT));
+    labelBox.add(noteLabel);
+    add(labelBox, BorderLayout.SOUTH);
   }
 
   void setId(int i) {

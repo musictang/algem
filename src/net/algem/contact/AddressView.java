@@ -1,7 +1,7 @@
 /*
- * @(#)AddressView.java	2.8.k 23/07/13
+ * @(#)AddressView.java	2.9.4.8 24/06/15
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -39,7 +39,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.k
+ * @version 2.9.4.8
  * @since 1.0a 07/07/1999
  */
 public class AddressView
@@ -60,11 +60,11 @@ public class AddressView
   /**
    *
    * @param b border style
-   * @param ar with archive
+   * @param archive with archive
    */
-  public AddressView(Border b, boolean ar) {
+  public AddressView(Border b, boolean archive) {
     super(b);
-    init(ar);
+    init(archive);
   }
 
   public void setCodePostalCtrl(CodePostalCtrl ctrl) {

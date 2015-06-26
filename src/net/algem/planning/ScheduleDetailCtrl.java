@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleDetailCtrl.java 2.9.4.6 02/06/15
+ * @(#)ScheduleDetailCtrl.java 2.9.4.8 24/06/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -59,7 +59,6 @@ import net.algem.util.model.Model;
 import net.algem.util.module.DefaultGemView;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.module.GemDesktopCtrl;
-import net.algem.util.module.GemModule;
 import net.algem.util.ui.*;
 
 /**
@@ -67,7 +66,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.6
+ * @version 2.9.4.8
  * @since 1.0a 07/07/1999
  */
 public class ScheduleDetailCtrl
@@ -75,6 +74,7 @@ public class ScheduleDetailCtrl
 {
 
   private static PersonScheduleComparator psComparator = new PersonScheduleComparator(ConfigUtil.getConf(ConfigKey.PERSON_SORT_ORDER.getKey()));
+  private static boolean nameFirst = ConfigUtil.getConf(ConfigKey.PERSON_SORT_ORDER.getKey()).equals("n");
   private static PersonComparator personComparator = new PersonComparator();
   private static MailUtil MAIL_UTIL;
 
@@ -240,7 +240,7 @@ public class ScheduleDetailCtrl
     }
     if (collective) {
       Collections.sort(v, psComparator);
-    }
+    }    
     StringBuffer buf = new StringBuffer();
     for (int i = 0; i < v.size(); i++) {
       ScheduleRangeObject pl = v.elementAt(i);
@@ -271,7 +271,7 @@ public class ScheduleDetailCtrl
           listPanel.add(new GemMenuButton(buf.toString(), this, "BreakLink", pl));
         } else {
           if (collective) {
-            buf = new StringBuffer(per.getFirstnameName());
+            buf = new StringBuffer(nameFirst ?  per.getNameFirstname() : per.getFirstnameName());
             Member m = null;
             try {
               m = memberService.findMember(per.getId());
@@ -286,7 +286,7 @@ public class ScheduleDetailCtrl
             }
 
           } else {
-            buf.append(" ").append(per.getFirstnameName());
+            buf.append(" ").append(nameFirst ?  per.getNameFirstname() : per.getFirstnameName());
           }
           listPanel.add(new GemMenuButton(buf.toString(), this, "MemberLink", pl));
         }
@@ -388,7 +388,7 @@ public class ScheduleDetailCtrl
     for (int i = 0; v != null && i < v.size(); i++) {
       ScheduleRangeObject pg = v.elementAt(i);
       Person per = pg.getMember();
-      buf = new StringBuffer(per.getFirstnameName());
+      buf = new StringBuffer(nameFirst ? per.getNameFirstname() : per.getFirstnameName());
       Member m = null;
       try {
         m = memberService.findMember(per.getId());

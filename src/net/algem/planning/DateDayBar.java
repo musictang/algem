@@ -27,6 +27,12 @@ import java.text.DateFormatSymbols;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import javax.swing.JButton;
+import javax.swing.SwingConstants;
+import javax.swing.UIDefaults;
+import javax.swing.UIManager;
+import javax.swing.plaf.InsetsUIResource;
+import net.algem.util.ImageUtil;
 import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GemPanel;
 
@@ -43,23 +49,18 @@ public class DateDayBar
         implements ActionListener
 {
 
+  private static final String dowLabelColor = "#4c4c4c";
   private String[] monthLabels;
-  private GemButton[] dayButtons;
+  private JButton[] dayButtons;
   private GemButton[] monthButtons;
   private GemButton btPrevYear;
   private GemButton btNextYear;
   private Calendar cal;
   private ActionListener actionListener;
-  private GemButton daySelected;
+  private JButton daySelected;
   private GemButton monthSelected;
   private int currentMonth;
   private int currentDay;
-
-  /** Color of selected button in bar (day or month). */
-  private static final Color selectedColor = Color.decode("#68d095");
-  //  private static final Color selectionColor = new Color(255, 225, 255);
-          
-  private static final String dowLabelColor = "#4c4c4c";
 
   public DateDayBar() {
     this(new Date());
@@ -76,20 +77,16 @@ public class DateDayBar
     dayPanel.setLayout(gl);
 
     /** The 31 days. */
-    dayButtons = new GemButton[31];
+    dayButtons = new JButton[31];
     int maxDaysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+
     for (int i = 0; i < 31; i++) {
-      /* ajout 2.0j jean-marc initiales des jours */
       cal.set(Calendar.DAY_OF_MONTH, i + 1);
-      dayButtons[i] = new GemButton("<html><center><font color=" + dowLabelColor + ">" + cal.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.FRANCE) + "</font><br />" + String.valueOf(i + 1) + "</center></html>");
+//      dayButtons[i] = new JButton("<html><font color=" + dowLabelColor + ">" + cal.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.FRANCE) + "</font><br />" + String.valueOf(i + 1) + "</html>");
+      dayButtons[i] = new JButton(cal.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.FRANCE));
       /* */
       dayButtons[i].setFont(new Font("Helvetica", Font.PLAIN, 10));
-
-      /*bjours[i].setContentAreaFilled(false);// nimbus workaround
-      bjours[i].setBorder(BorderFactory.createLineBorder(Color.GRAY));
-      //bjours[i].setBorder(null);*/
-
-      dayButtons[i].setMargin(new Insets(0, 1, 0, 1));
+      dayButtons[i].setMargin(new Insets(0, 0, 0, 0));
       dayPanel.add(dayButtons[i]);
       dayButtons[i].addActionListener(this);
     }
@@ -164,21 +161,25 @@ public class DateDayBar
       setDayLabel();
       cal.set(Calendar.DAY_OF_MONTH, 1);
       colorSelected(0,0);
-    } else if (c instanceof GemButton) {
+    } else if (c instanceof JButton) {
+        boolean isMonth = false;
         for (int i = 0; i < 12; i++) {
           if (c == monthButtons[i]) {
             cal.set(cal.get(Calendar.YEAR), i, 1); // le premier jour du mois
             setDayLabel();
             cal.set(cal.get(Calendar.YEAR), i, 1); // on réinitialise au premier jour du mois
             colorSelected(0,i);
+            isMonth = true;
             break;
           }
         }
         // recherche du jour sélectionné
-        for (int i = 0; i < 31; i++) {
-          if (c == dayButtons[i]) {
-            setSelected(i);
-            break;
+        if (!isMonth) {
+          for (int i = 0; i < 31; i++) {
+            if (c == dayButtons[i]) {
+              setSelected(i);
+              break;
+            }
           }
         }
     }
@@ -232,12 +233,12 @@ public class DateDayBar
     daySelected.setContentAreaFilled(false);
     daySelected.setOpaque(true);
     //
-    daySelected.setBackground(selectedColor);
+    daySelected.setBackground(DateBar.CALENDAR_BAR_SELECTED);
     
     monthSelected = monthButtons[m];
     monthSelected.setContentAreaFilled(false);
     monthSelected.setOpaque(true);
-    monthSelected.setBackground(selectedColor);
+    monthSelected.setBackground(DateBar.CALENDAR_BAR_SELECTED);
   }
   
   /**

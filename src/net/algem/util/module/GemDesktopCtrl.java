@@ -1,5 +1,5 @@
 /*
- * @(#)GemDesktopCtrl.java	2.9.4.6 02/06/15
+ * @(#)GemDesktopCtrl.java	2.9.4.8 23/06/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -66,7 +66,7 @@ import net.algem.util.ui.HtmlViewer;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.6
+ * @version 2.9.4.8
  * @since 1.0a 05/07/2002
  */
 public class GemDesktopCtrl
@@ -114,11 +114,11 @@ public class GemDesktopCtrl
     modules = new Hashtable<String, GemModule>();
     menus = new Hashtable<String, JMenuItem>();
     
-    try {
-      setUIProperties();
-    } catch(Exception e) {
-      GemLogger.logException(e);
-    }
+//    try {
+//      setUIProperties();
+//    } catch(Exception e) {
+//      GemLogger.logException(e);
+//    }
   
     mbar = createMenuBar();
     
@@ -162,27 +162,6 @@ public class GemDesktopCtrl
       dispatcher = null;
     }
   } // end constructor
-  
-  private void setUIProperties() {
-    String lkf = props.getProperty("lookandfeel");
-    if (lkf != null) {
-      try {
-        UIManager.setLookAndFeel(lkf);
-      } catch (Exception ignore) {
-        GemLogger.log("look&feel exception : " + ignore.getMessage());
-      }
-    }
-
-    String s = props.getProperty("couleur.fond");
-    if (s != null) {
-      frame.setBackground(Color.decode(s));
-    }
-
-    s = props.getProperty("couleur.char");
-    if (s != null) {
-      frame.setForeground(Color.decode(s));
-    }
-  }
   
   /**
    * Loads serialized modules.

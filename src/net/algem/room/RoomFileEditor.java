@@ -1,5 +1,5 @@
 /*
- * @(#)RoomFileEditor.java 2.9.4.6 02/06/15
+ * @(#)RoomFileEditor.java 2.9.4.8 23/06/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -45,7 +45,7 @@ import net.algem.util.ui.*;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.6
+ * @version 2.9.4.8
  * @since 2.1.b
  */
 public class RoomFileEditor
@@ -136,14 +136,25 @@ public class RoomFileEditor
             BundleUtil.getLabel("Member.schedule.payment.tip"));
     btNote.addActionListener(this);
     btOrderLine.addActionListener(this);
+    btPayer = mainToolbar.addIcon(
+            BundleUtil.getLabel("Member.payer.icon"),
+            "PayerLink",
+            BundleUtil.getLabel("Member.payer.tip"));
+    btPayer.addActionListener(this);
+    if (hasOtherPayer()) {
+      addPayerFile(room.getPayer().getId());
+    } else {
+      btPayer.setEnabled(false);
+    }
 
     closeToolbar = new GemToolBar(false);
-    //closeToolbar.setAlignmentX(JToolBar.RIGHT_ALIGNMENT);
     GemBorderPanel toolbar = new GemBorderPanel();
     toolbar.setLayout(new BoxLayout(toolbar, BoxLayout.X_AXIS));
     toolbar.add(mainToolbar);
-    toolbar.add(Box.createHorizontalGlue());
-    toolbar.add(closeToolbar);
+    JPanel right = new JPanel(new BorderLayout());
+    right.add(Box.createHorizontalGlue(), BorderLayout.WEST);
+    right.add(closeToolbar, BorderLayout.EAST);
+    toolbar.add(right);
 
     btSave = closeToolbar.addIcon(
             BundleUtil.getLabel("Contact.save.icon"),
@@ -156,17 +167,6 @@ public class RoomFileEditor
 
     btSave.addActionListener(this);
     btClose.addActionListener(this);
-
-    btPayer = mainToolbar.addIcon(
-            BundleUtil.getLabel("Member.payer.icon"),
-            "PayerLink",
-            BundleUtil.getLabel("Member.payer.tip"));
-    btPayer.addActionListener(this);
-    if (hasOtherPayer()) {
-      addPayerFile(room.getPayer().getId());
-    } else {
-      btPayer.setEnabled(false);
-    }
 
     roomView.add(toolbar, BorderLayout.NORTH);
 

@@ -1,5 +1,5 @@
 /*
- * @(#)PlanningService.java	2.9.4.3 21/04/15
+ * @(#)PlanningService.java	2.9.4.8 22/06/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -40,7 +40,7 @@ import net.algem.util.ui.MessagePopup;
  * Service class for planning.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.3
+ * @version 2.9.4.8
  * @since 2.4.a 07/05/12
  */
 public class PlanningService
@@ -103,7 +103,7 @@ public class PlanningService
         case MONTH:
           start.add(Calendar.MONTH, 1);
           start.set(Calendar.DAY_OF_WEEK_IN_MONTH, dwm);
-          while (start.get(Calendar.DAY_OF_WEEK) != a.getDay() + 1) {
+          while (start.get(Calendar.DAY_OF_WEEK) != a.getDay()) {
             start.add(Calendar.DATE, 1);
           }
           break;

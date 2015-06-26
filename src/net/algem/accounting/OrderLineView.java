@@ -1,7 +1,7 @@
 /*
- * @(#)OrderLineView.java	2.8.w 08/07/14
+ * @(#)OrderLineView.java	2.9.4.8 24/06/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,6 +21,7 @@
 package net.algem.accounting;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -40,7 +41,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.4.8
  * @since 1.0a 18/07/1999
  */
 public class OrderLineView
@@ -63,7 +64,6 @@ public class OrderLineView
   private GemChoice account;
   private ParamChoice costAccount;
   private GemField invoice;
-  //private JComboBox monnaie; // obsolète
   private GemButton okBt;
   private GemButton cancelBt;
   private boolean validation;
@@ -87,12 +87,17 @@ public class OrderLineView
     gb.insets = GridBagHelper.SMALL_INSETS;
 
     payer = new GemNumericField(8);
+    payer.setMinimumSize(new Dimension(60,payer.getPreferredSize().height));
     member = new GemNumericField(8);
+    member.setMinimumSize(new Dimension(60,member.getPreferredSize().height));
     group = new GemNumericField(8);
+    group.setMinimumSize(new Dimension(60,group.getPreferredSize().height));
     date = new DateFrField();
     label = new GemField(24);
+    label.setMinimumSize(new Dimension(200, label.getPreferredSize().height));
     amount = new JFormattedTextField(nf);
     amount.setColumns(8);
+    amount.setMinimumSize(new Dimension(60, amount.getPreferredSize().height));
     DataConnection dc = DataCache.getDataConnection();
     modeOfPayment = new JComboBox(
             ParamTableIO.getValues(
@@ -100,18 +105,19 @@ public class OrderLineView
             ModeOfPaymentCtrl.COLUMN_NAME, dc)
             );
     document = new GemField(10);
+    document.setMinimumSize(new Dimension(80, document.getPreferredSize().height));
     schoolChoice = new ParamChoice(dataCache.getList(Model.School).getData());
     account = new AccountChoice(AccountIO.find(true, dc));
+    account.setPreferredSize(new Dimension(200, account.getPreferredSize().height));
     costAccount = new ParamChoice(
             ActivableParamTableIO.findActive(
             CostAccountCtrl.tableName, CostAccountCtrl.columnName,
             CostAccountCtrl.columnFilter, dc)
             );
-
-    //monnaie = new JComboBox(monnaies);
+    costAccount.setPreferredSize(account.getPreferredSize());
     cbPaid = new JCheckBox();
     invoice = new GemField(10);
-
+    invoice.setPreferredSize(document.getPreferredSize());
     gb.add(new JLabel(BundleUtil.getLabel("Payer.label")), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(new JLabel(BundleUtil.getLabel("Member.label")), 0, 1, 1, 1, GridBagHelper.WEST);
     gb.add(new JLabel(BundleUtil.getLabel("Group.label")), 0, 2, 1, 1, GridBagHelper.WEST);
@@ -125,7 +131,6 @@ public class OrderLineView
     gb.add(new JLabel(BundleUtil.getLabel("Cost.account.label")), 0, 10, 1, 1, GridBagHelper.WEST);
     gb.add(new JLabel(BundleUtil.getLabel("Payment.schedule.cashing.tip")), 0, 11, 1, 1, GridBagHelper.WEST);
     gb.add(new JLabel(BundleUtil.getLabel("Invoice.label")), 0, 12, 1, 1, GridBagHelper.WEST);
-    //gb.add(new JLabel("Monnaie"), 0, 11, 1, 1, GridBagHelper.EAST);
 
     gb.add(payer, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(member, 1, 1, 1, 1, GridBagHelper.WEST);
@@ -140,7 +145,6 @@ public class OrderLineView
     gb.add(costAccount, 1, 10, 1, 1, GridBagHelper.WEST);
     gb.add(cbPaid, 1, 11, 1, 1, GridBagHelper.WEST);
     gb.add(invoice, 1, 12, 1, 1, GridBagHelper.WEST);
-    //gb.add(monnaie, 1, 11, 1, 1, GridBagHelper.WEST); //
 
     okBt = new GemButton(GemCommand.VALIDATION_CMD);
     okBt.addActionListener(this);
@@ -154,7 +158,7 @@ public class OrderLineView
     setLayout(new BorderLayout());
     add(editPanel,BorderLayout.CENTER);
     add(buttons,BorderLayout.SOUTH);
-    setSize(500, 420);
+    setSize(new Dimension(500, 460));
 
     setLocationRelativeTo(frame);
   }
@@ -203,7 +207,6 @@ public class OrderLineView
       costAccount.setEnabled(false);
       cbPaid.setEnabled(false);
       invoice.setEditable(false);
-      //monnaie.setEditable(false);
     }
   }
 
@@ -251,7 +254,6 @@ public class OrderLineView
     costAccount.setSelectedItem(orderLine.getCostAccount());
     cbPaid.setSelected(orderLine.isPaid());
     invoice.setText(orderLine.getInvoice());
-    //monnaie.setSelectedItem(echeancier.getCurrency());
   }
 
   OrderLine getOrderLine() throws ParseException {
@@ -287,7 +289,6 @@ public class OrderLineView
     orderLine.setCostAccount(getCostAccount());
     orderLine.setPaid(cbPaid.isSelected());
     orderLine.setInvoice(invoice.getText());
-    //echeancier.setCurrency((String) monnaie.getSelectedItem());
 
     return orderLine;
   }
@@ -324,7 +325,6 @@ public class OrderLineView
    */
   Account getAccount() {
     return (Account) account.getSelectedItem();
-//    return new Account(p);
   }
 
   Account getCostAccount() {

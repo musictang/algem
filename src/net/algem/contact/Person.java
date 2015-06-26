@@ -1,7 +1,7 @@
 /*
- * @(#)Person.java	2.9.1 12/11/14
+ * @(#)Person.java	2.9.4.8 24/06/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,6 +20,8 @@
  */
 package net.algem.contact;
 
+import net.algem.config.ConfigKey;
+import net.algem.config.ConfigUtil;
 import net.algem.util.model.GemModel;
 
 /**
@@ -30,7 +32,7 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.4.8
  *
  * @since 1.0a 07/07/1999
  */
@@ -43,6 +45,7 @@ public class Person
   public static final short ROOM = 4;
   public static final short ESTABLISHMENT = 5;
   public static final short BANK = 6;
+  protected static boolean nameFirst = ConfigUtil.getConf(ConfigKey.PERSON_SORT_ORDER.getKey()).equalsIgnoreCase("n");
   protected int id;
   protected short type = PERSON;
   protected String name;
@@ -119,7 +122,7 @@ public class Person
 
   @Override
   public String toString() {
-    return type == PERSON ? getFirstnameName() : name;
+    return type == PERSON ? (nameFirst ? getNameFirstname() : getFirstnameName()) : name;
   }
 
   public String getFirstnameName() {

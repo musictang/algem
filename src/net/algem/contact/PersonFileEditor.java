@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileEditor 2.9.4.7 15/06/15
+ * @(#)PersonFileEditor 2.9.4.8 23/06/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -54,6 +54,7 @@ import net.algem.util.jdesktop.DesktopOpenHandler;
 import net.algem.util.menu.PersonFileMenuItem;
 import net.algem.util.model.GemCloseVetoException;
 import net.algem.util.model.Model;
+import net.algem.util.model.TableIO;
 import net.algem.util.module.FileEditor;
 import net.algem.util.module.FileTabView;
 import net.algem.util.module.GemDesktopCtrl;
@@ -64,7 +65,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.7
+ * @version 2.9.4.8
  */
 public class PersonFileEditor
         extends FileEditor
@@ -892,9 +893,9 @@ public class PersonFileEditor
     boolean found = false;
     String where = "";
     if (c.getName() != null && c.getName().length() > 0) {
-      where = " WHERE lower(nom) = '" + c.getName().toLowerCase() + "'";
+      where = " WHERE lower(nom) = E'" + TableIO.escape(c.getName().toLowerCase()) + "'";
       if (c.getFirstName() != null && c.getFirstName().length() > 0) {
-        where +=  " AND lower(prenom) = '" + c.getFirstName().toLowerCase() + "'";
+        where +=  " AND lower(prenom) = E'" + TableIO.escape(c.getFirstName().toLowerCase()) + "'";
       }
       if (ContactIO.findId(where, dc) != null) {
         return true;
@@ -902,7 +903,7 @@ public class PersonFileEditor
     }
 
     if (c.getOrganization() != null && c.getOrganization().length() > 0) {
-      where = " WHERE lower(organisation) = '" + c.getOrganization().toLowerCase() + "'";
+      where = " WHERE lower(organisation) = E'" + TableIO.escape(c.getOrganization().toLowerCase()) + "'";
       found = ContactIO.findId(where, dc) != null;
     }
     return found;

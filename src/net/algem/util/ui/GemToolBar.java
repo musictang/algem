@@ -59,7 +59,7 @@ public class GemToolBar
   public void addIcon(ActionListener l, String file, String label, String tooltip) {
     addIcon(file, label, tooltip).addActionListener(l);
   }
-
+  
   public GemButton addIcon(String file, String label, String tooltip) {
     GemButton bt;
 
@@ -77,7 +77,7 @@ public class GemToolBar
       bt.setToolTipText(tooltip);
     }
     buttons.add(bt);
-    add(bt);
+      add(bt);
     return bt;
   }
 

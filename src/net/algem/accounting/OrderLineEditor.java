@@ -1,7 +1,7 @@
 /*
- * @(#)OrderLineEditor.java	2.8.u 19/05/14
+ * @(#)OrderLineEditor.java	2.9.4.8 24/06/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,6 +21,7 @@
 package net.algem.accounting;
 
 import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
@@ -49,7 +50,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.u
+ * @version 2.9.4.8
  * @since 1.0a 07/07/1999
  */
 public class OrderLineEditor
@@ -80,7 +81,6 @@ public class OrderLineEditor
     super(desktop);
     this.tableModel = tableModel;
     tableView = new OrderLineTableView(tableModel, this);
-
   }
 
   public void init(){
@@ -108,7 +108,7 @@ public class OrderLineEditor
     entete.add(payerName);
 
     GemPanel footer = new GemPanel(new BorderLayout());
-    GemPanel buttons = new GemPanel();
+    GemPanel buttons = new GemPanel(new GridLayout(1,6));
 
     buttons.add(btQuotation);
     buttons.add(btInvoice);

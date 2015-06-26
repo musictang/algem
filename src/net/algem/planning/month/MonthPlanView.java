@@ -62,7 +62,7 @@ public class MonthPlanView
     this.status = status;
     cal = Calendar.getInstance(Locale.FRANCE);
     year = cal.get(Calendar.YEAR);
-    month = cal.get(Calendar.MONTH) + 1;
+    month = cal.get(Calendar.MONTH);
     step_x = 10;
     dayNames = new DateFormatSymbols(Locale.FRANCE).getShortWeekdays();
 
@@ -73,7 +73,7 @@ public class MonthPlanView
   public void load(Date d, Vector<ScheduleObject> pl, Vector<ScheduleRangeObject> pg) {
     cal.setTime(d);
     year = cal.get(Calendar.YEAR);
-    month = cal.get(Calendar.MONTH) + 1;
+    month = cal.get(Calendar.MONTH);
     this.schedules = pl;
     this.ranges = pg;
     clickSchedule = null;
@@ -116,7 +116,7 @@ public class MonthPlanView
   public void drawGrid() {
     int x = RIGHT_MARGIN + 1;
     int y = lineHeight;
-    cal.set(year, month - 1, 1);
+    cal.set(year, month, 1);
     cal.setTime(cal.getTime());
     int dow = cal.get(Calendar.DAY_OF_WEEK);
     int maxd = DateLib.daysInMonth(month, year);
@@ -146,7 +146,7 @@ public class MonthPlanView
     }
 
     bg.drawLine(x - (step_x / 2), 2, x - (step_x / 2), TOP_MARGIN + (step_y * GRID_Y));
-    x = 5;
+    x = 1;
 //    y = TOP_MARGIN + step_y;
     y = TOP_MARGIN + (fm.getHeight() / 2);
     Hour hour = new Hour(H_START);
@@ -366,7 +366,7 @@ public class MonthPlanView
     g.drawString(h.toString(), 1, 25);
 
     clickSchedule = null;
-    cal.set(year, month - 1, jj, hh, mm);
+    cal.set(year, month, jj, hh, mm);
     Hour hc = new Hour(hh, mm);// heure clic
 
     clickSchedule = getSchedule(schedules, jj, hc);

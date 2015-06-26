@@ -1,5 +1,5 @@
 /*
- * @(#)InvoiceView.java 2.9.4.6 01/06/15
+ * @(#)InvoiceView.java 2.9.4.8 23/06/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -21,6 +21,7 @@
 package net.algem.billing;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridBagLayout;
@@ -66,11 +67,11 @@ import net.algem.util.ui.*;
  * Invoice / quotation view.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.6
+ * @version 2.9.4.8
  * @since 2.3.a 07/02/12
  */
 public class InvoiceView
-        extends GemBorderPanel
+        extends GemPanel
         implements ActionListener, GemEventListener, Printable
 {
 
@@ -121,13 +122,19 @@ public class InvoiceView
     gb.insets = GridBagHelper.SMALL_INSETS;
 
     invoiceId = new GemField(6);
+    invoiceId.setMinimumSize(new Dimension(65, invoiceId.getPreferredSize().height));
+    invoiceId.setCaretPosition(0);
     invoiceId.setEditable(false);
 
     invoiceLabel = new GemField(25);
+    invoiceLabel.setMinimumSize(new Dimension(250, invoiceLabel.getPreferredSize().height));
+    
     date = new DateFrField();
     ref = new GemField(15);
+    ref.setMinimumSize(new Dimension(150, ref.getPreferredSize().height));
     estab = new EstabChoice(dataCache.getList(Model.Establishment));
     payerId = new GemNumericField(5);
+    payerId.setMinimumSize(new Dimension(50, payerId.getPreferredSize().height));
     payerId.addActionListener(new ActionListener()
     {
       @Override
@@ -143,8 +150,10 @@ public class InvoiceView
 
     });
     payerName = new GemField(20);
+    payerName.setMinimumSize(new Dimension(200, payerName.getPreferredSize().height));
     payerName.setEditable(false);
     memberName = new GemField(20);
+    memberName.setMinimumSize(new Dimension(200, memberName.getPreferredSize().height));
     memberName.setEditable(false);
 
     nf = AccountUtil.getDefaultCurrencyFormat();
@@ -183,8 +192,10 @@ public class InvoiceView
     gb.add(memberName,5,1,3,1, GridBagHelper.WEST);
     
     issuerId = new GemNumericField(5);
+    issuerId.setMinimumSize(new Dimension(50, issuerId.getPreferredSize().height));
     issuerId.setEditable(false);
     issuerName = new GemField(20);
+    issuerName.setMinimumSize(new Dimension(200, issuerName.getPreferredSize().height));
     issuerName.setEditable(false);
     gb.add(new GemLabel(BundleUtil.getLabel("Issuer.label")),0,2,1,1, GridBagHelper.WEST);
     gb.add(issuerId,1,2,2,1, GridBagHelper.WEST);
@@ -231,6 +242,7 @@ public class InvoiceView
 
   public void setId(String n) {
     invoiceId.setText(n);
+    invoiceId.setCaretPosition(0);
     if (invoice != null) {
       invoice.setNumber(n);
     }
@@ -252,7 +264,9 @@ public class InvoiceView
     
     isInvoice = quote.isInvoice();
     invoiceId.setText(quote.getNumber());
+    invoiceId.setCaretPosition(0);
     invoiceLabel.setText(quote.getDescription());
+    invoiceLabel.setCaretPosition(0);
     date.setText(quote.getDate().toString());
     ref.setText(quote.getReference());
     estab.setKey(quote.getEstablishment());

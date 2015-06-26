@@ -1,7 +1,7 @@
 /*
- * @(#)GroupOrderLineEditor.java	2.8.t 16/05/14
+ * @(#)GroupOrderLineEditor.java	2.9.4.8 23/06/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -22,6 +22,7 @@
 package net.algem.accounting;
 
 import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -43,7 +44,7 @@ import net.algem.util.ui.GemPanel;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.9.4.8
  * @since 2.7.k 01/03/2013
  */
 public class GroupOrderLineEditor
@@ -100,7 +101,7 @@ public class GroupOrderLineEditor
     header.add(btDateRange);
 
     GemPanel footer = new GemPanel(new BorderLayout());
-    GemPanel buttons = new GemPanel();
+    GemPanel buttons = new GemPanel(new GridLayout(1,5));
 
     buttons.add(btUnpaidFilter);
     buttons.add(btMembershipFilter);

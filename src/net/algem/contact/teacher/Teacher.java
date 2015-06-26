@@ -1,7 +1,7 @@
 /*
- * @(#)Teacher.java	2.8.m 06/09/13
+ * @(#)Teacher.java	2.9.4.8 24/06/15
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,7 +28,7 @@ import net.algem.contact.Person;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.m
+ * @version 2.9.4.8
  */
 public class Teacher
   extends Person
@@ -42,11 +42,6 @@ public class Teacher
 
   public Teacher(int _id) {
     id = _id;
-  }
-
-  @Override
-  public String toString() {
-    return firstName + " " + name;
   }
 
   @Override
