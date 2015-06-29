@@ -1,5 +1,5 @@
 /*
- * @(#)Algem.java	2.9.4.8 25/06/15
+ * @(#)Algem.java	2.9.4.9 26/06/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -39,6 +39,7 @@ import javax.swing.*;
 import javax.swing.plaf.InsetsUIResource;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
+import net.algem.config.ThemeConfig;
 import net.algem.security.AuthDlg;
 import net.algem.security.User;
 import net.algem.util.*;
@@ -61,8 +62,8 @@ public class Algem
   private static final int DEF_HEIGHT = 780;
   private static final Point DEF_LOCATION = new Point(70, 30);
   private static final String[] ADDITIONAL_PROPERTIES = {
-          "local.properties",
-          System.getProperty("user.home") + FileUtil.FILE_SEPARATOR + ".algem" + FileUtil.FILE_SEPARATOR + "preferences"
+    "local.properties",
+    System.getProperty("user.home") + FileUtil.FILE_SEPARATOR + ".algem" + FileUtil.FILE_SEPARATOR + "preferences"
   };
 
   private JFrame frame;
@@ -77,11 +78,12 @@ public class Algem
     Locale.setDefault(Locale.FRENCH);
     props = new Properties();
   }
-  
+
   /**
    * Check if a given feature is enabled in current configuration.
    *
-   * <p>Feature keys are prefixed in properties files by <code>'feature.'</code></p>
+   * <p>
+   * Feature keys are prefixed in properties files by <code>'feature.'</code></p>
    *
    * @param featureName The name of the feature to check
    * @return whether this feature is enabled
@@ -91,7 +93,7 @@ public class Algem
   }
 
   private void init(String configFile, final String host, final String base, String login) throws IOException {
-    
+
     // opening configuration file
     try { // local file
       props.load(new FileInputStream(configFile));
@@ -139,7 +141,7 @@ public class Algem
       }
     }
     GemLogger.log(Level.INFO, "net.algem.Algem", "main", msg);
-   
+
     final GemBoot gemBoot = new GemBoot();
     String pass = null;
     boolean auth = "true".equalsIgnoreCase(props.getProperty("auth"));
@@ -155,7 +157,7 @@ public class Algem
     /* ------------------------ */
     cache.setUser(login);// important !
     checkUser(login, pass, auth);
-    
+
     cache.load(gemBoot);
     /* ------------------------------------------------ */
     /* Creates the frame of the application */
@@ -163,15 +165,16 @@ public class Algem
     setDesktop();
     gemBoot.close();
   }
-  
+
   /**
    * Creates a log file into temp folder.
-   * @throws IOException 
+   *
+   * @throws IOException
    */
-  private void setDefaultLogFile () throws IOException {
+  private void setDefaultLogFile() throws IOException {
     GemLogger.set("%t/algem.log");
   }
-  
+
   private void setDesktop() {
     String title = "Algem" + "(" + APP_VERSION + ")/" + props.getProperty("appClient")
             //			+ " - Utilisateur système " +System.getProperty("user.name")
@@ -327,26 +330,14 @@ public class Algem
     query = "UPDATE version SET version = '" + APP_VERSION + "'";
     dc.executeUpdate(query);
   }
-  
+
   private void setUIProperties() {
-    String laf = props.getProperty("lookandfeel");
+    String laf = ThemeConfig.THEME_PREF.get("theme", "javax.swing.plaf.metal.MetalLookAndFeel");
+    if (laf == null) {
+      laf = props.getProperty("lookandfeel");
+    }
     if (laf != null) {
-      try {
-        UIManager.setLookAndFeel(laf);
-        if ("Nimbus".equals(UIManager.getLookAndFeel().getName())) {
-          UIDefaults def = UIManager.getLookAndFeelDefaults();
-          def.put("Button.contentMargins", new InsetsUIResource(4,4,4,4)); //  default : (6,14,6,14)
-          def.put("TextField.contentMargins", new InsetsUIResource(4,4,4,4)); //  default : (6,6,6,6)
-//          def.put("Table.alternateRowColor", new Color(224,224,224));// default :  #f2f2f2 (242,242,242)
-          def.put("TableHeader.font",new Font(Font.SANS_SERIF,Font.PLAIN,11)); // default : Font SansSerif 12
-          def.put("TableHeader:\"TableHeader.renderer\".contentMargins", new InsetsUIResource(2,2,2,2)); // default: (2,5,4,5)
-          def.put("Table.font", new Font(Font.SANS_SERIF,Font.PLAIN,11)); // default : Font SansSerif 12
-          def.put("Table.showGrid",true); // default: false
-          def.put("Table.cellNoFocusBorder", new InsetsUIResource(2,2,2,2)); // Border Insets(2,5,2,5)
-        }
-      } catch (Exception ignore) {
-        GemLogger.log("look&feel exception : " + ignore.getMessage());
-      }
+      setLafProperties(laf);
     }
 
     String s = props.getProperty("couleur.fond");
@@ -358,14 +349,57 @@ public class Algem
     if (s != null) {
       frame.setForeground(Color.decode(s));
     }
-    
+
     if (!isFeatureEnabled("native_fonts")) {
-        initUIFonts();
-      }
+      initUIFonts();
+    }
     ToolTipManager.sharedInstance().setInitialDelay(20);
   }
-    
-  private void initUIFonts() {
+
+  public static void setLafProperties(final String lafClassName) {
+    SwingUtilities.invokeLater(new Runnable()
+    {
+      @Override
+      public void run() {
+        try {
+          UIManager.setLookAndFeel(lafClassName);
+        } catch (Exception ex) {
+          GemLogger.log("look&feel exception : " + ex.getMessage());
+        }
+      }
+    });
+    String lafName = UIManager.getLookAndFeel().getName();
+    UIDefaults def = UIManager.getLookAndFeelDefaults();
+    Font myFont = new Font(Font.SANS_SERIF, Font.PLAIN, 11);
+    switch (lafName) {
+      case "Nimbus":
+        def.put("Button.contentMargins", new InsetsUIResource(4, 4, 4, 4)); //  default : (6,14,6,14)
+        def.put("TextField.contentMargins", new InsetsUIResource(4, 4, 4, 4)); //  default : (6,6,6,6)
+//          def.put("Table.alternateRowColor", new Color(224,224,224));// default :  #f2f2f2 (242,242,242)
+        def.put("TableHeader.font", myFont); // default : Font SansSerif 12
+        def.put("TableHeader:\"TableHeader.renderer\".contentMargins", new InsetsUIResource(2, 2, 2, 2)); // default: (2,5,4,5)
+        def.put("Table.font", myFont); // default : Font SansSerif 12
+        def.put("Table.showGrid", true); // default: false
+        def.put("Table.cellNoFocusBorder", new InsetsUIResource(2, 2, 2, 2)); // Border Insets(2,5,2,5)
+        break;
+      case "Acrylique":
+      case "Aero":
+      case "Aluminium":
+      case "Bernstein":
+      case "Fast":
+      case "Graphite":
+      case "Smart":
+        initUIFonts();
+        def.put("TableHeader.font", myFont); // default : Font SansSerif 12
+        def.put("TableHeader:\"TableHeader.renderer\".contentMargins", new InsetsUIResource(2, 2, 2, 2)); // default: (2,5,4,5)
+        def.put("Table.font", myFont); // default : Font SansSerif 12
+        def.put("TextField.font", myFont);
+        def.put("ComboBox.font", myFont);
+        break;
+    }
+  }
+
+  private static void initUIFonts() {
     Font fsans = new Font("Lucida Sans", Font.BOLD, 12);
     Font fserif = new Font(Font.SERIF, Font.BOLD + Font.ITALIC, 12);
 
@@ -441,7 +475,7 @@ public class Algem
 
     try {
       appli = new Algem();
-      appli.init(confArg, hostArg, baseArg, userArg);     
+      appli.init(confArg, hostArg, baseArg, userArg);
     } catch (Exception ex) {
       JOptionPane.showMessageDialog(null,
               ex.getMessage(),
