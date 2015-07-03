@@ -1,5 +1,5 @@
 /*
- * @(#)MenuConfig.java 2.9.4.9 26/06/15
+ * @(#)MenuConfig.java 2.9.4.9 29/06/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -98,7 +98,7 @@ public class MenuConfig
     mParameters.addSeparator();
     
     mParameters.add(getItem(new JMenuItem(menus.get("Menu.color.label")), "Color.preferences.auth"));
-    mParameters.add(new JMenuItem(menus.get("Menu.theme.label")));
+    mParameters.add(new JMenuItem(menus.get("Theme.label")));
     add(mParameters);
     addSeparator();
     
@@ -195,7 +195,7 @@ public class MenuConfig
     } else if (menus.get("Menu.color.label").equals(arg)) {
       ColorPreviewCtrl cp = new ColorPreviewCtrl(desktop, new ColorPreview(new ColorPrefs()));
       desktop.addPanel("Menu.color", cp);
-    } else if(menus.get("Menu.theme.label").equals(arg)) {
+    } else if(menus.get("Theme.label").equals(arg)) {
       ThemeConfig themePref = new ThemeConfig(desktop);
       themePref.setLAF();
 //        desktop.addPanel(themePref, this);
@@ -293,7 +293,7 @@ public class MenuConfig
     menus.put("Menu.admin.label", BundleUtil.getLabel("Menu.administration.label"));
     menus.put("Menu.cache.label", BundleUtil.getLabel("Menu.cache.label"));
     menus.put("Menu.course.codes.label", BundleUtil.getLabel("Menu.course.codes.label"));
-    menus.put("Menu.theme.label", BundleUtil.getLabel("Menu.theme.label"));
+    menus.put("Theme.label", BundleUtil.getLabel("Theme.label"));
 
   }
 }

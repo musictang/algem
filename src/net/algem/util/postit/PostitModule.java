@@ -1,5 +1,5 @@
 /*
- * @(#)PostitModule.java	2.9.4.6 03/06/15
+ * @(#)PostitModule.java	2.9.4.9 28/06/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -41,14 +41,14 @@ import net.algem.util.module.GemModule;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.6
+ * @version 2.9.4.9
  */
 public class PostitModule
         extends GemModule
         implements VetoableChangeListener
 {
 
-  static final Dimension POSTIT_SIZE = new Dimension(110, 500);
+  static final Dimension POSTIT_SIZE = new Dimension(110, 550);
   private int lus;
   private PostitCanvas postit;
   private UserService service;

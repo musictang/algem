@@ -108,7 +108,7 @@ public class DefaultUserService
   public List<User> findAll(String where) {
     List<User> v = new Vector<User>();
     try {
-      v = dao.find(where);
+    v = dao.find(where);
     } catch (SQLException ex) {
       GemLogger.logException(ex);
     }
@@ -240,7 +240,7 @@ public class DefaultUserService
   public List<User> getRegisteredUsers() {
     List<User> v = new Vector<User>();
     try {
-      v = dao.find(null);
+    v = dao.find(null);
     } catch (SQLException ex) {
       GemLogger.logException(ex);
     }

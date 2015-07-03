@@ -28,11 +28,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import javax.swing.JButton;
-import javax.swing.SwingConstants;
-import javax.swing.UIDefaults;
-import javax.swing.UIManager;
-import javax.swing.plaf.InsetsUIResource;
-import net.algem.util.ImageUtil;
 import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GemPanel;
 
@@ -84,6 +79,7 @@ public class DateDayBar
       cal.set(Calendar.DAY_OF_MONTH, i + 1);
 //      dayButtons[i] = new JButton("<html><font color=" + dowLabelColor + ">" + cal.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.FRANCE) + "</font><br />" + String.valueOf(i + 1) + "</html>");
       dayButtons[i] = new JButton(cal.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.FRANCE));
+//      dayButtons[i].
       /* */
       dayButtons[i].setFont(new Font("Helvetica", Font.PLAIN, 10));
       dayButtons[i].setMargin(new Insets(0, 0, 0, 0));

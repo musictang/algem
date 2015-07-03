@@ -1,7 +1,7 @@
 /*
- * @(#)PostitView.java	2.9.1 17/12/14
+ * @(#)PostitView.java	2.9.4.9 28/06/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,6 +20,7 @@
  */
 package net.algem.util.postit;
 
+import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.sql.SQLException;
@@ -37,7 +38,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.4.9
  */
 public class PostitView
         extends GemBorderPanel
@@ -55,13 +56,15 @@ public class PostitView
     });
 
     issuer = new GemField(20);
+    issuer.setMinimumSize(new Dimension(180,issuer.getPreferredSize().height));
     issuer.setEditable(false);
 
     term = new DateFrField();
     textArea = new GemTextArea(2, 25);
     textArea.setLineWrap(true);
     textArea.setMargin(new Insets(0, 5, 0, 5));
-
+    textArea.setMinimumSize(new Dimension(180,textArea.getPreferredSize().height));
+    
     this.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
     gb.insets = GridBagHelper.SMALL_INSETS;
@@ -73,7 +76,7 @@ public class PostitView
     gb.add(type, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(issuer, 1, 1, 1, 1, GridBagHelper.WEST);
     gb.add(term, 1, 2, 1, 1, GridBagHelper.WEST);
-    gb.add(textArea, 0, 4, 2, 2, GridBagHelper.WEST);
+    gb.add(textArea, 0, 4, 2, 2, GridBagHelper.BOTH, GridBagHelper.WEST);
   }
 
   public Postit get() {

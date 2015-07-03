@@ -1,5 +1,5 @@
 /*
- * @(#)HistoQuote 2.9.4.7 15/06/15
+ * @(#)HistoQuote 2.9.4.9 28/06/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -36,7 +36,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.7
+ * @version 2.9.4.9
  * @since 2.4.d 07/06/12
  */
 public class HistoQuote
@@ -93,8 +93,15 @@ public class HistoQuote
       int n = getSelectedQuoteIndex();
       if (n >= 0) {
         try {
-          service.delete((Quote) invoiceListCtrl.getElementAt(n));
-          load(idper);
+          if (dataCache.authorize("Quotation.modification.auth")) {
+            Quote q = (Quote) invoiceListCtrl.getElementAt(n);
+            if (q != null && MessagePopup.confirm(this, MessageUtil.getMessage("quote.delete.confirmation",q.getNumber()))) {
+              service.delete(q);
+              load(idper);
+            }
+          } else {
+            MessagePopup.warning(this, MessageUtil.getMessage("quote.modification.warning"));
+          }
         } catch (SQLException ex) {
           GemLogger.logException(ex);
         }

@@ -156,8 +156,11 @@ public class UserIO
     }
     query += " ORDER BY p.nom, p.prenom";
     ResultSet rs = dc.executeQuery(query);
+    
     while (rs.next()) {
-      User u = new User();
+      net.algem.security.User u = new net.algem.security.User();
+   System.out.println("ooooo");
+//
       u.setId(rs.getInt(1));
       u.setType(rs.getShort(2));
       u.setName(rs.getString(3).trim());

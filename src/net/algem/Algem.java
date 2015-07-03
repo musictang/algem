@@ -1,5 +1,5 @@
 /*
- * @(#)Algem.java	2.9.4.9 26/06/15
+ * @(#)Algem.java	2.9.4.9 29/06/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -32,10 +32,13 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.logging.Level;
 import javax.swing.*;
+import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.plaf.InsetsUIResource;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
@@ -52,12 +55,13 @@ import org.apache.commons.codec.binary.Base64;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.8
+ * @version 2.9.4.9
  */
 public class Algem
 {
 
-  public static final String APP_VERSION = "2.9.4.8";//experimental
+  public static final String APP_VERSION = "2.9.4.9";//experimental
+  public static List<LookAndFeelInfo> ALTERNATIVE_LAF = new ArrayList<LookAndFeelInfo>();
   private static final int DEF_WIDTH = 1080;// (850,650) => ancienne taille
   private static final int DEF_HEIGHT = 780;
   private static final Point DEF_LOCATION = new Point(70, 30);
@@ -339,6 +343,15 @@ public class Algem
     if (laf != null) {
       setLafProperties(laf);
     }
+    // load alternatives look and feel
+    for(Object o : props.keySet()) {
+      String k = (String) o;
+      if (k.startsWith("lookandfeel")) {
+        String clazz = props.getProperty(k);
+        final String lafName = k.substring(k.lastIndexOf('.') + 1);
+        ALTERNATIVE_LAF.add(new ThemeConfig.GemLafInfo(lafName, clazz));
+      }
+    }
 
     String s = props.getProperty("couleur.fond");
     if (s != null) {
@@ -357,17 +370,10 @@ public class Algem
   }
 
   public static void setLafProperties(final String lafClassName) {
-    SwingUtilities.invokeLater(new Runnable()
-    {
-      @Override
-      public void run() {
-        try {
-          UIManager.setLookAndFeel(lafClassName);
-        } catch (Exception ex) {
-          GemLogger.log("look&feel exception : " + ex.getMessage());
-        }
-      }
-    });
+   try {UIManager.setLookAndFeel(lafClassName);
+    } catch (Exception ex) {
+      GemLogger.log("look&feel exception : " + ex.getMessage());
+    }
     String lafName = UIManager.getLookAndFeel().getName();
     UIDefaults def = UIManager.getLookAndFeelDefaults();
     Font myFont = new Font(Font.SANS_SERIF, Font.PLAIN, 11);
@@ -382,7 +388,7 @@ public class Algem
         def.put("Table.showGrid", true); // default: false
         def.put("Table.cellNoFocusBorder", new InsetsUIResource(2, 2, 2, 2)); // Border Insets(2,5,2,5)
         break;
-      case "Acrylique":
+      case "Acryl":
       case "Aero":
       case "Aluminium":
       case "Bernstein":

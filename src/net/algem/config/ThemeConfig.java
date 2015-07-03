@@ -1,5 +1,5 @@
 /*
- * @(#)ThemeConfig.java 2.9.4.0 26/06/2015
+ * @(#)ThemeConfig.java 2.9.4.9 29/06/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  * 
@@ -23,32 +23,42 @@ package net.algem.config;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.prefs.Preferences;
-import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import net.algem.Algem;
 import net.algem.util.BundleUtil;
 import net.algem.util.GemCommand;
+import net.algem.util.GemLogger;
+import net.algem.util.ImageUtil;
+import net.algem.util.MessageUtil;
 import net.algem.util.module.GemDesktop;
-import net.algem.util.module.GemModule;
 import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GemLabel;
 import net.algem.util.ui.GemPanel;
+import net.algem.util.ui.MessagePopup;
 
 /**
+ * Preferred theme selection.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.0
- * @since 2.9.4.0 26/06/2015
+ * @version 2.9.4.9
+ * @since 2.9.4.9 26/06/2015
  */
 public class ThemeConfig
 {
@@ -57,46 +67,66 @@ public class ThemeConfig
   private String theme;
   private JDialog view;
   private JComboBox themes;
+  private JTextArea description;
   private GemButton btOk;
   private GemButton btCancel;
-  private static final GemLafInfo[] additionalLAF = {
-    new GemLafInfo("Liquid", "com.birosoft.liquid.LiquidLookAndFeel","Mosfet Liquid KDE 3.x theme"),
-    //  new GemLAF("SeaGlass","com.seaglasslookandfeel.SeaGlassLookAndFeel"),
-    new GemLafInfo("Acrylique", "com.jtattoo.plaf.acryl.AcrylLookAndFeel", "JTattoo Acrilyque"),
-    new GemLafInfo("Smart", "com.jtattoo.plaf.smart.SmartLookAndFeel", "JTattoo Smart"),
-    new GemLafInfo("Aero", "com.jtattoo.plaf.aero.AeroLookAndFeel", "JTattoo Aero"),
-    new GemLafInfo("Aluminium", "com.jtattoo.plaf.aluminium.AluminiumLookAndFeel", "JTattoo Aluminium"),
-    new GemLafInfo("Bernstein", "com.jtattoo.plaf.bernstein.BernsteinLookAndFeel", "JTattoo Bernstein"),
-    new GemLafInfo("Fast", "com.jtattoo.plaf.fast.FastLookAndFeel", "JTattoo Fast"),
-    new GemLafInfo("Graphite", "com.jtattoo.plaf.graphite.GraphiteLookAndFeel", "JTattoo Graphite"), //new GemLAF("HiFi","com.jtattoo.plaf.hifi.HiFiLookAndFeel"),
-  //new GemLAF("Luna","com.jtattoo.plaf.luna.LunaLookAndFeel"),
-  //new GemLAF("Mint","com.jtattoo.plaf.mint.MintLookAndFeel"),
-  //new GemLAF("Noire","com.jtattoo.plaf.noire.NoireLookAndFeel")
-  };
+  private JLabel imageLabel;
 
   public ThemeConfig(GemDesktop desktop) {
     view = new JDialog(desktop.getFrame());
-    themes = new JComboBox();
-    final JTextArea description = new JTextArea(4, 20);
-    themes.addItemListener(new ItemListener() {
+    view.setTitle(BundleUtil.getLabel("Theme.modification.label"));
+    view.setSize(new Dimension(640, 380));
 
+    themes = new JComboBox();
+    Insets margin = new Insets(5, 5, 5, 5);
+    description = new JTextArea();
+    description.setEditable(false);
+    description.setMargin(margin);
+    description.setLineWrap(true);
+    description.setWrapStyleWord(true);
+    themes.addItemListener(new ItemListener()
+    {
       @Override
       public void itemStateChanged(ItemEvent e) {
-        description.setText(((GemLafInfo) themes.getSelectedItem()).getDescription());
+        String name = ((LookAndFeelInfo) e.getItem()).getName();
+        GemLogger.info(name);
+        description.setText(getDescription(name));
+        setPreview(name);
       }
-    
     });
-    
-    view.setLayout(new BorderLayout());
-    view.setTitle("Theme modification");
+    JScrollPane sp = new JScrollPane(description);
+
     GemPanel t = new GemPanel(new FlowLayout());
     t.add(new GemLabel(BundleUtil.getLabel("Theme.label")));
     t.add(themes);
-    view.add(t, BorderLayout.NORTH);
-    GemPanel d = new GemPanel();
-    d.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
-    d.add(description);
-    view.add(d, BorderLayout.CENTER);
+
+    JTextPane info = new JTextPane();
+    info.setMargin(margin);
+    info.setEditable(false);
+    info.setFont(info.getFont().deriveFont(Font.BOLD));
+    info.setText(MessageUtil.getMessage("laf.modification.info"));
+    JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, sp, info);
+
+    splitPane.setResizeWeight(0.5);
+    splitPane.setDividerLocation(0.6);
+
+    GemPanel leftPane = new GemPanel();
+    leftPane.setLayout(new BorderLayout());
+    leftPane.setPreferredSize(new Dimension(220, 320));
+    leftPane.add(t, BorderLayout.NORTH);
+    leftPane.add(splitPane, BorderLayout.CENTER);
+
+    imageLabel = new JLabel();
+    GemPanel rightPane = new GemPanel();
+    rightPane.setLayout(new BorderLayout());
+    rightPane.setPreferredSize(new Dimension(220, 320));
+    rightPane.add(new JLabel("Aperçu", JLabel.CENTER), BorderLayout.NORTH);
+    rightPane.add(imageLabel, BorderLayout.CENTER);
+
+    JSplitPane mainPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPane, rightPane);
+    mainPanel.setResizeWeight(0.5);
+    mainPanel.setDividerLocation(0.5);
+
     GemPanel buttons = new GemPanel(new GridLayout(1, 2));
     buttons.add(btOk = new GemButton(GemCommand.VALIDATE_CMD));
     buttons.add(btCancel = new GemButton(GemCommand.CANCEL_CMD));
@@ -104,59 +134,140 @@ public class ThemeConfig
     btOk.addActionListener(listener);
     btCancel.addActionListener(listener);
 
+    view.setLayout(new BorderLayout());
+    view.add(mainPanel, BorderLayout.NORTH);
     view.add(buttons, BorderLayout.SOUTH);
-    view.setSize(new Dimension(300,200));
-    view.setLocationRelativeTo(desktop.getFrame());
 
+    view.setLocationRelativeTo(desktop.getFrame());
     view.setVisible(true);
   }
 
+  /**
+   * Gets the selected theme.
+   *
+   * @return the name of selected look and feel
+   */
   public String getTheme() {
     return (String) themes.getSelectedItem();
   }
-  
-  private void setTheme(String name) {
-    
 
-      for (int i = 0 ; i < themes.getItemCount(); i++) {
-        LookAndFeelInfo item = (LookAndFeelInfo) themes.getItemAt(i);
-
-      if (item.getName().equals(name)) {
+  /**
+   * Sets the last stored theme.
+   *
+   * @param name of the look and feel
+   */
+  private void setActualTheme(String name) {
+    for (int i = 0; i < themes.getItemCount(); i++) {
+      LookAndFeelInfo item = (LookAndFeelInfo) themes.getItemAt(i);
+      if (item.getName().equals(name.replaceAll(" ", ""))) {
         themes.setSelectedIndex(i);
+//        description.setText(getDescription(name));
         break;
       }
     }
   }
 
-  private LookAndFeelInfo[] getInstalledLAF() {
-    return UIManager.getInstalledLookAndFeels();
-  }
-
   public void setLAF() {
-    for (UIManager.LookAndFeelInfo look : getInstalledLAF()) {
-      themes.addItem(new GemLafInfo(look.getName(), look.getClassName(), getDescription(look.getName())));
+    for (UIManager.LookAndFeelInfo look : UIManager.getInstalledLookAndFeels()) {
+      themes.addItem(new GemLafInfo(look.getName(), look.getClassName()));
     }
-    for (LookAndFeelInfo look : additionalLAF) {
+    for (LookAndFeelInfo look : Algem.ALTERNATIVE_LAF) {
       themes.addItem(look);
     }
-    System.out.println(UIManager.getLookAndFeel().getClass().getName());
-    setTheme(UIManager.getLookAndFeel().getName());
-  }
-  
-  private String getDescription(String name) {
-    switch(name) {
-      case "Metal" : return "Thème par défaut";
-      case "GTK+" : return "Thème Solaris, Linux GTK+ 2.2";
-      case "Motif" : return "Thème Solaris, Linux inspiré du gestionnaire de bureaux Motif";
-      case "Windows" :
-      case "Windows XP":
-      case "Windows Vista":
-        return "Thème Windows natif";
-      case "Macintosh" : return "Thème Mac natif";
-    }
-    return name;
+    GemLogger.info(UIManager.getLookAndFeel().getClass().getName());
+    GemLogger.info(UIManager.getLookAndFeel().getName());
+    
+    setActualTheme(UIManager.getLookAndFeel().getName());
   }
 
+  /**
+   * Gets the description of the selected look and feel.
+   *
+   * @param name look and feel name
+   * @return a i18n-string
+   */
+  private String getDescription(String name) {
+    System.out.println("descritpion name " + name);
+    switch (name) {
+      case "CDE/Motif":
+        return MessageUtil.getMessage("laf.description.motif");
+      case "Metal":
+        return MessageUtil.getMessage("laf.description.metal");
+      case "GTK+":
+        return MessageUtil.getMessage("laf.description.gtk");
+      case "Windows":
+        return MessageUtil.getMessage("laf.description.windows");
+      case "Windows XP":
+        return MessageUtil.getMessage("laf.description.xp");
+      case "Windows Vista":
+        return MessageUtil.getMessage("laf.description.vista");
+      case "Macintosh":
+        return MessageUtil.getMessage("laf.description.mac");
+      case "Liquid":
+        return MessageUtil.getMessage("laf.description.liquid");
+      case "Nimbus":
+        return MessageUtil.getMessage("laf.description.nimbus");
+      case "Acryl":
+        return MessageUtil.getMessage("laf.description.acryl");
+      case "Aero":
+        return MessageUtil.getMessage("laf.description.aero");
+      case "Aluminium":
+        return MessageUtil.getMessage("laf.description.aluminium");
+      case "Bernstein":
+        return MessageUtil.getMessage("laf.description.bernstein");
+      case "Fast":
+        return MessageUtil.getMessage("laf.description.fast");
+      case "Graphite":
+        return MessageUtil.getMessage("laf.description.graphite");
+      case "Smart":
+        return MessageUtil.getMessage("laf.description.smart");
+      case "JGoodiesPlastic":
+        return MessageUtil.getMessage("laf.description.jgoodies.plastic");
+      case "JGoodiesPlastic3D":
+        return MessageUtil.getMessage("laf.description.jgoodies.plastic.3d");
+
+      default:
+        return name;
+    }
+  }
+
+  /**
+   * Displays a preview of the selected Look and feel.
+   *
+   * @param lafName look and file name
+   */
+  private void setPreview(String lafName) {
+    String fileName;
+    switch (lafName) {
+      case "CDE/Motif":
+        fileName = "laf.CDE.png";
+        break;
+      case "Windows Classic":
+        fileName = "laf.WindowsClassic.png";
+        break;
+      case "Windows XP":
+        fileName = "laf.WindowsXP.png";
+        break;
+      case "JGoodies Plastic 3D":
+        fileName = "laf.JGoodiesPlastic3D.png";
+        break;
+      case "JGoodies Plastic":
+        fileName = "laf.JGoodiesPlastic.png";
+        break;
+      default:
+        fileName = "laf." + lafName + ".png";
+        break;
+    }
+    ImageIcon img = ImageUtil.createImageIcon(fileName);
+    if (img == null) {
+      img = ImageUtil.createImageIcon("laf.help.png");
+    }
+    imageLabel.setIcon(img);
+  }
+
+  /**
+   * Private listener for theme selection.
+   */
   private class ThemeListener
           implements ActionListener
   {
@@ -170,26 +281,24 @@ public class ThemeConfig
       Object src = e.getSource();
       if (src == btOk) {
         LookAndFeelInfo laf = (LookAndFeelInfo) themes.getSelectedItem();
-        setTheme(laf);
+//        setTheme(laf);
         THEME_PREF.put("theme", laf.getClassName());
+        MessagePopup.information(view, MessageUtil.getMessage("laf.modification.warning"));
       }
       view.setVisible(false);
     }
 
   }
 
-  private static class GemLafInfo
+  /**
+   * This subclass of LookAndFeelInfo only redefines the toString method.
+   */
+  public static class GemLafInfo
           extends LookAndFeelInfo
   {
-    private String description;
 
-    public GemLafInfo(String name, String className, String desc) {
+    public GemLafInfo(String name, String className) {
       super(name, className);
-      this.description = desc;
-    }
-
-    public String getDescription() {
-      return description;
     }
 
     @Override
