@@ -1,5 +1,5 @@
 /*
- * @(#)Algem.java	2.9.4.9 29/06/15
+ * @(#)Algem.java	2.9.4.9 06/07/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -309,10 +309,6 @@ public class Algem
         dc.setAutoCommit(true);
       }
     }
-  }
-
-  public void initUserDir(String path, Properties _props) throws Exception {
-    throw new Exception("initUserDir Not Implemented");
   }
 
   /**
