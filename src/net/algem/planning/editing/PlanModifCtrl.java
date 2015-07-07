@@ -95,9 +95,10 @@ public class PlanModifCtrl
   /**
    * Gets a list of buttons for course schedule modification.
    *
+   * @param collective course status
    * @return a list of buttons
    */
-  public Vector<GemMenuButton> getMenuCourse() {
+  public Vector<GemMenuButton> getMenuCourse(boolean collective) {
     Vector<GemMenuButton> v = new Vector<GemMenuButton>();
 
     v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.room.modification.label"), this, "ChangeRoom"));
@@ -115,11 +116,11 @@ public class PlanModifCtrl
       v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.suppression.label"), this, "DeletePlanning"));
     }
 
-    if (Algem.isFeatureEnabled("course_instruments")) {
+    if (collective && Algem.isFeatureEnabled("course_instruments")) {
       v.add(new GemMenuButton(BundleUtil.getLabel("Course.instrument.allocation.label"), this, "AtelierInstruments"));
     }
 
-    if (Algem.isFeatureEnabled("schedule_dispatch")) {
+    if (collective && Algem.isFeatureEnabled("schedule_dispatch")) {
       v.add(new GemMenuButton(BundleUtil.getLabel("ScheduleDispatch.label"), this, "ScheduleDispatch"));
     }
 

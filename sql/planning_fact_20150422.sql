@@ -15,4 +15,6 @@ CREATE TABLE planning_fact (
   planning_desc TEXT
 );
 
+ALTER TABLE planning_fact OWNER TO nobody;
+
 CREATE INDEX planning_fact_planning_idx ON planning_fact (planning);

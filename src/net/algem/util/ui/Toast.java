@@ -3,7 +3,6 @@ package net.algem.util.ui;
 import net.algem.util.module.GemDesktop;
 
 import java.awt.Color;
-import java.awt.Label;
 import java.awt.Point;
 import java.util.logging.Level;
 import java.util.logging.Logger;

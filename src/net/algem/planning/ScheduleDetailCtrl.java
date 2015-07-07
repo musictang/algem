@@ -226,7 +226,7 @@ public class ScheduleDetailCtrl
     boolean collective = p.getCourse().isCollective();
     loadRanges(de.getRanges(), collective);
     if (allMenus) {
-      Vector<GemMenuButton> v = modifCtrl.getMenuCourse(); // ajout des boutons de modification de planning (@see PlanModifCtrl)
+      Vector<GemMenuButton> v = modifCtrl.getMenuCourse(p.getCourse().isCollective()); // ajout des boutons de modification de planning (@see PlanModifCtrl)
       for (int i = 0; i < v.size(); i++) {
         menuPanel.add(v.elementAt(i));
       }
@@ -403,7 +403,7 @@ public class ScheduleDetailCtrl
       }
       listPanel.add(new GemMenuButton(buf.toString(), this, "MemberLink", pg));
     }
-    Vector<GemMenuButton> vb = modifCtrl.getMenuCourse(); // ajout des boutons de PlanModifCtrl
+    Vector<GemMenuButton> vb = modifCtrl.getMenuCourse(true); // ajout des boutons de PlanModifCtrl
     for (int j = 0; j < vb.size(); j++) {
       menuPanel.add((GemMenuButton) vb.elementAt(j));
     }

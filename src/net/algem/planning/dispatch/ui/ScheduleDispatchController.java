@@ -20,11 +20,14 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Vector;
+import net.algem.util.GemCommand;
+import net.algem.util.MessageUtil;
 
 public class ScheduleDispatchController implements SubscriptionPatternDialog.OnSubscriptionPatternListener {
     private JLabel coursLabel;
     private JTable table1;
     private JButton okButton;
+    private JButton btCancel;
     private JPanel panel;
     private JScrollPane scrollPane;
 
@@ -74,6 +77,13 @@ public class ScheduleDispatchController implements SubscriptionPatternDialog.OnS
                 saveScheduleDispatch();
             }
         });
+        
+        btCancel.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose();
+            }
+        });
     }
 
     public void run() {
@@ -102,7 +112,7 @@ public class ScheduleDispatchController implements SubscriptionPatternDialog.OnS
     private void saveScheduleDispatch() {
         try {
             scheduleDispatchService.saveScheduleDispatch(courseAction, scheduleDispatch);
-            Toast.showToast(desktop, "Affectations des planning enregistrées");
+            Toast.showToast(desktop, MessageUtil.getMessage("schedule.range.dispatch.success"));
             dialog.dispose();
         } catch (Exception e) {
             GemLogger.logException(e);
@@ -118,7 +128,7 @@ public class ScheduleDispatchController implements SubscriptionPatternDialog.OnS
         panel = new JPanel();
         panel.setLayout(new GridBagLayout());
         final JLabel label1 = new JLabel();
-        label1.setText("Cours");
+        label1.setText(BundleUtil.getLabel("Course.label"));
         GridBagConstraints gbc;
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -148,12 +158,21 @@ public class ScheduleDispatchController implements SubscriptionPatternDialog.OnS
         table1 = new JTable();
         scrollPane.setViewportView(table1);
         okButton = new JButton();
-        okButton.setText("Ok");
+        okButton.setText(GemCommand.OK_CMD);
+        gbc = new GridBagConstraints();
+        gbc.gridx = 5;
+        gbc.gridy = 2;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.insets = new Insets(0, 0, 8, 8);
+        panel.add(okButton, gbc);
+        
+        btCancel = new JButton();
+        btCancel.setText(GemCommand.CANCEL_CMD);
         gbc = new GridBagConstraints();
         gbc.gridx = 6;
         gbc.gridy = 2;
         gbc.anchor = GridBagConstraints.EAST;
         gbc.insets = new Insets(0, 0, 8, 8);
-        panel.add(okButton, gbc);
+        panel.add(btCancel, gbc);
     }
 }
