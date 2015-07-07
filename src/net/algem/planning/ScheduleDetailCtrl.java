@@ -31,8 +31,8 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Vector;
 import java.util.logging.Level;
-import javax.swing.JDialog;
-import javax.swing.JRootPane;
+import javax.swing.*;
+
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
 

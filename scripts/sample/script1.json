@@ -1,0 +1,12 @@
+{
+  "description": "Un script de test",
+  "args": [{
+    "name" : "text1", "label": "Un text", "type": "text"
+  }, {
+    "name" : "int1", "label": "Un entier", "type": "int"
+  }, {
+    "name" : "bool1", "label": "Vrai / faux", "type": "bool"
+  },{
+    "name" : "date1", "label": "Date", "type": "date"
+  }]
+}

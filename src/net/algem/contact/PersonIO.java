@@ -26,10 +26,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 import net.algem.billing.InvoiceIO;
+import net.algem.enrolment.CourseOrderIO;
+import net.algem.enrolment.OrderIO;
+import net.algem.planning.Action;
+import net.algem.planning.ActionIO;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
 import net.algem.util.model.Cacheable;
 import net.algem.util.model.TableIO;
+
+import static java.lang.String.format;
 
 /**
  * IO methods for class {@link net.algem.contact.Person}.
@@ -171,6 +177,33 @@ public class PersonIO
       lp.add(getFromRS(rs));
     }
     return lp;
+  }
+
+  public List<Integer> getPersonsIdsForAction(int idAction) throws SQLException {
+    String query = format(
+            "SELECT DISTINCT p.id, p.nom, p.prenom FROM " + PersonIO.TABLE + " p\n"
+                    + "JOIN " + OrderIO.TABLE + " c ON c.adh = p.id\n"
+                    + "JOIN " + CourseOrderIO.TABLE + " cc ON cc.idcmd = c.id\n"
+                    + "JOIN " + ActionIO.TABLE + " a ON cc.idaction = a.id\n"
+                    + "WHERE a.id = %d\n"
+                    + "ORDER BY p.prenom, p.nom ", idAction
+    );
+
+    List<Integer> result = new ArrayList<>();
+    ResultSet resultSet = dc.executeQuery(query);
+    while (resultSet.next()) {
+      result.add(resultSet.getInt(1));
+    }
+    return result;
+  }
+
+  public List<Person> getPersonsForAction(Action action) throws Exception {
+    List<Integer> ids = getPersonsIdsForAction(action.getId());
+    List<Person> result = new ArrayList<>(ids.size());
+    for (Integer id : ids) {
+      result.add(findId(id));
+    }
+    return result;
   }
   
 }

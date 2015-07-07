@@ -96,6 +96,10 @@ public class Algem
     return Boolean.parseBoolean(props.getProperty("feature." + featureName, "false"));
   }
 
+  public static File getScriptsPath() {
+    return new File(props.getProperty("scripts_path", "./scripts")).getAbsoluteFile();
+  }
+
   private void init(String configFile, final String host, final String base, String login) throws IOException {
 
     // opening configuration file

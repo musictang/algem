@@ -21,17 +21,16 @@
 package net.algem.planning.editing.instruments;
 
 import net.algem.config.Instrument;
-import net.algem.config.InstrumentIO;
 import net.algem.contact.Person;
 import net.algem.contact.PersonIO;
 import net.algem.planning.Action;
+import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
+import net.algem.util.model.Model;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import net.algem.util.DataCache;
-import net.algem.util.model.Model;
 
 /**
  *
@@ -52,15 +51,6 @@ public class AtelierInstrumentsServiceImpl
     this.dc = dc;
     this.atelierInstrumentsDAO = atelierInstrumentsDAO;
     this.personIO = personIO;
-  }
-
-  private List<Person> getPersonsForAction(Action action) throws Exception {
-    List<Integer> ids = atelierInstrumentsDAO.getPersonsIdsForAction(action.getId());
-    List<Person> result = new ArrayList<>(ids.size());
-    for (Integer id : ids) {
-      result.add(personIO.findId(id));
-    }
-    return result;
   }
 
   private static boolean isEmptyAllocation(List<PersonInstrumentRow> rows) {
@@ -85,7 +75,7 @@ public class AtelierInstrumentsServiceImpl
     {
       @Override
       public List<PersonInstrumentRow> run(DataConnection conn) throws Exception {
-        List<Person> persons = getPersonsForAction(action);
+        List<Person> persons = personIO.getPersonsForAction(action);
         List<PersonInstrumentRow> rows = new ArrayList<>(persons.size());
         for (Person person : persons) {
           PersonInstrumentRow row;

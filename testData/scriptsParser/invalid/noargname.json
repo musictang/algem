@@ -1,0 +1,6 @@
+{
+  "description": "Simple test script",
+  "args": [{
+    "label": "A text input", "type": "text"
+  }]
+}

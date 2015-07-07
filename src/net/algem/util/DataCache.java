@@ -28,6 +28,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 import javax.swing.JMenuItem;
+import net.algem.Algem;
 import net.algem.Algem.GemBoot;
 import net.algem.accounting.*;
 import net.algem.billing.Item;
@@ -48,13 +49,26 @@ import net.algem.contact.teacher.TeacherEvent;
 import net.algem.contact.teacher.TeacherIO;
 import net.algem.course.*;
 import net.algem.group.*;
+import net.algem.planning.Action;
 import net.algem.planning.*;
 import net.algem.planning.day.DaySchedule;
+import net.algem.planning.dispatch.model.ScheduleDispatchService;
 import net.algem.planning.editing.instruments.AtelierInstrumentsDAO;
 import net.algem.planning.editing.instruments.AtelierInstrumentsService;
 import net.algem.planning.editing.instruments.AtelierInstrumentsServiceImpl;
+import net.algem.planning.fact.services.PlanningFactCreator;
+import net.algem.planning.fact.services.PlanningFactDAO;
+import net.algem.planning.fact.services.PlanningFactService;
+import net.algem.planning.fact.services.SimpleConflictService;
 import net.algem.planning.month.MonthSchedule;
 import net.algem.room.*;
+import net.algem.script.directory.ScriptDirectoryService;
+import net.algem.script.directory.ScriptDirectoryServiceImpl;
+import net.algem.script.directory.ScriptManifestParserImpl;
+import net.algem.script.execution.ScriptExecutorService;
+import net.algem.script.execution.ScriptExecutorServiceImpl;
+import net.algem.script.execution.ScriptExportService;
+import net.algem.script.execution.ScriptExportServiceImpl;
 import net.algem.security.DefaultUserService;
 import net.algem.security.User;
 import net.algem.security.UserIO;
@@ -64,6 +78,16 @@ import net.algem.util.model.Cacheable;
 import net.algem.util.model.GemList;
 import net.algem.util.model.GemModel;
 import net.algem.util.model.Model;
+
+import javax.swing.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
 
 /**
  * Cache and various utilities.
@@ -153,6 +177,12 @@ public class DataCache
   private UserService userService;
 
   private AtelierInstrumentsService atelierInstrumentsService;
+  private PlanningFactService planningFactService;
+  private ScriptDirectoryService scriptDirectoryService;
+  private ScriptExecutorService scriptExecutorService;
+  private ScriptExportService scriptExportService;
+  private PlanningFactDAO planningFactDAO;
+  private ScheduleDispatchService scheduleDispatchService;
 
   private DataCache() {
 
@@ -200,6 +230,18 @@ public class DataCache
     daySchedule = new DaySchedule();
 
     atelierInstrumentsService = new AtelierInstrumentsServiceImpl(dc, new AtelierInstrumentsDAO(dc), PERSON_IO);
+    planningFactDAO = new PlanningFactDAO(dc);
+    planningFactService = new PlanningFactService(dc, new PlanningService(dc), planningFactDAO,
+            new PlanningFactCreator(), new PlanningFactService.RoomFinder(),
+            new PlanningFactService.ScheduleUpdater(dc), new SimpleConflictService(dc));
+    
+    File scriptsPath = Algem.getScriptsPath();
+    System.out.println(scriptsPath);
+    scriptDirectoryService = new ScriptDirectoryServiceImpl(scriptsPath, new IOUtil.FileReaderHelper(), new ScriptManifestParserImpl());
+    scriptExecutorService = new ScriptExecutorServiceImpl(dc);
+    scriptExportService = new ScriptExportServiceImpl();
+
+    scheduleDispatchService = new ScheduleDispatchService(dc, PERSON_IO);
   }
   
   public void setUser(String login) {
@@ -619,7 +661,7 @@ public class DataCache
     } else if (m instanceof Account) {
       ACCOUNT_LIST.removeElement((Account) m);
     } else if (m instanceof CostAccount) {
-      COST_ACCOUNT_CACHE.remove(((CostAccount)m).getKey());
+      COST_ACCOUNT_CACHE.remove(((CostAccount) m).getKey());
     } else if (m instanceof User) {
       USER_CACHE.remove(m.getId());
     } else if (m instanceof Vat) {
@@ -734,7 +776,7 @@ public class DataCache
       remove(obj);
     }
   }
-
+  
   /**
    * Initial loading.
    * @param frame (optional) to display messages
@@ -797,7 +839,7 @@ public class DataCache
 
       EMPLOYEE_TYPE_LIST = new GemList<GemParam>(EMPLOYEE_TYPE_IO.load());
       MARITAL_STATUS_LIST = new GemList<>(MARITAL_STATUS_IO.find());
-
+      
       STUDIO_TYPE_LIST = new GemList<GemParam>(STUDIO_TYPE_IO.load());
       PASS_CARD = new Hashtable<Integer,RehearsalPass>();
       for (RehearsalPass c : RehearsalPassIO.findAll("ORDER BY id", dc)) {
@@ -810,7 +852,7 @@ public class DataCache
     } finally {
       showMessage(frame, MessageUtil.getMessage("cache.loading.completed"));
       cacheInit = true;
-    }
+    } 
   }
 
   private void loadRoomContactCache() {
@@ -857,7 +899,7 @@ public class DataCache
       for(OrderLine ol : lo) {
         ORDER_LINE_CACHE.put(ol.getId(), ol);
       }
-    }
+    } 
     return lo;
   }
 
@@ -902,6 +944,18 @@ public class DataCache
 
   public AtelierInstrumentsService getAtelierInstrumentsService() {
     return atelierInstrumentsService;
+  }
+
+  public ScriptDirectoryService getScriptDirectoryService() {
+     return scriptDirectoryService;
+  }
+
+  public ScriptExecutorService getScriptExecutorService() {
+    return scriptExecutorService;
+  }
+
+  public ScriptExportService getScriptExportService() {
+    return scriptExportService;
   }
 
   public User getUser() {
@@ -1169,5 +1223,17 @@ public class DataCache
     } catch (IOException e) {
       GemLogger.log("serializ err :" + e);
     }
+  }
+
+  public PlanningFactService getPlanningFactService() {
+    return planningFactService;
+  }
+
+  public PlanningFactDAO getPlanningFactDAO() {
+    return planningFactDAO;
+  }
+
+  public ScheduleDispatchService getScheduleDispatchService() {
+    return scheduleDispatchService;
   }
 }

@@ -23,6 +23,8 @@ package net.algem.util.menu;
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
 import javax.swing.JMenuItem;
+
+import net.algem.Algem;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
 import net.algem.course.CourseSearchCtrl;
@@ -31,6 +33,8 @@ import net.algem.enrolment.EnrolmentListCtrl;
 import net.algem.enrolment.EnrolmentService;
 import net.algem.enrolment.ExtendeModuleOrderListCtrl;
 import net.algem.enrolment.ExtendedModuleOrderTableModel;
+import net.algem.planning.fact.ui.PlanningFactCRUDController;
+import net.algem.script.ui.ScriptingFormController;
 import net.algem.util.BundleUtil;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
@@ -56,6 +60,8 @@ public class MenuCatalog
   private JMenuItem miModuleOrder;
   private JMenuItem miCoursBrowse;
   private JMenuItem miEnrolment;
+  private final JMenuItem scriptItem;
+  private final JMenuItem factsItem;
 
   public MenuCatalog(GemDesktop desktop) {
     super(BundleUtil.getLabel("Menu.catalog.label"), desktop);
@@ -70,6 +76,17 @@ public class MenuCatalog
       miModuleOrder = new JMenuItem(BundleUtil.getLabel("Modules.ordered.label"));
       add(miModuleOrder);
     }
+
+    scriptItem = new JMenuItem(BundleUtil.getLabel("Scripts.label"));
+    if (Algem.isFeatureEnabled("scripting")) {
+      add(scriptItem);
+    }
+
+    factsItem = new JMenuItem(BundleUtil.getLabel("PlanningFact.label"));
+    if (Algem.isFeatureEnabled("planning_fact")) {
+      add(factsItem);
+    }
+
     setListener(this);
   }
 
@@ -105,6 +122,10 @@ public class MenuCatalog
       desktop.addPanel(ENROLMENT_BROWSER_KEY, enrolmentList);
     } else if (arg.equals(GemCommand.CANCEL_CMD)) {
       desktop.removeCurrentModule();
+    } else if (src == scriptItem) {
+        desktop.addPanel("Scripts", new ScriptingFormController(desktop).getPanel());
+    } else if (src == factsItem) {
+      desktop.addPanel("Absences & remplacement", new PlanningFactCRUDController(desktop).getPanel());
     }
     desktop.setDefaultCursor();
   }

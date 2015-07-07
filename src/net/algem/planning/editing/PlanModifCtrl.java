@@ -41,7 +41,12 @@ import net.algem.group.GemGroupService;
 import net.algem.group.Group;
 import net.algem.planning.*;
 import net.algem.planning.day.DayPlanView;
+import net.algem.planning.dispatch.ui.ScheduleDispatchController;
 import net.algem.planning.editing.instruments.AtelierInstrumentsController;
+import net.algem.planning.fact.ui.ActivitySupCtrl;
+import net.algem.planning.fact.ui.DeleteLowActivityCtrl;
+import net.algem.planning.fact.ui.AbsenceToCatchUpCtrl;
+import net.algem.planning.fact.ui.ReplanifyCtrl;
 import net.algem.room.Room;
 import net.algem.util.*;
 import net.algem.util.module.GemDesktop;
@@ -114,6 +119,16 @@ public class PlanModifCtrl
       v.add(new GemMenuButton(BundleUtil.getLabel("Course.instrument.allocation.label"), this, "AtelierInstruments"));
     }
 
+    if (Algem.isFeatureEnabled("schedule_dispatch")) {
+      v.add(new GemMenuButton(BundleUtil.getLabel("ScheduleDispatch.label"), this, "ScheduleDispatch"));
+    }
+
+    if (Algem.isFeatureEnabled("planning_fact")) {
+      v.add(new GemMenuButton(BundleUtil.getLabel("PlanningFact.AbsenceToCatchUp.label"), this, "AbsenceToCatchUp"));
+      v.add(new GemMenuButton(BundleUtil.getLabel("PlanningFact.DeleteLowActivity.label"), this, "DeleteLowActivity"));
+      v.add(new GemMenuButton(BundleUtil.getLabel("PlanningFact.ActivitySup.label"), this, "ActivitySup"));
+      v.add(new GemMenuButton(BundleUtil.getLabel("PlanningFact.Replanify.label"), this, "Replanify"));
+    }
     /* v.add(new GemMenuButton("Replanifier ce cours", this, "Replanifier")); */
     return v;
   }
@@ -262,6 +277,17 @@ public class PlanModifCtrl
         dialogAtelierInstruments();
       } else if(arg.equals("AddEvent")) {
         dialogAddEvent();
+      } else if(arg.equals("AbsenceToCatchUp")) {
+        new AbsenceToCatchUpCtrl(desktop, plan).run();
+      } else if(arg.equals("DeleteLowActivity")) {
+        new DeleteLowActivityCtrl(desktop, plan).run();
+      } else if (arg.equals("Replanify")) {
+        new ReplanifyCtrl(desktop, plan).run();
+      } else if (arg.equals("ActivitySup")) {
+        new ActivitySupCtrl(desktop, plan).run();
+      } else if (arg.equals("ScheduleDispatch")) {
+        Action action = ((CourseSchedule) plan).getAction();
+        new ScheduleDispatchController(desktop, action).run();
       }
       /*
        else if (arg.bufferEquals("Replanifier")) {

@@ -1,0 +1,8 @@
+{
+  "description": "Un script de test",
+  "args": [{
+    "name" : "dateDebut", "label": "Date début", "type": "date"
+  }, {
+    "name" : "dateFin", "label": "Date fin", "type": "date"
+  }]
+}
