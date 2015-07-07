@@ -1,7 +1,7 @@
 /*
- * @(#)RightsMenuView.java	2.6.a 01/08/2012
+ * @(#)RightsMenuView.java	2.9.4.9 06/07/15
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -25,29 +25,26 @@ import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.table.TableColumn;
 import net.algem.util.BundleUtil;
-import net.algem.util.DataConnection;
 import net.algem.util.ui.GemPanel;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.4.9
  * @since 2.6.a 01/08/2012
  */
 public class RightsMenuView
         extends GemPanel
 {
 
-  private DataConnection dc;
   private User user;
   private JTable table;
   private JTextField login;
   private JTextField id;
   private JComboBox profile;
-  //String [] ref_profils = {"Basique","Utilisateur","Professeur","Public","Administrateur"};
-  private MenuTableModel tmodel;
+  private MenuTableModel tableModel;
 
-  public RightsMenuView(UserService service) {
+  public RightsMenuView(final UserService service) {
     table = new JTable();
     table.setAutoCreateRowSorter(true);
     table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
@@ -55,24 +52,24 @@ public class RightsMenuView
     JScrollPane p = new JScrollPane(table);
     p.setBorder(new BevelBorder(BevelBorder.LOWERED));
 
-    tmodel = new MenuTableModel(service);
-    table.setModel(tmodel);
+    tableModel = new MenuTableModel(service);
+    table.setModel(tableModel);
 
     id = new JTextField(6);
     id.setEnabled(false);
     login = new JTextField(8);
     profile = new JComboBox(UserIO.PROFIL_NAMES);
 
-    JPanel haut = new JPanel();
-    haut.add(new JLabel(BundleUtil.getLabel("Id.label")));
-    haut.add(id);
-    haut.add(new JLabel(BundleUtil.getLabel("Login.label")));
-    haut.add(login);
-    haut.add(new JLabel(BundleUtil.getLabel("Profile.label")));
-    haut.add(profile);
+    JPanel top = new JPanel();
+    top.add(new JLabel(BundleUtil.getLabel("Id.label")));
+    top.add(id);
+    top.add(new JLabel(BundleUtil.getLabel("Login.label")));
+    top.add(login);
+    top.add(new JLabel(BundleUtil.getLabel("Profile.label")));
+    top.add(profile);
 
     setLayout(new BorderLayout());
-    add(haut, BorderLayout.NORTH);
+    add(top, BorderLayout.NORTH);
     add(p, BorderLayout.CENTER);
   }
 
@@ -94,12 +91,11 @@ public class RightsMenuView
     user = _user;
     id.setText(String.valueOf(user.getId()));
     login.setText(user.getLogin());
-    tmodel.load(user.getId());
+    tableModel.load(user.getId());
     profile.setSelectedIndex(user.getProfile());
     TableColumn col = table.getColumnModel().getColumn(0);
     col.setMaxWidth(50);
     col = table.getColumnModel().getColumn(2);
     col.setMaxWidth(50);
-    //table.repaint();
   }
 }

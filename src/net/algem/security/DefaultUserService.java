@@ -1,7 +1,7 @@
 /*
- * @(#)DefaultUserService.java	2.8.w 08/07/14
+ * @(#)DefaultUserService.java	2.9.4.9 06/07/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -40,7 +40,7 @@ import org.apache.commons.codec.binary.Base64;
  * User operations service.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.4.9
  * @since 2.6.a 06/08/2012
  */
 public class DefaultUserService
@@ -176,6 +176,11 @@ public class DefaultUserService
   public void update(User user) throws SQLException {
     dao.update(user);
     dataCache.update(user);
+  }
+
+  @Override
+  public void delete(int userId) throws UserException {
+    dao.delete(userId);
   }
 
   Vector<MenuAccess> getMenuAccess(int userId) {

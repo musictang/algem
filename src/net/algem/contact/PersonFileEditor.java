@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileEditor 2.9.4.8 23/06/15
+ * @(#)PersonFileEditor 2.9.4.9 06/07/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -65,7 +65,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.8
+ * @version 2.9.4.9
  */
 public class PersonFileEditor
         extends FileEditor
@@ -225,7 +225,7 @@ public class PersonFileEditor
     String arg = evt.getActionCommand();
 
     Object src = evt.getSource();
-    // On suave au préalable l'éventuel nouveau contact avant d'executer les actions des menus.
+    // On sauve au préalable l'éventuel nouveau contact avant d'executer les actions des menus.
     if (dossier.getId() == 0
             && !arg.equals(GemCommand.SAVE_CMD)
             && !arg.equals(GemCommand.CLOSE_CMD)) {
@@ -528,6 +528,10 @@ public class PersonFileEditor
    * @return true if no errors
    */
   boolean save() {
+     if (!dataCache.authorize("Contact.modification.auth")) {
+      MessagePopup.information(personFileView, MessageUtil.getMessage("rights.exception"));
+      return false;
+    }
     int currentId = dossier.getId();
     try {
       dc.setAutoCommit(false);
@@ -947,7 +951,7 @@ public class PersonFileEditor
   }
 
   private void savePersonFile() {
-
+   
     Object[] backup = dossier.backUpOldValues();
     updatePersonFile();
     String msg = dossier.hasErrors();
@@ -988,7 +992,7 @@ public class PersonFileEditor
   private void suppressPerson() {
     // interdire la suppression aux personnes non autorisées
     if (!dataCache.authorize("Contact.suppression.auth")) {
-      MessagePopup.information(personFileView, "Droits insuffisants");
+      MessagePopup.information(personFileView, MessageUtil.getMessage("rights.exception"));
       return;
     }
     if (MessagePopup.confirm(personFileView, MessageUtil.getMessage("contact.delete.confirmation", dossier.getId()))) {

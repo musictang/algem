@@ -1,7 +1,7 @@
 /*
- * @(#)UserIO.java 2.8.s 18/02/14
+ * @(#)UserIO.java 2.9.4.9 06/07/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -25,6 +25,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Vector;
+import net.algem.util.BundleUtil;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
 import net.algem.util.model.Cacheable;
@@ -36,7 +37,7 @@ import org.apache.commons.codec.binary.Base64;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.8.s
+ * @version 2.9.4.9
  * @since 1.0a 07/07/1999
  */
 public class UserIO
@@ -49,8 +50,17 @@ public class UserIO
   public static int PROFIL_PROF = 2; // PROF
   public static int PROFIL_PUBLIC = 3; // PUBLIC
   public static int PROFIL_ADMIN = 4; // ADMIN
-  public static String[] PROFIL_NAMES = {"Basique", "Utilisateur", "Professeur", "Public", "Administrateur"};
+  public static String[] PROFIL_NAMES = {
+    BundleUtil.getLabel("Profile.basic.label"), 
+    BundleUtil.getLabel("Profile.user.label"),
+    BundleUtil.getLabel("Profile.teacher.label"),
+    BundleUtil.getLabel("Profile.public.label"),
+    BundleUtil.getLabel("Profile.administrator.label"),
+  };
   static final String TABLE = "login";
+  static final String MENU_TABLE = "menu2";
+  static final String PROFIL_TABLE = "menuprofil";
+  static final String MENU_ACCESS = "menuaccess";
   private DataConnection dc;
 
   public UserIO(DataConnection dc) {
@@ -94,9 +104,24 @@ public class UserIO
 
   }
 
-  public void delete(User u) throws SQLException {
-    String query = "DELETE FROM " + TABLE + " WHERE idper = " + u.getId();
-    dc.executeUpdate(query);
+  public void delete(final int userId) throws UserException {
+    try {
+      dc.withTransaction(new DataConnection.SQLRunnable<Void>()
+      {
+        
+        @Override
+        public Void run(DataConnection conn) throws Exception {
+          String query = "DELETE FROM " + TABLE + " WHERE idper = " + userId;
+          dc.executeUpdate(query);
+          query = "DELETE FROM " + MENU_ACCESS + " WHERE idper = " + userId;
+          dc.executeUpdate(query);
+          return null;
+        }
+      });
+    } catch (Exception ex) {
+      throw new UserException(ex.getMessage());
+    }
+    
   }
 
   public void initRights(User u) {
@@ -115,13 +140,13 @@ public class UserIO
   }
 
   public void initMenus(User u) {
-    String query = "SELECT id,auth FROM menu2,menuprofil WHERE id=idmenu AND profil=" + u.getProfile();
+    String query = "SELECT id, auth FROM " + MENU_TABLE + ", " + PROFIL_TABLE + " WHERE id = idmenu AND profil = " + u.getProfile();
     try {
       ResultSet rs = dc.executeQuery(query);
       while (rs.next()) {
         int id = rs.getInt(1);
         boolean b = rs.getBoolean(2);
-        String query2 = "INSERT INTO menuaccess VALUES(" + u.getId() + "," + id + "," + (b ? "'t'" : "'f'") + ")";
+        String query2 = "INSERT INTO " + MENU_ACCESS + " VALUES(" + u.getId() + "," + id + "," + (b ? "'t'" : "'f'") + ")";
         dc.executeUpdate(query2);
       }
       rs.close();
@@ -158,9 +183,7 @@ public class UserIO
     ResultSet rs = dc.executeQuery(query);
     
     while (rs.next()) {
-      net.algem.security.User u = new net.algem.security.User();
-   System.out.println("ooooo");
-//
+      User u = new User();
       u.setId(rs.getInt(1));
       u.setType(rs.getShort(2));
       u.setName(rs.getString(3).trim());

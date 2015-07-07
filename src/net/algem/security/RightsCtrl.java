@@ -1,7 +1,7 @@
 /*
- * @(#)RightsCtrl.java	2.6.a 03/10/12
+ * @(#)RightsCtrl.java	2.9.4.9 06/07/15
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -22,14 +22,17 @@ package net.algem.security;
 
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
+import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
+import net.algem.util.MessageUtil;
 import net.algem.util.ui.CardCtrl;
+import net.algem.util.ui.MessagePopup;
 
 /**
  * comment
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.4.9
  * @since 2.6.a 01/08/2012
  */
 public class RightsCtrl
@@ -56,6 +59,7 @@ public class RightsCtrl
     switch (step) {
       default:
         select(step + 1);
+        setActionPrevious();
         break;
     }
     return true;
@@ -72,6 +76,9 @@ public class RightsCtrl
   @Override
   public boolean prev() {
     switch (step) {
+      case 1:
+        select(0);
+        setActionDelete();
       default:
         select(step - 1);
         break;
@@ -115,15 +122,47 @@ public class RightsCtrl
       cv.load(user);
 
       select(0);
+      setActionDelete();
+      
     } catch (Exception e) {
       GemLogger.logException("lecture ficher droits", e, this);
       return false;
     }
     return true;
   }
+  
+  private void setActionDelete() {
+    btPrev.setText(GemCommand.DELETE_CMD);
+    btPrev.setActionCommand(GemCommand.DELETE_CMD);
+    btPrev.setEnabled(true);
+    btPrev.setToolTipText(MessageUtil.getMessage("login.delete.tip"));
+  }
+  
+  private void setActionPrevious() {
+    btPrev.setActionCommand(GemCommand.PREVIOUS_CMD);
+    btPrev.setText(GemCommand.PREVIOUS_CMD);
+    btPrev.setToolTipText(null);
+  }
 
   @Override
   public boolean loadId(int id) {
     return loadCard(service.findId(id));
   }
+  
+  @Override
+  public void actionPerformed(ActionEvent evt) {
+    super.actionPerformed(evt);
+    if (GemCommand.DELETE_CMD.equals(evt.getActionCommand())) {
+      if (MessagePopup.confirm(this, MessageUtil.getMessage("login.delete.confirmation", user.getLogin()))) {
+        try {
+          service.delete(user.getId());
+          cancel();
+        } catch (UserException ex) {
+          GemLogger.log(ex.getMessage());
+          MessagePopup.warning(this, MessageUtil.getMessage("delete.error"));
+        }
+      }
+    }
+  }
+  
 }
