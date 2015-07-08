@@ -29,6 +29,7 @@ Ces scripts sont fournis par les developpeurs en utilisant le langage javascript
 notamment d'accéder à la base, d'écrire une ligne dans le tableau de sortie. 
 L'avantage est que ces scripts peuvent être écrits et déployés sans recompilation d'Algem, 
 et sont relativement rapide à écrire, car généralement ils ne font qu'englober une requête SQL.
+Une documentation spécifique pour le développeur est fournie dans le dossier script.
 
 Affectation des élèves aux plages de cours collectif
 ===
