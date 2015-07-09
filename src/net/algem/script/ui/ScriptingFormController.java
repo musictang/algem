@@ -1,3 +1,23 @@
+/*
+ * @(#)ScriptingFormController.java 2.9.4.9 08/07/15
+ * 
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * 
+ * This file is part of Algem.
+ * Algem is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * Algem is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License
+ * along with Algem. If not, see http://www.gnu.org/licenses.
+ * 
+ */
 package net.algem.script.ui;
 
 import net.algem.script.common.Script;
@@ -24,6 +44,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.List;
+import net.algem.util.BundleUtil;
 
 public class ScriptingFormController {
     private JPanel panel1;
@@ -93,7 +114,7 @@ public class ScriptingFormController {
                         scriptResult = scriptExecutorService.executeScript(script, userArguments);
                         resultTable.setModel(new ScriptResultTableModel(scriptResult));
                     } catch (Exception e) {
-                        e.printStackTrace(); // TODO show error message
+                        e.printStackTrace();
                         SQLErrorDlg.displayException(getPanel(), "Erreur durant l'éxécution du script", e);
                     }
                     progressBar1.setVisible(false);
@@ -182,7 +203,7 @@ public class ScriptingFormController {
         final JPanel panel2 = new JPanel();
         panel2.setLayout(new GridBagLayout());
         splitPane1.setLeftComponent(panel2);
-        panel2.setBorder(BorderFactory.createTitledBorder("Scripts disponible"));
+        panel2.setBorder(BorderFactory.createTitledBorder(BundleUtil.getLabel("Scripts.available.label")));
         tree1.setMaximumSize(new Dimension(250, 100));
         tree1.setPreferredSize(new Dimension(250, 100));
         tree1.setRequestFocusEnabled(true);
@@ -210,7 +231,7 @@ public class ScriptingFormController {
         gbc.ipady = 6;
         gbc.insets = new Insets(6, 6, 6, 6);
         rightPanel.add(panel3, gbc);
-        panel3.setBorder(BorderFactory.createTitledBorder("Résultats"));
+        panel3.setBorder(BorderFactory.createTitledBorder(BundleUtil.getLabel("Results.label")));
         final JScrollPane scrollPane1 = new JScrollPane();
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -236,7 +257,7 @@ public class ScriptingFormController {
         gbc.ipady = 6;
         gbc.insets = new Insets(6, 6, 6, 6);
         rightPanel.add(panel4, gbc);
-        panel4.setBorder(BorderFactory.createTitledBorder("Paramètres"));
+        panel4.setBorder(BorderFactory.createTitledBorder(BundleUtil.getLabel("Menu.parameters.label")));
         argumentsTable = new JTableX();
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -248,7 +269,7 @@ public class ScriptingFormController {
         gbc.insets = new Insets(6, 6, 6, 6);
         panel4.add(argumentsTable, gbc);
         runButton = new JButton();
-        runButton.setText("Executer");
+        runButton.setText(BundleUtil.getLabel("Action.execute.label"));
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.gridy = 2;
@@ -273,7 +294,7 @@ public class ScriptingFormController {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         rightPanel.add(progressBar1, gbc);
         buttonExport = new JButton();
-        buttonExport.setText("Exporter");
+        buttonExport.setText(BundleUtil.getLabel("Menu.export.label"));
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.gridy = 7;
@@ -304,7 +325,7 @@ public class ScriptingFormController {
         gbc.fill = GridBagConstraints.BOTH;
         gbc.insets = new Insets(6, 6, 6, 6);
         rightPanel.add(panel5, gbc);
-        panel5.setBorder(BorderFactory.createTitledBorder("Description"));
+        panel5.setBorder(BorderFactory.createTitledBorder(BundleUtil.getLabel("Description.label")));
         labelDescription = new JTextArea();
         labelDescription.setEditable(false);
         labelDescription.setFont(UIManager.getFont("Label.font"));

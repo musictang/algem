@@ -20,6 +20,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import net.algem.util.GemCommand;
+import net.algem.util.MessageUtil;
 
 public class PlanningFactCRUDController {
     private JTable table1;
@@ -183,9 +185,9 @@ public class PlanningFactCRUDController {
     private void createUIComponents() {
         datePickerStart = new JXDatePicker();
         datePickerEnd = new JXDatePicker();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
         datePickerStart.setFormats(dateFormat);
-        datePickerEnd.setFormats(new SimpleDateFormat("dd/MM/yyyy"));
+        datePickerEnd.setFormats(new SimpleDateFormat("dd-MM-yyyy"));
     }
 
     private void deleteSelectedFact() {
@@ -201,7 +203,7 @@ public class PlanningFactCRUDController {
                     refresh();
                 } catch (Exception e) {
                     GemLogger.logException(e);
-                    SQLErrorDlg.displayException(getPanel(), "Erreur de suppression", e);
+                    SQLErrorDlg.displayException(getPanel(), MessageUtil.getMessage("delete.error"), e);
                 }
             }
         }
@@ -237,7 +239,7 @@ public class PlanningFactCRUDController {
         gbc.fill = GridBagConstraints.BOTH;
         panel.add(panel1, gbc);
         ajouterButton = new JButton();
-        ajouterButton.setText("Ajouter");
+        ajouterButton.setText(GemCommand.ADD_CMD);
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -246,7 +248,7 @@ public class PlanningFactCRUDController {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel1.add(ajouterButton, gbc);
         modifierButton = new JButton();
-        modifierButton.setText("Modifier");
+        modifierButton.setText(GemCommand.MODIFY_CMD);
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.gridy = 0;
@@ -255,7 +257,7 @@ public class PlanningFactCRUDController {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel1.add(modifierButton, gbc);
         supprimerButton = new JButton();
-        supprimerButton.setText("Supprimer");
+        supprimerButton.setText(GemCommand.DELETE_CMD);
         gbc = new GridBagConstraints();
         gbc.gridx = 2;
         gbc.gridy = 0;

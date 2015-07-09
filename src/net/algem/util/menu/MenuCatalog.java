@@ -1,5 +1,5 @@
 /*
- * @(#)MenuCatalog.java	2.9.4.6 02/06/15
+ * @(#)MenuCatalog.java	2.9.4.9 08/07/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -46,7 +46,7 @@ import net.algem.util.module.GemModule;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.6
+ * @version 2.9.4.9
  * @since 1.0a 07/07/1999
  */
 public class MenuCatalog
@@ -123,9 +123,9 @@ public class MenuCatalog
     } else if (arg.equals(GemCommand.CANCEL_CMD)) {
       desktop.removeCurrentModule();
     } else if (src == scriptItem) {
-        desktop.addPanel("Scripts", new ScriptingFormController(desktop).getPanel());
+        desktop.addPanel("Scripts", new ScriptingFormController(desktop).getPanel(), GemModule.XXL_SIZE);
     } else if (src == factsItem) {
-      desktop.addPanel("Absences & remplacement", new PlanningFactCRUDController(desktop).getPanel());
+        desktop.addPanel("Absences & remplacement", new PlanningFactCRUDController(desktop).getPanel(), GemModule.XXL_SIZE);
     }
     desktop.setDefaultCursor();
   }

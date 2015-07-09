@@ -1,5 +1,5 @@
 /*
- * @(#)UserService.java	2.9.4.9 06/07/15
+ * @(#)UserService.java	2.9.4.9 08/07/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -66,7 +66,7 @@ public interface UserService
 
   public boolean update(User nu, final User old) throws SQLException, UserException;
   
-  public void delete(int userId) throws UserException;
+  public void delete(User user) throws UserException;
 
   public List<User> getRegisteredUsers();
 

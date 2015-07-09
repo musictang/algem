@@ -1,3 +1,23 @@
+/*
+ * @(#)ScriptArgumentTableModel.java 2.9.4.9 08/07/15
+ * 
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * 
+ * This file is part of Algem.
+ * Algem is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * Algem is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License
+ * along with Algem. If not, see http://www.gnu.org/licenses.
+ * 
+ */
 package net.algem.script.ui;
 
 import net.algem.script.common.ScriptArgument;
@@ -5,14 +25,11 @@ import net.algem.script.execution.models.ScriptUserArguments;
 import org.jdesktop.swingx.table.DatePickerCellEditor;
 
 import javax.swing.*;
-import javax.swing.event.CellEditorListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.text.NumberFormatter;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseEvent;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -103,7 +120,7 @@ public class ScriptArgumentTableModel extends AbstractTableModel {
                 case BOOL:
                     return new DefaultCellEditor(new JCheckBox());
                 case DATE:
-                    return new DatePickerCellEditor(new SimpleDateFormat("dd/MM/yyyy"));
+                    return new DatePickerCellEditor(new SimpleDateFormat("dd-MM-yyyy"));
             }
             return editor;
         }
@@ -128,7 +145,7 @@ public class ScriptArgumentTableModel extends AbstractTableModel {
                     return new JCheckBox("", value != null && (boolean) value);
                 case DATE:
                     if (value != null) {
-                        String dateText = new SimpleDateFormat("dd/MM/yyyy").format((Date) value);
+                        String dateText = new SimpleDateFormat("dd-MM-yyyy").format((Date) value);
                         return new JLabel(dateText);
                     } else {
                         return new JLabel("");

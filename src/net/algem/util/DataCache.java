@@ -1,5 +1,5 @@
 /*
- * @(#)DataCache.java	2.9.4.8 25/06/15
+ * @(#)DataCache.java	2.9.4.9 09/07/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,13 +20,6 @@
  */
 package net.algem.util;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.*;
 import javax.swing.JMenuItem;
 import net.algem.Algem;
 import net.algem.Algem.GemBoot;
@@ -79,7 +72,6 @@ import net.algem.util.model.GemList;
 import net.algem.util.model.GemModel;
 import net.algem.util.model.Model;
 
-import javax.swing.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -94,7 +86,7 @@ import java.util.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.8
+ * @version 2.9.4.9
  * @since 1.0b 03/09/2001
  */
 public class DataCache
@@ -513,8 +505,6 @@ public class DataCache
       }
     } else if (m instanceof Member) {
       MEMBER_CACHE.put(m.getId(), (Member) m);
-    } else if (m instanceof Person) {
-      PERSON_CACHE.put(m.getId(), (Person) m);
     } else if (m instanceof Group) {
       GROUP_LIST.addElement((Group) m);
       Collections.sort(GROUP_LIST.getData(), new GroupComparator());
@@ -542,6 +532,8 @@ public class DataCache
       COST_ACCOUNT_CACHE.put(((CostAccount) m).getKey(), (CostAccount) m);
     } else if (m instanceof User) {
       USER_CACHE.put(m.getId(), (User) m);
+    } else if (m instanceof Person) { //!important after subclasses
+      PERSON_CACHE.put(m.getId(), (Person) m);
     } else if (m instanceof Vat) {
       VAT_LIST.addElement((Vat) m);
     } else if (m instanceof CourseCode) {
@@ -579,14 +571,6 @@ public class DataCache
       }
     } else if (m instanceof Member) {
       MEMBER_CACHE.put(m.getId(), (Member) m);
-    } else if (m instanceof Person) {
-      PERSON_CACHE.put(m.getId(), (Person) m);
-      Teacher t = (Teacher) TEACHER_LIST.getItem(m.getId());
-      if (t != null) {
-        t.setFirstName(((Person) m).getFirstName());
-        t.setName(((Person) m).getName());
-        TEACHER_LIST.update(t, new TeacherComparator(ConfigUtil.getConf(ConfigKey.PERSON_SORT_ORDER.getKey())));
-      }
     } else if (m instanceof Group) {
       GROUP_LIST.update((Group) m, new GroupComparator());
     } else if (m instanceof Module) {
@@ -607,6 +591,14 @@ public class DataCache
       COST_ACCOUNT_CACHE.put(((CostAccount)m).getKey(), (CostAccount) m);
     } else if (m instanceof User) {
       USER_CACHE.put(m.getId(), (User) m);
+    } else if (m instanceof Person) {
+      PERSON_CACHE.put(m.getId(), (Person) m);
+      Teacher t = (Teacher) TEACHER_LIST.getItem(m.getId());
+      if (t != null) {
+        t.setFirstName(((Person) m).getFirstName());
+        t.setName(((Person) m).getName());
+        TEACHER_LIST.update(t, new TeacherComparator(ConfigUtil.getConf(ConfigKey.PERSON_SORT_ORDER.getKey())));
+      }
     } else if (m instanceof Action) {
       ACTION_CACHE.put(m.getId(), (Action) m);
     } else if (m instanceof Vat) {
@@ -642,8 +634,6 @@ public class DataCache
     } else if (m instanceof Teacher) {
       TEACHER_INSTRUMENT_CACHE.remove(m.getId());
       TEACHER_LIST.removeElement((Teacher) m);
-    } else if (m instanceof Person) {
-      PERSON_CACHE.remove(m.getId());
     } else if (m instanceof Group) {
       GROUP_LIST.removeElement((Group) m);
     } else if (m instanceof Module) {
@@ -664,6 +654,8 @@ public class DataCache
       COST_ACCOUNT_CACHE.remove(((CostAccount) m).getKey());
     } else if (m instanceof User) {
       USER_CACHE.remove(m.getId());
+    } else if (m instanceof Person) {
+      PERSON_CACHE.remove(m.getId());
     } else if (m instanceof Vat) {
       VAT_LIST.removeElement((Vat) m);
     } else if (m instanceof CourseCode) {

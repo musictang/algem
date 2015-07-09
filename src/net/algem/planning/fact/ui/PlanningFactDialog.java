@@ -35,7 +35,7 @@ public class PlanningFactDialog extends JDialog {
 
     private void createUIComponents() {
         datePicker = new JXDatePicker();
-        datePicker.setFormats(new SimpleDateFormat("dd/MM/yyyy"));
+        datePicker.setFormats(new SimpleDateFormat("dd-MM-yyyy"));
     }
 
     private void setupUI() {

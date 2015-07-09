@@ -1,5 +1,5 @@
 /*
- * @(#)ThemeConfig.java 2.9.4.9 29/06/15
+ * @(#)ThemeConfig.java 2.9.4.9 07/07/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  * 
@@ -187,7 +187,6 @@ public class ThemeConfig
    * @return a i18n-string
    */
   private String getDescription(String name) {
-    System.out.println("descritpion name " + name);
     switch (name) {
       case "CDE/Motif":
         return MessageUtil.getMessage("laf.description.motif");

@@ -1,5 +1,5 @@
 /*
- * @(#)RightsCtrl.java	2.9.4.9 06/07/15
+ * @(#)RightsCtrl.java	2.9.4.9 08/07/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -155,7 +155,7 @@ public class RightsCtrl
     if (GemCommand.DELETE_CMD.equals(evt.getActionCommand())) {
       if (MessagePopup.confirm(this, MessageUtil.getMessage("login.delete.confirmation", user.getLogin()))) {
         try {
-          service.delete(user.getId());
+          service.delete(user);
           cancel();
         } catch (UserException ex) {
           GemLogger.log(ex.getMessage());

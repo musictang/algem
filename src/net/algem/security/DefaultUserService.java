@@ -1,5 +1,5 @@
 /*
- * @(#)DefaultUserService.java	2.9.4.9 06/07/15
+ * @(#)DefaultUserService.java	2.9.4.9 08/07/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -179,8 +179,9 @@ public class DefaultUserService
   }
 
   @Override
-  public void delete(int userId) throws UserException {
-    dao.delete(userId);
+  public void delete(User user) throws UserException {
+    dao.delete(user.getId());
+    dataCache.remove(user);
   }
 
   Vector<MenuAccess> getMenuAccess(int userId) {

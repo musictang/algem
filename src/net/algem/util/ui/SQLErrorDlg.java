@@ -1,7 +1,7 @@
 /*
- * @(#)SQLErrorDlg.java	2.6.a 25/09/12
+ * @(#)SQLErrorDlg.java	2.9.4.9 07/07/15
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -36,7 +36,7 @@ import net.algem.util.GemCommand;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.4.9
  */
 public class SQLErrorDlg
         implements ActionListener
@@ -74,9 +74,6 @@ public class SQLErrorDlg
       //ex.printStackTrace(pos);
     }
 
-    /* FIXME que les premieres lignes net.algem (classfile+ligne)
-     * pos.println("\nStackTrace"); ex.printStackTrace(pos);
-     */
     pos.flush();
 
     trace.setText(bos.toString());
