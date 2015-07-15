@@ -53,6 +53,9 @@ public class PlanningExportService
   private final ScheduleColorizer colorizer;
   private final PlanningService planningService;
 
+  private final static short COLOR_START_INDEX = 20;
+  private short colorIndex = COLOR_START_INDEX;
+
   public PlanningExportService(PlanningService service, ScheduleColorizer colorizer) {
     this.planningService = service;
     this.colorizer = colorizer;
@@ -73,6 +76,9 @@ public class PlanningExportService
     printSetup.setPaperSize(PrintSetup.A3_PAPERSIZE);
     sheet.setFitToPage(true);
     sheet.setHorizontallyCenter(true);
+
+    eraseAllColors(workbook);
+    colorIndex = COLOR_START_INDEX;
 
     Map<String, CellStyle> styles = createStyles(workbook);
 
@@ -130,6 +136,12 @@ public class PlanningExportService
     out.close();
   }
 
+  private void eraseAllColors(HSSFWorkbook workbook) {
+    for (short i = 0; i < 56; i++) {
+      workbook.getCustomPalette().setColorAtIndex(i, (byte) 0,(byte)  0, (byte) 0);
+    }
+  }
+
   private Map<String, CellStyle> createStyles(HSSFWorkbook wb) {
     Map<String, CellStyle> styles = new HashMap<>();
 
@@ -170,9 +182,9 @@ public class PlanningExportService
       style.setBorderBottom(CellStyle.BORDER_THIN);
       style.setFillPattern(CellStyle.SOLID_FOREGROUND);
       HSSFColor hffsColor = wb.getCustomPalette().findColor((byte) color.getRed(), (byte)color.getGreen(), (byte)color.getBlue());
-      short index = -1;
+      short index;
       if (hffsColor == null) {
-        index = wb.getCustomPalette().findSimilarColor((byte) color.getRed(), (byte)color.getGreen(), (byte)color.getBlue()).getIndex();
+        index = colorIndex++;
         wb.getCustomPalette().setColorAtIndex(index, (byte) color.getRed(), (byte)color.getGreen(), (byte)color.getBlue());
       } else {
         index = hffsColor.getIndex();
