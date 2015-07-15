@@ -426,7 +426,7 @@ public class PlanModifCtrl
     }
     try {
       Action a = ((CourseSchedule) plan).getAction();
-      ModifPlanActionDlg dlg = new ModifPlanActionDlg(desktop, a, new DayPlanView().getDefaultScheduleColor(plan));
+      ModifPlanActionDlg dlg = new ModifPlanActionDlg(desktop, a, new DayPlanView().getColorizer().getDefaultScheduleColor(plan));
       dlg.show();
       if (!dlg.isValidate()) {
         return;
