@@ -183,7 +183,7 @@ public class MonthPlanView
   private void drawSchedules(Vector<ScheduleObject> plans) {
     for (int i = 0; i < plans.size(); i++) {
       ScheduleObject p = (ScheduleObject) plans.elementAt(i);
-      Color c = getScheduleColor(p);
+      Color c = colorizer.getScheduleColor(p);
       drawRange(p, c, step_x);
       if (p.getType() == Schedule.MEMBER || p.getType() == Schedule.GROUP) {
         if (p.getNote() == -1) {
@@ -288,7 +288,7 @@ public class MonthPlanView
       if (((Course) p.getActivity()).isCollective()) {
         int x = RIGHT_MARGIN + 0 + ((p.getDate().getDay() - 1) * step_x) - (step_x - 8);
         int y = setY(p.getStart().toMinutes());
-        bg.setColor(getTextColor(p));
+        bg.setColor(colorizer.getTextColor(p));
         bg.setFont(X_SMALL_FONT);
         showLabel(p, x, y);
       }

@@ -20,12 +20,10 @@
  */
 package net.algem.planning.export;
 
-import net.algem.config.ColorPlan;
 import net.algem.config.ColorPrefs;
 import net.algem.course.Course;
 import net.algem.planning.*;
 import net.algem.planning.day.DayPlan;
-import net.algem.room.Room;
 import net.algem.util.GemLogger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
@@ -52,12 +50,12 @@ import org.apache.poi.hssf.util.HSSFColor;
 public class PlanningExportService
 {
 
-  private ColorPrefs colorPrefs;
-  private PlanningService planningService;
+  private final ScheduleColorizer colorizer;
+  private final PlanningService planningService;
 
-  public PlanningExportService(PlanningService service) {
+  public PlanningExportService(PlanningService service, ScheduleColorizer colorizer) {
     this.planningService = service;
-    colorPrefs = new ColorPrefs();
+    this.colorizer = colorizer;
   }
 
   public void exportPlanning(List<DayPlan> dayPlan, File destFile) throws IOException {
@@ -157,7 +155,7 @@ public class PlanningExportService
   }
 
   private CellStyle getCoursStyle(HSSFWorkbook wb, ScheduleObject o, Map<java.awt.Color, CellStyle> cache) {
-    java.awt.Color color = getScheduleColor(o);
+    java.awt.Color color = colorizer.getScheduleColor(o);
     CellStyle cachedStyle = cache.get(color);
     if (cachedStyle != null) {
       return cachedStyle;
@@ -211,48 +209,5 @@ public class PlanningExportService
         sb.append(p.getScheduleLabel());
     }
     return sb.toString();
-  }
-
-  protected java.awt.Color getScheduleColor(ScheduleObject p) {
-    java.awt.Color c = java.awt.Color.white;
-    switch (p.getType()) {
-      case Schedule.COURSE:
-        Room s = ((CourseSchedule) p).getRoom();
-        Course cc = ((CourseSchedule) p).getCourse();
-        if (s.isCatchingUp()) {
-          c = colorPrefs.getColor(ColorPlan.CATCHING_UP);
-        } else {
-          if (cc != null && !cc.isCollective()) {
-            c = colorPrefs.getColor(ColorPlan.COURSE_INDIVIDUAL);
-          } else {
-            if (cc != null && cc.isInstCode()) {
-              c = colorPrefs.getColor(ColorPlan.INSTRUMENT_CO);
-            } else {
-              c = colorPrefs.getColor(ColorPlan.COURSE_CO);
-            }
-          }
-        }
-        break;
-      case Schedule.ACTION:
-        c = colorPrefs.getColor(ColorPlan.ACTION);
-        break;
-      case Schedule.MEMBER:
-        c = colorPrefs.getColor(ColorPlan.MEMBER_REHEARSAL);
-        break;
-      case Schedule.GROUP:
-        c = colorPrefs.getColor(ColorPlan.GROUP_REHEARSAL);
-        break;
-      case Schedule.WORKSHOP:
-        c = colorPrefs.getColor(ColorPlan.WORKSHOP);
-        break;
-      case Schedule.TRAINING:
-        c = colorPrefs.getColor(ColorPlan.TRAINING);
-        break;
-      case Schedule.STUDIO:
-      case Schedule.TECH:
-        c = colorPrefs.getColor(ColorPlan.STUDIO);
-        break;
-    } // end switch couleurs
-    return c;
   }
 }

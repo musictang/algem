@@ -258,7 +258,7 @@ public class DayPlanView
   protected void drawSchedules(int i, Vector<ScheduleObject> v) {
     for (int j = 0; j < v.size(); j++) {
       ScheduleObject p = v.elementAt(j);
-      Color c = getScheduleColor(p);
+      Color c = colorizer.getScheduleColor(p);
       drawRange(i, p, c, step_x); // dessin des plannings p comme ScheduleObject
       if (p.getType() == Schedule.MEMBER || p.getType() == Schedule.GROUP) {
         if (p.getNote() == -1) {
@@ -288,7 +288,7 @@ public class DayPlanView
     // individual schedule ranges
     for (ScheduleRangeObject p : vp) {
       Course cc = p.getCourse();
-      c = getScheduleColor(p);
+      c = colorizer.getScheduleColor(p);
       if (cc != null && !cc.isCollective() || Schedule.ADMINISTRATIVE == p.getType()) {
         drawRange(i, p, c, step_x);
       }
@@ -309,14 +309,14 @@ public class DayPlanView
         continue;
       }
       w = getScheduleRangeWidth(vpci.get(idx).getAction().getPlaces(), n);
-      c = getScheduleColor(p);
+      c = colorizer.getScheduleColor(p);
       drawRange(i, vpci.get(idx), c, w);
       idp = p.getScheduleId();
       n = 1;
       idx = j;
     }
     // last schedule of the column
-    c = getScheduleColor(vpci.get(idx));
+    c = colorizer.getScheduleColor(vpci.get(idx));
     w = getScheduleRangeWidth(vpci.get(idx).getAction().getPlaces(), n);
     drawRange(i, vpci.get(idx), c, w);
   }
@@ -335,7 +335,7 @@ public class DayPlanView
     int y = setY(pStart);
     int ht = setY(pEnd) - y;
 
-    bg.setColor(getScheduleRangeColor(p, c));
+    bg.setColor(colorizer.getScheduleRangeColor(p, c));
     bg.fillRect(x, y, w - 1, ht - 1);
     bg.setColor(Color.black);
     // black line separator
@@ -371,7 +371,7 @@ public class DayPlanView
     int x = setX(col, 1);
     int y = setY(pStart);
 
-    bg.setColor(getTextColor(p));
+    bg.setColor(colorizer.getTextColor(p));
     bg.setFont(NORMAL_FONT);
 
     showLabel(p, prev, x, y);

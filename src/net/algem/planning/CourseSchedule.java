@@ -72,7 +72,7 @@ public class CourseSchedule
 
   @Override
   public String getScheduleLabel() {
-    return ((Course) activity).getTitle();
+    return activity != null ? ((Course) activity).getTitle() : "";
   }
 
   @Override
