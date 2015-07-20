@@ -1,5 +1,5 @@
 /*
- * @(#)ModifPlanActionDlg.java 2.9.4.3 21/04/15
+ * @(#)ModifPlanActionDlg.java 2.9.4.10 17/07/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -34,7 +34,7 @@ import net.algem.util.module.GemDesktop;
  * Dialog for changing planification parameters.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.3
+ * @version 2.9.4.10
  * @since 2.5.a 22/06/12
  */
 class ModifPlanActionDlg
@@ -58,7 +58,7 @@ class ModifPlanActionDlg
     pv = new ModifPlanActionView(desktop.getDataCache(), a, defaultColor);
     dlg = new JDialog(parent, true);
     addContent(pv, null);
-    dlg.setSize(320, 240);
+    dlg.setSize(340,310);
   }
 
   @Override
@@ -86,7 +86,9 @@ class ModifPlanActionDlg
       } else {
         a.setColor(c);
       }
-    } 
+    }
+    a.setNote(pv.getNote());
+    
     return a;
   }
 

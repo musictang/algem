@@ -1,5 +1,5 @@
 /*
- * @(#)Person.java	2.9.4.8 24/06/15
+ * @(#)Person.java	2.9.4.10 17/07/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -32,7 +32,7 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.8
+ * @version 2.9.4.10
  *
  * @since 1.0a 07/07/1999
  */
@@ -45,6 +45,7 @@ public class Person
   public static final short ROOM = 4;
   public static final short ESTABLISHMENT = 5;
   public static final short BANK = 6;
+  public static final short ACTION = 7;
   protected static boolean nameFirst = ConfigUtil.getConf(ConfigKey.PERSON_SORT_ORDER.getKey()).equalsIgnoreCase("n");
   protected int id;
   protected short type = PERSON;

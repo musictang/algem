@@ -1,5 +1,5 @@
 /*
- * @(#)Action.java	2.9.4.7 12/06/15
+ * @(#)Action.java	2.9.4.10 17/07/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -23,6 +23,7 @@ package net.algem.planning;
 import java.util.List;
 import net.algem.config.AgeRange;
 import net.algem.config.GemParam;
+import net.algem.contact.Note;
 import net.algem.util.model.GemModel;
 
 /**
@@ -34,7 +35,7 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.7
+ * @version 2.9.4.10
  * @since 1.0a 07/07/1999
  */
 public class Action
@@ -55,6 +56,7 @@ public class Action
   private boolean resetDefaultColor;
   private int memberId;
   private Periodicity periodicity;
+  private Note note;
 
   /** Length in minutes. */
   private int length;
@@ -258,7 +260,15 @@ public class Action
   public void setDates(List<DateFr> dates) {
     this.dates = dates;
   }
-  
+
+  public Note getNote() {
+    return note;
+  }
+
+  public void setNote(Note note) {
+    this.note = note;
+  }
+
   @Override
   public String toString() {
     return id + " " + hourStart + " " + hourEnd + " " + idper + " " + memberId + " " + roomId;

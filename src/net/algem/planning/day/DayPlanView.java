@@ -1,5 +1,5 @@
 /*
- * @(#)DayPlanView.java 2.9.4.3 21/04/15
+ * @(#)DayPlanView.java 2.9.4.10 17/07/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -30,23 +30,25 @@ import java.util.List;
 import net.algem.config.ColorPlan;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
+import net.algem.contact.Note;
 import net.algem.course.Course;
 import net.algem.planning.*;
 import net.algem.room.DailyTimes;
+import net.algem.util.DataCache;
 
 /**
  * Day schedule layout.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.3
+ * @version 2.9.4.10
  * @since 1.0a 07/07/1999
  */
 public class DayPlanView
         extends ScheduleCanvas
         implements Printable
 {
-
+  
   private int ncols = 5;
   private int lineHeight;
   private FontMetrics fm;
@@ -56,11 +58,12 @@ public class DayPlanView
   private Calendar cal;
   private Vector<DayPlan> cols;
   private boolean showRangeNames;
-  
+
   /** Schedule type info used to differenciate label.
    *  @see Schedule
    */
   private int type;
+  private ActionService actionService;
 
   public DayPlanView(Date d) {
     cols = new Vector<DayPlan>();
@@ -70,6 +73,7 @@ public class DayPlanView
     step_x = 100;
     showRangeNames = ConfigUtil.getConf(ConfigKey.SCHEDULE_RANGE_NAMES.getKey()).equals("t");
     addMouseListener(this);
+    this.actionService = new ActionService();
   }
 
   public DayPlanView() {
@@ -162,6 +166,7 @@ public class DayPlanView
       }
       drawSchedules(i, pj.getSchedule());
       drawScheduleRanges(i, pj.getScheduleRange());
+      drawScheduleFlag(i, pj.getSchedule());// must be the last
     }
 
     for (int i = top; i < top + ncols && i < cols.size(); i++) {
@@ -267,6 +272,37 @@ public class DayPlanView
       }
     }
   }
+  
+  /**
+   * Draw a flag inside each schedule with a memo.
+   * @param i col
+   * @param v list of schedules
+   */
+  private void drawScheduleFlag(int i, Vector<ScheduleObject> v) {
+    for (int j = 0; j < v.size(); j++) {
+      ScheduleObject p = v.elementAt(j);
+      if (hasNoteForAction(p)) {
+        drawActionNoteFlag(i, p.getStart().toMinutes(), Color.BLACK);
+      }
+    }
+  }
+  
+  /**
+   * Checks if this schedule has a planning memo.
+   *
+   * @param p schedule
+   * @return true if a note exists
+   */
+  private boolean hasNoteForAction(ScheduleObject p) {
+    Note n = DataCache.ACTION_MEMO_CACHE.get(p.getIdAction());
+    if (n == null) {
+      n = actionService.getMemo(p.getIdAction());
+      if (n != null) {
+        DataCache.ACTION_MEMO_CACHE.put(p.getIdAction(), n);
+      }
+    }
+    return n != null;
+  }
 
   /**
    * Schedule range coloring.
@@ -345,6 +381,13 @@ public class DayPlanView
     if (showRangeNames || Schedule.ADMINISTRATIVE == p.getType()) {
       textSubRange(p, x);
     }
+  }
+  
+  private void drawActionNoteFlag(int col, int start, Color c){
+    int x = setX(col, 2);
+    int y = setY(start);
+    bg.setColor(c);
+    bg.fillPolygon(new int[]{x,x+6,x},new int[]{y,y,y+6},3);
   }
   
   private void textSubRange(ScheduleObject p, int x) {

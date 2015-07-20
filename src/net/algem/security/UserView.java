@@ -1,7 +1,7 @@
 /*
- * @(#)UserView.java	2.8.s 18/02/14
+ * @(#)UserView.java	2.9.4.10 20/07/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -33,7 +33,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.s
+ * @version 2.9.4.10
  */
 public class UserView
         extends GemBorderPanel
@@ -92,7 +92,7 @@ public class UserView
 
   public void set(User u) {
     name.setText(u.getFirstName() + " " + u.getName());
-    password.setText(u.getPassword());// clear text password is null by default
+    password.setText(u.getPassword());
     login.setText(u.getLogin());
     profile.setSelectedIndex(u.getProfile());
   }

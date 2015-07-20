@@ -1,7 +1,7 @@
 /*
- * @(#)ActionService.java  2.7.a 07/01/13
+ * @(#)ActionService.java  2.9.4.10 17/07/15
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -25,14 +25,19 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Vector;
 import net.algem.config.*;
+import net.algem.contact.Note;
+import net.algem.contact.NoteException;
+import net.algem.contact.NoteIO;
+import net.algem.contact.Person;
 import net.algem.util.DataCache;
+import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
 import net.algem.util.model.Model;
 
 /**
  * Service class for actions.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.9.4.10
  * @since 2.5.a 27/06/12
  */
 public class ActionService
@@ -41,12 +46,15 @@ public class ActionService
   private StatusIO statusIO;
   private DataCache dataCache;
 
+  public ActionService() {
+  }
+  
   public ActionService(DataCache dataCache) {
     this.dataCache = dataCache;
     levelIO = (LevelIO) DataCache.getDao(Model.Level);
     statusIO = (StatusIO) DataCache.getDao(Model.Status);
   }
-  
+
   public String verifyLevel(GemParam n) throws SQLException {
     verify(n);
     Vector<GemParam> nv = levelIO.find("WHERE id != " + n.getId() + " AND code = '" + n.getCode() + "'");
@@ -109,6 +117,20 @@ public class ActionService
   
   public List<AgeRange> getAgeRangeAll() throws SQLException {
     return dataCache.getList(Model.AgeRange).getData();
+  }
+  
+  /**
+   * Gets a note corresponding to the action {@code actionId}.
+   * @param actionId
+   * @return a note instance or null if none was found
+   */
+  public Note getMemo(int actionId) {
+    try {
+      return NoteIO.findId(actionId, Person.ACTION, DataCache.getDataConnection());
+    } catch (NoteException ex) {
+      GemLogger.log(ex.getMessage());
+    }
+    return null;
   }
   
 }

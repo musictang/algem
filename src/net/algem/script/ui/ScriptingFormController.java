@@ -1,5 +1,5 @@
 /*
- * @(#)ScriptingFormController.java 2.9.4.9 08/07/15
+ * @(#)ScriptingFormController.java 2.9.4.10 20/07/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  * 
@@ -46,6 +46,11 @@ import java.io.File;
 import java.util.List;
 import net.algem.util.BundleUtil;
 
+/**
+ * @author Alexandre Delattre
+ * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
+ * @since 2.9.4.9
+ */
 public class ScriptingFormController {
     private JPanel panel1;
     private JTree tree1;
@@ -216,7 +221,7 @@ public class ScriptingFormController {
         panel2.add(tree1, gbc);
         JPanel rightPanel = new JPanel();
         rightPanel.setLayout(new GridBagLayout());
-        rightPanel.setPreferredSize(new Dimension(800, 800));
+        //rightPanel.setPreferredSize(new Dimension(800, 800)); // don't define (bug dividerLocation)
         splitPane1.setRightComponent(rightPanel);
         final JPanel panel3 = new JPanel();
         panel3.setLayout(new GridBagLayout());
@@ -259,6 +264,7 @@ public class ScriptingFormController {
         rightPanel.add(panel4, gbc);
         panel4.setBorder(BorderFactory.createTitledBorder(BundleUtil.getLabel("Menu.parameters.label")));
         argumentsTable = new JTableX();
+        argumentsTable.setRowHeight(new JTextField().getPreferredSize().height);
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;

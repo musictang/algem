@@ -1,5 +1,5 @@
 /*
- * @(#)ModifPlanActionView.java 2.9.4.7 12/06/15
+ * @(#)ModifPlanActionView.java 2.9.4.10 17/07/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -30,7 +30,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import javax.swing.JCheckBox;
+import javax.swing.JTextArea;
 import net.algem.config.*;
+import net.algem.contact.Note;
+import net.algem.contact.Person;
 import net.algem.planning.Action;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
@@ -42,7 +45,7 @@ import net.algem.util.ui.*;
  * Modification of status, level, age range and number of places.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.7
+ * @version 2.9.4.10
  * @since 2.5.a 22/06/12
  */
 class ModifPlanActionView
@@ -53,7 +56,9 @@ class ModifPlanActionView
   private GemParamChoice ageRange;
   private GemNumericField places;
   private GemPanel bgColorPanel;
+  private JTextArea noteArea;
   private int initialColor;
+  private Note memo;
   private Color defaultBgColor;
 
   public ModifPlanActionView(DataCache dataCache, Action a, Color defaultColor) throws SQLException {
@@ -101,6 +106,15 @@ class ModifPlanActionView
       }
     });
     colorPanel.add(bgRestore, BorderLayout.EAST);
+    
+    noteArea = new JTextArea(4,16);
+    noteArea.setLineWrap(true);
+    noteArea.setWrapStyleWord(true);
+    noteArea.setBorder(places.getBorder());
+    if (a.getNote() != null) {
+      memo = a.getNote();
+      noteArea.setText(a.getNote().getText());
+    }
 
     GemPanel p = new GemPanel(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(p);
@@ -116,6 +130,8 @@ class ModifPlanActionView
     gb.add(new GemLabel(BundleUtil.getLabel("Color.label")), 0, 4, 1, 1, GridBagHelper.WEST);
     colorPanel.setPreferredSize(new Dimension(colorPanel.getPreferredSize().width, places.getPreferredSize().height));
     gb.add(colorPanel, 1, 4, 1, 1, GridBagHelper.NORTHWEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Note.label")), 0, 5, 1, 1, GridBagHelper.NORTHWEST);
+    gb.add(noteArea, 1, 5, 1, 1, GridBagHelper.NORTHWEST);
 
     add(p);
   }
@@ -149,8 +165,26 @@ class ModifPlanActionView
     return c != initialColor ? c : 0;
   }
   
+  Note getNote() {
+    String n = noteArea.getText();
+    if (n.isEmpty()) {
+      if (memo == null) {
+        return null;
+      } else {
+        memo.setIdPer(0);
+        return memo; // delete
+      }
+    }
+    if (memo == null) {
+      return new Note(0, n, Person.ACTION); // create
+    } else {
+      return new Note(memo.getId(), memo.getIdPer(), n, Person.ACTION); // update
+    }
+  }
+  
   boolean isEntryValid() {
     short p = getPlaces();
     return getLevel().getId() >= 0 && getStatus().getId() >= 0 && p >= 0 && p < 500;
   }
+
 }

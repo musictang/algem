@@ -1,5 +1,5 @@
 /*
- * @(#)PlanModifCtrl.java	2.9.4.3 21/04/15
+ * @(#)PlanModifCtrl.java	2.9.4.10 17/07/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -58,7 +58,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.0
+ * @version 2.9.4.10
  * @since 1.0b 05/07/2002 lien salle et groupe
  */
 public class PlanModifCtrl
@@ -424,20 +424,26 @@ public class PlanModifCtrl
     if (!(plan instanceof CourseSchedule)) {
       return;
     }
+
+    Action a = ((CourseSchedule) plan).getAction();
+    a.setNote(new ActionService().getMemo(a.getId()));
+
     try {
-      Action a = ((CourseSchedule) plan).getAction();
       ModifPlanActionDlg dlg = new ModifPlanActionDlg(desktop, a, new DayPlanView().getDefaultScheduleColor(plan));
       dlg.show();
+
       if (!dlg.isValidate()) {
         return;
       }
+      
       a = dlg.get();
       a.setPlaces(maxPlaces(a.getPlaces(), plan.getRoom()));
-
+    
       service.updateAction(a);
       dataCache.update(a);
       desktop.postEvent(new ModifPlanEvent(service, plan.getDate(), plan.getDate()));
-    } catch (SQLException sqe) {
+    } catch (Exception sqe) {
+      GemLogger.logException(sqe);
       MessagePopup.warning(null, sqe.getMessage());
     }
   }

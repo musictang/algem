@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileEditor 2.9.4.9 06/07/15
+ * @(#)PersonFileEditor 2.9.4.10 20/07/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -65,7 +65,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.9
+ * @version 2.9.4.10
  */
 public class PersonFileEditor
         extends FileEditor
@@ -623,8 +623,8 @@ public class PersonFileEditor
       } else {
         User nu = dlg.getUser();
         if (service.update(nu, u)) {
-          dataCache.update(u);
-          desktop.postEvent(new GemEvent(this, GemEvent.MODIFICATION, GemEvent.USER, u));
+          dataCache.update(nu);
+          desktop.postEvent(new GemEvent(this, GemEvent.MODIFICATION, GemEvent.USER, nu));
         }
       }
     } catch (SQLException e) {

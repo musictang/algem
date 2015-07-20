@@ -1,5 +1,5 @@
 /*
- * @(#)DataCache.java	2.9.4.9 09/07/15
+ * @(#)DataCache.java	2.9.4.10 17/07/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -80,13 +80,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import net.algem.contact.Note;
 
 /**
  * Cache and various utilities.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.9
+ * @version 2.9.4.10
  * @since 1.0b 03/09/2001
  */
 public class DataCache
@@ -124,6 +125,8 @@ public class DataCache
   private static Hashtable<Integer, Item> ITEM_CACHE = new Hashtable<Integer, Item>();
   private static Hashtable<Integer, OrderLine> ORDER_LINE_CACHE = new Hashtable<Integer, OrderLine>();
   private static Hashtable<Integer, RehearsalPass> PASS_CARD = new Hashtable<Integer, RehearsalPass>();
+  /** Cached action memos. Key = action id, value = Note instance. */
+  public static HashMap<Integer, Note> ACTION_MEMO_CACHE = new HashMap<Integer, Note>();
 
   private static GemList<Course> COURSE_LIST;
   private static GemList<Course> WORKSHOP_LIST;
@@ -216,7 +219,6 @@ public class DataCache
     loadDayRangeStmt = dc.prepareStatement(ScheduleRangeIO.getDayRangeStmt());
 
     userService = new DefaultUserService(this);
-//    user = ((DefaultUserService) userService).find(login);
 
     monthSchedule = new MonthSchedule();
     daySchedule = new DaySchedule();
@@ -601,6 +603,12 @@ public class DataCache
       }
     } else if (m instanceof Action) {
       ACTION_CACHE.put(m.getId(), (Action) m);
+      Note n = ((Action) m).getNote();
+      if (n != null) {
+        if (n.getIdPer() == 0) {
+          ACTION_MEMO_CACHE.remove(m.getId());
+        } 
+      }
     } else if (m instanceof Vat) {
       VAT_LIST.update((Vat) m, null);
     } else if (m instanceof CourseCode) {

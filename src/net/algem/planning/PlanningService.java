@@ -1,5 +1,5 @@
 /*
- * @(#)PlanningService.java	2.9.4.8 22/06/15
+ * @(#)PlanningService.java	2.9.4.10 17/07/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -25,6 +25,8 @@ import java.sql.SQLException;
 import java.text.DateFormatSymbols;
 import java.util.*;
 import net.algem.contact.EmployeeIO;
+import net.algem.contact.Note;
+import net.algem.contact.NoteIO;
 import net.algem.contact.Person;
 import net.algem.contact.PersonIO;
 import net.algem.course.Course;
@@ -1057,8 +1059,27 @@ public class PlanningService
     return (Action) DataCache.findId(id, Model.Action);
   }
 
-  public void updateAction(Action a) throws SQLException {
-    actionIO.update(a);
+  public void updateAction(final Action a) throws Exception {
+    dc.withTransaction(new DataConnection.SQLRunnable<Void>()
+    {
+      @Override
+      public Void run(DataConnection conn) throws Exception {
+        actionIO.update(a);
+        Note n = a.getNote();
+        if (n != null) {
+          if (n.getId() == 0) {
+            n.setIdPer(a.getId());
+            NoteIO.insert(n, dc);
+          } else if (n.getIdPer() == 0) {
+            NoteIO.delete(n, dc);
+          } else {
+            NoteIO.update(n, dc);
+          }
+        } 
+        return null;
+      }
+    });
+
   }
 
   public void updateAdministrativeEvent(final ScheduleRangeObject range, final String note) throws PlanningException {

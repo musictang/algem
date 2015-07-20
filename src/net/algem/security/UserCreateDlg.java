@@ -1,7 +1,7 @@
 /*
- * @(#)UserCreateDlg.java	2.8.p 30/10/13
+ * @(#)UserCreateDlg.java	2.9.4.10 20/07/15
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -39,7 +39,7 @@ import net.algem.util.ui.PopupDlg;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.p
+ * @version 2.9.4.10
  */
 public class UserCreateDlg
         implements ActionListener
@@ -56,7 +56,7 @@ public class UserCreateDlg
     person = p;
 
     dlg = new JDialog(PopupDlg.getTopFrame(c), true);
-    
+
     userView = new UserView(person);
 
     btValidation = new GemButton(GemCommand.OK_CMD);
@@ -74,9 +74,9 @@ public class UserCreateDlg
 
     ct.add(userView, BorderLayout.CENTER);
     ct.add(buttons, BorderLayout.SOUTH);
-		
-		dlg.setTitle(BundleUtil.getLabel("Login.creation.label"));
-		dlg.setSize(440,180);
+
+    dlg.setTitle(BundleUtil.getLabel("Login.creation.label"));
+    dlg.setSize(440, 180);
     dlg.setLocationRelativeTo(c);
   }
 
@@ -96,10 +96,11 @@ public class UserCreateDlg
     return true;
   }
 
-	/**
-	 * Checks status of validation command.
-	 * @return validation status
-	 */
+  /**
+   * Checks status of validation command.
+   *
+   * @return validation status
+   */
   public boolean isValidation() {
     return validation;
   }
