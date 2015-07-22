@@ -1,5 +1,5 @@
 /*
- * @(#)AccountingService.java	2.9.4.6 03/06/15
+ * @(#)AccountingService.java	2.9.4.11 22/07/2015
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -26,9 +26,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
+import net.algem.billing.ItemIO;
 import net.algem.config.ActivableParam;
 import net.algem.config.ActivableParamTableIO;
 import net.algem.config.Param;
+import net.algem.config.ParamTableIO;
 import net.algem.config.Preference;
 import net.algem.contact.PersonIO;
 import net.algem.course.CourseIO;
@@ -36,12 +38,14 @@ import net.algem.planning.*;
 import net.algem.room.RoomIO;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
+import net.algem.util.GemLogger;
+import net.algem.util.MessageUtil;
 
 /**
  * Service class for accounting.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.6
+ * @version 2.9.4.11
  * @since 2.4.a 21/05/12
  */
 public class AccountingService {
@@ -75,13 +79,23 @@ public class AccountingService {
     return ScheduleRangeIO.find("pg WHERE pg.idplanning = " + idplanning + " AND pg.adherent > 0 ORDER BY pg.debut", dc);
   }
 
-  public ResultSet getDetailTechnician(String start, String end, int type) throws SQLException {
+  public ResultSet getDetailByTechnician(String start, String end, int type) throws SQLException {
     String query = "SELECT p.jour, p.idper, p.debut, p.fin, (p.fin - p.debut) AS duree, pg.adherent"
             + " FROM " + ScheduleIO.TABLE + " p, " + ScheduleRangeIO.TABLE + " pg"
             + " WHERE pg.idplanning = p.id"
             + " AND p.jour BETWEEN '" + start + "' AND '" + end + "'"
             + " AND p.ptype = " + type
             + " ORDER BY pg.adherent,p.jour,p.debut";
+    return dc.executeQuery(query);
+  }
+  
+  public ResultSet getDetailByAdministrator(String start, String end, int type) throws SQLException {
+    String query = "SELECT p.jour, p.idper, p.debut, p.fin, (p.fin - p.debut) AS duree, s.nom"
+            + " FROM " + ScheduleIO.TABLE + " p, " + RoomIO.TABLE + " s"
+            + " WHERE p.jour BETWEEN '" + start + "' AND '" + end + "'"
+            + " AND p.ptype = " + type
+            + " AND p.lieux = s.id"
+            + " ORDER BY p.idper,p.jour,p.debut";
     return dc.executeQuery(query);
   }
 
@@ -128,7 +142,7 @@ public class AccountingService {
             + " AND p.action = a.id"
             + " AND a.cours = c.id "
             + " AND c.ecole = " + school
-            + " AND ((c.code IN(2,3,11,12) AND (SELECT count(id) FROM " + ScheduleRangeIO.TABLE + " WHERE idplanning = p.id) > 0)"
+            + " AND (((c.code IN(2,3,11,12) OR c.code > 12) AND (SELECT count(id) FROM " + ScheduleRangeIO.TABLE + " WHERE idplanning = p.id) > 0)"
             + " OR (c.code = 1 AND (SELECT count(id) FROM " + ScheduleRangeIO.TABLE + " WHERE idplanning = p.id AND debut = p.debut) > 1))";
             if(!catchup) {
               query +=  " AND s.nom !~* 'rattrap'";
@@ -148,7 +162,7 @@ public class AccountingService {
             + RoomIO.TABLE + " s";
     query += (idper > 0) ? " WHERE p.idper = " + idper : " WHERE p.idper > 0";
     query += " AND p.jour BETWEEN '" + start + "' AND '" + end + "'"
-      + " AND p.ptype IN (1,5,6)"
+      + " AND p.ptype IN (1,5,6)" // cours, atelier ponctuel, stage
       + " AND p.lieux = s.id"
       + " AND p.action = a.id"
       + " AND a.cours = c.id"
@@ -199,6 +213,81 @@ public class AccountingService {
    */
   public void updateAccountPref(Preference pref) throws SQLException {
     AccountPrefIO.update(pref, DataCache.getDataConnection());
+  }
+  
+  /**
+   * Checks if an account is still used elsewhere.
+   * @param c account
+   * @return a message if account is still used and null otherwise
+   * @throws AccountDeleteException
+   * @throws SQLException 
+   */
+  private String isAccountUsed(Param c) throws AccountDeleteException, SQLException {
+    String where = "WHERE " + OrderLineIO.ACCOUNT_COLUMN + " = '" + c.getId() + "'";
+    Vector<OrderLine> e = OrderLineIO.find(where, 1, dc);
+    // order lines
+    if (e != null && e.size() > 0) {
+      return MessageUtil.getMessage("account.delete.exception.orderline");
+    }
+    // preferred accounts
+    if (AccountPrefIO.containsAccount(c.getId(), dc)) {
+      return MessageUtil.getMessage("account.delete.exception.preference");
+    }
+    // billing items
+    if (new ItemIO(dc).find("WHERE compte = " + c.getId()).size() > 0) {
+      return MessageUtil.getMessage("account.delete.exception.billing");
+    }
+    // journal
+    if (JournalAccountIO.find(c.getId(), dc) != null) {
+      return MessageUtil.getMessage("account.delete.exception.journal");
+    }
+    return null;
+  }
+  
+  private String isCostAccountUsed(Param p) throws AccountDeleteException, SQLException {
+    String where = "WHERE " + OrderLineIO.COST_COLUMN + " = '" + p.getKey() + "'";
+    Vector<OrderLine> e = OrderLineIO.find(where, 1, dc);
+     if (e != null && e.size() > 0) {
+      return MessageUtil.getMessage("account.delete.exception.orderline");
+    }
+      // preferred accounts
+    if (AccountPrefIO.containsCostAccount(p.getKey(), dc)) {
+      return MessageUtil.getMessage("account.delete.exception.preference");
+    }
+    return null;
+  }
+  
+  public void delete(Account c) throws AccountDeleteException {
+    try {
+      String used = isAccountUsed(c);
+      if (used != null) {
+        throw new AccountDeleteException(used);
+      } else {
+        AccountIO.delete(c, dc);
+      }
+    } catch (SQLException ex) {
+      GemLogger.logException(ex);
+      throw new AccountDeleteException(ex.getMessage());
+    }
+  }
+  
+  /**
+   * Deletes a cost account.
+   * @param c cost account param instance
+   * @throws AccountDeleteException 
+   */
+  public void delete(Param c) throws AccountDeleteException {
+    try {
+      String used = isCostAccountUsed(c);
+      if (used != null) {
+        throw new AccountDeleteException(used);
+      } else {
+        ParamTableIO.delete(CostAccountCtrl.tableName, CostAccountCtrl.columnKey, c, dc);
+      }
+    } catch (SQLException ex) {
+      GemLogger.logException(ex);
+      throw new AccountDeleteException(ex.getMessage());
+    }
   }
 
 }

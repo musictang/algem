@@ -1,7 +1,7 @@
 /*
- * @(#)CommunAccountExportService.java	2.8.y 24/09/14
+ * @(#)CommunAccountExportService.java	2.9.4.11 22/07/2015
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,9 +20,10 @@
  */
 package net.algem.accounting;
 
-import java.io.FileWriter;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.NumberFormat;
@@ -39,7 +40,7 @@ import net.algem.util.model.ModelNotFoundException;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.y
+ * @version 2.9.4.11
  * @since 2.8.r 13/12/13
  */
 public abstract class CommunAccountExportService
@@ -169,7 +170,7 @@ public abstract class CommunAccountExportService
   public void exportCSV(String path, Vector<OrderLine> orderLines) throws IOException {
     int total = 0;
     OrderLine e = null;
-    PrintWriter out = new PrintWriter(new FileWriter(path));
+    PrintWriter out = new PrintWriter(new File(path), StandardCharsets.UTF_8.name());
     // force Byte Order Mark (BOM) : windows compatibility
     out.print("\ufeff");
     out.print("id;nom;date;reglement;piece;libelle;montant;compte;analytique" + TextUtil.LINE_SEPARATOR);

@@ -1,5 +1,5 @@
 /*
- * @(#)Statistics.java	2.8.w 09/07/14
+ * @(#)Statistics.java	2.9.4.11 21/07/15
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
@@ -48,7 +49,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.4.11
  * @since 2.6.a 09/10/12
  */
 public abstract class Statistics
@@ -90,7 +91,7 @@ public abstract class Statistics
     this.start = start;
     this.end = end;
     this.path = path;
-    out = new PrintWriter(new FileWriter(path));
+    out = new PrintWriter(new File(path), StandardCharsets.UTF_8.name());
     MEMBERSHIP_ACCOUNT = (Integer) pref.getValues()[0];
   }
 
@@ -105,7 +106,7 @@ public abstract class Statistics
     this.start = start;
     this.end = end;
     path = ConfigUtil.getExportPath() + FileUtil.FILE_SEPARATOR + "stats.html";
-    out = new PrintWriter(new FileWriter(path));
+    out = new PrintWriter(new File(path), StandardCharsets.UTF_8.name());
     Preference p = AccountPrefIO.find(AccountPrefIO.MEMBER_KEY_PREF, dc);
     MEMBERSHIP_ACCOUNT = (Integer) p.getValues()[0];
   }

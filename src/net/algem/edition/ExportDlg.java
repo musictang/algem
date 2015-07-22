@@ -1,5 +1,5 @@
 /*
- * @(#)ExportDlg.java 2.9.2.1 18/02/15
+ * @(#)ExportDlg.java 2.9.4.11 22/07/2015
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -24,9 +24,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Vector;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -47,7 +47,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2.1
+ * @version 2.9.4.11
  * @since 1.0a 14/12/1999
  */
 public abstract class ExportDlg
@@ -180,7 +180,7 @@ public abstract class ExportDlg
     setCursor(new Cursor(Cursor.WAIT_CURSOR));
     PrintWriter out;
     try {
-      out = new PrintWriter(new FileWriter(path));
+      out = new PrintWriter(new File(path), StandardCharsets.UTF_8.name());
       // force Byte Order Mark (BOM) : windows compatibility
       out.print("\ufeff");
       out.println(MessageUtil.getMessage("export.headers"));

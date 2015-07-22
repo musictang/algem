@@ -1,5 +1,5 @@
 /*
- * @(#)ParamTableCtrl  2.9.3 25/02/15
+ * @(#)ParamTableCtrl  2.9.4.11 22/07/2015
  *
  * Copyright (c) 1999-2015 Musiques Tangentes All Rights Reserved.
  *
@@ -41,7 +41,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.3
+ * @version 2.9.4.11
  * @since 1.0a 21/08/2009
  */
 public abstract class ParamTableCtrl
@@ -187,7 +187,7 @@ public abstract class ParamTableCtrl
         GemLogger.logException("suppression " + title, e, this);
       } catch (Exception ex) {
         if (ex.getMessage() != null) {
-          MessagePopup.information(this, ex.getMessage());
+          MessagePopup.warning(this, ex.getMessage());
         }
       }
 

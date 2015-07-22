@@ -1,5 +1,5 @@
 /*
- * @(#)HourEmployeeDlg.java	2.9.2 27/01/15
+ * @(#)HourEmployeeDlg.java	2.9.4.11 22/07/2015
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -27,9 +27,10 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.FileWriter;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
@@ -49,7 +50,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.9.4.11
  * @since 2.8.v 10/06/14
  */
 public class HourEmployeeDlg
@@ -104,7 +105,8 @@ public class HourEmployeeDlg
     add(p, BorderLayout.CENTER);
     add(buttons, BorderLayout.SOUTH);
     setLocation(200, 100);
-    pack();
+    setSize(480,440);
+//    pack();
   }
 
   String getPath() {
@@ -152,8 +154,10 @@ public class HourEmployeeDlg
     try {
       String sorting = view.getSorting();
       setPath(type, sorting);
-      out = new PrintWriter(new FileWriter(path));
-      out.print("\ufeff");// force Byte Order Mark (BOM) : windows/mac excel utf8 compatibility ! must be the first character in file
+      out = new PrintWriter(new File(path), StandardCharsets.UTF_8.name());
+      out.print("\ufeff");// force Byte Order Mark (BOM) : windows/mac excel utf8 compatibility ! must be the first character in file 
+      System.out.println(EmployeeType.TECHNICIAN.ordinal());
+      System.out.println(EmployeeType.ADMINISTRATOR.ordinal());
       if (EmployeeType.TEACHER.ordinal() == type) {
         out.println(MessageUtil.getMessage("export.hour.teacher.header", new Object[]{school.getValue(), start, end}) + lf);
 
@@ -172,7 +176,7 @@ public class HourEmployeeDlg
         } else if (SORTING_CMD[1].equals(sorting)) {
           ResultSet rs = service.getDetailTeacherByDate(start.toString(), end.toString(), catchup, employeeId, school.getId());
           employeeTask = new HoursTeacherByDateTask(this, pm, out, rs, detail);
-        }else if (SORTING_CMD[2].equals(sorting)) {
+        } else if (SORTING_CMD[2].equals(sorting)) {
           employeeTask = new HoursTeacherByMemberTask(this, pm, out, detail);
           ResultSet rsInd = service.getDetailIndTeacherByMember(start.toString(), end.toString(), catchup, employeeId, school.getId());
           ResultSet rsCo = service.getDetailCoTeacherByMember(start.toString(), end.toString(), catchup, employeeId, school.getId());
@@ -180,10 +184,15 @@ public class HourEmployeeDlg
           ((HoursTeacherByMemberTask) employeeTask).setCollectiveRS(rsCo);
         }
       } else if (EmployeeType.TECHNICIAN.ordinal() == type) {
-        ResultSet rs = service.getDetailTechnician(start.toString(), end.toString(), Schedule.TECH);
+        ResultSet rs = service.getDetailByTechnician(start.toString(), end.toString(), Schedule.TECH);
         pm = new ProgressMonitor(view, MessageUtil.getMessage("active.search.label"), "", 1, 100);
         pm.setMillisToDecideToPopup(10);
         employeeTask = new HoursTechnicianTask(this, pm, out, rs, detail);
+      } else if (EmployeeType.ADMINISTRATOR.ordinal() == type) {
+        ResultSet rs = service.getDetailByAdministrator(start.toString(), end.toString(), Schedule.ADMINISTRATIVE);
+        pm = new ProgressMonitor(view, MessageUtil.getMessage("active.search.label"), "", 1, 100);
+        pm.setMillisToDecideToPopup(10);
+        employeeTask = new HoursAdministrativeTask(this, pm, out, rs, detail);
       }
       employeeTask.addPropertyChangeListener(this);
       employeeTask.execute();

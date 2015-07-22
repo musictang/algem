@@ -76,7 +76,7 @@ public class EmployeeTypeIO
     ResultSet rs = dc.executeQuery(query);
     while (rs.next()) {
       GemParam n = new GemParam(rs.getInt(1));
-      n.setLabel(rs.getString(2));
+      //n.setLabel(rs.getString(2));
       n.setLabel(getLocalizedLabel(rs.getInt(1)));
       vn.addElement(n);
     }

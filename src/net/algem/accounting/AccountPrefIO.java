@@ -1,7 +1,7 @@
 /*
- * @(#)AccountPrefIO.java 2.6.a 12/10/2012
+ * @(#)AccountPrefIO.java 2.9.4.11 21/07/15
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -33,7 +33,7 @@ import net.algem.util.model.TableIO;
  * Default accounts persistence.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.4.11
  * @since 2.1.i
  *
  */
@@ -82,10 +82,44 @@ public class AccountPrefIO
 		p.setValues(new Object[]{rs.getInt(2), rs.getString(3)});
 		return p;
 	}
-
+    
+    
+    /**
+     * Gets the account instance corresponding to preference value (account id).
+     * @param p preference
+     * @param dc data connection
+     * @return an account instance
+     * @throws SQLException 
+     */
 	public static Account getAccount(Preference p, DataConnection dc) throws SQLException {
 		return AccountIO.find((Integer) p.getValues()[0], dc);
 	}
+    
+    /**
+     * Checks if an account is used in preferred accounts.
+     * @param accountId
+     * @param dc data connection
+     * @return true if this account has been set in preferred accounts
+     * @throws SQLException 
+     */
+    public static boolean containsAccount(int accountId, DataConnection dc) throws SQLException {
+      String query = "SELECT idcompte FROM " + AccountPrefIO.TABLE + " WHERE idcompte = " + accountId;
+      ResultSet rs = dc.executeQuery(query);
+      return rs.next();
+    }
+    
+    /**
+     * Checks if a cost account is found in preferred accounts.
+     * @param accountId account number
+     * @param dc data connection
+     * @return true if this account has been set in preferred accounts
+     * @throws SQLException 
+     */
+    public static boolean containsCostAccount(String accountId, DataConnection dc) throws SQLException {
+      String query = "SELECT idanalytique FROM " + AccountPrefIO.TABLE + " WHERE idanalytique = '" + accountId + "'";
+      ResultSet rs = dc.executeQuery(query);
+      return rs.next();
+    }
 
 	public static Account getCostAccount(Preference p, DataConnection dc) {
 		return OrderLineIO.findAccount(CostAccountCtrl.tableName, CostAccountCtrl.columnKey, (String) p.getValues()[1], dc);

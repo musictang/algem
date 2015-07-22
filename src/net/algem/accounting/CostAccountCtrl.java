@@ -1,7 +1,7 @@
 /*
- * @(#)CostAccountCtrl.java	2.8.d 16/05/13
+ * @(#)CostAccountCtrl.java	2.9.4.11 22/07/2015
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,7 +21,6 @@
 package net.algem.accounting;
 
 import java.sql.SQLException;
-import java.util.Vector;
 import net.algem.config.*;
 import net.algem.util.module.GemDesktop;
 
@@ -29,7 +28,7 @@ import net.algem.util.module.GemDesktop;
  * Cost account persistence.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.d
+ * @version 2.9.4.11
  */
 public class CostAccountCtrl
         extends ParamTableCtrl
@@ -40,8 +39,11 @@ public class CostAccountCtrl
   public static String columnName = "libelle";
   public static String columnFilter = "actif";
 
+  private AccountingService service;
+  
   public CostAccountCtrl(GemDesktop _desktop) {
     super(_desktop, "Comptes analytiques", true, true);
+    service = new AccountingService(dc);
   }
 
   @Override
@@ -72,16 +74,9 @@ public class CostAccountCtrl
   }
 
   @Override
-  public void suppression(Param p) throws SQLException, AccountDeleteException {
-    String where = "WHERE " + OrderLineIO.COST_COLUMN + " = '" + p.getKey() + "'";
-    Vector<OrderLine> e = OrderLineIO.find(where, 1, dc);
-    if (e != null && e.size() > 0) {
-      throw new AccountDeleteException();
-    } else {
-      ParamTableIO.delete(tableName, columnKey, p, dc);
-      
-      CostAccount ca = new CostAccount(p);
-      desktop.getDataCache().remove(ca);
-    }
+  public void suppression(Param p) throws AccountDeleteException {
+    service.delete(p);
+    CostAccount ca = new CostAccount(p);
+    desktop.getDataCache().remove(ca);
   }
 }

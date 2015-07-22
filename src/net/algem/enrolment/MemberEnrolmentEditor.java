@@ -1,5 +1,5 @@
 /*
- * @(#)MemberEnrolmentEditor.java 2.9.3.2 10/03/15
+ * @(#)MemberEnrolmentEditor.java 2.9.4.11 21/07/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -71,7 +72,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.3.2
+ * @version 2.9.4.11
  * @since 1.0b 06/09/2001
  */
 public class MemberEnrolmentEditor
@@ -774,7 +775,7 @@ public class MemberEnrolmentEditor
 
       if (node.getChildCount() >= 0) {
         temp = File.createTempFile(BundleUtil.getLabel("Enrolment.label") + "-" + order.getId() + "_", extension);
-        pw = new PrintWriter(temp);
+        pw = new PrintWriter(temp, StandardCharsets.UTF_8.name());
         pw.println(FileUtil.getHtmlHeader(BundleUtil.getLabel("Enrolment.label"), getCss()));
         pw.println(catchEnrolmentInfo(node));
         pw.println(catchActivity(order.getCreation(), dataCache.getEndOfYear()));

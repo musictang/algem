@@ -1,5 +1,5 @@
 /*
- * @(#)Algem.java	2.9.4.10 20/07/15
+ * @(#)Algem.java	2.9.4.11 22/07/2015
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -55,12 +55,12 @@ import org.apache.commons.codec.binary.Base64;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.10
+ * @version 2.9.4.11
  */
 public class Algem
 {
 
-  public static final String APP_VERSION = "2.9.4.10";//experimental
+  public static final String APP_VERSION = "2.9.4.11";//experimental
   public static List<LookAndFeelInfo> ALTERNATIVE_LAF = new ArrayList<LookAndFeelInfo>();
   private static final int DEF_WIDTH = 1080;// (850,650) => ancienne taille
   private static final int DEF_HEIGHT = 780;
@@ -401,6 +401,8 @@ public class Algem
         def.put("Table.font", myFont); // default : Font SansSerif 12
         def.put("TextField.font", myFont);
         def.put("ComboBox.font", myFont);
+        def.put("TextArea.font", myFont.deriveFont(12));
+        def.put("TextPane.font", myFont.deriveFont(12));
         break;
     }
   }

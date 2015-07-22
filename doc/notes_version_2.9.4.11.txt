@@ -1,0 +1,9 @@
+BUGS CORRIGES
+* Les pages au format html n'étaient pas correctement encodées sous Windows malgré l'option -Dfile.encoding=UTF-8 dans les paramètres de démarrage. Les accents devraient maintenant s'afficher correctement dans les Statistiques (Ficher -> Exporter -> Statistiques) et dans l'impression d'une inscription (menu Imprimer du clic droit sur le nom de l'inscription dans l'onglet Inscriptions d'un adhérent).
+* Certains exports de fichier comportaient un caracètère inconnu (?) en début de fichier. Ce problème était du à un mauvaise gestion de l'encodage des caractères.
+* Il n'est plus possible de supprimer comme auparavant un compte comptable encore utilisé dans un article de facturation, dans les journaux ou dans les comptes par défaut.
+* Il n'est plus possible de supprimer un compte analytique s'il est encore utilisé dans les comptes par défaut.
+* Dans l'export des heures par professeur et par élève (choix n°3), les codes cours éventuellement créés (id > 12) n'étaient pas pris en compte dans le calcul des heures pour les cours collectifs.
+
+HEURES SALARIES
+Le type Administratif est maintenant pris en compte dans l'export des heures salariés. Seule la seconde option est disponible dans ce cas (tri par date). Les autres types de tri sont maintenant inactifs si l'on sélectionne Administratif ou Technicien. La vue détaillée comportera les heures de début et de fin de chaque séance (et la salle), contrairement à la vue par défaut qui n'affichera que le total par jour (et les sous-totaux mois et période).

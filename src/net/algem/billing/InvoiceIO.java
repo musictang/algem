@@ -161,7 +161,7 @@ public class InvoiceIO
 //      Collection<OrderLine> echeances = inv.getOrderLines();
 //
 //      for (OrderLine o : old_echeances) {
-//        if (!echeances.contains(o)) {
+//        if (!echeances.containsAccount(o)) {
 //          OrderLineIO.delete(o, dc);
 //        }
 //      }

@@ -1,7 +1,7 @@
 /*
- * @(#)AccountCtrl.java	2.7.a 11/01/13
+ * @(#)AccountCtrl.java	2.9.4.11 21/07/15
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -22,7 +22,6 @@
 package net.algem.accounting;
 
 import java.sql.SQLException;
-import java.util.Vector;
 import net.algem.config.Param;
 import net.algem.config.ParamTableCtrl;
 import net.algem.util.event.GemEvent;
@@ -31,17 +30,19 @@ import net.algem.util.module.GemDesktop;
 /**
  * Management of accounts.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.9.4.11
  */
 public class AccountCtrl
   extends ParamTableCtrl  {
 
+  private AccountingService service;
   /**
    * Par défaut, les numéros de compte sont éditables et les comptes sont activables.
    * @param _desktop
    */
   public AccountCtrl(GemDesktop _desktop) {
     super(_desktop, "Comptes comptables", true, true);
+    service = new AccountingService(dc);
   }
 
   @Override
@@ -86,21 +87,15 @@ public class AccountCtrl
   /**
    * Account suppression.
    * It is not advisable to suppress an account referenced by any orderline.
+   *
    * @see net.algem.ctrl.parametres.ParamTableCtrl#suppression
    */
-  public void suppression(Param p) throws SQLException, AccountDeleteException {
+  public void suppression(Param p) throws AccountDeleteException {
     if (p instanceof Account) {
       Account c = (Account) p;
-      String where = "WHERE " + OrderLineIO.ACCOUNT_COLUMN + " = '"+c.getId()+"'";
-      Vector<OrderLine> e = OrderLineIO.find(where, 1, dc);
-      if (e != null && e.size() > 0) {
-        throw new AccountDeleteException();
-      }
-      else {
-        AccountIO.delete(c, dc);
-        desktop.getDataCache().remove(c);
-        desktop.postEvent(new GemEvent(this, GemEvent.SUPPRESSION, GemEvent.ACCOUNT, c));
-      }
+      service.delete(c);
+      desktop.getDataCache().remove(c);
+      desktop.postEvent(new GemEvent(this, GemEvent.SUPPRESSION, GemEvent.ACCOUNT, c));
     }
   }
 

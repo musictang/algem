@@ -1,7 +1,7 @@
 /*
- * @(#)HourEmployeeView.java  2.9.1 08/12/14
+ * @(#)HourEmployeeView.java  2.9.4.11 22/07/2015
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -55,7 +55,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.4.11
  * @since 2.8.v 10/06/14
  */
 public class HourEmployeeView
@@ -66,11 +66,12 @@ public class HourEmployeeView
   private JCheckBox detail;
   private ParamChoice schoolChoice;
   private EmployeeTypePanel employeeType;
+  private final JRadioButton r1, r2, r3;
 
   private String[] sortingInfos = {
-    MessageUtil.getMessage("employee.sorting.by.establishment.tip"),
-    MessageUtil.getMessage("employee.sorting.by.date.tip"),
-    MessageUtil.getMessage("employee.sorting.by.member.tip")
+    MessageUtil.getMessage("employee.hours.sorting.by.establishment.tip"),
+    MessageUtil.getMessage("employee.hours.sorting.by.date.tip"),
+    MessageUtil.getMessage("employee.hours.sorting.by.member.tip")
   };
   
   private final ButtonGroup btSortingGroup;
@@ -84,6 +85,28 @@ public class HourEmployeeView
     body.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
     GridBagHelper gb = new GridBagHelper(body);
     gb.insets = GridBagHelper.SMALL_INSETS;
+    
+    r1 = new JRadioButton(MessageUtil.getMessage("employee.hours.sorting.by.establishment.file.info"));
+    r1.setActionCommand(HourEmployeeDlg.SORTING_CMD[0]);
+    r1.setSelected(true);
+    r2 = new JRadioButton(MessageUtil.getMessage("employee.hours.sorting.by.date.file.info"));
+    r2.setActionCommand(HourEmployeeDlg.SORTING_CMD[1]);
+    r3 = new JRadioButton(MessageUtil.getMessage("employee.hours.sorting.by.member.file.info"));
+    r3.setActionCommand(HourEmployeeDlg.SORTING_CMD[2]);
+    
+    GemPanel sortingPanel = new GemPanel();
+    sortingPanel.setLayout(new BoxLayout(sortingPanel, BoxLayout.Y_AXIS));
+    sortingPanel.setBorder(BorderFactory.createTitledBorder(BundleUtil.getLabel("Default.sorting")));
+    
+    final JTextArea status = new JTextArea(5, 30);
+    
+    status.setEditable(false);
+    status.setLineWrap(true);
+    status.setWrapStyleWord(true);
+    status.setBackground(body.getBackground());
+    status.setText(sortingInfos[0]);
+    status.setPreferredSize(new Dimension(sortingPanel.getPreferredSize().width, status.getPreferredSize().height));
+    
     employeeType = new EmployeeTypePanel(employeeTypes);
     employeeType.setType(EmployeeType.TEACHER.ordinal());
     employeeType.addActionListener(dateRange);
@@ -91,6 +114,8 @@ public class HourEmployeeView
       @Override
       public void itemStateChanged(ItemEvent e) {
         dlg.setPath(getType(), getSorting());
+        setRadio(getType());
+        status.setText(sortingInfos[1]);
       }
     });
 
@@ -120,25 +145,7 @@ public class HourEmployeeView
     gb.add(detail, 1, 3, 1, 1, GridBagHelper.WEST);
     gb.add(Box.createRigidArea(new Dimension(100,20)), 1, 4, 1, 1, GridBagHelper.WEST);
 
-    GemPanel sortingPanel = new GemPanel();
-    sortingPanel.setLayout(new BoxLayout(sortingPanel, BoxLayout.Y_AXIS));
-    sortingPanel.setBorder(BorderFactory.createTitledBorder("Tri par défaut"));
-
     btSortingGroup = new ButtonGroup();
-    final JRadioButton r1 = new JRadioButton("Tri par établissement (fichier .txt au format texte)");
-    r1.setActionCommand(HourEmployeeDlg.SORTING_CMD[0]);
-    r1.setSelected(true);
-    final JRadioButton r2 = new JRadioButton("Tri simple par date (fichier .csv au format tableur)");
-    r2.setActionCommand(HourEmployeeDlg.SORTING_CMD[1]);
-    final JRadioButton r3 = new JRadioButton("Tri par élève/cours (fichier .csv au format tableur)");
-    r3.setActionCommand(HourEmployeeDlg.SORTING_CMD[2]);
-    
-    final JTextArea status = new JTextArea(5, 30);
-    status.setEditable(false);
-    status.setLineWrap(true);
-    status.setWrapStyleWord(true);
-    status.setBackground(body.getBackground());
-    status.setText(sortingInfos[0]);
 
     ActionListener radioBtListener = new ActionListener()
     {
@@ -172,6 +179,17 @@ public class HourEmployeeView
     gb.add(status, 0, 6, 2, 1, GridBagHelper.WEST);
     add(body, BorderLayout.CENTER);
 
+  }
+  
+  private void setRadio(int type) {
+    if (EmployeeType.TECHNICIAN.ordinal() == getType() || EmployeeType.ADMINISTRATOR.ordinal() == getType()) {
+      r1.setEnabled(false);
+      r3.setEnabled(false);
+      r2.setSelected(true);
+    } else {
+      r1.setEnabled(true);
+      r3.setEnabled(true);
+    }
   }
 
   public DateFr getDateStart() {
