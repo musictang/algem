@@ -30,7 +30,9 @@ import java.sql.SQLException;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.border.BevelBorder;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumnModel;
+import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
@@ -57,13 +59,36 @@ public class RehearsalPassListCtrl
   private GemButton btClose;
   private GemDesktop desktop;
   private RehearsalPassCtrl ctrl;
+  
+  private String[] toolTipsHeader = {
+    BundleUtil.getLabel("Pass.rehearsal.id.tip"),
+    BundleUtil.getLabel("Pass.rehearsal.label.tip"),
+    BundleUtil.getLabel("Pass.rehearsal.amount.tip"),
+    BundleUtil.getLabel("Pass.rehearsal.min.tip"),
+    BundleUtil.getLabel("Pass.rehearsal.total.tip")
+  };
 
   public RehearsalPassListCtrl(GemDesktop desktop, boolean searchFlag) {
     super(searchFlag);
     this.desktop = desktop;
     tableModel = new RehearsalPassTableModel();
 
-    table = new JTable(tableModel);
+    table = new JTable(tableModel) {
+       //Implements table header tool tips.
+      @Override
+      protected JTableHeader createDefaultTableHeader() {
+        return new JTableHeader(columnModel) {
+          
+          @Override
+          public String getToolTipText(MouseEvent e) {
+            java.awt.Point p = e.getPoint();
+            int index = columnModel.getColumnIndexAtX(p.x);
+            int realIndex = columnModel.getColumn(index).getModelIndex();
+            return toolTipsHeader[realIndex];
+          }
+        };
+      }
+    };
     table.setAutoCreateRowSorter(true);
     table.addMouseListener(new MouseAdapter() {
       @Override
@@ -127,6 +152,7 @@ public class RehearsalPassListCtrl
   private void add() throws SQLException {
     ctrl = new RehearsalPassCtrl(desktop, true);
     ctrl.loadCard(new RehearsalPass(-1));
+    ctrl.setTitle(BundleUtil.getLabel("Action.add.label"));
     ctrl.setVisible(true);
     if (ctrl.isValidation()) {
       RehearsalPass n = ctrl.getCard();
@@ -149,6 +175,7 @@ public class RehearsalPassListCtrl
     ctrl = new RehearsalPassCtrl(desktop, true);
     RehearsalPass c = (RehearsalPass) tableModel.getItem(getSelectedIndex());
     ctrl.loadCard(c);
+    ctrl.setTitle(BundleUtil.getLabel("Action.modify.label"));
     ctrl.setVisible(true);
     if (ctrl.isValidation()) {
       RehearsalPass u = ctrl.getCard();

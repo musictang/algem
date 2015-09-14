@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileEditor 2.9.4.10 20/07/15
+ * @(#)PersonFileEditor 2.9.4.12 01/09/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -65,7 +65,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.10
+ * @version 2.9.4.12
  */
 public class PersonFileEditor
         extends FileEditor
@@ -345,9 +345,13 @@ public class PersonFileEditor
       personFileView.addRehearsalHistoryTab();
       miHistoRehearsal.setEnabled(false);
     } else if ("Histo.pass".equals(arg)) {
+      desktop.setWaitCursor();
       if (personFileView.addHistoSubscriptionTab()) {
         miHistoPass.setEnabled(false);
+      } else {
+        MessagePopup.warning(personFileView, MessageUtil.getMessage("no.subscription.warning"));
       }
+      desktop.setDefaultCursor();
     } else if (HistoSubscriptionCard.CLOSE_CMD.equals(arg)) {
       personFileView.removeSubscriptionTab();
       miHistoPass.setEnabled(true);

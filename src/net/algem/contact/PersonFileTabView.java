@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileTabView.java  2.9.4.8 24/06/15
+ * @(#)PersonFileTabView.java  2.9.4.12 01/09/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes All Rights Reserved.
  *
@@ -21,7 +21,6 @@
 package net.algem.contact;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -29,7 +28,6 @@ import java.awt.event.ItemListener;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Vector;
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
@@ -67,7 +65,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.8
+ * @version 2.9.4.12
  */
 public class PersonFileTabView
         extends FileTabView
@@ -669,16 +667,13 @@ public class PersonFileTabView
   boolean addHistoSubscriptionTab() {
     if (histoSubscriptionCard == null) {
       histoSubscriptionCard = new HistoSubscriptionCard(desktop, dossier.getId(), listener, memberService);
-    }
-    desktop.setWaitCursor();
+    }  
     histoSubscriptionCard.load();
     if (!histoSubscriptionCard.isLoaded()) {
-      MessagePopup.warning(this, MessageUtil.getMessage("no.subscription.warning"));
       return false;
     }
     wTab.addItem(histoSubscriptionCard, HISTO_SUBSCRIPTIONS_TAB_TITLE);
     addTab(histoSubscriptionCard);
-    desktop.setDefaultCursor();
     return true;
   }
 

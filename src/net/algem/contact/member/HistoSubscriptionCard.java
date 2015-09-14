@@ -1,5 +1,5 @@
 /*
- * @(#)HistoSubscriptionCard.java 2.9.2.1 19/02/15
+ * @(#)HistoSubscriptionCard.java 2.9.4.12 01/09/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -43,7 +43,7 @@ import net.algem.util.ui.GemPanel;
 /**
  * History of passes purchased by the member.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2.1
+ * @version 2.9.4.12
  * @since 2.9.2 07/01/15
  */
 public class HistoSubscriptionCard 
@@ -75,7 +75,7 @@ public class HistoSubscriptionCard
     
     histoPanel = new GemPanel(new CardLayout());
     
-    histoTableModel = new HistoSubscriptionCardTableModel();
+    histoTableModel = new HistoSubscriptionCardTableModel(service);
     histoTable = new JTable(histoTableModel) {
       //Implements table header tool tips.
       @Override
@@ -167,6 +167,7 @@ public class HistoSubscriptionCard
     sessionTableModel.clear();
     try {
       List<SubscriptionCardSession> sessions = service.getSessions(card.getId());
+      card.setSessions(sessions);
       for (SubscriptionCardSession s : sessions) {
         sessionTableModel.addItem(s);
       }

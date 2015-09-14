@@ -41,7 +41,7 @@ public class RehearsalPass
   private int min;
   
   /** Total time in minutes. */
-  private int totalMin;
+  private int totalTime;
 
   public RehearsalPass() {
   }
@@ -59,7 +59,7 @@ public class RehearsalPass
     this.label = label;
     this.amount = amount;
     this.min = MIN_DEFAULT;
-    this.totalMin = total;
+    this.totalTime = 60;
   }
 
   public RehearsalPass(int id, String label, float amount, int total) {
@@ -67,7 +67,7 @@ public class RehearsalPass
     this.label = label;
     this.amount = amount;
     this.min = MIN_DEFAULT;
-    this.totalMin = total;
+    this.totalTime = 60;
   }
 
   @Override
@@ -121,7 +121,7 @@ public class RehearsalPass
     if (this.min != other.min) {
       return false;
     }
-    return this.totalMin == other.totalMin;
+    return this.totalTime == other.totalTime;
   }
 
   @Override
@@ -152,10 +152,10 @@ public class RehearsalPass
   }
 
   void setTotalTime(int min) {
-    this.totalMin = min;
+    this.totalTime = min;
   }
   
   public int getTotalTime() {
-    return totalMin;
+    return totalTime;
   }
 }

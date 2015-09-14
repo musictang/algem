@@ -1,5 +1,5 @@
 /*
- * @(#)RehearsalPassTableModel.java 2.9.2 26/01/15
+ * @(#)RehearsalPassTableModel.java 2.9.4.12 01/09/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,6 +20,7 @@
  */
 package net.algem.contact.member;
 
+import java.text.NumberFormat;
 import net.algem.planning.Hour;
 import net.algem.util.BundleUtil;
 import net.algem.util.ui.JTableModel;
@@ -27,12 +28,14 @@ import net.algem.util.ui.JTableModel;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.9.4.12
  */
 public class RehearsalPassTableModel
         extends JTableModel<RehearsalPass>
 {
 
+  NumberFormat nf = NumberFormat.getInstance();
+  
   public RehearsalPassTableModel() {
     header = new String[]{
       BundleUtil.getLabel("Id.label"),
@@ -59,17 +62,18 @@ public class RehearsalPassTableModel
       case 2:
         return Float.class;
       case 3:
-      case 4:
         return Hour.class;
+      case 4:
+        return String.class;
       default:
         return Object.class;
     }
   }
 
   @Override
-  public Object getValueAt(int ligne, int colonne) {
-    RehearsalPass pass = tuples.elementAt(ligne);
-    switch (colonne) {
+  public Object getValueAt(int row, int col) {
+    RehearsalPass pass = tuples.elementAt(row);
+    switch (col) {
       case 0:
         return pass.getId();
       case 1:
@@ -79,13 +83,14 @@ public class RehearsalPassTableModel
       case 3:
         return new Hour(pass.getMin());
       case 4:
-        return new Hour(pass.getTotalTime());
+//        return new Hour(pass.getTotalTime());
+        return nf.format(pass.getTotalTime() / 60d);
     }
     return null;
   }
 
   @Override
-  public void setValueAt(Object value, int ligne, int column) {
+  public void setValueAt(Object value, int row, int col) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 

@@ -1,3 +1,4 @@
+2.9.4.11
 BUGS CORRIGES
 * Les pages au format html n'étaient pas correctement encodées sous Windows malgré l'option -Dfile.encoding=UTF-8 dans les paramètres de démarrage. Les accents devraient maintenant s'afficher correctement dans les Statistiques (Ficher -> Exporter -> Statistiques) et dans l'impression d'une inscription (menu Imprimer du clic droit sur le nom de l'inscription dans l'onglet Inscriptions d'un adhérent).
 * Certains exports de fichier comportaient un caracètère inconnu (?) en début de fichier. Ce problème était du à un mauvaise gestion de l'encodage des caractères.

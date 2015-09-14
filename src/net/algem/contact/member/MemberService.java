@@ -1,5 +1,5 @@
 /*
- * @(#)MemberService.java	2.9.4.0 06/04/15
+ * @(#)MemberService.java	2.9.4.12 01/09/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -46,7 +46,7 @@ import net.algem.util.model.Model;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.0
+ * @version 2.9.4.12
  * @since 2.4.a 14/05/12
  */
 public class MemberService
@@ -231,7 +231,7 @@ public class MemberService
     cardIO.insert(card);
   }
 
-  public void update(PersonSubscriptionCard card) throws SQLException, MemberException {
+  public void update(PersonSubscriptionCard card) throws MemberException {
     cardIO.update(card);
   }
 

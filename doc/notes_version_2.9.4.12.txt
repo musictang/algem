@@ -1,0 +1,10 @@
+2.9.4.12
+BUGS CORRIGES
+* La durée totale d'une carte d'abonnement ne pouvait pas dépasser 24 heures en raison du format heures:minutes imposé. La durée totale est maintenant saisie au format décimal : 30,5 par exemple pour 30 heures 30 minutes et permet d'outrepasser cette limite.
+* Lorsqu'on modifiait la colonne "Abonnement restant" d'une carte d'abonnement (menu Abonnements de la fiche Personne), le détail des sessions de répétitions correspondantes était effacé. La modification avait lieu de plus même si le nombre restant n'était pas changé.
+Rappel : il est déconseillé d'éditer cette colonne. Le nombre d'heures restantes est normalement automatiquement déduit du nombre d'heures de répétitions effectuées. L'édition de cette colonne n'influera pas sur la durée des sessions préalablement enregistrées.
+* Le curseur restait en statut d'attente après l'affichage du message "Aucun abonnement", lorsqu'une personne ne disposait d'aucune carte d'abonnement active.
+* La barre de séparation dans la fenêtre de scripts restait bloquée après déplacement vers la gauche.
+
+TARIFS SALLES
+Les tarifs sont maintenant triés par défaut par "Heure pleine" dans la liste des tarifs : menu Compta -> Tarifs salles. Du moins cher au plus cher donc. Ils étaient auparavant classés par libellé.
