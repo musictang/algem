@@ -43,7 +43,9 @@
     <entry key="Etablissement 1">
       <util:list>
           <value>01 02 03 04 05</value>
-          <value>(lundi au vendredi 10h-22h - samedi 11h-18h)</value>
+          <value>info@musiques-tangentes.asso.fr</value>
+          <value>lundi-jeudi : 10h-22h</value>
+          <value>samedi 11h-18h</value>
         </util:list>
     </entry>
     <entry key="Etablissement 2">

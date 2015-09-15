@@ -3,6 +3,7 @@
 * Includes: jquery.ui.core.css, jquery.ui.accordion.css, jquery.ui.autocomplete.css, jquery.ui.button.css, jquery.ui.datepicker.css, jquery.ui.dialog.css, jquery.ui.menu.css, jquery.ui.progressbar.css, jquery.ui.resizable.css, jquery.ui.selectable.css, jquery.ui.slider.css, jquery.ui.spinner.css, jquery.ui.tabs.css, jquery.ui.tooltip.css
 * To view and modify this theme, visit http://jqueryui.com/themeroller/
 * Copyright (c) 2013 jQuery Foundation and other contributors Licensed MIT */
+/* Modification : jean-marc 15/09/15 */
 
 /* Layout helpers
 ----------------------------------*/
@@ -224,7 +225,8 @@ button.ui-button::-moz-focus-inner {
 	padding: 0;
 }
 .ui-datepicker {
-	width: 17em;
+	/*width: 17em;*/
+  width: 15em;
 	padding: .2em .2em 0;
 	display: none;
 }
@@ -783,7 +785,7 @@ body .ui-tooltip {
 /* Component containers
 ----------------------------------*/
 .ui-widget {
-	font-family: Verdana,Arial,sans-serif;
+	/*font-family: Verdana,Arial,sans-serif;*/
 	font-size: 1.1em;
 }
 .ui-widget .ui-widget {
@@ -793,7 +795,7 @@ body .ui-tooltip {
 .ui-widget select,
 .ui-widget textarea,
 .ui-widget button {
-	font-family: Verdana,Arial,sans-serif;
+	/*font-family: Verdana,Arial,sans-serif;*/
 	font-size: 1em;
 }
 .ui-widget-content {
