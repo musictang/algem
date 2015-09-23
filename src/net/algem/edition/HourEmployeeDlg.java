@@ -1,5 +1,5 @@
 /*
- * @(#)HourEmployeeDlg.java	2.9.4.11 22/07/2015
+ * @(#)HourEmployeeDlg.java	2.9.4.12 23/09/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -30,7 +30,6 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
@@ -50,7 +49,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.11
+ * @version 2.9.4.12
  * @since 2.8.v 10/06/14
  */
 public class HourEmployeeDlg
@@ -154,10 +153,9 @@ public class HourEmployeeDlg
     try {
       String sorting = view.getSorting();
       setPath(type, sorting);
-      out = new PrintWriter(new File(path), StandardCharsets.UTF_8.name());
-      out.print("\ufeff");// force Byte Order Mark (BOM) : windows/mac excel utf8 compatibility ! must be the first character in file 
-      System.out.println(EmployeeType.TECHNICIAN.ordinal());
-      System.out.println(EmployeeType.ADMINISTRATOR.ordinal());
+      /*out = new PrintWriter(new File(path), StandardCharsets.UTF_8.name());
+      out.print("\ufeff");// force Byte Order Mark (BOM) : windows/mac excel utf8 compatibility ! must be the first character in file */
+      out = new PrintWriter(new File(path), "UTF-16LE"); // this is the best solution
       if (EmployeeType.TEACHER.ordinal() == type) {
         out.println(MessageUtil.getMessage("export.hour.teacher.header", new Object[]{school.getValue(), start, end}) + lf);
 

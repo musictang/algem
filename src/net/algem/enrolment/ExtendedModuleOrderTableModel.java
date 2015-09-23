@@ -1,5 +1,5 @@
 /*
- * @(#)ExtendedModuleOrderTableModel.java	2.9.3.2 10/03/15
+ * @(#)ExtendedModuleOrderTableModel.java	2.9.4.12 22/09/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -36,7 +36,7 @@ import net.algem.util.ui.JTableModel;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.3.2
+ * @version 2.9.4.12
  * @since 2.9.2.1 16/02/15
  */
 public class ExtendedModuleOrderTableModel 
@@ -85,7 +85,7 @@ public class ExtendedModuleOrderTableModel
         return String.class;
       case 5:
       case 6:
-        return Double.class;
+//        return Double.class;
       case 7:
       case 8:
         return GemAmount.class;
@@ -116,9 +116,9 @@ public class ExtendedModuleOrderTableModel
       case 4:
         return m.getTitle();
       case 5:
-        return PricingPeriod.HOUR.equals(m.getPricing()) ? Hour.minutesToDecimal(m.getTotalTime()) : Hour.minutesToDecimal(m.getCompleted());
+        return PricingPeriod.HOUR.equals(m.getPricing()) ? nf.format(Hour.minutesToDecimal(m.getTotalTime())) : nf.format(Hour.minutesToDecimal(m.getCompleted()));
       case 6:
-        return rest <= 0 ? 0.0 : Hour.minutesToDecimal(rest);
+        return rest <= 0 ? nf.format(0.0d) : nf.format(Hour.minutesToDecimal(rest));
       case 7:
         return nf.format(AccountUtil.round(m.getPaymentInfo(m.getTotalTime())));
       case 8:

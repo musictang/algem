@@ -56,7 +56,7 @@ public class FollowUpDlg
     dlg = new JDialog(desktop.getFrame(), true);
     title = new GemLabel(BundleUtil.getLabel("Follow.up.label") + " " + range.getMember());
     pv = new FollowUpView(courseName, range.getDate(), range.getStart(), range.getEnd());
-    pv.setText(collective ? range.getNote2() : range.getNote1());
+    pv.setText(collective ? range.getNote2() : range.getNoteValue());
     btOk = new GemButton(GemCommand.OK_CMD);
     btOk.setEnabled(!collective);
     btOk.addActionListener(this);

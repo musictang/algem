@@ -1,5 +1,5 @@
 /*
- * @(#)AccountUtil.java	2.9.4.7 12/06/15
+ * @(#)AccountUtil.java	2.9.4.12 22/09/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -40,7 +40,7 @@ import net.algem.util.DataConnection;
  * Utility class for orderline operations.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.7
+ * @version 2.9.4.12
  * @since 2.0r
  */
 public class AccountUtil {
@@ -70,7 +70,8 @@ public class AccountUtil {
    * @return an integer
    */
   public static int getIntValue(double amount) {
-    return (int) (round(amount) * 100);
+//    return (int) (round(amount) * 100); // bug arrondi
+    return (int) Math.round(amount * 100);
   }
 
   /**

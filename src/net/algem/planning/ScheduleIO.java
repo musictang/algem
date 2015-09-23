@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleIO.java	2.9.4.0 25/03/2015
+ * @(#)ScheduleIO.java	2.9.4.12 17/09/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -26,6 +26,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
 import net.algem.config.GemParam;
+import net.algem.contact.Note;
 import net.algem.contact.Person;
 import net.algem.course.Course;
 import net.algem.group.Group;
@@ -41,7 +42,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.0
+ * @version 2.9.4.12
  */
 public class ScheduleIO
         extends TableIO
@@ -335,15 +336,13 @@ public class ScheduleIO
     return n;
   }
 
-  public static void createFollowUp(Schedule sched, String text, DataConnection dc) throws PlanningException {
+  public static void createCollectiveFollowUp(Schedule s, String text, DataConnection dc) throws PlanningException {
 
     try {
       dc.setAutoCommit(false);
-      int num = nextId(FOLLOW_UP_SEQUENCE, dc);
-      String query = "INSERT INTO " + FOLLOW_UP_TABLE + " VALUES(" + num + ",'" + escape(text) + "')";
-      dc.executeUpdate(query);
-      sched.setNote(num);
-      update(sched, dc);
+      int noteId = createFollowUp(text, dc);
+      s.setNote(noteId);
+      update(s, dc);
       dc.commit();
     } catch (SQLException ex) {
       dc.rollback();
@@ -353,21 +352,75 @@ public class ScheduleIO
     }
   }
 
-  public static void updateFollowUp(int idFollow, String text, DataConnection dc) throws SQLException {
-    String query = "UPDATE " + FOLLOW_UP_TABLE + " SET texte = '" + escape(text) + "' WHERE id = " + idFollow;
+  public static void createIndividualFollowUp(int rangeId, String text, DataConnection dc) throws PlanningException {
+    try {
+      dc.setAutoCommit(false);
+      int noteId = createFollowUp(text, dc);
+      Vector<ScheduleRange> ranges = ScheduleRangeIO.find("pg WHERE pg.id = " + rangeId, dc);
+      if (ranges.size() > 0) {
+        ScheduleRange r = ranges.elementAt(0);
+        r.setNote(noteId);
+        ScheduleRangeIO.update(r, dc);
+      }
+      dc.commit();
+    } catch (SQLException ex) {
+      dc.rollback();
+      throw new PlanningException(ex.getMessage());
+    } finally {
+      dc.setAutoCommit(true);
+    }
+  }
+  
+   private static int createFollowUp(String text, DataConnection dc) throws SQLException {
+    int num = nextId(FOLLOW_UP_SEQUENCE, dc);
+    String query = "INSERT INTO " + FOLLOW_UP_TABLE + " VALUES(" + num + ",'" + escape(text) + "')";
+    dc.executeUpdate(query);
+    return num;
+  }
+
+  public static void updateFollowUp(int noteId, String text, DataConnection dc) throws SQLException {
+    String query = "UPDATE " + FOLLOW_UP_TABLE + " SET texte = '" + escape(text) + "' WHERE id = " + noteId;
     dc.executeUpdate(query);
   }
 
-  public static String findFollowUp(int note, DataConnection dc) throws SQLException {
+  /**
+   * Find the text value of the note with Id {@code noteId}.
+   * @param noteId
+   * @param dc data Connection
+   * @return a text or an empty string if there is no text for this note
+   * @throws SQLException 
+   */
+  public static String findFollowUp(int noteId, DataConnection dc) throws SQLException {
 
     String text = "";
-    String query = "SELECT texte FROM " + FOLLOW_UP_TABLE + " WHERE id = " + note;
+    String query = "SELECT texte FROM " + FOLLOW_UP_TABLE + " WHERE id = " + noteId;
 
     ResultSet rs = dc.executeQuery(query);
     if (rs.next()) {
       text = unEscape(rs.getString(1));
     }
     return text;
+  }
+  /**
+   * Find the note value of the schedule including the range {@code rangeId}.
+   * @param rangeId range Id
+   * @param dc data connection
+   * @return a text or an empty string if there is no text for this note
+   * @throws SQLException 
+   */
+  public static Note getCollectiveFollowUpByRange(int rangeId, DataConnection dc) throws SQLException {
+ 
+    Note n = null;
+    String query = "SELECT s.id, s.texte FROM " + FOLLOW_UP_TABLE + " s, " + ScheduleRangeIO.TABLE + " pg, " + ScheduleIO.TABLE + " p"
+            + " WHERE pg.id = " + rangeId + " AND pg.idplanning = p.id AND p.note > 0 AND p.note = s.id ";
+
+    ResultSet rs = dc.executeQuery(query);
+    if (rs.next()) {
+      n = new Note();
+      n.setId(rs.getInt(1));
+      n.setText(unEscape(rs.getString(2)));
+    }
+    return n;
   }
 
   private static String getDeleteScheduleQuery(Action a) {

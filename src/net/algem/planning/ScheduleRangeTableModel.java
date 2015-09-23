@@ -99,7 +99,7 @@ public class ScheduleRangeTableModel
       case 5:
         return sro.getPerson().getFirstnameName();
       case 6:
-        return sro.getNote1() == null ? "" : sro.getNote1().replaceAll(System.lineSeparator(), " ");
+        return sro.getNoteValue() == null ? "" : sro.getNoteValue().replaceAll(System.lineSeparator(), " ");
         case 7:
         return sro.getNote2() == null ? "" : sro.getNote2().replaceAll(System.lineSeparator(), " ");
     }

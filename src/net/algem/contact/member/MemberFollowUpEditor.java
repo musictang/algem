@@ -225,7 +225,7 @@ public class MemberFollowUpEditor
       }
       if (col != 7) {
         planningService.updateFollowUp(sro, dlg.getText());
-        sro.setNote1(dlg.getText());
+        sro.setNoteValue(dlg.getText());
         tableModel.modItem(n, sro);
       }
     } finally {
@@ -246,7 +246,7 @@ public class MemberFollowUpEditor
       dc.setAutoCommit(false);
       planningService.deleteFollowUp(p);
       p.setNote(0);
-      p.setNote1(null);
+      p.setNoteValue(null);
       tableModel.modItem(n, p);
       dc.commit();
     } catch (SQLException e1) {

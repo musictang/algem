@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleRangeIO.java	2.9.4.0 01/04/2015
+ * @(#)ScheduleRangeIO.java	2.9.4.12 16/09/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -38,7 +38,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.0
+ * @version 2.9.4.12
  * @since 1.0a 7/7/1999
  */
 public class ScheduleRangeIO
@@ -133,7 +133,6 @@ public class ScheduleRangeIO
 
   public static Vector<ScheduleRange> find(String where, DataConnection dc) throws SQLException {
     String query = "SELECT " + COLUMNS + " FROM " + TABLE + " " + where;
-
     return ifind(query, dc);
   }
 
@@ -182,11 +181,14 @@ public class ScheduleRangeIO
     return p;
   }
 
-  public static Vector<ScheduleRangeObject> findObject(String and, PlanningService service, DataConnection dc) throws SQLException {
+  public static Vector<ScheduleRangeObject> findRangeObject(String and, PlanningService service, DataConnection dc) throws SQLException {
     String query = "SELECT " + COLUMNS + ", p.jour, p.action, p.idper, p.lieux, p.ptype"
       + " FROM " + TABLE + " pg, " + ScheduleIO.TABLE + " p"
       + " WHERE pg.idplanning = p.id " + and;
-
+    return findObject(query, service, dc);
+  }
+  
+  public  static Vector<ScheduleRangeObject> findObject(String query, PlanningService service, DataConnection dc) throws SQLException {
     Vector<ScheduleRangeObject> v = new Vector<ScheduleRangeObject>();
 
     ResultSet rs = dc.executeQuery(query);
@@ -226,7 +228,7 @@ public class ScheduleRangeIO
     ResultSet rs = dc.executeQuery(query);
     while (rs.next()) {
       ScheduleRangeObject p = rangeObjectFactory(rs, pService);
-      p.setNote1(rs.getString(12));
+      p.setNoteValue(rs.getString(12));
       p.setNote2(rs.getString(13));
       v.addElement(p);
     }
@@ -276,19 +278,6 @@ public class ScheduleRangeIO
   public static void deleteNote(int note, DataConnection dc) throws SQLException {
     String query = "DELETE FROM " + ScheduleIO.FOLLOW_UP_TABLE + " WHERE id = " + note;
     dc.executeUpdate(query);
-  }
-
-  public static String findNote(int note, DataConnection dc) throws SQLException {
-
-    String texte = "";
-    String query = "SELECT texte FROM " + ScheduleIO.FOLLOW_UP_TABLE + " WHERE id = " + note;
-
-    ResultSet rs = dc.executeQuery(query);
-    if (rs.next()) {
-      texte = unEscape(rs.getString(1));
-    }
-
-    return texte;
   }
 
   public static String getMonthRangeStmt() {

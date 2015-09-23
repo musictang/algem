@@ -1,7 +1,7 @@
 /*
- * @(#)TeacherService.java	2.9.1 21/11/14
+ * @(#)TeacherService.java	2.9.4.12 17/09/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -32,7 +32,7 @@ import net.algem.util.GemLogger;
 /**
  * Service class for teachers.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.4.12
  * @since 2.4.a 22/05/12
  */
 public class TeacherService
@@ -51,22 +51,33 @@ public class TeacherService
     this(dc);
     pService = service;
   }
+  
   /**
-   * Finds the schedules of the teacher {@code idprof} between date {@code start}
+   * Finds the schedules of the teacher {@code teacher} between date {@code start}
    * and date {@code end}.
    * @param teacher teacher id
    * @param start date start
    * @param end date end
-   * @return a list of schedules
+   * @return a list of schedule ranges
+   * @throws java.sql.SQLException
    */
-  public Vector<Schedule> getSchedule(int teacher, String start, String end) {
-    String query = "WHERE ptype IN (" + Schedule.COURSE + "," + Schedule.TRAINING + "," + Schedule.WORKSHOP + ") AND idper = " + teacher
+  public Vector<ScheduleRangeObject> getSchedule(int teacher, String start, String end) throws SQLException {
+    String query = " SELECT DISTINCT ON(p.jour,pg.debut)" + ScheduleRangeIO.COLUMNS + ", p.jour, p.action, p.idper, p.lieux, p.ptype"
+            + " FROM " + ScheduleRangeIO.TABLE + " pg, " + ScheduleIO.TABLE + " p"
+            + " WHERE p.jour BETWEEN '" + start + "' AND '" + end 
+            + "' AND p.ptype IN (" + Schedule.COURSE + "," + Schedule.TRAINING + "," + Schedule.WORKSHOP + ")"
+            + " AND pg.idplanning = p.id"
+            + " AND p.idper = " + teacher
+            + " ORDER BY p.jour, pg.debut";
+    // old query
+   /* String query = "WHERE ptype IN (" + Schedule.COURSE + "," + Schedule.TRAINING + "," + Schedule.WORKSHOP + ") AND idper = " + teacher
             + " AND jour >= '" + start + "' AND jour <= '" + end + "' ORDER BY jour,debut";
-    return ScheduleIO.find(query, dc);
+    return ScheduleIO.find(query, dc); */
+    return ScheduleRangeIO.findObject(query, pService, dc);
   }
 
   /**
-   * Finds the schedules of the teacher {@code idprof} between date {@code start}
+   * Finds the schedules of the teacher {@code teacher} between date {@code start}
    * and date {@code end} and in establishment {@code estab}.
    * @param teacher teacher id
    * @param estab establishment id
@@ -93,7 +104,6 @@ public class TeacherService
    /**
    * Finds the substitutes for this teacher and for the date selected in schedule.
    * Days of week are represented from index 0 to 6 (from monday to sunday)
-   * In french calendar, monday is 2. It's the reason why we decrement the date by 2.
    * 
    * @param s schedule object
    * @return a list of teachers
@@ -103,6 +113,7 @@ public class TeacherService
     int day = getDayOfWeek(s.getDate().getDate());
     try {
       int c = ActionIO.getCourse(s.getIdAction(), dc);
+      // In french calendar, monday is 2. It's the reason why we decrement the date by 2.
       return SubstituteTeacherIO.find(s.getRoom().getEstab(), c, s.getIdPerson(), day - 2, dc);
     } catch (SQLException ex) {
       GemLogger.logException(ex);

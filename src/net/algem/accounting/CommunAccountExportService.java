@@ -1,5 +1,5 @@
 /*
- * @(#)CommunAccountExportService.java	2.9.4.11 22/07/2015
+ * @(#)CommunAccountExportService.java	2.9.4.12 23/09/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -23,7 +23,6 @@ package net.algem.accounting;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.NumberFormat;
@@ -33,6 +32,7 @@ import java.util.Vector;
 import net.algem.config.Preference;
 import net.algem.contact.Contact;
 import net.algem.contact.ContactIO;
+import net.algem.contact.Person;
 import net.algem.util.DataConnection;
 import net.algem.util.TextUtil;
 import net.algem.util.model.ModelNotFoundException;
@@ -40,7 +40,7 @@ import net.algem.util.model.ModelNotFoundException;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.11
+ * @version 2.9.4.12
  * @since 2.8.r 13/12/13
  */
 public abstract class CommunAccountExportService
@@ -56,7 +56,7 @@ public abstract class CommunAccountExportService
     defaultNumberFormat.setMaximumFractionDigits(2);
   }
 
-  protected DateFormat defaultDateFormat = new SimpleDateFormat("ddMMyyyy");
+  protected DateFormat defaultDateFormat = new SimpleDateFormat("dd-MM-yyyy");
 
   /**
    * Retrieves the default account for the category {@literal key}.
@@ -170,29 +170,34 @@ public abstract class CommunAccountExportService
   public void exportCSV(String path, Vector<OrderLine> orderLines) throws IOException {
     int total = 0;
     OrderLine e = null;
-    PrintWriter out = new PrintWriter(new File(path), StandardCharsets.UTF_8.name());
-    // force Byte Order Mark (BOM) : windows compatibility
-    out.print("\ufeff");
-    out.print("id;nom;date;reglement;piece;libelle;montant;compte;analytique" + TextUtil.LINE_SEPARATOR);
-    for (int i = 0, n = orderLines.size(); i < n; i++) {
-      e = orderLines.elementAt(i);
-      Contact c = ContactIO.findId(e.getPayer(), dbx);
-      String payerName = c == null ? "" : c.getName();
-      total += e.getAmount();
-      out.print(e.getPayer()
-              + ";" + payerName
-              + ";" + defaultDateFormat.format(e.getDate().getDate())
-              + ";" + e.getModeOfPayment()
-              + ";" + e.getDocument()
-              + ";" + e.getLabel()
-              + ";" + defaultNumberFormat.format(e.getAmount() / 100.0)
-              + ";" + e.getAccount().getNumber() + " : " + e.getAccount().getLabel()
-              + ";" + e.getCostAccount().getNumber() + " : " + e.getCostAccount().getLabel()
-              + TextUtil.LINE_SEPARATOR);
+    // "UTF-16LE" is the best option : no BOM and excel-compatible
+    try (PrintWriter out = new PrintWriter(new File(path), "UTF-16LE")) {
+      out.print("id payeur;payeur;id adherent;adherent;date;reglement;piece;libelle;montant;n°compte;libelle compte;analytique;libelle analytique" + TextUtil.LINE_SEPARATOR);
+      for (int i = 0, n = orderLines.size(); i < n; i++) {
+        e = orderLines.elementAt(i);
+        Contact c = ContactIO.findId(e.getPayer(), dbx);
+        Person m = ContactIO.findId(e.getMember(), dbx);
+        String payerName = c == null ? "" : (c.getOrganization() != null && c.getOrganization().length() > 0 ? c.getOrganization() : c.getNameFirstname());
+        total += e.getAmount();
+        out.print(String.valueOf(e.getPayer())
+                + ";" + payerName
+                + ";" + e.getMember()
+                + ";" + (m == null ? "" : (m.getNameFirstname() == null ? "" : m.getNameFirstname())) // important : between brackets !
+                + ";" + defaultDateFormat.format(e.getDate().getDate())
+                + ";" + e.getModeOfPayment()
+                + ";" + e.getDocument()
+                + ";" + e.getLabel()
+                + ";" + defaultNumberFormat.format(e.getAmount() / 100.0)
+                + ";" + e.getAccount().getNumber()
+                + ";" + e.getAccount().getLabel()
+                + ";" + e.getCostAccount().getNumber()
+                + ";" + e.getCostAccount().getLabel()
+                + TextUtil.LINE_SEPARATOR);
+      }
+      if (total > 0) {
+        out.print(";;;;" + defaultDateFormat.format(e.getDate().getDate()) + ";;;TOTAL;" + defaultNumberFormat.format(total / 100.0) + ";;;;" + (char) 13);
+      }
     }
-    if (total > 0) {
-      out.print(";;" + defaultDateFormat.format(e.getDate().getDate()) + ";;;TOTAL;" + defaultNumberFormat.format(total / 100.0) + ";" + (char) 13);
-    }
-    out.close();
   }
+
 }

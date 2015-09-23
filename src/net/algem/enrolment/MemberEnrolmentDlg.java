@@ -1,5 +1,5 @@
 /*
- * @(#)MemberEnrolmentDlg.java	2.9.3.2 11/03/15
+ * @(#)MemberEnrolmentDlg.java	2.9.4.12 21/09/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -48,7 +48,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.3.2
+ * @version 2.9.3.12
  * @since 1.0a 07/07/1999
  * @see net.algem.contact.PersonFileEditor
  *
@@ -154,7 +154,7 @@ public class MemberEnrolmentDlg
           EnrolmentOrderUtil orderUtil = new EnrolmentOrderUtil(dossier, dc);
           orderUtil.setTotalOrderLine(totalBase);
           int n = orderUtil.saveOrderLines(module_orders.elementAt(0), school);
-          for(ModuleOrder mo : module_orders) {
+          for (ModuleOrder mo : module_orders) {
             orderUtil.updateModuleOrder(n, mo);
           }
         } catch (NullAccountException ne) {
@@ -186,7 +186,7 @@ public class MemberEnrolmentDlg
     ca.edit();
 
   }
-
+  
   private void resetIdModule() {
     for(int i = 0, size = module_orders.size(); i < size; i++) {
       ModuleOrder mo = module_orders.elementAt(i);

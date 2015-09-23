@@ -79,7 +79,7 @@ public class EditEventDlg
     note.setBorder(new JTextField().getBorder());
     note.setLineWrap(true);
     note.setWrapStyleWord(true);
-    note.setText(range.getNote1());
+    note.setText(range.getNoteValue());
     gb.add(new GemLabel(BundleUtil.getLabel("Hour.label")), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(timePanel, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Heading.label")), 0, 1, 1, 1, GridBagHelper.NORTHWEST);

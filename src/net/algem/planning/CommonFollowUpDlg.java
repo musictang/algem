@@ -1,7 +1,7 @@
 /*
- * @(#)CollectiveFollowUpDlg.java	2.6.a 21/09/12
+ * @(#)CommonFollowUpDlg.java	2.9.4.12 17/09/15
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,6 +27,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import javax.swing.JDialog;
+import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
@@ -37,18 +38,19 @@ import net.algem.util.ui.GemLabel;
 import net.algem.util.ui.GemPanel;
 
 /**
- * Dialog for pedagogic follow-up of collective courses.
+ * Dialog for educational monitoring of courses.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.5.b
+ * @version 2.9.4.12
+ * @since 2.9.4.12 17/09/15
  */
-public class CollectiveFollowUpDlg
+public class CommonFollowUpDlg
         implements ActionListener
 {
 
   private DataCache dc;
-  private ScheduleObject sched;
+  private ScheduleObject scheduleObject;
   private JDialog dlg;
   private FollowUpView pv;
   private GemLabel title;
@@ -56,21 +58,23 @@ public class CollectiveFollowUpDlg
   private GemButton btValid;
   private GemButton btCancel;
   private PlanningService service;
+  private boolean onlyCollective;
 
-  public CollectiveFollowUpDlg(GemDesktop desktop, PlanningService service, ScheduleObject plan, String courseTitle)
+  public CommonFollowUpDlg(GemDesktop desktop, PlanningService service, ScheduleObject plan, String courseTitle, boolean collective)
           throws SQLException 
   {
     
     dc = desktop.getDataCache();
     this.service = service;
-    this.sched = plan;
+    this.scheduleObject = plan;
+    this.onlyCollective = collective;
 
     dlg = new JDialog(desktop.getFrame(), true);
-    title = new GemLabel("Suivi cours : " + courseTitle);
-    pv = new FollowUpView(this.sched.getDate(), this.sched.getStart(), this.sched.getEnd());
+    title = new GemLabel(BundleUtil.getLabel("Follow.up.label") + " : " + courseTitle);
+    pv = new FollowUpView(this.scheduleObject.getDate(), this.scheduleObject.getStart(), this.scheduleObject.getEnd());
 
-    if (this.sched.getNote() != 0) {
-      pv.setText(service.getCollectiveFollowUp(plan.getNote()));
+    if (this.scheduleObject.getNote() != 0) {
+      pv.setText(service.getFollowUp(plan.getNote()));
     }
 
     btValid = new GemButton(GemCommand.OK_CMD);
@@ -116,10 +120,18 @@ public class CollectiveFollowUpDlg
   public void actionPerformed(ActionEvent evt) {
     if (evt.getActionCommand().equals(GemCommand.OK_CMD)) {
       try {
-        if (sched.getNote() == 0) {
-          service.createFollowUp(sched, pv.getText());
+        if (scheduleObject.getNote() == 0) {
+          if (onlyCollective) {
+            service.createCollectiveFollowUp(scheduleObject, pv.getText());
+          } else {
+              if (((CourseSchedule) scheduleObject).getCourse().isCollective()) {
+                service.createCollectiveFollowUp(scheduleObject, pv.getText());
+              } else {
+                service.createIndividualFollowUp(scheduleObject.getId(), pv.getText());
+              }
+          }
         } else {
-          service.updateFollowUp(sched.getNote(), pv.getText());
+          service.updateFollowUp(scheduleObject.getNote(), pv.getText());
         }
       } catch (SQLException e) {
         GemLogger.logException(MessageUtil.getMessage("activity.thread.update.exception"), e, dlg);

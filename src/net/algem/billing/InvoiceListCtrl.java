@@ -21,6 +21,7 @@
 package net.algem.billing;
 
 import java.awt.BorderLayout;
+import javax.swing.DropMode;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.RowSorter;
@@ -52,7 +53,6 @@ public class InvoiceListCtrl
     if (sorter instanceof TableRowSorter) {
       ((TableRowSorter) sorter).setComparator(0, new InvoiceComparator());
     }
-
     TableColumnModel cm = table.getColumnModel();
     cm.getColumn(0).setPreferredWidth(14);
     cm.getColumn(1).setPreferredWidth(80);

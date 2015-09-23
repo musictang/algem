@@ -1,7 +1,7 @@
 /*
- * @(#)ScheduleObject.java	2.9.1 18/11/14
+ * @(#)ScheduleObject.java	2.9.4.12 23/09/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,7 +28,7 @@ import net.algem.room.Room;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.4.12
  */
 public abstract class ScheduleObject
         extends Schedule
@@ -38,7 +38,7 @@ public abstract class ScheduleObject
   protected Object activity;	//action
   protected Person person;	//idper
   protected Room room;		//lieux
-  protected String note1;
+  protected String noteValue;
 
   public ScheduleObject() {
   }
@@ -85,12 +85,12 @@ public abstract class ScheduleObject
     return room;
   }
 
-   public void setNote1(String s) {
-    note1 = s;
+   public void setNoteValue(String s) {
+    noteValue = s;
   }
 
-  public String getNote1() {
-    return note1;
+  public String getNoteValue() {
+    return noteValue;
   }
 
   abstract public String getScheduleLabel();

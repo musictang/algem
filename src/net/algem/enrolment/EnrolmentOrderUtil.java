@@ -1,7 +1,7 @@
 /*
- * @(#)EnrolmentOrderUtil.java	2.9.1 09/12/14
+ * @(#)EnrolmentOrderUtil.java	2.9.4.12 22/09/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -38,7 +38,7 @@ import net.algem.util.model.Model;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.4.12
  * @since 2.8.a 01/04/2013
  */
 public class EnrolmentOrderUtil {
@@ -91,6 +91,10 @@ public class EnrolmentOrderUtil {
     
     orderLine.setSchool(schoolId);
     List<OrderLine> lines = getOrderLines(moduleOrder, orderLine);
+    if (lines.size() == 1 && (PayFrequency.QUARTER.equals(moduleOrder.getPayment()) || PayFrequency.MONTH.equals(moduleOrder.getPayment()))){
+      //montant total de l'échéance * nombre d'échéances par défaut
+      lines.get(0).setAmount(AccountUtil.getIntValue(total * getDefaultPayFrequency(moduleOrder.getPayment())));
+    }
     for (OrderLine ol : lines) {
       AccountUtil.createEntry(ol, dc);
     }
@@ -203,14 +207,32 @@ public class EnrolmentOrderUtil {
    * @throws SQLException 
    */
   void updateModuleOrder(int n, ModuleOrder mo) throws SQLException {
-    if (n <= 0) {
-      return;
-    }
-    if(mo != null) {
+    if (mo != null && n > 0) {
       mo.setNOrderLines(n);
       ModuleOrderIO.update(mo, dc);
     }
   }
+
+  /**
+   * Gets the number of payments for the rate period {@code p}.
+   * @param p payment frequency
+   * @return an integer
+   */
+  private int getDefaultPayFrequency(PayFrequency p) {
+    switch (p) {
+      case QUARTER:
+        return 3;
+      case MONTH:
+        return 9;
+      case YEAR:
+        return 1;
+      case SEMESTER:
+        return 2;
+      default:
+        return 0;
+    }
+  }
+
   
   /**
    * Gets the preferred accounts.

@@ -205,7 +205,7 @@ public class ScriptingFormController {
         panel1.add(splitPane1, gbc);
         final JPanel leftPanel = new JPanel();
         leftPanel.setLayout(new GridBagLayout());
-        leftPanel.setMinimumSize(new Dimension(250,550));//!important
+        leftPanel.setMinimumSize(new Dimension(120,550));//!important
         splitPane1.setLeftComponent(leftPanel);
         leftPanel.setBorder(BorderFactory.createTitledBorder(BundleUtil.getLabel("Scripts.available.label")));
         tree1.setRequestFocusEnabled(true);

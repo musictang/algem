@@ -1,5 +1,5 @@
 /*
- * @(#)ExportService.java 2.9.2.1 18/02/15
+ * @(#)ExportService.java 2.9.4.12 23/09/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -46,7 +46,7 @@ import net.algem.util.model.Model;
 /**
  * Service class for export operations.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2.1
+ * @version 2.9.4.12
  * @since 2.6.d 06/11/2012
  */
 public class ExportService {
@@ -92,7 +92,6 @@ public class ExportService {
   }
   
   int printCSV(PrintWriter out, List<Person> list) throws SQLException {
-    out.print("\ufeff");// force Byte Order Mark (BOM)
     out.println(getHeader(CSV_HEADER));
     for (Person p : list) {
       Address a = getAddress(p.getId());
@@ -384,7 +383,7 @@ public class ExportService {
   
   public Vector<ScheduleRangeObject> getScheduleRange(DateFr start, DateFr end) throws SQLException {
     String where = "AND p.jour >= '" + start + "' AND p.jour <= '" + end + "' AND pg.adherent != 0 ORDER BY p.jour";
-    return ScheduleRangeIO.findObject(where, service, dc);
+    return ScheduleRangeIO.findRangeObject(where, service, dc);
   }
   
   public boolean isPro(int action, int idper) throws SQLException {

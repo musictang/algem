@@ -1,5 +1,5 @@
 /*
- * @(#)StudentExportDlg.java 2.9.4.11 22/07/2015
+ * @(#)StudentExportDlg.java 2.9.4.12 23/09/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -27,7 +27,6 @@ import java.awt.GridBagLayout;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.List;
 import javax.swing.BorderFactory;
@@ -51,7 +50,7 @@ import net.algem.util.ui.MessagePopup;
  * Abstract class for student export operations.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.11
+ * @version 2.9.4.12
  * @since 2.6.a 06/11/2012
  */
 public abstract class StudentExportDlg
@@ -149,7 +148,7 @@ public abstract class StudentExportDlg
         
         List<Person> list = service.getContacts(query);
         if (typeContact.getSelectedIndex() == 0) {
-          out = new PrintWriter(new File(path), StandardCharsets.UTF_8.name());
+          out = new PrintWriter(new File(path), "UTF-16LE");
           counter = service.printCSV(out, list);
           MessagePopup.information(this, MessageUtil.getMessage("export.success.info", new Object[]{counter, path}));
         } else {

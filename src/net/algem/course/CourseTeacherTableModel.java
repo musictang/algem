@@ -1,5 +1,5 @@
 /*
- * @(#)CourseTeacherTableModel.java	2.9.2 26/01/15
+ * @(#)CourseTeacherTableModel.java	2.9.4.12 16/09/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -30,7 +30,7 @@ import net.algem.util.ui.JTableModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.9.4.12
  */
 public class CourseTeacherTableModel
         extends JTableModel<CourseSchedule>
@@ -61,6 +61,7 @@ public class CourseTeacherTableModel
       case 2:
         return String.class;
       case 3:
+        return Course.class;
       case 4:
         return String.class;
       default:
@@ -86,7 +87,10 @@ public class CourseTeacherTableModel
       case 3:
           return p.getCourse();
       case 4:
-        return p.getNote1();
+        String s = p.getNoteValue();
+        if (s != null) {
+          return p.getNoteValue().replace('\n', ' ');
+        }
     }
     return null;
   }

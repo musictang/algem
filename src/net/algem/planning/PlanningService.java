@@ -1,5 +1,5 @@
 /*
- * @(#)PlanningService.java	2.9.4.10 17/07/15
+ * @(#)PlanningService.java	2.9.4.12 16/09/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -42,7 +42,7 @@ import net.algem.util.ui.MessagePopup;
  * Service class for planning.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.8
+ * @version 2.9.4.12
  * @since 2.4.a 07/05/12
  */
 public class PlanningService
@@ -919,19 +919,9 @@ public class PlanningService
     ScheduleRangeIO.delete(where, dc);
   }
 
+  
   /**
-   * Gets an individual followup note.
-   *
-   * @param idnote note id
-   * @return a string
-   * @throws SQLException
-   */
-  public String getFollowUp(int idnote) throws SQLException {
-    return ScheduleRangeIO.findNote(idnote, dc);
-  }
-
-  /**
-   * Modifies a followup note.
+   * Modifies an individual followup note.
    *
    * @param range the schedule range
    * @param t the note
@@ -972,27 +962,49 @@ public class PlanningService
     }
 
   }
-
+  
   /**
-   * Gets a collective follow-up note.
+   * Gets the contents of the note with id {@code noteId}.
    *
-   * @param idnote note id
-   * @return a string annotation
+   * @param noteId note Id
+   * @return a text or an empty string if no text exists
    * @throws SQLException
    */
-  public String getCollectiveFollowUp(int idnote) throws SQLException {
-    return ScheduleIO.findFollowUp(idnote, dc);
+  public String getFollowUp(int noteId) throws SQLException {
+    return ScheduleIO.findFollowUp(noteId, dc);
   }
 
+  /**
+   * Gets the note contents of the schedule including this {@code rangeId}.
+   * The note is common to all persons present in the schedule.
+   * @param rangeId range number
+   * @return a text or an empty string if no text exists
+   * @throws SQLException 
+   */
+  public Note getCollectiveFollowUpByRange(int rangeId) throws SQLException {
+    return ScheduleIO.getCollectiveFollowUpByRange(rangeId, dc);
+  }
+  
   /**
    * Creates a note for collective follow-up.
    *
    * @param plan the schedule
-   * @param text
+   * @param text note contents
    * @throws PlanningException if SQL error
    */
-  public void createFollowUp(ScheduleObject plan, String text) throws PlanningException {
-    ScheduleIO.createFollowUp(plan, text, dc);
+  public void createCollectiveFollowUp(ScheduleObject plan, String text) throws PlanningException {
+    ScheduleIO.createCollectiveFollowUp(plan, text, dc);
+  }
+  
+  /**
+   * Creates a note for individual follow-up.
+   *
+   * @param rangeId range Id
+   * @param text note contents
+   * @throws PlanningException if SQL error
+   */
+  public void createIndividualFollowUp(int rangeId, String text) throws PlanningException {
+    ScheduleIO.createIndividualFollowUp(rangeId, text, dc);
   }
 
   /**
@@ -1117,9 +1129,22 @@ public class PlanningService
   public Vector<ScheduleObject> getSchedule(String where) throws SQLException {
     return ScheduleIO.findObject(where, dc);
   }
+  
+  /**
+   * Gets a schedule including the range with Id {@code rangeId}.
+   * @param rangeId range Id
+   * @return a schedule or null if no schedule was found
+   */
+  public Schedule getScheduleByRange(int rangeId) {
+    Vector<Schedule> vp = ScheduleIO.find(", plage pg where p.id = pg.idplanning and pg.id = " + rangeId, dc);
+    if (vp.size() > 0) {
+      return vp.elementAt(0);
+    }
+    return null;
+  }
 
   public Vector<ScheduleRangeObject> getScheduleRange(String where) throws SQLException {
-    return ScheduleRangeIO.findObject(where, this, dc);
+    return ScheduleRangeIO.findRangeObject(where, this, dc);
   }
 
   /**
