@@ -1,7 +1,7 @@
 /*
- * @(#)CourseView.java	2.8.k 23/07/13
+ * @(#)CourseView.java	2.9.4.12 25/09/15
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -35,7 +35,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.k
+ * @version 2.9.4.12
  */
 public class CourseView
         extends GemPanel
@@ -56,8 +56,8 @@ public class CourseView
     no = new GemNumericField(6);
     no.setEditable(false);
     no.setBackground(Color.lightGray);
-    title = new GemField(24);
-    label = new GemField(24);
+    title = new GemField(24, 32);
+    label = new GemField(24, 32);
     code = new GemParamChoice(new GemChoiceModel<CourseCode>(codes));
     Dimension comboDim = new Dimension(200, code.getPreferredSize().height);
     code.setPreferredSize(comboDim);

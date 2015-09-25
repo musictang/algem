@@ -1,7 +1,7 @@
 /*
- * @(#)ModuleIO.java 2.8.p 06/12/13
+ * @(#)ModuleIO.java 2.9.4.12 25/09/15
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -37,7 +37,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.p
+ * @version 2.9.4.12
  */
 public class ModuleIO
         extends TableIO
@@ -46,7 +46,7 @@ public class ModuleIO
 
   public static final String TABLE = "module";
   public static final String SEQUENCE = "idmodule";
-  public static final int TITLE_MAX_LEN = 40;
+  public static final int TITLE_MAX_LEN = 64;
   private DataConnection dc;
 
   public ModuleIO(DataConnection dc) {

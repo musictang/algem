@@ -7,6 +7,11 @@ Rappel : il est déconseillé d'éditer cette colonne. Le nombre d'heures restan
 * La barre de séparation dans la fenêtre de scripts (Menu Catalogue -> Scripts) restait bloquée après déplacement vers la gauche.
 * Le tri par colonne du tableau de suivi d'un enseignant (onglet Suivi enseignant) ne fonctionnait pas correctement si l'on voulait trier par cours.
 * Certains exports csv entraînaient des problèmes d'encodage de caractères avec Excel sous windows.
+* La fenêtre "Heures salariés" ne s'affichait pas correctement dans certaines configurations d'écran
+* La police par défaut des zones de saisie de texte a été modifiée pour les thèmes "windows" et "Windows Classic".
+* Certains champs de saisie de durée étaient masqués dans la fenêtre d'édition d'une formule lorsque celle-ci comportait plus de 6 cours.
+* En mode édition de formule, le titre ne peut plus désormais dépasser 64 caractères, conformément au nombre maximal de caractères autorisé en base de données.
+* En mode édition de cours, le titre et le libellé ne peuvent plus désormais dépasser 32 caractères, conformément au nombre maximal de caractères autorisé en base de données.
 
 TARIFS SALLES
 Les TARIFS SONT MAINTENANT TRIÉS PAR DÉFAUT PAR "HEURE PLEINE" dans la liste des tarifs : menu Compta -> Tarifs salles. Du moins cher au plus cher donc. Ils étaient auparavant classés par libellé.

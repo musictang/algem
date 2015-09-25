@@ -1,5 +1,5 @@
 /*
- * @(#)ModuleView.java	2.9.3.2 12/03/15
+ * @(#)ModuleView.java	2.9.4.12 25/09/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -38,7 +38,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.3.2
+ * @version 2.9.4.12
  */
 public class ModuleView
         extends GemPanel {
@@ -55,7 +55,7 @@ public class ModuleView
   public ModuleView(DataCache dataCache) {   
     no = new GemNumericField(6);
     no.setEditable(false);
-    title = new GemField(ModuleIO.TITLE_MAX_LEN);
+    title = new GemField(ModuleIO.TITLE_MAX_LEN, ModuleIO.TITLE_MAX_LEN);
     title.setColumns(ModuleIO.TITLE_MAX_LEN);
 
     Format f = AccountUtil.getDefaultNumberFormat();
@@ -89,12 +89,12 @@ public class ModuleView
 
     gb.add(new GemLabel(BundleUtil.getLabel("Number.abbrev.label")), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(no, 1, 0, 1, 1, GridBagHelper.WEST);
-    gb.add(title, 0, 1, 2, 1, GridBagHelper.WEST);
+    gb.add(title, 0, 1, 2, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
     gb.add(new JLabel(BundleUtil.getLabel("Type.label")), 0, 2, 1, 1, GridBagHelper.WEST);
     gb.add(type, 1, 2, 1, 1, GridBagHelper.WEST);
-    gb.add(courseView, 0, 3, 2, 1, GridBagHelper.WEST);
-    gb.add(pricePanel, 0, 4, 2, 1, GridBagHelper.WEST);
-
+    gb.add(courseView, 0, 3, 2, 1, GridBagHelper.BOTH, GridBagHelper.WEST);
+    gb.add(pricePanel, 0, 4, 2, 1, GridBagHelper.BOTH, GridBagHelper.WEST);
+    
   }
 
   public String getId() {

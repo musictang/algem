@@ -1,5 +1,5 @@
 /*
- * @(#)ModuleCtrl.java	2.9.3.2 12/03/15
+ * @(#)ModuleCtrl.java	2.9.4.12 25/09/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -34,7 +34,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.3.2
+ * @version 2.9.4.12
  * @since 1.0a 07/07/1999
  */
 public class ModuleCtrl
@@ -48,9 +48,9 @@ public class ModuleCtrl
 
   public ModuleCtrl(GemDesktop desktop) {
     this.desktop = desktop;
-    dataCache = desktop.getDataCache();   
+    dataCache = desktop.getDataCache(); 
     view = new ModuleView(dataCache);
-
+    
     addCard(BundleUtil.getLabel("Module.label"), view);
     select(0);
   }
