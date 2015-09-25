@@ -1,5 +1,5 @@
 /*
- * @(#)HourEmployeeView.java  2.9.4.11 22/07/2015
+ * @(#)HourEmployeeView.java  2.9.4.12 25/09/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -55,7 +55,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.11
+ * @version 2.9.4.12
  * @since 2.8.v 10/06/14
  */
 public class HourEmployeeView

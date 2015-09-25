@@ -1,5 +1,5 @@
 /*
- * @(#)Algem.java	2.9.4.12 24/09/15
+ * @(#)Algem.java	2.9.4.12 25/09/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -62,7 +62,7 @@ public class Algem
 {
 
   public static final String APP_VERSION = "2.9.4.12";//experimental
-  public static List<LookAndFeelInfo> ALTERNATIVE_LAF = new ArrayList<LookAndFeelInfo>();
+  public static List<LookAndFeelInfo> ALTERNATIVE_LAF = new ArrayList<>();
   private static final int DEF_WIDTH = 1080;// (850,650) => ancienne taille
   private static final int DEF_HEIGHT = 780;
   private static final Point DEF_LOCATION = new Point(70, 30);
@@ -380,6 +380,7 @@ public class Algem
     String lafName = UIManager.getLookAndFeel().getName();
     UIDefaults def = UIManager.getLookAndFeelDefaults();
     Font myFont = new Font(Font.SANS_SERIF, Font.PLAIN, 11);
+    System.out.println(lafName);
     switch (lafName) {
       case "Nimbus":
         def.put("Button.contentMargins", new InsetsUIResource(4, 4, 4, 4)); //  default : (6,14,6,14)
@@ -406,6 +407,10 @@ public class Algem
         def.put("ComboBox.font", myFont);
         def.put("TextArea.font", myFont.deriveFont(12));
         def.put("TextPane.font", myFont.deriveFont(12));
+        break;
+      case "Windows":
+      case "Windows Classic":
+        def.put("TextArea.font", def.getFont("Label.font").deriveFont(Font.PLAIN, 12));
         break;
     }
   }
