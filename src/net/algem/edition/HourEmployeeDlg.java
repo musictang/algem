@@ -106,7 +106,7 @@ public class HourEmployeeDlg
     add(buttons, BorderLayout.SOUTH);
     setLocation(200, 100);
     setSize(480,440);
-//    pack();
+    pack();
   }
 
   String getPath() {
