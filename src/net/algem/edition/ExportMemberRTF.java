@@ -258,7 +258,7 @@ public class ExportMemberRTF
         for (int j = 0; j < v.size(); j++) {
           ScheduleRangeObject p = v.elementAt(j);
 
-          String s = p.getNote1();
+          String s = p.getNoteValue();
           if (s != null) {
             String s2 = p.getNote2();
             if (s2 != null) s += " / " + s2;

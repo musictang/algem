@@ -76,11 +76,11 @@ public class RoomRateSearchCtrl
 
     String type = searchView.getField(0);
     if (type != null) {
-      query = "WHERE type ~* '" + type + "' ORDER BY libelle";
+      query = "WHERE type ~* '" + type + "' ORDER BY hp";
     } else if ((label = searchView.getField(1)) != null) {
-      query = "WHERE libelle ~* '" + label + "' ORDER BY libelle";
+      query = "WHERE libelle ~* '" + label + "' ORDER BY hp";
     } else {
-      query = "ORDER BY libelle";
+      query = "ORDER BY hp";
     }
 
     Vector<RoomRate> v;

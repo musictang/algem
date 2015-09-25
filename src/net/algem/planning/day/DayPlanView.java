@@ -492,7 +492,7 @@ public class DayPlanView
       int y = setY(p.getEnd().toMinutes()) - (fm.getHeight() /2);
       String subSubLabel = null;
       if (Schedule.ADMINISTRATIVE == p.getType()) {
-        subSubLabel = String.valueOf(p.getNote1());
+        subSubLabel = String.valueOf(p.getNoteValue());
       } else {
         subSubLabel = p.getMember() != null ? p.getMember().getCommunName() : "";
       }

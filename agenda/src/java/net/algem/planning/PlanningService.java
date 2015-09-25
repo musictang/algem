@@ -1,5 +1,5 @@
 /*
- * @(#)PlanningService.java	1.0.4 25/05/15
+ * @(#)PlanningService.java	1.0.5 14/09/15
  *
  * Copyright (c) 2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -22,6 +22,8 @@ package net.algem.planning;
 
 import java.sql.SQLException;
 import java.util.*;
+import net.algem.config.Config;
+import net.algem.config.ConfigIO;
 import net.algem.contact.Person;
 import net.algem.contact.PersonIO;
 import net.algem.room.Room;
@@ -34,7 +36,7 @@ import org.springframework.stereotype.Component;
  * Service class for schedule operations.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 1.0.4
+ * @version 1.0.5
  * @since 1.0.0 11/02/13
  */
 @Component
@@ -45,6 +47,8 @@ public class PlanningService
   private ScheduleIO scheduleIO;
   @Autowired
   private PersonIO personIO;
+  @Autowired
+  private ConfigIO configIO;
   @Autowired
   private MessageSource messageSource;
 
@@ -105,6 +109,11 @@ public class PlanningService
     return map;
   }
 
+  public int getTimeOffset() {
+    Config c = configIO.findId("Heure.ouverture");
+    return new Hour(c.getValue()).toMinutes();
+  }
+
   private DailyTimes[] findDailyTimes(int roomId) {
     try {
       return scheduleIO.find(roomId);
@@ -115,7 +124,7 @@ public class PlanningService
 
   private List<ScheduleElement> getClosed(int room, int dow) {
     List<ScheduleElement> closed = new ArrayList<ScheduleElement>();
-    Hour first = new Hour("09:00");
+    Hour first = new Hour(getTimeOffset());
     Hour last = new Hour("24:00");
 
     DailyTimes dt = getDailyTimes(room, dow);
@@ -204,4 +213,6 @@ public class PlanningService
     }
     return t.toUpperCase() + "<br />" + e.getStart() + "-" + e.getEnd();
   }
+
+
 }

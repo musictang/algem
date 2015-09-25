@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileEditor 2.9.4.10 20/07/15
+ * @(#)PersonFileEditor 2.9.4.12 01/09/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -21,12 +21,15 @@
 package net.algem.contact;
 
 import java.awt.Cursor;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
 import java.io.FileNotFoundException;
 import java.sql.SQLException;
 import java.util.Vector;
 import java.util.logging.Level;
+import java.util.prefs.Preferences;
 import javax.swing.*;
 import net.algem.accounting.*;
 import net.algem.bank.*;
@@ -65,7 +68,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.10
+ * @version 2.9.4.12
  */
 public class PersonFileEditor
         extends FileEditor
@@ -95,6 +98,8 @@ public class PersonFileEditor
   private OrderLineEditor orderLineEditor;
   private DataConnection dc;
   private static BankBranchIO BANK_BRANCH_IO;
+  private boolean savePrefs;
+  private final Preferences prefs = Preferences.userRoot().node("/algem/personfileeditor/size");
 
   public PersonFileEditor() {
     super("Fiche: ");
@@ -321,6 +326,7 @@ public class PersonFileEditor
       hoursDlg.setVisible(true);
     } // clic sur le bouton/icone Fermer la fiche
     else if (GemCommand.CLOSE_CMD.equals(arg)) { // GemCommand.
+      savePrefs = (evt.getModifiers() & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK;
       try {
         close();
       } catch (GemCloseVetoException i) {
@@ -345,9 +351,13 @@ public class PersonFileEditor
       personFileView.addRehearsalHistoryTab();
       miHistoRehearsal.setEnabled(false);
     } else if ("Histo.pass".equals(arg)) {
+      desktop.setWaitCursor();
       if (personFileView.addHistoSubscriptionTab()) {
         miHistoPass.setEnabled(false);
+      } else {
+        MessagePopup.warning(personFileView, MessageUtil.getMessage("no.subscription.warning"));
       }
+      desktop.setDefaultCursor();
     } else if (HistoSubscriptionCard.CLOSE_CMD.equals(arg)) {
       personFileView.removeSubscriptionTab();
       miHistoPass.setEnabled(true);
@@ -1040,6 +1050,11 @@ public class PersonFileEditor
       } else {
         System.out.println(MessageUtil.getMessage("no.update.info"));
       }
+    }
+    if (savePrefs) {
+        Rectangle bounds = getView().getBounds();
+        prefs.putInt("w", (int)bounds.getWidth());
+        prefs.putInt("h", (int)bounds.getHeight());
     }
     personFileView.clear();
     closeModule();

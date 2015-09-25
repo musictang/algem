@@ -1,5 +1,5 @@
 /*
- * @(#)ExtendeModuleOrderListCtrl.java	2.9.2.1 19/02/15
+ * @(#)ExtendeModuleOrderListCtrl.java	2.9.4.12 22/09/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -21,6 +21,7 @@
 package net.algem.enrolment;
 
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -33,6 +34,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.swing.Box;
 import javax.swing.DefaultRowSorter;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
@@ -40,6 +42,8 @@ import javax.swing.JTable;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
 import javax.swing.SwingUtilities;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumnModel;
@@ -54,13 +58,14 @@ import net.algem.util.jdesktop.DesktopOpenHandler;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.GemBorderPanel;
 import net.algem.util.ui.GemButton;
+import net.algem.util.ui.GemLabel;
 import net.algem.util.ui.GemPanel;
 import net.algem.util.ui.JTableModel;
 
 /**
  * Controller used to print and display the list of module orders.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2.1
+ * @version 2.9.4.12
  * @since 2.9.2.1 16/02/15
  */
 public class ExtendeModuleOrderListCtrl
@@ -73,6 +78,7 @@ public class ExtendeModuleOrderListCtrl
   private final JTable table;
   private EnrolmentService service;
   private final DateRangePanel datePanel;
+  private GemLabel status;
 
   private String[] columnToolTips = {
     BundleUtil.getLabel("Extended.module.list.person.id.tip"),
@@ -107,9 +113,24 @@ public class ExtendeModuleOrderListCtrl
         };
       }
     };
+    table.getSelectionModel().addListSelectionListener(new ListSelectionListener()
+    {
+
+      @Override
+      public void valueChanged(ListSelectionEvent e) {
+        int [] rows = table.getSelectedRows();
+        if (rows.length <= 0) {
+          status.setText(null);
+        } else {
+          status.setText(String.valueOf(rows.length));
+        }
+      }
+    });
 
     DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
     rightRenderer.setHorizontalAlignment( JLabel.RIGHT );
+    table.getColumnModel().getColumn(5).setCellRenderer(rightRenderer);
+    table.getColumnModel().getColumn(6).setCellRenderer(rightRenderer);
     table.getColumnModel().getColumn(7).setCellRenderer(rightRenderer);
     table.getColumnModel().getColumn(8).setCellRenderer(rightRenderer);
     table.setAutoCreateRowSorter(true);
@@ -139,7 +160,10 @@ public class ExtendeModuleOrderListCtrl
     GemBorderPanel mainPanel = new GemBorderPanel(new BorderLayout());
     mainPanel.add(scroll, BorderLayout.CENTER);
     
-    GemPanel bottom = new GemPanel();
+    GemPanel bottom = new GemPanel(new FlowLayout(FlowLayout.LEFT));
+    bottom.add(new GemLabel(BundleUtil.getLabel("Orders.label") + " : "));
+    bottom.add(status = new GemLabel());
+    bottom.add(Box.createHorizontalStrut(150));
     bottom.add(datePanel = new DateRangePanel(desktop.getDataCache().getStartOfYear(), desktop.getDataCache().getEndOfYear()));
     GemButton btLoad = new GemButton(GemCommand.LOAD_CMD);
     btLoad.addActionListener(this);
@@ -161,6 +185,7 @@ public class ExtendeModuleOrderListCtrl
       tableModel.addItem(m);
     }
     sortByColIndex(2, SortOrder.ASCENDING);
+    status.setText(String.valueOf(tableModel.getData().size()));
   }
   
   /**

@@ -1,5 +1,5 @@
 /*
- * @(#)ScriptingFormController.java 2.9.4.10 20/07/15
+ * @(#)ScriptingFormController.java 2.9.4.12 11/09/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  * 
@@ -49,7 +49,7 @@ import net.algem.util.BundleUtil;
 /**
  * @author Alexandre Delattre
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @since 2.9.4.9
+ * @since 2.9.4.12
  */
 public class ScriptingFormController {
     private JPanel panel1;
@@ -190,13 +190,11 @@ public class ScriptingFormController {
 
     private void setupUI() {
         createUIComponents();
+       
         panel1 = new JPanel();
         panel1.setLayout(new GridBagLayout());
-        panel1.setMinimumSize(new Dimension(1024, 768));
         panel1.setOpaque(true);
-        panel1.setPreferredSize(new Dimension(1024, 768));
         final JSplitPane splitPane1 = new JSplitPane();
-        splitPane1.setDividerLocation(250);
         GridBagConstraints gbc;
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -205,12 +203,11 @@ public class ScriptingFormController {
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
         panel1.add(splitPane1, gbc);
-        final JPanel panel2 = new JPanel();
-        panel2.setLayout(new GridBagLayout());
-        splitPane1.setLeftComponent(panel2);
-        panel2.setBorder(BorderFactory.createTitledBorder(BundleUtil.getLabel("Scripts.available.label")));
-        tree1.setMaximumSize(new Dimension(250, 100));
-        tree1.setPreferredSize(new Dimension(250, 100));
+        final JPanel leftPanel = new JPanel();
+        leftPanel.setLayout(new GridBagLayout());
+        leftPanel.setMinimumSize(new Dimension(120,550));//!important
+        splitPane1.setLeftComponent(leftPanel);
+        leftPanel.setBorder(BorderFactory.createTitledBorder(BundleUtil.getLabel("Scripts.available.label")));
         tree1.setRequestFocusEnabled(true);
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -218,13 +215,13 @@ public class ScriptingFormController {
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
-        panel2.add(tree1, gbc);
+        leftPanel.add(tree1, gbc);
         JPanel rightPanel = new JPanel();
         rightPanel.setLayout(new GridBagLayout());
-        //rightPanel.setPreferredSize(new Dimension(800, 800)); // don't define (bug dividerLocation)
+        rightPanel.setMinimumSize(new Dimension(500, 550));//!important
         splitPane1.setRightComponent(rightPanel);
-        final JPanel panel3 = new JPanel();
-        panel3.setLayout(new GridBagLayout());
+        final JPanel resultPanel = new JPanel();
+        resultPanel.setLayout(new GridBagLayout());
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 5;
@@ -235,8 +232,8 @@ public class ScriptingFormController {
         gbc.ipadx = 6;
         gbc.ipady = 6;
         gbc.insets = new Insets(6, 6, 6, 6);
-        rightPanel.add(panel3, gbc);
-        panel3.setBorder(BorderFactory.createTitledBorder(BundleUtil.getLabel("Results.label")));
+        rightPanel.add(resultPanel, gbc);
+        resultPanel.setBorder(BorderFactory.createTitledBorder(BundleUtil.getLabel("Results.label")));
         final JScrollPane scrollPane1 = new JScrollPane();
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -247,11 +244,11 @@ public class ScriptingFormController {
         gbc.ipadx = 6;
         gbc.ipady = 6;
         gbc.insets = new Insets(6, 6, 6, 6);
-        panel3.add(scrollPane1, gbc);
+        resultPanel.add(scrollPane1, gbc);
         resultTable = new JTable();
         scrollPane1.setViewportView(resultTable);
-        final JPanel panel4 = new JPanel();
-        panel4.setLayout(new GridBagLayout());
+        final JPanel argsPanel = new JPanel();
+        argsPanel.setLayout(new GridBagLayout());
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 1;
@@ -261,8 +258,8 @@ public class ScriptingFormController {
         gbc.ipadx = 6;
         gbc.ipady = 6;
         gbc.insets = new Insets(6, 6, 6, 6);
-        rightPanel.add(panel4, gbc);
-        panel4.setBorder(BorderFactory.createTitledBorder(BundleUtil.getLabel("Menu.parameters.label")));
+        rightPanel.add(argsPanel, gbc);
+        argsPanel.setBorder(BorderFactory.createTitledBorder(BundleUtil.getLabel("Menu.parameters.label")));
         argumentsTable = new JTableX();
         argumentsTable.setRowHeight(new JTextField().getPreferredSize().height);
         gbc = new GridBagConstraints();
@@ -273,14 +270,14 @@ public class ScriptingFormController {
         gbc.ipadx = 6;
         gbc.ipady = 6;
         gbc.insets = new Insets(6, 6, 6, 6);
-        panel4.add(argumentsTable, gbc);
+        argsPanel.add(argumentsTable, gbc);
         runButton = new JButton();
         runButton.setText(BundleUtil.getLabel("Action.execute.label"));
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.gridy = 2;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(0, 0, 0, 8);
+        gbc.insets = new Insets(3, 0, 0, 8);
         rightPanel.add(runButton, gbc);
         final JPanel spacer1 = new JPanel();
         gbc = new GridBagConstraints();
@@ -305,7 +302,7 @@ public class ScriptingFormController {
         gbc.gridx = 1;
         gbc.gridy = 7;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(0, 0, 10, 8);
+        gbc.insets = new Insets(0, 0, 8, 8);
         rightPanel.add(buttonExport, gbc);
         final JPanel spacer2 = new JPanel();
         gbc = new GridBagConstraints();
@@ -323,18 +320,18 @@ public class ScriptingFormController {
         gbc.gridy = 6;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         rightPanel.add(progressBar2, gbc);
-        final JPanel panel5 = new JPanel();
-        panel5.setLayout(new GridBagLayout());
+        final JPanel descPanel = new JPanel();
+        descPanel.setLayout(new GridBagLayout());
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.fill = GridBagConstraints.BOTH;
         gbc.insets = new Insets(6, 6, 6, 6);
-        rightPanel.add(panel5, gbc);
-        panel5.setBorder(BorderFactory.createTitledBorder(BundleUtil.getLabel("Description.label")));
+        rightPanel.add(descPanel, gbc);
+        descPanel.setBorder(BorderFactory.createTitledBorder(BundleUtil.getLabel("Description.label")));
         labelDescription = new JTextArea();
         labelDescription.setEditable(false);
-        labelDescription.setFont(UIManager.getFont("Label.font"));
+//        labelDescription.setFont(UIManager.getFont("Label.font"));
         labelDescription.setLineWrap(true);
         labelDescription.setRows(0);
         labelDescription.setText("");
@@ -345,6 +342,6 @@ public class ScriptingFormController {
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        panel5.add(labelDescription, gbc);
+        descPanel.add(labelDescription, gbc);
     }
 }

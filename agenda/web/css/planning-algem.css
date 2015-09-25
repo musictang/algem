@@ -1,13 +1,16 @@
 /*
     Created on : 9 mai 2015, 09:23:44
     Author     : <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
-    Last       : 28/05/15
+    Last       : 1.0.5 15/09/15
+
 */
 
 /*
  CSS Reset by Eric Meyer - Released under Public Domain
    http://meyerweb.com/eric/tools/css/reset/
 */
+/*@import url(http://fr.allfont.net/allfont.css?fonts=arial-narrow);*/
+@import url(https://fonts.googleapis.com/css?family=PT+Sans+Narrow);
 @font-face {
     font-family: 'droid_sans_monoregular';
     src: url('../fonts/DroidSansMono-webfont.eot');
@@ -45,7 +48,6 @@ body {
   font-family: Arial, Helvetica, sans-serif;
   color: #111;
   background-color: #ffab11;
-  /*background-color:#ff8d08;*/
   /*Personnalisation*/
 /*  background-image:url('../img/personas-header-1280x1024.png');
   background-position: right 710px;
@@ -55,7 +57,6 @@ body {
 header {
   position: relative;
   height: 50px;
-  /*background-color: #ff8d08;*/
   background-color: #ffab11;
 }
 
@@ -79,7 +80,6 @@ header > nav {
 }
 
 #grid tr {
-/*  height: 20px;  640/32 */
   height: auto;
 }
 
@@ -122,6 +122,7 @@ header > nav {
   position: absolute;
   top:-1.3em;
   width: 98%;
+  font-family: 'PT Sans Narrow','Arial Narrow',Arial,sans-serif;
   font-size: x-small;
   font-weight: bold;
   text-align: center;
@@ -130,6 +131,7 @@ header > nav {
 .schedule {
   position: absolute;
   width:100%;
+  font-family: 'PT Sans Narrow','Arial Narrow',Arial,sans-serif;
   font-size: x-small;
   text-align: center;
   text-wrap: normal;
@@ -153,7 +155,6 @@ header > nav {
 
 #datepicker {
   position: relative;
-  /*width:10em;*/
   text-align: center;
   font-size: small;
   z-index: 3000;
@@ -171,9 +172,7 @@ header > nav {
   top:50px;
   right:0;
   display: none;
-  /*background-color: #fcefa1;*/
   background-color: #ffd280;
-  /*background-color: ivory;*/
   border: 1px dotted gray;
   padding: 1em;
   font-family: Verdana, sans-serif;
@@ -212,11 +211,10 @@ header > nav {
 .bt-close {
   position:absolute;
   bottom:0;
-  right:1em
+  right: 0;
 }
 
 a:link,a:visited, a:active {
-  /*color: green;*/
   color: #008335;
 }
 a:hover {
@@ -240,6 +238,12 @@ footer > address {
 #next:link, #next:visited, #next:hover, #next:active {
   text-decoration: none;
   font-weight: bold;
+}
+
+ul.disc{
+  list-style: disc;
+  list-style-image: url('../img/puce-green.png');
+  list-style-position: inside
 }
 
 @media only screen and (min-width:521px) and (max-width: 1024px) {
@@ -266,9 +270,9 @@ footer > address {
 }
 
 /*iPhone 2G, 3G, 4, 4S Media Queries : Portrait*/
-@media only screen 
-and (min-device-width : 320px) 
-and (max-device-width : 480px) { 
+@media only screen
+and (min-device-width : 320px)
+and (max-device-width : 480px) {
   header > nav {
     padding:0.5em 0;
   }
@@ -281,9 +285,9 @@ and (max-device-width : 480px) {
   }
 }
 /*iPhone 2G, 3G, 4, 4S Media Queries : landscape*/
-@media only screen 
-and (min-device-width : 320px) 
-and (max-device-width : 480px) 
+@media only screen
+and (min-device-width : 320px)
+and (max-device-width : 480px)
 and (orientation : landscape) {
   /* STYLES GO HERE */
    header > nav {

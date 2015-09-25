@@ -1,7 +1,7 @@
 /*
- * @(#)PersonSubscriptionCard.java 2.9.2 19/12/14
+ * @(#)PersonSubscriptionCard.java 2.9.4.12 01/09/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -30,7 +30,7 @@ import net.algem.planning.ScheduleObject;
  * Subscription card for single rehearsals.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.9.4.12
  */
 public class PersonSubscriptionCard
 {
@@ -161,7 +161,7 @@ public class PersonSubscriptionCard
    * @return a duration as string
    */
   public String displayRestTime() {
-    Hour h = new Hour(getRest());
+    Hour h = new Hour(getRest(), true);
     return h.toSimpleString();
   }
 

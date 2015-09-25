@@ -1,7 +1,7 @@
 /*
- * @(#)TeacherFollowUpEditor.java	2.9.1 18/11/14
+ * @(#)TeacherFollowUpEditor.java	2.9.4.12 16/09/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,6 +20,7 @@
  */
 package net.algem.contact.teacher;
 
+import java.awt.BorderLayout;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -30,15 +31,22 @@ import java.util.Vector;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableColumnModel;
+import net.algem.contact.Note;
 import net.algem.contact.PersonFile;
+import net.algem.course.Course;
 import net.algem.course.CourseTeacherTableModel;
 import net.algem.planning.*;
 import net.algem.util.BundleUtil;
 import net.algem.util.GemCommand;
+import net.algem.util.GemLogger;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.FileTab;
 import net.algem.util.ui.GemButton;
+import net.algem.util.ui.GemLabel;
 import net.algem.util.ui.GemPanel;
 import net.algem.util.ui.GridBagHelper;
 
@@ -47,7 +55,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.4.12
  */
 public class TeacherFollowUpEditor
         extends FileTab
@@ -61,54 +69,83 @@ public class TeacherFollowUpEditor
   private GemButton btModify;
   private GemButton btLoad;
   private CourseTeacherTableModel courseTableModel;
-  private JTable scheduleRangeTable;
+  private JTable table;
   private TeacherService service;
-  private PlanningService planningService;
+//  private PlanningService planningService;
+  private GemLabel totalTime;
 
-  public TeacherFollowUpEditor(GemDesktop _desktop, PersonFile _dossier) {
-    super(_desktop);
+  public TeacherFollowUpEditor(GemDesktop desktop, PersonFile dossier) {
+    super(desktop);
 
-    service = new TeacherService(dc);
-    planningService = new PlanningService(dc);
-    pFile = _dossier;
+//    planningService = new PlanningService(dc);
+    service = new TeacherService(planningService, dc);
+    pFile = dossier;
 
     courseTableModel = new CourseTeacherTableModel();
-    scheduleRangeTable = new JTable(courseTableModel);
-    scheduleRangeTable.setAutoCreateRowSorter(true);
+    table = new JTable(courseTableModel);
+    table.setAutoCreateRowSorter(true);
 
-    TableColumnModel cm = scheduleRangeTable.getColumnModel();
+    final ListSelectionModel listSelectionModel = table.getSelectionModel();
+    listSelectionModel.addListSelectionListener(new ListSelectionListener()
+    {
+      @Override
+      public void valueChanged(ListSelectionEvent e) {
+        if (e.getValueIsAdjusting()) {
+          return;
+        }
+        int total = 0;
+        if (!listSelectionModel.isSelectionEmpty()) {
+          int rows[] = table.getSelectedRows();
+          for (int i = 0; i < rows.length; i++) {
+            Hour start = new Hour((String) table.getModel().getValueAt(rows[i], 1));
+            Hour end = new Hour((String) table.getModel().getValueAt(rows[i], 2));
+            total += start.getLength(end);
+          }
+        }
+        totalTime.setText(Hour.format(total));
+      }
+    });
+
+    TableColumnModel cm = table.getColumnModel();
     cm.getColumn(0).setPreferredWidth(30);
     cm.getColumn(1).setPreferredWidth(20);
     cm.getColumn(2).setPreferredWidth(20);
     cm.getColumn(3).setPreferredWidth(150);
     cm.getColumn(4).setPreferredWidth(300);
 
-    JScrollPane pm = new JScrollPane(scheduleRangeTable);
+    JScrollPane pm = new JScrollPane(table);
 
     btLoad = new GemButton(GemCommand.LOAD_CMD);
     btLoad.addActionListener(this);
     dateStart = new DateFrField(new Date());
     dateEnd = new DateFrField(new Date());
-    GemPanel header = new GemPanel();
-    header.add(new JLabel(BundleUtil.getLabel("Date.From.label")));
-    header.add(dateStart);
-    header.add(new JLabel(BundleUtil.getLabel("Date.To.label")));
-    header.add(dateEnd);
-    header.add(btLoad);
+
+    GemPanel datePanel = new GemPanel();
+    totalTime = new GemLabel();
+    datePanel.add(new GemLabel(BundleUtil.getLabel("Total.label") + " :"));
+    datePanel.add(totalTime);
+    datePanel.add(new JLabel(BundleUtil.getLabel("Date.From.label").toLowerCase()));
+    datePanel.add(dateStart);
+    datePanel.add(new JLabel(BundleUtil.getLabel("Date.To.label")));
+    datePanel.add(dateEnd);
+    datePanel.add(btLoad);
 
     btModify = new GemButton(BundleUtil.getLabel("View.modify.label"));
     btModify.addActionListener(this);
 
+    GemPanel footer = new GemPanel(new BorderLayout());
+    footer.add(datePanel, BorderLayout.NORTH);
+
     GemPanel buttons = new GemPanel();
     buttons.setLayout(new GridLayout(1, 1));
     buttons.add(btModify);
+    footer.add(buttons, BorderLayout.SOUTH);
 
     setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
 
-    gb.add(header, 0, 0, 1, 1, GridBagHelper.HORIZONTAL, 1.0, 0.0);
-    gb.add(pm, 0, 1, 1, 1, GridBagHelper.BOTH, 1.0, 1.0);
-    gb.add(buttons, 0, 2, 1, 1, GridBagHelper.HORIZONTAL, 1.0, 0.0);
+    gb.add(pm, 0, 0, 1, 1, GridBagHelper.BOTH, 1.0, 1.0);
+    gb.add(footer, 0, 1, 1, 1, GridBagHelper.HORIZONTAL, 1.0, 0.0);
 
   }
 
@@ -121,17 +158,37 @@ public class TeacherFollowUpEditor
   public void load() {
     loaded = true;
     courseTableModel.clear();
-
-    Vector<Schedule> v = service.getSchedule(pFile.getId(), dateStart.toString(), dateEnd.toString());
+    int min = 0;
     try {
+      Vector<ScheduleRangeObject> v = service.getSchedule(pFile.getId(), dateStart.toString(), dateEnd.toString());
       for (int i = 0; i < v.size(); i++) {
+        ScheduleRangeObject r = v.elementAt(i);
         CourseSchedule pc = new CourseSchedule(v.elementAt(i));
-        pc.setCourse(planningService.getCourseFromAction(pc.getIdAction()));
-        pc.setNote1(planningService.getCollectiveFollowUp(pc.getNote()));
+        pc.setCourse(r.getCourse());
+        if (pc.getCourse().isCollective()) {
+          Schedule s = planningService.getScheduleByRange(pc.getId());
+          if (s != null) {
+            pc.setId(s.getId());
+          }
+          Note n = planningService.getCollectiveFollowUpByRange(r.getId());
+          if (n != null) {
+            pc.setNote(n.getId());
+            pc.setNoteValue(n.getText());
+          } else {
+            pc.setNote(0);
+          }
+        } else {
+          pc.setNoteValue(planningService.getFollowUp(r.getNote()));
+        }
         courseTableModel.addItem(pc);
+        Hour hd = pc.getStart();
+        Hour hf = pc.getEnd();
+        min += hd.getLength(hf);
       }
+      totalTime.setText(Hour.format(min));
+
     } catch (SQLException ex) {
-      System.err.println(getClass().getName() + "#load " + ex.getMessage());
+      GemLogger.log(getClass().getName() + "#load " + ex.getMessage());
     }
   }
 
@@ -144,18 +201,17 @@ public class TeacherFollowUpEditor
       return;
     }
 
-    if (scheduleRangeTable.getSelectedRow() < 0) {
+    if (table.getSelectedRow() < 0) {
       return;
     }
 
-    int n = scheduleRangeTable.convertRowIndexToModel(scheduleRangeTable.getSelectedRow());
+    int n = table.convertRowIndexToModel(table.getSelectedRow());
 
     if (src == btModify) {
       try {
         modification(n);
       } catch (SQLException e) {
-        System.err.println(e.getMessage());
-        //dc.logException("modification suivi pédagogique", e, desktop.getFrame());
+        GemLogger.log(e.getMessage());
       }
     }
   }
@@ -163,19 +219,21 @@ public class TeacherFollowUpEditor
   void modification(int n) throws SQLException {
 
     CourseSchedule p = (CourseSchedule) courseTableModel.getItem(n);
-    CollectiveFollowUpDlg dlg = new CollectiveFollowUpDlg(desktop, planningService, p, p.getCourse().toString());
+    Course c = p.getCourse();
+    if (c == null) {
+      return;
+    }
+    CommonFollowUpDlg dlg = new CommonFollowUpDlg(desktop, planningService, p, p.getCourse().toString(), false);
     dlg.entry();
     if (!dlg.isValidation()) {
       return;
     }
-
-    p.setNote1(dlg.getText());
+    p.setNoteValue(dlg.getText());
     courseTableModel.modItem(n, p);
     dlg.exit();
   }
 
   void insertion(int n) throws SQLException {
-    //plages.addItem(v);
     clear();
   }
 

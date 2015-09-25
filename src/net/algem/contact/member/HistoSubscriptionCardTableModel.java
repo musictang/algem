@@ -1,5 +1,5 @@
 /*
- * @(#)HistoSubscriptionCardTableModel.java 2.9.2 26/01/15
+ * @(#)HistoSubscriptionCardTableModel.java 2.9.4.12 01/09/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package net.algem.contact.member;
 
 import java.sql.SQLException;
@@ -31,25 +30,28 @@ import net.algem.util.ui.JTableModel;
 
 /**
  * Table model for subscription card.
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.9.4.12
  * @since 2.9.2 07/01/15
  */
 public class HistoSubscriptionCardTableModel
-  extends JTableModel<PersonSubscriptionCard>
+        extends JTableModel<PersonSubscriptionCard>
 {
 
-
+  private final MemberService service;
+  
   /**
    * Creates a model with header.
+   * @param service
    */
-  public HistoSubscriptionCardTableModel() {
+  public HistoSubscriptionCardTableModel(MemberService service) {
+    this.service = service;
     header = new String[]{
       BundleUtil.getLabel("Id.label"),
       BundleUtil.getLabel("Date.label"),
       BundleUtil.getLabel("Module.label"),
-      BundleUtil.getLabel("Subscription.remaining.label"),
-    };
+      BundleUtil.getLabel("Subscription.remaining.label"),};
   }
 
   @Override
@@ -57,7 +59,7 @@ public class HistoSubscriptionCardTableModel
     return 0;
   }
 
-   @Override
+  @Override
   public Class getColumnClass(int col) {
     switch (col) {
       case 0:
@@ -94,7 +96,7 @@ public class HistoSubscriptionCardTableModel
           return null;
         }
       case 3:
-        return new Hour(pc.getRest());
+        return new Hour(pc.getRest(), true);
     }
     return null;
   }
@@ -108,8 +110,10 @@ public class HistoSubscriptionCardTableModel
     int oldRest = c.getRest();
     try {
       c.setRest(((Hour) value).toMinutes());
-      new PersonSubscriptionCardIO(DataCache.getDataConnection()).update(c);
-      modItem(line, c);
+      if (c.getRest() != oldRest) {
+        service.update(c);
+        modItem(line, c);
+      }
     } catch (MemberException ex) {
       c.setRest(oldRest);
       GemLogger.log(ex.getMessage());

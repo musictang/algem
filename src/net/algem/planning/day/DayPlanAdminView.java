@@ -1,5 +1,5 @@
 /*
- * @(#)DayPlanAdminView.java 2.9.4.0 25/03/2015
+ * @(#)DayPlanAdminView.java 2.9.4.12 16/09/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  * 
@@ -27,8 +27,8 @@ import java.util.List;
 import java.util.Vector;
 import net.algem.contact.Person;
 import net.algem.planning.Schedule;
+import net.algem.planning.ScheduleIO;
 import net.algem.planning.ScheduleObject;
-import net.algem.planning.ScheduleRangeIO;
 import net.algem.planning.ScheduleRangeObject;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
@@ -37,7 +37,7 @@ import net.algem.util.GemLogger;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.0
+ * @version 2.9.4.12
  * @since 2.9.4.0 25/03/2015
  */
 public class DayPlanAdminView 
@@ -87,7 +87,8 @@ public class DayPlanAdminView
         if ((range.getMember() != null && range.getMember().getId() == personId)) {
           v.addElement(t.elementAt(i));
           try {
-            range.setNote1(ScheduleRangeIO.findNote(range.getNote(), DataCache.getDataConnection()));
+//            range.setNoteValue(ScheduleRangeIO.findNote(range.getNote(), DataCache.getDataConnection()));
+            range.setNoteValue(ScheduleIO.findFollowUp(range.getNote(), DataCache.getDataConnection()));
           } catch (SQLException ex) {
             GemLogger.log(ex.getMessage());
           }

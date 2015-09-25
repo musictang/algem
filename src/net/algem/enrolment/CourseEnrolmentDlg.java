@@ -1,5 +1,5 @@
 /*
- * @(#)CourseEnrolmentDlg.java	2.8.w 09/07/14
+ * @(#)CourseEnrolmentDlg.java	2.9.4.12 24/09/15
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -35,6 +35,7 @@ import javax.swing.JDialog;
 import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import net.algem.Algem;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
 import net.algem.contact.teacher.TeacherChoice;
@@ -326,6 +327,15 @@ public class CourseEnrolmentDlg
       || course.isCourseCoInst()
       || course.getCode() == CourseCodeType.STG.getId()) {
       courseLength.setText(new Hour(p.getStart().getLength(p.getEnd())).toString());
+    }
+    // TODO : proposition d'ajouter une colonne "modulable" ou "variable" dans module_type, permettant de prédéfinir
+    // les modules à durée fixe ou interchangeable.
+    // appeler isModular() sur ces types permettrait de savoir si leur durée est prédéfinie ou flexible
+    if (Algem.getAppClient().equals("PaysRoiMorvan")) {
+      if (course.getCode() == CourseCodeType.ATL.getId()
+              || course.getCode() == CourseCodeType.FMU.getId()) {
+        courseLength.setText(new Hour(p.getStart().getLength(p.getEnd())).toString());
+      }
     }
 
     range.removeAll();

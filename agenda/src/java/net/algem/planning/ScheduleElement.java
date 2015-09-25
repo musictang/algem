@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleElement.java	1.0.4 25/05/15
+ * @(#)ScheduleElement.java	1.0.5 14/09/15
  *
  * Copyright (c) 2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -27,7 +27,7 @@ import java.util.Collection;
  * This class is used in calendar to display a time slot with label, position and time.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 1.0.2
+ * @version 1.0.5
  * @since 1.0.0 11/02/13
  */
 public class ScheduleElement
@@ -149,7 +149,7 @@ public class ScheduleElement
   }
 
   /**
-   * Gets the length of schedule in minutes.
+   * Gets the beginning time in minutes.
    * @return a number of minutes
    */
   public int getMinutes() {

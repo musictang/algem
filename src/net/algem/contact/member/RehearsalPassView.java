@@ -1,5 +1,5 @@
 /*
- * @(#)RehearsalPassView.java 2.9.2 12/01/15
+ * @(#)RehearsalPassView.java 2.9.4.12 28/08/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -33,7 +33,7 @@ import net.algem.util.ui.*;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.9.4.12
  */
 public class RehearsalPassView
         extends GemBorderPanel
@@ -42,8 +42,8 @@ public class RehearsalPassView
   private GemField label;
   private JFormattedTextField amount;
   private HourField minTime;
-  private HourField totalTime;
-  private NumberFormat format;
+  private GemDecimalField totalTime;
+  private NumberFormat nf = NumberFormat.getNumberInstance(Locale.getDefault());;
   private RehearsalPass card;
 
   public RehearsalPassView() {
@@ -54,7 +54,8 @@ public class RehearsalPassView
     minTime = new HourField();
     minTime.setToolTipText(BundleUtil.getLabel("Pass.rehearsal.min.tip"));
 
-    totalTime = new HourField();
+    totalTime = new GemDecimalField(nf);
+    totalTime.setColumns(5);
     totalTime.setToolTipText(BundleUtil.getLabel("Pass.rehearsal.total.tip"));
 
     this.setLayout(new GridBagLayout());
@@ -89,7 +90,7 @@ public class RehearsalPassView
     label.setText(c.getLabel());
     amount.setValue(c.getAmount());
     minTime.set(new Hour(c.getMin()));
-    totalTime.set(new Hour(c.getTotalTime()));
+    totalTime.setValue(c.getTotalTime() / 60d);
 
   }
 
@@ -100,18 +101,16 @@ public class RehearsalPassView
     card.setLabel(label.getText());
     card.setAmount((Float) amount.getValue());
     card.setMin(minTime.getHour().toMinutes());
-    card.setTotalTime(totalTime.getHour().toMinutes());
+    card.setTotalTime( (int) ((double) totalTime.getValue() * 60));
 
     return card;
   }
 
   private void initAmountField() {
-    format = NumberFormat.getNumberInstance(Locale.getDefault());
-    format.setMinimumFractionDigits(2);
-    format.setMaximumFractionDigits(2);
-    NumberFormatter nf = new NumberFormatter(format);
-    nf.setValueClass(Float.class);
-    amount = new JFormattedTextField(nf);
+    nf.setMaximumFractionDigits(2);
+    NumberFormatter formatter = new NumberFormatter(this.nf);
+    formatter.setValueClass(Float.class);
+    amount = new JFormattedTextField(formatter);
     amount.setColumns(5);
   }
 

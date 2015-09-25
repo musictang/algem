@@ -1,7 +1,7 @@
 /*
- * @(#)ModuleOrderIO.java	2.9.1 12/11/14
+ * @(#)ModuleOrderIO.java	2.9.4.12 22/09/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -23,6 +23,7 @@ package net.algem.enrolment;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
+import net.algem.accounting.AccountUtil;
 import net.algem.course.ModuleIO;
 import net.algem.planning.DateFr;
 import net.algem.util.DataConnection;
@@ -33,7 +34,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.4.12
  */
 public class ModuleOrderIO
         extends TableIO
@@ -44,13 +45,12 @@ public class ModuleOrderIO
 
   public static void insert(ModuleOrder c, DataConnection dc) throws SQLException {
     int next = nextId(SEQUENCE, dc);
-
     String query = "INSERT INTO " + TABLE + " VALUES("
             + next
             + ",'" + c.getIdOrder()
             + "','" + c.getModule()
             //+"','"+c.getPrice()
-            + "','" + (int) (c.getPrice() * 100)
+            + "','" + AccountUtil.getIntValue(c.getPrice()) 
             + "','" + c.getStart()
             + "','" + c.getEnd()
             + "','" + c.getModeOfPayment()

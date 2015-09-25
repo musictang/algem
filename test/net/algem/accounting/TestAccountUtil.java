@@ -1,7 +1,7 @@
 /*
- * @(#)TestAccountUtil.java 2.8.i 03/07/13
+ * @(#)TestAccountUtil.java 2.9.4.12 22/09/15
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -26,6 +26,7 @@ import net.algem.util.DataConnection;
 import org.junit.AfterClass;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -33,7 +34,7 @@ import org.junit.Test;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.i
+ * @version 2.9.4.12
  */
 public class TestAccountUtil
 {
@@ -91,6 +92,30 @@ public class TestAccountUtil
     double md = 15.0000000000001;
     res = AccountUtil.getIntValue(md);
     assertTrue(1500 == res);
+    
+    double m = 284.03d;
+    long d = Math.round(m * 100);
+    long ee = 28403l;
+    assertTrue("result = " +d, ee == d);
+    String s = String.valueOf(d);
+    assertEquals("28403", s);
+    
+    int i = new Long(ee).intValue();
+    assertTrue("result = " +i, i == 28403);
+    
+    int di = (int) Math.round(m * 100);
+    assertTrue("result = " +di, di == 28403);
+    
+    m = 284.02999999;
+    di = (int) Math.round(m * 100);
+    assertTrue("result = " +di, di == 28403);
+    
+    di = AccountUtil.getIntValue(m);
+    assertTrue("result = " +di, di == 28403);
+    
+    //fails here
+//    di = (int) (AccountUtil.round(m) * 100);
+//    assertTrue("result = " +di, di == 28403);
   }
 
 

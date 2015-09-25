@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleDetailCtrl.java 2.9.4.8 24/06/15
+ * @(#)ScheduleDetailCtrl.java 2.9.4.12 23/09/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -66,7 +66,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.8
+ * @version 2.9.4.12
  * @since 1.0a 07/07/1999
  */
 public class ScheduleDetailCtrl
@@ -428,13 +428,13 @@ public class ScheduleDetailCtrl
     for (ScheduleRangeObject sr : ranges) {
       if (sr.getNote() > 0) {
         try {
-          sr.setNote1(scheduleService.getFollowUp(sr.getNote()));
+          sr.setNoteValue(scheduleService.getFollowUp(sr.getNote()));
         } catch (SQLException ex) {
           GemLogger.log(ex.getMessage());
         }
       }
       sb.append(sr.getStart()).append("-").append(sr.getEnd());
-      sb.append(sr.getNote1() != null ? " " + sr.getNote1() : "");
+      sb.append(sr.getNoteValue() != null ? " " + sr.getNoteValue() : "");
       listPanel.add(new GemMenuButton(sb.toString(), this, "AdminEvent", sr));
       sb.delete(0, sb.length());
     }
@@ -571,7 +571,7 @@ public class ScheduleDetailCtrl
         setWaitCursor();
         c = (Course) ((GemMenuButton) evt.getSource()).getObject();
         if (!(evt.getModifiers() == InputEvent.BUTTON1_MASK)) { // ouverture du suivi cours touche majuscule
-          CollectiveFollowUpDlg dlg = new CollectiveFollowUpDlg(desktop, scheduleService, (ScheduleObject) schedule, c.getTitle());
+          CommonFollowUpDlg dlg = new CommonFollowUpDlg(desktop, scheduleService, (ScheduleObject) schedule, c.getTitle(), true);
           dlg.entry();
         } else {
           CourseCtrl courseCard = new CourseCtrl(desktop);
@@ -645,14 +645,14 @@ public class ScheduleDetailCtrl
    */
   private void setFollowUp(ScheduleRangeObject range, Course c) throws PlanningException, SQLException {
 
-    if (range.getNote() != 0 && range.getNote1() == null) {
-      range.setNote1(scheduleService.getFollowUp(range.getNote()));
+    if (range.getNote() != 0 && range.getNoteValue() == null) {
+      range.setNoteValue(scheduleService.getFollowUp(range.getNote()));
     }
     FollowUpDlg dlg = new FollowUpDlg(desktop, range, c.getTitle(), false);
     dlg.entry();
     if (dlg.isValidation()) {
       scheduleService.updateFollowUp(range, dlg.getText());
-      range.setNote1(dlg.getText());
+      range.setNoteValue(dlg.getText());
     }
 
   }

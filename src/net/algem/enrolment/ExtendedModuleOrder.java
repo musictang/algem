@@ -1,5 +1,5 @@
 /*
- * @(#)ExtendedModuleOrder.java	2.9.4.2 10/04/15
+ * @(#)ExtendedModuleOrder.java	2.9.4.12 22/09/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -22,6 +22,7 @@
 package net.algem.enrolment;
 
 import java.sql.SQLException;
+import net.algem.accounting.ModeOfPayment;
 import net.algem.course.Module;
 import net.algem.util.DataCache;
 import net.algem.util.model.Model;
@@ -29,7 +30,7 @@ import net.algem.util.model.Model;
 /**
  * Module order with additional information. 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.2
+ * @version 2.9.4.12
  * @since 2.9.2.1 16/02/15
  */
 public class ExtendedModuleOrder
@@ -75,7 +76,7 @@ public class ExtendedModuleOrder
   }
   
   /**
-   * Gets the total amount corresponding to the time length in minutes.
+   * Gets the total amount corresponding to the module order.
    * @param min time in minutes
    * @return a total amount minus any deductions
    */
@@ -83,11 +84,33 @@ public class ExtendedModuleOrder
     if (min >= 0 && PricingPeriod.HOUR.equals(getPricing())) {
       return getPrice() * min / 60;
     }
-    double total = getPrice() * nOrderLines;
-    return total - (total * getReduc(module, payFrequency) / 100d);
+    //  on suppose ici que le prix est égal au tarif base
+    double p = getPriceByPeriod(getPrice(), pricing);
+    
+    return p - (p * getReduction(getModule(), getPayment()) / 100d);
   }
   
-  private double getReduc(int module, PayFrequency frequency) {
+  private double getPriceByPeriod(double p, PricingPeriod pricing) {
+    switch(pricing) {
+      case MNTH:
+        return p * 9;
+      case QTER:
+        return p * 3;
+      default:
+        return p;
+    }
+  }
+  
+  /**
+   * Gets the price reduction applied when direct debit is selected.
+   * @param module module Id
+   * @param frequency payment frequency
+   * @return the value of the reduction
+   */
+  private double getReduction(int module, PayFrequency frequency) {
+    if (!ModeOfPayment.PRL.name().equalsIgnoreCase(getModeOfPayment())) {
+      return 0.0;
+    }
     try {
       Module m = (Module) DataCache.findId(module, Model.Module);
       switch (frequency) {

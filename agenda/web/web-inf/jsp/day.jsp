@@ -1,6 +1,6 @@
 <%--
 /*
- * @(#)day.jsp	1.0.4 25/05/15
+ * @(#)day.jsp	1.0.5 15/09/15
  *
  * Copyright (c) 2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -22,7 +22,7 @@
 --%>
 <%--
     @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
-    @version 1.0.4
+    @version 1.0.5
     @since 1.0.0 11/02/13
 --%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -63,7 +63,6 @@
     <spring:message code="room.closed.label" var="msg_room_closed"/>
     <spring:message code="workshop.label" var="msg_workshop"/>
     <spring:message code="training.label" var="msg_training"/>
-
     <header>
       <nav>
         <select id="estabSelection" name="estabId" tabindex="4">
@@ -74,14 +73,13 @@
         <label id="dow" for="datepicker">${dayName}</label><input type="text" id="datepicker" style="font-size:small" tabindex="3"/>
         &nbsp;&nbsp;<a href="" title="${msg_prev_day}" id="previous" tabindex="2">&lt;&lt;&nbsp;</a>&nbsp;|&nbsp;<a href="" title="${msg_next_day}" id="next" tabindex="1">&nbsp;&gt;&gt;</a>
       </nav>
-
     </header>
     <aside id="info-bar">
       <img src="img/help-contents.png" id="help" alt="Aide"/>
       <img src="img/tel.png" id="tel" alt="Tel."/>
     </aside>
     <aside id="help-content">
-      <ul>
+      <ul style="margin-bottom: 1em">
         <li><span class="colorSquare" title="${msg_course_co}" style="background-color:#FF3333"></span>&nbsp;${msg_course_co}</li>
         <li><span class="colorSquare colorHelp" style="background-color:#00D059;"></span>&nbsp;<spring:message code="course.available.label" />
           <span style="font-size: smaller">(<spring:message code="course.available.tip" />)</span></li>
@@ -99,10 +97,13 @@
         <spring:eval var="horaires" expression="@horaires" />
         <c:forEach  items="${horaires}" var="entry">
           <li><c:out value="${entry.key}" />
-            <%--<c:forEach items="${entry.value}" var="h" >--%>
             <c:set var="n" value="${fn:substringAfter(entry.value[0], '0')}" scope="request"/>
-            &nbsp;:&nbsp;<a href="tel:+33${fn:replace(n," ", "")}">${entry.value[0]}</a> ${entry.value[1]}
-            <%--</c:forEach>--%>
+            &nbsp;:&nbsp;<a href="tel:+33${fn:replace(n," ", "")}">${entry.value[0]}</a>
+            <ul class="disc" style="margin-bottom: 1em">
+            <c:forEach begin="1" items="${entry.value}" var="h" >
+              <li><c:out value="${h}" /></li>
+            </c:forEach>
+            </ul>
           </li>
         </c:forEach>
       </ul>
@@ -120,46 +121,16 @@
         </ul>
       </div>
     </div>
-    <table id="grid">
-      <%--<tr><th>08:00</th></tr>
-        <tr><th>08:30</th></tr>--%>
-      <tr><th><p>09:00</p></th></tr>
-      <tr><th><p>09:30</p></th></tr>
-      <tr><th><p>10:00</p></th></tr>
-      <tr><th><p>10:30</p></th></tr>
-      <tr><th><p>11:00</p></th></tr>
-      <tr><th><p>11:30</p></th></tr>
-      <tr><th><p>12:00</p></th></tr>
-      <tr><th><p>12:30</p></th></tr>
-      <tr><th><p>13:00</p></th></tr>
-      <tr><th><p>13:30</p></th></tr>
-      <tr><th><p>14:00</p></th></tr>
-      <tr><th><p>14:30</p></th></tr>
-      <tr><th><p>15:00</p></th></tr>
-      <tr><th><p>15:30</p></th></tr>
-      <tr><th><p>16:00</p></th></tr>
-      <tr><th><p>16:30</p></th></tr>
-      <tr><th><p>17:00</p></th></tr>
-      <tr><th><p>17:30</p></th></tr>
-      <tr><th><p>18:00</p></th></tr>
-      <tr><th><p>18:30</p></th></tr>
-      <tr><th><p>19:00</p></th></tr>
-      <tr><th><p>19:30</p></th></tr>
-      <tr><th><p>20:00</p></th></tr>
-      <tr><th><p>20:30</p></th></tr>
-      <tr><th><p>21:00</p></th></tr>
-      <tr><th><p>21:30</p></th></tr>
-      <tr><th><p>22:00</p></th></tr>
-      <tr><th><p>22:30</p></th></tr>
-      <tr><th><p>23:00</p></th></tr>
-      <tr><th><p>23:30</p></th></tr>
-    </table>
-
-    <section id="canvas">
+      <%-- Décalage en minutes à partir de 0h : heure d'ouverture--%>
+      <c:set var="offset" value="${timeOffset}" />
       <%-- Temps total affiché dans la grille --%>
-      <c:set var="totalTime" value="900" />
-      <%-- Décalage à partir de 0h --%>
-      <c:set var="timeOffset" value="540" />
+      <c:set var="totalTime" value="${1440-offset}" />
+    <%-- Affichage grille horaire --%>
+    <table id="grid"><%-- important : loop on one line --%>
+      <c:forEach  begin="${offset}" end="1410" step="30" varStatus="dv"><c:out value="<tr><th><p>" escapeXml="false" /><c:if test="${dv.index < 600}"><c:out value="0" /></c:if><fmt:parseNumber var="half" integerOnly="true" type="number" value="${dv.index/60}" /><c:out value="${half}:" /><c:choose><c:when test="${dv.index%60 == 0}"><c:out value="00" /></c:when><c:otherwise><c:out value="30" /><c:set var="start" value="${start+1}" /></c:otherwise></c:choose><c:out value="</p></th></tr>" escapeXml="false" />
+      </c:forEach>
+    </table>
+    <section id="canvas">
       <c:forEach var="entry" items="${planning}" >
         <div class="schedule_col">
           <p class="title_col">${entry.value[0].roomName}</p>
@@ -199,7 +170,6 @@
           </c:forEach>
         </div>
       </c:forEach>
-
     </section>
     <footer>
       <address>

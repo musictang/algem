@@ -1,5 +1,5 @@
 /*
- * @(#)ModuleDlg.java	2.9.3.2 11/03/15
+ * @(#)ModuleDlg.java	2.9.4.12 22/09/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -54,7 +54,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.3.2
+ * @version 2.9.4.12
  * @since 1.0a 07/07/1999
  */
 public class ModuleDlg
@@ -300,7 +300,7 @@ public class ModuleDlg
     }
   }
 
-  double calculatePayment(Module m, String mp, PayFrequency pf, PricingPeriod def) {
+  double calculatePayment(Module m, String mp, PayFrequency pf, PricingPeriod pp) {
     double price = getField(4) == null ? m.getBasePrice() : ((Number) getField(4)).doubleValue();
     double reduc = price;
     if (ModeOfPayment.PRL.toString().equals(mp)) {
@@ -318,7 +318,7 @@ public class ModuleDlg
       }
     }
 
-    if (def.equals(PricingPeriod.YEAR)) {
+    if (pp.equals(PricingPeriod.YEAR)) {
       switch (pf) {
         case YEAR:
           reduc = price;
@@ -333,7 +333,7 @@ public class ModuleDlg
           reduc = price / 9;
           break;
       }
-    } else if (def.equals(PricingPeriod.BIAN)) {
+    } else if (pp.equals(PricingPeriod.BIAN)) {
       switch (pf) {
         case YEAR:
           reduc = price;
@@ -348,7 +348,7 @@ public class ModuleDlg
           reduc = price / 6;
           break;
       }
-    } else if (def.equals(PricingPeriod.QTER)) {
+    } else if (pp.equals(PricingPeriod.QTER)) {
       switch (pf) {
         case YEAR:
           reduc = price * 3;
@@ -363,7 +363,7 @@ public class ModuleDlg
           reduc = price / 3;
           break;
       }
-    } else if (def.equals(PricingPeriod.MNTH)) {
+    } else if (pp.equals(PricingPeriod.MNTH)) {
       switch (pf) {
         case YEAR:
           reduc = price * 9;
@@ -378,7 +378,7 @@ public class ModuleDlg
           reduc = price;
           break;
       }
-    } else if (def.equals(PricingPeriod.HOUR)) {
+    } else if (pp.equals(PricingPeriod.HOUR)) {
       return price * (double) getField(8);
     }
 

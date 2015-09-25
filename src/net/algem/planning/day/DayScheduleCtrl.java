@@ -1,5 +1,5 @@
 /*
- * @(#)DayScheduleCtrl.java 2.9.4.8 18/06/15
+ * @(#)DayScheduleCtrl.java 2.9.4.12 25/09/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -21,8 +21,10 @@
 package net.algem.planning.day;
 
 import java.awt.Dimension;
+import java.awt.Event;
 import java.awt.EventQueue;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -33,6 +35,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.prefs.Preferences;
 import javax.swing.*;
 import net.algem.Algem;
 import net.algem.config.ConfigKey;
@@ -53,17 +56,20 @@ import net.algem.util.model.GemCloseVetoException;
 import net.algem.util.model.GemList;
 import net.algem.util.model.Model;
 import net.algem.util.module.GemModule;
+import net.algem.util.ui.Toast;
+import net.algem.util.ui.UIAdjustable;
 
 /**
  * Day schedule main controller.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.8
+ * @version 2.9.4.12
  * @since 1.0b 06/10/2001
  */
 public class DayScheduleCtrl
         extends GemModule
+        implements UIAdjustable
 {
 
   static final Dimension DAY_SIZE = new Dimension(920, 550);
@@ -74,7 +80,11 @@ public class DayScheduleCtrl
   private DaySchedule daySchedule;
   private boolean monthLink = false;
   private Calendar cal;
-  private JCheckBoxMenuItem miAllRoom;
+  private JCheckBoxMenuItem miAllRooms;
+  private JMenuItem miSaveUISettings;
+  private boolean savePrefs;
+  private final Preferences prefs = Preferences.userRoot().node("/algem/dayplan/size");
+  
 
   public DayScheduleCtrl() {
     super("TableauJour");
@@ -91,7 +101,7 @@ public class DayScheduleCtrl
 
     GemList<Establishment> estabs = dataCache.getList(Model.Establishment);
     view = new DayScheduleView(desktop, daySchedule, estabs);
-    view.setSize(DAY_SIZE);
+    view.setSize(new Dimension(prefs.getInt("w", DAY_SIZE.width), prefs.getInt("h", DAY_SIZE.height)));
     view.addActionListener(this);
 
     desktop.addGemEventListener(this);
@@ -99,6 +109,14 @@ public class DayScheduleCtrl
     JMenuBar mBar = new JMenuBar();
     JMenu mFile = createJMenu("Menu.file");
     miQuit = getMenuItem("Menu.quit");
+    miPrint = getMenuItem("Menu.print");
+    miExport = getMenuItem("Menu.export");
+    mFile.add(miPrint);
+    if (Algem.isFeatureEnabled("export_planning_xls")) {
+      mFile.add(miExport);
+    }
+    mFile.add(miQuit);
+    
     JMenu mOptions = new JMenu("Options");
     JCheckBoxMenuItem miLinkMonth = new JCheckBoxMenuItem(BundleUtil.getLabel("Day.schedule.link.label"), monthLink);
     miLinkMonth.setSelected(false);
@@ -109,25 +127,21 @@ public class DayScheduleCtrl
       }
     });
 
-    miAllRoom = new JCheckBoxMenuItem(BundleUtil.getLabel("Room.show.all.label"));
-    miAllRoom.setSelected(false);
-    miAllRoom.addItemListener(new ItemListener()
+    miAllRooms = new JCheckBoxMenuItem(BundleUtil.getLabel("Room.show.all.label"));
+    miAllRooms.setSelected(false);
+    miAllRooms.addItemListener(new ItemListener()
     {
       public void itemStateChanged(ItemEvent e) {
         ((DayScheduleView) view).propertyChange(new PropertyChangeEvent(daySchedule, "@all_rooms", null, e.getStateChange() == ItemEvent.SELECTED));
       }
     });
 
-    miPrint = getMenuItem("Menu.print");
-    miExport = getMenuItem("Menu.export");
-    mFile.add(miPrint);
-
-    if (Algem.isFeatureEnabled("export_planning_xls")) {
-      mFile.add(miExport);
-    }
-    mFile.add(miQuit);
     mOptions.add(miLinkMonth);
-    mOptions.add(miAllRoom);
+    mOptions.add(miAllRooms);
+    miSaveUISettings = getMenuItem(BundleUtil.getLabel("Store.ui.settings"));
+    miSaveUISettings.addActionListener(this);
+    mOptions.add(miSaveUISettings);
+
     mBar.add(mFile);
     mBar.add(mOptions);
 
@@ -159,7 +173,7 @@ public class DayScheduleCtrl
    */
   public void mayBeMaximize() {
      if (ConfigUtil.getConf(ConfigKey.SCHEDULE_RANGE_NAMES.getKey()).equals("t")) {
-        view.setSize(new Dimension(960,720));
+        view.setSize(prefs.getInt("w",960), prefs.getInt("h", 720)); // new Dimension(960,720));
     }
   }
 
@@ -197,9 +211,14 @@ public class DayScheduleCtrl
       desktop.setDefaultCursor();
       //((DayScheduleView) view).stateChanged(new ChangeEvent(cal));
       desktop.postEvent(new SelectDateEvent(this, d));
+    } else if (src == miSaveUISettings) {
+      storeUISettings();
+      Dimension d = view.getSize();
+      Toast.showToast(desktop, BundleUtil.getLabel("New.size.label") + " : " + d.width+"x"+d.height);
     } else if (src == miPrint) {
       view.print();
     } else if (src == miQuit) {
+      savePrefs = (evt.getModifiers() & Event.SHIFT_MASK) == Event.SHIFT_MASK;
       try {
         close();
       } catch (GemCloseVetoException ex) {
@@ -220,7 +239,7 @@ public class DayScheduleCtrl
       }
     }
   }
-
+  
   @Override
   public void postEvent(GemEvent _evt) {
 
@@ -287,24 +306,40 @@ public class DayScheduleCtrl
 
   @Override
   public void close() throws GemCloseVetoException {
-    view.close();
+    super.close();
+    if (savePrefs) {
+      storeUISettings();
+      Dimension d = view.getSize();
+      Toast.showToast(desktop, BundleUtil.getLabel("New.size.label") + " : " + d.width+"x"+d.height);
+    }
     view.removeActionListener(this);
     desktop.removeGemEventListener(this);
-    desktop.removeModule(this);
   }
 
   public void setState(Object[] state) {
     if (state != null && state.length > 0) {
       if (state[0].getClass() == Boolean.class) {
-        miAllRoom.setSelected((Boolean) state[0]);
+        miAllRooms.setSelected((Boolean) state[0]);
       }
     }
   }
 
   @Override
   public Object[] getState() {
-    return new Object[]{miAllRoom.isSelected()};
+    return new Object[]{miAllRooms.isSelected()};
   }
+
+  @Override
+  public void storeUISettings() {
+    Rectangle bounds = getView().getBounds();
+    prefs.putInt("w", (int) bounds.getWidth());
+    prefs.putInt("h", (int) bounds.getHeight());
+    // optional : store location ?
+    /*
+     Point p = bounds.getLocation();
+     prefs.putInt("x", p.x);
+     prefs.putInt("y", p.y);
+     */
+  }
+
 }
-
-

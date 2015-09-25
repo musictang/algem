@@ -1,5 +1,5 @@
 /*
- * @(#)EnrolmentService.java	2.9.3 23/02/15
+ * @(#)EnrolmentService.java	2.9.4.12 24/09/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -23,6 +23,7 @@ package net.algem.enrolment;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import net.algem.Algem;
 import net.algem.config.*;
 import net.algem.contact.Person;
 import net.algem.contact.PersonFile;
@@ -97,8 +98,16 @@ public class EnrolmentService
             + " AND action.cours = cours.id"
             + " AND cours.code = " + code
             + " AND planning.lieux = salle.id AND salle.etablissement = " + estab;
-    if (code != CourseCodeType.ATP.getId() && code != CourseCodeType.INS.getId() && code != CourseCodeType.STG.getId()) {
-      query += " AND planning.fin - planning.debut = '" + new Hour(courseInfo.getTimeLength()) + "'";
+    if (Algem.getAppClient().equals("PaysRoiMorvan")) {
+      if (code == CourseCodeType.ATL.getId() || code == CourseCodeType.FMU.getId()) {
+        query += " AND planning.fin - planning.debut <= '" + new Hour(courseInfo.getTimeLength()) + "'";
+      } else if (code != CourseCodeType.ATP.getId() && code != CourseCodeType.INS.getId() && code != CourseCodeType.STG.getId()) {
+        query += " AND planning.fin - planning.debut = '" + new Hour(courseInfo.getTimeLength()) + "'";
+      }
+    } else {
+      if (code != CourseCodeType.ATP.getId() && code != CourseCodeType.INS.getId() && code != CourseCodeType.STG.getId()) {
+        query += " AND planning.fin - planning.debut = '" + new Hour(courseInfo.getTimeLength()) + "'";
+      }
     }
     query += " ORDER BY cours.titre";
 
