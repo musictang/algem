@@ -23,6 +23,7 @@ package net.algem.util.module;
 
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JMenu;
@@ -144,7 +145,6 @@ public abstract class GemModule
   public String toString() {
     return label;
   }
-
 
   /**
    * 

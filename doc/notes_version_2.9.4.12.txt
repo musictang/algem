@@ -1,5 +1,5 @@
 2.9.4.12
-BUGS CORRIGES
+CORRECTIFS
 * La durée totale d'une carte d'abonnement ne pouvait pas dépasser 24 heures en raison du format heures:minutes imposé. La durée totale est maintenant saisie au format décimal : 30,5 par exemple pour 30 heures 30 minutes et permet d'outrepasser cette limite.
 * Lorsqu'on modifiait la colonne "Abonnement restant" d'une carte d'abonnement (menu Abonnements de la fiche Personne), le détail des sessions de répétitions correspondantes était effacé. La modification avait lieu de plus même si le nombre restant n'était pas changé.
 Rappel : il est déconseillé d'éditer cette colonne. Le nombre d'heures restantes est normalement automatiquement déduit du nombre d'heures de répétitions effectuées. L'édition de cette colonne n'influera pas sur la durée des sessions préalablement enregistrées.
@@ -14,7 +14,7 @@ Les TARIFS SONT MAINTENANT TRIÉS PAR DÉFAUT PAR "HEURE PLEINE" dans la liste d
 SUIVI ENSEIGNANT
 La disposition des éléments dans l'onglet "Suivi" d'un enseignant est maintenant conforme à celle de l'onglet "Suivi" de la fiche élève. Les champs de saisie pour le choix de la période sont placés en bas de la fenêtre.
 LES HEURES AFFICHÉES DANS CE SUIVI ENSEIGNANT SONT DÉSORMAIS LES HEURES EFFECTIVES DE COURS. Auparavant, les heures de début et de fin des plannings de type individuel s'étendaient sur toute la plage de réservation.
-Un nouveau champ "Total" indique le nombre exact d'heures effectué sur la période sélectionnée. Cela vous évitera ainsi de passer systématiquement par les menu Compta -> Heures salariés ou par l'icone "Heures professeur" dans la fiche de l'enseignant pour connaître ce résultat. IL EST MAINTENANT POSSIBLE DE CALCULER LE TOTAL à partir d'une sélection des lignes du tableau. En triant par "Cours" le tableau des résultats, vous pourrez par exemple avoir une idée du total d'heures correspondant à toutes les lignes d'un même cours.
+UN NOUVEAU CHAMP "Total" indique le NOMBRE EXACT D'HEURES EFFECTUÉES sur la période sélectionnée. Cela vous évitera ainsi de passer systématiquement par les menu Compta -> Heures salariés ou par l'icone "Heures professeur" dans la fiche de l'enseignant pour connaître ce résultat. IL EST MAINTENANT POSSIBLE DE CALCULER LE TOTAL à partir d'une sélection des lignes du tableau. En triant par "Cours" le tableau des résultats, vous pourrez par exemple avoir une idée du total d'heures correspondant à toutes les lignes d'un même cours.
 La colonne "Suivi" ne se contente plus d'afficher le suivi collectif. Lorsqu'un cours est de type "individuel" (cours dont la case "collectif" a été décochée), le suivi individuel de l'élève est aussi affiché s'il existe. Dans les deux cas, il est possible d'éditer ce suivi directement à partir de cet onglet. Auparavant, on ne pouvait éditer que le suivi Collectif.
 Les sauts de ligne sont maintenant remplacés par des espaces dans la colonne Suivi. Auparavant, ces sauts de ligne étaient supprimés et il n'y avait plus de séparation entre certains mots.
 
@@ -33,8 +33,15 @@ Si malgré tout vous rencontriez encore des problèmes, voici la méthode à sui
 - Après avoir cliqué sur "Suivant", laisser l'option "Format des données en colonnes" à "Standard" et cliquez sur "Terminer".
 
 CATALOGUE COMMANDE FORMULES
-Le calcul du montant total de la commande était parfois assez aléatoire pour toutes les formules non soumises à tarification horaire. Ce calcul se base maintenant sur le produit du tarif de base (avec ses réductions éventuelles) et de la période de tarification (ANNÉE, TRIMESTRE, MOIS, etc.).
+Le calcul du montant total de la commande était parfois assez aléatoire pour les formules non soumises à tarification horaire. Ce calcul se base maintenant sur le produit du tarif de base (avec ses réductions éventuelles) et de la période de tarification (ANNÉE, TRIMESTRE, MOIS, etc.). Dans le cas de règlement par prélèvement, les réductions appliquées par défaut correspondent aux taux de réduction mois et trimestre de la formule (s'ils ont été renseignés bien entendu).
 Les valeurs correspondantes au total des heures et au nombre d'heures restantes ont été réalignées à droite pour plus de clarté.
 Une nouvelle ligne de statut vous permet à tout moment de connaître le nombre de commandes formules sélectionnées. Au chargement, cette ligne vous informe du nombre total de commandes formules sur la période choisie. En triant le tableau par formule, vous pourrez ainsi décompter le nombre de commandes pour chaque formule.
+
+MEMORISATION TAILLE DE FENETRE
+On peut maintenant mémoriser les dimensions du Tableau Jour et du Tableau Mois. Vous disposez de deux méthodes pour cela :
+- cliquez sur "Mémoriser réglages de fenêtre" dans le menu Options.
+- fermez la fenêtre tout en appuyant sur la touche MAJ (Majuscule) ou cliquez sur le menu Fichier -> Quitter en appuyant sur la touche MAJ.
+
+Dans le premier cas, vous mémoriserez les réglages sans fermer la fenêtre. Dans le second, les réglages mémorisés seront pris en compte à la réouverture de la fenêtre.
 
 

@@ -21,12 +21,15 @@
 package net.algem.contact;
 
 import java.awt.Cursor;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
 import java.io.FileNotFoundException;
 import java.sql.SQLException;
 import java.util.Vector;
 import java.util.logging.Level;
+import java.util.prefs.Preferences;
 import javax.swing.*;
 import net.algem.accounting.*;
 import net.algem.bank.*;
@@ -95,6 +98,8 @@ public class PersonFileEditor
   private OrderLineEditor orderLineEditor;
   private DataConnection dc;
   private static BankBranchIO BANK_BRANCH_IO;
+  private boolean savePrefs;
+  private final Preferences prefs = Preferences.userRoot().node("/algem/personfileeditor/size");
 
   public PersonFileEditor() {
     super("Fiche: ");
@@ -321,6 +326,7 @@ public class PersonFileEditor
       hoursDlg.setVisible(true);
     } // clic sur le bouton/icone Fermer la fiche
     else if (GemCommand.CLOSE_CMD.equals(arg)) { // GemCommand.
+      savePrefs = (evt.getModifiers() & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK;
       try {
         close();
       } catch (GemCloseVetoException i) {
@@ -1044,6 +1050,11 @@ public class PersonFileEditor
       } else {
         System.out.println(MessageUtil.getMessage("no.update.info"));
       }
+    }
+    if (savePrefs) {
+        Rectangle bounds = getView().getBounds();
+        prefs.putInt("w", (int)bounds.getWidth());
+        prefs.putInt("h", (int)bounds.getHeight());
     }
     personFileView.clear();
     closeModule();

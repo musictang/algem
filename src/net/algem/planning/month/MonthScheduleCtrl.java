@@ -1,5 +1,5 @@
 /*
- * @(#)MonthScheduleCtrl.java	2.9.4.8 18/06/15
+ * @(#)MonthScheduleCtrl.java	2.9.4.12 25/09/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -21,13 +21,17 @@
 package net.algem.planning.month;
 
 import java.awt.Dimension;
+import java.awt.Event;
 import java.awt.EventQueue;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.prefs.Preferences;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -43,17 +47,20 @@ import net.algem.util.model.GemCloseVetoException;
 import net.algem.util.model.GemList;
 import net.algem.util.model.Model;
 import net.algem.util.module.GemModule;
+import net.algem.util.ui.Toast;
+import net.algem.util.ui.UIAdjustable;
 
 /**
  * Month schedule controller.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.8
+ * @version 2.9.4.11a
  * @since 1.0b 06/10/2001
  */
 public class MonthScheduleCtrl
         extends GemModule
+        implements UIAdjustable
 {
 
   static final Dimension MONTH_SIZE = new Dimension(920, 600);
@@ -62,12 +69,15 @@ public class MonthScheduleCtrl
   private JMenuItem mPrint;
   private JMenuItem mQuit;
   private JMenu mOptions;
+  private JMenuItem miSaveUISettings;
   private JCheckBoxMenuItem mLinkDay;
   private MonthSchedule monthSchedule;
   private boolean linkedToDay = false;
   private Calendar cal;
   private Date start;
   private Date end;
+  private boolean savePrefs;
+  private final Preferences prefs = Preferences.userRoot().node("/algem/monthplan/size");
 
   public MonthScheduleCtrl() {
     super("PlanningMois");
@@ -79,6 +89,7 @@ public class MonthScheduleCtrl
 
   /**
    * Inits the module.
+   *
    * @see net.algem.util.module.GemDesktop#addModule(net.algem.util.module.GemModule)
    */
   @Override
@@ -88,7 +99,7 @@ public class MonthScheduleCtrl
     GemList<Establishment> v = dataCache.getList(Model.Establishment);
 
     view = new MonthScheduleView(desktop, monthSchedule, v);
-    view.setSize(MONTH_SIZE);
+    view.setSize(new Dimension(prefs.getInt("w", MONTH_SIZE.width), prefs.getInt("h", MONTH_SIZE.height)));
     view.addActionListener(this);
 
     desktop.addGemEventListener(this);
@@ -97,8 +108,11 @@ public class MonthScheduleCtrl
     mFile = createJMenu("Menu.file");
     mPrint = getMenuItem("Menu.print");
     mQuit = getMenuItem("Menu.quit");
+    mFile.add(mPrint);
+    mFile.addSeparator();
+    mFile.add(mQuit);
+
     mOptions = new JMenu("Options");
-    //mLienJour = new JMenuItem("Lien planning jour");
     mLinkDay = new JCheckBoxMenuItem(BundleUtil.getLabel("Month.schedule.link.label"), linkedToDay);
     mLinkDay.setSelected(false);
     mLinkDay.addItemListener(new ItemListener()
@@ -108,14 +122,12 @@ public class MonthScheduleCtrl
       }
     });
 
-    mFile.add(mPrint);
-    mFile.addSeparator();
-    mFile.add(mQuit);
+    miSaveUISettings = getMenuItem(BundleUtil.getLabel("Store.ui.settings"));
     mOptions.add(mLinkDay);
+    mOptions.add(miSaveUISettings);
+
     mBar.add(mFile);
     mBar.add(mOptions);
-    mQuit.addActionListener(this);
-
     view.setJMenuBar(mBar);
 
     load(new java.util.Date());
@@ -154,7 +166,6 @@ public class MonthScheduleCtrl
       pde.setPosition(v.getClickPosition());
       pde.setRanges(v.getScheduleRanges());
       desktop.postEvent(pde);
-      //modifCtrl.loadPlan(p);
     } else if (cmd.equals("ClickDate")) {
       ScheduleView v = (ScheduleView) evt.getSource();
       Schedule p = v.getSchedule();
@@ -164,12 +175,18 @@ public class MonthScheduleCtrl
     } else if (src == mPrint) {
       view.print();
     } else if (src == mQuit) {
-        try {
-          close();
-        } catch (GemCloseVetoException ex) {
-            GemLogger.logException(ex);
-        }
+      savePrefs = (evt.getModifiers() & Event.SHIFT_MASK) == Event.SHIFT_MASK;
+      try {
+        close();
+      } catch (GemCloseVetoException ex) {
+        GemLogger.logException(ex);
+      }
+    } else if (src == miSaveUISettings) {
+      storeUISettings();
+      Dimension d = view.getBounds().getSize();
+      Toast.showToast(desktop, BundleUtil.getLabel("New.size.label") + " : " + d.width+"x"+d.height);
     }
+
   }
 
   @Override
@@ -223,10 +240,21 @@ public class MonthScheduleCtrl
 
   @Override
   public void close() throws GemCloseVetoException {
-    view.close();
+    super.close();
+    if (savePrefs) {
+      storeUISettings();
+      Dimension d = view.getSize();
+      Toast.showToast(desktop, BundleUtil.getLabel("New.size.label") + " : " + d.width+"x"+d.height);
+    }
     view.removeActionListener(this);
     desktop.removeGemEventListener(this);
-    desktop.removeModule(this);
+  }
+
+  @Override
+  public void storeUISettings() {
+    Rectangle bounds = getView().getBounds();
+    prefs.putInt("w", (int) bounds.getWidth());
+    prefs.putInt("h", (int) bounds.getHeight());
   }
 
 }

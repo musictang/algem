@@ -1,5 +1,5 @@
 /*
- * @(#)GemDesktopCtrl.java	2.9.4.8 23/06/15
+ * @(#)GemDesktopCtrl.java	2.9.4.11a 07/09/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -23,6 +23,7 @@ package net.algem.util.module;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyVetoException;
@@ -32,6 +33,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.*;
 import java.util.logging.Level;
+import java.util.prefs.Preferences;
 import javax.swing.*;
 import javax.swing.event.EventListenerList;
 import net.algem.contact.*;
@@ -66,7 +68,7 @@ import net.algem.util.ui.HtmlViewer;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.8
+ * @version 2.9.4.11a
  * @since 1.0a 05/07/2002
  */
 public class GemDesktopCtrl
@@ -98,6 +100,8 @@ public class GemDesktopCtrl
   private JMenu mHelp;
   private ActionListener actionListener;
   private Properties props;
+  private Preferences prefs;
+  private boolean savePrefs;  // TODO a mettre en menu ?
   private EventListenerList listenerList = new EventListenerList();
   Socket dispatcher;
   ObjectInputStream iDispatcher;
@@ -110,6 +114,7 @@ public class GemDesktopCtrl
     dc = DataCache.getDataConnection();
     userService = dataCache.getUserService();
     this.props = props;
+    prefs = Preferences.userRoot().node("/algem/desktop/size");
     
     modules = new Hashtable<String, GemModule>();
     menus = new Hashtable<String, JMenuItem>();
@@ -250,6 +255,11 @@ public class GemDesktopCtrl
    * @throws GemCloseVetoException 
    */
   private void close() throws GemCloseVetoException {
+    if (savePrefs) {
+        Rectangle bounds = frame.getBounds();
+        prefs.putInt("w", (int)bounds.getWidth());
+        prefs.putInt("h", (int)bounds.getHeight());
+    }
     ObjectOutputStream out = null;
     String path = System.getProperty("user.home") + FileUtil.FILE_SEPARATOR;
     try {
@@ -313,6 +323,7 @@ public class GemDesktopCtrl
     setWaitCursor();
     
     if (BundleUtil.getLabel("Menu.quit.label").equals(arg)) {
+      savePrefs = (evt.getModifiers() & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK;
       try {
         close();
         System.exit(0);

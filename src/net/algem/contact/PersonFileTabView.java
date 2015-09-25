@@ -22,12 +22,15 @@ package net.algem.contact;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Vector;
+import java.util.prefs.Preferences;
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
@@ -228,7 +231,8 @@ public class PersonFileTabView
 
     add(toolbar, BorderLayout.NORTH);
     wTab.setSelectedIndex(0);
-    setSize(GemModule.XXL_SIZE);
+    Preferences prefs = Preferences.userRoot().node("/algem/personfileeditor/size");
+    setSize(new Dimension(prefs.getInt("w",GemModule.XXL_SIZE.width), prefs.getInt("h",GemModule.XXL_SIZE.height)));
   }
 
   @Override

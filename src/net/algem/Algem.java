@@ -1,5 +1,5 @@
 /*
- * @(#)Algem.java	2.9.4.11 22/07/2015
+ * @(#)Algem.java	2.9.4.12 24/09/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.logging.Level;
+import java.util.prefs.Preferences;
 import javax.swing.*;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.plaf.InsetsUIResource;
@@ -55,12 +56,12 @@ import org.apache.commons.codec.binary.Base64;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.11
+ * @version 2.9.4.12
  */
 public class Algem
 {
 
-  public static final String APP_VERSION = "2.9.4.11";//experimental
+  public static final String APP_VERSION = "2.9.4.12";//experimental
   public static List<LookAndFeelInfo> ALTERNATIVE_LAF = new ArrayList<LookAndFeelInfo>();
   private static final int DEF_WIDTH = 1080;// (850,650) => ancienne taille
   private static final int DEF_HEIGHT = 780;
@@ -77,7 +78,7 @@ public class Algem
   private String baseName = "algem";
   private static Properties props;
   private DataConnection dc;
-
+  
   public Algem() {
     Locale.setDefault(Locale.FRENCH);
     props = new Properties();
@@ -189,7 +190,8 @@ public class Algem
             + " - jdbc://" + hostName + "/" + baseName;
 
     frame = new JFrame(title);
-    frame.setSize(DEF_WIDTH, DEF_HEIGHT);
+    Preferences prefs = Preferences.userRoot().node("/algem/desktop/size");
+    frame.setSize(prefs.getInt("w", DEF_WIDTH), prefs.getInt("h", DEF_HEIGHT));
     frame.setLocation(DEF_LOCATION);
     checkVersion(frame);
 
@@ -262,6 +264,7 @@ public class Algem
     int dbport = (port != null) ? Integer.parseInt(port) : 0;
 
     dc = new DataConnection(host, dbport, base, dbPass);
+//    dc = new DataConnectionSpy(host, dbport, base, dbPass);
 
     String ssl = props.getProperty("ssl");
     if (ssl != null && "true".equalsIgnoreCase(ssl)) {
@@ -493,6 +496,19 @@ public class Algem
       System.exit(7);
     }
   }
+  
+  /**
+   * Pour implémentation temporaire des modifs client Ecole Pays Roi Morvan.
+   *
+   * @return
+   * @author ERIC
+   *
+   * @since 2.9.4.12
+   */
+  public static String getAppClient() {
+    return props.getProperty("appClient");
+  }
+
 }
 
 // JUST FOR HISTORY INFO : DO NOT UNCOMMENT
