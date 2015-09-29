@@ -1,5 +1,5 @@
 /*
- * @(#)ModuleView.java	2.9.4.12 25/09/15
+ * @(#)ModuleView.java	2.9.4.12 29/09/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,6 +20,7 @@
  */
 package net.algem.course;
 
+import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.text.Format;
 import javax.swing.BorderFactory;
@@ -55,13 +56,13 @@ public class ModuleView
   public ModuleView(DataCache dataCache) {   
     no = new GemNumericField(6);
     no.setEditable(false);
-    title = new GemField(ModuleIO.TITLE_MAX_LEN, ModuleIO.TITLE_MAX_LEN);
-    title.setColumns(ModuleIO.TITLE_MAX_LEN);
+    no.setMinimumSize(new Dimension(60,no.getPreferredSize().height));
+            
+    title = new GemField(20, ModuleIO.TITLE_MAX_LEN);
 
     Format f = AccountUtil.getDefaultNumberFormat();
 
     basicPrice = new GemDecimalField(f);
-
     monthRateReduc = new GemDecimalField(f);
     quarterRateReduc = new GemDecimalField(f);
     basicPrice.setColumns(6);
@@ -76,6 +77,7 @@ public class ModuleView
     pricePanel.add(monthRateReduc);
     pricePanel.add(new GemLabel(BundleUtil.getLabel("Module.trim.reduc.rate.label")));
     pricePanel.add(quarterRateReduc);
+    pricePanel.setMinimumSize(new Dimension(520,50));
 
     type = new JComboBox(new String[] {
       BundleUtil.getLabel("Leisure.training.label"),
@@ -89,11 +91,12 @@ public class ModuleView
 
     gb.add(new GemLabel(BundleUtil.getLabel("Number.abbrev.label")), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(no, 1, 0, 1, 1, GridBagHelper.WEST);
-    gb.add(title, 0, 1, 2, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Title.label")), 0, 1, 1, 1, GridBagHelper.WEST);
+    gb.add(title, 1, 1, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
     gb.add(new JLabel(BundleUtil.getLabel("Type.label")), 0, 2, 1, 1, GridBagHelper.WEST);
     gb.add(type, 1, 2, 1, 1, GridBagHelper.WEST);
     gb.add(courseView, 0, 3, 2, 1, GridBagHelper.BOTH, GridBagHelper.WEST);
-    gb.add(pricePanel, 0, 4, 2, 1, GridBagHelper.BOTH, GridBagHelper.WEST);
+    gb.add(pricePanel, 0, 4, 2, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
     
   }
 

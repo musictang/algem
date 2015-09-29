@@ -1,5 +1,5 @@
 /*
- * @(#)ModuleCtrl.java	2.9.4.12 25/09/15
+ * @(#)ModuleCtrl.java	2.9.4.12 29/09/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -215,6 +215,11 @@ public class ModuleCtrl
         desktop.postEvent(new ModuleEvent(this, GemEvent.CREATION, m));
         MessagePopup.information(this, MessageUtil.getMessage("create.info"));
       } else {
+        if (service.isUsed(m.getId(), dataCache.getStartOfPeriod())) {
+          if (!MessagePopup.confirm(this, MessageUtil.getMessage("module.update.confirmation"))) {
+            return;
+          }
+        }
         service.update(m);
         dataCache.update(m);
         desktop.postEvent(new ModuleEvent(this, GemEvent.MODIFICATION, m));

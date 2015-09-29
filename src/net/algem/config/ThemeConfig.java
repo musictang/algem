@@ -1,5 +1,5 @@
 /*
- * @(#)ThemeConfig.java 2.9.4.9 07/07/15
+ * @(#)ThemeConfig.java 2.9.4.12 29/09/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  * 
@@ -57,7 +57,7 @@ import net.algem.util.ui.MessagePopup;
  * Preferred theme selection.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.9
+ * @version 2.9.4.12
  * @since 2.9.4.9 26/06/2015
  */
 public class ThemeConfig
@@ -159,9 +159,8 @@ public class ThemeConfig
   private void setActualTheme(String name) {
     for (int i = 0; i < themes.getItemCount(); i++) {
       LookAndFeelInfo item = (LookAndFeelInfo) themes.getItemAt(i);
-      if (item.getName().equals(name.replaceAll(" ", ""))) {
+      if (item.getClassName().equals(name)) {
         themes.setSelectedIndex(i);
-//        description.setText(getDescription(name));
         break;
       }
     }
@@ -177,7 +176,7 @@ public class ThemeConfig
     GemLogger.info(UIManager.getLookAndFeel().getClass().getName());
     GemLogger.info(UIManager.getLookAndFeel().getName());
     
-    setActualTheme(UIManager.getLookAndFeel().getName());
+    setActualTheme(UIManager.getLookAndFeel().getClass().getName());
   }
 
   /**

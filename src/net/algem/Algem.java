@@ -1,5 +1,5 @@
 /*
- * @(#)Algem.java	2.9.4.12 25/09/15
+ * @(#)Algem.java	2.9.4.12 28/09/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -190,9 +190,9 @@ public class Algem
             + " - jdbc://" + hostName + "/" + baseName;
 
     frame = new JFrame(title);
-    Preferences prefs = Preferences.userRoot().node("/algem/desktop/size");
-    frame.setSize(prefs.getInt("w", DEF_WIDTH), prefs.getInt("h", DEF_HEIGHT));
-    frame.setLocation(DEF_LOCATION);
+    Preferences prefs = Preferences.userRoot().node("/algem/ui");
+    frame.setSize(prefs.getInt("desktop.w", DEF_WIDTH), prefs.getInt("desktop.h", DEF_HEIGHT));
+    frame.setLocation(prefs.getInt("desktop.x",DEF_LOCATION.x), prefs.getInt("desktop.y", DEF_LOCATION.y));
     checkVersion(frame);
 
     GemDesktopCtrl desktop = new GemDesktopCtrl(frame, cache, props);
@@ -380,7 +380,6 @@ public class Algem
     String lafName = UIManager.getLookAndFeel().getName();
     UIDefaults def = UIManager.getLookAndFeelDefaults();
     Font myFont = new Font(Font.SANS_SERIF, Font.PLAIN, 11);
-    System.out.println(lafName);
     switch (lafName) {
       case "Nimbus":
         def.put("Button.contentMargins", new InsetsUIResource(4, 4, 4, 4)); //  default : (6,14,6,14)

@@ -95,15 +95,15 @@ public class Module
   }
 
   /**
-   * De type professionnel.
-   * @return vrai si le code du cours débute par "P"
+   * Specifies if this module is of type "professional".
+   * @return true if code starts with "P"
    */
   public boolean isProfessional() {
     return code.startsWith("P");
   }
 
   /**
-   * Specifies if this module is of leisure type.
+   * Specifies if this module is of type "leisure".
    * @return true if code starts with "L"
    */
   public boolean isLeisure() {
@@ -119,7 +119,7 @@ public class Module
   }
 
   /** 
-   * With group accompaniment.
+   * With group support.
    * @return true if code ends with "A"
    */
   public boolean withGroupAccompaniment() {
@@ -128,7 +128,7 @@ public class Module
 
   /**
    * Base price.
-   * This price is for a month.
+   * By default, This price is set for a quarter.
    *
    * @param p
    */
@@ -137,7 +137,7 @@ public class Module
   }
 
   /**
-   *
+   * Gets the base price.
    * @return a double
    */
   public double getBasePrice() {
@@ -146,7 +146,7 @@ public class Module
 
   /**
    * Sets the reduction rate for month debiting.
-   *
+   * Reduction is applied only if the mode of payment is direct debit.
    * @param p a rate in percent
    */
   public void setMonthReducRate(double p) {
@@ -164,7 +164,7 @@ public class Module
 
   /**
    * Sets the reduction rate for quarter debiting.
-   *
+   * Reduction is applied only if the mode of payment is direct debit.
    * @param p a rate in percent
    */
   public void setQuarterReducRate(double p) {
@@ -187,8 +187,6 @@ public class Module
   public void setCourses(List<CourseModuleInfo> courses) {
     this.courses = courses;
   }
-  
-  
 
   @Override
   public boolean equals(Object o) {

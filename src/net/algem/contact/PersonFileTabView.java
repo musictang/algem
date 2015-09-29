@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileTabView.java  2.9.4.12 01/09/15
+ * @(#)PersonFileTabView.java  2.9.4.12 29/09/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes All Rights Reserved.
  *
@@ -30,7 +30,6 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Vector;
 import java.util.prefs.Preferences;
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
@@ -231,8 +230,8 @@ public class PersonFileTabView
 
     add(toolbar, BorderLayout.NORTH);
     wTab.setSelectedIndex(0);
-    Preferences prefs = Preferences.userRoot().node("/algem/personfileeditor/size");
-    setSize(new Dimension(prefs.getInt("w",GemModule.XXL_SIZE.width), prefs.getInt("h",GemModule.XXL_SIZE.height)));
+    Preferences prefs = Preferences.userRoot().node("/algem/ui");
+    setSize(new Dimension(prefs.getInt("personfileeditor.w",GemModule.XXL_SIZE.width), prefs.getInt("personfileeditor.h",GemModule.XXL_SIZE.height)));
   }
 
   @Override

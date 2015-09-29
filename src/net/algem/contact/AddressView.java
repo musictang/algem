@@ -1,5 +1,5 @@
 /*
- * @(#)AddressView.java	2.9.4.8 24/06/15
+ * @(#)AddressView.java	2.9.4.12 28/09/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -39,7 +39,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.8
+ * @version 2.9.4.12
  * @since 1.0a 07/07/1999
  */
 public class AddressView
@@ -153,7 +153,7 @@ public class AddressView
   }
 
   private void init(boolean ar) {
-    adr1 = new GemField(40);
+    adr1 = new GemField(40, AddressIO.ADR1_LIMIT);
     adr2 = new GemField(40);
     cdp = new CodePostalField();
     city = new GemField(30);

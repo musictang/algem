@@ -1,7 +1,7 @@
 /*
- * @(#)ModuleService.java 2.6.a 03/08/12
+ * @(#)ModuleService.java 2.9.4.12 29/09/15
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -24,6 +24,7 @@ import java.sql.SQLException;
 import java.util.Vector;
 import net.algem.enrolment.ModuleOrder;
 import net.algem.enrolment.ModuleOrderIO;
+import net.algem.planning.DateFr;
 import net.algem.planning.Schedule;
 import net.algem.planning.ScheduleIO;
 import net.algem.util.DataCache;
@@ -35,7 +36,7 @@ import net.algem.util.model.Model;
  * Service class for modules.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.4.12
  * @since 2.5.a 03/07/12
  */
 public class ModuleService
@@ -73,6 +74,11 @@ public class ModuleService
       }
     }
     moduleIO.delete(m);
+  }
+  
+  boolean isUsed(int moduleId, DateFr start) throws SQLException {
+    Vector<ModuleOrder> vm = ModuleOrderIO.find("AND m.id = " + moduleId + " AND cm.debut >= '" + start.toString() + "'", dc);
+    return vm != null && vm.size() > 0;
   }
 
   public void create(Course c) throws SQLException {

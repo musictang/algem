@@ -1,7 +1,7 @@
 /*
- * @(#)GemField.java	2.8.w 02/09/14
+ * @(#)GemField.java	2.9.4.12 29/09/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -37,7 +37,7 @@ import javax.swing.text.PlainDocument;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.4.12
  * @since 1.0a 07/07/1999
  *
  */
@@ -56,8 +56,8 @@ public class GemField
    * Main constructor.
    * If {@code _histo} is true, a focusListener is added.
    * By default, history contains 20 elements.
-   * @param _histo
-   * @param length
+   * @param _histo history flag
+   * @param length number of columns
    */
   public GemField(boolean _histo, int length) {
     super(length);
@@ -70,46 +70,44 @@ public class GemField
   }
 
   /** 
-   * Constructs a field with history.
-   * @param _histo 
+   * Constructs a field with or without history management and with default length.
+   * @param _histo history flag
    */
   public GemField(boolean _histo) {
     this(_histo, 5);
   }
 
+  /**
+   * Constructs a field without history and with default length.
+   */
   public GemField() {
     this(false, 5);
   }
 
+  /**
+   * Constructs a field of some length and without history.
+   * @param length number of columns
+   */
   public GemField(int length) {
     this(false, length);
   }
 
   /**
-   * Constructs field with max input length of {@code limit}.
+   * Constructs a field with max input length of {@code maxChars}.
    *
-   * @param length
-   * @param limit
+   * @param length number of columns
+   * @param maxChars maximum number of chars
    * @since 2.6.d
    */
-  public GemField(int length, final int limit) {
+  public GemField(int length, final int maxChars) {
     this(false, length);
-    setDocument(new PlainDocument()
-    {
-      @Override
-      public void insertString(int offs, String str, AttributeSet a)
-              throws BadLocationException {
-        if (getLength() + str.length() <= limit) {
-          super.insertString(offs, str, a);
-        }
-      }
-    });
+    setMaxCharsDocument(maxChars);
   }
 
   /**
-   * Constructs a field with a default text without history.
-   * @param text
-   * @param length
+   * Constructs a field of some length with predefined content and without history.
+   * @param text predefined content
+   * @param length number of columns
    */
   public GemField(String text, int length) {
     this(false, length);
@@ -117,22 +115,34 @@ public class GemField
     //setFont(new Font("Helvetica",Font.PLAIN,12));
   }
 
+  /**
+   * Constructs a field of some length with predefined content.
+   * @param _histo history flag
+   * @param text predefined content
+   * @param length number of columns
+   */
   public GemField(boolean _histo, String text, int length) {
     this(_histo, length);
     setText(text);
     //setFont(new Font("Helvetica",Font.PLAIN,12));
   }
 
+  /**
+   * Constructs a field with predefined content and without history.
+   * The number of columns equals text length.
+   * @param text predefined content
+   */
   public GemField(String text) {
     this(false, text.length());
     setText(text);
   }
 
   /**
+   * Constructs a field with predefined content.
    * Length of the field depends on the {@code text} length.
    *
-   * @param _histo
-   * @param text
+   * @param _histo history flag
+   * @param text predefined content
    */
   public GemField(boolean _histo, String text) {
     this(_histo, text.length());
@@ -156,6 +166,31 @@ public class GemField
     }
     super.setText(text);
 
+  }
+  
+  /**
+   * Sets the document rule to limit the number of input characters.
+   * @param max maximum number of characters
+   */
+  public void setMaxChars(final int max) {
+    setMaxCharsDocument(max);
+  }
+  
+  /**
+   * Sets the maximum number of characters authorized.
+   * @param max maximum number of input characters allowed
+   */
+  private void setMaxCharsDocument(final int max) {
+    setDocument(new PlainDocument()
+    {
+      @Override
+      public void insertString(int offs, String str, AttributeSet a)
+              throws BadLocationException {
+        if (getLength() + str.length() <= max) {
+          super.insertString(offs, str, a);
+        }
+      }
+    });
   }
 
   @Override

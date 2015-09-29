@@ -1,5 +1,5 @@
 /*
- * @(#)DayScheduleCtrl.java 2.9.4.12 25/09/15
+ * @(#)DayScheduleCtrl.java 2.9.4.12 28/09/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -83,7 +83,7 @@ public class DayScheduleCtrl
   private JCheckBoxMenuItem miAllRooms;
   private JMenuItem miSaveUISettings;
   private boolean savePrefs;
-  private final Preferences prefs = Preferences.userRoot().node("/algem/dayplan/size");
+  private final Preferences prefs = Preferences.userRoot().node("/algem/ui");
   
 
   public DayScheduleCtrl() {
@@ -138,8 +138,7 @@ public class DayScheduleCtrl
 
     mOptions.add(miLinkMonth);
     mOptions.add(miAllRooms);
-    miSaveUISettings = getMenuItem(BundleUtil.getLabel("Store.ui.settings"));
-    miSaveUISettings.addActionListener(this);
+    miSaveUISettings = getMenuItem("Store.ui.settings");
     mOptions.add(miSaveUISettings);
 
     mBar.add(mFile);
@@ -173,7 +172,7 @@ public class DayScheduleCtrl
    */
   public void mayBeMaximize() {
      if (ConfigUtil.getConf(ConfigKey.SCHEDULE_RANGE_NAMES.getKey()).equals("t")) {
-        view.setSize(prefs.getInt("w",960), prefs.getInt("h", 720)); // new Dimension(960,720));
+        view.setSize(prefs.getInt("dayplan.w",960), prefs.getInt("dayplan.h", 720)); // new Dimension(960,720));
     }
   }
 
@@ -213,8 +212,7 @@ public class DayScheduleCtrl
       desktop.postEvent(new SelectDateEvent(this, d));
     } else if (src == miSaveUISettings) {
       storeUISettings();
-      Dimension d = view.getSize();
-      Toast.showToast(desktop, BundleUtil.getLabel("New.size.label") + " : " + d.width+"x"+d.height);
+      Toast.showToast(desktop, getUIInfo());
     } else if (src == miPrint) {
       view.print();
     } else if (src == miQuit) {
@@ -309,8 +307,7 @@ public class DayScheduleCtrl
     super.close();
     if (savePrefs) {
       storeUISettings();
-      Dimension d = view.getSize();
-      Toast.showToast(desktop, BundleUtil.getLabel("New.size.label") + " : " + d.width+"x"+d.height);
+      Toast.showToast(desktop, getUIInfo());
     }
     view.removeActionListener(this);
     desktop.removeGemEventListener(this);
@@ -332,14 +329,20 @@ public class DayScheduleCtrl
   @Override
   public void storeUISettings() {
     Rectangle bounds = getView().getBounds();
-    prefs.putInt("w", (int) bounds.getWidth());
-    prefs.putInt("h", (int) bounds.getHeight());
+    prefs.putInt("dayplan.w", bounds.width);
+    prefs.putInt("dayplan.h", bounds.height);
     // optional : store location ?
     /*
      Point p = bounds.getLocation();
-     prefs.putInt("x", p.x);
-     prefs.putInt("y", p.y);
+     prefs.putInt("dayplan.x", p.x);
+     prefs.putInt("dayplan.y", p.y);
      */
+  }
+
+  @Override
+  public String getUIInfo() {
+    Dimension d = view.getSize();
+    return BundleUtil.getLabel("New.size.label") + " : " + d.width+"x"+d.height;
   }
 
 }

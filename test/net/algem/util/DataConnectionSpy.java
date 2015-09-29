@@ -1,5 +1,5 @@
 /*
- * @(#)DataConnectionSpy.java	2.9.4.12 24/09/15
+ * @(#)DataConnectionSpy.java	2.9.4.12 28/09/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -21,8 +21,10 @@
 package net.algem.util;
 
 /**
- *
+ * Alternative data connection.
+ * 
  * @author eric
+ * @version 2.9.4.12
  * @since 2.9.4.12
  */
 public class DataConnectionSpy

@@ -1,5 +1,5 @@
 /*
- * @(#)CourseView.java	2.9.4.12 25/09/15
+ * @(#)CourseView.java	2.9.4.12 28/09/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -94,10 +94,6 @@ public class CourseView
     gb.add(collective, 1, 6, 1, 1, GridBagHelper.WEST);
     gb.add(active, 1, 7, 1, 1, GridBagHelper.WEST);
     gb.add(schoolChoice, 1, 8, 1, 1, GridBagHelper.WEST);
-  }
-
-  public String getTitre() {
-    return title.getText();
   }
 
   public int getId() {

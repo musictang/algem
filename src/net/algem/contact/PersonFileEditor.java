@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileEditor 2.9.4.12 01/09/15
+ * @(#)PersonFileEditor 2.9.4.12 28/09/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -21,10 +21,11 @@
 package net.algem.contact;
 
 import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Event;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
 import java.io.FileNotFoundException;
 import java.sql.SQLException;
 import java.util.Vector;
@@ -72,7 +73,7 @@ import net.algem.util.ui.*;
  */
 public class PersonFileEditor
         extends FileEditor
-        implements PersonFileListener
+        implements PersonFileListener, UIAdjustable
 {
 
   private JMenuBar mBar;
@@ -86,11 +87,11 @@ public class PersonFileEditor
   private JMenuItem miMember, miTeacher, miBank, miEmployee;
   private JMenuItem miPassRehearsal, miRehearsal, miHistoPass;
   private JMenuItem miHistoRehearsal;
-//  private JMenuItem miCard;
   private JMenuItem miHistoInvoice;
   private JMenuItem miHistoQuote;
   private JMenuItem miMonthPlanning;
   private JMenuItem miGroups;
+  private JMenuItem miSaveUISettings;
   private PersonFile dossier, parent;
   private PersonFileTabView personFileView;
   private PersonFileListCtrl memberList;
@@ -99,7 +100,7 @@ public class PersonFileEditor
   private DataConnection dc;
   private static BankBranchIO BANK_BRANCH_IO;
   private boolean savePrefs;
-  private final Preferences prefs = Preferences.userRoot().node("/algem/personfileeditor/size");
+  private final Preferences prefs = Preferences.userRoot().node("/algem/ui");
 
   public PersonFileEditor() {
     super("Fiche: ");
@@ -326,7 +327,7 @@ public class PersonFileEditor
       hoursDlg.setVisible(true);
     } // clic sur le bouton/icone Fermer la fiche
     else if (GemCommand.CLOSE_CMD.equals(arg)) { // GemCommand.
-      savePrefs = (evt.getModifiers() & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK;
+      savePrefs = (evt.getModifiers() & Event.SHIFT_MASK) == Event.SHIFT_MASK;
       try {
         close();
       } catch (GemCloseVetoException i) {
@@ -426,10 +427,13 @@ public class PersonFileEditor
           }
         }
       } else if (CloseableTab.CLOSE_CMD.equals(arg)) {
-        closeTab(src);
-      } else {
-        super.actionPerformed(evt);
-      }
+      closeTab(src);
+    } else if (src == miSaveUISettings) {
+      storeUISettings();
+      Toast.showToast(desktop, getUIInfo());
+    } else {
+      super.actionPerformed(evt);
+    }
 
   }
 
@@ -798,7 +802,8 @@ public class PersonFileEditor
     }
     mOptions.addSeparator();
     mOptions.add(miLogin = getMenuItem("Login.creation"));
-
+    mOptions.addSeparator();
+    mOptions.add(miSaveUISettings = getMenuItem("Store.ui.settings"));
     mHelp.add(miAbout);
     mHelp.add(miDoc);
 
@@ -1052,9 +1057,7 @@ public class PersonFileEditor
       }
     }
     if (savePrefs) {
-        Rectangle bounds = getView().getBounds();
-        prefs.putInt("w", (int)bounds.getWidth());
-        prefs.putInt("h", (int)bounds.getHeight());
+      storeUISettings();
     }
     personFileView.clear();
     closeModule();
@@ -1158,5 +1161,18 @@ public class PersonFileEditor
     editor.addActionListener(this);
     editor.load();
     personFileView.addTab(editor, FileTabView.ESTIMATE_TAB_TITLE);
+  }
+
+  @Override
+  public void storeUISettings() {
+    Rectangle bounds = getView().getBounds();
+    prefs.putInt("personfileeditor.w", bounds.width);
+    prefs.putInt("personfileeditor.h", bounds.height);
+  }
+
+  @Override
+  public String getUIInfo() {
+    Dimension d = view.getSize();
+    return BundleUtil.getLabel("New.size.label") + " : " + d.width + "x" + d.height;
   }
 }

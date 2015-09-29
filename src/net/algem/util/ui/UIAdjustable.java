@@ -1,5 +1,5 @@
 /*
- * @(#)UIAdjustable.java 2.9.4.12 24/09/15
+ * @(#)UIAdjustable.java 2.9.4.12 28/09/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  * 
@@ -29,5 +29,14 @@ package net.algem.util.ui;
 public interface UIAdjustable
 {
 
+  /**
+   * Store some ui settings like the windows's size or location. 
+   */
   void storeUISettings();
+  
+  /**
+   * Gets some information about current ui settings.
+   * @return a string describing some settings
+   */
+  String getUIInfo();
 }

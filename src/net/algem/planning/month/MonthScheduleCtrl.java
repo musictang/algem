@@ -1,5 +1,5 @@
 /*
- * @(#)MonthScheduleCtrl.java	2.9.4.12 25/09/15
+ * @(#)MonthScheduleCtrl.java	2.9.4.12 28/09/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -23,7 +23,6 @@ package net.algem.planning.month;
 import java.awt.Dimension;
 import java.awt.Event;
 import java.awt.EventQueue;
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
@@ -77,7 +76,7 @@ public class MonthScheduleCtrl
   private Date start;
   private Date end;
   private boolean savePrefs;
-  private final Preferences prefs = Preferences.userRoot().node("/algem/monthplan/size");
+  private final Preferences prefs = Preferences.userRoot().node("/algem/ui");
 
   public MonthScheduleCtrl() {
     super("PlanningMois");
@@ -99,7 +98,7 @@ public class MonthScheduleCtrl
     GemList<Establishment> v = dataCache.getList(Model.Establishment);
 
     view = new MonthScheduleView(desktop, monthSchedule, v);
-    view.setSize(new Dimension(prefs.getInt("w", MONTH_SIZE.width), prefs.getInt("h", MONTH_SIZE.height)));
+    view.setSize(new Dimension(prefs.getInt("monthplan.w", MONTH_SIZE.width), prefs.getInt("monthplan.h", MONTH_SIZE.height)));
     view.addActionListener(this);
 
     desktop.addGemEventListener(this);
@@ -122,7 +121,7 @@ public class MonthScheduleCtrl
       }
     });
 
-    miSaveUISettings = getMenuItem(BundleUtil.getLabel("Store.ui.settings"));
+    miSaveUISettings = getMenuItem("Store.ui.settings");
     mOptions.add(mLinkDay);
     mOptions.add(miSaveUISettings);
 
@@ -183,8 +182,7 @@ public class MonthScheduleCtrl
       }
     } else if (src == miSaveUISettings) {
       storeUISettings();
-      Dimension d = view.getBounds().getSize();
-      Toast.showToast(desktop, BundleUtil.getLabel("New.size.label") + " : " + d.width+"x"+d.height);
+      Toast.showToast(desktop, getUIInfo());
     }
 
   }
@@ -253,8 +251,14 @@ public class MonthScheduleCtrl
   @Override
   public void storeUISettings() {
     Rectangle bounds = getView().getBounds();
-    prefs.putInt("w", (int) bounds.getWidth());
-    prefs.putInt("h", (int) bounds.getHeight());
+    prefs.putInt("monthplan.w", bounds.width);
+    prefs.putInt("monthplan.h", bounds.height);
+  }
+
+  @Override
+  public String getUIInfo() {
+    Dimension d = view.getSize();
+    return BundleUtil.getLabel("New.size.label") + " : " + d.width+"x"+d.height;
   }
 
 }

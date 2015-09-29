@@ -1,5 +1,5 @@
 /*
- * @(#)GemDesktopCtrl.java	2.9.4.11a 07/09/15
+ * @(#)GemDesktopCtrl.java	2.9.4.12 28/09/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -23,7 +23,6 @@ package net.algem.util.module;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyVetoException;
@@ -61,6 +60,8 @@ import net.algem.util.postit.PostitCreateCtrl;
 import net.algem.util.postit.PostitModule;
 import net.algem.util.ui.FrameDetach;
 import net.algem.util.ui.HtmlViewer;
+import net.algem.util.ui.Toast;
+import net.algem.util.ui.UIAdjustable;
 
 /**
  * Algem desktop controller.
@@ -68,11 +69,11 @@ import net.algem.util.ui.HtmlViewer;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.11a
+ * @version 2.9.4.12
  * @since 1.0a 05/07/2002
  */
 public class GemDesktopCtrl
-        implements ActionListener, GemDesktop
+        implements ActionListener, GemDesktop, UIAdjustable
 {
   private final Cursor waitCursor = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
   private final Cursor defaultCursor = Cursor.getDefaultCursor();
@@ -92,6 +93,7 @@ public class GemDesktopCtrl
   private JMenuBar mbar;
   private JMenu mFile;
   private JMenu mWindows;
+  private JMenuItem miSaveUISettings;
   private JMenu mPerson;
   private JMenu mPlanning;
   private JMenu mCatalog;
@@ -101,7 +103,7 @@ public class GemDesktopCtrl
   private ActionListener actionListener;
   private Properties props;
   private Preferences prefs;
-  private boolean savePrefs;  // TODO a mettre en menu ?
+  private boolean savePrefs;
   private EventListenerList listenerList = new EventListenerList();
   Socket dispatcher;
   ObjectInputStream iDispatcher;
@@ -111,20 +113,13 @@ public class GemDesktopCtrl
   public GemDesktopCtrl(JFrame frame, DataCache dataCache, Properties props) {
     this.frame = frame;
     this.dataCache = dataCache;
-    dc = DataCache.getDataConnection();
+    this.dc = DataCache.getDataConnection();
     userService = dataCache.getUserService();
     this.props = props;
-    prefs = Preferences.userRoot().node("/algem/desktop/size");
+    prefs = Preferences.userRoot().node("/algem/ui");
     
     modules = new Hashtable<String, GemModule>();
     menus = new Hashtable<String, JMenuItem>();
-    
-//    try {
-//      setUIProperties();
-//    } catch(Exception e) {
-//      GemLogger.logException(e);
-//    }
-  
     mbar = createMenuBar();
     
     desktop = new JDesktopPane();
@@ -256,9 +251,7 @@ public class GemDesktopCtrl
    */
   private void close() throws GemCloseVetoException {
     if (savePrefs) {
-        Rectangle bounds = frame.getBounds();
-        prefs.putInt("w", (int)bounds.getWidth());
-        prefs.putInt("h", (int)bounds.getHeight());
+      storeUISettings();
     }
     ObjectOutputStream out = null;
     String path = System.getProperty("user.home") + FileUtil.FILE_SEPARATOR;
@@ -323,7 +316,7 @@ public class GemDesktopCtrl
     setWaitCursor();
     
     if (BundleUtil.getLabel("Menu.quit.label").equals(arg)) {
-      savePrefs = (evt.getModifiers() & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK;
+      savePrefs = (evt.getModifiers() & Event.SHIFT_MASK) == Event.SHIFT_MASK;
       try {
         close();
         System.exit(0);
@@ -384,6 +377,9 @@ public class GemDesktopCtrl
       detachCurrent();
     } else if (GemCommand.CLOSE_CMD.equals(arg) || GemCommand.CANCEL_CMD.equals(arg)) {
       removeCurrentModule();
+    } else if (src == miSaveUISettings) {
+      storeUISettings();
+      Toast.showToast(desktop, getUIInfo());
     } else {
       Iterator it = menus.entrySet().iterator();
       while (it.hasNext()) {
@@ -705,7 +701,9 @@ public class GemDesktopCtrl
     menuBar = new JMenuBar();
     
     mWindows = new JMenu(BundleUtil.getLabel("Menu.windows.label"));
-    
+    miSaveUISettings = getMenuItem("Store.ui.settings");
+    mWindows.add(miSaveUISettings);
+    mWindows.addSeparator();
     mWindows.add(getMenuItem("Menu.windows.detach"));
     
     menu = mWindows.add(new JMenuItem(BundleUtil.getLabel("Action.close.label")));
@@ -901,4 +899,23 @@ public class GemDesktopCtrl
    * URL(urlPrefix+url)); } catch (Exception e) { } }
    *
    * } */
+
+  @Override
+  public void storeUISettings() {
+    Rectangle bounds = frame.getBounds();
+    prefs.putInt("desktop.w", bounds.width);
+    prefs.putInt("desktop.h", bounds.height);
+    prefs.putInt("desktop.x", bounds.x);
+    prefs.putInt("desktop.y", bounds.y);
+  }
+
+  @Override
+  public String getUIInfo() {
+    Rectangle b = frame.getBounds();
+    StringBuilder sb = new StringBuilder("<html>");
+    sb.append(BundleUtil.getLabel("New.size.label")).append(" : ").append(b.width).append('x').append(b.height);
+    sb.append("<br />").append(BundleUtil.getLabel("Position.label")).append(" : ").append(b.x).append(';').append(b.y);
+    sb.append("</html>");
+    return sb.toString();
+  }
 }

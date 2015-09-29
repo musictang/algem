@@ -1,5 +1,5 @@
 /*
- * @(#)PersonView.java	2.9.4.8 24/06/15
+ * @(#)PersonView.java	2.9.4.12 28/09/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -50,7 +50,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.8
+ * @version 2.9.4.12
  */
 public class PersonView
         extends GemPanel
@@ -88,10 +88,13 @@ public class PersonView
     organization.setMinimumSize(new Dimension(200, organization.getPreferredSize().height));
     
     name = new GemField(true, 20);
+    name.setMaxChars(32);
     name.setMinimumSize(organization.getMinimumSize());
     firstname = new GemField(true, 20);
+    firstname.setMaxChars(32);
     firstname.setMinimumSize(organization.getMinimumSize());
     nickname = new GemField(true, 20);
+    nickname.setMaxChars(64);
     nickname.setMinimumSize(organization.getMinimumSize());
     civil = new CivilChoice();
     

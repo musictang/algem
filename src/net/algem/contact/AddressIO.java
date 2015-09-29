@@ -1,7 +1,7 @@
 /*
- * @(#)AddressIO.java	2.6.a 17/09/12
+ * @(#)AddressIO.java	2.9.4.12 28/09/15
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -31,12 +31,13 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.4.12
  */
 public class AddressIO
         extends TableIO {
 
   public static final String TABLE = "adresse";
+  public static final int ADR1_LIMIT = 50;
 
   public static void insert(Address a, DataConnection dc) throws SQLException {
     String query = "INSERT INTO " + TABLE + " VALUES("
