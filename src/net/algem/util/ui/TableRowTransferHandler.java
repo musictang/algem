@@ -1,5 +1,5 @@
 /*
- * @(#)TableRowTransferHandler.java 2.9.4.12 23/09/15
+ * @(#)TableRowTransferHandler.java 2.9.4.13 01/10/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  * 
@@ -51,7 +51,7 @@ public class TableRowTransferHandler
   @Override
   protected Transferable createTransferable(JComponent c) {
     assert (c == table);
-    return new DataHandler(new Integer(table.getSelectedRow()), localObjectFlavor.getMimeType());
+    return new DataHandler(table.getSelectedRow(), localObjectFlavor.getMimeType());
   }
 
   @Override

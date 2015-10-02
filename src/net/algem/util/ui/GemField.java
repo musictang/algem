@@ -1,5 +1,5 @@
 /*
- * @(#)GemField.java	2.9.4.12 29/09/15
+ * @(#)GemField.java	2.9.4.13 01/10/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -61,7 +61,7 @@ public class GemField
    */
   public GemField(boolean _histo, int length) {
     super(length);
-
+    setDragEnabled(true);
     if (_histo) {
       histo = new Vector<String>(20);
       addFocusListener(this);

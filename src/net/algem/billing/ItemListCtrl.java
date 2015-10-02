@@ -1,5 +1,5 @@
 /*
- * @(#)ItemListCtrl.java	2.9.4.7 12/06/15
+ * @(#)ItemListCtrl.java	2.9.4.13 01/10/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -25,6 +25,7 @@ import java.awt.event.MouseEvent;
 import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.util.logging.Level;
+import javax.swing.DropMode;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
@@ -38,17 +39,17 @@ import net.algem.util.DataCache;
 import net.algem.util.GemLogger;
 import net.algem.util.model.Model;
 import net.algem.util.ui.ListCtrl;
+import net.algem.util.ui.TableRowTransferHandler;
 
 /**
  * Item list controller.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.7
+ * @version 2.9.4.13
  * @since 2.3.a 30/01/12
  */
 public class ItemListCtrl
-        extends ListCtrl
-{
+        extends ListCtrl {
 
   private static NumberFormat nf = AccountUtil.getNumberFormat(2, 2);
 
@@ -66,6 +67,7 @@ public class ItemListCtrl
 
   /**
    * Liste d'articles de facturation.
+   *
    * @param tableModel
    * @param withSearch
    */
@@ -75,7 +77,7 @@ public class ItemListCtrl
     this.tableModel = tableModel;
     table = new JTable(tableModel) {
       @Override
-      public String getToolTipText(MouseEvent e){
+      public String getToolTipText(MouseEvent e) {
         int row = rowAtPoint(e.getPoint());
         InvoiceItem obj = (InvoiceItem) tableModel.getItem(row);
         int a = obj.getItem().getAccount();
@@ -87,16 +89,18 @@ public class ItemListCtrl
         }
       }
     };
-    
-    table.setAutoCreateRowSorter(true);
-   
+
+//    table.setAutoCreateRowSorter(true);
+    table.setDragEnabled(true);
+    table.setDropMode(DropMode.ON_OR_INSERT_ROWS);
+    table.setTransferHandler(new TableRowTransferHandler(table));
+
     setColumns(560, 20, 30, 10, 40);
     setColumnsRenderer(1, 2, 3, 4);
     addScrollPane();
 
   }
 
-  
   public InvoiceItem getSelectedItem() {
     return (InvoiceItem) tableModel.getItem(table.convertRowIndexToModel(table.getSelectedRow()));
   }
@@ -124,8 +128,7 @@ public class ItemListCtrl
   /**
    * Default renderer for columns with numbers.
    */
-  static class InvoiceNumberRenderer extends DefaultTableCellRenderer
-  {
+  static class InvoiceNumberRenderer extends DefaultTableCellRenderer {
 
     @Override
     public void setValue(Object value) {

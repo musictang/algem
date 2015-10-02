@@ -1,5 +1,5 @@
 /*
- * @(#)InvoiceItemTableModel.java 2.9.2 26/01/15
+ * @(#)InvoiceItemTableModel.java 2.9.4.13 01/10/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -24,6 +24,7 @@ package net.algem.billing;
 import net.algem.util.BundleUtil;
 import net.algem.config.Param;
 import net.algem.util.ui.JTableModel;
+import net.algem.util.ui.TableRowTransferHandler;
 
 /**
  *
@@ -33,6 +34,7 @@ import net.algem.util.ui.JTableModel;
  */
 public class InvoiceItemTableModel
         extends JTableModel<InvoiceItem>
+implements TableRowTransferHandler.Reorderable
 {
 
   public InvoiceItemTableModel() {
@@ -93,4 +95,17 @@ public class InvoiceItemTableModel
   public void setValueAt(Object value, int line, int col) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
+  
+  
+    @Override
+    public void reorder(int fromIndex, int toIndex) {
+        InvoiceItem ii = tuples.get(fromIndex);
+        deleteItem(fromIndex);
+        int maxIdx = tuples.size() - 1;
+        if (toIndex > maxIdx) {
+            toIndex = maxIdx + 1;
+        }
+        tuples.add(toIndex, ii);
+        fireTableRowsInserted(toIndex, toIndex);
+    }
 }
