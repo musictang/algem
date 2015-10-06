@@ -1,5 +1,5 @@
 /*
- * @(#)ItemListCtrl.java	2.9.4.13 01/10/15
+ * @(#)ItemListCtrl.java	2.9.4.13 02/10/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -39,6 +39,7 @@ import net.algem.util.DataCache;
 import net.algem.util.GemLogger;
 import net.algem.util.model.Model;
 import net.algem.util.ui.ListCtrl;
+import net.algem.util.ui.MultiLineTableCellRenderer;
 import net.algem.util.ui.TableRowTransferHandler;
 
 /**
@@ -90,10 +91,11 @@ public class ItemListCtrl
       }
     };
 
-//    table.setAutoCreateRowSorter(true);
+//    table.setAutoCreateRowSorter(true); // Off to not interfere with drag and drop
     table.setDragEnabled(true);
     table.setDropMode(DropMode.ON_OR_INSERT_ROWS);
     table.setTransferHandler(new TableRowTransferHandler(table));
+    table.getColumnModel().getColumn(0).setCellRenderer(new MultiLineTableCellRenderer());
 
     setColumns(560, 20, 30, 10, 40);
     setColumnsRenderer(1, 2, 3, 4);

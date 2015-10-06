@@ -1,7 +1,7 @@
 /*
-* @(#)OrderLineDlg.java	2.9.1 17/12/14
+* @(#)OrderLineDlg.java	2.9.4.13 05/10/2015
 *
-* Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+* Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
 *
 * This file is part of Algem.
 * Algem is free software: you can redistribute it and/or modify it
@@ -21,6 +21,7 @@
 package net.algem.accounting;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -38,7 +39,6 @@ import net.algem.planning.DateFr;
 import net.algem.planning.DateFrField;
 import net.algem.util.*;
 import net.algem.util.module.GemDesktop;
-import net.algem.util.module.GemModule;
 import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GemField;
 import net.algem.util.ui.GemPanel;
@@ -50,12 +50,12 @@ import net.algem.util.ui.MessagePopup;
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @author <a href="mailto:damien.loustau@gmail.com">Damien Loustau</a>
- * @version 2.9.1
+ * @version 2.9.4.13
  * @since 1.0a 07/07/1999
  */
 public class OrderLineDlg
-extends JDialog
-implements ActionListener, TableModelListener {
+  extends GemPanel
+  implements ActionListener, TableModelListener {
   
   private Frame parent;
   private final DataConnection dc;
@@ -70,7 +70,7 @@ implements ActionListener, TableModelListener {
   private GemButton btCreate;
   private GemButton btSuppress;
   private GemButton btModify;
-  private GemPanel boutons;
+  private GemPanel buttons;
   private JLabel totalLabel;
   private GemField totalField;
   private NumberFormat nf = NumberFormat.getInstance(Locale.FRANCE);
@@ -87,7 +87,6 @@ implements ActionListener, TableModelListener {
    * @param tableModel
    */
   public OrderLineDlg(GemDesktop desktop, OrderLineTableModel tableModel) {
-    super(desktop.getFrame(), BundleUtil.getLabel("Action.schedule.payment.label"));
     parent = desktop.getFrame();
     this.dataCache = desktop.getDataCache();
     this.dc = DataCache.getDataConnection();
@@ -95,8 +94,6 @@ implements ActionListener, TableModelListener {
   }
   
   public void init() {
-    
-    tableView = new OrderLineTableView(tableModel, this);
     JMenuBar menubar = new JMenuBar();
     menutop = new JMenu("Options");
     menubar.add(menutop);
@@ -114,6 +111,8 @@ implements ActionListener, TableModelListener {
     miCashing.setEnabled(false);
     miCancelTransfer.addActionListener(this);
     miTransfer.addActionListener(this);
+    
+    tableView = new OrderLineTableView(tableModel, this);
     tableView.addPopupMenuListener(popup, dataCache);
     
     btPrint = new GemButton(BundleUtil.getLabel("Action.print.label"));
@@ -125,12 +124,15 @@ implements ActionListener, TableModelListener {
     btSuppress = new GemButton(BundleUtil.getLabel("Action.suppress.label"));
     btSuppress.addActionListener(this);
     
-    btLoad = new GemButton(BundleUtil.getLabel("Action.load.label"));
-    btLoad.addActionListener(this);
-    btCurrentMonth = new GemButton(BundleUtil.getLabel("Action.current.month.label"));
-    btCurrentMonth.addActionListener(this);
     dateStart = new DateFrField(new Date());
     dateEnd = new DateFrField(new Date());
+    btLoad = new GemButton(BundleUtil.getLabel("Action.load.label"));
+    btLoad.setPreferredSize(new Dimension(btLoad.getPreferredSize().width, dateStart.getPreferredSize().height));
+    btLoad.addActionListener(this);
+    btCurrentMonth = new GemButton(BundleUtil.getLabel("Action.current.month.label"));
+    btCurrentMonth.setPreferredSize(new Dimension(btCurrentMonth.getPreferredSize().width, dateStart.getPreferredSize().height));
+    btCurrentMonth.addActionListener(this);
+    
     GemPanel header = new GemPanel();
     header.add(new JLabel(BundleUtil.getLabel("Date.From.label")));
     header.add(dateStart);
@@ -139,11 +141,11 @@ implements ActionListener, TableModelListener {
     header.add(btLoad);
     header.add(btCurrentMonth);
     
-    boutons = new GemPanel(new GridLayout(1, 4));
-    boutons.add(btPrint);
-    boutons.add(btModify);
-    boutons.add(btCreate);
-    boutons.add(btSuppress);
+    buttons = new GemPanel(new GridLayout(1, 4));
+    buttons.add(btPrint);
+    buttons.add(btModify);
+    buttons.add(btCreate);
+    buttons.add(btSuppress);
     
     GemPanel top = new GemPanel(new BorderLayout());
     top.add(menubar, BorderLayout.NORTH);
@@ -161,14 +163,12 @@ implements ActionListener, TableModelListener {
     pTotal.add(totalField);
     
     bottom.add(pTotal, BorderLayout.NORTH);
-    bottom.add(boutons, BorderLayout.CENTER);
+    bottom.add(buttons, BorderLayout.CENTER);
     
+    setLayout(new BorderLayout());
     add(top, BorderLayout.NORTH);
     add(tableView, BorderLayout.CENTER);
     add(bottom, BorderLayout.SOUTH);
-    
-    setSize(GemModule.XL_SIZE);
-    setLocation(70, 30);
   }
   
   @Override

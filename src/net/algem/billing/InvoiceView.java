@@ -1,5 +1,5 @@
 /*
- * @(#)InvoiceView.java 2.9.4.8 23/06/15
+ * @(#)InvoiceView.java 2.9.4.13 05/10/2015
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -67,7 +67,7 @@ import net.algem.util.ui.*;
  * Invoice / quotation view.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.8
+ * @version 2.9.4.13
  * @since 2.3.a 07/02/12
  */
 public class InvoiceView
@@ -511,13 +511,13 @@ public class InvoiceView
     name.draw(g);
     address.draw(g);
 
-    g.setFont(serif);
-    // nom établissement
-    g.drawString(getEstabName(quote) + ", le " + quote.getDate(), left, top + 80);
+    g.setFont(serif);    
     // numéro invoice
     String invoiceNumber = invoice.getClass() == Quote.class
             ? BundleUtil.getLabel("Quotation.label") : BundleUtil.getLabel("Invoice.label");
     g.drawString(invoiceNumber + " : " + quote.getNumber(), margin, top + 100);
+    // nom établissement
+    g.drawString(getEstabName(quote) + ", le " + quote.getDate(), left, top + 85);
     // référence
     g.drawString("Ref. : " + quote.getReference(), left, top + 100);
     /*
@@ -545,7 +545,7 @@ public class InvoiceView
     for (InvoiceItem invoiceItem : quote.getItems()) {
       InvoiceItemElement item = new InvoiceItemElement(margin, tableY + 20, invoiceItem);
       item.draw(g);
-      tableY += 20;
+      tableY = tableY + 20 + item.getOffset();
     }
     tableY += 5;
     int tablebottom = tableY + 20;

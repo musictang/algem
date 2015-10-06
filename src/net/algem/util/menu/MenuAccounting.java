@@ -1,5 +1,5 @@
 /*
- * @(#)MenuAccounting.java 2.9.4.6 03/06/15
+ * @(#)MenuAccounting.java 2.9.4.13 05/10/2015
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -38,14 +38,13 @@ import net.algem.room.RoomRateSearchCtrl;
 import net.algem.util.*;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.module.GemModule;
-import net.algem.util.ui.MessagePopup;
 
 /**
  * Accounting menu.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.9.4.6
+ * @version 2.9.4.13
  * @since 1.0a 07/07/1999
  */
 public class MenuAccounting
@@ -121,10 +120,10 @@ public class MenuAccounting
     desktop.setWaitCursor();
 
     if (src == miAccountSchedule) {
-      OrderLineTableModel tableEcheancier = new OrderLineTableModel();
-      OrderLineDlg dlg = new OrderLineDlg(desktop, tableEcheancier);
+      OrderLineTableModel orderLineDlg = new OrderLineTableModel();
+      OrderLineDlg dlg = new OrderLineDlg(desktop, orderLineDlg);
       dlg.init();
-      dlg.setVisible(true);
+      desktop.addPanel("Menu.schedule.payment", dlg, GemModule.XL_SIZE);
     } else if (src == miAccountTransfert) {
       AccountExportService exportService = getAccountingExportService(ConfigUtil.getConf(ConfigKey.ACCOUNTING_EXPORT_FORMAT.getKey()));
       CommunAccountTransferDlg accountTransfertDlg = new CommunAccountTransferDlg(desktop.getFrame(), dataCache, exportService);
@@ -221,7 +220,6 @@ public class MenuAccounting
       roomRateBrowse.init();
       desktop.addPanel("Menu.room.rate", roomRateBrowse);
     }
-
     else if (GemCommand.CANCEL_CMD.equals(arg)) {
       desktop.removeCurrentModule();
     } else if ("HistoFacture.Abandon".equals(arg)) {

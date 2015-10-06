@@ -1,7 +1,7 @@
 /*
- * @(#)ItemIO.java 2.7.a 17/01/13
+ * @(#)ItemIO.java 2.9.4.13 02/10/2015
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -35,7 +35,7 @@ import net.algem.util.model.TableIO;
  * Item persistence.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.9.4.13
  * @since 2.3.a 22/12/11
  */
 public class ItemIO
@@ -47,7 +47,8 @@ public class ItemIO
   public static final String SEQUENCE = "article_id_seq";
   public static final String COLUMNS = "id, designation, prix_u, id_tva, compte, standard";
   public static final String TVA_TABLE = "tva";
-  private DataConnection dc;
+  public static final int MAX_LENGH = 128;
+  private final DataConnection dc;
 
   public ItemIO(DataConnection dc) {
     this.dc = dc;

@@ -72,8 +72,8 @@ public class TestGroupRehearsalCreateCtrl
     int nh = 3;// nombre d'Hours repet
     int nm = 4;
     RoomRate t = new RoomRate();
-    t.setNh(7.0);
-    t.setPh(7.0);
+    t.setOffPeakRate(7.0);
+    t.setFullRate(7.0);
     t.setMax(11.5);
     t.setType(null);
 
@@ -166,8 +166,8 @@ public class TestGroupRehearsalCreateCtrl
   private RoomRate setHourRate(double hc, double hp, double plafond) {
     RoomRate t = new RoomRate();
     t.setType(RoomRateEnum.HORAIRE);
-    t.setNh(hc);
-    t.setPh(hp);
+    t.setOffPeakRate(hc);
+    t.setFullRate(hp);
     t.setMax(plafond);
     return t;
   }

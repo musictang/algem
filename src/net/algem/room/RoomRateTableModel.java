@@ -93,15 +93,15 @@ public class RoomRateTableModel
 			case 2:
 				return t.getType();
 			case 3:
-				return t.getNh();
+				return t.getOffpeakRate();
 			case 4:
-				return t.getPh();
+				return t.getFullRate();
       case 5:
        return t.getMax();
 			case 6:
-				return t.getFixedNh();
+				return t.getPassOffPeakPrice();
       case 7:
-				return t.getFixedPh();
+				return t.getPassFullPrice();
 
 		}
 		return null;

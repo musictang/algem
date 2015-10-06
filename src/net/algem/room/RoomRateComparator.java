@@ -1,7 +1,7 @@
 /*
- * @(#)RoomRateComparator.java	2.6.a 03/10/12
+ * @(#)RoomRateComparator.java	2.9.4.13 05/10/2015
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,7 +27,7 @@ import java.util.Comparator;
  * Room rate comparator.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.4.13
  * @since 2.6.a 03/10/12
  */
 public class RoomRateComparator 
@@ -35,8 +35,10 @@ implements Comparator<RoomRate> {
 
   @Override
   public int compare(RoomRate o1, RoomRate o2) {
-    return o1.getLabel().compareTo(o2.getLabel());
+//    return o1.getLabel().compareTo(o2.getLabel());
+    Double d1 = o1.getFullRate();
+    Double d2 = o2.getFullRate();
+    return d1.compareTo(d2);
   }
-
 
 }

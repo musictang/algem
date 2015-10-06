@@ -26,8 +26,15 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.JTextArea;
 import net.algem.config.ConfigKey;
@@ -191,10 +198,10 @@ public class InvoiceFooterEditor
   }
   
   private static File getFile() {
-    String filePath = ConfigUtil.getConf(ConfigKey.INVOICE_FOOTER.getKey());
-    if (filePath != null) {
+      String filePath = ConfigUtil.getConf(ConfigKey.INVOICE_FOOTER.getKey());
+      if (filePath != null) {
       return new File(filePath);
-    }
+      }
     return null;
   }
   

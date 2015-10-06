@@ -44,10 +44,11 @@ public class AccountMatchingCfg
         extends GemPanel implements ActionListener
 {
 
-  private final GemDesktop desktop;
-  private final DataConnection dc;
+  
   private static final String personalAccountLabel = BundleUtil.getLabel("Personal.account.label");
   private static final String revenueAccountLabel = BundleUtil.getLabel("Revenue.account.label");
+  private final GemDesktop desktop;
+  private final DataConnection dc;
   private Vector<Account> personalAccounts;
   private Vector<Account> revenueAccounts;
   private GemButton btOk;

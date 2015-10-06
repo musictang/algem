@@ -1,7 +1,7 @@
 /*
- * @(#)RoomRate.java	2.6.a 24/09/12
+ * @(#)RoomRate.java	2.9.4.13 05/10/2015
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -26,7 +26,7 @@ import net.algem.util.model.GemModel;
  * Room rate infos.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.4.13
  * @since 05/10/10 2.1a
  */
 public class RoomRate
@@ -38,35 +38,35 @@ public class RoomRate
   /** Type of rate (hour, person, etc.). */
   private RoomRateEnum type;
 
-  /** Offpeak rate. */
-  private double nh;
+  /** Off-peak rate. */
+  private double offpeakRate;
   
-  /** Peak rate. */
-  private double ph;
+  /** Full rate. */
+  private double fullRate;
   
   /** Max rate for an hour. */
   private double maxHourPrice;
 
-  /** Fixed offpeak rate. */
-  private double fixedNh;
+  /** Fixed off-peak rate. */
+  private double passOffPeakPrice;
 
-  /** Fixed peak rate. */
-  private double fixedPh;
+  /** Pass full price. */
+  private double passFullPrice;
 
-  public double getFixedNh() {
-    return fixedNh;
+  public double getPassOffPeakPrice() {
+    return passOffPeakPrice;
   }
 
-  public void setFixedNh(double fixedNh) {
-    this.fixedNh = fixedNh;
+  public void setPassOffPeakPrice(double price) {
+    this.passOffPeakPrice = price;
   }
 
-  public double getFixedPh() {
-    return fixedPh;
+  public double getPassFullPrice() {
+    return passFullPrice;
   }
 
-  public void setFixedPh(double fixedPh) {
-    this.fixedPh = fixedPh;
+  public void setPassFullPrice(double price) {
+    this.passFullPrice = price;
   }
 
   @Override
@@ -87,28 +87,28 @@ public class RoomRate
     this.label = label;
   }
 
-  public double getNh() {
-    return nh;
+  public double getOffpeakRate() {
+    return offpeakRate;
   }
 
-  public void setNh(double nhRate) {
-    this.nh = nhRate;
+  public void setOffPeakRate(double nhRate) {
+    this.offpeakRate = nhRate;
   }
 
+  public double getFullRate() {
+    return fullRate;
+  }
+
+  public void setFullRate(double price) {
+    this.fullRate = price;
+  }
+  
   public double getMax() {
     return maxHourPrice;
   }
 
   public void setMax(double max) {
     this.maxHourPrice = max;
-  }
-
-  public double getPh() {
-    return ph;
-  }
-
-  public void setPh(double phRate) {
-    this.ph = phRate;
   }
 
   public RoomRateEnum getType() {
@@ -138,19 +138,19 @@ public class RoomRate
     if ((this.type == null) ? (t.type != null) : !this.type.equals(t.type)) {
       return false;
     }
-    if (this.nh != t.nh) {
+    if (this.offpeakRate != t.offpeakRate) {
       return false;
     }
-    if (this.ph != t.ph) {
+    if (this.fullRate != t.fullRate) {
       return false;
     }
     if (this.maxHourPrice != t.maxHourPrice) {
       return false;
     }
-    if (this.fixedNh != t.fixedNh) {
+    if (this.passOffPeakPrice != t.passOffPeakPrice) {
       return false;
     }
-    if (this.fixedPh != t.fixedPh) {
+    if (this.passFullPrice != t.passFullPrice) {
       return false;
     }
     return true;

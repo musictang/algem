@@ -1,7 +1,7 @@
 /*
- * @(#)InvoiceItemElement.java 2.8.y 25/09/14
+ * @(#)InvoiceItemElement.java 2.9.4.13 05/10/2015
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -18,7 +18,6 @@
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 package net.algem.edition;
 
 import java.awt.Graphics;
@@ -28,9 +27,9 @@ import net.algem.util.ImageUtil;
 
 /**
  * Invoice item element.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.y
+ * @version 2.9.4.13
  * @since 2.3.a 23/02/12
  */
 public class InvoiceItemElement
@@ -43,10 +42,10 @@ public class InvoiceItemElement
   public static final int xColPrice = xColQty + 45;
   public static final int xColVAT = xColPrice + 60;
   public static final int xColHT = xColVAT + 30;
-  
-  private InvoiceItem af;
 
   protected int end;
+  private InvoiceItem af;
+  private int offset;
 
   public InvoiceItemElement(int x, int y) {
     super(x, y);
@@ -69,7 +68,25 @@ public class InvoiceItemElement
 
     int topOffset = 15;
 
-    g.drawString(des, x + 5, y + topOffset);
+    StringBuilder sb = new StringBuilder();
+    int w = 0;
+    for (int i = 0; i < des.length(); i++) {
+      w += g.getFontMetrics().charWidth(des.charAt(i));
+      if (w > FIRST_COL_WIDTH) {
+        // coupure de mots
+        while (sb.length() > 1 && sb.charAt(sb.length() - 1) != ' ') {
+          sb.deleteCharAt(sb.length() - 1);
+          i--;
+        }
+        g.drawString(sb.toString(), x + 5, y + topOffset + offset);
+        offset += g.getFontMetrics().getHeight();
+        sb.delete(0, sb.length());
+        w = 0;
+      }
+      sb.append(des.charAt(i));
+    }
+    g.drawString(sb.toString(), x + 5, y + topOffset + offset);
+
     rightAlign(g, qty, xColPrice, y + topOffset);
     rightAlign(g, price, xColVAT, y + topOffset);
     rightAlign(g, vat, xColHT, y + topOffset);
@@ -91,10 +108,14 @@ public class InvoiceItemElement
   public void setFont(Graphics g) {
     g.setFont(serifSmall);
   }
-  
+
   protected void center(Graphics g2d, String s, int width, int x, int y) {
     int stringLen = (int) g2d.getFontMetrics().getStringBounds(s, g2d).getWidth();
     int start = width / 2 - stringLen / 2;
     g2d.drawString(s, start + x, y);
+  }
+
+  public int getOffset() {
+    return offset;
   }
 }

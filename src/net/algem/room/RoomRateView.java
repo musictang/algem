@@ -148,11 +148,11 @@ public class RoomRateView
     this.rate = tarif;
     setLabel(tarif.getLabel());
     setType((RoomRateEnum) tarif.getType());
-    setNh(tarif.getNh());
-    setPh(tarif.getPh());
+    setNh(tarif.getOffpeakRate());
+    setPh(tarif.getFullRate());
     setMax(tarif.getMax());
-    setFixedNh(tarif.getFixedNh());
-    setFixedPh(tarif.getFixedPh());
+    setFixedNh(tarif.getPassOffPeakPrice());
+    setFixedPh(tarif.getPassFullPrice());
   }
 
   public RoomRate getRate() {
@@ -164,11 +164,11 @@ public class RoomRateView
     }
     t.setLabel(getLabel());
     t.setType(getType());
-    t.setNh(getNh());
-    t.setPh(getPh());
+    t.setOffPeakRate(getNh());
+    t.setFullRate(getPh());
     t.setMax(getMax());
-    t.setFixedNh(getFixedNh());
-    t.setFixedPh(getFixedPh());
+    t.setPassOffPeakPrice(getFixedNh());
+    t.setPassFullPrice(getFixedPh());
 
     return t;
   }

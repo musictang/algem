@@ -1,7 +1,7 @@
 /*
- * @(#)RoomRateIO.java	2.7.a 07/01/13
+ * @(#)RoomRateIO.java	2.9.4.13 05/10/2015
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -32,7 +32,7 @@ import net.algem.util.model.TableIO;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.9.4.13
  */
 public class RoomRateIO
         implements Cacheable
@@ -54,11 +54,11 @@ public class RoomRateIO
     String query = "INSERT INTO " + TABLE + " VALUES(" + nextid
             + ",'" + t.getLabel()
             + "','" + t.getType().name()
-            + "'," + t.getNh()
-            + "," + t.getPh()
+            + "'," + t.getOffpeakRate()
+            + "," + t.getFullRate()
             + "," + t.getMax()
-            + "," + t.getFixedNh()
-            + "," + t.getFixedPh()
+            + "," + t.getPassOffPeakPrice()
+            + "," + t.getPassFullPrice()
             + ")";
     dc.executeUpdate(query);
     t.setId(nextid);
@@ -67,11 +67,11 @@ public class RoomRateIO
   public void update(RoomRate t) throws SQLException {
     String query = "UPDATE " + TABLE + " SET libelle = '" + t.getLabel()
             + "',  type = '" + t.getType().name()
-            + "', hc = " + t.getNh()
-            + ", hp = " + t.getPh()
+            + "', hc = " + t.getOffpeakRate()
+            + ", hp = " + t.getFullRate()
             + ", plafond = " + t.getMax()
-            + ", forfaithc = " + t.getFixedNh()
-            + ", forfaithp = " + t.getFixedPh()
+            + ", forfaithc = " + t.getPassOffPeakPrice()
+            + ", forfaithp = " + t.getPassFullPrice()
             + " WHERE id = " + t.getId();
     dc.executeUpdate(query);
   }
@@ -132,17 +132,17 @@ public class RoomRateIO
     t.setLabel(rs.getString(2).trim());
     //t.setType(rs.getString(3));
     t.setType(Enum.valueOf(RoomRateEnum.class, rs.getString(3)));
-    t.setNh(rs.getDouble(4));
-    t.setPh(rs.getDouble(5));
+    t.setOffPeakRate(rs.getDouble(4));
+    t.setFullRate(rs.getDouble(5));
     t.setMax(rs.getDouble(6));
-    t.setFixedNh(rs.getDouble(7));
-    t.setFixedPh(rs.getDouble(8));
+    t.setPassOffPeakPrice(rs.getDouble(7));
+    t.setPassFullPrice(rs.getDouble(8));
 
     return t;
   }
 
   @Override
   public List<RoomRate> load() throws SQLException {
-    return find(" ORDER BY id");
+    return find(" ORDER BY hp");
   }
 }

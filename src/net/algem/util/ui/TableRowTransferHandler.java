@@ -33,6 +33,7 @@ import javax.swing.TransferHandler;
 /**
  * Handles drag & drop row reordering.
  * 
+ * @version 2.9.4.13
  * @since 2.9.4.12 16/09/15
  * @see {@link  http://stackoverflow.com/questions/638807/how-do-i-drag-and-drop-a-row-in-a-jtable}
  * 

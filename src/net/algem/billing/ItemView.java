@@ -1,7 +1,7 @@
 /*
- * @(#)ItemView.java 2.8.n 19/09/13
+ * @(#)ItemView.java 2.9.4.13 02/10/2015
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -53,7 +53,7 @@ public class ItemView
 
     id = new GemNumericField(5);
     id.setEditable(false);
-    designation = new GemField(30);
+    designation = new GemField(30, ItemIO.MAX_LENGH);
     price = new GemDecimalField();
 
     price.setColumns(10);

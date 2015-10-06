@@ -1,5 +1,5 @@
 /*
- * @(#)ConfigEditor.java 2.9.4.6 02/06/15
+ * @(#)ConfigEditor.java 2.9.4.13 06/10/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -22,51 +22,59 @@
 package net.algem.config;
 
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.util.Map;
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
+import javax.swing.JList;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import net.algem.util.*;
 import net.algem.util.module.GemDesktop;
-import net.algem.util.module.GemModule;
 import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GemPanel;
-import net.algem.util.ui.GemScrollPane;
 
 /**
  * General config editor.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.6
+ * @version 2.9.4.13
  * @since 2.1.k
  */
 public class ConfigEditor
-  extends GemPanel implements ActionListener {
-
+        extends GemPanel
+        implements ActionListener, ListSelectionListener
+{
+  
   public static final String GLOBAL_CONFIG_KEY = "Menu.configuration";
   private ConfigOrganization orgPanel;
   private ConfigPlanning activityPanel;
   private ConfigPanel adminPanel;
   private ConfigPanel filePanel;
   private ConfigPanel ribPanel;
-  private Map<String,Config> confs;
+  private Map<String, Config> confs;
   private DataConnection dc;
   private DataCache dataCache;
   private GemPanel btPanel;
   private GemButton btValidation;
   private GemButton btClose;
   private GemDesktop desktop;
-
+  private JList sectionList;
+  private JPanel confPanel;
+  
   public ConfigEditor() {
   }
-
+  
   public ConfigEditor(GemDesktop desktop) {
     this.desktop = desktop;
-		dataCache = desktop.getDataCache();
+    dataCache = desktop.getDataCache();
     this.dc = DataCache.getDataConnection();
     load();
   }
@@ -76,44 +84,55 @@ public class ConfigEditor
    */
   private void load() {
     setLayout(new BorderLayout());
-    GemPanel content = new GemPanel();
-    content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
-
+    confPanel = new JPanel(new CardLayout());
+    confPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+    
     try {
       confs = ConfigIO.find(null, dc);
-
       orgPanel = new ConfigOrganization(BundleUtil.getLabel("ConfEditor.organization.label"), confs);
-      content.add(orgPanel);
       activityPanel = new ConfigPlanning(BundleUtil.getLabel("ConfEditor.schedule.label"), confs);
-      content.add(activityPanel);
       adminPanel = new ConfigAdmin(BundleUtil.getLabel("ConfEditor.management.label"), confs);
       ((ConfigAdmin) adminPanel).init(dataCache);
-      content.add(adminPanel);
       filePanel = new ConfigFile(BundleUtil.getLabel("ConfEditor.file.label"), confs);
-      content.add(filePanel);
-      // panneau infos bancaires
       ribPanel = new ConfigCreditor(BundleUtil.getLabel("ConfEditor.accounting.label"), confs);
-      content.add(ribPanel);
+      confPanel.add(orgPanel, "organization");
+      confPanel.add(activityPanel, "schedule");
+      confPanel.add(adminPanel, "management");
+      confPanel.add(filePanel, "files");
+      confPanel.add(ribPanel, "accounting");
     } catch (SQLException ex) {
-        GemLogger.logException(ex);
+      GemLogger.logException(ex);
     }
-    JScrollPane sp = new GemScrollPane(content);
-    sp.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
-
-    add(sp,BorderLayout.CENTER);
+    
+    String[] sections = {
+      BundleUtil.getLabel("ConfEditor.organization.label"),
+      BundleUtil.getLabel("ConfEditor.schedule.label"),
+      BundleUtil.getLabel("ConfEditor.management.label"),
+      BundleUtil.getLabel("ConfEditor.file.label"),
+      BundleUtil.getLabel("ConfEditor.accounting.label"),};
+    sectionList = new JList(sections);
+    sectionList.setSelectedIndex(0);
+    sectionList.addListSelectionListener(this);
+    
+    JScrollPane scroll = new JScrollPane(confPanel);
+    scroll.setMinimumSize(new Dimension(550, scroll.getPreferredSize().height));
+    
+    JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, sectionList, scroll);
+    splitPane.setDividerLocation(150);
+    
+    add(splitPane, BorderLayout.CENTER);
     btPanel = new GemPanel();
-    btPanel.setLayout(new GridLayout(1,1));
+    btPanel.setLayout(new GridLayout(1, 1));
     btValidation = new GemButton(GemCommand.SAVE_CMD);
     btClose = new GemButton(GemCommand.CANCEL_CMD);
     btValidation.addActionListener(this);
     btClose.addActionListener(this);
     btPanel.add(btValidation);
     btPanel.add(btClose);
+    
     add(btPanel, BorderLayout.SOUTH);
-    setSize(GemModule.DEFAULT_SIZE);
-    //pack();
   }
-
+  
   @Override
   public void actionPerformed(ActionEvent e) {
     if (e.getSource() == btValidation) {
@@ -136,16 +155,41 @@ public class ConfigEditor
         ConfigIO.update(confs, dc);
         dataCache.setConfig();// mise à jour du dataCache
       } catch (SQLException ex) {
-          GemLogger.logException(MessageUtil.getMessage("config.update.exception"),ex);
+        GemLogger.logException(MessageUtil.getMessage("config.update.exception"), ex);
       }
     }
     close();
   }
-
-   private void close() {
-     confs.clear();
-     desktop.removeModule(GLOBAL_CONFIG_KEY);
-   }
-
+  
+  @Override
+  public void valueChanged(ListSelectionEvent e) {
+    JList list = (JList) e.getSource();
+    CardLayout cl = (CardLayout) (confPanel.getLayout());
+    switch (list.getSelectedIndex()) {
+      case 0:
+        cl.show(confPanel, "organization");
+        break;
+      case 1:
+        cl.show(confPanel, "schedule");
+        break;
+      case 2:
+        cl.show(confPanel, "management");
+        break;
+      case 3:
+        cl.show(confPanel, "files");
+        break;
+      case 4:
+        // panneau infos bancaires
+        cl.show(confPanel, "accounting");
+        break;
+      default:
+        cl.show(confPanel, "organization");
+    }
+  }
+  
+  private void close() {
+    confs.clear();
+    desktop.removeModule(GLOBAL_CONFIG_KEY);
+  }
+  
 }
-
