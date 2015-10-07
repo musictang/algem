@@ -1,5 +1,5 @@
 /*
- * @(#)RoomRateTableModel.java	2.9.2 26/01/15
+ * @(#)RoomRateTableModel.java	2.9.4.13 07/10/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,42 +20,40 @@
  */
 package net.algem.room;
 
+import net.algem.accounting.GemAmount;
 import net.algem.util.BundleUtil;
 import net.algem.util.ui.JTableModel;
 
 /**
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.9.4.13
  * @since 2.1a
  */
 public class RoomRateTableModel
         extends JTableModel<RoomRate>
 {
 
-  public RoomRateTableModel()
-  {
+  public RoomRateTableModel() {
     header = new String[]{
-              BundleUtil.getLabel("Id.label"),
-              BundleUtil.getLabel("Label.label"),
-              BundleUtil.getLabel("Type.label"),
-              "HC",
-              "HP",
-              "Plafond",
-              "Forfait HC",
-              "Forfait HP"
-            };
+      BundleUtil.getLabel("Id.label"),
+      BundleUtil.getLabel("Label.label"),
+      BundleUtil.getLabel("Type.label"),
+      "HC",
+      "HP",
+      "Plafond",
+      "Forfait HC",
+      "Forfait HP"
+    };
   }
 
   @Override
-  public int getIdFromIndex(int i)
-  {
+  public int getIdFromIndex(int i) {
     RoomRate t = tuples.elementAt(i);
-		return t.getId();
+    return t.getId();
   }
 
   @Override
-  public Class getColumnClass(int column)
-  {
+  public Class getColumnClass(int column) {
     switch (column) {
       case 0:
         return Integer.class;
@@ -68,50 +66,45 @@ public class RoomRateTableModel
       case 5:
       case 6:
       case 7:
-        return Double.class;
+//        return Double.class;
+        return GemAmount.class;
       default:
         return Object.class;
     }
   }
 
   @Override
-  public boolean isCellEditable(int row, int column)
-  {
+  public boolean isCellEditable(int row, int column) {
     return false;
   }
 
   @Override
-  public Object getValueAt(int line, int col)
-  {
+  public Object getValueAt(int line, int col) {
     RoomRate t = tuples.elementAt(line);
-		switch (col)
-		{
-			case 0:
-				return t.getId();
-			case 1:
-				return t.getLabel();
-			case 2:
-				return t.getType();
-			case 3:
-				return t.getOffpeakRate();
-			case 4:
-				return t.getFullRate();
+    switch (col) {
+      case 0:
+        return t.getId();
+      case 1:
+        return t.getLabel();
+      case 2:
+        return t.getType();
+      case 3:
+        return new GemAmount(t.getOffpeakRate());
+      case 4:
+        return new GemAmount(t.getFullRate());
       case 5:
-       return t.getMax();
-			case 6:
-				return t.getPassOffPeakPrice();
+        return new GemAmount(t.getMax());
+      case 6:
+        return new GemAmount(t.getPassOffPeakPrice());
       case 7:
-				return t.getPassFullPrice();
-
-		}
-		return null;
+        return new GemAmount(t.getPassFullPrice());
+    }
+    return null;
   }
 
   @Override
-  public void setValueAt(Object value, int ligne, int column)
-  {
+  public void setValueAt(Object value, int ligne, int column) {
 
   }
-
 
 }

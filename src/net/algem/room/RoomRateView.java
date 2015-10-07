@@ -1,7 +1,7 @@
 /*
- * @(#)RoomRateView.java	2.6.a 24/09/12
+ * @(#)RoomRateView.java	2.9.4.13 07/10/15
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -36,7 +36,7 @@ import net.algem.util.ui.GridBagHelper;
 
 /**
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.4.13
  * @since 2.1a
  */
 public class RoomRateView
@@ -45,11 +45,11 @@ public class RoomRateView
 
   private GemField label;
   private JComboBox type;
-  private JFormattedTextField nh;
-  private JFormattedTextField ph;
+  private JFormattedTextField offpeak;
+  private JFormattedTextField peak;
   private JFormattedTextField max;
-  private JFormattedTextField fixedNh;
-  private JFormattedTextField fixedPh;
+  private JFormattedTextField passOffpeak;
+  private JFormattedTextField passPeak;
   private NumberFormat format;
   private RoomRate rate;
 
@@ -66,16 +66,16 @@ public class RoomRateView
 
     Dimension dim = new Dimension(50, 20);
 
-    nh = new JFormattedTextField(nf);
-    nh.setPreferredSize(dim);
-    ph = new JFormattedTextField(nf);
-    ph.setPreferredSize(dim);
+    offpeak = new JFormattedTextField(nf);
+    offpeak.setPreferredSize(dim);
+    peak = new JFormattedTextField(nf);
+    peak.setPreferredSize(dim);
     max = new JFormattedTextField(nf);
     max.setPreferredSize(dim);
-    fixedNh = new JFormattedTextField(nf);
-    fixedNh.setPreferredSize(dim);
-    fixedPh = new JFormattedTextField(nf);
-    fixedPh.setPreferredSize(dim);
+    passOffpeak = new JFormattedTextField(nf);
+    passOffpeak.setPreferredSize(dim);
+    passPeak = new JFormattedTextField(nf);
+    passPeak.setPreferredSize(dim);
 
     this.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
@@ -89,70 +89,22 @@ public class RoomRateView
     gb.add(new GemLabel(BundleUtil.getLabel("Room.rate.fixed.peak.label")), 0, 6, 1, 1, GridBagHelper.WEST);
     gb.add(label, 1, 0, 3, 1, GridBagHelper.WEST);
     gb.add(type, 1, 1, 3, 1, GridBagHelper.WEST);
-    gb.add(nh, 1, 2, 3, 1, GridBagHelper.WEST);
-    gb.add(ph, 1, 3, 3, 1, GridBagHelper.WEST);
+    gb.add(offpeak, 1, 2, 3, 1, GridBagHelper.WEST);
+    gb.add(peak, 1, 3, 3, 1, GridBagHelper.WEST);
     gb.add(max, 1, 4, 3, 1, GridBagHelper.WEST);
-    gb.add(fixedNh, 1, 5, 3, 1, GridBagHelper.WEST);
-    gb.add(fixedPh, 1, 6, 3, 1, GridBagHelper.WEST);
-  }
-
-  private double getFixedNh() {
-    return (Double) fixedNh.getValue();
-  }
-
-  private void setFixedNh(double forfaithc) {
-    this.fixedNh.setValue(forfaithc);
-  }
-
-  private double getFixedPh() {
-    return (Double) fixedPh.getValue();
-  }
-
-  private void setFixedPh(double forfaithp) {
-    this.fixedPh.setValue(forfaithp);
-  }
-
-  private double getNh() {
-    return (Double) nh.getValue();
-  }
-
-  private void setNh(double hc) {
-    this.nh.setValue(hc);
-  }
-
-  private double getPh() {
-    return (Double) ph.getValue();
-  }
-
-  private void setPh(double hp) {
-    this.ph.setValue(hp);
-  }
-
-  private String getLabel() {
-    return label.getText();
-  }
-
-  private void setLabel(String libelle) {
-    this.label.setText(libelle);
-  }
-
-  private double getMax() {
-    return (Double) max.getValue();
-  }
-
-  private void setMax(double max) {
-    this.max.setValue(max);
+    gb.add(passOffpeak, 1, 5, 3, 1, GridBagHelper.WEST);
+    gb.add(passPeak, 1, 6, 3, 1, GridBagHelper.WEST);
   }
 
   public void setRate(RoomRate tarif) {
     this.rate = tarif;
-    setLabel(tarif.getLabel());
+    this.label.setText(tarif.getLabel());
     setType((RoomRateEnum) tarif.getType());
-    setNh(tarif.getOffpeakRate());
-    setPh(tarif.getFullRate());
-    setMax(tarif.getMax());
-    setFixedNh(tarif.getPassOffPeakPrice());
-    setFixedPh(tarif.getPassFullPrice());
+    this.offpeak.setValue(tarif.getOffpeakRate());
+    this.peak.setValue(tarif.getFullRate());
+    this.max.setValue(tarif.getMax());
+    this.passOffpeak.setValue(tarif.getPassOffPeakPrice());
+    this.passPeak.setValue(tarif.getPassFullPrice());
   }
 
   public RoomRate getRate() {
@@ -162,13 +114,13 @@ public class RoomRateView
     } else {
       t.setId(0);
     }
-    t.setLabel(getLabel());
+    t.setLabel(label.getText());
     t.setType(getType());
-    t.setOffPeakRate(getNh());
-    t.setFullRate(getPh());
-    t.setMax(getMax());
-    t.setPassOffPeakPrice(getFixedNh());
-    t.setPassFullPrice(getFixedPh());
+    t.setOffPeakRate((Double) offpeak.getValue());
+    t.setFullRate((Double) peak.getValue());
+    t.setMax((Double) max.getValue());
+    t.setPassOffPeakPrice((Double) passOffpeak.getValue());
+    t.setPassFullPrice((Double) passPeak.getValue());
 
     return t;
   }
@@ -183,12 +135,12 @@ public class RoomRateView
 
   public void clear() {
     rate = null;
-    setLabel(null);
+    label.setText(null);
     setType(null);
-    setNh(0.0);
-    setPh(0.0);
-    setMax(0.0);
-    setFixedNh(0.0);
-    setFixedPh(0.0);
+    offpeak.setValue(0.0);
+    peak.setValue(0.0);
+    max.setValue(0.0);
+    passOffpeak.setValue(0.0);
+    passPeak.setValue(0.0);
   }
 }

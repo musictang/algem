@@ -1,7 +1,7 @@
 /*
- * @(#)AccountMatchingCfg.java 2.8.w 08/07/14
+ * @(#)AccountMatchingCfg.java 2.9.4.13 07/10/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -25,37 +25,36 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
+import javax.swing.DefaultCellEditor;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import net.algem.config.ParamChoice;
 import net.algem.util.*;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.*;
 
 /**
  * Management of account matching between personal and revenue accounts.
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.4.13
  * @since 2.2.l 07/12/11
  */
 public class AccountMatchingCfg
-        extends GemPanel implements ActionListener
+        extends GemPanel
+        implements ActionListener
 {
-
-  
-  private static final String personalAccountLabel = BundleUtil.getLabel("Personal.account.label");
-  private static final String revenueAccountLabel = BundleUtil.getLabel("Revenue.account.label");
   private final GemDesktop desktop;
   private final DataConnection dc;
-  private Vector<Account> personalAccounts;
-  private Vector<Account> revenueAccounts;
+  private List<Account> personalAccounts;
+  private List<Account> revenueAccounts;
   private GemButton btOk;
   private GemButton btClose;
-  private GemPanel mainPanel = new GemPanel();
-  private AccountChoice[] personal;
-  private AccountChoice[] revenue;
+  private JTable table;
+  private JTableModel<AccountPref> tableModel;
 
   public AccountMatchingCfg(GemDesktop desktop) {
     this.desktop = desktop;
@@ -74,41 +73,25 @@ public class AccountMatchingCfg
     }
   }
 
-  public void init() throws SQLException, NullAccountException {
-
-    setLayout(new BorderLayout());
-
-    mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-    mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-    JScrollPane sp = new GemScrollPane(mainPanel);
-
+  private void init() throws SQLException, NullAccountException {
     if (personalAccounts == null || personalAccounts.isEmpty()) {
       throw new NullAccountException(MessageUtil.getMessage("no.personal.account"));
     }
     if (revenueAccounts == null || revenueAccounts.isEmpty()) {
       throw new NullAccountException(MessageUtil.getMessage("no.revenue.account"));
     }
+    tableModel = new AccountMatchingTableModel();
+    table = new JTable(tableModel);
+    table.setRowHeight(table.getRowHeight() + 3);
 
-    int max = personalAccounts.size();
-    personal = new AccountChoice[max];
-    revenue = new AccountChoice[max];
-
-    for (int i = 0; i < max; i++) {
-      GemPanel p = new GemPanel(new GridLayout(2,2,10,0));
-      p.setBorder(BorderFactory.createTitledBorder(String.valueOf(i + 1)));
-
-      personal[i] = new AccountChoice(personalAccounts);
-      revenue[i] = new AccountChoice(revenueAccounts);
-
-      p.add(new GemLabel(personalAccountLabel));
-      p.add(new GemLabel(revenueAccountLabel));
-      p.add(personal[i]);
-      p.add(revenue[i]);
-
-      mainPanel.add(p);
-    }
+    GemChoice accountSelector = new AccountChoice(new Vector<Account>(personalAccounts));
+    GemChoice revenueSelector = new ParamChoice(revenueAccounts);
+    table.getColumnModel().getColumn(0).setCellEditor(new DefaultCellEditor(accountSelector));
+    table.getColumnModel().getColumn(1).setCellEditor(new DefaultCellEditor(revenueSelector));
+    
     set();
-
+    
+    setLayout(new BorderLayout());
     GemPanel commandPanel = new GemPanel();
     commandPanel.setLayout(new GridLayout(1, 1));
 
@@ -122,7 +105,9 @@ public class AccountMatchingCfg
     commandPanel.add(btOk);
     commandPanel.add(btClose);
 
-    add(sp, BorderLayout.CENTER);
+    JScrollPane scroll = new GemScrollPane(table);
+
+    add(scroll, BorderLayout.CENTER);
     add(commandPanel, BorderLayout.SOUTH);
 
   }
@@ -136,44 +121,33 @@ public class AccountMatchingCfg
         GemLogger.logException("Update correspondance comptes", ex);
       }
     }
-
     desktop.removeCurrentModule();
-
   }
 
   private void save() throws SQLException {
-
-    for (int i = 0; i < personal.length; i++) {
-      int t = ((Account) personal[i].getSelectedItem()).getId();
-      int p = ((Account) revenue[i].getSelectedItem()).getId();
-      if (PersonalRevenueAccountIO.find(t, dc) == 0) {
-        PersonalRevenueAccountIO.insert(t, p, dc);
+    List<AccountPref> prefs = tableModel.getData();
+    for (AccountPref pref : prefs) {
+      if (pref.getCostAccount() == null) {
+        continue;
+      }
+      if (PersonalRevenueAccountIO.find(pref.getAccount().getId(), dc) == 0) {
+        PersonalRevenueAccountIO.insert(pref.getAccount().getId(), pref.getCostAccount().getId(), dc);
       } else {
-        PersonalRevenueAccountIO.update(t, p, dc);
+        PersonalRevenueAccountIO.update(pref.getAccount().getId(), pref.getCostAccount().getId(), dc);
       }
     }
   }
 
   private void set() throws SQLException {
-
-    Map<Account, Account> cm = PersonalRevenueAccountIO.find(dc);
-    if (cm != null) {
-      Account keys[] = new Account[cm.size()];
-      Account values[] = new Account[cm.size()];
-      int j = 0;
-      for (Account c : cm.keySet()) {
-        keys[j++] = c;
+    Map<Account, Account> prefs = PersonalRevenueAccountIO.find(dc);
+    for (Account a : personalAccounts) {
+      AccountPref p = new AccountPref();
+      p.setAccount(a);
+      if (prefs != null && prefs.get(a) != null) {
+        p.setCostAccount(prefs.get(a));
       }
-      j = 0;
-      for (Account c : cm.values()) {
-        values[j++] = c;
-      }
-
-      for (int i = 0; i < cm.size(); i++) {
-        personal[i].setSelectedItem(keys[i]);
-        revenue[i].setSelectedItem(values[i]);
-      }
+      tableModel.addItem(p);
     }
-
   }
+  
 }

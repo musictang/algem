@@ -1,5 +1,5 @@
 /*
- * @(#)RoomRateSearchCtrl.java	2.8.w 08/07/14
+ * @(#)RoomRateSearchCtrl.java	2.9.4.13 07/10/15
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -27,6 +27,7 @@ import java.util.Vector;
 import net.algem.util.DataCache;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
+import net.algem.util.model.GemList;
 import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.SearchCtrl;
@@ -35,13 +36,14 @@ import net.algem.util.ui.SearchCtrl;
  * Search controller for room rates.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.4.13
  * @since 2.1a
  */
 public class RoomRateSearchCtrl
-        extends SearchCtrl {
-	
-	private final DataCache dataCache;
+        extends SearchCtrl
+{
+
+  private final DataCache dataCache;
   private final GemDesktop desktop;
 
   public RoomRateSearchCtrl(GemDesktop desktop) {
@@ -98,7 +100,7 @@ public class RoomRateSearchCtrl
       mask.loadCard(v.elementAt(0));
     } else {
       ((CardLayout) wCard.getLayout()).show(wCard, "liste");
-      list.loadResult(v); // remplissage de la list des tarifs dans la table
+      list.loadResult(v); // remplissage de la liste des tarifs dans la table
     }
   }
 
@@ -106,7 +108,7 @@ public class RoomRateSearchCtrl
   public void actionPerformed(ActionEvent evt) {
     super.actionPerformed(evt);
     if ("CtrlValider".equals(evt.getActionCommand())) {
-      list.loadResult(((RoomRateList)dataCache.getList(Model.RoomRate)).getList());//XXX recharge la list de TOUS les tarifs !
+      list.loadResult(((GemList<RoomRate>) dataCache.getList(Model.RoomRate)).getData());//XXX recharge la list de TOUS les tarifs !
     } else if (GemCommand.CREATE_CMD.equals(evt.getActionCommand())) {
       ((CardLayout) wCard.getLayout()).show(wCard, "masque");
       mask.loadCard(null);

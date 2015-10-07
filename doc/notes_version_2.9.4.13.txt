@@ -1,14 +1,25 @@
 2.9.4.13
+CORRECTIFS
+* Après modification, le tarif d'une salle n'était pas mis à jour correctement dans la liste : menu Compta -> Tarifs salles. Si l'on modifiait les montants d'une ou plusieurs colonnes, ces nouveaux tarifs étaient bien enregistrés en base de données mais n'apparaissaient pas dans la liste après édition en raison d'une exception Java.
 
 FACTURES/DEVIS
 - En mode d'édition de facture ou de devis, il est maintenant possible d'insérer une DÉSIGNATION D'ARTICLE COMPORTANT PLUSIEURS LIGNES (dans la limite des 128 caractères autorisés en base de données). La hauteur de la rangée correspondante reflètera la composition de l'article en temps réel.
 - On peut aussi GLISSER-DÉPLACER UNE LIGNE DANS LE TABLEAU ET DONC MODIFIER L'ORDRE DANS LEQUEL APPARAISSENT LES ARTICLES de facturation. Auparavant, cet ordre était immuable et dépendait de l'ordre de création.
-- Si la désignation d'un article s'étend sur plusieurs lignes, vous n'avez pas à vous préoccuper des changements de ligne. Ceux-ci seront automatiques à l'impression et se feront en tenant compte des limites de mots (un mot ne sera pas coupé en plein milieu).
-- A l'impression, le nom de l'établissement et la date ont été légèrement décalés vers le bas pour ne pas prêter d'ambiguïté avec le bloc d'adresse.
-
-ECHEANCIER
-La fenêtre MAJ échéancier n'est plus modale. On peut désormais la minimiser ou la maximiser, quelle que soit le thème utilisé, et la passer à l'arrière-plan.
-La hauteur des boutons "Charger" et "Mois courant" est maintenant identique à celle des champs date sur leur gauche.
+- Si la désignation d'un article s'étend sur plusieurs lignes, vous n'avez pas à vous préoccuper des changements de ligne. Ceux-ci seront automatiques à l'impression et se feront en tenant compte des limites de colonne et de mots (un mot ne sera pas coupé en plein milieu).
+- A l'impression, le nom de l'établissement et la date ont été légèrement décalés vers le bas pour ne pas prêter confusion avec le bloc d'adresse.
 
 CONFIGURATION
-La fenêtre de configuration dans Configuration -> Paramètres -> Généraux a été réorganisée. La liste des rubriques est maintenant visible sur le panneau de gauche et il suffit de cliquer sur l'une d'elles pour accèder à sa page de configuration. Il n'est plus nécessaire d'utiliser en permanence l'ascenceur pour accéder aux différentes rubriques.
+La fenêtre de configuration dans Configuration -> Paramètres -> Généraux a été réorganisée. La liste des rubriques est maintenant visible sur le panneau de gauche et il suffit de cliquer sur l'une d'elles pour accèder à sa page de configuration. Il fallait auparavant utiliser en permanence l'ascenceur pour accéder aux différentes rubriques.
+
+COMPTABILITE
+Echéancier
+- La fenêtre MAJ échéancier n'est plus modale (fenêtre bloquante en premier-plan). On peut désormais la minimiser ou la maximiser, quel que soit le thème utilisé, et la passer à l'arrière-plan.
+- La hauteur des boutons "Charger" et "Mois courant" est maintenant identique à celle des champs date sur leur gauche.
+
+Correspondance de comptes
+La fenêtre des correspondances de comptes a été entièrement remaniée. Les correspondances apparaissent désormais dans un tableau. La colonne de gauche, non éditable, présente dans l'ordre alphabétique (libellé du compte) la liste de tous les comptes de tiers enregistrés et actifs. En cliquant sur la colonne de droite, on pourra choisir parmi les comptes de produits actifs, celui qui correspond le mieux au compte de tiers sur la gauche.
+Cette nouvelle présentation, plus simple et plus claire, permet d'éviter de paramétrer des comptes en doublon et fait apparaître sans ambiguïté les comptes restant à configurer (ceux pour lesquels il n'existe encore aucune correspondance).
+Rappel : cette correspondance est utilisée en particulier pour les exports comptables.
+
+Tarifs salle
+Les tarifs accessibles depuis le menu Compta -> Tarifs salles sont maintenant alignés sur la droite et sont formatés avec 2 chiffres après la virgule.

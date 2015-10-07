@@ -1,7 +1,7 @@
 /*
- * @(#)PersonalRevenueAccountIO.java 2.6.a 02/08/2012
+ * @(#)PersonalRevenueAccountIO.java 2.9.4.13 07/10/15
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -32,7 +32,7 @@ import net.algem.util.model.TableIO;
  * Persistence of matching between personal and revenue accounts.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.4.13
  * @since 2.2.l 07/12/11
  */
 public class PersonalRevenueAccountIO
@@ -45,7 +45,7 @@ public class PersonalRevenueAccountIO
     String query = "SELECT "+cols+" FROM " +tableName+" ORDER BY tiers";
     ResultSet rs = dc.executeQuery(query);
 
-    HashMap<Account, Account> map = new HashMap<Account, Account>();
+    Map<Account, Account> map = new HashMap<Account, Account>();
     while (rs.next()) {
       Account c = AccountIO.find(rs.getInt(1), dc);
       Account p = AccountIO.find(rs.getInt(2), dc);

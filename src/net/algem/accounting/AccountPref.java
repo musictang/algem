@@ -1,6 +1,5 @@
-
 /*
- * @(#)AccountPref.java 2.9.4.0 01/06/2015
+ * @(#)AccountPref.java 2.9.4.13 07/10/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  * 
@@ -27,7 +26,7 @@ import net.algem.config.Param;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.0
+ * @version 2.9.4.13
  * @since 2.9.4.0 01/06/2015
  */
 class AccountPref {
@@ -59,6 +58,5 @@ class AccountPref {
   public void setCostAccount(Param costAccount) {
     this.costAccount = costAccount;
   }
-  
-
+ 
 }

@@ -1,7 +1,7 @@
 /*
- * @(#)RoomRateListCtrl.java	2.6.a 24/09/12
+ * @(#)RoomRateListCtrl.java	2.9.4.13 07/10/15
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,9 +20,11 @@
  */
 package net.algem.room;
 
+import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.border.BevelBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import net.algem.util.ui.ListCtrl;
 
@@ -31,7 +33,7 @@ import net.algem.util.ui.ListCtrl;
  * comment
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.4.13
  * @since 2.1a
  */
 public class RoomRateListCtrl
@@ -44,8 +46,13 @@ public class RoomRateListCtrl
 
     table = new JTable(tableModel);
     table.setAutoCreateRowSorter(true);
-
+    DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
+    rightRenderer.setHorizontalAlignment(JLabel.RIGHT);
     TableColumnModel cm = table.getColumnModel();
+    for (int i= 3 ; i < cm.getColumnCount() ; i++) {
+      cm.getColumn(i).setCellRenderer(rightRenderer);
+    }
+
     cm.getColumn(0).setPreferredWidth(25);
     cm.getColumn(1).setPreferredWidth(250);
 
