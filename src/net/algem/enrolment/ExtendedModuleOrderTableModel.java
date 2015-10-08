@@ -1,5 +1,5 @@
 /*
- * @(#)ExtendedModuleOrderTableModel.java	2.9.4.12 22/09/15
+ * @(#)ExtendedModuleOrderTableModel.java	2.9.4.13 08/10/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -36,7 +36,7 @@ import net.algem.util.ui.JTableModel;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.12
+ * @version 2.9.4.13
  * @since 2.9.2.1 16/02/15
  */
 public class ExtendedModuleOrderTableModel 
@@ -97,22 +97,28 @@ public class ExtendedModuleOrderTableModel
   @Override
   public Object getValueAt(int line, int col) {
     ExtendedModuleOrder m = tuples.elementAt(line);
-    Person p = null;
-    try {
-      p = (Person) DataCache.findId(m.getIdper(), Model.Person);
-    } catch (SQLException ex) {
-      GemLogger.log(ex.getMessage());
-    }
+//    Person p = null;
+//    try {
+//      p = (Person) DataCache.findId(m.getIdper(), Model.Person);
+//    } catch (SQLException ex) {
+//      GemLogger.log(ex.getMessage());
+//    }
     int rest = m.getTotalTime() - m.getCompleted();
     switch (col) {
       case 0:
-        return new Integer(m.getIdper());
-      case 1:
-        return p == null ? "" : (p.getFirstName() == null ? "" : p.getFirstName());
+        return m.getIdper();
+//      case 1:
+//        return p == null ? "" : (p.getFirstName() == null ? "" : p.getFirstName());
+//      case 2:
+//        return p == null ? "" : (p.getName() == null ? "" : p.getName());
+//      case 3:
+//        return p == null ? "" : (p.getNickName() == null ? "" : p.getNickName());
+        case 1:
+        return m.getFirstName() == null ? "" : m.getFirstName();
       case 2:
-        return p == null ? "" : (p.getName() == null ? "" : p.getName());
+        return m.getName() == null ? "" : m.getName();
       case 3:
-        return p == null ? "" : (p.getNickName() == null ? "" : p.getNickName());
+        return m.getNickName() == null ? "" : m.getNickName();
       case 4:
         return m.getTitle();
       case 5:

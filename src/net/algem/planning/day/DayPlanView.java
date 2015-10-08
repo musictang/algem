@@ -1,5 +1,5 @@
 /*
- * @(#)DayPlanView.java 2.9.4.10 17/07/15
+ * @(#)DayPlanView.java 2.9.4.13 08/10/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -41,7 +41,7 @@ import net.algem.util.DataCache;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.10
+ * @version 2.9.4.13
  * @since 1.0a 07/07/1999
  */
 public class DayPlanView
@@ -136,9 +136,9 @@ public class DayPlanView
   @Override
   public void drawBackground() {
     ncols = dim.width / step_x;
-    /*if (bg instanceof Graphics2D) {
-      ((Graphics2D) bg).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-    }*/ // TODO DEBUG affichage des pointillés
+    if (bg instanceof Graphics2D) {
+      ((Graphics2D) bg).setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+    } // TODO DEBUG affichage des pointillés
     drawGrid();
 
     if (cols == null) {

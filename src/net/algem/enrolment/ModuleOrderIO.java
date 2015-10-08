@@ -1,5 +1,5 @@
 /*
- * @(#)ModuleOrderIO.java	2.9.4.12 22/09/15
+ * @(#)ModuleOrderIO.java	2.9.4.13 08/10/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -22,10 +22,19 @@ package net.algem.enrolment;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Vector;
 import net.algem.accounting.AccountUtil;
+import net.algem.contact.PersonIO;
+import net.algem.course.CourseIO;
 import net.algem.course.ModuleIO;
+import net.algem.planning.ActionIO;
 import net.algem.planning.DateFr;
+import net.algem.planning.Hour;
+import net.algem.planning.ScheduleIO;
+import net.algem.planning.ScheduleRangeIO;
 import net.algem.util.DataConnection;
 import net.algem.util.model.TableIO;
 
@@ -34,7 +43,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.12
+ * @version 2.9.4.13
  */
 public class ModuleOrderIO
         extends TableIO
@@ -120,6 +129,54 @@ public class ModuleOrderIO
     }
     rs.close();
     return v;
+  }
+  
+   public static List<ExtendedModuleOrder> findExtendedModuleOrders(Date start, Date end, DataConnection dc) throws SQLException {
+    String query = "SELECT cm.id, cm.prix, cm.debut, cm.fin, cm.reglement, cm.paiement, cm.tarification, cm.duree, m.titre"
+            + ",p.id,p.nom,p.prenom,p.pseudo, sum(pg.fin-pg.debut) AS duree"
+            + " FROM " + TABLE + " cm, " + ModuleIO.TABLE + " m, " + OrderIO.TABLE + " c, " + PersonIO.TABLE + " p, " + ScheduleRangeIO.TABLE + " pg"
+            + " WHERE cm.module = m.id"
+            + " AND cm.idcmd = c.id"
+            + " AND c.adh = p.id"
+            + " AND cm.debut BETWEEN '" + start + "' AND '" + end 
+            + "' AND pg.adherent = c.adh"
+            + " AND pg.idplanning IN("
+            + "   SELECT pl.id FROM " + ScheduleIO.TABLE + " pl, " + CourseOrderIO.TABLE + " cc, " + ActionIO.TABLE + " a, " + CourseIO.TABLE + " cr"
+            + "     WHERE pl.jour BETWEEN '" + start + "' AND '" + end 
+            + "'      AND pl.action = cc.idaction"
+            + "      AND cc.idaction = a.id"
+            + "      AND a.cours = cr.id"
+            + "      AND cc.datedebut <= pl.jour"
+            + "      AND cc.datefin >= pl.jour"
+            + "      AND cc.module = cm.id"
+            + "      AND CASE"// if not collective, filter by time length
+            + "       WHEN cr.collectif = false THEN (cc.fin - cc.debut) = (pg.fin - pg.debut)"
+            + "       ELSE TRUE"
+            + "       END)"
+            + "     GROUP BY cm.id, cm.prix, cm.debut, cm.fin, cm.reglement, cm.paiement, cm.tarification, cm.duree, m.titre"
+            + ",p.id, p.nom, p.prenom, p.pseudo, duree";
+    ResultSet rs = dc.executeQuery(query);
+    List<ExtendedModuleOrder> list = new ArrayList<>();
+    while (rs.next()) {
+      ExtendedModuleOrder em = new ExtendedModuleOrder();
+      em.setId(rs.getInt(1));
+      em.setPrice(rs.getInt(2)/100d);
+      em.setStart(new DateFr(rs.getString(3)));
+      em.setEnd(new DateFr(rs.getString(4)));
+      em.setModeOfPayment(rs.getString(5));
+
+      em.setPayment(PayFrequency.getValue(rs.getString(6)));
+      em.setPricing(PricingPeriod.valueOf(rs.getString(7)));
+      em.setTotalTime(rs.getInt(8));
+      em.setTitle(rs.getString(9));
+      em.setIdper(rs.getInt(10));
+      em.setName(rs.getString(11));
+      em.setFirstName(rs.getString(12));
+      em.setNickName(rs.getString(13));
+      em.setCompleted(new Hour(rs.getString(14)).toMinutes());
+      list.add(em);
+    }
+    return list;
   }
 
   private static ModuleOrder getFromRs(ResultSet rs) throws SQLException {

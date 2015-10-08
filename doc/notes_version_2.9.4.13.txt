@@ -1,4 +1,4 @@
-2.9.4.13
+﻿2.9.4.13
 CORRECTIFS
 * Après modification, le tarif d'une salle n'était pas mis à jour correctement dans la liste : menu Compta -> Tarifs salles. Si l'on modifiait les montants d'une ou plusieurs colonnes, ces nouveaux tarifs étaient bien enregistrés en base de données mais n'apparaissaient pas dans la liste après édition en raison d'une exception Java.
 
@@ -23,3 +23,9 @@ Rappel : cette correspondance est utilisée en particulier pour les exports comp
 
 Tarifs salle
 Les tarifs accessibles depuis le menu Compta -> Tarifs salles sont maintenant alignés sur la droite et sont formatés avec 2 chiffres après la virgule.
+
+CATALOGUE
+La recherche de la liste des commandes formules sur la période devrait prendre moins de temps qu'auparavant. En mode webstart, il fallait dans certains cas attendre plus d'une minute pour obtenir un résultat.
+
+PLANNING
+Un lissage (traitement anti aliasing) a été appliqué sur la police du texte des plannings (titres des cours, noms des professeurs ou intervenants, etc.). Le rendu devrait être plus agréable sur la plupart des configurations d'écran.

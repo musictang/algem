@@ -1,5 +1,5 @@
 /*
- * @(#)EnrolmentService.java	2.9.4.12 24/09/15
+ * @(#)EnrolmentService.java	2.9.4.13 08/10/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -43,7 +43,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.3
+ * @version 2.9.4.13
  * @since 2.4.a 20/04/12
  */
 public class EnrolmentService
@@ -863,8 +863,8 @@ public class EnrolmentService
   }
   
   /**
-   * Gets the time length of the sessions already performed by the member {@literal m},
-   * corresponding to the module order {@literal mo}.
+   * Gets the time length of the sessions already performed by the member {@literal idper},
+   * corresponding to the module order {@literal mOrderId}.
    * A session is seen as completed if it was scheduled, even though it has not actually occurred.
    * @param idper member's id
    * @param mOrderId id of the module order corresponding to the training performed
@@ -900,6 +900,7 @@ public class EnrolmentService
     return 0;
   }
   
+  
   /**
    * Gets the list of module orders created between {@literal start} and {@literal end} dates.
    * @param start start date
@@ -920,22 +921,33 @@ public class EnrolmentService
    * @throws SQLException 
    */
   public List<ExtendedModuleOrder> getExtendedModuleList(Date start, Date end) throws SQLException {
-    List<ModuleOrder> modules = getCurrentModuleList(start, end);
+    /*List<ModuleOrder> modules = getCurrentModuleList(start, end);
     List<ExtendedModuleOrder> extended = new ArrayList<ExtendedModuleOrder>();
     for (ModuleOrder m : modules) {
-      ExtendedModuleOrder hm = new ExtendedModuleOrder(m);
+      ExtendedModuleOrder em = new ExtendedModuleOrder(m);
+      // recherche commande
       Order order = OrderIO.findId(m.getIdOrder(), dc);
-      Person p = (Person) DataCache.findId(order.getMember(), Model.Person);
-      //TODO check p null
-      if (p != null) {
-        hm.setIdper(p.getId());
-        hm.setCompleted(getCompletedTime(p.getId(), m.getId(), start, end));
-        extended.add(hm);
-      } else {
-        GemLogger.log("getExtendedModuleList null person :" + order.getMember());
-      }
+      // recherche personne
+//      Person p = (Person) DataCache.findId(order.getMember(), Model.Person);
+//      if (p != null) {
+//        em.setIdper(p.getId());
+      em.setIdper(order.getMember());
+//        em.setCompleted(getCompletedTime(p.getId(), m.getId(), start, end));
+      em.setCompleted(getCompletedTime(order.getMember(), m.getId(), start, end));
+        extended.add(em);
+//      } else {
+//        GemLogger.log("getExtendedModuleList null person :" + order.getMember());
+//      }
     }
-    return extended;
+    return extended;*/
+    return getExtendedModuleOrders(start, end);
+    
+  }
+  
+  public List<ExtendedModuleOrder> getExtendedModuleOrders(Date start, Date end) throws SQLException {
+//    List<ModuleOrder> modules = getCurrentModuleList(start, end);
+    List<ExtendedModuleOrder> extended = new ArrayList<ExtendedModuleOrder>();
+    return ModuleOrderIO.findExtendedModuleOrders(start, end, dc);
   }
 
 }

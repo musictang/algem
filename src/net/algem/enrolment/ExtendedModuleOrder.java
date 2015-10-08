@@ -1,5 +1,5 @@
 /*
- * @(#)ExtendedModuleOrder.java	2.9.4.12 22/09/15
+ * @(#)ExtendedModuleOrder.java	2.9.4.13 08/10/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -30,7 +30,7 @@ import net.algem.util.model.Model;
 /**
  * Module order with additional information. 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.12
+ * @version 2.9.4.13
  * @since 2.9.2.1 16/02/15
  */
 public class ExtendedModuleOrder
@@ -38,6 +38,9 @@ public class ExtendedModuleOrder
 {
 
   private int idper;
+  private String name;
+  private String firstName;
+  private String nickName;
   private int completedTime;
 
   public ExtendedModuleOrder() {
@@ -66,7 +69,31 @@ public class ExtendedModuleOrder
   public void setIdper(int idper) {
     this.idper = idper;
   }
-  
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public String getFirstName() {
+    return firstName;
+  }
+
+  public void setFirstName(String firstName) {
+    this.firstName = firstName;
+  }
+
+  public String getNickName() {
+    return nickName;
+  }
+
+  public void setNickName(String nickName) {
+    this.nickName = nickName;
+  }
+
   void setCompleted(int min) {   
     completedTime = min;
   }
