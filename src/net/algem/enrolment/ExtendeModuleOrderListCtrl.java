@@ -1,5 +1,5 @@
 /*
- * @(#)ExtendeModuleOrderListCtrl.java	2.9.4.12 22/09/15
+ * @(#)ExtendeModuleOrderListCtrl.java	2.9.4.13 09/10/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -30,6 +30,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -65,7 +66,7 @@ import net.algem.util.ui.JTableModel;
 /**
  * Controller used to print and display the list of module orders.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.12
+ * @version 2.9.4.13
  * @since 2.9.2.1 16/02/15
  */
 public class ExtendeModuleOrderListCtrl
@@ -235,8 +236,9 @@ public class ExtendeModuleOrderListCtrl
     if (f == null) {
       return;
     }
-    try (PrintWriter out = new PrintWriter(new FileWriter(f))) {
-      StringBuilder sb = new StringBuilder("\ufeff");
+    try (PrintWriter out = new PrintWriter(new FileWriter(f))) {//"UTF-16LE"
+//      StringBuilder sb = new StringBuilder("\ufeff");
+      StringBuilder sb = new StringBuilder();
       for (int i = 0; i < tableModel.getColumnCount(); i++) {
         sb.append(tableModel.getColumnName(i)).append(';');
       }
@@ -279,7 +281,6 @@ public class ExtendeModuleOrderListCtrl
     List<RowSorter.SortKey> sortkeys = new ArrayList<>();
     sortkeys.add(new RowSorter.SortKey(col, order));
     sorter.setSortKeys(sortkeys);
-  }
-  
+  } 
 
 }

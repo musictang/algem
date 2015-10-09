@@ -1,5 +1,5 @@
 /*
- * @(#)ExtendedModuleOrderTableModel.java	2.9.4.13 08/10/15
+ * @(#)ExtendedModuleOrderTableModel.java	2.9.4.13 09/10/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -18,19 +18,13 @@
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 package net.algem.enrolment;
 
-import java.sql.SQLException;
 import java.text.NumberFormat;
 import net.algem.accounting.AccountUtil;
 import net.algem.accounting.GemAmount;
-import net.algem.contact.Person;
 import net.algem.planning.Hour;
 import net.algem.util.BundleUtil;
-import net.algem.util.DataCache;
-import net.algem.util.GemLogger;
-import net.algem.util.model.Model;
 import net.algem.util.ui.JTableModel;
 
 /**
@@ -39,12 +33,12 @@ import net.algem.util.ui.JTableModel;
  * @version 2.9.4.13
  * @since 2.9.2.1 16/02/15
  */
-public class ExtendedModuleOrderTableModel 
-  extends JTableModel<ExtendedModuleOrder>
+public class ExtendedModuleOrderTableModel
+        extends JTableModel<ExtendedModuleOrder>
 {
 
   private final NumberFormat nf;
-  
+
   public ExtendedModuleOrderTableModel() {
     this.nf = NumberFormat.getInstance();
     nf.setMinimumFractionDigits(2);
@@ -60,8 +54,8 @@ public class ExtendedModuleOrderTableModel
       BundleUtil.getLabel("Amount.label"),
       BundleUtil.getLabel("Deferred.income.label")
     };
-}
-  
+  }
+
   @Override
   public boolean isCellEditable(int row, int column) {
     return false;
@@ -75,7 +69,7 @@ public class ExtendedModuleOrderTableModel
 
   @Override
   public Class getColumnClass(int col) {
-   switch (col) {
+    switch (col) {
       case 0:
         return Integer.class;
       case 1:
@@ -93,27 +87,15 @@ public class ExtendedModuleOrderTableModel
         return Object.class;
     }
   }
-  
+
   @Override
   public Object getValueAt(int line, int col) {
     ExtendedModuleOrder m = tuples.elementAt(line);
-//    Person p = null;
-//    try {
-//      p = (Person) DataCache.findId(m.getIdper(), Model.Person);
-//    } catch (SQLException ex) {
-//      GemLogger.log(ex.getMessage());
-//    }
     int rest = m.getTotalTime() - m.getCompleted();
     switch (col) {
       case 0:
         return m.getIdper();
-//      case 1:
-//        return p == null ? "" : (p.getFirstName() == null ? "" : p.getFirstName());
-//      case 2:
-//        return p == null ? "" : (p.getName() == null ? "" : p.getName());
-//      case 3:
-//        return p == null ? "" : (p.getNickName() == null ? "" : p.getNickName());
-        case 1:
+      case 1:
         return m.getFirstName() == null ? "" : m.getFirstName();
       case 2:
         return m.getName() == null ? "" : m.getName();
@@ -130,13 +112,15 @@ public class ExtendedModuleOrderTableModel
       case 8:
         if (PricingPeriod.HOUR.equals(m.getPricing())) {
           return nf.format(AccountUtil.round(m.getPaymentInfo(rest)));
-        } else return nf.format(0.0d);
+        } else {
+          return nf.format(0.0d);
+        }
     }
     return null;
   }
 
   @Override
   public void setValueAt(Object value, int line, int column) {
-   
+
   }
 }

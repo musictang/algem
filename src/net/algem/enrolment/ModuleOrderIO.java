@@ -1,5 +1,5 @@
 /*
- * @(#)ModuleOrderIO.java	2.9.4.13 08/10/15
+ * @(#)ModuleOrderIO.java	2.9.4.13 09/10/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,6 +20,7 @@
  */
 package net.algem.enrolment;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -51,6 +52,20 @@ public class ModuleOrderIO
 
   public static final String TABLE = "commande_module";
   public static final String SEQUENCE = "commande_module_id_seq";
+  private static final String extendedModuleListStatement = "SELECT sum(fin-debut) AS duree FROM " + ScheduleRangeIO.TABLE + " pl"
+            + " WHERE adherent = ?"
+            + " AND idplanning IN("
+            + "SELECT p.id FROM " + ScheduleIO.TABLE + " p, " + CourseOrderIO.TABLE + " cc, " + ActionIO.TABLE + " a, " + CourseIO.TABLE + " c"
+            + " WHERE p.jour BETWEEN ? AND ? AND p.action = cc.idaction"
+            + " AND cc.idaction = a.id"
+            + " AND a.cours = c.id"
+            + " AND cc.datedebut <= p.jour"
+            + " AND cc.datefin >= p.jour"
+            + " AND cc.module = ?" 
+            + " AND CASE" // if not collective, filter by time length
+            + " WHEN c.collectif = false THEN (cc.fin - cc.debut) = (pl.fin - pl.debut)"
+            + " ELSE TRUE"
+            + " END)";
 
   public static void insert(ModuleOrder c, DataConnection dc) throws SQLException {
     int next = nextId(SEQUENCE, dc);
@@ -130,41 +145,24 @@ public class ModuleOrderIO
     rs.close();
     return v;
   }
-  
-   public static List<ExtendedModuleOrder> findExtendedModuleOrders(Date start, Date end, DataConnection dc) throws SQLException {
-    String query = "SELECT cm.id, cm.prix, cm.debut, cm.fin, cm.reglement, cm.paiement, cm.tarification, cm.duree, m.titre"
-            + ",p.id,p.nom,p.prenom,p.pseudo, sum(pg.fin-pg.debut) AS duree"
-            + " FROM " + TABLE + " cm, " + ModuleIO.TABLE + " m, " + OrderIO.TABLE + " c, " + PersonIO.TABLE + " p, " + ScheduleRangeIO.TABLE + " pg"
+
+   static List<ExtendedModuleOrder> findExtendedModuleList(Date start, Date end, DataConnection dc) throws SQLException {
+    String query = "SELECT cm.id,cm.prix,cm.debut,cm.fin,cm.reglement,cm.paiement,cm.tarification,cm.duree,m.titre"
+            + ",p.id,p.nom,p.prenom,p.pseudo"
+            + " FROM " + TABLE + " cm, " + OrderIO.TABLE + " c, " + PersonIO.TABLE + " p, " + ModuleIO.TABLE + " m"
             + " WHERE cm.module = m.id"
             + " AND cm.idcmd = c.id"
             + " AND c.adh = p.id"
-            + " AND cm.debut BETWEEN '" + start + "' AND '" + end 
-            + "' AND pg.adherent = c.adh"
-            + " AND pg.idplanning IN("
-            + "   SELECT pl.id FROM " + ScheduleIO.TABLE + " pl, " + CourseOrderIO.TABLE + " cc, " + ActionIO.TABLE + " a, " + CourseIO.TABLE + " cr"
-            + "     WHERE pl.jour BETWEEN '" + start + "' AND '" + end 
-            + "'      AND pl.action = cc.idaction"
-            + "      AND cc.idaction = a.id"
-            + "      AND a.cours = cr.id"
-            + "      AND cc.datedebut <= pl.jour"
-            + "      AND cc.datefin >= pl.jour"
-            + "      AND cc.module = cm.id"
-            + "      AND CASE"// if not collective, filter by time length
-            + "       WHEN cr.collectif = false THEN (cc.fin - cc.debut) = (pg.fin - pg.debut)"
-            + "       ELSE TRUE"
-            + "       END)"
-            + "     GROUP BY cm.id, cm.prix, cm.debut, cm.fin, cm.reglement, cm.paiement, cm.tarification, cm.duree, m.titre"
-            + ",p.id, p.nom, p.prenom, p.pseudo, duree";
-    ResultSet rs = dc.executeQuery(query);
+            + " AND cm.debut BETWEEN '" + start + "' AND '" + end + "'";
     List<ExtendedModuleOrder> list = new ArrayList<>();
+    ResultSet rs = dc.executeQuery(query);
     while (rs.next()) {
       ExtendedModuleOrder em = new ExtendedModuleOrder();
       em.setId(rs.getInt(1));
-      em.setPrice(rs.getInt(2)/100d);
+      em.setPrice(rs.getInt(2) / 100d);
       em.setStart(new DateFr(rs.getString(3)));
       em.setEnd(new DateFr(rs.getString(4)));
       em.setModeOfPayment(rs.getString(5));
-
       em.setPayment(PayFrequency.getValue(rs.getString(6)));
       em.setPricing(PricingPeriod.valueOf(rs.getString(7)));
       em.setTotalTime(rs.getInt(8));
@@ -173,14 +171,27 @@ public class ModuleOrderIO
       em.setName(rs.getString(11));
       em.setFirstName(rs.getString(12));
       em.setNickName(rs.getString(13));
-      em.setCompleted(new Hour(rs.getString(14)).toMinutes());
       list.add(em);
     }
     return list;
   }
+   
+  static int getCompletedTime(int idper, int mOrderId, Date start, Date end, DataConnection dc) throws SQLException {
+    PreparedStatement ps = dc.prepareStatement(extendedModuleListStatement);
+    ps.setInt(1, idper);
+    ps.setDate(2, new java.sql.Date(start.getTime()));
+    ps.setDate(3, new java.sql.Date(end.getTime()));
+    ps.setInt(4, mOrderId);
 
+    ResultSet rs = ps.executeQuery();
+    while (rs.next()) {
+      Hour h = new Hour(rs.getString(1));
+      return h.toMinutes();
+    }
+    return 0;
+  }
+    
   private static ModuleOrder getFromRs(ResultSet rs) throws SQLException {
-
       ModuleOrder m = new ModuleOrder();
       m.setId(rs.getInt(1));
       m.setIdOrder(rs.getInt(2));

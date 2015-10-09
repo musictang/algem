@@ -1,5 +1,5 @@
 /*
- * @(#)EnrolmentService.java	2.9.4.13 08/10/15
+ * @(#)EnrolmentService.java	2.9.4.13 09/10/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -25,7 +25,6 @@ import java.sql.SQLException;
 import java.util.*;
 import net.algem.Algem;
 import net.algem.config.*;
-import net.algem.contact.Person;
 import net.algem.contact.PersonFile;
 import net.algem.contact.PersonFileIO;
 import net.algem.contact.PersonIO;
@@ -872,82 +871,21 @@ public class EnrolmentService
    * @param end end date
    * @return a length in minutes
    */
-  public int getCompletedTime(int idper, int mOrderId, Date start, Date end) {
-    String query = "SELECT sum(fin-debut) AS duree FROM " + ScheduleRangeIO.TABLE + " pl"
-            + " WHERE adherent = " + idper
-            + " AND idplanning IN("
-            + "SELECT p.id FROM " + ScheduleIO.TABLE + " p, " + CourseOrderIO.TABLE + " cc, " + ActionIO.TABLE + " a, " + CourseIO.TABLE + " c"
-            + " WHERE p.jour BETWEEN '" + start + "' AND '" + end
-            + "' AND p.action = cc.idaction"
-            + " AND cc.idaction = a.id"
-            + " AND a.cours = c.id"
-            + " AND cc.datedebut <= p.jour"
-            + " AND cc.datefin >= p.jour"
-            + " AND cc.module = " + mOrderId
-            + " AND CASE" // if not collective, filter by time length
-            + " WHEN c.collectif = false THEN (cc.fin - cc.debut) = (pl.fin - pl.debut)"
-            + " ELSE TRUE"
-            + " END)";
+  int getCompletedTime(int idper, int mOrderId, Date start, Date end) {
     try {
-      ResultSet rs = dc.executeQuery(query);
-      while (rs.next()) {
-        Hour h = new Hour(rs.getString(1));
-        return h.toMinutes();
-      }
+      return ModuleOrderIO.getCompletedTime(idper, mOrderId, start, end, dc);
     } catch (SQLException ex) {
-      GemLogger.log(ex.getMessage());
+      GemLogger.log(" test ???? " +ex.getMessage());
+      return 0;
     }
-    return 0;
   }
   
-  
-  /**
-   * Gets the list of module orders created between {@literal start} and {@literal end} dates.
-   * @param start start date
-   * @param end end date
-   * @return a list of module orders
-   * @throws SQLException 
-   */
-  private List<ModuleOrder> getCurrentModuleList(Date start, Date end) throws SQLException {
-    String where = "" + " AND cm.debut BETWEEN '" + start + "' AND '" + end + "'";
-    return ModuleOrderIO.find(where, dc);
-  }
-  
-  /**
-   * Gets the extended list of module orders created between {@literal start} and {@literal end} dates.
-   * @param start date
-   * @param end date
-   * @return a list of ExtendedModuleOrder
-   * @throws SQLException 
-   */
   public List<ExtendedModuleOrder> getExtendedModuleList(Date start, Date end) throws SQLException {
-    /*List<ModuleOrder> modules = getCurrentModuleList(start, end);
-    List<ExtendedModuleOrder> extended = new ArrayList<ExtendedModuleOrder>();
-    for (ModuleOrder m : modules) {
-      ExtendedModuleOrder em = new ExtendedModuleOrder(m);
-      // recherche commande
-      Order order = OrderIO.findId(m.getIdOrder(), dc);
-      // recherche personne
-//      Person p = (Person) DataCache.findId(order.getMember(), Model.Person);
-//      if (p != null) {
-//        em.setIdper(p.getId());
-      em.setIdper(order.getMember());
-//        em.setCompleted(getCompletedTime(p.getId(), m.getId(), start, end));
-      em.setCompleted(getCompletedTime(order.getMember(), m.getId(), start, end));
-        extended.add(em);
-//      } else {
-//        GemLogger.log("getExtendedModuleList null person :" + order.getMember());
-//      }
+    List<ExtendedModuleOrder> extended = ModuleOrderIO.findExtendedModuleList(start, end, dc);
+    for (ExtendedModuleOrder em : extended) {
+      em.setCompleted(getCompletedTime(em.getIdper(), em.getId(), start, end));
     }
-    return extended;*/
-    return getExtendedModuleOrders(start, end);
-    
-  }
-  
-  public List<ExtendedModuleOrder> getExtendedModuleOrders(Date start, Date end) throws SQLException {
-//    List<ModuleOrder> modules = getCurrentModuleList(start, end);
-    List<ExtendedModuleOrder> extended = new ArrayList<ExtendedModuleOrder>();
-    return ModuleOrderIO.findExtendedModuleOrders(start, end, dc);
+    return extended;
   }
 
 }

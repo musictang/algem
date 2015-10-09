@@ -90,9 +90,10 @@ public class MonthPlanView
       img = createImage(d.width, d.height);
       step_y = (d.height - TOP_MARGIN) / GRID_Y;
       bg = img.getGraphics();
-//      bg.setFont(new Font("Helvetica", Font.PLAIN, 10));
       bg.setFont(new Font(Font.SANS_SERIF,Font.PLAIN,10));
-              
+      if (bg instanceof Graphics2D) {
+        ((Graphics2D) bg).setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+      }   
       fm = bg.getFontMetrics();
       lineHeight = fm.getHeight() + 4;
       drawBackground();

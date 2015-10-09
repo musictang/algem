@@ -123,6 +123,9 @@ public class DayPlanView
       img = createImage(dim.width, dim.height);
       bg = img.getGraphics();
       bg.setFont(NORMAL_FONT);
+      if (bg instanceof Graphics2D) {
+        ((Graphics2D) bg).setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+      } // TODO DEBUG affichage des pointillés
       fm = bg.getFontMetrics();
       lineHeight = fm.getHeight() + 4;
       drawBackground();
@@ -136,15 +139,10 @@ public class DayPlanView
   @Override
   public void drawBackground() {
     ncols = dim.width / step_x;
-    if (bg instanceof Graphics2D) {
-      ((Graphics2D) bg).setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-    } // TODO DEBUG affichage des pointillés
     drawGrid();
-
     if (cols == null) {
       return;
     }
-
     ScheduleObject dummy = new ScheduleObject()
     {
       @Override
