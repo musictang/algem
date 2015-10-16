@@ -1,7 +1,7 @@
 /*
- * @(#)MusicStyleCtrl.java	2.8.p 06/12/13
+ * @(#)MusicStyleCtrl.java	2.9.4.13 16/10/15
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -30,11 +30,11 @@ import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.MessagePopup;
 
 /**
- * comment
+ * Manages categories of musical style.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.p
+ * @version 2.9.4.13
  */
 public class MusicStyleCtrl
         extends ParamTableCtrl
@@ -45,7 +45,7 @@ public class MusicStyleCtrl
   private DataCache dataCache;
 
   public MusicStyleCtrl(GemDesktop _desktop) {
-    super(_desktop, "Style musical", false);
+    super(_desktop, "Style musical", false, -1);
     dataCache = _desktop.getDataCache();
   }
 

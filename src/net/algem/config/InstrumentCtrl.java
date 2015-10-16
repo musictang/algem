@@ -1,7 +1,7 @@
 /*
- * @(#)InstrumentCtrl.java 2.8.p 06/12/13
+ * @(#)InstrumentCtrl.java 2.9.4.13 16/10/15
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -31,7 +31,7 @@ import net.algem.util.ui.MessagePopup;
  * comment
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.p
+ * @version 2.9.4.13
  */
 public class InstrumentCtrl
         extends ParamTableCtrl
@@ -92,4 +92,5 @@ public class InstrumentCtrl
       }
     }
   }
+  
 }

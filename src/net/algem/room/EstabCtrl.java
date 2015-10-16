@@ -1,5 +1,5 @@
 /*
- * @(#)EstabCtrl.java	2.9.4.6 03/06/15
+ * @(#)EstabCtrl.java	2.9.4.13 15/10/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -34,11 +34,11 @@ import net.algem.util.ui.CardCtrl;
 import net.algem.util.ui.MessagePopup;
 
 /**
- * comment
+ * Establishment controller.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.6
+ * @version 2.9.4.13
  */
 public class EstabCtrl
         extends CardCtrl
@@ -126,6 +126,11 @@ public class EstabCtrl
       estab = get();
       if (estab.isValid()) {
         EstablishmentIO.update(oldEstab, estab, dc);
+        RoomIO roomIO = (RoomIO) DataCache.getDao(Model.Room);
+        for (Room r : roomListView.getData()) {   
+          roomIO.updateStatus(r);
+          dataCache.update(r);
+        }
         dataCache.update(estab);
         desktop.postEvent(new GemEvent(this, GemEvent.MODIFICATION, GemEvent.ESTABLISHMENT, estab));
       } else {
@@ -189,7 +194,7 @@ public class EstabCtrl
   @Override
   public boolean loadId(int id) {
     try {
-      return loadCard(dataCache.findId(id, Model.Establishment));
+      return loadCard(DataCache.findId(id, Model.Establishment));
     } catch (SQLException ex) {
       GemLogger.logException(ex);
       return false;

@@ -1,7 +1,7 @@
 /*
- * @(#)StatusCtrl.java 2.8.r 14/01/14
+ * @(#)StatusCtrl.java 2.9.4.13 15/10/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -36,7 +36,7 @@ import net.algem.util.ui.MessagePopup;
  * Status management (Leisure, Professional, etc.).
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.r
+ * @version 2.9.4.13
  * @since 2.5.a 06/07/12
  */
 public class StatusCtrl 
@@ -61,7 +61,7 @@ public class StatusCtrl
   public void modification(Param current, Param p) throws SQLException, ParamException {
     if (p instanceof GemParam) {
       Status status = new Status((GemParam) p);
-      if (isValidUpdate(status)) {
+      if (isValidUpdate(status) && status.getId() > 0) {
         service.updateStatus(status);  
         desktop.getDataCache().update(status);
         desktop.postEvent(new GemEvent(this, GemEvent.MODIFICATION, GemEvent.STATUS, status));
@@ -111,4 +111,5 @@ public class StatusCtrl
     }
     return true;
   }
+
 }

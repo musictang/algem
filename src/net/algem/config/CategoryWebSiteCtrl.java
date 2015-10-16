@@ -1,7 +1,7 @@
 /*
- * @(#)CategoryWebSiteCtrl.java	2.8.p 06/12/13
+ * @(#)CategoryWebSiteCtrl.java	2.9.4.13 16/10/15
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -22,16 +22,17 @@ package net.algem.config;
 
 import java.sql.SQLException;
 import net.algem.contact.WebSiteIO;
+import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.MessageUtil;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.MessagePopup;
 
 /**
- * comment
+ * Manages the website categories.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.p
+ * @version 2.9.4.13
  */
 public class CategoryWebSiteCtrl
         extends ParamTableCtrl
@@ -44,7 +45,7 @@ public class CategoryWebSiteCtrl
   private DataCache dataCache;
 
   public CategoryWebSiteCtrl(GemDesktop _desktop) {
-    super(_desktop, "Catégorie de sites web", false);
+    super(_desktop, BundleUtil.getLabel("Menu.web.site.cat.label"), false);
     dataCache = _desktop.getDataCache();
   }
 
@@ -84,4 +85,5 @@ public class CategoryWebSiteCtrl
     }
     
   }
+
 }

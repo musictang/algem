@@ -1,7 +1,7 @@
 /*
- * @(#)RoomSearchView.java	2.9.1 11/12/14
+ * @(#)RoomSearchView.java	2.9.4.13 15/10/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -32,7 +32,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.4.13
  * @since 1.0a 07/07/1999
  */
 public class RoomSearchView
@@ -67,10 +67,10 @@ public class RoomSearchView
 
     GridBagHelper gb = new GridBagHelper(mask);
     gb.insets = GridBagHelper.SMALL_INSETS;
-    gb.add(new GemLabel(BundleUtil.getLabel("Number.label")), 0, 0, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Name.label")), 0, 1, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Establishment.label")), 0, 2, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Contact.label")), 0, 3, 1, 1, GridBagHelper.EAST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Number.label")), 0, 0, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Name.label")), 0, 1, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Establishment.label")), 0, 2, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Contact.label")), 0, 3, 1, 1, GridBagHelper.WEST);
 
     gb.add(number, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(name, 1, 1, 1, 1, GridBagHelper.WEST);

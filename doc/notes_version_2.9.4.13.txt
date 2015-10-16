@@ -1,6 +1,9 @@
 ﻿2.9.4.13
 CORRECTIFS
-* Après modification, le tarif d'une salle n'était pas mis à jour correctement dans la liste : menu Compta -> Tarifs salles. Si l'on modifiait les montants d'une ou plusieurs colonnes, ces nouveaux tarifs étaient bien enregistrés en base de données mais n'apparaissaient pas dans la liste après édition en raison d'une exception Java.
+* Après modification, le tarif d'une salle n'était pas mis à jour correctement dans la liste : menu Compta -> Tarifs salles. Si l'on modifiait les montants d'une ou plusieurs colonnes, ces nouveaux tarifs étaient bien enregistrés en base de données mais n'apparaissaient pas dans la liste après édition.
+* Il était possible de mémoriser les dimensions de la fenêtre du planning "Jour" mais celles-ci n'étaient pas prises en compte à la réouverture.
+* Le tri par numéro ne fonctionnait pas correctement dans les tableaux représentant les listes de salles.
+* Le tri par adresse ne fonctionnait pas correctement dans la liste des agences bancaires.
 
 FACTURES/DEVIS
 - En mode d'édition de facture ou de devis, il est maintenant possible d'insérer une DÉSIGNATION D'ARTICLE COMPORTANT PLUSIEURS LIGNES (dans la limite des 128 caractères autorisés en base de données). La hauteur de la rangée correspondante reflètera la composition de l'article en temps réel.
@@ -10,6 +13,15 @@ FACTURES/DEVIS
 
 CONFIGURATION
 La fenêtre de configuration dans Configuration -> Paramètres -> Généraux a été réorganisée. La liste des rubriques est maintenant visible sur le panneau de gauche et il suffit de cliquer sur l'une d'elles pour accèder à sa page de configuration. Il fallait auparavant utiliser en permanence l'ascenceur pour accéder aux différentes rubriques.
+
+Certains paramètres, nécessaires au bon fonctionnement d'Algem, ne sont plus modifiables :
+- le taux de TVA = 0.0
+- les modes de règlement par défaut : CHQ,ESP,PRL,VIR,NUL,FAC
+- l'instrument dont l'id est 0 (aucun)
+- le code cours dont l'id est 0
+- le statut "Aucun"
+- le niveau "Aucun"
+- la tranche d'âge "Aucune"
 
 COMPTABILITE
 Echéancier
@@ -24,8 +36,17 @@ Rappel : cette correspondance est utilisée en particulier pour les exports comp
 Tarifs salle
 Les tarifs accessibles depuis le menu Compta -> Tarifs salles sont maintenant alignés sur la droite et sont formatés avec 2 chiffres après la virgule.
 
+Prélèvement
+Le format SEPA est maintenant proposé par défaut dans la fenêtre Compta -> Prélèvement -> Exporter. Le format NATIONAL est obsolète depuis Août 2014. Il n'a été conservé qu'afin de prévisualiser de manière plus claire les payeurs et montants exportés.
+
 CATALOGUE
-La recherche de la liste des commandes formules sur la période devrait prendre moins de temps qu'auparavant. En mode webstart, il fallait dans certains cas attendre plus d'une minute pour obtenir un résultat.
+La recherche de la liste des commandes formules sur la période devrait prendre un peu moins de temps qu'auparavant. Ces temps de chargement sont principalement significatifs en mode Webstart.
 
 PLANNING
 Un lissage (traitement anti aliasing) a été appliqué sur la police du texte des plannings (titres des cours, noms des professeurs ou intervenants, etc.). Le rendu devrait être plus agréable sur la plupart des configurations d'écran.
+Les codes associés à un cours (niveau, statut, tranche d'âge) n'étaient pas correctement alignés dans le planning mois et collaient trop au bord de plage.
+
+SALLE
+On peut maintenant éditer les statuts "Publique" et "Active" pour tout un ensemble de salles sans avoir besoin d'ouvrir la fiche de chacune. Pour le faire, allez dans Configuration -> Etablissements -> Consulter/Modifier, sélectionnez l'établissement qui vous intéresse et cliquez sur le bouton "Suivant". Vous pouvez modifier les deux dernières colonnes de chaque ligne. Cliquez sur "Valider" pour enregistrer les modifications (ces modifications incluent celles de la fiche établissement).
+Les colonnes "Active" et "Publique" sont maintenant visibles dans la liste de résultats de la recherche Salle (menu Recherche -> Salle).
+

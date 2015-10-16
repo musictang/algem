@@ -430,6 +430,7 @@ public class Algem
     UIManager.put("CheckBoxMenuItem.font", fsans);
     UIManager.put("TitledBorder.font", fsans.deriveFont(Font.BOLD + Font.ITALIC));
     UIManager.put("RadioButton.font", fsans);
+    UIManager.put("List.font", fsans);
   }
 
   public class GemBoot

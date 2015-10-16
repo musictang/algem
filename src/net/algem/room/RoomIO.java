@@ -20,6 +20,7 @@
  */
 package net.algem.room;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -54,11 +55,15 @@ public class RoomIO
   private static String NOTE_TABLE = "note";
   private static String EQUIP_TABLE = "sallequip";
   private DataConnection dc;
+  private PreparedStatement updateStatusPS;
+  private PreparedStatement updateEquipmentPS;
 //  private String insertEquipStatement = "INSERT INTO " + EQUIP_TABLE + " VALUES(?,?,?)";
 //  private String updateEquipStatement = "UPDATE " + EQUIP_TABLE + " SET libelle = ?, qte = ? WHERE idsalle = ? AND libelle = ?";
 
   public RoomIO(DataConnection dc) {
     this.dc = dc;
+    updateStatusPS = dc.prepareStatement("UPDATE " + TABLE + " SET active = ?, public = ? WHERE id = ?");
+    updateEquipmentPS = dc.prepareStatement("INSERT INTO " + EQUIP_TABLE + " VALUES(?,?,?,?)");
   }
 
   public void insert(Room s) throws SQLException {
@@ -82,15 +87,7 @@ public class RoomIO
     s.setId(id);
   }
 
-  private void insert(Equipment e) throws SQLException {
-    String query = "INSERT INTO " + EQUIP_TABLE + " VALUES("
-            + "" + e.getRoom()
-            + ",'" + escape(e.getLabel()) // 64 caractères max depuis version 2.0pc
-            + "'," + e.getQuantity()
-            + "," + e.getIdx()
-            + ")";
-    dc.executeUpdate(query);
-  }
+  
 
   /**
    *
@@ -101,17 +98,44 @@ public class RoomIO
   public void update(Room old, Room nr) throws SQLException {
     trans_update(old, nr);
   }
+  
+  public void updateStatus(Room r) throws SQLException {
+    updateStatusPS.setBoolean(1, r.isActive());
+    updateStatusPS.setBoolean(2, r.isAvailable());
+    updateStatusPS.setInt(3, r.getId());
+    updateStatusPS.executeUpdate();
+  }
 
   public void updateEquipment(Room r) throws SQLException {
 
     deleteEquipment(r.getId());
+    
     List<Equipment> ve = r.getEquipment();
+    
     for (int i = 0; i < ve.size(); i++) {
       Equipment e = ve.get(i);
       e.setRoom(r.getId());
       e.setIdx((short) i);
-      insert(e);
+      updateEquipmentPS.setInt(1, e.getRoom());
+      updateEquipmentPS.setString(2, escape(e.getLabel()));
+      updateEquipmentPS.setInt(3, e.getQuantity());
+      updateEquipmentPS.setShort(4, e.getIdx());
+      
+      updateEquipmentPS.executeUpdate();
+//      Equipment e = ve.get(i);
+//      e.setRoom(r.getId());
+//      e.setIdx((short) i);
+//      insert(e);
     }
+  }
+  private void insert(Equipment e) throws SQLException {
+    String query = "INSERT INTO " + EQUIP_TABLE + " VALUES("
+            + "" + e.getRoom()
+            + ",'" + escape(e.getLabel()) // 64 caractères max depuis version 2.0pc
+            + "'," + e.getQuantity()
+            + "," + e.getIdx()
+            + ")";
+    dc.executeUpdate(query);
   }
 
   /**
@@ -191,6 +215,7 @@ public class RoomIO
    * @param courseId
    * @param dateStart
    * @return a room
+   * @throws java.sql.SQLException
    */
   public Room getRoom(int courseId, String dateStart) throws SQLException {
     int s = 0;
@@ -271,7 +296,6 @@ public class RoomIO
     if (p != null) {
       return new Contact(p);
     }
-
     return null;
   }
 
@@ -282,7 +306,6 @@ public class RoomIO
   private Person loadPayer(int payerId) throws SQLException {
     return (Person) DataCache.findId(payerId, Model.Person);
   }
-
 
   @Override
   public List<Room> load() {

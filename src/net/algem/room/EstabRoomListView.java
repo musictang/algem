@@ -1,7 +1,7 @@
 /*
- * @(#)EstabRoomListView.java	2.8.e 20/05/13
+ * @(#)EstabRoomListView.java	2.9.4.13 15/10/15
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,6 +21,7 @@
 package net.algem.room;
 
 import java.awt.BorderLayout;
+import java.util.List;
 import java.util.Vector;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -32,11 +33,12 @@ import net.algem.util.ui.GemPanel;
 import net.algem.util.ui.JTableModel;
 
 /**
- * comment
+ * Room list view.
+ * This view is opened in the context of an establishment.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.e
+ * @version 2.9.4.13
  * @since 1.0a 07/07/1999
  */
 public class EstabRoomListView
@@ -47,7 +49,7 @@ public class EstabRoomListView
   private JTable table;
 
   public EstabRoomListView() {
-    tableModel = new RoomTableModel();
+    tableModel = new RoomTableModel(true);
     table = new JTable(tableModel);
     table.setAutoCreateRowSorter(true);
 
@@ -63,14 +65,19 @@ public class EstabRoomListView
     add(scroll, BorderLayout.CENTER);
   }
 
-  public void clear() {
+  void clear() {
     tableModel.clear();
   }
 
-  public void load(int id) {
+  void load(int id) {
     Vector<Room> v = ((RoomIO) DataCache.getDao(Model.Room)).find("WHERE etablissement = " + id);
     for (int i = 0; i < v.size(); i++) {
       tableModel.addItem(v.elementAt(i));
     }
   }
+  
+  List<Room> getData() {
+    return tableModel.getData();
+  }
+  
 }

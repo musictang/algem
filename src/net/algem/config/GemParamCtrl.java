@@ -1,7 +1,7 @@
 /*
- * @(#)GemParamCtrl.java 2.8.r 14/01/14
+ * @(#)GemParamCtrl.java 2.9.4.13 16/10/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -29,7 +29,7 @@ import net.algem.util.module.GemDesktop;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.r
+ * @version 2.9.4.13
  * @since 2.5.a 06/07/12
  */
 public abstract class GemParamCtrl 
@@ -40,6 +40,10 @@ public abstract class GemParamCtrl
   
   public GemParamCtrl(GemDesktop desktop, String title) {
     super(desktop, title, true);    
+  }
+  
+  public GemParamCtrl(GemDesktop desktop, String title, int minId) {
+    super(desktop, title, true, minId);    
   }
   
   @Override

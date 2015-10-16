@@ -55,7 +55,7 @@ public abstract class ScheduleCanvas
         implements ScheduleView, MouseListener, Printable {
 
   protected static final int TOP_MARGIN = 30;
-  protected static final int RIGHT_MARGIN = 50;
+  protected static final int LEFT_MARGIN = 50;
   protected static final Font NORMAL_FONT = new Font("Helvetica", Font.PLAIN, 10);
   protected static final Font SMALL_FONT = new Font("Helvetica", Font.PLAIN, 9);
   protected static final Font X_SMALL_FONT = new Font("Helvetica", Font.PLAIN, 8); 
@@ -367,7 +367,7 @@ public abstract class ScheduleCanvas
   }
   
    protected int setX(int col, int spacing) {
-    return RIGHT_MARGIN + spacing + ((col - top) * step_x);
+    return LEFT_MARGIN + spacing + ((col - top) * step_x);
   }
   
   protected int setY(int start) {

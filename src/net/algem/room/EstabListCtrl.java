@@ -1,7 +1,7 @@
 /*
- * @(#)EstabListCtrl.java	2.8.e 22/05/13
+ * @(#)EstabListCtrl.java	2.9.4.13 15/10/15
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -30,11 +30,11 @@ import net.algem.util.event.GemEventListener;
 import net.algem.util.ui.ListCtrl;
 
 /**
- * comment
+ * Control list of establishments.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.d
+ * @version 2.9.4.13
  */
 
 public class EstabListCtrl
@@ -43,7 +43,6 @@ public class EstabListCtrl
 {
 
 	public EstabListCtrl()
-
 	{
 		tableModel = new EstabTableModel();
 
@@ -53,7 +52,6 @@ public class EstabListCtrl
 		TableColumnModel cm = table.getColumnModel();
 		cm.getColumn(0).setPreferredWidth(40);
 		cm.getColumn(1).setPreferredWidth(150);
-		cm.getColumn(2).setPreferredWidth(200);
 
 		JScrollPane p = new JScrollPane(table);
 		p.setBorder(new BevelBorder(BevelBorder.LOWERED));

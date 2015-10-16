@@ -1,7 +1,7 @@
 /*
- * @(#)Room.java	2.7.g 13/02/13
+ * @(#)Room.java	2.9.4.13 15/10/15
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -31,7 +31,7 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.g
+ * @version 2.9.4.13
  * @since 1.0a 02/09/2001
  * 
  */
@@ -67,7 +67,7 @@ public class Room
   }
 
   public Room(int n) {
-    this(n, "?????");
+    this(n, "");
   }
 
   public Room(String n) {

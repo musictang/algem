@@ -875,7 +875,7 @@ public class EnrolmentService
     try {
       return ModuleOrderIO.getCompletedTime(idper, mOrderId, start, end, dc);
     } catch (SQLException ex) {
-      GemLogger.log(" test ???? " +ex.getMessage());
+      GemLogger.log(getClass().getName() + "#getCompletedTime " + ex.getMessage());
       return 0;
     }
   }

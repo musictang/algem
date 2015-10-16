@@ -1,7 +1,7 @@
 /*
- * @(#)VATCtrl  2.6.a 01/08/2012
+ * @(#)VATCtrl  2.9.4.13 16/10/15
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -32,7 +32,7 @@ import net.algem.util.module.GemDesktop;
 /**
  * Persistence for VAT.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.4.13
  * @since 2.3.a 30/01/12
  */
 public class VATCtrl
@@ -46,7 +46,7 @@ public class VATCtrl
   public static String sortColumn = "pourcentage";
 
   public VATCtrl(GemDesktop _desktop) {
-    super(_desktop, BundleUtil.getLabel("Invoice.item.vat.label"), false);
+    super(_desktop, BundleUtil.getLabel("Invoice.item.vat.label"), false, 1);
   }
 
   @Override

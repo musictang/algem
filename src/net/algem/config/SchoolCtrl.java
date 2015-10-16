@@ -1,7 +1,7 @@
 /*
- * @(#)SchoolCtrl  2.8.h 03/06/13
+ * @(#)SchoolCtrl  2.9.4.13 16/10/15
  *
- * Copyright (c) 1999-2013 Musiques Tangentes All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -22,13 +22,14 @@ package net.algem.config;
 
 import java.sql.SQLException;
 import java.util.Vector;
+import net.algem.util.BundleUtil;
 import net.algem.util.MessageUtil;
 import net.algem.util.module.GemDesktop;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.h
+ * @version 2.9.4.13
  */
 public class SchoolCtrl extends ParamTableCtrl
 {
@@ -44,7 +45,7 @@ public class SchoolCtrl extends ParamTableCtrl
   }
 
   public SchoolCtrl(GemDesktop _desktop) {
-    super(_desktop, "Ecoles", false);
+    super(_desktop, BundleUtil.getLabel("Menu.school.label"), false, -1);
   }
 
   @Override

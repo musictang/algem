@@ -1,7 +1,7 @@
 /*
- * @(#)CategoryVacancyCtrl.java	2.6.a 03/08/12
+ * @(#)CategoryVacancyCtrl.java	2.9.4.13 16/10/15
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -25,10 +25,10 @@ import net.algem.util.DataCache;
 import net.algem.util.module.GemDesktop;
 
 /**
- * comment
+ * Manage vacancy categories.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.4.13
  */
 public class CategoryVacancyCtrl
 	extends ParamTableCtrl {
@@ -38,7 +38,7 @@ public class CategoryVacancyCtrl
 	private DataCache dataCache;
 
 	public CategoryVacancyCtrl(GemDesktop _desktop) {
-		super(_desktop, "Catégorie de vacances", false);
+		super(_desktop, "Catégorie de vacances", false, -1);
 		dataCache = _desktop.getDataCache();
 	}
 
@@ -63,4 +63,5 @@ public class CategoryVacancyCtrl
 		ParamTableIO.delete(Category.VACANCY.getTable(), Category.VACANCY.getCol(), _p, dc);
 		dataCache.getVacancyCat().remove(_p);
 	}
+
 }

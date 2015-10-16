@@ -1,5 +1,5 @@
 /*
- * @(#)CostAccountCtrl.java	2.9.4.11 22/07/2015
+ * @(#)CostAccountCtrl.java	2.9.4.13 16/10/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -28,7 +28,7 @@ import net.algem.util.module.GemDesktop;
  * Cost account persistence.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.11
+ * @version 2.9.4.13
  */
 public class CostAccountCtrl
         extends ParamTableCtrl
@@ -42,7 +42,7 @@ public class CostAccountCtrl
   private AccountingService service;
   
   public CostAccountCtrl(GemDesktop _desktop) {
-    super(_desktop, "Comptes analytiques", true, true);
+    super(_desktop, "Comptes analytiques", true, true, -1);
     service = new AccountingService(dc);
   }
 

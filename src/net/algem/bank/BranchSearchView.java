@@ -1,7 +1,7 @@
 /*
- * @(#)BranchSearchView.java	2.6.a 14/09/12
+ * @(#)BranchSearchView.java	2.9.4.13 15/10/15
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,11 +27,11 @@ import net.algem.util.GemCommand;
 import net.algem.util.ui.*;
 
 /**
- * comment
+ * Search bank view.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.6.a
+ * @version 2.9.4.13
  * @since 1.0a 07/07/1999
  */
 public class BranchSearchView
@@ -67,10 +67,11 @@ public class BranchSearchView
     maskPanel.setLayout(new GridBagLayout());
 
     GridBagHelper gb = new GridBagHelper(maskPanel);
-    gb.add(new GemLabel(BundleUtil.getLabel("Number.label")), 0, 0, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel("code banque"), 0, 1, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel("nom banque"), 0, 2, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel("code guichet"), 0, 3, 1, 1, GridBagHelper.EAST);
+    gb.insets = GridBagHelper.SMALL_INSETS;
+    gb.add(new GemLabel(BundleUtil.getLabel("Number.label")), 0, 0, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Bank.code.label")), 0, 1, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Bank.name.label")), 0, 2, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Bank.branch.code.label")), 0, 3, 1, 1, GridBagHelper.WEST);
 
     gb.add(number, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(bankCode, 1, 1, 1, 1, GridBagHelper.WEST);

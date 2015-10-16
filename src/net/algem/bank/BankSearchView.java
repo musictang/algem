@@ -1,7 +1,7 @@
 /*
- * @(#)BankSearchView.java	2.8.i 05/07/13
+ * @(#)BankSearchView.java	2.9.4.13 15/10/15
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -22,15 +22,16 @@ package net.algem.bank;
 
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
+import net.algem.util.BundleUtil;
 import net.algem.util.GemCommand;
 import net.algem.util.ui.*;
 
 /**
- * comment
+ * Search bank dialog.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.8.i
+ * @version 2.9.4.13
  * @since 1.0a 07/07/1999
  */
 public class BankSearchView
@@ -60,8 +61,9 @@ public class BankSearchView
     maskPanel.setLayout(new GridBagLayout());
 
     GridBagHelper gb = new GridBagHelper(maskPanel);
-    gb.add(new GemLabel("code banque"), 0, 0, 1, 1, GridBagHelper.EAST);
-    gb.add(new GemLabel("nom banque"), 0, 1, 1, 1, GridBagHelper.EAST);
+    gb.insets = GridBagHelper.SMALL_INSETS;
+    gb.add(new GemLabel(BundleUtil.getLabel("Code.label")), 0, 0, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Name.label")), 0, 1, 1, 1, GridBagHelper.WEST);
 
     gb.add(bankCode, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(bankName, 1, 1, 1, 1, GridBagHelper.WEST);

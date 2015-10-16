@@ -1,7 +1,7 @@
 /*
- * @(#)NoteIO.java	2.6.a 17/09/12
+ * @(#)NoteIO.java	2.9.4.13 12/10/15
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,9 +20,11 @@
  */
 package net.algem.contact;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
+import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 import net.algem.util.MessageUtil;
 import net.algem.util.model.TableIO;
@@ -32,7 +34,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.4.13
  */
 public class NoteIO
         extends TableIO
@@ -40,6 +42,8 @@ public class NoteIO
 
   public static final String TABLE = "note";
   public static final String SEQUENCE = "idnote";
+  private static final PreparedStatement notePS = 
+          DataCache.getDataConnection().prepareStatement("SELECT * FROM " + TABLE + " WHERE idper = ? AND ptype = ? LIMIT 1");
 
   public static void insert(Note n, DataConnection dc) throws SQLException {
     
@@ -67,11 +71,24 @@ public class NoteIO
     dc.executeUpdate(query);
   }
 
-  public static Note findId(int n, short type, DataConnection dc) throws NoteException {
-    String query = "WHERE idper = " + n + " AND ptype = " + type;
-    Vector<Note> v = find(query, dc);
-    if (v.size() > 0) {
-      return v.elementAt(0);
+  /**
+   * 
+   * @param idper person id
+   * @param type note type
+   * @param dc data connection
+   * @return a note
+   * @throws NoteException
+   */
+  public static Note findId(int idper, short type, DataConnection dc) throws NoteException {
+    try {
+      notePS.setInt(1, idper);
+      notePS.setShort(2, type);
+      ResultSet rs = notePS.executeQuery();
+      while (rs.next()) {
+        return getResultFromRS(rs);
+      }
+    } catch (SQLException ex) {
+      throw new NoteException(MessageUtil.getMessage("note.exception"));
     }
     return null;
   }
@@ -83,12 +100,7 @@ public class NoteIO
     try {
       ResultSet rs = dc.executeQuery(query);
       while (rs.next()) {
-        Note n = new Note();
-        n.setId(rs.getInt(1));
-        n.setIdPer(rs.getInt(2));
-        n.setText(unEscape(rs.getString(3)));
-        n.setPtype(rs.getShort(4));
-        v.addElement(n);
+        v.addElement(getResultFromRS(rs));
       }
       rs.close();
 
@@ -97,4 +109,14 @@ public class NoteIO
       throw new NoteException(MessageUtil.getMessage("note.exception"));
     }
   }
+  
+  private static Note getResultFromRS(ResultSet rs) throws SQLException {
+    Note n = new Note();
+    n.setId(rs.getInt(1));
+    n.setIdPer(rs.getInt(2));
+    n.setText(unEscape(rs.getString(3)));
+    n.setPtype(rs.getShort(4));
+    return n;
+  }
+  
 }

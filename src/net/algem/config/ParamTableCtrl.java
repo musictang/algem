@@ -1,5 +1,5 @@
 /*
- * @(#)ParamTableCtrl  2.9.4.11 22/07/2015
+ * @(#)ParamTableCtrl  2.9.4.13 15/10/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes All Rights Reserved.
  *
@@ -41,7 +41,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.11
+ * @version 2.9.4.13
  * @since 1.0a 21/08/2009
  */
 public abstract class ParamTableCtrl
@@ -60,6 +60,7 @@ public abstract class ParamTableCtrl
   private boolean editKey;
   protected GemPanel wCard;
   protected int mode;
+  protected int minId;
   protected Param current;
 
   public ParamTableCtrl() {
@@ -71,19 +72,36 @@ public abstract class ParamTableCtrl
    * @param title
    * @param editKey editable key
    * @param activable
+   * @param minId
    */
-  public ParamTableCtrl(GemDesktop desktop , String title, boolean editKey, boolean activable) {
+  public ParamTableCtrl(GemDesktop desktop , String title, boolean editKey, boolean activable, int minId) {
     this.desktop = desktop;
     this.dc = DataCache.getDataConnection();
     this.title = title;
     this.editKey = editKey;
-
+    this.minId = minId;
     setView(activable);
-    init();
+    initView();
   }
 
-  public ParamTableCtrl(GemDesktop desktop, String title, boolean editable) {
-    this(desktop, title, editable, false);
+  /**
+   *
+   * @param desktop
+   * @param title
+   * @param editKey editable key
+   * @param activable
+   */
+  public ParamTableCtrl(GemDesktop desktop , String title, boolean editKey, boolean activable) {
+    this(desktop, title, editKey, activable, 0);
+  }
+  
+   
+  public ParamTableCtrl(GemDesktop desktop, String title, boolean editKey) {
+    this(desktop, title, editKey, false, 0);
+  }
+  
+  public ParamTableCtrl(GemDesktop desktop, String title, boolean editKey, int minId) {
+    this(desktop, title, editKey, false, minId);
   }
 
   protected void setView(boolean activable) {
@@ -96,20 +114,9 @@ public abstract class ParamTableCtrl
     }
   }
 
-  protected void init() {
-
+  private void initView() {
     table.addActionListener(this);
-    table.addMouseListener(new MouseAdapter()
-    {
-      public void mouseClicked(MouseEvent e) {
-        int n = table.getSelectedRow();
-        current = table.getItem(n);
-        mask.set(current);
-        mask.setKeyEditable(isKeyModif());
-        ((CardLayout) wCard.getLayout()).show(wCard, "masque");
-        mode = MODIFICATION_MODE;
-      }
-    });
+    table.addMouseListener(new ParamSelectionListener(minId));
     mask.addActionListener(this);
     mask.setKeyEditable(editKey);
 
@@ -122,10 +129,8 @@ public abstract class ParamTableCtrl
 
     setLayout(new BorderLayout());
     add(wCard, BorderLayout.CENTER);
-
-    //load();
   }
-  
+
   /**
    * Specifies if the key may be changed.
    * The default value is FALSE.
@@ -217,4 +222,29 @@ public abstract class ParamTableCtrl
   public abstract void insertion(Param p) throws SQLException, ParamException;
 
   public abstract void suppression(Param p) throws Exception;
+  
+  public class ParamSelectionListener extends MouseAdapter {
+    
+    /**
+     * Id from which a modification is possible.
+     * Id is exclusive.
+     */
+    private final int minId;
+
+    public ParamSelectionListener(int minId) {
+      this.minId = minId;
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        int n = table.getSelectedRow();
+        current = table.getItem(n);
+        if (current.getId() > minId) {
+          mask.set(current);
+          mask.setKeyEditable(isKeyModif());
+          ((CardLayout) wCard.getLayout()).show(wCard, "masque");
+          mode = MODIFICATION_MODE;
+        }
+      }
+  }
 }

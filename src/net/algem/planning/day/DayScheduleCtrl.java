@@ -1,5 +1,5 @@
 /*
- * @(#)DayScheduleCtrl.java 2.9.4.12 28/09/15
+ * @(#)DayScheduleCtrl.java 2.9.4.13 12/10/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -64,7 +64,7 @@ import net.algem.util.ui.UIAdjustable;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.12
+ * @version 2.9.4.13
  * @since 1.0b 06/10/2001
  */
 public class DayScheduleCtrl
@@ -101,7 +101,7 @@ public class DayScheduleCtrl
 
     GemList<Establishment> estabs = dataCache.getList(Model.Establishment);
     view = new DayScheduleView(desktop, daySchedule, estabs);
-    view.setSize(new Dimension(prefs.getInt("w", DAY_SIZE.width), prefs.getInt("h", DAY_SIZE.height)));
+    view.setSize(new Dimension(prefs.getInt("dayplan.w", DAY_SIZE.width), prefs.getInt("dayplan.h", DAY_SIZE.height)));
     view.addActionListener(this);
 
     desktop.addGemEventListener(this);
@@ -163,8 +163,10 @@ public class DayScheduleCtrl
 
   //XXX dans DataCache + thread
   public void load(Date date) {
+    desktop.setWaitCursor();
     cal.setTime(date);
     dataCache.setDaySchedule(date);
+    desktop.setDefaultCursor();
   }
 
   /**
@@ -182,16 +184,12 @@ public class DayScheduleCtrl
     String cmd = evt.getActionCommand();
     if (src instanceof DateDayBar) {
       Date d = ((DateDayBar) evt.getSource()).getDate();
-      desktop.setWaitCursor();
       load(d);
-      desktop.setDefaultCursor();
       //((DayScheduleView) view).stateChanged(new ChangeEvent(cal));
       desktop.postEvent(new SelectDateEvent(this, d));
     } else if (src instanceof DateFrField) {
-      desktop.setWaitCursor();
       Date d = ((DateFrField) evt.getSource()).getDate();
       load(d);
-      desktop.setDefaultCursor();
       //((DayScheduleView) view).stateChanged(new ChangeEvent(cal));
       desktop.postEvent(new SelectDateEvent(this, d));
     } else if ("Click".equals(cmd)) {
@@ -204,10 +202,8 @@ public class DayScheduleCtrl
       pde.setRanges(v.getScheduleRanges());
       desktop.postEvent(pde);
     } else if (BundleUtil.getLabel("Action.today.label").equals(cmd)) {
-      desktop.setWaitCursor();
       Date d = new Date();
       load(d);
-      desktop.setDefaultCursor();
       //((DayScheduleView) view).stateChanged(new ChangeEvent(cal));
       desktop.postEvent(new SelectDateEvent(this, d));
     } else if (src == miSaveUISettings) {

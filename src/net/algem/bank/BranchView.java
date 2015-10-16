@@ -1,5 +1,5 @@
 /*
- * @(#)BranchView.java	2.9.4.3 23/04/15
+ * @(#)BranchView.java	2.9.4.13 15/10/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -37,7 +37,7 @@ import net.algem.util.ui.GridBagHelper;
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.3
+ * @version 2.9.4.13
  */
 public class BranchView
         extends GemBorderPanel
@@ -74,6 +74,7 @@ public class BranchView
 
     this.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
+    gb.insets = GridBagHelper.SMALL_INSETS;
 
     gb.add(new GemLabel(BundleUtil.getLabel("Id.label")), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Bank.code.label")), 0, 1, 1, 1, GridBagHelper.WEST);

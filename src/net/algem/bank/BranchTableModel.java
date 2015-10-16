@@ -1,5 +1,5 @@
 /*
- * @(#)BranchTableModel.java	2.9.2 26/01/15
+ * @(#)BranchTableModel.java	2.9.4.13 15/10/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -27,7 +27,7 @@ import net.algem.util.ui.JTableModel;
 /**
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.9.4.13
  */
 public class BranchTableModel
         extends JTableModel<BankBranch>
@@ -59,8 +59,9 @@ public class BranchTableModel
       case 2:
       case 3:
       case 4:
-      case 5:
         return String.class;
+      case 5:
+        return Address.class;
       default:
         return Object.class;
     }

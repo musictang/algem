@@ -1,7 +1,7 @@
 /*
- * @(#)DirectDebitExportDlg.java	2.9.1 27/11/14
+ * @(#)DirectDebitExportDlg.java	2.9.4.13 15/10/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -42,7 +42,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.4.13
  */
 public class DirectDebitExportDlg
         extends JDialog
@@ -172,6 +172,7 @@ public class DirectDebitExportDlg
     GemLabel formatLabel = new GemLabel(BundleUtil.getLabel("Format.label"));
     formatLabel.setToolTipText(MessageUtil.getMessage("direct.debit.export.format.info"));
     exportFormat = new JComboBox(DirectDebitExportFormat.values());
+    exportFormat.setSelectedItem(DirectDebitExportFormat.SEPA);
     exportFormat.setToolTipText(MessageUtil.getMessage("direct.debit.export.format.info"));
 
     gb2.add(formatLabel, 0, 3, 1, 1, GridBagHelper.NONE, GridBagHelper.WEST);

@@ -20,6 +20,7 @@
  */
 package net.algem.course;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -111,10 +112,11 @@ public class ModuleIO
   }
 
   /**
-   * Recherche d'un forfait par son id.
+   * Finds a module by its id.
    *
-   * @param n l'id du module
-   * @return le premier forfait trouvé
+   * @param n module id
+   * @return the first module found
+   * @throws java.sql.SQLException
    */
   public Module findId(int n) throws SQLException {
     String query = "WHERE id = " + n;
@@ -147,16 +149,19 @@ public class ModuleIO
   }
 
   private List<CourseModuleInfo> findCourses(int module) throws SQLException {
+//    String query = "SELECT * FROM module_cours WHERE idmodule = " + module;
+    String query = "SELECT id,code,duree FROM module_cours WHERE idmodule = ?";
+    PreparedStatement ps = dc.prepareStatement(query);
+    ps.setInt(1, module);
+//    ResultSet rs = dc.executeQuery(query);
+    ResultSet rs = ps.executeQuery();
     List<CourseModuleInfo> courses = new ArrayList<CourseModuleInfo>();
-    String query = "SELECT * FROM module_cours WHERE idmodule = " + module;
-    ResultSet rs = dc.executeQuery(query);
     while (rs.next()) {
       CourseModuleInfo info = new CourseModuleInfo();
       info.setId(rs.getShort(1));
       info.setIdModule(module);
-      info.setCode((GemParam) DataCache.findId(rs.getInt(3), Model.CourseCode));
-      //info.setIdCode(rs.getInt(3));
-      info.setTimeLength(rs.getInt(4));
+      info.setCode((GemParam) DataCache.findId(rs.getInt(2), Model.CourseCode));
+      info.setTimeLength(rs.getInt(3));
 
       courses.add(info);
     }
@@ -183,4 +188,5 @@ public class ModuleIO
   public List<Module> load() throws SQLException {
     return find("ORDER BY code,titre");
   }
+
 }

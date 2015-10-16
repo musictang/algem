@@ -1,5 +1,5 @@
 /*
- * @(#)DayPlanView.java 2.9.4.13 08/10/15
+ * @(#)DayPlanView.java 2.9.4.13 15/10/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -26,7 +26,6 @@ import java.awt.event.MouseEvent;
 import java.awt.print.Printable;
 import java.util.*;
 import java.util.List;
-
 import net.algem.config.ColorPlan;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
@@ -125,7 +124,7 @@ public class DayPlanView
       bg.setFont(NORMAL_FONT);
       if (bg instanceof Graphics2D) {
         ((Graphics2D) bg).setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-      } // TODO DEBUG affichage des pointillés
+      }
       fm = bg.getFontMetrics();
       lineHeight = fm.getHeight() + 4;
       drawBackground();
@@ -202,7 +201,7 @@ public class DayPlanView
   }
 
   private void drawGrid() {
-    int x = RIGHT_MARGIN + (step_x / 2) + 1;
+    int x = LEFT_MARGIN + (step_x / 2) + 1;
     int y = lineHeight;
     // Column headers
     for (int i = top; i < top + ncols && i < cols.size(); i++) {
@@ -509,7 +508,7 @@ public class DayPlanView
 
   @Override
   public void flagNotPaid(int colonne, int deb, int fin, Color c) {
-    int x = RIGHT_MARGIN + 2 + ((colonne - top) * step_x);
+    int x = LEFT_MARGIN + 2 + ((colonne - top) * step_x);
     int y = setY(deb);
     bg.setColor(colorPrefs.getColor(ColorPlan.FLAG));
     bg.drawString("$$$", x, y + 12);
@@ -519,7 +518,7 @@ public class DayPlanView
   @Override
   public void processMouseEvent(MouseEvent e) {
     /*
-     * if (e.isPopupTrigger()) { int	x = e.getX() - RIGHT_MARGIN -2; int	y = e.getY()
+     * if (e.isPopupTrigger()) { int	x = e.getX() - RILEFT_MARGIN2; int	y = e.getY()
      * - TOP_MARGIN -2;
      *
      * int	jj = ((x + (step_x)/2) / step_x) + 1; int	hh = ((y * 30)/12)+540; int
@@ -531,7 +530,7 @@ public class DayPlanView
   }
 
   private int getColId() {
-    int x = clickX - RIGHT_MARGIN - 2;
+    int x = clickX - LEFT_MARGIN - 2;
     int y = clickY - TOP_MARGIN - 2;
 
     int col = x / step_x;
@@ -554,7 +553,7 @@ public class DayPlanView
 
     clickX = e.getX();
     clickY = e.getY();
-    int x = clickX - RIGHT_MARGIN - 2;
+    int x = clickX - LEFT_MARGIN - 2;
     int y = clickY - TOP_MARGIN - 2;
 
     int col = x / step_x; // le numéro de la colonne

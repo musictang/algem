@@ -1,5 +1,5 @@
 /*
- * @(#)MonthPlanView.java	2.9.4.8 18/06/15
+ * @(#)MonthPlanView.java	2.9.4.13 15/10/15
  *
  * Copyright (cp) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -36,7 +36,7 @@ import net.algem.util.ui.GemField;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.8
+ * @version 2.9.4.13
  */
 public class MonthPlanView
         extends ScheduleCanvas
@@ -115,7 +115,7 @@ public class MonthPlanView
   }
 
   public void drawGrid() {
-    int x = RIGHT_MARGIN + 1;
+    int x = LEFT_MARGIN + 1;
     int y = lineHeight;
     cal.set(year, month, 1);
     cal.setTime(cal.getTime());
@@ -123,7 +123,7 @@ public class MonthPlanView
     int maxd = DateLib.daysInMonth(month, year);
 
     Dimension d = getSize();
-    step_x = (d.width - RIGHT_MARGIN) / maxd;
+    step_x = (d.width - LEFT_MARGIN) / maxd;
     step_y = ((d.height - TOP_MARGIN) / GRID_Y);
 
     for (int i = 1; i <= maxd; i++) {
@@ -159,7 +159,7 @@ public class MonthPlanView
     }
     x = 5 + fm.stringWidth(hour.toString()) + 2;
 
-    bg.drawLine(x, TOP_MARGIN + 1, RIGHT_MARGIN + (step_x * maxd) - (step_x / 2), TOP_MARGIN + 1);
+    bg.drawLine(x, TOP_MARGIN + 1, LEFT_MARGIN + (step_x * maxd) - (step_x / 2), TOP_MARGIN + 1);
     bg.setColor(Color.gray);
 
 //    y = TOP_MARGIN + (step_y * 2);
@@ -170,7 +170,7 @@ public class MonthPlanView
     Stroke dotted = new BasicStroke(0.1f,BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 10, new float[]{1f,3f}, 0);
     g2d.setStroke(dotted);
 
-    int x2 = RIGHT_MARGIN + (step_x * maxd) - (step_x / 2);
+    int x2 = LEFT_MARGIN + (step_x * maxd) - (step_x / 2);
 //    for (int i = 0; i < GRID_Y; i += 2, y += (step_y * 2)) {
     for (int i = 0; i < GRID_Y; i += 1, y += (step_y)) {
       if (0 == (i & 1)) {
@@ -277,7 +277,7 @@ public class MonthPlanView
 
   @Override
   protected int setX(int col, int spacing) {
-    return RIGHT_MARGIN + spacing + ((col - 1) * step_x) - (step_x / 2);
+    return LEFT_MARGIN + spacing + ((col - 1) * step_x) - (step_x / 2);
   }
 
   private void textRange(Vector<ScheduleObject> plans) {
@@ -287,7 +287,7 @@ public class MonthPlanView
         continue;
       }
       if (((Course) p.getActivity()).isCollective()) {
-        int x = RIGHT_MARGIN + 0 + ((p.getDate().getDay() - 1) * step_x) - (step_x - 8);
+        int x = LEFT_MARGIN + 0 + ((p.getDate().getDay() - 1) * step_x) - (step_x / 2);
         int y = setY(p.getStart().toMinutes());
         bg.setColor(getTextColor(p));
         bg.setFont(X_SMALL_FONT);
@@ -306,7 +306,7 @@ public class MonthPlanView
         code = code.substring(0, code.length() - 1);// on enlève un caractère
         w = fm.stringWidth(code) + 4; // on réduit la largeur en fonction
       }
-      bg.drawString(code, x + offset - (w - 4) / 2, y + 10);
+      bg.drawString(code, (x + offset) - (w / 2), y + 10);
     }
   }
 
@@ -331,7 +331,7 @@ public class MonthPlanView
   @Override
   public void processMouseEvent(MouseEvent e) {
     /*
-     * if (e.isPopupTrigger()) { int	x = e.getX() - RIGHT_MARGIN -2; int	y = e.getY()
+     * if (e.isPopupTrigger()) { int	x = e.getX() - LEFT_MARGIN -2; int	y = e.getY()
      * - TOP_MARGIN -2;
      *
      * int	jj = ((x + (step_x)/2) / step_x) + 1; int	hh = ((y * 30)/pas_y)+540;
@@ -346,7 +346,7 @@ public class MonthPlanView
   public void mouseClicked(MouseEvent e) {
     clickX = e.getX();
     clickY = e.getY();
-    int x = clickX - RIGHT_MARGIN - 2;
+    int x = clickX - LEFT_MARGIN - 2;
     int y = clickY - TOP_MARGIN - 2;
 
     int jj = ((x + (step_x) / 2) / step_x) + 1;
@@ -357,9 +357,9 @@ public class MonthPlanView
     Hour h = new Hour(hh, mm);
     Graphics g = getGraphics();
     // ecrase frame du dessus ??
-    //g.clipRect(0,0,RIGHT_MARGIN-(step_x/2)-1,TOP_MARGIN-1);
+    //g.clipRect(0,0,LEFT_MARGIN-(step_x/2)-1,TOP_MARGIN-1);
     g.setColor(getBackground());
-    g.fillRect(0, 0, RIGHT_MARGIN - (step_x / 2) - 1, TOP_MARGIN - 1);
+    g.fillRect(0, 0, LEFT_MARGIN - (step_x / 2) - 1, TOP_MARGIN - 1);
     g.setColor(Color.black);
 
     g.setFont(new Font("Helvetica", Font.PLAIN, 10));
@@ -407,7 +407,7 @@ public class MonthPlanView
   @Override
   public void mouseMoved(MouseEvent e) {
 
-    int x = e.getX() - RIGHT_MARGIN - 2;
+    int x = e.getX() - LEFT_MARGIN - 2;
     int y = e.getY() - TOP_MARGIN - 2;
     int jj = ((x + (step_x) / 2) / step_x) + 1;
     int hh = ((y * 30) / step_y) + H_START;
@@ -432,8 +432,8 @@ public class MonthPlanView
      * int	mm = hh % 60; hh /=	60;
      *
      * Hour h = new Hour(hh,mm); Graphics g = getGraphics(); // ecrase
-     * //frame du dessus ?? //g.clipRect(0,0,RIGHT_MARGIN-(step_x/2)-1,TOP_MARGIN-1);
-     * g.setColor(getBackground()); g.fillRect(0,0,RIGHT_MARGIN-(step_x/2)-1,TOP_MARGIN-1);
+     * //frame du dessus ?? //g.clipRect(0,0,LEFT_MARGIN-(step_x/2)-1,TOP_MARGIN-1);
+     * g.setColor(getBackground()); g.fillRect(0,0,LEFT_MARGIN-(step_x/2)-1,TOP_MARGIN-1);
      * g.setColor(Color.black);
      *
      * g.setFont(new Font("Helvetica", Font.PLAIN, 10));

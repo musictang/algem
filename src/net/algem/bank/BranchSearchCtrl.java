@@ -1,7 +1,7 @@
 /*
- * @(#)BranchSearchCtrl.java	2.6.a 01/08/2012
+ * @(#)BranchSearchCtrl.java	2.9.4.13 15/10/15
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,11 +27,11 @@ import net.algem.util.DataConnection;
 import net.algem.util.ui.SearchCtrl;
 
 /**
- * comment
+ * Search controller for bank branch.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.4.13
  * @since 1.0a 07/07/1999
  */
 public class BranchSearchCtrl
@@ -41,8 +41,8 @@ public class BranchSearchCtrl
 	private BankBranchIO bankBranchIO;
 	
   public BranchSearchCtrl(DataConnection dc) {
-    super(dc, "Consultation/modification d'une agence bancaire");
-		bankBranchIO = new BankBranchIO(dc);
+    super(dc, "");
+    bankBranchIO = new BankBranchIO(dc);
   }
 
   @Override

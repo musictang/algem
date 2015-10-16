@@ -1,5 +1,5 @@
 /*
- * @(#)EstabTableModel.java	2.9.2 26/01/15
+ * @(#)EstabTableModel.java	2.9.4.13 15/10/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -27,7 +27,7 @@ import net.algem.util.ui.JTableModel;
 /**
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.9.4.13
  */
 public class EstabTableModel
         extends JTableModel<Person>
@@ -38,7 +38,6 @@ public class EstabTableModel
     header = new String[]{
       BundleUtil.getLabel("Id.label"),
       BundleUtil.getLabel("Name.label"),
-      BundleUtil.getLabel("Contact.label")
     };
   }
 
@@ -54,7 +53,7 @@ public class EstabTableModel
       case 0:
         return Integer.class;
       case 1:
-      case 2:
+//      case 2:
         return String.class;
       default:
         return Object.class;
@@ -74,8 +73,6 @@ public class EstabTableModel
         return new Integer(p.getId());
       case 1:
         return p.getName();
-      case 2:
-        return p.getFirstName();
     }
     return null;
   }

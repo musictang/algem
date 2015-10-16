@@ -1,7 +1,7 @@
 /*
- * @(#)LevelCtrl.java 2.8.r 14/01/14
+ * @(#)LevelCtrl.java 2.9.4.13 15/10/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -35,7 +35,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.r
+ * @version 2.9.4.13
  * @since 2.5.a 22/06/2012
  */
 public class LevelCtrl 
@@ -60,7 +60,7 @@ public class LevelCtrl
   public void modification(Param current, Param p) throws SQLException, ParamException {
     if (p instanceof GemParam) {
       Level level = new Level((GemParam) p);
-      if (isValidUpdate(level)) {
+      if (isValidUpdate(level) && level.getId() > 0) {
         service.updateLevel(level);
         desktop.getDataCache().update(level);
         desktop.postEvent(new GemEvent(this, GemEvent.MODIFICATION, GemEvent.LEVEL, level));

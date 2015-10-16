@@ -1,7 +1,7 @@
 /*
- * @(#)ModeOfPaymentCtrl  2.6.a 03/10/12
+ * @(#)ModeOfPaymentCtrl  2.9.4.13 16/10/15
  *
- * Copyright (c) 2011 Musiques Tangentes All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,7 +28,7 @@ import net.algem.util.module.GemDesktop;
  * Persistence of modes of payment.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.4.13
  */
 public class ModeOfPaymentCtrl
         extends ParamTableCtrl
@@ -40,7 +40,7 @@ public class ModeOfPaymentCtrl
   public static final String COLUMN_NAME = "mode";
 
   public ModeOfPaymentCtrl(GemDesktop _desktop) {
-    super(_desktop, "Modes de règlement", false);
+    super(_desktop, "Modes de règlement", false, 6);
   }
 
   @Override

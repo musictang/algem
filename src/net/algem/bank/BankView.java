@@ -1,7 +1,7 @@
 /*
- * @(#)BankView.java	2.6.a 14/09/12
+ * @(#)BankView.java	2.9.4.13 15/10/15
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -29,11 +29,11 @@ import net.algem.util.ui.GemLabel;
 import net.algem.util.ui.GridBagHelper;
 
 /**
- * comment
+ * Bank view.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.6.a
+ * @version 2.9.4.13
  */
 public class BankView
         extends GemBorderPanel
@@ -51,8 +51,8 @@ public class BankView
     this.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
 
-    gb.add(new GemLabel(BundleUtil.getLabel("Code.label")), 0, 0, 1, 1, GridBagHelper.WEST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Name.label")), 0, 1, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Bank.code.label")), 0, 0, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Bank.name.label")), 0, 1, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Bank.multi.label")), 0, 2, 1, 1, GridBagHelper.WEST);
     gb.add(code, 1, 0, 3, 1, GridBagHelper.WEST);
     gb.add(name, 1, 1, 3, 1, GridBagHelper.WEST);

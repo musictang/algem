@@ -1,7 +1,7 @@
 /*
- * @(#)CourseCodeCtrl.java	2.8.r 14/01/14
+ * @(#)CourseCodeCtrl.java	2.9.4.13 16/10/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -24,6 +24,7 @@ import java.sql.SQLException;
 import java.util.List;
 import net.algem.course.CourseCode;
 import net.algem.course.ModuleIO;
+import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.MessageUtil;
 import net.algem.util.event.GemEvent;
@@ -34,7 +35,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.r
+ * @version 2.9.4.13
  * @since 2.8.a 14/03/2013
  */
 public class CourseCodeCtrl 
@@ -44,7 +45,7 @@ public class CourseCodeCtrl
   private CourseCodeIO ccIO;
 
   public CourseCodeCtrl(GemDesktop desktop) {
-    super(desktop, "Course codes", true);
+    super(desktop, BundleUtil.getLabel("Menu.course.codes.label"), true);
   }
   
   @Override
@@ -107,5 +108,5 @@ public class CourseCodeCtrl
       }
     }
   }
-
+  
 }

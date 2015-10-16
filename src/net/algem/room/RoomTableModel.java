@@ -1,5 +1,5 @@
 /*
- * @(#)RoomTableModel.java	2.9.2 26/01/15
+ * @(#)RoomTableModel.java	2.9.4.13 15/10/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -24,20 +24,30 @@ import net.algem.util.BundleUtil;
 import net.algem.util.ui.JTableModel;
 
 /**
+ * Room table model.
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.9.4.13
  */
 public class RoomTableModel
         extends JTableModel<Room>
 {
 
+  private boolean editable;
+  
   public RoomTableModel() {
-    header = new String[]{
+    this(false);
+  }
+  
+  public RoomTableModel(boolean editable) {
+     this.editable = editable;
+     header = new String[]{
       BundleUtil.getLabel("Id.label"),
       BundleUtil.getLabel("Name.label"),
       BundleUtil.getLabel("Function.label"),
-      "NbPers"
+      BundleUtil.getLabel("Place.number.label"),
+      BundleUtil.getLabel("Room.active.label"),
+      BundleUtil.getLabel("Room.public.label")
     };
   }
 
@@ -51,11 +61,15 @@ public class RoomTableModel
   public Class getColumnClass(int column) {
     switch (column) {
       case 0:
-      case 3:
         return Integer.class;
       case 1:
       case 2:
         return String.class;
+      case 3:
+        return Integer.class;
+      case 4:
+      case 5:
+        return Boolean.class;
       default:
         return Object.class;
     }
@@ -63,26 +77,40 @@ public class RoomTableModel
 
   @Override
   public boolean isCellEditable(int row, int column) {
-    return false;
+    return editable && column >= 4;
   }
 
   @Override
-  public Object getValueAt(int ligne, int colonne) {
-    Room s = tuples.elementAt(ligne);
-    switch (colonne) {
+  public Object getValueAt(int line, int col) {
+    Room r = tuples.elementAt(line);
+    switch (col) {
       case 0:
-        return new Integer(s.getId());
+        return new Integer(r.getId());
       case 1:
-        return s.getName();
+        return r.getName();
       case 2:
-        return s.getFunction();
+        return r.getFunction();
       case 3:
-        return new Integer(s.getNPers());
+        return new Integer(r.getNPers());
+      case 4:
+        return r.isActive();
+      case 5:
+        return r.isAvailable();
     }
     return null;
   }
 
   @Override
-  public void setValueAt(Object value, int ligne, int column) {
+  public void setValueAt(Object value, int line, int col) {
+    Room r = tuples.elementAt(line);
+    switch(col) {
+      case 4:
+        r.setActive((boolean) value);
+        break;
+      case 5:
+        r.setAvailable((boolean) value);
+        break;
+    }
+    modItem(line, r);
   }
 }

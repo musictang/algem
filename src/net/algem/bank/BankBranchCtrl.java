@@ -1,7 +1,7 @@
 /*
- * @(#)BankBranchCtrl.java	2.8.i 07/07/13
+ * @(#)BankBranchCtrl.java	2.9.4.13 15/10/15
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -26,6 +26,7 @@ import java.util.Vector;
 import java.util.logging.Level;
 import net.algem.contact.AddressIO;
 import net.algem.contact.CodePostalCtrl;
+import net.algem.util.BundleUtil;
 import net.algem.util.DataConnection;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
@@ -38,7 +39,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.i
+ * @version 2.9.4.13 15/10/
  */
 public class BankBranchCtrl
         extends CardCtrl
@@ -56,7 +57,7 @@ public class BankBranchCtrl
     branchView.setBankCodeCtrl(new BankCodeCtrl(this.dc, branchIO));
     branchView.setPostalCodeCtrl(new CodePostalCtrl(this.dc));
 
-    addCard("Fiche agence bancaire", branchView);
+    addCard(BundleUtil.getLabel("Bank.branch.label"), branchView);
     btPrev.setText(GemCommand.DELETE_CMD);
     btPrev.setActionCommand(GemCommand.DELETE_CMD);
     select(0);

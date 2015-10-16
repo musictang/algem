@@ -1,7 +1,7 @@
 /*
- * @(#)ContactIO.java	2.8.t 15/05/14
+ * @(#)ContactIO.java	2.9.4.13 15/10/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -46,7 +46,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.9.4.13
  * @since 1.0a 07/07/1999
  */
 public class ContactIO
@@ -114,7 +114,7 @@ public class ContactIO
    *
    * @param c ancien contact
    * @param n nouveau contact
-   * @throws java.lang.SQLException
+   * @throws java.sql.SQLException
    */
   public void update(Contact c, Contact n) throws SQLException {
     System.out.println("ContactIO.update " + c + " --> " + n);
@@ -210,7 +210,8 @@ public class ContactIO
    * Suppression of contact. Address, telephone, emails are also deleted.
    *
    * @param c
-   * @throws java.lang.SQLException, net.algem.contact.ContactDeleteException
+   * @throws java.sql.SQLException
+   * @throws net.algem.contact.ContactDeleteException
    */
   public void delete(Contact c) throws SQLException, ContactDeleteException {
     checkDelete(c, dc);
@@ -320,7 +321,7 @@ public class ContactIO
       if (rs.next()) {
         cpt = rs.getInt(1);
       }
-    } catch (Exception e) {
+    } catch (SQLException e) {
       GemLogger.logException(query, e);
     }
     return cpt;
@@ -444,6 +445,7 @@ public class ContactIO
         msg += MessageUtil.getMessage("contact.delete.schedule.warning", vpl.size());
         throw new ContactDeleteException(msg);
       }
+      // TODO carte d'abonnement ??
     } else if (c.getType() == Person.BANK) {
       String check = "SELECT count(guichetid) FROM " + RibIO.TABLE + " WHERE guichetid = " + c.getId();
       ResultSet rs = dc.executeQuery(check);

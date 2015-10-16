@@ -1,7 +1,7 @@
 /*
- * @(#)BankBranchIO.java 2.8.i 08/07/13
+ * @(#)BankBranchIO.java 2.9.4.13 15/10/15
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -36,7 +36,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.i
+ * @version 2.9.4.13
  */
 public class BankBranchIO
         extends TableIO
@@ -137,9 +137,14 @@ public class BankBranchIO
     return find("WHERE g.code='" + c + "' AND b.code='" + b + "'", true);
   }
 
-  public Vector<BankBranch> find(String where, boolean complet) {
+  /**
+   * Finds branches.
+   * @param where optional request
+   * @param full with contact information
+   * @return a list of branches
+   */
+  public Vector<BankBranch> find(String where, boolean full) {
     Vector<BankBranch> v = new Vector<BankBranch>();
-    // 2.1a AJOUT DISTINCT pour éviter les doublons dans la vue.
     String query = "SELECT DISTINCT p.id,p.ptype,b.code, b.nom,b.multiguichet,g.code,g.domiciliation,g.bic FROM personne p, guichet g, banque b ";
     if (where != null && where.length() > 0) {
       query += where + " AND p.id = g.id";
@@ -148,7 +153,6 @@ public class BankBranchIO
     }
 
     query += " AND p.ptype=" + Person.BANK + " AND b.code = g.banque ORDER BY b.code,g.code";
-//    System.out.println(query);
     try {
       ResultSet rs = dc.executeQuery(query);
       while (rs.next()) {
@@ -162,7 +166,7 @@ public class BankBranchIO
         a.setBank(b);
         a.setCode(rs.getString(6).trim());
         a.setDomiciliation(rs.getString(7).trim());
-        if (complet) {
+        if (full) {
           a.setAddress(AddressIO.findId(a.getId(), dc));
           a.setTele(TeleIO.findId(a.getId(), dc));
         }
