@@ -35,6 +35,7 @@ import net.algem.contact.CityCtrl;
 import net.algem.contact.member.RehearsalPass;
 import net.algem.contact.member.RehearsalPassIO;
 import net.algem.contact.member.RehearsalPassListCtrl;
+import net.algem.course.ModulePresetDlg;
 import net.algem.planning.VacationCtrl;
 import net.algem.room.EstabCreateCtrl;
 import net.algem.room.EstabSearchCtrl;
@@ -131,6 +132,7 @@ public class MenuConfig
     mAdmin.add(miRightsBrowse);
     mAdmin.addSeparator();
     mAdmin.add(new JMenuItem(menus.get("Menu.cache.label")));
+    mAdmin.add(new JMenuItem("presets"));
     /* mSauve = new JMenu("Base de donnée"); mSauve.getItem(new JMenuItem("Sauvegarde
      * (dump de la base)")); mSauve.getItem(new JMenuItem("Restauration depuis
      * un dump")); mSauve.getItem(new JMenuItem("Création")); */
@@ -255,6 +257,10 @@ public class MenuConfig
       desktop.addPanel("Rights.management", rightsCtrl);
     } else if (menus.get("Menu.cache.label").equals(arg)) {
       dataCache.load(null);
+    } 
+     else if ("presets".equals(arg)) {
+      ModulePresetDlg dlg = new ModulePresetDlg(desktop);
+      dlg.initUI();
     } 
     /*else if (source == miServer) {
       ServeurCtrl serverCtrl = new ServeurCtrl(dataCache.getDataConnection());
