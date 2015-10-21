@@ -1,5 +1,5 @@
 /*
- * @(#)DataConnection.java	2.9.4.7 08/06/15
+ * @(#)DataConnection.java	2.9.4.13 21/10/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -28,7 +28,7 @@ import java.util.logging.Level;
  * Utility class for database connection.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.7
+ * @version 2.9.4.13
  * @since 2.6.a 01/08/2012
  */
 public class DataConnection
@@ -317,5 +317,12 @@ public class DataConnection
         setAutoCommit(true);
       }
     }
+  }
+
+  public Array createArray(String type, Object[] o) throws SQLException {
+    if (cnx != null) {
+      return cnx.createArrayOf(type, o);
+    }
+    return null;
   }
 }

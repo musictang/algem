@@ -1,6 +1,6 @@
 /*
- * @(#)GemCommand.java 2.9.2 09/01/15
- * 
+ * @(#)GemCommand.java 2.9.4.13 21/10/15
+ *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,14 +16,14 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.util;
 
 /**
  * Generic action commands.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.9.4.13
  * @since 2.2.c
  */
 public class GemCommand
@@ -58,6 +58,7 @@ public class GemCommand
   public static final String PRINT_CMD = BundleUtil.getLabel("Action.print.label");
   public static final String MAIL_CMD = BundleUtil.getLabel("Action.mail.label");
   public static final String DUPLICATE_CMD = BundleUtil.getLabel("Action.duplicate.label");
+  public static final String RENAME_CMD = BundleUtil.getLabel("Rename.label");
 
   private GemCommand(String val) {
   }

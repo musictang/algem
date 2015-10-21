@@ -1,6 +1,6 @@
 /*
- * @(#)ModuleService.java 2.9.4.12 29/09/15
- * 
+ * @(#)ModuleService.java 2.9.4.13 21/10/15
+ *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,12 +16,14 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.course;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Vector;
+import net.algem.config.Preset;
 import net.algem.enrolment.ModuleOrder;
 import net.algem.enrolment.ModuleOrderIO;
 import net.algem.planning.DateFr;
@@ -36,7 +38,7 @@ import net.algem.util.model.Model;
  * Service class for modules.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.12
+ * @version 2.9.4.13
  * @since 2.5.a 03/07/12
  */
 public class ModuleService
@@ -75,7 +77,7 @@ public class ModuleService
     }
     moduleIO.delete(m);
   }
-  
+
   boolean isUsed(int moduleId, DateFr start) throws SQLException {
     Vector<ModuleOrder> vm = ModuleOrderIO.find("AND m.id = " + moduleId + " AND cm.debut >= '" + start.toString() + "'", dc);
     return vm != null && vm.size() > 0;
@@ -96,5 +98,20 @@ public class ModuleService
     }
     courseIO.delete(c);
   }
-  
+
+  public List<Preset<Integer>> findPresets() throws SQLException{
+    return moduleIO.loadPresets();
+  }
+
+  public void addPreset(Preset<Integer> p) throws SQLException {
+    moduleIO.addPreset(p);
+  }
+
+  public void renamePreset(Preset<Integer> p) throws SQLException {
+    moduleIO.updatePreset(p);
+  }
+
+  public void deletePreset(int p) throws SQLException {
+    moduleIO.deletePreset(p);
+  }
 }

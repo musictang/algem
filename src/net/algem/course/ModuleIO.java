@@ -1,6 +1,6 @@
 /*
- * @(#)ModuleIO.java 2.9.4.12 25/09/15
- * 
+ * @(#)ModuleIO.java 2.9.4.13 21/10/15
+ *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.course;
 
@@ -24,9 +24,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 import net.algem.config.GemParam;
+import net.algem.config.Preset;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 import net.algem.util.model.Cacheable;
@@ -38,7 +41,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.12
+ * @version 2.9.4.13
  */
 public class ModuleIO
         extends TableIO
@@ -48,6 +51,8 @@ public class ModuleIO
   public static final String TABLE = "module";
   public static final String SEQUENCE = "idmodule";
   public static final int TITLE_MAX_LEN = 64;
+  private static final String PRESET_SELECTION_TABLE = "module_preset";
+  private static final String PRESET_SELECTION_SEQUENCE = "module_preset_id_seq";
   private DataConnection dc;
 
   public ModuleIO(DataConnection dc) {
@@ -73,7 +78,7 @@ public class ModuleIO
     transInsert(m);
 
   }
-  
+
   private void transInsert(Module m) throws SQLException {
     for (CourseModuleInfo cm : m.getCourses()) {
       cm.setIdModule(m.getId());
@@ -167,12 +172,12 @@ public class ModuleIO
     }
     return courses;
   }
-  
+
   /**
    * Find all associations between modules and course code.
    * @param code course code
    * @return the number of associations found
-   * @throws SQLException 
+   * @throws SQLException
    */
   public int haveCode(int code) throws SQLException {
     String query = "SELECT count(*) FROM module_cours WHERE code = " + code;
@@ -187,6 +192,41 @@ public class ModuleIO
   @Override
   public List<Module> load() throws SQLException {
     return find("ORDER BY code,titre");
+  }
+
+  public List<Preset<Integer>> loadPresets() throws SQLException {
+    String key = "modules";
+    String query = "SELECT id,nom,"+ key + " FROM module_preset";
+    ResultSet rs = dc.executeQuery(query);
+    List<Preset<Integer>> presets = new ArrayList<>();
+    while(rs.next()) {
+      Preset<Integer> p = new DefaultPreset<>();
+      p.setId(rs.getInt(1));
+      p.setName(rs.getString(2));
+      Map<String, Integer[]> map = new HashMap<>();
+      Integer[] modules = (Integer[]) rs.getArray(3).getArray();
+      p.setValue(modules);
+      presets.add(p);
+    }
+    return presets;
+  }
+
+  public void addPreset(Preset<Integer> p) throws SQLException {
+    Integer[] modules = p.getValue();
+    int idx = TableIO.nextId(PRESET_SELECTION_SEQUENCE, dc);
+    String query = "INSERT into " + PRESET_SELECTION_TABLE + " VALUES(" + idx + ",E'"+ TableIO.escape(p.getName()) + "','" + dc.createArray("integer", modules) + "')";
+    p.setId(idx);
+    dc.executeUpdate(query);
+  }
+
+  public void updatePreset(Preset<Integer> p) throws SQLException {
+    String query = "UPDATE " + PRESET_SELECTION_TABLE + " SET nom = E'" + TableIO.escape(p.getName()) + "' WHERE id = " + p.getId();
+    dc.executeUpdate(query);
+  }
+
+  public void deletePreset(int p) throws SQLException {
+    String query = "DELETE FROM " + PRESET_SELECTION_TABLE + " WHERE id = " + p;
+    dc.executeUpdate(query);
   }
 
 }
