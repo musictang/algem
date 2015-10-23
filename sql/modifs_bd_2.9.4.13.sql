@@ -4,3 +4,4 @@ CREATE TABLE module_preset(
   nom varchar(128),
   modules int[]
 );
+ALTER TABLE module_preset OWNER TO nobody;

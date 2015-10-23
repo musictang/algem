@@ -107,4 +107,16 @@ public class MessagePopup
   public static void error(Component c, String m, String title) {
     JOptionPane.showMessageDialog(c, m, title, JOptionPane.ERROR_MESSAGE);
   }
+  
+  /**
+   * Displays an input dialog box with custom message and title.
+   * @param c component
+   * @param m message
+   * @param t title
+   * @param o initial selection value
+   * @return a string or null
+   */
+  public static String input(Component c, String m, String t, Object o) {
+    return (String) JOptionPane.showInputDialog(c, m, t, JOptionPane.PLAIN_MESSAGE, null, null, o);
+  }
 }

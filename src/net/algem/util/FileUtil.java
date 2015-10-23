@@ -70,7 +70,9 @@ public class FileUtil
   /** Relative path for invoice footer file. */
   public final static String INVOICE_FOOTER_FILE = "/resources/doc/fact-pdp.txt";
 
-  public final static String DEFAULT_CSS_DIR = "/resources/css/";
+  public final static String DEFAULT_CSS_DIR = "/resources/css";
+  
+  public final static String DEFAULT_HELP_DIR = "/resources/doc/html";
 
 //  public final static String DOC_DIR = "/resources/doc/";
 

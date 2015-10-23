@@ -26,16 +26,15 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JEditorPane;
 import javax.swing.JList;
-import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.event.ListSelectionEvent;
@@ -44,14 +43,14 @@ import net.algem.config.Preset;
 import net.algem.config.PresetCtl;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
+import net.algem.util.FileUtil;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
-import net.algem.util.MessageUtil;
 import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
-import net.algem.util.module.GemModule;
 import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GemPanel;
+import net.algem.util.ui.MessagePopup;
 
 /**
  *
@@ -63,13 +62,17 @@ public class ModulePresetDlg
   extends JDialog
   implements ActionListener, ListSelectionListener {
 
-  private GemDesktop desktop;
+  private Component parent;
+  private DataCache dataCache;
   private PresetCtl presetCtl;
-  JList moduleList;
+  private JList moduleList;
   private ModuleService service;
+  private JButton btValidation;
+  private JButton btCancel;
+  private boolean validation;
 
-  public ModulePresetDlg(GemDesktop desktop) {
-    this.desktop = desktop;
+  public ModulePresetDlg(Component parent, DataCache cache) {
+    this.dataCache = cache;
     service = new ModuleService(DataCache.getDataConnection());
     setModal(true);
   }
@@ -83,19 +86,37 @@ public class ModulePresetDlg
     Component presetPanel = presetCtl.getView();
     presetPanel.setMinimumSize(new Dimension(200, 400));
 
-    GemPanel buttons = new GemPanel(new GridLayout(1, 2));
-    buttons.add(new GemButton(GemCommand.CANCEL_CMD));
-    buttons.add(new GemButton(GemCommand.VALIDATION_CMD));
+    GemPanel footer = new GemPanel(new BorderLayout());
+    URL url = getClass().getResource(FileUtil.DEFAULT_HELP_DIR + "/detail/module-preset.html");
 
+    JEditorPane help = new JEditorPane();
+    help.setContentType("text/html");
+    try {
+      help.setPage(url);
+    } catch (IOException ex) {
+      GemLogger.log(ex.getMessage());
+    }
+    help.setEditable(false);
+
+    GemPanel cmdPanel = new GemPanel(new GridLayout(1, 2));
+    cmdPanel.add(btCancel = new GemButton(GemCommand.CANCEL_CMD));
+    cmdPanel.add(btValidation = new GemButton(GemCommand.VALIDATION_CMD));
+    btValidation.addActionListener(this);
+    btCancel.addActionListener(this);
+    
+    footer.add(help, BorderLayout.NORTH);
+    footer.add(cmdPanel, BorderLayout.SOUTH);
+    
     moduleList = new JList(getModules().toArray());
-    JScrollPane scroll2 = new JScrollPane(moduleList);
-    scroll2.setMinimumSize(new Dimension(400, 400));
-    add(buttons, BorderLayout.SOUTH);
+    JScrollPane rightScroll = new JScrollPane(moduleList);
+    rightScroll.setMinimumSize(new Dimension(400, 400));
     setLayout(new BorderLayout());
-    JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, presetPanel, scroll2);
+    JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, presetPanel, rightScroll);
     add(splitPane, BorderLayout.CENTER);
-    add(buttons, BorderLayout.SOUTH);
-    setSize(GemModule.DEFAULT_SIZE);
+    add(footer, BorderLayout.SOUTH);
+    setSize(new Dimension(650, 650));
+    setLocationRelativeTo(parent);
+//    setLocation(100,0);
     setVisible(true);
   }
 
@@ -110,7 +131,11 @@ public class ModulePresetDlg
   }
 
   private List<Module> getModules() {
-    return desktop.getDataCache().getList(Model.Module).getData();
+    return dataCache.getList(Model.Module).getData();
+  }
+  
+  public List<Module> getSelectedModules() {
+    return moduleList.getSelectedValuesList();
   }
 
   @Override
@@ -129,19 +154,24 @@ public class ModulePresetDlg
         for (int i = 0; i < modules.size(); i++) {
           indices[i] = modules.get(i).getId();
         }
-        String name = (String) JOptionPane.showInputDialog(this, BundleUtil.getLabel("Name.label"), GemCommand.ADD_CMD, JOptionPane.PLAIN_MESSAGE, null, null, modules.get(0).getTitle());
+        String name = MessagePopup.input(this, BundleUtil.getLabel("Name.label"), GemCommand.ADD_CMD, modules.get(0).getTitle());
         if (name != null) {
           p.setName(name.isEmpty() ? modules.get(0).getTitle() : name);
           p.setValue(indices);
           service.addPreset(p);
           presetCtl.add(p);
         }
-
       } else if (GemCommand.RENAME_CMD.equals(cmd)) {
         Preset<Integer> p = presetCtl.rename();
         if (p != null) {
-          service.renamePreset(presetCtl.rename());
+          service.renamePreset(p);
         }
+      } else if (GemCommand.CANCEL_CMD.equals(cmd)) {
+        validation = false;
+        close();
+      } else if (GemCommand.VALIDATION_CMD.equals(cmd)) {
+        validation = true;
+        close();
       }
     } catch (SQLException ex) {
       GemLogger.log(ex.getMessage());
@@ -167,6 +197,15 @@ public class ModulePresetDlg
       }
     }
     moduleList.setSelectedIndices(indices);
+  }
+  
+  public boolean isValidated() {
+    return validation;
+  }
+  
+  private void close() {
+    setVisible(false);
+    dispose();
   }
 
 }

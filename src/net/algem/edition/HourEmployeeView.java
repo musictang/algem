@@ -66,12 +66,13 @@ public class HourEmployeeView
   private JCheckBox detail;
   private ParamChoice schoolChoice;
   private EmployeeTypePanel employeeType;
-  private final JRadioButton r1, r2, r3;
+  private final JRadioButton r1, r2, r3, r4;
 
   private String[] sortingInfos = {
     MessageUtil.getMessage("employee.hours.sorting.by.establishment.tip"),
     MessageUtil.getMessage("employee.hours.sorting.by.date.tip"),
-    MessageUtil.getMessage("employee.hours.sorting.by.member.tip")
+    MessageUtil.getMessage("employee.hours.sorting.by.member.tip"),
+    MessageUtil.getMessage("employee.hours.sorting.by.module.tip")
   };
   
   private final ButtonGroup btSortingGroup;
@@ -93,6 +94,8 @@ public class HourEmployeeView
     r2.setActionCommand(HourEmployeeDlg.SORTING_CMD[1]);
     r3 = new JRadioButton(MessageUtil.getMessage("employee.hours.sorting.by.member.file.info"));
     r3.setActionCommand(HourEmployeeDlg.SORTING_CMD[2]);
+    r4 = new JRadioButton(MessageUtil.getMessage("employee.hours.sorting.by.module.file.info"));
+    r4.setActionCommand(HourEmployeeDlg.SORTING_CMD[3]);
     
     GemPanel sortingPanel = new GemPanel();
     sortingPanel.setLayout(new BoxLayout(sortingPanel, BoxLayout.Y_AXIS));
@@ -160,20 +163,26 @@ public class HourEmployeeView
         } else if (e.getSource() == r3) {
           status.setText(sortingInfos[2]);
           dlg.setPath(getType(), HourEmployeeDlg.SORTING_CMD[2]);
+        } else if (e.getSource() == r4) {
+          status.setText(sortingInfos[3]);
+          dlg.setPath(getType(), HourEmployeeDlg.SORTING_CMD[3]);
         } 
       }
     };
     r1.addActionListener(radioBtListener);
     r2.addActionListener(radioBtListener);
     r3.addActionListener(radioBtListener);
+    r4.addActionListener(radioBtListener);
     
     btSortingGroup.add(r1);
     btSortingGroup.add(r2);
     btSortingGroup.add(r3);
+    btSortingGroup.add(r4);
 
     sortingPanel.add(r1);
     sortingPanel.add(r2);
     sortingPanel.add(r3);
+    sortingPanel.add(r4);
 
     gb.add(sortingPanel, 0, 5, 2, 1, GridBagHelper.WEST);
     gb.add(status, 0, 6, 2, 1, GridBagHelper.WEST);
@@ -185,10 +194,12 @@ public class HourEmployeeView
     if (EmployeeType.TECHNICIAN.ordinal() == getType() || EmployeeType.ADMINISTRATOR.ordinal() == getType()) {
       r1.setEnabled(false);
       r3.setEnabled(false);
+      r4.setEnabled(false);
       r2.setSelected(true);
     } else {
       r1.setEnabled(true);
       r3.setEnabled(true);
+      r4.setEnabled(true);
     }
   }
 

@@ -34,6 +34,10 @@ import net.algem.config.ParamTableIO;
 import net.algem.config.Preference;
 import net.algem.contact.PersonIO;
 import net.algem.course.CourseIO;
+import net.algem.course.Module;
+import net.algem.course.ModuleIO;
+import net.algem.enrolment.CourseOrderIO;
+import net.algem.enrolment.ModuleOrderIO;
 import net.algem.planning.*;
 import net.algem.room.RoomIO;
 import net.algem.util.DataCache;
@@ -175,6 +179,44 @@ public class AccountingService {
       query += " AND s.nom !~* 'rattrap'";
     }
     query += " ORDER BY p1.nom, p1.prenom,p.jour,pg.debut,a.cours";
+
+    return dc.executeQuery(query);
+  }
+  
+  public ResultSet getDetailTeacherByModule(String start, String end, boolean catchup, int idper, int school, List<Module> modules) throws SQLException {
+    StringBuilder sb = new StringBuilder();
+    for (Module m : modules) {
+      sb.append(m.getId()).append(',');
+    }
+    sb.deleteCharAt(sb.length()-1);
+    String query = "SELECT DISTINCT ON (p1.nom, p1.prenom, p.jour, pg.debut,m.id)"
+      + " p.idper, p1.prenom, p1.nom, a.id, c.id, c.titre, m.id, m.titre, p.jour, pg.debut, pg.fin, (pg.fin - pg.debut) AS duree"
+      + " FROM " + ScheduleIO.TABLE + " p, " 
+            + ScheduleRangeIO.TABLE + " pg, "
+            + ActionIO.TABLE + " a, " 
+            + CourseIO.TABLE  + " c, " 
+            + PersonIO.TABLE + " p1, "
+            + RoomIO.TABLE + " s,"
+            + CourseOrderIO.TABLE + " cc,"
+            + ModuleOrderIO.TABLE + " cm,"
+            + ModuleIO.TABLE + " m";
+    query += (idper > 0) ? " WHERE p.idper = " + idper : " WHERE p.idper > 0";
+    query += " AND p.jour BETWEEN '" + start + "' AND '" + end + "'"
+      + " AND p.ptype IN ("+Schedule.COURSE+","+Schedule.WORKSHOP+","+Schedule.TRAINING // cours, atelier ponctuel, stage
+      + ") AND p.lieux = s.id"
+      + " AND p.action = a.id"
+      + " AND a.id = cc.idaction"
+      + " AND cc.module = cm.id"
+      + " AND cm.module IN("+sb.toString()
+      + ") AND cm.module = m.id"
+      + " AND a.cours = c.id"
+      + " AND c.ecole = " + school
+      + " AND p.idper = p1.id"
+      + " AND pg.idplanning = p.id";
+    if (!catchup) {
+      query += " AND s.nom !~* 'rattrap'";
+    }
+    query += " ORDER BY m.id,p1.nom,p1.prenom,p.jour,pg.debut,a.cours";
 
     return dc.executeQuery(query);
   }

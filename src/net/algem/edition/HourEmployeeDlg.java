@@ -32,11 +32,14 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Vector;
 import javax.swing.*;
 import net.algem.accounting.AccountingService;
 import net.algem.config.Param;
 import net.algem.contact.EmployeeType;
+import net.algem.course.Module;
+import net.algem.course.ModulePresetDlg;
 import net.algem.planning.*;
 import net.algem.util.*;
 import net.algem.util.model.Model;
@@ -57,7 +60,7 @@ public class HourEmployeeDlg
         implements ActionListener, PropertyChangeListener
 {
 
-  static String[] SORTING_CMD = {"DefaultSorting", "DateSorting", "MemberSorting"};
+  static String[] SORTING_CMD = {"DefaultSorting", "DateSorting", "MemberSorting", "ModuleSorting"};
 
   private HourEmployeeView view;
   private AccountingService service;
@@ -163,7 +166,7 @@ public class HourEmployeeDlg
         pm.setMillisToDecideToPopup(10);
 
         if (SORTING_CMD[0].equals(sorting)) {
-          Vector<PlanningLib> plan = new Vector<PlanningLib>();
+          Vector<PlanningLib> plan = new Vector<>();
           if (employeeId > 0) {
             plan = service.getPlanningLib(start.toString(), end.toString(), school.getId(), employeeId, catchup);
           } else {
@@ -180,6 +183,15 @@ public class HourEmployeeDlg
           ResultSet rsCo = service.getDetailCoTeacherByMember(start.toString(), end.toString(), catchup, employeeId, school.getId());
           ((HoursTeacherByMemberTask) employeeTask).setIndividualRS(rsInd);
           ((HoursTeacherByMemberTask) employeeTask).setCollectiveRS(rsCo);
+        } else if (SORTING_CMD[3].equals(sorting)) {
+          ModulePresetDlg dlg = new ModulePresetDlg(this, dataCache);
+          dlg.initUI();
+          if (dlg.isValidated()) {
+            List<Module> modules = dlg.getSelectedModules();
+            assert(modules.size() > 0);
+            ResultSet rs = service.getDetailTeacherByModule(start.toString(), end.toString(), catchup, employeeId, school.getId(), modules);
+            employeeTask = new HoursTeacherByModuleTask(this, pm, out, rs, detail);
+          }
         }
       } else if (EmployeeType.TECHNICIAN.ordinal() == type) {
         ResultSet rs = service.getDetailByTechnician(start.toString(), end.toString(), Schedule.TECH);
@@ -192,8 +204,10 @@ public class HourEmployeeDlg
         pm.setMillisToDecideToPopup(10);
         employeeTask = new HoursAdministrativeTask(this, pm, out, rs, detail);
       }
-      employeeTask.addPropertyChangeListener(this);
-      employeeTask.execute();
+      if (employeeTask != null) {
+        employeeTask.addPropertyChangeListener(this);
+        employeeTask.execute();
+      } 
     } catch (IOException ex) {
       MessagePopup.warning(view, MessageUtil.getMessage("file.exception"));
       GemLogger.logException(ex);

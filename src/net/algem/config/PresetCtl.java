@@ -25,12 +25,12 @@ import java.awt.event.ActionListener;
 import java.util.List;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionListener;
 import net.algem.util.GemCommand;
 import net.algem.util.MessageUtil;
+import net.algem.util.ui.MessagePopup;
 import net.algem.util.ui.PresetPanel;
 
 /**
@@ -72,7 +72,7 @@ public class PresetCtl {
 
   public Preset<Integer> rename() {
     Preset<Integer> p = (Preset<Integer>) list.getSelectedValue();
-    String s = (String) JOptionPane.showInputDialog(view, MessageUtil.getMessage("dialog.rename"),GemCommand.ADD_CMD, JOptionPane.PLAIN_MESSAGE, null, null,  p.getName());
+    String s = MessagePopup.input(view, MessageUtil.getMessage("dialog.rename"),GemCommand.RENAME_CMD, p.getName());
     if (s != null && s.length() > 0) {
       p.setName(s);
       return p;
