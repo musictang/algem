@@ -1,7 +1,7 @@
 /*
- * @(#)TestHour.java	2.9.1 14/11/14
+ * @(#)TestHour.java	2.9.4.13 28/10/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -26,7 +26,7 @@ import org.junit.*;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.4.13
  * @since 2.7.a 11/06/2013
  */
 public class TestHour
@@ -135,5 +135,15 @@ public class TestHour
       return 0;
     }
 
+  }
+  
+  @Test
+  public void testConstructor() {
+    Hour h = new Hour("388:30:00");
+    assertFalse(h.toMinutes() == 23310);
+    h = new Hour(23310);
+    assertFalse(h.toMinutes() == 23310);
+    h = new Hour("99:30:00");
+    assertTrue(h.toMinutes() == 5970);
   }
 }

@@ -1,5 +1,5 @@
 /*
- * @(#)HourEmployeeDlg.java	2.9.4.12 23/09/15
+ * @(#)HourEmployeeDlg.java	2.9.4.13 27/10/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -30,18 +30,16 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Vector;
 import javax.swing.*;
 import net.algem.accounting.AccountingService;
 import net.algem.config.Param;
 import net.algem.contact.EmployeeType;
-import net.algem.course.Module;
-import net.algem.course.ModulePresetDlg;
+import net.algem.contact.Person;
 import net.algem.planning.*;
+import net.algem.room.Establishment;
 import net.algem.util.*;
+import net.algem.util.model.GemList;
 import net.algem.util.model.Model;
 import net.algem.util.ui.GemPanel;
 import net.algem.util.ui.GridBagHelper;
@@ -52,7 +50,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.12
+ * @version 2.9.4.13
  * @since 2.8.v 10/06/14
  */
 public class HourEmployeeDlg
@@ -69,23 +67,22 @@ public class HourEmployeeDlg
   private SwingWorker employeeTask;
   private DataCache dataCache;
   private String path;
+  private GemList<Establishment> allEstabList;
 
-  public HourEmployeeDlg(Frame parent, String file, DataCache dataCache) {
-    super(parent, BundleUtil.getLabel("Menu.edition.export.label") + " " + BundleUtil.getLabel("Menu.employee.hour.label"), file, DataCache.getDataConnection()
-    );
+  public HourEmployeeDlg(Frame parent, DataCache dataCache) {
+    super(parent, BundleUtil.getLabel("Menu.edition.export.label") + " " + BundleUtil.getLabel("Menu.employee.hour.label"), DataCache.getDataConnection());
     this.dataCache = dataCache;
     service = new AccountingService(dc);
-    init(file, dc);
   }
 
-  public HourEmployeeDlg(Frame parent, String file, int idper, DataCache dataCache) {
-    this(parent, file, dataCache);
+  public HourEmployeeDlg(Frame parent, int idper, DataCache dataCache) {
+    this(parent, dataCache);
     this.employeeId = idper;
   }
 
   @Override
-  public void init(String file, DataConnection dc) {
-    super.init(file, dc);
+  public void init(String fileName, DataConnection dc) {
+    super.init(fileName, dc);
     setLayout(new BorderLayout());
     setPath(EmployeeType.TEACHER.ordinal(), SORTING_CMD[0]);
     GemPanel p = new GemPanel();
@@ -99,7 +96,10 @@ public class HourEmployeeDlg
     gb.add(new JLabel(BundleUtil.getLabel("Menu.file.label")), 0, 0, 1, 1, GridBagHelper.EAST);
     gb.add(filepath, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(chooser, 2, 0, 1, 1, GridBagHelper.WEST);
-    view = new HourEmployeeView(this, dataCache.getList(Model.School), dataCache.getList(Model.EmployeeType));
+    
+    allEstabList = dataCache.getList(Model.Establishment);
+    allEstabList.addElement(new Establishment(new Person(0, BundleUtil.getLabel("All.label")))); 
+    view = new HourEmployeeView(this, dataCache.getList(Model.School), dataCache.getList(Model.EmployeeType), allEstabList);
 
     p.add(header);
     p.add(view);
@@ -107,8 +107,9 @@ public class HourEmployeeDlg
     add(p, BorderLayout.CENTER);
     add(buttons, BorderLayout.SOUTH);
     setLocation(200, 100);
-    setSize(480,440);
+    setSize(480, 440);
     pack();
+    setVisible(true);
   }
 
   String getPath() {
@@ -129,9 +130,9 @@ public class HourEmployeeDlg
         filepath.setText(path);
       }
     } else if (idx > 0) {
-        path = path.substring(0, idx);
-        path = path.concat(".txt");
-        filepath.setText(path);
+      path = path.substring(0, idx);
+      path = path.concat(".txt");
+      filepath.setText(path);
     }
   }
 
@@ -144,6 +145,7 @@ public class HourEmployeeDlg
 
     boolean detail = view.withDetail();
     int type = view.getType();
+    int estab = view.getEstab();
 
     String lf = TextUtil.LINE_SEPARATOR;
     setCursor(new Cursor(Cursor.WAIT_CURSOR));
@@ -156,58 +158,26 @@ public class HourEmployeeDlg
     try {
       String sorting = view.getSorting();
       setPath(type, sorting);
-      /*out = new PrintWriter(new File(path), StandardCharsets.UTF_8.name());
-      out.print("\ufeff");// force Byte Order Mark (BOM) : windows/mac excel utf8 compatibility ! must be the first character in file */
       out = new PrintWriter(new File(path), "UTF-16LE"); // this is the best solution
+      pm = new ProgressMonitor(view, MessageUtil.getMessage("active.search.label"), "", 1, 100);
+      pm.setMillisToDecideToPopup(10);
+      String cmd = null;
+      EmployeeTaskFactory factory = new EmployeeTaskFactory(this, service, dataCache, pm, out);
+      factory.setProperties(start, end, employeeId, school.getId(), estab, catchup, detail);
       if (EmployeeType.TEACHER.ordinal() == type) {
         out.println(MessageUtil.getMessage("export.hour.teacher.header", new Object[]{school.getValue(), start, end}) + lf);
-
-        pm = new ProgressMonitor(view, MessageUtil.getMessage("active.search.label"), "", 1, 100);
-        pm.setMillisToDecideToPopup(10);
-
-        if (SORTING_CMD[0].equals(sorting)) {
-          Vector<PlanningLib> plan = new Vector<>();
-          if (employeeId > 0) {
-            plan = service.getPlanningLib(start.toString(), end.toString(), school.getId(), employeeId, catchup);
-          } else {
-            plan = service.getPlanningLib(start.toString(), end.toString(), school.getId(), catchup);
-          }
-          employeeTask = new HoursTeacherByEstabTask(this, pm, out, plan, detail);
-          ((HoursTeacherByEstabTask) employeeTask).set(dataCache, service);
-        } else if (SORTING_CMD[1].equals(sorting)) {
-          ResultSet rs = service.getDetailTeacherByDate(start.toString(), end.toString(), catchup, employeeId, school.getId());
-          employeeTask = new HoursTeacherByDateTask(this, pm, out, rs, detail);
-        } else if (SORTING_CMD[2].equals(sorting)) {
-          employeeTask = new HoursTeacherByMemberTask(this, pm, out, detail);
-          ResultSet rsInd = service.getDetailIndTeacherByMember(start.toString(), end.toString(), catchup, employeeId, school.getId());
-          ResultSet rsCo = service.getDetailCoTeacherByMember(start.toString(), end.toString(), catchup, employeeId, school.getId());
-          ((HoursTeacherByMemberTask) employeeTask).setIndividualRS(rsInd);
-          ((HoursTeacherByMemberTask) employeeTask).setCollectiveRS(rsCo);
-        } else if (SORTING_CMD[3].equals(sorting)) {
-          ModulePresetDlg dlg = new ModulePresetDlg(this, dataCache);
-          dlg.initUI();
-          if (dlg.isValidated()) {
-            List<Module> modules = dlg.getSelectedModules();
-            assert(modules.size() > 0);
-            ResultSet rs = service.getDetailTeacherByModule(start.toString(), end.toString(), catchup, employeeId, school.getId(), modules);
-            employeeTask = new HoursTeacherByModuleTask(this, pm, out, rs, detail);
-          }
-        }
+        cmd = sorting;
       } else if (EmployeeType.TECHNICIAN.ordinal() == type) {
-        ResultSet rs = service.getDetailByTechnician(start.toString(), end.toString(), Schedule.TECH);
-        pm = new ProgressMonitor(view, MessageUtil.getMessage("active.search.label"), "", 1, 100);
-        pm.setMillisToDecideToPopup(10);
-        employeeTask = new HoursTechnicianTask(this, pm, out, rs, detail);
+        cmd = "Technician";
       } else if (EmployeeType.ADMINISTRATOR.ordinal() == type) {
-        ResultSet rs = service.getDetailByAdministrator(start.toString(), end.toString(), Schedule.ADMINISTRATIVE);
-        pm = new ProgressMonitor(view, MessageUtil.getMessage("active.search.label"), "", 1, 100);
-        pm.setMillisToDecideToPopup(10);
-        employeeTask = new HoursAdministrativeTask(this, pm, out, rs, detail);
+        cmd = "Administrator";
       }
+      employeeTask = factory.getTask(cmd);
+
       if (employeeTask != null) {
         employeeTask.addPropertyChangeListener(this);
         employeeTask.execute();
-      } 
+      }
     } catch (IOException ex) {
       MessagePopup.warning(view, MessageUtil.getMessage("file.exception"));
       GemLogger.logException(ex);
@@ -223,7 +193,7 @@ public class HourEmployeeDlg
     if (employeeTask != null && employeeTask.isDone()) {
       employeeTask.cancel(true);
     } else if (pm.isCanceled() && employeeTask != null) {
-        employeeTask.cancel(true);
+      employeeTask.cancel(true);
     } else if (event.getPropertyName().equals("progress")) {
       // get the % complete from the progress event
       // and set it on the progress monitor
@@ -231,6 +201,11 @@ public class HourEmployeeDlg
       pm.setProgress(pg);
     }
   }
-
+  
+  @Override
+  public void close() {
+    allEstabList.removeElement((Establishment) allEstabList.getItem(0));
+    super.close();
+  }
 
 }

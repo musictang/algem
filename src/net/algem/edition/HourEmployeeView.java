@@ -1,5 +1,5 @@
 /*
- * @(#)HourEmployeeView.java  2.9.4.12 25/09/15
+ * @(#)HourEmployeeView.java  2.9.4.13 27/10/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -44,6 +44,8 @@ import net.algem.contact.EmployeeType;
 import net.algem.contact.EmployeeTypePanel;
 import net.algem.planning.DateFr;
 import net.algem.planning.DateRangePanel;
+import net.algem.room.EstabChoice;
+import net.algem.room.Establishment;
 import net.algem.util.BundleUtil;
 import net.algem.util.MessageUtil;
 import net.algem.util.model.GemList;
@@ -55,7 +57,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.12
+ * @version 2.9.4.13
  * @since 2.8.v 10/06/14
  */
 public class HourEmployeeView
@@ -65,6 +67,8 @@ public class HourEmployeeView
   private DateRangePanel dateRange;
   private JCheckBox detail;
   private ParamChoice schoolChoice;
+  
+  private EstabChoice estabChoice;
   private EmployeeTypePanel employeeType;
   private final JRadioButton r1, r2, r3, r4;
 
@@ -77,7 +81,7 @@ public class HourEmployeeView
   
   private final ButtonGroup btSortingGroup;
 
-  public HourEmployeeView(final HourEmployeeDlg dlg, GemList<Param> schools, GemList<GemParam> employeeTypes) {
+  public HourEmployeeView(final HourEmployeeDlg dlg, GemList<Param> schools, GemList<GemParam> employeeTypes, GemList<Establishment> estabList) {
 
     setLayout(new BorderLayout());
     setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
@@ -131,22 +135,28 @@ public class HourEmployeeView
     dateRange = new DateRangePanel(start, end);
     detail = new JCheckBox();
     detail.setBorder(null);
-
+    
+    estabChoice = new EstabChoice(estabList);
+    estabChoice.setKey(0);
+    
     schoolChoice = new ParamChoice(schools.getData());
+    schoolChoice.setPreferredSize(new Dimension(estabChoice.getPreferredSize().width, schoolChoice.getPreferredSize().height));
     int defaultSchool = Integer.parseInt(ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey()));
     schoolChoice.setKey(defaultSchool);
     //TODO ajouter option 'Autoriser les plannings vides' : cf. ateliers extérieurs)
-    
+
     gb.add(new JLabel(BundleUtil.getLabel("Type.label")), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(new JLabel(BundleUtil.getLabel("Period.label")), 0, 1, 1, 1, GridBagHelper.WEST);
     gb.add(new JLabel(BundleUtil.getLabel("School.label")), 0, 2, 1, 1, GridBagHelper.WEST);
-    gb.add(new JLabel(BundleUtil.getLabel("Detail.label")), 0, 3, 1, 1, GridBagHelper.WEST);
+    gb.add(new JLabel(BundleUtil.getLabel("Establishment.label")), 0, 3, 1, 1, GridBagHelper.WEST);
+    gb.add(new JLabel(BundleUtil.getLabel("Detail.label")), 0, 4, 1, 1, GridBagHelper.WEST);
 
     gb.add(employeeType, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(dateRange, 1, 1, 1, 1, GridBagHelper.WEST);
     gb.add(schoolChoice, 1, 2, 1, 1, GridBagHelper.WEST);
-    gb.add(detail, 1, 3, 1, 1, GridBagHelper.WEST);
-    gb.add(Box.createRigidArea(new Dimension(100,20)), 1, 4, 1, 1, GridBagHelper.WEST);
+    gb.add(estabChoice, 1, 3, 1, 1, GridBagHelper.WEST);
+    gb.add(detail, 1, 4, 1, 1, GridBagHelper.WEST);
+    gb.add(Box.createRigidArea(new Dimension(100,20)), 1, 5, 1, 1, GridBagHelper.WEST);
 
     btSortingGroup = new ButtonGroup();
 
@@ -184,8 +194,8 @@ public class HourEmployeeView
     sortingPanel.add(r3);
     sortingPanel.add(r4);
 
-    gb.add(sortingPanel, 0, 5, 2, 1, GridBagHelper.WEST);
-    gb.add(status, 0, 6, 2, 1, GridBagHelper.WEST);
+    gb.add(sortingPanel, 0, 6, 2, 1, GridBagHelper.WEST);
+    gb.add(status, 0, 7, 2, 1, GridBagHelper.WEST);
     add(body, BorderLayout.CENTER);
 
   }
@@ -203,26 +213,30 @@ public class HourEmployeeView
     }
   }
 
-  public DateFr getDateStart() {
+  DateFr getDateStart() {
     return dateRange.getStartFr();
   }
 
-  public DateFr getDateEnd() {
+  DateFr getDateEnd() {
     return dateRange.getEndFr();
   }
 
-  public Param getSchool() {
+  Param getSchool() {
     return (Param) schoolChoice.getSelectedItem();
   }
 
-  public boolean withDetail() {
+  boolean withDetail() {
     return detail.isSelected();
   }
 
-  public int getType() {
+  int getType() {
     return employeeType.getType();
   }
   
+  int getEstab() {
+    return estabChoice.getKey();
+  }
+    
   String getSorting() {
     return btSortingGroup.getSelection().getActionCommand();
   }

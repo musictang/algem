@@ -1,5 +1,5 @@
 /*
- * @(#)ModulePresetDlg.java 2.9.4.0 20/10/2015
+ * @(#)ModulePresetDlg.java 2.9.4.13 27/10/2015
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -47,7 +47,6 @@ import net.algem.util.FileUtil;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
 import net.algem.util.model.Model;
-import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GemPanel;
 import net.algem.util.ui.MessagePopup;
@@ -55,8 +54,8 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.0
- * @since 2.9.4.0 20/10/2015
+ * @version 2.9.4.13
+ * @since 2.9.4.13 20/10/2015
  */
 public class ModulePresetDlg
   extends JDialog
@@ -68,8 +67,8 @@ public class ModulePresetDlg
   private JList moduleList;
   private ModuleService service;
   private JButton btValidation;
-  private JButton btCancel;
   private boolean validation;
+  private JButton btCancel;
 
   public ModulePresetDlg(Component parent, DataCache cache) {
     this.dataCache = cache;
@@ -99,8 +98,8 @@ public class ModulePresetDlg
     help.setEditable(false);
 
     GemPanel cmdPanel = new GemPanel(new GridLayout(1, 2));
-    cmdPanel.add(btCancel = new GemButton(GemCommand.CANCEL_CMD));
     cmdPanel.add(btValidation = new GemButton(GemCommand.VALIDATION_CMD));
+    cmdPanel.add(btCancel = new GemButton(GemCommand.CANCEL_CMD));
     btValidation.addActionListener(this);
     btCancel.addActionListener(this);
     
@@ -116,7 +115,6 @@ public class ModulePresetDlg
     add(footer, BorderLayout.SOUTH);
     setSize(new Dimension(650, 650));
     setLocationRelativeTo(parent);
-//    setLocation(100,0);
     setVisible(true);
   }
 

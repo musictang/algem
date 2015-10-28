@@ -1,5 +1,5 @@
 /*
- * @(#)HoursTeacherByEstabTask.java	2.9.4.8 25/06/15
+ * @(#)HoursTeacherByEstabTask.java	2.9.4.13 27/10/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -46,7 +46,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  * Task executed when editing hours of teachers. Sorting is performed by establisment.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.8
+ * @version 2.9.4.13
  * @since 2.9.1 03/12/14
  */
 class HoursTeacherByEstabTask
@@ -58,7 +58,7 @@ class HoursTeacherByEstabTask
     private int k;
     private DataCache dataCache;
     private AccountingService service;
-    private ExportService exportService;
+//    private ExportService exportService;
     private String [] types = {
       BundleUtil.getLabel("Leisure.label"),
       BundleUtil.getLabel("Pro.label")
@@ -73,8 +73,10 @@ class HoursTeacherByEstabTask
       this.plan = plan;
     }
 
-    /*
+    /**
      * Main task. Executed in background thread.
+     * @return Void object
+     * @throws SQLException 
      */
     @Override
     public Void doInBackground() throws SQLException {
@@ -86,7 +88,7 @@ class HoursTeacherByEstabTask
     void set(DataCache cache, AccountingService service) {
       this.dataCache = cache;
       this.service = service;
-      exportService = new ExportService(DataCache.getDataConnection());
+//      exportService = new ExportService(DataCache.getDataConnection());
     }
 
     /*
@@ -130,11 +132,11 @@ class HoursTeacherByEstabTask
             out.println(" " + this.totalDayLabel + " : " + new Hour(totalDay).toString());
             totalMonth += totalDay;
             totalPeriod += totalDay;
-            out.print(this.totalMonthLabel + " : " + numberFormat.format(totalMonth / 60.0) + " h; ");
-            out.print(this.totalPeriodLabel + " : " + numberFormat.format(totalPeriod / 60.0) + " h; ");
+            out.print(this.totalMonthLabel + " : " + getTotal(totalMonth) + " h; ");
+            out.print(this.totalPeriodLabel + " : " + getTotal(totalPeriod) + " h; ");
             if (detail) {
-              out.print(BundleUtil.getLabel("Total.label") + " " + types[0] + " : " + numberFormat.format(totalLeisure / 60.0));
-              out.println("; " + BundleUtil.getLabel("Total.label") + " " + types[1] + " : "+ numberFormat.format(totalPro / 60.0));
+              out.print(BundleUtil.getLabel("Total.label") + " " + types[0] + " : " + getTotal(totalLeisure));
+              out.println("; " + BundleUtil.getLabel("Total.label") + " " + types[1] + " : "+ getTotal(totalPro));
               printTotalEstab(out, totalEstab, totalEstabL, totalEstabP);
 
             }
@@ -167,7 +169,7 @@ class HoursTeacherByEstabTask
           oldDay = p.getDay();
           // affichage du sous-total par mois
           if (p.getDay().getMonth() != oldMonth) {
-            out.println(this.totalMonthLabel + " : " + numberFormat.format(totalMonth / 60.0) + " heures  ");
+            out.println(this.totalMonthLabel + " : " + getTotal(totalMonth) + " heures  ");
             totalMonth = 0;
             oldMonth = p.getDay().getMonth();
           }
@@ -253,11 +255,11 @@ class HoursTeacherByEstabTask
       out.println(" total jour : " + new Hour(totalDay).toString());
       totalMonth += totalDay;
       totalPeriod += totalDay;
-      out.print(this.totalMonthLabel + " : " + numberFormat.format(totalMonth / 60.0) + " h; ");
-      out.print(this.totalPeriodLabel + " : " + numberFormat.format(totalPeriod / 60.0) + " h; ");
+      out.print(this.totalMonthLabel + " : " + getTotal(totalMonth) + " h; ");
+      out.print(this.totalPeriodLabel + " : " + getTotal(totalPeriod) + " h; ");
       if (detail) {
-        out.print(BundleUtil.getLabel("Total.label") + " " + types[0] + " : " + numberFormat.format(totalLeisure / 60.0));
-        out.println("; " + BundleUtil.getLabel("Total.label") + " " + types[1] + " : " + numberFormat.format(totalPro / 60.0));
+        out.print(BundleUtil.getLabel("Total.label") + " " + types[0] + " : " + getTotal(totalLeisure));
+        out.println("; " + BundleUtil.getLabel("Total.label") + " " + types[1] + " : " + getTotal(totalPro));
         printTotalEstab(out, totalEstab, totalEstabL, totalEstabP);
       }
       out.println();
@@ -272,7 +274,7 @@ class HoursTeacherByEstabTask
       for (Map.Entry<Establishment, Integer> entry : totalEstab.entrySet()) {
         if (entry.getValue() > 0) {
           empty = false;
-          out.print(entry.getKey().getName() + " : " + numberFormat.format(entry.getValue() / 60.0) + "; ");
+          out.print(entry.getKey().getName() + " : " + getTotal(entry.getValue()) + "; ");
         }
       }
       if (!empty) {
@@ -283,7 +285,7 @@ class HoursTeacherByEstabTask
       for (Map.Entry<Establishment, Integer> entry : totalEstabL.entrySet()) {
         if (entry.getValue() > 0) {
           empty = false;
-          out.print(entry.getKey().getName() + " " + types[0] + " : " + numberFormat.format(entry.getValue() / 60.0) + "; ");
+          out.print(entry.getKey().getName() + " " + types[0] + " : " + getTotal(entry.getValue()) + "; ");
         }
       }
       if (!empty) {
@@ -293,7 +295,7 @@ class HoursTeacherByEstabTask
       for (Map.Entry<Establishment, Integer> entry : totalEstabP.entrySet()) {
         if (entry.getValue() > 0) {
           empty = false;
-          out.print(entry.getKey().getName() + " " + types[1] + " : " + numberFormat.format(entry.getValue() / 60.0) + "; ");
+          out.print(entry.getKey().getName() + " " + types[1] + " : " + getTotal(entry.getValue()) + "; ");
         }
       }
       if (!empty) {

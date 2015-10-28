@@ -1,5 +1,5 @@
 /*
- * @(#)HoursTeacherByMemberTask.java	2.9.2 27/01/15
+ * @(#)HoursTeacherByMemberTask.java	2.9.4.13 27/10/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -33,7 +33,7 @@ import net.algem.util.BundleUtil;
  * Task executed when editing hours of teachers. Sorting is performed by students, courses and dates.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.9.4.13
  * @since 2.9.1 03/12/14
  */
 class HoursTeacherByMemberTask
@@ -102,11 +102,11 @@ class HoursTeacherByMemberTask
           if (prevIdper > 0) {
             totalPeriod += totalMonth;
             if (detail) {
-              out.println(tc + ";;;;;;" + numberFormat.format(totalCourse / 60.0));
-              out.println(this.totalPeriodLabel +";;;;;;" + numberFormat.format(totalPeriod / 60.0));
+              out.println(tc + ";;;;;;" + getTotal(totalCourse));
+              out.println(this.totalPeriodLabel +";;;;;;" + getTotal(totalPeriod));
             } else {
-              out.println(teacherName + ";"+courseName+";;;;;" + numberFormat.format(totalCourse / 60.0));
-              out.println(this.totalPeriodLabel +";;;;;;" + numberFormat.format(totalPeriod / 60.0));
+              out.println(teacherName + ";"+courseName+";;;;;" + getTotal(totalCourse));
+              out.println(this.totalPeriodLabel +";;;;;;" + getTotal(totalPeriod));
             }
             out.println();
           }
@@ -123,9 +123,9 @@ class HoursTeacherByMemberTask
         if (idcourse != prevCourse) {
           if (prevCourse > 0 && totalCourse > 0) {
             if (detail) {
-              out.println(tc + ";;;;;;" + numberFormat.format(totalCourse / 60.0));
+              out.println(tc + ";;;;;;" + getTotal(totalCourse));
             } else {
-              out.println(teacherName +";"+courseName+";;;;;" + numberFormat.format(totalCourse / 60.0));
+              out.println(teacherName +";"+courseName+";;;;;" + getTotal(totalCourse));
             }
             totalCourse = 0;
           }
@@ -145,11 +145,11 @@ class HoursTeacherByMemberTask
       } //end while
       totalPeriod += totalMonth;
       if (detail) {
-        out.println(tc + ";;;;;;" + numberFormat.format(totalCourse / 60.0));
-        out.println(this.totalPeriodLabel + ";;;;;;" + numberFormat.format(totalPeriod / 60.0));
+        out.println(tc + ";;;;;;" + getTotal(totalCourse));
+        out.println(this.totalPeriodLabel + ";;;;;;" + getTotal(totalPeriod));
       } else {
-        out.println(teacherName +";"+courseName+";;;;;" + numberFormat.format(totalCourse / 60.0));
-        out.println(this.totalPeriodLabel + ";;;;;;" + numberFormat.format(totalPeriod / 60.0));
+        out.println(teacherName +";"+courseName+";;;;;" + getTotal(totalCourse));
+        out.println(this.totalPeriodLabel + ";;;;;;" + getTotal(totalPeriod));
       }
     }
 
@@ -187,11 +187,11 @@ class HoursTeacherByMemberTask
           if (prevIdper > 0) {
             totalPeriod += totalMonth;
             if (detail) {
-              out.println(tc + ";;;;;;" + numberFormat.format(totalCourse / 60.0));
-              out.println(this.totalPeriodLabel + ";;;;;;" + numberFormat.format(totalPeriod / 60.0));
+              out.println(tc + ";;;;;;" + getTotal(totalCourse));
+              out.println(this.totalPeriodLabel + ";;;;;;" + getTotal(totalPeriod));
             } else {
-              out.println(teacherName + ";" + courseName + ";" + memberName + ";;;;" + numberFormat.format(totalCourse / 60.0));
-              out.println(this.totalPeriodLabel + ";;;;;;" + numberFormat.format(totalPeriod / 60.0));
+              out.println(teacherName + ";" + courseName + ";" + memberName + ";;;;" + getTotal(totalCourse));
+              out.println(this.totalPeriodLabel + ";;;;;;" + getTotal(totalPeriod));
             }
             out.println();
           }
@@ -208,9 +208,9 @@ class HoursTeacherByMemberTask
         if (memberId != prevMember) {
           if (prevMember > 0) {
             if (detail) {
-              out.println(tc + ";;;;;;" + numberFormat.format(totalCourse / 60.0));
+              out.println(tc + ";;;;;;" + getTotal(totalCourse));
             } else {
-              out.println(teacherName + ";"+courseName+";"+memberName+";;;;" + numberFormat.format(totalCourse / 60.0));
+              out.println(teacherName + ";"+courseName+";"+memberName+";;;;" + getTotal(totalCourse));
             }
             totalCourse = 0;
             prevMember = memberId;
@@ -220,9 +220,9 @@ class HoursTeacherByMemberTask
         if (idcourse != prevCourse) {
           if (prevCourse > 0 && totalCourse > 0) {
             if (detail) {
-              out.println(tc +";;;;;;" + numberFormat.format(totalCourse / 60.0));
+              out.println(tc +";;;;;;" + getTotal(totalCourse));
             } else {
-              out.println(teacherName+";"+courseName+";;;;;" + numberFormat.format(totalCourse / 60.0));
+              out.println(teacherName+";"+courseName+";;;;;" + getTotal(totalCourse));
             }
             totalCourse = 0;
           }
@@ -247,11 +247,11 @@ class HoursTeacherByMemberTask
       } // end while
       totalPeriod += totalMonth;
       if (detail) {
-        out.println(tc +";;;;;;" + numberFormat.format(totalCourse / 60.0));
-        out.println(this.totalPeriodLabel + ";;;;;;" + numberFormat.format(totalPeriod / 60.0));
+        out.println(tc +";;;;;;" + getTotal(totalCourse));
+        out.println(this.totalPeriodLabel + ";;;;;;" + getTotal(totalPeriod));
       } else {
-        out.println(teacherName +";"+courseName+";"+memberName+";;;;" + numberFormat.format(totalCourse / 60.0));
-        out.println(this.totalPeriodLabel + ";;;;;;" + numberFormat.format(totalPeriod / 60.0));
+        out.println(teacherName +";"+courseName+";"+memberName+";;;;" + getTotal(totalCourse));
+        out.println(this.totalPeriodLabel + ";;;;;;" + getTotal(totalPeriod));
       }
     }
 

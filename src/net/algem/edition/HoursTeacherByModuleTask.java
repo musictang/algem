@@ -1,6 +1,5 @@
-
 /*
- * @(#)HoursTeacherByModuleTask.java 2.9.4.0 23/10/2015
+ * @(#)HoursTeacherByModuleTask.java 2.9.4.13 27/10/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  * 
@@ -26,18 +25,14 @@ import java.io.PrintWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.ProgressMonitor;
-import net.algem.course.Course;
-import net.algem.planning.Action;
 import net.algem.planning.DateFr;
 import net.algem.planning.Hour;
 import net.algem.util.BundleUtil;
-import net.algem.util.DataCache;
-import net.algem.util.model.Model;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.0
+ * @version 2.9.4.13
  * @since 2.9.4.0 23/10/2015
  */
 public class HoursTeacherByModuleTask 
@@ -61,7 +56,6 @@ extends HoursTask
   }
   
   private void printDetail() throws SQLException {
-      String tc = BundleUtil.getLabel("Total.label") + " " + BundleUtil.getLabel("Course.label");
       String totalModuleLabel = BundleUtil.getLabel("Total.label") + " " + BundleUtil.getLabel("Module.label");
       int prevMonth = -1;
       int prevIdper = -1;
@@ -80,10 +74,8 @@ extends HoursTask
         Hour start = new Hour(rs.getString(10));
         Hour end = new Hour(rs.getString(11));
         Hour length = new Hour(rs.getString(12));
-        int idaction = rs.getInt(4);
         int idper = rs.getInt(1);
         int idmodule = rs.getInt(7); 
-        int idcourse = rs.getInt(5);
         courseName = rs.getString(6);
         moduleName = rs.getString(8);
         
@@ -92,16 +84,15 @@ extends HoursTask
         if (idmodule != prevModule) {
           if (prevModule > 0) {
             totalPeriod += totalMonth;
-//            totalModule += totalDay;
             if (!detail) {
-              out.println(teacherName + ";;;"+ prevDate + ";;;" + numberFormat.format(totalDay / 60.0));
-              out.println(";COUCOU1;;" + (prevDate == null ? "" : simpleDateFmt.format(prevDate.getDate()).toUpperCase()) + ";;;" + numberFormat.format(totalMonth / 60.0));
-              out.println(totalPeriodLabel + ";COUCOU1;;;;;" + numberFormat.format(totalPeriod / 60.0));
-              out.println(totalModuleLabel + ";;;;;;" + numberFormat.format(totalModule / 60.0));
+              out.println(teacherName + ";;;"+ prevDate + ";;;" + getTotal(totalDay));
+              out.println(";;;" + (prevDate == null ? "" : simpleDateFmt.format(prevDate.getDate()).toUpperCase()) + ";;;" + getTotal(totalMonth));
+              out.println(totalPeriodLabel + ";;;;;;" + getTotal(totalPeriod));
+              out.println(totalModuleLabel.toUpperCase() + ";;;;;;" + getTotal(totalModule));
             } else {
-              out.println((prevDate == null ? "" : simpleDateFmt.format(prevDate.getDate()).toUpperCase()) + ";;;;;;" + numberFormat.format(totalMonth / 60.0));
-              out.println(totalPeriodLabel + ";;;;;;" + numberFormat.format(totalPeriod / 60.0));
-              out.println(totalModuleLabel + ";;;;;;" + numberFormat.format(totalModule / 60.0));
+              out.println((prevDate == null ? "" : simpleDateFmt.format(prevDate.getDate()).toUpperCase()) + ";;;;;;" + getTotal(totalMonth));
+              out.println(totalPeriodLabel + ";;;;;;" + getTotal(totalPeriod));
+              out.println(totalModuleLabel.toUpperCase() + ";;;;;;" + getTotal(totalModule));
             }
             out.println();
           }
@@ -119,12 +110,12 @@ extends HoursTask
           if (prevIdper > 0 && prevDate != null) {
             totalPeriod += totalMonth;
             if (!detail) {
-              out.println(teacherName + ";;;"+ prevDate + ";;;" + numberFormat.format(totalDay / 60.0));
-              out.println(";COUCOU2;;" + (prevDate == null ? "" : simpleDateFmt.format(prevDate.getDate()).toUpperCase()) + ";;;" + numberFormat.format(totalMonth / 60.0));
-              out.println(totalPeriodLabel + ";COUCOU2;;;;;" + numberFormat.format(totalPeriod / 60.0));
-            } else {
-              out.println((prevDate == null ? "" : simpleDateFmt.format(prevDate.getDate()).toUpperCase()) + ";;;;;;" + numberFormat.format(totalMonth / 60.0));
+              out.println(teacherName + ";;;"+ prevDate + ";;;" + getTotal(totalDay));
+              out.println(";;;" + (simpleDateFmt.format(prevDate.getDate()).toUpperCase()) + ";;;" + getTotal(totalMonth));
               out.println(totalPeriodLabel + ";;;;;;" + numberFormat.format(totalPeriod / 60.0));
+            } else {
+              out.println((simpleDateFmt.format(prevDate.getDate()).toUpperCase()) + ";;;;;;" + getTotal(totalMonth));
+              out.println(totalPeriodLabel + ";;;;;;" + getTotal(totalPeriod));
             }
             out.println();
           }
@@ -140,10 +131,10 @@ extends HoursTask
         if (date.getMonth() != prevMonth) {
           if (prevMonth > 0) {
             if (!detail) {
-              out.println(teacherName + ";COUCOU3;;"+ prevDate + ";;;" + numberFormat.format(totalDay / 60.0));
-              out.println(";COUCOU3;;" + (prevDate == null ? "" : simpleDateFmt.format(prevDate.getDate()).toUpperCase()) + ";;;" + numberFormat.format(totalMonth / 60.0));
+              out.println(teacherName + ";;;"+ prevDate + ";;;" + getTotal(totalDay));
+              out.println(";;;" + (prevDate == null ? "" : simpleDateFmt.format(prevDate.getDate()).toUpperCase()) + ";;;" + getTotal(totalMonth));
             } else {
-              out.println((prevDate == null ? "" : simpleDateFmt.format(prevDate.getDate()).toUpperCase()) +";;;;;;" + numberFormat.format(totalMonth / 60.0));
+              out.println((prevDate == null ? "" : simpleDateFmt.format(prevDate.getDate()).toUpperCase()) +";;;;;;" + getTotal(totalMonth));
             }
             totalDay = 0;
             prevDate = null;
@@ -154,8 +145,8 @@ extends HoursTask
         }
 
         if (!date.equals(prevDate)) {
-          if (!detail) {
-            out.println(teacherName + ";COUCOU5;;"+ prevDate + ";;;" + numberFormat.format(totalDay / 60.0));
+          if (!detail && prevDate != null) {
+            out.println(teacherName + ";;;"+ prevDate + ";;;" + getTotal(totalDay));
             totalDay = 0;
           }
           prevDate = new DateFr(date);
@@ -164,8 +155,6 @@ extends HoursTask
         totalMonth += length.toMinutes();
         totalDay += length.toMinutes();
         totalModule += length.toMinutes();
-//        Course course = (Course) DataCache.findId(idcourse, Model.Course);
-//        Action action = (Action) DataCache.findId(idaction, Model.Action);
         if (detail) {
           sb.append(teacherName).append(';')
                   .append(courseName).append(';')
@@ -181,15 +170,14 @@ extends HoursTask
       totalPeriod += totalMonth;
       
       if (!detail) {
-        out.println(teacherName + ";;;"+ prevDate + ";;;" + numberFormat.format(totalDay / 60.0));
-        out.println(";COUCOU4;;" + (prevDate == null ? "" : simpleDateFmt.format(prevDate.getDate()).toUpperCase()) + ";;;" + numberFormat.format(totalMonth / 60.0));
-        out.println(totalPeriodLabel + ";COUCOU4;;;;;" + numberFormat.format(totalPeriod / 60.0));
-        out.println(totalModuleLabel + ";;;;;;" + numberFormat.format(totalModule / 60.0));
+        out.println(teacherName + ";;;"+ prevDate + ";;;" + getTotal(totalDay));
+        out.println(";;;" + (prevDate == null ? "" : simpleDateFmt.format(prevDate.getDate()).toUpperCase()) + ";;;" + getTotal(totalMonth));
+        out.println(totalPeriodLabel + ";;;;;;" + getTotal(totalPeriod));
+        out.println(totalModuleLabel.toUpperCase() + ";;;;;;" + getTotal(totalModule));
       } else {
-        out.println((prevDate == null ? "" : simpleDateFmt.format(prevDate.getDate()).toUpperCase())
-          + ";;;;;;" + numberFormat.format(totalMonth / 60.0));
-        out.println(totalPeriodLabel + ";;;;;;" + numberFormat.format(totalPeriod / 60.0));
-        out.println(totalModuleLabel + ";;;;;;" + numberFormat.format(totalModule / 60.0));
+        out.println((prevDate == null ? "" : simpleDateFmt.format(prevDate.getDate()).toUpperCase()) + ";;;;;;" + getTotal(totalMonth));
+        out.println(totalPeriodLabel + ";;;;;;" + getTotal(totalPeriod));
+        out.println(totalModuleLabel.toUpperCase() + ";;;;;;" + getTotal(totalModule));
       }
      // end doInBackground
   }
@@ -210,6 +198,5 @@ extends HoursTask
     return sb.toString();
     
   }
-
-
+ 
 }

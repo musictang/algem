@@ -1,5 +1,5 @@
 /*
- * @(#)MenuAccounting.java 2.9.4.13 05/10/2015
+ * @(#)MenuAccounting.java 2.9.4.13 27/10/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -141,8 +141,9 @@ public class MenuAccounting
 			ddCtrl.load();
       desktop.addPanel("Direct.debit.sepa.list", ddCtrl, GemModule.M_SIZE);
     } else if (src == miAccountHourEmployee) {
-      HourEmployeeDlg hourTeacherDlg = new HourEmployeeDlg(desktop.getFrame(), BundleUtil.getLabel("File.export.hours.name") + ".txt", dataCache);
-      hourTeacherDlg.setVisible(true);
+      String fileName = BundleUtil.getLabel("File.export.hours.name") + ".txt";
+      HourEmployeeDlg hourTeacherDlg = new HourEmployeeDlg(desktop.getFrame(), dataCache);
+      hourTeacherDlg.init(fileName, dc);
     } else if (menus.get("Menu.invoice.history.label").equals(arg)) {
       BillingService billService = new BasicBillingService(dataCache);
       try {

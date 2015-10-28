@@ -1,5 +1,5 @@
 /*
- * @(#)ModuleOrderIO.java	2.9.4.13 09/10/15
+ * @(#)ModuleOrderIO.java	2.9.4.13 28/10/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -33,7 +33,6 @@ import net.algem.course.CourseIO;
 import net.algem.course.ModuleIO;
 import net.algem.planning.ActionIO;
 import net.algem.planning.DateFr;
-import net.algem.planning.Hour;
 import net.algem.planning.ScheduleIO;
 import net.algem.planning.ScheduleRangeIO;
 import net.algem.util.DataConnection;
@@ -52,7 +51,7 @@ public class ModuleOrderIO
 
   public static final String TABLE = "commande_module";
   public static final String SEQUENCE = "commande_module_id_seq";
-  private static final String extendedModuleListStatement = "SELECT sum(fin-debut) AS duree FROM " + ScheduleRangeIO.TABLE + " pl"
+  private static final String extendedModuleListStatement = "SELECT EXTRACT(epoch FROM sum(fin-debut)::interval)/60 AS duree FROM " + ScheduleRangeIO.TABLE + " pl"
             + " WHERE adherent = ?"
             + " AND idplanning IN("
             + "SELECT p.id FROM " + ScheduleIO.TABLE + " p, " + CourseOrderIO.TABLE + " cc, " + ActionIO.TABLE + " a, " + CourseIO.TABLE + " c"
@@ -185,8 +184,7 @@ public class ModuleOrderIO
 
     ResultSet rs = ps.executeQuery();
     while (rs.next()) {
-      Hour h = new Hour(rs.getString(1));
-      return h.toMinutes();
+      return rs.getInt(1);
     }
     return 0;
   }

@@ -1,7 +1,7 @@
 /*
- * @(#)GemList.java 2.8.f 24/05/13
+ * @(#)GemList.java 2.9.4.13 27/10/15
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,7 +27,8 @@ import javax.swing.AbstractListModel;
 /**
  * Base class for list of GemModel objects.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.f
+ * @version 2.9.4.13
+ * @param <T>
  * @since 2.5.a 28/06/12
  */
 public class GemList<T extends GemModel>

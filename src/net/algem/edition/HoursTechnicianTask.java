@@ -1,7 +1,7 @@
 /*
- * @(#)HoursTechnicianTask.java	2.9.1 03/12/14
+ * @(#)HoursTechnicianTask.java	2.9.4.13 27/10/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -36,7 +36,7 @@ import net.algem.util.model.Model;
 /**
  * Task executed when editing hours of technicians.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.4.13
  * @since 2.9.1 03/12/14
  */
 class HoursTechnicianTask
@@ -83,11 +83,11 @@ class HoursTechnicianTask
         if (idper != prevIdper) {
           if (prevIdper > 0) {
             if (!detail) {
-              out.println(df.format(prevDate.getDate()) + ";;;;" + numberFormat.format(totalDay / 60.0));
+              out.println(df.format(prevDate.getDate()) + ";;;;" + getTotal(totalDay));
             }
-            out.println(totalMonthLabel + ";;;;" + numberFormat.format(totalMonth / 60.0));
+            out.println(totalMonthLabel + ";;;;" + getTotal(totalMonth));
             totalPeriod += totalMonth;
-            out.println(totalPeriodLabel + ";;;;" + numberFormat.format(totalPeriod / 60.0));
+            out.println(totalPeriodLabel + ";;;;" + getTotal(totalPeriod));
             out.println();
           }
 
@@ -103,14 +103,14 @@ class HoursTechnicianTask
         if (date.getMonth() != prevMonth) {
           if (prevMonth > 0) {
             if (!detail && prevDate != null) {
-              out.println(df.format(prevDate.getDate()) + ";;;;" + numberFormat.format(totalDay / 60.0));
+              out.println(df.format(prevDate.getDate()) + ";;;;" + getTotal(totalDay));
             }
             totalDay = 0;
             prevDate = null;
-            out.println(totalMonthLabel + ";;;;" + numberFormat.format(totalMonth / 60.0));
+            out.println(totalMonthLabel + ";;;;" + getTotal(totalMonth));
           }
 
-          out.println(dmf.format(date.getDate()).toUpperCase() + ";;;;");//out.println(cal.get(Calendar.MONTH));
+          out.println(dmf.format(date.getDate()).toUpperCase() + ";;;;");
           prevMonth = date.getMonth();
           totalPeriod += totalMonth;
           totalMonth = 0;
@@ -118,7 +118,7 @@ class HoursTechnicianTask
 
         if (!date.equals(prevDate)) {
           if (!detail && prevDate != null) {
-            out.println(df.format(prevDate.getDate()) + ";;;;" + numberFormat.format(totalDay / 60.0));
+            out.println(df.format(prevDate.getDate()) + ";;;;" + getTotal(totalDay));
             totalDay = 0;
           }
           prevDate = new DateFr(date);
@@ -134,11 +134,11 @@ class HoursTechnicianTask
       } // end while
 
       if (!detail && prevDate != null) {
-        out.println(df.format(prevDate.getDate()) + ";;;;" + numberFormat.format(totalDay / 60.0));
+        out.println(df.format(prevDate.getDate()) + ";;;;" + getTotal(totalDay));
       }
-      out.println(totalMonthLabel + ";;;;" + numberFormat.format(totalMonth / 60.0));
+      out.println(totalMonthLabel + ";;;;" + getTotal(totalMonth));
       totalPeriod += totalMonth;
-      out.println(totalPeriodLabel + ";;;;" + numberFormat.format(totalPeriod / 60.0));
+      out.println(totalPeriodLabel + ";;;;" + getTotal(totalPeriod));
       out.close();
       return null;
     } // end doInBackground

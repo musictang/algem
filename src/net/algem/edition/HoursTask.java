@@ -1,7 +1,7 @@
 /*
- * @(#)HoursTask.java	2.9.1 03/12/14
+ * @(#)HoursTask.java	2.9.4.13 27/10/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -34,7 +34,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  * Abstract class used to execute tasks when editing hours of employees.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.4.13
  * @since 2.9.1 03/12/14
  */
 abstract class HoursTask 
@@ -46,13 +46,20 @@ abstract class HoursTask
     protected Format simpleDateFmt = new SimpleDateFormat("MMM yyyy");
     protected Format fullDateFormat = new SimpleDateFormat("EEE dd-MM-yyyy");
     protected NumberFormat numberFormat = AccountUtil.getDefaultNumberFormat();
-    protected boolean detail;
+
     protected HourEmployeeDlg dlg;
     protected ProgressMonitor pgMonitor;
+    protected boolean detail;
 
-  public HoursTask(HourEmployeeDlg dlg, ProgressMonitor pm, boolean detail) {
-    this.pgMonitor = pm;
+  /**
+   * 
+   * @param dlg parent dialog
+   * @param monitor progress monitor instance
+   * @param detail full report
+   */  
+  public HoursTask(HourEmployeeDlg dlg, ProgressMonitor monitor, boolean detail) {
     this.dlg = dlg;
+    this.pgMonitor = monitor;
     this.detail = detail;
   }
 
@@ -64,5 +71,15 @@ abstract class HoursTask
         pgMonitor.close();
       }
     }
+    
+  /**
+   * Gets a string representing the total time spent on the month.
+   * 
+   * @param totalmin total length in minutes 
+   * @return a string decimal-formatted
+   */
+  protected String getTotal(int totalmin) {
+    return numberFormat.format(totalmin / 60.0);
+  }
 
 }

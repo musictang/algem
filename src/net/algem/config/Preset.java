@@ -1,5 +1,5 @@
 /*
- * @(#)Preset.java 2.9.4.13 21/10/2015
+ * @(#)Preset.java 2.9.4.13 26/10/2015
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -27,6 +27,7 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.9.4.13
+ * @param <T>
  * @since 2.9.4.13 20/10/2015
  */
 public interface Preset<T>

@@ -322,9 +322,9 @@ public class PersonFileEditor
     } else if ("Teacher.presence".equals(arg)) {
       AttendanceSheetDlg dlg = new AttendanceSheetDlg(personFileView, dataCache, dossier.getTeacher());
     } else if ("Teacher.hour".equals(arg)) {
-      String file = "heures_" + dossier.getContact().getFirstName() + "_" + dossier.getContact().getName() + ".txt";
-      HourEmployeeDlg hoursDlg = new HourEmployeeDlg(desktop.getFrame(), file, dossier.getId(), dataCache);
-      hoursDlg.setVisible(true);
+      String fileName = "heures_" + dossier.getContact().getFirstName() + "_" + dossier.getContact().getName() + ".txt";
+      HourEmployeeDlg hoursDlg = new HourEmployeeDlg(desktop.getFrame(), dossier.getId(), dataCache);
+      hoursDlg.init(fileName, dc);
     } // clic sur le bouton/icone Fermer la fiche
     else if (GemCommand.CLOSE_CMD.equals(arg)) { // GemCommand.
       savePrefs = (evt.getModifiers() & Event.SHIFT_MASK) == Event.SHIFT_MASK;

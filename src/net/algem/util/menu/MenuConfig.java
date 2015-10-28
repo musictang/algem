@@ -1,5 +1,5 @@
 /*
- * @(#)MenuConfig.java 2.9.4.13 06/10/15
+ * @(#)MenuConfig.java 2.9.4.13 26/10/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -35,7 +35,6 @@ import net.algem.contact.CityCtrl;
 import net.algem.contact.member.RehearsalPass;
 import net.algem.contact.member.RehearsalPassIO;
 import net.algem.contact.member.RehearsalPassListCtrl;
-import net.algem.course.ModulePresetDlg;
 import net.algem.planning.VacationCtrl;
 import net.algem.room.EstabCreateCtrl;
 import net.algem.room.EstabSearchCtrl;
