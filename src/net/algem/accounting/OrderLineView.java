@@ -1,5 +1,5 @@
 /*
- * @(#)OrderLineView.java	2.9.4.8 24/06/15
+ * @(#)OrderLineView.java	2.9.4.13 03/11/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -41,7 +41,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.8
+ * @version 2.9.4.13
  * @since 1.0a 18/07/1999
  */
 public class OrderLineView
@@ -148,7 +148,7 @@ public class OrderLineView
 
     okBt = new GemButton(GemCommand.VALIDATION_CMD);
     okBt.addActionListener(this);
-    cancelBt = new GemButton(GemCommand.CANCEL_CMD);
+    cancelBt = new GemButton(GemCommand.ABORT);
     cancelBt.addActionListener(this);
 
     JPanel buttons = new JPanel(new GridLayout(1,1));

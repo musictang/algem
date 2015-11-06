@@ -1,7 +1,7 @@
 /*
- * @(#)OrderLine.java	2.9.2 05/01/15
+ * @(#)OrderLine.java	2.9.4.13 05/11/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -31,13 +31,14 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.9.4.13
  *
  */
 public class OrderLine
         implements GemModel
 {
 
+  private static final long serialVersionUID = -4614812764226507224L;
   private int id;
   private DateFr date;
   private int payer;
@@ -46,16 +47,16 @@ public class OrderLine
   private String label;
   private String modeOfPayment;
   private int amount;
-  /** Numéro de pièce. */
+  /** Document number. Numéro de pièce. */
   private String document = "";
   private int school;
   private Account account = new Account();
-  /** Analytique. */
+  /** Cost account. Analytique. */
   private Account costAccount = new Account();
   private boolean paid;
   private boolean transfered;
   private String currency = "E";
-  /** Numéro de facture */
+  /** Invoice number. Numéro de facture. */
   private String invoice;
   private int group;
 
@@ -341,4 +342,5 @@ public class OrderLine
     hash = 61 * hash + this.id;
     return hash;
   }
+  
 }

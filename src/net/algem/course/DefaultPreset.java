@@ -1,5 +1,5 @@
 /*
- * @(#)DefaultPreset.java 2.9.4.13 21/10/2015
+ * @(#)DefaultPreset.java 2.9.4.13 03/11/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -33,6 +33,8 @@ import net.algem.config.Preset;
 public class DefaultPreset<T>
   implements Preset<T> {
 
+  private static final long serialVersionUID = -6388535049138750981L;
+  
   private int id;
   private String name;
   private T[] selection;

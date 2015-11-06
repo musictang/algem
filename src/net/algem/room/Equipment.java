@@ -1,7 +1,7 @@
 /*
- * @(#)Equipment.java	2.7.a 13/12/12
+ * @(#)Equipment.java	2.9.4.13 05/11/15
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -26,13 +26,15 @@ package net.algem.room;
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.9.4.13
  * @since 1.0a 10/09/2001
  */
 public class Equipment
         implements java.io.Serializable, Cloneable
 {
 
+  private static final long serialVersionUID = 8423669965600138221L;
+  
   private int room;
   private int quantity;
   private String label;

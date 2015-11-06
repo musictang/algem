@@ -1,5 +1,5 @@
 /*
- * @(#)RoomRate.java	2.9.4.13 05/10/2015
+ * @(#)RoomRate.java	2.9.4.13 05/11/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -32,6 +32,8 @@ import net.algem.util.model.GemModel;
 public class RoomRate
         implements GemModel {
 
+  private static final long serialVersionUID = 6310410461945842796L;
+  
   private int id;
   private String label;
   
@@ -188,4 +190,5 @@ public class RoomRate
   public String toString() {
     return label;
   }
+  
 }

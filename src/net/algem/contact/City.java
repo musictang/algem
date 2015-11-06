@@ -1,7 +1,7 @@
 /*
- * @(#)City.java	2.6.a 17/09/12
+ * @(#)City.java	2.9.4.13 05/11/15
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -25,12 +25,14 @@ package net.algem.contact;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.4.13
  */
 public class City
         implements java.io.Serializable
 {
 
+  private static final long serialVersionUID = -7379005860658244170L;
+  
   private String cdp;
   private String city;
 
@@ -68,4 +70,5 @@ public class City
   public String toString() {
     return cdp + " " + city;
   }
+  
 }

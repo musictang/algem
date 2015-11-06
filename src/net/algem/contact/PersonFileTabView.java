@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileTabView.java  2.9.4.12 29/09/15
+ * @(#)PersonFileTabView.java  2.9.4.13 02/11/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes All Rights Reserved.
  *
@@ -67,7 +67,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.12
+ * @version 2.9.4.13
  */
 public class PersonFileTabView
         extends FileTabView
@@ -451,18 +451,9 @@ public class PersonFileTabView
     wTab.addItem(teacherEditor, TEACHER_TAB_TITLE);//"Fiche Enseignant");
     wTab.addItem(teacherFollowUpEditor, TEACHER_TAB_F_TITLE);//"Suivi Enseignant");
 
-    mainToolbar.addIcon(listener,
-            BundleUtil.getLabel("Teacher.hour.icon"),
-            "Teacher.hour",
-            BundleUtil.getLabel("Teacher.hour.tip"));
-    mainToolbar.addIcon(listener,
-            BundleUtil.getLabel("Teacher.break.icon"),
-            "Teacher.break",
-            BundleUtil.getLabel("Teacher.break.tip"));
-    mainToolbar.addIcon(listener,
-            BundleUtil.getLabel("Teacher.presence.icon"),
-            "Teacher.presence",
-            BundleUtil.getLabel("Teacher.presence.tip"));
+    mainToolbar.addIcon(listener, BundleUtil.getLabel("Teacher.hour.icon"), "Employee.hours", BundleUtil.getLabel("Employee.hours.tip"));
+    mainToolbar.addIcon(listener, BundleUtil.getLabel("Teacher.break.icon"),"Teacher.break",BundleUtil.getLabel("Teacher.break.tip"));
+    mainToolbar.addIcon(listener, BundleUtil.getLabel("Teacher.presence.icon"), "Teacher.presence", BundleUtil.getLabel("Teacher.presence.tip"));
     addTab(teacherEditor);
   }
 
@@ -651,7 +642,7 @@ public class PersonFileTabView
   }
 
   private void removeTeacherIcons() {
-    mainToolbar.removeIcon("Teacher.hour");
+    mainToolbar.removeIcon("Employee.hours");
     mainToolbar.removeIcon("Teacher.break");
     mainToolbar.removeIcon("Teacher.presence");
   }

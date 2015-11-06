@@ -1,7 +1,7 @@
 /*
- * @(#)Bank.java	2.6.a 14/09/12
+ * @(#)Bank.java	2.9.4.13 05/11/15
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -25,12 +25,14 @@ package net.algem.bank;
  * A bank is a person of type {@link net.algem.contact.Person#BANK}.
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.4.13
  */
 public class Bank
         implements java.io.Serializable
 {
 
+  private static final long serialVersionUID = 626018583577705700L;
+  
   private String code;
   private String name;
   /** Multi branch. */
@@ -83,4 +85,5 @@ public class Bank
   public boolean isValid() {
     return name.length() > 1 && code.length() == 5;
   }
+  
 }

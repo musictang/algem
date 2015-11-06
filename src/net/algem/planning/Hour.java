@@ -1,5 +1,5 @@
 /*
- * @(#)Hour.java	2.9.3.2 10/03/15
+ * @(#)Hour.java	2.9.4.13 05/11/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -25,13 +25,15 @@ package net.algem.planning;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.3.2
+ * @version 2.9.4.13
  */
 public class Hour
         implements java.io.Serializable
 {
 
   public static final String NULL_HOUR = "00:00";
+  private static final long serialVersionUID = -731574453711000560L;
+  
   private StringBuffer buf;
 
   public Hour() {
@@ -332,4 +334,5 @@ public class Hour
   public static int decimalToMinutes(double hours) {
     return (int) Math.rint(hours * 60);
   }
+  
 }

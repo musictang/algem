@@ -1,5 +1,5 @@
 /*
- * @(#)EmployeeTaskFactory.java 2.9.4.13 27/10/15
+ * @(#)EmployeeTaskFactory.java 2.9.4.13 02/11/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  * 
@@ -112,11 +112,11 @@ public class EmployeeTaskFactory
         }
         break;
       case "Technician":
-        rs = service.getReportByEmployee(start.toString(), end.toString(), Schedule.TECH);
+        rs = service.getReportByEmployee(start.toString(), end.toString(), idper, Schedule.TECH);
         task = new HoursTechnicianTask(parent, monitor, out, rs, detail);
         break;
       case "Administrator":
-        rs = service.getReportByEmployee(start.toString(), end.toString(), Schedule.ADMINISTRATIVE);
+        rs = service.getReportByEmployee(start.toString(), end.toString(), idper, Schedule.ADMINISTRATIVE);
         task = new HoursAdministrativeTask(parent, monitor, out, rs, detail);
         break;
     }

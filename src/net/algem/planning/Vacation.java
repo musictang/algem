@@ -1,7 +1,7 @@
 /*
- * @(#)Vacation.java	2.6.a 20/09/12
+ * @(#)Vacation.java	2.9.4.13 05/11/15
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -25,12 +25,14 @@ package net.algem.planning;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.4.13
  */
 public class Vacation
         implements java.io.Serializable
 {
 
+  private static final long serialVersionUID = -2602474187968680752L;
+  
   private DateFr day;
   private int type;
   private int vid;
@@ -111,11 +113,10 @@ public class Vacation
     hash = 13 * hash + this.vid;
     return hash;
   }
-  
-  
 
   @Override
   public String toString() {
     return day + " " + label;
   }
+  
 }

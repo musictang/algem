@@ -1,5 +1,5 @@
 /*
- * @(#)WebSite.java	2.9.3.2 09/03/15
+ * @(#)WebSite.java	2.9.4.13 05/11/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -23,7 +23,7 @@ package net.algem.contact;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.3.2
+ * @version 2.9.4.13
  * @since 2.0r
  */
 public class WebSite
@@ -36,6 +36,8 @@ public class WebSite
   public static final String TWITTER_PREFIX = "https://twitter.com/";
   public static final String HTTP_PREFIX = "http://";
   public static final String HTTPS_PREFIX = "https://";
+  private static final long serialVersionUID = -2440352101883348803L;
+  
   private int idx;
   private int idper;
   private String url;
@@ -133,4 +135,5 @@ public class WebSite
   public String toString() {
     return url;
   }
+  
 }

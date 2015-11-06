@@ -1,7 +1,7 @@
 /*
- * @(#)CourseScheduleObject.java	2.6.a 19/09/12
+ * @(#)CourseScheduleObject.java	2.9.4.13 05/11/15
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -25,13 +25,15 @@ package net.algem.planning;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.4.13
  */
 public class CourseScheduleObject
         extends Schedule
         implements java.io.Serializable
 {
 
+  private static final long serialVersionUID = 3399465614682929593L;
+  
   public CourseScheduleObject() {
     type = 1;
   }
@@ -64,4 +66,5 @@ public class CourseScheduleObject
   public String toString() {
     return "CourseScheduleObject:" + date + " " + start + " " + end + " " + idAction;
   }
+  
 }

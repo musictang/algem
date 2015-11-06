@@ -1,7 +1,7 @@
 /*
- * @(#)Member.java	2.8.m 06/09/13
+ * @(#)Member.java	2.9.4.13 03/11/15
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -30,12 +30,14 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.m
+ * @version 2.9.4.13
  */
 public class Member
         implements GemModel, Cloneable
 {
 
+  private static final long serialVersionUID = -8119742313674776277L;
+  
   private int id;
   private String occupation;
   private DateFr birth;
@@ -194,4 +196,5 @@ public class Member
   public Object clone() throws CloneNotSupportedException {
     return super.clone();
   }
+  
 }

@@ -1,7 +1,7 @@
 /*
- * @(#)Contact.java 2.9.1 04/11/14
+ * @(#)Contact.java 2.9.4.13 03/11/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,7 +27,7 @@ import java.util.Vector;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.4.13
  * @since 1.0a 07/07/1999
  */
 public class Contact
@@ -35,6 +35,8 @@ public class Contact
         implements Cloneable
 {
 
+  private static final long serialVersionUID = 4651926516240269103L;
+  
   private boolean complete;
   private Vector<Address> addresses;
   private Vector<Telephone> telephones;
@@ -325,4 +327,5 @@ public class Contact
     }
     return c;
   }
+  
 }

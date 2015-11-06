@@ -1,7 +1,7 @@
 /*
- * @(#)GemParam.java 2.7.a 09/01/13
+ * @(#)GemParam.java 2.9.4.13 05/11/15
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,7 +27,7 @@ import net.algem.util.model.GemModel;
  * General parameter implementing GemModel interface.
  * A param is a couple of key,value.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.9.4.13
  * @since 2.5.a 05/07/12
 
  */
@@ -36,6 +36,7 @@ public class GemParam
   implements GemModel
  {
 
+  private static final long serialVersionUID = -6582696018359350316L;
   public final static String NONE = "-";
   
   public GemParam() {

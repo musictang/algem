@@ -1,7 +1,7 @@
 /*
- * @(#)BillingItem.java 2.9.1 10/12/14
+ * @(#)BillingItem.java 2.9.4.13 05/11/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,18 +20,22 @@
  */
 package net.algem.billing;
 
+import java.io.Serializable;
+
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.4.13
  * @since 2.4.d 07/06/12
  */
 public class BillingItem
+  implements Serializable
 {
 
   protected String billingId;
   protected Item item;
   protected float quantity;
+  private static final long serialVersionUID = -5066123755134632021L;
 
   public BillingItem() {
     this.quantity = 1.0f;

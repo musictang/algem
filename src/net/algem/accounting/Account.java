@@ -1,7 +1,7 @@
 /*
- * @(#)Account.java	2.7.a 09/01/13
+ * @(#)Account.java	2.9.4.13 05/11/15
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,7 +28,7 @@ import net.algem.util.model.GemModel;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.9.4.13
  * @since 2.3.c 08/03/12
  */
 public class Account
@@ -36,7 +36,7 @@ public class Account
         implements GemModel
 {
 
-  private int id;
+  private static final long serialVersionUID = -4457361286671682346L;
 
   public Account() {
 
@@ -100,5 +100,5 @@ public class Account
   public String toString() {
     return getLabel();
   }
-
+  
 }

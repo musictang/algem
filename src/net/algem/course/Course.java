@@ -1,5 +1,5 @@
 /*
- * @(#)Course.java	2.9.4.7 05/06/15
+ * @(#)Course.java	2.9.4.13 03/11/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -27,7 +27,7 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.9.4.13
  * @since 1.0a 07/07/1999
  */
 public class Course
@@ -45,6 +45,8 @@ public class Course
 
   /** Maximum length of label. */
   public static final int MAX_LABEL_LENGTH = 32;
+  
+  private static final long serialVersionUID = -487195875125578605L;
 
   protected int id;
   protected String title;

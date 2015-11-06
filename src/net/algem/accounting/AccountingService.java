@@ -134,16 +134,17 @@ public class AccountingService {
    * 
    * @param start start of selected period
    * @param end end of selected period
+   * @param idper person id
    * @param ptype planning type
    * @return a resultset
    * @throws SQLException 
    */
-  public ResultSet getReportByEmployee(String start, String end, int ptype) throws SQLException {
+  public ResultSet getReportByEmployee(String start, String end, int idper, int ptype) throws SQLException {
     switch(ptype) {
       case Schedule.TECH :
-        return employeeReport.getDetailByTechnician(start, end, ptype);
+        return employeeReport.getDetailByTechnician(start, end, idper, ptype);
       case Schedule.ADMINISTRATIVE:
-        return employeeReport.getDetailByAdministrator(start, end, ptype);
+        return employeeReport.getDetailByAdministrator(start, end, idper, ptype);
     }
     return null;
   }

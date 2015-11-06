@@ -51,20 +51,22 @@ private final DataConnection dc;
     this.dc = dc;
   }
 
-  public ResultSet getDetailByTechnician(String start, String end, int type) throws SQLException {
+  public ResultSet getDetailByTechnician(String start, String end, int idper, int type) throws SQLException {
     String query = "SELECT p.jour, p.idper, p.debut, p.fin, (p.fin - p.debut) AS duree, pg.adherent"
             + " FROM " + ScheduleIO.TABLE + " p, " + ScheduleRangeIO.TABLE + " pg"
-            + " WHERE pg.idplanning = p.id"
-            + " AND p.jour BETWEEN '" + start + "' AND '" + end + "'"
+            + " WHERE pg.idplanning = p.id";
+            query += (idper > 0) ? " AND pg.adherent = " + idper : " AND pg.adherent > 0";
+            query += " AND p.jour BETWEEN '" + start + "' AND '" + end + "'"
             + " AND p.ptype = " + type
             + " ORDER BY pg.adherent,p.jour,p.debut";
     return dc.executeQuery(query);
   }
   
-  public ResultSet getDetailByAdministrator(String start, String end, int type) throws SQLException {
+  public ResultSet getDetailByAdministrator(String start, String end, int idper, int type) throws SQLException {
     String query = "SELECT p.jour, p.idper, p.debut, p.fin, (p.fin - p.debut) AS duree, s.nom"
-            + " FROM " + ScheduleIO.TABLE + " p, " + RoomIO.TABLE + " s"
-            + " WHERE p.jour BETWEEN '" + start + "' AND '" + end + "'"
+            + " FROM " + ScheduleIO.TABLE + " p, " + RoomIO.TABLE + " s";
+            query += (idper > 0) ? " WHERE p.idper = " + idper : " WHERE p.idper > 0";
+            query += " AND p.jour BETWEEN '" + start + "' AND '" + end + "'"
             + " AND p.ptype = " + type
             + " AND p.lieux = s.id"
             + " ORDER BY p.idper,p.jour,p.debut";

@@ -1,7 +1,7 @@
 /*
- * @(#)Status.java 2.7.m 14/03/13
+ * @(#)Status.java 2.9.4.13 03/11/15
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -24,13 +24,16 @@ package net.algem.config;
 /**
  * GemParam specialization for action status.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.m
+ * @version 2.9.4.13
  * @since 2.7.a 10/01/13
  */
 public class Status
   extends GemParam 
 {
+  private static final long serialVersionUID = 7566037239775936563L;
+  
   public Status(GemParam p) {
     super(p.getId(), p.getCode(), p.getLabel());
   }
+  
 }

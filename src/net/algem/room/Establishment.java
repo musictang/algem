@@ -1,5 +1,5 @@
 /*
- * @(#)Establishment.java	2.9.4.6 03/06/15
+ * @(#)Establishment.java	2.9.4.13 05/11/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -35,11 +35,13 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.6
+ * @version 2.9.4.13
  */
 public class Establishment
         implements GemModel {
 
+  private static final long serialVersionUID = -7929093636684679404L;
+  
   private Person p;
   private Vector<Address> a;
   private Vector<Telephone> t;

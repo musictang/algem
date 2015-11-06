@@ -1,5 +1,5 @@
 /*
- * @(#)InvoiceIO.java 2.9.3.2 11/03/15
+ * @(#)InvoiceIO.java 2.9.4.13 05/11/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -36,7 +36,7 @@ import net.algem.util.model.Model;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.3.2
+ * @version 2.9.4.13
  * @since 2.3.a 22/12/11
  */
 public class InvoiceIO
@@ -62,6 +62,7 @@ public class InvoiceIO
    * An invoice may include an orderline with a personal account
    * and does include one item at least {@link InvoiceItem}.
    *
+   * @param <T>
    * @param inv new invoice
    * @throws SQLException
    * @throws BillingException if transaction failed
@@ -85,8 +86,6 @@ public class InvoiceIO
             + "'," + inv.getMember()
             + "," + inv.getDownPayment()
             + ")";
-    //System.out.println(query);
-
     try {
       dc.setAutoCommit(false);
       dc.executeUpdate(query);// insertion facture

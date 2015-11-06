@@ -1,7 +1,7 @@
 /*
- * @(#)CostAccount.java	2.8.d 16/05/13
+ * @(#)CostAccount.java	2.9.4.13 05/11/15
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,7 +28,7 @@ import net.algem.util.model.GemModel;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.d
+ * @version 2.9.4.13
  * @since 2.7.a 16/01/2013
  */
 public class CostAccount 
@@ -36,7 +36,8 @@ public class CostAccount
   implements GemModel
 {
 
-
+  private static final long serialVersionUID = -8381278531932246406L;
+  
   public CostAccount() {
   }
 

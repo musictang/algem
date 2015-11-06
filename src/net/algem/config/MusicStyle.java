@@ -1,7 +1,7 @@
 /*
- * @(#)MusicStyle.java	2.6.a 24/09/12
+ * @(#)MusicStyle.java	2.9.4.13 03/11/15
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -26,12 +26,14 @@ import net.algem.util.model.GemModel;
  * Musical style.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.4.13
  */
 public class MusicStyle
         implements GemModel
 {
 
+  private static final long serialVersionUID = -6985183064680912108L;
+  
   private int id;
   private String label;
 
@@ -80,10 +82,7 @@ public class MusicStyle
       return false;
     }
     final MusicStyle other = (MusicStyle) obj;
-    if (this.id != other.id) {
-      return false;
-    }
-    return true;
+    return this.id == other.id;
   }
 
   @Override
@@ -92,4 +91,5 @@ public class MusicStyle
     hash = 29 * hash + this.id;
     return hash;
   }
+ 
 }

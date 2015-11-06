@@ -1,7 +1,7 @@
 /*
- * @(#)AttendanceSheetDlg.java	2.8.k 25/07/13
+ * @(#)AttendanceSheetDlg.java	2.9.4.13 02/11/15
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -43,7 +43,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.k
+ * @version 2.9.4.13
  */
 public class AttendanceSheetDlg
         implements ActionListener
@@ -54,7 +54,7 @@ public class AttendanceSheetDlg
   private DateFrField startDate;
   private DateFrField endDate;
   private GemButton btCancel;
-  private GemButton btEdition;
+  private GemButton btPrint;
   private Teacher teacher;
   private GemChoice estabChoice;
 
@@ -62,9 +62,9 @@ public class AttendanceSheetDlg
     dataCache = _cache;
     teacher = _prof;
 
-    String title = "Feuille présence ";
+    String title = BundleUtil.getLabel("Menu.presence.file.label");
     if (teacher != null) {
-      title += teacher.toString();
+      title += " " + teacher.toString();
     }
 
     dialog = new JDialog((Frame) null, title, true);
@@ -81,21 +81,23 @@ public class AttendanceSheetDlg
     String e = BundleUtil.getLabel("Establishment.label");
     gb.add(new JLabel(e == null ? "" : e.substring(0, 4)), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(estabChoice, 1, 0, 1, 1, GridBagHelper.WEST);
-    gb.add(new JLabel(BundleUtil.getLabel("Date.From.label")), 0, 1, 1, 1, GridBagHelper.EAST);
-    gb.add(startDate, 1, 1, 1, 1, GridBagHelper.WEST);
-    gb.add(new JLabel(BundleUtil.getLabel("Date.To.label")), 2, 1, 1, 1, GridBagHelper.WEST);
-    gb.add(endDate, 3, 1, 1, 1, GridBagHelper.WEST);
+    GemPanel datePanel = new GemPanel();
+    
+    datePanel.add(startDate);
+    datePanel.add(new JLabel(BundleUtil.getLabel("Date.To.label")));
+    datePanel.add(endDate);
+    gb.add(new JLabel(BundleUtil.getLabel("Date.From.label")), 0, 1, 1, 1, GridBagHelper.WEST);
+    gb.add(datePanel, 1, 1, 1, 1, GridBagHelper.WEST);
 
-    btEdition = new GemButton(GemCommand.EDIT_CMD);
-    btEdition.addActionListener(this);
+    btPrint = new GemButton(GemCommand.PRINT_CMD);
+    btPrint.addActionListener(this);
     btCancel = new GemButton(GemCommand.CANCEL_CMD);
     btCancel.addActionListener(this);
 
     GemPanel buttons = new GemPanel(new GridLayout(1,2));
+    buttons.add(btPrint);
     buttons.add(btCancel);
-    buttons.add(btEdition);
 
-    //dialog.add(new JLabel("Edition Feuille Présence"), BorderLayout.NORTH);
     dialog.add(panel, BorderLayout.CENTER);
     dialog.add(buttons, BorderLayout.SOUTH);
     dialog.setSize(400, 200);
@@ -120,10 +122,9 @@ public class AttendanceSheetDlg
   @Override
   public void actionPerformed(ActionEvent evt) {
     if (evt.getSource() == btCancel) {
-      //hide();
       dialog.setVisible(false);
       dialog.dispose();
-    } else if (evt.getSource() == btEdition) {
+    } else if (evt.getSource() == btPrint) {
       final DateRange pg = new DateRange(startDate.getDateFr(), endDate.getDateFr());
       if (!pg.isValid()) {
         MessagePopup.information(dialog, MessageUtil.getMessage("date.entry.error"));

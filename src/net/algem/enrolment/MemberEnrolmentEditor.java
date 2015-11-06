@@ -247,7 +247,7 @@ public class MemberEnrolmentEditor
     desktop.setWaitCursor();
     loaded = true;
     final Vector<Enrolment> ins = service.getEnrolments(dossier.getId());
-    if (ins != null && ins.size() < 1) {
+    if (ins == null || ins.size() < 1) {
       root = new DefaultMutableTreeNode(NONE_ENROLMENT);
       model.setRoot(root);
       desktop.setDefaultCursor();

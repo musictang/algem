@@ -1,5 +1,5 @@
 /*
- * @(#)ModuleOrder.java	2.9.2.1 16/02/15
+ * @(#)ModuleOrder.java	2.9.4.13 05/11/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -29,12 +29,14 @@ import net.algem.planning.DateFr;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2.1
+ * @version 2.9.4.13
  */
 public class ModuleOrder
         implements java.io.Serializable
 {
 
+  private static final long serialVersionUID = 8232081164289977122L;
+  
   protected int id;
   protected int idcmd;
   protected int payer;
@@ -212,5 +214,5 @@ public class ModuleOrder
   void clear() {
     courseOrders.clear();
   }
-  
+
 }

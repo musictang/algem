@@ -1,7 +1,7 @@
 /*
- * @(#)SGBDField.java	2.6.a 25/09/12
+ * @(#)SGBDField.java	2.9.4.13 05/11/15
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -24,13 +24,15 @@ package net.algem.util.ui;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.4.13
  * @since 1.0a 08/09/2001
  */
 public class SGBDField
         implements java.io.Serializable
 {
 
+  private static final long serialVersionUID = 9170430254647886854L;
+  
   private String name;
   private String type;
   private int length;
@@ -66,4 +68,5 @@ public class SGBDField
   public int getLength() {
     return length;
   }
+  
 }

@@ -1,7 +1,7 @@
 /*
- * @(#)ScheduleRangeObject.java	2.9.1 18/11/14
+ * @(#)ScheduleRangeObject.java	2.9.4.13 05/11/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,7 +27,7 @@ import net.algem.contact.Person;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.4.13
  * @since 1.0a 07/07/1999
  */
 public class ScheduleRangeObject
@@ -35,6 +35,8 @@ public class ScheduleRangeObject
         implements java.io.Serializable
 {
 
+  private static final long serialVersionUID = -49878176623897326L;
+  
   private Person member;
   protected int memberId;
   protected int scheduleId;

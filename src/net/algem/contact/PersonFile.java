@@ -1,7 +1,7 @@
 /*
- * @(#)PersonFile.java 2.8.y.1 03/11/14
+ * @(#)PersonFile.java 2.9.4.13 03/11/15
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -36,17 +36,19 @@ import net.algem.util.model.GemModel;
  * Person management.
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.y.1
+ * @version 2.9.4.13
  * @since 1.0a 12/08/2009
  */
 public class PersonFile
   implements GemModel
 {
+  private static final long serialVersionUID = -5525671215374943510L;
+  
+  protected EventListenerList listenerList = new EventListenerList();
   private Contact contact, oldContact;
   private Member member, oldMember;
   private Teacher teacher, oldTeacher;
   private Rib rib, oldRib;
-  protected EventListenerList listenerList = new EventListenerList();
   private PersonSubscriptionCard subscriptionCard;
   private Collection<Group> groups;
 
@@ -281,10 +283,7 @@ public class PersonFile
       return false;
     }
     final PersonFile other = (PersonFile) obj;
-    if (this.getId() != other.getId()) {
-      return false;
-    }
-    return true;
+    return this.getId() == other.getId();
   }
 
   @Override
@@ -293,5 +292,5 @@ public class PersonFile
     hash = 37 * hash + this.getId();
     return hash;
   }
-  
+
 }

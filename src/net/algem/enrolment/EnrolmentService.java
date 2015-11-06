@@ -23,6 +23,9 @@ package net.algem.enrolment;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.logging.Logger;
+import javax.swing.ProgressMonitor;
+import javax.swing.SwingWorker;
 import net.algem.Algem;
 import net.algem.config.*;
 import net.algem.contact.PersonFile;
@@ -871,7 +874,7 @@ public class EnrolmentService
    * @param end end date
    * @return a length in minutes
    */
-  int getCompletedTime(int idper, int mOrderId, Date start, Date end) {
+  public int getCompletedTime(int idper, int mOrderId, Date start, Date end) {
     try {
       return ModuleOrderIO.getCompletedTime(idper, mOrderId, start, end, dc);
     } catch (SQLException ex) {
@@ -880,11 +883,17 @@ public class EnrolmentService
     }
   }
   
-  public List<ExtendedModuleOrder> getExtendedModuleList(Date start, Date end) throws SQLException {
-    List<ExtendedModuleOrder> extended = ModuleOrderIO.findExtendedModuleList(start, end, dc);
-    for (ExtendedModuleOrder em : extended) {
-      em.setCompleted(getCompletedTime(em.getIdper(), em.getId(), start, end));
-    }
+  public List<ExtendedModuleOrder> getExtendedModuleList(final Date start, final Date end) throws SQLException {
+    final List<ExtendedModuleOrder> extended = ModuleOrderIO.findExtendedModuleList(start, end, dc);
+
+//    int i = 0;
+//    int size = extended.size();
+//    for (ExtendedModuleOrder em : extended) {
+////      em.setCompleted(getCompletedTime(em.getIdper(), em.getId(), start, end));
+////      p.setProgress(++i * 100 / size);
+////      p.setNote(em.getTitle());
+//      
+//    }
     return extended;
   }
 

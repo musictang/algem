@@ -1,7 +1,7 @@
 /*
- * @(#)GemAmount.java	2.6.a 13/09/12
+ * @(#)GemAmount.java	2.9.4.13 05/11/15
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,12 +28,14 @@ import java.util.Locale;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.4.13
  */
 public class GemAmount
         implements java.io.Serializable, Comparable
 {
 
+  private static final long serialVersionUID = 3382592365677086510L;
+  
   private double amount;
   private NumberFormat nf = NumberFormat.getInstance(Locale.FRANCE);
 
@@ -82,4 +84,5 @@ public class GemAmount
   public int compareTo(Object o) {
     return (int) (doubleValue() - ((GemAmount) o).doubleValue());
   }
+  
 }

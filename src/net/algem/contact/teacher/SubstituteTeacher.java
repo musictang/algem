@@ -1,7 +1,7 @@
 /*
- * @(#)SubstituteTeacher.java	2.7.a 03/12/12
+ * @(#)SubstituteTeacher.java	2.9.4.13 05/11/15
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,12 +27,14 @@ import net.algem.course.Course;
  * Substitute teacher.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.9.4.13
  */
 public class SubstituteTeacher
         implements java.io.Serializable
 {
 
+  private static final long serialVersionUID = 4301950805146057831L;
+  
   private int establishment;
   private Course course;
   private Person teacher;
@@ -40,7 +42,6 @@ public class SubstituteTeacher
   private String days;
   private boolean _favorite;
 
-  //public static String[] JOURS_SEMAINE = {"lundi","mardi","mercredi","jeudi","vendredi","samedi","dimanche"};
   public SubstituteTeacher() {
   }
 
@@ -171,4 +172,5 @@ public class SubstituteTeacher
   public String toString() {
     return getSubstitute().toString() + (isFavorite() ? "*" : "");
   }
+  
 }

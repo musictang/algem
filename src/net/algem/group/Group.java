@@ -1,7 +1,7 @@
 /*
- * @(#)Group.java	2.6.a 31/07/12
+ * @(#)Group.java	2.9.4.13 05/11/15
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -34,7 +34,7 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.4.13
  */
 public class Group
         implements GemModel
@@ -43,6 +43,8 @@ public class Group
   static final byte REFERENT = 1;
   static final byte MANAGER = 2;
   static final byte TOURNEUR = 3;
+  
+  private static final long serialVersionUID = -4359556012446341963L;
   
   private int id;
   
@@ -247,4 +249,5 @@ public class Group
     }
     return null;
   }
+  
 }

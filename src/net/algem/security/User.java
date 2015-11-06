@@ -1,7 +1,7 @@
 /*
- * @(#)User.java	2.8.s 18/02/14
+ * @(#)User.java	2.9.4.13 05/11/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -30,95 +30,98 @@ import net.algem.contact.Person;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.s
+ * @version 2.9.4.13
  */
 public class User
-	extends Person {
+        extends Person
+{
 
-	private String login;
-	private String password;
-	private int profile;
-	private UserPass pass;
+  private static final long serialVersionUID = -3336222510237928108L;
+  private String login;
+  private String password;
+  private int profile;
+  private UserPass pass;
 
-	public User() {
-	}
+  public User() {
+  }
 
-	public User(Person p) {
-		id = p.getId();
-		name = p.getName();
-		firstName = p.getFirstName();
-		gender = p.getGender();
-	}
+  public User(Person p) {
+    id = p.getId();
+    name = p.getName();
+    firstName = p.getFirstName();
+    gender = p.getGender();
+  }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		final Person p = (Person) obj;
-		if (!super.equals(p)) {
-			return false;
-		}
-		final User other = (User) obj;
-		if ((this.login == null) ? (other.login != null) : !this.login.equals(other.login)) {
-			return false;
-		}
-		if (this.profile != other.profile) {
-			return false;
-		}
-		if (this.pass != other.pass && (this.pass == null || !this.pass.equals(other.pass))) {
-			return false;
-		}
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final Person p = (Person) obj;
+    if (!super.equals(p)) {
+      return false;
+    }
+    final User other = (User) obj;
+    if ((this.login == null) ? (other.login != null) : !this.login.equals(other.login)) {
+      return false;
+    }
+    if (this.profile != other.profile) {
+      return false;
+    }
+    if (this.pass != other.pass && (this.pass == null || !this.pass.equals(other.pass))) {
+      return false;
+    }
 
-		return true;
-	}
+    return true;
+  }
 
-	@Override
-	public int hashCode() {
-		int hash = 7;
-		hash = 17 * hash + (this.login != null ? this.login.hashCode() : 0);
-		hash = 17 * hash + this.profile;
-		hash = 17 * hash + (this.pass != null ? this.pass.hashCode() : 0);
-		return hash;
-	}
-	
-	@Override
-	public String toString() {
-		return super.toString() + " " + login;
-	}
+  @Override
+  public int hashCode() {
+    int hash = 7;
+    hash = 17 * hash + (this.login != null ? this.login.hashCode() : 0);
+    hash = 17 * hash + this.profile;
+    hash = 17 * hash + (this.pass != null ? this.pass.hashCode() : 0);
+    return hash;
+  }
 
-	void setLogin(String s) {
-		login = s;
-	}
+  @Override
+  public String toString() {
+    return super.toString() + " " + login;
+  }
 
-	public String getLogin() {
-		return login;
-	}
+  void setLogin(String s) {
+    login = s;
+  }
 
-	void setPassword(String s) {
-		password = s;
-	}
+  public String getLogin() {
+    return login;
+  }
 
-	public String getPassword() {
-		return password;
-	}
+  void setPassword(String s) {
+    password = s;
+  }
 
-	void setProfile(int i) {
-		profile = i;
-	}
+  public String getPassword() {
+    return password;
+  }
 
-	public int getProfile() {
-		return profile;
-	}
+  void setProfile(int i) {
+    profile = i;
+  }
 
-	UserPass getPassInfo() {
-		return pass;
-	}
+  public int getProfile() {
+    return profile;
+  }
 
-	void setPassInfo(UserPass pass) {
-		this.pass = pass;
-	}
+  UserPass getPassInfo() {
+    return pass;
+  }
+
+  void setPassInfo(UserPass pass) {
+    this.pass = pass;
+  }
+
 }

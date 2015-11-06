@@ -1,7 +1,7 @@
 /*
- * @(#)Instrument.java	2.7.a 30/11/12
+ * @(#)Instrument.java	2.9.4.13 05/11/15
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,13 +27,14 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.9.4.13
  * @since 1.0a 07/07/1999
  */
 public class Instrument
         implements GemModel
 {
 
+  private static final long serialVersionUID = -1460112511550732390L;
   public static final int MEMBER = 1;
   public static final int TEACHER = 2;
   public static final int MUSICIAN = 3;
@@ -55,7 +56,6 @@ public class Instrument
 
   @Override
   public String toString() {
-//    return id + " " + name;
     return name;
   }
 

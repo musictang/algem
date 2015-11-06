@@ -1,7 +1,7 @@
 /*
- * @(#)DDMandate.java	2.8.r 16/01/14
+ * @(#)DDMandate.java	2.9.4.13 05/11/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,13 +27,15 @@ import net.algem.util.model.GemModel;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.r
+ * @version 2.9.4.13
  * @since 2.8.r 29/12/13
  */
 public class DDMandate
         implements GemModel
 {
 
+  private static final long serialVersionUID = -208747470869215222L;
+  private static final double EXPIRATION_LIMIT = -36.0;
   private int id;
   private int idper;
   private String name;
@@ -45,7 +47,7 @@ public class DDMandate
   private String ics;
   private DDSeqType seqType;
   private boolean recurrent;
-  private static final double EXPIRATION_LIMIT = -36.0;
+  
 
   public DDMandate(int idper) {
     this.idper = idper;
@@ -158,10 +160,7 @@ public class DDMandate
       return false;
     }
     final DDMandate other = (DDMandate) obj;
-    if (this.id != other.id) {
-      return false;
-    }
-    return true;
+    return this.id == other.id;
   }
 
   @Override

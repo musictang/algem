@@ -22,8 +22,15 @@ package net.algem.util.menu;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JMenuItem;
+import javax.swing.ProgressMonitor;
+import javax.swing.SwingWorker;
 
 import net.algem.Algem;
 import net.algem.config.ConfigKey;
@@ -33,6 +40,7 @@ import net.algem.course.ModuleSearchCtrl;
 import net.algem.enrolment.EnrolmentListCtrl;
 import net.algem.enrolment.EnrolmentService;
 import net.algem.enrolment.ExtendeModuleOrderListCtrl;
+import net.algem.enrolment.ExtendedModuleOrder;
 import net.algem.enrolment.ExtendedModuleOrderTableModel;
 import net.algem.planning.fact.ui.PlanningFactCRUDController;
 import net.algem.script.ui.ScriptingFormController;
@@ -104,14 +112,38 @@ public class MenuCatalog
       moduleBrowser.init();
       desktop.addPanel(MODULE_BROWSER_KEY, moduleBrowser);
     } else if (src == miModuleOrder) {
-      EnrolmentService service = new EnrolmentService(dataCache);
-      ExtendeModuleOrderListCtrl orderListCtrl = new ExtendeModuleOrderListCtrl(desktop, service, new ExtendedModuleOrderTableModel());
+      final EnrolmentService service = new EnrolmentService(dataCache);
+      final ExtendeModuleOrderListCtrl orderListCtrl = new ExtendeModuleOrderListCtrl(desktop, service, new ExtendedModuleOrderTableModel());
+      final ProgressMonitor monitor = new ProgressMonitor(orderListCtrl, "Patientez...", "1", 1, 100);
+      monitor.setProgress(0);
+      monitor.setMillisToDecideToPopup(10);
+      final List<ExtendedModuleOrder> modules;
       try {
-        orderListCtrl.load(service.getExtendedModuleList(dataCache.getStartOfYear().getDate() , dataCache.getEndOfYear().getDate()));
-        desktop.addPanel("Modules.ordered", orderListCtrl, GemModule.XXL_SIZE);
+        modules = service.getExtendedModuleList(dataCache.getStartOfYear().getDate(), dataCache.getEndOfYear().getDate());
+
+        ProgressMonitorManager progressManager = new ProgressMonitorManager(monitor);
+        SwingWorker<Void, Void> task = new SwingWorker<Void, Void>()
+        {
+          @Override
+          protected Void doInBackground() throws Exception {
+            int i = 0;
+            int size = modules.size();
+            for (ExtendedModuleOrder em : modules) {
+              em.setCompleted(service.getCompletedTime(em.getIdper(), em.getId(), dataCache.getStartOfYear().getDate(), dataCache.getEndOfYear().getDate()));
+              setProgress(++i * 100 / size);
+            }
+            orderListCtrl.load(modules);
+            return null;
+          }
+        };
+        task.addPropertyChangeListener(progressManager);
+        task.execute();
       } catch (SQLException ex) {
-        GemLogger.log(ex.getMessage());
+        Logger.getLogger(MenuCatalog.class.getName()).log(Level.SEVERE, null, ex);
       }
+      
+      desktop.addPanel("Modules.ordered", orderListCtrl, GemModule.XXL_SIZE);
+     
     } else if (src == miCoursBrowse) {
       CourseSearchCtrl coursCtrl = new CourseSearchCtrl(desktop);
       coursCtrl.addActionListener(this);
@@ -129,5 +161,29 @@ public class MenuCatalog
         desktop.addPanel("Absences & remplacement", new PlanningFactCRUDController(desktop).getPanel(), GemModule.XXL_SIZE);
     }
     desktop.setDefaultCursor();
+  }
+  class ProgressMonitorManager
+    implements PropertyChangeListener
+  {
+    private ProgressMonitor monitor;
+
+    public ProgressMonitorManager(ProgressMonitor monitor) {
+      this.monitor = monitor;
+    }
+    // executes in event dispatch thread
+    @Override
+    public void propertyChange(PropertyChangeEvent event) {
+        // if the operation is finished or has been canceled by
+        // the user, take appropriate action
+        if (monitor.isCanceled()) {
+//            monitor.cancel(true);
+        } else if (event.getPropertyName().equals("progress")) {            
+            // get the % complete from the progress event
+            // and set it on the progress monitor
+            int progress = ((Integer)event.getNewValue()).intValue();
+            monitor.setProgress(progress);            
+        }        
+    }
+    
   }
 }

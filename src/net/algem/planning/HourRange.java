@@ -1,7 +1,7 @@
 /*
- * @(#)HourRange.java	2.8.t 15/04/14
+ * @(#)HourRange.java	2.9.4.13 05/11/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -25,12 +25,14 @@ package net.algem.planning;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.9.4.13
  */
 public class HourRange
         implements java.io.Serializable
 {
 
+  private static final long serialVersionUID = -324528520816296467L;
+  
   private Hour start;
   private Hour end;
 

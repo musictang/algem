@@ -1,7 +1,7 @@
 /*
- * @(#)Musician.java	2.7.a 22/11/12
+ * @(#)Musician.java	2.9.4.13 05/11/15
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,12 +27,14 @@ import net.algem.contact.Person;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.a
+ * @version 2.9.4.13
  */
 public class Musician
         extends Person
 {
 
+  private static final long serialVersionUID = 4348331342721723243L;
+  
   private int instrument;
   private Group group;
 
@@ -100,4 +102,5 @@ public class Musician
   public String toString() {
     return super.toString() + " " + instrument;
   }
+ 
 }

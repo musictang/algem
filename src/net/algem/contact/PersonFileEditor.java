@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileEditor 2.9.4.12 28/09/15
+ * @(#)PersonFileEditor 2.9.4.13 02/11/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -69,7 +69,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.12
+ * @version 2.9.4.13
  */
 public class PersonFileEditor
         extends FileEditor
@@ -321,7 +321,7 @@ public class PersonFileEditor
       }
     } else if ("Teacher.presence".equals(arg)) {
       AttendanceSheetDlg dlg = new AttendanceSheetDlg(personFileView, dataCache, dossier.getTeacher());
-    } else if ("Teacher.hour".equals(arg)) {
+    } else if ("Employee.hours".equals(arg)) {
       String fileName = "heures_" + dossier.getContact().getFirstName() + "_" + dossier.getContact().getName() + ".txt";
       HourEmployeeDlg hoursDlg = new HourEmployeeDlg(desktop.getFrame(), dossier.getId(), dataCache);
       hoursDlg.init(fileName, dc);

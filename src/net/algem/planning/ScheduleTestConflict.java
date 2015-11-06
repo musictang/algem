@@ -1,7 +1,7 @@
 /*
- * @(#)ScheduleTestConflict.java	2.8.v 03/06/14
+ * @(#)ScheduleTestConflict.java	2.9.4.13 05/11/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,13 +27,15 @@ import java.util.Objects;
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.v
+ * @version 2.9.4.13
  * @since 1.0a 07/07/1999
  */
 public class ScheduleTestConflict
         implements java.io.Serializable
 {
 
+  private static final long serialVersionUID = -718206342909075970L;
+  
   private DateFr date;
   private Hour hStart;
   private Hour hEnd;
@@ -43,7 +45,6 @@ public class ScheduleTestConflict
   private boolean groupFree;
   private String detail;
 
-  
   public ScheduleTestConflict(DateFr date, Hour start, Hour end) {
     this.date = date;
     this.hStart = start;
@@ -176,4 +177,5 @@ public class ScheduleTestConflict
   public boolean isConflict() {
     return !(memberFree && roomFree && teacherFree && groupFree);
   }
+  
 }

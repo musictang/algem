@@ -1,5 +1,5 @@
 /*
- * @(#)PlanModifCtrl.java	2.9.4.10 17/07/15
+ * @(#)PlanModifCtrl.java	2.9.4.13 03/11/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -40,7 +40,6 @@ import net.algem.course.Course;
 import net.algem.group.GemGroupService;
 import net.algem.group.Group;
 import net.algem.planning.*;
-import net.algem.planning.day.DayPlanView;
 import net.algem.planning.dispatch.ui.ScheduleDispatchController;
 import net.algem.planning.editing.instruments.AtelierInstrumentsController;
 import net.algem.planning.fact.ui.ActivitySupCtrl;
@@ -58,7 +57,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.10
+ * @version 2.9.4.13
  * @since 1.0b 05/07/2002 lien salle et groupe
  */
 public class PlanModifCtrl
@@ -429,7 +428,7 @@ public class PlanModifCtrl
     a.setNote(new ActionService().getMemo(a.getId()));
 
     try {
-      ModifPlanActionDlg dlg = new ModifPlanActionDlg(desktop, a, new DayPlanView().getDefaultScheduleColor(plan));
+      ModifPlanActionDlg dlg = new ModifPlanActionDlg(desktop, a, new StandardScheduleColorizer().getDefaultScheduleColor(plan));
       dlg.show();
 
       if (!dlg.isValidate()) {

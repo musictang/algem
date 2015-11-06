@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleCanvas.java 2.9.4.4 06/05/15
+ * @(#)ScheduleCanvas.java 2.9.4.13 03/11/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -30,15 +30,13 @@ import java.awt.print.PrinterException;
 import java.util.ArrayList;
 import java.util.Vector;
 import net.algem.config.AgeRange;
-import net.algem.config.ColorPlan;
 import net.algem.config.ColorPrefs;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
 import net.algem.config.GemParam;
-import net.algem.contact.Person;
 import net.algem.course.Course;
-import net.algem.room.Room;
 import net.algem.util.DataCache;
+import net.algem.util.GemLogger;
 import net.algem.util.model.Cacheable;
 import net.algem.util.model.Model;
 import net.algem.util.ui.GemPanel;
@@ -47,7 +45,7 @@ import net.algem.util.ui.GemPanel;
  * Abstract class for planning layout.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.3
+ * @version 2.9.4.13
  * @since 2.5.a 10/07/12
  */
 public abstract class ScheduleCanvas
@@ -68,7 +66,7 @@ public abstract class ScheduleCanvas
     try {
       s = Integer.parseInt(start.substring(0, start.indexOf(':'))) * 60;
     } catch(NumberFormatException nfe) {
-      System.err.println(nfe.getMessage());
+      GemLogger.log(nfe.getMessage());
     }
     H_START = s;
   }
@@ -85,6 +83,7 @@ public abstract class ScheduleCanvas
   protected Image img;
   protected ColorPrefs colorPrefs = new ColorPrefs();
   protected Cacheable actionIO = DataCache.getDao(Model.Action);
+  protected ScheduleColorizer colorizer = new StandardScheduleColorizer(colorPrefs, (ActionIO) actionIO);
 
   public void removeActionListener(ActionListener l) {
     listener = AWTEventMulticaster.remove(listener, l);
@@ -101,61 +100,7 @@ public abstract class ScheduleCanvas
    * @return a color
    */
   protected Color getScheduleColor(ScheduleObject p) {
-    Color ac = null;
-    if (p instanceof ScheduleRangeObject) {
-      ac = getActionColor(((ScheduleRangeObject)p).getAction().getId());
-    } else {
-      ac = getActionColor(p.getIdAction());
-    }
-    if (ac != null) {
-      return (p instanceof ScheduleRangeObject ? ColorPrefs.brighten(ac) : ac);
-    }
-    return getDefaultScheduleColor(p);
-  }
-  
-  public Color getDefaultScheduleColor(ScheduleObject p) {
-    if (p instanceof ScheduleRangeObject) {
-      return colorPrefs.getColor(ColorPlan.RANGE);
-    }
-    switch (p.getType()) {
-      case Schedule.COURSE:
-        Room s = ((CourseSchedule) p).getRoom();
-        Course cc = ((CourseSchedule) p).getCourse();
-        if (s.isCatchingUp()) {
-          return colorPrefs.getColor(ColorPlan.CATCHING_UP);
-        } else {
-          if (cc != null && !cc.isCollective()) {
-            return colorPrefs.getColor(ColorPlan.COURSE_INDIVIDUAL);
-          } else {
-            if (cc != null && cc.isInstCode()) {
-              return colorPrefs.getColor(ColorPlan.INSTRUMENT_CO);
-            } else {
-              return colorPrefs.getColor(ColorPlan.COURSE_CO);
-            }
-          }
-        }
-      case Schedule.ACTION:
-        return colorPrefs.getColor(ColorPlan.ACTION);
-      case Schedule.MEMBER:
-        return  colorPrefs.getColor(ColorPlan.MEMBER_REHEARSAL);
-      case Schedule.GROUP:
-        return  colorPrefs.getColor(ColorPlan.GROUP_REHEARSAL);
-      case Schedule.WORKSHOP:
-        return  colorPrefs.getColor(ColorPlan.WORKSHOP);
-      case Schedule.TRAINING:
-        return  colorPrefs.getColor(ColorPlan.TRAINING);
-      case Schedule.STUDIO:
-      case Schedule.TECH:
-        return  colorPrefs.getColor(ColorPlan.STUDIO);
-      case Schedule.ADMINISTRATIVE:
-        return colorPrefs.getColor(ColorPlan.ADMINISTRATIVE);
-      default:
-        return Color.WHITE;
-    } // end switch couleurs
-  }
-  
-  private Color getActionColor(int action) {
-    return ((ActionIO) actionIO).getColor(action);
+    return colorizer.getScheduleColor(p);
   }
 
   /**
@@ -165,36 +110,7 @@ public abstract class ScheduleCanvas
    * @return a color
    */
   protected Color getTextColor(ScheduleObject p) {
-    Color ac = getActionColor(p.getIdAction());
-    if (ac != null) {
-      return ColorPrefs.getForeground(ac);
-    }
-    switch (p.getType()) {
-      case Schedule.COURSE:
-        Room r = p.getRoom();
-        if (r.isCatchingUp()) {
-          return colorPrefs.getColor(ColorPlan.CATCHING_UP_LABEL);
-        } else if (((CourseSchedule) p).getCourse().isCollective()) {
-          return colorPrefs.getColor(ColorPlan.COURSE_CO_LABEL);
-        } else {
-          return colorPrefs.getColor(ColorPlan.COURSE_INDIVIDUAL_LABEL);
-        }
-      case Schedule.WORKSHOP:
-        return colorPrefs.getColor(ColorPlan.WORKSHOP_LABEL);
-      case Schedule.TRAINING:
-        return colorPrefs.getColor(ColorPlan.TRAINING_LABEL);
-      case Schedule.GROUP:
-        return colorPrefs.getColor(ColorPlan.GROUP_LABEL);
-      case Schedule.MEMBER:
-        return colorPrefs.getColor(ColorPlan.MEMBER_LABEL);
-      case Schedule.STUDIO:
-      case Schedule.TECH:
-        return colorPrefs.getColor(ColorPlan.STUDIO_LABEL);
-      case Schedule.ADMINISTRATIVE:
-        return colorPrefs.getColor(ColorPlan.ADMINISTRATIVE_LABEL);
-      default:
-        return colorPrefs.getColor(ColorPlan.LABEL);
-    }
+    return colorizer.getTextColor(p);
   }
 
   /**
@@ -205,15 +121,7 @@ public abstract class ScheduleCanvas
    * @return a color
    */
   protected Color getScheduleRangeColor(ScheduleObject p, Color c) {
-    if (p instanceof ScheduleRangeObject) {
-      Person a = ((ScheduleRangeObject) p).getMember();
-      if (a == null) {
-        c = Color.GRAY;
-      } else if (a.getId() == 0) {
-        c = c.darker();// break color
-      }
-    }
-    return c;
+    return ((StandardScheduleColorizer) colorizer).getScheduleRangeColor(p, c);
   }
 
   /**
@@ -225,7 +133,6 @@ public abstract class ScheduleCanvas
    * @return an integer
    */
   public int getScheduleRangeWidth(int p, int n) {
-
     if (p <= 0) {
       return 0;
     }

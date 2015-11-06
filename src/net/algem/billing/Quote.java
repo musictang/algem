@@ -1,7 +1,7 @@
 /*
- * @(#)Quote.java 2.8.w 08/09/14
+ * @(#)Quote.java 2.9.4.13 05/11/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -32,13 +32,15 @@ import net.algem.security.User;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.4.13
  * @since 2.4.d 08/06/12
  */
 public class Quote
   implements Serializable
 {
 
+  private static final long serialVersionUID = -7931741834723333355L;
+  
   /**
    * A quote/invoice number de devis/facture is represented by pattern {@code yymmn}.
    * yy : first 2 digits of current year<br />
@@ -422,4 +424,5 @@ public class Quote
   void setEditable(boolean editable) {
     this.editable = editable;
   }
+  
 }

@@ -1,7 +1,7 @@
 /*
- * @(#)GemModuleSID.java	2.9.1 27/11/14
+ * @(#)GemModuleSID.java	2.9.4.13 05/11/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -24,12 +24,14 @@ package net.algem.util.module;
  * Serialization object for GemModule.
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.4.13
  */
 public class GemModuleSID
         implements java.io.Serializable
 {
 
+  private static final long serialVersionUID = -4985810274866429593L;
+  
   private String moduleClass;
   private String moduleSID;
   private String moduleString;
@@ -65,4 +67,5 @@ public class GemModuleSID
   public String toString() {
     return moduleClass + ":" + moduleSID + ":" + moduleString;
   }
+  
 }

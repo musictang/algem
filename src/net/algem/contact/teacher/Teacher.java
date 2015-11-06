@@ -1,5 +1,5 @@
 /*
- * @(#)Teacher.java	2.9.4.8 24/06/15
+ * @(#)Teacher.java	2.9.4.13 03/11/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -28,12 +28,14 @@ import net.algem.contact.Person;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.8
+ * @version 2.9.4.13
  */
 public class Teacher
   extends Person
 {
 
+  private static final long serialVersionUID = 4155908578879956310L;
+  
   private List<Integer> instruments;
   private String cert1 = "";
   private String cert2 = "";
@@ -142,4 +144,5 @@ public class Teacher
             && (instruments == null || instruments.isEmpty())
             && active == false;
   }
+  
 }

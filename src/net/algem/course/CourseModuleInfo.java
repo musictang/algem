@@ -1,7 +1,7 @@
 /*
- * @(#)CourseModuleInfo.java	2.8.v 17/06/14
+ * @(#)CourseModuleInfo.java	2.9.4.13 03/11/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,7 +28,7 @@ import net.algem.util.model.GemModel;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.v
+ * @version 2.9.4.13
  * @since 2.8.a 13/03/2013
  */
 public class CourseModuleInfo
@@ -39,6 +39,8 @@ public class CourseModuleInfo
 
   /** Max length in hours. */
   public static final int MAX_LENGTH = 24;
+  
+  private static final long serialVersionUID = -8268780716470396857L;
 
   private int id;
   private int idModule;

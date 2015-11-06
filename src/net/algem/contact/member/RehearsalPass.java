@@ -1,5 +1,5 @@
 /*
- * @(#)RehearsalPass.java 2.9.2 12/01/15
+ * @(#)RehearsalPass.java 2.9.4.13 03/11/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -26,13 +26,15 @@ import net.algem.util.model.GemModel;
  * Subscription pass option for rehearsals.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.9.4.13
  */
 public class RehearsalPass
   implements GemModel
 {
 
   public final static int MIN_DEFAULT = 30; // see DEFAULT value in database
+  private static final long serialVersionUID = -6338921697633719320L;
+  
   private int id;
   private String label;
   private float amount;
@@ -158,4 +160,5 @@ public class RehearsalPass
   public int getTotalTime() {
     return totalTime;
   }
+  
 }

@@ -1,5 +1,5 @@
 /*
- * @(#)MaritalStatus.java 2.9.3 26/02/2015
+ * @(#)MaritalStatus.java 2.9.4.13 03/11/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -24,17 +24,17 @@ package net.algem.config;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.3
+ * @version 2.9.4.13
  * @since 2.9.3 24/02/2015
  */
 public class MaritalStatus 
   extends GemParam
 {
 
+  private static final long serialVersionUID = -5142494208244582050L;
+  
   public MaritalStatus(GemParam p) {
     super(p.getId(), p.getCode(), p.getLabel());
   }
-  
-  
-  
+
 }

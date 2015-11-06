@@ -1,7 +1,7 @@
 /*
- * @(#)TeacherBreakDlg.java 2.8.w 08/07/14
+ * @(#)TeacherBreakDlg.java 2.9.4.13 03/11/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -40,7 +40,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.4.13
  * @since 1.0a 08/10/2001
  */
 public class TeacherBreakDlg
@@ -76,8 +76,8 @@ public class TeacherBreakDlg
 
     GemPanel buttonPanel = new GemPanel();
     buttonPanel.setLayout(new GridLayout(1, 2));
-    buttonPanel.add(btCancel);
     buttonPanel.add(btValid);
+    buttonPanel.add(btCancel);
 
     dlg.getContentPane().add(title, BorderLayout.NORTH);
     dlg.getContentPane().add(pv, BorderLayout.CENTER);

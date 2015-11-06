@@ -1,7 +1,7 @@
 /*
- * @(#)CourseCode.java	2.8.a 14/03/13
+ * @(#)CourseCode.java	2.9.4.13 03/11/15
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -25,17 +25,20 @@ import net.algem.config.GemParam;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.9.4.13
  * @since 2.8.a 13/03/2013
  */
 public class CourseCode
         extends GemParam
 {
 
+  private static final long serialVersionUID = 2028693695196994934L;
+  
   public CourseCode() {
   }
   
   public CourseCode(GemParam p) {
     super(p.getId(), p.getCode(), p.getLabel());
   }
+  
 }

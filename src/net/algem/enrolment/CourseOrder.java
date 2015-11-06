@@ -1,7 +1,7 @@
 /*
- * @(#)CourseOrder.java	2.8.a 26/03/13
+ * @(#)CourseOrder.java	2.9.4.13 05/11/15
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -29,12 +29,14 @@ import net.algem.planning.Hour;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.9.4.13
  */
 public class CourseOrder
         implements java.io.Serializable
 {
 
+  private static final long serialVersionUID = -4012019492419193410L;
+  
   private int id;
   private int idcmd;
   private int moduleOrder;
@@ -231,5 +233,4 @@ public class CourseOrder
     }
   }
 
-  
 }

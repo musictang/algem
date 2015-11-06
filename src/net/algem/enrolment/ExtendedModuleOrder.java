@@ -94,7 +94,7 @@ public class ExtendedModuleOrder
     this.nickName = nickName;
   }
 
-  void setCompleted(int min) {   
+  public void setCompleted(int min) {   
     completedTime = min;
   }
   

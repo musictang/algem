@@ -1,7 +1,7 @@
 /*
- * @(#)DateRange.java	2.6.a 21/09/12
+ * @(#)DateRange.java	2.9.4.13 05/11/15
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -25,13 +25,15 @@ package net.algem.planning;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.6.a
+ * @version 2.9.4.13
  * @since 1.0a 07/07/1999
  */
 public class DateRange
         implements java.io.Serializable
 {
 
+  private static final long serialVersionUID = 3770821611417617822L;
+  
   private DateFr start;
   private DateFr end;
 
@@ -72,4 +74,5 @@ public class DateRange
   public DateFr getEnd() {
     return end;
   }
+  
 }

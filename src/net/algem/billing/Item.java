@@ -1,7 +1,7 @@
 /*
- * @(#)Item.java 2.8.n 25/09/13
+ * @(#)Item.java 2.9.4.13 05/11/15
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -30,13 +30,14 @@ import net.algem.util.model.GemModel;
  * An item may be created regardless of invoice.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.n
+ * @version 2.9.4.13
  * @since 2.3.a 22/12/11
  */
 public class Item
   implements GemModel
 {
 
+ private static final long serialVersionUID = 3875590414115115006L; 
  private int id;
 
  /** Item name. */

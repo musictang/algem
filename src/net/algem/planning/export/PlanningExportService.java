@@ -1,5 +1,5 @@
 /*
- * @(#)PlanningExportService.java 2.9.3.2 11/03/15
+ * @(#)PlanningExportService.java 2.9.4.13 03/11/2015
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,12 +20,10 @@
  */
 package net.algem.planning.export;
 
-import net.algem.config.ColorPlan;
 import net.algem.config.ColorPrefs;
 import net.algem.course.Course;
 import net.algem.planning.*;
 import net.algem.planning.day.DayPlan;
-import net.algem.room.Room;
 import net.algem.util.GemLogger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
@@ -46,7 +44,7 @@ import org.apache.poi.hssf.util.HSSFColor;
 /**
  * @author <a href="mailto:alexandre.delattre.biz@gmail.com">Alexd</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.3.2
+ * @version 2.9.4.13
  * @since 2.9.2
  */
 public class PlanningExportService
@@ -54,9 +52,11 @@ public class PlanningExportService
 
   private ColorPrefs colorPrefs;
   private PlanningService planningService;
+  private ScheduleColorizer colorizer;
 
-  public PlanningExportService(PlanningService service) {
+  public PlanningExportService(PlanningService service, ScheduleColorizer colorizer) {
     this.planningService = service;
+    this.colorizer = colorizer;
     colorPrefs = new ColorPrefs();
   }
 
@@ -116,7 +116,6 @@ public class PlanningExportService
         coursCell.setCellValue(getLabel(event));
         CellStyle style = getCoursStyle(workbook, event, coursStyleCache);
         coursCell.setCellStyle(style);
-
         if (startRowPos != endRowPos) {
           sheet.addMergedRegion(new CellRangeAddress(startRowPos, endRowPos, col, col));
           for (int row = startRowPos; row < endRowPos; row++) {
@@ -157,7 +156,7 @@ public class PlanningExportService
   }
 
   private CellStyle getCoursStyle(HSSFWorkbook wb, ScheduleObject o, Map<java.awt.Color, CellStyle> cache) {
-    java.awt.Color color = getScheduleColor(o);
+    java.awt.Color color = colorizer.getScheduleColor(o);
     CellStyle cachedStyle = cache.get(color);
     if (cachedStyle != null) {
       return cachedStyle;
@@ -171,18 +170,31 @@ public class PlanningExportService
       style.setBorderTop(CellStyle.BORDER_THIN);
       style.setBorderBottom(CellStyle.BORDER_THIN);
       style.setFillPattern(CellStyle.SOLID_FOREGROUND);
-      HSSFColor hffsColor = wb.getCustomPalette().findColor((byte) color.getRed(), (byte)color.getGreen(), (byte)color.getBlue());
-      short index = -1;
-      if (hffsColor == null) {
-        index = wb.getCustomPalette().findSimilarColor((byte) color.getRed(), (byte)color.getGreen(), (byte)color.getBlue()).getIndex();
-        wb.getCustomPalette().setColorAtIndex(index, (byte) color.getRed(), (byte)color.getGreen(), (byte)color.getBlue());
-      } else {
-        index = hffsColor.getIndex();
-      }
-      style.setFillForegroundColor(index);
+      style.setFillForegroundColor(getColorIndex(wb, color));
+      
+      java.awt.Color textColor = colorizer.getTextColor(o);
+      Font font = wb.createFont();
+      font.setColor(getColorIndex(wb, textColor));
+      style.setFont(font);
+      
       cache.put(color, style);
       return style;
     }
+  }
+  
+  private short getColorIndex(HSSFWorkbook wb, java.awt.Color c) {
+    byte red = (byte) c.getRed();
+    byte green = (byte) c.getGreen();
+    byte blue = (byte) c.getBlue();
+    short index = -1;
+    HSSFColor color = wb.getCustomPalette().findColor(red, green, blue);
+    if (color == null) {
+      index = wb.getCustomPalette().findSimilarColor(red, green, blue).getIndex();
+      wb.getCustomPalette().setColorAtIndex(index, red, green, blue);
+    } else {
+      index = color.getIndex();
+    }
+    return index;
   }
 
   private String getLabel(ScheduleObject p) {
@@ -214,45 +226,6 @@ public class PlanningExportService
   }
 
   protected java.awt.Color getScheduleColor(ScheduleObject p) {
-    java.awt.Color c = java.awt.Color.white;
-    switch (p.getType()) {
-      case Schedule.COURSE:
-        Room s = ((CourseSchedule) p).getRoom();
-        Course cc = ((CourseSchedule) p).getCourse();
-        if (s.isCatchingUp()) {
-          c = colorPrefs.getColor(ColorPlan.CATCHING_UP);
-        } else {
-          if (cc != null && !cc.isCollective()) {
-            c = colorPrefs.getColor(ColorPlan.COURSE_INDIVIDUAL);
-          } else {
-            if (cc != null && cc.isInstCode()) {
-              c = colorPrefs.getColor(ColorPlan.INSTRUMENT_CO);
-            } else {
-              c = colorPrefs.getColor(ColorPlan.COURSE_CO);
-            }
-          }
-        }
-        break;
-      case Schedule.ACTION:
-        c = colorPrefs.getColor(ColorPlan.ACTION);
-        break;
-      case Schedule.MEMBER:
-        c = colorPrefs.getColor(ColorPlan.MEMBER_REHEARSAL);
-        break;
-      case Schedule.GROUP:
-        c = colorPrefs.getColor(ColorPlan.GROUP_REHEARSAL);
-        break;
-      case Schedule.WORKSHOP:
-        c = colorPrefs.getColor(ColorPlan.WORKSHOP);
-        break;
-      case Schedule.TRAINING:
-        c = colorPrefs.getColor(ColorPlan.TRAINING);
-        break;
-      case Schedule.STUDIO:
-      case Schedule.TECH:
-        c = colorPrefs.getColor(ColorPlan.STUDIO);
-        break;
-    } // end switch couleurs
-    return c;
+    return colorizer.getScheduleColor(p);
   }
 }

@@ -1,7 +1,7 @@
 /*
- * @(#)Workshop.java	2.8.y 29/09/14
+ * @(#)Workshop.java	2.9.4.13 05/11/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,12 +27,14 @@ import net.algem.util.BundleUtil;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.y
+ * @version 2.9.4.13
  */
 public class Workshop
         implements java.io.Serializable
 {
 
+  private static final long serialVersionUID = 9030117032647031173L;
+  
   private int id;
   private String name;
   private int teacherId;
@@ -88,4 +90,5 @@ public class Workshop
   public void setTeacher(int i) {
     teacherId = i;
   }
+  
 }

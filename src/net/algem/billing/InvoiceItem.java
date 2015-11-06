@@ -1,7 +1,7 @@
 /*
- * @(#)InvoiceItem.java 2.9.1 10/12/14
+ * @(#)InvoiceItem.java 2.9.4.13 05/11/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -25,13 +25,14 @@ import net.algem.accounting.OrderLine;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.4.13
  * @since 2.3.a 27/12/11
  */
 public class InvoiceItem
         extends BillingItem
 {
 
+  private static final long serialVersionUID = 7322513291605129612L;
   private OrderLine orderLine;
 
   public InvoiceItem() {
@@ -77,7 +78,5 @@ public class InvoiceItem
   public OrderLine getOrderLine() {
     return orderLine;
   }
-  
-  
-  
+
 }

@@ -1,5 +1,5 @@
 /*
- * @(#)Room.java	2.9.4.13 15/10/15
+ * @(#)Room.java	2.9.4.13 05/11/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -39,6 +39,8 @@ public class Room
         implements Cloneable, GemModel
 {
 
+  private static final long serialVersionUID = 5746933451268973734L;
+  
   private int id;
 
   /** Contact referent. */
@@ -88,10 +90,7 @@ public class Room
       return false;
     }
     final Room other = (Room) obj;
-    if (this.id != other.id) {
-      return false;
-    }
-    return true;
+    return this.id == other.id;
   }
 
   @Override
@@ -260,7 +259,7 @@ public class Room
 
   /** Debug. */
   private boolean out(int n) {
-//    System.out.println("!Room.equals "+n);
     return false;
   }
+  
 }

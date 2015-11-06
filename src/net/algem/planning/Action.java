@@ -1,5 +1,5 @@
 /*
- * @(#)Action.java	2.9.4.10 17/07/15
+ * @(#)Action.java	2.9.4.13 05/11/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -35,12 +35,14 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.10
+ * @version 2.9.4.13
  * @since 1.0a 07/07/1999
  */
 public class Action
         implements GemModel {
 
+  private static final long serialVersionUID = -2440481206020812924L;
+  
   private int id;
   private int courseId;
   private short nsessions;
@@ -290,4 +292,5 @@ public class Action
     }
     return c.toString();
   }
+  
 }

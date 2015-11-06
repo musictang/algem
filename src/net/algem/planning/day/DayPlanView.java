@@ -1,5 +1,5 @@
 /*
- * @(#)DayPlanView.java 2.9.4.13 15/10/15
+ * @(#)DayPlanView.java 2.9.4.13 03/11/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -342,7 +342,7 @@ public class DayPlanView
         continue;
       }
       w = getScheduleRangeWidth(vpci.get(idx).getAction().getPlaces(), n);
-      c = getScheduleColor(p);
+      c = getScheduleColor(vpci.get(idx));// important! previous range color
       drawRange(i, vpci.get(idx), c, w);
       idp = p.getScheduleId();
       n = 1;

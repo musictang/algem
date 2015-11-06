@@ -1,5 +1,5 @@
 /*
- * @(#)GemCommand.java 2.9.4.13 21/10/15
+ * @(#)GemCommand.java 2.9.4.13 03/11/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -43,6 +43,7 @@ public class GemCommand
   public static final String DELETE_CMD = BundleUtil.getLabel("Action.suppress.label");
   public static final String NOTE_CMD = BundleUtil.getLabel("Note.label");
   public static final String ECHEANCIER_CMD = BundleUtil.getLabel("Action.schedule.payment.label");
+  public static final String ABORT = BundleUtil.getLabel("Action.abort.label");
   //CtrlValidation
   public static final String VALIDATION_CMD = BundleUtil.getLabel("Action.validation.label");
   public static final String VALIDATE_CMD = BundleUtil.getLabel("Action.validate.label");

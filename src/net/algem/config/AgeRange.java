@@ -1,7 +1,7 @@
 /*
- * @(#)AgeRange.java 2.6.a 24/09/12
+ * @(#)AgeRange.java 2.9.4.13 05/11/15
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -26,13 +26,14 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:nicolasnouet@gmail.com">Nicolas Nouet</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.4.13
  * @since 2.3.a
  */
 
 public class AgeRange
   implements GemModel
 {
+  private static final long serialVersionUID = 7996967257343256662L;
   private int id; 
   private int agemin;
   private int agemax;
@@ -130,4 +131,5 @@ public class AgeRange
       return ((this.agemin <= t.getAgemin() && this.agemax > t.getAgemin())
             || (this.agemin < t.getAgemax() && this.agemax >= t.getAgemax()));
   }
+  
 }

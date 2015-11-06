@@ -1,7 +1,7 @@
 /*
- * @(#)CategoryOccup.java	2.3.a 22/12/11
+ * @(#)CategoryOccup.java	2.9.4.13 05/11/15
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,13 +27,14 @@ import net.algem.util.model.GenericTable;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.3.a
+ * @version 2.9.4.13
  * @since 1.0a 07/07/1999
  */
 public class CategoryOccup
         implements GenericTable
 {
 
+  private static final long serialVersionUID = 4362331151043829289L;
   private int id;
   private String label;
 
@@ -95,4 +96,5 @@ public class CategoryOccup
   public void setValue(String l) {
     label = l;
   }
+
 }

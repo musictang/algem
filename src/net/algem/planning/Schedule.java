@@ -1,5 +1,5 @@
 /*
- * @(#)Schedule.java	2.9.4.0 26/03/15
+ * @(#)Schedule.java	2.9.4.13 05/11/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -25,12 +25,12 @@ package net.algem.planning;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.0
+ * @version 2.9.4.13
  */
 public class Schedule
         implements java.io.Serializable
 {
-
+  
   public static final int COURSE = 1;
   public static final int ACTION = 2;
   public static final int GROUP = 3;
@@ -40,6 +40,8 @@ public class Schedule
   public static final int STUDIO = 7;
   public static final int TECH = 8;
   public static final int ADMINISTRATIVE = 9;
+  
+  private static final long serialVersionUID = 8525739722137960958L;
   
   protected int id;
   protected DateFr date;
@@ -192,4 +194,5 @@ public class Schedule
     }
     return attrib;
   }
+  
 }

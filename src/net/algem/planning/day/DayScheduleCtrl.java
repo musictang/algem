@@ -1,5 +1,5 @@
 /*
- * @(#)DayScheduleCtrl.java 2.9.4.13 12/10/15
+ * @(#)DayScheduleCtrl.java 2.9.4.13 03/11/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -38,6 +38,7 @@ import java.util.Locale;
 import java.util.prefs.Preferences;
 import javax.swing.*;
 import net.algem.Algem;
+import net.algem.config.ColorPrefs;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
 import net.algem.planning.*;
@@ -223,7 +224,10 @@ public class DayScheduleCtrl
       File destFile = FileUtil.getSaveFile(view, "xls", BundleUtil.getLabel("Excel.file.label"), null);
       if (destFile != null) {
         try {
-          new PlanningExportService(new PlanningService(DataCache.getDataConnection())).exportPlanning(planning, destFile);
+          new PlanningExportService(
+                  new PlanningService(DataCache.getDataConnection()), 
+                  new StandardScheduleColorizer(new ColorPrefs(), (ActionIO) DataCache.getDao(Model.Action))
+          ).exportPlanning(planning, destFile);
           new DesktopOpenHandler().open(destFile.getAbsolutePath());
         } catch (IOException e) {
           GemLogger.log(e.getMessage());

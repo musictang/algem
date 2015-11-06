@@ -1,7 +1,7 @@
 /*
- * @(#)JournalAccount.java	2.3.c 09/03/12
+ * @(#)JournalAccount.java	2.9.4.13 05/11/15
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,12 +27,13 @@ import net.algem.config.Param;
  * Accounting journal.
  * A journal is a param associated with an account.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.4.13
  * @since 2.2.a
  */
 public class JournalAccount
   extends Param
 {
+  private static final long serialVersionUID = 5684789480708725622L;
   private String label;
   private Account account;
 
