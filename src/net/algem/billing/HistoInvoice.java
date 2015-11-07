@@ -28,8 +28,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
+import javax.swing.ProgressMonitor;
+import javax.swing.SwingWorker;
 import net.algem.contact.PersonFile;
 import net.algem.contact.PersonFileEditor;
 import net.algem.planning.DateRange;
@@ -176,15 +179,13 @@ public class HistoInvoice
     super.actionPerformed(e);
     String cmd = e.getActionCommand();
     if (cmd.equals(BundleUtil.getLabel("Action.load.label"))) {
-      try {
-        if (idper > 0) {
-          load(service.getInvoices(idper, rangePanel.getStart(), rangePanel.getEnd()));
-        } else {
-          load(service.getInvoices(rangePanel.getStart(), rangePanel.getEnd()));
-        }
-      } catch (SQLException ex) {
-        GemLogger.log(Level.SEVERE, ex.getMessage());
-      }
+        ProgressMonitor monitor = new ProgressMonitor(this, BundleUtil.getLabel("Loading.label"), "", 1, 100);
+        monitor.setProgress(1);
+        monitor.setMillisToDecideToPopup(10);
+        DateRange range = new DateRange(rangePanel.getStartFr(), rangePanel.getEndFr());
+        SwingWorker<Void, String> task = new InvoiceLoader(this, service, range, idper, monitor);
+        task.addPropertyChangeListener(new ProgressMonitorHandler(monitor, task));
+        task.execute();
     }
     else if (cmd.equals("CtrlAbandonFacture")) {
       layout.show(this, card0);

@@ -1,5 +1,5 @@
 /*
- * @(#)Algem.java	2.9.4.13 04/11/15
+ * @(#)Algem.java	2.9.4.13 06/11/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -78,7 +78,7 @@ public class Algem
   private String baseName = "algem";
   private static Properties props;
   private DataConnection dc;
-  
+
   public Algem() {
     Locale.setDefault(Locale.FRENCH);
     props = new Properties();
@@ -379,6 +379,7 @@ public class Algem
     }
     String lafName = UIManager.getLookAndFeel().getName();
     UIDefaults def = UIManager.getLookAndFeelDefaults();
+    def.put("ProgressMonitor.progressText", BundleUtil.getLabel("Running.job.label"));
     Font myFont = new Font(Font.SANS_SERIF, Font.PLAIN, 11);
     switch (lafName) {
       case "Nimbus":
@@ -501,7 +502,7 @@ public class Algem
       System.exit(7);
     }
   }
-  
+
   /**
    * Pour implémentation temporaire des modifs client Ecole Pays Roi Morvan.
    *

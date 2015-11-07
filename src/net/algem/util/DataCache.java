@@ -1,5 +1,5 @@
 /*
- * @(#)DataCache.java	2.9.4.10 17/07/15
+ * @(#)DataCache.java	2.9.4.13 06/11/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -87,7 +87,7 @@ import net.algem.contact.Note;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.10
+ * @version 2.9.4.13
  * @since 1.0b 03/09/2001
  */
 public class DataCache
@@ -228,7 +228,7 @@ public class DataCache
     planningFactService = new PlanningFactService(dc, new PlanningService(dc), planningFactDAO,
             new PlanningFactCreator(), new PlanningFactService.RoomFinder(),
             new PlanningFactService.ScheduleUpdater(dc), new SimpleConflictService(dc));
-    
+
     File scriptsPath = Algem.getScriptsPath();
     System.out.println(scriptsPath);
     scriptDirectoryService = new ScriptDirectoryServiceImpl(scriptsPath, new IOUtil.FileReaderHelper(), new ScriptManifestParserImpl());
@@ -237,7 +237,7 @@ public class DataCache
 
     scheduleDispatchService = new ScheduleDispatchService(dc, PERSON_IO);
   }
-  
+
   public void setUser(String login) {
     user = ((DefaultUserService) userService).find(login);
   }
@@ -607,7 +607,7 @@ public class DataCache
       if (n != null) {
         if (n.getIdPer() == 0) {
           ACTION_MEMO_CACHE.remove(m.getId());
-        } 
+        }
       }
     } else if (m instanceof Vat) {
       VAT_LIST.update((Vat) m, null);
@@ -776,15 +776,14 @@ public class DataCache
       remove(obj);
     }
   }
-  
+
   /**
    * Initial loading.
    * @param frame (optional) to display messages
    */
   public void load(GemBoot frame) {
     try {
-
-      showMessage(frame, BundleUtil.getLabel("Loading.label") + "...");
+      showMessage(frame, BundleUtil.getLabel("Loading.label"));
       setConfig();
 
       ROOM_RATE_LIST = new GemList<RoomRate>(ROOM_RATE_IO.load());
@@ -839,7 +838,7 @@ public class DataCache
 
       EMPLOYEE_TYPE_LIST = new GemList<GemParam>(EMPLOYEE_TYPE_IO.load());
       MARITAL_STATUS_LIST = new GemList<>(MARITAL_STATUS_IO.find());
-      
+
       STUDIO_TYPE_LIST = new GemList<GemParam>(STUDIO_TYPE_IO.load());
       PASS_CARD = new Hashtable<Integer,RehearsalPass>();
       for (RehearsalPass c : RehearsalPassIO.findAll("ORDER BY id", dc)) {
@@ -852,7 +851,7 @@ public class DataCache
     } finally {
       showMessage(frame, MessageUtil.getMessage("cache.loading.completed"));
       cacheInit = true;
-    } 
+    }
   }
 
   private void loadRoomContactCache() {
@@ -899,7 +898,7 @@ public class DataCache
       for(OrderLine ol : lo) {
         ORDER_LINE_CACHE.put(ol.getId(), ol);
       }
-    } 
+    }
     return lo;
   }
 

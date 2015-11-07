@@ -1,5 +1,5 @@
 /*
- * @(#)MenuCatalog.java	2.9.4.10 20/07/15
+ * @(#)MenuCatalog.java	2.9.4.13 06/11/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -22,15 +22,7 @@ package net.algem.util.menu;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.sql.SQLException;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JMenuItem;
-import javax.swing.ProgressMonitor;
-import javax.swing.SwingWorker;
 
 import net.algem.Algem;
 import net.algem.config.ConfigKey;
@@ -40,13 +32,11 @@ import net.algem.course.ModuleSearchCtrl;
 import net.algem.enrolment.EnrolmentListCtrl;
 import net.algem.enrolment.EnrolmentService;
 import net.algem.enrolment.ExtendeModuleOrderListCtrl;
-import net.algem.enrolment.ExtendedModuleOrder;
 import net.algem.enrolment.ExtendedModuleOrderTableModel;
 import net.algem.planning.fact.ui.PlanningFactCRUDController;
 import net.algem.script.ui.ScriptingFormController;
 import net.algem.util.BundleUtil;
 import net.algem.util.GemCommand;
-import net.algem.util.GemLogger;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.module.GemModule;
 
@@ -59,12 +49,11 @@ import net.algem.util.module.GemModule;
  * @since 1.0a 07/07/1999
  */
 public class MenuCatalog
-        extends GemMenu
-{
+  extends GemMenu {
 
-  private static final String ENROLMENT_BROWSER_KEY="Enrolment.browser";
-  private static final String MODULE_BROWSER_KEY="Module.browser";
-  private static final String COURSE_BROWSER_KEY="Course.browser";
+  private static final String ENROLMENT_BROWSER_KEY = "Enrolment.browser";
+  private static final String MODULE_BROWSER_KEY = "Module.browser";
+  private static final String COURSE_BROWSER_KEY = "Course.browser";
   private JMenuItem miModule;
   private JMenuItem miModuleOrder;
   private JMenuItem miCoursBrowse;
@@ -114,36 +103,8 @@ public class MenuCatalog
     } else if (src == miModuleOrder) {
       final EnrolmentService service = new EnrolmentService(dataCache);
       final ExtendeModuleOrderListCtrl orderListCtrl = new ExtendeModuleOrderListCtrl(desktop, service, new ExtendedModuleOrderTableModel());
-      final ProgressMonitor monitor = new ProgressMonitor(orderListCtrl, "Patientez...", "1", 1, 100);
-      monitor.setProgress(0);
-      monitor.setMillisToDecideToPopup(10);
-      final List<ExtendedModuleOrder> modules;
-      try {
-        modules = service.getExtendedModuleList(dataCache.getStartOfYear().getDate(), dataCache.getEndOfYear().getDate());
-
-        ProgressMonitorManager progressManager = new ProgressMonitorManager(monitor);
-        SwingWorker<Void, Void> task = new SwingWorker<Void, Void>()
-        {
-          @Override
-          protected Void doInBackground() throws Exception {
-            int i = 0;
-            int size = modules.size();
-            for (ExtendedModuleOrder em : modules) {
-              em.setCompleted(service.getCompletedTime(em.getIdper(), em.getId(), dataCache.getStartOfYear().getDate(), dataCache.getEndOfYear().getDate()));
-              setProgress(++i * 100 / size);
-            }
-            orderListCtrl.load(modules);
-            return null;
-          }
-        };
-        task.addPropertyChangeListener(progressManager);
-        task.execute();
-      } catch (SQLException ex) {
-        Logger.getLogger(MenuCatalog.class.getName()).log(Level.SEVERE, null, ex);
-      }
-      
+      orderListCtrl.load(dataCache.getStartOfYear().getDate(), dataCache.getEndOfYear().getDate());
       desktop.addPanel("Modules.ordered", orderListCtrl, GemModule.XXL_SIZE);
-     
     } else if (src == miCoursBrowse) {
       CourseSearchCtrl coursCtrl = new CourseSearchCtrl(desktop);
       coursCtrl.addActionListener(this);
@@ -156,34 +117,11 @@ public class MenuCatalog
     } else if (arg.equals(GemCommand.CANCEL_CMD)) {
       desktop.removeCurrentModule();
     } else if (src == scriptItem) {
-        desktop.addPanel("Scripts", new ScriptingFormController(desktop).getPanel(), new Dimension(905,600));
+      desktop.addPanel("Scripts", new ScriptingFormController(desktop).getPanel(), new Dimension(905, 600));
     } else if (src == factsItem) {
-        desktop.addPanel("Absences & remplacement", new PlanningFactCRUDController(desktop).getPanel(), GemModule.XXL_SIZE);
+      desktop.addPanel("Absences & remplacement", new PlanningFactCRUDController(desktop).getPanel(), GemModule.XXL_SIZE);
     }
     desktop.setDefaultCursor();
   }
-  class ProgressMonitorManager
-    implements PropertyChangeListener
-  {
-    private ProgressMonitor monitor;
 
-    public ProgressMonitorManager(ProgressMonitor monitor) {
-      this.monitor = monitor;
-    }
-    // executes in event dispatch thread
-    @Override
-    public void propertyChange(PropertyChangeEvent event) {
-        // if the operation is finished or has been canceled by
-        // the user, take appropriate action
-        if (monitor.isCanceled()) {
-//            monitor.cancel(true);
-        } else if (event.getPropertyName().equals("progress")) {            
-            // get the % complete from the progress event
-            // and set it on the progress monitor
-            int progress = ((Integer)event.getNewValue()).intValue();
-            monitor.setProgress(progress);            
-        }        
-    }
-    
-  }
 }

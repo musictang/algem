@@ -23,6 +23,7 @@ package net.algem.enrolment;
 import java.text.NumberFormat;
 import net.algem.accounting.AccountUtil;
 import net.algem.accounting.GemAmount;
+import net.algem.planning.DateFr;
 import net.algem.planning.Hour;
 import net.algem.util.BundleUtil;
 import net.algem.util.ui.JTableModel;
@@ -44,7 +45,7 @@ public class ExtendedModuleOrderTableModel
     nf.setMinimumFractionDigits(2);
     nf.setMaximumFractionDigits(2);
     header = new String[]{
-      BundleUtil.getLabel("Id.label"),
+      BundleUtil.getLabel("Date.label"),
       BundleUtil.getLabel("First.name.label"),
       BundleUtil.getLabel("Name.label"),
       BundleUtil.getLabel("Nickname.label"),
@@ -71,7 +72,7 @@ public class ExtendedModuleOrderTableModel
   public Class getColumnClass(int col) {
     switch (col) {
       case 0:
-        return Integer.class;
+        return DateFr.class;
       case 1:
       case 2:
       case 3:
@@ -94,7 +95,7 @@ public class ExtendedModuleOrderTableModel
     int rest = m.getTotalTime() - m.getCompleted();
     switch (col) {
       case 0:
-        return m.getIdper();
+        return m.getStart();
       case 1:
         return m.getFirstName() == null ? "" : m.getFirstName();
       case 2:

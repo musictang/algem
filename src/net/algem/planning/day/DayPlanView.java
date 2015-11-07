@@ -1,5 +1,5 @@
 /*
- * @(#)DayPlanView.java 2.9.4.13 03/11/15
+ * @(#)DayPlanView.java 2.9.4.13 06/11/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -47,7 +47,7 @@ public class DayPlanView
         extends ScheduleCanvas
         implements Printable
 {
-  
+
   private int ncols = 5;
   private int lineHeight;
   private FontMetrics fm;
@@ -137,6 +137,7 @@ public class DayPlanView
    */
   @Override
   public void drawBackground() {
+    setWaitCursor();
     ncols = dim.width / step_x;
     drawGrid();
     if (cols == null) {
@@ -179,6 +180,7 @@ public class DayPlanView
         textRange(i, p, prev); // ajout des textes sur les plannings
       }
     }
+    setDefaultCursor();
   }
 
   protected void drawClosed(int col, DailyTimes dt, ScheduleObject dummy) {
@@ -269,7 +271,7 @@ public class DayPlanView
       }
     }
   }
-  
+
   /**
    * Draw a flag inside each schedule with a memo.
    * @param i col
@@ -283,7 +285,7 @@ public class DayPlanView
       }
     }
   }
-  
+
   /**
    * Checks if this schedule has a planning memo.
    *
@@ -353,7 +355,7 @@ public class DayPlanView
     w = getScheduleRangeWidth(vpci.get(idx).getAction().getPlaces(), n);
     drawRange(i, vpci.get(idx), c, w);
   }
-  
+
   protected void drawAgenda(int i, Vector<ScheduleRangeObject> vpl) {
     for (ScheduleRangeObject p : vpl) {
         drawRange(i, p, colorPrefs.getColor(ColorPlan.ADMINISTRATIVE).darker(), step_x);
@@ -379,23 +381,23 @@ public class DayPlanView
       textSubRange(p, x);
     }
   }
-  
+
   private void drawActionNoteFlag(int col, int start, Color c){
     int x = setX(col, 2);
     int y = setY(start);
     bg.setColor(c);
     bg.fillPolygon(new int[]{x,x+6,x},new int[]{y,y,y+6},3);
   }
-  
+
   private void textSubRange(ScheduleObject p, int x) {
-    if (p instanceof CourseSchedule && p instanceof ScheduleRangeObject) { 
+    if (p instanceof CourseSchedule && p instanceof ScheduleRangeObject) {
         Course crs = ((CourseSchedule) p).getCourse();
         // Displays the member's name if the time range is not shared between several persons.
         if (crs != null && (!crs.isCollective() || ((ScheduleRangeObject) p).getAction().getPlaces() < 2) || Schedule.ADMINISTRATIVE == p.getType()) {
           showSubSubLabel((ScheduleRangeObject) p, x);
         }
-      } 
-    
+      }
+
   }
 
   /**
@@ -449,7 +451,7 @@ public class DayPlanView
    * @param p
    * @param prev
    * @param x
-   * @param y 
+   * @param y
    */
   private void showSubLabel(ScheduleObject p, ScheduleObject prev, int x, int y) {
 
@@ -464,7 +466,7 @@ public class DayPlanView
         } else {
           subLabel = p.getPerson().getAbbrevFirstNameName();
         }
-        
+
         if (subLabel != null) {
           bg.setFont(SMALL_FONT);
           drawSubLabel(subLabel, x, y + (18), step_x);
@@ -477,9 +479,9 @@ public class DayPlanView
       }
     }
   }
-  
+
   /**
-   * 
+   *
    * @param p range object
    * @param x horizontal position
    */

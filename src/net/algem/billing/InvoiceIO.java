@@ -1,5 +1,5 @@
 /*
- * @(#)InvoiceIO.java 2.9.4.13 05/11/15
+ * @(#)InvoiceIO.java 2.9.4.13 06/11/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,6 +20,7 @@
  */
 package net.algem.billing;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -47,10 +48,12 @@ public class InvoiceIO
   public static final String JOIN_TABLE = "article_facture";
   private static final String COLUMNS = "numero, date_emission, etablissement, emetteur, debiteur, prestation, reference, adherent, acompte";
   private static final String KEY = "numero";
-  private DataConnection dc;
-  private ItemIO itemIO;
 
   private static final String JOIN_COLUMNS = "id_echeancier, id_article, quantite";
+  private static final String ITEM_STATEMENT = "SELECT " + JOIN_COLUMNS + " FROM " + JOIN_TABLE + " WHERE id_facture = ?";
+
+  private DataConnection dc;
+  private ItemIO itemIO;
 
   public InvoiceIO(DataConnection dc) {
     this.dc = dc;
@@ -245,13 +248,13 @@ public class InvoiceIO
       inv.setMember(rs.getInt(8));
       inv.setDownPayment(rs.getDouble(9));
 
-      inv.setItems(findItems(inv));//
+//      inv.setItems(findItems(inv.getNumber()));//
       inv.setOrderLines(findOrderLines(inv));//
 
       lv.add(inv);
     }
 
-    return lv.isEmpty() ? null : lv;
+    return lv;
   }
 
   /**
@@ -261,12 +264,13 @@ public class InvoiceIO
    * @return a collection of invoice items
    * @throws SQLException
    */
-  public Collection<InvoiceItem> findItems(Invoice inv) throws SQLException {
+  public Collection<InvoiceItem> findItems(String number) throws SQLException {
 
     List<InvoiceItem> items = new ArrayList<InvoiceItem>();
-    String query = "SELECT " + JOIN_COLUMNS + " FROM " + JOIN_TABLE + " WHERE id_facture = '" + inv.getNumber() + "'";
-    //System.out.println(query);
-    ResultSet rs = dc.executeQuery(query);
+    PreparedStatement ps = dc.prepareStatement(ITEM_STATEMENT);
+    ps.setString(1, number);
+
+    ResultSet rs = ps.executeQuery();
     while (rs.next()) {
 
       OrderLine ol = (OrderLine) DataCache.findId(rs.getInt(1), Model.OrderLine);
@@ -284,7 +288,7 @@ public class InvoiceIO
         item = new Item(ol, qty);
       }
 
-      InvoiceItem invoiceItem = new InvoiceItem(inv.getNumber());
+      InvoiceItem invoiceItem = new InvoiceItem(number);
       invoiceItem.setItem(item);
       invoiceItem.setOrderLine(ol);
       invoiceItem.setQuantity(rs.getFloat(3));
@@ -299,7 +303,7 @@ public class InvoiceIO
     if (cl.isEmpty()) {
       String query = "WHERE facture = '" + inv.getNumber() + "'";
       cl =  OrderLineIO.find(query, dc);
-    } 
+    }
     return cl;*/
     return DataCache.findOrderLines(inv.getNumber());
   }

@@ -1,5 +1,5 @@
 /*
- * @(#)MonthPlanView.java	2.9.4.13 15/10/15
+ * @(#)MonthPlanView.java	2.9.4.13 06/11/15
  *
  * Copyright (cp) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -93,7 +93,7 @@ public class MonthPlanView
       bg.setFont(new Font(Font.SANS_SERIF,Font.PLAIN,10));
       if (bg instanceof Graphics2D) {
         ((Graphics2D) bg).setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-      }   
+      }
       fm = bg.getFontMetrics();
       lineHeight = fm.getHeight() + 4;
       drawBackground();
@@ -103,7 +103,7 @@ public class MonthPlanView
 
   @Override
   public void drawBackground() {
-
+    setWaitCursor();
     drawGrid();
     if (schedules == null) {
       return;
@@ -112,6 +112,7 @@ public class MonthPlanView
     drawSchedules(schedules);
     drawScheduleRanges(ranges);
     textRange(schedules); // OPTIONNEL
+    setDefaultCursor();
   }
 
   public void drawGrid() {

@@ -83,7 +83,7 @@ public class DayScheduleView
       teacherView = new DayPlanTeacherView(dataCache.getList(Model.Teacher));
       tabPanel.addItem(teacherView, BundleUtil.getLabel("Day.schedule.teacher.tab"));
     }
-    
+
     if ((s = ConfigUtil.getConf(ConfigKey.ADMINISTRATIVE_MANAGEMENT.getKey())) != null && s.toLowerCase().startsWith("t")) {
       adminView = new DayPlanAdminView(new PlanningService(DataCache.getDataConnection()).getEmployees(EmployeeType.ADMINISTRATOR));
       tabPanel.addItem(adminView, BundleUtil.getLabel("Staff.label"));
@@ -110,7 +110,7 @@ public class DayScheduleView
     String teacherManaged = ConfigUtil.getConf(ConfigKey.TEACHER_MANAGEMENT.getKey());
     // First tab depends on the status "managed" of the teachers in the general configuration
     // The second tab refers to the administrative team
-    
+
     int offset = (teacherManaged.equals("t")) ? 1 : 0;
     if (s != null && s.toLowerCase().startsWith("t")) {
       offset++;

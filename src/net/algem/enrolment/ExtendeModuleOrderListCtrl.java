@@ -1,5 +1,5 @@
 /*
- * @(#)ExtendeModuleOrderListCtrl.java	2.9.4.13 09/10/15
+ * @(#)ExtendeModuleOrderListCtrl.java	2.9.4.13 06/11/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,6 +20,7 @@
  */
 package net.algem.enrolment;
 
+import net.algem.util.model.AsyncLoader;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -27,11 +28,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -42,7 +40,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
-import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -65,15 +62,16 @@ import net.algem.util.ui.JTableModel;
 
 /**
  * Controller used to print and display the list of module orders.
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.9.4.13
  * @since 2.9.2.1 16/02/15
  */
 public class ExtendeModuleOrderListCtrl
- extends GemPanel
-        implements ActionListener
-{
+  extends GemPanel
+  implements ActionListener {
 
+  private static final int SORT_COL_INDEX = 4;
   private GemDesktop desktop;
   private JTableModel<ExtendedModuleOrder> tableModel;
   private final JTable table;
@@ -82,7 +80,7 @@ public class ExtendeModuleOrderListCtrl
   private GemLabel status;
 
   private String[] columnToolTips = {
-    BundleUtil.getLabel("Extended.module.list.person.id.tip"),
+    BundleUtil.getLabel("Extended.module.list.date.tip"),
     BundleUtil.getLabel("First.name.label"),
     BundleUtil.getLabel("Name.label"),
     BundleUtil.getLabel("Nickname.label"),
@@ -90,10 +88,9 @@ public class ExtendeModuleOrderListCtrl
     BundleUtil.getLabel("Extended.module.list.total.time.tip"),
     BundleUtil.getLabel("Extended.module.list.remaining.time.tip"),
     BundleUtil.getLabel("Extended.module.list.total.amount.tip"),
-    BundleUtil.getLabel("Deferred.income.tip"),
-  };
+    BundleUtil.getLabel("Deferred.income.tip"),};
 
-  public  ExtendeModuleOrderListCtrl(GemDesktop desktop, EnrolmentService service, JTableModel<ExtendedModuleOrder> tableModel) {
+  public ExtendeModuleOrderListCtrl(GemDesktop desktop, EnrolmentService service, JTableModel<ExtendedModuleOrder> tableModel) {
     this.desktop = desktop;
     this.service = service;
     this.tableModel = tableModel;
@@ -103,7 +100,7 @@ public class ExtendeModuleOrderListCtrl
       @Override
       protected JTableHeader createDefaultTableHeader() {
         return new JTableHeader(columnModel) {
-          
+
           @Override
           public String getToolTipText(MouseEvent e) {
             java.awt.Point p = e.getPoint();
@@ -114,12 +111,11 @@ public class ExtendeModuleOrderListCtrl
         };
       }
     };
-    table.getSelectionModel().addListSelectionListener(new ListSelectionListener()
-    {
+    table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 
       @Override
       public void valueChanged(ListSelectionEvent e) {
-        int [] rows = table.getSelectedRows();
+        int[] rows = table.getSelectedRows();
         if (rows.length <= 0) {
           status.setText(null);
         } else {
@@ -129,7 +125,7 @@ public class ExtendeModuleOrderListCtrl
     });
 
     DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
-    rightRenderer.setHorizontalAlignment( JLabel.RIGHT );
+    rightRenderer.setHorizontalAlignment(JLabel.RIGHT);
     table.getColumnModel().getColumn(5).setCellRenderer(rightRenderer);
     table.getColumnModel().getColumn(6).setCellRenderer(rightRenderer);
     table.getColumnModel().getColumn(7).setCellRenderer(rightRenderer);
@@ -137,7 +133,7 @@ public class ExtendeModuleOrderListCtrl
     table.setAutoCreateRowSorter(true);
 
     TableColumnModel cm = table.getColumnModel();
-    cm.getColumn(0).setPreferredWidth(10);
+    cm.getColumn(0).setPreferredWidth(20);
     cm.getColumn(1).setPreferredWidth(60);
     cm.getColumn(2).setPreferredWidth(60);
     cm.getColumn(3).setPreferredWidth(60);
@@ -160,7 +156,7 @@ public class ExtendeModuleOrderListCtrl
 
     GemBorderPanel mainPanel = new GemBorderPanel(new BorderLayout());
     mainPanel.add(scroll, BorderLayout.CENTER);
-    
+
     GemPanel bottom = new GemPanel(new FlowLayout(FlowLayout.LEFT));
     bottom.add(new GemLabel(BundleUtil.getLabel("Orders.label") + " : "));
     bottom.add(status = new GemLabel());
@@ -170,49 +166,36 @@ public class ExtendeModuleOrderListCtrl
     btLoad.addActionListener(this);
     bottom.add(btLoad);
     mainPanel.add(bottom, BorderLayout.SOUTH);
-    
+
     setLayout(new BorderLayout());
     add(mainPanel, BorderLayout.CENTER);
     add(buttons, BorderLayout.SOUTH);
 
   }
-  
+
   /**
    * Feeds the model with the current loaded list.
+   *
    * @param list the list of current orders
    */
-  public void load(List<ExtendedModuleOrder> list) {
+  void load(List<ExtendedModuleOrder> list) {
+    tableModel.clear();
     for (ExtendedModuleOrder m : list) {
       tableModel.addItem(m);
     }
-    sortByColIndex(2, SortOrder.ASCENDING);
     status.setText(String.valueOf(tableModel.getData().size()));
+    sortByColIndex(SORT_COL_INDEX, SortOrder.ASCENDING);
   }
-  
+
   /**
    * Loads the list of orders created between {@code start} and {@code start} dates.
+   *
    * @param start start date
    * @param end end date
    */
-  private void load(final Date start, final Date end) {
-     SwingUtilities.invokeLater(new Runnable()
-     {
-      @Override
-      public void run() {
-        desktop.setWaitCursor();
-        List<ExtendedModuleOrder> current = new ArrayList<>();
-        try {
-          current = service.getExtendedModuleList(start, end); 
-        } catch (SQLException ex) {
-          GemLogger.log(ex.getMessage());
-        } finally {
-          tableModel.clear();
-          load(current);
-          desktop.setDefaultCursor();
-        }
-      }
-    });
-
+  public void load(final Date start, final Date end) {
+    AsyncLoader moduleOrderLoader = new ModuleOrderLoader(ExtendeModuleOrderListCtrl.this, service, start, end);
+    moduleOrderLoader.load();
   }
 
   @Override
@@ -220,13 +203,13 @@ public class ExtendeModuleOrderListCtrl
     String cmd = e.getActionCommand();
     if (GemCommand.CLOSE_CMD.equals(cmd)) {
       desktop.removeModule("Modules.ordered");
-    } else if(GemCommand.PRINT_CMD.equals(cmd)) {
+    } else if (GemCommand.PRINT_CMD.equals(cmd)) {
       print();
     } else if (GemCommand.LOAD_CMD.equals(cmd)) {
       load(datePanel.getStart(), datePanel.getEnd());
     }
   }
-  
+
   /**
    * Saves the selected rows to CSV.
    */
@@ -236,22 +219,22 @@ public class ExtendeModuleOrderListCtrl
     if (f == null) {
       return;
     }
-    try (PrintWriter out = new PrintWriter(new FileWriter(f))) {//"UTF-16LE"
+    try (PrintWriter out = new PrintWriter(f, "UTF-16LE")) {
 //      StringBuilder sb = new StringBuilder("\ufeff");
       StringBuilder sb = new StringBuilder();
       for (int i = 0; i < tableModel.getColumnCount(); i++) {
         sb.append(tableModel.getColumnName(i)).append(';');
       }
-      sb.delete(sb.length() -1,  sb.length() -1);
+      sb.delete(sb.length() - 1, sb.length() - 1);
       sb.append(TextUtil.LINE_SEPARATOR);
-      int [] rows = table.getSelectedRows();
+      int[] rows = table.getSelectedRows();
       if (rows.length == 0) {
-        rows = new int [tableModel.getRowCount()];
-        for(int i = 0; i < rows.length; i++) {
+        rows = new int[tableModel.getRowCount()];
+        for (int i = 0; i < rows.length; i++) {
           rows[i] = i;
         }
       }
-      for (int i = 0 ; i < rows.length; i++) {
+      for (int i = 0; i < rows.length; i++) {
         int idx = table.convertRowIndexToModel(rows[i]);
         sb.append(tableModel.getValueAt(idx, 0)).append(';');
         sb.append(tableModel.getValueAt(idx, 1)).append(';');
@@ -269,18 +252,19 @@ public class ExtendeModuleOrderListCtrl
       GemLogger.log(ex.getMessage());
     } catch (DesktopHandlerException ex) {
       GemLogger.log(ex.getMessage());
-    } 
+    }
   }
-  
+
   /**
    * Automatic sorting by column index.
+   *
    * @param col index of the column to sort
    */
-  private void sortByColIndex(int col, SortOrder order) {
+  void sortByColIndex(int col, SortOrder order) {
     DefaultRowSorter sorter = ((DefaultRowSorter) table.getRowSorter());
     List<RowSorter.SortKey> sortkeys = new ArrayList<>();
     sortkeys.add(new RowSorter.SortKey(col, order));
     sorter.setSortKeys(sortkeys);
-  } 
+  }
 
 }

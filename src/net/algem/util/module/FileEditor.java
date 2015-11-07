@@ -22,12 +22,17 @@ package net.algem.util.module;
 
 import java.sql.SQLException;
 import java.util.List;
+import javax.swing.ProgressMonitor;
+import javax.swing.SwingWorker;
 import net.algem.accounting.OrderLineEditor;
 import net.algem.billing.*;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
+import net.algem.planning.DateRange;
 import net.algem.room.Room;
+import net.algem.util.BundleUtil;
 import net.algem.util.GemLogger;
+import net.algem.util.ui.ProgressMonitorHandler;
 
 /**
  * Base class for editing dossiers.
@@ -98,6 +103,7 @@ public class FileEditor
    * @return a history
    */
   protected HistoInvoice addHistoInvoice(int idper) {
+    desktop.setWaitCursor();
     HistoInvoice history = null;
     try {
       List<Invoice> bills = billingService.getInvoices(idper);
@@ -108,6 +114,8 @@ public class FileEditor
       }
     } catch (SQLException ex) {
       GemLogger.logException(ex);
+    } finally {
+      desktop.setDefaultCursor();
     }
     return history;
   }
@@ -120,7 +128,7 @@ public class FileEditor
    */
   protected HistoQuote getHistoQuotation(int idper) {
     HistoQuote hq = null;
-    
+
     try {
       List<Quote> quotes = billingService.getQuotations(idper);
       if (quotes != null) {

@@ -85,7 +85,7 @@ public class DayScheduleCtrl
   private JMenuItem miSaveUISettings;
   private boolean savePrefs;
   private final Preferences prefs = Preferences.userRoot().node("/algem/ui");
-  
+
 
   public DayScheduleCtrl() {
     super("TableauJour");
@@ -117,7 +117,7 @@ public class DayScheduleCtrl
       mFile.add(miExport);
     }
     mFile.add(miQuit);
-    
+
     JMenu mOptions = new JMenu("Options");
     JCheckBoxMenuItem miLinkMonth = new JCheckBoxMenuItem(BundleUtil.getLabel("Day.schedule.link.label"), monthLink);
     miLinkMonth.setSelected(false);
@@ -164,10 +164,8 @@ public class DayScheduleCtrl
 
   //XXX dans DataCache + thread
   public void load(Date date) {
-    desktop.setWaitCursor();
     cal.setTime(date);
     dataCache.setDaySchedule(date);
-    desktop.setDefaultCursor();
   }
 
   /**
@@ -225,7 +223,7 @@ public class DayScheduleCtrl
       if (destFile != null) {
         try {
           new PlanningExportService(
-                  new PlanningService(DataCache.getDataConnection()), 
+                  new PlanningService(DataCache.getDataConnection()),
                   new StandardScheduleColorizer(new ColorPrefs(), (ActionIO) DataCache.getDao(Model.Action))
           ).exportPlanning(planning, destFile);
           new DesktopOpenHandler().open(destFile.getAbsolutePath());
@@ -237,7 +235,7 @@ public class DayScheduleCtrl
       }
     }
   }
-  
+
   @Override
   public void postEvent(GemEvent _evt) {
 

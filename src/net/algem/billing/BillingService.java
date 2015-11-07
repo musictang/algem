@@ -132,6 +132,8 @@ public interface BillingService
 
   public Vector<Item> getItems(String where) throws SQLException;
 
+  public Collection<InvoiceItem> findItemsByInvoiceId(String invNumber) throws SQLException;
+
   /**
    * Creates a standard invoice line.
    * @param it standard line

@@ -1,5 +1,5 @@
 /*
- * @(#)EnrolmentService.java	2.9.4.13 09/10/15
+ * @(#)EnrolmentService.java	2.9.4.13 06/11/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -23,9 +23,6 @@ package net.algem.enrolment;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.logging.Logger;
-import javax.swing.ProgressMonitor;
-import javax.swing.SwingWorker;
 import net.algem.Algem;
 import net.algem.config.*;
 import net.algem.contact.PersonFile;
@@ -76,7 +73,7 @@ public class EnrolmentService
   public Course getCourse(int idAction) throws SQLException {
     return planningService.getCourseFromAction(idAction);
   }
-  
+
   /**
    * Gets a list of courses(id, title) scheduled from {@literal startDate} in {@literal estab}.
    * Depending course's code, schedule's type and length may be used to filter the results.
@@ -154,7 +151,7 @@ public class EnrolmentService
             + " AND salle.nom NOT LIKE 'RATTRAP%' ORDER BY jour,debut,idper";
     return ScheduleIO.find(query, dc);
   }
-  
+
   /**
    * Gets the date when the member {@literal member} is scheduled for the action {@literal action}.
    *
@@ -252,7 +249,7 @@ public class EnrolmentService
    * @return a list of hour ranges
    * @throws net.algem.enrolment.EnrolmentException
    * @see net.algem.enrolment.CourseEnrolmentDlg
-   * @deprecated 
+   * @deprecated
    */
   public Vector<HourRange> getPlageCours(Schedule p) throws EnrolmentException {
     Vector<HourRange> v = new Vector<HourRange>();
@@ -292,7 +289,7 @@ public class EnrolmentService
       rs.close();
     } catch (SQLException ex) {
       GemLogger.logException(ex);
-    } 
+    }
     return ranges;
 
   }
@@ -322,7 +319,7 @@ public class EnrolmentService
       return null;
     }
   }
-  
+
   /**
    * Gets the list of enrolments for the member {@literal id}.
    *
@@ -341,7 +338,7 @@ public class EnrolmentService
   Vector<MemberOrder> getOrders() {
     return OrderIO.findMemberOrders(dc);
   }
-  
+
   /**
    * Gets the list of course orders associated with the enrolment {@literal i}
    * and the module {@literal m}.
@@ -501,7 +498,7 @@ public class EnrolmentService
     String where = ConflictQueries.getRangeOverlapSelection(start, member, hStart, hEnd, action);
     return ScheduleRangeIO.find(where, dc);
   }
-  
+
   private void insertRange(CourseOrder co, Course c, Vector<Schedule> v, ScheduleRange h)
           throws SQLException, EnrolmentScheduleException {
 
@@ -542,7 +539,7 @@ public class EnrolmentService
       }
     }
   }
-  
+
   /**
    * Updates schedule ranges after order validation.
    *
@@ -612,8 +609,8 @@ public class EnrolmentService
             + ")";
       dc.executeUpdate(query);
   }
-  
-  
+
+
 
    void changeHour(int member, CourseOrder co, Course c, DateFr from) throws EnrolmentException {
     String query = "DELETE FROM " + ScheduleRangeIO.TABLE
@@ -645,15 +642,15 @@ public class EnrolmentService
   void create(Order order) throws SQLException {
     OrderIO.insert(order, dc);
   }
-  
+
   void delete(Order order) throws Exception {
     OrderIO.delete(order, dc);
   }
-  
+
   void create(ModuleOrder mo) throws SQLException {
     ModuleOrderIO.insert(mo, dc);
   }
-  
+
   void delete(ModuleOrder mo, int member) throws EnrolmentException {
     try {
       dc.setAutoCommit(false);
@@ -682,7 +679,7 @@ public class EnrolmentService
   public void create(CourseOrder co) throws SQLException {
     CourseOrderIO.insert(co, dc);
   }
-  
+
   void createCourse(CourseOrder cc, int memberId) throws EnrolmentException {
     try {
       dc.setAutoCommit(false);
@@ -700,11 +697,11 @@ public class EnrolmentService
   public void update(CourseOrder co) throws SQLException {
     CourseOrderIO.update(co, dc);
   }
-  
+
   public void update(ModuleOrder mo) throws SQLException {
     ModuleOrderIO.update(mo, dc);
   }
-  
+
   /**
    * Redefines a course to define.
    *
@@ -726,7 +723,7 @@ public class EnrolmentService
       dc.setAutoCommit(true);
     }
   }
-  
+
   /**
    * Removes the course order with id {@literal id}.
    * @param id course order's id
@@ -801,7 +798,7 @@ public class EnrolmentService
       dc.setAutoCommit(true);
     }
   }
-  
+
   void stopCourseFromModule(int member, CourseOrder co, DateFr from) throws EnrolmentException {
     String query = "DELETE FROM " + ScheduleRangeIO.TABLE
             + " WHERE adherent = " + member
@@ -816,7 +813,7 @@ public class EnrolmentService
 
       String label = ((GemParam) DataCache.findId(co.getCode(), Model.CourseCode)).getLabel()
               + " " + BundleUtil.getLabel("To.define.label");
-      
+
       Hour timeLength = new Hour(co.getStart().getLength(co.getEnd()));
 
       // si la demande d'arret est postérieure à la date d'inscription à ce cours
@@ -835,12 +832,12 @@ public class EnrolmentService
       CourseOrderIO.update(co, dc);
     } catch (SQLException sqe) {
       throw new EnrolmentException(sqe.getMessage());
-    } 
+    }
   }
-  
+
   /**
    * Stops a module and delete (if exist) the schedule ranges after the date of {@literal stop}.
-   * 
+   *
    * @param mo module order
    * @param orders maps course order to course
    * @param member member's id
@@ -863,7 +860,7 @@ public class EnrolmentService
       dc.setAutoCommit(true);
     }
   }
-  
+
   /**
    * Gets the time length of the sessions already performed by the member {@literal idper},
    * corresponding to the module order {@literal mOrderId}.
@@ -882,19 +879,9 @@ public class EnrolmentService
       return 0;
     }
   }
-  
-  public List<ExtendedModuleOrder> getExtendedModuleList(final Date start, final Date end) throws SQLException {
-    final List<ExtendedModuleOrder> extended = ModuleOrderIO.findExtendedModuleList(start, end, dc);
 
-//    int i = 0;
-//    int size = extended.size();
-//    for (ExtendedModuleOrder em : extended) {
-////      em.setCompleted(getCompletedTime(em.getIdper(), em.getId(), start, end));
-////      p.setProgress(++i * 100 / size);
-////      p.setNote(em.getTitle());
-//      
-//    }
-    return extended;
+  public List<ExtendedModuleOrder> getExtendedModuleList(final Date start, final Date end) throws SQLException {
+    return ModuleOrderIO.findExtendedModuleList(start, end, dc);
   }
 
 }

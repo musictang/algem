@@ -20,13 +20,20 @@
  */
 package net.algem.util.menu;
 
+import com.jtattoo.plaf.BaseComboBoxUI;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.ProgressMonitor;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import net.algem.accounting.*;
 import net.algem.billing.*;
 import net.algem.config.ConfigKey;
@@ -34,10 +41,13 @@ import net.algem.config.ConfigUtil;
 import net.algem.config.ModeOfPaymentCtrl;
 import net.algem.config.Param;
 import net.algem.edition.HourEmployeeDlg;
+import net.algem.planning.DateFr;
+import net.algem.planning.DateRange;
 import net.algem.room.RoomRateSearchCtrl;
 import net.algem.util.*;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.module.GemModule;
+import net.algem.util.ui.ProgressMonitorHandler;
 
 /**
  * Accounting menu.
@@ -48,8 +58,7 @@ import net.algem.util.module.GemModule;
  * @since 1.0a 07/07/1999
  */
 public class MenuAccounting
-        extends GemMenu
-{
+  extends GemMenu {
 
   private static final HashMap<String, String> menus = new HashMap<String, String>();
 
@@ -138,19 +147,26 @@ public class MenuAccounting
     } else if (src == miDirectDebitList) {
       DirectDebitService ddService = DirectDebitService.getInstance(DataCache.getDataConnection());
       DDMandateCtrl ddCtrl = new DDMandateCtrl(desktop, ddService);
-			ddCtrl.load();
+      ddCtrl.load();
       desktop.addPanel("Direct.debit.sepa.list", ddCtrl, GemModule.M_SIZE);
     } else if (src == miAccountHourEmployee) {
       String fileName = BundleUtil.getLabel("File.export.hours.name") + ".txt";
       HourEmployeeDlg hourTeacherDlg = new HourEmployeeDlg(desktop.getFrame(), dataCache);
       hourTeacherDlg.init(fileName, dc);
     } else if (menus.get("Menu.invoice.history.label").equals(arg)) {
-      BillingService billService = new BasicBillingService(dataCache);
+
       try {
-        HistoInvoice hf = new HistoInvoice(desktop, billService);
-        hf.load(billService.getInvoices());
-        desktop.addPanel("Menu.invoice.history", hf, GemModule.XXL_SIZE);
-        hf.addActionListener(this);
+        final BillingService billingService = new BasicBillingService(dataCache);
+        final HistoInvoice histo = new HistoInvoice(desktop, billingService);
+        final ProgressMonitor monitor = new ProgressMonitor(histo, BundleUtil.getLabel("Loading.label"), "", 1, 100);
+        monitor.setProgress(1);
+        monitor.setMillisToDecideToPopup(10);
+        DateRange range = billingService.getFinancialYear();
+        SwingWorker<Void, String> task = new InvoiceLoader(histo, billingService, range, 0, monitor);
+        task.addPropertyChangeListener(new ProgressMonitorHandler(monitor, task));
+        task.execute();
+        desktop.addPanel("Menu.invoice.history", histo, GemModule.XXL_SIZE);
+        histo.addActionListener(this);
       } catch (SQLException ex) {
         GemLogger.logException(ex);
       } finally {
@@ -180,7 +196,7 @@ public class MenuAccounting
       AccountCtrl accountCtrl = new AccountCtrl(desktop);
       accountCtrl.load();
       desktop.addPanel("Menu.account", accountCtrl);
-      
+
     } else if (menus.get("Menu.cost.account.label").equals(arg)) {
       CostAccountCtrl costAccountCtrl = new CostAccountCtrl(desktop);
       costAccountCtrl.load();
@@ -197,7 +213,7 @@ public class MenuAccounting
       } catch (SQLException ex) {
         GemLogger.log(ex.getMessage());
       }
-      AccountPrefListCtrl prefAccountList = new AccountPrefListCtrl(desktop, service, accounts, costAccounts);      
+      AccountPrefListCtrl prefAccountList = new AccountPrefListCtrl(desktop, service, accounts, costAccounts);
       prefAccountList.load(keys);
       desktop.addPanel("Menu.default.account", prefAccountList, GemModule.L_SIZE);
     } else if (menus.get("Menu.booking.journal.label").equals(arg)) {
@@ -207,7 +223,7 @@ public class MenuAccounting
     } else if (menus.get("Menu.account.link.label").equals(arg)) {
       AccountMatchingCfg accountMatchingCfg = new AccountMatchingCfg(desktop);
       desktop.addPanel("Menu.account.link", accountMatchingCfg, GemModule.L_SIZE);
-    }  else if (menus.get("Menu.mode.of.payment.label").equals(arg)) {
+    } else if (menus.get("Menu.mode.of.payment.label").equals(arg)) {
       ModeOfPaymentCtrl modeOfPaymentCtrl = new ModeOfPaymentCtrl(desktop);
       modeOfPaymentCtrl.load();
       desktop.addPanel("Menu.mode.of.payment", modeOfPaymentCtrl);
@@ -220,8 +236,7 @@ public class MenuAccounting
       roomRateBrowse.addActionListener(this);
       roomRateBrowse.init();
       desktop.addPanel("Menu.room.rate", roomRateBrowse);
-    }
-    else if (GemCommand.CANCEL_CMD.equals(arg)) {
+    } else if (GemCommand.CANCEL_CMD.equals(arg)) {
       desktop.removeCurrentModule();
     } else if ("HistoFacture.Abandon".equals(arg)) {
       desktop.removeModule("Menu.invoice.history");

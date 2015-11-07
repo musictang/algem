@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleCanvas.java 2.9.4.13 03/11/15
+ * @(#)ScheduleCanvas.java 2.9.4.13 06/11/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -29,6 +29,7 @@ import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.util.ArrayList;
 import java.util.Vector;
+import javax.swing.RootPaneContainer;
 import net.algem.config.AgeRange;
 import net.algem.config.ColorPrefs;
 import net.algem.config.ConfigKey;
@@ -56,7 +57,7 @@ public abstract class ScheduleCanvas
   protected static final int LEFT_MARGIN = 50;
   protected static final Font NORMAL_FONT = new Font("Helvetica", Font.PLAIN, 10);
   protected static final Font SMALL_FONT = new Font("Helvetica", Font.PLAIN, 9);
-  protected static final Font X_SMALL_FONT = new Font("Helvetica", Font.PLAIN, 8); 
+  protected static final Font X_SMALL_FONT = new Font("Helvetica", Font.PLAIN, 8);
   protected static final Color CLOSED_COLOR = Color.decode("#cccccc");
   // !IMPORTANT non final static variable : authorize opening time modification without rebooting Algem
   protected int H_START;
@@ -272,11 +273,11 @@ public abstract class ScheduleCanvas
     }
     return null;
   }
-  
+
    protected int setX(int col, int spacing) {
     return LEFT_MARGIN + spacing + ((col - top) * step_x);
   }
-  
+
   protected int setY(int start) {
     int offset = start % 30;
     int y = TOP_MARGIN  + 2 + ((start - offset - H_START) / 30) * step_y;
@@ -295,6 +296,18 @@ public abstract class ScheduleCanvas
     p.y += clickY;
 
     return p;
+  }
+
+  protected void setWaitCursor() {
+    RootPaneContainer root = ((RootPaneContainer) getTopLevelAncestor());
+    root.getGlassPane().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+    root.getGlassPane().setVisible(true);
+  }
+
+  protected void setDefaultCursor() {
+    RootPaneContainer root = ((RootPaneContainer) getTopLevelAncestor());
+    root.getGlassPane().setCursor(Cursor.getDefaultCursor());
+    root.getGlassPane().setVisible(false);
   }
 
   /**

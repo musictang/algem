@@ -1,5 +1,5 @@
 /*
- * @(#)Quote.java 2.9.4.13 05/11/15
+ * @(#)Quote.java 2.9.4.13 06/11/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -40,7 +40,7 @@ public class Quote
 {
 
   private static final long serialVersionUID = -7931741834723333355L;
-  
+
   /**
    * A quote/invoice number de devis/facture is represented by pattern {@code yymmn}.
    * yy : first 2 digits of current year<br />
@@ -321,7 +321,7 @@ public class Quote
     return items;
   }
 
-  void setItems(Collection<InvoiceItem> items) {
+  public void setItems(Collection<InvoiceItem> items) {
     this.items = items;
   }
 
@@ -424,5 +424,5 @@ public class Quote
   void setEditable(boolean editable) {
     this.editable = editable;
   }
-  
+
 }

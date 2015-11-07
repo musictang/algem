@@ -966,7 +966,7 @@ public class PersonFileEditor
   }
 
   private void savePersonFile() {
-   
+
     Object[] backup = dossier.backUpOldValues();
     updatePersonFile();
     String msg = dossier.hasErrors();

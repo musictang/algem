@@ -1,5 +1,5 @@
 /*
- * @(#)BasicBillingService 2.9.4.7 15/06/15
+ * @(#)BasicBillingService 2.9.4.13 06/11/15
  *
  * Copyright 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -71,12 +71,17 @@ public class BasicBillingService
   @Override
   public List<Invoice> getInvoices(int idper) throws SQLException {
     // no filter by default for person's history
-    return invoiceIO.findBy(idper, null);
+    List<Invoice> invoices = invoiceIO.findBy(idper, null);
+    for (Invoice i : invoices) {
+      i.setItems(findItemsByInvoiceId(i.getNumber()));
+    }
+    return invoices;
   }
 
   @Override
   public List<Invoice> getInvoices(int idper, Date start, Date end) throws SQLException {
-    return invoiceIO.findBy(idper, " AND date_emission BETWEEN '" + start + "' AND '" + end + "'");
+    List<Invoice> invoices = invoiceIO.findBy(idper, " AND date_emission BETWEEN '" + start + "' AND '" + end + "'");
+    return invoices;
   }
 
   @Override
@@ -89,6 +94,11 @@ public class BasicBillingService
   @Override
   public List<Invoice> getInvoices(Date start, Date end) throws SQLException {
     return invoiceIO.find(" WHERE date_emission BETWEEN '" + start + "' AND '" + end + "'");
+  }
+
+  @Override
+  public Collection<InvoiceItem> findItemsByInvoiceId(String invNumber) throws SQLException {
+    return invoiceIO.findItems(invNumber);
   }
 
   @Override
@@ -390,16 +400,16 @@ public class BasicBillingService
 
   @Override
   public Quote duplicate(Quote v) {
-    
+
     //Invoice n = new Invoice();
-    Quote n;    
+    Quote n;
     try {
       n = v.getClass().newInstance();
     } catch (ReflectiveOperationException ex) {
       GemLogger.log(ex.getMessage());
       return null;
     }
-    
+
     n.date = new DateFr(new Date());
     n.estab = v.getEstablishment();
     n.issuer = dataCache.getUser().getId();
@@ -414,7 +424,7 @@ public class BasicBillingService
     for(InvoiceItem it : v.getItems()) {
       InvoiceItem vItem = new InvoiceItem(it.billingId); // orderLine is null
       vItem.setQuantity(it.quantity);
-      Item c = copy(it.getItem()); 
+      Item c = copy(it.getItem());
       vItem.setItem(c);
       n.items.add(vItem);
     }
