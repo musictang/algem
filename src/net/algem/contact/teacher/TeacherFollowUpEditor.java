@@ -1,5 +1,5 @@
 /*
- * @(#)TeacherFollowUpEditor.java	2.9.4.12 16/09/15
+ * @(#)TeacherFollowUpEditor.java	2.9.4.13 09/11/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -55,7 +55,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.12
+ * @version 2.9.4.13
  */
 public class TeacherFollowUpEditor
         extends FileTab
@@ -197,7 +197,9 @@ public class TeacherFollowUpEditor
     String cmd = evt.getActionCommand();
     Object src = evt.getSource();
     if (src == btLoad) {
+      desktop.setWaitCursor();
       load();
+      desktop.setDefaultCursor();
       return;
     }
 

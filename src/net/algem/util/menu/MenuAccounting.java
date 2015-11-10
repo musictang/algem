@@ -1,5 +1,5 @@
 /*
- * @(#)MenuAccounting.java 2.9.4.13 27/10/15
+ * @(#)MenuAccounting.java 2.9.4.13 09/11/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,19 +20,14 @@
  */
 package net.algem.util.menu;
 
-import com.jtattoo.plaf.BaseComboBoxUI;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.ProgressMonitor;
-import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import net.algem.accounting.*;
 import net.algem.billing.*;
@@ -41,7 +36,6 @@ import net.algem.config.ConfigUtil;
 import net.algem.config.ModeOfPaymentCtrl;
 import net.algem.config.Param;
 import net.algem.edition.HourEmployeeDlg;
-import net.algem.planning.DateFr;
 import net.algem.planning.DateRange;
 import net.algem.room.RoomRateSearchCtrl;
 import net.algem.util.*;

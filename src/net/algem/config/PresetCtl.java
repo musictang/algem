@@ -1,5 +1,5 @@
 /*
- * @(#)PresetCtl.java 2.9.4.13 21/10/2015
+ * @(#)PresetCtl.java 2.9.4.13 09/11/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -22,12 +22,12 @@ package net.algem.config;
 
 import java.awt.Component;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseListener;
 import java.util.List;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionListener;
 import net.algem.util.GemCommand;
 import net.algem.util.MessageUtil;
 import net.algem.util.ui.MessagePopup;
@@ -52,6 +52,11 @@ public class PresetCtl {
     view = new PresetPanel(list);
   }
 
+  /**
+   * Feeds the model with a preset list.
+   * @param <T>
+   * @param presets 
+   */
   public <T extends Preset> void load(List<T> presets) {
     for (T p : presets) {
       model.addElement(p);
@@ -62,14 +67,23 @@ public class PresetCtl {
     ((PresetPanel) view).addActionListener(listener);
   }
 
-  public void addSelectionListener(ListSelectionListener listener) {
-    list.getSelectionModel().addListSelectionListener(listener);
+  public void addMouseListener(MouseListener listener) {
+    list.addMouseListener(listener);
   }
 
+  /**
+   * Adds a preset in model.
+   * @param <T>
+   * @param preset 
+   */
   public <T extends Preset> void add(T preset) {
     model.add(model.getSize(), preset);
   }
 
+  /**
+   * Rename the selected preset.
+   * @return the renamed preset or null if the operation was not successful.
+   */
   public Preset<Integer> rename() {
     Preset<Integer> p = (Preset<Integer>) list.getSelectedValue();
     String s = MessagePopup.input(view, MessageUtil.getMessage("dialog.rename"),GemCommand.RENAME_CMD, p.getName());
@@ -80,6 +94,10 @@ public class PresetCtl {
     return null;
   }
 
+  /**
+   * Removes a preset from model.
+   * @return the object removed or null if object was not found
+   */
   public Object remove() {
     int idx = list.getSelectedIndex();
     if (idx >= 0) {
@@ -88,6 +106,10 @@ public class PresetCtl {
     return null;
   }
 
+  /**
+   * Gets the selected preset in the list.
+   * @return a preset or null if none has been found
+   */
   public Preset getSelected() {
     int idx = list.getSelectedIndex();
     if (idx < 0) {

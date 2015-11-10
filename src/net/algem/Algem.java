@@ -1,5 +1,5 @@
 /*
- * @(#)Algem.java	2.9.4.13 06/11/15
+ * @(#)Algem.java	2.9.4.13 10/11/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -383,7 +383,7 @@ public class Algem
     Font myFont = new Font(Font.SANS_SERIF, Font.PLAIN, 11);
     switch (lafName) {
       case "Nimbus":
-        def.put("Button.contentMargins", new InsetsUIResource(4, 4, 4, 4)); //  default : (6,14,6,14)
+        def.put("Button.contentMargins", new InsetsUIResource(4, 3, 4, 3)); //  default : (6,14,6,14)
         def.put("TextField.contentMargins", new InsetsUIResource(4, 4, 4, 4)); //  default : (6,6,6,6)
 //          def.put("Table.alternateRowColor", new Color(224,224,224));// default :  #f2f2f2 (242,242,242)
         def.put("TableHeader.font", myFont); // default : Font SansSerif 12

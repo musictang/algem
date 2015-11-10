@@ -1,7 +1,7 @@
 /*
- * @(#)ModifPlanRoomView.java	2.8.w 05/09/14
+ * @(#)ModifPlanRoomView.java	2.9.4.13 10/11/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,20 +20,14 @@
  */
 package net.algem.planning.editing;
 
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.SQLException;
-import java.util.logging.Level;
 import javax.swing.Box;
-import javax.swing.JCheckBox;
-import javax.swing.JPanel;
 import net.algem.room.Room;
 import net.algem.room.RoomChoice;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
-import net.algem.util.GemLogger;
 import net.algem.util.model.Model;
 import net.algem.util.ui.GemField;
 import net.algem.util.ui.GemLabel;
@@ -44,7 +38,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.4.13
  * @since 1.0a 07/07/1999
  */
 public class ModifPlanRoomView
@@ -54,9 +48,9 @@ public class ModifPlanRoomView
 
   private GemField before;
   private RoomChoice after;
-  private JCheckBox checkAbsence;
-  private GemLabel noteLabel;
-  private GemField noteAbs;
+  //private JCheckBox checkAbsence;
+  //private GemLabel noteLabel;
+  //private GemField noteAbs;
 
   public ModifPlanRoomView(DataCache dataCache, String label) {
     super(dataCache, label);
@@ -67,17 +61,17 @@ public class ModifPlanRoomView
     after.addActionListener(this);
     Dimension prefSize = new Dimension(before.getPreferredSize().width, after.getPreferredSize().height);
     after.setPreferredSize(prefSize);
-    checkAbsence = new JCheckBox(BundleUtil.getLabel("Teacher.notif.absence"));
+    /*checkAbsence = new JCheckBox(BundleUtil.getLabel("Teacher.notif.absence"));
     checkAbsence.setBorder(null);
-    checkAbsence.addActionListener(this);
+    checkAbsence.addActionListener(this);*/
 
     gb.add(new GemLabel(BundleUtil.getLabel("Current.room.label")), 0, 2, 1, 1, GridBagHelper.WEST);
     gb.add(before, 1, 2, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("New.room.label")), 0, 3, 1, 1, GridBagHelper.WEST);
     gb.add(after, 1, 3, 1, 1, GridBagHelper.WEST);
     gb.add(Box.createVerticalStrut(10), 0, 4, 2, 1, GridBagHelper.WEST);
-    gb.add(checkAbsence, 0, 5, 2, 1, GridBagHelper.WEST);
-    checkAbsence.setEnabled(false);
+    /*gb.add(checkAbsence, 0, 5, 2, 1, GridBagHelper.WEST);
+    checkAbsence.setEnabled(false);*/
   }
 
   @Override
@@ -97,54 +91,58 @@ public class ModifPlanRoomView
 
   @Override
   public void actionPerformed(ActionEvent evt) {
-    Object src = evt.getSource();
+    /*Object src = evt.getSource();
     if (src == after) {
       try {
         Room r = (Room) DataCache.findId(after.getKey(), Model.Room);
         if (r != null && r.isCatchingUp()) {
-          checkAbsence.setEnabled(true);
+          //checkAbsence.setEnabled(true);
         } else {
-          checkAbsence.setEnabled(false);
-          checkAbsence.setSelected(false);
+          //checkAbsence.setEnabled(false);
+          //checkAbsence.setSelected(false);
           removeNote();
         }
       } catch (SQLException ex) {
         GemLogger.log(Level.WARNING, ex.getMessage());
       }
-    } else if (src == checkAbsence) {
+    } 
+    else if (src == checkAbsence) {
       loadNoteAbsence();
-    }
+    }*/
   }
 
   /**
    * Adds or remove a note component depending on the state of {@code checkAbsence}.
+   * @deprecated 
    */
   private void loadNoteAbsence() {
-    if (checkAbsence.isSelected()) {
+    /*if (checkAbsence.isSelected()) {
       addNote();
     } else {
       removeNote();
-    }
+    }*/
   }
 
   /**
    * Adds a note component.
+   * @deprecated 
    */
   private void addNote() {
-    if (noteAbs == null) {
+    /*if (noteAbs == null) {
       noteAbs = new GemField(DEF_FIELD_WIDTH);
       noteLabel = new GemLabel(BundleUtil.getLabel("Reason.label"));
       gb.add(noteLabel, 0, 6, 1, 1, GridBagHelper.WEST);
       gb.add(noteAbs, 1, 6, 1, 1, GridBagHelper.WEST);
       revalidate();
-    }
+    }*/
   }
 
   /**
    * Removes the note component.
+   * @deprecated 
    */
   private void removeNote() {
-    if (noteAbs != null) {
+    /*if (noteAbs != null) {
       Component c = gb.getContainer();
       if (c instanceof JPanel) {
         ((JPanel) gb.getContainer()).remove(noteLabel);
@@ -153,7 +151,7 @@ public class ModifPlanRoomView
         noteAbs = null;
         revalidate();
       }
-    }
+    }*/
   }
 
 }

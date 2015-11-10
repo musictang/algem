@@ -1,7 +1,7 @@
 /*
- * @(#)FileEditor.java	2.8.y 29/09/14
+ * @(#)FileEditor.java	2.9.4.13 09/11/15
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -22,23 +22,18 @@ package net.algem.util.module;
 
 import java.sql.SQLException;
 import java.util.List;
-import javax.swing.ProgressMonitor;
-import javax.swing.SwingWorker;
 import net.algem.accounting.OrderLineEditor;
 import net.algem.billing.*;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
-import net.algem.planning.DateRange;
 import net.algem.room.Room;
-import net.algem.util.BundleUtil;
 import net.algem.util.GemLogger;
-import net.algem.util.ui.ProgressMonitorHandler;
 
 /**
  * Base class for editing dossiers.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.4.13
  * @since 2.3.c 21/03/12
  */
 public class FileEditor
@@ -127,6 +122,7 @@ public class FileEditor
    * @return a history
    */
   protected HistoQuote getHistoQuotation(int idper) {
+    desktop.setWaitCursor();
     HistoQuote hq = null;
 
     try {
@@ -138,6 +134,8 @@ public class FileEditor
       }
     } catch (SQLException ex) {
       GemLogger.logException(ex);
+    } finally {
+      desktop.setDefaultCursor();
     }
     return hq;
   }

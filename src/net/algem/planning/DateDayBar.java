@@ -1,5 +1,5 @@
 /*
- * @(#)DateDayBar.java	2.9.4.8 18/06/15
+ * @(#)DateDayBar.java	2.9.4.13 10/11/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -28,6 +28,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import javax.swing.JButton;
+import net.algem.util.ui.ButtonBgHandler;
 import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GemPanel;
 
@@ -36,7 +37,7 @@ import net.algem.util.ui.GemPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.9.4.8
+ * @version 2.9.4.13
  * @since 1.0a 07/07/1999
  */
 public class DateDayBar
@@ -44,7 +45,7 @@ public class DateDayBar
         implements ActionListener
 {
 
-  private static final String dowLabelColor = "#4c4c4c";
+  private static final String DOW_LABEL_COLOR = "#4c4c4c";
   private String[] monthLabels;
   private JButton[] dayButtons;
   private GemButton[] monthButtons;
@@ -77,10 +78,8 @@ public class DateDayBar
 
     for (int i = 0; i < 31; i++) {
       cal.set(Calendar.DAY_OF_MONTH, i + 1);
-//      dayButtons[i] = new JButton("<html><font color=" + dowLabelColor + ">" + cal.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.FRANCE) + "</font><br />" + String.valueOf(i + 1) + "</html>");
-      dayButtons[i] = new JButton(cal.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.FRANCE));
-//      dayButtons[i].
-      /* */
+//      dayButtons[i] = new JButton(cal.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.FRANCE));
+      dayButtons[i] = new JButton();
       dayButtons[i].setFont(new Font("Helvetica", Font.PLAIN, 10));
       dayButtons[i].setMargin(new Insets(0, 0, 0, 0));
       dayPanel.add(dayButtons[i]);
@@ -194,7 +193,7 @@ public class DateDayBar
     for (j = 0; j < maxDaysInMonth; j++) {
       cal.set(Calendar.DAY_OF_MONTH, j + 1);
       day = cal.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.FRANCE);
-      dayButtons[j].setText("<html><font color="+dowLabelColor+">"+day+"</font><br /><center>"+(j + 1)+"</center></html>");
+      dayButtons[j].setText("<html><font color="+DOW_LABEL_COLOR+">"+day+"</font><br /><center>"+(j + 1)+"</center></html>");
       if (!dayButtons[j].isEnabled()) {
         dayButtons[j].setEnabled(true);
       }
@@ -214,29 +213,18 @@ public class DateDayBar
    */
   public void colorSelected(int d, int m) {
     // reset previous selected button
-    if (daySelected != null) {
-      daySelected.setBackground(null);
-      daySelected.setContentAreaFilled(true);
-      daySelected.setOpaque(false);
-    }
-    if (monthSelected != null) {
-      monthSelected.setBackground(null);
-      monthSelected.setContentAreaFilled(true);
-      monthSelected.setOpaque(false);
-    }
+    ButtonBgHandler.reset(daySelected);
+    ButtonBgHandler.reset(monthSelected);
+    
     daySelected = dayButtons[d];
-    //windows L&F workaround
-    daySelected.setContentAreaFilled(false);
-    daySelected.setOpaque(true);
-    //
+    ButtonBgHandler.decore(daySelected);
     daySelected.setBackground(DateBar.CALENDAR_BAR_SELECTED);
     
     monthSelected = monthButtons[m];
-    monthSelected.setContentAreaFilled(false);
-    monthSelected.setOpaque(true);
+    ButtonBgHandler.decore(monthSelected);
     monthSelected.setBackground(DateBar.CALENDAR_BAR_SELECTED);
   }
-  
+   
   /**
    * Sets time to the selected index.
    * @param i selected index

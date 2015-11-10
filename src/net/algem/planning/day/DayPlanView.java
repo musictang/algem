@@ -1,5 +1,5 @@
 /*
- * @(#)DayPlanView.java 2.9.4.13 06/11/15
+ * @(#)DayPlanView.java 2.9.4.13 09/11/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -66,7 +66,7 @@ public class DayPlanView
 
   public DayPlanView(Date d) {
     cols = new Vector<DayPlan>();
-    date = d;
+    this.date = d;
     cal = Calendar.getInstance(Locale.FRANCE);
     cal.setTime(d);
     step_x = 100;
@@ -85,7 +85,7 @@ public class DayPlanView
 
   public void setDate(Date d) {
     cal.setTime(d);
-    date = d;
+    this.date = d;
   }
 
   public Date getDate() {
@@ -102,7 +102,7 @@ public class DayPlanView
 
   public void load(Date d, Vector<DayPlan> cols) {
     cal.setTime(d);
-    date = d;
+    this.date = d;
     this.cols = cols;
     img = null;
     repaint();
@@ -137,7 +137,6 @@ public class DayPlanView
    */
   @Override
   public void drawBackground() {
-    setWaitCursor();
     ncols = dim.width / step_x;
     drawGrid();
     if (cols == null) {
@@ -180,7 +179,6 @@ public class DayPlanView
         textRange(i, p, prev); // ajout des textes sur les plannings
       }
     }
-    setDefaultCursor();
   }
 
   protected void drawClosed(int col, DailyTimes dt, ScheduleObject dummy) {

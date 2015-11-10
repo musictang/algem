@@ -1,5 +1,5 @@
 /*
- * @(#)ModulePresetDlg.java 2.9.4.13 27/10/2015
+ * @(#)ModulePresetDlg.java 2.9.4.13 09/11/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -26,6 +26,8 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
@@ -37,8 +39,6 @@ import javax.swing.JEditorPane;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import net.algem.config.Preset;
 import net.algem.config.PresetCtl;
 import net.algem.util.BundleUtil;
@@ -58,8 +58,9 @@ import net.algem.util.ui.MessagePopup;
  * @since 2.9.4.13 20/10/2015
  */
 public class ModulePresetDlg
-  extends JDialog
-  implements ActionListener, ListSelectionListener {
+        extends JDialog
+        implements ActionListener
+{
 
   private Component parent;
   private DataCache dataCache;
@@ -80,7 +81,13 @@ public class ModulePresetDlg
     presetCtl = new PresetCtl();
 
     presetCtl.addActionListener(this);
-    presetCtl.addSelectionListener(this);
+    presetCtl.addMouseListener(new MouseAdapter()
+    {
+      @Override
+      public void mouseClicked(MouseEvent e) {
+        setSelected();
+      }
+    });
     presetCtl.load(getSavedPresets());
     Component presetPanel = presetCtl.getView();
     presetPanel.setMinimumSize(new Dimension(200, 400));
@@ -102,10 +109,10 @@ public class ModulePresetDlg
     cmdPanel.add(btCancel = new GemButton(GemCommand.CANCEL_CMD));
     btValidation.addActionListener(this);
     btCancel.addActionListener(this);
-    
+
     footer.add(help, BorderLayout.NORTH);
     footer.add(cmdPanel, BorderLayout.SOUTH);
-    
+
     moduleList = new JList(getModules().toArray());
     JScrollPane rightScroll = new JScrollPane(moduleList);
     rightScroll.setMinimumSize(new Dimension(400, 400));
@@ -131,7 +138,7 @@ public class ModulePresetDlg
   private List<Module> getModules() {
     return dataCache.getList(Model.Module).getData();
   }
-  
+
   public List<Module> getSelectedModules() {
     return moduleList.getSelectedValuesList();
   }
@@ -147,6 +154,9 @@ public class ModulePresetDlg
         }
       } else if (GemCommand.ADD_CMD.equals(cmd)) {
         List<Module> modules = moduleList.getSelectedValuesList();
+        if (modules.isEmpty()) {
+          return;
+        }
         Preset<Integer> p = new DefaultPreset<>();
         Integer[] indices = new Integer[modules.size()];
         for (int i = 0; i < modules.size(); i++) {
@@ -176,10 +186,9 @@ public class ModulePresetDlg
     }
   }
 
-  @Override
-  public void valueChanged(ListSelectionEvent e) {
+  private void setSelected() {
     Preset<Integer> p = presetCtl.getSelected();
-    if (p == null || e.getValueIsAdjusting()) {
+    if (p == null) {
       return;
     }
     Integer[] m = p.getValue();
@@ -196,11 +205,11 @@ public class ModulePresetDlg
     }
     moduleList.setSelectedIndices(indices);
   }
-  
+
   public boolean isValidated() {
     return validation;
   }
-  
+
   private void close() {
     setVisible(false);
     dispose();

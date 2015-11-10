@@ -1,5 +1,5 @@
 /*
- * @(#)MonthScheduleCtrl.java	2.9.4.12 28/09/15
+ * @(#)MonthScheduleCtrl.java	2.9.4.13 09/11/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -54,7 +54,7 @@ import net.algem.util.ui.UIAdjustable;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.11a
+ * @version 2.9.4.13
  * @since 1.0b 06/10/2001
  */
 public class MonthScheduleCtrl
@@ -138,7 +138,7 @@ public class MonthScheduleCtrl
   }
 
   private void load(Date date) {
-
+    desktop.setWaitCursor();
     cal.setTime(date);
     cal.set(Calendar.DAY_OF_MONTH, 1);
     start = cal.getTime();
@@ -146,6 +146,7 @@ public class MonthScheduleCtrl
     end = cal.getTime();
 
     dataCache.setMonthSchedule(start, end);
+    desktop.setDefaultCursor();
   }
 
   @Override

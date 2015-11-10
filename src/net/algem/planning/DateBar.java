@@ -1,5 +1,5 @@
 /*
- * @(#)DateBar.java	2.9.4.8 18/06/15
+ * @(#)DateBar.java	2.9.4.13 10/11/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -30,6 +30,7 @@ import java.text.DateFormatSymbols;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import net.algem.util.ui.ButtonBgHandler;
 import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GemPanel;
 
@@ -38,14 +39,14 @@ import net.algem.util.ui.GemPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.8
+ * @version 2.9.4.13
  */
 public class DateBar
         extends GemPanel
         implements ActionListener
 {
 
-    /** Color of selected button in bar (day or month). */
+  /** Color of selected button in bar (day or month). */
   static final Color CALENDAR_BAR_SELECTED = Color.decode("#68d095");
   private String[] monthLabels;
   private GemButton[] monthButtons;
@@ -122,14 +123,16 @@ public class DateBar
   }
   
   private void colorSelected(int idx) {
-    if (monthSelected != null) {
-      monthSelected.setBackground(null);
-      monthSelected.setContentAreaFilled(true);
-      monthSelected.setOpaque(false);
-    }
+    ButtonBgHandler.reset(monthSelected);
+//    if (monthSelected != null) {
+//      monthSelected.setBackground(null);
+//      monthSelected.setContentAreaFilled(true);
+//      monthSelected.setOpaque(false);
+//    }
     monthSelected = monthButtons[idx];
-    monthSelected.setContentAreaFilled(false);
-    monthSelected.setOpaque(true);
+    ButtonBgHandler.decore(monthSelected);
+//    monthSelected.setContentAreaFilled(false);
+//    monthSelected.setOpaque(true);
     monthSelected.setBackground(CALENDAR_BAR_SELECTED);
   }
 }

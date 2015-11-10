@@ -1,5 +1,5 @@
 /*
- * @(#)InvoiceLoader 2.9.4.13 06/11/15
+ * @(#)InvoiceLoader 2.9.4.13 09/11/15
  *
  * Copyright 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -63,7 +63,6 @@ public class InvoiceLoader
     int k = 1;
     int size = invoices.size();
     for (Invoice v : invoices) {
-      //Thread.sleep(40);
       v.setItems(((BasicBillingService) service).findItemsByInvoiceId(v.getNumber()));
       int p = k * 100 / size;
       setProgress(p);

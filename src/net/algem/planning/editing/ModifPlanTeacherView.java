@@ -1,7 +1,7 @@
 /*
- * @(#)ModifPlanTeacherView.java	2.8.x.1 18/09/14
+ * @(#)ModifPlanTeacherView.java	2.9.4.13 10/11/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,7 +21,6 @@
 package net.algem.planning.editing;
 
 import net.algem.planning.AbsenceNotification;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -37,8 +36,6 @@ import net.algem.util.MessageUtil;
 import net.algem.util.model.Model;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.Box;
-import javax.swing.JPanel;
 import net.algem.util.GemLogger;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.*;
@@ -48,7 +45,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.x.1
+ * @version 2.9.4.13
  */
 public class ModifPlanTeacherView
         extends ModifPlanView
@@ -58,15 +55,15 @@ public class ModifPlanTeacherView
   private GemField before;
   private GemChoice after;
   private JCheckBox checkAll;
-  private JCheckBox checkAbsence;
-  private JCheckBox checkReplacement;
+//  private JCheckBox checkAbsence;
+//  private JCheckBox checkReplacement;
   private SubstituteTeacherChoice substitute;
   private HourRangePanel hourRange;
   private JCheckBox replacement;
   private PlanningService service;
   private ScheduleObject orig;
-  private GemField noteAbs;
-  private GemLabel noteLabel;
+//  private GemField noteAbs;
+//  private GemLabel noteLabel;
   protected GemDesktop desktop;
 
   public ModifPlanTeacherView(DataCache dataCache, SubstituteTeacherList substitutes, PlanningService service) {
@@ -113,7 +110,7 @@ public class ModifPlanTeacherView
       gb.add(new GemLabel(BundleUtil.getLabel("Substitute.label")), 0, 8, 1, 1, GridBagHelper.WEST);
       gb.add(substitute, 1, 8, 1, 1, GridBagHelper.WEST);
     }
-    checkAbsence = new JCheckBox(BundleUtil.getLabel("Teacher.notif.absence"));
+    /*checkAbsence = new JCheckBox(BundleUtil.getLabel("Teacher.notif.absence"));
     checkAbsence.setBorder(null);
     checkAbsence.addActionListener(this);
 
@@ -123,7 +120,7 @@ public class ModifPlanTeacherView
     
     gb.add(Box.createVerticalStrut(10), 0, 9, 2, 1, GridBagHelper.WEST);
     gb.add(checkAbsence, 0, 10, 2, 1, GridBagHelper.WEST);
-    gb.add(checkReplacement, 0, 12, 2, 1, GridBagHelper.WEST);
+    gb.add(checkReplacement, 0, 12, 2, 1, GridBagHelper.WEST);*/
 
   }
 
@@ -187,9 +184,9 @@ public class ModifPlanTeacherView
       } else {
         after.setModel(new TeacherActiveChoiceModel(dataCache.getList(Model.Teacher), true));
       }
-    } else if (src == checkAbsence) {
+    } /*else if (src == checkAbsence) {
       loadNoteAbsence();
-    }
+    }*/
   }
 
   /**
@@ -204,15 +201,21 @@ public class ModifPlanTeacherView
     return false;
   }
   
+  /**
+   * 
+   * @return 
+   * @deprecated 
+   */
   private AbsenceNotification getMemo() {
-    AbsenceNotification memo = null;
+    /*AbsenceNotification memo = null;
     if (checkAbsence.isSelected() || checkReplacement.isSelected()) {
       memo = new AbsenceNotification();
       memo.setAbsence(checkAbsence.isSelected());
       memo.setReplacement(checkReplacement.isSelected());
       memo.setNote(noteAbs == null ? null : noteAbs.getText().trim());
     }
-    return memo;
+    return memo;*/
+    return null;
   }
 
   /**
@@ -245,9 +248,10 @@ public class ModifPlanTeacherView
   
   /**
    * Adds or remove a note component depending on the state of {@literal checkAbsence}.
+   * @deprecated 
    */
   private void loadNoteAbsence() {
-    if (checkAbsence.isSelected()) {
+    /*if (checkAbsence.isSelected()) {
       if (noteAbs == null) {
         noteAbs = new GemField(DEF_FIELD_WIDTH);
         noteLabel = new GemLabel(BundleUtil.getLabel("Reason.label"));
@@ -266,6 +270,6 @@ public class ModifPlanTeacherView
           revalidate();
         }
       }
-    }
+    }*/
   }
 }

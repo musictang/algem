@@ -164,8 +164,10 @@ public class DayScheduleCtrl
 
   //XXX dans DataCache + thread
   public void load(Date date) {
+    desktop.setWaitCursor();
     cal.setTime(date);
     dataCache.setDaySchedule(date);
+    desktop.setDefaultCursor();
   }
 
   /**

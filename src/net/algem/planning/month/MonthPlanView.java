@@ -1,5 +1,5 @@
 /*
- * @(#)MonthPlanView.java	2.9.4.13 06/11/15
+ * @(#)MonthPlanView.java	2.9.4.13 09/11/15
  *
  * Copyright (cp) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -103,7 +103,6 @@ public class MonthPlanView
 
   @Override
   public void drawBackground() {
-    setWaitCursor();
     drawGrid();
     if (schedules == null) {
       return;
@@ -112,7 +111,6 @@ public class MonthPlanView
     drawSchedules(schedules);
     drawScheduleRanges(ranges);
     textRange(schedules); // OPTIONNEL
-    setDefaultCursor();
   }
 
   public void drawGrid() {
