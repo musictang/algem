@@ -1,22 +1,22 @@
 /*
- * @(#)MultiLineTableCellRenderer.java 2.9.4.13 02/10/2015
- * 
+ * @(#)MultiLineTableCellRenderer.java 2.9.4.13 11/11/15
+ *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
- * 
+ *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Algem is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see http://www.gnu.org/licenses.
- * 
+ *
  */
 package net.algem.util.ui;
 
@@ -31,8 +31,8 @@ import javax.swing.table.TableCellRenderer;
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.9.4.13
  * @since 2.9.4.13 02/10/2015
- * @see https://community.oracle.com/thread/1362611?start=0&tstart=0
- * @see http://stackoverflow.com/posts/10101377/revisions
+ * @see <a href="https://community.oracle.com/thread/1362611?start=0&tstart=0" >community.oracle.com</a>
+ * @see <a href="http://stackoverflow.com/posts/10101377/revisions">stackoverflow.com</a>
  */
 public class MultiLineTableCellRenderer
         extends JTextArea

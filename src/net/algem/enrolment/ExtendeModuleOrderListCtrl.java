@@ -1,5 +1,5 @@
 /*
- * @(#)ExtendeModuleOrderListCtrl.java	2.9.4.13 06/11/15
+ * @(#)ExtendeModuleOrderListCtrl.java	2.9.4.13 11/11/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -220,7 +220,6 @@ public class ExtendeModuleOrderListCtrl
       return;
     }
     try (PrintWriter out = new PrintWriter(f, "UTF-16LE")) {
-//      StringBuilder sb = new StringBuilder("\ufeff");
       StringBuilder sb = new StringBuilder();
       for (int i = 0; i < tableModel.getColumnCount(); i++) {
         sb.append(tableModel.getColumnName(i)).append(';');
@@ -247,11 +246,16 @@ public class ExtendeModuleOrderListCtrl
         sb.append(tableModel.getValueAt(idx, 8)).append(TextUtil.LINE_SEPARATOR);
       }
       out.println(sb.toString());
-      new DesktopOpenHandler().open(f.getAbsolutePath());
     } catch (IOException ex) {
       GemLogger.log(ex.getMessage());
-    } catch (DesktopHandlerException ex) {
-      GemLogger.log(ex.getMessage());
+    } finally {
+      try {
+        if (f.length() > 0) {
+          new DesktopOpenHandler().open(f.getAbsolutePath());
+        }
+      } catch (DesktopHandlerException ex) {
+        GemLogger.log(ex.getMessage());
+      }
     }
   }
 

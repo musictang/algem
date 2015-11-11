@@ -5312,85 +5312,6 @@
       </para>
     </section>
 
-      <section id="public.table.menu"
-               xreflabel="public.menu">
-        <title id="public.table.menu-title">
-         Table:
-         
-         <structname>menu</structname>
-        </title>
- 
-
-
-        <para>
-          <variablelist>
-            <title>
-              Structure of <structname>menu</structname>
-            </title>
-
-
-            <varlistentry>
-              <term><structfield>id</structfield></term>
-              <listitem><para>
-                <type>integer</type>
-
-
-
-
-
-
-
-              </para>
-
-            </listitem>
-          </varlistentry>
-
-            <varlistentry>
-              <term><structfield>nom</structfield></term>
-              <listitem><para>
-                <type>character varying(64)</type>
-
-
-
-
-
-
-
-              </para>
-
-            </listitem>
-          </varlistentry>
-
-            <varlistentry>
-              <term><structfield>libelle</structfield></term>
-              <listitem><para>
-                <type>character varying(32)</type>
-
-
-
-
-
-
-
-              </para>
-
-            </listitem>
-          </varlistentry>
-
-        </variablelist>
-
-
-
-
-
-
-
-
-
-
-      </para>
-    </section>
-
       <section id="public.table.menu2"
                xreflabel="public.menu2">
         <title id="public.table.menu2-title">
@@ -5477,6 +5398,15 @@
                 <type>integer</type>
 
 
+                <literal>PRIMARY KEY</literal>
+
+
+
+
+
+
+
+
 
 
 
@@ -5491,6 +5421,15 @@
               <term><structfield>idmenu</structfield></term>
               <listitem><para>
                 <type>integer</type>
+
+
+                <literal>PRIMARY KEY</literal>
+
+
+
+
+
+
 
 
 
@@ -5556,6 +5495,15 @@
                 <type>integer</type>
 
 
+                <literal>PRIMARY KEY</literal>
+
+
+
+
+
+
+
+
 
 
 
@@ -5570,6 +5518,15 @@
               <term><structfield>profil</structfield></term>
               <listitem><para>
                 <type>integer</type>
+
+
+                <literal>PRIMARY KEY</literal>
+
+
+
+
+
+
 
 
 
@@ -5736,69 +5693,6 @@
 
             <varlistentry>
               <term><structfield>unite</structfield></term>
-              <listitem><para>
-                <type>integer</type>
-
-
-
-
-
-
-
-              </para>
-
-            </listitem>
-          </varlistentry>
-
-        </variablelist>
-
-
-
-
-
-
-
-
-
-
-      </para>
-    </section>
-
-      <section id="public.table.module-compo"
-               xreflabel="public.module_compo">
-        <title id="public.table.module-compo-title">
-         Table:
-         
-         <structname>module_compo</structname>
-        </title>
- 
-
-
-        <para>
-          <variablelist>
-            <title>
-              Structure of <structname>module_compo</structname>
-            </title>
-
-
-            <varlistentry>
-              <term><structfield>module</structfield></term>
-              <listitem><para>
-                <type>integer</type>
-
-
-
-
-
-
-
-              </para>
-
-            </listitem>
-          </varlistentry>
-
-            <varlistentry>
-              <term><structfield>mtype</structfield></term>
               <listitem><para>
                 <type>integer</type>
 
@@ -7002,6 +6896,226 @@
       </para>
     </section>
 
+      <section id="public.table.planning-fact"
+               xreflabel="public.planning_fact">
+        <title id="public.table.planning-fact-title">
+         Table:
+         
+         <structname>planning_fact</structname>
+        </title>
+ 
+
+
+        <para>
+          <variablelist>
+            <title>
+              Structure of <structname>planning_fact</structname>
+            </title>
+
+
+            <varlistentry>
+              <term><structfield>id</structfield></term>
+              <listitem><para>
+                <type>serial</type>
+
+
+                <literal>PRIMARY KEY</literal>
+
+
+
+
+
+
+
+
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+            <varlistentry>
+              <term><structfield>date</structfield></term>
+              <listitem><para>
+                <type>timestamp without time zone</type>
+
+
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+            <varlistentry>
+              <term><structfield>type</structfield></term>
+              <listitem><para>
+                <type>planning_fact_type</type>
+
+
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+            <varlistentry>
+              <term><structfield>planning</structfield></term>
+              <listitem><para>
+                <type>integer</type>
+
+
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+            <varlistentry>
+              <term><structfield>prof</structfield></term>
+              <listitem><para>
+                <type>integer</type>
+
+
+
+
+
+
+
+
+
+
+
+
+                <literal>REFERENCES</literal> <xref linkend="public.table.prof"/>
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+            <varlistentry>
+              <term><structfield>commentaire</structfield></term>
+              <listitem><para>
+                <type>text</type>
+
+
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+            <varlistentry>
+              <term><structfield>duree</structfield></term>
+              <listitem><para>
+                <type>interval</type>
+
+
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+            <varlistentry>
+              <term><structfield>statut</structfield></term>
+              <listitem><para>
+                <type>smallint</type>
+
+
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+            <varlistentry>
+              <term><structfield>niveau</structfield></term>
+              <listitem><para>
+                <type>smallint</type>
+
+
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+            <varlistentry>
+              <term><structfield>planning_desc</structfield></term>
+              <listitem><para>
+                <type>text</type>
+
+
+
+
+
+
+
+              </para>
+
+            </listitem>
+          </varlistentry>
+
+        </variablelist>
+
+
+
+
+
+        <variablelist>
+          <title>Indexes on planning_fact</title>
+
+          <varlistentry>
+            <term>planning_fact_planning_idx</term>
+            <listitem><para>planning</para></listitem>
+          </varlistentry>
+
+        </variablelist>
+
+
+
+
+
+
+
+
+      </para>
+    </section>
+
       <section id="public.view.planningvue"
                xreflabel="public.planningvue">
         <title id="public.view.planningvue-title">
@@ -7702,6 +7816,21 @@ WHERE (
 
 
 
+
+
+
+        <itemizedlist>
+          <title>
+            Tables referencing planning_fact via Foreign Key Constraints
+          </title>
+
+          <listitem>
+            <para>
+              <xref linkend="public.table.planning-fact"/>
+            </para>
+          </listitem>
+
+        </itemizedlist>
 
 
 

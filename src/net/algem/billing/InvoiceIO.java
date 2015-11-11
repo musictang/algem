@@ -260,15 +260,15 @@ public class InvoiceIO
   /**
    * Search for all items in invoice.
    *
-   * @param inv invoice instance
+   * @param invoice invoice number
    * @return a collection of invoice items
    * @throws SQLException
    */
-  public Collection<InvoiceItem> findItems(String number) throws SQLException {
+  public Collection<InvoiceItem> findItems(String invoice) throws SQLException {
 
     List<InvoiceItem> items = new ArrayList<InvoiceItem>();
     PreparedStatement ps = dc.prepareStatement(ITEM_STATEMENT);
-    ps.setString(1, number);
+    ps.setString(1, invoice);
 
     ResultSet rs = ps.executeQuery();
     while (rs.next()) {
@@ -288,7 +288,7 @@ public class InvoiceIO
         item = new Item(ol, qty);
       }
 
-      InvoiceItem invoiceItem = new InvoiceItem(number);
+      InvoiceItem invoiceItem = new InvoiceItem(invoice);
       invoiceItem.setItem(item);
       invoiceItem.setOrderLine(ol);
       invoiceItem.setQuantity(rs.getFloat(3));

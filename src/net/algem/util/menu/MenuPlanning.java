@@ -1,5 +1,5 @@
 /*
- * @(#)MenuPlanning.java	2.9.4.6 02/06/15
+ * @(#)MenuPlanning.java	2.9.4.13 11/11/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -35,8 +35,6 @@ import net.algem.planning.WorkhopScheduleCtrl;
 import net.algem.planning.day.DayScheduleCtrl;
 import net.algem.planning.month.MonthScheduleCtrl;
 import net.algem.util.BundleUtil;
-import net.algem.util.DataCache;
-import net.algem.util.DataConnection;
 import net.algem.util.GemCommand;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.module.GemModule;
@@ -46,7 +44,7 @@ import net.algem.util.module.GemModule;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.6
+ * @version 2.9.4.13
  * @since 1.0a 07/07/1999
  */
 public class MenuPlanning
@@ -69,18 +67,17 @@ public class MenuPlanning
 
     add(miDay = new JMenuItem(BundleUtil.getLabel("Menu.day.schedule.label")));
     add(miMonth = new JMenuItem(BundleUtil.getLabel("Menu.month.schedule.label")));
-    addSeparator();
-    DataConnection dc = DataCache.getDataConnection();
 
-    String manage = ConfigUtil.getConf(ConfigKey.COURSE_MANAGEMENT.getKey());
+    String manage = ConfigUtil.getConf(ConfigKey.COURSE_MANAGEMENT.getKey()).toLowerCase();
     if (manage != null && manage.startsWith("t")) {
+      addSeparator();
       add(miCourse = new JMenuItem(BundleUtil.getLabel("Course.scheduling.label")));
       add(miWorkshop = new JMenuItem(BundleUtil.getLabel("Workshop.scheduling.label")));
       add(miTraining = new JMenuItem(BundleUtil.getLabel("Training.course.scheduling.label")));
       add(miStudio = new JMenuItem(BundleUtil.getLabel("Studio.scheduling.label")));
     }
 
-    manage = ConfigUtil.getConf(ConfigKey.TEACHER_MANAGEMENT.getKey());
+    manage = ConfigUtil.getConf(ConfigKey.TEACHER_MANAGEMENT.getKey()).toLowerCase();
     if (manage != null && manage.startsWith("t")) {
       addSeparator();
       add(miAttendanceSheet = new JMenuItem(BundleUtil.getLabel("Menu.presence.file.label")));
@@ -88,6 +85,10 @@ public class MenuPlanning
     }
     addSeparator();
     add(miAdministrative = new JMenuItem(BundleUtil.getLabel("Administrative.scheduling.label")));
+    manage = ConfigUtil.getConf(ConfigKey.ADMINISTRATIVE_MANAGEMENT.getKey()).toLowerCase();
+    if (manage == null || !manage.startsWith("t")) {
+      miAdministrative.setEnabled(false);
+    }
 
     setListener(this);
   }

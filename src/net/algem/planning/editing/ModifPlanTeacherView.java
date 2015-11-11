@@ -1,6 +1,6 @@
 /*
  * @(#)ModifPlanTeacherView.java	2.9.4.13 10/11/15
- * 
+ *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning.editing;
 
@@ -71,7 +71,7 @@ public class ModifPlanTeacherView
     this.service = service;
     before = new GemField(DEF_FIELD_WIDTH);
     before.setEditable(false);
-    
+
     after = new TeacherChoice(dataCache.getList(Model.Teacher));
     Dimension prefSize = new Dimension(before.getPreferredSize().width, after.getPreferredSize().height);
     after.setPreferredSize(prefSize);
@@ -105,7 +105,7 @@ public class ModifPlanTeacherView
       substitute = new SubstituteTeacherChoice(substitutes);
       substitute.setPreferredSize(prefSize);
       substitute.setEnabled(false);
-      
+
       gb.add(replacement, 1, 7, 1, 1, GridBagHelper.WEST);
       gb.add(new GemLabel(BundleUtil.getLabel("Substitute.label")), 0, 8, 1, 1, GridBagHelper.WEST);
       gb.add(substitute, 1, 8, 1, 1, GridBagHelper.WEST);
@@ -117,7 +117,7 @@ public class ModifPlanTeacherView
     checkReplacement = new JCheckBox(BundleUtil.getLabel("Teacher.notif.replacement"));
     checkReplacement.setBorder(null);
     checkReplacement.addActionListener(this);
-    
+
     gb.add(Box.createVerticalStrut(10), 0, 9, 2, 1, GridBagHelper.WEST);
     gb.add(checkAbsence, 0, 10, 2, 1, GridBagHelper.WEST);
     gb.add(checkReplacement, 0, 12, 2, 1, GridBagHelper.WEST);*/
@@ -152,7 +152,7 @@ public class ModifPlanTeacherView
       return after.getKey();
     }
   }
-  
+
   void setTime(ScheduleObject s) {
     orig = s;
     hourRange.setStart(s.getStart());
@@ -200,11 +200,11 @@ public class ModifPlanTeacherView
     }
     return false;
   }
-  
+
   /**
-   * 
-   * @return 
-   * @deprecated 
+   *
+   * @return a notification
+   * @deprecated
    */
   private AbsenceNotification getMemo() {
     /*AbsenceNotification memo = null;
@@ -245,10 +245,10 @@ public class ModifPlanTeacherView
     hourRange.setStart(orig.getStart());
     hourRange.setEnd(orig.getEnd());
   }
-  
+
   /**
    * Adds or remove a note component depending on the state of {@literal checkAbsence}.
-   * @deprecated 
+   * @deprecated
    */
   private void loadNoteAbsence() {
     /*if (checkAbsence.isSelected()) {
@@ -258,7 +258,7 @@ public class ModifPlanTeacherView
         gb.add(noteLabel, 0, 11, 1, 1, GridBagHelper.WEST);
         gb.add(noteAbs, 1, 11, 1, 1, GridBagHelper.WEST);
         revalidate();
-      } 
+      }
     } else {
       if (noteAbs != null) {
         Component c = gb.getContainer();

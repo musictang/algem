@@ -77,13 +77,13 @@ public class GemDesktopCtrl
 {
   private final Cursor waitCursor = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
   private final Cursor defaultCursor = Cursor.getDefaultCursor();
-  
+
   private Hashtable<String, GemModule> modules;
   private Hashtable<String, JMenuItem> menus;
   private DataCache dataCache;
   private DataConnection dc;
   private UserService userService;
-  private final JDesktopPane desktop; 
+  private final JDesktopPane desktop;
   private PostitModule postit;
   private PostitCreateCtrl postitCreate;
   private PlanModifCtrl modifCtrl;
@@ -109,7 +109,7 @@ public class GemDesktopCtrl
   ObjectInputStream iDispatcher;
   ObjectOutputStream oDispatcher;
   String remoteId;
-  
+
   public GemDesktopCtrl(JFrame frame, DataCache dataCache, Properties props) {
     this.frame = frame;
     this.dataCache = dataCache;
@@ -117,26 +117,26 @@ public class GemDesktopCtrl
     userService = dataCache.getUserService();
     this.props = props;
     prefs = Preferences.userRoot().node("/algem/ui");
-    
+
     modules = new Hashtable<String, GemModule>();
     menus = new Hashtable<String, JMenuItem>();
     mbar = createMenuBar();
-    
+
     desktop = new JDesktopPane();
     desktop.setBackground(Color.gray);
-    
+
     postit = new PostitModule(userService); // postit windows
     addModule(postit);
     postit.getView().setLocation(new java.awt.Point(0, 0));
     postit.getNewPostit();
-    
+
     modifCtrl = new PlanModifCtrl(this);
     detailCtrl = new ScheduleDetailCtrl(this, modifCtrl);
-    
+
     frame.setJMenuBar(mbar);
     frame.getContentPane().setLayout(new BorderLayout());
     frame.getContentPane().add(desktop, BorderLayout.CENTER);
-    
+
     frame.addWindowListener(new WindowAdapter()
     {
       @Override
@@ -156,22 +156,22 @@ public class GemDesktopCtrl
       GemLogger.logException(ex);
     }
     try {
-      setDispatcher();   
+      setDispatcher();
     } catch (IOException e) {
       System.err.println("exception dispatcher:" + e);
       dispatcher = null;
     }
   } // end constructor
-  
+
   /**
    * Loads serialized modules.
-   * @throws IOException 
+   * @throws IOException
    */
   private void loadModules() throws IOException {
     ObjectInputStream ois = null;
     String path = System.getProperty("user.home") + FileUtil.FILE_SEPARATOR;
     ois = new ObjectInputStream(new FileInputStream(path + ".gemdesktop"));
-    
+
     try {
       java.util.List<GemModuleSID> serList = (ArrayList<GemModuleSID>) ois.readObject();
       for (GemModuleSID sid : serList) {
@@ -188,7 +188,7 @@ public class GemDesktopCtrl
             dayScheduleCtrl.setState(sid.getState());
             // location initiale du tableau jour.
             dayScheduleCtrl.getView().setLocation(110, 0);
-            dayScheduleCtrl.mayBeMaximize();  
+            dayScheduleCtrl.mayBeMaximize();
           }
         }
       }
@@ -207,7 +207,7 @@ public class GemDesktopCtrl
 
   /**
    * Inits dispatcher and runs listening thread.
-   * @throws IOException 
+   * @throws IOException
    */
   private void setDispatcher() throws IOException {
     initDispatcher();
@@ -235,7 +235,7 @@ public class GemDesktopCtrl
     }).start();
 
   }
-  
+
   /**
    * Gets the postit module.
    *
@@ -244,10 +244,10 @@ public class GemDesktopCtrl
   public PostitModule getPostit() {
     return postit;
   }
-  
+
   /**
    * Cleanup and closing.
-   * @throws GemCloseVetoException 
+   * @throws GemCloseVetoException
    */
   private void close() throws GemCloseVetoException {
     if (savePrefs) {
@@ -287,34 +287,34 @@ public class GemDesktopCtrl
     } catch (IOException ioe) {
       GemLogger.logException(ioe);
     }
-    
+
   }
-  
+
   public void removeActionListener(ActionListener l) {
     actionListener = AWTEventMulticaster.remove(actionListener, l);
   }
-  
+
   public void addActionListener(ActionListener l) {
     actionListener = AWTEventMulticaster.add(actionListener, l);
   }
-  
+
   @Override
   public void addGemEventListener(GemEventListener l) {
     listenerList.add(GemEventListener.class, l);
   }
-  
+
   @Override
   public void removeGemEventListener(GemEventListener l) {
     listenerList.remove(GemEventListener.class, l);
   }
-  
+
   @Override
   public void actionPerformed(ActionEvent evt) {
     String arg = evt.getActionCommand();
     Object src = evt.getSource();
 
     setWaitCursor();
-    
+
     if (BundleUtil.getLabel("Menu.quit.label").equals(arg)) {
       savePrefs = (evt.getModifiers() & Event.SHIFT_MASK) == Event.SHIFT_MASK;
       try {
@@ -341,7 +341,7 @@ public class GemDesktopCtrl
     } else if (BundleUtil.getLabel("Group.members.label").equals(arg)) {
       MusicianExportDlg dlg = new MusicianExportDlg(this);
       dlg.setVisible(true);
-      
+
     } else if (BundleUtil.getLabel("Menu.student.all.label").equals(arg)) {
       AllStudentExportDlg dlg = new AllStudentExportDlg(this);
       dlg.setVisible(true);
@@ -405,7 +405,7 @@ public class GemDesktopCtrl
   @Override
   public void postEvent(GemEvent evt) {
     System.out.println("GemDesktopCtrl.postEvent:" + evt);
-    
+
     if (evt instanceof ScheduleDetailEvent) {
       ScheduleDetailEvent pde = (ScheduleDetailEvent) evt;
       setWaitCursor();
@@ -437,9 +437,9 @@ public class GemDesktopCtrl
    * @param evt
    */
   public void forwardEvent(GemEvent evt) {
-//        System.out.println("GemDesktopCtrl.forwardEvent:"+evt);       
+//        System.out.println("GemDesktopCtrl.forwardEvent:"+evt);
     Object[] listeners = listenerList.getListenerList();
-    
+
     for (int i = listeners.length - 2; i >= 0; i -= 2) {
       if (listeners[i] == GemEventListener.class) {
         GemEventListener l = (GemEventListener) listeners[i + 1];
@@ -478,12 +478,12 @@ public class GemDesktopCtrl
     dataCache.remoteEvent(evt);
     forwardEvent(evt);
   }
-  
+
   @Override
   public Frame getFrame() {
     return frame;
   }
-  
+
   @Override
   public DataCache getDataCache() {
     return dataCache;
@@ -493,18 +493,18 @@ public class GemDesktopCtrl
   public void addModule(GemModule module) {
     addModule(module, false);
   }
-  
+
   public void addModule(GemModule module, boolean iconified) //public void addModule(GemModule _module, int _layer)
   {
     JMenuItem mItem = new JMenuItem(module.getLabel());
     menus.put(module.getLabel(), mItem);
     mItem.addActionListener(this);
-    
+
     modules.put(module.getLabel(), module);
     module.setDesktop(this);	// createIHM
     DefaultGemView gemView = module.getView();
     desktop.add(gemView);
-    
+
     gemView.setVisible(true);
     try {
       if (iconified) {
@@ -516,25 +516,25 @@ public class GemDesktopCtrl
     } catch (java.beans.PropertyVetoException e2) {
       System.err.println(e2.getMessage());
     }
-    
+
     desktop.revalidate();
     mWindows.add(mItem);
-    
+
   }
-  
+
   @Override
   public void addPanel(String s, Container p) {
     GemModule m = new DefaultGemModule(s, p);
     addModule(m); 	//m.init();
   }
-  
+
   @Override
   public void addPanel(String s, Container p, Dimension size) {
     GemModule m = new DefaultGemModule(s, p);
     addModule(m);
     m.setSize(size);
   }
-  
+
   @Override
   public void removeModule(GemModule module) {
     if (module == null || module == postit) {
@@ -544,28 +544,28 @@ public class GemDesktopCtrl
     desktop.repaint();
     JMenuItem mItem = (JMenuItem) menus.get(module.getLabel());
     mWindows.remove(mItem);
-    
+
     modules.remove(module.getLabel());
   }
-  
+
   @Override
   public void removeModule(String key) {
     GemModule m = modules.get(key);
     removeModule(m);
   }
-  
+
   @Override
   public void removeCurrentModule() {
     removeModule(getSelectedModule());
   }
-  
+
   @Override
   public GemModule getSelectedModule() {
     DefaultGemView v = (DefaultGemView) desktop.getSelectedFrame();
     GemModule m = modules.get(v.getLabel());
     return m;
   }
-  
+
   public GemModule getModule(String label) {
     return modules.get(label);
   }
@@ -577,7 +577,7 @@ public class GemDesktopCtrl
       setSelectedModule(m);
     }
   }
-  
+
   @Override
   public void setSelectedModule(GemModule m) {
     try {
@@ -588,7 +588,7 @@ public class GemDesktopCtrl
     } catch (java.beans.PropertyVetoException ignore) {
     }
   }
-  
+
   public PersonFileEditor getPersonFileEditor(int idper) {
     Enumeration<GemModule> mods = modules.elements();
     while (mods.hasMoreElements()) {
@@ -638,7 +638,7 @@ public class GemDesktopCtrl
     }
     return false;
   }
-  
+
   /**
    * Sets wait cursor in <strong>foreground</strong>.
    */
@@ -649,13 +649,13 @@ public class GemDesktopCtrl
     root.getGlassPane().setVisible(true);
     //frame.setCursor(waitCursor);
   }
-  
+
   /**
    * Sets default cursor.
    */
   @Override
   public void setDefaultCursor() {
-    RootPaneContainer root = ((RootPaneContainer) desktop.getTopLevelAncestor()); 
+    RootPaneContainer root = ((RootPaneContainer) desktop.getTopLevelAncestor());
     root.getGlassPane().setCursor(defaultCursor);
     root.getGlassPane().setVisible(false);
 //    frame.setCursor(defaultCursor); // cursor rest in background
@@ -697,15 +697,15 @@ public class GemDesktopCtrl
   private JMenuBar createMenuBar() {
     JMenuBar menuBar;
     JMenuItem menu;
-    
+
     menuBar = new JMenuBar();
-    
+
     mWindows = new JMenu(BundleUtil.getLabel("Menu.windows.label"));
     miSaveUISettings = getMenuItem("Store.ui.settings");
     mWindows.add(miSaveUISettings);
     mWindows.addSeparator();
     mWindows.add(getMenuItem("Menu.windows.detach"));
-    
+
     menu = mWindows.add(new JMenuItem(BundleUtil.getLabel("Action.close.label")));
     menu.addActionListener(this);
     menu = mWindows.add(new JMenuItem(BundleUtil.getLabel("Menu.windows.close.all.label")));
@@ -717,7 +717,7 @@ public class GemDesktopCtrl
     menu = mWindows.add(new JMenuItem(BundleUtil.getLabel("Menu.windows.cascade.label")));
     menu.addActionListener(this);
     mWindows.addSeparator();
-    
+
     mFile = new JMenu(BundleUtil.getLabel("Menu.file.label"));
     mFile.setMnemonic('f');
     menu = mFile.add(new JMenuItem(BundleUtil.getLabel("Menu.postit.label"), 'p'));
@@ -746,7 +746,7 @@ public class GemDesktopCtrl
     menu = mExport.add(new JMenuItem(BundleUtil.getLabel("Menu.student.by.instrument.label")));
     menu.addActionListener(this);
     mExport.addSeparator();
-    
+
     JMenuItem miAccountHourStat = new JMenuItem(BundleUtil.getLabel("Menu.hour.stat.label"));
     miAccountHourStat.addActionListener(this);
      if (!dataCache.authorize("Accounting.hours.stat.auth")) {
@@ -756,33 +756,33 @@ public class GemDesktopCtrl
     menu = mExport.add(new JMenuItem(BundleUtil.getLabel("Statistics.label")));
     menu.addActionListener(this);
     mFile.add(mExport);
-    
+
     menu = mFile.add(new JMenuItem(BundleUtil.getLabel("Menu.quit.label"), 'q'));
     menu.addActionListener(this);
-    
+
     menuBar.add(mFile);
     menuBar.add(mWindows);
-    
+
     mCatalog = new MenuCatalog(this);
     mCatalog.setMnemonic('c');
     menuBar.add(mCatalog);
-    
+
     mPerson = new MenuSearch(this);
     mPerson.setMnemonic('e');
     menuBar.add(mPerson);
-    
+
     mPlanning = new MenuPlanning(this);
     mPlanning.setMnemonic('p');
     menuBar.add(mPlanning);
-    
+
     mVarious = new MenuAccounting(this);
     mVarious.setMnemonic('d');
     menuBar.add(mVarious);
-    
+
     mConfig = new MenuConfig(this);
     menuBar.add(mConfig);
     menuBar.add(Box.createHorizontalGlue());
-    
+
     mHelp = new MenuHelp(this);
     mHelp.setMnemonic('A');
     menuBar.add(mHelp);
@@ -799,24 +799,24 @@ public class GemDesktopCtrl
 
     return menuBar;
   }
-  
+
   private void detachCurrent() {
     System.out.println("detacheCurrent");
     GemModule m = getSelectedModule();
     if (m == null || m == postit) {
       return;
     }
-    
+
     System.out.println("detacheCurrent remove:" + m);
     removeModule(m);
-    
+
     Container c = m.getView().getContentPane();
     System.out.println("detacheCurrent content:" + c);
     FrameDetach fd = new FrameDetach(this, m.getLabel(), c);
     fd.setSize(c.getSize());
     fd.setVisible(true);
   }
-  
+
   private void open() {
     JInternalFrame frames[] = desktop.getAllFrames();
     for (int i = 0; i < frames.length; i++) {
@@ -830,7 +830,7 @@ public class GemDesktopCtrl
       }
     }
   }
-  
+
   private void iconify() {
     JInternalFrame frames[] = desktop.getAllFrames();
     for (int i = 0; i < frames.length; i++) {
@@ -844,7 +844,7 @@ public class GemDesktopCtrl
       }
     }
   }
-  
+
   private void closeAll() {
     JInternalFrame frames[] = desktop.getAllFrames();
     for (int i = 0; i < frames.length; i++) {
@@ -859,12 +859,12 @@ public class GemDesktopCtrl
       }
     }
   }
-  
+
   private void cascade() {
     JInternalFrame frames[] = desktop.getAllFrames();
     int x = 110;
     int y = 0;
-    
+
     for (int i = 0; i < frames.length; i++) {
       if (!frames[i].isIcon()
               && frames[i] != postit.getView()) {
@@ -879,14 +879,14 @@ public class GemDesktopCtrl
       }
     }
   }
-  
+
   private JMenuItem getMenuItem(String id) {
     JMenuItem m = new JMenuItem(BundleUtil.getLabel(id + ".label"));
     m.setMnemonic(BundleUtil.getLabel(id + ".mnemo").charAt(0));
     m.getAccessibleContext().setAccessibleDescription(BundleUtil.getLabel(id + ".info"));
     m.setActionCommand(id);
     m.addActionListener(this);
-    
+
     return m;
   }
   /*

@@ -1,5 +1,5 @@
 /*
- * @(#)Algem.java	2.9.4.13 10/11/15
+ * @(#)Algem.java	2.9.4.13 11/11/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -506,7 +506,7 @@ public class Algem
   /**
    * Pour implémentation temporaire des modifs client Ecole Pays Roi Morvan.
    *
-   * @return
+   * @return a string representing the client
    * @author ERIC
    *
    * @since 2.9.4.12

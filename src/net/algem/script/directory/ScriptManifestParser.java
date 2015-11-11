@@ -64,7 +64,7 @@ public interface ScriptManifestParser {
      * Parse manifest data into a ScriptManifest object
      *
      * @param manifestData
-     * @return
+     * @return a ScriptManifest
      * @throws Exception
      */
     public ScriptManifest parseManifest(String name, String manifestData) throws Exception;

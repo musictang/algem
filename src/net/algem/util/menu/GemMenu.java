@@ -1,7 +1,7 @@
 /*
- * @(#)GemMenu.java	2.8.t 16/05/14
- * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * @(#)GemMenu.java	2.9.4.13 11/11/15
+ *
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.util.menu;
 
@@ -30,10 +30,10 @@ import net.algem.util.module.GemDesktop;
 
 /**
  * Gem menu utility.
- * 
+ *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.9.4.13
  * @since 1.0a 07/07/1999
  */
 public abstract class GemMenu
@@ -50,11 +50,10 @@ public abstract class GemMenu
     dataCache = desktop.getDataCache();
   }
 
-  public void setListener(JMenu menu) {
-    JMenuItem item;
-
+  protected void setListener(JMenu menu) {
+    // recursive
     for (int i = 0; i < menu.getItemCount(); i++) {
-      item = menu.getItem(i);
+      JMenuItem item = menu.getItem(i);
       if (item instanceof JMenu) {
         setListener((JMenu) item);
       } else if (item instanceof JMenuItem) {
@@ -62,10 +61,10 @@ public abstract class GemMenu
       }
     }
   }
-  
+
   /**
    * Enables or disables an item if {@code key} is authorized for current user.
-   * 
+   *
    * @param item
    * @param key
    * @return a menu item
@@ -79,7 +78,7 @@ public abstract class GemMenu
 
   /**
    * Gets a new JMenuItem the label depending on key {@code id} in properties file.
-   * 
+   *
    * @param id
    * @return a jMenuItem
    */

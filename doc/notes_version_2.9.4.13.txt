@@ -4,6 +4,7 @@ CORRECTIFS
 * Le calcul des heures administratives ne fonctionnait pas correctement s'il était lancé à partir de la fiche individuelle du salarié (icone "Heures professeur"). Le fichier généré recensait les heures de TOUS les salariés de l'équipe au lieu de ne recenser que celles du salarié sélectionné.
 * Le calcul des heures "Technicien" n'était pas pris en compte s'il était lancé à partir de la fiche individuelle du salarié (icone "Heures professeur"). Le fichier généré recensait les heures de TOUS les techniciens au lieu de ne recenser que celles du technicien sélectionné.
 * Lorsque plusieurs cours collectifs (d'instrument) étaient programmées sur la journée dans la même salle, la couleur de la plage élèves du cours dont on avait modifié la couleur par défaut était reportée sur l'un des cours précédents. La couleur personnalisée correspond bien maintenant au cours sélectionné.
+* Après avoir cliqué sur Imprimer dans la liste des commandes formules (menu Catalogue -> Commandes formules(programmes de formation)), le fichier à imprimer ne pouvait être ouvert dans le tableur par défaut car il était signalé comme déjà utilisé.
 * Les couleurs personnalisées n'étaient pas prises en compte dans l'export au format Excel du planning jour (menu Fichier -> Exporter). Celles-ci sont maintenant prises en charge. De plus, la couleur du texte des plannings exportés s'adapte à leur couleur de fond. Auparavant, le texte de certains plannings n'était pas bien visible si ceux-ci avaient des couleurs trop sombres.
 * Après modification, le tarif d'une salle n'était pas mis à jour correctement dans la liste : menu Compta -> Tarifs salles. Si l'on modifiait les montants d'une ou plusieurs colonnes, ces nouveaux tarifs étaient bien enregistrés en base de données mais n'apparaissaient pas dans la liste après édition.
 * Il était possible de mémoriser les dimensions de la fenêtre du planning "Jour" mais celles-ci n'étaient pas prises en compte à la réouverture (ce bug a déjà été corrigé dans les derniers envois de la version 2.9.4.12).
@@ -63,6 +64,10 @@ Les codes associés à un cours (niveau, statut, tranche d'âge) n'étaient pas 
 Optimisations diverses dans l'affichage des boutons de la barre de navigation (jour et mois).
 
 Les fenêtres de dialogue "Changer prof" et "Changer salle" n'incluent plus les cases à cocher "Mémoriser l'absence" ou "Mémoriser le remplacement". Ces actions étaient sans effet et leur présence ne se justifiait plus. De nouveaux menus seront dédiés à cet usage dans une prochaine version du logiciel.
+
+Le nom du fichier exporté vous est maintenant automatiquement proposé après avoir cliqué sur Fichier -> Exporter dans le planning du tableau Jour. Ce nom reprend la date en cours de consultation.
+
+Le menu Planning -> Planification administrative est maintenant inactif (grisé) si l'option "Planification administrative" est décochée dans la rubrique Gestion des paramètres généraux (menu Configuration -> Paramètres -> Généraux).
 
 SALLE
 ON PEUT MAINTENANT ÉDITER LES STATUTS "Publique" et "Active" POUR TOUT UN ENSEMBLE DE SALLES sans avoir besoin d'ouvrir la fiche de chacune. Pour le faire, allez dans Configuration -> Etablissements -> Consulter/Modifier, sélectionnez l'établissement qui vous intéresse et cliquez sur le bouton "Suivant". Vous pouvez modifier les deux dernières colonnes de chaque ligne. Cliquez sur "Valider" pour enregistrer les modifications (ces modifications incluent celles de la fiche établissement).
