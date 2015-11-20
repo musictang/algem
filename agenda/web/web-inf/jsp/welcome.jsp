@@ -1,5 +1,6 @@
+<%-- 
 /*
- * @(#)UserService.java	1.0.6 18/11/15
+ * @(#)welcome.jsp	1.0.0 11/02/13
  *
  * Copyright (c) 2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -18,26 +19,30 @@
  * along with Algem Agenda. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package net.algem.security;
+--%>
+<%--     
+	@author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
+	@version 1.0.0
+	@since 1.0.0 11/02/13
+--%>
 
-import java.sql.SQLException;
-
-/**
- *
- * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 1.0.6
- * @since 1.0.0 11/02/13
- */
-public interface UserService
-{
-  public boolean authenticate(String login, String pass);
-
-  public boolean authorize(String item, int user);
-
-  public void create(User u) throws SQLException;
-
-  public void update(User u) throws SQLException;
-
-  public User findId(int id);
-}
-
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>JSP Page</title>
+		<link rel="stylesheet" href="css/springtest.css" />
+	</head>
+	<body>
+		<h1>Hello ${user}</h1>
+		<table>	
+			<c:forEach items="${acl}" var="map">
+				<c:forEach items="${map}" var="entry">
+					<tr><td>${entry.key}</td><td>${entry.value}</td></tr>
+				</c:forEach>
+			</c:forEach>
+		</table>
+	</body>
+</html>

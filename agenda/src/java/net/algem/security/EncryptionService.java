@@ -1,9 +1,9 @@
 /*
- * @(#)UserService.java	1.0.6 18/11/15
+ * @(#)EncryptionService.java	1.0.6 18/11/15
  *
- * Copyright (c) 2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 2015 Musiques Tangentes. All Rights Reserved.
  *
- * This file is part of Algem Agenda.
+ * This file is part of AlgemWebApp.
  * Algem Agenda is free software: you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,24 +20,16 @@
  */
 package net.algem.security;
 
-import java.sql.SQLException;
-
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 1.0.6
- * @since 1.0.0 11/02/13
+ * @since 1.0.6 18/11/15
  */
-public interface UserService
+interface EncryptionService
 {
-  public boolean authenticate(String login, String pass);
+  boolean authenticate(String attemptedPassword, byte[] encryptedPassword, byte[] salt)
+          throws UserException;
 
-  public boolean authorize(String item, int user);
-
-  public void create(User u) throws SQLException;
-
-  public void update(User u) throws SQLException;
-
-  public User findId(int id);
+  UserPass createPassword(String pass) throws UserException;
 }
-

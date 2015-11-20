@@ -25,23 +25,25 @@ import org.springframework.validation.Validator;
 
 /**
  * User's validator.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 1.0.0
  * @since 1.0.0 11/02/13
  */
 public class UserValidator implements Validator {
 
+  @Override
 	public boolean supports(Class clazz) {
 		return clazz.isAssignableFrom(User.class);
 	}
 
 	/**
 	 * Validates user's values.
-	 * 
+	 *
 	 * @param obj user instance
 	 * @param errors
 	 */
+  @Override
 	public void validate(Object obj, Errors errors) {
 		User user = (User) obj;
 		if (user.getLogin() == null || user.getLogin().length() < 2) {

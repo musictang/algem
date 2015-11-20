@@ -60,6 +60,7 @@ public class LoginCtrl {
 
 	@RequestMapping(method = RequestMethod.GET, value = "/dologin.html")
 	public String showLogin(@ModelAttribute("user") User user, Model model) {
+//    model.addAttribute("login", "jm");
 		model.addAttribute("userlist", dao.findAll());
 		model.addAttribute("profiles", Profile.values());
 		return "login";

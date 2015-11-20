@@ -1,7 +1,7 @@
 /*
- * @(#)User.java	1.0.0 11/02/13
+ * @(#)User.java	1.0.6 18/11/15
  *
- * Copyright (c) 2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem Agenda.
  * Algem Agenda is free software: you can redistribute it and/or modify it
@@ -20,87 +20,108 @@
  */
 package net.algem.security;
 
-import java.util.regex.Pattern;
-
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 1.0.0
+ * @version 1.0.6
  * @since 1.0.0 11/02/13
  */
 public class User {
 
-	public static final int VISITOR = 1;
-	public static final int ADMIN = 2;
-//	@Pattern(regexp="^[a-zA-Z0-9]+$", message="Username must be alphanumeric with no spaces")
 	private int id;
 	private String login;
 	private String password;
 	private short profile;
 	private String name;
-
-	/**
-	 * Gets the profile's value.
-	 *
-	 * @return the value of profile
-	 */
-	public short getProfile() {
-		return profile;
-	}
-
-	/**
-	 * Sets the profile's value.
-	 *
-	 * @param profile new value of profile
-	 */
-	public void setProfile(short profile) {
-		this.profile = profile;
-	}
-
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
-
-	public String getLogin() {
-		return login;
-	}
-
-	public void setLogin(String login) {
-		this.login = login;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	/**
-	 * Gets the name's value.
-	 *
-	 * @return the value of name
-	 */
-	public String getName() {
-		return name;
-	}
-
-	/**
-	 * Sets the name's value.
-	 *
-	 * @param name new value of name
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
+  private UserPass passInfo;
 
 	@Override
 	public String toString() {
-		return "User {" + "login=" + login + ", password = " + password + ", profile=" + profile + '}';
+		return login;
 	}
+
+  /**
+   * @return the id
+   */
+  public int getId() {
+    return id;
+  }
+
+  /**
+   * @param id the id to set
+   */
+  public void setId(int id) {
+    this.id = id;
+  }
+
+  /**
+   * @return the login
+   */
+  public String getLogin() {
+    return login;
+  }
+
+  /**
+   * @param login the login to set
+   */
+  public void setLogin(String login) {
+    this.login = login;
+  }
+
+  /**
+   * @return the password
+   */
+  public String getPassword() {
+    return password;
+  }
+
+  /**
+   * @param password the password to set
+   */
+  void setPassword(String password) {
+    this.password = password;
+  }
+
+  /**
+   * @return the profile
+   */
+  public short getProfile() {
+    return profile;
+  }
+
+  /**
+   * @param profile the profile to set
+   */
+  public void setProfile(short profile) {
+    this.profile = profile;
+  }
+
+  /**
+   * @return the name
+   */
+  public String getName() {
+    return name;
+  }
+
+  /**
+   * @param name the name to set
+   */
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  /**
+   * @return the passInfo
+   */
+  public UserPass getPass() {
+    return passInfo;
+  }
+
+  /**
+   * @param passInfo the passInfo to set
+   */
+  public void setPass(UserPass passInfo) {
+    this.passInfo = passInfo;
+  }
+
 }

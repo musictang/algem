@@ -25,7 +25,9 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 import net.algem.util.AbstractGemDao;
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
@@ -36,72 +38,88 @@ import org.springframework.stereotype.Repository;
  * @since 1.0.0 11/02/13
  */
 @Repository
-public class UserDao extends AbstractGemDao {
+public class UserDao
+  extends AbstractGemDao {
 
-	public UserDao() {
-	}
+  public static final String TABLE = "login";
 
-	public List<User> findAll() {
-		String query = "SELECT * FROM login";
-		return jdbcTemplate.query(query, new RowMapper<User>() {
+  public UserDao() {
+  }
 
-			public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-				User u = new User();
-				u.setId(rs.getInt(1));
-				u.setLogin(rs.getString(2));
-				u.setPassword(rs.getString(3));
-				u.setProfile(rs.getShort(4));
-				return u;
-			}
-		});
-	}
+  public List<User> findAll() {
+    String query = "SELECT * FROM login";
+    return jdbcTemplate.query(query, new RowMapper<User>() {
 
-	public User find(String login) {
-		String query = "SELECT * FROM login WHERE login = ?";
-		return jdbcTemplate.queryForObject(query, new RowMapper<User>() {
+      public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+        return getFromRS(rs);
+      }
+    });
+  }
 
-			public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-				User u = new User();
+  private User getFromRS(ResultSet rs) throws SQLException {
+    User u = new User();
+    u.setId(rs.getInt(1));
+    u.setLogin(rs.getString(2));
+    u.setProfile(rs.getShort(3));
+    u.setPass(getUserPass(rs.getString(4), rs.getString((5))));
 
-				u.setId(rs.getInt(1));
-				u.setLogin(rs.getString(2));
-				u.setPassword(rs.getString(3));
-				u.setProfile(rs.getShort(4));
+    return u;
+  }
 
-				return u;
-			}
-		}, login);
+  /**
+   * Gets the encrypted password.
+   *
+   * @param salt base64-encoded salt
+   * @param pass base64-encoded pass
+   * @return user pass info
+   */
+  private UserPass getUserPass(String pass, String salt) {
 
-	}
+    byte[] b64pass = Base64.decodeBase64(pass);
+    byte[] b64salt = Base64.decodeBase64(salt);
 
-	public User findById(int id) {
-		String query = "SELECT * FROM login WHERE idper = ?";
-		List<User> users = jdbcTemplate.query(query, new RowMapper<User>() {
+    return new UserPass(b64pass, b64salt);
+  }
 
-			public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-				User u = new User();
+  public User find(String login) {
+    String query = "SELECT * FROM login WHERE idper = ?";
+    Logger.getLogger(getClass().getName()).info(query);
+    return jdbcTemplate.queryForObject(query, new RowMapper<User>() {
 
-				u.setId(rs.getInt(1));
-				u.setLogin(rs.getString(2));
-				u.setPassword(rs.getString(3));
-				u.setProfile(rs.getShort(4));
+      public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+        return getFromRS(rs);
+      }
+    }, login);
 
-				return u;
-			}
-		}, id);
-		return users.isEmpty() ? null : users.get(0);
-	}
+  }
 
-	public List<Map<String, Boolean>> listMenuAccess(int userId) {
-		String query = "SELECT m.label, a.autorisation FROM  menu2 m JOIN menuaccess a ON m.id = a.idmenu WHERE a.idper = ?";
-		return jdbcTemplate.query(query, new RowMapper<Map<String, Boolean>>() {
+  byte[] findAuthInfo(String login, String col) {
+    String query = "SELECT " + col + " FROM " + TABLE + " WHERE idper = ? OR login = ?";
+    String result = jdbcTemplate.queryForObject(query, String.class, new Object[]{login, login});
+    return Base64.decodeBase64(result);
+  }
 
-			public Map<String, Boolean> mapRow(ResultSet rs, int rowNum) throws SQLException {
-				Map<String, Boolean> map = new HashMap<String, Boolean>();
-				map.put(rs.getString(1), rs.getBoolean(2));
-				return map;
-			}
-		}, userId);
+  public User findById(int id) {
+    String query = "SELECT * FROM login WHERE idper = ?";
+    List<User> users = jdbcTemplate.query(query, new RowMapper<User>() {
 
-	}
+      public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+        return getFromRS(rs);
+      }
+    }, id);
+    return users.isEmpty() ? null : users.get(0);
+  }
+
+  public List<Map<String, Boolean>> listMenuAccess(int userId) {
+    String query = "SELECT m.label, a.autorisation FROM  menu2 m JOIN menuaccess a ON m.id = a.idmenu WHERE a.idper = ?";
+    return jdbcTemplate.query(query, new RowMapper<Map<String, Boolean>>() {
+
+      public Map<String, Boolean> mapRow(ResultSet rs, int rowNum) throws SQLException {
+        Map<String, Boolean> map = new HashMap<String, Boolean>();
+        map.put(rs.getString(1), rs.getBoolean(2));
+        return map;
+      }
+    }, userId);
+
+  }
 }

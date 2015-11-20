@@ -22,7 +22,7 @@
 package net.algem.config;
 
 /**
- * Alias of {@link net.algem.config.Param}.
+ * Alias of net.algem.config.Param.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 1.0.5
