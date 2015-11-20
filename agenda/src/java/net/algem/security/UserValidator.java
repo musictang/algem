@@ -47,7 +47,10 @@ public class UserValidator implements Validator {
 	public void validate(Object obj, Errors errors) {
 		User user = (User) obj;
 		if (user.getLogin() == null || user.getLogin().length() < 2) {
-			errors.rejectValue("login", "login.required", "erreur login");
+			errors.rejectValue("login", "login.required", "login.invalid");
+		}
+        if (user.getPassword() == null || user.getPassword().length() < 8) {
+			errors.rejectValue("password", "password.required", "password.invalid");
 		}
 
 	}

@@ -82,20 +82,28 @@ public class UserDao
   }
 
   public User find(String login) {
-    String query = "SELECT * FROM login WHERE idper = ?";
-    Logger.getLogger(getClass().getName()).info(query);
+    int id = getIdFromLogin(login);
+    String query = "SELECT * FROM login WHERE idper = ? OR login = ?";
     return jdbcTemplate.queryForObject(query, new RowMapper<User>() {
-
       public User mapRow(ResultSet rs, int rowNum) throws SQLException {
         return getFromRS(rs);
       }
-    }, login);
+    }, id, login);
 
   }
+    
+    private int getIdFromLogin(String login) {
+      try {
+        return Integer.parseInt(login);
+      } catch(NumberFormatException nfe) {
+        return -1;
+      }
+    }
 
   byte[] findAuthInfo(String login, String col) {
+    int id = getIdFromLogin(login);
     String query = "SELECT " + col + " FROM " + TABLE + " WHERE idper = ? OR login = ?";
-    String result = jdbcTemplate.queryForObject(query, String.class, new Object[]{login, login});
+    String result = jdbcTemplate.queryForObject(query, String.class, new Object[]{id, login});
     return Base64.decodeBase64(result);
   }
 

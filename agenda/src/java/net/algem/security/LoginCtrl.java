@@ -78,6 +78,7 @@ public class LoginCtrl {
 		try {
 			found = dao.find(user.getLogin());
 		} catch (DataAccessException e) {
+          System.err.println(e.getMessage());
 			model.addAttribute("unknown", "Unknown user");
 		}
 

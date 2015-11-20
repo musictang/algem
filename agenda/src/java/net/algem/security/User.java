@@ -20,6 +20,8 @@
  */
 package net.algem.security;
 
+//import javax.validation.constraints.Size;
+
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
@@ -29,6 +31,7 @@ package net.algem.security;
 public class User {
 
 	private int id;
+    //@Size(min = 1, max = 20, message = "{firstNameInvalid}")
 	private String login;
 	private String password;
 	private short profile;
@@ -78,7 +81,7 @@ public class User {
   /**
    * @param password the password to set
    */
-  void setPassword(String password) {
+  public void setPassword(String password) {
     this.password = password;
   }
 

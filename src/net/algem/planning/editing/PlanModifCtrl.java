@@ -589,10 +589,6 @@ public class PlanModifCtrl
   }
 
   private void dialogAddParticipant(Enum cat) throws PlanningException {
-//
-//    String where = ", " + EmployeeIO.TYPE_TABLE + " t  WHERE "
-//            + PersonIO.TABLE + ".id = t.idper AND t.idcat = " + cat.ordinal();
-//    List<Person> persons = PersonIO.find(where, DataCache.getDataConnection());
     List<Person> persons = service.getEmployees(cat);
     if (persons.size() < 1) {
       throw new PlanningException("Aucun participant disponible");

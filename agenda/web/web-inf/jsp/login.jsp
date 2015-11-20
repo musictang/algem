@@ -32,19 +32,29 @@
 <%@taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-		<title>JSP Page</title>
+  <head>
+    <meta charset="utf-8" />
+    <title id="Connexion"></title>
+    <meta name="viewport" content="width=device-width"> <!-- important -->
+    <link rel="shortcut icon" href="img/favicon.ico">
+    <link rel="stylesheet" href="css/common.css" />
+    <link rel="stylesheet" href="css/planning-algem.css" />
+    <link rel="stylesheet" href="css/smoothness/jquery-ui-1.10.0.custom.css" />
 <!--		les resources statiques (images, css) doivent être placées en dehors de WEB-INF-->
-		<link rel="stylesheet" href="css/springtest.css" />
 	</head>
 	<body>
 
-		<sf:form modelAttribute="user" action="login.html" method="post">
-			<fieldset><legend>Formulaire de login</legend>
+      <sf:form modelAttribute="user" action="login.html" method="post" cssClass="common-form">
+			<fieldset><legend>Identifiez-vous</legend>
 				<label for="login"><spring:message code="login.label" text="login" /></label>
-				<sf:input  path="login" id="login"/><br />
-				<sf:errors cssClass="error" path="login" />
+                <%-- Les messages d'erreur doivent être affichés à l'intérieur du formulaire --%>
+                
+                <sf:input path="login" id="login"/>
+                <sf:errors path="login" cssClass="error"/>
+                <label for="password"><spring:message code="password.label" text="password" /></label>
+                <sf:password path="password" id="password"/>
+                <sf:errors path="password" cssClass="error"/>
+				<%--<sf:errors cssClass="error" path="login" />--%>
 				<%--<label for="profile"><spring:message code="profile.label" /></label>
 				<sf:select path="profile" id="profile" >
 					<c:forEach items="${profiles}" var="name">
@@ -55,7 +65,9 @@
 				<spring:message code="submit.label" var="submitText"/>
 				<input type="submit" value="${submitText}" />
 				</fieldset>
+                
 			</sf:form>
+        
 		<span class="error"><spring:message text="${unknown}"  /></span>
 		<table>
 		<c:forEach var="u" items="${userlist}" >
