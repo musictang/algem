@@ -89,7 +89,7 @@
     <header class="center"><h1><span>planning</span>&nbsp;${org['nom']}</h1></header>
     <div class="page">
       <c:forEach var="estab" items="${estabList}">
-        <c:url value="today.html" var="todayUrl">
+        <c:url value="daily.html" var="todayUrl">
           <c:param name="d" value="${today}" />
           <c:param name="e" value="${estab.id}" />
         </c:url>

@@ -31,12 +31,11 @@ package net.algem.security;
 public class User {
 
 	private int id;
-    //@Size(min = 1, max = 20, message = "{firstNameInvalid}")
 	private String login;
 	private String password;
-	private short profile;
+	private Profile profile;
 	private String name;
-  private UserPass passInfo;
+    private UserPass passInfo;
 
 	@Override
 	public String toString() {
@@ -88,14 +87,14 @@ public class User {
   /**
    * @return the profile
    */
-  public short getProfile() {
+  public Profile getProfile() {
     return profile;
   }
 
   /**
    * @param profile the profile to set
    */
-  public void setProfile(short profile) {
+  public void setProfile(Profile profile) {
     this.profile = profile;
   }
 

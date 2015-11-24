@@ -7,21 +7,88 @@ and open the template in the editor.
     Created on : 20 nov. 2015, 19:42:53
     Author     : <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
 */
-
-fieldset {
-  border : thin solid gray;
+h1, h2, h3 {
+  padding: 1em;
+  font-family: Arial,sans-serif;
+  color: white;
+  background-color: dodgerblue;
+  border-radius: 10px;
 }
 
-.common-form {
-  width: 50%;
-  margin: 1em auto;
-}
-
-.common-form label , .common-form input {
+span.error {
   display: block;
-}
-
-.error{
-  display: inline-block;
   color: red;
 }
+
+fieldset legend {
+  font-weight: bold;
+}
+
+input[type=submit] {
+  margin: 1em 0;
+}
+
+.button-success,
+.button-error,
+.button-warning,
+.button-secondary {
+  color: white;
+  border-radius: 4px;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+.button-success {
+  background: rgb(28, 184, 65); /* this is a green */
+}
+
+.button-error {
+  background: rgb(202, 60, 60); /* this is a maroon */
+}
+
+.button-warning {
+  background: rgb(223, 117, 20); /* this is an orange */
+}
+
+.button-secondary {
+  background: rgb(66, 184, 221); /* this is a light blue */
+}
+
+.button-large {
+  font-size: 110%;
+}
+
+.button-xlarge {
+  font-size: 125%;
+}
+
+.bordered {
+  border : 1px solid red;
+}
+
+.centered {
+  width: 50%;
+  margin: 1em auto;
+  /*padding:  0 0 0 1em;*/
+}
+
+@media (max-width: 800px) {
+  .centered {
+  width: 100%;
+  margin: 1em 0;
+  }
+}
+
+.hpadded {
+  padding: 0 1em;
+}
+.test tr {
+  /*border-bottom: 1px solid lightgray*/
+}
+table.vertical-header th, table.vertical-header td {
+  text-align: left;
+  padding: 0.5em 0 0 1em;
+  /*background-color: #CCC;*/
+}
+
+
+

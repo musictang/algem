@@ -25,7 +25,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
+import net.algem.contact.PersonIO;
 import net.algem.util.AbstractGemDao;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.jdbc.core.RowMapper;
@@ -60,10 +60,22 @@ public class UserDao
     User u = new User();
     u.setId(rs.getInt(1));
     u.setLogin(rs.getString(2));
-    u.setProfile(rs.getShort(3));
+    u.setProfile(getProfileFromId(rs.getShort(3)));
     u.setPass(getUserPass(rs.getString(4), rs.getString((5))));
+    u.setName(rs.getString(6) + " " + rs.getString(7));
 
     return u;
+  }
+  
+  private Profile getProfileFromId(int id) {
+    switch(id) {
+      case 0: return Profile.Visitor;
+      case 1: return Profile.User;
+      case 2: return Profile.Teacher;
+      case 3: return Profile.Public;
+      case 4: return Profile.Admin;
+      default: return Profile.Visitor;
+    }
   }
 
   /**
@@ -83,7 +95,7 @@ public class UserDao
 
   public User find(String login) {
     int id = getIdFromLogin(login);
-    String query = "SELECT * FROM login WHERE idper = ? OR login = ?";
+    String query = "SELECT l.*,p.prenom,p.nom,p.pseudo FROM login l INNER JOIN " + PersonIO.TABLE + " p ON (l.idper = p.id) WHERE l.idper = ? OR l.login = ?";
     return jdbcTemplate.queryForObject(query, new RowMapper<User>() {
       public User mapRow(ResultSet rs, int rowNum) throws SQLException {
         return getFromRS(rs);

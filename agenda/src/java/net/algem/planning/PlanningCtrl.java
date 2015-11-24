@@ -61,7 +61,7 @@ public class PlanningCtrl
    * @return a string representing the view
    * @throws ParseException
    */
-  @RequestMapping(method = RequestMethod.GET, value = "/today.html")
+  @RequestMapping(method = RequestMethod.GET, value = "/daily.html")
   String loadDaySchedule(HttpServletRequest request, Model model) throws ParseException {
 
     String dateParam = request.getParameter("d");
@@ -81,7 +81,7 @@ public class PlanningCtrl
     model.addAttribute("freeplace", service.getFreePlace(date, estab));
     model.addAttribute("timeOffset", service.getTimeOffset());
 
-    return "day";
+    return "daily";
   }
 
   /**

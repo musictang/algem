@@ -1,7 +1,7 @@
 /*
- * @(#)Profile.java	1.0.0 11/02/13
+ * @(#)Profile.java	1.0.6 23/11/15
  *
- * Copyright (c) 2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem Agenda.
  * Algem Agenda is free software: you can redistribute it and/or modify it
@@ -22,15 +22,42 @@ package net.algem.security;
 
 /**
  * Profile enumeration.
+ * Web profiles are sorted by permission levels, the weakest first
+ * and begins at 10 to distinct them from the five initial Algem profiles.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 1.0.0
+ * @version 1.0.6
  * @since 1.0.0 11/02/13
  */
-public enum Profile {
+public enum Profile
+{
+  Basic(0, "profile.basic.label"),
+  User(1, "profile.user.label"),
+  Teacher(2, "profile.teacher.label"),
+  Public(3, "profile.public.label"),
+  Admin(4, "profile.admin.label"),
+  Visitor(10, "profile.visitor.label"),
+  Member(11, "profile.member.label");
 
-	Visitor,
-	Public,
-	Author,
-	Admin;
+  private final int id;
+  private final String label;
+
+  Profile(int id, String label) {
+    this.id = id;
+    this.label = label;
+  }
+
+  public int getId() {
+    return id;
+  }
+
+  public String getLabel() {
+    return label;
+  }
+
+  @Override
+  public String toString() {
+    return label;
+  }
+
 }

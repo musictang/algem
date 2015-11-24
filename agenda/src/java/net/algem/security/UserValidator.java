@@ -46,10 +46,12 @@ public class UserValidator implements Validator {
   @Override
 	public void validate(Object obj, Errors errors) {
 		User user = (User) obj;
-		if (user.getLogin() == null || user.getLogin().length() < 2) {
+        String login = user.getLogin();
+        String pass = user.getPassword();
+		if (login == null || login.length() < 2 || login.length() > 8) {
 			errors.rejectValue("login", "login.required", "login.invalid");
 		}
-        if (user.getPassword() == null || user.getPassword().length() < 8) {
+        if (pass == null || pass.length() < 6 || pass.length() > 64) {
 			errors.rejectValue("password", "password.required", "password.invalid");
 		}
 

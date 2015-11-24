@@ -63,6 +63,9 @@
     <spring:message code="room.closed.label" var="msg_room_closed"/>
     <spring:message code="workshop.label" var="msg_workshop"/>
     <spring:message code="training.label" var="msg_training"/>
+    <spring:message code="do.login.label" var="dologin" text="Login"/>
+    <spring:message code="tel.label" var="tel" text="Tel."/>
+    <spring:message code="help.label" var="help" text="Help"/>
     <header>
       <nav>
         <select id="estabSelection" name="estabId" tabindex="4">
@@ -75,8 +78,9 @@
       </nav>
     </header>
     <aside id="info-bar">
-      <img src="img/help-contents.png" id="help" alt="Aide"/>
-      <img src="img/tel.png" id="tel" alt="Tel."/>
+      <img src="img/help-contents.png" id="help" alt="${help}" title="${help}" />
+      <img src="img/tel.png" id="tel" alt="${tel}" title="${tel}"/>
+      <a href="login.html"><img src="img/go-home.png" id="home" alt="${dologin}" title="${dologin}"/></a>
     </aside>
     <aside id="help-content">
       <ul style="margin-bottom: 1em">

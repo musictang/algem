@@ -1,7 +1,7 @@
 /*
- * @(#)LoginCtrl.java	1.0.0 11/02/13
+ * @(#)LoginCtrl.java	1.0.6 24/11/15
  *
- * Copyright (c) 2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem Agenda.
  * Algem Agenda is free software: you can redistribute it and/or modify it
@@ -36,7 +36,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
  * Controller for login operations.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 1.0.0
+ * @version 1.0.6
  * @since 1.0.0 11/02/13
  */
 @Controller
@@ -58,20 +58,17 @@ public class LoginCtrl {
 		this.validator = validator;
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "/dologin.html")
+	@RequestMapping(method = RequestMethod.GET, value = "login.html")
 	public String showLogin(@ModelAttribute("user") User user, Model model) {
-//    model.addAttribute("login", "jm");
-		model.addAttribute("userlist", dao.findAll());
-		model.addAttribute("profiles", Profile.values());
 		return "login";
 	}
 
-	@RequestMapping(method = RequestMethod.POST, value = "/login.html")
+	@RequestMapping(method = RequestMethod.POST, value = "login.html")
 	public String login(@ModelAttribute("user") User user, BindingResult result, Model model) {
-		testBefore();
+		//testBefore();
 		validator.validate(user, result);
 		if (result.hasErrors()) {
-			model.addAttribute("profiles", Profile.values());
+			//model.addAttribute("profiles", Profile.values());
 			return "login";
 		}
 		User found = null;
@@ -79,16 +76,20 @@ public class LoginCtrl {
 			found = dao.find(user.getLogin());
 		} catch (DataAccessException e) {
           System.err.println(e.getMessage());
-			model.addAttribute("unknown", "Unknown user");
 		}
 
 		if (found == null) {
-			model.addAttribute("profiles", Profile.values());
+          model.addAttribute("unknown", "unknown.user.label");
 			return "login";
 		}
 		model.addAttribute("user", found);
-		List<Map<String, Boolean>> list = dao.listMenuAccess(found.getId());
-		model.addAttribute("acl", list);
+		//List<Map<String, Boolean>> list = dao.listMenuAccess(found.getId());
+		//model.addAttribute("acl", list);
+		return "welcome";
+	}
+    
+    @RequestMapping(method = RequestMethod.GET, value = "perso/home.html")
+	public String showHome(@ModelAttribute("user") User user, Model model) {
 		return "welcome";
 	}
 
@@ -100,7 +101,6 @@ public class LoginCtrl {
 		List<Map<String, Boolean>> list = dao.listMenuAccess(found.getId());
 		model.addAttribute("acl", list);
 		return "welcome";
-
 	}
 
 	public void testBefore() {

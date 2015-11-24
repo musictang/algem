@@ -21,28 +21,39 @@
  */
 --%>
 <%--     
-	@author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
-	@version 1.0.0
-	@since 1.0.0 11/02/13
+    @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
+    @version 1.0.0
+    @since 1.0.0 11/02/13
 --%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
+<%@ page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-		<title>JSP Page</title>
-		<link rel="stylesheet" href="css/springtest.css" />
-	</head>
-	<body>
-		<h1>Hello ${user}</h1>
-		<table>	
-			<c:forEach items="${acl}" var="map">
-				<c:forEach items="${map}" var="entry">
-					<tr><td>${entry.key}</td><td>${entry.value}</td></tr>
-				</c:forEach>
-			</c:forEach>
-		</table>
-	</body>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title><spring:message code="homepage.label" text="perso" /></title>
+    <meta name="viewport" content="width=device-width"> <!-- important -->
+    <link rel="shortcut icon" href="../img/favicon.ico">
+    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
+    <link rel="stylesheet" href="css/common.css" />
+  </head>
+  <body>
+    <div class="centered">
+      <h1>Mes Informations</h1>
+      <table class="vertical-header">
+        <tr><th><spring:message code="name.label" /></th><td>${user.name}</td></tr>
+        <tr><th><spring:message code="login.label" /></th><td>${user.login}</td></tr>
+        <tr><th><spring:message code="profile.label" /></th><td><spring:message code="${user.profile.label}" text="${user.profile.label}" /></td></tr>
+      </table>
+    </div>
+    <table>	
+      <c:forEach items="${acl}" var="map">
+        <c:forEach items="${map}" var="entry">
+          <tr><td>${entry.key}</td><td>${entry.value}</td></tr>
+        </c:forEach>
+      </c:forEach>
+    </table>
+  </body>
 </html>
