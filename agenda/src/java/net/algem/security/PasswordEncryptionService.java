@@ -27,6 +27,9 @@ import java.security.spec.KeySpec;
 import java.util.Arrays;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 
 /**
  * Utility class for password encryption.
@@ -54,7 +57,7 @@ class PasswordEncryptionService
   }
 
 
-  private byte[] getEncryptedPassword(String password, byte[] salt) throws UserException
+  public byte[] getEncryptedPassword(String password, byte[] salt) throws UserException
            {
     try {
       // PBKDF2 with SHA-1 as the hashing algorithm. Note that the NIST
@@ -95,6 +98,7 @@ class PasswordEncryptionService
     } catch (NoSuchAlgorithmException ex) {
       throw new UserException(ex.getMessage());
     }
+
   }
 
   @Override

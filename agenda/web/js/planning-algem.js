@@ -22,7 +22,7 @@ var picker = $("#datepicker");
   $('#estabSelection').val(estabId);
   document.title = 'Planning ' + $('#estabSelection option:selected').text();
   picker.change(function() {
-    window.location = 'today.html?d=' + this.value + '&e=' + estabId;
+    window.location = 'daily.html?d=' + this.value + '&e=' + estabId;
   });
   // Next Day Link
   $('a#next').click(function() {
@@ -40,7 +40,7 @@ var picker = $("#datepicker");
   });
   $('#estabSelection').change(function() {
     var eId = $('#estabSelection option:selected').val();
-    window.location = 'today.html?d=' + $("#datepicker").val() + '&e=' + eId;
+    window.location = 'daily.html?d=' + $("#datepicker").val() + '&e=' + eId;
   });
   $('#help').click(function() {
     $(this).css('cursor', 'pointer');

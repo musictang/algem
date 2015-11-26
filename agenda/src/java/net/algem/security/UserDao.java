@@ -66,14 +66,15 @@ public class UserDao
 
     return u;
   }
-  
+
   private Profile getProfileFromId(int id) {
     switch(id) {
-      case 0: return Profile.Visitor;
+
       case 1: return Profile.User;
       case 2: return Profile.Teacher;
       case 3: return Profile.Public;
       case 4: return Profile.Admin;
+      case 10: return Profile.Visitor;
       default: return Profile.Visitor;
     }
   }
@@ -95,7 +96,8 @@ public class UserDao
 
   public User find(String login) {
     int id = getIdFromLogin(login);
-    String query = "SELECT l.*,p.prenom,p.nom,p.pseudo FROM login l INNER JOIN " + PersonIO.TABLE + " p ON (l.idper = p.id) WHERE l.idper = ? OR l.login = ?";
+    String query = "SELECT l.*,p.prenom,p.nom,p.pseudo FROM login l INNER JOIN " + PersonIO.TABLE
+      + " p ON (l.idper = p.id) WHERE l.idper = ? OR l.login = ?";
     return jdbcTemplate.queryForObject(query, new RowMapper<User>() {
       public User mapRow(ResultSet rs, int rowNum) throws SQLException {
         return getFromRS(rs);
@@ -103,7 +105,7 @@ public class UserDao
     }, id, login);
 
   }
-    
+
     private int getIdFromLogin(String login) {
       try {
         return Integer.parseInt(login);

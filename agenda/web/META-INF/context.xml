@@ -5,6 +5,6 @@ driverClassName="org.postgresql.Driver"
 maxActive="20" maxIdle="30" maxWait="10000"
 name="jdbc/algem" password="Pigfy!"
 type="javax.sql.DataSource"
-url="jdbc:postgresql://localhost:5442/mustang"
+url="jdbc:postgresql://localhost:5432/mustang"
 username="nobody"/>
 </Context>
