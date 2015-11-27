@@ -15,10 +15,11 @@ import org.springframework.security.core.GrantedAuthority;
  * @version 2.6.a
  * @since 2.6.a 25/11/2015
  */
- class CustomUser extends org.springframework.security.core.userdetails.User
+ public class CustomUser extends org.springframework.security.core.userdetails.User
   {
 
     private String salt;
+    private String fullName;
 
     public CustomUser(String username, String password, boolean enabled, boolean accountNonExpired, boolean credentialsNonExpired, boolean accountNonLocked, GrantedAuthority[] authorities) {
       super(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
@@ -35,5 +36,13 @@ import org.springframework.security.core.GrantedAuthority;
     public void setSalt(String salt) {
       this.salt = salt;
     }
+
+  public String getFullName() {
+    return fullName;
+  }
+
+  public void setFullName(String fullName) {
+    this.fullName = fullName;
+  }
 
   }

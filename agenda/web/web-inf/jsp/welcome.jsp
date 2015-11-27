@@ -28,6 +28,7 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -35,17 +36,18 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title><spring:message code="homepage.label" text="perso" /></title>
     <meta name="viewport" content="width=device-width"> <!-- important -->
-    <link rel="shortcut icon" href="../img/favicon.ico">
+    <spring:url value="/resources/themes/default/img" var="img_dir" />
+    <spring:url value="/resources/themes/default/css" var="css_dir" />
+    <link rel="stylesheet" href="${css_dir}/common.css" />
     <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
-    <link rel="stylesheet" href="css/common.css" />
   </head>
   <body>
     <div class="centered">
       <h1>Mes Informations</h1>
       <table class="vertical-header">
-        <tr><th><spring:message code="name.label" /></th><td>${user.name}</td></tr>
-        <tr><th><spring:message code="login.label" /></th><td>${user.login}</td></tr>
-        <tr><th><spring:message code="profile.label" /></th><td><spring:message code="${user.profile.label}" text="${user.profile.label}" /></td></tr>
+        <tr><th><spring:message code="name.label" /></th><td><sec:authentication property="principal.username"/></td></tr>
+        <tr><th><spring:message code="login.label" /></th><td><sec:authentication property="principal.username"/></td></tr>
+        <tr><th><spring:message code="profile.label" /></th><td><sec:authentication property="principal.username"/></td></tr>
       </table>
     </div>
     <table>	

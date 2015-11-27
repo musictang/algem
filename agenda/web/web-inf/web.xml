@@ -26,9 +26,7 @@
 
 
   <session-config>
-    <session-timeout>
-      30
-    </session-timeout>
+    <session-timeout>1</session-timeout>
   </session-config>
   <welcome-file-list>
     <welcome-file>redirect.jsp</welcome-file>
@@ -47,5 +45,22 @@
     <filter-name>springSecurityFilterChain</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
+  
+   <!-- JSPs -->
+    <servlet>
+        <servlet-name>403Jsp</servlet-name>
+        <jsp-file>/403.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>403Jsp</servlet-name>
+        <url-pattern>/403</url-pattern>
+    </servlet-mapping>
+ 
+ 
+    <!-- The error page -->
+    <error-page>
+        <error-code>403</error-code>
+        <location>/403</location>
+    </error-page>
 
 </web-app>

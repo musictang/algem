@@ -59,37 +59,37 @@ public class LoginCtrl {
 	}
 
 	@RequestMapping(method = RequestMethod.GET, value = "login.html")
-	public String showLogin(@ModelAttribute("user") User user, Model model) {
+	public String showLogin() {
 		return "login";
 	}
-
-	@RequestMapping(method = RequestMethod.POST, value = "login.html")
-	public String login(@ModelAttribute("user") User user, BindingResult result, Model model) {
-		//testBefore();
-		validator.validate(user, result);
-		if (result.hasErrors()) {
-			//model.addAttribute("profiles", Profile.values());
-			return "login";
-		}
-		User found = null;
-		try {
-			found = dao.find(user.getLogin());
-		} catch (DataAccessException e) {
-          System.err.println(e.getMessage());
-		}
-
-		if (found == null) {
-          model.addAttribute("unknown", "unknown.user.label");
-			return "login";
-		}
-		model.addAttribute("user", found);
-		//List<Map<String, Boolean>> list = dao.listMenuAccess(found.getId());
-		//model.addAttribute("acl", list);
-		return "welcome";
-	}
+//
+//	@RequestMapping(method = RequestMethod.POST, value = "login.html")
+//	public String login(@ModelAttribute("user") User user, BindingResult result, Model model) {
+//		//testBefore();
+//		validator.validate(user, result);
+//		if (result.hasErrors()) {
+//			//model.addAttribute("profiles", Profile.values());
+//			return "login";
+//		}
+//		User found = null;
+//		try {
+//			found = dao.find(user.getLogin());
+//		} catch (DataAccessException e) {
+//          System.err.println(e.getMessage());
+//		}
+//
+//		if (found == null) {
+//          model.addAttribute("unknown", "unknown.user.label");
+//			return "login";
+//		}
+//		model.addAttribute("user", found);
+//		//List<Map<String, Boolean>> list = dao.listMenuAccess(found.getId());
+//		//model.addAttribute("acl", list);
+//		return "welcome";
+//	}
     
     @RequestMapping(method = RequestMethod.GET, value = "perso/home.html")
-	public String showHome(@ModelAttribute("user") User user, Model model) {
+	public String showHome() {
 		return "welcome";
 	}
 

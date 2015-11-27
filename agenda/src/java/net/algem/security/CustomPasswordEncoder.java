@@ -36,7 +36,8 @@ public class CustomPasswordEncoder
 
   @Override
   public boolean isPasswordValid(String encodedPass, String rawPass, Object salt) throws DataAccessException {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    String rawEncoded = encodePassword(rawPass, salt);
+    return rawEncoded.equals(encodedPass);
   }
-
+  
 }

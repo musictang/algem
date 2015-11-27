@@ -36,31 +36,32 @@
     <meta charset="utf-8" />
     <title id="Connexion"></title>
     <meta name="viewport" content="width=device-width"> <!-- important -->
-    <link rel="shortcut icon" href="img/favicon.ico">
+    <spring:url value="/resources/themes/default/img" var="img_dir" />
+    <spring:url value="/resources/themes/default/css" var="css_dir" />
+    <link rel="stylesheet" href="${css_dir}/common.css" />
     <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
-    <link rel="stylesheet" href="css/common.css" />
-    <!--    <link rel="stylesheet" href="css/planning-algem.css" />-->
-    <link rel="stylesheet" href="css/smoothness/jquery-ui-1.10.0.custom.css" />
-    <!--		les resources statiques (images, css) doivent être placées en dehors de WEB-INF-->
+    <%-- <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/themes/default/css/common.css" />--%>
   </head>
   <body>
     <div class="centered">
-      <sf:form modelAttribute="user" action="login.html" method="post" cssClass="hpadded pure-form pure-form-stacked">
+      <c:if test="${not empty SPRING_SECURITY_LAST_EXCEPTION}">
+        <p class="error"><c:out value="${SPRING_SECURITY_LAST_EXCEPTION.message}"/>.</p>
+    </c:if>
+      <form  action="j_spring_security_check" method="post" class="hpadded pure-form pure-form-stacked">
         <fieldset><legend>Saisissez vos identifiants</legend>
-          <label for="login"><spring:message code="login.label" text="login" /></label>
+          <label for="login"><spring:message code="form.username.label" text="Login" /></label>
           <%-- Les messages d'erreur doivent être affichés à l'intérieur du formulaire --%>
-          <sf:input path="login" id="login" required="required" />
-          <sf:errors path="login" cssClass="error"/>
-          <label for="password"><spring:message code="password.label" text="password" /></label>
-          <sf:password path="password" id="password" required="required" />
-          <sf:errors path="password" cssClass="error"/>
-          <spring:message code="submit.label" var="submitText"/>
+          <input id="login" required="required" name='j_username'/>
+          <label for="password"><spring:message code="form.password.label" text="Password" /></label>
+          <input type="password" id="password" required="required" name='j_password'/>
+          <spring:message code="login.submit.label" var="submitText"/>
           <input type="submit" value="${submitText}" class="button-xlarge pure-button pure-button-primary"/>
         </fieldset>
-      </sf:form>
-      <span class="error"><spring:message code="${unknown}" text="${unknown}" /></span>
+      </form>
+      <%-- <span class="error"><spring:message code="${unknown}" text="${unknown}" /></span> --%>
     </div>
 
+    
     <%--<table>
       <c:forEach var="u" items="${userlist}" >
         <tr>

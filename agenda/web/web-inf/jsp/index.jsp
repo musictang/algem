@@ -36,8 +36,13 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>planning ${org['nom']}</title>
     <meta name="viewport" content="width=device-width"> <!-- important -->
-    <link rel="shortcut icon" href="img/favicon.ico">
-    <link rel="stylesheet" href="css/planning-algem.css" />
+    <!-- Les resources statiques (images, css) doivent être placées en dehors de WEB-INF -->
+    <spring:url value="/resources/themes/default/img" var="img_dir" />
+    <spring:url value="/resources/themes/default/css" var="css_dir" />
+    <link rel="stylesheet" href="${css_dir}/common.css" />
+    <link rel="stylesheet" href="${css_dir}/planning.css" />
+    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
+    <link rel="shortcut icon" href="${img_dir}/favicon.ico" />
     <style>
       /*body {background-position: left 690px;}*/
       h1 {
@@ -95,7 +100,7 @@
         </c:url>
         <div class="estab">
           <a href="${todayUrl}">
-            <img src="img/Algem0_trans.png" alt="agenda"/>
+            <img src="${img_dir}/Algem0_trans.png" alt="agenda"/>
           </a><br />
           <a href="${todayUrl}">${estab.name}</a>
         </div>

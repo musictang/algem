@@ -6,8 +6,10 @@
 
 package net.algem.security;
 
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 
@@ -23,6 +25,7 @@ public class CustomAuthenticationProvider
 
   @Override
   public Authentication authenticate(Authentication a) throws AuthenticationException {
+//    DaoAuthenticationProvider
     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
 

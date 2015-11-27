@@ -37,13 +37,17 @@
     <meta charset="utf-8" />
     <title id="pageTitle"></title>
     <meta name="viewport" content="width=device-width"> <!-- important -->
-    <link rel="shortcut icon" href="img/favicon.ico">
-    <link rel="stylesheet" href="css/planning-algem.css" />
-    <link rel="stylesheet" href="css/smoothness/jquery-ui-1.10.0.custom.css" />
-    <script type="text/javascript" src="js/jquery-1.9.0.min.js"></script>
-    <script type="text/javascript" src="js/planning-algem.js"></script>
-    <script type="text/javascript" src="js/jquery-ui-1.10.0.custom.min.js"></script>
-    <script type="text/javascript" src="js/jquery-ui.datepicker-fr.js"></script>
+    <spring:url value="/resources/themes/default/img" var="img_dir" />
+    <spring:url value="/resources/themes/default/css" var="css_dir" />
+    <spring:url value="/resources/themes/default/js" var="js_dir" />
+    <link rel="stylesheet" href="${css_dir}/planning.css" />
+    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
+    <link rel="shortcut icon" href="${img_dir}/favicon.ico" />
+    <link rel="stylesheet" href="${css_dir}/smoothness/jquery-ui-1.10.0.custom.css" />
+    <script type="text/javascript" src="${js_dir}/jquery-1.9.0.min.js"></script>
+    <script type="text/javascript" src="${js_dir}/planning.js"></script>
+    <script type="text/javascript" src="${js_dir}/jquery-ui-1.10.0.custom.min.js"></script>
+    <script type="text/javascript" src="${js_dir}/jquery-ui.datepicker-fr.js"></script>
     <script type="text/javascript">
       var estabId = ${estab};
       var currentDate = '${now}';
@@ -78,9 +82,9 @@
       </nav>
     </header>
     <aside id="info-bar">
-      <img src="img/help-contents.png" id="help" alt="${help}" title="${help}" />
-      <img src="img/tel.png" id="tel" alt="${tel}" title="${tel}"/>
-      <a href="login.html"><img src="img/go-home.png" id="home" alt="${dologin}" title="${dologin}"/></a>
+      <img src="${img_dir}/help-contents.png" id="help" alt="${help}" title="${help}" />
+      <img src="${img_dir}/tel.png" id="tel" alt="${tel}" title="${tel}"/>
+      <a href="perso/home.html"><img src="${img_dir}/go-home.png" id="home" alt="${dologin}" title="${dologin}"/></a>
     </aside>
     <aside id="help-content">
       <ul style="margin-bottom: 1em">
@@ -94,7 +98,7 @@
         <li><span class="colorSquare" title="${msg_member_rehearsal}" style="background-color:#3399FF"></span>&nbsp;${msg_member_rehearsal}</li>
         <li><span class="colorSquare" title="${msg_room_closed}" style="background-color:#ccc"></span>&nbsp;${msg_room_closed}</li>
       </ul>
-      <img id="help-close" class="bt-close" alt="Fermer" src="img/close.png"/>
+      <img id="help-close" class="bt-close" alt="Fermer" src="${img_dir}/close.png"/>
     </aside>
     <aside id="tel-content">
       <ul>
@@ -111,7 +115,7 @@
           </li>
         </c:forEach>
       </ul>
-      <img id="tel-close" class="bt-close" alt="Fermer" src="img/close.png"/>
+      <img id="tel-close" class="bt-close" alt="Fermer" src="${img_dir}/close.png"/>
     </aside>
     <div id="colorInfo">
       <div id="contact">

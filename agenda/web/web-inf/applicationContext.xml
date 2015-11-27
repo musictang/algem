@@ -32,48 +32,41 @@
   <bean id="validator" class="net.algem.security.UserValidator" />
 
   <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
-    <property name="basename" value="/WEB-INF/resources/messages" />
-    <!--<property name="basenames">
+    <!--<property name="basename" value="/WEB-INF/resources/messages" />-->
+    <property name="basenames">
         <list>
             <value>/WEB-INF/resources/messages</value>
-            <value>exceptions</value>
+            <value>/WEB-INF/resources/security</value>
         </list>
-    </property>-->
+    </property>
   </bean>
 
   <!--The <http> element is responsible for creating a FilterChainProxy and the filter beans which it uses.-->
-  <security:http auto-config="true">
-    <security:intercept-url access="ROLE_ADMIN" pattern="/**"/>
+  <security:http auto-config="true" use-expressions="true">
+    <security:intercept-url pattern="/index.htm*" filters="none"/>
+    <security:intercept-url pattern="/login.htm*" filters="none"/>
+    <security:intercept-url  pattern="/resources/**" filters="none"/>
+<!--    <security:intercept-url  pattern="/resources/themes//js/**" filters="none"/>
+    <security:intercept-url  pattern="/img/**" filters="none"/>
+    <security:intercept-url  pattern="/fonts/**" filters="none"/>-->
+    <security:intercept-url pattern="/perso/**" access="hasRole('4')" />
+    <security:form-login login-page="/login.html"  default-target-url="/perso/home.html" always-use-default-target="true" />
   </security:http>
+ 
 
   <bean id="myUserDetailsService" class="net.algem.security.CustomJdbcUserService">
     <property name="dataSource" ref="dataSource"/>
   </bean>
 
   <bean id="customPasswordEncoder" class="net.algem.security.CustomPasswordEncoder" />
-
-  <!--  <jdbc-user-service id="userService"
-  data-source-ref="dataSource"
-  users-by-username-query=
-  "SELECT p.nom, l.pass,l.profil FROM login l, INNER JOIN person p ON (l.idper = p.id) WHERE l.idper = ?"
-  authorities-by-username-query=
-  "SELECT p.nom,l.profil FROM login l, INNER JOIN person p ON (l.idper = p.id) WHERE l.idper = ?" />-->
+  
   <security:authentication-manager>
-    <security:authentication-provider user-service-ref="myUserDetailsService" >
+    <security:authentication-provider user-service-ref="myUserDetailsService">
       <security:password-encoder ref="customPasswordEncoder">
         <security:salt-source user-property="salt"/>
       </security:password-encoder>
     </security:authentication-provider>
   </security:authentication-manager>
-
-  <!--  <security:authentication-manager>
-    <security:authentication-provider>
-      <security:user-service>
-        <security:user name="jimi" password="jimi" authorities="ROLE_ADMIN" />
-        <security:user name="bob" password="bob" authorities="ROLE_USER" />
-      </security:user-service>
-    </security:authentication-provider>
-  </security:authentication-manager>-->
 
   <util:map id="horaires" key-type="java.lang.String" >
     <entry key="Etablissement 1">

@@ -15,13 +15,16 @@ h1, h2, h3 {
   border-radius: 10px;
 }
 
-span.error {
-  display: block;
+.error {
   color: red;
 }
 
+span.error {
+  display: block;
+}
+
 fieldset legend {
-  font-weight: bold;
+  font-weight: bold;color: red;
 }
 
 input[type=submit] {
@@ -68,6 +71,7 @@ input[type=submit] {
 .centered {
   width: 50%;
   margin: 1em auto;
+  padding: 0 1em;
   /*padding:  0 0 0 1em;*/
 }
 
@@ -78,9 +82,9 @@ input[type=submit] {
   }
 }
 
-.hpadded {
+/*.hpadded {
   padding: 0 1em;
-}
+}*/
 .test tr {
   /*border-bottom: 1px solid lightgray*/
 }
