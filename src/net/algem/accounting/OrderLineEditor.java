@@ -72,6 +72,8 @@ public class OrderLineEditor
   private GemButton btQuotation;
   private ActionListener actionListener;
   private List<OrderLine> invoiceSelection;
+  private OrderLineView dlg;
+  private int selectedIndex;
   private static final String NO_PAYMENT_SELECTED = MessageUtil.getMessage("no.payment.selected");
   private static final String PAYMENT_UPDATE_EXCEPTION = MessageUtil.getMessage("update.exception.info");
   private static final String PAYMENT_CREATE_EXCEPTION = MessageUtil.getMessage("payment.add.exception");
@@ -182,6 +184,9 @@ public class OrderLineEditor
       createInvoice();
     } else if (src == btQuotation) {
       createQuotation();
+    } else if ("validate".equals(evt.getActionCommand())) {
+      modify();
+      
     }
   }
 
@@ -236,7 +241,7 @@ public class OrderLineEditor
 
   public void dialogModification() {
 
-    OrderLineView dlg = null;
+//    OrderLineView dlg = null;
     int n = tableView.getSelectedRow();
     if (n < 0) {
       JOptionPane.showMessageDialog(this,
@@ -245,7 +250,7 @@ public class OrderLineEditor
               JOptionPane.ERROR_MESSAGE);
       return;
     }
-
+//    selectedIndex = tableView.getTable().convertRowIndexToModel(n);
     OrderLine e = tableView.getElementAt(n);
     if (e.isTransfered()) {
       if (!MessagePopup.confirm(this,
@@ -256,20 +261,39 @@ public class OrderLineEditor
     }
     try {
       dlg = new OrderLineView(desktop.getFrame(), MessageUtil.getMessage("payment.update.label"), dataCache);
+      dlg.addActionListener(this);
+              
       dlg.setOrderLine(e);
       dlg.setInvoiceEditable(false);
       dlg.setVisible(true);
-      if (dlg.isValidation()) {
-        e = dlg.getOrderLine();
-        OrderLineIO.update(e, dc);
-        tableView.setElementAt(e, n);
-      }
+
+//      if (dlg.isValidation()) {
+//        e = dlg.getOrderLine();
+//        OrderLineIO.update(e, dc);
+//        tableView.setElementAt(e, n);
+//      }
     } catch (Exception ex) {
       GemLogger.logException(PAYMENT_UPDATE_EXCEPTION, ex, this);
     }
-    if (dlg != null) {
-      dlg.dispose();
+//    if (dlg != null) {
+//      dlg.dispose();
+//    }
+  }
+  
+  private void modify() {
+    // todo save selected row index
+    if (dlg.isValidation()) {
+      try {
+        OrderLine e = dlg.getOrderLine();
+        OrderLineIO.update(e, dc);
+        int n = tableView.getRowIndexByModel(e);
+        tableView.setElementAt(e, n);//XXX
+        dlg.dispose();
+      } catch (Exception ex) {
+        GemLogger.logException(PAYMENT_UPDATE_EXCEPTION, ex, this);
+      }
     }
+    
   }
 
   public void dialogCreation() {

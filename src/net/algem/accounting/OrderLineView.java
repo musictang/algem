@@ -69,6 +69,7 @@ public class OrderLineView
   private boolean validation;
   private OrderLine orderLine;
   private NumberFormat nf;
+  private ActionListener listener;
 
   /**
    *
@@ -77,7 +78,7 @@ public class OrderLineView
    * @param dataCache
    */
   public OrderLineView(Frame frame, String title, DataCache dataCache) throws SQLException {
-    super(frame, title, true);
+    super(frame, title, false);
 
     nf = AccountUtil.getDefaultNumberFormat();
 
@@ -94,7 +95,7 @@ public class OrderLineView
     group.setMinimumSize(new Dimension(60,group.getPreferredSize().height));
     date = new DateFrField();
     label = new GemField(24);
-    label.setMinimumSize(new Dimension(200, label.getPreferredSize().height));
+//    label.setMinimumSize(new Dimension(200, label.getPreferredSize().height));
     amount = new JFormattedTextField(nf);
     amount.setColumns(8);
     amount.setMinimumSize(new Dimension(60, amount.getPreferredSize().height));
@@ -104,11 +105,11 @@ public class OrderLineView
             ModeOfPaymentCtrl.TABLE,
             ModeOfPaymentCtrl.COLUMN_NAME, dc)
             );
-    document = new GemField(10);
-    document.setMinimumSize(new Dimension(80, document.getPreferredSize().height));
+    document = new GemField(8);
+    document.setMinimumSize(new Dimension(amount.getPreferredSize().width, document.getPreferredSize().height));
     schoolChoice = new ParamChoice(dataCache.getList(Model.School).getData());
     account = new AccountChoice(AccountIO.find(true, dc));
-    account.setPreferredSize(new Dimension(200, account.getPreferredSize().height));
+//    account.setPreferredSize(new Dimension(200, account.getPreferredSize().height));
     costAccount = new ParamChoice(
             ActivableParamTableIO.findActive(
             CostAccountCtrl.tableName, CostAccountCtrl.columnName,
@@ -315,8 +316,11 @@ public class OrderLineView
         return;
       }
       validation = true;
+      if (listener != null) {
+        listener.actionPerformed(new ActionEvent(this,ActionEvent.ACTION_PERFORMED, "validate"));
+      }
     }
-    setVisible(false);
+//    setVisible(false);
   }
 
   /**
@@ -355,5 +359,9 @@ public class OrderLineView
     amount.commitEdit();
     Number n = (Number) amount.getValue();
     return n.doubleValue();
+  }
+  
+  void addActionListener(ActionListener listener) {
+    this.listener = listener;
   }
 }

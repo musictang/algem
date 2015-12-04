@@ -38,6 +38,7 @@ import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.menu.MenuPopupListener;
 import net.algem.util.model.Model;
+import net.algem.util.ui.TableView;
 
 /**
  * Order line table view.
@@ -223,7 +224,6 @@ implements TableModelListener {
   
   public void setElementAt(OrderLine e, int n) {
     tableModel.setElementAt(e, table.convertRowIndexToModel(n));
-    //tableVue.repaint();
   }
   
   public int getSelectedRow() {
@@ -236,6 +236,16 @@ implements TableModelListener {
   
   public int[] getSelectedRows() {
     return table.getSelectedRows();
+  }
+  
+  <T> int getRowIndexByModel(T model) {
+    for (int i = 0; i < table.getRowCount(); i++) {
+      if (getElementAt(i).equals(model)) {
+        // what if value is not unique?
+        return i;
+      }
+    }
+    return -1;
   }
   
   public void setMemberShipFilter(final String a) {
