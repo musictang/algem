@@ -17,7 +17,7 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with Algem. If not, see <http://www.gnu.org/licenses/>.
 *
-*/
+ */
 package net.algem.accounting;
 
 import java.awt.BorderLayout;
@@ -54,8 +54,9 @@ import net.algem.util.ui.MessagePopup;
  * @since 1.0a 07/07/1999
  */
 public class OrderLineDlg
-  extends GemPanel
-  implements ActionListener, TableModelListener {
+        extends GemPanel
+        implements ActionListener, TableModelListener
+{
   
   private Frame parent;
   private final DataConnection dc;
@@ -80,7 +81,8 @@ public class OrderLineDlg
   private JMenuItem miCashing;
   private JCheckBoxMenuItem cbCheckPayment;
   private JMenu menutop;
-  
+  private OrderLineView dlg;
+
   /**
    *
    * @param desktop GemDesktop instance
@@ -97,7 +99,7 @@ public class OrderLineDlg
     JMenuBar menubar = new JMenuBar();
     menutop = new JMenu("Options");
     menubar.add(menutop);
-
+    
     menutop.add(cbCheckPayment = new JCheckBoxMenuItem(BundleUtil.getLabel("Payment.multiple.modification.auth")));
     if (!dataCache.authorize("Payment.multiple.modification.auth")) {
       cbCheckPayment.setEnabled(false);
@@ -107,7 +109,7 @@ public class OrderLineDlg
     popup.add(miCancelTransfer = new JMenuItem(BundleUtil.getLabel("Transfer.cancel.label")));
     popup.add(miTransfer = new JMenuItem(BundleUtil.getLabel("Transfer.set.label")));
     miTransfer.setEnabled(false);
-    popup.add(miCashing = new JMenuItem (BundleUtil.getLabel("Cashing.multiple.action.label")));
+    popup.add(miCashing = new JMenuItem(BundleUtil.getLabel("Cashing.multiple.action.label")));
     miCashing.setEnabled(false);
     miCancelTransfer.addActionListener(this);
     miTransfer.addActionListener(this);
@@ -179,6 +181,35 @@ public class OrderLineDlg
   public void actionPerformed(ActionEvent evt) {
     Object src = evt.getSource();
     
+    if ("orderline.view.cancel".equals(evt.getActionCommand())) {
+      closeEditorView();
+    } else if (src == cbCheckPayment) {
+      setMultipleCashingOption();
+    } else if ("orderline.view.validate".equals(evt.getActionCommand())) {
+      assert (dlg != null);
+      if (dlg.isValidation()) {
+        try {
+          assert (dlg != null);
+          OrderLine e = dlg.getOrderLine();
+          if (e.getId() == 0) {
+            create(e);
+          } else {
+            update(e);
+          }
+        } catch (ParseException ex) {
+          GemLogger.log(ex.getMessage());
+        } finally {
+          closeEditorView();
+        }
+      }
+    }
+    
+    // next actions will be disabled if dlg is opened
+    if (dlg != null) {
+      MessagePopup.warning(this, MessageUtil.getMessage("orderline.editing.warning"));
+      return;
+    }
+
     if (src == btPrint) {
       try {
         // printing of all orderlines, regardless of selection
@@ -186,8 +217,6 @@ public class OrderLineDlg
       } catch (PrinterException ex) {
         System.err.format("Cannot print %s%n", ex.getMessage());
       }
-    } else if (src == cbCheckPayment) {
-      removeMultipleCashingOption();
     } else if (src == btCreate) {
       dialogCreation();
     } else if (src == btModify) {
@@ -198,13 +227,13 @@ public class OrderLineDlg
       cancelTransfer();
     } else if (src == miTransfer && dataCache.authorize("Accounting.transfer.auth")) {
       setTransfer();
-    } else if (src == miCashing && dataCache.authorize("Payment.multiple.modification.auth")){
+    } else if (src == miCashing && dataCache.authorize("Payment.multiple.modification.auth")) {
       multipleCashing(); // encaissement multiple
     } else if (src == btLoad) {
       load();
     } else if (src == btCurrentMonth) {
       loadCurrentMonth();
-    }
+    } 
   }
   
   public void load() {
@@ -248,7 +277,7 @@ public class OrderLineDlg
       GemLogger.logException(MessageUtil.getMessage("delete.error"), ex, this);
     }
   }
-  
+
   /**
    * Mark the selected rows as not transfered. Attribute transfer in database is
    * also updated.
@@ -271,7 +300,7 @@ public class OrderLineDlg
       GemLogger.logException(e);
     }
   }
-  
+
   /**
    * Sets tranferred selected order line.
    * In most cases, the status "transferred" should not be editable.
@@ -281,16 +310,16 @@ public class OrderLineDlg
     int row = tableView.getSelectedRow();
     OrderLine ol = tableView.getElementAt(row);
     try {
-    if (!ol.isTransfered()) {
-      ol.setTransfered(true);
-      OrderLineIO.transfer(ol, dc);
-      tableView.setElementAt(ol, row);
-    }
+      if (!ol.isTransfered()) {
+        ol.setTransfered(true);
+        OrderLineIO.transfer(ol, dc);
+        tableView.setElementAt(ol, row);
+      }
     } catch (SQLException e) {
       GemLogger.log(e.getMessage());
     }
   }
-  
+
   /**
    * Update selected rows to "paid".
    */
@@ -313,9 +342,11 @@ public class OrderLineDlg
     }
   }
   
-  
-  
   public void dialogModification() {
+    if (dlg != null) {
+      MessagePopup.warning(this, MessageUtil.getMessage("orderline.editing.warning"));
+      return;
+    }
     int[] rows = tableView.getSelectedRows();
     if (rows.length > 1) {
       modify(rows);
@@ -330,25 +361,30 @@ public class OrderLineDlg
       }
       OrderLine e = tableView.getElementAt(n);
       try {
-        OrderLineView dlg = new OrderLineView(parent, BundleUtil.getLabel("Order.line.modification"), dataCache);
+        dlg = new OrderLineView(parent, BundleUtil.getLabel("Order.line.modification"), dataCache, false);
+        dlg.addActionListener(this);
         dlg.setOrderLine(e);
         dlg.setIdEditable(true);
         dlg.setVisible(true);
-        if (dlg.isValidation()) {
-          
-          e = dlg.getOrderLine();
-          OrderLineIO.update(e, dc);
-          tableView.setElementAt(e, n);
-          
-        }
-        dlg.dispose();
-      } catch (Exception ex) {
-        GemLogger.logException("modification échéance", ex, this);
+      } catch (SQLException ex) {
+        GemLogger.logException(BundleUtil.getLabel("Order.line.modification"), ex, this);
+        closeEditorView();
       }
-      
     }
   }
   
+  private void update(OrderLine e) {
+    try {
+      OrderLineIO.update(e, dc);
+      int n = tableView.getRowIndexByModel(e);
+      if (n >= 0) {
+        tableView.setElementAt(e, n);
+      }
+    } catch (SQLException ex) {
+      GemLogger.logException("modification échéance", ex, this);
+    }
+  }
+
   /**
    * One shot modification of several order lines. Modification is active only
    * for date and document number.
@@ -359,7 +395,7 @@ public class OrderLineDlg
   private void modify(int[] rows) {
     OrderLine e = tableView.getElementAt(rows[0]);
     try {
-      OrderLineView dlg = new OrderLineView(parent, BundleUtil.getLabel("Order.line.modification"), dataCache);
+      OrderLineView dlg = new OrderLineView(parent, BundleUtil.getLabel("Order.line.modification"), dataCache, true);
       dlg.setOrderLine(e);
       dlg.setEditable(false);
       dlg.setVisible(true);
@@ -385,13 +421,13 @@ public class OrderLineDlg
       dc.setAutoCommit(true);
     }
   }
-  
+
   /**
    * Activation / Desactivation of the option "Payment.multiple.modification.auth".
    * Sets the option "Payment.multiple.modification.auth" on menu.
    */
-  public void removeMultipleCashingOption() {
-    if (cbCheckPayment.getState()){
+  public void setMultipleCashingOption() {
+    if (cbCheckPayment.getState()) {
       miCashing.addActionListener(this);
       miCashing.setEnabled(true);
     } else {
@@ -406,34 +442,62 @@ public class OrderLineDlg
     if (n >= 0) {
       e = new OrderLine(tableView.getElementAt(n));
     }
-    OrderLineView dlg = null;
+//    OrderLineView dlg = null;
     try {
-      dlg = new OrderLineView(parent, MessageUtil.getMessage("payment.add.label"), dataCache);
+      if (dlg != null) {
+        MessagePopup.warning(this, MessageUtil.getMessage("orderline.editing.warning"));
+        return;
+      }
+      dlg = new OrderLineView(parent, MessageUtil.getMessage("payment.add.label"), dataCache, false);
+      dlg.addActionListener(this);
       if (e != null) {
         dlg.setOrderLine(e);
       }
       dlg.setIdEditable(true);
       dlg.setVisible(true);
-      if (dlg.isValidation()) {
-        e = dlg.getOrderLine();
-        OrderLine c = AccountUtil.createEntry(e, dc);
-        tableModel.addElement(e);
-        if (c != null) {
-          tableModel.addElement(c);
-        }
-      }
-      
-    } catch (ParseException px) {
-      System.err.println(px.getMessage());
-    } catch (SQLException ex) {
-      GemLogger.logException(MessageUtil.getMessage("payment.add.exception"), ex, this);
-    } finally {
-      if (dlg != null) {
-        dlg.dispose();
-      }
+    } catch (SQLException sqe) {
+      GemLogger.logException(sqe);
+      closeEditorView();
     }
+
+    //*************************
+//      if (dlg.isValidation()) {
+//        e = dlg.getOrderLine();
+//        OrderLine c = AccountUtil.createEntry(e, dc);
+//        tableModel.addElement(e);
+//        if (c != null) {
+//          tableModel.addElement(c);
+//        }
+//      }
+//      
+//    } catch (ParseException px) {
+//      System.err.println(px.getMessage());
+//    } catch (SQLException ex) {
+//      GemLogger.logException(MessageUtil.getMessage("payment.add.exception"), ex, this);
+//    } finally {
+//      if (dlg != null) {
+//        dlg.dispose();
+//      }
+//    }
   }
   
+  private void create(OrderLine e) {
+    try {
+      dc.setAutoCommit(false);
+      OrderLine c = AccountUtil.createEntry(e, dc);
+      dc.commit();
+      tableModel.addElement(e);
+      if (c != null) {
+        tableModel.addElement(c);
+      }
+    } catch (SQLException ex) {
+      dc.rollback();
+      GemLogger.logException(MessageUtil.getMessage("payment.add.exception"), ex, this);
+    } finally {
+      dc.setAutoCommit(true);
+    }
+  }
+
   /**
    * Loading of the orderlines of current month.
    */
@@ -446,6 +510,13 @@ public class OrderLineDlg
     b.decDay(1);
     dateEnd.set(b);
     load();
+  }
+  
+  private void closeEditorView() {
+    if (dlg != null) {
+      dlg.dispose();
+      dlg = null;
+    }
   }
   
 }

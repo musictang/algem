@@ -169,7 +169,7 @@ public class GroupOrderLineEditor
     }
     OrderLine e = tableView.getElementAt(rows[0]);
     try {
-      OrderLineView dlg = new OrderLineView(desktop.getFrame(), BundleUtil.getLabel("Order.line.modification"), dataCache);
+      OrderLineView dlg = new OrderLineView(desktop.getFrame(), BundleUtil.getLabel("Order.line.modification"), dataCache, true);
       dlg.setOrderLine(e);
       dlg.setGroupEditable(true);
       dlg.setVisible(true);

@@ -627,24 +627,31 @@ public class PersonFileEditor
     if (!dlg.isValidation()) {
       return;
     }
-
+    String error = null;
     try {
+      
       if (u == null) {
         u = dlg.getUser();
         service.create(u);
         dataCache.add(u);
         desktop.postEvent(new GemEvent(this, GemEvent.CREATION, GemEvent.USER, u));
+        MessagePopup.information(view, MessageUtil.getMessage("user.creation.success"));
       } else {
         User nu = dlg.getUser();
         if (service.update(nu, u)) {
           dataCache.update(nu);
           desktop.postEvent(new GemEvent(this, GemEvent.MODIFICATION, GemEvent.USER, nu));
+          MessagePopup.information(view, MessageUtil.getMessage("modification.success.label"));
         }
       }
     } catch (SQLException e) {
-      GemLogger.logException("enregistrement user", e, personFileView);
+      error = MessageUtil.getMessage("user.creation.failure");
+      GemLogger.logException(error, e, personFileView);
+      MessagePopup.warning(view, error);
     } catch (UserException ue) {
-      GemLogger.logException(ue);
+      error = MessageUtil.getMessage("user.pass.creation.failure");
+      GemLogger.logException(error, ue);
+      MessagePopup.warning(view, error);
     }
   }
 

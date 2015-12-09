@@ -1,5 +1,0 @@
-FRONTEND
-Les améliorations principales portent sur la présentation du planning.
-La page a été revue afin de mieux s'adapter à l'affichage sur smartphone. Les barres d'aide et de contact recouvraient maladroitement jusqu'alors les champs d'accès aux jours de la semaine. 
-Ces deux barres ont été remplacées par une barre d'icones (survolables et cliquables). Le clic sur l'icone de contact fait apparaître un panneau d'infos comportant les numéros de téléphone éventuels en lien direct.
-Les couleurs et les polices ont été revues afin d'améliorer la visibilité.

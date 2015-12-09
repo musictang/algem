@@ -70,6 +70,8 @@ public class OrderLineView
   private OrderLine orderLine;
   private NumberFormat nf;
   private ActionListener listener;
+  
+  
 
   /**
    *
@@ -77,8 +79,8 @@ public class OrderLineView
    * @param title
    * @param dataCache
    */
-  public OrderLineView(Frame frame, String title, DataCache dataCache) throws SQLException {
-    super(frame, title, false);
+  public OrderLineView(Frame frame, String title, DataCache dataCache, boolean modal) throws SQLException {
+    super(frame, title, modal);
 
     nf = AccountUtil.getDefaultNumberFormat();
 
@@ -88,11 +90,11 @@ public class OrderLineView
     gb.insets = GridBagHelper.SMALL_INSETS;
 
     payer = new GemNumericField(8);
-    payer.setMinimumSize(new Dimension(60,payer.getPreferredSize().height));
+    payer.setMinimumSize(new Dimension(60, payer.getPreferredSize().height));
     member = new GemNumericField(8);
-    member.setMinimumSize(new Dimension(60,member.getPreferredSize().height));
+    member.setMinimumSize(new Dimension(60, member.getPreferredSize().height));
     group = new GemNumericField(8);
-    group.setMinimumSize(new Dimension(60,group.getPreferredSize().height));
+    group.setMinimumSize(new Dimension(60, group.getPreferredSize().height));
     date = new DateFrField();
     label = new GemField(24);
 //    label.setMinimumSize(new Dimension(200, label.getPreferredSize().height));
@@ -102,9 +104,9 @@ public class OrderLineView
     DataConnection dc = DataCache.getDataConnection();
     modeOfPayment = new JComboBox(
             ParamTableIO.getValues(
-            ModeOfPaymentCtrl.TABLE,
-            ModeOfPaymentCtrl.COLUMN_NAME, dc)
-            );
+                    ModeOfPaymentCtrl.TABLE,
+                    ModeOfPaymentCtrl.COLUMN_NAME, dc)
+    );
     document = new GemField(8);
     document.setMinimumSize(new Dimension(amount.getPreferredSize().width, document.getPreferredSize().height));
     schoolChoice = new ParamChoice(dataCache.getList(Model.School).getData());
@@ -112,9 +114,9 @@ public class OrderLineView
 //    account.setPreferredSize(new Dimension(200, account.getPreferredSize().height));
     costAccount = new ParamChoice(
             ActivableParamTableIO.findActive(
-            CostAccountCtrl.tableName, CostAccountCtrl.columnName,
-            CostAccountCtrl.columnFilter, dc)
-            );
+                    CostAccountCtrl.tableName, CostAccountCtrl.columnName,
+                    CostAccountCtrl.columnFilter, dc)
+    );
     costAccount.setPreferredSize(account.getPreferredSize());
     cbPaid = new JCheckBox();
     invoice = new GemField(10);
@@ -152,13 +154,13 @@ public class OrderLineView
     cancelBt = new GemButton(GemCommand.ABORT);
     cancelBt.addActionListener(this);
 
-    JPanel buttons = new JPanel(new GridLayout(1,1));
+    JPanel buttons = new JPanel(new GridLayout(1, 1));
     buttons.add(okBt);
     buttons.add(cancelBt);
 
     setLayout(new BorderLayout());
-    add(editPanel,BorderLayout.CENTER);
-    add(buttons,BorderLayout.SOUTH);
+    add(editPanel, BorderLayout.CENTER);
+    add(buttons, BorderLayout.SOUTH);
     setSize(new Dimension(500, 460));
 
     setLocationRelativeTo(frame);
@@ -173,16 +175,17 @@ public class OrderLineView
     member.setEditable(b);
     group.setEditable(b);
   }
-  
+
   /**
    * Desactivates all but group field.
+   *
    * @param e editable
    */
   void setGroupEditable(boolean e) {
     setEditable(!e);
     date.setEditable(!e);
     document.setEditable(!e);
-    
+
     group.setEditable(e);
   }
 
@@ -192,6 +195,7 @@ public class OrderLineView
 
   /**
    * Global desactivation of fields.
+   *
    * @param single simple or multiple selection
    */
   public void setEditable(boolean single) {
@@ -300,31 +304,40 @@ public class OrderLineView
       try {
         testValidation();
       } catch (NumberFormatException ex) {
-        JOptionPane.showMessageDialog(this, ex.getMessage()
-                + " quantité saisie non numérique",
-                                      MessageUtil.getMessage("entry.error"),
-                                      JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this, 
+                ex.getMessage() + " quantité saisie non numérique",
+                MessageUtil.getMessage("entry.error"),
+                JOptionPane.ERROR_MESSAGE);
+        validation = false;
         return;
       } catch (ParseException ex) {
         JOptionPane.showMessageDialog(this,
-                                      "prix saisi non numérique",
-                                      MessageUtil.getMessage("entry.error"),
-                                      JOptionPane.ERROR_MESSAGE);
+                "prix saisi non numérique",
+                MessageUtil.getMessage("entry.error"),
+                JOptionPane.ERROR_MESSAGE);
+        validation = false;
         return;
       } catch (IllegalArgumentException ex) {
         MessagePopup.error(this, MessageUtil.getMessage("entry.error") + " :\n" + ex.getMessage());
+        validation = false;
         return;
       }
-      validation = true;
       if (listener != null) {
-        listener.actionPerformed(new ActionEvent(this,ActionEvent.ACTION_PERFORMED, "validate"));
+        validation = true;
+        listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "orderline.view.validate"));
       }
+    } else {
+      validation = false;
+      if (listener != null) {
+        listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "orderline.view.cancel"));
+      }
+//      setVisible(false);// the dialog may be reopened later
     }
-//    setVisible(false);
   }
 
   /**
    * Gets account choice.
+   *
    * @return an account
    */
   Account getAccount() {
@@ -338,6 +351,7 @@ public class OrderLineView
 
   /**
    * Selects an account for modification.
+   *
    * @param a an account
    */
   private void setAccount(Account a) {
@@ -350,6 +364,7 @@ public class OrderLineView
 
   /**
    * Retrieves the amount.
+   *
    * @return a double
    * @throws parseException in case of error format
    */
@@ -360,7 +375,7 @@ public class OrderLineView
     Number n = (Number) amount.getValue();
     return n.doubleValue();
   }
-  
+
   void addActionListener(ActionListener listener) {
     this.listener = listener;
   }

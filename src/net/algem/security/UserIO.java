@@ -51,12 +51,11 @@ public class UserIO
   public static int PROFIL_PUBLIC = 3; // PUBLIC
   public static int PROFIL_ADMIN = 4; // ADMIN
   public static String[] PROFIL_NAMES = {
-    BundleUtil.getLabel("Profile.basic.label"), 
+    BundleUtil.getLabel("Profile.basic.label"),
     BundleUtil.getLabel("Profile.user.label"),
     BundleUtil.getLabel("Profile.teacher.label"),
     BundleUtil.getLabel("Profile.public.label"),
-    BundleUtil.getLabel("Profile.administrator.label"),
-  };
+    BundleUtil.getLabel("Profile.administrator.label"),};
   static final String TABLE = "login";
   static final String MENU_TABLE = "menu2";
   static final String PROFIL_TABLE = "menuprofil";
@@ -88,19 +87,19 @@ public class UserIO
     UserPass pass = u.getPassInfo();
     String b64pass = null;
     String b64salt = null;
-    PreparedStatement statement = dc.prepareStatement(query);
-    statement.setString(1, u.getLogin());
-    statement.setInt(2, u.getProfile());
-
-    if (pass != null) {
-      b64pass = Base64.encodeBase64String(pass.getPass());
-      b64salt = Base64.encodeBase64String(pass.getKey());
+    try (PreparedStatement ps = dc.prepareStatement(query)) {
+      ps.setString(1, u.getLogin());
+      ps.setInt(2, u.getProfile());
+      
+      if (pass != null) {
+        b64pass = Base64.encodeBase64String(pass.getPass());
+        b64salt = Base64.encodeBase64String(pass.getKey());
+      }
+      
+      ps.setString(3, pass == null ? null : b64pass);
+      ps.setString(4, pass == null ? null : b64salt);
+      ps.executeUpdate();
     }
-
-    statement.setString(3, pass == null ? null : b64pass);
-    statement.setString(4, pass == null ? null : b64salt);
-    statement.executeUpdate();
-    statement.close();
 
   }
 
@@ -108,7 +107,7 @@ public class UserIO
     try {
       dc.withTransaction(new DataConnection.SQLRunnable<Void>()
       {
-        
+
         @Override
         public Void run(DataConnection conn) throws Exception {
           String query = "DELETE FROM " + TABLE + " WHERE idper = " + userId;
@@ -121,37 +120,76 @@ public class UserIO
     } catch (Exception ex) {
       throw new UserException(ex.getMessage());
     }
-    
+
   }
 
   public void initRights(User u) {
     String query = "SELECT relname FROM pg_class WHERE relkind = 'r' AND relname !~ '^pg' AND relname !~ '^sql_' AND relname !~ '^Inv'";
+    String batchQuery = "INSERT INTO droits VALUES(?,?,?,?,?,?)";
     try {
-      ResultSet rs = dc.executeQuery(query);
-      while (rs.next()) {
-        String table = rs.getString(1);
-        String query2 = "INSERT INTO droits VALUES(" + u.getId() + ",'" + table + "','t','f','f','f')";
-        dc.executeUpdate(query2);
+      
+      try (PreparedStatement ps = dc.prepareStatement(batchQuery)) {
+        dc.setAutoCommit(false);// important for batch insert
+        ResultSet rs = dc.executeQuery(query);
+        while (rs.next()) {
+          String table = rs.getString(1);
+          ps.setInt(1, u.getId());
+          ps.setString(2, table);
+          ps.setBoolean(3, true);
+          ps.setBoolean(4, false);
+          ps.setBoolean(5, false);
+          ps.setBoolean(6, false);
+          ps.addBatch();
+//        String query2 = "INSERT INTO droits VALUES(" + u.getId() + ",'" + table + "','t','f','f','f')";
+//        dc.executeUpdate(query2);
+        }
+        rs.close();
+        ps.executeBatch();
       }
-      rs.close();
+     
     } catch (SQLException e) {
       GemLogger.logException(query, e);
+    } finally {
+      dc.setAutoCommit(true);
     }
+
   }
 
   public void initMenus(User u) {
+//    String query = "SELECT id, auth FROM " + MENU_TABLE + ", " + PROFIL_TABLE + " WHERE id = idmenu AND profil = " + u.getProfile();
+//    try {
+//      ResultSet rs = dc.executeQuery(query);
+//      while (rs.next()) {
+//        int id = rs.getInt(1);
+//        boolean b = rs.getBoolean(2);
+//        String query2 = "INSERT INTO " + MENU_ACCESS + " VALUES(" + u.getId() + "," + id + "," + (b ? "'t'" : "'f'") + ")";
+//        dc.executeUpdate(query2);
+//      }
+//      rs.close();
+//    } catch (SQLException e) {
+//      GemLogger.logException(query, e);
+//    }
     String query = "SELECT id, auth FROM " + MENU_TABLE + ", " + PROFIL_TABLE + " WHERE id = idmenu AND profil = " + u.getProfile();
+    String batchQuery = "INSERT INTO " + MENU_ACCESS + " VALUES(?,?,?)";//idper,idmenu,auth
+    dc.setAutoCommit(false);// important for batch insert
+    PreparedStatement ps = dc.prepareStatement(batchQuery);
     try {
       ResultSet rs = dc.executeQuery(query);
       while (rs.next()) {
         int id = rs.getInt(1);
         boolean b = rs.getBoolean(2);
-        String query2 = "INSERT INTO " + MENU_ACCESS + " VALUES(" + u.getId() + "," + id + "," + (b ? "'t'" : "'f'") + ")";
-        dc.executeUpdate(query2);
+        ps.setInt(1, u.getId());
+        ps.setInt(2, id);
+        ps.setBoolean(3, b);
+        ps.addBatch();
       }
       rs.close();
+      ps.executeBatch();
+      ps.close();
     } catch (SQLException e) {
       GemLogger.logException(query, e);
+    } finally {
+      dc.setAutoCommit(true);
     }
   }
 
@@ -181,7 +219,7 @@ public class UserIO
     }
     query += " ORDER BY p.nom, p.prenom";
     ResultSet rs = dc.executeQuery(query);
-    
+
     while (rs.next()) {
       User u = new User();
       u.setId(rs.getInt(1));

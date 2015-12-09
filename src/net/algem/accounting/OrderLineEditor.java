@@ -25,6 +25,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -184,9 +185,30 @@ public class OrderLineEditor
       createInvoice();
     } else if (src == btQuotation) {
       createQuotation();
-    } else if ("validate".equals(evt.getActionCommand())) {
-      modify();
-      
+    } else if ("orderline.view.validate".equals(evt.getActionCommand())) {
+      if (dlg.isValidation()) {
+        try {
+          OrderLine e = dlg.getOrderLine();
+          if (e.getId() == 0) {
+            create(e);
+          } else {
+            update(e);
+          }
+        } catch (ParseException ex) {
+          GemLogger.log(ex.getMessage());
+        } finally {
+          closeEditorView();
+        }
+      }
+    } else if ("orderline.view.cancel".equals(evt.getActionCommand())) {
+      closeEditorView();
+    }          
+  }
+  
+  private void closeEditorView() {
+    if (dlg != null) {
+      dlg.dispose();
+      dlg = null;
     }
   }
 
@@ -195,6 +217,10 @@ public class OrderLineEditor
   }
 
   public void dialogSuppression() {
+    if (dlg != null) {
+      MessagePopup.warning(this, MessageUtil.getMessage("orderline.suppression.warning"));
+      return;
+    }
     int n = tableView.getSelectedRow();
     if (n < 0) {
       JOptionPane.showMessageDialog(this,
@@ -240,7 +266,10 @@ public class OrderLineEditor
   }
 
   public void dialogModification() {
-
+    if (dlg != null) {
+      MessagePopup.warning(this, MessageUtil.getMessage("orderline.editing.warning"));
+      return;
+    }
 //    OrderLineView dlg = null;
     int n = tableView.getSelectedRow();
     if (n < 0) {
@@ -250,7 +279,6 @@ public class OrderLineEditor
               JOptionPane.ERROR_MESSAGE);
       return;
     }
-//    selectedIndex = tableView.getTable().convertRowIndexToModel(n);
     OrderLine e = tableView.getElementAt(n);
     if (e.isTransfered()) {
       if (!MessagePopup.confirm(this,
@@ -260,44 +288,36 @@ public class OrderLineEditor
       }
     }
     try {
-      dlg = new OrderLineView(desktop.getFrame(), MessageUtil.getMessage("payment.update.label"), dataCache);
+      dlg = new OrderLineView(desktop.getFrame(), MessageUtil.getMessage("payment.update.label"), dataCache, false);
       dlg.addActionListener(this);
               
       dlg.setOrderLine(e);
       dlg.setInvoiceEditable(false);
       dlg.setVisible(true);
-
-//      if (dlg.isValidation()) {
-//        e = dlg.getOrderLine();
-//        OrderLineIO.update(e, dc);
-//        tableView.setElementAt(e, n);
-//      }
     } catch (Exception ex) {
       GemLogger.logException(PAYMENT_UPDATE_EXCEPTION, ex, this);
     }
-//    if (dlg != null) {
-//      dlg.dispose();
-//    }
   }
   
-  private void modify() {
-    // todo save selected row index
-    if (dlg.isValidation()) {
-      try {
-        OrderLine e = dlg.getOrderLine();
+  private void update(OrderLine e) {
+    try{
         OrderLineIO.update(e, dc);
         int n = tableView.getRowIndexByModel(e);
-        tableView.setElementAt(e, n);//XXX
-        dlg.dispose();
-      } catch (Exception ex) {
+        if (n >=0) {
+          tableView.setElementAt(e, n);
+        }
+      } catch (SQLException ex) {
         GemLogger.logException(PAYMENT_UPDATE_EXCEPTION, ex, this);
       }
     }
-    
-  }
+
 
   public void dialogCreation() {
-    OrderLineView dlg = null;
+//    OrderLineView dlg = null;
+    if (dlg != null) {
+      MessagePopup.warning(this, MessageUtil.getMessage("orderline.editing.warning"));
+      return;
+    }
     OrderLine e = null;
     int n = tableView.getSelectedRow();
     if (n >= 0) {
@@ -306,7 +326,9 @@ public class OrderLineEditor
       e.setInvoice(null);
     }
     try {
-      dlg = new OrderLineView(desktop.getFrame(), MessageUtil.getMessage("payment.add.label"), dataCache);
+     
+      dlg = new OrderLineView(desktop.getFrame(), MessageUtil.getMessage("payment.add.label"), dataCache, false);
+      dlg.addActionListener(this);
       if (e != null) {
         dlg.setOrderLine(e);
       } else {
@@ -318,29 +340,29 @@ public class OrderLineEditor
         }
       }
       dlg.setVisible(true);
-      if (dlg.isValidation()) {
-        dc.setAutoCommit(false);
-        e = dlg.getOrderLine();
-        //les échéances de facturation ont un montant négatif par défaut
-        if (ModeOfPayment.FAC.toString().equals(e.getModeOfPayment())) {
+    } catch(SQLException sqe) {
+      closeEditorView();
+    }
+  }
+  
+  private void create(OrderLine e) {
+     if (ModeOfPayment.FAC.toString().equals(e.getModeOfPayment())) {
           e.setAmount(-Math.abs(e.getAmount()));
         }
+     try {
+       dc.setAutoCommit(false);
         OrderLine c = AccountUtil.createEntry(e, dc);
         dc.commit();
         tableModel.addElement(e);
         if (c != null) {
           tableModel.addElement(c);
         }
-      }
-    } catch (Exception ex) {
+    } catch (SQLException ex) {
       dc.rollback();
       GemLogger.logException(PAYMENT_CREATE_EXCEPTION, ex, this);
     } finally {
       dc.setAutoCommit(true);
-      if (dlg != null) {
-        dlg.dispose();
-      }
-    }
+     }
   }
 
   @Override
