@@ -1,6 +1,6 @@
 /*
- * @(#)PersonView.java	2.9.4.12 28/09/15
- * 
+ * @(#)PersonView.java	2.9.4.14 09/12/15
+ *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,15 +16,18 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.contact;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileFilter;
@@ -39,9 +42,12 @@ import net.algem.contact.member.PersonSubscriptionCard;
 import net.algem.group.Group;
 import net.algem.group.GroupFileEditor;
 import net.algem.util.BundleUtil;
+import net.algem.util.DataCache;
+import net.algem.util.FileUtil;
 import net.algem.util.GemLogger;
 import net.algem.util.ImageUtil;
 import net.algem.util.MessageUtil;
+import net.algem.util.model.DataException;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.*;
 
@@ -50,11 +56,10 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.12
+ * @version 2.9.4.14
  */
 public class PersonView
-        extends GemPanel
-{
+  extends GemPanel {
 
   private GemNumericField no;
   private GemField name;
@@ -72,7 +77,7 @@ public class PersonView
   private GridBagHelper gb;
   private short ptype = Person.PERSON;
   private FileFilter photoFilter;
-  
+  private PhotoHandler photoHandler;
 
   public PersonView() {
     init();
@@ -83,10 +88,10 @@ public class PersonView
     no.setEditable(false);
     no.setBackground(Color.lightGray);
     no.setMinimumSize(new Dimension(60, no.getPreferredSize().height));
-    
+
     organization = new GemField(true, 20);
     organization.setMinimumSize(new Dimension(200, organization.getPreferredSize().height));
-    
+
     name = new GemField(true, 20);
     name.setMaxChars(32);
     name.setMinimumSize(organization.getMinimumSize());
@@ -97,7 +102,7 @@ public class PersonView
     nickname.setMaxChars(64);
     nickname.setMinimumSize(organization.getMinimumSize());
     civil = new CivilChoice();
-    
+
     cbImgRights = new JCheckBox(BundleUtil.getLabel("Person.img.rights.label"));
     cbImgRights.setToolTipText(BundleUtil.getLabel("Person.img.rights.tip"));
     cbImgRights.setBorder(null);
@@ -115,6 +120,12 @@ public class PersonView
     GemBorderPanel photoPanel = new GemBorderPanel(BorderFactory.createEmptyBorder(0, 10, 0, 10));
     photoField = new JLabel();
     photoPanel.add(photoField);
+    photoPanel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+    photoPanel.addMouseListener(new MouseAdapter() {
+      public void mouseClicked(MouseEvent m) {
+        savePhoto(Integer.parseInt(no.getText()));
+      }
+    });
 
     gb.insets = GridBagHelper.SMALL_INSETS;
     gb.add(photoPanel, 0, 0, 1, 6, GridBagHelper.NORTHWEST);
@@ -148,18 +159,42 @@ public class PersonView
     cbImgRights.setSelected(p.hasImgRights());
     cbPartner.setSelected(p.isPartnerInfo());
     organization.setText(p.getOrganization());
+    loadPhoto(p);
+  }
+
+  private void loadPhoto(Person p) {
     if (p.getType() == Person.PERSON || p.getType() == Person.ROOM) {
-      photoFilter = new PhotoFileFilter(p.getId());
-      BufferedImage orig = getPhoto(dir,p.getId());
-      ImageIcon icon = (orig == null ? null : getImageIcon(orig));
+      photoHandler = new SimplePhotoHandler(DataCache.getDataConnection());
+      BufferedImage img = photoHandler.load(p.getId());
+      if (img == null) {
+        img = getPhotoDefault();
+      }
+      ImageIcon icon = (img == null ? null : new ImageIcon(img));
       photoField.setIcon(icon);
     }
-    ptype = p.getType();
-    
   }
-  
+
+  private void savePhoto(int idper) {
+    try {
+      File file = FileUtil.getFile(this, BundleUtil.getLabel("FileChooser.selection"),
+        "",
+        "Fichiers image",
+        "jpg", "jpeg", "JPG", "JPEG", "png");
+      if (file != null) {
+        BufferedImage img = photoHandler.save(idper, file);
+        if (img != null) {
+          photoField.setIcon(new ImageIcon(img));
+        }
+      }
+    } catch (DataException ex) {
+      GemLogger.logException(ex);
+    }
+
+  }
+
   /**
    * Gets an image icon with photo id of the current contact.
+   *
    * @param orig original photo image
    * @return an image icon or null if no image has been processed
    */
@@ -175,7 +210,7 @@ public class PersonView
         buffered = ImageUtil.rescale(buffered);
         buffered = ImageUtil.formatPhoto(buffered);
 //
-//        String dest = url.getFile();
+//        String dest = url.getFilePath();
 //        File oldFile = new File(dest);
 //        int index = dest.lastIndexOf(".");
 //        dest = dest.substring(0, index);
@@ -191,9 +226,10 @@ public class PersonView
     return icon;
 
   }
-  
+
   /**
    * Gets the photo of the person {@code idper} from {@code configDir}.
+   *
    * @param configDir photo dir
    * @param idper person's id
    * @return a buffered image if a resource has been found or null otherwhise
@@ -203,7 +239,7 @@ public class PersonView
     File dir = new File(configDir);
     File[] files = null;
     if (dir.isDirectory() && dir.canRead()) {
-     files = dir.listFiles(photoFilter);
+      files = dir.listFiles(photoFilter);
     }
     try {
       if (files != null && files.length > 0) {
@@ -217,14 +253,23 @@ public class PersonView
           return ImageIO.read(input);
         }
       }
-    } catch(IOException ie) {
+    } catch (IOException ie) {
       GemLogger.logException(ie);
-    } catch(IllegalArgumentException ia) {
+    } catch (IllegalArgumentException ia) {
       GemLogger.logException(ia);
     }
     return null;
   }
 
+  private BufferedImage getPhotoDefault() {
+    try {
+      InputStream input = getClass().getResourceAsStream(ImageUtil.DEFAULT_PHOTO_ID);
+      return ImageIO.read(input);
+    } catch (IOException ex) {
+      GemLogger.logException(ex);
+      return null;
+    }
+  }
 
   void showSubscriptionRest(PersonSubscriptionCard card) {
     if (card != null) {
@@ -248,7 +293,7 @@ public class PersonView
     pr.setImgRights(cbImgRights.isSelected());
     pr.setPartnerInfo(cbPartner.isSelected());
     pr.setOrganization(organization.getText().isEmpty() ? null : organization.getText().trim());
-    
+
     return pr;
   }
 
@@ -294,8 +339,7 @@ public class PersonView
     GemPanel groupsPanel = new GemPanel();
     for (final Group g : gl) {
       JButton jb = new JButton(g.getName());
-      jb.addActionListener(new ActionListener()
-      {
+      jb.addActionListener(new ActionListener() {
 
         public void actionPerformed(ActionEvent e) {
           GroupFileEditor groupEditor = new GroupFileEditor(g);
@@ -323,8 +367,8 @@ public class PersonView
 //  }
 
   class PhotoFileFilter
-          implements FileFilter
-  {
+    implements FileFilter {
+
     private Pattern pattern;
 
     PhotoFileFilter(int idper) {

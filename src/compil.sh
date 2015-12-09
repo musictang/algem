@@ -1,6 +1,6 @@
 #!/bin/sh
 # exemple compil 2.9.x
-J_HOME=/opt/jdk1.7.0_51/bin
+J_HOME=/opt/jdk1.7.0_80/bin
 CLASSES_PATH=/home/user/algem
 CP=.:$CLASSES_PATH/lib/*
 

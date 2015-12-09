@@ -1,6 +1,6 @@
 /*
- * @(#)DefaultUserService.java	2.9.4.9 08/07/15
- * 
+ * @(#)DefaultUserService.java	2.9.4.14 09/12/15
+ *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.security;
 
@@ -40,7 +40,7 @@ import org.apache.commons.codec.binary.Base64;
  * User operations service.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.9
+ * @version 2.9.4.14
  * @since 2.6.a 06/08/2012
  */
 public class DefaultUserService
@@ -70,6 +70,9 @@ public class DefaultUserService
   public boolean authenticate(String login, String pass) {
     byte[] salt = findAuthInfo(login, "clef");// find salt in BD
     byte[] encryptedPassword = findAuthInfo(login, "pass");
+    if (salt == null || encryptedPassword == null) {
+      return false;
+    }
     try {
       return encryptionService.authenticate(pass, encryptedPassword, salt);
     } catch (NoSuchAlgorithmException ex) {

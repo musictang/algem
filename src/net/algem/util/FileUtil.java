@@ -1,5 +1,5 @@
 /*
- * @(#)FileUtil.java	2.9.4.8 18/06/15
+ * @(#)FileUtil.java	2.9.4.14 09/12/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -59,7 +59,7 @@ import net.algem.util.ui.MessagePopup;
  * Utility class for file operations.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.8
+ * @version 2.9.4.14
  * @since 2.0q
  */
 public class FileUtil
@@ -71,7 +71,7 @@ public class FileUtil
   public final static String INVOICE_FOOTER_FILE = "/resources/doc/fact-pdp.txt";
 
   public final static String DEFAULT_CSS_DIR = "/resources/css";
-  
+
   public final static String DEFAULT_HELP_DIR = "/resources/doc/html";
 
 //  public final static String DOC_DIR = "/resources/doc/";
@@ -106,10 +106,10 @@ public class FileUtil
    * @param parent parent
    * @param command text of command
    * @param options array of options (path, extension name, extension, ...)
-   * 
+   *
    * @return file path
    */
-  public static String getFile(Component parent, String command, String... options) {
+  public static String getFilePath(Component parent, String command, String... options) {
     JFileChooser chooser = getChooser(JFileChooser.FILES_ONLY, options[0]);
     if (options[1] != null && options[2] != null) {
       chooser.setFileFilter(new FileNameExtensionFilter(options[1], options[2]));
@@ -117,7 +117,16 @@ public class FileUtil
     File file = getFile(chooser, parent, command);
     return file == null ? null : file.getPath();
   }
-  
+
+  public static File getFile(Component parent, String command, String path, String description, String... extensions) {
+    JFileChooser chooser = getChooser(JFileChooser.FILES_ONLY, path);
+    chooser.setDialogType(JFileChooser.OPEN_DIALOG);
+    if (extensions != null && extensions.length > 0) {
+      chooser.setFileFilter(new FileNameExtensionFilter(description, extensions));
+    }
+    return getFile(chooser, parent, command);
+  }
+
   private static File getFile(JFileChooser fc, Component parent, String command) {
     File file = null;
     int ret = fc.showDialog(parent, command);
@@ -286,7 +295,7 @@ public class FileUtil
   }
 
   /**
-   * 
+   *
    * @param f file to print
    * @param flavor ex. DocFlavor.INPUT_STREAM.TEXT_HTML_UTF_8, DocFlavor.INPUT_STREAM.TEXT_HTML_UTF_8
    * @throws PrintException if any exception is catched
@@ -354,7 +363,7 @@ public class FileUtil
     }
     return null;
   }
-  
+
   /**
    * Prints Look & Feel default colors.
    */

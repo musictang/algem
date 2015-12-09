@@ -1,6 +1,6 @@
 /*
- * @(#)UserIO.java 2.9.4.9 06/07/15
- * 
+ * @(#)UserIO.java 2.9.4.14 09/12/15
+ *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.security;
 
@@ -37,13 +37,12 @@ import org.apache.commons.codec.binary.Base64;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.9.4.9
+ * @version 2.9.4.14
  * @since 1.0a 07/07/1999
  */
 public class UserIO
-        extends TableIO
-        implements Cacheable
-{
+  extends TableIO
+  implements Cacheable {
 
   public static int PROFIL_BASIC = 0; // BMS
   public static int PROFIL_USER = 1; // MUSTANG
@@ -90,12 +89,12 @@ public class UserIO
     try (PreparedStatement ps = dc.prepareStatement(query)) {
       ps.setString(1, u.getLogin());
       ps.setInt(2, u.getProfile());
-      
+
       if (pass != null) {
         b64pass = Base64.encodeBase64String(pass.getPass());
         b64salt = Base64.encodeBase64String(pass.getKey());
       }
-      
+
       ps.setString(3, pass == null ? null : b64pass);
       ps.setString(4, pass == null ? null : b64salt);
       ps.executeUpdate();
@@ -105,8 +104,7 @@ public class UserIO
 
   public void delete(final int userId) throws UserException {
     try {
-      dc.withTransaction(new DataConnection.SQLRunnable<Void>()
-      {
+      dc.withTransaction(new DataConnection.SQLRunnable<Void>() {
 
         @Override
         public Void run(DataConnection conn) throws Exception {
@@ -123,30 +121,29 @@ public class UserIO
 
   }
 
+  /**
+   * Rights initialization.
+   *
+   * @param u user
+   */
   public void initRights(User u) {
     String query = "SELECT relname FROM pg_class WHERE relkind = 'r' AND relname !~ '^pg' AND relname !~ '^sql_' AND relname !~ '^Inv'";
     String batchQuery = "INSERT INTO droits VALUES(?,?,?,?,?,?)";
-    try {
-      
-      try (PreparedStatement ps = dc.prepareStatement(batchQuery)) {
-        dc.setAutoCommit(false);// important for batch insert
-        ResultSet rs = dc.executeQuery(query);
-        while (rs.next()) {
-          String table = rs.getString(1);
-          ps.setInt(1, u.getId());
-          ps.setString(2, table);
-          ps.setBoolean(3, true);
-          ps.setBoolean(4, false);
-          ps.setBoolean(5, false);
-          ps.setBoolean(6, false);
-          ps.addBatch();
-//        String query2 = "INSERT INTO droits VALUES(" + u.getId() + ",'" + table + "','t','f','f','f')";
-//        dc.executeUpdate(query2);
-        }
-        rs.close();
-        ps.executeBatch();
+
+    dc.setAutoCommit(false);
+    try (PreparedStatement ps = dc.prepareStatement(batchQuery);
+      ResultSet rs = dc.executeQuery(query)) {
+      while (rs.next()) {
+        String table = rs.getString(1);
+        ps.setInt(1, u.getId());
+        ps.setString(2, table);
+        ps.setBoolean(3, true);
+        ps.setBoolean(4, false);
+        ps.setBoolean(5, false);
+        ps.setBoolean(6, false);
+        ps.addBatch();
       }
-     
+      ps.executeBatch();
     } catch (SQLException e) {
       GemLogger.logException(query, e);
     } finally {
@@ -155,26 +152,18 @@ public class UserIO
 
   }
 
+  /**
+   * Menus access initialization.
+   *
+   * @param u user
+   */
   public void initMenus(User u) {
-//    String query = "SELECT id, auth FROM " + MENU_TABLE + ", " + PROFIL_TABLE + " WHERE id = idmenu AND profil = " + u.getProfile();
-//    try {
-//      ResultSet rs = dc.executeQuery(query);
-//      while (rs.next()) {
-//        int id = rs.getInt(1);
-//        boolean b = rs.getBoolean(2);
-//        String query2 = "INSERT INTO " + MENU_ACCESS + " VALUES(" + u.getId() + "," + id + "," + (b ? "'t'" : "'f'") + ")";
-//        dc.executeUpdate(query2);
-//      }
-//      rs.close();
-//    } catch (SQLException e) {
-//      GemLogger.logException(query, e);
-//    }
     String query = "SELECT id, auth FROM " + MENU_TABLE + ", " + PROFIL_TABLE + " WHERE id = idmenu AND profil = " + u.getProfile();
     String batchQuery = "INSERT INTO " + MENU_ACCESS + " VALUES(?,?,?)";//idper,idmenu,auth
+
     dc.setAutoCommit(false);// important for batch insert
-    PreparedStatement ps = dc.prepareStatement(batchQuery);
-    try {
-      ResultSet rs = dc.executeQuery(query);
+    try (PreparedStatement ps = dc.prepareStatement(batchQuery);
+      ResultSet rs = dc.executeQuery(query)) {
       while (rs.next()) {
         int id = rs.getInt(1);
         boolean b = rs.getBoolean(2);
@@ -183,9 +172,7 @@ public class UserIO
         ps.setBoolean(3, b);
         ps.addBatch();
       }
-      rs.close();
       ps.executeBatch();
-      ps.close();
     } catch (SQLException e) {
       GemLogger.logException(query, e);
     } finally {

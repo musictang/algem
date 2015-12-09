@@ -1,0 +1,11 @@
+2.9.4.14
+CORRECTIFS
+* Aucun message n'était affiché après la création d'un nouveau login. Désormais, un message d'erreur ou de réussite vous informe sur les résultats de cette opération. Des optimisations diverses ont été faites par ailleurs au moment de l'enregistrement du nouvel utilisateur.
+
+ECHEANCIER
+La fenêtre d'édition d'une échéance est maintenant non modale. Elle n'est donc plus bloquante et vous permet d'accéder à d'autres endroits dans l'application avant de valider. C'est particulièrement utile lorsqu'il vous manque certaines informations au moment d'éditer une échéance.
+Note : afin d'éviter toute confusion, on ne peut pas ouvrir simultanément plusieurs échéances à l'intérieur d'une même fiche personne. Par contre, on peut ouvrir deux ou plusieurs échéances si elles proviennent de fiches distinctes. Attention dans ce dernier cas aux erreurs de saisie dues à la confusion entre les échéances ouvertes. Dans le doute, évitez d'éditer simultanément plusieurs échéances.
+
+PHOTO
+Les photos sont maintenant enregistrées en base de données. Les photos étant maintenant centralisées, la question du partage de fichiers ne se pose plus et tout le monde peut disposer des photos enregistrées quel que soit l'endroit où il se trouve.
+On ajoute une photo (si aucune encore n'est présente) ou on la modifie en cliquant sur le cadre de la photo à gauche de la fiche personne. Une fenêtre de dialogue vous permettra de choisir le fichier image désiré (formats acceptés : jpg, png).

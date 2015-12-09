@@ -1,5 +1,5 @@
 /*
- * @(#)Algem.java	2.9.4.13 11/11/15
+ * @(#)Algem.java	2.9.4.14 09/12/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -23,6 +23,7 @@ package net.algem;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.Point;
 import java.io.File;
 import java.io.FileInputStream;
@@ -56,12 +57,12 @@ import org.apache.commons.codec.binary.Base64;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.9.4.14
  */
 public class Algem
 {
 
-  public static final String APP_VERSION = "2.9.4.13";//experimental
+  public static final String APP_VERSION = "2.9.4.14";//experimental
   public static List<LookAndFeelInfo> ALTERNATIVE_LAF = new ArrayList<>();
   private static final int DEF_WIDTH = 1080;// (850,650) => ancienne taille
   private static final int DEF_HEIGHT = 780;
@@ -118,7 +119,7 @@ public class Algem
     }
 
     // optional properties file $HOME/.algem/preferences
-    setUserProperties();
+    setAdditionalProperties();
     setUIProperties();
     setLocale(props);
 
@@ -152,20 +153,17 @@ public class Algem
     GemLogger.log(Level.INFO, "net.algem.Algem", "main", msg);
 
     final GemBoot gemBoot = new GemBoot();
-    String pass = null;
-    boolean auth = "true".equalsIgnoreCase(props.getProperty("auth"));
-    if (auth || login == null) {//authentification requise
-      AuthDlg dlg = new AuthDlg(gemBoot.getFrame());
-      if (dlg.isValidation()) {
-        login = dlg.getLogin();
-        pass = dlg.getPass();
-      }
-    }
+
     /* ------------------------ */
     /* Test login user validity */
     /* ------------------------ */
-    cache.setUser(login);// important !
-    checkUser(login, pass, auth);
+    boolean auth = "true".equalsIgnoreCase(props.getProperty("auth"));
+
+    if (auth || login == null) {//authentication required
+      checkAuthUser(gemBoot.getFrame());
+    } else {
+      checkUnauthUser(login);
+    }
 
     cache.load(gemBoot);
     /* ------------------------------------------------ */
@@ -174,6 +172,71 @@ public class Algem
     setDesktop();
     gemBoot.close();
   }
+
+   private void checkUser(String u, String pass, boolean auth) {
+    User currentUser = cache.getUser();
+    if (currentUser == null) {
+      MessagePopup.error(null, MessageUtil.getMessage("unknown.login", u));
+      System.exit(4);
+    } else {
+      if (auth) {
+        if (!cache.getUserService().authenticate(currentUser, pass)) {
+          MessagePopup.error(null, MessageUtil.getMessage("authentication.failure"));
+          System.exit(5);
+        }
+      }
+    }
+  }
+
+   private boolean authenticate(String login, String pass) {
+     return cache.getUserService().authenticate(login, pass);
+   }
+
+   /**
+    * Presents a dialog to authenticate user.
+    * @param parent parent frame
+    */
+   private void checkAuthUser(Frame parent) {
+     String login = null;
+     String pass = null;
+     boolean success = false;
+      int trials = 1;
+      do {
+        AuthDlg dlg = new AuthDlg(parent);
+        if (dlg.isValidation()) {
+          login = dlg.getLogin();
+          pass = dlg.getPass();
+        } else {
+          System.exit(5);
+        }
+        if (cache.getUserService().authenticate(login, pass)) {
+          success = true;
+        } else if (trials < 3) {
+          MessagePopup.error(parent, MessageUtil.getMessage("authentication.failure"));
+        }
+        trials++;
+      } while (success == false && trials <= 3);
+      if (success) {
+        cache.setUser(login);
+      } else {
+        MessagePopup.error(parent, MessageUtil.getMessage("unknown.login", login));
+        System.exit(5);
+      }
+   }
+
+   /**
+    * Checks if this @{code login} is valid.
+    * This method must be called when authentication is disabled in properties.
+    * @param login a login string
+    */
+   private void checkUnauthUser(String login) {
+    cache.setUser(login);
+    if (cache.getUser() == null) {
+      MessagePopup.error(null, MessageUtil.getMessage("unknown.login", login));
+      System.exit(4);
+    }
+  }
+
 
   /**
    * Creates a log file into temp folder.
@@ -203,7 +266,7 @@ public class Algem
    * Sets additional user properties.
    * If the file does not exist, the relevant resource is loaded from the jar.
    */
-  private void setUserProperties() {
+  private void setAdditionalProperties() {
     for (String path : ADDITIONAL_PROPERTIES) {
       Properties p = new Properties();
       try {
@@ -277,20 +340,7 @@ public class Algem
     dc.connect();
   }
 
-  private void checkUser(String u, String pass, boolean auth) {
-    User currentUser = cache.getUser();
-    if (currentUser == null) {
-      MessagePopup.error(null, MessageUtil.getMessage("unknown.login", u));
-      System.exit(4);
-    } else {
-      if (auth) {
-        if (!cache.getUserService().authenticate(currentUser, pass)) {
-          MessagePopup.error(null, MessageUtil.getMessage("authentication.failure"));
-          System.exit(5);
-        }
-      }
-    }
-  }
+
 
   private void checkVersion(JFrame frame) {
     String v = cache.getVersion();
@@ -373,7 +423,8 @@ public class Algem
   }
 
   public static void setLafProperties(final String lafClassName) {
-   try {UIManager.setLookAndFeel(lafClassName);
+   try {
+     UIManager.setLookAndFeel(lafClassName);
     } catch (Exception ex) {
       GemLogger.log("look&feel exception : " + ex.getMessage());
     }

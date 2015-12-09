@@ -1,7 +1,7 @@
 /*
- * @(#)FilePanel.java 2.9.3.1 03/03/15
- * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * @(#)FilePanel.java 2.9.4.14 09/12/15
+ *
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 
 package net.algem.util.ui;
@@ -33,9 +33,9 @@ import net.algem.util.MessageUtil;
 
 /**
  * Panel controller for selecting directories or opening files.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.3.1
+ * @version 2.9.4.14
  */
 public class FilePanel
   extends GemPanel implements ActionListener
@@ -44,7 +44,7 @@ public class FilePanel
   private GemField path;
   private JButton btBrowse;
   private boolean dirOnly = true;
-  
+
   public FilePanel(String label, String defaultPath, boolean dirOnly) {
     this(label,defaultPath);
     this.dirOnly = dirOnly;
@@ -59,7 +59,7 @@ public class FilePanel
     else fileLabel.setText(label);
     path = new GemField(15);
     path.setText(defaultPath);
-    
+
     add(fileLabel);
     add(path);
     btBrowse = new JButton(GemCommand.BROWSE_CMD);
@@ -88,9 +88,9 @@ public class FilePanel
       if (dirOnly) {
         p = FileUtil.getDir(this, BundleUtil.getLabel("FileChooser.selection"), path.getText());
       } else {
-        p = FileUtil.getFile(this,
-                BundleUtil.getLabel("FileChooser.selection"), 
-                path.getText(), 
+        p = FileUtil.getFilePath(this,
+                BundleUtil.getLabel("FileChooser.selection"),
+                path.getText(),
                 MessageUtil.getMessage("filechooser.raw.text.filter.label"),
                 "txt"
         );
