@@ -164,7 +164,7 @@ public class PersonView
 
   private void loadPhoto(Person p) {
     if (p.getType() == Person.PERSON || p.getType() == Person.ROOM) {
-      photoHandler = new SimplePhotoHandler(DataCache.getDataConnection());
+      photoHandler = new SimplePhotoHandler(DataCache.getDataConnection(), null);
       BufferedImage img = photoHandler.load(p.getId());
       if (img == null) {
         img = getPhotoDefault();
@@ -208,7 +208,7 @@ public class PersonView
       if (buffered.getHeight() > ImageUtil.PHOTO_ID_HEIGHT) {
         //System.out.println("rescaling !");
         buffered = ImageUtil.rescale(buffered);
-        buffered = ImageUtil.formatPhoto(buffered);
+        buffered = ImageUtil.cropPhotoId(buffered);
 //
 //        String dest = url.getFilePath();
 //        File oldFile = new File(dest);

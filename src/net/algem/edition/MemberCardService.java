@@ -243,7 +243,7 @@ public class MemberCardService
     if (ImageUtil.PHOTO_ID_HEIGHT != img.getHeight()) {
       System.out.println(img.getHeight() + "rescaling !");
       BufferedImage bi2 = ImageUtil.rescale(img);
-      img = ImageUtil.formatPhoto(bi2);
+      img = ImageUtil.cropPhotoId(bi2);
     }
     return img;
   }

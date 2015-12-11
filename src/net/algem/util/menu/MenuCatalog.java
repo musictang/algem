@@ -20,13 +20,29 @@
  */
 package net.algem.util.menu;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.File;
+import javax.swing.BorderFactory;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.ProgressMonitor;
 
 import net.algem.Algem;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
+import net.algem.contact.PhotoHandler;
+import net.algem.contact.SimplePhotoHandler;
 import net.algem.course.CourseSearchCtrl;
 import net.algem.course.ModuleSearchCtrl;
 import net.algem.enrolment.EnrolmentListCtrl;
@@ -36,9 +52,15 @@ import net.algem.enrolment.ExtendedModuleOrderTableModel;
 import net.algem.planning.fact.ui.PlanningFactCRUDController;
 import net.algem.script.ui.ScriptingFormController;
 import net.algem.util.BundleUtil;
+import net.algem.util.DataCache;
+import net.algem.util.FileUtil;
 import net.algem.util.GemCommand;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.module.GemModule;
+import net.algem.util.ui.FilePanel;
+import net.algem.util.ui.GemButton;
+import net.algem.util.ui.GemPanel;
+import net.algem.util.ui.MessagePopup;
 
 /**
  * Catalog menu.
@@ -58,6 +80,7 @@ public class MenuCatalog
   private JMenuItem miModuleOrder;
   private JMenuItem miCoursBrowse;
   private JMenuItem miEnrolment;
+  private JMenuItem miImportPhotos;
   private final JMenuItem scriptItem;
   private final JMenuItem factsItem;
 
@@ -73,6 +96,9 @@ public class MenuCatalog
       add(miEnrolment = new JMenuItem(BundleUtil.getLabel("Menu.enrolment.label")));
       miModuleOrder = new JMenuItem(BundleUtil.getLabel("Modules.ordered.label"));
       add(miModuleOrder);
+      addSeparator();
+      miImportPhotos = new JMenuItem(BundleUtil.getLabel("Importer photos"));
+      add(miImportPhotos);
     }
 
     scriptItem = new JMenuItem(BundleUtil.getLabel("Scripts.label"));
@@ -120,8 +146,108 @@ public class MenuCatalog
       desktop.addPanel("Scripts", new ScriptingFormController(desktop).getPanel(), new Dimension(905, 600));
     } else if (src == factsItem) {
       desktop.addPanel("Absences & remplacement", new PlanningFactCRUDController(desktop).getPanel(), GemModule.XXL_SIZE);
+    } else if (src == miImportPhotos) {
+        ImportDlg  dlg = new ImportDlg(desktop.getFrame());
+        dlg.createUI();
+//        if (dlg.isValidation()) {
+//          
+//          ProgressMonitor monitor = new ProgressMonitor(this, BundleUtil.getLabel("Loading.label"), "", 1, 100);
+//        monitor.setProgress(1);
+//        monitor.setMillisToDecideToPopup(0);
+//          PhotoHandler handler = new SimplePhotoHandler(DataCache.getDataConnection(), monitor);
+//          File dir = new File(dlg.getDir());
+//          System.out.println(dir.getName());
+//          System.out.println(dir.getPath());
+//          int saved = handler.importFilesFromDir(dir);
+//          
+//          if (saved >= 0) {
+//            MessagePopup.information(this, saved + " nouvelle(s) photo(s) enregistrée(s)");
+//          } else {
+//            MessagePopup.error(this, "Erreur enregistrement");
+//          }
+//        } 
+        
+//      String dir = FileUtil.getDir(this, arg, arg)
     }
     desktop.setDefaultCursor();
+  }
+  
+  class ImportDlg extends JDialog implements ActionListener, PropertyChangeListener {
+
+    private FilePanel filePanel;
+    private GemButton btOk;
+    private GemButton btCancel;
+    private boolean validation;
+    private JProgressBar progressBar;
+//    private PhotoHandler handler;
+    public ImportDlg(Frame owner) {
+      super(owner);
+//      this.handler = handler;
+      String path = ConfigUtil.getConf(ConfigKey.PHOTOS_PATH.getKey());  
+      filePanel = new FilePanel(ConfigKey.PHOTOS_PATH.getLabel(), path);
+    }
+    
+    void createUI() {
+      setLayout(new BorderLayout());
+      setTitle("Choisissez un répertoire");
+      GemPanel content = new GemPanel(new BorderLayout());
+      content.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+//Where the GUI is constructed:
+progressBar = new JProgressBar(0, 100);
+progressBar.setValue(0);
+//progressBar.setStringPainted(true);
+      
+      GemPanel buttons = new GemPanel(new GridLayout(1,2));
+      btOk = new GemButton(GemCommand.OK_CMD);
+      btCancel = new GemButton(GemCommand.CANCEL_CMD);
+      btOk.addActionListener(this);
+      btCancel.addActionListener(this);
+      buttons.add(btOk);
+      buttons.add(btCancel);
+      content.add(filePanel, BorderLayout.NORTH);
+      content.add(progressBar, BorderLayout.SOUTH);
+      add(content, BorderLayout.CENTER);
+      add(buttons, BorderLayout.SOUTH);
+      setSize(new Dimension(550,150));
+      setLocationRelativeTo(desktop.getFrame());
+//      pack();
+      setVisible(true);
+    }
+    
+    boolean isValidation() {
+      return validation;
+    }
+    
+    String getDir() {
+      return filePanel.getText();
+    }
+    
+    public void propertyChange(PropertyChangeEvent evt) {
+        if ("progress" == evt.getPropertyName()) {
+            int progress = (Integer) evt.getNewValue();
+            progressBar.setValue(progress);
+//            taskOutput.append(String.format(
+//                    "Completed %d%% of task.\n", task.getProgress()));
+        } 
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      Object src = e.getSource();
+      if (src == btOk) {
+//        ProgressMonitor monitor = new ProgressMonitor(this, BundleUtil.getLabel("Loading.label"), "", 1, 100);
+//        monitor.setProgress(1);
+//        monitor.setMillisToDecideToPopup(10);
+          PhotoHandler handler = new SimplePhotoHandler(DataCache.getDataConnection(), this);
+        handler.importFilesFromDir(new File(getDir()));
+//        validation = true;
+      } else {
+        dispose();
+//        validation = false;
+      }
+//      dispose();
+    }
+
   }
 
 }

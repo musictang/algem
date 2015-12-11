@@ -97,7 +97,7 @@ public class ImageUtil
    * @param img BufferedImage
    * @return BufferedImage
    */
-  public static BufferedImage formatPhoto(BufferedImage img) {
+  public static BufferedImage cropPhotoId(BufferedImage img) {
     try {
       int w = img.getWidth();
       int h = img.getHeight();

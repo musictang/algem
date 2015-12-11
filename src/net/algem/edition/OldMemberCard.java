@@ -255,7 +255,7 @@ public class OldMemberCard
       if (ImageUtil.PHOTO_ID_HEIGHT != img.getHeight()) {
         System.out.println("rescaling !");
         BufferedImage bi2 = ImageUtil.rescale(img);
-        img = ImageUtil.formatPhoto(bi2);
+        img = ImageUtil.cropPhotoId(bi2);
       }
     } catch (Exception ex) {
     }

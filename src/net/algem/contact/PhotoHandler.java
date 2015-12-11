@@ -22,6 +22,7 @@ package net.algem.contact;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import net.algem.util.model.DataException;
 
 /**
@@ -32,7 +33,7 @@ import net.algem.util.model.DataException;
  */
 public interface PhotoHandler {
 
-  public void importFiles();
+  public int importFilesFromDir(File dir);
 
   public BufferedImage load(int idper);
 
