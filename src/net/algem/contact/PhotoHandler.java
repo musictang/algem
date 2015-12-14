@@ -1,5 +1,5 @@
 /*
- * @(#) PhotoHandler.java Algem 2.9.4.14 09/12/2015
+ * @(#) PhotoHandler.java Algem 2.9.4.14 13/12/2015
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -22,7 +22,6 @@ package net.algem.contact;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import net.algem.util.model.DataException;
 
 /**
@@ -33,14 +32,12 @@ import net.algem.util.model.DataException;
  */
 public interface PhotoHandler {
 
-  public int importFilesFromDir(File dir);
-
   public BufferedImage load(int idper);
 
   public BufferedImage save(int idper, File file) throws DataException;
 
-  public BufferedImage resize(BufferedImage img);
+  public void importFilesFromDir(File dir);
 
-
+  public void exportFilesToDir(File dir);
 
 }

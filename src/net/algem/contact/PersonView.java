@@ -164,7 +164,7 @@ public class PersonView
 
   private void loadPhoto(Person p) {
     if (p.getType() == Person.PERSON || p.getType() == Person.ROOM) {
-      photoHandler = new SimplePhotoHandler(DataCache.getDataConnection(), null);
+      photoHandler = new SimplePhotoHandler(DataCache.getDataConnection());
       BufferedImage img = photoHandler.load(p.getId());
       if (img == null) {
         img = getPhotoDefault();

@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Map;
 import javax.imageio.ImageIO;
 import net.algem.util.DataConnection;
@@ -62,7 +63,7 @@ public class PhotoIO
     PreparedStatement foundStmt = dc.prepareStatement("SELECT idper FROM " + TABLE + " WHERE idper = ?");
     int saved = 0;
     try {
-//      dc.setAutoCommit(false);
+      dc.setAutoCommit(false);
       for (Map.Entry<Integer, byte[]> entry : map.entrySet()) {
         foundStmt.setInt(1, entry.getKey());
         ResultSet rs = foundStmt.executeQuery();
@@ -71,20 +72,19 @@ public class PhotoIO
         }
         saveStmt.setInt(1, entry.getKey());
         saveStmt.setBytes(2, entry.getValue());
-//        saveStmt.addBatch();
-        saveStmt.executeUpdate();
+        saveStmt.addBatch();
         saved++;
-        
       }
-//      saveStmt.executeBatch();
-
+      saveStmt.executeBatch();
+      saveStmt.close();
+      dc.commit();
       return saved;
     } catch (SQLException ex) {
+      dc.rollback();
       GemLogger.logException(ex);
       return -1;
-//      throw new DataException(ex.getMessage());
     } finally {
-//      dc.setAutoCommit(true);
+      dc.setAutoCommit(true);
     }
   }
 
@@ -106,8 +106,20 @@ public class PhotoIO
     } catch (SQLException | IOException ex) {
       GemLogger.logException(ex);
       throw new DataException(ex.getMessage());
-    } 
+    }
     return img;
+  }
+
+  Map<Integer, byte[]> findAll() throws SQLException {
+
+    Map<Integer, byte[]> saved = new HashMap<Integer, byte[]>();
+    String query = "SELECT idper, photo FROM " + TABLE;
+    try (ResultSet rs = dc.executeQuery(query)) {
+      while (rs.next()) {
+        saved.put(rs.getInt(1), rs.getBytes(2));
+      }
+    }
+    return saved;
   }
 
 }

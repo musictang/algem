@@ -1,5 +1,5 @@
 /*
- * @(#) SimplePhotoHandler.java Algem 2.9.4.14 09/12/2015
+ * @(#) SimplePhotoHandler.java Algem 2.9.4.14 13/12/2015
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -19,27 +19,31 @@
  */
 package net.algem.contact;
 
+import java.awt.Component;
 import java.awt.image.BufferedImage;
-import java.beans.PropertyChangeListener;
-//import java.beans.PropertyChangeListener;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
-import javax.swing.JProgressBar;
 import javax.swing.ProgressMonitor;
 import javax.swing.SwingWorker;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataConnection;
+import net.algem.util.FileUtil;
 import net.algem.util.GemLogger;
 import net.algem.util.ImageUtil;
+import net.algem.util.MessageUtil;
 import net.algem.util.model.DataException;
+import net.algem.util.ui.MessagePopup;
 import net.algem.util.ui.ProgressMonitorHandler;
 
 /**
@@ -49,41 +53,50 @@ import net.algem.util.ui.ProgressMonitorHandler;
  * @since 2.9.4.14 09/12/2015
  */
 public class SimplePhotoHandler
-        implements PhotoHandler
-{
+  implements PhotoHandler {
 
   private PhotoIO photoIO;
-  private PropertyChangeListener listener;
+  private Component parent;
 
-  public SimplePhotoHandler(DataConnection dc, PropertyChangeListener listener) {
+  public SimplePhotoHandler(Component parent, DataConnection dc) {
+    this(dc);
+    this.parent = parent;
+  }
+
+  public SimplePhotoHandler(DataConnection dc) {
     this.photoIO = new PhotoIO(dc);
-    this.listener = listener;
   }
 
   @Override
-  public int importFilesFromDir(File dir) {
-//    final File[] files = dir.listFiles();
-//    int saved = 0;
+  public void importFilesFromDir(File dir) {
+    final ProgressMonitor monitor = new ProgressMonitor(parent, BundleUtil.getLabel("Loading.label"), "", 1, 100);
+    monitor.setProgress(1);
+    monitor.setMillisToDecideToPopup(1);
+    monitor.setMillisToPopup(1);
+
     SwingWorker<Integer, Void> task = new PhotoImportTask(dir);
-    
-    task.addPropertyChangeListener(listener);
+    task.addPropertyChangeListener(new ProgressMonitorHandler(monitor, task));
     task.execute();
-    try {
-      return task.get();
-    } catch (InterruptedException ex) {
-      Logger.getLogger(SimplePhotoHandler.class.getName()).log(Level.SEVERE, null, ex);
-    } catch (ExecutionException ex) {
-      Logger.getLogger(SimplePhotoHandler.class.getName()).log(Level.SEVERE, null, ex);
-    }
-    return 0;
+  }
+
+  @Override
+  public void exportFilesToDir(File dir) {
+    final ProgressMonitor monitor = new ProgressMonitor(parent, BundleUtil.getLabel("Loading.label"), "", 1, 100);
+    monitor.setProgress(1);
+    monitor.setMillisToDecideToPopup(1);
+    monitor.setMillisToPopup(1);
+
+    SwingWorker<Integer, Void> task = new PhotoExportTask(dir);
+    task.addPropertyChangeListener(new ProgressMonitorHandler(monitor, task));
+    task.execute();
   }
 
   private int getIdFromFileName(String fileName) {
-    String sub = fileName.trim().substring(0, fileName.lastIndexOf('.'));
     try {
+      String sub = fileName.substring(0, fileName.lastIndexOf('.'));
       int id = Integer.parseInt(sub);
       return id;
-    } catch (NumberFormatException e) {
+    } catch (NumberFormatException | IndexOutOfBoundsException e) {
       return -1;
     }
   }
@@ -113,8 +126,6 @@ public class SimplePhotoHandler
   }
 
   private byte[] getBytesFromImage(BufferedImage img) {
-    byte[] data = null;
-
     try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
       ImageIO.write(img, "jpg", out);
       out.flush();
@@ -130,14 +141,8 @@ public class SimplePhotoHandler
     return ImageUtil.cropPhotoId(bimg);
   }
 
-  @Override
-  public BufferedImage resize(BufferedImage img) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-  }
-  
   class PhotoImportTask
-          extends SwingWorker<Integer, Void>
-  {
+    extends SwingWorker<Integer, Void> {
 
     private File dir;
 
@@ -148,36 +153,106 @@ public class SimplePhotoHandler
     @Override
     protected Integer doInBackground() throws Exception {
       File[] files = dir.listFiles();
-      Map<Integer, byte[]> filtered = new HashMap<>();
+      Map<Integer, byte[]> filtered = new TreeMap<>();
       int k = 0;
       int size = files.length;
       for (File f : files) {
-         try {
-                    Thread.sleep(500);
-                } catch (InterruptedException ignore) {}
         try {
+          if (f.length() > Math.pow(2, 20)) { // limit length to 1Mio
+            size--;
+            continue;
+          }
           BufferedImage buffered = ImageIO.read(f); // check if file is really an image
           if (buffered != null) {
-            buffered = format(buffered);
-            byte[] data = getBytesFromImage(buffered);
+//            GemLogger.info(f.getName());
             int id = getIdFromFileName(f.getName());
-            System.out.println(id);
-            if (data != null && id > 0) {
-              filtered.put(id, data);
+//            GemLogger.info(String.valueOf(id));
+            if (id > 0) {
+              buffered = format(buffered);
+              byte[] data = getBytesFromImage(buffered);
+              if (data != null) {
+                filtered.put(id, data);
+              }
             }
           }
-          int p = k * 100 / size;
+          int p = ++k * 100 / size;
           setProgress(p);
-          k++;
         } catch (IOException ex) {
+//          GemLogger.logException(ex);
           GemLogger.log(ex.getMessage());
         }
       }
       return photoIO.save(filtered);
-//      return null;
     }
+
+    @Override
+    public void done() {
+      int saved = -1;
+      String error = "";
+      try {
+        saved = get();
+      } catch (InterruptedException | ExecutionException ex) {
+        error = ex.getMessage();
+        GemLogger.log(error);
+      }
+      if (saved >= 0) {
+        MessagePopup.information(parent, MessageUtil.getMessage("photos.imported", saved));
+      } else {
+        MessagePopup.error(parent, MessageUtil.getMessage("saving.exception") + ":\n" + error);
+      }
+    }
+
   }
-    
-  
+
+  class PhotoExportTask
+    extends SwingWorker<Integer, Void> {
+
+    private File dir;
+
+    public PhotoExportTask(File dir) {
+      this.dir = dir;
+    }
+
+    @Override
+    protected Integer doInBackground() throws Exception {
+
+      Map<Integer, byte[]> saved = photoIO.findAll();
+
+      int exported = 0;
+      int k = 0;
+      int size = saved.size();
+      String extension = ".jpg";
+      for (Map.Entry<Integer, byte[]> entry : saved.entrySet()) {
+        ByteArrayInputStream in = new ByteArrayInputStream(entry.getValue());
+        if (in.available() > 0) {
+          String name = String.valueOf(entry.getKey()) + extension;
+          Path path = Paths.get(dir.getAbsolutePath() + FileUtil.FILE_SEPARATOR + name);
+          Files.copy(in, path, StandardCopyOption.REPLACE_EXISTING);
+          exported++;
+        }
+        int p = ++k * 100 / size;
+        setProgress(p);
+      }
+      return exported;
+    }
+
+    @Override
+    public void done() {
+      int exported = -1;
+      String error = "";
+      try {
+        exported = get();
+      } catch (InterruptedException | ExecutionException ex) {
+        error = ex.getMessage();
+        GemLogger.log(error);
+      }
+      if (exported >= 0) {
+        MessagePopup.information(parent, MessageUtil.getMessage("files.exported", exported));
+      } else {
+        MessagePopup.error(parent, MessageUtil.getMessage("export.exception") + ":\n" + error);
+      }
+    }
+
+  }
 
 }
