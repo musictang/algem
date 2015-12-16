@@ -1,5 +1,5 @@
 /*
- * @(#)AddEventDlg.java 2.9.4.4 06/05/15
+ * @(#)AddEventDlg.java 2.9.4.14 15/12/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -39,7 +39,7 @@ import net.algem.util.ui.GridBagHelper;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.4
+ * @version 2.9.4.14
  * @since 2.9.4.0 26/03/2015
  */
 public class AddEventDlg
@@ -61,8 +61,8 @@ public class AddEventDlg
     timePanel = new HourRangePanel(plan.getStart(),plan.getEnd());
     note = new JTextArea(5, 20);
     note.setBorder(new JTextField().getBorder());
-    note.setLineWrap(false);
-    note.setWrapStyleWord(false);
+    note.setLineWrap(true);
+    note.setWrapStyleWord(true);
     gb.add(new GemLabel(BundleUtil.getLabel("Hour.label")), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(timePanel, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Heading.label")), 0, 1, 1, 1, GridBagHelper.NORTHWEST);

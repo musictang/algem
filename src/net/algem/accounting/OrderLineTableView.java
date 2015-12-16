@@ -1,7 +1,7 @@
 /*
-* @(#)OrderLineTableView.java 2.9.1 17/12/14
+* @(#)OrderLineTableView.java 2.9.4.14 15/12/15
 *
-* Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+* Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
 *
 * This file is part of Algem.
 * Algem is free software: you can redistribute it and/or modify it
@@ -24,6 +24,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.sql.SQLException;
 import java.util.Calendar;
 import javax.swing.RowFilter.Entry;
 import javax.swing.*;
@@ -32,13 +33,11 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.*;
 import javax.swing.text.JTextComponent;
 import net.algem.contact.Person;
-import net.algem.contact.PersonIO;
 import net.algem.planning.DateFr;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.menu.MenuPopupListener;
 import net.algem.util.model.Model;
-import net.algem.util.ui.TableView;
 
 /**
  * Order line table view.
@@ -46,7 +45,7 @@ import net.algem.util.ui.TableView;
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @author <a href="mailto:damien.loustau@gmail.com">Damien Loustau</a>
- * @version 2.9.1
+ * @version 2.9.4.14
  * @since 1.0a 07/07/1999
  *
  */
@@ -104,7 +103,7 @@ implements TableModelListener {
     
     sorter = new TableRowSorter<TableModel>(tableModel);
     table.setRowSorter(sorter);
-//    tableVue.setAutoCreateRowSorter(true);
+
     dateFilter = new RowFilter<Object, Object>() {
       
       @Override
@@ -149,20 +148,14 @@ implements TableModelListener {
     // la sélection multiple permet le copier-coller d'un ensemble de lignes vers une autre application
     table.getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
     tableModel.addTableModelListener(this);
-    
-    // Display name in tooltip for member column
-    table.getColumnModel().getColumn(1).setCellRenderer(new DefaultTableCellRenderer() {
-      public Component getTableCellRendererComponent(
-              JTable table, Object value,
-              boolean isSelected, boolean hasFocus,
-              int row, int column) {
-        JLabel c = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-        String idper = (String) value;
-        Person p = ((PersonIO) DataCache.getDao(Model.Person)).findId(Integer.parseInt(idper.trim()));
-        c.setToolTipText(p != null ? p.getFirstnameName() : "");
-        return c;
-      }
-    });
+
+    // Display name in tooltip for payer and member columns
+    ContactNameTableCellRenderer nameCellRenderer = new ContactNameTableCellRenderer();
+    table.getColumnModel().getColumn(0).setCellRenderer(nameCellRenderer);
+    table.getColumnModel().getColumn(1).setCellRenderer(nameCellRenderer);
+    AccountNameTableCellRenderer accountCellRenderer = new AccountNameTableCellRenderer();
+    table.getColumnModel().getColumn(8).setCellRenderer(accountCellRenderer);
+    table.getColumnModel().getColumn(9).setCellRenderer(accountCellRenderer);
     
     panel = new JScrollPane(table);
     
@@ -314,5 +307,41 @@ implements TableModelListener {
    */
   public JTable getTable() {
     return table;
+  }
+  
+  class ContactNameTableCellRenderer 
+        extends DefaultTableCellRenderer
+  {
+    @Override
+    public Component getTableCellRendererComponent(
+              JTable table, Object value,
+              boolean isSelected, boolean hasFocus,
+              int row, int column) {
+        JLabel c = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+        String idper = (String) value;
+        try {
+          Person p = (Person) DataCache.findId(Integer.parseInt(idper.trim()), Model.Person);
+          assert(p != null);
+          String org = p.getOrganization();
+          c.setToolTipText(org != null && org.length() > 0 ? org : p.getFirstnameName());
+        } catch(SQLException e) {
+          c.setToolTipText(null);
+        }
+        return c;
+      }
+  }
+  
+  class AccountNameTableCellRenderer
+          extends DefaultTableCellRenderer
+          {
+    @Override
+    public Component getTableCellRendererComponent(
+              JTable table, Object value,
+              boolean isSelected, boolean hasFocus,
+              int row, int column) {
+        JLabel c = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+        c.setToolTipText((String) value);
+        return c;
+      }
   }
 }

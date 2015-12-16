@@ -1,5 +1,5 @@
 /*
- * @(#)DataCache.java	2.9.4.13 06/11/15
+ * @(#)DataCache.java	2.9.4.14 15/12/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -87,7 +87,7 @@ import net.algem.contact.Note;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.9.4.14
  * @since 1.0b 03/09/2001
  */
 public class DataCache
@@ -230,10 +230,12 @@ public class DataCache
             new PlanningFactService.ScheduleUpdater(dc), new SimpleConflictService(dc));
 
     File scriptsPath = Algem.getScriptsPath();
-    System.out.println(scriptsPath);
-    scriptDirectoryService = new ScriptDirectoryServiceImpl(scriptsPath, new IOUtil.FileReaderHelper(), new ScriptManifestParserImpl());
-    scriptExecutorService = new ScriptExecutorServiceImpl(dc);
-    scriptExportService = new ScriptExportServiceImpl();
+    if (scriptsPath != null) {
+      System.out.println(scriptsPath);
+      scriptDirectoryService = new ScriptDirectoryServiceImpl(scriptsPath, new IOUtil.FileReaderHelper(), new ScriptManifestParserImpl());
+      scriptExecutorService = new ScriptExecutorServiceImpl(dc);
+      scriptExportService = new ScriptExportServiceImpl();
+    }
 
     scheduleDispatchService = new ScheduleDispatchService(dc, PERSON_IO);
   }
@@ -470,7 +472,7 @@ public class DataCache
           pc = RehearsalPassIO.find(id, dc);
           PASS_CARD.put(pc.getId(), pc);
         }
-      return pc;
+        return pc;
       default:
         return null;
     }
@@ -594,11 +596,12 @@ public class DataCache
     } else if (m instanceof User) {
       USER_CACHE.put(m.getId(), (User) m);
     } else if (m instanceof Person) {
-      PERSON_CACHE.put(m.getId(), (Person) m);
+      Person p = (Person) m;
+      PERSON_CACHE.put(m.getId(), p);
       Teacher t = (Teacher) TEACHER_LIST.getItem(m.getId());
       if (t != null) {
-        t.setFirstName(((Person) m).getFirstName());
-        t.setName(((Person) m).getName());
+        t.setFirstName(p.getFirstName());
+        t.setName(p.getName());
         TEACHER_LIST.update(t, new TeacherComparator(ConfigUtil.getConf(ConfigKey.PERSON_SORT_ORDER.getKey())));
       }
     } else if (m instanceof Action) {

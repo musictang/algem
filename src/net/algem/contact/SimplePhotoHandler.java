@@ -164,9 +164,7 @@ public class SimplePhotoHandler
           }
           BufferedImage buffered = ImageIO.read(f); // check if file is really an image
           if (buffered != null) {
-//            GemLogger.info(f.getName());
             int id = getIdFromFileName(f.getName());
-//            GemLogger.info(String.valueOf(id));
             if (id > 0) {
               buffered = format(buffered);
               byte[] data = getBytesFromImage(buffered);
@@ -178,7 +176,6 @@ public class SimplePhotoHandler
           int p = ++k * 100 / size;
           setProgress(p);
         } catch (IOException ex) {
-//          GemLogger.logException(ex);
           GemLogger.log(ex.getMessage());
         }
       }

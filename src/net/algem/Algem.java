@@ -99,7 +99,11 @@ public class Algem
   }
 
   public static File getScriptsPath() {
-    return new File(props.getProperty("scripts_path", "scripts")).getAbsoluteFile();
+    if (props == null) {
+      return null;
+    }
+    String pathName = props.getProperty("scripts_path", "scripts");
+    return pathName == null ? null : new File(props.getProperty("scripts_path", "scripts")).getAbsoluteFile();
   }
 
   private void init(String configFile, final String host, final String base, String login) throws IOException {

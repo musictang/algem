@@ -1,7 +1,7 @@
 /*
- * @(#)TestOrderLineView.java 2.8.a 01/04/13
+ * @(#)TestOrderLineView.java 2.9.4.14 14/12/15
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -37,7 +37,7 @@ import net.algem.util.module.GemDesktop;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.9.4.14
  */
 public class TestOrderLineView
         extends TestCase
@@ -59,11 +59,12 @@ public class TestOrderLineView
     super.setUp();
     dc = TestProperties.getDataConnection();
     dataCache = DataCache.getInstance(dc, System.getProperty("user.name"));
+    dataCache.load(null);
     amountFormat = NumberFormat.getNumberInstance();
     amountFormat.setMaximumFractionDigits(2);
     amountFormat.setMinimumFractionDigits(2);
     amount = new JFormattedTextField(amountFormat);
-    view = new OrderLineView(new Frame(), "", dataCache);
+    view = new OrderLineView(new Frame(), "", dataCache, false);
   }
 
   @Override
@@ -72,7 +73,7 @@ public class TestOrderLineView
   }
 
   public void testGetAmount() throws ParseException {
-    double excepted = 144.92;
+    double expected = 144.92;
     OrderLine e = new OrderLine();
     e.setAmount(14491);
     amount.setValue(e.getDoubleAmount());
@@ -81,14 +82,20 @@ public class TestOrderLineView
     amount.commitEdit();
     Double m = ((Number) amount.getValue()).doubleValue();
     e.setAmount(m);
-    assertTrue(excepted == m);
-    assertTrue(excepted == e.getDoubleAmount());
+    assertTrue(expected == m);
+    assertTrue(expected == e.getDoubleAmount());
 
-    excepted = 144.00;
+    expected = 144.00;
     amount.setText("144,00");
     amount.commitEdit();
     m = ((Number) amount.getValue()).doubleValue();
-    assertTrue(excepted == m);
+    assertTrue(expected == m);
+    
+    expected = -1144.57;
+    amount.setText("-1144,57");
+    amount.commitEdit();
+    m = ((Number) amount.getValue()).doubleValue();
+    assertTrue("excepted = " + expected + ", value = " + m, expected == m);
     //m = (Double) montant.getValue();// class cast exception Long -> Double
 
   }

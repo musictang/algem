@@ -1,5 +1,5 @@
 /*
- * @(#)MenuCatalog.java	2.9.4.14 13/12/2015
+ * @(#)MenuCatalog.java	2.9.4.14 14/12/2015
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -25,6 +25,7 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import net.algem.Algem;
 import net.algem.config.ConfigKey;
@@ -56,7 +57,8 @@ import net.algem.util.ui.MessagePopup;
  * @since 1.0a 07/07/1999
  */
 public class MenuCatalog
-  extends GemMenu {
+        extends GemMenu
+{
 
   private static final String ENROLMENT_BROWSER_KEY = "Enrolment.browser";
   private static final String MODULE_BROWSER_KEY = "Module.browser";
@@ -97,11 +99,13 @@ public class MenuCatalog
 
     addSeparator();
     miImportPhotos = new JMenuItem(BundleUtil.getLabel("Photos.import.auth"));
+    miImportPhotos.setToolTipText(BundleUtil.getLabel("Photos.import.auth.tip"));
     add(miImportPhotos);
     if (!dataCache.authorize("Photos.import.auth")) {
       miImportPhotos.setEnabled(false);
     }
     miExportPhotos = new JMenuItem(BundleUtil.getLabel("Photos.export.auth"));
+    miExportPhotos.setToolTipText(BundleUtil.getLabel("Photos.export.auth.tip"));
     add(miExportPhotos);
     if (!dataCache.authorize("Photos.export.auth")) {
       miExportPhotos.setEnabled(false);
@@ -153,16 +157,24 @@ public class MenuCatalog
   private void importPhotos() {
     String path = ConfigUtil.getConf(ConfigKey.PHOTOS_PATH.getKey());
     JFileChooser chooser = new JFileChooser(path);
+    chooser.setSelectedFile(new File(path));
     chooser.setDialogType(JFileChooser.OPEN_DIALOG);
-    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+    chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+    chooser.setFileHidingEnabled(true);
+    chooser.setFileFilter(new FileNameExtensionFilter(MessageUtil.getMessage("filechooser.image.filter.label"), "jpg", "png"));
     chooser.setDialogTitle(MessageUtil.getMessage("select.directory"));
+    chooser.setApproveButtonToolTipText(MessageUtil.getMessage("open.selected.dir.tip"));
     if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
       File selectedDir = chooser.getSelectedFile();
-      if (selectedDir.isDirectory() && selectedDir.canRead()) {
-        PhotoHandler handler = new SimplePhotoHandler(desktop.getFrame(), DataCache.getDataConnection());
-        handler.importFilesFromDir(selectedDir);
+      if (selectedDir.isDirectory()) {
+        if (selectedDir.canRead()) {
+          PhotoHandler handler = new SimplePhotoHandler(desktop.getFrame(), DataCache.getDataConnection());
+          handler.importFilesFromDir(selectedDir);
+        } else {
+          MessagePopup.warning(this, MessageUtil.getMessage("directory.read.access.warning"));
+        }
       } else {
-        MessagePopup.warning(this, MessageUtil.getMessage("directory.read.access.warning"));
+        MessagePopup.warning(this, MessageUtil.getMessage("selected.file.is.not.directory"));
       }
     }
   }
@@ -170,15 +182,21 @@ public class MenuCatalog
   private void exportPhotos() {
     JFileChooser chooser = new JFileChooser();
     chooser.setDialogType(JFileChooser.OPEN_DIALOG);
-    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+    chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+    chooser.setFileHidingEnabled(true);
     chooser.setDialogTitle(MessageUtil.getMessage("select.directory"));
+    chooser.setApproveButtonToolTipText(MessageUtil.getMessage("open.selected.dir.tip"));
     if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
       File selectedDir = chooser.getSelectedFile();
-      if (selectedDir.isDirectory() && selectedDir.canWrite()) {
-        PhotoHandler handler = new SimplePhotoHandler(desktop.getFrame(), DataCache.getDataConnection());
-        handler.exportFilesToDir(selectedDir);
+      if (selectedDir.isDirectory()) {
+        if (selectedDir.canWrite()) {
+          PhotoHandler handler = new SimplePhotoHandler(desktop.getFrame(), DataCache.getDataConnection());
+          handler.exportFilesToDir(selectedDir);
+        } else {
+          MessagePopup.warning(this, MessageUtil.getMessage("directory.write.access.warning"));
+        }
       } else {
-        MessagePopup.warning(this, MessageUtil.getMessage("directory.write.access.warning"));
+        MessagePopup.warning(this, MessageUtil.getMessage("selected.file.is.not.directory"));
       }
     }
   }

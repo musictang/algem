@@ -1,7 +1,7 @@
 /*
- * @(#)PersonIO.java 2.9.1 04/11/14
+ * @(#)PersonIO.java 2.9.4.14 15/12/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -36,13 +36,14 @@ import net.algem.util.model.Cacheable;
 import net.algem.util.model.TableIO;
 
 import static java.lang.String.format;
+import java.sql.PreparedStatement;
 
 /**
  * IO methods for class {@link net.algem.contact.Person}.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.4.14
  */
 public class PersonIO
         extends TableIO
@@ -56,11 +57,13 @@ public class PersonIO
   
   /** Next column number in joined queries. */
   public static final int PERSON_COLUMNS_OFFSET = 10;
-
+  private final PreparedStatement findIdPreparedStmt;
   private DataConnection dc;
+  
 
   public PersonIO(DataConnection _dc) {
     this.dc = _dc;
+    findIdPreparedStmt = dc.prepareStatement("SELECT * FROM " + TABLE + " WHERE id = ? LIMIT 1");
   }
 
   public void insert(Person p) throws SQLException {
@@ -107,14 +110,23 @@ public class PersonIO
   }
 
   public Person findId(int n) {
-    return findId(new Integer(n));
-  }
-
-  public Person findId(Integer n) {
-    String query = "WHERE id = " + n;
-    Vector<Person> v = find(query, dc);
-    if (v != null && v.size() > 0) {
-      return v.elementAt(0);
+    ResultSet rs = null;
+    try {
+      findIdPreparedStmt.setInt(1, n);
+      rs = findIdPreparedStmt.executeQuery();
+      while(rs.next()) {
+        return getFromRS(rs);
+      }
+    } catch (SQLException ex) {
+      GemLogger.logException(ex);
+    } finally {
+      if (rs != null) {
+        try {
+          rs.close();
+        } catch (SQLException ex) {
+          GemLogger.logException(ex);
+        }
+      }
     }
     return null;
   }
@@ -141,8 +153,7 @@ public class PersonIO
   public static Vector<Person> find(String where, DataConnection dc) {
     Vector<Person> v = new Vector<Person>();
     String query = "SELECT * FROM " + TABLE + " " + where + " ORDER BY nom";
-    try {
-      ResultSet rs = dc.executeQuery(query);
+    try (ResultSet rs = dc.executeQuery(query)) {
       while (rs.next()) {
         v.addElement(getFromRS(rs));
       }
@@ -155,8 +166,7 @@ public class PersonIO
   public static int count(String where, DataConnection dc) {
     int cpt = 0;
     String query = "SELECT count(id) FROM " + TABLE + " " + where;
-    try {
-      ResultSet rs = dc.executeQuery(query);
+    try (ResultSet rs = dc.executeQuery(query)) {
       if (rs.next()) {
         cpt = rs.getInt(1);
       }
@@ -172,9 +182,10 @@ public class PersonIO
     String query = "SELECT " + COLUMNS + " FROM  " + TABLE + " p"
             + " WHERE p.id IN (SELECT debiteur FROM " + InvoiceIO.TABLE + ")"
             + " OR p.id IN (SELECT adherent FROM " + InvoiceIO.TABLE + ")";
-    ResultSet rs = dc.executeQuery(query);
-    while(rs.next()) {
-      lp.add(getFromRS(rs));
+    try (ResultSet rs = dc.executeQuery(query)) {
+      while(rs.next()) {
+        lp.add(getFromRS(rs));
+      }
     }
     return lp;
   }

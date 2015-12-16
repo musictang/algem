@@ -1,7 +1,7 @@
 /*
- * @(#)TestProperties.java 2.9.2 22/12/14
+ * @(#)TestProperties.java 2.9.4.14 15/12/15
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -30,7 +30,7 @@ import net.algem.util.GemLogger;
  * Default values for database connection.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.9.4.14
  * @since 2.5.a 28/06/12
  */
 public class TestProperties 
@@ -46,7 +46,7 @@ public class TestProperties
    /** User with profile 1. */
   public final static String USER = "nobody"; // a modifier suivant le contexte
 	 /** Pass. */
-  public final static String PASS = "nobody"; // a modifier suivant le contexte
+  public final static String PASS = "Pigfy!"; // a modifier suivant le contexte
   /** JDBC driver. */
   public final static String DRIVER = "org.postgresql.Driver";
   
