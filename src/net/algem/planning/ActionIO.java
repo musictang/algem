@@ -1,5 +1,5 @@
 /*
- * @(#)ActionIO.java 2.9.4.7 12/06/15
+ * @(#)ActionIO.java 2.9.4.14 17/12/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,11 +20,9 @@
  */
 package net.algem.planning;
 
-import java.awt.Color;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -42,7 +40,7 @@ import net.algem.util.model.TableIO;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.7
+ * @version 2.9.4.14
  * @since 2.4.a 18/04/12
  */
 public class ActionIO
@@ -55,12 +53,13 @@ public class ActionIO
   public static final String SEQUENCE = "action_id_seq";
   private static final String ACTION_COLOR_TABLE = "action_color";
   private DataConnection dc;
-  private String actionColorQuery = "SELECT color FROM " + ACTION_COLOR_TABLE + " WHERE idaction = ?";
+  private static final String ACTION_COLOR_QUERY = "SELECT color FROM " + ACTION_COLOR_TABLE + " WHERE idaction = ?";
   private PreparedStatement colorStatement;
+  
 
   public ActionIO(DataConnection dc) {
     this.dc = dc;
-    this.colorStatement = dc.prepareStatement(actionColorQuery);
+    this.colorStatement = dc.prepareStatement(ACTION_COLOR_QUERY);
   }
 
   public void planify(final Action a, final int type) throws PlanningException {
@@ -175,7 +174,6 @@ public class ActionIO
             + ")";
     dc.executeUpdate(query);
     a.setId(nextid);
-//    cache.put(nextid, a);
   }
 
   public void update(Action a) throws SQLException {
@@ -265,13 +263,11 @@ public class ActionIO
   }
 
   private GemParam getLevel(int id) throws SQLException {
-//    GemParam n = levelIO.findId(id);
     GemParam n = (GemParam) DataCache.findId(id, Model.Level);
     return n == null ? new GemParam(0) : n;
   }
 
   private GemParam getStatus(int id) throws SQLException {
-//    GemParam n = statusIO.findId(id);
     GemParam n = (GemParam) DataCache.findId(id, Model.Status);
     return n == null ? new GemParam(0) : n;
   }
@@ -287,7 +283,6 @@ public class ActionIO
   }
 
   private AgeRange getAgeRange(int id) throws SQLException {
-//    AgeRange t = AgeRangeIO.findId(id, dc);
     AgeRange ar = (AgeRange) DataCache.findId(id, Model.AgeRange);
     return ar == null ? new AgeRange(0, GemParam.NONE) : ar;
   }
@@ -304,29 +299,55 @@ public class ActionIO
     return find(where);
   }
 
+  /**
+   * Loads the colors of the actions scheduled between two dates.
+   * 
+   * If an action has no custom color (null), it is assigned the color 0.
+   * @param start start date
+   * @param end end date
+   * @return a map whose the key = action id and value = color
+   * @throws SQLException 
+   */
   public Map<Integer, Integer> loadColors(Date start, Date end) throws SQLException {
     String query = "SELECT DISTINCT a.id, CASE WHEN c.color IS NULL THEN 0 ELSE c.color END"
-      + " FROM " + TABLE + " a JOIN " + ScheduleIO.TABLE + " p ON (a.id = p.action)"
-      + " LEFT JOIN " + ACTION_COLOR_TABLE + " c ON (p.action = c.idaction)"
-      + " WHERE p.jour BETWEEN '" + start + "' AND '" + end + "'"
-      + " AND p.ptype IN (" + Schedule.COURSE + "," + Schedule.WORKSHOP + "," + Schedule.TRAINING + ")";
-
+            + " FROM " + TABLE + " a JOIN " + ScheduleIO.TABLE + " p ON (a.id = p.action)"
+            + " LEFT JOIN " + ACTION_COLOR_TABLE + " c ON (p.action = c.idaction)"
+            + " WHERE p.jour BETWEEN ? AND ?"
+            + " AND p.ptype IN (" + Schedule.COURSE + "," + Schedule.WORKSHOP + "," + Schedule.TRAINING + ")";
+    ResultSet rs = null;
     Map<Integer, Integer> colors = new HashMap<Integer, Integer>();
-    ResultSet rs = dc.executeQuery(query);
-    while (rs.next()) {
-      colors.put(rs.getInt(1), rs.getInt(2));
+    try (PreparedStatement ps = dc.prepareStatement(query)) {
+      ps.setDate(1, new java.sql.Date(start.getTime()));
+      ps.setDate(2, new java.sql.Date(end.getTime()));
+
+      rs = ps.executeQuery();
+      while (rs.next()) {
+        colors.put(rs.getInt(1), rs.getInt(2));
+      }
+    } catch (SQLException e) {
+      GemLogger.log(e.getMessage());
+    } finally {
+      closeRS(rs);
     }
-    closeRS(rs);
+    System.out.println(colors);
     return colors;
   }
 
   /**
-   * Retrieves the possible color associated with this action {@code id}.
+   * Retrieves the possible custom color of this action {@code id}.
    * @param id action id
    * @return a color or null if no color was defined
    */
   public int getColor(int id) {
     ResultSet rs = null;
+    try {
+      if (colorStatement == null || colorStatement.isClosed()) {
+        colorStatement = dc.prepareStatement(ACTION_COLOR_QUERY);
+      }
+    } catch (SQLException ex) {
+      GemLogger.log(ex.getMessage());
+      return 0;
+    }
     try {
       colorStatement.setInt(1, id);
       rs = colorStatement.executeQuery();

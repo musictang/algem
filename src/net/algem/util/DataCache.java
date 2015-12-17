@@ -1,5 +1,5 @@
 /*
- * @(#)DataCache.java	2.9.4.14 15/12/15
+ * @(#)DataCache.java	2.9.4.14 17/12/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -1114,17 +1114,21 @@ public class DataCache
     return "";
   }
 
+  /**
+   * Retrieves the cached color for this action {@code id}.
+   * @param id action id
+   * @return a color or null if no color was found
+   */
   public static Color getActionColor(int id) {
 
     Integer c = ACTION_COLOR_CACHE.get(id);
     if (c == null) {
       c = ACTION_IO.getColor(id);
-//      if (c != 0) {
-        ACTION_COLOR_CACHE.put(id, c);
-//      }
+      ACTION_COLOR_CACHE.put(id, c); // cache also 0-color actions to avoid subsequent requests
     }
     return c == 0 ? null : new Color(c);
   }
+  
 
   /**
    * Gets a menu item.

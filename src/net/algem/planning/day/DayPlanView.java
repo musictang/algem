@@ -1,5 +1,5 @@
 /*
- * @(#)DayPlanView.java 2.9.4.13 09/11/15
+ * @(#)DayPlanView.java 2.9.4.14 17/12/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -40,7 +40,7 @@ import net.algem.util.DataCache;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.9.4.14
  * @since 1.0a 07/07/1999
  */
 public class DayPlanView
@@ -616,22 +616,18 @@ public class DayPlanView
     }
   }
 
-  public void setTop(int t) {
+  public void setColOffset(int t) {
     colOffset = t;
     img = null;
-//    repaint();
   }
 
   public Rectangle computeScroll() {
-    int r = visibleCols;
     int c = cols.size();
-    int newValue = colOffset;
-    int newExtent = (r == 0 ? 1 : r);
+    int newExtent = (visibleCols == 0 ? 1 : visibleCols);
     int newMin = 0;
     int newMax = c < 0 ? 0 : c + 1;
 
-//    return new Rectangle(colOffset, r == 0 ? 1 : r, 0, c < 0 ? 0 : c);
-    return new Rectangle(newValue,newExtent,newMin,newMax);
+    return new Rectangle(colOffset,newExtent,newMin,newMax);
   }
 
   public List<DayPlan> getCurrentPlanning() {

@@ -1,5 +1,5 @@
 /*
- * @(#)DayPlanTableView.java	2.9.4.8 18/06/15
+ * @(#)DayPlanTableView.java	2.9.4.14 17/12/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -50,7 +50,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.9.4.8
+ * @version 2.9.4.14
  * @since 1.0a 07/07/1999
  */
 public abstract class DayPlanTableView
@@ -157,11 +157,11 @@ public abstract class DayPlanTableView
   /**
    * The value adjusted depends on the of the first visible col.
    * @param e event
-   * @see DayPlanView#setTop(int)
+   * @see DayPlanView#setColOffset(int)
    */
   @Override
   public void adjustmentValueChanged(AdjustmentEvent e) {
-    dayPlanView.setTop(e.getValue());
+    dayPlanView.setColOffset(e.getValue());
     Rectangle r = dayPlanView.computeScroll();
     sb.setValues(r.x, r.y, r.width, r.height);
     repaint();

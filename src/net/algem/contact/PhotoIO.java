@@ -1,5 +1,5 @@
 /*
- * @(#) PhotoIO.java Algem 2.9.4.14 16/12/15
+ * @(#) PhotoIO.java Algem 2.9.4.14 17/12/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -40,15 +40,24 @@ import net.algem.util.model.TableIO;
  * @since 2.9.4.14 09/12/2015
  */
 public class PhotoIO
-  extends TableIO {
+        extends TableIO
+{
 
   public final static String TABLE = "personne_photo";
   private final static String LOAD_QUERY = "SELECT photo FROM " + TABLE + " WHERE idper = ?";
+  private final static String FIND_QUERY = "SELECT idper FROM " + TABLE + " WHERE idper = ?";
   private final static String SAVE_QUERY = "INSERT INTO " + TABLE + " VALUES(?,?)";
+  private final static String UPDATE_QUERY = "UPDATE " + TABLE + " SET photo = ? WHERE idper = ?";
+  private static PreparedStatement SAVE_STMT;
+  private static PreparedStatement FIND_STMT;
+  private static PreparedStatement UPDATE_STMT;
   private DataConnection dc;
 
   public PhotoIO(DataConnection dc) {
     this.dc = dc;
+    SAVE_STMT = dc.prepareStatement(SAVE_QUERY);
+    FIND_STMT = dc.prepareStatement(FIND_QUERY);
+    UPDATE_STMT = dc.prepareStatement(UPDATE_QUERY);
   }
 
   /**
@@ -58,12 +67,45 @@ public class PhotoIO
    * @param data content in bytes
    * @throws SQLException
    */
-  void save(int idper, byte[] data) throws SQLException {
-    PreparedStatement ps = dc.prepareStatement(SAVE_QUERY);
-    ps.setInt(1, idper);
-    ps.setBytes(2, data);
-    ps.executeUpdate();
-    closeStatement(ps);
+  boolean save(int idper, byte[] data) throws SQLException {
+    ResultSet rs = null;
+    try {
+      initStatements();
+    } catch(SQLException ex) {
+      return false;
+    }
+    try {    
+      FIND_STMT.setInt(1, idper);
+      rs = FIND_STMT.executeQuery();
+      if (rs.next()) {
+        UPDATE_STMT = dc.prepareStatement(UPDATE_QUERY);
+        UPDATE_STMT.setBytes(1, data);
+        UPDATE_STMT.setInt(2, idper);
+        UPDATE_STMT.executeUpdate();
+      } else {
+        SAVE_STMT.setInt(1, idper);
+        SAVE_STMT.setBytes(2, data);
+        SAVE_STMT.executeUpdate();
+      }
+      return true;
+    } catch (SQLException ex) {
+      GemLogger.log(ex.getMessage());
+      return false;
+    } finally {
+      closeRS(rs);
+    }
+  }
+  
+  private void initStatements() throws SQLException {
+    if (SAVE_STMT == null || SAVE_STMT.isClosed()) {
+      SAVE_STMT = dc.prepareStatement(SAVE_QUERY);
+    }
+     if (FIND_STMT == null || FIND_STMT.isClosed()) {
+      FIND_STMT = dc.prepareStatement(SAVE_QUERY);
+    }
+      if (UPDATE_STMT == null || UPDATE_STMT.isClosed()) {
+      UPDATE_STMT = dc.prepareStatement(SAVE_QUERY);
+    }
   }
 
   /**

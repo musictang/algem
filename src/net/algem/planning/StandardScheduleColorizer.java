@@ -1,5 +1,5 @@
 /*
- * @(#)StandardScheduleColorizer.java 2.9.4.13 02/11/2015
+ * @(#)StandardScheduleColorizer.java 2.9.4.14 17/12/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -31,7 +31,7 @@ import net.algem.util.DataCache;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.9.4.14
  * @since 2.9.4.13 02/11/2015
  */
 public class StandardScheduleColorizer
@@ -39,20 +39,13 @@ public class StandardScheduleColorizer
 {
 
   private final ColorPrefs colorPrefs;
-//  private final ActionIO actionIO;
 
   public StandardScheduleColorizer() {
     this(new ColorPrefs());
   }
 
-  public StandardScheduleColorizer(ColorPrefs colorPrefs, ActionIO actionIO) {
-    this.colorPrefs = colorPrefs;
-//    this.actionIO = actionIO;
-  }
-
   public StandardScheduleColorizer(ColorPrefs colorPrefs) {
     this.colorPrefs = colorPrefs;
-//    this.actionIO = null;
   }
 
   /**

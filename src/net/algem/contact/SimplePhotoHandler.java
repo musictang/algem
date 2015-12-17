@@ -1,5 +1,5 @@
 /*
- * @(#) SimplePhotoHandler.java Algem 2.9.4.14 16/12/15
+ * @(#) SimplePhotoHandler.java Algem 2.9.4.14 17/12/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -31,7 +31,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
 import javax.imageio.ImageIO;
 import javax.swing.ProgressMonitor;
@@ -174,7 +173,7 @@ public class SimplePhotoHandler
     @Override
     protected Integer doInBackground() throws Exception {
       File[] files = dir.listFiles();
-      Map<Integer, byte[]> filtered = new TreeMap<>();
+      int saved = 0;
       int k = 0;
       int size = files.length;
       for (File f : files) {
@@ -190,7 +189,9 @@ public class SimplePhotoHandler
               buffered = format(buffered);
               byte[] data = getBytesFromImage(buffered);
               if (data != null) {
-                filtered.put(id, data);
+                if (photoIO.save(id,data)) {
+                  saved++;
+                }
               }
             }
           }
@@ -200,7 +201,7 @@ public class SimplePhotoHandler
           GemLogger.log(ex.getMessage());
         }
       }
-      return photoIO.save(filtered);
+      return saved;
     }
 
     @Override
