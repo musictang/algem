@@ -87,8 +87,8 @@ public class DayPlanRoomView
       }
     }
 
-    dayPlanView.repaint();
-    setBar();
+//    dayPlanView.repaint();
+    setScrollBarToZero();
   }
 
   public <T extends ScheduleObject> Vector<T> getPlan(Vector<T> t, int roomId) {
@@ -112,6 +112,7 @@ public class DayPlanRoomView
       all = (Boolean) evt.getNewValue();
       DaySchedule model = (DaySchedule) evt.getSource();
       load(model.getDay(),model.getSchedules(), model.getRanges());
+      setScrollBarToZero();
     } else {
       super.propertyChange(evt);
     }

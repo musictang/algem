@@ -1,5 +1,5 @@
 /*
- * @(#) PhotoHandler.java Algem 2.9.4.14 13/12/2015
+ * @(#) PhotoHandler.java Algem 2.9.4.14 16/12/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -32,12 +32,33 @@ import net.algem.util.model.DataException;
  */
 public interface PhotoHandler {
 
+  /**
+   * Load the picture whose id is equal to the person's number {@code idper}.
+   * @param idper person id
+   * @return a buffered image or null if no image was found
+   */
   public BufferedImage load(int idper);
 
+  /**
+   * Save the photo of the person whose number is {@code idper}.
+   *
+   * @param idper person id
+   * @param file the file to save
+   * @return the image saved or null
+   * @throws DataException if other exception was thrown
+   */
   public BufferedImage save(int idper, File file) throws DataException;
 
+  /**
+   * Import a set of files from source {@code dir}.
+   * @param dir source directory
+   */
   public void importFilesFromDir(File dir);
 
+  /**
+   * Export a set of files to destination {@code dir}.
+   * @param dir destination directory
+   */
   public void exportFilesToDir(File dir);
 
 }

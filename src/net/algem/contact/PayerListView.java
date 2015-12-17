@@ -73,7 +73,7 @@ public class PayerListView
       ResultSet rs = DataCache.getDataConnection().executeQuery(query);
       while (rs.next()) {
         int eid = rs.getInt(1);
-        Person p = ((PersonIO) DataCache.getDao(Model.Person)).findId(eid);
+        Person p = ((PersonIO) DataCache.getDao(Model.Person)).findById(eid);
         if (p != null) {
           personTableModel.addItem(p);
         } else {

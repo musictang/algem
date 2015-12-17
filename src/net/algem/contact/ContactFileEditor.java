@@ -1,6 +1,6 @@
 /*
- * @(#)ContactFileEditor.java	2.9.4.8 24/06/15
- * 
+ * @(#)ContactFileEditor.java	2.9.4.14 16/12/15
+ *
  * Copyright (c) 1998-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.contact;
 
@@ -44,7 +44,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.8
+ * @version 2.9.4.14
  * @since 1.0a 09/07/2002
  */
 public class ContactFileEditor
@@ -70,10 +70,10 @@ public class ContactFileEditor
     note.setForeground(java.awt.Color.red);
     personView = new PersonView();
     infosView = new GemPanel();
-    
+
     infosView.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.lightGray));
     teleView = new TelView(ParamTableIO.find(Category.TELEPHONE.getTable(), Category.TELEPHONE.getCol(), dc));
-    
+
     emailView = new EmailView();
     websiteView = new WebSiteView(ParamTableIO.find(Category.SITEWEB.getTable(), Category.SITEWEB.getCol(), dc));
 
@@ -81,11 +81,11 @@ public class ContactFileEditor
     infosView.add(teleView);
     infosView.add(emailView);
     infosView.add(websiteView);
-    
+
     JScrollPane scp = new JScrollPane(infosView);
     scp.setBorder(null);
     scp.setPreferredSize(new Dimension(400, scp.getPreferredSize().height));
-    
+
     GemPanel addressPanel = new GemPanel();
     addressPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
     addressView = new AddressView();
@@ -94,7 +94,6 @@ public class ContactFileEditor
 
     this.setLayout(new GridBagLayout());
     gb = new GridBagHelper(this);
-//    GemPanel gp = new GemPanel(new GridLayout(1,1));
     GemBorderPanel gp = new GemBorderPanel(new BorderLayout());
 
     gp.add(personView, BorderLayout.WEST);
@@ -120,7 +119,7 @@ public class ContactFileEditor
     emailView.clear();
     websiteView.clear();
     addressView.clear();
-    
+
     if (cbTelAddress != null) {
       cbTelAddress.removeItemListener(this);
       remove(cbTelAddress);
@@ -240,7 +239,7 @@ public class ContactFileEditor
   public void setTele(Vector<Telephone> t) {
     teleView.setTels(t);
   }
-  
+
     public Vector<Telephone> getTele() {
     if (linkTelAddress == false) {
       return teleView.getTels();
@@ -255,11 +254,11 @@ public class ContactFileEditor
   public Vector<Email> getEmail() {
     return emailView.getEmails();
   }
-  
+
   public void setSites(List<WebSite> sites) {
     websiteView.setSites(new Vector<WebSite>(sites));
   }
-  
+
   public Vector<WebSite> getSites() {
     return websiteView.getSites();
   }

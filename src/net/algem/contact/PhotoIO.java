@@ -1,5 +1,5 @@
 /*
- * @(#) PhotoIO.java Algem 2.9.4.14 09/12/2015
+ * @(#) PhotoIO.java Algem 2.9.4.14 16/12/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -31,6 +31,7 @@ import javax.imageio.ImageIO;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
 import net.algem.util.model.DataException;
+import net.algem.util.model.TableIO;
 
 /**
  *
@@ -39,34 +40,49 @@ import net.algem.util.model.DataException;
  * @since 2.9.4.14 09/12/2015
  */
 public class PhotoIO
-{
+  extends TableIO {
 
   public final static String TABLE = "personne_photo";
-  private final PreparedStatement saveStmt;
-  private final PreparedStatement loadStmt;
+  private final static String LOAD_QUERY = "SELECT photo FROM " + TABLE + " WHERE idper = ?";
+  private final static String SAVE_QUERY = "INSERT INTO " + TABLE + " VALUES(?,?)";
   private DataConnection dc;
 
   public PhotoIO(DataConnection dc) {
     this.dc = dc;
-    saveStmt = dc.prepareStatement("INSERT INTO " + TABLE + " VALUES(?,?)");
-    loadStmt = dc.prepareStatement("SELECT photo FROM " + TABLE + " WHERE idper = ?");
   }
 
+  /**
+   * Save an individual photo.
+   *
+   * @param idper person id
+   * @param data content in bytes
+   * @throws SQLException
+   */
   void save(int idper, byte[] data) throws SQLException {
-    saveStmt.setInt(1, idper);
-    saveStmt.setBytes(2, data);
-    saveStmt.executeUpdate();
-    saveStmt.close();
+    PreparedStatement ps = dc.prepareStatement(SAVE_QUERY);
+    ps.setInt(1, idper);
+    ps.setBytes(2, data);
+    ps.executeUpdate();
+    closeStatement(ps);
   }
 
-  int save(Map<Integer, byte[]> map)  {
+  /**
+   * Save a set of photos.
+   * Each photo is represented by its id and its contents in bytes.
+   *
+   * @param map the pictures to save encapsultated in a map
+   * @return the number of pictures saved
+   */
+  int save(Map<Integer, byte[]> map) {
     PreparedStatement foundStmt = dc.prepareStatement("SELECT idper FROM " + TABLE + " WHERE idper = ?");
+    PreparedStatement saveStmt = dc.prepareStatement(SAVE_QUERY);
     int saved = 0;
+    ResultSet rs = null;
     try {
       dc.setAutoCommit(false);
       for (Map.Entry<Integer, byte[]> entry : map.entrySet()) {
         foundStmt.setInt(1, entry.getKey());
-        ResultSet rs = foundStmt.executeQuery();
+        rs = foundStmt.executeQuery();
         if (rs.next()) {
           continue;
         }
@@ -76,7 +92,6 @@ public class PhotoIO
         saved++;
       }
       saveStmt.executeBatch();
-      saveStmt.close();
       dc.commit();
       return saved;
     } catch (SQLException ex) {
@@ -85,31 +100,49 @@ public class PhotoIO
       return -1;
     } finally {
       dc.setAutoCommit(true);
+      closeRS(rs);
+      closeStatement(foundStmt);
+      closeStatement(saveStmt);
     }
   }
 
-
+  /**
+   * Find the photo whose id is equal to the person's number @{code idper}.
+   *
+   * @param idper person id
+   * @return an image
+   * @throws DataException
+   */
   BufferedImage find(int idper) throws DataException {
     BufferedImage img = null;
+    PreparedStatement loadStmt = null;
+    ResultSet rs = null;
     try {
+      loadStmt = dc.prepareStatement(LOAD_QUERY);
       loadStmt.setInt(1, idper);
-      ResultSet rs = loadStmt.executeQuery();
+      rs = loadStmt.executeQuery();
 
       while (rs.next()) {
         byte[] data = rs.getBytes(1);
         ByteArrayInputStream in = new ByteArrayInputStream(data);
         img = ImageIO.read(in);
       }
-      rs.close();
-      loadStmt.close();
-
     } catch (SQLException | IOException ex) {
       GemLogger.logException(ex);
       throw new DataException(ex.getMessage());
+    } finally {
+      closeRS(rs);
+      closeStatement(loadStmt);
     }
     return img;
   }
 
+  /**
+   * Find all the photos saved in database.
+   *
+   * @return a set of photos encapsulated in a map or an empty map if no photo was found
+   * @throws SQLException
+   */
   Map<Integer, byte[]> findAll() throws SQLException {
 
     Map<Integer, byte[]> saved = new HashMap<Integer, byte[]>();

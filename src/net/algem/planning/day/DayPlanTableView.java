@@ -58,7 +58,7 @@ public abstract class DayPlanTableView
         implements AdjustmentListener, PropertyChangeListener, KeyListener
 {
 
-  protected DayPlanView dayPlanView; 
+  protected DayPlanView dayPlanView;
   protected DateDayBar dayBar;
   protected DateFrField date;
   protected GemLabel dayLabel;
@@ -72,7 +72,7 @@ public abstract class DayPlanTableView
 
     dayPlanView = new DayPlanView();
     date = new DateFrField();
-    
+
     ActionListener prevNextListener = new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -106,7 +106,7 @@ public abstract class DayPlanTableView
     btNext.addActionListener(prevNextListener);
     btNow = new GemButton(BundleUtil.getLabel("Action.today.label"));
     btNow.setMargin(prevNextInsets);
-    
+
     GemPanel p = new GemPanel(new FlowLayout(FlowLayout.LEFT));
     p.add(new GemLabel(BundleUtil.getLabel("Day.schedule.prefix.label") + " " + label.toLowerCase() + " : "));
     p.add(dayLabel);
@@ -116,7 +116,7 @@ public abstract class DayPlanTableView
     p.add(btNow);
 
     dayBar = new DateDayBar();
-    
+
     sb = new JScrollBar(JScrollBar.HORIZONTAL);
     sb.addAdjustmentListener(this);
 
@@ -131,20 +131,40 @@ public abstract class DayPlanTableView
     dayPlanView.addKeyListener(this);
   }
 
-  public DateDayBar getBar() {
+  /**
+   * Gets the navigation bar.
+   * @return a navigation component
+   */
+  public DateDayBar getNavigationBar() {
     return dayBar;
   }
 
-  public void setBar() {
+  /**
+   * Position the scrollbar.
+   */
+  public void setScrollBar() {
     Rectangle r = dayPlanView.computeScroll();
     sb.setValues(r.x, r.y, r.width, r.height);
   }
 
+  /**
+   * Position programmatically the scrollbar to 0.
+   */
+  public void setScrollBarToZero() {
+    adjustmentValueChanged(new AdjustmentEvent(sb, AdjustmentEvent.ADJUSTMENT_LAST, AdjustmentEvent.TRACK, 0));
+  }
+
+  /**
+   * The value adjusted depends on the of the first visible col.
+   * @param e event
+   * @see DayPlanView#setTop(int)
+   */
   @Override
   public void adjustmentValueChanged(AdjustmentEvent e) {
     dayPlanView.setTop(e.getValue());
     Rectangle r = dayPlanView.computeScroll();
-    sb.setValues(r.x, r.y, r.width, r.height+1);//on ajoute 1 pour englober toutes les colonnes
+    sb.setValues(r.x, r.y, r.width, r.height);
+    repaint();
   }
 
   public void addActionListener(ActionListener l) {

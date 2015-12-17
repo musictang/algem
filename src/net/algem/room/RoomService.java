@@ -190,7 +190,7 @@ public class RoomService
    * @return a person
    */
   public static Person getPayer(int id) {
-    return ((PersonIO) DataCache.getDao(Model.Person)).findId(id);
+    return ((PersonIO) DataCache.getDao(Model.Person)).findById(id);
   }
 
   public Note getNote(Room r) throws NoteException {

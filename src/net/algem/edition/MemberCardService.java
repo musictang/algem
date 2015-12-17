@@ -135,7 +135,7 @@ public class MemberCardService
   }
 
   String getTeacher(int idTeacher) {
-    Person p = ((PersonIO) DataCache.getDao(Model.Person)).findId(idTeacher);
+    Person p = ((PersonIO) DataCache.getDao(Model.Person)).findById(idTeacher);
     return p == null || p.getId() == 0 ? "" : p.getFirstnameName().trim();
   }
 

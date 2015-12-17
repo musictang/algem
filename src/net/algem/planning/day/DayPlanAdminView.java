@@ -1,22 +1,22 @@
 /*
  * @(#)DayPlanAdminView.java 2.9.4.12 16/09/15
- * 
+ *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
- * 
+ *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Algem is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see http://www.gnu.org/licenses.
- * 
+ *
  */
 
 package net.algem.planning.day;
@@ -40,12 +40,12 @@ import net.algem.util.GemLogger;
  * @version 2.9.4.12
  * @since 2.9.4.0 25/03/2015
  */
-public class DayPlanAdminView 
+public class DayPlanAdminView
   extends DayPlanTableView
 {
 
   private List<Person> staff;
-  
+
   public DayPlanAdminView(List<Person> list) {
     super(BundleUtil.getLabel("Person.type.label"));
     this.staff = list;
@@ -72,11 +72,12 @@ public class DayPlanAdminView
         dayPlanView.addCol(pj);
       }
     }
+    setScrollBarToZero();
+//    setScrollBar();
+//    dayPlanView.repaint();
 
-    dayPlanView.repaint();
-    setBar();
   }
-  
+
   public <T extends ScheduleObject> Vector<T> getSchedule(Vector<T> t, int personId) {
     Vector<T> v = new Vector<T>();
     for (int i = 0; i < t.size(); i++) {
@@ -94,8 +95,8 @@ public class DayPlanAdminView
           }
         }
         else if (range.getPerson() != null && range.getPerson().getId() == personId) {
-          v.addElement(t.elementAt(i)); 
-        } 
+          v.addElement(t.elementAt(i));
+        }
       } else {
         Person p = plan.getPerson();
         if (p != null && p.getId() == personId) {

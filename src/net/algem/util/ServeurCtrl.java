@@ -1,6 +1,6 @@
 /*
- * @(#)ServeurCtrl.java	2.9.4.6 03/06/15
- * 
+ * @(#)ServeurCtrl.java	2.9.4.14 16/12/15
+ *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.util;
 
@@ -36,8 +36,8 @@ import net.algem.util.ui.TableSGBDView;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.6
- * @deprecated 
+ * @version 2.9.4.14
+ * @deprecated
  */
 public class ServeurCtrl
 	extends GemPanel {
@@ -76,7 +76,7 @@ public class ServeurCtrl
 		setLayout(new BorderLayout());
 		add("Center", wCard);
 	}
-    
+
     /**
    * @deprecated
    */
@@ -98,4 +98,19 @@ public class ServeurCtrl
     System.out.println();
     MessagePopup.information(null, message.toString());
   }
+
+
+  /**
+   * Checks if java webstart is running.
+   *
+   * @return true if running
+   */
+//  private boolean isRunningJavaWebStart() {
+//    try {
+//      DownloadService ds = (DownloadService) ServiceManager.lookup("javax.jnlp.DownloadService");
+//      return ds != null;
+//    } catch (UnavailableServiceException e) {
+//      return false;
+//    }
+//  }
 }

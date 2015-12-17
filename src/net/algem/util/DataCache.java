@@ -20,6 +20,7 @@
  */
 package net.algem.util;
 
+import java.awt.Color;
 import javax.swing.JMenuItem;
 import net.algem.Algem;
 import net.algem.Algem.GemBoot;
@@ -127,6 +128,8 @@ public class DataCache
   private static Hashtable<Integer, RehearsalPass> PASS_CARD = new Hashtable<Integer, RehearsalPass>();
   /** Cached action memos. Key = action id, value = Note instance. */
   public static HashMap<Integer, Note> ACTION_MEMO_CACHE = new HashMap<Integer, Note>();
+  /** Cached action colors. Key = action id, value = action color. */
+  public static Map<Integer, Integer> ACTION_COLOR_CACHE = new HashMap<Integer, Integer>();
 
   private static GemList<Course> COURSE_LIST;
   private static GemList<Course> WORKSHOP_LIST;
@@ -423,7 +426,7 @@ public class DataCache
       case Person:
         Person pi = PERSON_CACHE.get(id);
         if (pi == null) {
-          pi = PERSON_IO.findId(id);
+          pi = PERSON_IO.findById(id);
           if (pi != null) {
             PERSON_CACHE.put(id, pi);
           }
@@ -605,12 +608,16 @@ public class DataCache
         TEACHER_LIST.update(t, new TeacherComparator(ConfigUtil.getConf(ConfigKey.PERSON_SORT_ORDER.getKey())));
       }
     } else if (m instanceof Action) {
-      ACTION_CACHE.put(m.getId(), (Action) m);
-      Note n = ((Action) m).getNote();
+      Action a = (Action) m;
+      ACTION_CACHE.put(m.getId(), a);
+      Note n = a.getNote();
       if (n != null) {
         if (n.getIdPer() == 0) {
-          ACTION_MEMO_CACHE.remove(m.getId());
+          ACTION_MEMO_CACHE.remove(a.getId());
         }
+      }
+      if (a.getColor() != 0) {
+        ACTION_COLOR_CACHE.put(a.getId(), a.getColor());
       }
     } else if (m instanceof Vat) {
       VAT_LIST.update((Vat) m, null);
@@ -886,6 +893,7 @@ public class DataCache
     for(Action a : ACTION_IO.load()) {
       ACTION_CACHE.put(a.getId(), a);
     }
+    ACTION_COLOR_CACHE = ACTION_IO.loadColors(getStartOfYear().getDate(), getEndOfYear().getDate());
   }
 
   public static List<OrderLine> findOrderLines(String invoiceId) {
@@ -921,6 +929,12 @@ public class DataCache
 
   }
 
+  /**
+   *
+   * @throws SQLException
+   * @deprecated
+   *
+   */
   private void loadBillingCache() throws SQLException {
     for (Person p : PERSON_IO.load()) {
       PERSON_CACHE.put(p.getId(), p);
@@ -1098,6 +1112,18 @@ public class DataCache
       }
     }
     return "";
+  }
+
+  public static Color getActionColor(int id) {
+
+    Integer c = ACTION_COLOR_CACHE.get(id);
+    if (c == null) {
+      c = ACTION_IO.getColor(id);
+//      if (c != 0) {
+        ACTION_COLOR_CACHE.put(id, c);
+//      }
+    }
+    return c == 0 ? null : new Color(c);
   }
 
   /**

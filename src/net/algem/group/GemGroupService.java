@@ -327,7 +327,7 @@ public class GemGroupService
 
       Room room = ((RoomIO) DataCache.getDao(Model.Room)).findId(rn);
       double amount = RehearsalUtil.calcSingleRehearsalAmount(start, end, room.getRate(), getNumberOfMusicians(g), dc);
-      Person ref = ((PersonIO) DataCache.getDao(Model.Person)).findId(g.getIdref());
+      Person ref = ((PersonIO) DataCache.getDao(Model.Person)).findById(g.getIdref());
       // Echéance référent
       if (ref != null && ref.getId() > 0) {
         PersonFile dossier = ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findId(ref.getId());

@@ -1,6 +1,6 @@
 /*
  * @(#)ScheduleRangeObject.java	2.9.4.13 05/11/15
- * 
+ *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning;
 
@@ -36,7 +36,7 @@ public class ScheduleRangeObject
 {
 
   private static final long serialVersionUID = -49878176623897326L;
-  
+
   private Person member;
   protected int memberId;
   protected int scheduleId;
@@ -74,7 +74,7 @@ public class ScheduleRangeObject
   public Person getMember() {
     return member;
   }
-  
+
   public void setMemberId(int id) {
     this.memberId = id;
   }
@@ -98,5 +98,5 @@ public class ScheduleRangeObject
   public void setNote2(String note2) {
     this.note2 = note2;
   }
-  
+
 }

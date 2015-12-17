@@ -1,5 +1,5 @@
 /*
- * @(#)DataConnection.java	2.9.4.13 21/10/15
+ * @(#)DataConnection.java	2.9.4.14 16/12/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -28,7 +28,7 @@ import java.util.logging.Level;
  * Utility class for database connection.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.9.4.14
  * @since 2.6.a 01/08/2012
  */
 public class DataConnection
@@ -229,8 +229,7 @@ public class DataConnection
       GemLogger.log(Level.INFO, query);
     }
     Statement stmt = createStatement();
-    ResultSet rs = stmt.executeQuery(query);
-    return rs;
+    return stmt.executeQuery(query);
   }
 
   public ResultSet executeQuery(String query, int resultSetType, int resultSetConcurrency) throws SQLException {

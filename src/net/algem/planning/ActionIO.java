@@ -24,7 +24,11 @@ import java.awt.Color;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 import net.algem.config.AgeRange;
 import net.algem.config.GemParam;
@@ -184,7 +188,7 @@ public class ActionIO
             + " WHERE id = " + a.getId();
     dc.executeUpdate(query);
     if (a.getColor() != 0) {
-      if (getColor(a.getId()) != null) {       
+      if (getColor(a.getId()) != 0) {
         query = "UPDATE " + ACTION_COLOR_TABLE + " SET color = " + a.getColor() + " WHERE idaction = " + a.getId();
       } else {
         query = "INSERT INTO " + ACTION_COLOR_TABLE + " VALUES(" + a.getId() + "," + a.getColor() + ")";
@@ -299,22 +303,41 @@ public class ActionIO
             + ".id AND p.jour BETWEEN date_trunc('week', current_date)::date AND date_trunc('week', current_date)::date + 6";
     return find(where);
   }
-  
+
+  public Map<Integer, Integer> loadColors(Date start, Date end) throws SQLException {
+    String query = "SELECT DISTINCT a.id, CASE WHEN c.color IS NULL THEN 0 ELSE c.color END"
+      + " FROM " + TABLE + " a JOIN " + ScheduleIO.TABLE + " p ON (a.id = p.action)"
+      + " LEFT JOIN " + ACTION_COLOR_TABLE + " c ON (p.action = c.idaction)"
+      + " WHERE p.jour BETWEEN '" + start + "' AND '" + end + "'"
+      + " AND p.ptype IN (" + Schedule.COURSE + "," + Schedule.WORKSHOP + "," + Schedule.TRAINING + ")";
+
+    Map<Integer, Integer> colors = new HashMap<Integer, Integer>();
+    ResultSet rs = dc.executeQuery(query);
+    while (rs.next()) {
+      colors.put(rs.getInt(1), rs.getInt(2));
+    }
+    closeRS(rs);
+    return colors;
+  }
+
   /**
    * Retrieves the possible color associated with this action {@code id}.
    * @param id action id
    * @return a color or null if no color was defined
    */
-  public Color getColor(int id) {
+  public int getColor(int id) {
+    ResultSet rs = null;
     try {
       colorStatement.setInt(1, id);
-      ResultSet rs = colorStatement.executeQuery();
+      rs = colorStatement.executeQuery();
       if (rs.next()) {
-        return new Color(rs.getInt(1));
+        return rs.getInt(1);
       }
     } catch (SQLException ex) {
       GemLogger.log(ex.getMessage());
+    } finally {
+      closeRS(rs);
     }
-    return null;
+    return 0;
   }
 }

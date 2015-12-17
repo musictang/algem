@@ -279,7 +279,7 @@ public class ExportService {
     List<Person> list = new ArrayList<Person>();
     ResultSet rs = dc.executeQuery(query);
     while(rs.next()) {
-      list.add(((PersonIO) DataCache.getDao(Model.Person)).findId(rs.getInt(1)));
+      list.add(((PersonIO) DataCache.getDao(Model.Person)).findById(rs.getInt(1)));
     }
     return list;
   }

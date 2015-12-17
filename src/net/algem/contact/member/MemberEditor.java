@@ -215,7 +215,7 @@ public class MemberEditor
       payerName.setText(BundleUtil.getLabel("Himself.label"));
       return;
     }
-    Person p = ((PersonIO) DataCache.getDao(Model.Person)).findId(_id);
+    Person p = ((PersonIO) DataCache.getDao(Model.Person)).findById(_id);
     if (p != null) {
       String org = p.getOrganization();
       payerName.setText(org == null || org.isEmpty() ? p.getFirstnameName() : org);

@@ -1,5 +1,5 @@
 /*
- * @(#)TableIO.java	2.9.2.1 20/02/15
+ * @(#)TableIO.java	2.9.4.14 16/12/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -23,7 +23,9 @@ package net.algem.util.model;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
 import net.algem.util.DataConnection;
+import net.algem.util.GemLogger;
 //import org.apache.commons.lang.StringEscapeUtils;
 
 /**
@@ -31,7 +33,7 @@ import net.algem.util.DataConnection;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2.1
+ * @version 2.9.4.14
  */
 public abstract class TableIO
 {
@@ -69,7 +71,7 @@ public abstract class TableIO
    * Unescape quote characters in the string {@code s}.
    * @param s
    * @return a string
-   * @deprecated 
+   * @deprecated
    */
   public static String unEscape(String s) {
     /*if (s == null || s.indexOf('\'') < 0) {
@@ -146,5 +148,25 @@ public abstract class TableIO
       names[i - 1] = name;
     }
     return names;
+  }
+
+  protected void closeStatement(Statement stmt) {
+    if (stmt != null) {
+      try {
+        stmt.close();
+      } catch (SQLException ignore) {
+        GemLogger.log("close exception " + ignore.getMessage());
+      }
+    }
+  }
+
+  protected void closeRS(ResultSet rs) {
+    if (rs != null) {
+      try {
+        rs.close();
+      } catch (SQLException ignore) {
+        GemLogger.log("close exception " + ignore.getMessage());
+      }
+    }
   }
 }

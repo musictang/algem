@@ -322,7 +322,7 @@ public class MonthPlanView
   public void setBounds(int nx, int ny, int nw, int nh) {
     /*
      * if (nw != d.width || nh != d.height) { in = getInsets();
-     * sb.setBounds(width+in.left, in.top, sbwidth, height); respace();
+     * sb.setBounds(width+in.left, in.colOffset, sbwidth, height); respace();
      */
     super.setBounds(nx, ny, nw, nh);
   }

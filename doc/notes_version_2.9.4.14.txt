@@ -2,6 +2,7 @@
 CORRECTIFS
 * Aucun message n'était affiché après la création d'un nouveau login. Désormais, un message d'erreur ou de réussite vous informe sur les résultats de cette opération. Des optimisations diverses ont été faites par ailleurs au moment de l'enregistrement du nouvel utilisateur.
 * Le changement de ligne n'était pas automatique lorsque l'intitulé d'un rendez-vous administratif s'étendait sur plusieurs lignes (menu Ajouter rendez-vous dans un planning administratif).
+* Les plannings disparaissaient lorsqu'on alternait entre la vue avec Toutes les salles et celle avec seulement les salles occupées si on avait déplacé l'ascenceur vers la droite.
 
 LOGIN
 Vous avez maintenant droit à TROIS ESSAIS POUR VOUS IDENTIFIER en cas de demande de connexion (utilisation Webstart). Auparavant, il vous fallait redémarrer l'application dès le premier échec, ce qui était assez contraignant.
@@ -17,7 +18,7 @@ PHOTO
 Les photos sont désormais enregistrées en base de données. Les photos étant maintenant centralisées, la question du partage de fichiers ne se pose plus et TOUT LE MONDE PEUT DISPOSER DES PHOTOS ENREGISTRÉES QUEL QUE SOIT L'ENDROIT OÙ IL SE TROUVE.
 On ajoute une photo (si aucune encore n'est présente) ou on la modifie en cliquant sur le cadre de la photo à gauche de la fiche personne. Une fenêtre de dialogue vous permet de choisir le fichier image désiré (formats acceptés : jpg, png).
 
-Si vous disposez déjà d'un ensemble de photos, vous pouvez IMPORTER TOUS LES FICHIERS D'UN RÉPERTOIRE en cliquant sur le menu Catalogue -> Importer photos. Les photos déjà présentes en base de données seront remplacées par les photos importées. Choisissez le dossier dans lequel se trouvent vos photos (par défaut, il s'agit du dossier configuré dans la section Fichiers des préférences du logiciel (menu Configuration -> Paramètres -> Généraux). Le nom des fichiers image ne doit pas comporter d'espace et doit être construit sous la forme suivante : <n°contact>.<extension>. Exemples de nom valide : 1568.jpg, 1600.png, etc. Les images doivent être au format jpg ou png.
+Si vous disposez déjà d'un ensemble de photos, vous pouvez IMPORTER TOUS LES FICHIERS D'UN RÉPERTOIRE en cliquant sur le menu Catalogue -> Importer photos. Les photos de même nom déjà présentes en base de données ne seront pas remplacées. Choisissez le dossier dans lequel se trouvent vos photos (par défaut, il s'agit du dossier configuré dans la section Fichiers des préférences du logiciel (menu Configuration -> Paramètres -> Généraux). Le nom des fichiers image ne doit pas comporter d'espace et doit être construit sous la forme suivante : <n°contact>.<extension>. Exemples de noms valides : 1568.jpg, 1600.png, etc. Les images doivent être au format jpg ou png.
 Note : pour des raisons de performance, la taille des photos importées ne doit pas dépasser 1Mo.
 
 Inversement, vous pouvez EXPORTER TOUTES LES PHOTOS ENREGISTRÉES EN BASE DE DONNÉES vers un dossier de votre choix. Cela vous permettra par exemple de récupérer le trombinoscope de vos contacts.

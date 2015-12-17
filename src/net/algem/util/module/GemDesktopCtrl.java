@@ -1,5 +1,5 @@
 /*
- * @(#)GemDesktopCtrl.java	2.9.4.12 28/09/15
+ * @(#)GemDesktopCtrl.java	2.9.4.14 16/12/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -69,7 +69,7 @@ import net.algem.util.ui.UIAdjustable;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.12
+ * @version 2.9.4.14
  * @since 1.0a 05/07/2002
  */
 public class GemDesktopCtrl
@@ -168,11 +168,10 @@ public class GemDesktopCtrl
    * @throws IOException
    */
   private void loadModules() throws IOException {
-    ObjectInputStream ois = null;
-    String path = System.getProperty("user.home") + FileUtil.FILE_SEPARATOR;
-    ois = new ObjectInputStream(new FileInputStream(path + ".gemdesktop"));
 
-    try {
+    String path = System.getProperty("user.home") + FileUtil.FILE_SEPARATOR;
+
+    try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(path + ".gemdesktop"))) {
       java.util.List<GemModuleSID> serList = (ArrayList<GemModuleSID>) ois.readObject();
       for (GemModuleSID sid : serList) {
         if (sid != null) {
@@ -194,14 +193,6 @@ public class GemDesktopCtrl
       }
     } catch (Exception e) {
       GemLogger.logException("GemModuleSid", e);
-    } finally {
-      if (ois != null) {
-        try {
-          ois.close();
-        } catch (IOException ex) {
-          GemLogger.logException(ex);
-        }
-      }
     }
   }
 

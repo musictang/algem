@@ -669,7 +669,7 @@ public class PersonFileEditor
     if (dossier.getMember() != null) {
       // si l'adhérent n'est pas son propre payeur
       if (dossier.getMember().getPayer() != dossier.getId()) {
-        p = ((PersonIO) DataCache.getDao(Model.Person)).findId(dossier.getMember().getPayer());// le payeur de l'adherent
+        p = ((PersonIO) DataCache.getDao(Model.Person)).findById(dossier.getMember().getPayer());// le payeur de l'adherent
         if (p == null) {
           p = dossier.getContact();
         }

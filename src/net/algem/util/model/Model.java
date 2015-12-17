@@ -30,6 +30,7 @@ package net.algem.util.model;
 public enum Model {
   Account,
   Action,
+  ActionColor,
   AgeRange,
   CostAccount,
   Course,

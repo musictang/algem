@@ -1,5 +1,5 @@
 /*
- * @(#)DayScheduleCtrl.java 2.9.4.13 11/11/15
+ * @(#)DayScheduleCtrl.java 2.9.4.14 16/12/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -65,7 +65,7 @@ import net.algem.util.ui.UIAdjustable;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.9.4.14
  * @since 1.0b 06/10/2001
  */
 public class DayScheduleCtrl
@@ -163,7 +163,11 @@ public class DayScheduleCtrl
   }
 
   //XXX dans DataCache + thread
-  public void load(Date date) {
+  /**
+   * Loads all the schedules of the day corresponding to this {@code date}.
+   * @param date date of the day to load
+   */
+  private void load(Date date) {
     desktop.setWaitCursor();
     cal.setTime(date);
     dataCache.setDaySchedule(date);
@@ -231,7 +235,7 @@ public class DayScheduleCtrl
         try {
           new PlanningExportService(
                   new PlanningService(DataCache.getDataConnection()),
-                  new StandardScheduleColorizer(new ColorPrefs(), (ActionIO) DataCache.getDao(Model.Action))
+                  new StandardScheduleColorizer(new ColorPrefs())
           ).exportPlanning(planning, destFile);
           new DesktopOpenHandler().open(destFile.getAbsolutePath());
         } catch (IOException e) {

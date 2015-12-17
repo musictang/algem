@@ -20,6 +20,7 @@
  */
 package net.algem.course;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -45,6 +46,8 @@ public class CourseIO
   public static final String ALIAS = "c";
   public static final String COLUMNS = "c.id, c.titre, c.libelle, c.nplaces, c.niveau, c.collectif, c.code, c.ecole, c.actif";
   public static final String SEQUENCE = "idcours";
+
+  private static final String FIND_BY_ID_QUERY = "SELECT DISTINCT " + COLUMNS + " FROM " + TABLE + " " + ALIAS + " WHERE c.id = ?";
   private DataConnection dc;
 
   public CourseIO(DataConnection _dc) {
@@ -93,22 +96,16 @@ public class CourseIO
     dc.executeUpdate(query);
   }
 
-  public Course findId(String n) throws SQLException {
-    return findId(new Integer(n));
-  }
-
   public Course findId(int n) throws SQLException {
-    return findId(new Integer(n));
-  }
-
-  public Course findId(Integer n) throws SQLException {
-
-    String query = "WHERE c.id = " + n;
-
-    Vector<Course> v = find(query);
-    if (v != null && v.size() > 0) {
-      return v.elementAt(0);
+    PreparedStatement ps = dc.prepareStatement(FIND_BY_ID_QUERY);
+    ps.setInt(1, n);
+    ResultSet rs = ps.executeQuery();
+    while(rs.next()) {
+      return getCourseFromRS(rs);
     }
+    closeRS(rs);
+    closeStatement(ps);
+
     return null;
   }
 
@@ -120,24 +117,28 @@ public class CourseIO
     Vector<Course> v = new Vector<Course>();
 
     String query = "SELECT DISTINCT " + COLUMNS + " FROM " + TABLE + " " + ALIAS + " " + where;
-    ResultSet rs = dc.executeQuery(query);
-    while (rs.next()) {
-      Course c = new Course();
-      c.setId(rs.getInt(1));
-      c.setTitle(unEscape(rs.getString(2).trim()));
-      c.setLabel(unEscape(rs.getString(3).trim()));
-      //c.setNSessions(rs.getShort(4));
-      c.setNPlaces(rs.getShort(4));
-      c.setLevel(rs.getShort(5));
-      c.setCollective(rs.getBoolean(6));
-      c.setCode(rs.getInt(7));
-      c.setSchool(rs.getShort(8));
-      c.setActive(rs.getBoolean(9));// ajout 1.1d
-      v.addElement(c);
+    try (ResultSet rs = dc.executeQuery(query)) {
+      while (rs.next()) {
+        v.addElement(getCourseFromRS(rs));
+      }
     }
-    rs.close();
 
     return v;
+  }
+
+  private Course getCourseFromRS(ResultSet rs) throws SQLException {
+    Course c = new Course();
+    c.setId(rs.getInt(1));
+    c.setTitle(unEscape(rs.getString(2).trim()));
+    c.setLabel(unEscape(rs.getString(3).trim()));
+    //c.setNSessions(rs.getShort(4));
+    c.setNPlaces(rs.getShort(4));
+    c.setLevel(rs.getShort(5));
+    c.setCollective(rs.getBoolean(6));
+    c.setCode(rs.getInt(7));
+    c.setSchool(rs.getShort(8));
+    c.setActive(rs.getBoolean(9));
+    return c;
   }
 
   @Override

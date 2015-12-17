@@ -1,5 +1,5 @@
 /*
- * @(#)PersonView.java	2.9.4.14 09/12/15
+ * @(#)PersonView.java	2.9.4.14 16/12/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -35,7 +35,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.logging.Level;
-import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import net.algem.contact.member.PersonSubscriptionCard;
@@ -61,6 +60,8 @@ import net.algem.util.ui.*;
 public class PersonView
   extends GemPanel {
 
+  private static final PhotoHandler photoHandler = new SimplePhotoHandler(DataCache.getDataConnection());
+
   private GemNumericField no;
   private GemField name;
   private GemField firstname;
@@ -69,15 +70,20 @@ public class PersonView
   private JCheckBox cbPartner;
   private GemField organization;
   private GemField nickname;
+
+  /** Picture frame location. */
   private JLabel photoField;
+
+  /** Rest info on subscription card. */
   private GemLabel cardLabel;
+
   /** Rest time on subscription card. */
   private GemLabel cardInfo;
+
   private GemDesktop desktop;
   private GridBagHelper gb;
   private short ptype = Person.PERSON;
   private FileFilter photoFilter;
-  private PhotoHandler photoHandler;
 
   public PersonView() {
     init();
@@ -121,7 +127,9 @@ public class PersonView
     photoField = new JLabel();
     photoPanel.add(photoField);
     photoPanel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+    photoPanel.setToolTipText(BundleUtil.getLabel("Photo.add.tip"));
     photoPanel.addMouseListener(new MouseAdapter() {
+      @Override
       public void mouseClicked(MouseEvent m) {
         savePhoto(Integer.parseInt(no.getText()));
       }
@@ -159,12 +167,12 @@ public class PersonView
     cbImgRights.setSelected(p.hasImgRights());
     cbPartner.setSelected(p.isPartnerInfo());
     organization.setText(p.getOrganization());
+    ptype = p.getType();
     loadPhoto(p);
   }
 
   private void loadPhoto(Person p) {
     if (p.getType() == Person.PERSON || p.getType() == Person.ROOM) {
-      photoHandler = new SimplePhotoHandler(DataCache.getDataConnection());
       BufferedImage img = photoHandler.load(p.getId());
       if (img == null) {
         img = getPhotoDefault();
@@ -176,9 +184,11 @@ public class PersonView
 
   private void savePhoto(int idper) {
     try {
-      File file = FileUtil.getFile(this, BundleUtil.getLabel("FileChooser.selection"),
-        "",
-        "Fichiers image",
+      File file = FileUtil.getFile(
+        this,
+        BundleUtil.getLabel("FileChooser.selection"),
+        null,
+        MessageUtil.getMessage("filechooser.image.filter.label"),
         "jpg", "jpeg", "JPG", "JPEG", "png");
       if (file != null) {
         BufferedImage img = photoHandler.save(idper, file);
@@ -197,6 +207,7 @@ public class PersonView
    *
    * @param orig original photo image
    * @return an image icon or null if no image has been processed
+   * @deprecated
    */
   private ImageIcon getImageIcon(final BufferedImage orig) {
     ImageIcon icon = null;
@@ -233,6 +244,7 @@ public class PersonView
    * @param configDir photo dir
    * @param idper person's id
    * @return a buffered image if a resource has been found or null otherwhise
+   * @deprecated
    */
   private BufferedImage getPhoto(String configDir, int idper) {
 
@@ -350,35 +362,6 @@ public class PersonView
     }
     gb.add(groupsPanel, 0, 7, 1, 1, GridBagHelper.WEST);
 
-  }
-
-  /**
-   * Checks if java webstart is running.
-   *
-   * @return true if running
-   */
-//  private boolean isRunningJavaWebStart() {
-//    try {
-//      DownloadService ds = (DownloadService) ServiceManager.lookup("javax.jnlp.DownloadService");
-//      return ds != null;
-//    } catch (UnavailableServiceException e) {
-//      return false;
-//    }
-//  }
-
-  class PhotoFileFilter
-    implements FileFilter {
-
-    private Pattern pattern;
-
-    PhotoFileFilter(int idper) {
-      pattern = Pattern.compile("^" + idper + "\\.(jpg|jpeg|JPG|JPEG|png|PNG)$");
-    }
-
-    @Override
-    public boolean accept(File pathname) {
-      return pattern.matcher(pathname.getName()).matches();
-    }
   }
 
 }

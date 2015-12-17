@@ -73,7 +73,7 @@ public abstract class ScheduleCanvas
   }
   protected int GRID_Y = (1440 - H_START) /30;
 
-  protected int top;
+  protected int colOffset;
   protected int step_x;
   protected int step_y;
   protected ActionListener listener;
@@ -83,8 +83,8 @@ public abstract class ScheduleCanvas
   protected int clickY;
   protected Image img;
   protected ColorPrefs colorPrefs = new ColorPrefs();
-  protected Cacheable actionIO = DataCache.getDao(Model.Action);
-  protected ScheduleColorizer colorizer = new StandardScheduleColorizer(colorPrefs, (ActionIO) actionIO);
+//  protected Cacheable actionIO = DataCache.getDao(Model.Action);
+  protected ScheduleColorizer colorizer = new StandardScheduleColorizer(colorPrefs);
 
   public void removeActionListener(ActionListener l) {
     listener = AWTEventMulticaster.remove(listener, l);
@@ -275,7 +275,7 @@ public abstract class ScheduleCanvas
   }
 
    protected int setX(int col, int spacing) {
-    return LEFT_MARGIN + spacing + ((col - top) * step_x);
+    return LEFT_MARGIN + spacing + ((col - colOffset) * step_x);
   }
 
   protected int setY(int start) {

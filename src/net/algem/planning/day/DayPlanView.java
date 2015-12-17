@@ -48,7 +48,7 @@ public class DayPlanView
         implements Printable
 {
 
-  private int ncols = 5;
+  private int visibleCols = 5;
   private int lineHeight;
   private FontMetrics fm;
   private Dimension dim;
@@ -137,7 +137,7 @@ public class DayPlanView
    */
   @Override
   public void drawBackground() {
-    ncols = dim.width / step_x;
+    visibleCols = dim.width / step_x;
     drawGrid();
     if (cols == null) {
       return;
@@ -155,7 +155,7 @@ public class DayPlanView
       }
     };
     int dow = cal.get(Calendar.DAY_OF_WEEK);
-    for (int i = top; i < top + ncols && i < cols.size(); i++) {
+    for (int i = colOffset; i < colOffset + visibleCols && i < cols.size(); i++) {
       DayPlan pj = cols.elementAt(i);
       DailyTimes dt = pj.getDailyTime(dow);
       if (dt != null) {
@@ -166,7 +166,7 @@ public class DayPlanView
       drawScheduleFlag(i, pj.getSchedule());// must be the last
     }
 
-    for (int i = top; i < top + ncols && i < cols.size(); i++) {
+    for (int i = colOffset; i < colOffset + visibleCols && i < cols.size(); i++) {
       DayPlan pj = (DayPlan) cols.elementAt(i);
       Vector<ScheduleObject> v = pj.getSchedule();
       ScheduleObject prv = new CourseSchedule();
@@ -204,7 +204,7 @@ public class DayPlanView
     int x = LEFT_MARGIN + (step_x / 2) + 1;
     int y = lineHeight;
     // Column headers
-    for (int i = top; i < top + ncols && i < cols.size(); i++) {
+    for (int i = colOffset; i < colOffset + visibleCols && i < cols.size(); i++) {
       DayPlan p = cols.elementAt(i);
       String s = p.getLabel();
       int w = fm.stringWidth(s) + 4;
@@ -508,7 +508,7 @@ public class DayPlanView
 
   @Override
   public void flagNotPaid(int colonne, int deb, int fin, Color c) {
-    int x = LEFT_MARGIN + 2 + ((colonne - top) * step_x);
+    int x = LEFT_MARGIN + 2 + ((colonne - colOffset) * step_x);
     int y = setY(deb);
     bg.setColor(colorPrefs.getColor(ColorPlan.FLAG));
     bg.drawString("$$$", x, y + 12);
@@ -534,7 +534,7 @@ public class DayPlanView
     int y = clickY - TOP_MARGIN - 2;
 
     int col = x / step_x;
-    col += top;
+    col += colOffset;
 //		int	col = ((x + (step_x)/2) / step_x) + 1;
     if (col >= 0 && col < cols.size()) {
       return ((DayPlan) cols.elementAt(col)).getId();
@@ -565,11 +565,11 @@ public class DayPlanView
     Calendar c = (Calendar) cal.clone();
     c.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DATE), hh, mm);
 
-    if (col + top >= cols.size()) {
+    if (col + colOffset >= cols.size()) {
       return;
     }
 
-    DayPlan pj = cols.elementAt(col + top);
+    DayPlan pj = cols.elementAt(col + colOffset);
     Vector<ScheduleObject> v = pj.getSchedule();
     clickSchedule = null;
     Hour hc = new Hour(hh, mm);
@@ -617,15 +617,21 @@ public class DayPlanView
   }
 
   public void setTop(int t) {
-    top = t;
+    colOffset = t;
     img = null;
-    repaint();
+//    repaint();
   }
 
   public Rectangle computeScroll() {
-    int r = ncols;
+    int r = visibleCols;
     int c = cols.size();
-    return new Rectangle(top, r == 0 ? 1 : r, 0, c < 0 ? 0 : c);
+    int newValue = colOffset;
+    int newExtent = (r == 0 ? 1 : r);
+    int newMin = 0;
+    int newMax = c < 0 ? 0 : c + 1;
+
+//    return new Rectangle(colOffset, r == 0 ? 1 : r, 0, c < 0 ? 0 : c);
+    return new Rectangle(newValue,newExtent,newMin,newMax);
   }
 
   public List<DayPlan> getCurrentPlanning() {

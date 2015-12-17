@@ -81,7 +81,7 @@ public class AtelierInstrumentsServiceImpl
           PersonInstrumentRow row;
           AtelierInstrument atelierInstrument = atelierInstrumentsDAO.find(action.getId(), person.getId());
           if (atelierInstrument != null) {
-            //Instrument instrument = InstrumentIO.findId(atelierInstrument.getIdInstrument(), dc);
+            //Instrument instrument = InstrumentIO.findById(atelierInstrument.getIdInstrument(), dc);
             Instrument instrument = (Instrument) DataCache.findId(atelierInstrument.getIdInstrument(), Model.Instrument);
             row = new PersonInstrumentRow(person, instrument);
           } else {
@@ -127,7 +127,7 @@ public class AtelierInstrumentsServiceImpl
     List<Integer> ids = atelierInstrumentsDAO.getInstrumentIdsForPerson(person.getId());
     List<Instrument> instruments = new ArrayList<>(ids.size());
     for (Integer id : ids) {
-      //instruments.add(InstrumentIO.findId(id, dc));
+      //instruments.add(InstrumentIO.findById(id, dc));
       instruments.add((Instrument) DataCache.findId(id, Model.Instrument));
     }
     return instruments;
@@ -142,12 +142,12 @@ public class AtelierInstrumentsServiceImpl
   public Instrument getAllocatedInstrument(int actionId, int personId) throws Exception {
     AtelierInstrument atelierInstrument = atelierInstrumentsDAO.find(actionId, personId);
     if (atelierInstrument != null) {
-      //return InstrumentIO.findId(atelierInstrument.getIdInstrument(), dc);
+      //return InstrumentIO.findById(atelierInstrument.getIdInstrument(), dc);
       return (Instrument) DataCache.findId(atelierInstrument.getIdInstrument(), Model.Instrument);
     } else {
       List<Integer> ids = atelierInstrumentsDAO.getInstrumentIdsForPerson(personId);
       if (ids.size() > 0) {
-        //return InstrumentIO.findId(ids.get(0), dc);
+        //return InstrumentIO.findById(ids.get(0), dc);
         return (Instrument) DataCache.findId(ids.get(0), Model.Instrument);
       }
     }

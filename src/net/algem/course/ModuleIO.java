@@ -213,7 +213,7 @@ public class ModuleIO
 
   public void addPreset(Preset<Integer> p) throws SQLException {
     Integer[] modules = p.getValue();
-    int idx = TableIO.nextId(PRESET_SELECTION_SEQUENCE, dc);
+    int idx = nextId(PRESET_SELECTION_SEQUENCE, dc);
     String query = "INSERT into " + PRESET_SELECTION_TABLE + " VALUES(" + idx + ",E'"+ TableIO.escape(p.getName()) + "','" + dc.createArray("integer", modules) + "')";
     p.setId(idx);
     dc.executeUpdate(query);

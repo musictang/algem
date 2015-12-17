@@ -118,7 +118,7 @@ public class WorkshopIO
     ResultSet rs = dc.executeQuery(query);
     while (rs.next()) {
       int idper = rs.getInt(1);
-      Person p = ((PersonIO) DataCache.getDao(Model.Person)).findId(idper);
+      Person p = ((PersonIO) DataCache.getDao(Model.Person)).findById(idper);
       Musician m = new Musician(p);
       m.setInstrument(rs.getInt(2));
       v.addElement(m);

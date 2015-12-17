@@ -174,7 +174,7 @@ public class GroupIO
     String query = "SELECT musicien FROM " + TABLE_DETAIL + " WHERE id = " + id;
     ResultSet rs = dc.executeQuery(query);
     while (rs.next()) {
-      Person p = ((PersonIO) DataCache.getDao(Model.Person)).findId(rs.getInt(1));//musicien
+      Person p = ((PersonIO) DataCache.getDao(Model.Person)).findById(rs.getInt(1));//musicien
       if (p != null) {
         Musician m = new Musician(p);//personne, instrument
         List<Integer> li = InstrumentIO.find(p.getId(), Instrument.MUSICIAN, dc);

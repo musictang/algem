@@ -1,6 +1,6 @@
 /*
  * @(#)PersonIO.java 2.9.4.14 15/12/15
- * 
+ *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.contact;
 
@@ -54,16 +54,16 @@ public class PersonIO
   public static final String ALIAS = "p";
   public static final String COLUMNS = "p.id,p.ptype,p.nom,p.prenom,p.civilite,p.droit_img,p.organisation,p.partenaire,p.pseudo";
   public static final String SEQUENCE = "idper";
-  
+
   /** Next column number in joined queries. */
   public static final int PERSON_COLUMNS_OFFSET = 10;
-  private final PreparedStatement findIdPreparedStmt;
+  private static final String FIND_BY_ID_QUERY = "SELECT * FROM " + TABLE + " WHERE id = ? LIMIT 1";
+
   private DataConnection dc;
-  
+
 
   public PersonIO(DataConnection _dc) {
     this.dc = _dc;
-    findIdPreparedStmt = dc.prepareStatement("SELECT * FROM " + TABLE + " WHERE id = ? LIMIT 1");
   }
 
   public void insert(Person p) throws SQLException {
@@ -77,7 +77,7 @@ public class PersonIO
             + "','" + p.getGender()
             + "','" + (p.hasImgRights() ? "t" : "f") // t pour non autorisation, f pour autorisation image
             + (p.getOrganization() == null || p.getOrganization().isEmpty() ? "',NULL" : "','" + escape(p.getOrganization()) + "'")
-            + ",'" + (p.isPartnerInfo() ? "t" : "f") 
+            + ",'" + (p.isPartnerInfo() ? "t" : "f")
             + (p.getNickName() == null || p.getNickName().isEmpty() ? "',NULL" : "','" + escape(p.getNickName()) + "'") + ")";
 
     dc.executeUpdate(query);
@@ -105,28 +105,22 @@ public class PersonIO
     dc.executeUpdate(query);
   }
 
-  public Person findId(String n) {
-    return findId(new Integer(n));
+  public Person findById(String n) {
+    return PersonIO.this.findById(new Integer(n));
   }
 
-  public Person findId(int n) {
+  public Person findById(int n) {
     ResultSet rs = null;
-    try {
-      findIdPreparedStmt.setInt(1, n);
-      rs = findIdPreparedStmt.executeQuery();
+    try(PreparedStatement ps = dc.prepareStatement(FIND_BY_ID_QUERY)) {
+      ps.setInt(1, n);
+      rs = ps.executeQuery();
       while(rs.next()) {
         return getFromRS(rs);
       }
     } catch (SQLException ex) {
       GemLogger.logException(ex);
     } finally {
-      if (rs != null) {
-        try {
-          rs.close();
-        } catch (SQLException ex) {
-          GemLogger.logException(ex);
-        }
-      }
+      closeRS(rs);
     }
     return null;
   }
@@ -212,9 +206,9 @@ public class PersonIO
     List<Integer> ids = getPersonsIdsForAction(action.getId());
     List<Person> result = new ArrayList<>(ids.size());
     for (Integer id : ids) {
-      result.add(findId(id));
+      result.add(PersonIO.this.findById(id));
     }
     return result;
   }
-  
+
 }

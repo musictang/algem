@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleIO.java	2.9.4.12 17/09/15
+ * @(#)ScheduleIO.java	2.9.4.14 16/12/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -42,7 +42,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.12
+ * @version 2.9.4.14
  */
 public class ScheduleIO
         extends TableIO
@@ -370,7 +370,7 @@ public class ScheduleIO
       dc.setAutoCommit(true);
     }
   }
-  
+
    private static int createFollowUp(String text, DataConnection dc) throws SQLException {
     int num = nextId(FOLLOW_UP_SEQUENCE, dc);
     String query = "INSERT INTO " + FOLLOW_UP_TABLE + " VALUES(" + num + ",'" + escape(text) + "')";
@@ -388,7 +388,7 @@ public class ScheduleIO
    * @param noteId
    * @param dc data Connection
    * @return a text or an empty string if there is no text for this note
-   * @throws SQLException 
+   * @throws SQLException
    */
   public static String findFollowUp(int noteId, DataConnection dc) throws SQLException {
 
@@ -406,10 +406,10 @@ public class ScheduleIO
    * @param rangeId range Id
    * @param dc data connection
    * @return a text or an empty string if there is no text for this note
-   * @throws SQLException 
+   * @throws SQLException
    */
   public static Note getCollectiveFollowUpByRange(int rangeId, DataConnection dc) throws SQLException {
- 
+
     Note n = null;
     String query = "SELECT s.id, s.texte FROM " + FOLLOW_UP_TABLE + " s, " + ScheduleRangeIO.TABLE + " pg, " + ScheduleIO.TABLE + " p"
             + " WHERE pg.id = " + rangeId + " AND pg.idplanning = p.id AND p.note > 0 AND p.note = s.id ";

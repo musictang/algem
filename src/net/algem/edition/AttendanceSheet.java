@@ -317,7 +317,7 @@ public class AttendanceSheet
 
     for (int i = 0; i < v.size(); i++) {
       ScheduleRange h = v.elementAt(i);
-      Person p = ((PersonIO) DataCache.getDao(Model.Person)).findId(h.getMemberId());
+      Person p = ((PersonIO) DataCache.getDao(Model.Person)).findById(h.getMemberId());
       g.drawString(h.getStart().toString() + "-" + h.getEnd().toString(), 25, line += 10);
       if (p != null) {
         g.drawString(p.getFirstName() + " " + p.getName(), 25, line += 10);

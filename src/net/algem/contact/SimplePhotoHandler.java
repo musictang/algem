@@ -1,5 +1,5 @@
 /*
- * @(#) SimplePhotoHandler.java Algem 2.9.4.14 13/12/2015
+ * @(#) SimplePhotoHandler.java Algem 2.9.4.14 16/12/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -47,15 +47,20 @@ import net.algem.util.ui.MessagePopup;
 import net.algem.util.ui.ProgressMonitorHandler;
 
 /**
+ * Class charged to save and load the photos of the contacts.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.9.4.14
  * @since 2.9.4.14 09/12/2015
  */
 public class SimplePhotoHandler
-  implements PhotoHandler {
+  implements PhotoHandler
+{
 
+  /** Instance of DAO. */
   private PhotoIO photoIO;
+
+  /** Parent component frame. */
   private Component parent;
 
   public SimplePhotoHandler(Component parent, DataConnection dc) {
@@ -125,6 +130,12 @@ public class SimplePhotoHandler
 
   }
 
+  /**
+   * Convert an image to byte array.
+   *
+   * @param img the image to convert
+   * @return a byte array or null if an exception was thrown
+   */
   private byte[] getBytesFromImage(BufferedImage img) {
     try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
       ImageIO.write(img, "jpg", out);
@@ -136,15 +147,25 @@ public class SimplePhotoHandler
     }
   }
 
+  /**
+   * Rescale the image to standard ID photo size.
+   *
+   * @param img the image to format
+   * @return the image formatted
+   */
   private BufferedImage format(BufferedImage img) {
     BufferedImage bimg = ImageUtil.rescale(img);
     return ImageUtil.cropPhotoId(bimg);
   }
 
+  /**
+   * Async task dedicated to the export of a set of photos.
+   */
   class PhotoImportTask
     extends SwingWorker<Integer, Void> {
 
-    private File dir;
+    /** Destination directory. */
+    private final File dir;
 
     public PhotoImportTask(File dir) {
       this.dir = dir;
@@ -201,10 +222,14 @@ public class SimplePhotoHandler
 
   }
 
+  /**
+   * Async task dedicated to the import of a set of photos.
+   */
   class PhotoExportTask
     extends SwingWorker<Integer, Void> {
 
-    private File dir;
+    /** Source directory.*/
+    private final File dir;
 
     public PhotoExportTask(File dir) {
       this.dir = dir;

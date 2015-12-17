@@ -25,9 +25,7 @@ import java.awt.Color;
 import java.sql.SQLException;
 import javax.swing.JDialog;
 import net.algem.planning.Action;
-import net.algem.planning.ActionIO;
 import net.algem.util.DataCache;
-import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
 
 /**
@@ -51,7 +49,8 @@ class ModifPlanActionDlg
     id = a.getId();
     courseId = a.getCourse();
     this.defaultColor = defaultColor;
-    Color c = ((ActionIO) DataCache.getDao(Model.Action)).getColor(a.getId());
+//    Color c = ((ActionIO) DataCache.getDao(Model.Action)).getColor(a.getId());
+    Color c = DataCache.getActionColor(id);
     if (c != null) {
       a.setColor(c.getRGB());
     }
@@ -88,7 +87,7 @@ class ModifPlanActionDlg
       }
     }
     a.setNote(pv.getNote());
-    
+
     return a;
   }
 

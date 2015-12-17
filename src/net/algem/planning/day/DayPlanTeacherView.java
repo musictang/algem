@@ -20,18 +20,14 @@
  */
 package net.algem.planning.day;
 
-import java.sql.SQLException;
 import java.util.Vector;
 import net.algem.contact.Person;
 import net.algem.contact.teacher.Teacher;
 import net.algem.planning.CourseSchedule;
 import net.algem.planning.Schedule;
 import net.algem.planning.ScheduleObject;
-import net.algem.planning.ScheduleRangeIO;
 import net.algem.planning.ScheduleRangeObject;
 import net.algem.util.BundleUtil;
-import net.algem.util.DataCache;
-import net.algem.util.GemLogger;
 import net.algem.util.model.GemList;
 
 /**
@@ -81,8 +77,8 @@ public class DayPlanTeacherView
       }
     }
 
-    dayPlanView.repaint();
-    setBar();
+//    dayPlanView.repaint();
+    setScrollBarToZero();
   }
 
   public <T extends ScheduleObject> Vector<T> getSchedule(Vector<T> t, int teacherId) {

@@ -190,7 +190,7 @@ public class EnrolmentListCtrl
   private void suppression(int n) throws SQLException {
     try {
       MemberOrder cmd = (MemberOrder) orderTableModel.getItem(n);
-      Person p = ((PersonIO) DataCache.getDao(Model.Person)).findId(cmd.getMember());
+      Person p = ((PersonIO) DataCache.getDao(Model.Person)).findById(cmd.getMember());
       if (!MessagePopup.confirm(this,
               MessageUtil.getMessage("enrolment.delete.confirmation", new Object[]{cmd.getId(), p.getFirstnameName()}),
               "Suppression inscription")) {

@@ -919,7 +919,7 @@ public class PlanningService
     ScheduleRangeIO.delete(where, dc);
   }
 
-  
+
   /**
    * Modifies an individual followup note.
    *
@@ -962,7 +962,7 @@ public class PlanningService
     }
 
   }
-  
+
   /**
    * Gets the contents of the note with id {@code noteId}.
    *
@@ -979,12 +979,12 @@ public class PlanningService
    * The note is common to all persons present in the schedule.
    * @param rangeId range number
    * @return a text or an empty string if no text exists
-   * @throws SQLException 
+   * @throws SQLException
    */
   public Note getCollectiveFollowUpByRange(int rangeId) throws SQLException {
     return ScheduleIO.getCollectiveFollowUpByRange(rangeId, dc);
   }
-  
+
   /**
    * Creates a note for collective follow-up.
    *
@@ -995,7 +995,7 @@ public class PlanningService
   public void createCollectiveFollowUp(ScheduleObject plan, String text) throws PlanningException {
     ScheduleIO.createCollectiveFollowUp(plan, text, dc);
   }
-  
+
   /**
    * Creates a note for individual follow-up.
    *
@@ -1087,7 +1087,7 @@ public class PlanningService
           } else {
             NoteIO.update(n, dc);
           }
-        } 
+        }
         return null;
       }
     });
@@ -1129,7 +1129,7 @@ public class PlanningService
   public Vector<ScheduleObject> getSchedule(String where) throws SQLException {
     return ScheduleIO.findObject(where, dc);
   }
-  
+
   /**
    * Gets a schedule including the range with Id {@code rangeId}.
    * @param rangeId range Id

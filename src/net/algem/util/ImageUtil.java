@@ -1,5 +1,5 @@
 /*
- * @(#)ImageUtil.java	2.9.3.1 02/03/15
+ * @(#)ImageUtil.java	2.9.4.14 16/12/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -23,15 +23,18 @@ package net.algem.util;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileFilter;
 import java.net.URL;
+import java.util.regex.Pattern;
 import javax.swing.ImageIcon;
 import net.algem.accounting.AccountUtil;
 
 /**
  * Utility class for image operations.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.3.1
+ * @version 2.9.4.14
  */
 public class ImageUtil
 {
@@ -61,11 +64,11 @@ public class ImageUtil
   public static BufferedImage rescale(BufferedImage img) {
   	return rescale(img, PHOTO_ID_WIDTH, PHOTO_ID_HEIGHT);
   }
-  
-  
+
+
   /**
    * Proportional resizing of an image.
-   * @param img 
+   * @param img
    * @param nw new width
    * @param nh new heigth
    * @return a buffered image
@@ -108,7 +111,7 @@ public class ImageUtil
         double half_width = width / 2;
         //System.out.println("half width "+half_width);
         x = (int) (half_width - (PHOTO_ID_WIDTH / 2));
-        //System.out.println("x = "+x);      
+        //System.out.println("x = "+x);
         BufferedImage img2 = img.getSubimage(x, 0, PHOTO_ID_WIDTH, h);
         return img2;
       } else {
@@ -132,7 +135,7 @@ public class ImageUtil
 
   /**
    * Converts mm value in inches.
-   * @param mm 
+   * @param mm
    * @return value in inches
    */
   public static double toInch(double mm) {
@@ -142,7 +145,7 @@ public class ImageUtil
 
   /**
    * Converts mm value in points.
-   * @param mm 
+   * @param mm
    * @return a value in points
    */
   public static int toPoints(double mm) {
@@ -166,11 +169,26 @@ public class ImageUtil
 
   /**
    * Converts inches to points (1/72 inch) value.
-   * @param inches 
+   * @param inches
    * @return a value in points
    */
   private static double toPoints2(double inches) {
     return inches * 72;
+  }
+
+  class PhotoFileFilter
+    implements FileFilter {
+
+    private Pattern pattern;
+
+    PhotoFileFilter(int idper) {
+      pattern = Pattern.compile("^" + idper + "\\.(jpg|jpeg|JPG|JPEG|png|PNG)$");
+    }
+
+    @Override
+    public boolean accept(File pathname) {
+      return pattern.matcher(pathname.getName()).matches();
+    }
   }
 
 }

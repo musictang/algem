@@ -1,6 +1,6 @@
 /*
- * @(#)CourseCtrl.java	2.8.y 29/09/14
- * 
+ * @(#)CourseCtrl.java	2.9.4.14 16/12/15
+ *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.course;
 
@@ -41,7 +41,7 @@ import net.algem.util.ui.SearchCtrl;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.y
+ * @version 2.9.4.14
  */
 public class CourseCtrl
         extends CardCtrl
@@ -51,17 +51,17 @@ public class CourseCtrl
   private CourseEnrolmentView iv;
   private Course course;
   private String [] errors = new String[3];
-  
+
   private final GemDesktop desktop;
   private final DataCache dataCache;
   private final EnrolmentService enrolService;
-  private final ModuleService service;
+  private final ModuleService moduleService;
 
   public CourseCtrl(GemDesktop desktop) {
     this.desktop = desktop;
     dataCache = desktop.getDataCache();
     enrolService = new EnrolmentService(dataCache);
-    service = new ModuleService(DataCache.getDataConnection());
+    moduleService = new ModuleService(DataCache.getDataConnection());
 
     cv = new CourseView(
             dataCache.getList(Model.CourseCode),
@@ -88,7 +88,7 @@ public class CourseCtrl
 
   @Override
   public boolean cancel() {
-    
+
     if (actionListener != null) {
       if (actionListener instanceof SearchCtrl) {
       actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "CtrlValider"));
@@ -105,10 +105,10 @@ public class CourseCtrl
   public boolean prev() {
     switch (step) {
       case 0:
-        
+
         try {
           if (dataCache.authorize("Course.suppression.auth")) {
-            service.delete(cv.get());
+            moduleService.delete(cv.get());
             dataCache.remove(course);
             desktop.postEvent(new CourseEvent(this, GemEvent.SUPPRESSION, course));
           } else {
@@ -151,11 +151,11 @@ public class CourseCtrl
 
     try {
       if (course.getId() == 0) {
-        service.create(course);
+        moduleService.create(course);
         dataCache.add(course);
         desktop.postEvent(new CourseEvent(this, GemEvent.CREATION, course));
       } else {
-        service.update(course);
+        moduleService.update(course);
         dataCache.update(course);
         desktop.postEvent(new CourseEvent(this, GemEvent.MODIFICATION, course));
       }
@@ -166,29 +166,29 @@ public class CourseCtrl
     cancel();
     return true;
   }
-  
+
   private boolean isValid(Course c) {
-    
+
     boolean ok = true;
-    
+
     String t = c.getTitle();
-    
+
     if (t == null || t.length() < Course.MIN_TITLE_LENGTH || t.length() > Course.MAX_TITLE_LENGTH) {
       ok = false;
-      errors[0] = MessageUtil.getMessage("course.invalid.title", 
+      errors[0] = MessageUtil.getMessage("course.invalid.title",
               new Object[] {Course.MIN_TITLE_LENGTH, Course.MAX_TITLE_LENGTH} );
     }
-    
+
     if (c.getLabel() != null && c.getLabel().length() > Course.MAX_LABEL_LENGTH) {
       ok = false;
       errors[1] = MessageUtil.getMessage("course.invalid.label", Course.MAX_LABEL_LENGTH);
     }
-    
+
     if (c.getCode() <= 0) {
       ok = false;
       errors[2] = MessageUtil.getMessage("course.invalid.code");
     }
-    
+
     return ok;
 
   }
@@ -224,17 +224,17 @@ public class CourseCtrl
   @Override
   public boolean loadId(int id) {
     try {
-      return loadCard(((CourseIO) DataCache.getDao(Model.Course)).findId(id));
+      return loadCard(DataCache.findId(id, Model.Course));
     } catch (SQLException ex) {
       GemLogger.log(getClass().getName() + "#loadId :" + ex.getMessage());
     }
     return false;
   }
-  
+
   private void close() {
      if (actionListener != null) {
       actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, GemCommand.CANCEL_CMD));
-    } 
+    }
   }
 
 }

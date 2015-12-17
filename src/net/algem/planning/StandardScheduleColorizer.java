@@ -1,22 +1,22 @@
 /*
  * @(#)StandardScheduleColorizer.java 2.9.4.13 02/11/2015
- * 
+ *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
- * 
+ *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Algem is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see http://www.gnu.org/licenses.
- * 
+ *
  */
 package net.algem.planning;
 
@@ -26,6 +26,7 @@ import net.algem.config.ColorPrefs;
 import net.algem.contact.Person;
 import net.algem.course.Course;
 import net.algem.room.Room;
+import net.algem.util.DataCache;
 
 /**
  *
@@ -38,7 +39,7 @@ public class StandardScheduleColorizer
 {
 
   private final ColorPrefs colorPrefs;
-  private final ActionIO actionIO;
+//  private final ActionIO actionIO;
 
   public StandardScheduleColorizer() {
     this(new ColorPrefs());
@@ -46,12 +47,12 @@ public class StandardScheduleColorizer
 
   public StandardScheduleColorizer(ColorPrefs colorPrefs, ActionIO actionIO) {
     this.colorPrefs = colorPrefs;
-    this.actionIO = actionIO;
+//    this.actionIO = actionIO;
   }
 
   public StandardScheduleColorizer(ColorPrefs colorPrefs) {
     this.colorPrefs = colorPrefs;
-    this.actionIO = null;
+//    this.actionIO = null;
   }
 
   /**
@@ -63,6 +64,10 @@ public class StandardScheduleColorizer
   @Override
   public Color getScheduleColor(ScheduleObject p) {
     Color ac = null;
+    int type = p.getType();
+    if (type != Schedule.COURSE && type != Schedule.WORKSHOP && type != Schedule.TRAINING) {
+      return getDefaultScheduleColor(p);
+    }
     if (p instanceof ScheduleRangeObject) {
       ac = getActionColor(((ScheduleRangeObject) p).getAction().getId());
     } else {
@@ -124,10 +129,14 @@ public class StandardScheduleColorizer
    */
   @Override
   public Color getTextColor(ScheduleObject p) {
-    Color ac = getActionColor(p.getIdAction());
-    if (ac != null) {
-      return ColorPrefs.getForeground(ac);
+    int type = p.getType();
+    if (type == Schedule.COURSE || type == Schedule.WORKSHOP || type == Schedule.TRAINING) {
+      Color ac = getActionColor(p.getIdAction());
+      if (ac != null) {
+        return ColorPrefs.getForeground(ac);
+      }
     }
+
     switch (p.getType()) {
       case Schedule.COURSE:
         Room r = p.getRoom();
@@ -174,9 +183,9 @@ public class StandardScheduleColorizer
     }
     return c;
   }
-  
+
   private Color getActionColor(int action) {
-    return ((ActionIO) actionIO).getColor(action);
+    return DataCache.getActionColor(action);
   }
 
 }

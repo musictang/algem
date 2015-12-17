@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleRangeIO.java	2.9.4.12 16/09/15
+ * @(#)ScheduleRangeIO.java	2.9.4.14 16/12/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -38,7 +38,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.12
+ * @version 2.9.4.14
  * @since 1.0a 7/7/1999
  */
 public class ScheduleRangeIO
@@ -138,19 +138,19 @@ public class ScheduleRangeIO
 
   private static Vector<ScheduleRange> ifind(String query, DataConnection dc) throws SQLException {
     Vector<ScheduleRange> v = new Vector<ScheduleRange>();
-    ResultSet rs = dc.executeQuery(query);
-    while (rs.next()) {
-      ScheduleRange p = new ScheduleRange();
-      p.setId(rs.getInt(1));
-      p.setScheduleId(rs.getInt(2));
-      p.setStart(new Hour(rs.getString(3)));
-      p.setEnd(new Hour(PlanningService.getTime(rs.getString(4))));
-      p.setMemberId(rs.getInt(5));
-      p.setNote(rs.getInt(6));
+    try (ResultSet rs = dc.executeQuery(query)) {
+      while (rs.next()) {
+        ScheduleRange p = new ScheduleRange();
+        p.setId(rs.getInt(1));
+        p.setScheduleId(rs.getInt(2));
+        p.setStart(new Hour(rs.getString(3)));
+        p.setEnd(new Hour(PlanningService.getTime(rs.getString(4))));
+        p.setMemberId(rs.getInt(5));
+        p.setNote(rs.getInt(6));
 
-      v.addElement(p);
+        v.addElement(p);
+      }
     }
-    rs.close();
 
     return v;
   }
@@ -187,16 +187,16 @@ public class ScheduleRangeIO
       + " WHERE pg.idplanning = p.id " + and;
     return findObject(query, service, dc);
   }
-  
+
   public  static Vector<ScheduleRangeObject> findObject(String query, PlanningService service, DataConnection dc) throws SQLException {
     Vector<ScheduleRangeObject> v = new Vector<ScheduleRangeObject>();
 
-    ResultSet rs = dc.executeQuery(query);
-    while (rs.next()) {
-      ScheduleRangeObject p = rangeObjectFactory(rs, service);
-      v.addElement(p);
+    try (ResultSet rs = dc.executeQuery(query)) {
+      while (rs.next()) {
+        ScheduleRangeObject p = rangeObjectFactory(rs, service);
+        v.addElement(p);
+      }
     }
-    rs.close();
 
     return v;
   }
@@ -225,14 +225,14 @@ public class ScheduleRangeIO
 
     PlanningService pService = new PlanningService(dc);
 
-    ResultSet rs = dc.executeQuery(query);
-    while (rs.next()) {
-      ScheduleRangeObject p = rangeObjectFactory(rs, pService);
-      p.setNoteValue(rs.getString(12));
-      p.setNote2(rs.getString(13));
-      v.addElement(p);
+    try (ResultSet rs = dc.executeQuery(query)) {
+      while (rs.next()) {
+        ScheduleRangeObject p = rangeObjectFactory(rs, pService);
+        p.setNoteValue(rs.getString(12));
+        p.setNote2(rs.getString(13));
+        v.addElement(p);
+      }
     }
-    rs.close();
     return v;
   }
 
