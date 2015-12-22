@@ -175,7 +175,6 @@ public class AttendanceSheet
           if (p.equiv(vpl.elementAt(j))) {
             v.addElement(vpl.elementAt(j));
           }
-          //System.out.println("Boucle j "+j+" vector v : "+v);
         }
         vpl.removeAll(v);
         liste.addElement(v);
@@ -300,7 +299,6 @@ public class AttendanceSheet
 
   public void detailRange(Course course, Room room, Vector<Schedule> vpl) throws SQLException {
 
-//    System.out.println("detailRange=" + vpl);
     int topl = line;
     g.setFont(smallFont);
 

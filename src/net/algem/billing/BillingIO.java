@@ -53,7 +53,7 @@ public abstract class BillingIO
     String query = "SELECT max(substring(numero from 5)::integer) FROM " + table;
     ResultSet rs = dc.executeQuery(query);
     if (rs.next()) {
-      System.out.println("last max "+ rs.getInt(1));
+      //System.out.println("last max "+ rs.getInt(1));
       last =  rs.getInt(1);
     }
 

@@ -329,7 +329,6 @@ public class ActionIO
     } finally {
       closeRS(rs);
     }
-    System.out.println(colors);
     return colors;
   }
 

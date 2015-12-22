@@ -1,5 +1,5 @@
 /*
- * @(#)DayPlanView.java 2.9.4.14 17/12/15
+ * @(#)DayPlanView.java 2.9.4.14 18/12/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -621,6 +621,12 @@ public class DayPlanView
     img = null;
   }
 
+  /**
+   * Calculates the arguments required to move the scrollbar.
+   * The rectangle returned is just a way to encapsulate 4 integers.
+   * @return a rectangle of values
+   * @see javax.swing.JScrollBar#setValues(int, int, int, int)
+   */
   public Rectangle computeScroll() {
     int c = cols.size();
     int newExtent = (visibleCols == 0 ? 1 : visibleCols);

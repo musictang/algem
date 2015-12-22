@@ -252,9 +252,9 @@ public class Algem
   }
 
   private void setDesktop() {
-    String title = "Algem" + "(" + APP_VERSION + ")/" + props.getProperty("appClient")
+    String title = "Algem" + "(" + APP_VERSION + ")/" + props.getProperty("appClient");
             //			+ " - Utilisateur système " +System.getProperty("user.name")
-            + " - jdbc://" + hostName + "/" + baseName;
+            // + " - jdbc://" + hostName + "/" + baseName;
 
     frame = new JFrame(title);
     Preferences prefs = Preferences.userRoot().node("/algem/ui");
@@ -526,7 +526,6 @@ public class Algem
 
   public static void main(String args[]) {
 
-    Algem appli;
     String userArg = null;
     String hostArg = null;
     String baseArg = null;
@@ -546,7 +545,7 @@ public class Algem
     }
 
     try {
-      appli = new Algem();
+      Algem appli = new Algem();
       appli.init(confArg, hostArg, baseArg, userArg);
     } catch (Exception ex) {
       JOptionPane.showMessageDialog(null,

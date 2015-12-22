@@ -82,7 +82,6 @@ public class ActivableParamTableIO {
 			+ "', " + columnFilter + " = '" + (p.isActive() ? "t" : "f")
 			+ "' WHERE " + columnKey + " = '" + p.getKey() + "'";
 
-		//System.out.println("ParamTableIO.update:" + query);
 		dc.executeUpdate(query);
 	}
 

@@ -1,26 +1,32 @@
 2.9.4.14
 CORRECTIFS
+* La navigation dans le planing jour était parfois très lente. L'utilisation de la barre de défilement ou le changement d'onglet dans le planning jour entraînait une latence importante à l'affichage. Si le problème passait inaperçu sur le réseau local ou pour les personnes disposant d'une connexion à très haut débit, il pouvait être très handicapant pour les autres utilisateurs et notamment pour les abonnés Webstart. Ce problème était du à une mauvaise gestion du cache des couleurs de planning. La navigation dans le tableau jour devrait être maintenant bien plus réactive.
 * Aucun message n'était affiché après la création d'un nouveau login. Désormais, un message d'erreur ou de réussite vous informe sur les résultats de cette opération. Des optimisations diverses ont été faites par ailleurs au moment de l'enregistrement du nouvel utilisateur.
 * Le changement de ligne n'était pas automatique lorsque l'intitulé d'un rendez-vous administratif s'étendait sur plusieurs lignes (menu Ajouter rendez-vous dans un planning administratif).
-* Les plannings disparaissaient lorsqu'on alternait entre la vue avec Toutes les salles et celle avec seulement les salles occupées si on avait déplacé l'ascenceur vers la droite.
+* Les plannings disparaissaient lorsqu'on alternait entre la vue avec "Toutes les salles" (menu Options -> Afficher toutes les salles) et celle avec seulement les salles occupées si on avait déplacé l'ascenceur vers la droite.
 
 LOGIN
 Vous avez maintenant droit à TROIS ESSAIS POUR VOUS IDENTIFIER en cas de demande de connexion (utilisation Webstart). Auparavant, il vous fallait redémarrer l'application dès le premier échec, ce qui était assez contraignant.
+
+Le login peut maintenant s'étendre jusqu'à 16 caractères. Il était auparavant limité à 8 caractères.
 
 ECHEANCIER
 LA FENÊTRE D'ÉDITION D'UNE ÉCHÉANCE EST MAINTENANT NON MODALE. ELLE N'EST DONC PLUS BLOQUANTE et vous permet d'accéder à d'autres endroits dans l'application avant de valider. C'est particulièrement utile lorsqu'il vous manque certaines informations au moment d'éditer une échéance.
 Note : afin d'éviter toute confusion, on ne peut pas ouvrir simultanément plusieurs échéances à l'intérieur d'une même fiche personne. Par contre, on peut ouvrir deux ou plusieurs échéances si elles proviennent de fiches distinctes. Attention dans ce dernier cas aux erreurs de saisie dues à la confusion entre les échéances ouvertes. Dans le doute, évitez d'éditer simultanément plusieurs échéances.
 
-Le nom du payeur est affiché maintenant au survol de la colonne "payeur" d'une échéance. Seul le nom de l'adhérent était affiché auparavant en survolant la deuxième colonne.
+Le nom du payeur est affiché maintenant au survol de la colonne "Payeur" d'une échéance. Seul le nom de l'adhérent était affiché auparavant en survolant la deuxième colonne.
 Les libellés complets du compte comptable et du compte analytique apparaissent maintenant également quand on survole ces colonnes. Cela vous évite ainsi de redimensionner la colonne pour faire apparaître les caractères manquants.
 
 PHOTO
 Les photos sont désormais enregistrées en base de données. Les photos étant maintenant centralisées, la question du partage de fichiers ne se pose plus et TOUT LE MONDE PEUT DISPOSER DES PHOTOS ENREGISTRÉES QUEL QUE SOIT L'ENDROIT OÙ IL SE TROUVE.
 On ajoute une photo (si aucune encore n'est présente) ou on la modifie en cliquant sur le cadre de la photo à gauche de la fiche personne. Une fenêtre de dialogue vous permet de choisir le fichier image désiré (formats acceptés : jpg, png).
 
+Si vous disposez des droits d'Administrateur, vous pouvez aussi utiliser les 2 menus suivants :
+menu Catalogue -> Importer photos
 Si vous disposez déjà d'un ensemble de photos, vous pouvez IMPORTER TOUS LES FICHIERS D'UN RÉPERTOIRE en cliquant sur le menu Catalogue -> Importer photos. Les photos de même nom déjà présentes en base de données ne seront pas remplacées. Choisissez le dossier dans lequel se trouvent vos photos (par défaut, il s'agit du dossier configuré dans la section Fichiers des préférences du logiciel (menu Configuration -> Paramètres -> Généraux). Le nom des fichiers image ne doit pas comporter d'espace et doit être construit sous la forme suivante : <n°contact>.<extension>. Exemples de noms valides : 1568.jpg, 1600.png, etc. Les images doivent être au format jpg ou png.
 Note : pour des raisons de performance, la taille des photos importées ne doit pas dépasser 1Mo.
 
+menu Catalogue -> Exporter photos
 Inversement, vous pouvez EXPORTER TOUTES LES PHOTOS ENREGISTRÉES EN BASE DE DONNÉES vers un dossier de votre choix. Cela vous permettra par exemple de récupérer le trombinoscope de vos contacts.
 
 

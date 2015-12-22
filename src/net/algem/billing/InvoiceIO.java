@@ -1,5 +1,5 @@
 /*
- * @(#)InvoiceIO.java 2.9.4.13 06/11/15
+ * @(#)InvoiceIO.java 2.9.4.14 18/12/15
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -253,7 +253,7 @@ public class InvoiceIO
 
       lv.add(inv);
     }
-
+    closeRS(rs);
     return lv;
   }
 
@@ -295,6 +295,8 @@ public class InvoiceIO
 
       items.add(invoiceItem);
     }
+    closeRS(rs);
+    closeStatement(ps);
     return items;
   }
 

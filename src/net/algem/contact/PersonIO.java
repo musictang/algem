@@ -60,10 +60,12 @@ public class PersonIO
   private static final String FIND_BY_ID_QUERY = "SELECT * FROM " + TABLE + " WHERE id = ? LIMIT 1";
 
   private DataConnection dc;
+  private PreparedStatement findByIdStmt;
 
 
   public PersonIO(DataConnection _dc) {
     this.dc = _dc;
+    findByIdStmt = dc.prepareStatement(FIND_BY_ID_QUERY);
   }
 
   public void insert(Person p) throws SQLException {
@@ -111,10 +113,13 @@ public class PersonIO
 
   public Person findById(int n) {
     ResultSet rs = null;
-    try(PreparedStatement ps = dc.prepareStatement(FIND_BY_ID_QUERY)) {
-      ps.setInt(1, n);
-      rs = ps.executeQuery();
-      while(rs.next()) {
+    try {
+      if (findByIdStmt == null || findByIdStmt.isClosed()) {
+        findByIdStmt = dc.prepareStatement(FIND_BY_ID_QUERY);
+      }
+      findByIdStmt.setInt(1, n);
+      rs = findByIdStmt.executeQuery();
+      while (rs.next()) {
         return getFromRS(rs);
       }
     } catch (SQLException ex) {

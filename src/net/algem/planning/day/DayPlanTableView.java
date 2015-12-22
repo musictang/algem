@@ -162,8 +162,7 @@ public abstract class DayPlanTableView
   @Override
   public void adjustmentValueChanged(AdjustmentEvent e) {
     dayPlanView.setColOffset(e.getValue());
-    Rectangle r = dayPlanView.computeScroll();
-    sb.setValues(r.x, r.y, r.width, r.height);
+    setScrollBar();
     repaint();
   }
 

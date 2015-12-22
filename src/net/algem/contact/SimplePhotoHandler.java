@@ -75,8 +75,8 @@ public class SimplePhotoHandler
   public void importFilesFromDir(File dir) {
     final ProgressMonitor monitor = new ProgressMonitor(parent, BundleUtil.getLabel("Loading.label"), "", 1, 100);
     monitor.setProgress(1);
-    monitor.setMillisToDecideToPopup(1);
-    monitor.setMillisToPopup(1);
+    monitor.setMillisToDecideToPopup(10);
+    // monitor.setMillisToPopup(1);
 
     SwingWorker<Integer, Void> task = new PhotoImportTask(dir);
     task.addPropertyChangeListener(new ProgressMonitorHandler(monitor, task));
@@ -87,8 +87,8 @@ public class SimplePhotoHandler
   public void exportFilesToDir(File dir) {
     final ProgressMonitor monitor = new ProgressMonitor(parent, BundleUtil.getLabel("Loading.label"), "", 1, 100);
     monitor.setProgress(1);
-    monitor.setMillisToDecideToPopup(1);
-    monitor.setMillisToPopup(1);
+    monitor.setMillisToDecideToPopup(10);
+    // monitor.setMillisToPopup(1);
 
     SwingWorker<Integer, Void> task = new PhotoExportTask(dir);
     task.addPropertyChangeListener(new ProgressMonitorHandler(monitor, task));

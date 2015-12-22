@@ -854,7 +854,6 @@ public class DataCache
       for (RehearsalPass c : RehearsalPassIO.findAll("ORDER BY id", dc)) {
         PASS_CARD.put(c.getId(), c);
       }
-
     } catch (SQLException ex) {
       String m = MessageUtil.getMessage("cache.loading.exception");
       GemLogger.logException(m, ex);

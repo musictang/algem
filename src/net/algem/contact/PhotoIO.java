@@ -71,10 +71,10 @@ public class PhotoIO
     ResultSet rs = null;
     try {
       initStatements();
-    } catch(SQLException ex) {
+    } catch (SQLException ex) {
       return false;
     }
-    try {    
+    try {
       FIND_STMT.setInt(1, idper);
       rs = FIND_STMT.executeQuery();
       if (rs.next()) {
@@ -95,15 +95,15 @@ public class PhotoIO
       closeRS(rs);
     }
   }
-  
+
   private void initStatements() throws SQLException {
     if (SAVE_STMT == null || SAVE_STMT.isClosed()) {
       SAVE_STMT = dc.prepareStatement(SAVE_QUERY);
     }
-     if (FIND_STMT == null || FIND_STMT.isClosed()) {
+    if (FIND_STMT == null || FIND_STMT.isClosed()) {
       FIND_STMT = dc.prepareStatement(SAVE_QUERY);
     }
-      if (UPDATE_STMT == null || UPDATE_STMT.isClosed()) {
+    if (UPDATE_STMT == null || UPDATE_STMT.isClosed()) {
       UPDATE_STMT = dc.prepareStatement(SAVE_QUERY);
     }
   }

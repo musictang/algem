@@ -140,7 +140,6 @@ public class QuoteIO
     List<Quote> ld = new ArrayList<Quote>();
     String query = "SELECT " + COLUMNS + " FROM " + TABLE + where;
     query += " ORDER BY numero";
-    //System.out.println(query);
     ResultSet rs = dc.executeQuery(query);
     while (rs.next()) {
       Quote d = new Quote(rs.getString(1));
