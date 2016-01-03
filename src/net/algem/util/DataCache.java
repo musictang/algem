@@ -889,7 +889,7 @@ public class DataCache
     LEVEL_LIST = new GemList<GemParam>(LEVEL_IO.load());
     STATUS_LIST = new GemList<GemParam>(STATUS_IO.load());
     AGE_RANGE_LIST = new GemList<AgeRange>(AGE_RANGE_IO.load());
-    for(Action a : ACTION_IO.load()) {
+    for(Action a : ACTION_IO.load(getStartOfYear().getDate(), getEndOfYear().getDate())) {
       ACTION_CACHE.put(a.getId(), a);
     }
     ACTION_COLOR_CACHE = ACTION_IO.loadColors(getStartOfYear().getDate(), getEndOfYear().getDate());
@@ -1127,7 +1127,7 @@ public class DataCache
     }
     return c == 0 ? null : new Color(c);
   }
-  
+
 
   /**
    * Gets a menu item.

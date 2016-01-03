@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.logging.Level;
 import net.algem.config.AgeRange;
 import net.algem.config.GemParam;
 import net.algem.util.DataCache;
@@ -55,7 +56,7 @@ public class ActionIO
   private DataConnection dc;
   private static final String ACTION_COLOR_QUERY = "SELECT color FROM " + ACTION_COLOR_TABLE + " WHERE idaction = ?";
   private PreparedStatement colorStatement;
-  
+
 
   public ActionIO(DataConnection dc) {
     this.dc = dc;
@@ -217,9 +218,9 @@ public class ActionIO
   }
 
   public int findId(String where) throws SQLException {
-
     int action = 0;
-    String query = "SELECT action.id FROM " + TABLE + " " + where;
+    String query = "SELECT DISTINCT action.id FROM " + TABLE + " " + where;
+    query += " LIMIT 1";
     ResultSet rs = dc.executeQuery(query);
     if (rs.next()) {
       action = rs.getInt(1);
@@ -229,37 +230,43 @@ public class ActionIO
 
   public Action findId(int id) throws SQLException {
     Action a = null;
-    String query = "SELECT " + COLUMNS + " FROM " + TABLE + " WHERE id = " + id;
-    ResultSet rs = dc.executeQuery(query);
-    if (rs.next()) {
-      a = new Action();
-      a.setId(id);
-      a.setCourse(rs.getInt(2));
-      a.setLevel(getLevel(rs.getShort(3)));
-      a.setPlaces(rs.getShort(4));
-      a.setAgeRange(getAgeRange(rs.getShort(5)));
-      a.setStatus(getStatus(rs.getShort(6)));
+    String query = "SELECT DISTINCT " + COLUMNS + " FROM " + TABLE + " WHERE id = " + id;
+    try (ResultSet rs = dc.executeQuery(query)) {
+      if (rs.next()) {
+        a = getFromRS(rs);
+      }
+    } catch (SQLException ex) {
+      GemLogger.log(Level.SEVERE, ex.getMessage());
     }
     return a;
   }
 
-  public Vector<Action> find(String where) throws SQLException {
+  public Vector<Action> find(String where) {
     Vector<Action> va = new Vector<Action>();
-    String query = "SELECT " + TABLE + ".* FROM " + TABLE;
+    String query = "SELECT DISTINCT " + TABLE + ".* FROM " + TABLE;
     query += where;
-    ResultSet rs = dc.executeQuery(query);
-    while (rs.next()) {
-      Action a = new Action();
-      a.setId(rs.getInt(1));
-      a.setCourse(rs.getInt(2));
-      a.setLevel(getLevel(rs.getShort(3)));
-      a.setPlaces(rs.getShort(4));
-      a.setAgeRange(getAgeRange(rs.getShort(5)));
-      a.setStatus(getStatus(rs.getShort(6)));
-
-      va.addElement(a);
+    try (ResultSet rs = dc.executeQuery(query)) {
+      while (rs.next()) {
+        Action a = getFromRS(rs);
+        va.addElement(a);
+      }
+    } catch (SQLException ex) {
+      GemLogger.log(Level.SEVERE, ex.getMessage());
     }
+
     return va;
+  }
+
+  private Action getFromRS(ResultSet rs) throws SQLException {
+    Action a = new Action();
+    a.setId(rs.getInt(1));
+    a.setCourse(rs.getInt(2));
+    a.setLevel(getLevel(rs.getShort(3)));
+    a.setPlaces(rs.getShort(4));
+    a.setAgeRange(getAgeRange(rs.getShort(5)));
+    a.setStatus(getStatus(rs.getShort(6)));
+
+    return a;
   }
 
   private GemParam getLevel(int id) throws SQLException {
@@ -288,25 +295,41 @@ public class ActionIO
   }
 
   /**
-   * Gets all actions scheduled on the current week.
+   * Gets all actions scheduled between the last 9 months and the next 9 months.
    * @return a list of actions
    * @throws SQLException
    */
   @Override
   public List<Action> load() throws SQLException {
-    String where = ", " + ScheduleIO.TABLE + " p WHERE p.action = " + TABLE
-            + ".id AND p.jour BETWEEN date_trunc('week', current_date)::date AND date_trunc('week', current_date)::date + 6";
+
+    String where = ", " + ScheduleIO.TABLE + " p WHERE p.action = " + TABLE + ".id"
+//      + " AND p.jour BETWEEN date_trunc('month', current_date)::date -6 AND date_trunc('month', current_date)::date + 6";
+      + " AND p.jour BETWEEN date_trunc('month', current_date)::date - interval '9 months'"
+      + " AND date_trunc('month', current_date)::date + interval '9 months'";
+    return find(where);
+  }
+
+  /**
+   * Gets all actions scheduled between {@code start} and {@code end}.
+   * @param start start date
+   * @param end end date
+   * @return a list of actions or an empty list if no action was found
+   * @throws SQLException
+   */
+  public List<Action> load(Date start, Date end) throws SQLException {
+    String where = ", " + ScheduleIO.TABLE + " p WHERE p.action = " + TABLE + ".id"
+      + " AND p.jour BETWEEN '" + start + "' AND '" + end + "'";
     return find(where);
   }
 
   /**
    * Loads the colors of the actions scheduled between two dates.
-   * 
+   *
    * If an action has no custom color (null), it is assigned the color 0.
    * @param start start date
    * @param end end date
    * @return a map whose the key = action id and value = color
-   * @throws SQLException 
+   * @throws SQLException
    */
   public Map<Integer, Integer> loadColors(Date start, Date end) throws SQLException {
     String query = "SELECT DISTINCT a.id, CASE WHEN c.color IS NULL THEN 0 ELSE c.color END"

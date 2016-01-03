@@ -125,7 +125,6 @@ public class DataConnection
     if (cnx != null) {
       close();
     }
-
     cnx = DriverManager.getConnection(getUrl(), getConnectionProperties());
     connected = true;
 
@@ -179,7 +178,7 @@ public class DataConnection
         connect();
         pstmt = cnx.prepareStatement(query);
       } catch (SQLException sqe) {
-        GemLogger.log("Reconnection error " + sqe);
+        GemLogger.logException("Reconnection error ", sqe);
       }
     }
     return pstmt;
@@ -195,7 +194,7 @@ public class DataConnection
         connect();
         stmt = cnx.createStatement();
       } catch (SQLException sqe) {
-        GemLogger.log("Reconnection error " + sqe);
+        GemLogger.logException("Reconnection error ", sqe);
       }
     }
     return stmt;
@@ -211,7 +210,7 @@ public class DataConnection
         connect();
         stmt = cnx.createStatement(resultSetType, resultSetConcurrency);
       } catch (SQLException sqe) {
-        GemLogger.log("Reconnection error " + sqe);
+        GemLogger.logException("Reconnection error ", sqe);
       }
     }
     return stmt;

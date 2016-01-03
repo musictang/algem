@@ -1,5 +1,5 @@
 /*
- * @(#)MemberEnrolmentEditor.java 2.9.4.12 21/09/15
+ * @(#)MemberEnrolmentEditor.java 2.9.4.14 03/01/16
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -47,7 +47,6 @@ import net.algem.contact.PersonFile;
 import net.algem.contact.member.MemberService;
 import net.algem.course.*;
 import net.algem.planning.DateFr;
-import net.algem.planning.DateRange;
 import net.algem.planning.Hour;
 import net.algem.planning.ScheduleRangeObject;
 import net.algem.planning.editing.ChangeHourCourseDlg;
@@ -72,7 +71,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.12
+ * @version 2.9.4.14
  * @since 1.0b 06/09/2001
  */
 public class MemberEnrolmentEditor
@@ -612,7 +611,7 @@ public class MemberEnrolmentEditor
         addCourse(mo, info);
       }
       orderUtil.setTotalOrderLine(mo.getPaymentAmount());
-      
+
       String school = ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey());
       try {
         int n = orderUtil.saveOrderLines(mo, Integer.parseInt(school));
@@ -778,7 +777,8 @@ public class MemberEnrolmentEditor
         pw = new PrintWriter(temp, StandardCharsets.UTF_8.name());
         pw.println(FileUtil.getHtmlHeader(BundleUtil.getLabel("Enrolment.label"), getCss()));
         pw.println(catchEnrolmentInfo(node));
-        pw.println(catchActivity(order.getCreation(), dataCache.getEndOfYear()));
+        //pw.println(catchActivity(order.getCreation(), dataCache.getEndOfYear()));//XXX probleme date fin si cours programmés après
+        pw.println(catchActivity(order.getCreation(), getActions(node)));
         pw.println("</body></html>");
       }
       if (pw != null) {
@@ -805,16 +805,49 @@ public class MemberEnrolmentEditor
   }
 
   /**
-   * Returns the list of activities performed by member between {@literal start} and {@literal end} dates.
+   * Get the list of actions registered for this order command.
+   * @param node enrolment node order
+   * @return a comma-separated list of actions
+   */
+  private String getActions(TreeNode node) {
+    List<Integer> actions = new ArrayList<>();
+    for (Enumeration e = node.children(); e.hasMoreElements();) {
+      TreeNode n = (TreeNode) e.nextElement();
+      if (n instanceof ModuleEnrolmentNode) {
+        for (Enumeration c = n.children(); c.hasMoreElements();) {
+          TreeNode cn = (TreeNode) c.nextElement();
+          if (cn instanceof CourseEnrolmentNode) {
+            actions.add(((CourseEnrolmentNode) cn).getCourseOrder().getAction());
+          }
+        }
+      }
+    }
+    StringBuilder sb = new StringBuilder();
+    if (actions.isEmpty()) {
+      sb.append("-1");
+      return sb.toString();
+    }
+    for (int a : actions) {
+      sb.append(a).append(',');
+    }
+    sb.deleteCharAt(sb.length()-1);
+    return sb.toString();
+  }
+
+  /**
+   * Returns the list of activities performed by member from {@literal start}
+   * and corresponding to this list of {@code actions}.
    * @param start starting date
-   * @param end ending date
+   * @param actions a comma-separated list of actions' id
    * @return a html-formatted string
    */
-  private String catchActivity(DateFr start, DateFr end){
+//  private String catchActivity(DateFr start, DateFr end){
+    private String catchActivity(DateFr start, String actions){
     try {
       MemberService memberService = new MemberService(dc);
       StringBuilder sb = new StringBuilder();
-      Vector<ScheduleRangeObject> ranges = memberService.findFollowUp(dossier.getId(), new DateRange(start, end));
+      Vector<ScheduleRangeObject> ranges = memberService.findFollowUp(dossier.getId(), start.getDate(), actions);
+//      Vector<ScheduleRangeObject> ranges = memberService.findFollowUp(dossier.getId(), new DateRange(start, end));
       sb.append("<table><thead>");
       sb.append("<tr><th>").append(BundleUtil.getLabel("Activity.label")).append("</th><th>")
               .append(BundleUtil.getLabel("Teacher.label")).append("</th><th>")

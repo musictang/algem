@@ -629,7 +629,7 @@ public class PersonFileEditor
     }
     String error = null;
     try {
-      
+
       if (u == null) {
         u = dlg.getUser();
         service.create(u);

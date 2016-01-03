@@ -1,6 +1,6 @@
 /*
- * @(#)User.java	2.9.4.13 05/11/15
- * 
+ * @(#)User.java	2.9.4.14 03/01/16
+ *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.security;
 
@@ -30,7 +30,7 @@ import net.algem.contact.Person;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.9.4.14
  */
 public class User
         extends Person
@@ -38,9 +38,9 @@ public class User
 
   private static final long serialVersionUID = -3336222510237928108L;
   private String login;
-  private String password;
+  private transient String password;
   private int profile;
-  private UserPass pass;
+  private transient UserPass pass;
 
   public User() {
   }

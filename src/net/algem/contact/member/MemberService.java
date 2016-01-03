@@ -1,5 +1,5 @@
 /*
- * @(#)MemberService.java	2.9.4.12 01/09/15
+ * @(#)MemberService.java	2.9.4.14 03/01/16
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -46,7 +46,7 @@ import net.algem.util.model.Model;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.12
+ * @version 2.9.4.14
  * @since 2.4.a 14/05/12
  */
 public class MemberService
@@ -297,6 +297,16 @@ public class MemberService
             + "' AND (pg.note >= 0 OR p.note > 0)"
 //            + " AND (pg.note = s.id OR p.note = s.id)"
            // + " AND (pg.note = s.id OR (p.note = s.id AND p.note > 0 AND s.texte IS NOT NULL AND trim(s.texte) != ''))"
+            + " AND pg.note = s1.id"
+            + " AND p.note = s2.id"
+            + " AND pg.adherent = " + memberId
+            + " ORDER BY p.jour, pg.debut";
+    return ScheduleRangeIO.findFollowUp(where, false, dc);
+  }
+
+  public Vector<ScheduleRangeObject> findFollowUp(int memberId, Date date, String actions) throws SQLException {
+    String where = " AND p.jour >= '" + date + "' AND p.action IN (" + actions + ")"
+            + " AND (pg.note >= 0 OR p.note > 0)"
             + " AND pg.note = s1.id"
             + " AND p.note = s2.id"
             + " AND pg.adherent = " + memberId
