@@ -1,5 +1,5 @@
 /*
- * @(#)EnrolmentService.java	2.9.4.13 06/11/15
+ * @(#)EnrolmentService.java	2.9.4.14 05/01/16
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -42,7 +42,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.9.4.14
  * @since 2.4.a 20/04/12
  */
 public class EnrolmentService
@@ -862,7 +862,7 @@ public class EnrolmentService
   }
 
   /**
-   * Gets the time length of the sessions already performed by the member {@literal idper},
+   * Gets the time length of the sessions already performed by the member {@literal idper} between {@code start} and {@code end},
    * corresponding to the module order {@literal mOrderId}.
    * A session is seen as completed if it was scheduled, even though it has not actually occurred.
    * @param idper member's id
@@ -874,6 +874,24 @@ public class EnrolmentService
   public int getCompletedTime(int idper, int mOrderId, Date start, Date end) {
     try {
       return ModuleOrderIO.getCompletedTime(idper, mOrderId, start, end, dc);
+    } catch (SQLException ex) {
+      GemLogger.log(getClass().getName() + "#getCompletedTime " + ex.getMessage());
+      return 0;
+    }
+  }
+  
+  /**
+   * Gets the time length of the sessions already performed by the member {@literal idper} from {@code start},
+   * corresponding to the module order {@literal mOrderId}.
+   * A session is seen as completed if it was scheduled, even though it has not actually occurred.
+   * @param idper member's id
+   * @param mOrderId id of the module order corresponding to the training performed
+   * @param start start date
+   * @return a length in minutes
+   */
+  public int getCompletedTime(int idper, int mOrderId, Date start) {
+    try {
+      return ModuleOrderIO.getCompletedTime(idper, mOrderId, start, dc);
     } catch (SQLException ex) {
       GemLogger.log(getClass().getName() + "#getCompletedTime " + ex.getMessage());
       return 0;

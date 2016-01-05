@@ -62,6 +62,7 @@ public class PhotoIO
 
   /**
    * Save an individual photo.
+   * The photo is replaced. in database, if already present.
    *
    * @param idper person id
    * @param data content in bytes
@@ -111,6 +112,7 @@ public class PhotoIO
   /**
    * Save a set of photos.
    * Each photo is represented by its id and its contents in bytes.
+   * Unlike what happens when saving a single photo, existing photos are not replaced.
    *
    * @param map the pictures to save encapsultated in a map
    * @return the number of pictures saved

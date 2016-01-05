@@ -1,5 +1,5 @@
 /*
- * @(#)Note.java	2.9.4.13 05/11/15
+ * @(#)Note.java	2.9.4.14 04/01/16
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,15 +20,17 @@
  */
 package net.algem.contact;
 
+import net.algem.util.model.GemModel;
+
 /**
  * comment.
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.9.4.14
  */
 public class Note
-        implements java.io.Serializable
+        implements GemModel
 {
 
   private static final long serialVersionUID = -2510125799305049998L;
@@ -68,10 +70,12 @@ public class Note
     return text.equals(n.text);
   }
 
+  @Override
   public int getId() {
     return id;
   }
 
+  @Override
   public void setId(int i) {
     id = i;
   }

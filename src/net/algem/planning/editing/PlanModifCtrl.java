@@ -1,5 +1,5 @@
 /*
- * @(#)PlanModifCtrl.java	2.9.4.13 03/11/15
+ * @(#)PlanModifCtrl.java	2.9.4.14 04/01/16
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -31,6 +31,7 @@ import java.util.Vector;
 import net.algem.Algem;
 import net.algem.config.GemParam;
 import net.algem.contact.EmployeeType;
+import net.algem.contact.Note;
 import net.algem.contact.Person;
 import net.algem.contact.member.MemberException;
 import net.algem.contact.member.MemberService;
@@ -48,6 +49,7 @@ import net.algem.planning.fact.ui.AbsenceToCatchUpCtrl;
 import net.algem.planning.fact.ui.ReplanifyCtrl;
 import net.algem.room.Room;
 import net.algem.util.*;
+import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.GemMenuButton;
 import net.algem.util.ui.MessagePopup;
@@ -57,7 +59,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.9.4.14
  * @since 1.0b 05/07/2002 lien salle et groupe
  */
 public class PlanModifCtrl
@@ -425,9 +427,8 @@ public class PlanModifCtrl
     }
 
     Action a = ((CourseSchedule) plan).getAction();
-    a.setNote(new ActionService().getMemo(a.getId()));
-
     try {
+      a.setNote((Note) DataCache.findId(a.getId(), Model.ActionMemo));
       ModifPlanActionDlg dlg = new ModifPlanActionDlg(desktop, a, new StandardScheduleColorizer().getDefaultScheduleColor(plan));
       dlg.show();
 

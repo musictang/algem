@@ -1,5 +1,5 @@
 /*
- * @(#)ActionIO.java 2.9.4.14 17/12/15
+ * @(#)ActionIO.java 2.9.4.14 04/01/16
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -31,6 +31,9 @@ import java.util.Vector;
 import java.util.logging.Level;
 import net.algem.config.AgeRange;
 import net.algem.config.GemParam;
+import net.algem.contact.Note;
+import net.algem.contact.NoteIO;
+import net.algem.contact.Person;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
@@ -353,6 +356,24 @@ public class ActionIO
       closeRS(rs);
     }
     return colors;
+  }
+  
+  /**
+   * Load all memos saved, whatever the date.
+   * @return a map of notes
+   */
+  public HashMap<Integer, Note> loadMemos() {
+    HashMap<Integer, Note> memos = new HashMap<Integer, Note>();
+    String query = "SELECT * FROM " + NoteIO.TABLE + " WHERE ptype = " + Person.ACTION;
+    try (ResultSet rs = dc.executeQuery(query)) {
+      while (rs.next()) {
+        Note n = new Note(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getShort(4));
+        memos.put(rs.getInt(2), n);
+      }
+    } catch (SQLException ex) {
+      GemLogger.logException(ex);
+    }
+    return memos;
   }
 
   /**

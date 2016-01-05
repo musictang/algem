@@ -264,7 +264,9 @@ public class MemberEnrolmentEditor
           ModuleOrder mo = enu.nextElement();//probleme apres inscription
           ModuleEnrolmentNode mnode = new ModuleEnrolmentNode(mo);
           if (mo.getTotalTime() > 0) {
-            mnode.setCompleted(service.getCompletedTime(dossier.getId(), mo.getId(), dataCache.getStartOfYear().getDate(), dataCache.getEndOfYear().getDate()));
+            // do not restrict to end date
+            mnode.setCompleted(service.getCompletedTime(dossier.getId(), mo.getId(), dataCache.getStartOfYear().getDate()));
+//            mnode.setCompleted(service.getCompletedTime(dossier.getId(), mo.getId(), dataCache.getStartOfYear().getDate(), dataCache.getEndOfYear().getDate()));
           }
 
           if (mo.isStopped()) {

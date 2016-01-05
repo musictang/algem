@@ -1,5 +1,5 @@
 /*
- * @(#)DayPlanView.java 2.9.4.14 18/12/15
+ * @(#)DayPlanView.java 2.9.4.14 04/01/16
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -24,6 +24,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.print.Printable;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.List;
 import net.algem.config.ColorPlan;
@@ -34,6 +35,8 @@ import net.algem.course.Course;
 import net.algem.planning.*;
 import net.algem.room.DailyTimes;
 import net.algem.util.DataCache;
+import net.algem.util.GemLogger;
+import net.algem.util.model.Model;
 
 /**
  * Day schedule layout.
@@ -278,7 +281,8 @@ public class DayPlanView
   private void drawScheduleFlag(int i, Vector<ScheduleObject> v) {
     for (int j = 0; j < v.size(); j++) {
       ScheduleObject p = v.elementAt(j);
-      if (hasNoteForAction(p)) {
+      Note n = getNoteForAction(p.getIdAction());
+      if (n != null) {
         drawActionNoteFlag(i, p.getStart().toMinutes(), Color.BLACK);
       }
     }
@@ -290,15 +294,13 @@ public class DayPlanView
    * @param p schedule
    * @return true if a note exists
    */
-  private boolean hasNoteForAction(ScheduleObject p) {
-    Note n = DataCache.ACTION_MEMO_CACHE.get(p.getIdAction());
-    if (n == null) {
-      n = actionService.getMemo(p.getIdAction());
-      if (n != null) {
-        DataCache.ACTION_MEMO_CACHE.put(p.getIdAction(), n);
-      }
+  private Note getNoteForAction(int actionId) {
+    try {
+      return (Note) DataCache.findId(actionId, Model.ActionMemo);
+    } catch (SQLException ex) {
+      GemLogger.log(ex.getMessage());
+      return null;
     }
-    return n != null;
   }
 
   /**

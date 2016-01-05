@@ -1,5 +1,5 @@
 /*
- * @(#)ModuleOrderIO.java	2.9.4.13 28/10/15
+ * @(#)ModuleOrderIO.java	2.9.4.14 05/01/16
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -36,6 +36,7 @@ import net.algem.planning.DateFr;
 import net.algem.planning.ScheduleIO;
 import net.algem.planning.ScheduleRangeIO;
 import net.algem.util.DataConnection;
+import net.algem.util.GemLogger;
 import net.algem.util.model.TableIO;
 
 /**
@@ -43,7 +44,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.9.4.14
  */
 public class ModuleOrderIO
         extends TableIO
@@ -51,7 +52,7 @@ public class ModuleOrderIO
 
   public static final String TABLE = "commande_module";
   public static final String SEQUENCE = "commande_module_id_seq";
-  private static final String extendedModuleListStatement = "SELECT EXTRACT(epoch FROM sum(fin-debut)::interval)/60 AS duree FROM " + ScheduleRangeIO.TABLE + " pl"
+  private static final String EXTENDED_MODULE_TIME_STMT = "SELECT EXTRACT(epoch FROM sum(fin-debut)::interval)/60 AS duree FROM " + ScheduleRangeIO.TABLE + " pl"
             + " WHERE adherent = ?"
             + " AND idplanning IN("
             + "SELECT p.id FROM " + ScheduleIO.TABLE + " p, " + CourseOrderIO.TABLE + " cc, " + ActionIO.TABLE + " a, " + CourseIO.TABLE + " c"
@@ -59,8 +60,24 @@ public class ModuleOrderIO
             + " AND cc.idaction = a.id"
             + " AND a.cours = c.id"
             + " AND cc.datedebut <= p.jour"
-            + " AND cc.datefin >= p.jour"
+//            + " AND cc.datefin >= p.jour"
             + " AND cc.module = ?" 
+            + " AND CASE" // if not collective, filter by time length
+            + " WHEN c.collectif = false THEN (cc.fin - cc.debut) = (pl.fin - pl.debut)"
+            + " ELSE TRUE"
+            + " END)";
+  
+  private static final String EXTENDED_MODULE_TIME_STMT_2 = "SELECT EXTRACT(epoch FROM sum(fin-debut)::interval)/60 AS duree FROM " + ScheduleRangeIO.TABLE + " pl"
+            + " WHERE adherent = ?"
+            + " AND idplanning IN("
+            + "SELECT p.id FROM " + ScheduleIO.TABLE + " p, " + CourseOrderIO.TABLE + " cc, " + ActionIO.TABLE + " a, " + CourseIO.TABLE + " c"
+            + " WHERE p.jour >= ?"
+            + " AND p.action = cc.idaction"
+            + " AND cc.module = ?"
+            + " AND cc.idaction = a.id"
+            + " AND a.cours = c.id"
+            + " AND cc.datedebut <= p.jour"
+//            + " AND cc.datefin >= p.jour"
             + " AND CASE" // if not collective, filter by time length
             + " WHEN c.collectif = false THEN (cc.fin - cc.debut) = (pl.fin - pl.debut)"
             + " ELSE TRUE"
@@ -175,16 +192,53 @@ public class ModuleOrderIO
     return list;
   }
    
-  static int getCompletedTime(int idper, int mOrderId, Date start, Date end, DataConnection dc) throws SQLException {
-    PreparedStatement ps = dc.prepareStatement(extendedModuleListStatement);
+    /**
+   * Gets the time spent by the student {@code idper} in the module {@code mOrderId} between {@code start} and {@code end} dates.
+   * @param idper student id
+   * @param mOrderId module id
+   * @param start start date
+   * @param end end date
+   * @param dc data connection
+   * @return a length in minutes
+   * @throws SQLException 
+   */
+   static int getCompletedTime(int idper, int mOrderId, Date start, Date end, DataConnection dc) throws SQLException {
+    PreparedStatement ps = dc.prepareStatement(EXTENDED_MODULE_TIME_STMT);
     ps.setInt(1, idper);
     ps.setDate(2, new java.sql.Date(start.getTime()));
     ps.setDate(3, new java.sql.Date(end.getTime()));
     ps.setInt(4, mOrderId);
 
-    ResultSet rs = ps.executeQuery();
-    while (rs.next()) {
-      return rs.getInt(1);
+    try (ResultSet rs = ps.executeQuery()) {
+      while (rs.next()) {
+        return rs.getInt(1);
+      }
+    } catch (SQLException ex) {
+      GemLogger.logException(ex);
+    }
+    return 0;
+  }
+  
+  /**
+   * Gets the time spent by the student {@code idper} in the module {@code mOrderId} from {@code start} date.
+   * @param idper student id
+   * @param mOrderId module id
+   * @param start start date
+   * @param dc data connection
+   * @return a length in minutes
+   * @throws SQLException 
+   */
+   static int getCompletedTime(int idper, int mOrderId, Date start, DataConnection dc) throws SQLException {
+    PreparedStatement ps = dc.prepareStatement(EXTENDED_MODULE_TIME_STMT_2);
+    ps.setInt(1, idper);
+    ps.setDate(2, new java.sql.Date(start.getTime()));
+    ps.setInt(3, mOrderId);
+    try (ResultSet rs = ps.executeQuery()) {
+      while (rs.next()) {
+        return rs.getInt(1);
+      }
+    } catch (SQLException ex) {
+      GemLogger.logException(ex);
     }
     return 0;
   }

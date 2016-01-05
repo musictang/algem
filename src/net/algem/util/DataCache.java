@@ -1,5 +1,5 @@
 /*
- * @(#)DataCache.java	2.9.4.14 17/12/15
+ * @(#)DataCache.java	2.9.4.14 04/01/16
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -396,6 +396,9 @@ public class DataCache
           }
         }
         return a;
+      case ActionMemo:
+        // all memos are cached
+        return ACTION_MEMO_CACHE.get(id);
       case AgeRange:
         AgeRange ar = (AgeRange) AGE_RANGE_LIST.getItem(id);
         return ar != null ? ar : AGE_RANGE_IO.findId(id);
@@ -614,10 +617,14 @@ public class DataCache
       if (n != null) {
         if (n.getIdPer() == 0) {
           ACTION_MEMO_CACHE.remove(a.getId());
+        } else {
+          ACTION_MEMO_CACHE.put(a.getId(), n);
         }
       }
       if (a.getColor() != 0) {
         ACTION_COLOR_CACHE.put(a.getId(), a.getColor());
+      } else {
+        ACTION_COLOR_CACHE.put(a.getId(), 0); // stay in cache but with color 0
       }
     } else if (m instanceof Vat) {
       VAT_LIST.update((Vat) m, null);
@@ -893,6 +900,7 @@ public class DataCache
       ACTION_CACHE.put(a.getId(), a);
     }
     ACTION_COLOR_CACHE = ACTION_IO.loadColors(getStartOfYear().getDate(), getEndOfYear().getDate());
+    ACTION_MEMO_CACHE = ACTION_IO.loadMemos();
   }
 
   public static List<OrderLine> findOrderLines(String invoiceId) {
