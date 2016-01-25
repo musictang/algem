@@ -12,3 +12,6 @@ COMMENT ON COLUMN jeton_login.creadate IS 'Date de création du jeton';
 -- -- See comments with psql : \d+ jeton_login 
 
 ALTER TABLE jeton_login OWNER TO nobody;
+
+INSERT INTO config VALUES ('Reservation.delai',24);
+INSERT INTO config VALUES ('Annulation.delai',72);
