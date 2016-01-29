@@ -248,12 +248,10 @@ public class ScheduleIO
         fillPlanning(rs, p);
         ((MemberRehearsalSchedule) p).setMember((Person) DataCache.findId(p.getIdPerson(), Model.Person));
         break;
-
       case Schedule.GROUP:
         p = new GroupRehearsalSchedule();
         fillPlanning(rs, p);
         ((GroupRehearsalSchedule) p).setGroup((Group) DataCache.findId(p.getIdPerson(), Model.Group));
-
         break;
       case Schedule.STUDIO:
         p = new GroupStudioSchedule();
@@ -281,6 +279,16 @@ public class ScheduleIO
         break;
       case Schedule.ADMINISTRATIVE:
         p = new AdministrativeSchedule();
+        fillPlanning(rs, p);
+        p.setPerson((Person) DataCache.findId(p.getIdPerson(), Model.Person));
+        break;
+      case Schedule.BOOKING_GROUP:
+        p = new BookingGroupSchedule();
+        fillPlanning(rs, p);
+        ((GroupRehearsalSchedule) p).setGroup((Group) DataCache.findId(p.getIdPerson(), Model.Group));
+        break;
+      case Schedule.BOOKING_MEMBER:
+        p = new BookingMemberSchedule();
         fillPlanning(rs, p);
         p.setPerson((Person) DataCache.findId(p.getIdPerson(), Model.Person));
         break;

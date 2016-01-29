@@ -40,6 +40,8 @@ public class Schedule
   public static final int STUDIO = 7;
   public static final int TECH = 8;
   public static final int ADMINISTRATIVE = 9;
+  public static final int BOOKING_GROUP = 13;
+  public static final int BOOKING_MEMBER = 14;
   
   private static final long serialVersionUID = 8525739722137960958L;
   

@@ -98,8 +98,12 @@ public class StandardScheduleColorizer
         return colorPrefs.getColor(ColorPlan.ACTION);
       case Schedule.MEMBER:
         return colorPrefs.getColor(ColorPlan.MEMBER_REHEARSAL);
+      case Schedule.BOOKING_MEMBER:
+        return colorPrefs.getColor(ColorPlan.MEMBER_REHEARSAL).brighter();  
       case Schedule.GROUP:
         return colorPrefs.getColor(ColorPlan.GROUP_REHEARSAL);
+      case Schedule.BOOKING_GROUP:
+        return colorPrefs.getColor(ColorPlan.GROUP_REHEARSAL).brighter();
       case Schedule.WORKSHOP:
         return colorPrefs.getColor(ColorPlan.WORKSHOP);
       case Schedule.TRAINING:
