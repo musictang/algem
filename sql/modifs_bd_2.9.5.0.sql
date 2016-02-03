@@ -15,14 +15,14 @@ ALTER TABLE jeton_login OWNER TO nobody;
 CREATE TABLE reservation(
     id serial PRIMARY KEY,
     idper integer,
-    typeres integer,
+    idaction integer,
     dateres timestamp DEFAULT 'now',
     pass boolean DEFAULT FALSE
 );
 
 COMMENT ON TABLE reservation IS 'Stockage temporaire des informations de réservation';
 COMMENT ON COLUMN reservation.idper IS 'Identifiant de la personne ayant réservé';  
-COMMENT ON COLUMN reservation.typeres IS 'Type de réservation : individuelle, groupe'; 
+COMMENT ON COLUMN reservation.idaction IS 'Action sur le planning'; 
 COMMENT ON COLUMN reservation.dateres IS 'Date de soumission de la réservation';    
 COMMENT ON COLUMN reservation.pass IS 'Sélection carte d''abonnement';   
 
