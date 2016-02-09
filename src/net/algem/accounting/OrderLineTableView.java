@@ -1,7 +1,7 @@
 /*
-* @(#)OrderLineTableView.java 2.9.4.14 15/12/15
+* @(#)OrderLineTableView.java 2.9.5 09/02/16
 *
-* Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+* Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
 *
 * This file is part of Algem.
 * Algem is free software: you can redistribute it and/or modify it
@@ -45,7 +45,7 @@ import net.algem.util.model.Model;
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @author <a href="mailto:damien.loustau@gmail.com">Damien Loustau</a>
- * @version 2.9.4.14
+ * @version 2.9.5
  * @since 1.0a 07/07/1999
  *
  */
@@ -321,10 +321,14 @@ implements TableModelListener {
         String idper = (String) value;
         try {
           Person p = (Person) DataCache.findId(Integer.parseInt(idper.trim()), Model.Person);
-          assert(p != null);
-          String org = p.getOrganization();
-          c.setToolTipText(org != null && org.length() > 0 ? org : p.getFirstnameName());
-        } catch(SQLException e) {
+          //assert(p != null);
+          if (p != null) {
+            String org = p.getOrganization();
+            c.setToolTipText(org != null && org.length() > 0 ? org : p.getFirstnameName());
+          } else {
+            c.setToolTipText(null);
+          }
+        } catch(SQLException | NumberFormatException e) {
           c.setToolTipText(null);
         }
         return c;

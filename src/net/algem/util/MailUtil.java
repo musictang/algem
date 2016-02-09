@@ -1,7 +1,7 @@
 /*
- * @(#)MailUtil.java	2.8.w 09/07/14
+ * @(#)MailUtil.java	2.9.5 09/02/16
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,6 +21,8 @@
 
 package net.algem.util;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
@@ -40,7 +42,7 @@ import net.algem.util.model.Model;
  * Utility class for sending emails.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.5
  * @since 2.8.k 26/07/13
  */
 public class MailUtil {
@@ -59,6 +61,14 @@ public class MailUtil {
     dc = DataCache.getDataConnection();
     mailHandler = new DesktopMailHandler();
     memberService = service;
+  }
+  
+  public static String urlEncode(String str) {
+    try {
+      return URLEncoder.encode(str, "UTF-8").replace("+", "%20");
+    } catch (UnsupportedEncodingException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   /**

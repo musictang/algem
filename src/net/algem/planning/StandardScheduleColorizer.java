@@ -1,7 +1,7 @@
 /*
- * @(#)StandardScheduleColorizer.java 2.9.4.14 17/12/15
+ * @(#)StandardScheduleColorizer.java 2.9.5 09/02/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -31,7 +31,7 @@ import net.algem.util.DataCache;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.14
+ * @version 2.9.5
  * @since 2.9.4.13 02/11/2015
  */
 public class StandardScheduleColorizer
@@ -99,11 +99,11 @@ public class StandardScheduleColorizer
       case Schedule.MEMBER:
         return colorPrefs.getColor(ColorPlan.MEMBER_REHEARSAL);
       case Schedule.BOOKING_MEMBER:
-        return colorPrefs.getColor(ColorPlan.MEMBER_REHEARSAL).brighter();  
+        return colorPrefs.getColor(ColorPlan.BOOKING_MEMBER);  
       case Schedule.GROUP:
         return colorPrefs.getColor(ColorPlan.GROUP_REHEARSAL);
       case Schedule.BOOKING_GROUP:
-        return colorPrefs.getColor(ColorPlan.GROUP_REHEARSAL).brighter();
+        return colorPrefs.getColor(ColorPlan.BOOKING_GROUP);
       case Schedule.WORKSHOP:
         return colorPrefs.getColor(ColorPlan.WORKSHOP);
       case Schedule.TRAINING:
@@ -157,6 +157,9 @@ public class StandardScheduleColorizer
         return colorPrefs.getColor(ColorPlan.STUDIO_LABEL);
       case Schedule.ADMINISTRATIVE:
         return colorPrefs.getColor(ColorPlan.ADMINISTRATIVE_LABEL);
+      case Schedule.BOOKING_GROUP:
+      case Schedule.BOOKING_MEMBER:
+        return colorPrefs.getColor(ColorPlan.BOOKING_LABEL);
       default:
         return colorPrefs.getColor(ColorPlan.LABEL);
     }

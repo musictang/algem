@@ -1,7 +1,7 @@
 /*
- * @(#)DesktopMailHandler.java	2.8.t 16/05/14
+ * @(#)DesktopMailHandler.java	2.9.5 09/02/16
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -31,7 +31,7 @@ import net.algem.util.GemLogger;
  * Sending mail manager.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.9.5
  * @since 2.0k 11/01/10
  * @see java.awt.Desktop
  */
@@ -70,11 +70,38 @@ public class DesktopMailHandler
       executeMailClient(to, bcc);
     }
   }
+  
+  public void send(String uri) {
+    if (isMailSupported()) { //XXX bug KDE retourne true pour Action.MAIL mais ne fonctionne pas
+      try {
+          URI uriMailto = new URI(uri);
+          getDesktop().mail(uriMailto);
+       
+      } catch (IOException ioe) {
+        GemLogger.log(Level.WARNING, getClass().getName(), "send", ioe.getMessage());
+      } catch (URISyntaxException use) {
+        GemLogger.logException(use);
+      }
+    } else {
+      //utiliser le runtime
+      GemLogger.log("Desktop.Action.MAIL not supported");
+      executeMailClient();
+    }
+  }
 
   private void executeMailClient(String to, String bcc) {
     try {
       String mailClient = BundleUtil.getLabel("Mail.client");
       Runtime.getRuntime().exec(mailClient + " " + formatMailto(to, bcc, mailClient));
+    } catch (IOException e) {
+      GemLogger.logException(e);
+    }
+  }
+  
+  private void executeMailClient() {
+    try {
+      String mailClient = BundleUtil.getLabel("Mail.client");
+      Runtime.getRuntime().exec(mailClient);
     } catch (IOException e) {
       GemLogger.logException(e);
     }

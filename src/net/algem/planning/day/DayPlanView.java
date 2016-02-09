@@ -1,7 +1,7 @@
 /*
- * @(#)DayPlanView.java 2.9.4.14 04/01/16
+ * @(#)DayPlanView.java 2.9.5 09/02/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -43,7 +43,7 @@ import net.algem.util.model.Model;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.14
+ * @version 2.9.5
  * @since 1.0a 07/07/1999
  */
 public class DayPlanView
@@ -458,11 +458,21 @@ public class DayPlanView
     String subLabel = null;
     if (p.getIdPerson() != prev.getIdPerson() || prev.getIdPerson() == 0) {
       int length = p.getStart().getLength(p.getEnd());
-      if (length > 30 && (p instanceof CourseSchedule || p instanceof WorkshopSchedule || p instanceof StudioSchedule)) {
+      if (length > 30 && (
+              p instanceof CourseSchedule ||
+              p instanceof WorkshopSchedule ||
+              p instanceof StudioSchedule ||
+              Schedule.BOOKING_GROUP == p.getType() ||
+              Schedule.BOOKING_MEMBER == p.getType()
+              )) {
         if (p instanceof GroupStudioSchedule) {
           subLabel = ((GroupStudioSchedule) p).getActivityLabel();
         } else if (p instanceof TechStudioSchedule) {
           subLabel = ((TechStudioSchedule) p).getTechnicianLabel();
+        } else if (Schedule.BOOKING_GROUP == p.getType()) { 
+          subLabel = ((BookingGroupSchedule) p).getScheduleDetail();
+        } else if (Schedule.BOOKING_MEMBER == p.getType()) { 
+          subLabel = ((BookingMemberSchedule) p).getScheduleDetail();
         } else {
           subLabel = p.getPerson().getAbbrevFirstNameName();
         }

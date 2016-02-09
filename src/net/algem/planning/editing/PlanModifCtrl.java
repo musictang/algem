@@ -1,5 +1,5 @@
 /*
- * @(#)PlanModifCtrl.java	2.9.4.14 04/01/16
+ * @(#)PlanModifCtrl.java	2.9.5 09/02/16
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -34,12 +34,14 @@ import net.algem.contact.EmployeeType;
 import net.algem.contact.Note;
 import net.algem.contact.Person;
 import net.algem.contact.member.MemberException;
+import net.algem.contact.member.MemberRehearsalCtrl;
 import net.algem.contact.member.MemberService;
 import net.algem.contact.teacher.SubstituteTeacherList;
 import net.algem.contact.teacher.TeacherService;
 import net.algem.course.Course;
 import net.algem.group.GemGroupService;
 import net.algem.group.Group;
+import net.algem.group.GroupException;
 import net.algem.planning.*;
 import net.algem.planning.dispatch.ui.ScheduleDispatchController;
 import net.algem.planning.editing.instruments.AtelierInstrumentsController;
@@ -49,6 +51,7 @@ import net.algem.planning.fact.ui.AbsenceToCatchUpCtrl;
 import net.algem.planning.fact.ui.ReplanifyCtrl;
 import net.algem.room.Room;
 import net.algem.util.*;
+import net.algem.util.jdesktop.DesktopMailHandler;
 import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.GemMenuButton;
@@ -59,7 +62,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.14
+ * @version 2.9.5
  * @since 1.0b 05/07/2002 lien salle et groupe
  */
 public class PlanModifCtrl
@@ -218,6 +221,15 @@ public class PlanModifCtrl
     //}
     return v;
   }
+  
+  public Vector<GemMenuButton> getMenuBooking() {
+    Vector<GemMenuButton> v = new Vector<GemMenuButton>();
+    v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.room.modification.label"), this, "ChangeRoom"));
+    v.add(new GemMenuButton(BundleUtil.getLabel("Confirm.label"), this, "ConfirmBooking"));
+    v.add(new GemMenuButton(BundleUtil.getLabel("Cancel.label"), this, "CancelBooking"));
+    
+    return v;
+  }
 
   /**
    * Gets a list of buttons for schedule creation.
@@ -290,7 +302,11 @@ public class PlanModifCtrl
       } else if (arg.equals("ScheduleDispatch")) {
         Action action = ((CourseSchedule) plan).getAction();
         new ScheduleDispatchController(desktop, action).run();
-      }
+      } else if (arg.equals("CancelBooking")) {
+        cancelBooking(plan);
+      } else if (arg.equals("ConfirmBooking")) {
+        confirmBooking(plan);
+      } 
       /*
        else if (arg.bufferEquals("Replanifier")) {
        dialogDeplacerCours();
@@ -970,6 +986,70 @@ public class PlanModifCtrl
       service.deletePlanning(a);
     }
   }
+  
+  private void cancelBooking(ScheduleObject plan) {
+    try {
+      Booking b = service.getBookingFromAction(plan.getIdAction());
+      service.cancelBooking(plan.getIdAction());
+      String email = null;
+      String name = null;
+      if (Schedule.BOOKING_MEMBER == plan.getType()) {
+        email = memberService.getEmail(plan.getIdPerson());
+        name = plan.getPerson().getFirstnameName();
+      } else {
+        Group g = (Group) DataCache.findId(plan.getIdPerson(),Model.Group);
+        email = memberService.getEmail(b.getPerson());
+        name = g.getName();
+      }
+      String subject = MailUtil.urlEncode(MessageUtil.getMessage("booking.cancellation.subject"));
+      String body = MailUtil.urlEncode(MessageUtil.getMessage("booking.cancellation.message", new Object[] {name}));
+      sendMessage(email, subject, body);
+      desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));
+    } catch (BookingException ex) {
+      GemLogger.logException(ex);
+      MessagePopup.warning(null, ex.getMessage());
+    } catch (SQLException ex) {
+      GemLogger.log(ex.getMessage());
+      MessagePopup.warning(null, ex.getMessage());
+    }
+  }
+  
+  private void confirmBooking(ScheduleObject plan) {
+    try {
+      Booking b = service.getBookingFromAction(plan.getIdAction());
+      service.confirmBooking(plan);
+      String email = null;
+      String name = null;
+      if (Schedule.BOOKING_MEMBER == plan.getType()) {
+        new MemberRehearsalCtrl(desktop).order(b.isPass(), plan);
+        email = memberService.getEmail(plan.getIdPerson());
+        name = plan.getPerson().getFirstnameName();
+      } else {
+        Group g = (Group) DataCache.findId(plan.getIdPerson(),Model.Group);
+        new GemGroupService(dc).order(plan, g);
+        email = memberService.getEmail(b.getPerson());
+        name = g.getName();
+      }
+      String subject = MailUtil.urlEncode(MessageUtil.getMessage("booking.confirmation.subject"));
+      String body = MailUtil.urlEncode(
+              MessageUtil.getMessage(
+                      "booking.confirmation.message", 
+                      new Object[] {name, plan.getDate().toString(), plan.getStart()}
+              )
+      );
+      sendMessage(email, subject, body);
+      desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));
+    } catch (BookingException |SQLException|MemberException|GroupException ex) {
+      GemLogger.logException(ex);
+      MessagePopup.warning(null, ex.getMessage());
+    } 
+  }
+
+  private void sendMessage(String email, String subject, String body) {
+    DesktopMailHandler mailHandler = new DesktopMailHandler();
+    final String mailURIStr = String.format("mailto:%s?subject=%s&body=%s", email, subject, body);
+    mailHandler.send(mailURIStr);
+  }
 
   /**
    *
@@ -994,11 +1074,13 @@ public class PlanModifCtrl
 
   private String getLabel(ScheduleObject plan) {
     switch (plan.getType()) {
-      case ScheduleObject.MEMBER:
+      case Schedule.MEMBER:
+      case Schedule.BOOKING_MEMBER:
         return BundleUtil.getLabel("Schedule.person.modification.label");
-      case ScheduleObject.GROUP:
+      case Schedule.GROUP:
+      case Schedule.BOOKING_GROUP:
         return BundleUtil.getLabel("Schedule.group.modification.label");
-      case ScheduleObject.ADMINISTRATIVE:
+      case Schedule.ADMINISTRATIVE:
         return BundleUtil.getLabel("Diary.label");
       default:
         return BundleUtil.getLabel("Schedule.default.modification.label");

@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleIO.java	2.9.4.14 16/12/15
+ * @(#)ScheduleIO.java	2.9.5 09/02/16
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -42,7 +42,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.14
+ * @version 2.9.5
  */
 public class ScheduleIO
         extends TableIO
@@ -116,7 +116,87 @@ public class ScheduleIO
             + " AND action = " + sched.getIdAction();
     delete(query, dc);
   }
+  
+  public static Booking findBooking(int actionId, DataConnection dc) throws BookingException {
+    String query = "SELECT id,idper,dateres,pass,statut FROM reservation WHERE idaction = ?";
+    ResultSet rs = null;
+    try (PreparedStatement ps = dc.prepareStatement(query)) {
+      ps.setInt(1, actionId);
+      rs = ps.executeQuery();
+      while(rs.next()) {
+        Booking b = new Booking();
+        b.setId(rs.getInt(1));
+        b.setAction(actionId);
+        b.setPerson(rs.getInt(2));
+        b.setBookingDate(rs.getDate(3));
+        b.setPass(rs.getBoolean(4));
+        b.setStatus(rs.getByte(5));
+        return b;
+      }
+    } catch (Exception ex) {
+      throw new BookingException(ex.getMessage());
+    } finally {
+      if (rs != null) {
+        try {
+          rs.close();
+        } catch (SQLException ex) {
+          GemLogger.log(ex.getMessage());
+        }
+      }
+    }
+    return null;
+  }
 
+  public static void cancelBooking(final int action, DataConnection dc) throws BookingException {
+    String sql = "DELETE FROM reservation WHERE idaction = ?";
+    try (PreparedStatement ps = dc.prepareStatement(sql)) {
+      dc.withTransaction(new DataConnection.SQLRunnable<Void>()
+      {
+        @Override
+        public Void run(DataConnection conn) throws Exception {
+          delete("action = " + action, conn);
+          ps.setInt(1, action);
+          ps.executeUpdate();
+          return null;
+        }
+      });
+    } catch (Exception ex) {
+      throw new BookingException(ex.getMessage());
+    }
+  }
+  
+  public static void confirmBooking(final Schedule schedule, DataConnection dc) throws BookingException {
+    if (Schedule.BOOKING_GROUP != schedule.getType() && Schedule.BOOKING_MEMBER != schedule.getType()) {
+      return;
+    }
+    try {
+      final String sql = "UPDATE " + TABLE + " SET ptype = " + (Schedule.BOOKING_GROUP == schedule.getType() ? Schedule.GROUP : Schedule.MEMBER) + " WHERE id = ?";
+      final String sql2 = "UPDATE reservation SET statut = 1 WHERE idaction = ?";
+      dc.withTransaction(new DataConnection.SQLRunnable<Void>()
+      {
+        @Override
+        public Void run(DataConnection conn) throws Exception {
+          try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, schedule.getId());
+            ps.executeUpdate();
+          } catch (SQLException ex) {
+            throw new BookingException(ex.getMessage());
+          }
+          try (PreparedStatement ps = conn.prepareStatement(sql2)) {
+            ps.setInt(1, schedule.getIdAction());
+            ps.executeUpdate();
+          } catch (SQLException ex) {
+            throw new BookingException(ex.getMessage());
+          }
+          return null;
+        }
+      });
+    } catch (Exception e) {
+      throw new BookingException(e.getMessage());
+    }
+
+  }
+  
   /**
    * Schedule suppression.
    *

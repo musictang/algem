@@ -1,7 +1,7 @@
 /*
- * @(#)MemberRehearsalCtrl.java	2.9.3 25/02/15
+ * @(#)MemberRehearsalCtrl.java	2.9.5 09/02/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -50,7 +50,7 @@ import net.algem.util.ui.PopupDlg;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.3
+ * @version 2.9.5
  * @since 1.0a 12/12/2001
  */
 public class MemberRehearsalCtrl
@@ -134,7 +134,7 @@ public class MemberRehearsalCtrl
    * @return an amount
    * @throws SQLException
    */
-  PersonSubscriptionCard updatePersonalCard(PersonFile pFile, RehearsalPass pass, ScheduleObject dto) throws SQLException, MemberException {
+  PersonSubscriptionCard updatePersonalCard(PersonFile pFile, RehearsalPass pass, Schedule dto) throws SQLException, MemberException {
 
     PersonSubscriptionCard last = pFile.getSubscriptionCard();//XXX le pass peut être différent du pass courant
     PersonSubscriptionCard nc = null;
@@ -200,7 +200,7 @@ public class MemberRehearsalCtrl
    * @param idper person's id
    * @throws SQLException
    */
-  PersonSubscriptionCard createNewCard(RehearsalPass pass, int length, int idper, DateFr date, ScheduleObject dto) throws SQLException {
+  PersonSubscriptionCard createNewCard(RehearsalPass pass, int length, int idper, DateFr date, Schedule dto) throws SQLException {
 
     PersonSubscriptionCard c = new PersonSubscriptionCard();
     c.setIdper(idper);
@@ -316,6 +316,44 @@ public class MemberRehearsalCtrl
     }
     return true;
   }
+  
+  public void order(boolean subscription, Schedule schedule) throws MemberException {
+    
+    try {
+      PersonFile pf = (PersonFile) DataCache.findId(schedule.getIdPerson(), Model.PersonFile);
+      if (pf == null) {
+        return;
+      }
+      if (subscription) {
+        // recherche d'une choix d'abonnement pour cet adhérent
+        RehearsalPass pass = null;
+        List<RehearsalPass> passList = memberService.getPassList();
+        if (passList.size() > 0) {
+          pass = passList.get(0);
+        } else {
+          MessagePopup.warning(this, MessageUtil.getMessage("no.subscription.pass.warning"));
+          saveSinglePayment(schedule, pf);
+        }
+        
+        PersonSubscriptionCard newCard = updatePersonalCard(pf, pass, schedule);
+        PersonFileEvent event = null;
+        if (newCard != null) {
+          memberService.saveRehearsalOrderLine(pf, schedule.getDate(), pass.getAmount(), newCard.getId());
+          event = new PersonFileEvent(newCard, PersonFileEvent.SUBSCRIPTION_CARD_CHANGED);
+          MessagePopup.information(this, MessageUtil.getMessage("subscription.card.create.info"));
+        } else {
+          event = new PersonFileEvent(pf.getSubscriptionCard(), PersonFileEvent.SUBSCRIPTION_CARD_CHANGED);
+        }
+        if (actionListener != null) {
+          ((PersonFileEditor) actionListener).contentsChanged(event);
+        }
+      } else {
+        saveSinglePayment(schedule, pf);
+      }
+    } catch (SQLException sqe) {
+      throw new MemberException(sqe.getMessage());
+    }
+  }
 
   /**
    * Calculates the price of the session for this specific room {@literal roomId}
@@ -327,6 +365,14 @@ public class MemberRehearsalCtrl
     double amount = RehearsalUtil.calcSingleRehearsalAmount(view.getHourStart(), view.getHourEnd(), s.getRate(), 1, dc);
     if (amount > 0.0) {
       memberService.saveRehearsalOrderLine(personFile, view.getDate(), amount, 0);
+    }
+  }
+  
+  private void saveSinglePayment(Schedule schedule, PersonFile pf) throws SQLException {
+    Room room = ((RoomIO) DataCache.getDao(Model.Room)).findId(schedule.getIdRoom());
+    double amount = RehearsalUtil.calcSingleRehearsalAmount(schedule.getStart(), schedule.getEnd(), room.getRate(), 1, dc);
+    if (amount > 0.0) {
+      memberService.saveRehearsalOrderLine(pf, schedule.getDate(), amount, 0);
     }
   }
 

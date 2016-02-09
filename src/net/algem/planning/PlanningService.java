@@ -1,5 +1,5 @@
 /*
- * @(#)PlanningService.java	2.9.4.12 16/09/15
+ * @(#)PlanningService.java	2.9.5 09/02/16
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -42,7 +42,7 @@ import net.algem.util.ui.MessagePopup;
  * Service class for planning.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.12
+ * @version 2.9.5
  * @since 2.4.a 07/05/12
  */
 public class PlanningService
@@ -1180,6 +1180,18 @@ public class PlanningService
   public void markNotPaid(ScheduleObject schedule) throws SQLException {
     String query = "UPDATE planning SET note = -1 WHERE id = " + schedule.getId();
     dc.executeUpdate(query);
+  }
+  
+  public void cancelBooking(int actionId) throws BookingException {
+    ScheduleIO.cancelBooking(actionId, dc);
+  }
+  
+  public void confirmBooking(Schedule schedule) throws BookingException {
+    ScheduleIO.confirmBooking(schedule, dc);
+  }
+  
+  public Booking getBookingFromAction(int action) throws BookingException {
+    return ScheduleIO.findBooking(action, dc);
   }
 
   public Vector<ScheduleTestConflict> checkHour(ScheduleObject plan, DateFr dateStart, DateFr dateEnd, Hour hStart, Hour hEnd)

@@ -1,5 +1,5 @@
 /*
- * @(#)BookingMemberSchedule.java 2.9.4.0 29/01/2016
+ * @(#)BookingMemberSchedule.java 2.9.5.0 29/01/2016
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  * 
@@ -26,22 +26,22 @@ import net.algem.util.BundleUtil;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version Expression projectVersion is undefined on line 13, column 15 in Templates/Classes/Class.java.
- * @since Expression projectVersion is undefined on line 14, column 13 in Templates/Classes/Class.java. 29/01/2016
+ * @version 2.9.5.0
+ * @since 2.9.5.0 29/01/2016
  */
-class BookingMemberSchedule extends MemberRehearsalSchedule {
+public class BookingMemberSchedule extends MemberRehearsalSchedule {
 
   public BookingMemberSchedule() {
   }
   
   @Override
   public String getScheduleLabel() {
-    return getScheduleDetail();
+    return BundleUtil.getLabel("Booking.label");
   }
   
   @Override
   public String getScheduleDetail() {
-    return BundleUtil.getLabel("Booking.label") + "\n" + person;
+    return super.getScheduleLabel();
   }
 
 }

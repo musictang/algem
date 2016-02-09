@@ -1,7 +1,7 @@
 /*
- * @(#)GemGroupService.java	2.9.4.0 06/04/15
+ * @(#)GemGroupService.java	2.9.5 09/02/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -42,7 +42,7 @@ import net.algem.util.model.Model;
  * Service class for group operations.
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.0
+ * @version 2.9.5
  * @since 2.4.a 10/05/12
  */
 public class GemGroupService
@@ -342,6 +342,24 @@ public class GemGroupService
       throw new GroupException(MessageUtil.getMessage("rehearsal.create.exception") + "\n" + sqe.getMessage());
     } finally {
       dc.setAutoCommit(true);
+    }
+  }
+  
+  public void order(Schedule schedule, Group g) throws GroupException {
+    Room room = ((RoomIO) DataCache.getDao(Model.Room)).findId(schedule.getIdRoom());
+    double amount = RehearsalUtil.calcSingleRehearsalAmount(schedule.getStart(), schedule.getEnd(), room.getRate(), getNumberOfMusicians(g), dc);
+    Person ref = ((PersonIO) DataCache.getDao(Model.Person)).findById(g.getIdref());
+    // Echéance référent
+    if (ref != null && ref.getId() > 0) {
+      try {
+        PersonFile dossier = ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findId(ref.getId());
+        OrderLine ol = AccountUtil.setGroupOrderLine(g.getId(), dossier, schedule.getDate(), getAccount(AccountPrefIO.REHEARSAL_KEY_PREF), amount);
+        String s = ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey());
+        ol.setSchool(Integer.parseInt(s));
+        AccountUtil.createEntry(ol, dc);
+      } catch (SQLException ex) {
+        throw new GroupException(ex.getMessage());
+      }
     }
   }
 

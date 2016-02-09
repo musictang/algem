@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleDetailCtrl.java 2.9.4.12 23/09/15
+ * @(#)ScheduleDetailCtrl.java 2.9.5 09/02/16
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -66,7 +66,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.12
+ * @version 2.9.5
  * @since 1.0a 07/07/1999
  */
 public class ScheduleDetailCtrl
@@ -159,8 +159,12 @@ public class ScheduleDetailCtrl
     frame.setTitle(title);// || schedule instanceof WorkshopSchedule
     if (schedule instanceof CourseSchedule) {
       loadCourseSchedule(event);
+    } else if (schedule instanceof BookingMemberSchedule) {
+      loadBookingMemberSchedule(schedule);
     } else if (schedule instanceof MemberRehearsalSchedule) {
       loadMemberReahearsalSchedule(schedule);
+    } else if (schedule instanceof BookingGroupSchedule) {
+      loadBookingGroupSchedule(schedule);
     } else if (schedule instanceof GroupRehearsalSchedule) {
       loadGroupRehearsalSchedule(schedule);
     } else if (schedule instanceof WorkshopSchedule) {
@@ -171,7 +175,8 @@ public class ScheduleDetailCtrl
        loadTechnicianSchedule(event);
     } else if (schedule instanceof AdministrativeSchedule) {
        loadAdministrativeSchedule(event);
-    } else if (schedule instanceof Schedule) {
+    } 
+    else if (schedule instanceof Schedule) {
       Schedule p = (Schedule) schedule;
       headPanel.add(new GemLabel("Saisie sur planning"));
       Vector<GemMenuButton> vb = modifCtrl.getMenuPlanning();
@@ -316,6 +321,19 @@ public class ScheduleDetailCtrl
       menuPanel.add((GemMenuButton) modifButtons.elementAt(i));
     }
   }
+  
+  private void loadBookingMemberSchedule(Schedule sched) {
+    BookingMemberSchedule p = (BookingMemberSchedule) sched;
+    headPanel.add(new GemLabel(BundleUtil.getLabel("Booking.label")));
+
+    GemMenuButton b = getScheduleRangeButton(p.getMember());
+    listPanel.add(b);
+    Vector<GemMenuButton> modifButtons = modifCtrl.getMenuBooking();
+    for (int i = 0; i < modifButtons.size(); i++) {
+      menuPanel.add((GemMenuButton) modifButtons.elementAt(i));
+    }
+
+  }
 
   private void loadGroupRehearsalSchedule(Schedule plan) {
     GroupRehearsalSchedule p = (GroupRehearsalSchedule) plan;
@@ -337,6 +355,25 @@ public class ScheduleDetailCtrl
     }
     menuPanel.add(btGroupWrite);//mailing button
   }
+  
+  private void loadBookingGroupSchedule(Schedule plan) {
+    BookingGroupSchedule bg = (BookingGroupSchedule) plan;
+    headPanel.add(new GemLabel(bg.getScheduleLabel()));
+    StringBuilder buf = new StringBuilder(BundleUtil.getLabel("Group.label")).append(" ");
+    buf.append(bg.getGroup().getName());// unescape
+    GemMenuButton b = new GemMenuButton(buf.toString(), this, "GroupLink", bg.getGroup());
+    headPanel.add(b);
+    try {
+      loadMusicianList(groupService.getMusicians(plan.getIdPerson()));
+    } catch (SQLException ex) {
+      GemLogger.logException(ex);
+    }
+    Vector<GemMenuButton> modifButtons = modifCtrl.getMenuBooking();
+    for (int i = 0; i < modifButtons.size(); i++) {
+      menuPanel.add((GemMenuButton) modifButtons.elementAt(i));
+    }
+    menuPanel.add(btGroupWrite);//mailing button
+  }
 
   private void loadStudioSchedule(Schedule plan) {
     GroupStudioSchedule s = (GroupStudioSchedule) plan;
@@ -350,7 +387,7 @@ public class ScheduleDetailCtrl
     } catch (SQLException ex) {
       GemLogger.logException(ex);
     }
-    Vector<GemMenuButton> modifButtons = modifCtrl.getMenuStudio(Schedule.STUDIO);
+    Vector<GemMenuButton> modifButtons = modifCtrl.getMenuBooking();
     for (int i = 0; i < modifButtons.size(); i++) {
       menuPanel.add((GemMenuButton) modifButtons.elementAt(i));
     }
