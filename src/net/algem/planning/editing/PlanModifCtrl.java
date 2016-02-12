@@ -1002,7 +1002,7 @@ public class PlanModifCtrl
         name = g.getName();
       }
       String subject = MailUtil.urlEncode(MessageUtil.getMessage("booking.cancellation.subject"));
-      String body = MailUtil.urlEncode(MessageUtil.getMessage("booking.cancellation.message", new Object[] {name}));
+      String body = MailUtil.urlEncode(MessageUtil.getMessage("booking.cancellation.message", new Object[] {name, plan.getDate().toString(), plan.getStart()}));
       sendMessage(email, subject, body);
       desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));
     } catch (BookingException ex) {

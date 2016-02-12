@@ -324,6 +324,8 @@ public class MemberRehearsalCtrl
       if (pf == null) {
         return;
       }
+      // don't forget to set the card before searching a new one
+      pf.setSubscriptionCard(memberService.getLastSubscription(pf.getId(), false));
       if (subscription) {
         // recherche d'une choix d'abonnement pour cet adhérent
         RehearsalPass pass = null;
