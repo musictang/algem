@@ -62,7 +62,7 @@ public class GroupOrderLineEditor
     super(desktop, tableModel);
     this.service = service;
     try {
-      Preference p = AccountPrefIO.find(AccountPrefIO.MEMBER_KEY_PREF, dc);
+      Preference p = AccountPrefIO.find(AccountPrefIO.MEMBERSHIP, dc);
       Account a = AccountPrefIO.getAccount(p, dc);
       if (a != null) {
         tableView.setMemberShipFilter(a.getLabel());

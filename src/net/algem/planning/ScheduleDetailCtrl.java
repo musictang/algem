@@ -360,7 +360,7 @@ public class ScheduleDetailCtrl
     BookingGroupSchedule bg = (BookingGroupSchedule) plan;
     headPanel.add(new GemLabel(bg.getScheduleLabel()));
     StringBuilder buf = new StringBuilder(BundleUtil.getLabel("Group.label")).append(" ");
-    buf.append(bg.getGroup().getName());// unescape
+    buf.append(bg.getGroup().getName());
     GemMenuButton b = new GemMenuButton(buf.toString(), this, "GroupLink", bg.getGroup());
     headPanel.add(b);
     try {

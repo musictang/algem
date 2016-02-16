@@ -114,13 +114,13 @@ public abstract class CommunAccountExportService
     Account c = null;
     if (ModeOfPayment.ESP.toString().equalsIgnoreCase(mp)) {
       // journal de caisse
-      c = getAccount(AccountPrefIO.CASH_ACCOUNT);
+      c = getAccount(AccountPrefIO.CASH);
     } else if (ModeOfPayment.FAC.toString().equalsIgnoreCase(mp)) {
       // journal de ventes
-      c = getAccount(AccountPrefIO.PERSONAL_ACCOUNT);
+      c = getAccount(AccountPrefIO.PERSONAL);
     } else {
       //journal de banque
-      c = getAccount(AccountPrefIO.BANK_ACCOUNT);
+      c = getAccount(AccountPrefIO.BANK);
     }
     return c;
   }

@@ -159,7 +159,7 @@ public class StatsExportDlg
       
       st.setConfig(
               filePathField.getText(),
-              AccountPrefIO.find(AccountPrefIO.MEMBER_KEY_PREF, DataCache.getDataConnection()),
+              AccountPrefIO.find(AccountPrefIO.MEMBERSHIP, DataCache.getDataConnection()),
               datePanel.getStartFr(),
               datePanel.getEndFr());
       st.addPropertyChangeListener(this);

@@ -223,7 +223,7 @@ public class GemGroupService
     List<Musician> lm = g.getMusicians();
     if (lm != null) {
       try {
-        Preference p = AccountPrefIO.find(AccountPrefIO.MEMBER_KEY_PREF, dc);
+        Preference p = AccountPrefIO.find(AccountPrefIO.MEMBERSHIP, dc);
         Account a = AccountPrefIO.getAccount(p, dc);
         membershipAccount = a.getId();
       } catch (SQLException ex) {
@@ -331,7 +331,7 @@ public class GemGroupService
       // Echéance référent
       if (ref != null && ref.getId() > 0) {
         PersonFile dossier = ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findId(ref.getId());
-        OrderLine ol = AccountUtil.setGroupOrderLine(g.getId(), dossier, date, getAccount(AccountPrefIO.REHEARSAL_KEY_PREF), amount);
+        OrderLine ol = AccountUtil.setGroupOrderLine(g.getId(), dossier, date, getAccount(AccountPrefIO.REHEARSAL), amount);
         String s = ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey());
         ol.setSchool(Integer.parseInt(s));
         AccountUtil.createEntry(ol, dc);
@@ -353,7 +353,7 @@ public class GemGroupService
     if (ref != null && ref.getId() > 0) {
       try {
         PersonFile dossier = ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findId(ref.getId());
-        OrderLine ol = AccountUtil.setGroupOrderLine(g.getId(), dossier, schedule.getDate(), getAccount(AccountPrefIO.REHEARSAL_KEY_PREF), amount);
+        OrderLine ol = AccountUtil.setGroupOrderLine(g.getId(), dossier, schedule.getDate(), getAccount(AccountPrefIO.REHEARSAL), amount);
         String s = ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey());
         ol.setSchool(Integer.parseInt(s));
         AccountUtil.createEntry(ol, dc);

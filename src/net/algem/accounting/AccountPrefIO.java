@@ -1,5 +1,5 @@
 /*
- * @(#)AccountPrefIO.java 2.9.4.11 21/07/15
+ * @(#)AccountPrefIO.java 2.9.5 16/02/16
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -33,7 +33,7 @@ import net.algem.util.model.TableIO;
  * Default accounts persistence.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.11
+ * @version 2.9.5
  * @since 2.1.i
  *
  */
@@ -42,13 +42,14 @@ public class AccountPrefIO
 
 	public static final String TABLE = "comptepref";
 	public static final String[] COLUMNS = {"id", "idcompte", "idanalytique"};
-	public static final String MEMBER_KEY_PREF = "ADHÉSIONS";
-	public static final String LEISURE_KEY_PREF = "FORMATION LOISIR";
-	public static final String PRO_KEY_PREF = "FORMATION PROFESSIONNELLE";
-	public static final String REHEARSAL_KEY_PREF = "RÉPÉTITIONS";
-	public static final String CASH_ACCOUNT = "COMPTE DE CAISSE";
-	public static final String BANK_ACCOUNT = "COMPTE DE BANQUE";
-	public static final String PERSONAL_ACCOUNT = "DIVERS/TIERS";
+	public static final String MEMBERSHIP = "ADHÉSIONS";
+    public static final String PRO_MEMBERSHIP = "ADHÉSIONS PRO";
+	public static final String LEISURE = "FORMATION LOISIR";
+	public static final String PRO = "FORMATION PROFESSIONNELLE";
+	public static final String REHEARSAL = "RÉPÉTITIONS";
+	public static final String CASH = "COMPTE DE CAISSE";
+	public static final String BANK = "COMPTE DE BANQUE";
+	public static final String PERSONAL = "DIVERS/TIERS";
 
 	public static void insert(Preference p, String tablename, DataConnection dc) throws SQLException {
 		Object[] values = p.getValues();

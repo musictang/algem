@@ -1,5 +1,5 @@
 /*
- * @(#)ConfigPlanning.java 2.9.4.2 10/04/15
+ * @(#)ConfigPlanning.java 2.9.5 15/02/16
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -38,6 +38,7 @@ import net.algem.planning.Hour;
 import net.algem.planning.HourField;
 import net.algem.util.BundleUtil;
 import net.algem.util.ui.GemLabel;
+import net.algem.util.ui.GemNumericField;
 import net.algem.util.ui.GemPanel;
 import net.algem.util.ui.GridBagHelper;
 
@@ -53,10 +54,13 @@ public class ConfigPlanning
   private DateRangePanel yearPanel;
   private DateRangePanel periodPanel;
   private HourField offPeakTime;
+  private GemNumericField minDelay;
+  private GemNumericField maxDelay;
+  private GemNumericField cancelDelay;
   private HourField startTime;
   private JCheckBox rangeNames;
   private JRadioButton normal, reverse;
-  private Config c1, c2, c3, c4, c5, c6, c7, c8;
+  private Config c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11;
 
   public ConfigPlanning(String title, Map<String, Config> confs) {
     super(title, confs);
@@ -72,6 +76,9 @@ public class ConfigPlanning
     c6 = confs.get(ConfigKey.START_TIME.getKey());
     c7 = confs.get(ConfigKey.SCHEDULE_RANGE_NAMES.getKey());
     c8 = confs.get(ConfigKey.PERSON_SORT_ORDER.getKey());
+    c9 = confs.get(ConfigKey.BOOKING_MIN_DELAY.getKey());
+    c10 = confs.get(ConfigKey.BOOKING_MAX_DELAY.getKey());
+    c11 = confs.get(ConfigKey.BOOKING_CANCEL_DELAY.getKey());
 
     Border border = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
     yearPanel = new DateRangePanel(new DateFr(c1.getValue()), new DateFr(c2.getValue()), border);
@@ -83,6 +90,16 @@ public class ConfigPlanning
     offPeakTime.setToolTipText(ConfigKey.OFFPEAK_HOUR.getLabel());
     startTime = new HourField(c6 == null ? "00:00" : c6.getValue());
     startTime.setToolTipText(BundleUtil.getLabel("ConfEditor.start.time.tip"));
+    
+    minDelay = new GemNumericField(2);
+    minDelay.setToolTipText(BundleUtil.getLabel("Booking.min.delay.tip"));
+    minDelay.setText(c9.getValue());
+    maxDelay = new GemNumericField(2);
+    maxDelay.setToolTipText(BundleUtil.getLabel("Booking.max.delay.tip"));
+    maxDelay.setText(c10.getValue());
+    cancelDelay = new GemNumericField(2);
+    cancelDelay.setToolTipText(BundleUtil.getLabel("Booking.cancel.delay.tip"));
+    cancelDelay.setText(c11.getValue());
 
     content = new GemPanel();
     content.setLayout(new GridBagLayout());
@@ -114,12 +131,25 @@ public class ConfigPlanning
     startTimeLabel.setToolTipText(BundleUtil.getLabel("ConfEditor.start.time.tip"));
     gb.add(startTimeLabel, 0, 3, 1, 1, GridBagHelper.WEST);
     gb.add(startTime, 1, 3, 1, 1, GridBagHelper.WEST);
+    
+    GemLabel minDelayLabel = new GemLabel(ConfigKey.BOOKING_MIN_DELAY.getLabel());
+    minDelayLabel.setToolTipText(BundleUtil.getLabel("Booking.min.delay.tip"));
+    GemLabel maxDelayLabel = new GemLabel(ConfigKey.BOOKING_MAX_DELAY.getLabel());
+    maxDelayLabel.setToolTipText(BundleUtil.getLabel("Booking.max.delay.tip"));
+    GemLabel cancelDelayLabel = new GemLabel(ConfigKey.BOOKING_CANCEL_DELAY.getLabel());
+    cancelDelayLabel.setToolTipText(BundleUtil.getLabel("Booking.cancel.delay.tip"));
+    gb.add(minDelayLabel, 0, 4, 1, 1, GridBagHelper.WEST);
+    gb.add(minDelay, 1, 4, 1, 1, GridBagHelper.WEST);
+    gb.add(maxDelayLabel, 0, 5, 1, 1, GridBagHelper.WEST);
+    gb.add(maxDelay, 1, 5, 1, 1, GridBagHelper.WEST);
+    gb.add(cancelDelayLabel, 0, 6, 1, 1, GridBagHelper.WEST);
+    gb.add(cancelDelay, 1, 6, 1, 1, GridBagHelper.WEST);
 
     rangeNames = new JCheckBox(ConfigKey.SCHEDULE_RANGE_NAMES.getLabel());
 //    rangeNames.setBorder(null);
     rangeNames.setSelected(c7.getValue().equals("t"));
     gb.insets = new Insets(10,0,0,0);
-    gb.add(rangeNames, 0, 4, 2, 1, GridBagHelper.WEST);
+    gb.add(rangeNames, 0, 7, 2, 1, GridBagHelper.WEST);
 
     ButtonGroup group = new ButtonGroup();
     normal = new JRadioButton(BundleUtil.getLabel("Name.label") + " " + BundleUtil.getLabel("First.name.label").toLowerCase());
@@ -137,9 +167,9 @@ public class ConfigPlanning
     sortby.add(normal);
     sortby.add(reverse);
     
-    gb.add(new GemLabel(BundleUtil.getLabel("Person.sort.order.label") + " :"), 0, 5, 2, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Person.sort.order.label") + " :"), 0, 8, 2, 1, GridBagHelper.WEST);
     gb.insets = new Insets(0,0,4,0);
-    gb.add(sortby, 0, 6, 2, 1, GridBagHelper.WEST);
+    gb.add(sortby, 0, 9, 2, 1, GridBagHelper.WEST);
     
     add(content);
   }
@@ -159,6 +189,9 @@ public class ConfigPlanning
 
     c7.setValue(rangeNames.isSelected() ? "t" : "f");
     c8.setValue(normal.isSelected() ? "n" : "r");
+    c9.setValue(minDelay.getText());
+    c10.setValue(maxDelay.getText());
+    c11.setValue(cancelDelay.getText());
     conf.add(c1);
     conf.add(c2);
     conf.add(c3);
@@ -167,6 +200,9 @@ public class ConfigPlanning
     conf.add(c6);
     conf.add(c7);
     conf.add(c8);
+    conf.add(c9);
+    conf.add(c10);
+    conf.add(c11);
 
     return conf;
   }

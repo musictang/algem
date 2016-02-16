@@ -196,7 +196,7 @@ public class MemberService
 
     PersonFile pf = ((PersonFileIO)DataCache.getDao(Model.PersonFile)).findMember(card.getIdper(), false);
     pf.setSubscriptionCard(nc);
-    OrderLine e = AccountUtil.setRehearsalOrderLine(pf, plan.getDate(), getPrefAccount(AccountPrefIO.REHEARSAL_KEY_PREF), pass.getAmount(), nc.getId());
+    OrderLine e = AccountUtil.setRehearsalOrderLine(pf, plan.getDate(), getPrefAccount(AccountPrefIO.REHEARSAL), pass.getAmount(), nc.getId());
 
     AccountUtil.createEntry(e, dc);
 
@@ -206,7 +206,7 @@ public class MemberService
   public void create(PersonSubscriptionCard card, PersonFile pFile) throws SQLException {
     create(card);
     RehearsalPass abo = RehearsalPassIO.find(card.getPassId(), dc);
-    Preference p = AccountPrefIO.find(AccountPrefIO.REHEARSAL_KEY_PREF, dc);
+    Preference p = AccountPrefIO.find(AccountPrefIO.REHEARSAL, dc);
     OrderLine e = AccountUtil.setRehearsalOrderLine(pFile, new DateFr(new Date()), p, abo.getAmount(), card.getId());
     AccountUtil.createEntry(e, dc);
   }
@@ -372,7 +372,7 @@ public class MemberService
    */
   public void saveRehearsalOrderLine(PersonFile pFile, DateFr date, double amount, int idCard) throws SQLException {
 
-    Preference p = AccountPrefIO.find(AccountPrefIO.REHEARSAL_KEY_PREF, dc);
+    Preference p = AccountPrefIO.find(AccountPrefIO.REHEARSAL, dc);
     OrderLine e = AccountUtil.setRehearsalOrderLine(pFile, date, p, amount, idCard);
 
     AccountUtil.createEntry(e, dc);

@@ -1,5 +1,5 @@
 /*
- * @(#)PlanModifCtrl.java	2.9.5 09/02/16
+ * @(#)PlanModifCtrl.java	2.9.5 15/02/16
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -307,30 +307,6 @@ public class PlanModifCtrl
       } else if (arg.equals("ConfirmBooking")) {
         confirmBooking(plan);
       } 
-      /*
-       else if (arg.bufferEquals("Replanifier")) {
-       dialogDeplacerCours();
-       } else if (arg.equalsIgnoreCase("Replanifier.Validation")) {
-       try {
-       dataCache.setAutoCommit(false);
-       Action upAction = updatePlanCtrl.get();
-       cal.setTime(plan.getDate().getDate());
-       Action action = getActionFrom(upAction, plan, cal.get(Calendar.DAY_OF_WEEK) - 1);
-       if (service.deletePlanning(action) == 0) {// aucune plage élève n'existe pour ce planning
-       updatePlanCtrl.save();
-       dataCache.commit();
-       desktop.postEvent(new ModifPlanEvent(this, action.getDateEnd(), action.getDateEnd()));
-       updatePlanCtrl.cancel();
-       }
-       } catch (Exception ex) {
-       System.err.println(ex.getMessage());
-       dataCache.logException("Replanification cours", ex);
-       dataCache.rollback();
-       } finally {
-       dataCache.setAutoCommit(true);
-       }
-       }
-       */
     } catch (PlanningException ex) {
       GemLogger.log(ex.getMessage());
       MessagePopup.warning(desktop.getFrame(), ex.getMessage());
@@ -1034,7 +1010,7 @@ public class PlanModifCtrl
       String body = MailUtil.urlEncode(
               MessageUtil.getMessage(
                       "booking.confirmation.message", 
-                      new Object[] {name, plan.getDate().toString(), plan.getStart()}
+                      new Object[] {name, plan.getDate().toString(), plan.getStart(), plan.getRoom().getName()}
               )
       );
       sendMessage(email, subject, body);

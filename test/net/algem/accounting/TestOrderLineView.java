@@ -103,7 +103,7 @@ public class TestOrderLineView
   public void testSetOrderLine() throws SQLException {
     OrderLine e = new OrderLine();
     int member = 1234;
-    String prefkey = AccountPrefIO.MEMBER_KEY_PREF;
+    String prefkey = AccountPrefIO.MEMBERSHIP;
     Preference p = AccountPrefIO.find(prefkey, dc);
 
     Account c = AccountIO.find((Integer) p.getValues()[0], dc);

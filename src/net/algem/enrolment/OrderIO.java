@@ -108,7 +108,7 @@ public class OrderIO
       // suppression des échéances
       int memberAccount = 0;
       // on ne supprime pas les échéances correspondant à des adhésions
-      Preference p = AccountPrefIO.find(AccountPrefIO.MEMBER_KEY_PREF, dc);
+      Preference p = AccountPrefIO.find(AccountPrefIO.MEMBERSHIP, dc);
       if (p != null && p.getValues() != null && p.getValues().length > 0) {
         memberAccount = (Integer) p.getValues()[0];
       }

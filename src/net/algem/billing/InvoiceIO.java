@@ -118,7 +118,7 @@ public class InvoiceIO
    * @throws SQLException
    */
   protected <T extends Invoice> void setOrderLines(T inv) throws SQLException {
-    Preference p = AccountPrefIO.find(AccountPrefIO.PERSONAL_ACCOUNT, dc);
+    Preference p = AccountPrefIO.find(AccountPrefIO.PERSONAL, dc);
     // Insertion échéances
     for (OrderLine ol : inv.getOrderLines()) {
       ol.setInvoice(inv.getNumber());

@@ -1,5 +1,5 @@
 /*
- * @(#)ConfigKey.java 2.9.4.3 27/04/15
+ * @(#)ConfigKey.java 2.9.5 15/02/16
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -27,7 +27,7 @@ import net.algem.util.BundleUtil;
  * First arg represents key in the table, second arg represents the label.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.3
+ * @version 2.9.5
  * @since 2.1.k 07/07/11
  */
 public enum ConfigKey
@@ -152,7 +152,10 @@ public enum ConfigKey
 
   PERSON_SORT_ORDER("Ordre.tri.personne", BundleUtil.getLabel("Person.sort.order.label")),
 
-  ADMINISTRATIVE_MANAGEMENT("Planification.administrative", BundleUtil.getLabel("Administrative.scheduling.label"));
+  ADMINISTRATIVE_MANAGEMENT("Planification.administrative", BundleUtil.getLabel("Administrative.scheduling.label")),
+  BOOKING_MIN_DELAY("Reservation.delai.min", BundleUtil.getLabel("Booking.min.delay.label")),
+  BOOKING_MAX_DELAY("Reservation.delai.max", BundleUtil.getLabel("Booking.max.delay.label")),
+  BOOKING_CANCEL_DELAY("Reservation.annulation.delai", BundleUtil.getLabel("Booking.cancel.delay.label"));
 
   private final String key;
   private final String label;

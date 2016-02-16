@@ -34,6 +34,9 @@ ALTER TABLE reservation OWNER TO nobody;
 -- delai minimum de réservation en heures
 INSERT INTO config VALUES ('Reservation.delai.min',24);
 -- delai d'annulation en heures
-INSERT INTO config VALUES ('Annulation.delai',72);
+INSERT INTO config VALUES ('Reservation.annulation.delai',72);
 -- delai max de réservation en jours
 INSERT INTO config VALUES ('Reservation.delai.max',15);
+
+INSERT INTO comptepref VALUES ('ADHÉSIONS PRO',14,'MFORPROFES');
+

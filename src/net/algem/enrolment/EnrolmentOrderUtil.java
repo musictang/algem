@@ -245,11 +245,11 @@ public class EnrolmentOrderUtil {
      int key = 0;
      String analytics = "";
     if (m.isLeisure()) {
-      Preference p = AccountPrefIO.find(AccountPrefIO.LEISURE_KEY_PREF, dc);
+      Preference p = AccountPrefIO.find(AccountPrefIO.LEISURE, dc);
       key = (Integer) p.getValues()[0];
       analytics = (String) p.getValues()[1];
     } else if (m.isProfessional()) {
-      Preference p = AccountPrefIO.find(AccountPrefIO.PRO_KEY_PREF, dc);
+      Preference p = AccountPrefIO.find(AccountPrefIO.PRO, dc);
       key = (Integer) p.getValues()[0];
       analytics = (String) p.getValues()[1];
     }

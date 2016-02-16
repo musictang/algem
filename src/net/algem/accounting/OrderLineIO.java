@@ -316,7 +316,7 @@ public class OrderLineIO
    * @throws SQLException
    */
   public static int countMemberShip(int m, DataConnection dc) throws SQLException {
-    Preference p = AccountPrefIO.find(AccountPrefIO.MEMBER_KEY_PREF, dc);
+    Preference p = AccountPrefIO.find(AccountPrefIO.MEMBERSHIP, dc);
     //String query = "SELECT count(echeance) FROM echeancier2 WHERE adherent=" + m + " AND compte like '" + p.getValues()[0].substring(0, 8) + "%'";
     String query = "SELECT count(echeance) FROM " + TABLE + " WHERE adherent = " + m + " AND compte = '" + p.getValues()[0] + "'";
     ResultSet rs = dc.executeQuery(query);
