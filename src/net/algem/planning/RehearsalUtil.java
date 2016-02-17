@@ -40,7 +40,7 @@ public class RehearsalUtil
    */
   public static Hour getEndOffpeakHour(DataConnection dc) {
 
-    String end = ConfigUtil.getConf(ConfigKey.OFFPEAK_HOUR.getKey());
+    String end = ConfigUtil.getConf(ConfigKey.OFFPEAK_TIME.getKey());
     if (end == null || end.equals("00:00")) {
       return new Hour("17:00"); // default
     } else {

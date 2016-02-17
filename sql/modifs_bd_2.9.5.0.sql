@@ -21,8 +21,6 @@ CREATE TABLE reservation(
     statut smallint DEFAULT 0 -- 0 (en attente de confirmation),1 (confirmée)
 );
 
--- TEMP,CONF,ANNL, 0,1,-1
-
 COMMENT ON TABLE reservation IS 'Stockage temporaire des informations de réservation';
 COMMENT ON COLUMN reservation.idper IS 'Identifiant de la personne ayant réservé';  
 COMMENT ON COLUMN reservation.idaction IS 'Action sur le planning'; 
@@ -37,6 +35,11 @@ INSERT INTO config VALUES ('Reservation.delai.min',24);
 INSERT INTO config VALUES ('Reservation.annulation.delai',72);
 -- delai max de réservation en jours
 INSERT INTO config VALUES ('Reservation.delai.max',15);
+-- paiment de l'adhésion exigé pour les réservations
+INSERT INTO config VALUES ('Reservation.adhesion.requise', 't');
+-- compte adhésion auxiliaire pour les formations professionnelles
+INSERT INTO comptepref VALUES ('ADHÉSIONS PRO',0,'');
 
-INSERT INTO comptepref VALUES ('ADHÉSIONS PRO',14,'MFORPROFES');
+--INSERT INTO comptepref SELECT 'ADHÉSIONS PRO', idcompte, idanalytique
+--FROM comptepref WHERE id = 'ADHÉSIONS';
 

@@ -1,5 +1,5 @@
 /*
- * @(#)MemberRehearsalCtrl.java	2.9.5 09/02/16
+ * @(#)MemberRehearsalCtrl.java	2.9.5 17/02/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -167,7 +167,7 @@ public class MemberRehearsalCtrl
           Hour offset = new Hour(dto.getStart());
           offset.incMinute(last.getRest() - currentPass.getTotalTime());
           dto.setStart(offset);// on ampute la durée de la session de la partie positive
-        } 
+        }
         last.setRest(remainder);
       }
       // update last card
@@ -316,9 +316,9 @@ public class MemberRehearsalCtrl
     }
     return true;
   }
-  
+
   public void order(boolean subscription, Schedule schedule) throws MemberException {
-    
+
     try {
       PersonFile pf = (PersonFile) DataCache.findId(schedule.getIdPerson(), Model.PersonFile);
       if (pf == null) {
@@ -327,16 +327,15 @@ public class MemberRehearsalCtrl
       // don't forget to set the card before searching a new one
       pf.setSubscriptionCard(memberService.getLastSubscription(pf.getId(), false));
       if (subscription) {
-        // recherche d'une choix d'abonnement pour cet adhérent
-        RehearsalPass pass = null;
-        List<RehearsalPass> passList = memberService.getPassList();
-        if (passList.size() > 0) {
-          pass = passList.get(0);
-        } else {
+        // auto-select a pass
+        int passId = pf.getSubscriptionCard() == null ? 0 : pf.getSubscriptionCard().getPassId();
+        RehearsalPass pass = getPassFromList(memberService.getPassList(), passId);
+        if (pass == null) {
           MessagePopup.warning(this, MessageUtil.getMessage("no.subscription.pass.warning"));
           saveSinglePayment(schedule, pf);
+          return;
         }
-        
+
         PersonSubscriptionCard newCard = updatePersonalCard(pf, pass, schedule);
         PersonFileEvent event = null;
         if (newCard != null) {
@@ -357,6 +356,18 @@ public class MemberRehearsalCtrl
     }
   }
 
+  private RehearsalPass getPassFromList(List<RehearsalPass> passList, int passId) {
+    if (passList == null || passList.isEmpty()) {
+      return null;
+    }
+    for (RehearsalPass p : passList) {
+      if (p.getId() == passId) {
+        return p;
+      }
+    }
+    return passList.get(0);
+  }
+
   /**
    * Calculates the price of the session for this specific room {@literal roomId}
    * and possibly save it.
@@ -369,7 +380,7 @@ public class MemberRehearsalCtrl
       memberService.saveRehearsalOrderLine(personFile, view.getDate(), amount, 0);
     }
   }
-  
+
   private void saveSinglePayment(Schedule schedule, PersonFile pf) throws SQLException {
     Room room = ((RoomIO) DataCache.getDao(Model.Room)).findId(schedule.getIdRoom());
     double amount = RehearsalUtil.calcSingleRehearsalAmount(schedule.getStart(), schedule.getEnd(), room.getRate(), 1, dc);

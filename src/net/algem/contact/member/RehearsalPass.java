@@ -1,6 +1,6 @@
 /*
- * @(#)RehearsalPass.java 2.9.4.13 03/11/15
- * 
+ * @(#)RehearsalPass.java 2.9.5 17/02/16
+ *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.contact.member;
 
@@ -24,7 +24,7 @@ import net.algem.util.model.GemModel;
 
 /**
  * Subscription pass option for rehearsals.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.9.4.13
  */
@@ -34,14 +34,14 @@ public class RehearsalPass
 
   public final static int MIN_DEFAULT = 30; // see DEFAULT value in database
   private static final long serialVersionUID = -6338921697633719320L;
-  
+
   private int id;
   private String label;
   private float amount;
-   
-  /** Minimal time of a session. */
+
+  /** Minimal length of a session. */
   private int min;
-  
+
   /** Total time in minutes. */
   private int totalTime;
 
@@ -156,9 +156,9 @@ public class RehearsalPass
   void setTotalTime(int min) {
     this.totalTime = min;
   }
-  
+
   public int getTotalTime() {
     return totalTime;
   }
-  
+
 }

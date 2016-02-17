@@ -1,5 +1,5 @@
 /*
- * @(#)ConfigKey.java 2.9.5 15/02/16
+ * @(#)ConfigKey.java 2.9.5 17/02/16
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -33,7 +33,7 @@ import net.algem.util.BundleUtil;
 public enum ConfigKey
 {
 
-  /** Organization name. */
+  /** Organization name. *//** Organization name. */
   ORGANIZATION_NAME("Organisation.Nom", BundleUtil.getLabel("ConfEditor.organization.name.label")),
 
   /** Organization first address. */
@@ -73,7 +73,7 @@ public enum ConfigKey
   END_PERIOD("Date.FinPeriode", BundleUtil.getLabel("ConfEditor.date.end.period.label")),
 
   /** End peak hour - start full rate for rehearsals. */
-  OFFPEAK_HOUR("FinHeureCreuse", BundleUtil.getLabel("ConfEditor.offpeak.time.label")),
+  OFFPEAK_TIME("FinHeureCreuse", BundleUtil.getLabel("ConfEditor.offpeak.time.label")),
 
   /** Default start time. */
   START_TIME("Heure.ouverture", BundleUtil.getLabel("ConfEditor.start.time.label")),
@@ -155,7 +155,8 @@ public enum ConfigKey
   ADMINISTRATIVE_MANAGEMENT("Planification.administrative", BundleUtil.getLabel("Administrative.scheduling.label")),
   BOOKING_MIN_DELAY("Reservation.delai.min", BundleUtil.getLabel("Booking.min.delay.label")),
   BOOKING_MAX_DELAY("Reservation.delai.max", BundleUtil.getLabel("Booking.max.delay.label")),
-  BOOKING_CANCEL_DELAY("Reservation.annulation.delai", BundleUtil.getLabel("Booking.cancel.delay.label"));
+  BOOKING_CANCEL_DELAY("Reservation.annulation.delai", BundleUtil.getLabel("Booking.cancel.delay.label")),
+  BOOKING_REQUIRED_MEMBERSHIP("Reservation.adhesion.requise", BundleUtil.getLabel("Booking.required.membership.label"));
 
   private final String key;
   private final String label;
