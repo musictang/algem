@@ -88,7 +88,7 @@ public class ConfigPlanning
     periodPanel.setToolTipText(ConfigKey.BEGINNING_PERIOD.getLabel());
 
     offPeakTime = new HourField(c5.getValue());
-    offPeakTime.setToolTipText(ConfigKey.OFFPEAK_TIME.getLabel());
+    offPeakTime.setToolTipText(BundleUtil.getLabel("ConfEditor.offpeak.time.tip1"));
     startTime = new HourField(c6 == null ? "00:00" : c6.getValue());
     startTime.setToolTipText(BundleUtil.getLabel("ConfEditor.start.time.tip"));
 
@@ -123,7 +123,7 @@ public class ConfigPlanning
     gb.add(periodPanel, 1, 1, 1, 1, GridBagHelper.WEST);
 
     GemLabel hourLabel = new GemLabel(ConfigKey.OFFPEAK_TIME.getLabel());
-    hourLabel.setToolTipText(BundleUtil.getLabel("ConfEditor.offpeak.time.tip"));
+    hourLabel.setToolTipText(BundleUtil.getLabel("ConfEditor.offpeak.time.tip2"));
 
     GemPanel opPanel = new GemPanel(new BorderLayout());
     opPanel.add(offPeakTime, BorderLayout.WEST);

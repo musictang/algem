@@ -71,24 +71,32 @@ public class DesktopMailHandler
     }
   }
   
-  public void send(String uri) {
-    if (isMailSupported()) { //XXX bug KDE retourne true pour Action.MAIL mais ne fonctionne pas
+  public void send(String email, String subject, String body) {
+    String uriStr = String.format("mailto:%s?subject=%s&body=%s", email, subject, body);
+    if (isMailSupported()) {
       try {
-          URI uriMailto = new URI(uri);
-          getDesktop().mail(uriMailto);
-       
-      } catch (IOException ioe) {
-        GemLogger.log(Level.WARNING, getClass().getName(), "send", ioe.getMessage());
-      } catch (URISyntaxException use) {
-        GemLogger.logException(use);
+        URI uriMailto = new URI(uriStr);
+        getDesktop().mail(uriMailto);
+      } catch (IOException | URISyntaxException ex) {
+        GemLogger.logException(ex);
+        executeMailClient(uriStr);
       }
     } else {
-      //utiliser le runtime
+      //use runtime
       GemLogger.log("Desktop.Action.MAIL not supported");
-      executeMailClient();
+      executeMailClient(uriStr);
     }
   }
 
+  private void executeMailClient(String mailto) {
+    try {
+      String mailClient = BundleUtil.getLabel("Mail.client");
+      Runtime.getRuntime().exec(new String[] {mailClient, mailto});
+    } catch (Exception e) {
+      GemLogger.logException(e);
+    }
+  }
+  
   private void executeMailClient(String to, String bcc) {
     try {
       String mailClient = BundleUtil.getLabel("Mail.client");

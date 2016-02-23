@@ -1022,9 +1022,7 @@ public class PlanModifCtrl
   }
 
   private void sendMessage(String email, String subject, String body) {
-    DesktopMailHandler mailHandler = new DesktopMailHandler();
-    final String mailURIStr = String.format("mailto:%s?subject=%s&body=%s", email, subject, body);
-    mailHandler.send(mailURIStr);
+    new DesktopMailHandler().send(email, subject, body);
   }
 
   /**

@@ -1,7 +1,7 @@
 /*
- * @(#)ColorPreviewCtrl.java	2.8.t 08/05/14
+ * @(#)ColorPreviewCtrl.java	2.9.5 22/02/16
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -40,7 +40,7 @@ import net.algem.util.ui.MessagePopup;
  * Controller panel utility for previewing colors.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.9.5
  */
 public class ColorPreviewCtrl extends GemPanel implements ActionListener {
 

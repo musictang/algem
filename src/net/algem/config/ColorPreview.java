@@ -1,7 +1,7 @@
 /*
- * @(#)ColorPreview.java	2.9.4.0 24/03/2015
+ * @(#)ColorPreview.java	2.9.5 22/02/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,7 +21,6 @@
 package net.algem.config;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.util.EnumMap;
@@ -36,12 +35,11 @@ import net.algem.util.ui.GemPanel;
  * Display and modification panel of the planning colors.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.0
+ * @version 2.9.5
  */
 public class ColorPreview extends GemPanel {
 
   private ColorPrefs prefs;
-  private static final int w = 120;
 
   private final JLabel courseLabel = new JLabel(BundleUtil.getLabel("Month.schedule.course.tab"));
   private final JLabel courseCoLabel = new JLabel(BundleUtil.getLabel("Month.schedule.collective.course.tab"));
@@ -54,6 +52,7 @@ public class ColorPreview extends GemPanel {
   private final JLabel catchUpLabel = new JLabel(BundleUtil.getLabel("Catching.up.label"));
   private final JLabel studioLabel = new JLabel(BundleUtil.getLabel("Studio.label"));
   private final JLabel administrativeLabel = new JLabel(BundleUtil.getLabel("Administrative.label"));
+  private final JLabel bookingLabel = new JLabel(BundleUtil.getLabel("Booking.label"));
 
   private JPanel coursePanel;
   private JPanel memberRangePanel;
@@ -66,6 +65,7 @@ public class ColorPreview extends GemPanel {
   private JPanel trainingPanel;
   private JPanel studioPanel;
   private JPanel administrativePanel;
+  private JPanel bookingPanel;
 
   private Font f;
   private ColorPlanListener pColorListener;
@@ -90,46 +90,46 @@ public class ColorPreview extends GemPanel {
   }
 
   private void initComponents() {
-    int h = 100;
-    Dimension dsize = new Dimension(w, h);
-
     JPanel p1 = new JPanel();
     p1.setLayout(new BoxLayout(p1, BoxLayout.Y_AXIS));
-    coursePanel = initPanel(courseLabel, ColorPlan.COURSE_INDIVIDUAL, 60);
-    memberRangePanel = initPanel(memberRangeLabel, ColorPlan.RANGE, 40);
-
+    coursePanel = initPanel(courseLabel, ColorPlan.COURSE_INDIVIDUAL);
+    memberRangePanel = initPanel(memberRangeLabel, ColorPlan.RANGE);
+ 
     p1.add(coursePanel);
     p1.add(memberRangePanel);
-
+    
     JPanel p2 = new JPanel();
     p2.setLayout(new BoxLayout(p2, BoxLayout.Y_AXIS));
-    p2.setPreferredSize(dsize);
-    coCoursePanel = initPanel(courseCoLabel, ColorPlan.COURSE_CO, 40);
-    coCourseInstrPanel = initPanel(courseCoInstrLabel, ColorPlan.INSTRUMENT_CO, 30);
-    groupRehearsalPanel = initPanel(groupRehearsalLabel, ColorPlan.GROUP_REHEARSAL, 30);
+
+    coCoursePanel = initPanel(courseCoLabel, ColorPlan.COURSE_CO);
+    coCourseInstrPanel = initPanel(courseCoInstrLabel, ColorPlan.INSTRUMENT_CO);
+    workshopPanel = initPanel(workshopLabel, ColorPlan.WORKSHOP);
+    trainingPanel = initPanel(trainingLabel, ColorPlan.TRAINING);
+
     p2.add(coCoursePanel);
     p2.add(coCourseInstrPanel);
-    p2.add(groupRehearsalPanel);
-
+    p2.add(workshopPanel);
+    p2.add(trainingPanel);
+    
     JPanel p3 = new JPanel();
     p3.setLayout(new BoxLayout(p3, BoxLayout.Y_AXIS));
-    p3.setPreferredSize(dsize);
-    memberRehearsalPanel = initPanel(memberRehearsalLabel, ColorPlan.MEMBER_REHEARSAL, 20);
-    workshopPanel = initPanel(workshopLabel, ColorPlan.WORKSHOP, 40);
-    trainingPanel = initPanel(trainingLabel, ColorPlan.TRAINING, 40);
+    groupRehearsalPanel = initPanel(groupRehearsalLabel, ColorPlan.GROUP_REHEARSAL);
+    memberRehearsalPanel = initPanel(memberRehearsalLabel, ColorPlan.MEMBER_REHEARSAL);
+    bookingPanel = initPanel(bookingLabel, ColorPlan.BOOKING_GROUP);
+    p3.add(groupRehearsalPanel);
     p3.add(memberRehearsalPanel);
-    p3.add(workshopPanel);
-    p3.add(trainingPanel);
-
+    p3.add(bookingPanel);
+    
     JPanel p4 = new JPanel();
     p4.setLayout(new BoxLayout(p4, BoxLayout.Y_AXIS));
-    studioPanel = initPanel(studioLabel, ColorPlan.STUDIO, 30);
-    catchUpPanel = initPanel(catchUpLabel, ColorPlan.CATCHING_UP, 30);
-    administrativePanel = initPanel(administrativeLabel, ColorPlan.ADMINISTRATIVE, 40);
+    studioPanel = initPanel(studioLabel, ColorPlan.STUDIO);
+    catchUpPanel = initPanel(catchUpLabel, ColorPlan.CATCHING_UP);
+    administrativePanel = initPanel(administrativeLabel, ColorPlan.ADMINISTRATIVE);
+    
     p4.add(studioPanel);
     p4.add(catchUpPanel);
     p4.add(administrativePanel);
-
+    
     add(p1);
     add(p2);
     add(p3);
@@ -157,6 +157,7 @@ public class ColorPreview extends GemPanel {
     colors.put(ColorPlan.MEMBER_REHEARSAL, memberRehearsalPanel.getBackground());
     colors.put(ColorPlan.STUDIO, studioPanel.getBackground());
     colors.put(ColorPlan.ADMINISTRATIVE, administrativePanel.getBackground());
+    colors.put(ColorPlan.BOOKING_GROUP, bookingPanel.getBackground());
 
     colors.put(ColorPlan.COURSE_INDIVIDUAL_LABEL, courseLabel.getForeground());
     colors.put(ColorPlan.COURSE_CO_LABEL, courseCoLabel.getForeground());
@@ -168,6 +169,7 @@ public class ColorPreview extends GemPanel {
     colors.put(ColorPlan.MEMBER_LABEL, memberRehearsalLabel.getForeground());
     colors.put(ColorPlan.STUDIO_LABEL, studioLabel.getForeground());
     colors.put(ColorPlan.ADMINISTRATIVE_LABEL, administrativeLabel.getForeground());
+    colors.put(ColorPlan.BOOKING_LABEL, bookingLabel.getForeground());
 
     return colors;
   }
@@ -176,15 +178,15 @@ public class ColorPreview extends GemPanel {
    * Gets the differents color areas and labels.
    *
    * @param jlb label
-   * @param pc a color enumeration
-   * @param h height
+   * @param cp a color enumeration
+   * @param h height in percent
    * @return a panel
    */
-  private JPanel initPanel(JLabel jlb, ColorPlan pc, int h) {
+  private JPanel initPanel(JLabel jlb, ColorPlan cp) {
     Color bg = null;
     Color fg = null;
 
-    switch (pc) {
+    switch (cp) {
       case COURSE_INDIVIDUAL:
         bg = prefs.getColor(ColorPlan.COURSE_INDIVIDUAL);
         fg = prefs.getColor(ColorPlan.COURSE_INDIVIDUAL_LABEL);
@@ -233,6 +235,10 @@ public class ColorPreview extends GemPanel {
         bg = prefs.getColor(ColorPlan.ADMINISTRATIVE);
         fg = prefs.getColor(ColorPlan.ADMINISTRATIVE_LABEL);
         break;
+      case BOOKING_GROUP:
+        bg = prefs.getColor(ColorPlan.BOOKING_GROUP);
+        fg = prefs.getColor(ColorPlan.BOOKING_LABEL);
+        break;
       default:
         bg = Color.GRAY;
         fg = Color.BLACK;
@@ -240,7 +246,6 @@ public class ColorPreview extends GemPanel {
     }
 
     JPanel jp = new JPanel();
-    jp.setPreferredSize(new Dimension(w, h));
     jp.setBackground(bg);
     setLabel(jlb, fg);
     jp.add(jlb);
