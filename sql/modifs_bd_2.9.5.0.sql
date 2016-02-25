@@ -1,6 +1,6 @@
 -- 2.9.5.0
 CREATE TABLE jeton_login(
-    idper PRIMARY KEY,
+    idper integer PRIMARY KEY,
     jeton varchar(64),
     creadate timestamp
 );
