@@ -1,5 +1,5 @@
 /*
- * @(#)TestPlanModifCtrl.java 2.9.5 09/02/16
+ * @(#)TestPlanModifCtrl.java 2.9.5 24/02/16
  * 
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -79,7 +79,7 @@ public class TestPlanModifCtrl
   protected void tearDown() throws Exception {
     super.tearDown();
   }
-  
+
   public void failingtestUpdateCarteAbo() throws Exception {
     int idper = 2;
     RehearsalPass card = new RehearsalPass(100, "Pass", 22.0f, 600);
@@ -98,7 +98,7 @@ public class TestPlanModifCtrl
     abo2.setRest(420);
     abo2.setPassId(card.getId());
     io.insert(abo2);
-    
+
     Schedule p = new Schedule();
     p.setDate(toDay);
     p.setIdPerson(idper);
@@ -109,16 +109,16 @@ public class TestPlanModifCtrl
     ScheduleObject plan = new MemberRehearsalSchedule(p);
     memberService.cancelSubscriptionCardSession(dataCache, plan);
     PersonSubscriptionCard c = io.find(abo2.getId());
-    assertNotNull("abo2.getId = "+abo2.getId(), c);
-    
+    assertNotNull("abo2.getId = " + abo2.getId(), c);
+
     io.deleteByIdper(idper);
     RehearsalPassIO.delete(card.getId(), dc);
   }
 
-  public void testPostponeCourse() {   
+  public void testPostponeCourse() {
     HourRangePanel hp = new HourRangePanel(new Hour("14:00"), new Hour("15:00"));
     HourField hf = new HourField("17:00");
-    
+
     Hour end = hf.get().end(hp.getLength());
     assertTrue(end.equals(new Hour("18:00")));
   }
@@ -127,14 +127,11 @@ public class TestPlanModifCtrl
 
     String email = "jmao@free.fr";
     String subject = urlEncode(MessageUtil.getMessage("booking.confirmation.subject"));
-      String body = urlEncode(MessageUtil.getMessage("booking.confirmation.message", new Object[] {"Jean-Marc Gobat", "10-02-2016", "10:30"}));
-      DesktopMailHandler mailHandler = new DesktopMailHandler();
-    final String uriMailto = String.format("mailto:%s?subject=%s&body=%s", email, subject, body);
-      mailHandler.send(uriMailto);
-   
-
+    String body = urlEncode(MessageUtil.getMessage("booking.confirmation.message", new Object[]{"Jean-Marc Gobat", "10-02-2016", "10:30"}));
+    DesktopMailHandler mailHandler = new DesktopMailHandler();
+    mailHandler.send(email, subject, body);
   }
-  
+
   private String urlEncode(String str) {
     try {
       return URLEncoder.encode(str, "UTF-8").replace("+", "%20");

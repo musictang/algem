@@ -1,5 +1,5 @@
 /*
- * @(#)UserView.java	2.9.4.10 20/07/15
+ * @(#)UserView.java	2.9.5 26/02/16
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -33,7 +33,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.10
+ * @version 2.9.5
  */
 public class UserView
         extends GemBorderPanel
@@ -86,7 +86,8 @@ public class UserView
     User u = new User(person);
     u.setLogin(login.getText());
     u.setPassword(String.valueOf(password.getPassword()));
-    u.setProfile(profile.getSelectedIndex());
+    int p = getProfileIndex(profile.getSelectedIndex());
+    u.setProfile(p);
     return u;
   }
 
@@ -94,8 +95,46 @@ public class UserView
     name.setText(u.getFirstName() + " " + u.getName());
     password.setText(u.getPassword());
     login.setText(u.getLogin());
-    profile.setSelectedIndex(u.getProfile());
+    String p = getProfileName(u.getProfile());
+    profile.setSelectedItem(p);
   }
+  
+  private String getProfileName(int p) {
+    switch (p) {
+      case 0:
+        return UserIO.PROFIL_NAMES[0];
+      case 1:
+        return UserIO.PROFIL_NAMES[1];
+      case 2:
+        return UserIO.PROFIL_NAMES[2];
+      case 3:
+        return UserIO.PROFIL_NAMES[3];
+      case 4:
+        return UserIO.PROFIL_NAMES[4];
+      case 10:
+        return UserIO.PROFIL_NAMES[5];
+      case 11:
+        return UserIO.PROFIL_NAMES[6];
+    }
+    return null;
+  }
+  
+  private int getProfileIndex(int idx) {
+    switch (idx) {
+      case 0:
+      case 1:
+      case 2:
+      case 3:
+      case 4:
+        return idx;
+      case 10:
+        return 5;
+      case 11:
+        return 6;
+    }
+    return 0;
+  }
+  
 
   public void clear() {
     id.setText("");

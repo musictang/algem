@@ -1,5 +1,5 @@
 /*
- * @(#)GemGroupService.java	2.9.5 09/02/16
+ * @(#)GemGroupService.java	2.9.5 26/02/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -49,7 +49,7 @@ public class GemGroupService
   implements DocService, GroupService
 {
 
-  public static final int MIN_ANNULATION = 72; //72 heures minimum before annulation TODO set config parameter
+  public static final int BOOKING_CANCEL_DELAY = 72; // default cancel delay if config is not set
   private DataConnection dc;
   private GroupIO groupIO;
   private ActionIO actionIO;

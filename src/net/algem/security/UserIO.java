@@ -1,5 +1,5 @@
 /*
- * @(#)UserIO.java 2.9.4.14 09/12/15
+ * @(#)UserIO.java 2.9.5 26/02/16
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -37,7 +37,7 @@ import org.apache.commons.codec.binary.Base64;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.9.4.14
+ * @version 2.9.5
  * @since 1.0a 07/07/1999
  */
 public class UserIO
@@ -49,12 +49,17 @@ public class UserIO
   public static int PROFIL_PROF = 2; // PROF
   public static int PROFIL_PUBLIC = 3; // PUBLIC
   public static int PROFIL_ADMIN = 4; // ADMIN
+  public static int PROFIL_VISITOR = 10; //VISITOR
+  public static int PROFIL_MEMBER = 11;
+
   public static String[] PROFIL_NAMES = {
     BundleUtil.getLabel("Profile.basic.label"),
     BundleUtil.getLabel("Profile.user.label"),
     BundleUtil.getLabel("Profile.teacher.label"),
     BundleUtil.getLabel("Profile.public.label"),
-    BundleUtil.getLabel("Profile.administrator.label"),};
+    BundleUtil.getLabel("Profile.administrator.label"),
+    BundleUtil.getLabel("Profile.visitor.label"),
+    BundleUtil.getLabel("Profile.member.label")};
   static final String TABLE = "login";
   static final String MENU_TABLE = "menu2";
   static final String PROFIL_TABLE = "menuprofil";

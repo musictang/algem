@@ -1,5 +1,5 @@
 /*
- * @(#)PlanModifCtrl.java	2.9.5 15/02/16
+ * @(#)PlanModifCtrl.java	2.9.5 26/02/16
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -29,6 +29,8 @@ import java.util.Locale;
 import java.util.Vector;
 
 import net.algem.Algem;
+import net.algem.config.ConfigKey;
+import net.algem.config.ConfigUtil;
 import net.algem.config.GemParam;
 import net.algem.contact.EmployeeType;
 import net.algem.contact.Note;
@@ -857,7 +859,13 @@ public class PlanModifCtrl
           // annulation échéance
           Group g = new GemGroupService(dc).find(plan.getIdPerson());
           if (g != null && g.getIdref() > 0) {
-            int delay = GemGroupService.MIN_ANNULATION;
+            String confDelay = ConfigUtil.getConf(ConfigKey.BOOKING_CANCEL_DELAY.getKey());
+            int delay = GemGroupService.BOOKING_CANCEL_DELAY;
+            try {
+              delay = Integer.parseInt(confDelay);
+            } catch(NumberFormatException nfe) {
+              GemLogger.log(nfe.getMessage());
+            }
             boolean ok = true;
             if (!RehearsalUtil.isCancelledBefore(plan.getDate(), delay)) {
               if (!MessagePopup.confirm(null, MessageUtil.getMessage("rehearsal.payment.cancel.confirmation"), "Confirmation")) {
