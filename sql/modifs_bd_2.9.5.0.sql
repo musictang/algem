@@ -37,9 +37,15 @@ INSERT INTO config VALUES ('Reservation.annulation.delai',72);
 INSERT INTO config VALUES ('Reservation.delai.max',15);
 -- paiment de l'adhésion exigé pour les réservations
 INSERT INTO config VALUES ('Reservation.adhesion.requise', 't');
+-- date de début des pré-inscriptions
+INSERT INTO config VALUES ('Date.debut.preinscription','01-07-2015');
+
+--INSERT INTO config 'Date.debut.preinscription', valeur::date - interval '2 month' from config where clef = 'Date.DebutAnnee';
 -- compte adhésion auxiliaire pour les formations professionnelles
 INSERT INTO comptepref VALUES ('ADHÉSIONS PRO',0,'');
-
 --INSERT INTO comptepref SELECT 'ADHÉSIONS PRO', idcompte, idanalytique
 --FROM comptepref WHERE id = 'ADHÉSIONS';
+
+INSERT INTO menuprofil SELECT idmenu,10,auth FROM menuprofil WHERE profil = 0;
+INSERT INTO menuprofil SELECT idmenu,11,auth FROM menuprofil WHERE profil = 0;
 

@@ -36,6 +36,7 @@ import net.algem.contact.PersonFile;
 import net.algem.contact.PersonFileEditor;
 import net.algem.contact.PersonIO;
 import net.algem.planning.editing.ModifPlanEvent;
+import net.algem.security.Profile;
 import net.algem.security.UserIO;
 import net.algem.util.*;
 import net.algem.util.model.Model;
@@ -93,7 +94,7 @@ public class EnrolmentListCtrl
     btModidy.addActionListener(this);
     btClose.addActionListener(this);
 
-    if (dataCache.getUser().getProfile() == UserIO.PROFIL_ADMIN) {
+    if (Profile.ADMIN.getId() == dataCache.getUser().getProfile()) {
       btDelete.addActionListener(this);
     } else {
       btDelete.setEnabled(false);

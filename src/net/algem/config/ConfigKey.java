@@ -1,5 +1,5 @@
 /*
- * @(#)ConfigKey.java 2.9.5 17/02/16
+ * @(#)ConfigKey.java 2.9.5 29/02/16
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -156,7 +156,8 @@ public enum ConfigKey
   BOOKING_MIN_DELAY("Reservation.delai.min", BundleUtil.getLabel("Booking.min.delay.label")),
   BOOKING_MAX_DELAY("Reservation.delai.max", BundleUtil.getLabel("Booking.max.delay.label")),
   BOOKING_CANCEL_DELAY("Reservation.annulation.delai", BundleUtil.getLabel("Booking.cancel.delay.label")),
-  BOOKING_REQUIRED_MEMBERSHIP("Reservation.adhesion.requise", BundleUtil.getLabel("Booking.required.membership.label"));
+  BOOKING_REQUIRED_MEMBERSHIP("Reservation.adhesion.requise", BundleUtil.getLabel("Booking.required.membership.label")),
+  PRE_ENROLMENT_START_DATE("Date.debut.preinscription", BundleUtil.getLabel("ConfEditor.pre-enrolment.start.date.label"));
 
   private final String key;
   private final String label;

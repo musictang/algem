@@ -1,5 +1,5 @@
 /*
- * @(#)ColorPlan.java	2.9.4.0 26/03/2015
+ * @(#)ColorPlan.java	2.9.5 29/02/16
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -27,7 +27,7 @@ import java.awt.Color;
  * Default colors of schedule elements.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.0
+ * @version 2.9.5
  */
 public enum ColorPlan
 {
@@ -63,7 +63,7 @@ public enum ColorPlan
   STUDIO("plan.studio.color", -5160193),//153,0,255 (alternative : 6711039 //102,102,255 | 10027263)
   ADMINISTRATIVE("plan.administratif.color", -6710785),//light purple 153,153,255 #9999FF,
   BOOKING_GROUP("plan.reservation.groupe.color", Color.MAGENTA.getRGB()), 
-  BOOKING_MEMBER("plan.reservation.individuelle.color", Color.MAGENTA.brighter().getRGB()), 
+  BOOKING_MEMBER("plan.reservation.groupe.color", Color.MAGENTA.brighter().getRGB()), 
   // Foreground
   ACTION_LABEL("plan.action.label.color", Color.GREEN.getRGB()),
   MEMBER_LABEL("plan.adherent.label.color", -256),

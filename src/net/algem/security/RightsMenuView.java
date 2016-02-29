@@ -58,7 +58,7 @@ public class RightsMenuView
     id = new JTextField(6);
     id.setEnabled(false);
     login = new JTextField(8);
-    profile = new JComboBox(UserIO.PROFIL_NAMES);
+    profile = new JComboBox(Profile.values());
 
     JPanel top = new JPanel();
     top.add(new JLabel(BundleUtil.getLabel("Id.label")));
@@ -84,7 +84,7 @@ public class RightsMenuView
   }
 
   public int getProfile() {
-    return profile.getSelectedIndex();
+    return ((Profile) profile.getSelectedItem()).getId();
   }
 
   public void load(User _user) {
@@ -92,7 +92,7 @@ public class RightsMenuView
     id.setText(String.valueOf(user.getId()));
     login.setText(user.getLogin());
     tableModel.load(user.getId());
-    profile.setSelectedIndex(user.getProfile());
+    profile.setSelectedItem(Profile.get(user.getProfile()));
     TableColumn col = table.getColumnModel().getColumn(0);
     col.setMaxWidth(50);
     col = table.getColumnModel().getColumn(2);

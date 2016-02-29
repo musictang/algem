@@ -25,7 +25,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Vector;
-import net.algem.util.BundleUtil;
+import net.algem.contact.PersonIO;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
 import net.algem.util.model.Cacheable;
@@ -44,26 +44,11 @@ public class UserIO
   extends TableIO
   implements Cacheable {
 
-  public static int PROFIL_BASIC = 0; // BMS
-  public static int PROFIL_USER = 1; // MUSTANG
-  public static int PROFIL_PROF = 2; // PROF
-  public static int PROFIL_PUBLIC = 3; // PUBLIC
-  public static int PROFIL_ADMIN = 4; // ADMIN
-  public static int PROFIL_VISITOR = 10; //VISITOR
-  public static int PROFIL_MEMBER = 11;
-
-  public static String[] PROFIL_NAMES = {
-    BundleUtil.getLabel("Profile.basic.label"),
-    BundleUtil.getLabel("Profile.user.label"),
-    BundleUtil.getLabel("Profile.teacher.label"),
-    BundleUtil.getLabel("Profile.public.label"),
-    BundleUtil.getLabel("Profile.administrator.label"),
-    BundleUtil.getLabel("Profile.visitor.label"),
-    BundleUtil.getLabel("Profile.member.label")};
   static final String TABLE = "login";
-  static final String MENU_TABLE = "menu2";
-  static final String PROFIL_TABLE = "menuprofil";
-  static final String MENU_ACCESS = "menuaccess";
+  static final String T_MENU = "menu2";
+  static final String T_PROFILE = "menuprofil";
+  static final String T_ACCESS = "menuaccess";
+  static final String T_RIGHTS = "droits";
   private DataConnection dc;
 
   public UserIO(DataConnection dc) {
@@ -115,7 +100,7 @@ public class UserIO
         public Void run(DataConnection conn) throws Exception {
           String query = "DELETE FROM " + TABLE + " WHERE idper = " + userId;
           dc.executeUpdate(query);
-          query = "DELETE FROM " + MENU_ACCESS + " WHERE idper = " + userId;
+          query = "DELETE FROM " + T_ACCESS + " WHERE idper = " + userId;
           dc.executeUpdate(query);
           return null;
         }
@@ -133,7 +118,7 @@ public class UserIO
    */
   public void initRights(User u) {
     String query = "SELECT relname FROM pg_class WHERE relkind = 'r' AND relname !~ '^pg' AND relname !~ '^sql_' AND relname !~ '^Inv'";
-    String batchQuery = "INSERT INTO droits VALUES(?,?,?,?,?,?)";
+    String batchQuery = "INSERT INTO " + T_RIGHTS + " VALUES(?,?,?,?,?,?)";
 
     dc.setAutoCommit(false);
     try (PreparedStatement ps = dc.prepareStatement(batchQuery);
@@ -163,8 +148,8 @@ public class UserIO
    * @param u user
    */
   public void initMenus(User u) {
-    String query = "SELECT id, auth FROM " + MENU_TABLE + ", " + PROFIL_TABLE + " WHERE id = idmenu AND profil = " + u.getProfile();
-    String batchQuery = "INSERT INTO " + MENU_ACCESS + " VALUES(?,?,?)";//idper,idmenu,auth
+    String query = "SELECT id, auth FROM " + T_MENU + ", " + T_PROFILE + " WHERE id = idmenu AND profil = " + u.getProfile();
+    String batchQuery = "INSERT INTO " + T_ACCESS + " VALUES(?,?,?)";//idper,idmenu,auth
 
     dc.setAutoCommit(false);// important for batch insert
     try (PreparedStatement ps = dc.prepareStatement(batchQuery);
@@ -203,7 +188,7 @@ public class UserIO
 
   public List<User> find(String where) throws SQLException {
     List<User> v = new Vector<User>();
-    String query = "SELECT p.id,p.ptype,p.nom,p.prenom,p.civilite,u.login,u.profil,u.pass,u.clef FROM personne p, " + TABLE + " u ";
+    String query = "SELECT p.id,p.ptype,p.nom,p.prenom,p.civilite,u.login,u.profil,u.pass,u.clef FROM " + PersonIO.TABLE + " p, " + TABLE + " u ";
     if (where != null) {
       query += where + " AND p.id = u.idper";
     } else {

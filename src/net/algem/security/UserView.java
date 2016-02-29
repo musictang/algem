@@ -1,5 +1,5 @@
 /*
- * @(#)UserView.java	2.9.5 26/02/16
+ * @(#)UserView.java	2.9.5 29/02/16
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -65,7 +65,7 @@ public class UserView
     login = new GemField(8);
     password = new JPasswordField(8);
 
-    profile = new JComboBox(UserIO.PROFIL_NAMES);
+    profile = new JComboBox(Profile.values());
 
     this.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
@@ -86,8 +86,7 @@ public class UserView
     User u = new User(person);
     u.setLogin(login.getText());
     u.setPassword(String.valueOf(password.getPassword()));
-    int p = getProfileIndex(profile.getSelectedIndex());
-    u.setProfile(p);
+    u.setProfile(((Profile) profile.getSelectedItem()).getId());
     return u;
   }
 
@@ -95,46 +94,8 @@ public class UserView
     name.setText(u.getFirstName() + " " + u.getName());
     password.setText(u.getPassword());
     login.setText(u.getLogin());
-    String p = getProfileName(u.getProfile());
-    profile.setSelectedItem(p);
+    profile.setSelectedItem(Profile.get(u.getProfile()));
   }
-  
-  private String getProfileName(int p) {
-    switch (p) {
-      case 0:
-        return UserIO.PROFIL_NAMES[0];
-      case 1:
-        return UserIO.PROFIL_NAMES[1];
-      case 2:
-        return UserIO.PROFIL_NAMES[2];
-      case 3:
-        return UserIO.PROFIL_NAMES[3];
-      case 4:
-        return UserIO.PROFIL_NAMES[4];
-      case 10:
-        return UserIO.PROFIL_NAMES[5];
-      case 11:
-        return UserIO.PROFIL_NAMES[6];
-    }
-    return null;
-  }
-  
-  private int getProfileIndex(int idx) {
-    switch (idx) {
-      case 0:
-      case 1:
-      case 2:
-      case 3:
-      case 4:
-        return idx;
-      case 10:
-        return 5;
-      case 11:
-        return 6;
-    }
-    return 0;
-  }
-  
 
   public void clear() {
     id.setText("");
