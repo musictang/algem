@@ -23,12 +23,15 @@ package net.algem.contact;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Vector;
 import net.algem.accounting.DirectDebitIO;
 import net.algem.accounting.OrderLineIO;
 import net.algem.bank.RibIO;
 import net.algem.billing.InvoiceIO;
 import net.algem.contact.member.MemberIO;
+import net.algem.contact.member.PersonSubscriptionCard;
+import net.algem.contact.member.PersonSubscriptionCardIO;
 import net.algem.planning.Schedule;
 import net.algem.planning.ScheduleIO;
 import net.algem.planning.ScheduleRange;
@@ -445,7 +448,11 @@ public class ContactIO
         msg += MessageUtil.getMessage("contact.delete.schedule.warning", vpl.size());
         throw new ContactDeleteException(msg);
       }
-      // TODO carte d'abonnement ??
+      List<PersonSubscriptionCard> cards = new PersonSubscriptionCardIO(dc).find(c.getId(), null, false, 0);
+      if (cards.size() > 0) {
+        msg += MessageUtil.getMessage("contact.delete.subscription.warning", cards.size());
+        throw new ContactDeleteException(msg);
+      }
     } else if (c.getType() == Person.BANK) {
       String check = "SELECT count(guichetid) FROM " + RibIO.TABLE + " WHERE guichetid = " + c.getId();
       ResultSet rs = dc.executeQuery(check);
@@ -454,7 +461,7 @@ public class ContactIO
         msg += MessageUtil.getMessage("contact.delete.bank.branch.warning", g);
         throw new ContactDeleteException(msg);
       }
-    }
+    } 
 
   }
 }

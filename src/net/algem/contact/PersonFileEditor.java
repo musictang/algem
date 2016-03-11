@@ -603,6 +603,8 @@ public class PersonFileEditor
               "Erreur mise à jour dossier :",
               JOptionPane.ERROR_MESSAGE);
       return false;
+    } catch(DDMandateException ex){
+      MessagePopup.warning(view, ex.getMessage());
     } finally {
       dc.setAutoCommit(true);
     }

@@ -49,3 +49,5 @@ INSERT INTO comptepref VALUES ('ADHÉSIONS PRO',0,'');
 INSERT INTO menuprofil SELECT idmenu,10,auth FROM menuprofil WHERE profil = 0;
 INSERT INTO menuprofil SELECT idmenu,11,auth FROM menuprofil WHERE profil = 0;
 
+ALTER TABLE salle ALTER fonction TYPE varchar(128);
+

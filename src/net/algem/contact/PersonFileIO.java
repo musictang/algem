@@ -25,6 +25,10 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
+import java.util.logging.Logger;
+import net.algem.accounting.DDMandate;
+import net.algem.accounting.DDMandateException;
+import net.algem.accounting.DirectDebitService;
 import net.algem.bank.Rib;
 import net.algem.bank.RibIO;
 import net.algem.contact.member.Member;
@@ -72,7 +76,7 @@ public class PersonFileIO
     memberIO = (MemberIO) DataCache.getDao(Model.Member);
   }
 
-  public Vector<String> update(PersonFile dossier) throws SQLException {
+  public Vector<String> update(PersonFile dossier) throws SQLException, DDMandateException {
     Vector<String> logEvents = new Vector<String>();
     ContactIO contactIO = new ContactIO(dc);
 
@@ -130,27 +134,35 @@ public class PersonFileIO
 
   }
 
-  private void updateRib(PersonFile dossier, Vector<String> logEvents) throws SQLException {
+  private void updateRib(PersonFile dossier, Vector<String> logEvents) throws SQLException, DDMandateException {
     if (dossier.getRib() == null) {
       return;
     }
-    Rib fb = dossier.getRib();
+    Rib rib = dossier.getRib();
     if (dossier.getOldRib() == null) {
       //dossier.getRib().setId(dossier.getId());
-      if (0 != fb.getBranchId()) {
-        RibIO.insert(dossier.getRib(), dc);
+      if (0 != rib.getBranchId()) {
+        RibIO.insert(rib, dc);
         logEvents.addElement("bic.create.event " + dossier.getId());
       }
     } else {
       //Suppression du rib si la chaîne code compte est vide
       //if (fb.getAccount().isEmpty()) {
       //Suppression du rib si aucun des champs de la vue n'est rempli
-      if (fb.isEmpty()) {
+      if (rib.isEmpty()) {
         RibIO.delete(dossier.getOldRib(), dc);
         logEvents.addElement("bic.delete.event");
-      } else if (!fb.equals(dossier.getOldRib())) {
-        RibIO.update(dossier.getRib(), dc);
+      } else if (!rib.equals(dossier.getOldRib())) {
+        RibIO.update(rib, dc);
         logEvents.addElement("bic.update.event");
+      }
+      int payer = dossier.getMember() == null ? 0 : dossier.getMember().getPayer();
+      if (payer > 0) {
+        DirectDebitService ddService = DirectDebitService.getInstance(dc);        
+        DDMandate mandate = ddService.getMandate(payer);
+        if (mandate != null) {
+          throw new DDMandateException(MessageUtil.getMessage("rib.update.mandate.exception"));
+        }
       }
     }
 

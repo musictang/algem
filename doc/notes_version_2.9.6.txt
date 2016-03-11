@@ -1,0 +1,2 @@
+2.9.6
+* Lorsqu'on supprimait un contact disposant encore d'une carte d'abonnement, la suppression était impossible mais aucun message ne nous renseignait pourquoi.
