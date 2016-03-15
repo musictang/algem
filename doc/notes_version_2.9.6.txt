@@ -1,2 +1,4 @@
 2.9.6
 * Lorsqu'on supprimait un contact disposant encore d'une carte d'abonnement, la suppression était impossible mais aucun message ne nous renseignait pourquoi.
+* Si vous modifiez le RIB d'une personne ayant un mandat de prélèvement SEPA, un message d'avertissement vous demande maintenant d'archiver l'ancien mandat et d'en créer un nouveau.
+* La recherche des agences bancaires disponibles ne fonctionnait pas correctement après modification de RIB. Cela pouvait entraîner l'utilisateur à créer une nouvelle agence alors que celle-ci existait déjà.

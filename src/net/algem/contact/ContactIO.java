@@ -1,7 +1,7 @@
 /*
- * @(#)ContactIO.java	2.9.4.13 15/10/15
+ * @(#)ContactIO.java	2.9.6 14/03/16
  * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -49,7 +49,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.9.6
  * @since 1.0a 07/07/1999
  */
 public class ContactIO
@@ -448,6 +448,7 @@ public class ContactIO
         msg += MessageUtil.getMessage("contact.delete.schedule.warning", vpl.size());
         throw new ContactDeleteException(msg);
       }
+      // checks if contact has subscription cards
       List<PersonSubscriptionCard> cards = new PersonSubscriptionCardIO(dc).find(c.getId(), null, false, 0);
       if (cards.size() > 0) {
         msg += MessageUtil.getMessage("contact.delete.subscription.warning", cards.size());

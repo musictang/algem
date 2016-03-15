@@ -1,7 +1,7 @@
 /*
- * @(#)TeacherService.java	2.9.4.12 17/09/15
+ * @(#)TeacherService.java	2.9.6 15/03/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -32,7 +32,7 @@ import net.algem.util.GemLogger;
 /**
  * Service class for teachers.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.12
+ * @version 2.9.6
  * @since 2.4.a 22/05/12
  */
 public class TeacherService
@@ -84,16 +84,18 @@ public class TeacherService
    * @param start date start
    * @param end date end
    * @return a list of schedules
+   * @throws java.sql.SQLException
    */
   public Vector<ScheduleObject> getCourseSchedule(int teacher, int estab, String start, String end) throws SQLException {
-    String query = ", salle s, action a WHERE p.ptype = " + Schedule.COURSE + " AND p.idper = " + teacher
-              + " AND p.jour>='" + start + "'"
-              + " AND p.jour<='" + end + "'"
-              + " AND p.lieux = s.id AND s.etablissement=" + estab
-              + " AND p.action = a.id"
-              + " ORDER BY p.lieux,p.jour,p.debut,a.cours"; //OK
-              //+" order by p.idRoom,p.start,p.date,p.action"; //OK mais
-              //+" order by extract(dow from p.date),p.idRoom,p.action,p.start"; //OUI MAIS
+    String query = ", salle s, action a "
+            + " WHERE p.ptype IN( " + Schedule.COURSE + "," + Schedule.WORKSHOP + "," + Schedule.TRAINING + ")"
+            + " AND p.idper = " + teacher
+            + " AND p.jour>='" + start + "'"
+            + " AND p.jour<='" + end + "'"
+            + " AND p.lieux = s.id AND s.etablissement=" + estab
+            + " AND p.action = a.id"
+            //              + " ORDER BY p.lieux,p.jour,p.debut,a.cours"; // (2.9.5)
+            + " ORDER BY extract(dow FROM p.jour),p.jour,p.debut";
     return ScheduleIO.findObject(query, dc);
   }
 

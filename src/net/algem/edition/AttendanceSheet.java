@@ -1,7 +1,7 @@
 /*
- * @(#)AttendanceSheet.java	2.8.w 08/07/14
+ * @(#)AttendanceSheet.java	2.9.6 15/03/16
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -23,6 +23,7 @@ package net.algem.edition;
 import java.awt.*;
 import java.sql.SQLException;
 import java.text.DateFormatSymbols;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -51,7 +52,7 @@ import net.algem.util.model.Model;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.9.6
  * @since 1.0a 07/07/1999
  */
 public class AttendanceSheet
@@ -149,9 +150,12 @@ public class AttendanceSheet
     this.teacher = teacher;
 
     try {
-      Vector<? extends ScheduleObject> vpl =
-              service.getCourseSchedule(teacher.getId(), etab.getId(),
-              dateRange.getStart().toString(), dateRange.getEnd().toString());
+      Vector<? extends ScheduleObject> vpl = service.getCourseSchedule(
+              teacher.getId(), 
+              etab.getId(),
+              dateRange.getStart().toString(), 
+              dateRange.getEnd().toString()
+      );
       if (vpl.isEmpty()) {
         return;
       }
@@ -166,10 +170,10 @@ public class AttendanceSheet
       g.drawString("Etablissement : " + etab.getName(), 400, 60);
 
       line = mgh;
-      Vector<Vector<Schedule>> liste = new Vector<Vector<Schedule>>();
+      java.util.List<Vector<ScheduleObject>> vplList = new ArrayList<Vector<ScheduleObject>>();
 
       while (vpl.size() > 0) {
-        Vector<Schedule> v = new Vector<Schedule>();
+        Vector<ScheduleObject> v = new Vector<ScheduleObject>();
         for (int j = 0; j < vpl.size(); j++) {
           CourseSchedule p = (CourseSchedule) vpl.elementAt(0);
           if (p.equiv(vpl.elementAt(j))) {
@@ -177,11 +181,11 @@ public class AttendanceSheet
           }
         }
         vpl.removeAll(v);
-        liste.addElement(v);
+        vplList.add(v);
       }
 
-      for (int i = 0; i < liste.size(); i++) {
-        Vector<Schedule> v = liste.elementAt(i);
+      for (int i = 0; i < vplList.size(); i++) {
+        Vector<ScheduleObject> v = vplList.get(i);
         Schedule pl = v.elementAt(0);
         Course course = planningService.getCourseFromAction(pl.getIdAction());
         Room room = ((RoomIO) DataCache.getDao(Model.Room)).findId(pl.getIdRoom());
@@ -204,7 +208,7 @@ public class AttendanceSheet
 
   }
 
-  public void courseHeader(Course course, Room room, Vector<Schedule> vpl) {
+  public void courseHeader(Course course, Room room, Vector<ScheduleObject> vpl) {
 
     g.setFont(normalFont);
     //23092003 g.drawString(cours.getTitle()+" salle "+salle.getName()+" "+dataCache.getHeureDebutCours(cours.getId()).toString()+"-"+dataCache.getHeureFinCours(cours.getId()).toString(),25,ligne);
@@ -232,7 +236,7 @@ public class AttendanceSheet
     line += 20;
   }
 
-  public void detailCollective(Course course, Room room, DateRange _range, Vector<Schedule> vpl) {
+  public void detailCollective(Course course, Room room, DateRange _range, Vector<ScheduleObject> vpl) {
     int topl = line; // haut de colonne
     line += 10; // première ligne de texte
     g.setFont(smallFont);
@@ -297,7 +301,7 @@ public class AttendanceSheet
     }
   }
 
-  public void detailRange(Course course, Room room, Vector<Schedule> vpl) throws SQLException {
+  public void detailRange(Course course, Room room, Vector<ScheduleObject> vpl) throws SQLException {
 
     int topl = line;
     g.setFont(smallFont);
