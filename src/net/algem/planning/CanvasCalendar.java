@@ -1,7 +1,7 @@
 /*
- * @(#)CanvasCalendar.java	2.6.a 19/09/12
- * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * @(#)CanvasCalendar.java	2.9.6 16/03/16
+ *
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning;
 
@@ -37,7 +37,7 @@ import net.algem.util.ui.GemPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.6
  */
 public class CanvasCalendar
         extends GemPanel
@@ -189,6 +189,9 @@ public class CanvasCalendar
   public void paint(Graphics g) {
     dim = getSize();
     g.setColor(getBackground());
+    if (g instanceof Graphics2D) {
+      ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+    }
     g.fillRect(0, 0, dim.width, dim.height);
     draw(g);
   }

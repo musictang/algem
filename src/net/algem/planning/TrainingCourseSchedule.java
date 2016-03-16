@@ -1,7 +1,7 @@
 /*
- * @(#)TrainingCourseSchedule.java	2.6.a 20/09/12
+ * @(#)TrainingCourseSchedule.java	2.9.6 16/03/16
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -26,18 +26,13 @@ import net.algem.util.BundleUtil;
 
 /**
  * Training course schedule.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.6
  */
-public class TrainingCourseSchedule 
-        extends ScheduleObject
+public class TrainingCourseSchedule
+        extends CourseSchedule
 {
-
-  @Override
-  public String getScheduleLabel() {
-    return ((Course)activity).getTitle();
-  }
 
   @Override
   public String getScheduleDetail() {

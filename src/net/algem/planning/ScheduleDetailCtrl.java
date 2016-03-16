@@ -1,7 +1,7 @@
 /*
- * @(#)ScheduleDetailCtrl.java 2.9.5 09/02/16
+ * @(#)ScheduleDetailCtrl.java 2.9.6 16/03/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -66,7 +66,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.5
+ * @version 2.9.6
  * @since 1.0a 07/07/1999
  */
 public class ScheduleDetailCtrl
@@ -175,7 +175,7 @@ public class ScheduleDetailCtrl
        loadTechnicianSchedule(event);
     } else if (schedule instanceof AdministrativeSchedule) {
        loadAdministrativeSchedule(event);
-    } 
+    }
     else if (schedule instanceof Schedule) {
       Schedule p = (Schedule) schedule;
       headPanel.add(new GemLabel("Saisie sur planning"));
@@ -245,7 +245,7 @@ public class ScheduleDetailCtrl
     }
     if (collective) {
       Collections.sort(v, psComparator);
-    }    
+    }
     StringBuffer buf = new StringBuffer();
     for (int i = 0; i < v.size(); i++) {
       ScheduleRangeObject pl = v.elementAt(i);
@@ -321,7 +321,7 @@ public class ScheduleDetailCtrl
       menuPanel.add((GemMenuButton) modifButtons.elementAt(i));
     }
   }
-  
+
   private void loadBookingMemberSchedule(Schedule sched) {
     BookingMemberSchedule p = (BookingMemberSchedule) sched;
     headPanel.add(new GemLabel(BundleUtil.getLabel("Booking.label")));
@@ -355,7 +355,7 @@ public class ScheduleDetailCtrl
     }
     menuPanel.add(btGroupWrite);//mailing button
   }
-  
+
   private void loadBookingGroupSchedule(Schedule plan) {
     BookingGroupSchedule bg = (BookingGroupSchedule) plan;
     headPanel.add(new GemLabel(bg.getScheduleLabel()));
@@ -412,8 +412,8 @@ public class ScheduleDetailCtrl
   private void loadWorkshopSchedule(ScheduleDetailEvent de) {
     WorkshopSchedule p = (WorkshopSchedule) de.getSchedule();
     StringBuffer buf = new StringBuffer(BundleUtil.getLabel("Workshop.label")).append(" ");
-    buf.append(p.getWorkshop().getTitle());
-    GemMenuButton b = new GemMenuButton(buf.toString(), this, "WorkshopLink", p.getWorkshop());
+    buf.append(p.getScheduleLabel());
+    GemMenuButton b = new GemMenuButton(buf.toString(), this, "WorkshopLink", p.getCourse());
     headPanel.add(b);
 
     buf = new StringBuffer(BundleUtil.getLabel("Teacher.label")).append(" ");
@@ -533,11 +533,7 @@ public class ScheduleDetailCtrl
       } else if ("MemberLink".equals(arg)) {
         setWaitCursor();
         ScheduleRangeObject range = (ScheduleRangeObject) ((GemMenuButton) evt.getSource()).getObject();
-        if (schedule instanceof WorkshopSchedule) {
-          c = ((WorkshopSchedule) schedule).getWorkshop();
-        } else {
-          c = ((CourseSchedule) schedule).getCourse();
-        }
+        c = ((CourseSchedule) schedule).getCourse();
         //if (!(evt.getModifiers() == InputEvent.BUTTON1_MASK)) {
         if ((evt.getModifiers() & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK) {//ouverture du suivi élève touche MAJ
           //if (!c.isCollective()) { @since 2.4.a saisie suivi individuel activée pour les cours collectifs

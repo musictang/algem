@@ -1,7 +1,7 @@
 /*
- * @(#)WorkshopSchedule.java	2.8.t 08/05/14
+ * @(#)WorkshopSchedule.java	2.9.6 16/03/16
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,7 +20,6 @@
  */
 package net.algem.planning;
 
-import net.algem.contact.Person;
 import net.algem.course.Course;
 import net.algem.util.BundleUtil;
 
@@ -29,10 +28,10 @@ import net.algem.util.BundleUtil;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.9.6
  */
 public class WorkshopSchedule
-        extends ScheduleObject
+        extends CourseSchedule
 {
 
   public WorkshopSchedule() {
@@ -40,32 +39,6 @@ public class WorkshopSchedule
 
   public WorkshopSchedule(Schedule d) {
     super(d);
-  }
-
-  public void setTeacher(Person p) {
-    person = p;
-    if (p == null) {
-      idper = 0;
-    } else {
-      idper = p.getId();
-    }
-  }
-
-  public Person getTeacher() {
-    return person;
-  }
-
-  public void setWorkshop(Course a) {
-    activity = a;
-  }
-
-  public Course getWorkshop() {
-    return (Course) activity;
-  }
-
-  @Override
-  public String getScheduleLabel() {
-    return ((Course) activity).getTitle();
   }
 
   @Override

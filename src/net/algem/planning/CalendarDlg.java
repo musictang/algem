@@ -1,7 +1,7 @@
 /*
- * @(#)CalendarDlg.java	2.6.a 19/09/12
- * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * @(#)CalendarDlg.java	2.9.6 16/03/16
+ *
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,14 +16,14 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Frame;
 import java.awt.GridLayout;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Date;
@@ -39,11 +39,10 @@ import net.algem.util.ui.PopupDlg;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.6
  */
 public class CalendarDlg
-        implements ActionListener
-{
+  implements ActionListener {
 
   private Frame parent;
   private JDialog dlg;
@@ -53,11 +52,8 @@ public class CalendarDlg
   private GemButton btValidate;
   private CalendarView calView;
 
-
-  public CalendarDlg(Component c, String t) 
-  {
+  public CalendarDlg(Component c, String t) {
     parent = PopupDlg.getTopFrame(c);
-    title = new GemLabel(t);
     validation = false;
 
     calView = new CalendarView();
@@ -74,44 +70,32 @@ public class CalendarDlg
     buttons.add(btValidate);
 
     dlg = new JDialog(parent, true);
+    dlg.add(calView, BorderLayout.CENTER);
+    dlg.add(buttons, BorderLayout.SOUTH);
 
-    dlg.getContentPane().add("North", title);
-    dlg.getContentPane().add("Center", calView);
-    dlg.getContentPane().add("South", buttons);
+    dlg.setLocation(c.getLocation());
+    dlg.setTitle(t);
     dlg.pack();
-
-    Point p = c.getLocation();
-    dlg.setLocation(p);
   }
 
-
-  public void setDate(Date d) 
-  {
+  public void setDate(Date d) {
     calView.setDate(d);
   }
 
-
-  public void saisie() 
-  {
+  public void saisie() {
     dlg.setVisible(true);
   }
 
-
-  public boolean isValidate() 
-  {
+  public boolean isValidate() {
     return validation;
   }
 
-
-  public Date getDate() 
-  {
+  public Date getDate() {
     return calView.getDate();
   }
 
-
   @Override
-  public void actionPerformed(ActionEvent evt) 
-  {
+  public void actionPerformed(ActionEvent evt) {
     if (evt.getActionCommand().equals("click")) {
       validation = true;
     } else if (evt.getActionCommand().equals(GemCommand.VALIDATE_CMD)) {

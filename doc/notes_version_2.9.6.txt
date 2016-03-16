@@ -2,3 +2,11 @@
 * Lorsqu'on supprimait un contact disposant encore d'une carte d'abonnement, la suppression était impossible mais aucun message ne nous renseignait pourquoi.
 * Si vous modifiez le RIB d'une personne ayant un mandat de prélèvement SEPA, un message d'avertissement vous demande maintenant d'archiver l'ancien mandat et d'en créer un nouveau.
 * La recherche des agences bancaires disponibles ne fonctionnait pas correctement après modification de RIB. Cela pouvait entraîner l'utilisateur à créer une nouvelle agence alors que celle-ci existait déjà.
+* Les plannings de type Atelier ponctuel ou Stage apparaissent maintenant dans les feuilles de présence.
+* Les feuilles de présence sont maintenant classées dans l'ordre chronologique des cours. Elles étaient auparavant classées d'abord par salle.
+* La police des menus dans le thème Nimbus ne correspondait plus à la police originale après un certain temps d'utilisation.
+* Si vous utilisez un thème autre que celui par défaut (Metal), la police utilisée sera celle de votre système, que vous ayez activé ou pas ce réglage dans le fichier de paramètres (local.properties, en principe).
+* La police du calendrier n'était pas très élégante. Elle bénéficie maintenant d'un lissage.
+Rappel : on ouvre le calendrier en cliquant sur l'icone correspondante dans un champ date ou en appuyant sur F1 dans un champ date.
+* La décoration et l'affichage des boutons du planning jour sont mieux pris en charge dans les thèmes autres que celui par défaut.
+* Meilleure gestion des espacements pour les boutons du thème Nimbus.

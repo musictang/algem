@@ -1,7 +1,7 @@
 /*
- * @(#)DateRangePanel.java 2.9.2.1 16/02/15
+ * @(#)DateRangePanel.java 2.9.6 16/03/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -44,7 +44,7 @@ import net.algem.util.ui.GemPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2.1
+ * @version 2.9.6
  */
 public class DateRangePanel
         extends GemPanel
@@ -294,7 +294,7 @@ public class DateRangePanel
   @Override
   public void actionPerformed(ActionEvent evt) {
     if (dlg == null) {
-      dlg = new CalendarDlg(this, "calendrier");
+      dlg = new CalendarDlg(this, BundleUtil.getLabel("Calendar.label"));
     }
     if (evt.getSource() == cal1) {
       dlg.setDate(start.getDate());
@@ -314,14 +314,14 @@ public class DateRangePanel
           validDate2(dlg.getDate());
         }
       }
-    } 
+    }
   }
-  
+
   @Override
   public String toString() {
     return mode == SIMPLE_DATE ? getStartFr().toString() : (getStartFr().toString() + "_" + getEndFr().toString());
   }
-  
+
   private void validDate1(Date newDate) {
     Date dateFin = end.getDate();
     if (!newDate.before(dateFin)) {

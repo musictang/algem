@@ -1,7 +1,7 @@
 /*
- * @(#)DateFrField.java	2.9.2 22/12/14
+ * @(#)DateFrField.java	2.9.6 16/03/16
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,13 +27,14 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.swing.JTextField;
+import net.algem.util.BundleUtil;
 
 /**
  * Date field for DateFr.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.9.1
+ * @version 2.9.6
  * @since 1.0a 02/09/2001
  */
 public class DateFrField extends JTextField
@@ -116,7 +117,7 @@ public class DateFrField extends JTextField
   public void keyPressed(KeyEvent ke) {
     if (ke.isActionKey() && ke.getKeyCode() == KeyEvent.VK_F1) // 112)
     {
-      CalendarDlg calendrierdlg = new CalendarDlg(this, "calendrier");
+      CalendarDlg calendrierdlg = new CalendarDlg(this, BundleUtil.getLabel("Calendar.label"));
       String s = getText();
       DateFr datefr = new DateFr(s);
       if (!s.equals(DateFr.NULLDATE)) {

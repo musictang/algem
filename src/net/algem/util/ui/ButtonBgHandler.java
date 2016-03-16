@@ -1,7 +1,7 @@
 /*
- * @(#)ButtonBgHandler.java 2.9.4.13 11/11/2015
+ * @(#)ButtonBgHandler.java 2.9.6 16/03/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -26,7 +26,7 @@ import javax.swing.UIManager;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.9.6
  * @since 2.9.4.13 10/11/2015
  */
 public class ButtonBgHandler
@@ -49,6 +49,7 @@ public class ButtonBgHandler
         //windows L&F workaround
         bt.setContentAreaFilled(false);
         bt.setOpaque(true);
+        break;
     }
   }
 

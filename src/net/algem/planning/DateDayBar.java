@@ -1,7 +1,7 @@
 /*
- * @(#)DateDayBar.java	2.9.4.13 10/11/15
- * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * @(#)DateDayBar.java	2.9.6 16/03/16
+ *
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning;
 
@@ -27,7 +27,9 @@ import java.text.DateFormatSymbols;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.UIManager;
 import net.algem.util.ui.ButtonBgHandler;
 import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GemPanel;
@@ -37,7 +39,7 @@ import net.algem.util.ui.GemPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.9.4.13
+ * @version 2.9.6
  * @since 1.0a 07/07/1999
  */
 public class DateDayBar
@@ -75,13 +77,12 @@ public class DateDayBar
     /** The 31 days. */
     dayButtons = new JButton[31];
     int maxDaysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
-
+    String lafName = UIManager.getLookAndFeel().getName();
     for (int i = 0; i < 31; i++) {
       cal.set(Calendar.DAY_OF_MONTH, i + 1);
-//      dayButtons[i] = new JButton(cal.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.FRANCE));
       dayButtons[i] = new JButton();
       dayButtons[i].setFont(new Font("Helvetica", Font.PLAIN, 10));
-      dayButtons[i].setMargin(new Insets(0, 0, 0, 0));
+      setBorder(dayButtons[i], lafName);
       dayPanel.add(dayButtons[i]);
       dayButtons[i].addActionListener(this);
     }
@@ -215,16 +216,16 @@ public class DateDayBar
     // reset previous selected button
     ButtonBgHandler.reset(daySelected);
     ButtonBgHandler.reset(monthSelected);
-    
+
     daySelected = dayButtons[d];
     ButtonBgHandler.decore(daySelected);
     daySelected.setBackground(DateBar.CALENDAR_BAR_SELECTED);
-    
+
     monthSelected = monthButtons[m];
     ButtonBgHandler.decore(monthSelected);
     monthSelected.setBackground(DateBar.CALENDAR_BAR_SELECTED);
   }
-   
+
   /**
    * Sets time to the selected index.
    * @param i selected index
@@ -233,5 +234,30 @@ public class DateDayBar
     cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), i + 1);
     colorSelected(i,cal.get(Calendar.MONTH));
   }
-  
+
+  private void setBorder(JButton b, String lafName) {
+    switch (lafName) {
+      case "Nimbus":
+      case "GTK+":
+      case "Acryl":
+      case "Aero":
+      case "Aluminium":
+      case "Bernstein":
+      case "Graphite":
+      case "Smart":
+        b.setBorder(BorderFactory.createCompoundBorder(
+        BorderFactory.createEmptyBorder(),
+        BorderFactory.createEmptyBorder(4, 3, 4, 3)));
+        break;
+      case "CDE/Motif":
+      case "Fast":
+        b.setBorder(BorderFactory.createCompoundBorder(
+        BorderFactory.createMatteBorder(0, 0, 1, 1, Color.GRAY),
+        BorderFactory.createEmptyBorder(4, 3, 4, 3)));
+        break;
+      default:
+        b.setMargin(new Insets(1, 1, 1, 1));
+    }
+  }
+
 }

@@ -1,7 +1,7 @@
 /*
- * @(#)Algem.java	2.9.5 29/02/16
+ * @(#)Algem.java	2.9.6 16/03/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -57,7 +57,7 @@ import org.apache.commons.codec.binary.Base64;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.5
+ * @version 2.9.6
  */
 public class Algem
 {
@@ -438,7 +438,7 @@ public class Algem
     Font myFont = new Font(Font.SANS_SERIF, Font.PLAIN, 11);
     switch (lafName) {
       case "Nimbus":
-        def.put("Button.contentMargins", new InsetsUIResource(4, 3, 4, 3)); //  default : (6,14,6,14)
+        //def.put("Button.contentMargins", new InsetsUIResource(4, 3, 4, 3)); //  default : (6,14,6,14)
         def.put("TextField.contentMargins", new InsetsUIResource(4, 4, 4, 4)); //  default : (6,6,6,6)
 //          def.put("Table.alternateRowColor", new Color(224,224,224));// default :  #f2f2f2 (242,242,242)
         def.put("TableHeader.font", myFont); // default : Font SansSerif 12
@@ -471,22 +471,24 @@ public class Algem
   }
 
   private static void initUIFonts() {
-    Font fsans = new Font("Lucida Sans", Font.BOLD, 12);
-    Font fserif = new Font(Font.SERIF, Font.BOLD + Font.ITALIC, 12);
+    if ("Metal".equals(UIManager.getLookAndFeel().getName())) {
+      Font fsans = new Font("Lucida Sans", Font.BOLD, 12);
+      Font fserif = new Font(Font.SERIF, Font.BOLD + Font.ITALIC, 12);
 
-    UIManager.put("Menu.font", fsans);
-    UIManager.put("MenuBar.font", fsans);
-    UIManager.put("MenuItem.font", fsans);
-    UIManager.put("Label.font", fsans);
-    UIManager.put("Button.font", fsans);
-    UIManager.put("ToggleButton.font", fsans);
-    UIManager.put("ComboBox.font", fsans);
-    UIManager.put("TabbedPane.font", fsans);
-    UIManager.put("CheckBox.font", fsans);
-    UIManager.put("CheckBoxMenuItem.font", fsans);
-    UIManager.put("TitledBorder.font", fsans.deriveFont(Font.BOLD + Font.ITALIC));
-    UIManager.put("RadioButton.font", fsans);
-    UIManager.put("List.font", fsans);
+      UIManager.put("Menu.font", fsans);
+      UIManager.put("MenuBar.font", fsans);
+      UIManager.put("MenuItem.font", fsans);
+      UIManager.put("Label.font", fsans);
+      UIManager.put("Button.font", fsans);
+      UIManager.put("ToggleButton.font", fsans);
+      UIManager.put("ComboBox.font", fsans);
+      UIManager.put("TabbedPane.font", fsans);
+      UIManager.put("CheckBox.font", fsans);
+      UIManager.put("CheckBoxMenuItem.font", fsans);
+      UIManager.put("TitledBorder.font", fsans.deriveFont(Font.BOLD + Font.ITALIC));
+      UIManager.put("RadioButton.font", fsans);
+      UIManager.put("List.font", fsans);
+    }
   }
 
   public class GemBoot

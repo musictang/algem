@@ -1,5 +1,5 @@
 /*
- * @(#)AttendanceSheet.java	2.9.6 15/03/16
+ * @(#)AttendanceSheet.java	2.9.6 16/03/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -43,8 +43,10 @@ import net.algem.room.Establishment;
 import net.algem.room.EstablishmentIO;
 import net.algem.room.Room;
 import net.algem.room.RoomIO;
+import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.GemLogger;
+import net.algem.util.MessageUtil;
 import net.algem.util.model.Model;
 
 /**
@@ -102,6 +104,7 @@ public class AttendanceSheet
     dayLabels = new DateFormatSymbols(Locale.FRANCE).getShortWeekdays();
 
     JobAttributes ja = new JobAttributes();
+
     PageAttributes pa = new PageAttributes();
     pa.setMedia(PageAttributes.MediaType.A4);
     pa.setOrientationRequested(PageAttributes.OrientationRequestedType.LANDSCAPE);
@@ -111,7 +114,7 @@ public class AttendanceSheet
     if (c instanceof Frame) {
       parent = (Frame) c;
     }
-    prn = tk.getPrintJob(parent, "Feuille présence", ja, pa);
+    prn = tk.getPrintJob(parent, BundleUtil.getLabel("Attendance.sheet.label"), ja, pa);
   }
 
   public void edit(DateRange _plage, int etabId) {
@@ -151,9 +154,9 @@ public class AttendanceSheet
 
     try {
       Vector<? extends ScheduleObject> vpl = service.getCourseSchedule(
-              teacher.getId(), 
+              teacher.getId(),
               etab.getId(),
-              dateRange.getStart().toString(), 
+              dateRange.getStart().toString(),
               dateRange.getEnd().toString()
       );
       if (vpl.isEmpty()) {
@@ -164,10 +167,10 @@ public class AttendanceSheet
       g.setColor(Color.black);
 
       g.setFont(normalFont);
-      String head1 = "Feuille de présence du " + dateRange.getStart() + " au " + dateRange.getEnd();
+      String head1 = MessageUtil.getMessage("attendance.sheet.head1", new Object[]{dateRange.getStart(), dateRange.getEnd()});
       g.drawString(head1, 250, 40);
       g.drawString(teacher.toString(), 250, 60);
-      g.drawString("Etablissement : " + etab.getName(), 400, 60);
+      g.drawString(MessageUtil.getMessage("attendance.sheet.head2", etab.getName()), 400, 60);
 
       line = mgh;
       java.util.List<Vector<ScheduleObject>> vplList = new ArrayList<Vector<ScheduleObject>>();
@@ -215,14 +218,26 @@ public class AttendanceSheet
     Schedule plt = vpl.elementAt(0);
     /* Modification 1.1a ajouter information plage horaire dans l'entete du cours collectif */
     /* LIBELLE DU COURS SUIVI de la salle et DE SON HORAIRE */
+    String msg = "";
     if (course.isCollective()) {
-      g.drawString(course.getTitle() + " salle " + room.getName() + " " + plt.getStart() + "-" + plt.getEnd(), 25, line);
+      msg = MessageUtil.getMessage("attendance.sheet.collective.label", new Object[] {
+        course.getTitle(),
+        room.getName(),
+        plt.getStart(),
+        plt.getEnd()
+      });
+//      g.drawString(course.getTitle() + " salle " + room.getName() + " " + plt.getStart() + "-" + plt.getEnd(), 25, line);
     } else { // pas de libelle horaire pour les cours individuels
-      g.drawString(course.getTitle() + " salle " + room.getName()/* +" "+plt.getStart()+"-"+plt.getEnd() */, 25, line);
+      msg = MessageUtil.getMessage("attendance.sheet.individual.label", new Object[] {
+        course.getTitle(),
+        room.getName()
+      });
+//      g.drawString(course.getTitle() + " salle " + room.getName()/* +" "+plt.getStart()+"-"+plt.getEnd() */, 25, line);
     }
+    g.drawString(msg, 25, line);
     g.drawLine(25, line + 5, 800, line + 5);  // 15->5
 		/* HEADERS */
-    g.drawString("Prénom NOM", 25, line + 15);// 25->15
+    g.drawString(MessageUtil.getMessage("attendance.sheet.student.label"), 25, line + 15);// 25->15
     //g.drawLine(25,ligne+20,800,ligne+20); // 30->20
     int col = 180;
     /* LIBELLE DES JOURS DE LA SEMAINE */
@@ -258,7 +273,7 @@ public class AttendanceSheet
         g.dispose();
         g = prn.getGraphics();
         g.setFont(normalFont);
-        g.drawString("Feuille de présence du " + dateRange.getStart() + " au " + dateRange.getEnd(), 250, 40);
+        g.drawString(MessageUtil.getMessage("attendance.sheet.head1", new Object[]{dateRange.getStart(), dateRange.getEnd()}), 250, 40);
         //g.drawString(moisLibel[cal.get(Calendar.MONTH)]+" "+cal.get(Calendar.YEAR),400,40);
         //g.drawString(plage.getStart() + " au " + plage.getEnd(), 400, 40);
         //g.drawString(moisLibel[mois-1]+" "+an,400,40);
@@ -335,7 +350,7 @@ public class AttendanceSheet
         g.dispose();
         g = prn.getGraphics();
         g.setFont(normalFont);
-        g.drawString("Feuille de présence pour ", 250, 40);
+        g.drawString(MessageUtil.getMessage("attendance.sheet.recipient.label"), 250, 40);
         //g.drawString(moisLibel[cal.get(Calendar.MONTH)]+" "+cal.get(Calendar.YEAR),400,40);
         g.drawString(dateRange.getStart() + " au " + dateRange.getEnd(), 400, 40);
         //g.drawString(moisLibel[mois-1]+" "+an,400,40);
@@ -356,4 +371,5 @@ public class AttendanceSheet
       g.drawLine(col, topl, col, line);
     }
   }
+
 }

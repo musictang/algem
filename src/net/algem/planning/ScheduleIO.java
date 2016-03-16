@@ -1,7 +1,7 @@
 /*
- * @(#)ScheduleIO.java	2.9.5 09/02/16
+ * @(#)ScheduleIO.java	2.9.6 16/03/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -42,7 +42,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.5
+ * @version 2.9.6
  */
 public class ScheduleIO
         extends TableIO
@@ -116,7 +116,7 @@ public class ScheduleIO
             + " AND action = " + sched.getIdAction();
     delete(query, dc);
   }
-  
+
   public static Booking findBooking(int actionId, DataConnection dc) throws BookingException {
     String query = "SELECT id,idper,dateres,pass,statut FROM reservation WHERE idaction = ?";
     ResultSet rs = null;
@@ -164,7 +164,7 @@ public class ScheduleIO
       throw new BookingException(ex.getMessage());
     }
   }
-  
+
   public static void confirmBooking(final Schedule schedule, DataConnection dc) throws BookingException {
     if (Schedule.BOOKING_GROUP != schedule.getType() && Schedule.BOOKING_MEMBER != schedule.getType()) {
       return;
@@ -196,7 +196,7 @@ public class ScheduleIO
     }
 
   }
-  
+
   /**
    * Schedule suppression.
    *
@@ -353,9 +353,10 @@ public class ScheduleIO
       case Schedule.WORKSHOP:
         p = new WorkshopSchedule();
         fillPlanning(rs, p);
-        ((WorkshopSchedule) p).setTeacher((Person) DataCache.findId(p.getIdPerson(), Model.Teacher));
+        ((CourseSchedule) p).setTeacher((Person) DataCache.findId(p.getIdPerson(), Model.Teacher));
         Action w = (Action) DataCache.findId(p.getIdAction(), Model.Action);
-        ((WorkshopSchedule) p).setWorkshop((Course) DataCache.findId(w.getCourse(), Model.Course));
+        ((CourseSchedule) p).setAction(w);
+        ((CourseSchedule) p).setCourse((Course) DataCache.findId(w.getCourse(), Model.Course));
         break;
       case Schedule.ADMINISTRATIVE:
         p = new AdministrativeSchedule();
