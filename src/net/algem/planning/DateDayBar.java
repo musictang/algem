@@ -1,5 +1,5 @@
 /*
- * @(#)DateDayBar.java	2.9.6 16/03/16
+ * @(#)DateDayBar.java	2.9.6 17/03/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -30,6 +30,7 @@ import java.util.Locale;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.UIManager;
+import javax.swing.border.Border;
 import net.algem.util.ui.ButtonBgHandler;
 import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GemPanel;
@@ -77,12 +78,16 @@ public class DateDayBar
     /** The 31 days. */
     dayButtons = new JButton[31];
     int maxDaysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
-    String lafName = UIManager.getLookAndFeel().getName();
+    Border borderDeco = getBorderDeco(UIManager.getLookAndFeel().getName());
     for (int i = 0; i < 31; i++) {
       cal.set(Calendar.DAY_OF_MONTH, i + 1);
       dayButtons[i] = new JButton();
       dayButtons[i].setFont(new Font("Helvetica", Font.PLAIN, 10));
-      setBorder(dayButtons[i], lafName);
+      if (borderDeco == null) {
+        dayButtons[i].setMargin(new Insets(1, 1, 1, 1));
+      } else {
+        dayButtons[i].setBorder(borderDeco);
+      }
       dayPanel.add(dayButtons[i]);
       dayButtons[i].addActionListener(this);
     }
@@ -235,29 +240,35 @@ public class DateDayBar
     colorSelected(i,cal.get(Calendar.MONTH));
   }
 
-  private void setBorder(JButton b, String lafName) {
+  /**
+   * Gets the border having the best appearance for the current theme.
+   * @param lafName theme's name
+   * @return a border instance
+   */
+  private Border getBorderDeco(String lafName) {
+    Border b = null;
     switch (lafName) {
       case "Nimbus":
       case "GTK+":
+      case "GTK look and feel":
       case "Acryl":
       case "Aero":
       case "Aluminium":
       case "Bernstein":
       case "Graphite":
       case "Smart":
-        b.setBorder(BorderFactory.createCompoundBorder(
-        BorderFactory.createEmptyBorder(),
-        BorderFactory.createEmptyBorder(4, 3, 4, 3)));
+        b = BorderFactory.createCompoundBorder(
+                BorderFactory.createEmptyBorder(),
+                BorderFactory.createEmptyBorder(4, 3, 4, 3));
         break;
       case "CDE/Motif":
       case "Fast":
-        b.setBorder(BorderFactory.createCompoundBorder(
-        BorderFactory.createMatteBorder(0, 0, 1, 1, Color.GRAY),
-        BorderFactory.createEmptyBorder(4, 3, 4, 3)));
+        b = BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0, 0, 1, 1, Color.GRAY),
+                BorderFactory.createEmptyBorder(4, 3, 4, 3));
         break;
-      default:
-        b.setMargin(new Insets(1, 1, 1, 1));
     }
+    return b;
   }
 
 }

@@ -46,6 +46,8 @@ public class ButtonBgHandler
         break;
       case "Windows":
       case "Windows Classic":
+      case "GTK+":
+      case  "GTK look and feel":
         //windows L&F workaround
         bt.setContentAreaFilled(false);
         bt.setOpaque(true);

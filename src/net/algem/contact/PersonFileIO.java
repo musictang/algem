@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileIO.java  2.9.6 14/03/16
+ * @(#)PersonFileIO.java  2.9.6 18/03/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes All Rights Reserved.
  *
@@ -79,7 +79,7 @@ public class PersonFileIO
     Vector<String> logEvents = new Vector<String>();
     ContactIO contactIO = new ContactIO(dc);
 
-    if (dossier.getId() == 0) { // nouveau dossier
+    if (dossier.getId() <= 0) { // nouveau dossier
       contactIO.insert(dossier.getContact());
       logEvents.addElement(CONTACT_CREATE_EVENT);
     } else {

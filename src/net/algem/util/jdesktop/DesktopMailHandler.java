@@ -1,5 +1,5 @@
 /*
- * @(#)DesktopMailHandler.java	2.9.5 09/02/16
+ * @(#)DesktopMailHandler.java	2.9.6 17/03/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -31,7 +31,7 @@ import net.algem.util.GemLogger;
  * Sending mail manager.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.5
+ * @version 2.9.6
  * @since 2.0k 11/01/10
  * @see java.awt.Desktop
  */
@@ -138,7 +138,7 @@ public class DesktopMailHandler
         args = " -compose to='" + to + "'";
       }
     } else {
-      args = "mailto:" + to + "?bcc=" + bcc;
+      args = "mailto:" + to + (bcc == null ? "" : "?bcc=" + bcc);
     }
     return args;
   }

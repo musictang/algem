@@ -1,7 +1,7 @@
 /*
- * @(#)RoomFileView.java 2.9.4.6 02/06/15
+ * @(#)RoomFileView.java 2.9.6 18/03/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -39,7 +39,7 @@ import net.algem.util.ui.TabPanel;
  * Tab container for room file.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.6
+ * @version 2.9.6
  * @since 2.1.j
  */
 public class RoomFileView
@@ -116,7 +116,7 @@ public class RoomFileView
 
   public Room getRoom() {
     Room r = editor.getRoom();
-    if (!creation) {
+    if (!creation || contactEditor != null) {
       r.setContact(contactEditor.getContact());
       r.setEquipment(equipEditor.getData());
       if (r.getPayer() == null) {
@@ -172,19 +172,29 @@ public class RoomFileView
   }
 
   void setContact(Contact c) {
-     if (room != null && c != null) {
-       room.setContact(c);
-      contactEditor.set(c);
+    if (room != null && c != null) {
+      room.setContact(c);
+      if (contactEditor == null) {
+        loadContact();
+      } else {
+        contactEditor.set(c);
+      }
     }
   }
 
   private void initContact() {
+    if (contactEditor == null) {
+      loadContact();
+    }
+    creation = false;
+  }
+  
+  private void loadContact() {
     contactEditor = new ContactFileEditor(desktop);
     contactEditor.setCodePostalCtrl(new CodePostalCtrl(DataCache.getDataConnection()));
     setContact();
     wTab.addItem(contactEditor, TABS[1]);
     wTab.addItem(equipEditor, TABS[2]);
-    creation = false;
   }
 
   private void setRoom(Room r) {

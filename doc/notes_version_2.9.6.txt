@@ -1,12 +1,35 @@
 2.9.6
+CORRECTIFS
 * Lorsqu'on supprimait un contact disposant encore d'une carte d'abonnement, la suppression était impossible mais aucun message ne nous renseignait pourquoi.
-* Si vous modifiez le RIB d'une personne ayant un mandat de prélèvement SEPA, un message d'avertissement vous demande maintenant d'archiver l'ancien mandat et d'en créer un nouveau.
-* La recherche des agences bancaires disponibles ne fonctionnait pas correctement après modification de RIB. Cela pouvait entraîner l'utilisateur à créer une nouvelle agence alors que celle-ci existait déjà.
-* Les plannings de type Atelier ponctuel ou Stage apparaissent maintenant dans les feuilles de présence.
-* Les feuilles de présence sont maintenant classées dans l'ordre chronologique des cours. Elles étaient auparavant classées d'abord par salle.
+* Si vous modifiez le RIB d'une personne ayant un mandat de prélèvement SEPA, UN MESSAGE D'AVERTISSEMENT VOUS DEMANDE MAINTENANT D'ARCHIVER L'ANCIEN MANDAT et d'en créer un nouveau.
+* LA RECHERCHE DES AGENCES BANCAIRES DISPONIBLES NE FONCTIONNAIT PAS CORRECTEMENT APRÈS MODIFICATION DE RIB. Cela pouvait entraîner l'utilisateur à créer une nouvelle agence alors que celle-ci existait déjà.
+* La sélection d'un établissement ne fonctionnait pas toujours correctement après avoir ouvert la fenêtre d'impression de la feuille de présence.
+* Dans certains logiciels de courrier, le champ "cci" ou "bcc" comportait la mention "null" après avoir cliqué sur le bouton d'envoi de courrier dans la fiche "Personne".
+* Lorsqu'on envoyait un mail aux participants d'un planning de type Atelier ponctuel ou de type Stage, le mail du professeur n'était pas automatiquement inclus.
+* Les fiches Personne "à définir" ne sont plus réouvertes au démarrage (cela pouvait arriver lorsqu'on fermait le logiciel sans avoir terminé la création d'une fiche Personne).
 * La police des menus dans le thème Nimbus ne correspondait plus à la police originale après un certain temps d'utilisation.
-* Si vous utilisez un thème autre que celui par défaut (Metal), la police utilisée sera celle de votre système, que vous ayez activé ou pas ce réglage dans le fichier de paramètres (local.properties, en principe).
+* Si vous choisissez un thème autre que celui par défaut (Metal), la police utilisée sera celle de votre système, que vous ayez activé ou pas ce réglage dans le fichier de paramètres (local.properties, en principe).
 * La police du calendrier n'était pas très élégante. Elle bénéficie maintenant d'un lissage.
 Rappel : on ouvre le calendrier en cliquant sur l'icone correspondante dans un champ date ou en appuyant sur F1 dans un champ date.
 * La décoration et l'affichage des boutons du planning jour sont mieux pris en charge dans les thèmes autres que celui par défaut.
-* Meilleure gestion des espacements pour les boutons du thème Nimbus.
+* La couleur des jours et des mois sélectionnés dans la barre de navigation du planning est maintenant prise en compte par le thème GTK.
+* Meilleure gestion des marges pour les boutons du thème Nimbus.
+
+AMELIORATIONS
+FEUILLE DE PRESENCE
+- LES PLANNINGS DE TYPE ATELIER PONCTUEL OU STAGE APPARAISSENT MAINTENANT DANS LES FEUILLES DE PRÉSENCE.
+- Les FEUILLES DE PRÉSENCE sont maintenant CLASSÉES DANS L'ORDRE CHRONOLOGIQUE DES COURS. Elles étaient auparavant classées d'abord par salle.
+- Les PLANNINGS ALTERNÉS PAR QUINZAINE SONT MAINTENANT CORRECTEMENT PRIS EN COMPTE (à condition qu'ils aient été planifiés en deux étapes). Auparavant, seul le nom de l'élève de la première semaine était visible en début de ligne.
+- Les dates d'impression de la feuille de présence sont maintenant automatiquement positionnées au premier et au dernier jour du mois courant.
+
+FICHE GROUPE
+La fenêtre de recherche d'un contact est maintenant directement accessible en saisie après avoir cliqué sur l'icone de recherche dans le dialogue d'ajout de musicien (bouton Ajouter dans l'onglet "Musiciens"). Elle était auparavant masquée par le dialogue d'ajout.
+
+RECHERCHE CONTACT
+Les informations (organisation,nom, prénom,pseudo) déjà saisies dans la fenêtre de recherche sont maintenant récupérées après avoir cliqué sur le bouton Créer. Cela vous évite ainsi d'avoir à les resaisir après une recherche infructueuse.
+
+FICHE SALLE
+Il est maintenant possible de modifier le contact par défaut d'une salle dès sa création. Cliquez pour cela sur Options -> Changer/Ajouter contact. L'onglet Equipement étant ouvert, il vous sera également possible de renseigner l'équipement de cette salle.
+Il fallait auparavant enregistrer la salle pour pouvoir modifier le contact par défaut.
+
+

@@ -1,7 +1,7 @@
 /*
- * @(#)RoomIO.java	2.8.y 26/09/14
+ * @(#)RoomIO.java	2.9.6 18/03/16
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -42,7 +42,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.y
+ * @version 2.9.6
  * @since 1.0a 07/07/1999
  */
 public class RoomIO
@@ -122,10 +122,6 @@ public class RoomIO
       updateEquipmentPS.setShort(4, e.getIdx());
       
       updateEquipmentPS.executeUpdate();
-//      Equipment e = ve.get(i);
-//      e.setRoom(r.getId());
-//      e.setIdx((short) i);
-//      insert(e);
     }
   }
   private void insert(Equipment e) throws SQLException {

@@ -1,7 +1,7 @@
 /*
- * @(#)MailPanel.java	2.8.n 04/10/13
+ * @(#)MailPanel.java	2.9.6 17/03/16
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -31,7 +31,7 @@ import net.algem.util.jdesktop.DesktopMailHandler;
 
 /**
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.n
+ * @version 2.9.6
  */
 public class MailPanel
         extends InfoPanel
@@ -80,12 +80,10 @@ public class MailPanel
   }
 
   public void setEmail(Email email) {
-
     idper = email.getIdper();
     iField.setText(email.getEmail());
     iArchive.setSelected(email.isArchive());
     setEditable(iArchive.isSelected());
-
   }
 
   @Override

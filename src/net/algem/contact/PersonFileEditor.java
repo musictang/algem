@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileEditor 2.9.6 14/03/16
+ * @(#)PersonFileEditor 2.9.6 17/03/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -232,7 +232,7 @@ public class PersonFileEditor
 
     Object src = evt.getSource();
     // On sauve au préalable l'éventuel nouveau contact avant d'executer les actions des menus.
-    if (dossier.getId() == 0
+    if (dossier.getId() <= 0
             && !arg.equals(GemCommand.SAVE_CMD)
             && !arg.equals(GemCommand.CLOSE_CMD)) {
 
@@ -248,6 +248,7 @@ public class PersonFileEditor
         save();
         personFileView.setID(dossier.getId());
       } else {
+        desktop.removeCurrentModule();
         return;
       }
     }

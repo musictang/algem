@@ -1,7 +1,7 @@
 /*
- * @(#)PersonFileSearchCtrl.java 2.9.1 27/11/14
+ * @(#)PersonFileSearchCtrl.java 2.9.6 18/03/16
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -40,7 +40,7 @@ import net.algem.util.ui.SearchCtrl;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.6
  * @since 1.0a 07/07/1999
  */
 public class PersonFileSearchCtrl
@@ -51,7 +51,7 @@ public class PersonFileSearchCtrl
   private GemDesktop desktop;
   private String query;
   private String cquery = "DECLARE pc CURSOR FOR SELECT * FROM " + PersonIO.TABLE;
-  private PersonFileEditor dossierPersonne;
+  private PersonFileEditor dossier;
   private Contact currentContact;
   private GemEventListener gemListener;
 
@@ -224,12 +224,33 @@ public class PersonFileSearchCtrl
     super.actionPerformed(evt);
     String cmd = evt.getActionCommand();
     if (GemCommand.CREATE_CMD.equals(cmd)) {
-      dossierPersonne = new PersonFileEditor();
-      desktop.addModule(dossierPersonne);
+      PersonFile p = new PersonFile(preFill());
+      dossier = new PersonFileEditor(p);
+      desktop.addModule(dossier);
     } else if (GemCommand.CANCEL_CMD.equals(cmd)) {
       desktop.removeCurrentModule();
     }
+  }
 
+  private Contact preFill() {
+    Contact c = new Contact();
+    String org = searchView.getField(1);
+    if (org != null && org.length() > 0) {
+     c.setOrganization(org);
+    }
+    String name = searchView.getField(2);
+    if (name != null && name.length() > 0) {
+      c.setName(name);
+    }
+    String firstName = searchView.getField(3);
+    if (firstName != null && firstName.length() > 0) {
+      c.setFirstName(firstName);
+    }
+    String nickName = searchView.getField(7);
+    if (nickName != null && nickName.length() > 0) {
+      c.setNickName(nickName);
+    }
+    return c;
   }
 }
 

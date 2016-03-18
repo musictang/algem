@@ -1,7 +1,7 @@
 /*
- * @(#)MusicianDlg.java	2.8.w 23/07/14
+ * @(#)MusicianDlg.java	2.9.6 17/03/16
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -49,7 +49,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.w
+ * @version 2.9.6
  */
 public class MusicianDlg
         extends PopupDlg
@@ -171,6 +171,7 @@ public class MusicianDlg
       PersonFileSearchCtrl pfSearch = new PersonFileSearchCtrl(desktop, BundleUtil.getLabel("Contact.browser.label"), this); 
       pfSearch.init();
       desktop.addPanel("Contact", pfSearch, GemModule.S_SIZE);
+      dlg.setLocation(pfSearch.getLocation().x + pfSearch.getWidth(), dlg.getLocation().y);// shift the position to avoid overlapping
     } else if (evt.getActionCommand().equals(GemCommand.OK_CMD)) {
       ((MusicianListView) component).setMusician(get(), operation);
       super.actionPerformed(evt);// force closing

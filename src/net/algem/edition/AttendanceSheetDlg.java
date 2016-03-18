@@ -1,7 +1,7 @@
 /*
- * @(#)AttendanceSheetDlg.java	2.9.4.13 02/11/15
+ * @(#)AttendanceSheetDlg.java	2.9.6 17/03/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -23,6 +23,8 @@ package net.algem.edition;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Calendar;
+import java.util.Date;
 import javax.swing.BorderFactory;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -43,7 +45,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.9.6
  */
 public class AttendanceSheetDlg
         implements ActionListener
@@ -58,13 +60,13 @@ public class AttendanceSheetDlg
   private Teacher teacher;
   private GemChoice estabChoice;
 
-  public AttendanceSheetDlg(Component _parent, DataCache _cache, Teacher _prof) {
-    dataCache = _cache;
-    teacher = _prof;
+  public AttendanceSheetDlg(Component _parent, DataCache _cache, Teacher _teacher) {
+    this.dataCache = _cache;
+    this.teacher = _teacher;
 
     String title = BundleUtil.getLabel("Menu.presence.file.label");
-    if (teacher != null) {
-      title += " " + teacher.toString();
+    if (_teacher != null) {
+      title += " " + _teacher.toString();
     }
 
     dialog = new JDialog((Frame) null, title, true);
@@ -76,8 +78,12 @@ public class AttendanceSheetDlg
     gb.insets = GridBagHelper.SMALL_INSETS;
 
     estabChoice = new EstabChoice(dataCache.getList(Model.Establishment));
-    startDate = new DateFrField();
-    endDate = new DateFrField();
+    Calendar cal = Calendar.getInstance();
+    cal.setTime(new Date());
+    cal.set(Calendar.DAY_OF_MONTH,1);
+    startDate = new DateFrField(cal.getTime());
+    cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
+    endDate = new DateFrField(cal.getTime());
     String e = BundleUtil.getLabel("Establishment.label");
     gb.add(new JLabel(e == null ? "" : e.substring(0, 4)), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(estabChoice, 1, 0, 1, 1, GridBagHelper.WEST);
@@ -101,8 +107,8 @@ public class AttendanceSheetDlg
     dialog.add(panel, BorderLayout.CENTER);
     dialog.add(buttons, BorderLayout.SOUTH);
     dialog.setSize(400, 200);
+    dialog.setLocationRelativeTo(_parent);
     dialog.pack();
-
     dialog.setVisible(true);
 
   }

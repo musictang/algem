@@ -1,7 +1,7 @@
 /*
- * @(#)RoomService.java 2.8.y 26/09/14
+ * @(#)RoomService.java 2.9.6 18/03/16
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -43,7 +43,7 @@ import net.algem.util.ui.MessagePopup;
  * Service class for room operations.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.y
+ * @version 2.9.6
  * @since 2.2.b
  */
 public class RoomService
@@ -71,18 +71,18 @@ public class RoomService
     if (roomIO.find("WHERE nom = '" + TableIO.escape(r.getName()) + "'").isEmpty()) {
       try {
         dc.setAutoCommit(false);
-        Person p = new Person();
-        p.setName(r.getName());
-        p.setType(Person.ROOM);
-        p.setFirstName("");
-        p.setGender("");
-        p.setImgRights(false);
-
-        ((PersonIO) DataCache.getDao(Model.Person)).insert(p);
-        r.setContact(new Contact(p));
+        if (r.getContact() == null) {
+          Person p = createDefaultContact(r.getName());
+          ((PersonIO) DataCache.getDao(Model.Person)).insert(p);
+          r.setContact(new Contact(p));
+        } 
         r.setPayer(new Person(r.getContact().getId()));
-        r.setEquipment(new Vector<Equipment>());
         roomIO.insert(r);
+        if (r.getEquipment() == null) {
+          r.setEquipment(new Vector<Equipment>());
+        } else {
+          roomIO.updateEquipment(r);
+        }
         dc.commit();
       } catch (SQLException sq) {
         dc.rollback();
@@ -95,6 +95,16 @@ public class RoomService
       String message = MessageUtil.getMessage("create.exception") + MessageUtil.getMessage("existing.room.warning");
       throw new RoomException(message);
     }
+  }
+  
+  private Person createDefaultContact(String name) {
+    Person p = new Person();
+    p.setName(name);
+    p.setType(Person.ROOM);
+    p.setFirstName("");
+    p.setGender("");
+    p.setImgRights(false);
+    return p;
   }
 
   /**

@@ -1,5 +1,5 @@
 /*
- * @(#)MailUtil.java	2.9.5 09/02/16
+ * @(#)MailUtil.java	2.9.6 17/03/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -42,7 +42,7 @@ import net.algem.util.model.Model;
  * Utility class for sending emails.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.5
+ * @version 2.9.6
  * @since 2.8.k 26/07/13
  */
 public class MailUtil {
@@ -116,7 +116,7 @@ public class MailUtil {
     StringBuilder bcc = new StringBuilder();
 
     // recherche de l'email du professeur
-    if (Schedule.COURSE == schedule.getType()) {
+    if (Schedule.COURSE == schedule.getType() || Schedule.WORKSHOP == schedule.getType() || Schedule.TRAINING == schedule.getType()) {
       String teacherEmail = memberService.getEmail(schedule.getIdPerson());
       if (teacherEmail != null && teacherEmail.indexOf('@') != -1) {// si contient @
         bcc.append(teacherEmail);

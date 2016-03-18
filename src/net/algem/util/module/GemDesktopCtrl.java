@@ -1,7 +1,7 @@
 /*
- * @(#)GemDesktopCtrl.java	2.9.4.14 16/12/15
+ * @(#)GemDesktopCtrl.java	2.9.6 18/03/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -69,7 +69,7 @@ import net.algem.util.ui.UIAdjustable;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.14
+ * @version 2.9.6
  * @since 1.0a 05/07/2002
  */
 public class GemDesktopCtrl
@@ -176,7 +176,11 @@ public class GemDesktopCtrl
       for (GemModuleSID sid : serList) {
         if (sid != null) {
           if (sid.getModuleClass().equals(PersonFileEditor.class.getSimpleName())) {
-            Contact c = ContactIO.findId(Integer.parseInt(sid.getSID()), dc);
+            int id = Integer.parseInt(sid.getSID());
+            if (id <= 0) {
+              continue;
+            }
+            Contact c = ContactIO.findId(id, dc);
             PersonFile pFile = new PersonFile(c);
             ((PersonFileIO) DataCache.getDao(Model.PersonFile)).complete(pFile);
             PersonFileEditor editor = new PersonFileEditor(pFile);

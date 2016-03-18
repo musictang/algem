@@ -1,7 +1,7 @@
 /*
- * @(#)RoomFileEditor.java 2.9.4.8 23/06/15
+ * @(#)RoomFileEditor.java 2.9.6 18/03/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -45,7 +45,7 @@ import net.algem.util.ui.*;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.8
+ * @version 2.9.6
  * @since 2.1.b
  */
 public class RoomFileEditor
@@ -81,6 +81,7 @@ public class RoomFileEditor
 
   /**
    * Gets room's id as string.
+   *
    * @return room id converted to string
    */
   @Override
@@ -254,11 +255,11 @@ public class RoomFileEditor
     } else if ("CancelEditingTimes".equals(arg)) {
       roomView.removeTab((DailyTimesEditor) src);
       miTimes.setEnabled(true);
-    } else if("Contact.change".equals(arg)) {
+    } else if ("Contact.change".equals(arg)) {
 //      System.out.println("modifier contact");
       PersonFileSearchCtrl contactBrowser = new PersonFileSearchCtrl(desktop, BundleUtil.getLabel("Contact.browser.label"), this);
-    contactBrowser.init();
-    desktop.addPanel("Contact", contactBrowser, GemModule.S_SIZE);
+      contactBrowser.init();
+      desktop.addPanel("Contact", contactBrowser, GemModule.S_SIZE);
     } else if (CloseableTab.CLOSE_CMD.equals(arg)) {// fermeture de l'onglet par le bouton de fermeture
       if (getClassName(OrderLineEditor.class).equals(src)) {
         btOrderLine.setEnabled(true);
@@ -288,8 +289,7 @@ public class RoomFileEditor
           ole.postEvent(evt);
         }
       }
-    }
-    else if (evt instanceof ContactSelectEvent) {
+    } else if (evt instanceof ContactSelectEvent) {
       Contact c = ((ContactSelectEvent) evt).getContact();
       room.setContact(c);
 //      System.out.println(c + "selected");
@@ -364,7 +364,6 @@ public class RoomFileEditor
    */
   private void updateRoom(Room r) {
     try {
-
       if (r.getId() == 0) {
         service.create(r);
         roomView.completeTabs(r);
