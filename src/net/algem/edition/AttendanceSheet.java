@@ -1,5 +1,5 @@
 /*
- * @(#)AttendanceSheet.java	2.9.6 16/03/16
+ * @(#)AttendanceSheet.java	2.9.6 22/03/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -61,7 +61,7 @@ public class AttendanceSheet
         extends Canvas
 {
 
-  private static final int HPAGES = 500;
+  private static final int PAGE_HEIGTH = 500;//page height
   private int margeh = 30;
   private int marged = 50;
   private DateRange dateRange;
@@ -115,6 +115,7 @@ public class AttendanceSheet
       parent = (Frame) c;
     }
     prn = tk.getPrintJob(parent, BundleUtil.getLabel("Attendance.sheet.label"), ja, pa);
+    System.out.println("prn.getPageDimension() " + prn.getPageDimension());
   }
 
   public void edit(DateRange _plage, int etabId) {
@@ -214,31 +215,26 @@ public class AttendanceSheet
   public void courseHeader(Course course, Room room, Vector<ScheduleObject> vpl) {
 
     g.setFont(normalFont);
-    //23092003 g.drawString(cours.getTitle()+" salle "+salle.getName()+" "+dataCache.getHeureDebutCours(cours.getId()).toString()+"-"+dataCache.getHeureFinCours(cours.getId()).toString(),25,ligne);
     Schedule plt = vpl.elementAt(0);
-    /* Modification 1.1a ajouter information plage horaire dans l'entete du cours collectif */
     /* LIBELLE DU COURS SUIVI de la salle et DE SON HORAIRE */
     String msg = "";
     if (course.isCollective()) {
-      msg = MessageUtil.getMessage("attendance.sheet.collective.label", new Object[] {
+      msg = MessageUtil.getMessage("attendance.sheet.collective.label", new Object[]{
         course.getTitle(),
         room.getName(),
         plt.getStart(),
         plt.getEnd()
       });
-//      g.drawString(course.getTitle() + " salle " + room.getName() + " " + plt.getStart() + "-" + plt.getEnd(), 25, line);
     } else { // pas de libelle horaire pour les cours individuels
-      msg = MessageUtil.getMessage("attendance.sheet.individual.label", new Object[] {
+      msg = MessageUtil.getMessage("attendance.sheet.individual.label", new Object[]{
         course.getTitle(),
         room.getName()
       });
-//      g.drawString(course.getTitle() + " salle " + room.getName()/* +" "+plt.getStart()+"-"+plt.getEnd() */, 25, line);
     }
     g.drawString(msg, 25, line);
     g.drawLine(25, line + 5, 800, line + 5);  // 15->5
-		/* HEADERS */
+    /* HEADERS */
     g.drawString(MessageUtil.getMessage("attendance.sheet.student.label"), 25, line + 15);// 25->15
-    //g.drawLine(25,ligne+20,800,ligne+20); // 30->20
     int col = 180;
     /* LIBELLE DES JOURS DE LA SEMAINE */
     for (int i = 0; i < vpl.size(); i++, col += 120) {
@@ -247,25 +243,20 @@ public class AttendanceSheet
       g.drawString(dayLabels[cal.get(Calendar.DAY_OF_WEEK)] + " " + pl.getDate().getDay(), col, line + 15);// 25 -> 15
     }
     g.drawLine(25, line + 20, 800, line + 20); // 30->20
-    //ligne+=30;
     line += 20;
   }
 
   public void detailCollective(Course course, Room room, DateRange _range, Vector<ScheduleObject> vpl) {
+    boolean np = false;
     int topl = line; // haut de colonne
     line += 10; // première ligne de texte
     g.setFont(smallFont);
     Schedule plt = vpl.elementAt(0);
-
-    //Vector<DossierPersonne> v = DossierPersonneIO.findMembersByPlanning(dataCache, plt.getDate(), plt.getStart(), plt.getEnd(), cours.getId(), plt.getIdPerson());
     Vector<PersonFile> v = EnrolmentService.findMembersByPlanning(plt);
     for (int i = 0; i < v.size(); i++) {
       PersonFile d = v.elementAt(i);
-      //
       int col = 160;
-      //
-      if (line + 5 > HPAGES) {
-        //col=160;
+      if (line + 5 > PAGE_HEIGTH) {
         for (int j = 0; j < 5; j++, col += 120) {
           g.drawLine(col, topl, col, line);
           g.drawLine(col + 10, topl, col + 10, line);// topl hauteur de départ
@@ -274,16 +265,14 @@ public class AttendanceSheet
         g = prn.getGraphics();
         g.setFont(normalFont);
         g.drawString(MessageUtil.getMessage("attendance.sheet.head1", new Object[]{dateRange.getStart(), dateRange.getEnd()}), 250, 40);
-        //g.drawString(moisLibel[cal.get(Calendar.MONTH)]+" "+cal.get(Calendar.YEAR),400,40);
-        //g.drawString(plage.getStart() + " au " + plage.getEnd(), 400, 40);
-        //g.drawString(moisLibel[mois-1]+" "+an,400,40);
         g.drawString(teacher.toString(), 250, 60);
-
-        //topl = ligne = mgh;
         line = mgh;
         topl = mgh + 5;
-
-        courseHeader(course, room, vpl);//topl = ligne;
+        if (i < v.size() - 1) {
+          courseHeader(course, room, vpl);
+        } else {
+          np = true;
+        }
         line += 10;
         g.setFont(smallFont);
       }
@@ -292,7 +281,9 @@ public class AttendanceSheet
       if (Algem.isFeatureEnabled("course_instruments")) {
         try {
           Instrument instrument = dataCache.getAtelierInstrumentsService().getAllocatedInstrument(plt.getIdAction(), d.getContact().getId());
-          if (instrument != null) instrumentName = " - " + instrument.getName();
+          if (instrument != null) {
+            instrumentName = " - " + instrument.getName();
+          }
         } catch (Exception e) {
           GemLogger.log(e.getMessage());
         }
@@ -302,36 +293,29 @@ public class AttendanceSheet
       col = 160;
       for (int j = 0; j < 5; j++, col += 120) {
         g.drawLine(col, line + 5, col + 10, line + 5);
-        //g.drawLine(col,ligne, col+10, ligne);
       }
       line += 15; // espacement inter noms
     }
-    //
-    line += 20; //espacement supplémentaire pour les éventuels nouveaux élèves
+    //espacement supplémentaire pour les éventuels nouveaux élèves
+    line += 20;
     g.drawLine(25, line, 800, line);
-    int col = 160;
-    for (int i = 0; i < 5; i++, col += 120) {
-      g.drawLine(col, topl, col, line);
-      g.drawLine(col + 10, topl, col + 10, line);
+    if (!np) {
+      int col = 160;
+      for (int i = 0; i < 5; i++, col += 120) {
+        g.drawLine(col, topl, col, line);
+        g.drawLine(col + 10, topl, col + 10, line);
+      }
     }
   }
 
   public void detailRange(Course course, Room room, Vector<ScheduleObject> vpl) throws SQLException {
-
+    boolean np = false; // new page
     int topl = line;
     g.setFont(smallFont);
 
     Schedule plt = vpl.elementAt(0);
-//    System.out.println("plt=" + plt);
-//    System.out.println("cours=" + cours);
-//    String query2 = " WHERE cours=" + cours.getId()
-//            + " AND jour='" + plt.getDate() + "'"
-//            + " AND prof=" + plt.getIdPerson()
-//            + " AND debut >= '" + plt.getStart() + "'"
-//            + " AND end <= '" + plt.getEnd() + "' ORDER BY debut";
     String query2 = "pg WHERE pg.idplanning = " + plt.getId() + " ORDER BY pg.debut";
     Vector<ScheduleRange> v = ScheduleRangeIO.find(query2, DataCache.getDataConnection());
-
     for (int i = 0; i < v.size(); i++) {
       ScheduleRange h = v.elementAt(i);
       Person p = ((PersonIO) DataCache.getDao(Model.Person)).findById(h.getMemberId());
@@ -339,10 +323,10 @@ public class AttendanceSheet
       if (p != null) {
         g.drawString(p.getFirstName() + " " + p.getName(), 25, line += 10);
       }
-      //ligne+=10;
       line += 20;
       g.drawLine(25, line, 800, line);
-      if (line + 5 > HPAGES) {
+      if (line + 5 > PAGE_HEIGTH) {
+
         int col = 160;
         for (int j = 0; j < 5; j++, col += 120) {
           g.drawLine(col, topl, col, line);
@@ -351,24 +335,28 @@ public class AttendanceSheet
         g = prn.getGraphics();
         g.setFont(normalFont);
         g.drawString(MessageUtil.getMessage("attendance.sheet.recipient.label"), 250, 40);
-        //g.drawString(moisLibel[cal.get(Calendar.MONTH)]+" "+cal.get(Calendar.YEAR),400,40);
         g.drawString(dateRange.getStart() + " au " + dateRange.getEnd(), 400, 40);
-        //g.drawString(moisLibel[mois-1]+" "+an,400,40);
         g.drawString(teacher.toString(), 250, 60);
-        //topl = ligne = mgh; // on repart en haut de page
         line = mgh;
         topl = mgh + 5;
-        courseHeader(course, room, vpl);
+
+        if (i < v.size() - 1) {
+          courseHeader(course, room, vpl);
+        } else {
+          np = true;
+        }
         g.setFont(smallFont);
       }
     }
 
-    line += 20; //espacement supplémentaire pour les éventuels nouveaux élèves
-    g.drawLine(25, line, 800, line);
-
-    int col = 160;
-    for (int i = 0; i < 5; i++, col += 120) {
-      g.drawLine(col, topl, col, line);
+    //espacement supplémentaire pour les éventuels nouveaux élèves
+    /*line += 20; 
+    g.drawLine(25, line, 800, line); */
+    if (!np) {
+      int col = 160;
+      for (int k = 0; k < 5; k++, col += 120) {
+        g.drawLine(col, topl, col, line);
+      }
     }
   }
 

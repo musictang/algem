@@ -21,15 +21,19 @@ FEUILLE DE PRESENCE
 - Les FEUILLES DE PRÉSENCE sont maintenant CLASSÉES DANS L'ORDRE CHRONOLOGIQUE DES COURS. Elles étaient auparavant classées d'abord par salle.
 - Les PLANNINGS ALTERNÉS PAR QUINZAINE SONT MAINTENANT CORRECTEMENT PRIS EN COMPTE (à condition qu'ils aient été planifiés en deux étapes). Auparavant, seul le nom de l'élève de la première semaine était visible en début de ligne.
 - Les dates d'impression de la feuille de présence sont maintenant automatiquement positionnées au premier et au dernier jour du mois courant.
+- Aménagements divers dans la présentation de la feuille de présence.
 
 FICHE GROUPE
 La fenêtre de recherche d'un contact est maintenant directement accessible en saisie après avoir cliqué sur l'icone de recherche dans le dialogue d'ajout de musicien (bouton Ajouter dans l'onglet "Musiciens"). Elle était auparavant masquée par le dialogue d'ajout.
 
 RECHERCHE CONTACT
-Les informations (organisation,nom, prénom,pseudo) déjà saisies dans la fenêtre de recherche sont maintenant récupérées après avoir cliqué sur le bouton Créer. Cela vous évite ainsi d'avoir à les resaisir après une recherche infructueuse.
+Les informations (organisation,nom, prénom,pseudo) déjà saisies dans la fenêtre de recherche sont maintenant récupérées après avoir cliqué sur le bouton Créer. Cela vous évite ainsi d'avoir à les resaisir en créant une nouvelle fiche (après une recherche infructueuse par exemple).
 
 FICHE SALLE
 Il est maintenant possible de modifier le contact par défaut d'une salle dès sa création. Cliquez pour cela sur Options -> Changer/Ajouter contact. L'onglet Equipement étant ouvert, il vous sera également possible de renseigner l'équipement de cette salle.
 Il fallait auparavant enregistrer la salle pour pouvoir modifier le contact par défaut.
 
+ONGLET INSCRIPTION
+Il est maintenant possible de changer la date de fin (et éventuellement la date de début) d'une formule ou d'un programme de formation. Sélectionnez la formule qui vous intéresse dans la liste des inscriptions de l'élève, cliquez droit et choisissez : Modifier période.
+Auparavant, si l'on inscrivait un élève à un cours ayant lieu après la date de fin d'inscription, la plage horaire de cet élève n'apparaissait pas dans le planning. En modifiant la date de fin de la formule, vous pourrez ainsi l'inscrire à des cours postérieurs à la date d'origine.
 

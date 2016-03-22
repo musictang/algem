@@ -1,7 +1,7 @@
 /*
- * @(#)MemberEnrolmentEditor.java 2.9.4.14 03/01/16
+ * @(#)MemberEnrolmentEditor.java 2.9.6 22/03/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -71,7 +71,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.14
+ * @version 2.9.6
  * @since 1.0b 06/09/2001
  */
 public class MemberEnrolmentEditor
@@ -87,6 +87,7 @@ public class MemberEnrolmentEditor
   private final static String MODULE_DEL = BundleUtil.getLabel("Module.delete.label");
   private final static String MODULE_STOP = BundleUtil.getLabel("Module.stop.label");
   private final static String MODULE_TIME_CHANGE = BundleUtil.getLabel("Module.time.change.label");
+  private final static String MODULE_DATE_CHANGE = BundleUtil.getLabel("Module.date.change.label");
   private final static String NONE_ENROLMENT = MessageUtil.getMessage("enrolment.empty.list");
   private final static String COURSE_DATE = BundleUtil.getLabel("Course.date.modification.label");
   private final static String PRINT_ORDER = GemCommand.PRINT_CMD;
@@ -100,7 +101,7 @@ public class MemberEnrolmentEditor
   private GemLabel title;
   private boolean loaded;
   private CourseEnrolmentDlg courseDlg;
-  private JMenuItem m1, m2, m3, m4, m5, m6, m7, m8, m9, m10;
+  private JMenuItem m1, m2, m3, m4, m5, m6, m7, m8, m9, m10,m11;
   /** New enrolment button. */
   private GemButton btEnrolment;
   private TreePath currentSelection;
@@ -130,6 +131,7 @@ public class MemberEnrolmentEditor
     popup.add(m6 = new JMenuItem(MODULE_DEL));
     popup.add(m8 = new JMenuItem (MODULE_STOP));
     popup.add(m9 = new JMenuItem (MODULE_TIME_CHANGE));
+    popup.add(m11 = new JMenuItem (MODULE_DATE_CHANGE));
     popup.addSeparator();
     popup.add(m10 = new JMenuItem(PRINT_ORDER));
 
@@ -143,6 +145,7 @@ public class MemberEnrolmentEditor
     m8.addActionListener(this);
     m9.addActionListener(this);
     m10.addActionListener(this);
+    m11.addActionListener(this);
 
     cellRenderer = new EnrolmentTreeCellRenderer();
     tree = new JTree(new DefaultMutableTreeNode(NONE_ENROLMENT));
@@ -206,6 +209,7 @@ public class MemberEnrolmentEditor
       m8.setEnabled(false);
       m9.setEnabled(false);
       m10.setEnabled(false);
+      m11.setEnabled(false);
     } else {
       m1.setEnabled(false);
       m2.setEnabled(false);
@@ -217,6 +221,7 @@ public class MemberEnrolmentEditor
       m8.setEnabled(false);
       m9.setEnabled(false);
       m10.setEnabled(true);
+      m11.setEnabled(false);
     }
   }
 
@@ -234,6 +239,7 @@ public class MemberEnrolmentEditor
     m8.setEnabled(true);
     m9.setEnabled(true);
     m10.setEnabled(false);
+    m11.setEnabled(true);
   }
 
   @Override
@@ -355,6 +361,8 @@ public class MemberEnrolmentEditor
       deleteModuleOrder();
     } else if (s.equals(MODULE_TIME_CHANGE)) {
       changeModuleTime();
+    } else if (s.equals(MODULE_DATE_CHANGE)) {
+      changeModuleDate();
     } else if (s.equals(GemCommand.PRINT_CMD)) {
       printOrder();
     }
@@ -730,6 +738,10 @@ public class MemberEnrolmentEditor
     }
   }
 
+  /**
+   * Changes the time length of the selected module.
+   * This modification is only valid if the pricing period is the hour.
+   */
   private void changeModuleTime() {
     Object[] path = currentSelection.getPath();
     if (!isModuleNode(path)) {
@@ -752,6 +764,30 @@ public class MemberEnrolmentEditor
       } catch (SQLException ex) {
         mo.setTotalTime(oldTime);
         GemLogger.log(ex.getMessage());
+        MessagePopup.warning(this, ex.getMessage());
+      }
+    }
+  }
+  
+  /**
+   * Changes the start date and/or the end date of the selected module.
+   */
+  private void changeModuleDate() {
+    Object[] path = currentSelection.getPath();
+    if (!isModuleNode(path)) {
+      return;
+    }
+    ModuleEnrolmentNode node = ((ModuleEnrolmentNode) path[path.length - 1]);
+    ModuleOrder mo = node.getModule();
+    ChangeModuleDateDlg dlg = new ChangeModuleDateDlg(desktop, BundleUtil.getLabel("Module.date.change.label"), true);
+    dlg.initUI(mo);
+    dlg.setVisible(true);
+    if (dlg.isValidation()) {
+      mo.setStart(dlg.getRange().getStart());
+      mo.setEnd(dlg.getRange().getEnd());
+      try {
+        service.update(mo);
+      } catch (SQLException ex) {
         MessagePopup.warning(this, ex.getMessage());
       }
     }

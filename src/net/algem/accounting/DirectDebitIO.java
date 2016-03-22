@@ -1,7 +1,7 @@
 /*
- * @(#)DirectDebitIO.java 2.9.3.2 13/03/15
+ * @(#)DirectDebitIO.java 2.9.6 22/03/16
  * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -37,7 +37,7 @@ import net.algem.util.model.TableIO;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.9.3.2
+ * @version 2.9.6
  * @since 2.8.r 08/01/14
  */
 public class DirectDebitIO
@@ -184,24 +184,25 @@ public class DirectDebitIO
   }
 
   /**
-   * Search the set of all payers will be charged to the next {@literal datePrl}.
+   * Search all the players who will be charged on {@literal date}.
    *
-   * @param school
-   * @param datePrl
-   * @param seqType
+   * @param school default school
+   * @param date date of payment
+   * @param seqType sequence type
    * @return a result set
    * @throws SQLException
    */
-  ResultSet getDirectDebit(int school, DateFr datePrl, Enum seqType) throws SQLException {
+  ResultSet getDirectDebit(int school, DateFr date, Enum seqType) throws SQLException {
     String query = "SELECT e.payeur, e.montant, e.analytique FROM " + OrderLineIO.TABLE + " e, prlsepa p"
             + " WHERE e.ecole = '" + school
             + "' AND e.reglement = 'PRL"
             + "' AND e.paye = 't"
-            + "' AND e.echeance = '" + datePrl.toString()
+            + "' AND e.transfert = 'f"
+            + "' AND e.echeance = '" + date.toString()
             + "' AND e.payeur = p.payeur"
             + " AND p.seqtype != '" + DDSeqType.LOCK.name() + "' AND p.seqtype = '" + seqType.name()
             + "' ORDER BY e.payeur, e.echeance";
-// and p.signature between debut année et fin année ??? (restreindre à l'année scolaire)
+
     return dc.executeQuery(query);
 
   }

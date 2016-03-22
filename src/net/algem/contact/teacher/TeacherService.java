@@ -1,5 +1,5 @@
 /*
- * @(#)TeacherService.java	2.9.6 15/03/16
+ * @(#)TeacherService.java	2.9.6 21/03/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -94,7 +94,8 @@ public class TeacherService
             + " AND p.jour<='" + end + "'"
             + " AND p.lieux = s.id AND s.etablissement=" + estab
             + " AND p.action = a.id"
-            //              + " ORDER BY p.lieux,p.jour,p.debut,a.cours"; // (2.9.5)
+            + " AND (SELECT count(idplanning) FROM " + ScheduleRangeIO.TABLE + " WHERE idplanning = p.id) > 0" // filter if schedule is empty
+            // + " ORDER BY p.lieux,p.jour,p.debut,a.cours"; // (2.9.5)
             + " ORDER BY extract(dow FROM p.jour),p.jour,p.debut";
     return ScheduleIO.findObject(query, dc);
   }

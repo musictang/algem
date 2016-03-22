@@ -1,7 +1,7 @@
 /*
- * @(#)DirectDebitService.java	2.9.1 11/12/14
+ * @(#)DirectDebitService.java	2.9.6 22/03/16
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -36,7 +36,7 @@ import net.algem.util.MessageUtil;
  * Direct debit service.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.9.6
  * @since 2.8.r 24/12/13
  */
 public class DirectDebitService
@@ -61,8 +61,8 @@ public class DirectDebitService
     return INSTANCE;
   }
 
-  ResultSet getDirectDebit(int school, DateFr datePrl, Enum seqType) throws SQLException {
-    return dao.getDirectDebit(school, datePrl, seqType);
+  ResultSet getDirectDebit(int school, DateFr date, Enum seqType) throws SQLException {
+    return dao.getDirectDebit(school, date, seqType);
   }
 
   ResultSet getTransaction(int payer) throws SQLException {
