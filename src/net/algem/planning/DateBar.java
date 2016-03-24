@@ -1,7 +1,7 @@
 /*
- * @(#)DateBar.java	2.9.4.13 10/11/15
+ * @(#)DateBar.java	2.9.6 24/03/16
  * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -39,7 +39,7 @@ import net.algem.util.ui.GemPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.9.6
  */
 public class DateBar
         extends GemPanel
@@ -124,15 +124,8 @@ public class DateBar
   
   private void colorSelected(int idx) {
     ButtonBgHandler.reset(monthSelected);
-//    if (monthSelected != null) {
-//      monthSelected.setBackground(null);
-//      monthSelected.setContentAreaFilled(true);
-//      monthSelected.setOpaque(false);
-//    }
     monthSelected = monthButtons[idx];
     ButtonBgHandler.decore(monthSelected);
-//    monthSelected.setContentAreaFilled(false);
-//    monthSelected.setOpaque(true);
     monthSelected.setBackground(CALENDAR_BAR_SELECTED);
   }
 }

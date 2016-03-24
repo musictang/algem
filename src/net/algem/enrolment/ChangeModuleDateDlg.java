@@ -1,5 +1,5 @@
 /*
- * @(#)ChangeModuleDateDlg.java 2.9.6 22/03/16
+ * @(#)ChangeModuleDateDlg.java 2.9.6 24/03/16
  * 
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  * 
@@ -24,9 +24,6 @@ package net.algem.enrolment;
 import java.awt.BorderLayout;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import net.algem.planning.DateRange;
@@ -46,13 +43,9 @@ import net.algem.util.ui.GridBagHelper;
  * @since 2.9.6 22/03/16
  */
 public class ChangeModuleDateDlg 
-        extends JDialog
-        implements ActionListener
+        extends AbstractEditDlg
 {
   private DateRangePanel origPanel, datePanel;
-  private GemButton btOk;
-  private GemButton btCancel;
-  private boolean validation;
   private GemDesktop desktop;
   
   public ChangeModuleDateDlg(GemDesktop desktop, String title, boolean modal) {
@@ -93,27 +86,4 @@ public class ChangeModuleDateDlg
     return new DateRange(datePanel.getStartFr(), datePanel.getEndFr());
   }
   
-  @Override
-  public void actionPerformed(ActionEvent evt) {
-    validation = (evt.getSource() == btOk);
-    close();
-  }
-
-  /**
-   * Gets the state of validation.
-   *
-   * @return true if validation
-   */
-  public boolean isValidation() {
-    return validation;
-  }
-
-  /**
-   *  Closes this dialog.
-   */
-  private void close() {
-    setVisible(false);
-    dispose();
-  }
-
 }

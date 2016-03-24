@@ -1,7 +1,7 @@
 /*
- * @(#)CourseInfoDlg.java	2.8.t 15/04/14
+ * @(#)CourseInfoDlg.java	2.9.6 24/03/16
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -25,13 +25,11 @@ import java.awt.BorderLayout;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.sql.SQLException;
 import java.util.Date;
 import javax.swing.BorderFactory;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import net.algem.config.GemParam;
 import net.algem.config.GemParamChoice;
@@ -53,22 +51,18 @@ import net.algem.util.ui.GridBagHelper;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.9.6
  * @since 2.8.a 26/03/2013
  */
 public class CourseInfoDlg
-  extends JDialog
-  implements ActionListener
+  extends AbstractEditDlg
 {
   private GemParamChoice code;
   private HourField hf;
-  private GemButton okBt;
-  private GemButton cancelBt;
-  private boolean validation;
   private DateRangePanel datePanel;
 
-  public CourseInfoDlg(GemDesktop desktop, boolean modal, DateFr date) {
-    super(desktop.getFrame(), modal);
+  public CourseInfoDlg(GemDesktop desktop, boolean modal, String title, DateFr date) {
+    super(desktop.getFrame(), title, modal);
     code = new GemParamChoice(desktop.getDataCache().getList(Model.CourseCode));
     code.setSelectedIndex(0);
     if (date != null) {
@@ -108,12 +102,12 @@ public class CourseInfoDlg
     gb.add(code, 1,1,1,1, GridBagHelper.WEST);
     gb.add(hf, 1,2,1,1, GridBagHelper.WEST);
 
-    okBt = new GemButton(GemCommand.OK_CMD);
-    cancelBt = new GemButton(GemCommand.CANCEL_CMD);
-    okBt.addActionListener(this);
-    cancelBt.addActionListener(this);
-    buttons.add(okBt);
-    buttons.add(cancelBt);
+    btOk = new GemButton(GemCommand.OK_CMD);
+    btCancel = new GemButton(GemCommand.CANCEL_CMD);
+    btOk.addActionListener(this);
+    btCancel.addActionListener(this);
+    buttons.add(btOk);
+    buttons.add(btCancel);
     add(infoPanel, BorderLayout.CENTER);
     add(buttons, BorderLayout.SOUTH);
     setSize(GemModule.XXS_SIZE);
@@ -122,14 +116,10 @@ public class CourseInfoDlg
     setVisible(true);
   }
 
-  public boolean isValidation() {
-    return validation;
-  }
-
   @Override
   public void actionPerformed(ActionEvent e) {
     Object src = e.getSource();
-    if (src == okBt) {
+    if (src == btOk) {
       validation = check();
     } else {
       validation = false;
@@ -150,11 +140,6 @@ public class CourseInfoDlg
 
   DateFr getDate() {
     return datePanel.get();
-  }
-
-  public void close() {
-    setVisible(false);
-    dispose();
   }
 
   public boolean check() {

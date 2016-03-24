@@ -12,7 +12,7 @@ CORRECTIFS
 * La police du calendrier n'était pas très élégante. Elle bénéficie maintenant d'un lissage.
 Rappel : on ouvre le calendrier en cliquant sur l'icone correspondante dans un champ date ou en appuyant sur F1 dans un champ date.
 * La décoration et l'affichage des boutons du planning jour sont mieux pris en charge dans les thèmes autres que celui par défaut.
-* La couleur des jours et des mois sélectionnés dans la barre de navigation du planning est maintenant prise en compte par le thème GTK.
+* La couleur des jours et des mois sélectionnés dans la barre de navigation du planning est maintenant prise en compte par les thème GTK et Mac OS X.
 * Meilleure gestion des marges pour les boutons du thème Nimbus.
 
 AMELIORATIONS
@@ -38,5 +38,5 @@ IL EST MAINTENANT POSSIBLE DE CHANGER LA DATE DE FIN (et éventuellement la date
 Auparavant, si l'on inscrivait un élève à un cours ayant lieu après la date de fin d'inscription, la plage horaire de cet élève n'apparaissait pas dans le planning. En modifiant la date de fin de la formule, vous pourrez ainsi l'inscrire à des cours postérieurs à la date d'origine.
 
 PRELEVEMENTS
-- La validité d'un Iban n'était pas toujours correctement détectée lors de l'export du fichier bancaire de prélèvement. La détection est maintenant identique à celle qui se fait dans le rib, par calcul de la clé.
+- La validité d'un IBAN n'était pas toujours correctement détectée lors de l'export du fichier bancaire de prélèvement. La détection est maintenant identique à celle qui se fait dans le rib, par calcul de la clé.
 - L'export du fichier bancaire de prélèvement ne faisait pas de différence entre les lignes d'échéance marquées transférées et celles qui ne l'étaient pas, ce qui pouvait conduire à une différence de décompte entre le fichier de prélèvement (Compta->Prélèvement->Exporter) et le fichier de transfert (Compta->Transfert échéancier).

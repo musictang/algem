@@ -1,5 +1,5 @@
 /*
- * @(#)ButtonBgHandler.java 2.9.6 16/03/16
+ * @(#)ButtonBgHandler.java 2.9.6 24/03/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -42,12 +42,13 @@ public class ButtonBgHandler
       case "Metal":
       case "JGoodies Plastic":
       case "JGoodies Plastic 3D":
+      case "Mac OS X":
         bt.setOpaque(true);
         break;
       case "Windows":
       case "Windows Classic":
       case "GTK+":
-      case  "GTK look and feel":
+      case "GTK look and feel":
         //windows L&F workaround
         bt.setContentAreaFilled(false);
         bt.setOpaque(true);

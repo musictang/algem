@@ -1,5 +1,5 @@
 /*
- * @(#)DateDayBar.java	2.9.6 17/03/16
+ * @(#)DateDayBar.java	2.9.6 24/03/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -250,7 +250,7 @@ public class DateDayBar
     switch (lafName) {
       case "Nimbus":
       case "GTK+":
-      case "GTK look and feel":
+      case "GTK look and feel":      
       case "Acryl":
       case "Aero":
       case "Aluminium":
@@ -263,6 +263,7 @@ public class DateDayBar
         break;
       case "CDE/Motif":
       case "Fast":
+      case "Mac OS X":
         b = BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(0, 0, 1, 1, Color.GRAY),
                 BorderFactory.createEmptyBorder(4, 3, 4, 3));

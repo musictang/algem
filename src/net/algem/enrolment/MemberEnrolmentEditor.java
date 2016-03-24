@@ -1,5 +1,5 @@
 /*
- * @(#)MemberEnrolmentEditor.java 2.9.6 22/03/16
+ * @(#)MemberEnrolmentEditor.java 2.9.6 24/03/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -411,7 +411,7 @@ public class MemberEnrolmentEditor
     }
     ModuleOrder mo = ((ModuleEnrolmentNode) path[i - 1]).getModule();
 
-    CourseInfoDlg dlg = new CourseInfoDlg(desktop, true, null);
+    CourseInfoDlg dlg = new CourseInfoDlg(desktop, true, BundleUtil.getLabel("Course.add.label"), null);
     if (!dlg.isValidation()) {
       return;
     }
@@ -502,7 +502,7 @@ public class MemberEnrolmentEditor
       return;
     }
     DateFr oldDate = cc.getDateStart();
-    CourseInfoDlg dlg = new CourseInfoDlg(desktop, true, oldDate);
+    CourseInfoDlg dlg = new CourseInfoDlg(desktop, true, BundleUtil.getLabel("Course.date.modification.label"), oldDate);
 
     if (dlg.getDate() != null && !dlg.getDate().equals(oldDate)) {
       cc.setDateStart(dlg.getDate());

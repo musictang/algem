@@ -1,7 +1,7 @@
 /*
- * @(#)ChangeModuleTimeDlg.java	2.9.6 22/03/16
+ * @(#)ChangeModuleTimeDlg.java	2.9.6 24/03/16
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -23,10 +23,7 @@ package net.algem.enrolment;
 import java.awt.BorderLayout;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.text.ParseException;
-import javax.swing.JDialog;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -48,15 +45,11 @@ import net.algem.util.ui.GridBagHelper;
  * @since 2.9.1 14/11/14
  */
 public class ChangeModuleTimeDlg
-        extends JDialog
-        implements ActionListener
+        extends AbstractEditDlg
 {
 
   private final JFormattedTextField orig;
   private final JFormattedTextField hours;
-  private boolean validation;
-  private final GemButton btOk;
-  private final GemButton btCancel;
 
   public ChangeModuleTimeDlg(GemDesktop desktop, String title) {
     super(desktop.getFrame(), title, true);
@@ -112,29 +105,6 @@ public class ChangeModuleTimeDlg
       GemLogger.log(ex.getMessage());
     }
     return Hour.decimalToMinutes(((Number) hours.getValue()).doubleValue());
-  }
-
-  @Override
-  public void actionPerformed(ActionEvent evt) {
-    validation = (evt.getSource() == btOk);
-    close();
-  }
-
-  /**
-   * Gets the state of validation.
-   *
-   * @return true if validation
-   */
-  public boolean isValidation() {
-    return validation;
-  }
-
-  /**
-   *  Closes this dialog.
-   */
-  private void close() {
-    setVisible(false);
-    dispose();
   }
 
 }
