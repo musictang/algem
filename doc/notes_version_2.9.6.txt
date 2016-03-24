@@ -30,10 +30,13 @@ RECHERCHE CONTACT
 Les informations (organisation,nom, prénom,pseudo) déjà saisies dans la fenêtre de recherche sont maintenant récupérées après avoir cliqué sur le bouton Créer. Cela vous évite ainsi d'avoir à les resaisir en créant une nouvelle fiche (après une recherche infructueuse par exemple).
 
 FICHE SALLE
-Il est maintenant possible de modifier le contact par défaut d'une salle dès sa création. Cliquez pour cela sur Options -> Changer/Ajouter contact. L'onglet Equipement étant ouvert, il vous sera également possible de renseigner l'équipement de cette salle.
+IL EST MAINTENANT POSSIBLE DE MODIFIER LE CONTACT PAR DÉFAUT D'UNE SALLE DÈS SA CRÉATION. Cliquez pour cela sur Options -> Changer/Ajouter contact. L'onglet Equipement étant ouvert, il vous sera également possible de renseigner l'équipement de cette salle.
 Il fallait auparavant enregistrer la salle pour pouvoir modifier le contact par défaut.
 
 ONGLET INSCRIPTION
-Il est maintenant possible de changer la date de fin (et éventuellement la date de début) d'une formule ou d'un programme de formation. Sélectionnez la formule qui vous intéresse dans la liste des inscriptions de l'élève, cliquez droit et choisissez : Modifier période.
+IL EST MAINTENANT POSSIBLE DE CHANGER LA DATE DE FIN (et éventuellement la date de début) D'UNE FORMULE OU D'UN PROGRAMME DE FORMATION. Sélectionnez la formule qui vous intéresse dans la liste des inscriptions de l'élève, cliquez droit et choisissez : Modifier période.
 Auparavant, si l'on inscrivait un élève à un cours ayant lieu après la date de fin d'inscription, la plage horaire de cet élève n'apparaissait pas dans le planning. En modifiant la date de fin de la formule, vous pourrez ainsi l'inscrire à des cours postérieurs à la date d'origine.
 
+PRELEVEMENTS
+- La validité d'un Iban n'était pas toujours correctement détectée lors de l'export du fichier bancaire de prélèvement. La détection est maintenant identique à celle qui se fait dans le rib, par calcul de la clé.
+- L'export du fichier bancaire de prélèvement ne faisait pas de différence entre les lignes d'échéance marquées transférées et celles qui ne l'étaient pas, ce qui pouvait conduire à une différence de décompte entre le fichier de prélèvement (Compta->Prélèvement->Exporter) et le fichier de transfert (Compta->Transfert échéancier).

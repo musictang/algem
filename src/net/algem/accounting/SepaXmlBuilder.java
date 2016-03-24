@@ -1,7 +1,7 @@
 /*
- * @(#)SepaXmlBuilder.java	2.8.s 17/02/14
- * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * @(#)SepaXmlBuilder.java	2.9.6 23/03/16
+ *
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.accounting;
 
@@ -37,7 +37,7 @@ import net.algem.util.TextUtil;
  * Xml builder for creating documents in pain.008.001.02 standard scheme.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.s
+ * @version 2.9.6
  * @see <a href="http:\\www.iso20022.org">iso20022</a>
  * @since 2.8.r 24/12/13
  *
@@ -287,7 +287,7 @@ public class SepaXmlBuilder
     sb.append("<Dbtr><Nm>").append(mandate.getName()).append("</Nm></Dbtr>");
     indent(sb, 4);
     String iban = mandate.getIban();
-    if (iban != null && iban.length() > 0 && ibanPattern.matcher(iban).matches()) {
+    if (iban != null && iban.length() > 0 && ibanPattern.matcher(iban).matches() && BankUtil.isIbanOk(iban)) {
       sb.append("<DbtrAcct><Id><IBAN>").append(mandate.getIban().toUpperCase()).append("</IBAN></Id></DbtrAcct>");
     } else {
       addLogInfo(mandate.getIdper(), " -> IBAN");
