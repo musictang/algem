@@ -1,0 +1,3 @@
+2.9.7
+CORRECTIFS
+* Lorsqu'une planification administrative présentait des conflits et qu'aucune date planifiée n'était valide, le message "Vérifiez votre zone de vacances" s'affichait en lieu et place de la fenêtre de vérification des conflits.

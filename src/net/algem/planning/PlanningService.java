@@ -1,7 +1,7 @@
 /*
- * @(#)PlanningService.java	2.9.5 09/02/16
+ * @(#)PlanningService.java	2.9.7 29/03/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -42,7 +42,7 @@ import net.algem.util.ui.MessagePopup;
  * Service class for planning.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.5
+ * @version 2.9.7
  * @since 2.4.a 07/05/12
  */
 public class PlanningService
@@ -197,7 +197,9 @@ public class PlanningService
               a.setDates(dates);
               plan(a, Schedule.ADMINISTRATIVE);
             } else {
-              throw new PlanningException(MessageUtil.getMessage("administrative.schedule.ctrl.no.scheduled.dates"));
+              if (allConflicts.isEmpty()) {
+                throw new PlanningException(MessageUtil.getMessage("administrative.schedule.ctrl.no.scheduled.dates"));
+              }
             }
           }
           return null;
