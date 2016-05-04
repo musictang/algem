@@ -1,7 +1,7 @@
 /*
- * @(#)CourseScheduleCtrl.java	2.9.4.6 02/06/15
+ * @(#)CourseScheduleCtrl.java	2.9.7 02/05/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -39,7 +39,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.6
+ * @version 2.9.7
  * @since 1.0a 07/07/1999
  */
 public class CourseScheduleCtrl
@@ -108,7 +108,7 @@ public class CourseScheduleCtrl
 
   @Override
   public boolean next() {
-
+    desktop.setWaitCursor();
     select(step + 1);
     if (step == 1) {
       Action action = null;
@@ -116,6 +116,7 @@ public class CourseScheduleCtrl
       try {
         action = validate(av);
       } catch (PlanningException pe) {
+        desktop.setDefaultCursor();
         JOptionPane.showMessageDialog(this, pe.getMessage(), t, JOptionPane.ERROR_MESSAGE);
         return prev();
       }
@@ -130,6 +131,7 @@ public class CourseScheduleCtrl
         btNext.setText("");//bouton validation
       }
     }
+    desktop.setDefaultCursor();
     return true;
   }
 
@@ -243,7 +245,7 @@ public class CourseScheduleCtrl
   }
 
   public boolean save() {
-
+    desktop.setWaitCursor();
     for (Action a : actions) {
       if (a.getDates().isEmpty()) {
         MessagePopup.error(this, MessageUtil.getMessage("empty.planning.create.warning"));
@@ -252,8 +254,10 @@ public class CourseScheduleCtrl
     }
     try {
       service.plan(actions);
+      desktop.setDefaultCursor();
       return true;
     } catch (PlanningException ex) {
+      desktop.setDefaultCursor();
       MessagePopup.warning(this,
               MessageUtil.getMessage("planning.course.create.exception") + " :\n" + ex.getMessage());
       return false;

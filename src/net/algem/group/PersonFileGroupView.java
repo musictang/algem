@@ -1,7 +1,7 @@
 /*
- * @(#)PersonFileGroupView.java 2.9.4.6 02/06/15
+ * @(#)PersonFileGroupView.java 2.9.7 03/05/16
  * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -33,7 +33,7 @@ import net.algem.util.ui.ListCtrl;
  * Groups tab in person file.
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.6
+ * @version 2.9.7
  */
 public class PersonFileGroupView
         extends FileTab
@@ -51,10 +51,12 @@ public class PersonFileGroupView
 
       @Override
       public void mouseClicked(MouseEvent e) {
+        desktop.setWaitCursor();
         Group g = ((PersonFileGroupListCtrl) groupList).getGroup();
         if (g != null && g.getId() > 0) {
           loadModule(g);
         }
+        desktop.setDefaultCursor();
       }
     });
     add(groupList, BorderLayout.NORTH);

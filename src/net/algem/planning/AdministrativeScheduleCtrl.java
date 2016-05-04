@@ -1,7 +1,7 @@
 /*
- * @(#)AdministrativeScheduleCtrl.java	2.9.4.3 23/04/15
+ * @(#)AdministrativeScheduleCtrl.java	2.9.7 02/05/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -58,7 +58,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.3
+ * @version 2.9.7
  * @since 2.9.4.0 18/03/15
  */
 public class AdministrativeScheduleCtrl
@@ -200,11 +200,13 @@ public class AdministrativeScheduleCtrl
       MessagePopup.warning(this, MessageUtil.getMessage("no.schedule.to.plan"));
       return;
     }
+    desktop.setWaitCursor();
     try {
       List<ScheduleTestConflict> conflicts = service.planAdministrative(actions);
       desktop.postEvent(new ModifPlanEvent(this,
         actions.get(0).getDateStart(),
         actions.get(actions.size() - 1).getDateEnd()));
+      desktop.setDefaultCursor();
       if (conflicts.size() > 0) {
         ConflictListDlg cfd = new ConflictListDlg(
           desktop.getFrame(),
@@ -220,6 +222,7 @@ public class AdministrativeScheduleCtrl
       } 
       tableView.clear();
     } catch (PlanningException e) {
+      desktop.setDefaultCursor();
       MessagePopup.warning(this, e.getMessage());
       GemLogger.log(e.getMessage());
     }

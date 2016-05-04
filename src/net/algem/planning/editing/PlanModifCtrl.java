@@ -1,7 +1,7 @@
 /*
- * @(#)PlanModifCtrl.java	2.9.5 26/02/16
+ * @(#)PlanModifCtrl.java	2.9.7 03/05/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -64,7 +64,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.5
+ * @version 2.9.7
  * @since 1.0b 05/07/2002 lien salle et groupe
  */
 public class PlanModifCtrl
@@ -248,8 +248,6 @@ public class PlanModifCtrl
   public void actionPerformed(ActionEvent evt) {
 
     String arg = evt.getActionCommand();
-
-    desktop.setWaitCursor();
     try {
       if (arg.equals("ChangeRoom")) {
         dialogChangeRoom();
@@ -314,9 +312,7 @@ public class PlanModifCtrl
       MessagePopup.warning(desktop.getFrame(), ex.getMessage());
     } catch (SQLException sqe) {
       GemLogger.log(sqe.getMessage());
-    } finally {
-      desktop.setDefaultCursor();
-    }
+    } 
   }
 
   private void dialogAtelierInstruments() {
@@ -1068,4 +1064,5 @@ public class PlanModifCtrl
         return BundleUtil.getLabel("Schedule.default.modification.label");
     }
   }
+  
 }

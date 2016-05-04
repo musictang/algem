@@ -261,14 +261,14 @@ public class AttendanceSheet
           g.drawLine(col, topl, col, line);
           g.drawLine(col + 10, topl, col + 10, line);// topl hauteur de départ
         }
-        g.dispose();
+        g.dispose();//new page
         g = prn.getGraphics();
         g.setFont(normalFont);
         g.drawString(MessageUtil.getMessage("attendance.sheet.head1", new Object[]{dateRange.getStart(), dateRange.getEnd()}), 250, 40);
         g.drawString(teacher.toString(), 250, 60);
         line = mgh;
         topl = mgh + 5;
-        if (i < v.size() - 1) {
+        if (i <= v.size() - 1) {
           courseHeader(course, room, vpl);
         } else {
           np = true;

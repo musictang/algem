@@ -68,9 +68,8 @@ public class ScheduleDispatchController implements SubscriptionPatternDialog.OnS
             table1.setModel(dataModel);
         } catch (Exception e) {
             throw new RuntimeException(e);
-        }
-
-
+        } 
+        
         okButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

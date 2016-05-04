@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleDetailCtrl.java 2.9.6 16/03/16
+ * @(#)ScheduleDetailCtrl.java 2.9.7 02/05/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -66,7 +66,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.6
+ * @version 2.9.7
  * @since 1.0a 07/07/1999
  */
 public class ScheduleDetailCtrl
@@ -387,7 +387,7 @@ public class ScheduleDetailCtrl
     } catch (SQLException ex) {
       GemLogger.logException(ex);
     }
-    Vector<GemMenuButton> modifButtons = modifCtrl.getMenuBooking();
+    Vector<GemMenuButton> modifButtons = modifCtrl.getMenuStudio(Schedule.STUDIO);
     for (int i = 0; i < modifButtons.size(); i++) {
       menuPanel.add((GemMenuButton) modifButtons.elementAt(i));
     }

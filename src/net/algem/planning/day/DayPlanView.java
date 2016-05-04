@@ -190,7 +190,7 @@ public class DayPlanView
 
     Hour first = new Hour(H_START);
     Hour last = new Hour("24:00");
-
+    
     if (start != null && start.toMinutes() > H_START) {
       dummy.setStart(first);
       dummy.setEnd(start);
@@ -201,7 +201,7 @@ public class DayPlanView
       dummy.setEnd(last);
       drawRange(col, dummy, CLOSED_COLOR, step_x);
     }
-  }
+    }
 
   private void drawGrid() {
     int x = LEFT_MARGIN + (step_x / 2) + 1;

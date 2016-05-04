@@ -1,7 +1,7 @@
 /*
- * @(#)ItemCtrl.java 2.6.a 01/08/2012
+ * @(#)ItemCtrl.java 2.9.7 03/05/16
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -32,7 +32,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  * Item mask edition.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.9.7
  * @since 2.3.a 03/02/12
  */
 public class ItemCtrl
@@ -117,14 +117,15 @@ public class ItemCtrl
         MessagePopup.warning(view, MessageUtil.getMessage("invoice.item.create.exception")+"\n"+ex.getMessage());
         return false;
       }
-    }
-    try {
-      service.update(a);
-      old = a;
-      gemListener.postEvent(new ItemUpdateEvent(this, a));
-    } catch (SQLException ex) {
-      MessagePopup.warning(view, MessageUtil.getMessage("invoice.item.update.exception")+"\n"+ex.getMessage());
-      return false;
+    } else {
+      try {
+        service.update(a);
+        old = a;
+        gemListener.postEvent(new ItemUpdateEvent(this, a));
+      } catch (SQLException ex) {
+        MessagePopup.warning(view, MessageUtil.getMessage("invoice.item.update.exception")+"\n"+ex.getMessage());
+        return false;
+      }
     }
     return cancel();
   }
