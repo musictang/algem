@@ -1,7 +1,7 @@
 /*
- * @(#)WebSiteIO.java	2.9.4.6 03/06/15
+ * @(#)WebSiteIO.java	2.9.7 12/05/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -29,7 +29,7 @@ import net.algem.util.model.TableIO;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.6
+ * @version 2.9.7
  */
 public class WebSiteIO
         extends TableIO
@@ -68,7 +68,10 @@ public class WebSiteIO
     String query = "UPDATE " + TABLE
             + " SET url = '" + s.getUrl()
             + "', type = " + s.getType()
-            + " WHERE idx = " + idx + " AND idper = " + s.getIdper() + " AND ptype = " + s.getPtype();
+            + " WHERE idx = " + idx + " AND idper = " + s.getIdper();
+    if (s.getPtype() != 4) { // ptype room bug
+      query += " AND ptype = " + s.getPtype();
+    }
 
     dc.executeUpdate(query);
   }

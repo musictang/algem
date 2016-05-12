@@ -1,7 +1,7 @@
 /*
- * @(#)ExportCiel.java	2.8.x.3 24/09/14
+ * @(#)ExportCiel.java	2.9.7 10/05/16
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -39,7 +39,7 @@ import net.algem.util.ui.MessagePopup;
  * Utility class for exporting lines to CIEL accounting software.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.x.3
+ * @version 2.9.7
  * @since 2.8.r 13/12/13
  */
 public class ExportCiel 
@@ -64,6 +64,7 @@ public class ExportCiel
   public void export(String path, Vector<OrderLine> orderLines, String codeJournal, Account documentAccount) throws IOException {
     int total = 0;
     String number = (documentAccount == null) ? "" : documentAccount.getNumber();
+    String label = (documentAccount == null) ? "" : documentAccount.getLabel();
     OrderLine e = null;
     PrintWriter out = new PrintWriter(new FileWriter(path));
     String mouvement = "1";
@@ -99,7 +100,7 @@ public class ExportCiel
               + dc // débit
               + TextUtil.padWithTrailingSpaces(null, 12) // numéro pointage
               + TextUtil.padWithTrailingSpaces(null, 6) // code analytique
-              + TextUtil.padWithTrailingSpaces(TextUtil.truncate(documentAccount.getLabel(), 34), 34) // libellé compte
+              + TextUtil.padWithTrailingSpaces(TextUtil.truncate(label, 34), 34) // libellé compte // todo null
               + "O" // lettre O pour Euro = Oui
               + version
               + (char) 13);

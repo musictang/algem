@@ -1,7 +1,7 @@
 /*
- * @(#)WebSite.java	2.9.4.13 05/11/15
+ * @(#)WebSite.java	2.9.7 12/05/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -23,7 +23,7 @@ package net.algem.contact;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.9.7
  * @since 2.0r
  */
 public class WebSite
@@ -128,7 +128,8 @@ public class WebSite
   }
 
   public boolean equiv(WebSite s) {
-    return idx == s.getIdx() && url.equals(s.getUrl()) && type == s.getType();
+    // s.getUrl() may not include prefixed protocol (http://, http://www.)
+    return idx == s.getIdx() && url.endsWith(s.getUrl()) && type == s.getType();
   }
 
   @Override
