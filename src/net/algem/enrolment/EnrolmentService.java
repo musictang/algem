@@ -373,7 +373,7 @@ public class EnrolmentService
 //    return ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findByIdOrder(query, false);
   }
 
-  Vector<Musician> findCourseMembers(int course) throws SQLException {
+  Vector<Musician> findCourseMembers(int course, Date start, Date end) throws SQLException {
 
     Vector<Musician> vm = new Vector<Musician>();
 
@@ -386,7 +386,9 @@ public class EnrolmentService
             + InstrumentIO.PERSON_INSTRUMENT_TABLE + " pi"
             + " WHERE p.id = e.idper AND cc.idaction = a.id AND a.cours = " + course
             + " AND c.adh = p.id AND cc.idcmd = c.id AND pi.idper = p.id "
-            + " AND pi.ptype = " + Instrument.MEMBER + " AND pi.idx = 0";
+            + " AND cc.datedebut BETWEEN '" + start + "' AND '" + end + "'"
+            + " AND pi.ptype = " + Instrument.MEMBER + " AND pi.idx = 0"
+            + " ORDER BY p.nom,p.prenom";
 
     ResultSet rs = dc.executeQuery(query);
     for (int i = 0; rs.next(); i++) {

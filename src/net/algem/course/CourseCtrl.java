@@ -48,7 +48,7 @@ public class CourseCtrl
 {
 
   private CourseView cv;
-  private CourseEnrolmentView iv;
+  private CourseEnrolmentView ev;
   private Course course;
   private String [] errors = new String[3];
 
@@ -66,10 +66,10 @@ public class CourseCtrl
     cv = new CourseView(
             dataCache.getList(Model.CourseCode),
             dataCache.getList(Model.School));
-    iv = new CourseEnrolmentView(enrolService);
+    ev = new CourseEnrolmentView(desktop, enrolService);
 
     addCard("", cv);
-    addCard(BundleUtil.getLabel("Course.enrolment.list.label"), iv);
+    addCard(BundleUtil.getLabel("Course.enrolment.list.label"), ev);
 
     select(0);
   }
@@ -195,7 +195,7 @@ public class CourseCtrl
 
   public void clear() {
     cv.clear();
-    iv.clear();
+    ev.clear();
   }
 
   @Override
@@ -217,7 +217,8 @@ public class CourseCtrl
       btPrev.setText("");
     }
     select(0);
-    iv.load(course.getId());
+    ev.load(course.getId());
+    
     return true;
   }
 

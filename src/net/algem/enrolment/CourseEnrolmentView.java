@@ -1,7 +1,7 @@
 /*
- * @(#)CourseEnrolmentView.java	2.8.a 19/04/13
+ * @(#)CourseEnrolmentView.java	2.10.0 12/05/16
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,15 +20,36 @@
  */
 package net.algem.enrolment;
 
+import java.awt.Color;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.Vector;
+import javax.swing.BorderFactory;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.TableColumnModel;
+import net.algem.contact.Contact;
+import net.algem.contact.ContactIO;
+import net.algem.contact.PersonFile;
+import net.algem.contact.PersonFileEditor;
+import net.algem.contact.PersonFileIO;
 import net.algem.group.Musician;
 import net.algem.group.MusicianTableModel;
+import net.algem.planning.DateRangePanel;
+import net.algem.util.BundleUtil;
+import net.algem.util.DataCache;
+import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
+import net.algem.util.model.Model;
+import net.algem.util.module.GemDesktop;
+import net.algem.util.ui.GemButton;
+import net.algem.util.ui.GemLabel;
+import net.algem.util.ui.GemNumericField;
 import net.algem.util.ui.GemPanel;
 import net.algem.util.ui.GridBagHelper;
 
@@ -37,7 +58,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.10.0
  */
 public class CourseEnrolmentView
         extends GemPanel
@@ -46,12 +67,35 @@ public class CourseEnrolmentView
   private MusicianTableModel membersTableModel;
   private JTable memberTable;
   private EnrolmentService service;
+  private DateRangePanel datePanel;
+  private DataCache dataCache;
+  private int courseId;
+  private GemDesktop desktop;
+  private GemNumericField total;
 
-  public CourseEnrolmentView(EnrolmentService service) {
+  public CourseEnrolmentView(GemDesktop desktop, EnrolmentService service) {
+    this.desktop = desktop;
     this.service = service;
+    this.dataCache = desktop.getDataCache();
+    membersTableModel = new MusicianTableModel(dataCache);
 
-    membersTableModel = new MusicianTableModel(service.getDataCache());
-    memberTable = new JTable(membersTableModel);
+    memberTable = new JTable(membersTableModel)
+    {
+      @Override
+      public void processMouseEvent(MouseEvent evt) {
+        if (evt.getID() == MouseEvent.MOUSE_CLICKED && evt.getClickCount() > 1) {
+          loadMember();
+        } else {
+          super.processMouseEvent(evt);
+        }
+      }
+
+      @Override
+      public boolean isCellEditable(int rowIndex, int colIndex) {
+        return false;
+      }
+    };
+
     memberTable.setAutoCreateRowSorter(true);
 
     TableColumnModel cm = memberTable.getColumnModel();
@@ -64,26 +108,95 @@ public class CourseEnrolmentView
 
     this.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
+    gb.insets = new Insets(10, 10, 10, 10);
 
-    gb.add(pm, 0, 0, 1, 1, GridBagHelper.BOTH, 1.0, 1.0);
+    GemButton btLoad = new GemButton(GemCommand.LOAD_CMD);
+    datePanel = new DateRangePanel(dataCache.getStartOfYear(), dataCache.getEndOfYear(), BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+    btLoad.addActionListener(new ActionListener()
+    {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        load();
+      }
+    });
+    total = new GemNumericField(3);
+    total.setEditable(false);
+    gb.add(datePanel, 0, 0, 1, 1, GridBagHelper.WEST);
+    gb.add(btLoad, 1, 0, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel("Total : "), 2,0,1,1,GridBagHelper.WEST);
+    gb.add(total, 3, 0, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
+    gb.add(pm, 0, 1, 4, 1, GridBagHelper.BOTH, 1.0, 1.0);
 
   }
 
+  private void loadMember() {
+    int row = memberTable.getSelectedRow();
+    if (row < 0) {
+      return;
+    }
+    int n = memberTable.convertRowIndexToModel(row);
+    if (n < 0) {
+      return;
+    }
+
+    Musician m = (Musician) membersTableModel.getItem(n);
+    // il est nécessaire de récupérer les adresses, tel et email éventuels du contact
+    Contact c = ContactIO.findId(m.getId(), DataCache.getDataConnection());
+    PersonFile pf = new PersonFile(c);
+    try {
+      ((PersonFileIO) DataCache.getDao(Model.PersonFile)).complete(pf);
+    } catch (SQLException ex) {
+      GemLogger.logException("complete dossier musicien liste", ex);
+    }
+    PersonFileEditor editor = new PersonFileEditor(pf);
+    desktop.addModule(editor);
+  }
+
+  /**
+   * Initial loading.
+   *
+   * @param id course id
+   */
   public void load(int id) {
+    this.courseId = id;
+    datePanel.setStart(dataCache.getStartOfYear());
+    datePanel.setEnd(dataCache.getEndOfYear());
+    load(id, dataCache.getStartOfYear().getDate(), dataCache.getEndOfYear().getDate());
+  }
+
+  /**
+   * Load the list of members between {@code start} and {@code end}.
+   * @param id course id
+   * @param start start date
+   * @param end end date
+   */
+  private void load(int id, Date start, Date end) {
     if (id == 0) {
       return;
     }
     try {
-      Vector<Musician> vm = service.findCourseMembers(id);
+      Vector<Musician> vm = service.findCourseMembers(id, start, end);
       for (Musician m : vm) {
         membersTableModel.addItem(m);
+        total.setText(String.valueOf(vm.size()));
       }
     } catch (SQLException e) {
-      GemLogger.logException(getClass().getName() +"#load", e);
+      GemLogger.logException(getClass().getName() + "#load", e);
     }
+  }
+
+  private void load() {
+    Date start = datePanel.getStart();
+    Date end = datePanel.getEnd();
+    if (courseId == 0) {
+      return;
+    }
+    clear();
+    load(courseId, start, end);
   }
 
   public void clear() {
     membersTableModel.clear();
+    total.setText(null);
   }
 }
