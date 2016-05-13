@@ -1,6 +1,6 @@
 /*
- * @(#)CourseEnrolmentView.java	2.10.0 12/05/16
- * 
+ * @(#)CourseEnrolmentView.java	2.10.0 13/05/16
+ *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.enrolment;
 
@@ -41,7 +41,6 @@ import net.algem.contact.PersonFileIO;
 import net.algem.group.Musician;
 import net.algem.group.MusicianTableModel;
 import net.algem.planning.DateRangePanel;
-import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
@@ -70,6 +69,7 @@ public class CourseEnrolmentView
   private DateRangePanel datePanel;
   private DataCache dataCache;
   private int courseId;
+  private GemLabel courseTitle;
   private GemDesktop desktop;
   private GemNumericField total;
 
@@ -108,7 +108,7 @@ public class CourseEnrolmentView
 
     this.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
-    gb.insets = new Insets(10, 10, 10, 10);
+    gb.insets = new Insets(5, 5, 5, 5);
 
     GemButton btLoad = new GemButton(GemCommand.LOAD_CMD);
     datePanel = new DateRangePanel(dataCache.getStartOfYear(), dataCache.getEndOfYear(), BorderFactory.createLineBorder(Color.LIGHT_GRAY));
@@ -121,11 +121,13 @@ public class CourseEnrolmentView
     });
     total = new GemNumericField(3);
     total.setEditable(false);
-    gb.add(datePanel, 0, 0, 1, 1, GridBagHelper.WEST);
-    gb.add(btLoad, 1, 0, 1, 1, GridBagHelper.WEST);
-    gb.add(new GemLabel("Total : "), 2,0,1,1,GridBagHelper.WEST);
-    gb.add(total, 3, 0, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
-    gb.add(pm, 0, 1, 4, 1, GridBagHelper.BOTH, 1.0, 1.0);
+    courseTitle = new GemLabel();
+    gb.add(courseTitle, 0, 0, 1, 1, GridBagHelper.WEST);
+    gb.add(datePanel, 0, 1, 1, 1, GridBagHelper.WEST);
+    gb.add(btLoad, 1, 1, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel("Total : "), 2,1,1,1,GridBagHelper.WEST);
+    gb.add(total, 3, 1, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
+    gb.add(pm, 0, 2, 4, 1, GridBagHelper.BOTH, 1.0, 1.0);
 
   }
 
@@ -157,10 +159,12 @@ public class CourseEnrolmentView
    *
    * @param id course id
    */
-  public void load(int id) {
+  public void load(int id, String title) {
     this.courseId = id;
+
     datePanel.setStart(dataCache.getStartOfYear());
     datePanel.setEnd(dataCache.getEndOfYear());
+    courseTitle.setText(title);
     load(id, dataCache.getStartOfYear().getDate(), dataCache.getEndOfYear().getDate());
   }
 
