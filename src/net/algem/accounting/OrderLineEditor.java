@@ -1,7 +1,7 @@
 /*
- * @(#)OrderLineEditor.java	2.9.4.8 24/06/15
+ * @(#)OrderLineEditor.java	2.10.0 13/05/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -29,7 +29,10 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
+import java.util.prefs.Preferences;
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import net.algem.billing.BillingUtil;
@@ -51,13 +54,18 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.8
+ * @version 2.10.0
  * @since 1.0a 07/07/1999
  */
 public class OrderLineEditor
         extends FileTab
         implements ActionListener, TableModelListener, GemEventListener {
 
+  private static final String NO_PAYMENT_SELECTED = MessageUtil.getMessage("no.payment.selected");
+  private static final String PAYMENT_UPDATE_EXCEPTION = MessageUtil.getMessage("update.exception.info");
+  private static final String PAYMENT_CREATE_EXCEPTION = MessageUtil.getMessage("payment.add.exception");
+  private static final String PAYMENT_DELETE_EXCEPTION = MessageUtil.getMessage("payment.delete.exception");
+  protected static final String HIDE_OPTION = "hide.invoice.lines";
   protected OrderLineTableView tableView;
   protected GemButton btCreate;
   protected GemButton btSuppress;
@@ -66,19 +74,18 @@ public class OrderLineEditor
   protected JLabel totalLabel;
   protected GemField totalField;
   protected JToggleButton btFilter;
+  protected Preferences prefs = Preferences.userRoot().node("/algem/accounting");
+  
   private OrderLineTableModel tableModel;
   private int memberId, payerId;
   private JTextField payerName;
+  private JCheckBox invoiceLineFilter;
   private GemButton btInvoice;
   private GemButton btQuotation;
   private ActionListener actionListener;
   private List<OrderLine> invoiceSelection;
   private OrderLineView dlg;
   private int selectedIndex;
-  private static final String NO_PAYMENT_SELECTED = MessageUtil.getMessage("no.payment.selected");
-  private static final String PAYMENT_UPDATE_EXCEPTION = MessageUtil.getMessage("update.exception.info");
-  private static final String PAYMENT_CREATE_EXCEPTION = MessageUtil.getMessage("payment.add.exception");
-  private static final String PAYMENT_DELETE_EXCEPTION = MessageUtil.getMessage("payment.delete.exception");
 
   public OrderLineEditor(GemDesktop desktop, OrderLineTableModel tableModel) {
     super(desktop);
@@ -106,10 +113,23 @@ public class OrderLineEditor
 
     payerName = new JTextField(30);
     payerName.setEditable(false);
+    invoiceLineFilter = new JCheckBox("Cacher les lignes de facturation");
+    if (prefs.getBoolean(HIDE_OPTION, false)) {
+      invoiceLineFilter.setSelected(true);
+      hideInvoiceLines();
+    }
+    invoiceLineFilter.addChangeListener(new ChangeListener() {
+      @Override
+      public void stateChanged(ChangeEvent e) {
+        hideInvoiceLines();
+        savePrefs();
+      }
+      
+    });
     JPanel entete = new JPanel();
     entete.add(new JLabel(MessageUtil.getMessage("payer.payment.label")));
     entete.add(payerName);
-
+    entete.add(invoiceLineFilter);
     GemPanel footer = new GemPanel(new BorderLayout());
     GemPanel buttons = new GemPanel(new GridLayout(1,6));
 
@@ -490,5 +510,12 @@ public class OrderLineEditor
       MessagePopup.warning(this, MessageUtil.getMessage("estimate.payment.selection.error"));
     }
 
+  }
+  
+  private void hideInvoiceLines() {
+    tableView.filterByPayment(invoiceLineFilter.isSelected());
+  }
+  private void savePrefs() {
+    prefs.putBoolean("hide.invoice.lines", invoiceLineFilter.isSelected());
   }
 }

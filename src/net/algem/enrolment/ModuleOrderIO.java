@@ -1,7 +1,7 @@
 /*
- * @(#)ModuleOrderIO.java	2.9.4.14 05/01/16
+ * @(#)ModuleOrderIO.java	2.10.0 13/05/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,9 +28,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 import net.algem.accounting.AccountUtil;
+import net.algem.config.Instrument;
+import net.algem.config.InstrumentIO;
 import net.algem.contact.PersonIO;
+import net.algem.contact.member.MemberIO;
 import net.algem.course.CourseIO;
 import net.algem.course.ModuleIO;
+import net.algem.group.Musician;
 import net.algem.planning.ActionIO;
 import net.algem.planning.DateFr;
 import net.algem.planning.ScheduleIO;
@@ -44,7 +48,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.14
+ * @version 2.10.0
  */
 public class ModuleOrderIO
         extends TableIO
@@ -160,6 +164,34 @@ public class ModuleOrderIO
     }
     rs.close();
     return v;
+  }
+  
+  static List<Musician> findModuleMembers(int id, Date start, Date end, DataConnection dc) throws SQLException {
+    List<Musician> list = new ArrayList<Musician>();
+
+    String query = "SELECT DISTINCT p.id, p.nom, p.prenom, pi.instrument FROM "
+            + PersonIO.TABLE + " p LEFT JOIN " + InstrumentIO.PERSON_INSTRUMENT_TABLE + " pi ON (p.id = pi.idper AND pi.ptype = " + Instrument.MEMBER + " AND pi.idx = 0), "
+            + MemberIO.TABLE + " e, "
+            + OrderIO.TABLE + " c, "
+            + CourseOrderIO.TABLE + " cc, "
+            + ModuleOrderIO.TABLE + " cm"
+            + " WHERE cm.module = " + id
+            + " AND cm.id = cc.module"
+            + " AND cc.datedebut BETWEEN '" + start + "' AND '" + end + "'"
+            + " AND cc.idcmd = c.id"
+            + " AND c.adh = p.id AND p.id = e.idper"
+            + " ORDER BY p.nom,p.prenom";
+
+    ResultSet rs = dc.executeQuery(query);
+    while (rs.next()) {
+      Musician a = new Musician();
+      a.setId(rs.getInt(1));
+      a.setName(rs.getString(2).trim());
+      a.setFirstName(rs.getString(3).trim());
+      a.setInstrument(rs.getInt(4));
+      list.add(a);
+    }
+    return list;
   }
 
    static List<ExtendedModuleOrder> findExtendedModuleList(Date start, Date end, DataConnection dc) throws SQLException {

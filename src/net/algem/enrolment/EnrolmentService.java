@@ -1,7 +1,7 @@
 /*
- * @(#)EnrolmentService.java	2.9.4.14 05/01/16
+ * @(#)EnrolmentService.java	2.10.0 13/05/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -42,7 +42,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.14
+ * @version 2.10.0
  * @since 2.4.a 20/04/12
  */
 public class EnrolmentService
@@ -373,34 +373,28 @@ public class EnrolmentService
 //    return ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findByIdOrder(query, false);
   }
 
-  Vector<Musician> findCourseMembers(int course, Date start, Date end) throws SQLException {
-
-    Vector<Musician> vm = new Vector<Musician>();
-
-    String query = "SELECT DISTINCT p.id, p.nom, p.prenom, pi.instrument FROM "
-            + PersonIO.TABLE + " p, "
-            + MemberIO.TABLE + " e, "
-            + OrderIO.TABLE + " c, "
-            + CourseOrderIO.TABLE + " cc, "
-            + ActionIO.TABLE + " a, "
-            + InstrumentIO.PERSON_INSTRUMENT_TABLE + " pi"
-            + " WHERE p.id = e.idper AND cc.idaction = a.id AND a.cours = " + course
-            + " AND c.adh = p.id AND cc.idcmd = c.id AND pi.idper = p.id "
-            + " AND cc.datedebut BETWEEN '" + start + "' AND '" + end + "'"
-            + " AND pi.ptype = " + Instrument.MEMBER + " AND pi.idx = 0"
-            + " ORDER BY p.nom,p.prenom";
-
-    ResultSet rs = dc.executeQuery(query);
-    for (int i = 0; rs.next(); i++) {
-      Musician a = new Musician();
-      a.setId(rs.getInt(1));
-      a.setName(rs.getString(2).trim());
-      a.setFirstName(rs.getString(3).trim());
-      a.setInstrument(rs.getInt(4));
-      vm.addElement(a);
-    }
-
-    return vm;
+  /**
+   * Gets the list of students taking this course {@code id}.
+   * @param course course id
+   * @param start start date
+   * @param end end date
+   * @return a list of students or an empty list if no student was found
+   * @throws SQLException 
+   */
+  List<Musician> findCourseMembers(int course, Date start, Date end) throws SQLException {
+    return CourseOrderIO.findCourseMembers(course, start, end, dc);
+  }
+   
+  /**
+   * Gets the list of students enrolled in this module {@code id}.
+   * @param id module id
+   * @param start start date
+   * @param end end date
+   * @return a list of students or an empty list if no student was found
+   * @throws SQLException 
+   */
+  public List<Musician> findModuleMembers(int id, Date start, Date end) throws SQLException {
+    return ModuleOrderIO.findModuleMembers(id, start, end, dc);
   }
 
   /**

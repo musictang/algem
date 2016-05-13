@@ -1,7 +1,7 @@
 /*
- * @(#)CourseOrderIO.java	2.9.1 13/11/14
+ * @(#)CourseOrderIO.java	2.10.0 13/05/16
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -22,7 +22,16 @@ package net.algem.enrolment;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Vector;
+import net.algem.config.Instrument;
+import net.algem.config.InstrumentIO;
+import net.algem.contact.PersonIO;
+import net.algem.contact.member.MemberIO;
+import net.algem.group.Musician;
+import net.algem.planning.ActionIO;
 import net.algem.planning.DateFr;
 import net.algem.planning.Hour;
 import net.algem.util.DataConnection;
@@ -33,7 +42,7 @@ import net.algem.util.model.TableIO;
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.10.0
  * @since 1.0a 07/07/1999
  */
 public class CourseOrderIO
@@ -166,6 +175,35 @@ public class CourseOrderIO
       }
       rs.close();
       return v;
+  }
+  
+  public static List<Musician> findCourseMembers(int course, Date start, Date end, DataConnection dc) throws SQLException {
+
+    List<Musician> vm = new ArrayList<Musician>();
+
+    String query = "SELECT DISTINCT p.id, p.nom, p.prenom, pi.instrument FROM "
+            + PersonIO.TABLE + " p LEFT JOIN " + InstrumentIO.PERSON_INSTRUMENT_TABLE + " pi ON (p.id = pi.idper AND pi.ptype = " + Instrument.MEMBER + " AND pi.idx = 0), "
+            + MemberIO.TABLE + " e, "
+            + OrderIO.TABLE + " c, "
+            + TABLE + " cc, "
+            + ActionIO.TABLE + " a"
+            + " WHERE a.cours = " + course + " AND a.id = cc.idaction"
+            + " AND cc.datedebut BETWEEN '" + start + "' AND '" + end + "'"
+            + " AND cc.idcmd = c.id AND c.adh = p.id"
+            + " AND p.id = e.idper"
+            + " ORDER BY p.nom,p.prenom";
+
+    ResultSet rs = dc.executeQuery(query);
+    for (int i = 0; rs.next(); i++) {
+      Musician a = new Musician();
+      a.setId(rs.getInt(1));
+      a.setName(rs.getString(2).trim());
+      a.setFirstName(rs.getString(3).trim());
+      a.setInstrument(rs.getInt(4));
+      vm.add(a);
+    }
+
+    return vm;
   }
 
 }

@@ -1,7 +1,7 @@
 /*
- * @(#)ModuleSearchCtrl.java	2.8.w 08/07/14
+ * @(#)ModuleSearchCtrl.java	2.10.0 13/05/16
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -24,7 +24,6 @@ import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
 import java.util.Vector;
-import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
@@ -38,17 +37,16 @@ import net.algem.util.ui.SearchCtrl;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.10.0
  * @since 1.0a 07/07/1999
  */
 public class ModuleSearchCtrl
         extends SearchCtrl {
 
-  private static String t = BundleUtil.getLabel("Action.view.edit.label");
   protected GemDesktop desktop;
 
   public ModuleSearchCtrl(GemDesktop d) {
-    super(DataCache.getDataConnection(), t);
+    super(DataCache.getDataConnection(), null);
     this.desktop = d;
   }
 
@@ -85,7 +83,7 @@ public class ModuleSearchCtrl
     int id = getId();
     if (id > 0) {
       query = "WHERE id = " + id;
-    } //else if ((code = searchView.getField(1)) != null)	{
+    } 
     else if (null != (code = searchView.getField(1))) {
       query = "WHERE code ~* '" + code + "'";
     } else if ((nom = searchView.getField(2)) != null) {

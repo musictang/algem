@@ -67,7 +67,7 @@ public class CourseCtrl
             dataCache.getList(Model.CourseCode),
             dataCache.getList(Model.School));
     ev = new CourseEnrolmentView(desktop, enrolService);
-
+    btNext.setToolTipText(BundleUtil.getLabel("Student.list.label"));
     addCard("", cv);
     addCard(BundleUtil.getLabel("Course.enrolment.list.label"), ev);
 
@@ -81,23 +81,9 @@ public class CourseCtrl
         select(step + 1);
         btPrev.setText(GemCommand.PREVIOUS_CMD);
         btPrev.setActionCommand(GemCommand.PREVIOUS_CMD);
+        btNext.setToolTipText(null);
         break;
     }
-    return true;
-  }
-
-  @Override
-  public boolean cancel() {
-
-    if (actionListener != null) {
-      if (actionListener instanceof SearchCtrl) {
-      actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "CtrlValider"));
-      } else if (actionListener instanceof GemDesktop) {
-        clear();
-        actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, GemCommand.CANCEL_CMD));
-      }
-    }
-
     return true;
   }
 
@@ -126,9 +112,11 @@ public class CourseCtrl
         btPrev.setActionCommand(GemCommand.DELETE_CMD);
         btPrev.setText(GemCommand.DELETE_CMD);
         select(step - 1);
+        btNext.setToolTipText(BundleUtil.getLabel("Student.list.label"));
         break;
       default:
         select(step - 1);
+        btNext.setToolTipText(BundleUtil.getLabel("Student.list.label"));
         break;
     }
     return true;
@@ -164,6 +152,21 @@ public class CourseCtrl
       return false;
     }
     cancel();
+    return true;
+  }
+  
+   @Override
+  public boolean cancel() {
+
+    if (actionListener != null) {
+      if (actionListener instanceof SearchCtrl) {
+      actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "CtrlValider"));
+      } else if (actionListener instanceof GemDesktop) {
+        clear();
+        actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, GemCommand.CANCEL_CMD));
+      }
+    }
+
     return true;
   }
 
@@ -218,7 +221,7 @@ public class CourseCtrl
     }
     select(0);
     ev.load(course.getId(), course.getTitle());
-
+    btNext.setToolTipText(BundleUtil.getLabel("Student.list.label"));
     return true;
   }
 

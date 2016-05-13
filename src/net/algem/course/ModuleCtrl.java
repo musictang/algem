@@ -1,7 +1,7 @@
 /*
- * @(#)ModuleCtrl.java	2.9.4.12 29/09/15
+ * @(#)ModuleCtrl.java	2.10.0 13/05/16
  * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -22,6 +22,9 @@ package net.algem.course;
 
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
+import net.algem.enrolment.EnrolmentService;
+import net.algem.enrolment.MemberEnrolmentView;
+import net.algem.enrolment.ModuleEnrolmentView;
 import net.algem.util.*;
 import net.algem.util.event.GemEvent;
 import net.algem.util.model.Model;
@@ -34,7 +37,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.12
+ * @version 2.10.0
  * @since 1.0a 07/07/1999
  */
 public class ModuleCtrl
@@ -44,14 +47,19 @@ public class ModuleCtrl
   protected GemDesktop desktop;
   protected DataCache dataCache;
   protected ModuleView view;
+  protected MemberEnrolmentView ev;
   protected Module module;
+  private final EnrolmentService enrolService;
 
   public ModuleCtrl(GemDesktop desktop) {
     this.desktop = desktop;
     dataCache = desktop.getDataCache(); 
-    view = new ModuleView(dataCache);
+    enrolService = new EnrolmentService(dataCache);
     
-    addCard(BundleUtil.getLabel("Module.label"), view);
+    view = new ModuleView(dataCache);
+    ev = new ModuleEnrolmentView(desktop, enrolService);
+    addCard("", view);
+    addCard(BundleUtil.getLabel("Course.enrolment.list.label"), ev);
     select(0);
   }
 
@@ -60,15 +68,10 @@ public class ModuleCtrl
     switch (step) {
       default:
         select(step + 1);
+        btPrev.setText(GemCommand.PREVIOUS_CMD);
+        btPrev.setActionCommand(GemCommand.PREVIOUS_CMD);
+        btNext.setToolTipText(null);
         break;
-    }
-    return true;
-  }
-
-  @Override
-  public boolean cancel() {
-    if (actionListener != null) {
-      actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "CtrlAbandon"));
     }
     return true;
   }
@@ -85,8 +88,15 @@ public class ModuleCtrl
           return false;
         }
         break;
+      case 1:
+        btPrev.setActionCommand(GemCommand.DELETE_CMD);
+        btPrev.setText(GemCommand.DELETE_CMD);
+        select(step - 1);
+        btNext.setToolTipText(BundleUtil.getLabel("Student.list.label"));
+        break;
       default:
         select(step - 1);
+        btNext.setToolTipText(BundleUtil.getLabel("Student.list.label"));
         break;
     }
     return true;
@@ -113,6 +123,14 @@ public class ModuleCtrl
       return false;
     }
 
+    return true;
+  }
+  
+  @Override
+  public boolean cancel() {
+    if (actionListener != null) {
+      actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "CtrlAbandon"));
+    }
     return true;
   }
   
@@ -152,6 +170,8 @@ public class ModuleCtrl
         btPrev.setText("");
       }
       select(0);
+      ev.load(module.getId(), module.getTitle());
+      btNext.setToolTipText(BundleUtil.getLabel("Student.list.label"));
     } catch (Exception e) {
       GemLogger.logException("lecture ficher module", e);
       return false;
