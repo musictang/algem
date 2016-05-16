@@ -1,7 +1,7 @@
 /*
-* @(#)OrderLineDlg.java	2.9.4.13 05/10/2015
+* @(#)OrderLineDlg.java	2.10.0 16/05/16
 *
-* Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+* Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
 *
 * This file is part of Algem.
 * Algem is free software: you can redistribute it and/or modify it
@@ -33,6 +33,8 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.Locale;
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import net.algem.planning.DateFr;
@@ -50,14 +52,14 @@ import net.algem.util.ui.MessagePopup;
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @author <a href="mailto:damien.loustau@gmail.com">Damien Loustau</a>
- * @version 2.9.4.13
+ * @version 2.10.0
  * @since 1.0a 07/07/1999
  */
 public class OrderLineDlg
         extends GemPanel
         implements ActionListener, TableModelListener
 {
-  
+
   private Frame parent;
   private final DataConnection dc;
   private final DataCache dataCache;
@@ -74,7 +76,7 @@ public class OrderLineDlg
   private GemPanel buttons;
   private JLabel totalLabel;
   private GemField totalField;
-  private NumberFormat nf = NumberFormat.getInstance(Locale.FRANCE);
+  private final NumberFormat nf = NumberFormat.getInstance(Locale.FRANCE);
   private JPopupMenu popup;
   private JMenuItem miCancelTransfer;
   private JMenuItem miTransfer;
@@ -82,6 +84,8 @@ public class OrderLineDlg
   private JCheckBoxMenuItem cbCheckPayment;
   private JMenu menutop;
   private OrderLineView dlg;
+  private JCheckBox invoiceLineFilter;
+  private OrderLineEditor.InvoiceLinesFilter invoiceFilter;
 
   /**
    *
@@ -94,12 +98,12 @@ public class OrderLineDlg
     this.dc = DataCache.getDataConnection();
     this.tableModel = tableModel;
   }
-  
+
   public void init() {
     JMenuBar menubar = new JMenuBar();
     menutop = new JMenu("Options");
     menubar.add(menutop);
-    
+
     menutop.add(cbCheckPayment = new JCheckBoxMenuItem(BundleUtil.getLabel("Payment.multiple.modification.auth")));
     if (!dataCache.authorize("Payment.multiple.modification.auth")) {
       cbCheckPayment.setEnabled(false);
@@ -113,10 +117,10 @@ public class OrderLineDlg
     miCashing.setEnabled(false);
     miCancelTransfer.addActionListener(this);
     miTransfer.addActionListener(this);
-    
+
     tableView = new OrderLineTableView(tableModel, this);
     tableView.addPopupMenuListener(popup, dataCache);
-    
+
     btPrint = new GemButton(BundleUtil.getLabel("Action.print.label"));
     btPrint.addActionListener(this);
     btCreate = new GemButton(BundleUtil.getLabel("Action.add.label"));
@@ -125,7 +129,7 @@ public class OrderLineDlg
     btModify.addActionListener(this);
     btSuppress = new GemButton(BundleUtil.getLabel("Action.suppress.label"));
     btSuppress.addActionListener(this);
-    
+
     dateStart = new DateFrField(new Date());
     dateEnd = new DateFrField(new Date());
     btLoad = new GemButton(BundleUtil.getLabel("Action.load.label"));
@@ -134,53 +138,69 @@ public class OrderLineDlg
     btCurrentMonth = new GemButton(BundleUtil.getLabel("Action.current.month.label"));
     btCurrentMonth.setPreferredSize(new Dimension(btCurrentMonth.getPreferredSize().width, dateStart.getPreferredSize().height));
     btCurrentMonth.addActionListener(this);
-    
+
     GemPanel header = new GemPanel();
+
+    invoiceLineFilter = new JCheckBox(BundleUtil.getLabel("Invoice.lines.filter.label"));
+    invoiceFilter = new OrderLineEditor.InvoiceLinesFilter(tableView, invoiceLineFilter);
+    if (invoiceFilter.isHidden()) {
+      invoiceLineFilter.setSelected(true);
+      invoiceFilter.hideInvoiceLines();
+    }
+    invoiceLineFilter.addChangeListener(new ChangeListener() {
+      @Override
+      public void stateChanged(ChangeEvent e) {
+        invoiceFilter.hideInvoiceLines();
+        invoiceFilter.savePrefs();
+      }
+    });
+
     header.add(new JLabel(BundleUtil.getLabel("Date.From.label")));
     header.add(dateStart);
     header.add(new JLabel(BundleUtil.getLabel("Date.To.label")));
     header.add(dateEnd);
     header.add(btLoad);
     header.add(btCurrentMonth);
-    
+    header.add(invoiceLineFilter);
+
     buttons = new GemPanel(new GridLayout(1, 4));
     buttons.add(btPrint);
     buttons.add(btModify);
     buttons.add(btCreate);
     buttons.add(btSuppress);
-    
+
     GemPanel top = new GemPanel(new BorderLayout());
     top.add(menubar, BorderLayout.NORTH);
     top.add(header, BorderLayout.SOUTH);
-    
+
     GemPanel bottom = new GemPanel(new BorderLayout());
-    
+
     GemPanel pTotal = new GemPanel();
     totalLabel = new JLabel(BundleUtil.getLabel("Total.label"));
     totalField = new GemField(10);
     totalField.setEditable(false);
     tableView.addListSelectionListener(totalField);
-    
+
     pTotal.add(totalLabel);
     pTotal.add(totalField);
-    
+
     bottom.add(pTotal, BorderLayout.NORTH);
     bottom.add(buttons, BorderLayout.CENTER);
-    
+
     setLayout(new BorderLayout());
     add(top, BorderLayout.NORTH);
     add(tableView, BorderLayout.CENTER);
     add(bottom, BorderLayout.SOUTH);
   }
-  
+
   @Override
   public void tableChanged(TableModelEvent evt) {
   }
-  
+
   @Override
   public void actionPerformed(ActionEvent evt) {
     Object src = evt.getSource();
-    
+
     if ("orderline.view.cancel".equals(evt.getActionCommand())) {
       closeEditorView();
     } else if (src == cbCheckPayment) {
@@ -203,7 +223,7 @@ public class OrderLineDlg
         }
       }
     }
-    
+
     // next actions will be disabled if dlg is opened
     if (dlg != null) {
       MessagePopup.warning(this, MessageUtil.getMessage("orderline.editing.warning"));
@@ -233,9 +253,9 @@ public class OrderLineDlg
       load();
     } else if (src == btCurrentMonth) {
       loadCurrentMonth();
-    } 
+    }
   }
-  
+
   public void load() {
     totalField.setText(null);
     DateFr debut = dateStart.getDateFr();
@@ -243,7 +263,7 @@ public class OrderLineDlg
     String query = "WHERE echeance >= '" + debut + "' AND echeance <= '" + fin + "'";
     tableModel.load(OrderLineIO.find(query, dc));
   }
-  
+
   public void dialogSuppression() {
     int n = tableView.getSelectedRow();
     if (n < 0) {
@@ -254,7 +274,7 @@ public class OrderLineDlg
       return;
     }
     OrderLine e = tableView.getElementAt(n);
-    
+
     if (e.isTransfered()) {
       JOptionPane.showMessageDialog(this,
               MessageUtil.getMessage("payment.transfer.warning"),
@@ -269,7 +289,7 @@ public class OrderLineDlg
             MessageUtil.getMessage("payment.delete.label"))) {
       return;
     }
-    
+
     try {
       OrderLineIO.delete(e, dc);
       tableView.removeElementAt(n);
@@ -341,7 +361,7 @@ public class OrderLineDlg
       GemLogger.logException(e);
     }
   }
-  
+
   public void dialogModification() {
     if (dlg != null) {
       MessagePopup.warning(this, MessageUtil.getMessage("orderline.editing.warning"));
@@ -372,7 +392,7 @@ public class OrderLineDlg
       }
     }
   }
-  
+
   private void update(OrderLine e) {
     try {
       OrderLineIO.update(e, dc);
@@ -435,7 +455,7 @@ public class OrderLineDlg
       miCashing.setEnabled(false);
     }
   }
-  
+
   public void dialogCreation() {
     OrderLine e = null;
     int n = tableView.getSelectedRow();
@@ -469,7 +489,7 @@ public class OrderLineDlg
 //          tableModel.addElement(c);
 //        }
 //      }
-//      
+//
 //    } catch (ParseException px) {
 //      System.err.println(px.getMessage());
 //    } catch (SQLException ex) {
@@ -480,7 +500,7 @@ public class OrderLineDlg
 //      }
 //    }
   }
-  
+
   private void create(OrderLine e) {
     try {
       dc.setAutoCommit(false);
@@ -502,7 +522,7 @@ public class OrderLineDlg
    * Loading of the orderlines of current month.
    */
   private void loadCurrentMonth() {
-    
+
     DateFr b = new DateFr(new Date());
     b.setDay(1);
     dateStart.set(b);
@@ -511,12 +531,12 @@ public class OrderLineDlg
     dateEnd.set(b);
     load();
   }
-  
+
   private void closeEditorView() {
     if (dlg != null) {
       dlg.dispose();
       dlg = null;
     }
   }
-  
+
 }

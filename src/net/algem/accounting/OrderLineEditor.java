@@ -1,5 +1,5 @@
 /*
- * @(#)OrderLineEditor.java	2.10.0 13/05/16
+ * @(#)OrderLineEditor.java	2.10.0 16/05/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -65,7 +65,7 @@ public class OrderLineEditor
   private static final String PAYMENT_UPDATE_EXCEPTION = MessageUtil.getMessage("update.exception.info");
   private static final String PAYMENT_CREATE_EXCEPTION = MessageUtil.getMessage("payment.add.exception");
   private static final String PAYMENT_DELETE_EXCEPTION = MessageUtil.getMessage("payment.delete.exception");
-  protected static final String HIDE_OPTION = "hide.invoice.lines";
+
   protected OrderLineTableView tableView;
   protected GemButton btCreate;
   protected GemButton btSuppress;
@@ -74,8 +74,7 @@ public class OrderLineEditor
   protected JLabel totalLabel;
   protected GemField totalField;
   protected JToggleButton btFilter;
-  protected Preferences prefs = Preferences.userRoot().node("/algem/accounting");
-  
+
   private OrderLineTableModel tableModel;
   private int memberId, payerId;
   private JTextField payerName;
@@ -85,7 +84,7 @@ public class OrderLineEditor
   private ActionListener actionListener;
   private List<OrderLine> invoiceSelection;
   private OrderLineView dlg;
-  private int selectedIndex;
+  private InvoiceLinesFilter invoiceFilter;
 
   public OrderLineEditor(GemDesktop desktop, OrderLineTableModel tableModel) {
     super(desktop);
@@ -113,18 +112,19 @@ public class OrderLineEditor
 
     payerName = new JTextField(30);
     payerName.setEditable(false);
-    invoiceLineFilter = new JCheckBox("Cacher les lignes de facturation");
-    if (prefs.getBoolean(HIDE_OPTION, false)) {
+    invoiceLineFilter = new JCheckBox(BundleUtil.getLabel("Invoice.lines.filter.label"));
+    invoiceFilter = new InvoiceLinesFilter(tableView, invoiceLineFilter);
+    if (invoiceFilter.isHidden()) {
       invoiceLineFilter.setSelected(true);
-      hideInvoiceLines();
+      invoiceFilter.hideInvoiceLines();
     }
     invoiceLineFilter.addChangeListener(new ChangeListener() {
       @Override
       public void stateChanged(ChangeEvent e) {
-        hideInvoiceLines();
-        savePrefs();
+        invoiceFilter.hideInvoiceLines();
+        invoiceFilter.savePrefs();
       }
-      
+
     });
     JPanel entete = new JPanel();
     entete.add(new JLabel(MessageUtil.getMessage("payer.payment.label")));
@@ -222,9 +222,9 @@ public class OrderLineEditor
       }
     } else if ("orderline.view.cancel".equals(evt.getActionCommand())) {
       closeEditorView();
-    }          
+    }
   }
-  
+
   private void closeEditorView() {
     if (dlg != null) {
       dlg.dispose();
@@ -310,7 +310,7 @@ public class OrderLineEditor
     try {
       dlg = new OrderLineView(desktop.getFrame(), MessageUtil.getMessage("payment.update.label"), dataCache, false);
       dlg.addActionListener(this);
-              
+
       dlg.setOrderLine(e);
       dlg.setInvoiceEditable(false);
       dlg.setVisible(true);
@@ -318,7 +318,7 @@ public class OrderLineEditor
       GemLogger.logException(PAYMENT_UPDATE_EXCEPTION, ex, this);
     }
   }
-  
+
   private void update(OrderLine e) {
     try{
         OrderLineIO.update(e, dc);
@@ -346,7 +346,7 @@ public class OrderLineEditor
       e.setInvoice(null);
     }
     try {
-     
+
       dlg = new OrderLineView(desktop.getFrame(), MessageUtil.getMessage("payment.add.label"), dataCache, false);
       dlg.addActionListener(this);
       if (e != null) {
@@ -364,7 +364,7 @@ public class OrderLineEditor
       closeEditorView();
     }
   }
-  
+
   private void create(OrderLine e) {
      if (ModeOfPayment.FAC.toString().equals(e.getModeOfPayment())) {
           e.setAmount(-Math.abs(e.getAmount()));
@@ -511,11 +511,33 @@ public class OrderLineEditor
     }
 
   }
-  
-  private void hideInvoiceLines() {
-    tableView.filterByPayment(invoiceLineFilter.isSelected());
-  }
-  private void savePrefs() {
-    prefs.putBoolean("hide.invoice.lines", invoiceLineFilter.isSelected());
+
+  static class InvoiceLinesFilter {
+
+    private static final String HIDE_INVOICE_LINES = "hide.invoice.lines";
+    Preferences prefs = Preferences.userRoot().node("/algem/accounting");
+    OrderLineTableView tableView;
+    AbstractButton invoiceLineFilter;
+
+    public InvoiceLinesFilter(OrderLineTableView tableView) {
+      this.tableView = tableView;
+    }
+
+    public InvoiceLinesFilter(OrderLineTableView tableView, AbstractButton invoiceLineFilter) {
+      this.tableView = tableView;
+      this.invoiceLineFilter = invoiceLineFilter;
+    }
+
+    void hideInvoiceLines() {
+      tableView.filterByPayment(invoiceLineFilter.isSelected());
+    }
+
+    void savePrefs() {
+      prefs.putBoolean("hide.invoice.lines", invoiceLineFilter.isSelected());
+    }
+
+    boolean isHidden() {
+      return prefs.getBoolean(HIDE_INVOICE_LINES, false);
+    }
   }
 }
