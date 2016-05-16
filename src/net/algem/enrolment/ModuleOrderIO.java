@@ -1,5 +1,5 @@
 /*
- * @(#)ModuleOrderIO.java	2.10.0 13/05/16
+ * @(#)ModuleOrderIO.java	2.10.0 16/05/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -33,6 +33,7 @@ import net.algem.config.InstrumentIO;
 import net.algem.contact.PersonIO;
 import net.algem.contact.member.MemberIO;
 import net.algem.course.CourseIO;
+import net.algem.course.Module;
 import net.algem.course.ModuleIO;
 import net.algem.group.Musician;
 import net.algem.planning.ActionIO;
@@ -65,12 +66,12 @@ public class ModuleOrderIO
             + " AND a.cours = c.id"
             + " AND cc.datedebut <= p.jour"
 //            + " AND cc.datefin >= p.jour"
-            + " AND cc.module = ?" 
+            + " AND cc.module = ?"
             + " AND CASE" // if not collective, filter by time length
             + " WHEN c.collectif = false THEN (cc.fin - cc.debut) = (pl.fin - pl.debut)"
             + " ELSE TRUE"
             + " END)";
-  
+
   private static final String EXTENDED_MODULE_TIME_STMT_2 = "SELECT EXTRACT(epoch FROM sum(fin-debut)::interval)/60 AS duree FROM " + ScheduleRangeIO.TABLE + " pl"
             + " WHERE adherent = ?"
             + " AND idplanning IN("
@@ -94,7 +95,7 @@ public class ModuleOrderIO
             + ",'" + c.getIdOrder()
             + "','" + c.getModule()
             //+"','"+c.getPrice()
-            + "','" + AccountUtil.getIntValue(c.getPrice()) 
+            + "','" + AccountUtil.getIntValue(c.getPrice())
             + "','" + c.getStart()
             + "','" + c.getEnd()
             + "','" + c.getModeOfPayment()
@@ -165,7 +166,7 @@ public class ModuleOrderIO
     rs.close();
     return v;
   }
-  
+
   static List<Musician> findModuleMembers(int id, Date start, Date end, DataConnection dc) throws SQLException {
     List<Musician> list = new ArrayList<Musician>();
 
@@ -192,6 +193,27 @@ public class ModuleOrderIO
       list.add(a);
     }
     return list;
+  }
+
+  public static List<Module> findModules(int member, Date start, Date end, DataConnection dc) throws SQLException {
+    List<Module> modules = new ArrayList<Module>();
+    String query = "SELECT DISTINCT m.titre FROM " + ModuleIO.TABLE + " m"
+      + " JOIN " + TABLE + " cm on (cm.module = m.id)"
+      + " JOIN " + CourseOrderIO.TABLE + " cc on (cm.id = cc.module)"
+      + " JOIN " + OrderIO.TABLE + " c on (cc.idcmd = c.id)"
+      + " JOIN " + ScheduleRangeIO.TABLE + " pl on (c.adh = pl.adherent)"
+      + " JOIN " + ScheduleIO.TABLE + " p on (pl.idplanning = p.id AND p.action = cc.idaction)"
+      + " WHERE c.adh = " + member
+      + " AND p.jour BETWEEN '" + start + "' AND '" + end + "'";
+
+    ResultSet rs = dc.executeQuery(query);
+    while (rs.next()) {
+      Module m = new Module();
+      m.setTitle(rs.getString(1));
+      modules.add(m);
+    }
+
+    return modules;
   }
 
    static List<ExtendedModuleOrder> findExtendedModuleList(Date start, Date end, DataConnection dc) throws SQLException {
@@ -223,7 +245,7 @@ public class ModuleOrderIO
     }
     return list;
   }
-   
+
     /**
    * Gets the time spent by the student {@code idper} in the module {@code mOrderId} between {@code start} and {@code end} dates.
    * @param idper student id
@@ -232,7 +254,7 @@ public class ModuleOrderIO
    * @param end end date
    * @param dc data connection
    * @return a length in minutes
-   * @throws SQLException 
+   * @throws SQLException
    */
    static int getCompletedTime(int idper, int mOrderId, Date start, Date end, DataConnection dc) throws SQLException {
     PreparedStatement ps = dc.prepareStatement(EXTENDED_MODULE_TIME_STMT);
@@ -250,7 +272,7 @@ public class ModuleOrderIO
     }
     return 0;
   }
-  
+
   /**
    * Gets the time spent by the student {@code idper} in the module {@code mOrderId} from {@code start} date.
    * @param idper student id
@@ -258,7 +280,7 @@ public class ModuleOrderIO
    * @param start start date
    * @param dc data connection
    * @return a length in minutes
-   * @throws SQLException 
+   * @throws SQLException
    */
    static int getCompletedTime(int idper, int mOrderId, Date start, DataConnection dc) throws SQLException {
     PreparedStatement ps = dc.prepareStatement(EXTENDED_MODULE_TIME_STMT_2);
@@ -274,7 +296,7 @@ public class ModuleOrderIO
     }
     return 0;
   }
-    
+
   private static ModuleOrder getFromRs(ResultSet rs) throws SQLException {
       ModuleOrder m = new ModuleOrder();
       m.setId(rs.getInt(1));

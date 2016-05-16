@@ -379,19 +379,19 @@ public class EnrolmentService
    * @param start start date
    * @param end end date
    * @return a list of students or an empty list if no student was found
-   * @throws SQLException 
+   * @throws SQLException
    */
   List<Musician> findCourseMembers(int course, Date start, Date end) throws SQLException {
     return CourseOrderIO.findCourseMembers(course, start, end, dc);
   }
-   
+
   /**
    * Gets the list of students enrolled in this module {@code id}.
    * @param id module id
    * @param start start date
    * @param end end date
    * @return a list of students or an empty list if no student was found
-   * @throws SQLException 
+   * @throws SQLException
    */
   public List<Musician> findModuleMembers(int id, Date start, Date end) throws SQLException {
     return ModuleOrderIO.findModuleMembers(id, start, end, dc);
@@ -875,7 +875,7 @@ public class EnrolmentService
       return 0;
     }
   }
-  
+
   /**
    * Gets the time length of the sessions already performed by the member {@literal idper} from {@code start},
    * corresponding to the module order {@literal mOrderId}.

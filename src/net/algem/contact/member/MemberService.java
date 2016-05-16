@@ -1,7 +1,7 @@
 /*
- * @(#)MemberService.java	2.9.4.14 03/01/16
+ * @(#)MemberService.java	2.10.0 16/05/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,6 +21,7 @@
 package net.algem.contact.member;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -34,8 +35,10 @@ import net.algem.contact.EmailIO;
 import net.algem.contact.PersonFile;
 import net.algem.contact.PersonFileEvent;
 import net.algem.contact.PersonFileIO;
+import net.algem.course.Module;
 import net.algem.enrolment.Enrolment;
 import net.algem.enrolment.EnrolmentIO;
+import net.algem.enrolment.ModuleOrderIO;
 import net.algem.planning.*;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
@@ -46,7 +49,7 @@ import net.algem.util.model.Model;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.14
+ * @version 2.10.0
  * @since 2.4.a 14/05/12
  */
 public class MemberService
@@ -312,6 +315,15 @@ public class MemberService
             + " AND pg.adherent = " + memberId
             + " ORDER BY p.jour, pg.debut";
     return ScheduleRangeIO.findFollowUp(where, false, dc);
+  }
+
+  public  List<Module> findModuleOrders(int member, Date start, Date end) {
+    try {
+      return ModuleOrderIO.findModules(member, start, end, dc);
+    } catch (SQLException ex) {
+      GemLogger.log(ex.getMessage());
+      return new ArrayList<Module>();
+    }
   }
 
   public void saveRehearsal(ScheduleObject p) throws MemberException {
