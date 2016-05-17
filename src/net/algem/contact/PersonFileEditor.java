@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileEditor 2.9.7 03/05/16
+ * @(#)PersonFileEditor 2.9.7 17/05/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -619,7 +619,7 @@ public class PersonFileEditor
 
   void dlgLogin() {
     UserService service = dataCache.getUserService();
-    personFileView.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+    personFileView.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
     UserCreateDlg dlg = new UserCreateDlg(personFileView, "login", dossier.getContact());
     User u = service.findId(dossier.getId());
     if (u != null) {
@@ -632,7 +632,7 @@ public class PersonFileEditor
     }
     String error = null;
     try {
-
+      desktop.setWaitCursor();
       if (u == null) {
         u = dlg.getUser();
         service.create(u);
@@ -655,6 +655,8 @@ public class PersonFileEditor
       error = MessageUtil.getMessage("user.pass.creation.failure");
       GemLogger.logException(error, ue);
       MessagePopup.warning(view, error);
+    } finally {
+      desktop.setDefaultCursor();
     }
   }
 
