@@ -1,5 +1,5 @@
 /*
- * @(#)MemberFollowUpEditor.java	2.10.0 16/05/16
+ * @(#)MemberFollowUpEditor.java	2.10.0 17/05/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -32,9 +32,11 @@ import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Vector;
 import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
+import javax.print.attribute.standard.JobName;
 import javax.print.attribute.standard.MediaPrintableArea;
 import javax.print.attribute.standard.MediaSizeName;
 import javax.print.attribute.standard.OrientationRequested;
@@ -42,7 +44,10 @@ import javax.print.attribute.standard.Sides;
 import javax.swing.JDialog;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.RowFilter;
 import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 import net.algem.contact.PersonFile;
 import net.algem.course.Course;
 import net.algem.course.Module;
@@ -53,6 +58,7 @@ import net.algem.planning.Hour;
 import net.algem.planning.PlanningException;
 import net.algem.planning.ScheduleRangeObject;
 import net.algem.planning.ScheduleRangeTableModel;
+import net.algem.room.Room;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.GemCommand;
@@ -88,6 +94,8 @@ public class MemberFollowUpEditor
   private DateRangePanel dates;
   private GemLabel totalTime;
   private JDialog printDlg;
+  private final RowFilter<Object, Object> roomFilter;
+  private TableRowSorter<TableModel> printSorter;
 
   public MemberFollowUpEditor(GemDesktop desktop, PersonFile pf) {
     super(desktop);
@@ -95,7 +103,7 @@ public class MemberFollowUpEditor
     personFile = pf;
 
     tableModel = new ScheduleRangeTableModel(dataCache);
-    table = new JTable(tableModel);
+    table = new JTable(tableModel); 
     table.setAutoCreateRowSorter(true);
 
     table.addMouseListener(new MouseAdapter()
@@ -117,7 +125,14 @@ public class MemberFollowUpEditor
         }
       }
     });
-
+    roomFilter = new RowFilter<Object, Object>() {
+      
+      @Override
+      public boolean include(Entry<? extends Object, ? extends Object> entry) {
+        String r = (String) entry.getValue(4);
+        return !r.matches(Room.CATCHING_UP_REGEX);
+      }
+    };
     TableColumnModel cm = table.getColumnModel();
     cm.getColumn(0).setPreferredWidth(40);
     cm.getColumn(1).setPreferredWidth(15);
@@ -294,7 +309,8 @@ public class MemberFollowUpEditor
   private void initPrintTable() {
 
     printTable = new JTable(tableModel);
-
+    printSorter = new TableRowSorter<TableModel>(tableModel);
+    printTable.setRowSorter(printSorter);
     TableColumnModel cm = printTable.getColumnModel();
     cm.getColumn(0).setPreferredWidth(40);
     cm.getColumn(1).setPreferredWidth(10);
@@ -318,6 +334,7 @@ public class MemberFollowUpEditor
   }
 
   private void print() {
+    hideCatchingRooms();
     printDlg.setVisible(true);
     try {
       List<Module> modules = memberService.findModuleOrders(personFile.getId(), dates.getStart(), dates.getEnd());
@@ -335,8 +352,9 @@ public class MemberFollowUpEditor
       MessageFormat footer = new MessageFormat("Page {0}");
       PrintRequestAttributeSet prs = new HashPrintRequestAttributeSet();
       prs.add(MediaSizeName.ISO_A4);
-      prs.add(Sides.TWO_SIDED_SHORT_EDGE);
+      prs.add(Sides.TWO_SIDED_LONG_EDGE);
       prs.add(OrientationRequested.PORTRAIT);
+      prs.add(new JobName(BundleUtil.getLabel("Follow.up.label") + "-" + personFile.getId(), Locale.getDefault()));
       //210 x 297 mm | 8.3 x 11.7 in 1 inch = 25.4 mm
 
       MediaPrintableArea printableArea =
@@ -348,5 +366,9 @@ public class MemberFollowUpEditor
     } finally {
       printDlg.setVisible(false);
     }
+  }
+  
+  private void hideCatchingRooms() {
+    printSorter.setRowFilter(roomFilter);
   }
 }

@@ -7,9 +7,12 @@ Scripts
 
 Echeancier
 13-05-2016 : 1h15 (cacher fac)
-
 Echéancier : cacher lignes facturation
 16-05-2016 : 1h
 
 Impression Suivi élève
 16-05-2016 : 6h
+17-05-2016 : 1h
+
+Configuration date échéance par défaut
+17-05-2016 : 00:45

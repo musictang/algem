@@ -1,7 +1,7 @@
 /*
- * @(#)ConfigCreditor.java 2.8.r 03/01/14
+ * @(#)ConfigAccounting.java 2.10.0 17/05/16
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -42,13 +42,13 @@ import net.algem.util.ui.GridBagHelper;
  * Bic infos for the organization.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.8.r
+ * @version 2.10.0
  * @since 2.2.d
  */
-public class ConfigCreditor
+public class ConfigAccounting
 	extends ConfigPanel {
 
-	private Config c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11;
+	private Config c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12;
 	private GemField firmName;
 	private GemField issuer;
 	private GemField branch;
@@ -61,8 +61,9 @@ public class ConfigCreditor
 	private GemField invoice;
 //  private GemField dossierName;
 	private JComboBox accountingFormat;
+    private JSpinner defaultDueDay;
 
-	public ConfigCreditor(String title, Map<String, Config> cm) {
+	public ConfigAccounting(String title, Map<String, Config> cm) {
 		super(title, cm);
 		init();
 	}
@@ -80,6 +81,7 @@ public class ConfigCreditor
 		c9 = confs.get(ConfigKey.DIRECT_DEBIT_IBAN.getKey());//iban
 		c10 = confs.get(ConfigKey.DIRECT_DEBIT_BIC.getKey());//bic
 		c11 = confs.get(ConfigKey.DIRECT_DEBIT_ICS.getKey());//ics
+        c12 = confs.get(ConfigKey.DEFAULT_DUE_DAY.getKey());//jour d'échéance par défaut
 
 		firmName = new GemField(20);
 		firmName.setText(c1.getValue());
@@ -111,6 +113,10 @@ public class ConfigCreditor
 
 		ics = new GemField(10);
 		ics.setText(c11.getValue());
+        
+        SpinnerNumberModel spinnerModel = new SpinnerNumberModel(Integer.parseInt(c12.getValue()), 1, 28, 1);
+        defaultDueDay = new JSpinner(spinnerModel);
+        defaultDueDay.setToolTipText(BundleUtil.getLabel("ConfEditor.default.due.date.tip"));
 
 		content = new GemPanel();
 		content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
@@ -151,9 +157,12 @@ public class ConfigCreditor
 		 * gb.add(dossierName,1,7,1,1,GridBagHelper.EAST); */
 		GemLabel accountingFormatLabel = new GemLabel(ConfigKey.ACCOUNTING_EXPORT_FORMAT.getLabel());
 		accountingFormatLabel.setToolTipText(BundleUtil.getLabel("ConfEditor.accounting.export.format.tip"));
+        GemLabel defaultDueDayLabel = new GemLabel(ConfigKey.DEFAULT_DUE_DAY.getLabel());
+        defaultDueDayLabel.setToolTipText(BundleUtil.getLabel("ConfEditor.default.due.date.tip"));
 		gb2.add(accountingFormatLabel, 0, 2, 1, 1, GridBagHelper.WEST);
 		gb2.add(accountingFormat, 1, 2, 1, 1, GridBagHelper.WEST);
-
+        gb2.add(defaultDueDayLabel, 0, 3, 1, 1, GridBagHelper.WEST);
+        gb2.add(defaultDueDay, 1, 3, 1, 1, GridBagHelper.WEST);
 		Box b1 = Box.createHorizontalBox();
 		b1.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
 		b1.add(new GemLabel("<html><u>"+BundleUtil.getLabel("Menu.debiting.label")+"</u></html>"));
@@ -246,6 +255,7 @@ public class ConfigCreditor
 		c9.setValue(iban.getText().trim());
 		c10.setValue(bic.getText().trim());
 		c11.setValue(ics.getText().trim());
+        c12.setValue(String.valueOf(defaultDueDay.getValue()));
 
 		conf.add(c1);
 		conf.add(c2);
@@ -258,6 +268,7 @@ public class ConfigCreditor
 		conf.add(c9);
 		conf.add(c10);
 		conf.add(c11);
+        conf.add(c12);
 
 		return conf;
 	}

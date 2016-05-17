@@ -1,7 +1,7 @@
 /*
- * @(#)EnrolmentOrderUtil.java	2.9.4.12 22/09/15
+ * @(#)EnrolmentOrderUtil.java	2.10.0 17/05/16
  * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -38,12 +38,13 @@ import net.algem.util.model.Model;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.12
+ * @version 2.10.0
  * @since 2.8.a 01/04/2013
  */
 public class EnrolmentOrderUtil {
   
-  private static int LAST_MONTH_PRL = 6;
+  private static int LAST_MONTH_DD = 6;
+  private static int DEFAULT_DUE_DAY = Integer.parseInt(ConfigUtil.getConf(ConfigKey.DEFAULT_DUE_DAY.getKey()));
   private PersonFile dossier;
   private double total;
   private DataConnection dc;
@@ -118,7 +119,8 @@ public class EnrolmentOrderUtil {
       e.setAmount(AccountUtil.getIntValue(total));
       DateFr de = mo.getStart();
       de.incMonth(1);
-      de.setDay(15);
+      //de.setDay(15); // TODO set day in config
+      de.setDay(DEFAULT_DUE_DAY);
       e.setDate(de);
       //insertion echeances
       orderLines.add(e);
@@ -152,7 +154,8 @@ public class EnrolmentOrderUtil {
   private DateFr getFirstDateOfPayment(DateFr orderDateStart) {
     
     DateFr first = new DateFr(orderDateStart);
-    first.setDay(15);
+    //first.setDay(15);
+    first.setDay(DEFAULT_DUE_DAY);
     // on incrémente d'un mois, passé le 10 du mois ou si mois de septembre
     if (isFirstPaymentAfter(orderDateStart)) {
       first.incMonth(1);
@@ -166,7 +169,8 @@ public class EnrolmentOrderUtil {
    * @return true if after
    */
   private boolean isFirstPaymentAfter(DateFr orderDateStart) {
-    return (orderDateStart.getDay() > 10 || orderDateStart.getMonth() == 9);
+    // orig > 10
+    return (orderDateStart.getDay() > (DEFAULT_DUE_DAY - 5) || orderDateStart.getMonth() == 9);
   }
 
   /**
@@ -465,8 +469,8 @@ public class EnrolmentOrderUtil {
    * @return an integer
    */
   public static int calcNumberOfMonths(int monthStart, int monthEnd) {
-    if (monthEnd > LAST_MONTH_PRL && monthEnd < 9) {
-      monthEnd = LAST_MONTH_PRL;
+    if (monthEnd > LAST_MONTH_DD && monthEnd < 9) {
+      monthEnd = LAST_MONTH_DD;
     }
     if (monthStart > monthEnd) {
       return monthEnd + (13 - monthStart);
