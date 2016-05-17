@@ -1,3 +1,13 @@
+Liste élèves cours/formules
+12-05-2016 : 2h
+13-05-2016 : 4h
+
+Scripts
+13-05-2016 : 1h
+
+Echeancier
+13-05-2016 : 1h15 (cacher fac)
+
 Echéancier : cacher lignes facturation
 16-05-2016 : 1h
 
