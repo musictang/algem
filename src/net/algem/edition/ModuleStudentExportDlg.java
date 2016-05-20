@@ -1,7 +1,7 @@
 /*
- * @(#)ModuleStudentExportDlg.java 2.9.2.1 18/02/15
+ * @(#)ModuleStudentExportDlg.java 2.10.0 21/05/16
  * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -32,7 +32,7 @@ import net.algem.util.ui.GridBagHelper;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2.1
+ * @version 2.10.0
  * @since 2.8.o 09/10/13
  */
 public class ModuleStudentExportDlg 
@@ -61,7 +61,8 @@ extends StudentExportDlg
 
   @Override
   public String getRequest() {
-    return service.getContactQueryByModule(module.getKey(), dateRange.getStart(), dateRange.getEnd(), rdPro.isSelected());
+    Boolean pro = rdPro.isSelected() ? Boolean.valueOf(true) : (rdLeisure.isSelected() ? Boolean.valueOf(false) : null);
+    return service.getContactQueryByModule(module.getKey(), dateRange.getStart(), dateRange.getEnd(), pro);
   }
 
 }

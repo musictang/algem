@@ -18,7 +18,6 @@
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 package net.algem.edition;
 
 import java.io.PrintWriter;
@@ -43,28 +42,29 @@ import net.algem.util.DataConnection;
 
 /**
  * Service class for export operations.
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.10.0
  * @since 2.6.d 06/11/2012
  */
-public class ExportService {
+public class ExportService
+{
 
-  public static final String [] CSV_HEADER = {
-      BundleUtil.getLabel("First.name.label"),
-      BundleUtil.getLabel("Name.label"),
-      BundleUtil.getLabel("Address1.label"),
-      BundleUtil.getLabel("Address2.label"),
-      BundleUtil.getLabel("Zipcode.label"),
-      BundleUtil.getLabel("City.label"),
-      BundleUtil.getLabel("Email.label") + 1,
-      BundleUtil.getLabel("Email.label") + 2,
-      BundleUtil.getLabel("Telephone.label") + 1,
-      BundleUtil.getLabel("Telephone.label") + 2,
-      BundleUtil.getLabel("Telephone.label") + 3
-    };
+  public static final String[] CSV_HEADER = {
+    BundleUtil.getLabel("First.name.label"),
+    BundleUtil.getLabel("Name.label"),
+    BundleUtil.getLabel("Address1.label"),
+    BundleUtil.getLabel("Address2.label"),
+    BundleUtil.getLabel("Zipcode.label"),
+    BundleUtil.getLabel("City.label"),
+    BundleUtil.getLabel("Email.label") + 1,
+    BundleUtil.getLabel("Email.label") + 2,
+    BundleUtil.getLabel("Telephone.label") + 1,
+    BundleUtil.getLabel("Telephone.label") + 2,
+    BundleUtil.getLabel("Telephone.label") + 3
+  };
   private DataConnection dc;
   private PlanningService service;
-
 
   public ExportService(DataConnection dc) {
     this.dc = dc;
@@ -76,15 +76,15 @@ public class ExportService {
 
     out.println(getHeader(CSV_HEADER));
     ResultSet rs = dc.executeQuery(query);
-    while(rs.next()) {
+    while (rs.next()) {
       out.print(rs.getString(1));
-      out.printf(";%s",rs.getString(2));
-      out.printf(";%s",rs.getString(3));
-      out.printf(";%s",rs.getString(4));
-      out.printf(";%s",rs.getString(5));
-      out.printf(";%s",rs.getString(6));
+      out.printf(";%s", rs.getString(2));
+      out.printf(";%s", rs.getString(3));
+      out.printf(";%s", rs.getString(4));
+      out.printf(";%s", rs.getString(5));
+      out.printf(";%s", rs.getString(6));
       out.println();
-      counter ++;
+      counter++;
     }
     return counter;
   }
@@ -96,39 +96,50 @@ public class ExportService {
       List<String> emails = getEmails(p.getId());
       List<String> tels = getTels(p.getId());
       out.print(p.getFirstName());
-      out.printf(";%s",p.getName());
-      out.printf(";%s",a.getAdr1());
-      out.printf(";%s",a.getAdr2());
-      out.printf(";%s",a.getCdp());
-      out.printf(";%s",a.getCity());
-      switch(emails.size()) {
-        case 0 : out.print(";;"); break;
-        case 1 : out.printf(";%s;",emails.get(0));break;
-        default : out.printf(";%s;%s",emails.get(0), emails.get(1));
+      out.printf(";%s", p.getName());
+      out.printf(";%s", a.getAdr1());
+      out.printf(";%s", a.getAdr2());
+      out.printf(";%s", a.getCdp());
+      out.printf(";%s", a.getCity());
+      switch (emails.size()) {
+        case 0:
+          out.print(";;");
+          break;
+        case 1:
+          out.printf(";%s;", emails.get(0));
+          break;
+        default:
+          out.printf(";%s;%s", emails.get(0), emails.get(1));
       }
-      switch(tels.size()) {
-        case 0 : out.print(";;;"); break;
-        case 1 : out.printf(";%s;;",tels.get(0));break;
-        case 2 : out.printf(";%s;%s;",tels.get(0), tels.get(1));break;
-        default : out.printf(";%s;%s;%s",tels.get(0), tels.get(1), tels.get(2));// 3 tels
+      switch (tels.size()) {
+        case 0:
+          out.print(";;;");
+          break;
+        case 1:
+          out.printf(";%s;;", tels.get(0));
+          break;
+        case 2:
+          out.printf(";%s;%s;", tels.get(0), tels.get(1));
+          break;
+        default:
+          out.printf(";%s;%s;%s", tels.get(0), tels.get(1), tels.get(2));// 3 tels
       }
       out.println();
     }
     return list.size();
   }
 
-
-  private String getHeader(String [] header) {
+  private String getHeader(String[] header) {
     StringBuilder h = new StringBuilder();
     for (String s : header) {
       h.append(s).append(";");
     }
-    return h.substring(0, h.length() -1);
+    return h.substring(0, h.length() - 1);
   }
 
   int printEmailCSV(PrintWriter out, String query) throws SQLException {
     int counter = 0;
-    String [] headers = {
+    String[] headers = {
       BundleUtil.getLabel("First.name.label"),
       BundleUtil.getLabel("Name.label"),
       BundleUtil.getLabel("Email.label")
@@ -149,7 +160,7 @@ public class ExportService {
     StringBuilder bcc = new StringBuilder();
     Set<String> set = new LinkedHashSet<String>(); // insertion-ordered
     for (Person p : list) {
-      for(String e : getEmails(p.getId())) {
+      for (String e : getEmails(p.getId())) {
         set.add(e);
       }
     }
@@ -163,8 +174,8 @@ public class ExportService {
     return bcc.toString();
   }
 
-  String getContactQueryByTeacher(int teacher, Date start, Date end, boolean pro) {
-    return "SELECT DISTINCT p.id, p.nom, p.prenom FROM "
+  String getContactQueryByTeacher(int teacher, Date start, Date end, Boolean pro) {
+    String query = "SELECT DISTINCT p.id, p.nom, p.prenom FROM "
             + ScheduleIO.TABLE + " s,"
             + PersonIO.TABLE + " p,"
             + CourseOrderIO.TABLE + " cc,"
@@ -177,13 +188,16 @@ public class ExportService {
             + " AND cc.idcmd = c.id"
             + " AND c.adh = p.id"
             + " AND cc.module = cm.id"
-            + " AND cm.module = m.id"
-            + " AND m.code LIKE '" + (pro ? "P%'" : "L%'")
-            + " ORDER BY p.nom, p.prenom";
+            + " AND cm.module = m.id";
+    if (pro != null) {
+      query += " AND m.code LIKE '" + (pro ? "P%'" : "L%'");
+    }
+    query += " ORDER BY p.nom, p.prenom";
+    return query;
   }
 
-  String getContactQueryByCourse(int course, Date start, Date end, boolean pro) {
-    return "SELECT DISTINCT p.id, p.nom, p.prenom FROM "
+  String getContactQueryByCourse(int course, Date start, Date end, Boolean pro) {
+    String query = "SELECT DISTINCT p.id, p.nom, p.prenom FROM "
             + PersonIO.TABLE + " p,"
             + ActionIO.TABLE + " a,"
             + ScheduleIO.TABLE + " s,"
@@ -198,13 +212,16 @@ public class ExportService {
             + " AND cc.idcmd = c.id"
             + " AND c.adh = p.id"
             + " AND cc.module = cm.id"
-            + " AND cm.module = m.id"
-            + " AND m.code LIKE '" + (pro ? "P%'" : "L%'")
-            + " ORDER BY p.nom, p.prenom";
+            + " AND cm.module = m.id";
+    if (pro != null) {
+      query += " AND m.code LIKE '" + (pro ? "P%'" : "L%'");
+    }
+    query += " ORDER BY p.nom, p.prenom";
+    return query;
   }
 
-  String getContactQueryByModule(int module, Date start, Date end, boolean pro) {
-    return "SELECT DISTINCT p.id, p.nom, p.prenom FROM "
+  String getContactQueryByModule(int module, Date start, Date end, Boolean pro) {
+    String query = "SELECT DISTINCT p.id, p.nom, p.prenom FROM "
             + PersonIO.TABLE + " p, "
             + ScheduleIO.TABLE + " s, "
             + OrderIO.TABLE + " c, "
@@ -216,22 +233,27 @@ public class ExportService {
             + " AND cc.module = cm.id"
             + " AND cm.module = " + module
             + " AND cm.module = m.id"
-            + " AND m.code LIKE '" + (pro ? "P%'" : "L%'")
             + " AND cc.idcmd = c.id"
-            + " AND c.adh = p.id"
-            + " ORDER BY p.nom, p.prenom";
+            + " AND c.adh = p.id";
+
+    if (pro != null) {
+      query += " AND m.code LIKE '" + (pro ? "P%'" : "L%'");
+    }
+    query += " ORDER BY p.nom, p.prenom";
+    return query;
   }
 
   /**
    * Search query of people practicing the instrument {@literal instId}.
+   *
    * @param instId instrument id
    * @param start start date
    * @param end end date
    * @param pro status
    * @return a SQL-string
    */
-  String getContactQueryByInstrument(int instId, Date start, Date end, boolean pro) {
-    return "SELECT DISTINCT p.id, p.nom, p.prenom FROM "
+  String getContactQueryByInstrument(int instId, Date start, Date end, Boolean pro) {
+    String query = "SELECT DISTINCT p.id, p.nom, p.prenom FROM "
             + OrderIO.TABLE + " c,"
             + InstrumentIO.PERSON_INSTRUMENT_TABLE + " i,"
             + CourseOrderIO.TABLE + " cc,"
@@ -241,24 +263,27 @@ public class ExportService {
             + " WHERE c.adh = i.idper"
             + " AND i.instrument = " + instId + " AND i.ptype = " + Instrument.MEMBER
             + " AND c.id = cc.idcmd"
+            + " AND c.adh = p.id"
             + " AND cc.datedebut >= '" + start + "' AND cc.datefin <= '" + end + "'"
             + " AND cc.module = cm.id"
-            + " AND cm.module = m.id"
-            + " AND m.code LIKE '" + (pro ? "P%'" : "L%'")
-            + " AND c.adh = p.id"
-            + " ORDER BY p.nom, p.prenom";
+            + " AND cm.module = m.id";
+    if (pro != null) {
+      query += " AND m.code LIKE '" + (pro ? "P%'" : "L%'");
+    }
+    query += " ORDER BY p.nom, p.prenom";
+    return query;
   }
 
   String getStudent(Date start, Date end, Boolean pro, int estab) {
     String query = "SELECT DISTINCT p.id, p.nom, p.prenom"
-      + " FROM " + OrderIO.TABLE + " c JOIN " + MemberIO.TABLE + " e ON (c.adh = e.idper)"
-      + " JOIN " + PersonIO.TABLE + " p ON (e.idper = p.id)"
-      + " JOIN " + CourseOrderIO.TABLE + " cc ON (c.id = cc.idcmd)"
-      + " JOIN " + ModuleOrderIO.TABLE + " cm ON (cc.module = cm.id)"
-      + " JOIN " + ModuleIO.TABLE + " m ON (cm.module = m.id)"
-      + " JOIN " + ScheduleIO.TABLE + " pl ON (cc.idaction = pl.action)"
-      + " JOIN " + RoomIO.TABLE + " s ON (pl.lieux = s.id)"
-      + " WHERE cc.datedebut BETWEEN '" + start + "' AND '" + end + "'";
+            + " FROM " + OrderIO.TABLE + " c JOIN " + MemberIO.TABLE + " e ON (c.adh = e.idper)"
+            + " JOIN " + PersonIO.TABLE + " p ON (e.idper = p.id)"
+            + " JOIN " + CourseOrderIO.TABLE + " cc ON (c.id = cc.idcmd)"
+            + " JOIN " + ModuleOrderIO.TABLE + " cm ON (cc.module = cm.id)"
+            + " JOIN " + ModuleIO.TABLE + " m ON (cm.module = m.id)"
+            + " JOIN " + ScheduleIO.TABLE + " pl ON (cc.idaction = pl.action)"
+            + " JOIN " + RoomIO.TABLE + " s ON (pl.lieux = s.id)"
+            + " WHERE cc.datedebut BETWEEN '" + start + "' AND '" + end + "'";
     if (pro != null) {
       query += " AND m.code LIKE '" + (pro ? "P%'" : "L%'");
     }
@@ -273,7 +298,7 @@ public class ExportService {
   List<Person> getContacts(String query) throws SQLException {
     List<Person> list = new ArrayList<Person>();
     ResultSet rs = dc.executeQuery(query);
-    while(rs.next()) {
+    while (rs.next()) {
       Person p = new Person(rs.getInt(1));
       p.setName(rs.getString(2));
       p.setFirstName(rs.getString(3));
@@ -284,13 +309,13 @@ public class ExportService {
 
   Address getAddress(int idper) throws SQLException {
     String query = "SELECT DISTINCT a.adr1, a.adr2, a.cdp, a.ville"
-      + " FROM " + AddressIO.TABLE + " a JOIN " + MemberIO.TABLE + " m ON (a.idper = m.idper OR a.idper = m.payeur)"
-      + " WHERE m.idper = " + idper
-      + " AND a.archive = false";
+            + " FROM " + AddressIO.TABLE + " a JOIN " + MemberIO.TABLE + " m ON (a.idper = m.idper OR a.idper = m.payeur)"
+            + " WHERE m.idper = " + idper
+            + " AND a.archive = false";
     ResultSet rs = dc.executeQuery(query);
 
     Address a = new Address();
-    while(rs.next()) {
+    while (rs.next()) {
       a.setAdr1(rs.getString(1));
       a.setAdr2(rs.getString(2));
       a.setCdp(rs.getString(3));
@@ -302,12 +327,12 @@ public class ExportService {
 
   List<String> getEmails(int idper) throws SQLException {
     String query = "SELECT DISTINCT m.email FROM "
-      + EmailIO.TABLE + " m JOIN " + MemberIO.TABLE + " e ON (m.idper = e.idper OR m.idper = e.payeur)"
-      + " WHERE e.idper = " + idper
-      + " AND m.archive = false";
+            + EmailIO.TABLE + " m JOIN " + MemberIO.TABLE + " e ON (m.idper = e.idper OR m.idper = e.payeur)"
+            + " WHERE e.idper = " + idper
+            + " AND m.archive = false";
     ResultSet rs = dc.executeQuery(query);
     List<String> list = new ArrayList<String>();
-    while(rs.next()) {
+    while (rs.next()) {
       list.add(rs.getString(1));
     }
     return list;
@@ -315,12 +340,12 @@ public class ExportService {
 
   List<String> getTels(int idper) throws SQLException {
     String query = "SELECT DISTINCT t.numero FROM "
-      + TeleIO.TABLE + " t JOIN " + MemberIO.TABLE + " m ON (t.idper = m.idper OR t.idper = m.payeur)"
-      + " WHERE m.idper = " + idper;
+            + TeleIO.TABLE + " t JOIN " + MemberIO.TABLE + " m ON (t.idper = m.idper OR t.idper = m.payeur)"
+            + " WHERE m.idper = " + idper;
 
     ResultSet rs = dc.executeQuery(query);
     List<String> list = new ArrayList<String>();
-    while(rs.next()) {
+    while (rs.next()) {
       list.add(rs.getString(1));
     }
     return list;
@@ -333,12 +358,12 @@ public class ExportService {
             + GroupIO.TABLE + " g, "
             + GroupIO.TABLE_DETAIL + " d, "
             + InstrumentIO.PERSON_INSTRUMENT_TABLE + " i"
-            + " WHERE s.jour >= '" + start+"' AND s.jour <= '"+end+"'"
-            + " AND s.ptype = "+ Schedule.GROUP
+            + " WHERE s.jour >= '" + start + "' AND s.jour <= '" + end + "'"
+            + " AND s.ptype = " + Schedule.GROUP
             + " AND s.idper = g.id AND g.id = d.id AND d.musicien = p.id"
             + " AND d.musicien = i.idper AND i.ptype = " + Instrument.MUSICIAN;
     if (instrument > 0) {
-      query += " AND i.instrument = "+ instrument;
+      query += " AND i.instrument = " + instrument;
     }
     query += " ORDER by p.nom, p.prenom";
 
@@ -382,7 +407,3 @@ public class ExportService {
   }
 
 }
-
-
-
-

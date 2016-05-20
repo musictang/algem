@@ -64,7 +64,9 @@ public class CourseStudentExportDlg
 
   @Override
   public String getRequest() {
-    return service.getContactQueryByCourse(course.getKey(), dateRange.getStart(), dateRange.getEnd(), rdPro.isSelected());
+    // boxing required : null value may be returned
+    Boolean pro = rdPro.isSelected() ? Boolean.valueOf(true) : (rdLeisure.isSelected() ? Boolean.valueOf(false) : null);
+    return service.getContactQueryByCourse(course.getKey(), dateRange.getStart(), dateRange.getEnd(), pro);
   }
 
 }

@@ -1,0 +1,7 @@
+{
+  "description": "Cours à rattraper par professeur. Les cours sont considérés à rattraper lorsqu'ils existent en salle de rattrapage. La période de recherche correspond à l'année scolaire.",
+"args":
+[
+    {"name" : "prof", "label" : "Nom du professeur", "type" : "text"}
+]
+}

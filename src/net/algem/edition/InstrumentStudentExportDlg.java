@@ -1,7 +1,7 @@
 /*
- * @(#)InstrumentStudentExportDlg.java 2.9.2.1 17/02/15
+ * @(#)InstrumentStudentExportDlg.java 2.10.0 20/05/16
  * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -32,7 +32,7 @@ import net.algem.util.ui.GridBagHelper;
  * Export dialog for contact infos of students playing the instrument selected.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2.1
+ * @version 2.10.0
  * @since 2.6.d 06/11/2012
  */
 public class InstrumentStudentExportDlg
@@ -68,7 +68,8 @@ public class InstrumentStudentExportDlg
    */
   @Override
   public String getRequest() {
-    return service.getContactQueryByInstrument(instrument.getKey(), dateRange.getStart(), dateRange.getEnd(), rdPro.isSelected());
+    Boolean pro = rdPro.isSelected() ? Boolean.valueOf(true) : (rdLeisure.isSelected() ? Boolean.valueOf(false) : null);
+    return service.getContactQueryByInstrument(instrument.getKey(), dateRange.getStart(), dateRange.getEnd(), pro);
   }
 
 }

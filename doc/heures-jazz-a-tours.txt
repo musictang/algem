@@ -23,8 +23,9 @@ Arrondi paiments fractionnés :
 Echeances type :
 18-05-2016 : 4h
 
-Echeances type + automatisation echeances facturation :
+Echeances type + automatisation echeances facturation + arrondis:
 19-05-2016 : 3h45 + 1h
 
 Scripts (export élèves) :
 19-05-2016 : 1h:30
+20-05-2016 : 1h

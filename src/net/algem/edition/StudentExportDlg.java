@@ -1,5 +1,5 @@
 /*
- * @(#)StudentExportDlg.java 2.10.0 19/05/16
+ * @(#)StudentExportDlg.java 2.10.0 20/05/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -59,7 +59,7 @@ public abstract class StudentExportDlg
 
   /** Type of info (all, mail only). */
   protected JComboBox typeContact;
-  protected JRadioButton rdLeisure, rdPro;
+  protected JRadioButton rdLeisure, rdPro, rdAll;
   protected DateRangePanel dateRange;
   protected GridBagHelper gb;
   protected ExportService service;
@@ -97,15 +97,21 @@ public abstract class StudentExportDlg
     typeContact = new JComboBox(category);
     typeContact.setPreferredSize(new Dimension(dateRange.getPreferredSize().width, typeContact.getPreferredSize().height));
     ButtonGroup status = new ButtonGroup();
+    
     rdLeisure = new JRadioButton(BundleUtil.getLabel("Leisure.label"));
     rdLeisure.setBorder(null);
     rdPro = new JRadioButton(BundleUtil.getLabel("Pro.label"));
+    rdAll = new JRadioButton(BundleUtil.getLabel("Leisure+Pro.label"));
+    rdAll.setSelected(true);
     status.add(rdLeisure);
     status.add(rdPro);
+    status.add(rdAll);
 
     GemPanel statusPanel = new GemPanel();
+    
     statusPanel.add(rdLeisure);
     statusPanel.add(rdPro);
+    statusPanel.add(rdAll);
 
     setPanel();
     if (nextRow > 0) {
