@@ -1,7 +1,7 @@
 /*
- * @(#)MemberEnrolmentDlg.java	2.9.4.12 21/09/15
+ * @(#)MemberEnrolmentDlg.java	2.10.0 19/05/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,6 +28,8 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.Vector;
 import net.algem.accounting.NullAccountException;
+import net.algem.config.ConfigKey;
+import net.algem.config.ConfigUtil;
 import net.algem.contact.PersonFile;
 import net.algem.course.*;
 import net.algem.edition.MemberCardEditor;
@@ -48,7 +50,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.3.12
+ * @version 2.10.0
  * @since 1.0a 07/07/1999
  * @see net.algem.contact.PersonFileEditor
  *
@@ -153,10 +155,13 @@ public class MemberEnrolmentDlg
         try {
           EnrolmentOrderUtil orderUtil = new EnrolmentOrderUtil(dossier, dc);
           orderUtil.setTotalOrderLine(totalBase);
-          int n = orderUtil.saveOrderLines(module_orders.elementAt(0), school);
+          String billing = ConfigUtil.getConf(ConfigKey.CHARGE_ENROLMENT_LINES.getKey());
+          boolean withBilling = billing.toLowerCase().startsWith("t");
+          int n = orderUtil.saveOrderLines(module_orders.elementAt(0), school, withBilling);
           for (ModuleOrder mo : module_orders) {
             orderUtil.updateModuleOrder(n, mo);
           }
+          orderUtil.saveStandardOrderLines(module_orders.elementAt(0));
         } catch (NullAccountException ne) {
           MessagePopup.warning(view, ne.getMessage());
         }
@@ -186,7 +191,7 @@ public class MemberEnrolmentDlg
     ca.edit();
 
   }
-  
+
   private void resetIdModule() {
     for(int i = 0, size = module_orders.size(); i < size; i++) {
       ModuleOrder mo = module_orders.elementAt(i);

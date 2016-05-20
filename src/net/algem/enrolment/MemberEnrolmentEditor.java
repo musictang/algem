@@ -1,5 +1,5 @@
 /*
- * @(#)MemberEnrolmentEditor.java 2.9.6 24/03/16
+ * @(#)MemberEnrolmentEditor.java 2.10.0 19/05/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -71,7 +71,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.6
+ * @version 2.10.0
  * @since 1.0b 06/09/2001
  */
 public class MemberEnrolmentEditor
@@ -624,7 +624,7 @@ public class MemberEnrolmentEditor
 
       String school = ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey());
       try {
-        int n = orderUtil.saveOrderLines(mo, Integer.parseInt(school));
+        int n = orderUtil.saveOrderLines(mo, Integer.parseInt(school), false);
         orderUtil.updateModuleOrder(n, mo);
       } catch (NullAccountException ex) {
         GemLogger.logException(ex);
@@ -768,7 +768,7 @@ public class MemberEnrolmentEditor
       }
     }
   }
-  
+
   /**
    * Changes the start date and/or the end date of the selected module.
    */

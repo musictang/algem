@@ -1,5 +1,5 @@
 /*
- * @(#)ConfigKey.java 2.10.0 17/05/16
+ * @(#)ConfigKey.java 2.10.0 19/05/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -145,10 +145,11 @@ public enum ConfigKey
   ACCOUNTING_DOSSIER_NAME("Compta.nom.dossier", BundleUtil.getLabel("ConfEditor.accounting.export.dossier.label")),
 
   ORGANIZATION_DOMAIN("Organisation.domaine", BundleUtil.getLabel("ConfEditor.organization.domain.label")),
-  DEFAULT_DUE_DAY("Jour.echeance.par.defaut", BundleUtil.getLabel("ConfEditor.default.due.date.label")),
 
   DEFAULT_PRICING_PERIOD("Periode.tarification", BundleUtil.getLabel("ConfEditor.default.module.pricing")),
-
+  DEFAULT_DUE_DAY("Jour.echeance.par.defaut", BundleUtil.getLabel("ConfEditor.default.due.date.label")),
+  ROUND_FRACTIONAL_PAYMENTS("Arrondir.inter.paiements", BundleUtil.getLabel("ConfEditor.round.fractional.payments.label")),
+  CHARGE_ENROLMENT_LINES("Facturer.echeances.inscription", BundleUtil.getLabel("ConfEditor.charge.enrolment.lines.label")),
   SCHEDULE_RANGE_NAMES("Afficher.noms.plages", BundleUtil.getLabel("ConfEditor.schedule.ranges.names")),
 
   PERSON_SORT_ORDER("Ordre.tri.personne", BundleUtil.getLabel("Person.sort.order.label")),

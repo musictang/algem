@@ -1,7 +1,7 @@
 /*
- * @(#)MenuAccounting.java 2.9.4.13 09/11/15
+ * @(#)MenuAccounting.java 2.10.0 19/05/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -48,7 +48,7 @@ import net.algem.util.ui.ProgressMonitorHandler;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.9.4.13
+ * @version 2.10.0
  * @since 1.0a 07/07/1999
  */
 public class MenuAccounting
@@ -104,7 +104,7 @@ public class MenuAccounting
     add(getItem(new JMenuItem(menus.get("Menu.booking.journal.label")), "Accounting.journal.config.auth"));
     add(new JMenuItem(menus.get("Menu.account.link.label")));
     addSeparator();
-
+add(new JMenuItem(menus.get("Menu.standard.orderLine.label")));
     add(new JMenuItem(menus.get("Menu.mode.of.payment.label")));
     add(new JMenuItem(menus.get("Menu.vat.label")));
     miRoomRate = new JMenuItem(menus.get("Menu.room.rate.label"));
@@ -236,6 +236,15 @@ public class MenuAccounting
       desktop.removeModule("Menu.invoice.history");
     } else if ("HistoDevis.Abandon".equals(arg)) {
       desktop.removeModule("Menu.quotation.history");
+    } else if (menus.get("Menu.standard.orderLine.label").equals(arg)) {
+      AccountingService accService = new AccountingService(dc);
+      StandardOrderLineDlg dlg = new StandardOrderLineDlg(desktop, accService, "Echéances standards");
+      dlg.createUI();
+      try {
+        dlg.load();
+      } catch (SQLException ex) {
+        GemLogger.logException(ex);
+      }
     }
     desktop.setDefaultCursor();
   }
@@ -273,6 +282,7 @@ public class MenuAccounting
     menus.put("Menu.mode.of.payment.label", BundleUtil.getLabel("Menu.mode.of.payment.label"));
     menus.put("Menu.vat.label", BundleUtil.getLabel("Menu.vat.label"));
     menus.put("Menu.room.rate.label", BundleUtil.getLabel("Menu.room.rate.label"));
+    menus.put("Menu.standard.orderLine.label", BundleUtil.getLabel("Menu.standard.orderLine.label"));
   }
 
 }

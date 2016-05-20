@@ -1,7 +1,7 @@
 /*
- * @(#)AllStudentExportDlg.java	2.9.2.1 18/02/15
- * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * @(#)AllStudentExportDlg.java	2.10.0 19/05/16
+ *
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.edition;
 
@@ -33,43 +33,44 @@ import net.algem.util.ui.GridBagHelper;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2.1
+ * @version 2.10.0
  * @since 2.9.2.1 17/02/15
  */
-public class AllStudentExportDlg 
+public class AllStudentExportDlg
 extends StudentExportDlg
 {
-  
+
   private GemList<Establishment> allEstabList;
   private EstabChoice estab;
 
   public AllStudentExportDlg(GemDesktop desktop) {
     super(desktop);
   }
-  
+
   @Override
   protected void setPanel() {
     allEstabList = desktop.getDataCache().getList(Model.Establishment);
     allEstabList.addElement(new Establishment(new Person(0, BundleUtil.getLabel("All.label"))));
     estab = new EstabChoice(allEstabList);
     estab.setPreferredSize(typeContact.getPreferredSize());
-    
+
     gb.add(new JLabel(BundleUtil.getLabel("Date.From.label")), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(dateRange, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(new JLabel(BundleUtil.getLabel("Type.label")), 0, 1, 1, 1, GridBagHelper.WEST);
     gb.add(typeContact, 1, 1, 1, 1, GridBagHelper.WEST);
     gb.add(new JLabel(BundleUtil.getLabel("Establishment.label")), 0, 2, 1, 1, GridBagHelper.WEST);
     gb.add(estab, 1, 2, 1, 1, GridBagHelper.WEST);
-    
+
     nextRow = 3;
   }
 
   @Override
   public String getRequest() {
+    // boxing required : null value may be returned
     Boolean pro = rdPro.isSelected() ? Boolean.valueOf(true) : (rdLeisure.isSelected() ? Boolean.valueOf(false) : null);
     return service.getStudent(dateRange.getStart(), dateRange.getEnd(), pro, estab.getKey());
   }
-  
+
   @Override
   protected void close() {
     allEstabList.removeElement((Establishment) allEstabList.getItem(0));

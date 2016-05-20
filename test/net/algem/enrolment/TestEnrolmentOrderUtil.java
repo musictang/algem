@@ -1,7 +1,7 @@
 /*
- * @(#)TestEnrolmentOrderUtil.java 2.9.1 14/11/14
+ * @(#)TestEnrolmentOrderUtil.java 2.10.0 18/05/16
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -36,7 +36,7 @@ import org.junit.*;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.10.0
  * @since 2.8.n 25/09/13
  */
 public class TestEnrolmentOrderUtil {
@@ -70,6 +70,35 @@ public class TestEnrolmentOrderUtil {
       cleanUp(bdLines);
     }
 
+    @Test
+    public void testFractionalPortion() {
+      int [] numbers = {14699,14699,14699};
+      int [] result = new int[numbers.length];
+      int [] fractions = new int[numbers.length];
+      int total = 3*99;
+      for (int i = 0; i < numbers.length; i++) {
+        int r = numbers[i] % 100;
+        fractions[i] = r;
+        result[i] = numbers[i] -r;
+      }
+      int expected [] = {14600,14600,14600};
+      for(int i = 0; i < numbers.length; i++) {
+        System.out.println(result[i]);
+        assertTrue(""+result[i], expected[i] == result[i]);
+      }
+      int totalF = 0;
+      for (int f : fractions) {
+        totalF += f;
+      }
+      System.out.printf("%d %d",total, totalF);
+      assertTrue(""+totalF, total == totalF);
+
+      int last = 14600 + totalF;
+      assertTrue(""+totalF, 14897 == last);
+
+    }
+
+
   @Ignore
   public void testOrderLineCreationForQuarterPayment() {
 
@@ -91,7 +120,7 @@ public class TestEnrolmentOrderUtil {
     EnrolmentOrderUtil util = new EnrolmentOrderUtil(null, dc);
     util.setTotalOrderLine(600); // total des modules au trimestre
 
-    ModuleOrder mo = new ModuleOrder(); 
+    ModuleOrder mo = new ModuleOrder();
     mo.setStart(new DateFr("16-09-2013"));
     mo.setEnd(new DateFr("26-06-2014"));
     mo.setModeOfPayment(ModeOfPayment.FAC.toString());

@@ -1,6 +1,6 @@
 /*
- * @(#)ConfigAccounting.java 2.10.0 17/05/16
- * 
+ * @(#)ConfigAccounting.java 2.10.0 19/05/16
+ *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.config;
 
@@ -46,230 +46,240 @@ import net.algem.util.ui.GridBagHelper;
  * @since 2.2.d
  */
 public class ConfigAccounting
-	extends ConfigPanel {
+  extends ConfigPanel {
 
-	private Config c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12;
-	private GemField firmName;
-	private GemField issuer;
-	private GemField branch;
-	private GemField estab;
-	private GemField account;
-	private GemField iban;
-	private GemField bic;
-	private GemField ics;
-	private GemField document;
-	private GemField invoice;
+  private Config c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13, c14;
+  private GemField firmName;
+  private GemField issuer;
+  private GemField branch;
+  private GemField estab;
+  private GemField account;
+  private GemField iban;
+  private GemField bic;
+  private GemField ics;
+  private GemField document;
+  private GemField invoice;
 //  private GemField dossierName;
-	private JComboBox accountingFormat;
-    private JSpinner defaultDueDay;
+  private JComboBox accountingFormat;
+  private JSpinner defaultDueDay;
+  private JCheckBox roundFractionalPayments;
+  private JCheckBox chargeEnrolmentLines;
 
-	public ConfigAccounting(String title, Map<String, Config> cm) {
-		super(title, cm);
-		init();
-	}
+  public ConfigAccounting(String title, Map<String, Config> cm) {
+    super(title, cm);
+    init();
+  }
 
-	private void init() {
-		c1 = confs.get(ConfigKey.DIRECT_DEBIT_FIRM_NAME.getKey());//raison
-		c2 = confs.get(ConfigKey.DIRECT_DEBIT_CREDITOR_NNE.getKey());//emetteur
-		c3 = confs.get(ConfigKey.DIRECT_DEBIT_BANK_BRANCH.getKey());//guichet
-		c4 = confs.get(ConfigKey.DIRECT_DEBIT_BANKHOUSE_CODE.getKey());//etablissement
-		c5 = confs.get(ConfigKey.DIRECT_DEBIT_ACCOUNT.getKey());//compte
-		c6 = confs.get(ConfigKey.ACCOUNTING_DOCUMENT_NUMBER.getKey());//piece
-		c7 = confs.get(ConfigKey.ACCOUNTING_INVOICE_NUMBER.getKey());//facture
+  private void init() {
+    c1 = confs.get(ConfigKey.DIRECT_DEBIT_FIRM_NAME.getKey());//raison
+    c2 = confs.get(ConfigKey.DIRECT_DEBIT_CREDITOR_NNE.getKey());//emetteur
+    c3 = confs.get(ConfigKey.DIRECT_DEBIT_BANK_BRANCH.getKey());//guichet
+    c4 = confs.get(ConfigKey.DIRECT_DEBIT_BANKHOUSE_CODE.getKey());//etablissement
+    c5 = confs.get(ConfigKey.DIRECT_DEBIT_ACCOUNT.getKey());//compte
+    c6 = confs.get(ConfigKey.ACCOUNTING_DOCUMENT_NUMBER.getKey());//piece
+    c7 = confs.get(ConfigKey.ACCOUNTING_INVOICE_NUMBER.getKey());//facture
 //    c8 = confs.get(ConfigKey.ACCOUNTING_DOSSIER_NAME.getKey());//nom du dossier comptable
-		c8 = confs.get(ConfigKey.ACCOUNTING_EXPORT_FORMAT.getKey());//format export
-		c9 = confs.get(ConfigKey.DIRECT_DEBIT_IBAN.getKey());//iban
-		c10 = confs.get(ConfigKey.DIRECT_DEBIT_BIC.getKey());//bic
-		c11 = confs.get(ConfigKey.DIRECT_DEBIT_ICS.getKey());//ics
-        c12 = confs.get(ConfigKey.DEFAULT_DUE_DAY.getKey());//jour d'échéance par défaut
+    c8 = confs.get(ConfigKey.ACCOUNTING_EXPORT_FORMAT.getKey());//format export
+    c9 = confs.get(ConfigKey.DIRECT_DEBIT_IBAN.getKey());//iban
+    c10 = confs.get(ConfigKey.DIRECT_DEBIT_BIC.getKey());//bic
+    c11 = confs.get(ConfigKey.DIRECT_DEBIT_ICS.getKey());//ics
+    c12 = confs.get(ConfigKey.DEFAULT_DUE_DAY.getKey());//jour d'échéance par défaut
+    c13 = confs.get(ConfigKey.ROUND_FRACTIONAL_PAYMENTS.getKey());//jour d'échéance par défaut
+    c14 = confs.get(ConfigKey.CHARGE_ENROLMENT_LINES.getKey());//jour d'échéance par défaut
+    
+    firmName = new GemField(20);
+    firmName.setText(c1.getValue());
+    issuer = new GemField(10);
+    issuer.setText(c2.getValue());
+    branch = new GemField(5);
+    branch.setText(c3.getValue());
+    estab = new GemField(5);
+    estab.setText(c4.getValue());
+    account = new GemField(10);
+    account.setText(c5.getValue());
+    document = new GemField(10);
+    document.setText(c6.getValue());
+    invoice = new GemField(10);
+    invoice.setText(c7.getValue());
+    accountingFormat = new JComboBox(new String[]{
+      AccountingExportFormat.CIEL.getLabel(),
+      AccountingExportFormat.DVLOG.getLabel(),
+      AccountingExportFormat.SAGE.getLabel()});
+    accountingFormat.setSelectedItem(c8.getValue());
 
-		firmName = new GemField(20);
-		firmName.setText(c1.getValue());
-		issuer = new GemField(10);
-		issuer.setText(c2.getValue());
-		branch = new GemField(5);
-		branch.setText(c3.getValue());
-		estab = new GemField(5);
-		estab.setText(c4.getValue());
-		account = new GemField(10);
-		account.setText(c5.getValue());
-		document = new GemField(10);
-		document.setText(c6.getValue());
-		invoice = new GemField(10);
-		invoice.setText(c7.getValue());
-		/* dossierName = new GemField(20);
-		 * dossierName.setText(c8.getValue()); */
-		accountingFormat = new JComboBox(new String[]{
-				AccountingExportFormat.CIEL.getLabel(),
-				AccountingExportFormat.DVLOG.getLabel(),
-				AccountingExportFormat.SAGE.getLabel()});
-		accountingFormat.setSelectedItem(c8.getValue());
+    initIban();
+    iban.setText(c9.getValue());
 
-		initIban();
-		iban.setText(c9.getValue());
+    initBic();
+    bic.setText(c10.getValue());
 
-		initBic();
-		bic.setText(c10.getValue());
+    ics = new GemField(10);
+    ics.setText(c11.getValue());
 
-		ics = new GemField(10);
-		ics.setText(c11.getValue());
-        
-        SpinnerNumberModel spinnerModel = new SpinnerNumberModel(Integer.parseInt(c12.getValue()), 1, 28, 1);
-        defaultDueDay = new JSpinner(spinnerModel);
-        defaultDueDay.setToolTipText(BundleUtil.getLabel("ConfEditor.default.due.date.tip"));
+    SpinnerNumberModel spinnerModel = new SpinnerNumberModel(Integer.parseInt(c12.getValue()), 1, 28, 1);
+    defaultDueDay = new JSpinner(spinnerModel);
+    defaultDueDay.setToolTipText(BundleUtil.getLabel("ConfEditor.default.due.date.tip"));
 
-		content = new GemPanel();
-		content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
+    roundFractionalPayments = new JCheckBox(ConfigKey.ROUND_FRACTIONAL_PAYMENTS.getLabel());
+    roundFractionalPayments.setToolTipText(BundleUtil.getLabel("ConfEditor.round.fractional.payments.tip"));
+    roundFractionalPayments.setSelected(c13 == null || c13.getValue() == null ? false : c13.getValue().toLowerCase().startsWith("t"));
 
-		GemPanel creditorPanel = new GemPanel(new GridBagLayout());
+    chargeEnrolmentLines = new JCheckBox(ConfigKey.CHARGE_ENROLMENT_LINES.getLabel());
+    chargeEnrolmentLines.setToolTipText(BundleUtil.getLabel("ConfEditor.charge.enrolment.lines.tip"));
+    chargeEnrolmentLines.setSelected(c14 == null || c14.getValue() == null ? false : c14.getValue().toLowerCase().startsWith("t"));
+    content = new GemPanel();
+    content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
 
-		GridBagHelper gb = new GridBagHelper(creditorPanel);
-		gb.insets = GridBagHelper.SMALL_INSETS;
+    GemPanel creditorPanel = new GemPanel(new GridBagLayout());
 
-		gb.add(new GemLabel(ConfigKey.DIRECT_DEBIT_FIRM_NAME.getLabel()), 0, 0, 1, 1, GridBagHelper.WEST);
-		gb.add(firmName, 1, 0, 1, 1, GridBagHelper.WEST);
+    GridBagHelper gb = new GridBagHelper(creditorPanel);
+    gb.insets = GridBagHelper.SMALL_INSETS;
 
-		gb.add(new GemLabel(ConfigKey.DIRECT_DEBIT_CREDITOR_NNE.getLabel()), 0, 1, 1, 1, GridBagHelper.WEST);
-		gb.add(issuer, 1, 1, 1, 1, GridBagHelper.WEST);
-		gb.add(new GemLabel(ConfigKey.DIRECT_DEBIT_BANK_BRANCH.getLabel()), 0, 2, 1, 1, GridBagHelper.WEST);
-		gb.add(branch, 1, 2, 1, 1, GridBagHelper.WEST);
-		gb.add(new GemLabel(ConfigKey.DIRECT_DEBIT_BANKHOUSE_CODE.getLabel()), 0, 3, 1, 1, GridBagHelper.WEST);
-		gb.add(estab, 1, 3, 1, 1, GridBagHelper.WEST);
-		gb.add(new GemLabel(ConfigKey.DIRECT_DEBIT_ACCOUNT.getLabel()), 0, 4, 1, 1, GridBagHelper.WEST);
-		gb.add(account, 1, 4, 1, 1, GridBagHelper.WEST);
-		gb.add(new GemLabel(ConfigKey.DIRECT_DEBIT_IBAN.getLabel()), 0, 5, 1, 1, GridBagHelper.WEST);
-		gb.add(iban, 1, 5, 1, 1, GridBagHelper.WEST);
-		gb.add(new GemLabel(ConfigKey.DIRECT_DEBIT_BIC.getLabel()), 0, 6, 1, 1, GridBagHelper.WEST);
-		gb.add(bic, 1, 6, 1, 1, GridBagHelper.WEST);
-		gb.add(new GemLabel(ConfigKey.DIRECT_DEBIT_ICS.getLabel()), 0, 7, 1, 1, GridBagHelper.WEST);
-		gb.add(ics, 1, 7, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(ConfigKey.DIRECT_DEBIT_FIRM_NAME.getLabel()), 0, 0, 1, 1, GridBagHelper.WEST);
+    gb.add(firmName, 1, 0, 1, 1, GridBagHelper.WEST);
 
-		GemPanel options = new GemPanel(new GridBagLayout());
-		GridBagHelper gb2 = new GridBagHelper(options);
-		gb2.insets = GridBagHelper.SMALL_INSETS;
-		gb2.add(new GemLabel(ConfigKey.ACCOUNTING_DOCUMENT_NUMBER.getLabel()), 0, 0, 1, 1, GridBagHelper.WEST);
-		gb2.add(document, 1, 0, 1, 1, GridBagHelper.WEST);
-		gb2.add(new GemLabel(ConfigKey.ACCOUNTING_INVOICE_NUMBER.getLabel()), 0, 1, 1, 1, GridBagHelper.WEST);
-		gb2.add(invoice, 1, 1, 1, 1, GridBagHelper.WEST);
-		/* GemLabel accountingDossierName = new GemLabel(ConfigKey.ACCOUNTING_DOSSIER_NAME.getLabel());
-		 * accountingDossierName.setToolTipText(BundleUtil.getLabel("ConfEditor.accounting.export.dossier.tip"));
-		 * gb.add(accountingDossierName,0,7,1,1,GridBagHelper.EAST);
-		 * gb.add(dossierName,1,7,1,1,GridBagHelper.EAST); */
-		GemLabel accountingFormatLabel = new GemLabel(ConfigKey.ACCOUNTING_EXPORT_FORMAT.getLabel());
-		accountingFormatLabel.setToolTipText(BundleUtil.getLabel("ConfEditor.accounting.export.format.tip"));
-        GemLabel defaultDueDayLabel = new GemLabel(ConfigKey.DEFAULT_DUE_DAY.getLabel());
-        defaultDueDayLabel.setToolTipText(BundleUtil.getLabel("ConfEditor.default.due.date.tip"));
-		gb2.add(accountingFormatLabel, 0, 2, 1, 1, GridBagHelper.WEST);
-		gb2.add(accountingFormat, 1, 2, 1, 1, GridBagHelper.WEST);
-        gb2.add(defaultDueDayLabel, 0, 3, 1, 1, GridBagHelper.WEST);
-        gb2.add(defaultDueDay, 1, 3, 1, 1, GridBagHelper.WEST);
-		Box b1 = Box.createHorizontalBox();
-		b1.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
-		b1.add(new GemLabel("<html><u>"+BundleUtil.getLabel("Menu.debiting.label")+"</u></html>"));
-		b1.add(Box.createHorizontalGlue());
-		content.add(b1);
-		
-		content.add(creditorPanel);
-		
-		Box b2 = Box.createHorizontalBox();
-		
-		b2.add(new GemLabel("<html><u>"+BundleUtil.getLabel("Menu.options.label")+"</u></html>"));
-		b2.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
-		b2.add(Box.createHorizontalGlue());
-		content.add(b2);
-		
-		content.add(options);
+    gb.add(new GemLabel(ConfigKey.DIRECT_DEBIT_CREDITOR_NNE.getLabel()), 0, 1, 1, 1, GridBagHelper.WEST);
+    gb.add(issuer, 1, 1, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(ConfigKey.DIRECT_DEBIT_BANK_BRANCH.getLabel()), 0, 2, 1, 1, GridBagHelper.WEST);
+    gb.add(branch, 1, 2, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(ConfigKey.DIRECT_DEBIT_BANKHOUSE_CODE.getLabel()), 0, 3, 1, 1, GridBagHelper.WEST);
+    gb.add(estab, 1, 3, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(ConfigKey.DIRECT_DEBIT_ACCOUNT.getLabel()), 0, 4, 1, 1, GridBagHelper.WEST);
+    gb.add(account, 1, 4, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(ConfigKey.DIRECT_DEBIT_IBAN.getLabel()), 0, 5, 1, 1, GridBagHelper.WEST);
+    gb.add(iban, 1, 5, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(ConfigKey.DIRECT_DEBIT_BIC.getLabel()), 0, 6, 1, 1, GridBagHelper.WEST);
+    gb.add(bic, 1, 6, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(ConfigKey.DIRECT_DEBIT_ICS.getLabel()), 0, 7, 1, 1, GridBagHelper.WEST);
+    gb.add(ics, 1, 7, 1, 1, GridBagHelper.WEST);
 
-		add(content);
-	}
+    GemPanel options = new GemPanel(new GridBagLayout());
+    GridBagHelper gb2 = new GridBagHelper(options);
+    gb2.insets = GridBagHelper.SMALL_INSETS;
+    gb2.add(new GemLabel(ConfigKey.ACCOUNTING_DOCUMENT_NUMBER.getLabel()), 0, 0, 1, 1, GridBagHelper.WEST);
+    gb2.add(document, 1, 0, 1, 1, GridBagHelper.WEST);
+    gb2.add(new GemLabel(ConfigKey.ACCOUNTING_INVOICE_NUMBER.getLabel()), 0, 1, 1, 1, GridBagHelper.WEST);
+    gb2.add(invoice, 1, 1, 1, 1, GridBagHelper.WEST);
+    GemLabel accountingFormatLabel = new GemLabel(ConfigKey.ACCOUNTING_EXPORT_FORMAT.getLabel());
+    accountingFormatLabel.setToolTipText(BundleUtil.getLabel("ConfEditor.accounting.export.format.tip"));
+    GemLabel defaultDueDayLabel = new GemLabel(ConfigKey.DEFAULT_DUE_DAY.getLabel());
+    defaultDueDayLabel.setToolTipText(BundleUtil.getLabel("ConfEditor.default.due.date.tip"));
+    gb2.add(accountingFormatLabel, 0, 2, 1, 1, GridBagHelper.WEST);
+    gb2.add(accountingFormat, 1, 2, 1, 1, GridBagHelper.WEST);
+    gb2.add(defaultDueDayLabel, 0, 3, 1, 1, GridBagHelper.WEST);
+    gb2.add(defaultDueDay, 1, 3, 1, 1, GridBagHelper.WEST);
+    gb2.add(roundFractionalPayments, 0, 4, 2, 1, GridBagHelper.WEST);
+    gb2.add(chargeEnrolmentLines, 0, 5, 2, 1, GridBagHelper.WEST);
 
-	private void initBic() {
-		bic = new GemField(10);
-		bic.addFocusListener(new FocusAdapter() {
+    Box b1 = Box.createHorizontalBox();
+    b1.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
+    b1.add(new GemLabel("<html><u>" + BundleUtil.getLabel("Menu.debiting.label") + "</u></html>"));
+    b1.add(Box.createHorizontalGlue());
 
-			@Override
-			public void focusGained(FocusEvent e) {
-				markBic();
-			}
+    Box b2 = Box.createHorizontalBox();
+    b2.add(new GemLabel("<html><u>" + BundleUtil.getLabel("Menu.options.label") + "</u></html>"));
+    b2.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+    b2.add(Box.createHorizontalGlue());
 
-			@Override
-			public void focusLost(FocusEvent e) {
-				markBic();
-			}
-		});
+    content.add(b1);
+    content.add(creditorPanel);
+    content.add(b2);
+    content.add(options);
 
-		bic.addActionListener(new ActionListener() {
+    add(content);
+  }
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				markBic();
-			}
-		});
-	}
+  private void initBic() {
+    bic = new GemField(10);
+    bic.addFocusListener(new FocusAdapter() {
 
-	private void initIban() {
-		iban = new GemField(20);
-		iban.addFocusListener(new FocusAdapter() {
+      @Override
+      public void focusGained(FocusEvent e) {
+        markBic();
+      }
 
-			@Override
-			public void focusGained(FocusEvent e) {
-				markIban();
-			}
+      @Override
+      public void focusLost(FocusEvent e) {
+        markBic();
+      }
+    });
 
-			@Override
-			public void focusLost(FocusEvent e) {
-				markIban();
-			}
-		});
+    bic.addActionListener(new ActionListener() {
 
-		iban.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        markBic();
+      }
+    });
+  }
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				markIban();
-			}
-		});
-	}
+  private void initIban() {
+    iban = new GemField(20);
+    iban.addFocusListener(new FocusAdapter() {
 
-	private void markBic() {
-		bic.setBackground(BankUtil.isBicOk(bic.getText()) ? Color.WHITE : ColorPrefs.ERROR_BG_COLOR);
-	}
+      @Override
+      public void focusGained(FocusEvent e) {
+        markIban();
+      }
 
-	private void markIban() {
-		iban.setBackground(BankUtil.isIbanOk(iban.getText()) ? Color.WHITE : ColorPrefs.ERROR_BG_COLOR);
-	}
+      @Override
+      public void focusLost(FocusEvent e) {
+        markIban();
+      }
+    });
 
-	@Override
-	public List<Config> get() {
-		List<Config> conf = new ArrayList<Config>();
+    iban.addActionListener(new ActionListener() {
 
-		c1.setValue(firmName.getText().trim());
-		c2.setValue(issuer.getText().trim());
-		c3.setValue(branch.getText().trim());
-		c4.setValue(estab.getText().trim());
-		c5.setValue(account.getText().trim());
-		c6.setValue(document.getText().trim());
-		c7.setValue(invoice.getText().trim());
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        markIban();
+      }
+    });
+  }
+
+  private void markBic() {
+    bic.setBackground(BankUtil.isBicOk(bic.getText()) ? Color.WHITE : ColorPrefs.ERROR_BG_COLOR);
+  }
+
+  private void markIban() {
+    iban.setBackground(BankUtil.isIbanOk(iban.getText()) ? Color.WHITE : ColorPrefs.ERROR_BG_COLOR);
+  }
+
+  @Override
+  public List<Config> get() {
+    List<Config> conf = new ArrayList<Config>();
+
+    c1.setValue(firmName.getText().trim());
+    c2.setValue(issuer.getText().trim());
+    c3.setValue(branch.getText().trim());
+    c4.setValue(estab.getText().trim());
+    c5.setValue(account.getText().trim());
+    c6.setValue(document.getText().trim());
+    c7.setValue(invoice.getText().trim());
 //    c8.setValue(dossierName.getText().trim());
-		c8.setValue(accountingFormat.getSelectedItem().toString());
-		c9.setValue(iban.getText().trim());
-		c10.setValue(bic.getText().trim());
-		c11.setValue(ics.getText().trim());
-        c12.setValue(String.valueOf(defaultDueDay.getValue()));
+    c8.setValue(accountingFormat.getSelectedItem().toString());
+    c9.setValue(iban.getText().trim());
+    c10.setValue(bic.getText().trim());
+    c11.setValue(ics.getText().trim());
+    c12.setValue(String.valueOf(defaultDueDay.getValue()));
+    c13.setValue(roundFractionalPayments.isSelected() ? "t" : "f");
+    c14.setValue(chargeEnrolmentLines.isSelected() ? "t" : "f");
 
-		conf.add(c1);
-		conf.add(c2);
-		conf.add(c3);
-		conf.add(c4);
-		conf.add(c5);
-		conf.add(c6);
-		conf.add(c7);
-		conf.add(c8);
-		conf.add(c9);
-		conf.add(c10);
-		conf.add(c11);
-        conf.add(c12);
+    conf.add(c1);
+    conf.add(c2);
+    conf.add(c3);
+    conf.add(c4);
+    conf.add(c5);
+    conf.add(c6);
+    conf.add(c7);
+    conf.add(c8);
+    conf.add(c9);
+    conf.add(c10);
+    conf.add(c11);
+    conf.add(c12);
+    conf.add(c13);
+    conf.add(c14);
 
-		return conf;
-	}
+    return conf;
+  }
 }

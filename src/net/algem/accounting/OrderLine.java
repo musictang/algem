@@ -1,7 +1,7 @@
 /*
- * @(#)OrderLine.java	2.9.4.13 05/11/15
+ * @(#)OrderLine.java	2.10.0 19/05/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -31,28 +31,19 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.10.0
  *
  */
 public class OrderLine
-        implements GemModel
-{
+  extends StandardOrderLine
+  implements GemModel {
 
   private static final long serialVersionUID = -4614812764226507224L;
-  private int id;
+
   private DateFr date;
   private int payer;
   private int member;
   private int order;
-  private String label;
-  private String modeOfPayment;
-  private int amount;
-  /** Document number. Numéro de pièce. */
-  private String document = "";
-  private int school;
-  private Account account = new Account();
-  /** Cost account. Analytique. */
-  private Account costAccount = new Account();
   private boolean paid;
   private boolean transfered;
   private String currency = "E";
@@ -95,6 +86,32 @@ public class OrderLine
     group = e.getGroup();
   }
 
+  /**
+   * Creates order line from standard one.
+   * @param s standard instance
+   */
+  public OrderLine(StandardOrderLine s) {
+    id = s.getId();
+    date = new DateFr();
+    payer = 0;
+    member = 0;
+    order = 0;
+    label = s.getLabel();
+    modeOfPayment = s.getModeOfPayment();
+    amount = s.getAmount();
+    document = s.getDocument();
+    school = s.getSchool();
+    account = s.getAccount();
+    costAccount = s.getCostAccount();
+    paid = false;
+    transfered = false;
+    paid = false;
+    transfered = false;
+    currency = "E";
+    group = 0;
+    invoice = null;
+  }
+
   public OrderLine(Invoice v, InvoiceItem item) {
     this(v);
     label = item.getItem().getDesignation();
@@ -132,16 +149,6 @@ public class OrderLine
     date = new DateFr(d);
   }
 
-  @Override
-  public int getId() {
-    return id;
-  }
-
-  @Override
-  public void setId(int i) {
-    id = i;
-  }
-
   public int getMember() {
     return member;
   }
@@ -166,41 +173,6 @@ public class OrderLine
     payer = i;
   }
 
-  public String getLabel() {
-    if (label.length() > OrderLineIO.MAX_CHARS_LABEL) {
-      return label.substring(0, OrderLineIO.MAX_CHARS_LABEL);
-    }
-    return label;
-  }
-
-  public void setLabel(String s) {
-    label = s;
-  }
-
-  public String getDocument() {
-    return document;
-  }
-
-  public void setDocument(String s) {
-    document = s;
-  }
-
-  public int getSchool() {
-    return school;
-  }
-
-  public void setSchool(int s) {
-    school = s;
-  }
-
-  public Account getAccount() {
-    return account;
-  }
-
-  public void setAccount(Account c) {
-    account = c;
-  }
-
   /**
    * Retrieves account's label.
    *
@@ -210,22 +182,6 @@ public class OrderLine
     return account.getLabel();
   }
 
-  public String getModeOfPayment() {
-    return modeOfPayment;
-  }
-
-  public void setModeOfPayment(String l) {
-    modeOfPayment = l;
-  }
-
-  public int getAmount() {
-    return amount;
-  }
-
-  public void setAmount(int i) {
-    amount = i;
-  }
-
   public Double getDoubleAmount() {
     return (Double) (amount / 100D);
   }
@@ -233,14 +189,6 @@ public class OrderLine
   public void setAmount(Double d) {
     amount = (int) Math.rint(d * 100);
     //montant = (int) (d * 100); // bug arrondi
-  }
-
-  public void setCostAccount(Account i) {
-    costAccount = i;
-  }
-
-  public Account getCostAccount() {
-    return costAccount;
   }
 
   public boolean isTransfered() {
@@ -284,21 +232,17 @@ public class OrderLine
    */
   public String getCurrencyCode() {
     String m = getCurrency();
-    String currency = "€";
     switch (m.charAt(0)) {
       case 'E':
-        currency = "€";
-        break;
+        return "€";
       case 'F':
-        currency = "FF";
-        break;
+        return "FF";
       case 'D':
-        currency = "$";
-        break;
+        return "$";
       default:
-        currency = "€";
+        return "€";
     }
-    return currency;
+
   }
 
   /**
@@ -342,5 +286,5 @@ public class OrderLine
     hash = 61 * hash + this.id;
     return hash;
   }
-  
+
 }

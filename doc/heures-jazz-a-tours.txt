@@ -4,10 +4,10 @@ Liste élèves cours/formules
 
 Scripts
 13-05-2016 : 1h
+18-05-2016 : 1/2h
 
-Echeancier
-13-05-2016 : 1h15 (cacher fac)
-Echéancier : cacher lignes facturation
+Echeancier : cacher lignes facturation
+13-05-2016 : 1h15
 16-05-2016 : 1h
 
 Impression Suivi élève
@@ -16,3 +16,15 @@ Impression Suivi élève
 
 Configuration date échéance par défaut
 17-05-2016 : 00:45
+
+Arrondi paiments fractionnés :
+18-05-2016 : 4h
+
+Echeances type :
+18-05-2016 : 4h
+
+Echeances type + automatisation echeances facturation :
+19-05-2016 : 3h45 + 1h
+
+Scripts (export élèves) :
+19-05-2016 : 1h:30

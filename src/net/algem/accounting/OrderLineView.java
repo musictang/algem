@@ -1,7 +1,7 @@
 /*
- * @(#)OrderLineView.java	2.9.4.13 03/11/15
+ * @(#)OrderLineView.java	2.10.0 18/05/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -31,6 +31,7 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import javax.swing.*;
 import net.algem.config.*;
+import net.algem.planning.DateFr;
 import net.algem.planning.DateFrField;
 import net.algem.util.*;
 import net.algem.util.model.Model;
@@ -70,8 +71,8 @@ public class OrderLineView
   private OrderLine orderLine;
   private NumberFormat nf;
   private ActionListener listener;
-  
-  
+
+
 
   /**
    *
@@ -193,6 +194,15 @@ public class OrderLineView
     invoice.setEditable(b);
   }
 
+  void setStandardEditable() {
+    date.setEditable(false);
+    payer.setEditable(false);
+    member.setEditable(false);
+    cbPaid.setEnabled(false);
+    invoice.setEditable(false);
+    group.setEditable(false);
+  }
+
   /**
    * Global desactivation of fields.
    *
@@ -304,7 +314,7 @@ public class OrderLineView
       try {
         testValidation();
       } catch (NumberFormatException ex) {
-        JOptionPane.showMessageDialog(this, 
+        JOptionPane.showMessageDialog(this,
                 ex.getMessage() + " quantité saisie non numérique",
                 MessageUtil.getMessage("entry.error"),
                 JOptionPane.ERROR_MESSAGE);

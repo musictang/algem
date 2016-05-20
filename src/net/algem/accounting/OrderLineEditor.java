@@ -1,5 +1,5 @@
 /*
- * @(#)OrderLineEditor.java	2.10.0 16/05/16
+ * @(#)OrderLineEditor.java	2.10.0 19/05/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -58,11 +58,11 @@ import net.algem.util.ui.*;
  * @since 1.0a 07/07/1999
  */
 public class OrderLineEditor
-        extends FileTab
-        implements ActionListener, TableModelListener, GemEventListener {
+  extends FileTab
+  implements ActionListener, TableModelListener, GemEventListener {
 
-  private static final String NO_PAYMENT_SELECTED = MessageUtil.getMessage("no.payment.selected");
-  private static final String PAYMENT_UPDATE_EXCEPTION = MessageUtil.getMessage("update.exception.info");
+  public static final String NO_PAYMENT_SELECTED = MessageUtil.getMessage("no.payment.selected");
+  public static final String PAYMENT_UPDATE_EXCEPTION = MessageUtil.getMessage("update.exception.info");
   private static final String PAYMENT_CREATE_EXCEPTION = MessageUtil.getMessage("payment.add.exception");
   private static final String PAYMENT_DELETE_EXCEPTION = MessageUtil.getMessage("payment.delete.exception");
 
@@ -92,7 +92,7 @@ public class OrderLineEditor
     tableView = new OrderLineTableView(tableModel, this);
   }
 
-  public void init(){
+  public void init() {
     btQuotation = new GemButton(BundleUtil.getLabel("Quotation.label"));
     btQuotation.addActionListener(this);
     btInvoice = new GemButton(BundleUtil.getLabel("Invoice.label"));
@@ -131,7 +131,7 @@ public class OrderLineEditor
     entete.add(payerName);
     entete.add(invoiceLineFilter);
     GemPanel footer = new GemPanel(new BorderLayout());
-    GemPanel buttons = new GemPanel(new GridLayout(1,6));
+    GemPanel buttons = new GemPanel(new GridLayout(1, 6));
 
     buttons.add(btQuotation);
     buttons.add(btInvoice);
@@ -244,24 +244,24 @@ public class OrderLineEditor
     int n = tableView.getSelectedRow();
     if (n < 0) {
       JOptionPane.showMessageDialog(this,
-              NO_PAYMENT_SELECTED,
-              MessageUtil.getMessage("delete.error"),
-              JOptionPane.ERROR_MESSAGE);
+        NO_PAYMENT_SELECTED,
+        MessageUtil.getMessage("delete.error"),
+        JOptionPane.ERROR_MESSAGE);
       return;
     }
     OrderLine e = tableView.getElementAt(n);
 
     if (e.isTransfered()) {
       JOptionPane.showMessageDialog(this,
-              MessageUtil.getMessage("payment.transfer.warning"),
-              MessageUtil.getMessage(PAYMENT_DELETE_EXCEPTION),
-              JOptionPane.ERROR_MESSAGE);
+        MessageUtil.getMessage("payment.transfer.warning"),
+        MessageUtil.getMessage(PAYMENT_DELETE_EXCEPTION),
+        JOptionPane.ERROR_MESSAGE);
       return;
     }
     Object params[] = {new Double(e.getAmount() / 100), e.getCurrencyCode(), e.getDate()};
     if (!MessagePopup.confirm(this,
-            MessageUtil.getMessage("payment.delete.confirmation", params),
-            MessageUtil.getMessage("payment.delete.label"))) {
+      MessageUtil.getMessage("payment.delete.confirmation", params),
+      MessageUtil.getMessage("payment.delete.label"))) {
       return;
     }
 
@@ -294,16 +294,16 @@ public class OrderLineEditor
     int n = tableView.getSelectedRow();
     if (n < 0) {
       JOptionPane.showMessageDialog(this,
-              NO_PAYMENT_SELECTED,
-              PAYMENT_UPDATE_EXCEPTION,
-              JOptionPane.ERROR_MESSAGE);
+        NO_PAYMENT_SELECTED,
+        PAYMENT_UPDATE_EXCEPTION,
+        JOptionPane.ERROR_MESSAGE);
       return;
     }
     OrderLine e = tableView.getElementAt(n);
     if (e.isTransfered()) {
       if (!MessagePopup.confirm(this,
-              MessageUtil.getMessage("payment.update.confirmation"),
-              BundleUtil.getLabel("Warning.label"))) {
+        MessageUtil.getMessage("payment.update.confirmation"),
+        BundleUtil.getLabel("Warning.label"))) {
         return;
       }
     }
@@ -320,17 +320,16 @@ public class OrderLineEditor
   }
 
   private void update(OrderLine e) {
-    try{
-        OrderLineIO.update(e, dc);
-        int n = tableView.getRowIndexByModel(e);
-        if (n >=0) {
-          tableView.setElementAt(e, n);
-        }
-      } catch (SQLException ex) {
-        GemLogger.logException(PAYMENT_UPDATE_EXCEPTION, ex, this);
+    try {
+      OrderLineIO.update(e, dc);
+      int n = tableView.getRowIndexByModel(e);
+      if (n >= 0) {
+        tableView.setElementAt(e, n);
       }
+    } catch (SQLException ex) {
+      GemLogger.logException(PAYMENT_UPDATE_EXCEPTION, ex, this);
     }
-
+  }
 
   public void dialogCreation() {
 //    OrderLineView dlg = null;
@@ -360,29 +359,29 @@ public class OrderLineEditor
         }
       }
       dlg.setVisible(true);
-    } catch(SQLException sqe) {
+    } catch (SQLException sqe) {
       closeEditorView();
     }
   }
 
   private void create(OrderLine e) {
-     if (ModeOfPayment.FAC.toString().equals(e.getModeOfPayment())) {
-          e.setAmount(-Math.abs(e.getAmount()));
-        }
-     try {
-       dc.setAutoCommit(false);
-        OrderLine c = AccountUtil.createEntry(e, dc);
-        dc.commit();
-        tableModel.addElement(e);
-        if (c != null) {
-          tableModel.addElement(c);
-        }
+    if (ModeOfPayment.FAC.toString().equals(e.getModeOfPayment())) {
+      e.setAmount(-Math.abs(e.getAmount()));
+    }
+    try {
+      dc.setAutoCommit(false);
+      OrderLine c = AccountUtil.createEntry(e, dc);
+      dc.commit();
+      tableModel.addElement(e);
+      if (c != null) {
+        tableModel.addElement(c);
+      }
     } catch (SQLException ex) {
       dc.rollback();
       GemLogger.logException(PAYMENT_CREATE_EXCEPTION, ex, this);
     } finally {
       dc.setAutoCommit(true);
-     }
+    }
   }
 
   @Override
