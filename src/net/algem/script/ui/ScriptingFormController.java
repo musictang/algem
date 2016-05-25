@@ -1,5 +1,5 @@
 /*
- * @(#)ScriptingFormController.java 2.10.0 20/05/16
+ * @(#)ScriptingFormController.java 2.10.0 23/05/16
  * 
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  * 
@@ -45,6 +45,8 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.List;
 import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 import net.algem.util.BundleUtil;
 
 /**
@@ -72,9 +74,10 @@ public class ScriptingFormController
   private ScriptArgumentTableModel argumentTableModel;
   private ScriptResult scriptResult;
   private final ScriptExportService scriptExportService;
+  private final DataCache dataCache;
 
   public ScriptingFormController(GemDesktop desktop) {
-    DataCache dataCache = desktop.getDataCache();
+    this.dataCache = desktop.getDataCache();
     scriptDirectoryService = dataCache.getScriptDirectoryService();
     scriptExecutorService = dataCache.getScriptExecutorService();
     scriptExportService = dataCache.getScriptExportService();
@@ -140,6 +143,34 @@ public class ScriptingFormController
 
     }
   }
+  
+  /**
+   * Optional resizing.
+   * Result is not reliable !
+   * @param table 
+   */
+  private void autoResize(JTable table) {
+    for (int col = 0, len = table.getColumnCount(); col < len; col++) {
+      TableColumn tableColumn = table.getColumnModel().getColumn(col);
+      int preferredWidth = tableColumn.getMinWidth();
+      int maxWidth = tableColumn.getMaxWidth();
+
+      for (int row = 0, rlen = table.getRowCount(); row < rlen; row++) {
+        TableCellRenderer cellRenderer = table.getCellRenderer(row, col);
+        Component c = table.prepareRenderer(cellRenderer, row, col);
+        int width = c.getPreferredSize().width + table.getIntercellSpacing().width;
+        preferredWidth = Math.max(preferredWidth, width);
+
+        //  We've exceeded the maximum width, no need to check other rows
+        if (preferredWidth >= maxWidth) {
+          preferredWidth = maxWidth;
+          break;
+        }
+      }
+
+      tableColumn.setPreferredWidth(preferredWidth);
+    }
+  }
 
   private void exportScriptResult() {
     if (scriptResult != null) {
@@ -168,8 +199,8 @@ public class ScriptingFormController
       List<ScriptArgument> arguments = script.getArguments();
       argumentTableModel = new ScriptArgumentTableModel(arguments);
       argumentsTable.setModel(argumentTableModel);
-      argumentsTable.setCellEditorFactory(new ScriptArgumentTableModel.MyCellEditorFactory(arguments));
-      argumentsTable.getColumnModel().getColumn(1).setCellRenderer(new ScriptArgumentTableModel.MyCellRenderer(arguments));
+      argumentsTable.setCellEditorFactory(new ScriptArgumentTableModel.MyCellEditorFactory(arguments, dataCache));
+      argumentsTable.getColumnModel().getColumn(1).setCellRenderer(new ScriptArgumentTableModel.MyCellRenderer(arguments, dataCache));
       resultTable.setModel(new DefaultTableModel());
     } catch (Exception e) {
       e.printStackTrace();

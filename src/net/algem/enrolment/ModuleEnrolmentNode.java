@@ -22,6 +22,7 @@ package net.algem.enrolment;
 
 import java.text.NumberFormat;
 import net.algem.accounting.AccountUtil;
+import net.algem.planning.DateFr;
 import net.algem.planning.Hour;
 import net.algem.util.BundleUtil;
 
@@ -39,6 +40,7 @@ public class ModuleEnrolmentNode
   private ModuleOrder mo;
   private String info;
   private int completed;
+  private DateFr lastDate;
 
   public ModuleEnrolmentNode(Object o) {
     super(o);
@@ -63,19 +65,44 @@ public class ModuleEnrolmentNode
   public void setCompleted(int m) {
     this.completed = m;
   }
+  
+  void setLastScheduledDate(DateFr last) {
+    this.lastDate = last;
+  }
 
   @Override
   public String toString() {
     // TODO maybe display module type (L or P)
-    int timeLeft =  mo.getTotalTime() - completed;
-    return "<html>" + BundleUtil.getLabel("Module.label") + " : " + mo.getTitle()
-            + (mo.getTotalTime() > 0 ? " [" + (completed > 0 ? Hour.format(completed) : 0)
-            + "/" + Hour.format(mo.getTotalTime()) + " -> " + Hour.format(timeLeft) + "]"
-            + " >> [ " + getPaymentInfo(completed) + "/" + getPaymentInfo(mo.getTotalTime()) 
-            + " -> " + getPaymentInfo(timeLeft) + " ]"
-            : "")
-            + (info != null ? info : "")
-            + "</html>";
+    int timeLeft = mo.getTotalTime() - completed;
+    StringBuilder sb = new StringBuilder("<html>");
+    sb.append(BundleUtil.getLabel("Module.label")).append(" : ").append(mo.getTitle());
+    if (lastDate != null && !DateFr.NULLDATE.equals(lastDate.toString())) {
+      sb.append(" [\u2192").append(lastDate).append("]");
+    }
+    sb.append(getProgress(timeLeft)).append(info != null ? info : "").append("</html>");
+    return sb.toString();
+  }
+  
+  private String getProgress(int timeLeft) {
+    StringBuilder sb = new StringBuilder();
+    if (mo.getTotalTime() > 0) {
+      sb.append(" [")
+              .append(completed > 0 ? Hour.format(completed) : 0)
+              .append('/')
+              .append(Hour.format(mo.getTotalTime()))
+              .append(" \u2192 ")
+              .append(Hour.format(timeLeft))
+              .append("] \u2194 [ ")
+              .append(getPaymentInfo(completed))
+              .append('/')
+              .append(getPaymentInfo(mo.getTotalTime()))
+              .append(" \u2192 ")
+              .append(getPaymentInfo(timeLeft))
+              .append(" ]");
+    } else {
+      sb.append("");
+    }
+    return sb.toString();
   }
 
   @Override

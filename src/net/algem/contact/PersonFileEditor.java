@@ -843,7 +843,7 @@ public class PersonFileEditor
       }
       // en cas de mise en service tardive du logiciel (des adhésions ayant été enregistrées indépendamment d'algem),
       // le nombre d'adhésions enregistré dans les échéances pourra être < au nombre réel.
-      personFileView.setMemberShipNumber((nba > a) ? nba : a);//mise à jour de la view
+      personFileView.setMemberShipNumber((nba != a) ? nba : a);//XXX 
     }
   }
 

@@ -20,3 +20,14 @@ JOIN planning p on (pl.idplanning = p.id and p.action = cc.idaction)
 WHERE c.adh = 18584
 AND p.jour BETWEEN '21-09-2015' AND '16-05-2016'
 -- AND p.action = cc.idaction;
+
+
+-- dernière date de cours programmée pour tel module
+SELECT jour FROM planning p 
+join commande_cours cc on (p.action = cc.idaction)
+join commande_module cm on (cc.module = cm.id)
+join commande c on (cm.idcmd = c.id)
+join plage pl on (p.id = pl.idplanning and c.adh = pl.adherent)
+where cm.id = 2227 -- commande 1744
+and c.adh = 996
+order by jour desc limit 1; -- Stella Douglas

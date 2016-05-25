@@ -1,7 +1,7 @@
 /*
- * @(#)ScriptArgumentTableModel.java 2.9.4.10 20/07/15
+ * @(#)ScriptArgumentTableModel.java 2.10.0 23/05/16
  * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  * 
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -35,11 +35,16 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
+import net.algem.contact.teacher.Teacher;
+import net.algem.util.DataCache;
 import net.algem.util.GemLogger;
+import net.algem.util.model.Model;
+import static net.algem.script.common.ArgType.TEACHER_LIST;
 
 /**
  * @author Alexandre Delattre
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
+ * @version 2.10.0
  * @since 2.9.4.9
  */
 public class ScriptArgumentTableModel
@@ -96,9 +101,11 @@ public class ScriptArgumentTableModel
   {
 
     private final List<ScriptArgument> arguments;
+    private final DataCache dataCache;
 
-    public MyCellEditorFactory(List<ScriptArgument> arguments) {
+    public MyCellEditorFactory(List<ScriptArgument> arguments, DataCache dataCache) {
       this.arguments = arguments;
+      this.dataCache = dataCache;
     }
 
     @Override
@@ -139,6 +146,9 @@ public class ScriptArgumentTableModel
           return new DefaultCellEditor(new JCheckBox());
         case DATE:
           return new DatePickerCellEditor(new SimpleDateFormat("dd-MM-yyyy"));
+        case TEACHER_LIST:
+          List<Teacher> teachers = dataCache.getList(Model.Teacher).getData();
+          return new DefaultCellEditor(new JComboBox(new Vector<Teacher>(teachers)));
       }
       return editor;
     }
@@ -149,9 +159,11 @@ public class ScriptArgumentTableModel
   {
 
     private final List<ScriptArgument> arguments;
+    private final DataCache dataCache;
 
-    public MyCellRenderer(List<ScriptArgument> arguments) {
+    public MyCellRenderer(List<ScriptArgument> arguments, DataCache dataCache) {
       this.arguments = arguments;
+      this.dataCache = dataCache;
     }
 
     @Override
@@ -172,6 +184,8 @@ public class ScriptArgumentTableModel
           } else {
             return new JLabel("");
           }
+        case TEACHER_LIST:
+          return new JLabel(value != null ? value.toString() : "");
       }
       return null;
     }

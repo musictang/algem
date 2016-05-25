@@ -1,7 +1,10 @@
 {
-  "description": "Cours à rattraper par professeur. Les cours sont considérés à rattraper lorsqu'ils existent en salle de rattrapage. La période de recherche correspond à l'année scolaire.",
+  "description": "Cours à rattraper par professeur. Les cours sont considérés à rattraper lorsqu'ils existent en salle de rattrapage. Si vous ne saisissez pas de date, la période de recherche par défaut correspond à l'année scolaire.
+Si ne vous sélectionnez aucun professeur, la liste incluera les cours à rattraper de tous les professeurs.",
 "args":
 [
-    {"name" : "prof", "label" : "Nom du professeur", "type" : "text"}
+    {"name" : "prof", "label" : "Nom du professeur", "type" : "tlist"},
+    {"name" : "debut", "label": "Date début", "type": "date"},
+    {"name" : "fin", "label": "Date fin", "type": "date"}
 ]
 }

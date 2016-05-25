@@ -29,3 +29,9 @@ Echeances type + automatisation echeances facturation + arrondis:
 Scripts (export élèves) :
 19-05-2016 : 1h:30
 20-05-2016 : 1h
+Scripts (cours à rattraper):
+20-05-2016 : 4h30
+23-05-2016 : 2h
+
+Onglet Inscription (Date de dernier cours) :
+23-05-2016 : 2h

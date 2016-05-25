@@ -34,6 +34,8 @@ import net.algem.group.Musician;
 import net.algem.planning.ActionIO;
 import net.algem.planning.DateFr;
 import net.algem.planning.Hour;
+import net.algem.planning.ScheduleIO;
+import net.algem.planning.ScheduleRangeIO;
 import net.algem.util.DataConnection;
 import net.algem.util.model.TableIO;
 
@@ -204,6 +206,21 @@ public class CourseOrderIO
     }
 
     return vm;
+  }
+
+  static Date getLastSchedule(int idper, int id, DataConnection dc) throws SQLException {
+    String query = "SELECT jour FROM " + ScheduleIO.TABLE + " p"
+            + " join " + CourseOrderIO.TABLE + " cc on (p.action = cc.idaction)"
+            + " join " + OrderIO.TABLE + " c on (cc.idcmd = c.id)"
+            + " join " + ScheduleRangeIO.TABLE + " pl on (p.id = pl.idplanning and c.adh = pl.adherent)"
+            + " where cc.id = " + id
+            + " and c.adh = " + idper
+            + " order by jour desc limit 1";
+    ResultSet rs = dc.executeQuery(query);
+    while (rs.next()) {
+      return rs.getDate(1);
+    }
+    return null;
   }
 
 }

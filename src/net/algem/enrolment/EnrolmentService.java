@@ -23,6 +23,7 @@ package net.algem.enrolment;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.logging.Logger;
 import net.algem.Algem;
 import net.algem.config.*;
 import net.algem.contact.PersonFile;
@@ -891,6 +892,24 @@ public class EnrolmentService
     } catch (SQLException ex) {
       GemLogger.log(getClass().getName() + "#getCompletedTime " + ex.getMessage());
       return 0;
+    }
+  }
+  
+  public Date getLastScheduleByModuleOrder(int idper, int mOrderId) {
+    try {
+      return ModuleOrderIO.getLastSchedule(idper, mOrderId, dc);
+    } catch (SQLException ex) {
+      GemLogger.log(getClass().getName() + "#getLastScheduledDate " + ex.getMessage());
+      return null;
+    }
+  }
+  
+  public Date getLastSchedule(int idper, int courseOrderId) {
+    try {
+      return CourseOrderIO.getLastSchedule(idper, courseOrderId, dc);
+    } catch (SQLException ex) {
+      GemLogger.log(getClass().getName() + "#getLastScheduledDate " + ex.getMessage());
+      return null;
     }
   }
 

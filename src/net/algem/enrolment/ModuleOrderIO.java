@@ -296,6 +296,22 @@ public class ModuleOrderIO
     }
     return 0;
   }
+   
+  static Date getLastSchedule(int idper, int mOrderId, DataConnection dc) throws SQLException {
+    String query = "SELECT jour FROM " + ScheduleIO.TABLE + " p"
+            + " join " + CourseOrderIO.TABLE + " cc on (p.action = cc.idaction)"
+            + " join " + ModuleOrderIO.TABLE + " cm on (cc.module = cm.id)"
+            + " join " + OrderIO.TABLE + " c on (cm.idcmd = c.id)"
+            + " join " + ScheduleRangeIO.TABLE + " pl on (p.id = pl.idplanning and c.adh = pl.adherent)"
+            + " where cm.id = " + mOrderId
+            + " and c.adh = " + idper
+            + " order by jour desc limit 1";
+    ResultSet rs = dc.executeQuery(query);
+    while (rs.next()) {
+      return rs.getDate(1);
+    }
+    return null;
+  }
 
   private static ModuleOrder getFromRs(ResultSet rs) throws SQLException {
       ModuleOrder m = new ModuleOrder();

@@ -269,19 +269,27 @@ public class MemberEnrolmentEditor
         try {
           ModuleOrder mo = enu.nextElement();//probleme apres inscription
           ModuleEnrolmentNode mnode = new ModuleEnrolmentNode(mo);
+          mnode.setLastScheduledDate(new DateFr(service.getLastScheduleByModuleOrder(dossier.getId(), mo.getId())));
           if (mo.getTotalTime() > 0) {
             // do not restrict to end date
-            mnode.setCompleted(service.getCompletedTime(dossier.getId(), mo.getId(), dataCache.getStartOfYear().getDate()));
+            mnode.setCompleted(service.getCompletedTime(dossier.getId(), mo.getId(), dataCache.getStartOfYear().getDate()));            
 //            mnode.setCompleted(service.getCompletedTime(dossier.getId(), mo.getId(), dataCache.getStartOfYear().getDate(), dataCache.getEndOfYear().getDate()));
           }
 
           if (mo.isStopped()) {
-            mnode.setInfo(" -> [[" + mo.getEnd().toString() + "]]");
+            mnode.setInfo(" <font color=\"#666666\">" + BundleUtil.getLabel("Stopped.label") + " : " + mo.getEnd().toString() + "</font>");
           }
           Vector<CourseOrder> v = service.getCourseOrder(i.getId(), mo.getId());
           for (int k = 0; k < v.size(); k++) {
             CourseOrder cc = v.elementAt(k);
             int jj = service.getCourseDayMember(cc.getAction(), cc.getDateStart(), i.getMember());
+            //auto update of end date
+            DateFr last = new DateFr(service.getLastSchedule(dossier.getId(), cc.getId()));
+            if (!DateFr.NULLDATE.equals(last.toString()) && !last.equals(cc.getDateEnd())) {
+              cc.setDateEnd(last);
+              service.update(cc);
+            }
+            //
             if (cc.getTitle() == null && cc.getAction() == 0) {
               cc.setTitle(getUndefinedLabel(cc));
             }
