@@ -1,5 +1,5 @@
 /*
- * @(#)PlanModifCtrl.java	2.9.7 03/05/16
+ * @(#)PlanModifCtrl.java	2.9.7.1 25/05/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -64,7 +64,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.7
+ * @version 2.9.7.1
  * @since 1.0b 05/07/2002 lien salle et groupe
  */
 public class PlanModifCtrl
@@ -223,13 +223,13 @@ public class PlanModifCtrl
     //}
     return v;
   }
-  
+
   public Vector<GemMenuButton> getMenuBooking() {
     Vector<GemMenuButton> v = new Vector<GemMenuButton>();
     v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.room.modification.label"), this, "ChangeRoom"));
     v.add(new GemMenuButton(BundleUtil.getLabel("Confirm.label"), this, "ConfirmBooking"));
     v.add(new GemMenuButton(BundleUtil.getLabel("Cancel.label"), this, "CancelBooking"));
-    
+
     return v;
   }
 
@@ -306,13 +306,13 @@ public class PlanModifCtrl
         cancelBooking(plan);
       } else if (arg.equals("ConfirmBooking")) {
         confirmBooking(plan);
-      } 
+      }
     } catch (PlanningException ex) {
       GemLogger.log(ex.getMessage());
       MessagePopup.warning(desktop.getFrame(), ex.getMessage());
     } catch (SQLException sqe) {
       GemLogger.log(sqe.getMessage());
-    } 
+    }
   }
 
   private void dialogAtelierInstruments() {
@@ -425,10 +425,10 @@ public class PlanModifCtrl
       if (!dlg.isValidate()) {
         return;
       }
-      
+
       a = dlg.get();
       a.setPlaces(maxPlaces(a.getPlaces(), plan.getRoom()));
-    
+
       service.updateAction(a);
       dataCache.update(a);
       desktop.postEvent(new ModifPlanEvent(service, plan.getDate(), plan.getDate()));
@@ -556,14 +556,16 @@ public class PlanModifCtrl
     DateFr end = dlg.getEnd();
 
     try {
-      Vector<ScheduleTestConflict> v = service.checkChangeTeacher(plan, range, start, end);
-      if (v.size() > 0) {
-        ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), BundleUtil.getLabel("Teacher.change.conflicts.label"));
-        for (int i = 0; i < v.size(); i++) {
-          cfd.addConflict(v.elementAt(i));
+      if (range.getIdPerson() > 0) {
+        Vector<ScheduleTestConflict> v = service.checkChangeTeacher(plan, range, start, end);
+        if (v.size() > 0) {
+          ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), BundleUtil.getLabel("Teacher.change.conflicts.label"));
+          for (int i = 0; i < v.size(); i++) {
+            cfd.addConflict(v.elementAt(i));
+          }
+          cfd.show();
+          return;
         }
-        cfd.show();
-        return;
       }
       // on ne modifie que ce planning s'il en existe plusieurs partageant la même action à la même date.
       if (start.equals(end) && service.hasSiblings(plan) && MessagePopup.confirm(null, MessageUtil.getMessage("teacher.modification.single.schedule.confirmation"))) {
@@ -721,14 +723,16 @@ public class PlanModifCtrl
     }
 
     // teacher conflict
-    v = service.checkTeacherForSchedulePostpone(plan, newPlan);
-    if (v.size() > 0) {
-      ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), BundleUtil.getLabel("Teacher.conflict.label"));
-      for (int i = 0; i < v.size(); i++) {
-        cfd.addConflict(v.elementAt(i));
+    if (plan.getIdPerson() > 0) {
+      v = service.checkTeacherForSchedulePostpone(plan, newPlan);
+      if (v.size() > 0) {
+        ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), BundleUtil.getLabel("Teacher.conflict.label"));
+        for (int i = 0; i < v.size(); i++) {
+          cfd.addConflict(v.elementAt(i));
+        }
+        cfd.show();
+        return false;
       }
-      cfd.show();
-      return false;
     }
 
     // TODO member conflict
@@ -748,15 +752,16 @@ public class PlanModifCtrl
       cfd.show();
       return false;
     }
-
-    v = service.checkTeacherForScheduleCopy(plan, newPlan);
-    if (v.size() > 0) {
-      ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), BundleUtil.getLabel("Teacher.conflict.label"));
-      for (int i = 0; i < v.size(); i++) {
-        cfd.addConflict(v.elementAt(i));
+    if (plan.getIdPerson() > 0) {
+      v = service.checkTeacherForScheduleCopy(plan, newPlan);
+      if (v.size() > 0) {
+        ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), BundleUtil.getLabel("Teacher.conflict.label"));
+        for (int i = 0; i < v.size(); i++) {
+          cfd.addConflict(v.elementAt(i));
+        }
+        cfd.show();
+        return false;
       }
-      cfd.show();
-      return false;
     }
     return true;
   }
@@ -812,7 +817,7 @@ public class PlanModifCtrl
       }
 
       //TODO check teacher occupation in studio schedules
-      if (plan.getType() != Schedule.TECH && plan.getType() != Schedule.STUDIO) {
+      if (plan.getIdPerson() > 0 && (plan.getType() != Schedule.TECH && plan.getType() != Schedule.STUDIO)) {
         Vector<ScheduleTestConflict> conflicts = service.checkTeacherForScheduleLengthModif(plan, lastDay, hStart, hEnd);
         if (conflicts != null && conflicts.size() > 0) {
           ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), BundleUtil.getLabel("Teacher.conflict.label"));
@@ -966,7 +971,7 @@ public class PlanModifCtrl
       service.deletePlanning(a);
     }
   }
-  
+
   private void cancelBooking(ScheduleObject plan) {
     try {
       Booking b = service.getBookingFromAction(plan.getIdAction());
@@ -993,7 +998,7 @@ public class PlanModifCtrl
       MessagePopup.warning(null, ex.getMessage());
     }
   }
-  
+
   private void confirmBooking(ScheduleObject plan) {
     try {
       Booking b = service.getBookingFromAction(plan.getIdAction());
@@ -1013,7 +1018,7 @@ public class PlanModifCtrl
       String subject = MailUtil.urlEncode(MessageUtil.getMessage("booking.confirmation.subject"));
       String body = MailUtil.urlEncode(
               MessageUtil.getMessage(
-                      "booking.confirmation.message", 
+                      "booking.confirmation.message",
                       new Object[] {name, plan.getDate().toString(), plan.getStart(), plan.getRoom().getName()}
               )
       );
@@ -1022,7 +1027,7 @@ public class PlanModifCtrl
     } catch (BookingException |SQLException|MemberException|GroupException ex) {
       GemLogger.logException(ex);
       MessagePopup.warning(null, ex.getMessage());
-    } 
+    }
   }
 
   private void sendMessage(String email, String subject, String body) {
@@ -1064,5 +1069,5 @@ public class PlanModifCtrl
         return BundleUtil.getLabel("Schedule.default.modification.label");
     }
   }
-  
+
 }

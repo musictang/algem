@@ -1,7 +1,7 @@
 /*
- * @(#)ConflictService.java	2.9.4.0 06/04/15
+ * @(#)ConflictService.java	2.9.7.1 26/05/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -37,7 +37,7 @@ import net.algem.util.model.Model;
  * Service class for conflict verification.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.0
+ * @version 2.9.7.1
  * @since 2.4.a 08/05/12
  */
 public class ConflictService
@@ -377,8 +377,13 @@ public class ConflictService
   Vector<ScheduleTestConflict> testTeacherConflict(ScheduleObject orig, ScheduleObject newPlan, DateFr dateStart, DateFr dateEnd) throws SQLException {
 
     Vector<ScheduleTestConflict> conflicts = new Vector<ScheduleTestConflict>();
-    String query = "WHERE jour >= '" + dateStart + "' AND jour <= '" + dateEnd + "' AND action = " + orig.getIdAction() + " AND idper = " + orig.getIdPerson();
-    Vector<Schedule> v = ScheduleIO.find(query, dc);
+    Vector<Schedule> v = new Vector<Schedule>();
+    if (orig.getIdPerson() == 0) { // do not search schedules when teacher is undefined
+      v.addElement(orig);
+    } else {
+      String query = "WHERE jour >= '" + dateStart + "' AND jour <= '" + dateEnd + "' AND action = " + orig.getIdAction() + " AND idper = " + orig.getIdPerson();
+      v = ScheduleIO.find(query, dc);
+    }
 
     Hour endTime = new Hour(newPlan.getEnd());
     endTime.maybeDecMidnight();

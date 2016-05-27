@@ -1,7 +1,7 @@
 /*
- * @(#)GroupOrderLineEditor.java	2.9.4.8 23/06/15
+ * @(#)GroupOrderLineEditor.java	2.9.7.1 26/05/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -44,7 +44,7 @@ import net.algem.util.ui.GemPanel;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.8
+ * @version 2.9.7.1
  * @since 2.7.k 01/03/2013
  */
 public class GroupOrderLineEditor
@@ -62,11 +62,11 @@ public class GroupOrderLineEditor
     super(desktop, tableModel);
     this.service = service;
     try {
-      Preference p = AccountPrefIO.find(AccountPrefIO.MEMBERSHIP, dc);
-      Account a = AccountPrefIO.getAccount(p, dc);
-      if (a != null) {
-        tableView.setMemberShipFilter(a.getLabel());
-      }
+      Preference p1 = AccountPrefIO.find(AccountPrefIO.MEMBERSHIP, dc);
+      Preference p2 = AccountPrefIO.find(AccountPrefIO.PRO_MEMBERSHIP, dc);
+      Account a1 = AccountPrefIO.getAccount(p1, dc);
+      Account a2 = AccountPrefIO.getAccount(p2, dc);
+      tableView.setMemberShipFilter(a1 == null ? null : a1.getLabel(), a2 == null ? null : a2.getLabel());
     } catch (SQLException ex) {
       GemLogger.logException(ex);
     }
@@ -74,12 +74,12 @@ public class GroupOrderLineEditor
 
   @Override
   public void init(){
-    
+
     JPopupMenu popup = new JPopupMenu();
     miGroupModif = new JMenuItem(BundleUtil.getLabel("Order.line.modify.group.action"));
     miGroupModif.addActionListener(this);
     popup.add(miGroupModif);
-    
+
     btCreate = new GemButton(GemCommand.ADD_CMD);
     btCreate.addActionListener(this);
     btModify = new GemButton(GemCommand.MODIFY_CMD);
@@ -122,7 +122,7 @@ public class GroupOrderLineEditor
 
     tableView.filterByPeriod(dateRange.getStartFr(), dateRange.getEndFr());
     tableView.getTable().addMouseListener(new MenuPopupListener(tableView, popup));
-    
+
     setLayout(new BorderLayout());
     add(header, BorderLayout.NORTH);
     add(tableView, BorderLayout.CENTER);
@@ -158,7 +158,7 @@ public class GroupOrderLineEditor
       super.actionPerformed(evt);
     }
   }
-  
+
   /**
    * Updates the group number on selected order lines.
    */

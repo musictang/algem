@@ -1,7 +1,7 @@
 /*
- * @(#)WorkhopScheduleCtrl.java	2.9.4.6 02/06/15
- * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * @(#)WorkhopScheduleCtrl.java	2.9.7.1 25/05/16
+ *
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning;
 
@@ -37,7 +37,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.6
+ * @version 2.9.7.1
  * @since 1.0a 07/07/1999
  */
 public class WorkhopScheduleCtrl
@@ -136,7 +136,7 @@ public class WorkhopScheduleCtrl
     if (r == 0) {
       throw new PlanningException(MessageUtil.getMessage("room.invalid.choice"));
     }
-    if (t == 0) {
+    if (t < 0) {
       throw new PlanningException(MessageUtil.getMessage("invalid.teacher"));
     }
 

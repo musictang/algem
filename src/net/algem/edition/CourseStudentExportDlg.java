@@ -1,7 +1,7 @@
 /*
- * @(#)CourseStudentExportDlg.java 2.9.2.1 17/02/15
- * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * @(#)CourseStudentExportDlg.java 2.9.7.1 25/05/16
+ *
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 
 package net.algem.edition;
@@ -32,9 +32,9 @@ import net.algem.util.ui.GridBagHelper;
 
 /**
  * Export dialog for contact infos of students doing the selected course.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2.1
+ * @version 2.9.7.1
  * @since 2.6.d 06/11/2012
  */
 public class CourseStudentExportDlg
@@ -48,23 +48,24 @@ public class CourseStudentExportDlg
 
   @Override
   protected void setPanel() {
-    
+
     course = new CourseChoice(new CourseChoiceActiveModel(desktop.getDataCache().getList(Model.Course), true));
     course.setPreferredSize(typeContact.getPreferredSize());
-    
+
     gb.add(new JLabel(BundleUtil.getLabel("Course.label")), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(course, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(new JLabel(BundleUtil.getLabel("Date.From.label")), 0, 1, 1, 1, GridBagHelper.WEST);
     gb.add(dateRange, 1, 1, 1, 1, GridBagHelper.WEST);
     gb.add(new JLabel(BundleUtil.getLabel("Type.label")), 0, 2, 1, 1, GridBagHelper.WEST);
     gb.add(typeContact, 1, 2, 1, 1, GridBagHelper.WEST);
-    
+
     nextRow = 3;
   }
 
   @Override
   public String getRequest() {
-    return service.getContactQueryByCourse(course.getKey(), dateRange.getStart(), dateRange.getEnd(), rdPro.isSelected());
+    Boolean pro = rdPro.isSelected() ? Boolean.valueOf(true) : (rdLeisure.isSelected() ? Boolean.valueOf(false) : null);
+    return service.getContactQueryByCourse(course.getKey(), dateRange.getStart(), dateRange.getEnd(), pro);
   }
 
 }

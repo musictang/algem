@@ -1,7 +1,7 @@
 /*
- * @(#)ConflictQueries.java 2.8.y.1 08/10/14
- * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * @(#)ConflictQueries.java 2.9.7.1 25/05/16
+ *
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning;
 
@@ -24,7 +24,7 @@ package net.algem.planning;
  * Set of requests used in conflict detection when schedule is busy.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.y.1
+ * @version 2.9.7.1
  */
 public class ConflictQueries
 {
@@ -46,13 +46,13 @@ public class ConflictQueries
             + " OR (plage.debut <= '" + hStart + "' AND plage.fin >= '" + hEnd + "'))";
 
   }
-  
+
   public static String getRangeOverlapSelection(DateFr start, int member, Hour hStart, Hour hEnd, int action) {
     return "pg WHERE pg.adherent != " + member
          + " AND ((pg.debut >= '" + hStart + "' AND pg.debut < '" + hEnd + "')"
             + " OR (pg.fin > '" + hStart + "' AND pg.fin <= '" + hEnd + "')"
             + " OR (pg.debut <= '" + hStart + "' AND pg.fin >= '" + hEnd + "'))"
-        + " AND idplanning IN (SELECT id FROM " + ScheduleIO.TABLE 
+        + " AND idplanning IN (SELECT id FROM " + ScheduleIO.TABLE
         + " WHERE action = " + action + " AND jour >= '" + start + "')";
   }
 
@@ -63,11 +63,11 @@ public class ConflictQueries
   }
 
   public static String getRoomTeacherConflictSelection(String date, String hStart, String hEnd, int roomId, int teacherId) {
-    return getConflictSelection(date, hStart, hEnd) + " AND (lieux = " + roomId + " OR idper = " + teacherId + ")";
+    return getConflictSelection(date, hStart, hEnd) + " AND (lieux = " + roomId + " OR (idper > 0 AND idper = " + teacherId + "))";
   }
 
   public static String getTeacherConflictSelection(String date, String hStart, String hEnd, int teacherId) {
-    return getConflictSelection(date, hStart, hEnd) + " AND (idper= " + teacherId + ")";
+    return getConflictSelection(date, hStart, hEnd) + " AND (idper = " + teacherId + ")";
   }
 
   public static String getBreakConflict(int idPlan, String hStart, String hEnd) {
@@ -80,24 +80,24 @@ public class ConflictQueries
             + " OR (pg.fin > '" + hStart + "' AND pg.fin <= '" + hEnd + "')"
             + " OR (pg.debut <= '" + hStart + "' AND pg.fin >= '" + hEnd + "'))";
   }
-  
+
    private static String getConflictSelection(String date, String hStart, String hEnd) {
     return "WHERE jour = '" + date + "'"
             + " AND ((debut >= '" + hStart + "' AND debut < '" + hEnd + "')"
             + " OR (fin > '" + hStart + "' AND fin <= '" + hEnd + "')"
             + " OR (debut <= '" + hStart + "' AND fin >= '" + hEnd + "'))";
   }
-   
+
    public static String getSqlQueryOverlap(String hStart, String hEnd) {
      return " AND ((debut >= '" + hStart + "' AND debut < '" + hEnd + "')"
             + " OR (fin > '" + hStart + "' AND fin <= '" + hEnd + "')"
             + " OR (debut <= '" + hStart + "' AND fin >= '" + hEnd + "'))";
    }
-   
+
    public static String getSqlStatementOverlap() {
      return " AND ((debut >= ? AND debut < ?)"
             + " OR (fin > ? AND fin <= ?)"
             + " OR (debut <= ? AND fin >= ?))";
    }
-   
+
 }

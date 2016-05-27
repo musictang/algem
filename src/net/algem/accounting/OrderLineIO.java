@@ -1,7 +1,7 @@
 /*
- * @(#)OrderLineIO.java	2.9.2-b5 05/02/15
+ * @(#)OrderLineIO.java	2.9.7.1 26/05/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -39,7 +39,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.9.7.1
  *
  */
 public class OrderLineIO
@@ -316,9 +316,13 @@ public class OrderLineIO
    * @throws SQLException
    */
   public static int countMemberShip(int m, DataConnection dc) throws SQLException {
-    Preference p = AccountPrefIO.find(AccountPrefIO.MEMBERSHIP, dc);
-    //String query = "SELECT count(echeance) FROM echeancier2 WHERE adherent=" + m + " AND compte like '" + p.getValues()[0].substring(0, 8) + "%'";
-    String query = "SELECT count(echeance) FROM " + TABLE + " WHERE adherent = " + m + " AND compte = '" + p.getValues()[0] + "'";
+    Preference p1 = AccountPrefIO.find(AccountPrefIO.MEMBERSHIP, dc);
+    Preference p2 = AccountPrefIO.find(AccountPrefIO.PRO_MEMBERSHIP, dc);
+
+    String query = "SELECT count(echeance) FROM " + TABLE
+      + " WHERE adherent = " + m
+      + " AND montant > 0"
+      + " AND (compte = " + (p1 == null ? -1 : p1.getValues()[0]) + " OR compte = " + (p2 == null ? -1 : p2.getValues()[0]) + ")";
     ResultSet rs = dc.executeQuery(query);
     if (rs.next()) {
       return rs.getInt(1);
