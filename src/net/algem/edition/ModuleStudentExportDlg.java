@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 
 package net.algem.edition;
@@ -35,7 +35,7 @@ import net.algem.util.ui.GridBagHelper;
  * @version 2.10.0
  * @since 2.8.o 09/10/13
  */
-public class ModuleStudentExportDlg 
+public class ModuleStudentExportDlg
 extends StudentExportDlg
 {
   private GemChoice module;
@@ -46,10 +46,10 @@ extends StudentExportDlg
 
   @Override
   protected void setPanel() {
-    
+
     module = new ModuleChoice(desktop.getDataCache().getList(Model.Module));
     module.setPreferredSize(typeContact.getPreferredSize());
-    
+
     gb.add(new JLabel(BundleUtil.getLabel("Module.label")), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(module, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(new JLabel(BundleUtil.getLabel("Date.From.label")), 0, 1, 1, 1, GridBagHelper.WEST);

@@ -308,10 +308,18 @@ public class ExportService
   }
 
   Address getAddress(int idper) throws SQLException {
-    String query = "SELECT DISTINCT a.adr1, a.adr2, a.cdp, a.ville"
-            + " FROM " + AddressIO.TABLE + " a JOIN " + MemberIO.TABLE + " m ON (a.idper = m.idper OR a.idper = m.payeur)"
-            + " WHERE m.idper = " + idper
-            + " AND a.archive = false";
+    String query = "SELECT DISTINCT a.adr1, a.adr2, a.cdp, a.ville FROM "
+      + AddressIO.TABLE + " a"
+      + " WHERE a.idper = " + idper
+      + " AND a.archive = false"
+      + " UNION"
+      + " SELECT DISTINCT a.adr1, a.adr2, a.cdp, a.ville FROM "
+      + AddressIO.TABLE + " a JOIN " + MemberIO.TABLE + " m ON (a.idper = m.payeur)"
+      + " JOIN " + PersonIO.TABLE + " p ON (m.payeur = p.id)"
+      + " WHERE m.idper = " + idper
+      + " AND m.idper NOT IN (SELECT idper FROM " + AddressIO.TABLE + ")"
+      + " AND p.organisation IS NULL" // maybe do not include
+      + " AND a.archive = false";
     ResultSet rs = dc.executeQuery(query);
 
     Address a = new Address();
@@ -326,10 +334,18 @@ public class ExportService
   }
 
   List<String> getEmails(int idper) throws SQLException {
-    String query = "SELECT DISTINCT m.email FROM "
-            + EmailIO.TABLE + " m JOIN " + MemberIO.TABLE + " e ON (m.idper = e.idper OR m.idper = e.payeur)"
-            + " WHERE e.idper = " + idper
-            + " AND m.archive = false";
+    String query = "SELECT DISTINCT e.email FROM "
+      + EmailIO.TABLE + " e"
+      + " WHERE e.idper = " + idper
+      + " AND e.archive = false"
+      + " UNION"
+      + " SELECT DISTINCT e.email FROM " + EmailIO.TABLE
+      + " e JOIN " + MemberIO.TABLE + " m ON (e.idper = m.payeur) JOIN " + PersonIO.TABLE + " p ON (m.payeur = p.id)"
+      + " WHERE m.idper = " + idper
+      + " AND m.idper NOT IN (SELECT idper FROM  " + EmailIO.TABLE + ")"
+      + " AND p.organisation IS NULL"
+      + " AND e.archive = false";
+
     ResultSet rs = dc.executeQuery(query);
     List<String> list = new ArrayList<String>();
     while (rs.next()) {
@@ -340,9 +356,15 @@ public class ExportService
 
   List<String> getTels(int idper) throws SQLException {
     String query = "SELECT DISTINCT t.numero FROM "
-            + TeleIO.TABLE + " t JOIN " + MemberIO.TABLE + " m ON (t.idper = m.idper OR t.idper = m.payeur)"
-            + " WHERE m.idper = " + idper;
-
+      + TeleIO.TABLE + " t"
+      + " WHERE t.idper = " + idper
+      + " UNION"
+      + " SELECT DISTINCT t.numero FROM "
+      + TeleIO.TABLE + " t JOIN " + MemberIO.TABLE + " m ON (t.idper = m.payeur)"
+      + " JOIN " + PersonIO.TABLE + " p ON (m.payeur = p.id)"
+      + " WHERE m.idper = " + idper
+      + " AND p.organisation IS NULL"
+      + " AND m.idper NOT IN (SELECT idper FROM " + TeleIO.TABLE + ")";
     ResultSet rs = dc.executeQuery(query);
     List<String> list = new ArrayList<String>();
     while (rs.next()) {
@@ -388,12 +410,12 @@ public class ExportService
 
   public boolean isPro(int action, int idper) throws SQLException {
     String query = "SELECT m.code FROM "
-            + ModuleIO.TABLE + " AS m, " + CourseOrderIO.TABLE + " AS c, " + OrderIO.TABLE + " AS o,"
-            + ModuleOrderIO.TABLE + " AS mo"
-            + " WHERE o.adh = " + idper
-            + " AND o.id = c.idcmd AND c.idaction = " + action
-            + " AND c.module = mo.id"
-            + " AND mo.module = m.id";
+      + ModuleIO.TABLE + " AS m, " + CourseOrderIO.TABLE + " AS c, " + OrderIO.TABLE + " AS o,"
+      + ModuleOrderIO.TABLE + " AS mo"
+      + " WHERE o.adh = " + idper
+      + " AND o.id = c.idcmd AND c.idaction = " + action
+      + " AND c.module = mo.id"
+      + " AND mo.module = m.id";
 
     ResultSet rs = dc.executeQuery(query);
     if (rs.next()) {

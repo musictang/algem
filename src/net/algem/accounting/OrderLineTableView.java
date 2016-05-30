@@ -52,7 +52,7 @@ import net.algem.util.model.Model;
 public class OrderLineTableView
 extends JPanel
 implements TableModelListener {
-  
+
   private OrderLineTableModel tableModel;
   private JTable table;
   private JScrollPane panel;
@@ -81,16 +81,16 @@ implements TableModelListener {
   private final TableRowSorter<TableModel> sorter;
   private DateFr begin;
   private DateFr end;
-  
+
   public OrderLineTableView(OrderLineTableModel tableModel, ActionListener al) {
-    
+
     this.tableModel = tableModel;
     table = new JTable(tableModel) {
       //Implements table header tool tips.
       @Override
       protected JTableHeader createDefaultTableHeader() {
         return new JTableHeader(columnModel) {
-          
+
           @Override
           public String getToolTipText(MouseEvent e) {
             java.awt.Point p = e.getPoint();
@@ -101,21 +101,21 @@ implements TableModelListener {
         };
       }
     };
-    
+
     sorter = new TableRowSorter<TableModel>(tableModel);
     table.setRowSorter(sorter);
 
     dateFilter = new RowFilter<Object, Object>() {
-      
+
       @Override
       public boolean include(Entry<? extends Object, ? extends Object> entry) {
         DateFr date = (DateFr) entry.getValue(3);
         return date.after(begin) && date.before(end);
       }
     };
-    
+
     unpaidFilter = new RowFilter<Object, Object>() {
-      
+
       @Override
       public boolean include(Entry<? extends Object, ? extends Object> entry) {
         boolean paid = (Boolean) entry.getValue(10);
@@ -132,7 +132,7 @@ implements TableModelListener {
       
     };
     table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-    
+
     TableColumnModel cm = table.getColumnModel();
     cm.getColumn(0).setPreferredWidth(50);//payer
     cm.getColumn(1).setPreferredWidth(50);//member
@@ -149,7 +149,7 @@ implements TableModelListener {
     cm.getColumn(12).setPreferredWidth(40);//invoice
     //cm.getColumn(11).setPreferredWidth(20);// suppression devise de la vue
     //cm.getColumn(12).setPreferredWidth(50);
-    
+
     DefaultTableCellRenderer rd = new DefaultTableCellRenderer();
     rd.setHorizontalAlignment(SwingConstants.RIGHT);
     // alignement à droite de la colonne Montant
@@ -166,13 +166,13 @@ implements TableModelListener {
     AccountNameTableCellRenderer accountCellRenderer = new AccountNameTableCellRenderer();
     table.getColumnModel().getColumn(8).setCellRenderer(accountCellRenderer);
     table.getColumnModel().getColumn(9).setCellRenderer(accountCellRenderer);
-    
+
     panel = new JScrollPane(table);
-    
+
     setLayout(new BorderLayout());
     add(panel, BorderLayout.CENTER);
   }
-  
+
   /**
    * Adds right click listener for displaying popup menu. At least one row must
    * be selected and this row must be marked transfered.
@@ -212,23 +212,23 @@ implements TableModelListener {
       }
     });
   }
-  
+
   @Override
   public void tableChanged(TableModelEvent evt) {
   }
-  
+
   public void removeElementAt(int n) {
     tableModel.removeElementAt(table.convertRowIndexToModel(n));
   }
-  
+
   public OrderLine getElementAt(int n) {
     return (OrderLine) tableModel.getElementAt(table.convertRowIndexToModel(n));
   }
-  
+
   public void setElementAt(OrderLine e, int n) {
     tableModel.setElementAt(e, table.convertRowIndexToModel(n));
   }
-  
+
   public int getSelectedRow() {
     int n = table.getSelectedRow();
     if (table.getSelectedRowCount() < 0 || n < 0 || tableModel.getRowCount() <= n) {
@@ -236,11 +236,11 @@ implements TableModelListener {
     }
     return n;
   }
-  
+
   public int[] getSelectedRows() {
     return table.getSelectedRows();
   }
-  
+
   <T> int getRowIndexByModel(T model) {
     for (int i = 0; i < table.getRowCount(); i++) {
       if (getElementAt(i).equals(model)) {
@@ -250,25 +250,31 @@ implements TableModelListener {
     }
     return -1;
   }
-  
-  public void setMemberShipFilter(final String a) {
+
+  public void setMemberShipFilter(final String... values) {
     memberShipFilter = new RowFilter<Object, Object>() {
       @Override
       public boolean include(Entry<? extends Object, ? extends Object> entry) {
         DateFr date = (DateFr) entry.getValue(3);
         String account = (String) entry.getValue(8);
-        return account.equals(a) && date.after(begin) && date.before(end);
+        boolean has = false;
+        for (String a : values) {
+          if (account.equals(a) && date.after(begin) && date.before(end)) {
+            has = true;
+          }
+        }
+        return has;
       }
     };
   }
-  
+
   /**
    * Line selection by date.
    *
    * @param date start date
    */
   public void filterByDate(DateFr date) {
-    
+
     if (date == null) {
       sorter.setRowFilter(null);
     } else {
@@ -284,19 +290,19 @@ implements TableModelListener {
 //      sorter.setRowFilter(RowFilter.begin(RowFilter.ComparisonType.AFTER, date, 2));
     }
   }
-  
+
   public void filterByPeriod(DateFr begin, DateFr end) {
     this.begin = begin;
     this.end = end;
     sorter.setRowFilter(dateFilter);
   }
-  
+
   public void filterByMemberShip(DateFr begin, DateFr end) {
     this.begin = begin;
     this.end = end;
     sorter.setRowFilter(memberShipFilter);
   }
-  
+
   public void filterByUnpaid() {
     sorter.setRowFilter(unpaidFilter);
   }
@@ -317,7 +323,7 @@ implements TableModelListener {
   public void addListSelectionListener(JTextComponent tc) {
     table.getSelectionModel().addListSelectionListener(new OrderLineSelectionListener(this, tc));
   }
-  
+
   /**
    * Retrieves the table view.
    *
@@ -326,8 +332,8 @@ implements TableModelListener {
   public JTable getTable() {
     return table;
   }
-  
-  class ContactNameTableCellRenderer 
+
+  class ContactNameTableCellRenderer
         extends DefaultTableCellRenderer
   {
     @Override
@@ -352,7 +358,7 @@ implements TableModelListener {
         return c;
       }
   }
-  
+
   class AccountNameTableCellRenderer
           extends DefaultTableCellRenderer
           {

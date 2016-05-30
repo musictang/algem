@@ -1,0 +1,10 @@
+2.9.7.1
+CORRECTIFS
+* Lorsqu'on ne sélectionnait ni "Pro" ni "Loisir" dans les divers exports du menu Fichier -> Exports, la liste des résultats ne comportait que les élèves de type "Loisir". Ne rien sélectionner sous-entend maintenant l'ensemble des élèves (pro + loisir).
+* La recherche du nombre d'adhésions tient maintenant compte des "adhésions pro". Auparavant, seules les lignes d'échéance d'adhésion "Loisir" étaient comptabilisées.
+* Dans l'échéancier du groupe, le filtre sur les adhésions (bouton Adhésions) ne fonctionnait que pour les adhésions de type "Loisir".
+* La recherche des emails, adresses et téléphones dans l'export des élèves du menu Fichier -> Exporter (Tous les élèves, Elèves par professeur, Elèves par activité, Elèves par formule, Elèves par instrument) ne tient plus compte des données du payeur si le payeur correspond à une organisation. Les payeurs assimilés aux parents d'élèves ou aux tuteurs sont néanmoins bien pris en compte.
+
+PLANIFICATION
+Il est maintenant possible de planifier un cours (et par extension, un stage ou un atelier découverte) dont le professeur reste à définir. Ceci dans le but de faciliter les pré-planifications en période de rentrée, lorsque les intervenants ne sont pas encore tous connus ou décidés.
+Pour cette même raison, la recherche de confits dans l'occupation des intervenants ne tiendra pas compte des professeurs à définir. Deux ou plusieurs cours comportant un professeur "à définir" pourront donc exister en parallèle : fonctions Etirer/compresser, Changer professeur, Différer, Copier cours.

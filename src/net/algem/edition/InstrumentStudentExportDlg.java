@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 
 package net.algem.edition;
@@ -30,7 +30,7 @@ import net.algem.util.ui.GridBagHelper;
 
 /**
  * Export dialog for contact infos of students playing the instrument selected.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.10.0
  * @since 2.6.d 06/11/2012
@@ -40,24 +40,24 @@ public class InstrumentStudentExportDlg
 {
 
   private GemChoice instrument;
-  
+
   public InstrumentStudentExportDlg(GemDesktop desktop) {
     super(desktop);
   }
 
   @Override
   protected void setPanel() {
-    
+
     instrument = new InstrumentChoice(desktop.getDataCache().getInstruments());
     instrument.setPreferredSize(typeContact.getPreferredSize());
-    
+
     gb.add(new JLabel(BundleUtil.getLabel("Instrument.label")), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(instrument, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(new JLabel(BundleUtil.getLabel("Date.From.label")), 0, 1, 1, 1, GridBagHelper.WEST);
     gb.add(dateRange, 1, 1, 1, 1, GridBagHelper.WEST);
     gb.add(new JLabel(BundleUtil.getLabel("Type.label")), 0, 2, 1, 1, GridBagHelper.WEST);
     gb.add(typeContact, 1, 2, 1, 1, GridBagHelper.WEST);
-    
+
     nextRow = 3;
   }
 

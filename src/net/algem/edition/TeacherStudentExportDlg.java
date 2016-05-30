@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 
 package net.algem.edition;
@@ -31,13 +31,13 @@ import net.algem.util.ui.GridBagHelper;
 
 /**
  * Export dialog for contact infos of the selected teacher's students.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.10.0
  * @since 2.6.d 05/11/2012
  */
-public class TeacherStudentExportDlg 
- extends StudentExportDlg 
+public class TeacherStudentExportDlg
+ extends StudentExportDlg
 {
   private GemChoice teacher;
 
@@ -47,7 +47,7 @@ public class TeacherStudentExportDlg
 
   @Override
   protected void setPanel() {
-    
+
     teacher = new TeacherChoice(desktop.getDataCache().getList(Model.Teacher), true);
     teacher.setPreferredSize(typeContact.getPreferredSize());
 

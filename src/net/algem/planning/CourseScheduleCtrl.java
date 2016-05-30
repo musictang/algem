@@ -1,5 +1,5 @@
 /*
- * @(#)CourseScheduleCtrl.java	2.9.7 02/05/16
+ * @(#)CourseScheduleCtrl.java	2.9.7.2 30/05/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -39,7 +39,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.7
+ * @version 2.9.7.1
  * @since 1.0a 07/07/1999
  */
 public class CourseScheduleCtrl
@@ -83,16 +83,16 @@ public class CourseScheduleCtrl
     if (c == null || c.isUndefined()) {
       msg += MessageUtil.getMessage("course.invalid.choice");
     }
-    if (c.isCourseCoInst() && v.getCourseLength() < 15) { // 15 minutes mini
+    if (c != null && c.isCourseCoInst() && v.getCourseLength() < 15) { // 15 minutes mini
       msg += "\n" + MessageUtil.getMessage("course.length.warning");
     }
     if (!v.hasValidLength()) {
       msg += "\n" + MessageUtil.getMessage("hour.range.error");
     }
     Action a = v.get();
-    if (a.getIdper() == 0) {
+    if (a.getIdper() == 0 && !MessagePopup.confirm(this, MessageUtil.getMessage("teacher.undefined.confirmation"))) {
       msg += "\n" + MessageUtil.getMessage("teacher.invalid.choice");
-    }
+    } 
     if (a.getRoom() == 0) {
       msg += "\n" + MessageUtil.getMessage("room.invalid.choice");
     }
@@ -234,12 +234,15 @@ public class CourseScheduleCtrl
         conflicts++;
       }
       // test prof
-      query = ConflictQueries.getTeacherConflictSelection(d.toString(), hStart.toString(), hEnd.toString(), teacher);
-      if (ScheduleIO.count(query, dc) > 0) {
-        conflict.setTeacherFree(false);
-        conflicts++;
+      if (teacher > 0) {
+        query = ConflictQueries.getTeacherConflictSelection(d.toString(), hStart.toString(), hEnd.toString(), teacher);
+        if (ScheduleIO.count(query, dc) > 0) {
+          conflict.setTeacherFree(false);
+          conflicts++;
+        }
       }
       conflictsView.addConflict(conflict);
+
     }
     return conflicts;
   }

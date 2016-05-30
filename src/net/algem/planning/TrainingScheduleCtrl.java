@@ -1,7 +1,7 @@
 /*
- * @(#)TrainingScheduleCtrl.java	2.9.4.6 02/06/15
+ * @(#)TrainingScheduleCtrl.java	2.9.7.1 25/05/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -41,7 +41,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.6
+ * @version 2.9.7.1
  * @since 2.8.t 11/04/14
  */
 public class TrainingScheduleCtrl
@@ -182,7 +182,7 @@ public class TrainingScheduleCtrl
     if (room == 0) {
       throw new PlanningException(MessageUtil.getMessage("room.invalid.choice"));
     }
-    if (teacher == 0) {
+    if (teacher == 0 && !MessagePopup.confirm(this, MessageUtil.getMessage("teacher.undefined.confirmation"))) {
       throw new PlanningException(MessageUtil.getMessage("invalid.teacher"));
     }
     Action a = new Action();
@@ -207,10 +207,12 @@ public class TrainingScheduleCtrl
         conflicts++;
       }
       // test prof
-      query = ConflictQueries.getTeacherConflictSelection(d.toString(), start.toString(), end.toString(), a.getIdper());
-      if (ScheduleIO.count(query, dc) > 0) {
-        testConflict.setTeacherFree(false);
-        conflicts++;
+      if (a.getIdper() > 0) {
+        query = ConflictQueries.getTeacherConflictSelection(d.toString(), start.toString(), end.toString(), a.getIdper());
+        if (ScheduleIO.count(query, dc) > 0) {
+          testConflict.setTeacherFree(false);
+          conflicts++;
+        }
       }
       conflictsView.addConflict(testConflict);
     }
