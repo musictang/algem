@@ -1,5 +1,5 @@
 /*
- * @(#)CourseScheduleCtrl.java	2.9.7.1 25/05/16
+ * @(#)CourseScheduleCtrl.java	2.9.7.2 30/05/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -39,7 +39,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.7.1
+ * @version 2.9.7.2
  * @since 1.0a 07/07/1999
  */
 public class CourseScheduleCtrl
@@ -90,7 +90,7 @@ public class CourseScheduleCtrl
       msg += "\n" + MessageUtil.getMessage("hour.range.error");
     }
     Action a = v.get();
-    if (a.getIdper() < 0) {
+    if (a.getIdper() == 0 && !MessagePopup.confirm(this, MessageUtil.getMessage("teacher.undefined.confirmation"))) {
       msg += "\n" + MessageUtil.getMessage("teacher.invalid.choice");
     }
     if (a.getRoom() == 0) {

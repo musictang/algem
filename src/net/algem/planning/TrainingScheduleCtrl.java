@@ -1,5 +1,5 @@
 /*
- * @(#)TrainingScheduleCtrl.java	2.9.7.1 25/05/16
+ * @(#)TrainingScheduleCtrl.java	2.9.7.2 30/05/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -41,7 +41,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.7.1
+ * @version 2.9.7.2
  * @since 2.8.t 11/04/14
  */
 public class TrainingScheduleCtrl
@@ -182,7 +182,7 @@ public class TrainingScheduleCtrl
     if (room == 0) {
       throw new PlanningException(MessageUtil.getMessage("room.invalid.choice"));
     }
-    if (teacher < 0) {
+    if (teacher == 0 && !MessagePopup.confirm(this, MessageUtil.getMessage("teacher.undefined.confirmation"))) {
       throw new PlanningException(MessageUtil.getMessage("invalid.teacher"));
     }
     Action a = new Action();

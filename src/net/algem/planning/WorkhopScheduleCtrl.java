@@ -1,5 +1,5 @@
 /*
- * @(#)WorkhopScheduleCtrl.java	2.9.7.1 25/05/16
+ * @(#)WorkhopScheduleCtrl.java	2.9.7.2 30/05/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -37,7 +37,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.7.1
+ * @version 2.9.7.2
  * @since 1.0a 07/07/1999
  */
 public class WorkhopScheduleCtrl
@@ -136,7 +136,7 @@ public class WorkhopScheduleCtrl
     if (r == 0) {
       throw new PlanningException(MessageUtil.getMessage("room.invalid.choice"));
     }
-    if (t < 0) {
+    if (t == 0 && !MessagePopup.confirm(this, MessageUtil.getMessage("teacher.undefined.confirmation"))) {
       throw new PlanningException(MessageUtil.getMessage("invalid.teacher"));
     }
 
