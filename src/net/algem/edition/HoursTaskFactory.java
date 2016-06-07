@@ -1,8 +1,5 @@
-<#assign projectVersion = "2.10.0">
-<#if licenseFirst??>
-${licenseFirst}
-</#if>
- * @(#) ${nameAndExt} Algem ${projectVersion} ${date?date?string("dd/MM/yyyy")}
+/*
+ * @(#) HoursTaskFactory.java Algem 2.10.0 03/06/2016
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -19,6 +16,30 @@ ${licenseFirst}
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
-<#if licenseLast??>
-${licenseLast}
-</#if>
+ */
+package net.algem.edition;
+
+import net.algem.util.GemLogger;
+
+/**
+ *
+ * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
+ * @version 2.10.0
+ * @since 2.10.0 03/06/2016
+ */
+public class HoursTaskFactory {
+
+  public static HoursTaskExecutor getInstance() {
+    try {
+      Class c = Class.forName("net.algem.plugins.WorkingTimePlugin");
+      return (HoursTaskExecutor) c.newInstance();
+    } catch (InstantiationException ex) {
+      GemLogger.logException(ex);
+    } catch (ClassNotFoundException ex) {
+      GemLogger.logException(ex);
+    } catch (IllegalAccessException ex) {
+      GemLogger.logException(ex);
+    }
+    return null;
+  }
+}

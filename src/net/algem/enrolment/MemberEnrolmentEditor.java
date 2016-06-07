@@ -1,5 +1,5 @@
 /*
- * @(#)MemberEnrolmentEditor.java 2.10.0 19/05/16
+ * @(#)MemberEnrolmentEditor.java 2.10.0 01/06/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -251,7 +251,7 @@ public class MemberEnrolmentEditor
   public void load() {
     desktop.setWaitCursor();
     loaded = true;
-    final Vector<Enrolment> ins = service.getEnrolments(dossier.getId());
+    final List<Enrolment> ins = service.getEnrolments(dossier.getId());
     if (ins == null || ins.size() < 1) {
       root = new DefaultMutableTreeNode(NONE_ENROLMENT);
       model.setRoot(root);
@@ -261,7 +261,7 @@ public class MemberEnrolmentEditor
 
     root = new DefaultMutableTreeNode(BundleUtil.getLabel("Person.enrolment.tab.label") + " : " + dossier.getContact().getFirstnameName());
     for (int j = 0; j < ins.size(); j++) {
-      Enrolment i = ins.elementAt(j);
+      Enrolment i = ins.get(j);
       EnrolmentNode ni = new EnrolmentNode(i);
 
       Enumeration<ModuleOrder> enu = i.getModule().elements();
@@ -269,11 +269,12 @@ public class MemberEnrolmentEditor
         try {
           ModuleOrder mo = enu.nextElement();//probleme apres inscription
           ModuleEnrolmentNode mnode = new ModuleEnrolmentNode(mo);
-          mnode.setLastScheduledDate(new DateFr(service.getLastScheduleByModuleOrder(dossier.getId(), mo.getId())));
+          // line below is commented : not needed
+          //mnode.setLastScheduledDate(new DateFr(service.getLastScheduleByModuleOrder(dossier.getId(), mo.getId())));
           if (mo.getTotalTime() > 0) {
             // do not restrict to end date
-            mnode.setCompleted(service.getCompletedTime(dossier.getId(), mo.getId(), dataCache.getStartOfYear().getDate()));            
-//            mnode.setCompleted(service.getCompletedTime(dossier.getId(), mo.getId(), dataCache.getStartOfYear().getDate(), dataCache.getEndOfYear().getDate()));
+            mnode.setCompleted(service.getCompletedTime(dossier.getId(), mo.getId(), dataCache.getStartOfYear().getDate()));
+            //mnode.setCompleted(service.getCompletedTime(dossier.getId(), mo.getId(), dataCache.getStartOfYear().getDate(), dataCache.getEndOfYear().getDate()));
           }
 
           if (mo.isStopped()) {
@@ -287,7 +288,7 @@ public class MemberEnrolmentEditor
             DateFr last = new DateFr(service.getLastSchedule(dossier.getId(), cc.getId()));
             if (!DateFr.NULLDATE.equals(last.toString()) && !last.equals(cc.getDateEnd())) {
               cc.setDateEnd(last);
-              service.update(cc);
+              //service.update(cc); // no need to update (displayed in real time)
             }
             //
             if (cc.getTitle() == null && cc.getAction() == 0) {
@@ -310,7 +311,7 @@ public class MemberEnrolmentEditor
     desktop.setDefaultCursor();
   }
 
-  private String getUndefinedLabel(CourseOrder cc) throws SQLException {
+  public static String getUndefinedLabel(CourseOrder cc) throws SQLException {
     StringBuilder t = new StringBuilder("[");
     GemParam p = (GemParam) DataCache.findId(cc.getCode(), Model.CourseCode);
     t.append(p == null ? "!" : p.getLabel());
@@ -819,12 +820,13 @@ public class MemberEnrolmentEditor
       Order order = node.getOrder();
 
       if (node.getChildCount() >= 0) {
+        MemberService memberService = new MemberService(dc);
         temp = File.createTempFile(BundleUtil.getLabel("Enrolment.label") + "-" + order.getId() + "_", extension);
         pw = new PrintWriter(temp, StandardCharsets.UTF_8.name());
         pw.println(FileUtil.getHtmlHeader(BundleUtil.getLabel("Enrolment.label"), getCss()));
         pw.println(catchEnrolmentInfo(node));
         //pw.println(catchActivity(order.getCreation(), dataCache.getEndOfYear()));//XXX probleme date fin si cours programmés après
-        pw.println(catchActivity(order.getCreation(), getActions(node)));
+        pw.println(catchActivity(dossier.getId(), order.getCreation(), null, getActions(node), memberService));
         pw.println("</body></html>");
       }
       if (pw != null) {
@@ -887,13 +889,17 @@ public class MemberEnrolmentEditor
    * @param actions a comma-separated list of actions' id
    * @return a html-formatted string
    */
-//  private String catchActivity(DateFr start, DateFr end){
-    private String catchActivity(DateFr start, String actions){
+    public static String catchActivity(int idper, DateFr start, DateFr end, String actions, MemberService service){
     try {
-      MemberService memberService = new MemberService(dc);
       StringBuilder sb = new StringBuilder();
-      Vector<ScheduleRangeObject> ranges = memberService.findFollowUp(dossier.getId(), start.getDate(), actions);
-//      Vector<ScheduleRangeObject> ranges = memberService.findFollowUp(dossier.getId(), new DateRange(start, end));
+      Vector<ScheduleRangeObject> ranges;
+      if (end == null) {
+        ranges = service.findFollowUp(idper, start.getDate(), actions);
+      } else {
+        ranges = service.findFollowUp(idper, start.getDate(), end.getDate(), actions);
+      }
+//        Vector<ScheduleRangeObject> ranges = service.findFollowUp(idper, start.getDate(), actions);
+
       sb.append("<table><thead>");
       sb.append("<tr><th>").append(BundleUtil.getLabel("Activity.label")).append("</th><th>")
               .append(BundleUtil.getLabel("Teacher.label")).append("</th><th>")
@@ -919,7 +925,7 @@ public class MemberEnrolmentEditor
                 .append(r.getEnd()).append("</td><td>")
                 .append(Hour.format(hs.getLength(he))).append("</td></tr>");
       }
-      sb.append("</tbody><tfoot><tr><td colspan=\"7\">" + "Total" + "</td><td> ").append(Hour.format(min)).append("</td></tr>");
+      sb.append("</tbody><tfoot><tr><td colspan=\"7\">Total</td><td> ").append(Hour.format(min)).append("</td></tr>");
       sb.append("</tfoot></table>");
       return sb.toString();
     } catch (SQLException ex) {
@@ -948,7 +954,9 @@ public class MemberEnrolmentEditor
       if (n instanceof ModuleEnrolmentNode) {
         // print info commmande module
         sb.append("<ul>");
-        sb.append("<li>").append(((ModuleEnrolmentNode) n).toString()).append("</li>");
+        String moduleInfo = ((ModuleEnrolmentNode) n).toString();
+        moduleInfo = moduleInfo.substring(6, moduleInfo.lastIndexOf('<'));// do not include <html></html> tag
+        sb.append("<li>").append(moduleInfo).append("</li>");
         if (n.getChildCount() >= 0) {
           sb.append("<ul>");
           // print info commande cours
@@ -972,9 +980,9 @@ public class MemberEnrolmentEditor
    * Gets the css style used to print enrolment information.
    * @return a css-formatted string
    */
-  private String getCss() {
-    return "body {font-family: Arial, Helvetica, sans-serif}"
-            + " table {width: 100%;border-spacing: 0;border-collapse: collapse;border:1px solid Gray;font-size: smaller}"
+  public static String getCss() {
+    return " body {font-family: Arial, Helvetica, sans-serif;font-size: 1em}"
+            + " table {width: 100%;border-spacing: 0;border-collapse: collapse;border:1px solid Gray;font-size: 0.8em}"
             + " td, th { border-left: 1px solid Gray;text-align :left }"
             + " tbody td, tbody th { border-bottom: 1px solid LightGray}"
             + " tbody tr:last-child td {border-bottom: 1px solid Gray}"
@@ -983,11 +991,11 @@ public class MemberEnrolmentEditor
             + " tbody tr:nth-child(odd) {background-color: #FFF}"
             + " body  ul li {font-weight: bold}"
             + " body  ul ul li {font-weight: normal}"
-            + " h1 {font-size: 1.5em}"
-            + " h2 {font-size : 1.2em}"
-            + " ul {font-size: 1em;line-height: 1.4em}"
-            + " h1, h2 {background-color: #CCC !important}"
-            + " -webkit-print-color-adjust:exact;print-color-adjust: exact;";
+            + " h1 {font-size: 1.2em}"
+            + " h2 {font-size : 1.1em}"
+            + " ul {font-size: 0.9em;line-height: 1.4em}"
+            + " h1, h2 {background-color: #CCC !important}";
+//      + " -webkit-print-color-adjust:exact;";
   }
 
   /**

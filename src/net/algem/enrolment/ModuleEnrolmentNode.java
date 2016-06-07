@@ -65,7 +65,7 @@ public class ModuleEnrolmentNode
   public void setCompleted(int m) {
     this.completed = m;
   }
-  
+
   void setLastScheduledDate(DateFr last) {
     this.lastDate = last;
   }
@@ -76,13 +76,13 @@ public class ModuleEnrolmentNode
     int timeLeft = mo.getTotalTime() - completed;
     StringBuilder sb = new StringBuilder("<html>");
     sb.append(BundleUtil.getLabel("Module.label")).append(" : ").append(mo.getTitle());
-    if (lastDate != null && !DateFr.NULLDATE.equals(lastDate.toString())) {
+    /*if (lastDate != null && !DateFr.NULLDATE.equals(lastDate.toString())) {
       sb.append(" [\u2192").append(lastDate).append("]");
-    }
+    }*/
     sb.append(getProgress(timeLeft)).append(info != null ? info : "").append("</html>");
     return sb.toString();
   }
-  
+
   private String getProgress(int timeLeft) {
     StringBuilder sb = new StringBuilder();
     if (mo.getTotalTime() > 0) {

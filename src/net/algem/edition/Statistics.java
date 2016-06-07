@@ -57,7 +57,7 @@ public abstract class Statistics
 
   protected static Integer MEMBERSHIP_ACCOUNT;
   protected static int MAINTENANCE = 5;
-  
+
   protected DataCache dataCache;
   protected DataConnection dc;
   protected PrintWriter out;
@@ -251,7 +251,6 @@ public abstract class Statistics
    * @param nav
    */
   abstract protected void setSummaryDetail(StringBuilder nav);
-
 
   @Override
   protected Void doInBackground() throws Exception {
@@ -449,13 +448,13 @@ public abstract class Statistics
     out.println("\n\t\t\t<tr><td colspan='2'>Total : " + getTimeFromMinutes(total) + "</td></tr>");
     out.println("\n\t\t</table>");
   }
-  
+
   protected String getTimeFromMinutes(int minutes) {
     int h = (minutes / 60);
     int m = minutes % 60;
     return h + ":" + m;
   }
-  
+
   /**
    * Gets the total in minutes from formatted time string.
    * @param time with this pattern *hh:mm:00
@@ -475,7 +474,7 @@ public abstract class Statistics
         m = 0;
       } else {
         h = Integer.parseInt(time.substring(0, firstIdx));
-        if (lastIdx == -1) { 
+        if (lastIdx == -1) {
           m = Integer.parseInt(time.substring(firstIdx + 1));
         } else {
           m = Integer.parseInt(time.substring(firstIdx + 1, lastIdx));
@@ -485,7 +484,7 @@ public abstract class Statistics
     } catch (NumberFormatException ne) {
       return 0;
     }
-    
+
   }
 
   /**
@@ -808,6 +807,8 @@ public abstract class Statistics
       out.close();
     }
   }
+
+
 
   private String getMethodName() {
     return getClass().getEnclosingMethod().getName();

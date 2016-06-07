@@ -1,29 +1,31 @@
 /*
- * @(#)EmployeeTaskFactory.java 2.9.4.13 02/11/15
- * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
- * 
+ * @(#)EmployeeTaskFactory.java 2.10.0 07/06/16
+ *
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Algem is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see http://www.gnu.org/licenses.
- * 
+ *
  */
 package net.algem.edition;
 
 import java.io.PrintWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 import javax.swing.ProgressMonitor;
 import javax.swing.SwingWorker;
@@ -37,13 +39,12 @@ import net.algem.util.DataCache;
 
 /**
  * Class used to select a task for hours reporting.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.10.0
  * @since 2.9.4.13 26/10/15
  */
-public class EmployeeTaskFactory
-{
+public class EmployeeTaskFactory {
 
   private HourEmployeeDlg parent;
   private AccountingService service;
@@ -57,6 +58,7 @@ public class EmployeeTaskFactory
   private int estab;
   private boolean catchup;
   private boolean detail;
+  private Map<String, Object> props;
 
   public EmployeeTaskFactory(HourEmployeeDlg parent, AccountingService service, DataCache dataCache, ProgressMonitor pm, PrintWriter out) {
     this.parent = parent;
@@ -74,6 +76,18 @@ public class EmployeeTaskFactory
     this.estab = estab;
     this.catchup = catchup;
     this.detail = detail;
+    props = new HashMap<>();
+    props.put("start", start);
+    props.put("end", end);
+    props.put("idper", idper);
+    props.put("school", school);
+    props.put("estab", estab);
+    props.put("catchup", catchup);
+    props.put("detail", detail);
+  }
+
+  public Map<String, Object> getProps() {
+    return props;
   }
 
   public SwingWorker<Void, Void> getTask(String cmd) throws SQLException {
@@ -118,6 +132,13 @@ public class EmployeeTaskFactory
       case "Administrator":
         rs = service.getReportByEmployee(start.toString(), end.toString(), idper, Schedule.ADMINISTRATIVE);
         task = new HoursAdministrativeTask(parent, monitor, out, rs, detail);
+        break;
+      case "Custom":
+        HoursTaskExecutor executor = HoursTaskFactory.getInstance();
+        executor.setProperties(props);
+        executor.setOut(out);
+        task = new HoursTeacherCustomTask(parent, monitor, detail);
+        ((HoursTeacherCustomTask) task).setExecutor(executor);
         break;
     }
     return task;

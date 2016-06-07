@@ -1,8 +1,5 @@
-<#assign projectVersion = "2.10.0">
-<#if licenseFirst??>
-${licenseFirst}
-</#if>
- * @(#) ${nameAndExt} Algem ${projectVersion} ${date?date?string("dd/MM/yyyy")}
+/*
+ * @(#) HoursTeacherCustomTask.java Algem 2.10.0 04/06/2016
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -19,6 +16,35 @@ ${licenseFirst}
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
-<#if licenseLast??>
-${licenseLast}
-</#if>
+ */
+package net.algem.edition;
+
+import javax.swing.ProgressMonitor;
+
+/**
+ *
+ * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
+ * @version 2.10.0
+ * @since 2.10.0 04/06/2016
+ */
+public class HoursTeacherCustomTask
+  extends HoursTask {
+
+  private HoursTaskExecutor executor;
+
+  public HoursTeacherCustomTask(HourEmployeeDlg dlg, ProgressMonitor monitor, boolean detail) {
+    super(dlg, monitor, detail);
+  }
+
+  public void setExecutor(HoursTaskExecutor executor) {
+    this.executor = executor;
+    this.executor.setWorker(this);
+  }
+
+  @Override
+  protected Void doInBackground() throws Exception {
+    this.executor.execute();
+    return null;
+  }
+
+}

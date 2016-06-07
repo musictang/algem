@@ -1,0 +1,22 @@
+2.10.0
+CORRECTIFS
+
+* Dans le suivi enseignant de la fiche enseignant, le calcul du nombre d'heures correspondant aux lignes sélectionnées était faux après effectué un tri sur l'une des colonnes.
+
+
+FACTURATION
+paramètre date d'échéance, arrondi
+cacher lignes de facturation
+echeances standards
+facturation échéance inscription
+
+fiche inscription
+impression suivi élève
+feuille d'émargement 
+date de fin de cours
+
+FICHE COURS
+Liste élèves
+
+FICHE FORMULE
+Liste élèves

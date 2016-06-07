@@ -1,7 +1,7 @@
 /*
- * @(#)Hour.java	2.9.4.13 05/11/15
+ * @(#)Hour.java	2.10.0 07/06/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,12 +20,14 @@
  */
 package net.algem.planning;
 
+import net.algem.util.GemLogger;
+
 /**
  * Hour model.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.10.0
  */
 public class Hour
         implements java.io.Serializable
@@ -33,7 +35,7 @@ public class Hour
 
   public static final String NULL_HOUR = "00:00";
   private static final long serialVersionUID = -731574453711000560L;
-  
+
   private StringBuffer buf;
 
   public Hour() {
@@ -49,7 +51,7 @@ public class Hour
     if (m > 0) {
       incMinute(m);
     }
-    
+
   }
 
   public Hour(int m, boolean extended) {
@@ -295,7 +297,7 @@ public class Hour
   }
 
   public void set(String s) {
-    if (s != null && s.length() >= 5 && s.charAt(2) == ':') {
+    if (s != null && s.length() >= 5 && s.charAt(2) == ':') {//XXX bug if h >99
       buf = new StringBuffer(s.substring(0, 5));
     }
   }
@@ -324,15 +326,51 @@ public class Hour
       return "0h"+min;
     }
     int m = min%60;
-    return (min/60) + "h" + (m > 0 ? m : "");
+    if (m > 0) {
+      return String.format("%dh%02d", (min/60),m);
+    }
+    return (min/60) + "h";
   }
-  
+
   public static double minutesToDecimal(int min) {
     return Math.rint(min / 60d * 100) / 100;
   }
-  
+
   public static int decimalToMinutes(double hours) {
     return (int) Math.rint(hours * 60);
   }
-  
+
+  /**
+   * Converts a time-formatted string in minutes.
+   * @param time the time expressed as {@code hh:mm} or {@code *hh:mm}.
+   * @return a number of minutes
+   */
+  public static int getMinutesFromString(String time) {
+    if (time == null || time.isEmpty() || "00:00".equals(time)) {
+      return 0;
+    }
+    try {
+      int h = 0;
+      int m = 0;
+      int firstIdx = time.indexOf(':');
+      int lastIdx = time.lastIndexOf(':');
+      if (firstIdx == -1) {
+        h = Integer.parseInt(time.substring(0));
+        m = 0;
+      } else {
+        h = Integer.parseInt(time.substring(0, firstIdx));
+        if (lastIdx == -1 || firstIdx == lastIdx) {
+          m = Integer.parseInt(time.substring(firstIdx + 1));
+        } else {
+          m = Integer.parseInt(time.substring(firstIdx + 1, lastIdx));
+        }
+      }
+      return (h * 60) + m;
+    } catch (NumberFormatException ne) {
+      GemLogger.logException(time, ne);
+      return 0;
+    }
+
+  }
+
 }

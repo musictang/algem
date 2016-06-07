@@ -1,5 +1,5 @@
 /*
- * @(#)MemberService.java	2.10.0 16/05/16
+ * @(#)MemberService.java	2.10.0 01/06/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -255,12 +255,12 @@ public class MemberService
    * @return a list of enrolments
    * @throws java.sql.SQLException
    */
-  public Vector<Enrolment> getEnrolments(int memberId, DateFr start, DateFr end) throws SQLException {
+  public List<Enrolment> getEnrolments(int memberId, DateFr start, DateFr end) throws SQLException {
     String where = "WHERE adh = " + memberId + " AND creation >='" + start + "' AND creation <='" + end + "' ORDER BY id";
     return EnrolmentIO.find(where, dc);
   }
 
-  public Vector<Enrolment> getEnrolments(int memberId, String start) throws SQLException {
+  public List<Enrolment> getEnrolments(int memberId, String start) throws SQLException {
     String where = "WHERE adh = " + memberId + " AND creation >='" + start + "'";
     return EnrolmentIO.find(where, dc);
   }
@@ -309,6 +309,16 @@ public class MemberService
 
   public Vector<ScheduleRangeObject> findFollowUp(int memberId, Date date, String actions) throws SQLException {
     String where = " AND p.jour >= '" + date + "' AND p.action IN (" + actions + ")"
+            + " AND (pg.note >= 0 OR p.note > 0)"
+            + " AND pg.note = s1.id"
+            + " AND p.note = s2.id"
+            + " AND pg.adherent = " + memberId
+            + " ORDER BY p.jour, pg.debut";
+    return ScheduleRangeIO.findFollowUp(where, false, dc);
+  }
+
+  public Vector<ScheduleRangeObject> findFollowUp(int memberId, Date start, Date end, String actions) throws SQLException {
+    String where = " AND p.jour BETWEEN '" + start + "' AND '" + end + "' AND p.action IN (" + actions + ")"
             + " AND (pg.note >= 0 OR p.note > 0)"
             + " AND pg.note = s1.id"
             + " AND p.note = s2.id"

@@ -1,6 +1,6 @@
 /*
  * @(#)StatisticsFactory.java	2.7.a 22/11/12
- * 
+ *
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.edition;
 
@@ -25,7 +25,7 @@ import net.algem.util.GemLogger;
 
 /**
  * Factory for statistics plugin class.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.7.a
  * @since 2.6.a 11/10/12
@@ -48,14 +48,10 @@ public class StatisticsFactory
     try {
       Class c = Class.forName("net.algem.plugins.StatisticsPlugin");
       return (Statistics) c.newInstance();
-    } catch (InstantiationException ex) {
+    } catch (InstantiationException | IllegalAccessException | ClassNotFoundException ex) {
       GemLogger.log(Level.SEVERE, ex.getMessage());
-    } catch (IllegalAccessException ex) {
-      GemLogger.log(Level.SEVERE, ex.getMessage());
-    } catch (ClassNotFoundException ex) {
-     GemLogger.log(Level.SEVERE, ex.getMessage());
     }
     return null;
   }
-  
+
 }

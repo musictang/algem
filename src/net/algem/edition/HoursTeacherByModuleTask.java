@@ -1,22 +1,22 @@
 /*
  * @(#)HoursTeacherByModuleTask.java 2.9.4.13 27/10/15
- * 
+ *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
- * 
+ *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Algem is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see http://www.gnu.org/licenses.
- * 
+ *
  */
 
 package net.algem.edition;
@@ -35,7 +35,7 @@ import net.algem.util.BundleUtil;
  * @version 2.9.4.13
  * @since 2.9.4.0 23/10/2015
  */
-public class HoursTeacherByModuleTask 
+public class HoursTeacherByModuleTask
 extends HoursTask
   {
 
@@ -54,7 +54,7 @@ extends HoursTask
       out.close();
       return null;
   }
-  
+
   private void printDetail() throws SQLException {
       String totalModuleLabel = BundleUtil.getLabel("Total.label") + " " + BundleUtil.getLabel("Module.label");
       int prevMonth = -1;
@@ -75,12 +75,12 @@ extends HoursTask
         Hour end = new Hour(rs.getString(11));
         Hour length = new Hour(rs.getString(12));
         int idper = rs.getInt(1);
-        int idmodule = rs.getInt(7); 
+        int idmodule = rs.getInt(7);
         courseName = rs.getString(6);
         moduleName = rs.getString(8);
-        
+
         StringBuilder sb = new StringBuilder();
-        
+
         if (idmodule != prevModule) {
           if (prevModule > 0) {
             totalPeriod += totalMonth;
@@ -105,7 +105,7 @@ extends HoursTask
           totalPeriod = 0;
           totalModule = 0;
         }
-        
+
         if (idper != prevIdper) {
           if (prevIdper > 0 && prevDate != null) {
             totalPeriod += totalMonth;
@@ -168,7 +168,7 @@ extends HoursTask
         }
       } // end while
       totalPeriod += totalMonth;
-      
+
       if (!detail) {
         out.println(teacherName + ";;;"+ prevDate + ";;;" + getTotal(totalDay));
         out.println(";;;" + (prevDate == null ? "" : simpleDateFmt.format(prevDate.getDate()).toUpperCase()) + ";;;" + getTotal(totalMonth));
@@ -181,7 +181,7 @@ extends HoursTask
       }
      // end doInBackground
   }
-  
+
   private String getHeader() {
     StringBuilder sb = new StringBuilder();
     String[] cols = {
@@ -196,7 +196,7 @@ extends HoursTask
       sb.append(s);
     }
     return sb.toString();
-    
+
   }
- 
+
 }

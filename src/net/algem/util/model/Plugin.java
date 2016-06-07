@@ -1,8 +1,5 @@
-<#assign projectVersion = "2.10.0">
-<#if licenseFirst??>
-${licenseFirst}
-</#if>
- * @(#) ${nameAndExt} Algem ${projectVersion} ${date?date?string("dd/MM/yyyy")}
+/*
+ * @(#) Plugin.java Algem 2.10.0 03/06/2016
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -19,6 +16,20 @@ ${licenseFirst}
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
-<#if licenseLast??>
-${licenseLast}
-</#if>
+ */
+
+package net.algem.util.model;
+
+/**
+ *
+ * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
+ * @version 2.10.0
+ * @since 2.10.0 03/06/2016
+ */
+public interface Plugin {
+
+  String getLabel();
+
+  String getInfo();
+
+}

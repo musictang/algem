@@ -1,7 +1,7 @@
 /*
- * @(#)TeacherFollowUpEditor.java	2.9.4.13 09/11/15
- * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * @(#)TeacherFollowUpEditor.java	2.10.0 07/06/2016
+ *
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.contact.teacher;
 
@@ -55,7 +55,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.10.0
  */
 public class TeacherFollowUpEditor
         extends FileTab
@@ -97,8 +97,8 @@ public class TeacherFollowUpEditor
         if (!listSelectionModel.isSelectionEmpty()) {
           int rows[] = table.getSelectedRows();
           for (int i = 0; i < rows.length; i++) {
-            Hour start = new Hour((String) table.getModel().getValueAt(rows[i], 1));
-            Hour end = new Hour((String) table.getModel().getValueAt(rows[i], 2));
+            Hour start = new Hour((String) table.getModel().getValueAt(table.convertRowIndexToModel(rows[i]), 1));
+            Hour end = new Hour((String) table.getModel().getValueAt(table.convertRowIndexToModel(rows[i]), 2));
             total += start.getLength(end);
           }
         }

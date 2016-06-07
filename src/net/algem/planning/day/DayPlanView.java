@@ -1,5 +1,5 @@
 /*
- * @(#)DayPlanView.java 2.9.5 09/02/16
+ * @(#)DayPlanView.java 2.10.0 07/06/2016
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -43,7 +43,7 @@ import net.algem.util.model.Model;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.5
+ * @version 2.10.0
  * @since 1.0a 07/07/1999
  */
 public class DayPlanView
@@ -188,10 +188,10 @@ public class DayPlanView
     Hour start = dt.getOpening();
     Hour end = dt.getClosing();
 
-    Hour first = new Hour(H_START);
+    Hour first = new Hour(GLOBAL_START_TIME);
     Hour last = new Hour("24:00");
-    
-    if (start != null && start.toMinutes() > H_START) {
+
+    if (start != null && start.toMinutes() > GLOBAL_START_TIME) {
       dummy.setStart(first);
       dummy.setEnd(start);
       drawRange(col, dummy, CLOSED_COLOR, step_x);
@@ -228,7 +228,7 @@ public class DayPlanView
     x = 5;
     y = TOP_MARGIN + (fm.getHeight() / 2);
 
-    Hour hour = new Hour(H_START);
+    Hour hour = new Hour(GLOBAL_START_TIME);
 
     // Hour labels on left column
     for (int i = 0; i < GRID_Y; i++) {
@@ -469,9 +469,9 @@ public class DayPlanView
           subLabel = ((GroupStudioSchedule) p).getActivityLabel();
         } else if (p instanceof TechStudioSchedule) {
           subLabel = ((TechStudioSchedule) p).getTechnicianLabel();
-        } else if (Schedule.BOOKING_GROUP == p.getType()) { 
+        } else if (Schedule.BOOKING_GROUP == p.getType()) {
           subLabel = ((BookingGroupSchedule) p).getScheduleDetail();
-        } else if (Schedule.BOOKING_MEMBER == p.getType()) { 
+        } else if (Schedule.BOOKING_MEMBER == p.getType()) {
           subLabel = ((BookingMemberSchedule) p).getScheduleDetail();
         } else {
           subLabel = p.getPerson().getAbbrevFirstNameName();
@@ -570,7 +570,7 @@ public class DayPlanView
 
     int col = x / step_x; // le numéro de la colonne
 //		int	jj = ((x + (step_x)/2) / step_x) + 1;
-    int hh = ((y * 30) / step_y) + H_START; //heure
+    int hh = ((y * 30) / step_y) + GLOBAL_START_TIME; //heure
     int mm = hh % 60; // minute
     hh /= 60;
 

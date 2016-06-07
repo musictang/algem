@@ -1,5 +1,5 @@
 /*
- * @(#)EnrolmentService.java	2.10.0 13/05/16
+ * @(#)EnrolmentService.java	2.10.0 01/06/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -23,7 +23,6 @@ package net.algem.enrolment;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.logging.Logger;
 import net.algem.Algem;
 import net.algem.config.*;
 import net.algem.contact.PersonFile;
@@ -324,17 +323,40 @@ public class EnrolmentService
   /**
    * Gets the list of enrolments for the member {@literal id}.
    *
-   * @param id member id
+   * @param idper member id
    * @return a list of enrolments
    */
-  Vector<Enrolment> getEnrolments(int id) {
+  List<Enrolment> getEnrolments(int idper) {
     try {
-      return EnrolmentIO.find("WHERE adh = " + id + " ORDER BY id", dc);
+      return EnrolmentIO.find("WHERE adh = " + idper + " ORDER BY id", dc);
     } catch (SQLException ex) {
       GemLogger.logException(ex);
     }
     return null;
   }
+
+  /**
+   * Get the list of enrolments in pro training.
+   * @param idper member id
+   * @param from start date
+   * @param to end date
+   * @return a list of enrolments or an empty list if no enrolment was found
+   */
+  List<Enrolment> getProEnrolments(Date from, Date to) {
+    try {
+      return EnrolmentIO.find(" JOIN personne p on(adh = p.id)"
+        + " WHERE creation BETWEEN '" + from + "' AND '" + to
+        + "' AND " + OrderIO.TABLE + ".id IN("
+        + "SELECT idcmd FROM commande_module cm join module m on (cm.module = m.id) "
+        + " where m.code like 'P%')"
+        + " ORDER BY p.nom", dc);
+    } catch (SQLException ex) {
+      GemLogger.logException(ex);
+    }
+    return null;
+  }
+
+
 
   Vector<MemberOrder> getOrders() {
     return OrderIO.findMemberOrders(dc);
@@ -894,7 +916,7 @@ public class EnrolmentService
       return 0;
     }
   }
-  
+
   public Date getLastScheduleByModuleOrder(int idper, int mOrderId) {
     try {
       return ModuleOrderIO.getLastSchedule(idper, mOrderId, dc);
@@ -903,7 +925,7 @@ public class EnrolmentService
       return null;
     }
   }
-  
+
   public Date getLastSchedule(int idper, int courseOrderId) {
     try {
       return CourseOrderIO.getLastSchedule(idper, courseOrderId, dc);

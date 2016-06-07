@@ -1,7 +1,7 @@
 /*
- * @(#)TestHour.java	2.9.4.13 28/10/15
+ * @(#)TestHour.java	2.10.0 07/06/2016
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -26,7 +26,7 @@ import org.junit.*;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.10.0
  * @since 2.7.a 11/06/2013
  */
 public class TestHour
@@ -96,51 +96,30 @@ public class TestHour
   @Test
   public void testParseTimeString() {
     String t = "328:00:00";
-    int expected = getMinutesFromString(t);
+    int expected = Hour.getMinutesFromString(t);
     assertTrue(String.valueOf(expected), expected == 19680);
     t = "328";
-    expected = getMinutesFromString(t);
+    expected = Hour.getMinutesFromString(t);
     assertTrue(String.valueOf(expected), expected == 19680);
     t = null;
-    expected = getMinutesFromString(t);
+    expected = Hour.getMinutesFromString(t);
     assertTrue(String.valueOf(expected), expected == 0);
     t = "";
-    expected = getMinutesFromString(t);
+    expected = Hour.getMinutesFromString(t);
     assertTrue(String.valueOf(expected), expected == 0);
-    
-  }
-
-  private int getMinutesFromString(String time) {
-    if (time == null || time.isEmpty()) {
-      return 0;
-    }
-    try {
-      int h = 0;
-      int m = 0;
-      int firstIdx = time.indexOf(':');
-      int lastIdx = time.lastIndexOf(':');
-      if (firstIdx == -1) {
-        h = Integer.parseInt(time.substring(0));
-        m = 0;
-      } else {
-        h = Integer.parseInt(time.substring(0, firstIdx));
-        if (lastIdx == -1) { 
-          m = Integer.parseInt(time.substring(firstIdx + 1));
-        } else {
-          m = Integer.parseInt(time.substring(firstIdx + 1, lastIdx));
-        }
-      }
-      return (h + m) * 60;
-    } catch (NumberFormatException ne) {
-      return 0;
-    }
 
   }
-  
+
+
+
   @Test
   public void testConstructor() {
     Hour h = new Hour("388:30:00");
+    String t = "388:30:00";;
+    int min = Hour.getMinutesFromString(t);
+    assertTrue("expected :" + 23310 + ", result :" + min, min == 23310);
     assertFalse(h.toMinutes() == 23310);
+
     h = new Hour(23310);
     assertFalse(h.toMinutes() == 23310);
     h = new Hour("99:30:00");
