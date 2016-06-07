@@ -23,16 +23,15 @@ package net.algem.plugins;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import net.algem.config.AgeRange;
+import net.algem.edition.StatElement;
 import net.algem.edition.Statistics;
 import net.algem.edition.StatisticsDefault;
 import net.algem.edition.StatisticsFactory;
 import net.algem.planning.DateFr;
 import net.algem.planning.Schedule;
-import net.algem.room.Establishment;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 import net.algem.util.MessageUtil;
@@ -54,29 +53,27 @@ public class StatisticsPlugin
   private static final int MEMBERSHIP_N_ACCOUNT = 15;
   private static final int MEMBERSHIP_NN_ACCOUNT = 16;
 
-  protected Map<Integer, String> statList;
-
   @Override
   public void makeStats() throws SQLException {
 //    super.makeStats();
     header();
-    for (Map.Entry<Integer, String> entry : statList.entrySet()) {
+    for (StatElement entry : statList) {
       switch (entry.getKey()) {
         case 1:
-          printIntListResult(entry.getValue(), getQuery("members_without_date_of_birth"));
+          printIntListResult(entry.getLabel(), getQuery("members_without_date_of_birth"));
           break;
         case 2:
-          printErrors(entry.getValue(), getQuery("debtors"));
+          printErrors(entry.getLabel(), getQuery("debtors"));
           break;
         case 3:
-          printTableIntResult(entry.getValue(), getQuery("members_by_occupational"));
+          printTableIntResult(entry.getLabel(), getQuery("members_by_occupational"));
           break;
         case 4:
           out.println("<h2>©  STATISTIQUES PERSONNALISÉES  ©</h2>");
-          printErrors(entry.getValue(), getQuery("erreurs adhesions"));
+          printErrors(entry.getLabel(), getQuery("erreurs adhesions"));
           break;
         case 5:
-          printTitle(entry.getValue());
+          printTitle(entry.getLabel());
           out.println("\n\t\t<table class='list'>");
           out.println("\n\t<tr><th>Adhérents ne prenant pas de cours</th><td>" + getIntResult(getQuery("total_number_of_members_not_students")) + "</td></tr>");
           out.println("\n\t<tr><th>Adhérents prenant des cours</th><td>" + getIntResult(getQuery("total_number_of_students")) + "</td></tr>");
@@ -84,7 +81,7 @@ public class StatisticsPlugin
           out.println("\n\t\t</table>");
           break;
         case 6:
-          printTitle(entry.getValue());
+          printTitle(entry.getLabel());
           List<AgeRange> ages = dataCache.getList(Model.AgeRange).getData();
           out.print("\n\t\t<table class='list'>");
           if (ages != null) {
@@ -98,14 +95,14 @@ public class StatisticsPlugin
           }
           break;
         case 7:
-          printTitle(entry.getValue());
+          printTitle(entry.getLabel());
           out.print("\n\t\t<table class='list'>");
           out.print("<tr><th>Hommes</th><td>" + getIntResult(getQuery("number_of_men_students")) + "</td></tr>");
           out.print("<tr><th>Femmes</th><td>" + getIntResult(getQuery("number_of_women_students")) + "</td></tr>");
           out.println("\n\t\t</table>");
           break;
         case 8:
-          printTitle(entry.getValue());
+          printTitle(entry.getLabel());
           out.println("\n\t\t<table class='list'>");
           out.print("<tr><th>Tours</th><td>" + getIntResult(getQuery("number_of_students_in_Tours")) + "</td></tr>");
           out.print("<tr><th>Agglomération de Tours</th><td>" + getIntResult(getQuery("number_of_students_in_Tours_suburbs")) + "</td></tr>");
@@ -131,7 +128,7 @@ public class StatisticsPlugin
          }
          separate();*/
         case 10:
-          printTitle(entry.getValue());
+          printTitle(entry.getLabel());
           out.println("<cite>(seuls les élèves effectivement présents sur une plage de cours sont comptabilisés)</cite>");
           out.println("\n\t\t<table class='list'>");
 
@@ -156,7 +153,7 @@ public class StatisticsPlugin
           out.print("\n\t\t</table>");
           break;
         case 11:
-          printTitle(entry.getValue());
+          printTitle(entry.getLabel());
           out.println("\n\t\t<table class='list'>");
           out.println("<tr><th>PARCOURS BREVET Jazz 1/2h cours instrument (141)</th><td>" + getIntResult(getQuery(141)) + "</td></tr>");
           out.println("<tr><th>PARCOURS BREVETJazz 3/4h cours instrument (142)</th><td>" + getIntResult(getQuery(142)) + "</td></tr>");
@@ -186,24 +183,6 @@ public class StatisticsPlugin
 
     } // end for loop
     footer();
-  }
-
-  public Map<Integer, String> getStats() {
-    Map<Integer, String> map = new HashMap<>();
-    map.put(1, MessageUtil.getMessage("statistics.members.without.date.of.birth"));
-    map.put(2, "Adhésions non payées");
-    map.put(3, "Répartition des adhérents par catégorie professionnelle");
-    map.put(4, "Personnes avec erreur adhésion ou ligne d'adhésion incorrecte");
-    map.put(5, "Nombre d'adhérents");
-    map.put(6, "Répartition des élèves par âge");
-    map.put(7, "Répartition des élèves par sexe");
-    map.put(8, "Répartition géographique des élèves");
-    map.put(9, "Nombre d'élèves par instrument pour les cours individuels");
-//    "Nombre d'élèves par activité pour les cours collectifs");
-    map.put(10, "Répartition des élèves par formule (formule)");
-    map.put(11, "Répartition par niveau des élèves en formation pro");
-
-    return map;
   }
 
   @Override
@@ -439,26 +418,30 @@ public class StatisticsPlugin
   @Override
   protected void setSummaryDetail(StringBuilder nav) {
     setStats();
-    for (String v : statList.values()) {
-      addEntry(nav, v);
+    for (StatElement v : statList) {
+      addEntry(nav, v.getLabel());
     }
   }
 
+  @Override
   public void setStats() {
-    statList = new HashMap<>();
-    statList.put(1, MessageUtil.getMessage("statistics.members.without.date.of.birth"));
-    statList.put(2, "Adhésions non payées");
-    statList.put(3, "Répartition des adhérents par catégorie professionnelle");
-    statList.put(4, "Personnes avec erreur adhésion ou ligne d'adhésion incorrecte");
-    statList.put(5, "Nombre d'adhérents");
-    statList.put(6, "Répartition des élèves par âge");
-    statList.put(7, "Répartition des élèves par sexe");
-    statList.put(8, "Répartition géographique des élèves");
-    statList.put(9, "Nombre d'élèves par instrument pour les cours individuels");
+    statList = new ArrayList<StatElement>();
+    statList.add(new StatElement(1, MessageUtil.getMessage("statistics.members.without.date.of.birth"), true));
+    statList.add(new StatElement(2, "Adhésions non payées", true));
+    statList.add(new StatElement(3,"Répartition des adhérents par catégorie professionnelle", true));
+    statList.add(new StatElement(4, "Personnes avec erreur adhésion ou ligne d'adhésion incorrecte", true));
+    statList.add(new StatElement(5, "Nombre d'adhérents", true));
+    statList.add(new StatElement(6, "Répartition des élèves par âge", true));
+    statList.add(new StatElement(7, "Répartition des élèves par sexe", true));
+    statList.add(new StatElement(8, "Répartition géographique des élèves", true));
+    statList.add(new StatElement(9, "Nombre d'élèves par instrument pour les cours individuels", true));
 //    "Nombre d'élèves par activité pour les cours collectifs");
-    statList.put(10, "Répartition des élèves par formule (formule)");
-    statList.put(11, "Répartition par niveau des élèves en formation pro");
+    statList.add(new StatElement(10, "Répartition des élèves par formule (formule)", true));
+    statList.add(new StatElement(11, "Répartition par niveau des élèves en formation pro", true));
 
+  }
+    public void setStats(List<StatElement> filtered) {
+    statList = filtered;
   }
 
   private void incId() {

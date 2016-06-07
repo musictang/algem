@@ -1,7 +1,7 @@
 /*
- * @(#)StatisticsDefault.java	2.8.v 26/06/14
+ * @(#)StatisticsDefault.java	2.10.0 07/06/2016
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,6 +21,8 @@
 package net.algem.edition;
 
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
 import net.algem.accounting.OrderLineIO;
 import net.algem.contact.AddressIO;
 import net.algem.contact.PersonIO;
@@ -31,7 +33,7 @@ import net.algem.util.MessageUtil;
  * Default file export for statistics.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.v
+ * @version 2.10.0
  * @since 2.6.a 12/10/2012
  */
 public class StatisticsDefault
@@ -158,5 +160,11 @@ public class StatisticsDefault
     addEntry(nav, MessageUtil.getMessage("statistics.hours.of.studio.by.type"));
     addEntry(nav, MessageUtil.getMessage("statistics.hours.of.training"));
   }
+
+  @Override
+  public void setStats() {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
+
 
 }

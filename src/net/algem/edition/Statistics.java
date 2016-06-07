@@ -21,7 +21,6 @@
 package net.algem.edition;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
@@ -69,6 +68,8 @@ public abstract class Statistics
   protected int navCount = 0;
   protected Accessible monitor;
   protected String path;
+  
+  protected List<StatElement> statList;
 
   public Statistics() {
   }
@@ -808,8 +809,16 @@ public abstract class Statistics
     }
   }
 
-
-
+  public abstract void setStats();
+  
+  public void setStats(List<StatElement> filtered) {
+    statList = filtered;
+  }
+  
+  public List<StatElement> getStats() {
+    return statList;
+  }
+  
   private String getMethodName() {
     return getClass().getEnclosingMethod().getName();
   }

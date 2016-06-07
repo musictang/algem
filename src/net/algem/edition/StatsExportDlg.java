@@ -31,6 +31,8 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.*;
 import net.algem.accounting.AccountPrefIO;
 import net.algem.config.ConfigUtil;
@@ -149,10 +151,22 @@ public class StatsExportDlg
         MessagePopup.warning(desktop.getFrame(), MessageUtil.getMessage("statistics.default.warning"));
         st = new StatisticsDefault();
       }
+      st.setStats();
+      List<StatElement> filtered = new ArrayList<>();
+      StatsExportFilterDlg dlg = new StatsExportFilterDlg(desktop.getFrame(), true);
+      dlg.createUI(st.getStats());
+      if (!dlg.isValidation()) {
+        return;
+      } else {
+        filtered = dlg.getSelected();
+      }
+      if (filtered.size() > 0) {
+        st.setStats(filtered);
+      }
       setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
       btValidation.setEnabled(false);
       btCancel.setEnabled(false);
-      
+   
       st.init(dataCache);
       progressBar.setStringPainted(true);
       progressBar.setString(MessageUtil.getMessage("statistics.active.operation"));
