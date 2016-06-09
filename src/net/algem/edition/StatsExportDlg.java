@@ -1,7 +1,7 @@
 /*
- * @(#)StatsExportDlg.java	2.8.w 09/07/14
+ * @(#)StatsExportDlg.java	2.10.0 08/06/16
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -48,7 +48,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.10.0
  * @since 2.6.a 11/10/2012
  */
 public class StatsExportDlg
@@ -115,7 +115,7 @@ public class StatsExportDlg
     if (e.getSource() == btCancel) {
       if (st == null || st.isDone()) {
         close();
-      } 
+      }
     } else if (e.getSource() == btValidation) {
       file = new File(filePathField.getText());
       if (!FileUtil.confirmOverWrite(this, file)) {
@@ -153,9 +153,10 @@ public class StatsExportDlg
       }
       st.setStats();
       List<StatElement> filtered = new ArrayList<>();
-      StatsExportFilterDlg dlg = new StatsExportFilterDlg(desktop.getFrame(), true);
+      StatsFilterDlg dlg = new StatsFilterDlg(desktop.getFrame(), true);
       dlg.createUI(st.getStats());
       if (!dlg.isValidation()) {
+        st = null;
         return;
       } else {
         filtered = dlg.getSelected();
@@ -166,11 +167,11 @@ public class StatsExportDlg
       setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
       btValidation.setEnabled(false);
       btCancel.setEnabled(false);
-   
+
       st.init(dataCache);
       progressBar.setStringPainted(true);
       progressBar.setString(MessageUtil.getMessage("statistics.active.operation"));
-      
+
       st.setConfig(
               filePathField.getText(),
               AccountPrefIO.find(AccountPrefIO.MEMBERSHIP, DataCache.getDataConnection()),
@@ -185,7 +186,7 @@ public class StatsExportDlg
       MessagePopup.warning(desktop.getFrame(), MessageUtil.getMessage("file.path.exception", filePathField.getText()));
     } catch (SQLException ex) {
       GemLogger.logException(ex);
-    } 
+    }
   }
 
   private void close() {

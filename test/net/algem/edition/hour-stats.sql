@@ -192,3 +192,13 @@ AND action.id in(select idaction from commande_cours cc
  join commande_module cm on(cc.module = cm.id) join module m on (cm.module = m.id)
 where m.code like 'P%')
 GROUP BY cours.titre;
+
+
+SELECT DISTINCT eleve.idper,personne.prenom || ' ' || personne.nom as nom_prenom FROM commande_cours, commande, eleve, personne
+WHERE commande_cours.datedebut >= '01-09-2015' AND commande_cours.datedebut <= '30-06-2016'
+AND commande_cours.idcmd = commande.id
+AND commande.adh = eleve.idper
+AND eleve.idper = personne.id
+AND (extract(year from age(eleve.datenais)) > 100
+OR extract(year from age(eleve.datenais)) < 1
+OR eleve.datenais is null) ORDER BY nom_prenom;

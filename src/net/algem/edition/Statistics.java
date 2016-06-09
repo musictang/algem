@@ -1,7 +1,7 @@
 /*
- * @(#)Statistics.java	2.9.4.11 21/07/15
+ * @(#)Statistics.java	2.10.0 08/06/2016
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -48,7 +48,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.11
+ * @version 2.10.0
  * @since 2.6.a 09/10/12
  */
 public abstract class Statistics
@@ -68,7 +68,7 @@ public abstract class Statistics
   protected int navCount = 0;
   protected Accessible monitor;
   protected String path;
-  
+
   protected List<StatElement> statList;
 
   public Statistics() {
@@ -82,6 +82,7 @@ public abstract class Statistics
 
   /**
    * Sets the path of the output file and the dates between which query the database.
+   *
    * @param path file path
    * @param pref default membership account
    * @param start start of period
@@ -98,6 +99,7 @@ public abstract class Statistics
 
   /**
    * Sets the dates between which query the database.
+   *
    * @param start start of period
    * @param end end of period
    * @throws IOException
@@ -112,10 +114,6 @@ public abstract class Statistics
     MEMBERSHIP_ACCOUNT = (Integer) p.getValues()[0];
   }
 
-  protected void setMonitor(Accessible m) {
-    this.monitor = m;
-  }
-
   /**
    * Queries the database and displays the result of the different requests.
    *
@@ -124,61 +122,107 @@ public abstract class Statistics
   public void makeStats() throws SQLException {
 
     header();
+    for (StatElement entry : statList) {
+      switch (entry.getKey()) {
+        case 1:
+//          printIntListResult(entry.getLabel(), getQuery("members_without_date_of_birth"));
+          printTitle(entry.getLabel());
+          listPersons(getQuery("members_without_date_of_birth"));
+          break;
+        case 2:
+          printTitle(entry.getLabel());
+          printIntResult(getQuery("total_number_of_students"));
+          break;
+        case 3:
+          printTitle(entry.getLabel());
+          List<AgeRange> ages = dataCache.getList(Model.AgeRange).getData();
+          out.print("\n\t\t<table class='list'>");
+          out.print("\n\t\t\t<tr><td>&nbsp;</td>");
+          int totalLeisure = 0;
+          int totalPro = 0;
+          for (AgeRange a : ages) {
+            if (!a.getCode().equals("-")) {
+              out.print("<th>" + a.getAgemin() + "-" + a.getAgemax() + " ans</th>");
+            }
+          }
+          out.print("<th>Total</th></tr>\n\t\t\t<tr><th>Amateurs</th>");
+          for (AgeRange a : ages) {
+            if (!a.getCode().equals("-")) {
+              int r1 = getIntResult(getQuery("number_of_amateurs", a.getAgemin(), a.getAgemax()));
+              totalLeisure += r1;
+              out.print("<td>" + r1 + "</td>");
+            }
+          }
 
-    printIntListResult(MessageUtil.getMessage("statistics.members.without.date.of.birth"), getQuery("members_without_date_of_birth"));
+          out.print("<td>" + totalLeisure + "</td></tr>\n\t\t\t<tr><th>Pro</th>");
+          for (AgeRange a : ages) {
+            if (!a.getCode().equals("-")) {
+              int r2 = getIntResult(getQuery("number_of_pros", a.getAgemin(), a.getAgemax()));
+              totalPro += r2;
+              out.print("<td>" + getIntResult(getQuery("number_of_pros", a.getAgemin(), a.getAgemax())) + "</td>");
+            }
+          }
 
-    printIntResult(MessageUtil.getMessage("statistics.number.of.students"), getQuery("total_number_of_students"));
-
-    printTitle(MessageUtil.getMessage("statistics.distribution.between.amateurs.pros"));
-    List<AgeRange> ages = dataCache.getList(Model.AgeRange).getData();
-    out.print("\n\t\t<table class='list'>");
-    out.print("\n\t\t\t<tr><td>&nbsp;</td>");
-    int totalLeisure = 0;
-    int totalPro = 0;
-    for (AgeRange a : ages) {
-      if (!a.getCode().equals("-")) {
-        out.print("<th>" + a.getAgemin() + "-" + a.getAgemax() + " ans</th>");
+          out.print("<td>" + totalPro + "</td></tr>");
+          out.print("\n\t\t\t<tr><td colspan = '" + (ages.size() + 1) + "'>" + (totalLeisure + totalPro) + "</td></tr>\n\t\t</table>");
+          break;
+        case 4:
+          printTitle(entry.getLabel());
+          listPersons(getQuery("list_pro_students"));
+          break;
+        case 5:
+          printTitle(entry.getLabel());
+          printTableIntResult(getQuery("students_by_location"));
+          break;
+        case 6:
+          printTitle(entry.getLabel());
+          String hr = getStringResult(getQuery("hours_of_rehearsal", null, Schedule.GROUP));
+          String hm = getStringResult(getQuery("hours_of_rehearsal", null, Schedule.MEMBER));
+          out.println("\n\t\t<table>");
+          out.println("\n\t\t<tr><th>Groupes</th><td>" + parseTimeResult(hr) + "</td></tr>");
+          out.println("\n\t\t<tr><th>Adhérents</th><td>" + parseTimeResult(hm) + "</td></tr>");
+          out.println("\n\t\t</table>");
+          break;
+        case 7:
+          printTitle(entry.getLabel());
+          out.println("\n\t\t<table>");
+          out.println("\n\t\t<tr><th>Groupes</th><td>" + getIntResult(getQuery("groups_with_rehearsal")) + "</td></tr>");
+          out.println("\n\t\t<tr><th>Adhérents</th><td>" + getIntResult(getQuery("members_with_rehearsal")) + "</td></tr>");
+          out.println("\n\t\t</table>");
+          break;
       }
     }
-    out.print("<th>Total</th></tr>\n\t\t\t<tr><th>Amateurs</th>");
-    for (AgeRange a : ages) {
-      if (!a.getCode().equals("-")) {
-        int r1 = getIntResult(getQuery("number_of_amateurs", a.getAgemin(), a.getAgemax()));
-        totalLeisure += r1;
-        out.print("<td>" + r1 + "</td>");
-      }
+
+  }
+
+  /**
+   * Closes monitor and output file.
+   */
+  public void close() {
+    if (monitor != null && monitor instanceof JProgressBar) {
+      ((JProgressBar) monitor).setIndeterminate(false);
+      ((JProgressBar) monitor).setStringPainted(false);
+    } else if (monitor != null && monitor instanceof ProgressMonitor) {
+      ((ProgressMonitor) monitor).setProgress(100);
+      ((ProgressMonitor) monitor).close();
     }
-
-    out.print("<td>" + totalLeisure + "</td></tr>\n\t\t\t<tr><th>Pro</th>");
-    for (AgeRange a : ages) {
-      if (!a.getCode().equals("-")) {
-        int r2 = getIntResult(getQuery("number_of_pros", a.getAgemin(), a.getAgemax()));
-        totalPro += r2;
-        out.print("<td>" + getIntResult(getQuery("number_of_pros", a.getAgemin(), a.getAgemax())) + "</td>");
-      }
+    if (out != null) {
+      out.close();
     }
+  }
 
-    out.print("<td>" + totalPro + "</td></tr>");
-    out.print("\n\t\t\t<tr><td colspan = '" + (ages.size() + 1) + "'>" + (totalLeisure + totalPro) + "</td></tr>\n\t\t</table>");
+  public abstract void setStats();
 
-    listProStudents(getQuery("list_pro_students"));
+  public void setStats(List<StatElement> filtered) {
+    statList = filtered;
+  }
 
-    printTableIntResult(MessageUtil.getMessage("statistics.city.distribution"), getQuery("students_by_location"));
+  public List<StatElement> getStats() {
+    return statList;
+  }
 
-    printTitle(MessageUtil.getMessage("statistics.number.of.hours.of.rehearsal"));
-    String hr = getStringResult(getQuery("hours_of_rehearsal", null, Schedule.GROUP));
-    String hm = getStringResult(getQuery("hours_of_rehearsal", null, Schedule.MEMBER));
-    out.println("\n\t\t<table>");
-    out.println("\n\t\t<tr><th>Groupes</th><td>" + parseTimeResult(hr) + "</td></tr>");
-    out.println("\n\t\t<tr><th>Adhérents</th><td>" + parseTimeResult(hm) + "</td></tr>");
-    out.println("\n\t\t</table>");
-
-    printTitle(MessageUtil.getMessage("statistics.number.of.rehearsing.people"));
-    out.println("\n\t\t<table>");
-    out.println("\n\t\t<tr><th>Groupes</th><td>" + getIntResult(getQuery("groups_with_rehearsal")) + "</td></tr>");
-    out.println("\n\t\t<tr><th>Adhérents</th><td>" + getIntResult(getQuery("members_with_rehearsal")) + "</td></tr>");
-    out.println("\n\t\t</table>");
-
+  protected void setMonitor(Accessible m) {
+    this.monitor = m;
   }
 
   /**
@@ -186,20 +230,6 @@ public abstract class Statistics
    */
   protected void separate() {
     out.println("<div style='height : 20px'></div>");
-  }
-
-  /**
-   * Gets the main css attributes.
-   * @return a css string
-   */
-  private String getStyle() {
-    return "\n\t\th1, h2, h3 {background-color: #d2d7ff;}"
-      + "\n\t\ttable th, table td {text-align:left}"
-      + "\n\t\ttable.list td {text-align:right}"
-      + "\n\t\ttr:nth-child(even) {background-color: #EECCCC;}"
-      + "\n\t\ttr:nth-child(odd) {background-color: #FFCCCC;}"
-      + "\n\t\tul {list-style-type :none }"
-      + "\n\t\tul li {font-weight: bold}";
   }
 
   /**
@@ -223,8 +253,15 @@ public abstract class Statistics
     out.println("<p>" + footer + "</p>\n\t</body>\n</html>");
   }
 
+  protected void setSummaryDetail(StringBuilder nav) {
+    for (StatElement v : statList) {
+      addEntry(nav, v.getLabel());
+    }
+  }
+
   /**
    * Adds entry in summary.
+   *
    * @param nav
    * @param title
    */
@@ -247,15 +284,13 @@ public abstract class Statistics
     navId = 0;
   }
 
-  /**
-   * Displays the detailed summary.
-   * @param nav
-   */
-  abstract protected void setSummaryDetail(StringBuilder nav);
-
   @Override
   protected Void doInBackground() throws Exception {
-    makeStats();
+    try {
+      makeStats();
+    } catch(SQLException sqe) {
+      GemLogger.logException(sqe);
+    }
     return null;
   }
 
@@ -279,8 +314,12 @@ public abstract class Statistics
    * @param title
    */
   protected void printTitle(String title) {
-    out.println("\n\t\t<h3 id=\"" + navId + "\"><a href=\"#top\">^ </a>" + title + "</h3>");
+    out.println("\n\t\t<h3 id=\"" + navId + "\"><a href=\"#top\">::&uarr;::</a>&nbsp;" + title + "</h3>");
     navId++;
+  }
+
+  protected void printSecondaryTitle(String t) {
+    out.println("\n\t\t<h4>"+t+"</h4>");
   }
 
   /**
@@ -321,10 +360,10 @@ public abstract class Statistics
    * @param query
    * @throws SQLException
    */
-  protected void printIntResult(String title, String query) throws SQLException {
+  protected void printIntResult(String query) throws SQLException {
 
-    printTitle(title);
-    out.println("\n\t\t<ul>");
+//    printTitle(title);
+    out.println("\n\t\t<ul class=\"list\">");
     ResultSet rs = dc.executeQuery(query);
     while (rs.next()) {
       out.println("\t\t\t<li>" + rs.getInt(1) + "</li>");
@@ -339,11 +378,11 @@ public abstract class Statistics
    * @param query
    * @throws SQLException
    */
-  protected void printStringResult(String title, String query) throws SQLException {
-    printTitle(title);
+  protected void printStringResult(String query) throws SQLException {
+//    printTitle(title);
     ResultSet rs = dc.executeQuery(query);
     while (rs.next()) {
-      out.println("<p style='font-weight:bold'>" + rs.getString(1) + "</p>");
+      out.println("<p style='font-weight:bold;text-align: right'>" + rs.getString(1) + "</p>");
     }
     out.println();
   }
@@ -365,36 +404,32 @@ public abstract class Statistics
     int hh = Integer.parseInt(h.substring(0, idx));
     int hm = Integer.parseInt(h.substring(idx + 1, idx + 3));
 
-    return hh + ":" + hm;
+    return String.format("%02d:%02d",hh ,hm);
   }
 
   /**
    * Prints a title followed by the time-formatted result of a query.
    *
-   * @param title
    * @param query
    * @throws SQLException
    */
-  protected void printTimeResult(String title, String query) throws SQLException {
-    printTitle(title);
+  protected void printTimeResult(String query) throws SQLException {
     ResultSet rs = dc.executeQuery(query);
+    out.println("\t\t<ul class=\"list\">");
     while (rs.next()) {
-      out.println("<p style='font-weight:bold'>" + parseTimeResult(rs.getString(1)) + "</p>");
+      out.println("\n\t\t\t<li>" + parseTimeResult(rs.getString(1)) + "</li>");
     }
-    out.println();
+    out.println("\n\t\t</ul>");
   }
 
   /**
    * Prints a title followed by an unordered list of integers.
    *
-   * @param title
    * @param query
    * @throws SQLException
    */
-  protected void printIntListResult(String title, String query) throws SQLException {
-
-    printTitle(title);
-    out.println("\t\t<ul>");
+  protected void printIntListResult(String query) throws SQLException {
+    out.println("\t\t<ul class=\"list\">");
     ResultSet rs = dc.executeQuery(query);
     while (rs.next()) {
       out.println("\n\t\t\t<li>" + rs.getInt(1) + "</li>");
@@ -402,6 +437,22 @@ public abstract class Statistics
     out.println("\n\t\t</ul>");
   }
 
+
+  protected void printTableResult(String query) throws SQLException {
+    ResultSet rs = dc.executeQuery(query);
+    if (rs == null) return;
+    int cols = rs.getMetaData().getColumnCount();
+
+    out.println("\n\t\t<table class='list'>");
+    while (rs.next()) {
+      out.print("\n\t\t\t<tr>");
+      for (int i = 0; i < cols ; i++) {
+        out.print("<td>" + rs.getObject(i+1) + "</td>");
+      }
+      out.println("</tr>");
+    }
+    out.println("\n\t\t</table>");
+  }
   /**
    * Prints an array of String-integer pairs.
    *
@@ -409,9 +460,7 @@ public abstract class Statistics
    * @param query SQL query
    * @throws SQLException
    */
-  protected void printTableIntResult(String title, String query) throws SQLException {
-
-    printTitle(title);
+  protected void printTableIntResult(String query) throws SQLException {
     out.println("\n\t\t<table class='list'>");
     ResultSet rs = dc.executeQuery(query);
     int total = 0;
@@ -431,8 +480,7 @@ public abstract class Statistics
    * @param query SQL query
    * @throws SQLException
    */
-  protected void printTableTimeResult(String title, String query) throws SQLException {
-    printTitle(title);
+  protected void printTableTimeResult(String query) throws SQLException {
     out.println("\n\t\t<table class='list'>");
     ResultSet rs = dc.executeQuery(query);
     int total = 0;
@@ -453,60 +501,41 @@ public abstract class Statistics
   protected String getTimeFromMinutes(int minutes) {
     int h = (minutes / 60);
     int m = minutes % 60;
-    return h + ":" + m;
+    return String.format("%02d:%02d",h ,m);
   }
 
   /**
    * Gets the total in minutes from formatted time string.
+   *
    * @param time with this pattern *hh:mm:00
    * @return a total in minutes
    */
-  protected int getMinutesFromString(String time) {
-     if (time == null || time.isEmpty()) {
-      return 0;
-    }
-    try {
-      int h = 0;
-      int m = 0;
-      int firstIdx = time.indexOf(':');
-      int lastIdx = time.lastIndexOf(':');
-      if (firstIdx == -1) {
-        h = Integer.parseInt(time.substring(0));
-        m = 0;
-      } else {
-        h = Integer.parseInt(time.substring(0, firstIdx));
-        if (lastIdx == -1) {
-          m = Integer.parseInt(time.substring(firstIdx + 1));
-        } else {
-          m = Integer.parseInt(time.substring(firstIdx + 1, lastIdx));
-        }
-      }
-      return (h + m) * 60;
-    } catch (NumberFormatException ne) {
-      return 0;
-    }
-
-  }
-
-  /**
-   * Prints the list of pro students.
-   *
-   * @param query SQL query
-   * @throws SQLException
-   */
-  private void listProStudents(String query) throws SQLException {
-    printTitle(MessageUtil.getMessage("statistics.list.of.pro.students"));
-    out.println("\t\t<table>");
-    ResultSet rs = dc.executeQuery(query);
-    int n = 0;
-    while (rs.next()) {
-      n++;
-      out.println("\n\t\t\t<tr><th>" + rs.getInt(1) + "</th>");
-      out.println("<td>" + rs.getString(3) + " " + rs.getString(2) + "</td></tr>");
-    }
-    out.println("\n\t\t\t<tr><td colspan='2'>Total : " + n + "</td></tr>");
-    out.println("\n\t\t</table>");
-  }
+//  protected int getMinutesFromString(String time) {
+//    if (time == null || time.isEmpty()) {
+//      return 0;
+//    }
+//    try {
+//      int h = 0;
+//      int m = 0;
+//      int firstIdx = time.indexOf(':');
+//      int lastIdx = time.lastIndexOf(':');
+//      if (firstIdx == -1) {
+//        h = Integer.parseInt(time.substring(0));
+//        m = 0;
+//      } else {
+//        h = Integer.parseInt(time.substring(0, firstIdx));
+//        if (lastIdx == -1) {
+//          m = Integer.parseInt(time.substring(firstIdx + 1));
+//        } else {
+//          m = Integer.parseInt(time.substring(firstIdx + 1, lastIdx));
+//        }
+//      }
+//      return (h + m) * 60;
+//    } catch (NumberFormatException ne) {
+//      return 0;
+//    }
+//
+//  }
 
   /**
    * Returns a query depending on {@literal topic}.
@@ -515,16 +544,16 @@ public abstract class Statistics
    * @return a SQL query
    * @throws SQLException
    */
-  protected String getQuery(String topic )throws SQLException {
+  protected String getQuery(String topic) throws SQLException {
     if (topic.equals("members_without_date_of_birth")) {
-      return "SELECT DISTINCT (eleve.idper) FROM commande_cours, commande, eleve "
-        + "WHERE commande_cours.datedebut >= '" + start + "' AND commande_cours.datedebut <= '" + end + "'"
-        + "AND commande_cours.idcmd = commande.id "
-        + "AND commande.adh = eleve.idper "
-        //              + "AND to_char(eleve.datenais, 'HH12') = '12' ";
+      return "SELECT DISTINCT eleve.idper,personne.prenom,personne.nom FROM commande_cours, commande, eleve, personne"
+        + " WHERE commande_cours.datedebut >= '" + start + "' AND commande_cours.datedebut <= '" + end + "'"
+        + " AND commande_cours.idcmd = commande.id "
+        + " AND commande.adh = eleve.idper "
+        + " AND eleve.idper = personne.id"
         + " AND (extract(year from age(eleve.datenais)) > 100"
         + " OR extract(year from age(eleve.datenais)) < 1"
-        + " OR eleve.datenais is null)";
+        + " OR eleve.datenais is null) ORDER BY personne.nom,personne.prenom";
     }
     if (topic.equals("total_number_of_students")) {
       // on ne tient pas compte des commande_cours à définir
@@ -535,7 +564,7 @@ public abstract class Statistics
         + " AND commande_cours.debut != '00:00:00'"; // ou commande_cours.idaction = 0
     }
     if (topic.equals("list_pro_students")) {
-      return "SELECT DISTINCT(commande.adh), trim(personne.nom), trim(personne.prenom)"
+      return "SELECT DISTINCT(commande.adh), trim(personne.nom) as name, trim(personne.prenom) as firstname"
         + " FROM commande, commande_cours, commande_module, module, eleve, personne"
         + " WHERE commande_cours.module = commande_module.id"
         + " AND commande_module.module = module.id"
@@ -543,7 +572,8 @@ public abstract class Statistics
         + " AND eleve.idper = commande.adh"
         + " AND eleve.idper = personne.id"
         + " AND commande_cours.datedebut BETWEEN '" + start + "' AND '" + end + "'"
-        + " AND module.code LIKE 'P%'";
+        + " AND module.code LIKE 'P%'"
+        + " ORDER BY name,firstname";
     }
     if (topic.equals("students_by_location")) {
       return "SELECT adresse.ville, count(distinct eleve.idper) FROM commande_cours,commande, eleve, adresse"
@@ -662,13 +692,13 @@ public abstract class Statistics
         + " AND p.ptype = " + Schedule.TRAINING;
     }
 
-
     return null;
 
   }
 
   /**
    * Gets a sql query based on {@literal topic} and two parameters {@literal a1}, {@literal a2}.
+   *
    * @param topic
    * @param a1 first parameter
    * @param a2 second parameter
@@ -724,7 +754,6 @@ public abstract class Statistics
       return query;
     }
 
-
     if ("hours_of_rehearsal".equals(topic)) {
 //      return "SELECT extract(hour FROM sum(planning.fin - planning.debut)) FROM planning"
       return "SELECT sum(planning.fin - planning.debut) FROM planning"
@@ -755,7 +784,7 @@ public abstract class Statistics
         + " WHERE plage.idplanning = p.id"
         + " AND p.jour BETWEEN '" + start + "' AND  '" + end + "'"
         + " AND p.action = action.id"
-        + " AND p.ptype = " + Schedule.COURSE
+        + " AND p.ptype IN (" + Schedule.COURSE + "," + Schedule.WORKSHOP + "," + Schedule.TRAINING + ")"
         + " AND action.cours = cours.id"
         + " AND cours.collectif = " + a1
         + " AND plage.adherent IN("
@@ -774,7 +803,7 @@ public abstract class Statistics
         + "SELECT distinct p1.id, sum(p1.fin - p1.debut) as duree"
         + " FROM planning p1, action, cours"
         + " WHERE p1.jour BETWEEN '" + start + "' AND  '" + end + "'"
-        + " AND p1.ptype = " + Schedule.COURSE
+        + " AND p1.ptype IN (" + Schedule.COURSE + "," + Schedule.WORKSHOP + "," + Schedule.TRAINING + ")"
         + " AND p1.action = action.id"
         + " AND action.cours = cours.id"
         + " AND cours.collectif = " + a1
@@ -794,31 +823,46 @@ public abstract class Statistics
   }
 
   /**
-   * Closes monitor and output file.
+   * Prints the list of pro students.
+   *
+   * @param query SQL query
+   * @throws SQLException
    */
-  public void close() {
-    if (monitor != null && monitor instanceof JProgressBar) {
-       ((JProgressBar) monitor).setIndeterminate(false);
-       ((JProgressBar) monitor).setStringPainted(false);
-    } else if (monitor != null && monitor instanceof ProgressMonitor) {
-      ((ProgressMonitor) monitor).setProgress(100);
-      ((ProgressMonitor) monitor).close();
+  protected void listPersons(String query) throws SQLException {
+
+    out.println("\t\t<table>");
+    ResultSet rs = dc.executeQuery(query);
+    int n = 0;
+    while (rs.next()) {
+      n++;
+      out.println("\n\t\t\t<tr><th>" + rs.getInt(1) + "</th>");
+      out.println("<td>" + rs.getString(2) + " " + rs.getString(3) + "</td></tr>");
     }
-    if (out != null) {
-      out.close();
-    }
+    out.println("\n\t\t\t<tr><td colspan='2'>Total : " + n + "</td></tr>");
+    out.println("\n\t\t</table>");
   }
 
-  public abstract void setStats();
-  
-  public void setStats(List<StatElement> filtered) {
-    statList = filtered;
+  /**
+   * Gets the main css attributes.
+   *
+   * @return a css string
+   */
+  private String getStyle() {
+    return "\n\t\tbody {font-family:Arial,sans-serif;font-size: 1em;width: 80%;margin: 0 auto;}"
+      + "\n\t\th1, h2, h3 {color:white;background: #4096ee;padding:0.2em;margin:1em 0 0.5em 0;border-radius: 4px;background:linear-gradient(to bottom, #4096ee 0%,#60abf8 56%,#7abcff 100%);padding:0.2em}"
+      + "\n\t\th4 {font-family: Verdana,sans-serif;font-weight:normal;padding:0;margin:0.5em 0 }"
+      + "\n\t\ttable {font-family: Verdana,sans-serif;border: 2px solid #4096ee;border-radius: 4px;border-spacing: 1px}"
+      + " table th {text-align: left;padding: 0.2em;} table td {text-align:right;padding: 0.2em;}"
+      + "\n\t\ttable.list td {text-align:right}"
+      + "\n\t\ttr:nth-child(even) {background-color: #CCE6FF;}"
+      + "\n\t\ttr:nth-child(odd) {background-color: #99CDFF;}"
+      + "\n\t\tul {list-style-type :none } ul.list {display: inline-block;margin:0;padding:0} ul.list li {text-align: right;font-weight: bold}"
+      + "\n\t\tul li {font-family: Verdana,sans-serif;font-weight: normal}"
+      + "\n\t\ta:link,a:active {color: #0052CC;} a:visited {color: #666} a:hover {color: #0066ff}"
+      + "\n\t\ta[href=\"#top\"] {text-decoration: none;color: white;font-weight: bold}"
+      + "\n\t\ta[href=\"#top\"]:hover {color: #0066ff;background-color: white;border-radius: 4px";
   }
-  
-  public List<StatElement> getStats() {
-    return statList;
-  }
-  
+
   private String getMethodName() {
     return getClass().getEnclosingMethod().getName();
   }
