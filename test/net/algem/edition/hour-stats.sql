@@ -202,3 +202,35 @@ AND eleve.idper = personne.id
 AND (extract(year from age(eleve.datenais)) > 100
 OR extract(year from age(eleve.datenais)) < 1
 OR eleve.datenais is null) ORDER BY nom_prenom;
+
+-- plannings courants
+SELECT p.id,p.jour,p.debut,p.fin,p.idper,per.nom,per.prenom,p.action ,c.collectif,a.statut
+FROM planning p  JOIN personne per ON (p.idper = per.id) JOIN action a ON (p.action = a.id) join cours c on (a.cours=c.id)
+WHERE p.ptype IN (1,5,6)
+AND p.jour BETWEEN  '01-06-2016' AND '30-06-2016'
+ORDER BY per.nom,per.prenom,p.jour,p.debut;
+
+-- recherche du statut du cours
+select c.collectif
+from cours c join action a on (c.id=a.cours) join planning p on (a.id=p.action)
+where p.id = 24834;
+
+-- si cours individuel loisir
+SELECT distinct on (pl.id) pl.id,pl.fin-pl.debut,m.id,m.code,e.analytique
+from plage pl join planning p on (pl.idplanning=p.id) 
+join commande_cours cc on (cc.idaction=p.action)
+join commande_module cm on (cc.module=cm.id)
+join module m on (cm.module=m.id)
+join commande d on (cm.idcmd = d.id)
+join echeancier2 e on (d.id=e.commande)
+where pl.idplanning = 24834;
+-- group by pl.id,m.id,m.code,e.analytique;
+-- and p.action = 8519;
+
+JOIN " + CourseOrderIO.TABLE + " cc ON (d.id =cc.idcmd)"
+JOIN " + ModuleOrderIO.TABLE + " cm ON (cc.module = cm.id)"
+JOIN " + ModuleIO.TABLE + " m ON (cm.module = m.id)"
+JOIN " + OrderLineIO.TABLE + " e ON (cm.idcmd = e.commande)"
+ WHERE (m.id in(149,151,157,158) OR m.code like 'L%')"
+AND cc.idaction = p.action"
+AND e.analytique != '15000')) AS q1"

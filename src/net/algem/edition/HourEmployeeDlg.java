@@ -1,5 +1,5 @@
 /*
- * @(#)HourEmployeeDlg.java	2.10.0 07/06/2016
+ * @(#)HourEmployeeDlg.java	2.10.0 09/06/2016
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -151,19 +151,15 @@ public class HourEmployeeDlg
     setCursor(new Cursor(Cursor.WAIT_CURSOR));
 
     PrintWriter out = null;
-    boolean catchup = EmployeeType.TEACHER.ordinal() == type;
-    if (catchup && !MessagePopup.confirm(this, MessageUtil.getMessage("export.hour.teacher.catchup.warning"))) {
-      catchup = false;
-    }
     try {
       String sorting = view.getSorting();
       setPath(type, sorting);
       out = new PrintWriter(new File(path), "UTF-16LE"); // this is the best solution
       pm = new ProgressMonitor(view, MessageUtil.getMessage("active.search.label"), "", 1, 100);
       pm.setMillisToDecideToPopup(10);
-      String cmd = null;
+
       EmployeeTaskFactory factory = new EmployeeTaskFactory(this, service, dataCache, pm, out);
-      factory.setProperties(start, end, employeeId, school.getId(), estab, catchup, detail);
+      String cmd = null;
       if (EmployeeType.TEACHER.ordinal() == type) {
         out.println(MessageUtil.getMessage("export.hour.teacher.header", new Object[]{school.getValue(), start, end}) + lf);
         cmd = sorting;
@@ -172,6 +168,11 @@ public class HourEmployeeDlg
       } else if (EmployeeType.ADMINISTRATOR.ordinal() == type) {
         cmd = "Administrator";
       }
+      boolean catchup = EmployeeType.TEACHER.ordinal() == type && !"Custom".equals(cmd);
+      if (catchup && !MessagePopup.confirm(this, MessageUtil.getMessage("export.hour.teacher.catchup.warning"))) {
+        catchup = false;
+      }
+      factory.setProperties(start, end, employeeId, school.getId(), estab, catchup, detail);
       employeeTask = factory.getTask(cmd);
 
       if (employeeTask != null) {
