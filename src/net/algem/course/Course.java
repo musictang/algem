@@ -1,7 +1,7 @@
 /*
- * @(#)Course.java	2.9.4.13 03/11/15
+ * @(#)Course.java	2.10.0 13/06/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,7 +27,7 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.10.0
  * @since 1.0a 07/07/1999
  */
 public class Course
@@ -61,11 +61,19 @@ public class Course
   public Course() {
   }
 
-  public Course(int i) {
-    id = i;
+  /**
+   * Creates a course with id {@code id}.
+   * @param id course id
+   */
+  public Course(int id) {
+    this.id = id;
     title = "";
   }
 
+  /**
+   * Creates a course with name {@code s}.
+   * @param s the title of the course
+   */
   public Course(String s) {
     id = 0;
     title = s;

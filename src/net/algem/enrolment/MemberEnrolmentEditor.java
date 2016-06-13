@@ -1,5 +1,5 @@
 /*
- * @(#)MemberEnrolmentEditor.java 2.10.0 01/06/16
+ * @(#)MemberEnrolmentEditor.java 2.10.0 13/06/2016
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -31,6 +31,7 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
@@ -46,6 +47,7 @@ import net.algem.config.GemParam;
 import net.algem.contact.PersonFile;
 import net.algem.contact.member.MemberService;
 import net.algem.course.*;
+import net.algem.planning.CourseSchedule;
 import net.algem.planning.DateFr;
 import net.algem.planning.Hour;
 import net.algem.planning.ScheduleRangeObject;
@@ -81,6 +83,7 @@ public class MemberEnrolmentEditor
 
   private final static String STOP = BundleUtil.getLabel("Course.stop.label");
   private final static String COURSE_MODIF = BundleUtil.getLabel("Course.define.label");
+  private final static String REDEFINE = BundleUtil.getLabel("Course.stop.and.define.label");
   private final static String HOUR_MODIF = BundleUtil.getLabel("Course.hour.modification.label");
   private final static String COURSE_ADD = BundleUtil.getLabel("New.course.label");
   private final static String MODULE_ADD = BundleUtil.getLabel("New.module.label");
@@ -101,7 +104,7 @@ public class MemberEnrolmentEditor
   private GemLabel title;
   private boolean loaded;
   private CourseEnrolmentDlg courseDlg;
-  private JMenuItem m1, m2, m3, m4, m5, m6, m7, m8, m9, m10,m11;
+  private JMenuItem m1, m2, m3, m4, m5, m6, m7, m8, m9, m10,m11,m12;
   /** New enrolment button. */
   private GemButton btEnrolment;
   private TreePath currentSelection;
@@ -123,6 +126,7 @@ public class MemberEnrolmentEditor
     popup = new JPopupMenu();
     popup.add(m1 = new JMenuItem(STOP));
     popup.add(m2 = new JMenuItem(COURSE_MODIF));
+    popup.add(m12 = new JMenuItem(REDEFINE));
     popup.add(m3 = new JMenuItem(HOUR_MODIF));
     popup.add(m7 = new JMenuItem(COURSE_DATE));
     popup.add(m4 = new JMenuItem(COURSE_ADD));
@@ -146,6 +150,7 @@ public class MemberEnrolmentEditor
     m9.addActionListener(this);
     m10.addActionListener(this);
     m11.addActionListener(this);
+    m12.addActionListener(this);
 
     cellRenderer = new EnrolmentTreeCellRenderer();
     tree = new JTree(new DefaultMutableTreeNode(NONE_ENROLMENT));
@@ -210,6 +215,7 @@ public class MemberEnrolmentEditor
       m9.setEnabled(false);
       m10.setEnabled(false);
       m11.setEnabled(false);
+      m12.setEnabled(true);
     } else {
       m1.setEnabled(false);
       m2.setEnabled(false);
@@ -222,6 +228,7 @@ public class MemberEnrolmentEditor
       m9.setEnabled(false);
       m10.setEnabled(true);
       m11.setEnabled(false);
+      m12.setEnabled(false);
     }
   }
 
@@ -240,6 +247,7 @@ public class MemberEnrolmentEditor
     m9.setEnabled(true);
     m10.setEnabled(false);
     m11.setEnabled(true);
+    m12.setEnabled(false);
   }
 
   @Override
@@ -347,7 +355,14 @@ public class MemberEnrolmentEditor
         return;
       }
       modifCourse();
-    } else if (s.equals(COURSE_DATE)) {
+    } else if (s.equals(REDEFINE)) {
+      if (currentSelection == null) {
+        return;
+      }
+      stopAndDefine();
+    } 
+    
+    else if (s.equals(COURSE_DATE)) {
       if (currentSelection == null) {
         return;
       }
@@ -497,6 +512,58 @@ public class MemberEnrolmentEditor
     } catch (SQLException ex) {
       GemLogger.log(getClass().getName(), "#stopCourse :", ex.getMessage());
     }
+  }
+  
+  private void stopAndDefine() {
+    StopCourseDlg dlg2 = null;
+    Object[] path = currentSelection.getPath();
+    int i = path.length;
+    if (!(path[i - 1] instanceof CourseEnrolmentNode)) {
+      return;
+    }
+    CourseOrder cc = ((CourseEnrolmentNode) path[i - 1]).getCourseOrder();
+    CourseModuleInfo cmi = new CourseModuleInfo();
+    GemParam code = null;
+    try {
+      code = (GemParam) DataCache.findId(cc.getCode(), Model.CourseCode);
+      cmi.setCode(code);
+      cmi.setTimeLength(cc.getTimeLength());
+      DateFr now = new DateFr(new Date());
+      List<CourseSchedule> all = service.getSchedules(cmi, now, cc.getAction(), 0);
+      StopAndDefineDlg dlg = new StopAndDefineDlg(desktop.getFrame(), true);
+      dlg.createUI(all);
+      if (!dlg.isValidation()) {
+        return;
+      }
+      CourseSchedule cs = dlg.getCourse();
+      //arreter cours
+      Course c = planningService.getCourseFromAction(cc.getAction());
+      DateFr s = new DateFr(now);
+    while (Calendar.MONDAY != s.getDayOfWeek()) {
+      s.incDay(1);
+    }
+      service.stopCourse(dossier.getId(), cc, c, s);
+      //new course order
+      CourseOrder co = new CourseOrder();
+      
+      co.setIdOrder(cc.getIdOrder());
+      co.setModuleOrder(cc.getModuleOrder());
+      co.setAction(cs.getAction().getId());
+      co.setStart(cs.getStart());
+      co.setEnd(cs.getEnd());
+      co.setDateStart(now);
+      co.setDateEnd(dataCache.getEndOfYear());
+      co.setCode(cc.getCode());
+System.out.println(co);
+service.createCourse(co, dossier.getId());
+      //new EnrolmentService(dataCache).updateRange(cc, dossier.getId());
+    } catch (SQLException ex) {
+      GemLogger.logException(ex);
+    } 
+    catch (EnrolmentException ex) {
+      GemLogger.logException(ex);
+    }
+    //Vector<Schedule> v = service.getCourseWeek(cmi, new DateFr(new Date()), 0);
   }
 
   private void changeDateOfCourseOrder() {
@@ -885,8 +952,11 @@ public class MemberEnrolmentEditor
   /**
    * Returns the list of activities performed by member from {@literal start}
    * and corresponding to this list of {@code actions}.
+   * @param idper
    * @param start starting date
+   * @param end
    * @param actions a comma-separated list of actions' id
+   * @param service
    * @return a html-formatted string
    */
     public static String catchActivity(int idper, DateFr start, DateFr end, String actions, MemberService service){

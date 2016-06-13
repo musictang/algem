@@ -12,11 +12,11 @@ ORDER BY p.nom,p.prenom;
 
 -- modules associés au suivi sur une période
 SELECT DISTINCT m.titre FROM module m
-JOIN commande_module cm on (cm.module = m.id)
-JOIN commande_cours cc on (cm.id = cc.module)
-JOIN commande c on (cc.idcmd = c.id)
-JOIN plage pl on (c.adh = pl.adherent)
-JOIN planning p on (pl.idplanning = p.id and p.action = cc.idaction)
+JOIN commande_module cm ON (cm.module = m.id)
+JOIN commande_cours cc ON (cm.id = cc.module)
+JOIN commande c ON (cc.idcmd = c.id)
+JOIN plage pl ON (c.adh = pl.adherent)
+JOIN planning p ON (pl.idplanning = p.id and p.action = cc.idaction)
 WHERE c.adh = 18584
 AND p.jour BETWEEN '21-09-2015' AND '16-05-2016'
 -- AND p.action = cc.idaction;
@@ -24,10 +24,10 @@ AND p.jour BETWEEN '21-09-2015' AND '16-05-2016'
 
 -- dernière date de cours programmée pour tel module
 SELECT jour FROM planning p
-join commande_cours cc on (p.action = cc.idaction)
-join commande_module cm on (cc.module = cm.id)
-join commande c on (cm.idcmd = c.id)
-join plage pl on (p.id = pl.idplanning and c.adh = pl.adherent)
+JOIN commande_cours cc ON (p.action = cc.idaction)
+JOIN commande_module cm ON (cc.module = cm.id)
+JOIN commande c ON (cm.idcmd = c.id)
+JOIN plage pl ON (p.id = pl.idplanning and c.adh = pl.adherent)
 where cm.id = 2227 -- commande 1744
 and c.adh = 996
 order by jour desc limit 1; -- Stella Douglas
@@ -46,31 +46,45 @@ case
 when n1.texte is null or n1.texte = '' then n2.texte
 end,
 p.jour,pl.debut,pl.fin
-from planning p
-join personne p1 on (p.idper = p1.id)
-join salle s on (p.lieux = s.id)
-join action a on (p.action = a.id)
-join cours c on (a.cours = c.id)
-join plage pl on (p.id = pl.idplanning)
+FROM planning p
+JOIN personne p1 ON (p.idper = p1.id)
+JOIN salle s ON (p.lieux = s.id)
+JOIN action a ON (p.action = a.id)
+JOIN cours c ON (a.cours = c.id)
+JOIN plage pl ON (p.id = pl.idplanning)
 
-left join suivi n1 on (pl.note = n1.id)
-left join suivi n2 on (p.note = n2.id)
+left JOIN suivi n1 ON (pl.note = n1.id)
+left JOIN suivi n2 ON (p.note = n2.id)
 -- where pl.adherent in (21753,13827,21611)
 where pl.adherent in (
 select distinct e.idper
-from eleve e
-join commande c on (e.idper = c.adh)
-join commande_module cm on (c.id = cm.idcmd)
-join module m on (cm.module = m.id)
+FROM eleve e
+JOIN commande c ON (e.idper = c.adh)
+JOIN commande_module cm ON (c.id = cm.idcmd)
+JOIN module m ON (cm.module = m.id)
 where c.creation between '01-07-2015' and '30-06-2016'
 and m.code like 'P%'
 )
 and p.jour >= '21-09-2015'
 order by pl.adherent,p.jour,pl.debut;
 
-select * from commande
+select * FROM commande
 where  creation between '01-07-2015' and '30-06-2016'
 AND id IN(
-SELECT idcmd FROM commande_module cm join module m on (cm.module = m.id)
+SELECT idcmd FROM commande_module cm JOIN module m ON (cm.module = m.id)
 where m.code like 'P%')
 ORDER BY id;
+
+-- recherche de tous les cours du même type sur la première semaine dispo
+-- critères code cours, durée cours, numéro action, début, fin
+SELECT DISTINCT on (a.id) p.id,p.debut,p.fin,date_part('dow', p.jour) as dow, p.idper,p.lieux,a.id,a.statut,c.titre,per.nom,per.prenom
+FROM planning p JOIN action a ON (p.action = a.id) 
+JOIN cours c ON (a.cours = c.id)
+JOIN salle s ON (p.lieux = s.id)
+JOIN personne per ON (p.idper = per.id) 
+WHERE p.ptype in(1,5,6)
+AND p.jour BETWEEN '04-01-2016' AND '10-06-2016'
+AND c.code = 3
+AND (p.fin-p.debut) = '01:30'
+AND a.id != 8312
+ORDER BY a.id,dow,p.debut;

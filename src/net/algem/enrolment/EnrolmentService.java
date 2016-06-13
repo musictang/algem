@@ -1,5 +1,5 @@
 /*
- * @(#)EnrolmentService.java	2.10.0 01/06/16
+ * @(#)EnrolmentService.java	2.10.0 13/06/2016
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -150,6 +150,17 @@ public class EnrolmentService
             + " AND p.lieux = salle.id AND salle.etablissement = " + idEstab
             + " AND salle.nom NOT LIKE 'RATTRAP%' ORDER BY jour,debut,idper";
     return ScheduleIO.find(query, dc);
+  }
+  
+  List<CourseSchedule> getSchedules(CourseModuleInfo cmi, DateFr start, int action, int estab) throws SQLException {
+    DateFr s = new DateFr(start);
+    while (Calendar.MONDAY != start.getDayOfWeek()) {
+      s.incDay(1);
+    }
+    DateFr end = new DateFr(s);
+    end.incDay(6);
+    DateRange dates = new DateRange(s, end);
+    return actionIO.getAvailableSchedules(cmi, dates, action, estab);
   }
 
   /**

@@ -1,5 +1,5 @@
 /*
- * @(#)StatsFilterDlg.java 2.10.0 08/06/2016
+ * @(#)StatsFilterDlg.java 2.10.0 13/06/2016
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -55,7 +55,7 @@ public class StatsFilterDlg
   private GemButton btOk;
   private GemButton btCancel;
   private JTable table;
-  private JTableModel tableModel;
+  private JTableModel<StatElement> tableModel;
   private boolean validation;
 
   public StatsFilterDlg() {

@@ -1,7 +1,7 @@
 /*
- * @(#)ActionIO.java 2.9.4.14 04/01/16
+ * @(#)ActionIO.java 2.10.0 13/06/2016
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -23,6 +23,7 @@ package net.algem.planning;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +35,8 @@ import net.algem.config.GemParam;
 import net.algem.contact.Note;
 import net.algem.contact.NoteIO;
 import net.algem.contact.Person;
+import net.algem.course.Course;
+import net.algem.course.CourseModuleInfo;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
@@ -44,7 +47,7 @@ import net.algem.util.model.TableIO;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.14
+ * @version 2.10.0
  * @since 2.4.a 18/04/12
  */
 public class ActionIO
@@ -258,6 +261,45 @@ public class ActionIO
     }
 
     return va;
+  }
+  
+  public List<CourseSchedule> getAvailableSchedules(CourseModuleInfo cmi, DateRange dates, int action, int estab) throws SQLException {
+    String query = "SELECT DISTINCT on (a.id)"
+            + " p.id,p.jour,p.debut,p.fin,p.idper,a.id,a.statut,c.titre,per.nom,per.prenom"
+            + " FROM planning p JOIN action a ON (p.action = a.id)"
+            + " JOIN cours c ON (a.cours = c.id)"
+            + " JOIN salle s ON (p.lieux = s.id)"
+            + " JOIN personne per ON (p.idper = per.id)"
+            + " WHERE p.ptype in(1,5,6)"
+            + " AND p.jour BETWEEN '" + dates.getStart() + "' AND '" + dates.getEnd() + "'"
+            + " AND c.code = " + cmi.getIdCode()
+            + " AND (p.fin-p.debut) = '" + Hour.getStringFromMinutes(cmi.getTimeLength())
+            + "' AND a.id != " + action
+            + " AND s.nom NOT LIKE 'RATTRAP%'";
+    if (estab > 0) {
+      query += " AND s.etablissemnt = " + estab;
+    }
+
+    query += " ORDER BY a.id,p.jour,p.debut";
+System.out.println(query);
+    List<CourseSchedule> schedules = new ArrayList<>();
+    ResultSet rs = dc.executeQuery(query);
+    while (rs.next()) {
+      CourseSchedule s = new CourseSchedule();
+      s.setId(rs.getInt(1));
+      s.setDate(new DateFr(rs.getString(2)));
+      s.setStart(new Hour(rs.getString(3)));
+      s.setEnd(new Hour(rs.getString(4)));
+      s.setIdPerson(rs.getInt(5));
+      Action a = new Action(rs.getInt(6));
+      GemParam st = (GemParam) DataCache.findId(rs.getInt(7), Model.Status);
+      a.setStatus(st);
+      s.setAction(a);
+      s.setActivity(new Course(rs.getString(8)));
+      s.setPerson(new Person(rs.getInt(5), rs.getString(9), rs.getString(10), ""));
+      schedules.add(s);
+    }
+    return schedules;
   }
 
   private Action getFromRS(ResultSet rs) throws SQLException {
