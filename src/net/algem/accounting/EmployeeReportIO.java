@@ -1,22 +1,22 @@
 /*
  * @(#)EmployeeReportIO.java 2.9.4.13 27/10/2015
- * 
+ *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
- * 
+ *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Algem is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see http://www.gnu.org/licenses.
- * 
+ *
  */
 
 package net.algem.accounting;
@@ -43,7 +43,7 @@ import net.algem.util.DataConnection;
  * @version 2.9.4.13
  * @since 2.9.4.13 27/10/15
  */
-public class EmployeeReportIO 
+public class EmployeeReportIO
 {
 private final DataConnection dc;
 
@@ -61,7 +61,7 @@ private final DataConnection dc;
             + " ORDER BY pg.adherent,p.jour,p.debut";
     return dc.executeQuery(query);
   }
-  
+
   public ResultSet getDetailByAdministrator(String start, String end, int idper, int type) throws SQLException {
     String query = "SELECT p.jour, p.idper, p.debut, p.fin, (p.fin - p.debut) AS duree, s.nom"
             + " FROM " + ScheduleIO.TABLE + " p, " + RoomIO.TABLE + " s";
@@ -75,11 +75,11 @@ private final DataConnection dc;
 
   public ResultSet getDetailIndTeacherByMember(String start, String end, boolean catchup, int idper, int school, int estab) throws SQLException {
     String query = "SELECT p.idper, pg.adherent, p1.prenom, p1.nom, c.id, c.titre, p2.prenom, p2.nom, p.jour, pg.debut, pg.fin,(pg.fin - pg.debut) AS duree"
-            + " FROM " + ScheduleIO.TABLE + " p, " 
-            + ScheduleRangeIO.TABLE + " pg, " 
-            + ActionIO.TABLE + " a, " 
-            + CourseIO.TABLE + " c, " 
-            + PersonIO.TABLE + " p1, " 
+            + " FROM " + ScheduleIO.TABLE + " p, "
+            + ScheduleRangeIO.TABLE + " pg, "
+            + ActionIO.TABLE + " a, "
+            + CourseIO.TABLE + " c, "
+            + PersonIO.TABLE + " p1, "
             + PersonIO.TABLE + " p2, "
             + RoomIO.TABLE + " s";
             query += (idper > 0) ? " WHERE p.idper = " + idper : " WHERE p.idper > 0";
@@ -106,10 +106,10 @@ private final DataConnection dc;
 
   public ResultSet getDetailCoTeacherByMember(String start, String end, boolean catchup, int idper, int school, int estab) throws SQLException {
     String query = "SELECT p.idper, p1.prenom, p1.nom, c.id, c.titre, p.jour, p.debut, p.fin,(p.fin - p.debut) AS duree"
-            + " FROM " + ScheduleIO.TABLE + " p, " 
-            + ActionIO.TABLE + " a, " 
-            + CourseIO.TABLE  + " c, " 
-            + PersonIO.TABLE + " p1, " 
+            + " FROM " + ScheduleIO.TABLE + " p, "
+            + ActionIO.TABLE + " a, "
+            + CourseIO.TABLE  + " c, "
+            + PersonIO.TABLE + " p1, "
             + RoomIO.TABLE + " s";
             query += (idper > 0) ? " WHERE p.idper = " + idper : " WHERE p.idper > 0";
             query += " AND p.jour BETWEEN '" + start + "' AND '" + end + "'"
@@ -130,9 +130,9 @@ private final DataConnection dc;
             query += " ORDER BY p1.nom, a.cours, p.jour, p.debut";
     return dc.executeQuery(query);
   }
-  
+
 /**
- * 
+ *
  * @param start start date
  * @param end end date
  * @param catchup include catchup
@@ -140,15 +140,15 @@ private final DataConnection dc;
  * @param school school id
  * @param estab establishment id
  * @return a resultset
- * @throws SQLException 
+ * @throws SQLException
  */
   public ResultSet getDetailTeacherByDate(String start, String end, boolean catchup, int idper, int school, int estab) throws SQLException {
     String query = "SELECT DISTINCT ON (p1.nom, p1.prenom, p.jour, pg.debut)"
       + " p.idper, pg.adherent, p1.prenom, p1.nom, c.id, c.titre, p2.prenom, p2.nom, p.jour, pg.debut, pg.fin, (pg.fin - pg.debut) AS duree, a.id"
-      + " FROM " + ScheduleIO.TABLE + " p, " 
+      + " FROM " + ScheduleIO.TABLE + " p, "
             + ScheduleRangeIO.TABLE + " pg, "
-            + ActionIO.TABLE + " a, " 
-            + CourseIO.TABLE  + " c, " 
+            + ActionIO.TABLE + " a, "
+            + CourseIO.TABLE  + " c, "
             + PersonIO.TABLE + " p1, " + PersonIO.TABLE + " p2, "
             + RoomIO.TABLE + " s";
     query += (idper > 0) ? " WHERE p.idper = " + idper : " WHERE p.idper > 0";
@@ -169,12 +169,11 @@ private final DataConnection dc;
       query += " AND s.nom !~* 'rattrap'";
     }
     query += " ORDER BY p1.nom, p1.prenom,p.jour,pg.debut,a.cours";
-
     return dc.executeQuery(query);
   }
-  
+
   /**
-   * 
+   *
    * @param start start date
    * @param end end date
    * @param catchup include catchup
@@ -183,7 +182,7 @@ private final DataConnection dc;
    * @param estab establishment id
    * @param modules list of selected modules
    * @return a resultset
-   * @throws SQLException 
+   * @throws SQLException
    */
   public ResultSet getDetailTeacherByModule(String start, String end, boolean catchup, int idper, int school, int estab, List<Module> modules) throws SQLException {
     StringBuilder sb = new StringBuilder();
@@ -193,10 +192,10 @@ private final DataConnection dc;
     sb.deleteCharAt(sb.length()-1);
     String query = "SELECT DISTINCT ON (p1.nom, p1.prenom, p.jour, pg.debut,m.id)"
       + " p.idper, p1.prenom, p1.nom, a.id, c.id, c.titre, m.id, m.titre, p.jour, pg.debut, pg.fin, (pg.fin - pg.debut) AS duree"
-      + " FROM " + ScheduleIO.TABLE + " p, " 
+      + " FROM " + ScheduleIO.TABLE + " p, "
             + ScheduleRangeIO.TABLE + " pg, "
-            + ActionIO.TABLE + " a, " 
-            + CourseIO.TABLE  + " c, " 
+            + ActionIO.TABLE + " a, "
+            + CourseIO.TABLE  + " c, "
             + PersonIO.TABLE + " p1, "
             + RoomIO.TABLE + " s,"
             + CourseOrderIO.TABLE + " cc,"

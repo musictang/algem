@@ -1,5 +1,5 @@
 /*
- * @(#)Hour.java	2.10.0 07/06/16
+ * @(#)Hour.java	2.10.0 11/06/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -371,6 +371,18 @@ public class Hour
       return 0;
     }
 
+  }
+
+  /**
+   * Converts a length in minutes to time-formatted string.
+   * Ex. 120 -> 02:00; 150 -> 02:30
+   * @param min
+   * @return
+   */
+  public static String getStringFromMinutes(int min) {
+    int h = min / 60;
+    int m = min % 60;
+    return String.format("%02d:%02d", h, m);
   }
 
 }
