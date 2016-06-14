@@ -77,14 +77,17 @@ ORDER BY id;
 
 -- recherche de tous les cours du même type sur la première semaine dispo
 -- critères code cours, durée cours, numéro action, début, fin
-SELECT DISTINCT on (a.id) p.id,p.debut,p.fin,date_part('dow', p.jour) as dow, p.idper,p.lieux,a.id,a.statut,c.titre,per.nom,per.prenom
-FROM planning p JOIN action a ON (p.action = a.id) 
-JOIN cours c ON (a.cours = c.id)
+
+SELECT DISTINCT on (dow,p.jour,p.debut,a.id)
+ p.id,p.jour,extract('dow' from p.jour) AS dow,p.debut,p.fin,p.idper,a.id,a.statut,c.titre,per.nom,per.prenom 
+FROM planning p JOIN action a ON (p.action = a.id)
+ JOIN cours c ON (a.cours = c.id) 
 JOIN salle s ON (p.lieux = s.id)
-JOIN personne per ON (p.idper = per.id) 
-WHERE p.ptype in(1,5,6)
-AND p.jour BETWEEN '04-01-2016' AND '10-06-2016'
-AND c.code = 3
-AND (p.fin-p.debut) = '01:30'
-AND a.id != 8312
-ORDER BY a.id,dow,p.debut;
+ JOIN personne per ON (p.idper = per.id)
+ WHERE p.ptype in(1,6) 
+AND p.jour BETWEEN '05-01-2016' AND '11-01-2016'
+AND c.code = 3 AND 
+(p.fin-p.debut) = '02:00' 
+AND a.id != 8261 
+AND s.nom NOT LIKE 'RATTRAP%' 
+ORDER BY dow,p.jour,p.debut,a.id;

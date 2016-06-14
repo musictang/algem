@@ -1,5 +1,5 @@
 /*
- * @(#)MemberEnrolmentEditor.java 2.10.0 13/06/2016
+ * @(#)MemberEnrolmentEditor.java 2.10.0 14/06/2016
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -31,7 +31,6 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
@@ -57,6 +56,7 @@ import net.algem.planning.editing.StopCourseDlg;
 import net.algem.planning.editing.StopCourseFromModuleDlg;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
+import net.algem.util.DataConnection;
 import net.algem.util.FileUtil;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
@@ -515,55 +515,66 @@ public class MemberEnrolmentEditor
   }
   
   private void stopAndDefine() {
-    StopCourseDlg dlg2 = null;
     Object[] path = currentSelection.getPath();
     int i = path.length;
     if (!(path[i - 1] instanceof CourseEnrolmentNode)) {
       return;
     }
-    CourseOrder cc = ((CourseEnrolmentNode) path[i - 1]).getCourseOrder();
     CourseModuleInfo cmi = new CourseModuleInfo();
     GemParam code = null;
     try {
+      final CourseOrder cc = ((CourseEnrolmentNode) path[i - 1]).getCourseOrder();
+      final Course c = planningService.getCourseFromAction(cc.getAction());
+      if (!c.isCollective()) {
+        MessagePopup.warning(this, MessageUtil.getMessage("member.enrolment.stop.and.redefine.warning"));
+        return;
+      }
       code = (GemParam) DataCache.findId(cc.getCode(), Model.CourseCode);
       cmi.setCode(code);
       cmi.setTimeLength(cc.getTimeLength());
-      DateFr now = new DateFr(new Date());
+//      final DateFr now = new DateFr(new Date());
+      final DateFr now = new DateFr("05-01-2016"); // mardi XXX POUR TEST SEULEMENT !!!
+      
       List<CourseSchedule> all = service.getSchedules(cmi, now, cc.getAction(), 0);
       StopAndDefineDlg dlg = new StopAndDefineDlg(desktop.getFrame(), true);
       dlg.createUI(all);
       if (!dlg.isValidation()) {
         return;
       }
-      CourseSchedule cs = dlg.getCourse();
+      final CourseSchedule selected = dlg.getCourse();
       //arreter cours
-      Course c = planningService.getCourseFromAction(cc.getAction());
-      DateFr s = new DateFr(now);
-    while (Calendar.MONDAY != s.getDayOfWeek()) {
-      s.incDay(1);
-    }
-      service.stopCourse(dossier.getId(), cc, c, s);
-      //new course order
-      CourseOrder co = new CourseOrder();
-      
-      co.setIdOrder(cc.getIdOrder());
-      co.setModuleOrder(cc.getModuleOrder());
-      co.setAction(cs.getAction().getId());
-      co.setStart(cs.getStart());
-      co.setEnd(cs.getEnd());
-      co.setDateStart(now);
-      co.setDateEnd(dataCache.getEndOfYear());
-      co.setCode(cc.getCode());
-System.out.println(co);
-service.createCourse(co, dossier.getId());
-      //new EnrolmentService(dataCache).updateRange(cc, dossier.getId());
+      /*final DateFr s = new DateFr(now);
+      while (Calendar.MONDAY != s.getDayOfWeek()) {
+        s.incDay(1);
+      }*/
+      final CourseOrder co = new CourseOrder();
+      dc.withTransaction(new DataConnection.SQLRunnable<Void>()
+      {
+        @Override
+        public Void run(DataConnection conn) throws Exception {
+          service.stopCourse(dossier.getId(), cc, c, now, false);
+          //new course order
+          co.setIdOrder(cc.getIdOrder());
+          co.setModuleOrder(cc.getModuleOrder());
+          co.setAction(selected.getAction().getId());
+          co.setStart(selected.getStart());
+          co.setEnd(selected.getEnd());
+          co.setDateStart(selected.getDate());// date du premier planning
+          co.setDateEnd(dataCache.getEndOfYear());
+          co.setCode(cc.getCode());
+          System.out.println(co);
+          service.createCourse(co, dossier.getId());
+
+          return null;
+        }
+      });
+      desktop.postEvent(new ModifPlanEvent(this, now, co.getDateEnd()));
+      desktop.postEvent(new EnrolmentUpdateEvent(this, dossier.getId()));
     } catch (SQLException ex) {
       GemLogger.logException(ex);
-    } 
-    catch (EnrolmentException ex) {
+    } catch (Exception ex) {
       GemLogger.logException(ex);
-    }
-    //Vector<Schedule> v = service.getCourseWeek(cmi, new DateFr(new Date()), 0);
+    }     
   }
 
   private void changeDateOfCourseOrder() {

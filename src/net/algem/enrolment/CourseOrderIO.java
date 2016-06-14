@@ -1,5 +1,5 @@
 /*
- * @(#)CourseOrderIO.java	2.10.0 13/05/16
+ * @(#)CourseOrderIO.java	2.10.0 14/06/2016
  * 
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -55,19 +55,19 @@ public class CourseOrderIO
   public static final String COLUMNS = "cc.id,cc.idcmd,cc.module,cc.idaction,cc.debut,cc.fin,cc.datedebut,cc.datefin, cc.code";
   public static final String SEQUENCE = "commande_cours_id_seq";
 
-  public static void insert(CourseOrder c, DataConnection dc) throws SQLException {
+  public static void insert(CourseOrder co, DataConnection dc) throws SQLException {
 
     int nextval = nextId(SEQUENCE, dc);
     String query = "INSERT INTO " + TABLE + " VALUES("
             + nextval
-            + "," + c.getIdOrder()
-            + "," + c.getModuleOrder()
-            + "," + c.getAction()
-            + ",'" + c.getStart()
-            + "','" + c.getEnd()
-            + "','" + c.getDateStart()
-            + "','" + c.getDateEnd()
-            + "'," + c.getCode()
+            + "," + co.getIdOrder()
+            + "," + co.getModuleOrder()
+            + "," + co.getAction()
+            + ",'" + co.getStart()
+            + "','" + co.getEnd()
+            + "','" + co.getDateStart()
+            + "','" + co.getDateEnd()
+            + "'," + co.getCode()
             + ")";
     dc.executeUpdate(query);
   }

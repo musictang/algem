@@ -1,7 +1,7 @@
 /*
- * @(#)StopCourseDlg.java	2.8.x.2 18/09/14
+ * @(#)StopCourseDlg.java	2.10.0 14/06/2016
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -44,7 +44,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.x.2
+ * @version 2.10.0
  * @since 1.0a 27/09/2001
  */
 public class StopCourseDlg
@@ -107,7 +107,7 @@ public class StopCourseDlg
 
     setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
     try {
-      service.stopCourse(member, courseOrder, course, start);
+      service.stopCourse(member, courseOrder, course, start, true);
       desktop.postEvent(new ModifPlanEvent(this, start, courseOrder.getDateEnd()));
       desktop.postEvent(new EnrolmentUpdateEvent(this, member));
     } catch (EnrolmentException ex) {

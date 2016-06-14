@@ -1,5 +1,5 @@
 /*
- * @(#)EnrolmentService.java	2.10.0 13/06/2016
+ * @(#)EnrolmentService.java	2.10.0 14/06/2016
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -154,9 +154,6 @@ public class EnrolmentService
   
   List<CourseSchedule> getSchedules(CourseModuleInfo cmi, DateFr start, int action, int estab) throws SQLException {
     DateFr s = new DateFr(start);
-    while (Calendar.MONDAY != start.getDayOfWeek()) {
-      s.incDay(1);
-    }
     DateFr end = new DateFr(s);
     end.incDay(6);
     DateRange dates = new DateRange(s, end);
@@ -767,36 +764,46 @@ public class EnrolmentService
   }
 
   /**
-   * Stops a member's course from a date {@literal from}.
+   * Stops a member's course from the date {@literal from}.
    *
-   * @param member id
+   * @param member member's id
    * @param co course order
    * @param c course
-   * @param from date
+   * @param from the date from which to stop
+   * @param redefine If true, a new course order to define is created. If false, course order is only updated.
    * @throws EnrolmentException
    */
-  public void stopCourse(int member, CourseOrder co, Course c, DateFr from) throws EnrolmentException {
-    String query = "DELETE FROM " + ScheduleRangeIO.TABLE
-            + " WHERE adherent = " + member
-            + " AND idplanning IN ("
-            + " SELECT id FROM planning"
-            + " WHERE jour >= '" + from + "' AND action = " + co.getAction()
-            + ")";
+  public void stopCourse(int member, final CourseOrder co, final Course c, final DateFr from, final boolean redefine) throws EnrolmentException {
     try {
-      dc.setAutoCommit(false);
-      dc.executeUpdate(query);
-
-      String label = ((GemParam) DataCache.findId(c.getCode(), Model.CourseCode)).getLabel()
-              + " " + BundleUtil.getLabel("To.define.label");
-
-      Hour timeLength = new Hour(co.getStart().getLength(co.getEnd()));
-
-      // si la demande d'arret est postérieure à la date d'inscription à ce cours
-      if (from.after(co.getDateStart())) {
-        if (!c.isATP()) {
-          co.setDateEnd(from);	// on change la date de fin de l'ancienne commande_cours
-          CourseOrderIO.update(co, dc);// on updateAdministrativeEvent l'ancienne commande
+      final String query = "DELETE FROM " + ScheduleRangeIO.TABLE
+              + " WHERE adherent = " + member
+              + " AND idplanning IN ("
+              + " SELECT id FROM planning"
+              + " WHERE jour >= '" + from + "' AND action = " + co.getAction()
+              + ")";
+      dc.withTransaction(new DataConnection.SQLRunnable<Void>() {
+        @Override
+        public Void run(DataConnection conn) throws Exception {
+          dc.executeUpdate(query);
+          refreshCourseOrder(from, co, c, redefine);
+          return null;
         }
+      });
+    } catch (Exception ex) {
+      throw new EnrolmentException(ex.getMessage());
+    }
+  }
+  
+  private void refreshCourseOrder(DateFr from, CourseOrder co, Course c, boolean redefine) throws SQLException {
+    String label = ((GemParam) DataCache.findId(c.getCode(), Model.CourseCode)).getLabel()
+            + " " + BundleUtil.getLabel("To.define.label");
+    Hour timeLength = new Hour(co.getStart().getLength(co.getEnd()));
+    if (from.after(co.getDateStart())) {
+      if (!c.isATP()) {
+        co.setDateEnd(from);	// on change la date de fin de l'ancienne commande_cours
+        CourseOrderIO.update(co, dc);// on update l'ancienne commande
+      }
+      if (redefine) {
         co.setDateStart(from);
         co.setDateEnd(dataCache.getEndOfYear());
         co.setAction(0);
@@ -806,7 +813,9 @@ public class EnrolmentService
         co.setDay(0);
         // on insère une nouvelle commande_cours (à définir)
         CourseOrderIO.insert(co, dc);
-      } else {// si la demande d'arret est antérieure ou égale à la date d'inscription à ce cours
+      }
+    } else {// si la demande d'arret est antérieure ou égale à la date d'inscription à ce cours
+      if (redefine) {
         co.setAction(0);
         co.setTitle(label);
         co.setStart(new Hour());
@@ -819,13 +828,9 @@ public class EnrolmentService
         }
         // on modifie la commande_cours existante
         CourseOrderIO.update(co, dc);
+      } else {
+        CourseOrderIO.deleteById(co.getId(), dc);
       }
-      dc.commit();
-    } catch (SQLException sqe) {
-      dc.rollback();
-      throw new EnrolmentException(sqe.getMessage());
-    } finally {
-      dc.setAutoCommit(true);
     }
   }
 

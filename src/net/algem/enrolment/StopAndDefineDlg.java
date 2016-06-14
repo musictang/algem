@@ -1,5 +1,5 @@
 /*
- * @(#)StopAndDefineDlg.java 2.9.10.0 13/06/2016
+ * @(#)StopAndDefineDlg.java 2.9.10.0 14/06/2016
  * 
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  * 
@@ -26,9 +26,7 @@ import java.awt.Component;
 import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
-import javax.swing.JDialog;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.TableColumnModel;
@@ -48,22 +46,16 @@ import net.algem.util.ui.JTableModel;
  * @since 2.10.0 13/06/16
  */
 public class StopAndDefineDlg 
-        extends JDialog
-        implements ActionListener
+        extends AbstractEditDlg
 {
 
-  private GemButton btValid, btCancel;
   private JTable table;
   private JTableModel<CourseSchedule> tableModel;
-  private boolean validation;
   private Component parent;
-  public StopAndDefineDlg(Frame owner) {
-    super(owner);
-    this.parent = parent;
-  }
 
   public StopAndDefineDlg(Frame owner, boolean modal) {
     super(owner, BundleUtil.getLabel("Available.courses.label"), modal);
+    this.parent = owner;
   }
   
   public void createUI(List<CourseSchedule> schedules) {
@@ -76,14 +68,15 @@ public class StopAndDefineDlg
     cm.getColumn(1).setPreferredWidth(10);
     cm.getColumn(2).setPreferredWidth(10);
     cm.getColumn(4).setPreferredWidth(40);
+    cm.getColumn(5).setPreferredWidth(120);
     JScrollPane scroll = new JScrollPane(table);
     add(scroll, BorderLayout.CENTER);
     GemPanel buttons = new GemPanel(new GridLayout(1, 2));
-    btValid = new GemButton(GemCommand.VALIDATION_CMD);
+    btOk = new GemButton(GemCommand.VALIDATION_CMD);
     btCancel = new GemButton(GemCommand.CANCEL_CMD);
-    btValid.addActionListener(this);
+    btOk.addActionListener(this);
     btCancel.addActionListener(this);
-    buttons.add(btValid);
+    buttons.add(btOk);
     buttons.add(btCancel);
     add(buttons, BorderLayout.SOUTH);
     setSize(GemModule.M_SIZE);
@@ -104,25 +97,21 @@ public class StopAndDefineDlg
   @Override
   public void actionPerformed(ActionEvent e) {
     Object src = e.getSource();
-    validation = src == btValid;
-    setVisible(false);
+    validation = src == btOk;
+    close();
   }
-  
-  public boolean isValidation() {
-    return validation;
-  }
-  
+
   private class AvailableScheduleTableModel extends JTableModel<CourseSchedule> {
 
     public AvailableScheduleTableModel() {
-       header = new String[]{
-         BundleUtil.getLabel("Day.label"),
-      BundleUtil.getLabel("Start.label"),
-      BundleUtil.getLabel("End.label"),
-      BundleUtil.getLabel("Course.label"),
-      BundleUtil.getLabel("Status.label"),
-      BundleUtil.getLabel("Teacher.label")
-    };
+      header = new String[]{
+        BundleUtil.getLabel("Day.label"),
+        BundleUtil.getLabel("Start.label"),
+        BundleUtil.getLabel("End.label"),
+        BundleUtil.getLabel("Course.label"),
+        BundleUtil.getLabel("Status.label"),
+        BundleUtil.getLabel("Teacher.label")
+      };
     }
 
     @Override

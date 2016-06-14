@@ -1,5 +1,5 @@
 /*
- * @(#)ActionIO.java 2.10.0 13/06/2016
+ * @(#)ActionIO.java 2.10.0 14/06/2016
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -264,13 +264,13 @@ public class ActionIO
   }
   
   public List<CourseSchedule> getAvailableSchedules(CourseModuleInfo cmi, DateRange dates, int action, int estab) throws SQLException {
-    String query = "SELECT DISTINCT on (a.id)"
-            + " p.id,p.jour,p.debut,p.fin,p.idper,a.id,a.statut,c.titre,per.nom,per.prenom"
+    String query = "SELECT DISTINCT on (dow,p.jour,p.debut,a.id)"
+            + " p.id,p.jour,extract('dow' from p.jour) AS dow,p.debut,p.fin,p.idper,a.id,a.statut,c.titre,per.nom,per.prenom"
             + " FROM planning p JOIN action a ON (p.action = a.id)"
             + " JOIN cours c ON (a.cours = c.id)"
             + " JOIN salle s ON (p.lieux = s.id)"
             + " JOIN personne per ON (p.idper = per.id)"
-            + " WHERE p.ptype in(1,5,6)"
+            + " WHERE p.ptype in(1,6)"
             + " AND p.jour BETWEEN '" + dates.getStart() + "' AND '" + dates.getEnd() + "'"
             + " AND c.code = " + cmi.getIdCode()
             + " AND (p.fin-p.debut) = '" + Hour.getStringFromMinutes(cmi.getTimeLength())
@@ -279,24 +279,23 @@ public class ActionIO
     if (estab > 0) {
       query += " AND s.etablissemnt = " + estab;
     }
-
-    query += " ORDER BY a.id,p.jour,p.debut";
-System.out.println(query);
+    query += " ORDER BY dow,p.jour,p.debut,a.id";
+    //System.out.println(query);
     List<CourseSchedule> schedules = new ArrayList<>();
     ResultSet rs = dc.executeQuery(query);
     while (rs.next()) {
       CourseSchedule s = new CourseSchedule();
       s.setId(rs.getInt(1));
       s.setDate(new DateFr(rs.getString(2)));
-      s.setStart(new Hour(rs.getString(3)));
-      s.setEnd(new Hour(rs.getString(4)));
-      s.setIdPerson(rs.getInt(5));
-      Action a = new Action(rs.getInt(6));
-      GemParam st = (GemParam) DataCache.findId(rs.getInt(7), Model.Status);
+      s.setStart(new Hour(rs.getString(4)));
+      s.setEnd(new Hour(rs.getString(5)));
+      s.setIdPerson(rs.getInt(6));
+      Action a = new Action(rs.getInt(7));
+      GemParam st = (GemParam) DataCache.findId(rs.getInt(8), Model.Status);
       a.setStatus(st);
       s.setAction(a);
-      s.setActivity(new Course(rs.getString(8)));
-      s.setPerson(new Person(rs.getInt(5), rs.getString(9), rs.getString(10), ""));
+      s.setActivity(new Course(rs.getString(9)));
+      s.setPerson(new Person(rs.getInt(6), rs.getString(10), rs.getString(11), ""));
       schedules.add(s);
     }
     return schedules;
