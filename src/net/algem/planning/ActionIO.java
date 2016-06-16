@@ -1,5 +1,5 @@
 /*
- * @(#)ActionIO.java 2.10.0 14/06/2016
+ * @(#)ActionIO.java 2.10.0 15/06/2016
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -262,7 +262,7 @@ public class ActionIO
 
     return va;
   }
-  
+
   public List<CourseSchedule> getAvailableSchedules(CourseModuleInfo cmi, DateRange dates, int action, int estab) throws SQLException {
     String query = "SELECT DISTINCT on (dow,p.jour,p.debut,a.id)"
             + " p.id,p.jour,extract('dow' from p.jour) AS dow,p.debut,p.fin,p.idper,a.id,a.statut,c.titre,per.nom,per.prenom"
@@ -270,7 +270,7 @@ public class ActionIO
             + " JOIN cours c ON (a.cours = c.id)"
             + " JOIN salle s ON (p.lieux = s.id)"
             + " JOIN personne per ON (p.idper = per.id)"
-            + " WHERE p.ptype in(1,6)"
+            + " WHERE p.ptype in(1,6)" // regular and training courses only
             + " AND p.jour BETWEEN '" + dates.getStart() + "' AND '" + dates.getEnd() + "'"
             + " AND c.code = " + cmi.getIdCode()
             + " AND (p.fin-p.debut) = '" + Hour.getStringFromMinutes(cmi.getTimeLength())
@@ -398,7 +398,7 @@ public class ActionIO
     }
     return colors;
   }
-  
+
   /**
    * Load all memos saved, whatever the date.
    * @return a map of notes

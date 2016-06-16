@@ -1,7 +1,7 @@
 /*
- * @(#)Item.java 2.9.4.13 05/11/15
- * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * @(#)Item.java 2.10.0 15/06/2016
+ *
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 
 package net.algem.billing;
@@ -30,25 +30,25 @@ import net.algem.util.model.GemModel;
  * An item may be created regardless of invoice.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.10.0
  * @since 2.3.a 22/12/11
  */
 public class Item
   implements GemModel
 {
 
- private static final long serialVersionUID = 3875590414115115006L; 
+ private static final long serialVersionUID = 3875590414115115006L;
  private int id;
 
  /** Item name. */
  private String designation;
- 
+
  /** Unit price */
  private double price;
 
  /** VAT id. */
  private Param vat;
- 
+
  /** Account number. */
  private int account;
 
@@ -63,12 +63,12 @@ public class Item
   }
 
   /**
-   * Item creation.
+   * Full item creation.
    * @param id
    * @param designation
-   * @param price
-   * @param account
-   * @param standard article standard si true
+   * @param price basic price
+   * @param account account id
+   * @param standard if true, this item is standard
    */
   public Item(int id, String designation, double price, int account, boolean standard) {
     this(id);
@@ -77,7 +77,7 @@ public class Item
     this.account = account;
     this.standard = standard;
   }
-  
+
   public Item copy() {
     Item c = new Item();
     c.id = this.id;
@@ -86,7 +86,7 @@ public class Item
     c.account = this.account;
     c.standard = this.standard;
     c.vat = new Vat(this.vat);
-    
+
     return c;
   }
 
@@ -99,7 +99,7 @@ public class Item
    */
   public Item(String d, double p, int c, boolean s) {
     this.designation = d;
-    this.price = p; 
+    this.price = p;
     this.account = c;
     this.standard = s;
   }

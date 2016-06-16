@@ -103,7 +103,7 @@ public class MemberFollowUpEditor
     personFile = pf;
 
     tableModel = new ScheduleRangeTableModel(dataCache);
-    table = new JTable(tableModel); 
+    table = new JTable(tableModel);
     table.setAutoCreateRowSorter(true);
 
     table.addMouseListener(new MouseAdapter()
@@ -126,7 +126,7 @@ public class MemberFollowUpEditor
       }
     });
     roomFilter = new RowFilter<Object, Object>() {
-      
+
       @Override
       public boolean include(Entry<? extends Object, ? extends Object> entry) {
         String r = (String) entry.getValue(4);
@@ -334,6 +334,7 @@ public class MemberFollowUpEditor
   }
 
   private void print() {
+    desktop.setWaitCursor();
     hideCatchingRooms();
     printDlg.setVisible(true);
     try {
@@ -365,9 +366,10 @@ public class MemberFollowUpEditor
       GemLogger.logException(ex);
     } finally {
       printDlg.setVisible(false);
+      desktop.setDefaultCursor();
     }
   }
-  
+
   private void hideCatchingRooms() {
     printSorter.setRowFilter(roomFilter);
   }

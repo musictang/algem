@@ -1,5 +1,5 @@
 /*
- * @(#) WorkingTimePlugin.java Algem 2.10.0 07/06/2016
+ * @(#) WorkingTimePlugin.java Algem 2.10.0 11/06/2016
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -52,9 +52,10 @@ import net.algem.util.TextUtil;
 public class WorkingTimePlugin
   extends HoursTaskExecutor {
 
+  private final int CODE_LOISIR = 1;
   private CustomDAO dao;
 
-  private String [] categories = {
+  private String[] categories = {
     "DEM + L1 + L2 + Loisirs",
     "Parcours BREVET + MIMA + FP",
     "Réunions"
@@ -74,6 +75,16 @@ public class WorkingTimePlugin
     return "Tri par professeur :\nDEM + L1 + L2 + Loisirs\nParcours BREVET + MIMA + FP\nRéunions";
   }
 
+  private void printResult(Person t, int total1, int total2, int total3) {
+    StringBuilder sb = new StringBuilder();
+    int total = total1 + total2 + total3;
+    sb.append(t.getFirstnameName()).append(';').append(TextUtil.LINE_SEPARATOR);
+    sb.append(categories[0]).append(';').append(Hour.getStringFromMinutes(total1)).append(TextUtil.LINE_SEPARATOR);
+    sb.append(categories[1]).append(';').append(Hour.getStringFromMinutes(total2)).append(TextUtil.LINE_SEPARATOR);
+    sb.append(categories[2]).append(';').append(Hour.getStringFromMinutes(total3)).append(TextUtil.LINE_SEPARATOR);
+    sb.append("TOTAL;").append(Hour.getStringFromMinutes(total)).append(TextUtil.LINE_SEPARATOR);
+    out.print(sb.toString());
+  }
 
   @Override
   public void execute() {
@@ -81,97 +92,271 @@ public class WorkingTimePlugin
       Map<String, Object> props = getProperties();
       DateFr start = (DateFr) props.get("start");
       DateFr end = (DateFr) props.get("end");
-      List<Person> teachers = dao.getTeachers(start, end);
-      int p = 0;
-      int len = teachers.size();
-      StringBuilder sb = new StringBuilder();
-      for (Person t : teachers) {
-        sb.append(t.getFirstnameName()).append(';').append(TextUtil.LINE_SEPARATOR);
-        String total1 = dao.getTotal1(t.getId(), start, end);
-        String total2 = dao.getTotal2(t.getId(), start, end);
-        String total3 = dao.getTotal3(t.getId(), start, end);
-        int t1 = Hour.getMinutesFromString(total1);
-        int t2 = Hour.getMinutesFromString(total2);
-        int t3 = Hour.getMinutesFromString(total3);
-        int total = t1 + t2 + t3;
+      int idper = (int) props.get("idper");
 
-        sb.append(categories[0]).append(';').append(total1).append(TextUtil.LINE_SEPARATOR);
-        sb.append(categories[1]).append(';').append(total2).append(TextUtil.LINE_SEPARATOR);
-        sb.append(categories[2]).append(';').append(total3).append(TextUtil.LINE_SEPARATOR);
-        sb.append("TOTAL;").append(formatTotal(total)).append(TextUtil.LINE_SEPARATOR);
-        out.print(sb.toString());
-        worker.setStep(p++ * 100 / len);
-        sb.delete(0, sb.length() -1);
+      List<CustomSchedule> schedules = dao.getSchedules(idper, start, end);
+
+      int t = 0;
+      int totalL = 0;
+      int totalP = 0;
+      int totalR = 0;
+      Person person = null;
+      int len = schedules.size();
+      int progress = 0;
+      for (CustomSchedule cs : schedules) {
+        if (cs.getPerson().getId() != t) {
+          if (t > 0) {
+            printResult(person, totalL, totalP, totalR);
+            totalL = 0;
+            totalP = 0;
+            totalR = 0;
+          }
+          t = cs.getPerson().getId();
+          person = cs.getPerson();
+        }
+        if (Schedule.ADMINISTRATIVE == cs.getType()) {
+          totalR += cs.getLength();
+          continue;
+        } else {
+          if (cs.isCollective()) {//XXX si aucune plage élève
+            if (cs.status == CODE_LOISIR) {
+              totalL += cs.getLength();
+            } else {
+              totalP += cs.getLength();
+            }
+          } else {
+            List<CustomRange> ranges = dao.getRanges(cs.getId());
+            for (CustomRange r : ranges) {
+              if (r.isLeisure()) {
+                totalL += r.length;
+              } else {
+                totalP += r.length;
+              }
+            }
+          }
+        }
+        worker.setStep(progress++ * 100 / len);
       }
+      printResult(person, totalL, totalP, totalR);
     } catch (SQLException ex) {
       GemLogger.logException(ex);
     } finally {
       out.close();
     }
-
   }
 
+  /*@Override
+   public void execute() {
+   try {
+   Map<String, Object> props = getProperties();
+   DateFr start = (DateFr) props.get("start");
+   DateFr end = (DateFr) props.get("end");
+   int idper = (int) props.get("idper");
+   List<Person> teachers = new ArrayList<>();
+   if (idper == 0) {
+   teachers = dao.getTeachers(start, end);
+   } else {
+   teachers.add(dao.getTeacher(idper));
+   }
+   int p = 0;
+   int len = teachers.size();
+   StringBuilder sb = new StringBuilder();
+   for (Person t : teachers) {
+   sb.append(t.getFirstnameName()).append(';').append(TextUtil.LINE_SEPARATOR);
+   String total1 = dao.getTotal1(t.getId(), start, end);
+   String total2 = dao.getTotal2(t.getId(), start, end);
+   String total3 = dao.getTotal3(t.getId(), start, end);
+   int t1 = Hour.getMinutesFromString(total1);
+   int t2 = Hour.getMinutesFromString(total2);
+   int t3 = Hour.getMinutesFromString(total3);
+   int total = t1 + t2 + t3;
+
+   sb.append(categories[0]).append(';').append(total1).append(TextUtil.LINE_SEPARATOR);
+   sb.append(categories[1]).append(';').append(total2).append(TextUtil.LINE_SEPARATOR);
+   sb.append(categories[2]).append(';').append(total3).append(TextUtil.LINE_SEPARATOR);
+   sb.append("TOTAL;").append(formatTotal(total)).append(TextUtil.LINE_SEPARATOR);
+   out.print(sb.toString());
+   worker.setStep(p++ * 100 / len);
+   sb.delete(0, sb.length() -1);
+   }
+   } catch (SQLException ex) {
+   GemLogger.logException(ex);
+   } finally {
+   out.close();
+   }
+
+   }*/
   private List<Person> getTestList() {
     List<Person> t = new ArrayList<>();
-    t.add(new Person(106,"ANTOLIN","Elora","Mme"));
+    t.add(new Person(106, "ANTOLIN", "Elora", "Mme"));
     return t;
   }
 
-  private String formatTotal(int min) {
-    int h = min / 60;
-    int m = min % 60;
-    return String.format("%02d:%02d", h,m);
+  private class CustomRange {
+
+    private final int[] MOD_LOISIR = {149, 151, 157, 158};
+    private final int[] MOD_PRO = {141, 142, 143, 144, 145, 146, 147, 148};
+    private final String FP = "15000";
+
+    private int length;
+    private int moduleId;
+    private String code;
+    private String analytique;
+
+    public CustomRange(int length, int moduleId, String code, String analytique) {
+      this.length = length;
+      this.moduleId = moduleId;
+      this.code = code;
+      this.analytique = analytique;
+    }
+
+    public boolean isLeisure() {
+      if (code.startsWith("L")) {
+        return true;
+      }
+      boolean l = false;
+      for (int i : MOD_LOISIR) {
+        if (moduleId == i) {
+          l = true;
+          break;
+        }
+      }
+      return l && !FP.equals(analytique);
+    }
+
+    public boolean isPro() {
+      if (FP.equals(analytique)) {
+        return true;
+      }
+      for (int i : MOD_PRO) {
+        if (moduleId == i) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+  }
+
+  private class CustomSchedule
+    extends Schedule {
+
+    private Person person;
+    private int length;
+    private int status;
+    private int action;
+    private boolean collective;
+
+    public int getStatus() {
+      return status;
+    }
+
+    public void setStatus(int status) {
+      this.status = status;
+    }
+
+    public int getAction() {
+      return action;
+    }
+
+    public void setAction(int action) {
+      this.action = action;
+    }
+
+    public boolean isCollective() {
+      return collective;
+    }
+
+    public void setCollective(boolean collective) {
+      this.collective = collective;
+    }
+
+    public Person getPerson() {
+      return person;
+    }
+
+    public void setPerson(Person person) {
+      this.person = person;
+    }
+
+    public void setLength(int length) {
+      this.length = length;
+    }
+
+    @Override
+    public int getLength() {
+      return length;
+    }
+
   }
 
   private class CustomDAO {
 
     private DataConnection dc;
-    private PreparedStatement ps1, ps2, ps3;
+    private PreparedStatement ps1, ps2, ps3, ps4;
     private final String total1Query = "SELECT sum(q1.fin-q1.debut) FROM"
-        + " (SELECT DISTINCT ON (p.jour,pl.debut)"
-        + " pl.debut AS debut, pl.fin AS fin"
-        + " FROM " + ScheduleRangeIO.TABLE + " pl JOIN " + ScheduleIO.TABLE + " p ON (pl.idplanning = p.id)"
-        + " JOIN " + PersonIO.TABLE + " per ON (p.idper = per.id)"
-        + " WHERE p.ptype IN (" + Schedule.COURSE + ","+ Schedule.WORKSHOP + "," + Schedule.TRAINING + ")"
-        + " AND p.idper = ?"
-        + " AND p.jour BETWEEN  ? AND ?"
-        + " AND pl.adherent in(SELECT adh FROM " + OrderIO.TABLE + " d"
-        + " JOIN " + CourseOrderIO.TABLE + " cc ON (d.id =cc.idcmd)"
-        + " JOIN " + ModuleOrderIO.TABLE + " cm ON (cc.module = cm.id)"
-        + " JOIN " + ModuleIO.TABLE + " m ON (cm.module = m.id)"
-        + " JOIN " + OrderLineIO.TABLE + " e ON (cm.idcmd = e.commande)"
-        + "  WHERE (m.id in(149,151,157,158) OR m.code like 'L%')"
-        + " AND cc.idaction = p.action"
-        + " AND e.analytique != '15000')) AS q1";
+      + " (SELECT DISTINCT ON (p.jour,pl.debut)"
+      + " pl.debut AS debut, pl.fin AS fin"
+      + " FROM " + ScheduleRangeIO.TABLE + " pl JOIN " + ScheduleIO.TABLE + " p ON (pl.idplanning = p.id)"
+      + " JOIN " + PersonIO.TABLE + " per ON (p.idper = per.id)"
+      + " WHERE p.ptype IN (" + Schedule.COURSE + "," + Schedule.WORKSHOP + "," + Schedule.TRAINING + ")"
+      + " AND p.idper = ?"
+      + " AND p.jour BETWEEN  ? AND ?"
+      + " AND pl.adherent in(SELECT adh FROM " + OrderIO.TABLE + " d"
+      + " JOIN " + CourseOrderIO.TABLE + " cc ON (d.id =cc.idcmd)"
+      + " JOIN " + ModuleOrderIO.TABLE + " cm ON (cc.module = cm.id)"
+      + " JOIN " + ModuleIO.TABLE + " m ON (cm.module = m.id)"
+      + " JOIN " + OrderLineIO.TABLE + " e ON (cm.idcmd = e.commande)"
+      + "  WHERE (m.id in(149,151,157,158) OR m.code like 'L%')"
+      + " AND cc.idaction = p.action"
+      + " AND e.analytique != '15000')) AS q1";
     private final String total2Query = "SELECT sum(q1.fin-q1.debut) FROM"
-        + "(SELECT DISTINCT ON (p.jour,pl.debut) pl.debut AS debut, pl.fin AS fin"
-        + " FROM " + ScheduleRangeIO.TABLE + " pl JOIN " + ScheduleIO.TABLE + " p ON (pl.idplanning = p.id)"
-        + " JOIN " + PersonIO.TABLE + " per ON (p.idper = per.id)"
-        + " WHERE p.ptype IN (" + Schedule.COURSE + ","+ Schedule.WORKSHOP + "," + Schedule.TRAINING + ")"
-        + " AND p.idper = ?"
-        + " AND p.jour BETWEEN  ? AND ?"
-        + " AND pl.adherent IN(SELECT adh FROM " + OrderIO.TABLE + " d"
-        + " JOIN " + CourseOrderIO.TABLE + " cc ON (d.id = cc.idcmd)"
-        + " JOIN " + ModuleOrderIO.TABLE + " cm ON (cc.module = cm.id)"
-        + " JOIN " + ModuleIO.TABLE + " m ON (cm.module = m.id)"
-        + " JOIN " + OrderLineIO.TABLE + " e ON (cm.idcmd = e.commande)"
-        + " WHERE cc.idaction = p.action"
-        + " AND ((m.id BETWEEN 141 AND 148 AND e.analytique != '15000') OR e.analytique = '15000')"
-        + ")) AS q1";
+      + "(SELECT DISTINCT ON (p.jour,pl.debut) pl.debut AS debut, pl.fin AS fin"
+      + " FROM " + ScheduleRangeIO.TABLE + " pl JOIN " + ScheduleIO.TABLE + " p ON (pl.idplanning = p.id)"
+      + " JOIN " + PersonIO.TABLE + " per ON (p.idper = per.id)"
+      + " WHERE p.ptype IN (" + Schedule.COURSE + "," + Schedule.WORKSHOP + "," + Schedule.TRAINING + ")"
+      + " AND p.idper = ?"
+      + " AND p.jour BETWEEN  ? AND ?"
+      + " AND pl.adherent IN(SELECT adh FROM " + OrderIO.TABLE + " d"
+      + " JOIN " + CourseOrderIO.TABLE + " cc ON (d.id = cc.idcmd)"
+      + " JOIN " + ModuleOrderIO.TABLE + " cm ON (cc.module = cm.id)"
+      + " JOIN " + ModuleIO.TABLE + " m ON (cm.module = m.id)"
+      + " JOIN " + OrderLineIO.TABLE + " e ON (cm.idcmd = e.commande)"
+      + " WHERE cc.idaction = p.action"
+      + " AND ((m.id BETWEEN 141 AND 148 AND e.analytique != '15000') OR e.analytique = '15000')"
+      + ")) AS q1";
     private final String total3Query = "SELECT sum(p.fin-p.debut) FROM " + ScheduleIO.TABLE + " p JOIN " + PersonIO.TABLE + " per ON (p.idper = per.id)"
-          + " WHERE p.ptype = " + Schedule.ADMINISTRATIVE
-          + " AND p.idper = ?"
+      + " WHERE p.ptype = " + Schedule.ADMINISTRATIVE
+      + " AND p.idper = ?"
       + " AND p.jour BETWEEN  ? AND ?";
 
+    private final String rangeQuery = "SELECT DISTINCT ON (pl.id) pl.fin-pl.debut,m.id,m.code,e.analytique"
+      + " FROM " + ScheduleRangeIO.TABLE + " pl JOIN " + ScheduleIO.TABLE + " p ON (pl.idplanning = p.id)"
+      + " JOIN " + CourseOrderIO.TABLE + " cc ON (cc.idaction = p.action)"
+      + " JOIN " + ModuleOrderIO.TABLE + " cm ON (cc.module = cm.id)"
+      + " JOIN " + ModuleIO.TABLE + " m ON (cm.module = m.id)"
+      //"JOIN commande d ON (cm.idcmd = d.id)\n" +
+      + " JOIN " + OrderLineIO.TABLE + " e ON (cm.idcmd = e.commande AND e.adherent = pl.adherent)"
+      + " WHERE pl.idplanning = ?";
 
     public CustomDAO(DataConnection dc) {
       this.dc = dc;
       ps1 = dc.prepareStatement(total1Query);
       ps2 = dc.prepareStatement(total2Query);
       ps3 = dc.prepareStatement(total3Query);
+
+      ps4 = dc.prepareStatement(rangeQuery);
     }
 
-    public List<Person> getTeachers(DateFr start, DateFr end) throws SQLException {
+    /**
+     * Gets all the teachers scheduled between {@code start} and {@code end}.
+     * @param start start of period
+     * @param end end of period
+     * @return a list of persons
+     * @throws SQLException
+     * @deprecated
+     */
+    List<Person> getTeachers(DateFr start, DateFr end) throws SQLException {
       List<Person> teachers = new ArrayList<>();
 
       String query = "SELECT DISTINCT p.idper,per.nom,per.prenom FROM " + ScheduleIO.TABLE + " p JOIN " + PersonIO.TABLE + " per ON (p.idper = per.id)"
@@ -192,12 +377,83 @@ public class WorkingTimePlugin
     }
 
     /**
+     * Get the name of the teacher with id {@code idper}.
+     * @param idper teacher id
+     * @return a person
+     * @throws SQLException
+     * @deprecated
+     */
+    Person getTeacher(int idper) throws SQLException {
+      String query = "SELECT nom,prenom FROM " + PersonIO.TABLE + " WHERE id = " + idper;
+      ResultSet rs = dc.executeQuery(query);
+      while (rs.next()) {
+        Person t = new Person(idper);
+        t.setName(rs.getString(1));
+        t.setFirstName(rs.getString(2));
+        return t;
+      }
+      return new Person(0, "Inconnu", "", "");
+    }
+
+    private List<CustomSchedule> getSchedules(int idper, DateFr start, DateFr end) throws SQLException {
+      List<CustomSchedule> schedules = new ArrayList<>();
+      String query = "SELECT p.id,p.fin-p.debut,p.ptype,p.idper,per.nom,per.prenom,p.action,c.collectif,a.statut"
+        + " FROM " + ScheduleIO.TABLE + " p  JOIN " + PersonIO.TABLE + " per ON (p.idper = per.id)"
+        + " JOIN action a ON (p.action = a.id) LEFT JOIN cours c ON (a.cours = c.id)"
+        + " WHERE p.ptype IN (" + Schedule.COURSE + "," + Schedule.WORKSHOP + "," + Schedule.TRAINING + "," + Schedule.ADMINISTRATIVE + ")"
+        + " AND p.jour BETWEEN '" + start + "' AND '" + end + "'"
+        + " AND ((p.id IN (SELECT idplanning FROM " + ScheduleRangeIO.TABLE
+        + ")) OR p.ptype = " + Schedule.ADMINISTRATIVE + ")";
+      if (idper > 0) {
+        query += " AND p.idper = " + idper;
+      }
+      query += " ORDER BY per.nom,per.prenom,p.jour,p.debut";
+      ResultSet rs = dc.executeQuery(query);
+      while (rs.next()) {
+        CustomSchedule cs = new CustomSchedule();
+
+        cs.setId(rs.getInt(1));
+        String len = rs.getString(2);
+        cs.setLength(Hour.getMinutesFromString(len));
+        cs.setType(rs.getInt(3));
+        Person p = new Person(rs.getInt(4), rs.getString(5), rs.getString(6), "");
+        cs.setPerson(p);
+        cs.setAction(rs.getInt(7));
+        cs.setCollective(rs.getBoolean(8));
+        cs.setStatus(rs.getInt(9));
+
+        schedules.add(cs);
+      }
+      return schedules;
+    }
+
+    /**
+     * Gets individual ranges enclosed in schedule {@code p}.
+     * @param p schedule
+     * @return a list of ranges
+     * @throws SQLException
+     */
+    private List<CustomRange> getRanges(int p) throws SQLException {
+      List<CustomRange> ranges = new ArrayList<>();
+      ps4.setInt(1, p);
+      ResultSet rs = ps4.executeQuery();
+      while (rs.next()) {
+        int min = Hour.getMinutesFromString(rs.getString(1));
+        CustomRange cr = new CustomRange(min, rs.getInt(2), rs.getString(3), rs.getString(4));
+        ranges.add(cr);
+      }
+      return ranges;
+    }
+
+    /**
      * DEM + L1 + L2 + Loisirs.
+     *
      * @param idper teacher id
      * @param start start of period
      * @param end end of period
      * @return a time-formatted string
      * @throws SQLException
+     * @deprecated
      */
     public String getTotal1(int idper, DateFr start, DateFr end) throws SQLException {
 
@@ -207,18 +463,20 @@ public class WorkingTimePlugin
       ResultSet rs = ps1.executeQuery();
       while (rs.next()) {
         String t = rs.getString(1);
-        return t == null ? "00:00" : t.substring(0,t.indexOf(':') + 3); // String.valueOf(time).substring(0,5);
+        return t == null ? "00:00" : t.substring(0, t.indexOf(':') + 3); // String.valueOf(time).substring(0,5);
       }
       return "00:00";
     }
 
     /**
      * Parcours BREVET + MIMA + FP (formations financées).
+     *
      * @param idper teacher id
      * @param start start of period
      * @param end end of period
      * @return a time-formatted string
      * @throws SQLException
+     * @deprecated
      */
     public String getTotal2(int idper, DateFr start, DateFr end) throws SQLException {
       ps2.setInt(1, idper);
@@ -227,30 +485,32 @@ public class WorkingTimePlugin
       ResultSet rs = ps2.executeQuery();
       while (rs.next()) {
         String t = rs.getString(1);
-        return t == null ? "00:00" : t.substring(0,t.indexOf(':') + 3);
+        return t == null ? "00:00" : t.substring(0, t.indexOf(':') + 3);
       }
       return "00:00";
     }
 
     /**
      * Réunions.
+     *
      * @param idper teacher id
      * @param start start of period
      * @param end end of period
      * @return a time-formatted string
      * @throws SQLException
+     * @deprecated
      */
     public String getTotal3(int idper, DateFr start, DateFr end) throws SQLException {
       ps3.setInt(1, idper);
       ps3.setDate(2, new java.sql.Date(start.getTime()));
       ps3.setDate(3, new java.sql.Date(end.getTime()));
       ResultSet rs = ps3.executeQuery();
-        while (rs.next()) {
-          String t = rs.getString(1);
-          return t == null ? "00:00" : t.substring(0,t.indexOf(':') + 3);
-        }
-        return "00:00";
+      while (rs.next()) {
+        String t = rs.getString(1);
+        return t == null ? "00:00" : t.substring(0, t.indexOf(':') + 3);
       }
+      return "00:00";
     }
+  }
 
 }

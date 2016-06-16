@@ -1,5 +1,5 @@
 /*
- * @(#)MemberEnrolmentEditor.java 2.10.0 14/06/2016
+ * @(#)MemberEnrolmentEditor.java 2.10.0 15/06/2016
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -52,8 +52,10 @@ import net.algem.planning.Hour;
 import net.algem.planning.ScheduleRangeObject;
 import net.algem.planning.editing.ChangeHourCourseDlg;
 import net.algem.planning.editing.ModifPlanEvent;
+import net.algem.planning.editing.StopCourseAbstractDlg;
 import net.algem.planning.editing.StopCourseDlg;
 import net.algem.planning.editing.StopCourseFromModuleDlg;
+import net.algem.planning.editing.StopCourseView;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
@@ -66,6 +68,7 @@ import net.algem.util.jdesktop.DesktopHandlerException;
 import net.algem.util.menu.MenuPopupListener;
 import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
+import net.algem.util.module.GemModule;
 import net.algem.util.ui.*;
 
 /**
@@ -360,8 +363,8 @@ public class MemberEnrolmentEditor
         return;
       }
       stopAndDefine();
-    } 
-    
+    }
+
     else if (s.equals(COURSE_DATE)) {
       if (currentSelection == null) {
         return;
@@ -488,16 +491,18 @@ public class MemberEnrolmentEditor
 
   private void stopCourse() {
 
-    StopCourseDlg dlg2 = null;
+    StopCourseDlg stopDlg = null;
     Object[] path = currentSelection.getPath();
     int i = path.length;
     if (!(path[i - 1] instanceof CourseEnrolmentNode)) {
       return;
     }
     CourseOrder cc = ((CourseEnrolmentNode) path[i - 1]).getCourseOrder();
-    if (cc.getAction() == 0 && MessagePopup.confirm(this, MessageUtil.getMessage("course.suppression.confirmation"))) {;
-      service.stopCourse(cc.getId());
-      desktop.postEvent(new EnrolmentUpdateEvent(this, dossier.getId()));
+    if (cc.getAction() == 0) {
+      if (MessagePopup.confirm(this, MessageUtil.getMessage("course.suppression.confirmation"))) {
+        service.stopCourse(cc.getId());
+        desktop.postEvent(new EnrolmentUpdateEvent(this, dossier.getId()));
+      }
       return;
     }
     try {
@@ -507,13 +512,16 @@ public class MemberEnrolmentEditor
         return;
       }
 
-      dlg2 = new StopCourseDlg(desktop, dossier.getId(), cc, c);
-      dlg2.setVisible(true);
+      stopDlg = new StopCourseDlg(desktop, dossier.getId(), cc, c, service);
+      stopDlg.setVisible(true);
     } catch (SQLException ex) {
       GemLogger.log(getClass().getName(), "#stopCourse :", ex.getMessage());
     }
   }
-  
+
+  /**
+   * Stops a course order and redefine it in one step.
+   */
   private void stopAndDefine() {
     Object[] path = currentSelection.getPath();
     int i = path.length;
@@ -524,17 +532,29 @@ public class MemberEnrolmentEditor
     GemParam code = null;
     try {
       final CourseOrder cc = ((CourseEnrolmentNode) path[i - 1]).getCourseOrder();
+      if (cc.getAction() == 0) {
+        MessagePopup.warning(this, MessageUtil.getMessage("course.invalid.choice"));
+        return;
+      }
+      if (cc.getDateEnd().before(dataCache.getStartOfYear())) {
+        MessagePopup.warning(this, MessageUtil.getMessage("date.out.of.period"));
+        return;
+      }
+
       final Course c = planningService.getCourseFromAction(cc.getAction());
-      if (!c.isCollective()) {
+      if (!c.isCollective() || CourseCodeType.ATP.getId() == cc.getCode()) {
         MessagePopup.warning(this, MessageUtil.getMessage("member.enrolment.stop.and.redefine.warning"));
         return;
       }
       code = (GemParam) DataCache.findId(cc.getCode(), Model.CourseCode);
       cmi.setCode(code);
       cmi.setTimeLength(cc.getTimeLength());
-//      final DateFr now = new DateFr(new Date());
-      final DateFr now = new DateFr("05-01-2016"); // mardi XXX POUR TEST SEULEMENT !!!
-      
+
+      StopCourseDateDlg stopDlg = new StopCourseDateDlg(desktop.getFrame(), REDEFINE, c.toString(), true);
+      final DateFr now = stopDlg.getDate();
+      if (now == null) {
+        return;
+      }
       List<CourseSchedule> all = service.getSchedules(cmi, now, cc.getAction(), 0);
       StopAndDefineDlg dlg = new StopAndDefineDlg(desktop.getFrame(), true);
       dlg.createUI(all);
@@ -574,7 +594,7 @@ public class MemberEnrolmentEditor
       GemLogger.logException(ex);
     } catch (Exception ex) {
       GemLogger.logException(ex);
-    }     
+    }
   }
 
   private void changeDateOfCourseOrder() {
@@ -1104,6 +1124,51 @@ public class MemberEnrolmentEditor
 
   private boolean isModuleNode(Object[] path) {
     return path[path.length - 1] instanceof ModuleEnrolmentNode;
+  }
+
+  private class StopCourseDateDlg
+    extends StopCourseAbstractDlg {
+
+    private DateFr date;
+
+    public StopCourseDateDlg(Frame owner, String title, String course, boolean modal) {
+      super(owner, title, modal);
+
+      view = new StopCourseView(course);
+
+      btOk = new GemButton(GemCommand.VALIDATION_CMD);
+      btOk.addActionListener(this);
+      btCancel = new GemButton(GemCommand.CANCEL_CMD);
+      btCancel.addActionListener(this);
+
+      JPanel buttons = new JPanel();
+      buttons.setLayout(new GridLayout(1, 1));
+      buttons.add(btOk);
+      buttons.add(btCancel);
+
+      setLayout(new BorderLayout());
+      add(view, BorderLayout.CENTER);
+      add(buttons, BorderLayout.SOUTH);
+      setSize(GemModule.XXS_SIZE);
+      setLocationRelativeTo(owner);
+      setVisible(true);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      Object src = e.getSource();
+      if (src == btOk) {
+        this.date = view.getDateStart();
+      } else {
+        this.date = null;
+      }
+      close();
+    }
+
+    public DateFr getDate() {
+      return date;
+    }
+
   }
 
 }

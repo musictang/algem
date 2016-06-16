@@ -1,8 +1,31 @@
 2.10.0
 CORRECTIFS
+* Lorqu'on modifiait un article de facture créée à partir d'un devis, la modification se répercutait dans le devis d'origine. Une facture est maintenant complètement indépendante du devis à partir duquel elle a été créée.
+Note : la duplication d'un devis n'entraînait pas ce problème.
 
-* Dans le suivi enseignant de la fiche enseignant, le calcul du nombre d'heures correspondant aux lignes sélectionnées était faux après effectué un tri sur l'une des colonnes.
+* Dans le suivi enseignant de la fiche professeur, le calcul du nombre d'heures correspondant aux lignes sélectionnées était faux après avoir effectué un tri sur l'une des colonnes.
 
+* L'enregistrement des modifications était impossible si l'on ne remplissait aucun champ dans l'adresse de l'organisation (menu Configuration->Paramètres->Généraux, section "Organisation").
+
+* La fenêtre de changement d'heure (menu clic droit "Changer d'heure" sur un cours dans l'onglet Inscriptions d'un élève) était trop étroite pour afficher les horaires d'origine dans leur intégralité.
+
+* L'annulation de l'opération "Arrêter/Supprimer cours" (clic droit sur un cours à définir dans l'onglet Inscriptions d'un élève) entraînait l'ouverture inopinée de l'avertissement "Choix de cours invalide".
+
+* Si le libellé d'un équipement de salle comportait un caractère spécial (comme une apostrophe par exemple), ce caractère était précédé d'un anti-slash (\). Ce n'est plus le cas désormais.
+
+* Les lignes d'"AVOIR" en facturation sont maintenant exportées dans le bon sens. Les lignes de "Débit", "Crédit" étaient auparavant inversées : menu Compta -> Transfert échéancier et Compta -> Transfert pièce.
+Rappel : on représente une facture d'Avoir dans l'échéancier par une ligne de règlement "FAC" avec un montant positif. Le montant de la ligne de paiement est inversement négatif.
+
+* Le calcul de l'âge dans l'onglet Adhérent ne tenait pas compte du mois ni du jour de naissance. L'âge des personnes tient compte maintenant de la date exacte d'anniversaire et n'est plus anticipé comme auparavant.
+
+CODES COURS
+La suppression des codes cours suivants est désormais impossible : INST, AT, ATP, STG. Ces codes ayant une signification particulière dans le logiciel, il est important de les conserver.
+
+FICHE COURS
+Liste élèves
+
+FICHE FORMULE
+Liste élèves
 
 FACTURATION
 paramètre date d'échéance, arrondi
@@ -10,13 +33,11 @@ cacher lignes de facturation
 echeances standards
 facturation échéance inscription
 
-fiche inscription
+ONGLET INSCRIPTIONS
 impression suivi élève
-feuille d'émargement 
 date de fin de cours
 
-FICHE COURS
-Liste élèves
+PLANNING
+feuille d'émargement 
 
-FICHE FORMULE
-Liste élèves
+STATISTIQUES

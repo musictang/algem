@@ -1,7 +1,7 @@
 /*
- * @(#)ParamView.java	2.8.p 06/12/13
- * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * @(#)ParamView.java	2.10.0 15/06/2016
+ *
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.config;
 
@@ -34,7 +34,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.p
+ * @version 2.10.0
  * @since 1.0a 07/07/1999
  */
 public class ParamView
@@ -61,15 +61,15 @@ public class ParamView
     btCancel = new GemButton(GemCommand.CANCEL_CMD);
     btModify = new GemButton(GemCommand.SAVE_CMD);
     btDelete = new GemButton(GemCommand.DELETE_CMD);
-    GemPanel boutons = new GemPanel();
-    boutons.setLayout(new GridLayout(1, 3));
-    boutons.add(btDelete);
-    boutons.add(btCancel);
-    boutons.add(btModify);
+    GemPanel buttons = new GemPanel();
+    buttons.setLayout(new GridLayout(1, 3));
+    buttons.add(btDelete);
+    buttons.add(btCancel);
+    buttons.add(btModify);
 
-    GemPanel masque = new GemPanel();
-    masque.setLayout(new GridBagLayout());
-    GridBagHelper gb = new GridBagHelper(masque);
+    GemPanel mask = new GemPanel();
+    mask.setLayout(new GridBagLayout());
+    GridBagHelper gb = new GridBagHelper(mask);
     gb.insets = GridBagHelper.SMALL_INSETS;
     keyLabel = new GemLabel();
     valueLabel = new GemLabel();
@@ -88,8 +88,8 @@ public class ParamView
     }
 
     setLayout(new BorderLayout());
-    add(masque, BorderLayout.CENTER);
-    add(boutons, BorderLayout.SOUTH);
+    add(mask, BorderLayout.CENTER);
+    add(buttons, BorderLayout.SOUTH);
   }
 
   /**

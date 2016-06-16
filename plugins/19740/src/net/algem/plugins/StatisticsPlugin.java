@@ -1,5 +1,5 @@
 /*
- * @(#)StatisticsPlugin.java    2.10.0 08/06/2016
+ * @(#)StatisticsPluginMusichalle.java	2.10.0 08/06/2016
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *

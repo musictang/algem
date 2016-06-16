@@ -1,7 +1,7 @@
 /*
- * @(#)ChangeHourCourseView.java	2.8.w 02/09/14
- * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * @(#)ChangeHourCourseView.java	2.10.0 15/06/2016
+ *
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,11 +16,10 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning.editing;
 
-import java.awt.Dimension;
 import java.util.Date;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -34,10 +33,10 @@ import net.algem.util.ui.GridBagHelper;
 
 /**
  * Modification of time slot entry panel.
- * 
+ *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.10.0
  * @since 1.0a 02/09/2001
  */
 public class ChangeHourCourseView
@@ -62,7 +61,6 @@ public class ChangeHourCourseView
     this.courseLabel = new JLabel(label);
 
     GemLabel currentTime = new GemLabel(BundleUtil.getLabel("Hour.label")  + " [" + start + "-" + end + "]");
-    currentTime.setPreferredSize(new Dimension(courseLabel.getPreferredSize().width, currentTime.getPreferredSize().height));
     gb.add(new JLabel(BundleUtil.getLabel("Course.label")), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(currentTime, 0, 1, 1, 1, GridBagHelper.WEST);
     gb.add(new JLabel(BundleUtil.getLabel("From.label")), 0, 2, 1, 1, GridBagHelper.WEST);

@@ -1,7 +1,7 @@
 /*
- * @(#)RightsSearchView.java	2.6.a 03/10/12
- * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * @(#)RightsSearchView.java	2.10.0 15/06/16
+ *
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.security;
 
@@ -31,7 +31,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.10.0
  */
 public class RightsSearchView
         extends SearchView
@@ -63,6 +63,7 @@ public class RightsSearchView
     mask.setLayout(new GridBagLayout());
 
     GridBagHelper gb = new GridBagHelper(mask);
+    gb.insets = GridBagHelper.SMALL_INSETS;
     gb.add(new GemLabel(BundleUtil.getLabel("Number.label")), 0, 0, 1, 1, GridBagHelper.EAST);
     gb.add(new GemLabel(BundleUtil.getLabel("Name.label")), 0, 1, 1, 1, GridBagHelper.EAST);
     gb.add(new GemLabel(BundleUtil.getLabel("Login.label")), 0, 2, 1, 1, GridBagHelper.EAST);

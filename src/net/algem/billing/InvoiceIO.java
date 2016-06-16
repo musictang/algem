@@ -1,7 +1,7 @@
 /*
- * @(#)InvoiceIO.java 2.9.4.14 18/12/15
+ * @(#)InvoiceIO.java 2.10.0 15/06/2016
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -37,7 +37,7 @@ import net.algem.util.model.Model;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.10.0
  * @since 2.3.a 22/12/11
  */
 public class InvoiceIO
@@ -70,7 +70,7 @@ public class InvoiceIO
    * @throws SQLException
    * @throws BillingException if transaction failed
    */
-  public <T extends Invoice> void insert(T inv) throws SQLException, BillingException {
+  public <T extends Invoice> void insert(final T inv) throws SQLException, BillingException {
 
     int last = getLastId(TABLE, dc);
 
@@ -79,34 +79,34 @@ public class InvoiceIO
     }
     inv.inc(last);
 
-    String query = "INSERT INTO " + TABLE + " VALUES('" + inv.getNumber()
-            + "','" + inv.getDate()
-            + "'," + inv.getEstablishment()
-            + "," + inv.getIssuer()
-            + "," + inv.getPayer()
-            + ",'" + escape(inv.getDescription().trim())
-            + "','" + escape(inv.getReference().trim())
-            + "'," + inv.getMember()
-            + "," + inv.getDownPayment()
-            + ")";
+    final String query = "INSERT INTO " + TABLE + " VALUES('" + inv.getNumber()
+      + "','" + inv.getDate()
+      + "'," + inv.getEstablishment()
+      + "," + inv.getIssuer()
+      + "," + inv.getPayer()
+      + ",'" + escape(inv.getDescription().trim())
+      + "','" + escape(inv.getReference().trim())
+      + "'," + inv.getMember()
+      + "," + inv.getDownPayment()
+      + ")";
     try {
-      dc.setAutoCommit(false);
-      dc.executeUpdate(query);// insertion facture
-      // insertion/mise à jour des échéances
-      setOrderLines(inv);
+      dc.withTransaction(new DataConnection.SQLRunnable<Void>() {
 
-      // insertion lignes facture
-      for (InvoiceItem item : inv.getItems()) {
-        insert(item, inv.getNumber());
-      }
+        @Override
+        public Void run(DataConnection conn) throws Exception {
+          dc.executeUpdate(query);// insertion facture
+          // insertion/mise à jour des échéances
+          setOrderLines(inv);
+          // insertion lignes facture
+          for (InvoiceItem item : inv.getItems()) {
+            insert(item, inv.getNumber());
+          }
+          return null;
+        }
 
-      dc.commit();
-    } catch (SQLException sqe) {
-      dc.rollback();
-      //System.err.println(sqe.getMessage());
+      });
+    } catch (Exception sqe) {
       throw new BillingException(sqe.getMessage());
-    } finally {
-      dc.setAutoCommit(true);
     }
 
   }

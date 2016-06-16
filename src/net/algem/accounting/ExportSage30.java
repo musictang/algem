@@ -1,7 +1,7 @@
 /*
- * @(#)ExportSage30.java	2.8.x.3 24/09/14
+ * @(#)ExportSage30.java	2.10.0 15/06/2016
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -39,9 +39,9 @@ import net.algem.util.ui.MessagePopup;
 
 /**
  * Utility class for exporting lines to CIEL accounting software.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.x.3
+ * @version 2.10.0
  * @since 2.8.r 17/12/13
  */
 public class ExportSage30
@@ -61,9 +61,9 @@ public class ExportSage30
     dossierName = ConfigUtil.getConf(ConfigKey.DIRECT_DEBIT_FIRM_NAME.getKey());
     nf.setGroupingUsed(false);
     nf.setMinimumFractionDigits(2);
-    nf.setMaximumFractionDigits(2); 
+    nf.setMaximumFractionDigits(2);
   }
-  
+
   @Override
   /**
    * Export to 105 characters SAGE pnp format.
@@ -74,7 +74,7 @@ public class ExportSage30
     PrintWriter out = new PrintWriter(new FileWriter(path));
 
     out.print(TextUtil.truncate(dossierName, 30) + (char) 13);
-    
+
     for (int i = 0, n = orderLines.size(); i < n ; i++) {
       e =  orderLines.elementAt(i);
       total += e.getAmount();
@@ -129,9 +129,9 @@ public class ExportSage30
     PrintWriter out = new PrintWriter(new FileWriter(path));
 
     int mouvement = 0;
-    
+
     out.print(TextUtil.truncate(dossierName, 30) + (char) 13);
-    
+
     for (int i = 0, n = orderLines.size(); i < n ; i++) {
       e =  orderLines.elementAt(i);
       if (!AccountUtil.isPersonalAccount(e.getAccount())) {
@@ -140,7 +140,7 @@ public class ExportSage30
         m1 = true;
         continue;
       }
-      
+
       int p = getPersonalAccountId(e.getAccount().getId());
       if (p == 0) {
         errors++;
@@ -164,13 +164,13 @@ public class ExportSage30
               + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getLabel() + getInvoiceNumber(e), 25), 25) // libellé
               + getModeOfPayment(e.getModeOfPayment()) // mode de paiement
               + dateFormat.format(e.getDate().getDate()) // date échéance
-              + cd // débit - crédit
+              + (e.getAmount() < 0 ? dc : cd) // cd débit - crédit
               + TextUtil.padWithLeadingSpaces(m, 20) // montant
               + "N" // Type
               + (char) 13);
 
       String debit = getAccount(e);
-              
+
         out.print(TextUtil.padWithTrailingSpaces(codeJournal,3) // code journal
               + dateFormat.format(new Date()) // date écriture
               + default_document_type
@@ -181,19 +181,19 @@ public class ExportSage30
               + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getLabel(), 25),25) // libellé
               + "S" // mode de paiement
               + dateFormat.format(e.getDate().getDate()) // date échéance
-              + dc // débit - crédit
+              + (e.getAmount() < 0 ? cd : dc) // dc débit - crédit
               + TextUtil.padWithLeadingSpaces(m, 20) // montant
               + "N" // Type
               + (char) 13);
     }
     out.close();
-    
+
     if (logMessage.length() > 0) {
       PrintWriter log = new PrintWriter(new FileWriter(logpath));
       log.println(logMessage.toString());
       log.close();
     }
-    
+
     if (errors > 0) {
       if (m1) {
         message += MessageUtil.getMessage("personal.account.export.warning");
@@ -205,10 +205,10 @@ public class ExportSage30
       String l = MessageUtil.getMessage("see.log.file", path);
       MessagePopup.warning(null, err+message+l);
     }
-// 
+//
     return errors;
   }
-  
+
   private char getModeOfPayment(String p) {
     if (p.equals(ModeOfPayment.CHQ.toString())) {
       return 'C';

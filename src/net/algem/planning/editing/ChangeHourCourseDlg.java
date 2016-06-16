@@ -1,7 +1,7 @@
 /*
- * @(#)ChangeHourCourseDlg.java	2.8.w 08/07/14
- * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * @(#)ChangeHourCourseDlg.java	2.10.0 15/06/2016
+ *
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,12 +16,13 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning.editing;
 
 import java.awt.BorderLayout;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -44,10 +45,10 @@ import net.algem.util.ui.MessagePopup;
 /**
  * Modification of course time in member enrolment course order.
  * TODO
- * 
+ *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.10.0
  * @since 1.0a 27/09/2001
  */
 public class ChangeHourCourseDlg
@@ -69,13 +70,12 @@ public class ChangeHourCourseDlg
   private boolean validation = false;
 
   public ChangeHourCourseDlg(GemDesktop desktop, EnrolmentService service, CourseOrder co, int member) throws SQLException {
-    super(desktop.getFrame(), "Changement heure de cours", true);//modal
+    super(desktop.getFrame(), BundleUtil.getLabel("Schedule.hour.modification.title"), true);//modal
     this.desktop = desktop;
-    dataCache = desktop.getDataCache();
+    this.dataCache = desktop.getDataCache();
     this.service = service;
-    courseOrder = co;
+    this.courseOrder = co;
     this.member = member;
-//    this.order = order;
   }
 
   public void init() throws SQLException {
@@ -94,9 +94,9 @@ public class ChangeHourCourseDlg
     buttons.add(btCancel);
 
     setLayout(new BorderLayout());
-    getContentPane().add(view, BorderLayout.NORTH);
+    getContentPane().add(view, BorderLayout.CENTER);
     getContentPane().add(buttons, BorderLayout.SOUTH);
-    pack();
+    setSize(new Dimension(340,150));
     setLocationRelativeTo(desktop.getFrame());
   }
 
@@ -135,9 +135,9 @@ public class ChangeHourCourseDlg
       return;
     }
     setCursor(new Cursor(Cursor.WAIT_CURSOR));
-    
+
     DataConnection dc = DataCache.getDataConnection();
-    
+
     try {
       dc.setAutoCommit(false);
       // Vérification des conflits

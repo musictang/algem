@@ -1,5 +1,5 @@
 /*
- * @(#) SigningSheetCtrl.java Algem 2.10.0 02/06/16
+ * @(#) SigningSheetCtrl.java Algem 2.10.0 15/06/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -74,7 +74,7 @@ public class SigningSheetCtrl
   protected Void doInBackground() throws Exception {
 
     try {
-      temp = File.createTempFile(BundleUtil.getLabel("Signing.sheet.label"), "html");
+      temp = File.createTempFile(BundleUtil.getLabel("Signing.sheet.label"), ".html");
       pw = new PrintWriter(temp, StandardCharsets.UTF_8.name());
       pw.println(FileUtil.getHtmlHeader(BundleUtil.getLabel("Enrolment.label"), getCss() + addCss()));
 

@@ -1,5 +1,5 @@
 /*
- * @(#)RoomIO.java	2.9.6 18/03/16
+ * @(#)RoomIO.java	2.10.0 17/05/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -42,7 +42,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.6
+ * @version 2.10.0
  * @since 1.0a 07/07/1999
  */
 public class RoomIO
@@ -87,7 +87,7 @@ public class RoomIO
     s.setId(id);
   }
 
-  
+
 
   /**
    *
@@ -98,7 +98,7 @@ public class RoomIO
   public void update(Room old, Room nr) throws SQLException {
     trans_update(old, nr);
   }
-  
+
   public void updateStatus(Room r) throws SQLException {
     updateStatusPS.setBoolean(1, r.isActive());
     updateStatusPS.setBoolean(2, r.isAvailable());
@@ -109,18 +109,18 @@ public class RoomIO
   public void updateEquipment(Room r) throws SQLException {
 
     deleteEquipment(r.getId());
-    
+
     List<Equipment> ve = r.getEquipment();
-    
+
     for (int i = 0; i < ve.size(); i++) {
       Equipment e = ve.get(i);
       e.setRoom(r.getId());
       e.setIdx((short) i);
       updateEquipmentPS.setInt(1, e.getRoom());
-      updateEquipmentPS.setString(2, escape(e.getLabel()));
+      updateEquipmentPS.setString(2, e.getLabel());// no need to escape with preparedstatement
       updateEquipmentPS.setInt(3, e.getQuantity());
       updateEquipmentPS.setShort(4, e.getIdx());
-      
+
       updateEquipmentPS.executeUpdate();
     }
   }

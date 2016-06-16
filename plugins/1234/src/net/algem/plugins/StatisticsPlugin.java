@@ -30,14 +30,14 @@ import net.algem.util.MessageUtil;
  * @version 2.10.0
  * @since 2.6.g 20/11/12
  */
-public class StatisticsPluginMustang
+public class StatisticsPlugin
   extends Statistics {
 
   private static final int PRO_MEMBER_ACCOUNT = 14;
   private static final int STUDIO = 8;
   private static final int MONTANT_ADHESION = 1000;
 
-  public StatisticsPluginMustang() {
+  public StatisticsPlugin() {
   }
 
   @Override

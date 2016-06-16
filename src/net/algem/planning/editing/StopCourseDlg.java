@@ -1,6 +1,6 @@
 /*
  * @(#)StopCourseDlg.java	2.10.0 14/06/2016
- * 
+ *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning.editing;
 
@@ -58,14 +58,14 @@ public class StopCourseDlg
   private EnrolmentService service;
 
 
-  public StopCourseDlg(GemDesktop desktop, int member, CourseOrder courseOrder, Course c) throws SQLException {
+  public StopCourseDlg(GemDesktop desktop, int member, CourseOrder courseOrder, Course c, EnrolmentService service) throws SQLException {
     super(desktop.getFrame(), BundleUtil.getLabel("Course.stop.label"), true);//modal
     this.desktop = desktop;
-    service = new EnrolmentService(desktop.getDataCache());
+    this.service = service;
     this.courseOrder = courseOrder;
     course = c;
     this.member = member;
-    
+
     view = new StopCourseView(course.getTitle());
 
     btOk = new GemButton(GemCommand.VALIDATION_CMD);
@@ -85,7 +85,7 @@ public class StopCourseDlg
     setLocationRelativeTo(desktop.getFrame());
   }
 
-  
+
   @Override
   public void actionPerformed(ActionEvent evt) {
     if (evt.getSource() == btCancel) {

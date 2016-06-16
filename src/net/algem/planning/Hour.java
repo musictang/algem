@@ -323,7 +323,7 @@ public class Hour
    */
   public static String format(int min) {
     if (min < 60) {
-      return "0h"+min;
+      return String.format("%dh%02d", 0,min);
     }
     int m = min%60;
     if (m > 0) {

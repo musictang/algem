@@ -132,7 +132,7 @@ public class StatisticsPlugin
          printTableIntResult("Nombre d'élèves par activité pour les cours collectifs sur " + e.getName(), super.getQuery("students_by_instrument", true, e.getId()));
          }
          }
-         separate();*/
+         */
         case 10:
           printTitle(entry.getLabel());
           out.println("<cite>(seuls les élèves effectivement présents sur une plage de cours sont comptabilisés)</cite>");
@@ -163,13 +163,13 @@ public class StatisticsPlugin
           out.println("\n\t\t<table class='list'>");
           out.println("<tr><th>PARCOURS BREVET Jazz 1/2h cours instrument (141)</th><td>" + getIntResult(getQuery(141)) + "</td></tr>");
           out.println("<tr><th>PARCOURS BREVETJazz 3/4h cours instrument (142)</th><td>" + getIntResult(getQuery(142)) + "</td></tr>");
-          out.println("<tr><th>Parcours MIMA Jazz (143)</th><td>" + getIntResult(getQuery(143)) + "</td></tr>");
-          out.println("<tr><th>Parcours MIMA Jazz (144)</th><td>" + getIntResult(getQuery(144)) + "</td></tr>");
+          out.println("<tr><th>Parcours MIMA 1 Jazz (143)</th><td>" + getIntResult(getQuery(143)) + "</td></tr>");
+          out.println("<tr><th>Parcours MIMA 2 Jazz (144)</th><td>" + getIntResult(getQuery(144)) + "</td></tr>");
           out.println("<tr><th>Dem jazz (149)</th><td>" + getIntResult(getQuery(149)) + "</td></tr>");
           out.println("<tr><th>PARCOURS BREVET ½ h cours instrument (147)</th><td>" + getIntResult(getQuery(147)) + "</td></tr>");
           out.println("<tr><th>PARCOURS BREVET 3/4h instrument (148)</th><td>" + getIntResult(getQuery(148)) + "</td></tr>");
-          out.println("<tr><th>Parcours MIMA MAA(145)</th><td>" + getIntResult(getQuery(145)) + "</td></tr>");
-          out.println("<tr><th>Parcours MIMA MAA(146)</th><td>" + getIntResult(getQuery(146)) + "</td></tr>");
+          out.println("<tr><th>Parcours MIMA 1 MAA(145)</th><td>" + getIntResult(getQuery(145)) + "</td></tr>");
+          out.println("<tr><th>Parcours MIMA 2 MAA(146)</th><td>" + getIntResult(getQuery(146)) + "</td></tr>");
           out.println("<tr><th>Licence 1 musicologie (151)</th><td>" + getIntResult(getQuery(151)) + "</td></tr>");
           out.println("<tr><th>Licence 2 musicologie (157)</th><td>" + getIntResult(getQuery(157)) + "</td></tr>");
           out.println("<tr><th>Licence 3 musicologie (158)</th><td>" + getIntResult(getQuery(158)) + "</td></tr>");
@@ -433,8 +433,7 @@ public class StatisticsPlugin
     statList.add(new StatElement(6, "Répartition des élèves par âge", true));
     statList.add(new StatElement(7, "Répartition des élèves par sexe", true));
     statList.add(new StatElement(8, "Répartition géographique des élèves", true));
-    statList.add(new StatElement(9, "Nombre d'élèves par instrument pour les cours individuels", true));
-//    "Nombre d'élèves par activité pour les cours collectifs");
+    //statList.add(new StatElement(9, "Nombre d'élèves par instrument pour les cours individuels", true));
     statList.add(new StatElement(10, "Répartition des élèves par formule (formule)", true));
     statList.add(new StatElement(11, "Répartition par niveau des élèves en formation pro", true));
 
