@@ -1,5 +1,5 @@
 /*
- * @(#)ExportCiel.java	2.10.0 15/06/2016
+ * @(#)ExportCiel.java	2.10.1 20/06/2016
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -39,7 +39,7 @@ import net.algem.util.ui.MessagePopup;
  * Utility class for exporting lines to CIEL accounting software.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.10.1
  * @since 2.8.r 13/12/13
  */
 public class ExportCiel
@@ -153,7 +153,7 @@ public class ExportCiel
               + TextUtil.padWithTrailingSpaces(c.getNumber(), 11) // numéro dompte
               + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getLabel() + getInvoiceNumber(e), 25), 25) // numéro de facture pour les echéances correspondant à une facture.
               + TextUtil.padWithLeadingSpaces(m, 13) // montant
-              + (e.getAmount() < 0 ? dc : cd) //cd crédit
+              + (e.getAmount() < 0 ? cd : dc) //cd crédit
               + TextUtil.padWithTrailingSpaces(e.getDocument(), 12) // numéro pointage
               + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getCostAccount().getNumber(), 6),6) // code analytique
               + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getAccount().getLabel(), 34), 34) // libellé compte
@@ -171,7 +171,7 @@ public class ExportCiel
               + TextUtil.padWithTrailingSpaces(debit, 11) // numéro compte tiers
               + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getLabel(), 25), 25)
               + TextUtil.padWithLeadingSpaces(m, 13) // montant
-              + (e.getAmount() < 0 ? cd : dc) //dc débit
+              + (e.getAmount() < 0 ? dc : cd) //dc débit
               + TextUtil.padWithTrailingSpaces(null, 12) // numéro pointage
               + TextUtil.padWithTrailingSpaces(null, 6) // code analytique
               + TextUtil.padWithTrailingSpaces(TextUtil.truncate(debitLabel, 34), 34) // libellé compte tiers

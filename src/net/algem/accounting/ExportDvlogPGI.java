@@ -1,5 +1,5 @@
 /*
- * @(#)ExportDvlogPGI.java	2.10.0 15/06/2016
+ * @(#)ExportDvlogPGI.java	2.10.1 20/06/2016
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -38,7 +38,7 @@ import net.algem.util.ui.MessagePopup;
  * Utility class for exporting lines to DVLOG PGI accounting software.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.10.1
  * @since 2.8.r 13/12/13
  */
 public class ExportDvlogPGI
@@ -138,7 +138,7 @@ public class ExportDvlogPGI
               + "#" + TextUtil.padWithTrailingSpaces(e.getDocument(), 10)
               + "#" + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getLabel(), 24), 24)
               + "#" + TextUtil.padWithLeadingZeros(m, 13)
-              + "#" + (e.getAmount() < 0 ? dc : cd) // cd Crédit
+              + "#" + (e.getAmount() < 0 ? cd : dc) // cd Crédit
               + "#" + TextUtil.padWithTrailingSpaces(e.getCostAccount().getNumber(), 10)
               + "#" + (char) 13);
 
@@ -149,7 +149,7 @@ public class ExportDvlogPGI
               + "#" + TextUtil.padWithTrailingSpaces(f, 10)
               + "#" + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getLabel(), 24), 24)
               + "#" + TextUtil.padWithLeadingZeros(m, 13)
-              + "#" + (e.getAmount() < 0 ? cd : dc) //dc Débit
+              + "#" + (e.getAmount() < 0 ? dc : cd) //dc Débit
               + "#" + TextUtil.padWithTrailingSpaces("", 10)
               + "#" + (char) 13);//CR (Carriage return, retour à la ligne)
     }

@@ -1,5 +1,5 @@
 /*
- * @(#) SigningSheetCtrl.java Algem 2.10.0 15/06/16
+ * @(#) SigningSheetCtrl.java Algem 2.10.2 23/06/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -45,7 +45,7 @@ import net.algem.util.module.GemDesktop;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.10.2
  * @since 2.10.0 01/06/16
  */
 public class SigningSheetCtrl
@@ -173,7 +173,7 @@ public class SigningSheetCtrl
     }
 
     if (mo.isStopped()) {
-      node.setInfo(" <font color=\"#666666\">" + BundleUtil.getLabel("Stopped.label") + " : " + mo.getEnd().toString() + "</font>");
+      node.setInfo(" <font color=\"#666666\">" + BundleUtil.getLabel("Module.stopped.label") + " : " + mo.getEnd().toString() + "</font>");
     }
     String nodeInfo = node.toString();
     return nodeInfo.substring(6, nodeInfo.lastIndexOf('<'));

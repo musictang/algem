@@ -1,5 +1,5 @@
 /*
- * @(#) WorkingTimePlugin.java Algem 2.10.2 22/06/2016
+ * @(#) WorkingTimePlugin.java Algem 2.10.2 23/06/2016
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -120,7 +120,7 @@ public class WorkingTimePlugin
       DateFr end = (DateFr) props.get("end");
       int idper = (int) props.get("idper");
       boolean detail = (boolean) props.get("detail");
-// probleme derniere date du mois detail
+
       List<CustomSchedule> schedules = dao.getSchedules(idper, start, end);
 
       int t = 0;
@@ -133,32 +133,14 @@ public class WorkingTimePlugin
       int totaldR = 0;
       DateFr d = null;
       Person person = null;
-      String name = null;
       int len = schedules.size();
       int progress = 0;
       for (CustomSchedule cs : schedules) {
-        if (cs.getPerson().getId() != t) {
-          if (t > 0) {
-            if (detail) {
-              out.println();
-              printResult(totalL, totalP, totalR);
-            } else {
-              printResult(person, totalL, totalP, totalR);
-            }
-            out.println();
-            totalL = 0;
-            totalP = 0;
-            totalR = 0;
-          }
-          t = cs.getPerson().getId();
-          person = cs.getPerson();
+        if (detail && d == null) {
+          out.println(cs.getPerson().getFirstnameName());
         }
-        if (detail && !cs.getDate().equals(d)) {
-          if (!cs.getPerson().getFirstnameName().equals(name)) {
-            out.println(cs.getPerson().getFirstnameName());
-            name = cs.getPerson().getFirstnameName();
-          }
-          if (d != null) {
+        if (detail && (!cs.getDate().equals(d) || cs.getPerson().getId() != t)) {
+          if (d != null) { // pas au premier tour de boucle
             printResult(d, totaldL, totaldP, totaldR);//XXX cs.getDate()
             totaldL = 0;
             totaldP = 0;
@@ -166,6 +148,25 @@ public class WorkingTimePlugin
           }
           d = cs.getDate();
         }
+        if (cs.getPerson().getId() != t) {
+          if (t > 0) { // pas au premier tour de boucle
+            if (detail) {
+              out.println();
+              printResult(totalL, totalP, totalR);
+              out.println();
+              out.println(cs.getPerson().getFirstnameName());
+            } else {
+              printResult(person, totalL, totalP, totalR);
+              out.println();
+            }
+            totalL = 0;
+            totalP = 0;
+            totalR = 0;
+          }
+          t = cs.getPerson().getId();
+          person = cs.getPerson();
+        }
+       
         if (Schedule.ADMINISTRATIVE == cs.getType()) {
           totalR += cs.getLength();
           totaldR += cs.getLength();
@@ -194,7 +195,13 @@ public class WorkingTimePlugin
         }
         worker.setStep(progress++ * 100 / len);
       }
-      printResult(person, totalL, totalP, totalR);//XXX
+      if (detail) {
+        printResult(d, totaldL, totaldP, totaldR);
+        out.println();
+        printResult(totalL, totalP, totalR);
+      } else {
+        printResult(person, totalL, totalP, totalR);
+      }
     } catch (SQLException ex) {
       GemLogger.logException(ex);
     } finally {

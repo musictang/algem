@@ -1,5 +1,5 @@
 /*
- * @(#)ExportSage30.java	2.10.0 15/06/2016
+ * @(#)ExportSage30.java	2.10.1 20/06/2016
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -41,7 +41,7 @@ import net.algem.util.ui.MessagePopup;
  * Utility class for exporting lines to CIEL accounting software.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.10.1
  * @since 2.8.r 17/12/13
  */
 public class ExportSage30
@@ -164,7 +164,7 @@ public class ExportSage30
               + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getLabel() + getInvoiceNumber(e), 25), 25) // libellé
               + getModeOfPayment(e.getModeOfPayment()) // mode de paiement
               + dateFormat.format(e.getDate().getDate()) // date échéance
-              + (e.getAmount() < 0 ? dc : cd) // cd débit - crédit
+              + (e.getAmount() < 0 ? cd : dc) // cd débit - crédit
               + TextUtil.padWithLeadingSpaces(m, 20) // montant
               + "N" // Type
               + (char) 13);
@@ -181,7 +181,7 @@ public class ExportSage30
               + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getLabel(), 25),25) // libellé
               + "S" // mode de paiement
               + dateFormat.format(e.getDate().getDate()) // date échéance
-              + (e.getAmount() < 0 ? cd : dc) // dc débit - crédit
+              + (e.getAmount() < 0 ? dc : cd) // dc débit - crédit
               + TextUtil.padWithLeadingSpaces(m, 20) // montant
               + "N" // Type
               + (char) 13);
