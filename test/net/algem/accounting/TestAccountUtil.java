@@ -1,6 +1,6 @@
 /*
- * @(#)TestAccountUtil.java 2.9.4.12 22/09/15
- * 
+ * @(#)TestAccountUtil.java 2.10.2 22/05/16
+ *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.accounting;
 
@@ -34,7 +34,7 @@ import org.junit.Test;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.12
+ * @version 2.10.2
  */
 public class TestAccountUtil
 {
@@ -84,6 +84,39 @@ public class TestAccountUtil
   }
 
   @Test
+  public void testRoundTotalFraction() {
+    double f = 0.999999;
+    double res = Math.rint(f);
+    assertTrue(res == 1);
+    f = 0.555657;
+    res = Math.rint(f);
+    assertTrue(res == 1);
+    f = 0.495657;
+    res = Math.rint(f);
+    assertFalse(res == 1);
+    f = 1.4933333;
+    res = Math.rint(f);
+    assertTrue(res == 1);
+    f = 0.333333333 * 3;
+    res = Math.rint(f);
+    assertTrue(res == 1);
+    f = 0.444444444 * 9;//3,999999996
+    res = Math.rint(f);
+    assertTrue(res == 4);
+
+    double r = Math.rint(99*0.01);
+    assertTrue("r = " +r, r *100 == 100);
+    r = Math.rint(99/100d);
+    assertTrue("r = " +r, r *100 == 100);
+
+    r= Math.rint(14999.0*0.01);
+    assertTrue("r = " +r, r*100 == 15000);
+    OrderLine ol = new OrderLine();
+    ol.setAmount(Math.rint(14999 * 0.01));
+    assertTrue(ol.getAmount() == 15000);
+  }
+
+  @Test
   public void testGetIntValue() {
     float montant = 28.599F;
     double res = AccountUtil.getIntValue(montant);
@@ -92,27 +125,27 @@ public class TestAccountUtil
     double md = 15.0000000000001;
     res = AccountUtil.getIntValue(md);
     assertTrue(1500 == res);
-    
+
     double m = 284.03d;
     long d = Math.round(m * 100);
     long ee = 28403l;
     assertTrue("result = " +d, ee == d);
     String s = String.valueOf(d);
     assertEquals("28403", s);
-    
+
     int i = new Long(ee).intValue();
     assertTrue("result = " +i, i == 28403);
-    
+
     int di = (int) Math.round(m * 100);
     assertTrue("result = " +di, di == 28403);
-    
+
     m = 284.02999999;
     di = (int) Math.round(m * 100);
     assertTrue("result = " +di, di == 28403);
-    
+
     di = AccountUtil.getIntValue(m);
     assertTrue("result = " +di, di == 28403);
-    
+
     //fails here
 //    di = (int) (AccountUtil.round(m) * 100);
 //    assertTrue("result = " +di, di == 28403);

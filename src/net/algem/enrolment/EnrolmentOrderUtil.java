@@ -1,5 +1,5 @@
 /*
- * @(#)EnrolmentOrderUtil.java	2.10.0 18/05/16
+ * @(#)EnrolmentOrderUtil.java	2.10.2 22/05/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -40,7 +40,7 @@ import net.algem.util.model.Model;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.10.2
  * @since 2.8.a 01/04/2013
  */
 public class EnrolmentOrderUtil {
@@ -102,17 +102,34 @@ public class EnrolmentOrderUtil {
     String c = ConfigUtil.getConf(ConfigKey.ROUND_FRACTIONAL_PAYMENTS.getKey());
     boolean rounded = c == null || c.isEmpty() ? false : c.toLowerCase().startsWith("t");
     int totalFraction = 0;
+    int totalAmount = 0;
     for (int i = 0, len = lines.size(); i < len; i++) {
       OrderLine ol = lines.get(i);
+      totalAmount += ol.getAmount();
       if (rounded) {
         int d = ol.getAmount() % 100;
-        if (i < len - 1) {
+        if (i < len) {
           ol.setAmount(ol.getAmount() - d);
           totalFraction += d;
-        } else {
-          ol.setAmount(ol.getAmount() + totalFraction);
+        }
+        if (i == len -1) {
+          double b = ol.getAmount() + totalFraction;
+          ol.setAmount(Math.rint(b * 0.01));// ajustement
+        }
+      } else {
+        // ajuster la dernière échéance pour que la somme des échéances corresponde au montant total calculé
+        if (i == len -1) {
+          int ta = AccountUtil.getIntValue(total * len);
+          if (totalAmount > ta) {
+            int rest = totalAmount - ta;
+            ol.setAmount(ol.getAmount() - rest);
+          } else if (totalAmount < ta) {
+            int rest = ta - totalAmount;
+            ol.setAmount(ol.getAmount() + rest);
+          }
         }
       }
+
       AccountUtil.createEntry(ol, false, dc);
     }
     if (lines.size() > 0 && (billing || AccountUtil.isPersonalAccount(lines.get(0).getAccount()))) {

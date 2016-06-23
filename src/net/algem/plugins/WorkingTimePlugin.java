@@ -120,7 +120,7 @@ public class WorkingTimePlugin
       DateFr end = (DateFr) props.get("end");
       int idper = (int) props.get("idper");
       boolean detail = (boolean) props.get("detail");
-// probleme derniere date du mois detail
+
       List<CustomSchedule> schedules = dao.getSchedules(idper, start, end);
 
       int t = 0;
