@@ -1,5 +1,5 @@
 /*
- * @(#)PersonView.java	2.9.6 17/03/16
+ * @(#)PersonView.java	2.10.3 19/07/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -37,6 +37,8 @@ import java.util.Collection;
 import java.util.logging.Level;
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import net.algem.config.ConfigKey;
+import net.algem.config.ConfigUtil;
 import net.algem.contact.member.PersonSubscriptionCard;
 import net.algem.group.Group;
 import net.algem.group.GroupFileEditor;
@@ -55,7 +57,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.6
+ * @version 2.10.3
  */
 public class PersonView
   extends GemPanel {
@@ -187,9 +189,9 @@ public class PersonView
       File file = FileUtil.getFile(
         this,
         BundleUtil.getLabel("FileChooser.selection"),
-        null,
+        ConfigUtil.getConf(ConfigKey.PHOTOS_PATH.getKey()),
         MessageUtil.getMessage("filechooser.image.filter.label"),
-        "jpg", "jpeg", "JPG", "JPEG", "png");
+        "jpg", "jpeg", "JPG", "JPEG", "png", "PNG");
       if (file != null) {
         BufferedImage img = photoHandler.save(idper, file);
         if (img != null) {

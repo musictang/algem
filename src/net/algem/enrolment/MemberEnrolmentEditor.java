@@ -284,8 +284,8 @@ public class MemberEnrolmentEditor
           //mnode.setLastScheduledDate(new DateFr(service.getLastScheduleByModuleOrder(dossier.getId(), mo.getId())));
           if (mo.getTotalTime() > 0) {
             // do not restrict to end date
-            mnode.setCompleted(service.getCompletedTime(dossier.getId(), mo.getId(), dataCache.getStartOfYear().getDate()));
-            //mnode.setCompleted(service.getCompletedTime(dossier.getId(), mo.getId(), dataCache.getStartOfYear().getDate(), dataCache.getEndOfYear().getDate()));
+            mnode.setCompleted(service.getCompletedTime(dossier.getId(), mo.getId(), mo.getStart().getDate()));
+//            mnode.setCompleted(service.getCompletedTime(dossier.getId(), mo.getId(), dataCache.getStartOfYear().getDate()));//XXX problème au changement d'année
           }
 
           if (mo.isStopped()) {

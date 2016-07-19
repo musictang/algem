@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileEditor 2.9.7 17/05/16
+ * @(#)PersonFileEditor 2.10.3 18/07/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -69,7 +69,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.7
+ * @version 2.10.3
  */
 public class PersonFileEditor
         extends FileEditor
@@ -627,7 +627,9 @@ public class PersonFileEditor
     }
     personFileView.setCursor(Cursor.getDefaultCursor());
     dlg.display();
+    
     if (!dlg.isValidation()) {
+      MessagePopup.information(view, MessageUtil.getMessage("no.update.info"));
       return;
     }
     String error = null;

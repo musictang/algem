@@ -1,0 +1,5 @@
+2.10.3
+CORRECTIFS
+* On pouvait mettre à jour le login d'un utilisateur (menu Options -> Création/modification login dans la fiche "Personne") sans avoir besoin de taper de mot de passe. En conséquence de quoi, la personne pouvait se connecter avec un mot de passe vide.
+* En mode Webstart, il n'est plus possible de se connecter avec un login ou un mot de passe vides.
+* Lorsqu'on cliquait sur le cadre photo de la fiche personne pour modifier ou ajouter une photo, le dossier proposé par défaut correspondait au répertoire personnel de l'utilisateur. Ce dossier correspond maintenant à celui paramétré dans la section "Fichiers" - "Dossier photos" du menu Configuration->Paramètres->Généraux.

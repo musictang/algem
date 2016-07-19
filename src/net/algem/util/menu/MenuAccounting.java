@@ -104,7 +104,7 @@ public class MenuAccounting
     add(getItem(new JMenuItem(menus.get("Menu.booking.journal.label")), "Accounting.journal.config.auth"));
     add(new JMenuItem(menus.get("Menu.account.link.label")));
     addSeparator();
-add(new JMenuItem(menus.get("Menu.standard.orderLine.label")));
+    add(new JMenuItem(menus.get("Menu.standard.orderLine.label")));
     add(new JMenuItem(menus.get("Menu.mode.of.payment.label")));
     add(new JMenuItem(menus.get("Menu.vat.label")));
     miRoomRate = new JMenuItem(menus.get("Menu.room.rate.label"));

@@ -1,5 +1,5 @@
 /*
- * @(#)UserCreateDlg.java	2.9.4.10 20/07/15
+ * @(#)UserCreateDlg.java	2.10.3 18/07/16
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -39,7 +39,7 @@ import net.algem.util.ui.PopupDlg;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.10
+ * @version 2.10.3
  */
 public class UserCreateDlg
         implements ActionListener
@@ -90,7 +90,7 @@ public class UserCreateDlg
 
   public boolean isEntryValid() {
     User u = getUser();
-    if ("".equals(u.getLogin()) && "".equals(u.getPassword())) {
+    if ("".equals(u.getLogin()) || "".equals(u.getPassword())) {
       return false;
     }
     return true;
@@ -116,10 +116,7 @@ public class UserCreateDlg
   @Override
   public void actionPerformed(ActionEvent evt) {
     if (evt.getActionCommand().equals(GemCommand.OK_CMD)) {
-      if (!isEntryValid()) {
-        return;
-      }
-      validation = true;
+      validation = isEntryValid();
     } else {
       validation = false;
     }
