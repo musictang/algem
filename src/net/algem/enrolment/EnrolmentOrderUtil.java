@@ -1,7 +1,7 @@
 /*
- * @(#)EnrolmentOrderUtil.java	2.9.4.12 22/09/15
- * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * @(#)EnrolmentOrderUtil.java	2.10.2 22/05/16
+ *
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,13 +16,15 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.enrolment;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 import net.algem.accounting.*;
 import net.algem.config.*;
@@ -38,12 +40,13 @@ import net.algem.util.model.Model;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.12
+ * @version 2.10.2
  * @since 2.8.a 01/04/2013
  */
 public class EnrolmentOrderUtil {
-  
-  private static int LAST_MONTH_PRL = 6;
+
+  private static int LAST_MONTH_DD = 6;
+  private static int DEFAULT_DUE_DAY = Integer.parseInt(ConfigUtil.getConf(ConfigKey.DEFAULT_DUE_DAY.getKey()));
   private PersonFile dossier;
   private double total;
   private DataConnection dc;
@@ -67,7 +70,7 @@ public class EnrolmentOrderUtil {
    * @throws java.sql.SQLException
    * @throws net.algem.accounting.NullAccountException
    */
-  public int saveOrderLines(ModuleOrder moduleOrder, int schoolId) throws SQLException, NullAccountException {
+  public int saveOrderLines(ModuleOrder moduleOrder, int schoolId, boolean billing) throws SQLException, NullAccountException {
 
     String label = "p" + dossier.getMember().getPayer() + " a" + dossier.getId();
 
@@ -88,25 +91,67 @@ public class EnrolmentOrderUtil {
     } else {
       throw new NullAccountException(MessageUtil.getMessage("no.default.cost.account"));
     }
-    
+
     orderLine.setSchool(schoolId);
     List<OrderLine> lines = getOrderLines(moduleOrder, orderLine);
     if (lines.size() == 1 && (PayFrequency.QUARTER.equals(moduleOrder.getPayment()) || PayFrequency.MONTH.equals(moduleOrder.getPayment()))){
       //montant total de l'échéance * nombre d'échéances par défaut
       lines.get(0).setAmount(AccountUtil.getIntValue(total * getDefaultPayFrequency(moduleOrder.getPayment())));
     }
-    for (OrderLine ol : lines) {
-      AccountUtil.createEntry(ol, dc);
+
+    String c = ConfigUtil.getConf(ConfigKey.ROUND_FRACTIONAL_PAYMENTS.getKey());
+    boolean rounded = c == null || c.isEmpty() ? false : c.toLowerCase().startsWith("t");
+    int totalFraction = 0;
+    int totalAmount = 0;
+    for (int i = 0, len = lines.size(); i < len; i++) {
+      OrderLine ol = lines.get(i);
+      totalAmount += ol.getAmount();
+      if (rounded) {
+        int d = ol.getAmount() % 100;
+        if (i < len) {
+          ol.setAmount(ol.getAmount() - d);
+          totalFraction += d;
+        }
+        if (i == len -1) {
+          double b = ol.getAmount() + totalFraction;
+          ol.setAmount(Math.rint(b * 0.01));// ajustement
+        }
+      } else {
+        // ajuster la dernière échéance pour que la somme des échéances corresponde au montant total calculé
+        if (i == len -1) {
+          int ta = AccountUtil.getIntValue(total * len);
+          if (totalAmount > ta) {
+            int rest = totalAmount - ta;
+            ol.setAmount(ol.getAmount() - rest);
+          } else if (totalAmount < ta) {
+            int rest = ta - totalAmount;
+            ol.setAmount(ol.getAmount() + rest);
+          }
+        }
+      }
+
+      AccountUtil.createEntry(ol, false, dc);
+    }
+    if (lines.size() > 0 && (billing || AccountUtil.isPersonalAccount(lines.get(0).getAccount()))) {
+      int totalBilling = 0;
+      for (OrderLine o: lines) {
+        totalBilling += o.getAmount();
+      }
+      OrderLine b = lines.get(0);
+      b.setAmount(-totalBilling);
+      b.setPaid(true);
+      b.setModeOfPayment(ModeOfPayment.FAC.toString());
+      AccountUtil.createEntry(b, false, dc);
     }
     return lines.size();
-  } 
-  
+  }
+
   /**
    * Creates a list of order lines.
    * @param mo
    * @param e a single order line
    * @return the size of order lines collection
-   * @throws SQLException 
+   * @throws SQLException
    */
   List<OrderLine> getOrderLines(ModuleOrder mo, OrderLine e) throws SQLException {
 
@@ -118,7 +163,8 @@ public class EnrolmentOrderUtil {
       e.setAmount(AccountUtil.getIntValue(total));
       DateFr de = mo.getStart();
       de.incMonth(1);
-      de.setDay(15);
+      //de.setDay(15); // TODO set day in config
+      de.setDay(DEFAULT_DUE_DAY);
       e.setDate(de);
       //insertion echeances
       orderLines.add(e);
@@ -137,12 +183,59 @@ public class EnrolmentOrderUtil {
          setPaymentOrderLine(e, moduleOrder.getPayment());
          }*/
         orderLines = setMonthOrderLines(mo, e, dates);
-      } 
+      }
     }
     return orderLines;
 
   }
-  
+
+  public void saveStandardOrderLines(ModuleOrder mo) throws SQLException {
+    AccountingService service = new AccountingService(dc);
+    List<OrderLine> std = service.findStandardOrderLines();
+    Map<Integer,List<OrderLine>> totalAccountMap = new HashMap<>();
+
+    if (std.size() > 0) {
+      for (OrderLine o : std) {
+        if (service.exists(o)) {
+          continue;
+        }
+        o.setMember(dossier.getId());
+        o.setPayer(mo.getPayer());
+        o.setDate(mo.getStart());
+        o.setPaid(false);
+        o.setTransfered(false);
+        o.setOrder(mo.getIdOrder());
+        List<OrderLine> ol = totalAccountMap.get(o.getAccount().getId());
+        if (ol == null) {
+          ol = new ArrayList<OrderLine>();
+          totalAccountMap.put(o.getAccount().getId(), ol);
+        }
+        ol.add(o);
+        AccountUtil.createEntry(o, false, dc);
+      }
+      String billing = ConfigUtil.getConf(ConfigKey.CHARGE_ENROLMENT_LINES.getKey());
+      if (billing.toLowerCase().startsWith("t")) {
+        for (Map.Entry<Integer,List<OrderLine>> entry : totalAccountMap.entrySet()) {
+          int t = 0;
+          for (OrderLine o : entry.getValue()) {
+            t += o.getAmount();
+          }
+          OrderLine b = entry.getValue().get(0);
+          b.setMember(dossier.getId());
+          b.setPayer(mo.getPayer());
+          b.setDate(mo.getStart());
+          b.setPaid(true);
+          b.setTransfered(false);
+          b.setOrder(mo.getIdOrder());
+          b.setModeOfPayment(ModeOfPayment.FAC.toString());
+          b.setAmount(-t);
+          AccountUtil.createEntry(b, false, dc);
+        }
+      }
+    }
+  }
+
+
   /**
    * Gets the date of the first payment.
    * Optionnaly updates the first month of payment.
@@ -150,31 +243,33 @@ public class EnrolmentOrderUtil {
    * @return a date
    */
   private DateFr getFirstDateOfPayment(DateFr orderDateStart) {
-    
+
     DateFr first = new DateFr(orderDateStart);
-    first.setDay(15);
-    // on incrémente d'un mois, passé le 10 du mois ou si mois de septembre
+    //first.setDay(15);
+    first.setDay(DEFAULT_DUE_DAY);
+    // report to next month if first payment not in delay
     if (isFirstPaymentAfter(orderDateStart)) {
       first.incMonth(1);
     }
     return first;
   }
-  
+
   /**
    * Checks if the first date of payment is after some day or month.
    * @param orderDateStart
    * @return true if after
    */
   private boolean isFirstPaymentAfter(DateFr orderDateStart) {
-    return (orderDateStart.getDay() > 10 || orderDateStart.getMonth() == 9);
+    // orig : orderDateStart.getDay()  > 10
+    return (orderDateStart.getDay() > (DEFAULT_DUE_DAY - 5) || orderDateStart.getMonth() == 9);
   }
 
   /**
-   * 
+   *
    * @param e
    * @param dates
-   * @throws SQLException 
-   * @deprecated 
+   * @throws SQLException
+   * @deprecated
    */
   private void addPersonalOrderLine(OrderLine e, List<DateFr> dates) throws SQLException {
       e.setPaid(true);
@@ -182,13 +277,13 @@ public class EnrolmentOrderUtil {
       e.setDate(dates.get(0));
       AccountUtil.createPersonalEntry(e, dc);
   }
-  
+
   /**
-   * 
+   *
    * @param e
    * @param payment
-   * @throws SQLException 
-   * @deprecated 
+   * @throws SQLException
+   * @deprecated
    */
   private void setPaymentOrderLine(OrderLine e, String payment) throws SQLException {
     //payment line
@@ -199,12 +294,12 @@ public class EnrolmentOrderUtil {
     Account p = AccountIO.find(pr, dc);
     e.setAccount(p);
   }
-  
+
   /**
    * Updates the module order with the actual number of due dates.
    * @param n number of due dates
    * @param mo module order
-   * @throws SQLException 
+   * @throws SQLException
    */
   void updateModuleOrder(int n, ModuleOrder mo) throws SQLException {
     if (mo != null && n > 0) {
@@ -233,13 +328,13 @@ public class EnrolmentOrderUtil {
     }
   }
 
-  
+
   /**
    * Gets the preferred accounts.
    * @param m module instance
    * @param dc dataConnection
    * @return an array of 2 elements
-   * @throws SQLException 
+   * @throws SQLException
    */
   private Account[] getPrefAccount(Module m, DataConnection dc) throws SQLException {
      int key = 0;
@@ -255,10 +350,10 @@ public class EnrolmentOrderUtil {
     }
     Account p = AccountIO.find(key, dc);
     Param a = ParamTableIO.findByKey(CostAccountCtrl.tableName, CostAccountCtrl.columnKey, analytics, dc);
-    
+
     return new Account[] {p, new Account(a)};
   }
-  
+
   /**
    * Gets a list of dates for quarterly payment.
    *
@@ -267,7 +362,7 @@ public class EnrolmentOrderUtil {
    * @return a list of dates
    */
   public Vector<DateFr> getQuarterPaymentDates(DateFr orderDateStart, DateFr orderDateEnd) {
-    
+
     Vector<DateFr> dates = new Vector<DateFr>();
 
     int nbMonths = 0;
@@ -281,7 +376,7 @@ public class EnrolmentOrderUtil {
     if (isFirstPaymentAfter(orderDateStart) && orderStartMonth != 9 && orderStartMonth != 12 && orderStartMonth != 3) {
       nbMonths = calcNumberOfMonths(orderDateStart, orderDateEnd);
     } else {
-      nbMonths = calcNumberOfMonths(firstOrderDate, orderDateEnd);// premiere echeance
+      nbMonths = calcNumberOfMonths(firstOrderDate, orderDateEnd);// first payment
     }
     if (nbMonths <= 3) {
       nbOrderLines = 1;
@@ -351,12 +446,12 @@ public class EnrolmentOrderUtil {
       } else {
         e.setDocument(moduleOrder.getModeOfPayment() + (i + 1));
       }
-      e.setDate((DateFr) dates.get(i)); 
+      e.setDate((DateFr) dates.get(i));
       orderLines.add(new OrderLine(e)); // others
     }
     return orderLines;
   }
-  
+
   /**
    * Gets a list of dates for monthly payment.
    * @param startOrderDate
@@ -364,7 +459,7 @@ public class EnrolmentOrderUtil {
    * @return a list of dates
    */
   Vector<DateFr> getMonthPaymentDates(DateFr startOrderDate, DateFr endOrderDate) {
-    
+
     Vector<DateFr> dates = new Vector<DateFr>();
 
     DateFr firstOrderLine = getFirstDateOfPayment(startOrderDate);
@@ -378,7 +473,7 @@ public class EnrolmentOrderUtil {
 
     return dates;
   }
-  
+
    /**
    * Gets a list of order lines for month dues.
    * @param moduleOrder
@@ -465,8 +560,8 @@ public class EnrolmentOrderUtil {
    * @return an integer
    */
   public static int calcNumberOfMonths(int monthStart, int monthEnd) {
-    if (monthEnd > LAST_MONTH_PRL && monthEnd < 9) {
-      monthEnd = LAST_MONTH_PRL;
+    if (monthEnd > LAST_MONTH_DD && monthEnd < 9) {
+      monthEnd = LAST_MONTH_DD;
     }
     if (monthStart > monthEnd) {
       return monthEnd + (13 - monthStart);
@@ -509,4 +604,7 @@ public class EnrolmentOrderUtil {
       return number + 2 + month;
     }
   }
+
+
+
 }

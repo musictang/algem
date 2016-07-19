@@ -1,7 +1,7 @@
 /*
- * @(#)CourseEnrolmentDlg.java	2.9.4.12 24/09/15
+ * @(#)CourseEnrolmentDlg.java	2.10.0 15/06/2016
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -51,6 +51,7 @@ import net.algem.util.model.Model;
 import net.algem.util.model.SQLkey;
 import net.algem.util.model.SqlList;
 import net.algem.util.module.GemDesktop;
+import net.algem.util.module.GemModule;
 import net.algem.util.ui.*;
 
 
@@ -61,7 +62,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.10.0
  * @since 1.0a 07/07/1999
  */
 public class CourseEnrolmentDlg
@@ -205,13 +206,15 @@ public class CourseEnrolmentDlg
     dlg.getContentPane().add(bgPanel, BorderLayout.CENTER);
     dlg.getContentPane().add(buttons, BorderLayout.SOUTH);
 
-    dlg.setSize(340, 400);
+//    dlg.setSize(340, 400);
+    dlg.setSize(GemModule.S_SIZE);
     dlg.setTitle(BundleUtil.getLabel("Enrolment.label"));
     dlg.setLocation(100, 100);
 
     estabChoice.addItemListener(this);
     cbDay.addItemListener(this);
     courseList.addListSelectionListener(this);
+
   }
 
   public CourseEnrolmentDlg(GemDesktop d, EnrolmentService s) {
@@ -475,20 +478,20 @@ public class CourseEnrolmentDlg
       po = p;
       cal.setTime(p.getDate().getDate());
 
-      StringBuilder bf = new StringBuilder();// label
+      StringBuilder sb = new StringBuilder();// label
 
       HourRange ph = new HourRange(p.getStart(), p.getEnd());
         if (c.isATP()) {
-          bf.append(p.getDate().toString());
+          sb.append(p.getDate().toString());
         } else {
-          bf.append(ph.getStart().toString());
-          bf.append("-");
-          bf.append(ph.getEnd().toString());
+          sb.append(ph.getStart().toString())
+          .append("-")
+          .append(ph.getEnd().toString());
         }
       // recherche du nom du professeur
-      bf.append(service.getTeacher(p.getIdPerson()));
+      sb.append(' ').append(service.getTeacher(p.getIdPerson()));
       // ajout des jours dans la combobox date
-      cbDay.addItem(new DayRange(p, bf.toString()));
+      cbDay.addItem(new DayRange(p, sb.toString()));
     }
     loadDay();
 

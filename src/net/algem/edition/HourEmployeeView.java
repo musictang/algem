@@ -1,6 +1,6 @@
 /*
- * @(#)HourEmployeeView.java  2.9.4.13 27/10/15
- * 
+ * @(#)HourEmployeeView.java  2.10.0 07/06/2016
+ *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.edition;
 
@@ -57,7 +57,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.10.0
  * @since 2.8.v 10/06/14
  */
 public class HourEmployeeView
@@ -67,18 +67,18 @@ public class HourEmployeeView
   private DateRangePanel dateRange;
   private JCheckBox detail;
   private ParamChoice schoolChoice;
-  
   private EstabChoice estabChoice;
   private EmployeeTypePanel employeeType;
-  private final JRadioButton r1, r2, r3, r4;
+  private final JRadioButton r1, r2, r3, r4, r5;
 
   private String[] sortingInfos = {
     MessageUtil.getMessage("employee.hours.sorting.by.establishment.tip"),
     MessageUtil.getMessage("employee.hours.sorting.by.date.tip"),
     MessageUtil.getMessage("employee.hours.sorting.by.member.tip"),
-    MessageUtil.getMessage("employee.hours.sorting.by.module.tip")
+    MessageUtil.getMessage("employee.hours.sorting.by.module.tip"),
+    MessageUtil.getMessage("employee.hours.custom.tip")
   };
-  
+
   private final ButtonGroup btSortingGroup;
 
   public HourEmployeeView(final HourEmployeeDlg dlg, GemList<Param> schools, GemList<GemParam> employeeTypes, GemList<Establishment> estabList) {
@@ -90,7 +90,7 @@ public class HourEmployeeView
     body.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
     GridBagHelper gb = new GridBagHelper(body);
     gb.insets = GridBagHelper.SMALL_INSETS;
-    
+
     r1 = new JRadioButton(MessageUtil.getMessage("employee.hours.sorting.by.establishment.file.info"));
     r1.setActionCommand(HourEmployeeDlg.SORTING_CMD[0]);
     r1.setSelected(true);
@@ -100,20 +100,29 @@ public class HourEmployeeView
     r3.setActionCommand(HourEmployeeDlg.SORTING_CMD[2]);
     r4 = new JRadioButton(MessageUtil.getMessage("employee.hours.sorting.by.module.file.info"));
     r4.setActionCommand(HourEmployeeDlg.SORTING_CMD[3]);
-    
+
+    HoursTaskExecutor custom = HoursTaskFactory.getInstance();
+    if (custom != null) {
+      r5 = new JRadioButton(custom.getLabel());
+      r5.setActionCommand(HourEmployeeDlg.SORTING_CMD[4]);
+      sortingInfos[4] = custom.getInfo();
+    } else {
+      r5 = null;
+    }
+
     GemPanel sortingPanel = new GemPanel();
     sortingPanel.setLayout(new BoxLayout(sortingPanel, BoxLayout.Y_AXIS));
     sortingPanel.setBorder(BorderFactory.createTitledBorder(BundleUtil.getLabel("Default.sorting")));
-    
+
     final JTextArea status = new JTextArea(5, 30);
-    
+
     status.setEditable(false);
     status.setLineWrap(true);
     status.setWrapStyleWord(true);
     status.setBackground(body.getBackground());
     status.setText(sortingInfos[0]);
     status.setPreferredSize(new Dimension(sortingPanel.getPreferredSize().width, status.getPreferredSize().height));
-    
+
     employeeType = new EmployeeTypePanel(employeeTypes);
     employeeType.setType(EmployeeType.TEACHER.ordinal());
     employeeType.addActionListener(dateRange);
@@ -135,10 +144,10 @@ public class HourEmployeeView
     dateRange = new DateRangePanel(start, end);
     detail = new JCheckBox();
     detail.setBorder(null);
-    
+
     estabChoice = new EstabChoice(estabList);
     estabChoice.setKey(0);
-    
+
     schoolChoice = new ParamChoice(schools.getData());
     schoolChoice.setPreferredSize(new Dimension(estabChoice.getPreferredSize().width, schoolChoice.getPreferredSize().height));
     int defaultSchool = Integer.parseInt(ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey()));
@@ -176,14 +185,17 @@ public class HourEmployeeView
         } else if (e.getSource() == r4) {
           status.setText(sortingInfos[3]);
           dlg.setPath(getType(), HourEmployeeDlg.SORTING_CMD[3]);
-        } 
+        } else if (e.getSource() == r5) {
+          status.setText(sortingInfos[4]);
+          dlg.setPath(getType(), HourEmployeeDlg.SORTING_CMD[4]);
+        }
       }
     };
     r1.addActionListener(radioBtListener);
     r2.addActionListener(radioBtListener);
     r3.addActionListener(radioBtListener);
     r4.addActionListener(radioBtListener);
-    
+
     btSortingGroup.add(r1);
     btSortingGroup.add(r2);
     btSortingGroup.add(r3);
@@ -193,23 +205,31 @@ public class HourEmployeeView
     sortingPanel.add(r2);
     sortingPanel.add(r3);
     sortingPanel.add(r4);
+    if (r5 != null) {
+      btSortingGroup.add(r5);
+      r5.addActionListener(radioBtListener);
+      sortingPanel.add(r5);
+
+    }
 
     gb.add(sortingPanel, 0, 6, 2, 1, GridBagHelper.WEST);
     gb.add(status, 0, 7, 2, 1, GridBagHelper.WEST);
     add(body, BorderLayout.CENTER);
 
   }
-  
+
   private void setRadio(int type) {
     if (EmployeeType.TECHNICIAN.ordinal() == getType() || EmployeeType.ADMINISTRATOR.ordinal() == getType()) {
       r1.setEnabled(false);
       r3.setEnabled(false);
       r4.setEnabled(false);
+      if (r5 != null) r5.setEnabled(false);
       r2.setSelected(true);
     } else {
       r1.setEnabled(true);
       r3.setEnabled(true);
       r4.setEnabled(true);
+      if (r5 != null) r5.setEnabled(true);
     }
   }
 
@@ -232,11 +252,11 @@ public class HourEmployeeView
   int getType() {
     return employeeType.getType();
   }
-  
+
   int getEstab() {
     return estabChoice.getKey();
   }
-    
+
   String getSorting() {
     return btSortingGroup.getSelection().getActionCommand();
   }

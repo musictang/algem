@@ -1,5 +1,5 @@
 /*
- * @(#)MemberEnrolmentEditor.java 2.9.6 24/03/16
+ * @(#)MemberEnrolmentEditor.java 2.10.2 23/06/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -46,15 +46,19 @@ import net.algem.config.GemParam;
 import net.algem.contact.PersonFile;
 import net.algem.contact.member.MemberService;
 import net.algem.course.*;
+import net.algem.planning.CourseSchedule;
 import net.algem.planning.DateFr;
 import net.algem.planning.Hour;
 import net.algem.planning.ScheduleRangeObject;
 import net.algem.planning.editing.ChangeHourCourseDlg;
 import net.algem.planning.editing.ModifPlanEvent;
+import net.algem.planning.editing.StopCourseAbstractDlg;
 import net.algem.planning.editing.StopCourseDlg;
 import net.algem.planning.editing.StopCourseFromModuleDlg;
+import net.algem.planning.editing.StopCourseView;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
+import net.algem.util.DataConnection;
 import net.algem.util.FileUtil;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
@@ -64,6 +68,7 @@ import net.algem.util.jdesktop.DesktopHandlerException;
 import net.algem.util.menu.MenuPopupListener;
 import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
+import net.algem.util.module.GemModule;
 import net.algem.util.ui.*;
 
 /**
@@ -71,7 +76,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.6
+ * @version 2.10.2
  * @since 1.0b 06/09/2001
  */
 public class MemberEnrolmentEditor
@@ -81,6 +86,7 @@ public class MemberEnrolmentEditor
 
   private final static String STOP = BundleUtil.getLabel("Course.stop.label");
   private final static String COURSE_MODIF = BundleUtil.getLabel("Course.define.label");
+  private final static String REDEFINE = BundleUtil.getLabel("Course.stop.and.define.label");
   private final static String HOUR_MODIF = BundleUtil.getLabel("Course.hour.modification.label");
   private final static String COURSE_ADD = BundleUtil.getLabel("New.course.label");
   private final static String MODULE_ADD = BundleUtil.getLabel("New.module.label");
@@ -101,7 +107,7 @@ public class MemberEnrolmentEditor
   private GemLabel title;
   private boolean loaded;
   private CourseEnrolmentDlg courseDlg;
-  private JMenuItem m1, m2, m3, m4, m5, m6, m7, m8, m9, m10,m11;
+  private JMenuItem m1, m2, m3, m4, m5, m6, m7, m8, m9, m10,m11,m12;
   /** New enrolment button. */
   private GemButton btEnrolment;
   private TreePath currentSelection;
@@ -123,6 +129,7 @@ public class MemberEnrolmentEditor
     popup = new JPopupMenu();
     popup.add(m1 = new JMenuItem(STOP));
     popup.add(m2 = new JMenuItem(COURSE_MODIF));
+    popup.add(m12 = new JMenuItem(REDEFINE));
     popup.add(m3 = new JMenuItem(HOUR_MODIF));
     popup.add(m7 = new JMenuItem(COURSE_DATE));
     popup.add(m4 = new JMenuItem(COURSE_ADD));
@@ -146,6 +153,7 @@ public class MemberEnrolmentEditor
     m9.addActionListener(this);
     m10.addActionListener(this);
     m11.addActionListener(this);
+    m12.addActionListener(this);
 
     cellRenderer = new EnrolmentTreeCellRenderer();
     tree = new JTree(new DefaultMutableTreeNode(NONE_ENROLMENT));
@@ -210,6 +218,7 @@ public class MemberEnrolmentEditor
       m9.setEnabled(false);
       m10.setEnabled(false);
       m11.setEnabled(false);
+      m12.setEnabled(true);
     } else {
       m1.setEnabled(false);
       m2.setEnabled(false);
@@ -222,6 +231,7 @@ public class MemberEnrolmentEditor
       m9.setEnabled(false);
       m10.setEnabled(true);
       m11.setEnabled(false);
+      m12.setEnabled(false);
     }
   }
 
@@ -240,6 +250,7 @@ public class MemberEnrolmentEditor
     m9.setEnabled(true);
     m10.setEnabled(false);
     m11.setEnabled(true);
+    m12.setEnabled(false);
   }
 
   @Override
@@ -251,7 +262,7 @@ public class MemberEnrolmentEditor
   public void load() {
     desktop.setWaitCursor();
     loaded = true;
-    final Vector<Enrolment> ins = service.getEnrolments(dossier.getId());
+    final List<Enrolment> ins = service.getEnrolments(dossier.getId());
     if (ins == null || ins.size() < 1) {
       root = new DefaultMutableTreeNode(NONE_ENROLMENT);
       model.setRoot(root);
@@ -261,7 +272,7 @@ public class MemberEnrolmentEditor
 
     root = new DefaultMutableTreeNode(BundleUtil.getLabel("Person.enrolment.tab.label") + " : " + dossier.getContact().getFirstnameName());
     for (int j = 0; j < ins.size(); j++) {
-      Enrolment i = ins.elementAt(j);
+      Enrolment i = ins.get(j);
       EnrolmentNode ni = new EnrolmentNode(i);
 
       Enumeration<ModuleOrder> enu = i.getModule().elements();
@@ -269,19 +280,28 @@ public class MemberEnrolmentEditor
         try {
           ModuleOrder mo = enu.nextElement();//probleme apres inscription
           ModuleEnrolmentNode mnode = new ModuleEnrolmentNode(mo);
+          // line below is commented : not needed
+          //mnode.setLastScheduledDate(new DateFr(service.getLastScheduleByModuleOrder(dossier.getId(), mo.getId())));
           if (mo.getTotalTime() > 0) {
             // do not restrict to end date
-            mnode.setCompleted(service.getCompletedTime(dossier.getId(), mo.getId(), dataCache.getStartOfYear().getDate()));
-//            mnode.setCompleted(service.getCompletedTime(dossier.getId(), mo.getId(), dataCache.getStartOfYear().getDate(), dataCache.getEndOfYear().getDate()));
+            mnode.setCompleted(service.getCompletedTime(dossier.getId(), mo.getId(), mo.getStart().getDate()));
+//            mnode.setCompleted(service.getCompletedTime(dossier.getId(), mo.getId(), dataCache.getStartOfYear().getDate()));//XXX problème au changement d'année
           }
 
           if (mo.isStopped()) {
-            mnode.setInfo(" -> [[" + mo.getEnd().toString() + "]]");
+            mnode.setInfo(" <font color=\"#666666\">" + BundleUtil.getLabel("Module.stopped.label") + " : " + mo.getEnd().toString() + "</font>");
           }
           Vector<CourseOrder> v = service.getCourseOrder(i.getId(), mo.getId());
           for (int k = 0; k < v.size(); k++) {
             CourseOrder cc = v.elementAt(k);
             int jj = service.getCourseDayMember(cc.getAction(), cc.getDateStart(), i.getMember());
+            //auto update of end date
+            DateFr last = new DateFr(service.getLastSchedule(dossier.getId(), cc.getId()));
+            if (!DateFr.NULLDATE.equals(last.toString()) && !last.equals(cc.getDateEnd())) {
+              cc.setDateEnd(last);
+              //service.update(cc); // no need to update (displayed in real time)
+            }
+            //
             if (cc.getTitle() == null && cc.getAction() == 0) {
               cc.setTitle(getUndefinedLabel(cc));
             }
@@ -302,7 +322,7 @@ public class MemberEnrolmentEditor
     desktop.setDefaultCursor();
   }
 
-  private String getUndefinedLabel(CourseOrder cc) throws SQLException {
+  public static String getUndefinedLabel(CourseOrder cc) throws SQLException {
     StringBuilder t = new StringBuilder("[");
     GemParam p = (GemParam) DataCache.findId(cc.getCode(), Model.CourseCode);
     t.append(p == null ? "!" : p.getLabel());
@@ -338,7 +358,14 @@ public class MemberEnrolmentEditor
         return;
       }
       modifCourse();
-    } else if (s.equals(COURSE_DATE)) {
+    } else if (s.equals(REDEFINE)) {
+      if (currentSelection == null) {
+        return;
+      }
+      stopAndDefine();
+    }
+
+    else if (s.equals(COURSE_DATE)) {
       if (currentSelection == null) {
         return;
       }
@@ -464,16 +491,18 @@ public class MemberEnrolmentEditor
 
   private void stopCourse() {
 
-    StopCourseDlg dlg2 = null;
+    StopCourseDlg stopDlg = null;
     Object[] path = currentSelection.getPath();
     int i = path.length;
     if (!(path[i - 1] instanceof CourseEnrolmentNode)) {
       return;
     }
     CourseOrder cc = ((CourseEnrolmentNode) path[i - 1]).getCourseOrder();
-    if (cc.getAction() == 0 && MessagePopup.confirm(this, MessageUtil.getMessage("course.suppression.confirmation"))) {;
-      service.stopCourse(cc.getId());
-      desktop.postEvent(new EnrolmentUpdateEvent(this, dossier.getId()));
+    if (cc.getAction() == 0) {
+      if (MessagePopup.confirm(this, MessageUtil.getMessage("course.suppression.confirmation"))) {
+        service.stopCourse(cc.getId());
+        desktop.postEvent(new EnrolmentUpdateEvent(this, dossier.getId()));
+      }
       return;
     }
     try {
@@ -483,10 +512,88 @@ public class MemberEnrolmentEditor
         return;
       }
 
-      dlg2 = new StopCourseDlg(desktop, dossier.getId(), cc, c);
-      dlg2.setVisible(true);
+      stopDlg = new StopCourseDlg(desktop, dossier.getId(), cc, c, service);
+      stopDlg.setVisible(true);
     } catch (SQLException ex) {
       GemLogger.log(getClass().getName(), "#stopCourse :", ex.getMessage());
+    }
+  }
+
+  /**
+   * Stops a course order and redefine it in one step.
+   */
+  private void stopAndDefine() {
+    Object[] path = currentSelection.getPath();
+    int i = path.length;
+    if (!(path[i - 1] instanceof CourseEnrolmentNode)) {
+      return;
+    }
+    CourseModuleInfo cmi = new CourseModuleInfo();
+    GemParam code = null;
+    try {
+      final CourseOrder cc = ((CourseEnrolmentNode) path[i - 1]).getCourseOrder();
+      if (cc.getAction() == 0) {
+        MessagePopup.warning(this, MessageUtil.getMessage("course.invalid.choice"));
+        return;
+      }
+      if (cc.getDateEnd().before(dataCache.getStartOfYear())) {
+        MessagePopup.warning(this, MessageUtil.getMessage("date.out.of.period"));
+        return;
+      }
+
+      final Course c = planningService.getCourseFromAction(cc.getAction());
+      if (!c.isCollective() || CourseCodeType.ATP.getId() == cc.getCode()) {
+        MessagePopup.warning(this, MessageUtil.getMessage("member.enrolment.stop.and.redefine.warning"));
+        return;
+      }
+      code = (GemParam) DataCache.findId(cc.getCode(), Model.CourseCode);
+      cmi.setCode(code);
+      cmi.setTimeLength(cc.getTimeLength());
+
+      StopCourseDateDlg stopDlg = new StopCourseDateDlg(desktop.getFrame(), REDEFINE, c.toString(), true);
+      final DateFr now = stopDlg.getDate();
+      if (now == null) {
+        return;
+      }
+      List<CourseSchedule> all = service.getSchedules(cmi, now, cc.getAction(), 0);
+      StopAndDefineDlg dlg = new StopAndDefineDlg(desktop.getFrame(), true);
+      dlg.createUI(all);
+      if (!dlg.isValidation()) {
+        return;
+      }
+      final CourseSchedule selected = dlg.getCourse();
+      //arreter cours
+      /*final DateFr s = new DateFr(now);
+      while (Calendar.MONDAY != s.getDayOfWeek()) {
+        s.incDay(1);
+      }*/
+      final CourseOrder co = new CourseOrder();
+      dc.withTransaction(new DataConnection.SQLRunnable<Void>()
+      {
+        @Override
+        public Void run(DataConnection conn) throws Exception {
+          service.stopCourse(dossier.getId(), cc, c, now, false);
+          //new course order
+          co.setIdOrder(cc.getIdOrder());
+          co.setModuleOrder(cc.getModuleOrder());
+          co.setAction(selected.getAction().getId());
+          co.setStart(selected.getStart());
+          co.setEnd(selected.getEnd());
+          co.setDateStart(selected.getDate());// date du premier planning
+          co.setDateEnd(dataCache.getEndOfYear());
+          co.setCode(cc.getCode());
+          System.out.println(co);
+          service.createCourse(co, dossier.getId());
+
+          return null;
+        }
+      });
+      desktop.postEvent(new ModifPlanEvent(this, now, co.getDateEnd()));
+      desktop.postEvent(new EnrolmentUpdateEvent(this, dossier.getId()));
+    } catch (SQLException ex) {
+      GemLogger.logException(ex);
+    } catch (Exception ex) {
+      GemLogger.logException(ex);
     }
   }
 
@@ -624,7 +731,7 @@ public class MemberEnrolmentEditor
 
       String school = ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey());
       try {
-        int n = orderUtil.saveOrderLines(mo, Integer.parseInt(school));
+        int n = orderUtil.saveOrderLines(mo, Integer.parseInt(school), false);
         orderUtil.updateModuleOrder(n, mo);
       } catch (NullAccountException ex) {
         GemLogger.logException(ex);
@@ -768,7 +875,7 @@ public class MemberEnrolmentEditor
       }
     }
   }
-  
+
   /**
    * Changes the start date and/or the end date of the selected module.
    */
@@ -811,12 +918,13 @@ public class MemberEnrolmentEditor
       Order order = node.getOrder();
 
       if (node.getChildCount() >= 0) {
+        MemberService memberService = new MemberService(dc);
         temp = File.createTempFile(BundleUtil.getLabel("Enrolment.label") + "-" + order.getId() + "_", extension);
         pw = new PrintWriter(temp, StandardCharsets.UTF_8.name());
         pw.println(FileUtil.getHtmlHeader(BundleUtil.getLabel("Enrolment.label"), getCss()));
         pw.println(catchEnrolmentInfo(node));
         //pw.println(catchActivity(order.getCreation(), dataCache.getEndOfYear()));//XXX probleme date fin si cours programmés après
-        pw.println(catchActivity(order.getCreation(), getActions(node)));
+        pw.println(catchActivity(dossier.getId(), order.getCreation(), null, getActions(node), memberService));
         pw.println("</body></html>");
       }
       if (pw != null) {
@@ -875,17 +983,24 @@ public class MemberEnrolmentEditor
   /**
    * Returns the list of activities performed by member from {@literal start}
    * and corresponding to this list of {@code actions}.
+   * @param idper
    * @param start starting date
+   * @param end
    * @param actions a comma-separated list of actions' id
+   * @param service
    * @return a html-formatted string
    */
-//  private String catchActivity(DateFr start, DateFr end){
-    private String catchActivity(DateFr start, String actions){
+    public static String catchActivity(int idper, DateFr start, DateFr end, String actions, MemberService service){
     try {
-      MemberService memberService = new MemberService(dc);
       StringBuilder sb = new StringBuilder();
-      Vector<ScheduleRangeObject> ranges = memberService.findFollowUp(dossier.getId(), start.getDate(), actions);
-//      Vector<ScheduleRangeObject> ranges = memberService.findFollowUp(dossier.getId(), new DateRange(start, end));
+      Vector<ScheduleRangeObject> ranges;
+      if (end == null) {
+        ranges = service.findFollowUp(idper, start.getDate(), actions);
+      } else {
+        ranges = service.findFollowUp(idper, start.getDate(), end.getDate(), actions);
+      }
+//        Vector<ScheduleRangeObject> ranges = service.findFollowUp(idper, start.getDate(), actions);
+
       sb.append("<table><thead>");
       sb.append("<tr><th>").append(BundleUtil.getLabel("Activity.label")).append("</th><th>")
               .append(BundleUtil.getLabel("Teacher.label")).append("</th><th>")
@@ -911,7 +1026,7 @@ public class MemberEnrolmentEditor
                 .append(r.getEnd()).append("</td><td>")
                 .append(Hour.format(hs.getLength(he))).append("</td></tr>");
       }
-      sb.append("</tbody><tfoot><tr><td colspan=\"7\">" + "Total" + "</td><td> ").append(Hour.format(min)).append("</td></tr>");
+      sb.append("</tbody><tfoot><tr><td colspan=\"7\">Total</td><td> ").append(Hour.format(min)).append("</td></tr>");
       sb.append("</tfoot></table>");
       return sb.toString();
     } catch (SQLException ex) {
@@ -940,7 +1055,9 @@ public class MemberEnrolmentEditor
       if (n instanceof ModuleEnrolmentNode) {
         // print info commmande module
         sb.append("<ul>");
-        sb.append("<li>").append(((ModuleEnrolmentNode) n).toString()).append("</li>");
+        String moduleInfo = ((ModuleEnrolmentNode) n).toString();
+        moduleInfo = moduleInfo.substring(6, moduleInfo.lastIndexOf('<'));// do not include <html></html> tag
+        sb.append("<li>").append(moduleInfo).append("</li>");
         if (n.getChildCount() >= 0) {
           sb.append("<ul>");
           // print info commande cours
@@ -964,9 +1081,9 @@ public class MemberEnrolmentEditor
    * Gets the css style used to print enrolment information.
    * @return a css-formatted string
    */
-  private String getCss() {
-    return "body {font-family: Arial, Helvetica, sans-serif}"
-            + " table {width: 100%;border-spacing: 0;border-collapse: collapse;border:1px solid Gray;font-size: smaller}"
+  public static String getCss() {
+    return " body {font-family: Arial, Helvetica, sans-serif;font-size: 1em}"
+            + " table {width: 100%;border-spacing: 0;border-collapse: collapse;border:1px solid Gray;font-size: 0.8em}"
             + " td, th { border-left: 1px solid Gray;text-align :left }"
             + " tbody td, tbody th { border-bottom: 1px solid LightGray}"
             + " tbody tr:last-child td {border-bottom: 1px solid Gray}"
@@ -975,11 +1092,11 @@ public class MemberEnrolmentEditor
             + " tbody tr:nth-child(odd) {background-color: #FFF}"
             + " body  ul li {font-weight: bold}"
             + " body  ul ul li {font-weight: normal}"
-            + " h1 {font-size: 1.5em}"
-            + " h2 {font-size : 1.2em}"
-            + " ul {font-size: 1em;line-height: 1.4em}"
-            + " h1, h2 {background-color: #CCC !important}"
-            + " -webkit-print-color-adjust:exact;print-color-adjust: exact;";
+            + " h1 {font-size: 1.2em}"
+            + " h2 {font-size : 1.1em}"
+            + " ul {font-size: 0.9em;line-height: 1.4em}"
+            + " h1, h2 {background-color: #CCC !important}";
+//      + " -webkit-print-color-adjust:exact;";
   }
 
   /**
@@ -1007,6 +1124,51 @@ public class MemberEnrolmentEditor
 
   private boolean isModuleNode(Object[] path) {
     return path[path.length - 1] instanceof ModuleEnrolmentNode;
+  }
+
+  private class StopCourseDateDlg
+    extends StopCourseAbstractDlg {
+
+    private DateFr date;
+
+    public StopCourseDateDlg(Frame owner, String title, String course, boolean modal) {
+      super(owner, title, modal);
+
+      view = new StopCourseView(course);
+
+      btOk = new GemButton(GemCommand.VALIDATION_CMD);
+      btOk.addActionListener(this);
+      btCancel = new GemButton(GemCommand.CANCEL_CMD);
+      btCancel.addActionListener(this);
+
+      JPanel buttons = new JPanel();
+      buttons.setLayout(new GridLayout(1, 1));
+      buttons.add(btOk);
+      buttons.add(btCancel);
+
+      setLayout(new BorderLayout());
+      add(view, BorderLayout.CENTER);
+      add(buttons, BorderLayout.SOUTH);
+      setSize(GemModule.XXS_SIZE);
+      setLocationRelativeTo(owner);
+      setVisible(true);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      Object src = e.getSource();
+      if (src == btOk) {
+        this.date = view.getDateStart();
+      } else {
+        this.date = null;
+      }
+      close();
+    }
+
+    public DateFr getDate() {
+      return date;
+    }
+
   }
 
 }

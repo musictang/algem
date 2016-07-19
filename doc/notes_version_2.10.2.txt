@@ -1,0 +1,9 @@
+2.10.1
+CORRECTIFS
+* Le sens Débit/crédit était inversé dans l'export des lignes de facturations.
+2.10.2
+CORRECTIFS
+* La recherche des heures complétées (et par extension des montants restants) dans les formules associées à une tarification horaire ne fonctionnait pas correctement si l'on changeait les dates d'année scolaire (et en particulier quand on passait à l'année suivante). Cette recherche débute maintenant à la date de début de la formule et, de fait, inclut bien toutes les heures effectuées à partir de cette date.
+
+* Le calcul des arrondis n'était pas correct pour la dernière échéance générée lors d'une inscription.
+Rappel : ce calcul ne se fait que si l'option "Arrondir les paiements intermédiaires a été activée dans les paramètres généraux : section Comptabilité dans le menu Configuration -> Paramètres -> Généraux.

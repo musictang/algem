@@ -1,5 +1,5 @@
 /*
- * @(#)PlanModifCtrl.java	2.9.7.1 25/05/16
+ * @(#)PlanModifCtrl.java	2.10.0 12/06/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -64,7 +64,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.7.1
+ * @version 2.10.0
  * @since 1.0b 05/07/2002 lien salle et groupe
  */
 public class PlanModifCtrl
@@ -987,7 +987,8 @@ public class PlanModifCtrl
         name = g.getName();
       }
       String subject = MailUtil.urlEncode(MessageUtil.getMessage("booking.cancellation.subject"));
-      String body = MailUtil.urlEncode(MessageUtil.getMessage("booking.cancellation.message", new Object[] {name, plan.getDate().toString(), plan.getStart()}));
+      String signature = MailUtil.getSignature(dataCache.getUser());
+      String body = MailUtil.urlEncode(MessageUtil.getMessage("booking.cancellation.message", new Object[] {name, plan.getDate().toString(), plan.getStart(), signature}));
       sendMessage(email, subject, body);
       desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));
     } catch (BookingException ex) {
@@ -1016,10 +1017,11 @@ public class PlanModifCtrl
         name = g.getName();
       }
       String subject = MailUtil.urlEncode(MessageUtil.getMessage("booking.confirmation.subject"));
+      String signature = MailUtil.getSignature(dataCache.getUser());
       String body = MailUtil.urlEncode(
               MessageUtil.getMessage(
                       "booking.confirmation.message",
-                      new Object[] {name, plan.getDate().toString(), plan.getStart(), plan.getRoom().getName()}
+                      new Object[] {name, plan.getDate().toString(), plan.getStart(), plan.getRoom().getName(), signature}
               )
       );
       sendMessage(email, subject, body);

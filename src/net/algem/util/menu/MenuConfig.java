@@ -1,7 +1,7 @@
 /*
- * @(#)MenuConfig.java 2.9.4.13 26/10/15
- * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * @(#)MenuConfig.java 2.10.0 19/05/16
+ *
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,11 +16,12 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 
 package net.algem.util.menu;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -51,10 +52,10 @@ import net.algem.util.module.GemModule;
 /**
  * Configuration menu.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.10.0
  * @since 2.6.a 12/10/2012
  */
-public class MenuConfig 
+public class MenuConfig
   extends GemMenu
 {
 
@@ -62,7 +63,7 @@ public class MenuConfig
   static {
     initLabels();
   }
-  
+
   private JMenu mEstab;
   private JMenuItem miEstabBrowse;
   private JMenuItem msEstabCreate;
@@ -72,7 +73,7 @@ public class MenuConfig
   private JMenu mParameters;
   private JMenu mAdmin;
   private JMenuItem miRightsBrowse;
-  
+
   public MenuConfig(GemDesktop _desktop) {
     super(menus.get("Menu.configuration.label"), _desktop);
     mParameters = new JMenu(menus.get("Menu.parameters.label"));
@@ -83,25 +84,25 @@ public class MenuConfig
     mParameters.addSeparator();
     mParameters.add(new JMenuItem(menus.get("Menu.occupational.cat.label")));
     mParameters.add(new JMenuItem(menus.get("Marital.status.label")));
-    
+
     mParameters.addSeparator();
-    
+
     mParameters.add(new JMenuItem(menus.get("Menu.course.codes.label")));
     mParameters.add(new JMenuItem(menus.get("Status.label")));
     mParameters.add(new JMenuItem(menus.get("Level.label")));
     mParameters.add(new JMenuItem(BundleUtil.getLabel("Menu.age.range.label")));
     mParameters.addSeparator();
-    
+
     mParameters.add(new JMenuItem(menus.get("Menu.telephone.type.label")));
     mParameters.add(new JMenuItem(menus.get("Menu.city.label")));
-    mParameters.add(new JMenuItem(menus.get("Menu.web.site.cat.label")));   
+    mParameters.add(new JMenuItem(menus.get("Menu.web.site.cat.label")));
     mParameters.addSeparator();
-    
+
     mParameters.add(getItem(new JMenuItem(menus.get("Menu.color.label")), "Color.preferences.auth"));
     mParameters.add(new JMenuItem(menus.get("Theme.label")));
     add(mParameters);
     addSeparator();
-    
+
     add(new JMenuItem(menus.get("Menu.school.label")));
     mEstab = new JMenu(menus.get("Menu.establishment.label"));
     miEstabBrowse = mEstab.add(GemCommand.VIEW_EDIT_CMD);
@@ -111,21 +112,21 @@ public class MenuConfig
     }
     add(mEstab);
     addSeparator();
-    
+
     add(new JMenuItem(menus.get("Menu.bank.label")));
     JMenu mGuichet = new JMenu(menus.get("Menu.branch.bank.label"));
     mBankBranchBrowse = mGuichet.add(BundleUtil.getLabel("Action.view.edit.label"));
     mBankBranchCreate = mGuichet.add(BundleUtil.getLabel("Action.create.label"));
     add(mGuichet);
     addSeparator();
-       
+
     add(new JMenuItem(menus.get("Menu.card.label")));
     mVacancy = new JMenu(menus.get("Menu.holidays.label"));
     mVacancy.add(new JMenuItem(menus.get("Menu.holidays.cat.label")));
     mVacancy.add(new JMenuItem(menus.get("Menu.periods.label")));
     add(mVacancy);
     addSeparator();
-    
+
     mAdmin = new JMenu(menus.get("Menu.admin.label"));
     miRightsBrowse = getItem(new JMenuItem(BundleUtil.getLabel("Rights.management.label")), "Rights.management.auth");
     mAdmin.add(miRightsBrowse);
@@ -140,14 +141,14 @@ public class MenuConfig
 
   @Override
   public void actionPerformed(ActionEvent e) {
-    
+
     Object src = e.getSource();
     String arg = e.getActionCommand();
     DataConnection dc = DataCache.getDataConnection();
     desktop.setWaitCursor();
     if (menus.get("Menu.general.parameters.label").equals(arg)) {
       ConfigEditor confEditor = new ConfigEditor(desktop);
-      desktop.addPanel(ConfigEditor.GLOBAL_CONFIG_KEY, confEditor, GemModule.L_SIZE);
+      desktop.addPanel(ConfigEditor.GLOBAL_CONFIG_KEY, confEditor, new Dimension(850, 570));
     } else if (menus.get("Menu.instrument.label").equals(arg)) {
       InstrumentCtrl instrumentCtrl = new InstrumentCtrl(desktop);
       instrumentCtrl.load();
@@ -255,7 +256,7 @@ public class MenuConfig
       desktop.addPanel("Rights.management", rightsCtrl);
     } else if (menus.get("Menu.cache.label").equals(arg)) {
       dataCache.load(null);
-    } 
+    }
     /*else if (source == miServer) {
       ServeurCtrl serverCtrl = new ServeurCtrl(dataCache.getDataConnection());
       desktop.addPanel("DataCache", serverCtrl);
@@ -265,7 +266,7 @@ public class MenuConfig
     }
     desktop.setDefaultCursor();
   }
-  
+
   private static void initLabels() {
 
     menus.put("Menu.configuration.label", BundleUtil.getLabel("Menu.configuration.label"));
@@ -279,7 +280,7 @@ public class MenuConfig
     menus.put("Menu.card.label", BundleUtil.getLabel("Menu.card.label"));
     menus.put("Menu.parameters.label", BundleUtil.getLabel("Menu.parameters.label"));
     menus.put("Menu.general.parameters.label", BundleUtil.getLabel("Menu.general.parameters.label"));
-    menus.put("Menu.instrument.label", BundleUtil.getLabel("Menu.instrument.label"));   
+    menus.put("Menu.instrument.label", BundleUtil.getLabel("Menu.instrument.label"));
     menus.put("Menu.style.label", BundleUtil.getLabel("Menu.style.label"));
     menus.put("Menu.occupational.cat.label", BundleUtil.getLabel("Menu.occupational.cat.label"));
     menus.put("Marital.status.label", BundleUtil.getLabel("Marital.status.label"));

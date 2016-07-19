@@ -92,7 +92,7 @@ public class CourseScheduleCtrl
     Action a = v.get();
     if (a.getIdper() == 0 && !MessagePopup.confirm(this, MessageUtil.getMessage("teacher.undefined.confirmation"))) {
       msg += "\n" + MessageUtil.getMessage("teacher.invalid.choice");
-    }
+    } 
     if (a.getRoom() == 0) {
       msg += "\n" + MessageUtil.getMessage("room.invalid.choice");
     }

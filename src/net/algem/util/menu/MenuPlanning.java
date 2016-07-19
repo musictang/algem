@@ -1,7 +1,7 @@
 /*
- * @(#)MenuPlanning.java	2.9.4.13 11/11/15
+ * @(#)MenuPlanning.java	2.10.0 04/06/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -23,10 +23,12 @@ package net.algem.util.menu;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import javax.swing.JMenuItem;
+import javax.swing.ProgressMonitor;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
 import net.algem.contact.teacher.SubstituteTeacherCtrl;
 import net.algem.edition.AttendanceSheetDlg;
+import net.algem.enrolment.SigningSheetCtrl;
 import net.algem.planning.AdministrativeScheduleCtrl;
 import net.algem.planning.CourseScheduleCtrl;
 import net.algem.planning.StudioScheduleCtrl;
@@ -36,15 +38,17 @@ import net.algem.planning.day.DayScheduleCtrl;
 import net.algem.planning.month.MonthScheduleCtrl;
 import net.algem.util.BundleUtil;
 import net.algem.util.GemCommand;
+import net.algem.util.MessageUtil;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.module.GemModule;
+import net.algem.util.ui.ProgressMonitorHandler;
 
 /**
  * Planning menu.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.10.0
  * @since 1.0a 07/07/1999
  */
 public class MenuPlanning
@@ -54,6 +58,7 @@ public class MenuPlanning
   private JMenuItem miDay;
   private JMenuItem miMonth;
   private JMenuItem miAttendanceSheet;
+  private JMenuItem miSigningSheet;
   private JMenuItem miCourse;
   private JMenuItem miWorkshop;
   private JMenuItem miTraining;
@@ -81,6 +86,7 @@ public class MenuPlanning
     if (manage != null && manage.startsWith("t")) {
       addSeparator();
       add(miAttendanceSheet = new JMenuItem(BundleUtil.getLabel("Menu.presence.file.label")));
+      add(miSigningSheet = new JMenuItem(BundleUtil.getLabel("Menu.signing.sheet.label")));
       add(miReplacement = dataCache.getMenu2("Menu.replacement", true));
     }
     addSeparator();
@@ -128,6 +134,14 @@ public class MenuPlanning
       desktop.addPanel(StudioScheduleCtrl.STUDIO_SCHEDULING_KEY, studioCtrl, new Dimension(650, 480));
     } else if (src == miAttendanceSheet) {
        new AttendanceSheetDlg(desktop.getFrame(), dataCache);
+    } else if (src == miSigningSheet) {
+      final SigningSheetCtrl task = new SigningSheetCtrl(desktop);
+      ProgressMonitor pm = new ProgressMonitor(this, MessageUtil.getMessage("task.executing.info"), null, 0, 100);
+      ProgressMonitorHandler monitor = new ProgressMonitorHandler(pm, task);
+      task.addPropertyChangeListener(monitor);
+      if (task.isValidation()) {
+        task.execute();
+      }
     } else if (src == miReplacement) {
       SubstituteTeacherCtrl rCtrl = new SubstituteTeacherCtrl(desktop);
       desktop.addPanel("Replacement", rCtrl);

@@ -1,7 +1,7 @@
 /*
- * @(#)EnrolmentIO.java 2.6.a 17/09/12
- * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * @(#)EnrolmentIO.java 2.10.0 01/06/16
+ *
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,12 +16,14 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.enrolment;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Vector;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
@@ -30,10 +32,10 @@ import net.algem.util.model.TableIO;
 
 /**
  * IO methods for class {@link net.algem.enrolment.Enrolment}.
- * 
+ *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.10.0
  */
 public class EnrolmentIO
         extends TableIO
@@ -91,26 +93,26 @@ public class EnrolmentIO
 
   public static Enrolment findId(int n, DataConnection dc) throws SQLException {
     String query = "WHERE id=" + n;
-    Vector<Enrolment> v = find(query, dc);
+    List<Enrolment> v = find(query, dc);
     if (v.size() > 0) {
-      return v.elementAt(0);
+      return v.get(0);
     }
     return null;
   }
 
-  public static Vector<Enrolment> find(String where, DataConnection dc) throws SQLException {
-    Vector<Enrolment> v = new Vector<Enrolment>();
-    Vector<Order> pl = OrderIO.find(where, dc);
-    if (pl.size() < 1) {
+  public static List<Enrolment> find(String where, DataConnection dc) throws SQLException {
+    List<Enrolment> v = new ArrayList<Enrolment>();
+    Vector<Order> orders = OrderIO.find(where, dc);
+    if (orders.size() < 1) {
       return v;
     }
-    Enumeration<Order> enu = pl.elements();
+    Enumeration<Order> enu = orders.elements();
     while (enu.hasMoreElements()) {
-      Order c = enu.nextElement();
-      Enrolment i = new Enrolment(c);
-      i.setModule(ModuleOrderIO.findByIdOrder(i.getId(), dc));
-      i.setCourseOrder(CourseOrderIO.findId(i.getId(), dc));
-      v.addElement(i);
+      Order o = enu.nextElement();
+      Enrolment e = new Enrolment(o);
+      e.setModule(ModuleOrderIO.findByIdOrder(e.getId(), dc));
+      e.setCourseOrder(CourseOrderIO.findId(e.getId(), dc));
+      v.add(e);
     }
     return v;
   }

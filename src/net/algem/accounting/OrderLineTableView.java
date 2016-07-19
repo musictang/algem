@@ -1,5 +1,5 @@
 /*
-* @(#)OrderLineTableView.java 2.9.7.1 26/05/16
+* @(#)OrderLineTableView.java 2.10.0 13/05/16
 *
 * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
 *
@@ -45,7 +45,7 @@ import net.algem.util.model.Model;
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @author <a href="mailto:damien.loustau@gmail.com">Damien Loustau</a>
- * @version 2.9.7.1
+ * @version 2.10.0
  * @since 1.0a 07/07/1999
  *
  */
@@ -77,6 +77,7 @@ implements TableModelListener {
   private RowFilter<Object, Object> dateFilter;
   private RowFilter<Object, Object> memberShipFilter;
   private RowFilter<Object, Object> unpaidFilter;
+  private RowFilter<Object, Object> invoiceFilter;
   private final TableRowSorter<TableModel> sorter;
   private DateFr begin;
   private DateFr end;
@@ -120,6 +121,15 @@ implements TableModelListener {
         boolean paid = (Boolean) entry.getValue(10);
         return !paid;
       }
+    };
+    
+    invoiceFilter = new RowFilter<Object, Object>() {
+      @Override
+      public boolean include(Entry<? extends Object, ? extends Object> entry) {
+        String payment = (String) entry.getValue(5);
+        return !payment.equals(ModeOfPayment.FAC.name());
+      }
+      
     };
     table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 
@@ -296,7 +306,15 @@ implements TableModelListener {
   public void filterByUnpaid() {
     sorter.setRowFilter(unpaidFilter);
   }
-
+  
+  public void filterByPayment(boolean filter) {
+    if (filter) {
+      sorter.setRowFilter(invoiceFilter);
+    } else {
+      sorter.setRowFilter(null);
+    }
+  }
+  
   /**
    * Activates a listener for rows selection.
    *

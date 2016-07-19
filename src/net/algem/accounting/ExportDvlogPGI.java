@@ -1,7 +1,7 @@
 /*
- * @(#)ExportDvlogPGI.java	2.8.x.3 24/09/14
+ * @(#)ExportDvlogPGI.java	2.10.1 20/06/2016
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -36,9 +36,9 @@ import net.algem.util.ui.MessagePopup;
 
 /**
  * Utility class for exporting lines to DVLOG PGI accounting software.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.x.3
+ * @version 2.10.1
  * @since 2.8.r 13/12/13
  */
 public class ExportDvlogPGI
@@ -55,9 +55,9 @@ public class ExportDvlogPGI
     journalService = new JournalAccountService(dc);
     nf.setGroupingUsed(false);
     nf.setMinimumFractionDigits(2);
-    nf.setMaximumFractionDigits(2); 
+    nf.setMaximumFractionDigits(2);
   }
-  
+
   @Override
   public void export(String path, Vector<OrderLine> orderLines, String codeJournal, Account documentAccount) throws IOException {
     int total = 0;
@@ -119,7 +119,7 @@ public class ExportDvlogPGI
         m1 = true;
         continue;
       }
-      
+
       int p = getPersonalAccountId(e.getAccount().getId());
       if (p == 0) {
         errors++;
@@ -138,7 +138,7 @@ public class ExportDvlogPGI
               + "#" + TextUtil.padWithTrailingSpaces(e.getDocument(), 10)
               + "#" + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getLabel(), 24), 24)
               + "#" + TextUtil.padWithLeadingZeros(m, 13)
-              + "#" + cd //Crédit
+              + "#" + (e.getAmount() < 0 ? cd : dc) // cd Crédit
               + "#" + TextUtil.padWithTrailingSpaces(e.getCostAccount().getNumber(), 10)
               + "#" + (char) 13);
 
@@ -149,18 +149,18 @@ public class ExportDvlogPGI
               + "#" + TextUtil.padWithTrailingSpaces(f, 10)
               + "#" + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getLabel(), 24), 24)
               + "#" + TextUtil.padWithLeadingZeros(m, 13)
-              + "#" + dc //Débit
+              + "#" + (e.getAmount() < 0 ? dc : cd) //dc Débit
               + "#" + TextUtil.padWithTrailingSpaces("", 10)
               + "#" + (char) 13);//CR (Carriage return, retour à la ligne)
     }
     out.close();
-    
+
     if (logMessage.length() > 0) {
       PrintWriter log = new PrintWriter(new FileWriter(logpath));
       log.println(logMessage.toString());
       log.close();
     }
-    
+
     if (errors > 0) {
       if (m1) {
         message += MessageUtil.getMessage("personal.account.export.warning");

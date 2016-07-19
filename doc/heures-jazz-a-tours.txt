@@ -1,0 +1,58 @@
+Liste élèves cours/formules
+12-05-2016 : 2h
+13-05-2016 : 4h
+
+Scripts
+13-05-2016 : 1h
+18-05-2016 : 1/2h
+
+Echeancier : cacher lignes facturation
+13-05-2016 : 1h15
+16-05-2016 : 1h
+
+Impression Suivi élève
+16-05-2016 : 6h
+17-05-2016 : 1h
+
+Configuration date échéance par défaut
+17-05-2016 : 00:45
+
+Arrondi paiments fractionnés :
+18-05-2016 : 4h
+
+Echeances type :
+18-05-2016 : 4h
+
+Echeances type + automatisation echeances facturation + arrondis:
+19-05-2016 : 3h45 + 1h
+
+Scripts (export élèves) :
+19-05-2016 : 1h:30
+20-05-2016 : 1h
+Scripts (cours à rattraper):
+20-05-2016 : 4h30
+23-05-2016 : 2h
+
+Onglet Inscription (Date de dernier cours) :
+23-05-2016 : 2h
+
+Feuille d'émargement :
+01-06-2016 : 6h
+02-06-2016 : 1h + 00:30
+
+Heures profs:
+02-06-2016 : 00:45
+03-06-2016 : 2:30 + 2:45
+06-06-2016 : 2:30 + 2:30
+08:06-2016 : 05:00
+10:06-2016 : 04:30
+
+Stats :
+02-06-2016 : 01:30
+06-06-2016 : 02:00
+07-06-2016 : 03:30 + 01:45
+09:06-2016 : 05:00
+10:06-2016 : 01:00
+
+Changer planification :
+10:06-2016 : 01:00

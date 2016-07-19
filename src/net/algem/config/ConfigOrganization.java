@@ -1,7 +1,7 @@
 /*
- * @(#)ConfigOrganization.java 2.8.v 12/06/14
+ * @(#)ConfigOrganization.java 2.10.0 15/06/2016
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -43,7 +43,7 @@ import net.algem.util.ui.GemPanel;
  * Organization parameters and contact.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.v
+ * @version 2.10.0
  * @since 2.2.p 23/01/12
  */
 public class ConfigOrganization
@@ -182,16 +182,15 @@ public class ConfigOrganization
     add(content);
   }
 
-  //TODO check null values
   @Override
   public List<Config> get() {
     List<Config> conf = new ArrayList<Config>();
     Address b = address.get();
     c1.setValue(name.getText().trim());
-    c2.setValue(b.getAdr1().trim());
-    c3.setValue(b.getAdr2().trim());
-    c4.setValue(b.getCdp().trim());
-    c5.setValue(b.getCity().trim());
+    c2.setValue(b == null ? "" : b.getAdr1().trim());
+    c3.setValue(b == null ? "" : b.getAdr2().trim());
+    c4.setValue(b == null ? "" : b.getCdp().trim());
+    c5.setValue(b == null ? "" : b.getCity().trim());
     c6.setValue((String)siret.getValue());
     c7.setValue(naf.getText());
     c8.setValue((String)tva.getValue());

@@ -1,6 +1,6 @@
 /*
- * @(#)ModuleStudentExportDlg.java 2.9.7.1 25/05/16
- *
+ * @(#)ModuleStudentExportDlg.java 2.10.0 21/05/16
+ * 
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -32,7 +32,7 @@ import net.algem.util.ui.GridBagHelper;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.7.1
+ * @version 2.10.0
  * @since 2.8.o 09/10/13
  */
 public class ModuleStudentExportDlg

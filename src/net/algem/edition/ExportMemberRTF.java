@@ -1,7 +1,7 @@
 /*
- * @(#)ExportMemberRTF.java 2.9.1 18/11/14
- * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * @(#)ExportMemberRTF.java 2.10.0 01/06/16
+ *
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.edition;
 
@@ -49,10 +49,10 @@ import net.algem.util.module.GemDesktop;
 
 /**
  * Member file export to RTF.
- * 
+ *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.10.0
  * @since 1.0b 05/03/2002
  */
 public class ExportMemberRTF
@@ -156,7 +156,7 @@ public class ExportMemberRTF
     out.println();
     Member m = member.getMember();
     out.println("\\par " + FileUtil.rtfReplaceChars(BundleUtil.getLabel("Date.of.birth.label")) + " : " + m.getBirth()
-            + " - " + BundleUtil.getLabel("Practical.experience.label").toLowerCase() + " " + m.getPractice() 
+            + " - " + BundleUtil.getLabel("Practical.experience.label").toLowerCase() + " " + m.getPractice()
             + " - " + BundleUtil.getLabel("Level.label").toLowerCase() + " " + m.getLevel());
     out.println("\\par " + BundleUtil.getLabel("Instruments.label") + " : ");
     if (m.getInstruments() != null) {
@@ -174,7 +174,7 @@ public class ExportMemberRTF
     //out.println("\\par \\pard\\plain \\s3\\qc\\sa144\\slmult1 \\f1\\fs24\\cf1 {\\b\\f2\\fs28 P\\'e9riode du "+debut+" au "+fin+"}");
     out.println("\\par \\pard\\plain \\s3\\slmult1 \\f1\\fs24\\cf1");
 
-    Vector<Enrolment> ins = null;
+    List<Enrolment> ins = null;
     try {
       ins = memberService.getEnrolments(member.getId(), start, end);
     } catch (SQLException ex) {
@@ -196,11 +196,11 @@ public class ExportMemberRTF
     out.close();
   }
 
-  void editEnrolment(Vector<Enrolment> ins) {
+  void editEnrolment(List<Enrolment> ins) {
 
     for (int j = 0; j < ins.size(); j++) {
-      Enrolment i = ins.elementAt(j);
-      out.println("\\par " + FileUtil.rtfReplaceChars(BundleUtil.getLabel("Enrolment.label")) 
+      Enrolment i = ins.get(j);
+      out.println("\\par " + FileUtil.rtfReplaceChars(BundleUtil.getLabel("Enrolment.label"))
               + "  " + i.getId() + " " + BundleUtil.getLabel("Date.From.label").toLowerCase()
               + " " + i.getOrder().getCreation()
       );
@@ -213,9 +213,9 @@ public class ExportMemberRTF
           for (CourseOrder cc : v) {
             cc.setDay(enrolmentService.getCourseDayMember(cc.getAction(), cc.getDateStart(), i.getMember()));
             courseOrderList.addElement(cc);
-            out.println("\\par \\tab\\tab " + BundleUtil.getLabel("Course.label") 
+            out.println("\\par \\tab\\tab " + BundleUtil.getLabel("Course.label")
                     + "  " + (cc.getTitle() == null ? FileUtil.rtfReplaceChars(BundleUtil.getLabel("To.define.label")) : cc.getTitle())
-                    + " " + dayNames[cc.getDay()] 
+                    + " " + dayNames[cc.getDay()]
                     + " " + cc.getStart() + "-" + cc.getEnd()
             );
           }

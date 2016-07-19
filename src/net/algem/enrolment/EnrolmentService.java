@@ -1,7 +1,7 @@
 /*
- * @(#)EnrolmentService.java	2.9.4.14 05/01/16
+ * @(#)EnrolmentService.java	2.10.0 14/06/2016
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -42,7 +42,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.14
+ * @version 2.10.0
  * @since 2.4.a 20/04/12
  */
 public class EnrolmentService
@@ -150,6 +150,14 @@ public class EnrolmentService
             + " AND p.lieux = salle.id AND salle.etablissement = " + idEstab
             + " AND salle.nom NOT LIKE 'RATTRAP%' ORDER BY jour,debut,idper";
     return ScheduleIO.find(query, dc);
+  }
+  
+  List<CourseSchedule> getSchedules(CourseModuleInfo cmi, DateFr start, int action, int estab) throws SQLException {
+    DateFr s = new DateFr(start);
+    DateFr end = new DateFr(s);
+    end.incDay(6);
+    DateRange dates = new DateRange(s, end);
+    return actionIO.getAvailableSchedules(cmi, dates, action, estab);
   }
 
   /**
@@ -323,17 +331,40 @@ public class EnrolmentService
   /**
    * Gets the list of enrolments for the member {@literal id}.
    *
-   * @param id member id
+   * @param idper member id
    * @return a list of enrolments
    */
-  Vector<Enrolment> getEnrolments(int id) {
+  List<Enrolment> getEnrolments(int idper) {
     try {
-      return EnrolmentIO.find("WHERE adh = " + id + " ORDER BY id", dc);
+      return EnrolmentIO.find("WHERE adh = " + idper + " ORDER BY id", dc);
     } catch (SQLException ex) {
       GemLogger.logException(ex);
     }
     return null;
   }
+
+  /**
+   * Get the list of enrolments in pro training.
+   * @param idper member id
+   * @param from start date
+   * @param to end date
+   * @return a list of enrolments or an empty list if no enrolment was found
+   */
+  List<Enrolment> getProEnrolments(Date from, Date to) {
+    try {
+      return EnrolmentIO.find(" JOIN personne p on(adh = p.id)"
+        + " WHERE creation BETWEEN '" + from + "' AND '" + to
+        + "' AND " + OrderIO.TABLE + ".id IN("
+        + "SELECT idcmd FROM commande_module cm join module m on (cm.module = m.id) "
+        + " where m.code like 'P%')"
+        + " ORDER BY p.nom", dc);
+    } catch (SQLException ex) {
+      GemLogger.logException(ex);
+    }
+    return null;
+  }
+
+
 
   Vector<MemberOrder> getOrders() {
     return OrderIO.findMemberOrders(dc);
@@ -373,32 +404,28 @@ public class EnrolmentService
 //    return ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findByIdOrder(query, false);
   }
 
-  Vector<Musician> findCourseMembers(int course) throws SQLException {
+  /**
+   * Gets the list of students taking this course {@code id}.
+   * @param course course id
+   * @param start start date
+   * @param end end date
+   * @return a list of students or an empty list if no student was found
+   * @throws SQLException
+   */
+  List<Musician> findCourseMembers(int course, Date start, Date end) throws SQLException {
+    return CourseOrderIO.findCourseMembers(course, start, end, dc);
+  }
 
-    Vector<Musician> vm = new Vector<Musician>();
-
-    String query = "SELECT DISTINCT p.id, p.nom, p.prenom, pi.instrument FROM "
-            + PersonIO.TABLE + " p, "
-            + MemberIO.TABLE + " e, "
-            + OrderIO.TABLE + " c, "
-            + CourseOrderIO.TABLE + " cc, "
-            + ActionIO.TABLE + " a, "
-            + InstrumentIO.PERSON_INSTRUMENT_TABLE + " pi"
-            + " WHERE p.id = e.idper AND cc.idaction = a.id AND a.cours = " + course
-            + " AND c.adh = p.id AND cc.idcmd = c.id AND pi.idper = p.id "
-            + " AND pi.ptype = " + Instrument.MEMBER + " AND pi.idx = 0";
-
-    ResultSet rs = dc.executeQuery(query);
-    for (int i = 0; rs.next(); i++) {
-      Musician a = new Musician();
-      a.setId(rs.getInt(1));
-      a.setName(rs.getString(2).trim());
-      a.setFirstName(rs.getString(3).trim());
-      a.setInstrument(rs.getInt(4));
-      vm.addElement(a);
-    }
-
-    return vm;
+  /**
+   * Gets the list of students enrolled in this module {@code id}.
+   * @param id module id
+   * @param start start date
+   * @param end end date
+   * @return a list of students or an empty list if no student was found
+   * @throws SQLException
+   */
+  public List<Musician> findModuleMembers(int id, Date start, Date end) throws SQLException {
+    return ModuleOrderIO.findModuleMembers(id, start, end, dc);
   }
 
   /**
@@ -737,36 +764,46 @@ public class EnrolmentService
   }
 
   /**
-   * Stops a member's course from a date {@literal from}.
+   * Stops a member's course from the date {@literal from}.
    *
-   * @param member id
+   * @param member member's id
    * @param co course order
    * @param c course
-   * @param from date
+   * @param from the date from which to stop
+   * @param redefine If true, a new course order to define is created. If false, course order is only updated.
    * @throws EnrolmentException
    */
-  public void stopCourse(int member, CourseOrder co, Course c, DateFr from) throws EnrolmentException {
-    String query = "DELETE FROM " + ScheduleRangeIO.TABLE
-            + " WHERE adherent = " + member
-            + " AND idplanning IN ("
-            + " SELECT id FROM planning"
-            + " WHERE jour >= '" + from + "' AND action = " + co.getAction()
-            + ")";
+  public void stopCourse(int member, final CourseOrder co, final Course c, final DateFr from, final boolean redefine) throws EnrolmentException {
     try {
-      dc.setAutoCommit(false);
-      dc.executeUpdate(query);
-
-      String label = ((GemParam) DataCache.findId(c.getCode(), Model.CourseCode)).getLabel()
-              + " " + BundleUtil.getLabel("To.define.label");
-
-      Hour timeLength = new Hour(co.getStart().getLength(co.getEnd()));
-
-      // si la demande d'arret est postérieure à la date d'inscription à ce cours
-      if (from.after(co.getDateStart())) {
-        if (!c.isATP()) {
-          co.setDateEnd(from);	// on change la date de fin de l'ancienne commande_cours
-          CourseOrderIO.update(co, dc);// on updateAdministrativeEvent l'ancienne commande
+      final String query = "DELETE FROM " + ScheduleRangeIO.TABLE
+              + " WHERE adherent = " + member
+              + " AND idplanning IN ("
+              + " SELECT id FROM planning"
+              + " WHERE jour >= '" + from + "' AND action = " + co.getAction()
+              + ")";
+      dc.withTransaction(new DataConnection.SQLRunnable<Void>() {
+        @Override
+        public Void run(DataConnection conn) throws Exception {
+          dc.executeUpdate(query);
+          refreshCourseOrder(from, co, c, redefine);
+          return null;
         }
+      });
+    } catch (Exception ex) {
+      throw new EnrolmentException(ex.getMessage());
+    }
+  }
+  
+  private void refreshCourseOrder(DateFr from, CourseOrder co, Course c, boolean redefine) throws SQLException {
+    String label = ((GemParam) DataCache.findId(c.getCode(), Model.CourseCode)).getLabel()
+            + " " + BundleUtil.getLabel("To.define.label");
+    Hour timeLength = new Hour(co.getStart().getLength(co.getEnd()));
+    if (from.after(co.getDateStart())) {
+      if (!c.isATP()) {
+        co.setDateEnd(from);	// on change la date de fin de l'ancienne commande_cours
+        CourseOrderIO.update(co, dc);// on update l'ancienne commande
+      }
+      if (redefine) {
         co.setDateStart(from);
         co.setDateEnd(dataCache.getEndOfYear());
         co.setAction(0);
@@ -776,7 +813,9 @@ public class EnrolmentService
         co.setDay(0);
         // on insère une nouvelle commande_cours (à définir)
         CourseOrderIO.insert(co, dc);
-      } else {// si la demande d'arret est antérieure ou égale à la date d'inscription à ce cours
+      }
+    } else {// si la demande d'arret est antérieure ou égale à la date d'inscription à ce cours
+      if (redefine) {
         co.setAction(0);
         co.setTitle(label);
         co.setStart(new Hour());
@@ -789,13 +828,9 @@ public class EnrolmentService
         }
         // on modifie la commande_cours existante
         CourseOrderIO.update(co, dc);
+      } else {
+        CourseOrderIO.deleteById(co.getId(), dc);
       }
-      dc.commit();
-    } catch (SQLException sqe) {
-      dc.rollback();
-      throw new EnrolmentException(sqe.getMessage());
-    } finally {
-      dc.setAutoCommit(true);
     }
   }
 
@@ -879,7 +914,7 @@ public class EnrolmentService
       return 0;
     }
   }
-  
+
   /**
    * Gets the time length of the sessions already performed by the member {@literal idper} from {@code start},
    * corresponding to the module order {@literal mOrderId}.
@@ -895,6 +930,24 @@ public class EnrolmentService
     } catch (SQLException ex) {
       GemLogger.log(getClass().getName() + "#getCompletedTime " + ex.getMessage());
       return 0;
+    }
+  }
+
+  public Date getLastScheduleByModuleOrder(int idper, int mOrderId) {
+    try {
+      return ModuleOrderIO.getLastSchedule(idper, mOrderId, dc);
+    } catch (SQLException ex) {
+      GemLogger.log(getClass().getName() + "#getLastScheduledDate " + ex.getMessage());
+      return null;
+    }
+  }
+
+  public Date getLastSchedule(int idper, int courseOrderId) {
+    try {
+      return CourseOrderIO.getLastSchedule(idper, courseOrderId, dc);
+    } catch (SQLException ex) {
+      GemLogger.log(getClass().getName() + "#getLastScheduledDate " + ex.getMessage());
+      return null;
     }
   }
 

@@ -1,7 +1,7 @@
 /*
- * @(#)ScheduleCanvas.java 2.9.4.13 06/11/15
+ * @(#)ScheduleCanvas.java 2.10.0 07/06/2016
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -43,7 +43,7 @@ import net.algem.util.ui.GemPanel;
  * Abstract class for planning layout.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.10.0
  * @since 2.5.a 10/07/12
  */
 public abstract class ScheduleCanvas
@@ -57,7 +57,8 @@ public abstract class ScheduleCanvas
   protected static final Font X_SMALL_FONT = new Font("Helvetica", Font.PLAIN, 8);
   protected static final Color CLOSED_COLOR = Color.decode("#cccccc");
   // !IMPORTANT non final static variable : authorize opening time modification without rebooting Algem
-  protected int H_START;
+  /** Global starting time in minutes. */
+  protected int GLOBAL_START_TIME;
   {
     String start = ConfigUtil.getConf(ConfigKey.START_TIME.getKey());
     int s = 0;
@@ -66,9 +67,9 @@ public abstract class ScheduleCanvas
     } catch(NumberFormatException nfe) {
       GemLogger.log(nfe.getMessage());
     }
-    H_START = s;
+    GLOBAL_START_TIME = s;
   }
-  protected int GRID_Y = (1440 - H_START) /30;
+  protected int GRID_Y = (1440 - GLOBAL_START_TIME) /30;
 
   protected int colOffset;
   protected int step_x;
@@ -277,7 +278,7 @@ public abstract class ScheduleCanvas
 
   protected int setY(int start) {
     int offset = start % 30;
-    int y = TOP_MARGIN  + 2 + ((start - offset - H_START) / 30) * step_y;
+    int y = TOP_MARGIN  + 2 + ((start - offset - GLOBAL_START_TIME) / 30) * step_y;
     return y + (offset * step_y / 30);
   }
 

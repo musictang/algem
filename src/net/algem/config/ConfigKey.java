@@ -1,7 +1,7 @@
 /*
- * @(#)ConfigKey.java 2.9.5 29/02/16
+ * @(#)ConfigKey.java 2.10.0 19/05/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,13 +27,13 @@ import net.algem.util.BundleUtil;
  * First arg represents key in the table, second arg represents the label.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.5
+ * @version 2.10.0
  * @since 2.1.k 07/07/11
  */
 public enum ConfigKey
 {
 
-  /** Organization name. *//** Organization name. */
+  /** Organization name. *//** Organization name. *//** Organization name. *//** Organization name. */
   ORGANIZATION_NAME("Organisation.Nom", BundleUtil.getLabel("ConfEditor.organization.name.label")),
 
   /** Organization first address. */
@@ -147,7 +147,9 @@ public enum ConfigKey
   ORGANIZATION_DOMAIN("Organisation.domaine", BundleUtil.getLabel("ConfEditor.organization.domain.label")),
 
   DEFAULT_PRICING_PERIOD("Periode.tarification", BundleUtil.getLabel("ConfEditor.default.module.pricing")),
-
+  DEFAULT_DUE_DAY("Jour.echeance.par.defaut", BundleUtil.getLabel("ConfEditor.default.due.date.label")),
+  ROUND_FRACTIONAL_PAYMENTS("Arrondir.inter.paiements", BundleUtil.getLabel("ConfEditor.round.fractional.payments.label")),
+  CHARGE_ENROLMENT_LINES("Facturer.echeances.inscription", BundleUtil.getLabel("ConfEditor.charge.enrolment.lines.label")),
   SCHEDULE_RANGE_NAMES("Afficher.noms.plages", BundleUtil.getLabel("ConfEditor.schedule.ranges.names")),
 
   PERSON_SORT_ORDER("Ordre.tri.personne", BundleUtil.getLabel("Person.sort.order.label")),

@@ -1,7 +1,7 @@
 /*
- * @(#)AccountUtil.java	2.9.4.12 22/09/15
+ * @(#)AccountUtil.java	2.10.0 19/05/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -40,7 +40,7 @@ import net.algem.util.DataConnection;
  * Utility class for orderline operations.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.12
+ * @version 2.10.0
  * @since 2.0r
  */
 public class AccountUtil {
@@ -106,7 +106,7 @@ public class AccountUtil {
     } else {
       payer = pf.getId();
     }
-    
+
     e.setPayer(payer);
     //e.setDate(new DateFr(new Date()));// current date may be different than schedule date
     // Il est préférable que la date d'échéance corresponde à la date de répétition
@@ -140,7 +140,7 @@ public class AccountUtil {
   }
 
   /**
-   * Generates the complementary orderline for personal account.
+   * Generates counterpart orderline for personal account.
    *
    * @param e first orderline
    * @return a second orderline
@@ -149,7 +149,7 @@ public class AccountUtil {
 
     OrderLine n = new OrderLine(e);
     n.setPaid(false);
-    
+
     if (!ModeOfPayment.FAC.toString().equals(e.getModeOfPayment())) {
       n.setModeOfPayment(e.getModeOfPayment());
     } else {
@@ -157,7 +157,7 @@ public class AccountUtil {
     }
 
     if (e.getAmount() > 0) {
-      e.setAmount(-(n.getAmount()));// montant à créditer 
+      e.setAmount(-(n.getAmount()));// montant à créditer
       e.setModeOfPayment(ModeOfPayment.FAC.toString());
     }
     return n;
@@ -173,10 +173,10 @@ public class AccountUtil {
    * @return a new payment order line
    * @throws SQLException
    */
-  public static OrderLine createEntry(OrderLine e, DataConnection dc) throws SQLException {
+  public static OrderLine createEntry(OrderLine e, boolean counterpart, DataConnection dc) throws SQLException {
     OrderLine p = null;
     e.setTransfered(false);
-    if (isPersonalAccount(e.getAccount()) && !hasPersonalEntry(e, dc)) { // compte de classe 4
+    if (counterpart && isPersonalAccount(e.getAccount()) && !hasPersonalEntry(e, dc)) { // compte de classe 4
       p = createOrderLine(e);
       OrderLineIO.insert(e, dc);//première échéance à reglement FAC
       OrderLineIO.insert(p, dc);
@@ -184,6 +184,10 @@ public class AccountUtil {
       OrderLineIO.insert(e, dc);
     }
     return p;
+  }
+
+  public static OrderLine createEntry(OrderLine e, DataConnection dc) throws SQLException {
+    return createEntry(e, true, dc);
   }
 
   public static OrderLine createPersonalEntry(OrderLine ol, DataConnection dc) throws SQLException {
@@ -288,7 +292,7 @@ public class AccountUtil {
 
     return nf;
   }
-  
+
   /**
    * Gets a format depending on {@code minFraction} digits and {@code maxFraction} digits.
    * @param minFraction min fraction digits

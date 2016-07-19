@@ -1,7 +1,7 @@
 /*
- * @(#)ExportDlg.java 2.9.4.12 23/09/15
- * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * @(#)ExportDlg.java 2.10.0 20/05/16
+ *
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.edition;
 
@@ -46,7 +46,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.12
+ * @version 2.10.0
  * @since 1.0a 14/12/1999
  */
 public abstract class ExportDlg
@@ -55,7 +55,7 @@ public abstract class ExportDlg
 {
 
   public static final String TEXT_FILTER_LABEL = MessageUtil.getMessage("filechooser.text.filter.label");
-  
+
   protected DataConnection dc;
   protected GemDesktop desktop;
   protected GemField fileName;
@@ -64,6 +64,7 @@ public abstract class ExportDlg
   protected JPanel buttons;
   protected JButton chooser;
   protected File file;
+  protected JProgressBar progress;
 
   public ExportDlg(GemDesktop desktop, String _title) {
     super(desktop.getFrame(), _title);
@@ -84,11 +85,17 @@ public abstract class ExportDlg
     btCancel = new GemButton(GemCommand.CANCEL_CMD);
     btCancel.addActionListener(this);
 
+    GemPanel footer = new GemPanel(new BorderLayout());
+    progress = new JProgressBar();
+
     buttons = new GemPanel();
     buttons.setLayout(new GridLayout(1, 1));
     buttons.add(btValidation);
     buttons.add(btCancel);
-    
+
+    footer.add(progress, BorderLayout.NORTH);
+    footer.add(buttons, BorderLayout.SOUTH);
+
     fileName = new GemField(ConfigUtil.getExportPath() + FileUtil.FILE_SEPARATOR + getFileName() + ".csv", 30);
     GemPanel pFile = new GemPanel();
     pFile.add(new Label(BundleUtil.getLabel("Menu.file.label")));
@@ -97,15 +104,15 @@ public abstract class ExportDlg
     chooser.setPreferredSize(new Dimension(chooser.getPreferredSize().width, fileName.getPreferredSize().height));
     chooser.addActionListener(this);
     pFile.add(chooser);
-    
+
     GemPanel body = new GemPanel(new BorderLayout());
     body.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
     body.add(pFile, BorderLayout.NORTH);
     body.add(getCriterion(), BorderLayout.SOUTH);
-    
+
     setLayout(new BorderLayout());
     add(body, BorderLayout.CENTER);
-    add(buttons, BorderLayout.SOUTH);
+    add(footer, BorderLayout.SOUTH);
     setLocation(100,100);
     //setPreferredSize(new Dimension(520,260));
     pack();
@@ -124,17 +131,25 @@ public abstract class ExportDlg
       if (!writeFile()) {
         return;
       }
-      new Thread(new Runnable()
-      {
+      btValidation.setEnabled(false);
+      btCancel.setEnabled(false);
+      new SwingWorker<Object, Object>() {
+
         @Override
-        public void run() {
-          btValidation.setEnabled(false);
-          btCancel.setEnabled(false);
+        protected Void doInBackground() throws Exception {
+          progress.setIndeterminate(true);
           validation();
-          close();
+          return null;
         }
-      }).start();
-      
+        @Override
+          public void done() {
+            btValidation.setEnabled(true);
+            btCancel.setEnabled(true);
+            progress.setIndeterminate(false);
+            //close();
+          }
+
+      }.execute();
     } else if (evt.getSource() == chooser) {
       JFileChooser fileChooser = getFileChooser(fileName.getText());
       int ret = fileChooser.showDialog(this, BundleUtil.getLabel("FileChooser.selection"));
@@ -143,9 +158,9 @@ public abstract class ExportDlg
         fileName.setText(file.getPath());
       }
     }
-    
+
   }
-  
+
   protected boolean writeFile() {
     if (file == null) {
       return true;
@@ -176,7 +191,6 @@ public abstract class ExportDlg
     }
     String query = getRequest();
 
-    setCursor(new Cursor(Cursor.WAIT_CURSOR));
     PrintWriter out;
     try {
       /*out = new PrintWriter(new File(path), StandardCharsets.UTF_8.name());
@@ -245,10 +259,8 @@ public abstract class ExportDlg
     } catch (DesktopHandlerException ex) {
       GemLogger.log(ex.getMessage());
       MessagePopup.warning(this, ex.getMessage());
-    } finally {
-      setCursor(Cursor.getDefaultCursor());
     }
-    
+
   }
 
   protected void close() {

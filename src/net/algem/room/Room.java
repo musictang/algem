@@ -1,7 +1,7 @@
 /*
- * @(#)Room.java	2.9.4.13 05/11/15
+ * @(#)Room.java	2.10.0 17/05/16
  * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -31,7 +31,7 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.10.0
  * @since 1.0a 02/09/2001
  * 
  */
@@ -39,6 +39,7 @@ public class Room
         implements Cloneable, GemModel
 {
 
+  public static String CATCHING_UP_REGEX = "(?iu).*(RATTRAP|CATCHING).*";
   private static final long serialVersionUID = 5746933451268973734L;
   
   private int id;
@@ -248,8 +249,7 @@ public class Room
    */
   public boolean isCatchingUp() {
     // TODO test should not apply to room's name
-    String regex = "(?iu).*(RATTRAP|CATCHING).*";
-    return name.matches(regex);
+    return name.matches(CATCHING_UP_REGEX);
   }
 
   @Override

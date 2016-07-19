@@ -1,7 +1,7 @@
 /*
- * @(#)CourseCodeCtrl.java	2.9.4.13 16/10/15
- * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * @(#)CourseCodeCtrl.java	2.10.0 15/06/2016
+ *
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,13 +16,14 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.config;
 
 import java.sql.SQLException;
 import java.util.List;
 import net.algem.course.CourseCode;
+import net.algem.course.CourseCodeType;
 import net.algem.course.ModuleIO;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
@@ -35,19 +36,19 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.10.0
  * @since 2.8.a 14/03/2013
  */
-public class CourseCodeCtrl 
+public class CourseCodeCtrl
   extends ParamTableCtrl
  {
-  
+
   private CourseCodeIO ccIO;
 
   public CourseCodeCtrl(GemDesktop desktop) {
     super(desktop, BundleUtil.getLabel("Menu.course.codes.label"), true);
   }
-  
+
   @Override
   public void setView(boolean activable) {
     table = new GemParamTableView(title, new GemParamTableModel<CourseCode>());
@@ -58,8 +59,8 @@ public class CourseCodeCtrl
   protected boolean isKeyModif() {
     return false;
   }
-  
-  
+
+
   @Override
   public void load() {
     ccIO = new CourseCodeIO(dc);
@@ -76,7 +77,7 @@ public class CourseCodeCtrl
       ccIO.update(cc);
       desktop.getDataCache().update(cc);
       desktop.postEvent(new GemEvent(this, GemEvent.MODIFICATION, GemEvent.COURSE_CODE, cc));
-      
+
     }
   }
 
@@ -95,6 +96,12 @@ public class CourseCodeCtrl
   public void suppression(Param p) throws Exception {
     if (p instanceof GemParam) {
       CourseCode cc = new CourseCode((GemParam) p);
+      if (CourseCodeType.INS.getId() == cc.getId()
+        || CourseCodeType.ATL.getId() == cc.getId()
+        || CourseCodeType.ATP.getId() == cc.getId()
+        || CourseCodeType.STG.getId() == cc.getId()) {
+        throw new ParamException(MessageUtil.getMessage("course.code.predefined.exception"));
+      }
       int used = ((ModuleIO) DataCache.getDao(Model.Module)).haveCode(cc.getId());
       if (used > 0) {
         throw new ParamException(MessageUtil.getMessage("course.code.delete.exception", used));
@@ -108,5 +115,5 @@ public class CourseCodeCtrl
       }
     }
   }
-  
+
 }

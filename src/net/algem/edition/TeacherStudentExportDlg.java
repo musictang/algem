@@ -1,6 +1,6 @@
 /*
- * @(#)TeacherStudentExportDlg.java 2.9.7.1 25/05/16
- *
+ * @(#)TeacherStudentExportDlg.java 2.10.0 21/05/16
+ * 
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -33,7 +33,7 @@ import net.algem.util.ui.GridBagHelper;
  * Export dialog for contact infos of the selected teacher's students.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.7.1
+ * @version 2.10.0
  * @since 2.6.d 05/11/2012
  */
 public class TeacherStudentExportDlg

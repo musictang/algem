@@ -1,7 +1,7 @@
 /*
- * @(#)AccountingService.java	2.9.4.13 27/10/15
+ * @(#)AccountingService.java	2.10.0 18/05/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -43,17 +43,19 @@ import net.algem.util.MessageUtil;
  * Service class for accounting.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.10.0
  * @since 2.4.a 21/05/12
  */
 public class AccountingService {
 
   private final DataConnection dc;
   private final EmployeeReportIO employeeReport;
+  private StandardOrderLineIO stdOrderLineIO;
 
   public AccountingService(DataConnection dc) {
     this.dc = dc;
     employeeReport = new EmployeeReportIO(dc);
+    stdOrderLineIO = new StandardOrderLineIO(dc);
   }
 
   public Vector<PlanningLib> getPlanningLib(String start, String end, int school, boolean catchup) throws SQLException {
@@ -78,9 +80,9 @@ public class AccountingService {
     // on ne comptabilise pas les plages de pause (adherent = 0)
     return ScheduleRangeIO.find("pg WHERE pg.idplanning = " + idplanning + " AND pg.adherent > 0 ORDER BY pg.debut", dc);
   }
-  
+
   /**
-   * 
+   *
    * @param start start of selected period
    * @param end end of selected period
    * @param catchup include catchup
@@ -88,14 +90,14 @@ public class AccountingService {
    * @param school school id
    * @param estab establishment id
    * @return a resultset
-   * @throws SQLException 
+   * @throws SQLException
    */
   public ResultSet getReportByDate(String start, String end, boolean catchup, int idper, int school, int estab) throws SQLException {
     return employeeReport.getDetailTeacherByDate(start, end, catchup, idper, school, estab);
   }
-  
+
   /**
-   * 
+   *
    * @param start start of selected period
    * @param end end of selected period
    * @param catchup include catchup
@@ -104,7 +106,7 @@ public class AccountingService {
    * @param school school id
    * @param estab establishment id
    * @return a resultset
-   * @throws SQLException 
+   * @throws SQLException
    */
   public ResultSet getReportByMember(String start, String end, boolean catchup, boolean collective, int idper, int school, int estab) throws SQLException {
     if (collective) {
@@ -113,9 +115,9 @@ public class AccountingService {
       return employeeReport.getDetailIndTeacherByMember(start, end, catchup, idper, school, estab);
     }
   }
-  
+
   /**
-   * 
+   *
    * @param start start of selected period
    * @param end end of selected period
    * @param catchup include catchup
@@ -124,20 +126,20 @@ public class AccountingService {
    * @param estab establishment id
    * @param modules list of selected modules
    * @return a resultset
-   * @throws SQLException 
+   * @throws SQLException
    */
   public ResultSet getReportByModule(String start, String end, boolean catchup, int idper, int school, int estab, List<Module> modules) throws SQLException {
     return employeeReport.getDetailTeacherByModule(start, end, catchup, idper, school, estab, modules);
   }
-  
+
   /**
-   * 
+   *
    * @param start start of selected period
    * @param end end of selected period
    * @param idper person id
    * @param ptype planning type
    * @return a resultset
-   * @throws SQLException 
+   * @throws SQLException
    */
   public ResultSet getReportByEmployee(String start, String end, int idper, int ptype) throws SQLException {
     switch(ptype) {
@@ -148,16 +150,16 @@ public class AccountingService {
     }
     return null;
   }
-  
+
   /**
    * Gets active accounts.
    * @return a list of accounts
-   * @throws SQLException 
+   * @throws SQLException
    */
   public List<Account> getAccounts() throws SQLException {
     return AccountIO.find(true, dc);
   }
-  
+
   /**
    * Gets active cost accounts.
    * @return a list of cost accounts
@@ -166,31 +168,31 @@ public class AccountingService {
     List<ActivableParam> actives = ActivableParamTableIO.find(CostAccountCtrl.tableName, CostAccountCtrl.columnName, " WHERE " + CostAccountCtrl.columnFilter + " = TRUE", dc);
     return new ArrayList<Param>(actives);
   }
-  
+
   /**
    * Gets categories of accounts.
    * @return a list of strings
-   * @throws SQLException 
+   * @throws SQLException
    */
   public String[] getAccountTypes() throws SQLException {
     return AccountPrefIO.findKeys(dc);
   }
-  
+
   /**
    * Updates a preferred account.
    * @param pref the preference's key is the category to be updated
-   * @throws SQLException 
+   * @throws SQLException
    */
   public void updateAccountPref(Preference pref) throws SQLException {
     AccountPrefIO.update(pref, DataCache.getDataConnection());
   }
-  
+
   /**
    * Checks if an account is still used elsewhere.
    * @param c account
    * @return a message if account is still used and null otherwise
    * @throws AccountDeleteException
-   * @throws SQLException 
+   * @throws SQLException
    */
   private String isAccountUsed(Param c) throws AccountDeleteException, SQLException {
     String where = "WHERE " + OrderLineIO.ACCOUNT_COLUMN + " = '" + c.getId() + "'";
@@ -213,7 +215,7 @@ public class AccountingService {
     }
     return null;
   }
-  
+
   private String isCostAccountUsed(Param p) throws AccountDeleteException, SQLException {
     String where = "WHERE " + OrderLineIO.COST_COLUMN + " = '" + p.getKey() + "'";
     Vector<OrderLine> e = OrderLineIO.find(where, 1, dc);
@@ -226,7 +228,7 @@ public class AccountingService {
     }
     return null;
   }
-  
+
   public void delete(Account c) throws AccountDeleteException {
     try {
       String used = isAccountUsed(c);
@@ -240,11 +242,11 @@ public class AccountingService {
       throw new AccountDeleteException(ex.getMessage());
     }
   }
-  
+
   /**
    * Deletes a cost account.
    * @param c cost account param instance
-   * @throws AccountDeleteException 
+   * @throws AccountDeleteException
    */
   public void delete(Param c) throws AccountDeleteException {
     try {
@@ -257,6 +259,31 @@ public class AccountingService {
     } catch (SQLException ex) {
       GemLogger.logException(ex);
       throw new AccountDeleteException(ex.getMessage());
+    }
+  }
+  public List<OrderLine> findStandardOrderLines() throws SQLException {
+    return stdOrderLineIO.find();
+  }
+
+  public void createStandardOrderLine(OrderLine ol) throws SQLException {
+    stdOrderLineIO.insert(ol);
+  }
+
+  public void updateStandardOrderLine(OrderLine ol) throws SQLException {
+    stdOrderLineIO.update(ol);
+  }
+
+  public void deleteStandardOrderLine(OrderLine ol) throws SQLException {
+    stdOrderLineIO.delete(ol.getId());
+  }
+
+  public boolean exists(OrderLine o) {
+    try {
+      DataCache cache = DataCache.getInstance(dc, null);
+      return stdOrderLineIO.exists(o, cache.getStartOfYear().getDate(), cache.getEndOfYear().getDate());
+    } catch (SQLException ex) {
+      GemLogger.log(ex.getMessage());
+      return false;
     }
   }
 

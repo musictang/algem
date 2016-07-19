@@ -131,7 +131,7 @@ public class MonthPlanView
       bg.drawString(dayNames[dow], x - (w - 10) / 2, y);
       // draw sunday column
       if (dow == Calendar.SUNDAY) {
-        drawRange(i, H_START, H_END, Color.gray);
+        drawRange(i, GLOBAL_START_TIME, H_END, Color.gray);
       }
       if (++dow > 7) {
         dow = 1;
@@ -149,7 +149,7 @@ public class MonthPlanView
     x = 1;
 //    y = TOP_MARGIN + step_y;
     y = TOP_MARGIN + (fm.getHeight() / 2);
-    Hour hour = new Hour(H_START);
+    Hour hour = new Hour(GLOBAL_START_TIME);
     // Half hours labels
     for (int i = 0; i < GRID_Y; i++) {
       bg.drawString(hour.toString(), x, y);
@@ -349,7 +349,7 @@ public class MonthPlanView
     int y = clickY - TOP_MARGIN - 2;
 
     int jj = ((x + (step_x) / 2) / step_x) + 1;
-    int hh = ((y * 30) / step_y) + H_START;
+    int hh = ((y * 30) / step_y) + GLOBAL_START_TIME;
     int mm = hh % 60;
     hh /= 60;
 
@@ -409,7 +409,7 @@ public class MonthPlanView
     int x = e.getX() - LEFT_MARGIN - 2;
     int y = e.getY() - TOP_MARGIN - 2;
     int jj = ((x + (step_x) / 2) / step_x) + 1;
-    int hh = ((y * 30) / step_y) + H_START;
+    int hh = ((y * 30) / step_y) + GLOBAL_START_TIME;
     int mm = hh % 60;
     hh /= 60;
 

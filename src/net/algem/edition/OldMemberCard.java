@@ -1,7 +1,7 @@
 /*
- * @(#)OldMemberCard.java	2.8.w 08/07/14
+ * @(#)OldMemberCard.java	2.10.0 01/06/16
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -48,7 +48,7 @@ import net.algem.util.module.GemDesktop;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.10.0
  * @deprecated
  *
  */
@@ -161,14 +161,14 @@ public class OldMemberCard
     g.setFont(normalFont);
     String where = "WHERE adh=" + dossier.getId() + " AND creation >= '01-07-" + cache.getStartOfYear().getYear() + "'";
     System.out.println(where);
-    Vector<Enrolment> v = null;
+    java.util.List<Enrolment> v = null;
     try {
       v = EnrolmentIO.find(where, DataCache.getDataConnection()); // recherche des inscriptions
     } catch (SQLException ex) {
       System.err.println(ex.getMessage());
     }
-    if (v.size() > 0) {
-      Enrolment ins = (Enrolment) v.elementAt(0);
+    if (v != null && v.size() > 0) {
+      Enrolment ins = v.get(0);
       Vector cmc = ins.getCourseOrder();// recherche des commande_cours
       int cpt1, cpt2, cpt3, cpt4;
       cpt1 = cpt2 = cpt3 = cpt4 = 0;

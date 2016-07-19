@@ -131,9 +131,10 @@ public class MemberEditor
     if (evt.getSource() == payer) {
       searchPayer();
     } else if (evt.getSource() == birth) {
-      Calendar cal = Calendar.getInstance(Locale.FRANCE);
-      int a = cal.get(Calendar.YEAR) - birth.get().getYear();
-      age.setText(String.valueOf(a));
+//      Calendar cal = Calendar.getInstance(Locale.FRANCE);
+//      int a = cal.get(Calendar.YEAR) - birth.get().getYear();
+//      age.setText(String.valueOf(a));
+      age.setText(String.valueOf(getAge(birth.get())));
     }
   }
 
@@ -183,9 +184,10 @@ public class MemberEditor
     occupation.setSelectedItem((String) m.getOccupation());
     if (m.getBirth() != null) {
       birth.set(m.getBirth());
-      Calendar cal = Calendar.getInstance(Locale.FRANCE);
-      int a = cal.get(Calendar.YEAR) - m.getBirth().getYear();
-      age.setText(String.valueOf(a));
+//      Calendar cal = Calendar.getInstance(Locale.FRANCE);
+//      int a = cal.get(Calendar.YEAR) - m.getBirth().getYear();
+//      age.setText(String.valueOf(a));
+      age.setText(String.valueOf(getAge(m.getBirth())));
     } else {
       age.setText("0");
     }
@@ -247,5 +249,16 @@ public class MemberEditor
   public void reload(PersonFile d) {
     clear();
     set(d.getOldMember());
+  }
+
+  private int getAge(DateFr birth) {
+    Calendar cal = Calendar.getInstance(Locale.FRANCE);
+    int a = cal.get(Calendar.YEAR) - birth.getYear();
+    int m = birth.getMonth() -1;
+    if (m  > cal.get(Calendar.MONTH)
+      || (m == cal.get(Calendar.MONTH) && birth.getDay() > cal.get(Calendar.DATE))) {
+      a--;
+    }
+    return a;
   }
 }

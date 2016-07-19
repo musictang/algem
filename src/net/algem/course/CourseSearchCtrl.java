@@ -46,7 +46,7 @@ public class CourseSearchCtrl
   private final GemDesktop desktop;
 
   public CourseSearchCtrl(GemDesktop desktop) {
-    super(DataCache.getDataConnection(), "Recherche d'un cours");
+    super(DataCache.getDataConnection(), null);
     this.desktop = desktop;
   }
 

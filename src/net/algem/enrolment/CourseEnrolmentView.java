@@ -1,7 +1,7 @@
 /*
- * @(#)CourseEnrolmentView.java	2.8.a 19/04/13
- * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * @(#)CourseEnrolmentView.java	2.10.0 13/05/16
+ *
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,74 +16,52 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.enrolment;
 
-import java.awt.GridBagLayout;
 import java.sql.SQLException;
-import java.util.Vector;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.table.TableColumnModel;
+import java.util.Date;
+import java.util.List;
 import net.algem.group.Musician;
-import net.algem.group.MusicianTableModel;
 import net.algem.util.GemLogger;
-import net.algem.util.ui.GemPanel;
-import net.algem.util.ui.GridBagHelper;
+import net.algem.util.module.GemDesktop;
 
 /**
  * View the list of enrolled members.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.10.0
  */
 public class CourseEnrolmentView
-        extends GemPanel
+        extends MemberEnrolmentView
 {
 
-  private MusicianTableModel membersTableModel;
-  private JTable memberTable;
-  private EnrolmentService service;
-
-  public CourseEnrolmentView(EnrolmentService service) {
-    this.service = service;
-
-    membersTableModel = new MusicianTableModel(service.getDataCache());
-    memberTable = new JTable(membersTableModel);
-    memberTable.setAutoCreateRowSorter(true);
-
-    TableColumnModel cm = memberTable.getColumnModel();
-    cm.getColumn(0).setPreferredWidth(30);
-    cm.getColumn(1).setPreferredWidth(120);
-    cm.getColumn(2).setPreferredWidth(120);
-    cm.getColumn(3).setPreferredWidth(120);
-
-    JScrollPane pm = new JScrollPane(memberTable);
-
-    this.setLayout(new GridBagLayout());
-    GridBagHelper gb = new GridBagHelper(this);
-
-    gb.add(pm, 0, 0, 1, 1, GridBagHelper.BOTH, 1.0, 1.0);
-
+  public CourseEnrolmentView(GemDesktop desktop, EnrolmentService service) {
+     super(desktop, service);
   }
 
-  public void load(int id) {
+  /**
+   * Load the list of members between {@code start} and {@code end}.
+   * @param id course id
+   * @param start start date
+   * @param end end date
+   */
+  @Override
+  protected void load(int id, Date start, Date end) {
     if (id == 0) {
       return;
     }
     try {
-      Vector<Musician> vm = service.findCourseMembers(id);
+      List<Musician> vm = service.findCourseMembers(id, start, end);
       for (Musician m : vm) {
         membersTableModel.addItem(m);
+        total.setText(String.valueOf(vm.size()));
       }
     } catch (SQLException e) {
-      GemLogger.logException(getClass().getName() +"#load", e);
+      GemLogger.logException(getClass().getName() + "#load", e);
     }
   }
 
-  public void clear() {
-    membersTableModel.clear();
-  }
 }

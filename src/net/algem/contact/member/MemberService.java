@@ -1,7 +1,7 @@
 /*
- * @(#)MemberService.java	2.9.4.14 03/01/16
+ * @(#)MemberService.java	2.10.0 01/06/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,6 +21,7 @@
 package net.algem.contact.member;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -34,8 +35,10 @@ import net.algem.contact.EmailIO;
 import net.algem.contact.PersonFile;
 import net.algem.contact.PersonFileEvent;
 import net.algem.contact.PersonFileIO;
+import net.algem.course.Module;
 import net.algem.enrolment.Enrolment;
 import net.algem.enrolment.EnrolmentIO;
+import net.algem.enrolment.ModuleOrderIO;
 import net.algem.planning.*;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
@@ -46,7 +49,7 @@ import net.algem.util.model.Model;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.14
+ * @version 2.10.0
  * @since 2.4.a 14/05/12
  */
 public class MemberService
@@ -252,12 +255,12 @@ public class MemberService
    * @return a list of enrolments
    * @throws java.sql.SQLException
    */
-  public Vector<Enrolment> getEnrolments(int memberId, DateFr start, DateFr end) throws SQLException {
+  public List<Enrolment> getEnrolments(int memberId, DateFr start, DateFr end) throws SQLException {
     String where = "WHERE adh = " + memberId + " AND creation >='" + start + "' AND creation <='" + end + "' ORDER BY id";
     return EnrolmentIO.find(where, dc);
   }
 
-  public Vector<Enrolment> getEnrolments(int memberId, String start) throws SQLException {
+  public List<Enrolment> getEnrolments(int memberId, String start) throws SQLException {
     String where = "WHERE adh = " + memberId + " AND creation >='" + start + "'";
     return EnrolmentIO.find(where, dc);
   }
@@ -312,6 +315,25 @@ public class MemberService
             + " AND pg.adherent = " + memberId
             + " ORDER BY p.jour, pg.debut";
     return ScheduleRangeIO.findFollowUp(where, false, dc);
+  }
+
+  public Vector<ScheduleRangeObject> findFollowUp(int memberId, Date start, Date end, String actions) throws SQLException {
+    String where = " AND p.jour BETWEEN '" + start + "' AND '" + end + "' AND p.action IN (" + actions + ")"
+            + " AND (pg.note >= 0 OR p.note > 0)"
+            + " AND pg.note = s1.id"
+            + " AND p.note = s2.id"
+            + " AND pg.adherent = " + memberId
+            + " ORDER BY p.jour, pg.debut";
+    return ScheduleRangeIO.findFollowUp(where, false, dc);
+  }
+
+  public  List<Module> findModuleOrders(int member, Date start, Date end) {
+    try {
+      return ModuleOrderIO.findModules(member, start, end, dc);
+    } catch (SQLException ex) {
+      GemLogger.log(ex.getMessage());
+      return new ArrayList<Module>();
+    }
   }
 
   public void saveRehearsal(ScheduleObject p) throws MemberException {

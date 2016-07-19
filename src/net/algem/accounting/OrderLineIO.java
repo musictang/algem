@@ -318,11 +318,12 @@ public class OrderLineIO
   public static int countMemberShip(int m, DataConnection dc) throws SQLException {
     Preference p1 = AccountPrefIO.find(AccountPrefIO.MEMBERSHIP, dc);
     Preference p2 = AccountPrefIO.find(AccountPrefIO.PRO_MEMBERSHIP, dc);
-
-    String query = "SELECT count(echeance) FROM " + TABLE
-      + " WHERE adherent = " + m
-      + " AND montant > 0"
-      + " AND (compte = " + (p1 == null ? -1 : p1.getValues()[0]) + " OR compte = " + (p2 == null ? -1 : p2.getValues()[0]) + ")";
+    //String query = "SELECT count(echeance) FROM echeancier2 WHERE adherent=" + m + " AND compte like '" + p.getValues()[0].substring(0, 8) + "%'";
+    String query = "SELECT count(echeance) FROM " + TABLE 
+            + " WHERE adherent = " + m 
+            + " AND reglement != '" + ModeOfPayment.FAC.name()
+            + "' AND montant > 0"
+            + " AND (compte = " + (p1 == null ? -1 : p1.getValues()[0]) + " OR compte = " + (p2 == null ? -1 : p2.getValues()[0]) + ")";
     ResultSet rs = dc.executeQuery(query);
     if (rs.next()) {
       return rs.getInt(1);

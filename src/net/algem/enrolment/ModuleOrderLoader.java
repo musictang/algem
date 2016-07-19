@@ -1,7 +1,7 @@
 /*
- * @(#)ModuleOrderLoader.java	2.9.4.13 11/11/15
+ * @(#)ModuleOrderLoader.java	2.10.0 17/05/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -33,7 +33,7 @@ import net.algem.util.ui.ProgressMonitorHandler;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13 06/11/15
+ * @version 2.10.0
  * @since 2.9.4.13 06/11/15
  */
 public class ModuleOrderLoader
@@ -95,7 +95,7 @@ public class ModuleOrderLoader
         }
         em.setCompleted(service.getCompletedTime(em.getIdper(), em.getId(), start, end));
         setProgress(++i * 100 / size);
-        publish(i  + "/" + size + " : " + em.getTitle());
+        publish(i  + "/" + size);// + " : " + em.getTitle());
       }
 
       return null;

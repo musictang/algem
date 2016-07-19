@@ -1,5 +1,5 @@
 package net.algem.script.common;
 
 public enum ArgType {
-    TEXT, INT, FLOAT, BOOL, DATE
+    TEXT, INT, FLOAT, BOOL, DATE, TEACHER_LIST
 }

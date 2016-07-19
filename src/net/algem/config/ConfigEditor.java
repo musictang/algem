@@ -1,7 +1,7 @@
 /*
- * @(#)ConfigEditor.java 2.9.4.13 06/10/15
+ * @(#)ConfigEditor.java 2.10.0 17/05/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -45,7 +45,7 @@ import net.algem.util.ui.GemPanel;
  * General config editor.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.10.0
  * @since 2.1.k
  */
 public class ConfigEditor
@@ -58,7 +58,7 @@ public class ConfigEditor
   private ConfigPlanning activityPanel;
   private ConfigPanel adminPanel;
   private ConfigPanel filePanel;
-  private ConfigPanel ribPanel;
+  private ConfigPanel accountingPanel;
   private Map<String, Config> confs;
   private DataConnection dc;
   private DataCache dataCache;
@@ -94,12 +94,12 @@ public class ConfigEditor
       adminPanel = new ConfigAdmin(BundleUtil.getLabel("ConfEditor.management.label"), confs);
       ((ConfigAdmin) adminPanel).init(dataCache);
       filePanel = new ConfigFile(BundleUtil.getLabel("ConfEditor.file.label"), confs);
-      ribPanel = new ConfigCreditor(BundleUtil.getLabel("ConfEditor.accounting.label"), confs);
+      accountingPanel = new ConfigAccounting(BundleUtil.getLabel("ConfEditor.accounting.label"), confs);
       confPanel.add(orgPanel, "organization");
       confPanel.add(activityPanel, "schedule");
       confPanel.add(adminPanel, "management");
       confPanel.add(filePanel, "files");
-      confPanel.add(ribPanel, "accounting");
+      confPanel.add(accountingPanel, "accounting");
     } catch (SQLException ex) {
       GemLogger.logException(ex);
     }
@@ -149,7 +149,7 @@ public class ConfigEditor
         for (Config c : filePanel.get()) {
           confs.put(c.getKey(), c);
         }
-        for (Config c : ribPanel.get()) {
+        for (Config c : accountingPanel.get()) {
           confs.put(c.getKey(), c);
         }
         ConfigIO.update(confs, dc);

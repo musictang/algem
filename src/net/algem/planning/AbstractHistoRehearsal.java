@@ -1,7 +1,7 @@
 /*
- * @(#)AbstractHistoRehearsal.java 2.9.4.13 27/10/15
- * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * @(#)AbstractHistoRehearsal.java 2.10.0 15/06/16
+ *
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning;
 
@@ -25,11 +25,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Vector;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.TableColumnModel;
 import net.algem.util.BundleUtil;
-import net.algem.util.MessageUtil;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.FileTabDialog;
 import net.algem.util.ui.GemButton;
@@ -39,16 +39,15 @@ import net.algem.util.ui.GemPanel;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.10.0
  * @since 2.1.j
  */
-public abstract class AbstractHistoRehearsal 
-  extends FileTabDialog
-{
+public abstract class AbstractHistoRehearsal
+  extends FileTabDialog {
 
   private RehearsalTableModel rehearsalTableModel;
   private JTable table;
-  private GemLabel nbHours;
+  private GemLabel totalLabel;
   protected DateRangePanel datePanel;
   protected int idper;
   protected ActionListener listener;
@@ -57,6 +56,7 @@ public abstract class AbstractHistoRehearsal
 
   /**
    * Inits rehearsal history.
+   *
    * @param desktop
    * @param listener optional
    * @param id contact or group id
@@ -76,33 +76,33 @@ public abstract class AbstractHistoRehearsal
     cm.getColumn(2).setPreferredWidth(30);
     cm.getColumn(3).setPreferredWidth(250);
 
-    JScrollPane pm = new JScrollPane(table);
+    JScrollPane sp = new JScrollPane(table);
 
-    GemPanel bottomPanel = new GemPanel();
+    GemPanel infoPanel = new GemPanel();
+    GemPanel totalPanel = new GemPanel();
     GemPanel datesPanel = new GemPanel();
-    GemPanel hoursPanel = new GemPanel();
-    nbHours = new GemLabel();
+    totalLabel = new GemLabel();
     datePanel = new DateRangePanel(DateRangePanel.RANGE_DATE, null);
     datesPanel.add(datePanel);
 
-    bottomPanel.setLayout(new BorderLayout());
+    totalPanel.add(new JLabel(BundleUtil.getLabel("Total.label") + " : "));
+    totalPanel.add(totalLabel);
 
-    hoursPanel.add(new JLabel(MessageUtil.getMessage("total.hour")));
-    hoursPanel.add(nbHours);
+    infoPanel.add(totalPanel);
+    infoPanel.add(datesPanel);
 
-    bottomPanel.add(datesPanel, BorderLayout.NORTH);
-    bottomPanel.add(hoursPanel, BorderLayout.CENTER);
+    JPanel mainPanel = new GemPanel(new BorderLayout());
+    mainPanel.add(sp, BorderLayout.CENTER);
+    mainPanel.add(infoPanel, BorderLayout.SOUTH);
 
     btAll = new GemButton(BundleUtil.getLabel("Any.label"));
     btAll.setToolTipText(BundleUtil.getLabel("Rehearsal.list.all.tip"));
     btAll.addActionListener(this);
     buttons.add(btAll, 0);
 
-    bottomPanel.add(buttons, BorderLayout.SOUTH);
-
     setLayout(new BorderLayout());
-    add(pm, BorderLayout.CENTER);
-    add(bottomPanel, BorderLayout.SOUTH);
+    add(mainPanel, BorderLayout.CENTER);
+    add(buttons, BorderLayout.SOUTH);
 
   }
 
@@ -127,6 +127,7 @@ public abstract class AbstractHistoRehearsal
 
   /**
    * Loads the schedules.
+   *
    * @param all all schedules if true
    */
   public void load(boolean all) {
@@ -136,18 +137,16 @@ public abstract class AbstractHistoRehearsal
     if (vp != null && vp.size() > 0) {
       loaded = true;
     }
-    for (int i = 0; i < vp.size(); i++) {
-      Schedule p = vp.elementAt(i);
-      Hour hd = p.getStart();
-      Hour hf = p.getEnd();
-      min += hd.getLength(hf);
-      rehearsalTableModel.addItem(p);
+    if (vp != null) {
+      for (int i = 0, len = vp.size(); i < len; i++) {
+        Schedule p = vp.elementAt(i);
+        Hour hd = p.getStart();
+        Hour hf = p.getEnd();
+        min += hd.getLength(hf);
+        rehearsalTableModel.addItem(p);
+      }
     }
-    int nbh = min / 60;
-    int nbm = min % 60;
-    String nm = (nbm < 10) ? "0" : "";
-    nm += String.valueOf(nbm);
-    nbHours.setText(String.valueOf(nbh) + "h " + nm);
+    totalLabel.setText(Hour.format(min));
   }
 
   @Override
@@ -159,7 +158,7 @@ public abstract class AbstractHistoRehearsal
     if (rehearsalTableModel.getRowCount() > 0) {
       rehearsalTableModel.clear();
     }
-    nbHours.setText(null);
+    totalLabel.setText(null);
   }
 
   @Override
@@ -167,7 +166,7 @@ public abstract class AbstractHistoRehearsal
     desktop.setWaitCursor();
     if (evt.getSource() == btAll) {
       clear();
-      load(true);    
+      load(true);
     } else {
       super.actionPerformed(evt);
     }
@@ -176,6 +175,7 @@ public abstract class AbstractHistoRehearsal
 
   /**
    * Retrieves the schedules.
+   *
    * @param all all the schedules from the beginning
    * @return a list of schedules
    */

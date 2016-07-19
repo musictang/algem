@@ -1,7 +1,7 @@
 /*
- * @(#)CourseCtrl.java	2.9.4.14 16/12/15
+ * @(#)CourseCtrl.java	2.10.0 13/05/16
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -41,14 +41,14 @@ import net.algem.util.ui.SearchCtrl;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.14
+ * @version 2.10.0
  */
 public class CourseCtrl
         extends CardCtrl
 {
 
   private CourseView cv;
-  private CourseEnrolmentView iv;
+  private CourseEnrolmentView ev;
   private Course course;
   private String [] errors = new String[3];
 
@@ -66,10 +66,10 @@ public class CourseCtrl
     cv = new CourseView(
             dataCache.getList(Model.CourseCode),
             dataCache.getList(Model.School));
-    iv = new CourseEnrolmentView(enrolService);
-
+    ev = new CourseEnrolmentView(desktop, enrolService);
+    btNext.setToolTipText(BundleUtil.getLabel("Student.list.label"));
     addCard("", cv);
-    addCard(BundleUtil.getLabel("Course.enrolment.list.label"), iv);
+    addCard(BundleUtil.getLabel("Course.enrolment.list.label"), ev);
 
     select(0);
   }
@@ -81,23 +81,9 @@ public class CourseCtrl
         select(step + 1);
         btPrev.setText(GemCommand.PREVIOUS_CMD);
         btPrev.setActionCommand(GemCommand.PREVIOUS_CMD);
+        btNext.setToolTipText(null);
         break;
     }
-    return true;
-  }
-
-  @Override
-  public boolean cancel() {
-
-    if (actionListener != null) {
-      if (actionListener instanceof SearchCtrl) {
-      actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "CtrlValider"));
-      } else if (actionListener instanceof GemDesktop) {
-        clear();
-        actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, GemCommand.CANCEL_CMD));
-      }
-    }
-
     return true;
   }
 
@@ -126,9 +112,11 @@ public class CourseCtrl
         btPrev.setActionCommand(GemCommand.DELETE_CMD);
         btPrev.setText(GemCommand.DELETE_CMD);
         select(step - 1);
+        btNext.setToolTipText(BundleUtil.getLabel("Student.list.label"));
         break;
       default:
         select(step - 1);
+        btNext.setToolTipText(BundleUtil.getLabel("Student.list.label"));
         break;
     }
     return true;
@@ -166,6 +154,21 @@ public class CourseCtrl
     cancel();
     return true;
   }
+  
+   @Override
+  public boolean cancel() {
+
+    if (actionListener != null) {
+      if (actionListener instanceof SearchCtrl) {
+      actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "CtrlValider"));
+      } else if (actionListener instanceof GemDesktop) {
+        clear();
+        actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, GemCommand.CANCEL_CMD));
+      }
+    }
+
+    return true;
+  }
 
   private boolean isValid(Course c) {
 
@@ -195,7 +198,7 @@ public class CourseCtrl
 
   public void clear() {
     cv.clear();
-    iv.clear();
+    ev.clear();
   }
 
   @Override
@@ -217,7 +220,8 @@ public class CourseCtrl
       btPrev.setText("");
     }
     select(0);
-    iv.load(course.getId());
+    ev.load(course.getId(), course.getTitle());
+    btNext.setToolTipText(BundleUtil.getLabel("Student.list.label"));
     return true;
   }
 

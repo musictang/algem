@@ -1,5 +1,5 @@
 /*
- * @(#)MailUtil.java	2.9.6 17/03/16
+ * @(#)MailUtil.java	2.10.0 12/06/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -35,6 +35,7 @@ import net.algem.planning.Schedule;
 import net.algem.planning.ScheduleIO;
 import net.algem.planning.ScheduleRangeIO;
 import net.algem.planning.ScheduleRangeObject;
+import net.algem.security.User;
 import net.algem.util.jdesktop.DesktopMailHandler;
 import net.algem.util.model.Model;
 
@@ -42,7 +43,7 @@ import net.algem.util.model.Model;
  * Utility class for sending emails.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.6
+ * @version 2.10.0
  * @since 2.8.k 26/07/13
  */
 public class MailUtil {
@@ -62,7 +63,7 @@ public class MailUtil {
     mailHandler = new DesktopMailHandler();
     memberService = service;
   }
-  
+
   public static String urlEncode(String str) {
     try {
       return URLEncoder.encode(str, "UTF-8").replace("+", "%20");
@@ -200,6 +201,16 @@ public class MailUtil {
     sendMailTo(bcc.toString());
 
     return message;
+  }
+
+  public static String getSignature(User user) {
+    String org = ConfigUtil.getConf(ConfigKey.ORGANIZATION_NAME.getKey());
+    /*String address1 = ConfigUtil.getConf(ConfigKey.ORGANIZATION_ADDRESS1.getKey());
+    String address2 = ConfigUtil.getConf(ConfigKey.ORGANIZATION_ADDRESS2.getKey());
+    String zipcode = ConfigUtil.getConf(ConfigKey.ORGANIZATION_ZIPCODE.getKey());
+    String city = ConfigUtil.getConf(ConfigKey.ORGANIZATION_CITY.getKey());*/
+    String name = user == null ? "" : user.getFirstName();
+    return org == null ? "\n" + name : "\n" + org + "\n" + name;
   }
 
   /**

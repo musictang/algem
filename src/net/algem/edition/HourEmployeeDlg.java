@@ -1,7 +1,7 @@
 /*
- * @(#)HourEmployeeDlg.java	2.9.4.13 27/10/15
+ * @(#)HourEmployeeDlg.java	2.10.0 09/06/2016
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -50,7 +50,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.10.0
  * @since 2.8.v 10/06/14
  */
 public class HourEmployeeDlg
@@ -58,7 +58,7 @@ public class HourEmployeeDlg
         implements ActionListener, PropertyChangeListener
 {
 
-  static String[] SORTING_CMD = {"DefaultSorting", "DateSorting", "MemberSorting", "ModuleSorting"};
+  static String[] SORTING_CMD = {"DefaultSorting", "DateSorting", "MemberSorting", "ModuleSorting", "Custom"};
 
   private HourEmployeeView view;
   private AccountingService service;
@@ -96,9 +96,9 @@ public class HourEmployeeDlg
     gb.add(new JLabel(BundleUtil.getLabel("Menu.file.label")), 0, 0, 1, 1, GridBagHelper.EAST);
     gb.add(filepath, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(chooser, 2, 0, 1, 1, GridBagHelper.WEST);
-    
+
     allEstabList = dataCache.getList(Model.Establishment);
-    allEstabList.addElement(new Establishment(new Person(0, BundleUtil.getLabel("All.label")))); 
+    allEstabList.addElement(new Establishment(new Person(0, BundleUtil.getLabel("All.label"))));
     view = new HourEmployeeView(this, dataCache.getList(Model.School), dataCache.getList(Model.EmployeeType), allEstabList);
 
     p.add(header);
@@ -151,19 +151,15 @@ public class HourEmployeeDlg
     setCursor(new Cursor(Cursor.WAIT_CURSOR));
 
     PrintWriter out = null;
-    boolean catchup = EmployeeType.TEACHER.ordinal() == type;
-    if (catchup && !MessagePopup.confirm(this, MessageUtil.getMessage("export.hour.teacher.catchup.warning"))) {
-      catchup = false;
-    }
     try {
       String sorting = view.getSorting();
       setPath(type, sorting);
       out = new PrintWriter(new File(path), "UTF-16LE"); // this is the best solution
       pm = new ProgressMonitor(view, MessageUtil.getMessage("active.search.label"), "", 1, 100);
       pm.setMillisToDecideToPopup(10);
-      String cmd = null;
+
       EmployeeTaskFactory factory = new EmployeeTaskFactory(this, service, dataCache, pm, out);
-      factory.setProperties(start, end, employeeId, school.getId(), estab, catchup, detail);
+      String cmd = null;
       if (EmployeeType.TEACHER.ordinal() == type) {
         out.println(MessageUtil.getMessage("export.hour.teacher.header", new Object[]{school.getValue(), start, end}) + lf);
         cmd = sorting;
@@ -172,6 +168,11 @@ public class HourEmployeeDlg
       } else if (EmployeeType.ADMINISTRATOR.ordinal() == type) {
         cmd = "Administrator";
       }
+      boolean catchup = EmployeeType.TEACHER.ordinal() == type && !"Custom".equals(cmd);
+      if (catchup && !MessagePopup.confirm(this, MessageUtil.getMessage("export.hour.teacher.catchup.warning"))) {
+        catchup = false;
+      }
+      factory.setProperties(start, end, employeeId, school.getId(), estab, catchup, detail);
       employeeTask = factory.getTask(cmd);
 
       if (employeeTask != null) {
@@ -201,7 +202,7 @@ public class HourEmployeeDlg
       pm.setProgress(pg);
     }
   }
-  
+
   @Override
   public void close() {
     allEstabList.removeElement((Establishment) allEstabList.getItem(0));

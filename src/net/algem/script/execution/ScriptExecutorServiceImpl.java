@@ -1,3 +1,4 @@
+/*2.10.0 20/05/16*/
 package net.algem.script.execution;
 
 import net.algem.scripthelper.ScriptHelperFactory;
@@ -14,7 +15,15 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import net.algem.config.ConfigKey;
+import net.algem.config.ConfigUtil;
+import net.algem.planning.DateFr;
 
+/**
+ * 
+ * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
+ * @version 2.10.0
+ */
 public class ScriptExecutorServiceImpl implements ScriptExecutorService {
     private final DataConnection dataConnection;
 
@@ -87,12 +96,21 @@ public class ScriptExecutorServiceImpl implements ScriptExecutorService {
                     '}';
         }
     }
-
+    
     public static class Utils {
+      
         public String sqlDate(Date date) {
             return new SimpleDateFormat("yyyy-MM-dd").format(date);
         }
-
+        
+        public Date getStartOfYear() {
+          return new DateFr(ConfigUtil.getConf(ConfigKey.BEGINNING_YEAR.getKey())).getDate();
+        }
+        
+        public Date getEndOfYear() {
+          return new DateFr(ConfigUtil.getConf(ConfigKey.END_YEAR.getKey())).getDate();
+        }
+        
         public void print(Object o) {
             System.out.println(o);
         }

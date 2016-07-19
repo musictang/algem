@@ -1,7 +1,7 @@
 /*
- * @(#)BasicBillingService 2.9.4.13 06/11/15
+ * @(#)BasicBillingService 2.10.0 15/06/2016
  *
- * Copyright 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -30,6 +30,7 @@ import net.algem.contact.Person;
 import net.algem.planning.DateFr;
 import net.algem.planning.DateRange;
 import net.algem.util.DataCache;
+import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
 import net.algem.util.GemService;
 import net.algem.util.MessageUtil;
@@ -40,7 +41,7 @@ import net.algem.util.model.Model;
  * Service class for billing.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.7
+ * @version 2.10.0
  * @since 2.3.a 06/02/12
  */
 public class BasicBillingService
@@ -147,22 +148,36 @@ public class BasicBillingService
   }
 
   @Override
-  public Invoice createInvoiceFrom(Quote q) throws BillingException {
+  public Invoice createInvoiceFrom(final Quote q) throws BillingException {
 
-    Invoice iv = new Invoice(q);
+    final Invoice iv = new Invoice(q);
     iv.setUser(dataCache.getUser());//change to current issuer
     iv.setDate(new DateFr(new Date()));// important
-    iv.setItems(q.getItems());
+
+    iv.setItems(new ArrayList<InvoiceItem>());
+    for (InvoiceItem it : q.getItems()) {
+      InvoiceItem iic = new InvoiceItem();
+      iic.setQuantity(it.getQuantity());
+      iic.setItem(copy(it.getItem()));
+      iv.addItem(iic);
+    }
     try {
-      q.setEditable(false);
-      update(q);
-      create(iv);
-      return iv;
-    } catch(SQLException ex) {
+      return dc.withTransaction(new DataConnection.SQLRunnable<Invoice>() {
+
+        @Override
+        public Invoice run(DataConnection conn) throws Exception {
+          q.setEditable(false);
+          update(q);
+          create(iv);
+          return iv;
+        }
+      });
+    } catch (Exception ex) {
       throw new BillingException(MessageUtil.getMessage("invoicing.create.exception") + "\n" + ex.getMessage());
     }
 
   }
+
 
   @Override
   public void create(Quote q) throws SQLException, BillingException {
@@ -401,7 +416,6 @@ public class BasicBillingService
   @Override
   public Quote duplicate(Quote v) {
 
-    //Invoice n = new Invoice();
     Quote n;
     try {
       n = v.getClass().newInstance();
@@ -432,7 +446,9 @@ public class BasicBillingService
   }
 
    /**
-   * Returns an item with the same properties that {@literal i} except its id.
+   * Returns an item with the same properties that {@literal orig} except its id.
+   * This method must be called when new invoice is created from an existing quote
+   * or when a quote is duplicated.
    * @param orig model
    * @return a copy of model
    */
