@@ -17,3 +17,7 @@ analytique varchar(13)
 CREATE INDEX echeance_compte_idx ON echeance(compte);
 
 ALTER TABLE echeance OWNER TO nobody;
+
+ALTER TABLE suivi ADD note varchar(8);
+ALTER TABLE suivi ADD abs boolean;
+ALTER TABLE suivi ADD exc boolean;
