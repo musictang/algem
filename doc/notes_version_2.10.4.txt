@@ -1,0 +1,5 @@
+2.10.4
+CORRECTIFS
+* La vérification des doublons ne fonctionnait pas correctement avant l'insertion des échéances automatiques (Compta->Echéances standards). Des doublons étaient détectés alors qu'ils n'auraient pas du l'être et aucune échéance automatique n'était donc ajoutée dans l'échéancier de l'adhérent.
+
+* La table "suivi" a été modifiée en base de données. Les colonnes "abs" et "exc" ont été remplacées par la colonne "statut". Une personne "excusée" étant forcément "absente", il était inutile d'en faire deux champs séparés. Dans Algem, les statuts sont représentés par les mentions "Présent(e)", "Absent(e)" et "Excusé(e)". En base de données, ces mentions équivalent respectivement aux valeurs : 0 (présent, valeur par défaut), 1(absent) et 2(excusé).
