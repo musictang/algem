@@ -43,6 +43,7 @@ import net.algem.course.ModuleChoice;
 import net.algem.planning.DateFr;
 import net.algem.planning.DateFrField;
 import net.algem.planning.Hour;
+import net.algem.security.Profile;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.GemLogger;
@@ -106,6 +107,7 @@ public class ModuleDlg
 
     calculatedPrice = new JFormattedTextField(nf);
     calculatedPrice.setColumns(8);
+    calculatedPrice.setEditable(false);
 
     Calendar deb = Calendar.getInstance(Locale.FRANCE);
     Calendar cal = Calendar.getInstance(Locale.FRANCE);
@@ -125,6 +127,9 @@ public class ModuleDlg
     pricing = new JComboBox(PricingPeriod.values());
     pricing.setSelectedItem(getDefaultPricingPeriod());
     pricing.addItemListener(this);
+    if (Profile.ADMIN.getId() != dataCache.getUser().getProfile()) {
+      pricing.setEnabled(false);
+    }
 
     hours = new JFormattedTextField(AccountUtil.getDefaultNumberFormat());
     hours.setColumns(5);

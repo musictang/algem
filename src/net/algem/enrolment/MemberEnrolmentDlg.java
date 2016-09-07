@@ -464,7 +464,7 @@ public class MemberEnrolmentDlg
    * Opens the dialog for course order modification.
    */
   private void modifyCourse() {
-    int n = view.getSelectedCourse();// le commandes_cours selectionné
+    int n = view.getSelectedCourse();//  commande cours selectionnée
     if (n < 0) {
       return;
     }

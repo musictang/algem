@@ -162,7 +162,7 @@ public class EnrolmentOrderUtil {
     }
     if (PricingPeriod.NULL.equals(mo.getPricing()) || PricingPeriod.HOUR.equals(mo.getPricing()) || PayFrequency.YEAR.equals(mo.getPayment())) {
       e.setAmount(AccountUtil.getIntValue(total));
-      DateFr de = mo.getStart();
+      DateFr de = new DateFr(mo.getStart());
       de.incMonth(1);
       //de.setDay(15); // TODO set day in config
       de.setDay(DEFAULT_DUE_DAY);
