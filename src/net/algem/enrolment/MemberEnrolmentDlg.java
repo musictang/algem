@@ -1,5 +1,5 @@
 /*
- * @(#)MemberEnrolmentDlg.java	2.10.4 01/09/16
+ * @(#)MemberEnrolmentDlg.java	2.10.5 08/09/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -50,7 +50,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.4
+ * @version 2.10.5
  * @since 1.0a 07/07/1999
  * @see net.algem.contact.PersonFileEditor
  *

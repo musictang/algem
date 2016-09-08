@@ -1,5 +1,5 @@
 /*
- * @(#)EnrolmentOrderUtil.java	2.10.4 01/09/16
+ * @(#)EnrolmentOrderUtil.java	2.10.5 08/09/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -41,7 +41,7 @@ import net.algem.util.model.Model;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.4
+ * @version 2.10.5
  * @since 2.8.a 01/04/2013
  */
 public class EnrolmentOrderUtil {
@@ -164,7 +164,6 @@ public class EnrolmentOrderUtil {
       e.setAmount(AccountUtil.getIntValue(total));
       DateFr de = new DateFr(mo.getStart());
       de.incMonth(1);
-      //de.setDay(15); // TODO set day in config
       de.setDay(DEFAULT_DUE_DAY);
       e.setDate(de);
       //insertion echeances
