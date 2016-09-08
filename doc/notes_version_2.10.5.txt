@@ -5,4 +5,4 @@ CORRECTIFS
 INSCRIPTIONS
 Dans la fenêtre de choix d'une formule (qu'on ouvre après avoir cliqué sur "Ajouter formule" à l'inscription) le champ "Montant échéance" n'est maintenant plus éditable. Ce montant étant automatiquement calculé en fonction du "Tarif base", de l'"Echéance" et de la "Période de tarification", il était inutile et imprudent de le rendre éditable.
 
-Dans cette même fenêtre, le champ "Tarification" a été renommé en "Période de tarification", plus explicite. Seules les personnes ayant le profil "Administrateur" peuvent maintenant modifier la "Période de tarification".
+Dans cette même fenêtre, le champ "Tarification" a été renommé en "Période de tarification", plus explicite. Seules les personnes ayant le profil "Administrateur" peuvent maintenant modifier la "Période de tarification" en cours d'inscription.
