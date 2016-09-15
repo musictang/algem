@@ -38,14 +38,14 @@ public class CodePostalCtrl
 	implements ActionListener, FocusListener {
 
 	private DataConnection dc;
-	private GemField ville;
+	private GemField city;
 
 	public CodePostalCtrl(DataConnection dc) {
 		this.dc = dc;
 	}
 
-	public void setVille(GemField _ville) {
-		ville = _ville;
+	public void setVille(GemField _city) {
+		city = _city;
 	}
 
 	@Override
@@ -53,11 +53,11 @@ public class CodePostalCtrl
 		return new CodePostalCtrl(dc);
 	}
 
-	public void chercheVille(GemField cdp) {
+	public void findCity(GemField cdp) {
 		City v = CityIO.findCdp(cdp.getText(), dc);
 
 		if (v != null) {
-			ville.setText(v.getCity());
+			city.setText(v.getCity());
 		}
 	}
 
@@ -67,13 +67,13 @@ public class CodePostalCtrl
 
 	@Override
 	public void focusLost(FocusEvent evt) {
-		if (ville != null && ville.getText().length() == 0) {
-			chercheVille((GemField) evt.getSource());
+		if (city != null && city.getText().length() == 0) {
+			findCity((GemField) evt.getSource());
 		}
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent evt) {
-		chercheVille((GemField) evt.getSource());
+		findCity((GemField) evt.getSource());
 	}
 }
