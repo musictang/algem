@@ -1,5 +1,5 @@
 /*
- * @(#)ExportMemberRTF.java 2.10.0 01/06/16
+ * @(#)ExportMemberRTF.java 2.11.0 20/09/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -52,7 +52,7 @@ import net.algem.util.module.GemDesktop;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.11.0
  * @since 1.0b 05/03/2002
  */
 public class ExportMemberRTF
@@ -258,7 +258,7 @@ public class ExportMemberRTF
         for (int j = 0; j < v.size(); j++) {
           ScheduleRangeObject p = v.elementAt(j);
 
-          String s = p.getNoteValue();
+          String s = p.getFollowUp() == null ? null : p.getFollowUp().getContent();
           if (s != null) {
             String s2 = p.getNote2();
             if (s2 != null) s += " / " + s2;

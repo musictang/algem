@@ -1,7 +1,7 @@
 /*
- * @(#)CityIO.java	2.6.a 03/10/12
+ * @(#)CityIO.java	2.11.0 16/09/16
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -22,7 +22,8 @@ package net.algem.contact;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
 import net.algem.util.model.TableIO;
@@ -32,12 +33,12 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.11.0
  */
 public class CityIO
 	extends TableIO {
-    // TODO : plusieurs villes peuvent comporter le même code postal. Utiliser un id.
-    public final static String TABLE = "ville";
+
+  public final static String TABLE = "ville";
 
 	public static void insert(City v, DataConnection dc) throws SQLException {
 		String query = "INSERT INTO " + TABLE + " VALUES("
@@ -58,17 +59,13 @@ public class CityIO
 		dc.executeUpdate(query);
 	}
 
-	public static City findCdp(String cdp, DataConnection dc) {
+	public static List<City> findCity(String cdp, DataConnection dc) {
 		String query = "WHERE cdp = '" + cdp + "'";
-		Vector<City> v = find(query, dc);
-		if (v != null && v.size() > 0) {
-			return v.elementAt(0);
-		}
-		return null;
+        return find(query, dc);
 	}
 
-	public static Vector<City> find(String where, DataConnection dc) {
-		Vector<City> v = new Vector<City>();
+	public static List<City> find(String where, DataConnection dc) {
+		List<City> cities = new ArrayList<City>();
 		String query = "SELECT cdp, nom FROM " + TABLE + " " + where + " ORDER BY cdp";
 		try {
 			ResultSet rs = dc.executeQuery(query);
@@ -77,12 +74,12 @@ public class CityIO
 				n.setCdp(rs.getString(1));
 				n.setCity(unEscape(rs.getString(2).trim()));
 
-				v.addElement(n);
+				cities.add(n);
 			}
 			rs.close();
 		} catch (SQLException e) {
 			GemLogger.logException(query, e);
 		}
-		return v;
+		return cities;
 	}
 }

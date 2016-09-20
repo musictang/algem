@@ -1,7 +1,7 @@
 /*
- * @(#)FollowUpDlg.java	2.9.1 18/11/14
+ * @(#)FollowUpDlg.java	2.11.0 20/09/16
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -25,11 +25,11 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JDialog;
+import net.algem.enrolment.FollowUp;
 import net.algem.util.BundleUtil;
 import net.algem.util.GemCommand;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.GemButton;
-import net.algem.util.ui.GemLabel;
 import net.algem.util.ui.GemPanel;
 
 /**
@@ -38,7 +38,7 @@ import net.algem.util.ui.GemPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.9.1
+ * @version 2.11.0
  */
 public class FollowUpDlg
         implements ActionListener
@@ -46,17 +46,16 @@ public class FollowUpDlg
 
   private JDialog dlg;
   private FollowUpView pv;
-  private GemLabel title;
   private boolean validation;
   private GemButton btOk;
   private GemButton btCancel;
 
   public FollowUpDlg(GemDesktop desktop, ScheduleRangeObject range, String courseName, boolean collective) {
-
-    dlg = new JDialog(desktop.getFrame(), true);
-    title = new GemLabel(BundleUtil.getLabel("Follow.up.label") + " " + range.getMember());
+    String title = BundleUtil.getLabel("Follow.up.label") + " " + range.getMember();
+    dlg = new JDialog(desktop.getFrame(), title, true);
+    
     pv = new FollowUpView(courseName, range.getDate(), range.getStart(), range.getEnd());
-    pv.setText(collective ? range.getNote2() : range.getNoteValue());
+    pv.set(range, collective);
     btOk = new GemButton(GemCommand.OK_CMD);
     btOk.setEnabled(!collective);
     btOk.addActionListener(this);
@@ -67,18 +66,17 @@ public class FollowUpDlg
     btPanel.setLayout(new GridLayout(1, 2));
     btPanel.add(btCancel);
     btPanel.add(btOk);
-
-    dlg.getContentPane().add(title, BorderLayout.NORTH);
-    dlg.getContentPane().add(pv, BorderLayout.CENTER);
-    dlg.getContentPane().add(btPanel, BorderLayout.SOUTH);
+  
+    dlg.add(pv, BorderLayout.CENTER);
+    dlg.add(btPanel, BorderLayout.SOUTH);
     dlg.setSize(400, 200);
     dlg.setLocationRelativeTo(desktop.getFrame());
   }
 
-  public String getText() {
-    return pv.getText();
+  public FollowUp getFollowUp() {
+    return pv.get();
   }
-
+  
   public void clear() {
     pv.clear();
   }

@@ -1,7 +1,7 @@
 /*
- * @(#)DayPlanAdminView.java 2.9.4.12 16/09/15
+ * @(#)DayPlanAdminView.java 2.11.0 20/09/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -37,7 +37,7 @@ import net.algem.util.GemLogger;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.12
+ * @version 2.11.0
  * @since 2.9.4.0 25/03/2015
  */
 public class DayPlanAdminView
@@ -73,8 +73,6 @@ public class DayPlanAdminView
       }
     }
     setScrollBarToZero();
-//    setScrollBar();
-//    dayPlanView.repaint();
 
   }
 
@@ -88,8 +86,7 @@ public class DayPlanAdminView
         if ((range.getMember() != null && range.getMember().getId() == personId)) {
           v.addElement(t.elementAt(i));
           try {
-//            range.setNoteValue(ScheduleRangeIO.findNote(range.getNote(), DataCache.getDataConnection()));
-            range.setNoteValue(ScheduleIO.findFollowUp(range.getNote(), DataCache.getDataConnection()));
+            range.setFollowUp(ScheduleIO.findFollowUp(range.getNote(), DataCache.getDataConnection()));
           } catch (SQLException ex) {
             GemLogger.log(ex.getMessage());
           }

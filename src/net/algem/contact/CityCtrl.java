@@ -1,7 +1,7 @@
 /*
- * @(#)CityCtrl.java	2.9.4.6 01/06/15
+ * @(#)CityCtrl.java	2.11.0 15/09/16
  * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,7 +27,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
-import java.util.Vector;
+import java.util.List;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.TableColumnModel;
@@ -44,7 +44,7 @@ import net.algem.util.ui.*;
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.6
+ * @version 2.11.0
  * @since 1.0a 02/09/2001
  */
 public class CityCtrl
@@ -123,9 +123,9 @@ public class CityCtrl
   }
 
   public void load() {
-    Vector v = CityIO.find("", dc);
+    List v = CityIO.find("", dc);
     for (int i = 0; i < v.size(); i++) {
-      cityTableModel.addItem((City) v.elementAt(i));
+      cityTableModel.addItem((City) v.get(i));
     }
   }
 

@@ -1,5 +1,5 @@
 /*
- * @(#)MemberFollowUpEditor.java	2.10.0 17/05/16
+ * @(#)MemberFollowUpEditor.java	2.11.0 20/09/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -73,9 +73,9 @@ import net.algem.util.ui.GemPanel;
 /**
  * Follow up list controller for a member.
  *
- * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.11.0
+ * @since 2.11.0 16/09/16
  */
 public class MemberFollowUpEditor
         extends FileTab
@@ -134,14 +134,15 @@ public class MemberFollowUpEditor
       }
     };
     TableColumnModel cm = table.getColumnModel();
-    cm.getColumn(0).setPreferredWidth(40);
+    cm.getColumn(0).setPreferredWidth(50);
     cm.getColumn(1).setPreferredWidth(15);
     cm.getColumn(2).setPreferredWidth(15);
     cm.getColumn(3).setPreferredWidth(100);
     cm.getColumn(4).setPreferredWidth(40);
     cm.getColumn(5).setPreferredWidth(60);
-    cm.getColumn(6).setPreferredWidth(160);
-    cm.getColumn(7).setPreferredWidth(150);
+    cm.getColumn(6).setPreferredWidth(15);
+    cm.getColumn(7).setPreferredWidth(160);
+    cm.getColumn(8).setPreferredWidth(150);
 
     JScrollPane scroll = new JScrollPane(table);
     initPrintTable();
@@ -257,24 +258,20 @@ public class MemberFollowUpEditor
     Course c = sro.getCourse();
 
     int col = table.getSelectedColumn();
-    FollowUpDlg dlg = new FollowUpDlg(desktop, sro, c.getTitle(), (col == 7));
+    FollowUpDlg dlg = new FollowUpDlg(desktop, sro, c.getTitle(), (col == 8));
     try {
       dlg.entry();
       if (!dlg.isValidation()) {
         return;
       }
-      if (col != 7) {
-        planningService.updateFollowUp(sro, dlg.getText());
-        sro.setNoteValue(dlg.getText());
+      if (col != 8) {
+        planningService.updateFollowUp(sro, dlg.getFollowUp());
+        sro.setFollowUp(dlg.getFollowUp());
         tableModel.modItem(n, sro);
       }
     } finally {
       setCursor(Cursor.getDefaultCursor());
     }
-  }
-
-  void insertion(int n) throws SQLException {
-    //plages.addItem(v);
   }
 
   void suppression(int n) throws SQLException {
@@ -286,12 +283,12 @@ public class MemberFollowUpEditor
       dc.setAutoCommit(false);
       planningService.deleteFollowUp(p);
       p.setNote(0);
-      p.setNoteValue(null);
+      p.setFollowUp(null);
       tableModel.modItem(n, p);
       dc.commit();
     } catch (SQLException e1) {
-      GemLogger.logException("transaction update", e1);
       dc.rollback();
+      GemLogger.logException("transaction update", e1);
     } finally {
       dc.setAutoCommit(true);
       setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));

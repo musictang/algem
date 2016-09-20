@@ -1,7 +1,7 @@
 /*
- * @(#)ScheduleRangeTableModel.java	2.9.4.13 09/11/15
+ * @(#)ScheduleRangeTableModel.java	2.11.0 20/09/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,6 +20,7 @@
  */
 package net.algem.planning;
 
+import net.algem.enrolment.FollowUp;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.ui.JTableModel;
@@ -28,7 +29,7 @@ import net.algem.util.ui.JTableModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.11.0
  */
 public class ScheduleRangeTableModel
         extends JTableModel<ScheduleRangeObject>
@@ -45,8 +46,9 @@ public class ScheduleRangeTableModel
       BundleUtil.getLabel("Activity.label"),
       BundleUtil.getLabel("Room.label"),
       BundleUtil.getLabel("Teacher.label"),
+      BundleUtil.getLabel("Status.label"),
       BundleUtil.getLabel("Individual.monitoring.label"),
-      BundleUtil.getLabel("Follow.up.label") + " " +  BundleUtil.getLabel("Collective.label")
+      BundleUtil.getLabel("Follow.up.label") + " " + BundleUtil.getLabel("Collective.label")
 
     };
 
@@ -71,6 +73,7 @@ public class ScheduleRangeTableModel
       case 5:
       case 6:
       case 7:
+      case 8:
         return String.class;
       default:
         return Object.class;
@@ -85,6 +88,7 @@ public class ScheduleRangeTableModel
   @Override
   public Object getValueAt(int line, int col) {
     ScheduleRangeObject sro = tuples.elementAt(line);
+    FollowUp up = sro.getFollowUp();
     switch (col) {
       case 0:
         return sro.getDate();
@@ -99,8 +103,10 @@ public class ScheduleRangeTableModel
       case 5:
         return sro.getPerson().getFirstnameName();
       case 6:
-        return sro.getNoteValue() == null ? "" : sro.getNoteValue().replaceAll(System.lineSeparator(), " ");
-        case 7:
+        return up == null || up.getStatus() <= 0 ? "" : up.getStatusFromResult().name();
+      case 7:
+        return up == null || up.toString() == null ? "" : up.toString().replaceAll(System.lineSeparator(), " ");
+      case 8:
         return sro.getNote2() == null ? "" : sro.getNote2().replaceAll(System.lineSeparator(), " ");
     }
     return null;

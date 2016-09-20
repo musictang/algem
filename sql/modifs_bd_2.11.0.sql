@@ -5,4 +5,4 @@ CREATE UNIQUE INDEX ville_idx on ville(cdp,nom);
 -- BACKUP
 --COPY ville TO '/tmp/algem_ville_backup.csv' CSV DELIMITER ';';
 DELETE FROM ville;
-COPY ville FROM '/home/jm/dev/algem/git/sql/laposte_10-02-2016_tri1.csv' CSV HEADER DELIMITER ';';
+COPY ville FROM '/tmp/laposte_10-02-2016_tri1.csv' CSV HEADER DELIMITER ';';

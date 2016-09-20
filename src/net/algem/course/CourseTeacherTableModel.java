@@ -1,7 +1,7 @@
 /*
- * @(#)CourseTeacherTableModel.java	2.9.4.12 16/09/15
+ * @(#)CourseTeacherTableModel.java	2.11.0 20/09/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,6 +20,7 @@
  */
 package net.algem.course;
 
+import net.algem.enrolment.FollowUp;
 import net.algem.planning.CourseSchedule;
 import net.algem.planning.DateFr;
 import net.algem.util.BundleUtil;
@@ -30,17 +31,20 @@ import net.algem.util.ui.JTableModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.12
+ * @version 2.11.0
  */
 public class CourseTeacherTableModel
         extends JTableModel<CourseSchedule>
 {
+
   public CourseTeacherTableModel() {
     header = new String[]{
       BundleUtil.getLabel("Date.label"),
       BundleUtil.getLabel("Start.label"),
       BundleUtil.getLabel("End.label"),
       BundleUtil.getLabel("Course.label"),
+      BundleUtil.getLabel("Member.label"),
+      BundleUtil.getLabel("Status.label"),
       BundleUtil.getLabel("Follow.up.label")
     };
   }
@@ -59,11 +63,12 @@ public class CourseTeacherTableModel
         return DateFr.class;
       case 1:
       case 2:
+      case 4:
+      case 5:
+      case 6:
         return String.class;
       case 3:
         return Course.class;
-      case 4:
-        return String.class;
       default:
         return Object.class;
     }
@@ -77,6 +82,7 @@ public class CourseTeacherTableModel
   @Override
   public Object getValueAt(int line, int col) {
     CourseSchedule p = tuples.elementAt(line);
+    FollowUp up = p.getFollowUp();
     switch (col) {
       case 0:
         return p.getDate();
@@ -85,12 +91,13 @@ public class CourseTeacherTableModel
       case 2:
         return p.getEnd().toString();
       case 3:
-          return p.getCourse();
+        return p.getCourse();
       case 4:
-        String s = p.getNoteValue();
-        if (s != null) {
-          return p.getNoteValue().replace('\n', ' ');
-        }
+        return p.getMember() != null ? p.getMember().getFirstnameName() : null;
+      case 5:
+        return up == null || up.getStatus() <= 0 ? "" : up.getStatusFromResult().name();
+      case 6:
+        return up == null || up.toString() == null ? "" : up.toString().replaceAll(System.lineSeparator(), " ");
     }
     return null;
   }

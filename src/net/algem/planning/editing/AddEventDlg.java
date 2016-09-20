@@ -1,7 +1,7 @@
 /*
- * @(#)AddEventDlg.java 2.9.4.14 15/12/15
+ * @(#)AddEventDlg.java 2.11.0 20/09/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -26,6 +26,7 @@ import java.awt.GridBagLayout;
 import javax.swing.JDialog;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import net.algem.enrolment.FollowUp;
 import net.algem.planning.HourRange;
 import net.algem.planning.HourRangePanel;
 import net.algem.planning.ScheduleObject;
@@ -39,7 +40,7 @@ import net.algem.util.ui.GridBagHelper;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.14
+ * @version 2.11.0
  * @since 2.9.4.0 26/03/2015
  */
 public class AddEventDlg
@@ -86,8 +87,10 @@ public class AddEventDlg
     return new HourRange(timePanel.getStart(), timePanel.getEnd());
   }
 
-  String getNote() {
-    return note.getText().trim();
+  FollowUp getNote() {
+    FollowUp up = new FollowUp();
+    up.setContent(note.getText().trim());
+    return up;
   }
 
 }

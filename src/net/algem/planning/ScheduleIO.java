@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleIO.java	2.9.6 16/03/16
+ * @(#)ScheduleIO.java	2.11.0 20/09/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -26,9 +26,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
 import net.algem.config.GemParam;
-import net.algem.contact.Note;
 import net.algem.contact.Person;
 import net.algem.course.Course;
+import net.algem.enrolment.FollowUp;
 import net.algem.group.Group;
 import net.algem.room.Room;
 import net.algem.util.DataCache;
@@ -42,7 +42,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.6
+ * @version 2.11.0
  */
 public class ScheduleIO
         extends TableIO
@@ -425,11 +425,11 @@ public class ScheduleIO
     return n;
   }
 
-  public static void createCollectiveFollowUp(Schedule s, String text, DataConnection dc) throws PlanningException {
+  public static void createCollectiveFollowUp(Schedule s, FollowUp up, DataConnection dc) throws PlanningException {
 
     try {
       dc.setAutoCommit(false);
-      int noteId = createFollowUp(text, dc);
+      int noteId = createFollowUp(up, dc);
       s.setNote(noteId);
       update(s, dc);
       dc.commit();
@@ -441,10 +441,10 @@ public class ScheduleIO
     }
   }
 
-  public static void createIndividualFollowUp(int rangeId, String text, DataConnection dc) throws PlanningException {
+  public static void createIndividualFollowUp(int rangeId, FollowUp up, DataConnection dc) throws PlanningException {
     try {
       dc.setAutoCommit(false);
-      int noteId = createFollowUp(text, dc);
+      int noteId = createFollowUp(up, dc);
       Vector<ScheduleRange> ranges = ScheduleRangeIO.find("pg WHERE pg.id = " + rangeId, dc);
       if (ranges.size() > 0) {
         ScheduleRange r = ranges.elementAt(0);
@@ -460,15 +460,31 @@ public class ScheduleIO
     }
   }
 
-   private static int createFollowUp(String text, DataConnection dc) throws SQLException {
-    int num = nextId(FOLLOW_UP_SEQUENCE, dc);
-    String query = "INSERT INTO " + FOLLOW_UP_TABLE + " VALUES(" + num + ",'" + escape(text) + "')";
+   private static int createFollowUp(FollowUp up, DataConnection dc) throws SQLException {
+     int nextId = nextId(FOLLOW_UP_SEQUENCE, dc);
+     String content = up.getContent() == null || up.getContent().isEmpty() ? "NULL,"  : "'" + escape(up.getContent()) + "',";
+      String note = up.getNote() == null || up.getNote().isEmpty()? "NULL,"  : "'" + escape(up.getNote()) + "',";
+      String query = "INSERT INTO " + ScheduleIO.FOLLOW_UP_TABLE + " VALUES(" 
+              + nextId + ","
+              + content
+              + note
+              + up.getStatus() + ")";
+    
+//    String query = "INSERT INTO " + FOLLOW_UP_TABLE 
+//            + " VALUES(" + nextId + ",'" + escape(text) + "')";
     dc.executeUpdate(query);
-    return num;
+    return nextId;
   }
 
-  public static void updateFollowUp(int noteId, String text, DataConnection dc) throws SQLException {
-    String query = "UPDATE " + FOLLOW_UP_TABLE + " SET texte = '" + escape(text) + "' WHERE id = " + noteId;
+  public static void updateFollowUp(int noteId, FollowUp up, DataConnection dc) throws SQLException {
+    String content = up.getContent() == null || up.getContent().isEmpty() ? "NULL,"  : "'" + escape(up.getContent()) + "',";
+      String n = up.getNote() == null || up.getNote().isEmpty()? "NULL,"  : "'" + escape(up.getNote()) + "',";
+//    String query = "UPDATE " + FOLLOW_UP_TABLE + " SET texte = '" + escape(text) + "' WHERE id = " + noteId;
+String query = "UPDATE " + ScheduleIO.FOLLOW_UP_TABLE 
+            + " SET texte = " + content
+            + " note = " + n
+            + " statut = " + up.getStatus()
+            + " WHERE id = " + noteId;
     dc.executeUpdate(query);
   }
 
@@ -479,16 +495,21 @@ public class ScheduleIO
    * @return a text or an empty string if there is no text for this note
    * @throws SQLException
    */
-  public static String findFollowUp(int noteId, DataConnection dc) throws SQLException {
+  public static FollowUp findFollowUp(int noteId, DataConnection dc) throws SQLException {
+    
+    
+    String query = "SELECT texte,CASE WHEN id = 0 AND note = '0' THEN NULL ELSE note END AS note1,statut FROM " + FOLLOW_UP_TABLE + " WHERE id = " + noteId;
 
-    String text = "";
-    String query = "SELECT texte FROM " + FOLLOW_UP_TABLE + " WHERE id = " + noteId;
-
-    ResultSet rs = dc.executeQuery(query);
-    if (rs.next()) {
-      text = unEscape(rs.getString(1));
+    try (ResultSet rs = dc.executeQuery(query)) {
+      if (rs.next()) {
+        FollowUp up = new FollowUp();
+        up.setContent(unEscape(rs.getString(1)));
+        up.setNote(unEscape(rs.getString(2)));
+        up.setStatus(rs.getShort(3));
+        return up;
+      }
+      return null;
     }
-    return text;
   }
   /**
    * Find the note value of the schedule including the range {@code rangeId}.
@@ -497,19 +518,18 @@ public class ScheduleIO
    * @return a text or an empty string if there is no text for this note
    * @throws SQLException
    */
-  public static Note getCollectiveFollowUpByRange(int rangeId, DataConnection dc) throws SQLException {
+  public static FollowUp getCollectiveFollowUpByRange(int rangeId, DataConnection dc) throws SQLException {
 
-    Note n = null;
+    FollowUp up = new FollowUp();
     String query = "SELECT s.id, s.texte FROM " + FOLLOW_UP_TABLE + " s, " + ScheduleRangeIO.TABLE + " pg, " + ScheduleIO.TABLE + " p"
             + " WHERE pg.id = " + rangeId + " AND pg.idplanning = p.id AND p.note > 0 AND p.note = s.id ";
 
     ResultSet rs = dc.executeQuery(query);
     if (rs.next()) {
-      n = new Note();
-      n.setId(rs.getInt(1));
-      n.setText(unEscape(rs.getString(2)));
+      up.setId(rs.getInt(1));
+      up.setContent(unEscape(rs.getString(2)));
     }
-    return n;
+    return up;
   }
 
   private static String getDeleteScheduleQuery(Action a) {

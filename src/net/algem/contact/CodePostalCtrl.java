@@ -1,7 +1,7 @@
 /*
- * @(#)CodePostalCtrl.java	2.6.a 01/08/2012
+ * @(#)CodePostalCtrl.java	2.11.0 16/09/16
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,60 +20,165 @@
  */
 package net.algem.contact;
 
+import java.awt.BorderLayout;
+import java.awt.Frame;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.util.List;
+import javax.swing.JDialog;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.TableColumnModel;
 import net.algem.util.DataConnection;
+import net.algem.util.GemCommand;
+import net.algem.util.module.GemModule;
+import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GemField;
+import net.algem.util.ui.GemPanel;
+import net.algem.util.ui.PopupDlg;
 
 /**
  * Search controller for a city from its postal code.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.11.0
  */
 public class CodePostalCtrl
-	implements ActionListener, FocusListener {
+        extends KeyAdapter
+        implements ActionListener, FocusListener
+{
 
-	private DataConnection dc;
-	private GemField city;
+  private DataConnection dc;
+  private GemField zipCode;
+  private GemField city;
+  private SelectCityDlg selectCityDlg;
 
-	public CodePostalCtrl(DataConnection dc) {
-		this.dc = dc;
-	}
+  public CodePostalCtrl(DataConnection dc) {
+    this.dc = dc;
+  }
 
-	public void setVille(GemField _city) {
-		city = _city;
-	}
+  public void setFields(GemField _city, GemField _zip) {
+    city = _city;
+    zipCode = _zip;
+  }
 
-	@Override
-	public Object clone() {
-		return new CodePostalCtrl(dc);
-	}
+  @Override
+  public Object clone() {
+    return new CodePostalCtrl(dc);
+  }
 
-	public void findCity(GemField cdp) {
-		City v = CityIO.findCdp(cdp.getText(), dc);
+  public void findCity(GemField cdp) {
+    List<City> v = CityIO.findCity(cdp.getText(), dc);
+    int size = v.size();
+    if (size > 0) {
+      if (size == 1) {
+        city.setText(v.get(0).getCity());
+      } else {
+        selectCityDlg = new SelectCityDlg(PopupDlg.getTopFrame(city), true);
+        selectCityDlg.loadResult(v);
+        selectCityDlg.initUI();
+        City c = selectCityDlg.getCity();
+        if (c != null) {
+          city.setText(c.getCity());
+        }
+      }
+    }
+  }
 
-		if (v != null) {
-			city.setText(v.getCity());
-		}
-	}
+  @Override
+  public void keyReleased(KeyEvent e) {
+    int length = zipCode.getText().length();
+    if (length == 5) {
+      findCity(zipCode);
+    }
+  }
 
-	@Override
-	public void focusGained(FocusEvent evt) {
-	}
+  @Override
+  public void focusGained(FocusEvent evt) {
+  }
 
-	@Override
-	public void focusLost(FocusEvent evt) {
-		if (city != null && city.getText().length() == 0) {
-			findCity((GemField) evt.getSource());
-		}
-	}
+  @Override
+  public void focusLost(FocusEvent evt) {
+    if (city != null && city.getText().length() == 0) {
+      findCity((GemField) evt.getSource());
+    }
+  }
 
-	@Override
-	public void actionPerformed(ActionEvent evt) {
-		findCity((GemField) evt.getSource());
-	}
+  @Override
+  public void actionPerformed(ActionEvent evt) {
+    findCity((GemField) evt.getSource());
+  }
+
+  class SelectCityDlg
+          extends JDialog
+          implements ActionListener
+  {
+
+    private CityTableModel model;
+    private JTable table;
+    private GemButton btOk, btCancel;
+    private Frame parent;
+    private City city;
+
+    SelectCityDlg(Frame owner, boolean modal) {
+      super(owner, modal);
+      this.parent = owner;
+      model = new CityTableModel();
+      table = new JTable(model);
+    }
+
+    void initUI() {
+      table.getColumnModel().getColumn(0).setPreferredWidth(80);
+      table.getColumnModel().getColumn(1).setPreferredWidth(240);
+      GemPanel buttons = new GemPanel(new GridLayout(1, 2));
+      JScrollPane scroll = new JScrollPane(table);
+      add(scroll, BorderLayout.CENTER);
+      btOk = new GemButton(GemCommand.OK_CMD);
+      btOk.addActionListener(this);
+      btCancel = new GemButton(GemCommand.CANCEL_CMD);
+      btCancel.addActionListener(this);
+      buttons.add(btOk);
+      buttons.add(btCancel);
+      add(buttons, BorderLayout.SOUTH);
+      setSize(GemModule.XS_SIZE);
+      setLocationRelativeTo(parent);
+      setVisible(true);
+    }
+
+    void setCity() {
+      int row = table.getSelectedRow();
+      if (row >= 0) {
+        city = (City) model.getItem(row);
+      }
+    }
+
+    City getCity() {
+      return city;
+    }
+
+    public void loadResult(List<City> result) {
+      for (City c : result) {
+        model.addItem(c);
+      }
+
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      Object src = e.getSource();
+      if (src == btOk) {
+        setCity();
+      } else {
+        city = null;
+      }
+      setVisible(false);
+    }
+  }
+
 }

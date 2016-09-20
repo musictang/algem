@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleObject.java	2.9.6 15/03/16
+ * @(#)ScheduleObject.java	2.11.0 20/09/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -30,13 +30,14 @@ import net.algem.course.Course;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.6
+ * @version 2.11.0
  */
 public class CourseSchedule
         extends ScheduleObject
 {
 
   private Action action;
+  private Person member;
 
   public CourseSchedule() {
   }
@@ -68,6 +69,14 @@ public class CourseSchedule
 
   public void setAction(Action action) {
     this.action = action;
+  }
+
+  public Person getMember() {
+    return member;
+  }
+
+  public void setMember(Person member) {
+    this.member = member;
   }
 
   @Override
