@@ -1,5 +1,5 @@
 /*
- * @(#)ContactIO.java	2.9.6 14/03/16
+ * @(#)ContactIO.java	2.11.0 15/09/16
  * 
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -49,7 +49,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.6
+ * @version 2.11.0
  * @since 1.0a 07/07/1999
  */
 public class ContactIO
@@ -356,8 +356,8 @@ public class ContactIO
    * @param a
    */
   private static void addCity(Address a, DataConnection dc) {
-    City v = CityIO.findCdp(a.getCdp(), dc);
-    if (v == null) {
+    List<City> v = CityIO.findCity(a.getCdp(), dc);
+    if (v == null || v.isEmpty()) {
       try {
         CityIO.insert(new City(a.getCdp(), a.getCity()), dc);
       } catch (SQLException se) {

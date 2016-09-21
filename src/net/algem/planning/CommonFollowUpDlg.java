@@ -1,7 +1,7 @@
 /*
- * @(#)CommonFollowUpDlg.java	2.9.4.12 17/09/15
+ * @(#)CommonFollowUpDlg.java	2.11.0 20/09/16
  * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,6 +27,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import javax.swing.JDialog;
+import net.algem.enrolment.FollowUp;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.GemCommand;
@@ -42,7 +43,7 @@ import net.algem.util.ui.GemPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.9.4.12
+ * @version 2.11.0
  * @since 2.9.4.12 17/09/15
  */
 public class CommonFollowUpDlg
@@ -68,14 +69,11 @@ public class CommonFollowUpDlg
     this.service = service;
     this.scheduleObject = plan;
     this.onlyCollective = collective;
-
-    dlg = new JDialog(desktop.getFrame(), true);
-    title = new GemLabel(BundleUtil.getLabel("Follow.up.label") + " : " + courseTitle);
+    String title = BundleUtil.getLabel("Follow.up.label") + " : " + courseTitle;
+    dlg = new JDialog(desktop.getFrame(), title, true);
     pv = new FollowUpView(this.scheduleObject.getDate(), this.scheduleObject.getStart(), this.scheduleObject.getEnd());
 
-    if (this.scheduleObject.getNote() != 0) {
-      pv.setText(service.getFollowUp(plan.getNote()));
-    }
+    pv.set(scheduleObject.getFollowUp(), collective);
 
     btValid = new GemButton(GemCommand.OK_CMD);
     btValid.addActionListener(this);
@@ -87,7 +85,6 @@ public class CommonFollowUpDlg
     btPanel.add(btCancel);
     btPanel.add(btValid);
 
-    dlg.getContentPane().add(title, BorderLayout.NORTH);
     dlg.getContentPane().add(pv, BorderLayout.CENTER);
     dlg.getContentPane().add(btPanel, BorderLayout.SOUTH);
     dlg.setSize(400, 200);
@@ -95,9 +92,9 @@ public class CommonFollowUpDlg
     pt.translate(200, 200);
     dlg.setLocation(pt);
   }
-
-  public String getText() {
-    return pv.getText();
+  
+  public FollowUp getFollowUp() {
+    return pv.get();
   }
 
   public void clear() {
@@ -122,16 +119,16 @@ public class CommonFollowUpDlg
       try {
         if (scheduleObject.getNote() == 0) {
           if (onlyCollective) {
-            service.createCollectiveFollowUp(scheduleObject, pv.getText());
+            service.createCollectiveFollowUp(scheduleObject, pv.get());
           } else {
               if (((CourseSchedule) scheduleObject).getCourse().isCollective()) {
-                service.createCollectiveFollowUp(scheduleObject, pv.getText());
+                service.createCollectiveFollowUp(scheduleObject, pv.get());
               } else {
-                service.createIndividualFollowUp(scheduleObject.getId(), pv.getText());
+                service.createIndividualFollowUp(scheduleObject.getId(), pv.get());
               }
           }
         } else {
-          service.updateFollowUp(scheduleObject.getNote(), pv.getText());
+          service.updateFollowUp(scheduleObject.getNote(), pv.get());
         }
       } catch (SQLException e) {
         GemLogger.logException(MessageUtil.getMessage("activity.thread.update.exception"), e, dlg);

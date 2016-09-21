@@ -24,6 +24,7 @@ package net.algem.accounting;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 import net.algem.billing.ItemIO;
@@ -277,10 +278,16 @@ public class AccountingService {
     stdOrderLineIO.delete(ol.getId());
   }
 
-  public boolean exists(OrderLine o) {
+  public boolean exists(OrderLine o, String startDate, int member) {
     try {
       DataCache cache = DataCache.getInstance(dc, null);
-      return stdOrderLineIO.exists(o, cache.getStartOfYear().getDate(), cache.getEndOfYear().getDate());
+      Date start = null;
+      if (startDate == null || DateFr.NULLDATE.equals(startDate)) {
+        start = cache.getStartOfYear().getDate();
+      } else {
+        start = new DateFr(startDate).getDate();
+      }
+      return stdOrderLineIO.exists(o, start, cache.getEndOfYear().getDate(), member);
     } catch (SQLException ex) {
       GemLogger.log(ex.getMessage());
       return false;

@@ -50,7 +50,7 @@ public class AddressIO
             + "')";
 
     dc.executeUpdate(query);
-    if (CityIO.findCdp(a.getCdp(), dc) == null) {
+    if (CityIO.findCity(a.getCdp(), dc) == null) {
       City v = new City(a.getCdp(), a.getCity().toUpperCase());
       CityIO.insert(v, dc);
     }

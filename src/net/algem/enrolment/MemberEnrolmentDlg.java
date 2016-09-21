@@ -1,5 +1,5 @@
 /*
- * @(#)MemberEnrolmentDlg.java	2.10.0 19/05/16
+ * @(#)MemberEnrolmentDlg.java	2.10.5 08/09/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -50,7 +50,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.10.5
  * @since 1.0a 07/07/1999
  * @see net.algem.contact.PersonFileEditor
  *
@@ -161,7 +161,7 @@ public class MemberEnrolmentDlg
           for (ModuleOrder mo : module_orders) {
             orderUtil.updateModuleOrder(n, mo);
           }
-          orderUtil.saveStandardOrderLines(module_orders.elementAt(0));
+          orderUtil.saveStandardOrderLines(module_orders.elementAt(0), dossier.getId());
         } catch (NullAccountException ne) {
           MessagePopup.warning(view, ne.getMessage());
         }
@@ -464,7 +464,7 @@ public class MemberEnrolmentDlg
    * Opens the dialog for course order modification.
    */
   private void modifyCourse() {
-    int n = view.getSelectedCourse();// le commandes_cours selectionné
+    int n = view.getSelectedCourse();//  commande cours selectionnée
     if (n < 0) {
       return;
     }

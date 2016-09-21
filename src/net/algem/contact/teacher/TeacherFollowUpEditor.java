@@ -1,5 +1,5 @@
 /*
- * @(#)TeacherFollowUpEditor.java	2.10.0 07/06/2016
+ * @(#)TeacherFollowUpEditor.java	2.11.0 20/09/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -35,10 +35,10 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableColumnModel;
-import net.algem.contact.Note;
 import net.algem.contact.PersonFile;
 import net.algem.course.Course;
 import net.algem.course.CourseTeacherTableModel;
+import net.algem.enrolment.FollowUp;
 import net.algem.planning.*;
 import net.algem.util.BundleUtil;
 import net.algem.util.GemCommand;
@@ -55,7 +55,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.11.0
  */
 public class TeacherFollowUpEditor
         extends FileTab
@@ -71,13 +71,11 @@ public class TeacherFollowUpEditor
   private CourseTeacherTableModel courseTableModel;
   private JTable table;
   private TeacherService service;
-//  private PlanningService planningService;
   private GemLabel totalTime;
 
   public TeacherFollowUpEditor(GemDesktop desktop, PersonFile dossier) {
     super(desktop);
 
-//    planningService = new PlanningService(dc);
     service = new TeacherService(planningService, dc);
     pFile = dossier;
 
@@ -107,11 +105,13 @@ public class TeacherFollowUpEditor
     });
 
     TableColumnModel cm = table.getColumnModel();
-    cm.getColumn(0).setPreferredWidth(30);
-    cm.getColumn(1).setPreferredWidth(20);
-    cm.getColumn(2).setPreferredWidth(20);
+    cm.getColumn(0).setPreferredWidth(50);
+    cm.getColumn(1).setPreferredWidth(15);
+    cm.getColumn(2).setPreferredWidth(15);
     cm.getColumn(3).setPreferredWidth(150);
-    cm.getColumn(4).setPreferredWidth(300);
+    cm.getColumn(4).setPreferredWidth(150);
+    cm.getColumn(5).setPreferredWidth(15);
+    cm.getColumn(6).setPreferredWidth(250);
 
     JScrollPane pm = new JScrollPane(table);
 
@@ -163,22 +163,26 @@ public class TeacherFollowUpEditor
       Vector<ScheduleRangeObject> v = service.getSchedule(pFile.getId(), dateStart.toString(), dateEnd.toString());
       for (int i = 0; i < v.size(); i++) {
         ScheduleRangeObject r = v.elementAt(i);
-        CourseSchedule pc = new CourseSchedule(v.elementAt(i));
-        pc.setCourse(r.getCourse());
+        CourseSchedule pc = new CourseSchedule(r);
+        Course c = r.getCourse();
+        pc.setCourse(c);
+        if (!c.isCollective() || v.size() == 1) {
+          pc.setMember(r.getMember());
+        }
         if (pc.getCourse().isCollective()) {
           Schedule s = planningService.getScheduleByRange(pc.getId());
           if (s != null) {
             pc.setId(s.getId());
           }
-          Note n = planningService.getCollectiveFollowUpByRange(r.getId());
+          FollowUp n = planningService.getCollectiveFollowUpByRange(r.getId());
           if (n != null) {
             pc.setNote(n.getId());
-            pc.setNoteValue(n.getText());
+            pc.setFollowUp(n);
           } else {
             pc.setNote(0);
           }
         } else {
-          pc.setNoteValue(planningService.getFollowUp(r.getNote()));
+          pc.setFollowUp(planningService.getFollowUp(r.getNote()));
         }
         courseTableModel.addItem(pc);
         Hour hd = pc.getStart();
@@ -225,12 +229,12 @@ public class TeacherFollowUpEditor
     if (c == null) {
       return;
     }
-    CommonFollowUpDlg dlg = new CommonFollowUpDlg(desktop, planningService, p, p.getCourse().toString(), false);
+    CommonFollowUpDlg dlg = new CommonFollowUpDlg(desktop, planningService, p, p.getCourse().toString(), c.isCollective());
     dlg.entry();
     if (!dlg.isValidation()) {
       return;
     }
-    p.setNoteValue(dlg.getText());
+    p.setFollowUp(dlg.getFollowUp());
     courseTableModel.modItem(n, p);
     dlg.exit();
   }

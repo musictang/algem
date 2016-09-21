@@ -1,7 +1,7 @@
 /*
- * @(#)ModuleDlg.java	2.9.4.12 22/09/15
+ * @(#)ModuleDlg.java	2.10.5 08/09/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -43,6 +43,7 @@ import net.algem.course.ModuleChoice;
 import net.algem.planning.DateFr;
 import net.algem.planning.DateFrField;
 import net.algem.planning.Hour;
+import net.algem.security.Profile;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.GemLogger;
@@ -54,7 +55,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.12
+ * @version 2.9.5
  * @since 1.0a 07/07/1999
  */
 public class ModuleDlg
@@ -106,6 +107,7 @@ public class ModuleDlg
 
     calculatedPrice = new JFormattedTextField(nf);
     calculatedPrice.setColumns(8);
+    calculatedPrice.setEditable(false);
 
     Calendar deb = Calendar.getInstance(Locale.FRANCE);
     Calendar cal = Calendar.getInstance(Locale.FRANCE);
@@ -125,6 +127,9 @@ public class ModuleDlg
     pricing = new JComboBox(PricingPeriod.values());
     pricing.setSelectedItem(getDefaultPricingPeriod());
     pricing.addItemListener(this);
+    if (Profile.ADMIN.getId() != dataCache.getUser().getProfile()) {
+      pricing.setEnabled(false);
+    }
 
     hours = new JFormattedTextField(AccountUtil.getDefaultNumberFormat());
     hours.setColumns(5);

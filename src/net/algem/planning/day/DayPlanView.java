@@ -1,5 +1,5 @@
 /*
- * @(#)DayPlanView.java 2.10.0 07/06/2016
+ * @(#)DayPlanView.java 2.11.0 20/09/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -43,7 +43,7 @@ import net.algem.util.model.Model;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.11.0
  * @since 1.0a 07/07/1999
  */
 public class DayPlanView
@@ -501,7 +501,7 @@ public class DayPlanView
       int y = setY(p.getEnd().toMinutes()) - (fm.getHeight() /2);
       String subSubLabel = null;
       if (Schedule.ADMINISTRATIVE == p.getType()) {
-        subSubLabel = String.valueOf(p.getNoteValue());
+        subSubLabel = p.getFollowUp() == null ? null : p.getFollowUp().getContent();
       } else {
         subSubLabel = p.getMember() != null ? p.getMember().getCommunName() : "";
       }

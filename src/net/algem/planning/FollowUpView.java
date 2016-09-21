@@ -1,7 +1,7 @@
 /*
- * @(#)FollowUpView.java	2.9.4.4 06/05/15
+ * @(#)FollowUpView.java	2.11.0 20/09/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,61 +21,142 @@
 package net.algem.planning;
 
 import java.awt.GridBagLayout;
+import javax.swing.BorderFactory;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import net.algem.util.ui.GemBorderPanel;
+import javax.swing.JTextField;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.PlainDocument;
+import net.algem.config.FollowUpStatus;
+import net.algem.enrolment.FollowUp;
+import net.algem.util.BundleUtil;
+import net.algem.util.ui.GemPanel;
 import net.algem.util.ui.GemTextArea;
 import net.algem.util.ui.GridBagHelper;
-
 
 /**
  * View for followup editing.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.9.4.4
+ * @version 2.11.0
  */
 public class FollowUpView
-        extends GemBorderPanel
+        extends GemPanel
 {
 
   private JLabel course;
   private GemTextArea textArea;
+  private JTextField note;
+  private JComboBox status;
 
   public FollowUpView(String courseName, DateFr date, Hour start, Hour end) {
     course = new JLabel(courseName);
     JLabel detail = new JLabel(date + " " + start + "-" + end);
-
+    setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
     textArea = new GemTextArea(3, 30);
     textArea.setLineWrap(true);
     textArea.setWrapStyleWord(true);
+    note = new JTextField(BundleUtil.getLabel("Note.label"));
+    note.setColumns(6);
+    note.setDocument(new NoteDocumentFilter());
+    status = new JComboBox(FollowUpStatus.values());
 
-    this.setLayout(new GridBagLayout());
+    setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
+    gb.insets = GridBagHelper.SMALL_INSETS;
 
-    gb.add(course, 0, 0, 1, 1, GridBagHelper.WEST);
-    gb.add(detail, 0, 1, 1, 1, GridBagHelper.WEST);
-    gb.add(textArea, 0, 2, 1, 1, GridBagHelper.BOTH, 1.0, 1.0);
+    gb.add(course, 0, 0, 3, 1, GridBagHelper.WEST);
+    gb.add(detail, 0, 1, 3, 1, GridBagHelper.WEST);
+    gb.add(textArea, 0, 2, 3, 1, GridBagHelper.BOTH, 1.0, 1.0);
+    gb.add(new JLabel(BundleUtil.getLabel("Note.label")), 0, 3, 1, 1, GridBagHelper.WEST);
+    gb.add(note, 1, 3, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
+    gb.add(status, 2, 3, 1, 1, GridBagHelper.WEST);
+
   }
 
   public FollowUpView(DateFr date, Hour start, Hour end) {
-    this("", date,start, end);
+    this("", date, start, end);
   }
 
-  public void set(String courseName, String txt) {
-    course.setText(courseName);
-    textArea.setText(txt);
+  public void set(ScheduleRangeObject range, boolean collective) {
+    if (range.getFollowUp() != null) {
+      if (collective) {
+        textArea.setText(range.getNote2());
+      } else {
+        FollowUp up = range.getFollowUp();
+        textArea.setText(up.getContent());
+        note.setText(up.getNote());
+        status.setSelectedItem(up.getStatusFromResult());
+      }
+    }
+    if (collective) {
+      note.setEnabled(false);
+      status.setEnabled(false);
+    }
+
   }
 
-  public void setText(String txt) {
-    textArea.setText(txt);
+  public void set(FollowUp up, boolean collective) {
+    if (up != null) {
+      textArea.setText(up.getContent());
+      if (!collective) {
+        note.setText(up.getNote());
+        status.setSelectedItem(up.getStatusFromResult());
+      }
+    }
+    if (collective) {
+      note.setEnabled(false);
+      status.setEnabled(false);
+    }
   }
 
-  public String getText() {
-    return textArea.getText();
+  public FollowUp get() {
+    FollowUp up = new FollowUp();
+    up.setContent(textArea.getText());
+    up.setNote((String) note.getText());
+    up.setStatus((short) ((FollowUpStatus) status.getSelectedItem()).getId());
+    return up;
   }
 
   public void clear() {
-    course.setText("");
+    course.setText(null);
     textArea.clear();
+    note.setText(null);
+    status.setSelectedIndex(0);
+    note.setEnabled(true);
+    status.setEnabled(true);
   }
+
+  class NoteDocumentFilter
+          extends PlainDocument
+  {
+
+    private static final String REGEX = "^[a-zA-Z0-9,\\.\\+-]+$";
+
+    @Override
+    public void insertString(int offset,
+            String text, AttributeSet attr)
+            throws BadLocationException {
+      if (text == null) {
+        return;
+      }
+      if (text.matches(REGEX)) {
+        super.insertString(offset, text, attr);
+      }
+    }
+
+    @Override
+    public void replace(int offset, int length, String text, AttributeSet attr) throws BadLocationException {
+      if (text == null) {
+        return;
+      }
+      if (text.matches(REGEX)) {
+        super.replace(offset, length, text, attr);
+      }
+    }
+
+  }
+
 }

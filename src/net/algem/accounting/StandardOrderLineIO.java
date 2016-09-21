@@ -1,5 +1,5 @@
 /*
- * @(#) StandardOrderLineIO.java Algem 2.10.0 19/05/16
+ * @(#) StandardOrderLineIO.java Algem 2.10.4 01/09/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -35,7 +35,7 @@ import static net.algem.util.model.TableIO.escape;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.10.4
  * @since 2.10.0 18/05/16
  */
 public class StandardOrderLineIO {
@@ -116,14 +116,25 @@ public class StandardOrderLineIO {
       return defs;
     }
 
-    public boolean exists(StandardOrderLine o, Date start, Date end) throws SQLException {
-      String query = "SELECT e.oid FROM " + OrderLineIO.TABLE + " e, " + TABLE + " s"
+    /**
+     * Checks if an order line already exists between {@code start} and {@code end} dates
+     * for this {@code member}.
+     * @param o order line to check
+     * @param start start date
+     * @param end end date
+     * @param member member id
+     * @return true if any line exists, else false
+     * @throws SQLException 
+     */
+    public boolean exists(StandardOrderLine o, Date start, Date end, int member) throws SQLException {
+      String query = "SELECT e.oid FROM " + OrderLineIO.TABLE + " e"
         + " WHERE e.echeance BETWEEN '" + start + "' AND '" + end
         //+ " AND e.reglement LIKE '" + o.getModeOfPayment() + "%'"
-        + "' AND e.libelle = '" + o.getLabel()
+        //+ "' AND e.libelle = '" + o.getLabel()
         + "' AND e.montant = " + o.getAmount()
         + " AND e.compte = " + o.getAccount().getId()
-        + " AND e.analytique = '" + o.getCostAccount().getNumber() + "'";
+        + " AND e.analytique = '" + o.getCostAccount().getNumber()
+        + "' AND e.adherent = " + member;
       ResultSet rs = dc.executeQuery(query);
       while (rs.next()) {
         return true;

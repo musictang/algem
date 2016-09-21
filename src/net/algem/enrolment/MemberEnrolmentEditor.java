@@ -1,5 +1,5 @@
 /*
- * @(#)MemberEnrolmentEditor.java 2.10.2 23/06/16
+ * @(#)MemberEnrolmentEditor.java 2.11.0 20/09/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -76,7 +76,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.2
+ * @version 2.11.0
  * @since 1.0b 06/09/2001
  */
 public class MemberEnrolmentEditor
@@ -1015,7 +1015,7 @@ public class MemberEnrolmentEditor
         Hour hs = r.getStart();
         Hour he = r.getEnd();
         min += hs.getLength(he);
-        String note = r.getNoteValue();
+        String note = r.getFollowUp() == null ? "" : r.getFollowUp().getContent();
         sb.append("<tr><td>")
                 .append(r.getActivity()).append("</td><td>")
                 .append(r.getTeacher().getFirstnameName()).append("</td><td>")

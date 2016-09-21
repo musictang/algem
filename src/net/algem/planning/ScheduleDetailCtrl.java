@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleDetailCtrl.java 2.9.7 02/05/16
+ * @(#)ScheduleDetailCtrl.java 2.11.0 20/09/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -66,7 +66,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.7
+ * @version 2.11.0
  * @since 1.0a 07/07/1999
  */
 public class ScheduleDetailCtrl
@@ -465,13 +465,13 @@ public class ScheduleDetailCtrl
     for (ScheduleRangeObject sr : ranges) {
       if (sr.getNote() > 0) {
         try {
-          sr.setNoteValue(scheduleService.getFollowUp(sr.getNote()));
+          sr.setFollowUp(scheduleService.getFollowUp(sr.getNote()));
         } catch (SQLException ex) {
           GemLogger.log(ex.getMessage());
         }
       }
       sb.append(sr.getStart()).append("-").append(sr.getEnd());
-      sb.append(sr.getNoteValue() != null ? " " + sr.getNoteValue() : "");
+      sb.append(sr.getFollowUp() != null ? " " + sr.getFollowUp().getContent(): "");
       listPanel.add(new GemMenuButton(sb.toString(), this, "AdminEvent", sr));
       sb.delete(0, sb.length());
     }
@@ -678,14 +678,14 @@ public class ScheduleDetailCtrl
    */
   private void setFollowUp(ScheduleRangeObject range, Course c) throws PlanningException, SQLException {
 
-    if (range.getNote() != 0 && range.getNoteValue() == null) {
-      range.setNoteValue(scheduleService.getFollowUp(range.getNote()));
+    if (range.getNote() != 0 && range.getFollowUp() == null) {
+      range.setFollowUp(scheduleService.getFollowUp(range.getNote()));
     }
     FollowUpDlg dlg = new FollowUpDlg(desktop, range, c.getTitle(), false);
     dlg.entry();
     if (dlg.isValidation()) {
-      scheduleService.updateFollowUp(range, dlg.getText());
-      range.setNoteValue(dlg.getText());
+      scheduleService.updateFollowUp(range, dlg.getFollowUp());
+      range.setFollowUp(dlg.getFollowUp());
     }
 
   }

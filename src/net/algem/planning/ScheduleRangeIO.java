@@ -1,7 +1,7 @@
 /*
- * @(#)ScheduleRangeIO.java	2.9.4.14 16/12/15
+ * @(#)ScheduleRangeIO.java	2.11.0 20/09/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -26,6 +26,7 @@ import java.sql.SQLException;
 import java.util.Vector;
 import net.algem.contact.Person;
 import net.algem.course.Course;
+import net.algem.enrolment.FollowUp;
 import net.algem.room.Room;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
@@ -38,7 +39,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.14
+ * @version 2.11.0
  * @since 1.0a 7/7/1999
  */
 public class ScheduleRangeIO
@@ -222,14 +223,18 @@ public class ScheduleRangeIO
     Vector<ScheduleRangeObject> v = new Vector<ScheduleRangeObject>();
     String query = getFollowUpRequest(action);
     query += where;
-
     PlanningService pService = new PlanningService(dc);
 
     try (ResultSet rs = dc.executeQuery(query)) {
       while (rs.next()) {
         ScheduleRangeObject p = rangeObjectFactory(rs, pService);
-        p.setNoteValue(rs.getString(12));
-        p.setNote2(rs.getString(13));
+        FollowUp up = new FollowUp();
+        up.setContent(rs.getString(12));
+        up.setNote(rs.getString(13));
+        up.setStatus(rs.getShort(14));
+        p.setFollowUp(up);
+        p.setNote2(rs.getString(15));
+        
         v.addElement(p);
       }
     }
@@ -238,24 +243,30 @@ public class ScheduleRangeIO
 
   private static String getFollowUpRequest(boolean action) {//TODO !!!!
     if (action) {
-      return "SELECT " + COLUMNS + ", p.jour, p.action, p.idper, p.lieux, p.ptype, s1.texte, s2.texte"
+      return "SELECT " + COLUMNS + ", p.jour, p.action, p.idper, p.lieux, p.ptype, s1.texte, CASE WHEN pg.note = 0 AND s1.note = '0' THEN NULL ELSE s1.note END AS note1, s1.statut, s2.texte"
               + " FROM " + TABLE + " pg, planning p, action a, " + ScheduleIO.FOLLOW_UP_TABLE + " s1, " + ScheduleIO.FOLLOW_UP_TABLE + " s2"
         + " WHERE p.ptype IN (" + Schedule.COURSE + "," + Schedule.WORKSHOP + "," + Schedule.TRAINING
         + ") AND p.id = pg.idplanning";
 
     } else {
-      return "SELECT " + COLUMNS + ", p.jour, p.action, p.idper, p.lieux, p.ptype, s1.texte, s2.texte"
+      return "SELECT " + COLUMNS + ", p.jour, p.action, p.idper, p.lieux, p.ptype, s1.texte, CASE WHEN pg.note = 0 AND s1.note = '0' THEN NULL ELSE s1.note END AS note1, s1.statut, s2.texte"
               + " FROM " + TABLE + " pg, planning p, " + ScheduleIO.FOLLOW_UP_TABLE + " s1, " + ScheduleIO.FOLLOW_UP_TABLE + " s2"
         + " WHERE p.ptype IN (" + Schedule.COURSE + "," + Schedule.WORKSHOP + "," + Schedule.TRAINING
         + ") AND p.id = pg.idplanning";
     }
   }
 
-  public static void createNote(ScheduleRangeObject range, String text, DataConnection dc) throws PlanningException {
+  public static void createNote(ScheduleRangeObject range, FollowUp up, DataConnection dc) throws PlanningException {
     try {
       dc.setAutoCommit(false);
       int id = nextId(ScheduleIO.FOLLOW_UP_SEQUENCE, dc);
-      String query = "INSERT INTO " + ScheduleIO.FOLLOW_UP_TABLE + " VALUES(" + id + ",'" + escape(text) + "')";
+      String content = up.getContent() == null || up.getContent().isEmpty() ? "NULL,"  : "'" + escape(up.getContent()) + "',";
+      String note = up.getNote() == null || up.getNote().isEmpty()? "NULL,"  : "'" + escape(up.getNote()) + "',";
+      String query = "INSERT INTO " + ScheduleIO.FOLLOW_UP_TABLE + " VALUES(" 
+              + id + ","
+              + content
+              + note
+              + up.getStatus() + ")";
       dc.executeUpdate(query);
       range.setNote(id);
       if (range.getId() > 0) {
@@ -270,8 +281,14 @@ public class ScheduleRangeIO
     }
   }
 
-  public static void updateNote(int note, String text, DataConnection dc) throws SQLException {
-    String query = "UPDATE " + ScheduleIO.FOLLOW_UP_TABLE + " SET texte = '" + escape(text) + "' WHERE id = " + note;
+  public static void updateNote(int note, FollowUp up, DataConnection dc) throws SQLException {
+    String content = up.getContent() == null || up.getContent().isEmpty() ? "NULL,"  : "'" + escape(up.getContent()) + "',";
+      String n = up.getNote() == null || up.getNote().isEmpty()? "NULL,"  : "'" + escape(up.getNote()) + "',";
+    String query = "UPDATE " + ScheduleIO.FOLLOW_UP_TABLE 
+            + " SET texte = " + content
+            + " note = " + n
+            + " statut = " + up.getStatus()
+            + " WHERE id = " + note;
     dc.executeUpdate(query);
   }
 

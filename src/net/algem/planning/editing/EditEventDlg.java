@@ -1,7 +1,7 @@
 /*
- * @(#)EditEventDlg.java 2.9.4.4 06/05/15
+ * @(#)EditEventDlg.java 2.11.0 20/09/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,6 +28,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JDialog;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import net.algem.enrolment.FollowUp;
 import net.algem.planning.HourRangePanel;
 import net.algem.planning.PlanningException;
 import net.algem.planning.PlanningService;
@@ -48,7 +49,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.4
+ * @version 2.11.0
  * @since 2.9.4.0 31/03/2015
  */
 public class EditEventDlg
@@ -79,7 +80,7 @@ public class EditEventDlg
     note.setBorder(new JTextField().getBorder());
     note.setLineWrap(true);
     note.setWrapStyleWord(true);
-    note.setText(range.getNoteValue());
+    note.setText(range.getFollowUp() == null ? null : range.getFollowUp().getContent());
     gb.add(new GemLabel(BundleUtil.getLabel("Hour.label")), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(timePanel, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Heading.label")), 0, 1, 1, 1, GridBagHelper.NORTHWEST);
@@ -129,7 +130,9 @@ public class EditEventDlg
             || MessagePopup.confirm(this, MessageUtil.getMessage("invalid.range.length.confirmation"))) {
             range.setStart(timePanel.getStart());
             range.setEnd(timePanel.getEnd());
-            service.updateAdministrativeEvent(range, note.getText().trim());
+            FollowUp up = new FollowUp();
+            up.setContent(note.getText().trim());
+            service.updateAdministrativeEvent(range, up);
             desktop.postEvent(new ModifPlanEvent(this, range.getDate(), range.getDate()));
           }
         } else {

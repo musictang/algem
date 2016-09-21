@@ -1,5 +1,5 @@
 /*
- * @(#)PlanningService.java	2.9.7 29/03/16
+ * @(#)PlanningService.java	2.11.0 20/09/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -33,6 +33,7 @@ import net.algem.course.Course;
 import net.algem.course.CourseIO;
 import net.algem.enrolment.CourseOrder;
 import net.algem.enrolment.CourseOrderIO;
+import net.algem.enrolment.FollowUp;
 import net.algem.room.Room;
 import net.algem.util.*;
 import net.algem.util.model.Model;
@@ -42,7 +43,7 @@ import net.algem.util.ui.MessagePopup;
  * Service class for planning.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.7
+ * @version 2.11.0
  * @since 2.4.a 07/05/12
  */
 public class PlanningService
@@ -926,15 +927,15 @@ public class PlanningService
    * Modifies an individual followup note.
    *
    * @param range the schedule range
-   * @param t the note
+   * @param up monitoring note
    * @throws net.algem.planning.PlanningException
    * @throws SQLException
    */
-  public void updateFollowUp(ScheduleRangeObject range, String t) throws PlanningException, SQLException {
+  public void updateFollowUp(ScheduleRangeObject range, FollowUp up) throws PlanningException, SQLException {
     if (range.getNote() == 0) {
-      ScheduleRangeIO.createNote(range, t, dc);
+      ScheduleRangeIO.createNote(range, up, dc);
     } else {
-      ScheduleRangeIO.updateNote(range.getNote(), t, dc);
+      ScheduleRangeIO.updateNote(range.getNote(), up, dc);
     }
   }
 
@@ -946,7 +947,7 @@ public class PlanningService
     }
   }
 
-  public void createAdministrativeEvent(final ScheduleRange range, final String info) throws PlanningException {
+  public void createAdministrativeEvent(final ScheduleRange range, final FollowUp info) throws PlanningException {
     try {
       dc.withTransaction(new DataConnection.SQLRunnable<Void>()
       {
@@ -972,7 +973,7 @@ public class PlanningService
    * @return a text or an empty string if no text exists
    * @throws SQLException
    */
-  public String getFollowUp(int noteId) throws SQLException {
+  public FollowUp getFollowUp(int noteId) throws SQLException {
     return ScheduleIO.findFollowUp(noteId, dc);
   }
 
@@ -983,7 +984,7 @@ public class PlanningService
    * @return a text or an empty string if no text exists
    * @throws SQLException
    */
-  public Note getCollectiveFollowUpByRange(int rangeId) throws SQLException {
+  public FollowUp getCollectiveFollowUpByRange(int rangeId) throws SQLException {
     return ScheduleIO.getCollectiveFollowUpByRange(rangeId, dc);
   }
 
@@ -994,30 +995,30 @@ public class PlanningService
    * @param text note contents
    * @throws PlanningException if SQL error
    */
-  public void createCollectiveFollowUp(ScheduleObject plan, String text) throws PlanningException {
-    ScheduleIO.createCollectiveFollowUp(plan, text, dc);
+  public void createCollectiveFollowUp(ScheduleObject plan, FollowUp up) throws PlanningException {
+    ScheduleIO.createCollectiveFollowUp(plan, up, dc);
   }
 
   /**
    * Creates a note for individual follow-up.
    *
    * @param rangeId range Id
-   * @param text note contents
+   * @param up follow-up instance
    * @throws PlanningException if SQL error
    */
-  public void createIndividualFollowUp(int rangeId, String text) throws PlanningException {
-    ScheduleIO.createIndividualFollowUp(rangeId, text, dc);
+  public void createIndividualFollowUp(int rangeId, FollowUp up) throws PlanningException {
+    ScheduleIO.createIndividualFollowUp(rangeId, up, dc);
   }
 
   /**
    * Updates a collective follow-up note.
    *
    * @param id note id
-   * @param text
+   * @param up follow-up instance
    * @throws SQLException
    */
-  public void updateFollowUp(int id, String text) throws SQLException {
-    ScheduleIO.updateFollowUp(id, text, dc);
+  public void updateFollowUp(int id, FollowUp up) throws SQLException {
+    ScheduleIO.updateFollowUp(id, up, dc);
   }
 
   public Vector<Course> getCourseByTeacher(int teacherId, String dateStart) {
@@ -1096,7 +1097,7 @@ public class PlanningService
 
   }
 
-  public void updateAdministrativeEvent(final ScheduleRangeObject range, final String note) throws PlanningException {
+  public void updateAdministrativeEvent(final ScheduleRangeObject range, final FollowUp note) throws PlanningException {
     try {
       dc.withTransaction(new DataConnection.SQLRunnable<Void>()
       {

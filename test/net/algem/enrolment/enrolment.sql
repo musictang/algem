@@ -91,3 +91,30 @@ AND c.code = 3 AND
 AND a.id != 8261 
 AND s.nom NOT LIKE 'RATTRAP%' 
 ORDER BY dow,p.jour,p.debut,a.id;
+
+SELECT pg.id, pg.idplanning, pg.debut, pg.fin, pg.adherent, pg.note,
+ p.jour, p.action, p.idper, p.lieux, p.ptype,
+ s1.texte, case when pg.note = 0 and s1.note = '0' then null else s1.note  end as note1, s1.statut, s2.texte 
+FROM plage pg, planning p, suivi s1, suivi s2 
+WHERE p.ptype IN (1,5,6) 
+AND p.id = pg.idplanning 
+AND p.jour BETWEEN '19-09-2016' AND '12-11-2016' 
+AND (pg.note >= 0 OR p.note > 0) 
+AND pg.note = s1.id 
+AND p.note = s2.id 
+AND pg.adherent = 21967 
+ORDER BY p.jour, pg.debut;
+
+SELECT pl.id,pl.idplanning,pl.debut,pl.fin,n1.id,n1.texte,n1.note,n1.statut,n2.id,n2.texte,n2.statut
+FROM planning p
+-- JOIN personne per on p.idper = per.id
+JOIN action a ON p.action = a.id
+-- JOIN cours c ON a.cours = c.id
+JOIN plage pl ON p.id = pl.idplanning
+-- JOIN salle s ON p.lieux = s.id
+LEFT JOIN suivi n1 ON pl.note = n1.id
+LEFT JOIN suivi n2 ON p.note = n2.id
+WHERE p.ptype IN (1,5,6)
+AND pl.adherent = 21967 
+AND p.jour BETWEEN '19-09-2016' AND '12-11-2016' 
+ORDER BY p.jour,pl.debut;

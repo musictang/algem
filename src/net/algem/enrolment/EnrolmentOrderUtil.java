@@ -1,5 +1,5 @@
 /*
- * @(#)EnrolmentOrderUtil.java	2.10.2 22/05/16
+ * @(#)EnrolmentOrderUtil.java	2.10.5 08/09/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -22,6 +22,7 @@ package net.algem.enrolment;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +41,7 @@ import net.algem.util.model.Model;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.2
+ * @version 2.10.5
  * @since 2.8.a 01/04/2013
  */
 public class EnrolmentOrderUtil {
@@ -161,9 +162,8 @@ public class EnrolmentOrderUtil {
     }
     if (PricingPeriod.NULL.equals(mo.getPricing()) || PricingPeriod.HOUR.equals(mo.getPricing()) || PayFrequency.YEAR.equals(mo.getPayment())) {
       e.setAmount(AccountUtil.getIntValue(total));
-      DateFr de = mo.getStart();
+      DateFr de = new DateFr(mo.getStart());
       de.incMonth(1);
-      //de.setDay(15); // TODO set day in config
       de.setDay(DEFAULT_DUE_DAY);
       e.setDate(de);
       //insertion echeances
@@ -189,19 +189,23 @@ public class EnrolmentOrderUtil {
 
   }
 
-  public void saveStandardOrderLines(ModuleOrder mo) throws SQLException {
+  public void saveStandardOrderLines(ModuleOrder mo, int memberId) throws SQLException {
     AccountingService service = new AccountingService(dc);
     List<OrderLine> std = service.findStandardOrderLines();
     Map<Integer,List<OrderLine>> totalAccountMap = new HashMap<>();
-
+    String startDateCheck = ConfigUtil.getConf(ConfigKey.PRE_ENROLMENT_START_DATE.getKey());
+    Date now = new Date();
+    String suffix = " p" + mo.getPayer() + " a" + memberId;
     if (std.size() > 0) {
       for (OrderLine o : std) {
-        if (service.exists(o)) {
+        if (service.exists(o, startDateCheck, memberId)) {
           continue;
         }
-        o.setMember(dossier.getId());
+        o.setMember(memberId);
         o.setPayer(mo.getPayer());
-        o.setDate(mo.getStart());
+        o.setLabel(o.getLabel() + suffix);
+        //o.setDate(mo.getStart());
+        o.setDate(now);
         o.setPaid(false);
         o.setTransfered(false);
         o.setOrder(mo.getIdOrder());
@@ -221,9 +225,11 @@ public class EnrolmentOrderUtil {
             t += o.getAmount();
           }
           OrderLine b = entry.getValue().get(0);
-          b.setMember(dossier.getId());
+          b.setMember(memberId);
           b.setPayer(mo.getPayer());
-          b.setDate(mo.getStart());
+          b.setLabel(b.getLabel() + suffix);
+          //b.setDate(mo.getStart());
+          b.setDate(now);
           b.setPaid(true);
           b.setTransfered(false);
           b.setOrder(mo.getIdOrder());
