@@ -1,0 +1,20 @@
+2.11.0
+CORRECTIFS
+* Le document d'exportation du "Payeur" ne comportait aucune échéance lorsque l'adhérent n'était pas son propre payeur : icone "Dossier Adhérent" dans la fiche d'une personne.
+
+NOUVEAUTES
+SUIVI PEDAGOGIQUE
+Une nouvelle colonne "Statut" est présente dans le "Suivi" de l'élève et du professeur. Cette colonne permet de répertorier l'absence d'un élève (ou son statut "Excusé", si le motif de l'absence a été donné).
+Un élève absent est signalé par "ABS". Un élève excusé est signalé par "EXC".
+
+La saisie du suivi pédagogique comporte maintenant deux champs supplémentaires : le statut à choisir parmi "Présent(e)", "Absent(e)" et "Excusé(e)" et une "Note" optionnelle. La note peut comporter des lettres (sans accents), des chiffres, ou les caractères "." (point), "," (virgule), "+" (le signe +) et "-" (le signe -), ex. : A, B, B+, 12, 12.5, 12,5, etc.
+
+Dans l'onglet "Suivi enseignant" de la fiche professeur, on peut maintenant double-cliquer sur une ligne pour ajouter ou modifier une note de suivi. Auparavant, on ne pouvait le faire qu'en cliquant sur le bouton "Consultation/Modification".
+
+Le statut et la note sont désactivés lorsque le suivi est collectif.
+
+CODES POSTAUX
+La base de données intègre maintenant les codes postaux de toutes les communes de France. La ville est automatiquement déduite du code postal saisi dans l'adresse d'un contact. Si plusieurs villes correspondent au même code postal, une fenêtre de sélection vous permettra de choisir la bonne.
+
+La recherche automatique de la ville est maintenant active dans la fiche "Etablissement".
+

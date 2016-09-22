@@ -1,5 +1,5 @@
 /*
- * @(#)TeacherFollowUpEditor.java	2.11.0 20/09/16
+ * @(#)TeacherFollowUpEditor.java	2.11.0 21/09/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -25,6 +25,8 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.Vector;
@@ -82,6 +84,23 @@ public class TeacherFollowUpEditor
     courseTableModel = new CourseTeacherTableModel();
     table = new JTable(courseTableModel);
     table.setAutoCreateRowSorter(true);
+    table.addMouseListener(new MouseAdapter()
+    {
+      @Override
+      public void mouseClicked(MouseEvent e) {
+        if (table.getSelectedRow() < 0) {
+          return;
+        }
+        int n = table.convertRowIndexToModel(table.getSelectedRow());
+        if (e.getClickCount() == 2) {
+          try {
+            modification(n);
+          } catch (SQLException sqe) {
+            GemLogger.log(sqe.getMessage());
+          } 
+        }
+      }
+    });
 
     final ListSelectionModel listSelectionModel = table.getSelectionModel();
     listSelectionModel.addListSelectionListener(new ListSelectionListener()

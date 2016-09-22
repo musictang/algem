@@ -118,3 +118,10 @@ WHERE p.ptype IN (1,5,6)
 AND pl.adherent = 21967 
 AND p.jour BETWEEN '19-09-2016' AND '12-11-2016' 
 ORDER BY p.jour,pl.debut;
+
+SELECT p.id,p.ptype,p.nom,p.prenom,p.civilite,p.droit_img,p.organisation,p.partenaire,p.pseudo,
+idper,profession,datenais,payeur,nadhesions,pratique,niveau 
+FROM personne p, eleve 
+WHERE payeur=18547
+AND p.id = eleve.idper 
+ORDER BY p.prenom,p.nom

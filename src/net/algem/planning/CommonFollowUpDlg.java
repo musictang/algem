@@ -1,5 +1,5 @@
 /*
- * @(#)CommonFollowUpDlg.java	2.11.0 20/09/16
+ * @(#)CommonFollowUpDlg.java	2.11.0 21/09/16
  * 
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
