@@ -1,7 +1,7 @@
 /*
- * @(#)DataCache.java	2.9.4.14 04/01/16
+ * @(#)DataCache.java	2.11.0 23/09/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -88,7 +88,7 @@ import net.algem.contact.Note;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.14
+ * @version 2.11.0
  * @since 1.0b 03/09/2001
  */
 public class DataCache
@@ -181,6 +181,7 @@ public class DataCache
   private ScriptExportService scriptExportService;
   private PlanningFactDAO planningFactDAO;
   private ScheduleDispatchService scheduleDispatchService;
+//  private String estabActivationType;
 
   private DataCache() {
 
@@ -215,10 +216,23 @@ public class DataCache
     EMPLOYEE_TYPE_IO = new EmployeeTypeIO(dc);
     STUDIO_TYPE_IO = new StudioTypeIO(dc);
     MARITAL_STATUS_IO = new MaritalStatusIO(dc);
+    
+//    estabActivationType = ConfigUtil.getConf(ConfigKey.ESTABLISHEMENT_ACTIVATION_TYPE.getKey());
 
-    loadMonthStmt = dc.prepareStatement("SELECT " + ScheduleIO.COLUMNS + " FROM planning p WHERE jour >= ? AND jour <= ? ORDER BY p.jour,p.debut");
+    String loadMonthQuery = "SELECT " + ScheduleIO.COLUMNS 
+            + " FROM planning p JOIN salle s ON (p.lieux = s.id) JOIN etablissement e ON (s.etablissement = e.id)"
+            + " WHERE jour >= ? AND jour <= ?"
+            + " AND e.actif = TRUE AND e.idper = ? ORDER BY p.jour,p.debut";
+//    loadMonthQuery += "0".equals(estabActivationType) ? " AND e.actif = TRUE ORDER BY p.jour,p.debut" : " ORDER BY p.jour,p.debut";
+    loadMonthStmt = dc.prepareStatement(loadMonthQuery);
     loadMonthRangeStmt = dc.prepareStatement(ScheduleRangeIO.getMonthRangeStmt());
-    loadDayStmt = dc.prepareStatement("SELECT " + ScheduleIO.COLUMNS + " FROM planning p WHERE jour = ? ORDER BY p.debut");//ORDER BY p.action,p.debut
+    
+    String loadDayQuery = "SELECT " + ScheduleIO.COLUMNS 
+            + " FROM planning p JOIN salle s ON (p.lieux = s.id) JOIN etablissement e ON (s.etablissement = e.id)"
+            + " WHERE jour = ?"
+            + " AND e.actif = TRUE AND e.idper = ? ORDER BY p.debut";
+//    loadDayQuery += "0".equals(estabActivationType) ? " AND e.actif = TRUE ORDER BY p.debut" : " ORDER BY p.debut";
+    loadDayStmt = dc.prepareStatement(loadDayQuery);//ORDER BY p.action,p.debut
     loadDayRangeStmt = dc.prepareStatement(ScheduleRangeIO.getDayRangeStmt());
 
     userService = new DefaultUserService(this);
@@ -529,6 +543,7 @@ public class DataCache
       Collections.sort(ROOM_RATE_LIST.getData(), new RoomRateComparator());
     } else if (m instanceof Establishment) {
       ESTAB_LIST.addElement((Establishment) m);
+      Collections.sort(ESTAB_LIST.getData(), new EstablishmentComparator());
     } else if (m instanceof AgeRange) {
       AGE_RANGE_LIST.addElement((AgeRange) m);
       Collections.sort(AGE_RANGE_LIST.getData(), new AgeRangeComparator());
@@ -807,10 +822,21 @@ public class DataCache
       loadRoomContactCache();
       Vector<Param> schools = ParamTableIO.find(SchoolCtrl.TABLE, SchoolCtrl.COLUMN_KEY, dc);
       SCHOOL_LIST = new GemList<Param>(schools);
-      ESTAB_LIST = new GemList<Establishment>(EstablishmentIO.find(" ORDER BY p.nom", dc));
+      
+//      if (estabActivationType != null && "0".equals(estabActivationType)) {
+        ESTAB_LIST = new GemList<Establishment>(EstablishmentIO.find(" AND e.actif = TRUE AND e.idper = " + user.getId() + " ORDER BY p.nom", dc));
+//      } else {
+//        ESTAB_LIST = new GemList<Establishment>(EstablishmentIO.find(" ORDER BY p.nom", dc));
+//        EstablishmentPref ePrefs = new EstablishmentPref();
+//        for (Establishment e : ESTAB_LIST.getData()) {
+////          if (ePrefs.isActive(String.valueOf(e.getId()))) {
+//            e.setActive(ePrefs.isActive(String.valueOf(e.getId())));
+////          }
+//        }
+//      }
 
       showMessage(frame, BundleUtil.getLabel("Room.label"));
-      ROOM_LIST = new GemList<Room>(ROOM_IO.load());
+      ROOM_LIST = new GemList<Room>(ROOM_IO.load(user.getId()));
 
       showMessage(frame, BundleUtil.getLabel("Course.label"));
       COURSE_LIST = new GemList<Course>(COURSE_IO.load());
@@ -1048,6 +1074,7 @@ public class DataCache
         try {
           loadMonthStmt.setDate(1, new java.sql.Date(start.getTime()));
           loadMonthStmt.setDate(2, new java.sql.Date(end.getTime()));
+          loadMonthStmt.setInt(3, user.getId());
           Vector<ScheduleObject> vpl = ScheduleIO.getLoadRS(loadMonthStmt, dc);
 
           //dump("planningmois.ser",vpl);
@@ -1078,6 +1105,7 @@ public class DataCache
   public void setDaySchedule(java.util.Date date) {
     try {
       loadDayStmt.setDate(1, new java.sql.Date(date.getTime()));
+      loadDayStmt.setInt(2, user.getId());
       loadDayRangeStmt.setDate(1, new java.sql.Date(date.getTime()));
       daySchedule.setDay(date,
               ScheduleIO.getLoadRS(loadDayStmt, dc),

@@ -1,5 +1,5 @@
 /*
- * @(#)RoomIO.java	2.10.0 17/05/16
+ * @(#)RoomIO.java	2.11.0 23/09/2016
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -42,7 +42,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.11.0
  * @since 1.0a 07/07/1999
  */
 public class RoomIO
@@ -233,7 +233,7 @@ public class RoomIO
   }
 
   public Vector<Room> find(String where) {
-    String query = "SELECT * FROM " + TABLE + " " + where;
+    String query = "SELECT " + TABLE + ".* FROM " + TABLE + " " + where;
     return findAll(query);
   }
 
@@ -303,8 +303,15 @@ public class RoomIO
     return (Person) DataCache.findId(payerId, Model.Person);
   }
 
+  
   @Override
   public List<Room> load() {
     return findAll();
+  }
+  
+//  @Override
+  public List<Room> load(int userId) {
+    return find(" JOIN etablissement ON salle.etablissement = etablissement.id "
+            + "WHERE etablissement.actif = TRUE AND etablissement.idper = " + userId + " ORDER BY salle.nom");
   }
 }

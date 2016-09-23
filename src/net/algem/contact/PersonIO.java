@@ -1,7 +1,7 @@
 /*
- * @(#)PersonIO.java 2.9.4.14 15/12/15
+ * @(#)PersonIO.java 2.11.0 23/09/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -43,7 +43,7 @@ import java.sql.PreparedStatement;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.14
+ * @version 2.11.0
  */
 public class PersonIO
         extends TableIO

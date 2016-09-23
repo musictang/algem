@@ -1,5 +1,5 @@
 /*
- * @(#)EstabSearchCtrl.java	2.9.4.6 28/05/15
+ * @(#)EstabSearchCtrl.java	2.11.0 23/09/16
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -21,8 +21,9 @@
 package net.algem.room;
 
 import java.awt.CardLayout;
+import java.awt.event.MouseEvent;
 import java.sql.SQLException;
-import java.util.Vector;
+import java.util.List;
 import net.algem.contact.*;
 import net.algem.util.DataCache;
 import net.algem.util.GemLogger;
@@ -34,7 +35,7 @@ import net.algem.util.ui.SearchCtrl;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.6
+ * @version 2.11.0
  * @since 1.0a 07/07/1999
  */
 public class EstabSearchCtrl
@@ -65,46 +66,73 @@ public class EstabSearchCtrl
     wCard.add("masque", mask);
     wCard.add("liste", list);
 
-//    ((CardLayout) wCard.getLayout()).show(wCard, "cherche");
   }
 
   @Override
   public void search() {
-
-    String query = "WHERE ptype = " + Person.ESTABLISHMENT;
-    String name;
+    String query = "";
+    String name = "";
     int id = getId();
     if (id > 0) {
       query += " AND id = " + id;
     } else if ((name = searchView.getField(1)) != null) {
       query += " AND nom ~* '" + name + "' AND ptype =" + Person.ESTABLISHMENT;
     }
-
-    Vector<Person> v = PersonIO.find(query, dc);
-    if (v.isEmpty()) {
-      setStatus(EMPTY_LIST);
-    } else if (v.size() == 1) {// ne fonctionnait pas
-      ((CardLayout) wCard.getLayout()).show(wCard, "masque");
-      Establishment estab = new Establishment((Person) v.elementAt(0));
-      try {
+    query += " AND idper = " + desktop.getDataCache().getUser().getId();
+    System.out.println( "search " + query);
+    try {
+      List<Establishment> v = EstablishmentIO.find(query, dc);
+      if (v.isEmpty()) {
+        setStatus(EMPTY_LIST);
+      } else if (v.size() == 1) {// ne fonctionnait pas
+        ((CardLayout) wCard.getLayout()).show(wCard, "masque");
+        Establishment estab = v.get(0);
         estab.setAddress(AddressIO.findId(estab.getId(), dc));
         estab.setTele(TeleIO.findId(estab.getId(), dc));
         estab.setEmail(EmailIO.find(estab.getId(), dc));
-      } catch (SQLException e) {
-        GemLogger.logException(e);
+
+        mask.loadCard(estab);
+      } else {
+        ((CardLayout) wCard.getLayout()).show(wCard, "liste");
+        list.loadResult(v);
       }
-      mask.loadCard(estab);
-    } else {
-      ((CardLayout) wCard.getLayout()).show(wCard, "liste");
-      list.loadResult(v);
+    } catch (SQLException e) {
+      GemLogger.logException(e);
     }
   }
-  
+
   public void load() {
-    String query = "WHERE ptype = " + Person.ESTABLISHMENT;
-    Vector<Person> v = PersonIO.find(query, dc);
-    ((CardLayout) wCard.getLayout()).show(wCard, "liste");
-    list.loadResult(v);
+    try {
+      List<Establishment> v = EstablishmentIO.find(" AND idper = " + desktop.getDataCache().getUser().getId() + " ORDER BY p.nom", dc);
+      ((CardLayout) wCard.getLayout()).show(wCard, "liste");
+      list.loadResult(v);
+    } catch (SQLException ex) {
+      GemLogger.log(ex.getMessage());
+    }
   }
-  
+
+  @Override
+  public void mouseClicked(MouseEvent e) {
+    Establishment et = ((EstabListCtrl) list).getActive();
+    if (et != null) {
+      try {
+          EstablishmentIO.updateStatus(et.getId(), et.isActive(), desktop.getDataCache().getUser().getId(), dc);
+        if (et.isActive()) {
+            desktop.getDataCache().add(et); // do not remote propagation
+        } else {
+          desktop.getDataCache().remove(et); // do not remote propagation
+        }
+      } catch (SQLException ex) {
+        GemLogger.log(ex.getMessage());
+      }
+      return;
+    }
+    int id = list.getSelectedID();
+    if (id > 0) {
+      desktop.setWaitCursor();
+      load(id);
+      desktop.setDefaultCursor();
+    }
+  }
+
 }

@@ -1,5 +1,5 @@
 /*
- * @(#)EstabCtrl.java	2.11.0 16/09/16
+ * @(#)EstabCtrl.java	2.11.0 22/09/16
  * 
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -195,7 +195,8 @@ public class EstabCtrl
   @Override
   public boolean loadId(int id) {
     try {
-      return loadCard(DataCache.findId(id, Model.Establishment));
+      // return loadCard(DataCache.findId(id, Model.Establishment));
+      return loadCard(EstablishmentIO.findId(id, dc)); // do not use the cache here
     } catch (SQLException ex) {
       GemLogger.logException(ex);
       return false;

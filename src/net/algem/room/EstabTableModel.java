@@ -1,7 +1,7 @@
 /*
- * @(#)EstabTableModel.java	2.9.4.13 15/10/15
+ * @(#)EstabTableModel.java	2.11.0 23/09/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,10 +27,10 @@ import net.algem.util.ui.JTableModel;
 /**
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.11.0
  */
 public class EstabTableModel
-        extends JTableModel<Person>
+        extends JTableModel<Establishment>
 {
 
   public EstabTableModel() {
@@ -38,12 +38,13 @@ public class EstabTableModel
     header = new String[]{
       BundleUtil.getLabel("Id.label"),
       BundleUtil.getLabel("Name.label"),
+      BundleUtil.getLabel("Active.label")
     };
   }
 
   @Override
   public int getIdFromIndex(int i) {
-    Person p = tuples.elementAt(i);
+    Person p = tuples.elementAt(i).getPerson();
     return p.getId();
   }
 
@@ -53,8 +54,9 @@ public class EstabTableModel
       case 0:
         return Integer.class;
       case 1:
-//      case 2:
         return String.class;
+      case 2:
+        return Boolean.class;
       default:
         return Object.class;
     }
@@ -62,22 +64,30 @@ public class EstabTableModel
 
   @Override
   public boolean isCellEditable(int row, int column) {
-    return column > 0;
+    return column > 1;
   }
 
   @Override
   public Object getValueAt(int line, int col) {
-    Person p = tuples.elementAt(line);
+    Establishment e = tuples.elementAt(line);
+    Person p = e.getPerson();
     switch (col) {
       case 0:
-        return new Integer(p.getId());
+        return p.getId();
       case 1:
         return p.getName();
+      case 2:
+        return e.isActive();
     }
     return null;
   }
 
   @Override
   public void setValueAt(Object value, int line, int col) {
+    Establishment e = tuples.elementAt(line);
+    if (col == 2) {
+      e.setActive((boolean) value);
+    }
+    modItem(line, e); 
   }
 }

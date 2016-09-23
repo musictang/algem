@@ -1,7 +1,7 @@
 /*
- * @(#)AccountPrefTableModel.java 2.9.4.6 01/06/15
+ * @(#)AccountPrefTableModel.java 2.11.0 23/09/16
  * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  * 
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,7 +28,7 @@ import net.algem.util.ui.JTableModel;
 /**
  * Preferred accounts table model.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.6
+ * @version 2.11.0
  * @since 2.9.4.6 01/06/15
  */
 public class AccountPrefTableModel 
@@ -45,7 +45,7 @@ public class AccountPrefTableModel
 
   @Override
   public int getIdFromIndex(int i) {
-    return ((Account) getItem(i)).getId();
+    return ((AccountPref) getItem(i)).getAccount().getId();
   }
   
      @Override

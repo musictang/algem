@@ -1,7 +1,7 @@
 /*
- * @(#)JTableModel.java	2.8.w 16/07/14
+ * @(#)JTableModel.java	2.11.0 23/09/16
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,7 +27,7 @@ import javax.swing.table.AbstractTableModel;
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.11.0
  * @param <T>
  * @since 1.0a 07/07/1999
  */
@@ -37,10 +37,6 @@ public abstract class JTableModel<T>
 
   protected String[] header;
   protected Vector<T> tuples = new Vector<T>();
-
-  public JTableModel() {
-
-  }
 
   public void clear() {
     tuples = new Vector<T>();
@@ -70,7 +66,7 @@ public abstract class JTableModel<T>
     fireTableRowsInserted(idx, idx);
   }
 
-  public Object getItem(int idx) {
+  public T getItem(int idx) {
     return tuples.elementAt(idx);
   }
 

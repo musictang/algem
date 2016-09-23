@@ -1,7 +1,7 @@
 /*
- * @(#)EstablishmentIO.java	2.9.4.6 03/06/15
+ * @(#)EstablishmentIO.java	2.11.0 23/09/16
  * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -22,7 +22,7 @@ package net.algem.room;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Enumeration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 import net.algem.bank.RibIO;
@@ -39,11 +39,13 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.6
+ * @version 2.11.0
  */
 public class EstablishmentIO
         extends TableIO
 {
+
+  public static final String TABLE = "etablissement";
 
   public static void trans_insert(Establishment e, short type, DataConnection dc) throws SQLException {
     int number = nextId(PersonIO.SEQUENCE, dc);
@@ -52,7 +54,7 @@ public class EstablishmentIO
     String query = "INSERT INTO " + PersonIO.TABLE + "  VALUES("
             + number
             + "," + type
-            + ",'" + escape(p.getName().toUpperCase())
+            + ",'" + escape(e.getName().toUpperCase())
             + "','" + escape(p.getFirstName())
             + "','" + p.getGender()
             + "', FALSE"
@@ -60,17 +62,17 @@ public class EstablishmentIO
             + "')";
 
     dc.executeUpdate(query);
-    p.setId(number);
+    e.setId(number);
 
     Address a = e.getAddress();
     if (a != null && a.getAdr1().length() > 0) {
-      a.setId(p.getId());
+      a.setId(e.getId());
       AddressIO.insert(a, dc);
     }
     Vector<Telephone> v = e.getTele();
     for (int i = 0; v != null && i < v.size(); i++) {
       Telephone tel = v.elementAt(i);
-      tel.setIdper(p.getId());
+      tel.setIdper(e.getId());
       if (tel.getNumber().length() > 0) {
         TeleIO.insert(tel, i, dc);
       }
@@ -79,7 +81,7 @@ public class EstablishmentIO
     if (ve != null) {
       for (int j = 0; j < ve.size(); j++) {
         Email em = ve.elementAt(j);
-        em.setIdper(p.getId());
+        em.setIdper(e.getId());
         if (em.getEmail() != null && em.getEmail().trim().length() > 0) {
           EmailIO.insert(ve.elementAt(j), j, dc);
         }
@@ -214,41 +216,36 @@ public class EstablishmentIO
   public static Establishment findId(int n, DataConnection dc) throws SQLException {
 
     String where = " AND id = " + n;
-    Vector<Establishment> v = find(where, dc);
+    List<Establishment> v = find(where, dc);
     if (v.size() > 0) {
-      return v.elementAt(0);
+      return v.get(0);
     }
     return null;
   }
 
-  public static Vector<Establishment> find(String where, DataConnection dc) throws SQLException {
+  public static List<Establishment> find(String where, DataConnection dc) throws SQLException {
 
-    Vector<Establishment> v = new Vector<Establishment>();
-    String query = "SELECT " + PersonIO.COLUMNS + " FROM " + PersonIO.TABLE + " p WHERE p.ptype = " + Person.ESTABLISHMENT;
+    List<Establishment> estabs = new ArrayList<Establishment>();
+    String query = "SELECT DISTINCT ON (p.nom) " + PersonIO.COLUMNS + ", e.actif FROM " + PersonIO.TABLE + " p  JOIN " + TABLE + " e ON (p.id = e.id)"
+            + " WHERE p.ptype = " + Person.ESTABLISHMENT;
     query += where;
-
+System.out.println(query);
     ResultSet rs = dc.executeQuery(query);
-    Vector<Person> pl = new Vector<Person>();
     while (rs.next()) {
-      pl.addElement(PersonIO.getFromRS(rs));
+      Establishment e = new Establishment(PersonIO.getFromRS(rs));
+      e.setActive(rs.getBoolean(10));
+      e.setAddress(AddressIO.findId(e.getId(), dc));
+      e.setTele(TeleIO.findId(e.getId(), dc));
+      e.setEmail(EmailIO.find(e.getId(), dc));
+      e.setSites(WebSiteIO.find(e.getId(), Person.ESTABLISHMENT, dc));
+      
+      estabs.add(e);
     }
-
-    if (pl.size() < 1) {
-      return v;
-    }
-    Enumeration<Person> enu = pl.elements();
-    while (enu.hasMoreElements()) {
-      Person p = enu.nextElement();
-      Establishment e = new Establishment(p);
-
-      e.setAddress(AddressIO.findId(p.getId(), dc));
-      e.setTele(TeleIO.findId(p.getId(), dc));
-      e.setEmail(EmailIO.find(p.getId(), dc));
-      e.setSites(WebSiteIO.find(p.getId(), Person.ESTABLISHMENT, dc));
-
-      v.addElement(e);
-    }
-
-    return v;
+    return estabs;
+  }
+  
+  public static void updateStatus(int id, boolean active, int userId, DataConnection dc) throws SQLException {
+    String query = "UPDATE etablissement SET actif = " + active + " WHERE id = " + id + " AND idper = " + userId;
+    dc.executeUpdate(query);
   }
 }

@@ -1,5 +1,5 @@
 /*
- * @(#)ConfigKey.java 2.10.0 19/05/16
+ * @(#)ConfigKey.java 2.11.0 23/09/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -27,7 +27,7 @@ import net.algem.util.BundleUtil;
  * First arg represents key in the table, second arg represents the label.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.11.0
  * @since 2.1.k 07/07/11
  */
 public enum ConfigKey
@@ -159,7 +159,8 @@ public enum ConfigKey
   BOOKING_MAX_DELAY("Reservation.delai.max", BundleUtil.getLabel("Booking.max.delay.label")),
   BOOKING_CANCEL_DELAY("Reservation.annulation.delai", BundleUtil.getLabel("Booking.cancel.delay.label")),
   BOOKING_REQUIRED_MEMBERSHIP("Reservation.adhesion.requise", BundleUtil.getLabel("Booking.required.membership.label")),
-  PRE_ENROLMENT_START_DATE("Date.debut.preinscription", BundleUtil.getLabel("ConfEditor.pre-enrolment.start.date.label"));
+  PRE_ENROLMENT_START_DATE("Date.debut.preinscription", BundleUtil.getLabel("ConfEditor.pre-enrolment.start.date.label")),
+  ESTABLISHEMENT_ACTIVATION_TYPE("Activation.etablissement.type", BundleUtil.getLabel("ConfEditor.pre-enrolment.start.date.label"));
 
   private final String key;
   private final String label;

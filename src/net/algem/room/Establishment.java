@@ -1,7 +1,7 @@
 /*
- * @(#)Establishment.java	2.9.4.13 05/11/15
+ * @(#)Establishment.java	2.11.0 23/09/16
  * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,6 +21,7 @@
 package net.algem.room;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Vector;
 import net.algem.contact.Address;
 import net.algem.contact.Email;
@@ -35,7 +36,7 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.11.0
  */
 public class Establishment
         implements GemModel {
@@ -47,16 +48,17 @@ public class Establishment
   private Vector<Telephone> t;
   private Vector<Email> emails;
   private List<WebSite> sites;
+  private boolean active;
 
   public Establishment() {
   }
 
   public Establishment(String pp) {
-    p = new Person(1, pp);
+    this.p = new Person(1, pp);
   }
 
   public Establishment(Person pp) {
-    p = pp;
+    this.p = pp;
   }
 
   @Override
@@ -76,8 +78,9 @@ public class Establishment
 
   @Override
   public int hashCode() {
-    int hash = 3;
-    hash = 67 * hash + (this.p != null ? this.p.hashCode() : 0);
+    int hash = 5;
+    hash = 73 * hash + Objects.hashCode(this.p);
+    hash = 73 * hash + (this.active ? 1 : 0);
     return hash;
   }
 
@@ -148,7 +151,15 @@ public class Establishment
   }
 
   public boolean isValid() {
-    return getName() != null && ! p.getName().isEmpty();
+    return p.getName() != null && ! p.getName().isEmpty();
   }
 
+  public boolean isActive() {
+    return active;
+  }
+
+  public void setActive(boolean active) {
+    this.active = active;
+  }
+  
 }

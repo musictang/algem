@@ -1,7 +1,7 @@
 /*
- * @(#)AccountMatchingTableModel.java 2.9.4.13 06/10/2015
+ * @(#)AccountMatchingTableModel.java 2.11.0 23/09/16
  * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  * 
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,7 +27,7 @@ import net.algem.util.ui.JTableModel;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.11.0
  * @since 2.9.4.13 06/10/2015
  */
 public class AccountMatchingTableModel
@@ -43,7 +43,7 @@ public class AccountMatchingTableModel
 
   @Override
   public int getIdFromIndex(int i) {
-    return ((Account) getItem(i)).getId();
+    return ((AccountPref) getItem(i)).getAccount().getId();
   }
 
   @Override

@@ -1,7 +1,7 @@
 /*
- * @(#)ConfigAdmin.java 2.9.4.3 27/04/15
+ * @(#)ConfigAdmin.java 2.11.0 23/09/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,6 +20,7 @@
  */
 package net.algem.config;
 
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,8 +28,10 @@ import java.util.Map;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JRadioButton;
 import javax.swing.border.Border;
 import net.algem.enrolment.PricingPeriod;
 import net.algem.room.EstabChoice;
@@ -39,23 +42,25 @@ import net.algem.util.DataCache;
 import net.algem.util.model.Model;
 import net.algem.util.ui.GemLabel;
 import net.algem.util.ui.GemPanel;
+import net.algem.util.ui.GridBagHelper;
 
 /**
  * Panel for config and administrative tasks.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.3
+ * @version 2.11.0
  */
 public class ConfigAdmin
         extends ConfigPanel
 {
 
-  private Config c1, c2, c3, c4, c5, c6, c7;
+  private Config c1, c2, c3, c4, c5, c6, c7, c8;
   private JCheckBox jc1, jc2, jc3;
   private ParamChoice school;
   private EstabChoice estab;
   private RoomChoice studio;
   private JComboBox pricingPeriod;
+  private JRadioButton jr1, jr2;
 
   public ConfigAdmin(String title, Map<String, Config> cm) {
     super(title, cm);
@@ -66,11 +71,11 @@ public class ConfigAdmin
     c1 = confs.get(ConfigKey.TEACHER_MANAGEMENT.getKey());
     c2 = confs.get(ConfigKey.COURSE_MANAGEMENT.getKey());
     c3 = confs.get(ConfigKey.ADMINISTRATIVE_MANAGEMENT.getKey());
-//    c3 = confs.get(ConfigKey.WORKSHOP_MANAGEMENT.getKey());
     c4 = confs.get(ConfigKey.DEFAULT_SCHOOL.getKey());
     c5 = confs.get(ConfigKey.DEFAULT_ESTABLISHMENT.getKey());
     c6 = confs.get(ConfigKey.DEFAULT_STUDIO.getKey());
     c7 = confs.get(ConfigKey.DEFAULT_PRICING_PERIOD.getKey());
+    c8 = confs.get(ConfigKey.ESTABLISHEMENT_ACTIVATION_TYPE.getKey());
 
     content = new GemPanel();
 
@@ -133,6 +138,29 @@ public class ConfigAdmin
     defs.add(pricingPeriod);
 
     content.add(defs);
+    Box box4 = Box.createHorizontalBox();
+    box4.add(Box.createVerticalStrut(10));
+    content.add(box4);
+    jr1 = new JRadioButton("Globale");
+    jr1.setToolTipText("<html>L'activation ou la désactivation d'un établissement est commune<br />à tous les utilisateurs d'Algem dans la structure.</html>");
+    jr2 = new JRadioButton("Individuelle");
+    jr2.setToolTipText("<html>L'activation ou la désactivation d'un établissement est spécifique<br />à chaque utilisateur d'Algem dans la structure.<br />Un établissement marqué \"Actif\" pour l'un ne le sera pas forcément pour l'autre.</html>");
+    ButtonGroup jrgroup = new ButtonGroup();
+    jrgroup.add(jr1);
+    jrgroup.add(jr2);
+    if ("0".equals(c8.getValue())) {
+      jr1.setSelected(true);
+    } else {
+      jr2.setSelected(true);
+    }
+    GemPanel p2 = new GemPanel(new GridBagLayout());
+    GridBagHelper gb = new GridBagHelper(p2);
+    GemLabel p2label = new GemLabel("Activation/Désactivation d'un établissement : ");
+    gb.add(p2label, 0,0,1,1, GridBagHelper.WEST);
+    gb.add(jr1,1,0,1,1);
+    gb.add(jr2,2,0,1,1);
+    content.add(p2); 
+
     add(content);
   }
 
@@ -146,6 +174,7 @@ public class ConfigAdmin
     c5.setValue(String.valueOf(estab.getKey()));
     c6.setValue(String.valueOf(studio.getKey()));
     c7.setValue(((PricingPeriod) pricingPeriod.getSelectedItem()).name());
+    c8.setValue(jr1.isSelected() ? "0" : "1");
 
     conf.add(c1);
     conf.add(c2);
@@ -154,6 +183,7 @@ public class ConfigAdmin
     conf.add(c5);
     conf.add(c6);
     conf.add(c7);
+    conf.add(c8);
 
     return conf;
   }

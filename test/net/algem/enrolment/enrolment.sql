@@ -125,3 +125,15 @@ FROM personne p, eleve
 WHERE payeur=18547
 AND p.id = eleve.idper 
 ORDER BY p.prenom,p.nom
+
+SELECT DISTINCT ON (p.nom) p.id,p.ptype,p.nom,p.prenom,p.civilite,p.droit_img,p.organisation,p.partenaire,p.pseudo, e.actif
+ FROM personne p  JOIN etablissement e ON (p.id = e.id) 
+WHERE p.ptype = 5 AND e.actif = TRUE
+ AND e.idper = 16094 
+ORDER BY p.nom
+
+SELECT DISTINCT ON (p.nom) p.id,p.ptype,p.nom,p.prenom,p.civilite,p.droit_img,p.organisation,p.partenaire,p.pseudo, e.actif
+ FROM personne p  JOIN etablissement e ON (p.id = e.id) 
+WHERE p.ptype = 5 AND e.actif = TRUE
+--  AND e.idper = 16094 
+ORDER BY p.nom

@@ -1,5 +1,5 @@
 /*
- * @(#)RoomView.java	2.8.m 11/09/13
+ * @(#)RoomView.java	2.11.0 23/09/16
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -22,9 +22,12 @@ package net.algem.room;
 
 import java.awt.BorderLayout;
 import java.awt.GridBagLayout;
+import java.sql.SQLException;
 import javax.swing.JCheckBox;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
+import net.algem.util.GemLogger;
+import net.algem.util.model.GemList;
 import net.algem.util.model.Model;
 import net.algem.util.ui.*;
 
@@ -33,7 +36,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.m
+ * @version 2.11.0
  * @since 1.0a 02/09/2001
  */
 public class RoomView
@@ -71,7 +74,11 @@ public class RoomView
     function = new GemField(25);
     surf = new GemNumericField(8);
     npers = new GemNumericField(8);
-    estab = new EstabChoice(dataCache.getList(Model.Establishment));
+    try {
+      estab = new EstabChoice(new GemList<Establishment>(EstablishmentIO.find(" ORDER BY p.nom", DataCache.getDataConnection())));
+    } catch (SQLException ex) {
+      GemLogger.log(ex.getMessage());
+    }
     rate = new RoomRateChoice(dataCache.getList(Model.RoomRate));
     active = new JCheckBox(labels[6], true);
     available = new JCheckBox(labels[7], false);

@@ -1,5 +1,5 @@
 /*
- * @(#)Person.java	2.10.0 19/05/16
+ * @(#)Person.java	2.11.0 23/09/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -32,7 +32,7 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.11.0
  *
  * @since 1.0a 07/07/1999
  */
@@ -62,14 +62,27 @@ public class Person
   public Person() {
   }
 
+  /**
+   * 
+   * @param i id
+   */
   public Person(int i) {
     this(i, "");
   }
 
+  /**
+   * 
+   * @param n name
+   */
   public Person(String n) {
     this(0, n);
   }
 
+  /**
+   * 
+   * @param i id
+   * @param n name
+   */
   public Person(int i, String n) {
     this(i, n, "", "M");
   }
