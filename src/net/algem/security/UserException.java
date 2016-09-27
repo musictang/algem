@@ -1,7 +1,7 @@
 /*
- * @(#)UserException.java	2.8.p 30/10/13
+ * @(#)UserException.java	2.11.0 27/09/16
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -22,26 +22,47 @@ package net.algem.security;
 
 /**
  * User exception.
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.p
+ * @version 2.11.0
  * @since 2.8.p 30/10/13
  */
-public class UserException extends Exception {
+public class UserException
+        extends Exception
+{
 
-	/**
-	 * Creates a new instance of
-	 * <code>UserException</code> without detail message.
-	 */
-	public UserException() {
-	}
+  private String type;
 
-	/**
-	 * Constructs an instance of
-	 * <code>UserException</code> with the specified detail message.
-	 *
-	 * @param msg the detail message.
-	 */
-	public UserException(String msg) {
-		super(msg);
-	}
+  /**
+   * Creates a new instance of
+   * <code>UserException</code> without detail message.
+   */
+  public UserException() {
+  }
+
+  /**
+   * Constructs an instance of
+   * <code>UserException</code> with the specified detail message.
+   *
+   * @param msg the detail message.
+   * @param type
+   */
+  public UserException(String msg, String type) {
+    super(msg);
+    this.type = type;
+  }
+
+  public String getMessageKey() {
+    switch (type) {
+      case "CREATION":
+        return "user.creation.failure";
+      case "ENCRYPTION":
+        return "user.pass.creation.failure";
+      case "MODIFICATION":
+        return "user.modification.failure";
+      default:
+        return "user.modification.failure";
+    }
+  }
+
 }

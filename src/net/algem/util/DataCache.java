@@ -216,12 +216,10 @@ public class DataCache
     EMPLOYEE_TYPE_IO = new EmployeeTypeIO(dc);
     STUDIO_TYPE_IO = new StudioTypeIO(dc);
     MARITAL_STATUS_IO = new MaritalStatusIO(dc);
-    
-//    estabActivationType = ConfigUtil.getConf(ConfigKey.ESTABLISHEMENT_ACTIVATION_TYPE.getKey());
 
     String loadMonthQuery = "SELECT " + ScheduleIO.COLUMNS 
             + " FROM planning p JOIN salle s ON (p.lieux = s.id) JOIN etablissement e ON (s.etablissement = e.id)"
-            + " WHERE jour >= ? AND jour <= ?"
+            + " WHERE p.jour >= ? AND p.jour <= ?"
             + " AND e.actif = TRUE AND e.idper = ? ORDER BY p.jour,p.debut";
 //    loadMonthQuery += "0".equals(estabActivationType) ? " AND e.actif = TRUE ORDER BY p.jour,p.debut" : " ORDER BY p.jour,p.debut";
     loadMonthStmt = dc.prepareStatement(loadMonthQuery);
@@ -229,9 +227,9 @@ public class DataCache
     
     String loadDayQuery = "SELECT " + ScheduleIO.COLUMNS 
             + " FROM planning p JOIN salle s ON (p.lieux = s.id) JOIN etablissement e ON (s.etablissement = e.id)"
-            + " WHERE jour = ?"
+            + " WHERE p.jour = ?"
             + " AND e.actif = TRUE AND e.idper = ? ORDER BY p.debut";
-//    loadDayQuery += "0".equals(estabActivationType) ? " AND e.actif = TRUE ORDER BY p.debut" : " ORDER BY p.debut";
+
     loadDayStmt = dc.prepareStatement(loadDayQuery);//ORDER BY p.action,p.debut
     loadDayRangeStmt = dc.prepareStatement(ScheduleRangeIO.getDayRangeStmt());
 
@@ -544,6 +542,7 @@ public class DataCache
     } else if (m instanceof Establishment) {
       ESTAB_LIST.addElement((Establishment) m);
       Collections.sort(ESTAB_LIST.getData(), new EstablishmentComparator());
+      ROOM_LIST = new GemList<Room>(ROOM_IO.load(user.getId()));
     } else if (m instanceof AgeRange) {
       AGE_RANGE_LIST.addElement((AgeRange) m);
       Collections.sort(AGE_RANGE_LIST.getData(), new AgeRangeComparator());
@@ -664,6 +663,7 @@ public class DataCache
       ROOM_LIST.removeElement((Room) m);
     } else if (m instanceof Establishment) {
       ESTAB_LIST.removeElement((Establishment) m);
+      ROOM_LIST = new GemList<Room>(ROOM_IO.load(user.getId()));
     } else if (m instanceof Course) {
       Course course = (Course)m;
       if (course.isATP()) {

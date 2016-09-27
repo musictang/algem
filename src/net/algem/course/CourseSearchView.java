@@ -75,7 +75,6 @@ public class CourseSearchView
     btErase.addActionListener(this);
 
     GridBagHelper gb = new GridBagHelper(mask);
-    gb.insets = GridBagHelper.SMALL_INSETS;
     gb.add(new GemLabel(BundleUtil.getLabel("Number.label")), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Title.label")), 0, 1, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Code.label")), 0, 2, 1, 1, GridBagHelper.WEST);

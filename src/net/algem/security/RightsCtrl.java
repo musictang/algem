@@ -1,7 +1,7 @@
 /*
- * @(#)RightsCtrl.java	2.9.4.9 08/07/15
+ * @(#)RightsCtrl.java	2.11.0 27/09/16
  * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,7 +21,6 @@
 package net.algem.security;
 
 import java.awt.event.ActionEvent;
-import java.sql.SQLException;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
@@ -32,7 +31,7 @@ import net.algem.util.ui.MessagePopup;
  * comment
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.9
+ * @version 2.11.0
  * @since 2.6.a 01/08/2012
  */
 public class RightsCtrl
@@ -94,7 +93,7 @@ public class RightsCtrl
       service.update(user);
       //TODO update cache
 
-    } catch (SQLException e1) {
+    } catch (UserException e1) {
       GemLogger.logException("Update user", e1, this);
       return false;
     }

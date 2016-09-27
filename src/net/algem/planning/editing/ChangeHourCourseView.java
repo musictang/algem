@@ -54,7 +54,6 @@ public class ChangeHourCourseView
 
     setLayout(new java.awt.GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
-    gb.insets = GridBagHelper.SMALL_INSETS;
 
     dateStart = new DateFrField(new Date());
     hour = new HourField();

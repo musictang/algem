@@ -58,7 +58,6 @@ public class About
     GemPanel infos = new GemPanel(new GridBagLayout());
     infos.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
     GridBagHelper gb = new GridBagHelper(infos);
-    gb.insets = GridBagHelper.SMALL_INSETS;
 
     gb.add(new GemLabel("Système"), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel("Java version"), 0, 1, 1, 1, GridBagHelper.WEST);

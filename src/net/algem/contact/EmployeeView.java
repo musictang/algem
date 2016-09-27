@@ -199,8 +199,6 @@ public class EmployeeView
     centerPanel.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(centerPanel);
 
-    gb.insets = GridBagHelper.SMALL_INSETS;
-
     GemLabel nirLabel = new GemLabel(BundleUtil.getLabel("Nir.label"));
     nirLabel.setToolTipText(BundleUtil.getLabel("Nir.tip"));
     GemLabel placeLabel = new GemLabel(BundleUtil.getLabel("Place.of.birth.label"));

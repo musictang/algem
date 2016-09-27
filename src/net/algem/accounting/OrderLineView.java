@@ -88,7 +88,6 @@ public class OrderLineView
     GemPanel editPanel = new GemPanel();
     editPanel.setLayout(new java.awt.GridBagLayout());
     GridBagHelper gb = new GridBagHelper(editPanel);
-    gb.insets = GridBagHelper.SMALL_INSETS;
 
     payer = new GemNumericField(8);
     payer.setMinimumSize(new Dimension(60, payer.getPreferredSize().height));

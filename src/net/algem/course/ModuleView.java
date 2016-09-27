@@ -87,7 +87,6 @@ public class ModuleView
     courseView = new CourseModuleView(dataCache.getList(Model.CourseCode));
     setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
-    gb.insets = GridBagHelper.SMALL_INSETS;
 
     gb.add(new GemLabel(BundleUtil.getLabel("Number.abbrev.label")), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(no, 1, 0, 1, 1, GridBagHelper.WEST);

@@ -66,7 +66,6 @@ public class MemberRehearsalView
     withCard.setBorder(null);
     this.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
-    gb.insets = GridBagHelper.SMALL_INSETS;
     
     gb.add(new GemLabel(BundleUtil.getLabel("Member.label")), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Date.label")), 0, 1, 1, 1, GridBagHelper.WEST);

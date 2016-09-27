@@ -129,7 +129,6 @@ public class GroupView
     contactPanel.setLayout(new GridBagLayout());
 
     GridBagHelper gb = new GridBagHelper(contactPanel);
-    gb.insets = GridBagHelper.SMALL_INSETS;
 
     gb.add(new GemLabel("N°"), 0, 0, 1, 1, GridBagHelper.EAST);
     gb.add(new GemLabel(BundleUtil.getLabel("Name.label")), 0, 1, 1, 1, GridBagHelper.EAST);

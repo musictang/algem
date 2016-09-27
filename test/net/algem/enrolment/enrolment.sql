@@ -137,3 +137,36 @@ SELECT DISTINCT ON (p.nom) p.id,p.ptype,p.nom,p.prenom,p.civilite,p.droit_img,p.
 WHERE p.ptype = 5 AND e.actif = TRUE
 --  AND e.idper = 16094 
 ORDER BY p.nom
+
+-- suivi global absences élèves
+SELECT p1.id,p1.nom,p1.prenom,pl.jour,pg.debut,pg.fin,c.titre,p2.nom,p2.prenom,
+case when s.statut=0 then NULL when s.statut = 1 then 'ABS' when s.statut = 2 then 'EXC' end as statut,s.texte
+ from personne p1 join plage pg on p1.id = pg.adherent 
+join suivi s on pg.note = s.id
+join planning pl on pg.idplanning = pl.id
+join personne p2 on pl.idper = p2.id
+join action a on pl.action = a.id
+join cours c on a.cours = c.id
+where pl.jour between '01-09-2016' and '30-09-2016'
+and pg.adherent > 0
+and s.statut in (1,2)
+order by p1.nom,p1.prenom,pl.jour,pg.debut;
+
+-- suivi global élèves
+SELECT p1.id,p1.nom,p1.prenom,pl.jour,pg.debut,pg.fin,c.titre,p2.nom,p2.prenom,
+case 
+when s1.statut=0 then NULL 
+when s1.statut = 1 then 'ABS'
+when s1.statut = 2 then 'EXC' end as statut,
+s1.texte,s2.texte
+from personne p1 join plage pg on p1.id = pg.adherent 
+join suivi s1 on pg.note = s1.id
+join planning pl on pg.idplanning = pl.id
+join suivi s2 on pl.note = s2.id
+join personne p2 on pl.idper = p2.id
+join action a on pl.action = a.id
+join cours c on a.cours = c.id
+where pl.jour between '01-09-2016' and '30-09-2016'
+and pg.adherent > 0
+and (pg.note > 0 or pl.note > 0)
+order by pl.jour,p1.nom,p1.prenom,pg.debut;

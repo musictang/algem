@@ -64,7 +64,6 @@ public class AuthDlg
 		pass = new JPasswordField(10);
 		
 		GridBagHelper gb = new GridBagHelper(p);
-		gb.insets = GridBagHelper.SMALL_INSETS;
 		
 		GemPanel buttons = new GemPanel(new GridLayout(1,2));
 		gb.add(new GemLabel(BundleUtil.getLabel("Login.label")), 0, 0, 1, 1, GridBagHelper.WEST);

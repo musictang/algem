@@ -1,7 +1,7 @@
 /*
- * @(#)EstabSearchView.java	2.9.4.13 15/10/15
+ * @(#)EstabSearchView.java	2.11.0 27/09/16
  * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -31,7 +31,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.11.0
  * @since 1.0a 07/07/1999
  */
 public class EstabSearchView
@@ -61,7 +61,6 @@ public class EstabSearchView
     mask.setLayout(new GridBagLayout());
 
     GridBagHelper gb = new GridBagHelper(mask);
-    gb.insets = GridBagHelper.SMALL_INSETS;
     gb.add(new GemLabel(BundleUtil.getLabel("Number.label")), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Name.label")), 0, 1, 1, 1, GridBagHelper.WEST);
     gb.add(number, 1, 0, 1, 1, GridBagHelper.WEST);

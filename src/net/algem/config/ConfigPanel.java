@@ -1,7 +1,7 @@
 /*
- * @(#)ConfigPanel.java 2.1.k 30 juin 2011
+ * @(#)ConfigPanel.java 2.11.0 27/09/16
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -31,6 +31,7 @@ import net.algem.util.ui.GemPanel;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
+ * @version 2.11.0
  */
 public abstract class ConfigPanel
   extends GemBorderPanel
@@ -42,14 +43,15 @@ public abstract class ConfigPanel
   public ConfigPanel(String title) {
     super(BorderFactory.createTitledBorder(title));
   }
-
+  
   public ConfigPanel(String title, Map<String, Config> cm) {
     this(title);
     this.confs = cm;
   }
 
-  public ConfigPanel(Border style) {
-    super(style);
+  public ConfigPanel(Border border, Map<String, Config> cm) {
+    super(border);
+    this.confs = cm;
   }
   
   public abstract List<Config> get();

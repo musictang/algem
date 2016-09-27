@@ -59,7 +59,6 @@ public class AgeRangeSearchView
     mask.setLayout(new GridBagLayout());
 
     GridBagHelper gb = new GridBagHelper(mask);
-    gb.insets = GridBagHelper.SMALL_INSETS;
     gb.add(new GemLabel(BundleUtil.getLabel("Age.range.min.label")), 0, 0, 1, 1, GridBagHelper.EAST);
     gb.add(new GemLabel(BundleUtil.getLabel("Age.range.max.label")), 0, 1, 1, 1, GridBagHelper.EAST);
 

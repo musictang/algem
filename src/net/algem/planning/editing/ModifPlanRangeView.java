@@ -60,7 +60,6 @@ public class ModifPlanRangeView
     currentRange.setEditable(false);
     newRange = new HourRangePanel();
 
-    gb.insets = GridBagHelper.SMALL_INSETS;
     gb.add(new GemLabel(BundleUtil.getLabel("Heading.label")), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(scheduleLabel, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Date.From.label")), 0, 1, 1, 1, GridBagHelper.WEST);

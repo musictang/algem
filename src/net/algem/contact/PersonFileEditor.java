@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileEditor 2.10.3 18/07/16
+ * @(#)PersonFileEditor 2.11.0 27/09/2016
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -69,7 +69,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.3
+ * @version 2.11.0
  */
 public class PersonFileEditor
         extends FileEditor
@@ -632,7 +632,7 @@ public class PersonFileEditor
       MessagePopup.information(view, MessageUtil.getMessage("no.update.info"));
       return;
     }
-    String error = null;
+//    String error = null;
     try {
       desktop.setWaitCursor();
       if (u == null) {
@@ -649,14 +649,9 @@ public class PersonFileEditor
           MessagePopup.information(view, MessageUtil.getMessage("modification.success.label"));
         }
       }
-    } catch (SQLException e) {
-      error = MessageUtil.getMessage("user.creation.failure");
-      GemLogger.logException(error, e, personFileView);
-      MessagePopup.warning(view, error);
-    } catch (UserException ue) {
-      error = MessageUtil.getMessage("user.pass.creation.failure");
-      GemLogger.logException(error, ue);
-      MessagePopup.warning(view, error);
+    } catch (UserException e) {
+      GemLogger.logException(e.getMessage(), e);
+      MessagePopup.warning(view, MessageUtil.getMessage(e.getMessageKey()));
     } finally {
       desktop.setDefaultCursor();
     }

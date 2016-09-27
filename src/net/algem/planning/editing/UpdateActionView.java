@@ -67,7 +67,6 @@ public class UpdateActionView
 
     this.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
-    gb.insets = GridBagHelper.SMALL_INSETS;
     gb.add(new GemLabel(BundleUtil.getLabel("Course.label")), 0, 0, 1, 1, GridBagHelper.EAST);
     gb.add(new GemLabel(BundleUtil.getLabel("Date.label ")), 0, 1, 1, 1, GridBagHelper.EAST);
     gb.add(new GemLabel(BundleUtil.getLabel("Day.label")), 0, 2, 1, 1, GridBagHelper.EAST);

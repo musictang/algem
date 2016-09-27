@@ -146,7 +146,6 @@ public class ModuleDlg
     maskPanel = new GemPanel();
     maskPanel.setLayout(new GridBagLayout());
     gb = new GridBagHelper(maskPanel);
-    gb.insets = GridBagHelper.SMALL_INSETS;
 
     gb.add(new GemLabel(BundleUtil.getLabel("Module.label")), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Start.label")), 0, 1, 1, 1, GridBagHelper.WEST);

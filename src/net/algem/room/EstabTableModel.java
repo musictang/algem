@@ -1,5 +1,5 @@
 /*
- * @(#)EstabTableModel.java	2.11.0 23/09/16
+ * @(#)EstabTableModel.java	2.11.0 27/09/2016
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -64,7 +64,7 @@ public class EstabTableModel
 
   @Override
   public boolean isCellEditable(int row, int column) {
-    return column > 1;
+    return column >= 2;
   }
 
   @Override

@@ -70,7 +70,6 @@ public class AccountTransferView
     p.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
     gb = new GridBagHelper(p);
-    gb.insets = GridBagHelper.SMALL_INSETS;
 
     payment = new JComboBox(ParamTableIO.getValues(ModeOfPaymentCtrl.TABLE,
             ModeOfPaymentCtrl.COLUMN_NAME,

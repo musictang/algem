@@ -1,5 +1,5 @@
 /*
- * @(#)ConfigEditor.java 2.10.0 17/05/16
+ * @(#)ConfigEditor.java 2.11.0 27/09/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -45,7 +45,7 @@ import net.algem.util.ui.GemPanel;
  * General config editor.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.11.0
  * @since 2.1.k
  */
 public class ConfigEditor
@@ -90,7 +90,7 @@ public class ConfigEditor
     try {
       confs = ConfigIO.find(null, dc);
       orgPanel = new ConfigOrganization(BundleUtil.getLabel("ConfEditor.organization.label"), confs);
-      activityPanel = new ConfigPlanning(BundleUtil.getLabel("ConfEditor.schedule.label"), confs);
+      activityPanel = new ConfigPlanning(confs);
       adminPanel = new ConfigAdmin(BundleUtil.getLabel("ConfEditor.management.label"), confs);
       ((ConfigAdmin) adminPanel).init(dataCache);
       filePanel = new ConfigFile(BundleUtil.getLabel("ConfEditor.file.label"), confs);

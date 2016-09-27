@@ -120,7 +120,6 @@ public class RibView
 
     this.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
-    gb.insets = GridBagHelper.SMALL_INSETS;
     GemLabel ribLabel = new GemLabel(BundleUtil.getLabel("Rib.label"));
     ribLabel.setToolTipText(BundleUtil.getLabel("Rib.tip"));
     gb.add(ribLabel, 0, 1, 1, 1, GridBagHelper.NORTHWEST);

@@ -77,7 +77,6 @@ public class PayerExportDlg
 
     pCriterion = new GemPanel(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(pCriterion);
-    gb.insets = GridBagHelper.SMALL_INSETS;
 
     cbCriterion = new JComboBox(criteria);
     payment = new JComboBox(ParamTableIO.getValues(ModeOfPaymentCtrl.TABLE, ModeOfPaymentCtrl.COLUMN_NAME, dc));

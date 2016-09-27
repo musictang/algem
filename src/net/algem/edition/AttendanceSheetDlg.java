@@ -75,7 +75,6 @@ public class AttendanceSheetDlg
     GemPanel panel = new GemPanel(new GridBagLayout());
     panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
     GridBagHelper gb = new GridBagHelper(panel);
-    gb.insets = GridBagHelper.SMALL_INSETS;
 
     estabChoice = new EstabChoice(dataCache.getList(Model.Establishment));
     Calendar cal = Calendar.getInstance();

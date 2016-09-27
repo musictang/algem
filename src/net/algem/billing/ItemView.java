@@ -63,7 +63,6 @@ public class ItemView
 
     setLayout(new GridBagLayout());
     gb = new GridBagHelper(this);
-    gb.insets = GridBagHelper.SMALL_INSETS;
     gb.add(new GemLabel("Id"), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Invoice.item.description.label")), 0, 1, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Invoice.item.price.label")), 0, 2, 1, 1, GridBagHelper.WEST);

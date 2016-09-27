@@ -49,7 +49,6 @@ public class StopCourseView
 
     dateStart = new DateFrField(new Date());
     this.course = new JLabel(c);
-    gb.insets = GridBagHelper.SMALL_INSETS;
 
     gb.add(new JLabel(BundleUtil.getLabel("Course.label")), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(new JLabel(BundleUtil.getLabel("From.label")), 0, 1, 1, 1, GridBagHelper.WEST);

@@ -70,7 +70,6 @@ public class ParamView
     GemPanel mask = new GemPanel();
     mask.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(mask);
-    gb.insets = GridBagHelper.SMALL_INSETS;
     keyLabel = new GemLabel();
     valueLabel = new GemLabel();
 

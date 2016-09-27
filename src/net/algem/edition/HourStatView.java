@@ -52,7 +52,6 @@ public class HourStatView
     setLayout(new java.awt.GridBagLayout());
     setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
     GridBagHelper gb = new GridBagHelper(this);
-    gb.insets = GridBagHelper.SMALL_INSETS;
 
     dateStart = new DateFrField(new Date());
     dateEnd = new DateFrField(new Date());

@@ -76,7 +76,6 @@ public class MemberExportDlg
     pCriterion.setLayout(new GridBagLayout());
 
     GridBagHelper gb = new GridBagHelper(pCriterion);
-    gb.insets = GridBagHelper.SMALL_INSETS;
 
     schoolChoice = new ParamChoice(ParamTableIO.find(SchoolCtrl.TABLE, SchoolCtrl.SORT_COLUMN, dc));
     try {

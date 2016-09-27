@@ -87,7 +87,6 @@ public class RoomView
 
     this.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
-    gb.insets = GridBagHelper.SMALL_INSETS;
 
     gb.add(new GemLabel(labels[0]), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(labels[1]), 0, 1, 1, 1, GridBagHelper.WEST);

@@ -20,6 +20,7 @@
  */
 package net.algem.planning;
 
+import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
@@ -61,17 +62,19 @@ public class FollowUpView
     note = new JTextField(BundleUtil.getLabel("Note.label"));
     note.setColumns(6);
     note.setDocument(new NoteDocumentFilter());
+    
     status = new JComboBox(FollowUpStatus.values());
 
     setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
-    gb.insets = GridBagHelper.SMALL_INSETS;
 
     gb.add(course, 0, 0, 3, 1, GridBagHelper.WEST);
     gb.add(detail, 0, 1, 3, 1, GridBagHelper.WEST);
     gb.add(textArea, 0, 2, 3, 1, GridBagHelper.BOTH, 1.0, 1.0);
+    
     gb.add(new JLabel(BundleUtil.getLabel("Note.label")), 0, 3, 1, 1, GridBagHelper.WEST);
-    gb.add(note, 1, 3, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
+    gb.add(note, 1, 3, 1, 1, GridBagHelper.WEST);
+    note.setPreferredSize(new Dimension(20, note.getPreferredSize().height));
     gb.add(status, 2, 3, 1, 1, GridBagHelper.WEST);
 
   }

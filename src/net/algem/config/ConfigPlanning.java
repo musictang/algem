@@ -1,7 +1,7 @@
 /*
- * @(#)ConfigPlanning.java 2.9.5 29/02/16
+ * @(#)ConfigPlanning.java 2.11.0 27/09/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,7 +21,6 @@
 package net.algem.config;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -29,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.swing.BorderFactory;
-import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
 import javax.swing.JRadioButton;
@@ -48,7 +47,7 @@ import net.algem.util.ui.GridBagHelper;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.5
+ * @version 2.11.0
  */
 public class ConfigPlanning
         extends ConfigPanel
@@ -66,8 +65,8 @@ public class ConfigPlanning
   private JRadioButton normal, reverse;
   private Config c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13;
 
-  public ConfigPlanning(String title, Map<String, Config> confs) {
-    super(title, confs);
+  public ConfigPlanning(Map<String, Config> confs) {
+    super(BorderFactory.createEmptyBorder(), confs);
     init();
   }
 
@@ -115,9 +114,13 @@ public class ConfigPlanning
     memberShip.setSelected(c12.getValue().equalsIgnoreCase("t"));
 
     content = new GemPanel();
-    content.setLayout(new GridBagLayout());
-    GridBagHelper gb = new GridBagHelper(content);
-    gb.insets = GridBagHelper.SMALL_INSETS;
+    content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
+
+    GemPanel p1 = new GemPanel();
+    p1.setBorder(BorderFactory.createTitledBorder(BundleUtil.getLabel("Period.label")));
+    p1.setLayout(new GridBagLayout());
+    p1.setMinimumSize(new Dimension(520,140));
+    GridBagHelper gb = new GridBagHelper(p1);
 
     GemLabel yearLabel = new GemLabel(BundleUtil.getLabel("School.year.label"));
     yearLabel.setToolTipText(ConfigKey.BEGINNING_YEAR.getLabel());
@@ -130,13 +133,16 @@ public class ConfigPlanning
     gb.add(periodPanel, 1, 1, 1, 1, GridBagHelper.WEST);
     
     GemLabel preEnrolmentLabel = new GemLabel(BundleUtil.getLabel("ConfEditor.pre-enrolment.start.date.label"));
+    preEnrolmentLabel.setToolTipText(BundleUtil.getLabel("ConfEditor.pre-enrolment.start.date.tip"));
+    preEnrolmentStart.setToolTipText(BundleUtil.getLabel("ConfEditor.pre-enrolment.start.date.tip"));
     gb.add(preEnrolmentLabel, 0, 2, 1, 1, GridBagHelper.WEST);
     gb.add(preEnrolmentStart, 1, 2, 1, 1, GridBagHelper.WEST);
     
-    Box sep1 = Box.createHorizontalBox();
-    sep1.setBorder(BorderFactory.createMatteBorder(0,0,1,0, Color.GRAY));
-    sep1.setPreferredSize(new Dimension(500, 10));
-    gb.add(sep1, 0, 3, 2, 1, GridBagHelper.WEST);
+    GemPanel p2 = new GemPanel();
+    p2.setBorder(BorderFactory.createTitledBorder(BundleUtil.getLabel("Times.label")));
+    p2.setLayout(new GridBagLayout());
+    p2.setMinimumSize(new Dimension(520,160));
+    GridBagHelper gb2 = new GridBagHelper(p2);
 
     GemLabel hourLabel = new GemLabel(ConfigKey.OFFPEAK_TIME.getLabel());
     hourLabel.setToolTipText(BundleUtil.getLabel("ConfEditor.offpeak.time.tip2"));
@@ -144,15 +150,15 @@ public class ConfigPlanning
     GemPanel opPanel = new GemPanel(new BorderLayout());
     opPanel.add(offPeakTime, BorderLayout.WEST);
 
-    gb.add(hourLabel, 0, 4, 1, 1, GridBagHelper.WEST);
-    gb.add(opPanel, 1, 4, 1, 1, GridBagHelper.WEST);
+    gb2.add(hourLabel, 0, 0, 1, 1, GridBagHelper.WEST);
+    gb2.add(opPanel, 1, 0, 1, 1, GridBagHelper.WEST);
 
     GemPanel stPanel = new GemPanel(new BorderLayout());
     stPanel.add(startTime, BorderLayout.WEST);
     GemLabel startTimeLabel = new GemLabel(ConfigKey.START_TIME.getLabel());
     startTimeLabel.setToolTipText(BundleUtil.getLabel("ConfEditor.start.time.tip"));
-    gb.add(startTimeLabel, 0, 5, 1, 1, GridBagHelper.WEST);
-    gb.add(startTime, 1, 5, 1, 1, GridBagHelper.WEST);
+    gb2.add(startTimeLabel, 0, 1, 1, 1, GridBagHelper.WEST);
+    gb2.add(startTime, 1, 1, 1, 1, GridBagHelper.WEST);
 
     GemLabel minDelayLabel = new GemLabel(ConfigKey.BOOKING_MIN_DELAY.getLabel());
     minDelayLabel.setToolTipText(BundleUtil.getLabel("Booking.min.delay.tip"));
@@ -160,28 +166,27 @@ public class ConfigPlanning
     maxDelayLabel.setToolTipText(BundleUtil.getLabel("Booking.max.delay.tip"));
     GemLabel cancelDelayLabel = new GemLabel(ConfigKey.BOOKING_CANCEL_DELAY.getLabel());
     cancelDelayLabel.setToolTipText(BundleUtil.getLabel("Booking.cancel.delay.tip"));
-    gb.add(minDelayLabel, 0, 6, 1, 1, GridBagHelper.WEST);
-    gb.add(minDelay, 1, 6, 1, 1, GridBagHelper.WEST);
-    gb.add(maxDelayLabel, 0, 7, 1, 1, GridBagHelper.WEST);
-    gb.add(maxDelay, 1, 7, 1, 1, GridBagHelper.WEST);
-    gb.add(cancelDelayLabel, 0, 8, 1, 1, GridBagHelper.WEST);
-    gb.add(cancelDelay, 1, 8, 1, 1, GridBagHelper.WEST);
+    gb2.add(minDelayLabel, 0, 2, 1, 1, GridBagHelper.WEST);
+    gb2.add(minDelay, 1, 2, 1, 1, GridBagHelper.WEST);
+    gb2.add(maxDelayLabel, 0, 3, 1, 1, GridBagHelper.WEST);
+    gb2.add(maxDelay, 1, 3, 1, 1, GridBagHelper.WEST);
+    gb2.add(cancelDelayLabel, 0, 4, 1, 1, GridBagHelper.WEST);
+    gb2.add(cancelDelay, 1, 4, 1, 1, GridBagHelper.WEST);
 
-    gb.add(memberShip, 0, 9, 2, 1, GridBagHelper.WEST);
-    Box sep2 = Box.createHorizontalBox();
-    sep2.setBorder(BorderFactory.createMatteBorder(0,0,1,0, Color.GRAY));
-    sep2.setPreferredSize(new Dimension(500, 10));
-    gb.add(sep2, 0, 10, 2, 1, GridBagHelper.WEST);
+    gb2.add(memberShip, 0, 5, 2, 1, GridBagHelper.WEST);
 
+    GemPanel p3 = new GemPanel();
+    p3.setBorder(BorderFactory.createTitledBorder(BundleUtil.getLabel("Options.label")));
+     p3.setLayout(new GridBagLayout());
+     p3.setMinimumSize(new Dimension(520,110));
+    GridBagHelper gb3 = new GridBagHelper(p3);
     rangeNames = new JCheckBox(ConfigKey.SCHEDULE_RANGE_NAMES.getLabel());
-//    rangeNames.setBorder(null);
     rangeNames.setSelected(c7.getValue().equals("t"));
-    gb.insets = new Insets(10,0,0,0);
-    gb.add(rangeNames, 0, 11, 2, 1, GridBagHelper.WEST);
+    gb3.insets = new Insets(10,0,0,0);
+    gb3.add(rangeNames, 0, 0, 2, 1, GridBagHelper.WEST);
 
     ButtonGroup group = new ButtonGroup();
     normal = new JRadioButton(BundleUtil.getLabel("Name.label") + " " + BundleUtil.getLabel("First.name.label").toLowerCase());
-//    normal.setBorder(null);
     reverse = new JRadioButton(BundleUtil.getLabel("First.name.label") + " " + BundleUtil.getLabel("Name.label").toLowerCase());
     group.add(normal);
     group.add(reverse);
@@ -195,10 +200,13 @@ public class ConfigPlanning
     sortby.add(normal);
     sortby.add(reverse);
 
-    gb.add(new GemLabel(BundleUtil.getLabel("Person.sort.order.label") + " :"), 0, 12, 2, 1, GridBagHelper.WEST);
-    gb.insets = new Insets(0,0,4,0);
-    gb.add(sortby, 0, 13, 2, 1, GridBagHelper.WEST);
+    gb3.add(new GemLabel(BundleUtil.getLabel("Person.sort.order.label") + " :"), 0, 1, 2, 1, GridBagHelper.WEST);
+    gb3.insets = new Insets(0,0,4,0);
+    gb3.add(sortby, 0, 2, 2, 1, GridBagHelper.WEST);
 
+    content.add(p1);
+    content.add(p2);
+    content.add(p3);
     add(content);
   }
 

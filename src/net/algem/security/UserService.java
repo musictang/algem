@@ -1,7 +1,7 @@
 /*
- * @(#)UserService.java	2.9.4.9 08/07/15
+ * @(#)UserService.java	2.11.0 27/09/16
  * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,7 +28,7 @@ import net.algem.util.postit.Postit;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.9
+ * @version 2.11.0
  * @since 2.8.p 30/10/13
  */
 public interface UserService
@@ -54,7 +54,7 @@ public interface UserService
 
   public boolean authorize(String menu2, User user);
 
-  public void create(User u) throws SQLException;
+  public void create(User u) throws UserException;
 
   public User findId(int id);
 
@@ -62,9 +62,9 @@ public interface UserService
 
   public List<User> findAll(String where);
 
-  public void update(User user) throws SQLException;
+  public void update(User user) throws UserException;
 
-  public boolean update(User nu, final User old) throws SQLException, UserException;
+  public boolean update(User nu, final User old) throws UserException;
   
   public void delete(User user) throws UserException;
 

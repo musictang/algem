@@ -89,7 +89,6 @@ public class HourEmployeeView
     GemPanel body = new GemPanel(new GridBagLayout());
     body.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
     GridBagHelper gb = new GridBagHelper(body);
-    gb.insets = GridBagHelper.SMALL_INSETS;
 
     r1 = new JRadioButton(MessageUtil.getMessage("employee.hours.sorting.by.establishment.file.info"));
     r1.setActionCommand(HourEmployeeDlg.SORTING_CMD[0]);

@@ -58,7 +58,6 @@ public class AddEventDlg
     dlg.setLayout(new BorderLayout());
     GemPanel p = new GemPanel(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(p);
-    gb.insets = GridBagHelper.SMALL_INSETS;
     timePanel = new HourRangePanel(plan.getStart(),plan.getEnd());
     note = new JTextArea(5, 20);
     note.setBorder(new JTextField().getBorder());

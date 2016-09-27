@@ -8,6 +8,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
 
+/**
+ * 
+ * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
+ * @version 2.11.0
+ */
 public class Toast {
 
     private final JComponent component;
@@ -55,11 +60,15 @@ public class Toast {
         new Toast(component, null, message, 2000/*Default 2 Sec*/);
     }
 
-    public static void showToast(JComponent component, String message, Point location, long forDuration) {
+    public static void showToast(JComponent component, Point location, String message, long forDuration) {
         new Toast(component, location, message, forDuration);
     }
 
     public static void showToast(GemDesktop desktop, String message) {
         showToast((JComponent) desktop.getFrame().getComponent(0), message);
+    }
+    
+    public static void showToast(GemDesktop desktop, String message, long forDuration) {
+        showToast((JComponent) desktop.getFrame().getComponent(0), null, message, forDuration);
     }
 }

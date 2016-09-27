@@ -71,7 +71,6 @@ public class WorkshopScheduleView
 
     this.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
-    gb.insets = GridBagHelper.SMALL_INSETS;
 
     GemPanel hours = new GemPanel();
     hours.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));

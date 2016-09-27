@@ -70,7 +70,6 @@ public class CommunAccountTransferDlg
     GemPanel header = new GemPanel();
     header.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(header);
-    gb.insets = GridBagHelper.SMALL_INSETS;
 
     gb.add(new JLabel(BundleUtil.getLabel("Menu.file.label")), 0, 0, 1, 1, GridBagHelper.EAST);
     gb.add(filePath, 1, 0, 1, 1, GridBagHelper.WEST);

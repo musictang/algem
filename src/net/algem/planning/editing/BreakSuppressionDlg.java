@@ -68,7 +68,6 @@ public class BreakSuppressionDlg
     GemPanel content = new GemPanel();
     content.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(content);
-    gb.insets = GridBagHelper.SMALL_INSETS;
 
     from = new GemField(b.toString());
     from.setEditable(false);

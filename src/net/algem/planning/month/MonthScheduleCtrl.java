@@ -1,7 +1,7 @@
 /*
- * @(#)MonthScheduleCtrl.java	2.9.4.13 09/11/15
+ * @(#)MonthScheduleCtrl.java	2.11.0 27/09/2016
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -41,6 +41,7 @@ import net.algem.planning.editing.ModifPlanEvent;
 import net.algem.room.Establishment;
 import net.algem.util.BundleUtil;
 import net.algem.util.GemLogger;
+import net.algem.util.MessageUtil;
 import net.algem.util.event.GemEvent;
 import net.algem.util.model.GemCloseVetoException;
 import net.algem.util.model.GemList;
@@ -54,7 +55,7 @@ import net.algem.util.ui.UIAdjustable;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.11.0
  * @since 1.0b 06/10/2001
  */
 public class MonthScheduleCtrl
@@ -69,6 +70,7 @@ public class MonthScheduleCtrl
   private JMenuItem mQuit;
   private JMenu mOptions;
   private JMenuItem miSaveUISettings;
+  private JMenuItem miEstab;
   private JCheckBoxMenuItem mLinkDay;
   private MonthSchedule monthSchedule;
   private boolean linkedToDay = false;
@@ -116,14 +118,19 @@ public class MonthScheduleCtrl
     mLinkDay.setSelected(false);
     mLinkDay.addItemListener(new ItemListener()
     {
+      @Override
       public void itemStateChanged(ItemEvent e) {
         linkedToDay = (e.getStateChange() == ItemEvent.SELECTED);
       }
     });
 
     miSaveUISettings = getMenuItem("Store.ui.settings");
+    miEstab = new JMenuItem(BundleUtil.getLabel("Menu.establishment.label"));
+    miEstab.setToolTipText(BundleUtil.getLabel("Establishment.activation.tip"));
+    miEstab.addActionListener(this);
     mOptions.add(mLinkDay);
     mOptions.add(miSaveUISettings);
+    mOptions.add(miEstab);
 
     mBar.add(mFile);
     mBar.add(mOptions);
@@ -184,6 +191,12 @@ public class MonthScheduleCtrl
     } else if (src == miSaveUISettings) {
       storeUISettings();
       Toast.showToast(desktop, getUIInfo());
+    } else if (src == miEstab) {
+      EstabActivationCtrl estabCtrl = new EstabActivationCtrl(desktop, true);
+      estabCtrl.initUI();
+      if (estabCtrl.hasChanged()) {
+        Toast.showToast(desktop, MessageUtil.getMessage("establishment.activation.info"), 4000);
+      }
     }
 
   }

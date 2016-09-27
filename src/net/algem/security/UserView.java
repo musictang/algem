@@ -69,7 +69,6 @@ public class UserView
 
     this.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
-    gb.insets = GridBagHelper.SMALL_INSETS;
 
     gb.add(id, 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Login.label")), 0, 1, 1, 1, GridBagHelper.WEST);

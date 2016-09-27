@@ -90,7 +90,6 @@ public class MemberEditor
     GemPanel p = new GemPanel();
     p.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(p);
-    gb.insets = GridBagHelper.SMALL_INSETS;
     //gb.add(new GemLabel(BundleUtil.getLabel("Instruments.label")), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Occupation.label")), 0, 2, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Date.of.birth.label")), 0, 3, 1, 1, GridBagHelper.WEST);

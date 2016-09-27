@@ -70,6 +70,7 @@ public class FollowUpDlg
     dlg.add(pv, BorderLayout.CENTER);
     dlg.add(btPanel, BorderLayout.SOUTH);
     dlg.setSize(400, 200);
+    dlg.pack();
     dlg.setLocationRelativeTo(desktop.getFrame());
   }
 

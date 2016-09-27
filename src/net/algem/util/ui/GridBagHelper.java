@@ -1,7 +1,7 @@
 /*
- * @(#)GridBagHelper.java	2.8.w 02/09/14
+ * @(#)GridBagHelper.java	2.11.0 27/09/16
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -25,7 +25,7 @@ import java.awt.*;
 /**
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.11.0
  */
 public class GridBagHelper
 {
@@ -80,7 +80,7 @@ public class GridBagHelper
     ipadx = constraints.ipadx;
     ipady = constraints.ipady;
 
-    insets = constraints.insets;
+    insets = SMALL_INSETS;
 
     anchor = constraints.anchor;
 

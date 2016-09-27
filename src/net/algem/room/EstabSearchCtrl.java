@@ -103,7 +103,7 @@ public class EstabSearchCtrl
 
   public void load() {
     try {
-      List<Establishment> v = EstablishmentIO.find(" AND idper = " + desktop.getDataCache().getUser().getId() + " ORDER BY p.nom", dc);
+      List<Establishment> v = EstablishmentIO.find(" AND e.idper = " + desktop.getDataCache().getUser().getId() + " ORDER BY p.nom", dc);
       ((CardLayout) wCard.getLayout()).show(wCard, "liste");
       list.loadResult(v);
     } catch (SQLException ex) {

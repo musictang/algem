@@ -130,7 +130,6 @@ public class DirectDebitExportDlg
     p.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
     GridBagHelper gb1 = new GridBagHelper(p);
-    gb1.insets = GridBagHelper.SMALL_INSETS;
 
     Calendar c = Calendar.getInstance();
     c.set(Calendar.DAY_OF_MONTH, 15);
@@ -157,7 +156,6 @@ public class DirectDebitExportDlg
     GemPanel body = new GemPanel(new GridBagLayout());
     body.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
     GridBagHelper gb2 = new GridBagHelper(body);
-    gb2.insets = GridBagHelper.SMALL_INSETS;
 
     gb2.add(new GemLabel(BundleUtil.getLabel("Date.label")), 0, 0, 1, 1, GridBagHelper.NONE, GridBagHelper.WEST);
     gb2.add(datePanel, 1, 0, 1, 1, GridBagHelper.NONE, GridBagHelper.WEST);

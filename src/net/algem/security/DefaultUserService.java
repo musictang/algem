@@ -1,7 +1,7 @@
 /*
- * @(#)DefaultUserService.java	2.9.4.14 09/12/15
+ * @(#)DefaultUserService.java	2.11.0 27/09/2016
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -40,7 +40,7 @@ import org.apache.commons.codec.binary.Base64;
  * User operations service.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.14
+ * @version 2.11.0
  * @since 2.6.a 06/08/2012
  */
 public class DefaultUserService
@@ -176,9 +176,14 @@ public class DefaultUserService
   }
 
   @Override
-  public void update(User user) throws SQLException {
-    dao.update(user);
-    dataCache.update(user);
+  public void update(User user) throws UserException {
+    try {
+      dao.update(user);
+      dataCache.update(user);
+    } catch (SQLException ex) {
+      GemLogger.logException(ex);
+      throw new UserException(ex.getMessage(), "MODIFICATION");
+    }
   }
 
   @Override
@@ -310,22 +315,36 @@ public class DefaultUserService
   }
 
   @Override
-  public void create(User u) throws SQLException {
-    u.setPassInfo(createPassword(u.getPassword()));
-    dao.insert(u);
-    dao.initMenus(u);
-    dao.initRights(u);
+  public void create(final User u) throws UserException {
+    try {
+      u.setPassInfo(createPassword(u.getPassword()));
+      dc.withTransaction(new DataConnection.SQLRunnable<Void>()
+      {
+        @Override
+        public Void run(DataConnection conn) throws Exception {
+          dao.insert(u);
+          dao.initMenus(u);
+          dao.initRights(u);
+          dao.initEstabStatus(u.getId());
+          return null;
+        }
+      });
+    } catch (Exception ex) {
+      GemLogger.logException(ex);
+      throw new UserException(ex.getMessage(), "CREATION");
+    }
+
   }
 
   @Override
-  public boolean update(User nu, final User old) throws SQLException, UserException {
+  public boolean update(User nu, final User old) throws UserException {
     byte[] salt = null;
 
     if (old.getPassInfo() == null || old.getPassInfo().getKey() == null) {
       try {
         salt = encryptionService.generateSalt();
       } catch (NoSuchAlgorithmException ex) {
-        throw new UserException(ex.getMessage());
+        throw new UserException(ex.getMessage(), "ENCRYPTION");
       }
     } else {
       salt = old.getPassInfo().getKey();
@@ -335,15 +354,19 @@ public class DefaultUserService
       byte[] p = encryptionService.getEncryptedPassword(nu.getPassword(), salt);
       nu.setPassInfo(new UserPass(p, salt));
     } catch (NoSuchAlgorithmException ex) {
-      throw new UserException(ex.getMessage());
+      throw new UserException(ex.getMessage(), "ENCRYPTION");
     } catch (InvalidKeySpecException ex) {
       // if password is null for exemple
-      throw new UserException(ex.getMessage());
+      throw new UserException(ex.getMessage(), "ENCRYPTION");
     }
 
     if (!nu.equals(old)) {
-      dao.update(nu);
-      return true;
+      try {
+        dao.update(nu);
+        return true;
+      } catch (SQLException ex) {
+        throw new UserException(ex.getMessage(), "MODIFICATION");
+      }
     }
     return false;
   }

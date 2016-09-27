@@ -1,5 +1,5 @@
 /*
- * @(#)ConfigAdmin.java 2.11.0 23/09/16
+ * @(#)ConfigAdmin.java 2.11.0 27/09/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,7 +20,6 @@
  */
 package net.algem.config;
 
-import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +27,6 @@ import java.util.Map;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JRadioButton;
@@ -42,7 +40,6 @@ import net.algem.util.DataCache;
 import net.algem.util.model.Model;
 import net.algem.util.ui.GemLabel;
 import net.algem.util.ui.GemPanel;
-import net.algem.util.ui.GridBagHelper;
 
 /**
  * Panel for config and administrative tasks.
@@ -54,7 +51,7 @@ public class ConfigAdmin
         extends ConfigPanel
 {
 
-  private Config c1, c2, c3, c4, c5, c6, c7, c8;
+  private Config c1, c2, c3, c4, c5, c6, c7;
   private JCheckBox jc1, jc2, jc3;
   private ParamChoice school;
   private EstabChoice estab;
@@ -75,7 +72,7 @@ public class ConfigAdmin
     c5 = confs.get(ConfigKey.DEFAULT_ESTABLISHMENT.getKey());
     c6 = confs.get(ConfigKey.DEFAULT_STUDIO.getKey());
     c7 = confs.get(ConfigKey.DEFAULT_PRICING_PERIOD.getKey());
-    c8 = confs.get(ConfigKey.ESTABLISHEMENT_ACTIVATION_TYPE.getKey());
+    //c8 = confs.get(ConfigKey.ESTABLISHEMENT_ACTIVATION_TYPE.getKey());
 
     content = new GemPanel();
 
@@ -141,6 +138,7 @@ public class ConfigAdmin
     Box box4 = Box.createHorizontalBox();
     box4.add(Box.createVerticalStrut(10));
     content.add(box4);
+    /*
     jr1 = new JRadioButton("Globale");
     jr1.setToolTipText("<html>L'activation ou la désactivation d'un établissement est commune<br />à tous les utilisateurs d'Algem dans la structure.</html>");
     jr2 = new JRadioButton("Individuelle");
@@ -159,7 +157,7 @@ public class ConfigAdmin
     gb.add(p2label, 0,0,1,1, GridBagHelper.WEST);
     gb.add(jr1,1,0,1,1);
     gb.add(jr2,2,0,1,1);
-    content.add(p2); 
+    content.add(p2);*/
 
     add(content);
   }
@@ -174,7 +172,7 @@ public class ConfigAdmin
     c5.setValue(String.valueOf(estab.getKey()));
     c6.setValue(String.valueOf(studio.getKey()));
     c7.setValue(((PricingPeriod) pricingPeriod.getSelectedItem()).name());
-    c8.setValue(jr1.isSelected() ? "0" : "1");
+    //c8.setValue(jr1.isSelected() ? "0" : "1");
 
     conf.add(c1);
     conf.add(c2);
@@ -183,7 +181,7 @@ public class ConfigAdmin
     conf.add(c5);
     conf.add(c6);
     conf.add(c7);
-    conf.add(c8);
+    //conf.add(c8);
 
     return conf;
   }

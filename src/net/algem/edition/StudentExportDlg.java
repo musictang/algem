@@ -87,7 +87,6 @@ public abstract class StudentExportDlg
     outerPanel.add(pCriterion);
 
     gb = new GridBagHelper(pCriterion);
-    gb.insets = GridBagHelper.SMALL_INSETS;
 
     dateRange = new DateRangePanel(desktop.getDataCache().getStartOfYear(), desktop.getDataCache().getEndOfYear());
     String[] category = {

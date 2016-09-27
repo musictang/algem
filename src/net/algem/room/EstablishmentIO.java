@@ -215,7 +215,7 @@ public class EstablishmentIO
 
   public static Establishment findId(int n, DataConnection dc) throws SQLException {
 
-    String where = " AND id = " + n;
+    String where = " AND p.id = " + n;
     List<Establishment> v = find(where, dc);
     if (v.size() > 0) {
       return v.get(0);

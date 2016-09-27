@@ -67,7 +67,6 @@ public class TeacherBreakView
 
     content.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(content);
-    gb.insets = GridBagHelper.SMALL_INSETS;
     gb.add(new JLabel(BundleUtil.getLabel("Course.label")), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(course, 1, 0, 3, 1, GridBagHelper.WEST);
     gb.add(new JLabel(BundleUtil.getLabel("Room.label")), 0, 1, 1, 1, GridBagHelper.WEST);

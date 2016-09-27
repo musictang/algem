@@ -1,7 +1,7 @@
 /*
- * @(#)DayScheduleCtrl.java 2.11.0 23/09/16
+ * @(#)DayScheduleCtrl.java 2.11.0 27/09/2016
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -50,6 +50,7 @@ import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.FileUtil;
 import net.algem.util.GemLogger;
+import net.algem.util.MessageUtil;
 import net.algem.util.event.GemEvent;
 import net.algem.util.jdesktop.DesktopHandlerException;
 import net.algem.util.jdesktop.DesktopOpenHandler;
@@ -83,6 +84,7 @@ public class DayScheduleCtrl
   private Calendar cal;
   private JCheckBoxMenuItem miAllRooms;
   private JMenuItem miSaveUISettings;
+  private JMenuItem miEstab;
   private boolean savePrefs;
   private final Preferences prefs = Preferences.userRoot().node("/algem/ui");
 
@@ -141,6 +143,11 @@ public class DayScheduleCtrl
     mOptions.add(miAllRooms);
     miSaveUISettings = getMenuItem("Store.ui.settings");
     mOptions.add(miSaveUISettings);
+    
+    miEstab = new JMenuItem(BundleUtil.getLabel("Menu.establishment.label"));
+    miEstab.setToolTipText(BundleUtil.getLabel("Establishment.activation.tip"));
+    miEstab.addActionListener(this);
+    mOptions.add(miEstab);
 
     mBar.add(mFile);
     mBar.add(mOptions);
@@ -243,6 +250,12 @@ public class DayScheduleCtrl
         } catch (DesktopHandlerException e) {
           GemLogger.log(e.getMessage());
         }
+      }
+    } else if (src == miEstab) {
+      EstabActivationCtrl estabCtrl = new EstabActivationCtrl(desktop, true);
+      estabCtrl.initUI();
+      if (estabCtrl.hasChanged()) {
+        Toast.showToast(desktop, MessageUtil.getMessage("establishment.activation.info"), 4000);
       }
     }
   }

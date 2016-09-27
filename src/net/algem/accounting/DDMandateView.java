@@ -95,7 +95,6 @@ public class DDMandateView
     setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
     GridBagHelper gb = new GridBagHelper(this);
-    gb.insets = GridBagHelper.SMALL_INSETS;
     
     gb.add(new GemLabel(BundleUtil.getLabel("Direct.debit.last.label")), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Direct.debit.signature.label")), 0, 1, 1, 1, GridBagHelper.WEST);

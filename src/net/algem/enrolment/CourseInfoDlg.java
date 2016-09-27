@@ -91,7 +91,6 @@ public class CourseInfoDlg
     infoPanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
 
     GridBagHelper gb = new GridBagHelper(infoPanel);
-    gb.insets = GridBagHelper.SMALL_INSETS;
 
     GemPanel buttons = new GemPanel(new GridLayout(1,2));
     gb.add(new JLabel(BundleUtil.getLabel("Date.label")), 0,0,1,1, GridBagHelper.WEST);

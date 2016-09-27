@@ -66,7 +66,6 @@ public class RehearsalCancelView
     GemPanel body = new GemPanel();
     body.setLayout(new GridBagLayout());
     gb = new GridBagHelper(body);
-    gb.insets = GridBagHelper.SMALL_INSETS;
 
     gb.add(new GemLabel(BundleUtil.getLabel("Date.From.label")), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(start, 1, 0, 1, 1, GridBagHelper.WEST);

@@ -137,7 +137,6 @@ public class PersonView
       }
     });
 
-    gb.insets = GridBagHelper.SMALL_INSETS;
     gb.add(photoPanel, 0, 0, 1, 6, GridBagHelper.NORTHWEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Number.label")), 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Organization.label")), 1, 1, 1, 1, GridBagHelper.WEST);

@@ -61,7 +61,6 @@ public class ChangeModuleTimeDlg
     hours.setColumns(4);
     JPanel p = new JPanel(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(p);
-    gb.insets = GridBagHelper.SMALL_INSETS;
 
     gb.add(new JLabel(GemCommand.PREVIOUS_CMD), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(new JLabel(BundleUtil.getLabel("New.label")), 0, 1, 1, 1, GridBagHelper.WEST);

@@ -119,7 +119,6 @@ public class InvoiceView
   private void init() {
     GemPanel head = new GemPanel(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(head);
-    gb.insets = GridBagHelper.SMALL_INSETS;
 
     invoiceId = new GemField(6);
     invoiceId.setMinimumSize(new Dimension(65, invoiceId.getPreferredSize().height));

@@ -1,5 +1,5 @@
 /*
- * @(#)UserIO.java 2.9.5 26/02/16
+ * @(#)UserIO.java 2.11.0 27/09/16
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -25,9 +25,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Vector;
+import net.algem.contact.Person;
 import net.algem.contact.PersonIO;
+import net.algem.room.EstablishmentIO;
 import net.algem.util.DataConnection;
-import net.algem.util.GemLogger;
 import net.algem.util.model.Cacheable;
 import net.algem.util.model.TableIO;
 import org.apache.commons.codec.binary.Base64;
@@ -37,7 +38,7 @@ import org.apache.commons.codec.binary.Base64;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.9.5
+ * @version 2.11.0
  * @since 1.0a 07/07/1999
  */
 public class UserIO
@@ -106,23 +107,45 @@ public class UserIO
         }
       });
     } catch (Exception ex) {
-      throw new UserException(ex.getMessage());
+      throw new UserException(ex.getMessage(), "SUPPRESSION");
     }
 
+  }
+
+  /**
+   * Menus access initialization.
+   *
+   * @param u user
+   * @throws java.sql.SQLException
+   */
+  public void initMenus(User u) throws SQLException {
+    String query = "SELECT id, auth FROM " + T_MENU + ", " + T_PROFILE + " WHERE id = idmenu AND profil = " + u.getProfile();
+    String batchQuery = "INSERT INTO " + T_ACCESS + " VALUES(?,?,?)";//idper,idmenu,auth
+
+    try (PreparedStatement ps = dc.prepareStatement(batchQuery); ResultSet rs = dc.executeQuery(query)) {
+      while (rs.next()) {
+        int id = rs.getInt(1);
+        boolean b = rs.getBoolean(2);
+        ps.setInt(1, u.getId());
+        ps.setInt(2, id);
+        ps.setBoolean(3, b);
+        ps.addBatch();
+      }
+      ps.executeBatch();
+    } 
   }
 
   /**
    * Rights initialization.
    *
    * @param u user
+   * @throws java.sql.SQLException
    */
-  public void initRights(User u) {
+  public void initRights(User u) throws SQLException {
     String query = "SELECT relname FROM pg_class WHERE relkind = 'r' AND relname !~ '^pg' AND relname !~ '^sql_' AND relname !~ '^Inv'";
     String batchQuery = "INSERT INTO " + T_RIGHTS + " VALUES(?,?,?,?,?,?)";
 
-    dc.setAutoCommit(false);
-    try (PreparedStatement ps = dc.prepareStatement(batchQuery);
-      ResultSet rs = dc.executeQuery(query)) {
+    try (PreparedStatement ps = dc.prepareStatement(batchQuery); ResultSet rs = dc.executeQuery(query)) {
       while (rs.next()) {
         String table = rs.getString(1);
         ps.setInt(1, u.getId());
@@ -134,42 +157,19 @@ public class UserIO
         ps.addBatch();
       }
       ps.executeBatch();
-    } catch (SQLException e) {
-      GemLogger.logException(query, e);
-    } finally {
-      dc.setAutoCommit(true);
-    }
-
+    } 
   }
-
+  
   /**
-   * Menus access initialization.
-   *
-   * @param u user
+   * Establishment active status initialization.
+   * @param idper user id
+   * @throws SQLException 
    */
-  public void initMenus(User u) {
-    String query = "SELECT id, auth FROM " + T_MENU + ", " + T_PROFILE + " WHERE id = idmenu AND profil = " + u.getProfile();
-    String batchQuery = "INSERT INTO " + T_ACCESS + " VALUES(?,?,?)";//idper,idmenu,auth
-
-    dc.setAutoCommit(false);// important for batch insert
-    try (PreparedStatement ps = dc.prepareStatement(batchQuery);
-      ResultSet rs = dc.executeQuery(query)) {
-      while (rs.next()) {
-        int id = rs.getInt(1);
-        boolean b = rs.getBoolean(2);
-        ps.setInt(1, u.getId());
-        ps.setInt(2, id);
-        ps.setBoolean(3, b);
-        ps.addBatch();
-      }
-      ps.executeBatch();
-    } catch (SQLException e) {
-      GemLogger.logException(query, e);
-    } finally {
-      dc.setAutoCommit(true);
-    }
+  public void initEstabStatus(int idper) throws SQLException {
+    String query = "INSERT INTO " + EstablishmentIO.TABLE + " SELECT p.id," + idper + ",true FROM personne p WHERE p.ptype = " + Person.ESTABLISHMENT;
+    dc.executeUpdate(query);
   }
-
+  
   public User findId(int n) throws SQLException {
     String query = "WHERE idper = " + n;
     List<User> v = find(query);

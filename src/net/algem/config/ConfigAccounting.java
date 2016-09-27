@@ -1,5 +1,5 @@
 /*
- * @(#)ConfigAccounting.java 2.10.0 19/05/16
+ * @(#)ConfigAccounting.java 2.11.0 27/09/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -21,6 +21,7 @@
 package net.algem.config;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -42,7 +43,7 @@ import net.algem.util.ui.GridBagHelper;
  * Bic infos for the organization.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.10.0
+ * @version 2.11.0
  * @since 2.2.d
  */
 public class ConfigAccounting
@@ -131,13 +132,12 @@ public class ConfigAccounting
     content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
 
     GemPanel creditorPanel = new GemPanel(new GridBagLayout());
-
+    creditorPanel.setMinimumSize(new Dimension(400,240));
+    creditorPanel.setBorder(BorderFactory.createTitledBorder(BundleUtil.getLabel("Menu.debiting.label")));
+    
     GridBagHelper gb = new GridBagHelper(creditorPanel);
-    gb.insets = GridBagHelper.SMALL_INSETS;
-
     gb.add(new GemLabel(ConfigKey.DIRECT_DEBIT_FIRM_NAME.getLabel()), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(firmName, 1, 0, 1, 1, GridBagHelper.WEST);
-
     gb.add(new GemLabel(ConfigKey.DIRECT_DEBIT_CREDITOR_NNE.getLabel()), 0, 1, 1, 1, GridBagHelper.WEST);
     gb.add(issuer, 1, 1, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(ConfigKey.DIRECT_DEBIT_BANK_BRANCH.getLabel()), 0, 2, 1, 1, GridBagHelper.WEST);
@@ -153,9 +153,12 @@ public class ConfigAccounting
     gb.add(new GemLabel(ConfigKey.DIRECT_DEBIT_ICS.getLabel()), 0, 7, 1, 1, GridBagHelper.WEST);
     gb.add(ics, 1, 7, 1, 1, GridBagHelper.WEST);
 
+    
     GemPanel options = new GemPanel(new GridBagLayout());
+    options.setBorder(BorderFactory.createTitledBorder(BundleUtil.getLabel("Options.label")));
+    options.setMinimumSize(new Dimension(400,200));
+    
     GridBagHelper gb2 = new GridBagHelper(options);
-    gb2.insets = GridBagHelper.SMALL_INSETS;
     gb2.add(new GemLabel(ConfigKey.ACCOUNTING_DOCUMENT_NUMBER.getLabel()), 0, 0, 1, 1, GridBagHelper.WEST);
     gb2.add(document, 1, 0, 1, 1, GridBagHelper.WEST);
     gb2.add(new GemLabel(ConfigKey.ACCOUNTING_INVOICE_NUMBER.getLabel()), 0, 1, 1, 1, GridBagHelper.WEST);
@@ -171,19 +174,7 @@ public class ConfigAccounting
     gb2.add(roundFractionalPayments, 0, 4, 2, 1, GridBagHelper.WEST);
     gb2.add(chargeEnrolmentLines, 0, 5, 2, 1, GridBagHelper.WEST);
 
-    Box b1 = Box.createHorizontalBox();
-    b1.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
-    b1.add(new GemLabel("<html><u>" + BundleUtil.getLabel("Menu.debiting.label") + "</u></html>"));
-    b1.add(Box.createHorizontalGlue());
-
-    Box b2 = Box.createHorizontalBox();
-    b2.add(new GemLabel("<html><u>" + BundleUtil.getLabel("Menu.options.label") + "</u></html>"));
-    b2.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
-    b2.add(Box.createHorizontalGlue());
-
-    content.add(b1);
     content.add(creditorPanel);
-    content.add(b2);
     content.add(options);
 
     add(content);

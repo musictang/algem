@@ -92,7 +92,6 @@ public class MusicianDlg
     back = new GemPanel();
     back.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(back);
-    gb.insets = GridBagHelper.SMALL_INSETS;
 
     gb.add(new GemLabel(BundleUtil.getLabel("Number.abbrev.label")), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(no, 1, 0, 1, 1, GridBagHelper.WEST);
