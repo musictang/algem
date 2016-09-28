@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleIO.java	2.11.0 20/09/16
+ * @(#)ScheduleIO.java	2.11.0 28/09/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -45,8 +45,7 @@ import net.algem.util.model.TableIO;
  * @version 2.11.0
  */
 public class ScheduleIO
-        extends TableIO
-{
+    extends TableIO {
 
   public final static String TABLE = "planning";
   public final static String SEQUENCE = "planning_id_seq";
@@ -61,16 +60,16 @@ public class ScheduleIO
     int id = nextId(SEQUENCE, dc);
 
     String query = "INSERT INTO " + TABLE + " VALUES("
-            + id
-            + ",'" + p.getDate().toString() + "'"
-            + ",'" + p.getStart() + "'"
-            + ",'" + p.getEnd() + "'"
-            + "," + p.getType()
-            + "," + p.getIdPerson()
-            + "," + p.getIdAction()
-            + "," + p.getIdRoom()
-            + "," + p.getNote()
-            + ")";
+        + id
+        + ",'" + p.getDate().toString() + "'"
+        + ",'" + p.getStart() + "'"
+        + ",'" + p.getEnd() + "'"
+        + "," + p.getType()
+        + "," + p.getIdPerson()
+        + "," + p.getIdAction()
+        + "," + p.getIdRoom()
+        + "," + p.getNote()
+        + ")";
 
     dc.executeUpdate(query);
     p.setId(id);
@@ -78,15 +77,15 @@ public class ScheduleIO
 
   public static void update(Schedule p, DataConnection dc) throws SQLException {
     String query = "UPDATE " + TABLE + " SET "
-            + "jour = '" + p.getDate()
-            + "',debut = '" + p.getStart()
-            + "',fin = '" + p.getEnd()
-            + "',ptype = " + p.getType()
-            + ",idper = " + p.getIdPerson()
-            + ",action = " + p.getIdAction()
-            + ",lieux = " + p.getIdRoom()
-            + ",note = " + p.getNote()
-            + " WHERE id = " + p.getId();
+        + "jour = '" + p.getDate()
+        + "',debut = '" + p.getStart()
+        + "',fin = '" + p.getEnd()
+        + "',ptype = " + p.getType()
+        + ",idper = " + p.getIdPerson()
+        + ",action = " + p.getIdAction()
+        + ",lieux = " + p.getIdRoom()
+        + ",note = " + p.getNote()
+        + " WHERE id = " + p.getId();
 
     dc.executeUpdate(query);
   }
@@ -112,8 +111,8 @@ public class ScheduleIO
    */
   public static void deleteRehearsal(DateFr startDate, DateFr endDate, ScheduleObject sched, DataConnection dc) throws SQLException {
     String query = "jour >= '" + startDate + "' AND jour <= '" + endDate + "'"
-            + " AND (ptype = " + Schedule.GROUP + " OR ptype=" + Schedule.MEMBER + ")"
-            + " AND action = " + sched.getIdAction();
+        + " AND (ptype = " + Schedule.GROUP + " OR ptype=" + Schedule.MEMBER + ")"
+        + " AND action = " + sched.getIdAction();
     delete(query, dc);
   }
 
@@ -123,7 +122,7 @@ public class ScheduleIO
     try (PreparedStatement ps = dc.prepareStatement(query)) {
       ps.setInt(1, actionId);
       rs = ps.executeQuery();
-      while(rs.next()) {
+      while (rs.next()) {
         Booking b = new Booking();
         b.setId(rs.getInt(1));
         b.setAction(actionId);
@@ -150,8 +149,7 @@ public class ScheduleIO
   public static void cancelBooking(final int action, DataConnection dc) throws BookingException {
     String sql = "DELETE FROM reservation WHERE idaction = ?";
     try (PreparedStatement ps = dc.prepareStatement(sql)) {
-      dc.withTransaction(new DataConnection.SQLRunnable<Void>()
-      {
+      dc.withTransaction(new DataConnection.SQLRunnable<Void>() {
         @Override
         public Void run(DataConnection conn) throws Exception {
           delete("action = " + action, conn);
@@ -172,8 +170,7 @@ public class ScheduleIO
     try {
       final String sql = "UPDATE " + TABLE + " SET ptype = " + (Schedule.BOOKING_GROUP == schedule.getType() ? Schedule.GROUP : Schedule.MEMBER) + " WHERE id = ?";
       final String sql2 = "UPDATE reservation SET statut = 1 WHERE idaction = ?";
-      dc.withTransaction(new DataConnection.SQLRunnable<Void>()
-      {
+      dc.withTransaction(new DataConnection.SQLRunnable<Void>() {
         @Override
         public Void run(DataConnection conn) throws Exception {
           try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -206,14 +203,14 @@ public class ScheduleIO
    * @throws SQLException
    */
   public static void deleteSchedule(Action action, DataConnection dc) throws SQLException {
-      String query = getDeleteScheduleQuery(action);
-      dc.executeUpdate(query);
+    String query = getDeleteScheduleQuery(action);
+    dc.executeUpdate(query);
   }
 
-   public static void deleteSchedule(Action action, Schedule s, DataConnection dc) throws SQLException {
-      String query = getDeleteScheduleQuery(action);
-      query += " AND debut = '" + s.getStart() + "' AND fin = '" + s.getEnd() +"'";
-      dc.executeUpdate(query);
+  public static void deleteSchedule(Action action, Schedule s, DataConnection dc) throws SQLException {
+    String query = getDeleteScheduleQuery(action);
+    query += " AND debut = '" + s.getStart() + "' AND fin = '" + s.getEnd() + "'";
+    dc.executeUpdate(query);
   }
 
   public static Vector<Schedule> find(String where, DataConnection dc) {
@@ -279,7 +276,7 @@ public class ScheduleIO
   }
 
   private static void fillPlanning(ResultSet rs, ScheduleObject p)
-          throws SQLException {
+      throws SQLException {
     p.setId(rs.getInt(1));
     p.setDate(new DateFr(rs.getString(2)));
     p.setStart(new Hour(rs.getString(3)));
@@ -295,7 +292,7 @@ public class ScheduleIO
   }
 
   public static Vector<ScheduleObject> getLoadRS(PreparedStatement ps, DataConnection dc)
-          throws SQLException {
+      throws SQLException {
 
     Vector<ScheduleObject> v = new Vector<ScheduleObject>();
 
@@ -309,7 +306,7 @@ public class ScheduleIO
   }
 
   private static ScheduleObject planningObjectFactory(ResultSet rs, DataConnection dc)
-          throws SQLException {
+      throws SQLException {
 
     ScheduleObject p = null;
 
@@ -337,7 +334,7 @@ public class ScheduleIO
         p = new GroupStudioSchedule();
         fillPlanning(rs, p);
         ((GroupStudioSchedule) p).setGroup((Group) DataCache.findId(p.getIdPerson(), Model.Group));
-        ((GroupStudioSchedule) p).setActivity((GemParam) DataCache.findId(p.getNote(),Model.StudioType));
+        ((GroupStudioSchedule) p).setActivity((GemParam) DataCache.findId(p.getNote(), Model.StudioType));
         break;
       case Schedule.TECH:
         p = new TechStudioSchedule();
@@ -348,7 +345,7 @@ public class ScheduleIO
           ((TechStudioSchedule) p).setTechnicianLabel(per.getAbbrevFirstNameName());
         }
         ((TechStudioSchedule) p).setGroup((Group) DataCache.findId(p.getIdPerson(), Model.Group));
-        ((TechStudioSchedule) p).setActivity((GemParam) DataCache.findId(p.getNote(),Model.StudioType));
+        ((TechStudioSchedule) p).setActivity((GemParam) DataCache.findId(p.getNote(), Model.StudioType));
         break;
       case Schedule.WORKSHOP:
         p = new WorkshopSchedule();
@@ -397,7 +394,7 @@ public class ScheduleIO
   }
 
   public static Vector<ScheduleObject> findObject(String where, DataConnection dc)
-          throws SQLException {
+      throws SQLException {
     Vector<ScheduleObject> v = new Vector<ScheduleObject>();
 
     String query = "SELECT " + COLUMNS + " FROM " + TABLE + " p " + where;
@@ -460,16 +457,16 @@ public class ScheduleIO
     }
   }
 
-   private static int createFollowUp(FollowUp up, DataConnection dc) throws SQLException {
-     int nextId = nextId(FOLLOW_UP_SEQUENCE, dc);
-     String content = up.getContent() == null || up.getContent().isEmpty() ? "NULL,"  : "'" + escape(up.getContent()) + "',";
-      String note = up.getNote() == null || up.getNote().isEmpty()? "NULL,"  : "'" + escape(up.getNote()) + "',";
-      String query = "INSERT INTO " + ScheduleIO.FOLLOW_UP_TABLE + " VALUES(" 
-              + nextId + ","
-              + content
-              + note
-              + up.getStatus() + ")";
-    
+  private static int createFollowUp(FollowUp up, DataConnection dc) throws SQLException {
+    int nextId = nextId(FOLLOW_UP_SEQUENCE, dc);
+    String content = up.getContent() == null || up.getContent().isEmpty() ? "NULL," : "'" + escape(up.getContent()) + "',";
+    String note = up.getNote() == null || up.getNote().isEmpty() ? "NULL," : "'" + escape(up.getNote()) + "',";
+    String query = "INSERT INTO " + FOLLOW_UP_TABLE + " VALUES("
+        + nextId + ","
+        + content
+        + note
+        + up.getStatus() + ")";
+
 //    String query = "INSERT INTO " + FOLLOW_UP_TABLE 
 //            + " VALUES(" + nextId + ",'" + escape(text) + "')";
     dc.executeUpdate(query);
@@ -477,27 +474,27 @@ public class ScheduleIO
   }
 
   public static void updateFollowUp(int noteId, FollowUp up, DataConnection dc) throws SQLException {
-    String content = up.getContent() == null || up.getContent().isEmpty() ? "NULL,"  : "'" + escape(up.getContent()) + "',";
-      String n = up.getNote() == null || up.getNote().isEmpty()? "NULL,"  : "'" + escape(up.getNote()) + "',";
+    String content = up.getContent() == null || up.getContent().isEmpty() ? "NULL," : "'" + escape(up.getContent()) + "',";
+    String n = up.getNote() == null || up.getNote().isEmpty() ? "NULL," : "'" + escape(up.getNote()) + "',";
 //    String query = "UPDATE " + FOLLOW_UP_TABLE + " SET texte = '" + escape(text) + "' WHERE id = " + noteId;
-String query = "UPDATE " + ScheduleIO.FOLLOW_UP_TABLE 
-            + " SET texte = " + content
-            + " note = " + n
-            + " statut = " + up.getStatus()
-            + " WHERE id = " + noteId;
+    String query = "UPDATE " + FOLLOW_UP_TABLE
+        + " SET texte = " + content
+        + " note = " + n
+        + " statut = " + up.getStatus()
+        + " WHERE id = " + noteId;
     dc.executeUpdate(query);
   }
 
   /**
    * Find the text value of the note with Id {@code noteId}.
+   *
    * @param noteId
    * @param dc data Connection
    * @return a text or an empty string if there is no text for this note
    * @throws SQLException
    */
   public static FollowUp findFollowUp(int noteId, DataConnection dc) throws SQLException {
-    
-    
+
     String query = "SELECT texte,CASE WHEN id = 0 AND note = '0' THEN NULL ELSE note END AS note1,statut FROM " + FOLLOW_UP_TABLE + " WHERE id = " + noteId;
 
     try (ResultSet rs = dc.executeQuery(query)) {
@@ -511,8 +508,10 @@ String query = "UPDATE " + ScheduleIO.FOLLOW_UP_TABLE
       return null;
     }
   }
+
   /**
    * Find the note value of the schedule including the range {@code rangeId}.
+   *
    * @param rangeId range Id
    * @param dc data connection
    * @return a text or an empty string if there is no text for this note
@@ -522,7 +521,7 @@ String query = "UPDATE " + ScheduleIO.FOLLOW_UP_TABLE
 
     FollowUp up = new FollowUp();
     String query = "SELECT s.id, s.texte FROM " + FOLLOW_UP_TABLE + " s, " + ScheduleRangeIO.TABLE + " pg, " + ScheduleIO.TABLE + " p"
-            + " WHERE pg.id = " + rangeId + " AND pg.idplanning = p.id AND p.note > 0 AND p.note = s.id ";
+        + " WHERE pg.id = " + rangeId + " AND pg.idplanning = p.id AND p.note > 0 AND p.note = s.id ";
 
     ResultSet rs = dc.executeQuery(query);
     if (rs.next()) {
@@ -534,8 +533,8 @@ String query = "UPDATE " + ScheduleIO.FOLLOW_UP_TABLE
 
   private static String getDeleteScheduleQuery(Action a) {
     String query = "DELETE FROM " + TABLE
-            + " WHERE jour >= '" + a.getDateStart() + "' AND jour <= '" + a.getDateEnd() + "'"
-            + " AND action = " + a.getId();
+        + " WHERE jour >= '" + a.getDateStart() + "' AND jour <= '" + a.getDateEnd() + "'"
+        + " AND action = " + a.getId();
     return query;
   }
 
@@ -570,13 +569,14 @@ String query = "UPDATE " + ScheduleIO.FOLLOW_UP_TABLE
 
   private static String getQueryNumberOfRanges(Action a) {
     return "SELECT COUNT(pg.debut) AS nb_cours FROM " + ScheduleRangeIO.TABLE + " pg, " + TABLE + " p"
-            + " WHERE pg.idplanning = p.id AND p.action = " + a.getId()
-            + " AND p.jour >= '" + a.getDateStart() + "' AND p.jour <= '" + a.getDateEnd() + "'";
+        + " WHERE pg.idplanning = p.id AND p.action = " + a.getId()
+        + " AND p.jour >= '" + a.getDateStart() + "' AND p.jour <= '" + a.getDateEnd() + "'";
   }
 
   /**
-   * Gets a result set listing start and end time of all schedules
-   * which type, date and action equal to model {@literal p}.
+   * Gets a result set listing start and end time of all schedules which type,
+   * date and action equal to model {@literal p}.
+   *
    * @param p schedule
    * @param dc dataConnection
    * @return a resultSet
@@ -585,8 +585,8 @@ String query = "UPDATE " + ScheduleIO.FOLLOW_UP_TABLE
   public static ResultSet getRSCourseRange(Schedule p, DataConnection dc) throws SQLException {
 
     String query = "SELECT debut, fin FROM " + TABLE + " WHERE ptype = " + p.getType()
-            + " AND jour = '" + p.getDate() + "'"
-            + " AND action = " + p.getIdAction() + " ORDER BY debut";
+        + " AND jour = '" + p.getDate() + "'"
+        + " AND action = " + p.getIdAction() + " ORDER BY debut";
     return dc.executeQuery(query);
   }
 }

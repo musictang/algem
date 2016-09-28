@@ -1,5 +1,5 @@
 /*
- * @(#)ScriptingFormController.java 2.10.0 23/05/16
+ * @(#)ScriptingFormController.java 2.11.0 28/09/16
  * 
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  * 
@@ -44,15 +44,19 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.List;
+import java.util.prefs.Preferences;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import net.algem.util.BundleUtil;
+import net.algem.util.GemCommand;
+import net.algem.util.ui.GemButton;
+import net.algem.util.ui.GridBagHelper;
 
 /**
  * @author Alexandre Delattre
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.11.0
  * @since 2.9.4.12
  */
 public class ScriptingFormController
@@ -67,6 +71,7 @@ public class ScriptingFormController
   private JButton buttonExport;
   private JProgressBar progressBar2;
   private JTextArea labelDescription;
+  private GemButton chooser;
 
   private ScriptDirectoryService scriptDirectoryService;
   private ScriptExecutorService scriptExecutorService;
@@ -215,6 +220,19 @@ public class ScriptingFormController
   private void loadScripts() {
     ScriptDirectory availableScripts = scriptDirectoryService.getAvailableScripts();
     tree1.setModel(new ScriptDirectoryTreeModel(availableScripts));
+    
+  }
+  
+  private void load() {
+    Preferences prefs = Preferences.userRoot().node("/algem/scripts");
+//    String path = pref.get(key, def)
+    String path = FileUtil.getDir(panel1, BundleUtil.getLabel("FileChooser.selection"), null);
+    if (path != null) {
+      File f = new File(path);
+      ScriptDirectory availableScripts = (ScriptDirectory) scriptDirectoryService.getFile(f);
+      tree1.setModel(new ScriptDirectoryTreeModel(availableScripts));
+      prefs.put("scripts.path", path);
+    }
   }
 
   private void createUIComponents() {
@@ -230,7 +248,20 @@ public class ScriptingFormController
           return super.convertValueToText(value, selected, expanded, leaf, row, hasFocus);
         }
       }
+      @Override
+      public String getToolTipText(MouseEvent e) {
+        TreePath p = getPathForLocation(e.getX(), e.getY());
+        if (p == null) {
+          return super.getToolTipText(e);
+        }
+        Object node = p.getLastPathComponent();
+        if (node instanceof ScriptImplFile) {
+          return BundleUtil.getLabel("Script.file.tip");
+        }
+        return null;
+      }
     };
+    ToolTipManager.sharedInstance().registerComponent(tree1);
   }
 
   private void setupUI() {
@@ -240,34 +271,33 @@ public class ScriptingFormController
     panel1.setLayout(new GridBagLayout());
     panel1.setOpaque(true);
     final JSplitPane splitPane1 = new JSplitPane();
-    GridBagConstraints gbc;
-    gbc = new GridBagConstraints();
-    gbc.gridx = 0;
-    gbc.gridy = 0;
-    gbc.weightx = 1.0;
-    gbc.weighty = 1.0;
-    gbc.fill = GridBagConstraints.BOTH;
-    panel1.add(splitPane1, gbc);
+    GridBagHelper gbh = new GridBagHelper(panel1);
+    
+    gbh.add(splitPane1, 0,0,1,1,GridBagConstraints.BOTH,1.0,1.0);
     final JPanel leftPanel = new JPanel();
-    leftPanel.setLayout(new GridBagLayout());
+    leftPanel.setLayout(new BorderLayout());
     leftPanel.setMinimumSize(new Dimension(120, 550));//!important
     splitPane1.setLeftComponent(leftPanel);
     leftPanel.setBorder(BorderFactory.createTitledBorder(BundleUtil.getLabel("Scripts.available.label")));
     tree1.setRequestFocusEnabled(true);
-    gbc = new GridBagConstraints();
-    gbc.gridx = 0;
-    gbc.gridy = 0;
-    gbc.weightx = 1.0;
-    gbc.weighty = 1.0;
-    gbc.fill = GridBagConstraints.BOTH;
-    leftPanel.add(tree1, gbc);
+    chooser = new GemButton(GemCommand.BROWSE_CMD);
+    chooser.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        System.out.println("Parcourir...");
+        load();
+      }
+      
+    });
+    leftPanel.add(tree1, BorderLayout.CENTER);
+    leftPanel.add(chooser, BorderLayout.SOUTH);
     JPanel rightPanel = new JPanel();
     rightPanel.setLayout(new GridBagLayout());
     rightPanel.setMinimumSize(new Dimension(500, 550));//!important
     splitPane1.setRightComponent(rightPanel);
     final JPanel resultPanel = new JPanel();
     resultPanel.setLayout(new GridBagLayout());
-    gbc = new GridBagConstraints();
+    GridBagConstraints gbc = new GridBagConstraints();
     gbc.gridx = 0;
     gbc.gridy = 5;
     gbc.gridheight = 3;

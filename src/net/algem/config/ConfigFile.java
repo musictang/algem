@@ -1,7 +1,7 @@
 /*
- * @(#)ConfigFile.java 2.9.3.1 03/03/15
+ * @(#)ConfigFile.java 2.11.0 28/09/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -34,7 +34,7 @@ import net.algem.util.ui.GemPanel;
  * Default paths config.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.3.1
+ * @version 2.11.0
  * @since 2.1.k
  */
 public class ConfigFile
@@ -45,8 +45,10 @@ public class ConfigFile
   private FilePanel photosFilePanel;
   private FilePanel groupsFilePanel;
   private FilePanel employeesFilePanel;
+  private FilePanel scriptFilePanel;
   private FilePanel invoiceFooterPanel;
-  private Config c1, c2, c3, c4, c5, c6;
+  
+  private Config c1, c2, c3, c4, c5, c6, c7;
 
   public ConfigFile(String title, Map<String, Config> cm) {
     super(title, cm);
@@ -62,6 +64,7 @@ public class ConfigFile
     c4.setValue(groupsFilePanel.getText());
     c5.setValue(employeesFilePanel.getText());
     c6.setValue(invoiceFooterPanel.getText());
+    c7.setValue(scriptFilePanel.getText());
 
     conf.add(c1);
     conf.add(c2);
@@ -69,6 +72,7 @@ public class ConfigFile
     conf.add(c4);
     conf.add(c5);
     conf.add(c6);
+    conf.add(c7);
 
     return conf;
   }
@@ -80,6 +84,7 @@ public class ConfigFile
     c4 = confs.get(ConfigKey.GROUPS_PATH.getKey());
     c5 = confs.get(ConfigKey.EMPLOYEES_PATH.getKey());
     c6 = confs.get(ConfigKey.INVOICE_FOOTER.getKey());
+    c7 = confs.get(ConfigKey.SCRIPTS_PATH.getKey());
 
     content = new GemPanel();
     content.setLayout(new BoxLayout(content,BoxLayout.Y_AXIS));
@@ -94,6 +99,8 @@ public class ConfigFile
     groupsFilePanel.setToolTipText(BundleUtil.getLabel("ConfEditor.groups.path.tip"));
     employeesFilePanel = new FilePanel(ConfigKey.EMPLOYEES_PATH.getLabel(),c5.getValue());
     employeesFilePanel.setToolTipText(BundleUtil.getLabel("ConfEditor.employees.path.tip"));
+    scriptFilePanel = new FilePanel(ConfigKey.SCRIPTS_PATH.getLabel(),c7.getValue());
+    scriptFilePanel.setToolTipText(BundleUtil.getLabel("ConfEditor.scripts.path.tip"));
     invoiceFooterPanel = new FilePanel(ConfigKey.INVOICE_FOOTER.getLabel(),c6.getValue(), false);
     invoiceFooterPanel.setToolTipText(BundleUtil.getLabel("ConfEditor.invoice.footer.tip"));
 
@@ -106,6 +113,8 @@ public class ConfigFile
     content.add(groupsFilePanel);
 		content.add(Box.createVerticalStrut(4));
     content.add(employeesFilePanel);
+    content.add(Box.createVerticalStrut(4));
+    content.add(scriptFilePanel);
 		content.add(Box.createVerticalStrut(4));
     content.add(invoiceFooterPanel);
 

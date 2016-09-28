@@ -160,7 +160,8 @@ public enum ConfigKey
   BOOKING_CANCEL_DELAY("Reservation.annulation.delai", BundleUtil.getLabel("Booking.cancel.delay.label")),
   BOOKING_REQUIRED_MEMBERSHIP("Reservation.adhesion.requise", BundleUtil.getLabel("Booking.required.membership.label")),
   PRE_ENROLMENT_START_DATE("Date.debut.preinscription", BundleUtil.getLabel("ConfEditor.pre-enrolment.start.date.label")),
-  ESTABLISHEMENT_ACTIVATION_TYPE("Activation.etablissement.type", BundleUtil.getLabel("ConfEditor.pre-enrolment.start.date.label"));
+  ESTABLISHEMENT_ACTIVATION_TYPE("Activation.etablissement.type", BundleUtil.getLabel("ConfEditor.pre-enrolment.start.date.label")),
+  SCRIPTS_PATH("Scripts.path", BundleUtil.getLabel("ConfEditor.scripts.path.label"));
 
   private final String key;
   private final String label;

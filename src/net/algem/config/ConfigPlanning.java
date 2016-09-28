@@ -1,5 +1,5 @@
 /*
- * @(#)ConfigPlanning.java 2.11.0 27/09/16
+ * @(#)ConfigPlanning.java 2.11.0 28/09/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -176,7 +176,7 @@ public class ConfigPlanning
     gb2.add(memberShip, 0, 5, 2, 1, GridBagHelper.WEST);
 
     GemPanel p3 = new GemPanel();
-    p3.setBorder(BorderFactory.createTitledBorder(BundleUtil.getLabel("Options.label")));
+    p3.setBorder(BorderFactory.createTitledBorder(BundleUtil.getLabel("Menu.options.label")));
      p3.setLayout(new GridBagLayout());
      p3.setMinimumSize(new Dimension(520,110));
     GridBagHelper gb3 = new GridBagHelper(p3);

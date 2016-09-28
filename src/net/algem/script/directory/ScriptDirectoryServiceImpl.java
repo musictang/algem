@@ -12,6 +12,13 @@ import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 
+ * @author Alexandre Delattre
+ * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
+ * @version 2.11.0 28/09/16
+ * @since 2.9.4.12
+ */
 public class ScriptDirectoryServiceImpl implements ScriptDirectoryService {
     private final File rootScriptDirectory;
     private final IOUtil.FileReaderHelper fileReader;
@@ -30,7 +37,8 @@ public class ScriptDirectoryServiceImpl implements ScriptDirectoryService {
         return (ScriptDirectory) getFile(rootScriptDirectory);
     }
 
-    ScriptFile getFile(File file) {
+    @Override
+    public ScriptFile getFile(File file) {
         if (file.isDirectory()) {
             List<ScriptFile> children = new ArrayList<>();
             File[] subFiles = file.listFiles(new FileFilter() {
@@ -45,6 +53,9 @@ public class ScriptDirectoryServiceImpl implements ScriptDirectoryService {
             }
             return new ScriptDirectory(file, children);
         } else {
+            if (!file.isFile()) {
+              return null;
+            }
             assert file.getName().endsWith(".json");
             String implFileName = file.getName().replace(".json", ".js");
             File implFile = new File(file.getParent(), implFileName);
@@ -65,4 +76,5 @@ public class ScriptDirectoryServiceImpl implements ScriptDirectoryService {
         String codeData = fileReader.readFile(scriptFile.getCodeFile());
         return new Script(manifest.getName(), manifest.getArguments(), manifest.getDescription(), codeData);
     }
+   
 }

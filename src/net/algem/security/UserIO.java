@@ -103,6 +103,8 @@ public class UserIO
           dc.executeUpdate(query);
           query = "DELETE FROM " + T_ACCESS + " WHERE idper = " + userId;
           dc.executeUpdate(query);
+          query = "DELETE FROM " + EstablishmentIO.TABLE + " WHERE idper = " + userId;
+          dc.executeUpdate(query);
           return null;
         }
       });

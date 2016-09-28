@@ -1,5 +1,5 @@
 /*
- * @(#)Algem.java	21/09/16
+ * @(#)Algem.java	2.11.0 28/09/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -99,6 +99,12 @@ public class Algem
   }
 
   public static File getScriptsPath() {
+    Preferences prefs = Preferences.userRoot().node("/algem/scripts");
+    String path = prefs.get("scripts.path", ConfigUtil.getConf(ConfigKey.SCRIPTS_PATH.getKey()));
+    File prefDir = new File(path).getAbsoluteFile();
+    if (prefDir.isDirectory()) {
+      return prefDir;
+    }
     if (props == null) {
       return null;
     }

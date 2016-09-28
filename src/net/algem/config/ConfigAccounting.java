@@ -1,5 +1,5 @@
 /*
- * @(#)ConfigAccounting.java 2.11.0 27/09/16
+ * @(#)ConfigAccounting.java 2.11.0 28/09/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -155,7 +155,7 @@ public class ConfigAccounting
 
     
     GemPanel options = new GemPanel(new GridBagLayout());
-    options.setBorder(BorderFactory.createTitledBorder(BundleUtil.getLabel("Options.label")));
+    options.setBorder(BorderFactory.createTitledBorder(BundleUtil.getLabel("Menu.options.label")));
     options.setMinimumSize(new Dimension(400,200));
     
     GridBagHelper gb2 = new GridBagHelper(options);

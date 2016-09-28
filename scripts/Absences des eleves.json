@@ -1,0 +1,8 @@
+{
+  "description": "Absences des élèves sur la période.\nLes élèves sont classés dans l'ordre alphabétique. Seuls les élèves Absents ou Excusés apparaissent dans les résultats.\nSi vous n'indiquez aucune période, la recherche portera sur toute l'année scolaire.",
+"args":
+[   
+    {"name" : "dateDebut", "label": "Date début", "type": "date"},
+    {"name" : "dateFin", "label": "Date fin", "type": "date"}
+]
+}
