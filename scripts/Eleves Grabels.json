@@ -1,5 +1,5 @@
 {
-  "description": "Emploi du temps des élèves sur la période (généralement une semaine type).\nLes élèves sont classés dans l'ordre alphabétique avec pour chacun sa date de naissance, la salle, le cours auquel il est inscrit et ses horaires, salle et professeur.",
+  "description": "Emploi du temps des élèves sur la période (la saisie des dates de début et de fin est obligatoire : généralement une semaine type).\nLes élèves sont classés dans l'ordre alphabétique avec pour chacun sa date de naissance, le cours auquel il est inscrit et ses horaires, salle et professeur.",
 "args":
 [   
     {"name" : "dateDebut", "label": "Date début", "type": "date"},

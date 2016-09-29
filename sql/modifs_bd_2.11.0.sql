@@ -18,3 +18,4 @@ ALTER TABLE etablissement OWNER TO nobody;
 INSERT INTO etablissement SELECT p.id,l.idper,true FROM personne p,login l WHERE p.ptype = 5 AND l.profil IN (1,2,4);
 
 --INSERT INTO config VALUES('Activation.etablissement.type', '0');
+INSERT INTO config VALUES('Scripts.path',E'C:\\Algem\\Scripts');
