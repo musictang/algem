@@ -1,5 +1,5 @@
 /*
- * @(#)PersonView.java	2.10.3 19/07/16
+ * @(#)PersonView.java	2.11.0 29/09/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.logging.Level;
+import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import net.algem.config.ConfigKey;
@@ -57,7 +58,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.3
+ * @version 2.11.0
  */
 public class PersonView
   extends GemPanel {
@@ -176,7 +177,17 @@ public class PersonView
     if (p.getType() == Person.PERSON || p.getType() == Person.ROOM) {
       BufferedImage img = photoHandler.load(p.getId());
       if (img == null) {
-        img = getPhotoDefault();
+        photoFilter = new PhotoFileFilter(p.getId());
+        BufferedImage orig = getPhoto(ConfigUtil.getConf(ConfigKey.PHOTOS_PATH.getKey()), p.getId());
+        if (orig != null) {
+          try {
+            img = photoHandler.saveFromBuffer(p.getId(), orig);
+          } catch (DataException ex) {
+            GemLogger.log(ex.getMessage());
+          }
+        } else {
+          img = getPhotoDefault();
+        }
       }
       ImageIcon icon = (img == null ? null : new ImageIcon(img));
       photoField.setIcon(icon);
@@ -192,7 +203,7 @@ public class PersonView
         MessageUtil.getMessage("filechooser.image.filter.label"),
         "jpg", "jpeg", "JPG", "JPEG", "png", "PNG");
       if (file != null) {
-        BufferedImage img = photoHandler.save(idper, file);
+        BufferedImage img = photoHandler.saveFromFile(idper, file);
         if (img != null) {
           photoField.setIcon(new ImageIcon(img));
         }
@@ -245,7 +256,6 @@ public class PersonView
    * @param configDir photo dir
    * @param idper person's id
    * @return a buffered image if a resource has been found or null otherwhise
-   * @deprecated
    */
   private BufferedImage getPhoto(String configDir, int idper) {
 
@@ -257,7 +267,8 @@ public class PersonView
     try {
       if (files != null && files.length > 0) {
         return ImageIO.read(files[0]);
-      } else { // default resource path
+      } 
+      /*else { // default resource path USELESS
         for (String s : ImageUtil.DEFAULT_IMG_EXTENSIONS) {
           InputStream input = getClass().getResourceAsStream(ImageUtil.PHOTO_PATH + idper + s);
           if (input == null) {
@@ -265,7 +276,7 @@ public class PersonView
           }
           return ImageIO.read(input);
         }
-      }
+      }*/
     } catch (IOException ie) {
       GemLogger.logException(ie);
     } catch (IllegalArgumentException ia) {
@@ -353,7 +364,7 @@ public class PersonView
     for (final Group g : gl) {
       JButton jb = new JButton(g.getName());
       jb.addActionListener(new ActionListener() {
-
+        @Override
         public void actionPerformed(ActionEvent e) {
           GroupFileEditor groupEditor = new GroupFileEditor(g);
           desktop.addModule(groupEditor);
@@ -363,6 +374,21 @@ public class PersonView
     }
     gb.add(groupsPanel, 0, 7, 1, 1, GridBagHelper.WEST);
 
+  }
+  
+  class PhotoFileFilter
+          implements FileFilter
+  {
+    private final Pattern pattern;
+
+    PhotoFileFilter(int idper) {
+      pattern = Pattern.compile("^.*" + idper + "\\.(jpg|jpeg|JPG|JPEG|png|PNG)$");
+    }
+
+    @Override
+    public boolean accept(File pathname) {
+      return pattern.matcher(pathname.getName()).matches();
+    }
   }
 
 }

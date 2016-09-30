@@ -1,5 +1,5 @@
 /*
- * @(#)StatisticsPluginMustang.java	2.10.0 08/06/2016
+ * @(#)StatisticsPluginMustang.java	2.11.0 30/09/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -24,10 +24,10 @@ import net.algem.util.MessageUtil;
 
 /**
  * Statistics file export for Musiques Tangentes.
- * For Algem >= 2.8.v
+ * For Algem >= 2.11.0
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.11.0
  * @since 2.6.g 20/11/12
  */
 public class StatisticsPlugin
@@ -226,7 +226,7 @@ public class StatisticsPlugin
     statList.add(new StatElement(2, MessageUtil.getMessage("statistics.number.of.students"), true));
     statList.add(new StatElement(3, "Répartition des élèves entre amateurs et pros", true));
     statList.add(new StatElement(4, "Liste des élèves en formation professionnelle", true));
-    statList.add(new StatElement(5, MessageUtil.getMessage("statistics.city.distribution"), true));
+    statList.add(new StatElement(5, MessageUtil.getMessage("statistics.students.by.location"), true));
     statList.add(new StatElement(6, "Nombre d'heures de répétition", true));
     statList.add(new StatElement(7, "Nombre de répétiteurs", true));
     statList.add(new StatElement(8, "Payeurs sans adresse", true));

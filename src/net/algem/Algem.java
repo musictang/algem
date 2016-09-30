@@ -99,7 +99,7 @@ public class Algem
   }
 
   public static File getScriptsPath() {
-    Preferences prefs = Preferences.userRoot().node("/algem/scripts");
+    Preferences prefs = Preferences.userRoot().node("/algem/paths");
     String path = prefs.get("scripts.path", ConfigUtil.getConf(ConfigKey.SCRIPTS_PATH.getKey()));
     File prefDir = new File(path).getAbsoluteFile();
     if (prefDir.isDirectory()) {

@@ -1,5 +1,5 @@
 /*
- * @(#)StatsExportDlg.java	2.10.0 08/06/16
+ * @(#)StatsExportDlg.java	2.11.0 30/09/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -36,6 +36,7 @@ import java.util.List;
 import javax.swing.*;
 import net.algem.accounting.AccountPrefIO;
 import net.algem.config.ConfigUtil;
+import net.algem.config.Preference;
 import net.algem.planning.DateFr;
 import net.algem.planning.DateRangePanel;
 import net.algem.util.*;
@@ -171,10 +172,13 @@ public class StatsExportDlg
       st.init(dataCache);
       progressBar.setStringPainted(true);
       progressBar.setString(MessageUtil.getMessage("statistics.active.operation"));
-
+      Preference [] prefs = {
+        AccountPrefIO.find(AccountPrefIO.MEMBERSHIP, DataCache.getDataConnection()),
+        AccountPrefIO.find(AccountPrefIO.PRO_MEMBERSHIP, DataCache.getDataConnection())
+      };
       st.setConfig(
               filePathField.getText(),
-              AccountPrefIO.find(AccountPrefIO.MEMBERSHIP, DataCache.getDataConnection()),
+              prefs,
               datePanel.getStartFr(),
               datePanel.getEndFr());
       st.addPropertyChangeListener(this);

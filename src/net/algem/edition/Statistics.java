@@ -1,5 +1,5 @@
 /*
- * @(#)Statistics.java	2.10.0 08/06/2016
+ * @(#)Statistics.java	2.11.0 30/09/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -55,6 +55,7 @@ public abstract class Statistics
   extends SwingWorker<Void, Void> {
 
   protected static Integer MEMBERSHIP_ACCOUNT;
+  protected static Integer PRO_MEMBERSHIP_ACCOUNT;
   protected static int MAINTENANCE = 5;
 
   protected DataCache dataCache;
@@ -84,17 +85,19 @@ public abstract class Statistics
    * Sets the path of the output file and the dates between which query the database.
    *
    * @param path file path
-   * @param pref default membership account
+   * @param prefs default membership accounts
    * @param start start of period
    * @param end end of period
    * @throws IOException
    */
-  public void setConfig(String path, Preference pref, DateFr start, DateFr end) throws IOException {
+  public void setConfig(String path, Preference[] prefs, DateFr start, DateFr end) throws IOException {
     this.start = start;
     this.end = end;
     this.path = path;
     out = new PrintWriter(new File(path), StandardCharsets.UTF_8.name());
-    MEMBERSHIP_ACCOUNT = (Integer) pref.getValues()[0];
+    MEMBERSHIP_ACCOUNT = (Integer) prefs[0].getValues()[0];
+    PRO_MEMBERSHIP_ACCOUNT = (Integer) prefs[1].getValues()[0];
+    
   }
 
   /**
@@ -110,8 +113,10 @@ public abstract class Statistics
     this.end = end;
     path = ConfigUtil.getExportPath() + FileUtil.FILE_SEPARATOR + "stats.html";
     out = new PrintWriter(new File(path), StandardCharsets.UTF_8.name());
-    Preference p = AccountPrefIO.find(AccountPrefIO.MEMBERSHIP, dc);
-    MEMBERSHIP_ACCOUNT = (Integer) p.getValues()[0];
+    Preference p1 = AccountPrefIO.find(AccountPrefIO.MEMBERSHIP, dc);
+    Preference p2 = AccountPrefIO.find(AccountPrefIO.PRO_MEMBERSHIP, dc);
+    MEMBERSHIP_ACCOUNT = (Integer) p1.getValues()[0];
+    PRO_MEMBERSHIP_ACCOUNT = (Integer) p2.getValues()[0];
   }
 
   /**
@@ -172,7 +177,16 @@ public abstract class Statistics
           break;
         case 5:
           printTitle(entry.getLabel());
-          printTableIntResult(getQuery("students_by_location"));
+          out.println("\n\t\t<table class='list'>");
+          ResultSet rs = dc.executeQuery(getQuery("students_by_location"));
+          int total = 0;
+          while (rs.next()) {
+            total += rs.getInt(3);
+            out.println("\n\t\t\t<tr><th>" + rs.getString(1) + "</th><td>" + rs.getString(2) + "</td>");
+            out.println("<td>" + rs.getInt(3) + "</td></tr>");
+          }
+          out.println("\n\t\t\t<tr><td colspan='3'>Total : " + total + "</td></tr>");
+          out.println("\n\t\t</table>");
           break;
         case 6:
           printTitle(entry.getLabel());
@@ -576,12 +590,10 @@ public abstract class Statistics
         + " ORDER BY name,firstname";
     }
     if (topic.equals("students_by_location")) {
-      return "SELECT adresse.ville, count(distinct eleve.idper) FROM commande_cours,commande, eleve, adresse"
-        + " WHERE commande_cours.datedebut >= '" + start + "' AND commande_cours.datedebut <= '" + end + "'"
-        + " AND commande_cours.idcmd = commande.id and commande.adh = eleve.idper"
-        //+ " AND to_char(eleve.datenais, 'HH12') = '12'"
-        + " AND adresse.idper = eleve.payeur"
-        + " GROUP BY adresse.ville";
+      return "SELECT a.ville, a.cdp, count(distinct e.idper) FROM commande_cours cc JOIN commande c ON cc.idcmd = c.id"
+              + " JOIN eleve e ON c.adh = e.idper JOIN adresse a ON e.payeur = a.idper"
+        + " WHERE cc.datedebut BETWEEN '" + start + "' AND '" + end + "'"
+        + " GROUP BY a.ville, a.cdp ORDER BY a.cdp,a.ville";
     }
     if (topic.equals("groups_with_rehearsal")) {
       return "SELECT count(DISTINCT planning.idper) FROM planning, groupe"
@@ -755,7 +767,6 @@ public abstract class Statistics
     }
 
     if ("hours_of_rehearsal".equals(topic)) {
-//      return "SELECT extract(hour FROM sum(planning.fin - planning.debut)) FROM planning"
       return "SELECT sum(planning.fin - planning.debut) FROM planning"
         + " WHERE planning.jour BETWEEN '" + start + "' AND '" + end + "'"
         + " AND planning.ptype = " + a2;

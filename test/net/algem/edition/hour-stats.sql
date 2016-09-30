@@ -255,3 +255,19 @@ left JOIN cours c ON (a.cours = c.id)
 AND p.ptype = 9
 AND p.idper = 63
 ORDER BY per.nom,per.prenom,p.jour,p.debut;
+
+-- repartition par ville, code postal
+SELECT a.ville, a.cdp, count(DISTINCT e.adherent) FROM echeancier2 e, adresse a
+WHERE e.echeance BETWEEN '01-09-2015'  AND '30-08-2016'
+AND e.compte IN (14,17)
+AND (e.payeur = a.idper OR e.adherent = a.idper)
+GROUP BY a.cdp,a.ville ORDER BY a.cdp,a.ville;
+
+-- nombre d'eleves par activité
+SELECT c.titre, count(distinct pg.adherent) FROM plage pg JOIN planning p ON (pg.idplanning = p.id)
+JOIN action a ON (p.action = a.id) JOIN cours c ON (a.cours = c.id)
+WHERE p.jour BETWEEN '01-09-2015'  AND '30-08-2016'
+AND pg.debut >= p.debut
+AND pg.fin <= p.fin
+AND p.ptype IN (1,5,6)
+GROUP BY c.titre;

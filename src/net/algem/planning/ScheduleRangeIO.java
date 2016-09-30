@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleRangeIO.java	2.11.0 21/09/16
+ * @(#)ScheduleRangeIO.java	2.11.0 30/09/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -295,6 +295,7 @@ public class ScheduleRangeIO
     }
 
     public static void deleteNote(int note, DataConnection dc) throws SQLException {
+        if (note == 0) return;
         String query = "DELETE FROM " + ScheduleIO.FOLLOW_UP_TABLE + " WHERE id = " + note;
         dc.executeUpdate(query);
     }

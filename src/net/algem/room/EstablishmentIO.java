@@ -1,5 +1,5 @@
 /*
- * @(#)EstablishmentIO.java	2.11.0 23/09/16
+ * @(#)EstablishmentIO.java	2.11.0 29/09/16
  * 
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -229,7 +229,7 @@ public class EstablishmentIO
     String query = "SELECT DISTINCT ON (p.nom) " + PersonIO.COLUMNS + ", e.actif FROM " + PersonIO.TABLE + " p  JOIN " + TABLE + " e ON (p.id = e.id)"
             + " WHERE p.ptype = " + Person.ESTABLISHMENT;
     query += where;
-System.out.println(query);
+
     ResultSet rs = dc.executeQuery(query);
     while (rs.next()) {
       Establishment e = new Establishment(PersonIO.getFromRS(rs));

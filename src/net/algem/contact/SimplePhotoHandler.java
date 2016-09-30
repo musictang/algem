@@ -1,7 +1,7 @@
 /*
- * @(#) SimplePhotoHandler.java Algem 2.9.4.14 17/12/15
+ * @(#) SimplePhotoHandler.java Algem 2.11.0 29/09/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -49,7 +49,7 @@ import net.algem.util.ui.ProgressMonitorHandler;
  * Class charged to save and load the photos of the contacts.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.14
+ * @version 2.11.0
  * @since 2.9.4.14 09/12/2015
  */
 public class SimplePhotoHandler
@@ -95,10 +95,26 @@ public class SimplePhotoHandler
     task.execute();
   }
 
+  /**
+   * Extract id from file name.
+   * 
+   * @param fileName file name with extension
+   * @return -1 if the name doesn't last by digits
+   */
   private int getIdFromFileName(String fileName) {
     try {
       String sub = fileName.substring(0, fileName.lastIndexOf('.'));
-      int id = Integer.parseInt(sub);
+      
+      StringBuilder n = new StringBuilder();
+      for (int i = sub.length() -1; i >=0 ; i--) {
+        char c = sub.charAt(i);
+        if (Character.isDigit(c)) {
+          n.append(c);
+        } else  {
+          break;
+        }
+      }
+      int id = Integer.parseInt(n.reverse().toString());
       return id;
     } catch (NumberFormatException | IndexOutOfBoundsException e) {
       return -1;
@@ -115,7 +131,20 @@ public class SimplePhotoHandler
   }
 
   @Override
-  public BufferedImage save(int idper, File file) throws DataException {
+  public BufferedImage saveFromBuffer(int idper, BufferedImage img) throws DataException {
+    try {
+      BufferedImage cropped = format(img);
+      byte[] data = getBytesFromImage(cropped);
+      photoIO.save(idper, data);
+      return cropped;
+    } catch (SQLException e) {
+      throw new DataException(e.getMessage());
+    }
+
+  }
+  
+   @Override
+  public BufferedImage saveFromFile(int idper, File file) throws DataException {
     try {
       BufferedImage img = ImageIO.read(file);
       BufferedImage cropped = format(img);

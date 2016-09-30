@@ -71,7 +71,7 @@ public class ScriptingFormController
   private JButton buttonExport;
   private JProgressBar progressBar2;
   private JTextArea labelDescription;
-  private GemButton chooser;
+  private GemButton btBrowser;
 
   private ScriptDirectoryService scriptDirectoryService;
   private ScriptExecutorService scriptExecutorService;
@@ -224,8 +224,7 @@ public class ScriptingFormController
   }
   
   private void load() {
-    Preferences prefs = Preferences.userRoot().node("/algem/scripts");
-//    String path = pref.get(key, def)
+    Preferences prefs = Preferences.userRoot().node("/algem/paths");
     String path = FileUtil.getDir(panel1, BundleUtil.getLabel("FileChooser.selection"), null);
     if (path != null) {
       File f = new File(path);
@@ -280,17 +279,17 @@ public class ScriptingFormController
     splitPane1.setLeftComponent(leftPanel);
     leftPanel.setBorder(BorderFactory.createTitledBorder(BundleUtil.getLabel("Scripts.available.label")));
     tree1.setRequestFocusEnabled(true);
-    chooser = new GemButton(GemCommand.BROWSE_CMD);
-    chooser.addActionListener(new ActionListener() {
+    btBrowser = new GemButton(GemCommand.BROWSE_CMD);
+    btBrowser.setToolTipText(BundleUtil.getLabel("Scripts.path.define.tip"));
+    btBrowser.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        System.out.println("Parcourir...");
         load();
       }
       
     });
     leftPanel.add(tree1, BorderLayout.CENTER);
-    leftPanel.add(chooser, BorderLayout.SOUTH);
+    leftPanel.add(btBrowser, BorderLayout.SOUTH);
     JPanel rightPanel = new JPanel();
     rightPanel.setLayout(new GridBagLayout());
     rightPanel.setMinimumSize(new Dimension(500, 550));//!important
