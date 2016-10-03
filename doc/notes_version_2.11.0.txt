@@ -4,6 +4,8 @@ CORRECTIFS
 * La suppression d'une plage de cours ne comportant pas de note de suivi entraînait la disparition de l'affichage du suivi dans l'onglet "Suivi" d'un élève.
 * La recherche automatique des photos disponibles ne fonctionnait que si le nom du fichier ne comportait rien d'autre que le numéro de la personne (ex. : 1234.jpg). Le nom d'une photo peut maintenant débuter par d'autres caractères, comme le nom de la personne, par exemple (ex. : Jean-Marc 1234.jpg, Jean-Marc_1234.jpg, etc.). 
 RAPPEL : pour que l'import à partir du menu Catalogue puisse fonctionner correctement, il faut que le nom des photos se termine par le numéro de la personne, suivi de l'extension (jpg, png, etc.).
+* Lorsque les horaires d'une répétition (individuelle ou de groupe) tombaient sur des heures de fermeture, le message retourné n'était pas toujours exact (et parfois redondant).
+* Il n'est plus nécessaire de valider la saisie en appuyant sur la touche Entrée lorsqu'on édite les horaires d'une salle. Les dernières valeures saisies seront bien prises en compte.
 
 NOUVEAUTES
 SUIVI PEDAGOGIQUE
@@ -40,7 +42,7 @@ Deux nouveaux scripts ont été mis à disposition : "Absences des eleves" et "S
 
 STATISTIQUES
 Les statistiques par défaut bénéficient des apports suivants :
-- Ajout du code postal dans la répartition géographique des élèves et des adhérents. Le code postal permet de classer plus facilement les élèves en fonction de zones géographiques (agglo., hors agglo., etc.).
+- Ajout du code postal dans la répartition géographique des élèves et des adhérents. Le code postal permet de classer plus facilement les élèves en fonction de zones géographiques (agglo., hors agglo., etc.)
 - Répartition des élèves par ville
 - Répartition des élèves par activité (cours)
 

@@ -1,5 +1,5 @@
 /*
- * @(#)AbstractHistoRehearsal.java 2.10.0 15/06/16
+ * @(#)AbstractHistoRehearsal.java 2.11.0 03/10/2016
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -21,6 +21,7 @@
 package net.algem.planning;
 
 import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Vector;
@@ -30,6 +31,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.TableColumnModel;
 import net.algem.util.BundleUtil;
+import net.algem.util.GemCommand;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.FileTabDialog;
 import net.algem.util.ui.GemButton;
@@ -39,7 +41,7 @@ import net.algem.util.ui.GemPanel;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.11.0
  * @since 2.1.j
  */
 public abstract class AbstractHistoRehearsal
@@ -52,6 +54,7 @@ public abstract class AbstractHistoRehearsal
   protected int idper;
   protected ActionListener listener;
   protected GemButton btAll;
+  protected GemButton btLoad;
   private boolean loaded = false;
 
   /**
@@ -88,8 +91,11 @@ public abstract class AbstractHistoRehearsal
     totalPanel.add(new JLabel(BundleUtil.getLabel("Total.label") + " : "));
     totalPanel.add(totalLabel);
 
+    btLoad = new GemButton(GemCommand.LOAD_CMD);
+    btLoad.addActionListener(this);
     infoPanel.add(totalPanel);
     infoPanel.add(datesPanel);
+    infoPanel.add(btLoad);
 
     JPanel mainPanel = new GemPanel(new BorderLayout());
     mainPanel.add(sp, BorderLayout.CENTER);
@@ -104,6 +110,16 @@ public abstract class AbstractHistoRehearsal
     add(mainPanel, BorderLayout.CENTER);
     add(buttons, BorderLayout.SOUTH);
 
+  }
+  
+  @Override
+  protected void initUI() {
+    btCancel = new GemButton(GemCommand.CANCEL_CMD);
+    btCancel.addActionListener(this);
+
+    buttons = new GemPanel();
+    buttons.setLayout(new GridLayout(1, 1));
+    buttons.add(btCancel);
   }
 
   @Override
@@ -167,6 +183,9 @@ public abstract class AbstractHistoRehearsal
     if (evt.getSource() == btAll) {
       clear();
       load(true);
+    } else if(evt.getSource() == btLoad) {
+      clear();
+      load();
     } else {
       super.actionPerformed(evt);
     }

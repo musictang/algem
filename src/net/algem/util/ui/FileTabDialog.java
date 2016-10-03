@@ -1,7 +1,7 @@
 /*
- * @(#)FileTabDialog.java	2.8.w 21/07/14
+ * @(#)FileTabDialog.java	2.11.0 03/10/2016
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -30,7 +30,7 @@ import net.algem.util.module.GemDesktop;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.11.0
  */
 public abstract class FileTabDialog
         extends FileTab
@@ -43,7 +43,10 @@ public abstract class FileTabDialog
 
   public FileTabDialog(GemDesktop desktop) {
     super(desktop);
-
+    initUI();
+  }
+  
+  protected void initUI() {
     btValidation = new GemButton(GemCommand.VALIDATION_CMD);
     btCancel = new GemButton(GemCommand.CANCEL_CMD);
     btValidation.addActionListener(this);

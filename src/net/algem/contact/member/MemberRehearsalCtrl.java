@@ -1,5 +1,5 @@
 /*
- * @(#)MemberRehearsalCtrl.java	2.9.5 17/02/16
+ * @(#)MemberRehearsalCtrl.java	2.11.0 03/10/2016
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -50,7 +50,7 @@ import net.algem.util.ui.PopupDlg;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.5
+ * @version 2.11.0
  * @since 1.0a 12/12/2001
  */
 public class MemberRehearsalCtrl
@@ -252,7 +252,7 @@ public class MemberRehearsalCtrl
       return false;
     }
 
-    if (!RoomService.isClosed(view.getRoom(), date, hStart, hEnd)) {
+    if (!RoomService.acceptWhenClosed(view.getRoom(), date, hStart, hEnd)) {
       return false;
     }
 
