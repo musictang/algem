@@ -1,9 +1,9 @@
 {
-  "description": "Emploi du temps des élèves sur la période.\nLes élèves sont classés dans l'ordre alphabétique avec pour chacun la salle, le professeur, le nom du cours auquel il est inscrit et son horaire.",
+  "description": "Emploi du temps des \u00e9l\u00e8ves sur la p\u00e9riode.\nLes \u00e9l\u00e8ves sont class\u00e9s dans l'ordre alphab\u00e9tique avec pour chacun la salle, le professeur, le nom du cours auquel il est inscrit et son horaire.",
 "args":
 [   
-    {"name" : "etablissement", "label" : "N° d'établissement", "type" : "int"},
-    {"name" : "dateDebut", "label": "Date début", "type": "date"},
+    {"name" : "etablissement", "label" : "N\u00b0 d'\u00e9tablissement", "type" : "int"},
+    {"name" : "dateDebut", "label": "Date d\u00e9but", "type": "date"},
     {"name" : "dateFin", "label": "Date fin", "type": "date"}
 ]
 }

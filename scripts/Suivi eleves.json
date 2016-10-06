@@ -1,8 +1,8 @@
 {
-  "description": "Suivi des élèves sur la période.\nLes élèves sont classés dans l'ordre alphabétique.\nSi vous n'indiquez aucune période, la recherche portera sur toute l'année scolaire.",
+  "description": "Suivi des \u00e9l\u00e8ves sur la p\u00e9riode.\nLes \u00e9l\u00e8ves sont class\u00e9s dans l'ordre alphab\u00e9tique.\nSi vous n'indiquez aucune p\u00e9riode, la recherche portera sur toute l'ann\u00e9e scolaire.",
 "args":
 [   
-    {"name" : "dateDebut", "label": "Date début", "type": "date"},
+    {"name" : "dateDebut", "label": "Date d\u00e9but", "type": "date"},
     {"name" : "dateFin", "label": "Date fin", "type": "date"}
 ]
 }
