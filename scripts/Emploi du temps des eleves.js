@@ -16,4 +16,4 @@ var query = "SELECT DISTINCT p.nom,p.prenom AS \"NOM\",s.nom AS \"SALLE\",pr.nom
 + " ORDER BY \"NOM\"";
 
 utils.print(query);
-out.resultSet(dc.executeQuery(query));
+out.setQuery(query);

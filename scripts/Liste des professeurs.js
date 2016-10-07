@@ -23,9 +23,9 @@ else {
         + " LEFT JOIN telephone t ON (p.id = t.idper AND t.typetel = 8)"
         + " LEFT JOIN person_instrument pi ON (pr.idper = pi.idper)"
         + " JOIN instrument i ON (pi.instrument = i.id)"
-        + " WHERE pi.ptype = 2 AND pi.idx = 0"
+        + " WHERE pi.ptype = 2 AND pi.idx = 0 AND p.id > 0"
         + " ORDER BY \"INSTRUMENT\",\"NOM\"";
 }
 
 utils.print(query);
-out.resultSet(dc.executeQuery(query));
+out.setQuery(query);

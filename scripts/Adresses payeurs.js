@@ -27,4 +27,4 @@ query += " AND p2.id = adr.idper"
 + " ORDER BY \"PAYEUR\"";
 
 utils.print(query);
-out.resultSet(dc.executeQuery(query));
+out.setQuery(query);

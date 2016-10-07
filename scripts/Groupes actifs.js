@@ -11,4 +11,4 @@ var query = "SELECT DISTINCT g.id AS \"ID\",g.nom AS \"GROUPE\",p.nom || ' ' || 
 + " ORDER BY s.libelle";
 
 utils.print(query);
-out.resultSet(dc.executeQuery(query));
+out.setQuery(query);

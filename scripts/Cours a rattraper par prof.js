@@ -22,4 +22,4 @@ var query = "SELECT DISTINCT p1.nom AS \"NOM\",p1.prenom AS \"PRENOM\",p.jour AS
 + " ORDER BY p1.nom,p1.prenom,p.jour";
 
 utils.print(query);
-out.resultSet(dc.executeQuery(query));
+out.setQuery(query);

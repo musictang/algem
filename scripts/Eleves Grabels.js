@@ -19,4 +19,4 @@ var query = "SELECT DISTINCT p1.nom || ' ' || p1.prenom AS \"ELEVE\","
 + " ORDER BY \"ELEVE\", pg.debut";
 
 utils.print(query);
-out.resultSet(dc.executeQuery(query));
+out.setQuery(query);

@@ -1,5 +1,5 @@
 /* 
- * @(#) scripts.sql Algem 2.11.0 06/10/2016
+ * @(#) scripts.sql Algem 2.11.1 07/10/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -19,7 +19,7 @@
  */
 /**
  * Author:  <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * Created: 6 oct. 2016
+ * Created: 06/10/16
  */
 
 SELECT DISTINCT p.id AS "ID",p.nom || ' ' || p.prenom AS "NOM",
@@ -34,3 +34,13 @@ WHERE pi.ptype = 2 AND pi.idx = 0
 ORDER BY "INSTRUMENT","NOM";
 -- AND e.idx <= 0
 -- AND t.typetel = 8
+
+-- emails adherents
+SELECT DISTINCT p.nom || ' ' || p.prenom AS "NOM",
+COALESCE(m1.email, m2.email) AS "EMAIL"
+FROM eleve e LEFT JOIN email m1 ON (e.idper = m1.idper)
+LEFT JOIN email m2 ON (e.payeur = m2.idper)
+JOIN personne p ON (e.idper = p.id)
+JOIN echeancier2 c ON (e.idper = c.adherent)
+WHERE c.echeance BETWEEN '2016-09-19' AND '2017-07-01'
+ORDER BY "NOM";

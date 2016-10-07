@@ -1,5 +1,5 @@
 {
-  "description": "Adresses des payeurs des personnes dont l'\u00e2ge est compris entre un minimum et un maximum. On peut demander par exemple l'adresse des payeurs des personnes entre 5 et 14 ans. Vous pouvez n'indiquer aucun \u00e2ge. Dans ce cas, ce crit\u00e8re ne sera pas pris en compte.\nLe num\u00e9ro d'\u00e9tablissement permet de trier ces payeurs en fonction du lieu o\u00f9 les personnes ont cours.\n Si vous n'indiquez aucun \u00e9tablissement, tous les \u00e9tablissements de la structure seront pris en compte.",
+  "description": "Adresses des payeurs des personnes dont l'\u00e2ge est compris entre un minimum et un maximum. On peut demander par exemple l'adresse des payeurs des personnes entre 5 et 14 ans. Si vous n'indiquez rien, tous les \u00e2ges seront pris en compte.\nLe num\u00e9ro d'\u00e9tablissement (optionnel) permet de trier ces payeurs en fonction du lieu o\u00f9 les personnes ont cours. Si vous n'indiquez aucun \u00e9tablissement, tous les \u00e9tablissements de la structure seront pris en compte.\nLa saisie des dates est obligatoire.",
   "args": 
 [   
     {"name" : "ageMini", "label" : "Age minimum", "type" : "int"},
