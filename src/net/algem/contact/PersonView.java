@@ -1,5 +1,5 @@
 /*
- * @(#)PersonView.java	2.11.0 29/09/16
+ * @(#)PersonView.java	2.11.1 07/10/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -174,6 +174,7 @@ public class PersonView
   }
 
   private void loadPhoto(Person p) {
+    if (p.getId() == 0) return;
     if (p.getType() == Person.PERSON || p.getType() == Person.ROOM) {
       BufferedImage img = photoHandler.load(p.getId());
       if (img == null) {
@@ -195,6 +196,7 @@ public class PersonView
   }
 
   private void savePhoto(int idper) {
+    if (idper == 0) return;
     try {
       File file = FileUtil.getFile(
         this,

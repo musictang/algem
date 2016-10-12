@@ -1,0 +1,8 @@
+{
+  "description": "Groupes actifs durant la p\u00e9riode. Les groupes sont class\u00e9s par style.\nSi vous n'indiquez pas de p\u00e9riode, la recherche portera sur l'ann\u00e9e scolaire.",
+"args":
+[   
+    {"name" : "dateDebut", "label": "Date d\u00e9but", "type": "date"},
+    {"name" : "dateFin", "label": "Date fin", "type": "date"}
+]
+}

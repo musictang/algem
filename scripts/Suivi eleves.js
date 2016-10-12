@@ -22,4 +22,4 @@ var query = "SELECT p1.id AS \"ID\",p1.nom || ' ' || p1.prenom AS \"NOM\","
 + " ORDER BY \"JOUR\",\"NOM\",pg.debut";
 
 utils.print(query);
-out.resultSet(dc.executeQuery(query));
+out.setQuery(query);

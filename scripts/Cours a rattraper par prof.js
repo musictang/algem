@@ -2,7 +2,7 @@ var prof = args.prof == null ? 0 : args.prof.getId();
 var dateDebut = args.debut != null ? utils.sqlDate(args.debut) : utils.sqlDate(utils.getStartOfYear());
 var dateFin = args.fin != null ? utils.sqlDate(args.fin) : utils.sqlDate(utils.getEndOfYear());
 
-var query = "SELECT DISTINCT p1.nom AS \"Nom\",p1.prenom AS \"Prénom\",p.jour AS \"Date\", to_char(pl.debut,'HH24:MI') AS \"Début\",to_char(pl.fin,'HH24:MI') AS \"Fin\","
+var query = "SELECT DISTINCT p1.nom AS \"NOM\",p1.prenom AS \"PRENOM\",p.jour AS \"DATE\", to_char(pl.debut,'HH24:MI') AS \"DEBUT\",to_char(pl.fin,'HH24:MI') AS \"FIN\","
 + " CASE" 
 + " WHEN c.code = 12 THEN 'Stage'"
 + " WHEN c.collectif = false OR (c.code = 1 AND (pl.debut = p.debut AND pl.fin = p.fin)) THEN 'Individuel'"
@@ -16,15 +16,10 @@ var query = "SELECT DISTINCT p1.nom AS \"Nom\",p1.prenom AS \"Prénom\",p.jour A
 + " JOIN cours c ON (a.cours = c.id)"
 + " JOIN salle s ON (p.lieux = s.id)"
 + (prof == 0 ? " WHERE p.idper > 0" : " WHERE p.idper = " + prof)
-//if (prof == 0) {
-    //query += " WHERE p.idper > 0";
-//} else {
-    //query += " WHERE p.idper = " + prof;
-//}
 + " AND p.ptype IN(1,5,6)" 
 + " AND p.jour BETWEEN '"+dateDebut+"' AND '"+dateFin+"'"
 + " AND s.nom like 'RATTRAP%'"
 + " ORDER BY p1.nom,p1.prenom,p.jour";
 
 utils.print(query);
-out.resultSet(dc.executeQuery(query));
+out.setQuery(query);
