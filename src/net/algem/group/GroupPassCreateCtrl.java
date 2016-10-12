@@ -1,7 +1,7 @@
 /*
- * @(#)GroupPassCreateCtrl.java	2.11.0 03/10/2016
+ * @(#)GroupPassCreateCtrl.java	2.8.w 24/07/14
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -42,7 +42,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.0
+ * @version 2.8.w
  */
 public class GroupPassCreateCtrl
         extends CardCtrl
@@ -121,7 +121,7 @@ public class GroupPassCreateCtrl
         MessagePopup.error(this,MessageUtil.getMessage("hour.range.error"), wt);
         return prev();
       }
-      if (!RoomService.acceptWhenClosed(view.getRoom(), view.getDateStart(), hStart, hEnd)) {
+      if (!RoomService.isClosed(view.getRoom(), view.getDateStart(), hStart, hEnd)) {
         return prev();
       }
       dateList = service.generateDates(view.getDay(), view.getDateStart(), view.getDateEnd());

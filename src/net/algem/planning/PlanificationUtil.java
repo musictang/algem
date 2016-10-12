@@ -1,7 +1,7 @@
 /*
- * @(#)PlanificationUtil.java	2.11.0 03/10/2016
+ * @(#)PlanificationUtil.java	2.8.w 21/07/14
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -29,7 +29,7 @@ import net.algem.room.DailyTimes;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.0
+ * @version 2.8.w
  * @since 2.8.v 29/05/14
  */
 public class PlanificationUtil
@@ -59,21 +59,22 @@ public class PlanificationUtil
    * @return null if room is free, null time if room is closed
    * or opening/closing time if selected time before/after opening/closing time 
    */
-  public static Hour[] isRoomClosed(int room, DateFr date, Hour h) {
-    DailyTimes[] times = ConfigUtil.getTimes(room);
+  public static Hour isRoomClosed(int room, DateFr date, Hour h) {
+    DailyTimes [] times = ConfigUtil.getTimes(room);
     int dow = date.getDayOfWeek();
-    Hour t[] = new Hour[2];
-    
-    t[0] = times[dow - 1].getOpening();
-    t[1] = times[dow - 1].getClosing();
-    if (t[0].equals(t[1])) {
-      return new Hour[]{new Hour(),new Hour()};
-    }
-    if (h.before(t[0]) || h.after(t[1])) {
-      return t;
-    }
-    return null;
 
+    Hour first = times[dow -1].getOpening();
+    Hour last = times[dow -1].getClosing();
+    if (first.equals(last)) {
+      return new Hour();
+    }
+    if (h.before(first)) {
+      return first;
+    } else if ( h.after(last)) {
+      return last;
+    } else {
+      return null;
+    }
   }
 
 }

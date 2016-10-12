@@ -1,9 +1,0 @@
-{
-  "description": "Emploi du temps des élèves sur la période.\nLes élèves sont classés dans l'ordre alphabétique avec pour chacun la salle, le professeur, le nom du cours auquel il est inscrit et son horaire.",
-"args":
-[   
-    {"name" : "etablissement", "label" : "N° d'établissement", "type" : "int"},
-    {"name" : "dateDebut", "label": "Date début", "type": "date"},
-    {"name" : "dateFin", "label": "Date fin", "type": "date"}
-]
-}

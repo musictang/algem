@@ -1,5 +1,5 @@
 /*
- * @(#)RoomService.java 2.11.0 03/10/2016
+ * @(#)RoomService.java 2.9.6 18/03/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -43,7 +43,7 @@ import net.algem.util.ui.MessagePopup;
  * Service class for room operations.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.0
+ * @version 2.9.6
  * @since 2.2.b
  */
 public class RoomService
@@ -248,17 +248,20 @@ public class RoomService
     roomTimesIO.update(roomId, times);
   }
 
-  public static boolean acceptWhenClosed(int room, DateFr date, Hour hStart, Hour hEnd) {
-    Hour[] op1 = PlanificationUtil.isRoomClosed(room, date, hStart);
-    
-    Hour n = new Hour();
-    if (op1 != null && n.equals(op1[0]) && n.equals(op1[1])) {
+  public static boolean isClosed(int room, DateFr date, Hour hStart, Hour hEnd) {
+    Hour closed = PlanificationUtil.isRoomClosed(room, date, hStart);
+    if (new Hour().equals(closed)) {
       return MessagePopup.confirm(null, MessageUtil.getMessage("room.closed.warning"));
     }
-    Hour[] op2 = PlanificationUtil.isRoomClosed(room, date, hEnd);
-    if (op1 != null || op2 != null) {
-      if (!MessagePopup.confirm(null, MessageUtil.getMessage("opening.room.warning",
-              op1 != null ? new Object[]{op1[0], op1[1]} : new Object[]{op2[0], op2[1]}))) {
+
+    if (closed != null) {
+      if (!MessagePopup.confirm(null, MessageUtil.getMessage("opening.room.warning", closed))) {
+        return false;
+      }
+    }
+    closed = PlanificationUtil.isRoomClosed(room, date, hEnd);
+    if (closed != null) {
+      if (!MessagePopup.confirm(null, MessageUtil.getMessage("closing.room.warning", closed))) {
         return false;
       }
     }

@@ -1,7 +1,7 @@
 /*
- * @(#)MemberRehearsalPassCtrl.java	2.11.0 03/10/2016
+ * @(#)MemberRehearsalPassCtrl.java	2.9.4.0 06/04/15
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -42,7 +42,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.0
+ * @version 2.9.4.0
  */
 public class MemberRehearsalPassCtrl
         extends FileTabCard
@@ -132,7 +132,7 @@ public class MemberRehearsalPassCtrl
       return false;
     }
 
-    if (!RoomService.acceptWhenClosed(rehearsalView.getRoom(), rehearsalView.getDateStart(), hStart, hEnd)) {
+    if (!RoomService.isClosed(rehearsalView.getRoom(), rehearsalView.getDateStart(), hStart, hEnd)) {
       return false;
     }
 

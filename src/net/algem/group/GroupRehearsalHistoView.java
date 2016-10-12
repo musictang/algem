@@ -1,7 +1,7 @@
 /*
- * @(#)GroupRehearsalHistoView.java 2.11.0 03/10/2016
+ * @(#)GroupRehearsalHistoView.java 2.9.3 27/02/15
  * 
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -32,7 +32,7 @@ import net.algem.util.module.GemDesktop;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.0
+ * @version 2.9.3
  */
 public class GroupRehearsalHistoView
         extends AbstractHistoRehearsal
@@ -43,6 +43,8 @@ public class GroupRehearsalHistoView
   public GroupRehearsalHistoView(GemDesktop desktop, GemGroupService service, int id) {
     super(desktop, null, id);
     this.service = service;
+    btValidation.setText(BundleUtil.getLabel("Period.label"));
+    btValidation.setToolTipText(BundleUtil.getLabel("Rehearsal.list.selection.tip"));
     btCancel.setText(BundleUtil.getLabel("Action.current.month.label"));
   }
 
