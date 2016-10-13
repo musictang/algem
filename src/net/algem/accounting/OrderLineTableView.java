@@ -110,7 +110,7 @@ implements TableModelListener {
       @Override
       public boolean include(Entry<? extends Object, ? extends Object> entry) {
         DateFr date = (DateFr) entry.getValue(3);
-        return date.after(begin) && date.before(end);
+        return date.afterOrEqual(begin) && date.beforeOrEqual(end);
       }
     };
 
@@ -122,14 +122,14 @@ implements TableModelListener {
         return !paid;
       }
     };
-    
+
     invoiceFilter = new RowFilter<Object, Object>() {
       @Override
       public boolean include(Entry<? extends Object, ? extends Object> entry) {
         String payment = (String) entry.getValue(5);
         return !payment.equals(ModeOfPayment.FAC.name());
       }
-      
+
     };
     table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 
@@ -306,7 +306,7 @@ implements TableModelListener {
   public void filterByUnpaid() {
     sorter.setRowFilter(unpaidFilter);
   }
-  
+
   public void filterByPayment(boolean filter) {
     if (filter) {
       sorter.setRowFilter(invoiceFilter);
@@ -314,7 +314,7 @@ implements TableModelListener {
       sorter.setRowFilter(null);
     }
   }
-  
+
   /**
    * Activates a listener for rows selection.
    *

@@ -24,6 +24,8 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -31,8 +33,6 @@ import java.util.List;
 import java.util.Vector;
 import java.util.prefs.Preferences;
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import net.algem.billing.BillingUtil;
@@ -113,16 +113,17 @@ public class OrderLineEditor
     payerName = new JTextField(30);
     payerName.setEditable(false);
     invoiceLineFilter = new JCheckBox(BundleUtil.getLabel("Invoice.lines.filter.label"));
-    invoiceFilter = new InvoiceLinesFilter(tableView, invoiceLineFilter);
+    invoiceFilter = new InvoiceLinesFilter(tableView);
     if (invoiceFilter.isHidden()) {
       invoiceLineFilter.setSelected(true);
-      invoiceFilter.hideInvoiceLines();
+      invoiceFilter.hideInvoiceLines(true);
     }
-    invoiceLineFilter.addChangeListener(new ChangeListener() {
+    invoiceLineFilter.addItemListener(new ItemListener() {
       @Override
-      public void stateChanged(ChangeEvent e) {
-        invoiceFilter.hideInvoiceLines();
-        invoiceFilter.savePrefs();
+      public void itemStateChanged(ItemEvent e) {
+        boolean h = e.getStateChange() == ItemEvent.SELECTED;
+        invoiceFilter.hideInvoiceLines(h);
+        invoiceFilter.savePrefs(h);
       }
 
     });
@@ -201,6 +202,7 @@ public class OrderLineEditor
       } else {
         tableView.filterByDate(null);
       }
+
     } else if (src == btInvoice) {
       createInvoice();
     } else if (src == btQuotation) {
@@ -516,23 +518,17 @@ public class OrderLineEditor
     private static final String HIDE_INVOICE_LINES = "hide.invoice.lines";
     Preferences prefs = Preferences.userRoot().node("/algem/accounting");
     OrderLineTableView tableView;
-    AbstractButton invoiceLineFilter;
 
     public InvoiceLinesFilter(OrderLineTableView tableView) {
       this.tableView = tableView;
     }
 
-    public InvoiceLinesFilter(OrderLineTableView tableView, AbstractButton invoiceLineFilter) {
-      this.tableView = tableView;
-      this.invoiceLineFilter = invoiceLineFilter;
+    void hideInvoiceLines(boolean hidden) {
+      tableView.filterByPayment(hidden);
     }
 
-    void hideInvoiceLines() {
-      tableView.filterByPayment(invoiceLineFilter.isSelected());
-    }
-
-    void savePrefs() {
-      prefs.putBoolean("hide.invoice.lines", invoiceLineFilter.isSelected());
+    void savePrefs(boolean hidden) {
+      prefs.putBoolean("hide.invoice.lines", hidden);
     }
 
     boolean isHidden() {

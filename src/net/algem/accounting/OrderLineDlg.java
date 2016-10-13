@@ -26,6 +26,8 @@ import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.print.PrinterException;
 import java.sql.SQLException;
 import java.text.NumberFormat;
@@ -33,8 +35,6 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.Locale;
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import net.algem.planning.DateFr;
@@ -142,16 +142,17 @@ public class OrderLineDlg
     GemPanel header = new GemPanel();
 
     invoiceLineFilter = new JCheckBox(BundleUtil.getLabel("Invoice.lines.filter.label"));
-    invoiceFilter = new OrderLineEditor.InvoiceLinesFilter(tableView, invoiceLineFilter);
+    invoiceFilter = new OrderLineEditor.InvoiceLinesFilter(tableView);
     if (invoiceFilter.isHidden()) {
       invoiceLineFilter.setSelected(true);
-      invoiceFilter.hideInvoiceLines();
+      invoiceFilter.hideInvoiceLines(true);
     }
-    invoiceLineFilter.addChangeListener(new ChangeListener() {
+    invoiceLineFilter.addItemListener(new ItemListener() {
       @Override
-      public void stateChanged(ChangeEvent e) {
-        invoiceFilter.hideInvoiceLines();
-        invoiceFilter.savePrefs();
+      public void itemStateChanged(ItemEvent e) {
+        boolean h = e.getStateChange() == ItemEvent.SELECTED;
+        invoiceFilter.hideInvoiceLines(h);
+        invoiceFilter.savePrefs(h);
       }
     });
 
