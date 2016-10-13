@@ -1,5 +1,5 @@
 /*
- * @(#)GroupOrderLineEditor.java	2.9.7.1 26/05/16
+ * @(#)GroupOrderLineEditor.java	2.11.2 13/10/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -44,7 +44,7 @@ import net.algem.util.ui.GemPanel;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.7.1
+ * @version 2.11.2
  * @since 2.7.k 01/03/2013
  */
 public class GroupOrderLineEditor
@@ -120,7 +120,7 @@ public class GroupOrderLineEditor
     footer.add(pTotal, BorderLayout.NORTH);
     footer.add(buttons, BorderLayout.CENTER);
 
-    tableView.filterByPeriod(dateRange.getStartFr(), dateRange.getEndFr());
+    tableView.filterByPeriod(dateRange.getStartFr(), dateRange.getEndFr(), false);
     tableView.getTable().addMouseListener(new MenuPopupListener(tableView, popup));
 
     setLayout(new BorderLayout());
@@ -135,7 +135,7 @@ public class GroupOrderLineEditor
   public void actionPerformed(ActionEvent evt) {
     Object src = evt.getSource();
     if (src == btDateRange) {
-      tableView.filterByPeriod(dateRange.getStartFr(), dateRange.getEndFr());
+      tableView.filterByPeriod(dateRange.getStartFr(), dateRange.getEndFr(), false);
       btMembershipFilter.setSelected(false);
       btUnpaidFilter.setSelected(false);
     } else if (evt.getSource() == btMembershipFilter) {
@@ -143,14 +143,14 @@ public class GroupOrderLineEditor
         tableView.filterByMemberShip(dateRange.getStartFr(), dateRange.getEndFr());
         btUnpaidFilter.setSelected(false);
       } else {
-        tableView.filterByPeriod(dateRange.getStartFr(), dateRange.getEndFr());
+        tableView.filterByPeriod(dateRange.getStartFr(), dateRange.getEndFr(), false);
       }
     } else if (src == btUnpaidFilter) {
       if (btUnpaidFilter.isSelected()) {
         tableView.filterByUnpaid();
         btMembershipFilter.setSelected(false);
       } else {
-        tableView.filterByPeriod(dateRange.getStartFr(), dateRange.getEndFr());
+        tableView.filterByPeriod(dateRange.getStartFr(), dateRange.getEndFr(), false);
       }
     } else if (src == miGroupModif) {
       updateGroup();

@@ -1,5 +1,5 @@
 /*
-* @(#)OrderLineDlg.java	2.10.0 16/05/16
+* @(#)OrderLineDlg.java	2.11.2 13/10/16
 *
 * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
 *
@@ -52,7 +52,7 @@ import net.algem.util.ui.MessagePopup;
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @author <a href="mailto:damien.loustau@gmail.com">Damien Loustau</a>
- * @version 2.10.0
+ * @version 2.11.2
  * @since 1.0a 07/07/1999
  */
 public class OrderLineDlg
@@ -145,13 +145,13 @@ public class OrderLineDlg
     invoiceFilter = new OrderLineEditor.InvoiceLinesFilter(tableView);
     if (invoiceFilter.isHidden()) {
       invoiceLineFilter.setSelected(true);
-      invoiceFilter.hideInvoiceLines(true);
+      invoiceFilter.hideInvoiceLines(true, null);
     }
     invoiceLineFilter.addItemListener(new ItemListener() {
       @Override
       public void itemStateChanged(ItemEvent e) {
         boolean h = e.getStateChange() == ItemEvent.SELECTED;
-        invoiceFilter.hideInvoiceLines(h);
+        invoiceFilter.hideInvoiceLines(h, null);
         invoiceFilter.savePrefs(h);
       }
     });

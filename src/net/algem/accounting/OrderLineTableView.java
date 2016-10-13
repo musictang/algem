@@ -1,5 +1,5 @@
 /*
-* @(#)OrderLineTableView.java 2.10.0 13/05/16
+* @(#)OrderLineTableView.java 2.11.2 13/10/16
 *
 * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
 *
@@ -17,7 +17,7 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with Algem. If not, see <http://www.gnu.org/licenses/>.
 *
-*/
+ */
 package net.algem.accounting;
 
 import java.awt.BorderLayout;
@@ -45,13 +45,14 @@ import net.algem.util.model.Model;
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @author <a href="mailto:damien.loustau@gmail.com">Damien Loustau</a>
- * @version 2.10.0
+ * @version 2.11.2
  * @since 1.0a 07/07/1999
  *
  */
 public class OrderLineTableView
-extends JPanel
-implements TableModelListener {
+        extends JPanel
+        implements TableModelListener
+{
 
   private OrderLineTableModel tableModel;
   private JTable table;
@@ -81,15 +82,18 @@ implements TableModelListener {
   private final TableRowSorter<TableModel> sorter;
   private DateFr begin;
   private DateFr end;
+  private boolean hideBilling;
 
   public OrderLineTableView(OrderLineTableModel tableModel, ActionListener al) {
 
     this.tableModel = tableModel;
-    table = new JTable(tableModel) {
+    table = new JTable(tableModel)
+    {
       //Implements table header tool tips.
       @Override
       protected JTableHeader createDefaultTableHeader() {
-        return new JTableHeader(columnModel) {
+        return new JTableHeader(columnModel)
+        {
 
           @Override
           public String getToolTipText(MouseEvent e) {
@@ -105,16 +109,24 @@ implements TableModelListener {
     sorter = new TableRowSorter<TableModel>(tableModel);
     table.setRowSorter(sorter);
 
-    dateFilter = new RowFilter<Object, Object>() {
+    dateFilter = new RowFilter<Object, Object>()
+    {
 
       @Override
       public boolean include(Entry<? extends Object, ? extends Object> entry) {
         DateFr date = (DateFr) entry.getValue(3);
-        return date.afterOrEqual(begin) && date.beforeOrEqual(end);
+        String payment = (String) entry.getValue(5);
+        if (hideBilling) {//XXX
+          return date.afterOrEqual(begin) && date.beforeOrEqual(end) && !payment.equals(ModeOfPayment.FAC.name());
+        } else {
+          return date.afterOrEqual(begin) && date.beforeOrEqual(end);
+        }
+
       }
     };
 
-    unpaidFilter = new RowFilter<Object, Object>() {
+    unpaidFilter = new RowFilter<Object, Object>()
+    {
 
       @Override
       public boolean include(Entry<? extends Object, ? extends Object> entry) {
@@ -123,11 +135,18 @@ implements TableModelListener {
       }
     };
 
-    invoiceFilter = new RowFilter<Object, Object>() {
+    invoiceFilter = new RowFilter<Object, Object>()
+    {
       @Override
       public boolean include(Entry<? extends Object, ? extends Object> entry) {
+        DateFr date = (DateFr) entry.getValue(3);
         String payment = (String) entry.getValue(5);
-        return !payment.equals(ModeOfPayment.FAC.name());
+        if (begin != null && end != null) {
+          return !payment.equals(ModeOfPayment.FAC.name()) && date.afterOrEqual(begin) && date.beforeOrEqual(end);
+        } else {
+          return !payment.equals(ModeOfPayment.FAC.name());
+        }
+
       }
 
     };
@@ -252,7 +271,8 @@ implements TableModelListener {
   }
 
   public void setMemberShipFilter(final String... values) {
-    memberShipFilter = new RowFilter<Object, Object>() {
+    memberShipFilter = new RowFilter<Object, Object>()
+    {
       @Override
       public boolean include(Entry<? extends Object, ? extends Object> entry) {
         DateFr date = (DateFr) entry.getValue(3);
@@ -273,25 +293,31 @@ implements TableModelListener {
    *
    * @param date start date
    */
-  public void filterByDate(DateFr date) {
-
+  public void filterByDate(DateFr date, boolean hideBilling) {
+    this.hideBilling = hideBilling;
     if (date == null) {
-      sorter.setRowFilter(null);
+      begin = null;
+      sorter.setRowFilter(hideBilling ? invoiceFilter : null);
     } else {
-      Calendar cal = Calendar.getInstance();
-      cal.setTime(date.getDate());
-      cal.set(Calendar.MONTH, Calendar.SEPTEMBER);// beginning of year for accounting
-      cal.set(Calendar.DAY_OF_MONTH, 1);
-      begin = new DateFr(cal.getTime());
-      end = new DateFr(begin);
-      end.incYear(1);
+      setDates(date);
       sorter.setRowFilter(dateFilter);
 //      sorter.setRowFilter(RowFilter.regexFilter("^.*"+year+".*$", 2));
 //      sorter.setRowFilter(RowFilter.begin(RowFilter.ComparisonType.AFTER, date, 2));
     }
   }
 
-  public void filterByPeriod(DateFr begin, DateFr end) {
+  private void setDates(DateFr date) {
+    Calendar cal = Calendar.getInstance();
+    cal.setTime(date.getDate());
+    cal.set(Calendar.MONTH, Calendar.SEPTEMBER);// beginning of year for accounting
+    cal.set(Calendar.DAY_OF_MONTH, 1);
+    begin = new DateFr(cal.getTime());
+    end = new DateFr(begin);
+    end.incYear(1);
+  }
+
+  public void filterByPeriod(DateFr begin, DateFr end, boolean hideBilling) {
+    this.hideBilling = hideBilling;
     this.begin = begin;
     this.end = end;
     sorter.setRowFilter(dateFilter);
@@ -307,11 +333,17 @@ implements TableModelListener {
     sorter.setRowFilter(unpaidFilter);
   }
 
-  public void filterByPayment(boolean filter) {
+  public void filterByPayment(boolean filter, DateFr d) {
+    if (d == null) {
+      this.begin = null;
+    } else {
+      setDates(d);
+    }
     if (filter) {
       sorter.setRowFilter(invoiceFilter);
     } else {
-      sorter.setRowFilter(null);
+      this.hideBilling = false;
+      sorter.setRowFilter(d != null ? dateFilter : null);
     }
   }
 
@@ -334,42 +366,45 @@ implements TableModelListener {
   }
 
   class ContactNameTableCellRenderer
-        extends DefaultTableCellRenderer
+          extends DefaultTableCellRenderer
   {
+
     @Override
     public Component getTableCellRendererComponent(
-              JTable table, Object value,
-              boolean isSelected, boolean hasFocus,
-              int row, int column) {
-        JLabel c = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-        String idper = (String) value;
-        try {
-          Person p = (Person) DataCache.findId(Integer.parseInt(idper.trim()), Model.Person);
-          //assert(p != null);
-          if (p != null) {
-            String org = p.getOrganization();
-            c.setToolTipText(org != null && org.length() > 0 ? org : p.getFirstnameName());
-          } else {
-            c.setToolTipText(null);
-          }
-        } catch(SQLException | NumberFormatException e) {
+            JTable table, Object value,
+            boolean isSelected, boolean hasFocus,
+            int row, int column) {
+      JLabel c = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+      String idper = (String) value;
+      try {
+        Person p = (Person) DataCache.findId(Integer.parseInt(idper.trim()), Model.Person);
+        //assert(p != null);
+        if (p != null) {
+          String org = p.getOrganization();
+          c.setToolTipText(org != null && org.length() > 0 ? org : p.getFirstnameName());
+        } else {
           c.setToolTipText(null);
         }
-        return c;
+      } catch (SQLException | NumberFormatException e) {
+        c.setToolTipText(null);
       }
+      return c;
+    }
   }
 
   class AccountNameTableCellRenderer
           extends DefaultTableCellRenderer
-          {
+  {
+
     @Override
     public Component getTableCellRendererComponent(
-              JTable table, Object value,
-              boolean isSelected, boolean hasFocus,
-              int row, int column) {
-        JLabel c = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-        c.setToolTipText((String) value);
-        return c;
-      }
+            JTable table, Object value,
+            boolean isSelected, boolean hasFocus,
+            int row, int column) {
+      JLabel c = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+      c.setToolTipText((String) value);
+      return c;
+    }
   }
+
 }
