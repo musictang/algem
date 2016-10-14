@@ -1,5 +1,5 @@
 /*
- * @(#)ConfigAccounting.java 2.11.0 28/09/16
+ * @(#)ConfigAccounting.java 2.11.2 13/10/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -43,11 +43,12 @@ import net.algem.util.ui.GridBagHelper;
  * Bic infos for the organization.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.11.0
+ * @version 2.11.2
  * @since 2.2.d
  */
 public class ConfigAccounting
-  extends ConfigPanel {
+        extends ConfigPanel
+{
 
   private Config c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13, c14;
   private GemField firmName;
@@ -87,7 +88,7 @@ public class ConfigAccounting
     c12 = confs.get(ConfigKey.DEFAULT_DUE_DAY.getKey());//jour d'échéance par défaut
     c13 = confs.get(ConfigKey.ROUND_FRACTIONAL_PAYMENTS.getKey());//jour d'échéance par défaut
     c14 = confs.get(ConfigKey.CHARGE_ENROLMENT_LINES.getKey());//jour d'échéance par défaut
-    
+
     firmName = new GemField(20);
     firmName.setText(c1.getValue());
     issuer = new GemField(10);
@@ -117,8 +118,8 @@ public class ConfigAccounting
     ics = new GemField(10);
     ics.setText(c11.getValue());
 
-    SpinnerNumberModel spinnerModel = new SpinnerNumberModel(Integer.parseInt(c12.getValue()), 1, 28, 1);
-    defaultDueDay = new JSpinner(spinnerModel);
+    SpinnerNumberModel dueDaySpinnerModel = new SpinnerNumberModel(Integer.parseInt(c12.getValue()), 1, 28, 1);
+    defaultDueDay = new JSpinner(dueDaySpinnerModel);
     defaultDueDay.setToolTipText(BundleUtil.getLabel("ConfEditor.default.due.date.tip"));
 
     roundFractionalPayments = new JCheckBox(ConfigKey.ROUND_FRACTIONAL_PAYMENTS.getLabel());
@@ -132,9 +133,9 @@ public class ConfigAccounting
     content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
 
     GemPanel creditorPanel = new GemPanel(new GridBagLayout());
-    creditorPanel.setMinimumSize(new Dimension(400,240));
+    creditorPanel.setMinimumSize(new Dimension(400, 240));
     creditorPanel.setBorder(BorderFactory.createTitledBorder(BundleUtil.getLabel("Menu.debiting.label")));
-    
+
     GridBagHelper gb = new GridBagHelper(creditorPanel);
     gb.add(new GemLabel(ConfigKey.DIRECT_DEBIT_FIRM_NAME.getLabel()), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(firmName, 1, 0, 1, 1, GridBagHelper.WEST);
@@ -153,11 +154,10 @@ public class ConfigAccounting
     gb.add(new GemLabel(ConfigKey.DIRECT_DEBIT_ICS.getLabel()), 0, 7, 1, 1, GridBagHelper.WEST);
     gb.add(ics, 1, 7, 1, 1, GridBagHelper.WEST);
 
-    
     GemPanel options = new GemPanel(new GridBagLayout());
     options.setBorder(BorderFactory.createTitledBorder(BundleUtil.getLabel("Menu.options.label")));
-    options.setMinimumSize(new Dimension(400,200));
-    
+    options.setMinimumSize(new Dimension(400, 200));
+
     GridBagHelper gb2 = new GridBagHelper(options);
     gb2.add(new GemLabel(ConfigKey.ACCOUNTING_DOCUMENT_NUMBER.getLabel()), 0, 0, 1, 1, GridBagHelper.WEST);
     gb2.add(document, 1, 0, 1, 1, GridBagHelper.WEST);
@@ -182,7 +182,8 @@ public class ConfigAccounting
 
   private void initBic() {
     bic = new GemField(10);
-    bic.addFocusListener(new FocusAdapter() {
+    bic.addFocusListener(new FocusAdapter()
+    {
 
       @Override
       public void focusGained(FocusEvent e) {
@@ -195,7 +196,8 @@ public class ConfigAccounting
       }
     });
 
-    bic.addActionListener(new ActionListener() {
+    bic.addActionListener(new ActionListener()
+    {
 
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -206,7 +208,8 @@ public class ConfigAccounting
 
   private void initIban() {
     iban = new GemField(20);
-    iban.addFocusListener(new FocusAdapter() {
+    iban.addFocusListener(new FocusAdapter()
+    {
 
       @Override
       public void focusGained(FocusEvent e) {
@@ -219,7 +222,8 @@ public class ConfigAccounting
       }
     });
 
-    iban.addActionListener(new ActionListener() {
+    iban.addActionListener(new ActionListener()
+    {
 
       @Override
       public void actionPerformed(ActionEvent e) {

@@ -1,7 +1,7 @@
 /*
- * @(#)MenuCatalog.java	2.9.4.14 14/12/2015
+ * @(#)MenuCatalog.java	2.11.2 14/10/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -53,7 +53,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.10
+ * @version 2.11.2
  * @since 1.0a 07/07/1999
  */
 public class MenuCatalog
@@ -77,17 +77,22 @@ public class MenuCatalog
     String course = ConfigUtil.getConf(ConfigKey.COURSE_MANAGEMENT.getKey());
     if (course != null && course.startsWith("t")) {
       miModule = new JMenuItem(BundleUtil.getLabel("Module.label"));
+      miModule.setToolTipText(BundleUtil.getLabel("Module.catalog.tip"));
       add(miModule);
       miCoursBrowse = new JMenuItem(BundleUtil.getLabel("Course.label"));
+      miCoursBrowse.setToolTipText(BundleUtil.getLabel("Course.catalog.tip"));
       add(miCoursBrowse);
       addSeparator();
+      
       add(miEnrolment = new JMenuItem(BundleUtil.getLabel("Menu.enrolment.label")));
+      miEnrolment.setToolTipText(BundleUtil.getLabel("Enrolment.catalog.tip"));
       miModuleOrder = new JMenuItem(BundleUtil.getLabel("Modules.ordered.label"));
+      miModuleOrder.setToolTipText(BundleUtil.getLabel("Modules.ordered.tip"));
       add(miModuleOrder);
-
     }
 
     scriptItem = new JMenuItem(BundleUtil.getLabel("Scripts.label"));
+    scriptItem.setToolTipText(BundleUtil.getLabel("Scripts.catalog.tip"));
     if (Algem.isFeatureEnabled("scripting")) {
       add(scriptItem);
     }

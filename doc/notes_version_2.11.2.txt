@@ -1,0 +1,8 @@
+2.11.2
+CORRECTIFS
+* Le survol de la case à cocher "Cacher lignes de facturation" dans l'échéancier d'une personne désactivait la vue filtrée par "Année scolaire".
+* Les options "Cacher lignes de facturation" et "Année scolaire" sont maintenant cumulatives. Auparavant, l'activation de l'option "Cacher lignes de facturation" désactivait l'autre et vice-versa.
+* Lorsqu'on cliquait sur "Année scolaire", les échéances du premier jour du mois n'étaient pas visibles (le 1er septembre, par défaut).
+
+ECHEANCIER
+Le bouton "Année scolaire" a été renommé "Année comptable".

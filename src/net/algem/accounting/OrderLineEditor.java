@@ -108,7 +108,7 @@ public class OrderLineEditor
     btYear = new GemButton(String.valueOf(dataCache.getStartOfYear().getYear()));
     btYear.addActionListener(this);
 
-    btCurrentYear = new JToggleButton(MessageUtil.getMessage("current.year.label"));
+    btCurrentYear = new JToggleButton(BundleUtil.getLabel("Financial.year.label"));
     btCurrentYear.addActionListener(this);
 
     payerName = new JTextField(30);
