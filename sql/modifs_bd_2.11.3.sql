@@ -1,0 +1,1 @@
+COMMENT ON COLUMN person_instrument.ptype IS '1 = élève, 2 = professeur, 3 = musicien';
