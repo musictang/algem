@@ -41,7 +41,7 @@ public class StatisticsPlugin
     statList.add(new StatElement(2, MessageUtil.getMessage("statistics.number.of.students"), true));
     statList.add(new StatElement(3, MessageUtil.getMessage("statistics.distribution.between.amateurs.pros"), true));
     statList.add(new StatElement(4, MessageUtil.getMessage("statistics.list.of.pro.students"), true));
-    statList.add(new StatElement(5, MessageUtil.getMessage("statistics.city.distribution"), true));
+    statList.add(new StatElement(5, MessageUtil.getMessage("statistics.students.by.location"), true));
     statList.add(new StatElement(6, MessageUtil.getMessage("statistics.number.of.hours.of.rehearsal"), true));
     statList.add(new StatElement(7, MessageUtil.getMessage("statistics.number.of.rehearsing.people"), true));
     statList.add(new StatElement(8, "Payeurs sans adresse", true));

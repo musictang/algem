@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileEditor 2.11.0 27/09/2016
+ * @(#)PersonFileEditor 2.11.3 17/10/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -69,7 +69,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.0
+ * @version 2.11.3
  */
 public class PersonFileEditor
         extends FileEditor
@@ -467,8 +467,8 @@ public class PersonFileEditor
       MessagePopup.error(personFileView, MessageUtil.getMessage("payer.invalid.warning"));
       return;
     }
-    dossier.setRib(personFileView.getRibFile());// get rib from view
-    if (dossier.hasChanged()) {// non enregistrement éventuel du rib
+    Rib v = personFileView.getRibFile();
+    if (!v.equals(dossier.getRib())) {
       MessagePopup.warning(personFileView, MessageUtil.getMessage("rib.error.printing"));
       return;
     }
@@ -513,7 +513,7 @@ public class PersonFileEditor
 
     dossier.setTeacher(personFileView.getTeacher());
     dossier.setRib(personFileView.getRibFile());
-
+    // auto update BIC code
     BankBranch a = personFileView.getBranchBank();
     if (a != null && a.getBicCode() != null && !a.getBicCode().isEmpty()) {
       try {
