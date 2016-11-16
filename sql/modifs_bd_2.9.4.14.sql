@@ -4,7 +4,7 @@ ALTER TABLE login ALTER login TYPE VARCHAR(16);
 ALTER TABLE login ADD CONSTRAINT login_unique UNIQUE (login);
 
 -- TODO vérifier doublons au préalable (verifier menuaccess_pk)
-DELETE FROM menuaccess where oid IN (SELECT m2.oid from menuaccess m1, menuaccess m2 where m1.idper = m2.idper and m1.idmenu = m2.idmenu and m2.oid > m1.oid);
+-- DELETE FROM menuaccess where oid IN (SELECT m2.oid from menuaccess m1, menuaccess m2 where m1.idper = m2.idper and m1.idmenu = m2.idmenu and m2.oid > m1.oid);
 --ALTER TABLE menuaccess ADD CONSTRAINT menuaccess_pk PRIMARY KEY (idper,idmenu); 2.9.4.10
 
 -- photo management

@@ -1,5 +1,5 @@
 /*
- * @(#)PersonIO.java 2.11.0 23/09/16
+ * @(#)PersonIO.java 2.11.3 17/10/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -43,7 +43,7 @@ import java.sql.PreparedStatement;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.0
+ * @version 2.11.3
  */
 public class PersonIO
         extends TableIO
@@ -76,8 +76,9 @@ public class PersonIO
             + ", " + p.getType()
             + ",'" + escape(p.getName().toUpperCase())
             + "','" + escape(p.getFirstName())
-            + "','" + p.getGender()
-            + "','" + (p.hasImgRights() ? "t" : "f") // t pour non autorisation, f pour autorisation image
+            //+ "','" + p.getGender()
+            + (p.getGender() == null || p.getGender().isEmpty() ? "',NULL" : "','" + p.getGender() + "'")
+            + ",'" + (p.hasImgRights() ? "t" : "f") // t pour non autorisation, f pour autorisation image
             + (p.getOrganization() == null || p.getOrganization().isEmpty() ? "',NULL" : "','" + escape(p.getOrganization()) + "'")
             + ",'" + (p.isPartnerInfo() ? "t" : "f")
             + (p.getNickName() == null || p.getNickName().isEmpty() ? "',NULL" : "','" + escape(p.getNickName()) + "'") + ")";

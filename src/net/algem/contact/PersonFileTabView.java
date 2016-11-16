@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileTabView.java  2.9.6 17/03/16
+ * @(#)PersonFileTabView.java  2.11.3 17/10/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes All Rights Reserved.
  *
@@ -67,7 +67,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.6
+ * @version 2.11.3
  */
 public class PersonFileTabView
         extends FileTabView
@@ -392,6 +392,16 @@ public class PersonFileTabView
 
       @Override
       protected void print() {
+        // double check existing RIB : very optional here
+        Rib d = dossier.getRib();
+        Rib r = null;
+        if (d != null) {
+          r = RibIO.findId(dossier.getRib().getId(), dc);
+        }
+        if (d == null || r == null || !r.equals(d)) {
+          MessagePopup.warning(this, MessageUtil.getMessage("rib.error.printing"));
+          return;
+        }
 
         boolean printOrderLines = true;
 
