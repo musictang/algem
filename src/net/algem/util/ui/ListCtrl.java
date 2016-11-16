@@ -1,7 +1,7 @@
 /*
- * @(#)ListCtrl.java	2.9.4.6 02/06/15
+ * @(#)ListCtrl.java	2.11.3 16/11/16
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -36,7 +36,7 @@ import net.algem.util.GemCommand;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.6
+ * @version 2.11.3
  * @since 1.0a 07/07/1999
  */
 public abstract class ListCtrl
@@ -80,7 +80,11 @@ public abstract class ListCtrl
   }
 
   public int getSelectedIndex() {
-    return table.convertRowIndexToModel(table.getSelectedRow());
+    int idx = table.getSelectedRow();
+    if (idx == -1) {
+      return -1;
+    }
+    return table.convertRowIndexToModel(idx);
   }
 
   public int getIdFromIndex(int i) {

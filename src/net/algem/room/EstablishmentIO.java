@@ -1,6 +1,6 @@
 /*
- * @(#)EstablishmentIO.java	2.11.0 29/09/16
- * 
+ * @(#)EstablishmentIO.java	2.11.3 16/11/16
+ *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.room;
 
@@ -39,30 +39,119 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.0
+ * @version 2.11.3
  */
 public class EstablishmentIO
-        extends TableIO
-{
+  extends TableIO {
 
   public static final String TABLE = "etablissement";
 
-  public static void trans_insert(Establishment e, short type, DataConnection dc) throws SQLException {
+  public static Establishment findId(int n, DataConnection dc) throws SQLException {
+
+    String where = " AND p.id = " + n;
+    List<Establishment> v = find(where, dc);
+    if (v.size() > 0) {
+      return v.get(0);
+    }
+    return null;
+  }
+
+  public static List<Establishment> find(String where, DataConnection dc) throws SQLException {
+
+    List<Establishment> estabs = new ArrayList<Establishment>();
+    String query = "SELECT DISTINCT ON (p.nom) " + PersonIO.COLUMNS + ", e.actif FROM " + PersonIO.TABLE + " p  JOIN " + TABLE + " e ON (p.id = e.id)"
+      + " WHERE p.ptype = " + Person.ESTABLISHMENT;
+    query += where;
+
+    ResultSet rs = dc.executeQuery(query);
+    while (rs.next()) {
+      Establishment e = new Establishment(PersonIO.getFromRS(rs));
+      e.setActive(rs.getBoolean(10));
+      e.setAddress(AddressIO.findId(e.getId(), dc));
+      e.setTele(TeleIO.findId(e.getId(), dc));
+      e.setEmail(EmailIO.find(e.getId(), dc));
+      e.setSites(WebSiteIO.find(e.getId(), Person.ESTABLISHMENT, dc));
+
+      estabs.add(e);
+    }
+    return estabs;
+  }
+
+  public static void insert(final Establishment e, final short type, DataConnection dc) throws SQLException {
+    try {
+      dc.withTransaction(new DataConnection.SQLRunnable<Void>() {
+        @Override
+        public Void run(DataConnection conn) throws Exception {
+          trans_insert(e, type, conn);
+          return null;
+        }
+      });
+    } catch (Exception ex) {
+      GemLogger.logException("transaction insert Etablissement", ex);
+      throw new SQLException(ex.getMessage());
+    }
+  }
+
+  public static void update(final Establishment e, final Establishment n, DataConnection dc) throws SQLException {
+    try {
+      dc.withTransaction(new DataConnection.SQLRunnable<Void>() {
+        @Override
+        public Void run(DataConnection conn) throws Exception {
+          trans_update(e, n, conn);
+          return null;
+        }
+      });
+    } catch (Exception ex) {
+      GemLogger.logException("transaction update Etablissement", ex);
+      throw new SQLException(ex.getMessage());
+    }
+
+  }
+
+  public static void updateStatus(int id, boolean active, int userId, DataConnection dc) throws SQLException {
+    String query = "UPDATE etablissement SET actif = " + active + " WHERE id = " + id + " AND idper = " + userId;
+    dc.executeUpdate(query);
+  }
+
+  public static void delete(Establishment e, DataConnection dc) throws EstablishmentException {
+
+    String query = "SELECT etablissement FROM " + RoomIO.TABLE + " WHERE etablissement = " + e.getId();
+    try {
+      ResultSet rs = dc.executeQuery(query);
+      if (rs.next()) {
+        throw new EstablishmentException(MessageUtil.getMessage("establishment.delete.exception"));
+      }
+
+      new PersonIO(dc).delete(e.getPerson());
+      AddressIO.delete(e.getId(), dc);
+      TeleIO.delete(e.getId(), dc);
+      EmailIO.delete(e.getId(), dc);
+      WebSiteIO.delete(e.getId(), Person.ESTABLISHMENT, dc);
+      RibIO.delete(e.getId(), dc);
+    } catch (SQLException sqe) {
+      throw new EstablishmentException("SQL : " + sqe.getMessage());
+    }
+  }
+
+  private static void trans_insert(Establishment e, short type, DataConnection dc) throws SQLException {
     int number = nextId(PersonIO.SEQUENCE, dc);
 
     Person p = e.getPerson();
     String query = "INSERT INTO " + PersonIO.TABLE + "  VALUES("
-            + number
-            + "," + type
-            + ",'" + escape(e.getName().toUpperCase())
-            + "','" + escape(p.getFirstName())
-            + "','" + p.getGender()
-            + "', FALSE"
-            + ", '" + escape(p.getOrganization())
-            + "')";
+      + number
+      + "," + type
+      + ",'" + escape(e.getName().toUpperCase())
+      + "','" + escape(p.getFirstName())
+      + "','" + p.getGender()
+      + "', FALSE"
+      + ", '" + escape(p.getOrganization())
+      + "')";
 
     dc.executeUpdate(query);
     e.setId(number);
+
+    query = "INSERT INTO etablissement SELECT " + e.getId() + ", idper, true FROM login WHERE profil in (1,2,4)";
+    dc.executeUpdate(query);
 
     Address a = e.getAddress();
     if (a != null && a.getAdr1().length() > 0) {
@@ -100,36 +189,7 @@ public class EstablishmentIO
 
   }
 
-  public static void insert(Establishment e, short type, DataConnection dc) throws SQLException {
-    try {
-      dc.setAutoCommit(false);
-      trans_insert(e, type, dc);
-      dc.commit();
-    } catch (SQLException e1) {
-      dc.rollback();
-      GemLogger.logException("transaction insert Etablissement", e1);
-      throw e1;
-    } finally {
-      dc.setAutoCommit(true);
-    }
-  }
-
-  public static void update(Establishment e, Establishment n, DataConnection dc) throws SQLException {
-
-    try {
-      dc.setAutoCommit(false);
-      trans_update(e, n, dc);
-      dc.commit();
-    } catch (SQLException e1) {
-      GemLogger.logException("transaction update Etablissement", e1);
-      dc.rollback();
-      throw e1;
-    } finally {
-      dc.setAutoCommit(true);
-    }
-  }
-
-  public static void trans_update(Establishment e, Establishment n, DataConnection dc) throws SQLException {
+  private static void trans_update(Establishment e, Establishment n, DataConnection dc) throws SQLException {
     Person p = n.getPerson();
     PersonIO pio = (PersonIO) DataCache.getDao(Model.Person);
     pio.update(p);
@@ -139,10 +199,8 @@ public class EstablishmentIO
       if (a != null && !a.equals(e.getAddress())) {
         AddressIO.update(a, dc);
       }
-    } else {
-      if (a != null && a.getAdr1().length() > 0) {
-        AddressIO.insert(a, dc);
-      }
+    } else if (a != null && a.getAdr1().length() > 0) {
+      AddressIO.insert(a, dc);
     }
 
     Vector<Telephone> newtels = n.getTele();
@@ -186,66 +244,10 @@ public class EstablishmentIO
     WebSiteIO.delete(e.getId(), Person.ESTABLISHMENT, dc);
     i = 0;
     List<WebSite> newsites = n.getSites();
-    for(; newsites != null && i < newsites.size(); i++) {
+    for (; newsites != null && i < newsites.size(); i++) {
       WebSite w = newsites.get(i);
       WebSiteIO.insert(w, i, dc);
     }
 
-  }
-
-  public static void delete(Establishment e, DataConnection dc) throws EstablishmentException {
-
-    String query = "SELECT etablissement FROM " + RoomIO.TABLE + " WHERE etablissement = " + e.getId();
-    try {
-      ResultSet rs = dc.executeQuery(query);
-      if (rs.next()) {
-        throw new EstablishmentException(MessageUtil.getMessage("establishment.delete.exception"));
-      }
-
-      new PersonIO(dc).delete(e.getPerson());
-      AddressIO.delete(e.getId(), dc);
-      TeleIO.delete(e.getId(), dc);
-      EmailIO.delete(e.getId(), dc);
-      WebSiteIO.delete(e.getId(), Person.ESTABLISHMENT, dc);
-      RibIO.delete(e.getId(), dc);
-    } catch (SQLException sqe) {
-      throw new EstablishmentException("SQL : " + sqe.getMessage());
-    }
-  }
-
-  public static Establishment findId(int n, DataConnection dc) throws SQLException {
-
-    String where = " AND p.id = " + n;
-    List<Establishment> v = find(where, dc);
-    if (v.size() > 0) {
-      return v.get(0);
-    }
-    return null;
-  }
-
-  public static List<Establishment> find(String where, DataConnection dc) throws SQLException {
-
-    List<Establishment> estabs = new ArrayList<Establishment>();
-    String query = "SELECT DISTINCT ON (p.nom) " + PersonIO.COLUMNS + ", e.actif FROM " + PersonIO.TABLE + " p  JOIN " + TABLE + " e ON (p.id = e.id)"
-            + " WHERE p.ptype = " + Person.ESTABLISHMENT;
-    query += where;
-
-    ResultSet rs = dc.executeQuery(query);
-    while (rs.next()) {
-      Establishment e = new Establishment(PersonIO.getFromRS(rs));
-      e.setActive(rs.getBoolean(10));
-      e.setAddress(AddressIO.findId(e.getId(), dc));
-      e.setTele(TeleIO.findId(e.getId(), dc));
-      e.setEmail(EmailIO.find(e.getId(), dc));
-      e.setSites(WebSiteIO.find(e.getId(), Person.ESTABLISHMENT, dc));
-      
-      estabs.add(e);
-    }
-    return estabs;
-  }
-  
-  public static void updateStatus(int id, boolean active, int userId, DataConnection dc) throws SQLException {
-    String query = "UPDATE etablissement SET actif = " + active + " WHERE id = " + id + " AND idper = " + userId;
-    dc.executeUpdate(query);
   }
 }

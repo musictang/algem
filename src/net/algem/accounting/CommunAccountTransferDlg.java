@@ -1,5 +1,5 @@
 /*
- * @(#)CommunAccountTransferDlg.java	2.9.6 23/03/16
+ * @(#)CommunAccountTransferDlg.java	2.11.3 16/11/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -44,7 +44,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.6
+ * @version 2.11.3
  * @since 2.8.r 13/12/13
  */
 public class CommunAccountTransferDlg
@@ -86,7 +86,7 @@ public class CommunAccountTransferDlg
 
   @Override
   void transfer() {
-
+    // mode of payment selected in dialog
     String modeOfPayment = transferView.getModeOfPayment();
 
     Vector<OrderLine> orderLines = getOrderLines(modeOfPayment);

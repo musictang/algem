@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileEditor 2.11.3 17/10/16
+ * @(#)PersonFileEditor 2.11.3 16/11/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -459,7 +459,7 @@ public class PersonFileEditor
   }
 
   /**
-   * Opens if exist the list of direct debit mandates of the payer.
+   * Opens the list of SEPA direct debit mandates of the payer.
    * @throws DDMandateException
    */
   private void showMandates() throws DDMandateException {
@@ -468,6 +468,7 @@ public class PersonFileEditor
       return;
     }
     Rib v = personFileView.getRibFile();
+    //checks if RIB has changed
     if (!v.equals(dossier.getRib())) {
       MessagePopup.warning(personFileView, MessageUtil.getMessage("rib.error.printing"));
       return;
@@ -627,7 +628,7 @@ public class PersonFileEditor
     }
     personFileView.setCursor(Cursor.getDefaultCursor());
     dlg.display();
-    
+
     if (!dlg.isValidation()) {
       MessagePopup.information(view, MessageUtil.getMessage("no.update.info"));
       return;

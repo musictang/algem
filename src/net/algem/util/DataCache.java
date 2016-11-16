@@ -1,5 +1,5 @@
 /*
- * @(#)DataCache.java	2.11.0 23/09/16
+ * @(#)DataCache.java	2.11.3 16/11/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -88,7 +88,7 @@ import net.algem.contact.Note;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.0
+ * @version 2.11.3
  * @since 1.0b 03/09/2001
  */
 public class DataCache
@@ -181,7 +181,6 @@ public class DataCache
   private ScriptExportService scriptExportService;
   private PlanningFactDAO planningFactDAO;
   private ScheduleDispatchService scheduleDispatchService;
-//  private String estabActivationType;
 
   private DataCache() {
 
@@ -217,15 +216,15 @@ public class DataCache
     STUDIO_TYPE_IO = new StudioTypeIO(dc);
     MARITAL_STATUS_IO = new MaritalStatusIO(dc);
 
-    String loadMonthQuery = "SELECT " + ScheduleIO.COLUMNS 
+    String loadMonthQuery = "SELECT " + ScheduleIO.COLUMNS
             + " FROM planning p JOIN salle s ON (p.lieux = s.id) JOIN etablissement e ON (s.etablissement = e.id)"
             + " WHERE p.jour >= ? AND p.jour <= ?"
             + " AND e.actif = TRUE AND e.idper = ? ORDER BY p.jour,p.debut";
 //    loadMonthQuery += "0".equals(estabActivationType) ? " AND e.actif = TRUE ORDER BY p.jour,p.debut" : " ORDER BY p.jour,p.debut";
     loadMonthStmt = dc.prepareStatement(loadMonthQuery);
     loadMonthRangeStmt = dc.prepareStatement(ScheduleRangeIO.getMonthRangeStmt());
-    
-    String loadDayQuery = "SELECT " + ScheduleIO.COLUMNS 
+
+    String loadDayQuery = "SELECT " + ScheduleIO.COLUMNS
             + " FROM planning p JOIN salle s ON (p.lieux = s.id) JOIN etablissement e ON (s.etablissement = e.id)"
             + " WHERE p.jour = ?"
             + " AND e.actif = TRUE AND e.idper = ? ORDER BY p.debut";
@@ -822,18 +821,7 @@ public class DataCache
       loadRoomContactCache();
       Vector<Param> schools = ParamTableIO.find(SchoolCtrl.TABLE, SchoolCtrl.COLUMN_KEY, dc);
       SCHOOL_LIST = new GemList<Param>(schools);
-      
-//      if (estabActivationType != null && "0".equals(estabActivationType)) {
-        ESTAB_LIST = new GemList<Establishment>(EstablishmentIO.find(" AND e.actif = TRUE AND e.idper = " + user.getId() + " ORDER BY p.nom", dc));
-//      } else {
-//        ESTAB_LIST = new GemList<Establishment>(EstablishmentIO.find(" ORDER BY p.nom", dc));
-//        EstablishmentPref ePrefs = new EstablishmentPref();
-//        for (Establishment e : ESTAB_LIST.getData()) {
-////          if (ePrefs.isActive(String.valueOf(e.getId()))) {
-//            e.setActive(ePrefs.isActive(String.valueOf(e.getId())));
-////          }
-//        }
-//      }
+      ESTAB_LIST = new GemList<Establishment>(EstablishmentIO.find(" AND e.actif = TRUE AND e.idper = " + user.getId() + " ORDER BY p.nom", dc));
 
       showMessage(frame, BundleUtil.getLabel("Room.label"));
       ROOM_LIST = new GemList<Room>(ROOM_IO.load(user.getId()));

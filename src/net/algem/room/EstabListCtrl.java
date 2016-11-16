@@ -1,6 +1,6 @@
 /*
- * @(#)EstabListCtrl.java	2.11.0 23/09/16
- * 
+ * @(#)EstabListCtrl.java	2.11.3 16/11/16
+ *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,9 +16,8 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
- 
 package net.algem.room;
 
 import javax.swing.JScrollPane;
@@ -34,56 +33,52 @@ import net.algem.util.ui.ListCtrl;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.0
+ * @version 2.11.3
  */
-
 public class EstabListCtrl
-	extends ListCtrl
-    implements GemEventListener
-{
+  extends ListCtrl
+  implements GemEventListener {
 
-	public EstabListCtrl()
-	{
-		tableModel = new EstabTableModel();
+  public EstabListCtrl() {
+    tableModel = new EstabTableModel();
 
-		table = new JTable(tableModel);
-        table.setAutoCreateRowSorter(true);        
+    table = new JTable(tableModel);
+    table.setAutoCreateRowSorter(true);
 
-		TableColumnModel cm = table.getColumnModel();
-		cm.getColumn(0).setPreferredWidth(40);
-		cm.getColumn(1).setPreferredWidth(300);
-        cm.getColumn(2).setPreferredWidth(40);
+    TableColumnModel cm = table.getColumnModel();
+    cm.getColumn(0).setPreferredWidth(40);
+    cm.getColumn(1).setPreferredWidth(300);
+    cm.getColumn(2).setPreferredWidth(40);
 
-		JScrollPane p = new JScrollPane(table);
-		p.setBorder(new BevelBorder(BevelBorder.LOWERED));
+    JScrollPane p = new JScrollPane(table);
+    p.setBorder(new BevelBorder(BevelBorder.LOWERED));
 
-		add("Center",p);
-	}
+    add("Center", p);
+  }
 
   @Override
   public void postEvent(GemEvent _evt) {
     if (_evt.getType() == GemEvent.ESTABLISHMENT) {
       Establishment e = (Establishment) _evt.getObject();
       if (e != null && e.getPerson() != null) {
-        if (_evt.getOperation() == GemEvent.MODIFICATION) {   
-          updateRow(e.getPerson());
+        if (_evt.getOperation() == GemEvent.MODIFICATION) {
+          updateRow(e);
         } else if (_evt.getOperation() == GemEvent.SUPPRESSION) {
-          deleteRow(e.getPerson());
+          deleteRow(e);
         }
       }
     }
   }
-  
+
   int getSelectedColumn() {
     return table.getSelectedColumn();
   }
-  
+
   Establishment getActive() {
     if (2 == table.getSelectedColumn()) {
-      return ((EstabTableModel)table.getModel()).getItem(table.convertRowIndexToModel(table.getSelectedRow()));
+      return ((EstabTableModel) table.getModel()).getItem(table.convertRowIndexToModel(table.getSelectedRow()));
     }
     return null;
   }
-
 
 }
