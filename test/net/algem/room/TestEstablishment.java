@@ -1,5 +1,5 @@
 /*
- * @(#) TestEstablishment.java Algem 2.11.0 17/11/2016
+ * @(#) TestEstablishment.java Algem 2.11.3 17/11/2016
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -35,6 +35,8 @@ import static org.junit.Assert.*;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
+ * @version 2.11.3
+ * @since 2.11.3 17/11/16
  */
 public class TestEstablishment {
 
@@ -86,16 +88,14 @@ public class TestEstablishment {
      p2.setType(Person.ESTABLISHMENT);
 
      Establishment e1 = new Establishment();
-
      e1.setPerson(p1);
      e1.setId(1);
 
      Establishment e2 = new Establishment();
-
      e2.setPerson(p2);
-     e2.setId(1);
+     e2.setId(2);
 
-     assertEquals(e1, e2);
+     assertNotEquals(e1, e2);
      e2.setPerson(null);
      assertNotEquals(e1, e2);
      e1.setPerson(null);
