@@ -1,6 +1,6 @@
 /*
  * @(#)Establishment.java	2.11.0 23/09/16
- * 
+ *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.room;
 
@@ -42,7 +42,7 @@ public class Establishment
         implements GemModel {
 
   private static final long serialVersionUID = -7929093636684679404L;
-  
+
   private Person p;
   private Vector<Address> a;
   private Vector<Telephone> t;
@@ -63,6 +63,9 @@ public class Establishment
 
   @Override
   public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
     if (obj == null) {
       return false;
     }
@@ -70,17 +73,18 @@ public class Establishment
       return false;
     }
     final Establishment other = (Establishment) obj;
-    if (this.p != other.p && (this.p == null || !this.p.equals(other.p))) {
-      return false;
+    if (this.getPerson() == null) {
+      return other.getPerson() == null;
     }
-    return true;
+    return (other.getPerson() == null ? false : this.getPerson().getId() == other.getPerson().getId());
+
   }
 
   @Override
   public int hashCode() {
     int hash = 5;
     hash = 73 * hash + Objects.hashCode(this.p);
-    hash = 73 * hash + (this.active ? 1 : 0);
+    //hash = 73 * hash + (this.active ? 1 : 0);
     return hash;
   }
 
@@ -161,5 +165,5 @@ public class Establishment
   public void setActive(boolean active) {
     this.active = active;
   }
-  
+
 }

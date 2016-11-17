@@ -1,6 +1,6 @@
 /*
  * @(#)ConfigUtil.java 2.8.w 17/07/14
- * 
+ *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 
 package net.algem.config;
@@ -34,7 +34,7 @@ import net.algem.util.MessageUtil;
  * @version 2.8.w
  */
 public class ConfigUtil {
-  
+
   private static final DataConnection dc = DataCache.getDataConnection();
 
   public static String getConf(String key) {
@@ -52,23 +52,23 @@ public class ConfigUtil {
   public static String getPath(ConfigKey key) {
     return getConf(key.getKey());
   }
-  
+
   public static String getExportPath() {
     return getConf(ConfigKey.EXPORT_PATH.getKey());
   }
-	
+
 	public static String getStartOfPeriod() {
     return getConf(ConfigKey.BEGINNING_PERIOD.getKey());
   }
-	
+
 	public static String getEndOfPeriod() {
     return getConf(ConfigKey.END_PERIOD.getKey());
   }
-	
+
 	public static String getStartOfYear() {
     return getConf(ConfigKey.BEGINNING_YEAR.getKey());
   }
-	
+
 	public static String getEndOfYear() {
     return getConf(ConfigKey.END_YEAR.getKey());
   }

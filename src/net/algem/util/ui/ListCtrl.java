@@ -81,10 +81,7 @@ public abstract class ListCtrl
 
   public int getSelectedIndex() {
     int idx = table.getSelectedRow();
-    if (idx == -1) {
-      return -1;
-    }
-    return table.convertRowIndexToModel(idx);
+    return  (idx == -1) ? idx : table.convertRowIndexToModel(idx);
   }
 
   public int getIdFromIndex(int i) {
@@ -92,7 +89,7 @@ public abstract class ListCtrl
   }
 
   public int getSelectedID() {
-    return tableModel.getIdFromIndex(table.convertRowIndexToModel(table.getSelectedRow()));
+    return tableModel.getIdFromIndex(getSelectedIndex());
   }
 
   public <E> void loadResult(List<E> list) {

@@ -1,6 +1,6 @@
 /*
  * @(#)TestProperties.java 2.9.4.14 15/12/15
- * 
+ *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 
 package net.algem;
@@ -28,15 +28,15 @@ import net.algem.util.GemLogger;
 
 /**
  * Default values for database connection.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.9.4.14
  * @since 2.5.a 28/06/12
  */
-public class TestProperties 
+public class TestProperties
 {
    /** Test database. */
-  public final static String BASE = "test";
+  public final static String BASE = "mustang";
   /** SGBD server. */
   public final static String HOST = "localhost";
 	/** Test database port. */
@@ -49,11 +49,11 @@ public class TestProperties
   public final static String PASS = "Pigfy!"; // a modifier suivant le contexte
   /** JDBC driver. */
   public final static String DRIVER = "org.postgresql.Driver";
-  
+
   public static DataCache getDataCache(DataConnection dc) throws Exception {
     return DataCache.getInstance(dc, USER);
   }
- 
+
   public static DataConnection getDataConnection() {
     DataConnection dc = new DataConnection(HOST, PORT, BASE, PASS);
     try {
@@ -63,7 +63,7 @@ public class TestProperties
     }
     return dc;
   }
-  
+
   /**
    * List system properties. For info only.
    */
@@ -72,5 +72,5 @@ public class TestProperties
     java.util.Properties props = System.getProperties();
     props.list(System.out);
   }
-  
+
 }

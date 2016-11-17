@@ -135,22 +135,21 @@ public class EstablishmentIO
 
   private static void trans_insert(Establishment e, short type, DataConnection dc) throws SQLException {
     int number = nextId(PersonIO.SEQUENCE, dc);
-
     Person p = e.getPerson();
     String query = "INSERT INTO " + PersonIO.TABLE + "  VALUES("
       + number
       + "," + type
-      + ",'" + escape(e.getName().toUpperCase())
-      + "','" + escape(p.getFirstName())
-      + "','" + p.getGender()
-      + "', FALSE"
-      + ", '" + escape(p.getOrganization())
-      + "')";
+      + ",'" + escape(e.getName())
+      + "',''" // firstname
+      + ",''" // gender
+      + ",FALSE" // img rights
+      + (p.getOrganization() == null || p.getOrganization().isEmpty() ? ",NULL" : ",'" + escape(p.getOrganization()) + "'")
+      + ")";
 
     dc.executeUpdate(query);
     e.setId(number);
 
-    query = "INSERT INTO etablissement SELECT " + e.getId() + ", idper, true FROM login WHERE profil in (1,2,4)";
+    query = "INSERT INTO etablissement SELECT " + e.getId() + ", idper, " + e.isActive() + " FROM login WHERE profil in (1,2,4)";
     dc.executeUpdate(query);
 
     Address a = e.getAddress();

@@ -1,6 +1,6 @@
 /*
  * @(#)EstabCreateCtrl.java 2.9.4.6 03/06/15
- * 
+ *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.room;
 
@@ -101,8 +101,8 @@ public class EstabCreateCtrl
     } catch (SQLException ex) {
       GemLogger.logException("Insertion etablissement", ex, this);
       return false;
-    } 
-    
+    }
+
     return true;
   }
 
@@ -122,9 +122,9 @@ public class EstabCreateCtrl
   }
 
   Establishment save() throws SQLException {
-    
+
     Establishment e = new Establishment();
-    
+    e.setActive(true);
     e.setPerson(contact.getPerson());
     e.setAddress(contact.getAddressAll());
     e.setTele(contact.getTele());
@@ -137,7 +137,7 @@ public class EstabCreateCtrl
     }
 
     EstablishmentIO.insert(e, Person.ESTABLISHMENT, dc);
-    
+
     return e;
   }
 }
