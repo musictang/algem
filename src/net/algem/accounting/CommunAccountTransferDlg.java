@@ -141,6 +141,10 @@ public class CommunAccountTransferDlg
       // TODO vérification iban/bic ??
       query += " AND payeur IN (SELECT idper FROM rib) AND payeur IN (SELECT id FROM personne)";
     }
+    // DO NOT export if no facture is present
+    if (ModeOfPayment.FAC.name().equals(modeOfPayment)) {
+      query += " AND (facture IS NOT NULL OR facture != '')";
+    }
 
     return OrderLineIO.find(query, dc);
   }

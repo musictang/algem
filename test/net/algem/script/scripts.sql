@@ -44,3 +44,15 @@ JOIN personne p ON (e.idper = p.id)
 JOIN echeancier2 c ON (e.idper = c.adherent)
 WHERE c.echeance BETWEEN '2016-09-19' AND '2017-07-01'
 ORDER BY "NOM";
+
+-- export prelevements jav
+SELECT e.* FROM echeancier2 e
+join personne p1 on (e.payeur = p1.id)
+join personne p2 on (e.adherent = p2.id)
+join compte c on (e.compte = c.id)
+join analytique a on (e.analytique = a.id)
+
+WHERE echeance >= '15-11-2016' AND echeance <= ''15-11-2016'
+-- AND ecole = ' + school
+-- AND paye = 't' AND transfert = 'f' AND reglement = 'PRL'
+

@@ -218,6 +218,7 @@ public class PlanModifCtrl
     v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.time.modification.label"), this, "ChangeScheduleLength"));
     v.add(new GemMenuButton(BundleUtil.getLabel("Copy.label"), this, "CopyCourse"));
     v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.add.event.label"), this, "AddEvent"));
+    v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.add.attendee.label"), this, "AddAttendee"));
     //if (dataCache.authorize("Schedule.suppression.auth")) { //TODO authorise default profil 1 ?
       v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.suppression.label"), this, "DeletePlanning"));
     //}
@@ -291,7 +292,11 @@ public class PlanModifCtrl
         dialogAtelierInstruments();
       } else if(arg.equals("AddEvent")) {
         dialogAddEvent();
-      } else if(arg.equals("AbsenceToCatchUp")) {
+      } else if (arg.equals("AddAttendee")) {
+        dialogAddAttendee();
+        //TODO
+      }
+      else if(arg.equals("AbsenceToCatchUp")) {
         new AbsenceToCatchUpCtrl(desktop, plan).run();
       } else if(arg.equals("DeleteLowActivity")) {
         new DeleteLowActivityCtrl(desktop, plan).run();
@@ -335,6 +340,21 @@ public class PlanModifCtrl
     range.setEnd(dlg.getRange().getEnd());
     range.setMemberId(plan.getIdPerson());
     service.createAdministrativeEvent(range, dlg.getNote());
+    desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));
+  }
+  
+  private void dialogAddAttendee() throws PlanningException {
+    AddAttendeeDlg dlg = new AddAttendeeDlg(desktop,service);
+    dlg.show();
+    if (!dlg.isValidate()) {
+      return;
+    }
+    ScheduleRange range = new ScheduleRange();
+    range.setScheduleId(plan.getId());
+    range.setStart(plan.getStart());
+    range.setEnd(plan.getEnd());
+    range.setMemberId(dlg.getEmployee());
+    service.addScheduleRange(range);
     desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));
   }
 

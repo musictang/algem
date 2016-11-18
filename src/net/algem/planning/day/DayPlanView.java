@@ -510,6 +510,7 @@ public class DayPlanView
   }
 
   private void drawSubLabel(String subLabel, int x, int y, int step_x) {
+    if (subLabel == null) {return;}
     int w = fm.stringWidth(subLabel) + 4;
     while (w > step_x) {
       subLabel = subLabel.substring(0, subLabel.length() - 1);

@@ -4,3 +4,7 @@ CORRECTIFS
 * La mise à jour ou la suppression d'un établissement restait bloquée sur le bouton "Validation".
 * Lorsqu'on fermait une fiche sans avoir rien modifié, le message "Voulez-vous enregistrer les modifications ?" se déclenchait malgré tout si le champ Civilité n'était pas renseigné.
 * On pouvait dans certains cas imprimer une feuille de prélèvement sans avoir enregistré le RIB du payeur.
+
+EXPORT ECHEANCIER
+Une échéance de facturation n'est plus exportable si aucune facture n'y est associée.
+Rappel : une échéance de facturation est une ligne d'échéance dont le règlement est "FAC". 
