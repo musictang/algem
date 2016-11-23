@@ -1,5 +1,5 @@
 /*
- * @(#)OrderLineEditor.java	2.11.2 13/10/16
+ * @(#)OrderLineEditor.java	2.11.3 23/11/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -55,7 +55,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.2
+ * @version 2.11.3
  * @since 1.0a 07/07/1999
  */
 public class OrderLineEditor
@@ -308,6 +308,10 @@ public class OrderLineEditor
     }
     OrderLine e = tableView.getElementAt(n);
     if (e.isTransfered()) {
+      if (!dataCache.authorize("OrderLine.transferred.modification.auth")) {
+        MessagePopup.warning(dlg, MessageUtil.getMessage("rights.exception"));
+        return;
+      }
       if (!MessagePopup.confirm(this,
         MessageUtil.getMessage("payment.update.confirmation"),
         BundleUtil.getLabel("Warning.label"))) {

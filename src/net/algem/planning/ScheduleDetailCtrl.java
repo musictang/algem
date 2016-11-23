@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleDetailCtrl.java 2.11.0 20/09/16
+ * @(#)ScheduleDetailCtrl.java 2.11.3 23/11/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -66,7 +66,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.0
+ * @version 2.11.3
  * @since 1.0a 07/07/1999
  */
 public class ScheduleDetailCtrl
@@ -462,21 +462,24 @@ public class ScheduleDetailCtrl
         try {
           sr.setFollowUp(scheduleService.getFollowUp(sr.getNote()));
           sb.append(sr.getStart()).append("-").append(sr.getEnd());
-          sb.append(sr.getFollowUp() != null ? " " + sr.getFollowUp().getContent() : "");
+          sb.append(" : ").append(sr.getFollowUp() != null ? sr.getFollowUp().getContent() : "");
+          sb.append(" (").append(p.getPerson().getFirstnameName()).append(')');
           listPanel.add(new GemMenuButton(sb.toString(), this, "AdminEvent", sr));
           sb.delete(0, sb.length());
         } catch (SQLException ex) {
           GemLogger.log(ex.getMessage());
         }
       }
-      
+
     }
     for (ScheduleRangeObject sr : event.getRanges()) {
-    if (sr.getMember().getId() != p.getPerson().getId()) {
+      if (sr.getMember().getId() != p.getPerson().getId()) {
+        sb.append(sr.getStart()).append("-").append(sr.getEnd()).append(" : ");
         Person per = sr.getMember();
-        n = (nameFirst ? per.getNameFirstname() : per.getFirstnameName());
-        listPanel.add(new GemMenuButton(n, this, "MemberLink", sr));
+        sb.append(nameFirst ? per.getNameFirstname() : per.getFirstnameName());
+        listPanel.add(new GemMenuButton(sb.toString(), this, "MemberLink", sr));
       }
+      sb.delete(0, sb.length());
     }
     Vector<GemMenuButton> vb = modifCtrl.getMenuAdministrative(); // ajout des boutons de PlanModifCtrl
     for (int j = 0; j < vb.size(); j++) {
@@ -541,12 +544,15 @@ public class ScheduleDetailCtrl
       } else if ("MemberLink".equals(arg)) {
         setWaitCursor();
         ScheduleRangeObject range = (ScheduleRangeObject) ((GemMenuButton) evt.getSource()).getObject();
-        c = ((CourseSchedule) schedule).getCourse();
-        //if (!(evt.getModifiers() == InputEvent.BUTTON1_MASK)) {
-        if ((evt.getModifiers() & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK) {//ouverture du suivi élève touche MAJ
-          setFollowUp(range, c);
-          return;
-        } else if ((evt.getModifiers() & InputEvent.CTRL_MASK) == InputEvent.CTRL_MASK) {
+        if (Schedule.COURSE == schedule.getType()) {
+          c = ((CourseSchedule) schedule).getCourse();
+          //if (!(evt.getModifiers() == InputEvent.BUTTON1_MASK)) {
+          if ((evt.getModifiers() & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK) {//ouverture du suivi élève touche MAJ
+            setFollowUp(range, c);
+            return;
+          }
+        }
+        if ((evt.getModifiers() & InputEvent.CTRL_MASK) == InputEvent.CTRL_MASK) {
           deleteRange(range);
           return;
         }

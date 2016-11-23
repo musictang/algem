@@ -1,5 +1,5 @@
 /*
- * @(#)PlanningService.java	2.11.0 20/09/16
+ * @(#)PlanningService.java	2.11.3 23/11/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -43,7 +43,7 @@ import net.algem.util.ui.MessagePopup;
  * Service class for planning.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.0
+ * @version 2.11.3
  * @since 2.4.a 07/05/12
  */
 public class PlanningService
@@ -947,7 +947,7 @@ public class PlanningService
     }
   }
 
-  public void createAdministrativeEvent(final ScheduleRange range, final FollowUp info) throws PlanningException {
+  public void createAdministrativeEvent(final ScheduleRange range,  final FollowUp info, final List<ScheduleRange> attendees) throws PlanningException {
     try {
       dc.withTransaction(new DataConnection.SQLRunnable<Void>()
       {
@@ -957,6 +957,9 @@ public class PlanningService
           updateFollowUp(rv, info);
           range.setNote(rv.getNote());
           addScheduleRange(range);
+          for (ScheduleRange r : attendees) {
+            addScheduleRange(r);
+          }
           return null;
         }
       });
@@ -964,6 +967,27 @@ public class PlanningService
       throw new PlanningException(e.getMessage());
     }
 
+  }
+
+  /**
+   * Gets the list of attendees present in this {@code timeRange}.
+   * @param scheduleId
+   * @param idper organizer id
+   * @param timeRange time range of the event
+   * @return a list of persons or an empty list if no person was found
+   * @throws SQLException
+   */
+  public List<Person> getAttendees(int scheduleId, int idper, HourRange timeRange) throws SQLException {
+    List<Person> attendees = new ArrayList<>();
+    String where = "pg WHERE pg.idplanning = " + scheduleId
+      + " AND pg.adherent != " + idper
+      + " AND pg.debut = '" + timeRange.getStart()
+      + "' AND pg.fin = '" + timeRange.getEnd() + "'";
+    List<ScheduleRange> ranges = ScheduleRangeIO.find(where, dc);
+    for (ScheduleRange r : ranges) {
+      attendees.add((Person) DataCache.findId(r.getMemberId(), Model.Person));
+    }
+    return attendees;
   }
 
   /**
@@ -1097,14 +1121,42 @@ public class PlanningService
 
   }
 
-  public void updateAdministrativeEvent(final ScheduleRangeObject range, final FollowUp note) throws PlanningException {
+  /**
+   *
+   * @param range selected time range
+   * @param oldTimeRange old time range
+   * @param note follow-up content
+   * @param attendees list of attendees
+   * @throws PlanningException
+   */
+  public void updateAdministrativeEvent(final ScheduleRangeObject range, final HourRange oldTimeRange, final FollowUp note, final List<Person> attendees) throws PlanningException {
     try {
-      dc.withTransaction(new DataConnection.SQLRunnable<Void>()
-      {
+      dc.withTransaction(new DataConnection.SQLRunnable<Void>() {
         @Override
         public Void run(DataConnection conn) throws Exception {
           ScheduleRangeIO.update(range, dc);
           updateFollowUp(range, note);
+          String where = "idplanning = " + range.getScheduleId()
+            + " AND adherent != " + range.getMemberId()
+            + " AND debut = '" + oldTimeRange.getStart()
+            + "' AND fin = '" + oldTimeRange.getEnd() + "'";
+
+          ScheduleRangeIO.delete(where, dc);
+          List<ScheduleRange> ranges = new ArrayList<ScheduleRange>();
+          if (attendees != null && !attendees.isEmpty()) {
+            for (Person p : attendees) {
+              ScheduleRange r = new ScheduleRange();
+              r.setScheduleId(range.getScheduleId());
+              r.setStart(range.getStart());
+              r.setEnd(range.getEnd());
+              r.setMemberId(p.getId());
+              ranges.add(r);
+            }
+          }
+
+          for (ScheduleRange r : ranges) {
+            addScheduleRange(r);
+          }
           return null;
         }
       });
@@ -1113,6 +1165,11 @@ public class PlanningService
     }
   }
 
+  /**
+   *
+   * @param range schedule range to delete
+   * @throws PlanningException
+   */
   public void deleteAdministrativeEvent(final ScheduleRangeObject range) throws PlanningException {
     try {
       dc.withTransaction(new DataConnection.SQLRunnable<Void>()
@@ -1120,7 +1177,10 @@ public class PlanningService
         @Override
         public Void run(DataConnection conn) throws Exception {
           deleteFollowUp(range);
-          deleteScheduleRange(range);
+          String where = "idplanning = " + range.getScheduleId()
+            + " AND debut = '" + range.getStart()
+            + "' AND fin = '" + range.getEnd() + "'";
+          ScheduleRangeIO.delete(where, dc);
           return null;
         }
       });
@@ -1184,15 +1244,15 @@ public class PlanningService
     String query = "UPDATE planning SET note = -1 WHERE id = " + schedule.getId();
     dc.executeUpdate(query);
   }
-  
+
   public void cancelBooking(int actionId) throws BookingException {
     ScheduleIO.cancelBooking(actionId, dc);
   }
-  
+
   public void confirmBooking(Schedule schedule) throws BookingException {
     ScheduleIO.confirmBooking(schedule, dc);
   }
-  
+
   public Booking getBookingFromAction(int action) throws BookingException {
     return ScheduleIO.findBooking(action, dc);
   }

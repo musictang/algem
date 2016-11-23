@@ -1,5 +1,5 @@
 /*
- * @(#)EditEventDlg.java 2.11.0 20/09/16
+ * @(#)EditEventDlg.java 2.11.3 23/11/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -21,14 +21,30 @@
 package net.algem.planning.editing;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.List;
+import javax.swing.DefaultListModel;
 import javax.swing.JDialog;
+import javax.swing.JList;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+import net.algem.contact.EmployeeSelector;
+import net.algem.contact.EmployeeType;
+import net.algem.contact.Person;
 import net.algem.enrolment.FollowUp;
+import net.algem.planning.HourRange;
 import net.algem.planning.HourRangePanel;
 import net.algem.planning.PlanningException;
 import net.algem.planning.PlanningService;
@@ -41,6 +57,7 @@ import net.algem.util.MessageUtil;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.module.GemModule;
 import net.algem.util.ui.GemButton;
+import net.algem.util.ui.GemChoice;
 import net.algem.util.ui.GemLabel;
 import net.algem.util.ui.GemPanel;
 import net.algem.util.ui.GridBagHelper;
@@ -49,7 +66,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.0
+ * @version 2.11.3
  * @since 2.9.4.0 31/03/2015
  */
 public class EditEventDlg
@@ -63,6 +80,10 @@ public class EditEventDlg
   private HourRangePanel timePanel;
   private JTextArea note;
   private Schedule schedule;
+  private GemChoice employee;
+  private JList<Person> eList;
+  private GemButton btAdd;
+  private DefaultListModel model;
 
   public EditEventDlg(GemDesktop desktop, ScheduleRangeObject range, Schedule schedule, PlanningService service) {
     super(desktop.getFrame());
@@ -79,15 +100,67 @@ public class EditEventDlg
     note.setBorder(new JTextField().getBorder());
     note.setLineWrap(true);
     note.setWrapStyleWord(true);
+    note.setPreferredSize(new Dimension(250, 50));
     note.setText(range.getFollowUp() == null ? null : range.getFollowUp().getContent());
-    gb.add(new GemLabel(BundleUtil.getLabel("Hour.label")), 0, 0, 1, 1, GridBagHelper.WEST);
-    gb.add(timePanel, 1, 0, 1, 1, GridBagHelper.WEST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Heading.label")), 0, 1, 1, 1, GridBagHelper.NORTHWEST);
-    gb.add(note, 1, 1, 1, 1, GridBagHelper.WEST);
+
+    gb.add(new GemLabel(BundleUtil.getLabel("Time.label")), 0, 0, 1, 1, GridBagHelper.WEST);
+    gb.add(timePanel, 0, 1, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Heading.label")), 0, 2, 1, 1, GridBagHelper.NORTHWEST);
+    gb.add(note, 0, 3, 2, 1, GridBagHelper.WEST);
+
+    employee = new EmployeeSelector(service.getEmployees(EmployeeType.ADMINISTRATOR));
+    btAdd = new GemButton("+");
+    btAdd.setToolTipText(GemCommand.ADD_CMD);
+    btAdd.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        addAttendee();
+      }
+    });
+    GemPanel selectorPanel = new GemPanel();
+    selectorPanel.add(employee);
+    selectorPanel.add(btAdd);
+
+    model = new DefaultListModel();
+    try {
+      for (Person att : service.getAttendees(schedule.getId(), schedule.getIdPerson(), new HourRange(range.getStart(),range.getEnd()))) {
+        model.addElement(att);
+      }
+    } catch (SQLException ex) {
+      GemLogger.logException(ex);
+    }
+    eList = new JList<>(model);
+    eList.setToolTipText(MessageUtil.getMessage("attendee.list.tip"));
+
+    eList.addMouseListener(new MouseAdapter() {
+      public void mouseClicked(MouseEvent e) {
+        if (SwingUtilities.isRightMouseButton(e)) {
+          eList.setSelectedIndex(eList.locationToIndex(e.getPoint()));
+
+          JPopupMenu menu = new JPopupMenu();
+          JMenuItem itemRemove = new JMenuItem(GemCommand.DELETE_CMD);
+          itemRemove.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+              removeAttendee();
+            }
+          });
+          menu.add(itemRemove);
+          menu.show(eList, e.getPoint().x, e.getPoint().y);
+        }
+      }
+    });
+
+    JScrollPane scrollList = new JScrollPane(eList);
+    scrollList.setPreferredSize(new Dimension(250, 100));
+
+    gb.add(new GemLabel(BundleUtil.getLabel("Attendees.label")), 0, 4, 1, 1, GridBagHelper.WEST);
+    gb.add(selectorPanel, 0, 5, 2, 1, GridBagHelper.WEST);
+    gb.add(scrollList, 0, 6, 2, 1, GridBagHelper.WEST);
 
     add(p, BorderLayout.CENTER);
     GemPanel buttons = new GemPanel();
     buttons.setLayout(new GridLayout(1, 3));
+
 
     GemButton btValid = new GemButton(GemCommand.OK_CMD);
     btValid.addActionListener(this);
@@ -101,7 +174,7 @@ public class EditEventDlg
     buttons.add(btValid);
     buttons.add(btCancel);
     add(buttons, BorderLayout.SOUTH);
-    setSize(GemModule.XS_SIZE);
+    setSize(GemModule.S_SIZE);
     setLocationRelativeTo(desktop.getFrame());
     setVisible(true);
   }
@@ -122,6 +195,7 @@ public class EditEventDlg
   public void actionPerformed(ActionEvent e) {
     String cmd = e.getActionCommand();
     int minTime = 15;
+    HourRange oldTimeRange = new HourRange(range.getStart(), range.getEnd());
     try {
       if (GemCommand.OK_CMD.equals(cmd)) {
         if (logErrors() == null || logErrors().isEmpty()) {
@@ -129,9 +203,10 @@ public class EditEventDlg
             || MessagePopup.confirm(this, MessageUtil.getMessage("invalid.range.length.confirmation"))) {
             range.setStart(timePanel.getStart());
             range.setEnd(timePanel.getEnd());
+            range.setMemberId(schedule.getIdPerson());
             FollowUp up = new FollowUp();
             up.setContent(note.getText().trim());
-            service.updateAdministrativeEvent(range, up);
+            service.updateAdministrativeEvent(range, oldTimeRange, up, getAttendees());
             desktop.postEvent(new ModifPlanEvent(this, range.getDate(), range.getDate()));
           }
         } else {
@@ -145,6 +220,26 @@ public class EditEventDlg
       GemLogger.log(ex.getMessage());
     }
     dispose();
+  }
+
+  private void addAttendee() {
+    Person a = (Person) employee.getSelectedItem();
+
+    if (a == null || a.getId() <= 0) {return;}
+    if (!model.contains(a) && a.getId() != schedule.getIdPerson()) {
+      model.addElement(a);
+    } else {
+      MessagePopup.warning(this, MessageUtil.getMessage("attendee.already.present.warning"));
+    }
+  }
+
+  private void removeAttendee() {
+    int index = eList.getSelectedIndex();
+    model.remove(index);
+  }
+
+  private List<Person> getAttendees() {
+    return Collections.list(model.elements());
   }
 
 }

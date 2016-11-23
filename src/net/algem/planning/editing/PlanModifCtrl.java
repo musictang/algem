@@ -1,5 +1,5 @@
 /*
- * @(#)PlanModifCtrl.java	2.10.0 12/06/16
+ * @(#)PlanModifCtrl.java	2.11.3 23/11/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -23,6 +23,7 @@ package net.algem.planning.editing;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -58,13 +59,14 @@ import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.GemMenuButton;
 import net.algem.util.ui.MessagePopup;
+import net.algem.util.ui.Toast;
 
 /**
  * Controller for planning modification.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.11.3
  * @since 1.0b 05/07/2002 lien salle et groupe
  */
 public class PlanModifCtrl
@@ -218,7 +220,6 @@ public class PlanModifCtrl
     v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.time.modification.label"), this, "ChangeScheduleLength"));
     v.add(new GemMenuButton(BundleUtil.getLabel("Copy.label"), this, "CopyCourse"));
     v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.add.event.label"), this, "AddEvent"));
-    v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.add.attendee.label"), this, "AddAttendee"));
     //if (dataCache.authorize("Schedule.suppression.auth")) { //TODO authorise default profil 1 ?
       v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.suppression.label"), this, "DeletePlanning"));
     //}
@@ -292,9 +293,6 @@ public class PlanModifCtrl
         dialogAtelierInstruments();
       } else if(arg.equals("AddEvent")) {
         dialogAddEvent();
-      } else if (arg.equals("AddAttendee")) {
-        dialogAddAttendee();
-        //TODO
       }
       else if(arg.equals("AbsenceToCatchUp")) {
         new AbsenceToCatchUpCtrl(desktop, plan).run();
@@ -328,33 +326,36 @@ public class PlanModifCtrl
     new AtelierInstrumentsController(desktop, action).run();
   }
 
+  /**
+   * Calls the add event dialog.
+   * @throws PlanningException
+   */
   private void dialogAddEvent() throws PlanningException {
-    AddEventDlg dlg = new AddEventDlg(desktop, plan);
+    AddEventDlg dlg = new AddEventDlg(desktop, plan, service);
     dlg.show();
     if (!dlg.isValidate()) {
       return;
     }
-    ScheduleRange range = new ScheduleRange();
-    range.setScheduleId(plan.getId());
-    range.setStart(dlg.getRange().getStart());
-    range.setEnd(dlg.getRange().getEnd());
-    range.setMemberId(plan.getIdPerson());
-    service.createAdministrativeEvent(range, dlg.getNote());
-    desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));
-  }
-  
-  private void dialogAddAttendee() throws PlanningException {
-    AddAttendeeDlg dlg = new AddAttendeeDlg(desktop,service);
-    dlg.show();
-    if (!dlg.isValidate()) {
-      return;
+    ScheduleRange initialRange = new ScheduleRange();
+    initialRange.setScheduleId(plan.getId());
+    initialRange.setStart(dlg.getRange().getStart());
+    initialRange.setEnd(dlg.getRange().getEnd());
+    initialRange.setMemberId(plan.getIdPerson());
+
+    List<Person> attendees = dlg.getAttendees();
+    List<ScheduleRange> ranges = new ArrayList<ScheduleRange>();
+    if (attendees != null && !attendees.isEmpty()) {
+      for (Person p : attendees) {
+        ScheduleRange r = new ScheduleRange();
+        r.setScheduleId(plan.getId());
+        r.setStart(dlg.getRange().getStart());
+        r.setEnd(dlg.getRange().getEnd());
+        r.setMemberId(p.getId());
+        ranges.add(r);
+      }
     }
-    ScheduleRange range = new ScheduleRange();
-    range.setScheduleId(plan.getId());
-    range.setStart(plan.getStart());
-    range.setEnd(plan.getEnd());
-    range.setMemberId(dlg.getEmployee());
-    service.addScheduleRange(range);
+
+    service.createAdministrativeEvent(initialRange, dlg.getNote(), ranges);
     desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));
   }
 
@@ -889,7 +890,11 @@ public class PlanModifCtrl
             }
             boolean ok = true;
             if (!RehearsalUtil.isCancelledBefore(plan.getDate(), delay)) {
-              if (!MessagePopup.confirm(null, MessageUtil.getMessage("rehearsal.payment.cancel.confirmation"), "Confirmation")) {
+              if (!dataCache.authorize("OrderLine.rehearsal.cancelling.auth")) {
+                ok = false;
+                Toast.showToast(desktop, MessageUtil.getMessage("rehearsal.payment.cancel.warning"), 4000);
+              }
+              if (ok && !MessagePopup.confirm(null, MessageUtil.getMessage("rehearsal.payment.cancel.confirmation"), "Confirmation")) {
                 ok = false;
               }
             }

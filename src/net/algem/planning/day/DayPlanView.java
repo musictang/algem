@@ -1,5 +1,5 @@
 /*
- * @(#)DayPlanView.java 2.11.0 20/09/16
+ * @(#)DayPlanView.java 2.11.3 23/11/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -43,7 +43,7 @@ import net.algem.util.model.Model;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.0
+ * @version 2.11.3
  * @since 1.0a 07/07/1999
  */
 public class DayPlanView
@@ -321,11 +321,19 @@ public class DayPlanView
     }
     Color c = null;
     // individual schedule ranges
+    Hour start = new Hour();
     for (ScheduleRangeObject p : vp) {
-      Course cc = p.getCourse();
       c = getScheduleColor(p);
-      if (cc != null && !cc.isCollective() || Schedule.ADMINISTRATIVE == p.getType()) {
-        drawRange(i, p, c, step_x);
+      if (Schedule.ADMINISTRATIVE == p.getType()) {
+        if (p.getFollowUp() != null && !p.getStart().equals(start)) {
+          drawRange(i, p, c, step_x);
+          start = p.getStart();
+        }
+      } else {
+        Course cc = p.getCourse();
+        if (cc != null && !cc.isCollective()) {
+          drawRange(i, p, c, step_x);
+        }
       }
     }
     if (vpci == null || vpci.isEmpty()) {
@@ -356,11 +364,11 @@ public class DayPlanView
     drawRange(i, vpci.get(idx), c, w);
   }
 
-  protected void drawAgenda(int i, Vector<ScheduleRangeObject> vpl) {
+  /*protected void drawAgenda(int i, Vector<ScheduleRangeObject> vpl) {
     for (ScheduleRangeObject p : vpl) {
         drawRange(i, p, colorPrefs.getColor(ColorPlan.ADMINISTRATIVE).darker(), step_x);
     }
-  }
+  }*/
 
   protected void drawRange(int col, ScheduleObject p, Color c, int w) {
     int pStart = p.getStart().toMinutes();
@@ -501,7 +509,7 @@ public class DayPlanView
       int y = setY(p.getEnd().toMinutes()) - (fm.getHeight() /2);
       String subSubLabel = null;
       if (Schedule.ADMINISTRATIVE == p.getType()) {
-        subSubLabel = p.getFollowUp() == null ? null : p.getFollowUp().getContent();
+          subSubLabel = p.getFollowUp().getContent() == null ? "" : p.getFollowUp().getContent();
       } else {
         subSubLabel = p.getMember() != null ? p.getMember().getCommunName() : "";
       }
