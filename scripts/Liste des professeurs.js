@@ -3,7 +3,7 @@ var dateFin = args.dateFin != null ? utils.sqlDate(args.dateFin) : utils.sqlDate
 var onPlan = args.onPlan;
 
 if (args.onPlan) {
-    var query = "SELECT DISTINCT p.id AS \"ID\",p.nom || ' ' || p.prenom AS \"NOM\", CASE WHEN pr.actif = true THEN 'OUI' ELSE 'NON' END AS \"ACTIF\",i.nom AS \"INSTRUMENT\",e.email AS \"EMAIL\",t.numero AS \"PORTABLE\""
+    var query = "SELECT DISTINCT p.id AS \"Id\",p.nom || ' ' || p.prenom AS \"NOM\", CASE WHEN pr.actif = true THEN 'OUI' ELSE 'NON' END AS \"ACTIF\",i.nom AS \"INSTRUMENT\",e.email AS \"EMAIL\",t.numero AS \"PORTABLE\""
         + " FROM prof pr JOIN personne p ON (pr.idper = p.id)"
         + " LEFT JOIN email e ON (p.id = e.idper AND e.idx <=0)"
         + " LEFT JOIN telephone t ON (p.id = t.idper AND t.typetel = 8)"

@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleDetailCtrl.java 2.11.3 23/11/16
+ * @(#)ScheduleDetailCtrl.java 2.11.3 25/11/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -455,16 +455,17 @@ public class ScheduleDetailCtrl
     String n = p.getPerson().getFirstnameName();
     GemMenuButton b = new GemMenuButton(n, this, "PersonLink", p.getPerson());
     headPanel.add(b);
-//    Vector<ScheduleRangeObject> v = event.getRanges();
     StringBuilder sb = new StringBuilder();
     for (ScheduleRangeObject sr : event.getRanges()) {
       if (sr.getNote() > 0) {
         try {
           sr.setFollowUp(scheduleService.getFollowUp(sr.getNote()));
-          sb.append(sr.getStart()).append("-").append(sr.getEnd());
-          sb.append(" : ").append(sr.getFollowUp() != null ? sr.getFollowUp().getContent() : "");
-          sb.append(" (").append(p.getPerson().getFirstnameName()).append(')');
-          listPanel.add(new GemMenuButton(sb.toString(), this, "AdminEvent", sr));
+          if (sr.getMember().getId() == p.getPerson().getId()) {
+            sb.append(sr.getStart()).append("-").append(sr.getEnd());
+            sb.append(" : * ").append(sr.getFollowUp() != null ? sr.getFollowUp().getContent() : "");
+            sb.append(" (").append(sr.getMember().getFirstnameName()).append(')');
+            listPanel.add(new GemMenuButton(sb.toString(), this, "AdminEvent", sr));
+          }
           sb.delete(0, sb.length());
         } catch (SQLException ex) {
           GemLogger.log(ex.getMessage());

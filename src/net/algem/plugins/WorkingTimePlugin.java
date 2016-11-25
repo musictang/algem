@@ -169,6 +169,7 @@ public class WorkingTimePlugin
         }
        
         if (Schedule.ADMINISTRATIVE == cs.getType()) {
+          //todo reunion/coordination
           totalR += cs.getLength();
           totaldR += cs.getLength();
           continue;
@@ -196,6 +197,7 @@ public class WorkingTimePlugin
         }
         worker.setStep(progress++ * 100 / len);
       }
+      
       if (detail) {
         printResult(d, totaldL, totaldP, totaldR);
         out.println();
@@ -358,7 +360,8 @@ public class WorkingTimePlugin
   private class CustomDAO {
 
     private DataConnection dc;
-    private PreparedStatement ps1, ps2, ps3, ps4;
+    private PreparedStatement ps1, ps2, ps3, ps4, ps5;
+    // DEM + L1 + L2 + L3 + Loisirs
     private final String total1Query = "SELECT sum(q1.fin-q1.debut) FROM"
       + " (SELECT DISTINCT ON (p.jour,pl.debut)"
       + " pl.debut AS debut, pl.fin AS fin"
@@ -375,6 +378,7 @@ public class WorkingTimePlugin
       + "  WHERE (m.id in(149,151,157,158) OR m.code like 'L%')"
       + " AND cc.idaction = p.action"
       + " AND e.analytique != '15000')) AS q1";
+    //Parcours BREVET + MIMA + FP
     private final String total2Query = "SELECT sum(q1.fin-q1.debut) FROM"
       + "(SELECT DISTINCT ON (p.jour,pl.debut) pl.debut AS debut, pl.fin AS fin"
       + " FROM " + ScheduleRangeIO.TABLE + " pl JOIN " + ScheduleIO.TABLE + " p ON (pl.idplanning = p.id)"
@@ -390,10 +394,19 @@ public class WorkingTimePlugin
       + " WHERE cc.idaction = p.action"
       + " AND ((m.id BETWEEN 141 AND 148 AND e.analytique != '15000') OR e.analytique = '15000')"
       + ")) AS q1";
+    // total reunions
     private final String total3Query = "SELECT sum(p.fin-p.debut) FROM " + ScheduleIO.TABLE + " p JOIN " + PersonIO.TABLE + " per ON (p.idper = per.id)"
       + " WHERE p.ptype = " + Schedule.ADMINISTRATIVE
       + " AND p.idper = ?"
-      + " AND p.jour BETWEEN  ? AND ?";
+      + " AND p.jour BETWEEN  ? AND ?"
+      + " AND p.id NOT IN (SELECT idplanning FROM " + ScheduleRangeIO.TABLE + " pg JOIN suivi s ON (pg.note = s.id) WHERE s.texte ~* 'coordination')";
+    // total coordination
+    private final String total4Query = "SELECT sum(pg.fin-pg.debut) FROM " + ScheduleRangeIO.TABLE + " pg"
+      + " JOIN " + PersonIO.TABLE + " per ON (pg.adherent = per.id)"
+      + " JOIN suivi s ON (pg.note = s.id)"
+      + " WHERE pg.adherent = ?"
+      + " AND s.texte ~* 'coordination'"
+      + " AND pg.idplanning IN (SELECT id FROM " + ScheduleIO.TABLE + " WHERE ptype = " + Schedule.ADMINISTRATIVE + " AND jour BETWEEN ? AND ?)";
 
     private final String rangeQuery = "SELECT DISTINCT ON (pl.id) pl.fin-pl.debut,m.id,m.code,e.analytique"
       + " FROM " + ScheduleRangeIO.TABLE + " pl JOIN " + ScheduleIO.TABLE + " p ON (pl.idplanning = p.id)"
@@ -409,8 +422,9 @@ public class WorkingTimePlugin
       ps1 = dc.prepareStatement(total1Query);
       ps2 = dc.prepareStatement(total2Query);
       ps3 = dc.prepareStatement(total3Query);
+      ps4 = dc.prepareStatement(total4Query);
 
-      ps4 = dc.prepareStatement(rangeQuery);
+      ps5 = dc.prepareStatement(rangeQuery);
     }
 
     /**
@@ -492,6 +506,11 @@ public class WorkingTimePlugin
       }
       return schedules;
     }
+    
+    private List<CustomSchedule> getAdministrativeSchedules(int idper, DateFr start, DateFr end) throws SQLException {
+      //todo
+      return null;
+    }
 
     /**
      * Gets individual ranges enclosed in schedule {@code p}.
@@ -501,8 +520,8 @@ public class WorkingTimePlugin
      */
     private List<CustomRange> getRanges(int p) throws SQLException {
       List<CustomRange> ranges = new ArrayList<>();
-      ps4.setInt(1, p);
-      ResultSet rs = ps4.executeQuery();
+      ps5.setInt(1, p);
+      ResultSet rs = ps5.executeQuery();
       while (rs.next()) {
         int min = Hour.getMinutesFromString(rs.getString(1));
         CustomRange cr = new CustomRange(min, rs.getInt(2), rs.getString(3), rs.getString(4));
@@ -571,6 +590,18 @@ public class WorkingTimePlugin
       ps3.setDate(2, new java.sql.Date(start.getTime()));
       ps3.setDate(3, new java.sql.Date(end.getTime()));
       ResultSet rs = ps3.executeQuery();
+      while (rs.next()) {
+        String t = rs.getString(1);
+        return t == null ? "00:00" : t.substring(0, t.indexOf(':') + 3);
+      }
+      return "00:00";
+    }
+    
+    public String getTotal4(int idper, DateFr start, DateFr end) throws SQLException {
+      ps4.setInt(1, idper);
+      ps4.setDate(2, new java.sql.Date(start.getTime()));
+      ps4.setDate(3, new java.sql.Date(end.getTime()));
+      ResultSet rs = ps4.executeQuery();
       while (rs.next()) {
         String t = rs.getString(1);
         return t == null ? "00:00" : t.substring(0, t.indexOf(':') + 3);

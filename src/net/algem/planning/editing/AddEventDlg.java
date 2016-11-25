@@ -1,5 +1,5 @@
 /*
- * @(#)AddEventDlg.java 2.11.3 23/11/16
+ * @(#)AddEventDlg.java 2.11.3 25/11/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -29,6 +29,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Collections;
 import java.util.List;
+import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JDialog;
 import javax.swing.JList;
@@ -81,6 +82,7 @@ public class AddEventDlg
     dlg = new JDialog(desktop.getFrame(), true);
     dlg.setLayout(new BorderLayout());
     GemPanel content = new GemPanel(new GridBagLayout());
+    content.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
     GridBagHelper gb = new GridBagHelper(content);
     gb.add(new GemLabel(BundleUtil.getLabel("Time.label")), 0, 0, 1, 1, GridBagHelper.WEST);
     timePanel = new HourRangePanel(plan.getStart(), plan.getEnd());
@@ -138,6 +140,7 @@ public class AddEventDlg
 
     addContent(content, "Schedule.add.event.label");
     dlg.setSize(GemModule.S_SIZE);
+    dlg.pack();
   }
 
   @Override

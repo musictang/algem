@@ -1,5 +1,5 @@
 /*
- * @(#)DayPlanView.java 2.11.3 23/11/16
+ * @(#)DayPlanView.java 2.11.3 24/11/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -325,7 +325,7 @@ public class DayPlanView
     for (ScheduleRangeObject p : vp) {
       c = getScheduleColor(p);
       if (Schedule.ADMINISTRATIVE == p.getType()) {
-        if (p.getFollowUp() != null && !p.getStart().equals(start)) {
+        if (p.getFollowUp() != null && p.getFollowUp().getContent() != null && !p.getStart().equals(start)) {
           drawRange(i, p, c, step_x);
           start = p.getStart();
         }

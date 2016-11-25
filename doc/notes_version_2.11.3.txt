@@ -4,6 +4,8 @@ CORRECTIFS
 * La mise à jour ou la suppression d'un établissement restait bloquée sur le bouton "Validation".
 * Lorsqu'on fermait une fiche sans avoir rien modifié, le message "Voulez-vous enregistrer les modifications ?" se déclenchait malgré tout si le champ Civilité n'était pas renseigné.
 * On pouvait dans certains cas imprimer une feuille de prélèvement sans avoir enregistré le RIB du payeur.
+* L'export de certains scripts n'était pas lisible avec Open Office ou certaines versions d'Excel. La présence du mot "ID" (en majuscules) dans la première colonne d'entête entraînait une mauvaise interprétation du tableur. Le problème se posait avec les scripts suivants : 
+Absences des eleves.js, Groupes actifs.js, Liste des professeurs.js, Suivi des eleves.js.
 
 COMPTABILITÉ
 EXPORT ECHEANCIER

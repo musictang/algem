@@ -1,5 +1,5 @@
 /*
- * @(#)EditEventDlg.java 2.11.3 23/11/16
+ * @(#)EditEventDlg.java 2.11.3 25/11/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -31,6 +31,7 @@ import java.awt.event.MouseEvent;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
+import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JDialog;
 import javax.swing.JList;
@@ -94,6 +95,7 @@ public class EditEventDlg
     this.service = service;
     setLayout(new BorderLayout());
     GemPanel p = new GemPanel(new GridBagLayout());
+    p.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
     GridBagHelper gb = new GridBagHelper(p);
     timePanel = new HourRangePanel(range.getStart(), range.getEnd());
     note = new JTextArea(5, 20);
@@ -175,6 +177,7 @@ public class EditEventDlg
     buttons.add(btCancel);
     add(buttons, BorderLayout.SOUTH);
     setSize(GemModule.S_SIZE);
+    pack();
     setLocationRelativeTo(desktop.getFrame());
     setVisible(true);
   }
