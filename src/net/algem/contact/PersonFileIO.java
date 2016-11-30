@@ -158,7 +158,7 @@ public class PersonFileIO
       int payer = dossier.getMember() == null ? 0 : dossier.getMember().getPayer();
       if (payer > 0) {
         DirectDebitService ddService = DirectDebitService.getInstance(dc);        
-        DDMandate mandate = ddService.getMandate(payer);
+        DDMandate mandate = ddService.getMandateIfValid(payer);
         if (mandate != null) {
           throw new DDMandateException(MessageUtil.getMessage("rib.update.mandate.exception"));
         }

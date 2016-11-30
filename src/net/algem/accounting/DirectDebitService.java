@@ -130,7 +130,7 @@ public class DirectDebitService
     return dao.getMandates(payer);
   }
 
-  public DDMandate getMandate(int idper) throws DDMandateException {
+  public DDMandate getMandateIfValid(int idper) throws DDMandateException {
     try {
       DDMandate dd = dao.getMandate(idper);
       if (dd != null && !dd.isValid()) {

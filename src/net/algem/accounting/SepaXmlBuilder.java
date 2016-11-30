@@ -46,13 +46,14 @@ public class SepaXmlBuilder
 {
 
   public static DateFormat ISO_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+  public static final String IBAN_REGEX = "[A-Z]{2,2}[0-9]{2,2}[a-zA-Z0-9]{1,30}";
   private static String TAB = "  ";
   private static short MAX_NAME_LENGTH = 70;
   private static int MAX_LENGTH = 140;
   private static int SHORT_LENGTH = 35;
   private DirectDebitService service;
   private StringBuilder sbMailing, sbLog;
-  private String ibanRegex = "[A-Z]{2,2}[0-9]{2,2}[a-zA-Z0-9]{1,30}";
+  
   private Pattern ibanPattern;
   private int totalDebit = 0;
   private int numberOfGlobalTx = 0;
@@ -65,7 +66,7 @@ public class SepaXmlBuilder
 
   public SepaXmlBuilder(DirectDebitService service) {
     this.service = service;
-    ibanPattern = Pattern.compile(ibanRegex);
+    ibanPattern = Pattern.compile(IBAN_REGEX);
     sbMailing = new StringBuilder();
     sbLog = new StringBuilder();
     nf = NumberFormat.getInstance(Locale.UK);

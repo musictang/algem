@@ -23,6 +23,8 @@ package net.algem.accounting;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridBagLayout;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.Date;
 import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
@@ -66,10 +68,10 @@ public class AccountTransferView
     setLayout(new BorderLayout());
     setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 
-    GemPanel p = new GemPanel(new GridBagLayout());
-    p.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+    GemPanel mainPanel = new GemPanel(new GridBagLayout());
+    mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-    gb = new GridBagHelper(p);
+    gb = new GridBagHelper(mainPanel);
 
     payment = new JComboBox(ParamTableIO.getValues(ModeOfPaymentCtrl.TABLE,
             ModeOfPaymentCtrl.COLUMN_NAME,
@@ -89,7 +91,7 @@ public class AccountTransferView
     gb.add(payment, 1, 2, 2, 1, GridBagHelper.WEST);
     gb.add(csv, 1, 3, 2, 1, GridBagHelper.WEST);
 
-    add(p, BorderLayout.CENTER);
+    add(mainPanel, BorderLayout.CENTER);
   }
 
   public DateFr getDateStart() {

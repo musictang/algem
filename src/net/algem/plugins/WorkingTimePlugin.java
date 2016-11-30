@@ -1,5 +1,5 @@
 /*
- * @(#) WorkingTimePlugin.java Algem 2.10.2 23/06/2016
+ * @(#) WorkingTimePlugin.java Algem 2.11.3 29/11/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -46,7 +46,7 @@ import net.algem.util.TextUtil;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.2
+ * @version 2.11.3
  * @since 2.10.0 03/06/2016
  */
 public class WorkingTimePlugin
@@ -81,34 +81,37 @@ public class WorkingTimePlugin
     return sb.toString();
   }
 
-  private void printResult(Person t, int total1, int total2, int total3) {
+  private void printResult(Person t, int total1, int total2, int total3, int total4) {
     StringBuilder sb = new StringBuilder();
-    int total = total1 + total2 + total3;
+    int total = total1 + total2 + total3 + total4;
     sb.append(t.getFirstnameName()).append(';').append(TextUtil.LINE_SEPARATOR);
     sb.append(categories[0]).append(';').append(Hour.getStringFromMinutes(total1)).append(TextUtil.LINE_SEPARATOR);
     sb.append(categories[1]).append(';').append(Hour.getStringFromMinutes(total2)).append(TextUtil.LINE_SEPARATOR);
     sb.append(categories[2]).append(';').append(Hour.getStringFromMinutes(total3)).append(TextUtil.LINE_SEPARATOR);
+    sb.append(categories[3]).append(';').append(Hour.getStringFromMinutes(total4)).append(TextUtil.LINE_SEPARATOR);
     sb.append("TOTAL;").append(Hour.getStringFromMinutes(total)).append(TextUtil.LINE_SEPARATOR);
     out.print(sb.toString());
   }
 
-  private void printResult(DateFr d, int total1, int total2, int total3) {
+  private void printResult(DateFr d, int total1, int total2, int total3, int total4) {
     StringBuilder sb = new StringBuilder();
-    int total = total1 + total2 + total3;
+    int total = total1 + total2 + total3 + total4;
     sb.append(d).append(';').append(TextUtil.LINE_SEPARATOR);
     sb.append(categories[0]).append(';').append(Hour.getStringFromMinutes(total1)).append(TextUtil.LINE_SEPARATOR);
     sb.append(categories[1]).append(';').append(Hour.getStringFromMinutes(total2)).append(TextUtil.LINE_SEPARATOR);
     sb.append(categories[2]).append(';').append(Hour.getStringFromMinutes(total3)).append(TextUtil.LINE_SEPARATOR);
+    sb.append(categories[3]).append(';').append(Hour.getStringFromMinutes(total4)).append(TextUtil.LINE_SEPARATOR);
     sb.append("TOTAL ").append(d).append(';').append(Hour.getStringFromMinutes(total)).append(TextUtil.LINE_SEPARATOR);
     out.print(sb.toString());
   }
 
-  private void printResult(int total1, int total2, int total3) {
+  private void printResult(int total1, int total2, int total3, int total4) {
     StringBuilder sb = new StringBuilder();
-    int total = total1 + total2 + total3;
+    int total = total1 + total2 + total3 + total4;
     sb.append("TOTAL ").append(categories[0]).append(';').append(Hour.getStringFromMinutes(total1)).append(TextUtil.LINE_SEPARATOR);
     sb.append("TOTAL ").append(categories[1]).append(';').append(Hour.getStringFromMinutes(total2)).append(TextUtil.LINE_SEPARATOR);
     sb.append("TOTAL ").append(categories[2]).append(';').append(Hour.getStringFromMinutes(total3)).append(TextUtil.LINE_SEPARATOR);
+    sb.append("TOTAL ").append(categories[3]).append(';').append(Hour.getStringFromMinutes(total4)).append(TextUtil.LINE_SEPARATOR);
     sb.append("TOTAL PERIODE;").append(Hour.getStringFromMinutes(total)).append(TextUtil.LINE_SEPARATOR);
     out.print(sb.toString());
   }
@@ -125,13 +128,15 @@ public class WorkingTimePlugin
       List<CustomSchedule> schedules = dao.getSchedules(idper, start, end);
 
       int t = 0;
-      int totalL = 0;
-      int totalP = 0;
-      int totalR = 0;
+      int totalL = 0; // total Loisir
+      int totalP = 0; // total Pro
+      int totalR = 0; // total Réunion
+      int totalC = 0; // total Coordination
 
       int totaldL = 0;
       int totaldP = 0;
       int totaldR = 0;
+      int totaldC = 0;
       DateFr d = null;
       Person person = null;
       int len = schedules.size();
@@ -142,10 +147,11 @@ public class WorkingTimePlugin
         }
         if (detail && (!cs.getDate().equals(d) || cs.getPerson().getId() != t)) {
           if (d != null) { // pas au premier tour de boucle
-            printResult(d, totaldL, totaldP, totaldR);//XXX cs.getDate()
+            printResult(d, totaldL, totaldP, totaldR, totaldC);//XXX cs.getDate()
             totaldL = 0;
             totaldP = 0;
             totaldR = 0;
+            totaldC = 0;
           }
           d = cs.getDate();
         }
@@ -153,25 +159,30 @@ public class WorkingTimePlugin
           if (t > 0) { // pas au premier tour de boucle
             if (detail) {
               out.println();
-              printResult(totalL, totalP, totalR);
+              printResult(totalL, totalP, totalR, totalC);
               out.println();
               out.println(cs.getPerson().getFirstnameName());
             } else {
-              printResult(person, totalL, totalP, totalR);
+              printResult(person, totalL, totalP, totalR, totalC);
               out.println();
             }
             totalL = 0;
             totalP = 0;
             totalR = 0;
+            totalC = 0;
           }
           t = cs.getPerson().getId();
           person = cs.getPerson();
         }
        
         if (Schedule.ADMINISTRATIVE == cs.getType()) {
-          //todo reunion/coordination
-          totalR += cs.getLength();
-          totaldR += cs.getLength();
+          if (cs.getNoteValue() != null && "coordination".equals(cs.getNoteValue().trim().toLowerCase())) {
+            totalC += cs.getLength();
+            totaldC += cs.getLength();
+          } else {
+            totalR += cs.getLength();
+            totaldR += cs.getLength();
+          }
           continue;
         } else {
           if (cs.isCollective()) {//XXX si aucune plage élève
@@ -199,11 +210,11 @@ public class WorkingTimePlugin
       }
       
       if (detail) {
-        printResult(d, totaldL, totaldP, totaldR);
+        printResult(d, totaldL, totaldP, totaldR, totaldC);
         out.println();
-        printResult(totalL, totalP, totalR);
+        printResult(totalL, totalP, totalR, totalC);
       } else {
-        printResult(person, totalL, totalP, totalR);
+        printResult(person, totalL, totalP, totalR, totalC);
       }
     } catch (SQLException ex) {
       GemLogger.logException(ex);
@@ -260,8 +271,9 @@ public class WorkingTimePlugin
   }
 
   private class CustomRange {
-
+//    Parcours DEM Jazz, L1 Musicologie/Jazz à Tours, L2 Musicologie / Jazz à Tours, L3 Musicologie / Jazz à Tours
     private final int[] MOD_LOISIR = {149, 151, 157, 158};
+
     private final int[] MOD_PRO = {141, 142, 143, 144, 145, 146, 147, 148};
     private final String FP = "15000";
 
@@ -288,7 +300,8 @@ public class WorkingTimePlugin
           break;
         }
       }
-      return l && !FP.equals(analytique);
+      return l;
+      //return l && !FP.equals(analytique);
     }
 
     public boolean isPro() {
@@ -313,6 +326,7 @@ public class WorkingTimePlugin
     private int status;
     private int action;
     private boolean collective;
+    private String noteValue;
 
     public int getStatus() {
       return status;
@@ -354,6 +368,15 @@ public class WorkingTimePlugin
     public int getLength() {
       return length;
     }
+
+    public String getNoteValue() {
+      return noteValue;
+    }
+
+    public void setNoteValue(String noteValue) {
+      this.noteValue = noteValue;
+    }
+    
 
   }
 
@@ -413,8 +436,9 @@ public class WorkingTimePlugin
       + " JOIN " + CourseOrderIO.TABLE + " cc ON (cc.idaction = p.action)"
       + " JOIN " + ModuleOrderIO.TABLE + " cm ON (cc.module = cm.id)"
       + " JOIN " + ModuleIO.TABLE + " m ON (cm.module = m.id)"
+      + " JOIN " + OrderIO.TABLE + " c ON (cm.idcmd = c.id AND pl.adherent = c.adh)"
       //"JOIN commande d ON (cm.idcmd = d.id)\n" +
-      + " JOIN " + OrderLineIO.TABLE + " e ON (cm.idcmd = e.commande AND e.adherent = pl.adherent)"
+      + " LEFT JOIN " + OrderLineIO.TABLE + " e ON (cm.idcmd = e.commande AND e.adherent = pl.adherent)" // !LEFT JOIN : IMPORTANT!
       + " WHERE pl.idplanning = ?";
 
     public CustomDAO(DataConnection dc) {
@@ -476,13 +500,14 @@ public class WorkingTimePlugin
 
     private List<CustomSchedule> getSchedules(int idper, DateFr start, DateFr end) throws SQLException {
       List<CustomSchedule> schedules = new ArrayList<>();
-      String query = "SELECT p.id,p.jour,p.fin-p.debut,p.ptype,p.idper,per.nom,per.prenom,p.action,c.collectif,a.statut"
+      String query = "SELECT p.id,p.jour,p.fin-p.debut,p.ptype,p.idper,per.nom,per.prenom,p.action,c.collectif,a.statut,s.texte"
         + " FROM " + ScheduleIO.TABLE + " p  JOIN " + PersonIO.TABLE + " per ON (p.idper = per.id)"
         + " JOIN action a ON (p.action = a.id) LEFT JOIN cours c ON (a.cours = c.id)"
+        + " LEFT JOIN plage pl ON (p.id = pl.idplanning AND p.idper = pl.adherent) LEFT JOIN suivi s ON (pl.note = s.id)"        
         + " WHERE p.ptype IN (" + Schedule.COURSE + "," + Schedule.WORKSHOP + "," + Schedule.TRAINING + "," + Schedule.ADMINISTRATIVE + ")"
         + " AND p.jour BETWEEN '" + start + "' AND '" + end + "'"
-        + " AND ((p.id IN (SELECT idplanning FROM " + ScheduleRangeIO.TABLE
-        + ")) OR p.ptype = " + Schedule.ADMINISTRATIVE + ")";
+        + " AND p.lieux NOT IN (SELECT id FROM salle WHERE nom ~* 'RATTRAP')"
+        + " AND (p.ptype = " + Schedule.ADMINISTRATIVE + " OR (p.id IN (SELECT idplanning FROM " + ScheduleRangeIO.TABLE + ")))";
       if (idper > 0) {
         query += " AND p.idper = " + idper;
       }
@@ -501,15 +526,11 @@ public class WorkingTimePlugin
         cs.setAction(rs.getInt(8));
         cs.setCollective(rs.getBoolean(9));
         cs.setStatus(rs.getInt(10));
+        cs.setNoteValue(rs.getString(11));
 
         schedules.add(cs);
       }
       return schedules;
-    }
-    
-    private List<CustomSchedule> getAdministrativeSchedules(int idper, DateFr start, DateFr end) throws SQLException {
-      //todo
-      return null;
     }
 
     /**
@@ -597,6 +618,15 @@ public class WorkingTimePlugin
       return "00:00";
     }
     
+    /**
+     * 
+     * @param idper
+     * @param start
+     * @param end
+     * @return
+     * @throws SQLException 
+     * @deprecated 
+     */
     public String getTotal4(int idper, DateFr start, DateFr end) throws SQLException {
       ps4.setInt(1, idper);
       ps4.setDate(2, new java.sql.Date(start.getTime()));

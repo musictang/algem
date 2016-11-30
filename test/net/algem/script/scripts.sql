@@ -56,3 +56,4 @@ WHERE echeance >= '15-11-2016' AND echeance <= ''15-11-2016'
 -- AND ecole = ' + school
 -- AND paye = 't' AND transfert = 'f' AND reglement = 'PRL'
 
+-- erreurs prelevements musichalle

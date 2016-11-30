@@ -475,7 +475,7 @@ public class PersonFileEditor
     }
     DirectDebitService ddService = DirectDebitService.getInstance(dc);
     int payer = dossier.getMember() == null ? dossier.getId() : dossier.getMember().getPayer();
-    DDMandate dd = ddService.getMandate(payer);
+    DDMandate dd = ddService.getMandateIfValid(payer);
     if (dd == null) {
       if (payer > 0 && MessagePopup.confirm(view, MessageUtil.getMessage("direct.debit.create.mandate.confirmation", payer))) {
         ddService.createMandate(payer);

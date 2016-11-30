@@ -23,6 +23,7 @@ package net.algem.accounting;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Vector;
 
 /**
@@ -38,7 +39,7 @@ public interface AccountExportService {
   
   int tiersExport(String path, Vector<OrderLine> lines) throws IOException, SQLException;
   
-  void exportCSV(String path, Vector<OrderLine> orderLines) throws IOException;
+  List<String> exportCSV(String path, Vector<OrderLine> orderLines) throws IOException;
   
   Account getAccount(String key) throws SQLException;
   

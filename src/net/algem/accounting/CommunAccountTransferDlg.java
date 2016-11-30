@@ -24,8 +24,11 @@ import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Frame;
 import java.awt.GridBagLayout;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -81,6 +84,7 @@ public class CommunAccountTransferDlg
     add(p, BorderLayout.CENTER);
     add(buttons, BorderLayout.SOUTH);
     setLocation(200, 100);
+    //setSize(450,380);
     pack();
   }
 
@@ -107,7 +111,10 @@ public class CommunAccountTransferDlg
 
       if (transferView.withCSV()) {
         path = path.replace(".txt", ".csv");
-        exportService.exportCSV(path, orderLines);
+        List<String> errorsCSV = exportService.exportCSV(path, orderLines);
+        if (errorsCSV.size() > 0) {
+          writeErrorLog(errorsCSV, path + ".log");
+        }
       } else {
         if (ModeOfPayment.FAC.toString().equalsIgnoreCase(modeOfPayment)) {
           errors = exportService.tiersExport(path, orderLines);
@@ -147,5 +154,15 @@ public class CommunAccountTransferDlg
     }
 
     return OrderLineIO.find(query, dc);
+  }
+  
+  private void writeErrorLog(List<String> errors,  String path) throws IOException {
+    if (errors.size() > 0) {
+      try (PrintWriter logFile = new PrintWriter(new FileWriter(path))) {
+        for(String e : errors) {
+        logFile.println(e);
+        }
+      }
+    }
   }
 }

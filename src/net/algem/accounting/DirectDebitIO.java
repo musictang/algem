@@ -60,12 +60,28 @@ public class DirectDebitIO
    * @throws SQLException
    */
   DDMandate getMandate(int idper) throws SQLException {
-    String query = "SELECT s.*, p.nom FROM " + TABLE + " s, " + PersonIO.TABLE + " p"
+    String query = "SELECT s.*, p.nom FROM " + TABLE + " s JOIN " + PersonIO.TABLE + " p ON (s.payeur = p.id)"
             + " WHERE s.payeur = " + idper
-            + " AND s.seqtype != '" + DDSeqType.LOCK.name() + "'";
+            + " AND s.seqtype != '" + DDSeqType.LOCK.name() + "'"
+            + " ORDER BY id DESC LIMIT 1";
     ResultSet rs = dc.executeQuery(query);
     while (rs.next()) {
       return getMandateFromRs(rs);
+    }
+    return null;
+  }
+  
+  DDMandate getMandateWithBic(int idper) throws SQLException {
+    String query = "SELECT s.*, g.bic, p.nom FROM " + TABLE + " s JOIN " + PersonIO.TABLE + " p ON (s.payeur = p.id)"
+            + " LEFT JOIN " + RibIO.TABLE + " r ON (s.payeur = r.idper) LEFT JOIN " + BranchIO.TABLE + " g ON (r.guichetid = g.id)"
+            + " WHERE s.payeur = " + idper
+            + " AND s.seqtype != '" + DDSeqType.LOCK.name() + "'"
+            + " ORDER BY id DESC LIMIT 1";
+    ResultSet rs = dc.executeQuery(query);
+    while (rs.next()) {
+      DDMandate m = getMandateFromRs(rs);
+      m.setBic(rs.getString(9));
+      return m;
     }
     return null;
   }

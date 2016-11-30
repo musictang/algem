@@ -27,13 +27,21 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import net.algem.bank.BankUtil;
+import net.algem.bank.Rib;
+import net.algem.bank.RibIO;
 import net.algem.config.Preference;
 import net.algem.contact.Contact;
 import net.algem.contact.ContactIO;
 import net.algem.contact.Person;
 import net.algem.util.DataConnection;
+import net.algem.util.GemLogger;
 import net.algem.util.TextUtil;
 import net.algem.util.model.ModelNotFoundException;
 
@@ -167,7 +175,9 @@ public abstract class CommunAccountExportService
    * @throws IOException
    */
   @Override
-  public void exportCSV(String path, Vector<OrderLine> orderLines) throws IOException {
+  public List<String> exportCSV(String path, Vector<OrderLine> orderLines) throws IOException {
+    DirectDebitService ddService = DirectDebitService.getInstance(dbx);
+    List<String> errors = new ArrayList<>();
     int total = 0;
     OrderLine e = null;
     // "UTF-16LE" is the best option : no BOM and excel-compatible
@@ -175,6 +185,13 @@ public abstract class CommunAccountExportService
       out.print("id payeur;payeur;id adherent;adherent;date;reglement;piece;libelle;montant;n°compte;libelle compte;analytique;libelle analytique" + TextUtil.LINE_SEPARATOR);
       for (int i = 0, n = orderLines.size(); i < n; i++) {
         e = orderLines.elementAt(i);
+        String modeOfPayment = e.getModeOfPayment();
+        if (ModeOfPayment.PRL.name().equals(modeOfPayment)) {
+          List<String> err = checkDirectDebit(e, ddService);
+          if (err.size() > 0) {
+            errors.addAll(err);
+          }
+        }
         Contact c = ContactIO.findId(e.getPayer(), dbx);
         Person m = ContactIO.findId(e.getMember(), dbx);
         String payerName = c == null ? "" : (c.getOrganization() != null && c.getOrganization().length() > 0 ? c.getOrganization() : c.getNameFirstname());
@@ -197,7 +214,35 @@ public abstract class CommunAccountExportService
       if (total > 0) {
         out.print(";;;;" + defaultDateFormat.format(e.getDate().getDate()) + ";;;TOTAL;" + defaultNumberFormat.format(total / 100.0) + ";;;;" + (char) 13);
       }
+      return errors;
     }
+  }
+  
+  private List<String> checkDirectDebit(OrderLine e, DirectDebitService ddService) {
+    List<String> errors = new ArrayList<>();
+    int payer = e.getPayer();
+
+    Rib rib = RibIO.findId(payer, dbx);
+    if (rib == null) {
+      errors.add("Payeur " + payer + " : pas de RIB");
+    } else {
+      if (rib.getIban() == null || !rib.getIban().matches(SepaXmlBuilder.IBAN_REGEX) || !BankUtil.isIbanOk(rib.getIban())) {
+        errors.add("Payeur " + payer + ": erreur IBAN");
+      }
+//      if (rib.getB)
+      DDMandate mandate;
+      try {
+        //mandate = ddService.getMandateWithBic(payer);
+        if (mandate.getBic() == null) {
+          errors.add("Payeur " + payer + ": pas de MANDAT SEPA");
+        }
+      } catch (DDMandateException ex) {
+        GemLogger.logException(ex);
+        errors.add("Payeur " + payer + ": erreur MANDAT");
+      }
+
+    }
+    return errors;
   }
 
 }
