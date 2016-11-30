@@ -1,6 +1,6 @@
 /*
- * @(#)DirectDebitService.java	2.9.6 22/03/16
- * 
+ * @(#)DirectDebitService.java	2.11.3 30/11/16
+ *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.accounting;
 
@@ -36,7 +36,7 @@ import net.algem.util.MessageUtil;
  * Direct debit service.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.6
+ * @version 2.11.3
  * @since 2.8.r 24/12/13
  */
 public class DirectDebitService
@@ -89,7 +89,7 @@ public class DirectDebitService
     list.deleteCharAt(list.length() - 1);
     dao.updateToRcurSeqType(list.toString());
   }
-  
+
   void updateLastDebit(DateFr date, List<Integer> debited) throws SQLException {
     StringBuilder list = new StringBuilder();
     for (Integer i : debited) {
@@ -107,7 +107,7 @@ public class DirectDebitService
     for (DDMandate dd : mandates) {
       if (dd.isRecurrent() && seqType.equals(DDSeqType.OOFF)) {
         throw new DDMandateException(MessageUtil.getMessage("direct.debit.edit.ooff.warning", seqType));
-      } else if (!dd.isRecurrent() && !seqType.equals(DDSeqType.OOFF)) { 
+      } else if (!dd.isRecurrent() && !seqType.equals(DDSeqType.OOFF)) {
         throw new DDMandateException(MessageUtil.getMessage("direct.debit.edit.rcur.warning", seqType));
       }
     }
@@ -126,10 +126,22 @@ public class DirectDebitService
     return dao.getMandates();
   }
 
+  /**
+   * Returns all payer mandates (archived/locked included).
+   * @param payer payer's id
+   * @return a liste of mandate instances
+   * @throws SQLException
+   */
   public List<DDMandate> getMandates(int payer) throws SQLException {
     return dao.getMandates(payer);
   }
 
+  /**
+   * Returns the payer's current mandate.
+   * @param idper payer's id
+   * @return a mandate instance or null if no mandate was found (or mandate is out of time)
+   * @throws DDMandateException
+   */
   public DDMandate getMandateIfValid(int idper) throws DDMandateException {
     try {
       DDMandate dd = dao.getMandate(idper);
@@ -137,8 +149,25 @@ public class DirectDebitService
         dd.setSeqType(DDSeqType.LOCK);
         dao.update(dd);
         return null;
-      } 
+      }
       return dd;
+    } catch (SQLException ex) {
+      GemLogger.logException(ex);
+      throw new DDMandateException(MessageUtil.getMessage("direct.debit.retrieve.mandate.exception"));
+    }
+  }
+
+  /**
+   * Returns the payer's current mandate.
+   * No validity check is performed.
+   * BIC (Bank Identifier Code) is attached to the mandate.
+   * @param idper
+   * @return
+   * @throws DDMandateException
+   */
+  public DDMandate getMandate(int idper) throws DDMandateException {
+    try {
+      return dao.getMandateWithBic(idper);
     } catch (SQLException ex) {
       GemLogger.logException(ex);
       throw new DDMandateException(MessageUtil.getMessage("direct.debit.retrieve.mandate.exception"));
@@ -147,7 +176,7 @@ public class DirectDebitService
 
   public void createMandate(int idper) throws DDMandateException {
     DDMandate dd = new DDMandate(idper);
-    
+
     dd.setLastDebit(null);
     dd.setDateSign(new DateFr(new Date()));
     dd.setRecurrent(true); // default
@@ -160,5 +189,5 @@ public class DirectDebitService
       throw new DDMandateException(MessageUtil.getMessage("direct.debit.create.mandate.exception"));
     }
   }
-  
+
 }

@@ -1,5 +1,5 @@
 /*
- * @(#)OrderLineView.java	2.10.0 18/05/16
+ * @(#)OrderLineView.java	2.11.3 30/11/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -31,7 +31,6 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import javax.swing.*;
 import net.algem.config.*;
-import net.algem.planning.DateFr;
 import net.algem.planning.DateFrField;
 import net.algem.util.*;
 import net.algem.util.model.Model;
@@ -42,7 +41,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.11.3
  * @since 1.0a 18/07/1999
  */
 public class OrderLineView
@@ -331,16 +330,21 @@ public class OrderLineView
         validation = false;
         return;
       }
+      validation = true;
       if (listener != null) {
-        validation = true;
         listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "orderline.view.validate"));
+      } else {
+        setVisible(false);// if modal
       }
     } else {
       validation = false;
       if (listener != null) {
         listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "orderline.view.cancel"));
+        // setVisible(false);// when non modal, the dialog may be reopened later
+      } else {
+        setVisible(false);
       }
-//      setVisible(false);// the dialog may be reopened later
+
     }
   }
 

@@ -1,6 +1,6 @@
 /*
- * @(#)AccountDocumentTransferDlg.java	2.9.1 27/11/14
- * 
+ * @(#)AccountDocumentTransferDlg.java	2.11.3 30/11/16
+ *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.accounting;
 
@@ -24,6 +24,7 @@ import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Frame;
 import java.awt.GridBagLayout;
+import java.util.List;
 import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -42,7 +43,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.11.3
  * @since 1.0a 27/09/2000
  */
 public class AccountDocumentTransferDlg
@@ -79,8 +80,9 @@ public class AccountDocumentTransferDlg
 
     add(p, BorderLayout.CENTER);
     add(buttons, BorderLayout.SOUTH);
+    setSize(450,300);
     setLocation(200, 100);
-    pack();
+    //pack();
   }
 
   @Override
@@ -88,7 +90,13 @@ public class AccountDocumentTransferDlg
 
     String payment = view.getModeOfPayment();
 
-    Vector<OrderLine> orderLines = getOrderLines(payment);
+    Vector<OrderLine> orderLines = getOrderLines(
+      payment,
+      view.getDateStart(),
+      view.getDateEnd(),
+      view.getDocument(),
+      view.withUnpaid()
+    );
     if (orderLines.size() <= 0) {
       MessagePopup.information(this, MessageUtil.getMessage("payment.transfer.empty.collection"));
       return;
@@ -96,23 +104,6 @@ public class AccountDocumentTransferDlg
     int errors = 0;
     setCursor(new Cursor(Cursor.WAIT_CURSOR));
     try {
-
-      /* String codeJournal = "";
-       * String documentAccount = "";
-       *
-       * Compte c = getDocumentAccount(reglement);
-       * if (c != null) {
-       * codeJournal = getCodeJournal(c.getId());
-       * documentAccount = c.getNumber();
-       * } */
-
-      /* if ("ESP".equalsIgnoreCase(reglement)) {
-       * codeJournal = "CA";
-       * documentAccount = "5300000000";
-       * } else {
-       * codeJournal = "CC";
-       * documentAccount = "5120300000";
-       * } */
       String codeJournal = "";
       Account documentAccount = exportService.getDocumentAccount(payment);
       if (documentAccount != null) {
@@ -123,6 +114,11 @@ public class AccountDocumentTransferDlg
       if (view.withCSV()) {
         path = path.replace(".txt", ".csv");
         exportService.exportCSV(path, orderLines);
+        List<String> errorsCSV = exportService.exportCSV(path, orderLines);
+        if (errorsCSV.size() > 0) {
+          writeErrorLog(errorsCSV, path + ".log");
+          MessagePopup.warning(this, MessageUtil.getMessage("payment.transfer.error.log.warning", new Object[] {errorsCSV.size(), path + ".log"}));
+        }
       } else {
         if (ModeOfPayment.FAC.toString().equalsIgnoreCase(payment)) {
           errors = exportService.tiersExport(path, orderLines);
@@ -138,16 +134,19 @@ public class AccountDocumentTransferDlg
     setCursor(Cursor.getDefaultCursor());
   }
 
-  private Vector<OrderLine> getOrderLines(String payment) {
-
-    DateFr start = view.getDateStart();
-    DateFr end = view.getDateEnd();
-    String document = view.getDocument();
+  private Vector<OrderLine> getOrderLines(String payment, DateFr start, DateFr end, String document, boolean unpaid) {
 
     String query = "WHERE echeance >= '" + start + "' AND echeance <= '" + end
-            + "' AND piece = '" + document
-            + "' AND reglement = '" + payment
-            + "' AND paye = 't' AND transfert = 'f'";
+      + "' AND piece = '" + document
+      + "' AND reglement = '" + payment + "'";
+    if (!unpaid) {
+      query += " AND paye = 't'";
+    }
+    query += " AND transfert = 'f'";
+    // DO NOT export if no invoice is present
+    if (ModeOfPayment.FAC.name().equals(payment)) {
+      query += " AND facture IS NOT NULL AND facture != ''";
+    }
     return OrderLineIO.find(query, dc);
   }
 }

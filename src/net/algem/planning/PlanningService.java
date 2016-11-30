@@ -1,5 +1,5 @@
 /*
- * @(#)PlanningService.java	2.11.3 23/11/16
+ * @(#)PlanningService.java	2.11.3 30/11/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -1137,13 +1137,13 @@ public class PlanningService
         public Void run(DataConnection conn) throws Exception {
           ScheduleRangeIO.update(range, dc);
           updateFollowUp(range, note);
-          
+
           String where = "idplanning = " + range.getScheduleId()
             + " AND adherent != " + range.getMemberId()
             + " AND debut = '" + oldTimeRange.getStart()
             + "' AND fin = '" + oldTimeRange.getEnd() + "'";
           ScheduleRangeIO.delete(where, dc);
-          
+
           List<ScheduleRange> ranges = new ArrayList<ScheduleRange>();
           if (attendees != null && !attendees.isEmpty()) {
             for (Person p : attendees) {

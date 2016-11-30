@@ -12,6 +12,20 @@ EXPORT ECHEANCIER
 Une échéance de facturation n'est plus exportable si aucune facture n'y est associée.
 Rappel : une échéance de facturation est une ligne d'échéance dont le règlement est "FAC".
 
+PRELEVEMENT
+Les payeurs dont le RIB ne comporte pas de BIC (Bank Identifier Code) ou dont le BIC est incorrect ne sont plus pris en compte dans le fichier d'export des prélèvements SEPA (Compta -> Prélèvement -> Exporter).
+
+L'export CSV des prélèvements à partir du menu Compta -> Transfert échéancier inclue maintenant la détection automatique des erreurs suivantes :
+- Echéance non encaissée (si l'option 'Inclure les lignes non encaissées' a été cochée)
+- Payeur sans RIB
+- Payeur dont le numéro d'IBAN est incorrect
+- Payeur dont le RIB ne comporte pas de BIC
+- Payeur dont le BIC est incorrect
+- Payeur sans mandat SEPA
+- Payeur dont le mandat SEPA est périmé
+
+Cela vous permet de vérifier la validité des lignes à prélever avant d'exporter votre fichier d'envoi (Compta -> Prélèvement -> Exporter) 
+
 ECHEANCIER
 Une échéance transférée ne peut plus être modifiée que par les personnes dont le profil est "Administrateur".
 La suppression d'une échéance (après annulation d'une répétition hors délai) n'est autorisée que pour les personnes dont le profil est "Administrateur".
@@ -20,8 +34,11 @@ PLANNING ADMINISTRATIF
 Il est maintenant possible d'ajouter des participants à un rendez-vous/réunion.
 
 Cliquez sur Ajouter rendez-vous/réunion dans le détail d'un planning administratif.
-Indiquez un horaire et un intitulé. Une boîte de sélection vous permet de choisir les participants. Cette boîte ne contient que les personnes appartenant à la catégorie "Administratif" (pour qu'une personne fasse partie de la catégorie "Administratif", ouvrez le menu "Options->Salarié" dans sa fiche puis ajoutez-le à la catégorie "Administratif"). 
+Indiquez un horaire et un intitulé. Une boîte de sélection vous permet de choisir les participants. Cette boîte ne contient que les personnes appartenant à la catégorie "Administratif" (pour qu'une personne fasse partie de la catégorie "Administratif", ouvrez le menu "Options->Salarié" dans sa fiche puis ajoutez-la à la catégorie "Administratif"). 
 
 Cliquez droit sur le nom d'un participant pour le "Supprimer" de la réunion.
 
 TODO : voir menu clic droit modifier groupe dans échéancier groupe.
+TODO : avertissements décompte abonnement quand annulation repet
+repet individuelle annulation échéance
+message salle fermée heure de fin

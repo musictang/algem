@@ -1,5 +1,5 @@
 /*
- * @(#)GroupFileEditor.java 2.9.4.8 23/06/15
+ * @(#)GroupFileEditor.java 2.11.3 30/11/16
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -46,7 +46,7 @@ import net.algem.util.ui.*;
 /**
  * Group file main editor.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.8
+ * @version 2.11.3
  */
 public class GroupFileEditor
         extends GemModule
@@ -127,7 +127,7 @@ public class GroupFileEditor
       GemLogger.log(getClass().getName(), "init", ne);
     } catch (SQLException ex) {// NoteException ex) {
       GemLogger.log(getClass().getName(), "init", ex);
-    } 
+    }
 
     mBar = new JMenuBar();
     mFile = new JMenu(BundleUtil.getLabel("Menu.file.label"));
@@ -180,7 +180,7 @@ public class GroupFileEditor
 
     btSave.addActionListener(this);
     btClose.addActionListener(this);
-    
+
     groupFileTabView.add(toolbar, BorderLayout.NORTH);
 
     loadPaymentSchedule();
@@ -377,7 +377,8 @@ public class GroupFileEditor
         desktop.postEvent(new GroupDeleteEvent(this, group));
         super.close();
       } else {
-        MessagePopup.warning(view, "Suppression non autorisée");
+        String msg = MessageUtil.getMessage("delete.exception") + MessageUtil.getMessage("rights.exception");
+        MessagePopup.warning(view, msg);
       }
     } catch (GroupException ex) {
       MessagePopup.warning(view, MessageUtil.getMessage("band.delete.info", ex.getMessage()));
@@ -385,7 +386,7 @@ public class GroupFileEditor
       GemLogger.logException(i);
     }
   }
-  
+
   @Override
   public void postEvent(GemEvent evt) {
     if (evt instanceof RehearsalEvent) {

@@ -1,5 +1,5 @@
 /*
- * @(#)CommunAccountTransferDlg.java	2.11.3 16/11/16
+ * @(#)CommunAccountTransferDlg.java	2.11.3 30/11/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -84,8 +84,8 @@ public class CommunAccountTransferDlg
     add(p, BorderLayout.CENTER);
     add(buttons, BorderLayout.SOUTH);
     setLocation(200, 100);
-    //setSize(450,380);
-    pack();
+    setSize(450,300);
+    //pack();
   }
 
   @Override
@@ -93,7 +93,13 @@ public class CommunAccountTransferDlg
     // mode of payment selected in dialog
     String modeOfPayment = transferView.getModeOfPayment();
 
-    Vector<OrderLine> orderLines = getOrderLines(modeOfPayment);
+    Vector<OrderLine> orderLines = getOrderLines(
+      modeOfPayment,
+      transferView.getDateStart(),
+      transferView.getDateEnd(),
+      transferView.getSchool(),
+      transferView.withUnpaid()
+    );
     if (orderLines.size() <= 0) {
       MessagePopup.information(this, MessageUtil.getMessage("payment.transfer.empty.collection"));
       return;
@@ -114,6 +120,7 @@ public class CommunAccountTransferDlg
         List<String> errorsCSV = exportService.exportCSV(path, orderLines);
         if (errorsCSV.size() > 0) {
           writeErrorLog(errorsCSV, path + ".log");
+          MessagePopup.warning(this, MessageUtil.getMessage("payment.transfer.error.log.warning", new Object[] {errorsCSV.size(), path + ".log"}));
         }
       } else {
         if (ModeOfPayment.FAC.toString().equalsIgnoreCase(modeOfPayment)) {
@@ -126,7 +133,7 @@ public class CommunAccountTransferDlg
       }
       MessagePopup.information(this, MessageUtil.getMessage("payment.transfer.info", new Object[]{orderLines.size() - errors, path}));
     } catch (IOException ioe) {
-      System.err.println(ioe.getMessage());
+      GemLogger.log(ioe.getMessage());
     } catch (SQLException sqe) {
       GemLogger.logException(MessageUtil.getMessage("payment.transfer.exception"), sqe, this);
     } finally {
@@ -134,35 +141,19 @@ public class CommunAccountTransferDlg
     }
   }
 
-  protected Vector<OrderLine> getOrderLines(String modeOfPayment) {
+  protected Vector<OrderLine> getOrderLines(String modeOfPayment, DateFr start, DateFr end, int school, boolean withUnpaid) {
 
-    DateFr start = transferView.getDateStart();
-    DateFr end = transferView.getDateEnd();
-    int school = transferView.getSchool();
-
-    String query = "WHERE echeance >= '" + start + "' AND echeance <= '" + end
-            + "' AND ecole = '" + school
-            + "' AND paye = 't' AND transfert = 'f' AND reglement = '" + modeOfPayment + "'";
-    // les échéances de type prélèvement impliquent que le payeur ait un rib et qu'il existe en tant que contact.
-    if (ModeOfPayment.PRL.name().equals(modeOfPayment)) {
-      // TODO vérification iban/bic ??
-      query += " AND payeur IN (SELECT idper FROM rib) AND payeur IN (SELECT id FROM personne)";
+    String query = "WHERE echeance >= '" + start + "' AND echeance <= '" + end + "' AND ecole = '" + school + "'";
+    if (!withUnpaid) {
+      query += " AND paye = 't'";
     }
+    query += " AND transfert = 'f' AND reglement = '" + modeOfPayment + "'";
     // DO NOT export if no facture is present
     if (ModeOfPayment.FAC.name().equals(modeOfPayment)) {
-      query += " AND (facture IS NOT NULL OR facture != '')";
+      query += " AND facture IS NOT NULL AND facture != ''";
     }
 
     return OrderLineIO.find(query, dc);
   }
-  
-  private void writeErrorLog(List<String> errors,  String path) throws IOException {
-    if (errors.size() > 0) {
-      try (PrintWriter logFile = new PrintWriter(new FileWriter(path))) {
-        for(String e : errors) {
-        logFile.println(e);
-        }
-      }
-    }
-  }
+
 }

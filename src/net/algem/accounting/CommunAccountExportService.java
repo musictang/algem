@@ -1,5 +1,5 @@
 /*
- * @(#)CommunAccountExportService.java	2.9.4.12 23/09/15
+ * @(#)CommunAccountExportService.java	2.11.3 30/11/16
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -31,8 +31,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import net.algem.bank.BankUtil;
 import net.algem.bank.Rib;
 import net.algem.bank.RibIO;
@@ -42,6 +40,7 @@ import net.algem.contact.ContactIO;
 import net.algem.contact.Person;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
+import net.algem.util.MessageUtil;
 import net.algem.util.TextUtil;
 import net.algem.util.model.ModelNotFoundException;
 
@@ -95,7 +94,7 @@ public abstract class CommunAccountExportService
    *
    * @param account account id
    * @return journal code
-   * 
+   *
    */
   @Override
   public String getCodeJournal(int account) {
@@ -185,6 +184,9 @@ public abstract class CommunAccountExportService
       out.print("id payeur;payeur;id adherent;adherent;date;reglement;piece;libelle;montant;n°compte;libelle compte;analytique;libelle analytique" + TextUtil.LINE_SEPARATOR);
       for (int i = 0, n = orderLines.size(); i < n; i++) {
         e = orderLines.elementAt(i);
+        if (!e.isPaid()) {
+          errors.add(MessageUtil.getMessage("payment.transfer.unpaid.error", e.getPayer()));
+        }
         String modeOfPayment = e.getModeOfPayment();
         if (ModeOfPayment.PRL.name().equals(modeOfPayment)) {
           List<String> err = checkDirectDebit(e, ddService);
@@ -217,28 +219,36 @@ public abstract class CommunAccountExportService
       return errors;
     }
   }
-  
+
   private List<String> checkDirectDebit(OrderLine e, DirectDebitService ddService) {
     List<String> errors = new ArrayList<>();
     int payer = e.getPayer();
 
     Rib rib = RibIO.findId(payer, dbx);
     if (rib == null) {
-      errors.add("Payeur " + payer + " : pas de RIB");
+      errors.add(MessageUtil.getMessage("direct.debit.transfer.null.rib.error", payer));
     } else {
       if (rib.getIban() == null || !rib.getIban().matches(SepaXmlBuilder.IBAN_REGEX) || !BankUtil.isIbanOk(rib.getIban())) {
-        errors.add("Payeur " + payer + ": erreur IBAN");
-      }
-//      if (rib.getB)
-      DDMandate mandate;
+        errors.add(MessageUtil.getMessage("direct.debit.transfer.iban.error", payer));
+    }
+
       try {
-        //mandate = ddService.getMandateWithBic(payer);
-        if (mandate.getBic() == null) {
-          errors.add("Payeur " + payer + ": pas de MANDAT SEPA");
+        DDMandate mandate = ddService.getMandate(payer);
+        if (mandate == null) {
+          errors.add(MessageUtil.getMessage("direct.debit.transfer.null.mandate.error", payer));
+        } else {
+          if (!mandate.isValid() || DDSeqType.LOCK == mandate.getSeqType()) {
+            errors.add(MessageUtil.getMessage("direct.debit.transfer.outdated.mandate.error", new Object[]{payer, mandate.getName()}));
+          }
+          if (mandate.getBic() == null) {
+            errors.add(MessageUtil.getMessage("direct.debit.transfer.null.bic.error", new Object[]{payer, mandate.getName()}));
+          } else if (!BankUtil.isBicOk(mandate.getBic())) {
+            errors.add(MessageUtil.getMessage("direct.debit.transfer.bic.error", new Object[]{payer, mandate.getName()}));
+          }
         }
       } catch (DDMandateException ex) {
         GemLogger.logException(ex);
-        errors.add("Payeur " + payer + ": erreur MANDAT");
+        errors.add(MessageUtil.getMessage("direct.debit.transfer.mandate.error", payer));
       }
 
     }

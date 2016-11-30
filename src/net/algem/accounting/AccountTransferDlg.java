@@ -1,7 +1,7 @@
 /*
- * @(#)AccountTransferDlg.java	2.8.w 09/07/14
+ * @(#)AccountTransferDlg.java	2.11.3 30/11/16
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -26,7 +26,11 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
 import javax.swing.JButton;
@@ -42,9 +46,9 @@ import net.algem.util.ui.MessagePopup;
 
 /**
  * Dialog for transfering orderlines to a file readable by accounting software.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.11.3
  * @since 2.8.r 13/12/13
  */
 public abstract class AccountTransferDlg
@@ -124,7 +128,17 @@ public abstract class AccountTransferDlg
     }
   }
 
-  
+  protected void writeErrorLog(List<String> errors, String path) throws IOException {
+    if (errors.size() > 0) {
+      try (PrintWriter logFile = new PrintWriter(new FileWriter(path))) {
+        for (String e : errors) {
+          logFile.println(e);
+        }
+      }
+    }
+  }
+
+
   /**
    * Transfer order lines.
    */

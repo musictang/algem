@@ -1,7 +1,7 @@
 /*
- * @(#)AccountDocumentTransferView.java	2.8.a 01/04/13
- * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * @(#)AccountDocumentTransferView.java	2.11.3 30/11/16
+ *
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.accounting;
 
@@ -28,10 +28,10 @@ import net.algem.util.ui.GridBagHelper;
 
 /**
  * View transfer from document number.
- * 
+ *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.11.3
  */
 public class AccountDocumentTransferView
         extends AccountTransferView
@@ -42,8 +42,9 @@ public class AccountDocumentTransferView
   public AccountDocumentTransferView(DataCache dataCache) {
     super(dataCache);
     document = new GemField(8);
-    gb.add(new JLabel(BundleUtil.getLabel("Document.number.label")), 0, 4, 1, 1, GridBagHelper.EAST);
-    gb.add(document, 1, 4, 2, 1, GridBagHelper.WEST);
+    int idx = mainPanel.getComponentCount();
+    gb.add(new JLabel(BundleUtil.getLabel("Document.number.label")), 0, idx, 1, 1, GridBagHelper.EAST);
+    gb.add(document, 1, idx, 2, 1, GridBagHelper.WEST);
   }
 
   public String getDocument() {

@@ -1,5 +1,5 @@
 /*
- * @(#)AccountUtil.java	2.10.0 19/05/16
+ * @(#)AccountUtil.java	2.11.3 30/11/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -40,7 +40,7 @@ import net.algem.util.DataConnection;
  * Utility class for orderline operations.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.11.3
  * @since 2.0r
  */
 public class AccountUtil {
@@ -92,10 +92,10 @@ public class AccountUtil {
    * @param date schedule date
    * @param pref accounts preference
    * @param amount order amount
-   * @param idCard order id == card id
+   * @param link link to this rehearsal (card id if subscription, scheduleId if not)
    * @return a single orderline
    */
-  public static OrderLine setRehearsalOrderLine(PersonFile pf, DateFr date, Preference pref, double amount, int idCard) {
+  public static OrderLine setRehearsalOrderLine(PersonFile pf, DateFr date, Preference pref, double amount, int link) {
 
     OrderLine e = new OrderLine();
     e.setMember(pf.getId());
@@ -112,7 +112,7 @@ public class AccountUtil {
     // Il est préférable que la date d'échéance corresponde à la date de répétition
     // La plupart du temps, l'échéance est encaissée le jour de la répétition
     e.setDate(date);
-    e.setOrder(idCard);
+    e.setOrder(link);
     String s = ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey());
     e.setSchool(Integer.parseInt(s));
     e.setAccount(new Account((Integer) pref.getValues()[0]));

@@ -1,5 +1,5 @@
 /*
- * @(#)MemberRehearsalCtrl.java	2.9.5 17/02/16
+ * @(#)MemberRehearsalCtrl.java	2.11.3 30/11/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -50,7 +50,7 @@ import net.algem.util.ui.PopupDlg;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.5
+ * @version 2.11.3
  * @since 1.0a 12/12/2001
  */
 public class MemberRehearsalCtrl
@@ -290,7 +290,7 @@ public class MemberRehearsalCtrl
           pass = passList.get(0);
         } else {
           MessagePopup.warning(this, MessageUtil.getMessage("no.subscription.pass.warning"));
-          saveSinglePayment(view.getRoom());
+          saveSinglePayment(view.getRoom(),0);
           return true;
         }
 
@@ -307,7 +307,7 @@ public class MemberRehearsalCtrl
           ((PersonFileEditor) actionListener).contentsChanged(event);
         }
       } else {
-        saveSinglePayment(view.getRoom());
+        saveSinglePayment(view.getRoom(), so.getId());
       }
     } catch (MemberException e) {
       throw e;
@@ -317,6 +317,12 @@ public class MemberRehearsalCtrl
     return true;
   }
 
+  /**
+   *
+   * @param subscription subscription card selected
+   * @param schedule the schedule to book
+   * @throws MemberException
+   */
   public void order(boolean subscription, Schedule schedule) throws MemberException {
 
     try {
@@ -372,20 +378,29 @@ public class MemberRehearsalCtrl
    * Calculates the price of the session for this specific room {@literal roomId}
    * and possibly save it.
    * @throws SQLException
+   * @param roomId room id
+   * @param scheduleId schedule id (this id is used in order line for linking)
+   * @throws SQLException
    */
-  private void saveSinglePayment(int roomId) throws SQLException {
+  private void saveSinglePayment(int roomId, int scheduleId) throws SQLException {
     Room s = ((RoomIO) DataCache.getDao(Model.Room)).findId(roomId);
     double amount = RehearsalUtil.calcSingleRehearsalAmount(view.getHourStart(), view.getHourEnd(), s.getRate(), 1, dc);
     if (amount > 0.0) {
-      memberService.saveRehearsalOrderLine(personFile, view.getDate(), amount, 0);
+      memberService.saveRehearsalOrderLine(personFile, view.getDate(), amount, scheduleId);
     }
   }
 
+  /**
+   *
+   * @param schedule schedule to book
+   * @param pf person file
+   * @throws SQLException
+   */
   private void saveSinglePayment(Schedule schedule, PersonFile pf) throws SQLException {
     Room room = ((RoomIO) DataCache.getDao(Model.Room)).findId(schedule.getIdRoom());
     double amount = RehearsalUtil.calcSingleRehearsalAmount(schedule.getStart(), schedule.getEnd(), room.getRate(), 1, dc);
     if (amount > 0.0) {
-      memberService.saveRehearsalOrderLine(pf, schedule.getDate(), amount, 0);
+      memberService.saveRehearsalOrderLine(pf, schedule.getDate(), amount, schedule.getId());
     }
   }
 

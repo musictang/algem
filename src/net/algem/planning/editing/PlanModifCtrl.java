@@ -20,6 +20,7 @@
  */
 package net.algem.planning.editing;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
@@ -28,6 +29,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
+import javax.swing.JComponent;
 
 import net.algem.Algem;
 import net.algem.config.ConfigKey;
@@ -873,33 +875,23 @@ public class PlanModifCtrl
     dlg.show();
     if (dlg.isValidate()) {
       try {
+        int delay = getDefaultCancelDelay(GemGroupService.BOOKING_CANCEL_DELAY);
         // suppression du planning
         service.deleteRehearsal(dlg.getDateStart(), dlg.getDateEnd(), plan);
         if (ScheduleObject.MEMBER == plan.getType()) {
-          memberService.cancelSubscriptionCardSession(dataCache, plan);
+//TODO force delete session
+            if (!memberService.cancelSubscriptionCardSession(dataCache, plan)) {
+              if (forceDeletePayment(delay)) {
+                memberService.deleteOrderLine(dlg.getDateStart(), plan.getIdPerson(), 0, plan.getId());
+              }
+            }
+//          }
         } else if (ScheduleObject.GROUP == plan.getType()) {
           // annulation échéance
           Group g = new GemGroupService(dc).find(plan.getIdPerson());
           if (g != null && g.getIdref() > 0) {
-            String confDelay = ConfigUtil.getConf(ConfigKey.BOOKING_CANCEL_DELAY.getKey());
-            int delay = GemGroupService.BOOKING_CANCEL_DELAY;
-            try {
-              delay = Integer.parseInt(confDelay);
-            } catch(NumberFormatException nfe) {
-              GemLogger.log(nfe.getMessage());
-            }
-            boolean ok = true;
-            if (!RehearsalUtil.isCancelledBefore(plan.getDate(), delay)) {
-              if (!dataCache.authorize("OrderLine.rehearsal.cancelling.auth")) {
-                ok = false;
-                Toast.showToast(desktop, MessageUtil.getMessage("rehearsal.payment.cancel.warning"), 4000);
-              }
-              if (ok && !MessagePopup.confirm(null, MessageUtil.getMessage("rehearsal.payment.cancel.confirmation"), "Confirmation")) {
-                ok = false;
-              }
-            }
-            if (ok) {
-              memberService.deleteOrderLine(dlg.getDateStart(), g.getIdref());
+            if (forceDeletePayment(delay)) {
+              memberService.deleteOrderLine(dlg.getDateStart(), g.getIdref(), g.getId(),0);// referent
             }
           }
         }
@@ -910,6 +902,40 @@ public class PlanModifCtrl
         GemLogger.log(ex.getMessage());
       }
     }
+  }
+
+  private int getDefaultCancelDelay(int def) {
+    String confDelay = ConfigUtil.getConf(ConfigKey.BOOKING_CANCEL_DELAY.getKey());
+    try {
+      return Integer.parseInt(confDelay);
+    } catch (NumberFormatException nfe) {
+      GemLogger.log(nfe.getMessage());
+      return def;
+    }
+  }
+
+  private boolean forceDeletePayment(int delay) {
+    boolean ok = true;
+    if (!RehearsalUtil.isCancelledBefore(plan.getDate(), delay)) {
+      if (!dataCache.authorize("OrderLine.rehearsal.cancelling.auth")) {
+        ok = false;
+        MessagePopup.warning(desktop.getFrame(), MessageUtil.getMessage("rehearsal.payment.cancel.warning"));
+        //Toast.showToast(desktop, MessageUtil.getMessage("rehearsal.payment.cancel.warning"), 4000);
+      }
+      if (ok && !MessagePopup.confirm(desktop.getFrame(), MessageUtil.getMessage("rehearsal.payment.cancel.confirmation"), "Confirmation")) {
+        ok = false;
+      }
+    }
+    return ok;
+  }
+
+   private boolean forceDeleteSession(int delay) {
+    if (!RehearsalUtil.isCancelledBefore(plan.getDate(), delay)) {
+      if (!MessagePopup.confirm(desktop.getFrame(), MessageUtil.getMessage("Décompter de l'abonnement ?"))) {
+        return false;
+      }
+    }
+    return true;
   }
 
   /**

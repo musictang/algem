@@ -1,5 +1,5 @@
 /*
- * @(#)GemGroupService.java	2.9.5 26/02/16
+ * @(#)GemGroupService.java	2.11.3 30/11/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -42,7 +42,7 @@ import net.algem.util.model.Model;
  * Service class for group operations.
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.5
+ * @version 2.11.3
  * @since 2.4.a 10/05/12
  */
 public class GemGroupService
@@ -344,7 +344,7 @@ public class GemGroupService
       dc.setAutoCommit(true);
     }
   }
-  
+
   public void order(Schedule schedule, Group g) throws GroupException {
     Room room = ((RoomIO) DataCache.getDao(Model.Room)).findId(schedule.getIdRoom());
     double amount = RehearsalUtil.calcSingleRehearsalAmount(schedule.getStart(), schedule.getEnd(), room.getRate(), getNumberOfMusicians(g), dc);

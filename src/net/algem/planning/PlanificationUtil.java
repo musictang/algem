@@ -1,5 +1,5 @@
 /*
- * @(#)PlanificationUtil.java	2.8.w 21/07/14
+ * @(#)PlanificationUtil.java	2.11.3 30/11/16
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -29,7 +29,7 @@ import net.algem.room.DailyTimes;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.11.3
  * @since 2.8.v 29/05/14
  */
 public class PlanificationUtil
@@ -50,14 +50,14 @@ public class PlanificationUtil
     }
     return false;
   }
-  
+
   /**
    * Checks if room is closed at date {@code date} or closed at time {@code h}.
    * @param room room id
    * @param date start date
    * @param h time
    * @return null if room is free, null time if room is closed
-   * or opening/closing time if selected time before/after opening/closing time 
+   * or opening/closing time if selected time before/after opening/closing time
    */
   public static Hour isRoomClosed(int room, DateFr date, Hour h) {
     DailyTimes [] times = ConfigUtil.getTimes(room);
@@ -70,7 +70,7 @@ public class PlanificationUtil
     }
     if (h.before(first)) {
       return first;
-    } else if ( h.after(last)) {
+    } else if (h.after(last)) {
       return last;
     } else {
       return null;

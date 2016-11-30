@@ -1,5 +1,5 @@
 /*
- * @(#)RoomService.java 2.9.6 18/03/16
+ * @(#)RoomService.java 2.11.3 30/11/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -43,7 +43,7 @@ import net.algem.util.ui.MessagePopup;
  * Service class for room operations.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.6
+ * @version 2.11.3
  * @since 2.2.b
  */
 public class RoomService
@@ -75,7 +75,7 @@ public class RoomService
           Person p = createDefaultContact(r.getName());
           ((PersonIO) DataCache.getDao(Model.Person)).insert(p);
           r.setContact(new Contact(p));
-        } 
+        }
         r.setPayer(new Person(r.getContact().getId()));
         roomIO.insert(r);
         if (r.getEquipment() == null) {
@@ -96,7 +96,7 @@ public class RoomService
       throw new RoomException(message);
     }
   }
-  
+
   private Person createDefaultContact(String name) {
     Person p = new Person();
     p.setName(name);
@@ -260,7 +260,7 @@ public class RoomService
       }
     }
     closed = PlanificationUtil.isRoomClosed(room, date, hEnd);
-    if (closed != null) {
+    if (closed != null && hEnd.after(closed)) {
       if (!MessagePopup.confirm(null, MessageUtil.getMessage("closing.room.warning", closed))) {
         return false;
       }

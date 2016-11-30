@@ -1,5 +1,5 @@
 /*
- * @(#)AccountTransferView.java	2.8.w 08/07/14
+ * @(#)AccountTransferView.java	2.11.3 30/11/16
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -37,7 +37,6 @@ import net.algem.planning.DateFr;
 import net.algem.planning.DateRangePanel;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
-import net.algem.util.MessageUtil;
 import net.algem.util.model.Model;
 import net.algem.util.ui.GemPanel;
 import net.algem.util.ui.GridBagHelper;
@@ -47,7 +46,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.11.3
  * @since 1.0a 07/07/1999
  */
 public class AccountTransferView
@@ -59,6 +58,8 @@ public class AccountTransferView
   protected DateRangePanel dateRange;
   protected JCheckBox csv;
   protected GridBagHelper gb;
+  protected GemPanel mainPanel;
+  protected JCheckBox unpaid;
 
   public AccountTransferView() {
   }
@@ -68,7 +69,7 @@ public class AccountTransferView
     setLayout(new BorderLayout());
     setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 
-    GemPanel mainPanel = new GemPanel(new GridBagLayout());
+    mainPanel = new GemPanel(new GridBagLayout());
     mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
     gb = new GridBagHelper(mainPanel);
@@ -76,12 +77,40 @@ public class AccountTransferView
     payment = new JComboBox(ParamTableIO.getValues(ModeOfPaymentCtrl.TABLE,
             ModeOfPaymentCtrl.COLUMN_NAME,
             DataCache.getDataConnection()));
+    payment.addItemListener(new ItemListener() {
+      @Override
+      public void itemStateChanged(ItemEvent e) {
+        if (csv.isSelected() && e.getStateChange() == ItemEvent.SELECTED && ModeOfPayment.PRL.name().equals(e.getItem())) {
+          addUnpayedOptionCheck();
+        } else {
+          if (unpaid != null) {
+            mainPanel.remove(unpaid);
+            revalidate();
+          }
+        }
+      }
+    });
     schoolChoice = new ParamChoice(dataCache.getList(Model.School).getData());
 
     Date now = new Date();
     dateRange = new DateRangePanel(new DateFr(now), new DateFr(now));
-    csv = new JCheckBox(MessageUtil.getMessage("csv.export.label"));
+    csv = new JCheckBox(BundleUtil.getLabel("Payment.schedule.transfer.csv.label"));
+    csv.setToolTipText(BundleUtil.getLabel("Payment.schedule.transfer.csv.tip"));
     csv.setBorder(null);
+    csv.addItemListener(new ItemListener() {
+      @Override
+      public void itemStateChanged(ItemEvent e) {
+        if (e.getStateChange() == ItemEvent.SELECTED && ModeOfPayment.PRL.name().equals(payment.getSelectedItem())) {
+          addUnpayedOptionCheck();
+        } else {
+          if (unpaid != null) {
+            unpaid.setSelected(false);
+            mainPanel.remove(unpaid);
+            revalidate();
+          }
+        }
+      }
+    });
 
     gb.add(new JLabel(BundleUtil.getLabel("Period.label")), 0, 0, 1, 1, GridBagHelper.EAST);
     gb.add(new JLabel(BundleUtil.getLabel("School.label")), 0, 1, 1, 1, GridBagHelper.EAST);
@@ -113,4 +142,19 @@ public class AccountTransferView
   public boolean withCSV() {
     return csv.isSelected();
   }
+
+  protected void addUnpayedOptionCheck() {
+    if (unpaid == null) {
+      unpaid = new JCheckBox(BundleUtil.getLabel("Payment.schedule.tranfer.unpaid.label"));
+      unpaid.setToolTipText(BundleUtil.getLabel("Payment.schedule.tranfer.unpaid.tip"));
+      unpaid.setBorder(null);
+    }
+    gb.add(unpaid, 1, 4, 2, 1, GridBagHelper.WEST);
+    revalidate();
+  }
+
+  public boolean withUnpaid() {
+    return unpaid != null && unpaid.isSelected();
+  }
+
 }

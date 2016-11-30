@@ -1,6 +1,6 @@
 /*
  * @(#)DirectDebitIO.java 2.9.6 22/03/16
- * 
+ *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.accounting;
 
@@ -70,7 +70,7 @@ public class DirectDebitIO
     }
     return null;
   }
-  
+
   DDMandate getMandateWithBic(int idper) throws SQLException {
     String query = "SELECT s.*, g.bic, p.nom FROM " + TABLE + " s JOIN " + PersonIO.TABLE + " p ON (s.payeur = p.id)"
             + " LEFT JOIN " + RibIO.TABLE + " r ON (s.payeur = r.idper) LEFT JOIN " + BranchIO.TABLE + " g ON (r.guichetid = g.id)"
@@ -80,7 +80,8 @@ public class DirectDebitIO
     ResultSet rs = dc.executeQuery(query);
     while (rs.next()) {
       DDMandate m = getMandateFromRs(rs);
-      m.setBic(rs.getString(9));
+      m.setBic(rs.getString(8));
+      m.setName(rs.getString(9));
       return m;
     }
     return null;
@@ -296,7 +297,7 @@ public class DirectDebitIO
             + " AND seqtype = '" + DDSeqType.FRST.name() + "'";
     dc.executeUpdate(query);
   }
-  
+
   void updateLastDebit(String ddDate, String mandates) throws SQLException {
     String query = "UPDATE " + TABLE + " SET lastdebit = '" + ddDate
             +  "' WHERE id IN(" + mandates + ")";
@@ -313,6 +314,6 @@ public class DirectDebitIO
     String query = "DELETE FROM " + TABLE + " WHERE lastdebit IS NULL AND id = " + id;
     dc.executeUpdate(query.toString());
   }
-  
+
 
 }

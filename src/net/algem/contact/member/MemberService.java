@@ -1,5 +1,5 @@
 /*
- * @(#)MemberService.java	2.10.0 01/06/16
+ * @(#)MemberService.java	2.11.3 30/11/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -49,7 +49,7 @@ import net.algem.util.model.Model;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.11.3
  * @since 2.4.a 14/05/12
  */
 public class MemberService
@@ -135,24 +135,30 @@ public class MemberService
    * @throws java.sql.SQLException
    * @throws net.algem.contact.member.MemberException
    */
-  public void cancelSubscriptionCardSession(DataCache dc, ScheduleObject plan) throws SQLException, MemberException {
+  public boolean cancelSubscriptionCardSession(DataCache dc, ScheduleObject plan) throws SQLException, MemberException {
     PersonSubscriptionCard card = getLastSubscription(plan.getIdPerson(), true);
     if (card == null) {
-      return;
+      return false;
     }
-    int duration = plan.getStart().getLength(plan.getEnd());
 
-    card.inc(duration);
+    boolean hasSession = false;
     Iterator<SubscriptionCardSession> iterator = card.getSessions().iterator();
     while(iterator.hasNext()) {
       SubscriptionCardSession s = iterator.next();
       if (s.getScheduleId() == plan.getId()) {
         iterator.remove();
+        hasSession = true;
         break;
       }
-
     }
-    updateSubscriptionCard(card);
+    if (hasSession) {
+      int duration = plan.getStart().getLength(plan.getEnd());
+      card.inc(duration);
+
+      updateSubscriptionCard(card);
+      return true;
+    }
+    return false;
   }
 
   public PersonSubscriptionCard getLastSubscription(int idper, boolean complete) {
@@ -227,7 +233,7 @@ public class MemberService
 
   private void deleteSubscriptionCard(PersonSubscriptionCard abo) throws SQLException {
     cardIO.delete(abo.getId());
-    deleteOrderLine(abo.getPurchaseDate(), abo.getIdper());
+    deleteOrderLine(abo.getPurchaseDate(), abo.getIdper(), 0,0);
   }
 
   public void create(PersonSubscriptionCard card) throws SQLException {
@@ -238,8 +244,11 @@ public class MemberService
     cardIO.update(card);
   }
 
-  public void deleteOrderLine(DateFr date, int member) throws SQLException {
+  public void deleteOrderLine(DateFr date, int member, int group, int scheduleId) throws SQLException {
     String where = "WHERE echeance = '" + date + "' AND adherent = " + member + " AND paye = 'f' AND transfert = 'f'";
+    if (group > 0) {
+      where += " AND groupe = " + group;
+    }
     Vector<OrderLine> ve = OrderLineIO.find(where, dc);
     if (ve.size() > 0) {
       OrderLineIO.delete(ve.elementAt(0), dc); // suppression de la première échéance trouvée seulement

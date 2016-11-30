@@ -1,5 +1,5 @@
 /*
- * @(#)SepaXmlBuilder.java	2.9.6 23/03/16
+ * @(#)SepaXmlBuilder.java	2.11.3 30/11/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -37,7 +37,7 @@ import net.algem.util.TextUtil;
  * Xml builder for creating documents in pain.008.001.02 standard scheme.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.6
+ * @version 2.11.3
  * @see <a href="http:\\www.iso20022.org">iso20022</a>
  * @since 2.8.r 24/12/13
  *
@@ -53,7 +53,7 @@ public class SepaXmlBuilder
   private static int SHORT_LENGTH = 35;
   private DirectDebitService service;
   private StringBuilder sbMailing, sbLog;
-  
+
   private Pattern ibanPattern;
   private int totalDebit = 0;
   private int numberOfGlobalTx = 0;
@@ -282,7 +282,8 @@ public class SepaXmlBuilder
       sb.append("<DbtrAgt><FinInstnId><BIC>").append(mandate.getBic()).append("</BIC></FinInstnId></DbtrAgt>");
     } else {
       addLogInfo(mandate.getIdper(), " -> BIC");
-      sb.append("<DbtrAgt><FinInstnId><Othr><Id>NOTPROVIDED</Id></Othr></FinInstnId></DbtrAgt>");
+      return null;
+      //sb.append("<DbtrAgt><FinInstnId><Othr><Id>NOTPROVIDED</Id></Othr></FinInstnId></DbtrAgt>");
     }
     indent(sb, 4);
     sb.append("<Dbtr><Nm>").append(mandate.getName()).append("</Nm></Dbtr>");
