@@ -1,5 +1,5 @@
 /*
- * @(#)MemberService.java	2.11.3 30/11/16
+ * @(#)MemberService.java	2.11.3 01/12/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -132,6 +132,7 @@ public class MemberService
    *
    * @param dc dataCache
    * @param plan schedule
+   * @return true if some session was found
    * @throws java.sql.SQLException
    * @throws net.algem.contact.member.MemberException
    */
@@ -154,7 +155,6 @@ public class MemberService
     if (hasSession) {
       int duration = plan.getStart().getLength(plan.getEnd());
       card.inc(duration);
-
       updateSubscriptionCard(card);
       return true;
     }
@@ -398,13 +398,14 @@ public class MemberService
    *
    * @param pFile person file
    * @param date date of reservation
-   * @param amount
+   * @param amount total of the order
+   * @param linkId If subscription, this is the id of the card, else the id of the schedule
    * @throws SQLException
    */
-  public void saveRehearsalOrderLine(PersonFile pFile, DateFr date, double amount, int idCard) throws SQLException {
+  public void saveRehearsalOrderLine(PersonFile pFile, DateFr date, double amount, int linkId) throws SQLException {
 
     Preference p = AccountPrefIO.find(AccountPrefIO.REHEARSAL, dc);
-    OrderLine e = AccountUtil.setRehearsalOrderLine(pFile, date, p, amount, idCard);
+    OrderLine e = AccountUtil.setRehearsalOrderLine(pFile, date, p, amount, linkId);
 
     AccountUtil.createEntry(e, dc);
   }

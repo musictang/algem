@@ -1,5 +1,5 @@
 /*
-* @(#)OrderLineDlg.java	2.11.2 13/10/16
+* @(#)OrderLineDlg.java	2.11.3 01/12/16
 *
 * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
 *
@@ -52,7 +52,7 @@ import net.algem.util.ui.MessagePopup;
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @author <a href="mailto:damien.loustau@gmail.com">Damien Loustau</a>
- * @version 2.11.2
+ * @version 2.11.3
  * @since 1.0a 07/07/1999
  */
 public class OrderLineDlg
@@ -274,6 +274,10 @@ public class OrderLineDlg
               JOptionPane.ERROR_MESSAGE);
       return;
     }
+    if (!dataCache.authorize("OrderLine.suppression.auth")) {
+      MessagePopup.warning(this, MessageUtil.getMessage("rights.exception"));
+      return;
+    }
     OrderLine e = tableView.getElementAt(n);
 
     if (e.isTransfered()) {
@@ -381,6 +385,12 @@ public class OrderLineDlg
         return;
       }
       OrderLine e = tableView.getElementAt(n);
+      if (e.isTransfered()) {
+        if (!dataCache.authorize("OrderLine.transferred.modification.auth")) {
+          MessagePopup.warning(dlg, MessageUtil.getMessage("rights.exception"));
+          return;
+        }
+      }
       try {
         dlg = new OrderLineView(parent, BundleUtil.getLabel("Order.line.modification"), dataCache, false);
         dlg.addActionListener(this);

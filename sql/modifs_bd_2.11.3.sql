@@ -1,7 +1,7 @@
 COMMENT ON COLUMN person_instrument.ptype IS '1 = élève, 2 = professeur, 3 = musicien';
 
 -- Droits de suppression/modification échéancier
-INSERT INTO menu2 VALUES (148,'OrderLine.modification.auth');
+INSERT INTO menu2 VALUES (148,'OrderLine.suppression.auth');
 INSERT INTO menu2 VALUES (149,'OrderLine.transferred.modification.auth');
 INSERT INTO menu2 VALUES (150,'OrderLine.rehearsal.cancelling.auth');
 

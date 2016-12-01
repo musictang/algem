@@ -19,4 +19,4 @@ INSERT INTO etablissement SELECT p.id,l.idper,true FROM personne p,login l WHERE
 
 --INSERT INTO config VALUES('Activation.etablissement.type', '0');
 INSERT INTO config VALUES('Scripts.path',E'C:\\Algem\\Scripts');
---CREATE RULE protect_first_entry_suivi AS ON DELETE TO suivi WHERE old.id = 0 DO INSTEAD NOTHING;
+CREATE RULE protect_first_entry_suivi AS ON DELETE TO suivi WHERE old.id = 0 DO INSTEAD NOTHING;

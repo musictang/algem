@@ -1,5 +1,5 @@
 /*
- * @(#)OrderLineEditor.java	2.11.3 23/11/16
+ * @(#)OrderLineEditor.java	2.11.3 01/12/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -248,6 +248,10 @@ public class OrderLineEditor
       MessagePopup.warning(this, MessageUtil.getMessage("orderline.suppression.warning"));
       return;
     }
+    if (!dataCache.authorize("OrderLine.suppression.auth")) {
+      MessagePopup.warning(this, MessageUtil.getMessage("rights.exception"));
+      return;
+    }
     int n = tableView.getSelectedRow();
     if (n < 0) {
       JOptionPane.showMessageDialog(this,
@@ -257,7 +261,7 @@ public class OrderLineEditor
       return;
     }
     OrderLine e = tableView.getElementAt(n);
-
+    
     if (e.isTransfered()) {
       JOptionPane.showMessageDialog(this,
         MessageUtil.getMessage("payment.transfer.warning"),

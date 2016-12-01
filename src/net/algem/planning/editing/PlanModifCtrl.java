@@ -1,5 +1,5 @@
 /*
- * @(#)PlanModifCtrl.java	2.11.3 23/11/16
+ * @(#)PlanModifCtrl.java	2.11.3 01/12/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,7 +20,6 @@
  */
 package net.algem.planning.editing;
 
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
@@ -29,7 +28,6 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
-import javax.swing.JComponent;
 
 import net.algem.Algem;
 import net.algem.config.ConfigKey;
@@ -61,7 +59,6 @@ import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.GemMenuButton;
 import net.algem.util.ui.MessagePopup;
-import net.algem.util.ui.Toast;
 
 /**
  * Controller for planning modification.
@@ -879,13 +876,11 @@ public class PlanModifCtrl
         // suppression du planning
         service.deleteRehearsal(dlg.getDateStart(), dlg.getDateEnd(), plan);
         if (ScheduleObject.MEMBER == plan.getType()) {
-//TODO force delete session
-            if (!memberService.cancelSubscriptionCardSession(dataCache, plan)) {
-              if (forceDeletePayment(delay)) {
-                memberService.deleteOrderLine(dlg.getDateStart(), plan.getIdPerson(), 0, plan.getId());
-              }
+          if (!memberService.cancelSubscriptionCardSession(dataCache, plan)) {
+            if (forceDeletePayment(delay)) {
+              memberService.deleteOrderLine(dlg.getDateStart(), plan.getIdPerson(), 0, plan.getId());
             }
-//          }
+          }
         } else if (ScheduleObject.GROUP == plan.getType()) {
           // annulation échéance
           Group g = new GemGroupService(dc).find(plan.getIdPerson());
@@ -904,6 +899,11 @@ public class PlanModifCtrl
     }
   }
 
+  /**
+   * Gets the minimal number of hours required to cancel a rehearsal.
+   * @param def default value
+   * @return a number of hours
+   */
   private int getDefaultCancelDelay(int def) {
     String confDelay = ConfigUtil.getConf(ConfigKey.BOOKING_CANCEL_DELAY.getKey());
     try {
@@ -914,24 +914,28 @@ public class PlanModifCtrl
     }
   }
 
+  /**
+   * Optionally delete payment after cancellation.
+   * @param delay Minimal number of hours required to cancel a rehearsal.
+   * @return true if deleting payment is confirmed
+   */
   private boolean forceDeletePayment(int delay) {
-    boolean ok = true;
     if (!RehearsalUtil.isCancelledBefore(plan.getDate(), delay)) {
       if (!dataCache.authorize("OrderLine.rehearsal.cancelling.auth")) {
-        ok = false;
         MessagePopup.warning(desktop.getFrame(), MessageUtil.getMessage("rehearsal.payment.cancel.warning"));
+        return false;
         //Toast.showToast(desktop, MessageUtil.getMessage("rehearsal.payment.cancel.warning"), 4000);
       }
-      if (ok && !MessagePopup.confirm(desktop.getFrame(), MessageUtil.getMessage("rehearsal.payment.cancel.confirmation"), "Confirmation")) {
-        ok = false;
+      if (!MessagePopup.confirm(desktop.getFrame(), MessageUtil.getMessage("rehearsal.payment.cancel.confirmation"), "Confirmation")) {
+        return false;
       }
     }
-    return ok;
+    return true;
   }
 
    private boolean forceDeleteSession(int delay) {
     if (!RehearsalUtil.isCancelledBefore(plan.getDate(), delay)) {
-      if (!MessagePopup.confirm(desktop.getFrame(), MessageUtil.getMessage("Décompter de l'abonnement ?"))) {
+      if (!MessagePopup.confirm(desktop.getFrame(), MessageUtil.getMessage("Restaurer le nombre d'heures sur la carte ?"))) {
         return false;
       }
     }

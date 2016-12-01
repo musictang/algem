@@ -1,5 +1,5 @@
 /*
- * @(#)PersonView.java	2.11.1 07/10/16
+ * @(#)PersonView.java	2.11.3 01/12/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -58,7 +58,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.0
+ * @version 2.11.3
  */
 public class PersonView
   extends GemPanel {
@@ -384,7 +384,7 @@ public class PersonView
     private final Pattern pattern;
 
     PhotoFileFilter(int idper) {
-      pattern = Pattern.compile("^.*" + idper + "\\.(jpg|jpeg|JPG|JPEG|png|PNG)$");
+      pattern = Pattern.compile("^[a-zA-ZàâäéèêëîïôöùûüÀÂÉÈËÊÎÏÔÙÜ_ \\(\\)-]*" + idper + "\\.(jpg|jpeg|JPG|JPEG|png|PNG)$");
     }
 
     @Override
