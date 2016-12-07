@@ -1,5 +1,5 @@
 /*
- * @(#)MenuPlanning.java	2.10.0 04/06/16
+ * @(#)MenuPlanning.java	2.11.4 02/12/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -48,7 +48,7 @@ import net.algem.util.ui.ProgressMonitorHandler;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.11.4
  * @since 1.0a 07/07/1999
  */
 public class MenuPlanning
@@ -148,7 +148,7 @@ public class MenuPlanning
       desktop.getSelectedModule().setSize(GemModule.L_SIZE);
     } else if (src == miAdministrative) {
       AdministrativeScheduleCtrl adminScheduleCtrl = new AdministrativeScheduleCtrl(desktop);
-      desktop.addPanel("Administrative.scheduling", adminScheduleCtrl);
+      desktop.addPanel("Administrative.scheduling", adminScheduleCtrl, new Dimension(650,480));
     } else if (GemCommand.CANCEL_CMD.equals(arg)) {
       desktop.removeCurrentModule();
     }

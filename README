@@ -15,6 +15,21 @@ You should have received a copy of the GNU Affero General Public License
 along with Algem. If not, see <http://www.gnu.org/licenses/>.
 
 ============================================================================
+PRESENTATION
+============================================================================
+Algem se décompose en deux applications :
+- Une application de bureau en Java (Swing), dédiée au back-office et
+principalement utilisée par l'équipe administrative.
+- Une application web en Java (Spring 3), interface publique du logiciel
+permettant aux adhérents, professeurs, élèves, visiteurs occasionnels
+de consulter leur planning ou leur suivi pédagogique. Cette interface
+permet aussi aux répétiteurs de réserver une salle en ligne.
+
+Cette deuxième application est optionnelle. Le code source de l'application
+web est disponible à cette adresse :
+https://github.com/musictang/algem-web-app
+
+============================================================================
 NOTES POUR LE DEVELOPPEUR
 ============================================================================
 Si le projet vous intéresse, n'hésitez pas à nous contacter.
@@ -215,5 +230,4 @@ EN PROJET
 - Extension et amélioration des exportations de données.
 - Importation de données à partir d'un fichier CSV.
 - Extension des tests unitaires et des tests d'intégration.
-- Rédaction d'une doc utilisateur.
 

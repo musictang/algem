@@ -40,3 +40,5 @@ INSERT INTO menuaccess (select idper, 150, false from login where profil = 1);
 INSERT INTO menuaccess (select idper, 150, false from login where profil = 2);
 INSERT INTO menuaccess (select idper, 150, false from login where profil = 3);
 INSERT INTO menuaccess (select idper, 150, true from login where profil = 4);
+
+UPDATE version SET version='2.11.3';
