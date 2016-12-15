@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package net.algem.accounting;
 
 import java.io.FileWriter;
@@ -29,7 +28,10 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.Vector;
+import net.algem.util.DataConnection;
+import net.algem.util.MessageUtil;
 import net.algem.util.TextUtil;
+import net.algem.util.ui.MessagePopup;
 
 /**
  *
@@ -38,13 +40,19 @@ import net.algem.util.TextUtil;
  * @since 2.11.0 13/12/2016
  */
 public class ExportOpenConcerto
-        extends  CommunAccountExportService
-{
+  extends CommunAccountExportService {
 
   private DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
   private NumberFormat nf = NumberFormat.getInstance(Locale.FRENCH);
-  private static char cd = 'C';// credit
-  private static char dc = 'D';//debit
+
+  public ExportOpenConcerto(DataConnection dc) {
+    dbx = dc;
+    journalService = new JournalAccountService(dc);
+    nf.setGroupingUsed(false);
+    nf.setMinimumFractionDigits(2);
+    nf.setMaximumFractionDigits(2);
+  }
+
   @Override
   public void export(String path, Vector<OrderLine> lines, String codeJournal, Account documentAccount) throws IOException {
     int total = 0;
@@ -52,43 +60,155 @@ public class ExportOpenConcerto
     OrderLine e = null;
     try (PrintWriter out = new PrintWriter(new FileWriter(path))) {
       StringBuilder sb = new StringBuilder();
-      for (int i = 0, n = lines.size(); i < n ; i++) {
-        e =  lines.elementAt(i);
+      for (int i = 0, n = lines.size(); i < n; i++) {
+        e = lines.elementAt(i);
         total += e.getAmount();
-        //String f = (AccountUtil.isPersonalAccount(e.getAccount()) && e.getInvoice() != null) ? e.getInvoice() : e.getInvoiceNumber();
-        //out.print(padWithTrailingZeros(e.getAccount().getNumber(), 10)
-        
         sb.append(dateFormat.format(e.getDate().getDate()));
         sb.append(';').append(codeJournal);
         sb.append(';').append(getAccount(e));
         sb.append(';').append(e.getDocument());
         sb.append(';').append(e.getLabel()).append(' ').append(getInvoiceNumber(e));
-        sb.append(';').append(0.0);
+        sb.append(';').append(nf.format(0.0));
         sb.append(';').append(nf.format(e.getAmount() / 100.0));
         sb.append(';').append(e.getCostAccount().getNumber());
         out.println(sb.toString());
+        sb.delete(0, sb.length());
       }
-      sb.delete(0, sb.length());
+
       if (total > 0) {
         sb.append(dateFormat.format(e.getDate().getDate()));
         sb.append(';').append(codeJournal);
         sb.append(';').append(number);
         sb.append(';').append(e.getDocument());
         sb.append(';').append("CENTRALISE");
-        
-        sb.append(';').append(nf.format(e.getAmount() / 100.0));
-        sb.append(';').append(0.0);
+
+        sb.append(';').append(nf.format(total / 100.0));
+        sb.append(';').append(nf.format(0.0));
         sb.append(';').append(e.getCostAccount().getNumber());
         out.println(sb.toString());
-        out.print(sb.toString());
       }
     }
-    
+
   }
 
   @Override
   public int tiersExport(String path, Vector<OrderLine> lines) throws IOException, SQLException {
-    return -1;
+    OrderLine e = null;
+    int errors = 0;
+    StringBuilder logMessage = new StringBuilder();
+    String m1prefix = MessageUtil.getMessage("account.error");
+    String m2prefix = MessageUtil.getMessage("matching.account.error");
+    boolean m1 = false;
+    boolean m2 = false;
+    if (path.endsWith(".txt")) {
+      path = path.replace(".txt", ".csv");
+    }
+    String logpath = path + ".log";
+
+    try (PrintWriter out = new PrintWriter(new FileWriter(path))) {
+      StringBuilder sb = new StringBuilder();
+      for (int i = 0, n = lines.size(); i < n; i++) {
+        e = lines.elementAt(i);
+        if (!AccountUtil.isPersonalAccount(e.getAccount())) {
+          errors++;
+          logMessage.append(m1prefix).append(" -> ").append(e).append(" [").append(e.getAccount()).append("]").append(TextUtil.LINE_SEPARATOR);
+          m1 = true;
+          continue;
+        }
+
+        int p = getPersonalAccountId(e.getAccount().getId());
+        if (p == 0) {
+          errors++;
+          logMessage.append(m2prefix).append(" -> ").append(e.getAccount()).append(TextUtil.LINE_SEPARATOR);
+          m2 = true;
+          continue;
+        }
+
+        Account c = getAccount(p);
+        String total = nf.format(Math.abs(e.getAmount()) / 100.0); // le montant doit être positif
+        String codeJournal = getCodeJournal(e.getAccount().getId());
+        String f = (e.getInvoice() == null) ? "" : e.getInvoice();
+
+        sb.append(dateFormat.format(e.getDate().getDate()));
+        sb.append(';').append(codeJournal);
+        sb.append(';').append(c.getNumber());
+        sb.append(';').append(e.getDocument());
+        sb.append(';').append(e.getLabel()).append(' ').append(getInvoiceNumber(e));
+        if (e.getAmount() < 0) {
+          sb.append(';').append(total);
+          sb.append(';').append(nf.format(0.0));
+        } else {
+          sb.append(';').append(nf.format(0.0));
+          sb.append(';').append(total);
+        }
+        sb.append(';').append(e.getCostAccount().getNumber());
+        out.println(sb.toString());
+        sb.delete(0, sb.length());
+//        out.print(TextUtil.padWithTrailingZeros(c.getNumber(), 10)
+//          + "#" + dateFormat.format(e.getDate().getDate())
+//          + "#" + codeJournal
+//          + "#" + TextUtil.padWithTrailingSpaces(e.getDocument(), 10)
+//          + "#" + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getLabel(), 24), 24)
+//          + "#" + TextUtil.padWithLeadingZeros(m, 13)
+//          + "#" + (e.getAmount() < 0 ? cd : dc) // cd Crédit
+//          + "#" + TextUtil.padWithTrailingSpaces(e.getCostAccount().getNumber(), 10)
+//          + "#" + (char) 13);
+        sb.append(dateFormat.format(e.getDate().getDate()));
+        sb.append(';').append(codeJournal);
+        sb.append(';').append(getAccount(e));
+        sb.append(';').append(e.getDocument());
+        sb.append(';').append(e.getLabel()).append(' ').append(getInvoiceNumber(e));
+        if (e.getAmount() < 0) {
+          sb.append(';').append(nf.format(0.0));
+          sb.append(';').append(total);
+        } else {
+          sb.append(';').append(total);
+          sb.append(';').append(nf.format(0.0));
+        }
+        sb.append(';').append(e.getCostAccount().getNumber());
+        out.println(sb.toString());
+        sb.delete(0, sb.length());
+//        out.print(
+//          TextUtil.padWithTrailingZeros(getAccount(e), 10) // compte client
+//            + "#" + dateFormat.format(e.getDate().getDate())
+//            + "#" + codeJournal
+//            + "#" + TextUtil.padWithTrailingSpaces(f, 10)
+//            + "#" + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getLabel(), 24), 24)
+//            + "#" + TextUtil.padWithLeadingZeros(m, 13)
+//            + "#" + (e.getAmount() < 0 ? dc : cd) //dc Débit
+//            + "#" + TextUtil.padWithTrailingSpaces("", 10)
+//            + "#" + (char) 13);//CR (Carriage return, retour à la ligne)
+      }
+    }
+
+    if (logMessage.length() > 0) {
+      PrintWriter log = new PrintWriter(new FileWriter(logpath));
+      log.println(logMessage.toString());
+      log.close();
+    }
+
+    String errorsMessage = null;
+    if (errors > 0) {
+      if (m1) {
+        errorsMessage += MessageUtil.getMessage("personal.account.export.warning");
+      }
+      if (m2) {
+        errorsMessage += MessageUtil.getMessage("no.revenue.matching.warning");
+      }
+      String err = MessageUtil.getMessage("error.count.warning", errors);
+      String log = MessageUtil.getMessage("see.log.file", path);
+      MessagePopup.warning(null, err + errorsMessage + log);
+    }
+
+    return errors;
+  }
+
+  private boolean checkPersonalAccount(OrderLine e, StringBuilder logMessage, String prefix) {
+    if (!AccountUtil.isPersonalAccount(e.getAccount())) {
+      logMessage.append(prefix).append(" -> ").append(e).append(" [").append(e.getAccount()).append("]").append(TextUtil.LINE_SEPARATOR);
+      return false;
+    }
+    return true;
   }
 
 }

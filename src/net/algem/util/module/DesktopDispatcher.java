@@ -38,7 +38,7 @@ import net.algem.util.GemLogger;
 public class DesktopDispatcher {
 
   static final int DEFAULT_SOCKET_PORT = 5433;
-  
+
   Vector<ObjectInputStream> ins = new Vector<ObjectInputStream>();
   Vector<ObjectOutputStream> outs = new Vector<ObjectOutputStream>();
 
@@ -64,4 +64,4 @@ public class DesktopDispatcher {
       }
     }
   }
-}
+  }

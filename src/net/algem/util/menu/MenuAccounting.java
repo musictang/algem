@@ -256,6 +256,9 @@ public class MenuAccounting
     if (format.equals(AccountingExportFormat.SAGE.getLabel())) {
       return new ExportSage30(dc);
     }
+    if (format.equals(AccountingExportFormat.OPENCONCERTO.getLabel())) {
+      return new ExportOpenConcerto(dc);
+    }
     return new ExportDvlogPGI(dc);
   }
 

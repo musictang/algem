@@ -26,21 +26,22 @@ package net.algem.accounting;
  * @version 2.8.r
  * @since 2.8.r 13/12/13
  */
-public enum AccountingExportFormat 
+public enum AccountingExportFormat
 {
- 
+
  CIEL("CIEL (ximport)"),
  DVLOG("DVLOG"),
+ OPENCONCERTO("OpenConcerto"),
  SAGE("SAGE 30/100 (pnm)");
- 
+
  private String label;
 
  private AccountingExportFormat(String label) {
     this.label = label;
   }
- 
+
  public String getLabel() {
    return label;
  }
- 
+
 }

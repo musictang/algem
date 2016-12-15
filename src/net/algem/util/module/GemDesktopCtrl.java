@@ -665,12 +665,12 @@ public class GemDesktopCtrl
   private void initDispatcher() throws UnknownHostException, IOException {
     dispatcher = new Socket(props.getProperty("hostdispatcher"), DesktopDispatcher.DEFAULT_SOCKET_PORT);
     // dispatcher.getPort() -> DEFAULT_SOCKET_PORT
-    GemLogger.log(Level.INFO, "Connexion dispatcher ok");
-    InetAddress ia = dispatcher.getLocalAddress();
-    remoteId = dataCache.getUser().getLogin() + "/" + ia.getHostName();
+    //InetAddress ia = dispatcher.getLocalAddress();
+    remoteId = dataCache.getUser().getLogin() + "/" + dispatcher.toString();
     GemLogger.log(Level.INFO, "remoteId " + remoteId);
     iDispatcher = new ObjectInputStream(dispatcher.getInputStream());
     oDispatcher = new ObjectOutputStream(dispatcher.getOutputStream());
+    GemLogger.log(Level.INFO, "Connexion dispatcher ok");
   }
 
   /**

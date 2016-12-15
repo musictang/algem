@@ -106,7 +106,9 @@ public class ConfigAccounting
     accountingFormat = new JComboBox(new String[]{
       AccountingExportFormat.CIEL.getLabel(),
       AccountingExportFormat.DVLOG.getLabel(),
+      AccountingExportFormat.OPENCONCERTO.getLabel(),
       AccountingExportFormat.SAGE.getLabel()});
+
     accountingFormat.setSelectedItem(c8.getValue());
 
     initIban();
