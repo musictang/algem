@@ -1,7 +1,7 @@
 /*
- * @(#)AccountingExportFormat.java	2.8.r 02/01/14
+ * @(#)AccountingExportFormat.java	2.11.4 15/12/16
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -23,7 +23,7 @@ package net.algem.accounting;
 /**
  * Accounting export format.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.r
+ * @version 2.11.4
  * @since 2.8.r 13/12/13
  */
 public enum AccountingExportFormat

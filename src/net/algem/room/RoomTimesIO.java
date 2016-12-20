@@ -1,7 +1,7 @@
 /*
- * @(#)RoomTimesIO.java	2.8.w 17/07/14
+ * @(#)RoomTimesIO.java	2.11.4 15/12/16
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -32,7 +32,7 @@ import net.algem.util.GemLogger;
  * Daily times DAO.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.11.4
  * @since 2.8.w 16/07/14
  */
 public class RoomTimesIO
@@ -88,7 +88,7 @@ public class RoomTimesIO
     return timesArray;
   }
 
-  public void update(int roomId, DailyTimes[] times) {
+  public void update(int roomId, DailyTimes[] times) throws SQLException {
     try {
       dc.setAutoCommit(false);
       String query = "DELETE FROM " + TABLE + " WHERE idsalle = " + roomId;
@@ -101,6 +101,7 @@ public class RoomTimesIO
     } catch (SQLException sqe) {
       dc.rollback();
       GemLogger.log(sqe.getMessage());
+      throw sqe;
     } finally {
       dc.setAutoCommit(true);
     }

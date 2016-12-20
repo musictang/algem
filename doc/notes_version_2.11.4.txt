@@ -1,0 +1,6 @@
+2.11.4
+CORRECTIFS
+* La modification d'un horaire dans le tableau des horaires d'une salle (menu Option -> Horaires dans la fiche d'une salle) n'était pas prise en compte tant qu'on avait pas appuyé sur Entrée ou changé de ligne. Ces actions ne sont plus maintenant indispensables avant validation.
+
+COMPTABILITÉ
+Un nouveau format d'export est désormais disponible pour le logiciel libre OpenConcerto (ERP et comptabilité). Cela vous permet d'importer automatiquement vos écritures à partir d'un fichier généré par Algem. Le module Algem doit être activé et installé dans OpenConcerto.

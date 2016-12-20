@@ -1,5 +1,5 @@
 /*
- * @(#)ConfigAccounting.java 2.11.2 13/10/16
+ * @(#)ConfigAccounting.java 2.11.4 15/12/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -43,7 +43,7 @@ import net.algem.util.ui.GridBagHelper;
  * Bic infos for the organization.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.11.2
+ * @version 2.11.4
  * @since 2.2.d
  */
 public class ConfigAccounting

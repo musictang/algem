@@ -1,5 +1,5 @@
 /*
- * @(#)RoomService.java 2.11.3 30/11/16
+ * @(#)RoomService.java 2.11.4 15/12/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -43,7 +43,7 @@ import net.algem.util.ui.MessagePopup;
  * Service class for room operations.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.3
+ * @version 2.11.4
  * @since 2.2.b
  */
 public class RoomService
@@ -244,7 +244,7 @@ public class RoomService
     return timesArray;
   }
 
-  void updateTimes(int roomId, DailyTimes [] times) {
+  void updateTimes(int roomId, DailyTimes [] times) throws SQLException {
     roomTimesIO.update(roomId, times);
   }
 

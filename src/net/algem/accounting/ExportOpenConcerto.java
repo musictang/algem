@@ -1,5 +1,5 @@
 /*
- * @(#) ExportOpenConcerto.java Algem 2.11.0 13/12/2016
+ * @(#) ExportOpenConcerto.java Algem 2.11.4 13/12/2016
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -36,14 +36,14 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.0
- * @since 2.11.0 13/12/2016
+ * @version 2.11.4
+ * @since 2.11.4 13/12/2016
  */
 public class ExportOpenConcerto
   extends CommunAccountExportService {
 
-  private DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-  private NumberFormat nf = NumberFormat.getInstance(Locale.FRENCH);
+  private final DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+  private final NumberFormat nf = NumberFormat.getInstance(Locale.FRENCH);
 
   public ExportOpenConcerto(DataConnection dc) {
     dbx = dc;
@@ -144,20 +144,13 @@ public class ExportOpenConcerto
         sb.append(';').append(e.getCostAccount().getNumber());
         out.println(sb.toString());
         sb.delete(0, sb.length());
-//        out.print(TextUtil.padWithTrailingZeros(c.getNumber(), 10)
-//          + "#" + dateFormat.format(e.getDate().getDate())
-//          + "#" + codeJournal
-//          + "#" + TextUtil.padWithTrailingSpaces(e.getDocument(), 10)
-//          + "#" + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getLabel(), 24), 24)
-//          + "#" + TextUtil.padWithLeadingZeros(m, 13)
-//          + "#" + (e.getAmount() < 0 ? cd : dc) // cd Crédit
-//          + "#" + TextUtil.padWithTrailingSpaces(e.getCostAccount().getNumber(), 10)
-//          + "#" + (char) 13);
+
         sb.append(dateFormat.format(e.getDate().getDate()));
         sb.append(';').append(codeJournal);
         sb.append(';').append(getAccount(e));
         sb.append(';').append(e.getDocument());
         sb.append(';').append(e.getLabel()).append(' ').append(getInvoiceNumber(e));
+        //+ "#" + (e.getAmount() < 0 ? cd : dc) // cd Crédit
         if (e.getAmount() < 0) {
           sb.append(';').append(nf.format(0.0));
           sb.append(';').append(total);
@@ -168,16 +161,6 @@ public class ExportOpenConcerto
         sb.append(';').append(e.getCostAccount().getNumber());
         out.println(sb.toString());
         sb.delete(0, sb.length());
-//        out.print(
-//          TextUtil.padWithTrailingZeros(getAccount(e), 10) // compte client
-//            + "#" + dateFormat.format(e.getDate().getDate())
-//            + "#" + codeJournal
-//            + "#" + TextUtil.padWithTrailingSpaces(f, 10)
-//            + "#" + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getLabel(), 24), 24)
-//            + "#" + TextUtil.padWithLeadingZeros(m, 13)
-//            + "#" + (e.getAmount() < 0 ? dc : cd) //dc Débit
-//            + "#" + TextUtil.padWithTrailingSpaces("", 10)
-//            + "#" + (char) 13);//CR (Carriage return, retour à la ligne)
       }
     }
 
@@ -201,14 +184,6 @@ public class ExportOpenConcerto
     }
 
     return errors;
-  }
-
-  private boolean checkPersonalAccount(OrderLine e, StringBuilder logMessage, String prefix) {
-    if (!AccountUtil.isPersonalAccount(e.getAccount())) {
-      logMessage.append(prefix).append(" -> ").append(e).append(" [").append(e.getAccount()).append("]").append(TextUtil.LINE_SEPARATOR);
-      return false;
-    }
-    return true;
   }
 
 }
