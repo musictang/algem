@@ -1,5 +1,18 @@
+/*
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ *
+ * Copyright 2016 Musiques Tangentes. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of the GNU General Public License Version 3
+ * only ("GPL"). You may not use this file except in compliance with the License. You can obtain a
+ * copy of the License at http://www.gnu.org/licenses/gpl-3.0.html See the License for the specific
+ * language governing permissions and limitations under the License.
+ *
+ * When distributing the software, include this License Header Notice in each file.
+ */
 package org.openconcerto.module.algem.accounting;
 
+import org.apache.commons.dbutils.handlers.ArrayListHandler;
 import org.openconcerto.erp.config.ComptaPropsConfiguration;
 import org.openconcerto.erp.core.finance.accounting.element.ComptePCESQLElement;
 import org.openconcerto.erp.core.finance.accounting.element.JournalSQLElement;
@@ -11,8 +24,11 @@ import org.openconcerto.openoffice.ContentTypeVersioned;
 import org.openconcerto.sql.Configuration;
 import org.openconcerto.sql.model.ConnectionHandlerNoSetup;
 import org.openconcerto.sql.model.DBRoot;
+import org.openconcerto.sql.model.SQLBase;
 import org.openconcerto.sql.model.SQLDataSource;
+import org.openconcerto.sql.model.SQLSelect;
 import org.openconcerto.sql.model.SQLTable;
+import org.openconcerto.sql.model.Where;
 import org.openconcerto.sql.utils.SQLUtils;
 import org.openconcerto.ui.DefaultGridBagConstraints;
 import org.openconcerto.ui.ReloadPanel;
@@ -34,6 +50,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.JButton;
@@ -43,6 +60,13 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+/**
+ * Réécriture de la classe ImportEcriturePanel.
+ * @author jm
+ * @version 1.0
+ * @since 1.0 15/12/2016
+ * @see  org.openconcerto.erp.core.finance.accounting.ui.ImportEcriturePanel;
+ */
 public class CustomImportEcriturePanel extends JPanel {
 
     private final Map<String, Integer> mapJournal;
@@ -57,17 +81,19 @@ public class CustomImportEcriturePanel extends JPanel {
         this.mapJournal.put("VE", JournalSQLElement.VENTES);
         this.mapJournal.put("BA", JournalSQLElement.BANQUES);
         this.mapJournal.put("CA", JournalSQLElement.CAISSES);
+        this.mapJournal.put("CA", JournalSQLElement.CAISSES);
         this.mapJournal.put("OD", JournalSQLElement.OD);
 
         JLabel label = new JLabel("Import depuis un fichier CSV, XLS ou ODT.");
         JLabel label2 = new JLabel("Le fichier doit contenir les colonnes :");
         JLabel label3 = new JLabel(" - Date (format dd/MM/yy pour le CSV)");
-        JLabel label4 = new JLabel(" - Journal");
+        JLabel label4 = new JLabel(" - Code journal");
         JLabel label5 = new JLabel(" - N° de compte");
         JLabel label6 = new JLabel(" - Nom de la pièce");
         JLabel label7 = new JLabel(" - Libellé");
         JLabel label8 = new JLabel(" - Débit");
         JLabel label9 = new JLabel(" - Crédit");
+        JLabel label10 = new JLabel(" - Analytique");
         final JButton button = new JButton("Sélectionner le ficher");
         GridBagConstraints c = new DefaultGridBagConstraints();
         c.gridwidth = 2;
@@ -89,6 +115,8 @@ public class CustomImportEcriturePanel extends JPanel {
         c.gridy++;
         this.add(label9, c);
         c.gridy++;
+        this.add(label10, c);
+        c.gridy++;
         c.gridwidth = 1;
         c.weightx = 1;
         final ReloadPanel rlPanel = new ReloadPanel();
@@ -109,7 +137,8 @@ public class CustomImportEcriturePanel extends JPanel {
                 fd.setFilenameFilter(new FilenameFilter() {
                     @Override
                     public boolean accept(File dir, String name) {
-                        return name.endsWith("." + ContentTypeVersioned.SPREADSHEET.getExtension());
+                        return name.endsWith("." + ContentTypeVersioned.SPREADSHEET.getExtension())
+                        		|| name.toLowerCase().endsWith(".csv");
                     }
                 });
                 fd.setVisible(true);
@@ -145,6 +174,9 @@ public class CustomImportEcriturePanel extends JPanel {
                             frame.dispose();
                         }
                     }.start();
+                } else {
+                	rlPanel.setMode(ReloadPanel.MODE_EMPTY);
+                	button.setEnabled(true);
                 }
             }
         });
@@ -200,38 +232,43 @@ public class CustomImportEcriturePanel extends JPanel {
 
             System.err.println("(" + stringValueD + " : " + stringValueC + ") ---- (" + montantD + " : " + montantC + ")");
             // Journal
-
+            
             final String valueJrnl = m.getValueAt(i, 1).toString();
-            if (mapJournal.get(valueJrnl) == null) {
+            
+			if (mapJournal.get(valueJrnl) == null) {
+				int jrnlId = getJournalByCode(valueJrnl);
+				if (jrnlId != -1) {
+					mapJournal.put(valueJrnl, jrnlId);
+				} else {
+					try {
+						System.err.println("LOCKED");
 
-                try {
-                    System.err.println("LOCKED");
+						SwingUtilities.invokeAndWait(new Runnable() {
+							public void run() {
+								// try {
+								JDialog diag = new JDialog(owner);
+								diag.setModal(true);
+								diag.setContentPane(new SelectionJournalImportPanel(valueJrnl, mapJournal, null));
+								diag.setTitle("Import écritures");
+								diag.setLocationRelativeTo(null);
+								diag.pack();
+								diag.setVisible(true);
+							}
+						});
 
-                    SwingUtilities.invokeAndWait(new Runnable() {
-                        public void run() {
-                            // try {
-                            JDialog diag = new JDialog(owner);
-                            diag.setModal(true);
-                            diag.setContentPane(new SelectionJournalImportPanel(valueJrnl, mapJournal, null));
-                            diag.setTitle("Import écritures");
-                            diag.setLocationRelativeTo(null);
-                            diag.pack();
-                            diag.setVisible(true);
-                        }
-                    });
+						System.err.println("PASSED");
+					} catch (InterruptedException e1) {
+						e1.printStackTrace();
+					}
+				}
 
-                    System.err.println("PASSED");
-                } catch (InterruptedException e1) {
-                    e1.printStackTrace();
-                }
-
-            }
+			}
 
             gen.mEcritures.put("ID_JOURNAL", this.mapJournal.get(valueJrnl));
 
             // Date
             gen.mEcritures.put("DATE", dateValue);
-gen.mEcritures.put("POSTE_ANALYTIQUE_NOM", m.getValueAt(i, 7).toString());
+            gen.mEcritures.put("POSTE_ANALYTIQUE_NOM", m.getValueAt(i, 7).toString());
             String stringPiece = m.getValueAt(i, 3).toString();
             if (stringPiece != null && stringPiece.length() > 0 && stringPiece.contains(".")) {
                 stringPiece = stringPiece.substring(0, stringPiece.indexOf('.'));
@@ -242,16 +279,36 @@ gen.mEcritures.put("POSTE_ANALYTIQUE_NOM", m.getValueAt(i, 7).toString());
             
         }
         if (solde != 0) {
-            throw new IllegalArgumentException("La partie double n'est respectée (solde = " + solde + "). Import annulé!");
+            throw new IllegalArgumentException("La partie double n'est pas respectée (solde = " + solde + "). Import annulé!");
         }
-        SwingUtilities.invokeLater(new Runnable() {
-
+        JOptionPane.showMessageDialog(owner, "Importation des écritures terminée");
+        // Le dialogue ne s'ouvre pas : conflit avec invokeAndWait ? 
+        /*SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
                 JOptionPane.showMessageDialog(owner, "Importation des écritures terminée");
             }
-        });
+        });*/
     }
+    
+	private int getJournalByCode(String code) {
+		final SQLBase base = ((ComptaPropsConfiguration) Configuration.getInstance()).getSQLBaseSociete();
+		final SQLTable journalTable = base.getTable("JOURNAL");
+		final SQLSelect selJrnl = new SQLSelect();
+		selJrnl.addSelect(journalTable.getField("ID"));
+		selJrnl.setWhere(new Where(journalTable.getField("CODE"), "=", code.trim()));
+
+		@SuppressWarnings("unchecked")
+		final List<Object[]> myListJrnl = (List<Object[]>) base.getDataSource().execute(selJrnl.asString(),
+				new ArrayListHandler());
+
+		if (myListJrnl.size() != 0) {
+			return Integer.parseInt(myListJrnl.get(0)[0].toString());
+		} else {
+			return -1;
+		}
+
+	}
 
 }
 

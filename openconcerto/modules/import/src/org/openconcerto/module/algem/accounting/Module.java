@@ -1,3 +1,15 @@
+/*
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ *
+ * Copyright 2016 Musiques Tangentes. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of the GNU General Public License Version 3
+ * only ("GPL"). You may not use this file except in compliance with the License. You can obtain a
+ * copy of the License at http://www.gnu.org/licenses/gpl-3.0.html See the License for the specific
+ * language governing permissions and limitations under the License.
+ *
+ * When distributing the software, include this License Header Notice in each file.
+ */
 package org.openconcerto.module.algem.accounting;
 
 import java.awt.event.ActionEvent;
@@ -19,8 +31,8 @@ import org.openconcerto.utils.FileUtils;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version
- * @since
+ * @version 1.0
+ * @since 1.0 15/12/2016
  */
 public class Module extends AbstractModule {
 
@@ -66,6 +78,12 @@ public class Module extends AbstractModule {
 	
 	public static void main(String[] args) throws IOException {
         System.setProperty(ConnexionPanel.QUICK_LOGIN, "true");
+		String defaultModulesPath = "/opt/OpenConcerto-1.4.2-multiposte/Modules";
+		String modulesPath = defaultModulesPath;
+		if (args != null && args.length > 0) {
+			modulesPath = args[0];
+		}
+		
         final File propsFile = new File("module.properties");
 
         final File distDir = new File("dist");
@@ -73,13 +91,11 @@ public class Module extends AbstractModule {
         final ModulePackager modulePackager = new ModulePackager(propsFile, new File("bin/"));
         //modulePackager.addJarsFromDir(new File("lib"));
         modulePackager.writeToDir(distDir);
-//        modulePackager.writeToDir(new File("../OpenConcerto/Modules"));
-        modulePackager.writeToDir(new File("/opt/OpenConcerto-1.4-multiposte/Modules"));
+        modulePackager.writeToDir(new File(modulesPath));
         //// SQLRequestLog.setEnabled(true);
         ////SQLRequestLog.showFrame();
 
-//        ModuleManager.getInstance().addFactories(new File("../OpenConcerto/Modules"));
-        ModuleManager.getInstance().addFactories(new File("/opt/OpenConcerto-1.4-multiposte/Modules"));
+        ModuleManager.getInstance().addFactories(new File(modulesPath));
         Gestion.main(args);
     }
 
