@@ -148,7 +148,7 @@ public class CommunAccountTransferDlg
       query += " AND paye = 't'";
     }
     query += " AND transfert = 'f' AND reglement = '" + modeOfPayment + "'";
-    // DO NOT export if no facture is present
+    // DO NOT export if no invoice is present
     if (ModeOfPayment.FAC.name().equals(modeOfPayment)) {
       query += " AND facture IS NOT NULL AND facture != ''";
     }

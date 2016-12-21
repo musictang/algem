@@ -58,6 +58,9 @@ public class ExportOpenConcerto
     int total = 0;
     String number = (documentAccount == null) ? "" : documentAccount.getNumber();
     OrderLine e = null;
+     if (path.endsWith(".txt")) {
+      path = path.replace(".txt", ".csv");
+    }
     try (PrintWriter out = new PrintWriter(new FileWriter(path))) {
       StringBuilder sb = new StringBuilder();
       for (int i = 0, n = lines.size(); i < n; i++) {
@@ -70,7 +73,11 @@ public class ExportOpenConcerto
         sb.append(';').append(e.getLabel()).append(' ').append(getInvoiceNumber(e));
         sb.append(';').append(nf.format(0.0));
         sb.append(';').append(nf.format(e.getAmount() / 100.0));
-        sb.append(';').append(e.getCostAccount().getNumber());
+        Account a = e.getCostAccount();
+        sb.append(';').append(
+          (a == null || a.getNumber() == null || "null".equals(a.getNumber()))
+            ? ""
+            : a.getNumber());
         out.println(sb.toString());
         sb.delete(0, sb.length());
       }
