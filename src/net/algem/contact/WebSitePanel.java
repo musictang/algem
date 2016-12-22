@@ -37,7 +37,7 @@ import net.algem.util.jdesktop.DesktopHandlerException;
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.9.3.2
  */
-public class WebSitePanel extends InfoPanel implements ActionListener, ItemListener {
+public class WebSitePanel extends InfoPanel implements ActionListener {
 
   private DesktopBrowseHandler browser;
   private short ptype;// temp value
@@ -45,7 +45,6 @@ public class WebSitePanel extends InfoPanel implements ActionListener, ItemListe
   public WebSitePanel(Vector<Param> v, WebSite s, DesktopBrowseHandler browser) {
     super(v, false);
     setSite(s);
-    iChoice.addItemListener(this);
     addButton(BundleUtil.getLabel("See.label"), BundleUtil.getLabel("Website.view.tip"));
     this.browser = browser;
     iButton.addActionListener(this);
@@ -54,7 +53,8 @@ public class WebSitePanel extends InfoPanel implements ActionListener, ItemListe
   public WebSite getSite() {
     WebSite s = new WebSite();
     s.setType(iChoice.getKey());
-    s.setUrl(maybePrefixURL(iField.getText().trim()));
+    //s.setUrl(maybePrefixURL(iField.getText().trim()));
+    s.setUrl(iField.getText().trim());
     return s;
   }
 
@@ -65,16 +65,12 @@ public class WebSitePanel extends InfoPanel implements ActionListener, ItemListe
     iField.setText(s.getUrl());
     ptype = s.getPtype();
   }
-
-  @Override
-  public void itemStateChanged(ItemEvent e) {
-    iField.setText(maybePrefixURL(iField.getText()));
-  }
   
   /**
    * Adds the prefix http or https at the beginning of the url if not present.
    * @param url current url
    * @return formatted-url
+   * @deprecated 
    */
   private String maybePrefixURL(String url) {
     String val = iChoice.getValue().toLowerCase();

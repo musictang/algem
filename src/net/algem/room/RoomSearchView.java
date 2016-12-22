@@ -56,8 +56,9 @@ public class RoomSearchView
     name.addActionListener(this);
     estab = new GemNumericField(6);
     estab.addActionListener(this);
-    estab.setToolTipText(MessageUtil.getMessage("establishment.number.tip"));
+    estab.setToolTipText(BundleUtil.getLabel("Establishment.number.tip"));
     contact = new GemNumericField(6);
+    contact.setToolTipText(BundleUtil.getLabel("Contact.number.tip"));
     contact.addActionListener(this);
     btErase = new GemButton(GemCommand.ERASE_CMD);
     btErase.addActionListener(this);
@@ -101,7 +102,7 @@ public class RoomSearchView
         s = number.getText();
         break;
       case 1:
-        s = name.getText();
+        s = name.getText().trim();
         break;
       case 2:
         s = estab.getText();

@@ -81,7 +81,7 @@ public class ExportOpenConcerto
         out.println(sb.toString());
         sb.delete(0, sb.length());
       }
-
+      assert(e != null);
       if (total > 0) {
         sb.append(dateFormat.format(e.getDate().getDate()));
         sb.append(';').append(codeJournal);

@@ -103,13 +103,13 @@ public class GroupSearchView
         s = number.getText();
         break;
       case 1:
-        s = name.getText();
+        s = name.getText().trim();
         break;
       case 2:
-        s = style.getText();
+        s = style.getText().trim();
         break;
       case 3:
-        s = site.getText();
+        s = site.getText().trim();
         break;
 
     }

@@ -126,28 +126,28 @@ public class PersonSearchView
     String s = null;
     switch (n) {
       case 0:
-        s = number.getText();
+        s = number.getText().trim();
         break;
       case 1:
-        s = org.getText();
+        s = org.getText().trim();
         break;
       case 2:
-        s = name.getText();
+        s = name.getText().trim();
         break;
       case 3:
-        s = firstname.getText();
+        s = firstname.getText().trim();
         break;
       case 4:
-        s = telephone.getText();
+        s = telephone.getText().trim();
         break;
       case 5:
-        s = email.getText();
+        s = email.getText().trim();
         break;
       case 6:
-        s = site.getText();
+        s = site.getText().trim();
         break;
       case 7:
-        s = pseudo.getText();
+        s = pseudo.getText().trim();
         break;
     }
     if (s != null && s.length() > 0) {
