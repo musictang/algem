@@ -1,7 +1,7 @@
 /*
  * @(#) ExportOpenConcerto.java Algem 2.11.4 13/12/2016
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it

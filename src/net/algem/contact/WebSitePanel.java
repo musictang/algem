@@ -1,7 +1,7 @@
 /*
- * @(#)WebSitePanel.java	2.9.3.2 10/03/15
+ * @(#)WebSitePanel.java	2.11.4 02/01/17
  *
- * Copyright (c) 1998-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1998-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -35,7 +35,7 @@ import net.algem.util.jdesktop.DesktopHandlerException;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.3.2
+ * @version 2.11.4
  */
 public class WebSitePanel extends InfoPanel implements ActionListener {
 

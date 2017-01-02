@@ -1,5 +1,5 @@
 /*
- * @(#)OrderLineView.java	2.11.3 30/11/16
+ * @(#)OrderLineView.java	2.11.4 02/01/17
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -160,7 +160,7 @@ public class OrderLineView
     setLayout(new BorderLayout());
     add(editPanel, BorderLayout.CENTER);
     add(buttons, BorderLayout.SOUTH);
-    setSize(new Dimension(500, 460));
+    setSize(new Dimension(500, 480));
 
     setLocationRelativeTo(frame);
   }
