@@ -1,0 +1,3 @@
+2.11.5
+CORRECTIFS
+* La fiche d'une personne était impossible à ouvrir si sa photo n'existait pas et que le fichier par défaut (silhouette) était introuvable.

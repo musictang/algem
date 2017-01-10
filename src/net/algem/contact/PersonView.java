@@ -1,5 +1,5 @@
 /*
- * @(#)PersonView.java	2.11.3 01/12/16
+ * @(#)PersonView.java	2.11.5 06/01/17
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -58,7 +58,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.3
+ * @version 2.11.5
  */
 public class PersonView
   extends GemPanel {
@@ -291,7 +291,7 @@ public class PersonView
     try {
       InputStream input = getClass().getResourceAsStream(ImageUtil.DEFAULT_PHOTO_ID);
       return ImageIO.read(input);
-    } catch (IOException ex) {
+    } catch (IOException | IllegalArgumentException ex) {
       GemLogger.logException(ex);
       return null;
     }
