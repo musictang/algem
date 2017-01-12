@@ -1,7 +1,7 @@
 /*
- * @(#)User.java	2.9.4.14 03/01/16
+ * @(#)User.java	2.11.5 11/01/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -30,7 +30,7 @@ import net.algem.contact.Person;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.14
+ * @version 2.11.5
  */
 public class User
         extends Person
@@ -89,7 +89,7 @@ public class User
 
   @Override
   public String toString() {
-    return super.toString() + " " + login;
+    return super.toString() + " (" + login + ")";
   }
 
   void setLogin(String s) {

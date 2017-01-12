@@ -1,7 +1,7 @@
 /*
- * @(#)DefaultUserService.java	2.11.0 27/09/2016
+ * @(#)DefaultUserService.java	2.11.5 11/01/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -24,6 +24,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
@@ -40,7 +41,7 @@ import org.apache.commons.codec.binary.Base64;
  * User operations service.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.0
+ * @version 2.11.5
  * @since 2.6.a 06/08/2012
  */
 public class DefaultUserService
@@ -251,15 +252,15 @@ public class DefaultUserService
   }
 
   @Override
-  public List<User> getRegisteredUsers() {
-    List<User> v = new Vector<User>();
+  public List<User> getPostitUserList() {
     try {
-    v = dao.find(null);
+      return dao.findPostitUserList();
     } catch (SQLException ex) {
       GemLogger.logException(ex);
+      return new ArrayList<User>();
     }
-    return v;
   }
+
 
   @Override
   public void create(Postit p) throws SQLException {
@@ -278,7 +279,8 @@ public class DefaultUserService
 
   @Override
   public Vector<Postit> getPostits(int userId, int read) {
-    String where = "WHERE (dest = 0 OR dest = " + userId + ") AND id > " + read;
+    //String where = "WHERE (dest = 0 OR dest = " + userId + ") AND id > " + read;
+    String where = "WHERE (dest = 0 OR emet = " + userId + " OR dest = " + userId + ") AND id > " + read;
     return PostitIO.find(where, dc);
   }
 

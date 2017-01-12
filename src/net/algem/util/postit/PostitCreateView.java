@@ -1,7 +1,7 @@
 /*
- * @(#)PostitCreateView.java	2.9.2 22/01/15
- * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * @(#)PostitCreateView.java	2.11.5 11/01/17
+ *
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -26,6 +26,7 @@ import java.util.List;
 import javax.swing.JComboBox;
 import net.algem.planning.DateFr;
 import net.algem.planning.DateFrField;
+import net.algem.security.Profile;
 import net.algem.security.User;
 import net.algem.util.BundleUtil;
 import net.algem.util.ui.GemBorderPanel;
@@ -38,7 +39,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.11.5
  */
 public class PostitCreateView
         extends GemBorderPanel
@@ -55,16 +56,18 @@ public class PostitCreateView
     userId = _userId;
     users = _users;
     type = new JComboBox(new String[]{
-      BundleUtil.getLabel("Notes.label"),
-      BundleUtil.getLabel("Urgent.label")
+      BundleUtil.getLabel("Postit.internal.label"),
+      BundleUtil.getLabel("Postit.urgent.internal.label"),
+      BundleUtil.getLabel("Postit.external.label")
     });
     receiver = new JComboBox(new String[]{
       BundleUtil.getLabel("Private.label"),
-      BundleUtil.getLabel("Public.label")
+      BundleUtil.getLabel("Public.label"),
+      BundleUtil.getLabel("Teachers.label")
     });
 
     for (int i = 0; i < users.size(); i++) {
-      receiver.addItem(((User) users.get(i)).getLogin());
+      receiver.addItem(users.get(i).toString());
     }
     term = new DateFrField(new DateFr(new Date()));
     textArea = new GemTextArea();
@@ -83,16 +86,20 @@ public class PostitCreateView
   }
 
   public Postit get() {
+    int indexOffset = 3;
     Postit p = new Postit();
     p.setType(type.getSelectedIndex());
-    int i = receiver.getSelectedIndex();
+    int selectedIdx = receiver.getSelectedIndex();
     p.setIssuer(userId);
-    if (i <= 0) { // privé
+
+    if (selectedIdx <= 0) { // privé
       p.setReceiver(userId); //id de l'utilisateur courant
-    } else if (i == 1) { // public
+    } else if (selectedIdx == 1) { // public
       p.setReceiver(0);
+    } else if (selectedIdx == 2) {
+      p.setReceiver(p.getType() == Postit.EXTERNAL ? - (Profile.TEACHER.getId()) : 0);
     } else {
-      p.setReceiver(((User) users.get(i)).getId()); //id de l'utilisateur choisi
+      p.setReceiver(users.get(selectedIdx - indexOffset).getId()); //id de l'utilisateur choisi
     }
     p.setTerm(term.getDateFr());
     p.setDay(new DateFr(new java.util.Date()));

@@ -1,7 +1,7 @@
 /*
- * @(#)PostitDlg.java	2.9.1 17/12/14
- * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * @(#)PostitDlg.java	2.11.5 11/01/17
+ *
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.util.postit;
 
@@ -29,7 +29,6 @@ import javax.swing.JDialog;
 import net.algem.util.BundleUtil;
 import net.algem.util.GemCommand;
 import net.algem.util.ui.GemButton;
-import net.algem.util.ui.GemLabel;
 import net.algem.util.ui.GemPanel;
 import net.algem.util.ui.PopupDlg;
 
@@ -38,7 +37,7 @@ import net.algem.util.ui.PopupDlg;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.11.5
  */
 public class PostitDlg
         implements ActionListener
@@ -46,7 +45,6 @@ public class PostitDlg
 
   private JDialog dlg;
   private PostitView pv;
-  private Postit post;
   private boolean suppression;
   private boolean modification;
   private GemButton btValid;
@@ -54,18 +52,15 @@ public class PostitDlg
   private GemButton btCancel;
 
   public PostitDlg(Component c) {
-    dlg = new JDialog(PopupDlg.getTopFrame(c), true);
-
-    GemLabel title = new GemLabel(BundleUtil.getLabel("Postit.label"));
-
+    dlg = new JDialog(PopupDlg.getTopFrame(c), BundleUtil.getLabel("Postit.edit.label"), true);
     pv = new PostitView();
 
     btDelete = new GemButton(GemCommand.DELETE_CMD);
     btDelete.addActionListener(this);
-    
+
     btValid = new GemButton(GemCommand.MODIFY_CMD);
     btValid.addActionListener(this);
-    
+
     btCancel = new GemButton(GemCommand.CANCEL_CMD);
     btCancel.addActionListener(this);
 
@@ -76,15 +71,14 @@ public class PostitDlg
     buttons.add(btValid);
     buttons.add(btCancel);
 
-    dlg.add(title, BorderLayout.NORTH);
     dlg.add(pv, BorderLayout.CENTER);
     dlg.add(buttons, BorderLayout.SOUTH);
-    dlg.pack();
+    dlg.setSize(340,300);
     dlg.setLocation(100, 100);
   }
 
   void setPost(Postit p) {
-    post = p;
+//    post = p;
     pv.set(p);
   }
 
@@ -106,7 +100,7 @@ public class PostitDlg
 
   @Override
   public void actionPerformed(ActionEvent evt) {
-    
+
     if (GemCommand.DELETE_CMD.equals(evt.getActionCommand())) {
       suppression = true;
       exit();

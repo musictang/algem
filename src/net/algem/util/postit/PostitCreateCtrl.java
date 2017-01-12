@@ -1,7 +1,7 @@
 /*
- * @(#)PostitCreateCtrl.java	2.9.4.6 02/06/15
- * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * @(#)PostitCreateCtrl.java	2.11.5 11/01/17
+ *
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.util.postit;
 
@@ -36,10 +36,10 @@ import net.algem.util.ui.GemPanel;
 
 /**
  * Postit creation controller.
- * 
+ *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.6
+ * @version 2.11.5
  */
 public class PostitCreateCtrl
         extends GemPanel
@@ -63,7 +63,7 @@ public class PostitCreateCtrl
     status = new GemField();
     status.setEditable(false);
 
-    postit = new PostitCreateView(desktop.getDataCache().getUser().getId(), service.getRegisteredUsers());
+    postit = new PostitCreateView(desktop.getDataCache().getUser().getId(), service.getPostitUserList());
 
     GemPanel p1 = new GemPanel();
     p1.setLayout(new GridLayout(1, 2));
@@ -109,9 +109,9 @@ public class PostitCreateCtrl
       try {
         service.create(p);
         desktop.getPostit().addPostit(p);
-//        if (p.getReceiver() == 0) { //public (filter at reception)
-          desktop.postEvent(new CreatePostitEvent(this, p));
-//        }
+        // if (p.getReceiver() == 0) { //public (filter at reception)
+        desktop.postEvent(new CreatePostitEvent(this, p));
+        // }
       } catch (SQLException e) {
         GemLogger.logException("Insertion postit", e, this);
       } finally {

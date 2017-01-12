@@ -1,7 +1,7 @@
 /*
- * @(#)UserIO.java 2.11.0 27/09/16
+ * @(#)UserIO.java 2.11.5 11/01/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -23,8 +23,10 @@ package net.algem.security;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.algem.contact.Person;
 import net.algem.contact.PersonIO;
 import net.algem.room.EstablishmentIO;
@@ -38,7 +40,7 @@ import org.apache.commons.codec.binary.Base64;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.11.0
+ * @version 2.11.5
  * @since 1.0a 07/07/1999
  */
 public class UserIO
@@ -134,7 +136,7 @@ public class UserIO
         ps.addBatch();
       }
       ps.executeBatch();
-    } 
+    }
   }
 
   /**
@@ -159,19 +161,19 @@ public class UserIO
         ps.addBatch();
       }
       ps.executeBatch();
-    } 
+    }
   }
-  
+
   /**
    * Establishment active status initialization.
    * @param idper user id
-   * @throws SQLException 
+   * @throws SQLException
    */
   public void initEstabStatus(int idper) throws SQLException {
     String query = "INSERT INTO " + EstablishmentIO.TABLE + " SELECT p.id," + idper + ",true FROM personne p WHERE p.ptype = " + Person.ESTABLISHMENT;
     dc.executeUpdate(query);
   }
-  
+
   public User findId(int n) throws SQLException {
     String query = "WHERE idper = " + n;
     List<User> v = find(query);
@@ -189,12 +191,11 @@ public class UserIO
   }
 
   public List<User> find(String where) throws SQLException {
-    List<User> v = new Vector<User>();
-    String query = "SELECT p.id,p.ptype,p.nom,p.prenom,p.civilite,u.login,u.profil,u.pass,u.clef FROM " + PersonIO.TABLE + " p, " + TABLE + " u ";
+    List<User> v = new ArrayList<User>();
+    String query = "SELECT p.id,p.ptype,p.nom,p.prenom,p.civilite,u.login,u.profil,u.pass,u.clef"
+      + " FROM " + PersonIO.TABLE + " p JOIN " + TABLE + " u ON (p.id = u.idper)";
     if (where != null) {
-      query += where + " AND p.id = u.idper";
-    } else {
-      query += " WHERE p.id = u.idper";
+      query += " "  + where;
     }
     query += " ORDER BY p.nom, p.prenom";
     ResultSet rs = dc.executeQuery(query);
@@ -216,6 +217,33 @@ public class UserIO
       v.add(u);
     }
     rs.close();
+    return v;
+  }
+
+  public List<User> findPostitUserList() throws SQLException {
+    List<User> v = new ArrayList<User>();
+    String query = "SELECT p.id,p.ptype,p.nom,p.prenom,p.pseudo,p.civilite,u.login,u.profil"
+      + " FROM " + PersonIO.TABLE + " p JOIN " + TABLE + " u ON (p.id = u.idper)"
+      + " ORDER BY p.nom, p.prenom";
+    try (ResultSet rs = dc.executeQuery(query)) {
+      while (rs.next()) {
+        User u = new User();
+        u.setId(rs.getInt(1));
+        u.setType(rs.getShort(2));
+        String n = rs.getString(3);
+        String f = rs.getString(4);
+        String p = rs.getString(5);
+        u.setName(n == null ? null : n.trim());
+        u.setFirstName(f == null ? null : f.trim());
+        u.setNickName(p == null ? null : p.trim());
+        u.setGender(rs.getString(6).trim());
+        u.setLogin(rs.getString(7).trim());
+        u.setProfile(rs.getInt(8));
+        v.add(u);
+      }
+    } catch (SQLException ex) {
+      throw ex;
+    }
     return v;
   }
 

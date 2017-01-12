@@ -1,7 +1,7 @@
 /*
- * @(#)PostitView.java	2.9.4.9 28/06/15
- * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * @(#)PostitView.java	2.11.5 11/01/17
+ *
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.util.postit;
 
@@ -24,6 +24,7 @@ import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.sql.SQLException;
+import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
 import net.algem.planning.DateFrField;
 import net.algem.security.User;
@@ -38,10 +39,10 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.9
+ * @version 2.11.5
  */
 public class PostitView
-        extends GemBorderPanel
+        extends GemPanel
 {
 
   private JComboBox type;
@@ -51,8 +52,9 @@ public class PostitView
 
   public PostitView() {
     type = new JComboBox(new String[]{
-      BundleUtil.getLabel("Notes.label"), 
-      BundleUtil.getLabel("Urgent.label")
+      BundleUtil.getLabel("Postit.internal.label"),
+      BundleUtil.getLabel("Postit.urgent.internal.label"),
+      BundleUtil.getLabel("Postit.external.label"),
     });
 
     issuer = new GemField(20);
@@ -60,11 +62,13 @@ public class PostitView
     issuer.setEditable(false);
 
     term = new DateFrField();
-    textArea = new GemTextArea(2, 25);
+    textArea = new GemTextArea(3, 25);
     textArea.setLineWrap(true);
+    textArea.setWrapStyleWord(true);
     textArea.setMargin(new Insets(0, 5, 0, 5));
     textArea.setMinimumSize(new Dimension(180,textArea.getPreferredSize().height));
-    
+    textArea.setMargin(new Insets(5,5,5,5));
+    setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
     this.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
 

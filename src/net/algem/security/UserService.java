@@ -68,7 +68,7 @@ public interface UserService
   
   public void delete(User user) throws UserException;
 
-  public List<User> getRegisteredUsers();
+  public List<User> getPostitUserList();
 
   public void create(Postit p) throws SQLException;
 

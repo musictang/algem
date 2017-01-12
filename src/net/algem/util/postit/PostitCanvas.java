@@ -1,7 +1,7 @@
 /*
- * @(#)PostitCanvas.java	2.9.4.6 03/06/15
- * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * @(#)PostitCanvas.java	2.11.5 11/01/17
+ *
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.util.postit;
 
@@ -32,13 +32,17 @@ import net.algem.util.ui.GemPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.6
+ * @version 2.11.5
  */
 public class PostitCanvas
         extends GemPanel
         implements MouseListener, MouseMotionListener
 {
 
+  private static final Color INTERNAL_PUBLIC_COLOR = Color.YELLOW;
+  private static final Color INTERNAL_PRIVATE_COLOR = new Color(230, 255, 68);
+  private static final Color EXTERNAL_PUBLIC_COLOR = Color.ORANGE;
+  private static final Color EXTERNAL_PRIVATE_COLOR = Color.pink;
   int nextx = 50;
   int nexty = 40;
   int initialDragPos;
@@ -126,20 +130,29 @@ public class PostitCanvas
       p = pp.getPostit();
 
       int w = MAXW;
-      if (p.getReceiver() > 0) {
-        g.setColor(new Color(230, 255, 68)); // couleur du postit si privé
-      } else {
-        g.setColor(Color.yellow); // jaune si public
+      // background color
+      switch(p.getType()) {
+        case Postit.INTERNAL:
+          g.setColor(p.getReceiver() > 0 ? INTERNAL_PRIVATE_COLOR : INTERNAL_PUBLIC_COLOR);
+          break;
+        case Postit.EXTERNAL:
+          g.setColor(p.getReceiver() > 0 ? EXTERNAL_PRIVATE_COLOR : EXTERNAL_PUBLIC_COLOR);
+          break;
+        default:
+          g.setColor(INTERNAL_PUBLIC_COLOR);
+
       }
-      g.fillRoundRect(x - w / 2, y - h / 2, w, h, 10, 10);//dessin du fond
-      if (p.getType() == 0) { // si message de type notes
+      g.fillRoundRect(x - w / 2, y - h / 2, w, h, 10, 10);
+      // border
+      if (p.getType() != Postit.INTERNAL_URGENT) {
         g.setColor(Color.black);
-        g.drawRoundRect(x - w / 2, y - h / 2, w - 1, h - 1, 10, 10);//bordure
-      } else { // si message de type urgent
-        g.setColor(Color.red);
-        g.drawRoundRect(x - w / 2, y - h / 2, w - 1, h - 1, 10, 10);//bordure
+        g.drawRoundRect(x - w / 2, y - h / 2, w - 1, h - 1, 10, 10);
+      } else {
+        g.setColor(Color.RED);
+        g.drawRoundRect(x - w / 2, y - h / 2, w - 1, h - 1, 10, 10);
       }
 
+      //text
       g.setColor(Color.black);
       StringTokenizer tk = new StringTokenizer(p.getText());
       int pos = 0;

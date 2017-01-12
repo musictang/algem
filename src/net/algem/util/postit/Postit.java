@@ -1,6 +1,6 @@
 /*
  * @(#)Postit.java	2.9.4.13 05/11/15
- * 
+ *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.util.postit;
 
@@ -33,23 +33,27 @@ public class Postit
         implements java.io.Serializable
 {
 
+  public static final int INTERNAL = 0;
+  public static final int INTERNAL_URGENT = 1;
+  public static final int EXTERNAL = 2;
+
   private static final long serialVersionUID = -4295824851261772842L;
-  
+
   private int id;
-  
+
   /** Type : notes/urgent. */
   private int type;
 
   private int issuer;
-  
+
   /** Receiver : private / public. */
   private int receiver;
 
   private DateFr day;
-  
+
   /** Term. */
   private DateFr term;
-  
+
   private String text;
 
   @Override
@@ -112,5 +116,5 @@ public class Postit
   public void setText(String t) {
     text = t;
   }
-  
+
 }
