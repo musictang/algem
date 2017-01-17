@@ -1,7 +1,7 @@
 /*
- * @(#)CourseTeacherTableModel.java	2.11.0 20/09/16
+ * @(#)CourseTeacherTableModel.java	2.11.5 16/01/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -31,7 +31,7 @@ import net.algem.util.ui.JTableModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.0
+ * @version 2.11.5
  */
 public class CourseTeacherTableModel
         extends JTableModel<CourseSchedule>
@@ -45,6 +45,7 @@ public class CourseTeacherTableModel
       BundleUtil.getLabel("Course.label"),
       BundleUtil.getLabel("Member.label"),
       BundleUtil.getLabel("Status.label"),
+      BundleUtil.getLabel("Note.label"),
       BundleUtil.getLabel("Follow.up.label")
     };
   }
@@ -66,6 +67,7 @@ public class CourseTeacherTableModel
       case 4:
       case 5:
       case 6:
+      case 7:
         return String.class;
       case 3:
         return Course.class;
@@ -97,6 +99,8 @@ public class CourseTeacherTableModel
       case 5:
         return up == null || up.getStatus() <= 0 ? "" : up.getStatusFromResult().name();
       case 6:
+        return up == null || (up.getNote() == null || "0".equals(up.getNote())) ? "" : up.getNote();
+      case 7:
         return up == null || up.toString() == null ? "" : up.toString().replaceAll(System.lineSeparator(), " ");
     }
     return null;

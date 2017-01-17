@@ -1,3 +1,11 @@
 2.11.5
 CORRECTIFS
 * La fiche d'une personne était impossible à ouvrir si sa photo n'existait pas et que le fichier par défaut (silhouette) était introuvable.
+
+POSTIT
+Postit externe
+
+SUIVI PEDAGOGIQUE
+Les éventuelles notes d'évaluation sont maintenant visibles dans les onglets Suivi  d'un élève et Suivi enseignant d'un professeur. La note n'est visible que si différente de 0. Dans le cadre des écoles de musiques actuelles, il est très rare de mettre en place un système de notation
+Le suivi enseignant peut maintenant être imprimé, à l'instar du suivi élève.
+A l'impression, les lignes trop longues sont maintenant correctement affichées.

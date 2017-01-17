@@ -1,7 +1,7 @@
 /*
- * @(#)MemberFollowUpEditor.java	2.11.0 20/09/16
+ * @(#)MemberFollowUpEditor.java	2.11.5 17/01/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -69,12 +69,13 @@ import net.algem.util.ui.FileTab;
 import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GemLabel;
 import net.algem.util.ui.GemPanel;
+import net.algem.util.ui.MultiLineTableCellRenderer;
 
 /**
  * Follow up list controller for a member.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.0
+ * @version 2.11.5
  * @since 2.11.0 16/09/16
  */
 public class MemberFollowUpEditor
@@ -141,8 +142,9 @@ public class MemberFollowUpEditor
     cm.getColumn(4).setPreferredWidth(40);
     cm.getColumn(5).setPreferredWidth(60);
     cm.getColumn(6).setPreferredWidth(15);
-    cm.getColumn(7).setPreferredWidth(160);
-    cm.getColumn(8).setPreferredWidth(150);
+    cm.getColumn(7).setPreferredWidth(15);
+    cm.getColumn(8).setPreferredWidth(160);
+    cm.getColumn(9).setPreferredWidth(150);
 
     JScrollPane scroll = new JScrollPane(table);
     initPrintTable();
@@ -258,13 +260,13 @@ public class MemberFollowUpEditor
     Course c = sro.getCourse();
 
     int col = table.getSelectedColumn();
-    FollowUpDlg dlg = new FollowUpDlg(desktop, sro, c.getTitle(), (col == 8));
+    FollowUpDlg dlg = new FollowUpDlg(desktop, sro, c.getTitle(), (col == 9));
     try {
       dlg.entry();
       if (!dlg.isValidation()) {
         return;
       }
-      if (col != 8) {
+      if (col != 9) {
         planningService.updateFollowUp(sro, dlg.getFollowUp());
         sro.setFollowUp(dlg.getFollowUp());
         tableModel.modItem(n, sro);
@@ -315,8 +317,11 @@ public class MemberFollowUpEditor
     cm.getColumn(3).setPreferredWidth(100);
     cm.getColumn(4).setPreferredWidth(80);
     cm.getColumn(5).setPreferredWidth(100);
-    cm.getColumn(6).setPreferredWidth(140);
-    cm.getColumn(7).setPreferredWidth(110);
+    cm.getColumn(6).setPreferredWidth(10);
+    cm.getColumn(7).setPreferredWidth(10);
+    cm.getColumn(8).setPreferredWidth(110);
+    printTable.getColumnModel().getColumn(8).setCellRenderer(new MultiLineTableCellRenderer());
+    printTable.getColumnModel().getColumn(9).setCellRenderer(new MultiLineTableCellRenderer());
     printTable.setRowHeight(30);
 
   }

@@ -1,7 +1,7 @@
 /*
- * @(#)CommunAccountExportService.java	2.11.3 30/11/16
+ * @(#)CommunAccountExportService.java	2.11.5 16/01/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -47,7 +47,7 @@ import net.algem.util.model.ModelNotFoundException;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.12
+ * @version 2.11.5
  * @since 2.8.r 13/12/13
  */
 public abstract class CommunAccountExportService
@@ -169,8 +169,9 @@ public abstract class CommunAccountExportService
   /**
    * CSV export with payers names.
    *
-   * @param path location
+   * @param path location of export file
    * @param orderLines list of order lines
+   * @return a non-empty list of error messages if any problem was found
    * @throws IOException
    */
   @Override

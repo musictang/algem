@@ -1,7 +1,7 @@
 /*
- * @(#)ScheduleRangeTableModel.java	2.11.0 20/09/16
+ * @(#)ScheduleRangeTableModel.java	2.11.5 16/01/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -29,7 +29,7 @@ import net.algem.util.ui.JTableModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.0
+ * @version 2.11.5
  */
 public class ScheduleRangeTableModel
         extends JTableModel<ScheduleRangeObject>
@@ -47,9 +47,9 @@ public class ScheduleRangeTableModel
       BundleUtil.getLabel("Room.label"),
       BundleUtil.getLabel("Teacher.label"),
       BundleUtil.getLabel("Status.label"),
+      BundleUtil.getLabel("Note.label"),
       BundleUtil.getLabel("Individual.monitoring.label"),
       BundleUtil.getLabel("Follow.up.label") + " " + BundleUtil.getLabel("Collective.label")
-
     };
 
   }
@@ -74,6 +74,7 @@ public class ScheduleRangeTableModel
       case 6:
       case 7:
       case 8:
+      case 9:
         return String.class;
       default:
         return Object.class;
@@ -105,8 +106,10 @@ public class ScheduleRangeTableModel
       case 6:
         return up == null || up.getStatus() <= 0 ? "" : up.getStatusFromResult().name();
       case 7:
-        return up == null || up.toString() == null ? "" : up.toString().replaceAll(System.lineSeparator(), " ");
+        return up == null || (up.getNote() == null || "0".equals(up.getNote())) ? "" : up.getNote();
       case 8:
+        return up == null || up.toString() == null ? "" : up.toString().replaceAll(System.lineSeparator(), " ");
+      case 9:
         return sro.getNote2() == null ? "" : sro.getNote2().replaceAll(System.lineSeparator(), " ");
     }
     return null;
