@@ -1,11 +1,31 @@
 2.11.5
-CORRECTIFS
-* La fiche d'une personne était impossible à ouvrir si sa photo n'existait pas et que le fichier par défaut (silhouette) était introuvable.
 
-POSTIT
-Postit externe
+CORRECTIFS
+
+* La fiche d'une personne était impossible à ouvrir si sa photo n'existait pas et que le fichier par défaut (silhouette) était introuvable.
+* Les lignes d'appréciation trop longues étaient partiellement affichées à l'impression du suivi élève (bouton Imprimer dans l'onglet Suivi d'un élève). La colonne s'adapte maintenant automatiquement en fonction de la longueur de l'appréciation.
+* L'émetteur d'un postit adressé à une personne en privé n'avait plus la possibilité de modifier ou de consulter ce postit, une fois créé.
+
+POSTITS
+
+Il est maintenant possible d'envoyer des postits externes, c'est-à-dire faire apparaître ces postits sur les pages du planning public d'Algem. Un postit externe pourra donc être vu par toutes les personnes n'utilisant pas le logiciel en interne.
+
+Un postit externe peut être public (vu par n'importe quel visiteur), privé (vu seulement par la personne à laquelle il est envoyé), ou adressé à l'ensemble des professeurs (ayant un compte).
+Quelques exemples d'utilisation de postits public et privé:
+- rappeler aux répétiteurs (visiteurs, adhérents) les périodes de fermeture durant les vacances scolaires.
+- afficher une information importante commune à tous les adhérents de la structure, sans passer par la rédaction d'une news-letter.
+- rappeler à un professeur une information importante, concernant son planning ou son suivi pédagogique.
+
+La création d'un postit se fait toujours à partir de la version de bureau du logiciel. Cliquez sur Fichier -> Nouveau postit dans le menu principal. Choisissez parmi l'un des 3 types suivants : Interne, Interne urgent, Externe. Choisissez le 3ème pour envoyer un postit externe. Si vous voulez qu'il soit public, sélectionnez Public devant le champ "Destinataire". Sinon, vous avez le choix de l'envoyer aux professeurs (Professeurs) ou à une personne en particulier en sélectionnant son nom dans la liste.
+Vu de l'application web, les postits publics apparaissent en page d'accueil et sur le planning jour. Les postits privés apparaissent sur la page personnelle de l'utilisateur.
+Il suffit de cliquer sur un postit pour le faire disparaître temporairement (le postit ne disparaît définitivement que s'il arrive à échéance ou que s'il est supprimé par l'émetteur ou l'un des utilisateurs d'Algem).
+Dans Algem, les postits publics sont représentés en orange, et les postits privés en rouge clair. Il en est de même dans l'application web : jaune orangé pour les postits publics, rouge clair pour les privés.
 
 SUIVI PEDAGOGIQUE
-Les éventuelles notes d'évaluation sont maintenant visibles dans les onglets Suivi  d'un élève et Suivi enseignant d'un professeur. La note n'est visible que si différente de 0. Dans le cadre des écoles de musiques actuelles, il est très rare de mettre en place un système de notation
-Le suivi enseignant peut maintenant être imprimé, à l'instar du suivi élève.
-A l'impression, les lignes trop longues sont maintenant correctement affichées.
+
+Les éventuelles notes d'évaluation sont maintenant visibles dans les onglets Suivi d'un élève et Suivi enseignant d'un professeur. La note n'est visible que si différente de 0. Bien qu'il soit assez rare de mettre en place un système de notation dans le cadre des écoles de musiques actuelles, l'ajout de cette colonne s'imposait pour des raisons de cohérence avec l'application web (qui permet aux professeurs de saisir éventuellement des notes d'évaluation).
+
+Le suivi enseignant peut maintenant être imprimé, à l'instar du suivi élève. Cliquez pour cela sur le bouton Imprimer dans l'onglet Suivi enseignant d'un professeur.
+
+La colonne Note a été également ajoutée dans le script Suivi eleves.js. Veuillez écraser votre script existant (après l'avoir dézippé) par la nouvelle version disponible à cette adresse : http://www.algem.net/install/Suivi_eleves_2.11.5.zip
+

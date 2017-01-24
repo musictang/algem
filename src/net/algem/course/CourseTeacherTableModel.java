@@ -44,7 +44,7 @@ public class CourseTeacherTableModel
       BundleUtil.getLabel("End.label"),
       BundleUtil.getLabel("Course.label"),
       BundleUtil.getLabel("Member.label"),
-      BundleUtil.getLabel("Status.label"),
+      BundleUtil.getLabel("Absence.label"),
       BundleUtil.getLabel("Note.label"),
       BundleUtil.getLabel("Follow.up.label")
     };

@@ -27,6 +27,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.algem.config.Config;
+import net.algem.config.ConfigKey;
+import net.algem.config.ConfigUtil;
 import net.algem.contact.Person;
 import net.algem.contact.PersonIO;
 import net.algem.room.EstablishmentIO;
@@ -221,10 +224,11 @@ public class UserIO
   }
 
   public List<User> findPostitUserList() throws SQLException {
+    String order = ConfigUtil.getConf(ConfigKey.PERSON_SORT_ORDER.getKey());
     List<User> v = new ArrayList<User>();
     String query = "SELECT p.id,p.ptype,p.nom,p.prenom,p.pseudo,p.civilite,u.login,u.profil"
       + " FROM " + PersonIO.TABLE + " p JOIN " + TABLE + " u ON (p.id = u.idper)"
-      + " ORDER BY p.nom, p.prenom";
+      + ("n".equals(order) ? " ORDER BY p.nom, p.prenom" : " ORDER BY p.prenom, p.nom");
     try (ResultSet rs = dc.executeQuery(query)) {
       while (rs.next()) {
         User u = new User();

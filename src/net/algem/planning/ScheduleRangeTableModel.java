@@ -46,7 +46,7 @@ public class ScheduleRangeTableModel
       BundleUtil.getLabel("Activity.label"),
       BundleUtil.getLabel("Room.label"),
       BundleUtil.getLabel("Teacher.label"),
-      BundleUtil.getLabel("Status.label"),
+      BundleUtil.getLabel("Absence.label"),
       BundleUtil.getLabel("Note.label"),
       BundleUtil.getLabel("Individual.monitoring.label"),
       BundleUtil.getLabel("Follow.up.label") + " " + BundleUtil.getLabel("Collective.label")

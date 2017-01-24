@@ -41,8 +41,8 @@ public class PostitCanvas
 
   private static final Color INTERNAL_PUBLIC_COLOR = Color.YELLOW;
   private static final Color INTERNAL_PRIVATE_COLOR = new Color(230, 255, 68);
-  private static final Color EXTERNAL_PUBLIC_COLOR = Color.ORANGE;
-  private static final Color EXTERNAL_PRIVATE_COLOR = Color.pink;
+  private static final Color EXTERNAL_PUBLIC_COLOR = new Color(254,210,68);//"fed244"
+  private static final Color EXTERNAL_PRIVATE_COLOR = new Color(255,123,123);//#ff7b7b
   int nextx = 50;
   int nexty = 40;
   int initialDragPos;

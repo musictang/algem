@@ -61,8 +61,8 @@ public class PostitCreateView
       BundleUtil.getLabel("Postit.external.label")
     });
     receiver = new JComboBox(new String[]{
-      BundleUtil.getLabel("Private.label"),
       BundleUtil.getLabel("Public.label"),
+      BundleUtil.getLabel("Private.label"),
       BundleUtil.getLabel("Teachers.label")
     });
 
@@ -92,10 +92,10 @@ public class PostitCreateView
     int selectedIdx = receiver.getSelectedIndex();
     p.setIssuer(userId);
 
-    if (selectedIdx <= 0) { // privé
-      p.setReceiver(userId); //id de l'utilisateur courant
-    } else if (selectedIdx == 1) { // public
+    if (selectedIdx <= 0) { // public
       p.setReceiver(0);
+    } else if (selectedIdx == 1) { // privé
+      p.setReceiver(userId); //id de l'utilisateur courant
     } else if (selectedIdx == 2) {
       p.setReceiver(p.getType() == Postit.EXTERNAL ? - (Profile.TEACHER.getId()) : 0);
     } else {
