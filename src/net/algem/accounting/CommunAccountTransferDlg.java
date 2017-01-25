@@ -1,7 +1,7 @@
 /*
- * @(#)CommunAccountTransferDlg.java	2.11.3 30/11/16
+ * @(#)CommunAccountTransferDlg.java	2.11.5 25/01/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -24,9 +24,7 @@ import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Frame;
 import java.awt.GridBagLayout;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Vector;
@@ -47,7 +45,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.3
+ * @version 2.11.5
  * @since 2.8.r 13/12/13
  */
 public class CommunAccountTransferDlg
@@ -65,6 +63,7 @@ public class CommunAccountTransferDlg
     transferView = new AccountTransferView(dataCache);
 
     setLayout(new BorderLayout());
+    setTitle(BundleUtil.getLabel("Menu.schedule.payment.transfer.label"));
 
     GemPanel p = new GemPanel();
     p.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));

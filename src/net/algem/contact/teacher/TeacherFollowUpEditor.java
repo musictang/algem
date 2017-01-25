@@ -1,5 +1,5 @@
 /*
- * @(#)TeacherFollowUpEditor.java	2.11.5 17/01/17
+ * @(#)TeacherFollowUpEditor.java	2.11.5 25/01/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -31,7 +31,6 @@ import java.awt.print.PrinterException;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
 import javax.print.attribute.HashPrintRequestAttributeSet;
@@ -52,7 +51,6 @@ import javax.swing.table.TableColumnModel;
 import net.algem.contact.PersonFile;
 import net.algem.course.Course;
 import net.algem.course.CourseTeacherTableModel;
-import net.algem.course.Module;
 import net.algem.enrolment.FollowUp;
 import net.algem.planning.*;
 import net.algem.util.BundleUtil;
@@ -115,7 +113,7 @@ public class TeacherFollowUpEditor
             modification(n);
           } catch (SQLException sqe) {
             GemLogger.log(sqe.getMessage());
-          } 
+          }
         }
       }
     });
@@ -132,8 +130,14 @@ public class TeacherFollowUpEditor
         if (!listSelectionModel.isSelectionEmpty()) {
           int rows[] = table.getSelectedRows();
           for (int i = 0; i < rows.length; i++) {
-            Hour start = new Hour((String) table.getModel().getValueAt(table.convertRowIndexToModel(rows[i]), 1));
-            Hour end = new Hour((String) table.getModel().getValueAt(table.convertRowIndexToModel(rows[i]), 2));
+            int rowIndex = table.convertRowIndexToModel(rows[i]);
+            String member = (String) table.getModel().getValueAt(rowIndex, 4);
+            // do not include teacher breaks
+            if (BundleUtil.getLabel("Teacher.break.label").toUpperCase().equals(member)) {
+              continue;
+            }
+            Hour start = new Hour((String) table.getModel().getValueAt(rowIndex, 1));
+            Hour end = new Hour((String) table.getModel().getValueAt(rowIndex, 2));
             total += start.getLength(end);
           }
         }
@@ -286,7 +290,7 @@ public class TeacherFollowUpEditor
   void insertion(int n) throws SQLException {
     clear();
   }
-  
+
   private void initPrintTable() {
     printTable = new JTable(courseTableModel);
     TableColumnModel cm = printTable.getColumnModel();
@@ -301,7 +305,7 @@ public class TeacherFollowUpEditor
     printTable.getColumnModel().getColumn(7).setCellRenderer(new MultiLineTableCellRenderer());
     printTable.setRowHeight(30);
   }
-  
+
   private void initPrintDialog() {
     JScrollPane sc = new JScrollPane(printTable);
     GemPanel p = new GemPanel(new BorderLayout());
@@ -310,7 +314,7 @@ public class TeacherFollowUpEditor
     printDlg.add(p);
     printDlg.setSize(GemModule.XXL_SIZE);
   }
-  
+
   private void print() {
     desktop.setWaitCursor();
     printDlg.setVisible(true);

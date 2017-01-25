@@ -1,5 +1,5 @@
 /*
- * @(#)CourseTeacherTableModel.java	2.11.5 16/01/17
+ * @(#)CourseTeacherTableModel.java	2.11.5 25/01/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,6 +20,7 @@
  */
 package net.algem.course;
 
+import java.util.regex.Pattern;
 import net.algem.enrolment.FollowUp;
 import net.algem.planning.CourseSchedule;
 import net.algem.planning.DateFr;
@@ -36,6 +37,8 @@ import net.algem.util.ui.JTableModel;
 public class CourseTeacherTableModel
         extends JTableModel<CourseSchedule>
 {
+
+  public static final Pattern BREAK_PATTERN = Pattern.compile("^.*definir.*$");
 
   public CourseTeacherTableModel() {
     header = new String[]{
@@ -85,6 +88,7 @@ public class CourseTeacherTableModel
   public Object getValueAt(int line, int col) {
     CourseSchedule p = tuples.elementAt(line);
     FollowUp up = p.getFollowUp();
+
     switch (col) {
       case 0:
         return p.getDate();
@@ -95,7 +99,12 @@ public class CourseTeacherTableModel
       case 3:
         return p.getCourse();
       case 4:
-        return p.getMember() != null ? p.getMember().getFirstnameName() : null;
+        if (p.getMember() == null) {
+          return null;
+        } else {
+          String n = p.getMember().getFirstnameName();
+          return BREAK_PATTERN.matcher(n).matches() ? BundleUtil.getLabel("Teacher.break.label").toUpperCase() : n;
+        }
       case 5:
         return up == null || up.getStatus() <= 0 ? "" : up.getStatusFromResult().name();
       case 6:
