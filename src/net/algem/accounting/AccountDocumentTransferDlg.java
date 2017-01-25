@@ -1,7 +1,7 @@
 /*
- * @(#)AccountDocumentTransferDlg.java	2.11.3 30/11/16
+ * @(#)AccountDocumentTransferDlg.java	2.11.5 25/01/17
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -43,7 +43,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.3
+ * @version 2.11.5
  * @since 1.0a 27/09/2000
  */
 public class AccountDocumentTransferDlg
@@ -62,6 +62,7 @@ public class AccountDocumentTransferDlg
     view = new AccountDocumentTransferView(dataCache);
 
     setLayout(new BorderLayout());
+    setTitle(BundleUtil.getLabel("Menu.document.transfer.label"));
 
     GemPanel p = new GemPanel();
     p.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));

@@ -1,7 +1,7 @@
 /*
- * @(#) HoursTaskFactory.java Algem 2.10.0 03/06/2016
+ * @(#) HoursTaskFactory.java Algem 2.11.5 25/01/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -24,7 +24,7 @@ import net.algem.util.GemLogger;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.11.5
  * @since 2.10.0 03/06/2016
  */
 public class HoursTaskFactory {
@@ -33,12 +33,10 @@ public class HoursTaskFactory {
     try {
       Class c = Class.forName("net.algem.plugins.WorkingTimePlugin");
       return (HoursTaskExecutor) c.newInstance();
-    } catch (InstantiationException ex) {
+    } catch (InstantiationException | IllegalAccessException ex) {
       GemLogger.logException(ex);
     } catch (ClassNotFoundException ex) {
-      GemLogger.logException(ex);
-    } catch (IllegalAccessException ex) {
-      GemLogger.logException(ex);
+      GemLogger.log(ex.getMessage());
     }
     return null;
   }

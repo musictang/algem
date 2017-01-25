@@ -1,7 +1,7 @@
 /*
- * @(#)TextUtil.java	2.8.r 30/12/13
+ * @(#)TextUtil.java	2.11.5 25/01/17
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -24,7 +24,7 @@ package net.algem.util;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.r
+ * @version 2.11.5
  * @since 2.8.r 13/12/13
  */
 public class TextUtil
@@ -35,82 +35,97 @@ public class TextUtil
 	public final static String LINE_SEPARATOR = System.getProperty("line.separator");
 
   /**
-   * Tronque la chaine de caractères au nombre de caractères
-   * fourni par
-   * <CODE>taille</CODE>. Si la chaîne a une taille
-   * supérieure à l'argument
-   * <CODE>taille</CODE> alors renvoie
-   * la chaîne d'origine sans altération
+   * Truncate the string {@code s} to {@code size} characters.
+   * If initial string length is greater than {@code size}, the string is returned without alterations.
+   * @param s initial string
+   * @param size final size
+   * @return a formatted string
    */
-  public static String truncate(String chaine, int taille) {
+  public static String truncate(String s, int size) {
 
-    if (chaine.length() > taille) {
-      return chaine.substring(0, taille);
+    if (s.length() > size) {
+      return s.substring(0, size);
     }
 
-    return chaine;
+    return s;
   }
 
   /**
-   * Ajoute le caractère
-   * <CODE>c</CODE> au début ou à la fin de la chaine
-   * de telle manière que la chaine soit de
-   * <CODE>size</CODE> caractères
+   * Adds the character {@code c} at the start of the end of the string {@code s} until string length equals {@code size}.
+   * @param s initial string
+   * @param size final size
+   * @param c the character used to fill
+   * @param where filling location (leading or trailing)
+   * return a formatted string
    */
-  public static String pad(String chaine, int size, char c, int where) {
+  public static String pad(String s, int size, char c, int where) {
 
-    if (chaine == null) {
-      chaine = "";
+    if (s == null) {
+      s = "";
     }
 
-    String resultat = chaine;
-    int numSpaces = size - chaine.length();
+    String res = s;
+    int numSpaces = size - s.length();
     if (numSpaces > 0) {
       for (int i = 0; i < numSpaces; i++) {
         if (where == TRAILING) {
-          resultat += c;
+          res += c;
         } else {
-          resultat = c + resultat;
+          res = c + res;
         }
       }
     }
-    return resultat;
+    return res;
   }
 
   /**
-   * Remplit d'espaces une chaîne de caractères selon la taille fixée par
-   * <code>size</code>.
+   * Fills the end of the string {@code s} with spaces until its size equals {@code size}.
+   * @param s initial string
+   * @param size final size
+   * @return a formatted string
    */
-  public static String padWithTrailingSpaces(String chaine, int size) {
-    return pad(chaine, size, ' ', TRAILING);
+  public static String padWithTrailingSpaces(String s, int size) {
+    return pad(s, size, ' ', TRAILING);
+  }
+
+  public static String padWithLeadingSpaces(String s, int size) {
+    return pad(s, size, ' ', LEADING);
   }
 
   /**
-   * Remplit de zéros une chaîne de caractères selon la taille fixée par size.
+   * Fills the end of the string {@code s} with "0" until its size equals {@code size}.
    *
-   * @param chaine
-   * @param size
-   * @return une chaîne
+   * @param s initial string
+   * @param size final size
+   * @return a formatted sring
    */
-  public static String padWithTrailingZeros(String chaine, int size) {
-    return pad(chaine, size, '0', TRAILING);
+  public static String padWithTrailingZeros(String s, int size) {
+    return pad(s, size, '0', TRAILING);
   }
 
-  public static String padWithLeadingZeros(String chaine, int size) {
-    return pad(chaine, size, '0', LEADING);
+  /**
+   * Fills the start of the string {@code s} with "0" until its size equals {@code size}.
+   * @param s initial string
+   * @param size final size
+   * @return a formatted string
+   */
+  public static String padWithLeadingZeros(String s, int size) {
+    return pad(s, size, '0', LEADING);
   }
 
-  public static String padWithLeadingZeros(int chiffre, int size) {
-    return pad(String.valueOf(chiffre), size, '0', LEADING);
+  /**
+   * Converts a number {@code n} to string, filling its start with "0" until its size equals {@code size}.
+   * @param n the number to convert
+   * @param size final size
+   * @return a formatted string
+   */
+  public static String padWithLeadingZeros(int n, int size) {
+    return pad(String.valueOf(n), size, '0', LEADING);
   }
-  
-  public static String padWithLeadingSpaces(String chaine, int size) {
-    return pad(chaine, size, ' ', LEADING);
-  }
-	
+
 	/**
    * Removes accented characters from a string.
-   * @param s the original string
+   * @param s initial string
    * @return a string without accents if any
    */
   public static String replaceChars(String s) {
