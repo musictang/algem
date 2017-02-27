@@ -1,5 +1,5 @@
 /*
- * @(#)CommunAccountTransferDlg.java	2.11.5 25/01/17
+ * @(#)CommunAccountTransferDlg.java	2.11.6 27/02/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -45,7 +45,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.5
+ * @version 2.11.6
  * @since 2.8.r 13/12/13
  */
 public class CommunAccountTransferDlg
@@ -83,7 +83,7 @@ public class CommunAccountTransferDlg
     add(p, BorderLayout.CENTER);
     add(buttons, BorderLayout.SOUTH);
     setLocation(200, 100);
-    setSize(450,300);
+    setSize(460,300);
     //pack();
   }
 
