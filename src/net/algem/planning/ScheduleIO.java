@@ -533,7 +533,7 @@ public class ScheduleIO
 
   private static String getDeleteScheduleQuery(Action a) {
     String query = "DELETE FROM " + TABLE
-        + " WHERE jour >= '" + a.getDateStart() + "' AND jour <= '" + a.getDateEnd() + "'"
+        + " WHERE jour >= '" + a.getStartDate() + "' AND jour <= '" + a.getEndDate() + "'"
         + " AND action = " + a.getId();
     return query;
   }
@@ -570,7 +570,7 @@ public class ScheduleIO
   private static String getQueryNumberOfRanges(Action a) {
     return "SELECT COUNT(pg.debut) AS nb_cours FROM " + ScheduleRangeIO.TABLE + " pg, " + TABLE + " p"
         + " WHERE pg.idplanning = p.id AND p.action = " + a.getId()
-        + " AND p.jour >= '" + a.getDateStart() + "' AND p.jour <= '" + a.getDateEnd() + "'";
+        + " AND p.jour >= '" + a.getStartDate() + "' AND p.jour <= '" + a.getEndDate() + "'";
   }
 
   /**

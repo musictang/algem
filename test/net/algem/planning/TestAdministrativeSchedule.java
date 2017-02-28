@@ -81,13 +81,13 @@ public class TestAdministrativeSchedule
       System.out.println(a + " : " + PlanningService.WEEK_DAYS[a.getDay()]);
     }
     assertTrue(new DayOfWeek(Calendar.TUESDAY, PlanningService.WEEK_DAYS[Calendar.TUESDAY]).getIndex() == actions.get(1).getDay());
-    assertEquals(new Hour("10:00"), actions.get(1).getHourStart());
-    assertEquals(new Hour("17:00"), actions.get(1).getHourEnd());
+    assertEquals(new Hour("10:00"), actions.get(1).getStartTime());
+    assertEquals(new Hour("17:00"), actions.get(1).getEndTime());
     assertTrue(1 == actions.get(1).getRoom());
 
     assertTrue(new DayOfWeek(Calendar.THURSDAY, PlanningService.WEEK_DAYS[Calendar.THURSDAY]).getIndex() == actions.get(4).getDay());
-    assertEquals(new Hour("14:00"), actions.get(4).getHourStart());
-    assertEquals(new Hour("17:00"), actions.get(4).getHourEnd());
+    assertEquals(new Hour("14:00"), actions.get(4).getStartTime());
+    assertEquals(new Hour("17:00"), actions.get(4).getEndTime());
     assertTrue(3 == actions.get(4).getRoom());
     
   }

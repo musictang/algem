@@ -135,10 +135,10 @@ public class TeacherBreakDlg
 
   public void save() {
     Action a = new Action();
-    a.setDateStart(pv.getDateStart());
-    a.setDateEnd(pv.getDateEnd());
-    a.setHourStart(pv.getHourStart());
-    a.setHourEnd(pv.getHourEnd());
+    a.setStartDate(pv.getDateStart());
+    a.setEndDate(pv.getDateEnd());
+    a.setStartTime(pv.getHourStart());
+    a.setEndTime(pv.getHourEnd());
     a.setCourse(pv.getCourse());
     a.setRoom(pv.getRoom());
     a.setIdper(teacher);

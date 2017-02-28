@@ -46,10 +46,10 @@ public class Action
   private int id;
   private int courseId;
   private short nsessions;
-  private DateFr dateStart;
-  private DateFr dateEnd;
-  private Hour hourStart;
-  private Hour hourEnd;
+  private DateFr startDate;
+  private DateFr endDate;
+  private Hour startTime;
+  private Hour endTime;
   private int idper;
   private int roomId;
   private short day;
@@ -78,8 +78,8 @@ public class Action
 
   public Action(Action a) {
     this.courseId = a.getCourse();
-    this.dateStart = a.getDateStart();
-    this.dateEnd = a.getDateEnd();
+    this.startDate = a.getStartDate();
+    this.endDate = a.getEndDate();
     this.idper = a.getIdper();
     this.roomId = a.getRoom();
     this.day = (short) a.getDay();
@@ -135,20 +135,20 @@ public class Action
     roomId = i;
   }
 
-  public Hour getHourStart() {
-    return hourStart;
+  public Hour getStartTime() {
+    return startTime;
   }
 
-  public void setHourStart(Hour h) {
-    hourStart = h;
+  public void setStartTime(Hour h) {
+    startTime = h;
   }
 
-  public Hour getHourEnd() {
-    return hourEnd;
+  public Hour getEndTime() {
+    return endTime;
   }
 
-  public void setHourEnd(Hour h) {
-    hourEnd = h;
+  public void setEndTime(Hour h) {
+    endTime = h;
   }
 
   public int getLength() {
@@ -159,20 +159,20 @@ public class Action
     this.length = length;
   }
 
-  public DateFr getDateStart() {
-    return dateStart;
+  public DateFr getStartDate() {
+    return startDate;
   }
 
-  public void setDateStart(DateFr d) {
-    dateStart = d;
+  public void setStartDate(DateFr d) {
+    startDate = d;
   }
 
-  public DateFr getDateEnd() {
-    return dateEnd;
+  public DateFr getEndDate() {
+    return endDate;
   }
 
-  public void setDateEnd(DateFr d) {
-    dateEnd = d;
+  public void setEndDate(DateFr d) {
+    endDate = d;
   }
 
   public int getDay() {
@@ -273,7 +273,7 @@ public class Action
 
   @Override
   public String toString() {
-    return id + " " + hourStart + " " + hourEnd + " " + idper + " " + memberId + " " + roomId;
+    return id + " " + startTime + " " + endTime + " " + idper + " " + memberId + " " + roomId;
   }
 
   public String getCodeLabel() {

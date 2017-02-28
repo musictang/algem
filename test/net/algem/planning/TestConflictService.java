@@ -100,15 +100,16 @@ public class TestConflictService
     clear(a1);
     clear(a2);
   }
+  
 
   private Action createAction(DateFr d, DateFr f, Hour hd, Hour hf, int prof, int salle) {
     Action a = new Action();
 
     a.setCourse(514);// mao
-    a.setDateStart(d);
-    a.setDateEnd(f);
-    a.setHourStart(hd);
-    a.setHourEnd(hf);
+    a.setStartDate(d);
+    a.setEndDate(f);
+    a.setStartTime(hd);
+    a.setEndTime(hf);
     a.setIdper(prof);
     a.setRoom(salle);
     a.setDay(1);

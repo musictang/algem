@@ -76,10 +76,10 @@ public class TestCourseScheduleCtrl
 
     Action a = new Action();
     a.setCourse(4);
-    a.setDateStart(new DateFr("17-09-2012"));
-    a.setDateEnd(new DateFr("17-09-2012"));
-    a.setHourStart(start);
-    a.setHourEnd(end);
+    a.setStartDate(new DateFr("17-09-2012"));
+    a.setEndDate(new DateFr("17-09-2012"));
+    a.setStartTime(start);
+    a.setEndTime(end);
     a.setLength(60);
     a.setDay(1);
     a.setPeriodicity(Periodicity.WEEK);
@@ -95,38 +95,40 @@ public class TestCourseScheduleCtrl
 
     a.setLength(duration);
 
-    a.setHourEnd(end);
+    a.setEndTime(end);
     la = ctrl.getPlanification(a, 0);
     assertTrue(la.size() == 5);
-    assertEquals(start, la.get(0).getHourStart());
-    assertEquals(new Hour("17:45"), la.get(la.size() - 1).getHourEnd());
+    assertEquals(start, la.get(0).getStartTime());
+    assertEquals(new Hour("17:45"), la.get(la.size() - 1).getEndTime());
 
-    a.setHourEnd(end);
+    a.setEndTime(end);
     la = ctrl.getPlanification(a, intervall);
     assertTrue(la.size() == 4);
-    assertEquals(start, la.get(0).getHourStart());
-    assertEquals(new Hour("17:00"), la.get(la.size() - 1).getHourStart());
-    assertEquals(new Hour("17:45"), la.get(la.size() - 1).getHourEnd());
+    assertEquals(start, la.get(0).getStartTime());
+    assertEquals(new Hour("17:00"), la.get(la.size() - 1).getStartTime());
+    assertEquals(new Hour("17:45"), la.get(la.size() - 1).getEndTime());
 
-    a.setHourEnd(end);
+    a.setEndTime(end);
     a.setLength(55);
     intervall = 5;
     la = ctrl.getPlanification(a, intervall);
     assertTrue(la.size() == 4);
-    assertEquals(start, la.get(0).getHourStart());
-    assertEquals(new Hour("17:00"), la.get(la.size() - 1).getHourStart());
-    assertEquals(new Hour("17:55"), la.get(la.size() - 1).getHourEnd());
+    assertEquals(start, la.get(0).getStartTime());
+    assertEquals(new Hour("17:00"), la.get(la.size() - 1).getStartTime());
+    assertEquals(new Hour("17:55"), la.get(la.size() - 1).getEndTime());
 
-    a.setHourEnd(end);
+    a.setEndTime(end);
     a.setLength(40);
     la = ctrl.getPlanification(a, intervall);
     assertTrue(la.size() == 5);
-    assertEquals(start, la.get(0).getHourStart());
-    assertEquals(new Hour("16:15"), la.get(la.size() - 2).getHourStart());
-    assertEquals(new Hour("16:55"), la.get(la.size() - 2).getHourEnd());
-    assertEquals(new Hour("17:00"), la.get(la.size() - 1).getHourStart());
-    assertEquals(new Hour("17:40"), la.get(la.size() - 1).getHourEnd());
+    assertEquals(start, la.get(0).getStartTime());
+    assertEquals(new Hour("16:15"), la.get(la.size() - 2).getStartTime());
+    assertEquals(new Hour("16:55"), la.get(la.size() - 2).getEndTime());
+    assertEquals(new Hour("17:00"), la.get(la.size() - 1).getStartTime());
+    assertEquals(new Hour("17:40"), la.get(la.size() - 1).getEndTime());
   }
+  
+  
 
 //  @Test
 //  public void duration() {

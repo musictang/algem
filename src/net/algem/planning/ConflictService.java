@@ -630,16 +630,16 @@ public class ConflictService
 
   public List<ScheduleTestConflict> testRoomAndPersonConflicts(DateFr d, Action a) throws SQLException {
     List<ScheduleTestConflict> conflicts = new ArrayList<ScheduleTestConflict>();
-    Hour endTime = new Hour(a.getHourEnd());
+    Hour endTime = new Hour(a.getEndTime());
     endTime.maybeDecMidnight();
     testRoomAndPersonPS.setDate(1, new java.sql.Date(d.getTime()));
     testRoomAndPersonPS.setInt(2, a.getRoom());
     testRoomAndPersonPS.setInt(3, a.getIdper());
-    testRoomAndPersonPS.setTime(4, java.sql.Time.valueOf(a.getHourStart().toString() + ":00"));
+    testRoomAndPersonPS.setTime(4, java.sql.Time.valueOf(a.getStartTime().toString() + ":00"));
     testRoomAndPersonPS.setTime(5, java.sql.Time.valueOf(endTime.toString() + ":00"));
-    testRoomAndPersonPS.setTime(6, java.sql.Time.valueOf(a.getHourStart().toString() + ":00"));
+    testRoomAndPersonPS.setTime(6, java.sql.Time.valueOf(a.getStartTime().toString() + ":00"));
     testRoomAndPersonPS.setTime(7, java.sql.Time.valueOf(endTime.toString() + ":00"));
-    testRoomAndPersonPS.setTime(8, java.sql.Time.valueOf(a.getHourStart().toString() + ":00"));
+    testRoomAndPersonPS.setTime(8, java.sql.Time.valueOf(a.getStartTime().toString() + ":00"));
     testRoomAndPersonPS.setTime(9, java.sql.Time.valueOf(endTime.toString() + ":00"));
 
     ResultSet rs = testRoomAndPersonPS.executeQuery();

@@ -178,10 +178,10 @@ public class AdministrativeScheduleCtrl
       if (aa.getEnd().le(aa.getStart())) {
         continue;
       }
-      a.setHourStart(aa.getStart());
-      a.setHourEnd(aa.getEnd());
-      a.setDateStart(start);
-      a.setDateEnd(end);
+      a.setStartTime(aa.getStart());
+      a.setEndTime(aa.getEnd());
+      a.setStartDate(start);
+      a.setEndDate(end);
       a.setIdper(idper);
 
       a.setDay(aa.getDay().getIndex());
@@ -203,8 +203,8 @@ public class AdministrativeScheduleCtrl
     try {
       List<ScheduleTestConflict> conflicts = service.planAdministrative(actions);
       desktop.postEvent(new ModifPlanEvent(this,
-        actions.get(0).getDateStart(),
-        actions.get(actions.size() - 1).getDateEnd()));
+        actions.get(0).getStartDate(),
+        actions.get(actions.size() - 1).getEndDate()));
       desktop.setDefaultCursor();
       if (conflicts.size() > 0) {
         ConflictListDlg cfd = new ConflictListDlg(

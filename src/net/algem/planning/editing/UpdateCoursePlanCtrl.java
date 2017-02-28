@@ -68,7 +68,7 @@ public class UpdateCoursePlanCtrl
 		try {
 			action.setId(plan.getIdAction());// on récupère le numéro d'action déjà planifiée
 			service.replanify(action, plan);
-			desktop.postEvent(new ModifPlanEvent(this, action.getDateStart(), action.getDateEnd()));
+			desktop.postEvent(new ModifPlanEvent(this, action.getStartDate(), action.getEndDate()));
 			cancel();
 			return true;
 		} catch (PlanningException ex) {

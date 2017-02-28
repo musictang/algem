@@ -393,7 +393,7 @@ public class MonthPlanView
 //      if (pg.getDate().bufferEquals(clickSchedule.getDate())
 //              && pg.getIdAction() == clickSchedule.getIdAction()
 //              && pg.getIdper().getId() == clickSchedule.getIdPerson() //ajout 1.1d
-//              && (pg.getDateStart().ge(clickSchedule.getDateStart()) && pg.getDateEnd().le(clickSchedule.getDateEnd()))) //ajout 1.1d
+//              && (pg.getStartDate().ge(clickSchedule.getStartDate()) && pg.getEndDate().le(clickSchedule.getEndDate()))) //ajout 1.1d
 //      {
         clickRange.add(pg);
       }

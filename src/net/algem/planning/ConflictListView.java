@@ -21,10 +21,19 @@
 package net.algem.planning;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
+import javax.swing.AbstractCellEditor;
+import javax.swing.DefaultCellEditor;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import net.algem.util.BundleUtil;
+import net.algem.util.ImageUtil;
 import net.algem.util.ui.GemLabel;
 import net.algem.util.ui.GemPanel;
 
@@ -56,6 +65,12 @@ public class ConflictListView
     cm.getColumn(2).setPreferredWidth(40);
     cm.getColumn(3).setPreferredWidth(30);
     cm.getColumn(4).setPreferredWidth(400);
+//    JCheckBox checkBx = new JCheckBox(ImageUtil.createImageIcon(ImageUtil.CONFLICT_ICON));
+//    checkBx.setSelectedIcon(ImageUtil.createImageIcon(ImageUtil.NO_CONFLICT_ICON));
+    cm.getColumn(3).setCellRenderer(new CustomTrafficLightCellRenderer());
+//    cm.getColumn(3).setCellEditor(new CustomTrafficLightEditor());
+//    cm.getColumn(3).setCellEditor(new DefaultCellEditor(new TrafficLightCheckBox(ImageUtil.createImageIcon(ImageUtil.NO_CONFLICT_ICON))));
+//    new JCheckBox()
 
     JScrollPane pm = new JScrollPane(table);
 
@@ -80,4 +95,67 @@ public class ConflictListView
       + (s == null ? BundleUtil.getLabel("Conflicts.label").toLowerCase() : s)
     );
   }
+//  public class TrafficLightCheckBox extends JCheckBox  {
+//
+////        private ImageIcon sad;
+////        private ImageIcon happy;
+//       private final ImageIcon iconOK = ImageUtil.createImageIcon(ImageUtil.NO_CONFLICT_ICON);
+//    private final ImageIcon iconERR = ImageUtil.createImageIcon(ImageUtil.CONFLICT_ICON);
+//
+//    public TrafficLightCheckBox() {
+//    }
+//
+////    public TrafficLightCheckBox(Icon icon) {
+////      super(icon);
+////    }
+//
+//
+//  }
+  public class CustomTrafficLightCellRenderer extends JCheckBox implements TableCellRenderer {
+private final ImageIcon iconOK = ImageUtil.createImageIcon(ImageUtil.NO_CONFLICT_ICON);
+    private final ImageIcon iconERR = ImageUtil.createImageIcon(ImageUtil.CONFLICT_ICON);
+
+    public CustomTrafficLightCellRenderer() {
+//      setIcon(iconOK);
+    }
+
+    
+    @Override
+    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+
+//        if (value instanceof Boolean) {
+            boolean selected = (boolean) value;
+            setSelected(selected);
+            setIcon(selected ? iconOK: iconERR);
+//        }
+        return this;
+    }
+
 }
+//  public class CustomTrafficLightEditor extends AbstractCellEditor implements TableCellEditor {
+//
+//    private TrafficLightCheckBox editor;
+//private final ImageIcon iconOK = ImageUtil.createImageIcon(ImageUtil.NO_CONFLICT_ICON);
+//    private final ImageIcon iconERR = ImageUtil.createImageIcon(ImageUtil.CONFLICT_ICON);
+//    public CustomTrafficLightEditor() {
+//        editor = new TrafficLightCheckBox();
+//    }
+//
+//    @Override
+//    public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+//        if (value instanceof Boolean) {
+//            //boolean selected = (boolean) value;
+//            editor.setSelected((boolean) value);
+//            editor.setIcon((boolean) value ? iconOK: iconERR);
+//        }
+//        return editor;
+//    }
+//
+//    @Override
+//    public Object getCellEditorValue() {
+//        return editor.isSelected();
+//    }
+//
+//}
+
+  }

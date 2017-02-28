@@ -136,25 +136,25 @@ public class CourseScheduleCtrl
   }
 
   List<Action> getPlanification(Action action, int interval) {
-    Hour end = action.getHourEnd();
+    Hour end = action.getEndTime();
     List<Action> v = new ArrayList<Action>();
 
     if (action.getLength() > 15) {
-      Hour start = new Hour(action.getHourStart());
-      action.setHourEnd(start.end(action.getLength()));
+      Hour start = new Hour(action.getStartTime());
+      action.setEndTime(start.end(action.getLength()));
       action.setDates(service.generationDate(action));
       v.add(action);
-      start = action.getHourEnd();
+      start = action.getEndTime();
       while (start.before(end)) {
         Action a = new Action(action);
-        a.setHourStart(start.end(interval));
-        a.setHourEnd(a.getHourStart().end(action.getLength()));
-        if (a.getHourEnd().after(end)) {
+        a.setStartTime(start.end(interval));
+        a.setEndTime(a.getStartTime().end(action.getLength()));
+        if (a.getEndTime().after(end)) {
           break;
         }
         a.setDates(service.generationDate(a));
         v.add(a);
-        start = a.getHourEnd();
+        start = a.getEndTime();
       }
     } else { // course length is undefined
       action.setDates(service.generationDate(action));
@@ -201,8 +201,8 @@ public class CourseScheduleCtrl
     boolean r = save();
     if (r) {
       desktop.postEvent(new ModifPlanEvent(this,
-              actions.get(0).getDateStart(),
-              actions.get(actions.size() - 1).getDateEnd()));
+              actions.get(0).getStartDate(),
+              actions.get(actions.size() - 1).getEndDate()));
     }
     clear();
     return r;
@@ -220,8 +220,8 @@ public class CourseScheduleCtrl
     int room = a.getRoom();
     int teacher = a.getIdper();
 
-    Hour hStart = a.getHourStart();
-    Hour hEnd = a.getHourEnd();
+    Hour hStart = a.getStartTime();
+    Hour hEnd = a.getEndTime();
 
     int conflicts = 0;
     for (DateFr d : a.getDates()) {

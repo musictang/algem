@@ -80,7 +80,7 @@ public class ActionIO
           for (DateFr d : a.getDates()) {
             query = "INSERT INTO planning VALUES (DEFAULT"
                     + ",'" + d.toString()
-                    + "','" + a.getHourStart() + "','" + a.getHourEnd() + "',"
+                    + "','" + a.getStartTime() + "','" + a.getEndTime() + "',"
                     + type + ","
                     + a.getIdper() + ","
                     + a.getId() + ","

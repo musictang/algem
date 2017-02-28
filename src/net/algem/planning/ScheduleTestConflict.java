@@ -37,22 +37,30 @@ public class ScheduleTestConflict
   private static final long serialVersionUID = -718206342909075970L;
   
   private DateFr date;
-  private Hour hStart;
-  private Hour hEnd;
+  private Hour startTime;
+  private Hour endTime;
   private boolean teacherFree;
   private boolean roomFree;
   private boolean memberFree;
   private boolean groupFree;
   private String detail;
+  private int actionIndex;
+  private int dateIndex;
 
   public ScheduleTestConflict(DateFr date, Hour start, Hour end) {
     this.date = date;
-    this.hStart = start;
-    this.hEnd = end;
+    this.startTime = start;
+    this.endTime = end;
     this.teacherFree = true;
     this.roomFree = true;
     this.memberFree = true;
     this.groupFree = true;
+  }
+
+  public ScheduleTestConflict(DateFr date, Hour start, Hour end, int actionIndex, int dateIndex) {
+    this(date, start, end);
+    this.actionIndex = actionIndex;
+    this.dateIndex = dateIndex;
   }
 
   @Override
@@ -67,10 +75,10 @@ public class ScheduleTestConflict
     if (this.date != other.date && (this.date == null || !this.date.equals(other.date))) {
       return false;
     }
-    if (this.hStart != other.hStart && (this.hStart == null || !this.hStart.equals(other.hStart))) {
+    if (this.startTime != other.startTime && (this.startTime == null || !this.startTime.equals(other.startTime))) {
       return false;
     }
-    if (this.hEnd != other.hEnd && (this.hEnd == null || !this.hEnd.equals(other.hEnd))) {
+    if (this.endTime != other.endTime && (this.endTime == null || !this.endTime.equals(other.endTime))) {
       return false;
     }
     if (this.teacherFree != other.teacherFree) {
@@ -92,8 +100,8 @@ public class ScheduleTestConflict
   public int hashCode() {
     int hash = 3;
     hash = 67 * hash + Objects.hashCode(this.date);
-    hash = 67 * hash + Objects.hashCode(this.hStart);
-    hash = 67 * hash + Objects.hashCode(this.hEnd);
+    hash = 67 * hash + Objects.hashCode(this.startTime);
+    hash = 67 * hash + Objects.hashCode(this.endTime);
     hash = 67 * hash + (this.teacherFree ? 1 : 0);
     hash = 67 * hash + (this.roomFree ? 1 : 0);
     hash = 67 * hash + (this.memberFree ? 1 : 0);
@@ -119,19 +127,19 @@ public class ScheduleTestConflict
   }
 
   public void setStart(Hour h) {
-    hStart = h;
+    startTime = h;
   }
 
   public Hour getStart() {
-    return hStart;
+    return startTime;
   }
 
   public void setEnd(Hour h) {
-    hEnd = h;
+    endTime = h;
   }
 
   public Hour getEnd() {
-    return hEnd;
+    return endTime;
   }
 
   public void setTeacherFree(boolean b) {
@@ -177,5 +185,13 @@ public class ScheduleTestConflict
   public boolean isConflict() {
     return !(memberFree && roomFree && teacherFree && groupFree);
   }
-  
+
+  public int getActionIndex() {
+    return actionIndex;
+  }
+
+  public int getDateIndex() {
+    return dateIndex;
+  }
+
 }

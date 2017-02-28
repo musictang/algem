@@ -78,9 +78,9 @@ public class PlanningService
 
     int i = 0; // sessions number
     Calendar start = Calendar.getInstance(Locale.FRANCE);
-    start.setTime(a.getDateStart().getDate());
+    start.setTime(a.getStartDate().getDate());
     Calendar end = Calendar.getInstance(Locale.FRANCE);
-    end.setTime(a.getDateEnd().getDate());
+    end.setTime(a.getEndDate().getDate());
 
     while (start.get(Calendar.DAY_OF_WEEK) != a.getDay()) {
       start.add(Calendar.DATE, 1); // day increment
@@ -243,7 +243,7 @@ public class PlanningService
 //      for (DateFr d : action.getDates()) {
 //        query = "INSERT INTO planning VALUES (DEFAULT"
 //                + ",'" + d.toString()
-//                + "','" + action.getHourStart() + "','" + action.getHourEnd() + "',"
+//                + "','" + action.getStartTime() + "','" + action.getEndTime() + "',"
 //                + plan.getType() + ","// on ne change pas le type
 //                + action.getIdper() + ","
 //                + action.getId() + ","
@@ -740,25 +740,25 @@ public class PlanningService
       Vector<CourseOrder> vcc = CourseOrderIO.find(where, dc);
 
       // selection planning
-      Vector<Schedule> vp = ScheduleIO.find("WHERE action = " + a.getId() + " AND jour >= '" + a.getDateStart() + "'", dc);
+      Vector<Schedule> vp = ScheduleIO.find("WHERE action = " + a.getId() + " AND jour >= '" + a.getStartDate() + "'", dc);
 
       //creer nouvelle action
       actionIO.insert(a);
 
       for (CourseOrder cc : vcc) {
 
-        if (a.getDateStart().after(cc.getDateStart())) {
+        if (a.getStartDate().after(cc.getDateStart())) {
           // update ancienne commande
-          cc.setDateEnd(a.getDateStart());
+          cc.setDateEnd(a.getStartDate());
           CourseOrderIO.update(cc, dc);
           // creation nouvelle commande
           cc.setAction(a.getId()); // l'id a ici été modifiée
-          cc.setDateStart(a.getDateStart());
-          cc.setDateEnd(a.getDateEnd());
+          cc.setDateStart(a.getStartDate());
+          cc.setDateEnd(a.getEndDate());
           CourseOrderIO.insert(cc, dc);
         } else {
           cc.setAction(a.getId());
-          cc.setDateStart(a.getDateStart());
+          cc.setDateStart(a.getStartDate());
           CourseOrderIO.update(cc, dc);
         }
       }
@@ -861,10 +861,10 @@ public class PlanningService
    * @throws PlanningException if error SQL
    */
   public void createBreak(Action a) throws PlanningException {
-    DateFr startDate = a.getDateStart();
-    DateFr endDate = a.getDateEnd();
-    Hour startTime = a.getHourStart();
-    Hour endTime = a.getHourEnd();
+    DateFr startDate = a.getStartDate();
+    DateFr endDate = a.getEndDate();
+    Hour startTime = a.getStartTime();
+    Hour endTime = a.getEndTime();
     int course = a.getCourse();
     int room = a.getRoom();
     String where = ", action a WHERE ptype = " + Schedule.COURSE
@@ -882,8 +882,8 @@ public class PlanningService
       for (int i = 0; i < v.size(); i++) {
         Schedule p = v.elementAt(i);
         ScheduleRange pl = new ScheduleRange(p);
-        pl.setStart(a.getHourStart());
-        pl.setEnd(a.getHourEnd());
+        pl.setStart(a.getStartTime());
+        pl.setEnd(a.getEndTime());
 
         String j = p.getDate().toString();
         String hd = startTime.toString();

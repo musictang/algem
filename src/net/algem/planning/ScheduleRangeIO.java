@@ -107,7 +107,7 @@ public class ScheduleRangeIO
         String query = "DELETE FROM " + TABLE + " WHERE idplanning IN ("
                 + "SELECT id FROM " + ScheduleIO.TABLE
                 + " WHERE action = " + a.getId()
-                + " AND jour >= '" + a.getDateStart() + "' AND jour <= '" + a.getDateEnd() + "')";
+                + " AND jour >= '" + a.getStartDate() + "' AND jour <= '" + a.getEndDate() + "')";
         dc.executeUpdate(query);
     }
 
@@ -124,7 +124,7 @@ public class ScheduleRangeIO
         String query = "DELETE FROM " + TABLE + " WHERE idplanning IN ("
                 + "SELECT id FROM " + ScheduleIO.TABLE
                 + " WHERE action = " + a.getId()
-                + " AND jour >= '" + a.getDateStart() + "' AND jour <= '" + a.getDateEnd()
+                + " AND jour >= '" + a.getStartDate() + "' AND jour <= '" + a.getEndDate()
                 + "' AND debut >= '" + s.getStart() + "' AND fin <= '" + s.getEnd() + "')";
         dc.executeUpdate(query);
     }

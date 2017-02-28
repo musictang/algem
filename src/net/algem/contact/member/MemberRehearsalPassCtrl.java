@@ -197,8 +197,8 @@ public class MemberRehearsalPassCtrl
 
         Action a = new Action();
         a.setIdper(personFile.getId());
-        a.setHourStart(rehearsalView.getHourStart());
-        a.setHourEnd(rehearsalView.getHourEnd());
+        a.setStartTime(rehearsalView.getHourStart());
+        a.setEndTime(rehearsalView.getHourEnd());
         a.setRoom(rehearsalView.getRoom());
         conflicts = service.testMemberSchedule(d, a);
         if (conflicts.size() > 0) {

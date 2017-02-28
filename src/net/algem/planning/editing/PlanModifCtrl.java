@@ -396,7 +396,7 @@ public class PlanModifCtrl
         }
       }
       dc.commit();
-      desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));//XXX dlg.getDateEnd/Fin
+      desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));//XXX dlg.getEndDate/Fin
 
     } catch (Exception e) {
       dc.rollback();
@@ -487,8 +487,8 @@ public class PlanModifCtrl
 
     Action a = new Action(plan.getIdAction());
     a.setCourse(dlg.getCourse());
-    a.setDateStart(dlg.getStart());
-    a.setDateEnd(dlg.getEnd());
+    a.setStartDate(dlg.getStart());
+    a.setEndDate(dlg.getEnd());
 
     try {
       Course oc = service.getCourseFromAction(plan.getIdAction());
@@ -542,7 +542,7 @@ public class PlanModifCtrl
       } else {
         service.changeRoom(plan, start, end, roomId);
       }
-      desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));//XXX dlg.getDateEnd/Fin
+      desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));//XXX dlg.getEndDate/Fin
     } catch (PlanningException e) {
       GemLogger.logException("Change room", e);
     } catch (SQLException sqe) {
@@ -595,7 +595,7 @@ public class PlanModifCtrl
         //modifier cette fonction pour ajouter les insert dans la table absence
         service.changeTeacher(plan, range, start, end);
       }
-      desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));//XXX dlg.getDateEnd/Fin
+      desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));//XXX dlg.getEndDate/Fin
     } catch (PlanningException e) {
       MessagePopup.warning(null, e.getMessage());
     }
@@ -954,10 +954,10 @@ public class PlanModifCtrl
     if (dlg.isValidate()) {
       Action action = new Action();
       action.setId(plan.getIdAction());
-      action.setDateStart(dlg.getDateStart());
-      action.setDateEnd(dlg.getDateEnd());
+      action.setStartDate(dlg.getDateStart());
+      action.setEndDate(dlg.getDateEnd());
       try {
-        if (action.getDateStart().equals(action.getDateEnd())) {
+        if (action.getStartDate().equals(action.getEndDate())) {
           if (service.hasSiblings(plan)) {
             if (plan instanceof StudioSchedule) {
               deleteStudioSchedule(plan, action);
@@ -1104,10 +1104,10 @@ public class PlanModifCtrl
     action.setDay(jour);
     action.setCourse(plan.getIdAction());
     action.setIdper(plan.getIdPerson());
-    action.setDateStart(a.getDateStart());
-    action.setDateEnd(a.getDateEnd());
-    action.setHourStart(plan.getStart());
-    action.setHourEnd(plan.getEnd());
+    action.setStartDate(a.getStartDate());
+    action.setEndDate(a.getEndDate());
+    action.setStartTime(plan.getStart());
+    action.setEndTime(plan.getEnd());
     action.setRoom(plan.getIdRoom());
     return action;
   }

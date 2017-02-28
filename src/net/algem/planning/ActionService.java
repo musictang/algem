@@ -113,19 +113,5 @@ public class ActionService
   public List<AgeRange> getAgeRangeAll() throws SQLException {
     return dataCache.getList(Model.AgeRange).getData();
   }
-  
-  /**
-   * Gets a note corresponding to the action {@code actionId}.
-   * @param actionId
-   * @return a note instance or null if none was found
-   */
-//  public Note getMemo(int actionId) {
-//    try {
-//      return NoteIO.findId(actionId, Person.ACTION, DataCache.getDataConnection());
-//    } catch (NoteException ex) {
-//      GemLogger.log(ex.getMessage());
-//    }
-//    return null;
-//  }
-  
+
 }

@@ -66,7 +66,8 @@ public class ConflictTableModel
       case 2:
         return String.class;
       case 3:
-        return ImageIcon.class;
+        //return ImageIcon.class;
+        return Boolean.class;
       case 4:
         return String.class;
       default:
@@ -76,7 +77,8 @@ public class ConflictTableModel
 
   @Override
   public boolean isCellEditable(int row, int column) {
-    return false;
+    return column == 0 || column == 3;
+    //return false;
   }
 
   @Override
@@ -91,9 +93,11 @@ public class ConflictTableModel
         return p.getEnd().toString();
       case 3:
         if (p.isConflict()) {
-          return iconERR;
+//          return iconERR;
+return false;
         } else {
-          return iconOK;
+          return true;
+//          return iconOK;
         }
       case 4:
         StringBuilder lib = new StringBuilder();
@@ -119,5 +123,15 @@ public class ConflictTableModel
 
   @Override
   public void setValueAt(Object value, int line, int column) {
+    ScheduleTestConflict c = tuples.elementAt(line);
+    switch (column) {
+      case 0:
+        c.setDate(new DateFr((String)value));
+        break;
+      case 3:
+        c.setRoomFree((boolean) value);
+        break;
+    }
   }
+  
 }

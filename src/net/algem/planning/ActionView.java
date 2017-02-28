@@ -198,10 +198,10 @@ public class ActionView
     Action a = new Action();
 
     a.setCourse(course.getKey());
-    a.setDateStart(datePanel.getStartFr());
-    a.setDateEnd(datePanel.getEndFr());
-    a.setHourStart(hourPanel.getStart());
-    a.setHourEnd(hourPanel.getEnd());
+    a.setStartDate(datePanel.getStartFr());
+    a.setEndDate(datePanel.getEndFr());
+    a.setStartTime(hourPanel.getStart());
+    a.setEndTime(hourPanel.getEnd());
     a.setLength(getCourseLength());
     a.setIdper(teacher.getKey());
     a.setRoom(room.getKey());
