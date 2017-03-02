@@ -1,7 +1,7 @@
 /*
- * @(#)CourseScheduleCtrl.java	2.9.7.2 30/05/16
+ * @(#)CourseScheduleCtrl.java	2.12.0 01/03/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -39,11 +39,12 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.7.2
+ * @version 2.12.0
  * @since 1.0a 07/07/1999
  */
 public class CourseScheduleCtrl
-        extends CardCtrl {
+        extends CardCtrl
+        implements UpdateConflictListener {
 
   public static final String COURSE_SCHEDULING_KEY="Course.scheduling";
   protected GemDesktop desktop;
@@ -55,16 +56,16 @@ public class CourseScheduleCtrl
 
   public CourseScheduleCtrl(GemDesktop desktop) {
     this.desktop = desktop;
-    dc = DataCache.getDataConnection();
-    service = new PlanningService(dc);
+    this.dc = DataCache.getDataConnection();
+    this.service = new PlanningService(dc);
   }
 
   public void init() {
     av = new ActionView(desktop);
     av.init();
 
-    conflictsView = new ConflictListView();
-
+    conflictsView = new ConflictListView(service);
+    conflictsView.addUpdateConflictListener(this);
     addCard(MessageUtil.getMessage("planning.session.init"), av);
     addCard(BundleUtil.getLabel("Conflict.verification.label"), conflictsView);
     select(0);
@@ -92,7 +93,7 @@ public class CourseScheduleCtrl
     Action a = v.get();
     if (a.getIdper() == 0 && !MessagePopup.confirm(this, MessageUtil.getMessage("teacher.undefined.confirmation"))) {
       msg += "\n" + MessageUtil.getMessage("teacher.invalid.choice");
-    } 
+    }
     if (a.getRoom() == 0) {
       msg += "\n" + MessageUtil.getMessage("room.invalid.choice");
     }
@@ -128,12 +129,24 @@ public class CourseScheduleCtrl
         n += testConflict(a);
       }
       if (n > 0) {
-        btNext.setText("");//bouton validation
+        btNext.setText("");//validation button
       }
     }
     desktop.setDefaultCursor();
     return true;
   }
+
+
+  @Override
+  public void update(boolean unlock) {
+      if (unlock) {
+
+        btNext.setText(GemCommand.VALIDATE_CMD);
+      } else {
+        btNext.setText("");
+      }
+  }
+
 
   List<Action> getPlanification(Action action, int interval) {
     Hour end = action.getEndTime();
@@ -224,46 +237,55 @@ public class CourseScheduleCtrl
     Hour hEnd = a.getEndTime();
 
     int conflicts = 0;
+    int idx = 0;
     for (DateFr d : a.getDates()) {
-      ScheduleTestConflict conflict = new ScheduleTestConflict(d, hStart, hEnd);
-      // test salles
-      String query = ConflictQueries.getRoomConflictSelection(d.toString(), hStart.toString(), hEnd.toString(), room);
-
-      if (ScheduleIO.count(query, dc) > 0) {
+      ScheduleTestConflict conflict = new ScheduleTestConflict(d,a,idx++);
+      if (!service.isRoomFree(conflict, room)) {
         conflict.setRoomFree(false);
         conflicts++;
       }
-      // test prof
       if (teacher > 0) {
-        query = ConflictQueries.getTeacherConflictSelection(d.toString(), hStart.toString(), hEnd.toString(), teacher);
-        if (ScheduleIO.count(query, dc) > 0) {
+        if (!service.isTeacherFree(conflict, teacher)) {
           conflict.setTeacherFree(false);
           conflicts++;
         }
       }
       conflictsView.addConflict(conflict);
-
     }
+
     return conflicts;
   }
 
-  public boolean save() {
-    desktop.setWaitCursor();
+  protected boolean save() {
+    boolean hasActiveDates = false;
     for (Action a : actions) {
+      //FIX other actions may not be empty
       if (a.getDates().isEmpty()) {
         MessagePopup.error(this, MessageUtil.getMessage("empty.planning.create.warning"));
         return false;
       }
+      for (DateFr d : a.getDates()) {
+        if (!DateFr.NULLDATE.equals(d.toString())) {
+          hasActiveDates = true;
+          break;
+        }
+      }
+    }
+    // Is there at least one active date
+    if (!hasActiveDates) {
+      MessagePopup.warning(this, MessageUtil.getMessage("no.active.date.warning"));
+      return false;
     }
     try {
+      desktop.setWaitCursor();
       service.plan(actions);
-      desktop.setDefaultCursor();
       return true;
     } catch (PlanningException ex) {
-      desktop.setDefaultCursor();
       MessagePopup.warning(this,
               MessageUtil.getMessage("planning.course.create.exception") + " :\n" + ex.getMessage());
       return false;
+    } finally {
+      desktop.setDefaultCursor();
     }
 
   }
@@ -279,9 +301,9 @@ public class CourseScheduleCtrl
    * @param vtype holydays type
    * @return a list of dates
    */
-  Vector<DateFr> generationDate(int jour, DateFr _debut, DateFr _fin, int _maxi, int vid) {
+  List<DateFr> generationDate(int jour, DateFr _debut, DateFr _fin, int _maxi, int vid) {
 
-    Vector<DateFr> v = new Vector<DateFr>();
+    List<DateFr> v = new ArrayList<>();
 
     int i = 0; // nombre de séances
     Calendar start = Calendar.getInstance(Locale.FRANCE);
@@ -294,11 +316,12 @@ public class CourseScheduleCtrl
         if (VacationIO.findDay(start.getTime(), vid, dc) == null) {
           // si cette date ne correspond pas à un jour de vacances du type sélectionné
           i++;
-          v.addElement(new DateFr(start.getTime()));
+          v.add(new DateFr(start.getTime()));
         }
       }
       start.add(Calendar.DATE, 1); // on incrémente d'un jour
     }
     return v;
   }
+
 }

@@ -1,7 +1,7 @@
 /*
- * @(#)TrainingScheduleCtrl.java	2.9.7.2 30/05/16
+ * @(#)TrainingScheduleCtrl.java	2.12.0 01/03/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -41,7 +41,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.7.2
+ * @version 2.12.0
  * @since 2.8.t 11/04/14
  */
 public class TrainingScheduleCtrl
@@ -59,8 +59,8 @@ public class TrainingScheduleCtrl
 
   public TrainingScheduleCtrl(GemDesktop desktop) {
     this.desktop = desktop;
-    dc = DataCache.getDataConnection();
-    service = new PlanningService(dc);
+    this.dc = DataCache.getDataConnection();
+    this.service = new PlanningService(dc);
   }
 
   public void init() {
@@ -71,7 +71,7 @@ public class TrainingScheduleCtrl
     GemPanel gp = new GemPanel(new BorderLayout());
     gp.add(scroll, BorderLayout.CENTER);
 
-    conflictsView = new ConflictListView();
+    conflictsView = new ConflictListView(service);
     addCard(null, gp);
     addCard(BundleUtil.getLabel("Conflict.verification.label"), conflictsView);
     select(0);

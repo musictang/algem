@@ -1,7 +1,7 @@
 /*
- * @(#)MemberRehearsalPassCtrl.java	2.9.4.0 06/04/15
+ * @(#)MemberRehearsalPassCtrl.java	2.12.0 01/03/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -42,7 +42,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.0
+ * @version 2.12.0
  */
 public class MemberRehearsalPassCtrl
         extends FileTabCard
@@ -62,7 +62,7 @@ public class MemberRehearsalPassCtrl
     this.listener = listener;
 
     rehearsalView = new MemberPassRehearsalView(dataCache);
-    cfv = new ConflictListView();
+    cfv = new ConflictListView(null);
 
     addCard(BundleUtil.getLabel("Person.pass.scheduling.auth"), rehearsalView);
     addCard(BundleUtil.getLabel("Conflict.verification.label"), cfv);

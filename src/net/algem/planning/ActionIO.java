@@ -1,7 +1,7 @@
 /*
- * @(#)ActionIO.java 2.10.0 15/06/2016
+ * @(#)ActionIO.java 2.12.0 01/03/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -47,7 +47,7 @@ import net.algem.util.model.TableIO;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.12.0
  * @since 2.4.a 18/04/12
  */
 public class ActionIO
@@ -78,6 +78,9 @@ public class ActionIO
           insert(a);
           String query = null;
           for (DateFr d : a.getDates()) {
+            if (DateFr.NULLDATE.equals(d.toString())) {
+              continue;
+            }
             query = "INSERT INTO planning VALUES (DEFAULT"
                     + ",'" + d.toString()
                     + "','" + a.getStartTime() + "','" + a.getEndTime() + "',"

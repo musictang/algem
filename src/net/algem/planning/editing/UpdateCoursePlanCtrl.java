@@ -1,7 +1,7 @@
 /*
- * @(#)UpdateCoursePlanCtrl.java	2.6.a 21/09/12
+ * @(#)UpdateCoursePlanCtrl.java	2.12.0 01/03/17
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -31,7 +31,8 @@ import net.algem.util.ui.MessagePopup;
  * comment
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.12.0
+ * @deprecated
  */
 public class UpdateCoursePlanCtrl
 	extends CourseScheduleCtrl {
@@ -47,7 +48,7 @@ public class UpdateCoursePlanCtrl
 	public void init() {
 		av = new UpdateActionView(desktop, plan);
         ((UpdateActionView)av).init(plan);
-		conflictsView = new ConflictListView();
+		conflictsView = new ConflictListView(null);
 
 		addCard("Initialisation des sessions", av);
 		addCard("Vérification conflit", conflictsView);
@@ -55,7 +56,7 @@ public class UpdateCoursePlanCtrl
 	}
 
 	@Override
-	public boolean save() {
+	protected boolean save() {
 		Action action = actions.get(0);
 		if (action != null && action.getDates().isEmpty()) {
 			JOptionPane.showMessageDialog(this,

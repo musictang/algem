@@ -1,7 +1,7 @@
 /*
- * @(#)GroupPassCreateCtrl.java	2.8.w 24/07/14
+ * @(#)GroupPassCreateCtrl.java	2.12.0 01/03/17
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -42,7 +42,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.12.0
  */
 public class GroupPassCreateCtrl
         extends CardCtrl
@@ -61,7 +61,7 @@ public class GroupPassCreateCtrl
     desktop = d;
     dataCache = d.getDataCache();
     view = new GroupPassRehearsalView(dataCache);
-    cfv = new ConflictListView();
+    cfv = new ConflictListView(null);
     service = new GemGroupService(DataCache.getDataConnection());
 
     addCard(BundleUtil.getLabel("Group.pass.scheduling.auth"), view);
@@ -114,7 +114,7 @@ public class GroupPassCreateCtrl
       }
       Hour hStart = view.getHourStart();
       Hour hEnd = view.getHourEnd();
-      
+
       if (hStart.toString().equals("00:00")
               || hEnd.toString().equals("00:00")
               || !(hEnd.after(hStart))) {

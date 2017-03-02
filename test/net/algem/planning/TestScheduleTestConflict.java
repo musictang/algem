@@ -1,7 +1,7 @@
 /*
- * @(#) TestScheduleTestConflict.java Algem 2.11.0 28/02/2017
+ * @(#) TestScheduleTestConflict.java Algem 2.12.0 01/03/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,6 +21,7 @@ package net.algem.planning;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -35,22 +36,22 @@ import static org.junit.Assert.*;
  */
 public class TestScheduleTestConflict
 {
-  
+
   public TestScheduleTestConflict() {
   }
-  
+
   @BeforeClass
   public static void setUpClass() {
   }
-  
+
   @AfterClass
   public static void tearDownClass() {
   }
-  
+
   @Before
   public void setUp() {
   }
-  
+
   @After
   public void tearDown() {
   }
@@ -72,35 +73,50 @@ public class TestScheduleTestConflict
 
      Action a = createAction(start, end, startTime, endTime, t1, r1);
      a.setDates(dates);
-     
+
      List<ScheduleTestConflict> conflicts = new ArrayList<>();
      List<DateFr> aDates = new ArrayList<DateFr>(a.getDates());
      for (int i=0; i < aDates.size(); i++) {
        DateFr d = aDates.get(i);
-       conflicts.add(new ScheduleTestConflict(d, startTime, endTime, 0, i));
+       conflicts.add(new ScheduleTestConflict(d, a, i));
      }
      ScheduleTestConflict c0 = conflicts.get(0);
      ScheduleTestConflict c1 = conflicts.get(1);
      c0.setRoomFree(false);
      c1.setTeacherFree(false);
-     
+
      assertTrue("c0.getDate() : " +c0.getDate()+ " c1.getDate() " + c1.getDate(), c0.getDate() == aDates.get(0));
      assertTrue(c1.getDate() == aDates.get(1));
-     
-     
+
+
      c0.setDate(new DateFr("20-09-2016"));
      assertFalse(c0.getDate() == aDates.get(0));
      assertNotEquals(aDates.get(0), c0.getDate());
-     
+
      aDates.set(c0.getDateIndex(), c0.getDate());
      assertEquals(aDates.get(0), c0.getDate());
      assertTrue(c0.getDate() == aDates.get(0));
    }
-   
+
+   @Test
+   public void testNullDate() {
+     DateFr nullDate = new DateFr();
+     System.out.println(nullDate.getTime());
+     System.out.println(nullDate.getDay());
+     System.out.println(nullDate.getMonth());
+     System.out.println(nullDate.getYear());
+     assertTrue(nullDate.getDay() == 0);
+     DateFr d = new DateFr("01-01-1970");
+     System.out.println(d.getTime());
+     Date d2 = new Date(0L);
+     System.out.println(d2.getTime());
+     assertTrue(d.getTime() > 0);
+   }
+
    private Action createAction(DateFr start, DateFr end, Hour startTime, Hour endTime, int teacher, int room) {
-    
+
     Action a = new Action();
-    
+
     a.setCourse(514);// mao
     a.setStartDate(start);
     a.setEndDate(end);

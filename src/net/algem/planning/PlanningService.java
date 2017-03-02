@@ -1,7 +1,7 @@
 /*
- * @(#)PlanningService.java	2.11.3 30/11/16
+ * @(#)PlanningService.java	2.12.0 01/03/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -43,7 +43,7 @@ import net.algem.util.ui.MessagePopup;
  * Service class for planning.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.3
+ * @version 2.12.0
  * @since 2.4.a 07/05/12
  */
 public class PlanningService
@@ -395,6 +395,14 @@ public class PlanningService
     }
   }
 
+  public boolean isRoomFree(ScheduleTestConflict stc, int room) {
+    String query = ConflictQueries.getRoomConflictSelection(stc.getDate().toString(), stc.getStart().toString(), stc.getEnd().toString(), room);
+    if (ScheduleIO.count(query, dc) > 0) {
+      return false;
+    }
+    return true;
+  }
+
   /**
    * Changes the schedule location between 2 dates.
    *
@@ -429,6 +437,15 @@ public class PlanningService
     if (dc.executeUpdate(query) < 1) {
       throw new PlanningException("PLANNING UPDATE=0 " + query);
     }
+  }
+
+  public boolean isTeacherFree(ScheduleTestConflict stc, int teacher) {
+    String query = ConflictQueries.getTeacherConflictSelection(stc.getDate().toString(), stc.getStart().toString(), stc.getEnd().toString(), teacher);
+
+    if (ScheduleIO.count(query, dc) > 0) {
+      return false;
+    }
+    return true;
   }
 
    /**

@@ -65,7 +65,7 @@ public class StudioScheduleCtrl
   public StudioScheduleCtrl(GemDesktop desktop) {
     this.desktop = desktop;
     this.dc = DataCache.getDataConnection();
-    service = new PlanningService(dc);
+    this.service = new PlanningService(dc);
   }
 
   public void init() {
@@ -79,7 +79,7 @@ public class StudioScheduleCtrl
     GemPanel gp = new GemPanel(new BorderLayout());
     gp.add(scroll, BorderLayout.CENTER);
 
-    conflictsView = new ConflictListView();
+    conflictsView = new ConflictListView(service);
     addCard(null, gp);
     addCard(BundleUtil.getLabel("Conflict.verification.label"), conflictsView);
     select(0);

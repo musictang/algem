@@ -1,7 +1,7 @@
 /*
- * @(#)ActionView.java	2.9.4.7 12/06/15
+ * @(#)ActionView.java	2.12.0 01/03/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -58,7 +58,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.7
+ * @version 2.12.0
  */
 public class ActionView
         extends GemPanel
@@ -92,7 +92,7 @@ public class ActionView
     course = new CourseChoice(new CourseChoiceActiveModel(courseList, true));
     course.addItemListener(new CourseScheduleItemListener());
     datePanel = new DateRangePanel(dataCache.getStartOfYear(), dataCache.getEndOfYear());
-    hourPanel = new HourRangePanel();
+    hourPanel = new HourRangePanel(new Hour("16:00"), new Hour("17:00"));
     GemList<Teacher> teacherList = dataCache.getList(Model.Teacher);
     teacher = new TeacherChoice(teacherList, true);
     if (teacherList.getSize() > 0) {
@@ -103,10 +103,11 @@ public class ActionView
     day = new DayChoice();
     periodicity = new JComboBox(new Enum[]{Periodicity.WEEK, Periodicity.FORTNIGHT, Periodicity.DAY, Periodicity.MONTH});
     sessions = new GemNumericField(2);
+    sessions.setText("33");
     places = new GemNumericField(2);
     colorPanel = new GemPanel();
     colorPanel.setToolTipText(BundleUtil.getLabel("Scheduling.color.tip"));
-    
+
     colorPanel.addMouseListener(new ColorPlanListener());
     vacancy = new ParamChoice(dataCache.getVacancyCat());
     courseLength = new HourField();
@@ -114,7 +115,7 @@ public class ActionView
     if (courseList.getSize() > 0) {
       load(((Course) course.getSelectedItem()));
     }
-    
+
   }
 
   private void load(Course c) {
@@ -308,11 +309,11 @@ public class ActionView
         load(c);
       } else if (evt.getStateChange() == ItemEvent.DESELECTED) {
         courseLength.setText(null);
-      } 
+      }
       setColor(getColor(c));
     }
   }
-  
+
   private Color getColor(Course c) {
     int code = c.getCode();
     if (CourseCodeType.INS.getId() == code) {
@@ -337,7 +338,7 @@ public class ActionView
     return null;
 
   }
-  
+
   private void setColor(Color c) {
     if (c != null) {
       colorPanel.setBackground(c);

@@ -1,7 +1,7 @@
 /*
- * @(#)ConflictListDlg.java	2.9.4.0 06/04/15
+ * @(#)ConflictListDlg.java	2.12.0 01/03/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -35,7 +35,7 @@ import net.algem.util.ui.PopupDlg;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.0
+ * @version 2.12.0
  */
 public class ConflictListDlg
         implements ActionListener
@@ -46,6 +46,7 @@ public class ConflictListDlg
   private GemButton btClose;
   private ConflictListView listView;
   private String info;
+  private PlanningService service;
 
   /**
    *
@@ -53,24 +54,25 @@ public class ConflictListDlg
    * @param t label
    * @param info additional information
    */
-  public ConflictListDlg(Component c, String t, String info) {
-    this(c, t, false);
+  public ConflictListDlg(Component c, String t, String info, PlanningService service) {
+    this(c, t, false, service);
     this.info = info;
   }
 
-  public ConflictListDlg(Component c, String t) {
-    this(c, t, true);
+  public ConflictListDlg(Component c, String t, PlanningService service) {
+    this(c, t, true, service);
   }
 
-  public ConflictListDlg(Component c, String t, boolean modal) {
-    title = new GemLabel(t);
+  public ConflictListDlg(Component c, String t, boolean modal, PlanningService service) {
+    this.service = service;
+    this.title = new GemLabel(t);
 
-    dlg = new JDialog(PopupDlg.getTopFrame(c), modal);
+    this.dlg = new JDialog(PopupDlg.getTopFrame(c), modal);
 
     btClose = new GemButton(GemCommand.OK_CMD);
     btClose.addActionListener(this);
 
-    listView = new ConflictListView();
+    listView = new ConflictListView(service);
 
     dlg.add(title, BorderLayout.NORTH);
     dlg.add(listView, BorderLayout.CENTER);

@@ -1,7 +1,7 @@
 /*
- * @(#)PlanModifCtrl.java	2.11.3 01/12/16
+ * @(#)PlanModifCtrl.java	2.12.0 01/03/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -65,7 +65,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.3
+ * @version 2.12.0
  * @since 1.0b 05/07/2002 lien salle et groupe
  */
 public class PlanModifCtrl
@@ -380,7 +380,7 @@ public class PlanModifCtrl
     try {
       Vector<ScheduleTestConflict> v = service.checkHour(plan, start, end, hStart, hEnd);
       if (v.size() > 0) {
-        ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), "Conflits changement d'heure");
+        ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), "Conflits changement d'heure", service);
         for (int i = 0; i < v.size(); i++) {
           cfd.addConflict((ScheduleTestConflict) v.elementAt(i));
         }
@@ -530,7 +530,7 @@ public class PlanModifCtrl
     try {
       Vector<ScheduleTestConflict> v = service.checkChangeRoom(plan, start, end, roomId);
       if (v.size() > 0) {
-        ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), "Conflits changement de salle");
+        ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), "Conflits changement de salle", service);
         for (int i = 0; i < v.size(); i++) {
           cfd.addConflict(v.elementAt(i));
         }
@@ -579,7 +579,7 @@ public class PlanModifCtrl
       if (range.getIdPerson() > 0) {
         Vector<ScheduleTestConflict> v = service.checkChangeTeacher(plan, range, start, end);
         if (v.size() > 0) {
-          ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), BundleUtil.getLabel("Teacher.change.conflicts.label"));
+          ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), BundleUtil.getLabel("Teacher.change.conflicts.label"), service);
           for (int i = 0; i < v.size(); i++) {
             cfd.addConflict(v.elementAt(i));
           }
@@ -734,7 +734,7 @@ public class PlanModifCtrl
     Vector<ScheduleTestConflict> v = service.checkRoomForSchedulePostpone(plan, newPlan);
     // room conflict
     if (v.size() > 0) {
-      ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), BundleUtil.getLabel("Room.conflict.label"));
+      ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), BundleUtil.getLabel("Room.conflict.label"), service);
       for (int i = 0; i < v.size(); i++) {
         cfd.addConflict(v.elementAt(i));
       }
@@ -746,7 +746,7 @@ public class PlanModifCtrl
     if (plan.getIdPerson() > 0) {
       v = service.checkTeacherForSchedulePostpone(plan, newPlan);
       if (v.size() > 0) {
-        ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), BundleUtil.getLabel("Teacher.conflict.label"));
+        ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), BundleUtil.getLabel("Teacher.conflict.label"), service);
         for (int i = 0; i < v.size(); i++) {
           cfd.addConflict(v.elementAt(i));
         }
@@ -765,7 +765,7 @@ public class PlanModifCtrl
     Vector<ScheduleTestConflict> v = service.checkRoomForScheduleCopy(newPlan);
 
     if (v.size() > 0) {
-      ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), BundleUtil.getLabel("Room.conflict.label"));
+      ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), BundleUtil.getLabel("Room.conflict.label"), service);
       for (int i = 0; i < v.size(); i++) {
         cfd.addConflict(v.elementAt(i));
       }
@@ -775,7 +775,7 @@ public class PlanModifCtrl
     if (plan.getIdPerson() > 0) {
       v = service.checkTeacherForScheduleCopy(plan, newPlan);
       if (v.size() > 0) {
-        ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), BundleUtil.getLabel("Teacher.conflict.label"));
+        ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), BundleUtil.getLabel("Teacher.conflict.label"), service);
         for (int i = 0; i < v.size(); i++) {
           cfd.addConflict(v.elementAt(i));
         }
@@ -816,7 +816,7 @@ public class PlanModifCtrl
         if (!c.isCollective()) {
           Vector<ScheduleTestConflict> v = service.testRange(plan, hStart, hEnd, lastDay);
           if (v.size() > 0) {
-            ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), MessageUtil.getMessage("time.slot.conflict.detail", v.size()));
+            ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), MessageUtil.getMessage("time.slot.conflict.detail", v.size()), service);
             for (int i = 0; i < v.size(); i++) {
               cfd.addConflict(v.elementAt(i));
             }
@@ -828,7 +828,7 @@ public class PlanModifCtrl
 
       Vector<ScheduleTestConflict> v = service.checkRoomForScheduleLengthModif(plan, hStart, hEnd, lastDay);
       if (v.size() > 0) {
-        ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), BundleUtil.getLabel("Room.conflict.label"));
+        ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), BundleUtil.getLabel("Room.conflict.label"), service);
         for (int i = 0; i < v.size(); i++) {
           cfd.addConflict(v.elementAt(i));
         }
@@ -840,7 +840,7 @@ public class PlanModifCtrl
       if (plan.getIdPerson() > 0 && (plan.getType() != Schedule.TECH && plan.getType() != Schedule.STUDIO)) {
         Vector<ScheduleTestConflict> conflicts = service.checkTeacherForScheduleLengthModif(plan, lastDay, hStart, hEnd);
         if (conflicts != null && conflicts.size() > 0) {
-          ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), BundleUtil.getLabel("Teacher.conflict.label"));
+          ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), BundleUtil.getLabel("Teacher.conflict.label"), service);
           for (int i = 0; i < conflicts.size(); i++) {
             cfd.addConflict(conflicts.elementAt(i));
           }

@@ -1,7 +1,7 @@
 /*
- * @(#)ScheduleTestConflict.java	2.9.4.13 05/11/15
- * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * @(#)ScheduleTestConflict.java	2.12.0 01/03/17
+ *
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning;
 
@@ -24,10 +24,10 @@ import java.util.Objects;
 
 /**
  * This class is used in the detection of conflicts when creating a schedule.
- * 
+ *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.12.0
  * @since 1.0a 07/07/1999
  */
 public class ScheduleTestConflict
@@ -35,7 +35,7 @@ public class ScheduleTestConflict
 {
 
   private static final long serialVersionUID = -718206342909075970L;
-  
+
   private DateFr date;
   private Hour startTime;
   private Hour endTime;
@@ -43,8 +43,9 @@ public class ScheduleTestConflict
   private boolean roomFree;
   private boolean memberFree;
   private boolean groupFree;
+  private boolean active;
   private String detail;
-  private int actionIndex;
+  private Action action;
   private int dateIndex;
 
   public ScheduleTestConflict(DateFr date, Hour start, Hour end) {
@@ -55,11 +56,12 @@ public class ScheduleTestConflict
     this.roomFree = true;
     this.memberFree = true;
     this.groupFree = true;
+    this.active = true;
   }
 
-  public ScheduleTestConflict(DateFr date, Hour start, Hour end, int actionIndex, int dateIndex) {
-    this(date, start, end);
-    this.actionIndex = actionIndex;
+  public ScheduleTestConflict(DateFr date, Action action, int dateIndex) {
+    this(date, action.getStartTime(), action.getEndTime());
+    this.action = action;
     this.dateIndex = dateIndex;
   }
 
@@ -174,6 +176,14 @@ public class ScheduleTestConflict
     return groupFree;
   }
 
+  public boolean isActive() {
+    return active;
+  }
+
+  public void setActive(boolean active) {
+    this.active = active;
+  }
+
   public void setDetail(String s) {
     detail = s;
   }
@@ -186,8 +196,8 @@ public class ScheduleTestConflict
     return !(memberFree && roomFree && teacherFree && groupFree);
   }
 
-  public int getActionIndex() {
-    return actionIndex;
+  public Action getAction() {
+    return action;
   }
 
   public int getDateIndex() {
