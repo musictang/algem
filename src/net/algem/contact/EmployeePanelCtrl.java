@@ -29,7 +29,7 @@ import javax.swing.BoxLayout;
 import net.algem.planning.PlanningService;
 import net.algem.util.DataCache;
 import net.algem.util.GemCommand;
-import net.algem.util.ui.AbstractGemPanelCtrl;
+import net.algem.util.ui.AbstractComponentCtrl;
 import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GemLabel;
 import net.algem.util.ui.GemPanel;
@@ -41,7 +41,7 @@ import net.algem.util.ui.GemPanel;
  * @since 2.8.v 29/05/14
  */
 public class EmployeePanelCtrl
-  extends AbstractGemPanelCtrl
+  extends AbstractComponentCtrl
 {
 
   private List<EmployeePanel> panels;
@@ -61,12 +61,12 @@ public class EmployeePanelCtrl
     add(top);
     add(Box.createVerticalStrut(SPACING));
     panels = new ArrayList<EmployeePanel>();
-    addPanel();
+    add();
   }
 
 
   @Override
-  public void addPanel() {
+  public void add() {
     EmployeePanel p = new EmployeePanel(setEmployees(EmployeeType.TECHNICIAN));
     p.addActionListener(this);
     panels.add(p);
@@ -83,8 +83,7 @@ public class EmployeePanelCtrl
     add(Box.createVerticalStrut(SPACING));
   }
 
-  @Override
-  public void removePanel(GemPanel panel) {
+  public void remove(GemPanel panel) {
     panels.remove((EmployeePanel) panel);
     ((EmployeePanel) panel).removeActionListener(this);
     remove(panel);
@@ -115,6 +114,11 @@ public class EmployeePanelCtrl
       emps[i] = panels.get(i).getId();
     }
     return emps;
+  }
+
+  @Override
+  public void remove() {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
 
 

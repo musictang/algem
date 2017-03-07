@@ -1,5 +1,5 @@
 /*
- * @(#)ConflictListView.java	2.12.0 01/03/17
+ * @(#)ConflictListView.java	2.12.0 07/03/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -21,13 +21,15 @@
 package net.algem.planning;
 
 import java.awt.BorderLayout;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.TableColumnModel;
 import net.algem.util.BundleUtil;
 import net.algem.util.ui.GemLabel;
 import net.algem.util.ui.GemPanel;
-
+import net.algem.util.ui.JTableModel;
 
 /**
  * List of conflicts.
@@ -44,9 +46,9 @@ public class ConflictListView
   private JTable table;
   private GemLabel status;
 
-  public ConflictListView(PlanningService service) {
-    tableModel = new ConflictTableModel(service);
-    table = new JTable(tableModel);
+  public ConflictListView(ConflictTableModel tableModel) {
+    this.tableModel = tableModel;
+    this.table = new JTable(tableModel);
     //table.setAutoCreateRowSorter(true);
 
     TableColumnModel cm = table.getColumnModel();
@@ -79,9 +81,17 @@ public class ConflictListView
   }
 
   public void setStatus(String s) {
-    status.setText(tableModel.getRowCount() + " "
-      + (s == null ? BundleUtil.getLabel("Conflicts.label").toLowerCase() : s)
-    );
+    status.setText(s == null ? BundleUtil.getLabel("Conflicts.label").toLowerCase() : s);
+  }
+  
+  public List<ScheduleTestConflict> getResolvedConflicts() {
+    List<ScheduleTestConflict> resolved = new ArrayList<>();
+    for(ScheduleTestConflict c : tableModel.getData()) {
+      if (c.isActive()) {
+        resolved.add(c);
+      }
+    }
+    return resolved;
   }
 
-  }
+}

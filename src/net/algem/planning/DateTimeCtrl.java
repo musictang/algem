@@ -1,7 +1,7 @@
 /*
- * @(#)DateTimeCtrl.java	2.9.4.3 22/04/15
+ * @(#)DateTimeCtrl.java	2.12.0 06/03/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,83 +21,132 @@
 package net.algem.planning;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Insets;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
+import javax.swing.BorderFactory;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.SwingUtilities;
+import javax.swing.table.TableCellEditor;
 import net.algem.util.BundleUtil;
 import net.algem.util.GemCommand;
-import net.algem.util.ui.AbstractGemPanelCtrl;
+import net.algem.util.MessageUtil;
+import net.algem.util.ui.AbstractComponentCtrl;
+import net.algem.util.ui.DateCellEditor;
+import net.algem.util.ui.DateTimeTableModel;
 import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GemLabel;
 import net.algem.util.ui.GemPanel;
+import net.algem.util.ui.HourCellEditor;
+import net.algem.util.ui.MessagePopup;
 
 /**
  * This controller is used to add or remove DateTimePanel components.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.3
+ * @version 2.12.0
  * @since 2.8.t 11/04/14
  */
 public class DateTimeCtrl
-        extends AbstractGemPanelCtrl
+        extends AbstractComponentCtrl
 {
 
   private List<DateTimePanel> panels;
+  private JTable timetable;
+  private DateTimeTableModel tableModel;
   private final static int SPACING = 4;
 
   public DateTimeCtrl() {
 
+    setLayout(new BorderLayout());
     plus = new GemButton("+");
     plus.setMargin(new Insets(0, 4, 0, 4)); //reduction de la taille du bouton
     plus.addActionListener(this);
     plus.setToolTipText(GemCommand.ADD_CMD);
+    
+    minus = new GemButton("-");
+    minus.setMargin(new Insets(0, 4, 0, 4));
+    minus.addActionListener(this);
+    minus.setToolTipText(BundleUtil.getLabel("Remove.selected.line.tip"));
+    
+    JPanel actionPanel = new JPanel();
+    actionPanel.add(minus);
+    actionPanel.add(plus);
     GemPanel top = new GemPanel(new BorderLayout());
     top.add(new GemLabel(BundleUtil.getLabel("DateTime.label")), BorderLayout.WEST);
-    top.add(plus, BorderLayout.EAST);
-
-    setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-    add(top);
-    add(Box.createVerticalStrut(SPACING));
-    panels = new ArrayList<DateTimePanel>();
-    addPanel();
+    top.add(actionPanel, BorderLayout.EAST);
+    top.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+    add(top, BorderLayout.NORTH);
+  
+    this.tableModel = new DateTimeTableModel();
+    this.timetable = new JTable(tableModel);
+    HourCellEditor cellEditor = new HourCellEditor();
+    timetable.getColumnModel().getColumn(0).setCellEditor(new DateCellEditor());
+    timetable.getColumnModel().getColumn(1).setCellEditor(cellEditor);
+    timetable.getColumnModel().getColumn(2).setCellEditor(cellEditor);
+    JScrollPane tableScroll = new JScrollPane(timetable);
+    add(tableScroll,BorderLayout.CENTER);
+    //add();
+    setPreferredSize(new Dimension(320, 200));
+    
   }
 
   List<GemDateTime> getRanges() {
     List<GemDateTime> ranges = new ArrayList<GemDateTime>();
-    for (DateTimePanel dp : panels) {
-      ranges.add(new GemDateTime(dp.getDate(), dp.getHourRange()));
+    for(DateTimeActionModel d : tableModel.getData()) {
+      if (d.isActive()) {
+        ranges.add(new GemDateTime(d.getDate(), new HourRange(d.getStart(), d.getEnd())));
+      }
     }
     return ranges;
   }
 
 
   @Override
-  public void addPanel() {
-    DateTimePanel dt = new DateTimePanel();
-    dt.addActionListener(this);
-    panels.add(dt);
-    add(panels.get(panels.size() - 1));
-    add(Box.createVerticalStrut(SPACING));
+  public void add() {
+    int rows = timetable.getRowCount();
+    DateTimeActionModel dam = new DateTimeActionModel();
+    if (rows > 0) {
+      stopCellEditing();
+      DateTimeActionModel m = tableModel.getItem(rows -1);
+      DateFr d2 = new DateFr(m.getDate());
+      d2.incDay(1);
+      dam.setDate(d2);
+      dam.setStart(new Hour(m.getStart()));
+      dam.setEnd(new Hour(m.getEnd()));
+    }
+    tableModel.addItem(dam);
   }
 
   @Override
-  public void removePanel(GemPanel dt) {
-    panels.remove((DateTimePanel) dt);
-    ((DateTimePanel) dt).removeActionListener(this);
-    remove(dt);
-    revalidate();
+  public void remove() {
+    final int row = timetable.getSelectedRow();
+    if (row == -1) {
+      MessagePopup.warning(this, MessageUtil.getMessage("no.line.selected"));
+      return;
+    }
+    stopCellEditing();// IMPORTANT
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        tableModel.deleteItem(row);
+      }
+    });
+    
   }
 
   @Override
   public void clear() {
-    for (int i = 1; i < panels.size(); i++) {
-      DateTimePanel dp = panels.get(i);
-      panels.remove(dp);
-      remove(dp);
-    }
-    panels.get(0).reset();
-    revalidate();
+    tableModel.clear();
+  }
+  
+  private void stopCellEditing() {
+    TableCellEditor tce = timetable.getCellEditor();
+      if (tce != null) {
+        tce.stopCellEditing();
+      }
   }
 }

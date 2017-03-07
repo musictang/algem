@@ -201,7 +201,7 @@ public class PlanningService
               if (allConflicts.isEmpty()) {
                 throw new PlanningException(MessageUtil.getMessage("administrative.schedule.ctrl.no.scheduled.dates"));
               }
-            }
+          }
           }
           return null;
         }

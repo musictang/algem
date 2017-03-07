@@ -64,7 +64,7 @@ public class CourseScheduleCtrl
     av = new ActionView(desktop);
     av.init();
 
-    conflictsView = new ConflictListView(service);
+    conflictsView = new ConflictListView(new ConflictTableModel(service));
     conflictsView.addUpdateConflictListener(this);
     addCard(MessageUtil.getMessage("planning.session.init"), av);
     addCard(BundleUtil.getLabel("Conflict.verification.label"), conflictsView);
@@ -126,7 +126,7 @@ public class CourseScheduleCtrl
       int n = 0;
       conflictsView.clear();
       for (Action a : actions) {
-        n += testConflict(a);
+        n += getConflicts(a);
       }
       if (n > 0) {
         btNext.setText("");//validation button
@@ -140,7 +140,6 @@ public class CourseScheduleCtrl
   @Override
   public void update(boolean unlock) {
       if (unlock) {
-
         btNext.setText(GemCommand.VALIDATE_CMD);
       } else {
         btNext.setText("");
@@ -223,18 +222,18 @@ public class CourseScheduleCtrl
   }
 
   /**
-   * Test room or teacher occupation.
+   * Checks room or teacher occupation.
    *
    * @param a action to check
-   * @return the number of conflicts
+   * @return the number of conflicts detected
    */
-  public int testConflict(Action a) {
+  private int getConflicts(Action a) {
 
     int room = a.getRoom();
     int teacher = a.getIdper();
 
-    Hour hStart = a.getStartTime();
-    Hour hEnd = a.getEndTime();
+//    Hour hStart = a.getStartTime();
+//    Hour hEnd = a.getEndTime();
 
     int conflicts = 0;
     int idx = 0;
@@ -259,7 +258,7 @@ public class CourseScheduleCtrl
   protected boolean save() {
     boolean hasActiveDates = false;
     for (Action a : actions) {
-      //FIX other actions may not be empty
+      //FIX other actions may be not empty
       if (a.getDates().isEmpty()) {
         MessagePopup.error(this, MessageUtil.getMessage("empty.planning.create.warning"));
         return false;

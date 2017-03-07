@@ -79,7 +79,7 @@ public class StudioScheduleCtrl
     GemPanel gp = new GemPanel(new BorderLayout());
     gp.add(scroll, BorderLayout.CENTER);
 
-    conflictsView = new ConflictListView(service);
+    conflictsView = new ConflictListView(new ConflictTableModel(service));
     addCard(null, gp);
     addCard(BundleUtil.getLabel("Conflict.verification.label"), conflictsView);
     select(0);

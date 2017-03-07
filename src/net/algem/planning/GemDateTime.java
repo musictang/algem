@@ -1,7 +1,7 @@
 /*
- * @(#)GemDateTime.java	2.8.t 15/04/14
+ * @(#)GemDateTime.java	2.12.0 07/03/17
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -25,10 +25,12 @@ package net.algem.planning;
  * This king of object is used to store one date and one schedule between a start time and end time.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.12.0
  * @since 2.8.t 14/04/14
  */
-public class GemDateTime {
+public class GemDateTime
+        implements Comparable
+{
 
   private DateFr date;
   private HourRange timeRange;
@@ -38,8 +40,8 @@ public class GemDateTime {
 
   /**
    * Constructs a GemDateTime instance with a date and a time range.
-   * @param date French date
-   * @param timeRange schedule time range
+   * @param date French-formatted date (dd-mm-yyyy)
+   * @param timeRange time range
    */
   public GemDateTime(DateFr date, HourRange timeRange) {
     this.date = date;
@@ -93,5 +95,20 @@ public class GemDateTime {
     return date + " - " + timeRange;
   }
 
+  @Override
+  public int compareTo(Object o) {
+    if (o.getClass() != GemDateTime.class) {
+      return 1;
+    }
+    DateFr d1 = this.getDate();
+    
+    GemDateTime dt = (GemDateTime) o;
+    if (d1.before(dt.getDate())) {
+      return -1;
+    } else if (d1.equals(dt.getDate())) {
+        return getTimeRange().equals(dt.getTimeRange()) ? 0 : 1;
+    }
+    return 1;
+  }
 
 }

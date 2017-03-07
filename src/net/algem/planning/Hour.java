@@ -1,5 +1,5 @@
 /*
- * @(#)Hour.java	2.10.0 11/06/16
+ * @(#)Hour.java	2.12.0 07/03/17
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -27,7 +27,7 @@ import net.algem.util.GemLogger;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.12.0
  */
 public class Hour
         implements java.io.Serializable
@@ -88,8 +88,7 @@ public class Hour
 
 	@Override
 	public int hashCode() {
-		int hash = 7;
-		return hash;
+      return toMinutes();
 	}
 
   public void setHour(int h) {

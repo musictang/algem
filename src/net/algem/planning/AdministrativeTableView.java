@@ -95,7 +95,7 @@ public class AdministrativeTableView
     setLayout(new BorderLayout());
     add(scroll, BorderLayout.CENTER);
     final GemButton btRemove = new GemButton(GemCommand.REMOVE_CMD);
-    btRemove.setToolTipText(BundleUtil.getLabel("Administrative.scheduling.remove.tip"));
+    btRemove.setToolTipText(BundleUtil.getLabel("Remove.selected.line.tip"));
     final GemButton btAdd = new GemButton(GemCommand.ADD_CMD);
     btAdd.setToolTipText(BundleUtil.getLabel("Administrative.scheduling.add.tip"));
     GemPanel buttons = new GemPanel(new GridLayout(1, 2));

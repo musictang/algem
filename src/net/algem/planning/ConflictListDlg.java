@@ -27,7 +27,6 @@ import java.awt.event.ActionListener;
 import javax.swing.JDialog;
 import net.algem.util.GemCommand;
 import net.algem.util.ui.GemButton;
-import net.algem.util.ui.GemLabel;
 import net.algem.util.ui.PopupDlg;
 
 /**
@@ -42,17 +41,16 @@ public class ConflictListDlg
 {
 
   private JDialog dlg;
-  private GemLabel title;
   private GemButton btClose;
   private ConflictListView listView;
   private String info;
-  private PlanningService service;
 
   /**
    *
    * @param c parent
    * @param t label
    * @param info additional information
+   * @param service
    */
   public ConflictListDlg(Component c, String t, String info, PlanningService service) {
     this(c, t, false, service);
@@ -64,20 +62,21 @@ public class ConflictListDlg
   }
 
   public ConflictListDlg(Component c, String t, boolean modal, PlanningService service) {
-    this.service = service;
-    this.title = new GemLabel(t);
-
     this.dlg = new JDialog(PopupDlg.getTopFrame(c), modal);
-
     btClose = new GemButton(GemCommand.OK_CMD);
     btClose.addActionListener(this);
 
-    listView = new ConflictListView(service);
+    listView = new ConflictListView(new ConflictTableModel(service) {
+      @Override
+      public boolean isCellEditable(int row, int column) {
+        return false;
+      }
+    });
 
-    dlg.add(title, BorderLayout.NORTH);
+    dlg.setTitle(t);
     dlg.add(listView, BorderLayout.CENTER);
     dlg.add(btClose, BorderLayout.SOUTH);
-    dlg.setSize(600, 300);
+    dlg.setSize(650, 400);
     dlg.setLocation(100, 100);
   }
 

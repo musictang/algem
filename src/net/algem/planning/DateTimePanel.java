@@ -56,7 +56,8 @@ public class DateTimePanel
 
     add(datePanel);
     add(rPanel);
-    setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1, false));  
+    //setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1, false));
+    setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
   }
 
   public DateFr getDate() {

@@ -1,7 +1,7 @@
 /*
- * @(#)AdministrativeScheduleCtrl.java	2.12.0 01/03/17
+ * @(#)AdministrativeScheduleCtrl.java	2.9.7 02/05/16
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -58,7 +58,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.12.0
+ * @version 2.9.7
  * @since 2.9.4.0 18/03/15
  */
 public class AdministrativeScheduleCtrl
@@ -66,7 +66,7 @@ public class AdministrativeScheduleCtrl
   implements ActionListener
 {
 
-  private DataCache dataCache;
+//  private DataCache dataCache;
   private GemDesktop desktop;
   private DateRangePanel datePanel;
   private AdministrativeTableView tableView;
@@ -82,13 +82,13 @@ public class AdministrativeScheduleCtrl
 
     GemPanel mainPanel = new GemPanel();
     this.desktop = desktop;
-    this.dataCache = desktop.getDataCache();
+    DataCache cache = desktop.getDataCache();
     service = new PlanningService(DataCache.getDataConnection());
 
-    estab = new EstabChoice(dataCache.getList(Model.Establishment));
+    estab = new EstabChoice(cache.getList(Model.Establishment));
     estab.setSelectedIndex(0);
-    roomList = dataCache.getList(Model.Room);
-    datePanel = new DateRangePanel(dataCache.getStartOfYear(), dataCache.getEndOfYear());
+    roomList = cache.getList(Model.Room);
+    datePanel = new DateRangePanel(cache.getStartOfYear(), cache.getEndOfYear());
     tableView = new AdministrativeTableView(roomList, estab.getKey());
     tableView.load();
     estab.addItemListener(new ItemListener() {
@@ -100,7 +100,7 @@ public class AdministrativeScheduleCtrl
       }
     });
     employee = new EmployeeSelector(service.getEmployees(EmployeeType.ADMINISTRATOR));
-    vacancy = new ParamChoice(dataCache.getVacancyCat());
+    vacancy = new ParamChoice(cache.getVacancyCat());
     vacancy.setPreferredSize(employee.getPreferredSize());
 
     JTextField helpLabel = new JTextField();
@@ -206,11 +206,12 @@ public class AdministrativeScheduleCtrl
         actions.get(0).getStartDate(),
         actions.get(actions.size() - 1).getEndDate()));
       desktop.setDefaultCursor();
-      if (conflicts.size() > 0) {
+      int n = conflicts.size();
+      if (n > 0) {
         ConflictListDlg cfd = new ConflictListDlg(
           desktop.getFrame(),
           BundleUtil.getLabel("Conflict.verification.label"),
-          MessageUtil.getMessage("sessions.unscheduled"),
+          MessageUtil.getMessage(n == 1 ? "session.unscheduled" : "sessions.unscheduled", n),
           service
         );
         for (ScheduleTestConflict c : conflicts) {
@@ -219,7 +220,7 @@ public class AdministrativeScheduleCtrl
         cfd.show();
       } else if (!MessagePopup.confirm(this, MessageUtil.getMessage("planning.keep.on.confirmation"))) {
         close();
-      }
+      } 
       tableView.clear();
     } catch (PlanningException e) {
       desktop.setDefaultCursor();

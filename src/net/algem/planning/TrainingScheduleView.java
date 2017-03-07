@@ -1,7 +1,7 @@
 /*
- * @(#)TrainingScheduleView.java	2.8.t 14/04/14
+ * @(#)TrainingScheduleView.java	2.12.0 07/03/17
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -37,7 +37,7 @@ import net.algem.util.ui.GridBagHelper;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.t
+ * @version 2.12.0
  * @since 2.8.t 11/04/14
  */
 public class TrainingScheduleView
@@ -53,6 +53,7 @@ extends GemPanel{
     course = new CourseChoice(new CourseChoiceTrainingModel(dataCache.getList(Model.Course), true));
 
     dateTimeCtrl = new DateTimeCtrl();
+    dateTimeCtrl.add();
 
     room = new RoomChoice(dataCache.getList(Model.Room));
     teacher = new TeacherChoice(dataCache.getList(Model.Teacher));
@@ -65,7 +66,7 @@ extends GemPanel{
     gb.add(new GemLabel(BundleUtil.getLabel("Teacher.label")), 0, 3, 1, 1, GridBagHelper.WEST);
 
     gb.add(course, 1, 0, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
-    gb.add(dateTimeCtrl, 1, 1, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
+    gb.add(dateTimeCtrl, 0, 1, 2, 1, GridBagHelper.BOTH, GridBagHelper.WEST);
     gb.add(room, 1, 2, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
     gb.add(teacher, 1, 3, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
 

@@ -1,7 +1,7 @@
 /*
- * @(#)ConfigPlanning.java 2.11.0 28/09/16
+ * @(#)ConfigPlanning.java 2.12.0 03/03/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -22,6 +22,7 @@ package net.algem.config;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.util.ArrayList;
@@ -47,7 +48,7 @@ import net.algem.util.ui.GridBagHelper;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.0
+ * @version 2.12.0
  */
 public class ConfigPlanning
         extends ConfigPanel
@@ -60,10 +61,11 @@ public class ConfigPlanning
   private GemNumericField minDelay;
   private GemNumericField maxDelay;
   private GemNumericField cancelDelay;
+  private GemNumericField sessions;
   private HourField startTime;
   private JCheckBox rangeNames, memberShip;
   private JRadioButton normal, reverse;
-  private Config c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13;
+  private Config c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13, c14;
 
   public ConfigPlanning(Map<String, Config> confs) {
     super(BorderFactory.createEmptyBorder(), confs);
@@ -84,7 +86,8 @@ public class ConfigPlanning
     c11 = confs.get(ConfigKey.BOOKING_CANCEL_DELAY.getKey());
     c12 = confs.get(ConfigKey.BOOKING_REQUIRED_MEMBERSHIP.getKey());
     c13 = confs.get(ConfigKey.PRE_ENROLMENT_START_DATE.getKey());
-
+    c14 = confs.get(ConfigKey.DEFAULT_NUMBER_OF_SESSIONS.getKey());
+    
     Border border = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
     yearPanel = new DateRangePanel(new DateFr(c1.getValue()), new DateFr(c2.getValue()), border);
     yearPanel.setToolTipText(ConfigKey.BEGINNING_YEAR.getLabel());
@@ -177,8 +180,8 @@ public class ConfigPlanning
 
     GemPanel p3 = new GemPanel();
     p3.setBorder(BorderFactory.createTitledBorder(BundleUtil.getLabel("Menu.options.label")));
-     p3.setLayout(new GridBagLayout());
-     p3.setMinimumSize(new Dimension(520,110));
+    p3.setLayout(new GridBagLayout());
+    p3.setMinimumSize(new Dimension(520,110));
     GridBagHelper gb3 = new GridBagHelper(p3);
     rangeNames = new JCheckBox(ConfigKey.SCHEDULE_RANGE_NAMES.getLabel());
     rangeNames.setSelected(c7.getValue().equals("t"));
@@ -203,7 +206,12 @@ public class ConfigPlanning
     gb3.add(new GemLabel(BundleUtil.getLabel("Person.sort.order.label") + " :"), 0, 1, 2, 1, GridBagHelper.WEST);
     gb3.insets = new Insets(0,0,4,0);
     gb3.add(sortby, 0, 2, 2, 1, GridBagHelper.WEST);
-
+    GemPanel sessionsPanel = new GemPanel(new FlowLayout());
+    sessionsPanel.add(new GemLabel(BundleUtil.getLabel("Default.number.of.sessions")));
+    sessions = new GemNumericField(2);
+    sessions.setText(c14.getValue());
+    sessionsPanel.add(sessions);
+    gb3.add(sessionsPanel,0,4,2,1, GridBagHelper.WEST);
     content.add(p1);
     content.add(p2);
     content.add(p3);
@@ -230,6 +238,7 @@ public class ConfigPlanning
     c11.setValue(cancelDelay.getText());
     c12.setValue(memberShip.isSelected() ? "t" : "f");
     c13.setValue(preEnrolmentStart.getStartFr().toString());
+    c14.setValue(sessions.getText());
 
     conf.add(c1);
     conf.add(c2);
@@ -244,6 +253,7 @@ public class ConfigPlanning
     conf.add(c11);
     conf.add(c12);
     conf.add(c13);
+    conf.add(c14);
 
     return conf;
   }

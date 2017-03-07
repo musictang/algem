@@ -32,6 +32,8 @@ import javax.swing.JComboBox;
 import net.algem.config.ColorPlan;
 import net.algem.config.ColorPlanListener;
 import net.algem.config.ColorPrefs;
+import net.algem.config.ConfigKey;
+import net.algem.config.ConfigUtil;
 import net.algem.config.ParamChoice;
 import net.algem.contact.teacher.Teacher;
 import net.algem.contact.teacher.TeacherChoice;
@@ -103,11 +105,10 @@ public class ActionView
     day = new DayChoice();
     periodicity = new JComboBox(new Enum[]{Periodicity.WEEK, Periodicity.FORTNIGHT, Periodicity.DAY, Periodicity.MONTH});
     sessions = new GemNumericField(2);
-    sessions.setText("33");
+    sessions.setText(ConfigUtil.getConf(ConfigKey.DEFAULT_NUMBER_OF_SESSIONS.getKey()));
     places = new GemNumericField(2);
     colorPanel = new GemPanel();
     colorPanel.setToolTipText(BundleUtil.getLabel("Scheduling.color.tip"));
-
     colorPanel.addMouseListener(new ColorPlanListener());
     vacancy = new ParamChoice(dataCache.getVacancyCat());
     courseLength = new HourField();
@@ -115,7 +116,6 @@ public class ActionView
     if (courseList.getSize() > 0) {
       load(((Course) course.getSelectedItem()));
     }
-
   }
 
   private void load(Course c) {

@@ -30,7 +30,7 @@ import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.GemCommand;
 import net.algem.util.model.Model;
-import net.algem.util.ui.AbstractGemPanelCtrl;
+import net.algem.util.ui.AbstractComponentCtrl;
 import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GemLabel;
 import net.algem.util.ui.GemPanel;
@@ -42,7 +42,7 @@ import net.algem.util.ui.GemPanel;
  * @since 2.8.v 21/05/14
  */
 public class RoomPanelCtrl
-        extends AbstractGemPanelCtrl
+        extends AbstractComponentCtrl
 {
 
   private List<RoomPanel> panels;
@@ -63,7 +63,7 @@ public class RoomPanelCtrl
     add(top);
     add(Box.createVerticalStrut(SPACING));
     panels = new ArrayList<RoomPanel>();
-    addPanel();
+    add();
   }
 
   public int[] getRooms() {
@@ -75,7 +75,7 @@ public class RoomPanelCtrl
   }
 
   @Override
-  public void addPanel() {
+  public void add() {
     RoomPanel p = new RoomPanel(dataCache.getList(Model.Room));
     p.addActionListener(this);
     panels.add(p);
@@ -83,8 +83,7 @@ public class RoomPanelCtrl
     add(Box.createVerticalStrut(SPACING));
   }
 
-  @Override
-  public void removePanel(GemPanel panel) {
+  public void remove(GemPanel panel) {
     panels.remove((RoomPanel) panel);
     ((RoomPanel) panel).removeActionListener(this);
     remove(panel);
@@ -108,5 +107,10 @@ public class RoomPanelCtrl
     }
 //    panels.get(0).reset();
     revalidate();
+  }
+
+  @Override
+  public void remove() {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
 }

@@ -65,6 +65,14 @@ public class ScheduleTestConflict
     this.dateIndex = dateIndex;
   }
 
+  public ScheduleTestConflict(DateFr date, Hour startTime, Hour endTime, Action action, int dateIndex) {
+    this(date, startTime, endTime);
+    this.action = action;
+    this.dateIndex = dateIndex;
+  }
+  
+  
+
   @Override
   public boolean equals(Object obj) {
     if (obj == null) {

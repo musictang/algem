@@ -1,7 +1,7 @@
 /*
- * @(#)ConfigKey.java 2.11.2 13/10/16
+ * @(#)ConfigKey.java 2.12.0 03/03/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,7 +27,7 @@ import net.algem.util.BundleUtil;
  * First arg represents key in the table, second arg represents the label.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.2
+ * @version 2.12.0
  * @since 2.1.k 07/07/11
  */
 public enum ConfigKey
@@ -74,7 +74,7 @@ public enum ConfigKey
   BOOKING_REQUIRED_MEMBERSHIP("Reservation.adhesion.requise", BundleUtil.getLabel("Booking.required.membership.label")),
   SCHEDULE_RANGE_NAMES("Afficher.noms.plages", BundleUtil.getLabel("ConfEditor.schedule.ranges.names")),
   PERSON_SORT_ORDER("Ordre.tri.personne", BundleUtil.getLabel("Person.sort.order.label")),
-  
+  DEFAULT_NUMBER_OF_SESSIONS("Nombre.sessions.par.defaut", BundleUtil.getLabel("Default.number.of.sessions")),
   //== MANAGEMENT ==//
   /** Teacher management. */
   TEACHER_MANAGEMENT("GestionProf", BundleUtil.getLabel("ConfEditor.teacher.management.label")),

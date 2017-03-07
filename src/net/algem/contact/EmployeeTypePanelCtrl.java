@@ -31,7 +31,7 @@ import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.GemCommand;
 import net.algem.util.model.Model;
-import net.algem.util.ui.AbstractGemPanelCtrl;
+import net.algem.util.ui.AbstractComponentCtrl;
 import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GemLabel;
 import net.algem.util.ui.GemPanel;
@@ -44,7 +44,7 @@ import net.algem.util.ui.GemPanel;
  * @since 2.8.v 28/05/14
  */
 public class EmployeeTypePanelCtrl
-  extends AbstractGemPanelCtrl
+  extends AbstractComponentCtrl
 {
 
   private List<EmployeeTypePanel> panels;
@@ -65,11 +65,11 @@ public class EmployeeTypePanelCtrl
     add(top);
     add(Box.createVerticalStrut(SPACING));
     panels = new ArrayList<EmployeeTypePanel>();
-//    addPanel();
+//    add();
   }
 
   @Override
-  public void addPanel() {
+  public void add() {
     EmployeeTypePanel p = new EmployeeTypePanel(dataCache.getList(Model.EmployeeType));
     p.addActionListener(this);
     panels.add(p);
@@ -87,8 +87,8 @@ public class EmployeeTypePanelCtrl
     add(Box.createVerticalStrut(SPACING));
   }
 
-  @Override
-  public void removePanel(GemPanel panel) {
+
+  public void remove(GemPanel panel) {
     panels.remove((EmployeeTypePanel) panel);
     ((EmployeeTypePanel) panel).removeActionListener(this);
     remove(panel);
@@ -114,6 +114,11 @@ public class EmployeeTypePanelCtrl
       }
     }
     return t;
+  }
+
+  @Override
+  public void remove() {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
 
 

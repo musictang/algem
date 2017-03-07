@@ -1,7 +1,7 @@
 /*
- * @(#)DateTimeCtrl.java	2.8.v 21/05/14
+ * @(#)AbstractComponentCtrl.java	2.12.0 06/03/17
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -18,25 +18,35 @@
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  *
  */
+
 package net.algem.util.ui;
 
-import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 /**
- * JPanel controller interface.
- * This controller is used to add or remove from container one or more components of JPanel type.
+ * Abstract controller based on GemComponentCtrl interface.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.v
+ * @version 2.12.0
  * @since 2.8.v 21/05/14
  */
-public interface GemPanelCtrl
-        extends ActionListener
+public abstract class AbstractComponentCtrl 
+  extends GemPanel
+  implements GemComponentCtrl
+
 {
+  
+  protected GemButton plus;
+  protected GemButton minus;
 
-  void addPanel();
+  @Override
+  public void actionPerformed(ActionEvent e) {
+    Object src = e.getSource();
+    if (src == plus) {
+      add();
+    } else if (src == minus) {
+      remove();
+    }
+  }
 
-  void removePanel(GemPanel panel);
-
-  void clear();
 }
