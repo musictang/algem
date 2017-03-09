@@ -1,7 +1,7 @@
 /*
- * @(#)StudioScheduleCtrl.java	2.9.4.6 02/06/15
+ * @(#)StudioScheduleCtrl.java	2.12.0 08/03/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -47,16 +47,16 @@ import net.algem.util.ui.MessagePopup;
  * This controller is used to plan one or more rooms at differents times and for different technicians.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.6
+ * @version 2.12.0
  * @since 2.8.v 21/05/14
  */
 public class StudioScheduleCtrl
   extends CardCtrl
+  implements UpdateConflictListener
 {
 
   public static final String STUDIO_SCHEDULING_KEY="Studio.scheduling";
   protected ConflictListView conflictsView;
-  private List<GemDateTime> dates;
   private StudioScheduleView studioView;
   private final GemDesktop desktop;
   private final PlanningService service;
@@ -79,7 +79,12 @@ public class StudioScheduleCtrl
     GemPanel gp = new GemPanel(new BorderLayout());
     gp.add(scroll, BorderLayout.CENTER);
 
-    conflictsView = new ConflictListView(new ConflictTableModel(service));
+    conflictsView = new ConflictListView(new ConflictTableModel(service) {
+      @Override
+      public boolean isCellEditable(int row, int column) {
+        return false;
+      }
+    });
     addCard(null, gp);
     addCard(BundleUtil.getLabel("Conflict.verification.label"), conflictsView);
     select(0);
@@ -89,17 +94,18 @@ public class StudioScheduleCtrl
   public boolean next() {
     select(step + 1);
     if (step == 1) {
+      conflictsView.clear();
       String t = MessageUtil.getMessage("invalid.choice");
       try {
-        checkAction();
+        List<GemDateTime> dates = checkAction();
+        conflictsView.clear();
+        int n = testConflicts(studioView.getGroup(), studioView.getRooms(), dates);
+        if (n > 0) {
+          btNext.setText("");//lock validation
+        }
       } catch (PlanningException pe) {
         JOptionPane.showMessageDialog(this, pe.getMessage(), t, JOptionPane.ERROR_MESSAGE);
         return prev();
-      }
-      conflictsView.clear();
-      int n = testConflicts(studioView.getGroup(), studioView.getRooms());
-      if (n > 0) {
-        btNext.setText("");//bouton validation
       }
     }
     return true;
@@ -121,14 +127,18 @@ public class StudioScheduleCtrl
 
   @Override
   public boolean validation() {
+    List<ScheduleTestConflict> resolved = conflictsView.getResolvedConflicts();
+    if (resolved.isEmpty()) {
+      MessagePopup.warning(this, MessageUtil.getMessage("no.schedule.to.plan"));
+      return false;
+    }
+    List<GemDateTime> dates = new ArrayList<>();
+    for (ScheduleTestConflict c : resolved) {
+      GemDateTime dt = new GemDateTime(c.getDate(), new HourRange(c.getStart(), c.getEnd()));
+      dates.add(dt);
+    }
 
-    StudioSession session = new StudioSession();
-    session.setGroup(studioView.getGroup());
-    session.setStudio(studioView.getStudio());
-    session.setRooms(studioView.getRooms());
-    session.setTechnicians(studioView.getEmployees());
-    session.setDates(dates);
-    session.setCategory(studioView.getCategory());
+    StudioSession session = createSession(studioView, dates);
     try {
       service.planStudio(session);
       GemDateTime dts = dates.get(0);
@@ -142,6 +152,18 @@ public class StudioScheduleCtrl
     return cancel();
   }
 
+  private StudioSession createSession(StudioScheduleView studioView, List<GemDateTime> dates) {
+    StudioSession session = new StudioSession();
+    session.setGroup(studioView.getGroup());
+    session.setStudio(studioView.getStudio());
+    session.setRooms(studioView.getRooms());
+    session.setTechnicians(studioView.getEmployees());
+    session.setDates(dates);
+    session.setCategory(studioView.getCategory());
+
+    return session;
+  }
+
   @Override
   public boolean loadId(int id) {
     return false;
@@ -152,9 +174,14 @@ public class StudioScheduleCtrl
     return false;
   }
 
-  private void checkAction() throws PlanningException {
+  @Override
+  public void updateStatus(boolean unlock) {
+    btNext.setText(unlock ? GemCommand.VALIDATE_CMD : "");
+  }
 
-    dates = studioView.getDates();
+  private List<GemDateTime> checkAction() throws PlanningException {
+
+    List<GemDateTime> dates = studioView.getDates();
     // check duplicates
     Set<GemDateTime> uniques = new HashSet<GemDateTime>(dates);
     if (uniques.size() < dates.size()) {
@@ -199,10 +226,12 @@ public class StudioScheduleCtrl
     if (studioView.getStudio() <= 0) {
       throw new PlanningException(MessageUtil.getMessage("studio.invalid.choice"));
     }
+    return dates;
   }
 
-  private int testConflicts(int groupId, int [] rooms) {
+  private int testConflicts(int groupId, int [] rooms, List<GemDateTime> dates) {
     int conflicts = 0;
+
 
     for (GemDateTime dt : dates) {
       DateFr d = dt.getDate();
@@ -210,6 +239,7 @@ public class StudioScheduleCtrl
       Hour end = dt.getTimeRange().getEnd();
       ScheduleTestConflict testConflict = new ScheduleTestConflict(d, start, end);
       String query = null;
+
       if (rooms != null) {
         for (int r : rooms) {
           query = ConflictQueries.getRoomConflictSelection(d.toString(), start.toString(), end.toString(), r);

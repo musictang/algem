@@ -1,5 +1,5 @@
 /*
- * @(#) ExportOpenConcerto.java Algem 2.11.4 13/12/2016
+ * @(#) ExportOpenConcerto.java Algem 2.12.0 08/03/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -36,7 +36,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.4
+ * @version 2.12.0
  * @since 2.11.4 13/12/2016
  */
 public class ExportOpenConcerto
@@ -156,6 +156,7 @@ public class ExportOpenConcerto
         sb.append(';').append(codeJournal);
         sb.append(';').append(getAccount(e));
         sb.append(';').append(e.getDocument());
+        //TODO maybe remove " or ' from label
         sb.append(';').append(e.getLabel()).append(' ').append(getInvoiceNumber(e));
         //+ "#" + (e.getAmount() < 0 ? cd : dc) // cd Crédit
         if (e.getAmount() < 0) {

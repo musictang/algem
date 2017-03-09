@@ -1,5 +1,5 @@
 /*
- * @(#)CommunAccountExportService.java	2.11.5 16/01/17
+ * @(#)CommunAccountExportService.java	2.12.0 08/03/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -47,7 +47,7 @@ import net.algem.util.model.ModelNotFoundException;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.5
+ * @version 2.12.0
  * @since 2.8.r 13/12/13
  */
 public abstract class CommunAccountExportService
@@ -148,7 +148,7 @@ public abstract class CommunAccountExportService
     if (e.getInvoice() != null && !e.getInvoice().isEmpty()
             //&& !AccountUtil.INVOICE_PAYMENT.bufferEquals(e.getModeOfPayment())
             && AccountUtil.isCustomerAccount(e.getAccount())) {
-      c = "C" + e.getPayer();
+      c = "411C" + e.getPayer();// prefix with 411 + C (client)
     }
     return c;
   }

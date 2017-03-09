@@ -252,7 +252,7 @@ public class MemberRehearsalCtrl
       return false;
     }
 
-    if (!RoomService.isClosed(view.getRoom(), date, hStart, hEnd)) {
+    if (!RoomService.isOpened(view.getRoom(), date, hStart, hEnd)) {
       return false;
     }
 

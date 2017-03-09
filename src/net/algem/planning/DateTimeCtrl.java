@@ -1,5 +1,5 @@
 /*
- * @(#)DateTimeCtrl.java	2.12.0 06/03/17
+ * @(#)DateTimeCtrl.java	2.12.0 08/03/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -23,6 +23,8 @@ package net.algem.planning;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.BorderFactory;
@@ -34,7 +36,6 @@ import javax.swing.table.TableCellEditor;
 import net.algem.util.BundleUtil;
 import net.algem.util.GemCommand;
 import net.algem.util.MessageUtil;
-import net.algem.util.ui.AbstractComponentCtrl;
 import net.algem.util.ui.DateCellEditor;
 import net.algem.util.ui.DateTimeTableModel;
 import net.algem.util.ui.GemButton;
@@ -45,33 +46,36 @@ import net.algem.util.ui.MessagePopup;
 
 /**
  * This controller is used to add or remove DateTimePanel components.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.12.0
  * @since 2.8.t 11/04/14
  */
 public class DateTimeCtrl
-        extends AbstractComponentCtrl
+  extends GemPanel
+  implements ActionListener
 {
 
-  private List<DateTimePanel> panels;
   private JTable timetable;
   private DateTimeTableModel tableModel;
-  private final static int SPACING = 4;
+  protected GemButton plus;
+  protected GemButton minus;
 
   public DateTimeCtrl() {
+    this.tableModel = new DateTimeTableModel();
+    this.timetable = new JTable(tableModel);
 
     setLayout(new BorderLayout());
     plus = new GemButton("+");
     plus.setMargin(new Insets(0, 4, 0, 4)); //reduction de la taille du bouton
     plus.addActionListener(this);
     plus.setToolTipText(GemCommand.ADD_CMD);
-    
+
     minus = new GemButton("-");
     minus.setMargin(new Insets(0, 4, 0, 4));
     minus.addActionListener(this);
     minus.setToolTipText(BundleUtil.getLabel("Remove.selected.line.tip"));
-    
+
     JPanel actionPanel = new JPanel();
     actionPanel.add(minus);
     actionPanel.add(plus);
@@ -80,18 +84,15 @@ public class DateTimeCtrl
     top.add(actionPanel, BorderLayout.EAST);
     top.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
     add(top, BorderLayout.NORTH);
-  
-    this.tableModel = new DateTimeTableModel();
-    this.timetable = new JTable(tableModel);
+
     HourCellEditor cellEditor = new HourCellEditor();
     timetable.getColumnModel().getColumn(0).setCellEditor(new DateCellEditor());
     timetable.getColumnModel().getColumn(1).setCellEditor(cellEditor);
     timetable.getColumnModel().getColumn(2).setCellEditor(cellEditor);
     JScrollPane tableScroll = new JScrollPane(timetable);
     add(tableScroll,BorderLayout.CENTER);
-    //add();
     setPreferredSize(new Dimension(320, 200));
-    
+
   }
 
   List<GemDateTime> getRanges() {
@@ -104,8 +105,6 @@ public class DateTimeCtrl
     return ranges;
   }
 
-
-  @Override
   public void add() {
     int rows = timetable.getRowCount();
     DateTimeActionModel dam = new DateTimeActionModel();
@@ -121,7 +120,6 @@ public class DateTimeCtrl
     tableModel.addItem(dam);
   }
 
-  @Override
   public void remove() {
     final int row = timetable.getSelectedRow();
     if (row == -1) {
@@ -135,18 +133,27 @@ public class DateTimeCtrl
         tableModel.deleteItem(row);
       }
     });
-    
+
   }
 
-  @Override
   public void clear() {
     tableModel.clear();
   }
-  
-  private void stopCellEditing() {
+
+  void stopCellEditing() {
     TableCellEditor tce = timetable.getCellEditor();
       if (tce != null) {
         tce.stopCellEditing();
       }
+  }
+
+  @Override
+  public void actionPerformed(ActionEvent e) {
+   Object src = e.getSource();
+    if (src == plus) {
+      add();
+    } else if (src == minus) {
+      remove();
+    }
   }
 }

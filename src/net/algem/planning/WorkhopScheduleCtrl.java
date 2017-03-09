@@ -1,7 +1,7 @@
 /*
- * @(#)WorkhopScheduleCtrl.java	2.9.7.2 30/05/16
+ * @(#)WorkhopScheduleCtrl.java	2.12.0 08/03/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -22,7 +22,8 @@ package net.algem.planning;
 
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import net.algem.course.Course;
 import net.algem.planning.editing.ModifPlanEvent;
 import net.algem.util.*;
@@ -32,12 +33,12 @@ import net.algem.util.ui.CardCtrl;
 import net.algem.util.ui.MessagePopup;
 
 /**
- * Single workshop planification.
- * (A session on one date only)
+ * Single workshop scheduling.
+ * Only one session is scheduled.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.7.2
+ * @version 2.12.0
  * @since 1.0a 07/07/1999
  */
 public class WorkhopScheduleCtrl
@@ -58,7 +59,8 @@ public class WorkhopScheduleCtrl
 
   public void init() {
     rv = new WorkshopScheduleView(desktop.getDataCache());
-    addCard(MessageUtil.getMessage("workshop.planification"), rv);
+    //addCard(MessageUtil.getMessage("workshop.planification"), rv);
+    addCard("", rv);
     select(0);
   }
 
@@ -100,22 +102,22 @@ public class WorkhopScheduleCtrl
 
   @Override
   public boolean validation() {
-
-    boolean v = false;
     try {
       save();
       desktop.postEvent(new ModifPlanEvent(this, rv.getDate(), rv.getDate()));
-      v = true;
+      return cancel();
     } catch (PlanningException ex) {
       MessagePopup.warning(this, ex.getMessage());
       return false;
     }
-    clear();
-    return cancel();
-
   }
 
   public void save() throws PlanningException {
+    Action a = getActionFromView(rv);
+    service.plan(a, Schedule.WORKSHOP);
+  }
+
+  private Action getActionFromView(WorkshopScheduleView rv) throws PlanningException {
     int w = rv.getWorkshop();
     int r = rv.getRoom();
     int t = rv.getTeacher();
@@ -140,8 +142,7 @@ public class WorkhopScheduleCtrl
       throw new PlanningException(MessageUtil.getMessage("invalid.teacher"));
     }
 
-    String query
-            = ConflictQueries.getRoomTeacherConflictSelection(rv.getDate().toString(), hStart.toString(), hEnd.toString(), r, t);
+    String query = ConflictQueries.getRoomTeacherConflictSelection(rv.getDate().toString(), hStart.toString(), hEnd.toString(), r, t);
 
     if (ScheduleIO.count(query, dc) > 0) {
       throw new PlanningException(MessageUtil.getMessage("busy.room.teacher.warning"));
@@ -153,12 +154,11 @@ public class WorkhopScheduleCtrl
     a.setIdper(t);
     a.setRoom(r);
     a.setCourse(w);
-
-    Vector<DateFr> dates = new Vector<DateFr>();
+    List<DateFr> dates = new ArrayList<DateFr>();
     dates.add(rv.getDate());
     a.setDates(dates);
 
-    service.plan(a, Schedule.WORKSHOP);
-
+    return a;
   }
+
 }

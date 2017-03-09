@@ -1,7 +1,7 @@
 /*
- * @(#)DataCache.java	2.11.3 16/11/16
+ * @(#)DataCache.java	2.12.0 08/03/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -88,7 +88,7 @@ import net.algem.contact.Note;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.3
+ * @version 2.12.0
  * @since 1.0b 03/09/2001
  */
 public class DataCache
@@ -264,6 +264,7 @@ public class DataCache
    * @param dc
    * @param user
    * @return une instance de DataCache
+   * @see The "Double-Checked Locking is Broken" Declaration  http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html
    */
   public static DataCache getInstance(DataConnection dc, String user) {
     if (INSTANCE == null) {

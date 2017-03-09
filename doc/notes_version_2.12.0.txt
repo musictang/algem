@@ -1,0 +1,3 @@
+2.12.0
+
+* Dans la planification, l'insertion d'une ligne se faisait AVANT la ligne sélectionnée et non "après", contrairement à ce qui était spécifié dans la bulle d'aide. La ligne ajoutée reprend maintenant le jour et la salle de la ligne sélectionnée.

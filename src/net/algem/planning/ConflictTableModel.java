@@ -1,5 +1,5 @@
 /*
- * @(#)ConflictTableModel.java	2.12.0 01/03/17
+ * @(#)ConflictTableModel.java	2.12.0 08/03/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -68,6 +68,7 @@ public class ConflictTableModel
   public Class getColumnClass(int column) {
     switch (column) {
       case 0:
+        return DateFr.class;
       case 1:
       case 2:
         return String.class;
@@ -92,7 +93,7 @@ public class ConflictTableModel
     ScheduleTestConflict p = tuples.elementAt(row);
     switch (col) {
       case 0:
-        return p.getDate().toString();
+        return p.getDate();
       case 1:
         return p.getStart().toString();
       case 2:
@@ -131,10 +132,12 @@ public class ConflictTableModel
     ScheduleTestConflict c = tuples.elementAt(row);
     switch (col) {
       case 0:
-        DateFr newDate = new DateFr((String)value);
+        DateFr newDate = (DateFr) value;
         c.setDate(newDate);
         if (isFree(c)) {
-          c.getAction().getDates().set(c.getDateIndex(), newDate);
+          if (c.getAction() != null) {
+            c.getAction().getDates().set(c.getDateIndex(), newDate);
+          }
           boolean unlock = true;
           for (ScheduleTestConflict tc : tuples) {
             if (!isFree(tc)) {
@@ -142,9 +145,9 @@ public class ConflictTableModel
               break;
             }
           }
-          listener.update(unlock);
+          listener.updateStatus(unlock);
         } else {
-          listener.update(false);
+          listener.updateStatus(false);
         }
         fireTableRowsUpdated(row, row);
         break;
@@ -161,10 +164,11 @@ public class ConflictTableModel
     }
   }
 
-  private boolean isFree(ScheduleTestConflict stc) {
+  protected boolean isFree(ScheduleTestConflict stc) {
     boolean free = true;
     int room = stc.getAction().getRoom();
     int teacher = stc.getAction().getIdper();
+
     if (service != null) {
       if (service.isRoomFree(stc, room)) {
         stc.setRoomFree(true);
@@ -172,7 +176,7 @@ public class ConflictTableModel
         stc.setRoomFree(false);
         free = false;
       }
-      // test prof
+
       if (teacher > 0) {
         if (service.isTeacherFree(stc, teacher)) {
           stc.setTeacherFree(true);

@@ -1,7 +1,7 @@
 /*
- * @(#)RoomService.java 2.11.4 15/12/16
+ * @(#)RoomService.java 2.12.0 08/03/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -43,7 +43,7 @@ import net.algem.util.ui.MessagePopup;
  * Service class for room operations.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.4
+ * @version 2.12.0
  * @since 2.2.b
  */
 public class RoomService
@@ -248,7 +248,8 @@ public class RoomService
     roomTimesIO.update(roomId, times);
   }
 
-  public static boolean isClosed(int room, DateFr date, Hour hStart, Hour hEnd) {
+  public static boolean isOpened(int room, DateFr date, Hour hStart, Hour hEnd) {
+    // check start
     Hour closed = PlanificationUtil.isRoomClosed(room, date, hStart);
     if (new Hour().equals(closed)) {
       return MessagePopup.confirm(null, MessageUtil.getMessage("room.closed.warning"));
@@ -259,6 +260,7 @@ public class RoomService
         return false;
       }
     }
+    // check end
     closed = PlanificationUtil.isRoomClosed(room, date, hEnd);
     if (closed != null && hEnd.after(closed)) {
       if (!MessagePopup.confirm(null, MessageUtil.getMessage("closing.room.warning", closed))) {

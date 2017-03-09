@@ -24,7 +24,6 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -45,9 +44,8 @@ import net.algem.util.ui.MessagePopup;
  * @since 2.8.t 11/04/14
  */
 public class TrainingScheduleCtrl
-        extends CardCtrl
-        implements UpdateConflictListener
-{
+  extends CardCtrl
+  implements UpdateConflictListener {
 
   public static final String TRAINING_SCHEDULING_KEY = "Training.course.scheduling";
   private final GemDesktop desktop;
@@ -86,6 +84,7 @@ public class TrainingScheduleCtrl
   public boolean next() {
     select(step + 1);
     if (step == 1) {
+      trainingView.stopEditing();
       conflictsView.clear();
       String t = MessageUtil.getMessage("invalid.choice");
       try {
@@ -143,33 +142,37 @@ public class TrainingScheduleCtrl
       MessagePopup.warning(this, ex.getMessage());
       return false;
     }
-    clear();
     return cancel();
   }
 
   @Override
-  public void update(boolean unlock) {
-    if (unlock) {
-      btNext.setText(GemCommand.VALIDATE_CMD);
-    } else {
-      btNext.setText("");
-    }
+  public void updateStatus(boolean unlock) {
+    btNext.setText(unlock ? GemCommand.VALIDATE_CMD : "");
   }
 
   private DateFr[] save() throws PlanningException {
     List<ScheduleTestConflict> resolved = conflictsView.getResolvedConflicts();
+    if (resolved.isEmpty()) {
+      throw new PlanningException(MessageUtil.getMessage("no.schedule.to.plan"));
+    }
     List<GemDateTime> dates = new ArrayList<>();
     for (ScheduleTestConflict c : resolved) {
       GemDateTime dt = new GemDateTime(c.getDate(), new HourRange(c.getStart(), c.getEnd()));
       dates.add(dt);
     }
-    
+
     Set<GemDateTime> checked = checkDates(dates);
     List<GemDateTime> toSave = new ArrayList(checked);
     service.plan(action, Schedule.TRAINING, new ArrayList(toSave));
     return new DateFr[]{toSave.get(0).getDate(), toSave.get(toSave.size() - 1).getDate()};
   }
 
+  /**
+   * Creates a new scheduling model.
+   *
+   * @return an action instance encapsuling scheduling parameters
+   * @throws PlanningException
+   */
   private Action createAction() throws PlanningException {
     int course = trainingView.getCourse();
     int room = trainingView.getRoom();
@@ -195,13 +198,19 @@ public class TrainingScheduleCtrl
     a.setIdper(teacher);
     a.setRoom(room);
     a.setCourse(course);
-    
+
     return a;
   }
 
+  /**
+   * Check the dates and times to schedule.
+   * @param dates list of dates and times
+   * @return a set of dates and times with no duplicates
+   * @throws PlanningException
+   */
   private Set<GemDateTime> checkDates(List<GemDateTime> dates) throws PlanningException {
     // check duplicates
-    Set<GemDateTime> uniques = new TreeSet<GemDateTime>(dates);
+    Set<GemDateTime> uniques = new TreeSet<GemDateTime>(dates);// preserve order and sorting
     if (uniques.size() < dates.size()) {
       throw new PlanningException(MessageUtil.getMessage("time.duplication"));
     }
@@ -219,6 +228,12 @@ public class TrainingScheduleCtrl
     return uniques;
   }
 
+  /**
+   * Check conflicts with the dates and times to schedule.
+   * @param a schedule action model
+   * @param dates a set of dates and times
+   * @return the number of conflicts or 0 if none
+   */
   private int testConflicts(Action a, Set<GemDateTime> dates) {
     int conflicts = 0;
     int idx = 0;

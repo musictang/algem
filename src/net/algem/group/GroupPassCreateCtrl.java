@@ -22,10 +22,13 @@ package net.algem.group;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import net.algem.planning.ConflictListView;
+import net.algem.planning.ConflictTableModel;
 import net.algem.planning.DateFr;
 import net.algem.planning.Hour;
+import net.algem.planning.PlanningService;
 import net.algem.planning.ScheduleTestConflict;
 import net.algem.planning.editing.ModifPlanEvent;
 import net.algem.room.RoomService;
@@ -50,22 +53,35 @@ public class GroupPassCreateCtrl
 
   private DataCache dataCache;
   private GemDesktop desktop;
-  private GroupPassRehearsalView view;
-  private ConflictListView cfv;
-  private Vector<DateFr> dateList;
+  private GroupPassRehearsalView passView;
+  private ConflictListView conflictsView;
   private Group group;
   private GemGroupService service;
   private String wt = BundleUtil.getLabel("Warning.label");
 
-  public GroupPassCreateCtrl(GemDesktop d) {
-    desktop = d;
-    dataCache = d.getDataCache();
-    view = new GroupPassRehearsalView(dataCache);
-    cfv = new ConflictListView(null);
-    service = new GemGroupService(DataCache.getDataConnection());
+  public GroupPassCreateCtrl(GemDesktop desktop) {
+    this.desktop = desktop;
+    this.dataCache = desktop.getDataCache();
+    passView = new GroupPassRehearsalView(dataCache);
 
-    addCard(BundleUtil.getLabel("Group.pass.scheduling.auth"), view);
-    addCard(BundleUtil.getLabel("Conflict.verification.label"), cfv);
+    service = new GemGroupService(DataCache.getDataConnection());
+    PlanningService planningSrv = new PlanningService(DataCache.getDataConnection());
+    conflictsView = new ConflictListView(new ConflictTableModel(planningSrv) {
+      @Override
+      public boolean isCellEditable(int row, int col) {
+        return col == 4;
+      }
+
+      @Override
+      public void setValueAt(Object value, int row, int col) {
+        ScheduleTestConflict c = tuples.elementAt(row);
+        boolean checked = (boolean) value;
+        c.setActive(c.isConflict() ? false : checked);
+      }
+    });
+
+    addCard(BundleUtil.getLabel("Group.pass.scheduling.auth"), passView);
+    addCard(BundleUtil.getLabel("Conflict.verification.label"), conflictsView);
 
     select(0);
   }
@@ -87,56 +103,67 @@ public class GroupPassCreateCtrl
 
     select(step + 1);
     if (step == 1) {
-      if (view.getRoom() == 0) {
-        MessagePopup.error(this,MessageUtil.getMessage("room.invalid.choice"), wt);
+      if (hasErrors()) {
         return prev();
       }
 
-      DateFr date = view.getDateStart();
+      Hour hStart = passView.getHourStart();
+      Hour hEnd = passView.getHourEnd();
+      List<DateFr> dateList = service.generateDates(passView.getDay(), passView.getDateStart(), passView.getDateEnd());
+      conflictsView.clear();
+      List<ScheduleTestConflict> vc = service.testConflict(dateList, hStart, hEnd, group.getId(), passView.getRoom());
+      if (vc.size() > 0) {
+        for (ScheduleTestConflict pc : vc) {
+          conflictsView.addConflict(pc);
+        }
+        // let button active : permission to save non conflicting schedules
+        /*if (hasConflits(vc)) {
+          btNext.setText("");
+        }*/
+      }
+    }
+    return true;
+  }
+
+  private boolean hasErrors() {
+    if (passView.getRoom() == 0) {
+        MessagePopup.error(this,MessageUtil.getMessage("room.invalid.choice"), wt);
+        return true;
+      }
+
+      DateFr date = passView.getDateStart();
       if (date.bufferEquals(DateFr.NULLDATE)) {
         MessagePopup.error(this,MessageUtil.getMessage("beginning.date.invalid.choice"), wt);
-        return prev();
+        return true;
       }
       if (date.before(dataCache.getStartOfPeriod())
               || date.after(dataCache.getEndOfPeriod())) {
         MessagePopup.error(this,MessageUtil.getMessage("beginning.date.out.of.period"), wt);
-        return prev();
+        return true;
       }
-      date = view.getDateEnd();
+      date = passView.getDateEnd();
       if (date.bufferEquals(DateFr.NULLDATE)) {
         MessagePopup.error(this,MessageUtil.getMessage("end.date.invalid.choice"), wt);
-        return prev();
+        return true;
       }
       if (date.before(dataCache.getStartOfPeriod())
               || date.after(dataCache.getEndOfPeriod())) {
         MessagePopup.error(this,MessageUtil.getMessage("end.date.out.of.period"), wt);
-        return prev();
+        return true;
       }
-      Hour hStart = view.getHourStart();
-      Hour hEnd = view.getHourEnd();
+      Hour hStart = passView.getHourStart();
+      Hour hEnd = passView.getHourEnd();
 
       if (hStart.toString().equals("00:00")
               || hEnd.toString().equals("00:00")
               || !(hEnd.after(hStart))) {
         MessagePopup.error(this,MessageUtil.getMessage("hour.range.error"), wt);
-        return prev();
+        return true;
       }
-      if (!RoomService.isClosed(view.getRoom(), view.getDateStart(), hStart, hEnd)) {
-        return prev();
+      if (!RoomService.isOpened(passView.getRoom(), passView.getDateStart(), hStart, hEnd)) {
+        return true;
       }
-      dateList = service.generateDates(view.getDay(), view.getDateStart(), view.getDateEnd());
-      cfv.clear();
-      Vector<ScheduleTestConflict> vc = service.testConflict(dateList, hStart, hEnd, group.getId(), view.getRoom());
-      if (vc.size() > 0) {
-        for (ScheduleTestConflict pc : vc) {
-          cfv.addConflict(pc);
-        }
-        if (hasConflits(vc)) {
-          btNext.setText("");
-        }
-      }
-    }
-    return true;
+      return false;
   }
 
   @Override
@@ -149,22 +176,14 @@ public class GroupPassCreateCtrl
   }
 
   public void clear() {
-    view.clear();
-    cfv.clear();
+    passView.clear();
+    conflictsView.clear();
     select(0);
   }
 
   @Override
   public boolean loadCard(Object o) {
     clear();
-    /*
-    if (o == null || !(o instanceof Group))
-    return false;
-
-    group = (Group)o;
-    view.setGroupe(group);
-    return true;
-     */
     return false;
   }
 
@@ -176,15 +195,22 @@ public class GroupPassCreateCtrl
   @Override
   public boolean validation() {
 
-    if (dateList.isEmpty()) {
+    List<ScheduleTestConflict> enabled = conflictsView.getResolvedConflicts();
+    List<DateFr> dates = new ArrayList<>();
+    for (ScheduleTestConflict c : enabled) {
+      if (!c.isConflict()) {
+        dates.add(c.getDate());
+      }
+    }
+    if (dates.isEmpty()) {
       MessagePopup.error(this,MessageUtil.getMessage("empty.planning.create.warning"), wt);
       return false;
     }
 
     try {
-      service.createPassRehearsal(dateList, view.getHourStart(), view.getHourEnd(), group.getId(), view.getRoom());
+      service.createPassRehearsal(dates, passView.getHourStart(), passView.getHourEnd(), group.getId(), passView.getRoom());
       MessagePopup.information(this,MessageUtil.getMessage("planning.update.info"));
-      desktop.postEvent(new ModifPlanEvent(this, view.getDateStart(), view.getDateEnd()));
+      desktop.postEvent(new ModifPlanEvent(this, passView.getDateStart(), passView.getDateEnd()));
     } catch (GroupException ex) {
       MessagePopup.warning(this, ex.getMessage());
       GemLogger.logException("Insertion répétition", ex, this);
@@ -195,9 +221,9 @@ public class GroupPassCreateCtrl
   }
 
 
-  private boolean hasConflits(Vector<ScheduleTestConflict> vc) {
+  private boolean hasConflits(List<ScheduleTestConflict> vc) {
     for (ScheduleTestConflict pc : vc) {
-      if (!(pc.isMemberFree() && pc.isRoomFree())) {
+      if (pc.isConflict()) {
         return true;
       }
     }

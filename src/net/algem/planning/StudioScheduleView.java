@@ -1,7 +1,7 @@
 /*
- * @(#)StudioScheduleView.java	2.9.4.0 26/03/2015
+ * @(#)StudioScheduleView.java	2.12.0 08/03/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,14 +21,12 @@
 
 package net.algem.planning;
 
-import java.awt.Color;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.List;
 import java.util.Vector;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
 import javax.swing.JCheckBox;
 import net.algem.config.*;
 import net.algem.contact.EmployeePanelCtrl;
@@ -51,7 +49,7 @@ import net.algem.util.ui.GridBagHelper;
  * when scheduling studio sessions.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.0
+ * @version 2.12.0
  * @since 2.8.v 21/05/14
  */
 class StudioScheduleView
@@ -83,9 +81,6 @@ class StudioScheduleView
     dateTimeCtrl = new DateTimeCtrl();
     roomPanelCtrl = new RoomPanelCtrl(dataCache);
 
-    GemPanel separator = new GemPanel();
-    separator.add(Box.createVerticalStrut(10));
-    separator.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY));
     category = new GemParamChoice(new GemParamModel(dataCache.getList(Model.StudioType)));
     category.setKey(0);
     employeePanelCtrl = new EmployeePanelCtrl(BundleUtil.getLabel("Technician.label"));
@@ -98,14 +93,16 @@ class StudioScheduleView
     gb.add(onlyStudio, 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Group.label")), 0, 1, 1, 1, GridBagHelper.WEST);
     gb.add(group, 0, 2, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
+    gb.insets = new Insets(10,4,2,0);
     gb.add(roomPanelCtrl, 0, 3, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
+    gb.insets = GridBagHelper.SMALL_INSETS;
     gb.add(dateTimeCtrl, 0, 4, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
-    gb.add(separator, 0, 5, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Category.label")), 0, 6, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
-    gb.add(category, 0, 7, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
-    gb.add(employeePanelCtrl, 0, 8, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Studio.label")), 0, 9, 1, 1, GridBagHelper.WEST);
-    gb.add(studio, 0, 10, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
+    //gb.add(separator, 0, 5, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Category.label")), 0, 5, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
+    gb.add(category, 0, 6, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
+    gb.add(employeePanelCtrl, 0, 7, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Studio.label")), 0, 8, 1, 1, GridBagHelper.WEST);
+    gb.add(studio, 0, 9, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
 
   }
 

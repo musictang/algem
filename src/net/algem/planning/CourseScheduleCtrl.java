@@ -136,16 +136,10 @@ public class CourseScheduleCtrl
     return true;
   }
 
-
   @Override
-  public void update(boolean unlock) {
-      if (unlock) {
-        btNext.setText(GemCommand.VALIDATE_CMD);
-      } else {
-        btNext.setText("");
-      }
+  public void updateStatus(boolean unlock) {
+    btNext.setText(unlock ? GemCommand.VALIDATE_CMD : "");
   }
-
 
   List<Action> getPlanification(Action action, int interval) {
     Hour end = action.getEndTime();

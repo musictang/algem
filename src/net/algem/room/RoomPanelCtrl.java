@@ -1,7 +1,7 @@
 /*
- * @(#)RoomPanelCtrl.java	2.9.4.3 22/04/15
+ * @(#)RoomPanelCtrl.java	2.12.0 08/03/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -30,7 +30,7 @@ import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.GemCommand;
 import net.algem.util.model.Model;
-import net.algem.util.ui.AbstractComponentCtrl;
+import net.algem.util.ui.AbstractGemPanelCtrl;
 import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GemLabel;
 import net.algem.util.ui.GemPanel;
@@ -38,11 +38,11 @@ import net.algem.util.ui.GemPanel;
 /**
  * This controller is used to add or remove DateTimePanel components.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.3
+ * @version 2.12.0
  * @since 2.8.v 21/05/14
  */
 public class RoomPanelCtrl
-        extends AbstractComponentCtrl
+        extends AbstractGemPanelCtrl
 {
 
   private List<RoomPanel> panels;
@@ -63,7 +63,7 @@ public class RoomPanelCtrl
     add(top);
     add(Box.createVerticalStrut(SPACING));
     panels = new ArrayList<RoomPanel>();
-    add();
+    addPanel();
   }
 
   public int[] getRooms() {
@@ -75,7 +75,7 @@ public class RoomPanelCtrl
   }
 
   @Override
-  public void add() {
+  public void addPanel() {
     RoomPanel p = new RoomPanel(dataCache.getList(Model.Room));
     p.addActionListener(this);
     panels.add(p);
@@ -83,13 +83,14 @@ public class RoomPanelCtrl
     add(Box.createVerticalStrut(SPACING));
   }
 
-  public void remove(GemPanel panel) {
+  @Override
+  public void removePanel(GemPanel panel) {
     panels.remove((RoomPanel) panel);
     ((RoomPanel) panel).removeActionListener(this);
     remove(panel);
     revalidate();
   }
-  
+
   @Override
   public void setEnabled(boolean enabled) {
     plus.setEnabled(enabled);
@@ -105,12 +106,7 @@ public class RoomPanelCtrl
       panels.remove(rp);
       remove(rp);
     }
-//    panels.get(0).reset();
     revalidate();
   }
 
-  @Override
-  public void remove() {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-  }
 }

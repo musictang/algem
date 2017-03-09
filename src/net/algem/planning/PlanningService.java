@@ -56,8 +56,8 @@ public class PlanningService
 
   public PlanningService(DataConnection dc) {
     this.dc = dc;
-    actionIO = (ActionIO) DataCache.getDao(Model.Action);
-    conflictService = new ConflictService(dc);
+    this.actionIO = (ActionIO) DataCache.getDao(Model.Action);
+    this.conflictService = new ConflictService(dc);
   }
 
   /**

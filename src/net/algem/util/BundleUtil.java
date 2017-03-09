@@ -1,6 +1,6 @@
 /*
  * @(#)BundleUtil.java 2.8.n 04/10/13
- * 
+ *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 
 package net.algem.util;
@@ -45,7 +45,6 @@ public class BundleUtil
   }
 
   public static String getLabel(String key) {
-
     if (DEFAULT_BUNDLE == null) {
       return "nobundle:" + key;
     }
@@ -77,6 +76,5 @@ public class BundleUtil
 
     return label == null ? key : label;
   }
-
 
 }

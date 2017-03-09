@@ -1,5 +1,5 @@
 /*
- * @(#)TrainingScheduleView.java	2.12.0 07/03/17
+ * @(#)TrainingScheduleView.java	2.12.0 08/03/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -93,6 +93,10 @@ extends GemPanel{
 
   List<GemDateTime> getDates() {
     return dateTimeCtrl.getRanges();
+  }
+
+  void stopEditing() {
+    dateTimeCtrl.stopCellEditing();
   }
 
 }

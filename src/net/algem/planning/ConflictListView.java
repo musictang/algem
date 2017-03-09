@@ -1,5 +1,5 @@
 /*
- * @(#)ConflictListView.java	2.12.0 07/03/17
+ * @(#)ConflictListView.java	2.12.0 08/03/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -25,11 +25,12 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumnModel;
 import net.algem.util.BundleUtil;
+import net.algem.util.ui.DateCellEditor;
 import net.algem.util.ui.GemLabel;
 import net.algem.util.ui.GemPanel;
-import net.algem.util.ui.JTableModel;
 
 /**
  * List of conflicts.
@@ -59,6 +60,8 @@ public class ConflictListView
     cm.getColumn(4).setPreferredWidth(30);
     cm.getColumn(5).setPreferredWidth(400);
 
+    cm.getColumn(0).setCellEditor(new DateCellEditor());
+
     JScrollPane pm = new JScrollPane(table);
 
     status = new GemLabel();
@@ -83,8 +86,9 @@ public class ConflictListView
   public void setStatus(String s) {
     status.setText(s == null ? BundleUtil.getLabel("Conflicts.label").toLowerCase() : s);
   }
-  
+
   public List<ScheduleTestConflict> getResolvedConflicts() {
+    stopCellEditing();
     List<ScheduleTestConflict> resolved = new ArrayList<>();
     for(ScheduleTestConflict c : tableModel.getData()) {
       if (c.isActive()) {
@@ -92,6 +96,13 @@ public class ConflictListView
       }
     }
     return resolved;
+  }
+
+  private void stopCellEditing() {
+    TableCellEditor tce = table.getCellEditor();
+    if (tce != null) {
+      tce.stopCellEditing();
+    }
   }
 
 }

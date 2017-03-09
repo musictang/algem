@@ -1,5 +1,5 @@
 /*
- * @(#)DateTimeCtrl.java	2.12.0 06/03/17
+ * @(#)AbstractComponentCtrl.java	2.12.0 08/03/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,23 +20,34 @@
  */
 package net.algem.util.ui;
 
-import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import net.algem.util.GemCommand;
 
 /**
- * JPanel controller interface.
- * This controller is used to add or remove from container one or more components of JPanel type.
- * 
+ * Abstract controller based on GemComponentCtrl interface.
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.12.0
- * @since 2.12.0 06/03/17
+ * @since 2.8.v 21/05/14
  */
-public interface GemComponentCtrl
-        extends ActionListener
-{
+public abstract class AbstractGemPanelCtrl
+  extends GemPanel
+  implements GemPanelCtrl {
 
-  void add();
+  protected GemButton plus;
 
-  void remove();
+  @Override
+  public void actionPerformed(ActionEvent e) {
+    Object src = e.getSource();
+    if (src == plus) {
+      addPanel();
+      revalidate();
+    } else if (e.getActionCommand().equals(GemCommand.REMOVE_CMD)) {
+      if (src instanceof GemRemovingButton) {
+        GemRemovingButton bt = (GemRemovingButton) e.getSource();
+        removePanel(bt.getPanel());
+      }
+    }
+  }
 
-  void clear();
 }

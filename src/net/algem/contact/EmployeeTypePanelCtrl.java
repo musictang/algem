@@ -1,7 +1,7 @@
 /*
- * @(#)EmployeeTypePanelCtrl.java	2.9.4.3 22/04/15
+ * @(#)EmployeeTypePanelCtrl.java	2.12.0 08/03/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -31,7 +31,7 @@ import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.GemCommand;
 import net.algem.util.model.Model;
-import net.algem.util.ui.AbstractComponentCtrl;
+import net.algem.util.ui.AbstractGemPanelCtrl;
 import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GemLabel;
 import net.algem.util.ui.GemPanel;
@@ -40,11 +40,11 @@ import net.algem.util.ui.GemPanel;
  * Controller used to add or remove panels for selecting categories of employee.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.3
+ * @version 2.12.0
  * @since 2.8.v 28/05/14
  */
 public class EmployeeTypePanelCtrl
-  extends AbstractComponentCtrl
+  extends AbstractGemPanelCtrl
 {
 
   private List<EmployeeTypePanel> panels;
@@ -69,7 +69,7 @@ public class EmployeeTypePanelCtrl
   }
 
   @Override
-  public void add() {
+  public void addPanel() {
     EmployeeTypePanel p = new EmployeeTypePanel(dataCache.getList(Model.EmployeeType));
     p.addActionListener(this);
     panels.add(p);
@@ -78,7 +78,7 @@ public class EmployeeTypePanelCtrl
   }
 
 
-  public void addPanel(int t) {
+  void addPanel(int t) {
     EmployeeTypePanel p = new EmployeeTypePanel(dataCache.getList(Model.EmployeeType));
     p.addActionListener(this);
     p.setType(t);
@@ -88,7 +88,8 @@ public class EmployeeTypePanelCtrl
   }
 
 
-  public void remove(GemPanel panel) {
+  @Override
+  public void removePanel(GemPanel panel) {
     panels.remove((EmployeeTypePanel) panel);
     ((EmployeeTypePanel) panel).removeActionListener(this);
     remove(panel);
@@ -100,7 +101,7 @@ public class EmployeeTypePanelCtrl
     for (int i = 1; i < panels.size(); i++) {
       EmployeeTypePanel rp = panels.get(i);
       panels.remove(rp);
-      remove(rp);
+      removePanel(rp);
     }
 //    panels.get(0).reset();
     revalidate();
@@ -115,11 +116,5 @@ public class EmployeeTypePanelCtrl
     }
     return t;
   }
-
-  @Override
-  public void remove() {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-  }
-
 
 }

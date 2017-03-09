@@ -1,7 +1,7 @@
 /*
- * @(#)GemGroupService.java	2.11.3 30/11/16
+ * @(#)GemGroupService.java	2.12.0 08/03/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,6 +21,7 @@
 package net.algem.group;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -42,7 +43,7 @@ import net.algem.util.model.Model;
  * Service class for group operations.
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.3
+ * @version 2.12.0
  * @since 2.4.a 10/05/12
  */
 public class GemGroupService
@@ -363,7 +364,7 @@ public class GemGroupService
     }
   }
 
-  void createPassRehearsal(Vector<DateFr> dates, Hour start, Hour end, int g, int room) throws GroupException {
+  void createPassRehearsal(List<DateFr> dates, Hour start, Hour end, int g, int room) throws GroupException {
 
     try {
       dc.setAutoCommit(false);
@@ -379,7 +380,7 @@ public class GemGroupService
       dto.setIdAction(a.getId());
 
       for (int i = 0; i < dates.size(); i++) {
-        DateFr d = dates.elementAt(i);
+        DateFr d = dates.get(i);
         dto.setDate(d);
         ScheduleIO.insert(dto, dc);
       }
@@ -438,25 +439,26 @@ public class GemGroupService
     return nm;
   }
 
-  Vector<ScheduleTestConflict> testConflict(Vector<DateFr> dates, Hour start, Hour end, int g, int room) {
+  List<ScheduleTestConflict> testConflict(List<DateFr> dates, Hour start, Hour end, int g, int room) {
 
-    Vector<ScheduleTestConflict> vc = new Vector<ScheduleTestConflict>();
+    List<ScheduleTestConflict> vc = new ArrayList<ScheduleTestConflict>();
     String startHour = start.toString();
     String endHour = end.toString();
 
     for (int i = 0; i < dates.size(); i++) {
-      DateFr d = dates.elementAt(i);
+      DateFr d = dates.get(i);
       ScheduleTestConflict conflict = new ScheduleTestConflict(d, start, end);
 
       String query = ConflictQueries.getRoomConflictSelection(d.toString(), startHour, endHour, room);
-
       if (ScheduleIO.count(query, dc) > 0) {
         conflict.setRoomFree(false);
+        conflict.setActive(false);
       }
-      query = ConflictQueries.getGroupConflictSelection(d.toString(), startHour, endHour, g);
 
+      query = ConflictQueries.getGroupConflictSelection(d.toString(), startHour, endHour, g);
       if (ScheduleIO.count(query, dc) > 0) {
         conflict.setMemberFree(false);
+        conflict.setActive(false);
       }
       vc.add(conflict);
     }

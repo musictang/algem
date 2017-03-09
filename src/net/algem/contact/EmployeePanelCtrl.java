@@ -1,7 +1,7 @@
 /*
- * @(#)EmployeePanelCtrl.java	2.9.4.3 22/04/15
+ * @(#)EmployeePanelCtrl.java	2.12.0 08/03/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -29,7 +29,7 @@ import javax.swing.BoxLayout;
 import net.algem.planning.PlanningService;
 import net.algem.util.DataCache;
 import net.algem.util.GemCommand;
-import net.algem.util.ui.AbstractComponentCtrl;
+import net.algem.util.ui.AbstractGemPanelCtrl;
 import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GemLabel;
 import net.algem.util.ui.GemPanel;
@@ -37,11 +37,11 @@ import net.algem.util.ui.GemPanel;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.3
+ * @version 2.12.0
  * @since 2.8.v 29/05/14
  */
 public class EmployeePanelCtrl
-  extends AbstractComponentCtrl
+  extends AbstractGemPanelCtrl
 {
 
   private List<EmployeePanel> panels;
@@ -61,12 +61,12 @@ public class EmployeePanelCtrl
     add(top);
     add(Box.createVerticalStrut(SPACING));
     panels = new ArrayList<EmployeePanel>();
-    add();
+    addPanel();
   }
 
 
   @Override
-  public void add() {
+  public void addPanel() {
     EmployeePanel p = new EmployeePanel(setEmployees(EmployeeType.TECHNICIAN));
     p.addActionListener(this);
     panels.add(p);
@@ -83,7 +83,7 @@ public class EmployeePanelCtrl
     add(Box.createVerticalStrut(SPACING));
   }
 
-  public void remove(GemPanel panel) {
+  public void removePanel(GemPanel panel) {
     panels.remove((EmployeePanel) panel);
     ((EmployeePanel) panel).removeActionListener(this);
     remove(panel);
@@ -95,7 +95,7 @@ public class EmployeePanelCtrl
     for (int i = 1; i < panels.size(); i++) {
       EmployeePanel rp = panels.get(i);
       panels.remove(rp);
-      remove(rp);
+      removePanel(rp);
     }
 //    panels.get(0).reset();
     revalidate();
@@ -114,11 +114,6 @@ public class EmployeePanelCtrl
       emps[i] = panels.get(i).getId();
     }
     return emps;
-  }
-
-  @Override
-  public void remove() {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
 
 

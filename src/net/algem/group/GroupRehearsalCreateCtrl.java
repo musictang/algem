@@ -135,7 +135,7 @@ public class GroupRehearsalCreateCtrl
       return false;
     }
     
-    if (!RoomService.isClosed(room, date, hStart, hEnd)) {
+    if (!RoomService.isOpened(room, date, hStart, hEnd)) {
       return false;
     }
     

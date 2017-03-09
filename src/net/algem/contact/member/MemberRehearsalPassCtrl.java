@@ -1,5 +1,5 @@
 /*
- * @(#)MemberRehearsalPassCtrl.java	2.12.0 01/03/17
+ * @(#)MemberRehearsalPassCtrl.java	2.12.0 08/03/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -25,12 +25,13 @@ import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
+import java.util.logging.Level;
 import net.algem.contact.PersonFile;
 import net.algem.planning.*;
 import net.algem.planning.editing.ModifPlanEvent;
 import net.algem.room.RoomService;
 import net.algem.util.BundleUtil;
+import net.algem.util.DataCache;
 import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
 import net.algem.util.module.GemDesktop;
@@ -50,22 +51,34 @@ public class MemberRehearsalPassCtrl
 
   private PersonFile personFile;
   private MemberPassRehearsalView rehearsalView;
-  private ConflictListView cfv;
-  private Vector<DateFr> dateList;
+  private ConflictListView conflictsView;
   private ActionListener listener;
   private MemberService service;
 
   public MemberRehearsalPassCtrl(GemDesktop desktop, ActionListener listener, PersonFile pFile) {
     super(desktop);
-    service = new MemberService(dc);
-    personFile = pFile;
+    this.service = new MemberService(dc);
+    this.personFile = pFile;
     this.listener = listener;
 
     rehearsalView = new MemberPassRehearsalView(dataCache);
-    cfv = new ConflictListView(null);
+    PlanningService planningSrv = new PlanningService(DataCache.getDataConnection());
+    conflictsView = new ConflictListView(new ConflictTableModel(planningSrv) {
+      @Override
+      public boolean isCellEditable(int row, int col) {
+        return col == 4;
+      }
+
+      @Override
+      public void setValueAt(Object value, int row, int col) {
+        ScheduleTestConflict c = tuples.elementAt(row);
+        boolean checked = (boolean) value;
+        c.setActive(c.isConflict() ? false : checked);
+      }
+    });
 
     addCard(BundleUtil.getLabel("Person.pass.scheduling.auth"), rehearsalView);
-    addCard(BundleUtil.getLabel("Conflict.verification.label"), cfv);
+    addCard(BundleUtil.getLabel("Conflict.verification.label"), conflictsView);
 
     select(0);
 
@@ -85,11 +98,13 @@ public class MemberRehearsalPassCtrl
       if (!isEntryValid()) {
         return back();
       }
-
-      dateList = service.generationDate(rehearsalView.getDay(), rehearsalView.getDateStart(), rehearsalView.getDateEnd());
-      if (testConflict(dateList, rehearsalView.getHourStart(), rehearsalView.getHourEnd()) > 0) {
+      conflictsView.clear();
+      List<DateFr> dateList = service.generationDate(rehearsalView.getDay(), rehearsalView.getDateStart(), rehearsalView.getDateEnd());
+      int nc = testConflict(dateList, rehearsalView.getHourStart(), rehearsalView.getHourEnd());
+      GemLogger.log(Level.WARNING, String.valueOf(nc) + " conflicts");
+      /*if (testConflict(dateList, rehearsalView.getHourStart(), rehearsalView.getHourEnd()) > 0) {
         btNext.setText("");
-      }
+      }*/
     }
     return true;
   }
@@ -132,7 +147,7 @@ public class MemberRehearsalPassCtrl
       return false;
     }
 
-    if (!RoomService.isClosed(rehearsalView.getRoom(), rehearsalView.getDateStart(), hStart, hEnd)) {
+    if (!RoomService.isOpened(rehearsalView.getRoom(), rehearsalView.getDateStart(), hStart, hEnd)) {
       return false;
     }
 
@@ -146,7 +161,7 @@ public class MemberRehearsalPassCtrl
 
   private void clear() {
     rehearsalView.clear();
-    cfv.clear();
+    conflictsView.clear();
     select(0);
   }
 
@@ -164,35 +179,46 @@ public class MemberRehearsalPassCtrl
   @Override
   public void validation() {
 
-    String wt = BundleUtil.getLabel("Warning.label");
+    /*String wt = BundleUtil.getLabel("Warning.label");
     if (dateList.isEmpty()) {
       MessagePopup.error(this, MessageUtil.getMessage("empty.planning.create.warning"), wt);
-    }
+    }*/
 
     try {
-      save();
-      MessagePopup.information(this, MessageUtil.getMessage("planning.update.info"));
-      desktop.postEvent(new ModifPlanEvent(this, rehearsalView.getDateStart(), rehearsalView.getDateEnd()));
-      listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "AdherentForfaitRepetition.Validation"));
+      if (save()) {
+        MessagePopup.information(this, MessageUtil.getMessage("planning.update.info"));
+        desktop.postEvent(new ModifPlanEvent(this, rehearsalView.getDateStart(), rehearsalView.getDateEnd()));
+        listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "AdherentForfaitRepetition.Validation"));
+      }
     } catch (MemberException ex) {
       GemLogger.logException("Insertion répétition", ex, this);
     }
     clear();
   }
 
-  public void save() throws MemberException {
-    service.savePassRehearsal(dateList, rehearsalView.getHourStart(), rehearsalView.getHourEnd(), personFile.getId(), rehearsalView.getRoom());
+  private boolean save() throws MemberException {
+    List<ScheduleTestConflict> enabled = conflictsView.getResolvedConflicts();
+    List<DateFr> dates = new ArrayList<>();
+    for (ScheduleTestConflict c : enabled) {
+      if (!c.isConflict()) {
+        dates.add(c.getDate());
+      }
+    }
+    if (dates.isEmpty()) {
+      MessagePopup.error(this,MessageUtil.getMessage("empty.planning.create.warning"));
+      return false;
+    }
+    service.savePassRehearsal(dates, rehearsalView.getHourStart(), rehearsalView.getHourEnd(), personFile.getId(), rehearsalView.getRoom());
+    return true;
   }
 
-  int testConflict(Vector<DateFr> dateList, Hour start, Hour end) {
-    cfv.clear();
-
+  int testConflict(List<DateFr> dateList, Hour start, Hour end) {
+    conflictsView.clear();
     int nc = 0;
 
-    List<ScheduleTestConflict> conflicts = new ArrayList<ScheduleTestConflict>();
     try {
       for (int i = 0; i < dateList.size(); i++) {
-        DateFr d = dateList.elementAt(i);
+        DateFr d = dateList.get(i);
         ScheduleTestConflict conflict = new ScheduleTestConflict(d, start, end);
 
         Action a = new Action();
@@ -200,12 +226,13 @@ public class MemberRehearsalPassCtrl
         a.setStartTime(rehearsalView.getHourStart());
         a.setEndTime(rehearsalView.getHourEnd());
         a.setRoom(rehearsalView.getRoom());
-        conflicts = service.testMemberSchedule(d, a);
+        List<ScheduleTestConflict> conflicts = service.testMemberSchedule(d, a);
         if (conflicts.size() > 0) {
           for (ScheduleTestConflict c : conflicts) {
             nc++;
             conflict.setRoomFree(c.isRoomFree());
             conflict.setTeacherFree(c.isTeacherFree());
+            conflict.setActive(false);
           }
         }
         // test conflits plage adhérent
@@ -213,12 +240,13 @@ public class MemberRehearsalPassCtrl
         plan.setIdPerson(personFile.getId());
         conflicts = service.testRangeSchedule(plan, d, rehearsalView.getHourStart(), rehearsalView.getHourEnd());
         if (conflicts.size() > 0) {
+          conflict.setMemberFree(false);
+          conflict.setActive(false);
           for (ScheduleTestConflict c : conflicts) {
             nc++;
-            conflict.setMemberFree(false);
           }
         }
-        cfv.addConflict(conflict);
+        conflictsView.addConflict(conflict);
 
       }
     } catch (SQLException e) {

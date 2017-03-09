@@ -28,5 +28,5 @@ package net.algem.planning;
  */
 public interface UpdateConflictListener {
 
-  void update(boolean unlock);
+  void updateStatus(boolean unlock);
 }

@@ -1,7 +1,7 @@
 /*
- * @(#)AdministrativeTableView.java		2.9.4.2 10/04/15
+ * @(#)AdministrativeTableView.java		2.12.0 08/03/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -49,7 +49,7 @@ import net.algem.util.ui.JTableModel;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.2
+ * @version 2.12.0
  * @since 2.9.4.0 18/03/15
  */
 public class AdministrativeTableView
@@ -109,7 +109,7 @@ public class AdministrativeTableView
           int idx = table.getSelectedRow();
           if (idx >= 0) {
             AdministrativeActionModel a = (AdministrativeActionModel) tableModel.getItem(idx);
-            tableModel.getData().add(idx, createAction(a.getDay()));
+            tableModel.getData().add(idx+1, createAction(a));
             tableModel.fireTableRowsInserted(idx, idx);
           }
         } else if (src == btRemove) {
@@ -129,7 +129,7 @@ public class AdministrativeTableView
     setPreferredSize(new Dimension(480, 200));//! IMPORTANT
 
   }
-  
+
   private void stopCellEditing() {
     TableCellEditor tce = table.getCellEditor();
     if (tce != null) {
@@ -159,6 +159,15 @@ public class AdministrativeTableView
     a.setStart(new Hour("00:00"));
     a.setEnd(new Hour("00:00"));
     a.setRoom(new Room(0, ""));
+    return a;
+  }
+
+  private AdministrativeActionModel createAction(AdministrativeActionModel model) {
+    AdministrativeActionModel a = new AdministrativeActionModel();
+    a.setDay(model.getDay());
+    a.setStart(new Hour("00:00"));
+    a.setEnd(new Hour("00:00"));
+    a.setRoom(model.getRoom());
     return a;
   }
 

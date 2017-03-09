@@ -1,7 +1,7 @@
 /*
- * @(#)MemberService.java	2.11.3 01/12/16
+ * @(#)MemberService.java	2.12.0 08/03/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -49,7 +49,7 @@ import net.algem.util.model.Model;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.3
+ * @version 2.12.0
  * @since 2.4.a 14/05/12
  */
 public class MemberService
@@ -364,7 +364,7 @@ public class MemberService
     }
   }
 
-  public void savePassRehearsal(Vector<DateFr> dates, Hour start, Hour end, int idper, int room) throws MemberException {
+  public void savePassRehearsal(List<DateFr> dates, Hour start, Hour end, int idper, int room) throws MemberException {
     try {
       dc.setAutoCommit(false);
       ActionIO actionIO = new ActionIO(dc);
@@ -379,8 +379,7 @@ public class MemberService
       dto.setEnd(end);
       dto.setIdAction(a.getId());
 
-      for (int i = 0; i < dates.size(); i++) {
-        DateFr d = dates.elementAt(i);
+      for (DateFr d : dates) {
         dto.setDate(d);
         ScheduleIO.insert(dto, dc);
       }
