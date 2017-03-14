@@ -1,7 +1,7 @@
 /*
- * @(#)ModuleChoice.java	2.8.w 23/07/14
- * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * @(#)ModuleChoice.java	2.12.0 14/03/17
+ *
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,25 +16,26 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.course;
 
 import net.algem.util.BundleUtil;
 import net.algem.util.model.GemList;
 import net.algem.util.ui.GemChoice;
+import net.algem.util.ui.GemChoiceModel;
 
 /**
  * comment
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.12.0
  */
 public class ModuleChoice
         extends GemChoice {
 
-  public ModuleChoice(ModuleChoiceModel model, boolean none) {
+  public ModuleChoice(GemChoiceModel model, boolean none) {
     super(model);
 
     if (none) {
@@ -46,8 +47,12 @@ public class ModuleChoice
     }
   }
 
-  public ModuleChoice(GemList modules) {
+  public ModuleChoice(GemList<Module> modules) {
     this(new ModuleChoiceModel(modules), false);
+  }
+
+   public ModuleChoice(GemList<Module> modules, boolean active) {
+    this(new ModuleActiveChoiceModel(modules, active), false);
   }
 
   /**
@@ -58,7 +63,10 @@ public class ModuleChoice
    */
   @Override
   public int getKey() {
-    return ((Module) getSelectedItem()).getId();
+    if (getModel().getSize() > 0) {
+      return ((Module) getSelectedItem()).getId();
+    }
+    return -1;
   }
 
   /**
@@ -72,6 +80,6 @@ public class ModuleChoice
 
   @Override
   public void setKey(int k) {
-    setSelectedItem(((ModuleChoiceModel) getModel()).getModule(k));
+    ((GemChoiceModel) getModel()).setSelectedItem(k);
   }
 }

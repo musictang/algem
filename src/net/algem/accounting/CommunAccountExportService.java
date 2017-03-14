@@ -1,5 +1,5 @@
 /*
- * @(#)CommunAccountExportService.java	2.12.0 08/03/17
+ * @(#)CommunAccountExportService.java	2.12.0 14/03/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -66,10 +66,10 @@ public abstract class CommunAccountExportService
   protected DateFormat defaultDateFormat = new SimpleDateFormat("dd-MM-yyyy");
 
   /**
-   * Retrieves the default account for the category {@literal key}.
+   * Retrieves the default account corresponding to the category of activities {@literal key}.
    *
-   * @param key the category
-   * @return an account
+   * @param key the category of activities (Ex. : Leisure course fees, Pro course fees, Membership, etc.)
+   * @return an instance of Account
    * @throws SQLException
    */
   @Override
@@ -133,30 +133,29 @@ public abstract class CommunAccountExportService
   }
 
   /**
-   * Retrieves an account number.
-   * Customer accounts (it is a Client account and some invoice was generated from this orderline)
-   * are represented by the payer id prefixed by the character 'C'.
+   * Retrieves the account number from an order line.
+   * Customer accounts (it is a Client account and this orderline has an invoice number)
+   * are represented by the payer id prefixed by '411C'.
    *
-   * @param e the orderline
-   * @return an account number
+   * @param ol the orderline
+   * @return the account number
    */
   @Override
-  public String getAccount(OrderLine e) {
+  public String getAccount(OrderLine ol) {
 
-    String c = e.getAccount().getNumber();
+    String c = ol.getAccount().getNumber();
 
-    if (e.getInvoice() != null && !e.getInvoice().isEmpty()
+    if (ol.getInvoice() != null && !ol.getInvoice().isEmpty()
             //&& !AccountUtil.INVOICE_PAYMENT.bufferEquals(e.getModeOfPayment())
-            && AccountUtil.isCustomerAccount(e.getAccount())) {
-      c = "411C" + e.getPayer();// prefix with 411 + C (client)
+            && AccountUtil.isCustomerAccount(ol.getAccount())) {
+      c = "411C" + ol.getPayer();// prefix with 411 + C (client)
     }
     return c;
   }
 
   /**
-   * Retrieves the document number.
-   *
-   * Invoice number is substituted to document number when an orderline references an account of class 4.
+   * Retrieves the document number from an order line.
+   * Invoice number is substituted to document number when an order line references an account of class 4.
    *
    * @param e the orderline
    * @return a string representing invoice or document number

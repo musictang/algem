@@ -1,6 +1,6 @@
 /*
  * @(#)EnrolmentView.java	2.8.a 23/04/13
- * 
+ *
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.enrolment;
 
@@ -30,14 +30,13 @@ import javax.swing.JTable;
 import javax.swing.border.BevelBorder;
 import javax.swing.table.TableColumnModel;
 import net.algem.contact.Person;
-import net.algem.planning.PlanningService;
 import net.algem.util.BundleUtil;
 import net.algem.util.MessageUtil;
 import net.algem.util.ui.*;
 
 /**
  * Course and module order view.
- * 
+ *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.8.a
@@ -165,7 +164,7 @@ public class EnrolmentView
   void addCourse(CourseOrder order) {
     courseOrderTableModel.addItem(order);
   }
-  
+
   CourseOrder getCourseOrder(int row) {
     return (CourseOrder) courseOrderTableModel.getItem(row);
   }
@@ -177,7 +176,7 @@ public class EnrolmentView
   void removeCourse(int i) {
     courseOrderTableModel.deleteItem(i);
   }
-  
+
   void remove(CourseOrder co) {
     courseOrderTableModel.deleteItem(co);
   }

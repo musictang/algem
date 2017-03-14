@@ -1,5 +1,5 @@
 /*
- * @(#)InstrumentPanel.java 2.12.0 14/03/17
+ * @(#) ModuleActiveChoiceModel.java Algem 2.12.0 14/03/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -16,40 +16,42 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- *
  */
 
-package net.algem.contact;
+package net.algem.course;
 
-import java.awt.Dimension;
-import java.util.List;
-import net.algem.config.Instrument;
-import net.algem.config.InstrumentChoice;
+import java.util.Vector;
+import net.algem.util.model.GemList;
+import net.algem.util.model.GemModel;
+import net.algem.util.ui.GemChoiceFilterModel;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.12.0
- * @since 2.7.a 21/11/12
+ * @since 2.12.0 14/03/17
  */
-public class InstrumentPanel
-   extends InfoPanel
+public class ModuleActiveChoiceModel extends GemChoiceFilterModel
 {
+  private boolean active;
 
-  private InstrumentChoice instrument;
-
-  public InstrumentPanel(List<Instrument> instruments) {
-    instrument = new InstrumentChoice(instruments);
-    instrument.setPreferredSize(new Dimension(200, instrument.getPreferredSize().height));
-    add(instrument);
+  public ModuleActiveChoiceModel(GemList<Module> list, boolean active) {
+    super(list);
+    this.active = active;
+    load(list);
   }
 
-  public void setInstrument(int id) {
-    instrument.setKey(id);
+  public ModuleActiveChoiceModel(Vector<Module> list, boolean active) {
+    this(new GemList<Module>(list), active);
   }
 
-  public int getInstrument() {
-    return instrument.getKey();
+  @Override
+  public boolean isFilterOk(GemModel m) {
+    return ((Module) m).isActive() == active;
+  }
+
+  public Module getModule(int id) {
+    return (Module) list.getItem(id);
   }
 
 }

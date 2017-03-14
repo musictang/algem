@@ -1,7 +1,7 @@
 /*
- * @(#)ModuleIO.java 2.9.4.13 21/10/15
+ * @(#)ModuleIO.java 2.12.0 14/03/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -24,9 +24,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Vector;
 import net.algem.config.GemParam;
 import net.algem.config.Preset;
@@ -41,7 +39,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.12.0
  */
 public class ModuleIO
         extends TableIO
@@ -59,6 +57,12 @@ public class ModuleIO
     this.dc = dc;
   }
 
+  /**
+   * Inserts a new training module.
+   * A new module is enabled by default.
+   * @param m the module to insert
+   * @throws SQLException
+   */
   public void insert(Module m) throws SQLException {
 
     int n = nextId(SEQUENCE, dc);
@@ -76,7 +80,6 @@ public class ModuleIO
     int rsn = dc.executeUpdate(query);
     m.setId(n);
     transInsert(m);
-
   }
 
   private void transInsert(Module m) throws SQLException {
@@ -99,7 +102,8 @@ public class ModuleIO
             + "',prix_base = " + m.getBasePrice()
             + ",taux_mensuel = " + m.getMonthReducRate()
             + ",taux_trim = " + m.getQuarterReducRate()
-            + ",unite = 0" //+m.getUnite()
+            + ",unite = 0"
+            + ",actif = " + m.isActive()//+m.getUnite()
             + " WHERE id = " + m.getId();
 
     dc.executeUpdate(query);
@@ -144,6 +148,7 @@ public class ModuleIO
       m.setBasePrice(rs.getDouble(4)); // prixinst
       m.setMonthReducRate(rs.getDouble(5)); // taux de réduction prélèvement mensuel
       m.setQuarterReducRate(rs.getDouble(6)); // taux de réduction prélèvement trimestriel
+      m.setActive(rs.getBoolean(8));
 
       m.setCourses(findCourses(m.getId()));
 
@@ -203,7 +208,6 @@ public class ModuleIO
       Preset<Integer> p = new DefaultPreset<>();
       p.setId(rs.getInt(1));
       p.setName(rs.getString(2));
-      Map<String, Integer[]> map = new HashMap<>();
       Integer[] modules = (Integer[]) rs.getArray(3).getArray();
       p.setValue(modules);
       presets.add(p);

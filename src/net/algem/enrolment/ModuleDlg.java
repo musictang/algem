@@ -1,7 +1,7 @@
 /*
- * @(#)ModuleDlg.java	2.10.5 08/09/16
+ * @(#)ModuleDlg.java	2.12.0 14/03/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -55,7 +55,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.5
+ * @version 2.12.0
  * @since 1.0a 07/07/1999
  */
 public class ModuleDlg
@@ -86,7 +86,7 @@ public class ModuleDlg
     this.service = service;
     personFile = p;
 
-    moduleChoice = new ModuleChoice(dataCache.getList(Model.Module));
+    moduleChoice = new ModuleChoice(dataCache.getList(Model.Module), true);
     moduleChoice.addItemListener(this);
 
     NumberFormat nf = AccountUtil.getDefaultCurrencyFormat();
@@ -172,8 +172,11 @@ public class ModuleDlg
     payment.setPreferredSize(pricing.getPreferredSize());
     frequency.setPreferredSize(pricing.getPreferredSize());
     //pour faire apparaître le prix du premier module à l'ouverture
-    module = service.getModule(moduleChoice.getKey());
-    initPrice(module);
+    int first = moduleChoice.getKey();
+    if (first >= 0) {
+      module = service.getModule(moduleChoice.getKey());
+      initPrice(module);
+    }
     init();
   }
 
@@ -215,7 +218,7 @@ public class ModuleDlg
         break;
     }
   }
-  
+
   private double minutesToDecimal(int min) {
     return min/60;
   }

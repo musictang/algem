@@ -1,5 +1,5 @@
 /*
- * @(#)MemberEditor.java	2.9.4.0 01/04/2015
+ * @(#)MemberEditor.java	2.12.0 14/03/17
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -22,6 +22,7 @@ package net.algem.contact.member;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -48,7 +49,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.0
+ * @version 2.12.0
  */
 public class MemberEditor
         extends FileTab
@@ -77,7 +78,7 @@ public class MemberEditor
     payer = new GemNumericField(6);
     payer.addFocusListener(this);
     payer.addActionListener(this);
-    payerName = new GemField(30);
+    payerName = new GemField(20);
     payerName.setEditable(false);
     payerName.setBackground(Color.lightGray);
     practice = new GemNumericField(3);
@@ -97,8 +98,8 @@ public class MemberEditor
     gb.add(new GemLabel(BundleUtil.getLabel("Practical.experience.label")), 0, 5, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Level.label")), 0, 6, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Payer.label")), 0, 7, 1, 1, GridBagHelper.WEST);
-
     gb.add(instrument, 1, 0, 3, 1, GridBagHelper.WEST);
+    occupation.setPreferredSize(new Dimension(200, occupation.getPreferredSize().height));
     gb.add(occupation, 1, 2, 2, 1, GridBagHelper.WEST);
     gb.add(birth, 1, 3, 1, 1, GridBagHelper.WEST);
     gb.add(age, 2, 3, 1, 1, GridBagHelper.WEST);

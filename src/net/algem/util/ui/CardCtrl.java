@@ -1,6 +1,6 @@
 /*
  * @(#)CardCtrl.java	2.9.3.2 12/03/15
- * 
+ *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.util.ui;
 
@@ -62,7 +62,7 @@ public abstract class CardCtrl
 
     title = new GemLabel("", GemLabel.CENTER);
     title.setFont(new Font("Helvetica", Font.PLAIN, 12));
- 
+
     wCard = new GemPanel();
     wCard.setLayout(new CardLayout());
 
@@ -139,9 +139,9 @@ public abstract class CardCtrl
 
   @Override
   public void actionPerformed(ActionEvent evt) {
-    
+
     String cmd = evt.getActionCommand();
-    
+
     if (cmd.equals(GemCommand.CANCEL_CMD)) {
       cancel();
     } /*
@@ -176,11 +176,11 @@ public abstract class CardCtrl
   public void addGemEventListener(GemEventListener l) {
     gemListener = l;
   }
-  
+
   public void removeGemEventListener() {
     gemListener = null;
   }
-  
+
   @Override
   public String toString() {
     return getClass().getSimpleName();

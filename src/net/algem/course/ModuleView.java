@@ -1,7 +1,7 @@
 /*
- * @(#)ModuleView.java	2.9.4.12 29/09/15
+ * @(#)ModuleView.java	2.12.0 14/03/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -24,8 +24,10 @@ import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.text.Format;
 import javax.swing.BorderFactory;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JScrollPane;
 import net.algem.accounting.AccountUtil;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
@@ -39,7 +41,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.12
+ * @version 2.12.0
  */
 public class ModuleView
         extends GemPanel {
@@ -52,12 +54,14 @@ public class ModuleView
   private GemDecimalField monthRateReduc;
   private GemDecimalField quarterRateReduc;
   private CourseModuleView courseView;
+  private JCheckBox active;
 
-  public ModuleView(DataCache dataCache) {   
+  public ModuleView(DataCache dataCache) {
+
     no = new GemNumericField(6);
     no.setEditable(false);
     no.setMinimumSize(new Dimension(60,no.getPreferredSize().height));
-            
+
     title = new GemField(20, ModuleIO.TITLE_MAX_LEN);
 
     Format f = AccountUtil.getDefaultNumberFormat();
@@ -85,18 +89,27 @@ public class ModuleView
     });
 
     courseView = new CourseModuleView(dataCache.getList(Model.CourseCode));
-    setLayout(new GridBagLayout());
-    GridBagHelper gb = new GridBagHelper(this);
+    active = new JCheckBox(BundleUtil.getLabel("Active.label"));
+
+    GemPanel mainPanel = new GemPanel();
+    mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+    mainPanel.setLayout(new GridBagLayout());
+    GridBagHelper gb = new GridBagHelper(mainPanel);
 
     gb.add(new GemLabel(BundleUtil.getLabel("Number.abbrev.label")), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(no, 1, 0, 1, 1, GridBagHelper.WEST);
+    gb.add(active, 2, 0, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Title.label")), 0, 1, 1, 1, GridBagHelper.WEST);
-    gb.add(title, 1, 1, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
+    gb.add(title, 1, 1, 2, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
     gb.add(new JLabel(BundleUtil.getLabel("Type.label")), 0, 2, 1, 1, GridBagHelper.WEST);
-    gb.add(type, 1, 2, 1, 1, GridBagHelper.WEST);
-    gb.add(courseView, 0, 3, 2, 1, GridBagHelper.BOTH, GridBagHelper.WEST);
-    gb.add(pricePanel, 0, 4, 2, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
-    
+    gb.add(type, 1, 2, 2, 1, GridBagHelper.WEST);
+    gb.add(courseView, 0, 3, 3, 1, GridBagHelper.BOTH, GridBagHelper.WEST);
+    gb.add(pricePanel, 0, 4, 3, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
+
+    JScrollPane scroll = new JScrollPane(mainPanel);
+    scroll.setBorder(BorderFactory.createEmptyBorder());
+    scroll.setPreferredSize(new Dimension(580,370));
+    add(scroll);
   }
 
   public String getId() {
@@ -149,6 +162,7 @@ public class ModuleView
     } catch (Exception e) {
       m.setQuarterReducRate(0.0);
     }
+    m.setActive(active.isSelected());
 
     return m;
   }
@@ -176,6 +190,7 @@ public class ModuleView
     monthRateReduc.setValue(m.getMonthReducRate());
     quarterRateReduc.setValue(m.getQuarterReducRate());
     courseView.set(m);
+    active.setSelected(m.isActive());
   }
 
   /**

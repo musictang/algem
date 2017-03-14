@@ -89,7 +89,7 @@ public abstract class InfoView
     for (int i = rows.size()-1 ; i >= 0 ; i--) {
       remove(rows.remove(i));
     }
-    
+
     /*InfoPanel  p = rows.get(0);
     if (p.iArchive != null) {
       p.iArchive.setSelected(false);

@@ -83,7 +83,7 @@ public abstract class AccountTransferDlg
     buttons.add(btCancel);
 
     filePath = new GemField(ConfigUtil.getExportPath() + FileUtil.FILE_SEPARATOR + "export.txt");
-    filePath.setMinimumSize(new Dimension(100, filePath.getPreferredSize().height));
+    filePath.setMinimumSize(new Dimension(200, filePath.getPreferredSize().height));
     chooser = new JButton(GemCommand.BROWSE_CMD);
     chooser.addActionListener(this);
   }

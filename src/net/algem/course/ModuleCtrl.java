@@ -1,6 +1,6 @@
 /*
  * @(#)ModuleCtrl.java	2.10.0 13/05/16
- * 
+ *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.course;
 
@@ -53,9 +53,9 @@ public class ModuleCtrl
 
   public ModuleCtrl(GemDesktop desktop) {
     this.desktop = desktop;
-    dataCache = desktop.getDataCache(); 
+    dataCache = desktop.getDataCache();
     enrolService = new EnrolmentService(dataCache);
-    
+
     view = new ModuleView(dataCache);
     ev = new ModuleEnrolmentView(desktop, enrolService);
     addCard("", view);
@@ -109,7 +109,7 @@ public class ModuleCtrl
     for (CourseModuleInfo cm : m.getCourses()) {
       String err = isValid(cm);
       if (err != null) {
-        MessagePopup.error(this, err);         
+        MessagePopup.error(this, err);
         return false;
       }
     }
@@ -125,7 +125,7 @@ public class ModuleCtrl
 
     return true;
   }
-  
+
   @Override
   public boolean cancel() {
     if (actionListener != null) {
@@ -133,7 +133,7 @@ public class ModuleCtrl
     }
     return true;
   }
-  
+
   private String isValid(CourseModuleInfo cm) {
     String msg = "";
     if (cm.getCode().getId() < 1) {
@@ -192,31 +192,31 @@ public class ModuleCtrl
   private boolean isValid(Module m) throws ModuleException {
 
     String e = "";
-    
+
     if (m.getCode().length() < 1) {
       e += MessageUtil.getMessage("invalid.module.code");
     }
-    
+
     if (m.getCourses() == null || m.getCourses().isEmpty()) {
       e += "\n" + MessageUtil.getMessage("module.course.create.exception");
     }
-    
+
     if (m.getTitle().length() < 1 || m.getTitle().length() > ModuleIO.TITLE_MAX_LEN) {
       e += "\n" + MessageUtil.getMessage("invalid.name", new Object[]{1, ModuleIO.TITLE_MAX_LEN});
     }
-    
+
     if (m.getBasePrice() < 0.0) {
       e += "\n" + MessageUtil.getMessage("invalid.module.price");
     }
-    
+
     if (m.getMonthReducRate() < 0.0 || m.getMonthReducRate() > 100.0) {
       e += "\n" + MessageUtil.getMessage("invalid.module.month.reduc");
     }
-    
+
     if (m.getQuarterReducRate() < 0.0 || m.getQuarterReducRate() > 100.0) {
       e += "\n" + MessageUtil.getMessage("invalid.module.trim.reduc");
     }
-    
+
     if (!e.isEmpty()) {
       throw new ModuleException(e);
     }

@@ -67,7 +67,7 @@ public class InfoPanel extends GemPanel {
   }
 
   private void init(String label) {
-    
+
     iButton = new GemButton(label);
     iButton.setMargin(PADDING);
     iField = new GemField();
@@ -75,21 +75,21 @@ public class InfoPanel extends GemPanel {
     iArchive = new JCheckBox();
     iArchive.setBorder(null);
     gb.add(iButton, 0,0,1,1, RIGHT_SPACING, GridBagHelper.HORIZONTAL, 0.0, 0.0);
-    gb.add(iField, 1,0,3,1, RIGHT_SPACING,GridBagConstraints.HORIZONTAL, 1.0, 0.0);
+    gb.add(iField, 1,0,3,1, RIGHT_SPACING, GridBagConstraints.HORIZONTAL, 1.0, 0.0);
     gb.add(iArchive, 4,0,1,1, GridBagConstraints.HORIZONTAL, 0.0, 0.0);
   }
 
   private void init(Vector<Param> v, boolean withArchive) {
 
     iChoice = new ParamChoice(v);
-    iField = new GemField();  
+    iField = new GemField();
     gb.add(iChoice, 0,0,1,1, RIGHT_SPACING, GridBagConstraints.HORIZONTAL, 0.0, 0.0);
     gb.add(iField, 1,0,3,1, GridBagConstraints.HORIZONTAL, 1.0, 0.0);
     if (withArchive) {
       iArchive = new JCheckBox();
       iArchive.setBorder(null);
       gb.add(iArchive, col++,0,1,1, LEFT_SPACING, GridBagConstraints.EAST);
-    } 
+    }
 
   }
 
@@ -97,7 +97,7 @@ public class InfoPanel extends GemPanel {
     this.addButton(label);
     iButton.setToolTipText(tooltip);
   }
-  
+
   protected void addButton(String label) {
     iButton = new GemButton(label);
     iButton.setMargin(PADDING);

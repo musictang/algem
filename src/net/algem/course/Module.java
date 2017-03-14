@@ -1,7 +1,7 @@
 /*
- * @(#)Module.java	 2.9.4.13 05/11/15
- * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * @(#)Module.java	 2.12.0 14/03/17
+ *
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.course;
 
@@ -30,13 +30,13 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.12.0
  */
 public class Module
         implements GemModel {
 
   private static final long serialVersionUID = 2788857764816449695L;
-  
+
   private int id;
   private String code;
   private String title;
@@ -44,6 +44,7 @@ public class Module
   private double monthReducRate;
   private double quarterReducRate;
   private List<CourseModuleInfo> courses;
+  private boolean active;
 
   public Module() {
   }
@@ -120,7 +121,7 @@ public class Module
     return code.endsWith("R");
   }
 
-  /** 
+  /**
    * With group support.
    * @return true if code ends with "A"
    */
@@ -190,6 +191,14 @@ public class Module
     this.courses = courses;
   }
 
+  public boolean isActive() {
+    return active;
+  }
+
+  public void setActive(boolean active) {
+    this.active = active;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (o == null || getClass() != o.getClass()) {
@@ -205,5 +214,5 @@ public class Module
     hash = 23 * hash + (this.code != null ? this.code.hashCode() : 0);
     return hash;
   }
-  
+
 }

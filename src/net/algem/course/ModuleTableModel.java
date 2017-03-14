@@ -1,7 +1,7 @@
 /*
- * @(#)ModuleTableModel.java	2.9.2 26/01/15
+ * @(#)ModuleTableModel.java	2.12.0 14/03/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,7 +28,7 @@ import net.algem.util.ui.JTableModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.12.0
  */
 public class ModuleTableModel
         extends JTableModel<Module>
@@ -38,7 +38,8 @@ public class ModuleTableModel
     header = new String[]{
       BundleUtil.getLabel("Id.label"),
       BundleUtil.getLabel("Code.label"),
-      BundleUtil.getLabel("Name.label")
+      BundleUtil.getLabel("Name.label"),
+      BundleUtil.getLabel("Active.label")
     };
   }
 
@@ -56,6 +57,8 @@ public class ModuleTableModel
       case 1:
       case 2:
         return String.class;
+      case 3:
+        return Boolean.class;
       default:
         return Object.class;
     }
@@ -71,11 +74,13 @@ public class ModuleTableModel
     Module m = tuples.elementAt(line);
     switch (col) {
       case 0:
-        return new Integer(m.getId());
+        return m.getId();
       case 1:
         return m.getCode();
       case 2:
         return m.getTitle();
+      case 3:
+        return m.isActive();
     }
     return null;
   }

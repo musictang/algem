@@ -1,6 +1,6 @@
 /*
  * @(#)InstrumentView.java 2.7.k 01/03/13
- * 
+ *
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 
 package net.algem.contact;
@@ -33,21 +33,21 @@ import net.algem.util.BundleUtil;
  * @version 2.7.k
  * @since 2.7.a 21/11/12
  */
-public class InstrumentView 
+public class InstrumentView
   extends InfoView
 {
   private List<Instrument> list;
-  
+
   public InstrumentView(List<Instrument> list) {
     super(BundleUtil.getLabel("Instruments.label"), false);
     this.list = list;
   }
-  
+
   public InstrumentView(List<Instrument> list, String label) {
     super(label, false);
     this.list = list;
   }
-  
+
   public void set(List<Integer> instruments) {
     if (instruments == null) {
       addRow();
@@ -59,7 +59,7 @@ public class InstrumentView
       }
     }
   }
-  
+
   @Override
   protected void addRow() {
     InstrumentPanel ip = new InstrumentPanel(list);
@@ -68,7 +68,7 @@ public class InstrumentView
     add(ip);
     revalidate();
   }
-  
+
   public List<Integer> get() {
     List<Integer> li = new ArrayList<Integer>();
     for (int i = 0 ; i < rows.size(); i++) {
@@ -78,7 +78,7 @@ public class InstrumentView
       }
     }
     return li.isEmpty() ? null : li;
-    
+
   }
 
 }

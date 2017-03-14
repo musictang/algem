@@ -1,7 +1,7 @@
 /*
- * @(#)SearchView.java	2.9.4.8 24/06/15
- * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * @(#)SearchView.java	2.12.0 14/03/17
+ *
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,12 +16,13 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 
 package net.algem.util.ui;
 
 import java.awt.AWTEventMulticaster;
+import java.awt.BorderLayout;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionListener;
@@ -30,10 +31,10 @@ import net.algem.util.GemCommand;
 /**
  * Abstract class for search view.
  * Criterium panel must be implemented in subtype classes.
- * 
+ *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.8
+ * @version 2.12.0
  * @since 1.0a 07/07/1999
  */
 public abstract class SearchView
@@ -51,12 +52,14 @@ public abstract class SearchView
 
   public SearchView() {
 
+    GemPanel mainPanel = new GemPanel(new GridBagLayout());
     btCreate = new GemButton(GemCommand.CREATE_CMD);
     btCreate.addActionListener(this);
     criteriaPanel = init();
 
     status = new GemField();
-    status.setEnabled(false);
+    //status.setBorder(BorderFactory.createEmptyBorder());
+    status.setEditable(false);
 
     btSearch = new GemButton(GemCommand.SEARCH_CMD);
     btSearch.addActionListener(this);
@@ -70,11 +73,15 @@ public abstract class SearchView
     buttons.add(btCancel);
     buttons.add(btSearch);
 
-    this.setLayout(new GridBagLayout());
-    GridBagHelper gb = new GridBagHelper(this);
+    this.setLayout(new BorderLayout());
+    GridBagHelper gb = new GridBagHelper(mainPanel);
     gb.add(criteriaPanel, 0, 0, 1, 1, GridBagHelper.BOTH, 1.0, 1.0);
+    gb.insets = GridBagHelper.NULL_INSETS;
     gb.add(status, 0, 1, 1, 1, GridBagHelper.HORIZONTAL, 1.0, 0.0);
-    gb.add(buttons, 0, 2, 1, 1, GridBagHelper.HORIZONTAL, 1.0, 0.0);
+
+    add(mainPanel, BorderLayout.CENTER);
+    add(buttons, BorderLayout.SOUTH);
+    //gb.add(buttons, 0, 2, 1, 1, GridBagHelper.HORIZONTAL, 1.0, 0.0);
   }
 
   public void setStatus(String message) {

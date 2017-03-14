@@ -1,5 +1,5 @@
 /*
- * @(#)GridBagHelper.java	2.12.0 09/03/17
+ * @(#)GridBagHelper.java	2.12.0 14/03/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -31,9 +31,10 @@ public class GridBagHelper
 {
 
   /** Default padding for a component in GridBagHelper. */
-  public static Insets DEF_INSETS = new Insets(3, 4, 3, 0);
+  public static Insets DEF_INSETS = new Insets(3, 3, 3, 3);
   public static Insets MEDIUM_INSETS = new Insets(0, 5, 0, 0);
-  
+  public static Insets NULL_INSETS = new Insets(0, 0, 0, 0);
+
   public static final int RELATIVE = GridBagConstraints.RELATIVE;
   public static final int REMAINDER = GridBagConstraints.REMAINDER;
   public static final int HORIZONTAL = GridBagConstraints.HORIZONTAL;
@@ -49,9 +50,9 @@ public class GridBagHelper
   public static final int SOUTHEAST = GridBagConstraints.SOUTHEAST;
   public static final int SOUTHWEST = GridBagConstraints.SOUTHWEST;
   public static final int WEST = GridBagConstraints.WEST;
-  
+
   public Insets insets;
-  
+
   private Container container;
   private GridBagLayout layout;
   private GridBagConstraints constraints;
@@ -59,7 +60,7 @@ public class GridBagHelper
   private int gridwidth, gridheight;
   private int fill;
   private int ipadx, ipady;
-  
+
   private int anchor;
   private double weightx, weighty;
 
@@ -108,13 +109,13 @@ public class GridBagHelper
           int gridx, int gridy, int gridwidth, int gridheight, int fill, int anchor, double weightx, double weighty) {
     add(component, gridx, gridy, gridwidth, gridheight, fill, ipadx, ipady, insets, anchor, weightx, weighty);
   }
-  
+
   public void add(Component component,
           int gridx, int gridy, int gridwidth, int gridheight,
           Insets insets, int anchor) {
     add(component, gridx, gridy, gridwidth, gridheight, fill, ipadx, ipady, insets, anchor, weightx, weighty);
   }
-  
+
   public void add(Component component,
           int gridx, int gridy, int gridwidth, int gridheight,
           double weightx, double weighty,
@@ -183,7 +184,7 @@ public class GridBagHelper
     layout.setConstraints(component, constraints);
     container.add(component);
   }
-  
+
   public Component getContainer() {
     return container;
   }

@@ -1,7 +1,7 @@
 /*
- * @(#)BranchSearchView.java	2.9.4.13 15/10/15
- * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * @(#)BranchSearchView.java	2.12.0 14/03/17
+ *
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.bank;
 
@@ -31,7 +31,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.9.4.13
+ * @version 2.12.0
  * @since 1.0a 07/07/1999
  */
 public class BranchSearchView
@@ -51,11 +51,11 @@ public class BranchSearchView
   public GemPanel init() {
     number = new GemNumericField(6);
     number.addActionListener(this);
-    bankCode = new GemField(5);
+    bankCode = new GemField(6);
     bankCode.addActionListener(this);
     bankName = new GemField(30);
     bankName.addActionListener(this);
-    branchCode = new GemField(5);
+    branchCode = new GemField(6);
     branchCode.addActionListener(this);
 
     btCreate.setText(null);

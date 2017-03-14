@@ -1,7 +1,7 @@
 /*
- * @(#)PersonFileEditor 2.11.3 16/11/16
+ * @(#)PersonFileEditor 2.12.0 14/03/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -69,7 +69,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.3
+ * @version 2.12.0
  */
 public class PersonFileEditor
         extends FileEditor
@@ -79,9 +79,9 @@ public class PersonFileEditor
   private JMenuBar mBar;
   private JMenu mFile;
   private JMenu mOptions;
-  private JMenu mHelp;
+  /*private JMenu mHelp;
   private JMenuItem miAbout;
-  private JMenuItem miDoc;
+  private JMenuItem miDoc;*/
   private JMenuItem miDelete;
   private JMenuItem miLogin;
   private JMenuItem miMember, miTeacher, miBank, miEmployee;
@@ -767,9 +767,9 @@ public class PersonFileEditor
     miDelete = getMenuItem("Contact.suppression");
     mOptions = createJMenu("Menu.options");
 
-    mHelp = new JMenu(BundleUtil.getLabel("Menu.help.label"));
+    /*mHelp = new JMenu(BundleUtil.getLabel("Menu.help.label"));
     miAbout = new JMenuItem(BundleUtil.getLabel("About.label"));
-    miDoc = new JMenuItem(BundleUtil.getLabel("Menu.doc.label"));
+    miDoc = new JMenuItem(BundleUtil.getLabel("Menu.doc.label"));*/
 
     mFile.add(miDelete);
 
@@ -816,13 +816,13 @@ public class PersonFileEditor
     mOptions.add(miLogin = getMenuItem("Login.creation"));
     mOptions.addSeparator();
     mOptions.add(miSaveUISettings = getMenuItem("Store.ui.settings"));
-    mHelp.add(miAbout);
-    mHelp.add(miDoc);
+    /*mHelp.add(miAbout);
+    mHelp.add(miDoc);*/
 
     mBar.add(mFile);
     mBar.add(mOptions);
     mBar.add(Box.createHorizontalGlue());
-    mBar.add(mHelp);
+    /*mBar.add(mHelp);*/
 
     personFileView.setJMenuBar(mBar);
   }
