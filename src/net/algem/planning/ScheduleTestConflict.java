@@ -70,8 +70,6 @@ public class ScheduleTestConflict
     this.action = action;
     this.dateIndex = dateIndex;
   }
-  
-  
 
   @Override
   public boolean equals(Object obj) {

@@ -98,7 +98,7 @@ public class ConflictListView
     return resolved;
   }
 
-  private void stopCellEditing() {
+  void stopCellEditing() {
     TableCellEditor tce = table.getCellEditor();
     if (tce != null) {
       tce.stopCellEditing();

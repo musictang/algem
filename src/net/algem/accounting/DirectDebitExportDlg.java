@@ -1,7 +1,7 @@
 /*
- * @(#)DirectDebitExportDlg.java	2.9.4.13 15/10/15
+ * @(#)DirectDebitExportDlg.java	2.12.0 13/03/17
  * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -42,7 +42,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.12.0
  */
 public class DirectDebitExportDlg
         extends JDialog
@@ -125,7 +125,6 @@ public class DirectDebitExportDlg
     buttons.add(btCancel);
 
     GemPanel p = new GemPanel();
-
     p.setLayout(new GridBagLayout());
     p.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
@@ -137,18 +136,19 @@ public class DirectDebitExportDlg
     datePanel.setDate(c.getTime());
     String path = ConfigUtil.getExportPath() + FileUtil.FILE_SEPARATOR;
 
-
-    fMailling = new GemField(path + MAILING_FILE_NAME, 30);
+    fMailling = new GemField(path + MAILING_FILE_NAME, 25);
+    fMailling.setMinimumSize(new Dimension(100, fMailling.getPreferredSize().height));
     fMailling.setAutoscrolls(true);
     gb1.add(new GemLabel(BundleUtil.getLabel("Mailing.file.label")), 0, 0, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
     gb1.add(fMailling, 1, 0, 1, 1);
-    gb1.add(browse1, 2, 0, 1, 1, GridBagHelper.NONE, GridBagHelper.WEST);
+    gb1.add(browse1, 2, 0, 1, 1, GridBagHelper.WEST);
 
-    fExport = new GemField(path + EXPORT_FILE_NAME, 30);
+    fExport = new GemField(path + EXPORT_FILE_NAME, 25);
     gb1.add(new GemLabel(BundleUtil.getLabel("Export.file.label")), 0, 1, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
     gb1.add(fExport, 1, 1, 1, 1);
+    fExport.setMinimumSize(new Dimension(100, fExport.getPreferredSize().height));
     fExport.setAutoscrolls(true);
-    gb1.add(browse2, 2, 1, 1, 1, GridBagHelper.NONE, GridBagHelper.WEST);
+    gb1.add(browse2, 2, 1, 1, 1, GridBagHelper.WEST);
 
     GemPanel bodyBorder = new GemPanel(new BorderLayout());
     bodyBorder.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));

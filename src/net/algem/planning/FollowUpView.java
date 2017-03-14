@@ -1,7 +1,7 @@
 /*
- * @(#)FollowUpView.java	2.11.0 20/09/16
+ * @(#)FollowUpView.java	2.12.0 13/03/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -41,7 +41,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.11.0
+ * @version 2.12.0
  */
 public class FollowUpView
         extends GemPanel
@@ -60,6 +60,7 @@ public class FollowUpView
     textArea.setLineWrap(true);
     textArea.setWrapStyleWord(true);
     note = new JTextField(BundleUtil.getLabel("Note.label"));
+    note.setMinimumSize(new Dimension(40, note.getPreferredSize().height));
     note.setColumns(6);
     note.setDocument(new NoteDocumentFilter());
     

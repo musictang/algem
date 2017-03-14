@@ -144,7 +144,7 @@ public class ExtendeModuleOrderListCtrl
     cm.getColumn(8).setPreferredWidth(15);
     JScrollPane scroll = new JScrollPane(table);
 
-    GemButton btPrint = new GemButton(GemCommand.PRINT_CMD);
+    GemButton btPrint = new GemButton(GemCommand.EXPORT_CMD);
     GemButton btClose = new GemButton(GemCommand.CLOSE_CMD);
 
     btPrint.addActionListener(this);
@@ -203,7 +203,7 @@ public class ExtendeModuleOrderListCtrl
     String cmd = e.getActionCommand();
     if (GemCommand.CLOSE_CMD.equals(cmd)) {
       desktop.removeModule("Modules.ordered");
-    } else if (GemCommand.PRINT_CMD.equals(cmd)) {
+    } else if (GemCommand.EXPORT_CMD.equals(cmd)) {
       print();
     } else if (GemCommand.LOAD_CMD.equals(cmd)) {
       load(datePanel.getStart(), datePanel.getEnd());

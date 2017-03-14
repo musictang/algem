@@ -1,7 +1,7 @@
 /*
- * @(#)ConfigAccounting.java 2.11.4 15/12/16
+ * @(#)ConfigAccounting.java 2.12.0 09/03/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -33,6 +33,8 @@ import java.util.Map;
 import javax.swing.*;
 import net.algem.accounting.AccountingExportFormat;
 import net.algem.bank.BankUtil;
+import net.algem.planning.DateFr;
+import net.algem.planning.DateFrField;
 import net.algem.util.BundleUtil;
 import net.algem.util.ui.GemField;
 import net.algem.util.ui.GemLabel;
@@ -43,14 +45,14 @@ import net.algem.util.ui.GridBagHelper;
  * Bic infos for the organization.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.11.4
+ * @version 2.12.0
  * @since 2.2.d
  */
 public class ConfigAccounting
         extends ConfigPanel
 {
 
-  private Config c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13, c14;
+  private Config c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13, c14, c15;
   private GemField firmName;
   private GemField issuer;
   private GemField branch;
@@ -66,6 +68,7 @@ public class ConfigAccounting
   private JSpinner defaultDueDay;
   private JCheckBox roundFractionalPayments;
   private JCheckBox chargeEnrolmentLines;
+  private DateFrField financialYearStart;
 
   public ConfigAccounting(String title, Map<String, Config> cm) {
     super(title, cm);
@@ -88,6 +91,7 @@ public class ConfigAccounting
     c12 = confs.get(ConfigKey.DEFAULT_DUE_DAY.getKey());//jour d'échéance par défaut
     c13 = confs.get(ConfigKey.ROUND_FRACTIONAL_PAYMENTS.getKey());//jour d'échéance par défaut
     c14 = confs.get(ConfigKey.CHARGE_ENROLMENT_LINES.getKey());//jour d'échéance par défaut
+    c15 = confs.get(ConfigKey.FINANCIAL_YEAR_START.getKey());//jour d'échéance par défaut
 
     firmName = new GemField(20);
     firmName.setText(c1.getValue());
@@ -131,6 +135,8 @@ public class ConfigAccounting
     chargeEnrolmentLines = new JCheckBox(ConfigKey.CHARGE_ENROLMENT_LINES.getLabel());
     chargeEnrolmentLines.setToolTipText(BundleUtil.getLabel("ConfEditor.charge.enrolment.lines.tip"));
     chargeEnrolmentLines.setSelected(c14 == null || c14.getValue() == null ? false : c14.getValue().toLowerCase().startsWith("t"));
+    
+    financialYearStart = new DateFrField(new DateFr(c15.getValue()));
     content = new GemPanel();
     content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
 
@@ -173,8 +179,10 @@ public class ConfigAccounting
     gb2.add(accountingFormat, 1, 2, 1, 1, GridBagHelper.WEST);
     gb2.add(defaultDueDayLabel, 0, 3, 1, 1, GridBagHelper.WEST);
     gb2.add(defaultDueDay, 1, 3, 1, 1, GridBagHelper.WEST);
-    gb2.add(roundFractionalPayments, 0, 4, 2, 1, GridBagHelper.WEST);
-    gb2.add(chargeEnrolmentLines, 0, 5, 2, 1, GridBagHelper.WEST);
+    gb2.add(new GemLabel(BundleUtil.getLabel("Financial.year.start.label")), 0, 4, 1, 1, GridBagHelper.WEST);
+    gb2.add(financialYearStart, 1, 4, 2, 1, GridBagHelper.WEST);
+    gb2.add(roundFractionalPayments, 0, 5, 2, 1, GridBagHelper.WEST);
+    gb2.add(chargeEnrolmentLines, 0, 6, 2, 1, GridBagHelper.WEST);
 
     content.add(creditorPanel);
     content.add(options);
@@ -261,6 +269,7 @@ public class ConfigAccounting
     c12.setValue(String.valueOf(defaultDueDay.getValue()));
     c13.setValue(roundFractionalPayments.isSelected() ? "t" : "f");
     c14.setValue(chargeEnrolmentLines.isSelected() ? "t" : "f");
+    c15.setValue(financialYearStart.get().toString());
 
     conf.add(c1);
     conf.add(c2);
@@ -276,6 +285,7 @@ public class ConfigAccounting
     conf.add(c12);
     conf.add(c13);
     conf.add(c14);
+    conf.add(c15);
 
     return conf;
   }

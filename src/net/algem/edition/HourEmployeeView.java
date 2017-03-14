@@ -1,7 +1,7 @@
 /*
- * @(#)HourEmployeeView.java  2.10.0 07/06/2016
+ * @(#)HourEmployeeView.java  2.12.0 13/03/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -57,7 +57,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.12.0
  * @since 2.8.v 10/06/14
  */
 public class HourEmployeeView
@@ -85,6 +85,7 @@ public class HourEmployeeView
 
     setLayout(new BorderLayout());
     setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+    setMinimumSize(new Dimension(400,380));
 
     GemPanel body = new GemPanel(new GridBagLayout());
     body.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));

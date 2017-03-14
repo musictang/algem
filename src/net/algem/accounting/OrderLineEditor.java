@@ -1,7 +1,7 @@
 /*
- * @(#)OrderLineEditor.java	2.11.3 01/12/16
+ * @(#)OrderLineEditor.java	2.12.0 13/03/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -26,6 +26,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -39,6 +42,8 @@ import net.algem.billing.BillingUtil;
 import net.algem.billing.Invoice;
 import net.algem.billing.InvoiceCreateEvent;
 import net.algem.billing.InvoiceUpdateEvent;
+import net.algem.config.ConfigKey;
+import net.algem.config.ConfigUtil;
 import net.algem.planning.DateFr;
 import net.algem.util.BundleUtil;
 import net.algem.util.GemCommand;
@@ -55,7 +60,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.3
+ * @version 2.12.0
  * @since 1.0a 07/07/1999
  */
 public class OrderLineEditor
@@ -74,8 +79,9 @@ public class OrderLineEditor
   protected GemButton btYear;
   protected JLabel totalLabel;
   protected GemField totalField;
-  protected JToggleButton btCurrentYear;
+  protected JToggleButton btFinancialYear;
 
+  private DateFr FINANCIAL_YEAR = new DateFr(ConfigUtil.getConf(ConfigKey.FINANCIAL_YEAR_START.getKey()));
   private OrderLineTableModel tableModel;
   private int memberId, payerId;
   private JTextField payerName;
@@ -86,6 +92,7 @@ public class OrderLineEditor
   private List<OrderLine> invoiceSelection;
   private OrderLineView dlg;
   private InvoiceLinesFilter invoiceFilter;
+  
 
   public OrderLineEditor(GemDesktop desktop, OrderLineTableModel tableModel) {
     super(desktop);
@@ -108,8 +115,9 @@ public class OrderLineEditor
     btYear = new GemButton(String.valueOf(dataCache.getStartOfYear().getYear()));
     btYear.addActionListener(this);
 
-    btCurrentYear = new JToggleButton(BundleUtil.getLabel("Financial.year.label"));
-    btCurrentYear.addActionListener(this);
+    btFinancialYear = new JToggleButton(BundleUtil.getLabel("Financial.year.label"));
+    btFinancialYear.setToolTipText(BundleUtil.getLabel("Financial.year.tip"));
+    btFinancialYear.addActionListener(this);
 
     payerName = new JTextField(30);
     payerName.setEditable(false);
@@ -123,8 +131,9 @@ public class OrderLineEditor
       @Override
       public void itemStateChanged(ItemEvent e) {
         boolean h = e.getStateChange() == ItemEvent.SELECTED;
-        if (btCurrentYear.isSelected()) {
-          invoiceFilter.hideInvoiceLines(h, dataCache.getStartOfYear());
+        if (btFinancialYear.isSelected()) {
+          //invoiceFilter.hideInvoiceLines(h, dataCache.getStartOfYear());
+          invoiceFilter.hideInvoiceLines(h, FINANCIAL_YEAR);
         } else {
           invoiceFilter.hideInvoiceLines(h,null);
         }
@@ -141,7 +150,7 @@ public class OrderLineEditor
 
     buttons.add(btQuotation);
     buttons.add(btInvoice);
-    buttons.add(btCurrentYear);
+    buttons.add(btFinancialYear);
     buttons.add(btModify);
     buttons.add(btCreate);
     buttons.add(btSuppress);
@@ -191,23 +200,21 @@ public class OrderLineEditor
 
   @Override
   public void actionPerformed(ActionEvent evt) {
-
     Object src = evt.getSource();
-
     if (src == btCreate) {
       dialogCreation();
     } else if (src == btModify) {
       dialogModification();
     } else if (src == btSuppress) {
       dialogSuppression();
-    } else if (src == btCurrentYear) {
+    } else if (src == btFinancialYear) {
       totalField.setText(null);
-      if (btCurrentYear.isSelected()) {
-        tableView.filterByDate(dataCache.getStartOfYear(), invoiceLineFilter.isSelected());
+      if (btFinancialYear.isSelected()) {
+        //tableView.filterByDate(dataCache.getStartOfYear(), invoiceLineFilter.isSelected());
+        tableView.filterByDate(FINANCIAL_YEAR, invoiceLineFilter.isSelected());
       } else {
         tableView.filterByDate(null, invoiceLineFilter.isSelected());
       }
-
     } else if (src == btInvoice) {
       createInvoice();
     } else if (src == btQuotation) {
@@ -235,6 +242,10 @@ public class OrderLineEditor
   private void closeEditorView() {
     if (dlg != null) {
       dlg.dispose();
+      WindowListener[] wls = (WindowListener[])(dlg.getListeners(WindowListener.class));
+      for(WindowListener wl : wls) {
+        dlg.removeWindowListener(wl);
+      }
       dlg = null;
     }
   }
@@ -244,7 +255,7 @@ public class OrderLineEditor
   }
 
   public void dialogSuppression() {
-    if (dlg != null) {
+    if (dlg != null) { // other option : dlg.isDisplayable ?
       MessagePopup.warning(this, MessageUtil.getMessage("orderline.suppression.warning"));
       return;
     }
@@ -325,7 +336,13 @@ public class OrderLineEditor
     try {
       dlg = new OrderLineView(desktop.getFrame(), MessageUtil.getMessage("payment.update.label"), dataCache, false);
       dlg.addActionListener(this);
-
+      dlg.addWindowListener(new WindowAdapter()
+      {
+        @Override
+        public void windowClosing(WindowEvent e) {
+          closeEditorView();
+        }
+      });
       dlg.setOrderLine(e);
       dlg.setInvoiceEditable(false);
       dlg.setVisible(true);

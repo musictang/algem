@@ -1,7 +1,7 @@
 /*
-* @(#)OrderLineTableView.java 2.11.2 13/10/16
+* @(#)OrderLineTableView.java 2.12.0 13/03/17
 *
-* Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+* Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
 *
 * This file is part of Algem.
 * Algem is free software: you can redistribute it and/or modify it
@@ -25,7 +25,6 @@ import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
-import java.util.Calendar;
 import javax.swing.RowFilter.Entry;
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
@@ -116,7 +115,7 @@ public class OrderLineTableView
       public boolean include(Entry<? extends Object, ? extends Object> entry) {
         DateFr date = (DateFr) entry.getValue(3);
         String payment = (String) entry.getValue(5);
-        if (hideBilling) {//XXX
+        if (hideBilling) {
           return date.afterOrEqual(begin) && date.beforeOrEqual(end) && !payment.equals(ModeOfPayment.FAC.name());
         } else {
           return date.afterOrEqual(begin) && date.beforeOrEqual(end);
@@ -166,8 +165,6 @@ public class OrderLineTableView
     cm.getColumn(10).setPreferredWidth(30);//payed
     cm.getColumn(11).setPreferredWidth(30);//transferred
     cm.getColumn(12).setPreferredWidth(40);//invoice
-    //cm.getColumn(11).setPreferredWidth(20);// suppression devise de la vue
-    //cm.getColumn(12).setPreferredWidth(50);
 
     DefaultTableCellRenderer rd = new DefaultTableCellRenderer();
     rd.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -307,11 +304,12 @@ public class OrderLineTableView
   }
 
   private void setDates(DateFr date) {
-    Calendar cal = Calendar.getInstance();
+    /*Calendar cal = Calendar.getInstance();
     cal.setTime(date.getDate());
     cal.set(Calendar.MONTH, Calendar.SEPTEMBER);// beginning of year for accounting
     cal.set(Calendar.DAY_OF_MONTH, 1);
-    begin = new DateFr(cal.getTime());
+    begin = new DateFr(cal.getTime());*/
+    begin = new DateFr(date);
     end = new DateFr(begin);
     end.incYear(1);
   }

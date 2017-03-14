@@ -40,7 +40,7 @@ public class DateTimeTableModel
       BundleUtil.getLabel("Date.label"),
       BundleUtil.getLabel("Start.label"),
       BundleUtil.getLabel("End.label"),
-      BundleUtil.getLabel("Active.label")
+      //BundleUtil.getLabel("Active.label")
     };
   }
 
@@ -57,8 +57,8 @@ public class DateTimeTableModel
       case 1: 
       case 2:
         return Hour.class;
-      case 3:
-        return Boolean.class;
+      /*case 3:
+        return Boolean.class;*/
       default:
         return Object.class;
     }
@@ -73,8 +73,8 @@ public class DateTimeTableModel
         return a.getStart();
       case 2:
         return a.getEnd();
-      case 3:
-        return a.isActive();
+      /*case 3:
+        return a.isActive();*/
       default:
         return null;
     }
@@ -102,9 +102,9 @@ public class DateTimeTableModel
         }
         a.setEnd(end);
         break;
-      case 3:
+      /*case 3:
         a.setActive((Boolean) value);
-        break;
+        break;*/
     }
   }
 

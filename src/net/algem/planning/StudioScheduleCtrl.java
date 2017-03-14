@@ -94,6 +94,7 @@ public class StudioScheduleCtrl
   public boolean next() {
     select(step + 1);
     if (step == 1) {
+      studioView.stopEditing();
       conflictsView.clear();
       String t = MessageUtil.getMessage("invalid.choice");
       try {

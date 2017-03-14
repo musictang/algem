@@ -1,7 +1,7 @@
 /*
- * @(#)ModifPlanActionView.java 2.9.4.10 17/07/15
+ * @(#)ModifPlanActionView.java 2.12.0 13/03/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -45,7 +45,7 @@ import net.algem.util.ui.*;
  * Modification of status, level, age range and number of places.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.10
+ * @version 2.12.0
  * @since 2.5.a 22/06/12
  */
 class ModifPlanActionView
@@ -162,7 +162,7 @@ class ModifPlanActionView
   
   int getColor() {
     int c = bgColorPanel.getBackground().getRGB();
-    return c != initialColor ? c : 0;
+    return c != initialColor ? c : initialColor;
   }
   
   Note getNote() {

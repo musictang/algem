@@ -1,5 +1,5 @@
 /*
- * @(#)ActionView.java	2.12.0 01/03/17
+ * @(#)ActionView.java	2.12.0 13/03/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -94,7 +94,7 @@ public class ActionView
     course = new CourseChoice(new CourseChoiceActiveModel(courseList, true));
     course.addItemListener(new CourseScheduleItemListener());
     datePanel = new DateRangePanel(dataCache.getStartOfYear(), dataCache.getEndOfYear());
-    hourPanel = new HourRangePanel(new Hour("16:00"), new Hour("17:00"));
+    hourPanel = new HourRangePanel();
     GemList<Teacher> teacherList = dataCache.getList(Model.Teacher);
     teacher = new TeacherChoice(teacherList, true);
     if (teacherList.getSize() > 0) {

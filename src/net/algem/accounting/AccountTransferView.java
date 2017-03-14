@@ -112,9 +112,9 @@ public class AccountTransferView
       }
     });
 
-    gb.add(new JLabel(BundleUtil.getLabel("Period.label")), 0, 0, 1, 1, GridBagHelper.EAST);
-    gb.add(new JLabel(BundleUtil.getLabel("School.label")), 0, 1, 1, 1, GridBagHelper.EAST);
-    gb.add(new JLabel(BundleUtil.getLabel("Mode.of.payment.label")), 0, 2, 1, 1, GridBagHelper.EAST);
+    gb.add(new JLabel(BundleUtil.getLabel("Period.label")), 0, 0, 1, 1, GridBagHelper.WEST);
+    gb.add(new JLabel(BundleUtil.getLabel("School.label")), 0, 1, 1, 1, GridBagHelper.WEST);
+    gb.add(new JLabel(BundleUtil.getLabel("Mode.of.payment.label")), 0, 2, 1, 1, GridBagHelper.WEST);
     gb.add(dateRange, 1, 0, 2, 1, GridBagHelper.WEST);
     gb.add(schoolChoice, 1, 1, 2, 1, GridBagHelper.WEST);
     gb.add(payment, 1, 2, 2, 1, GridBagHelper.WEST);

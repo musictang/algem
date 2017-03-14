@@ -32,6 +32,7 @@ public class GemCommand
   public static final String SEARCH_CMD = BundleUtil.getLabel("Action.search.label");
   public static final String NEW_SEARCH_CMD = BundleUtil.getLabel("Action.new.search.label");
   public static final String ERASE_CMD = BundleUtil.getLabel("Action.erase.label");
+  public static final String EXPORT_CMD = BundleUtil.getLabel("Action.export.label");
   public static final String SAVE_CMD = BundleUtil.getLabel("Action.save.label");
   public static final String BROWSE_CMD = BundleUtil.getLabel("Action.browse.label");
   public static final String ADD_CMD = BundleUtil.getLabel("Action.add.label");

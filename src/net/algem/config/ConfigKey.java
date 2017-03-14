@@ -129,6 +129,7 @@ public enum ConfigKey
   ROUND_FRACTIONAL_PAYMENTS("Arrondir.inter.paiements", BundleUtil.getLabel("ConfEditor.round.fractional.payments.label")),
   CHARGE_ENROLMENT_LINES("Facturer.echeances.inscription", BundleUtil.getLabel("ConfEditor.charge.enrolment.lines.label")),
   ADMINISTRATIVE_MANAGEMENT("Planification.administrative", BundleUtil.getLabel("Administrative.scheduling.label")),
+  FINANCIAL_YEAR_START("Debut.annee.comptable", BundleUtil.getLabel("Financial.year.start.label")),
   
   //== OTHERS ==//
   ESTABLISHEMENT_ACTIVATION_TYPE("Activation.etablissement.type", BundleUtil.getLabel("ConfEditor.pre-enrolment.start.date.label"));

@@ -1,5 +1,5 @@
 /*
- * @(#)CourseScheduleCtrl.java	2.12.0 01/03/17
+ * @(#)CourseScheduleCtrl.java	2.12.0 09/03/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -181,6 +181,7 @@ public class CourseScheduleCtrl
 
   public void clear() {
     av.clear();
+    conflictsView.stopCellEditing();
     conflictsView.clear();
     select(0);
   }
@@ -225,9 +226,6 @@ public class CourseScheduleCtrl
 
     int room = a.getRoom();
     int teacher = a.getIdper();
-
-//    Hour hStart = a.getStartTime();
-//    Hour hEnd = a.getEndTime();
 
     int conflicts = 0;
     int idx = 0;

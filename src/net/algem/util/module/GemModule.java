@@ -1,7 +1,7 @@
 /*
- * @(#)GemModule.java	2.9.4.6 03/06/15
+ * @(#)GemModule.java	2.12.0 13/03/17
  * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -23,7 +23,6 @@ package net.algem.util.module;
 
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JMenu;
@@ -41,7 +40,7 @@ import net.algem.util.model.GemCloseVetoException;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.9.4.6
+ * @version 2.12.0
  * @since 1.0a 06/07/2002
  */
 public abstract class GemModule
@@ -55,7 +54,7 @@ public abstract class GemModule
   public static final Dimension M_SIZE = new Dimension(750, 450);
   public static final Dimension L_SIZE = new Dimension(800, 500);
   public static final Dimension XL_SIZE = new Dimension(870, 500);
-  public static final Dimension XXL_SIZE = new Dimension(905, 500);
+  public static final Dimension XXL_SIZE = new Dimension(905, 540);
 
   protected String label;
   protected DefaultGemView view;

@@ -1,5 +1,5 @@
 /*
- * @(#)CommunAccountTransferDlg.java	2.11.6 27/02/17
+ * @(#)CommunAccountTransferDlg.java	2.12.0 13/03/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -45,7 +45,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.6
+ * @version 2.12.0
  * @since 2.8.r 13/12/13
  */
 public class CommunAccountTransferDlg
@@ -74,7 +74,7 @@ public class CommunAccountTransferDlg
     GridBagHelper gb = new GridBagHelper(header);
 
     gb.add(new JLabel(BundleUtil.getLabel("Menu.file.label")), 0, 0, 1, 1, GridBagHelper.EAST);
-    gb.add(filePath, 1, 0, 1, 1, GridBagHelper.WEST);
+    gb.add(filePath, 1, 0, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
     gb.add(chooser, 2, 0, 1, 1, GridBagHelper.WEST);
 
     p.add(header);

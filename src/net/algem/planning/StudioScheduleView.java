@@ -1,5 +1,5 @@
 /*
- * @(#)StudioScheduleView.java	2.12.0 08/03/17
+ * @(#)StudioScheduleView.java	2.12.0 13/03/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -79,6 +79,7 @@ class StudioScheduleView
 
     group = new GroupChoice(new Vector<Group>(dataCache.getList(Model.Group).getData()));
     dateTimeCtrl = new DateTimeCtrl();
+    dateTimeCtrl.add();
     roomPanelCtrl = new RoomPanelCtrl(dataCache);
 
     category = new GemParamChoice(new GemParamModel(dataCache.getList(Model.StudioType)));
@@ -95,7 +96,7 @@ class StudioScheduleView
     gb.add(group, 0, 2, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
     gb.insets = new Insets(10,4,2,0);
     gb.add(roomPanelCtrl, 0, 3, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
-    gb.insets = GridBagHelper.SMALL_INSETS;
+    gb.insets = GridBagHelper.DEF_INSETS;
     gb.add(dateTimeCtrl, 0, 4, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
     //gb.add(separator, 0, 5, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Category.label")), 0, 5, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
@@ -143,6 +144,10 @@ class StudioScheduleView
      dateTimeCtrl.clear();
      roomPanelCtrl.clear();
      employeePanelCtrl.clear();
+  }
+  
+  void stopEditing() {
+    dateTimeCtrl.stopCellEditing();
   }
 
 }

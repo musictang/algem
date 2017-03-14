@@ -74,6 +74,7 @@ public class MemberRehearsalPassCtrl
         ScheduleTestConflict c = tuples.elementAt(row);
         boolean checked = (boolean) value;
         c.setActive(c.isConflict() ? false : checked);
+        fireTableRowsUpdated(row, row);
       }
     });
 

@@ -1,7 +1,7 @@
 /*
- * @(#)TransferDlg.java	2.9.4.13 27/10/15
+ * @(#)TransferDlg.java	2.12.0 13/03/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,6 +20,7 @@
  */
 package net.algem.edition;
 
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -41,7 +42,7 @@ import net.algem.util.ui.GemPanel;
  * Abstract class for transfer operations dialog.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.12.0
  * @since 2.4.a 10/05/12
  */
 public abstract class TransferDlg
@@ -77,6 +78,7 @@ public abstract class TransferDlg
     chooser.addActionListener(this);
 
     filepath = new GemField(ConfigUtil.getExportPath() + FileUtil.FILE_SEPARATOR + fileName, 25);
+    filepath.setMinimumSize(new Dimension(100, filepath.getPreferredSize().height));
   }
 
   @Override
