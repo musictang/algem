@@ -30,11 +30,11 @@ Après avoir cliqué sur le bouton Suivant, l'existence de conflits horaires (sa
 CATALOGUE
 Le bouton "Imprimer" a été renommé "Exporter" dans le catalogue des commandes formules (menu Catalogue → Commandes formules). Le mot Imprimer prêtait à confusion car le rôle de cette commande est d'enregistrer la sélection dans un fichier puis de l'ouvrir automatiquement dans votre tableur par défaut (à partir duquel vous pouvez imprimer le contenu).
 
-Un ascenseur est maintenant visible dans la fenêtre de création/modification d'une formule dans le cas où la formule comporte un 
-
 Formules
 Les formules peuvent maintenant être activées ou désactivées si nécessaire. Une formule est activée par défaut à sa création.
 Une nouvelle case à cocher permet de modifier ce paramètre dans la fiche Formule (menu Catalogue → Formule). Une formule désactivée n'apparaît plus lors du choix d'une nouvelle formule à l'inscription d'un élève.
+
+Un ascenseur est maintenant visible dans la fenêtre de création/modification d'une formule dans le cas où la formule comporte un nombre de cours important.
 
 COMPTABILITE
 Les comptes clients débutent maintenant par le préfixe "411C". Cela permet ainsi de les faire apparaître automatiquement comme des sous-branches du compte 411 dans certains logiciels de comptabilité.
