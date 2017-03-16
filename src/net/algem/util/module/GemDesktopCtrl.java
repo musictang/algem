@@ -32,6 +32,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.*;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import javax.swing.*;
 import javax.swing.event.EventListenerList;
@@ -321,7 +322,18 @@ public class GemDesktopCtrl
       postitCreate = new PostitCreateCtrl(this, userService);
       postitCreate.addActionListener(this);
       addPanel(PostitCreateCtrl.POSTIT_CREATE_KEY, postitCreate);
-    } else if (BundleUtil.getLabel("Menu.contact.label").equals(arg)) {
+    }
+    else if ("Contacts (csv)".equals(arg)) {
+System.out.println("importer contacts");
+      try {
+        ImportCsvHandler importHandler = new ImportCsvHandler(ImportCsvHandler.IMPORT_FILE_NAME);
+        ImportCsvCtrl importCtrl = new ImportCsvCtrl(getFrame(), false, importHandler.getHeader(), importHandler.getPreview());
+        importCtrl.createUI();
+      } catch (IOException ex) {
+        GemLogger.log(ex.getMessage());
+      }
+    }
+    else if (BundleUtil.getLabel("Menu.contact.label").equals(arg)) {
       ContactExportDlg dlg = new ContactExportDlg(this);
       dlg.setVisible(true);
     } else if (BundleUtil.getLabel("Menu.member.label").equals(arg)) {
@@ -718,6 +730,11 @@ public class GemDesktopCtrl
     menu = mFile.add(new JMenuItem(BundleUtil.getLabel("Menu.postit.label"), 'p'));
     menu.addActionListener(this);
     mFile.addSeparator();
+
+    JMenu mImport = new JMenu(BundleUtil.getLabel("Menu.import.label"));
+    menu = mImport.add(new JMenuItem("Contacts (csv)"));
+    menu.addActionListener(this);
+    mFile.add(mImport);
     JMenu mExport = new JMenu(BundleUtil.getLabel("Menu.export.label"));
     menu = mExport.add(new JMenuItem(BundleUtil.getLabel("Menu.contact.label")));
     menu.addActionListener(this);
