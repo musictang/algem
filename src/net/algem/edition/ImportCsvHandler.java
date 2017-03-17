@@ -19,10 +19,15 @@
  */
 package net.algem.edition;
 
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.List;
+import net.algem.util.SimpleCharsetDecoder;
 import org.supercsv.cellprocessor.ParseDate;
 import org.supercsv.cellprocessor.constraint.NotNull;
 import org.supercsv.cellprocessor.constraint.UniqueHashCode;
@@ -39,11 +44,16 @@ import org.supercsv.prefs.CsvPreference;
  */
 public class ImportCsvHandler {
 
-  public static String IMPORT_FILE_NAME = "/home/jm/dev/algem/git/doc/test-import1.csv";
+  public static String IMPORT_FILE_NAME = "/home/jm/algem/src/git/trunk/doc/test-import1.csv";
+  //public static String IMPORT_FILE_NAME = "/home/jm/dev/algem/git/doc/test-import1.csv";
   private String fileName;
 
   private ICsvListReader listReader;
 
+  public ImportCsvHandler() {
+  }
+
+  
   public ImportCsvHandler(String fileName) throws FileNotFoundException {
     listReader = new CsvListReader(new FileReader(fileName), CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
   }
@@ -96,7 +106,13 @@ public class ImportCsvHandler {
       }
     }
   }
-
+  public void setReader(String fileName, Charset c) throws FileNotFoundException, UnsupportedEncodingException {
+    
+    //listReader = new CsvListReader(new FileReader(fileName), CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
+    InputStreamReader input = new InputStreamReader(new FileInputStream(fileName), c != null ? c.name() : "UTF-8");
+    listReader = new CsvListReader(input, new CsvPreference.Builder('"', ';', "\n").build());
+  }
+  
   public String[] getHeader() throws IOException {
     //listReader = new CsvListReader(new FileReader(fileName), CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
       return listReader.getHeader(true);

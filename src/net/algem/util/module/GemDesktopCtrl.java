@@ -327,7 +327,8 @@ public class GemDesktopCtrl
 System.out.println("importer contacts");
       try {
         ImportCsvHandler importHandler = new ImportCsvHandler(ImportCsvHandler.IMPORT_FILE_NAME);
-        ImportCsvCtrl importCtrl = new ImportCsvCtrl(getFrame(), false, importHandler.getHeader(), importHandler.getPreview());
+        //ImportCsvCtrl importCtrl = new ImportCsvCtrl(getFrame(), false, importHandler.getHeader(), importHandler.getPreview());
+        ImportCsvCtrl importCtrl = new ImportCsvCtrl(getFrame(), false, new ImportCsvHandler());
         importCtrl.createUI();
       } catch (IOException ex) {
         GemLogger.log(ex.getMessage());

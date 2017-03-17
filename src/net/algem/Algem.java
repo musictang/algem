@@ -478,7 +478,9 @@ public class Algem
 
   private static void initUIFonts() {
     if ("Metal".equals(UIManager.getLookAndFeel().getName())) {
-      Font fsans = new Font("Lucida Sans", Font.BOLD, 12);
+      //Font fsans = new Font("Lucida Sans", Font.BOLD, 12);
+      Font fsans = new Font(Font.SANS_SERIF, Font.PLAIN, 12);
+      Font titleFont = new Font("Lucida Sans", Font.BOLD, 12);
       Font fserif = new Font(Font.SERIF, Font.BOLD + Font.ITALIC, 12);
 
       UIManager.put("Menu.font", fsans);
@@ -491,7 +493,8 @@ public class Algem
       UIManager.put("TabbedPane.font", fsans);
       UIManager.put("CheckBox.font", fsans);
       UIManager.put("CheckBoxMenuItem.font", fsans);
-      UIManager.put("TitledBorder.font", fsans.deriveFont(Font.BOLD + Font.ITALIC));
+      UIManager.put("TitledBorder.font", titleFont);
+      //UIManager.put("TitledBorder.font", fsans.deriveFont(Font.BOLD + Font.ITALIC));
       UIManager.put("RadioButton.font", fsans);
       UIManager.put("List.font", fsans);
     }
