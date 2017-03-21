@@ -323,16 +323,9 @@ public class GemDesktopCtrl
       postitCreate.addActionListener(this);
       addPanel(PostitCreateCtrl.POSTIT_CREATE_KEY, postitCreate);
     }
-    else if ("Contacts (csv)".equals(arg)) {
-System.out.println("importer contacts");
-      try {
-        ImportCsvHandler importHandler = new ImportCsvHandler(ImportCsvHandler.IMPORT_FILE_NAME);
-        //ImportCsvCtrl importCtrl = new ImportCsvCtrl(getFrame(), false, importHandler.getHeader(), importHandler.getPreview());
-        ImportCsvCtrl importCtrl = new ImportCsvCtrl(getFrame(), false, new ImportCsvHandler());
+    else if (BundleUtil.getLabel("Menu.import.csv.contacts.label").equals(arg)) {
+        ImportCsvCtrl importCtrl = new ImportCsvCtrl(getFrame(), true, new ImportCsvHandler());
         importCtrl.createUI();
-      } catch (IOException ex) {
-        GemLogger.log(ex.getMessage());
-      }
     }
     else if (BundleUtil.getLabel("Menu.contact.label").equals(arg)) {
       ContactExportDlg dlg = new ContactExportDlg(this);
@@ -733,7 +726,7 @@ System.out.println("importer contacts");
     mFile.addSeparator();
 
     JMenu mImport = new JMenu(BundleUtil.getLabel("Menu.import.label"));
-    menu = mImport.add(new JMenuItem("Contacts (csv)"));
+    menu = mImport.add(new JMenuItem(BundleUtil.getLabel("Menu.import.csv.contacts.label")));
     menu.addActionListener(this);
     mFile.add(mImport);
     JMenu mExport = new JMenu(BundleUtil.getLabel("Menu.export.label"));

@@ -134,8 +134,8 @@ public class Algem
     setLocale(props);
 
     /* -------------------------- */
-    /* Initialisation driver JDBC */
-    /* -------------------------- */
+ /* Initialisation driver JDBC */
+ /* -------------------------- */
     try {
       setDB(host, base, props);
     } catch (SQLException ex) {
@@ -144,8 +144,8 @@ public class Algem
     }
     cache = DataCache.getInstance(dc, login);// !important before Logger
     /* -------------------------- */
-    /* Logger initialisation */
-    /* -------------------------- */
+ /* Logger initialisation */
+ /* -------------------------- */
     String logPath = ConfigUtil.getConf(ConfigKey.LOG_PATH.getKey()) + "/algem.log";
     String msg = "Algem version " + APP_VERSION + "\nJava version " + System.getProperty("java.version");
     if (logPath != null) {
@@ -165,8 +165,8 @@ public class Algem
     final GemBoot gemBoot = new GemBoot();
 
     /* ------------------------ */
-    /* Test login user validity */
-    /* ------------------------ */
+ /* Test login user validity */
+ /* ------------------------ */
     boolean auth = "true".equalsIgnoreCase(props.getProperty("auth"));
 
     if (auth || login == null) {//authentication required
@@ -177,76 +177,75 @@ public class Algem
 
     cache.load(gemBoot);
     /* ------------------------------------------------ */
-    /* Creates the frame of the application */
-    /* ------------------------------------------------ */
+ /* Creates the frame of the application */
+ /* ------------------------------------------------ */
     setDesktop();
     gemBoot.close();
   }
 
-   private void checkUser(String u, String pass, boolean auth) {
+  private void checkUser(String u, String pass, boolean auth) {
     User currentUser = cache.getUser();
     if (currentUser == null) {
       MessagePopup.error(null, MessageUtil.getMessage("unknown.login", u));
       System.exit(4);
-    } else {
-      if (auth) {
-        if (!cache.getUserService().authenticate(currentUser, pass)) {
-          MessagePopup.error(null, MessageUtil.getMessage("authentication.failure"));
-          System.exit(5);
-        }
+    } else if (auth) {
+      if (!cache.getUserService().authenticate(currentUser, pass)) {
+        MessagePopup.error(null, MessageUtil.getMessage("authentication.failure"));
+        System.exit(5);
       }
     }
   }
 
-   private boolean authenticate(String login, String pass) {
-     return cache.getUserService().authenticate(login, pass);
-   }
+  private boolean authenticate(String login, String pass) {
+    return cache.getUserService().authenticate(login, pass);
+  }
 
-   /**
-    * Presents a dialog to authenticate user.
-    * @param parent parent frame
-    */
-   private void checkAuthUser(Frame parent) {
-     String login = null;
-     String pass = null;
-     boolean success = false;
-      int trials = 1;
-      do {
-        AuthDlg dlg = new AuthDlg(parent);
-        if (dlg.isValidation()) {
-          login = dlg.getLogin();
-          pass = dlg.getPass();
-        } else {
-          System.exit(5);
-        }
-        if (login.length() > 0 && pass.length() > 0 && cache.getUserService().authenticate(login, pass)) {
-          success = true;
-        } else if (trials < 3) {
-          MessagePopup.error(parent, MessageUtil.getMessage("authentication.failure"));
-        }
-        trials++;
-      } while (success == false && trials <= 3);
-      if (success) {
-        cache.setUser(login);
+  /**
+   * Presents a dialog to authenticate user.
+   *
+   * @param parent parent frame
+   */
+  private void checkAuthUser(Frame parent) {
+    String login = null;
+    String pass = null;
+    boolean success = false;
+    int trials = 1;
+    do {
+      AuthDlg dlg = new AuthDlg(parent);
+      if (dlg.isValidation()) {
+        login = dlg.getLogin();
+        pass = dlg.getPass();
       } else {
-        MessagePopup.error(parent, MessageUtil.getMessage("unknown.login", login));
         System.exit(5);
       }
-   }
+      if (login.length() > 0 && pass.length() > 0 && cache.getUserService().authenticate(login, pass)) {
+        success = true;
+      } else if (trials < 3) {
+        MessagePopup.error(parent, MessageUtil.getMessage("authentication.failure"));
+      }
+      trials++;
+    } while (success == false && trials <= 3);
+    if (success) {
+      cache.setUser(login);
+    } else {
+      MessagePopup.error(parent, MessageUtil.getMessage("unknown.login", login));
+      System.exit(5);
+    }
+  }
 
-   /**
-    * Checks if this @{code login} is valid.
-    * This method must be called when authentication is disabled in properties.
-    * @param login a login string
-    */
-   private void checkUnauthUser(String login) {
+  /**
+   * Checks if this @{code login} is valid.
+   * This method must be called when authentication is disabled in properties.
+   *
+   * @param login a login string
+   */
+  private void checkUnauthUser(String login) {
     cache.setUser(login);
     if (cache.getUser() == null) {
       MessagePopup.error(null, MessageUtil.getMessage("unknown.login", login));
       System.exit(4);
     }
   }
-
 
   /**
    * Creates a log file into temp folder.
@@ -259,13 +258,13 @@ public class Algem
 
   private void setDesktop() {
     String title = "Algem" + "(" + APP_VERSION + ")/" + props.getProperty("appClient");
-            //			+ " - Utilisateur système " +System.getProperty("user.name")
-            // + " - jdbc://" + hostName + "/" + baseName;
+    //			+ " - Utilisateur système " +System.getProperty("user.name")
+    // + " - jdbc://" + hostName + "/" + baseName;
 
     frame = new JFrame(title);
     Preferences prefs = Preferences.userRoot().node("/algem/ui");
     frame.setSize(prefs.getInt("desktop.w", DEF_WIDTH), prefs.getInt("desktop.h", DEF_HEIGHT));
-    frame.setLocation(prefs.getInt("desktop.x",DEF_LOCATION.x), prefs.getInt("desktop.y", DEF_LOCATION.y));
+    frame.setLocation(prefs.getInt("desktop.x", DEF_LOCATION.x), prefs.getInt("desktop.y", DEF_LOCATION.y));
     checkVersion(frame);
 
     GemDesktopCtrl desktop = new GemDesktopCtrl(frame, cache, props);
@@ -350,8 +349,6 @@ public class Algem
     dc.connect();
   }
 
-
-
   private void checkVersion(JFrame frame) {
     String v = cache.getVersion();
     if (!v.equals(APP_VERSION)) {
@@ -407,7 +404,7 @@ public class Algem
       setLafProperties(laf);
     }
     // load alternatives look and feel
-    for(Object o : props.keySet()) {
+    for (Object o : props.keySet()) {
       String k = (String) o;
       if (k.startsWith("lookandfeel")) {
         String clazz = props.getProperty(k);
@@ -433,9 +430,39 @@ public class Algem
   }
 
   public static void setLafProperties(final String lafClassName) {
-   try {
-     UIManager.setLookAndFeel(lafClassName);
-    } catch (Exception ex) {
+    try {
+      System.out.println("lafClassName " + lafClassName);
+
+      if (lafClassName.startsWith("com.jtattoo")) {
+        switch (lafClassName) {
+          case "com.jtattoo.plaf.acryl.AcrylLookAndFeel":
+            com.jtattoo.plaf.acryl.AcrylLookAndFeel.setTheme("Default", "INSERT YOUR LICENSE KEY HERE", "Algem");
+            break;
+          case "com.jtattoo.plaf.aero.AerolLookAndFeel":
+            com.jtattoo.plaf.aero.AeroLookAndFeel.setTheme("Default", "INSERT YOUR LICENSE KEY HERE", "Algem");
+            break;
+          case "com.jtattoo.plaf.aluminium.AluminiumLookAndFeel":
+            com.jtattoo.plaf.aluminium.AluminiumLookAndFeel.setTheme("Default", "INSERT YOUR LICENSE KEY HERE", "Algem");
+            break;
+          case "com.jtattoo.plaf.bernstein.BernsteinLookAndFeel":
+            com.jtattoo.plaf.bernstein.BernsteinLookAndFeel.setTheme("Default", "INSERT YOUR LICENSE KEY HERE", "Algem");
+            break;
+          case "com.jtattoo.plaf.fast.FastLookAndFeel":
+            com.jtattoo.plaf.fast.FastLookAndFeel.setTheme("Default", "INSERT YOUR LICENSE KEY HERE", "Algem");
+            break;
+          case "com.jtattoo.plaf.graphite.GraphiteLookAndFeel":
+            com.jtattoo.plaf.graphite.GraphiteLookAndFeel.setTheme("Default", "INSERT YOUR LICENSE KEY HERE", "Algem");
+            break;
+          case "com.jtattoo.plaf.smart.SmartLookAndFeel":
+            com.jtattoo.plaf.smart.SmartLookAndFeel.setTheme("Default", "INSERT YOUR LICENSE KEY HERE", "Algem");
+            break;
+          case "com.jtattoo.plaf.texture.TextureLookAndFeel":
+            com.jtattoo.plaf.texture.TextureLookAndFeel.setTheme("Default", "INSERT YOUR LICENSE KEY HERE", "Algem");
+            break;
+        }
+      }
+      UIManager.setLookAndFeel(lafClassName);
+    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
       GemLogger.log("look&feel exception : " + ex.getMessage());
     }
     String lafName = UIManager.getLookAndFeel().getName();
@@ -460,7 +487,8 @@ public class Algem
       case "Fast":
       case "Graphite":
       case "Smart":
-        initUIFonts();
+      case "Texture":
+        //initUIFonts();
         def.put("TableHeader.font", myFont); // default : Font SansSerif 12
         def.put("TableHeader:\"TableHeader.renderer\".contentMargins", new InsetsUIResource(2, 2, 2, 2)); // default: (2,5,4,5)
         def.put("Table.font", myFont); // default : Font SansSerif 12

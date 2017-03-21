@@ -36,7 +36,6 @@ public class SimpleCharsetDecoder
 {
 
   public Charset detectCharset(File f, String[] charsets) throws IOException {
-
     Charset charset = null;
 
     for (String charsetName : charsets) {

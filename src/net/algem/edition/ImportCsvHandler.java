@@ -26,12 +26,15 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import net.algem.util.SimpleCharsetDecoder;
 import org.supercsv.cellprocessor.ParseDate;
 import org.supercsv.cellprocessor.constraint.NotNull;
 import org.supercsv.cellprocessor.constraint.UniqueHashCode;
 import org.supercsv.cellprocessor.ift.CellProcessor;
+import org.supercsv.comment.CommentStartsWith;
 import org.supercsv.io.CsvListReader;
 import org.supercsv.io.ICsvListReader;
 import org.supercsv.prefs.CsvPreference;
@@ -47,15 +50,17 @@ public class ImportCsvHandler {
   public static String IMPORT_FILE_NAME = "/home/jm/algem/src/git/trunk/doc/test-import1.csv";
   //public static String IMPORT_FILE_NAME = "/home/jm/dev/algem/git/doc/test-import1.csv";
   private String fileName;
+  private Charset charset;
 
-  private ICsvListReader listReader;
+//  private ICsvListReader listReader;
 
   public ImportCsvHandler() {
   }
 
   
   public ImportCsvHandler(String fileName) throws FileNotFoundException {
-    listReader = new CsvListReader(new FileReader(fileName), CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
+    this.fileName = fileName;
+    //listReader = new CsvListReader(new FileReader(fileName), CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
   }
 
 
@@ -85,7 +90,7 @@ public class ImportCsvHandler {
       for (String s : header) {
         System.out.println(s.trim());
       }
-      /*while( (listReader.read()) != null ) {
+      while( (listReader.read()) != null ) {
 
                         // use different processors depending on the number of columns
                         final CellProcessor[] processors;
@@ -98,7 +103,7 @@ public class ImportCsvHandler {
                         final List<Object> customerList = listReader.executeProcessors(processors);
                         System.out.println(String.format("lineNo=%s, rowNo=%s, columns=%s, customerList=%s",
                                 listReader.getLineNumber(), listReader.getRowNumber(), customerList.size(), customerList));
-                }*/
+                }
 
     } finally {
       if (listReader != null) {
@@ -106,24 +111,77 @@ public class ImportCsvHandler {
       }
     }
   }
-  public void setReader(String fileName, Charset c) throws FileNotFoundException, UnsupportedEncodingException {
-    
+  public ICsvListReader getReader() throws FileNotFoundException, UnsupportedEncodingException {
     //listReader = new CsvListReader(new FileReader(fileName), CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
-    InputStreamReader input = new InputStreamReader(new FileInputStream(fileName), c != null ? c.name() : "UTF-8");
-    listReader = new CsvListReader(input, new CsvPreference.Builder('"', ';', "\n").build());
-  }
-  
-  public String[] getHeader() throws IOException {
-    //listReader = new CsvListReader(new FileReader(fileName), CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
-      return listReader.getHeader(true);
+    InputStreamReader input = new InputStreamReader(new FileInputStream(fileName), charset != null ? charset.name() : "UTF-8");
+    return new CsvListReader(input, new CsvPreference.Builder('"', ';', "\n").ignoreEmptyLines(true).skipComments(new CommentStartsWith("#")).build());
   }
 
-  public List<String> getPreview() throws IOException {
+  public List<String> getPreview(ICsvListReader listReader) throws IOException {
     if (listReader != null) {
       List<String> data = listReader.read();
+      listReader.close();
       return data;
-    }
+  }
+    
     return null;
+  }
+  
+  void setOptions(String fileName, Charset c) {
+    this.fileName = fileName;
+    this.charset = c;
+  }
+  
+  public boolean create(CellProcessor[] processors, Map<String,Integer> map) throws IOException {
+    ICsvListReader listReader = getReader();
+    listReader.getHeader(true);
+    while((listReader.read()) != null ) {
+      final List<Object> rowData = listReader.executeProcessors(processors);
+      int idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[0]);
+      Integer id = 0;
+      if (idx > -1) {
+        id = (Integer) rowData.get(map.get(ImportCsvCtrl.IMPORT_FIELDS[0]));
+      }  
+      idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[2]);
+      String name = null;
+      if (idx > -1) {
+        name = (String) rowData.get(map.get(ImportCsvCtrl.IMPORT_FIELDS[2]));
+      }
+      if (name == null) {
+        return false;
+      }
+      
+      idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[4]);
+      String adr1 = null;
+      if (idx > -1) {
+        adr1 = (String) rowData.get(map.get(ImportCsvCtrl.IMPORT_FIELDS[4]));
+      }
+      
+      idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[5]);
+      String adr2 = null;
+      if (idx > -1) {
+        adr2 = (String) rowData.get(map.get(ImportCsvCtrl.IMPORT_FIELDS[5]));
+      }
+      idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[6]);
+      String cdp = null;
+      if (idx > -1) {
+        cdp = (String) rowData.get(map.get(ImportCsvCtrl.IMPORT_FIELDS[6]));
+      }
+      idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[7]);
+      String city = null;
+      if (idx > -1) {
+        city = (String) rowData.get(map.get(ImportCsvCtrl.IMPORT_FIELDS[7]));
+      }
+      System.out.println("Id : "+ id);
+      System.out.println("Nom : "+ name);
+      System.out.println("Adr1 : "+ adr1);
+      System.out.println("Adr2 : "+ adr2);
+      System.out.println("Cdp : "+ cdp);
+      System.out.println("Ville : "+ city);
+      
+    }
+    
+    return true;
   }
 
   public CellProcessor[] createProcessorFromSource(int length) {
