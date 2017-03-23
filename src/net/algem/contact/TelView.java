@@ -1,7 +1,7 @@
 /*
- * @(#)TelView.java	2.8.y 26/09/2014
+ * @(#)TelView.java	2.13.0 22/03/2017
  *
- * Copyright (c) 1998-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1998-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,7 +27,7 @@ import net.algem.util.BundleUtil;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.y
+ * @version 2.13.0
  */
 public class TelView
         extends InfoView
@@ -44,7 +44,9 @@ public class TelView
     clearAll();
     if (tels != null && tels.size() > 0) {
       for (Telephone t : tels) {
-        TelPanel tp = new TelPanel(vp, t);
+        TelPanel tp = new TelPanel();
+        tp.init(vp, false);
+        tp.setTel(t);
         rows.add(tp);
         add(tp);
       }
@@ -87,7 +89,9 @@ public class TelView
   protected void addRow() {
     Telephone t = new Telephone();
     t.setTypeTel(Telephone.DEFAULT_TYPE);
-    TelPanel tp = new TelPanel(vp, t);
+    TelPanel tp = new TelPanel();
+    tp.init(vp, false);
+    tp.setTel(t);
     rows.add(tp);
     add(tp);
     revalidate();

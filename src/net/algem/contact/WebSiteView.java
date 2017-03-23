@@ -1,7 +1,7 @@
 /*
- * @(#)WebSiteView.java	2.8.y 26/09/2014
+ * @(#)WebSiteView.java	2.13.0 22/03/17
  *
- * Copyright (c) 1998-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1998-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,7 +28,7 @@ import net.algem.util.jdesktop.DesktopBrowseHandler;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.y
+ * @version 2.13.0
  * @since 2.1.b
  */
 public class WebSiteView
@@ -41,7 +41,7 @@ public class WebSiteView
   public WebSiteView(Vector<Param> vp) {
     this(vp, true);
   }
-  
+
   public WebSiteView(Vector<Param> vp, boolean border) {
     super(BundleUtil.getLabel("Website.label"), border);
     this.vp = vp;
@@ -52,7 +52,9 @@ public class WebSiteView
     clearAll();
     if (sites != null && sites.size() > 0) {
       for (WebSite s : sites) {
-        WebSitePanel ps = new WebSitePanel(vp, s, browser);
+        WebSitePanel ps = new WebSitePanel(browser);
+        ps.init(vp, false);
+        ps.setSite(s);
         rows.add(ps);
         add(ps);
       }
@@ -80,7 +82,9 @@ public class WebSiteView
   protected void addRow() {
     WebSite s = new WebSite();
     s.setType(WebSite.DEFAULT_TYPE);
-    WebSitePanel ps = new WebSitePanel(vp, s, browser);
+    WebSitePanel ps = new WebSitePanel(browser);
+    ps.init(vp, false);
+    ps.setSite(s);
     rows.add(ps);
     add(ps);
     revalidate();

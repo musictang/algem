@@ -1,7 +1,7 @@
 /*
- * @(#)InfoPanel.java	2.8.k 23/07/13
+ * @(#)InfoPanel.java	2.13.0 22/03/2017
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -36,7 +36,7 @@ import net.algem.util.ui.GridBagHelper;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.k
+ * @version 2.13.0
  */
 public class InfoPanel extends GemPanel {
 
@@ -48,7 +48,7 @@ public class InfoPanel extends GemPanel {
   protected JCheckBox iArchive;
   protected ParamChoice iChoice;
   protected GridBagHelper gb;
-  private int col = 4;
+  protected int col = 4;
 
   public InfoPanel() {
     setLayout(new GridBagLayout());
@@ -61,12 +61,7 @@ public class InfoPanel extends GemPanel {
     init(label);
   }
 
-  public InfoPanel(Vector<Param> v, boolean withArchive) {
-    this();
-    init(v, withArchive);
-  }
-
-  private void init(String label) {
+  protected void init(String label) {
 
     iButton = new GemButton(label);
     iButton.setMargin(PADDING);
@@ -79,7 +74,7 @@ public class InfoPanel extends GemPanel {
     gb.add(iArchive, 4,0,1,1, GridBagConstraints.HORIZONTAL, 0.0, 0.0);
   }
 
-  private void init(Vector<Param> v, boolean withArchive) {
+  protected void init(Vector<Param> v, boolean withArchive) {
 
     iChoice = new ParamChoice(v);
     iField = new GemField();

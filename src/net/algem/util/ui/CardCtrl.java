@@ -1,7 +1,7 @@
 /*
- * @(#)CardCtrl.java	2.9.3.2 12/03/15
+ * @(#)CardCtrl.java	2.13.0 22/03/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -33,7 +33,7 @@ import net.algem.util.event.GemEventListener;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.3.2
+ * @version 2.13.0
  */
 public abstract class CardCtrl
         extends GemPanel
@@ -96,9 +96,9 @@ public abstract class CardCtrl
 
   public abstract boolean next();
 
-  public abstract boolean cancel();
-
   public abstract boolean prev();
+
+  public abstract boolean cancel();
 
   public abstract boolean validation();
 
@@ -130,7 +130,7 @@ public abstract class CardCtrl
       btPrev.setEnabled(true);
     }
     if (step == panels.size() - 1) {
-      btNext.setText(GemCommand.VALIDATE_CMD);// dernière étape
+      btNext.setText(GemCommand.VALIDATE_CMD);// last step
     } else {
       btNext.setText(GemCommand.NEXT_CMD);
     }

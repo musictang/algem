@@ -1,7 +1,7 @@
 /*
- * @(#)TelPanel.java	2.6.a 17/09/12
+ * @(#)TelPanel.java	2.13.0 22/03/2017
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -22,20 +22,23 @@
 package net.algem.contact;
 
 import java.awt.Color;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
 import java.util.Vector;
 import net.algem.config.Param;
+import net.algem.config.ParamChoice;
+import static net.algem.contact.InfoPanel.RIGHT_SPACING;
+import net.algem.util.ui.GemField;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.13.0
  */
 public class TelPanel extends InfoPanel
 {
 
-  public TelPanel(Vector<Param> params, Telephone tel) {
-    super(params, false);
-    setTel(tel);
+  public TelPanel() {
   }
 
   public Telephone getTel() {
@@ -58,5 +61,13 @@ public class TelPanel extends InfoPanel
     iChoice.setEnabled(editable);
     iField.setEditable(editable);
     iField.setBackground(editable ? Color.white : Color.lightGray);
+  }
+
+  @Override
+  protected void init(Vector<Param> v, boolean withArchive) {
+    iChoice = new ParamChoice(v);
+    iField = new GemField();
+    gb.add(iChoice, 0,0,1,1, RIGHT_SPACING, GridBagConstraints.HORIZONTAL, 0.0, 0.0);
+    gb.add(iField, 1,0,3,1, new Insets(0,0,0,0), GridBagConstraints.HORIZONTAL, 1.0, 0.0);
   }
 }

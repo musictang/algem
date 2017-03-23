@@ -1,6 +1,6 @@
 /*
- * @(#)Telephone.java 2.9.4.13 05/11/15
- * 
+ * @(#)Telephone.java 2.13.0 22/03/2017
+ *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,23 +16,25 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.contact;
 
+import java.util.Objects;
+
 /**
  * Telephone model.
- * 
+ *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.13.0
  */
 public class Telephone
         implements java.io.Serializable, Cloneable
 {
   public static int DEFAULT_TYPE = 1;
   private static final long serialVersionUID = -1173024853654392333L;
-  
+
   private int idper;
   private int idx;
   private String number;
@@ -53,19 +55,28 @@ public class Telephone
 
   /**
    * Two Telephones instances equal if number and type are equal.
-   * @param t Telephone
-   * @return vrai si égal
+   * @param obj
+   * @return true if equal
    */
   @Override
-  public boolean equals(Object t) {
-    if (t instanceof Telephone) {
-      return equals((Telephone) t);
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
     }
-    return false;
-  }
-
-  public boolean equals(Telephone t) {
-    return number.equals(t.number) && typetel == t.typetel;
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final Telephone other = (Telephone) obj;
+    if (this.typetel != other.typetel) {
+      return false;
+    }
+    if (!Objects.equals(this.number, other.number)) {
+      return false;
+    }
+    return true;
   }
 
   @Override
@@ -117,5 +128,5 @@ public class Telephone
   public int getTypeTel() {
     return typetel;
   }
-  
+
 }

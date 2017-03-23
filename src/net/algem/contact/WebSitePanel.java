@@ -1,5 +1,5 @@
 /*
- * @(#)WebSitePanel.java	2.11.4 02/01/17
+ * @(#)WebSitePanel.java	2.13.0 22/03/17
  *
  * Copyright (c) 1998-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -23,10 +23,6 @@ package net.algem.contact;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.util.Vector;
-import net.algem.config.Param;
 import net.algem.util.BundleUtil;
 import net.algem.util.GemLogger;
 import net.algem.util.jdesktop.DesktopBrowseHandler;
@@ -35,16 +31,15 @@ import net.algem.util.jdesktop.DesktopHandlerException;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.4
+ * @version 2.13.0
  */
 public class WebSitePanel extends InfoPanel implements ActionListener {
 
   private DesktopBrowseHandler browser;
   private short ptype;// temp value
 
-  public WebSitePanel(Vector<Param> v, WebSite s, DesktopBrowseHandler browser) {
-    super(v, false);
-    setSite(s);
+  public WebSitePanel(DesktopBrowseHandler browser) {
+//    super(v, false);
     addButton(BundleUtil.getLabel("See.label"), BundleUtil.getLabel("Website.view.tip"));
     this.browser = browser;
     iButton.addActionListener(this);
@@ -58,19 +53,19 @@ public class WebSitePanel extends InfoPanel implements ActionListener {
     return s;
   }
 
-  private void setSite(WebSite s) {
+  public void setSite(WebSite s) {
     if (s.getType() >= 0) {
       iChoice.setKey(s.getType());
     }
     iField.setText(s.getUrl());
     ptype = s.getPtype();
   }
-  
+
   /**
    * Adds the prefix http or https at the beginning of the url if not present.
    * @param url current url
    * @return formatted-url
-   * @deprecated 
+   * @deprecated
    */
   private String maybePrefixURL(String url) {
     String val = iChoice.getValue().toLowerCase();

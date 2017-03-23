@@ -1,5 +1,5 @@
 /*
- * @(#) ImportCsvHandler.java Algem 2.12.1 15/03/2017
+ * @(#) ImportCsvHandler.java Algem 2.13.0 22/03/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -19,6 +19,7 @@
  */
 package net.algem.edition;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -29,6 +30,12 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
+import net.algem.contact.Address;
+import net.algem.contact.Contact;
+import net.algem.contact.Email;
+import net.algem.contact.Telephone;
+import net.algem.util.GemLogger;
 import net.algem.util.SimpleCharsetDecoder;
 import org.supercsv.cellprocessor.ParseDate;
 import org.supercsv.cellprocessor.constraint.NotNull;
@@ -42,27 +49,26 @@ import org.supercsv.prefs.CsvPreference;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.12.1
- * @since 2.12.1 15/03/2017
+ * @version 2.13.0
+ * @since 2.13.0 15/03/2017
  */
 public class ImportCsvHandler {
 
   public static String IMPORT_FILE_NAME = "/home/jm/algem/src/git/trunk/doc/test-import1.csv";
+  private static final int TEL1_TYPE = 1;
+  private static final int TEL2_TYPE = 8;
   //public static String IMPORT_FILE_NAME = "/home/jm/dev/algem/git/doc/test-import1.csv";
   private String fileName;
   private Charset charset;
 
 //  private ICsvListReader listReader;
-
   public ImportCsvHandler() {
   }
 
-  
   public ImportCsvHandler(String fileName) throws FileNotFoundException {
     this.fileName = fileName;
     //listReader = new CsvListReader(new FileReader(fileName), CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
   }
-
 
   /**
    * An example of reading a file with a variable number of columns using CsvListReader. It demonstrates that you can
@@ -90,20 +96,19 @@ public class ImportCsvHandler {
       for (String s : header) {
         System.out.println(s.trim());
       }
-      while( (listReader.read()) != null ) {
+      while ((listReader.read()) != null) {
+        // use different processors depending on the number of columns
+        final CellProcessor[] processors;
+        if (listReader.length() == noBirthDateProcessors.length) {
+          processors = noBirthDateProcessors;
+        } else {
+          processors = allProcessors;
+        }
 
-                        // use different processors depending on the number of columns
-                        final CellProcessor[] processors;
-                        if( listReader.length() == noBirthDateProcessors.length ) {
-                                processors = noBirthDateProcessors;
-                        } else {
-                                processors = allProcessors;
-                        }
-
-                        final List<Object> customerList = listReader.executeProcessors(processors);
-                        System.out.println(String.format("lineNo=%s, rowNo=%s, columns=%s, customerList=%s",
-                                listReader.getLineNumber(), listReader.getRowNumber(), customerList.size(), customerList));
-                }
+        final List<Object> customerList = listReader.executeProcessors(processors);
+        System.out.println(String.format("lineNo=%s, rowNo=%s, columns=%s, customerList=%s",
+          listReader.getLineNumber(), listReader.getRowNumber(), customerList.size(), customerList));
+      }
 
     } finally {
       if (listReader != null) {
@@ -111,6 +116,7 @@ public class ImportCsvHandler {
       }
     }
   }
+
   public ICsvListReader getReader() throws FileNotFoundException, UnsupportedEncodingException {
     //listReader = new CsvListReader(new FileReader(fileName), CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
     InputStreamReader input = new InputStreamReader(new FileInputStream(fileName), charset != null ? charset.name() : "UTF-8");
@@ -122,70 +128,154 @@ public class ImportCsvHandler {
       List<String> data = listReader.read();
       listReader.close();
       return data;
-  }
-    
+    }
+
     return null;
   }
-  
-  void setOptions(String fileName, Charset c) {
-    this.fileName = fileName;
-    this.charset = c;
+
+  void setFile(File file) {
+    this.fileName = file.getPath();
+    this.charset = getCharset(file);
   }
-  
-  public boolean create(CellProcessor[] processors, Map<String,Integer> map) throws IOException {
+
+  public List<Contact> create(CellProcessor[] processors, Map<String, Integer> map) throws IOException {
     ICsvListReader listReader = getReader();
     listReader.getHeader(true);
-    while((listReader.read()) != null ) {
+    List<Contact> contacts = new ArrayList<>();
+    while ((listReader.read()) != null) {
       final List<Object> rowData = listReader.executeProcessors(processors);
+      Contact c = new Contact();
+
       int idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[0]);
-      Integer id = 0;
+
       if (idx > -1) {
-        id = (Integer) rowData.get(map.get(ImportCsvCtrl.IMPORT_FIELDS[0]));
-      }  
+        String sid = (String) rowData.get(map.get(ImportCsvCtrl.IMPORT_FIELDS[0]));
+        c.setId(Integer.parseInt(sid));
+      }
+
+      idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[1]);
+      if (idx > -1) {
+        c.setGender((String) rowData.get(map.get(ImportCsvCtrl.IMPORT_FIELDS[1])));
+      }
+
       idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[2]);
-      String name = null;
       if (idx > -1) {
-        name = (String) rowData.get(map.get(ImportCsvCtrl.IMPORT_FIELDS[2]));
+        c.setName((String) rowData.get(map.get(ImportCsvCtrl.IMPORT_FIELDS[2])));
       }
-      if (name == null) {
-        return false;
+
+      idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[3]);
+      if (idx > -1) {
+        c.setFirstName((String) rowData.get(map.get(ImportCsvCtrl.IMPORT_FIELDS[3])));
       }
-      
+
       idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[4]);
-      String adr1 = null;
       if (idx > -1) {
-        adr1 = (String) rowData.get(map.get(ImportCsvCtrl.IMPORT_FIELDS[4]));
+        Address a = new Address();
+        String adr1 = (String) rowData.get(map.get(ImportCsvCtrl.IMPORT_FIELDS[4]));
+        a.setAdr1(adr1 == null || "null".equals(adr1) ? "" : adr1);
+        c.setAddress(a);
       }
-      
+
       idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[5]);
-      String adr2 = null;
       if (idx > -1) {
-        adr2 = (String) rowData.get(map.get(ImportCsvCtrl.IMPORT_FIELDS[5]));
+        if (c.getAddress() != null) {
+          String adr2 = (String) rowData.get(map.get(ImportCsvCtrl.IMPORT_FIELDS[5]));
+          c.getAddress().setAdr2(adr2 == null || "null".equals(adr2) ? "" : adr2);
+        }
       }
+
       idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[6]);
-      String cdp = null;
       if (idx > -1) {
-        cdp = (String) rowData.get(map.get(ImportCsvCtrl.IMPORT_FIELDS[6]));
+        if (c.getAddress() != null) {
+          c.getAddress().setCdp((String) rowData.get(map.get(ImportCsvCtrl.IMPORT_FIELDS[6])));
+        }
       }
+
       idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[7]);
-      String city = null;
       if (idx > -1) {
-        city = (String) rowData.get(map.get(ImportCsvCtrl.IMPORT_FIELDS[7]));
+        if (c.getAddress() != null) {
+          c.getAddress().setCity((String) rowData.get(map.get(ImportCsvCtrl.IMPORT_FIELDS[7])));
+        }
       }
-      System.out.println("Id : "+ id);
-      System.out.println("Nom : "+ name);
-      System.out.println("Adr1 : "+ adr1);
-      System.out.println("Adr2 : "+ adr2);
-      System.out.println("Cdp : "+ cdp);
-      System.out.println("Ville : "+ city);
-      
+
+      idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[8]);
+      String tel1 = null;
+      if (idx > -1) {
+        tel1 = (String) rowData.get(map.get(ImportCsvCtrl.IMPORT_FIELDS[8]));
+        if (tel1 != null && tel1.length() > 0) {
+          Vector<Telephone> tels = new Vector<Telephone>();
+          Telephone t1 = new Telephone();
+          t1.setNumber(tel1);
+          t1.setTypeTel(TEL1_TYPE);
+          t1.setIdx(0);
+          tels.add(t1);
+          c.setTele(tels);
+        }
+      }
+      idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[9]);
+      String tel2 = null;
+      if (idx > -1) {
+        tel2 = (String) rowData.get(map.get(ImportCsvCtrl.IMPORT_FIELDS[9]));
+        if (tel2 != null && tel2.length() > 0) {
+          Telephone t2 = new Telephone();
+          t2.setNumber(tel1);
+          t2.setTypeTel(TEL2_TYPE);
+          if (c.getTele() != null) {
+            t2.setIdx(1);
+            c.getTele().add(t2);
+          } else {
+            Vector<Telephone> tels = new Vector<Telephone>();
+            t2.setIdx(0);
+            tels.add(t2);
+            c.setTele(tels);
+          }
+        }
+      }
+
+      idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[10]);
+      if (idx > -1) {
+        String email1 = (String) rowData.get(map.get(ImportCsvCtrl.IMPORT_FIELDS[10]));
+        if (email1 != null && email1.length() > 0) {
+          Vector<Email> emails = new Vector<Email>();
+          Email m1 = new Email();
+          m1.setEmail(email1);
+          emails.add(m1);
+          c.setEmail(emails);
+        }
+      }
+      idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[11]);
+      if (idx > -1) {
+        String email2 = (String) rowData.get(map.get(ImportCsvCtrl.IMPORT_FIELDS[11]));
+        if (email2 != null && email2.length() > 0) {
+          if (c.getEmail() != null) {
+            Email m2 = new Email();
+            m2.setEmail(email2);
+            c.getEmail().addElement(m2);
+          }
+        }
+      }
+
+      if (c.getName() != null) {
+        contacts.add(c);
+      }
     }
-    
-    return true;
+
+    return contacts;
   }
 
   public CellProcessor[] createProcessorFromSource(int length) {
 
     return new CellProcessor[length];
+  }
+
+  private Charset getCharset(File f) {
+    try {
+      String[] charsetsToBeTested = {"UTF-8", "windows-1252", "ISO-8859-1", "ISO-8859-15", "x-MacRoman"};
+      SimpleCharsetDecoder cd = new SimpleCharsetDecoder();
+      return cd.detectCharset(f, charsetsToBeTested);
+    } catch (IOException ex) {
+      GemLogger.logException(ex);
+      return null;
+    }
   }
 }

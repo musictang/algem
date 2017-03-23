@@ -1,7 +1,7 @@
 /*
- * @(#)OrderTableModel.java	2.9.2 26/01/15
+ * @(#)OrderTableModel.java	2.13.0 22/03/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,7 +28,7 @@ import net.algem.util.ui.JTableModel;
  * Table model for member order.
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.13.0
  */
 public class OrderTableModel
         extends JTableModel<MemberOrder>
@@ -79,17 +79,17 @@ public class OrderTableModel
     MemberOrder cmd = tuples.elementAt(line);
     switch (col) {
       case 0:
-        return new Integer(cmd.getId());
+        return cmd.getId();
       case 1:
         return cmd.getCreation();
       case 2:
-        return new Integer(cmd.getMember());
+        return cmd.getMember();
       case 3:
         return cmd.getMemberName();
       case 4:
         return cmd.getMemberFirstname();
       case 5:
-        return new Integer(cmd.getPayer());
+        return cmd.getPayer();
     }
     return null;
   }

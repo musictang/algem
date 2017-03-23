@@ -1,7 +1,7 @@
 /*
- * @(#)Address.java	2.9.4.13 05/11/15
- * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * @(#)Address.java	2.13.0 22/03/2017
+ *
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,23 +16,25 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.contact;
 
+import java.util.Objects;
+
 /**
  * Address of contact.
- * 
+ *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.13.0
  * @since 1.0a 07/07/1999
  */
 public class Address
         implements java.io.Serializable, Cloneable
 {
   private static final long serialVersionUID = -4271706486538263344L;
-  
+
   private int oid;
   private int idper;
   private int type;
@@ -64,21 +66,33 @@ public class Address
   }
 
   @Override
-  public boolean equals(Object a) {
-    if (a instanceof Address) {
-      return equals((Address) a);
-    } else {
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
       return false;
     }
-  }
-
-  public boolean equals(Address a) {
-    return (a != null
-            && adr1.equals(a.adr1)
-            && adr2.equals(a.adr2)
-            && cdp.equals(a.cdp)
-            && city.equals(a.city)
-            && isArchive() == a.isArchive());
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final Address other = (Address) obj;
+    if (this.archive != other.archive) {
+      return false;
+    }
+    if (!Objects.equals(this.adr1, other.adr1)) {
+      return false;
+    }
+    if (!Objects.equals(this.adr2, other.adr2)) {
+      return false;
+    }
+    if (!Objects.equals(this.cdp, other.cdp)) {
+      return false;
+    }
+    if (!Objects.equals(this.city, other.city)) {
+      return false;
+    }
+    return true;
   }
 
   @Override
@@ -157,5 +171,5 @@ public class Address
   public Object clone() throws CloneNotSupportedException {
     return super.clone();
   }
-  
+
 }

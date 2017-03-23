@@ -1,7 +1,7 @@
 /*
- * @(#) ImportCsvTest.java Algem 2.11.0 20/03/2017
+ * @(#) ImportCsvTest.java Algem 2.13.0 20/03/2017
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -19,6 +19,7 @@
  */
 package net.algem.edition;
 
+import net.algem.util.model.TableIO;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -29,29 +30,30 @@ import static org.junit.Assert.*;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
+ * @since 2.13.0 20/03/2017
  */
 public class ImportCsvTest
 {
-  
+
   public ImportCsvTest() {
   }
-  
+
   @BeforeClass
   public static void setUpClass() {
   }
-  
+
   @AfterClass
   public static void tearDownClass() {
   }
-  
+
   @Before
   public void setUp() {
   }
-  
+
   @After
   public void tearDown() {
   }
-  
+
   @Test
   public void testComment() {
     //test comment lines in csv
@@ -63,5 +65,18 @@ public class ImportCsvTest
     assertTrue(input2.matches(regex1));
     assertTrue(input3.matches(regex1));
   }
-  
+
+  @Test
+  public void testNullString() {
+    String s = null;
+    String res = TableIO.escape(s);
+    assertNull(res);
+    res = escape(s);
+    assertNull(res);
+  }
+
+  private String escape(String s) {
+    return s;
+  }
+
 }

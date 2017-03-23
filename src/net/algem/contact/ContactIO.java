@@ -1,7 +1,7 @@
 /*
- * @(#)ContactIO.java	2.11.0 15/09/16
- * 
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * @(#)ContactIO.java	2.13.0 22/03/2017
+ *
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.contact;
 
@@ -49,7 +49,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.0
+ * @version 2.13.0
  * @since 1.0a 07/07/1999
  */
 public class ContactIO
@@ -115,33 +115,33 @@ public class ContactIO
   /**
    * Updates a contact.
    *
-   * @param c ancien contact
-   * @param n nouveau contact
+   * @param o old contact
+   * @param n new contact
    * @throws java.sql.SQLException
    */
-  public void update(Contact c, Contact n) throws SQLException {
-    System.out.println("ContactIO.update " + c + " --> " + n);
+  public void update(Contact o, Contact n) throws SQLException {
+    System.out.println("ContactIO.update " + o + " --> " + n);
 
-    n.setId(c.getId());
+    n.setId(o.getId());
     personIO.update(n);
 
-    Address a = c.getAddress();
+    Address ao = o.getAddress();
     Address an = n.getAddress();
-    if (a == null) {
+    if (ao == null) {
       if (an != null) {
-        an.setId(c.getId());
+        an.setId(o.getId());
         AddressIO.insert(an, dc);
         addCity(an, dc);
       }
-    } else if (an != null && !a.equals(an)) {
-      an.setId(c.getId());
+    } else if (an != null && !ao.equals(an)) {
+      an.setId(o.getId());
       AddressIO.update(an, dc);
       addCity(an, dc);
     } else if (an == null) {
-      AddressIO.delete(a, dc);
+      AddressIO.delete(ao, dc);
     }
 
-    Vector<Telephone> oldtels = c.getTele();
+    Vector<Telephone> oldtels = o.getTele();
     Vector<Telephone> newtels = n.getTele();
 
     int i = 0;
@@ -149,21 +149,21 @@ public class ContactIO
       Telephone nt = newtels.elementAt(i);
       if (oldtels != null && i < oldtels.size()) {
         if (!nt.equals(oldtels.elementAt(i))) {
-          nt.setIdper(c.getId());
+          nt.setIdper(o.getId());
           TeleIO.update(nt, i, dc);
         }
       } else {
-        nt.setIdper(c.getId());
+        nt.setIdper(o.getId());
         TeleIO.insert(nt, i, dc);
       }
     }
     // si le nombre d'anciens numéros > nombre nouveaux numéros
     for (; oldtels != null && i < oldtels.size(); i++) {
-      TeleIO.delete(c.getId(), i, dc);
+      TeleIO.delete(o.getId(), i, dc);
     }
 
     i = 0;
-    Vector<Email> oldmails = c.getEmail();
+    Vector<Email> oldmails = o.getEmail();
     Vector<Email> newmails = n.getEmail();
     for (; newmails != null && i < newmails.size(); i++) {
       Email ne = newmails.elementAt(i);
@@ -177,9 +177,9 @@ public class ContactIO
     }
 
     for (; oldmails != null && i < oldmails.size(); i++) {
-      EmailIO.delete(c.getId(), i, dc);
+      EmailIO.delete(o.getId(), i, dc);
     }
-    updateSites(c.getSites(), n.getSites(), c.getId(), c.getType());
+    updateSites(o.getSites(), n.getSites(), o.getId(), o.getType());
 
   }
 
@@ -462,7 +462,7 @@ public class ContactIO
         msg += MessageUtil.getMessage("contact.delete.bank.branch.warning", g);
         throw new ContactDeleteException(msg);
       }
-    } 
+    }
 
   }
 }

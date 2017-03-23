@@ -1,7 +1,7 @@
 /*
- * @(#)GemDesktopCtrl.java	2.9.6 18/03/16
+ * @(#)GemDesktopCtrl.java	2.13.0 22/03/2017
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -32,7 +32,6 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.*;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import javax.swing.*;
 import javax.swing.event.EventListenerList;
@@ -70,12 +69,12 @@ import net.algem.util.ui.UIAdjustable;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.6
+ * @version 2.13.0
  * @since 1.0a 05/07/2002
  */
 public class GemDesktopCtrl
-        implements ActionListener, GemDesktop, UIAdjustable
-{
+  implements ActionListener, GemDesktop, UIAdjustable {
+
   private final Cursor waitCursor = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
   private final Cursor defaultCursor = Cursor.getDefaultCursor();
 
@@ -138,8 +137,7 @@ public class GemDesktopCtrl
     frame.getContentPane().setLayout(new BorderLayout());
     frame.getContentPane().add(desktop, BorderLayout.CENTER);
 
-    frame.addWindowListener(new WindowAdapter()
-    {
+    frame.addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosing(WindowEvent evt) {
         try {
@@ -166,6 +164,7 @@ public class GemDesktopCtrl
 
   /**
    * Loads serialized modules.
+   *
    * @throws IOException
    */
   private void loadModules() throws IOException {
@@ -203,6 +202,7 @@ public class GemDesktopCtrl
 
   /**
    * Inits dispatcher and runs listening thread.
+   *
    * @throws IOException
    */
   private void setDispatcher() throws IOException {
@@ -243,6 +243,7 @@ public class GemDesktopCtrl
 
   /**
    * Cleanup and closing.
+   *
    * @throws GemCloseVetoException
    */
   private void close() throws GemCloseVetoException {
@@ -322,12 +323,12 @@ public class GemDesktopCtrl
       postitCreate = new PostitCreateCtrl(this, userService);
       postitCreate.addActionListener(this);
       addPanel(PostitCreateCtrl.POSTIT_CREATE_KEY, postitCreate);
-    }
-    else if (BundleUtil.getLabel("Menu.import.csv.contacts.label").equals(arg)) {
-        ImportCsvCtrl importCtrl = new ImportCsvCtrl(getFrame(), true, new ImportCsvHandler());
-        importCtrl.createUI();
-    }
-    else if (BundleUtil.getLabel("Menu.contact.label").equals(arg)) {
+    } else if (BundleUtil.getLabel("Menu.import.csv.contacts.label").equals(arg)) {
+      ImportCsvCtrl importCtrl = new ImportCsvCtrl(this, new ImportCsvHandler());
+      importCtrl.addActionListener(this);
+      importCtrl.createUI();
+      addPanel("Menu.import.csv.contacts", importCtrl, GemModule.XL_SIZE);
+    } else if (BundleUtil.getLabel("Menu.contact.label").equals(arg)) {
       ContactExportDlg dlg = new ContactExportDlg(this);
       dlg.setVisible(true);
     } else if (BundleUtil.getLabel("Menu.member.label").equals(arg)) {
@@ -346,8 +347,7 @@ public class GemDesktopCtrl
     } else if (BundleUtil.getLabel("Menu.student.all.label").equals(arg)) {
       AllStudentExportDlg dlg = new AllStudentExportDlg(this);
       dlg.setVisible(true);
-    }
-    else if (BundleUtil.getLabel("Menu.student.by.teacher.label").equals(arg)) {
+    } else if (BundleUtil.getLabel("Menu.student.by.teacher.label").equals(arg)) {
       TeacherStudentExportDlg dlg = new TeacherStudentExportDlg(this);
       dlg.setVisible(true);
     } else if (BundleUtil.getLabel("Menu.student.by.course.label").equals(arg)) {
@@ -755,7 +755,7 @@ public class GemDesktopCtrl
 
     JMenuItem miAccountHourStat = new JMenuItem(BundleUtil.getLabel("Menu.hour.stat.label"));
     miAccountHourStat.addActionListener(this);
-     if (!dataCache.authorize("Accounting.hours.stat.auth")) {
+    if (!dataCache.authorize("Accounting.hours.stat.auth")) {
       miAccountHourStat.setEnabled(false);
     }
     mExport.add(miAccountHourStat);
@@ -802,7 +802,6 @@ public class GemDesktopCtrl
      * menu.addActionListener(this); mAide.setMnemonic('A');
      */
     //jmb.setHelpMenu(m);
-
     return menuBar;
   }
 
@@ -827,7 +826,7 @@ public class GemDesktopCtrl
     JInternalFrame frames[] = desktop.getAllFrames();
     for (int i = 0; i < frames.length; i++) {
       if (frames[i].isIcon()
-              && frames[i] != postit.getView()) {
+        && frames[i] != postit.getView()) {
         try {
           frames[i].setIcon(false);
         } catch (PropertyVetoException ignore) {
@@ -841,7 +840,7 @@ public class GemDesktopCtrl
     JInternalFrame frames[] = desktop.getAllFrames();
     for (int i = 0; i < frames.length; i++) {
       if (!frames[i].isIcon()
-              && frames[i] != postit.getView()) {
+        && frames[i] != postit.getView()) {
         try {
           frames[i].setIcon(true);
         } catch (PropertyVetoException ignore) {
@@ -855,7 +854,7 @@ public class GemDesktopCtrl
     JInternalFrame frames[] = desktop.getAllFrames();
     for (int i = 0; i < frames.length; i++) {
       if (!frames[i].isClosed()
-              && frames[i] != postit.getView()) {
+        && frames[i] != postit.getView()) {
         try {
           frames[i].setClosed(true);
           frames[i].dispose();
@@ -873,7 +872,7 @@ public class GemDesktopCtrl
 
     for (int i = 0; i < frames.length; i++) {
       if (!frames[i].isIcon()
-              && frames[i] != postit.getView()) {
+        && frames[i] != postit.getView()) {
         frames[i].setLocation(x, y);
         frames[i].toFront();
         x += 10;
@@ -895,6 +894,7 @@ public class GemDesktopCtrl
 
     return m;
   }
+
   /*
    * void showHelpViewer(String url)
    *

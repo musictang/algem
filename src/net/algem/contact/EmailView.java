@@ -1,7 +1,7 @@
 /*
- * @(#)EmailView.java	2.8.y 26/09/2014
+ * @(#)EmailView.java	2.13.0 22/03/2017
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -26,7 +26,7 @@ import net.algem.util.jdesktop.DesktopMailHandler;
 
 /**
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.y
+ * @version 2.13.0
  */
 public class EmailView extends InfoView
 {
@@ -53,7 +53,7 @@ public class EmailView extends InfoView
     }
   }
 
-  public Vector<Email> getEmails() { 
+  public Vector<Email> getEmails() {
     Vector<Email> v = new Vector<Email>();
     for (InfoPanel pm : rows) {
       Email e = ((MailPanel) pm).getEmail();
