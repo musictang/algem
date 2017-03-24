@@ -20,18 +20,22 @@
 package net.algem.edition;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.swing.BorderFactory;
+import javax.swing.JEditorPane;
 import javax.swing.JLabel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import net.algem.contact.Contact;
+import net.algem.contact.ContactImport;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.FileUtil;
@@ -64,20 +68,23 @@ import org.supercsv.io.ICsvListReader;
 public class ImportCsvCtrl
   extends CardCtrl {
 
-  private static final short COLS = 12;
+  private static final short COLS = 15;
   static final String[] IMPORT_FIELDS = {
-    BundleUtil.getLabel("Number.label"),
+    BundleUtil.getLabel("Number.abbrev.label"),
     BundleUtil.getLabel("Person.civility.label"),
     BundleUtil.getLabel("Name.label"),
     BundleUtil.getLabel("First.name.label"),
+    BundleUtil.getLabel("Parent.gender.label"),
+    BundleUtil.getLabel("Parent.name.label"),
+    BundleUtil.getLabel("Parent.first.name.label"),
     BundleUtil.getLabel("Address1.label"),
     BundleUtil.getLabel("Address2.label"),
     BundleUtil.getLabel("Zipcode.label"),
     BundleUtil.getLabel("City.label"),
     BundleUtil.getLabel("Home.phone.label"),
     BundleUtil.getLabel("Mobile.phone.label"),
-    BundleUtil.getLabel("Email.label") + " 1",
-    BundleUtil.getLabel("Email.label") + " 2"
+    BundleUtil.getLabel("Email.label"),
+    BundleUtil.getLabel("Parent.email.label")
   };
 
   private GemDesktop desktop;
@@ -88,8 +95,9 @@ public class ImportCsvCtrl
   private JTextField fileName;
   private ImportCsvPreview preview;
   private ImportCsvTablePreview tablePreview;
-  private List<Contact> contacts;
+  private List<ContactImport> contacts;
   private ImportService service;
+  private JEditorPane help;
 
   public ImportCsvCtrl(GemDesktop desktop, ImportCsvHandler handler) {
     this.desktop = desktop;
@@ -108,6 +116,7 @@ public class ImportCsvCtrl
 
   public void createUI() {
     GemPanel mp = new GemPanel();
+    
     mp.setLayout(new BorderLayout());
     GemPanel filePanel = new GemPanel();
     JLabel fileLabel = new JLabel(BundleUtil.getLabel("File.label"));
@@ -121,8 +130,22 @@ public class ImportCsvCtrl
     mp.add(filePanel, BorderLayout.NORTH);
 
     GemPanel helpPanel = new GemPanel();
+    
     helpPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-    mp.add(helpPanel, BorderLayout.CENTER);
+    
+    try {
+      URL url = getClass().getResource(FileUtil.DEFAULT_HELP_DIR + "/detail/import-csv.html");
+      if (url != null) {
+        help = new JEditorPane(url);
+        help.setEditable(false);
+        help.setPreferredSize(new Dimension(800, 400));
+        helpPanel.add(help);
+      }
+    } catch (IOException ex) {
+      GemLogger.logException(ex);
+    }
+    JScrollPane jsp = new JScrollPane(helpPanel);
+    mp.add(jsp, BorderLayout.CENTER);
 
     preview = new ImportCsvPreview(COLS);
     preview.createUi();
@@ -223,7 +246,7 @@ public class ImportCsvCtrl
     preview.reload(csvHeader, model);
   }
 
-  private List<Contact> getContactsFromCsv() {
+  private List<ContactImport> getContactsFromCsv() {
     try {
       preview.setMatchings(importMap);
       System.out.println(importMap);
@@ -253,12 +276,21 @@ public class ImportCsvCtrl
             processors[idx] = new ConvertNullTo("\"\"", new Trim(new Truncate(32)));
             break; // firstName
           case 4:
-            processors[idx] = new Optional(new Trim(new Truncate(50)));// adr1
+            processors[idx] = new ConvertNullTo("\"\"", new Trim(new Truncate(4)));
+            break; // parent title
           case 5:
-            processors[idx] = new Optional(new Trim(new Truncate(50)));// adr2
+            processors[idx] = new ConvertNullTo("\"\"", new Trim(new Truncate(32)));
+            break; // parent lastName
           case 6:
-            processors[idx] = new Optional(new Trim(new StrMinMax(0, 5)));// cdp
+            processors[idx] = new ConvertNullTo("\"\"", new Trim(new Truncate(32)));
+            break; // parent firstName  
           case 7:
+            processors[idx] = new Optional(new Trim(new Truncate(50)));// adr1
+          case 8:
+            processors[idx] = new Optional(new Trim(new Truncate(50)));// adr2
+          case 9:
+            processors[idx] = new Optional(new Trim(new StrMinMax(0, 5)));// cdp
+          case 10:
             processors[idx] = new Optional(new Trim(new Truncate(50)));// ville
 //          case 8: processors[idx] = new ParseInt(); break; // id
         }

@@ -20,11 +20,14 @@
 package net.algem.edition;
 
 import java.awt.Dimension;
+import java.awt.event.MouseEvent;
 import java.util.List;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumnModel;
 import net.algem.contact.Contact;
+import net.algem.contact.ContactImport;
 import net.algem.util.ui.GemPanel;
 import net.algem.util.ui.JTableModel;
 
@@ -38,29 +41,44 @@ public class ImportCsvTablePreview
   extends GemPanel {
 
   private JTable table;
-  private final JTableModel<Contact> tableModel;
+  private final JTableModel<ContactImport> tableModel;
 
-  public ImportCsvTablePreview(JTableModel<Contact> model) {
+  public ImportCsvTablePreview(JTableModel<ContactImport> model) {
     this.tableModel = model;
   }
 
   public void createUi() {
-    table = new JTable(tableModel);
+    table = new JTable(tableModel) {
+      protected JTableHeader createDefaultTableHeader() {
+        return new JTableHeader(columnModel) {
+            public String getToolTipText(MouseEvent e) {
+                //String tip = null;
+                java.awt.Point p = e.getPoint();
+                int index = columnModel.getColumnIndexAtX(p.x);
+                int realIndex = columnModel.getColumn(index).getModelIndex();
+                return ImportCsvPreview.IMPORT_TIPS[realIndex];
+            }
+        };
+    }
+    };
     TableColumnModel cm = table.getColumnModel();
     cm.getColumn(0).setPreferredWidth(10);
     cm.getColumn(1).setPreferredWidth(20);
-    for (int i = 2; i < 12; i++) {
-      cm.getColumn(i).setPreferredWidth(70);
+    cm.getColumn(2).setPreferredWidth(60);
+    cm.getColumn(3).setPreferredWidth(60);
+    cm.getColumn(4).setPreferredWidth(20);
+    for (int i = 5; i < 15; i++) {
+      cm.getColumn(i).setPreferredWidth(60);
     }
     JScrollPane scroll = new JScrollPane(table);
     scroll.setPreferredSize(new Dimension(840, 400));
     add(scroll);
   }
 
-  public void load(List<Contact> contacts) {
+  public void load(List<ContactImport> contacts) {
     tableModel.clear();
     for (Contact c : contacts) {
-      tableModel.addItem((Contact) c);
+      tableModel.addItem((ContactImport) c);
     }
   }
 }

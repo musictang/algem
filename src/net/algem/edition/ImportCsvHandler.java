@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Vector;
 import net.algem.contact.Address;
 import net.algem.contact.Contact;
+import net.algem.contact.ContactImport;
 import net.algem.contact.Email;
 import net.algem.contact.Telephone;
 import net.algem.util.GemLogger;
@@ -138,14 +139,14 @@ public class ImportCsvHandler {
     this.charset = getCharset(file);
   }
 
-  public List<Contact> create(CellProcessor[] processors, Map<String, Integer> map) throws IOException {
+  public List<ContactImport> create(CellProcessor[] processors, Map<String, Integer> map) throws IOException {
     ICsvListReader listReader = getReader();
     listReader.getHeader(true);
-    List<Contact> contacts = new ArrayList<>();
+    List<ContactImport> contacts = new ArrayList<>();
     while ((listReader.read()) != null) {
       final List<Object> rowData = listReader.executeProcessors(processors);
-      Contact c = new Contact();
-
+      ContactImport c = new ContactImport();
+      Contact p = null;
       int idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[0]);
 
       if (idx > -1) {
@@ -167,41 +168,73 @@ public class ImportCsvHandler {
       if (idx > -1) {
         c.setFirstName((String) rowData.get(map.get(ImportCsvCtrl.IMPORT_FIELDS[3])));
       }
-
+      
+      idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[5]); // parent name
+      if (idx > -1) {
+        p = new Contact();
+        p.setName((String) rowData.get(map.get(ImportCsvCtrl.IMPORT_FIELDS[5])));
+      }
+      
       idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[4]);
       if (idx > -1) {
-        Address a = new Address();
-        String adr1 = (String) rowData.get(map.get(ImportCsvCtrl.IMPORT_FIELDS[4]));
-        a.setAdr1(adr1 == null || "null".equals(adr1) ? "" : adr1);
-        c.setAddress(a);
-      }
-
-      idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[5]);
-      if (idx > -1) {
-        if (c.getAddress() != null) {
-          String adr2 = (String) rowData.get(map.get(ImportCsvCtrl.IMPORT_FIELDS[5]));
-          c.getAddress().setAdr2(adr2 == null || "null".equals(adr2) ? "" : adr2);
+        if (p != null) {
+          p.setGender((String) rowData.get(map.get(ImportCsvCtrl.IMPORT_FIELDS[4])));
         }
       }
 
       idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[6]);
       if (idx > -1) {
-        if (c.getAddress() != null) {
-          c.getAddress().setCdp((String) rowData.get(map.get(ImportCsvCtrl.IMPORT_FIELDS[6])));
+        if (p != null) {
+          p.setFirstName((String) rowData.get(map.get(ImportCsvCtrl.IMPORT_FIELDS[6])));
         }
       }
-
+      
       idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[7]);
       if (idx > -1) {
-        if (c.getAddress() != null) {
-          c.getAddress().setCity((String) rowData.get(map.get(ImportCsvCtrl.IMPORT_FIELDS[7])));
+        Address a = new Address();
+        String adr1 = (String) rowData.get(map.get(ImportCsvCtrl.IMPORT_FIELDS[7]));
+        a.setAdr1(adr1);
+        if (p != null) {
+          p.setAddress(a);
+        } else {
+          c.setAddress(a);
         }
       }
 
       idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[8]);
+      if (idx > -1) {
+        String adr2 = (String) rowData.get(map.get(ImportCsvCtrl.IMPORT_FIELDS[8]));
+        if (c.getAddress() != null) {
+          c.getAddress().setAdr2(adr2);
+        } else if (p != null && p.getAddress() != null) {
+          p.getAddress().setAdr2(adr2);
+        }
+      }
+
+      idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[9]);
+      if (idx > -1) {
+        String cdp = (String) rowData.get(map.get(ImportCsvCtrl.IMPORT_FIELDS[9]));
+        if (c.getAddress() != null) {
+          c.getAddress().setCdp(cdp);
+        } else if (p != null && p.getAddress() != null) {
+          p.getAddress().setCdp(cdp);
+        }
+      }
+
+      idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[10]);
+      if (idx > -1) {
+        String city = (String) rowData.get(map.get(ImportCsvCtrl.IMPORT_FIELDS[10]));
+        if (c.getAddress() != null) {
+          c.getAddress().setCity(city);
+        } else if (p != null && p.getAddress() != null) {
+          p.getAddress().setCity(city);
+        }
+      }
+
+      idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[11]);
       String tel1 = null;
       if (idx > -1) {
-        tel1 = (String) rowData.get(map.get(ImportCsvCtrl.IMPORT_FIELDS[8]));
+        tel1 = (String) rowData.get(map.get(ImportCsvCtrl.IMPORT_FIELDS[11]));
         if (tel1 != null && tel1.length() > 0) {
           Vector<Telephone> tels = new Vector<Telephone>();
           Telephone t1 = new Telephone();
@@ -209,32 +242,48 @@ public class ImportCsvHandler {
           t1.setTypeTel(TEL1_TYPE);
           t1.setIdx(0);
           tels.add(t1);
-          c.setTele(tels);
-        }
-      }
-      idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[9]);
-      String tel2 = null;
-      if (idx > -1) {
-        tel2 = (String) rowData.get(map.get(ImportCsvCtrl.IMPORT_FIELDS[9]));
-        if (tel2 != null && tel2.length() > 0) {
-          Telephone t2 = new Telephone();
-          t2.setNumber(tel1);
-          t2.setTypeTel(TEL2_TYPE);
-          if (c.getTele() != null) {
-            t2.setIdx(1);
-            c.getTele().add(t2);
+          if (p != null) {
+            p.setTele(tels);
           } else {
-            Vector<Telephone> tels = new Vector<Telephone>();
-            t2.setIdx(0);
-            tels.add(t2);
             c.setTele(tels);
           }
         }
       }
-
-      idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[10]);
+      idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[12]);
+      String tel2 = null;
       if (idx > -1) {
-        String email1 = (String) rowData.get(map.get(ImportCsvCtrl.IMPORT_FIELDS[10]));
+        tel2 = (String) rowData.get(map.get(ImportCsvCtrl.IMPORT_FIELDS[12]));
+        if (tel2 != null && tel2.length() > 0) {
+          Telephone t2 = new Telephone();
+          t2.setNumber(tel1);
+          t2.setTypeTel(TEL2_TYPE);
+          if (p == null) {
+            if (c.getTele() != null) {
+              t2.setIdx(1);
+              c.getTele().add(t2);
+            } else {
+              Vector<Telephone> tels = new Vector<Telephone>();
+              t2.setIdx(0);
+              tels.add(t2);
+              c.setTele(tels);
+            }
+          } else {
+            if (p.getTele() != null) {
+              t2.setIdx(1);
+              p.getTele().add(t2);
+            } else {
+              Vector<Telephone> tels = new Vector<Telephone>();
+              t2.setIdx(0);
+              tels.add(t2);
+              p.setTele(tels);
+            }
+          }
+        }
+      }
+
+      idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[13]);
+      if (idx > -1) {
+        String email1 = (String) rowData.get(map.get(ImportCsvCtrl.IMPORT_FIELDS[13]));
         if (email1 != null && email1.length() > 0) {
           Vector<Email> emails = new Vector<Email>();
           Email m1 = new Email();
@@ -243,19 +292,22 @@ public class ImportCsvHandler {
           c.setEmail(emails);
         }
       }
-      idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[11]);
+      idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[14]);
       if (idx > -1) {
-        String email2 = (String) rowData.get(map.get(ImportCsvCtrl.IMPORT_FIELDS[11]));
-        if (email2 != null && email2.length() > 0) {
-          if (c.getEmail() != null) {
+        if (p != null) {
+          String email2 = (String) rowData.get(map.get(ImportCsvCtrl.IMPORT_FIELDS[14]));
+          if (email2 != null && email2.length() > 0) {
+            Vector<Email> emails = new Vector<Email>();
             Email m2 = new Email();
             m2.setEmail(email2);
-            c.getEmail().addElement(m2);
+            emails.add(m2);
+            p.setEmail(emails);
           }
         }
       }
 
       if (c.getName() != null) {
+        c.setParent(p);
         contacts.add(c);
       }
     }

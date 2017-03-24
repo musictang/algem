@@ -30,6 +30,7 @@ import java.util.Map;
 import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JScrollPane;
 import static net.algem.edition.ImportCsvCtrl.IMPORT_FIELDS;
 import net.algem.util.BundleUtil;
 import net.algem.util.ui.GemPanel;
@@ -44,26 +45,31 @@ import net.algem.util.ui.GridBagHelper;
 public class ImportCsvPreview
   extends GemPanel
 {
-
+ static final String[]IMPORT_TIPS = {
+    BundleUtil.getLabel("Import.number.tip"),
+    BundleUtil.getLabel("Import.gender.tip"),
+    BundleUtil.getLabel("Name.label"),
+    BundleUtil.getLabel("First.name.label"),
+    BundleUtil.getLabel("Parent.gender.label"),
+    BundleUtil.getLabel("Import.parent.tip"),
+    BundleUtil.getLabel("Parent.first.name.label"),
+    BundleUtil.getLabel("Import.address.tip"),
+    BundleUtil.getLabel("Address2.label"),
+    BundleUtil.getLabel("Zipcode.label"),
+    BundleUtil.getLabel("City.label"),
+    BundleUtil.getLabel("Home.phone.label"),
+    BundleUtil.getLabel("Mobile.phone.label"),
+    BundleUtil.getLabel("Email.label"),
+    BundleUtil.getLabel("Parent.email.label")
+  };
   private GemPanel configPanel;
-  private JLabel idLabel;
-  private JLabel titleLabel;
-  private JLabel nameLabel;
-  private JLabel firstNameLabel;
-  private JLabel streetLabel;
-  private JLabel additionalAddressLabel;
-  private JLabel zipCodeLabel;
-  private JLabel cityLabel;
-  private JLabel homePhoneLabel;
-  private JLabel mobilePhoneLabel;
-  private JLabel email1Label;
-  private JLabel email2Label;
   private JComboBox[] matchingBoxes;
   private JLabel[] preview;
   private GridBagHelper gb;
   private int cols;
   private List<String> model;
   private ActionListener cbListener;
+  
 
   public ImportCsvPreview(int cols) {
     this.cols = cols;
@@ -75,46 +81,29 @@ public class ImportCsvPreview
   public void createUi() {
     configPanel = new GemPanel(new GridBagLayout());
     configPanel.setBorder(BorderFactory.createTitledBorder("Configurer"));
+    configPanel.setMinimumSize(new Dimension(780, 380));
     gb = new GridBagHelper(configPanel);
 
     GemPanel mp = new GemPanel();
     mp.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-    mp.add(configPanel);
+mp.add(configPanel);
 
-    add(mp, BorderLayout.CENTER);
+    JScrollPane scp = new JScrollPane(mp);
+    scp.setPreferredSize(new Dimension(840, 400));
+    add(scp, BorderLayout.CENTER);
   }
 
   void reload(List<String> csvHeader, List<String> model) {
     this.model = model;
     clear();
-     idLabel = new JLabel(IMPORT_FIELDS[0]);
-    titleLabel = new JLabel(IMPORT_FIELDS[1]);
-    nameLabel = new JLabel(IMPORT_FIELDS[2]);
-    firstNameLabel = new JLabel(IMPORT_FIELDS[3]);
-    streetLabel = new JLabel(IMPORT_FIELDS[4]);
-    additionalAddressLabel = new JLabel(IMPORT_FIELDS[5]);
-    zipCodeLabel = new JLabel(IMPORT_FIELDS[6]);
-    cityLabel = new JLabel(IMPORT_FIELDS[7]);
-    homePhoneLabel = new JLabel(IMPORT_FIELDS[8]);
-    mobilePhoneLabel = new JLabel(IMPORT_FIELDS[9]);
-    email1Label = new JLabel(IMPORT_FIELDS[10]);
-    email2Label = new JLabel(IMPORT_FIELDS[11]);
-
     gb.add(new JLabel("<html><b>Algem</b></html>"), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(new JLabel("<html><b>"+BundleUtil.getLabel("Matching.label")+"<html><b>"), 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(new JLabel("<html><b>"+BundleUtil.getLabel("Preview.label")+"<html><b>"), 2, 0, 1, 1, GridBagHelper.WEST);
-    gb.add(idLabel, 0, 1, 1, 1, GridBagHelper.WEST);
-    gb.add(titleLabel, 0, 2, 1, 1, GridBagHelper.WEST);
-    gb.add(nameLabel, 0, 3, 1, 1, GridBagHelper.WEST);
-    gb.add(firstNameLabel, 0, 4, 1, 1, GridBagHelper.WEST);
-    gb.add(streetLabel, 0, 5, 1, 1, GridBagHelper.WEST);
-    gb.add(additionalAddressLabel, 0, 6, 1, 1, GridBagHelper.WEST);
-    gb.add(zipCodeLabel, 0, 7, 1, 1, GridBagHelper.WEST);
-    gb.add(cityLabel, 0, 8, 1, 1, GridBagHelper.WEST);
-    gb.add(homePhoneLabel, 0, 9, 1, 1, GridBagHelper.WEST);
-    gb.add(mobilePhoneLabel, 0, 10, 1, 1, GridBagHelper.WEST);
-    gb.add(email1Label, 0, 11, 1, 1, GridBagHelper.WEST);
-    gb.add(email2Label, 0, 12, 1, 1, GridBagHelper.WEST);
+    for (int i=0; i< IMPORT_FIELDS.length; i++) {
+      JLabel lb = new JLabel(IMPORT_FIELDS[i]);
+      lb.setToolTipText(IMPORT_TIPS[i]);
+      gb.add(lb, 0, i+1, 1, 1, GridBagHelper.WEST);
+    }
 
     for (int i = 0; i < cols; i++) {
       matchingBoxes[i] = new JComboBox(csvHeader.toArray());

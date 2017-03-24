@@ -23,6 +23,7 @@ package net.algem.edition;
 import java.util.List;
 import net.algem.contact.Address;
 import net.algem.contact.Contact;
+import net.algem.contact.ContactImport;
 import net.algem.contact.Email;
 import net.algem.contact.Telephone;
 import net.algem.util.ui.JTableModel;
@@ -34,7 +35,7 @@ import net.algem.util.ui.JTableModel;
  * @since 2.13.0 22/03/2017
  */
 public class CsvContactTableModel
-  extends JTableModel<Contact>
+  extends JTableModel<ContactImport>
 {
 
   public CsvContactTableModel() {
@@ -48,9 +49,20 @@ public class CsvContactTableModel
 
   @Override
   public Object getValueAt(int line, int col) {
-    Contact c = tuples.elementAt(line);
+    ContactImport c = tuples.elementAt(line);
+    Contact p = c.getParent();
     Address a = c.getAddress();
+    if (a == null) {
+      if (p != null) {
+        a = p.getAddress();
+      }
+    }
     List<Telephone> tels = c.getTele();
+    if (tels == null) {
+      if (p != null) {
+        tels = p.getTele();
+      }
+    }
     List<Email> emails = c.getEmail();
     switch (col) {
       case 0:
@@ -62,21 +74,29 @@ public class CsvContactTableModel
       case 3:
         return c.getFirstName();
       case 4:
-        return a == null ? "" : a.getAdr1();
+        return p != null ? p.getGender() : null;
       case 5:
-        return a == null ? "" : a.getAdr2();
+        return p != null ? p.getName(): null;
       case 6:
-        return a == null ? "" : a.getCdp();
+        return p != null ? p.getFirstName(): null;
       case 7:
-        return a == null ? "" : a.getCity();
+        return a == null ? "" : a.getAdr1();
       case 8:
-        return tels == null ? "" : tels.isEmpty() ? "" : tels.get(0).getNumber();
+        return a == null ? "" : a.getAdr2();
       case 9:
-        return tels == null ? "" : tels.size() < 2 ? "" : tels.get(1).getNumber();
-        case 10:
-        return emails == null ? "" : emails.isEmpty() ? "" : emails.get(0).getEmail();
+        return a == null ? "" : a.getCdp();
+      case 10:
+        return a == null ? "" : a.getCity();
       case 11:
-        return emails == null ? "" : emails.size() < 2 ? "" : emails.get(1).getEmail();
+        return tels == null ? "" : tels.isEmpty() ? "" : tels.get(0).getNumber();
+      case 12:
+        return tels == null ? "" : tels.size() < 2 ? "" : tels.get(1).getNumber();
+      case 13:
+        return emails == null ? "" : emails.isEmpty() ? "" : emails.get(0).getEmail();
+      case 14:
+        if (p == null) return null;
+        List<Email> pMails = p.getEmail();
+        return pMails == null ? "" : (pMails.isEmpty()  ? "" : pMails.get(0).getEmail());
 
     }
     return null;
