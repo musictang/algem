@@ -1,5 +1,5 @@
 /*
- * @(#) ImportCsvCtrl.java Algem 2.13.0 22/03/2017
+ * @(#) ImportCsvCtrl.java Algem 2.13.0 28/03/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -35,7 +35,10 @@ import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.ProgressMonitor;
+import javax.swing.SwingWorker;
 import net.algem.contact.ContactImport;
+import net.algem.contact.SimplePhotoHandler;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.FileUtil;
@@ -47,8 +50,10 @@ import net.algem.util.ui.CardCtrl;
 import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GemPanel;
 import net.algem.util.ui.MessagePopup;
+import net.algem.util.ui.ProgressMonitorHandler;
 import org.supercsv.cellprocessor.ConvertNullTo;
 import org.supercsv.cellprocessor.Optional;
+import org.supercsv.cellprocessor.ParseDate;
 import org.supercsv.cellprocessor.ParseInt;
 import org.supercsv.cellprocessor.Trim;
 import org.supercsv.cellprocessor.Truncate;
@@ -57,9 +62,7 @@ import org.supercsv.cellprocessor.ift.CellProcessor;
 import org.supercsv.io.ICsvListReader;
 
 /**
- * String encodedWithISO88591 = "Ã¼zÃ¼m baÄlarÄ±";
- * String decodedToUTF8 = new String(encodedWithISO88591.getBytes("ISO-8859-1"), "UTF-8");
- * //Result, decodedToUTF8 --> "üzüm bağları"
+ * 
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.13.0
@@ -68,12 +71,14 @@ import org.supercsv.io.ICsvListReader;
 public class ImportCsvCtrl
   extends CardCtrl {
 
-  private static final short COLS = 15;
+  private static final short COLS = 17;
   static final String[] IMPORT_FIELDS = {
     BundleUtil.getLabel("Number.abbrev.label"),
     BundleUtil.getLabel("Person.civility.label"),
-    BundleUtil.getLabel("Name.label"),
+    BundleUtil.getLabel("Name.label") + "*",
     BundleUtil.getLabel("First.name.label"),
+    BundleUtil.getLabel("Birth.date.label"),
+    BundleUtil.getLabel("Parent.number.label"),
     BundleUtil.getLabel("Parent.gender.label"),
     BundleUtil.getLabel("Parent.name.label"),
     BundleUtil.getLabel("Parent.first.name.label"),
@@ -96,13 +101,13 @@ public class ImportCsvCtrl
   private ImportCsvPreview preview;
   private ImportCsvTablePreview tablePreview;
   private List<ContactImport> contacts;
-  private ImportService service;
+  private ImportServiceImpl service;
   private JEditorPane help;
 
   public ImportCsvCtrl(GemDesktop desktop, ImportCsvHandler handler) {
     this.desktop = desktop;
     this.importCsvHandler = handler;
-    this.service = new ImportService(DataCache.getDataConnection());
+    this.service = new ImportServiceImpl(DataCache.getDataConnection());
     importMap = new HashMap<>();
     for (String f : IMPORT_FIELDS) {
       importMap.put(f, -1);
@@ -138,7 +143,7 @@ public class ImportCsvCtrl
       if (url != null) {
         help = new JEditorPane(url);
         help.setEditable(false);
-        help.setPreferredSize(new Dimension(800, 400));
+        help.setPreferredSize(new Dimension(800, 480));
         helpPanel.add(help);
       }
     } catch (IOException ex) {
@@ -194,7 +199,7 @@ public class ImportCsvCtrl
     if (step == 2) {
       contacts = getContactsFromCsv();
       if (contacts != null && contacts.size() > 0) {
-        tablePreview.load(contacts);
+        tablePreview.load(contacts, importCsvHandler.getErrors());
       } else {
         MessagePopup.warning(this, "Aucune correspondance détectée");
         select(1);
@@ -249,7 +254,7 @@ public class ImportCsvCtrl
   private List<ContactImport> getContactsFromCsv() {
     try {
       preview.setMatchings(importMap);
-      System.out.println(importMap);
+      //System.out.println(importMap);
       return importCsvHandler.create(buildProcessors(csvHeader), importMap);
     } catch (IOException ex) {
       GemLogger.logException(ex);
@@ -270,29 +275,47 @@ public class ImportCsvCtrl
             processors[idx] = new ConvertNullTo("\"\"", new Trim(new Truncate(4)));
             break; // title
           case 2:
-            processors[idx] = new ConvertNullTo("\"\"", new Trim(new Truncate(32)));
+            processors[idx] = new Trim(new Truncate(32));
             break; // lastName
           case 3:
             processors[idx] = new ConvertNullTo("\"\"", new Trim(new Truncate(32)));
             break; // firstName
           case 4:
-            processors[idx] = new ConvertNullTo("\"\"", new Trim(new Truncate(4)));
-            break; // parent title
+            processors[idx] = new Optional(new ParseDate("dd/mm/yyyy"));
+            break; // date of birth
           case 5:
-            processors[idx] = new ConvertNullTo("\"\"", new Trim(new Truncate(32)));
-            break; // parent lastName
+            processors[idx] = new ParseInt(new Trim());
+            break; // parent id
           case 6:
-            processors[idx] = new ConvertNullTo("\"\"", new Trim(new Truncate(32)));
-            break; // parent firstName  
+            processors[idx] = new Optional(new Trim(new Truncate(4)));
+            break; // parent title
           case 7:
-            processors[idx] = new Optional(new Trim(new Truncate(50)));// adr1
+            processors[idx] = new Optional(new Trim(new Truncate(32)));
+            break; // parent lastName
           case 8:
-            processors[idx] = new Optional(new Trim(new Truncate(50)));// adr2
+            processors[idx] = new Optional(new Trim(new Truncate(32)));
+            break; // parent firstName  
           case 9:
-            processors[idx] = new Optional(new Trim(new StrMinMax(0, 5)));// cdp
+            processors[idx] = new Optional(new Trim(new Truncate(50)));// adr1
+            break;
           case 10:
+            processors[idx] = new Optional(new Trim(new Truncate(50)));// adr2
+            break;
+          case 11:
+            processors[idx] = new Optional(new Trim(new StrMinMax(0, 5)));// cdp
+            break;
+          case 12:
             processors[idx] = new Optional(new Trim(new Truncate(50)));// ville
-//          case 8: processors[idx] = new ParseInt(); break; // id
+            break;
+          case 13:
+          case 14:
+            processors[idx] = new Optional(new Trim(new Truncate(24)));// tel
+            break;
+          case 15:
+          case 16:
+            processors[idx] = new Optional(new Trim(new Truncate(64)));// email
+            break;
+          default: processors[idx] = new Optional();
         }
       }
     }
@@ -308,7 +331,17 @@ public class ImportCsvCtrl
   private boolean save() {
     if (contacts != null && contacts.size() > 0) {
       try {
+        final ProgressMonitor monitor = new ProgressMonitor(this, BundleUtil.getLabel("Loading.label"), "", 1, 100);
+//    monitor.setProgress(1);
+    monitor.setMillisToDecideToPopup(10);
+    // monitor.setMillisToPopup(1);
+    SwingWorker<Void, Void> task = service.new ImportCsvTask(contacts);
+
+//    SwingWorker<Integer, Void> task = new SimplePhotoHandler.PhotoImportTask(dir);
+    task.addPropertyChangeListener(new ProgressMonitorHandler(monitor, task));
+    task.execute();
         int n = service.importContacts(contacts);
+        
         MessagePopup.information(this, MessageUtil.getMessage("contacts.imported", n));
         return true;
       } catch (Exception ex) {

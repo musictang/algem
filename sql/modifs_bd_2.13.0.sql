@@ -1,2 +1,1 @@
-ALTER TABLE module ADD actif boolean DEFAULT TRUE;
-
+ALTER TABLE eleve ALTER archiv SET DEFAULT false;

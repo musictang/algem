@@ -1,7 +1,7 @@
 /*
- * @(#)AddressView.java	2.11.0 15/09/16
+ * @(#)AddressView.java	2.13.0 28/03/17
  * 
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,6 +21,7 @@
 package net.algem.contact;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ItemEvent;
@@ -39,7 +40,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.0
+ * @version 2.13.0
  * @since 1.0a 07/07/1999
  */
 public class AddressView
@@ -155,23 +156,27 @@ public class AddressView
 
   private void init(boolean ar) {
     adr1 = new GemField(40, AddressIO.ADR1_LIMIT);
+    adr1.setMinimumSize(new Dimension(300, adr1.getPreferredSize().height));
     adr2 = new GemField(40);
+    adr2.setMinimumSize(new Dimension(300, adr2.getPreferredSize().height));
     cdp = new CodePostalField();
+    cdp.setMinimumSize(new Dimension(60, cdp.getPreferredSize().height));
     city = new GemField(30);
+    city.setMinimumSize(new Dimension(300, city.getPreferredSize().height));
 
     this.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
     gb.insets = new Insets(0,0,4,4);
     
-    gb.add(new GemLabel(BundleUtil.getLabel("Address1.label").toLowerCase()), 0, 0, 1, 1, GridBagHelper.WEST); //EAST
-    gb.add(new GemLabel(BundleUtil.getLabel("Address2.label").toLowerCase()), 0, 1, 1, 1, GridBagHelper.WEST); //EAST
-    gb.add(new GemLabel(BundleUtil.getLabel("Address.zip.code.label").toLowerCase()), 0, 2, 1, 1, GridBagHelper.WEST); //EAST
-    gb.add(new GemLabel(BundleUtil.getLabel("City.label").toLowerCase()), 0, 3, 1, 1, GridBagHelper.WEST); //EAST
+    gb.add(new GemLabel(BundleUtil.getLabel("Address1.label")), 0, 0, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Address2.label")), 0, 1, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Address.zip.code.label")), 0, 2, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("City.label")), 0, 3, 1, 1, GridBagHelper.WEST);
 
-    gb.add(adr1, 1, 0, 3, 1, GridBagHelper.WEST);
-    gb.add(adr2, 1, 1, 3, 1, GridBagHelper.WEST);
+    gb.add(adr1, 1, 0, 1, 1, GridBagHelper.WEST);
+    gb.add(adr2, 1, 1, 1, 1, GridBagHelper.WEST);
     gb.add(cdp, 1, 2, 1, 1, GridBagHelper.WEST);
-    gb.add(city, 1, 3, 2, 1, GridBagHelper.WEST);
+    gb.add(city, 1, 3, 1, 1, GridBagHelper.WEST);
     if(ar) {
       archive = new JCheckBox("archive");
       archive.setBorder(null);

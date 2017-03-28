@@ -1,5 +1,5 @@
 /*
- * @(#) ContactImport.java Algem 2.13.0 24/03/2017
+ * @(#) ContactImport.java Algem 2.13.0 28/03/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,6 +20,8 @@
 
 package net.algem.contact;
 
+import java.util.Date;
+
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
@@ -31,6 +33,7 @@ public class ContactImport
 {
 
   private Contact parent;
+  private Date birthDate;
 
   public Contact getParent() {
     return parent;
@@ -39,5 +42,13 @@ public class ContactImport
   public void setParent(Contact parent) {
     this.parent = parent;
   }
-  
+
+  public Date getBirthDate() {
+    return birthDate;
+  }
+
+  public void setBirthDate(Date birthDate) {
+    this.birthDate = birthDate;
+  }
+
 }

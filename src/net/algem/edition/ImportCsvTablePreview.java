@@ -1,5 +1,5 @@
 /*
- * @(#) ImportCsvTablePreview.java Algem 2.13.0 22/03/2017
+ * @(#) ImportCsvTablePreview.java Algem 2.13.0 28/03/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -19,15 +19,18 @@
  */
 package net.algem.edition;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.MouseEvent;
 import java.util.List;
+import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumnModel;
 import net.algem.contact.Contact;
 import net.algem.contact.ContactImport;
+import net.algem.util.MessageUtil;
 import net.algem.util.ui.GemPanel;
 import net.algem.util.ui.JTableModel;
 
@@ -42,12 +45,14 @@ public class ImportCsvTablePreview
 
   private JTable table;
   private final JTableModel<ContactImport> tableModel;
+  private JLabel status;
 
   public ImportCsvTablePreview(JTableModel<ContactImport> model) {
     this.tableModel = model;
   }
 
   public void createUi() {
+    setLayout(new BorderLayout());
     table = new JTable(tableModel) {
       protected JTableHeader createDefaultTableHeader() {
         return new JTableHeader(columnModel) {
@@ -66,19 +71,28 @@ public class ImportCsvTablePreview
     cm.getColumn(1).setPreferredWidth(20);
     cm.getColumn(2).setPreferredWidth(60);
     cm.getColumn(3).setPreferredWidth(60);
-    cm.getColumn(4).setPreferredWidth(20);
-    for (int i = 5; i < 15; i++) {
+    cm.getColumn(4).setPreferredWidth(40);
+    cm.getColumn(5).setPreferredWidth(10);
+    cm.getColumn(6).setPreferredWidth(20);
+    for (int i = 7; i < 17; i++) {
       cm.getColumn(i).setPreferredWidth(60);
     }
     JScrollPane scroll = new JScrollPane(table);
     scroll.setPreferredSize(new Dimension(840, 400));
-    add(scroll);
+    add(scroll, BorderLayout.CENTER);
+    status = new JLabel();
+    add(status, BorderLayout.SOUTH);
   }
 
-  public void load(List<ContactImport> contacts) {
+  public void load(List<ContactImport> contacts, int errors) {
+    status.setText(null);
     tableModel.clear();
     for (Contact c : contacts) {
       tableModel.addItem((ContactImport) c);
     }
+    if (errors > 0) {
+      status.setText(MessageUtil.getMessage("import.contacts.warning", errors));
+    }
   }
+  
 }

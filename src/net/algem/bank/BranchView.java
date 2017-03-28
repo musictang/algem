@@ -1,7 +1,7 @@
 /*
- * @(#)BranchView.java	2.9.4.13 15/10/15
+ * @(#)BranchView.java	2.13.0 28/03/17
  * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,6 +21,7 @@
 package net.algem.bank;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import net.algem.config.ColorPrefs;
 import net.algem.contact.Address;
@@ -37,7 +38,7 @@ import net.algem.util.ui.GridBagHelper;
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.13.0
  */
 public class BranchView
         extends GemBorderPanel
@@ -57,16 +58,22 @@ public class BranchView
 
   public BranchView() {
 
-    no = new GemField(6);
+    no = new GemField();
     no.setEditable(false);
+    no.setMinimumSize(new Dimension(60, no.getPreferredSize().height));
     no.setBackground(Color.lightGray);
 
     bankCode = new BankCodeField();
-    bankName = new GemField(30);
-
+    bankCode.setMinimumSize(new Dimension(60, bankCode.getPreferredSize().height));
+    
+    bankName = new GemField();
+bankName.setMinimumSize(new Dimension(300, bankName.getPreferredSize().height));
     branchCode = new BranchCodeField();
-    domiciliation = new GemField(24);
+    branchCode.setMinimumSize(new Dimension(60, branchCode.getPreferredSize().height));
+    domiciliation = new GemField();
+    domiciliation.setMinimumSize(new Dimension(300, domiciliation.getPreferredSize().height));
     bicCode = new BicCodeField();
+    bicCode.setMinimumSize(new Dimension(200, bicCode.getPreferredSize().height));
     bicCode.setActionCommand(BankCodeCtrl.BIC_CMD);
     bicCode.setToolTipText(BundleUtil.getLabel("Bic.code.tip"));
 
@@ -82,8 +89,8 @@ public class BranchView
     gb.add(new GemLabel("Domiciliation"), 0, 4, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Bic.code.label")), 0, 5, 1, 1, GridBagHelper.WEST);
     gb.add(no, 1, 0, 1, 1, GridBagHelper.WEST);
-    gb.add(bankCode, 1, 1, 3, 1, GridBagHelper.WEST);
-    gb.add(bankName, 1, 2, 3, 1, GridBagHelper.WEST);
+    gb.add(bankCode, 1, 1, 1, 1, GridBagHelper.WEST);
+    gb.add(bankName, 1, 2, 1, 1, GridBagHelper.WEST);
     gb.add(branchCode, 1, 3, 1, 1, GridBagHelper.WEST);
     gb.add(domiciliation, 1, 4, 1, 1, GridBagHelper.WEST);
     gb.add(bicCode, 1, 5, 1, 1, GridBagHelper.WEST);

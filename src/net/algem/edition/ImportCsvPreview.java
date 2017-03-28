@@ -1,5 +1,5 @@
 /*
- * @(#) ImportCsvPreview.java Algem 2.13.0 22/03/2017
+ * @(#) ImportCsvPreview.java Algem 2.13.0 28/03/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -48,8 +48,10 @@ public class ImportCsvPreview
  static final String[]IMPORT_TIPS = {
     BundleUtil.getLabel("Import.number.tip"),
     BundleUtil.getLabel("Import.gender.tip"),
-    BundleUtil.getLabel("Name.label"),
+    BundleUtil.getLabel("Import.name.tip"),
     BundleUtil.getLabel("First.name.label"),
+    BundleUtil.getLabel("Import.birth.date.tip"),
+    BundleUtil.getLabel("Parent.number.label"),
     BundleUtil.getLabel("Parent.gender.label"),
     BundleUtil.getLabel("Import.parent.tip"),
     BundleUtil.getLabel("Parent.first.name.label"),
@@ -86,7 +88,7 @@ public class ImportCsvPreview
 
     GemPanel mp = new GemPanel();
     mp.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-mp.add(configPanel);
+    mp.add(configPanel);
 
     JScrollPane scp = new JScrollPane(mp);
     scp.setPreferredSize(new Dimension(840, 400));

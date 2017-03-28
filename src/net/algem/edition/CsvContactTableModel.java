@@ -1,5 +1,5 @@
 /*
- * @(#) CsvContactTableModel.java Algem 2.13.0 22/03/2017
+ * @(#) CsvContactTableModel.java Algem 2.13.0 28/03/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,6 +20,8 @@
 
 package net.algem.edition;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import net.algem.contact.Address;
 import net.algem.contact.Contact;
@@ -38,8 +40,11 @@ public class CsvContactTableModel
   extends JTableModel<ContactImport>
 {
 
+  private final DateFormat df;
+  
   public CsvContactTableModel() {
     header = ImportCsvCtrl.IMPORT_FIELDS;
+    df = new SimpleDateFormat("dd/mm/yyyy");
   }
 
   @Override
@@ -52,6 +57,7 @@ public class CsvContactTableModel
     ContactImport c = tuples.elementAt(line);
     Contact p = c.getParent();
     Address a = c.getAddress();
+
     if (a == null) {
       if (p != null) {
         a = p.getAddress();
@@ -74,26 +80,30 @@ public class CsvContactTableModel
       case 3:
         return c.getFirstName();
       case 4:
-        return p != null ? p.getGender() : null;
+        return c.getBirthDate() != null ? df.format(c.getBirthDate()) : null;
       case 5:
-        return p != null ? p.getName(): null;
+        return p != null ? p.getId() : 0;
       case 6:
-        return p != null ? p.getFirstName(): null;
+        return p != null ? p.getGender() : null;
       case 7:
-        return a == null ? "" : a.getAdr1();
+        return p != null ? p.getName(): null;
       case 8:
-        return a == null ? "" : a.getAdr2();
+        return p != null ? p.getFirstName(): null;
       case 9:
-        return a == null ? "" : a.getCdp();
+        return a == null ? "" : a.getAdr1();
       case 10:
-        return a == null ? "" : a.getCity();
+        return a == null ? "" : a.getAdr2();
       case 11:
-        return tels == null ? "" : tels.isEmpty() ? "" : tels.get(0).getNumber();
+        return a == null ? "" : a.getCdp();
       case 12:
-        return tels == null ? "" : tels.size() < 2 ? "" : tels.get(1).getNumber();
+        return a == null ? "" : a.getCity();
       case 13:
-        return emails == null ? "" : emails.isEmpty() ? "" : emails.get(0).getEmail();
+        return tels == null ? "" : tels.isEmpty() ? "" : tels.get(0).getNumber();
       case 14:
+        return tels == null ? "" : tels.size() < 2 ? "" : tels.get(1).getNumber();
+      case 15:
+        return emails == null ? "" : emails.isEmpty() ? "" : emails.get(0).getEmail();
+      case 16:
         if (p == null) return null;
         List<Email> pMails = p.getEmail();
         return pMails == null ? "" : (pMails.isEmpty()  ? "" : pMails.get(0).getEmail());
@@ -106,6 +116,7 @@ public class CsvContactTableModel
   public Class getColumnClass(int column) {
     switch (column) {
       case 0:
+      case 5:
         return Integer.class;
       default:
         return String.class;

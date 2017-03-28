@@ -1,7 +1,7 @@
 /*
- * @(#)MemberIO.java	2.9.2 26/01/15
+ * @(#)MemberIO.java	2.13.0 28/03/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,6 +20,7 @@
  */
 package net.algem.contact.member;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -28,7 +29,6 @@ import net.algem.config.Instrument;
 import net.algem.config.InstrumentIO;
 import net.algem.planning.DateFr;
 import net.algem.util.DataConnection;
-import net.algem.util.GemLogger;
 import net.algem.util.model.Cacheable;
 import net.algem.util.model.TableIO;
 
@@ -37,7 +37,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.13.0
  * @since 1.0a 07/07/1999
  */
 public class MemberIO
@@ -47,6 +47,8 @@ public class MemberIO
 
   public static final String COLUMNS = "idper,profession,datenais,payeur,nadhesions,pratique,niveau";
   public static final String TABLE = "eleve";
+  private static final String CREATE_QUERY = "INSERT INTO " + TABLE + " VALUES(?,?,?,?,?,?,?)";
+  private static final String UPDATE_QUERY = "UPDATE " + TABLE + " SET profession=?,datenais=?,payeur=?,nadhesions=?,pratique=?,niveau=? WHERE idper=?";
 
   private DataConnection dc;
 
@@ -62,25 +64,20 @@ public class MemberIO
    * @throws SQLException
    */
   public void insert(Member m) throws SQLException {
-    String query = "INSERT INTO " + TABLE + " VALUES("
-            + "'" + m.getId()
-            + "','" + m.getOccupation() + "'";
-    if (!m.getBirth().bufferEquals(DateFr.NULLDATE)) {
-      query += ",'" + m.getBirth().toString() + "'";
-    } else {
-      query += ",null";
-    }
     if (m.getPayer() == 0) {
       m.setPayer(m.getId());
     }
-    query += ",'" + m.getPayer()
-            + "','" + m.getMembershipCount()
-            + "','" + m.getPractice()
-            + "','" + m.getLevel()
-            + "'";
-    query += ")";
-
-    dc.executeUpdate(query);
+    DateFr birth = m.getBirth().bufferEquals(DateFr.NULLDATE) ? null : m.getBirth();
+    try (PreparedStatement createPs = dc.prepareStatement(CREATE_QUERY)) {
+      createPs.setInt(1, m.getId());
+      createPs.setString(2, m.getOccupation());
+      createPs.setDate(3, birth == null ? null : new java.sql.Date(birth.getDate().getTime()));
+      createPs.setInt(4, m.getPayer());
+      createPs.setInt(5, m.getMembershipCount());
+      createPs.setInt(6, m.getPractice());
+      createPs.setInt(7, m.getLevel());
+      createPs.executeUpdate();
+    }
     InstrumentIO.insert(m.getInstruments(), m.getId(), Instrument.MEMBER, dc);
   }
 
@@ -92,34 +89,37 @@ public class MemberIO
    * @throws SQLException
    */
   public void update(Member m) throws SQLException {
-    String query = "UPDATE " + TABLE + " SET profession = '" + m.getOccupation() + "'";
-    if (!m.getBirth().bufferEquals(DateFr.NULLDATE)) {
-      query += ",datenais='" + m.getBirth().toString() + "'";
+    DateFr birth = m.getBirth().bufferEquals(DateFr.NULLDATE) ? null : m.getBirth();
+    try (PreparedStatement updatePs = dc.prepareStatement(UPDATE_QUERY)) {
+      updatePs.setString(1, m.getOccupation());
+      updatePs.setDate(2, birth == null ? null : new java.sql.Date(birth.getDate().getTime()));
+      updatePs.setInt(3, m.getPayer());
+      updatePs.setInt(4, m.getMembershipCount());
+      updatePs.setInt(5, m.getPractice());
+      updatePs.setInt(6, m.getLevel());
+      updatePs.setInt(7, m.getId());
+      updatePs.executeUpdate();
     }
-    query += ", payeur='" + m.getPayer()
-            + "', nadhesions='" + m.getMembershipCount()
-            + "', pratique='" + m.getPractice()
-            + "', niveau='" + m.getLevel() + "'"
-            + " WHERE idper=" + m.getId();
-    dc.executeUpdate(query);
     InstrumentIO.delete(m.getId(), Instrument.MEMBER, dc);
     InstrumentIO.insert(m.getInstruments(), m.getId(), Instrument.MEMBER, dc);
-
   }
 
-  public void delete(int m) throws SQLException {
-
-    String query = "DELETE FROM " + TABLE + " WHERE idper = " + m;
+  public void delete(final int m) throws SQLException {
     try {
-      dc.setAutoCommit(false);
-      dc.executeUpdate(query);
-      InstrumentIO.delete(m, Instrument.MEMBER, dc);
-      dc.commit();
-    } catch (SQLException ex) {
-      dc.rollback();
-      GemLogger.logException(ex);
-    } finally {
-      dc.setAutoCommit(true);
+      dc.withTransaction(new DataConnection.SQLRunnable<Void>()
+      {
+        @Override
+        public Void run(DataConnection conn) throws Exception {
+          try(PreparedStatement deletePs = dc.prepareStatement("DELETE FROM " + TABLE + " WHERE idper = ?")) {
+            deletePs.setInt(1, m);
+            deletePs.executeUpdate();
+          }
+          InstrumentIO.delete(m, Instrument.MEMBER, dc);
+          return null;
+        }
+      }); 
+    } catch(Exception e) {
+      throw new SQLException(e.getMessage());
     }
   }
 
@@ -134,7 +134,8 @@ public class MemberIO
 
   public Member getFromRS(ResultSet rs, int col) throws SQLException {
     Member member = new Member(rs.getInt(col++));
-    member.setOccupation(rs.getString(col++).trim());// TODO check NULL value
+    String ocp = rs.getString(col++);
+    member.setOccupation(ocp != null ? ocp.trim() : ocp);
     member.setBirth(new DateFr(rs.getString(col++)));
     member.setPayer(rs.getInt(col++));
     member.setMembershipCount(rs.getInt(col++));
