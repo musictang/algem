@@ -1,5 +1,5 @@
 /*
- * @(#) ImportCsvTest.java Algem 2.13.0 20/03/2017
+ * @(#) ImportCsvTest.java Algem 2.13.0 29/03/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -19,6 +19,7 @@
  */
 package net.algem.edition;
 
+import net.algem.util.TextUtil;
 import net.algem.util.model.TableIO;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -77,6 +78,14 @@ public class ImportCsvTest
 
   private String escape(String s) {
     return s;
+  }
+
+  @Test
+  public void testDiacritics() {
+    String s = "Gaëlle";
+    String res = TextUtil.stripDiacritics(s);
+    System.out.println(res);
+    assertNotEquals(s, res);
   }
 
 }

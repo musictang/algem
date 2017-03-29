@@ -1,5 +1,5 @@
 /*
- * @(#)Algem.java	2.13.0 22/03/17
+ * @(#)Algem.java	2.13.0 29/03/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -509,8 +509,8 @@ public class Algem
 
   private static void initUIFonts() {
     if ("Metal".equals(UIManager.getLookAndFeel().getName())) {
-      //Font fsans = new Font("Lucida Sans", Font.BOLD, 12);
-      Font fsans = new Font(Font.SANS_SERIF, Font.PLAIN, 12);
+      Font fsans = new Font("Lucida Sans", Font.BOLD, 12);
+      //Font fsans = new Font(Font.SANS_SERIF, Font.PLAIN, 12);
       Font titleFont = new Font("Lucida Sans", Font.BOLD, 12);
       Font fserif = new Font(Font.SERIF, Font.BOLD + Font.ITALIC, 12);
 

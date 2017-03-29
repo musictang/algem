@@ -1,5 +1,5 @@
 /*
- * @(#)GemDesktopCtrl.java	2.13.0 22/03/2017
+ * @(#)GemDesktopCtrl.java	2.13.0 29/03/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -324,10 +324,10 @@ public class GemDesktopCtrl
       postitCreate.addActionListener(this);
       addPanel(PostitCreateCtrl.POSTIT_CREATE_KEY, postitCreate);
     } else if (BundleUtil.getLabel("Menu.import.csv.contacts.label").equals(arg)) {
-      ImportCsvCtrl importCtrl = new ImportCsvCtrl(this, new ImportCsvHandler());
+      ImportCsvCtrl importCtrl = new ImportCsvCtrl(new ImportCsvHandler());
       importCtrl.addActionListener(this);
       importCtrl.createUI();
-      addPanel("Menu.import.csv.contacts", importCtrl, GemModule.XL_SIZE);
+      addPanel("Menu.import.csv.contacts", importCtrl, new Dimension(905, 640));
     } else if (BundleUtil.getLabel("Menu.contact.label").equals(arg)) {
       ContactExportDlg dlg = new ContactExportDlg(this);
       dlg.setVisible(true);

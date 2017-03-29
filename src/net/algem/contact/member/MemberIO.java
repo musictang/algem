@@ -1,5 +1,5 @@
 /*
- * @(#)MemberIO.java	2.13.0 28/03/17
+ * @(#)MemberIO.java	2.13.0 29/03/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -67,7 +67,7 @@ public class MemberIO
     if (m.getPayer() == 0) {
       m.setPayer(m.getId());
     }
-    DateFr birth = m.getBirth().bufferEquals(DateFr.NULLDATE) ? null : m.getBirth();
+    DateFr birth =  m.getBirth() == null || m.getBirth().bufferEquals(DateFr.NULLDATE) ? null : m.getBirth();
     try (PreparedStatement createPs = dc.prepareStatement(CREATE_QUERY)) {
       createPs.setInt(1, m.getId());
       createPs.setString(2, m.getOccupation());
@@ -117,7 +117,7 @@ public class MemberIO
           InstrumentIO.delete(m, Instrument.MEMBER, dc);
           return null;
         }
-      }); 
+      });
     } catch(Exception e) {
       throw new SQLException(e.getMessage());
     }

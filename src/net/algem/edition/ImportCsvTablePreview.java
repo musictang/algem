@@ -51,7 +51,7 @@ public class ImportCsvTablePreview
     this.tableModel = model;
   }
 
-  public void createUi() {
+  public void createUI() {
     setLayout(new BorderLayout());
     table = new JTable(tableModel) {
       protected JTableHeader createDefaultTableHeader() {
@@ -69,16 +69,17 @@ public class ImportCsvTablePreview
     TableColumnModel cm = table.getColumnModel();
     cm.getColumn(0).setPreferredWidth(10);
     cm.getColumn(1).setPreferredWidth(20);
-    cm.getColumn(2).setPreferredWidth(60);
-    cm.getColumn(3).setPreferredWidth(60);
+    cm.getColumn(2).setPreferredWidth(55);
+    cm.getColumn(3).setPreferredWidth(55);
     cm.getColumn(4).setPreferredWidth(40);
-    cm.getColumn(5).setPreferredWidth(10);
-    cm.getColumn(6).setPreferredWidth(20);
+    cm.getColumn(5).setPreferredWidth(40);
+    cm.getColumn(6).setPreferredWidth(10);
+    cm.getColumn(7).setPreferredWidth(20);
     for (int i = 7; i < 17; i++) {
-      cm.getColumn(i).setPreferredWidth(60);
+      cm.getColumn(i).setPreferredWidth(55);
     }
     JScrollPane scroll = new JScrollPane(table);
-    scroll.setPreferredSize(new Dimension(840, 400));
+    scroll.setPreferredSize(new Dimension(840, 500));
     add(scroll, BorderLayout.CENTER);
     status = new JLabel();
     add(status, BorderLayout.SOUTH);
@@ -94,5 +95,5 @@ public class ImportCsvTablePreview
       status.setText(MessageUtil.getMessage("import.contacts.warning", errors));
     }
   }
-  
+
 }

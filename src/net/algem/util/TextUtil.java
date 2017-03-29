@@ -1,5 +1,5 @@
 /*
- * @(#)TextUtil.java	2.11.5 25/01/17
+ * @(#)TextUtil.java	2.13.0 29/03/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -21,10 +21,13 @@
 
 package net.algem.util;
 
+import java.text.Normalizer;
+import java.util.regex.Pattern;
+
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.5
+ * @version 2.13.0
  * @since 2.8.r 13/12/13
  */
 public class TextUtil
@@ -33,6 +36,7 @@ public class TextUtil
   public static final int LEADING = 0;
   public static final int TRAILING = 1;
 	public final static String LINE_SEPARATOR = System.getProperty("line.separator");
+  public static final Pattern DIACRITICS_AND_FRIENDS = Pattern.compile("[\\p{InCombiningDiacriticalMarks}\\p{IsLm}\\p{IsSk}]+");
 
   /**
    * Truncate the string {@code s} to {@code size} characters.
@@ -141,6 +145,12 @@ public class TextUtil
     }
     return new String(str);
 
+  }
+
+  public static String stripDiacritics(String str) {
+    str = Normalizer.normalize(str, Normalizer.Form.NFD);
+    str = DIACRITICS_AND_FRIENDS.matcher(str).replaceAll("");
+    return str;
   }
 
 }

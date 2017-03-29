@@ -1,5 +1,5 @@
 /*
- * @(#)AddressIO.java	2.13.0 22/03/2017
+ * @(#)AddressIO.java	2.13.0 29/03/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -40,28 +40,31 @@ public class AddressIO
   public static final int ADR1_LIMIT = 50;
 
   public static void insert(Address a, DataConnection dc) throws SQLException {
+    assert(a != null && a.getAdr1() != null);
     String query = "INSERT INTO " + TABLE + " VALUES("
             + a.getId()
             + ",'" + escape(a.getAdr1())
             + "','" + (a.getAdr2() == null ? "" : escape(a.getAdr2()))
-            + "','" + a.getCdp()
-            + "','" + escape(a.getCity().toUpperCase())
+            + "','" + (a.getCdp() == null ? "" : escape(a.getCdp()))
+            + "','" + (a.getCity() == null ? "" : escape(a.getCity().toUpperCase()))
             + "','" + (a.isArchive() ? "t" : "f")
             + "')";
 
     dc.executeUpdate(query);
-    if (CityIO.findCity(a.getCdp(), dc) == null) {
-      City v = new City(a.getCdp(), a.getCity().toUpperCase());
-      CityIO.insert(v, dc);
+    if (a.getCdp() != null && a.getCity() != null) {
+      if (CityIO.findCity(a.getCdp(), dc) == null) {
+        City v = new City(a.getCdp(), a.getCity().toUpperCase());
+        CityIO.insert(v, dc);
+      }
     }
   }
 
   public static void update(Address a, DataConnection dc) throws SQLException {
     String query = "UPDATE " + TABLE + " SET "
             + "adr1='" + escape(a.getAdr1())
-            + "',adr2='" + escape(a.getAdr2())
-            + "',cdp='" + a.getCdp()
-            + "',ville='" + escape(a.getCity())
+            + "',adr2='" + (a.getAdr2() == null ? "" : escape(a.getAdr2()))
+            + "',cdp='" + (a.getCdp() == null ? "" : escape(a.getCdp()))
+            + "',ville='" + (a.getCity() == null ? "" : escape(a.getCity().toUpperCase()))
             + "',archive='" + (a.isArchive() ? "t" : "f")
             + "'";
     query += " WHERE idper=" + a.getId();

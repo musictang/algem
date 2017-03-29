@@ -79,7 +79,7 @@ public class ImportCsvHandler {
     this.fileName = file.getPath();
     this.charset = getCharset(file);
   }
-  
+
   int getErrors() {
     return errors;
   }
@@ -107,27 +107,29 @@ public class ImportCsvHandler {
           c.setBirthDate((Date) rowData.get(idx));
         }
 
-        idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[7]); // parent name
+        c.setInstrument(getField(rowData, map, 5));
+
+        idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[8]); // parent name
         if (idx > -1) {
           p = new Contact();
           p.setName((String) rowData.get(idx));
         }
 
-        idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[5]); // parent id
+        idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[6]); // parent id
         if (idx > -1) {
           String pid = (String) rowData.get(idx);
           if (p != null) {
             p.setId(Integer.parseInt(pid));
           }
         }
-        idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[6]); // parent gender
+        idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[7]); // parent gender
         if (idx > -1) {
           if (p != null) {
             p.setGender((String) rowData.get(idx));
           }
         }
 
-        idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[8]); //parent first name
+        idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[9]); //parent first name
         if (idx > -1) {
           if (p != null) {
             p.setFirstName((String) rowData.get(idx));
@@ -150,7 +152,7 @@ public class ImportCsvHandler {
 
     return contacts;
   }
-  
+
   private String getField(List<Object> rowData, Map<String, Integer> map, int index) {
     int idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[index]); // contact id
     if (idx > -1) {
@@ -158,21 +160,23 @@ public class ImportCsvHandler {
     }
     return null;
   }
-  
+
   private void setAddress(List<Object> rowData, Map<String, Integer> map, ContactImport c, Contact p) {
-    int idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[9]);
+    int idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[10]);
     if (idx > -1) {
-      Address a = new Address();
       String adr1 = (String) rowData.get(idx);
-      a.setAdr1(adr1);
-      if (p != null) {
-        p.setAddress(a);
-      } else {
-        c.setAddress(a);
-      }
+      if (adr1 != null) {
+        Address a = new Address();
+        a.setAdr1(adr1);
+        if (p != null) {
+          p.setAddress(a);
+        } else {
+          c.setAddress(a);
+        }
+      } else {return;}
     }
 
-    idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[10]);
+    idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[11]);
     if (idx > -1) {
       String adr2 = (String) rowData.get(idx);
       if (c.getAddress() != null) {
@@ -182,7 +186,7 @@ public class ImportCsvHandler {
       }
     }
 
-    idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[11]);
+    idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[12]);
     if (idx > -1) {
       String cdp = (String) rowData.get(idx);
       if (c.getAddress() != null) {
@@ -192,7 +196,7 @@ public class ImportCsvHandler {
       }
     }
 
-    idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[12]);
+    idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[13]);
     if (idx > -1) {
       String city = (String) rowData.get(idx);
       if (c.getAddress() != null) {
@@ -202,9 +206,9 @@ public class ImportCsvHandler {
       }
     }
   }
-  
+
   private void setTels(List<Object> rowData, Map<String, Integer> map, ContactImport c, Contact p) {
-    int idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[13]);
+    int idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[14]);
       String tel1 = null;
       if (idx > -1) {
         tel1 = (String) rowData.get(idx);
@@ -222,7 +226,7 @@ public class ImportCsvHandler {
           }
         }
       }
-      idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[14]);
+      idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[15]);
       String tel2 = null;
       if (idx > -1) {
         tel2 = (String) rowData.get(idx);
@@ -255,9 +259,9 @@ public class ImportCsvHandler {
       }
 
   }
-  
+
   private void setEmails(List<Object> rowData, Map<String, Integer> map, ContactImport c, Contact p) {
-    int idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[15]);
+    int idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[16]);
     if (idx > -1) {
       String email1 = (String) rowData.get(idx);
       if (email1 != null && email1.length() > 0) {
@@ -268,7 +272,7 @@ public class ImportCsvHandler {
         c.setEmail(emails);
       }
     }
-    idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[16]);
+    idx = map.get(ImportCsvCtrl.IMPORT_FIELDS[17]);
     if (idx > -1) {
       if (p != null) {
         String email2 = (String) rowData.get(idx);

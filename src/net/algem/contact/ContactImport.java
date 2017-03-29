@@ -28,12 +28,13 @@ import java.util.Date;
  * @version 2.13.0
  * @since 2.13.0 24/03/2017
  */
-public class ContactImport 
+public class ContactImport
         extends Contact
 {
 
   private Contact parent;
   private Date birthDate;
+  private String instrument;
 
   public Contact getParent() {
     return parent;
@@ -49,6 +50,14 @@ public class ContactImport
 
   public void setBirthDate(Date birthDate) {
     this.birthDate = birthDate;
+  }
+
+  public String getInstrument() {
+    return instrument;
+  }
+
+  public void setInstrument(String instrument) {
+    this.instrument = instrument;
   }
 
 }

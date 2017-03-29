@@ -1,5 +1,5 @@
 /*
- * @(#) ImportCsvPreview.java Algem 2.13.0 28/03/2017
+ * @(#) ImportCsvPreview.java Algem 2.13.0 29/03/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -51,7 +51,8 @@ public class ImportCsvPreview
     BundleUtil.getLabel("Import.name.tip"),
     BundleUtil.getLabel("First.name.label"),
     BundleUtil.getLabel("Import.birth.date.tip"),
-    BundleUtil.getLabel("Parent.number.label"),
+    BundleUtil.getLabel("Import.instrument.tip"),
+    BundleUtil.getLabel("Import.parent.number.tip"),
     BundleUtil.getLabel("Parent.gender.label"),
     BundleUtil.getLabel("Import.parent.tip"),
     BundleUtil.getLabel("Parent.first.name.label"),
@@ -71,7 +72,7 @@ public class ImportCsvPreview
   private int cols;
   private List<String> model;
   private ActionListener cbListener;
-  
+
 
   public ImportCsvPreview(int cols) {
     this.cols = cols;
@@ -80,9 +81,9 @@ public class ImportCsvPreview
     preview = new JLabel[cols];
   }
 
-  public void createUi() {
+  public void createUI() {
     configPanel = new GemPanel(new GridBagLayout());
-    configPanel.setBorder(BorderFactory.createTitledBorder("Configurer"));
+    configPanel.setBorder(BorderFactory.createTitledBorder(BundleUtil.getLabel("Configure.label")));
     configPanel.setMinimumSize(new Dimension(780, 380));
     gb = new GridBagHelper(configPanel);
 
@@ -91,8 +92,10 @@ public class ImportCsvPreview
     mp.add(configPanel);
 
     JScrollPane scp = new JScrollPane(mp);
-    scp.setPreferredSize(new Dimension(840, 400));
+    scp.setPreferredSize(new Dimension(840, 550));
+    setLayout(new BorderLayout());
     add(scp, BorderLayout.CENTER);
+    add(new JLabel("Survolez le nom des champs pour afficher les bulles d'aide"), BorderLayout.SOUTH);
   }
 
   void reload(List<String> csvHeader, List<String> model) {
