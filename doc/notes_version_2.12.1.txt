@@ -1,0 +1,5 @@
+2.12.1
+
+CORRECTIFS
+* L'absence de civilité (valeur nulle) pour les personnes disposant d'un login entraînait un blocage de l'application au démarrage.
+* Si la catégorie professionnelle d'un adhérent correspondait à une valeur nulle, la fiche de la personne était impossible à ouvrir.

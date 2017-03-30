@@ -1,5 +1,5 @@
 /*
- * @(#)Algem.java	2.12.0 13/03/17
+ * @(#)Algem.java	2.12.1 30/03/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -57,12 +57,12 @@ import org.apache.commons.codec.binary.Base64;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.12.0
+ * @version 2.12.1
  */
 public class Algem
 {
 
-  public static final String APP_VERSION = "2.12.0";
+  public static final String APP_VERSION = "2.12.1";
   public static List<LookAndFeelInfo> ALTERNATIVE_LAF = new ArrayList<>();
   private static final int DEF_WIDTH = 1080;// (850,650) => ancienne taille
   private static final int DEF_HEIGHT = 780;
@@ -557,8 +557,8 @@ public class Algem
       appli.init(confArg, hostArg, baseArg, userArg);
     } catch (Exception ex) {
       JOptionPane.showMessageDialog(null,
-              ex.getMessage(),
-              MessageUtil.getMessage("application.create.error"),
+              MessageUtil.getMessage("application.create.error") + " :\n" + ex.getClass().getName() + "\n" + ex.getMessage(),
+              "Erreur",
               JOptionPane.ERROR_MESSAGE);
       ex.printStackTrace();
       System.exit(7);

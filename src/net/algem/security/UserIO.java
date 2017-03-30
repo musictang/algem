@@ -1,5 +1,5 @@
 /*
- * @(#)UserIO.java 2.11.5 11/01/17
+ * @(#)UserIO.java 2.12.1 30/03/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -25,9 +25,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import net.algem.config.Config;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
 import net.algem.contact.Person;
@@ -43,7 +40,7 @@ import org.apache.commons.codec.binary.Base64;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.11.5
+ * @version 2.12.1
  * @since 1.0a 07/07/1999
  */
 public class UserIO
@@ -207,10 +204,14 @@ public class UserIO
       User u = new User();
       u.setId(rs.getInt(1));
       u.setType(rs.getShort(2));
-      u.setName(rs.getString(3).trim());
-      u.setFirstName(rs.getString(4).trim());
-      u.setGender(rs.getString(5).trim());
-      u.setLogin(rs.getString(6).trim());
+      String n = rs.getString(3);
+      String f = rs.getString(4);
+      String g = rs.getString(5);
+      String l = rs.getString(6);
+      u.setName(n == null ? null : n.trim());
+      u.setFirstName(f == null ? null : f.trim());
+      u.setGender(g == null ? null : g.trim());
+      u.setLogin(l == null ? null : l.trim());
       u.setProfile(rs.getInt(7));
 
       byte[] b64pass = Base64.decodeBase64(rs.getString(8));
@@ -237,11 +238,13 @@ public class UserIO
         String n = rs.getString(3);
         String f = rs.getString(4);
         String p = rs.getString(5);
+        String g = rs.getString(6);
+        String l = rs.getString(7);
         u.setName(n == null ? null : n.trim());
         u.setFirstName(f == null ? null : f.trim());
         u.setNickName(p == null ? null : p.trim());
-        u.setGender(rs.getString(6).trim());
-        u.setLogin(rs.getString(7).trim());
+        u.setGender(g == null ? null : g.trim());
+        u.setLogin(l == null ? null : l.trim());
         u.setProfile(rs.getInt(8));
         v.add(u);
       }
