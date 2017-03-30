@@ -125,9 +125,9 @@ public class ImportServiceImpl implements ImportService {
   }
 
   private boolean hasDuplicates(Contact c) {
-    String query = "WHERE translate(lower(nom),'" + TRANSLATE_FROM + "', '" + TRANSLATE_TO + "') = '" + TextUtil.stripDiacritics(c.getName().toLowerCase());
+    String query = "WHERE translate(lower(nom),'" + TRANSLATE_FROM + "', '" + TRANSLATE_TO + "') = '" + TextUtil.stripDiacritics(c.getName().toLowerCase()) + "'";
     if (c.getFirstName() != null) {
-      query += "' AND translate(lower(prenom),'" + TRANSLATE_FROM + "', '" + TRANSLATE_TO + "') = '" + TextUtil.stripDiacritics(c.getFirstName().toLowerCase()) + "'";
+      query += " AND translate(lower(prenom),'" + TRANSLATE_FROM + "', '" + TRANSLATE_TO + "') = '" + TextUtil.stripDiacritics(c.getFirstName().toLowerCase()) + "'";
     }
 
     List<Contact> oc = ContactIO.find(query, true, dc);

@@ -273,7 +273,7 @@ public class ImportCsvCtrl
             break; // title
           case 2:
             processors[idx] = new Trim(new Truncate(32));
-            break; // lastName
+            break; // lastName *
           case 3:
             processors[idx] = new ConvertNullTo("\"\"", new Trim(new Truncate(32)));
             break; // firstName
