@@ -1,5 +1,5 @@
 /*
- * @(#)BranchCreateDlg.java	2.8.i 05/07/13
+ * @(#)BranchCreateDlg.java	2.13.0 31/03/17
  * 
  * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
  *
@@ -31,6 +31,7 @@ import net.algem.util.DataConnection;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
+import net.algem.util.module.GemModule;
 import net.algem.util.ui.*;
 
 /**
@@ -38,7 +39,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.i
+ * @version 2.13.0
  */
 public class BranchCreateDlg
         implements ActionListener
@@ -46,20 +47,17 @@ public class BranchCreateDlg
 
   private DataConnection dc;
   private JDialog dlg;
-  private GemLabel title;
   private boolean validation;
-  private GemButton btValidation;
-  private GemButton btCancel;
-  private BranchView branchView;
+  private final GemButton btValidation;
+  private final GemButton btCancel;
+  private final BranchView branchView;
   private BankBranch branch;
   private BankBranchIO bankBranchIO;
 
-  public BranchCreateDlg(Component c, String _titre, DataConnection dc) {
+  public BranchCreateDlg(Component c, String title, DataConnection dc) {
     this.dc = dc;
     bankBranchIO = new BankBranchIO(dc);
     dlg = new JDialog(PopupDlg.getTopFrame(c), true);
-
-    title = new GemLabel(_titre);
     validation = false;
 
     branchView = new BranchView();
@@ -76,10 +74,10 @@ public class BranchCreateDlg
     buttons.add(btCancel);
     buttons.add(btValidation);
 
-    dlg.add(title, BorderLayout.NORTH);
+    dlg.setTitle(title);
     dlg.add(branchView, BorderLayout.CENTER);
     dlg.add(buttons, BorderLayout.SOUTH);
-    dlg.pack();
+    dlg.setSize(GemModule.DEFAULT_SIZE);
     dlg.setLocation(100, 100);
   }
 

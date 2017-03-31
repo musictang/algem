@@ -1,7 +1,7 @@
 /*
- * @(#)CategoryOccupChoice.java	2.6.a 20/09/12
+ * @(#)CategoryOccupChoice.java	2.13.0 31/03/2017
  * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,6 +21,7 @@
 package net.algem.config;
 
 import java.util.Vector;
+import net.algem.util.BundleUtil;
 import net.algem.util.ui.GemChoice;
 
 /**
@@ -28,14 +29,14 @@ import net.algem.util.ui.GemChoice;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.13.0
  */
 public class CategoryOccupChoice
         extends GemChoice
 {
 
   public CategoryOccupChoice(Vector categories) {
-    addItem("aucun");
+    addItem(BundleUtil.getLabel("None.label"));
 
     for (int n = 0; n < categories.size(); n++) {
       CategoryOccup i = (CategoryOccup) categories.elementAt(n);

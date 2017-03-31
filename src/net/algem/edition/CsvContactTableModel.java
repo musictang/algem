@@ -1,5 +1,5 @@
 /*
- * @(#) CsvContactTableModel.java Algem 2.13.0 29/03/2017
+ * @(#) CsvContactTableModel.java Algem 2.13.0 31/03/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -100,9 +100,21 @@ public class CsvContactTableModel
       case 13:
         return a == null ? "" : a.getCity();
       case 14:
-        return tels == null ? "" : tels.isEmpty() ? "" : tels.get(0).getNumber();
+        if (tels == null || tels.isEmpty()) {return "";}
+        for (Telephone t : tels) {
+          if (t.getTypeTel() == 1) {
+            return t.getNumber();
+          }
+          return "";
+        }
       case 15:
-        return tels == null ? "" : tels.size() < 2 ? "" : tels.get(1).getNumber();
+        if (tels == null || tels.isEmpty()) {return "";}
+        for (Telephone t : tels) {
+          if (t.getTypeTel() == 8) {
+            return t.getNumber();
+          }
+          return "";
+        }
       case 16:
         return emails == null ? "" : emails.isEmpty() ? "" : emails.get(0).getEmail();
       case 17:

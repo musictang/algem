@@ -1,7 +1,7 @@
 /*
- * @(#)BranchCreateCtrl.java 2.8.i 05/07/13
+ * @(#)BranchCreateCtrl.java 2.13.0 31/03/17
  * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -34,7 +34,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.i
+ * @version 2.13.0
  */
 public class BranchCreateCtrl
         extends CardCtrl
@@ -54,8 +54,7 @@ public class BranchCreateCtrl
     branchView.setPostalCodeCtrl(new CodePostalCtrl(dc));
     branchView.setBankCodeCtrl(new BankCodeCtrl(true, dc, bankBranchIO));
 
-    addCard("fiche guichet bancaire", branchView);
-
+    addCard("", branchView);
     select(0);
   }
 

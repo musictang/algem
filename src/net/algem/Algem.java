@@ -1,5 +1,5 @@
 /*
- * @(#)Algem.java	2.13.0 29/03/17
+ * @(#)Algem.java	2.13.0 31/03/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -509,25 +509,24 @@ public class Algem
 
   private static void initUIFonts() {
     if ("Metal".equals(UIManager.getLookAndFeel().getName())) {
-      Font fsans = new Font("Lucida Sans", Font.BOLD, 12);
-      //Font fsans = new Font(Font.SANS_SERIF, Font.PLAIN, 12);
-      Font titleFont = new Font("Lucida Sans", Font.BOLD, 12);
+      Font fsans = new Font("Lucida Sans", Font.PLAIN, 12);
+      Font bold = fsans.deriveFont(Font.BOLD);
       Font fserif = new Font(Font.SERIF, Font.BOLD + Font.ITALIC, 12);
 
-      UIManager.put("Menu.font", fsans);
-      UIManager.put("MenuBar.font", fsans);
-      UIManager.put("MenuItem.font", fsans);
-      UIManager.put("Label.font", fsans);
-      UIManager.put("Button.font", fsans);
-      UIManager.put("ToggleButton.font", fsans);
-      UIManager.put("ComboBox.font", fsans);
-      UIManager.put("TabbedPane.font", fsans);
-      UIManager.put("CheckBox.font", fsans);
-      UIManager.put("CheckBoxMenuItem.font", fsans);
-      UIManager.put("TitledBorder.font", titleFont);
+      UIManager.put("Menu.font", bold);
+      UIManager.put("MenuBar.font", bold);
+      UIManager.put("MenuItem.font", bold);
+      UIManager.put("Label.font", bold);
+      UIManager.put("Button.font", bold);
+      UIManager.put("ToggleButton.font", bold);
+      UIManager.put("ComboBox.font", bold);
+      UIManager.put("TabbedPane.font", bold);
+      UIManager.put("CheckBox.font", bold);
+      UIManager.put("CheckBoxMenuItem.font", bold);
+      UIManager.put("TitledBorder.font", bold);
       //UIManager.put("TitledBorder.font", fsans.deriveFont(Font.BOLD + Font.ITALIC));
-      UIManager.put("RadioButton.font", fsans);
-      UIManager.put("List.font", fsans);
+      UIManager.put("RadioButton.font", bold);
+      UIManager.put("List.font", bold);
     }
   }
 
@@ -590,9 +589,12 @@ public class Algem
       Algem appli = new Algem();
       appli.init(confArg, hostArg, baseArg, userArg);
     } catch (Exception ex) {
+      StackTraceElement[] trace = ex.getStackTrace();
+      String st = trace.length == 0 ? "" : trace[0].toString();
+      String msg = ex.getMessage();
       JOptionPane.showMessageDialog(null,
-              ex.getMessage(),
-              MessageUtil.getMessage("application.create.error"),
+              MessageUtil.getMessage("application.create.error") + " :\n" +  ex.getClass().getName() + "\n" + st + (msg == null ? "" : "\n"+msg),
+              "Erreur",
               JOptionPane.ERROR_MESSAGE);
       ex.printStackTrace();
       System.exit(7);
@@ -612,13 +614,3 @@ public class Algem
   }
 
 }
-
-// JUST FOR HISTORY INFO : DO NOT UNCOMMENT
-/*
- * System.setSecurityManager(new RMISecurityManager());
- * try {
- * dc = (DataCacheObjet) Naming.lookup("//www/DataCache");
- * } catch (Exception e) {
- * System.err.println("Erreur Lookup "+e);
- * }
- */

@@ -1,7 +1,7 @@
 /*
- * @(#)BankBranchCtrl.java	2.9.4.13 15/10/15
+ * @(#)BankBranchCtrl.java	2.13.0 31/03/17
  * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -57,7 +57,7 @@ public class BankBranchCtrl
     branchView.setBankCodeCtrl(new BankCodeCtrl(this.dc, branchIO));
     branchView.setPostalCodeCtrl(new CodePostalCtrl(this.dc));
 
-    addCard(BundleUtil.getLabel("Bank.branch.label"), branchView);
+    addCard("", branchView);
     btPrev.setText(GemCommand.DELETE_CMD);
     btPrev.setActionCommand(GemCommand.DELETE_CMD);
     select(0);

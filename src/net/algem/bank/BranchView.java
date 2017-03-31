@@ -1,5 +1,5 @@
 /*
- * @(#)BranchView.java	2.13.0 28/03/17
+ * @(#)BranchView.java	2.13.0 31/03/17
  * 
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -66,11 +66,11 @@ public class BranchView
     bankCode = new BankCodeField();
     bankCode.setMinimumSize(new Dimension(60, bankCode.getPreferredSize().height));
     
-    bankName = new GemField();
-bankName.setMinimumSize(new Dimension(300, bankName.getPreferredSize().height));
+    bankName = new GemField(24);
+    bankName.setMinimumSize(new Dimension(300, bankName.getPreferredSize().height));
     branchCode = new BranchCodeField();
     branchCode.setMinimumSize(new Dimension(60, branchCode.getPreferredSize().height));
-    domiciliation = new GemField();
+    domiciliation = new GemField(24);
     domiciliation.setMinimumSize(new Dimension(300, domiciliation.getPreferredSize().height));
     bicCode = new BicCodeField();
     bicCode.setMinimumSize(new Dimension(200, bicCode.getPreferredSize().height));

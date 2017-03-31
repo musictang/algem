@@ -1,5 +1,5 @@
 /*
- * @(#)MemberIO.java	2.13.0 29/03/17
+ * @(#)MemberIO.java	2.13.0 31/03/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -28,6 +28,7 @@ import java.util.Vector;
 import net.algem.config.Instrument;
 import net.algem.config.InstrumentIO;
 import net.algem.planning.DateFr;
+import net.algem.util.BundleUtil;
 import net.algem.util.DataConnection;
 import net.algem.util.model.Cacheable;
 import net.algem.util.model.TableIO;
@@ -70,7 +71,8 @@ public class MemberIO
     DateFr birth =  m.getBirth() == null || m.getBirth().bufferEquals(DateFr.NULLDATE) ? null : m.getBirth();
     try (PreparedStatement createPs = dc.prepareStatement(CREATE_QUERY)) {
       createPs.setInt(1, m.getId());
-      createPs.setString(2, m.getOccupation());
+      String occup = m.getOccupation();
+      createPs.setString(2, occup == null || occup.isEmpty() ? BundleUtil.getLabel("None.label") : occup);
       createPs.setDate(3, birth == null ? null : new java.sql.Date(birth.getDate().getTime()));
       createPs.setInt(4, m.getPayer());
       createPs.setInt(5, m.getMembershipCount());
@@ -134,8 +136,8 @@ public class MemberIO
 
   public Member getFromRS(ResultSet rs, int col) throws SQLException {
     Member member = new Member(rs.getInt(col++));
-    String ocp = rs.getString(col++);
-    member.setOccupation(ocp != null ? ocp.trim() : ocp);
+    String occup = rs.getString(col++);
+    member.setOccupation(occup == null ? BundleUtil.getLabel("None.label") : occup.trim());
     member.setBirth(new DateFr(rs.getString(col++)));
     member.setPayer(rs.getInt(col++));
     member.setMembershipCount(rs.getInt(col++));

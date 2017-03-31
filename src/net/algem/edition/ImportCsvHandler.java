@@ -1,5 +1,5 @@
 /*
- * @(#) ImportCsvHandler.java Algem 2.13.0 28/03/2017
+ * @(#) ImportCsvHandler.java Algem 2.13.0 31/03/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -53,7 +53,6 @@ import org.supercsv.prefs.CsvPreference;
  */
 public class ImportCsvHandler {
 
-  public static String IMPORT_FILE_NAME = "/home/jm/algem/src/git/trunk/doc/test-import1.csv";
   private static final int TEL1_TYPE = 1;
   private static final int TEL2_TYPE = 8;
   private String fileName;
@@ -232,7 +231,7 @@ public class ImportCsvHandler {
         tel2 = (String) rowData.get(idx);
         if (tel2 != null && tel2.length() > 0) {
           Telephone t2 = new Telephone();
-          t2.setNumber(tel1);
+          t2.setNumber(tel2);
           t2.setTypeTel(TEL2_TYPE);
           if (p == null) {
             if (c.getTele() != null) {

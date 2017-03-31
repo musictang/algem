@@ -1,7 +1,7 @@
 /*
- * @(#)BankCodeCtrl.java	2.9.6 14/03/16
+ * @(#)BankCodeCtrl.java	2.13.0 31/03/17
  * 
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -26,6 +26,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.Vector;
+import net.algem.util.BundleUtil;
 import net.algem.util.DataConnection;
 
 /**
@@ -33,7 +34,7 @@ import net.algem.util.DataConnection;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.6
+ * @version 2.13.0
  * @since 1.0a 07/07/1999
  */
 public class BankCodeCtrl
@@ -134,7 +135,7 @@ public class BankCodeCtrl
       branchView.setBankBranch(a);
       return;
     }
-    BranchCreateDlg gCreateDlg = new BranchCreateDlg(parent, "nouvelle adresse guichet", dc);
+    BranchCreateDlg gCreateDlg = new BranchCreateDlg(parent, BundleUtil.getLabel("Bank.branch.creation.auth"), dc);
     gCreateDlg.setBankCode(bankCode);
     gCreateDlg.setBankName(branchView.getBankName());
     gCreateDlg.setBranchCode(branchCode);

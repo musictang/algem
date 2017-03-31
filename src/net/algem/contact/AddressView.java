@@ -1,5 +1,5 @@
 /*
- * @(#)AddressView.java	2.13.0 28/03/17
+ * @(#)AddressView.java	2.13.0 31/03/17
  * 
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -156,13 +156,13 @@ public class AddressView
 
   private void init(boolean ar) {
     adr1 = new GemField(40, AddressIO.ADR1_LIMIT);
-    adr1.setMinimumSize(new Dimension(300, adr1.getPreferredSize().height));
+    adr1.setMinimumSize(new Dimension(340, adr1.getPreferredSize().height));
     adr2 = new GemField(40);
-    adr2.setMinimumSize(new Dimension(300, adr2.getPreferredSize().height));
+    adr2.setMinimumSize(new Dimension(340, adr2.getPreferredSize().height));
     cdp = new CodePostalField();
     cdp.setMinimumSize(new Dimension(60, cdp.getPreferredSize().height));
     city = new GemField(30);
-    city.setMinimumSize(new Dimension(300, city.getPreferredSize().height));
+    city.setMinimumSize(new Dimension(340, city.getPreferredSize().height));
 
     this.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);

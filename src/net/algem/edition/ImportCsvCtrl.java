@@ -1,5 +1,5 @@
 /*
- * @(#) ImportCsvCtrl.java Algem 2.13.0 29/03/2017
+ * @(#) ImportCsvCtrl.java Algem 2.13.0 31/03/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -287,7 +287,7 @@ public class ImportCsvCtrl
             processors[idx] = new ParseInt(new Trim());
             break; // parent id
           case 7:
-            processors[idx] = new Optional(new Trim(new Truncate(4)));
+            processors[idx] = new Optional(new ConvertNullTo("\"\"", new Trim(new Truncate(4))));
             break; // parent title
           case 8:
             processors[idx] = new Optional(new Trim(new Truncate(32)));
