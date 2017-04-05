@@ -1,5 +1,5 @@
 /*
- * @(#) ImportServiceImpl.java Algem 2.13.0 29/03/2017
+ * @(#) ImportServiceImpl.java Algem 2.13.0 04/04/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -146,7 +146,7 @@ public class ImportServiceImpl implements ImportService {
         m.setPayer(c.getParent().getId());
       }
       m.setBirth(birth == null ? null : new DateFr(birth));
-      if (instrument != null) {
+      if (instrument != null && instrument.trim().length() > 0) {
         List<Instrument> ii = InstrumentIO.find("WHERE lower(nom) = E'" + instrument.toLowerCase() + "'", dc);
         if (ii != null && ii.size() > 0) {
           List<Integer> myii = new ArrayList<>();
@@ -266,7 +266,8 @@ public class ImportServiceImpl implements ImportService {
     @Override
     public void done() {
       try {
-        MessagePopup.information(null, MessageUtil.getMessage("contacts.imported", get()));
+        int ci = get();
+        MessagePopup.information(null, MessageUtil.getMessage(ci <= 1 ? "contact.imported" : "contacts.imported", ci));
       } catch (InterruptedException | ExecutionException ex) {
         GemLogger.logException(ex);
         MessagePopup.error(null, MessageUtil.getMessage("import.exception") + ":\n" + ex.getMessage());

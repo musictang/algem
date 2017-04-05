@@ -1,7 +1,7 @@
 /*
- * @(#)GroupIO.java	2.9.2.1 20/02/15
+ * @(#)GroupIO.java	2.13.0 03/04/17
  * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -42,7 +42,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2.1
+ * @version 2.13.0
  * @since 1.0a 07/07/1999
  */
 public class GroupIO
@@ -95,8 +95,14 @@ public class GroupIO
     pst.close();
   }
 
+  /**
+   * Deletes a group.
+   * Suppression of group 0 is not authorized.
+   * @param g the group to delete
+   * @throws SQLException 
+   */
   public void delete(Group g) throws SQLException {
-    String query = "DELETE FROM " + TABLE + " WHERE id = " + g.getId();
+    String query = "DELETE FROM " + TABLE + " WHERE id > 0 AND id = " + g.getId();
     dc.executeUpdate(query);
   }
 

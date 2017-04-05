@@ -32,7 +32,7 @@ import java.nio.charset.CharsetDecoder;
  * @since 2.13.0 16/03/2017
  * @see https://gmigdos.wordpress.com/2010/04/08/java-how-to-auto-detect-a-files-encoding/
  */
-public class SimpleCharsetDecoder
+public class CharsetDetector
 {
 
   public Charset detectCharset(File f, String[] charsets) throws IOException {

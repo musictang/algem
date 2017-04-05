@@ -1,7 +1,7 @@
 /*
- * @(#)DailyTimesEditor.java	2.11.4 15/12/16
+ * @(#)DailyTimesEditor.java	2.13.0 03/04/17
  * 
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -40,7 +40,7 @@ import net.algem.util.ui.MessagePopup;
  * Opening and closing time editor.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.4
+ * @version 2.13.0
  * @since 2.8.w 16/07/14
  */
 public class DailyTimesEditor
@@ -64,7 +64,7 @@ public class DailyTimesEditor
     JScrollPane scroll = new JScrollPane(table);
     setLayout(new BorderLayout());
     add(scroll, BorderLayout.CENTER);
-    btCancel.setText(btCancel.getText() + "/" + BundleUtil.getLabel("Action.closing.label"));
+    btCancel.setText(btCancel.getText() + "/" + BundleUtil.getLabel("Action.close.label"));
     add(buttons, BorderLayout.SOUTH);
   }
 

@@ -1,7 +1,7 @@
 /*
- * @(#)CityCtrl.java	2.11.0 15/09/16
+ * @(#)CityCtrl.java	2.13.0 04/04/17
  * 
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -44,7 +44,7 @@ import net.algem.util.ui.*;
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.0
+ * @version 2.13.0
  * @since 1.0a 02/09/2001
  */
 public class CityCtrl
@@ -198,10 +198,10 @@ public class CityCtrl
   void suppression(int n) throws SQLException {
     String sc = cdp.getText().trim();
     String sv = city.getText().trim();
-    if (sc.length() == 0 || sv.length() == 0) {
+    /*if (sc.length() == 0 || sv.length() == 0) {
       new ErrorDlg(this, entry_error);
       return;
-    }
+    }*/
     City v = new City(sc, sv);
     CityIO.delete(v, dc);
 

@@ -138,7 +138,6 @@ public class ImportCsvPreview
     @Override
     public void actionPerformed(ActionEvent e) {
       JComboBox cb = (JComboBox) e.getSource();
-      //System.out.println(cb.getSelectedIndex());
       assert (matchingBoxes.length == preview.length);
       int index = 0;
       for (int i = 0; i < matchingBoxes.length; i++) {

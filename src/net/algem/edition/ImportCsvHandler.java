@@ -36,8 +36,8 @@ import net.algem.contact.Contact;
 import net.algem.contact.ContactImport;
 import net.algem.contact.Email;
 import net.algem.contact.Telephone;
+import net.algem.util.FileUtil;
 import net.algem.util.GemLogger;
-import net.algem.util.SimpleCharsetDecoder;
 import org.supercsv.cellprocessor.ift.CellProcessor;
 import org.supercsv.comment.CommentStartsWith;
 import org.supercsv.exception.SuperCsvCellProcessorException;
@@ -74,9 +74,13 @@ public class ImportCsvHandler {
     return null;
   }
 
+  
   void setFile(File file) {
     this.fileName = file.getPath();
-    this.charset = getCharset(file);
+  }
+  
+  void setCharset(Charset charset) {
+    this.charset = charset;
   }
 
   int getErrors() {
@@ -95,9 +99,8 @@ public class ImportCsvHandler {
         ContactImport c = new ContactImport();
         Contact p = null;
         String sid = getField(rowData, map, 0);
-        c.setId(sid == null ? 0 : Integer.parseInt(sid));
-        String gender = getField(rowData, map, 1);
-        c.setGender(gender == null ? "" : gender);
+        c.setId(sid.isEmpty() ? 0 : Integer.parseInt(sid));
+        c.setGender(getField(rowData, map, 1));
         c.setName(getField(rowData, map, 2));
         c.setFirstName(getField(rowData, map, 3));
 
@@ -157,7 +160,7 @@ public class ImportCsvHandler {
     if (idx > -1) {
       return (String) rowData.get(idx);
     }
-    return null;
+    return "";
   }
 
   private void setAddress(List<Object> rowData, Map<String, Integer> map, ContactImport c, Contact p) {
@@ -290,19 +293,4 @@ public class ImportCsvHandler {
     return new CellProcessor[length];
   }
 
-  /**
-   * Tries to detect the charset of the file {@code f}.
-   * @param f file
-   * @return the detected charset
-   */
-  private Charset getCharset(File f) {
-    try {
-      String[] charsetsToBeTested = {"UTF-8", "windows-1252", "ISO-8859-1", "ISO-8859-15", "x-MacRoman"};
-      SimpleCharsetDecoder cd = new SimpleCharsetDecoder();
-      return cd.detectCharset(f, charsetsToBeTested);
-    } catch (IOException ex) {
-      GemLogger.logException(ex);
-      return null;
-    }
-  }
 }

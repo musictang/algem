@@ -25,12 +25,16 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.charset.IllegalCharsetNameException;
+import java.nio.charset.UnsupportedCharsetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.swing.BorderFactory;
+import javax.swing.JComboBox;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
@@ -101,6 +105,7 @@ public class ImportCsvCtrl
   private List<ContactImport> contacts;
   private ImportServiceImpl service;
   private JEditorPane help;
+  private JComboBox<Charset> charsetBox;
 
   public ImportCsvCtrl(ImportCsvHandler handler) {
     this.importCsvHandler = handler;
@@ -129,10 +134,16 @@ public class ImportCsvCtrl
     filePanel.add(fileName);
     filePanel.add(btBrowse);
 
+    charsetBox = new JComboBox(getCommonCharsets());
+    charsetBox.addActionListener(this);
+    JLabel encodingLabel = new JLabel(BundleUtil.getLabel("Encoding.label"));
+    encodingLabel.setToolTipText(BundleUtil.getLabel("Import.encoding.tip"));
+    filePanel.add(encodingLabel);
+    filePanel.add(charsetBox);
+
     mp.add(filePanel, BorderLayout.NORTH);
 
     GemPanel helpPanel = new GemPanel();
-
     helpPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
     try {
@@ -165,22 +176,30 @@ public class ImportCsvCtrl
   public void actionPerformed(ActionEvent e) {
     super.actionPerformed(e);
     Object src = e.getSource();
-    if (src == btBrowse) {
-      File file = FileUtil.getFile(
-        this,
-        BundleUtil.getLabel("FileChooser.selection"),
-        null,
-        MessageUtil.getMessage("filechooser.csv.filter.label"),
-        "csv", "CSV");
-      if (file != null) { // if cancelled
-        fileName.setText(file.getPath());
-        try {
+    try {
+      if (src == btBrowse) {
+        File file = FileUtil.getFile(
+                this,
+                BundleUtil.getLabel("FileChooser.selection"),
+                null,
+                MessageUtil.getMessage("filechooser.csv.filter.label"),
+                "csv", "CSV");
+        if (file != null) { // if cancelled
+          fileName.setText(file.getPath());
           importCsvHandler.setFile(file);
-          loadPreview();
-        } catch (IOException ex) {
-          GemLogger.logException(ex);
+          Charset detectedCharset = FileUtil.getCharset(file);
+          if (detectedCharset != null) {
+            charsetBox.setSelectedItem(detectedCharset);
+          } else {
+            loadPreview();
+          }
         }
+      } else if (src == charsetBox) {
+        importCsvHandler.setCharset((Charset) charsetBox.getSelectedItem());
+        loadPreview();
       }
+    } catch (IOException ex) {
+      GemLogger.logException(ex);
     }
 
   }
@@ -188,17 +207,16 @@ public class ImportCsvCtrl
   @Override
   public boolean next() {
     if (fileName.getText().isEmpty()) {
-      MessagePopup.warning(this, "Aucun fichier sélectionné");
+      MessagePopup.warning(this, MessageUtil.getMessage("file.none.selected"));
       select(0);
       return false;
     }
     select(step + 1);
     if (step == 2) {
       contacts = getContactsFromCsv();
-      if (contacts != null && contacts.size() > 0) {
+      if (contacts != null) {
         tablePreview.load(contacts, importCsvHandler.getErrors());
       } else {
-        MessagePopup.warning(this, "Aucune correspondance détectée");
         select(1);
       }
     }
@@ -251,7 +269,17 @@ public class ImportCsvCtrl
   private List<ContactImport> getContactsFromCsv() {
     try {
       preview.setMatchings(importMap);
-      //System.out.println(importMap);
+      boolean hasMatching = false;
+      for(Integer n : importMap.values()) {
+        if (n > -1) {
+          hasMatching = true;
+          break;
+        }
+      }
+      if (!hasMatching) {
+        MessagePopup.error(this, MessageUtil.getMessage("import.matching.warning"));
+        return null;
+      }
       return importCsvHandler.create(buildProcessors(csvHeader), importMap);
     } catch (IOException ex) {
       GemLogger.logException(ex);
@@ -345,6 +373,23 @@ public class ImportCsvCtrl
       return true;
     }
     return false;
+  }
+  
+  private Object[] getCommonCharsets() {
+    try {
+      return new Charset[]{
+        Charset.forName("UTF-8"),
+        Charset.forName("UTF-16LE"),
+        Charset.forName("UTF-16BE"),
+        Charset.forName("ISO-8859-1"),
+        Charset.forName("ISO-8859-15"),
+        Charset.forName("windows-1252")
+      };
+    } catch (IllegalCharsetNameException | UnsupportedCharsetException ex) {
+      GemLogger.log(ex.getMessage());
+      return Charset.availableCharsets().values().toArray();
+    }
+
   }
 
 }

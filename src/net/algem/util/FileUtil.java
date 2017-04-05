@@ -1,7 +1,7 @@
 /*
- * @(#)FileUtil.java	2.9.4.14 09/12/15
+ * @(#)FileUtil.java	2.13.0 03/04/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -23,6 +23,7 @@ package net.algem.util;
 import java.awt.Color;
 import java.awt.Component;
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -59,7 +60,7 @@ import net.algem.util.ui.MessagePopup;
  * Utility class for file operations.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.14
+ * @version 2.13.0
  * @since 2.0q
  */
 public class FileUtil
@@ -204,6 +205,22 @@ public class FileUtil
       ((DesktopOpenHandler) handler).open(path);
     } catch (DesktopHandlerException ex) {
       GemLogger.log(ex.getMessage());
+    }
+  }
+  
+   /**
+   * Tries to detect the charset of the file {@code f}.
+   * @param f file
+   * @return the detected charset
+   */
+  public static Charset getCharset(File f) {
+    try {
+      String[] charsetsToBeTested = {"UTF-8", "windows-1252", "ISO-8859-1", "ISO-8859-15"};
+      CharsetDetector cd = new CharsetDetector();
+      return cd.detectCharset(f, charsetsToBeTested);
+    } catch (IOException ex) {
+      GemLogger.logException(ex);
+      return null;
     }
   }
 

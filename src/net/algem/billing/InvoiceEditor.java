@@ -1,7 +1,7 @@
 /*
- * @(#)InvoiceEditor.java 2.9.4.6 28/05/15
+ * @(#)InvoiceEditor.java 2.13.0 03/04/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -42,7 +42,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.6
+ * @version 2.13.0
  * @since 2.3.a 07/02/12
  */
 public class InvoiceEditor
@@ -64,7 +64,7 @@ public class InvoiceEditor
     this(desktop);
     this.service = service;
     old = quote;
-    btCancel.setText(btCancel.getText()+"/"+BundleUtil.getLabel("Action.closing.label"));
+    btCancel.setText(btCancel.getText()+"/"+BundleUtil.getLabel("Action.close.label"));
     view = new InvoiceView(desktop, service);
 
     setLayout(new BorderLayout());

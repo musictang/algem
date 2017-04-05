@@ -1,4 +1,8 @@
 2.13.0
+CORRECTIFS
+* La suppression du groupe 0 (Aucun) n'est plus possible.
+* Il était impossible de supprimer une ville dont le code postal n'était pas précisé (Configuration → Paramètres → Codes postaux).
+* Certains libellés de commandes ont été uniformisés ("Abandonner" plutôt qu'"Abandon", Valider plutôt que "Validation" ou "Ok", "Fermer" plutôt que "Fermeture").
 
 IMPORTATION DE CONTACTS
 Le menu Fichier comporte un nouveau sous-menu Importer → Importer contacts (csv).

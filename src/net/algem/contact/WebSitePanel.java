@@ -89,6 +89,6 @@ public class WebSitePanel extends InfoPanel implements ActionListener {
       browser.browse(iField.getText());
     } catch (DesktopHandlerException ex) {
       GemLogger.log(ex.getMessage());
-    }
+    } 
   }
 }
