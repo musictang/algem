@@ -1,6 +1,6 @@
 /*
- * @(#)UserView.java	2.9.5 29/02/16
- * 
+ * @(#)UserView.java	2.13.1 05/04/17
+ *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,10 +16,11 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.security;
 
+import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
@@ -33,7 +34,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.5
+ * @version 2.13.1
  */
 public class UserView
         extends GemBorderPanel
@@ -55,15 +56,19 @@ public class UserView
     this.person = p;
 
     id = new GemNumericField(6);
+    id.setMinimumSize(new Dimension(60, id.getPreferredSize().height));
     id.setText(String.valueOf(person.getId()));
     id.setEditable(false);
 
     name = new GemField(25);
+    name.setMinimumSize(new Dimension(250, name.getPreferredSize().height));
     name.setText(person.getFirstName() + " " + person.getName());
     name.setEditable(false);
 
     login = new GemField(8);
+    login.setMinimumSize(new Dimension(100, login.getPreferredSize().height));
     password = new JPasswordField(8);
+    password.setMinimumSize(new Dimension(100, password.getPreferredSize().height));
 
     profile = new JComboBox(Profile.values());
 

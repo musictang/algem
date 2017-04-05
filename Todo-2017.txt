@@ -1,5 +1,5 @@
-- ENT - échange de documents entre profs et élèves,
-- La planification,
+- ENT - échange de documents entre profs et élèves, FAIT
+- La planification, FAIT
 - Revoir les forfaits répétitions (là je ne vois pas trop ce qu'il y a comme problèmes ou insatisfactions ?) et proposer des abonnements de groupe,
 - Revoir/faciliter les procédures d'inscriptions
 - L'outil de recherche
@@ -24,4 +24,3 @@ l'édition personnalisée d'un bulletin scolaire, revoir les forfaits
 répétitions, proposer des abonnements de groupe, faciliter la procédure
 d'inscription (inscription de groupe) entre autres sujets souvent
 soulevés...
-

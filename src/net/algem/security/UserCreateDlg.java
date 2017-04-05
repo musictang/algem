@@ -1,6 +1,6 @@
 /*
- * @(#)UserCreateDlg.java	2.10.3 18/07/16
- * 
+ * @(#)UserCreateDlg.java	2.13.1 05/04/17
+ *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.security;
 
@@ -39,7 +39,7 @@ import net.algem.util.ui.PopupDlg;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.3
+ * @version 2.13.1
  */
 public class UserCreateDlg
         implements ActionListener
@@ -66,8 +66,8 @@ public class UserCreateDlg
 
     GemPanel buttons = new GemPanel();
     buttons.setLayout(new GridLayout(1, 2));
-    buttons.add(btCancel);
     buttons.add(btValidation);
+    buttons.add(btCancel);
 
     Container ct = dlg.getContentPane();
     ct.setLayout(new BorderLayout());
@@ -76,7 +76,7 @@ public class UserCreateDlg
     ct.add(buttons, BorderLayout.SOUTH);
 
     dlg.setTitle(BundleUtil.getLabel("Login.creation.label"));
-    dlg.setSize(440, 180);
+    dlg.setSize(440, 200);
     dlg.setLocationRelativeTo(c);
   }
 

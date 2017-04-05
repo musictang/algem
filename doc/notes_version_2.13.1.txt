@@ -1,0 +1,6 @@
+2.13.1
+CORRECTIFS
+* Dans la fiche contact, section Sites/Liens, les fichiers locaux ne s'ouvraient pas après avoir cliqué sur Voir si leur nom ou leur chemin d'accès comportaient des espaces. La reconnaissance du fichier ne fonctionnait pas sous Windows avec le séparateur par défaut (l'anti-slash).
+Rappel : dans la section Sites/Liens d'une fiche "Contact", il est possible d'indiquer un chemin vers un fichier local, à condition de le préfixer par file:// (ex. : file://C:\Mes Documents\monfichier.pdf)
+Sous Windows, pour récupérer le chemin d'accès d'un fichier, cliquez droit sur le fichier puis faites Propriétés. Copier le texte à droite d'Emplacement.
+* La fenêtre de création/modification login était trop étroite sous Windows avec le thème Nimbus.

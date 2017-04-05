@@ -1,5 +1,5 @@
 /*
- * @(#)Algem.java	2.13.0 31/03/17
+ * @(#)Algem.java	2.13.1 05/04/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -57,12 +57,12 @@ import org.apache.commons.codec.binary.Base64;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.13.0
+ * @version 2.13.1
  */
 public class Algem
 {
 
-  public static final String APP_VERSION = "2.13.0";
+  public static final String APP_VERSION = "2.13.1";
   public static List<LookAndFeelInfo> ALTERNATIVE_LAF = new ArrayList<>();
   private static final int DEF_WIDTH = 1080;// (850,650) => ancienne taille
   private static final int DEF_HEIGHT = 780;

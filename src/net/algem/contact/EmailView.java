@@ -1,5 +1,5 @@
 /*
- * @(#)EmailView.java	2.13.0 22/03/2017
+ * @(#)EmailView.java	2.13.1 05/04/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -26,7 +26,7 @@ import net.algem.util.jdesktop.DesktopMailHandler;
 
 /**
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.13.0
+ * @version 2.13.1
  */
 public class EmailView extends InfoView
 {
@@ -35,7 +35,7 @@ public class EmailView extends InfoView
   private DesktopMailHandler mailHandler;
 
   public EmailView() {
-    super(BundleUtil.getLabel("Email.label"), true);
+    super(BundleUtil.getLabel("Emails.label"), true);
     mailHandler = new DesktopMailHandler();
   }
 

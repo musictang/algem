@@ -1,5 +1,5 @@
 /*
- * @(#)WebSitePanel.java	2.13.0 22/03/17
+ * @(#)WebSitePanel.java	2.13.1 05/04/17
  *
  * Copyright (c) 1998-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -27,11 +27,12 @@ import net.algem.util.BundleUtil;
 import net.algem.util.GemLogger;
 import net.algem.util.jdesktop.DesktopBrowseHandler;
 import net.algem.util.jdesktop.DesktopHandlerException;
+import net.algem.util.jdesktop.DesktopOpenHandler;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.13.0
+ * @version 2.13.1
  */
 public class WebSitePanel extends InfoPanel implements ActionListener {
 
@@ -85,10 +86,16 @@ public class WebSitePanel extends InfoPanel implements ActionListener {
 
   @Override
   public void actionPerformed(ActionEvent e) {
+    String path = iField.getText();
     try {
-      browser.browse(iField.getText());
+      if (path.startsWith("file://")) {
+        path = path.substring(7);
+        new DesktopOpenHandler().open(path);
+      } else {
+        browser.browse(path);
+      }
     } catch (DesktopHandlerException ex) {
       GemLogger.log(ex.getMessage());
-    } 
+    }
   }
 }
