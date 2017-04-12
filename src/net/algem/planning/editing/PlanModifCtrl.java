@@ -1,5 +1,5 @@
 /*
- * @(#)PlanModifCtrl.java	2.12.0 01/03/17
+ * @(#)PlanModifCtrl.java	2.13.1 12/04/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -65,7 +65,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.12.0
+ * @version 2.13.1
  * @since 1.0b 05/07/2002 lien salle et groupe
  */
 public class PlanModifCtrl
@@ -105,8 +105,11 @@ public class PlanModifCtrl
    * @param collective course status
    * @return a list of buttons
    */
-  public Vector<GemMenuButton> getMenuCourse(boolean collective) {
-    Vector<GemMenuButton> v = new Vector<GemMenuButton>();
+  public List<GemMenuButton> getMenuCourse(boolean collective) {
+    List<GemMenuButton> v = new ArrayList<GemMenuButton>();
+    if (!dataCache.authorize("Schedule.modification.auth")) {
+      return v;
+    }
 
     v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.room.modification.label"), this, "ChangeRoom"));
     v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.teacher.modification.label"), this, "ChangeTeacher"));

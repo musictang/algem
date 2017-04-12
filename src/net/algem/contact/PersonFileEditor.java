@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileEditor 2.12.0 14/03/17
+ * @(#)PersonFileEditor 2.13.1 12/04/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -46,6 +46,7 @@ import net.algem.enrolment.MemberEnrolmentDlg;
 import net.algem.group.PersonFileGroupView;
 import net.algem.planning.TeacherBreakDlg;
 import net.algem.planning.month.MonthScheduleTab;
+import net.algem.security.RuleFactory;
 import net.algem.security.User;
 import net.algem.security.UserCreateDlg;
 import net.algem.security.UserException;
@@ -63,13 +64,14 @@ import net.algem.util.module.FileEditor;
 import net.algem.util.module.FileTabView;
 import net.algem.util.module.GemDesktopCtrl;
 import net.algem.util.ui.*;
+import org.passay.PasswordValidator;
 
 /**
  * Person file editor.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.12.0
+ * @version 2.13.1
  */
 public class PersonFileEditor
         extends FileEditor
@@ -620,8 +622,9 @@ public class PersonFileEditor
 
   void dlgLogin() {
     UserService service = dataCache.getUserService();
+    PasswordValidator validator = RuleFactory.getValidator(RuleFactory.MEDIUM);
     personFileView.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-    UserCreateDlg dlg = new UserCreateDlg(personFileView, "login", dossier.getContact());
+    UserCreateDlg dlg = new UserCreateDlg(personFileView, "login", dossier.getContact(), validator);
     User u = service.findId(dossier.getId());
     if (u != null) {
       dlg.setUser(u);

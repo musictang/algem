@@ -1,5 +1,5 @@
 /*
- * @(#)UserCreateDlg.java	2.13.1 05/04/17
+ * @(#)UserCreateDlg.java	2.13.1 12/04/17
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -33,6 +33,7 @@ import net.algem.util.GemCommand;
 import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GemPanel;
 import net.algem.util.ui.PopupDlg;
+import org.passay.Rule;
 
 /**
  * User creation and modification dialog.
@@ -52,15 +53,15 @@ public class UserCreateDlg
   private GemButton btCancel;
   private UserView userView;
 
-  public UserCreateDlg(Component c, String t, Person p) {
-    person = p;
+  public UserCreateDlg(Component c, String t, Person p, Rule validator) {
+    this.person = p;
 
     dlg = new JDialog(PopupDlg.getTopFrame(c), true);
 
-    userView = new UserView(person);
-
     btValidation = new GemButton(GemCommand.OK_CMD);
     btValidation.addActionListener(this);
+
+    userView = new UserView(person, validator, btValidation);
     btCancel = new GemButton(GemCommand.CANCEL_CMD);
     btCancel.addActionListener(this);
 
@@ -76,7 +77,7 @@ public class UserCreateDlg
     ct.add(buttons, BorderLayout.SOUTH);
 
     dlg.setTitle(BundleUtil.getLabel("Login.creation.label"));
-    dlg.setSize(440, 200);
+    dlg.setSize(440, 240);
     dlg.setLocationRelativeTo(c);
   }
 

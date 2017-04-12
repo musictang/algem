@@ -1,5 +1,5 @@
 /*
- * @(#) TestLoginPassword.java Algem 2.13.1 06/04/2017
+ * @(#) TestLoginPassword.java Algem 2.13.1 12/04/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -79,7 +79,7 @@ public class TestLoginPassword {
     ));
 
 //final char[] password = System.console().readPassword("Password: ");
-    String pass = "Bonj0ur";
+    String pass = "bonjour";
     RuleResult result = validator.validate(new PasswordData(pass));
 //    System.out.println(result.getDetails());
     System.out.println("pass 1");
@@ -118,6 +118,14 @@ public class TestLoginPassword {
         System.out.println(msg);
       }
     }*/
+  }
+
+  @Test
+  public void testInputVerifier() {
+    char p1 [] = {'f','o', 'o','p','a','s','s'};
+    char p2 [] = {'f','o', 'o','p','a','s','s'};
+    assertNotEquals(p1.toString(), p2.toString());
+    assertTrue(Arrays.equals(p1, p2));
   }
 
   private void printDetail(RuleResult result) {

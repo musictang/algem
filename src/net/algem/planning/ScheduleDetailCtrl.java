@@ -1,5 +1,5 @@
 /*
- * @(#)ScheduleDetailCtrl.java 2.11.3 25/11/16
+ * @(#)ScheduleDetailCtrl.java 2.13.1 12/04/17
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -29,6 +29,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
 import javax.swing.*;
@@ -66,12 +67,11 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.3
+ * @version 2.13.1
  * @since 1.0a 07/07/1999
  */
 public class ScheduleDetailCtrl
-        implements ActionListener
-{
+  implements ActionListener {
 
   private static PersonScheduleComparator psComparator = new PersonScheduleComparator(ConfigUtil.getConf(ConfigKey.PERSON_SORT_ORDER.getKey()));
   private static boolean nameFirst = ConfigUtil.getConf(ConfigKey.PERSON_SORT_ORDER.getKey()).equals("n");
@@ -194,6 +194,7 @@ public class ScheduleDetailCtrl
       StringBuilder buf = new StringBuilder(BundleUtil.getLabel("Room.label")).append(" ");
       buf.append(((ScheduleObject) schedule).getRoom().getName());
       GemMenuButton b = new GemMenuButton(buf.toString(), this, "RoomLink", ((ScheduleObject) schedule).getRoom());
+      b.setEnabled(dataCache.authorize("Room.reading.auth"));
       headPanel.add(b);
     }
 
@@ -222,21 +223,25 @@ public class ScheduleDetailCtrl
 
   private void loadCourseSchedule(ScheduleDetailEvent de) {
     CourseSchedule p = (CourseSchedule) de.getSchedule();
-    StringBuffer buf = new StringBuffer(BundleUtil.getLabel("Course.label")).append(" ");
+    StringBuilder buf = new StringBuilder(BundleUtil.getLabel("Course.label")).append(" ");
     buf.append(p.getCourse().getTitle());
+
     GemButton b = new GemMenuButton(buf.toString(), this, "CourseLink", p.getCourse());
+    b.setEnabled(dataCache.authorize("Course.reading.auth"));
     headPanel.add(b);
 
-    buf = new StringBuffer(BundleUtil.getLabel("Teacher.label")).append(" ");
+    buf = new StringBuilder(BundleUtil.getLabel("Teacher.label")).append(" ");
     buf.append(p.getTeacher().getFirstnameName());
     b = new GemMenuButton(buf.toString(), this, "TeacherLink", p.getTeacher());
+    b.setEnabled(dataCache.authorize("Teacher.reading.auth"));
     headPanel.add(b);
     boolean collective = p.getCourse().isCollective();
     loadRanges(de.getRanges(), collective);
     if (allMenus) {
-      Vector<GemMenuButton> v = modifCtrl.getMenuCourse(p.getCourse().isCollective()); // ajout des boutons de modification de planning (@see PlanModifCtrl)
-      for (int i = 0; i < v.size(); i++) {
-        menuPanel.add(v.elementAt(i));
+      // ajout des boutons de modification de planning (@see PlanModifCtrl)
+      List<GemMenuButton> v = modifCtrl.getMenuCourse(p.getCourse().isCollective());
+      for (GemMenuButton bt : v) {
+        menuPanel.add(bt);
       }
     }
     menuPanel.add(btWrite);
@@ -262,17 +267,6 @@ public class ScheduleDetailCtrl
       if (per == null) {
         buf.append(" ").append(pl.getMemberId());
         listPanel.add(new GemMenuButton(buf.toString(), this, "NullMember", pl));
-        /*Vector<ScheduleRange> vp = null;
-        try {
-          vp = ScheduleRangeIO.find("pg WHERE pg.id = " + pl.getId(), dc);
-        } catch (SQLException ex) {
-          GemLogger.logException(ex);
-        }
-        if (vp != null && vp.size() > 0) {
-          ScheduleRange g = vp.elementAt(0);
-          buf.append(" ").append(g.getMemberId());
-          listPanel.add(new GemMenuButton(buf.toString(), this, "NullMember", g));
-        }*/
       } else if (per.getId() == 0) {
         buf.append(" ").append(BundleUtil.getLabel("Teacher.break.label"));
         listPanel.add(new GemMenuButton(buf.toString(), this, "BreakLink", pl));
@@ -291,11 +285,12 @@ public class ScheduleDetailCtrl
               buf.append(" : ").append(instrumentName);
             }
           }
-
         } else {
           buf.append(" ").append(nameFirst ? per.getNameFirstname() : per.getFirstnameName());
         }
-        listPanel.add(new GemMenuButton(buf.toString(), this, "MemberLink", pl));
+        GemMenuButton b = new GemMenuButton(buf.toString(), this, "MemberLink", pl);
+        b.setEnabled(dataCache.authorize("Member.reading.auth"));
+        listPanel.add(b);
       }
     }
   }
@@ -441,9 +436,9 @@ public class ScheduleDetailCtrl
       }
       listPanel.add(new GemMenuButton(buf.toString(), this, "MemberLink", pg));
     }
-    Vector<GemMenuButton> vb = modifCtrl.getMenuCourse(true); // ajout des boutons de PlanModifCtrl
-    for (int j = 0; j < vb.size(); j++) {
-      menuPanel.add((GemMenuButton) vb.elementAt(j));
+    List<GemMenuButton> vb = modifCtrl.getMenuCourse(true); // ajout des boutons de PlanModifCtrl
+    for (GemMenuButton bt : vb) {
+      menuPanel.add(bt);
     }
     menuPanel.add(btWrite);//mailing button
   }

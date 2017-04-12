@@ -4,3 +4,8 @@ CORRECTIFS
 Rappel : dans la section Sites/Liens d'une fiche "Contact", il est possible d'indiquer un chemin vers un fichier local, à condition de le préfixer par file:// (ex. : file://C:\Mes Documents\monfichier.pdf)
 Sous Windows, pour récupérer le chemin d'accès d'un fichier, cliquez droit sur le fichier puis faites Propriétés. Copier le texte à droite d'Emplacement.
 * La fenêtre de création/modification login était trop étroite sous Windows avec le thème Nimbus.
+
+
+SECURITE
+Modification de la saisie de mot de passe dans Création/modification login.
+Ajouts de droits () et prise en compte des droits de consultation dans le détail des plannings.
