@@ -20,7 +20,8 @@ PRESENTATION
 Algem se décompose en deux applications :
 - Une application de bureau en Java (Swing), dédiée au back-office et
 principalement utilisée par l'équipe administrative.
-- Une application web en Java (Spring 3), interface publique du logiciel
+- Une application web en Java (Spring 3/Thymeleaf/JQuery), interface
+publique du logiciel 
 permettant aux adhérents, professeurs, élèves, visiteurs occasionnels
 de consulter leur planning ou leur suivi pédagogique. Cette interface
 permet aussi aux répétiteurs de réserver une salle en ligne.
@@ -205,12 +206,16 @@ minuscules et mots séparés par des points.
 
 PLUGINS
 =======
-- Le package plugins a été conçu pour rendre extensible l'application et
+Le package plugins a été conçu pour rendre extensible l'application et
 l'adapter à l'organisation dans laquelle elle est mise en service. C'est le rôle
 en particulier de la classe StatisticsPlugin, qui peut être développée de
 manière indépendante. Une fois compilée et archivée dans un jar, il suffit de
 placer ce jar dans le classpath pour que l'organisation dispose de statistiques
 (exportation de données) personnalisées.
+
+SCRIPTS
+=======
+Les scripts permettent d'effectuer des exports "ON THE FLY". C'est une manière simple d'étendre les DAO existants sans avoir besoin de recompiler.
 
 TESTS
 =====
@@ -226,8 +231,9 @@ EN PROJET
 =========
 - Gestion des acomptes dans l'échéancier après création de facture.
 - Gestion optimisée des absences.
+- Gestion de bulletin scolaire
 - Optimisation des exports comptables vers les logiciels CIEL et SAGE.
 - Extension et amélioration des exportations de données.
-- Importation de données à partir d'un fichier CSV.
 - Extension des tests unitaires et des tests d'intégration.
+- Mise en conformité LF 2016
 

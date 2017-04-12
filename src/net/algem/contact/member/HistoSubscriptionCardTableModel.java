@@ -43,7 +43,7 @@ public class HistoSubscriptionCardTableModel
   
   /**
    * Creates a model with header.
-   * @param service
+   * @param service business service instance
    */
   public HistoSubscriptionCardTableModel(MemberService service) {
     this.service = service;

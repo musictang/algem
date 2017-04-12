@@ -42,10 +42,10 @@ public class BankUtil {
 
    /**
    * Checking BIC.
-   * @link  http://fr.wikipedia.org/wiki/Relev%C3%A9_d%27identit%C3%A9_bancaire#Algorithme_de_v.C3.A9rification_en_Java
    *
    * @param rib on 23 digits
    * @return true if rib % 97 = 0
+   * @see  http://fr.wikipedia.org/wiki/Relev%C3%A9_d%27identit%C3%A9_bancaire#Algorithme_de_v.C3.A9rification_en_Java
    */
   public static boolean isRibOk(String rib) {
     StringBuilder extendedRib = new StringBuilder(rib.length());

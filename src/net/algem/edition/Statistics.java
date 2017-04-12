@@ -370,7 +370,6 @@ public abstract class Statistics
   /**
    * Prints a title followed by the integer result of a query.
    *
-   * @param title
    * @param query
    * @throws SQLException
    */
@@ -388,7 +387,6 @@ public abstract class Statistics
   /**
    * Prints a title followed by the string result of a query.
    *
-   * @param title
    * @param query
    * @throws SQLException
    */
@@ -470,7 +468,6 @@ public abstract class Statistics
   /**
    * Prints an array of String-integer pairs.
    *
-   * @param title title of the array
    * @param query SQL query
    * @throws SQLException
    */
@@ -490,7 +487,6 @@ public abstract class Statistics
   /**
    * Prints an array of time-formatted strings.
    *
-   * @param title main title
    * @param query SQL query
    * @throws SQLException
    */

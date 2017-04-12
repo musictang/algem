@@ -61,7 +61,7 @@ public class MemberIO
    * Inserts a new member.
    * Transaction should be processed at higher level.
    *
-   * @param m
+   * @param m the member to create
    * @throws SQLException
    */
   public void insert(Member m) throws SQLException {
