@@ -1,5 +1,5 @@
 /*
- * @(#)ModuleDlg.java	2.12.0 14/03/17
+ * @(#)ModuleDlg.java	2.13.2 14/04/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -22,6 +22,8 @@ package net.algem.enrolment;
 
 import java.awt.Component;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
@@ -31,8 +33,15 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Locale;
+import javax.swing.ButtonGroup;
 import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
+import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.JToggleButton;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import net.algem.accounting.AccountUtil;
 import net.algem.accounting.ModeOfPayment;
 import net.algem.config.ConfigKey;
@@ -55,7 +64,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.12.0
+ * @version 2.13.2
  * @since 1.0a 07/07/1999
  */
 public class ModuleDlg
@@ -77,6 +86,12 @@ public class ModuleDlg
   private PersonFile personFile;
   private EnrolmentService service;
   private GridBagHelper gb;
+  private JSpinner percentControl;
+  private final JToggleButton addPercent = new JToggleButton("+");
+  ;
+  private final JToggleButton subPercent = new JToggleButton("-");
+
+  ;
 
   public ModuleDlg() {
   }
@@ -159,15 +174,72 @@ public class ModuleDlg
     hoursLabel.setToolTipText(BundleUtil.getLabel("Pricing.period.hours.tip"));
     gb.add(hoursLabel, 0, 8, 1, 1, GridBagHelper.WEST);
 
-    gb.add(moduleChoice, 1, 0, 1, 1, GridBagHelper.WEST);
-    gb.add(dateStart, 1, 1, 1, 1, GridBagHelper.WEST);
-    gb.add(dateEnd, 1, 2, 1, 1, GridBagHelper.WEST);
+    gb.add(moduleChoice, 1, 0, 2, 1, GridBagHelper.WEST);
+    gb.add(dateStart, 1, 1, 2, 1, GridBagHelper.WEST);
+    gb.add(dateEnd, 1, 2, 2, 1, GridBagHelper.WEST);
     gb.add(price, 1, 3, 1, 1, GridBagHelper.WEST);
-    gb.add(calculatedPrice, 1, 4, 1, 1, GridBagHelper.WEST);
-    gb.add(payment, 1, 5, 1, 1, GridBagHelper.WEST);
-    gb.add(frequency, 1, 6, 1, 1, GridBagHelper.WEST);
-    gb.add(pricing, 1, 7, 1, 1, GridBagHelper.WEST);
-    gb.add(hours, 1, 8, 1, 1, GridBagHelper.WEST);
+
+    JPanel adjustment = new JPanel();
+    ActionListener percentListener = new ActionListener()
+    {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        JToggleButton tb = (JToggleButton) e.getSource();
+        int val = (int) percentControl.getValue();
+        double baseP = module.getBasePrice();
+        if (val > 0) {
+          if (tb == addPercent) {
+            price.setValue(baseP + (baseP * val / 100));
+            calculatedPrice.setValue(calculatePayment(module, (String) getField(5), (PayFrequency) getField(6), (PricingPeriod) getField(9)));
+          } else if (tb == subPercent) {
+            price.setValue(baseP - (baseP * val / 100));
+            calculatedPrice.setValue(calculatePayment(module, (String) getField(5), (PayFrequency) getField(6), (PricingPeriod) getField(9)));
+          }
+        }
+      }
+
+    };
+    addPercent.setToolTipText(BundleUtil.getLabel("Module.add.percent.tip"));
+    addPercent.addActionListener(percentListener);
+    subPercent.setToolTipText(BundleUtil.getLabel("Module.sub.percent.tip"));
+    subPercent.addActionListener(percentListener);
+
+    percentControl = new JSpinner(new SpinnerNumberModel(0, 0, 100, 1));
+    percentControl.setToolTipText(BundleUtil.getLabel("Module.percent.adjustment"));
+    percentControl.addChangeListener(new ChangeListener()
+    {
+      @Override
+      public void stateChanged(ChangeEvent e) {
+        JSpinner o = (JSpinner) e.getSource();
+        int val = (int) o.getValue();
+        double baseP = module.getBasePrice();//((Number) price.getValue()).doubleValue();
+        if (addPercent.isSelected()) {
+          price.setValue(baseP + (baseP * val / 100));
+          calculatedPrice.setValue(calculatePayment(module, (String) getField(5), (PayFrequency) getField(6), (PricingPeriod) getField(9)));
+        } else if (subPercent.isSelected()) {
+          price.setValue(baseP - (baseP * val / 100));
+          calculatedPrice.setValue(calculatePayment(module, (String) getField(5), (PayFrequency) getField(6), (PricingPeriod) getField(9)));
+        }
+      }
+
+    });
+
+    ButtonGroup group = new ButtonGroup();
+    group.add(addPercent);
+    group.add(subPercent);
+
+    adjustment.add(subPercent);
+    adjustment.add(percentControl);
+    adjustment.add(new GemLabel("%"));
+    adjustment.add(addPercent);
+    gb.add(adjustment, 2, 3, 1, 1, GridBagHelper.WEST);
+
+    gb.add(calculatedPrice, 1, 4, 2, 1, GridBagHelper.WEST);
+
+    gb.add(payment, 1, 5, 2, 1, GridBagHelper.WEST);
+    gb.add(frequency, 1, 6, 2, 1, GridBagHelper.WEST);
+    gb.add(pricing, 1, 7, 2, 1, GridBagHelper.WEST);
+    gb.add(hours, 1, 8, 2, 1, GridBagHelper.WEST);
 
     payment.setPreferredSize(pricing.getPreferredSize());
     frequency.setPreferredSize(pricing.getPreferredSize());
@@ -220,7 +292,7 @@ public class ModuleDlg
   }
 
   private double minutesToDecimal(int min) {
-    return min/60;
+    return min / 60;
   }
 
   public Object getField(int n) {
@@ -270,7 +342,7 @@ public class ModuleDlg
       if (module == null || personFile == null) {
         return;
       }
-    } else if(evt.getSource() == pricing) {
+    } else if (evt.getSource() == pricing) {
       hours.setEditable(PricingPeriod.HOUR.equals((PricingPeriod) getField(9)));
     }
     calculatedPrice.setValue(calculatePayment(module, (String) getField(5), (PayFrequency) getField(6), (PricingPeriod) getField(9)));
@@ -301,9 +373,9 @@ public class ModuleDlg
       } else {//(ps.bufferEquals("ANNU"))// si annuel
         reducPrice = normalPrice * 3; // 3 trimestres // prix normal ou prix trimestriel ?
       }
-      price.setValue(new Double(reducPrice));
+      price.setValue(reducPrice);
     } else {
-      price.setValue(new Double(0.0)); // si NUL
+      price.setValue(0.0); // si NUL
     }
   }
 

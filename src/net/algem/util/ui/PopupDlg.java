@@ -1,7 +1,7 @@
 /*
- * @(#)PopupDlg.java	2.8.w 23/07/14
+ * @(#)PopupDlg.java	2.13.2 14/04/17
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -35,7 +35,7 @@ import net.algem.util.GemCommand;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.13.2
  */
 public abstract class PopupDlg
         implements ActionListener
@@ -79,8 +79,8 @@ public abstract class PopupDlg
 
     GemPanel buttons = new GemPanel();
     buttons.setLayout(new GridLayout(1, 2));
-    buttons.add(btCancel);
     buttons.add(btValid);
+    buttons.add(btCancel);
 
     GemPanel panel = new GemPanel(new BorderLayout());
     panel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
