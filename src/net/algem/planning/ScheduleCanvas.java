@@ -1,7 +1,7 @@
 /*
- * @(#)ScheduleCanvas.java 2.10.0 07/06/2016
+ * @(#)ScheduleCanvas.java 2.13.1 18/04/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -43,13 +43,14 @@ import net.algem.util.ui.GemPanel;
  * Abstract class for planning layout.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.13.1
  * @since 2.5.a 10/07/12
  */
 public abstract class ScheduleCanvas
         extends GemPanel
         implements ScheduleView, MouseListener, Printable {
 
+  public static final int DAY_COL_WIDTH = 100;
   protected static final int TOP_MARGIN = 30;
   protected static final int LEFT_MARGIN = 50;
   protected static final Font NORMAL_FONT = new Font("Helvetica", Font.PLAIN, 10);
@@ -90,6 +91,10 @@ public abstract class ScheduleCanvas
 
   public void addActionListener(ActionListener l) {
     listener = AWTEventMulticaster.add(listener, l);
+  }
+
+  public void setStepX(int step_x) {
+    this.step_x = step_x;
   }
 
   /**
@@ -228,15 +233,16 @@ public abstract class ScheduleCanvas
     return clickRange;
   }
 
-  public java.util.List<ScheduleRangeObject> getRangesCoursCoInst(java.util.List<ScheduleRangeObject> plages) {
+  public java.util.List<ScheduleRangeObject> getRangesCoursCoInst(java.util.List<ScheduleRangeObject> ranges) {
 
     java.util.List<ScheduleRangeObject> vcc = new ArrayList<ScheduleRangeObject>();
-    for (ScheduleRangeObject p : plages) {
+    for (ScheduleRangeObject p : ranges) {
       Course c = p.getCourse();
       if (c == null) {
         continue;
       }
-      if (c.isCourseCoInst()) {
+//      if (c.isCourseCoInst()) {
+      if (c.isCollective()) {
         vcc.add(p);
       }
     }

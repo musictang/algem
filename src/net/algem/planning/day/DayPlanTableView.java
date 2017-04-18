@@ -1,7 +1,7 @@
 /*
- * @(#)DayPlanTableView.java	2.9.4.14 17/12/15
+ * @(#)DayPlanTableView.java	2.13.1 18/04/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -32,9 +32,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 import javax.swing.JScrollBar;
+import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import net.algem.planning.DateDayBar;
 import net.algem.planning.DateFr;
 import net.algem.planning.DateFrField;
+import net.algem.planning.ScheduleCanvas;
 import net.algem.planning.ScheduleObject;
 import net.algem.planning.ScheduleRangeObject;
 import net.algem.util.BundleUtil;
@@ -50,7 +54,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.9.4.14
+ * @version 2.13.1
  * @since 1.0a 07/07/1999
  */
 public abstract class DayPlanTableView
@@ -67,7 +71,8 @@ public abstract class DayPlanTableView
   protected GemButton btNext;
   protected ActionListener mainActionListener;
   private JScrollBar sb;
-
+  private JSlider hZoom;
+  
   public DayPlanTableView(String label) {
 
     dayPlanView = new DayPlanView();
@@ -106,6 +111,42 @@ public abstract class DayPlanTableView
     btNext.addActionListener(prevNextListener);
     btNow = new GemButton(BundleUtil.getLabel("Action.today.label"));
     btNow.setMargin(prevNextInsets);
+    hZoom = new JSlider(JSlider.HORIZONTAL,-40, 40, 0);
+    hZoom.setToolTipText(BundleUtil.getLabel("Slider.horizontal.zoom.tip"));
+    hZoom.setMajorTickSpacing(10);
+    hZoom.setMinorTickSpacing(5);
+    hZoom.setSnapToTicks(true);
+    /*hZoom.setFont(new Font("SansSerif", Font.PLAIN, 8));
+    hZoom.setPaintLabels(true);*/
+
+    hZoom.setMinimumSize(new Dimension(80, hZoom.getPreferredSize().height));
+    hZoom.addMouseListener(new MouseAdapter()
+    {
+      @Override
+      public void mouseClicked(MouseEvent e) {
+        if (e.getClickCount() == 2) {
+          hZoom.setValue(0);
+          dayPlanView.setStepX(ScheduleCanvas.DAY_COL_WIDTH);
+          if (mainActionListener != null) {
+            mainActionListener.actionPerformed(new ActionEvent(date, ActionEvent.ACTION_PERFORMED, "ZOOM_H"));
+          }
+        }
+      }
+    });
+    hZoom.addChangeListener(new ChangeListener()
+    {
+      @Override
+      public void stateChanged(ChangeEvent e) {
+        JSlider source = (JSlider) e.getSource();
+        if (!source.getValueIsAdjusting()) {
+          int z = (int) source.getValue();
+          dayPlanView.setStepX(ScheduleCanvas.DAY_COL_WIDTH + z);
+          if (mainActionListener != null) {
+            mainActionListener.actionPerformed(new ActionEvent(date, ActionEvent.ACTION_PERFORMED, "ZOOM_H"));
+          }
+        }
+      }
+    });
 
     GemPanel p = new GemPanel(new FlowLayout(FlowLayout.LEFT));
     p.add(new GemLabel(BundleUtil.getLabel("Day.schedule.prefix.label") + " " + label.toLowerCase() + " : "));
@@ -123,10 +164,11 @@ public abstract class DayPlanTableView
     this.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
 
-    gb.add(p, 0, 0, 1, 1, GridBagHelper.WEST);
-    gb.add(dayPlanView, 0, 1, 1, 1, GridBagHelper.BOTH, 1.0, 1.0);
-    gb.add(sb, 0, 2, 1, 1, GridBagHelper.HORIZONTAL, 1.0, 0.0);
-    gb.add(dayBar, 0, 3, 1, 1, GridBagHelper.HORIZONTAL, 1.0, 0.0);
+    gb.add(p, 0, 0, 1, 1,  GridBagHelper.WEST);
+    gb.add(hZoom, 1, 0, 1, 1, GridBagHelper.EAST);
+    gb.add(dayPlanView, 0, 1, 2, 1, GridBagHelper.BOTH, 1.0, 1.0);
+    gb.add(sb, 0, 2, 2, 1, GridBagHelper.HORIZONTAL, 1.0, 0.0);
+    gb.add(dayBar, 0, 3, 2, 1, GridBagHelper.HORIZONTAL, 1.0, 0.0);
 
     dayPlanView.addKeyListener(this);
   }

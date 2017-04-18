@@ -15,4 +15,7 @@ Calcul automatique des réductions en pourcentage
 Prise en compte d'une réduction en pourcentage pour les paiements annuels (quel que soit le type de paiement)
 
 PLANNING
-Le nombre de places occupées dans un cours d'instrument collectif est maintenant directement visible dans le planning jour. Ce nombre est affiché en bas de zone sous la forme n/n (ex. 2/3 pour 2 places occupées sur 3 au total).
+Le nombre de places occupées dans un cours collectif est maintenant directement visible dans le planning jour. Ce nombre est affiché en bas de zone sous la forme n/n (ex. 2/3 pour 2 places occupées sur 3 au total). Cette information n'est présente que si le planning comporte un nombre de places maximal > 0.
+Rappel : par convention, le nombre de places est considéré comme illimité lorsqu'il est égal à 0. Le paramétrage du nombre de places se fait au moment de la planification d'un cours, ou a posteriori, en cliquant sur Paramètres planification dans le détail d'une session de cours collectif.
+
+Un zoom horizontal est maintenant disponible dans le planning Jour, en haut à droite de la fenêtre. Ce zoom a pour effet d'élargir ou de rétrécir la largeur des colonnes. Cela peut être utile lorsque le nom des cours ne peut être affiché dans son intégralité ou pour distinguer mieux l'affichage des quotas.
