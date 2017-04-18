@@ -9,3 +9,10 @@ Sous Windows, pour récupérer le chemin d'accès d'un fichier, cliquez droit su
 SECURITE
 Modification de la saisie de mot de passe dans Création/modification login.
 Ajouts de droits () et prise en compte des droits de consultation dans le détail des plannings.
+
+FORMULE
+Calcul automatique des réductions en pourcentage
+Prise en compte d'une réduction en pourcentage pour les paiements annuels (quel que soit le type de paiement)
+
+PLANNING
+Le nombre de places occupées dans un cours d'instrument collectif est maintenant directement visible dans le planning jour. Ce nombre est affiché en bas de zone sous la forme n/n (ex. 2/3 pour 2 places occupées sur 3 au total).

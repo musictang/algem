@@ -1,5 +1,5 @@
 /*
- * @(#)ModuleDlg.java	2.13.2 14/04/17
+ * @(#)ModuleDlg.java	2.13.1 17/04/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -21,7 +21,9 @@
 package net.algem.enrolment;
 
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -56,6 +58,7 @@ import net.algem.security.Profile;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.GemLogger;
+import net.algem.util.MessageUtil;
 import net.algem.util.model.Model;
 import net.algem.util.ui.*;
 
@@ -64,13 +67,12 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.13.2
+ * @version 2.13.1
  * @since 1.0a 07/07/1999
  */
 public class ModuleDlg
-        extends PopupDlg
-        implements ItemListener
-{
+  extends PopupDlg
+  implements ItemListener {
 
   private GemPanel maskPanel;
   private GemChoice moduleChoice;
@@ -78,6 +80,7 @@ public class ModuleDlg
   private DateFrField dateEnd;
   private JFormattedTextField price;
   private JFormattedTextField calculatedPrice;
+  private GemLabel calculatedPriceInfo;
   private JComboBox payment;
   private JComboBox frequency;
   private JComboBox pricing;
@@ -88,10 +91,8 @@ public class ModuleDlg
   private GridBagHelper gb;
   private JSpinner percentControl;
   private final JToggleButton addPercent = new JToggleButton("+");
-  ;
   private final JToggleButton subPercent = new JToggleButton("-");
-
-  ;
+  private ButtonGroup percentGroup;
 
   public ModuleDlg() {
   }
@@ -107,12 +108,11 @@ public class ModuleDlg
     NumberFormat nf = AccountUtil.getDefaultCurrencyFormat();
     price = new JFormattedTextField(nf);
     price.setColumns(8);
-    price.addKeyListener(new KeyAdapter()
-    {
+    price.addKeyListener(new KeyAdapter() {
       public void keyReleased(KeyEvent e) {
         try {
           price.commitEdit();
-          calculatedPrice.setValue(calculatePayment(module, (String) getField(5), (PayFrequency) getField(6), (PricingPeriod) getField(9)));
+          calculatedPrice.setValue(calculatePayment(module, (String) getField(5), (PayFrequency) getField(6), (PricingPeriod) getField(9), getField(4)));
         } catch (ParseException ex) {
           GemLogger.log(ex.getMessage());
         }
@@ -123,6 +123,8 @@ public class ModuleDlg
     calculatedPrice = new JFormattedTextField(nf);
     calculatedPrice.setColumns(8);
     calculatedPrice.setEditable(false);
+    calculatedPriceInfo = new GemLabel();
+    calculatedPriceInfo.setFont(calculatedPrice.getFont().deriveFont(Font.PLAIN, 10));
 
     Calendar deb = Calendar.getInstance(Locale.FRANCE);
     Calendar cal = Calendar.getInstance(Locale.FRANCE);
@@ -151,10 +153,9 @@ public class ModuleDlg
     hours.setValue(1d);
     hours.setToolTipText(BundleUtil.getLabel("Pricing.period.hours.tip"));
     hours.setEditable(PricingPeriod.HOUR.equals(getDefaultPricingPeriod()));
-    hours.addKeyListener(new KeyAdapter()
-    {
+    hours.addKeyListener(new KeyAdapter() {
       public void keyReleased(KeyEvent e) {
-        calculatedPrice.setValue(calculatePayment(module, (String) getField(5), (PayFrequency) getField(6), (PricingPeriod) getField(9)));
+        calculatedPrice.setValue(calculatePayment(module, (String) getField(5), (PayFrequency) getField(6), (PricingPeriod) getField(9), getField(4)));
       }
     });
 
@@ -180,25 +181,24 @@ public class ModuleDlg
     gb.add(price, 1, 3, 1, 1, GridBagHelper.WEST);
 
     JPanel adjustment = new JPanel();
-    ActionListener percentListener = new ActionListener()
-    {
+
+    ActionListener percentListener = new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        JToggleButton tb = (JToggleButton) e.getSource();
-        int val = (int) percentControl.getValue();
-        double baseP = module.getBasePrice();
-        if (val > 0) {
-          if (tb == addPercent) {
-            price.setValue(baseP + (baseP * val / 100));
-            calculatedPrice.setValue(calculatePayment(module, (String) getField(5), (PayFrequency) getField(6), (PricingPeriod) getField(9)));
-          } else if (tb == subPercent) {
-            price.setValue(baseP - (baseP * val / 100));
-            calculatedPrice.setValue(calculatePayment(module, (String) getField(5), (PayFrequency) getField(6), (PricingPeriod) getField(9)));
+        try {
+          percentControl.commitEdit();
+          int val = (int) percentControl.getValue();
+          double baseP = module.getBasePrice();
+          if (val > 0) {
+            adjustBasePrice(baseP, val);
           }
+        } catch (ParseException ex) {
+          GemLogger.log(ex.getMessage());
         }
       }
-
     };
+    addPercent.setMargin(new Insets(0, 4, 0, 4));
+    subPercent.setMargin(new Insets(0, 4, 0, 4));
     addPercent.setToolTipText(BundleUtil.getLabel("Module.add.percent.tip"));
     addPercent.addActionListener(percentListener);
     subPercent.setToolTipText(BundleUtil.getLabel("Module.sub.percent.tip"));
@@ -206,8 +206,7 @@ public class ModuleDlg
 
     percentControl = new JSpinner(new SpinnerNumberModel(0, 0, 100, 1));
     percentControl.setToolTipText(BundleUtil.getLabel("Module.percent.adjustment"));
-    percentControl.addChangeListener(new ChangeListener()
-    {
+    percentControl.addChangeListener(new ChangeListener() {
       @Override
       public void stateChanged(ChangeEvent e) {
         JSpinner o = (JSpinner) e.getSource();
@@ -215,27 +214,27 @@ public class ModuleDlg
         double baseP = module.getBasePrice();//((Number) price.getValue()).doubleValue();
         if (addPercent.isSelected()) {
           price.setValue(baseP + (baseP * val / 100));
-          calculatedPrice.setValue(calculatePayment(module, (String) getField(5), (PayFrequency) getField(6), (PricingPeriod) getField(9)));
+          calculatedPrice.setValue(calculatePayment(module, (String) getField(5), (PayFrequency) getField(6), (PricingPeriod) getField(9), getField(4)));
         } else if (subPercent.isSelected()) {
           price.setValue(baseP - (baseP * val / 100));
-          calculatedPrice.setValue(calculatePayment(module, (String) getField(5), (PayFrequency) getField(6), (PricingPeriod) getField(9)));
+          calculatedPrice.setValue(calculatePayment(module, (String) getField(5), (PayFrequency) getField(6), (PricingPeriod) getField(9), getField(4)));
         }
       }
 
     });
 
-    ButtonGroup group = new ButtonGroup();
-    group.add(addPercent);
-    group.add(subPercent);
+    percentGroup = new ButtonGroup();
+
+    percentGroup.add(addPercent);
+    percentGroup.add(subPercent);
 
     adjustment.add(subPercent);
     adjustment.add(percentControl);
     adjustment.add(new GemLabel("%"));
     adjustment.add(addPercent);
     gb.add(adjustment, 2, 3, 1, 1, GridBagHelper.WEST);
-
-    gb.add(calculatedPrice, 1, 4, 2, 1, GridBagHelper.WEST);
-
+    gb.add(calculatedPrice, 1, 4, 1, 1, GridBagHelper.WEST);
+    gb.add(calculatedPriceInfo, 2, 4, 1, 1, GridBagHelper.WEST);
     gb.add(payment, 1, 5, 2, 1, GridBagHelper.WEST);
     gb.add(frequency, 1, 6, 2, 1, GridBagHelper.WEST);
     gb.add(pricing, 1, 7, 2, 1, GridBagHelper.WEST);
@@ -250,6 +249,17 @@ public class ModuleDlg
       initPrice(module);
     }
     init();
+  }
+
+  private void adjustBasePrice(double baseP, double pcVal) {
+    if (addPercent.isSelected()) {
+      price.setValue(baseP + (baseP * pcVal / 100));
+    } else if (subPercent.isSelected()) {
+      price.setValue(baseP - (baseP * pcVal / 100));
+    } else {
+      price.setValue(baseP);
+    }
+    calculatedPrice.setValue(calculatePayment(module, (String) getField(5), (PayFrequency) getField(6), (PricingPeriod) getField(9), getField(4)));
   }
 
   @Override
@@ -332,21 +342,51 @@ public class ModuleDlg
 
   @Override
   public void itemStateChanged(ItemEvent evt) {
-    if (evt.getSource() == moduleChoice) {
+    Object src = evt.getSource();
+    if (src == moduleChoice) {
       try {
+        int val = (int) percentControl.getValue();
         module = service.getModule(moduleChoice.getKey());
-        price.setValue(module.getBasePrice());
+//        price.setValue(module.getBasePrice());
+        adjustBasePrice(module.getBasePrice(), val);
       } catch (SQLException ex) {
         GemLogger.log(getClass().getName() + "#itemStateChanged " + ex.getMessage());
       }
       if (module == null || personFile == null) {
         return;
       }
-    } else if (evt.getSource() == pricing) {
+    } else if (src == frequency || src == payment) {
+      calculatedPrice.setValue(calculatePayment(module, (String) getField(5), (PayFrequency) getField(6), (PricingPeriod) getField(9), getField(4)));
+    } else if (src == pricing) {
       hours.setEditable(PricingPeriod.HOUR.equals((PricingPeriod) getField(9)));
+      calculatedPrice.setValue(calculatePayment(module, (String) getField(5), (PayFrequency) getField(6), (PricingPeriod) getField(9), getField(4)));
     }
-    calculatedPrice.setValue(calculatePayment(module, (String) getField(5), (PayFrequency) getField(6), (PricingPeriod) getField(9)));
+    showReducInfo();
+  }
 
+  private void showReducInfo() {
+    PricingPeriod pp = (PricingPeriod) getField(9);
+    if (PricingPeriod.HOUR.equals(pp)) {
+      calculatedPriceInfo.setText(null);
+      return;
+    }
+    PayFrequency pf = (PayFrequency) getField(6);
+    String modeOfPay = (String) getField(5);
+    if (PayFrequency.YEAR.equals(pf) && module.getYearReducRate() > 0.0) {
+      calculatedPriceInfo.setText(
+        MessageUtil.getMessage("module.year.reduc.rate.info", module.getYearReducRate())
+      );
+    } else if ("PRL".equals(modeOfPay) && PayFrequency.QUARTER.equals(pf) && module.getQuarterReducRate() > 0.0) {
+      calculatedPriceInfo.setText(
+        MessageUtil.getMessage("module.quarter.reduc.rate.info", module.getQuarterReducRate())
+      );
+    } else if ("PRL".equals(modeOfPay) && PayFrequency.MONTH.equals(pf) && module.getMonthReducRate() > 0.0) {
+      calculatedPriceInfo.setText(
+        MessageUtil.getMessage("module.month.reduc.rate.info", module.getMonthReducRate())
+      );
+    } else {
+      calculatedPriceInfo.setText(null);
+    }
   }
 
   /**
@@ -379,9 +419,11 @@ public class ModuleDlg
     }
   }
 
-  double calculatePayment(Module m, String mp, PayFrequency pf, PricingPeriod pp) {
-    double price = getField(4) == null ? m.getBasePrice() : ((Number) getField(4)).doubleValue();
+  double calculatePayment(Module m, String mp, PayFrequency pf, PricingPeriod pp, Object priceValue) {
+    //double price = getField(4) == null ? m.getBasePrice() : ((Number) getField(4)).doubleValue();
+    double price = priceValue == null ? m.getBasePrice() : ((Number) priceValue).doubleValue();
     double reduc = price;
+    double yearPrice = price - (price * m.getYearReducRate() / 100);
     if (ModeOfPayment.PRL.toString().equals(mp)) {
       switch (pf) {
         case YEAR:
@@ -389,10 +431,14 @@ public class ModuleDlg
         case SEMESTER:
           break;
         case QUARTER:
-          price = price - (price * m.getQuarterReducRate() / 100);
+          if (!PricingPeriod.HOUR.equals(pp)) {
+            price = price - (price * m.getQuarterReducRate() / 100);
+          }
           break;
         case MONTH:
-          price = price - (price * m.getMonthReducRate() / 100);
+          if (!PricingPeriod.HOUR.equals(pp)) {
+            price = price - (price * m.getMonthReducRate() / 100);
+          }
           break;
       }
     }
@@ -400,7 +446,7 @@ public class ModuleDlg
     if (pp.equals(PricingPeriod.YEAR)) {
       switch (pf) {
         case YEAR:
-          reduc = price;
+          reduc = yearPrice;
           break;
         case SEMESTER:
           reduc = price;
@@ -415,7 +461,7 @@ public class ModuleDlg
     } else if (pp.equals(PricingPeriod.BIAN)) {
       switch (pf) {
         case YEAR:
-          reduc = price;
+          reduc = yearPrice;
           break;
         case SEMESTER:
           reduc = price;
@@ -430,7 +476,7 @@ public class ModuleDlg
     } else if (pp.equals(PricingPeriod.QTER)) {
       switch (pf) {
         case YEAR:
-          reduc = price * 3;
+          reduc = yearPrice * 3;
           break;
         case SEMESTER:
           reduc = price * 2;
@@ -445,7 +491,7 @@ public class ModuleDlg
     } else if (pp.equals(PricingPeriod.MNTH)) {
       switch (pf) {
         case YEAR:
-          reduc = price * 9;
+          reduc = yearPrice * 9;
           break;
         case SEMESTER:
           reduc = price * 6;
@@ -461,12 +507,12 @@ public class ModuleDlg
       return price * (double) getField(8);
     }
 
-    return reduc;
+    return AccountUtil.round(reduc);
   }
 
   private void initPrice(Module m) {
     price.setValue(m.getBasePrice());
-    calculatedPrice.setValue(calculatePayment(m, ModeOfPayment.CHQ.toString(), PayFrequency.MONTH, getDefaultPricingPeriod()));
+    calculatedPrice.setValue(calculatePayment(m, ModeOfPayment.CHQ.toString(), PayFrequency.MONTH, getDefaultPricingPeriod(), getField(4)));
   }
 
   @Override
@@ -487,6 +533,9 @@ public class ModuleDlg
     hours.setValue(1d);
     pricing.setSelectedItem(getDefaultPricingPeriod());
     price.setValue(module.getBasePrice());
-    calculatedPrice.setValue(calculatePayment(module, (String) getField(5), (PayFrequency) getField(6), (PricingPeriod) getField(9)));
+    calculatedPrice.setValue(calculatePayment(module, (String) getField(5), (PayFrequency) getField(6), (PricingPeriod) getField(9), getField(4)));
+    calculatedPriceInfo.setText(null);
+    percentGroup.clearSelection();
+    percentControl.setValue(0);
   }
 }

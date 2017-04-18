@@ -1,7 +1,7 @@
 /*
- * @(#)TestModuleRate.java	2.9.1 12/11/14
+ * @(#)TestModuleRate.java	2.13.1 17/04/17
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -32,7 +32,7 @@ import static org.junit.Assert.*;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.13.1
  * @since 2.8.w 16/07/14
  */
 public class TestModuleRate
@@ -63,53 +63,73 @@ public class TestModuleRate
     m.setBasePrice(600.0);
     m.setMonthReducRate(7.0);
     m.setQuarterReducRate(10.0);
+    m.setYearReducRate(12.0);
 
     ModuleDlg dlg = new ModuleDlg();
+
     String check = ModeOfPayment.CHQ.toString();
     String ddebit = ModeOfPayment.PRL.toString();
+    String cash = ModeOfPayment.ESP.toString();
 
     // rating periodicity : module rate is linked to this parameter (if YEAR, the module basic rate is based on year)
     PricingPeriod def = PricingPeriod.YEAR;
 
-    double payment = dlg.calculatePayment(m, ddebit, PayFrequency.MONTH, def);
+    double payment = dlg.calculatePayment(m, ddebit, PayFrequency.MONTH, def, null);
     double expected = 558.0 / 9;
     assertTrue(expected == payment);
-    payment = dlg.calculatePayment(m, ddebit, PayFrequency.QUARTER, def);
+    payment = dlg.calculatePayment(m, ddebit, PayFrequency.QUARTER, def, null);
     expected = 540 / 3;
     assertTrue(expected == payment);
 
-    payment = dlg.calculatePayment(m, ddebit, PayFrequency.YEAR, def);
-    expected = m.getBasePrice();
+    payment = dlg.calculatePayment(m, cash, PayFrequency.QUARTER, def, null);
+    expected = 600 / 3;
     assertTrue(expected == payment);
 
-    //
+    payment = dlg.calculatePayment(m, check, PayFrequency.QUARTER, def, null);
+    expected = 600 / 3;
+    assertTrue(expected == payment);
+
+    payment = dlg.calculatePayment(m, ddebit, PayFrequency.YEAR, def, null);
+    expected = m.getBasePrice() - (m.getBasePrice() * 12 /100);//
+    System.out.println("base = " + m.getBasePrice() + " expected = " + expected);
+    assertTrue(expected == payment);
+
     def = PricingPeriod.QTER;
-
-    payment = dlg.calculatePayment(m, ddebit, PayFrequency.MONTH, def);
-
+    payment = dlg.calculatePayment(m, ddebit, PayFrequency.MONTH, def, null);
     expected = 558.0 / 3;
     assertTrue("payment == " + payment, expected == payment);
-    payment = dlg.calculatePayment(m, ddebit, PayFrequency.QUARTER, def);
+
+    payment = dlg.calculatePayment(m, ddebit, PayFrequency.QUARTER, def, null);
     expected = 540.0;
     assertTrue(expected == payment);
 
-    payment = dlg.calculatePayment(m, check, PayFrequency.YEAR, def);
-    expected = m.getBasePrice() * 3;
+    payment = dlg.calculatePayment(m, check, PayFrequency.QUARTER, def, null);
+    expected = 600.0;
+    assertTrue(expected == payment);
+
+    payment = dlg.calculatePayment(m, check, PayFrequency.YEAR, def, null);
+    expected = (m.getBasePrice() - (m.getBasePrice() * 12 /100)) * 3;//
+    System.out.println("base = " + m.getBasePrice() + " expected = " + expected);
+    assertTrue("payment == " + payment, expected == payment);
+
+    payment = dlg.calculatePayment(m, ddebit, PayFrequency.YEAR, def, null);
+//    expected = (m.getBasePrice() - (m.getBasePrice() * 12 /100)) * 3;//
+    System.out.println("base = " + m.getBasePrice() + " expected = " + expected);
     assertTrue("payment == " + payment, expected == payment);
 
     //
     def = PricingPeriod.BIAN;
-
-    payment = dlg.calculatePayment(m, ddebit, PayFrequency.MONTH, def);
-
+    payment = dlg.calculatePayment(m, ddebit, PayFrequency.MONTH, def, null);
     expected = 558 / 6;
     assertTrue("payment == " + payment, expected == payment);
-    payment = dlg.calculatePayment(m, ddebit, PayFrequency.QUARTER, def);
+
+    payment = dlg.calculatePayment(m, ddebit, PayFrequency.QUARTER, def, null);
     expected = 540.0 / 2;
     assertTrue(expected == payment);
 
-    payment = dlg.calculatePayment(m, check, PayFrequency.YEAR, def);
-    expected = m.getBasePrice();
+    payment = dlg.calculatePayment(m, check, PayFrequency.YEAR, def, null);
+    expected = m.getBasePrice() - (m.getBasePrice() * 12 /100);//
+    System.out.println("base = " + m.getBasePrice() + " expected = " + expected);
     assertTrue("payment == " + payment, expected == payment);
 
   }

@@ -1,7 +1,7 @@
 /*
- * @(#)DayPlanView.java 2.11.3 24/11/16
+ * @(#)DayPlanView.java 2.13.1 17/04/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -43,7 +43,7 @@ import net.algem.util.model.Model;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.3
+ * @version 2.13.1
  * @since 1.0a 07/07/1999
  */
 public class DayPlanView
@@ -194,12 +194,12 @@ public class DayPlanView
     if (start != null && start.toMinutes() > GLOBAL_START_TIME) {
       dummy.setStart(first);
       dummy.setEnd(start);
-      drawRange(col, dummy, CLOSED_COLOR, step_x);
+      drawRange(col, dummy, CLOSED_COLOR, step_x, null);
     }
     if (end != null && end.toMinutes() < 1440) {
       dummy.setStart(end.toString().equals(Hour.NULL_HOUR) ? first : end);
       dummy.setEnd(last);
-      drawRange(col, dummy, CLOSED_COLOR, step_x);
+      drawRange(col, dummy, CLOSED_COLOR, step_x, null);
     }
     }
 
@@ -264,7 +264,7 @@ public class DayPlanView
     for (int j = 0; j < v.size(); j++) {
       ScheduleObject p = v.elementAt(j);
       Color c = getScheduleColor(p);
-      drawRange(i, p, c, step_x); // dessin des plannings p comme ScheduleObject
+      drawRange(i, p, c, step_x, null); // dessin des plannings p comme ScheduleObject
       if (p.getType() == Schedule.MEMBER || p.getType() == Schedule.GROUP) {
         if (p.getNote() == -1) {
           flagNotPaid(i, p.getStart().toMinutes(), p.getEnd().toMinutes(), c);
@@ -326,13 +326,13 @@ public class DayPlanView
       c = getScheduleColor(p);
       if (Schedule.ADMINISTRATIVE == p.getType()) {
         if (p.getFollowUp() != null && p.getFollowUp().getContent() != null && !p.getStart().equals(start)) {
-          drawRange(i, p, c, step_x);
+          drawRange(i, p, c, step_x, null);
           start = p.getStart();
         }
       } else {
         Course cc = p.getCourse();
         if (cc != null && !cc.isCollective()) {
-          drawRange(i, p, c, step_x);
+          drawRange(i, p, c, step_x, null);
         }
       }
     }
@@ -342,6 +342,7 @@ public class DayPlanView
     int n = 0; // nombre de participants
     int w = 0; // largeur de plage occupée
     int idx = 0; // index plage
+
     int idp = vpci.get(0).getScheduleId();
     // tracé des plages de cours collectifs
     for (int j = 0; j < vpci.size(); j++) {
@@ -351,17 +352,22 @@ public class DayPlanView
         idx = j;
         continue;
       }
-      w = getScheduleRangeWidth(vpci.get(idx).getAction().getPlaces(), n);
+      int places = vpci.get(idx).getAction().getPlaces();
+      w = getScheduleRangeWidth(places, n);
       c = getScheduleColor(vpci.get(idx));// important! previous range color
-      drawRange(i, vpci.get(idx), c, w);
+      String quota = n + "/" + places;
+      drawRange(i, vpci.get(idx), c, w, quota);
       idp = p.getScheduleId();
       n = 1;
       idx = j;
     }
     // last schedule of the column
+    int places = vpci.get(idx).getAction().getPlaces();
     c = getScheduleColor(vpci.get(idx));
-    w = getScheduleRangeWidth(vpci.get(idx).getAction().getPlaces(), n);
-    drawRange(i, vpci.get(idx), c, w);
+    w = getScheduleRangeWidth(places, n);
+
+    String quota = n + "/" + places;
+    drawRange(i, vpci.get(idx), c, w, quota);
   }
 
   /*protected void drawAgenda(int i, Vector<ScheduleRangeObject> vpl) {
@@ -370,7 +376,7 @@ public class DayPlanView
     }
   }*/
 
-  protected void drawRange(int col, ScheduleObject p, Color c, int w) {
+  protected void drawRange(int col, ScheduleObject p, Color c, int w, String quota) {
     int pStart = p.getStart().toMinutes();
     int pEnd = p.getEnd().toMinutes();
 
@@ -384,6 +390,9 @@ public class DayPlanView
     // black line separator
     if (p instanceof CourseSchedule && p.getClass() != ScheduleRangeObject.class) {
       bg.drawLine(x, y - 1, (x + w) - 1, y - 1);
+    }
+    if (p.getClass() == ScheduleRangeObject.class && quota != null) {
+      showQuota((ScheduleRangeObject) p, quota, x);
     }
     if (showRangeNames || Schedule.ADMINISTRATIVE == p.getType()) {
       textSubRange(p, x);
@@ -506,7 +515,7 @@ public class DayPlanView
   private void showSubSubLabel(ScheduleRangeObject p, int x) {
     int length = p.getStart().getLength(p.getEnd());
     if (length > 56) {
-      int y = setY(p.getEnd().toMinutes()) - (fm.getHeight() /2);
+      int y = setY(p.getEnd().toMinutes()) - (fm.getHeight() /4);
       String subSubLabel = null;
       if (Schedule.ADMINISTRATIVE == p.getType()) {
           subSubLabel = p.getFollowUp().getContent() == null ? "" : p.getFollowUp().getContent();
@@ -515,6 +524,12 @@ public class DayPlanView
       }
       drawSubLabel(subSubLabel, x, y , step_x);
     }
+  }
+
+  private void showQuota(ScheduleRangeObject p, String quota, int x) {
+    int y = setY(p.getEnd().toMinutes()) - (fm.getHeight()/4);// - (fm.getHeight()/2);
+    int xq = x + step_x - fm.stringWidth(quota) - 1;
+    bg.drawString(quota, xq, y);
   }
 
   private void drawSubLabel(String subLabel, int x, int y, int step_x) {

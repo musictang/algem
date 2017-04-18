@@ -1,5 +1,5 @@
 /*
- * @(#)Module.java	 2.12.0 14/03/17
+ * @(#)Module.java	 2.13.1 17/04/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -30,7 +30,7 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.12.0
+ * @version 2.13.1
  */
 public class Module
         implements GemModel {
@@ -43,6 +43,7 @@ public class Module
   private double basePrice;
   private double monthReducRate;
   private double quarterReducRate;
+  private double yearReducRate;
   private List<CourseModuleInfo> courses;
   private boolean active;
 
@@ -181,6 +182,19 @@ public class Module
    */
   public double getQuarterReducRate() {
     return quarterReducRate;
+  }
+
+  /**
+   * Gets the reduction rate for year debiting.
+   *
+   * @return a rate in percent
+   */
+  public double getYearReducRate() {
+    return yearReducRate;
+  }
+
+  public void setYearReducRate(double yearReducRate) {
+    this.yearReducRate = yearReducRate;
   }
 
   public List<CourseModuleInfo> getCourses() {

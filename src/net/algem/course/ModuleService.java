@@ -1,7 +1,7 @@
 /*
- * @(#)ModuleService.java 2.9.4.13 21/10/15
+ * @(#)ModuleService.java 2.13.1 17/04/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -38,7 +38,7 @@ import net.algem.util.model.Model;
  * Service class for modules.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.13.1
  * @since 2.5.a 03/07/12
  */
 public class ModuleService
@@ -75,7 +75,7 @@ public class ModuleService
         throw new ModuleException(MessageUtil.getMessage("module.delete.exception", vm.size()));
       }
     }
-    moduleIO.delete(m);
+    moduleIO.delete(m.getId());
   }
 
   boolean isUsed(int moduleId, DateFr start) throws SQLException {

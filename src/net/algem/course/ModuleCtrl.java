@@ -1,5 +1,5 @@
 /*
- * @(#)ModuleCtrl.java	2.10.0 13/05/16
+ * @(#)ModuleCtrl.java	2.13.1 17/04/17
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -37,7 +37,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.13.1
  * @since 1.0a 07/07/1999
  */
 public class ModuleCtrl
@@ -118,8 +118,8 @@ public class ModuleCtrl
         edit(m);
       }
     } catch (ModuleException e1) {
-      MessagePopup.error(this, e1.getMessage());
       GemLogger.logException("Edition module", e1);
+      MessagePopup.error(this, e1.getMessage());
       return false;
     }
 
@@ -224,11 +224,8 @@ public class ModuleCtrl
   }
 
   protected void edit(Module m) throws ModuleException {
-
-    DataConnection dc = DataCache.getDataConnection();
     try {
-      ModuleService service = new ModuleService(dc);
-      dc.setAutoCommit(false);
+      ModuleService service = new ModuleService(DataCache.getDataConnection());
       if (m.getId() == 0) {
         service.create(m);
         dataCache.add(m);
@@ -244,25 +241,19 @@ public class ModuleCtrl
         dataCache.update(m);
         desktop.postEvent(new ModuleEvent(this, GemEvent.MODIFICATION, m));
       }
-      dc.commit();
       if (actionListener != null) {
         actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "CtrlValider"));
       }
     } catch (SQLException ex) {
-      dc.rollback();
       throw new ModuleException("Edit module : " + ex.getMessage());
-    } finally {
-      dc.setAutoCommit(true);
     }
   }
 
   private void delete(Module m) throws ModuleException {
     DataConnection dc = DataCache.getDataConnection();
     try {
-      dc.setAutoCommit(false);
       ModuleService service = new ModuleService(dc);
       service.delete(m);
-      dc.commit();
       dataCache.remove(m);
       desktop.postEvent(new ModuleEvent(this, GemEvent.SUPPRESSION, m));
       MessagePopup.information(this, MessageUtil.getMessage("delete.info"));
@@ -271,10 +262,7 @@ public class ModuleCtrl
         actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, GemCommand.NEW_SEARCH_CMD));
       }
     } catch (SQLException ex) {
-      dc.rollback();
       throw new ModuleException("Edit module : " + ex.getMessage());
-    } finally {
-      dc.setAutoCommit(true);
     }
   }
 }

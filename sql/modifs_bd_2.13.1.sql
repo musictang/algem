@@ -1,4 +1,9 @@
 -- -- 2.13.1
+-- -- Ajout taux de réduction annuel formule
+ALTER TABLE module ADD taux_annu numeric;
+-- -- Renommer colonne taux_mensuel
+ALTER TABLE module RENAME taux_mensuel TO taux_mens;
+
 -- SELECT * from siteweb where url like 'http://https://%';
 UPDATE siteweb SET url = right(url, -7) WHERE url LIKE 'http://https://%';
 
@@ -219,4 +224,3 @@ insert into menuaccess select idper,147,false from login where profil = 2 and id
 insert into menuaccess select idper,149,false from login where profil = 2 and idper not in (select idper from menuaccess where idmenu = 149);
 insert into menuaccess select idper,150,false from login where profil = 2 and idper not in (select idper from menuaccess where idmenu = 150);
 insert into menuaccess select idper,148,false from login where profil = 2 and idper not in (select idper from menuaccess where idmenu = 148);
-

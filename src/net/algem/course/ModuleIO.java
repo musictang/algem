@@ -1,5 +1,5 @@
 /*
- * @(#)ModuleIO.java 2.12.0 14/03/17
+ * @(#)ModuleIO.java 2.13.1 17/04/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -26,10 +26,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
+import java.util.logging.Level;
 import net.algem.config.GemParam;
 import net.algem.config.Preset;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
+import net.algem.util.GemLogger;
 import net.algem.util.model.Cacheable;
 import net.algem.util.model.Model;
 import net.algem.util.model.TableIO;
@@ -39,7 +41,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.12.0
+ * @version 2.13.1
  */
 public class ModuleIO
         extends TableIO
@@ -60,64 +62,113 @@ public class ModuleIO
   /**
    * Inserts a new training module.
    * A new module is enabled by default.
+   * @{actif} column in database is set TRUE by default.
    * @param m the module to insert
    * @throws SQLException
    */
-  public void insert(Module m) throws SQLException {
+  public void insert(final Module m) throws SQLException {
 
-    int n = nextId(SEQUENCE, dc);
-
-    String query = "INSERT INTO " + TABLE + " VALUES("
-            + "'" + n
-            + "','" + m.getCode()
-            + "','" + escape(m.getTitle())
-            + "'," + m.getBasePrice()
-            + "," + m.getMonthReducRate()
-            + "," + m.getQuarterReducRate()
-            + ",0" //+m.getUnite()
-            + ")";
-
-    int rsn = dc.executeUpdate(query);
-    m.setId(n);
-    transInsert(m);
-  }
-
-  private void transInsert(Module m) throws SQLException {
-    for (CourseModuleInfo cm : m.getCourses()) {
-      cm.setIdModule(m.getId());
-      String query = "INSERT INTO module_cours VALUES("
-              + cm.getId()
-              + ", " + cm.getIdModule()
-              + ", " + cm.getCode().getId()
-              + ", " + cm.getTimeLength()
-              + ")";
-      dc.executeUpdate(query);
+    final int n = nextId(SEQUENCE, dc);
+    try {
+      dc.withTransaction(new DataConnection.SQLRunnable<Void>() {
+        @Override
+        public Void run(DataConnection conn) throws Exception {
+          String query = "INSERT INTO " + TABLE + " VALUES(?,?,?,?,?,?,?,?,?)";
+          try (PreparedStatement ps = dc.prepareStatement(query)) {
+            ps.setInt(1, n);
+            ps.setString(2, m.getCode());
+            ps.setString(3, m.getTitle());
+            ps.setDouble(4, m.getBasePrice());
+            ps.setDouble(5, m.getMonthReducRate());
+            ps.setDouble(6, m.getQuarterReducRate());
+            ps.setInt(7, 0);
+            ps.setBoolean(8, true);
+            ps.setDouble(9, m.getYearReducRate());
+            ps.executeUpdate();
+          }
+          m.setId(n);
+          transInsert(m);
+          return null;
+        }
+      });
+    } catch (Exception ex) {
+      GemLogger.logException(ex);
+      throw new SQLException(ex);
     }
   }
 
-  public void update(Module m) throws SQLException {
-    String query = "UPDATE " + TABLE + " SET "
-            + "titre = '" + escape(m.getTitle())
-            + "',code = '" + m.getCode()
-            + "',prix_base = " + m.getBasePrice()
-            + ",taux_mensuel = " + m.getMonthReducRate()
-            + ",taux_trim = " + m.getQuarterReducRate()
-            + ",unite = 0"
-            + ",actif = " + m.isActive()//+m.getUnite()
-            + " WHERE id = " + m.getId();
+  private void transInsert(Module m) throws SQLException {
+    String query = "INSERT INTO module_cours VALUES(?,?,?,?)";
+    try (PreparedStatement ps = dc.prepareStatement(query)) {
+      for (CourseModuleInfo cm : m.getCourses()) {
+        cm.setIdModule(m.getId());
+        ps.setInt(1, cm.getId());
+        ps.setInt(2, cm.getIdModule());
+        ps.setInt(3, cm.getCode().getId());
+        ps.setInt(4, cm.getTimeLength());
 
-    dc.executeUpdate(query);
-    query = "DELETE FROM module_cours WHERE idmodule = " + m.getId();
-    dc.executeUpdate(query);
-    transInsert(m);
+        GemLogger.log(Level.INFO, ps.toString());
+        ps.executeUpdate();
+      }
+    }
   }
 
-  public void delete(Module m) throws SQLException {
-    //TODO verifier la non utilisation du module dans les commandes cours
-    String query = "DELETE FROM " + TABLE + " WHERE id = " + m.getId();
-    dc.executeUpdate(query);
-    query = "DELETE FROM module_cours WHERE idmodule = " + m.getId();
-    dc.executeUpdate(query);
+  public void update(final Module m) throws SQLException {
+    try {
+      dc.withTransaction(new DataConnection.SQLRunnable<Void>() {
+        @Override
+        public Void run(DataConnection conn) throws Exception {
+          String query = "UPDATE " + TABLE
+            + " SET titre = ?, code = ?, prix_base = ?, taux_mens = ?, taux_trim = ?, taux_annu = ?, unite = ?, actif = ?" + " WHERE id = ?";
+          try (PreparedStatement ps = dc.prepareStatement(query)) {
+            ps.setString(1, m.getTitle());
+            ps.setString(2, m.getCode());
+            ps.setDouble(3, m.getBasePrice());
+            ps.setDouble(4, m.getMonthReducRate());
+            ps.setDouble(5, m.getQuarterReducRate());
+            ps.setDouble(6, m.getYearReducRate());
+            ps.setInt(7, 0);
+            ps.setBoolean(8, m.isActive());
+            ps.setInt(9, m.getId());
+
+            GemLogger.log(Level.INFO, ps.toString());
+            ps.executeUpdate();
+          }
+
+          query = "DELETE FROM module_cours WHERE idmodule = " + m.getId();
+          dc.executeUpdate(query);
+          transInsert(m);
+          return null;
+        }
+
+      });
+    } catch (Exception ex) {
+      GemLogger.logException(ex);
+      throw new SQLException(ex.getMessage());
+    }
+  }
+
+  /**
+   * Deletes the module whose id is @{code id}.
+   * @param id the module id
+   * @throws SQLException
+   */
+  public void delete(final int id) throws SQLException {
+    try {
+      dc.withTransaction(new DataConnection.SQLRunnable<Void>() {
+        @Override
+        public Void run(DataConnection conn) throws Exception {
+          String query = "DELETE FROM " + TABLE + " WHERE id = " + id;
+          dc.executeUpdate(query);
+          query = "DELETE FROM module_cours WHERE idmodule = " + id;
+          dc.executeUpdate(query);
+          return null;
+        }
+      });
+    } catch (Exception ex) {
+      GemLogger.logException(ex);
+      throw new SQLException(ex.getMessage());
+    }
   }
 
   /**
@@ -139,41 +190,41 @@ public class ModuleIO
   public Vector<Module> find(String where) throws SQLException {
     Vector<Module> v = new Vector<Module>();
     String query = "SELECT " + TABLE + ".* FROM " + TABLE + " " + where;
-    ResultSet rs = dc.executeQuery(query);
-    while (rs.next()) {
-      Module m = new Module();
-      m.setId(rs.getInt(1));
-      m.setCode(rs.getString(2).trim());
-      m.setTitle(rs.getString(3));
-      m.setBasePrice(rs.getDouble(4)); // prixinst
-      m.setMonthReducRate(rs.getDouble(5)); // taux de réduction prélèvement mensuel
-      m.setQuarterReducRate(rs.getDouble(6)); // taux de réduction prélèvement trimestriel
-      m.setActive(rs.getBoolean(8));
+    try (ResultSet rs = dc.executeQuery(query)) {
+      while (rs.next()) {
+        Module m = new Module();
+        m.setId(rs.getInt(1));
+        m.setCode(rs.getString(2).trim());
+        m.setTitle(rs.getString(3));
+        m.setBasePrice(rs.getDouble(4));
+        m.setMonthReducRate(rs.getDouble(5));
+        m.setQuarterReducRate(rs.getDouble(6));
+        m.setActive(rs.getBoolean(8));
+        m.setYearReducRate(rs.getDouble(9));
 
-      m.setCourses(findCourses(m.getId()));
-
-      v.addElement(m);
+        m.setCourses(findCourses(m.getId()));
+        v.addElement(m);
+      }
     }
-    rs.close();
+
     return v;
   }
 
   private List<CourseModuleInfo> findCourses(int module) throws SQLException {
-//    String query = "SELECT * FROM module_cours WHERE idmodule = " + module;
     String query = "SELECT id,code,duree FROM module_cours WHERE idmodule = ?";
-    PreparedStatement ps = dc.prepareStatement(query);
-    ps.setInt(1, module);
-//    ResultSet rs = dc.executeQuery(query);
-    ResultSet rs = ps.executeQuery();
     List<CourseModuleInfo> courses = new ArrayList<CourseModuleInfo>();
-    while (rs.next()) {
-      CourseModuleInfo info = new CourseModuleInfo();
-      info.setId(rs.getShort(1));
-      info.setIdModule(module);
-      info.setCode((GemParam) DataCache.findId(rs.getInt(2), Model.CourseCode));
-      info.setTimeLength(rs.getInt(3));
+    try (PreparedStatement ps = dc.prepareStatement(query)) {
+      ps.setInt(1, module);
+      ResultSet rs = ps.executeQuery();
+      while (rs.next()) {
+        CourseModuleInfo info = new CourseModuleInfo();
+        info.setId(rs.getShort(1));
+        info.setIdModule(module);
+        info.setCode((GemParam) DataCache.findId(rs.getInt(2), Model.CourseCode));
+        info.setTimeLength(rs.getInt(3));
 
-      courses.add(info);
+        courses.add(info);
+      }
     }
     return courses;
   }
