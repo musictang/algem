@@ -1,5 +1,5 @@
 /*
- * @(#)Algem.java	2.13.1 05/04/17
+ * @(#)Algem.java	2.13.1 19/04/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -455,6 +455,9 @@ public class Algem
             break;
           case "com.jtattoo.plaf.luna.LunaLookAndFeel":
             com.jtattoo.plaf.luna.LunaLookAndFeel.setTheme("Default", "INSERT YOUR LICENSE KEY HERE", "Algem");
+            break;
+          case "com.jtattoo.plaf.mint.MintLookAndFeel":
+            com.jtattoo.plaf.mint.MintLookAndFeel.setTheme("Default", "INSERT YOUR LICENSE KEY HERE", "Algem");
             break;
           case "com.jtattoo.plaf.smart.SmartLookAndFeel":
             com.jtattoo.plaf.smart.SmartLookAndFeel.setTheme("Default", "INSERT YOUR LICENSE KEY HERE", "Algem");

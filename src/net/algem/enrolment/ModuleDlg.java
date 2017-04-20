@@ -1,5 +1,5 @@
 /*
- * @(#)ModuleDlg.java	2.13.1 17/04/17
+ * @(#)ModuleDlg.java	2.13.1 19/04/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -23,9 +23,6 @@ package net.algem.enrolment;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
@@ -35,12 +32,10 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Locale;
-import javax.swing.ButtonGroup;
 import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
-import javax.swing.JToggleButton;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -90,9 +85,6 @@ public class ModuleDlg
   private EnrolmentService service;
   private GridBagHelper gb;
   private JSpinner percentControl;
-  private final JToggleButton addPercent = new JToggleButton("+");
-  private final JToggleButton subPercent = new JToggleButton("-");
-  private ButtonGroup percentGroup;
 
   public ModuleDlg() {
   }
@@ -182,29 +174,7 @@ public class ModuleDlg
 
     JPanel adjustment = new JPanel();
 
-    ActionListener percentListener = new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        try {
-          percentControl.commitEdit();
-          int val = (int) percentControl.getValue();
-          double baseP = module.getBasePrice();
-          if (val > 0) {
-            adjustBasePrice(baseP, val);
-          }
-        } catch (ParseException ex) {
-          GemLogger.log(ex.getMessage());
-        }
-      }
-    };
-    addPercent.setMargin(new Insets(0, 4, 0, 4));
-    subPercent.setMargin(new Insets(0, 4, 0, 4));
-    addPercent.setToolTipText(BundleUtil.getLabel("Module.add.percent.tip"));
-    addPercent.addActionListener(percentListener);
-    subPercent.setToolTipText(BundleUtil.getLabel("Module.sub.percent.tip"));
-    subPercent.addActionListener(percentListener);
-
-    percentControl = new JSpinner(new SpinnerNumberModel(0, 0, 100, 1));
+    percentControl = new JSpinner(new SpinnerNumberModel(0, -100, 100, 1));
     percentControl.setToolTipText(BundleUtil.getLabel("Module.percent.adjustment"));
     percentControl.addChangeListener(new ChangeListener() {
       @Override
@@ -212,26 +182,13 @@ public class ModuleDlg
         JSpinner o = (JSpinner) e.getSource();
         int val = (int) o.getValue();
         double baseP = module.getBasePrice();//((Number) price.getValue()).doubleValue();
-        if (addPercent.isSelected()) {
-          price.setValue(baseP + (baseP * val / 100));
-          calculatedPrice.setValue(calculatePayment(module, (String) getField(5), (PayFrequency) getField(6), (PricingPeriod) getField(9), getField(4)));
-        } else if (subPercent.isSelected()) {
-          price.setValue(baseP - (baseP * val / 100));
-          calculatedPrice.setValue(calculatePayment(module, (String) getField(5), (PayFrequency) getField(6), (PricingPeriod) getField(9), getField(4)));
-        }
+        adjustBasePrice(baseP, val);
       }
 
     });
 
-    percentGroup = new ButtonGroup();
-
-    percentGroup.add(addPercent);
-    percentGroup.add(subPercent);
-
-    adjustment.add(subPercent);
     adjustment.add(percentControl);
     adjustment.add(new GemLabel("%"));
-    adjustment.add(addPercent);
     gb.add(adjustment, 2, 3, 1, 1, GridBagHelper.WEST);
     gb.add(calculatedPrice, 1, 4, 1, 1, GridBagHelper.WEST);
     gb.add(calculatedPriceInfo, 2, 4, 1, 1, GridBagHelper.WEST);
@@ -252,13 +209,7 @@ public class ModuleDlg
   }
 
   private void adjustBasePrice(double baseP, double pcVal) {
-    if (addPercent.isSelected()) {
-      price.setValue(baseP + (baseP * pcVal / 100));
-    } else if (subPercent.isSelected()) {
-      price.setValue(baseP - (baseP * pcVal / 100));
-    } else {
-      price.setValue(baseP);
-    }
+    price.setValue(baseP + (baseP * pcVal / 100));
     calculatedPrice.setValue(calculatePayment(module, (String) getField(5), (PayFrequency) getField(6), (PricingPeriod) getField(9), getField(4)));
   }
 
@@ -393,6 +344,7 @@ public class ModuleDlg
    * Calculates the base price for an order line.
    *
    * @param normalPrice
+   * @deprecated
    */
   private void calculatePrice(double normalPrice) {
     String rs = (String) payment.getSelectedItem();
@@ -535,7 +487,6 @@ public class ModuleDlg
     price.setValue(module.getBasePrice());
     calculatedPrice.setValue(calculatePayment(module, (String) getField(5), (PayFrequency) getField(6), (PricingPeriod) getField(9), getField(4)));
     calculatedPriceInfo.setText(null);
-    percentGroup.clearSelection();
     percentControl.setValue(0);
   }
 }

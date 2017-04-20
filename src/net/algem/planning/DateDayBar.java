@@ -250,7 +250,7 @@ public class DateDayBar
     switch (lafName) {
       case "Nimbus":
       case "GTK+":
-      case "GTK look and feel":      
+      case "GTK look and feel":
       case "Acryl":
       case "Aero":
       case "Aluminium":

@@ -1,5 +1,5 @@
 /*
- * @(#)ModuleCtrl.java	2.13.1 17/04/17
+ * @(#)ModuleCtrl.java	2.13.1 19/04/17
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -212,10 +212,13 @@ public class ModuleCtrl
     if (m.getMonthReducRate() < 0.0 || m.getMonthReducRate() > 100.0) {
       e += "\n" + MessageUtil.getMessage("invalid.module.month.reduc");
     }
-
     if (m.getQuarterReducRate() < 0.0 || m.getQuarterReducRate() > 100.0) {
-      e += "\n" + MessageUtil.getMessage("invalid.module.trim.reduc");
+      e += "\n" + MessageUtil.getMessage("invalid.module.quarter.reduc");
     }
+    if (m.getYearReducRate()< 0.0 || m.getYearReducRate() > 100.0) {
+      e += "\n" + MessageUtil.getMessage("invalid.module.year.reduc");
+    }
+
 
     if (!e.isEmpty()) {
       throw new ModuleException(e);

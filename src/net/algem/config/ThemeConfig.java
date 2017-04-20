@@ -1,22 +1,22 @@
 /*
  * @(#)ThemeConfig.java 2.9.4.12 29/09/15
- * 
+ *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
- * 
+ *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * Algem is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see http://www.gnu.org/licenses.
- * 
+ *
  */
 package net.algem.config;
 
@@ -30,7 +30,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Vector;
 import java.util.prefs.Preferences;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -39,6 +45,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextPane;
+import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import net.algem.Algem;
@@ -75,9 +82,9 @@ public class ThemeConfig
   public ThemeConfig(GemDesktop desktop) {
     view = new JDialog(desktop.getFrame());
     view.setTitle(BundleUtil.getLabel("Theme.modification.label"));
-    view.setSize(new Dimension(640, 380));
+    view.setSize(new Dimension(710, 400));
 
-    themes = new JComboBox();
+    themes = new JComboBox(new ComboBoxThemeModel());
     Insets margin = new Insets(5, 5, 5, 5);
     description = new JTextArea();
     description.setEditable(false);
@@ -112,15 +119,14 @@ public class ThemeConfig
 
     GemPanel leftPane = new GemPanel();
     leftPane.setLayout(new BorderLayout());
-    leftPane.setPreferredSize(new Dimension(220, 320));
+    leftPane.setPreferredSize(new Dimension(220, 340));
     leftPane.add(t, BorderLayout.NORTH);
     leftPane.add(splitPane, BorderLayout.CENTER);
 
-    imageLabel = new JLabel();
-    GemPanel rightPane = new GemPanel();
-    rightPane.setLayout(new BorderLayout());
-    rightPane.setPreferredSize(new Dimension(220, 320));
-    rightPane.add(new JLabel("Aperçu", JLabel.CENTER), BorderLayout.NORTH);
+    imageLabel = new JLabel((Icon) null, SwingConstants.CENTER);
+    GemPanel rightPane = new GemPanel(new BorderLayout());
+    rightPane.setPreferredSize(new Dimension(220, 340));
+    rightPane.add(new JLabel(BundleUtil.getLabel("Preview.label"), JLabel.CENTER), BorderLayout.NORTH);
     rightPane.add(imageLabel, BorderLayout.CENTER);
 
     JSplitPane mainPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPane, rightPane);
@@ -170,13 +176,25 @@ public class ThemeConfig
     for (UIManager.LookAndFeelInfo look : UIManager.getInstalledLookAndFeels()) {
       themes.addItem(new GemLafInfo(look.getName(), look.getClassName()));
     }
-    for (LookAndFeelInfo look : Algem.ALTERNATIVE_LAF) {
-      themes.addItem(look);
+    List<LookAndFeelInfo> alt = Algem.ALTERNATIVE_LAF;
+    if (alt.size() > 0) {
+      Collections.sort(alt, new Comparator<LookAndFeelInfo>() {
+        @Override
+        public int compare(LookAndFeelInfo o1, LookAndFeelInfo o2) {
+          return o1.toString().compareTo(o2.toString());
+        }
+
+      });
+      themes.addItem(new GemLafInfo("**"+MessageUtil.getMessage("alternative.themes.item")+"**", ""));
+      for (LookAndFeelInfo look : alt) {
+        themes.addItem(look);
+      }
     }
-    GemLogger.info(UIManager.getLookAndFeel().getClass().getName());
-    GemLogger.info(UIManager.getLookAndFeel().getName());
-    
-    setActualTheme(UIManager.getLookAndFeel().getClass().getName());
+    String actualLaF = UIManager.getLookAndFeel().getClass().getName();
+    GemLogger.info(actualLaF);
+    //GemLogger.info(UIManager.getLookAndFeel().getName());
+
+    setActualTheme(actualLaF);
   }
 
   /**
@@ -217,8 +235,14 @@ public class ThemeConfig
         return MessageUtil.getMessage("laf.description.fast");
       case "Graphite":
         return MessageUtil.getMessage("laf.description.graphite");
+      case "Luna":
+        return MessageUtil.getMessage("laf.description.luna");
+      case "Mint":
+        return MessageUtil.getMessage("laf.description.mint");
       case "Smart":
         return MessageUtil.getMessage("laf.description.smart");
+      case "Texture":
+        return MessageUtil.getMessage("laf.description.texture");
       case "JGoodiesPlastic":
         return MessageUtil.getMessage("laf.description.jgoodies.plastic");
       case "JGoodiesPlastic3D":
@@ -253,6 +277,7 @@ public class ThemeConfig
         fileName = "laf.JGoodiesPlastic.png";
         break;
       default:
+        System.out.println("laf." + lafName + ".png");
         fileName = "laf." + lafName + ".png";
         break;
     }
@@ -304,5 +329,19 @@ public class ThemeConfig
       return getName();
     }
   }
+
+  private class ComboBoxThemeModel extends DefaultComboBoxModel<GemLafInfo> {
+    public ComboBoxThemeModel() {}
+    public ComboBoxThemeModel(Vector<GemLafInfo> items) {
+        super(items);
+    }
+    @Override
+    public void setSelectedItem(Object item) {
+        if (item.toString().startsWith("**"))
+            return;
+        super.setSelectedItem(item);
+    };
+}
+
 
 }

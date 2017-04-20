@@ -1,5 +1,5 @@
 /*
- * @(#)DayPlanTableView.java	2.13.1 18/04/17
+ * @(#)DayPlanTableView.java	2.13.1 19/04/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -72,7 +72,7 @@ public abstract class DayPlanTableView
   protected ActionListener mainActionListener;
   private JScrollBar sb;
   private JSlider hZoom;
-  
+
   public DayPlanTableView(String label) {
 
     dayPlanView = new DayPlanView();
@@ -116,6 +116,7 @@ public abstract class DayPlanTableView
     hZoom.setMajorTickSpacing(10);
     hZoom.setMinorTickSpacing(5);
     hZoom.setSnapToTicks(true);
+
     /*hZoom.setFont(new Font("SansSerif", Font.PLAIN, 8));
     hZoom.setPaintLabels(true);*/
 

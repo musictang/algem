@@ -1,7 +1,7 @@
 /*
- * @(#)ButtonBgHandler.java 2.9.6 24/03/16
+ * @(#)ButtonBgHandler.java 2.13.1 20/04/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -26,7 +26,7 @@ import javax.swing.UIManager;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.6
+ * @version 2.13.1
  * @since 2.9.4.13 10/11/2015
  */
 public class ButtonBgHandler
@@ -58,9 +58,10 @@ public class ButtonBgHandler
 
   public static void reset(JButton bt) {
     if (bt != null) {
-      bt.setBackground(null);
       bt.setContentAreaFilled(true);
       bt.setOpaque(false);
+      bt.setBackground(UIManager.getColor("Button.background"));
+      /*bt.setBackground(null);*/
     }
   }
 }

@@ -24,3 +24,11 @@ l'édition personnalisée d'un bulletin scolaire, revoir les forfaits
 répétitions, proposer des abonnements de groupe, faciliter la procédure
 d'inscription (inscription de groupe) entre autres sujets souvent
 soulevés...
+
+thèmes compatibilité daybar colorisation
+aero
+jgoodies
+noire
+smart
+luna
+acryl
