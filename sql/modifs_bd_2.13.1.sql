@@ -11,11 +11,13 @@ UPDATE siteweb SET url = right(url, -7) WHERE url LIKE 'http://https://%';
 ALTER TABLE menu2 ADD constraint menu2_pk PRIMARY KEY(id);
 ALTER TABLE menu2 ADD constraint menu2_label_unique UNIQUE(label);
 
-ALTER TABLE menuprofil ADD CONSTRAINT menuprofil_pk PRIMARY KEY(idmenu,profil);
+-- modifs_bd_2.9.4.10.sql
+--ALTER TABLE menuprofil ADD CONSTRAINT menuprofil_pk PRIMARY KEY(idmenu,profil);
 
+-- modifs_bd_2.9.4.10.sql
 -- suppression doublons menuaccess
-DELETE FROM menuaccess where oid IN (SELECT m2.oid from menuaccess m1, menuaccess m2 where m1.idper = m2.idper and m1.idmenu = m2.idmenu and m2.oid > m1.oid);
-ALTER TABLE menuaccess ADD CONSTRAINT menuaccess_pk PRIMARY KEY(idper,idmenu);
+-- DELETE FROM menuaccess where oid IN (SELECT m2.oid from menuaccess m1, menuaccess m2 where m1.idper = m2.idper and m1.idmenu = m2.idmenu and m2.oid > m1.oid);
+-- ALTER TABLE menuaccess ADD CONSTRAINT menuaccess_pk PRIMARY KEY(idper,idmenu);
 
 INSERT INTO menu2 VALUES(73,'Room.modification.auth');
 INSERT INTO menu2 VALUES(74,'Course.reading.auth');
