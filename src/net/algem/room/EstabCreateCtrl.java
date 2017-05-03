@@ -1,7 +1,7 @@
 /*
- * @(#)EstabCreateCtrl.java 2.9.4.6 03/06/15
+ * @(#)EstabCreateCtrl.java 2.13.1 20/04/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -26,6 +26,7 @@ import net.algem.contact.ContactFileEditor;
 import net.algem.contact.Person;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
+import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
 import net.algem.util.event.GemEvent;
@@ -38,7 +39,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.6
+ * @version 2.13.1
  */
 public class EstabCreateCtrl
         extends CardCtrl
@@ -54,14 +55,13 @@ public class EstabCreateCtrl
   }
 
   public void init() {
-
     contact = new ContactFileEditor(desktop);
     contact.filter(Person.ESTABLISHMENT);
     addCard("Coordonnées etablissement", contact);
     select(0);
   }
 
-	@Override
+  @Override
   public boolean prev() {
     switch (step) {
       default:
@@ -71,7 +71,7 @@ public class EstabCreateCtrl
     return true;
   }
 
-	@Override
+  @Override
   public boolean next() {
     switch (step) {
       default:
@@ -81,15 +81,15 @@ public class EstabCreateCtrl
     return true;
   }
 
-	@Override
+  @Override
   public boolean cancel() {
     if (actionListener != null) {
-      actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Abandon"));
+      actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, GemCommand.CANCEL_CMD));
     }
     return true;
   }
 
-	@Override
+  @Override
   public boolean validation() {
     try {
       Establishment p = save();
@@ -111,12 +111,12 @@ public class EstabCreateCtrl
     select(0);
   }
 
-	@Override
+  @Override
   public boolean loadCard(Object o) {
     return false;
   }
 
-	@Override
+  @Override
   public boolean loadId(int id) {
     return false;
   }
@@ -141,4 +141,3 @@ public class EstabCreateCtrl
     return e;
   }
 }
-

@@ -1,7 +1,7 @@
 /*
- * @(#)GroupRehearsalCreateCtrl.java	2.8.w 24/07/14
+ * @(#)GroupRehearsalCreateCtrl.java	2.13.1 20/04/17
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,6 +28,7 @@ import net.algem.planning.RehearsalEvent;
 import net.algem.planning.editing.ModifPlanEvent;
 import net.algem.room.RoomService;
 import net.algem.util.DataCache;
+import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
 import net.algem.util.event.GemEvent;
@@ -40,7 +41,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.13.1
  * @since 1.0a 07/07/1999
  */
 public class GroupRehearsalCreateCtrl
@@ -89,7 +90,7 @@ public class GroupRehearsalCreateCtrl
   public boolean cancel() {
     clear();
     if (actionListener != null) {
-      actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Abandon"));
+      actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, GemCommand.CANCEL_CMD));
     }
     return true;
   }

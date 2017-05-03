@@ -1,5 +1,5 @@
 /*
- * @(#)GroupPassCreateCtrl.java	2.12.0 01/03/17
+ * @(#)GroupPassCreateCtrl.java	2.13.1 20/04/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -34,6 +34,7 @@ import net.algem.planning.editing.ModifPlanEvent;
 import net.algem.room.RoomService;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
+import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
 import net.algem.util.module.GemDesktop;
@@ -45,7 +46,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.12.0
+ * @version 2.13.1
  */
 public class GroupPassCreateCtrl
         extends CardCtrl
@@ -171,7 +172,7 @@ public class GroupPassCreateCtrl
   public boolean cancel() {
     clear();
     if (actionListener != null) {
-      actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Abandon"));
+      actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, GemCommand.CANCEL_CMD));
     }
     return true;
   }
