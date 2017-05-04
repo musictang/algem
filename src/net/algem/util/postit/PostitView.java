@@ -1,5 +1,5 @@
 /*
- * @(#)PostitView.java	2.11.5 11/01/17
+ * @(#)PostitView.java	2.13.2 03/05/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -26,6 +26,7 @@ import java.awt.Insets;
 import java.sql.SQLException;
 import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
+import javax.swing.JScrollPane;
 import net.algem.planning.DateFrField;
 import net.algem.security.User;
 import net.algem.util.BundleUtil;
@@ -39,7 +40,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.5
+ * @version 2.13.2
  */
 public class PostitView
         extends GemPanel
@@ -55,6 +56,7 @@ public class PostitView
       BundleUtil.getLabel("Postit.internal.label"),
       BundleUtil.getLabel("Postit.urgent.internal.label"),
       BundleUtil.getLabel("Postit.external.label"),
+      BundleUtil.getLabel("Postit.booking.label"),
     });
 
     issuer = new GemField(20);
@@ -62,12 +64,15 @@ public class PostitView
     issuer.setEditable(false);
 
     term = new DateFrField();
-    textArea = new GemTextArea(3, 25);
+
+    textArea = new GemTextArea(4, 25);
     textArea.setLineWrap(true);
     textArea.setWrapStyleWord(true);
-    textArea.setMargin(new Insets(0, 5, 0, 5));
-    textArea.setMinimumSize(new Dimension(180,textArea.getPreferredSize().height));
-    textArea.setMargin(new Insets(5,5,5,5));
+    textArea.setMargin(new Insets(2,4,4,4));
+    JScrollPane scroll = new JScrollPane (textArea);
+    scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+    scroll.setMinimumSize(new Dimension(270,80));
+
     setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
     this.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
@@ -79,7 +84,7 @@ public class PostitView
     gb.add(type, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(issuer, 1, 1, 1, 1, GridBagHelper.WEST);
     gb.add(term, 1, 2, 1, 1, GridBagHelper.WEST);
-    gb.add(textArea, 0, 4, 2, 2, GridBagHelper.BOTH, GridBagHelper.WEST);
+    gb.add(scroll, 0, 4, 2, 2, GridBagHelper.BOTH, GridBagHelper.WEST);
   }
 
   public Postit get() {

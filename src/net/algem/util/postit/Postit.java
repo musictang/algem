@@ -1,7 +1,7 @@
 /*
- * @(#)Postit.java	2.9.4.13 05/11/15
+ * @(#)Postit.java	2.13.2 03/05/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,7 +27,7 @@ import net.algem.planning.DateFr;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.13.2
  */
 public class Postit
         implements java.io.Serializable
@@ -36,6 +36,7 @@ public class Postit
   public static final int INTERNAL = 0;
   public static final int INTERNAL_URGENT = 1;
   public static final int EXTERNAL = 2;
+  public static final int BOOKING = 3;
 
   private static final long serialVersionUID = -4295824851261772842L;
 

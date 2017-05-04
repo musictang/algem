@@ -1,7 +1,7 @@
 /*
- * @(#)MenuTableModel.java	2.8.u 19/05/14
- * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * @(#)MenuTableModel.java	2.13.2 03/05/2017
+ *
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,18 +16,19 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.security;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.table.AbstractTableModel;
 import net.algem.util.BundleUtil;
 
 /**
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.u
+ * @version 2.13.2
  * @since 2.6.a 01/08/2012
  */
 public class MenuTableModel
@@ -39,7 +40,7 @@ public class MenuTableModel
     BundleUtil.getLabel("Menu.label"),
     BundleUtil.getLabel("Authorization.label")
   };
-  private Vector<MenuAccess> tuples = new Vector<MenuAccess>();
+  private List<MenuAccess> tuples = new ArrayList<MenuAccess>();
   private int userId;
   private UserService service;
 
@@ -88,8 +89,8 @@ public class MenuTableModel
   }
 
   @Override
-  public Object getValueAt(int line, int col) {
-    MenuAccess m = tuples.elementAt(line);
+  public Object getValueAt(int row, int col) {
+    MenuAccess m = tuples.get(row);
     switch (col) {
       case 0:
         return m.getId();
@@ -102,12 +103,12 @@ public class MenuTableModel
   }
 
   @Override
-  public void setValueAt(Object value, int line, int col) {
+  public void setValueAt(Object value, int row, int col) {
     if (col != 2) {
       return;
     }
 
-    MenuAccess m = tuples.elementAt(line);
+    MenuAccess m = tuples.get(row);
     m.setAuth((Boolean) value);
     ((DefaultUserService) service).updateAccess(m, getColumnName(col).toLowerCase(), userId);
   }

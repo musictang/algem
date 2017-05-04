@@ -1,7 +1,7 @@
 /*
- * @(#)PostitIO.java	2.6.a 21/09/12
+ * @(#)PostitIO.java	2.13.2 03/05/17
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -22,7 +22,8 @@ package net.algem.util.postit;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import net.algem.planning.DateFr;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
@@ -33,13 +34,14 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.13.2
  */
 public class PostitIO
 	extends TableIO {
 
 	private final static String TABLE = "postit";
 	private final static String SEQUENCE = "idpostit";
+  private final static int MAX_LENGTH = 256;
 
 	public static void insert(Postit p, DataConnection dc) throws SQLException {
 		int numero = nextId(SEQUENCE, dc);
@@ -47,6 +49,7 @@ public class PostitIO
 		if (p.getTerm().bufferEquals(DateFr.NULLDATE)) {
 			p.setTerm(p.getDay());
 		}
+    String msg = p.getText();
 		String query = "INSERT INTO " + TABLE + " VALUES("
 			+ "'" + numero
 			+ "','" + p.getType()
@@ -54,7 +57,7 @@ public class PostitIO
 			+ "','" + p.getReceiver()
 			+ "','" + p.getDay()
 			+ "','" + p.getTerm()
-			+ "','" + escape(p.getText())
+			+ "','" + escape(msg.length() > MAX_LENGTH ? msg.substring(0,256) : msg)
 			+ "')";
 
 		dc.executeUpdate(query);
@@ -62,13 +65,14 @@ public class PostitIO
 	}
 
 	public static void update(Postit p, DataConnection dc) throws SQLException {
+    String msg = p.getText();
 		String query = "UPDATE " + TABLE + " SET "
 			+ "ptype='" + p.getType()
 			+ "',emet='" + p.getIssuer()
 			+ "',dest='" + p.getReceiver()
 			+ "',jour='" + p.getDay()
 			+ "',echeance='" + p.getTerm()
-			+ "',texte='" + escape(p.getText())
+			+ "',texte='" + escape(msg.length() > MAX_LENGTH ? msg.substring(0,256) : msg)
 			+ "'"
 			+ " WHERE id=" + p.getId();
 
@@ -84,15 +88,15 @@ public class PostitIO
 	public static Postit findId(int n, DataConnection dc) {
 		String query;
 		query = "WHERE id=" + n;
-		Vector<Postit> v = find(query, dc);
+		List<Postit> v = find(query, dc);
 		if (v.size() > 0) {
-			return v.elementAt(0);
+			return v.get(0);
 		}
 		return null;
 	}
 
-	public static Vector<Postit> find(String where, DataConnection dc) {
-		Vector<Postit> v = new Vector<Postit>();
+	public static List<Postit> find(String where, DataConnection dc) {
+		List<Postit> v = new ArrayList<Postit>();
 		String query = "SELECT * FROM " + TABLE + " " + where;
 		try {
 			ResultSet rs = dc.executeQuery(query);
@@ -106,7 +110,7 @@ public class PostitIO
 				p.setTerm(new DateFr(rs.getString(6)));
 				p.setText(rs.getString(7));
 
-				v.addElement(p);
+				v.add(p);
 			}
 		} catch (SQLException e) {
 			GemLogger.logException(query, e);

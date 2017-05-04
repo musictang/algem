@@ -1,7 +1,7 @@
 /*
- * @(#)RightsCardView.java	2.8.p 30/10/13
- * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * @(#)RightsCardView.java	2.13.2 03/05/2017
+ *
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.security;
 
@@ -30,7 +30,7 @@ import net.algem.util.ui.GemPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.p
+ * @version 2.13.2
  */
 public class RightsCardView
         extends GemPanel
@@ -45,7 +45,7 @@ public class RightsCardView
   public RightsCardView(UserService service) {
 
     table = new JTable();
-    table.setAutoCreateRowSorter(true);
+//    table.setAutoCreateRowSorter(false);
     table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
     JScrollPane p = new JScrollPane(table);

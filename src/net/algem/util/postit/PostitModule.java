@@ -1,6 +1,6 @@
 /*
- * @(#)PostitModule.java	2.9.4.9 28/06/15
- * 
+ * @(#)PostitModule.java	2.13.2 03/05/17
+ *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.util.postit;
 
@@ -27,8 +27,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
 import java.sql.SQLException;
-import java.util.Enumeration;
-import java.util.Vector;
+import java.util.Iterator;
+import java.util.List;
 import javax.swing.JInternalFrame;
 import net.algem.planning.DateFr;
 import net.algem.security.UserService;
@@ -41,7 +41,7 @@ import net.algem.util.module.GemModule;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.9
+ * @version 2.13.2
  */
 public class PostitModule
         extends GemModule
@@ -49,8 +49,8 @@ public class PostitModule
 {
 
   static final Dimension POSTIT_SIZE = new Dimension(110, 550);
-  private int lus;
-  private PostitCanvas postit;
+  private int read;
+  private PostitCanvas postitCanvas;
   private UserService service;
 
   public PostitModule(UserService service) {
@@ -62,10 +62,10 @@ public class PostitModule
   public void init() {
     view = new DefaultGemView(desktop, "Postit");
 
-    postit = new PostitCanvas();
-    postit.addActionListener(this);
-    lus = 0;
-    view.add(postit, BorderLayout.CENTER);
+    postitCanvas = new PostitCanvas();
+    postitCanvas.addActionListener(this);
+    read = 0;
+    view.add(postitCanvas, BorderLayout.CENTER);
     view.setMaximizable(false);
     view.setClosable(false);
     view.setIconifiable(false);
@@ -75,7 +75,7 @@ public class PostitModule
 
   @Override
   public String getSID() {
-    return String.valueOf(lus);
+    return String.valueOf(read);
   }
 
   /**
@@ -87,10 +87,10 @@ public class PostitModule
 
     int userId = dataCache.getUser().getId();
 
-    Vector<Postit> v = service.getPostits(userId, lus);
-    Enumeration<Postit> enu = v.elements();
-    while (enu.hasMoreElements()) {
-      Postit p = enu.nextElement();
+    List<Postit> v = service.getPostits(userId, read);
+    Iterator<Postit> enu = v.iterator();
+    while (enu.hasNext()) {
+      Postit p = enu.next();
 
       DateFr toDay = new DateFr(new java.util.Date());
       if (toDay.after(p.getTerm())) {
@@ -101,12 +101,12 @@ public class PostitModule
         }
         continue;
       }
-      lus = p.getId();
+      read = p.getId();
       // ajout 1.1d : gestion des postits privés
       if (p.getReceiver() > 0 && userId == p.getReceiver()) { // si privé
-        postit.add(p);
+        postitCanvas.add(p);
       } else {
-        postit.add(p); // si public
+        postitCanvas.add(p); // si public
       }
     }
   }
@@ -129,32 +129,37 @@ public class PostitModule
       dlg.entry();
       if (dlg.isSuppression()) {
         try {
-          service.delete(pp.getPostit());
-          postit.remove(pp);
+          Postit p = pp.getPostit();
+          if (Postit.BOOKING != p.getType()) {
+            service.delete(p);
+          }
+          postitCanvas.remove(pp);
         } catch (SQLException e) {
           GemLogger.logException("suppression postit", e, desktop.getFrame());
         }
       } else if (dlg.isModif()) {
         try {
           Postit p = pp.getPostit();
-          Postit mp = dlg.get();
-          p.setType(mp.getType());
-          p.setTerm(mp.getTerm());
-          p.setText(mp.getText());
-          service.update(p);
+          if (Postit.BOOKING != p.getType()) {
+            Postit mp = dlg.get();
+            p.setType(mp.getType());
+            p.setTerm(mp.getTerm());
+            p.setText(mp.getText());
+            service.update(p);
+          }
         } catch (SQLException ex) {
           GemLogger.logException("update postit", ex);
         }
       }
-      postit.repaint();
+      postitCanvas.repaint();
     }
 
   }
 
   public void addPostit(Postit p) {
-    postit.add(p);
-    lus = p.getId();
-    System.out.println("PostitModule lu=" + lus);
+    postitCanvas.add(p);
+    read = p.getId();
+    GemLogger.log("PostitModule lu=" + read);
   }
 
 }

@@ -1,5 +1,5 @@
 /*
- * @(#)PostitCreateView.java	2.11.5 11/01/17
+ * @(#)PostitCreateView.java	2.13.2 03/05/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -39,7 +39,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.5
+ * @version 2.13.2
  */
 public class PostitCreateView
         extends GemBorderPanel
@@ -71,6 +71,8 @@ public class PostitCreateView
     }
     term = new DateFrField(new DateFr(new Date()));
     textArea = new GemTextArea();
+    textArea.setLineWrap(true);
+    textArea.setWrapStyleWord(true);
 
     this.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);

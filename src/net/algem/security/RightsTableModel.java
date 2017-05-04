@@ -1,6 +1,6 @@
 /*
- * @(#)RightsTableModel.java	2.6.a 01/08/2012
- * 
+ * @(#)RightsTableModel.java	2.13.2 03/05/2017
+ *
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,25 +16,26 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.security;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
 /**
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.13.2
  * @since 2.6.a 01/08/2012
  */
 public class RightsTableModel
         extends AbstractTableModel
 {
 
-  private String[] head = {"table", "lecture", "insertion", "modification", "suppression"};
-  private Vector tuples = new Vector();
+  private String[] head = {"Table", "Lecture", "Insertion", "Modification", "Suppression"};
+  private List<SQLRights> tuples = new ArrayList<SQLRights>();
   private int userId;
   private UserService service;
 
@@ -85,20 +86,47 @@ public class RightsTableModel
   }
 
   @Override
-  public Object getValueAt(int ligne, int colonne) {
-    Vector v = (Vector) tuples.elementAt(ligne);
-    return v.elementAt(colonne);
+  public Object getValueAt(int row, int col) {
+    SQLRights tr = tuples.get(row);
+    switch(col) {
+      case 0:
+        return tr.getName();
+      case 1:
+        return tr.isAuthRead();
+      case 2:
+        return tr.isAuthInsert();
+      case 3:
+        return tr.isAuthUpdate();
+      case 4:
+        return tr.isAuthDelete();
+    }
+    return null;
   }
 
   @Override
-  public void setValueAt(Object value, int line, int column) {
+  public void setValueAt(Object value, int row, int column) {
     if (column < 1) {
       return;
     }
-    String col = getColumnName(column);
-    String table = getValueAt(line, 1).toString();
-    service.updateTableRights(table, col, value, userId);
-    Vector dataRow = (Vector) tuples.elementAt(line);
-    dataRow.setElementAt(value, column);
+    String col = getColumnName(column).toLowerCase();
+    SQLRights tr = tuples.get(row);
+    String table = tr.getName();
+    boolean auth = (boolean) value;
+    switch (column) {
+      case 1:
+        tr.setAuthRead(auth);
+        break;
+      case 2:
+        tr.setAuthInsert(auth);
+        break;
+      case 3:
+        tr.setAuthUpdate(auth);
+        break;
+      case 4:
+        tr.setAuthDelete(auth);
+        break;
+    }
+    service.updateTableRights(table, col, auth, userId);
+    fireTableRowsUpdated(row, row);
   }
 }

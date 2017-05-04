@@ -1,5 +1,5 @@
 /*
- * @(#)DefaultUserService.java	2.11.5 11/01/17
+ * @(#)DefaultUserService.java	2.13.2 03/05/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -25,9 +25,13 @@ import java.security.spec.InvalidKeySpecException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
+import net.algem.planning.DateFr;
+import net.algem.planning.Schedule;
+import net.algem.planning.ScheduleIO;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
@@ -41,7 +45,7 @@ import org.apache.commons.codec.binary.Base64;
  * User operations service.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.5
+ * @version 2.13.2
  * @since 2.6.a 06/08/2012
  */
 public class DefaultUserService
@@ -76,9 +80,7 @@ public class DefaultUserService
     }
     try {
       return encryptionService.authenticate(pass, encryptedPassword, salt);
-    } catch (NoSuchAlgorithmException ex) {
-      GemLogger.logException(ex);
-    } catch (InvalidKeySpecException ex) {
+    } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
       GemLogger.logException(ex);
     }
     return false;
@@ -100,9 +102,7 @@ public class DefaultUserService
     }
     try {
       return encryptionService.authenticate(pass, encryptedPassword, salt);
-    } catch (NoSuchAlgorithmException ex) {
-      GemLogger.logException(ex);
-    } catch (InvalidKeySpecException ex) {
+    } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
       GemLogger.logException(ex);
     }
     return false;
@@ -193,21 +193,21 @@ public class DefaultUserService
     dataCache.remove(user);
   }
 
-  Vector<MenuAccess> getMenuAccess(int userId) {
-    Vector<MenuAccess> mv = new Vector<MenuAccess>();
+  List<MenuAccess> getMenuAccess(int userId) {
+    List<MenuAccess> mal = new ArrayList<MenuAccess>();
     String query = "SELECT idmenu,label,autorisation FROM menu2, menuaccess WHERE menu2.id = menuaccess.idmenu AND idper = " + userId + " ORDER BY idmenu";
     try {
       ResultSet rs = dc.executeQuery(query);
       while (rs.next()) {
         String label = BundleUtil.getLabel(rs.getString(2));
         MenuAccess m = new MenuAccess(rs.getInt(1), label, rs.getBoolean(3));
-        mv.addElement(m);
+        mal.add(m);
       }
       rs.close();
     } catch (SQLException ex) {
       GemLogger.logException(query, ex);
     }
-    return mv;
+    return mal;
   }
 
   void updateAccess(MenuAccess m, String col, int userId) {
@@ -221,29 +221,31 @@ public class DefaultUserService
   }
 
   public @Override
-  Vector getTableRights(int userId) {
-    Vector vr = new Vector();
+  List<SQLRights> getTableRights(int userId) {
+    List<SQLRights> rtl = new ArrayList<>();
     String query = "SELECT nomtable,lecture,insertion,modification,suppression FROM droits WHERE idper=" + userId + " ORDER BY nomtable";
     try {
       ResultSet rs = dc.executeQuery(query);
       while (rs.next()) {
-        Vector v = new Vector();
-        for (int i = 1; i <= 5; i++) {
-          v.addElement(rs.getObject(i));
-        }
-        vr.addElement(v);
+        SQLRights tr = new SQLRights();
+        tr.setName(rs.getString(1));
+        tr.setAuthRead(rs.getBoolean(2));
+        tr.setAuthInsert(rs.getBoolean(3));
+        tr.setAuthUpdate(rs.getBoolean(4));
+        tr.setAuthDelete(rs.getBoolean(5));
+        rtl.add(tr);
       }
       rs.close();
     } catch (SQLException ex) {
       GemLogger.logException(query, ex);
     }
-    return vr;
+    return rtl;
   }
 
   @Override
-  public void updateTableRights(String table, String col, Object value, int userId) {
-    String query = "UPDATE droits SET " + col + " = " + (((Boolean) value).booleanValue() ? "1" : "0")
-            + " WHERE idper = " + userId + " AND nomtable = '" + table + "'";
+  public void updateTableRights(String table, String col, boolean value, int userId) {
+    String query = "UPDATE droits SET " + col + " = " + value
+      + " WHERE idper = " + userId + " AND nomtable = '" + table + "'";
     try {
       dc.executeUpdate(query);
     } catch (SQLException ex) {
@@ -278,11 +280,46 @@ public class DefaultUserService
   }
 
   @Override
-  public Vector<Postit> getPostits(int userId, int read) {
+  public List<Postit> getPostits(int userId, int read) {
     //String where = "WHERE (dest = 0 OR dest = " + userId + ") AND id > " + read;
     String where = "WHERE (dest = 0 OR emet = " + userId + " OR dest = " + userId + ") AND id > " + read;
     return PostitIO.find(where, dc);
   }
+
+  /**
+   * Detects bookings equal to or after the current date, still to be confirmed.
+   * The postit list the date and location of each pending booking.
+   *
+   * @return a postit if any booking still to be confirmed or null if not
+   */
+  @Override
+  public Postit getBookingAlert() {
+    String query = "SELECT jour,lieux FROM " + ScheduleIO.TABLE
+      + " WHERE ptype in(" + Schedule.BOOKING_GROUP + "," + Schedule.BOOKING_MEMBER + ") AND jour >= CURRENT_DATE";
+    StringBuilder sb = new StringBuilder(BundleUtil.getLabel("Booking.to.be.confirmed"));
+    boolean toBeConfirmed = false;
+    try (ResultSet rs = dc.executeQuery(query)) {
+      while (rs.next()) {
+        toBeConfirmed = true;
+        sb.append('\n').append(new DateFr(rs.getDate(1)));
+        sb.append(':').append(DataCache.findId(rs.getInt(2), Model.Room));
+      }
+    } catch (SQLException ex) {
+      GemLogger.logException(ex);
+      return null;
+    }
+    Postit b = null;
+    if (toBeConfirmed) {
+      b = new Postit();
+      b.setText(sb.toString());
+      b.setType(Postit.BOOKING);
+      DateFr today = new DateFr(new Date());
+      b.setDay(today);
+      b.setTerm(today);
+    }
+    return b;
+  }
+
 
   @Override
   public boolean authorize(String menu, User user) {
@@ -308,9 +345,7 @@ public class DefaultUserService
       byte[] salt = encryptionService.generateSalt();
       UserPass up = new UserPass(encryptionService.getEncryptedPassword(pass, salt), salt);
       return up;
-    } catch (InvalidKeySpecException ex) {
-      GemLogger.logException(ex);
-    } catch (NoSuchAlgorithmException ex) {
+    } catch (InvalidKeySpecException | NoSuchAlgorithmException ex) {
       GemLogger.logException(ex);
     }
     return null;
@@ -355,10 +390,8 @@ public class DefaultUserService
     try {
       byte[] p = encryptionService.getEncryptedPassword(nu.getPassword(), salt);
       nu.setPassInfo(new UserPass(p, salt));
-    } catch (NoSuchAlgorithmException ex) {
-      throw new UserException(ex.getMessage(), "ENCRYPTION");
-    } catch (InvalidKeySpecException ex) {
-      // if password is null for exemple
+    } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
+       // if password is null for exemple
       throw new UserException(ex.getMessage(), "ENCRYPTION");
     }
 

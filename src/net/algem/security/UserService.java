@@ -1,7 +1,7 @@
 /*
- * @(#)UserService.java	2.11.0 27/09/16
- * 
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * @(#)UserService.java	2.13.2 03/05/17
+ *
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,19 +16,18 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.security;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Vector;
 import net.algem.util.postit.Postit;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.0
+ * @version 2.13.2
  * @since 2.8.p 30/10/13
  */
 public interface UserService
@@ -41,7 +40,7 @@ public interface UserService
    * @param pass clear text password
    * @return true if pass encryption equals stored encrypted pass
    */
-  public boolean authenticate(String login, String pass);
+  boolean authenticate(String login, String pass);
 
   /**
    * Authenticates a user with some {@code pass}.
@@ -50,35 +49,37 @@ public interface UserService
    * @param pass clear text password
    * @return true if clearPass encryption equals stored encrypted pass
    */
-  public boolean authenticate(User user, String pass);
+  boolean authenticate(User user, String pass);
 
-  public boolean authorize(String menu2, User user);
+  boolean authorize(String menu2, User user);
 
-  public void create(User u) throws UserException;
+  void create(User u) throws UserException;
 
-  public User findId(int id);
+  User findId(int id);
 
-  public User find(String login);
+  User find(String login);
 
-  public List<User> findAll(String where);
+  List<User> findAll(String where);
 
-  public void update(User user) throws UserException;
+  void update(User user) throws UserException;
 
-  public boolean update(User nu, final User old) throws UserException;
-  
-  public void delete(User user) throws UserException;
+  boolean update(User nu, final User old) throws UserException;
 
-  public List<User> getPostitUserList();
+  void delete(User user) throws UserException;
 
-  public void create(Postit p) throws SQLException;
+  List<User> getPostitUserList();
 
-  public void update(Postit p) throws SQLException;
+  void create(Postit p) throws SQLException;
 
-  public void delete(Postit p) throws SQLException;
+  void update(Postit p) throws SQLException;
 
-  public Vector<Postit> getPostits(int idUser, int read);
+  void delete(Postit p) throws SQLException;
 
-  public void updateTableRights(String table, String col, Object value, int userId);
+  List<Postit> getPostits(int idUser, int read);
 
-  public Vector getTableRights(int userId);
+  Postit getBookingAlert();
+
+  void updateTableRights(String table, String col, boolean value, int userId);
+
+  List<SQLRights> getTableRights(int userId);
 }

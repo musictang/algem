@@ -1,5 +1,5 @@
 /*
- * @(#)PostitCanvas.java	2.11.5 11/01/17
+ * @(#)PostitCanvas.java	2.13.2 03/05/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -22,9 +22,10 @@ package net.algem.util.postit;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.util.Enumeration;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.StringTokenizer;
-import java.util.Vector;
+import java.util.List;
 import net.algem.util.ui.GemPanel;
 
 /**
@@ -32,33 +33,39 @@ import net.algem.util.ui.GemPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.5
+ * @version 2.13.2
  */
 public class PostitCanvas
         extends GemPanel
         implements MouseListener, MouseMotionListener
 {
 
+  static final int MAXW = 96;// 100 - LAF borders
+  static final int MAXH = 50;
   private static final Color INTERNAL_PUBLIC_COLOR = Color.YELLOW;
   private static final Color INTERNAL_PRIVATE_COLOR = new Color(230, 255, 68);
   private static final Color EXTERNAL_PUBLIC_COLOR = new Color(254,210,68);//"fed244"
   private static final Color EXTERNAL_PRIVATE_COLOR = new Color(255,123,123);//#ff7b7b
+  private static final Color BOOKING_COLOR = Color.MAGENTA.brighter();
   int nextx = 50;
-  int nexty = 40;
+  int nexty = 40;//40
   int initialDragPos;
-  private Vector<PostitPosition> postits;
+  private List<PostitPosition> postits;
   private PostitPosition pick;
   private int clickx;
   private int clicky;
   private Dimension dim;
   private ActionListener actionListener;
-  private Font font = new Font("Helvetica",Font.PLAIN,11);
+  private Font font = new Font("Helvetica",Font.PLAIN,10);
+  private Font smallFont = new Font("Helvetica",Font.PLAIN,9);
+  private int yOffset = 0;
+  private int xOffset = 0;
 
   public PostitCanvas() {
-    postits = new Vector<PostitPosition>();
+    postits = new ArrayList<PostitPosition>();
     addMouseListener(this);
     addMouseMotionListener(this);
-    dim = new Dimension(200, 400); // espace du canevas
+    dim = new Dimension(200, 520); // espace du canevas !!
   }
 
   /**
@@ -67,18 +74,16 @@ public class PostitCanvas
    * @param p the postit
    */
   public void add(Postit p) {
-    PostitPosition pos = new PostitPosition(nextx, nexty, p);
-    postits.addElement(pos);
-    /*if ((nextx+=90) > dim.width)
-    {
-    nextx=90;
-    nexty+=50;
-    }*/
-    if ((nexty += 55) > dim.height) // si espace vertical insuffisant
-    {
-      nextx = 70; // décalage horizontal
-      nexty = 30; // décalage vertical
+    if (nexty > dim.height) { // si le bas est atteint
+      // retour haut de panneau
+      nextx = 70 + xOffset; // décalage horizontal
+      nexty = 30 + yOffset; // décalage vertical
+      xOffset += 20;
+      yOffset += 10;
     }
+    PostitPosition pos = new PostitPosition(nextx, nexty, p);
+    postits.add(pos);
+    nexty += 55;
     repaint();
   }
 
@@ -87,7 +92,7 @@ public class PostitCanvas
    * @param p postit position
    */
   public void remove(PostitPosition p) {
-    postits.removeElement(p);
+    postits.remove(p);
     repaint();
   }
 
@@ -98,8 +103,6 @@ public class PostitCanvas
   public void addActionListener(ActionListener l) {
     actionListener = AWTEventMulticaster.add(actionListener, l);
   }
-  static final int MAXW = 100;
-  static final int MAXH = 50;
 
   @Override
   public void paint(Graphics g) {
@@ -121,13 +124,12 @@ public class PostitCanvas
 //		int h = fm.getHeight() + 4;
     int h = MAXH;
 
-    Postit p;
-    Enumeration enu = postits.elements();
-    while (enu.hasMoreElements()) {
-      PostitPosition pp = (PostitPosition) enu.nextElement();
+    Iterator<PostitPosition> enu = postits.iterator();
+    while (enu.hasNext()) {
+      PostitPosition pp = enu.next();
       x = pp.getX();
       y = pp.getY();
-      p = pp.getPostit();
+      Postit p = pp.getPostit();
 
       int w = MAXW;
       // background color
@@ -138,44 +140,50 @@ public class PostitCanvas
         case Postit.EXTERNAL:
           g.setColor(p.getReceiver() > 0 ? EXTERNAL_PRIVATE_COLOR : EXTERNAL_PUBLIC_COLOR);
           break;
+        case Postit.BOOKING:
+          g.setColor(BOOKING_COLOR);
+          break;
         default:
           g.setColor(INTERNAL_PUBLIC_COLOR);
 
       }
-      g.fillRoundRect(x - w / 2, y - h / 2, w, h, 10, 10);
+      g.fillRoundRect(x - w / 2, y - h / 2, w, h, 5, 5);
       // border
       if (p.getType() != Postit.INTERNAL_URGENT) {
         g.setColor(Color.black);
-        g.drawRoundRect(x - w / 2, y - h / 2, w - 1, h - 1, 10, 10);
+        g.drawRoundRect(x - w / 2, y - h / 2, w - 1, h - 1, 5, 5);
       } else {
         g.setColor(Color.RED);
-        g.drawRoundRect(x - w / 2, y - h / 2, w - 1, h - 1, 10, 10);
+        g.drawRoundRect(x - w / 2, y - h / 2, w - 1, h - 1, 5, 5);
       }
 
       //text
-      g.setColor(Color.black);
+      g.setColor(Postit.BOOKING == p.getType() ? Color.WHITE : Color.BLACK);
+
       StringTokenizer tk = new StringTokenizer(p.getText());
       int pos = 0;
       String msg = "";
       while (tk.hasMoreElements()) {
         String s = tk.nextToken();
-        int n = fm.stringWidth(s) + 4;
+        int n = fm.stringWidth(s) + 3; //4
         if (pos + n < MAXW) {
           msg += s + " ";
           pos += n;
         } else // si depassement largeur
         {
-          g.drawString(msg, x - (w - 10) / 2, (y - 10));
+          //g.drawString(msg, x - (w - 10) / 2, (y - 10));
+          g.drawString(msg, x - (w - 2) / 2, (y - 17));
           msg = s + " ";
           pos = n;
-          y += 10; // decalage vertical (anciennement 10)
-          if (y - pp.getY() >= MAXH - 10) {
+          y += 10; // decalage vertical
+          if (y - pp.getY() >= MAXH - 5) { // (anciennement 10)
             break;
           }
         }
       }
-      if (y - pp.getY() < MAXH - 10 && msg.length() > 0) {
-        g.drawString(msg, x - (w - 10) / 2, (y - 10));
+      if (y - pp.getY() < MAXH - 5 && msg.length() > 0) { // (anciennement 10)
+        //g.drawString(msg, x - (w - 10) / 2, (y - 10));
+        g.drawString(msg, x - (w - 2) / 2, (y - 17));
       }
     }
   }
@@ -197,8 +205,7 @@ public class PostitCanvas
     int y = e.getY();
 
     double bestdist = Double.MAX_VALUE;
-    for (int i = 0; i < postits.size(); i++) {
-      PostitPosition p = (PostitPosition) postits.elementAt(i);
+    for (PostitPosition p : postits) {
       double dist = (p.getX() - x) * (p.getX() - x) + (p.getY() - y) * (p.getY() - y);
       if (dist < bestdist) {
         pick = p;

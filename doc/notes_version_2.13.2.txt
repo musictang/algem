@@ -1,0 +1,15 @@
+2.13.2
+CORRECTIFS
+Les postits n'occupaient pas tout l'espace requis dans le panneau de gauche.
+Les nouveaux postits masquaient les précédents si les postits occupaient plus de 2 rangées.
+POSTIT
+Les marges et la taille de police ont été modifiés afin de permettre l'affichage de textes plus longs.
+On peut maintenant afficher jusqu'à 4 rangées de 9 postits.
+
+RESERVATION
+S'il existe encore des réservations à confirmer, un postit vous le signale avec date et lieu de réservation.
+Ce postit est présent à l'ouverture du logiciel tant qu'il existe des réservations à confirmer. Il est toujours le dernier à être affiché et ne peut être modifié. On peut néanmoins le faire disparaître temporairement après avoir cliqué dessus et appuyé sur Supprimer.
+
+GESTION DE DROITS
+Reconception du tableau de modification des droits SQL sur les tables de la base de données. L'activation/désactivation des cases à cocher ne se reflétait pas dans le tableau.
+Rappel : ce tableau est visible après avoir cliqué sur Suivant dans la fenêtre de gestion des droits d'un utilisateur. Cette liste de droits n'est pas utilisée pour le moment.

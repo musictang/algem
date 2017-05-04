@@ -1,5 +1,5 @@
 /*
- * @(#)GemDesktopCtrl.java	2.13.0 29/03/2017
+ * @(#)GemDesktopCtrl.java	2.13.2 03/05/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -27,7 +27,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyVetoException;
 import java.io.*;
-import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.*;
@@ -69,7 +68,7 @@ import net.algem.util.ui.UIAdjustable;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.13.0
+ * @version 2.13.2
  * @since 1.0a 05/07/2002
  */
 public class GemDesktopCtrl
@@ -129,6 +128,9 @@ public class GemDesktopCtrl
     addModule(postit);
     postit.getView().setLocation(new java.awt.Point(0, 0));
     postit.getNewPostit();
+
+    Postit bookings = userService.getBookingAlert();
+    if (bookings != null) {postit.addPostit(bookings);}
 
     modifCtrl = new PlanModifCtrl(this);
     detailCtrl = new ScheduleDetailCtrl(this, modifCtrl);
