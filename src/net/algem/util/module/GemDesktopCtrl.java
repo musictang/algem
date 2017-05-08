@@ -1,5 +1,5 @@
 /*
- * @(#)GemDesktopCtrl.java	2.13.2 03/05/17
+ * @(#)GemDesktopCtrl.java	2.13.2 05/05/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -123,14 +123,7 @@ public class GemDesktopCtrl
 
     desktop = new JDesktopPane();
     desktop.setBackground(Color.gray);
-
-    postit = new PostitModule(userService); // postit windows
-    addModule(postit);
-    postit.getView().setLocation(new java.awt.Point(0, 0));
-    postit.getNewPostit();
-
-    Postit bookings = userService.getBookingAlert();
-    if (bookings != null) {postit.addPostit(bookings);}
+    addPostit();
 
     modifCtrl = new PlanModifCtrl(this);
     detailCtrl = new ScheduleDetailCtrl(this, modifCtrl);
@@ -163,6 +156,24 @@ public class GemDesktopCtrl
       dispatcher = null;
     }
   } // end constructor
+  
+  private void addPostit() {
+    postit = new PostitModule(userService); // postit windows
+    addModule(postit);
+    postit.getView().setLocation(new java.awt.Point(0, 0));
+    
+    loadPostits();
+  }
+  
+  @Override
+  public void loadPostits() {
+    if (postit != null) {
+      postit.clear();
+      postit.getNewPostit();
+      Postit bookings = userService.getBookingAlert();
+      if (bookings != null) {postit.addPostit(bookings);}
+    }
+  }
 
   /**
    * Loads serialized modules.

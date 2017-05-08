@@ -1,5 +1,5 @@
 /*
- * @(#)PostitCanvas.java	2.13.2 03/05/17
+ * @(#)PostitCanvas.java	2.13.2 05/05/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -48,7 +48,7 @@ public class PostitCanvas
   private static final Color EXTERNAL_PRIVATE_COLOR = new Color(255,123,123);//#ff7b7b
   private static final Color BOOKING_COLOR = Color.MAGENTA.brighter();
   int nextx = 50;
-  int nexty = 40;//40
+  int nexty = 40;
   int initialDragPos;
   private List<PostitPosition> postits;
   private PostitPosition pick;
@@ -165,25 +165,25 @@ public class PostitCanvas
       String msg = "";
       while (tk.hasMoreElements()) {
         String s = tk.nextToken();
-        int n = fm.stringWidth(s) + 3; //4
+        int n = fm.stringWidth(s) + 4; //4
         if (pos + n < MAXW) {
           msg += s + " ";
           pos += n;
         } else // si depassement largeur
         {
           //g.drawString(msg, x - (w - 10) / 2, (y - 10));
-          g.drawString(msg, x - (w - 2) / 2, (y - 17));
+          g.drawString(msg, x - (w - 10) / 2, (y - 13));
           msg = s + " ";
           pos = n;
           y += 10; // decalage vertical
-          if (y - pp.getY() >= MAXH - 5) { // (anciennement 10)
+          if (y - pp.getY() >= MAXH - 10) { // (anciennement 10)
             break;
           }
         }
       }
-      if (y - pp.getY() < MAXH - 5 && msg.length() > 0) { // (anciennement 10)
+      if (y - pp.getY() < MAXH - 10 && msg.length() > 0) { // (anciennement 10)
         //g.drawString(msg, x - (w - 10) / 2, (y - 10));
-        g.drawString(msg, x - (w - 2) / 2, (y - 17));
+        g.drawString(msg, x - (w - 10) / 2, (y - 13));
       }
     }
   }
@@ -279,5 +279,12 @@ public class PostitCanvas
       }
       repaint();
     }
+  }
+  
+  public void clear() {
+    postits.clear();
+    removeAll();
+    nextx = 50;
+    nexty = 40;
   }
 }

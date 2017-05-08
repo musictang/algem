@@ -1,5 +1,5 @@
 /*
- * @(#)PostitModule.java	2.13.2 03/05/17
+ * @(#)PostitModule.java	2.13.2 04/05/17
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -160,6 +160,11 @@ public class PostitModule
     postitCanvas.add(p);
     read = p.getId();
     GemLogger.log("PostitModule lu=" + read);
+  }
+  
+  public void clear() {
+    read = 0;
+    postitCanvas.clear();
   }
 
 }

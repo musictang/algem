@@ -1,5 +1,5 @@
 /*
- * @(#)Algem.java	2.13.1 19/04/17
+ * @(#)Algem.java	2.13.2 05/05/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -57,12 +57,12 @@ import org.apache.commons.codec.binary.Base64;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.13.1
+ * @version 2.13.2
  */
 public class Algem
 {
 
-  public static final String APP_VERSION = "2.13.1";
+  public static final String APP_VERSION = "2.13.2";
   public static List<LookAndFeelInfo> ALTERNATIVE_LAF = new ArrayList<>();
   private static final int DEF_WIDTH = 1080;// (850,650) => ancienne taille
   private static final int DEF_HEIGHT = 780;
@@ -78,6 +78,7 @@ public class Algem
   private String hostName = "localhost";
   private String baseName = "algem";
   private static Properties props;
+  private static final Font MY_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 11);
   private DataConnection dc;
 
   public Algem() {
@@ -134,8 +135,8 @@ public class Algem
     setLocale(props);
 
     /* -------------------------- */
- /* Initialisation driver JDBC */
- /* -------------------------- */
+    /* Initialisation driver JDBC */
+    /* -------------------------- */
     try {
       setDB(host, base, props);
     } catch (SQLException ex) {
@@ -144,8 +145,8 @@ public class Algem
     }
     cache = DataCache.getInstance(dc, login);// !important before Logger
     /* -------------------------- */
- /* Logger initialisation */
- /* -------------------------- */
+    /* Logger initialisation      */
+    /* -------------------------- */
     String logPath = ConfigUtil.getConf(ConfigKey.LOG_PATH.getKey()) + "/algem.log";
     String msg = "Algem version " + APP_VERSION + "\nJava version " + System.getProperty("java.version");
     if (logPath != null) {
@@ -165,8 +166,8 @@ public class Algem
     final GemBoot gemBoot = new GemBoot();
 
     /* ------------------------ */
- /* Test login user validity */
- /* ------------------------ */
+    /* Test login user validity */
+    /* ------------------------ */
     boolean auth = "true".equalsIgnoreCase(props.getProperty("auth"));
 
     if (auth || login == null) {//authentication required
@@ -177,8 +178,8 @@ public class Algem
 
     cache.load(gemBoot);
     /* ------------------------------------------------ */
- /* Creates the frame of the application */
- /* ------------------------------------------------ */
+    /* Creates the frame of the application             */
+    /* ------------------------------------------------ */
     setDesktop();
     gemBoot.close();
   }
@@ -474,15 +475,14 @@ public class Algem
     String lafName = UIManager.getLookAndFeel().getName();
     UIDefaults def = UIManager.getLookAndFeelDefaults();
     def.put("ProgressMonitor.progressText", BundleUtil.getLabel("Running.job.label"));
-    Font myFont = new Font(Font.SANS_SERIF, Font.PLAIN, 11);
     switch (lafName) {
       case "Nimbus":
         //def.put("Button.contentMargins", new InsetsUIResource(4, 3, 4, 3)); //  default : (6,14,6,14)
         def.put("TextField.contentMargins", new InsetsUIResource(4, 4, 4, 4)); //  default : (6,6,6,6)
 //          def.put("Table.alternateRowColor", new Color(224,224,224));// default :  #f2f2f2 (242,242,242)
-        def.put("TableHeader.font", myFont); // default : Font SansSerif 12
+        def.put("TableHeader.font", MY_FONT);
         def.put("TableHeader:\"TableHeader.renderer\".contentMargins", new InsetsUIResource(2, 2, 2, 2)); // default: (2,5,4,5)
-        def.put("Table.font", myFont); // default : Font SansSerif 12
+        def.put("Table.font", MY_FONT); // default : Font SansSerif 12
         def.put("Table.showGrid", true); // default: false
         def.put("Table.cellNoFocusBorder", new InsetsUIResource(2, 2, 2, 2)); // Border Insets(2,5,2,5)
         break;
@@ -494,14 +494,13 @@ public class Algem
       case "Graphite":
       case "Smart":
       case "Texture":
-        //initUIFonts();
-        def.put("TableHeader.font", myFont); // default : Font SansSerif 12
+        def.put("TableHeader.font", MY_FONT);
         def.put("TableHeader:\"TableHeader.renderer\".contentMargins", new InsetsUIResource(2, 2, 2, 2)); // default: (2,5,4,5)
-        def.put("Table.font", myFont); // default : Font SansSerif 12
-        def.put("TextField.font", myFont);
-        def.put("ComboBox.font", myFont);
-        def.put("TextArea.font", myFont.deriveFont(12));
-        def.put("TextPane.font", myFont.deriveFont(12));
+        def.put("Table.font", MY_FONT); // default : Font SansSerif 12
+        def.put("TextField.font", MY_FONT);
+        def.put("ComboBox.font", MY_FONT);
+//        def.put("TextArea.font", MY_FONT.deriveFont(12));
+//        def.put("TextPane.font", MY_FONT.deriveFont(12));
         break;
       case "Windows":
       case "Windows Classic":
@@ -514,7 +513,6 @@ public class Algem
     if ("Metal".equals(UIManager.getLookAndFeel().getName())) {
       Font fsans = new Font("Lucida Sans", Font.PLAIN, 12);
       Font bold = fsans.deriveFont(Font.BOLD);
-      Font fserif = new Font(Font.SERIF, Font.BOLD + Font.ITALIC, 12);
 
       UIManager.put("Menu.font", bold);
       UIManager.put("MenuBar.font", bold);

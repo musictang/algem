@@ -85,6 +85,8 @@ public interface GemDesktop
   public java.awt.Frame getFrame();
 
   public DataCache getDataCache();
+  
+  public void loadPostits();
 
   public void addGemEventListener(GemEventListener l);
 

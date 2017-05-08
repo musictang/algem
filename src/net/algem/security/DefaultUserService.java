@@ -1,5 +1,5 @@
 /*
- * @(#)DefaultUserService.java	2.13.2 03/05/17
+ * @(#)DefaultUserService.java	2.13.2 04/05/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -32,6 +32,7 @@ import java.util.logging.Level;
 import net.algem.planning.DateFr;
 import net.algem.planning.Schedule;
 import net.algem.planning.ScheduleIO;
+import net.algem.room.Room;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
@@ -296,13 +297,15 @@ public class DefaultUserService
   public Postit getBookingAlert() {
     String query = "SELECT jour,lieux FROM " + ScheduleIO.TABLE
       + " WHERE ptype in(" + Schedule.BOOKING_GROUP + "," + Schedule.BOOKING_MEMBER + ") AND jour >= CURRENT_DATE";
-    StringBuilder sb = new StringBuilder(BundleUtil.getLabel("Booking.to.be.confirmed"));
+    StringBuilder sb = new StringBuilder(BundleUtil.getLabel("Booking.to.be.confirmed").toUpperCase());
     boolean toBeConfirmed = false;
     try (ResultSet rs = dc.executeQuery(query)) {
       while (rs.next()) {
         toBeConfirmed = true;
         sb.append('\n').append(new DateFr(rs.getDate(1)));
-        sb.append(':').append(DataCache.findId(rs.getInt(2), Model.Room));
+        Room room = (Room) DataCache.findId(rs.getInt(2), Model.Room);
+        String r = room == null ? "" : room.toString();
+        sb.append(':').append(r);
       }
     } catch (SQLException ex) {
       GemLogger.logException(ex);

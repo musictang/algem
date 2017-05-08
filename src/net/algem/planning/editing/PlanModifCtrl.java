@@ -1049,6 +1049,7 @@ public class PlanModifCtrl
       String body = MailUtil.urlEncode(MessageUtil.getMessage("booking.cancellation.message", new Object[] {name, plan.getDate().toString(), plan.getStart(), signature}));
       sendMessage(email, subject, body);
       desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));
+      desktop.loadPostits();
     } catch (BookingException ex) {
       GemLogger.logException(ex);
       MessagePopup.warning(null, ex.getMessage());
@@ -1084,6 +1085,7 @@ public class PlanModifCtrl
       );
       sendMessage(email, subject, body);
       desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));
+      desktop.loadPostits();
     } catch (BookingException |SQLException|MemberException|GroupException ex) {
       GemLogger.logException(ex);
       MessagePopup.warning(null, ex.getMessage());

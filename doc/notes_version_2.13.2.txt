@@ -7,8 +7,8 @@ Les marges et la taille de police ont été modifiés afin de permettre l'affich
 On peut maintenant afficher jusqu'à 4 rangées de 9 postits.
 
 RESERVATION
-S'il existe encore des réservations à confirmer, un postit vous le signale avec date et lieu de réservation.
-Ce postit est présent à l'ouverture du logiciel tant qu'il existe des réservations à confirmer. Il est toujours le dernier à être affiché et ne peut être modifié. On peut néanmoins le faire disparaître temporairement après avoir cliqué dessus et appuyé sur Supprimer.
+S'il existe encore des réservations à confirmer, un postit (couleur magenta) vous le signale avec date et lieu de réservation.
+Ce postit est présent à l'ouverture du logiciel tant qu'il existe des réservations à confirmer. Il est toujours le dernier à être affiché et ne peut être modifié. On peut néanmoins le faire disparaître temporairement après avoir cliqué dessus et appuyé sur Supprimer. Le postit est automatiquement mis à jour si la réservation est confirmée ou annulée. Il disparaît automatiquement si tout a été confirmé.
 
 GESTION DE DROITS
 Reconception du tableau de modification des droits SQL sur les tables de la base de données. L'activation/désactivation des cases à cocher ne se reflétait pas dans le tableau.
