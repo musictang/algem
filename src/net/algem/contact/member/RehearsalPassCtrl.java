@@ -1,5 +1,5 @@
 /*
- * @(#)RehearsalPassCtrl.java 2.9.2 12/01/15
+ * @(#)RehearsalPassCtrl.java 2.13.2 09/05/17
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -36,7 +36,7 @@ import net.algem.util.ui.GemPanel;
  * Controller for rehearsal cards.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.13.2
  */
 public class RehearsalPassCtrl
   extends JDialog implements ActionListener
@@ -91,11 +91,13 @@ public class RehearsalPassCtrl
   public void actionPerformed(ActionEvent e) {
     Object src = e.getSource();
     if (src == btValidate) {
-      validation = true;
+      validation = view.check();
+      setVisible(!validation);
     } else {
       validation = false;
+      setVisible(false);
     }
-    setVisible(false);
+    
   }
 
 }
