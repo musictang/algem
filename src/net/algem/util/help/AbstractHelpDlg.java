@@ -1,6 +1,6 @@
 /*
  * @(#)AbstractHelpDlg.java 2.8.w 10/09/14
- * 
+ *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 
 package net.algem.util.help;
@@ -33,24 +33,24 @@ import net.algem.util.ui.GemButton;
 
 /**
  * Abstract dialog help controller.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.8.w
  * @since 2.8.w 10/09/14
  */
-public abstract class AbstractHelpDlg 
+public abstract class AbstractHelpDlg
   extends JDialog
   implements ActionListener
 {
 
   /** Default help resource directory. */
   protected static final String RES_PREFIX = "/resources/doc/html/";
-  
+
   protected GemButton okBt;
-  
+
   public AbstractHelpDlg(Frame owner, String title) {
     super(owner, title);
-    okBt = new GemButton(GemCommand.OK_CMD);
+    okBt = new GemButton(GemCommand.CLOSE_CMD);
     okBt.addActionListener(this);
     setLayout(new BorderLayout());
     add(BorderLayout.CENTER, getContent());
@@ -65,7 +65,7 @@ public abstract class AbstractHelpDlg
       dispose();
     }
   }
-  
+
   /**
    * Gets a URL linking to a resource.
    * @param res resource link as string
@@ -80,5 +80,5 @@ public abstract class AbstractHelpDlg
    * @return a component
    */
   protected abstract Component getContent();
-    
+
 }

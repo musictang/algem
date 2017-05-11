@@ -1,7 +1,7 @@
 /*
- * @(#)GemLogFormatter.java	2.8.j 12/07/13
+ * @(#)GemLogFormatter.java	2.13.2 10/05/17
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -29,12 +29,13 @@ import java.util.logging.LogRecord;
 /**
  * Formatter for logging.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.j
+ * @version 2.13.2
  * @since 2.6.a 30/07/2012
  */
 public class GemLogFormatter
 	extends java.util.logging.Formatter
 {
+  private static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy H:mm:ss");
 
 	@Override
 	public String format(LogRecord record) {
@@ -42,9 +43,8 @@ public class GemLogFormatter
 		StringBuilder s = new StringBuilder(1000);
 
 		Date d = new Date(record.getMillis());
-		DateFormat df = new SimpleDateFormat("dd-MM-yyyy H:mm:ss");
 
-		s.append(record.getLevel()).append(':').append(df.format(d)).append(" ").append(System.getProperty("user.name")).append(nl);
+		s.append(record.getLevel()).append(':').append(DATE_FORMAT.format(d)).append(" ").append(System.getProperty("user.name")).append(nl);
 		s.append(record.getMessage()).append(nl).append(nl);
 		return s.toString();
 	}

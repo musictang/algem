@@ -1,5 +1,5 @@
 /*
- * @(#)PostitDlg.java	2.11.5 11/01/17
+ * @(#)PostitDlg.java	2.13.2 10/05/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -37,7 +37,7 @@ import net.algem.util.ui.PopupDlg;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.5
+ * @version 2.13.2
  */
 public class PostitDlg
         implements ActionListener
@@ -73,7 +73,7 @@ public class PostitDlg
 
     dlg.add(pv, BorderLayout.CENTER);
     dlg.add(buttons, BorderLayout.SOUTH);
-    dlg.setSize(340,300);
+    dlg.setSize(380,300);
     dlg.setLocation(100, 100);
   }
 

@@ -1,5 +1,5 @@
 /*
- * @(#)PostitCanvas.java	2.13.2 05/05/17
+ * @(#)PostitCanvas.java	2.13.2 10/05/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -40,14 +40,14 @@ public class PostitCanvas
         implements MouseListener, MouseMotionListener
 {
 
-  static final int MAXW = 96;// 100 - LAF borders
+  static final int MAXW = 100;
   static final int MAXH = 50;
   private static final Color INTERNAL_PUBLIC_COLOR = Color.YELLOW;
   private static final Color INTERNAL_PRIVATE_COLOR = new Color(230, 255, 68);
   private static final Color EXTERNAL_PUBLIC_COLOR = new Color(254,210,68);//"fed244"
   private static final Color EXTERNAL_PRIVATE_COLOR = new Color(255,123,123);//#ff7b7b
   private static final Color BOOKING_COLOR = Color.MAGENTA.brighter();
-  int nextx = 50;
+  int nextx = MAXW / 2;
   int nexty = 40;
   int initialDragPos;
   private List<PostitPosition> postits;
@@ -130,8 +130,11 @@ public class PostitCanvas
       x = pp.getX();
       y = pp.getY();
       Postit p = pp.getPostit();
-
-      int w = MAXW;
+      if (x == 50) {
+        x = getWidth() / 2;// LAF adaptation
+      }
+      //int w = MAXW;
+      int w = getWidth();// LAF adaptation
       // background color
       switch(p.getType()) {
         case Postit.INTERNAL:
@@ -147,14 +150,15 @@ public class PostitCanvas
           g.setColor(INTERNAL_PUBLIC_COLOR);
 
       }
-      g.fillRoundRect(x - w / 2, y - h / 2, w, h, 5, 5);
+      g.fillRoundRect(x - w / 2, y - h / 2, w, h, 4, 4);
+
       // border
       if (p.getType() != Postit.INTERNAL_URGENT) {
         g.setColor(Color.black);
-        g.drawRoundRect(x - w / 2, y - h / 2, w - 1, h - 1, 5, 5);
+        g.drawRoundRect(x - w / 2, y - h / 2, w - 1, h - 1, 4, 4);
       } else {
         g.setColor(Color.RED);
-        g.drawRoundRect(x - w / 2, y - h / 2, w - 1, h - 1, 5, 5);
+        g.drawRoundRect(x - w / 2, y - h / 2, w - 1, h - 1, 4, 4);
       }
 
       //text
@@ -165,25 +169,30 @@ public class PostitCanvas
       String msg = "";
       while (tk.hasMoreElements()) {
         String s = tk.nextToken();
-        int n = fm.stringWidth(s) + 4; //4
+        int n = fm.stringWidth(s) + 4;
+        if (n > MAXW && s.length() > 14) {
+          s = s.substring(0,14).concat("...");
+        }
         if (pos + n < MAXW) {
           msg += s + " ";
           pos += n;
         } else // si depassement largeur
         {
           //g.drawString(msg, x - (w - 10) / 2, (y - 10));
-          g.drawString(msg, x - (w - 10) / 2, (y - 13));
+          g.drawString(msg, x - (w - 6) / 2, (y - 14));
           msg = s + " ";
           pos = n;
           y += 10; // decalage vertical
-          if (y - pp.getY() >= MAXH - 10) { // (anciennement 10)
+          if (y - pp.getY() >= MAXH - 10) {
             break;
           }
         }
       }
-      if (y - pp.getY() < MAXH - 10 && msg.length() > 0) { // (anciennement 10)
+      if (y - pp.getY() < MAXH - 10 && msg.length() > 0) {
         //g.drawString(msg, x - (w - 10) / 2, (y - 10));
-        g.drawString(msg, x - (w - 10) / 2, (y - 13));
+        g.drawString(msg, x - (w - 6) / 2, (y - 14));
+      } else {
+        g.drawString("...", x - (w - 6) / 2, (y - 18));
       }
     }
   }
@@ -280,7 +289,7 @@ public class PostitCanvas
       repaint();
     }
   }
-  
+
   public void clear() {
     postits.clear();
     removeAll();

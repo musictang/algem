@@ -35,6 +35,7 @@ import net.algem.security.UserService;
 import net.algem.util.GemLogger;
 import net.algem.util.module.DefaultGemView;
 import net.algem.util.module.GemModule;
+import static net.algem.planning.day.DayScheduleCtrl.DAY_SCHEDULE_WINDOW_HEIGHT;
 
 /**
  * Internal frame used to display postits.
@@ -48,7 +49,8 @@ public class PostitModule
         implements VetoableChangeListener
 {
 
-  static final Dimension POSTIT_SIZE = new Dimension(110, 550);
+  public static final int POSTIT_MODULE_WIDTH = 110;
+  static final Dimension POSTIT_SIZE = new Dimension(POSTIT_MODULE_WIDTH, DAY_SCHEDULE_WINDOW_HEIGHT);
   private int read;
   private PostitCanvas postitCanvas;
   private UserService service;
@@ -161,7 +163,7 @@ public class PostitModule
     read = p.getId();
     GemLogger.log("PostitModule lu=" + read);
   }
-  
+
   public void clear() {
     read = 0;
     postitCanvas.clear();

@@ -156,15 +156,15 @@ public class GemDesktopCtrl
       dispatcher = null;
     }
   } // end constructor
-  
+
   private void addPostit() {
     postit = new PostitModule(userService); // postit windows
     addModule(postit);
     postit.getView().setLocation(new java.awt.Point(0, 0));
-    
+
     loadPostits();
   }
-  
+
   @Override
   public void loadPostits() {
     if (postit != null) {
@@ -203,7 +203,7 @@ public class GemDesktopCtrl
             addModule(dayScheduleCtrl);
             dayScheduleCtrl.setState(sid.getState());
             // location initiale du tableau jour.
-            dayScheduleCtrl.getView().setLocation(110, 0);
+            dayScheduleCtrl.getView().setLocation(PostitModule.POSTIT_MODULE_WIDTH, 0);
             dayScheduleCtrl.mayBeMaximize();
           }
         }

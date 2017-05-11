@@ -41,6 +41,7 @@ import net.algem.util.GemCommand;
 import net.algem.util.MessageUtil;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.module.GemModule;
+import net.algem.util.postit.PostitModule;
 import net.algem.util.ui.ProgressMonitorHandler;
 
 /**
@@ -109,6 +110,7 @@ public class MenuPlanning
     if (src == miDay) {
       DayScheduleCtrl dsCtrl = new DayScheduleCtrl();
       desktop.addModule(dsCtrl);
+      dsCtrl.getView().setLocation(PostitModule.POSTIT_MODULE_WIDTH, 0);
       dsCtrl.mayBeMaximize();
     } else if (src == miMonth) {
       desktop.addModule(new MonthScheduleCtrl());

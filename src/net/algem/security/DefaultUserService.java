@@ -1,5 +1,5 @@
 /*
- * @(#)DefaultUserService.java	2.13.2 04/05/17
+ * @(#)DefaultUserService.java	2.13.2 10/05/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -24,6 +24,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -302,7 +303,7 @@ public class DefaultUserService
     try (ResultSet rs = dc.executeQuery(query)) {
       while (rs.next()) {
         toBeConfirmed = true;
-        sb.append('\n').append(new DateFr(rs.getDate(1)));
+        sb.append('\n').append(new SimpleDateFormat("dd/MM/yy").format(rs.getDate(1)));
         Room room = (Room) DataCache.findId(rs.getInt(2), Model.Room);
         String r = room == null ? "" : room.toString();
         sb.append(':').append(r);

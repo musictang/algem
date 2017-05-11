@@ -74,7 +74,8 @@ public class DayScheduleCtrl
         implements UIAdjustable
 {
 
-  static final Dimension DAY_SIZE = new Dimension(920, 550);
+  public static final int DAY_SCHEDULE_WINDOW_HEIGHT = 550;
+  private static final Dimension DAY_SCHEDULE_DIMENSION = new Dimension(920, DAY_SCHEDULE_WINDOW_HEIGHT);
   private JMenuItem miPrint;
   private JMenuItem miQuit;
   private JMenuItem miExport;
@@ -104,7 +105,7 @@ public class DayScheduleCtrl
 
     GemList<Establishment> estabs = dataCache.getList(Model.Establishment);
     view = new DayScheduleView(desktop, daySchedule, estabs);
-    view.setSize(new Dimension(prefs.getInt("dayplan.w", DAY_SIZE.width), prefs.getInt("dayplan.h", DAY_SIZE.height)));
+    view.setSize(new Dimension(prefs.getInt("dayplan.w", DAY_SCHEDULE_DIMENSION.width), prefs.getInt("dayplan.h", DAY_SCHEDULE_DIMENSION.height)));
     view.addActionListener(this);
 
     desktop.addGemEventListener(this);
@@ -143,7 +144,7 @@ public class DayScheduleCtrl
     mOptions.add(miAllRooms);
     miSaveUISettings = getMenuItem("Store.ui.settings");
     mOptions.add(miSaveUISettings);
-    
+
     miEstab = new JMenuItem(BundleUtil.getLabel("Menu.establishment.label"));
     miEstab.setToolTipText(BundleUtil.getLabel("Establishment.activation.tip"));
     miEstab.addActionListener(this);
@@ -209,7 +210,7 @@ public class DayScheduleCtrl
       Schedule p = v.getSchedule();
       ScheduleDetailEvent pde = new ScheduleDetailEvent(this, p);
       Point pos = v.getClickPosition();
-      pos.translate(150, 0); // deplacement vers la droite
+      pos.translate(60, 0); // deplacement vers la droite
       pde.setPosition(pos);
       pde.setRanges(v.getScheduleRanges());
       desktop.postEvent(pde);

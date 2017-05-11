@@ -22,8 +22,10 @@ package net.algem.planning;
 
 import java.awt.BorderLayout;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
@@ -203,12 +205,19 @@ public class ScheduleDetailCtrl
     frame.pack();
 
     Point pos = event.getPosition();
-    int x = pos.y - 100;
-    int y = pos.y - frame.getHeight() - 15;
-    if (y < desktop.getFrame().getY()) {
-      y = desktop.getFrame().getY() + 110;
+    int dw = desktop.getFrame().getWidth();
+    int x = pos.x;
+    if (x > (dw - 260)) {
+      x = dw - 260;
     }
-//    pos.y -= frame.getHeight() - 15;
+    int y = pos.y;
+    if (y + frame.getHeight() > Toolkit.getDefaultToolkit().getScreenSize().height) {
+      y = pos.y - frame.getHeight() - 15;// to the top
+      if (y < desktop.getFrame().getY()) { // above the top
+        y = desktop.getFrame().getY() + 70;
+      }
+    }
+
     frame.setLocation(new Point(x, y));
     frame.setSize(260, frame.getHeight());
     frame.setVisible(true);
@@ -735,12 +744,20 @@ public class ScheduleDetailCtrl
    * @return a point
    */
   private Point getOffset(DefaultGemView view) {
-    // TODO change position when the new point doesn't fit inside the screen.
-    int x = view.getX();
-    int y = view.getY();
-    int w = view.getWidth();
-    int h = view.getHeight();
-    return new Point(x + w, y + h);
+
+    int dw = desktop.getFrame().getWidth();
+    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+
+    int x = view.getX() + view.getWidth();
+    int y = view.getLocationOnScreen().y + view.getHeight();
+    if (x > dw) {
+      x = dw - 100;
+    }
+    if (y + frame.getHeight() > screenSize.getHeight()) {
+      y = view.getLocationOnScreen().y + 88;// don't mask close and save buttons
+//      y = (int) screenSize.getHeight() - frame.getHeight() - 100;// 100 = reserved space at bottom (for taskbar)
+    }
+    return new Point(x, y);
   }
 
   private void setWaitCursor() {
