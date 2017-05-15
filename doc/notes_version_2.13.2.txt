@@ -1,15 +1,27 @@
 2.13.2
 CORRECTIFS
 Les postits n'occupaient pas tout l'espace requis dans le panneau de gauche.
-Les nouveaux postits masquaient les précédents si les postits occupaient plus de 2 rangées.
-POSTIT
-Les marges et la taille de police ont été modifiés afin de permettre l'affichage de textes plus longs.
+La largeur des postits n'était pas uniforme suivant le thème utilisé.
+Les nouveaux postits masquaient les précédents s'ils occupaient plus de 2 rangées.
+
+POSTITS
+Les marges et la taille de police ont été optimisées afin de permettre l'affichage de textes plus longs.
+Les postits dont le texte ne peut être affiché en entier se terminent par 3 points de suspension. Il suffit de cliquer sur le postit pour consulter le texte dans son intégralité.
+
 On peut maintenant afficher jusqu'à 4 rangées de 9 postits.
 
-RESERVATION
-S'il existe encore des réservations à confirmer, un postit (couleur magenta) vous le signale avec date et lieu de réservation.
-Ce postit est présent à l'ouverture du logiciel tant qu'il existe des réservations à confirmer. Il est toujours le dernier à être affiché et ne peut être modifié. On peut néanmoins le faire disparaître temporairement après avoir cliqué dessus et appuyé sur Supprimer. Le postit est automatiquement mis à jour si la réservation est confirmée ou annulée. Il disparaît automatiquement si tout a été confirmé.
+RESERVATIONS
+S'il existe encore des réservations à confirmer, un postit (couleur magenta) vous le signale avec date(s) et lieu(x) de réservation.
+Ce postit est présent à l'ouverture du logiciel tant qu'il existe des réservations à confirmer. Il est toujours le dernier à être affiché et ne peut être modifié. On peut néanmoins le faire disparaître temporairement après avoir cliqué dessus et appuyé sur Supprimer. Le postit est automatiquement mis à jour si la réservation est confirmée ou annulée. Il disparaît automatiquement si tout a été confirmé (ou annulé).
+Ce postit est complémentaire aux demandes de réservation reçues par mail. Il peut être utile dans le cas où vous avez beaucoup de réservations ou lorsque certains mails n'ont pu être envoyés pour des raisons techniques.
 
 GESTION DE DROITS
-Reconception du tableau de modification des droits SQL sur les tables de la base de données. L'activation/désactivation des cases à cocher ne se reflétait pas dans le tableau.
-Rappel : ce tableau est visible après avoir cliqué sur Suivant dans la fenêtre de gestion des droits d'un utilisateur. Cette liste de droits n'est pas utilisée pour le moment.
+L'activation/désactivation des cases à cocher ne se reflétait pas dans le tableau de modification des droits SQL.
+Rappel : ce tableau est visible après avoir cliqué sur Suivant dans la fenêtre de gestion des droits d'un utilisateur. Cette liste de droits, bien qu'elle ne soit pas utilisée pour l'instant pourra éventuellement servir dans le futur.
+
+CARTE D'ABONNEMENT INDIVIDUELLE
+Les champs de saisie font maintenant l'objet d'une vérification lors de la création ou de la modification d'une carte d'abonnement :
+Le libellé est obligatoire et ne peut dépasser 128 caractères.
+Le montant saisi doit être compris entre 0 et 1000.
+La durée minimale ne peut être inférieure à 30 minutes.
+La durée totale doit être supérieure ou égale à la durée minimale et inférieure à 8640 heures (24 * 360).

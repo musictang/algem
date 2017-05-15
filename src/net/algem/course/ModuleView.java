@@ -1,5 +1,5 @@
 /*
- * @(#)ModuleView.java	2.13.1 17/04/17
+ * @(#)ModuleView.java	2.13.2 11/05/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -45,7 +45,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.13.1
+ * @version 2.13.2
  */
 public class ModuleView
   extends GemPanel {
@@ -89,19 +89,19 @@ public class ModuleView
     String basePeriod = "";
     switch (periodConfig) {
       case "MNTH":
-        basePeriod = BundleUtil.getLabel("Payment.frequency.month.label");
+        basePeriod = BundleUtil.getLabel("Monthly.label");
         break;
       case "QTER":
-        basePeriod = BundleUtil.getLabel("Payment.frequency.quarter.label");
+        basePeriod = BundleUtil.getLabel("Quarterly.label");
         break;
       case "YEAR":
-        basePeriod = BundleUtil.getLabel("Payment.frequency.year.label");
+        basePeriod = BundleUtil.getLabel("Yearly.label");
         break;
       case "HOUR":
-        basePeriod = BundleUtil.getLabel("Payment.frequency.hour.label");
+        basePeriod = BundleUtil.getLabel("Hourly.label");
         break;
       default:
-        basePeriod = BundleUtil.getLabel("Payment.frequency.year.label");
+        basePeriod = BundleUtil.getLabel("Yearly.label");
     }
     basePeriod = basePeriod.toLowerCase();
     pricePanel.setBorder(BorderFactory.createTitledBorder(BundleUtil.getLabel("Module.rate.label")));
