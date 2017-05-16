@@ -1,7 +1,7 @@
 /*
- * @(#)ContactFileEditor.java	2.9.6 17/03/16
+ * @(#)ContactFileEditor.java	2.13.3 16/05/17
  *
- * Copyright (c) 1998-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1998-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -44,7 +44,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.6
+ * @version 2.13.3
  * @since 1.0a 09/07/2002
  */
 public class ContactFileEditor
@@ -69,6 +69,7 @@ public class ContactFileEditor
     note = new GemLabel();
     note.setForeground(java.awt.Color.red);
     personView = new PersonView();
+    personView.init();
     infosView = new GemPanel();
 
     infosView.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.lightGray));

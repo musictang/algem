@@ -1,7 +1,7 @@
 /*
- * @(#)MemberCardService.java 2.10.0 01/06/16
+ * @(#)MemberCardService.java 2.13.3 16/05/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -49,7 +49,7 @@ import net.algem.util.module.GemDesktop;
  * Service class for member card edition.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.13.3
  * @since 2.4.a 16/05/12
  */
 public class MemberCardService
@@ -222,15 +222,21 @@ public class MemberCardService
     return dataCache.getInstrumentName(m.getFirstInstrument());
   }
 
-  BufferedImage getPhoto(PersonFile p) throws IOException {
-    URL url_photo = getPhotoPath(p.getId());
-    return getPhoto(url_photo);
+  BufferedImage getPhoto(int idper) throws IOException {
+    return ImageUtil.getPhoto(idper);
   }
 
   String getConf(String conf) {
     return ConfigUtil.getConf(conf);
   }
 
+  /**
+   * 
+   * @param url
+   * @return
+   * @throws IOException
+   * @deprecated 
+   */
   private BufferedImage getPhoto(URL url) throws IOException {
     if (url == null) {
       return null;

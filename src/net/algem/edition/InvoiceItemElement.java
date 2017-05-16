@@ -36,8 +36,8 @@ public class InvoiceItemElement
         extends DrawableElement
 {
 
-  public static final int TABLE_WIDTH = ImageUtil.toPoints(180);
-  public static final int FIRST_COL_WIDTH = ImageUtil.toPoints(110);
+  public static final int TABLE_WIDTH = ImageUtil.mmToPoints(180);
+  public static final int FIRST_COL_WIDTH = ImageUtil.mmToPoints(110);
   public static final int xColQty = InvoiceView.MARGIN + FIRST_COL_WIDTH;
   public static final int xColPrice = xColQty + 45;
   public static final int xColVAT = xColPrice + 60;

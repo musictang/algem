@@ -1,7 +1,7 @@
 /*
- * @(#)MemberCardEditor.java 2.9.4.3 21/04/15
+ * @(#)MemberCardEditor.java 2.13.3 16/05/17
  * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -23,7 +23,9 @@ package net.algem.edition;
 import java.awt.BasicStroke;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Shape;
 import java.awt.Stroke;
+import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
@@ -54,23 +56,25 @@ import net.algem.util.module.GemDesktop;
  * Member card editor.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.3
+ * @version 2.13.3
  * @since 2.2.p
  */
 public class MemberCardEditor implements Printable {
 
+  static Stroke DASHED = new BasicStroke(0.2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 1.0f, new float[]{5.0f}, 0.0f);
+  static Stroke LINE = new BasicStroke();
+  
+  private static final int MARGIN = 5; // marge en mm
+  private static final int WIDTH = 210; // largeur par défaut en mm
+  private static final int HEIGHT = 297;// hauteur par défaut en mm
+  private static int planningX = ImageUtil.mmToPoints(50);//50mm
+  private static int TOP_CUTTING_MARK_Y = ImageUtil.mmToPoints(96);//95mm +1 à cause de la perte de précision entière
+  private static int BOTTOM_CUTTING_MARK_Y = ImageUtil.mmToPoints(HEIGHT - 76);//75mm
+  
+  //private DrawableElement titleBlock, addressBlock, identityBlock;
   private PersonFile dossier;
   private List<DrawableElement> blocks;
   private MemberCardService service;
-  private static int MARGIN = 5; // marge en mm
-  private static int WIDTH = 210; // largeur par défaut en mm
-  private static int HEIGHT = 297;// hauteur par défaut en mm
-  private static int planningX = ImageUtil.toPoints(50);//50mm
-  private static int TOP_SEPARATION_LINE = ImageUtil.toPoints(96);//95mm +1 à cause de la perte de précision entière
-  private static int BOTTOM_SEPARATION_LINE = ImageUtil.toPoints(HEIGHT - 76);//75mm
-  static Stroke DASHED = new BasicStroke(0.2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 1.0f, new float[]{5.0f}, 0.0f);
-  static Stroke LINE = new BasicStroke();
-  //private DrawableElement titleBlock, addressBlock, identityBlock;
   private Contact contact;
   private Member member;
   private Address address;
@@ -115,8 +119,13 @@ public class MemberCardEditor implements Printable {
     }
     Graphics2D g2d = (Graphics2D) g;
     g2d.setStroke(DASHED);
-    g2d.drawLine(-ImageUtil.toPoints(MARGIN), TOP_SEPARATION_LINE, (int) pf.getWidth(), TOP_SEPARATION_LINE);
-    g2d.drawLine(-ImageUtil.toPoints(MARGIN), BOTTOM_SEPARATION_LINE, (int) pf.getWidth(), BOTTOM_SEPARATION_LINE);
+    /*Shape lt = new Line2D.Double(-ImageUtil.mmToPoints(MARGIN), ImageUtil.mmToPrecisePoints(96), pf.getWidth(), ImageUtil.mmToPrecisePoints(96));
+    g2d.draw(lt);
+    Shape lb = new Line2D.Double(-ImageUtil.mmToPoints(MARGIN), ImageUtil.mmToPrecisePoints(75), pf.getWidth(), ImageUtil.mmToPrecisePoints(75));
+    g2d.draw(lb);*/
+    g2d.drawLine(-ImageUtil.mmToPoints(MARGIN), TOP_CUTTING_MARK_Y, (int) pf.getWidth(), TOP_CUTTING_MARK_Y);
+    g2d.drawLine(-ImageUtil.mmToPoints(MARGIN), BOTTOM_CUTTING_MARK_Y, (int) pf.getWidth(), BOTTOM_CUTTING_MARK_Y);
+    
     g2d.setStroke(LINE);
     g2d.translate(pf.getImageableX(), pf.getImageableY());
     // only for test
@@ -141,13 +150,10 @@ public class MemberCardEditor implements Printable {
     try {
       address = service.getAddress(dossier);
       tels = service.getTels(dossier);
-      photo = null;
-      photo = service.getPhoto(dossier);
-    } catch (IOException ex) {
-      System.err.println("CarteAdherentEditeur#load :" + ex.getMessage());
-    } catch (SQLException sqe) {
-      System.err.println("CarteAdherentEditeur#load :" + sqe.getMessage());
-    }
+      photo = service.getPhoto(dossier.getId());
+    } catch (IOException |SQLException ex) {
+      GemLogger.logException(ex);
+    } 
     infos = service.getPlanningInfo(dossier);
   }
 
@@ -196,7 +202,7 @@ public class MemberCardEditor implements Printable {
 
   private void addBottom(PageFormat pf, int vOffset) {
     int x = 0;
-    int y = BOTTOM_SEPARATION_LINE;
+    int y = BOTTOM_CUTTING_MARK_Y;
 
     // identité
     if (contact != null) {

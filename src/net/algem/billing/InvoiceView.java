@@ -75,7 +75,7 @@ public class InvoiceView
         implements ActionListener, GemEventListener, Printable
 {
 
-  public static final int MARGIN = ImageUtil.toPoints(15);
+  public static final int MARGIN = ImageUtil.mmToPoints(15);
   //private final static Font sans = new Font("Helvetica", Font.PLAIN, 8);
   private final static Font sans = new Font(Font.SANS_SERIF, Font.PLAIN, 8);
   //private final static Font serif = new Font("TimesRoman", Font.PLAIN, 9);
@@ -493,10 +493,10 @@ public class InvoiceView
     if (pageIndex > 0) { /* We have only one page, and 'page' is zero-based */
       return NO_SUCH_PAGE;
     }
-    int left = ImageUtil.toPoints(110);
-    int top = ImageUtil.toPoints(50);
-    int bottom = ImageUtil.toPoints(297 - 20);// hauteur de page - 20 mm de marge
-    int margin = ImageUtil.toPoints(15);
+    int left = ImageUtil.mmToPoints(110);
+    int top = ImageUtil.mmToPoints(50);
+    int bottom = ImageUtil.mmToPoints(297 - 20);// hauteur de page - 20 mm de marge
+    int margin = ImageUtil.mmToPoints(15);
 
     Contact c = ContactIO.findId(quote.getPayer(), dc);
     Address a = null;

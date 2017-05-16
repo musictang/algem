@@ -1,7 +1,7 @@
 /*
- * @(#)ImageUtil.java	2.9.4.14 16/12/15
+ * @(#)ImageUtil.java	2.13.3 16/05/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -25,16 +25,23 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
-import java.util.regex.Pattern;
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import net.algem.accounting.AccountUtil;
+import net.algem.config.ConfigKey;
+import net.algem.config.ConfigUtil;
+import net.algem.contact.PhotoHandler;
+import net.algem.contact.SimplePhotoHandler;
+import net.algem.util.model.DataException;
 
 /**
  * Utility class for image operations.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.14
+ * @version 2.13.3
  */
 public class ImageUtil
 {
@@ -52,6 +59,7 @@ public class ImageUtil
   public static final String [] DEFAULT_IMG_EXTENSIONS = {".jpg",".jpg",".JPG",".JPEG",".png",".PNG"};
   public static final int PHOTO_ID_HEIGHT = 130;
   private static final int PHOTO_ID_WIDTH = 100;
+  private static final PhotoHandler PHOTO_HANDLER = new SimplePhotoHandler(DataCache.getDataConnection());
 
   public ImageUtil() {
   }
@@ -148,8 +156,12 @@ public class ImageUtil
    * @param mm
    * @return a value in points
    */
-  public static int toPoints(double mm) {
-    return (int) Math.round(toPoints2(toInch(mm)));
+  public static int mmToPoints(double mm) {
+    return (int) Math.round(inchesToPoints(toInch(mm)));
+  }
+  
+  public static double mmToPrecisePoints(double mm) {
+    return inchesToPoints(toInch(mm));
   }
 
   /**
@@ -166,29 +178,75 @@ public class ImageUtil
     }
     return img;
   }
+  
+  public static BufferedImage getPhoto(int idper) {
+    BufferedImage img = PHOTO_HANDLER.load(idper);
+    if (img == null) {
+      BufferedImage orig = getPhotoFromConfigDir(ConfigUtil.getConf(ConfigKey.PHOTOS_PATH.getKey()), new PhotoFileFilter(idper));
+      if (orig != null) {
+        try {
+          img = PHOTO_HANDLER.saveFromBuffer(idper, orig);
+        } catch (DataException ex) {
+          GemLogger.log(ex.getMessage());
+        }
+      } else {
+        img = getPhotoDefault();
+      } 
+    }
+    return img;
+  }
+
+  
+  /**
+   * Gets the photo matching this {@code filter}.
+   *
+   * @param configDir configured photo directory
+   * @param filter file name filter
+   * @return a buffered image if a resource has been found or null otherwhise
+   */
+  private static BufferedImage getPhotoFromConfigDir(String configDir, FileFilter filter) {
+
+    File dir = new File(configDir);
+    File[] files = null;
+    if (dir.isDirectory() && dir.canRead()) {
+      files = dir.listFiles(filter);
+    }
+    try {
+      if (files != null && files.length > 0) {
+        return ImageIO.read(files[0]);
+      } 
+      /*else { // default resource path USELESS
+        for (String s : ImageUtil.DEFAULT_IMG_EXTENSIONS) {
+          InputStream input = getClass().getResourceAsStream(ImageUtil.PHOTO_PATH + idper + s);
+          if (input == null) {
+            input = getClass().getResourceAsStream(ImageUtil.DEFAULT_PHOTO_ID);
+          }
+          return ImageIO.read(input);
+        }
+      }*/
+    } catch (IOException ex) {
+      GemLogger.logException(ex);
+    } 
+    return null;
+  }
+  
+  private static BufferedImage getPhotoDefault() {
+    try {
+      InputStream input = new ImageUtil().getClass().getResourceAsStream(DEFAULT_PHOTO_ID);
+      return ImageIO.read(input);
+    } catch (IOException ex) {
+      GemLogger.logException(ex);
+      return null;
+    }
+  }
 
   /**
    * Converts inches to points (1/72 inch) value.
    * @param inches
    * @return a value in points
    */
-  private static double toPoints2(double inches) {
+  private static double inchesToPoints(double inches) {
     return inches * 72;
-  }
-
-  class PhotoFileFilter
-    implements FileFilter {
-
-    private Pattern pattern;
-
-    PhotoFileFilter(int idper) {
-      pattern = Pattern.compile("^" + idper + "\\.(jpg|jpeg|JPG|JPEG|png|PNG)$");
-    }
-
-    @Override
-    public boolean accept(File pathname) {
-      return pattern.matcher(pathname.getName()).matches();
-    }
   }
 
 }

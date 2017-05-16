@@ -63,7 +63,7 @@ public class TestMemberCard extends TestCase {
     public void testToPoints() {
       double n = 25.4;
       int expected = 72;
-      double r = ImageUtil.toPoints(n);
+      double r = ImageUtil.mmToPoints(n);
       assertTrue("expected = "+expected+"; current = "+r,r == expected);
     }
 

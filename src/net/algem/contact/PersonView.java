@@ -1,7 +1,7 @@
 /*
- * @(#)PersonView.java	2.11.5 06/01/17
+ * @(#)PersonView.java	2.13.3 16/05/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -30,13 +30,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.logging.Level;
-import java.util.regex.Pattern;
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
@@ -58,12 +53,12 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.5
+ * @version 2.13.3
  */
 public class PersonView
   extends GemPanel {
 
-  private static final PhotoHandler photoHandler = new SimplePhotoHandler(DataCache.getDataConnection());
+  private static final PhotoHandler PHOTO_HANDLER = new SimplePhotoHandler(DataCache.getDataConnection());
 
   private GemNumericField no;
   private GemField name;
@@ -86,16 +81,14 @@ public class PersonView
   private GemDesktop desktop;
   private GridBagHelper gb;
   private short ptype = Person.PERSON;
-  private FileFilter photoFilter;
 
   public PersonView() {
-    init();
   }
 
-  private void init() {
+  protected void init() {
     no = new GemNumericField(6);
     no.setEditable(false);
-    no.setBackground(Color.lightGray);
+    no.setBackground(Color.LIGHT_GRAY);
     no.setMinimumSize(new Dimension(60, no.getPreferredSize().height));
 
     organization = new GemField(true, 20);
@@ -175,21 +168,8 @@ public class PersonView
 
   private void loadPhoto(Person p) {
     if (p.getId() == 0) return;
-    if (p.getType() == Person.PERSON || p.getType() == Person.ROOM) {
-      BufferedImage img = photoHandler.load(p.getId());
-      if (img == null) {
-        photoFilter = new PhotoFileFilter(p.getId());
-        BufferedImage orig = getPhoto(ConfigUtil.getConf(ConfigKey.PHOTOS_PATH.getKey()), p.getId());
-        if (orig != null) {
-          try {
-            img = photoHandler.saveFromBuffer(p.getId(), orig);
-          } catch (DataException ex) {
-            GemLogger.log(ex.getMessage());
-          }
-        } else {
-          img = getPhotoDefault();
-        }
-      }
+    if (Person.PERSON == p.getType() || Person.ROOM == p.getType()) {
+      BufferedImage img = ImageUtil.getPhoto(p.getId());
       ImageIcon icon = (img == null ? null : new ImageIcon(img));
       photoField.setIcon(icon);
     }
@@ -205,7 +185,7 @@ public class PersonView
         MessageUtil.getMessage("filechooser.image.filter.label"),
         "jpg", "jpeg", "JPG", "JPEG", "png", "PNG");
       if (file != null) {
-        BufferedImage img = photoHandler.saveFromFile(idper, file);
+        BufferedImage img = PHOTO_HANDLER.saveFromFile(idper, file);
         if (img != null) {
           photoField.setIcon(new ImageIcon(img));
         }
@@ -250,51 +230,6 @@ public class PersonView
     }
     return icon;
 
-  }
-
-  /**
-   * Gets the photo of the person {@code idper} from {@code configDir}.
-   *
-   * @param configDir photo dir
-   * @param idper person's id
-   * @return a buffered image if a resource has been found or null otherwhise
-   */
-  private BufferedImage getPhoto(String configDir, int idper) {
-
-    File dir = new File(configDir);
-    File[] files = null;
-    if (dir.isDirectory() && dir.canRead()) {
-      files = dir.listFiles(photoFilter);
-    }
-    try {
-      if (files != null && files.length > 0) {
-        return ImageIO.read(files[0]);
-      } 
-      /*else { // default resource path USELESS
-        for (String s : ImageUtil.DEFAULT_IMG_EXTENSIONS) {
-          InputStream input = getClass().getResourceAsStream(ImageUtil.PHOTO_PATH + idper + s);
-          if (input == null) {
-            input = getClass().getResourceAsStream(ImageUtil.DEFAULT_PHOTO_ID);
-          }
-          return ImageIO.read(input);
-        }
-      }*/
-    } catch (IOException ie) {
-      GemLogger.logException(ie);
-    } catch (IllegalArgumentException ia) {
-      GemLogger.logException(ia);
-    }
-    return null;
-  }
-
-  private BufferedImage getPhotoDefault() {
-    try {
-      InputStream input = getClass().getResourceAsStream(ImageUtil.DEFAULT_PHOTO_ID);
-      return ImageIO.read(input);
-    } catch (IOException | IllegalArgumentException ex) {
-      GemLogger.logException(ex);
-      return null;
-    }
   }
 
   void showSubscriptionRest(PersonSubscriptionCard card) {
@@ -376,21 +311,6 @@ public class PersonView
     }
     gb.add(groupsPanel, 0, 7, 1, 1, GridBagHelper.WEST);
 
-  }
-  
-  class PhotoFileFilter
-          implements FileFilter
-  {
-    private final Pattern pattern;
-
-    PhotoFileFilter(int idper) {
-      pattern = Pattern.compile("^[a-zA-ZàâäéèêëîïôöùûüÀÂÉÈËÊÎÏÔÙÜ_ \\(\\)-]*" + idper + "\\.(jpg|jpeg|JPG|JPEG|png|PNG)$");
-    }
-
-    @Override
-    public boolean accept(File pathname) {
-      return pattern.matcher(pathname.getName()).matches();
-    }
   }
 
 }
