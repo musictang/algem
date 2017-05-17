@@ -42,7 +42,7 @@ public class TelElement
 
   @Override
   protected void draw(Graphics g) {
-    g.setFont(serifSmall);
+    g.setFont(SERIF_SMALL);
     g.drawString(tel.getNumber(), x, y);
   }
 

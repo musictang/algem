@@ -41,7 +41,7 @@ public class AccessElement extends DrawableElement {
 
 	@Override
 	protected void draw(Graphics g) {
-		g.setFont(sansXSmall);
+		g.setFont(SANS_XSMALL);
 		for(int i = 0, yOffset = 0; i < text.length ; i++, yOffset += 8) {
 			g.drawString(text[i], x, y + yOffset);
 		}

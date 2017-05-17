@@ -1,6 +1,6 @@
 /*
- * @(#)IdentityElement.java 2.7.m 14/03/13
- * 
+ * @(#)IdentityElement.java 2.13.3 17/05/17
+ *
  * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,18 +16,20 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.edition;
 
 import java.awt.Graphics;
 import net.algem.contact.Contact;
+import static net.algem.edition.MemberCardEditor.COURSE_LIST_X;
+import net.algem.util.TextUtil;
 
 /**
  * Identity element.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.m
+ * @version 2.13.3
  * @since 2.1.n 22/07/2011
  */
 public class IdentityElement
@@ -43,12 +45,11 @@ public class IdentityElement
 
   @Override
   public void draw(Graphics g) {
-    g.setFont(serifMed);
+    g.setFont(SERIF_MED);
     String ident = "";
     if (contact != null) {
-      String p = (contact.getFirstName() == null || contact.getFirstName().isEmpty()) ? "" : contact.getFirstName() + " ";
-      String n = contact.getName() == null ? "" : contact.getName();
-      ident = p + n;
+      ident = TextUtil.crop(contact.toString(), g, COURSE_LIST_X);
+
       String org = contact.getOrganization();
       if (org != null && !org.isEmpty()) {
         g.drawString(org, x, y - 10);

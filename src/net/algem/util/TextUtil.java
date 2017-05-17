@@ -21,6 +21,8 @@
 
 package net.algem.util;
 
+import java.awt.FontMetrics;
+import java.awt.Graphics;
 import java.text.Normalizer;
 import java.util.regex.Pattern;
 
@@ -47,11 +49,33 @@ public class TextUtil
    */
   public static String truncate(String s, int size) {
 
-    if (s.length() > size) {
+    if (s != null && s.length() > size) {
       return s.substring(0, size);
     }
 
     return s;
+  }
+
+  public static String crop(String s, Graphics g, int width) {
+    FontMetrics fm = g.getFontMetrics();
+    String crop = "";
+    if (s != null && fm.stringWidth(s) > width) {
+      int w = 0;
+      for (char c : s.toCharArray()) {
+        int cw = fm.charWidth(c);
+        if (w + cw < width) {
+          w += cw;
+          crop += c;
+        } else {
+          break;
+        }
+      }
+    }
+
+    if (crop.isEmpty()) {
+      return s;
+    }
+    return crop.substring(0, crop.length()-1) + '.';
   }
 
   /**

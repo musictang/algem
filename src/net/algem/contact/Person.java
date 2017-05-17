@@ -1,7 +1,7 @@
 /*
- * @(#)Person.java	2.11.0 23/09/16
+ * @(#)Person.java	2.13.3 17/05/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -32,7 +32,7 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.0
+ * @version 2.13.3
  *
  * @since 1.0a 07/07/1999
  */
@@ -63,7 +63,7 @@ public class Person
   }
 
   /**
-   * 
+   *
    * @param i id
    */
   public Person(int i) {
@@ -71,7 +71,7 @@ public class Person
   }
 
   /**
-   * 
+   *
    * @param n name
    */
   public Person(String n) {
@@ -79,7 +79,7 @@ public class Person
   }
 
   /**
-   * 
+   *
    * @param i id
    * @param n name
    */
@@ -231,11 +231,7 @@ public class Person
     return firstName;
   }
 
-  public String getIdentity() {
-    return name + " " + firstName;
-  }
-
-  public void setGender(String s) {
+   public void setGender(String s) {
     gender = s;
   }
 

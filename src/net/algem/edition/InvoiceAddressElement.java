@@ -42,6 +42,6 @@ public class InvoiceAddressElement
 
   @Override
   public void setFont(Graphics g) {
-    g.setFont(serifMed);
+    g.setFont(SERIF_MED);
   }
 }

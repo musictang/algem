@@ -1,5 +1,5 @@
 /*
- * @(#)ImageUtil.java	2.13.3 16/05/17
+ * @(#)ImageUtil.java	2.13.3 17/05/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -157,11 +157,9 @@ public class ImageUtil
    * @return a value in points
    */
   public static int mmToPoints(double mm) {
-    return (int) Math.round(inchesToPoints(toInch(mm)));
-  }
-  
-  public static double mmToPrecisePoints(double mm) {
-    return inchesToPoints(toInch(mm));
+    double val = (mm / 25.4) * 72;
+    return (int) Math.round(val);
+    //return (int) Math.round(inchesToPoints(toInch(mm)));
   }
 
   /**
@@ -178,7 +176,7 @@ public class ImageUtil
     }
     return img;
   }
-  
+
   public static BufferedImage getPhoto(int idper) {
     BufferedImage img = PHOTO_HANDLER.load(idper);
     if (img == null) {
@@ -191,12 +189,12 @@ public class ImageUtil
         }
       } else {
         img = getPhotoDefault();
-      } 
+      }
     }
     return img;
   }
 
-  
+
   /**
    * Gets the photo matching this {@code filter}.
    *
@@ -214,7 +212,7 @@ public class ImageUtil
     try {
       if (files != null && files.length > 0) {
         return ImageIO.read(files[0]);
-      } 
+      }
       /*else { // default resource path USELESS
         for (String s : ImageUtil.DEFAULT_IMG_EXTENSIONS) {
           InputStream input = getClass().getResourceAsStream(ImageUtil.PHOTO_PATH + idper + s);
@@ -226,10 +224,10 @@ public class ImageUtil
       }*/
     } catch (IOException ex) {
       GemLogger.logException(ex);
-    } 
+    }
     return null;
   }
-  
+
   private static BufferedImage getPhotoDefault() {
     try {
       InputStream input = new ImageUtil().getClass().getResourceAsStream(DEFAULT_PHOTO_ID);

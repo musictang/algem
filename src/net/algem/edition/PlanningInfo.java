@@ -1,7 +1,7 @@
 /*
- * @(#)PlanningInfo.java 2.6.a 17/09/12
- * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * @(#)PlanningInfo.java 2.13.3 17/05/17
+ *
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,15 +16,15 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 
 package net.algem.edition;
 
 /**
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.13.3
  */
 public class PlanningInfo {
 
@@ -33,6 +33,8 @@ public class PlanningInfo {
   private String day;
   private String start;
   private String end;
+  /** Day of week. */
+  private int dow;
 
   public PlanningInfo() {
   }
@@ -43,6 +45,14 @@ public class PlanningInfo {
     this.day = day;
     this.start = start;
     this.end = end;
+  }
+
+  public int getDow() {
+    return dow;
+  }
+
+  public void setDow(int dow) {
+    this.dow = dow;
   }
 
   public String getTeacher() {
@@ -84,6 +94,5 @@ public class PlanningInfo {
   public void setDay(String day) {
     this.day = day;
   }
-
 
 }

@@ -1,5 +1,5 @@
 /*
- * @(#)MemberCardService.java 2.13.3 16/05/17
+ * @(#)MemberCardService.java 2.13.3 17/05/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -22,11 +22,9 @@ package net.algem.edition;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
-import javax.imageio.ImageIO;
 import net.algem.config.ConfigUtil;
 import net.algem.contact.*;
 import net.algem.contact.member.Member;
@@ -52,8 +50,7 @@ import net.algem.util.module.GemDesktop;
  * @version 2.13.3
  * @since 2.4.a 16/05/12
  */
-public class MemberCardService
-{
+public class MemberCardService {
 
   private final DataCache dataCache;
   private final DataConnection dc;
@@ -106,9 +103,9 @@ public class MemberCardService
    * @param p the person file
    * @return a list of course order
    */
-  List<CourseOrder> getCourseOrder(PersonFile p) {
+  private List<CourseOrder> getCourseOrder(PersonFile p) {
 
-    Vector<CourseOrder> vcc = new Vector<CourseOrder>();
+    List<CourseOrder> vcc = new ArrayList<CourseOrder>();
     // on commence au 1er mai en raison des préinscriptions possibles
     String start = "01-05-" + dataCache.getStartOfYear().getYear();
     List<Enrolment> vi = null;
@@ -122,7 +119,7 @@ public class MemberCardService
         vcc.addAll(i.getCourseOrder());
       }
     }
-    return vcc.isEmpty() ? null : vcc;
+    return vcc;
   }
 
   String getDay(int day) {
@@ -166,15 +163,15 @@ public class MemberCardService
     int dow = 0;
     int[] infos = new int[2];
     Calendar cal = Calendar.getInstance(Locale.FRANCE); // on force la locale ici
-    String query = "SELECT planning.idper, planning.jour FROM planning, plage"
-            + " WHERE planning.ptype = " + Schedule.COURSE
-            + " AND planning.jour >= '" + startDate + "'"
-            + " AND planning.action = " + action
-            + " AND planning.id = plage.idplanning"
-            + " AND plage.adherent = " + memberId
-            + " ORDER BY jour LIMIT 1";
-    try {
-      ResultSet rs = dc.executeQuery(query);
+    String query = "SELECT p.idper, p.jour FROM planning p JOIN plage pl ON p.id = pl.idplanning"
+      + " WHERE p.ptype IN (" + Schedule.COURSE + "," + Schedule.TRAINING + "," + Schedule.WORKSHOP + ")"
+      + " AND p.jour >= '" + startDate + "'"
+      + " AND p.action = " + action
+      //            + " AND planning.id = plage.idplanning"
+      + " AND pl.adherent = " + memberId
+      + " ORDER BY p.jour LIMIT 1";
+
+    try (ResultSet rs = dc.executeQuery(query)) {
       if (rs.next()) {
         int prof = rs.getInt(1);
         DateFr d = new DateFr(rs.getString(2));
@@ -183,33 +180,31 @@ public class MemberCardService
         infos[0] = prof;
         infos[1] = dow;
       }
-      rs.close();
     } catch (SQLException e) {
       GemLogger.logException(e);
     }
     return infos;
   }
 
-  List<PlanningInfo> getPlanningInfo(PersonFile p) {
+  List<PlanningInfo> getPlanningInfo(final PersonFile p) {
     List<PlanningInfo> infos = new ArrayList<PlanningInfo>();
     List<CourseOrder> orders = getCourseOrder(p);
-    if (orders != null) {
-      for (CourseOrder co : orders) {
-        Course c = getCourse(co);
-        if (c != null) {
-          String title = c.getTitle();
-          int[] others = getInfos(co.getAction(), p.getId());
-          String teacher = getTeacher(others[0]);
-          String day = getDay(others[1]);
-          String start = co.getStart().toString();
-          String end = co.getEnd().toString();
-          if (Hour.NULL_HOUR.equals(start)) {
-            start = "";
-            end = "";
-          }
-          PlanningInfo info = new PlanningInfo(title, teacher, day, start, end);
-          infos.add(info);
+    for (CourseOrder co : orders) {
+      Course c = getCourse(co);
+      if (c != null) {
+        String title = c.getTitle();
+        int[] others = getInfos(co.getAction(), p.getId());
+        String teacher = getTeacher(others[0]);
+        String day = getDay(others[1]);
+        String start = co.getStart().toString();
+        String end = co.getEnd().toString();
+        if (Hour.NULL_HOUR.equals(start)) {
+          start = "";
+          end = "";
         }
+        PlanningInfo info = new PlanningInfo(title, teacher, day, start, end);
+        info.setDow(others[1]);
+        infos.add(info);
       }
     }
     return infos;
@@ -230,32 +225,4 @@ public class MemberCardService
     return ConfigUtil.getConf(conf);
   }
 
-  /**
-   * 
-   * @param url
-   * @return
-   * @throws IOException
-   * @deprecated 
-   */
-  private BufferedImage getPhoto(URL url) throws IOException {
-    if (url == null) {
-      return null;
-    }
-    BufferedImage img = ImageIO.read(url);
-    if (img == null) {
-      return null;
-    }
-    // recadrer si nécessaire
-    if (ImageUtil.PHOTO_ID_HEIGHT != img.getHeight()) {
-      System.out.println(img.getHeight() + "rescaling !");
-      BufferedImage bi2 = ImageUtil.rescale(img);
-      img = ImageUtil.cropPhotoId(bi2);
-    }
-    return img;
-  }
-
-  private URL getPhotoPath(int id) {
-    String path = ImageUtil.PHOTO_PATH + id + ".jpg";
-    return getClass().getResource(path);
-  }
 }
