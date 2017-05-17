@@ -43,7 +43,7 @@ public class SignatureElement
 
   @Override
   protected void draw(Graphics g) {
-    g.setFont(sansSmall);
+    g.setFont(SANS_SMALL);
     g.drawString(signature.toString(),x, y);
     g.drawString(" A :", x, y+20);
     g.drawString("Le :", x, y+40);

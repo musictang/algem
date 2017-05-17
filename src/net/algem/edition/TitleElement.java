@@ -1,7 +1,7 @@
 /*
- * @(#)TitleElement.java 2.6.a 17/09/12
- * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * @(#)TitleElement.java 2.13.3 17/05/17
+ *
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.edition;
 
@@ -26,42 +26,36 @@ import java.awt.Graphics;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.13.3
  * @since 2.1.n
  */
 class TitleElement extends DrawableElement
 {
 
-  static int TITLE_WIDTH = 300;
-  private String titre;
-
+  private String title;
+  private double centerPos;
   private int h = 16;
   private int angle = 10;
 
-  public TitleElement(String titre, int x, int y) {
+  public TitleElement(String title, int x, int y) {
     super(x, y);
-    this.titre = titre;
+    this.title = title;
+  }
+
+  public void setCenter(double c) {
+    this.centerPos = c;
   }
 
   @Override
   protected void draw(Graphics g) {
-    g.setFont(sansLarge);
-    g.drawRoundRect(x, y, TITLE_WIDTH, h, angle, angle);
+    g.setFont(SANS_LARGE);
     FontMetrics fm = g.getFontMetrics();
-    int margin = getX(fm.charWidth('x'));
-    //centrage du texte à l'intérieur du rectangle
-    // seulement dans le cas d'un rectangle conteneur haut
-    //g.drawString(titre, x + margin, y + (h / 2) + (fm.getHeight() / 2));
-    g.drawString(titre, x + margin, y + (h * 3 / 4)); // 3/4 de la hauteur
+    int w = fm.stringWidth(title);
+    int margin = fm.charWidth('x');
+    w = w + (2*margin);
+    x = (int) (centerPos - (w / 2));
+    g.drawRoundRect(x, y, w, h, angle, angle);
+    g.drawString(title, x + margin, y + (h * 3 / 4)); // 3/4 de la hauteur
   }
 
-  /**
-   * Position x du texte à l'intérieur du rectangle.
-   * @param charWidth
-   * @return une position relative
-   */
-  private int getX(int charWidth) {
-    int stringLength = titre.length() * charWidth;
-    return (TITLE_WIDTH / 2) - (stringLength / 2);
-  }
 }

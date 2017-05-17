@@ -28,3 +28,5 @@ SELECT DISTINCT m.email
 FROM email m JOIN eleve e ON (m.idper = e.idper OR m.idper = e.payeur)
 where e.idper = 21525 -- important : eleve.idper
 AND e.archive = false;
+
+SELECT p.idper, p.jour, EXTRACT(ISODOW FROM p.jour) AS dow FROM planning p JOIN plage pl ON p.id = pl.idplanning WHERE p.ptype IN (1,6,5) AND p.jour >= '19-09-2016' AND p.action = 79827 AND pl.adherent = 22143 ORDER BY dow LIMIT 1;

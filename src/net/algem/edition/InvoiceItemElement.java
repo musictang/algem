@@ -106,7 +106,7 @@ public class InvoiceItemElement
 
   @Override
   public void setFont(Graphics g) {
-    g.setFont(serifSmall);
+    g.setFont(SERIF_SMALL);
   }
 
   protected void center(Graphics g2d, String s, int width, int x, int y) {

@@ -1,6 +1,5 @@
-
 /*
- * @(#)InstrumentElement.java 2.13.3 17/05/17
+ * @(#) TestImageUtil.java Algem 2.13.3 17/05/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -17,39 +16,57 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- *
  */
+package net.algem.util;
 
-package net.algem.edition;
-
-import java.awt.Graphics;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
- * Instrument element.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.13.3
- * @since 2.1.n
+ * @since 2.13.3 17/05/17
  */
-public class InstrumentElement
-  extends DrawableElement
-{
+public class TestImageUtil {
 
-  private String instrument;
-
-  public InstrumentElement(String instrument, int x, int y) {
-    super(x, y);
-    this.instrument = instrument;
+  public TestImageUtil() {
   }
 
-  @Override
-  protected void draw(Graphics g) {
-    g.setFont(SERIF_SMALL);
-    g.drawString(getInstrument(), x, y);
+  @BeforeClass
+  public static void setUpClass() {
   }
 
-  private String getInstrument() {
-    return "aucun".equalsIgnoreCase(instrument) ? "" : instrument;
+  @AfterClass
+  public static void tearDownClass() {
+  }
+
+  @Before
+  public void setUp() {
+  }
+
+  @After
+  public void tearDown() {
+  }
+
+  @Test
+  public void testMmToPoints() {
+    int mm = 75;
+    double val1 = (mm / 25.4) * 72;
+    System.out.println("val " + val1);
+
+    double val2 = mm / 25.4;
+    val2 = val2 * 72;
+    System.out.println("val " + val2);
+
+    double p1 = Math.round(val1);
+    double p2 = Math.round(val2);
+    assertTrue(p1 == p2);
+
   }
 
 }

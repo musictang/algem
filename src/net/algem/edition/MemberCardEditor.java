@@ -1,6 +1,6 @@
 /*
- * @(#)MemberCardEditor.java 2.13.3 16/05/17
- * 
+ * @(#)MemberCardEditor.java 2.13.3 17/05/17
+ *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,16 +16,14 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.edition;
 
 import java.awt.BasicStroke;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Shape;
 import java.awt.Stroke;
-import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
@@ -34,6 +32,8 @@ import java.awt.print.PrinterJob;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
@@ -47,6 +47,7 @@ import net.algem.contact.Contact;
 import net.algem.contact.PersonFile;
 import net.algem.contact.Telephone;
 import net.algem.contact.member.Member;
+import net.algem.planning.Hour;
 import net.algem.util.BundleUtil;
 import net.algem.util.GemLogger;
 import net.algem.util.ImageUtil;
@@ -63,15 +64,15 @@ public class MemberCardEditor implements Printable {
 
   static Stroke DASHED = new BasicStroke(0.2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 1.0f, new float[]{5.0f}, 0.0f);
   static Stroke LINE = new BasicStroke();
-  
+
+  static int COURSE_LIST_X = ImageUtil.mmToPoints(50);//50mm
   private static final int MARGIN = 5; // marge en mm
   private static final int WIDTH = 210; // largeur par défaut en mm
   private static final int HEIGHT = 297;// hauteur par défaut en mm
-  private static int planningX = ImageUtil.mmToPoints(50);//50mm
+
   private static int TOP_CUTTING_MARK_Y = ImageUtil.mmToPoints(96);//95mm +1 à cause de la perte de précision entière
   private static int BOTTOM_CUTTING_MARK_Y = ImageUtil.mmToPoints(HEIGHT - 76);//75mm
-  
-  //private DrawableElement titleBlock, addressBlock, identityBlock;
+
   private PersonFile dossier;
   private List<DrawableElement> blocks;
   private MemberCardService service;
@@ -94,8 +95,8 @@ public class MemberCardEditor implements Printable {
     PrintRequestAttributeSet attSet = new HashPrintRequestAttributeSet();
     attSet.add(MediaSizeName.ISO_A4);
     attSet.add(OrientationRequested.PORTRAIT);
-    MediaPrintableArea printableArea =
-            new MediaPrintableArea(MARGIN, MARGIN, WIDTH - (MARGIN * 2), HEIGHT - (MARGIN * 2), MediaSize.MM);
+    MediaPrintableArea printableArea
+      = new MediaPrintableArea(MARGIN, MARGIN, WIDTH - (MARGIN * 2), HEIGHT - (MARGIN * 2), MediaSize.MM);
     attSet.add(printableArea);
 
     job.setPrintable(this);
@@ -113,19 +114,15 @@ public class MemberCardEditor implements Printable {
 
   @Override
   public int print(Graphics g, PageFormat pf, int pageIndex) throws PrinterException {
-    if (pageIndex > 0) { 
+    if (pageIndex > 0) {
       // We have only one page, and 'page' is zero-based
       return NO_SUCH_PAGE;
     }
     Graphics2D g2d = (Graphics2D) g;
     g2d.setStroke(DASHED);
-    /*Shape lt = new Line2D.Double(-ImageUtil.mmToPoints(MARGIN), ImageUtil.mmToPrecisePoints(96), pf.getWidth(), ImageUtil.mmToPrecisePoints(96));
-    g2d.draw(lt);
-    Shape lb = new Line2D.Double(-ImageUtil.mmToPoints(MARGIN), ImageUtil.mmToPrecisePoints(75), pf.getWidth(), ImageUtil.mmToPrecisePoints(75));
-    g2d.draw(lb);*/
     g2d.drawLine(-ImageUtil.mmToPoints(MARGIN), TOP_CUTTING_MARK_Y, (int) pf.getWidth(), TOP_CUTTING_MARK_Y);
     g2d.drawLine(-ImageUtil.mmToPoints(MARGIN), BOTTOM_CUTTING_MARK_Y, (int) pf.getWidth(), BOTTOM_CUTTING_MARK_Y);
-    
+
     g2d.setStroke(LINE);
     g2d.translate(pf.getImageableX(), pf.getImageableY());
     // only for test
@@ -151,23 +148,45 @@ public class MemberCardEditor implements Printable {
       address = service.getAddress(dossier);
       tels = service.getTels(dossier);
       photo = service.getPhoto(dossier.getId());
-    } catch (IOException |SQLException ex) {
+    } catch (IOException | SQLException ex) {
       GemLogger.logException(ex);
-    } 
+    }
     infos = service.getPlanningInfo(dossier);
+    Collections.sort(infos, new Comparator<PlanningInfo>() {
+      @Override
+      public int compare(PlanningInfo o1, PlanningInfo o2) {
+        Integer d1 = o1.getDow();
+        Integer d2 = o2.getDow();
+        int c = d1.compareTo(d2);
+        if (c == 0) {
+          Hour s1 = new Hour(o1.getStart());
+          Hour s2 = new Hour(o2.getStart());
+          if (s1.after(s2)) {
+            c = 1;
+          } else if (s1.before(s2)) {
+            c = -1;
+          }
+        }
+        return c;
+      }
+
+    });
   }
 
   private void addTop(PageFormat pf, int vOffset) {//35
     int x = 0;
     int y = 0;
 
-    int headX = (int) (pf.getWidth() / 2) - (TitleElement.TITLE_WIDTH / 2);
     // titre
     String start = service.getBeginningYear();
     String end = service.getEndYear();
     String firmName = service.getConf(ConfigKey.ORGANIZATION_NAME.getKey());
     String args[] = {firmName, start, end};
-    addBlock(new TitleElement(BundleUtil.getLabel("Member.card.title.label", args).toUpperCase(), x + headX, y));
+    String title = BundleUtil.getLabel("Member.card.title.label", args).toUpperCase();
+    double headX = (pf.getWidth() / 2);
+    TitleElement titleElement = new TitleElement(title, 0, y);
+    titleElement.setCenter(headX);
+    addBlock(titleElement);
     // identité
     if (contact != null) {
       addBlock(new IdentityElement(contact, x, y + vOffset));
@@ -192,11 +211,11 @@ public class MemberCardEditor implements Printable {
     // cours
     if (infos != null) {
       for (int i = 0, yoffset = y + vOffset; i < infos.size(); i++, yoffset += 15) {
-        addBlock(new PlanningElement(infos.get(i), planningX, y + yoffset));
+        addBlock(new PlanningElement(infos.get(i), COURSE_LIST_X, y + yoffset));
       }
     }
     // signature
-    addBlock(new SignatureElement(planningX, vOffset + 140));
+    addBlock(new SignatureElement(COURSE_LIST_X, vOffset + 140));
 
   }
 
@@ -217,7 +236,7 @@ public class MemberCardEditor implements Printable {
     }
     // cours
     for (int i = 0, yoffset = vOffset; i < infos.size(); i++, yoffset += 15) {
-      addBlock(new PlanningElement(infos.get(i), planningX, y + yoffset));
+      addBlock(new PlanningElement(infos.get(i), COURSE_LIST_X, y + yoffset));
     }
     //id
     addBlock(new IdElement(dossier.getId(), x, y + vOffset + 65));
@@ -225,7 +244,7 @@ public class MemberCardEditor implements Printable {
     addBlock(new PhotoElement(photo, x, y + vOffset + 70));//
 
     // signature
-    addBlock(new AccessElement(planningX, (int) pf.getHeight() - 65));
+    addBlock(new AccessElement(COURSE_LIST_X, (int) pf.getHeight() - 65));
 
   }
 
