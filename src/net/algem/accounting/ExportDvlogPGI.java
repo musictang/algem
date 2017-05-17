@@ -1,7 +1,7 @@
 /*
- * @(#)ExportDvlogPGI.java	2.10.1 20/06/2016
+ * @(#)ExportDvlogPGI.java	2.14.0 15/05/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -38,17 +38,17 @@ import net.algem.util.ui.MessagePopup;
  * Utility class for exporting lines to DVLOG PGI accounting software.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.1
+ * @version 2.14.0
  * @since 2.8.r 13/12/13
  */
 public class ExportDvlogPGI
   extends  CommunAccountExportService
 {
-
-  private DateFormat dateFormat = new SimpleDateFormat("ddMMyyyy");
-  private NumberFormat nf = NumberFormat.getInstance(Locale.FRENCH);
+ 
   private static char cd = 'C';// credit
   private static char dc = 'D';//debit
+  private DateFormat dateFormat = new SimpleDateFormat("ddMMyyyy");
+  private NumberFormat nf = NumberFormat.getInstance(Locale.FRENCH);
 
   public ExportDvlogPGI(DataConnection dc) {
     dbx = dc;
@@ -60,14 +60,19 @@ public class ExportDvlogPGI
 
   @Override
   public void export(String path, Vector<OrderLine> orderLines, String codeJournal, Account documentAccount) throws IOException {
-    int total = 0;
+    int totalDebit = 0;
+    int totalCredit = 0;
     String number = (documentAccount == null) ? "" : documentAccount.getNumber();
     OrderLine e = null;
     PrintWriter out = new PrintWriter(new FileWriter(path));
 
     for (int i = 0, n = orderLines.size(); i < n ; i++) {
       e =  orderLines.elementAt(i);
-      total += e.getAmount();
+      if (e.getAmount() > 0) {
+        totalDebit += e.getAmount();
+      } else {
+        totalCredit += Math.abs(e.getAmount());
+      }
       //String f = (AccountUtil.isPersonalAccount(e.getAccount()) && e.getInvoice() != null) ? e.getInvoice() : e.getInvoiceNumber();
       //out.print(padWithTrailingZeros(e.getAccount().getNumber(), 10)
       out.print(TextUtil.padWithTrailingZeros(getAccount(e), 10)
@@ -77,20 +82,32 @@ public class ExportDvlogPGI
               // La valeur 13 ne semble pas obligatoire. On peut étendre la taille du champ.
               //+ "#" + padWithTrailingSpaces(truncate(e.getLabel(), 13), 13)
               + "#" + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getLabel() + getInvoiceNumber(e), 24), 24) // numéro de facture pour les echéances correspondant à une facture.
-              + "#" + TextUtil.padWithLeadingZeros(nf.format(e.getAmount() / 100.0), 13)
-              + "#" + cd
+              + "#" + TextUtil.padWithLeadingZeros(nf.format(Math.abs(e.getAmount()) / 100.0), 13)
+              + "#" + (e.getAmount() > 0 ? cd : dc)
               + "#" + TextUtil.padWithTrailingSpaces(e.getCostAccount().getNumber(), 10)
               + "#" + (char) 13);
     }
-    if (total > 0) {
+    if (totalDebit > 0) {
       out.print(
               TextUtil.padWithTrailingZeros(number, 10)
               + "#" + dateFormat.format(e.getDate().getDate())
               + "#" + codeJournal
               + "#" + TextUtil.padWithTrailingSpaces("", 10)
-              + "#" + TextUtil.padWithTrailingSpaces("CENTRALISE", 24)
-              + "#" + TextUtil.padWithLeadingZeros(nf.format(total / 100.0), 13)
+              + "#" + TextUtil.padWithTrailingSpaces("TOTAL DEBIT", 24) //  CENTRALISE
+              + "#" + TextUtil.padWithLeadingZeros(nf.format(totalDebit / 100.0), 13)
               + "#" + dc
+              + "#" + TextUtil.padWithTrailingSpaces("", 10)
+              + "#" + (char) 13);//CR (Carriage return, retour à la ligne)
+    }
+    if (totalCredit > 0) {
+      out.print(
+              TextUtil.padWithTrailingZeros(number, 10)
+              + "#" + dateFormat.format(e.getDate().getDate())
+              + "#" + codeJournal
+              + "#" + TextUtil.padWithTrailingSpaces("", 10)
+              + "#" + TextUtil.padWithTrailingSpaces("TOTAL CREDIT", 24)
+              + "#" + TextUtil.padWithLeadingZeros(nf.format(totalCredit / 100.0), 13)
+              + "#" + cd
               + "#" + TextUtil.padWithTrailingSpaces("", 10)
               + "#" + (char) 13);//CR (Carriage return, retour à la ligne)
     }
