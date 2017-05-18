@@ -1,5 +1,5 @@
 /*
- * @(#)DrawableElement.java 2.13.3 17/05/17
+ * @(#)DrawableElement.java 2.13.3 18/05/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -39,6 +39,7 @@ public abstract class DrawableElement {
   protected Font SANS_LARGE = new Font(Font.SANS_SERIF, Font.PLAIN, 10);
   protected Font SERIF_MED = new Font(Font.SERIF, Font.PLAIN, 10);
   protected Font SERIF_SMALL = new Font(Font.SERIF, Font.PLAIN, 9);
+  protected Font SERIF_XSMALL = new Font(Font.SERIF, Font.PLAIN, 8);
   protected Font SANS_SMALL = new Font(Font.SANS_SERIF, Font.PLAIN, 8);
   protected Font SANS_XSMALL = new Font(Font.SANS_SERIF, Font.PLAIN, 6);
 
