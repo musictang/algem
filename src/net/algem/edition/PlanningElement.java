@@ -1,5 +1,5 @@
 /*
- * @(#)PlanningElement.java 2.13.3 17/05/17
+ * @(#)PlanningElement.java 2.13.3 18/05/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -42,7 +42,7 @@ class PlanningElement extends DrawableElement
 
   @Override
   protected void draw(Graphics g) {
-    g.setFont(SERIF_SMALL);
+    g.setFont(SERIF_XSMALL);
     String course = TextUtil.crop(info.getCourse(), g, 160);
     String teacher = TextUtil.crop(info.getTeacher(), g, 160);
     g.drawString(course, x, y);

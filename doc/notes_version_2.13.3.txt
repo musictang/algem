@@ -11,6 +11,12 @@ Améliorations :
 
 - Les cours sont listés dans l'ordre chronologique (jour de la semaine et heure de début).
 
+- La liste des cours ne chevauche plus le pied de page (ou le bloc de signature) si elle est trop longue. Le bloc de signature ou d'informations est maintenant décalé automatiquement en cas de place insuffisante.
+
+- Les stages et les ateliers ponctuels sont maintenant inclus dans la liste de cours.
+
+- La carte d'adhérent n'affichait pas tous les cours si les élèves en avaient beaucoup. Elle offre maintenant assez de place pour en imprimer jusqu'à 19.
+
 - Les horaires de début et de fin sont maintenant reliés par un tiret (hh:mm-hh-mm), ex. : 17:00-17:45
 
 - Le cadre de titre central, affiché en haut de page, est maintenant proportionnel à la largeur du titre. Auparavant, le titre débordait du cadre si le nom de la structure était plus long que la normale.

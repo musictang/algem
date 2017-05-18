@@ -1,5 +1,5 @@
 /*
- * @(#)MemberCardEditor.java 2.13.3 17/05/17
+ * @(#)MemberCardEditor.java 2.13.3 18/05/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -209,13 +209,19 @@ public class MemberCardEditor implements Printable {
     //photo
     addBlock(new PhotoElement(photo, x, vOffset + 110));//
     // cours
+    int yoffset = y + vOffset;
     if (infos != null) {
-      for (int i = 0, yoffset = y + vOffset; i < infos.size(); i++, yoffset += 15) {
+      for (int i = 0; i < infos.size(); i++, yoffset += 10) {
         addBlock(new PlanningElement(infos.get(i), COURSE_LIST_X, y + yoffset));
       }
     }
     // signature
-    addBlock(new SignatureElement(COURSE_LIST_X, vOffset + 140));
+    int topSignPos = vOffset + 140;
+    if (yoffset + 10 < topSignPos) {
+      addBlock(new SignatureElement(COURSE_LIST_X, topSignPos));
+    } else {
+      addBlock(new SignatureElement(COURSE_LIST_X, yoffset + 10));
+    }
 
   }
 
@@ -235,16 +241,21 @@ public class MemberCardEditor implements Printable {
       addBlock(new AddressElement(address, x, y + vOffset + 25));
     }
     // cours
-    for (int i = 0, yoffset = vOffset; i < infos.size(); i++, yoffset += 15) {
+    int yoffset = vOffset;
+    for (int i = 0; i < infos.size(); i++, yoffset += 10) {
       addBlock(new PlanningElement(infos.get(i), COURSE_LIST_X, y + yoffset));
+    }
+    // signature
+    int bottomPos = (int) pf.getHeight() - 65;
+    if (y + yoffset < bottomPos) {
+      addBlock(new AccessElement(COURSE_LIST_X, bottomPos));
+    } else {
+      addBlock(new AccessElement(COURSE_LIST_X, y + yoffset));
     }
     //id
     addBlock(new IdElement(dossier.getId(), x, y + vOffset + 65));
     //photo
     addBlock(new PhotoElement(photo, x, y + vOffset + 70));//
-
-    // signature
-    addBlock(new AccessElement(COURSE_LIST_X, (int) pf.getHeight() - 65));
 
   }
 
