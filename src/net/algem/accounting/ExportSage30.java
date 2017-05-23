@@ -1,7 +1,7 @@
 /*
- * @(#)ExportSage30.java	2.10.1 20/06/2016
+ * @(#)ExportSage30.java	2.14.0 23/05/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -41,7 +41,7 @@ import net.algem.util.ui.MessagePopup;
  * Utility class for exporting lines to CIEL accounting software.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.1
+ * @version 2.14.0
  * @since 2.8.r 17/12/13
  */
 public class ExportSage30
@@ -69,7 +69,9 @@ public class ExportSage30
    * Export to 105 characters SAGE pnp format.
    */
   public void export(String path, Vector<OrderLine> orderLines, String codeJournal, Account documentAccount) throws IOException {
-    int total = 0;
+    int totalDebit = 0;
+    int totalCredit = 0;
+    
     OrderLine e = null;
     PrintWriter out = new PrintWriter(new FileWriter(path));
 
@@ -77,8 +79,11 @@ public class ExportSage30
 
     for (int i = 0, n = orderLines.size(); i < n ; i++) {
       e =  orderLines.elementAt(i);
-      total += e.getAmount();
-
+      if (e.getAmount() > 0) {
+        totalDebit += e.getAmount();
+      } else {
+        totalCredit += Math.abs(e.getAmount());
+      }
       out.print(TextUtil.padWithTrailingSpaces(codeJournal,3) // code journal
               + dateFormat.format(new Date()) // date écriture
               + default_document_type
@@ -89,12 +94,12 @@ public class ExportSage30
               + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getLabel() + getInvoiceNumber(e), 25), 25) // libellé
               + getModeOfPayment(e.getModeOfPayment()) // mode de paiement
               + dateFormat.format(e.getDate().getDate()) // date échéance
-              + cd // débit - crédit
+              + (e.getAmount() > 0 ? cd : dc) // credit - debit
               + TextUtil.padWithLeadingSpaces(nf.format(e.getAmount() / 100.0), 20) // montant
               + 'N' // Type
               + (char) 13);
     }
-    if (total > 0) {
+    if (totalDebit > 0) {
       out.print(TextUtil.padWithTrailingSpaces(codeJournal,3) // code journal
               + dateFormat.format(new Date()) // date écriture
               + default_document_type
@@ -102,14 +107,29 @@ public class ExportSage30
               + " " // code analytique
               + TextUtil.padWithTrailingSpaces(null, 13) // numéro analytique
               + TextUtil.padWithTrailingSpaces(null, 13) // libellé pièce
-              + TextUtil.padWithTrailingSpaces("CENTRALISE", 25) // libellé
+              + TextUtil.padWithTrailingSpaces("TOTAL DEBIT", 25) // libellé
               + 'S'// mode de paiement
               + dateFormat.format(e.getDate().getDate()) // date échéance
-              + dc // débit - crédit
-              + TextUtil.padWithLeadingSpaces(nf.format(total / 100.0), 20) // montant
+              + dc // débit
+              + TextUtil.padWithLeadingSpaces(nf.format(totalDebit / 100.0), 20) // montant
               + 'N' // Type
               + (char) 13);
-
+    }
+    if (totalCredit > 0) {
+      out.print(TextUtil.padWithTrailingSpaces(codeJournal,3) // code journal
+              + dateFormat.format(new Date()) // date écriture
+              + default_document_type
+              + TextUtil.padWithTrailingSpaces(e.getAccount().getNumber(), 13) // numéro dompte
+              + " " // code analytique
+              + TextUtil.padWithTrailingSpaces(null, 13) // numéro analytique
+              + TextUtil.padWithTrailingSpaces(null, 13) // libellé pièce
+              + TextUtil.padWithTrailingSpaces("TOTAL CREDIT", 25) // libellé
+              + 'S'// mode de paiement
+              + dateFormat.format(e.getDate().getDate()) // date échéance
+              + cd // crédit
+              + TextUtil.padWithLeadingSpaces(nf.format(totalCredit / 100.0), 20) // montant
+              + 'N' // Type
+              + (char) 13);
     }
     out.close();
   }

@@ -1,5 +1,5 @@
 /*
- * @(#) ExportOpenConcerto.java Algem 2.12.0 08/03/17
+ * @(#) ExportOpenConcerto.java Algem 2.14.0 23/05/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -36,11 +36,12 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.12.0
+ * @version 2.14.0
  * @since 2.11.4 13/12/2016
  */
 public class ExportOpenConcerto
-  extends CommunAccountExportService {
+        extends CommunAccountExportService
+{
 
   private final DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
   private final NumberFormat nf = NumberFormat.getInstance(Locale.FRENCH);
@@ -55,42 +56,60 @@ public class ExportOpenConcerto
 
   @Override
   public void export(String path, Vector<OrderLine> lines, String codeJournal, Account documentAccount) throws IOException {
-    int total = 0;
+    int totalDebit = 0;
+//    int totalDebit = 0;
+    int totalCredit = 0;
     String number = (documentAccount == null) ? "" : documentAccount.getNumber();
     OrderLine e = null;
-     if (path.endsWith(".txt")) {
+    if (path.endsWith(".txt")) {
       path = path.replace(".txt", ".csv");
     }
     try (PrintWriter out = new PrintWriter(new FileWriter(path))) {
       StringBuilder sb = new StringBuilder();
       for (int i = 0, n = lines.size(); i < n; i++) {
         e = lines.elementAt(i);
-        total += e.getAmount();
+        if (e.getAmount() > 0) {
+          totalDebit += e.getAmount();
+        } else {
+          totalCredit += Math.abs(e.getAmount());
+        }
         sb.append(dateFormat.format(e.getDate().getDate()));
         sb.append(';').append(codeJournal);
         sb.append(';').append(getAccount(e));
         sb.append(';').append(e.getDocument());
         sb.append(';').append(e.getLabel()).append(' ').append(getInvoiceNumber(e));
-        sb.append(';').append(nf.format(0.0));
-        sb.append(';').append(nf.format(e.getAmount() / 100.0));
+        if (e.getAmount() > 0 ) {
+          sb.append(';').append(nf.format(0.0));
+          sb.append(';').append(nf.format(e.getAmount() / 100.0));
+        } else {
+          sb.append(';').append(nf.format(e.getAmount() / 100.0));
+          sb.append(';').append(nf.format(0.0));
+        }
         Account a = e.getCostAccount();
-        sb.append(';').append(
-          (a == null || a.getNumber() == null || "null".equals(a.getNumber()))
-            ? ""
-            : a.getNumber());
+        sb.append(';').append((a == null || a.getNumber() == null || "null".equals(a.getNumber())) ? "" : a.getNumber());
         out.println(sb.toString());
         sb.delete(0, sb.length());
       }
-      assert(e != null);
-      if (total > 0) {
+      assert (e != null);
+      if (totalDebit > 0) {
         sb.append(dateFormat.format(e.getDate().getDate()));
         sb.append(';').append(codeJournal);
         sb.append(';').append(number);
         sb.append(';').append(e.getDocument());
-        sb.append(';').append("CENTRALISE");
-
-        sb.append(';').append(nf.format(total / 100.0));
+        sb.append(';').append("TOTAL DEBIT");
+        sb.append(';').append(nf.format(totalDebit / 100.0));
         sb.append(';').append(nf.format(0.0));
+        sb.append(';').append(e.getCostAccount().getNumber());
+        out.println(sb.toString());
+      }
+      if (totalCredit > 0) {
+        sb.append(dateFormat.format(e.getDate().getDate()));
+        sb.append(';').append(codeJournal);
+        sb.append(';').append(number);
+        sb.append(';').append(e.getDocument());
+        sb.append(';').append("TOTAL CREDIT");
+        sb.append(';').append(nf.format(0.0));
+        sb.append(';').append(nf.format(totalCredit / 100.0));
         sb.append(';').append(e.getCostAccount().getNumber());
         out.println(sb.toString());
       }

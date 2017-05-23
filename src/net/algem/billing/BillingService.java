@@ -148,6 +148,8 @@ public interface BillingService
   public Quote duplicate(Quote v);
 
   public Invoice createInvoiceFrom(Quote q) throws BillingException;
+  
+  public Invoice createCreditNote(Quote i);
 
   public GemList<Account> getAccounts();
 

@@ -1,5 +1,5 @@
 /*
- * @(#)InvoiceEditor.java 2.13.0 03/04/17
+ * @(#)InvoiceEditor.java 2.14.0 23/05/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -42,7 +42,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.13.0
+ * @version 2.14.0
  * @since 2.3.a 07/02/12
  */
 public class InvoiceEditor
@@ -55,34 +55,44 @@ public class InvoiceEditor
   protected GemEventListener gemListener;
   protected GemButton btPrint;
   protected GemButton btDuplicate;
-  
+  private GemButton btCreditNote;//avoir
+
   /** Mock object for edit detection and backup. */
   private Quote old;
-  
+
   public InvoiceEditor(GemDesktop desktop, BillingService service, Quote quote) {
 
     this(desktop);
     this.service = service;
     old = quote;
-    btCancel.setText(btCancel.getText()+"/"+BundleUtil.getLabel("Action.close.label"));
+    btCancel.setText(btCancel.getText() + "/" + BundleUtil.getLabel("Action.close.label"));
     view = new InvoiceView(desktop, service);
 
     setLayout(new BorderLayout());
     addView();
-   
+
   }
 
   protected void addView() {
     add(view, BorderLayout.CENTER);
 
     btPrint = new GemButton(GemCommand.PRINT_CMD);
+    btPrint.setToolTipText(BundleUtil.getLabel("Invoice.print.tip"));
     btPrint.addActionListener(this);
-    
+
     btDuplicate = new GemButton(GemCommand.DUPLICATE_CMD);
+    btDuplicate.setToolTipText(BundleUtil.getLabel("Invoice.duplicate.tip"));
     btDuplicate.addActionListener(this);
 
-    buttons.add(btPrint,0);
-    buttons.add(btDuplicate,1);
+    btCreditNote = new GemButton(BundleUtil.getLabel("Credit.note.label"));
+    btCreditNote.setToolTipText(BundleUtil.getLabel("Invoice.credit.note.tip"));
+    btCreditNote.addActionListener(this);
+
+    btValidation.setToolTipText(BundleUtil.getLabel("Invoice.validate.tip"));
+
+    buttons.add(btPrint, 0);
+    buttons.add(btCreditNote, 1);
+    buttons.add(btDuplicate, 2);
 
     add(buttons, BorderLayout.SOUTH);
   }
@@ -94,13 +104,14 @@ public class InvoiceEditor
   public Vector<Invoice> find(int client) {
     return null;
   }
-  
+
   /**
    * Resets items' id to 0 after sql failure.
    * Under some circumstances, sql error may be generated after inserting an
    * item and updating its id in corresponding object instance. So, it may be necessary
    * to reset this id to 0 before recreation. Else, the program will update this
    * item without creating first.
+   *
    * @param v invoice
    */
   private void resetItemsId(Invoice v) {
@@ -122,7 +133,7 @@ public class InvoiceEditor
         service.create(v);
         view.setId(v.getNumber()); // rafraîchissement du numéro
         desktop.postEvent(new InvoiceCreateEvent(v));
-        
+
         backup(v);
         btDuplicate.setEnabled(true);
       } catch (SQLException e) {
@@ -130,7 +141,7 @@ public class InvoiceEditor
         GemLogger.logException(e);
       } catch (BillingException fe) {
         resetItemsId(v);
-        MessagePopup.warning(this, MessageUtil.getMessage("invoicing.create.exception")+"\n"+fe.getMessage());
+        MessagePopup.warning(this, MessageUtil.getMessage("invoicing.create.exception") + "\n" + fe.getMessage());
       }
     } else {
       Collection<OrderLine> col = v.getOrderLines();
@@ -150,7 +161,7 @@ public class InvoiceEditor
         }
         backup(v);
       } catch (BillingException fe) {
-        MessagePopup.warning(this, MessageUtil.getMessage("invoicing.update.exception")+"\n"+fe.getMessage());
+        MessagePopup.warning(this, MessageUtil.getMessage("invoicing.update.exception") + "\n" + fe.getMessage());
       }
     }
     //cancel(); // COMMENTÉ POUR LAISSER OUVERTE LA FENETRE
@@ -159,6 +170,7 @@ public class InvoiceEditor
 
   /**
    * Marks transfered billing order lines whose account is Class 7.
+   *
    * @param inv invoice
    */
   private void setTransfer(Invoice inv) {
@@ -203,19 +215,19 @@ public class InvoiceEditor
   public void load() {
     if (old == null || old.getNumber() == null) {
       btDuplicate.setEnabled(false);
-    } 
+    }
     if (old != null) {
       view.set(old, service.getContact(old.getMember()), service.getContact(old.getPayer()), service.getContact(old.getIssuer()));
       backup(old);
     }
   }
-  
+
   private void backup(Quote q) {
     old = new Invoice(q);
     old.setUser(q.getUser());
 
     Iterator<InvoiceItem> it = q.getItems().iterator();
-    while(it.hasNext()) {
+    while (it.hasNext()) {
       InvoiceItem invoiceItem = it.next();
       InvoiceItem t = new InvoiceItem();
       t.setQuantity(invoiceItem.quantity);
@@ -224,14 +236,14 @@ public class InvoiceEditor
       Item i = invoiceItem.getItem();
       t.setItem(i.copy());
       old.addItem(t);
-    } 
+    }
     old.setOrderLines(q.orderLines);
   }
 
   public void addActionListener(ActionListener listener) {
     this.listener = listener;
   }
-  
+
   public void addGemEventListener(GemEventListener listener) {
     this.gemListener = listener;
   }
@@ -241,18 +253,30 @@ public class InvoiceEditor
     super.actionPerformed(evt);
     if (evt.getSource() == btPrint) {
       view.print();
-    } else if(evt.getSource() == btDuplicate) {
-        Quote n = service.duplicate(view.get());
-        if (n != null) {
-          n.setUser(dataCache.getUser());
-          n.setEditable(true);
-          view.set(n, service.getContact(n.getMember()), service.getContact(n.getPayer()), service.getContact(n.getIssuer()));
-          view.setId("");
-          btDuplicate.setEnabled(false);
-        } else {
-          MessagePopup.error(this, MessageUtil.getMessage("billing.duplication.error"));
-        }
+    } else if (evt.getSource() == btCreditNote) {
+      Invoice n = service.createCreditNote(view.get());
+      n.setCreditNote(true);
+      if (n != null) {
+        n.setUser(dataCache.getUser());
+        n.setEditable(true);
+        view.set(n, service.getContact(n.getMember()), service.getContact(n.getPayer()), service.getContact(n.getIssuer()));
+        view.setId("");
+        btCreditNote.setEnabled(false);
+      } else {
+        MessagePopup.error(this, MessageUtil.getMessage("billing.credit.note.error"));
+      }
+    } else if (evt.getSource() == btDuplicate) {
+      Quote n = service.duplicate(view.get());
+      if (n != null) {
+        n.setUser(dataCache.getUser());
+        n.setEditable(true);
+        view.set(n, service.getContact(n.getMember()), service.getContact(n.getPayer()), service.getContact(n.getIssuer()));
+        view.setId("");
+        btDuplicate.setEnabled(false);
+      } else {
+        MessagePopup.error(this, MessageUtil.getMessage("billing.duplication.error"));
+      }
     }
   }
-  
+
 }

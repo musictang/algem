@@ -1,7 +1,7 @@
 /*
- * @(#)InvoiceView.java 2.9.4.13 05/10/2015
+ * @(#)InvoiceView.java 2.14.0 23/05/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -67,7 +67,7 @@ import net.algem.util.ui.*;
  * Invoice / quotation view.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.14.0
  * @since 2.3.a 07/02/12
  */
 public class InvoiceView
@@ -204,10 +204,13 @@ public class InvoiceView
 
     GemPanel buttons = new GemPanel(new GridLayout(1, 3));
     btDelete = new GemButton(GemCommand.DELETE_CMD);
+    btDelete.setToolTipText(BundleUtil.getLabel("Invoice.item.delete.tip"));
     btDelete.addActionListener(this);
     btModify = new GemButton(GemCommand.MODIFY_CMD);
+    btModify.setToolTipText(BundleUtil.getLabel("Invoice.item.modify.tip"));
     btModify.addActionListener(this);
     btAdd = new GemButton(GemCommand.ADD_CMD);
+    btAdd.setToolTipText(BundleUtil.getLabel("Invoice.item.add.tip"));
     btAdd.addActionListener(this);
 
     buttons.add(btDelete);
@@ -340,6 +343,7 @@ public class InvoiceView
         q.setEstablishment(invoice.getEstablishment());
         q.setIssuer(invoice.getIssuer());
         q.setUser(invoice.getUser());
+        q.setCreditNote(invoice.isCreditNote());
       }
 
     return q;

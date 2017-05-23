@@ -1,7 +1,7 @@
 /*
- * @(#)InvoiceIO.java 2.10.0 15/06/2016
+ * @(#)InvoiceIO.java 2.14.0 23/05/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -37,7 +37,7 @@ import net.algem.util.model.Model;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.14.0
  * @since 2.3.a 22/12/11
  */
 public class InvoiceIO
@@ -127,6 +127,9 @@ public class InvoiceIO
         ol.setDocument(inv.getNumber()); // par défaut, numéro de pièce = numéro de facture
         ol.setPaid(true);// encaissé par défaut pour les échéances de type "FAC"
         ol.setDate(inv.getDate());// la date des échéances de facturation reprend celle de la facture
+      }
+      if (inv.isCreditNote()) {
+        ol.setAmount(-ol.getAmount());// reverse
       }
       if (ol.getId() == 0) {
         OrderLineIO.insert(ol, dc);

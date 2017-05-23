@@ -1,7 +1,7 @@
 /*
- * @(#)Quote.java 2.9.4.13 06/11/15
+ * @(#)Quote.java 2.14.0 23/05/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -32,7 +32,7 @@ import net.algem.security.User;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.14.0
  * @since 2.4.d 08/06/12
  */
 public class Quote
@@ -80,9 +80,11 @@ public class Quote
 
   /** Order line collection. */
   protected Collection<OrderLine> orderLines = new ArrayList<OrderLine>();
+  
+  protected boolean creditNote;
 
   private boolean editable = true;
-
+  
   /**
    * Création d'un devis/facture vierge. La date de facturation correspond à la
    * date du jour.
@@ -419,6 +421,14 @@ public class Quote
 
   boolean isEditable() {
     return editable;
+  }
+  
+  boolean isCreditNote() {
+    return creditNote;
+  }
+  
+  void setCreditNote(boolean c) {
+    creditNote = c;
   }
 
   void setEditable(boolean editable) {

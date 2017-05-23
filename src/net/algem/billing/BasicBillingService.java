@@ -1,7 +1,7 @@
 /*
- * @(#)BasicBillingService 2.10.0 15/06/2016
+ * @(#)BasicBillingService 2.14.0 23/05/17
  *
- * Copyright 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -29,6 +29,7 @@ import net.algem.config.Param;
 import net.algem.contact.Person;
 import net.algem.planning.DateFr;
 import net.algem.planning.DateRange;
+import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
@@ -41,7 +42,7 @@ import net.algem.util.model.Model;
  * Service class for billing.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.14.0
  * @since 2.3.a 06/02/12
  */
 public class BasicBillingService
@@ -440,6 +441,29 @@ public class BasicBillingService
       vItem.setQuantity(it.quantity);
       Item c = copy(it.getItem());
       vItem.setItem(c);
+      n.items.add(vItem);
+    }
+    return n;
+  }
+  
+  @Override
+  public Invoice createCreditNote(Quote source) {
+    Invoice n = new Invoice();
+    n.setDate(new DateFr(new Date()));
+    n.setDescription(BundleUtil.getLabel("Credit.note.label") + " " + source.getDescription());
+    n.setEstablishment(source.getEstablishment());
+    n.issuer = dataCache.getUser().getId();
+    n.setPayer(source.getPayer());
+    n.setMember(source.getMember());
+    n.setReference(source.getNumber());
+    n.items = new ArrayList<InvoiceItem>();
+    List<InvoiceItem> sourceItems = new ArrayList<>(source.getItems());
+    if (sourceItems.size() > 0) {
+      InvoiceItem vItem = new InvoiceItem();
+      vItem.setQuantity(1);
+      Item e = copy(sourceItems.get(0).getItem());
+      e.setPrice(source.getTotalATI());
+      vItem.setItem(e);
       n.items.add(vItem);
     }
     return n;

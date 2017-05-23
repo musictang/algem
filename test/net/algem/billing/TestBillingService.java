@@ -1,7 +1,7 @@
 /*
- * @(#)TestBillingService.java 2.8.a 01/04/13
+ * @(#)TestBillingService.java 2.14.0 23/05/17
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -35,7 +35,7 @@ import static org.junit.Assert.*;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.14.0
  * @since 2.3.d
  */
 public class TestBillingService
@@ -55,8 +55,8 @@ public class TestBillingService
   
   @Before
   public void setUp() throws Exception {
-    dc = TestProperties.getDataConnection();
-    service = new BasicBillingService(TestProperties.getDataCache(dc));
+//    dc = TestProperties.getDataConnection();
+//    service = new BasicBillingService(TestProperties.getDataCache(dc));
   }
   
   @After
@@ -323,6 +323,26 @@ public class TestBillingService
     assertTrue(map.size() == expected);
     assertTrue(getTotal(map.get(13)) == 200);
     assertTrue(getTotal(map.get(14)) == 310);
+    
+  }
+  
+  @Test
+  public void testCreateCreditNote() {
+    OrderLine e1 = new OrderLine();
+    e1.setAmount(176.39);
+    
+    OrderLine e2 = new OrderLine();
+    e2.setAmount(-176.39);
+    System.out.println("e1 = " + e1.getAmount());
+    System.out.println("e2 = " + e2.getAmount());
+    
+    OrderLine e3 = new OrderLine();
+    e3.setAmount(-e1.getAmount());
+    assertFalse(e1.getAmount() == e2.getAmount());
+    assertFalse(e3.getAmount() == e1.getAmount());
+    
+    e1.setAmount(-e1.getAmount());
+    assertTrue(-17639 == e1.getAmount());
     
   }
   
