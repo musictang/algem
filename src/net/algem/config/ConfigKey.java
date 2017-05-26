@@ -1,5 +1,5 @@
 /*
- * @(#)ConfigKey.java 2.12.0 03/03/17
+ * @(#)ConfigKey.java 2.14.0 26/05/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -27,7 +27,7 @@ import net.algem.util.BundleUtil;
  * First arg represents key in the table, second arg represents the label.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.12.0
+ * @version 2.14.0
  * @since 2.1.k 07/07/11
  */
 public enum ConfigKey
@@ -130,6 +130,7 @@ public enum ConfigKey
   CHARGE_ENROLMENT_LINES("Facturer.echeances.inscription", BundleUtil.getLabel("ConfEditor.charge.enrolment.lines.label")),
   ADMINISTRATIVE_MANAGEMENT("Planification.administrative", BundleUtil.getLabel("Administrative.scheduling.label")),
   FINANCIAL_YEAR_START("Debut.annee.comptable", BundleUtil.getLabel("Financial.year.start.label")),
+  LANGUAGE_CODE("Code.langue", BundleUtil.getLabel("Language.code.label")),
   
   //== OTHERS ==//
   ESTABLISHEMENT_ACTIVATION_TYPE("Activation.etablissement.type", BundleUtil.getLabel("ConfEditor.pre-enrolment.start.date.label"));

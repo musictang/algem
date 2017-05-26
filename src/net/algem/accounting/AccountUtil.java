@@ -1,7 +1,7 @@
 /*
- * @(#)AccountUtil.java	2.11.3 30/11/16
+ * @(#)AccountUtil.java	2.14.0 26/05/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -40,7 +40,7 @@ import net.algem.util.DataConnection;
  * Utility class for orderline operations.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.3
+ * @version 2.14.0
  * @since 2.0r
  */
 public class AccountUtil {
@@ -271,8 +271,9 @@ public class AccountUtil {
    * @return a numberformat
    */
   public static NumberFormat getDefaultCurrencyFormat() {
-
-    NumberFormat nf = NumberFormat.getCurrencyInstance(Locale.FRANCE);
+//    NumberFormat nf = NumberFormat.get(Locale.getDefault());
+    Locale l = Locale.forLanguageTag(ConfigUtil.getConf(ConfigKey.LANGUAGE_CODE.getKey()));
+    NumberFormat nf = NumberFormat.getCurrencyInstance(l);
     nf.setMinimumFractionDigits(2);
     nf.setMaximumFractionDigits(2);
 

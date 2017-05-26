@@ -1,7 +1,7 @@
 /*
- * @(#)ModuleEnrolmentNode.java 2.9.1 10/12/14
+ * @(#)ModuleEnrolmentNode.java 2.14.0 26/05/17
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -31,7 +31,7 @@ import net.algem.util.BundleUtil;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.1
+ * @version 2.14.0
  */
 public class ModuleEnrolmentNode
         extends EnrolmentNode
@@ -41,6 +41,7 @@ public class ModuleEnrolmentNode
   private String info;
   private int completed;
   private DateFr lastDate;
+  private NumberFormat defCurrencyFormat = AccountUtil.getDefaultCurrencyFormat();//not static here !
 
   public ModuleEnrolmentNode(Object o) {
     super(o);
@@ -111,10 +112,11 @@ public class ModuleEnrolmentNode
   }
 
   private String getPaymentInfo(int arg) {
-    NumberFormat nf = AccountUtil.getDefaultCurrencyFormat();
+    double m = mo.getPrice() * arg / 60f;
+    String p = defCurrencyFormat.format(m);
     if (arg < 0) {
-      return "<font color=\"red\">" + nf.format(mo.getPrice() * arg / 60) + "</font>";
+      return "<font color=\"red\">" + p + "</font>";
     }
-    return nf.format(mo.getPrice() * arg / 60);
+    return p;
   }
 }

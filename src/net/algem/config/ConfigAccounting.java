@@ -1,5 +1,5 @@
 /*
- * @(#)ConfigAccounting.java 2.12.0 09/03/17
+ * @(#)ConfigAccounting.java 2.14.0 26/05/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -27,15 +27,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.swing.*;
+import javax.swing.text.MaskFormatter;
 import net.algem.accounting.AccountingExportFormat;
 import net.algem.bank.BankUtil;
 import net.algem.planning.DateFr;
 import net.algem.planning.DateFrField;
 import net.algem.util.BundleUtil;
+import net.algem.util.GemLogger;
 import net.algem.util.ui.GemField;
 import net.algem.util.ui.GemLabel;
 import net.algem.util.ui.GemPanel;
@@ -45,14 +48,14 @@ import net.algem.util.ui.GridBagHelper;
  * Bic infos for the organization.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.12.0
+ * @version 2.14.0
  * @since 2.2.d
  */
 public class ConfigAccounting
         extends ConfigPanel
 {
 
-  private Config c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13, c14, c15;
+  private Config c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13, c14, c15, c16;
   private GemField firmName;
   private GemField issuer;
   private GemField branch;
@@ -69,6 +72,7 @@ public class ConfigAccounting
   private JCheckBox roundFractionalPayments;
   private JCheckBox chargeEnrolmentLines;
   private DateFrField financialYearStart;
+  private JFormattedTextField currencyCode;
 
   public ConfigAccounting(String title, Map<String, Config> cm) {
     super(title, cm);
@@ -92,6 +96,7 @@ public class ConfigAccounting
     c13 = confs.get(ConfigKey.ROUND_FRACTIONAL_PAYMENTS.getKey());//jour d'échéance par défaut
     c14 = confs.get(ConfigKey.CHARGE_ENROLMENT_LINES.getKey());//jour d'échéance par défaut
     c15 = confs.get(ConfigKey.FINANCIAL_YEAR_START.getKey());//jour d'échéance par défaut
+    c16 = confs.get(ConfigKey.LANGUAGE_CODE.getKey());
 
     firmName = new GemField(20);
     firmName.setText(c1.getValue());
@@ -181,8 +186,21 @@ public class ConfigAccounting
     gb2.add(defaultDueDay, 1, 3, 1, 1, GridBagHelper.WEST);
     gb2.add(new GemLabel(BundleUtil.getLabel("Financial.year.start.label")), 0, 4, 1, 1, GridBagHelper.WEST);
     gb2.add(financialYearStart, 1, 4, 2, 1, GridBagHelper.WEST);
-    gb2.add(roundFractionalPayments, 0, 5, 2, 1, GridBagHelper.WEST);
-    gb2.add(chargeEnrolmentLines, 0, 6, 2, 1, GridBagHelper.WEST);
+    GemLabel currencyCodeLabel = new GemLabel(BundleUtil.getLabel("Language.code.label"));
+    currencyCodeLabel.setToolTipText(BundleUtil.getLabel("Language.code.tip"));
+    gb2.add(currencyCodeLabel, 0, 5, 1, 1, GridBagHelper.WEST);
+    
+    try {
+      currencyCode = new JFormattedTextField(new MaskFormatter("LL-UU"));
+      currencyCode.setToolTipText(BundleUtil.getLabel("Language.code.tip"));
+      currencyCode.setColumns(4);
+      currencyCode.setValue(c16 == null || c16.getValue() == null || c16.getValue().isEmpty() ? "fr-FR" : c16.getValue());
+    } catch (ParseException ex) {
+      GemLogger.logException(ex);
+    }
+    gb2.add(currencyCode, 1, 5, 1, 1, GridBagHelper.WEST);
+    gb2.add(roundFractionalPayments, 0, 6, 2, 1, GridBagHelper.WEST);
+    gb2.add(chargeEnrolmentLines, 0, 7, 2, 1, GridBagHelper.WEST);
 
     content.add(creditorPanel);
     content.add(options);
@@ -270,6 +288,7 @@ public class ConfigAccounting
     c13.setValue(roundFractionalPayments.isSelected() ? "t" : "f");
     c14.setValue(chargeEnrolmentLines.isSelected() ? "t" : "f");
     c15.setValue(financialYearStart.get().toString());
+    c16.setValue(currencyCode.getValue().toString());
 
     conf.add(c1);
     conf.add(c2);
@@ -286,6 +305,7 @@ public class ConfigAccounting
     conf.add(c13);
     conf.add(c14);
     conf.add(c15);
+    conf.add(c16);
 
     return conf;
   }

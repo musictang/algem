@@ -1,7 +1,7 @@
 /*
- * @(#)TestAccountUtil.java 2.10.2 22/05/16
+ * @(#)TestAccountUtil.java 2.14.0 26/05/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,6 +20,8 @@
  */
 package net.algem.accounting;
 
+import java.text.NumberFormat;
+import java.util.Locale;
 import net.algem.TestProperties;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
@@ -29,12 +31,14 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.2
+ * @version 2.14.0
+ * @since 2.10
  */
 public class TestAccountUtil
 {
@@ -47,9 +51,9 @@ public class TestAccountUtil
 
   @Before
   public void setUp() throws Exception {
-    dc = TestProperties.getDataConnection();
-    dataCache = TestProperties.getDataCache(dc);
-    dataCache.load(null);
+//    dc = TestProperties.getDataConnection();
+//    dataCache = TestProperties.getDataCache(dc);
+//    dataCache.load(null);
   }
 
  @BeforeClass
@@ -60,7 +64,7 @@ public class TestAccountUtil
   public static void tearDownClass() throws Exception {
   }
 
-  @Test
+  @Ignore
   public void testRound() {
     float montant = 28.599F;
     double res = AccountUtil.round(montant);
@@ -116,7 +120,7 @@ public class TestAccountUtil
     assertTrue(ol.getAmount() == 15000);
   }
 
-  @Test
+  @Ignore
   public void testGetIntValue() {
     float montant = 28.599F;
     double res = AccountUtil.getIntValue(montant);
@@ -152,7 +156,7 @@ public class TestAccountUtil
   }
 
 
-  @Test
+  @Ignore
   public void testIsPersonalAccount() {
     Account c1 = new Account("4111111111");
     Account c2 = new Account("41100001");
@@ -169,5 +173,56 @@ public class TestAccountUtil
     assertFalse(AccountUtil.isPersonalAccount(c6));
     assertFalse(AccountUtil.isPersonalAccount(null));
     assertFalse(AccountUtil.isPersonalAccount(new Account("")));
+  }
+  
+  @Test
+  /**
+   *  test ISO 639-1-ISO_3166-1 sequences.
+   */
+  public void testBPCP() {
+    NumberFormat nf1 = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("en-GB"));
+    nf1.setMinimumFractionDigits(2);
+    nf1.setMaximumFractionDigits(2);
+    String res = nf1.format(123.45);
+    System.out.println(res);
+    assertEquals("£123.45",res);
+    nf1 = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("en-US"));
+    res = nf1.format(123.45);
+    System.out.println(res);
+    assertEquals("$123.45",res);
+    nf1 = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("fr-FR"));
+    res = nf1.format(123.45);
+    System.out.println(res);
+    assertEquals("123,45 €",res);
+    nf1 = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("fr-NC"));//nouvelle-caledonie
+    nf1.setMinimumFractionDigits(2);// force decimal
+    nf1.setMaximumFractionDigits(2);
+    res = nf1.format(123.45);
+    System.out.println(res);
+    assertEquals("123,45 XPF",res);
+    nf1 = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("es-ES"));//espagne
+    res = nf1.format(123.45);
+    System.out.println(res);
+    assertEquals("123,45 €",res);
+    nf1 = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("de-DE"));//allemagne
+    res = nf1.format(123.45);
+    System.out.println(res);
+    assertEquals("123,45 €",res);
+    nf1 = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("uk-UA"));//ukraine
+    res = nf1.format(123.45);
+    System.out.println(res);
+    assertEquals("123,45 грн.",res);
+    nf1 = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("pt-PT"));//portugal
+    res = nf1.format(123.45);
+    System.out.println(res);
+    assertEquals("123,45 €",res);
+    nf1 = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("pt-BR"));//brésil
+    res = nf1.format(123.45);
+    System.out.println(res);
+    assertEquals("R$ 123,45",res);
+    nf1 = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("zh-CN"));//chine
+    res = nf1.format(123.45);
+    System.out.println(res);
+    assertEquals("￥123.45",res);
   }
 }
