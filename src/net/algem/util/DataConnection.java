@@ -1,7 +1,7 @@
 /*
- * @(#)DataConnection.java	2.9.4.14 16/12/15
+ * @(#)DataConnection.java	2.14.0 30/05/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,7 +28,7 @@ import java.util.logging.Level;
  * Utility class for database connection.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.14
+ * @version 2.14.0
  * @since 2.6.a 01/08/2012
  */
 public class DataConnection
@@ -240,14 +240,14 @@ public class DataConnection
   }
 
   public int executeUpdate(String query) throws SQLException {
-    int rs = 0;
+    int rc = 0; // row count
     GemLogger.info(query);
 
     Statement stmt = createStatement();
-    rs = stmt.executeUpdate(query);
+    rc = stmt.executeUpdate(query);
     stmt.close();
 
-    return rs;
+    return rc;
   }
 
   public void commit() throws SQLException {

@@ -1,7 +1,7 @@
 /*
- * @(#)QuoteIO.java 2.9.4.7 15/06/15
+ * @(#)QuoteIO.java 2.14.0 30/05/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,6 +20,7 @@
  */
 package net.algem.billing;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -29,13 +30,14 @@ import net.algem.planning.DateFr;
 import net.algem.security.User;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
+import net.algem.util.GemLogger;
 import net.algem.util.model.Model;
 
 /**
  * Quote persistence {@link net.algem.billing.Quote}.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.7
+ * @version 2.14.0
  * @since 2.4.d 07/06/12
  */
 public class QuoteIO
@@ -46,7 +48,7 @@ public class QuoteIO
   private ItemIO itemIO;
   private static final String TABLE = "devis";
   private static final String COLUMNS = "numero, date_emission, etablissement, emetteur, debiteur, prestation, reference, adherent, editable";
-  private static final String JOIN_TABLE = "article_devis";
+  private static final String ITEM_TABLE = "article_devis";
   private static final String JOIN_COLUMNS = "id_article, quantite";
 
   public QuoteIO(DataConnection dc) {
@@ -55,56 +57,56 @@ public class QuoteIO
   }
 
   public static boolean isQuotationItem(int id, DataConnection dc) throws SQLException {
-    String query = "SELECT id_article FROM " + JOIN_TABLE + " WHERE id_article = " + id;
+    String query = "SELECT id_article FROM " + ITEM_TABLE + " WHERE id_article = " + id;
     ResultSet rs = dc.executeQuery(query);
-    if (rs.next()) {
-      return true;
-    }
-    return false;
+    return rs.next();
   }
 
   /**
    * Transaction for quote creation.
    *
    * @param <T>
-   * @param q
+   * @param q the quote to store
    * @throws SQLException
    * @throws BillingException
    */
-  public <T extends Quote> void insert(T q) throws SQLException, BillingException {
+  public <T extends Quote> void insert(final T q) throws SQLException, BillingException {
 
     int last = getLastId(TABLE, dc);
-
     if (last == -1) {
       throw new BillingException("NULL INVOICE LAST ID");
     }
     q.inc(last);
-    // la colonne editable prend la valeur true par défaut
-    String query = "INSERT INTO " + TABLE + " VALUES('" + q.getNumber()
-            + "','" + q.getDate()
-            + "'," + q.getEstablishment()
-            + "," + q.getIssuer()
-            + "," + q.getPayer()
-            + ",'" + escape(q.getDescription().trim())
-            + "','" + escape(q.getReference().trim())
-            + "'," + q.getMember()
-            + ")";
-
+    // editable is true by default
+    final String cq = "INSERT INTO " + TABLE + "(" + COLUMNS + ")" + " VALUES(?,?,?,?,?,?,?,?,?)";
     try {
-      dc.setAutoCommit(false);
-      dc.executeUpdate(query);// insertion facture
+      dc.withTransaction(new DataConnection.SQLRunnable<Void>()
+      {
+        @Override
+        public Void run(DataConnection conn) throws Exception {
+          try (PreparedStatement ps = dc.prepareStatement(cq)) {
+            ps.setString(1, q.getNumber());
+            ps.setDate(2, new java.sql.Date(q.getDate().getDate().getTime()));
+            ps.setInt(3, q.getEstablishment());
+            ps.setInt(4, q.getIssuer());
+            ps.setInt(5, q.getPayer());
+            ps.setString(6, q.getDescription().trim());
+            ps.setString(7, q.getReference().trim());
+            ps.setInt(8, q.getMember());
+            ps.setBoolean(9, true);
+            GemLogger.info(ps.toString());
+            ps.executeUpdate();
+          }
+          //items
+          for (InvoiceItem vItem : q.getItems()) {
+            insert(vItem, q.getNumber());
+          }
+          return null;
+        }
+      });
 
-      // insertion lignes facture
-      for (InvoiceItem vItem : q.getItems()) {
-        insert(vItem, q.getNumber());
-      }
-
-      dc.commit();
-    } catch (SQLException sqe) {
-      dc.rollback();
+    } catch (Exception sqe) {
       throw new BillingException(sqe.getMessage());
-    } finally {
-      dc.setAutoCommit(true);
     }
 
   }
@@ -118,21 +120,22 @@ public class QuoteIO
    */
   protected void insert(InvoiceItem it, String in) throws SQLException {
 
-    String query = "INSERT INTO " + JOIN_TABLE + " VALUES('" + in + "',";
+    String q = "INSERT INTO " + ITEM_TABLE + " VALUES(?,?,?)";
     Item a = it.getItem();
-
-    // on n'ajoute un article que s'il n'existe pas ou que s'il provient d'un article standard
-    if (a.getId() == 0 || a.isStandard()) {
-      a.setStandard(false);
-      itemIO.insert(a);//article
-    } else {
-      itemIO.update(a);
+    try (PreparedStatement ps = dc.prepareStatement(q)) {
+      if (a.getId() == 0 || a.isStandard()) {
+        a.setStandard(false);
+        itemIO.insert(a);
+      } else {
+        itemIO.update(a);
+      }
+      ps.setString(1, in);
+      ps.setInt(2, a.getId());
+      ps.setDouble(3, it.getQuantity());
+      
+      GemLogger.info(ps.toString());
+      ps.executeUpdate();
     }
-    //int id_echeancier = (it.getOrderLine() == null) ? 0 : it.getOrderLine().getOID();
-    //query += a.getId() + "," + id_echeancier + "," + it.getQuantity() + ")";
-    query += a.getId() + "," + it.getQuantity() + ")";
-
-    dc.executeUpdate(query);//jointure
   }
 
   public List<Quote> find(String where) throws SQLException {
@@ -160,37 +163,37 @@ public class QuoteIO
     return ld;
   }
 
-  public void update(Quote d) throws BillingException {
+  public void update(final Quote quote) throws BillingException {
 
-    String query = "UPDATE " + TABLE + " SET "
-            + " date_emission = '" + d.getDate()
-            + "', etablissement = " + d.getEstablishment()
-            //+ ", emetteur = " + d.getIssuer()
-            + ", debiteur = " + d.getPayer()
-            + ", prestation = '" + escape(d.getDescription().trim())
-            + "', reference = '" + escape(d.getReference().trim())
-            + "', editable = " + d.isEditable()
-            + " WHERE numero = '" + d.getNumber() + "'";
+    final String q = "UPDATE " + TABLE + " SET date_emission =?,etablissement=?,debiteur=?,prestation=?,reference=?,editable=? WHERE numero =?";
     try {
-      dc.setAutoCommit(false);
-      dc.executeUpdate(query); // update devis
-
-      // supression des articles dans la table article_devis
-      String q2 = "DELETE FROM " + JOIN_TABLE + " WHERE id_devis = '" + d.getNumber() + "'";
-      dc.executeUpdate(q2);
-
-      for (InvoiceItem af : d.getItems()) {
-        insert(af, d.getNumber());
-      }
-
-      dc.commit();
-    } catch (SQLException sqe) {
-      dc.rollback();
+      dc.withTransaction(new DataConnection.SQLRunnable<Void>()
+      {
+        @Override
+        public Void run(DataConnection conn) throws Exception {
+          try (PreparedStatement ps = dc.prepareStatement(q)) {
+            ps.setDate(1, new java.sql.Date(quote.getDate().getDate().getTime()));
+            ps.setInt(2, quote.getEstablishment());
+            ps.setInt(3, quote.getPayer());
+            ps.setString(4, quote.getDescription().trim());
+            ps.setString(5, quote.getReference().trim());
+            ps.setBoolean(6, quote.isEditable());
+            ps.setString(7, quote.getNumber());
+            GemLogger.info(ps.toString());
+            ps.executeUpdate();
+            
+            String q2 = "DELETE FROM " + ITEM_TABLE + " WHERE id_devis = '" + quote.getNumber() + "'";
+            dc.executeUpdate(q2);
+            for (InvoiceItem it : quote.getItems()) {
+              insert(it, quote.getNumber());
+            }
+          }
+          return null;
+        }
+      });
+    } catch (Exception sqe) {
       throw new BillingException(sqe.getMessage());
-    } finally {
-      dc.setAutoCommit(true);
     }
-
   }
 
   public void delete(Quote d) throws SQLException {
@@ -222,7 +225,7 @@ public class QuoteIO
   public Collection<InvoiceItem> findItems(Quote d) throws SQLException {
 
     List<InvoiceItem> list = new ArrayList<InvoiceItem>();
-    String query = "SELECT " + JOIN_COLUMNS + " FROM " + JOIN_TABLE + " WHERE id_devis = '" + d.getNumber() + "'";
+    String query = "SELECT " + JOIN_COLUMNS + " FROM " + ITEM_TABLE + " WHERE id_devis = '" + d.getNumber() + "'";
     ResultSet rs = dc.executeQuery(query);
     while (rs.next()) {
       Item a = null;

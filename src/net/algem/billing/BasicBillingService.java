@@ -1,5 +1,5 @@
 /*
- * @(#)BasicBillingService 2.14.0 23/05/17
+ * @(#)BasicBillingService 2.14.0 29/05/17
  *
  * Copyright 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -137,7 +137,8 @@ public class BasicBillingService
     cal.set(Calendar.DAY_OF_YEAR, cal.getActualMaximum(Calendar.DAY_OF_YEAR));
     range.setEnd(new DateFr(cal.getTime()));*/
     DateRange range = new DateRange();
-    range.setStart(dataCache.getStartOfYear());
+    String y = ConfigUtil.getConf(ConfigKey.FINANCIAL_YEAR_START.getKey());
+    range.setStart(new DateFr(y));
     range.setEnd(dataCache.getEndOfYear());
     return range;
   }
@@ -179,7 +180,6 @@ public class BasicBillingService
 
   }
 
-
   @Override
   public void create(Quote q) throws SQLException, BillingException {
     quotationIO.insert(q);
@@ -207,7 +207,7 @@ public class BasicBillingService
   private void setOrderLine(Invoice inv) throws SQLException {
     Map<Integer,List<InvoiceItem>> map = mapInvoiceItemsByAccount(inv.getItems());
     for(List<InvoiceItem> items : map.values()) {
-      addOrderLines(inv, items);
+      addInvoiceOrderLines(inv, items);
     }
     // on n'ajoute une ligne de paiement qu'à partir d'une facture générée sans
     // sélection d'échéances
@@ -245,7 +245,7 @@ public class BasicBillingService
    * @param items invoice items
    * @throws SQLException
    */
-  private void addOrderLines(Invoice inv, List<InvoiceItem> items) throws SQLException {
+  private void addInvoiceOrderLines(Invoice inv, List<InvoiceItem> items) throws SQLException {
 
     assert(items.size() > 0);
 
@@ -299,6 +299,13 @@ public class BasicBillingService
 
     inv.addOrderLine(n);
 //    inv.addOrderLine(cp);
+  }
+  
+  private void addTVA(InvoiceItem item) {
+    String val = item.getItem().getVat().getValue();
+    if (Integer.parseInt(val) > 0) {
+      
+    }
   }
 
   private OrderLine getTotalOrderLine(Invoice inv) {

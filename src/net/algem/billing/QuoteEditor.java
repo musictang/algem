@@ -1,7 +1,7 @@
 /*
- * @(#)QuoteEditor 2.8.w 08/09/14
+ * @(#)QuoteEditor 2.14.0 30/05/17
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -34,7 +34,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.n
+ * @version 2.14.0
  * @since 2.4.d 07/06/12
  */
 public class QuoteEditor
@@ -85,7 +85,7 @@ public class QuoteEditor
       } catch (SQLException e) {
         System.err.println(e.getMessage());
       } catch (BillingException fe) {
-        MessagePopup.warning(this, MessageUtil.getMessage("invoicing.create.exception")+"\n"+fe.getMessage());
+        MessagePopup.warning(this, MessageUtil.getMessage("quote.create.exception")+"\n"+fe.getMessage());
       }
     } else {    
       try {
@@ -93,7 +93,7 @@ public class QuoteEditor
         MessagePopup.information(view, MessageUtil.getMessage("modification.success.label"));
         desktop.postEvent(new QuoteUpdateEvent((Quote) edit));
       } catch (BillingException fe) {
-        MessagePopup.warning(this, MessageUtil.getMessage("invoicing.update.exception")+"\n"+fe.getMessage());
+        MessagePopup.warning(this, MessageUtil.getMessage("quote.update.exception")+"\n"+fe.getMessage());
       }
     }
 

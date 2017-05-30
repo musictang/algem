@@ -1,7 +1,7 @@
 /*
- * @(#)BillingIO.java 2.8.w 09/07/14
+ * @(#)BillingIO.java 2.14.0 29/05/17
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -30,20 +30,21 @@ import net.algem.util.model.TableIO;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.14.0
  * @since 2.4.d 07/06/12
  */
 public abstract class BillingIO
         extends TableIO {
 
   /**
-   * Retrieves the last invoice number.
-   * Invoice numbers must follow (without intervall).
-   * An invoice number is composed of year on 2 digits, month on 2 digits
-   * and an incremental integer yymmN...
+   * Retrieves the last quote/invoice number.
+   * There must be no break in the numbering.
+   * This number is composed as follows : the year on 2 digits, the month on 2 digits
+   * and an incremental integer yymmN... (ex. : 1506124).
    *
-   * @param dc
-   * @return une chaîne de caractères correspondant au numéro de facture
+   * @param table the table to query
+   * @param dc connexion
+   * @return a string-formatted billing id
    * @throws SQLException
    */
   protected static int getLastId(String table, DataConnection dc) throws SQLException {

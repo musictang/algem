@@ -37,6 +37,7 @@ import net.algem.util.model.TableIO;
 
 import java.sql.PreparedStatement;
 import static java.lang.String.format;
+import static java.lang.String.format;
 
 /**
  * IO methods for class {@link net.algem.contact.Person}.

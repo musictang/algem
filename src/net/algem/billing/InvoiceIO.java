@@ -1,5 +1,5 @@
 /*
- * @(#)InvoiceIO.java 2.14.0 23/05/17
+ * @(#)InvoiceIO.java 2.14.0 29/05/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -32,6 +32,7 @@ import net.algem.planning.DateFr;
 import net.algem.security.User;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
+import net.algem.util.GemLogger;
 import net.algem.util.model.Model;
 
 /**
@@ -45,12 +46,9 @@ public class InvoiceIO
 {
 
   public static final String TABLE = "facture";
-  public static final String JOIN_TABLE = "article_facture";
-  private static final String COLUMNS = "numero, date_emission, etablissement, emetteur, debiteur, prestation, reference, adherent, acompte";
-  private static final String KEY = "numero";
-
-  private static final String JOIN_COLUMNS = "id_echeancier, id_article, quantite";
-  private static final String ITEM_STATEMENT = "SELECT " + JOIN_COLUMNS + " FROM " + JOIN_TABLE + " WHERE id_facture = ?";
+  public static final String ITEM_TABLE = "article_facture";
+  private static final String COLUMNS = "numero,date_emission,etablissement,emetteur,debiteur,prestation,reference,adherent,acompte";
+  private static final String ITEM_STATEMENT = "SELECT id_echeancier, id_article, quantite FROM " + ITEM_TABLE + " WHERE id_facture = ?";
 
   private DataConnection dc;
   private ItemIO itemIO;
@@ -79,29 +77,32 @@ public class InvoiceIO
     }
     inv.inc(last);
 
-    final String query = "INSERT INTO " + TABLE + " VALUES('" + inv.getNumber()
-      + "','" + inv.getDate()
-      + "'," + inv.getEstablishment()
-      + "," + inv.getIssuer()
-      + "," + inv.getPayer()
-      + ",'" + escape(inv.getDescription().trim())
-      + "','" + escape(inv.getReference().trim())
-      + "'," + inv.getMember()
-      + "," + inv.getDownPayment()
-      + ")";
+    final String q = "INSERT INTO " + TABLE + "(" + COLUMNS + ")" + " VALUES(?,?,?,?,?,?,?,?,?)";
     try {
-      dc.withTransaction(new DataConnection.SQLRunnable<Void>() {
-
+      dc.withTransaction(new DataConnection.SQLRunnable<Void>()
+      {
         @Override
         public Void run(DataConnection conn) throws Exception {
-          dc.executeUpdate(query);// insertion facture
-          // insertion/mise à jour des échéances
-          setOrderLines(inv);
-          // insertion lignes facture
-          for (InvoiceItem item : inv.getItems()) {
-            insert(item, inv.getNumber());
+          try (PreparedStatement ps = dc.prepareStatement(q)) {
+            ps.setString(1, inv.getNumber());
+            ps.setDate(2, new java.sql.Date(inv.getDate().getDate().getTime()));
+            ps.setInt(3, inv.getEstablishment());
+            ps.setInt(4, inv.getIssuer());
+            ps.setInt(5, inv.getPayer());
+            ps.setString(6, inv.getDescription().trim());
+            ps.setString(7, inv.getReference().trim());
+            ps.setInt(8, inv.getMember());
+            ps.setDouble(9, inv.getDownPayment());
+            GemLogger.info(ps.toString());
+            ps.executeUpdate();// create invoice
+            // insert/update order lines
+            setOrderLines(inv);
+            // insertion lignes facture
+            for (InvoiceItem item : inv.getItems()) {
+              insert(item, inv.getNumber());
+            }
+            return null;
           }
-          return null;
         }
 
       });
@@ -142,52 +143,36 @@ public class InvoiceIO
     }
   }
 
-  public void update(Invoice inv) throws BillingException {
-
-    String query = "UPDATE " + TABLE + " SET "
-            + " date_emission = '" + inv.getDate()
-            + "', etablissement = " + inv.getEstablishment()
-            //+ ", emetteur = " + f.getIssuer()
-            + ", debiteur = " + inv.getPayer()
-            + ", prestation = '" + escape(inv.getDescription().trim())
-            + "', reference = '" + escape(inv.getReference().trim())
-            + "', acompte = " + inv.getDownPayment()
-            + " WHERE numero = '" + inv.getNumber() + "'";
+  public void update(final Invoice inv) throws BillingException {
+    final String q = "UPDATE " + TABLE + " SET date_emission = ?,etablissement =?,debiteur =?,prestation =?,reference =?,acompte =? WHERE numero =?";
     try {
-      dc.setAutoCommit(false);
-      dc.executeUpdate(query); // update facture
+      dc.withTransaction(new DataConnection.SQLRunnable<Void>()
+      {
+        @Override
+        public Void run(DataConnection conn) throws Exception {
+          try (PreparedStatement ps = dc.prepareStatement(q)) {
+            ps.setDate(1, new java.sql.Date(inv.getDate().getDate().getTime()));
+            ps.setInt(2, inv.getEstablishment());
+            ps.setInt(3, inv.getPayer());
+            ps.setString(4, inv.getDescription());
+            ps.setString(5, inv.getReference());
+            ps.setDouble(6, inv.getDownPayment());
+            ps.setString(7, inv.getNumber());
+            GemLogger.info(ps.toString());
+            ps.executeUpdate(); // update
+            // cleaning items
+            String q2 = "DELETE FROM " + ITEM_TABLE + " WHERE id_facture = '" + inv.getNumber() + "'";
+            dc.executeUpdate(q2);
+            for (InvoiceItem invoiceItem : inv.getItems()) {
+              insert(invoiceItem, inv.getNumber());
+            }
+          }
+          return null;
+        }
+      });
 
-      // supression des articles dans la table article_facture
-      String q2 = "DELETE FROM " + JOIN_TABLE + " WHERE id_facture = '" + inv.getNumber() + "'";
-      dc.executeUpdate(q2);
-
-      // commented since 2.8.n
-//      Collection<OrderLine> old_echeances = findOrderLines(inv);
-//      Collection<OrderLine> echeances = inv.getOrderLines();
-//
-//      for (OrderLine o : old_echeances) {
-//        if (!echeances.containsAccount(o)) {
-//          OrderLineIO.delete(o, dc);
-//        }
-//      }
-//      for (OrderLine n : echeances) {
-//        if (n.getId() == 0) {
-//          OrderLineIO.insert(n, dc);
-//        } else {
-//          OrderLineIO.update(n, dc);
-//        }
-//      }
-
-      for (InvoiceItem invoiceItem : inv.getItems()) {
-        insert(invoiceItem, inv.getNumber());
-      }
-
-      dc.commit();
-    } catch (SQLException sqe) {
-      dc.rollback();
+    } catch (Exception sqe) {
       throw new BillingException(sqe.getMessage());
-    } finally {
-      dc.setAutoCommit(true);
     }
 
   }
@@ -218,7 +203,7 @@ public class InvoiceIO
    * @throws SQLException
    */
   public List<Invoice> findBy(int idper, String andPeriod) throws SQLException {
-    String where = "  WHERE (debiteur = " + idper + " OR adherent = " + idper + ")";
+    String where = " WHERE (debiteur = " + idper + " OR adherent = " + idper + ")";
     if (andPeriod != null) {
       where += andPeriod;
     }
@@ -226,10 +211,10 @@ public class InvoiceIO
   }
 
   /**
-   * Search a list of invoices.
+   * Search for invoices.
    *
    * @param where
-   * @return a list
+   * @return a list of invoices
    * @throws SQLException
    */
   public List<Invoice> find(String where) throws SQLException {
@@ -238,25 +223,24 @@ public class InvoiceIO
     String query = "SELECT " + COLUMNS + " FROM " + TABLE + where;
     query += " ORDER BY substring(numero, 5)::integer";
 
-    ResultSet rs = dc.executeQuery(query);
-    while (rs.next()) {
-      Invoice inv = new Invoice(rs.getString(1));
-      inv.setDate(new DateFr(rs.getString(2)));
-      inv.setEstablishment(rs.getInt(3));
-      inv.setIssuer(rs.getInt(4));
-      inv.setUser((User) DataCache.findId(rs.getInt(4), Model.User));
-      inv.setPayer(rs.getInt(5));
-      inv.setDescription(unEscape(rs.getString(6)));
-      inv.setReference(unEscape(rs.getString(7)));
-      inv.setMember(rs.getInt(8));
-      inv.setDownPayment(rs.getDouble(9));
+    try (ResultSet rs = dc.executeQuery(query)) {
+      while (rs.next()) {
+        Invoice inv = new Invoice(rs.getString(1));
+        inv.setDate(new DateFr(rs.getString(2)));
+        inv.setEstablishment(rs.getInt(3));
+        inv.setIssuer(rs.getInt(4));
+        inv.setUser((User) DataCache.findId(rs.getInt(4), Model.User));
+        inv.setPayer(rs.getInt(5));
+        inv.setDescription(unEscape(rs.getString(6)));
+        inv.setReference(unEscape(rs.getString(7)));
+        inv.setMember(rs.getInt(8));
+        inv.setDownPayment(rs.getDouble(9));
+  //      inv.setItems(findItems(inv.getNumber()));//
+        inv.setOrderLines(findOrderLines(inv));//
 
-//      inv.setItems(findItems(inv.getNumber()));//
-      inv.setOrderLines(findOrderLines(inv));//
-
-      lv.add(inv);
+        lv.add(inv);
+      }
     }
-    closeRS(rs);
     return lv;
   }
 
@@ -270,36 +254,34 @@ public class InvoiceIO
   public Collection<InvoiceItem> findItems(String invoice) throws SQLException {
 
     List<InvoiceItem> items = new ArrayList<InvoiceItem>();
-    PreparedStatement ps = dc.prepareStatement(ITEM_STATEMENT);
-    ps.setString(1, invoice);
+    try (PreparedStatement ps = dc.prepareStatement(ITEM_STATEMENT)) {
+      ps.setString(1, invoice);
+      try (ResultSet rs = ps.executeQuery()) {
+        while (rs.next()) {
+          OrderLine ol = (OrderLine) DataCache.findId(rs.getInt(1), Model.OrderLine);
+          if (ol == null) {
+            ol = OrderLineIO.find(rs.getInt(1), dc);
+          }
+          int itemId = rs.getInt(2);
+          int qty = rs.getInt(3);
 
-    ResultSet rs = ps.executeQuery();
-    while (rs.next()) {
+          Item item = null;
+          if (itemId > 0) {
+            item = (Item) DataCache.findId(itemId, Model.Item);
+          }
+          if (item == null || itemId == 0) {
+            item = new Item(ol, qty);
+          }
 
-      OrderLine ol = (OrderLine) DataCache.findId(rs.getInt(1), Model.OrderLine);
-      if (ol == null) {
-        ol = OrderLineIO.find(rs.getInt(1), dc);
+          InvoiceItem invoiceItem = new InvoiceItem(invoice);
+          invoiceItem.setItem(item);
+          invoiceItem.setOrderLine(ol);
+          invoiceItem.setQuantity(rs.getFloat(3));
+
+          items.add(invoiceItem);
+        }
       }
-      int itemId = rs.getInt(2);
-      int qty = rs.getInt(3);
-
-      Item item = null;
-      if (itemId > 0) {
-        item = (Item) DataCache.findId(itemId, Model.Item);
-      }
-      if (item == null || itemId == 0) {
-        item = new Item(ol, qty);
-      }
-
-      InvoiceItem invoiceItem = new InvoiceItem(invoice);
-      invoiceItem.setItem(item);
-      invoiceItem.setOrderLine(ol);
-      invoiceItem.setQuantity(rs.getFloat(3));
-
-      items.add(invoiceItem);
     }
-    closeRS(rs);
-    closeStatement(ps);
     return items;
   }
 
@@ -316,25 +298,29 @@ public class InvoiceIO
   /**
    * Insertion of an item.
    *
-   * @param invItem
+   * @param invItem invoice item
    * @param n invoice number
    * @throws SQLException
    */
   protected void insert(InvoiceItem invItem, String n) throws SQLException {
-
-    String query = "INSERT INTO " + JOIN_TABLE + " VALUES('" + n + "',";
-    Item a = invItem.getItem();
-
-    // on n'ajoute un article que s'il n'existe pas ou que s'il provient d'un article standard
-    if (a.getId() == 0 || a.isStandard()) {
-      a.setStandard(false);
-      itemIO.insert(a);//article
-    } else {
-      itemIO.update(a);
+    String q = "INSERT INTO " + ITEM_TABLE + " VALUES(?,?,?,?)";
+    try (PreparedStatement ps = dc.prepareStatement(q)) {
+      Item a = invItem.getItem();
+      // on n'ajoute un article que s'il n'existe pas ou que s'il provient d'un article standard
+      if (a.getId() == 0 || a.isStandard()) {
+        a.setStandard(false);
+        itemIO.insert(a);//article
+      } else {
+        itemIO.update(a);
+      }
+      int olId = (invItem.getOrderLine() == null) ? 0 : invItem.getOrderLine().getId();
+      ps.setString(1, n);
+      ps.setInt(2, olId);
+      ps.setInt(3, a.getId());
+      ps.setDouble(4, invItem.getQuantity());
+      GemLogger.info(ps.toString());
+      ps.executeUpdate();
     }
-    int id_echeancier = (invItem.getOrderLine() == null) ? 0 : invItem.getOrderLine().getId();
-    query += id_echeancier + "," + a.getId() + "," + invItem.getQuantity() + ")";
-    dc.executeUpdate(query);//joint
   }
 
 }

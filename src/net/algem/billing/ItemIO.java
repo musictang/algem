@@ -1,7 +1,7 @@
 /*
- * @(#)ItemIO.java 2.9.4.13 02/10/2015
+ * @(#)ItemIO.java 2.14.0 29/05/17
  * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,13 +20,16 @@
  */
 package net.algem.billing;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Vector;
+import java.util.logging.Level;
 import net.algem.config.Param;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
+import net.algem.util.GemLogger;
 import net.algem.util.model.Cacheable;
 import net.algem.util.model.Model;
 import net.algem.util.model.TableIO;
@@ -35,7 +38,7 @@ import net.algem.util.model.TableIO;
  * Item persistence.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.14.0
  * @since 2.3.a 22/12/11
  */
 public class ItemIO
@@ -57,15 +60,24 @@ public class ItemIO
   public void insert(Item i) throws SQLException {
 
     int n = nextId(SEQUENCE, dc);
-
-    String query = "INSERT INTO " + TABLE + " VALUES (" + n
-            + ",'" + escape(i.getDesignation())
-            + "'," + i.getPrice()
-            + ",'" + i.getVat().getKey()
-            + "','" + i.getAccount()
-            + "', " + i.isStandard() + ")";
-    dc.executeUpdate(query);
-    i.setId(n);
+    String q = "INSERT INTO " + TABLE + " VALUES (?,?,?,?,?,?)";
+    try (PreparedStatement ps = dc.prepareStatement(q)) {
+      ps.setInt(1, n);
+      ps.setString(2, i.getDesignation());
+      ps.setDouble(3, i.getPrice());
+      int vat = 0;
+      try {
+        vat = Integer.parseInt(i.getVat().getKey());
+      } catch (NumberFormatException nfe) {
+        GemLogger.log(nfe.getMessage());
+      }
+      ps.setInt(4, vat);
+      ps.setInt(5, i.getAccount());
+      ps.setBoolean(6, i.isStandard());
+      GemLogger.info(ps.toString());
+      ps.executeUpdate();
+      i.setId(n);
+    }
   }
 
   public Item findId(int id) throws SQLException {
@@ -93,14 +105,23 @@ public class ItemIO
   }
 
   public void update(Item i) throws SQLException {
-
-    String query = "UPDATE " + TABLE + " SET designation = '" + escape(i.getDesignation()) + "'"
-            + ", prix_u = " + i.getPrice()
-            + ", id_tva = '" + i.getVat().getKey() + "'"
-            + ", compte = '" + i.getAccount() + "'"
-            + ", standard = " + i.isStandard()
-            + " WHERE id = " + i.getId();
-    dc.executeUpdate(query);
+    String q = "UPDATE " + TABLE + " SET designation = ?, prix_u = ?, id_tva = ?, compte = ?, standard = ? WHERE id = ?";
+    try(PreparedStatement ps = dc.prepareStatement(q)) {
+      ps.setString(1, i.getDesignation());
+      ps.setDouble(2, i.getPrice());
+      int vat = 0;
+      try {
+        vat = Integer.parseInt(i.getVat().getKey());
+      } catch(NumberFormatException nfe) {
+        GemLogger.log(Level.WARNING, nfe.getMessage());
+      }
+      ps.setInt(3,vat);
+      ps.setInt(4, i.getAccount());
+      ps.setBoolean(5, i.isStandard());
+      ps.setInt(6, i.getId());
+      GemLogger.info(ps.toString());
+      ps.executeUpdate();
+    }
   }
 
   public void delete(Item a) throws SQLException {
