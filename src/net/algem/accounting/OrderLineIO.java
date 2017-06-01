@@ -47,7 +47,7 @@ public class OrderLineIO
 {
 
   public static final String TABLE = "echeancier2";
-  public static final String COLUMNS = "oid,echeance,payeur,adherent,commande,libelle,reglement,montant,piece,ecole,compte,paye,transfert,monnaie,analytique,facture,groupe";
+  public static final String COLUMNS = "oid,echeance,payeur,adherent,commande,libelle,reglement,montant,piece,ecole,compte,paye,transfert,monnaie,analytique,facture,groupe,tva";
   public final static String ACCOUNT_COLUMN = "compte";
   public final static String COST_COLUMN = "analytique";
 
@@ -85,6 +85,7 @@ public class OrderLineIO
             + "','" + e.getCostAccount().getNumber()
             + "'," + ((e.getInvoice() == null || e.getInvoice().isEmpty()) ? "NULL" : "'" + e.getInvoice() + "'") //@since 2.3.a
             + ", " + e.getGroup()
+
             + ")";
 
     dc.executeUpdate(query);
@@ -319,8 +320,8 @@ public class OrderLineIO
     Preference p1 = AccountPrefIO.find(AccountPrefIO.MEMBERSHIP, dc);
     Preference p2 = AccountPrefIO.find(AccountPrefIO.PRO_MEMBERSHIP, dc);
     //String query = "SELECT count(echeance) FROM echeancier2 WHERE adherent=" + m + " AND compte like '" + p.getValues()[0].substring(0, 8) + "%'";
-    String query = "SELECT count(echeance) FROM " + TABLE 
-            + " WHERE adherent = " + m 
+    String query = "SELECT count(echeance) FROM " + TABLE
+            + " WHERE adherent = " + m
             + " AND reglement != '" + ModeOfPayment.FAC.name()
             + "' AND montant > 0"
             + " AND (compte = " + (p1 == null ? -1 : p1.getValues()[0]) + " OR compte = " + (p2 == null ? -1 : p2.getValues()[0]) + ")";
@@ -464,6 +465,7 @@ public class OrderLineIO
         e.setInvoice(rs.getString(16));
 
         e.setGroup(rs.getInt(17));
+        e.setVat(rs.getFloat(18));
 
         v.addElement(e);
       }

@@ -29,6 +29,9 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.Vector;
+import net.algem.billing.Invoice;
+import net.algem.billing.InvoiceIO;
+import net.algem.billing.InvoiceItem;
 import net.algem.util.DataConnection;
 import net.algem.util.MessageUtil;
 import net.algem.util.TextUtil;
@@ -44,7 +47,7 @@ import net.algem.util.ui.MessagePopup;
 public class ExportDvlogPGI
   extends  CommunAccountExportService
 {
- 
+
   private static char cd = 'C';// credit
   private static char dc = 'D';//debit
   private DateFormat dateFormat = new SimpleDateFormat("ddMMyyyy");
@@ -116,23 +119,22 @@ public class ExportDvlogPGI
 
   @Override
   public int tiersExport(String path, Vector<OrderLine> orderLines) throws IOException, SQLException {
-    //
-    OrderLine e = null;
+    InvoiceIO invoiceIO = new InvoiceIO(dbx);
     int errors = 0;
     boolean m1 = false;
     boolean m2 = false;
     String message = "";
-    StringBuilder logMessage = new StringBuilder();
+    StringBuilder log = new StringBuilder();
     String m1prefix = MessageUtil.getMessage("account.error");
     String m2prefix = MessageUtil.getMessage("matching.account.error");
     String logpath = path+".log";
     PrintWriter out = new PrintWriter(new FileWriter(path));
-
+    OrderLine e = null;
     for (int i = 0, n = orderLines.size(); i < n ; i++) {
       e =  orderLines.elementAt(i);
       if (!AccountUtil.isPersonalAccount(e.getAccount())) {
         errors++;
-        logMessage.append(m1prefix).append(" -> ").append(e).append(" [").append(e.getAccount()).append("]").append(TextUtil.LINE_SEPARATOR);
+        log.append(m1prefix).append(" -> ").append(e).append(" [").append(e.getAccount()).append("]").append(TextUtil.LINE_SEPARATOR);
         m1 = true;
         continue;
       }
@@ -140,24 +142,49 @@ public class ExportDvlogPGI
       int p = getPersonalAccountId(e.getAccount().getId());
       if (p == 0) {
         errors++;
-        logMessage.append(m2prefix).append(" -> ").append(e.getAccount()).append(TextUtil.LINE_SEPARATOR);
+        log.append(m2prefix).append(" -> ").append(e.getAccount()).append(TextUtil.LINE_SEPARATOR);
         m2 = true;
         continue;
       }
 
       Account c = getAccount(p);
-      String m = nf.format(Math.abs(e.getAmount()) / 100.0); // le montant doit être positif
+      int amount = e.getAmount();
+      double exclTax = 0;
+      double vat = 0;
       String codeJournal = getCodeJournal(e.getAccount().getId());
       String f = (e.getInvoice() == null) ? "" : e.getInvoice();
+      if (e.getVat() > 0.0) {
+        double coeff = 100 / (100 + e.getVat());
+        System.out.println("amount = "+amount);
+        System.out.println("e.getVat() = "+e.getVat());
+        exclTax = AccountUtil.round((Math.abs(amount) /100d) * coeff);
+        System.out.println("exclTax = "+exclTax);
+        vat = (Math.abs(amount) /100d) - exclTax;
+      }
+
+      String m = nf.format(Math.abs(amount) / 100.0); // le montant doit être positif
+
       out.print(TextUtil.padWithTrailingZeros(c.getNumber(), 10)
               + "#" + dateFormat.format(e.getDate().getDate())
               + "#" + codeJournal
               + "#" + TextUtil.padWithTrailingSpaces(e.getDocument(), 10)
               + "#" + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getLabel(), 24), 24)
-              + "#" + TextUtil.padWithLeadingZeros(m, 13)
+              + "#" + TextUtil.padWithLeadingZeros(exclTax > 0 ? nf.format(exclTax) : m, 13)
               + "#" + (e.getAmount() < 0 ? cd : dc) // cd Crédit
               + "#" + TextUtil.padWithTrailingSpaces(e.getCostAccount().getNumber(), 10)
               + "#" + (char) 13);
+      // test tva
+      if (vat > 0.0) {
+       out.print(TextUtil.padWithTrailingZeros("4457", 10)
+          + "#" + dateFormat.format(e.getDate().getDate())
+          + "#" + codeJournal
+          + "#" + TextUtil.padWithTrailingSpaces(e.getDocument(), 10)
+          + "#" + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getLabel(), 24), 24)
+          + "#" + TextUtil.padWithLeadingZeros(nf.format(vat), 13)
+          + "#" + (e.getAmount() < 0 ? cd : dc) // cd Crédit
+          + "#" + TextUtil.padWithTrailingSpaces(e.getCostAccount().getNumber(), 10)
+          + "#" + (char) 13);
+      }
 
       out.print(
               TextUtil.padWithTrailingZeros(getAccount(e), 10) // compte client
@@ -172,10 +199,10 @@ public class ExportDvlogPGI
     }
     out.close();
 
-    if (logMessage.length() > 0) {
-      PrintWriter log = new PrintWriter(new FileWriter(logpath));
-      log.println(logMessage.toString());
-      log.close();
+    if (log.length() > 0) {
+      PrintWriter pw = new PrintWriter(new FileWriter(logpath));
+      pw.println(log.toString());
+      pw.close();
     }
 
     if (errors > 0) {

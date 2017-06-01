@@ -50,6 +50,7 @@ public class OrderLine
   /** Invoice number. Numéro de facture. */
   private String invoice;
   private int group;
+  private float vat;
 
   public OrderLine() {
   }
@@ -243,6 +244,14 @@ public class OrderLine
         return "€";
     }
 
+  }
+
+  public float getVat() {
+    return vat;
+  }
+
+  public void setVat(float vat) {
+    this.vat = vat;
   }
 
   /**

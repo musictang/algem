@@ -80,11 +80,11 @@ public class Quote
 
   /** Order line collection. */
   protected Collection<OrderLine> orderLines = new ArrayList<OrderLine>();
-  
+
   protected boolean creditNote;
 
   private boolean editable = true;
-  
+
   /**
    * Création d'un devis/facture vierge. La date de facturation correspond à la
    * date du jour.
@@ -319,11 +319,11 @@ public class Quote
    *
    * @return a collection of items
    */
-  Collection<InvoiceItem> getItems() {
+  public Collection<InvoiceItem> getItems() {
     return items;
   }
 
-  public void setItems(Collection<InvoiceItem> items) {
+  protected void setItems(Collection<InvoiceItem> items) {
     this.items = items;
   }
 
@@ -422,11 +422,11 @@ public class Quote
   boolean isEditable() {
     return editable;
   }
-  
+
   boolean isCreditNote() {
     return creditNote;
   }
-  
+
   void setCreditNote(boolean c) {
     creditNote = c;
   }

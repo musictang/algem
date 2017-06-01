@@ -185,8 +185,8 @@ public class InvoiceIO
   /**
    * Search by invoice number.
    *
-   * @param number
-   * @return une facture
+   * @param number invoice id
+   * @return an invoice
    * @throws SQLException
    */
   public Invoice findBy(String number) throws SQLException {
@@ -197,7 +197,7 @@ public class InvoiceIO
   /**
    * Search invoices by {@literal payer} or {@literal idper}.
    *
-   * @param idper
+   * @param idper payer's (or member's) id
    * @param andPeriod optional period query
    * @return a list of invoices
    * @throws SQLException
