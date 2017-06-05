@@ -1,5 +1,5 @@
 /*
- * @(#)OrderLineIO.java	2.9.7.1 26/05/16
+ * @(#)OrderLineIO.java	2.14.0 02/06/17
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -39,7 +39,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.7.1
+ * @version 2.14.0
  *
  */
 public class OrderLineIO
@@ -85,6 +85,7 @@ public class OrderLineIO
             + "','" + e.getCostAccount().getNumber()
             + "'," + ((e.getInvoice() == null || e.getInvoice().isEmpty()) ? "NULL" : "'" + e.getInvoice() + "'") //@since 2.3.a
             + ", " + e.getGroup()
+            + ", " + e.getVat()
 
             + ")";
 

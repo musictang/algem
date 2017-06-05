@@ -1,7 +1,7 @@
 /*
- * @(#)BillingItem.java 2.9.4.13 05/11/15
+ * @(#)BillingItem.java 2.14.0 02/06/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -25,7 +25,7 @@ import java.io.Serializable;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.14.0
  * @since 2.4.d 07/06/12
  */
 public class BillingItem
@@ -61,7 +61,7 @@ public class BillingItem
   }
 
   /**
-   * Total amount of an invoice item
+   * Total amount of an invoice item.
    *
    * @param ati all taxes included
    * @return a double

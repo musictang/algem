@@ -1,5 +1,5 @@
 /*
- * @(#)OrderLineView.java	2.11.4 02/01/17
+ * @(#)OrderLineView.java	2.14.0 02/06/17
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -26,9 +26,12 @@ import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.List;
 import javax.swing.*;
 import net.algem.config.*;
 import net.algem.planning.DateFrField;
@@ -41,7 +44,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.3
+ * @version 2.14.0
  * @since 1.0a 18/07/1999
  */
 public class OrderLineView
@@ -63,6 +66,8 @@ public class OrderLineView
 
   private GemChoice account;
   private ParamChoice costAccount;
+  private ParamChoice vat;
+  private List<Param> vatList;
   private GemField invoice;
   private GemButton okBt;
   private GemButton cancelBt;
@@ -71,22 +76,20 @@ public class OrderLineView
   private NumberFormat nf;
   private ActionListener listener;
 
-
-
   /**
    *
    * @param frame
    * @param title
    * @param dataCache
    */
-  public OrderLineView(Frame frame, String title, DataCache dataCache, boolean modal) throws SQLException {
+  public OrderLineView(Frame frame, String title, final DataCache dataCache, boolean modal) throws SQLException {
     super(frame, title, modal);
 
     nf = AccountUtil.getDefaultNumberFormat();
 
     GemPanel editPanel = new GemPanel();
     editPanel.setLayout(new java.awt.GridBagLayout());
-    GridBagHelper gb = new GridBagHelper(editPanel);
+    final GridBagHelper gb = new GridBagHelper(editPanel);
 
     payer = new GemNumericField(8);
     payer.setMinimumSize(new Dimension(60, payer.getPreferredSize().height));
@@ -106,6 +109,34 @@ public class OrderLineView
                     ModeOfPaymentCtrl.TABLE,
                     ModeOfPaymentCtrl.COLUMN_NAME, dc)
     );
+    vatList = dataCache.getList(Model.Vat).getData();
+    vat = new ParamChoice(vatList);
+    vat.setEnabled(false);
+    modeOfPayment.addItemListener(new ItemListener()
+    {
+      @Override
+      public void itemStateChanged(ItemEvent e) {
+        Object v = e.getItem();
+        if (e.getStateChange() == ItemEvent.SELECTED) {
+          if (ModeOfPayment.FAC.name().equals(v)) {          
+           vat.setEnabled(true);
+           float val = Float.parseFloat(vat.getValue());
+           System.out.println(val);
+           try {
+             double am = getAmount();
+             amount.setValue(am + (am * val / 100d));
+           } catch(ParseException fe) {
+             
+           }
+           
+          } else {
+            vat.setEnabled(false);
+            //vat.setSelectedIndex(0);
+          }
+        }
+        
+      }
+    });
     document = new GemField(8);
     document.setMinimumSize(new Dimension(amount.getPreferredSize().width, document.getPreferredSize().height));
     schoolChoice = new ParamChoice(dataCache.getList(Model.School).getData());
@@ -127,6 +158,7 @@ public class OrderLineView
     gb.add(new JLabel(BundleUtil.getLabel("Label.label")), 0, 4, 1, 1, GridBagHelper.WEST);
     gb.add(new JLabel(BundleUtil.getLabel("Amount.label")), 0, 5, 1, 1, GridBagHelper.WEST);
     gb.add(new JLabel(BundleUtil.getLabel("Mode.of.payment.label")), 0, 6, 1, 1, GridBagHelper.WEST);
+    
     gb.add(new JLabel(BundleUtil.getLabel("Document.number.label")), 0, 7, 1, 1, GridBagHelper.WEST);
     gb.add(new JLabel(BundleUtil.getLabel("School.label")), 0, 8, 1, 1, GridBagHelper.WEST);
     gb.add(new JLabel(BundleUtil.getLabel("Account.label")), 0, 9, 1, 1, GridBagHelper.WEST);
@@ -134,19 +166,21 @@ public class OrderLineView
     gb.add(new JLabel(BundleUtil.getLabel("Payment.schedule.cashing.tip")), 0, 11, 1, 1, GridBagHelper.WEST);
     gb.add(new JLabel(BundleUtil.getLabel("Invoice.label")), 0, 12, 1, 1, GridBagHelper.WEST);
 
-    gb.add(payer, 1, 0, 1, 1, GridBagHelper.WEST);
-    gb.add(member, 1, 1, 1, 1, GridBagHelper.WEST);
-    gb.add(group, 1, 2, 1, 1, GridBagHelper.WEST);
-    gb.add(date, 1, 3, 1, 1, GridBagHelper.WEST);
-    gb.add(label, 1, 4, 1, 1, GridBagHelper.WEST);
-    gb.add(amount, 1, 5, 1, 1, GridBagHelper.WEST);
+    gb.add(payer, 1, 0, 3, 1, GridBagHelper.WEST);
+    gb.add(member, 1, 1, 3, 1, GridBagHelper.WEST);
+    gb.add(group, 1, 2, 3, 1, GridBagHelper.WEST);
+    gb.add(date, 1, 3, 3, 1, GridBagHelper.WEST);
+    gb.add(label, 1, 4, 3, 1, GridBagHelper.WEST);
+    gb.add(amount, 1, 5, 3, 1, GridBagHelper.WEST);
     gb.add(modeOfPayment, 1, 6, 1, 1, GridBagHelper.WEST);
-    gb.add(document, 1, 7, 1, 1, GridBagHelper.WEST);
-    gb.add(schoolChoice, 1, 8, 1, 1, GridBagHelper.WEST);
-    gb.add(account, 1, 9, 1, 1, GridBagHelper.WEST);
-    gb.add(costAccount, 1, 10, 1, 1, GridBagHelper.WEST);
-    gb.add(cbPaid, 1, 11, 1, 1, GridBagHelper.WEST);
-    gb.add(invoice, 1, 12, 1, 1, GridBagHelper.WEST);
+    gb.add(new JLabel(BundleUtil.getLabel("Invoice.item.vat.label")), 2, 6, 1, 1, GridBagHelper.WEST);
+    gb.add(vat, 3, 6, 1, 1, GridBagHelper.WEST);
+    gb.add(document, 1, 7, 3, 1, GridBagHelper.WEST);
+    gb.add(schoolChoice, 1, 8, 3, 1, GridBagHelper.WEST);
+    gb.add(account, 1, 9, 3, 1, GridBagHelper.WEST);
+    gb.add(costAccount, 1, 10, 3, 1, GridBagHelper.WEST);
+    gb.add(cbPaid, 1, 11, 3, 1, GridBagHelper.WEST);
+    gb.add(invoice, 1, 12, 3, 1, GridBagHelper.WEST);
 
     okBt = new GemButton(GemCommand.VALIDATION_CMD);
     okBt.addActionListener(this);
@@ -267,6 +301,16 @@ public class OrderLineView
     costAccount.setSelectedItem(orderLine.getCostAccount());
     cbPaid.setSelected(orderLine.isPaid());
     invoice.setText(orderLine.getInvoice());
+    setVat(orderLine.getVat());
+  }
+  
+  private void setVat(float v) {
+    for(Param p: vatList) {
+      if (p.getValue().equals(String.valueOf(v))) {
+        vat.setSelectedItem(p);
+        break;
+      }
+    }
   }
 
   OrderLine getOrderLine() throws ParseException {
@@ -302,6 +346,10 @@ public class OrderLineView
     orderLine.setCostAccount(getCostAccount());
     orderLine.setPaid(cbPaid.isSelected());
     orderLine.setInvoice(invoice.getText());
+    
+    if (ModeOfPayment.FAC.name().equals(modeOfPayment.getSelectedItem())) {
+      orderLine.setVat(Float.parseFloat(vat.getValue()));
+    }
 
     return orderLine;
   }
@@ -381,7 +429,7 @@ public class OrderLineView
    * @return a double
    * @throws parseException in case of error format
    */
-  private Double getAmount() throws ParseException {
+  private double getAmount() throws ParseException {
     //echeancier.setAmount(nf.parse(montant.getText()).intValue());
     //class cast exception (Long -> Double) si 00 après la virgule avec : (Double)montant.getValue();
     amount.commitEdit();

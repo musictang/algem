@@ -1,7 +1,7 @@
 /*
- * @(#)AccountPrefIO.java 2.9.5 16/02/16
+ * @(#)AccountPrefIO.java 2.14.0 02/06/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -33,7 +33,7 @@ import net.algem.util.model.TableIO;
  * Default accounts persistence.
  * 
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.5
+ * @version 2.14.0
  * @since 2.1.i
  *
  */
@@ -50,6 +50,7 @@ public class AccountPrefIO
 	public static final String CASH = "COMPTE DE CAISSE";
 	public static final String BANK = "COMPTE DE BANQUE";
 	public static final String PERSONAL = "DIVERS/TIERS";
+    public static final String VAT = "TVA";
 
 	public static void insert(Preference p, String tablename, DataConnection dc) throws SQLException {
 		Object[] values = p.getValues();

@@ -1,5 +1,5 @@
 /*
- * @(#)BasicBillingService 2.14.0 29/05/17
+ * @(#)BasicBillingService 2.14.0 02/06/17
  *
  * Copyright 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -204,7 +204,7 @@ public class BasicBillingService
    * @param inv invoice
    * @throws SQLException
    */
-  private void setOrderLine(Invoice inv) throws SQLException {
+  private void setOrderLine(Invoice inv) throws SQLException, BillingException {
     Map<Integer,List<InvoiceItem>> map = mapInvoiceItemsByAccount(inv.getItems());
     for(List<InvoiceItem> items : map.values()) {
       addInvoiceOrderLines(inv, items);
@@ -222,15 +222,25 @@ public class BasicBillingService
    * @param items
    * @return a map
    */
-  private Map<Integer,List<InvoiceItem>> mapInvoiceItemsByAccount(Collection<InvoiceItem> items) {
+  private Map<Integer, List<InvoiceItem>> mapInvoiceItemsByAccount(Collection<InvoiceItem> items) throws BillingException, SQLException {
     Map<Integer, List<InvoiceItem>> map = new HashMap<Integer, List<InvoiceItem>>();
     for (InvoiceItem item : items) {
       if (item.getOrderLine() == null && item.getTotal(true) != 0.0) {
         int c = item.getItem().getAccount();
-        if (c == 0) continue;
+        if (c == 0) {
+          continue;
+        }
         List<InvoiceItem> list = map.get(c);
         if (list == null) {
           list = new ArrayList<InvoiceItem>();
+        }
+        // check if vat matches
+        if (list.size() > 0) {
+          Param v = list.get(0).getItem().getVat();
+          if (v.getId() != item.getItem().getVat().getId()) {
+            Account acc = (Account) DataCache.findId(c, Model.Account);
+            throw new BillingException(MessageUtil.getMessage("invoice.item.matching.vat.exception", new Object[]{acc.getLabel(), v.getValue()}));
+          }
         }
         list.add(item);
         map.put(c, list);
@@ -283,6 +293,9 @@ public class BasicBillingService
     n.setAccount(c);
     n.setCostAccount(a);
     n.setPaid(true); // payé par défaut pour les échéances de facturation
+    Param vat = item.getItem().getVat();
+    
+    n.setVat(vat == null ? 0.0f : Float.parseFloat(vat.getValue()));
 
     // échéance de contrepartie (d'encaissement)
     /*OrderLine cp = new OrderLine(inv);

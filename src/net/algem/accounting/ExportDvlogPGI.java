@@ -29,9 +29,6 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.Vector;
-import net.algem.billing.Invoice;
-import net.algem.billing.InvoiceIO;
-import net.algem.billing.InvoiceItem;
 import net.algem.util.DataConnection;
 import net.algem.util.MessageUtil;
 import net.algem.util.TextUtil;
@@ -119,7 +116,6 @@ public class ExportDvlogPGI
 
   @Override
   public int tiersExport(String path, Vector<OrderLine> orderLines) throws IOException, SQLException {
-    InvoiceIO invoiceIO = new InvoiceIO(dbx);
     int errors = 0;
     boolean m1 = false;
     boolean m2 = false;
