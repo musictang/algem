@@ -144,15 +144,15 @@ public class ExportDvlogPGI
       }
 
       Account c = getAccount(p);
-      int amount = e.getAmount();
-      double exclTax = 0;
+      int amount = e.getAmount();//TTC
+      double exclTax = 0;//HT
       double vat = 0;
       String codeJournal = getCodeJournal(e.getAccount().getId());
       String f = (e.getInvoice() == null) ? "" : e.getInvoice();
-      if (e.getVat() > 0.0) {
-        double coeff = 100 / (100 + e.getVat());
+      if (e.getTax() > 0.0) {
+        double coeff = 100 / (100 + e.getTax());
         System.out.println("amount = "+amount);
-        System.out.println("e.getVat() = "+e.getVat());
+        System.out.println("e.getVat() = "+e.getTax());
         exclTax = AccountUtil.round((Math.abs(amount) /100d) * coeff);
         System.out.println("exclTax = "+exclTax);
         vat = (Math.abs(amount) /100d) - exclTax;

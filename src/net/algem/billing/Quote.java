@@ -390,7 +390,7 @@ public class Quote
 
     for (BillingItem bi : items) {
       double total = 0.0;
-      Param vat = bi.getItem().getVat();
+      Param vat = bi.getItem().getTax();
       Double t = vatMap.get(vat.getValue());
       total = (t == null) ? 0.0 : t.doubleValue();
       total += bi.getTotalVat();

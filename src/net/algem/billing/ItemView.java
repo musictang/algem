@@ -1,7 +1,7 @@
 /*
- * @(#)ItemView.java 2.9.4.13 02/10/2015
+ * @(#)ItemView.java 2.14.0 05/06/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -33,7 +33,7 @@ import net.algem.util.ui.*;
 /**
  * Invoice item view.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.n
+ * @version 2.14.0
  * @since 2.3.a 03/02/12
  */
 public class ItemView
@@ -58,7 +58,7 @@ public class ItemView
 
     price.setColumns(10);
     account = new AccountChoice(service.getAccounts());
-    
+
     vat = new ParamChoice(service.getVat());
 
     setLayout(new GridBagLayout());
@@ -96,7 +96,7 @@ public class ItemView
     a.setDesignation(designation.getText().trim());
     a.setPrice(((Number) price.getValue()).doubleValue());
     a.setAccount(account.getKey());
-    a.setVat((Param) vat.getSelectedItem());
+    a.setTax((Param) vat.getSelectedItem());
     //a.setStandard(standard.isSelected());
     a.setStandard(standard);
 
@@ -108,14 +108,14 @@ public class ItemView
    * @param a current item
    */
   public void set(Item a) {
-    
+
     id.setText(String.valueOf(a.getId()));
     designation.setText(a.getDesignation());
     price.setValue(a.getPrice());
     account.setKey(a.getAccount());
-    Param t = a.getVat();
+    Param t = a.getTax();
     if (t != null) {
-      vat.setKey(a.getVat().getKey());
+      vat.setKey(a.getTax().getKey());
     }
     standard = a.isStandard();
     //standard.setSelected(a.isStandard());
@@ -125,7 +125,7 @@ public class ItemView
    * Resets the view.
    */
   public void clear() {
-    
+
     id.setText(null);
     designation.setText(null);
     price.setValue(0.0);

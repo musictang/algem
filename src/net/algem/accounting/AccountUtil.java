@@ -150,10 +150,16 @@ public class AccountUtil {
     OrderLine n = new OrderLine(e);
     n.setPaid(false);
 
+    int a = e.getAmount();
+//    if (e.getTax() > 0) {
+//      a = a + Math.round((a * e.getTax() / 100d));
+//    }
     if (!ModeOfPayment.FAC.toString().equals(e.getModeOfPayment())) {
       n.setModeOfPayment(e.getModeOfPayment());
     } else {
       n.setModeOfPayment(ModeOfPayment.CHQ.toString());// règlement par défaut
+      n.setAmount(-(e.getAmount()));
+      n.setTax(0.0f);
     }
 
     if (e.getAmount() > 0) {
@@ -176,7 +182,7 @@ public class AccountUtil {
   public static OrderLine createEntry(OrderLine e, boolean counterpart, DataConnection dc) throws SQLException {
     OrderLine p = null;
     e.setTransfered(false);
-    if (counterpart && isPersonalAccount(e.getAccount()) && !hasPersonalEntry(e, dc)) { // compte de classe 4
+    if (ModeOfPayment.FAC.toString().equals(e.getModeOfPayment()) && counterpart && isPersonalAccount(e.getAccount()) && !hasPersonalEntry(e, dc)) { // compte de classe 4
       p = createOrderLine(e);
       OrderLineIO.insert(e, dc);//première échéance à reglement FAC
       OrderLineIO.insert(p, dc);

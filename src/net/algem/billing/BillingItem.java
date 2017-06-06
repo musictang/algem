@@ -80,8 +80,8 @@ public class BillingItem
 
     double tva = 0.0;
 
-    if (item.getVat() != null) {
-      tva = Double.parseDouble(item.getVat().getValue());
+    if (item.getTax() != null) {
+      tva = Double.parseDouble(item.getTax().getValue());
     }
     return (getTotalET() * tva) / 100;
   }

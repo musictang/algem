@@ -65,7 +65,7 @@ implements TableRowTransferHandler.Reorderable
       case 2:
         return ivItem.getItem().getPrice();
       case 3:
-        return ivItem.getItem().getVat();
+        return ivItem.getItem().getTax();
       case 4:
         return ivItem.getTotal(false);
     }

@@ -72,7 +72,7 @@ public class TestQuotationIO extends TestCase
       d.setReference("");
       QuoteIO quotationIO = new QuoteIO(dc);
       Item a1 = new Item(0, "Article test", 400d, account, false);
-      a1.setVat(default_vat);
+      a1.setTax(default_vat);
       InvoiceItem af = new InvoiceItem(a1);
       d.addItem(af);
       quotationIO.insert(d);

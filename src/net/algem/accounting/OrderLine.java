@@ -1,7 +1,7 @@
 /*
- * @(#)OrderLine.java	2.10.0 19/05/16
+ * @(#)OrderLine.java	2.14.0 05/06/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-20167Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -31,7 +31,7 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.14.0
  *
  */
 public class OrderLine
@@ -50,7 +50,7 @@ public class OrderLine
   /** Invoice number. Numéro de facture. */
   private String invoice;
   private int group;
-  private float vat;
+  private float tax;
 
   public OrderLine() {
   }
@@ -73,9 +73,9 @@ public class OrderLine
     payer = e.getPayer();
     member = e.getMember();
     order = e.getOrder();
-    label = e.getLabel();
     modeOfPayment = e.getModeOfPayment();
-    amount = Math.abs(e.getAmount());
+    label = e.getLabel();
+    amount = ModeOfPayment.FAC.toString().equals(modeOfPayment) ? e.getAmount() : Math.abs(e.getAmount());
     document = e.getDocument();
     school = e.getSchool();
     account = e.getAccount();
@@ -85,6 +85,8 @@ public class OrderLine
     currency = e.getCurrency();
     invoice = e.getInvoice();
     group = e.getGroup();
+    tax = e.getTax();
+
   }
 
   /**
@@ -246,12 +248,12 @@ public class OrderLine
 
   }
 
-  public float getVat() {
-    return vat;
+  public float getTax() {
+    return tax;
   }
 
-  public void setVat(float vat) {
-    this.vat = vat;
+  public void setTax(float tax) {
+    this.tax = tax;
   }
 
   /**

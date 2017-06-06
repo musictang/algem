@@ -63,7 +63,7 @@ public class InvoiceItemElement
     String des = af.getItem().getDesignation();
     double qty = af.getQuantity();
     double price = af.getItem().getPrice();
-    double vat = Double.parseDouble(af.getItem().getVat().getValue());
+    double vat = Double.parseDouble(af.getItem().getTax().getValue());
     double totalHt = af.getTotal(false);
 
     int topOffset = 15;

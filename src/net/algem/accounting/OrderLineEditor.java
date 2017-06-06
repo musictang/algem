@@ -1,5 +1,5 @@
 /*
- * @(#)OrderLineEditor.java	2.12.0 13/03/17
+ * @(#)OrderLineEditor.java	2.14.0 05/06/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -60,7 +60,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.12.0
+ * @version 2.14.0
  * @since 1.0a 07/07/1999
  */
 public class OrderLineEditor
@@ -92,7 +92,7 @@ public class OrderLineEditor
   private List<OrderLine> invoiceSelection;
   private OrderLineView dlg;
   private InvoiceLinesFilter invoiceFilter;
-  
+
 
   public OrderLineEditor(GemDesktop desktop, OrderLineTableModel tableModel) {
     super(desktop);
@@ -272,7 +272,7 @@ public class OrderLineEditor
       return;
     }
     OrderLine e = tableView.getElementAt(n);
-    
+
     if (e.isTransfered()) {
       JOptionPane.showMessageDialog(this,
         MessageUtil.getMessage("payment.transfer.warning"),
@@ -475,12 +475,12 @@ public class OrderLineEditor
 
     int[] rows = tableView.getSelectedRows();
     invoiceSelection = new ArrayList<OrderLine>();
-    int nullItems = 0;
+    int invoiceLines = 0;
 
     for (int i = 0; i < rows.length; i++) {
       OrderLine e = tableView.getElementAt(rows[i]);
       if (ModeOfPayment.FAC.toString().equals(e.getModeOfPayment())) {
-        nullItems++;
+        invoiceLines++;
       }
       // la création de facture n'est possible que si l'échéance ne comporte encore aucun numéro de facture
       if (e.getInvoice() == null || e.getInvoice().isEmpty()) {
@@ -491,7 +491,7 @@ public class OrderLineEditor
       }
     }
 
-    if (!invoiceSelection.isEmpty() && nullItems == 0) { // aucune échéance de facturation
+    if (!invoiceSelection.isEmpty() && invoiceLines == 0) { // aucune échéance de facturation
       MessagePopup.warning(this, MessageUtil.getMessage("invalid.invoice.selection.warning"));
       return;
     }

@@ -67,7 +67,7 @@ public class ItemIO
       ps.setDouble(3, i.getPrice());
       int vat = 0;
       try {
-        vat = Integer.parseInt(i.getVat().getKey());
+        vat = Integer.parseInt(i.getTax().getKey());
       } catch (NumberFormatException nfe) {
         GemLogger.log(nfe.getMessage());
       }
@@ -86,7 +86,7 @@ public class ItemIO
     ResultSet rs = dc.executeQuery(query);
     while (rs.next()) {
       n = new Item(rs.getInt(1), unEscape(rs.getString(2)), rs.getDouble(3), rs.getInt(5), rs.getBoolean(6));
-      n.setVat(getVat(rs.getInt(4)));
+      n.setTax(getVat(rs.getInt(4)));
     }
     return n;
   }
@@ -98,7 +98,7 @@ public class ItemIO
     ResultSet rs = dc.executeQuery(query);
     while (rs.next()) {
       Item a = new Item(rs.getInt(1), unEscape(rs.getString(2)), rs.getDouble(3), rs.getInt(5), rs.getBoolean(6));
-      a.setVat(getVat(rs.getInt(4)));
+      a.setTax(getVat(rs.getInt(4)));
       v.add(a);
     }
     return v;
@@ -111,7 +111,7 @@ public class ItemIO
       ps.setDouble(2, i.getPrice());
       int vat = 0;
       try {
-        vat = Integer.parseInt(i.getVat().getKey());
+        vat = Integer.parseInt(i.getTax().getKey());
       } catch(NumberFormatException nfe) {
         GemLogger.log(Level.WARNING, nfe.getMessage());
       }

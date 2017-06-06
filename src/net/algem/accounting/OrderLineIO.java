@@ -1,7 +1,7 @@
 /*
- * @(#)OrderLineIO.java	2.14.0 02/06/17
+ * @(#)OrderLineIO.java	2.14.0 05/06/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -85,7 +85,7 @@ public class OrderLineIO
             + "','" + e.getCostAccount().getNumber()
             + "'," + ((e.getInvoice() == null || e.getInvoice().isEmpty()) ? "NULL" : "'" + e.getInvoice() + "'") //@since 2.3.a
             + ", " + e.getGroup()
-            + ", " + e.getVat()
+            + ", " + e.getTax()
 
             + ")";
 
@@ -119,7 +119,8 @@ public class OrderLineIO
             + "', monnaie = '" + e.getCurrency()
             + "', analytique = '" + e.getCostAccount().getNumber()
             + "', facture = " + ((e.getInvoice() == null || e.getInvoice().isEmpty()) ? "NULL" : "'" + e.getInvoice() + "'")
-            + ", groupe = " + e.getGroup();
+            + ", groupe = " + e.getGroup()
+            + ", tva = " + e.getTax();
     query += " WHERE oid = " + e.getId();
     dc.executeUpdate(query);
 
@@ -466,7 +467,7 @@ public class OrderLineIO
         e.setInvoice(rs.getString(16));
 
         e.setGroup(rs.getInt(17));
-        e.setVat(rs.getFloat(18));
+        e.setTax(rs.getFloat(18));
 
         v.addElement(e);
       }

@@ -65,7 +65,7 @@ public class ItemTableModel
 			case 3:
 				return it.getAccount();
       case 4:
-				return it.getVat();
+				return it.getTax();
 
 		}
 		return null;

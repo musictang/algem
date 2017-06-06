@@ -1,7 +1,7 @@
 /*
- * @(#)OrderLineView.java	2.14.0 02/06/17
+ * @(#)OrderLineView.java	2.14.0 05/06/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,6 +28,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -66,8 +68,10 @@ public class OrderLineView
 
   private GemChoice account;
   private ParamChoice costAccount;
-  private ParamChoice vat;
-  private List<Param> vatList;
+  private ParamChoice tax;
+  private JLabel taxLabel;
+  private List<Param> taxList;
+  private JLabel  inclTax;
   private GemField invoice;
   private GemButton okBt;
   private GemButton cancelBt;
@@ -103,40 +107,54 @@ public class OrderLineView
     amount = new JFormattedTextField(nf);
     amount.setColumns(8);
     amount.setMinimumSize(new Dimension(60, amount.getPreferredSize().height));
+
+    taxList = dataCache.getList(Model.Vat).getData();
+    taxLabel = new JLabel(BundleUtil.getLabel("Invoice.item.vat.label"));
+    taxLabel.setEnabled(false);
+    tax = new ParamChoice(taxList);
+    tax.setEnabled(false);
+
+    amount.addKeyListener(new KeyAdapter() {
+      @Override
+      public void keyReleased(KeyEvent e) {
+        if (isInvoicePayment()) {
+          showPriceTaxeIncluded(tax.getValue());
+        }
+      }
+    });
+    inclTax = new JLabel();
+    //inclTax.setFont(new Font(Font.SANS_SERIF,Font.PLAIN,9));
+    inclTax.setEnabled(false);
     DataConnection dc = DataCache.getDataConnection();
     modeOfPayment = new JComboBox(
             ParamTableIO.getValues(
                     ModeOfPaymentCtrl.TABLE,
                     ModeOfPaymentCtrl.COLUMN_NAME, dc)
     );
-    vatList = dataCache.getList(Model.Vat).getData();
-    vat = new ParamChoice(vatList);
-    vat.setEnabled(false);
-    modeOfPayment.addItemListener(new ItemListener()
-    {
+    modeOfPayment.addItemListener(new ItemListener() {
       @Override
       public void itemStateChanged(ItemEvent e) {
-        Object v = e.getItem();
-        if (e.getStateChange() == ItemEvent.SELECTED) {
-          if (ModeOfPayment.FAC.name().equals(v)) {          
-           vat.setEnabled(true);
-           float val = Float.parseFloat(vat.getValue());
-           System.out.println(val);
-           try {
-             double am = getAmount();
-             amount.setValue(am + (am * val / 100d));
-           } catch(ParseException fe) {
-             
-           }
-           
-          } else {
-            vat.setEnabled(false);
-            //vat.setSelectedIndex(0);
-          }
+        if (isInvoicePayment()) {
+          taxLabel.setEnabled(true);
+          tax.setEnabled(true);
+        } else {
+          taxLabel.setEnabled(false);
+          tax.setEnabled(false);
+          inclTax.setText(null);
         }
-        
+
       }
     });
+
+    tax.addItemListener(new ItemListener() {
+      @Override
+      public void itemStateChanged(ItemEvent e) {
+        if (isInvoicePayment() && e.getStateChange() == ItemEvent.SELECTED) {
+          showPriceTaxeIncluded(tax.getValue());
+        }
+      }
+    });
+
     document = new GemField(8);
     document.setMinimumSize(new Dimension(amount.getPreferredSize().width, document.getPreferredSize().height));
     schoolChoice = new ParamChoice(dataCache.getList(Model.School).getData());
@@ -158,7 +176,7 @@ public class OrderLineView
     gb.add(new JLabel(BundleUtil.getLabel("Label.label")), 0, 4, 1, 1, GridBagHelper.WEST);
     gb.add(new JLabel(BundleUtil.getLabel("Amount.label")), 0, 5, 1, 1, GridBagHelper.WEST);
     gb.add(new JLabel(BundleUtil.getLabel("Mode.of.payment.label")), 0, 6, 1, 1, GridBagHelper.WEST);
-    
+
     gb.add(new JLabel(BundleUtil.getLabel("Document.number.label")), 0, 7, 1, 1, GridBagHelper.WEST);
     gb.add(new JLabel(BundleUtil.getLabel("School.label")), 0, 8, 1, 1, GridBagHelper.WEST);
     gb.add(new JLabel(BundleUtil.getLabel("Account.label")), 0, 9, 1, 1, GridBagHelper.WEST);
@@ -171,10 +189,13 @@ public class OrderLineView
     gb.add(group, 1, 2, 3, 1, GridBagHelper.WEST);
     gb.add(date, 1, 3, 3, 1, GridBagHelper.WEST);
     gb.add(label, 1, 4, 3, 1, GridBagHelper.WEST);
-    gb.add(amount, 1, 5, 3, 1, GridBagHelper.WEST);
+    gb.add(amount, 1, 5, 2, 1, GridBagHelper.WEST);
+
+
+    gb.add(inclTax, 3, 5, 1, 1, GridBagHelper.WEST);
     gb.add(modeOfPayment, 1, 6, 1, 1, GridBagHelper.WEST);
-    gb.add(new JLabel(BundleUtil.getLabel("Invoice.item.vat.label")), 2, 6, 1, 1, GridBagHelper.WEST);
-    gb.add(vat, 3, 6, 1, 1, GridBagHelper.WEST);
+    gb.add(taxLabel, 2, 6, 1, 1, GridBagHelper.WEST);
+    gb.add(tax, 3, 6, 1, 1, GridBagHelper.WEST);
     gb.add(document, 1, 7, 3, 1, GridBagHelper.WEST);
     gb.add(schoolChoice, 1, 8, 3, 1, GridBagHelper.WEST);
     gb.add(account, 1, 9, 3, 1, GridBagHelper.WEST);
@@ -197,6 +218,21 @@ public class OrderLineView
     setSize(new Dimension(500, 480));
 
     setLocationRelativeTo(frame);
+  }
+
+  private void showPriceTaxeIncluded(String value) {
+    float val = Float.parseFloat(value);
+    if (val <= 0) {
+      inclTax.setText(null);
+    } else {
+      try {
+        double exclTax = getTotalTaxesExcluded();
+        String suff = " " +  BundleUtil.getLabel("Invoice.ati.label");
+        inclTax.setText(nf.format(exclTax + (exclTax * val / 100d)) + suff);
+      } catch (ParseException pe) {
+        GemLogger.logException(pe);
+      }
+    }
   }
 
   boolean isValidation() {
@@ -268,7 +304,7 @@ public class OrderLineView
       throw new IllegalArgumentException("Libellé non saisi");
     }
     //if (!AccountUtil.isPersonalAccount(getAccount()) && getAmount() < 1.0) {
-    if (!ModeOfPayment.FAC.toString().equals(modeOfPayment.getSelectedItem()) && getAmount() < 0.0) {
+    if (!ModeOfPayment.FAC.toString().equals(modeOfPayment.getSelectedItem()) && getTotalTaxesIncluded() < 0.0) {
       if (!MessagePopup.confirm(this, MessageUtil.getMessage("payment.negative.amount.warning"))) {
         throw new IllegalArgumentException(MessageUtil.getMessage("invalid.amount"));
       }
@@ -293,7 +329,6 @@ public class OrderLineView
     group.setText(String.valueOf(orderLine.getGroup()));
     date.setText(orderLine.getDate().toString());
     label.setText(orderLine.getLabel());
-    setAmount(orderLine.getDoubleAmount());
     modeOfPayment.setSelectedItem(orderLine.getModeOfPayment());
     document.setText(orderLine.getDocument());
     schoolChoice.setKey(orderLine.getSchool());
@@ -301,13 +336,15 @@ public class OrderLineView
     costAccount.setSelectedItem(orderLine.getCostAccount());
     cbPaid.setSelected(orderLine.isPaid());
     invoice.setText(orderLine.getInvoice());
-    setVat(orderLine.getVat());
+    setVat(orderLine.getTax());
+    setAmount(orderLine.getDoubleAmount());
+    showPriceTaxeIncluded(tax.getValue());
   }
-  
+
   private void setVat(float v) {
-    for(Param p: vatList) {
+    for(Param p: taxList) {
       if (p.getValue().equals(String.valueOf(v))) {
-        vat.setSelectedItem(p);
+        tax.setSelectedItem(p);
         break;
       }
     }
@@ -339,19 +376,23 @@ public class OrderLineView
     orderLine.setDate(date.getDate());
     orderLine.setModeOfPayment((String) modeOfPayment.getSelectedItem());
     orderLine.setLabel(label.getText());
-    orderLine.setAmount(getAmount());
+    orderLine.setAmount(getTotalTaxesIncluded());
     orderLine.setDocument(document.getText());
     orderLine.setSchool(schoolChoice.getKey());
     orderLine.setAccount(getAccount());
     orderLine.setCostAccount(getCostAccount());
     orderLine.setPaid(cbPaid.isSelected());
     orderLine.setInvoice(invoice.getText());
-    
-    if (ModeOfPayment.FAC.name().equals(modeOfPayment.getSelectedItem())) {
-      orderLine.setVat(Float.parseFloat(vat.getValue()));
+
+    if (isInvoicePayment()) {
+      orderLine.setTax(Float.parseFloat(tax.getValue()));
     }
 
     return orderLine;
+  }
+
+  private boolean isInvoicePayment() {
+    return ModeOfPayment.FAC.name().equals(modeOfPayment.getSelectedItem());
   }
 
   @Override
@@ -420,7 +461,14 @@ public class OrderLineView
   }
 
   private void setAmount(Double m) {
-    amount.setValue(m);
+    float v = Float.parseFloat(tax.getValue());
+    if (v > 0) {
+      double coeff = 100 / (100 + v);
+      Double et = AccountUtil.round(Math.abs(m) * coeff);
+      amount.setValue(m < 0 ? -et : et);
+    } else {
+      amount.setValue(m);
+    }
   }
 
   /**
@@ -429,12 +477,30 @@ public class OrderLineView
    * @return a double
    * @throws parseException in case of error format
    */
-  private double getAmount() throws ParseException {
+  private double getTotalTaxesIncluded() throws ParseException {
     //echeancier.setAmount(nf.parse(montant.getText()).intValue());
     //class cast exception (Long -> Double) si 00 après la virgule avec : (Double)montant.getValue();
-    amount.commitEdit();
-    Number n = (Number) amount.getValue();
-    return n.doubleValue();
+    if (amount.getValue() != null) {
+      amount.commitEdit();
+      Number n = (Number) amount.getValue();
+      float t = Float.parseFloat(tax.getValue());
+      if (t > 0) {
+        double et = n.doubleValue();
+        return et + (et * t / 100d);
+      } else {
+        return n.doubleValue();
+      }
+    }
+    return 0.0;
+  }
+
+  private double getTotalTaxesExcluded() throws ParseException {
+    if (amount.getValue() != null) {
+      amount.commitEdit();
+      Number n = (Number) amount.getValue();
+      return n.doubleValue();
+    }
+    return 0.0;
   }
 
   void addActionListener(ActionListener listener) {

@@ -1,5 +1,5 @@
 /*
- * @(#)BasicBillingService 2.14.0 02/06/17
+ * @(#)BasicBillingService 2.14.0 05/06/17
  *
  * Copyright 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -236,8 +236,8 @@ public class BasicBillingService
         }
         // check if vat matches
         if (list.size() > 0) {
-          Param v = list.get(0).getItem().getVat();
-          if (v.getId() != item.getItem().getVat().getId()) {
+          Param v = list.get(0).getItem().getTax();
+          if (v.getId() != item.getItem().getTax().getId()) {
             Account acc = (Account) DataCache.findId(c, Model.Account);
             throw new BillingException(MessageUtil.getMessage("invoice.item.matching.vat.exception", new Object[]{acc.getLabel(), v.getValue()}));
           }
@@ -293,9 +293,9 @@ public class BasicBillingService
     n.setAccount(c);
     n.setCostAccount(a);
     n.setPaid(true); // payé par défaut pour les échéances de facturation
-    Param vat = item.getItem().getVat();
-    
-    n.setVat(vat == null ? 0.0f : Float.parseFloat(vat.getValue()));
+    Param vat = item.getItem().getTax();
+
+    n.setTax(vat == null ? 0.0f : Float.parseFloat(vat.getValue()));
 
     // échéance de contrepartie (d'encaissement)
     /*OrderLine cp = new OrderLine(inv);
@@ -312,13 +312,6 @@ public class BasicBillingService
 
     inv.addOrderLine(n);
 //    inv.addOrderLine(cp);
-  }
-  
-  private void addTVA(InvoiceItem item) {
-    String val = item.getItem().getVat().getValue();
-    if (Integer.parseInt(val) > 0) {
-      
-    }
   }
 
   private OrderLine getTotalOrderLine(Invoice inv) {
@@ -465,7 +458,7 @@ public class BasicBillingService
     }
     return n;
   }
-  
+
   @Override
   public Invoice createCreditNote(Quote source) {
     Invoice n = new Invoice();
@@ -478,11 +471,12 @@ public class BasicBillingService
     n.setReference(source.getNumber());
     n.items = new ArrayList<InvoiceItem>();
     List<InvoiceItem> sourceItems = new ArrayList<>(source.getItems());
-    if (sourceItems.size() > 0) {
+    //TODO get total by account and by tax
+    for (InvoiceItem it : sourceItems) {
       InvoiceItem vItem = new InvoiceItem();
       vItem.setQuantity(1);
-      Item e = copy(sourceItems.get(0).getItem());
-      e.setPrice(source.getTotalATI());
+      Item e = copy(it.getItem());
+//      e.setPrice(source.getTotalET());
       vItem.setItem(e);
       n.items.add(vItem);
     }
@@ -504,7 +498,7 @@ public class BasicBillingService
       ni.setDesignation(orig.getDesignation());
       ni.setPrice(orig.getPrice());
       ni.setStandard(false);
-      ni.setVat(orig.getVat());
+      ni.setTax(orig.getTax());
 
       return ni;
   }

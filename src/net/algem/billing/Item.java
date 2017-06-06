@@ -1,7 +1,7 @@
 /*
- * @(#)Item.java 2.10.0 15/06/2016
+ * @(#)Item.java 2.14.0 05/06/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,16 +21,20 @@
 
 package net.algem.billing;
 
+import java.util.List;
+import net.algem.accounting.AccountUtil;
 import net.algem.accounting.OrderLine;
 import net.algem.config.Param;
+import net.algem.util.DataCache;
 import net.algem.util.model.GemModel;
+import net.algem.util.model.Model;
 
 /**
  * Item usable for invoice creation.
  * An item may be created regardless of invoice.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.14.0
  * @since 2.3.a 22/12/11
  */
 public class Item
@@ -47,7 +51,7 @@ public class Item
  private double price;
 
  /** VAT id. */
- private Param vat;
+ private Param tax;
 
  /** Account number. */
  private int account;
@@ -85,7 +89,7 @@ public class Item
     c.price = this.price;
     c.account = this.account;
     c.standard = this.standard;
-    c.vat = new Vat(this.vat);
+    c.tax = new Vat(this.tax);
 
     return c;
   }
@@ -109,18 +113,41 @@ public class Item
    * @param e order line
    */
   public Item(OrderLine e, int qty) {
+    float t = 0.0f;
     if (e != null) {
       designation = e.getLabel();
+      t = e.getTax();
       if (qty > 0) {
-        price = (Math.abs(e.getDoubleAmount()) / qty);
+        if (t > 0) {
+          double coeff = 100 / (100 + t);
+          double exclTax = AccountUtil.round(Math.abs(e.getDoubleAmount()) * coeff);
+          price = exclTax / qty;
+        } else {
+          price = (Math.abs(e.getDoubleAmount()) / qty);
+        }
       }
       if (e.getAccount() != null) {
         account = e.getAccount().getId();
       }
     }
-    vat = new Param("1","0.0"); // vat par défaut à 0.0
-    standard = false;
 
+    if (t > 0) {
+      DataCache cache = DataCache.getInitializedInstance();
+      if (cache != null) {
+        List<Param> taxList = cache.getList(Model.Vat).getData();
+        for (Param p : taxList) {
+          if (p.getValue().equals(String.valueOf(t))) {
+            tax = new Param(String.valueOf(p.getId()), p.getValue());
+            break;
+          }
+        }
+      } else {
+        tax = new Param("1", "0.0"); // default to 0.0
+      }
+    } else {
+      tax = new Param("1", "0.0"); // default to 0.0
+    }
+    standard = false;
   }
 
   @Override
@@ -141,7 +168,7 @@ public class Item
     if (this.price != other.price) {
       return false;
     }
-    if (this.vat != other.vat && (this.vat == null || !this.vat.equals(other.vat))) {
+    if (this.tax != other.tax && (this.tax == null || !this.tax.equals(other.tax))) {
       return false;
     }
     if (this.account != other.getAccount()) {
@@ -159,7 +186,7 @@ public class Item
     hash = 47 * hash + this.id;
     hash = 47 * hash + (this.designation != null ? this.designation.hashCode() : 0);
     hash = 47 * hash + (int) (Double.doubleToLongBits(this.price) ^ (Double.doubleToLongBits(this.price) >>> 32));
-    hash = 47 * hash + (this.vat != null ? this.vat.hashCode() : 0);
+    hash = 47 * hash + (this.tax != null ? this.tax.hashCode() : 0);
     hash = 47 * hash + this.account;
     hash = 47 * hash + (this.standard ? 1 : 0);
     return hash;
@@ -210,12 +237,12 @@ public class Item
     this.standard = standard;
   }
 
-  public Param getVat() {
-    return vat;
+  public Param getTax() {
+    return tax;
   }
 
-  public void setVat(Param tva) {
-    this.vat = tva;
+  public void setTax(Param tax) {
+    this.tax = tax;
   }
 
   @Override
