@@ -205,7 +205,7 @@ public class BasicBillingService
    * @throws SQLException
    */
   private void setOrderLine(Invoice inv) throws SQLException, BillingException {
-    Map<Integer,List<InvoiceItem>> map = mapInvoiceItemsByAccount(inv.getItems());
+    Map<Integer,List<InvoiceItem>> map = mapInvoiceItemsByAccount(inv.getItems(), true);
     for(List<InvoiceItem> items : map.values()) {
       addInvoiceOrderLines(inv, items);
     }
@@ -222,10 +222,10 @@ public class BasicBillingService
    * @param items
    * @return a map
    */
-  private Map<Integer, List<InvoiceItem>> mapInvoiceItemsByAccount(Collection<InvoiceItem> items) throws BillingException, SQLException {
+  private Map<Integer, List<InvoiceItem>> mapInvoiceItemsByAccount(Collection<InvoiceItem> items, boolean checkLine) throws BillingException, SQLException {
     Map<Integer, List<InvoiceItem>> map = new HashMap<Integer, List<InvoiceItem>>();
     for (InvoiceItem item : items) {
-      if (item.getOrderLine() == null && item.getTotal(true) != 0.0) {
+      if (item.getTotal(true) != 0.0 && (item.getOrderLine() == null || !checkLine)) {
         int c = item.getItem().getAccount();
         if (c == 0) {
           continue;
@@ -460,7 +460,7 @@ public class BasicBillingService
   }
 
   @Override
-  public Invoice createCreditNote(Quote source) {
+  public Invoice createCreditNote(Quote source) throws BillingException, SQLException {
     Invoice n = new Invoice();
     n.setDate(new DateFr(new Date()));
     n.setDescription(BundleUtil.getLabel("Credit.note.label") + " " + source.getDescription());
@@ -470,16 +470,27 @@ public class BasicBillingService
     n.setMember(source.getMember());
     n.setReference(source.getNumber());
     n.items = new ArrayList<InvoiceItem>();
-    List<InvoiceItem> sourceItems = new ArrayList<>(source.getItems());
+//    List<InvoiceItem> sourceItems = new ArrayList<>(source.getItems());
     //TODO get total by account and by tax
-    for (InvoiceItem it : sourceItems) {
+    Map<Integer,List<InvoiceItem>> map = mapInvoiceItemsByAccount(source.getItems(), false);
+    for (List<InvoiceItem> items : map.values()) {
       InvoiceItem vItem = new InvoiceItem();
       vItem.setQuantity(1);
-      Item e = copy(it.getItem());
-//      e.setPrice(source.getTotalET());
-      vItem.setItem(e);
-      n.items.add(vItem);
+      Item e = null;
+      double excTotal = 0.0;
+      for (InvoiceItem it : items) {
+        e = copy(it.getItem());
+        excTotal += e.getPrice();
+      }
+      
+      if (e != null && excTotal > 0.0) {
+        e.setPrice(excTotal);
+        vItem.setItem(e);
+        n.items.add(vItem);
+      }
+      
     }
+    
     return n;
   }
 

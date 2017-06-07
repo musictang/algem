@@ -27,6 +27,8 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.algem.accounting.AccountUtil;
 import net.algem.accounting.OrderLine;
 import net.algem.util.BundleUtil;
@@ -254,17 +256,22 @@ public class InvoiceEditor
     if (evt.getSource() == btPrint) {
       view.print();
     } else if (evt.getSource() == btCreditNote) {
-      Invoice n = service.createCreditNote(view.get());
-      n.setCreditNote(true);
-      if (n != null) {
-        n.setUser(dataCache.getUser());
-        n.setEditable(true);
-        view.set(n, service.getContact(n.getMember()), service.getContact(n.getPayer()), service.getContact(n.getIssuer()));
-        view.setId("");
-        btCreditNote.setEnabled(false);
-      } else {
-        MessagePopup.error(this, MessageUtil.getMessage("billing.credit.note.error"));
-      }
+      try {
+        Invoice n = service.createCreditNote(view.get());
+        if (n != null) {
+          n.setCreditNote(true);
+          n.setUser(dataCache.getUser());
+          n.setEditable(true);
+          view.set(n, service.getContact(n.getMember()), service.getContact(n.getPayer()), service.getContact(n.getIssuer()));
+          view.setId("");
+          btCreditNote.setEnabled(false);
+        } else {
+          MessagePopup.error(this, MessageUtil.getMessage("billing.credit.note.error"));
+        }
+      } catch (SQLException | BillingException ex) {
+        GemLogger.logException(ex);
+        MessagePopup.error(this, ex.getMessage());
+      } 
     } else if (evt.getSource() == btDuplicate) {
       Quote n = service.duplicate(view.get());
       if (n != null) {

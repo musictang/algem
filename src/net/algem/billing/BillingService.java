@@ -149,7 +149,7 @@ public interface BillingService
 
   public Invoice createInvoiceFrom(Quote q) throws BillingException;
   
-  public Invoice createCreditNote(Quote i);
+  public Invoice createCreditNote(Quote i) throws  SQLException, BillingException;
 
   public GemList<Account> getAccounts();
 

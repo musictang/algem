@@ -85,6 +85,8 @@ public class OrderLineView
    * @param frame
    * @param title
    * @param dataCache
+   * @param modal status
+   * @throws java.sql.SQLException
    */
   public OrderLineView(Frame frame, String title, final DataCache dataCache, boolean modal) throws SQLException {
     super(frame, title, modal);
@@ -103,7 +105,6 @@ public class OrderLineView
     group.setMinimumSize(new Dimension(60, group.getPreferredSize().height));
     date = new DateFrField();
     label = new GemField(24);
-//    label.setMinimumSize(new Dimension(200, label.getPreferredSize().height));
     amount = new JFormattedTextField(nf);
     amount.setColumns(8);
     amount.setMinimumSize(new Dimension(60, amount.getPreferredSize().height));
@@ -123,7 +124,6 @@ public class OrderLineView
       }
     });
     inclTax = new JLabel();
-    //inclTax.setFont(new Font(Font.SANS_SERIF,Font.PLAIN,9));
     inclTax.setEnabled(false);
     DataConnection dc = DataCache.getDataConnection();
     modeOfPayment = new JComboBox(
@@ -159,7 +159,6 @@ public class OrderLineView
     document.setMinimumSize(new Dimension(amount.getPreferredSize().width, document.getPreferredSize().height));
     schoolChoice = new ParamChoice(dataCache.getList(Model.School).getData());
     account = new AccountChoice(AccountIO.find(true, dc));
-//    account.setPreferredSize(new Dimension(200, account.getPreferredSize().height));
     costAccount = new ParamChoice(
             ActivableParamTableIO.findActive(
                     CostAccountCtrl.tableName, CostAccountCtrl.columnName,
@@ -220,6 +219,10 @@ public class OrderLineView
     setLocationRelativeTo(frame);
   }
 
+  /**
+   * Calculates and show price full taxes.
+   * @param value tax value
+   */
   private void showPriceTaxeIncluded(String value) {
     float val = Float.parseFloat(value);
     if (val <= 0) {
@@ -472,9 +475,9 @@ public class OrderLineView
   }
 
   /**
-   * Retrieves the amount.
+   * Gets the amount, all taxes included.
    *
-   * @return a double
+   * @return a total
    * @throws parseException in case of error format
    */
   private double getTotalTaxesIncluded() throws ParseException {
@@ -494,6 +497,11 @@ public class OrderLineView
     return 0.0;
   }
 
+  /**
+   * Gets the amount, excluding taxes.
+   * @return a total
+   * @throws ParseException 
+   */
   private double getTotalTaxesExcluded() throws ParseException {
     if (amount.getValue() != null) {
       amount.commitEdit();
