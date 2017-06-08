@@ -1,7 +1,7 @@
 /*
- * @(#)Vat  2.9.4.13 05/11/15
+ * @(#)Vat  2.14.0 07/06/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,36 +21,77 @@
 
 package net.algem.billing;
 
+import net.algem.accounting.Account;
 import net.algem.config.Param;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.14.0
  * @since 2.7.a 17/01/2013
  */
-public class Vat 
+public class Vat
   extends Param
 {
 
   private static final long serialVersionUID = 3078588727265655506L;
-  
-  public Vat(String _key, String _value) {
-    super(_key, _value);
+
+  private Account account;
+
+  public Vat(int id, String key, Account account) {
+    this.id = id;
+    this.key = key;
+    this.account = account;
   }
-  
-  public Vat(Param p) {
-    this(p.getKey(), p.getValue());
+
+  public Vat() {
   }
-  
+
+  public Vat(Vat t) {
+    if (t != null) {
+      this.id = t.id;
+      this.key = t.key;
+      this.account = t.account;
+    }
+  }
+
   @Override
   public int getId() {
-    return Integer.parseInt(key);
+    return id;
   }
 
   @Override
   public void setId(int id) {
-    throw new UnsupportedOperationException();
+    this.id = id;
+  }
+
+  public float getRate() {
+    try {
+      return Float.parseFloat(key);
+    } catch(NumberFormatException ex) {
+      return 0.0f;
+    }
+  }
+
+  @Override
+  public String getValue() {
+    return account != null ? account.getLabel() : null;
+  }
+
+  public Account getAccount() {
+    return account;
+  }
+
+  public void setAccount(Account account) {
+    this.account = account;
+    if (account != null) {
+      this.value = account.getLabel();
+    }
+  }
+
+  @Override
+  public String toString() {
+    return key;
   }
 
 }

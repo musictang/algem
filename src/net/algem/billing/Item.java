@@ -1,5 +1,5 @@
 /*
- * @(#)Item.java 2.14.0 05/06/17
+ * @(#)Item.java 2.14.0 07/06/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -24,7 +24,6 @@ package net.algem.billing;
 import java.util.List;
 import net.algem.accounting.AccountUtil;
 import net.algem.accounting.OrderLine;
-import net.algem.config.Param;
 import net.algem.util.DataCache;
 import net.algem.util.model.GemModel;
 import net.algem.util.model.Model;
@@ -50,8 +49,8 @@ public class Item
  /** Unit price */
  private double price;
 
- /** VAT id. */
- private Param tax;
+ /** VAT tax. */
+ private Vat tax;
 
  /** Account number. */
  private int account;
@@ -134,18 +133,18 @@ public class Item
     if (t > 0) {
       DataCache cache = DataCache.getInitializedInstance();
       if (cache != null) {
-        List<Param> taxList = cache.getList(Model.Vat).getData();
-        for (Param p : taxList) {
-          if (p.getValue().equals(String.valueOf(t))) {
-            tax = new Param(String.valueOf(p.getId()), p.getValue());
+        List<Vat> taxList = cache.getList(Model.Vat).getData();
+        for (Vat p : taxList) {
+          if (p.getRate() == t) {
+            tax = new Vat(p.getId(), p.getKey(), p.getAccount());
             break;
           }
         }
       } else {
-        tax = new Param("1", "0.0"); // default to 0.0
+        tax = new Vat(1, "0.0", null); // default to 0.0
       }
     } else {
-      tax = new Param("1", "0.0"); // default to 0.0
+      tax = new Vat(1, "0.0", null); // default to 0.0
     }
     standard = false;
   }
@@ -237,11 +236,11 @@ public class Item
     this.standard = standard;
   }
 
-  public Param getTax() {
+  public Vat getTax() {
     return tax;
   }
 
-  public void setTax(Param tax) {
+  public void setTax(Vat tax) {
     this.tax = tax;
   }
 

@@ -1,7 +1,7 @@
 /*
- * @(#)VATCtrl  2.9.4.13 16/10/15
+ * @(#)VATCtrl  2.14.0 08/06/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -21,68 +21,98 @@
 package net.algem.billing;
 
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Vector;
+import javax.swing.table.TableColumnModel;
+import net.algem.accounting.Account;
+import net.algem.accounting.AccountIO;
 import net.algem.config.Param;
 import net.algem.config.ParamTableCtrl;
-import net.algem.config.ParamTableIO;
 import net.algem.config.ParamTableView;
 import net.algem.util.BundleUtil;
+import net.algem.util.DataCache;
+import net.algem.util.GemLogger;
 import net.algem.util.event.GemEvent;
 import net.algem.util.module.GemDesktop;
+import net.algem.util.ui.JTableModel;
 
 /**
- * Persistence for VAT.
+ * Taxes controller.
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.14.0
  * @since 2.3.a 30/01/12
  */
 public class VATCtrl
-        extends ParamTableCtrl
-{
+  extends ParamTableCtrl {
 
-  public static String tableName = "tva";
-  public static String seqName = "tva_id_seq";
-  public static String columnKey = "id";
-  public static String columnValue = "pourcentage";
-  public static String sortColumn = "pourcentage";
+  private VatIO vatIO;
 
-  public VATCtrl(GemDesktop _desktop) {
-    super(_desktop, BundleUtil.getLabel("Invoice.item.vat.label"), false, 1);
+  public VATCtrl(GemDesktop desktop) {
+    super(desktop, BundleUtil.getLabel("Invoice.item.vat.label"), false, 1);
+    this.vatIO = new VatIO(DataCache.getDataConnection());
   }
 
   @Override
   public void load() {
-    load(ParamTableIO.find(tableName, sortColumn, dc).elements());
+    try {
+      List<Vat> taxes = vatIO.load();
+      load(Collections.enumeration(taxes));
+    } catch (SQLException ex) {
+      GemLogger.logException(ex);
+    }
   }
 
   @Override
   public void modification(Param current, Param p) throws SQLException {
-    ParamTableIO.update(tableName, columnKey, columnValue, p, dc);
-    desktop.getDataCache().update((Vat) p);
-    desktop.postEvent(new GemEvent(this, GemEvent.MODIFICATION, GemEvent.VAT, (Vat) p));
+    Vat t = (Vat) p;
+    vatIO.update(t);
+    desktop.getDataCache().update(t);
+    desktop.postEvent(new GemEvent(this, GemEvent.MODIFICATION, GemEvent.VAT, t));
   }
 
   @Override
   public void insertion(Param p) throws SQLException {
-    ParamTableIO.insert(tableName, seqName, p, dc);
-    desktop.getDataCache().add((Vat) p);
-    desktop.postEvent(new GemEvent(this, GemEvent.CREATION, GemEvent.VAT, (Vat) p));
+    Vat t = (Vat) p;
+    vatIO.insert(t);
+    desktop.getDataCache().add(t);
+    desktop.postEvent(new GemEvent(this, GemEvent.CREATION, GemEvent.VAT, t));
+
   }
 
   @Override
   public void suppression(Param p) throws SQLException {
-    ParamTableIO.delete(tableName, columnKey, p, dc);
-    desktop.getDataCache().remove((Vat) p);
-    desktop.postEvent(new GemEvent(this, GemEvent.SUPPRESSION, GemEvent.VAT, (Vat) p));
-  }
-
-  public String find() {
-    Param p = ParamTableIO.findBy(tableName, " ORDER BY id LIMIT 1", dc);
-    return p == null ? null : p.getValue();
+    Vat t = (Vat) p;
+    vatIO.delete(t.getId());
+    desktop.getDataCache().remove(t);
+    desktop.postEvent(new GemEvent(this, GemEvent.SUPPRESSION, GemEvent.VAT, t));
   }
 
   @Override
   public void setView(boolean activable) {
-    table = new ParamTableView(title, new VatTableModel());
-    mask = new VATView(activable);
+    table = new VatTableView(title, new VatTableModel());
+    table.setColumnModel();
+    Vector<Account> accounts = new Vector<>();
+    try {
+      accounts = AccountIO.find(false, dc);// false: include inactive accounts
+    } catch (SQLException ex) {
+      GemLogger.logException(ex);
+    }
+    mask = new VATView(accounts);
+  }
+
+  class VatTableView extends ParamTableView {
+
+    public VatTableView(String title, JTableModel<Vat> model) {
+      super(title, model);
+    }
+
+    @Override
+    public void setColumnModel() {
+      TableColumnModel cm = table.getColumnModel();
+      cm.getColumn(0).setPreferredWidth(25);
+      cm.getColumn(1).setPreferredWidth(400);
+    }
   }
 }

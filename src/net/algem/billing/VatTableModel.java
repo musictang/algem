@@ -1,7 +1,7 @@
 /*
- * @(#)VatTableModel  2.5.d 25/07/12
+ * @(#)VatTableModel  2.14.0 07/06/17
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -22,20 +22,50 @@
 package net.algem.billing;
 
 import net.algem.util.BundleUtil;
-import net.algem.config.ParamTableModel;
+import net.algem.util.ui.JTableModel;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.5.d
+ * @version 2.14.0
  * @since 2.3.c 12/03/12
  */
 public class VatTableModel
-        extends ParamTableModel
+        extends JTableModel<Vat>
 {
 
   public VatTableModel() {
-    header = new String[]{BundleUtil.getLabel("Code.label"), BundleUtil.getLabel("Rate.label")};
+    header = new String[]{
+      BundleUtil.getLabel("Rate.label"),
+      BundleUtil.getLabel("Account.label")
+    };
+  }
+
+  @Override
+  public int getIdFromIndex(int i) {
+    return getItem(i).getId();
+  }
+
+   @Override
+  public boolean isCellEditable(int row, int column) {
+    return false;
+  }
+
+  @Override
+  public Object getValueAt(int line, int col) {
+    Vat t = tuples.elementAt(line);
+    switch (col) {
+      case 0:
+        return t.getKey();
+      case 1:
+        return t.getAccount();
+    }
+    return null;
+  }
+
+  @Override
+  public void setValueAt(Object value, int line, int column) {
+
   }
 
 

@@ -1,7 +1,7 @@
 /*
- * @(#)AccountIO.java	2.8.i 28/06/13
+ * @(#)AccountIO.java	2.14.0 08/06/17
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -29,9 +29,9 @@ import net.algem.util.model.TableIO;
 
 /**
  * Account persistence.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.i
+ * @version 2.14.0
  * @since 2.3.c 08/03/12
  */
 public class AccountIO
@@ -81,9 +81,10 @@ public class AccountIO
 
   /**
    *
-   * @param active
-   * @param dc
-   * @return une liste de comptes
+   * @param active if true, only activated accounts are returned
+   * @param dc connexion
+   *
+   * @return a list of accounts
    * @throws SQLException
    */
   public static Vector<Account> find(boolean active, DataConnection dc) throws SQLException {
@@ -91,15 +92,15 @@ public class AccountIO
     String where = "";
     if (active) {
       where = " WHERE actif = true";
-    } // tous les comptes sinon
+    } // all accounts otherwise
     return find(where, ORDER_COLUMN, dc);
   }
 
   /**
    *
-   * @param where
-   * @param orderColumn
-   * @param dc
+   * @param where restrict expression
+   * @param orderColumn the column used to sort the results
+   * @param dc connexion
    * @return a list of accounts
    * @throws SQLException
    */
@@ -112,13 +113,12 @@ public class AccountIO
     if (orderColumn != null) {
       query += " ORDER BY " + orderColumn;
     }
-//System.out.println(query);
-    ResultSet rs = dc.executeQuery(query);
-    while (rs.next()) {
-      Account c = new Account(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getBoolean(4));
-      v.addElement(c);
+    try (ResultSet rs = dc.executeQuery(query)) {
+      while (rs.next()) {
+        Account c = new Account(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getBoolean(4));
+        v.addElement(c);
+      }
     }
-    rs.close();
 
     return v;
   }
@@ -145,9 +145,10 @@ public class AccountIO
     if (actif) {
       query += " AND actif = " + actif;
     }
-    ResultSet rs = dc.executeQuery(query);
-    if (rs.next()) {
-      c = new Account(rs.getInt(1), rs.getString(2), unEscape(rs.getString(3)), rs.getBoolean(4));
+    try (ResultSet rs = dc.executeQuery(query)) {
+      if (rs.next()) {
+        c = new Account(rs.getInt(1), rs.getString(2), unEscape(rs.getString(3)), rs.getBoolean(4));
+      }
     }
     return c;
   }

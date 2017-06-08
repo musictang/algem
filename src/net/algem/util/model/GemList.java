@@ -1,7 +1,7 @@
 /*
- * @(#)GemList.java 2.9.4.13 27/10/15
- * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * @(#)GemList.java 2.14.0 08/06/17
+ *
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 
 package net.algem.util.model;
@@ -27,7 +27,7 @@ import javax.swing.AbstractListModel;
 /**
  * Base class for list of GemModel objects.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.14.0
  * @param <T>
  * @since 2.5.a 28/06/12
  */
@@ -40,7 +40,7 @@ public class GemList<T extends GemModel>
   public GemList() {
     this.list = new ArrayList<T>();
   }
-  
+
   public GemList(List<T> list) {
     this.list = list;//new ArrayList<T>(list);
   }
@@ -59,7 +59,7 @@ public class GemList<T extends GemModel>
   public Object getElementAt(int index) {
     return list.get(index);
   }
-  
+
   /**
    * Gets {@code obj} id.
    * @param obj
@@ -72,20 +72,19 @@ public class GemList<T extends GemModel>
     }
     return list.get(index).getId();
   }
-  
+
   /**
    * Gets {@code obj} index in the list.
    * @param obj
    * @return an integer
    */
   public int indexOf(Object obj) {
-    if (!(obj instanceof GemModel)) {
-      return -1;
-    }
-    for (int i = 0 ; i < list.size(); i++) {
-      GemModel m = list.get(i);
-      if (m.getId() == ((GemModel) obj).getId()) {
-        return i;
+    if (obj instanceof GemModel) {
+      for (int i = 0 ; i < list.size(); i++) {
+        GemModel m = list.get(i);
+        if (m.getId() == ((GemModel) obj).getId()) {
+          return i;
+        }
       }
     }
     return -1;
@@ -93,7 +92,7 @@ public class GemList<T extends GemModel>
     // it is preferable to check only the id as above
     // return list.indexOf(obj);
   }
-  
+
   /**
    * Gets element in the list which id is {@code id}.
    * @param id
@@ -108,7 +107,7 @@ public class GemList<T extends GemModel>
     }
     return null;
   }
-  
+
   /**
    * Gets the list of elements.
    * @return a list
@@ -120,15 +119,15 @@ public class GemList<T extends GemModel>
   /**
    * Sets the element {@code obj} at position {@code index}.
    * @param obj
-   * @param index 
+   * @param index
    */
   public void setElementAt(T obj, int index) {
     list.set(index, obj);
     fireContentsChanged(this, index, index);
   }
-  
+
   public void update(T obj, Comparator<T> comp) {
-    
+
     int idx = indexOf(obj);
     if (idx > -1) {
       setElementAt(obj, idx);
@@ -137,7 +136,7 @@ public class GemList<T extends GemModel>
       }
     }
   }
-  
+
   /**
    * Adds element {@code obj} at end of list.
    * @param obj
@@ -150,7 +149,7 @@ public class GemList<T extends GemModel>
 
   /**
    * Deletes the element {@code obj} from the list.
-   * @param obj 
+   * @param obj
    */
   public void removeElement(T obj) {
     int index = list.indexOf(obj);

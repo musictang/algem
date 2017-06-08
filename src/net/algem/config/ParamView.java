@@ -1,7 +1,7 @@
 /*
- * @(#)ParamView.java	2.10.0 15/06/2016
+ * @(#)ParamView.java	2.14.0 07/06/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -34,7 +34,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.14.0
  * @since 1.0a 07/07/1999
  */
 public class ParamView
@@ -46,11 +46,14 @@ public class ParamView
   protected JCheckBox active;
   protected GemLabel keyLabel;
   protected GemLabel valueLabel;
+  protected GemButton btCancel;
+  protected GemButton btModify;
+  protected GemButton btDelete;
 
   private boolean activable;
-  private GemButton btCancel;
-  private GemButton btModify;
-  private GemButton btDelete;
+
+  public ParamView() {
+  }
 
   public ParamView(boolean activable) {
     key = new GemField(20);
@@ -75,8 +78,8 @@ public class ParamView
 
     setLabels();
 
-    gb.add(keyLabel, 0, 0, 1, 1, GridBagHelper.EAST);
-    gb.add(valueLabel, 0, 1, 1, 1, GridBagHelper.EAST);
+    gb.add(keyLabel, 0, 0, 1, 1, GridBagHelper.WEST);
+    gb.add(valueLabel, 0, 1, 1, 1, GridBagHelper.WEST);
 
     gb.add(key, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(value, 1, 1, 3, 1, GridBagHelper.WEST);

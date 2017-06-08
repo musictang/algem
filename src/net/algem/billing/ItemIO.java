@@ -1,6 +1,6 @@
 /*
- * @(#)ItemIO.java 2.14.0 29/05/17
- * 
+ * @(#)ItemIO.java 2.14.0 07/06/17
+ *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.billing;
 
@@ -25,8 +25,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Vector;
-import java.util.logging.Level;
-import net.algem.config.Param;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
@@ -36,7 +34,7 @@ import net.algem.util.model.TableIO;
 
 /**
  * Item persistence.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.14.0
  * @since 2.3.a 22/12/11
@@ -65,13 +63,7 @@ public class ItemIO
       ps.setInt(1, n);
       ps.setString(2, i.getDesignation());
       ps.setDouble(3, i.getPrice());
-      int vat = 0;
-      try {
-        vat = Integer.parseInt(i.getTax().getKey());
-      } catch (NumberFormatException nfe) {
-        GemLogger.log(nfe.getMessage());
-      }
-      ps.setInt(4, vat);
+      ps.setInt(4, i.getTax().getId());
       ps.setInt(5, i.getAccount());
       ps.setBoolean(6, i.isStandard());
       GemLogger.info(ps.toString());
@@ -109,13 +101,7 @@ public class ItemIO
     try(PreparedStatement ps = dc.prepareStatement(q)) {
       ps.setString(1, i.getDesignation());
       ps.setDouble(2, i.getPrice());
-      int vat = 0;
-      try {
-        vat = Integer.parseInt(i.getTax().getKey());
-      } catch(NumberFormatException nfe) {
-        GemLogger.log(Level.WARNING, nfe.getMessage());
-      }
-      ps.setInt(3,vat);
+      ps.setInt(3,i.getTax().getId());
       ps.setInt(4, i.getAccount());
       ps.setBoolean(5, i.isStandard());
       ps.setInt(6, i.getId());
@@ -129,9 +115,8 @@ public class ItemIO
     dc.executeUpdate(query);
   }
 
-  private Param getVat(int idVat) throws SQLException {
-//    return ParamTableIO.findBy(TVA_TABLE, " WHERE id = " + idVat, dc);
-    return (Vat) DataCache.findId(idVat, Model.Vat);
+  private Vat getVat(int taxId) throws SQLException {
+    return (Vat) DataCache.findId(taxId, Model.Vat);
   }
 
   @Override

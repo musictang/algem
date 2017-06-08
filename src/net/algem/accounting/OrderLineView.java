@@ -1,5 +1,5 @@
 /*
- * @(#)OrderLineView.java	2.14.0 05/06/17
+ * @(#)OrderLineView.java	2.14.0 07/06/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -35,10 +35,12 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.List;
 import javax.swing.*;
+import net.algem.billing.Vat;
 import net.algem.config.*;
 import net.algem.planning.DateFrField;
 import net.algem.util.*;
 import net.algem.util.model.Model;
+import static net.algem.util.model.Model.Vat;
 import net.algem.util.ui.*;
 
 /**
@@ -70,7 +72,7 @@ public class OrderLineView
   private ParamChoice costAccount;
   private ParamChoice tax;
   private JLabel taxLabel;
-  private List<Param> taxList;
+  private List<Vat> taxList;
   private JLabel  inclTax;
   private GemField invoice;
   private GemButton okBt;
@@ -112,7 +114,23 @@ public class OrderLineView
     taxList = dataCache.getList(Model.Vat).getData();
     taxLabel = new JLabel(BundleUtil.getLabel("Invoice.item.vat.label"));
     taxLabel.setEnabled(false);
-    tax = new ParamChoice(taxList);
+    tax = new ParamChoice(taxList) {
+      @Override
+      public int getKey() {
+        Param p = (Param) getSelectedItem();
+        if (p != null) {
+          return p.getId();
+        }
+        return -1;
+      }
+
+      @Override
+      public String getValue() {
+        Param p = (Param) getSelectedItem();
+        return p.getKey();
+      }
+    };
+
     tax.setEnabled(false);
 
     amount.addKeyListener(new KeyAdapter() {
@@ -345,9 +363,9 @@ public class OrderLineView
   }
 
   private void setVat(float v) {
-    for(Param p: taxList) {
-      if (p.getValue().equals(String.valueOf(v))) {
-        tax.setSelectedItem(p);
+    for(Vat t: taxList) {
+      if (t.getRate() == v) {
+        tax.setSelectedItem(t);
         break;
       }
     }
@@ -500,7 +518,7 @@ public class OrderLineView
   /**
    * Gets the amount, excluding taxes.
    * @return a total
-   * @throws ParseException 
+   * @throws ParseException
    */
   private double getTotalTaxesExcluded() throws ParseException {
     if (amount.getValue() != null) {

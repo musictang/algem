@@ -1,5 +1,5 @@
 /*
- * @(#)ItemView.java 2.14.0 05/06/17
+ * @(#)ItemView.java 2.14.0 07/06/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -96,7 +96,7 @@ public class ItemView
     a.setDesignation(designation.getText().trim());
     a.setPrice(((Number) price.getValue()).doubleValue());
     a.setAccount(account.getKey());
-    a.setTax((Param) vat.getSelectedItem());
+    a.setTax((Vat) vat.getSelectedItem());
     //a.setStandard(standard.isSelected());
     a.setStandard(standard);
 

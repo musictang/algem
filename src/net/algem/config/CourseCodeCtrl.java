@@ -1,7 +1,7 @@
 /*
- * @(#)CourseCodeCtrl.java	2.10.0 15/06/2016
+ * @(#)CourseCodeCtrl.java	2.14.0 08/06/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -36,7 +36,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.14.0
  * @since 2.8.a 14/03/2013
  */
 public class CourseCodeCtrl
@@ -52,6 +52,7 @@ public class CourseCodeCtrl
   @Override
   public void setView(boolean activable) {
     table = new GemParamTableView(title, new GemParamTableModel<CourseCode>());
+    table.setColumnModel();
     mask = new GemParamView(true, 6);
   }
 

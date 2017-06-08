@@ -1,7 +1,7 @@
 /*
- * @(#)AccountCtrl.java	2.9.4.11 21/07/15
+ * @(#)AccountCtrl.java	2.14.0 08/06/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -24,21 +24,26 @@ package net.algem.accounting;
 import java.sql.SQLException;
 import net.algem.config.Param;
 import net.algem.config.ParamTableCtrl;
+import net.algem.util.GemLogger;
 import net.algem.util.event.GemEvent;
 import net.algem.util.module.GemDesktop;
 
 /**
- * Management of accounts.
+ * Accounts management.
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.11
+ * @version 2.14.0
  */
 public class AccountCtrl
   extends ParamTableCtrl  {
 
   private AccountingService service;
+
   /**
-   * Par défaut, les numéros de compte sont éditables et les comptes sont activables.
-   * @param _desktop
+   * Constructs a controller.
+   *
+   * By default, account numbers are editable and accounts are activated.
+   * @param _desktop main frame controller
    */
   public AccountCtrl(GemDesktop _desktop) {
     super(_desktop, "Comptes comptables", true, true);
@@ -48,15 +53,16 @@ public class AccountCtrl
   @Override
   public void setView(boolean activable) {
     table = new AccountTableView(title, new AccountTableModel());
+    table.setColumnModel();
     mask = new AccountView();
   }
-  
+
   @Override
   public void load() {
     try {
       load(AccountIO.find(false, dc).elements());
     } catch (SQLException ex) {
-
+      GemLogger.logException(ex);
     }
   }
 

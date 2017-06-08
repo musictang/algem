@@ -1,7 +1,7 @@
 /*
- * @(#)ItemListCtrl.java	2.9.4.13 02/10/15
- * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * @(#)ItemListCtrl.java	2.14.0 07/06/17
+ *
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -33,7 +33,6 @@ import javax.swing.border.BevelBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import net.algem.accounting.AccountUtil;
-import net.algem.config.Param;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.GemLogger;
@@ -46,7 +45,7 @@ import net.algem.util.ui.TableRowTransferHandler;
  * Item list controller.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.14.0
  * @since 2.3.a 30/01/12
  */
 public class ItemListCtrl
@@ -134,9 +133,9 @@ public class ItemListCtrl
 
     @Override
     public void setValue(Object value) {
-      if (value instanceof Param) {
-        Param p = (Param) value;
-        setText((p.getValue() == null) ? "" : nf.format(Float.parseFloat(p.getValue())));
+      if (value instanceof Vat) {
+        Vat p = (Vat) value;
+        setText((p.getRate() == 0.0f) ? "" : nf.format(p.getRate()));
       } else if (value instanceof Number) {
         if (value instanceof Integer || value instanceof Short) {
           setText(String.valueOf(value));

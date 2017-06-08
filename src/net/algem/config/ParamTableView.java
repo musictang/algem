@@ -1,7 +1,7 @@
 /*
- * @(#)ParamTableView.java	2.8.r 14/01/14
- * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * @(#)ParamTableView.java	2.14.0 08/06/17
+ *
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.config;
 
@@ -29,6 +29,7 @@ import javax.swing.JTable;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableRowSorter;
 import net.algem.util.GemCommand;
+import net.algem.util.model.GemModel;
 import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GemPanel;
 import net.algem.util.ui.JTableModel;
@@ -38,7 +39,7 @@ import net.algem.util.ui.JTableModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.r
+ * @version 2.14.0
  */
 public class ParamTableView
         extends GemPanel
@@ -49,11 +50,11 @@ public class ParamTableView
   private GemButton btAdd;
   private GemButton btClose;
 
-  public ParamTableView(String title, JTableModel model) {
+  public <T extends GemModel> ParamTableView(String title, JTableModel<T> model) {
     this(title, model, 0);
   }
 
-  public ParamTableView(String title, JTableModel model, int sortColumn) {
+  public <T extends GemModel> ParamTableView(String title, JTableModel<T> model, int sortColumn) {
 
     this.tableModel = model;
     this.table = new JTable(tableModel);
@@ -63,8 +64,6 @@ public class ParamTableView
     table.setRowSorter(sorter);
     sorter.setSortsOnUpdates(true); // tri automatique après modification
     sorter.setComparator(sortColumn, new ParamKeyComparator());
-
-    setColumnModel();
 
     JScrollPane pm = new JScrollPane(table);
 
@@ -83,7 +82,7 @@ public class ParamTableView
     add(buttons, BorderLayout.SOUTH);
   }
 
-  protected void setColumnModel() {
+  public void setColumnModel() {
     TableColumnModel cm = table.getColumnModel();
     cm.getColumn(0).setPreferredWidth(80);
     cm.getColumn(1).setPreferredWidth(300);

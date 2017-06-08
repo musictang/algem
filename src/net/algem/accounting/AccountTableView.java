@@ -1,7 +1,7 @@
 /*
- * @(#)AccountTableView.java	2.6.a 13/09/2012
+ * @(#)AccountTableView.java	2.14.0 08/06/17
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -29,20 +29,19 @@ import net.algem.config.ParamTableView;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.14.0
  * @since 2.3.c 09/03/12
  */
-public class AccountTableView 
-extends ParamTableView
+public class AccountTableView
+  extends ParamTableView
   {
 
-  public AccountTableView(String title, JTableModel model) {
+  public AccountTableView(String title, JTableModel<Account> model) {
     super(title, model, 1);
-
   }
 
   @Override
-  protected void setColumnModel() {
+  public void setColumnModel() {
     TableColumnModel cm = table.getColumnModel();
     cm.getColumn(0).setPreferredWidth(25);
     cm.getColumn(1).setPreferredWidth(100);

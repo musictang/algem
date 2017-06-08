@@ -1,7 +1,7 @@
 /*
- * @(#)TestQuotationIO.java 2.6.a 08/10/12
- * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * @(#)TestQuotationIO.java 2.14.0 07/06/17
+ *
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.billing;
 
@@ -26,12 +26,12 @@ import junit.framework.TestCase;
 import net.algem.TestProperties;
 import net.algem.planning.DateFr;
 import net.algem.util.DataConnection;
-import net.algem.config.Param;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.14.0 07/06/17
+ * @since 2.6.a
  */
 public class TestQuotationIO extends TestCase
 {
@@ -60,7 +60,7 @@ public class TestQuotationIO extends TestCase
       int member = 1234;
       int payer = 1234;
       int issuer = 16094;
-      Param default_vat = new Param("1", "0.0");
+      Vat default_vat = new Vat(1, "0.0", null);
       Quote d = new Quote();
       d.setMember(member);
       d.setPayer(payer);
@@ -76,9 +76,7 @@ public class TestQuotationIO extends TestCase
       InvoiceItem af = new InvoiceItem(a1);
       d.addItem(af);
       quotationIO.insert(d);
-    } catch (SQLException ex) {
-      fail(ex.getMessage());
-    } catch (BillingException ex) {
+    } catch (SQLException | BillingException ex) {
       fail(ex.getMessage());
     }
 

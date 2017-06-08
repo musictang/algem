@@ -1,7 +1,7 @@
 /*
- * @(#)ParamTableCtrl  2.9.4.13 15/10/15
+ * @(#)ParamTableCtrl  2.14.0 08/06/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -41,7 +41,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.14.0
  * @since 1.0a 21/08/2009
  */
 public abstract class ParamTableCtrl
@@ -94,12 +94,12 @@ public abstract class ParamTableCtrl
   public ParamTableCtrl(GemDesktop desktop , String title, boolean editKey, boolean activable) {
     this(desktop, title, editKey, activable, 0);
   }
-  
-   
+
+
   public ParamTableCtrl(GemDesktop desktop, String title, boolean editKey) {
     this(desktop, title, editKey, false, 0);
   }
-  
+
   public ParamTableCtrl(GemDesktop desktop, String title, boolean editKey, int minId) {
     this(desktop, title, editKey, false, minId);
   }
@@ -112,6 +112,7 @@ public abstract class ParamTableCtrl
       table = new ParamTableView(title, new ParamTableModel());
       mask = new ParamView(false);
     }
+    table.setColumnModel();
   }
 
   private void initView() {
@@ -202,7 +203,7 @@ public abstract class ParamTableCtrl
       desktop.removeCurrentModule();
     }
   }
-  
+
   @Override
   public String toString() {
     return getClass().getName();
@@ -211,20 +212,20 @@ public abstract class ParamTableCtrl
   public abstract void load();
 
   /**
-   * 
-   * @param current actual 
+   *
+   * @param current actual
    * @param p updated
    * @throws SQLException
-   * @throws ParamException 
+   * @throws ParamException
    */
   public abstract void modification(Param current, Param p) throws SQLException, ParamException;
 
   public abstract void insertion(Param p) throws SQLException, ParamException;
 
   public abstract void suppression(Param p) throws Exception;
-  
+
   public class ParamSelectionListener extends MouseAdapter {
-    
+
     /**
      * Id from which a modification is possible.
      * Id is exclusive.

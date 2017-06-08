@@ -1,5 +1,5 @@
 /*
- * @(#)DataCache.java	2.14.0 05/06/17
+ * @(#)DataCache.java	2.14.0 07/06/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -81,6 +81,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import net.algem.billing.VatIO;
 import net.algem.contact.Note;
 
 /**
@@ -467,7 +468,10 @@ public class DataCache
         User u = USER_CACHE.get(id);
         return u != null ? u : USER_IO.findId(id);
       case Vat:
-        return (Vat) VAT_LIST.getItem(id);
+        Vat vat = (Vat) VAT_LIST.getItem(id);
+        if (vat == null) {
+          return new VatIO(dc).findId(id);
+        }
       case CourseCode:
         GemParam cc = (GemParam) COURSE_CODE_LIST.getItem(id);
         return cc != null ? cc : COURSE_CODE_IO.find(id);
@@ -942,12 +946,8 @@ public class DataCache
     for(Param p : vca) {
       COST_ACCOUNT_CACHE.put(p.getKey(), p);
     }
-    List<Param> lp = ParamTableIO.find(ItemIO.TVA_TABLE, "id", dc);
-    List<Vat> lv = new ArrayList<Vat>();
-    for (Param p : lp) {
-      lv.add(new Vat(p));
-    }
-    VAT_LIST = new GemList<Vat>(lv);
+    List<Vat> taxes = new VatIO(dc).load();
+    VAT_LIST = new GemList<Vat>(taxes);
 
   }
 

@@ -1,5 +1,5 @@
 /*
- * @(#)BillingItem.java 2.14.0 02/06/17
+ * @(#)BillingItem.java 2.14.0 07/06/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -72,7 +72,7 @@ public class BillingItem
     return ati ? t + getTotalVat() : t;
   }
 
-  /** 
+  /**
    * Total amount of VAT.
    * @return total VAT
    */
@@ -81,7 +81,7 @@ public class BillingItem
     double tva = 0.0;
 
     if (item.getTax() != null) {
-      tva = Double.parseDouble(item.getTax().getValue());
+      tva = Double.parseDouble(item.getTax().getKey());
     }
     return (getTotalET() * tva) / 100;
   }
@@ -115,7 +115,7 @@ public class BillingItem
     return item + " " + quantity;
   }
 
-  /** 
+  /**
    * Total amount without taxes.
    * @return a number
    */
