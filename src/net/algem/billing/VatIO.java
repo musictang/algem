@@ -1,5 +1,5 @@
 /*
- * @(#) VatIO.java Algem 2.14.0 08/06/2017
+ * @(#) VatIO.java Algem 2.14.0 09/06/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -26,7 +26,9 @@ import java.util.ArrayList;
 import java.util.List;
 import net.algem.accounting.Account;
 import net.algem.accounting.AccountIO;
+import net.algem.accounting.AccountUtil;
 import net.algem.util.DataConnection;
+import net.algem.util.GemLogger;
 import net.algem.util.model.Cacheable;
 import net.algem.util.model.TableIO;
 
@@ -120,6 +122,25 @@ public class VatIO
       }
     }
     return new Vat(1,"0.0",null);
+  }
+  
+  public Account findAccountByTax(final float tax) throws SQLException {
+    String query = "SELECT c.numero,c.libelle FROM " + AccountIO.TABLE + " c JOIN " + TABLE + " t ON c.id = t.compte WHERE t.pourcentage = ?";
+    try (PreparedStatement ps = dc.prepareStatement(query)) {
+      ps.setDouble(1, AccountUtil.round(tax)); // important round value before set
+      GemLogger.info(ps.toString());
+      try (ResultSet rs = ps.executeQuery()) {
+        while (rs.next()) {
+          Account a = new Account();
+          a.setNumber(rs.getString(1));
+          a.setLabel(rs.getString(2));
+          
+          return a;
+        }
+      }
+    }
+    
+    return null;
   }
 
   private Vat getResultFromRS(ResultSet rs) throws SQLException {

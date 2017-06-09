@@ -161,11 +161,11 @@ public class ExportOpenConcerto
         sb.append(';').append(e.getDocument());
         sb.append(';').append(e.getLabel()).append(' ').append(getInvoiceNumber(e));
         if (e.getAmount() < 0) {
-          sb.append(';').append(total);
           sb.append(';').append(nf.format(0.0));
+          sb.append(';').append(total);// credit
         } else {
-          sb.append(';').append(nf.format(0.0));
           sb.append(';').append(total);
+          sb.append(';').append(nf.format(0.0));
         }
         sb.append(';').append(e.getCostAccount().getNumber());
         out.println(sb.toString());
@@ -180,7 +180,7 @@ public class ExportOpenConcerto
         //+ "#" + (e.getAmount() < 0 ? cd : dc) // cd Crédit
         if (e.getAmount() < 0) {
           sb.append(';').append(nf.format(0.0));
-          sb.append(';').append(total);
+          sb.append(';').append(total); // credit
         } else {
           sb.append(';').append(total);
           sb.append(';').append(nf.format(0.0));

@@ -1,5 +1,5 @@
 /*
- * @(#)CommunAccountExportService.java	2.12.0 14/03/17
+ * @(#)CommunAccountExportService.java	2.14.0 08/06/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -34,10 +34,12 @@ import java.util.Vector;
 import net.algem.bank.BankUtil;
 import net.algem.bank.Rib;
 import net.algem.bank.RibIO;
+import net.algem.billing.VatIO;
 import net.algem.config.Preference;
 import net.algem.contact.Contact;
 import net.algem.contact.ContactIO;
 import net.algem.contact.Person;
+import net.algem.util.BundleUtil;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
@@ -47,7 +49,7 @@ import net.algem.util.model.ModelNotFoundException;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.12.0
+ * @version 2.14.0
  * @since 2.8.r 13/12/13
  */
 public abstract class CommunAccountExportService
@@ -64,7 +66,7 @@ public abstract class CommunAccountExportService
   }
 
   protected DateFormat defaultDateFormat = new SimpleDateFormat("dd-MM-yyyy");
-
+  
   /**
    * Retrieves the default account corresponding to the category of activities {@literal key}.
    *
@@ -133,9 +135,9 @@ public abstract class CommunAccountExportService
   }
 
   /**
-   * Retrieves the account number from an order line.
+   * Finds the number of the account referenced by the order line {@code ol}.
    * Customer accounts (it is a Client account and this orderline has an invoice number)
-   * are represented by the payer id prefixed by '411C'.
+   * are represented by the payer's id prefixed by '411C'.
    *
    * @param ol the orderline
    * @return the account number
@@ -152,9 +154,24 @@ public abstract class CommunAccountExportService
     }
     return c;
   }
+  
+  /**
+   * Gets the account corresponding to this {@code tax}.
+   * @param tax numeric percentage
+   * @param vatIO dao
+   * @return an account
+   * @throws SQLException 
+   */
+  public Account getTaxAccount(float tax, VatIO vatIO) throws SQLException {
+    Account a = vatIO.findAccountByTax(tax);
+    if (a == null) {
+      a = new Account(0, "4457", BundleUtil.getLabel("Generic.tax.account.label"));
+    }
+    return a;
+  }
 
   /**
-   * Retrieves the document number from an order line.
+   * Finds the document number referenced by the order line {@code e}.
    * Invoice number is substituted to document number when an order line references an account of class 4.
    *
    * @param e the orderline

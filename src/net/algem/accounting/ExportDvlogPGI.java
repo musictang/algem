@@ -29,6 +29,7 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.Vector;
+import net.algem.billing.VatIO;
 import net.algem.util.DataConnection;
 import net.algem.util.MessageUtil;
 import net.algem.util.TextUtil;
@@ -116,6 +117,7 @@ public class ExportDvlogPGI
 
   @Override
   public int tiersExport(String path, Vector<OrderLine> orderLines) throws IOException, SQLException {
+    VatIO vatIO = new VatIO(dbx);
     int errors = 0;
     boolean m1 = false;
     boolean m2 = false;
@@ -145,16 +147,16 @@ public class ExportDvlogPGI
 
       Account c = getAccount(p);
       int amount = e.getAmount();//TTC
-      double exclTax = 0;//HT
-      double vat = 0;
+
       String codeJournal = getCodeJournal(e.getAccount().getId());
       String f = (e.getInvoice() == null) ? "" : e.getInvoice();
+      Account taxAccount = null;
+      double exclTax = 0;//HT
+      double vat = 0;
       if (e.getTax() > 0.0) {
+        taxAccount = getTaxAccount(e.getTax(), vatIO);
         double coeff = 100 / (100 + e.getTax());
-        System.out.println("amount = "+amount);
-        System.out.println("e.getVat() = "+e.getTax());
         exclTax = AccountUtil.round((Math.abs(amount) /100d) * coeff);
-        System.out.println("exclTax = "+exclTax);
         vat = (Math.abs(amount) /100d) - exclTax;
       }
 
@@ -171,7 +173,8 @@ public class ExportDvlogPGI
               + "#" + (char) 13);
       // test tva
       if (vat > 0.0) {
-       out.print(TextUtil.padWithTrailingZeros("4457", 10)
+       assert(taxAccount != null);
+       out.print(TextUtil.padWithTrailingZeros(taxAccount.getNumber(), 10)
           + "#" + dateFormat.format(e.getDate().getDate())
           + "#" + codeJournal
           + "#" + TextUtil.padWithTrailingSpaces(e.getDocument(), 10)

@@ -1,5 +1,5 @@
 /*
- * @(#)TestAccountUtil.java 2.14.0 26/05/17
+ * @(#)TestAccountUtil.java 2.14.0 09/06/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -224,5 +224,13 @@ public class TestAccountUtil
     res = nf1.format(123.45);
     System.out.println(res);
     assertEquals("￥123.45",res);
+  }
+  
+  @Test
+  public void testTaxValue() {
+    double tax = 19.6;
+    double c = AccountUtil.round(tax);
+    
+    assertTrue(""+c, c == tax);
   }
 }
