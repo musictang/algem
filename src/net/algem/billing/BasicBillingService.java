@@ -1,5 +1,5 @@
 /*
- * @(#)BasicBillingService 2.14.0 05/06/17
+ * @(#)BasicBillingService 2.14.0 13/06/17
  *
  * Copyright 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -139,7 +139,12 @@ public class BasicBillingService
     DateRange range = new DateRange();
     String y = ConfigUtil.getConf(ConfigKey.FINANCIAL_YEAR_START.getKey());
     range.setStart(new DateFr(y));
-    range.setEnd(dataCache.getEndOfYear());
+    Date end = new DateFr(y).getDate();
+    Calendar cal = Calendar.getInstance();
+    cal.setTime(end);
+    cal.add(Calendar.YEAR, 1);
+    cal.add(Calendar.DATE, -1);
+    range.setEnd(new DateFr(cal.getTime()));
     return range;
   }
 
@@ -293,9 +298,8 @@ public class BasicBillingService
     n.setAccount(c);
     n.setCostAccount(a);
     n.setPaid(true); // payé par défaut pour les échéances de facturation
-    Param vat = item.getItem().getTax();
-
-    n.setTax(vat == null ? 0.0f : Float.parseFloat(vat.getValue()));
+    Vat vat = item.getItem().getTax();
+    n.setTax(vat == null ? 0.0f : vat.getRate());
 
     // échéance de contrepartie (d'encaissement)
     /*OrderLine cp = new OrderLine(inv);

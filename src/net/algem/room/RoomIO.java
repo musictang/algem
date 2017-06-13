@@ -1,7 +1,7 @@
 /*
- * @(#)RoomIO.java	2.11.0 23/09/2016
+ * @(#)RoomIO.java	2.14.0 13/06/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -42,7 +42,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.0
+ * @version 2.14.0
  * @since 1.0a 07/07/1999
  */
 public class RoomIO
@@ -63,7 +63,7 @@ public class RoomIO
   public RoomIO(DataConnection dc) {
     this.dc = dc;
     updateStatusPS = dc.prepareStatement("UPDATE " + TABLE + " SET active = ?, public = ? WHERE id = ?");
-    updateEquipmentPS = dc.prepareStatement("INSERT INTO " + EQUIP_TABLE + " VALUES(?,?,?,?)");
+    updateEquipmentPS = dc.prepareStatement("INSERT INTO " + EQUIP_TABLE + " VALUES(?,?,?,?,?,?)");
   }
 
   public void insert(Room s) throws SQLException {
@@ -86,8 +86,6 @@ public class RoomIO
     dc.executeUpdate(query);
     s.setId(id);
   }
-
-
 
   /**
    *
@@ -120,6 +118,8 @@ public class RoomIO
       updateEquipmentPS.setString(2, e.getLabel());// no need to escape with preparedstatement
       updateEquipmentPS.setInt(3, e.getQuantity());
       updateEquipmentPS.setShort(4, e.getIdx());
+      updateEquipmentPS.setBoolean(5, e.isVisible());
+      updateEquipmentPS.setString(6, e.getFixedAssetNumber());
 
       updateEquipmentPS.executeUpdate();
     }
@@ -276,6 +276,8 @@ public class RoomIO
         e.setLabel(unEscape(rs.getString(2).trim()));
         e.setQuantity(rs.getInt(3));
         e.setIdx(rs.getShort(4));
+        e.setVisible(rs.getBoolean(5));
+        e.setFixedAssetNumber(rs.getString(6));
 
         v.addElement(e);
       }

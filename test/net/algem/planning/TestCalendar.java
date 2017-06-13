@@ -1,7 +1,7 @@
 /*
- * @(#)TestCalendar.java	2.8.w 08/07/14
+ * @(#)TestCalendar.java	2.14.0 13/06/17
  * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -31,7 +31,7 @@ import org.junit.*;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc Gobat</a>
- * @version 2.8.w
+ * @version 2.14.0
  * @since 2.8.w 08/07/14
  */
 public class TestCalendar
@@ -98,6 +98,24 @@ public class TestCalendar
     
     assertTrue(9 == hi);
     
+  }
+  
+  @Test
+  public void testIncYear() {
+    Date d1 = new DateFr("01-09-2016").getDate();
+    Calendar cal = Calendar.getInstance();
+    cal.setTime(d1);
+    cal.add(Calendar.YEAR, 1);
+    cal.add(Calendar.DATE, -1);
+    DateFr d2 = new DateFr(cal.getTime());
+    assertEquals(""+d2, d2, new DateFr("31-08-2017"));
+    
+    d1 = new DateFr("01-01-2016").getDate();
+    cal.setTime(d1);
+    cal.add(Calendar.YEAR, 1);
+    cal.add(Calendar.DATE, -1);
+    d2 = new DateFr(cal.getTime());
+    assertEquals(""+d2, d2, new DateFr("31-12-2016"));
   }
 
   class DayTimes

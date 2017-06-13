@@ -63,7 +63,8 @@ public class EquipTableView
 
     TableColumnModel cm = table.getColumnModel();
     cm.getColumn(0).setPreferredWidth(30);
-    cm.getColumn(1).setPreferredWidth(800);
+    cm.getColumn(1).setPreferredWidth(700);
+    cm.getColumn(2).setPreferredWidth(100);
 
     JScrollPane pm = new JScrollPane(table);
 

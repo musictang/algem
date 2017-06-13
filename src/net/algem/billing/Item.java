@@ -1,5 +1,5 @@
 /*
- * @(#)Item.java 2.14.0 07/06/17
+ * @(#)Item.java 2.14.0 12/06/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -110,6 +110,7 @@ public class Item
   /**
    * Item creation from an order line.
    * @param e order line
+   * @param qty quantity
    */
   public Item(OrderLine e, int qty) {
     float t = 0.0f;

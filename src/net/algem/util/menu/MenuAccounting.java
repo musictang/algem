@@ -1,7 +1,7 @@
 /*
- * @(#)MenuAccounting.java 2.10.0 19/05/16
+ * @(#)MenuAccounting.java 2.14.0 13/06/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -48,7 +48,7 @@ import net.algem.util.ui.ProgressMonitorHandler;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.10.0
+ * @version 2.14.0
  * @since 1.0a 07/07/1999
  */
 public class MenuAccounting
@@ -129,7 +129,7 @@ public class MenuAccounting
       desktop.addPanel("Menu.schedule.payment", dlg, GemModule.XL_SIZE);
     } else if (src == miAccountTransfert) {
       AccountExportService exportService = getAccountingExportService(ConfigUtil.getConf(ConfigKey.ACCOUNTING_EXPORT_FORMAT.getKey()));
-      CommunAccountTransferDlg accountTransfertDlg = new CommunAccountTransferDlg(desktop.getFrame(), dataCache, exportService);
+      CommonAccountTransferDlg accountTransfertDlg = new CommonAccountTransferDlg(desktop.getFrame(), dataCache, exportService);
       accountTransfertDlg.setVisible(true);
     } else if (src == miAccountDocument) {
       AccountExportService exportService = getAccountingExportService(ConfigUtil.getConf(ConfigKey.ACCOUNTING_EXPORT_FORMAT.getKey()));

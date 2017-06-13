@@ -1,5 +1,5 @@
 /*
- * @(#)CommunAccountTransferDlg.java	2.12.0 13/03/17
+ * @(#)CommonAccountTransferDlg.java	2.14.0 13/06/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -45,15 +45,15 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.12.0
+ * @version 2.14.0
  * @since 2.8.r 13/12/13
  */
-public class CommunAccountTransferDlg
+public class CommonAccountTransferDlg
         extends AccountTransferDlg
 {
   private AccountTransferView transferView;
 
-  public CommunAccountTransferDlg(Frame parent, DataCache dataCache, AccountExportService exportService) {
+  public CommonAccountTransferDlg(Frame parent, DataCache dataCache, AccountExportService exportService) {
     super(parent, dataCache, exportService);
     setDisplay();
   }

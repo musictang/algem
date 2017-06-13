@@ -1,0 +1,32 @@
+2.14.0
+
+CORRECTIFS
+- dans l'export vers OpenConcerto, le sens débit/crédit était inversé dans le transfert des écritures en attente (FAC et compte de tiers)
+- la date de fin d'année comptable s'étend maintenant jusqu'au dernier jour de l'exercice courant : si par exemple la date de début est au 01/09/2016, la date de fin correspond au 31/08/2017)
+
+COMPTABILITE
+AVOIR
+Création de facture d'avoir
+Vous pouvez maintenant créer directement une facture d'avoir à partir d'une facture existante. Cliquez sur le bouton "Avoir" dans la fenêtre de consultation de facture. Après enregistrement de la facture d'Avoir, les lignes d'écriture adéquates sont automatiquement ajoutées dans l'échéancier du payeur. Notez que les montants seront inversés par rapport à la facture originale. Les lignes de facturation auront un montant positif et les lignes de règlement un montant négatif.
+Le montant de la facture d'avoir peut être partiel et si la facture originale comportait plusieurs articles (correspondant à plusieurs comptes), il n'est pas obligatoire de tous les inclure dans l'avoir. Avant de valider la nouvelle facture, supprimez le cas échéant les lignes désirées ou modifiez les montants.
+
+Gestion des avoirs dans les exports
+Les lignes d'avoir sont maintenant prises en compte dans les exports. Le sens débit/crédit est tout simplement inversé par rapport à l'export habituel.
+
+TVA
+Il est déjà possible d'indiquer un taux de TVA autre que 0 pour chaque article de facturation. La nouveauté est que le montant de la TVA est maintenant pris en compte dans les exports comptables (menu Transfert -> Echéancier et Transfert -> Pièce). Si par exemple, une facture est composée d'un article dont le montant HT est de 100 € et dont le taux de TVA est 19.6, l'export comptable des lignes de facturation (FAC) sera décomposé ainsi :
+- une ligne de crédit pour le montant HT sur le compte de produits
+- une ligne de crédit pour le montant de la TVA associée au compte TVA correspondant (445714, par exemple pour une TVA à 19.6)
+- une ligne de débit pour le montant TTC associée au compte client 411.
+
+
+Gestion de la tva dans les échéances
+
+
+Améliorations export Ciel
+
+Langue et région
+
+SALLE
+Equipement
+

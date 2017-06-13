@@ -1,5 +1,5 @@
 /*
- * @(#)CommunAccountExportService.java	2.14.0 08/06/17
+ * @(#)CommonAccountExportService.java	2.14.0 12/06/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -35,6 +35,8 @@ import net.algem.bank.BankUtil;
 import net.algem.bank.Rib;
 import net.algem.bank.RibIO;
 import net.algem.billing.VatIO;
+import net.algem.config.ConfigKey;
+import net.algem.config.ConfigUtil;
 import net.algem.config.Preference;
 import net.algem.contact.Contact;
 import net.algem.contact.ContactIO;
@@ -52,7 +54,7 @@ import net.algem.util.model.ModelNotFoundException;
  * @version 2.14.0
  * @since 2.8.r 13/12/13
  */
-public abstract class CommunAccountExportService
+public abstract class CommonAccountExportService
         implements AccountExportService
 {
 
@@ -137,20 +139,24 @@ public abstract class CommunAccountExportService
   /**
    * Finds the number of the account referenced by the order line {@code ol}.
    * Customer accounts (it is a Client account and this orderline has an invoice number)
-   * are represented by the payer's id prefixed by '411C'.
+   * are represented by the payer's id prefixed by '411'.
    *
    * @param ol the orderline
    * @return the account number
    */
   @Override
   public String getAccount(OrderLine ol) {
-
     String c = ol.getAccount().getNumber();
-
     if (ol.getInvoice() != null && !ol.getInvoice().isEmpty()
             //&& !AccountUtil.INVOICE_PAYMENT.bufferEquals(e.getModeOfPayment())
             && AccountUtil.isCustomerAccount(ol.getAccount())) {
-      c = "411C" + ol.getPayer();// prefix with 411 + C (client)
+      
+      String prefix = "411";
+      String format = ConfigUtil.getConf(ConfigKey.ACCOUNTING_EXPORT_FORMAT.getKey());
+      if (AccountingExportFormat.OPENCONCERTO.getLabel().equals(format)) {
+        prefix += "C"; // (C = Client)
+      }
+      c = prefix + ol.getPayer();// prefix with 411
     }
     return c;
   }

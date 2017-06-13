@@ -469,9 +469,7 @@ public class DataCache
         return u != null ? u : USER_IO.findId(id);
       case Vat:
         Vat vat = (Vat) VAT_LIST.getItem(id);
-        if (vat == null) {
-          return new VatIO(dc).findId(id);
-        }
+        return vat != null ? vat : new VatIO(dc).findId(id);
       case CourseCode:
         GemParam cc = (GemParam) COURSE_CODE_LIST.getItem(id);
         return cc != null ? cc : COURSE_CODE_IO.find(id);

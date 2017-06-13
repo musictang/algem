@@ -1,7 +1,7 @@
 /*
- * @(#)Param.java	2.9.4.13 05/11/15
+ * @(#)Param.java	2.14.0 12/06/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,6 +20,7 @@
  */
 package net.algem.config;
 
+import java.util.Objects;
 import net.algem.util.model.GemModel;
 
 /**
@@ -27,7 +28,7 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.9.4.13
+ * @version 2.14.0
  * @since 1.0a 07/07/1999
  */
 public class Param
@@ -68,29 +69,27 @@ public class Param
     return value;
   }
 
-  public boolean equals(Param o) {
-    return (o != null
-            && key.equals(o.key)
-            && value.equals(o.value));
-  }
-
   @Override
   public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
     if (obj == null) {
       return false;
     }
-    if (!(obj instanceof Param)) {
+    if (getClass() != obj.getClass()) {
       return false;
     }
     final Param other = (Param) obj;
-    if ((this.key == null) ? (other.key != null) : !this.key.equals(other.key)) {
+    if (!Objects.equals(this.key, other.key)) {
       return false;
     }
-    if ((this.value == null) ? (other.value != null) : !this.value.equals(other.value)) {
+    if (!Objects.equals(this.value, other.value)) {
       return false;
     }
     return true;
   }
+  
 
   @Override
   public int hashCode() {

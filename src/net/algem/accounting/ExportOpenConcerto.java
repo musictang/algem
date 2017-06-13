@@ -1,5 +1,5 @@
 /*
- * @(#) ExportOpenConcerto.java Algem 2.14.0 23/05/17
+ * @(#) ExportOpenConcerto.java Algem 2.14.0 12/06/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -28,6 +28,7 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.Vector;
+import net.algem.billing.VatIO;
 import net.algem.util.DataConnection;
 import net.algem.util.MessageUtil;
 import net.algem.util.TextUtil;
@@ -40,7 +41,7 @@ import net.algem.util.ui.MessagePopup;
  * @since 2.11.4 13/12/2016
  */
 public class ExportOpenConcerto
-        extends CommunAccountExportService
+        extends CommonAccountExportService
 {
 
   private final DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -57,7 +58,6 @@ public class ExportOpenConcerto
   @Override
   public void export(String path, Vector<OrderLine> lines, String codeJournal, Account documentAccount) throws IOException {
     int totalDebit = 0;
-//    int totalDebit = 0;
     int totalCredit = 0;
     String number = (documentAccount == null) ? "" : documentAccount.getNumber();
     OrderLine e = null;
@@ -97,7 +97,7 @@ public class ExportOpenConcerto
         sb.append(';').append(number);
         sb.append(';').append(e.getDocument());
         sb.append(';').append("TOTAL DEBIT");
-        sb.append(';').append(nf.format(totalDebit / 100.0));
+        sb.append(';').append(nf.format(totalDebit / 100.0));//DEBIT
         sb.append(';').append(nf.format(0.0));
         sb.append(';').append(e.getCostAccount().getNumber());
         out.println(sb.toString());
@@ -109,7 +109,7 @@ public class ExportOpenConcerto
         sb.append(';').append(e.getDocument());
         sb.append(';').append("TOTAL CREDIT");
         sb.append(';').append(nf.format(0.0));
-        sb.append(';').append(nf.format(totalCredit / 100.0));
+        sb.append(';').append(nf.format(totalCredit / 100.0));// CREDIT
         sb.append(';').append(e.getCostAccount().getNumber());
         out.println(sb.toString());
       }
@@ -119,6 +119,7 @@ public class ExportOpenConcerto
 
   @Override
   public int tiersExport(String path, Vector<OrderLine> lines) throws IOException, SQLException {
+    VatIO vatIO = new VatIO(dbx);
     OrderLine e = null;
     int errors = 0;
     StringBuilder logMessage = new StringBuilder();
@@ -141,7 +142,8 @@ public class ExportOpenConcerto
           m1 = true;
           continue;
         }
-
+        
+        
         int p = getPersonalAccountId(e.getAccount().getId());
         if (p == 0) {
           errors++;
@@ -149,7 +151,16 @@ public class ExportOpenConcerto
           m2 = true;
           continue;
         }
-
+        Account taxAccount = null;
+        double exclTax = 0;//HT
+        double vat = 0;
+        if (e.getTax() > 0.0) {
+          taxAccount = getTaxAccount(e.getTax(), vatIO);
+          double coeff = 100 / (100 + e.getTax());
+          exclTax = AccountUtil.round((Math.abs(e.getAmount()) /100d) * coeff);
+          vat = AccountUtil.round((Math.abs(e.getAmount()) /100d) - exclTax);
+        }
+        // COMPTE DE PRODUIT (7xx)
         Account c = getAccount(p);
         String total = nf.format(Math.abs(e.getAmount()) / 100.0); // le montant doit être positif
         String codeJournal = getCodeJournal(e.getAccount().getId());
@@ -162,28 +173,47 @@ public class ExportOpenConcerto
         sb.append(';').append(e.getLabel()).append(' ').append(getInvoiceNumber(e));
         if (e.getAmount() < 0) {
           sb.append(';').append(nf.format(0.0));
-          sb.append(';').append(total);// credit
+          sb.append(';').append(exclTax > 0 ? nf.format(exclTax) : total);// CREDIT
         } else {
-          sb.append(';').append(total);
+          sb.append(';').append(exclTax > 0 ? nf.format(exclTax) : total);
           sb.append(';').append(nf.format(0.0));
         }
         sb.append(';').append(e.getCostAccount().getNumber());
         out.println(sb.toString());
         sb.delete(0, sb.length());
+        
+        if (vat > 0.0) {
+          assert(taxAccount != null);
+          sb.append(dateFormat.format(e.getDate().getDate()));
+          sb.append(';').append(codeJournal);
+          sb.append(';').append(taxAccount.getNumber());
+          sb.append(';').append(e.getDocument());
+          sb.append(';').append(e.getLabel()).append(' ').append(getInvoiceNumber(e));
+          if (e.getAmount() < 0) {
+            sb.append(';').append(nf.format(0.0));
+            sb.append(';').append(nf.format(vat));// CREDIT
+          } else {
+            sb.append(';').append(nf.format(vat));
+            sb.append(';').append(nf.format(0.0));
+          }
+          sb.append(';').append(e.getCostAccount().getNumber());
+          out.println(sb.toString());
+          sb.delete(0, sb.length());
+        }
 
+        // COMPTE D'ATTENTE (411)
         sb.append(dateFormat.format(e.getDate().getDate()));
         sb.append(';').append(codeJournal);
         sb.append(';').append(getAccount(e));
         sb.append(';').append(e.getDocument());
         //TODO maybe remove " or ' from label
         sb.append(';').append(e.getLabel()).append(' ').append(getInvoiceNumber(e));
-        //+ "#" + (e.getAmount() < 0 ? cd : dc) // cd Crédit
         if (e.getAmount() < 0) {
-          sb.append(';').append(nf.format(0.0));
-          sb.append(';').append(total); // credit
+          sb.append(';').append(total); // DEBIT
+          sb.append(';').append(nf.format(0.0));  
         } else {
-          sb.append(';').append(total);
           sb.append(';').append(nf.format(0.0));
+          sb.append(';').append(total); // CREDIT
         }
         sb.append(';').append(e.getCostAccount().getNumber());
         out.println(sb.toString());

@@ -1,7 +1,7 @@
 /*
- * @(#)Equipment.java	2.9.4.13 05/11/15
+ * @(#)Equipment.java	2.14.0 13/06/17
  * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,13 +20,15 @@
  */
 package net.algem.room;
 
+import java.util.Objects;
+
 /**
  * 
  * Room equipment.
  * 
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.14.0
  * @since 1.0a 10/09/2001
  */
 public class Equipment
@@ -39,6 +41,8 @@ public class Equipment
   private int quantity;
   private String label;
   private short idx;
+  private String fixedAssetNumber;
+  private boolean visible;
 
   public Equipment() {
   }
@@ -55,9 +59,9 @@ public class Equipment
     this.room = room;
   }
 
-  public Equipment(int quantite, String libelle) {
-    this.quantity = quantite;
-    this.label = libelle;
+  public Equipment(int quantity, String label) {
+    this.quantity = quantity;
+    this.label = label;
   }
 
   public int getRoom() {
@@ -92,8 +96,38 @@ public class Equipment
     this.idx = idx;
   }
 
+  public String getFixedAssetNumber() {
+    return fixedAssetNumber;
+  }
+
+  public void setFixedAssetNumber(String fixedAssetNumber) {
+    this.fixedAssetNumber = fixedAssetNumber;
+  }
+
+  public boolean isVisible() {
+    return visible;
+  }
+
+  public void setVisible(boolean visible) {
+    this.visible = visible;
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 5;
+    hash = 13 * hash + this.room;
+    hash = 13 * hash + this.quantity;
+    hash = 13 * hash + Objects.hashCode(this.label);
+    hash = 13 * hash + Objects.hashCode(this.fixedAssetNumber);
+    hash = 13 * hash + (this.visible ? 1 : 0);
+    return hash;
+  }
+
   @Override
   public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
     if (obj == null) {
       return false;
     }
@@ -107,19 +141,16 @@ public class Equipment
     if (this.quantity != other.quantity) {
       return false;
     }
-    if ((this.label == null) ? (other.label != null) : !this.label.equals(other.label)) {
+    if (this.visible != other.visible) {
+      return false;
+    }
+    if (!Objects.equals(this.label, other.label)) {
+      return false;
+    }
+    if (!Objects.equals(this.fixedAssetNumber, other.fixedAssetNumber)) {
       return false;
     }
     return true;
-  }
-
-  @Override
-  public int hashCode() {
-    int hash = 7;
-    hash = 19 * hash + this.room;
-    hash = 19 * hash + this.quantity;
-    hash = 19 * hash + (this.label != null ? this.label.hashCode() : 0);
-    return hash;
   }
 
   @Override

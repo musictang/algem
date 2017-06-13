@@ -1,7 +1,7 @@
 /*
- * @(#)GemParam.java 2.9.4.13 05/11/15
+ * @(#)GemParam.java 2.14.0 12/06/17
  * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,7 +27,7 @@ import net.algem.util.model.GemModel;
  * General parameter implementing GemModel interface.
  * A param is a couple of key,value.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.14.0
  * @since 2.5.a 05/07/12
 
  */
@@ -92,13 +92,6 @@ public class GemParam
    @Override
   public String toString() {
     return value;
-  }
-
-  @Override
-  public boolean equals(Param o) {
-    return (o != null
-            && key.equals(o.key)
-            && value.equals(o.value));
   }
 
   @Override

@@ -1,5 +1,5 @@
 /*
- * @(#)ExportDvlogPGI.java	2.14.0 15/05/17
+ * @(#)ExportDvlogPGI.java	2.14.0 13/06/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -43,7 +43,7 @@ import net.algem.util.ui.MessagePopup;
  * @since 2.8.r 13/12/13
  */
 public class ExportDvlogPGI
-  extends  CommunAccountExportService
+  extends  CommonAccountExportService
 {
 
   private static char cd = 'C';// credit
@@ -157,11 +157,11 @@ public class ExportDvlogPGI
         taxAccount = getTaxAccount(e.getTax(), vatIO);
         double coeff = 100 / (100 + e.getTax());
         exclTax = AccountUtil.round((Math.abs(amount) /100d) * coeff);
-        vat = (Math.abs(amount) /100d) - exclTax;
+        vat = AccountUtil.round((Math.abs(amount) /100d) - exclTax);
       }
-
+      
       String m = nf.format(Math.abs(amount) / 100.0); // le montant doit être positif
-
+      //COMPTE DE PRODUITS (7xx)
       out.print(TextUtil.padWithTrailingZeros(c.getNumber(), 10)
               + "#" + dateFormat.format(e.getDate().getDate())
               + "#" + codeJournal
@@ -171,7 +171,7 @@ public class ExportDvlogPGI
               + "#" + (e.getAmount() < 0 ? cd : dc) // cd Crédit
               + "#" + TextUtil.padWithTrailingSpaces(e.getCostAccount().getNumber(), 10)
               + "#" + (char) 13);
-      // test tva
+      // TVA
       if (vat > 0.0) {
        assert(taxAccount != null);
        out.print(TextUtil.padWithTrailingZeros(taxAccount.getNumber(), 10)
@@ -185,6 +185,7 @@ public class ExportDvlogPGI
           + "#" + (char) 13);
       }
 
+      //COMPTE D'ATTENTE (411)
       out.print(
               TextUtil.padWithTrailingZeros(getAccount(e), 10) // compte client
               + "#" + dateFormat.format(e.getDate().getDate())

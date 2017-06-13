@@ -1,7 +1,7 @@
 /*
- * @(#)RoomFileEditor.java 2.9.6 18/03/16
+ * @(#)RoomFileEditor.java 2.14.0 13/06/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -45,7 +45,7 @@ import net.algem.util.ui.*;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.6
+ * @version 2.14.0
  * @since 2.1.b
  */
 public class RoomFileEditor
@@ -386,7 +386,10 @@ public class RoomFileEditor
     if (room.getEquipment() != null) {
       oldEquip.clear();
       for (Equipment e : room.getEquipment()) {
-        oldEquip.add(new Equipment(e.getLabel(), e.getQuantity(), e.getRoom()));
+        Equipment o = new Equipment(e.getLabel(), e.getQuantity(), e.getRoom());
+        o.setFixedAssetNumber(e.getFixedAssetNumber());
+        o.setVisible(e.isVisible());
+        oldEquip.add(o);
       }
     }
     if (room.getPayer() != null) {

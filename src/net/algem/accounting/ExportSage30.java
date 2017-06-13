@@ -1,5 +1,5 @@
 /*
- * @(#)ExportSage30.java	2.14.0 23/05/17
+ * @(#)ExportSage30.java	2.14.0 12/06/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -45,7 +45,7 @@ import net.algem.util.ui.MessagePopup;
  * @since 2.8.r 17/12/13
  */
 public class ExportSage30
-  extends  CommunAccountExportService
+        extends CommonAccountExportService
 {
 
   private final DateFormat dateFormat = new SimpleDateFormat("ddMMyy");
@@ -71,20 +71,20 @@ public class ExportSage30
   public void export(String path, Vector<OrderLine> orderLines, String codeJournal, Account documentAccount) throws IOException {
     int totalDebit = 0;
     int totalCredit = 0;
-    
+
     OrderLine e = null;
     PrintWriter out = new PrintWriter(new FileWriter(path));
 
     out.print(TextUtil.truncate(dossierName, 30) + (char) 13);
 
-    for (int i = 0, n = orderLines.size(); i < n ; i++) {
-      e =  orderLines.elementAt(i);
+    for (int i = 0, n = orderLines.size(); i < n; i++) {
+      e = orderLines.elementAt(i);
       if (e.getAmount() > 0) {
         totalDebit += e.getAmount();
       } else {
         totalCredit += Math.abs(e.getAmount());
       }
-      out.print(TextUtil.padWithTrailingSpaces(codeJournal,3) // code journal
+      out.print(TextUtil.padWithTrailingSpaces(codeJournal, 3) // code journal
               + dateFormat.format(new Date()) // date écriture
               + default_document_type
               + TextUtil.padWithTrailingSpaces(e.getAccount().getNumber(), 13) // numéro dompte
@@ -94,13 +94,13 @@ public class ExportSage30
               + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getLabel() + getInvoiceNumber(e), 25), 25) // libellé
               + getModeOfPayment(e.getModeOfPayment()) // mode de paiement
               + dateFormat.format(e.getDate().getDate()) // date échéance
-              + (e.getAmount() > 0 ? cd : dc) // credit - debit
+              + (e.getAmount() > 0 ? cd : dc) // credit : debit
               + TextUtil.padWithLeadingSpaces(nf.format(e.getAmount() / 100.0), 20) // montant
               + 'N' // Type
               + (char) 13);
     }
     if (totalDebit > 0) {
-      out.print(TextUtil.padWithTrailingSpaces(codeJournal,3) // code journal
+      out.print(TextUtil.padWithTrailingSpaces(codeJournal, 3) // code journal
               + dateFormat.format(new Date()) // date écriture
               + default_document_type
               + TextUtil.padWithTrailingSpaces(e.getAccount().getNumber(), 13) // numéro dompte
@@ -116,7 +116,7 @@ public class ExportSage30
               + (char) 13);
     }
     if (totalCredit > 0) {
-      out.print(TextUtil.padWithTrailingSpaces(codeJournal,3) // code journal
+      out.print(TextUtil.padWithTrailingSpaces(codeJournal, 3) // code journal
               + dateFormat.format(new Date()) // date écriture
               + default_document_type
               + TextUtil.padWithTrailingSpaces(e.getAccount().getNumber(), 13) // numéro dompte
@@ -145,15 +145,15 @@ public class ExportSage30
     StringBuilder logMessage = new StringBuilder();
     String m1prefix = MessageUtil.getMessage("account.error");
     String m2prefix = MessageUtil.getMessage("matching.account.error");
-    String logpath = path+".log";
+    String logpath = path + ".log";
     PrintWriter out = new PrintWriter(new FileWriter(path));
 
     int mouvement = 0;
 
     out.print(TextUtil.truncate(dossierName, 30) + (char) 13);
 
-    for (int i = 0, n = orderLines.size(); i < n ; i++) {
-      e =  orderLines.elementAt(i);
+    for (int i = 0, n = orderLines.size(); i < n; i++) {
+      e = orderLines.elementAt(i);
       if (!AccountUtil.isPersonalAccount(e.getAccount())) {
         errors++;
         logMessage.append(m1prefix).append(" -> ").append(e).append(" [").append(e.getAccount()).append("]").append(TextUtil.LINE_SEPARATOR);
@@ -169,12 +169,13 @@ public class ExportSage30
         continue;
       }
 
-      mouvement ++;
+      mouvement++;
+      // COMPTE DE PRODUIT (7xx)
       Account c = getAccount(p);
       String m = nf.format(Math.abs(e.getAmount()) / 100.0); // le montant doit être positif
       String codeJournal = getCodeJournal(e.getAccount().getId());
 
-      out.print(TextUtil.padWithTrailingSpaces(codeJournal,3) // code journal
+      out.print(TextUtil.padWithTrailingSpaces(codeJournal, 3) // code journal
               + dateFormat.format(new Date()) // date écriture
               + default_document_type
               + TextUtil.padWithTrailingSpaces(c.getNumber(), 13) // numéro compte client
@@ -184,24 +185,24 @@ public class ExportSage30
               + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getLabel() + getInvoiceNumber(e), 25), 25) // libellé
               + getModeOfPayment(e.getModeOfPayment()) // mode de paiement
               + dateFormat.format(e.getDate().getDate()) // date échéance
-              + (e.getAmount() < 0 ? cd : dc) // cd débit - crédit
+              + (e.getAmount() < 0 ? cd : dc) // credit : debit
               + TextUtil.padWithLeadingSpaces(m, 20) // montant
               + "N" // Type
               + (char) 13);
 
+      // COMPTE D'ATTENTE (411)
       String debit = getAccount(e);
-
-        out.print(TextUtil.padWithTrailingSpaces(codeJournal,3) // code journal
+      out.print(TextUtil.padWithTrailingSpaces(codeJournal, 3) // code journal
               + dateFormat.format(new Date()) // date écriture
               + default_document_type
               + TextUtil.padWithTrailingSpaces(debit, 13) // numéro compte tiers
               + " " // code analytique
               + TextUtil.padWithTrailingSpaces(null, 13) // numéro analytique
               + TextUtil.padWithTrailingSpaces(null, 13) // libellé pièce
-              + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getLabel(), 25),25) // libellé
+              + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getLabel(), 25), 25) // libellé
               + "S" // mode de paiement
               + dateFormat.format(e.getDate().getDate()) // date échéance
-              + (e.getAmount() < 0 ? dc : cd) // dc débit - crédit
+              + (e.getAmount() < 0 ? dc : cd) // débit : crédit
               + TextUtil.padWithLeadingSpaces(m, 20) // montant
               + "N" // Type
               + (char) 13);
@@ -220,12 +221,11 @@ public class ExportSage30
       }
       if (m2) {
         message += MessageUtil.getMessage("no.revenue.matching.warning");
-       }
+      }
       String err = MessageUtil.getMessage("error.count.warning", errors);
       String l = MessageUtil.getMessage("see.log.file", path);
-      MessagePopup.warning(null, err+message+l);
+      MessagePopup.warning(null, err + message + l);
     }
-//
     return errors;
   }
 

@@ -92,7 +92,7 @@ public class TestAccountTransfertDlg extends TestCase {
     int payer = 12;
     int member = 12;
 AccountExportService exportService = new ExportDvlogPGI(dc);
-    CommunAccountTransferDlg dlg = new CommunAccountTransferDlg(new JFrame(), dataCache, exportService);
+    CommonAccountTransferDlg dlg = new CommonAccountTransferDlg(new JFrame(), dataCache, exportService);
     Vector<OrderLine> orderLines = new Vector<OrderLine>();
 
     // Détection d'erreurs de correspondance de comptes

@@ -12,3 +12,7 @@ INSERT INTO compte VALUES(DEFAULT,'445712','TVA collectée 5,5%',false);
 INSERT INTO compte VALUES(DEFAULT,'445713','TVA collectée 7%',false);
 INSERT INTO compte VALUES(DEFAULT,'445714','TVA collectée 19,6%',false);
 INSERT INTO compte VALUES(DEFAULT,'445715','TVA collectée 10%',false);
+
+ALTER TABLE sallequip ADD visible boolean default TRUE;
+ALTER TABLE sallequip ADD immo varchar(32);
+CREATE INDEX sallequip_idx ON sallequip (idsalle);

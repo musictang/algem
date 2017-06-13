@@ -1,0 +1,3 @@
+2.13.4
+CORRECTIFS
+- dans l'export vers OpenConcerto, le sens débit/crédit était inversé dans le transfert des écritures en attente (FAC et compte de tiers)
