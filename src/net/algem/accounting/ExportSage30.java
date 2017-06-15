@@ -1,5 +1,5 @@
 /*
- * @(#)ExportSage30.java	2.14.0 12/06/17
+ * @(#)ExportSage30.java	2.14.0 14/06/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,14 +20,16 @@
  */
 package net.algem.accounting;
 
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Locale;
 import java.util.Vector;
 import net.algem.config.ConfigKey;
@@ -45,8 +47,7 @@ import net.algem.util.ui.MessagePopup;
  * @since 2.8.r 17/12/13
  */
 public class ExportSage30
-        extends CommonAccountExportService
-{
+  extends CommonAccountExportService {
 
   private final DateFormat dateFormat = new SimpleDateFormat("ddMMyy");
   private final NumberFormat nf = NumberFormat.getInstance(Locale.ENGLISH);
@@ -65,73 +66,100 @@ public class ExportSage30
   }
 
   @Override
+  public String getFileExtension() {
+    return ".pnm";
+  }
+
+  @Override
   /**
-   * Export to 105 characters SAGE pnp format.
+   * Export to 105 characters SAGE pnm format.
    */
   public void export(String path, Vector<OrderLine> orderLines, String codeJournal, Account documentAccount) throws IOException {
     int totalDebit = 0;
     int totalCredit = 0;
+    String number = (documentAccount == null) ? "" : documentAccount.getNumber();
+    //String label = (documentAccount == null) ? "" : documentAccount.getLabel();
 
     OrderLine e = null;
-    PrintWriter out = new PrintWriter(new FileWriter(path));
+    try (PrintWriter out = new PrintWriter(new OutputStreamWriter(new FileOutputStream(path), StandardCharsets.ISO_8859_1), true)) {
 
-    out.print(TextUtil.truncate(dossierName, 30) + (char) 13);
+      out.print(TextUtil.truncate(dossierName, 30) + "\r\n");
 
-    for (int i = 0, n = orderLines.size(); i < n; i++) {
-      e = orderLines.elementAt(i);
-      if (e.getAmount() > 0) {
-        totalDebit += e.getAmount();
-      } else {
-        totalCredit += Math.abs(e.getAmount());
+      for (int i = 0, n = orderLines.size(); i < n; i++) {
+        e = orderLines.elementAt(i);
+        if (e.getAmount() > 0) {
+          totalDebit += e.getAmount();
+        } else {
+          totalCredit += Math.abs(e.getAmount());
+        }
+        boolean personal = AccountUtil.isPersonalAccount(e.getAccount());
+        if (personal) {
+        out.print(TextUtil.padWithTrailingSpaces(codeJournal, 3) // code journal
+          + dateFormat.format(e.getDate().getDate()) // date écriture
+          + default_document_type
+          + TextUtil.padWithTrailingSpaces("4110000", 13) // compte général
+          + "X" // compte auxiliaire
+          + TextUtil.padWithTrailingSpaces(getAccount(e), 13) // compte client
+          + TextUtil.padWithTrailingSpaces(e.getDocument(), 13) // libellé pièce
+          + TextUtil.padWithTrailingSpaces(TextUtil.truncate(TextUtil.stripDiacritics(e.getLabel()) + " " + getInvoiceNumber(e), 25), 25) // libellé
+          + getModeOfPayment(e.getModeOfPayment()) // mode de paiement
+          + TextUtil.padWithTrailingSpaces(null, 6)
+          //+ dateFormat.format(e.getDate().getDate()) // date échéance
+          + (e.getAmount() > 0 ? cd : dc) // credit : debit
+          + TextUtil.padWithLeadingSpaces(nf.format(e.getAmount() / 100.0), 20) // montant
+          + 'N' // Type
+          + "\r\n");
+        } else {
+          out.print(TextUtil.padWithTrailingSpaces(codeJournal, 3) // code journal
+          + dateFormat.format(e.getDate().getDate()) // date écriture
+          + default_document_type
+          + TextUtil.padWithTrailingSpaces(e.getAccount().getNumber(), 13) // compte général
+          + " " // code analytique
+          + TextUtil.padWithTrailingSpaces(null, 13) // compte client
+          + TextUtil.padWithTrailingSpaces(e.getDocument(), 13) // libellé pièce
+          + TextUtil.padWithTrailingSpaces(TextUtil.truncate(TextUtil.stripDiacritics(e.getLabel()) + " " + getInvoiceNumber(e), 25), 25) // libellé
+          + getModeOfPayment(e.getModeOfPayment()) // mode de paiement
+          + TextUtil.padWithTrailingSpaces(null, 6)
+          //+ dateFormat.format(e.getDate().getDate()) // date échéance
+          + (e.getAmount() > 0 ? cd : dc) // credit : debit
+          + TextUtil.padWithLeadingSpaces(nf.format(e.getAmount() / 100.0), 20) // montant
+          + 'N' // Type
+          + "\r\n");
+        }
       }
-      out.print(TextUtil.padWithTrailingSpaces(codeJournal, 3) // code journal
-              + dateFormat.format(new Date()) // date écriture
-              + default_document_type
-              + TextUtil.padWithTrailingSpaces(e.getAccount().getNumber(), 13) // numéro dompte
-              + 'A' // code analytique
-              + TextUtil.padWithTrailingSpaces(e.getCostAccount().getNumber(), 13) // numéro analytique
-              + TextUtil.padWithTrailingSpaces(e.getDocument(), 13) // libellé pièce
-              + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getLabel() + getInvoiceNumber(e), 25), 25) // libellé
-              + getModeOfPayment(e.getModeOfPayment()) // mode de paiement
-              + dateFormat.format(e.getDate().getDate()) // date échéance
-              + (e.getAmount() > 0 ? cd : dc) // credit : debit
-              + TextUtil.padWithLeadingSpaces(nf.format(e.getAmount() / 100.0), 20) // montant
-              + 'N' // Type
-              + (char) 13);
-    }
-    if (totalDebit > 0) {
-      out.print(TextUtil.padWithTrailingSpaces(codeJournal, 3) // code journal
-              + dateFormat.format(new Date()) // date écriture
-              + default_document_type
-              + TextUtil.padWithTrailingSpaces(e.getAccount().getNumber(), 13) // numéro dompte
-              + " " // code analytique
-              + TextUtil.padWithTrailingSpaces(null, 13) // numéro analytique
-              + TextUtil.padWithTrailingSpaces(null, 13) // libellé pièce
-              + TextUtil.padWithTrailingSpaces("TOTAL DEBIT", 25) // libellé
-              + 'S'// mode de paiement
-              + dateFormat.format(e.getDate().getDate()) // date échéance
-              + dc // débit
-              + TextUtil.padWithLeadingSpaces(nf.format(totalDebit / 100.0), 20) // montant
-              + 'N' // Type
-              + (char) 13);
-    }
-    if (totalCredit > 0) {
-      out.print(TextUtil.padWithTrailingSpaces(codeJournal, 3) // code journal
-              + dateFormat.format(new Date()) // date écriture
-              + default_document_type
-              + TextUtil.padWithTrailingSpaces(e.getAccount().getNumber(), 13) // numéro dompte
-              + " " // code analytique
-              + TextUtil.padWithTrailingSpaces(null, 13) // numéro analytique
-              + TextUtil.padWithTrailingSpaces(null, 13) // libellé pièce
-              + TextUtil.padWithTrailingSpaces("TOTAL CREDIT", 25) // libellé
-              + 'S'// mode de paiement
-              + dateFormat.format(e.getDate().getDate()) // date échéance
-              + cd // crédit
-              + TextUtil.padWithLeadingSpaces(nf.format(totalCredit / 100.0), 20) // montant
-              + 'N' // Type
-              + (char) 13);
-    }
-    out.close();
+      if (totalDebit > 0) {
+        out.print(TextUtil.padWithTrailingSpaces(codeJournal, 3) // code journal
+          + dateFormat.format(e.getDate().getDate()) // date écriture
+          + default_document_type
+          + TextUtil.padWithTrailingSpaces(number, 13) // compte financier (5xx)
+          + " " // code analytique
+          + TextUtil.padWithTrailingSpaces(null, 13) // analytique null
+          + TextUtil.padWithTrailingSpaces(null, 13) // libellé pièce null
+          + TextUtil.padWithTrailingSpaces("TOTAL DEBIT", 25) // libellé
+          + ' '// mode de paiement
+          + dateFormat.format(e.getDate().getDate()) // date échéance
+          + dc // débit
+          + TextUtil.padWithLeadingSpaces(nf.format(totalDebit / 100.0), 20) // montant
+          + 'N' // Type
+          + "\r\n");
+      }
+      if (totalCredit > 0) {
+        out.print(TextUtil.padWithTrailingSpaces(codeJournal, 3) // code journal
+          + dateFormat.format(e.getDate().getDate()) // date écriture
+          + default_document_type
+          + TextUtil.padWithTrailingSpaces(e.getAccount().getNumber(), 13) // compte financier (5xx)
+          + " " // code analytique
+          + TextUtil.padWithTrailingSpaces(null, 13) // numéro analytique
+          + TextUtil.padWithTrailingSpaces(null, 13) // libellé pièce
+          + TextUtil.padWithTrailingSpaces("TOTAL CREDIT", 25) // libellé
+          + ' '// mode de paiement
+          + dateFormat.format(e.getDate().getDate()) // date échéance
+          + cd // crédit
+          + TextUtil.padWithLeadingSpaces(nf.format(totalCredit / 100.0), 20) // montant
+          + 'N' // Type
+          + "\r\n");
+      }
+    } //out.close();
   }
 
   @Override
@@ -145,74 +173,92 @@ public class ExportSage30
     StringBuilder logMessage = new StringBuilder();
     String m1prefix = MessageUtil.getMessage("account.error");
     String m2prefix = MessageUtil.getMessage("matching.account.error");
+
     String logpath = path + ".log";
-    PrintWriter out = new PrintWriter(new FileWriter(path));
 
-    int mouvement = 0;
+    try (PrintWriter out = new PrintWriter(new OutputStreamWriter(new FileOutputStream(path), StandardCharsets.ISO_8859_1), true)) {
+      out.print(TextUtil.truncate(dossierName, 30) + "\r\n");
 
-    out.print(TextUtil.truncate(dossierName, 30) + (char) 13);
+      for (int i = 0, n = orderLines.size(); i < n; i++) {
+        e = orderLines.elementAt(i);
+        if (!AccountUtil.isPersonalAccount(e.getAccount())) {
+          errors++;
+          logMessage.append(m1prefix).append(" -> ").append(e).append(" [").append(e.getAccount()).append("]").append(TextUtil.LINE_SEPARATOR);
+          m1 = true;
+          continue;
+        }
 
-    for (int i = 0, n = orderLines.size(); i < n; i++) {
-      e = orderLines.elementAt(i);
-      if (!AccountUtil.isPersonalAccount(e.getAccount())) {
-        errors++;
-        logMessage.append(m1prefix).append(" -> ").append(e).append(" [").append(e.getAccount()).append("]").append(TextUtil.LINE_SEPARATOR);
-        m1 = true;
-        continue;
+        int p = getPersonalAccountId(e.getAccount().getId());
+        if (p == 0) {
+          errors++;
+          logMessage.append(m2prefix).append(" -> ").append(e.getAccount()).append(TextUtil.LINE_SEPARATOR);
+          m2 = true;
+          continue;
+        }
+
+        // COMPTE DE PRODUIT (7xx)
+        Account c = getAccount(p);
+        Account a = e.getCostAccount();
+        String m = nf.format(Math.abs(e.getAmount()) / 100.0); // le montant doit être positif
+        String codeJournal = getCodeJournal(e.getAccount().getId());
+
+        out.print(TextUtil.padWithTrailingSpaces(codeJournal, 3) // code journal
+          + dateFormat.format(e.getDate().getDate()) // date écriture
+          + default_document_type // code operation
+          + TextUtil.padWithTrailingSpaces(c.getNumber(), 13) // numéro compte produit
+          + " " // (G ou ' ')
+          + TextUtil.padWithTrailingSpaces(null, 13) // numéro analytique
+          + TextUtil.padWithTrailingSpaces(e.getDocument(), 13) // libellé pièce
+          + TextUtil.padWithTrailingSpaces(TextUtil.truncate(TextUtil.stripDiacritics(e.getLabel()) + getInvoiceNumber(e), 25), 25) // libellé
+          + getModeOfPayment(e.getModeOfPayment()) // mode de paiement
+          //+ dateFormat.format(e.getDate().getDate()) // date échéance
+          + TextUtil.padWithTrailingSpaces(null, 6)
+          + (e.getAmount() < 0 ? cd : dc) // credit : debit
+          + TextUtil.padWithLeadingSpaces(m, 20) // montant
+          + "N" // Type
+          + "\r\n");
+        //ANALYTIQUE
+        if (a != null) {
+          out.print(TextUtil.padWithTrailingSpaces(codeJournal, 3) // code journal
+            + dateFormat.format(e.getDate().getDate()) // date écriture
+            + default_document_type // code operation
+            + TextUtil.padWithTrailingSpaces(c.getNumber(), 13) // numéro compte produit
+            + "A"
+            + TextUtil.padWithTrailingSpaces(a.getNumber(), 13) // numéro analytique
+            + TextUtil.padWithTrailingSpaces(e.getDocument(), 13) // libellé pièce
+            + TextUtil.padWithTrailingSpaces(TextUtil.truncate(TextUtil.stripDiacritics(e.getLabel()) + getInvoiceNumber(e), 25), 25) // libellé
+            + getModeOfPayment(e.getModeOfPayment()) // mode de paiement
+            //+ dateFormat.format(e.getDate().getDate()) // date échéance
+            + TextUtil.padWithTrailingSpaces(null, 6)
+            + (e.getAmount() < 0 ? cd : dc) // credit : debit
+            + TextUtil.padWithLeadingSpaces(m, 20) // montant
+            + "N" // Type
+            + "\r\n");
+        }
+
+        // COMPTE D'ATTENTE (411)
+        String debit = getAccount(e);
+        out.print(TextUtil.padWithTrailingSpaces(codeJournal, 3) // code journal
+          + dateFormat.format(e.getDate().getDate()) // date écriture
+          + default_document_type
+          + TextUtil.padWithTrailingSpaces("41100000", 13) // n° compte général
+          + "X" // compte auxiliaire
+          + TextUtil.padWithTrailingSpaces(debit, 13) // compte client
+          + TextUtil.padWithTrailingSpaces(null, 13) // libellé pièce
+          + TextUtil.padWithTrailingSpaces(TextUtil.truncate(TextUtil.stripDiacritics(e.getLabel()), 25), 25) // libellé
+          + " " // mode de paiement
+          + dateFormat.format(e.getDate().getDate()) // date échéance
+          + (e.getAmount() < 0 ? dc : cd) // débit : crédit
+          + TextUtil.padWithLeadingSpaces(m, 20) // montant
+          + "N" // Type
+          + "\r\n");
       }
-
-      int p = getPersonalAccountId(e.getAccount().getId());
-      if (p == 0) {
-        errors++;
-        logMessage.append(m2prefix).append(" -> ").append(e.getAccount()).append(TextUtil.LINE_SEPARATOR);
-        m2 = true;
-        continue;
-      }
-
-      mouvement++;
-      // COMPTE DE PRODUIT (7xx)
-      Account c = getAccount(p);
-      String m = nf.format(Math.abs(e.getAmount()) / 100.0); // le montant doit être positif
-      String codeJournal = getCodeJournal(e.getAccount().getId());
-
-      out.print(TextUtil.padWithTrailingSpaces(codeJournal, 3) // code journal
-              + dateFormat.format(new Date()) // date écriture
-              + default_document_type
-              + TextUtil.padWithTrailingSpaces(c.getNumber(), 13) // numéro compte client
-              + "A" // code analytique
-              + TextUtil.padWithTrailingSpaces(e.getCostAccount().getNumber(), 13) // numéro analytique
-              + TextUtil.padWithTrailingSpaces(e.getDocument(), 13) // libellé pièce
-              + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getLabel() + getInvoiceNumber(e), 25), 25) // libellé
-              + getModeOfPayment(e.getModeOfPayment()) // mode de paiement
-              + dateFormat.format(e.getDate().getDate()) // date échéance
-              + (e.getAmount() < 0 ? cd : dc) // credit : debit
-              + TextUtil.padWithLeadingSpaces(m, 20) // montant
-              + "N" // Type
-              + (char) 13);
-
-      // COMPTE D'ATTENTE (411)
-      String debit = getAccount(e);
-      out.print(TextUtil.padWithTrailingSpaces(codeJournal, 3) // code journal
-              + dateFormat.format(new Date()) // date écriture
-              + default_document_type
-              + TextUtil.padWithTrailingSpaces(debit, 13) // numéro compte tiers
-              + " " // code analytique
-              + TextUtil.padWithTrailingSpaces(null, 13) // numéro analytique
-              + TextUtil.padWithTrailingSpaces(null, 13) // libellé pièce
-              + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getLabel(), 25), 25) // libellé
-              + "S" // mode de paiement
-              + dateFormat.format(e.getDate().getDate()) // date échéance
-              + (e.getAmount() < 0 ? dc : cd) // débit : crédit
-              + TextUtil.padWithLeadingSpaces(m, 20) // montant
-              + "N" // Type
-              + (char) 13);
-    }
-    out.close();
+    }//out.close();
 
     if (logMessage.length() > 0) {
-      PrintWriter log = new PrintWriter(new FileWriter(logpath));
-      log.println(logMessage.toString());
-      log.close();
+      try (PrintWriter log = new PrintWriter(new FileWriter(logpath))) {
+        log.println(logMessage.toString());
+      }
     }
 
     if (errors > 0) {
@@ -234,7 +280,7 @@ public class ExportSage30
       return 'C';
     }
     if (p.equals(ModeOfPayment.FAC.toString())) {
-      return 'S';
+      return ' '; // 'S'
     }
     if (p.equals(ModeOfPayment.ESP.toString())) {
       return 'E';
@@ -248,6 +294,6 @@ public class ExportSage30
     if (p.equals(ModeOfPayment.NUL.toString())) {
       return 'S';
     }
-    return 'S';
+    return ' ';
   }
 }

@@ -1,5 +1,5 @@
 /*
- * @(#) TestTextUtil.java Algem 2.13.3 17/05/2017
+ * @(#) TestTextUtil.java Algem 2.14.0 14/06/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -32,7 +32,7 @@ import static org.junit.Assert.*;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.13.3
+ * @version 2.14.0
  * @since 2.13.3 17/05/17
  */
 public class TestTextUtil {
@@ -56,7 +56,7 @@ public class TestTextUtil {
   public void tearDown() {
   }
 
-   @Test
+  @Test
   public void testTruncate() {
     String s = null;
     assertTrue(TextUtil.truncate(s, 50) == null);
@@ -84,6 +84,16 @@ public class TestTextUtil {
     String cropped = TextUtil.crop(s, g, 50);
     assertTrue(cropped != null);
     assertTrue(cropped.length() < length);
-    assertTrue(cropped.charAt(cropped.length()-1) == '.');
+    assertTrue(cropped.charAt(cropped.length() - 1) == '.');
+  }
+
+  @Test
+  public void replaceInsensitive() {
+    String path = "myfile.TXT";
+    if (path.toLowerCase().endsWith(".txt")) {
+      path = path.replaceAll("(?i)\\.txt", ".pnm"); // insensitive
+    }
+    System.out.println(path);
+    assertEquals(path, "myfile.pnm");
   }
 }

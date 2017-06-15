@@ -1,5 +1,5 @@
 /*
- * @(#)ExportDvlogPGI.java	2.14.0 13/06/17
+ * @(#)ExportDvlogPGI.java	2.14.0 14/06/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -57,6 +57,12 @@ public class ExportDvlogPGI
     nf.setGroupingUsed(false);
     nf.setMinimumFractionDigits(2);
     nf.setMaximumFractionDigits(2);
+  }
+
+
+  @Override
+  public String getFileExtension() {
+    return ".txt";
   }
 
   @Override
@@ -159,7 +165,7 @@ public class ExportDvlogPGI
         exclTax = AccountUtil.round((Math.abs(amount) /100d) * coeff);
         vat = AccountUtil.round((Math.abs(amount) /100d) - exclTax);
       }
-      
+
       String m = nf.format(Math.abs(amount) / 100.0); // le montant doit être positif
       //COMPTE DE PRODUITS (7xx)
       out.print(TextUtil.padWithTrailingZeros(c.getNumber(), 10)

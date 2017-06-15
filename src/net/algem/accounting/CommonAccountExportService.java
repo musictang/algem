@@ -1,5 +1,5 @@
 /*
- * @(#)CommonAccountExportService.java	2.14.0 12/06/17
+ * @(#)CommonAccountExportService.java	2.14.0 14/06/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -68,7 +68,7 @@ public abstract class CommonAccountExportService
   }
 
   protected DateFormat defaultDateFormat = new SimpleDateFormat("dd-MM-yyyy");
-  
+
   /**
    * Retrieves the default account corresponding to the category of activities {@literal key}.
    *
@@ -150,7 +150,7 @@ public abstract class CommonAccountExportService
     if (ol.getInvoice() != null && !ol.getInvoice().isEmpty()
             //&& !AccountUtil.INVOICE_PAYMENT.bufferEquals(e.getModeOfPayment())
             && AccountUtil.isCustomerAccount(ol.getAccount())) {
-      
+
       String prefix = "411";
       String format = ConfigUtil.getConf(ConfigKey.ACCOUNTING_EXPORT_FORMAT.getKey());
       if (AccountingExportFormat.OPENCONCERTO.getLabel().equals(format)) {
@@ -160,13 +160,13 @@ public abstract class CommonAccountExportService
     }
     return c;
   }
-  
+
   /**
    * Gets the account corresponding to this {@code tax}.
    * @param tax numeric percentage
    * @param vatIO dao
    * @return an account
-   * @throws SQLException 
+   * @throws SQLException
    */
   public Account getTaxAccount(float tax, VatIO vatIO) throws SQLException {
     Account a = vatIO.findAccountByTax(tax);

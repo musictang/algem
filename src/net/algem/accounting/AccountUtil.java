@@ -1,5 +1,5 @@
 /*
- * @(#)AccountUtil.java	2.14.0 26/05/17
+ * @(#)AccountUtil.java	2.14.0 14/06/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -150,7 +150,7 @@ public class AccountUtil {
     OrderLine n = new OrderLine(e);
     n.setPaid(false);
 
-    int a = e.getAmount();
+//    int a = e.getAmount();
 //    if (e.getTax() > 0) {
 //      a = a + Math.round((a * e.getTax() / 100d));
 //    }

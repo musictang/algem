@@ -1,5 +1,5 @@
 /*
- * @(#)CommonAccountTransferDlg.java	2.14.0 13/06/17
+ * @(#)CommonAccountTransferDlg.java	2.14.0 14/06/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -122,6 +122,9 @@ public class CommonAccountTransferDlg
           MessagePopup.warning(this, MessageUtil.getMessage("payment.transfer.error.log.warning", new Object[] {errorsCSV.size(), path + ".log"}));
         }
       } else {
+        if (path.toLowerCase().endsWith(".txt")) {
+          path = path.replaceAll("(?i)\\.txt", exportService.getFileExtension());
+        }
         if (ModeOfPayment.FAC.toString().equalsIgnoreCase(modeOfPayment)) {
           errors = exportService.tiersExport(path, orderLines);
         } else {

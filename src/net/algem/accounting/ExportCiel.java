@@ -1,5 +1,5 @@
 /*
- * @(#)ExportCiel.java	2.14.0 13/06/17
+ * @(#)ExportCiel.java	2.14.0 14/06/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -62,6 +62,11 @@ public class ExportCiel
     nf.setGroupingUsed(false);
     nf.setMinimumFractionDigits(2);
     nf.setMaximumFractionDigits(2);
+  }
+
+  @Override
+  public String getFileExtension() {
+    return ".txt";
   }
 
   @Override

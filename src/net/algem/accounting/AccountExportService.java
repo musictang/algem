@@ -1,7 +1,7 @@
 /*
- * @(#)AccountExportService.java	2.8.x.3 24/09/14
- * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * @(#)AccountExportService.java	2.14.0 14/06/17
+ *
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 
 package net.algem.accounting;
@@ -28,30 +28,32 @@ import java.util.Vector;
 
 /**
  * Account export service interface.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.x.3
+ * @version 2.14.0
  * @since 2.8.r 13/12/13
  */
 public interface AccountExportService {
-  
+
+  String getFileExtension();
+
   void export(String path, Vector<OrderLine> lines, String codeJournal, Account documentAccount) throws IOException;
-  
+
   int tiersExport(String path, Vector<OrderLine> lines) throws IOException, SQLException;
-  
+
   List<String> exportCSV(String path, Vector<OrderLine> orderLines) throws IOException;
-  
+
   Account getAccount(String key) throws SQLException;
-  
+
   Account getAccount(int id) throws SQLException;
-  
+
   int getPersonalAccountId(int id) throws SQLException;
-  
+
   String getCodeJournal(int account);
-  
+
   Account getDocumentAccount(String mp) throws SQLException;
-  
+
   String getAccount(OrderLine e);
-  
+
   String getInvoiceNumber(OrderLine e);
 }

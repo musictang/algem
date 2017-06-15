@@ -1,5 +1,5 @@
 /*
- * @(#)Param.java	2.14.0 12/06/17
+ * @(#)Param.java	2.14.0 14/06/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -77,7 +77,7 @@ public class Param
     if (obj == null) {
       return false;
     }
-    if (getClass() != obj.getClass()) {
+    if (!(obj instanceof Param)) {
       return false;
     }
     final Param other = (Param) obj;
@@ -89,7 +89,7 @@ public class Param
     }
     return true;
   }
-  
+
 
   @Override
   public int hashCode() {

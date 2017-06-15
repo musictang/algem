@@ -40,7 +40,6 @@ import net.algem.config.*;
 import net.algem.planning.DateFrField;
 import net.algem.util.*;
 import net.algem.util.model.Model;
-import static net.algem.util.model.Model.Vat;
 import net.algem.util.ui.*;
 
 /**

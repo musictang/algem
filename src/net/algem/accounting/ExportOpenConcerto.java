@@ -56,14 +56,17 @@ public class ExportOpenConcerto
   }
 
   @Override
+  public String getFileExtension() {
+    return ".csv";
+  }
+
+  @Override
   public void export(String path, Vector<OrderLine> lines, String codeJournal, Account documentAccount) throws IOException {
     int totalDebit = 0;
     int totalCredit = 0;
     String number = (documentAccount == null) ? "" : documentAccount.getNumber();
     OrderLine e = null;
-    if (path.endsWith(".txt")) {
-      path = path.replace(".txt", ".csv");
-    }
+
     try (PrintWriter out = new PrintWriter(new FileWriter(path))) {
       StringBuilder sb = new StringBuilder();
       for (int i = 0, n = lines.size(); i < n; i++) {
@@ -127,9 +130,7 @@ public class ExportOpenConcerto
     String m2prefix = MessageUtil.getMessage("matching.account.error");
     boolean m1 = false;
     boolean m2 = false;
-    if (path.endsWith(".txt")) {
-      path = path.replace(".txt", ".csv");
-    }
+
     String logpath = path + ".log";
 
     try (PrintWriter out = new PrintWriter(new FileWriter(path))) {
@@ -142,8 +143,8 @@ public class ExportOpenConcerto
           m1 = true;
           continue;
         }
-        
-        
+
+
         int p = getPersonalAccountId(e.getAccount().getId());
         if (p == 0) {
           errors++;
@@ -181,7 +182,7 @@ public class ExportOpenConcerto
         sb.append(';').append(e.getCostAccount().getNumber());
         out.println(sb.toString());
         sb.delete(0, sb.length());
-        
+
         if (vat > 0.0) {
           assert(taxAccount != null);
           sb.append(dateFormat.format(e.getDate().getDate()));
@@ -210,7 +211,7 @@ public class ExportOpenConcerto
         sb.append(';').append(e.getLabel()).append(' ').append(getInvoiceNumber(e));
         if (e.getAmount() < 0) {
           sb.append(';').append(total); // DEBIT
-          sb.append(';').append(nf.format(0.0));  
+          sb.append(';').append(nf.format(0.0));
         } else {
           sb.append(';').append(nf.format(0.0));
           sb.append(';').append(total); // CREDIT
