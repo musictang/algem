@@ -41,7 +41,7 @@ import net.algem.util.ui.GridBagHelper;
 import net.algem.util.ui.MessagePopup;
 
 /**
- * Commun transfer.
+ * Common transfer dialog.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>

@@ -100,7 +100,7 @@ public class ExportDvlogPGI
               + "#" + dateFormat.format(e.getDate().getDate())
               + "#" + codeJournal
               + "#" + TextUtil.padWithTrailingSpaces("", 10)
-              + "#" + TextUtil.padWithTrailingSpaces("TOTAL DEBIT", 24) //  CENTRALISE
+              + "#" + TextUtil.padWithTrailingSpaces("CENTRALISE", 24) //  CENTRALISE
               + "#" + TextUtil.padWithLeadingZeros(nf.format(totalDebit / 100.0), 13)
               + "#" + dc
               + "#" + TextUtil.padWithTrailingSpaces("", 10)
@@ -112,7 +112,7 @@ public class ExportDvlogPGI
               + "#" + dateFormat.format(e.getDate().getDate())
               + "#" + codeJournal
               + "#" + TextUtil.padWithTrailingSpaces("", 10)
-              + "#" + TextUtil.padWithTrailingSpaces("TOTAL CREDIT", 24)
+              + "#" + TextUtil.padWithTrailingSpaces("CENTRALISE C", 24)
               + "#" + TextUtil.padWithLeadingZeros(nf.format(totalCredit / 100.0), 13)
               + "#" + cd
               + "#" + TextUtil.padWithTrailingSpaces("", 10)

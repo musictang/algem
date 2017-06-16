@@ -14,19 +14,35 @@ Gestion des avoirs dans les exports
 Les lignes d'avoir sont maintenant prises en compte dans les exports. Le sens débit/crédit est tout simplement inversé par rapport à l'export habituel.
 
 TVA
-Il est déjà possible d'indiquer un taux de TVA autre que 0 pour chaque article de facturation. La nouveauté est que le montant de la TVA est maintenant pris en compte dans les exports comptables (menu Transfert -> Echéancier et Transfert -> Pièce). Si par exemple, une facture est composée d'un article dont le montant HT est de 100 € et dont le taux de TVA est 19.6, l'export comptable des lignes de facturation (FAC) sera décomposé ainsi :
-- une ligne de crédit pour le montant HT sur le compte de produits
-- une ligne de crédit pour le montant de la TVA associée au compte TVA correspondant (445714, par exemple pour une TVA à 19.6)
+Export
+Il était déjà possible d'indiquer un taux de TVA autre que 0 pour chaque article de facturation. La nouveauté est que la TVA est maintenant prise en compte dans les exports comptables (menu Transfert → Echéancier et Transfert → Pièce). Si par exemple, une facture est composée d'un article dont le montant HT est de 100 € et dont le taux de TVA est 19.6, l'export comptable des lignes de facturation (FAC) sera décomposé ainsi :
+- une ligne de crédit pour le montant HT sur le compte de produits.
+- une ligne de crédit pour le montant de la TVA associée au compte TVA correspondant (445714, par exemple pour une TVA à 19.6).
 - une ligne de débit pour le montant TTC associée au compte client 411.
 
-
 Gestion de la tva dans les échéances
+Lorsqu'on ajoute ou modifie une échéance, il est maintenant possible d'indiquer un taux de TVA particulier pour les lignes de facturation. Le champ TVA n'est actif que si vous choisissez un règlement 'FAC'. Dans ce cas, le champ montant correspond au prix HT. Le montant TTC est calculé automatiquement et indiqué à droite de ce champ.
+Seuls les montants TTC sont visibles dans l'échéancier.
 
-
-Améliorations export Ciel
+Améliorations export Ciel/SAGE
+Les exports au format ximport (Ciel) et pnm (SAGE) ont été revus et corrigés. Le programme a été testé avec Ciel Compta 2010 et SAGE 100. L'import des lignes d'écriture à partir d'un fichier généré par Algem ne devrait plus poser de problèmes.
 
 Langue et région
+Pour ceux dont la devise n'est pas l'euro, il était parfois gênant de voir afficher ce symbole dans certains champs de saisie. Le paramètre "Langue et région" dans la section "Infos comptables" des paramètres généraux vous permet d'afficher les montants numériques dans la devise que vous souhaitez. Ce paramètre est composé de deux sections :
+- la langue sur 2 lettres en minuscules (fr, par exemple pour le français)
+- le pays ou la région du monde sur 2 lettres en majuscules (FR pour la France, GB pour le Royaume Uni, NC pour la Nouvelle Calédonie, etc.)
+
+AJOUT/MODIFICATION ECHEANCE
+De nouvelles vérifications sont faites lors de l'ajout ou modification d'une échéance :
+- la date saisie ne peut être antérieure à la date de début d'année comptable, à moins de disposer de ce droit. Ce droit, intitulé "Saisie de date d'échéance antérieure à l'année comptable" est paramétrable pour chaque utilisateur en passant par le menu Configuration → Admin → Gestion des droits. Seuls les personnes ayant le profil "Administrateur" disposent de ce droit par défaut.
+- une confirmation vous est demandée si le montant dépasse 10000 (€) ou si la date est postérieure de 2 ans à la date de fin de période.
+- vous ne pouvez plus saisir des numéros de pièce supérieurs à 10 caractères.
 
 SALLE
 Equipement
+Deux nouvelles colonnes sont maintenant disponibles dans l'équipement d'une salle :
+- le numéro d'immo (n° d'immobilisation)
+- le statut "public"
+Le numéro d'immo permet de repérer plus facilement un équipement et de faire le lien avec les fiches d'immobilisation.
+Un équipement non "public" n'apparaît pas dans les informations de salles de l'application en ligne.
 

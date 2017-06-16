@@ -66,6 +66,10 @@ public class ExportOpenConcerto
     int totalCredit = 0;
     String number = (documentAccount == null) ? "" : documentAccount.getNumber();
     OrderLine e = null;
+    
+    if (!path.toLowerCase().endsWith(".csv")) {
+      path = path + ".csv";
+    }
 
     try (PrintWriter out = new PrintWriter(new FileWriter(path))) {
       StringBuilder sb = new StringBuilder();
@@ -99,7 +103,7 @@ public class ExportOpenConcerto
         sb.append(';').append(codeJournal);
         sb.append(';').append(number);
         sb.append(';').append(e.getDocument());
-        sb.append(';').append("TOTAL DEBIT");
+        sb.append(';').append("CENTRALISE");
         sb.append(';').append(nf.format(totalDebit / 100.0));//DEBIT
         sb.append(';').append(nf.format(0.0));
         sb.append(';').append(e.getCostAccount().getNumber());
@@ -110,7 +114,7 @@ public class ExportOpenConcerto
         sb.append(';').append(codeJournal);
         sb.append(';').append(number);
         sb.append(';').append(e.getDocument());
-        sb.append(';').append("TOTAL CREDIT");
+        sb.append(';').append("CENTRALISE C");
         sb.append(';').append(nf.format(0.0));
         sb.append(';').append(nf.format(totalCredit / 100.0));// CREDIT
         sb.append(';').append(e.getCostAccount().getNumber());
@@ -143,8 +147,6 @@ public class ExportOpenConcerto
           m1 = true;
           continue;
         }
-
-
         int p = getPersonalAccountId(e.getAccount().getId());
         if (p == 0) {
           errors++;
@@ -167,11 +169,11 @@ public class ExportOpenConcerto
         String codeJournal = getCodeJournal(e.getAccount().getId());
         String f = (e.getInvoice() == null) ? "" : e.getInvoice();
 
-        sb.append(dateFormat.format(e.getDate().getDate()));
-        sb.append(';').append(codeJournal);
-        sb.append(';').append(c.getNumber());
-        sb.append(';').append(e.getDocument());
-        sb.append(';').append(e.getLabel()).append(' ').append(getInvoiceNumber(e));
+        sb.append(dateFormat.format(e.getDate().getDate()));// date d'écriture
+        sb.append(';').append(codeJournal); // code journal
+        sb.append(';').append(c.getNumber()); // n° de compte
+        sb.append(';').append(e.getDocument()); // n° de pièce
+        sb.append(';').append(e.getLabel()).append(' ').append(getInvoiceNumber(e));// libellé
         if (e.getAmount() < 0) {
           sb.append(';').append(nf.format(0.0));
           sb.append(';').append(exclTax > 0 ? nf.format(exclTax) : total);// CREDIT
@@ -179,7 +181,7 @@ public class ExportOpenConcerto
           sb.append(';').append(exclTax > 0 ? nf.format(exclTax) : total);
           sb.append(';').append(nf.format(0.0));
         }
-        sb.append(';').append(e.getCostAccount().getNumber());
+        sb.append(';').append(e.getCostAccount().getNumber());// code analytique
         out.println(sb.toString());
         sb.delete(0, sb.length());
 

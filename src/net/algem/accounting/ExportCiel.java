@@ -1,5 +1,5 @@
 /*
- * @(#)ExportCiel.java	2.14.0 14/06/17
+ * @(#)ExportCiel.java	2.14.0 15/06/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -87,8 +87,8 @@ public class ExportCiel
         }
         out.print(TextUtil.padWithLeadingSpaces(movement, 5) // n° mouvement
                 + TextUtil.padWithTrailingSpaces(codeJournal, 2) // code journal
-                + dateFormat.format(new Date()) // date écriture
-                + dateFormat.format(e.getDate().getDate()) // date échéance
+                + dateFormat.format(e.getDate().getDate()) // date écriture
+                + dateFormat.format(new Date()) // date échéance
                 + TextUtil.padWithTrailingSpaces(e.getDocument(), 12) // libellé pièce
                 + TextUtil.padWithTrailingSpaces(getAccount(e), 11) // n° compte
                 + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getLabel() + getInvoiceNumber(e), 25), 25) // numéro de facture pour les echéances correspondant à une facture.
@@ -104,11 +104,11 @@ public class ExportCiel
       if (totalDebit > 0) {
         out.print(TextUtil.padWithLeadingSpaces(movement, 5) // n° mouvement
                 + TextUtil.padWithTrailingSpaces(codeJournal, 2) // code journal
-                + dateFormat.format(new Date()) // date écriture
-                + dateFormat.format(e.getDate().getDate()) // date échéance
+                + dateFormat.format(e.getDate().getDate()) // date écriture
+                + dateFormat.format(new Date()) // date échéance
                 + TextUtil.padWithTrailingSpaces(null, 12) // libellé pièce
                 + TextUtil.padWithTrailingSpaces(number, 11) // numéro dompte
-                + TextUtil.padWithTrailingSpaces("TOTAL DEBIT", 25)
+                + TextUtil.padWithTrailingSpaces("CENTRALISE", 25)
                 + TextUtil.padWithLeadingSpaces(nf.format(totalDebit / 100.0), 13) // montant
                 + dc // débit
                 + TextUtil.padWithTrailingSpaces(null, 12) // numéro pointage
@@ -121,11 +121,11 @@ public class ExportCiel
       if (totalCredit > 0) {
         out.print(TextUtil.padWithLeadingSpaces(movement, 5) // n° mouvement
                 + TextUtil.padWithTrailingSpaces(codeJournal, 2) // code journal
-                + dateFormat.format(new Date()) // date écriture
-                + dateFormat.format(e.getDate().getDate()) // date échéance
+                + dateFormat.format(e.getDate().getDate()) // date écriture
+                + dateFormat.format(new Date()) // date échéance
                 + TextUtil.padWithTrailingSpaces(null, 12) // libellé pièce
                 + TextUtil.padWithTrailingSpaces(number, 11) // numéro dompte
-                + TextUtil.padWithTrailingSpaces("TOTAL CREDIT", 25)
+                + TextUtil.padWithTrailingSpaces("CENTRALISE C", 25)
                 + TextUtil.padWithLeadingSpaces(nf.format(totalCredit / 100.0), 13) // montant
                 + cd // credit
                 + TextUtil.padWithTrailingSpaces(null, 12) // numéro pointage
@@ -187,10 +187,10 @@ public class ExportCiel
 
         out.print(TextUtil.padWithLeadingSpaces(String.valueOf(movement), 5) // n° mouvement
                 + TextUtil.padWithTrailingSpaces(codeJournal, 2) // code journal
-                + dateFormat.format(new Date()) // date écriture
-                + dateFormat.format(e.getDate().getDate()) // date échéance
+                + dateFormat.format(e.getDate().getDate()) // date écriture
+                + dateFormat.format(new Date()) // date échéance
                 + TextUtil.padWithTrailingSpaces(e.getDocument(), 12) // libellé pièce
-                + TextUtil.padWithTrailingSpaces(c.getNumber(), 11) // numéro dompte
+                + TextUtil.padWithTrailingSpaces(c.getNumber(), 11) // numéro compte
                 + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getLabel() + getInvoiceNumber(e), 25), 25) // numéro de facture pour les echéances correspondant à une facture.
                 + TextUtil.padWithLeadingSpaces(exclTax > 0 ? nf.format(exclTax) : m, 13) // montant
                 + (e.getAmount() < 0 ? cd : dc) //cd crédit
@@ -205,16 +205,16 @@ public class ExportCiel
           assert (taxAccount != null);
           out.print(TextUtil.padWithLeadingSpaces(String.valueOf(movement), 5) // n° mouvement
                   + TextUtil.padWithTrailingSpaces(codeJournal, 2) // code journal
-                  + dateFormat.format(new Date()) // date écriture
-                  + dateFormat.format(e.getDate().getDate()) // date échéance
+                  + dateFormat.format(e.getDate().getDate()) // date écriture
+                  + dateFormat.format(new Date()) // date échéance
                   + TextUtil.padWithTrailingSpaces(e.getDocument(), 12) // libellé pièce
                   + TextUtil.padWithTrailingSpaces(taxAccount.getNumber(), 11) // numéro dompte
                   + TextUtil.padWithTrailingSpaces(TextUtil.truncate(taxAccount.getLabel() + getInvoiceNumber(e), 25), 25) // numéro de facture pour les echéances correspondant à une facture.
                   + TextUtil.padWithLeadingSpaces(nf.format(vat), 13) // montant
                   + (e.getAmount() < 0 ? cd : dc) //cd crédit
                   + TextUtil.padWithTrailingSpaces(e.getDocument(), 12) // numéro pointage
-                  + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getCostAccount().getNumber(), 6), 6) // code analytique
-                  + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getAccount().getLabel(), 34), 34) // libellé compte
+                  + TextUtil.padWithTrailingSpaces(TextUtil.truncate(null, 6), 6) // code analytique
+                  + TextUtil.padWithTrailingSpaces(TextUtil.truncate(taxAccount.getLabel(), 34), 34) // libellé compte
                   + "O" // lettre O pour Euro = Oui
                   + VERSION
                   + (char) 13);
@@ -224,11 +224,11 @@ public class ExportCiel
         String debitLabel = debit.charAt(0) == 'C' ? "Compte client " + debit : e.getAccountLabel();
         out.print(TextUtil.padWithLeadingSpaces(String.valueOf(movement), 5) // n° mouvement
                 + TextUtil.padWithTrailingSpaces(codeJournal, 2) // code journal
-                + dateFormat.format(new Date()) // date écriture
-                + dateFormat.format(e.getDate().getDate()) // date échéance
+                + dateFormat.format(e.getDate().getDate()) // date écriture
+                + dateFormat.format(new Date()) // date échéance
                 + TextUtil.padWithTrailingSpaces(null, 12) // libellé pièce
                 + TextUtil.padWithTrailingSpaces(debit, 11) // numéro compte tiers
-                + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getLabel(), 25), 25)
+                + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getLabel(), 25), 25) // libelle ecriture
                 + TextUtil.padWithLeadingSpaces(m, 13) // montant
                 + (e.getAmount() < 0 ? dc : cd) //dc débit
                 + TextUtil.padWithTrailingSpaces(null, 12) // numéro pointage

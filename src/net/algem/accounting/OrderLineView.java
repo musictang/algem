@@ -1,5 +1,5 @@
 /*
- * @(#)OrderLineView.java	2.14.0 07/06/17
+ * @(#)OrderLineView.java	2.14.0 16/06/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -37,6 +37,7 @@ import java.util.List;
 import javax.swing.*;
 import net.algem.billing.Vat;
 import net.algem.config.*;
+import net.algem.planning.DateFr;
 import net.algem.planning.DateFrField;
 import net.algem.util.*;
 import net.algem.util.model.Model;
@@ -55,6 +56,8 @@ public class OrderLineView
         implements ActionListener
 {
 
+  private static final int DOC_NUMBER_LENGTH = 10;
+  private static final double TOTAL_AMOUNT_ALLOWED = 10000;
   private GemNumericField payer;
   private GemNumericField member;
   private GemNumericField group;
@@ -72,7 +75,7 @@ public class OrderLineView
   private ParamChoice tax;
   private JLabel taxLabel;
   private List<Vat> taxList;
-  private JLabel  inclTax;
+  private JLabel inclTax;
   private GemField invoice;
   private GemButton okBt;
   private GemButton cancelBt;
@@ -80,6 +83,7 @@ public class OrderLineView
   private OrderLine orderLine;
   private NumberFormat nf;
   private ActionListener listener;
+  private DataCache dataCache;
 
   /**
    *
@@ -93,6 +97,7 @@ public class OrderLineView
     super(frame, title, modal);
 
     nf = AccountUtil.getDefaultNumberFormat();
+    this.dataCache = dataCache;
 
     GemPanel editPanel = new GemPanel();
     editPanel.setLayout(new java.awt.GridBagLayout());
@@ -113,7 +118,8 @@ public class OrderLineView
     taxList = dataCache.getList(Model.Vat).getData();
     taxLabel = new JLabel(BundleUtil.getLabel("Invoice.item.vat.label"));
     taxLabel.setEnabled(false);
-    tax = new ParamChoice(taxList) {
+    tax = new ParamChoice(taxList)
+    {
       @Override
       public int getKey() {
         Param p = (Param) getSelectedItem();
@@ -132,7 +138,8 @@ public class OrderLineView
 
     tax.setEnabled(false);
 
-    amount.addKeyListener(new KeyAdapter() {
+    amount.addKeyListener(new KeyAdapter()
+    {
       @Override
       public void keyReleased(KeyEvent e) {
         if (isInvoicePayment()) {
@@ -148,7 +155,8 @@ public class OrderLineView
                     ModeOfPaymentCtrl.TABLE,
                     ModeOfPaymentCtrl.COLUMN_NAME, dc)
     );
-    modeOfPayment.addItemListener(new ItemListener() {
+    modeOfPayment.addItemListener(new ItemListener()
+    {
       @Override
       public void itemStateChanged(ItemEvent e) {
         if (isInvoicePayment()) {
@@ -163,7 +171,8 @@ public class OrderLineView
       }
     });
 
-    tax.addItemListener(new ItemListener() {
+    tax.addItemListener(new ItemListener()
+    {
       @Override
       public void itemStateChanged(ItemEvent e) {
         if (isInvoicePayment() && e.getStateChange() == ItemEvent.SELECTED) {
@@ -207,7 +216,6 @@ public class OrderLineView
     gb.add(label, 1, 4, 3, 1, GridBagHelper.WEST);
     gb.add(amount, 1, 5, 2, 1, GridBagHelper.WEST);
 
-
     gb.add(inclTax, 3, 5, 1, 1, GridBagHelper.WEST);
     gb.add(modeOfPayment, 1, 6, 1, 1, GridBagHelper.WEST);
     gb.add(taxLabel, 2, 6, 1, 1, GridBagHelper.WEST);
@@ -238,6 +246,7 @@ public class OrderLineView
 
   /**
    * Calculates and show price full taxes.
+   *
    * @param value tax value
    */
   private void showPriceTaxeIncluded(String value) {
@@ -247,7 +256,7 @@ public class OrderLineView
     } else {
       try {
         double exclTax = getTotalTaxesExcluded();
-        String suff = " " +  BundleUtil.getLabel("Invoice.ati.label");
+        String suff = " " + BundleUtil.getLabel("Invoice.ati.label");
         inclTax.setText(nf.format(exclTax + (exclTax * val / 100d)) + suff);
       } catch (ParseException pe) {
         GemLogger.logException(pe);
@@ -313,22 +322,56 @@ public class OrderLineView
     }
   }
 
-  void testValidation()
-          throws NumberFormatException, IllegalArgumentException, ParseException {
+  boolean testValidation() throws IllegalArgumentException {
+
     String s = payer.getText();
     if (s.length() < 1) {
-      throw new IllegalArgumentException("Payeur non saisi");
+      throw new IllegalArgumentException(MessageUtil.getMessage("orderline.no.payer.warning"));
     }
     s = label.getText();
     if (s.length() < 1) {
-      throw new IllegalArgumentException("Libellé non saisi");
+      throw new IllegalArgumentException(MessageUtil.getMessage("orderline.no.label.warning"));
     }
-    //if (!AccountUtil.isPersonalAccount(getAccount()) && getAmount() < 1.0) {
-    if (!ModeOfPayment.FAC.toString().equals(modeOfPayment.getSelectedItem()) && getTotalTaxesIncluded() < 0.0) {
-      if (!MessagePopup.confirm(this, MessageUtil.getMessage("payment.negative.amount.warning"))) {
-        throw new IllegalArgumentException(MessageUtil.getMessage("invalid.amount"));
+    try {
+      double total = getTotalTaxesIncluded();
+      if (total > TOTAL_AMOUNT_ALLOWED) {
+        if (!MessagePopup.confirm(this, MessageUtil.getMessage("payment.large.amount.warning", TOTAL_AMOUNT_ALLOWED))) {
+          return false;
+        }
+      }
+
+      //if (!AccountUtil.isPersonalAccount(getAccount()) && getAmount() < 1.0) {
+      if (!ModeOfPayment.FAC.toString().equals(modeOfPayment.getSelectedItem()) && total < 0.0) {
+        if (!MessagePopup.confirm(this, MessageUtil.getMessage("payment.negative.amount.warning"))) {
+          throw new IllegalArgumentException(MessageUtil.getMessage("invalid.amount"));
+        }
+      }
+    } catch (ParseException ex) {
+      throw new IllegalArgumentException(MessageUtil.getMessage("orderline.tti.warning"));
+    }
+    // DATE
+    DateFr d = new DateFr(date.getDate());
+    DateFr start = new DateFr(ConfigUtil.getConf(ConfigKey.FINANCIAL_YEAR_START.getKey()));
+    if (d.before(start)) {
+      if (dataCache.authorize("OrderLine.date.before.financial.year.auth")) {
+        if (!MessagePopup.confirm(this, MessageUtil.getMessage("date.before.period.confirmation", start))) {
+          return false;
+        }
+      } else {
+        throw new IllegalArgumentException(MessageUtil.getMessage("date.before.period.warning", start));
       }
     }
+    DateFr end = new DateFr(dataCache.getEndOfPeriod());
+    end.incYear(2);
+    if (d.after(end) && !MessagePopup.confirm(this, MessageUtil.getMessage("date.out.of.period.confirmation"))) {
+      return false;
+    }
+
+    String docNumber = document.getText();
+    if (docNumber.length() > DOC_NUMBER_LENGTH) {
+      throw new IllegalArgumentException(MessageUtil.getMessage("document.number.length.warning", DOC_NUMBER_LENGTH));
+    }
+    return true;
 
   }
 
@@ -362,7 +405,7 @@ public class OrderLineView
   }
 
   private void setVat(float v) {
-    for(Vat t: taxList) {
+    for (Vat t : taxList) {
       if (t.getRate() == v) {
         tax.setSelectedItem(t);
         break;
@@ -419,31 +462,17 @@ public class OrderLineView
   public void actionPerformed(ActionEvent evt) {
     if (evt.getSource() == okBt) {
       try {
-        testValidation();
-      } catch (NumberFormatException ex) {
-        JOptionPane.showMessageDialog(this,
-                ex.getMessage() + " quantité saisie non numérique",
-                MessageUtil.getMessage("entry.error"),
-                JOptionPane.ERROR_MESSAGE);
-        validation = false;
-        return;
-      } catch (ParseException ex) {
-        JOptionPane.showMessageDialog(this,
-                "prix saisi non numérique",
-                MessageUtil.getMessage("entry.error"),
-                JOptionPane.ERROR_MESSAGE);
-        validation = false;
-        return;
+        validation = testValidation();
       } catch (IllegalArgumentException ex) {
-        MessagePopup.error(this, MessageUtil.getMessage("entry.error") + " :\n" + ex.getMessage());
+        MessagePopup.error(this, ex.getMessage());
         validation = false;
-        return;
       }
-      validation = true;
-      if (listener != null) {
-        listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "orderline.view.validate"));
-      } else {
-        setVisible(false);// if modal
+      if (validation) {
+        if (listener != null) {
+          listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "orderline.view.validate"));
+        } else {
+          setVisible(false);// if modal
+        }
       }
     } else {
       validation = false;
@@ -453,7 +482,6 @@ public class OrderLineView
       } else {
         setVisible(false);
       }
-
     }
   }
 
@@ -516,6 +544,7 @@ public class OrderLineView
 
   /**
    * Gets the amount, excluding taxes.
+   *
    * @return a total
    * @throws ParseException
    */

@@ -1,7 +1,7 @@
 /*
- * @(#)ExportDlg.java 2.10.0 20/05/16
+ * @(#)ExportDlg.java 2.14.0 15/06/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -46,7 +46,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.14.0
  * @since 1.0a 14/12/1999
  */
 public abstract class ExportDlg
@@ -170,7 +170,8 @@ public abstract class ExportDlg
 
   public static JFileChooser getFileChooser(String file) {
     JFileChooser fileChooser = new JFileChooser((File) null);
-    FileNameExtensionFilter filter = new FileNameExtensionFilter(TEXT_FILTER_LABEL, "csv", "txt", "htm", "html");
+    // File name extension comparisons are case insensitive
+    FileNameExtensionFilter filter = new FileNameExtensionFilter(TEXT_FILTER_LABEL, "csv", "txt", "pnm", "htm", "html");
     fileChooser.setFileFilter(filter);
     fileChooser.setSelectedFile(new File(file));
     return fileChooser;
