@@ -1,5 +1,5 @@
 /*
- * @(#)ExportCiel.java	2.14.0 15/06/17
+ * @(#)ExportCiel.java	2.14.0 19/06/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -74,7 +74,7 @@ public class ExportCiel
     int totalDebit = 0;
     int totalCredit = 0;
     String number = (documentAccount == null) ? "" : documentAccount.getNumber();
-    String label = (documentAccount == null) ? "" : documentAccount.getLabel();
+    String label = (documentAccount == null) ? "" : TextUtil.stripDiacritics(documentAccount.getLabel());
     OrderLine e = null;
     try (PrintWriter out = new PrintWriter(new OutputStreamWriter(new FileOutputStream(path), StandardCharsets.ISO_8859_1), true)) {
       String movement = "1";
@@ -91,12 +91,12 @@ public class ExportCiel
                 + dateFormat.format(new Date()) // date échéance
                 + TextUtil.padWithTrailingSpaces(e.getDocument(), 12) // libellé pièce
                 + TextUtil.padWithTrailingSpaces(getAccount(e), 11) // n° compte
-                + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getLabel() + getInvoiceNumber(e), 25), 25) // numéro de facture pour les echéances correspondant à une facture.
+                + TextUtil.padWithTrailingSpaces(TextUtil.truncate(TextUtil.stripDiacritics(e.getLabel()) + getInvoiceNumber(e), 25), 25) // numéro de facture pour les echéances correspondant à une facture.
                 + TextUtil.padWithLeadingSpaces(nf.format(e.getAmount() / 100.0), 13) // montant
                 + (e.getAmount() > 0 ? cd : dc) // credit - debit
                 + TextUtil.padWithTrailingSpaces(e.getDocument(), 12) // numéro pointage
                 + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getCostAccount().getNumber(), 6), 6) // code analytique
-                + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getAccount().getLabel(), 34), 34) // libellé compte
+                + TextUtil.padWithTrailingSpaces(TextUtil.truncate(TextUtil.stripDiacritics(e.getAccount().getLabel()), 34), 34) // libellé compte
                 + "O" // lettre O pour Euro = Oui
                 + VERSION
                 + (char) 13);
@@ -191,12 +191,12 @@ public class ExportCiel
                 + dateFormat.format(new Date()) // date échéance
                 + TextUtil.padWithTrailingSpaces(e.getDocument(), 12) // libellé pièce
                 + TextUtil.padWithTrailingSpaces(c.getNumber(), 11) // numéro compte
-                + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getLabel() + getInvoiceNumber(e), 25), 25) // numéro de facture pour les echéances correspondant à une facture.
+                + TextUtil.padWithTrailingSpaces(TextUtil.truncate(TextUtil.stripDiacritics(e.getLabel()) + getInvoiceNumber(e), 25), 25) // numéro de facture pour les echéances correspondant à une facture.
                 + TextUtil.padWithLeadingSpaces(exclTax > 0 ? nf.format(exclTax) : m, 13) // montant
                 + (e.getAmount() < 0 ? cd : dc) //cd crédit
                 + TextUtil.padWithTrailingSpaces(e.getDocument(), 12) // numéro pointage
                 + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getCostAccount().getNumber(), 6), 6) // code analytique
-                + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getAccount().getLabel(), 34), 34) // libellé compte
+                + TextUtil.padWithTrailingSpaces(TextUtil.truncate(TextUtil.stripDiacritics(e.getAccount().getLabel()), 34), 34) // libellé compte
                 + "O" // lettre O pour Euro = Oui
                 + VERSION
                 + (char) 13);
@@ -209,31 +209,31 @@ public class ExportCiel
                   + dateFormat.format(new Date()) // date échéance
                   + TextUtil.padWithTrailingSpaces(e.getDocument(), 12) // libellé pièce
                   + TextUtil.padWithTrailingSpaces(taxAccount.getNumber(), 11) // numéro dompte
-                  + TextUtil.padWithTrailingSpaces(TextUtil.truncate(taxAccount.getLabel() + getInvoiceNumber(e), 25), 25) // numéro de facture pour les echéances correspondant à une facture.
+                  + TextUtil.padWithTrailingSpaces(TextUtil.truncate(TextUtil.stripDiacritics(taxAccount.getLabel()) + getInvoiceNumber(e), 25), 25) // numéro de facture pour les echéances correspondant à une facture.
                   + TextUtil.padWithLeadingSpaces(nf.format(vat), 13) // montant
                   + (e.getAmount() < 0 ? cd : dc) //cd crédit
                   + TextUtil.padWithTrailingSpaces(e.getDocument(), 12) // numéro pointage
                   + TextUtil.padWithTrailingSpaces(TextUtil.truncate(null, 6), 6) // code analytique
-                  + TextUtil.padWithTrailingSpaces(TextUtil.truncate(taxAccount.getLabel(), 34), 34) // libellé compte
+                  + TextUtil.padWithTrailingSpaces(TextUtil.truncate(TextUtil.stripDiacritics(taxAccount.getLabel()), 34), 34) // libellé compte
                   + "O" // lettre O pour Euro = Oui
                   + VERSION
                   + (char) 13);
         }
         // COMPTE D'ATTENTE (411)
         String debit = getAccount(e);
-        String debitLabel = debit.charAt(0) == 'C' ? "Compte client " + debit : e.getAccountLabel();
+        String debitLabel = debit.startsWith("411") && debit.length() > 3 ? "client " + debit.substring(3) : e.getAccountLabel();
         out.print(TextUtil.padWithLeadingSpaces(String.valueOf(movement), 5) // n° mouvement
                 + TextUtil.padWithTrailingSpaces(codeJournal, 2) // code journal
                 + dateFormat.format(e.getDate().getDate()) // date écriture
                 + dateFormat.format(new Date()) // date échéance
                 + TextUtil.padWithTrailingSpaces(null, 12) // libellé pièce
                 + TextUtil.padWithTrailingSpaces(debit, 11) // numéro compte tiers
-                + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getLabel(), 25), 25) // libelle ecriture
+                + TextUtil.padWithTrailingSpaces(TextUtil.truncate(TextUtil.stripDiacritics(e.getLabel()), 25), 25) // libelle ecriture
                 + TextUtil.padWithLeadingSpaces(m, 13) // montant
                 + (e.getAmount() < 0 ? dc : cd) //dc débit
                 + TextUtil.padWithTrailingSpaces(null, 12) // numéro pointage
                 + TextUtil.padWithTrailingSpaces(null, 6) // code analytique
-                + TextUtil.padWithTrailingSpaces(TextUtil.truncate(debitLabel, 34), 34) // libellé compte tiers
+                + TextUtil.padWithTrailingSpaces(TextUtil.truncate(TextUtil.stripDiacritics(debitLabel), 34), 34) // libellé compte tiers
                 + "O" // lettre O pour Euro = Oui
                 + VERSION
                 + (char) 13);

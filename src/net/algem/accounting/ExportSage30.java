@@ -1,5 +1,5 @@
 /*
- * @(#)ExportSage30.java	2.14.0 15/06/17
+ * @(#)ExportSage30.java	2.14.0 19/06/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -102,13 +102,13 @@ public class ExportSage30
           out.print(TextUtil.padWithTrailingSpaces(codeJournal, 3) // code journal
                   + dateFormat.format(e.getDate().getDate()) // date écriture
                   + default_document_type
-                  + TextUtil.padWithTrailingSpaces("41100000", 13) // compte général
+                  + TextUtil.padWithTrailingSpaces("411", 13) // compte général
                   + "X" // compte auxiliaire
                   + TextUtil.padWithTrailingSpaces(getAccount(e), 13) // compte client
                   + TextUtil.padWithTrailingSpaces(e.getDocument(), 13) // libellé pièce
                   + TextUtil.padWithTrailingSpaces(TextUtil.truncate(TextUtil.stripDiacritics(e.getLabel()) + " " + getInvoiceNumber(e), 25), 25) // libellé
                   + getModeOfPayment(e.getModeOfPayment()) // mode de paiement
-                  //+ dateFormat.format(e.getDate().getDate()) 
+                  //+ dateFormat.format(e.getDate().getDate())
                   + TextUtil.padWithTrailingSpaces(null, 6) // date échéance
                   + (e.getAmount() > 0 ? cd : dc) // credit : debit
                   + TextUtil.padWithLeadingSpaces(amount, 20) // montant
@@ -221,7 +221,7 @@ public class ExportSage30
         Account a = e.getCostAccount();
         String m = nf.format(Math.abs(e.getAmount()) / 100.0); // le montant doit être positif
         String codeJournal = getCodeJournal(e.getAccount().getId());
-        
+
         Account taxAccount = null;
         double exclTax = 0;//HT
         double vat = 0;
@@ -286,7 +286,7 @@ public class ExportSage30
         out.print(TextUtil.padWithTrailingSpaces(codeJournal, 3) // code journal
                 + dateFormat.format(e.getDate().getDate()) // date écriture
                 + default_document_type
-                + TextUtil.padWithTrailingSpaces("41100000", 13) // n° compte général
+                + TextUtil.padWithTrailingSpaces("411", 13) // n° compte général
                 + "X" // compte auxiliaire
                 + TextUtil.padWithTrailingSpaces(debit, 13) // compte client
                 + TextUtil.padWithTrailingSpaces(null, 13) // libellé pièce
