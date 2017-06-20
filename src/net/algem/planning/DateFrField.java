@@ -1,7 +1,7 @@
 /*
- * @(#)DateFrField.java	2.9.6 16/03/16
+ * @(#)DateFrField.java	2.14.0 20/06/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -34,7 +34,7 @@ import net.algem.util.BundleUtil;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.9.6
+ * @version 2.14.0
  * @since 1.0a 02/09/2001
  */
 public class DateFrField extends JTextField
@@ -42,15 +42,15 @@ public class DateFrField extends JTextField
 {
 
   private int pos;
-  private DateDocument buf;
+  private DateDocument dateDocument;
   private final DateFormat mediumFormat = DateFormat.getDateInstance(DateFormat.MEDIUM);
   private final DateFormat simpleFormat = new SimpleDateFormat("EEEE dd MMM yyyy");
   private final DateFormat dayOfWeekFormat = new SimpleDateFormat("EEEE");
 
   public DateFrField(String s) {
     addKeyListener(this);
-    buf = new DateDocument(this, s);
-    setDocument(buf);
+    dateDocument = new DateDocument(this, s);
+    setDocument(dateDocument);
   }
 
   public DateFrField() {
@@ -66,7 +66,7 @@ public class DateFrField extends JTextField
   }
 
   public DateFr get() {
-    return buf.getDateFr();
+    return dateDocument.getDateFr();
   }
 
   public DateFr getDateFr() {
@@ -74,7 +74,7 @@ public class DateFrField extends JTextField
   }
 
   public Date getDate() {
-    return buf.getDate();
+    return dateDocument.getDate();
   }
 
   public void setDate(Date date) {
@@ -82,8 +82,8 @@ public class DateFrField extends JTextField
   }
 
   public void set(Date date) {
-    buf = new DateDocument(this, (new DateFr(date)).toString());
-    setDocument(buf);
+    dateDocument = new DateDocument(this, (new DateFr(date)).toString());
+    setDocument(dateDocument);
     pos = 0;
   }
 
@@ -93,8 +93,8 @@ public class DateFrField extends JTextField
 
   public void set(DateFr datefr) {
     if (datefr != null) {
-      buf = new DateDocument(this, datefr.toString());
-      setDocument(buf);
+      dateDocument = new DateDocument(this, datefr.toString());
+      setDocument(dateDocument);
       pos = 0;
     }
   }
@@ -126,7 +126,7 @@ public class DateFrField extends JTextField
       calendrierdlg.saisie();
       if (calendrierdlg.isValidate()) {
         DateFr datefr1 = new DateFr(calendrierdlg.getDate());
-        buf.setDate(datefr1.toString());
+        dateDocument.setDate(datefr1.toString());
         fireActionPerformed();
       }
       ke.consume();
@@ -136,8 +136,8 @@ public class DateFrField extends JTextField
   @Override
   public void setText(String s) {
     if (s != null) {
-      buf = new DateDocument(this, s);
-      setDocument(buf);
+      dateDocument = new DateDocument(this, s);
+      setDocument(dateDocument);
       pos = 0;
     }
   }
@@ -149,15 +149,15 @@ public class DateFrField extends JTextField
 
   @Override
   public String toString() {
-    return buf.getDateFr().toString();
+    return dateDocument.getDateFr().toString();
   }
 
   public String toSimpleString() {
-    return simpleFormat.format(buf.getDate());
+    return simpleFormat.format(dateDocument.getDate());
   }
 
   public String getDayOfWeek() {
-    String dow = dayOfWeekFormat.format(buf.getDate());
+    String dow = dayOfWeekFormat.format(dateDocument.getDate());
     if (dow.length() < 8) {
       StringBuilder fill = new StringBuilder();
       for (int i = 8; i > dow.length(); i--) {

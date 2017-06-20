@@ -1,7 +1,7 @@
 /*
- * @(#)OrderLineTableModel.java	2.8.t 10/05/14
+ * @(#)OrderLineTableModel.java	2.14.0 20/06/17
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -32,7 +32,7 @@ import net.algem.util.ui.TableElementModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.t
+ * @version 2.14.0
  * @since 1.0a 18/07/1999
  */
 public class OrderLineTableModel
@@ -195,7 +195,7 @@ public class OrderLineTableModel
       case 2:
         return e.getGroup();
       case 3:
-        return e.getDate();
+        return e.getDate() == null || DateFr.NULLDATE.equals(e.getDate().toString()) ? "" : e.getDate();
       case 4:
         return e.getLabel();
       case 5:

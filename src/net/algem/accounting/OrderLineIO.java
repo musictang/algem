@@ -1,5 +1,5 @@
 /*
- * @(#)OrderLineIO.java	2.14.0 05/06/17
+ * @(#)OrderLineIO.java	2.14.0 20/06/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -69,8 +69,8 @@ public class OrderLineIO
 
     String query = "INSERT INTO " + TABLE + " VALUES("
             + nextid
-            + ",'" + e.getDate().toString()
-            + "'," + e.getPayer()
+            + ", " + (e.getDate() == null || DateFr.NULLDATE.equals(e.getDate().toString()) ? "NULL" : "'" + e.getDate().toString() + "'")
+            + "," + e.getPayer()
             + "," + e.getMember()
             + "," + e.getOrder()
             + ",'" + e.getModeOfPayment()
@@ -104,8 +104,8 @@ public class OrderLineIO
    */
   public static void update(OrderLine e, DataConnection dc) throws SQLException {
     String query = "UPDATE " + TABLE + " SET"
-            + " echeance = '" + e.getDate().toString()
-            + "', payeur = " + e.getPayer()
+            + " echeance = " + (e.getDate() == null || DateFr.NULLDATE.equals(e.getDate().toString()) ? "NULL" : "'" + e.getDate().toString() + "'")
+            + ", payeur = " + e.getPayer()
             + ", adherent = " + e.getMember()
             + ", commande = " + e.getOrder()
             + ", libelle = '" + escape(e.getLabel())

@@ -1,7 +1,7 @@
 /*
- * @(#)EnrolmentOrderUtil.java	2.10.5 08/09/16
+ * @(#)EnrolmentOrderUtil.java	2.14.0 20/06/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -41,7 +41,7 @@ import net.algem.util.model.Model;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.5
+ * @version 2.14.0
  * @since 2.8.a 01/04/2013
  */
 public class EnrolmentOrderUtil {
@@ -199,13 +199,15 @@ public class EnrolmentOrderUtil {
     if (std.size() > 0) {
       for (OrderLine o : std) {
         if (service.exists(o, startDateCheck, memberId)) {
-          continue;
+          continue;// do not include duplicates
         }
         o.setMember(memberId);
         o.setPayer(mo.getPayer());
         o.setLabel(o.getLabel() + suffix);
         //o.setDate(mo.getStart());
-        o.setDate(now);
+        if (o.getDate() == null || DateFr.NULLDATE.equals(o.getDate().toString())) {
+          o.setDate(now);
+        }
         o.setPaid(false);
         o.setTransfered(false);
         o.setOrder(mo.getIdOrder());
@@ -228,8 +230,9 @@ public class EnrolmentOrderUtil {
           b.setMember(memberId);
           b.setPayer(mo.getPayer());
           b.setLabel(b.getLabel() + suffix);
-          //b.setDate(mo.getStart());
-          b.setDate(now);
+          if (b.getDate() == null || DateFr.NULLDATE.equals(b.getDate().toString())) {
+            b.setDate(now);
+          }
           b.setPaid(true);
           b.setTransfered(false);
           b.setOrder(mo.getIdOrder());

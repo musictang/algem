@@ -1,5 +1,5 @@
 /*
- * @(#)OrderLineView.java	2.14.0 16/06/17
+ * @(#)OrderLineView.java	2.14.0 20/06/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -292,7 +292,7 @@ public class OrderLineView
   }
 
   void setStandardEditable() {
-    date.setEditable(false);
+    //date.setEditable(false);
     payer.setEditable(false);
     member.setEditable(false);
     cbPaid.setEnabled(false);
@@ -387,20 +387,20 @@ public class OrderLineView
   void setOrderLine(OrderLine ol) {
     orderLine = ol;
 
-    setPayerId(orderLine.getPayer());
-    setMemberId(orderLine.getMember());
-    group.setText(String.valueOf(orderLine.getGroup()));
-    date.setText(orderLine.getDate().toString());
-    label.setText(orderLine.getLabel());
-    modeOfPayment.setSelectedItem(orderLine.getModeOfPayment());
-    document.setText(orderLine.getDocument());
-    schoolChoice.setKey(orderLine.getSchool());
-    setAccount(orderLine.getAccount());
-    costAccount.setSelectedItem(orderLine.getCostAccount());
-    cbPaid.setSelected(orderLine.isPaid());
-    invoice.setText(orderLine.getInvoice());
-    setVat(orderLine.getTax());
-    setAmount(orderLine.getDoubleAmount());
+    setPayerId(ol.getPayer());
+    setMemberId(ol.getMember());
+    group.setText(String.valueOf(ol.getGroup()));
+    date.setText(ol.getDate().toString());
+    label.setText(ol.getLabel());
+    modeOfPayment.setSelectedItem(ol.getModeOfPayment());
+    document.setText(ol.getDocument());
+    schoolChoice.setKey(ol.getSchool());
+    setAccount(ol.getAccount());
+    costAccount.setSelectedItem(ol.getCostAccount());
+    cbPaid.setSelected(ol.isPaid());
+    invoice.setText(ol.getInvoice());
+    setVat(ol.getTax());
+    setAmount(ol.getDoubleAmount());
     showPriceTaxeIncluded(tax.getValue());
   }
 
@@ -421,19 +421,19 @@ public class OrderLineView
     try {
       orderLine.setPayer(nf.parse(payer.getText()).intValue());
     } catch (ParseException ignore) {
-      GemLogger.logException(ignore);
+      GemLogger.log(ignore.getMessage());
       orderLine.setPayer(0);
     }
     try {
       orderLine.setMember(nf.parse(member.getText()).intValue());
     } catch (ParseException ignore) {
-      GemLogger.logException(ignore);
+      GemLogger.log(ignore.getMessage());
       orderLine.setMember(0);
     }
     try {
       orderLine.setGroup(nf.parse(group.getText()).intValue());
     } catch (ParseException ignore) {
-      GemLogger.logException(ignore);
+      GemLogger.log(ignore.getMessage());
       orderLine.setGroup(0);
     }
     orderLine.setDate(date.getDate());

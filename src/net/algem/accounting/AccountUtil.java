@@ -1,5 +1,5 @@
 /*
- * @(#)AccountUtil.java	2.14.0 14/06/17
+ * @(#)AccountUtil.java	2.14.0 20/06/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -149,23 +149,20 @@ public class AccountUtil {
 
     OrderLine n = new OrderLine(e);
     n.setPaid(false);
+    String mode = e.getModeOfPayment();
 
-//    int a = e.getAmount();
-//    if (e.getTax() > 0) {
-//      a = a + Math.round((a * e.getTax() / 100d));
-//    }
-    if (!ModeOfPayment.FAC.toString().equals(e.getModeOfPayment())) {
-      n.setModeOfPayment(e.getModeOfPayment());
+    if (!ModeOfPayment.FAC.toString().equals(mode)) {
+      n.setModeOfPayment(mode);
     } else {
       n.setModeOfPayment(ModeOfPayment.CHQ.toString());// règlement par défaut
       n.setAmount(-(e.getAmount()));
       n.setTax(0.0f);
     }
 
-    if (e.getAmount() > 0) {
+    /*if (e.getAmount() > 0) {
       e.setAmount(-(n.getAmount()));// montant à créditer
       e.setModeOfPayment(ModeOfPayment.FAC.toString());
-    }
+    }*/
     return n;
   }
 
@@ -175,21 +172,33 @@ public class AccountUtil {
    * As a precaution, orderlines are marked not transfered.
    *
    * @param e the order to save
+   * @param counterpart also add counterpart
    * @param dc data connection
    * @return a new payment order line
    * @throws SQLException
    */
-  public static OrderLine createEntry(OrderLine e, boolean counterpart, DataConnection dc) throws SQLException {
-    OrderLine p = null;
+  public static OrderLine createEntry(final OrderLine e, boolean counterpart, final DataConnection dc) throws SQLException {
     e.setTransfered(false);
-    if (ModeOfPayment.FAC.toString().equals(e.getModeOfPayment()) && counterpart && isPersonalAccount(e.getAccount()) && !hasPersonalEntry(e, dc)) { // compte de classe 4
-      p = createOrderLine(e);
-      OrderLineIO.insert(e, dc);//première échéance à reglement FAC
-      OrderLineIO.insert(p, dc);
+    if (ModeOfPayment.FAC.toString().equals(e.getModeOfPayment()) && counterpart && isPersonalAccount(e.getAccount()) && !existsEntry(e, dc)) { // compte de classe 4
+      final OrderLine p = createOrderLine(e);
+      try {
+        return dc.withTransaction(new DataConnection.SQLRunnable<OrderLine>()
+        {
+          @Override
+          public OrderLine run(DataConnection conn) throws Exception {
+            OrderLineIO.insert(e, dc);//première échéance à reglement FAC
+            OrderLineIO.insert(p, dc);
+            return p;
+          }
+        });
+      } catch (Exception ex) {
+        throw new SQLException(ex.getMessage());
+      }
+      
     } else {
       OrderLineIO.insert(e, dc);
     }
-    return p;
+    return null;
   }
 
   public static OrderLine createEntry(OrderLine e, DataConnection dc) throws SQLException {
@@ -211,7 +220,7 @@ public class AccountUtil {
    * @param e orderline
    * @return true if this orderline exists
    */
-  private static boolean hasPersonalEntry(OrderLine e, DataConnection dc) {
+  private static boolean existsEntry(OrderLine e, DataConnection dc) {
     OrderLine n = OrderLineIO.find(e, dc);
     return n != null;
   }

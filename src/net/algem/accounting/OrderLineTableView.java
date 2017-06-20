@@ -1,5 +1,5 @@
 /*
-* @(#)OrderLineTableView.java 2.12.0 13/03/17
+* @(#)OrderLineTableView.java 2.14.0 20/06/17
 *
 * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
 *
@@ -44,7 +44,7 @@ import net.algem.util.model.Model;
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @author <a href="mailto:damien.loustau@gmail.com">Damien Loustau</a>
- * @version 2.11.2
+ * @version 2.14.0
  * @since 1.0a 07/07/1999
  *
  */
@@ -289,6 +289,7 @@ public class OrderLineTableView
    * Line selection by date.
    *
    * @param date start date
+   * @param hideBilling hide billing lines
    */
   public void filterByDate(DateFr date, boolean hideBilling) {
     this.hideBilling = hideBilling;
@@ -311,9 +312,16 @@ public class OrderLineTableView
     begin = new DateFr(cal.getTime());*/
     begin = new DateFr(date);
     end = new DateFr(begin);
-    end.incYear(1);
+    end.incYear(1);//XXX enlarge after : 2 ?
+    end.decDay(1);
   }
 
+  /**
+   * 
+   * @param begin start date
+   * @param end end date
+   * @param hideBilling hide billing lines
+   */
   public void filterByPeriod(DateFr begin, DateFr end, boolean hideBilling) {
     this.hideBilling = hideBilling;
     this.begin = begin;

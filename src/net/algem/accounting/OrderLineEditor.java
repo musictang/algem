@@ -1,5 +1,5 @@
 /*
- * @(#)OrderLineEditor.java	2.14.0 05/06/17
+ * @(#)OrderLineEditor.java	2.14.0 20/06/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -401,19 +401,14 @@ public class OrderLineEditor
       e.setAmount(-Math.abs(e.getAmount()));
     }
     try {
-      dc.setAutoCommit(false);
       OrderLine c = AccountUtil.createEntry(e, dc);
-      dc.commit();
       tableModel.addElement(e);
       if (c != null) {
         tableModel.addElement(c);
       }
     } catch (SQLException ex) {
-      dc.rollback();
       GemLogger.logException(PAYMENT_CREATE_EXCEPTION, ex, this);
-    } finally {
-      dc.setAutoCommit(true);
-    }
+    } 
   }
 
   @Override

@@ -1,5 +1,5 @@
 /*
- * @(#)PlanModifCtrl.java	2.13.1 12/04/17
+ * @(#)PlanModifCtrl.java	2.14.0 20/06/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -65,7 +65,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.13.1
+ * @version 2.14.0
  * @since 1.0b 05/07/2002 lien salle et groupe
  */
 public class PlanModifCtrl
@@ -400,7 +400,6 @@ public class PlanModifCtrl
       }
       dc.commit();
       desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));//XXX dlg.getEndDate/Fin
-
     } catch (Exception e) {
       dc.rollback();
       GemLogger.logException("Changement d'heure", e);

@@ -27,7 +27,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.Date;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JDialog;
@@ -37,7 +36,6 @@ import javax.swing.JTextPane;
 import javax.swing.UIManager;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
-import net.algem.planning.DateFr;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
@@ -77,7 +75,7 @@ public class StandardOrderLineDlg
   public void createUI() {
     model = new OrderLineTableModel();
     view = new OrderLineTableView(model, this);
-    disableCols(0,1,2,3,10,11,12);
+    disableCols(0,1,2,10,11,12);
     setLayout(new BorderLayout());
     JTextPane info = new JTextPane();
     info.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -160,7 +158,7 @@ public class StandardOrderLineDlg
       return;
     }
     OrderLine e = view.getElementAt(n);
-    e.setDate(new Date());
+    //e.setDate(new Date());
 
     try {
       dlg = new OrderLineView(null, MessageUtil.getMessage("payment.update.label"), desktop.getDataCache(), false);
@@ -179,7 +177,7 @@ public class StandardOrderLineDlg
     if (n >= 0) {
       e = new OrderLine(view.getElementAt(n));
       e.setId(0);
-      e.setDate(new Date());
+      //e.setDate(new Date());
     } else {
       e = getDefault();
     }
@@ -217,7 +215,7 @@ public class StandardOrderLineDlg
     OrderLine e = new OrderLine();
     e.setLabel("");
     e.setDocument("");
-    e.setDate(new DateFr(new Date()));
+    //e.setDate(new DateFr(new Date()));
     e.setAccount(null);
     e.setCostAccount(null);
     e.setPaid(false);

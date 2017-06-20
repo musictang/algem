@@ -1,7 +1,7 @@
 /*
-* @(#)OrderLineDlg.java	2.11.3 01/12/16
+* @(#)OrderLineDlg.java	2.14.0 20/06/17
 *
-* Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+* Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
 *
 * This file is part of Algem.
 * Algem is free software: you can redistribute it and/or modify it
@@ -52,7 +52,7 @@ import net.algem.util.ui.MessagePopup;
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @author <a href="mailto:damien.loustau@gmail.com">Damien Loustau</a>
- * @version 2.11.3
+ * @version 2.14.0
  * @since 1.0a 07/07/1999
  */
 public class OrderLineDlg
@@ -514,19 +514,14 @@ public class OrderLineDlg
 
   private void create(OrderLine e) {
     try {
-      dc.setAutoCommit(false);
       OrderLine c = AccountUtil.createEntry(e, dc);
-      dc.commit();
       tableModel.addElement(e);
       if (c != null) {
         tableModel.addElement(c);
       }
     } catch (SQLException ex) {
-      dc.rollback();
-      GemLogger.logException(MessageUtil.getMessage("payment.add.exception"), ex, this);
-    } finally {
-      dc.setAutoCommit(true);
-    }
+      GemLogger.log(MessageUtil.getMessage("payment.add.exception") + ex.getMessage());
+    } 
   }
 
   /**

@@ -110,6 +110,7 @@ public class ConfigAccounting
     account.setText(c5.getValue());
     document = new GemField(10);
     document.setText(c6.getValue());
+    document.setToolTipText(BundleUtil.getLabel("ConfEditor.document.number.tip"));
     invoice = new GemField(10);
     invoice.setText(c7.getValue());
     accountingFormat = new JComboBox(new String[]{
@@ -172,7 +173,9 @@ public class ConfigAccounting
     options.setMinimumSize(new Dimension(400, 200));
 
     GridBagHelper gb2 = new GridBagHelper(options);
-    gb2.add(new GemLabel(ConfigKey.ACCOUNTING_DOCUMENT_NUMBER.getLabel()), 0, 0, 1, 1, GridBagHelper.WEST);
+    GemLabel docNumberLabel = new GemLabel(ConfigKey.ACCOUNTING_DOCUMENT_NUMBER.getLabel());
+    docNumberLabel.setToolTipText(BundleUtil.getLabel("ConfEditor.document.number.tip"));
+    gb2.add(docNumberLabel, 0, 0, 1, 1, GridBagHelper.WEST);
     gb2.add(document, 1, 0, 1, 1, GridBagHelper.WEST);
     gb2.add(new GemLabel(ConfigKey.ACCOUNTING_INVOICE_NUMBER.getLabel()), 0, 1, 1, 1, GridBagHelper.WEST);
     gb2.add(invoice, 1, 1, 1, 1, GridBagHelper.WEST);

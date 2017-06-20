@@ -1,7 +1,7 @@
 /*
- * @(#) StandardOrderLine.java Algem 2.10.0 19/05/2016
+ * @(#) StandardOrderLine.java Algem 2.14.0 20/06/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,10 +20,12 @@
 
 package net.algem.accounting;
 
+import net.algem.planning.DateFr;
+
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.14.0
  * @since 2.9.4.14 18/05/2016
  */
 public class StandardOrderLine
@@ -39,6 +41,7 @@ public class StandardOrderLine
   protected Account account = new Account();
   /** Cost account. Analytique. */
   protected Account costAccount = new Account();
+  protected DateFr date;
 
   public int getId() {
     return id;
@@ -56,7 +59,7 @@ public class StandardOrderLine
     modeOfPayment = l;
   }
 
-public String getLabel() {
+  public String getLabel() {
     if (label.length() > OrderLineIO.MAX_CHARS_LABEL) {
       return label.substring(0, OrderLineIO.MAX_CHARS_LABEL);
     }
@@ -106,6 +109,18 @@ public String getLabel() {
 
   public void setCostAccount(Account costAccount) {
     this.costAccount = costAccount;
+  }
+  
+  public DateFr getDate() {
+    return date;
+  }
+
+  public void setDate(DateFr d) {
+    date = d;
+  }
+
+  public void setDate(java.util.Date d) {
+    date = new DateFr(d);
   }
 
   public boolean hasSameAccount(StandardOrderLine o) {

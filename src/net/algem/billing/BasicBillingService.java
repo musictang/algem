@@ -1,5 +1,5 @@
 /*
- * @(#)BasicBillingService 2.14.0 13/06/17
+ * @(#)BasicBillingService 2.14.0 20/06/17
  *
  * Copyright 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -474,12 +474,11 @@ public class BasicBillingService
     n.setMember(source.getMember());
     n.setReference(source.getNumber());
     n.items = new ArrayList<InvoiceItem>();
-//    List<InvoiceItem> sourceItems = new ArrayList<>(source.getItems());
-    //TODO get total by account and by tax
+
     Map<Integer,List<InvoiceItem>> map = mapInvoiceItemsByAccount(source.getItems(), false);
     for (List<InvoiceItem> items : map.values()) {
       InvoiceItem vItem = new InvoiceItem();
-      vItem.setQuantity(1);
+      vItem.setQuantity(1); //XXX
       Item e = null;
       double excTotal = 0.0;
       for (InvoiceItem it : items) {

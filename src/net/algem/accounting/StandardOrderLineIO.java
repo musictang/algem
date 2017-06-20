@@ -1,7 +1,7 @@
 /*
- * @(#) StandardOrderLineIO.java Algem 2.10.4 01/09/16
+ * @(#) StandardOrderLineIO.java Algem 2.14.0 20/06/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import net.algem.config.Param;
+import net.algem.planning.DateFr;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 import net.algem.util.model.Model;
@@ -35,7 +36,7 @@ import static net.algem.util.model.TableIO.escape;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.4
+ * @version 2.14.0
  * @since 2.10.0 18/05/16
  */
 public class StandardOrderLineIO {
@@ -59,6 +60,7 @@ public class StandardOrderLineIO {
               + "'," + ol.getSchool()
               + "," + ol.getAccount().getId()
               + ",'" + ol.getCostAccount().getNumber()
+              + ", " + (ol.getDate() == null || DateFr.NULLDATE.equals(ol.getDate().toString()) ? "NULL" : "'" + ol.getDate().toString() + "'")
               + "')";
 
       dc.executeUpdate(query);
@@ -75,7 +77,8 @@ public class StandardOrderLineIO {
             + "', ecole = " + ol.getSchool()
             + ", compte = " + ol.getAccount().getId()
             + ", analytique = '" + ol.getCostAccount().getNumber()
-            + "' WHERE id = " + ol.getId();
+            + "', echeance = " + (ol.getDate() == null || DateFr.NULLDATE.equals(ol.getDate().toString()) ? "NULL" : "'" + ol.getDate().toString() + "'")
+            + " WHERE id = " + ol.getId();
     dc.executeUpdate(query);
 
   }
@@ -87,7 +90,7 @@ public class StandardOrderLineIO {
 
     public List<OrderLine> find() throws SQLException {
       List<OrderLine> defs = new ArrayList<>();
-      String query = "SELECT id,libelle,reglement,montant,piece,ecole,compte,analytique FROM " + TABLE;
+      String query = "SELECT id,libelle,reglement,montant,piece,ecole,compte,analytique,echeance FROM " + TABLE;
       ResultSet rs = dc.executeQuery(query);
       while (rs.next()) {
         StandardOrderLine def = new StandardOrderLine();
@@ -111,6 +114,7 @@ public class StandardOrderLineIO {
         }
 
         def.setCostAccount(a);
+        def.setDate(rs.getDate(9));
         defs.add(new OrderLine(def));
       }
       return defs;

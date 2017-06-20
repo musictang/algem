@@ -50,7 +50,6 @@ public class AccountPrefIO
 	public static final String CASH = "COMPTE DE CAISSE";
 	public static final String BANK = "COMPTE DE BANQUE";
 	public static final String PERSONAL = "DIVERS/TIERS";
-    public static final String VAT = "TVA";
 
 	public static void insert(Preference p, String tablename, DataConnection dc) throws SQLException {
 		Object[] values = p.getValues();

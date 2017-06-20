@@ -1,5 +1,5 @@
 /*
- * @(#)OrderLine.java	2.14.0 05/06/17
+ * @(#)OrderLine.java	2.14.0 20/06/17
  *
  * Copyright (c) 1999-20167Musiques Tangentes. All Rights Reserved.
  *
@@ -40,7 +40,6 @@ public class OrderLine
 
   private static final long serialVersionUID = -4614812764226507224L;
 
-  private DateFr date;
   private int payer;
   private int member;
   private int order;
@@ -95,7 +94,7 @@ public class OrderLine
    */
   public OrderLine(StandardOrderLine s) {
     id = s.getId();
-    date = new DateFr();
+    date = new DateFr(s.getDate());//new DateFr();
     payer = 0;
     member = 0;
     order = 0;
@@ -138,18 +137,6 @@ public class OrderLine
   @Override
   public String toString() {
     return date.toString() + " " + payer + " " + member + " " + modeOfPayment;// + " " + monnaie;
-  }
-
-  public DateFr getDate() {
-    return date;
-  }
-
-  public void setDate(DateFr d) {
-    date = d;
-  }
-
-  public void setDate(java.util.Date d) {
-    date = new DateFr(d);
   }
 
   public int getMember() {
