@@ -1,8 +1,11 @@
 2.14.0
 
 CORRECTIFS
-- dans l'export vers OpenConcerto, le sens débit/crédit était inversé dans le transfert des écritures en attente (FAC et compte de tiers)
-- la date de fin d'année comptable s'étend maintenant jusqu'au dernier jour de l'exercice courant : si par exemple la date de début est au 01/09/2016, la date de fin correspond au 31/08/2017)
+- Dans l'export vers OpenConcerto, le sens débit/crédit était inversé dans le transfert des écritures en attente (FAC et compte de tiers)
+- La date de fin d'année comptable s'étend maintenant jusqu'au dernier jour de l'exercice courant : si par exemple la date de début est au 01/09/2016, la date de fin correspond au 31/08/2017)
+- Lorsqu'une ligne de facturation comportant un n° de commande avait été prise comme modèle lors de l'ajout d'une échéance, la suppression de cette ligne pouvait entraîner dans certains cas celle de la ligne ajoutée.
+- L'ajout d'une ligne de paiement sur un compte de tiers (classe 4) ne crée plus systématiquement de contrepartie de facturation (ligne de règlement 'FAC' au montant opposé). L'inverse (l'ajout d'une ligne de facturation sur un compte de tiers crée une ligne de contrepartie de paiement) reste toujours vrai cependant.
+- Il fallait saisir explicitement un nom de fichier après avoir cliqué sur Parcourir dans la fenêtre d'export des prélèvements. Le nom de fichier proposé correspond maintenant au nom par défaut, quel que soit l'endroit sélectionné. L'extension par défaut est maintenant .xml.
 
 COMPTABILITE
 AVOIR
@@ -25,7 +28,7 @@ Lorsqu'on ajoute ou modifie une échéance, il est maintenant possible d'indique
 Seuls les montants TTC sont visibles dans l'échéancier.
 
 Améliorations export Ciel/SAGE
-Les exports au format ximport (Ciel) et pnm (SAGE) ont été revus et corrigés. Le programme a été testé avec Ciel Compta 2010 et SAGE 100. L'import des lignes d'écriture à partir d'un fichier généré par Algem ne devrait plus poser de problèmes.
+Les exports au format ximport (Ciel) et pnm (SAGE) ont été revus en détail et corrigés. Le programme a été testé avec Ciel Compta 2010 (16) et SAGE 100. L'import des lignes d'écriture à partir d'un fichier généré par Algem ne devrait plus poser de problèmes.
 
 Langue et région
 Pour ceux dont la devise n'est pas l'euro, il était parfois gênant de voir afficher ce symbole dans certains champs de saisie. Le paramètre "Langue et région" dans la section "Infos comptables" des paramètres généraux vous permet d'afficher les montants numériques dans la devise que vous souhaitez. Ce paramètre est composé de deux sections :
@@ -34,9 +37,13 @@ Pour ceux dont la devise n'est pas l'euro, il était parfois gênant de voir aff
 
 AJOUT/MODIFICATION ECHEANCE
 De nouvelles vérifications sont faites lors de l'ajout ou modification d'une échéance :
-- la date saisie ne peut être antérieure à la date de début d'année comptable, à moins de disposer de ce droit. Ce droit, intitulé "Saisie de date d'échéance antérieure à l'année comptable" est paramétrable pour chaque utilisateur en passant par le menu Configuration → Admin → Gestion des droits. Seuls les personnes ayant le profil "Administrateur" disposent de ce droit par défaut.
+- la date saisie ne peut être antérieure à la date de début d'année comptable, à moins de disposer de ce droit. Ce droit, intitulé "Saisie de date d'échéance antérieure à l'année comptable" est paramétrable pour chaque utilisateur en passant par le menu Configuration → Admin → Gestion des droits. Seules les personnes ayant le profil "Administrateur" disposent de ce droit par défaut.
 - une confirmation vous est demandée si le montant dépasse 10000 (€) ou si la date est postérieure de 2 ans à la date de fin de période.
 - vous ne pouvez plus saisir des numéros de pièce supérieurs à 10 caractères.
+
+ECHEANCES STANDARDS
+La date a été ajoutée dans la configuration des échéances standards. Il était souhaitable en effet que certaines échéances générées automatiquement après inscription prennent une date bien précise (celle du début de l'année comptable ou scolaire, par exemple). Auparavant, les échéances standards prenaient systématiquement la date du jour de leur création, ce qui pouvait ne pas convenir pour certains types d'échéances comme les adhésions ou les frais d'inscription.
+Maintenant que la date est paramétrable, il faudra penser néanmoins à la modifier chaque nouvelle année, pour qu'elle reflète la période d'exercice courant (menu Compta → Echéances standards).
 
 SALLE
 Equipement
@@ -45,4 +52,3 @@ Deux nouvelles colonnes sont maintenant disponibles dans l'équipement d'une sal
 - le statut "public"
 Le numéro d'immo permet de repérer plus facilement un équipement et de faire le lien avec les fiches d'immobilisation.
 Un équipement non "public" n'apparaît pas dans les informations de salles de l'application en ligne.
-

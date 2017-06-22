@@ -1,5 +1,5 @@
 /*
- * @(#)OrderLineEditor.java	2.14.0 20/06/17
+ * @(#)OrderLineEditor.java	2.14.0 21/06/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -290,14 +290,16 @@ public class OrderLineEditor
     try {
       OrderLineIO.delete(e, dc);
       tableView.removeElementAt(n);
-      // suppression de l'échéance de tiers s'il y a lieu
+      // suppression de la contrepartie s'il y a lieu
       if (AccountUtil.isPersonalAccount(e.getAccount())) {
         OrderLine t = OrderLineIO.find(e, dc);
-        if (t != null) {
-          OrderLineIO.delete(t, dc);
-          int idx = tableModel.getData().indexOf(t);
-          if (idx != -1) {
-            tableModel.removeElementAt(idx);//ici idx est l'index du modele (pas de conversion nécessaire)
+        if (t != null && !(t.isPaid() || t.isTransfered())) {
+          if (MessagePopup.confirm(this, MessageUtil.getMessage("orderline.delete.counterpart.warning",t))) {
+            OrderLineIO.delete(t, dc);
+            int idx = tableModel.getData().indexOf(t);
+            if (idx != -1) {
+              tableModel.removeElementAt(idx);//ici idx est l'index du modele (pas de conversion nécessaire)
+            }
           }
         }
       }
@@ -312,7 +314,6 @@ public class OrderLineEditor
       MessagePopup.warning(this, MessageUtil.getMessage("orderline.editing.warning"));
       return;
     }
-//    OrderLineView dlg = null;
     int n = tableView.getSelectedRow();
     if (n < 0) {
       JOptionPane.showMessageDialog(this,
@@ -364,7 +365,6 @@ public class OrderLineEditor
   }
 
   public void dialogCreation() {
-//    OrderLineView dlg = null;
     if (dlg != null) {
       MessagePopup.warning(this, MessageUtil.getMessage("orderline.editing.warning"));
       return;
@@ -375,6 +375,7 @@ public class OrderLineEditor
       e = new OrderLine(tableView.getElementAt(n));
       e.setPaid(false); // echeance remise à non payée pour la copie
       e.setInvoice(null);
+      e.setTax(0.0f);
     }
     try {
 
@@ -408,7 +409,7 @@ public class OrderLineEditor
       }
     } catch (SQLException ex) {
       GemLogger.logException(PAYMENT_CREATE_EXCEPTION, ex, this);
-    } 
+    }
   }
 
   @Override

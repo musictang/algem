@@ -235,7 +235,8 @@ public class OrderLineIO
     query += fac.equals(e.getModeOfPayment()) ? " != '" + fac + "'" : " = '" + fac + "'";
     query += " AND commande >  0 AND commande = " + e.getOrder()
             + " AND payeur = " + e.getPayer()
-            + " AND echeance = '" + e.getDate() + "'";
+            + " AND echeance = '" + e.getDate() + "'"
+            + " AND abs(montant) = " + Math.abs(e.getAmount());
     Vector<OrderLine> r = getResult(query, dc);
     return (r == null || r.isEmpty()) ? null : r.elementAt(0);
   }

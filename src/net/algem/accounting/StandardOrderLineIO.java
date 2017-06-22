@@ -1,5 +1,5 @@
 /*
- * @(#) StandardOrderLineIO.java Algem 2.14.0 20/06/17
+ * @(#) StandardOrderLineIO.java Algem 2.14.0 21/06/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -17,21 +17,22 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package net.algem.accounting;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
 import net.algem.config.Param;
 import net.algem.planning.DateFr;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
+import net.algem.util.GemLogger;
 import net.algem.util.model.Model;
 import net.algem.util.model.TableIO;
-import static net.algem.util.model.TableIO.escape;
 
 /**
  *
@@ -51,47 +52,62 @@ public class StandardOrderLineIO {
 
   public void insert(StandardOrderLine ol) throws SQLException {
     int nextid = TableIO.nextId(SEQUENCE, dc);
-    String query = "INSERT INTO " + TABLE + " VALUES("
-              + nextid
-              + ",'" + ol.getModeOfPayment()
-              + "','" + TableIO.escape(ol.getLabel())
-              + "'," + ol.getAmount()
-              + ",'" + ol.getDocument()
-              + "'," + ol.getSchool()
-              + "," + ol.getAccount().getId()
-              + ",'" + ol.getCostAccount().getNumber()
-              + ", " + (ol.getDate() == null || DateFr.NULLDATE.equals(ol.getDate().toString()) ? "NULL" : "'" + ol.getDate().toString() + "'")
-              + "')";
+    String query = "INSERT INTO " + TABLE + " VALUES(?,?,?,?,?,?,?,?,?)";
 
-      dc.executeUpdate(query);
+    try (PreparedStatement ps = dc.prepareStatement(query)) {
+      ps.setInt(1, nextid);
+      ps.setString(2, ol.getModeOfPayment());
+      ps.setString(3, ol.getLabel());
+      ps.setInt(4, ol.getAmount());
+      ps.setString(5, ol.getDocument());
+      ps.setInt(6, ol.getSchool());
+      ps.setInt(7, ol.getAccount().getId());
+      ps.setString(8, ol.getCostAccount().getNumber());
+      if (ol.getDate() == null || DateFr.NULLDATE.equals(ol.getDate().toString())) {
+        ps.setNull(9, java.sql.Types.DATE);
+      } else {
+        ps.setDate(9, new java.sql.Date(ol.getDate().getTime()));
+      }
 
+      GemLogger.log(Level.INFO, ps.toString());
+      ps.executeUpdate();
       ol.setId(nextid);
-  }
-
-    public void update(StandardOrderLine ol) throws SQLException {
-    String query = "UPDATE " + TABLE + " SET"
-            + " libelle = '" + escape(ol.getLabel())
-            + "', reglement = '" + ol.getModeOfPayment()
-            + "', montant = " + ol.getAmount()
-            + ", piece = '" + ol.getDocument()
-            + "', ecole = " + ol.getSchool()
-            + ", compte = " + ol.getAccount().getId()
-            + ", analytique = '" + ol.getCostAccount().getNumber()
-            + "', echeance = " + (ol.getDate() == null || DateFr.NULLDATE.equals(ol.getDate().toString()) ? "NULL" : "'" + ol.getDate().toString() + "'")
-            + " WHERE id = " + ol.getId();
-    dc.executeUpdate(query);
-
-  }
-
-    public void delete(int id) throws SQLException {
-      String query = "DELETE FROM " + TABLE + " WHERE id = " + id;
-      dc.executeUpdate(query);
     }
 
-    public List<OrderLine> find() throws SQLException {
-      List<OrderLine> defs = new ArrayList<>();
-      String query = "SELECT id,libelle,reglement,montant,piece,ecole,compte,analytique,echeance FROM " + TABLE;
-      ResultSet rs = dc.executeQuery(query);
+  }
+
+  public void update(StandardOrderLine ol) throws SQLException {
+    String query = "UPDATE " + TABLE + " SET libelle=?,reglement=?,montant=?,piece=?,ecole=?,compte=?,analytique=?,echeance=? WHERE id = ?";
+    try (PreparedStatement ps = dc.prepareStatement(query)) {
+      ps.setString(1, ol.getLabel());
+      ps.setString(2, ol.getModeOfPayment());
+      ps.setInt(3, ol.getAmount());
+      ps.setString(4, ol.getDocument());
+      ps.setInt(5, ol.getSchool());
+      ps.setInt(6, ol.getAccount().getId());
+      ps.setString(7, ol.getCostAccount().getNumber());
+      if (ol.getDate() == null || DateFr.NULLDATE.equals(ol.getDate().toString())) {
+        ps.setNull(8, java.sql.Types.DATE);
+      } else {
+        ps.setDate(8, new java.sql.Date(ol.getDate().getTime()));
+      }
+
+      ps.setInt(9, ol.getId());
+
+      GemLogger.log(Level.INFO, ps.toString());
+      ps.executeUpdate();
+    }
+  }
+
+  public void delete(int id) throws SQLException {
+    String query = "DELETE FROM " + TABLE + " WHERE id = " + id;
+    dc.executeUpdate(query);
+  }
+
+  public List<OrderLine> find() throws SQLException {
+    List<OrderLine> defs = new ArrayList<>();
+    String query = "SELECT id,libelle,reglement,montant,piece,ecole,compte,analytique,echeance FROM " + TABLE;
+    try (ResultSet rs = dc.executeQuery(query)) {
       while (rs.next()) {
         StandardOrderLine def = new StandardOrderLine();
         def.setId(rs.getInt(1));
@@ -117,34 +133,35 @@ public class StandardOrderLineIO {
         def.setDate(rs.getDate(9));
         defs.add(new OrderLine(def));
       }
-      return defs;
     }
+    return defs;
+  }
 
-    /**
-     * Checks if an order line already exists between {@code start} and {@code end} dates
-     * for this {@code member}.
-     * @param o order line to check
-     * @param start start date
-     * @param end end date
-     * @param member member id
-     * @return true if any line exists, else false
-     * @throws SQLException 
-     */
-    public boolean exists(StandardOrderLine o, Date start, Date end, int member) throws SQLException {
-      String query = "SELECT e.oid FROM " + OrderLineIO.TABLE + " e"
-        + " WHERE e.echeance BETWEEN '" + start + "' AND '" + end
-        //+ " AND e.reglement LIKE '" + o.getModeOfPayment() + "%'"
-        //+ "' AND e.libelle = '" + o.getLabel()
-        + "' AND e.montant = " + o.getAmount()
-        + " AND e.compte = " + o.getAccount().getId()
-        + " AND e.analytique = '" + o.getCostAccount().getNumber()
-        + "' AND e.adherent = " + member;
-      ResultSet rs = dc.executeQuery(query);
-      while (rs.next()) {
-        return true;
-      }
-      return false;
+  /**
+   * Checks if an order line already exists between {@code start} and {@code end} dates
+   * for this {@code member}.
+   *
+   * @param o order line to check
+   * @param start start date
+   * @param end end date
+   * @param member member id
+   * @return true if any line exists, else false
+   * @throws SQLException
+   */
+  public boolean exists(StandardOrderLine o, Date start, Date end, int member) throws SQLException {
+    String query = "SELECT e.oid FROM " + OrderLineIO.TABLE + " e"
+      + " WHERE e.echeance BETWEEN '" + start + "' AND '" + end
+      //+ " AND e.reglement LIKE '" + o.getModeOfPayment() + "%'"
+      //+ "' AND e.libelle = '" + o.getLabel()
+      + "' AND e.montant = " + o.getAmount()
+      + " AND e.compte = " + o.getAccount().getId()
+      + " AND e.analytique = '" + o.getCostAccount().getNumber()
+      + "' AND e.adherent = " + member;
+    ResultSet rs = dc.executeQuery(query);
+    while (rs.next()) {
+      return true;
     }
-
+    return false;
+  }
 
 }

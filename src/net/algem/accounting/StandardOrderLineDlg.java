@@ -1,7 +1,7 @@
 /*
- * @(#) StandardOrderLineDlg.java Algem 2.10.0 19/05/16
+ * @(#) StandardOrderLineDlg.java Algem 2.14.0 21/06/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -36,6 +36,7 @@ import javax.swing.JTextPane;
 import javax.swing.UIManager;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
+import net.algem.planning.DateFr;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
@@ -46,7 +47,7 @@ import net.algem.util.ui.GemPanel;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.14.0
  * @since 2.10.0 18/05/16
  */
 public class StandardOrderLineDlg
@@ -215,7 +216,7 @@ public class StandardOrderLineDlg
     OrderLine e = new OrderLine();
     e.setLabel("");
     e.setDocument("");
-    //e.setDate(new DateFr(new Date()));
+    e.setDate(new DateFr(DateFr.NULLDATE));
     e.setAccount(null);
     e.setCostAccount(null);
     e.setPaid(false);

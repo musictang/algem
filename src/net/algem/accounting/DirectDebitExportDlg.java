@@ -1,6 +1,6 @@
 /*
  * @(#)DirectDebitExportDlg.java	2.12.0 13/03/17
- * 
+ *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.accounting;
 
@@ -49,8 +49,10 @@ public class DirectDebitExportDlg
         implements ActionListener
 {
 
-  private static final String MAILING_FILE_NAME = "mailing_prlv.csv";
-  private static final String EXPORT_FILE_NAME = "prlv.txt";
+  private static final String MAILING_FILE_NAME = "mailing_prlv";
+  private static final String MAILING_EXTENSION = ".csv";
+  private static final String EXPORT_FILE_NAME = "prlv";
+  private static final String EXPORT_EXTENSION = ".xml";
   private static final String LOG_FILE_NAME = ".log";
   private static String LF = TextUtil.LINE_SEPARATOR;
   /** Issuer number. */
@@ -135,15 +137,15 @@ public class DirectDebitExportDlg
     datePanel = new DateRangePanel(DateRangePanel.SIMPLE_DATE, null);
     datePanel.setDate(c.getTime());
     String path = ConfigUtil.getExportPath() + FileUtil.FILE_SEPARATOR;
-
-    fMailling = new GemField(path + MAILING_FILE_NAME, 25);
+    String dateStr = datePanel.get().toString();
+    fMailling = new GemField(buildFileName(path + MAILING_FILE_NAME, dateStr, MAILING_EXTENSION), 25);
     fMailling.setMinimumSize(new Dimension(100, fMailling.getPreferredSize().height));
     fMailling.setAutoscrolls(true);
     gb1.add(new GemLabel(BundleUtil.getLabel("Mailing.file.label")), 0, 0, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
     gb1.add(fMailling, 1, 0, 1, 1);
     gb1.add(browse1, 2, 0, 1, 1, GridBagHelper.WEST);
 
-    fExport = new GemField(path + EXPORT_FILE_NAME, 25);
+    fExport = new GemField(buildFileName(path + EXPORT_FILE_NAME, dateStr, EXPORT_EXTENSION), 25);
     gb1.add(new GemLabel(BundleUtil.getLabel("Export.file.label")), 0, 1, 1, 1, GridBagHelper.HORIZONTAL, GridBagHelper.WEST);
     gb1.add(fExport, 1, 1, 1, 1);
     fExport.setMinimumSize(new Dimension(100, fExport.getPreferredSize().height));
@@ -188,6 +190,11 @@ public class DirectDebitExportDlg
     pack();
   }
 
+  private String buildFileName(String name, String date, String extension) {
+    String d = date.substring(3);
+    return name + "_" + d + extension;
+  }
+
   @Override
   public void actionPerformed(ActionEvent evt) {
     JFileChooser fileChooser = new JFileChooser((File) null);
@@ -196,8 +203,11 @@ public class DirectDebitExportDlg
     if (evt.getSource() == btCancel) {
       close();
     } else if (evt.getSource() == btValidation) {
-
-      file1 = new File(fMailling.getText());
+      String mailingPath = fMailling.getText();
+      if (!mailingPath.endsWith(".csv")) {
+        mailingPath += ".csv";
+      }
+      file1 = new File(mailingPath);
       file2 = new File(fExport.getText());
       if (!FileUtil.confirmOverWrite(this, file1) || !FileUtil.confirmOverWrite(this, file2)) {
         return;
@@ -205,14 +215,15 @@ public class DirectDebitExportDlg
       DirectDebitExportFormat format = (DirectDebitExportFormat) exportFormat.getSelectedItem();
       switch (format) {
         case NATIONAL:
-          createCfnob160();
+          createCfnob160(mailingPath);
           break;
         case SEPA:
-          createSepa();
+          createSepa(mailingPath);
           break;
       }
       close();
     } else if (evt.getSource() == browse1) {
+      fileChooser.setSelectedFile(new File(fMailling.getText()));
       ret = fileChooser.showDialog(this, BundleUtil.getLabel("FileChooser.selection"));
       if (ret == JFileChooser.APPROVE_OPTION) {
         file1 = fileChooser.getSelectedFile();
@@ -221,6 +232,7 @@ public class DirectDebitExportDlg
         }
       }
     } else if (evt.getSource() == browse2) {
+      fileChooser.setSelectedFile(new File(fExport.getText()));
       ret = fileChooser.showDialog(this, BundleUtil.getLabel("FileChooser.selection"));
       if (ret == JFileChooser.APPROVE_OPTION) {
         file2 = fileChooser.getSelectedFile();
@@ -231,13 +243,15 @@ public class DirectDebitExportDlg
     }
   }
 
-  private void createSepa() {
+  private void createSepa(String mailingPath) {
     try {
-      String mailingPath = fMailling.getText();
       String exportPath = fExport.getText();
       if (exportPath.endsWith(".txt")) {
         exportPath = exportPath.substring(0, exportPath.lastIndexOf(".txt")) + ".xml";
+      } else if (!exportPath.endsWith(".xml")) {
+        exportPath += ".xml";
       }
+
       DateFr datePrl = datePanel.get();
       int school = schoolChoice.getKey();
       DirectDebitService ddService = DirectDebitService.getInstance(dc);
@@ -295,9 +309,7 @@ public class DirectDebitExportDlg
       } else {
         MessagePopup.information(this, message);
       }
-    } catch (IOException ex) {
-      GemLogger.logException(ex);
-    } catch (SQLException ex) {
+    } catch (IOException | SQLException ex) {
       GemLogger.logException(ex);
     } finally {
       closeFiles();
@@ -305,11 +317,15 @@ public class DirectDebitExportDlg
     }
   }
 
-  private void createCfnob160() {
+  private void createCfnob160(String mailingPath) {
     boolean error = false;
     int cpt = 0; // nombre de lignes exportées
-    String path1 = fMailling.getText();
     String path2 = fExport.getText();
+    if (path2.endsWith(".xml")) {
+      path2 = path2.substring(0, path2.lastIndexOf(".xml")) + ".txt";
+    } else if (!path2.endsWith(".txt")) {
+      path2 += ".txt";
+    }
 
     label = flabel.getText();
     DateFr datePrl = datePanel.get();
@@ -320,8 +336,9 @@ public class DirectDebitExportDlg
             //+" AND payeur IN (SELECT idper FROM rib)"
             + " ORDER BY payeur,echeance";
     setCursor(new Cursor(Cursor.WAIT_CURSOR));
+
     try {
-      pMailing = new PrintWriter(new FileWriter(path1));
+      pMailing = new PrintWriter(new FileWriter(mailingPath));
 //      pExport = new PrintStream(path2);// XXX PrintWriter ?
       pExport = new PrintWriter(new FileWriter(path2));
 
@@ -364,7 +381,7 @@ public class DirectDebitExportDlg
       }
       pExport.format(LF + "0808        %-6.6s                                                                                    %016d                                          ", creditorNNE, gtotal);
 
-      String message = MessageUtil.getMessage("export.success.info", new Object[]{cpt, path1});
+      String message = MessageUtil.getMessage("export.success.info", new Object[]{cpt, mailingPath});
       if (error) {
         message += LF + MessageUtil.getMessage("payer.export.warning");
         message += LF + MessageUtil.getMessage("payer.log.info", logFile.getAbsolutePath());

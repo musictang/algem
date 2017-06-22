@@ -1,5 +1,5 @@
 /*
- * @(#)OrderLine.java	2.14.0 20/06/17
+ * @(#)OrderLine.java	2.14.0 21/06/17
  *
  * Copyright (c) 1999-20167Musiques Tangentes. All Rights Reserved.
  *
@@ -136,7 +136,18 @@ public class OrderLine
 
   @Override
   public String toString() {
-    return date.toString() + " " + payer + " " + member + " " + modeOfPayment;// + " " + monnaie;
+    String s = "[" + payer + "," + member + "," + date + "," + label + "," + modeOfPayment + "," + AccountUtil.getDefaultNumberFormat().format(amount / 100d);
+    if (document != null && !document.isEmpty()) {
+      s += "," + document;
+    }
+    if (invoice != null) {
+      s += "," + invoice;
+    }
+    if (tax > 0.0f) {
+      s += "," + tax;
+    }
+    s += "]";
+    return s;
   }
 
   public int getMember() {

@@ -54,6 +54,7 @@ public class DesktopMailHandler
             to += "?bcc=" + bcc;
           }
           uriMailto = new URI("mailto", to, null);
+          //GemLogger.log(Level.INFO,uriMailto.toString());
           getDesktop().mail(uriMailto);
         } else {
           getDesktop().mail();
@@ -70,7 +71,7 @@ public class DesktopMailHandler
       executeMailClient(to, bcc);
     }
   }
-  
+
   public void send(String email, String subject, String body) {
     String uriStr = String.format("mailto:%s?subject=%s&body=%s", email, subject, body);
     if (isMailSupported()) {
@@ -96,7 +97,7 @@ public class DesktopMailHandler
       GemLogger.logException(e);
     }
   }
-  
+
   private void executeMailClient(String to, String bcc) {
     try {
       String mailClient = BundleUtil.getLabel("Mail.client");
@@ -105,7 +106,7 @@ public class DesktopMailHandler
       GemLogger.logException(e);
     }
   }
-  
+
   private void executeMailClient() {
     try {
       String mailClient = BundleUtil.getLabel("Mail.client");

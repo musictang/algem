@@ -1,5 +1,5 @@
 /*
- * @(#)AccountUtil.java	2.14.0 20/06/17
+ * @(#)AccountUtil.java	2.14.0 21/06/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -171,10 +171,10 @@ public class AccountUtil {
    * If the account is of type personal, a complementary orderline is also created.
    * As a precaution, orderlines are marked not transfered.
    *
-   * @param e the order to save
+   * @param e the line to save
    * @param counterpart also add counterpart
    * @param dc data connection
-   * @return a new payment order line
+   * @return a new payment order line or null if no counterpart was added
    * @throws SQLException
    */
   public static OrderLine createEntry(final OrderLine e, boolean counterpart, final DataConnection dc) throws SQLException {
@@ -194,7 +194,7 @@ public class AccountUtil {
       } catch (Exception ex) {
         throw new SQLException(ex.getMessage());
       }
-      
+
     } else {
       OrderLineIO.insert(e, dc);
     }
@@ -205,6 +205,14 @@ public class AccountUtil {
     return createEntry(e, true, dc);
   }
 
+  /**
+   *
+   * @param ol
+   * @param dc
+   * @return
+   * @throws SQLException
+   * @deprecated
+   */
   public static OrderLine createPersonalEntry(OrderLine ol, DataConnection dc) throws SQLException {
 
     ol.setTransfered(false);

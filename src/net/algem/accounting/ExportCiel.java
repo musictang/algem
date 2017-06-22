@@ -1,5 +1,5 @@
 /*
- * @(#)ExportCiel.java	2.14.0 19/06/17
+ * @(#)ExportCiel.java	2.14.0 21/06/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -99,7 +99,7 @@ public class ExportCiel
                 + TextUtil.padWithTrailingSpaces(TextUtil.truncate(TextUtil.stripDiacritics(e.getAccount().getLabel()), 34), 34) // libellé compte
                 + "O" // lettre O pour Euro = Oui
                 + VERSION
-                + (char) 13);
+                + "\r\n");
       }
       if (totalDebit > 0) {
         out.print(TextUtil.padWithLeadingSpaces(movement, 5) // n° mouvement
@@ -116,7 +116,7 @@ public class ExportCiel
                 + TextUtil.padWithTrailingSpaces(TextUtil.truncate(label, 34), 34) // libellé compte // todo null
                 + "O" // lettre O pour Euro = Oui
                 + VERSION
-                + (char) 13);
+                + "\r\n");
       }
       if (totalCredit > 0) {
         out.print(TextUtil.padWithLeadingSpaces(movement, 5) // n° mouvement
@@ -133,7 +133,7 @@ public class ExportCiel
                 + TextUtil.padWithTrailingSpaces(TextUtil.truncate(label, 34), 34) // libellé compte // todo null
                 + "O" // lettre O pour Euro = Oui
                 + VERSION
-                + (char) 13);
+                + "\r\n");
       }
     }
   }
@@ -199,7 +199,7 @@ public class ExportCiel
                 + TextUtil.padWithTrailingSpaces(TextUtil.truncate(TextUtil.stripDiacritics(e.getAccount().getLabel()), 34), 34) // libellé compte
                 + "O" // lettre O pour Euro = Oui
                 + VERSION
-                + (char) 13);
+                + "\r\n");
         // TVA
         if (vat > 0.0) {
           assert (taxAccount != null);
@@ -217,7 +217,7 @@ public class ExportCiel
                   + TextUtil.padWithTrailingSpaces(TextUtil.truncate(TextUtil.stripDiacritics(taxAccount.getLabel()), 34), 34) // libellé compte
                   + "O" // lettre O pour Euro = Oui
                   + VERSION
-                  + (char) 13);
+                  + "\r\n");
         }
         // COMPTE D'ATTENTE (411)
         String debit = getAccount(e);
@@ -236,7 +236,7 @@ public class ExportCiel
                 + TextUtil.padWithTrailingSpaces(TextUtil.truncate(TextUtil.stripDiacritics(debitLabel), 34), 34) // libellé compte tiers
                 + "O" // lettre O pour Euro = Oui
                 + VERSION
-                + (char) 13);
+                + "\r\n");
       }
     }// out.close()
 

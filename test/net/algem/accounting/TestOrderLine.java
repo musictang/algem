@@ -1,5 +1,5 @@
 /*
- * @(#) TestOrderLine.java Algem 2.14.0 31/05/2017
+ * @(#) TestOrderLine.java Algem 2.14.0 21/06/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -19,6 +19,7 @@
  */
 package net.algem.accounting;
 
+import net.algem.planning.DateFr;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -74,5 +75,20 @@ public class TestOrderLine {
     v = AccountUtil.getIntValue(ht);
     System.out.println(v);
     assertTrue(18962 == v);
+  }
+
+  @Test
+  public void testToString() {
+    OrderLine ol = new OrderLine();
+    ol.setPayer(1234);
+    ol.setMember(22250);
+    ol.setDate(new DateFr("02-11-2017").getDate());
+    ol.setModeOfPayment("CHQ");
+    ol.setLabel("Test p1234 a22250");
+    ol.setAmount(125.50);
+    ol.setDocument("");
+    ol.setTax(0.0f);
+
+    System.out.println(ol.toString());
   }
 }
