@@ -1,5 +1,5 @@
 /*
- * @(#)Quote.java 2.14.0 23/05/17
+ * @(#)Quote.java 2.14.1 28/05/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -32,7 +32,7 @@ import net.algem.security.User;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.14.0
+ * @version 2.14.1
  * @since 2.4.d 08/06/12
  */
 public class Quote
@@ -391,10 +391,10 @@ public class Quote
     for (BillingItem bi : items) {
       double total = 0.0;
       Param vat = bi.getItem().getTax();
-      Double t = vatMap.get(vat.getValue());
+      Double t = vatMap.get(vat.getKey());
       total = (t == null) ? 0.0 : t.doubleValue();
       total += bi.getTotalVat();
-      vatMap.put(vat.getValue(), total);
+      vatMap.put(vat.getKey(), total);
     }
 
     return vatMap;

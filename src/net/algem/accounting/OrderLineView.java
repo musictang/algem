@@ -334,7 +334,7 @@ public class OrderLineView
     }
     try {
       double total = getTotalTaxesIncluded();
-      if (total > TOTAL_AMOUNT_ALLOWED) {
+      if (Math.abs(total) > TOTAL_AMOUNT_ALLOWED) {
         if (!MessagePopup.confirm(this, MessageUtil.getMessage("payment.large.amount.warning", TOTAL_AMOUNT_ALLOWED))) {
           return false;
         }

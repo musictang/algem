@@ -1,0 +1,6 @@
+2.14.1
+
+CORRECTIFS
+* Dans la version 2.14.0, l'impression des devis et factures se soldait par une page vide.
+* En ajout/modification d'échéances, une confirmation vous est demandée en cas de montant négatif inférieur à -10000.
+* Dans certains cas, un message d'erreur vous informe maintenant en cas de perte de connexion à la base de données. Ce message est suivi de la fermeture du logiciel.

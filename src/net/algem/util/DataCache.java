@@ -1,5 +1,5 @@
 /*
- * @(#)DataCache.java	2.14.0 07/06/17
+ * @(#)DataCache.java	2.14.1 28/05/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -83,13 +83,14 @@ import java.sql.SQLException;
 import java.util.*;
 import net.algem.billing.VatIO;
 import net.algem.contact.Note;
+import net.algem.util.ui.MessagePopup;
 
 /**
  * Cache and various utilities.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.14.0
+ * @version 2.14.1
  * @since 1.0b 03/09/2001
  */
 public class DataCache
@@ -172,7 +173,7 @@ public class DataCache
   private DaySchedule daySchedule;
   private Thread monthThread;
 
-  private static DataConnection dc;
+  private static DataConnection DATA_CONNECTION;
   private UserService userService;
 
   private AtelierInstrumentsService atelierInstrumentsService;
@@ -195,7 +196,7 @@ public class DataCache
    */
   private DataCache(DataConnection dc, String login) {
 
-    this.dc = dc;
+    this.DATA_CONNECTION = dc;
     PERSON_IO = new PersonIO(dc);
     MEMBER_IO = new MemberIO(dc);
     TEACHER_IO = new TeacherIO(dc);
@@ -288,7 +289,12 @@ public class DataCache
    * @return a connection
    */
   public static DataConnection getDataConnection() {
-    return dc;
+    if (DATA_CONNECTION == null) {
+      GemLogger.log(java.util.logging.Level.SEVERE, "NULL DATA CONNECTION");
+      MessagePopup.error(null, MessageUtil.getMessage("no.active.connection"));
+      System.exit(1);
+    }
+    return DATA_CONNECTION;
   }
 
    /**
@@ -396,7 +402,7 @@ public class DataCache
       case Account:
         Account account = (Account) ACCOUNT_LIST.getItem(id);
         if (account == null) {
-          account = AccountIO.find(id, dc);
+          account = AccountIO.find(id, DATA_CONNECTION);
           ACCOUNT_LIST.addElement(account);
         }
         return  account;
@@ -469,7 +475,7 @@ public class DataCache
         return u != null ? u : USER_IO.findId(id);
       case Vat:
         Vat vat = (Vat) VAT_LIST.getItem(id);
-        return vat != null ? vat : new VatIO(dc).findId(id);
+        return vat != null ? vat : new VatIO(DATA_CONNECTION).findId(id);
       case CourseCode:
         GemParam cc = (GemParam) COURSE_CODE_LIST.getItem(id);
         return cc != null ? cc : COURSE_CODE_IO.find(id);
@@ -489,7 +495,7 @@ public class DataCache
       case PassCard:
         RehearsalPass pc = PASS_CARD.get(id);
         if (pc == null) {
-          pc = RehearsalPassIO.find(id, dc);
+          pc = RehearsalPassIO.find(id, DATA_CONNECTION);
           PASS_CARD.put(pc.getId(), pc);
         }
         return pc;
@@ -822,9 +828,9 @@ public class DataCache
 
       ROOM_RATE_LIST = new GemList<RoomRate>(ROOM_RATE_IO.load());
       loadRoomContactCache();
-      Vector<Param> schools = ParamTableIO.find(SchoolCtrl.TABLE, SchoolCtrl.COLUMN_KEY, dc);
+      Vector<Param> schools = ParamTableIO.find(SchoolCtrl.TABLE, SchoolCtrl.COLUMN_KEY, DATA_CONNECTION);
       SCHOOL_LIST = new GemList<Param>(schools);
-      ESTAB_LIST = new GemList<Establishment>(EstablishmentIO.find(" AND e.actif = TRUE AND e.idper = " + user.getId() + " ORDER BY p.nom", dc));
+      ESTAB_LIST = new GemList<Establishment>(EstablishmentIO.find(" AND e.actif = TRUE AND e.idper = " + user.getId() + " ORDER BY p.nom", DATA_CONNECTION));
 
       showMessage(frame, BundleUtil.getLabel("Room.label"));
       ROOM_LIST = new GemList<Room>(ROOM_IO.load(user.getId()));
@@ -836,7 +842,7 @@ public class DataCache
       WORKSHOP_LIST = new GemList<Course>(COURSE_IO.load("WHERE c.code = '" + CourseCodeType.ATP.getId() + "' AND titre !~* 'DEFIN' ORDER BY c.titre"));
 
       showMessage(frame, BundleUtil.getLabel("Instruments.label"));
-      instruments = InstrumentIO.find("ORDER BY nom", dc);
+      instruments = InstrumentIO.find("ORDER BY nom", DATA_CONNECTION);
 
       showMessage(frame, BundleUtil.getLabel("Teachers.label"));
       loadTeacherInstrumentCache();
@@ -847,9 +853,9 @@ public class DataCache
       COURSE_CODE_LIST = new GemList<GemParam>(COURSE_CODE_IO.load());
       MODULE_LIST = new GemList<Module>(MODULE_IO.load());
 
-      occupCat = CategoryOccupIO.find("ORDER BY nom", dc);
-      vacancyCat = ParamTableIO.find(Category.VACANCY.getTable(), Category.VACANCY.getCol(), dc);
-      webSiteCat = ParamTableIO.find(Category.SITEWEB.getTable(), Category.SITEWEB.getCol(), dc);
+      occupCat = CategoryOccupIO.find("ORDER BY nom", DATA_CONNECTION);
+      vacancyCat = ParamTableIO.find(Category.VACANCY.getTable(), Category.VACANCY.getCol(), DATA_CONNECTION);
+      webSiteCat = ParamTableIO.find(Category.SITEWEB.getTable(), Category.SITEWEB.getCol(), DATA_CONNECTION);
 
       showMessage(frame, BundleUtil.getLabel("Scheduling.label"));
       loadScheduleCache();
@@ -875,7 +881,7 @@ public class DataCache
 
       STUDIO_TYPE_LIST = new GemList<GemParam>(STUDIO_TYPE_IO.load());
       PASS_CARD = new Hashtable<Integer,RehearsalPass>();
-      for (RehearsalPass c : RehearsalPassIO.findAll("ORDER BY id", dc)) {
+      for (RehearsalPass c : RehearsalPassIO.findAll("ORDER BY id", DATA_CONNECTION)) {
         PASS_CARD.put(c.getId(), c);
       }
     } catch (SQLException ex) {
@@ -891,7 +897,7 @@ public class DataCache
     String query = "SELECT " + PersonIO.COLUMNS + " FROM " + PersonIO.TABLE + " p, " + RoomIO.TABLE + " r "
             + "WHERE r.idper = p.id OR r.payeur = p.id ORDER BY nom";
     try {
-      ResultSet rs = dc.executeQuery(query);
+      ResultSet rs = DATA_CONNECTION.executeQuery(query);
       while (rs.next()) {
         Person p = PersonIO.getFromRS(rs);
         PERSON_CACHE.put(p.getId(), p);
@@ -903,7 +909,7 @@ public class DataCache
 
   private void loadTeacherInstrumentCache() {
     try {
-      TEACHER_INSTRUMENT_CACHE = InstrumentIO.load(dc);
+      TEACHER_INSTRUMENT_CACHE = InstrumentIO.load(DATA_CONNECTION);
     } catch (SQLException ex) {
       GemLogger.logException(ex);
     }
@@ -929,7 +935,7 @@ public class DataCache
     }
     if (lo.isEmpty()) {
       String query = "WHERE facture = '" + invoiceId + "'";
-      lo =  OrderLineIO.find(query, dc);
+      lo =  OrderLineIO.find(query, DATA_CONNECTION);
       for(OrderLine ol : lo) {
         ORDER_LINE_CACHE.put(ol.getId(), ol);
       }
@@ -938,13 +944,13 @@ public class DataCache
   }
 
   private void loadAccountingCache() throws SQLException {
-    ACCOUNT_LIST = new GemList<Account>(AccountIO.load(dc));
+    ACCOUNT_LIST = new GemList<Account>(AccountIO.load(DATA_CONNECTION));
 
-    Vector<Param> vca = ParamTableIO.find(CostAccountCtrl.tableName, CostAccountCtrl.columnKey,null, dc);
+    Vector<Param> vca = ParamTableIO.find(CostAccountCtrl.tableName, CostAccountCtrl.columnKey,null, DATA_CONNECTION);
     for(Param p : vca) {
       COST_ACCOUNT_CACHE.put(p.getKey(), p);
     }
-    List<Vat> taxes = new VatIO(dc).load();
+    List<Vat> taxes = new VatIO(DATA_CONNECTION).load();
     VAT_LIST = new GemList<Vat>(taxes);
 
   }
@@ -962,7 +968,7 @@ public class DataCache
     for (Item it : ITEM_IO.load()) {
       ITEM_CACHE.put(it.getId(), it);
     }
-    for (OrderLine ol : OrderLineIO.getBillingOrderLines(dc)) {
+    for (OrderLine ol : OrderLineIO.getBillingOrderLines(DATA_CONNECTION)) {
       ORDER_LINE_CACHE.put(ol.getId(), ol);
     }
 
@@ -1062,7 +1068,7 @@ public class DataCache
           loadMonthStmt.setDate(1, new java.sql.Date(start.getTime()));
           loadMonthStmt.setDate(2, new java.sql.Date(end.getTime()));
           loadMonthStmt.setInt(3, user.getId());
-          Vector<ScheduleObject> vpl = ScheduleIO.getLoadRS(loadMonthStmt, dc);
+          Vector<ScheduleObject> vpl = ScheduleIO.getLoadRS(loadMonthStmt, DATA_CONNECTION);
 
           //dump("planningmois.ser",vpl);
           if (Thread.interrupted()) {
@@ -1072,7 +1078,7 @@ public class DataCache
 
           loadMonthRangeStmt.setDate(1, new java.sql.Date(start.getTime()));
           loadMonthRangeStmt.setDate(2, new java.sql.Date(end.getTime()));
-          Vector<ScheduleRangeObject> vpg = ScheduleRangeIO.getLoadRS(loadMonthRangeStmt, dc);
+          Vector<ScheduleRangeObject> vpg = ScheduleRangeIO.getLoadRS(loadMonthRangeStmt, DATA_CONNECTION);
           //dump("plagemois.ser",vpg);
           if (Thread.interrupted()) {
             return;
@@ -1095,8 +1101,8 @@ public class DataCache
       loadDayStmt.setInt(2, user.getId());
       loadDayRangeStmt.setDate(1, new java.sql.Date(date.getTime()));
       daySchedule.setDay(date,
-              ScheduleIO.getLoadRS(loadDayStmt, dc),
-              ScheduleRangeIO.getLoadRS(loadDayRangeStmt, dc));
+              ScheduleIO.getLoadRS(loadDayStmt, DATA_CONNECTION),
+              ScheduleRangeIO.getLoadRS(loadDayRangeStmt, DATA_CONNECTION));
     } catch (SQLException e) {
       GemLogger.logException(e);
     }
@@ -1187,7 +1193,7 @@ public class DataCache
     String v = "inconnue";
     String query = "SELECT version FROM version";
     try {
-      ResultSet rs = dc.executeQuery(query);
+      ResultSet rs = DATA_CONNECTION.executeQuery(query);
       if (rs.next()) {
         v = rs.getString(1).trim();
       }
@@ -1209,7 +1215,7 @@ public class DataCache
     boolean ret = false;
     String query = "SELECT " + operation + " FROM droits WHERE idper=" + user.getId() + " AND nomtable = '" + table + "'";
     try {
-      ResultSet rs = dc.executeQuery(query);
+      ResultSet rs = DATA_CONNECTION.executeQuery(query);
       if (rs.next()) {
         ret = rs.getBoolean(1);
       }

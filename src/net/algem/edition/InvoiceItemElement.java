@@ -1,7 +1,7 @@
 /*
- * @(#)InvoiceItemElement.java 2.9.4.13 05/10/2015
+ * @(#)InvoiceItemElement.java 2.14.1 28/05/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -29,7 +29,7 @@ import net.algem.util.ImageUtil;
  * Invoice item element.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.14.1
  * @since 2.3.a 23/02/12
  */
 public class InvoiceItemElement
@@ -63,7 +63,7 @@ public class InvoiceItemElement
     String des = af.getItem().getDesignation();
     double qty = af.getQuantity();
     double price = af.getItem().getPrice();
-    double vat = Double.parseDouble(af.getItem().getTax().getValue());
+    double vat = Double.parseDouble(af.getItem().getTax().getKey());
     double totalHt = af.getTotal(false);
 
     int topOffset = 15;
