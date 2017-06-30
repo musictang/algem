@@ -1,5 +1,5 @@
 /*
- * @(#)Item.java 2.14.0 12/06/17
+ * @(#)Item.java 2.14.2 29/06/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -33,7 +33,7 @@ import net.algem.util.model.Model;
  * An item may be created regardless of invoice.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.14.0
+ * @version 2.14.2
  * @since 2.3.a 22/12/11
  */
 public class Item
@@ -131,7 +131,7 @@ public class Item
       }
     }
 
-    if (t > 0) {
+    if (t >= 0) {
       DataCache cache = DataCache.getInitializedInstance();
       if (cache != null) {
         List<Vat> taxList = cache.getList(Model.Vat).getData();
@@ -142,10 +142,10 @@ public class Item
           }
         }
       } else {
-        tax = new Vat(1, "0.0", null); // default to 0.0
+        tax = new Vat(1, "0.00", null); // default to 0.00
       }
     } else {
-      tax = new Vat(1, "0.0", null); // default to 0.0
+      tax = new Vat(1, "0.00", null); // default to 0.00
     }
     standard = false;
   }

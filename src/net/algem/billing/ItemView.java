@@ -1,5 +1,5 @@
 /*
- * @(#)ItemView.java 2.14.0 07/06/17
+ * @(#)ItemView.java 2.14.2 29/06/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -33,7 +33,7 @@ import net.algem.util.ui.*;
 /**
  * Invoice item view.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.14.0
+ * @version 2.14.2
  * @since 2.3.a 03/02/12
  */
 public class ItemView
@@ -115,7 +115,7 @@ public class ItemView
     account.setKey(a.getAccount());
     Param t = a.getTax();
     if (t != null) {
-      vat.setKey(a.getTax().getKey());
+      vat.setKey(t.getKey());
     }
     standard = a.isStandard();
     //standard.setSelected(a.isStandard());
