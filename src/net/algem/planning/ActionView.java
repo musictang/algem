@@ -1,5 +1,5 @@
 /*
- * @(#)ActionView.java	2.12.0 13/03/17
+ * @(#)ActionView.java	2.14.3 06/07/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -56,17 +56,20 @@ import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.*;
 
 /**
- * View for course planification.
+ * Generic course planning form.
+ * This view is used to schedule recurring sessions.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.12.0
+ * @version 2.14.3
+ * @see net.algem.planning.CourseScheduleCtrl
  */
 public class ActionView
         extends GemPanel
         implements GemEventListener
 {
 
+  private static String SESSIONS_MAX = ConfigUtil.getConf(ConfigKey.DEFAULT_NUMBER_OF_SESSIONS.getKey());
   protected DataCache dataCache;
   protected GemDesktop desktop;
   protected CourseChoice course;
@@ -105,7 +108,7 @@ public class ActionView
     day = new DayChoice();
     periodicity = new JComboBox(new Enum[]{Periodicity.WEEK, Periodicity.FORTNIGHT, Periodicity.DAY, Periodicity.MONTH});
     sessions = new GemNumericField(2);
-    sessions.setText(ConfigUtil.getConf(ConfigKey.DEFAULT_NUMBER_OF_SESSIONS.getKey()));
+    sessions.setText(SESSIONS_MAX);
     places = new GemNumericField(2);
     colorPanel = new GemPanel();
     colorPanel.setToolTipText(BundleUtil.getLabel("Scheduling.color.tip"));
@@ -281,7 +284,7 @@ public class ActionView
     room.setSelectedIndex(0);
     day.setSelectedIndex(0);
     periodicity.setSelectedIndex(0);
-    sessions.setText("");
+    sessions.setText(SESSIONS_MAX);
     courseLength.set(new Hour());
     intervall.setText(null);
   }

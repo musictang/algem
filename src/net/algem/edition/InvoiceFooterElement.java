@@ -1,7 +1,7 @@
 /*
- * @(#)InvoiceFooterElement.java 2.8.y 25/09/14
+ * @(#)InvoiceFooterElement.java 2.14.3 06/07/17
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -29,7 +29,7 @@ import net.algem.util.BundleUtil;
  * Invoice footer element.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.y
+ * @version 2.14.3
  * @since 2.3.a 23/02/12
  */
 public class InvoiceFooterElement
@@ -45,7 +45,7 @@ public class InvoiceFooterElement
 
   @Override
   public void draw(Graphics g) {
-
+    g.setFont(SERIF_SMALL);
     int xoffset = x;
     int sep1 = x + FIRST_COL_WIDTH;
 //    int sep2 = sep1 + 100;
@@ -63,6 +63,7 @@ public class InvoiceFooterElement
     g.drawString(BundleUtil.getLabel("Invoice.et.label"), sep1 + 5, y + 52);
     g.drawString(BundleUtil.getLabel("Invoice.ati.label"), sep2 + 5, y + 52);
 
+    g.setFont(MONO_SMALL);
     for (Map.Entry<String, Double> entry : q.getTotalVAT().entrySet()) {
       if (entry.getValue() > 0.0) {
         rightAlign(g, Double.parseDouble(entry.getKey()), xoffset + 40, y + 50); // valeur tva
@@ -74,10 +75,15 @@ public class InvoiceFooterElement
     rightAlign(g, (q.getTotalATI()), end, y + 72);
 
     if (q.hasDownPayment()) {
+      g.setFont(SERIF_SMALL);
       g.drawString(BundleUtil.getLabel("Invoice.down.payment.label"), sep1 + 5, y + 92);
+      g.setFont(MONO_SMALL);
       rightAlign(g, -(q.getDownPayment()), end, y + 92);
+      g.setFont(SERIF_SMALL);
       g.drawString(BundleUtil.getLabel("Invoice.net.label"), sep1 + 5, y + 112);
-      rightAlign(g, (q.netToPay()), end, y + 112);
+      g.setFont(MONO_SMALL);
+      rightAlign(g, (q.netToPay()), end, y + 112, true);
     }
   }
+  
 }

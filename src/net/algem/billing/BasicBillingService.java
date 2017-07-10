@@ -264,8 +264,8 @@ public class BasicBillingService
 
     assert(items.size() > 0);
 
-    double total = getTotaByAccount(items);
-
+    double total = getTotaByAccount(items); 
+if (total <= 0 || (total - inv.getDownPayment()) <= 0) return; //XXX TEST
     InvoiceItem item = items.get(0);
     Account c = (Account) DataCache.findId(item.getItem().getAccount(), Model.Account);
     Account a = AccountPrefIO.getCostAccount(c.getId(), dc);//analytics

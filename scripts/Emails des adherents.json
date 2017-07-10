@@ -1,0 +1,8 @@
+{
+  "description": "Emails des adh\u00e9rents de la p\u00e9riode (ou de leurs payeurs s'ils n'ont pas d'email).\nSi vous n'indiquez aucune date, la recherche portera sur l'ann\u00e9e scolaire en cours.",
+  "args": [{
+    "name" : "dateDebut", "label": "Date d\u00e9but", "type": "date"
+  }, {
+    "name" : "dateFin", "label": "Date fin", "type": "date"
+  }]
+}

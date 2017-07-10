@@ -1,5 +1,5 @@
 /*
- * @(#)DrawableElement.java 2.13.3 18/05/17
+ * @(#)DrawableElement.java 2.14.3 06/07/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -28,7 +28,7 @@ import java.awt.Graphics;
  * Generic drawable element.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.13.3
+ * @version 2.14.3
  * @since 2.1.n
  */
 public abstract class DrawableElement {
@@ -42,6 +42,7 @@ public abstract class DrawableElement {
   protected Font SERIF_XSMALL = new Font(Font.SERIF, Font.PLAIN, 8);
   protected Font SANS_SMALL = new Font(Font.SANS_SERIF, Font.PLAIN, 8);
   protected Font SANS_XSMALL = new Font(Font.SANS_SERIF, Font.PLAIN, 6);
+  protected Font MONO_SMALL = new Font(Font.MONOSPACED, Font.PLAIN, 8);
 
   public DrawableElement(int x, int y) {
     this.x = x;

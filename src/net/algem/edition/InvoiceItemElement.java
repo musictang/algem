@@ -1,5 +1,5 @@
 /*
- * @(#)InvoiceItemElement.java 2.14.1 28/05/17
+ * @(#)InvoiceItemElement.java 2.14.3 07/07/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -29,7 +29,7 @@ import net.algem.util.ImageUtil;
  * Invoice item element.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.14.1
+ * @version 2.14.3
  * @since 2.3.a 23/02/12
  */
 public class InvoiceItemElement
@@ -42,7 +42,7 @@ public class InvoiceItemElement
   public static final int xColPrice = xColQty + 45;
   public static final int xColVAT = xColPrice + 60;
   public static final int xColHT = xColVAT + 30;
-
+  
   protected int end;
   private InvoiceItem af;
   private int offset;
@@ -87,6 +87,7 @@ public class InvoiceItemElement
     }
     g.drawString(sb.toString(), x + 5, y + topOffset + offset);
 
+    g.setFont(MONO_SMALL);
     rightAlign(g, qty, xColPrice, y + topOffset);
     rightAlign(g, price, xColVAT, y + topOffset);
     rightAlign(g, vat, xColHT, y + topOffset);
@@ -94,11 +95,34 @@ public class InvoiceItemElement
 
   }
 
+  /**
+   * Prints a right-aligned amount.
+   * The amount is not displayed if equal to 0.
+   * 
+   * @param g graphics
+   * @param d amount to display
+   * @param x horizontal position
+   * @param y vertical position
+   */
   protected void rightAlign(Graphics g, double d, int x, int y) {
+    rightAlign(g, d, x, y, false);
+  }
+  
+  /**
+   * Align amount info to the right.
+   * 
+   * @param g graphics
+   * @param d amount to display
+   * @param x horizontal position
+   * @param y vertical position
+   * @param showNull show 0.00 if any
+   */
+  protected void rightAlign(Graphics g, double d, int x, int y, boolean showNull) {
     String s = "";
-    if (d != 0.0) { // on n'affiche pas les montants nuls
+    if (d != 0.0 || showNull) {
       s = String.format("%,.2f", d);
     }
+    
     int stringLen = (int) g.getFontMetrics().getStringBounds(s, g).getWidth();
     int start = x - stringLen - 3;
     g.drawString(s, start, y);

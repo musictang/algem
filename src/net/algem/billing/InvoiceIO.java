@@ -1,5 +1,5 @@
 /*
- * @(#)InvoiceIO.java 2.14.0 29/05/17
+ * @(#)InvoiceIO.java 2.14.3 07/07/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import net.algem.accounting.*;
-import net.algem.config.Preference;
 import net.algem.planning.DateFr;
 import net.algem.security.User;
 import net.algem.util.DataCache;
@@ -38,7 +37,7 @@ import net.algem.util.model.Model;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.14.0
+ * @version 2.14.3
  * @since 2.3.a 22/12/11
  */
 public class InvoiceIO
@@ -119,7 +118,6 @@ public class InvoiceIO
    * @throws SQLException
    */
   protected <T extends Invoice> void setOrderLines(T inv) throws SQLException {
-    Preference p = AccountPrefIO.find(AccountPrefIO.PERSONAL, dc);
     // Insertion échéances
     for (OrderLine ol : inv.getOrderLines()) {
       ol.setInvoice(inv.getNumber());

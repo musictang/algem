@@ -1,5 +1,5 @@
 /*
- * @(#)InvoiceView.java 2.14.0 23/05/17
+ * @(#)InvoiceView.java 2.14.3 06/07/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -67,7 +67,7 @@ import net.algem.util.ui.*;
  * Invoice / quotation view.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.14.0
+ * @version 2.14.3
  * @since 2.3.a 07/02/12
  */
 public class InvoiceView
@@ -76,9 +76,7 @@ public class InvoiceView
 {
 
   public static final int MARGIN = ImageUtil.mmToPoints(15);
-  //private final static Font sans = new Font("Helvetica", Font.PLAIN, 8);
   private final static Font sans = new Font(Font.SANS_SERIF, Font.PLAIN, 8);
-  //private final static Font serif = new Font("TimesRoman", Font.PLAIN, 9);
   private final static Font serif = new Font(Font.SERIF, Font.PLAIN, 9);
   private GemField invoiceId;
   private GemField invoiceLabel;

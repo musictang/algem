@@ -1,5 +1,5 @@
 /*
- * @(#)InvoiceEditor.java 2.14.1 28/05/17
+ * @(#)InvoiceEditor.java 2.14.3 06/07/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -42,7 +42,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.14.1
+ * @version 2.14.3
  * @since 2.3.a 07/02/12
  */
 public class InvoiceEditor
@@ -131,7 +131,7 @@ public class InvoiceEditor
       try {
         setTransfer(v);
         service.create(v);
-        view.setId(v.getNumber()); // rafraîchissement du numéro
+        view.setId(v.getNumber()); // refresh number
         desktop.postEvent(new InvoiceCreateEvent(v));
 
         backup(v);
@@ -169,7 +169,7 @@ public class InvoiceEditor
   }
 
   /**
-   * Marks transfered billing order lines whose account is Class 7.
+   * Marks transfered billing order lines whose account is class 7.
    *
    * @param inv invoice
    */
