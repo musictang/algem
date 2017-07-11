@@ -253,6 +253,9 @@ public class MenuAccounting
     if (format.equals(AccountingExportFormat.CIEL.getLabel())) {
       return new ExportCiel(dc);
     }
+    if (format.equals(AccountingExportFormat.EBP.getLabel())) {
+      return new ExportEBP(dc);
+    }
     if (format.equals(AccountingExportFormat.SAGE.getLabel())) {
       return new ExportSage30(dc);
     }

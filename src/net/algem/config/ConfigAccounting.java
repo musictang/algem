@@ -115,9 +115,11 @@ public class ConfigAccounting
     invoice.setText(c7.getValue());
     accountingFormat = new JComboBox(new String[]{
       AccountingExportFormat.CIEL.getLabel(),
+      AccountingExportFormat.EBP.getLabel(),
       AccountingExportFormat.DVLOG.getLabel(),
       AccountingExportFormat.OPENCONCERTO.getLabel(),
-      AccountingExportFormat.SAGE.getLabel()});
+      AccountingExportFormat.SAGE.getLabel()
+    });
 
     accountingFormat.setSelectedItem(c8.getValue());
 

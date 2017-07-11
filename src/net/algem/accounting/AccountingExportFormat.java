@@ -32,7 +32,8 @@ public enum AccountingExportFormat
  CIEL("CIEL (ximport)"),
  DVLOG("DVLOG"),
  OPENCONCERTO("OpenConcerto"),
- SAGE("SAGE 30/100 (pnm)");
+ SAGE("SAGE 30/100 (pnm)"),
+ EBP("EBP V3");
 
  private String label;
 
