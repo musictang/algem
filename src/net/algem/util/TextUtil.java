@@ -1,5 +1,5 @@
 /*
- * @(#)TextUtil.java	2.13.0 29/03/2017
+ * @(#)TextUtil.java	2.15.0 14/07/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.13.0
+ * @version 2.15.0
  * @since 2.8.r 13/12/13
  */
 public class TextUtil
@@ -42,7 +42,7 @@ public class TextUtil
 
   /**
    * Truncate the string {@code s} to {@code size} characters.
-   * If initial string length is greater than {@code size}, the string is returned without alterations.
+   * If initial string length is lower than {@code size}, the string is returned without alterations.
    * @param s initial string
    * @param size final size
    * @return a formatted string
