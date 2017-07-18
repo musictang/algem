@@ -20,20 +20,20 @@
  */
 package net.algem.accounting;
 
-import com.itextpdf.kernel.font.PdfFontFactory;
-import com.itextpdf.kernel.pdf.PdfDocument;
-import com.itextpdf.kernel.pdf.PdfReader;
-import com.itextpdf.kernel.pdf.PdfWriter;
-import com.itextpdf.layout.Document;
-import com.itextpdf.layout.element.Paragraph;
-
-import com.itextpdf.io.font.FontConstants;
-import com.itextpdf.kernel.color.Color;
-import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
-import com.itextpdf.kernel.pdf.xobject.PdfFormXObject;
-import com.itextpdf.kernel.utils.PdfMerger;
-import com.itextpdf.layout.property.TextAlignment;
-import com.itextpdf.layout.property.VerticalAlignment;
+//import com.itextpdf.kernel.font.PdfFontFactory;
+//import com.itextpdf.kernel.pdf.PdfDocument;
+//import com.itextpdf.kernel.pdf.PdfReader;
+//import com.itextpdf.kernel.pdf.PdfWriter;
+//import com.itextpdf.layout.Document;
+//import com.itextpdf.layout.element.Paragraph;
+//
+//import com.itextpdf.io.font.FontConstants;
+//import com.itextpdf.kernel.color.Color;
+//import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
+//import com.itextpdf.kernel.pdf.xobject.PdfFormXObject;
+//import com.itextpdf.kernel.utils.PdfMerger;
+//import com.itextpdf.layout.property.TextAlignment;
+//import com.itextpdf.layout.property.VerticalAlignment;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfImportedPage;
@@ -101,49 +101,49 @@ public class TestExportFormat {
     assertEquals(dir, "/home/jm", dir);
   }
 
-  @Ignore
-  public void testPdfHeader() throws IOException {
-    final String DEST = "/tmp/Merged.pdf";
-    final String SRC = "/tmp/Right.pdf";
-    PdfDocument pdfDoc = new PdfDocument(new PdfReader(SRC), new PdfWriter(DEST));
-    Document doc = new Document(pdfDoc);
-    Paragraph header = new Paragraph("Copy")
-      .setFont(PdfFontFactory.createFont(FontConstants.HELVETICA))
-      .setFontSize(14)
-      .setFontColor(Color.RED);
-    for (int i = 1; i <= pdfDoc.getNumberOfPages(); i++) {
-      float x = pdfDoc.getPage(i).getPageSize().getWidth() / 2;
-      float y = pdfDoc.getPage(i).getPageSize().getTop() - 20;
-      doc.showTextAligned(header.setFontColor(Color.RED), x, y, i,
-        TextAlignment.LEFT, VerticalAlignment.BOTTOM, 0);
-    }
-    doc.close();
-  }
+//  @Ignore
+//  public void testPdfHeader() throws IOException {
+//    final String DEST = "/tmp/Merged.pdf";
+//    final String SRC = "/tmp/Right.pdf";
+//    PdfDocument pdfDoc = new PdfDocument(new PdfReader(SRC), new PdfWriter(DEST));
+//    Document doc = new Document(pdfDoc);
+//    Paragraph header = new Paragraph("Copy")
+//      .setFont(PdfFontFactory.createFont(FontConstants.HELVETICA))
+//      .setFontSize(14)
+//      .setFontColor(Color.RED);
+//    for (int i = 1; i <= pdfDoc.getNumberOfPages(); i++) {
+//      float x = pdfDoc.getPage(i).getPageSize().getWidth() / 2;
+//      float y = pdfDoc.getPage(i).getPageSize().getTop() - 20;
+//      doc.showTextAligned(header.setFontColor(Color.RED), x, y, i,
+//        TextAlignment.LEFT, VerticalAlignment.BOTTOM, 0);
+//    }
+//    doc.close();
+//  }
 
-  @Ignore
-  /**
-   * Test iText 7 surimposition pdf.
-   */
-  public void testPdfMerge() throws IOException {
+//  @Ignore
+//  /**
+//   * Test iText 7 surimposition pdf.
+//   */
+//  public void testPdfMerge() throws IOException {
+//
+//    final String SRC = "/tmp/memo.pdf";
+//    final String DEST = "/tmp/memo-et.pdf";
+//    final String MODEL = "/tmp/model.pdf";
+//
+//    try (PdfDocument pdfDoc = new PdfDocument(new PdfReader(SRC), new PdfWriter(DEST));
+//      PdfDocument model = new PdfDocument(new PdfReader(MODEL))) {
+//
+//      PdfFormXObject page = model.getFirstPage().copyAsFormXObject(pdfDoc);
+//      for (int i = 1; i <= pdfDoc.getNumberOfPages(); i++) {
+//        PdfCanvas canvas = new PdfCanvas(
+//          pdfDoc.getPage(i).newContentStreamBefore(),
+//          pdfDoc.getPage(i).getResources(),
+//          pdfDoc);
+//        canvas.addXObject(page, 0, 0);
+//      }
+//    }
 
-    final String SRC = "/tmp/memo.pdf";
-    final String DEST = "/tmp/memo-et.pdf";
-    final String MODEL = "/tmp/model.pdf";
-
-    try (PdfDocument pdfDoc = new PdfDocument(new PdfReader(SRC), new PdfWriter(DEST));
-      PdfDocument model = new PdfDocument(new PdfReader(MODEL))) {
-
-      PdfFormXObject page = model.getFirstPage().copyAsFormXObject(pdfDoc);
-      for (int i = 1; i <= pdfDoc.getNumberOfPages(); i++) {
-        PdfCanvas canvas = new PdfCanvas(
-          pdfDoc.getPage(i).newContentStreamBefore(),
-          pdfDoc.getPage(i).getResources(),
-          pdfDoc);
-        canvas.addXObject(page, 0, 0);
-      }
-    }
-
-  }
+//  }
 
   /**
    * Test surimposition pdf iText 2.1.

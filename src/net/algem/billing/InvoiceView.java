@@ -20,10 +20,21 @@
  */
 package net.algem.billing;
 
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.PageSize;
+import com.lowagie.text.Rectangle;
+import com.lowagie.text.pdf.PdfContentByte;
+import com.lowagie.text.pdf.PdfGraphics2D;
+import com.lowagie.text.pdf.PdfImportedPage;
+import com.lowagie.text.pdf.PdfStamper;
+import com.lowagie.text.pdf.PdfTemplate;
+import com.lowagie.text.pdf.PdfWriter;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -32,12 +43,18 @@ import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.print.attribute.standard.MediaSizeName;
 import javax.print.attribute.standard.OrientationRequested;
 import javax.swing.JFormattedTextField;
@@ -565,12 +582,86 @@ public class InvoiceView
 
     return PAGE_EXISTS;
   }
+  
+  private void drawContent(Graphics g, Quote quote) {
+    int left = ImageUtil.mmToPoints(110);
+    int top = ImageUtil.mmToPoints(50);
+    int bottom = ImageUtil.mmToPoints(297 - 20);// hauteur de page - 20 mm de marge
+    int margin = ImageUtil.mmToPoints(15);
+
+    Contact c = ContactIO.findId(quote.getPayer(), dc);
+    Address a = null;
+    if (c != null) {
+      a = c.getAddress();
+    }
+      
+    IdentityElement name = new IdentityElement(c, left, top + 10);
+    AddressElement address = new InvoiceAddressElement(a, left, top + 30);
+    // nom et adresse
+    name.draw(g);
+    address.draw(g);
+
+    g.setFont(serif);    
+    // numéro invoice
+    String invoiceNumber = invoice.getClass() == Quote.class
+            ? BundleUtil.getLabel("Quotation.label") : BundleUtil.getLabel("Invoice.label");
+    g.drawString(invoiceNumber + " : " + quote.getNumber(), margin, top + 100);
+    // nom établissement
+    g.drawString(getEstabName(quote) + ", le " + quote.getDate(), left, top + 85);
+    // référence
+    g.drawString("Ref. : " + quote.getReference(), left, top + 100);
+    /*
+    // @since 2.9.4.6 ne plus afficher l'émetteur à l'impression
+    Person issuer = null;
+    try {
+      // émetteur
+      issuer = (Person) DataCache.findId(quote.getIssuer(), Model.Person);
+    } catch (SQLException ex) {
+      GemLogger.log(ex.getMessage());
+    }
+    g.drawString(BundleUtil.getLabel("Issuer.label") + " : " + (issuer != null && issuer.getId() > 0 ? issuer.getFirstnameName(): ""), margin, top + 120);
+    */
+    // description
+    g.drawString(BundleUtil.getLabel("Invoice.description.label") + " : " + quote.getDescription(), margin, top + 140);
+
+    int tableY = top + 160;
+    int tabletop = tableY;
+    int end = margin + InvoiceItemElement.TABLE_WIDTH;
+    // entete tableau
+    new InvoiceHeaderElement(margin, tableY).draw(g);
+    g.drawLine(margin, tableY + 20, margin + InvoiceItemElement.TABLE_WIDTH, tableY + 20);
+    // items
+    tableY += 5;
+    for (InvoiceItem invoiceItem : quote.getItems()) {
+      InvoiceItemElement item = new InvoiceItemElement(margin, tableY + 20, invoiceItem);
+      item.draw(g);
+      tableY = tableY + 20 + item.getOffset();
+    }
+    tableY += 5;
+    int tablebottom = tableY + 20;
+    // encadrement du tableau d'items
+    g.drawRect(margin, tabletop, InvoiceItemElement.TABLE_WIDTH, tablebottom - tabletop);
+    // lignes séparatrices verticales des colonnes
+    g.drawLine(InvoiceItemElement.xColPrice, tabletop, InvoiceItemElement.xColPrice, tablebottom); // colonne prix
+    g.drawLine(InvoiceItemElement.xColVAT, tabletop, InvoiceItemElement.xColVAT, tablebottom); // colonne tva
+    g.drawLine(InvoiceItemElement.xColQty, tabletop, InvoiceItemElement.xColQty, tablebottom); // colonne quantité
+    g.drawLine(InvoiceItemElement.xColHT, tabletop, InvoiceItemElement.xColHT, tablebottom); // colonne total HT
+
+    // pied tableau
+    new InvoiceFooterElement(margin, tablebottom + 20, quote).draw(g);
+    // infos légales
+    drawFooter(g, margin, bottom);
+  }
 
   /**
    * Prints the invoice.
    */
   void print() {
-    
+    try {
+      createPdf();
+    } catch (IOException | DocumentException ex) {
+      Logger.getLogger(InvoiceView.class.getName()).log(Level.SEVERE, null, ex);
+    } 
     if (invoice.getClass() != Quote.class && (invoice.getNumber() == null || invoice.getNumber().isEmpty())) {
       MessagePopup.warning(this, MessageUtil.getMessage("invoice.printing.warning"));
       return;
@@ -586,6 +677,34 @@ public class InvoiceView
       System.err.println(e.getMessage());
     }
 
+  }
+  
+  public void createPdf() throws IOException, DocumentException {
+    Document document = new Document(PageSize.A4);
+    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    PdfWriter writer = PdfWriter.getInstance(document, outputStream);
+    document.open();
+    PdfContentByte cb = writer.getDirectContent();
+    Graphics2D g2d = cb.createGraphics(document.getPageSize().getWidth(), document.getPageSize().getHeight());
+    drawContent(g2d, invoice);
+    g2d.dispose();
+
+    document.close();
+    final String DEST = "/tmp/facture-et.pdf";
+    final String MODEL = "/tmp/Papier_entete_2010.pdf";
+    com.lowagie.text.pdf.PdfReader reader = new com.lowagie.text.pdf.PdfReader(outputStream.toByteArray());
+    PdfStamper stamper = new PdfStamper(reader, new FileOutputStream(DEST));
+
+    com.lowagie.text.pdf.PdfReader model = new com.lowagie.text.pdf.PdfReader(MODEL);
+    PdfImportedPage template = stamper.getImportedPage(model, 1);
+    for (int i = 1; i <= reader.getNumberOfPages(); i++) {
+      PdfContentByte canvas = stamper.getUnderContent(i);
+      canvas.addTemplate(template, 0, 0);
+    }
+
+    stamper.getWriter().freeReader(model);
+    model.close();
+    stamper.close();
   }
 
   /**
