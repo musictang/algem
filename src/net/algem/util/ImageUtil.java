@@ -49,6 +49,7 @@ public class ImageUtil
   public static final String IMAGE_PATH = "/resources/images/";
   public static final String PHOTO_PATH = "/resources/photos/";
   public static final String DEFAULT_PHOTO_ID = "/resources/images/idphoto.png";
+  public static final String DEFAULT_PDF_TEMPLATE = "/resources/images/pdf.png";
   public static final String ALGEM_LOGO = "logo.png";
   public static final String SEARCH_ICON = "cherche.png";
   public static final String CAL_ICON = "cal.gif";

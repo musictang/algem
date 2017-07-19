@@ -52,12 +52,13 @@ public class ConfigEditor
         extends GemPanel
         implements ActionListener, ListSelectionListener
 {
-  
+
   public static final String GLOBAL_CONFIG_KEY = "Menu.configuration";
   private ConfigOrganization orgPanel;
   private ConfigPlanning activityPanel;
   private ConfigPanel adminPanel;
   private ConfigPanel filePanel;
+  private ConfigPanel templatesPanel;
   private ConfigPanel accountingPanel;
   private Map<String, Config> confs;
   private DataConnection dc;
@@ -68,10 +69,10 @@ public class ConfigEditor
   private GemDesktop desktop;
   private JList sectionList;
   private JPanel confPanel;
-  
+
   public ConfigEditor() {
   }
-  
+
   public ConfigEditor(GemDesktop desktop) {
     this.desktop = desktop;
     dataCache = desktop.getDataCache();
@@ -86,7 +87,7 @@ public class ConfigEditor
     setLayout(new BorderLayout());
     confPanel = new JPanel(new CardLayout());
     confPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-    
+
     try {
       confs = ConfigIO.find(null, dc);
       orgPanel = new ConfigOrganization(BundleUtil.getLabel("ConfEditor.organization.label"), confs);
@@ -94,32 +95,36 @@ public class ConfigEditor
       adminPanel = new ConfigAdmin(BundleUtil.getLabel("ConfEditor.management.label"), confs);
       ((ConfigAdmin) adminPanel).init(dataCache);
       filePanel = new ConfigFile(BundleUtil.getLabel("ConfEditor.file.label"), confs);
+      templatesPanel = new ConfigTemplates(BundleUtil.getLabel("Page.templates.label"),new PageTemplateIO(dc));
+      ((ConfigTemplates) templatesPanel).init();
       accountingPanel = new ConfigAccounting(BundleUtil.getLabel("ConfEditor.accounting.label"), confs);
       confPanel.add(orgPanel, "organization");
       confPanel.add(activityPanel, "schedule");
       confPanel.add(adminPanel, "management");
       confPanel.add(filePanel, "files");
+      confPanel.add(templatesPanel, "templates");
       confPanel.add(accountingPanel, "accounting");
     } catch (SQLException ex) {
       GemLogger.logException(ex);
     }
-    
+
     String[] sections = {
       BundleUtil.getLabel("ConfEditor.organization.label"),
       BundleUtil.getLabel("ConfEditor.schedule.label"),
       BundleUtil.getLabel("ConfEditor.management.label"),
       BundleUtil.getLabel("ConfEditor.file.label"),
+      BundleUtil.getLabel("Page.templates.label"),
       BundleUtil.getLabel("ConfEditor.accounting.label"),};
     sectionList = new JList(sections);
     sectionList.setSelectedIndex(0);
     sectionList.addListSelectionListener(this);
-    
+
     JScrollPane scroll = new JScrollPane(confPanel);
     scroll.setMinimumSize(new Dimension(550, scroll.getPreferredSize().height));
-    
+
     JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, sectionList, scroll);
     splitPane.setDividerLocation(150);
-    
+
     add(splitPane, BorderLayout.CENTER);
     btPanel = new GemPanel();
     btPanel.setLayout(new GridLayout(1, 1));
@@ -129,10 +134,10 @@ public class ConfigEditor
     btClose.addActionListener(this);
     btPanel.add(btValidation);
     btPanel.add(btClose);
-    
+
     add(btPanel, BorderLayout.SOUTH);
   }
-  
+
   @Override
   public void actionPerformed(ActionEvent e) {
     if (e.getSource() == btValidation) {
@@ -160,7 +165,7 @@ public class ConfigEditor
     }
     close();
   }
-  
+
   @Override
   public void valueChanged(ListSelectionEvent e) {
     JList list = (JList) e.getSource();
@@ -179,6 +184,9 @@ public class ConfigEditor
         cl.show(confPanel, "files");
         break;
       case 4:
+        cl.show(confPanel, "templates");
+        break;
+      case 5:
         // panneau infos bancaires
         cl.show(confPanel, "accounting");
         break;
@@ -186,10 +194,10 @@ public class ConfigEditor
         cl.show(confPanel, "organization");
     }
   }
-  
+
   private void close() {
     confs.clear();
     desktop.removeModule(GLOBAL_CONFIG_KEY);
   }
-  
+
 }

@@ -35,15 +35,34 @@ package net.algem.accounting;
 //import com.itextpdf.layout.property.TextAlignment;
 //import com.itextpdf.layout.property.VerticalAlignment;
 import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.ByteBuffer;
 import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfImportedPage;
 import com.lowagie.text.pdf.PdfStamper;
+import com.sun.pdfview.PDFFile;
+import com.sun.pdfview.PDFPage;
+import com.sun.pdfview.PDFRenderer;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
 import java.text.NumberFormat;
 import java.util.Locale;
+import javax.imageio.ImageIO;
+import net.algem.util.ImageUtil;
 
 import net.algem.util.TextUtil;
 import org.junit.*;
@@ -119,7 +138,6 @@ public class TestExportFormat {
 //    }
 //    doc.close();
 //  }
-
 //  @Ignore
 //  /**
 //   * Test iText 7 surimposition pdf.
@@ -142,16 +160,14 @@ public class TestExportFormat {
 //        canvas.addXObject(page, 0, 0);
 //      }
 //    }
-
 //  }
-
   /**
    * Test surimposition pdf iText 2.1.
    *
    * @throws IOException
    * @throws DocumentException
    */
-  @Test
+  @Ignore
   public void testPdfMerge2() throws IOException, DocumentException {
     final String SRC = "/tmp/memo.pdf";
     final String DEST = "/tmp/memo-et.pdf";
@@ -170,6 +186,54 @@ public class TestExportFormat {
     model.close();
     stamper.close();
 
+  }
+
+  @Test
+  public void testPdfPreviewAsImage() throws FileNotFoundException, IOException {
+    //  load a pdf from a file
+
+    File file = new File("/tmp/Papier entete 2010.pdf");
+    RandomAccessFile raf = new RandomAccessFile(file, "r");
+    //ReadableByteChannel ch = Channels.newChannel(new FileInputStream(file));
+
+    FileChannel channel = raf.getChannel();
+    MappedByteBuffer buf = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
+    PDFFile pdffile = new PDFFile(buf);
+    PDFPage page = pdffile.getPage(1);
+
+    //  create new image
+    Rectangle rect = new Rectangle(0, 0, (int) (page.getBBox().getWidth()), (int) (page.getBBox().getHeight()));
+
+    Image img = page.getImage(
+      rect.width, rect.height, //width & height
+      rect, // clip rect
+      null, // null for the ImageObserver
+      true, // fill background with white
+      true // block until drawing is done
+    );
+
+    BufferedImage bufferedImage = new BufferedImage(rect.width, rect.height, BufferedImage.TYPE_INT_RGB);
+    Graphics g = bufferedImage.createGraphics();
+    g.drawImage(img, 0, 0, null);
+    g.dispose();
+
+    BufferedImage scaled = rescale(bufferedImage, rect.width/4, rect.height/4);
+    File asd = new File("/tmp/testmemo.png");
+    if (asd.exists()) {
+      asd.delete();
+    }
+    ImageIO.write(scaled, "png", asd);
+
+  }
+
+  private BufferedImage rescale(BufferedImage img, int nw, int nh) {
+    Image imgSmall = img.getScaledInstance(nw, nh, Image.SCALE_SMOOTH);
+    BufferedImage dimg = new BufferedImage(nw, nh, img.getType());
+
+    Graphics2D g = dimg.createGraphics();
+    g.drawImage(imgSmall, 0, 0, null);
+    g.dispose();
+    return dimg;
   }
 
 }

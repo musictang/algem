@@ -61,6 +61,7 @@ public class GemCommand
   public static final String MAIL_CMD = BundleUtil.getLabel("Action.mail.label");
   public static final String DUPLICATE_CMD = BundleUtil.getLabel("Action.duplicate.label");
   public static final String RENAME_CMD = BundleUtil.getLabel("Rename.label");
+  public static final String DEFINE_CMD = BundleUtil.getLabel("Action.define.label");
 
   private GemCommand(String val) {
   }
