@@ -1,5 +1,5 @@
 /*
- * @(#) ConfigTemplates.java Algem 2.14.0 19/07/2017
+ * @(#) ConfigTemplates.java Algem 2.15.0 21/07/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -60,8 +60,8 @@ import net.algem.util.ui.GemPanel;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.14.0
- * @since 2.14.0 19/07/2017
+ * @version 2.15.0
+ * @since 2.15.0 19/07/17
  */
 public class ConfigTemplates
   extends ConfigPanel {
@@ -94,9 +94,10 @@ public class ConfigTemplates
   public void init() {
     ImageIcon icon = null;
     try {
-      //    loadThumbnail();
-      icon = new ImageIcon(getDefaultThumbnail());
-
+      BufferedImage bi = getDefaultThumbnail();
+      if (bi != null) {
+        icon = new ImageIcon(getDefaultThumbnail());
+      }
     } catch (IOException ex) {
       GemLogger.logException(ex);
     }
@@ -242,7 +243,7 @@ public class ConfigTemplates
 
   private BufferedImage getDefaultThumbnail() throws IOException {
     InputStream input = getClass().getResourceAsStream(ImageUtil.DEFAULT_PDF_TEMPLATE);
-    return ImageIO.read(input);
+    return input == null ? null : ImageIO.read(input);
   }
 
   private ByteBuffer getBufferFromFile(File file) throws IOException {

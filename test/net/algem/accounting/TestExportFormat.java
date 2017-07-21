@@ -1,5 +1,5 @@
 /*
- * @(#)TestExportFormat.java	2.15.0 14/07/17
+ * @(#)TestExportFormat.java	2.15.0 21/07/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -138,6 +138,7 @@ public class TestExportFormat {
 //    }
 //    doc.close();
 //  }
+  
 //  @Ignore
 //  /**
 //   * Test iText 7 surimposition pdf.
@@ -161,6 +162,7 @@ public class TestExportFormat {
 //      }
 //    }
 //  }
+  
   /**
    * Test surimposition pdf iText 2.1.
    *
