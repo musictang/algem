@@ -1,7 +1,7 @@
 /*
- * @(#)MemberExportDlg.java	2.9.2.1 17/02/15
+ * @(#)MemberExportDlg.java	2.15.0 26/07/2017
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -47,12 +47,11 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2.1
+ * @version 2.15.0
  * @since 1.0a 14/12/1999
  */
 public class MemberExportDlg
-        extends ExportDlg
-{
+  extends ExportDlg {
 
   private static final String MEMBER_TITLE = BundleUtil.getLabel("Export.member.title");
   private GemPanel pCriterion;
@@ -83,10 +82,10 @@ public class MemberExportDlg
     } catch (SQLException ex) {
       GemLogger.logException(ex);
     }
-    
-    account.addItem(new Account(-1,"",MessageUtil.getMessage("export.criterium.any.account")));
+
+    account.addItem(new Account(-1, "", MessageUtil.getMessage("export.criterium.any.account")));
     costAccount = new ParamChoice(ParamTableIO.find(CostAccountCtrl.tableName, CostAccountCtrl.columnName, dc));
-    costAccount.addItem(new Param("",MessageUtil.getMessage("export.criterium.any.cost.account")));
+    costAccount.addItem(new Param("", MessageUtil.getMessage("export.criterium.any.cost.account")));
 
     initDateRange();
 
@@ -98,7 +97,7 @@ public class MemberExportDlg
     gb.add(costAccount, 1, 2, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Date.From.label")), 0, 3, 1, 1, GridBagHelper.WEST);
     gb.add(dateRange, 1, 3, 1, 1, GridBagHelper.WEST);
-    
+
     schoolChoice.setPreferredSize(new Dimension(dateRange.getPreferredSize().width, schoolChoice.getPreferredSize().height));
     account.setPreferredSize(schoolChoice.getPreferredSize());
     costAccount.setPreferredSize(schoolChoice.getPreferredSize());
@@ -119,12 +118,10 @@ public class MemberExportDlg
     Param n = (Param) costAccount.getSelectedItem();
     a = (n == null) ? new Account(0) : new Account(n);
 
-    String query = "WHERE id IN (SELECT DISTINCT p.id FROM personne p, eleve e, " + OrderLineIO.TABLE + " c"
-            + " WHERE e.idper = p.id "
-            + " AND p.id = c.adherent"
-            + " AND c.echeance BETWEEN '" + dateRange.getStartFr().toString() + "' AND '" + dateRange.getEndFr().toString() + "'"
-            + " AND c.ecole = '" + getSchool() + "'";
-    //+" AND (p.id=a.idper OR e.payeur=a.idper)";
+    String query = "WHERE p.id IN ("
+      + "SELECT DISTINCT p.id FROM personne p JOIN eleve e ON p.id = e.idper JOIN " + OrderLineIO.TABLE + " c ON p.id = c.adherent"
+      + " WHERE c.echeance BETWEEN '" + dateRange.getStartFr().toString() + "' AND '" + dateRange.getEndFr().toString() + "'"
+      + " AND c.ecole = '" + getSchool() + "'";
     query += c.getNumber().isEmpty() ? "" : " AND c.compte = '" + c.getId() + "'";
     query += a.getNumber().isEmpty() ? ")" : " AND c.analytique = '" + a.getNumber() + "')";
 
@@ -137,15 +134,15 @@ public class MemberExportDlg
 
   /**
    * Inits the period for search.
-   * By default, the period stretches from the beginning of school year (first day in the month) 
-   * to the end of school year. 
+   * By default, the period stretches from the beginning of school year (first day in the month)
+   * to the end of school year.
    */
   private void initDateRange() {
     DateFr b = new DateFr(desktop.getDataCache().getStartOfYear());
     b.setDay(1);
-    dateRange = new DateRangePanel(b,desktop.getDataCache().getEndOfYear());
+    dateRange = new DateRangePanel(b, desktop.getDataCache().getEndOfYear());
   }
-  
+
   @Override
   protected String getFileName() {
     return BundleUtil.getLabel("Export.member.file");

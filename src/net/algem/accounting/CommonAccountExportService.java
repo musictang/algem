@@ -219,7 +219,7 @@ public abstract class CommonAccountExportService
         }
         Contact c = ContactIO.findId(e.getPayer(), dbx);
         Person m = ContactIO.findId(e.getMember(), dbx);
-        String payerName = c == null ? "" : (c.getOrganization() != null && c.getOrganization().length() > 0 ? c.getOrganization() : c.getNameFirstname());
+        String payerName = c == null ? "" : (c.getOrgName() != null && c.getOrgName().length() > 0 ? c.getOrgName() : c.getNameFirstname());
         total += e.getAmount();
         out.print(String.valueOf(e.getPayer())
                 + ";" + payerName

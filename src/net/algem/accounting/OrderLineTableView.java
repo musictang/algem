@@ -386,7 +386,7 @@ public class OrderLineTableView
         Person p = (Person) DataCache.findId(Integer.parseInt(idper.trim()), Model.Person);
         //assert(p != null);
         if (p != null) {
-          String org = p.getOrganization();
+          String org = p.getOrgName();
           c.setToolTipText(org != null && org.length() > 0 ? org : p.getFirstnameName());
         } else {
           c.setToolTipText(null);

@@ -50,7 +50,7 @@ public class IdentityElement
     if (contact != null) {
       ident = TextUtil.crop(contact.toString(), g, COURSE_LIST_X);
 
-      String org = contact.getOrganization();
+      String org = contact.getOrgName();
       if (org != null && !org.isEmpty()) {
         g.drawString(org, x, y - 10);
       }

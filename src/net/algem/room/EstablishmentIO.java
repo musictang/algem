@@ -1,7 +1,7 @@
 /*
- * @(#)EstablishmentIO.java	2.11.3 17/11/16
+ * @(#)EstablishmentIO.java	2.15.0 26/07/2017
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -39,7 +39,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.3
+ * @version 2.15.0
  */
 public class EstablishmentIO
   extends TableIO {
@@ -59,7 +59,8 @@ public class EstablishmentIO
   public static List<Establishment> find(String where, DataConnection dc) throws SQLException {
 
     List<Establishment> estabs = new ArrayList<Establishment>();
-    String query = "SELECT DISTINCT ON (p.nom) " + PersonIO.COLUMNS + ", e.actif FROM " + PersonIO.TABLE + " p  JOIN " + TABLE + " e ON (p.id = e.id)"
+    String query = "SELECT DISTINCT ON (p.nom) " + PersonIO.COLUMNS + ", e.actif " + PersonIO.POST_QUERY
+      + " JOIN " + TABLE + " e ON (p.id = e.id)"
       + " WHERE p.ptype = " + Person.ESTABLISHMENT;
     query += where;
 
@@ -143,7 +144,7 @@ public class EstablishmentIO
       + "',''" // firstname
       + ",''" // gender
       + ",FALSE" // img rights
-      + (p.getOrganization() == null || p.getOrganization().isEmpty() ? ",NULL" : ",'" + escape(p.getOrganization()) + "'")
+      + (p.getOrgName() == null || p.getOrgName().isEmpty() ? ",NULL" : ",'" + escape(p.getOrgName()) + "'")
       + ")";
 
     dc.executeUpdate(query);

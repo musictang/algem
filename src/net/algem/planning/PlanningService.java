@@ -1,5 +1,5 @@
 /*
- * @(#)PlanningService.java	2.12.0 01/03/17
+ * @(#)PlanningService.java	2.15.0 26/07/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -43,7 +43,7 @@ import net.algem.util.ui.MessagePopup;
  * Service class for planning.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.12.0
+ * @version 2.15.0
  * @since 2.4.a 07/05/12
  */
 public class PlanningService
@@ -214,8 +214,7 @@ public class PlanningService
   }
 
   public List<Person> getEmployees(Enum type) {
-    String where = ", " + EmployeeIO.TYPE_TABLE + " t  WHERE "
-      + PersonIO.TABLE + ".id = t.idper AND t.idcat = " + type.ordinal();
+    String where = "JOIN " + EmployeeIO.TYPE_TABLE + " t  ON p.id = t.idper WHERE t.idcat = " + type.ordinal();
     return  PersonIO.find(where, dc);
   }
 

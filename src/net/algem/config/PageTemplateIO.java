@@ -1,5 +1,5 @@
 /*
- * @(#) PageModelIO.java Algem 2.14.0 19/07/2017
+ * @(#) PageModelIO.java Algem 2.15.0 23/07/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -30,8 +30,8 @@ import net.algem.util.DataConnection;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.14.0
- * @since 2.14.0 19/07/2017
+ * @version 2.15.0
+ * @since 2.15.0 19/07/2017
  */
 public class PageTemplateIO {
 
@@ -58,6 +58,14 @@ public class PageTemplateIO {
     try (PreparedStatement ps = dc.prepareStatement(query)) {
       ps.setBytes(1, document);
       ps.setShort(2, type);
+      ps.executeUpdate();
+    }
+  }
+
+   public void delete(short type) throws SQLException {
+    String query = "DELETE FROM " + TABLE + " WHERE mtype = ?";
+    try (PreparedStatement ps = dc.prepareStatement(query)) {
+      ps.setShort(1, type);
       ps.executeUpdate();
     }
   }

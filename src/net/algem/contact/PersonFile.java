@@ -169,7 +169,7 @@ public class PersonFile
   }
 
   public boolean hasChanged() {
-    if (contact.getId() == 0 && (contact.getName().length() > 0 || contact.getOrganization().length() > 0)) {
+    if (contact.getId() == 0 && (contact.getName().length() > 0 || contact.getOrgName().length() > 0)) {
       return true;
     } else if (oldContact != null && !contact.equals(oldContact)) {
       return true;

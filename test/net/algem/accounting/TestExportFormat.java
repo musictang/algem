@@ -35,34 +35,27 @@ package net.algem.accounting;
 //import com.itextpdf.layout.property.TextAlignment;
 //import com.itextpdf.layout.property.VerticalAlignment;
 import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.ByteBuffer;
 import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfImportedPage;
 import com.lowagie.text.pdf.PdfStamper;
 import com.sun.pdfview.PDFFile;
 import com.sun.pdfview.PDFPage;
-import com.sun.pdfview.PDFRenderer;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
-import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.MappedByteBuffer;
-import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
-import java.nio.channels.ReadableByteChannel;
 import java.text.NumberFormat;
 import java.util.Locale;
 import javax.imageio.ImageIO;
-import net.algem.util.ImageUtil;
 
 import net.algem.util.TextUtil;
 import org.junit.*;
@@ -138,7 +131,7 @@ public class TestExportFormat {
 //    }
 //    doc.close();
 //  }
-  
+
 //  @Ignore
 //  /**
 //   * Test iText 7 surimposition pdf.
@@ -162,7 +155,7 @@ public class TestExportFormat {
 //      }
 //    }
 //  }
-  
+
   /**
    * Test surimposition pdf iText 2.1.
    *

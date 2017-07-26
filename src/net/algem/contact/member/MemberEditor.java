@@ -219,7 +219,7 @@ public class MemberEditor
     }
     Person p = ((PersonIO) DataCache.getDao(Model.Person)).findById(_id);
     if (p != null) {
-      String org = p.getOrganization();
+      String org = p.getOrgName();
       payerName.setText(org == null || org.isEmpty() ? p.getFirstnameName() : org);
     } else {
       payerName.setText(BundleUtil.getLabel("Unknown.label"));

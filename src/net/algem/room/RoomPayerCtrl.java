@@ -70,7 +70,7 @@ public class RoomPayerCtrl
     if (p.getId() == room.getContact().getId()) {
       payerName.setText(BundleUtil.getLabel("Himself.label"));
     } else {
-      String org = p.getOrganization();
+      String org = p.getOrgName();
       payerName.setText(org == null || org.isEmpty() ? p.getFirstnameName() : org);
     }
     room.setPayer(p);

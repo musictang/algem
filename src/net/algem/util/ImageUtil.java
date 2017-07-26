@@ -1,5 +1,5 @@
 /*
- * @(#)ImageUtil.java	2.13.3 17/05/17
+ * @(#)ImageUtil.java	2.15.0 25/07/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -21,6 +21,7 @@
 package net.algem.util;
 
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -41,7 +42,7 @@ import net.algem.util.model.DataException;
  * Utility class for image operations.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.13.3
+ * @version 2.15.0
  */
 public class ImageUtil
 {
@@ -99,7 +100,18 @@ public class ImageUtil
     BufferedImage dimg = new BufferedImage(newWidth, nh, img.getType());
     Graphics2D g = dimg.createGraphics();
     g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+    /*g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);*/
     g.drawImage(img, 0, 0, newWidth, nh, 0, 0, w, h, null);
+    g.dispose();
+    return dimg;
+  }
+
+  public static BufferedImage rescaleSmooth(BufferedImage img, int nw, int nh) {
+    Image imgSmall = img.getScaledInstance(nw, -nh, Image.SCALE_SMOOTH);
+    BufferedImage dimg = new BufferedImage(imgSmall.getWidth(null), imgSmall.getHeight(null), img.getType());
+    Graphics2D g = dimg.createGraphics();
+    g.drawImage(imgSmall, 0, 0, null);
     g.dispose();
     return dimg;
   }

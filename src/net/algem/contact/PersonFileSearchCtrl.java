@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileSearchCtrl.java 2.9.6 18/03/16
+ * @(#)PersonFileSearchCtrl.java 2.15.0 26/07/2017
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -40,7 +40,7 @@ import net.algem.util.ui.SearchCtrl;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.6
+ * @version 2.15.0
  * @since 1.0a 07/07/1999
  */
 public class PersonFileSearchCtrl
@@ -50,7 +50,7 @@ public class PersonFileSearchCtrl
 
   private GemDesktop desktop;
   private String query;
-  private String cquery = "DECLARE pc CURSOR FOR SELECT * FROM " + PersonIO.TABLE;
+  private String cquery = "DECLARE pc CURSOR FOR " + PersonIO.PRE_QUERY + PersonIO.POST_QUERY;
   private PersonFileEditor dossier;
   private Contact currentContact;
   private GemEventListener gemListener;
@@ -87,33 +87,33 @@ public class PersonFileSearchCtrl
     String org, name, firstname, pseudo, telephone, email, site;
     int id = getId();
     if (id > 0) {
-      query = "WHERE id = " + id;
+      query = "WHERE p.id = " + id;
     } else if ((org = searchView.getField(1)) != null) {
-      query = "WHERE translate(lower(organisation),'" + TRANSLATE_FROM + "', '" + TRANSLATE_TO + "') ~* '"
+      query = "WHERE translate(lower(o.nom),'" + TRANSLATE_FROM + "', '" + TRANSLATE_TO + "') ~* '"
               + TableIO.normalize(org) + "'";
     } else if ((name = searchView.getField(2)) != null) {
-      query = "WHERE translate(lower(nom),'" + TRANSLATE_FROM + "', '" + TRANSLATE_TO + "') ~* '"
+      query = "WHERE translate(lower(p.nom),'" + TRANSLATE_FROM + "', '" + TRANSLATE_TO + "') ~* '"
               + TableIO.normalize(name) + "'";
     } else if ((firstname = searchView.getField(3)) != null) {
-      query = "WHERE translate(lower(prenom),'" + TRANSLATE_FROM + "', '" + TRANSLATE_TO + "') ~* '"
+      query = "WHERE translate(lower(p.prenom),'" + TRANSLATE_FROM + "', '" + TRANSLATE_TO + "') ~* '"
               + TableIO.normalize(firstname) + "'";
     } else if ((telephone = searchView.getField(4)) != null) {
-      query = ", "+TeleIO.TABLE+" t WHERE id = t.idper AND t.numero ~ '"+telephone+"'";
+      query = ", "+TeleIO.TABLE+" t WHERE p.id = t.idper AND t.numero ~ '"+telephone+"'";
     } //ajout 2.0g recherche email
     else if ((email = searchView.getField(5)) != null) {
-      query = ", "+EmailIO.TABLE+" e WHERE id = e.idper AND e.email ~* '"+email+"'";
+      query = ", "+EmailIO.TABLE+" e WHERE p.id = e.idper AND e.email ~* '"+email+"'";
     } // ajout 2.1a recherche site web
     else if ((site = searchView.getField(6)) != null) {
-      query = ", "+WebSiteIO.TABLE+" s WHERE id = s.idper AND s.url ~* '"+site+"'";
+      query = ", "+WebSiteIO.TABLE+" s WHERE p.id = s.idper AND s.url ~* '"+site+"'";
     } else if ((pseudo = searchView.getField(7)) != null) {
-      query = "WHERE translate(lower(pseudo),'" + TRANSLATE_FROM + "', '" + TRANSLATE_TO + "') ~* '"
+      query = "WHERE translate(lower(p.pseudo),'" + TRANSLATE_FROM + "', '" + TRANSLATE_TO + "') ~* '"
                + TableIO.normalize(pseudo) + "'";
     } else {
       query = "";
     }
 
     query += query.length() > 0 ? " AND " : " WHERE ";
-    query += "personne.ptype != " + Person.BANK + " AND personne.ptype != " + Person.ESTABLISHMENT;
+    query += "p.ptype != " + Person.BANK + " AND p.ptype != " + Person.ESTABLISHMENT;
 
     int nb = ContactIO.count(query, dc);
 
@@ -153,7 +153,7 @@ public class PersonFileSearchCtrl
       return;
     }
 
-    String squery = cquery + " " + query + " ORDER BY nom,prenom";
+    String squery = cquery + " " + query + " ORDER BY p.nom,p.prenom";
     int cpt = 0;
     try {
       Vector<Contact> block; // vecteur de Contact
@@ -236,7 +236,7 @@ public class PersonFileSearchCtrl
     Contact c = new Contact();
     String org = searchView.getField(1);
     if (org != null && org.length() > 0) {
-     c.setOrganization(org);
+     c.setOrgName(org);
     }
     String name = searchView.getField(2);
     if (name != null && name.length() > 0) {

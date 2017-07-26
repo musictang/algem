@@ -1,5 +1,5 @@
 /*
- * @(#)InvoiceEditor.java 2.14.3 06/07/17
+ * @(#)InvoiceEditor.java 2.15.0 23/07/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -42,7 +42,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.14.3
+ * @version 2.15.0
  * @since 2.3.a 07/02/12
  */
 public class InvoiceEditor
@@ -75,9 +75,10 @@ public class InvoiceEditor
 
   protected void addView() {
     add(view, BorderLayout.CENTER);
-
-    btPrint = new GemButton(GemCommand.PRINT_CMD);
-    btPrint.setToolTipText(BundleUtil.getLabel("Invoice.print.tip"));
+    btPrint = new GemButton(BundleUtil.getLabel("Print.preview.label"));
+//    btPrint = new GemButton(GemCommand.PRINT_CMD);
+//    btPrint.setToolTipText(BundleUtil.getLabel("Invoice.print.tip"));
+    btPrint.setToolTipText(BundleUtil.getLabel("Print.preview.tip"));
     btPrint.addActionListener(this);
 
     btDuplicate = new GemButton(GemCommand.DUPLICATE_CMD);
@@ -252,7 +253,8 @@ public class InvoiceEditor
   public void actionPerformed(ActionEvent evt) {
     super.actionPerformed(evt);
     if (evt.getSource() == btPrint) {
-      view.print();
+      //view.print();
+      view.preview();
     } else if (evt.getSource() == btCreditNote) {
       try {
         Invoice n = service.createCreditNote(view.get());

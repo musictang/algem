@@ -1,7 +1,7 @@
 /*
- * @(#)ConfigOrganization.java 2.10.0 15/06/2016
+ * @(#)ConfigOrganization.java 2.15.0 26/07/2017
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -18,199 +18,348 @@
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 package net.algem.config;
 
 import java.awt.BorderLayout;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
-import javax.swing.border.Border;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.text.MaskFormatter;
 import net.algem.contact.Address;
 import net.algem.contact.AddressView;
+import net.algem.contact.OrganizationIO;
+import net.algem.contact.PersonFile;
+import net.algem.contact.PersonFileEditor;
 import net.algem.util.BundleUtil;
+import net.algem.util.DataCache;
+import net.algem.util.FileUtil;
+import net.algem.util.GemCommand;
+import net.algem.util.GemLogger;
+import net.algem.util.ImageUtil;
 import net.algem.util.MessageUtil;
-import net.algem.util.ui.GemField;
+import net.algem.util.model.Model;
+import net.algem.util.module.GemDesktop;
+import net.algem.util.module.GemDesktopCtrl;
+import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GemLabel;
 import net.algem.util.ui.GemPanel;
+import net.algem.util.ui.GridBagHelper;
+import net.algem.util.ui.MessagePopup;
 
 /**
  * Organization parameters and contact.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.15.0
  * @since 2.2.p 23/01/12
  */
 public class ConfigOrganization
-        extends ConfigPanel
-{
+  extends ConfigPanel {
 
-  private Config c1, c2, c3, c4, c5, c6, c7, c8, c9, c10;
+  private Config c10;
 
   /** Organization name. */
-  private GemField name;
-
+  //private GemField name;
+  private GemButton btName;
   private JFormattedTextField siret;
   private JFormattedTextField naf;
-
-  /**
-   * Intra-community VAT code.
-   * Code TVA intra-communautaire.
-   * In France, it is composed of the letters FR, completed by a two-digits (or two-letters) key
-   * assigned by the tax office from the place of exercise of the company
-   * It ends by the SIREN 9-digits number.
-   * VAT key = [ 12 + 3 * ( SIREN modulo 97 ) ] modulo 97
-   * Pour la France, il est composé des lettres FR, complétées d'une clé de deux chiffres
-   * ou lettres attribuée par le centre des impôts du lieu d'exercice de l'entreprise,
-   * et du numéro SIREN à 9 chiffres. Par exemple pour l'entreprise déjà citée : FR 83 404 833 048.
-   * La clé française suit la règle suivante :
-   * Clé TVA = [ 12 + 3 * ( SIREN modulo 97 ) ] modulo 97
-   */
-  private JFormattedTextField tva;
-
-  /**
-   * Professional training code.
-   * Code formation professionnelle.
-   */
   private JFormattedTextField forPro;
+  private JFormattedTextField tva;
+  private JLabel logo;
+  private JLabel stamp;
+  private JButton btLogo;
+  private JButton btStamp;
 
   /** Address. */
   private AddressView address;
 
   /** Domain name. */
-  private GemField domainName;
+  private JTextField domainName;
 
-  public ConfigOrganization(String title, Map<String, Config> cm) {
+  private OrganizationIO orgIO;
+  private GemDesktop desktop;
+
+  public ConfigOrganization(String title, Map<String, Config> cm, OrganizationIO orgIO, GemDesktop desktop) {
     super(title, cm);
+    this.desktop = desktop;
+    this.orgIO = orgIO;
     init();
   }
 
   private void init() {
-    c1 = confs.get(ConfigKey.ORGANIZATION_NAME.getKey());
-    c2 = confs.get(ConfigKey.ORGANIZATION_ADDRESS1.getKey());
-    c3 = confs.get(ConfigKey.ORGANIZATION_ADDRESS2.getKey());
-    c4 = confs.get(ConfigKey.ORGANIZATION_ZIPCODE.getKey());
-    c5 = confs.get(ConfigKey.ORGANIZATION_CITY.getKey());
-    c6 = confs.get(ConfigKey.SIRET_NUMBER.getKey());
-    c7 = confs.get(ConfigKey.CODE_NAF.getKey());
-    c8 = confs.get(ConfigKey.CODE_TVA.getKey());
-    c9 = confs.get(ConfigKey.CODE_FP.getKey());
-    c10 = confs.get(ConfigKey.ORGANIZATION_DOMAIN.getKey());
+    try {
+      Company comp = orgIO.getDefault();
+      final int idper = comp.getIdper();
+      content = new GemPanel(new BorderLayout());
 
-    content = new GemPanel(new BorderLayout());
+      JPanel panel = new JPanel(new GridBagLayout());
+      GridBagHelper gb = new GridBagHelper(panel);
+      btName = new GemButton(comp.getContact().getOrgName());
+      btName.setPreferredSize(new Dimension(200, btName.getPreferredSize().height));
+      btName.setToolTipText(MessageUtil.getMessage("open.company.profile.tip"));
+      btName.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          showContactFile(idper);
+        }
+      });
 
-    Box pName = Box.createHorizontalBox();
-		pName.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
-    pName.add(new GemLabel(BundleUtil.getLabel("Name.label")));
-		pName.add(Box.createHorizontalStrut(3));
-    name = new GemField(20);
-    name.setText(c1.getValue());
-		pName.add(name);
-		pName.add(Box.createHorizontalGlue());
+      MaskFormatter siretMask = MessageUtil.createFormatter("### ### ### #####");
+      siretMask.setValueContainsLiteralCharacters(false);
+      siret = new JFormattedTextField(siretMask);
+      Dimension fieldDim = new Dimension(200, siret.getPreferredSize().height);
+      siret.setPreferredSize(fieldDim);
+      siret.setEditable(false);
+      siret.setValue(comp.getOrg().getSiret());
 
-    MaskFormatter siretMask = MessageUtil.createFormatter("### ### ### #####");
-    siretMask.setValueContainsLiteralCharacters(false);
-    siret = new JFormattedTextField(siretMask);
-    siret.setColumns(14);
-    siret.setValue(c6.getValue());
+      JTextField referent = new JTextField();
+      referent.setEditable(false);
+      referent.setPreferredSize(fieldDim);
+      referent.setText(comp.getContact().getFirstnameName());
 
-    naf = new JFormattedTextField(MessageUtil.createFormatter("AAAAA"));
-    naf.setColumns(5);
-    naf.setValue(c7.getValue());
+      naf = new JFormattedTextField(MessageUtil.createFormatter("AAAAA"));
+      naf.setPreferredSize(fieldDim);
+      naf.setEditable(false);
+      naf.setValue(comp.getOrg().getNafCode());
 
-    MaskFormatter tvaMask = MessageUtil.createFormatter("AA AA AAA AAA AAA AAAAA");
-    tvaMask.setValueContainsLiteralCharacters(false);
+      MaskFormatter forProMask = MessageUtil.createFormatter("## ## ##### ##");
+      forProMask.setValueContainsLiteralCharacters(false);
+      forPro = new JFormattedTextField(forProMask);
+      forPro.setPreferredSize(fieldDim);
+      forPro.setEditable(false);
+      forPro.setValue(comp.getOrg().getFpCode());
 
-    tva = new JFormattedTextField(tvaMask);
-    tva.setColumns(18);
-    tva.setValue(c8.getValue());
+      MaskFormatter tvaMask = MessageUtil.createFormatter("AA AA AAA AAA AAA AAAAA");
+      tvaMask.setValueContainsLiteralCharacters(false);
+      tva = new JFormattedTextField(tvaMask);
+      tva.setPreferredSize(fieldDim);
+      tva.setEditable(false);
+      tva.setValue(comp.getOrg().getVatCode());
 
-    MaskFormatter forProMask = MessageUtil.createFormatter("## ## ##### ##");
-    forProMask.setValueContainsLiteralCharacters(false);
+      domainName = new JTextField();
+      domainName.setPreferredSize(fieldDim);
+      domainName.setText(comp.getDomain());
+      c10 = new Config(ConfigKey.ORGANIZATION_DOMAIN.getKey(), comp.getDomain());
 
-    forPro = new JFormattedTextField(forProMask);
-    forPro.setColumns(11);
-    forPro.setValue(c9.getValue());
+      address = new AddressView(null, false);
+      Address a = comp.getContact().getAddress();
+      address.set(a);
+      address.setEditable(false);
 
-    address = new AddressView(null,false);
+      gb.add(new GemLabel(BundleUtil.getLabel("Name.label")), 0, 0, 1, 1, GridBagHelper.WEST);
+      gb.add(btName, 1, 0, 1, 1, GridBagHelper.WEST);
+      gb.add(new GemLabel(BundleUtil.getLabel("Group.referent")), 0, 1, 1, 1, GridBagHelper.WEST);
+      gb.add(referent, 1, 1, 1, 1, GridBagHelper.WEST);
 
-    Address a = new Address();
-    a.setAdr1(c2.getValue());
-    a.setAdr2(c3.getValue());
-    a.setCdp(c4.getValue());
-    a.setCity(c5.getValue());
+      JLabel siretL = new JLabel(BundleUtil.getLabel("Organization.SIRET.label"));
+      siretL.setToolTipText(ConfigKey.SIRET_NUMBER.getLabel());
+      gb.add(siretL, 0, 2, 1, 1, GridBagHelper.WEST);
+      gb.add(siret, 1, 2, 1, 1, GridBagHelper.WEST);
+      JLabel nafL = new JLabel(BundleUtil.getLabel("Organization.NAF.label"));
+      nafL.setToolTipText(ConfigKey.CODE_NAF.getLabel());
+      gb.add(nafL, 0, 3, 1, 1, GridBagHelper.WEST);
+      gb.add(naf, 1, 3, 1, 1, GridBagHelper.WEST);
+      JLabel fpL = new JLabel(BundleUtil.getLabel("Organization.FP.label"));
+      fpL.setToolTipText(ConfigKey.CODE_FP.getLabel());
+      gb.add(fpL, 0, 4, 1, 1, GridBagHelper.WEST);
+      gb.add(forPro, 1, 4, 1, 1, GridBagHelper.WEST);
+      JLabel tvaL = new JLabel(BundleUtil.getLabel("Organization.VAT.label"));
+      tvaL.setToolTipText(ConfigKey.CODE_TVA.getLabel());
+      gb.add(tvaL, 0, 5, 1, 1, GridBagHelper.WEST);
+      gb.add(tva, 1, 5, 1, 1, GridBagHelper.WEST);
+      JLabel domainL = new GemLabel(ConfigKey.ORGANIZATION_DOMAIN.getLabel());
+      domainL.setToolTipText(BundleUtil.getLabel("ConfEditor.organization.domain.tip"));
+      gb.add(domainL, 0, 6, 1, 1, GridBagHelper.WEST);
+      gb.add(domainName, 1, 6, 1, 1, GridBagHelper.WEST);
 
-    address.set(a);
+      gb.add(Box.createVerticalStrut(20), 0, 7, 2, 1);
+      gb.add(address, 0, 8, 2, 1);
 
-    domainName = new GemField(10);
-    domainName.setText(c10.getValue());
+      content.add(panel, BorderLayout.CENTER);
 
-    GemPanel domainPanel = new GemPanel(new GridLayout(1,2));
-    domainPanel.setToolTipText(BundleUtil.getLabel("ConfEditor.organization.domain.tip"));
-    domainPanel.add(new GemLabel(ConfigKey.ORGANIZATION_DOMAIN.getLabel()));
-    domainPanel.add(domainName);
+      JPanel imagePanel = new JPanel(new GridLayout(1, 2, 10, 0));
+      imagePanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
+      Cursor hand = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
+      final ImageIcon defIcon = ImageUtil.createImageIcon("image-x-generic-symbolic.png");
+      MouseAdapter mouseAdapter = new MouseAdapter() {
+        @Override
+        public void mouseClicked(MouseEvent e) {
+          Object src = e.getSource();
+          if (src instanceof JLabel) {
+            setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+            if (src == logo) {
+              saveThumbnail(logo, OrganizationIO.LOGO_COL);
+            } else {
+              saveThumbnail(stamp, OrganizationIO.STAMP_COL);
+            }
+            setCursor(Cursor.getDefaultCursor());
+          }
+        }
 
-    GemPanel contactPanel = new GemPanel(new BorderLayout());
-    contactPanel.add(address, BorderLayout.NORTH);
+      };
+      ActionListener listener = new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          Object src = e.getSource();
+          if (src instanceof JButton) {
+            try {
+              if (src == btLogo) {
+                resetThumbnail(logo, OrganizationIO.LOGO_COL, defIcon);
+              } else {
+                resetThumbnail(stamp, OrganizationIO.STAMP_COL, defIcon);
+              }
+            } catch (SQLException ex) {
+              GemLogger.logException(ex);
+            }
+          }
+        }
+      };
+      JPanel p1 = new JPanel(new BorderLayout());
+      p1.add(new JLabel(BundleUtil.getLabel("Logo.label"), SwingConstants.CENTER), BorderLayout.NORTH);
+      logo = new JLabel("", SwingConstants.CENTER);
+      logo.setToolTipText(GemCommand.DEFINE_CMD);
 
-    Border topBorder = BorderFactory.createEmptyBorder(10,0,10,0);
-    domainPanel.setBorder(topBorder);
-    contactPanel.add(domainPanel, BorderLayout.SOUTH);
+      logo.setIcon(getThumbnail(comp, OrganizationIO.LOGO_COL, defIcon));
+      logo.setCursor(hand);
+      logo.addMouseListener(mouseAdapter);
+      p1.add(logo, BorderLayout.CENTER);
 
-    GemPanel pCodes = new GemPanel(new GridLayout(4,2));
-		((GridLayout) pCodes.getLayout()).setHgap(4);
-		((GridLayout) pCodes.getLayout()).setVgap(4);
-    pCodes.setBorder(topBorder);
-    pCodes.add(new GemLabel(ConfigKey.SIRET_NUMBER.getLabel()));
-    pCodes.add(siret);
-    pCodes.add(new GemLabel(ConfigKey.CODE_NAF.getLabel()));
-    pCodes.add(naf);
-    pCodes.add(new GemLabel(ConfigKey.CODE_TVA.getLabel()));
-    pCodes.add(tva);
-    pCodes.add(new GemLabel(ConfigKey.CODE_FP.getLabel()));
-    pCodes.add(forPro);
+      JPanel btPanel1 = new JPanel();
+      btLogo = new GemButton(GemCommand.DELETE_CMD);
+      btLogo.addActionListener(listener);
+      btPanel1.add(btLogo);
+      p1.add(btPanel1, BorderLayout.SOUTH);
 
-    content.add(pName, BorderLayout.NORTH);
-    content.add(contactPanel, BorderLayout.CENTER);
-    content.add(pCodes, BorderLayout.SOUTH);
+      JPanel p2 = new JPanel(new BorderLayout());
+//     p2.setPreferredSize(logoSize);
+      p2.add(new JLabel(BundleUtil.getLabel("Stamp.label"), SwingConstants.CENTER), BorderLayout.NORTH);
+      stamp = new JLabel("", SwingConstants.CENTER);
+      stamp.setToolTipText(GemCommand.DEFINE_CMD);
+      Icon tb = getThumbnail(comp, OrganizationIO.STAMP_COL, defIcon);
+      stamp.setIcon(getThumbnail(comp, OrganizationIO.STAMP_COL, defIcon));
+      stamp.setSize(tb.getIconWidth(), tb.getIconHeight());
+      stamp.setCursor(hand);
+      stamp.addMouseListener(mouseAdapter);
+      p2.add(stamp, BorderLayout.CENTER);
+      JPanel btPanel2 = new JPanel();
+      btStamp = new GemButton(GemCommand.DELETE_CMD);
+      btStamp.addActionListener(listener);
+      btPanel2.add(btStamp);
+      p2.add(btPanel2, BorderLayout.SOUTH);
 
-    add(content);
+      imagePanel.add(p1);
+      imagePanel.add(p2);
+
+      content.add(imagePanel, BorderLayout.SOUTH);
+
+      add(content);
+    } catch (SQLException ex) {
+      GemLogger.logException(ex);
+    }
   }
 
   @Override
   public List<Config> get() {
     List<Config> conf = new ArrayList<Config>();
-    Address b = address.get();
-    c1.setValue(name.getText().trim());
-    c2.setValue(b == null ? "" : b.getAdr1().trim());
-    c3.setValue(b == null ? "" : b.getAdr2().trim());
-    c4.setValue(b == null ? "" : b.getCdp().trim());
-    c5.setValue(b == null ? "" : b.getCity().trim());
-    c6.setValue((String)siret.getValue());
-    c7.setValue(naf.getText());
-    c8.setValue((String)tva.getValue());
-    c9.setValue((String)forPro.getValue());
     c10.setValue(domainName.getText());
-
-    conf.add(c1);
-    conf.add(c2);
-    conf.add(c3);
-    conf.add(c4);
-    conf.add(c5);
-    conf.add(c6);
-    conf.add(c7);
-    conf.add(c8);
-    conf.add(c9);
     conf.add(c10);
-
     return conf;
   }
 
+  private Icon getThumbnail(Company comp, String type, Icon def) {
+    try {
+      byte[] data = null;
+      if (OrganizationIO.LOGO_COL.equals(type)) {
+        data = comp.getLogo();
+      } else {
+        data = comp.getStamp();
+      }
+      if (data == null) {
+        return def;
+      }
+      ByteArrayInputStream in = new ByteArrayInputStream(data);
+      BufferedImage img = ImageIO.read(in);
+      return new ImageIcon(ImageUtil.rescaleSmooth(img, 200, 200));
+    } catch (IOException ex) {
+      GemLogger.logException(ex);
+      return def;
+    }
+
+  }
+
+  private void resetThumbnail(JLabel label, String type, Icon def) throws SQLException {
+    orgIO.saveImage(type, null);
+    label.setIcon(def);
+  }
+
+  private void saveThumbnail(JLabel label, String type) {
+    File file = FileUtil.getFile(
+      this,
+      BundleUtil.getLabel("FileChooser.selection"),
+      ConfigUtil.getConf(ConfigKey.PHOTOS_PATH.getKey()),
+      MessageUtil.getMessage("filechooser.image.filter.label"),
+      "jpg", "jpeg", "JPG", "JPEG", "png", "PNG");
+    if (file != null) {
+      try {
+        byte[] data = Files.readAllBytes(file.toPath());
+        System.out.println("img data  " + data.length);
+        if (data.length > 1024 * 1024) { //1Mo
+          MessagePopup.warning(this, MessageUtil.getMessage("file.too.large.warning", "1 Mo"));
+          return;
+        }
+        orgIO.saveImage(type, data);
+        BufferedImage img = ImageIO.read(file);
+        if (img != null) {
+          label.setIcon(new ImageIcon(ImageUtil.rescaleSmooth(img, 200, 200)));
+        }
+      } catch (IOException | SQLException e) {
+        GemLogger.logException(e);
+      }
+    }
+
+  }
+
+  private void showContactFile(int id) {
+    PersonFileEditor editor = ((GemDesktopCtrl) desktop).getPersonFileEditor(id);
+    if (editor != null) {
+      desktop.setSelectedModule(editor);
+    } else {
+      try {
+        desktop.setWaitCursor();
+        PersonFile pf = (PersonFile) DataCache.findId(id, Model.PersonFile);
+        editor = new PersonFileEditor(pf);
+        desktop.addModule(editor);
+      } catch (SQLException ex) {
+        GemLogger.logException(ex);
+      } finally {
+        desktop.setDefaultCursor();
+      }
+    }
+  }
+
 }
-
-

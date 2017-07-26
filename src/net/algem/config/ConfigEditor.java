@@ -1,7 +1,7 @@
 /*
- * @(#)ConfigEditor.java 2.11.0 27/09/16
+ * @(#)ConfigEditor.java 2.15.0 25/07/2017
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -36,6 +36,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import net.algem.contact.OrganizationIO;
 import net.algem.util.*;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.GemButton;
@@ -45,7 +46,7 @@ import net.algem.util.ui.GemPanel;
  * General config editor.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.0
+ * @version 2.15.0
  * @since 2.1.k
  */
 public class ConfigEditor
@@ -69,6 +70,7 @@ public class ConfigEditor
   private GemDesktop desktop;
   private JList sectionList;
   private JPanel confPanel;
+  private OrganizationIO orgIO;
 
   public ConfigEditor() {
   }
@@ -90,7 +92,8 @@ public class ConfigEditor
 
     try {
       confs = ConfigIO.find(null, dc);
-      orgPanel = new ConfigOrganization(BundleUtil.getLabel("ConfEditor.organization.label"), confs);
+      orgIO = new OrganizationIO(dc);
+      orgPanel = new ConfigOrganization(BundleUtil.getLabel("ConfEditor.organization.label"), confs, orgIO,desktop);
       activityPanel = new ConfigPlanning(confs);
       adminPanel = new ConfigAdmin(BundleUtil.getLabel("ConfEditor.management.label"), confs);
       ((ConfigAdmin) adminPanel).init(dataCache);
@@ -143,7 +146,11 @@ public class ConfigEditor
     if (e.getSource() == btValidation) {
       try {
         for (Config c : orgPanel.get()) {
-          confs.put(c.getKey(), c);
+          Company comp = new Company();
+          if (ConfigKey.ORGANIZATION_DOMAIN.getKey().equals(c.getKey())) {
+            comp.setDomain(c.getValue());
+          }
+          orgIO.saveDefault(comp);
         }
         for (Config c : activityPanel.get()) {
           confs.put(c.getKey(), c);

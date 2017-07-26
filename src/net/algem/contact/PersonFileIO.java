@@ -157,7 +157,7 @@ public class PersonFileIO
       }
       int payer = dossier.getMember() == null ? 0 : dossier.getMember().getPayer();
       if (payer > 0) {
-        DirectDebitService ddService = DirectDebitService.getInstance(dc);        
+        DirectDebitService ddService = DirectDebitService.getInstance(dc);
         DDMandate mandate = ddService.getMandateIfValid(payer);
         if (mandate != null) {
           throw new DDMandateException(MessageUtil.getMessage("rib.update.mandate.exception"));
@@ -174,7 +174,7 @@ public class PersonFileIO
 
   public PersonFile findId(int n, boolean complete) {
 
-    String query = "WHERE id = " + n;
+    String query = "WHERE p.id = " + n;
     Vector<PersonFile> v = find(query, complete);
     if (v.size() > 0) {
       return v.elementAt(0);
@@ -232,16 +232,17 @@ public class PersonFileIO
 
   public Vector<PersonFile> findMembers(String where) {
     Vector<PersonFile> v = new Vector<PersonFile>();
-    String query =
-            "SELECT " + PersonIO.COLUMNS + "," + MemberIO.COLUMNS
-            + " FROM " + PersonIO.TABLE + " p, " + MemberIO.TABLE + " ";
-    if (where != null) {
-      query += where + " AND p.id = " + MemberIO.TABLE + ".idper";
-    } else {
-      query += " WHERE p.id = " + MemberIO.TABLE + ".idper";
-    }
+    String query = PersonIO.PRE_QUERY + "," + MemberIO.COLUMNS + PersonIO.POST_QUERY
+      + " JOIN " +  MemberIO.TABLE + " m ON p.id = m.idper";
+//            "SELECT " + PersonIO.COLUMNS + "," + MemberIO.COLUMNS
+//            + " + MemberIO.TABLE + " ";
+//    if (where != null) {
+//      query += where + " AND p.id = " + MemberIO.TABLE + ".idper";
+//    } else {
+//      query += " WHERE p.id = " + MemberIO.TABLE + ".idper";
+//    }
 
-    query += " ORDER BY p.prenom,p.nom";
+    query += (where == null ? "" : " " + where) + " ORDER BY p.prenom,p.nom";
     try {
       ResultSet rs = dc.executeQuery(query);
       while (rs.next()) {
@@ -274,8 +275,8 @@ public class PersonFileIO
 
   public Vector<PersonFile> findPayers(String where) {
     Vector<PersonFile> v = new Vector<>();
-    String query = "SELECT " + PersonIO.COLUMNS + " FROM " + PersonIO.TABLE + " p";
-
+//    String query = "SELECT " + PersonIO.COLUMNS + " FROM " + PersonIO.TABLE + " p";
+String query = PersonIO.PRE_QUERY + PersonIO.POST_QUERY;
     query += (where != null) ? (" " + where + " AND") :  " WHERE";
     query += " p.id IN (SELECT payeur FROM " + MemberIO.TABLE + ")";
     query += " ORDER BY p.nom,p.prenom";

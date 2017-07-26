@@ -194,8 +194,8 @@ public class BasicBillingService
   public String getContact(int id)  {
     try {
       Person p = (Person) DataCache.findId(id, Model.Person);
-      if (p.getOrganization() != null && !p.getOrganization().isEmpty()) {
-        return p.getOrganization();
+      if (p.getOrgName() != null && !p.getOrgName().isEmpty()) {
+        return p.getOrgName();
       }
       return p != null ? p.getFirstnameName() : "";
     } catch (SQLException ex) {

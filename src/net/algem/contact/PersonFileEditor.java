@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileEditor 2.13.1 12/04/17
+ * @(#)PersonFileEditor 2.15.0 26/07/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -71,7 +71,7 @@ import org.passay.PasswordValidator;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.13.1
+ * @version 2.15.0
  */
 public class PersonFileEditor
         extends FileEditor
@@ -758,7 +758,7 @@ public class PersonFileEditor
     if (dossier.getMember() == null || dossier.getMember().getPayer() == dossier.getId()) {
       orderLineEditor.setLabel(dossier.getContact().getFirstnameName());
     } else {
-      String org = p.getOrganization();
+      String org = p.getOrgName();
       orderLineEditor.setLabel(org != null && org.trim().length() > 0 ? org : p.getFirstnameName());
     }
     personFileView.addTab(orderLineEditor, BundleUtil.getLabel("Person.schedule.payment.tab.label"));
@@ -897,7 +897,8 @@ public class PersonFileEditor
    * Gets the number of linked members.
    */
   private int setMemberList() {
-    Vector<PersonFile> v = ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findMembers("WHERE payeur = " + dossier.getId() + " AND id != payeur");
+    Vector<PersonFile> v = ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findMembers("WHERE payeur = " + dossier.getId() + " AND p.id != payeur");
+
     memberList = new PersonFileListCtrl();
 
     for (int i = 0; i < v.size(); i++) {
@@ -936,8 +937,8 @@ public class PersonFileEditor
       }
     }
 
-    if (c.getOrganization() != null && c.getOrganization().length() > 0) {
-      where = " WHERE lower(organisation) = E'" + TableIO.escape(c.getOrganization().toLowerCase()) + "'";
+    if (c.getOrgName() != null && c.getOrgName().length() > 0) {
+      where = " WHERE lower(organisation) = E'" + TableIO.escape(c.getOrgName().toLowerCase()) + "'";
       found = ContactIO.findId(where, dc) != null;
     }
     return found;

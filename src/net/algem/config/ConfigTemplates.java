@@ -1,5 +1,5 @@
 /*
- * @(#) ConfigTemplates.java Algem 2.15.0 21/07/17
+ * @(#) ConfigTemplates.java Algem 2.15.0 24/07/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,34 +20,35 @@
 package net.algem.config;
 
 import com.sun.pdfview.PDFFile;
-import com.sun.pdfview.PDFPage;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.imageio.ImageIO;
+import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import static net.algem.config.PageTemplate.AGREEMENT_PAGE_MODEL;
+import static net.algem.config.PageTemplate.CONTRACT_PAGE_MODEL;
+import static net.algem.config.PageTemplate.DEFAULT_MODEL;
+import static net.algem.config.PageTemplate.QUOTE_PAGE_MODEL;
+import net.algem.edition.PdfHandler;
 import net.algem.util.BundleUtil;
 import net.algem.util.FileUtil;
 import net.algem.util.GemCommand;
@@ -56,6 +57,7 @@ import net.algem.util.ImageUtil;
 import net.algem.util.MessageUtil;
 import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GemPanel;
+import net.algem.util.ui.MessagePopup;
 
 /**
  *
@@ -69,21 +71,19 @@ public class ConfigTemplates
   private JLabel quoteThumb;
   private JLabel contractThumb;
   private JLabel agreementThumb;
+  private JLabel defaultThumb;
 
   private JButton btQuote;
   private JButton btAgreement;
   private JButton btContract;
-  private File file; //new File("/tmp/Papier entete 2010.pdf");
-  private PageTemplateIO templateIO;
-  private final static short QUOTE_PAGE_MODEL = 1;
-  private final static short AGREEMENT_PAGE_MODEL = 2;
-  private final static short CONTRACT_PAGE_MODEL = 3;
+  private JButton btDefault;
+  private File file;
+  private PdfHandler pdfHandler;
+  private Map<Short, PageTemplate> templates = new HashMap<>();
 
-  private Map<Short,PageTemplate> templates = new HashMap<>();
-
-  public ConfigTemplates(String title, PageTemplateIO pageIO) {
+  public ConfigTemplates(String title, PageTemplateIO templateIO) {
     super(title);
-    this.templateIO = pageIO;
+    pdfHandler = new PdfHandler(templateIO);
   }
 
   @Override
@@ -101,11 +101,36 @@ public class ConfigTemplates
     } catch (IOException ex) {
       GemLogger.logException(ex);
     }
-    content = new GemPanel(new GridLayout(1, 3, 10, 10));
+    content = new GemPanel(new GridLayout(2, 3, 10, 10));
 
     ActionListener listener = new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
+        Object src = e.getSource();
+        if (src instanceof JButton) {
+          try {
+            if (src == btQuote) {
+              resetTemplate(QUOTE_PAGE_MODEL);
+              quoteThumb.setIcon(new ImageIcon(getDefaultThumbnail()));
+            } else if (src == btAgreement) {
+              resetTemplate(AGREEMENT_PAGE_MODEL);
+              agreementThumb.setIcon(new ImageIcon(getDefaultThumbnail()));
+            } else if (src == btContract) {
+              resetTemplate(CONTRACT_PAGE_MODEL);
+              contractThumb.setIcon(new ImageIcon(getDefaultThumbnail()));
+            } else {
+              resetTemplate(DEFAULT_MODEL);
+              defaultThumb.setIcon(new ImageIcon(getDefaultThumbnail()));
+            }
+          } catch (IOException ex) {
+            GemLogger.logException(ex);
+          }
+        }
+      }
+    };
+    MouseAdapter mouseAdapter = new MouseAdapter() {
+      @Override
+      public void mouseClicked(MouseEvent e) {
         file = FileUtil.getFile(
           ConfigTemplates.this,
           BundleUtil.getLabel("FileChooser.selection"),
@@ -114,84 +139,131 @@ public class ConfigTemplates
           "pdf"
         );
         Object src = e.getSource();
-        if (file != null && src instanceof JButton) {
-          if (src == btQuote) {
-            importTemplate(quoteThumb);
-          } else if (src == btAgreement) {
-            importTemplate(agreementThumb);
+        if (file != null && src instanceof JLabel) {
+          setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+          if (src == quoteThumb) {
+            importTemplate(file, quoteThumb);
+          } else if (src == agreementThumb) {
+            importTemplate(file, agreementThumb);
+          } else if (src == contractThumb) {
+            importTemplate(file, contractThumb);
           } else {
-            importTemplate(contractThumb);
+            importTemplate(file, defaultThumb);
           }
+          setCursor(Cursor.getDefaultCursor());
         }
       }
-    };
 
+    };
     JPanel p1 = new JPanel(new BorderLayout());
     p1.add(new JLabel(BundleUtil.getLabel("Quotations.Invoices.label"), SwingConstants.CENTER), BorderLayout.NORTH);
+    Cursor hand = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
+
     quoteThumb = new JLabel("", SwingConstants.CENTER);
+    quoteThumb.setToolTipText(GemCommand.DEFINE_CMD);
+    quoteThumb.setIcon(icon);
+    quoteThumb.setCursor(hand);
+    quoteThumb.addMouseListener(mouseAdapter);
 
-//    quoteThumb.setIcon(icon);
     p1.add(quoteThumb, BorderLayout.CENTER);
-    btQuote = new GemButton(GemCommand.DEFINE_CMD);
-    btQuote.addActionListener(listener);
 
+    btQuote = new GemButton(GemCommand.DELETE_CMD);
+    btQuote.addActionListener(listener);
     p1.add(btQuote, BorderLayout.SOUTH);
 
     JPanel p2 = new JPanel(new BorderLayout());
     p2.add(new JLabel(BundleUtil.getLabel("Internship.agreements.label"), SwingConstants.CENTER), BorderLayout.NORTH);
     agreementThumb = new JLabel("", SwingConstants.CENTER);
     agreementThumb.setIcon(icon);
+    agreementThumb.setCursor(hand);
+    agreementThumb.setToolTipText(GemCommand.DEFINE_CMD);
+    agreementThumb.addMouseListener(mouseAdapter);
     p2.add(agreementThumb, BorderLayout.CENTER);
-    btAgreement = new GemButton(GemCommand.DEFINE_CMD);
+    btAgreement = new GemButton(GemCommand.DELETE_CMD);
     btAgreement.addActionListener(listener);
     p2.add(btAgreement, BorderLayout.SOUTH);
 
     JPanel p3 = new JPanel(new BorderLayout());
     p3.add(new JLabel(BundleUtil.getLabel("Training.contracts.label"), SwingConstants.CENTER), BorderLayout.NORTH);
     contractThumb = new JLabel("", SwingConstants.CENTER);
+    contractThumb.setToolTipText(GemCommand.DEFINE_CMD);
     contractThumb.setIcon(icon);
+    contractThumb.setCursor(hand);
+    contractThumb.addMouseListener(mouseAdapter);
     p3.add(contractThumb, BorderLayout.CENTER);
-    btContract = new GemButton(GemCommand.DEFINE_CMD);
+    btContract = new GemButton(GemCommand.DELETE_CMD);
     btContract.addActionListener(listener);
     p3.add(btContract, BorderLayout.SOUTH);
 
+    JPanel p4 = new JPanel(new BorderLayout());
+    p4.add(new JLabel(BundleUtil.getLabel("Default.template.label"), SwingConstants.CENTER), BorderLayout.NORTH);
+    defaultThumb = new JLabel("", SwingConstants.CENTER);
+    defaultThumb.setToolTipText(GemCommand.DEFINE_CMD);
+    defaultThumb.setIcon(icon);
+    defaultThumb.setCursor(hand);
+    defaultThumb.addMouseListener(mouseAdapter);
+    p4.add(defaultThumb, BorderLayout.CENTER);
+    btDefault = new GemButton(GemCommand.DELETE_CMD);
+    btDefault.addActionListener(listener);
+    p4.add(btDefault, BorderLayout.SOUTH);
+
     try {
       load();
-    } catch (SQLException | IOException ex) {
+    } catch (SQLException ex) {
       GemLogger.logException(ex);
     }
 
     content.add(p1);
     content.add(p2);
     content.add(p3);
+    content.add(Box.createHorizontalBox());
+    content.add(p4);
+    content.add(Box.createHorizontalBox());
     add(content);
   }
 
-  private void importTemplate(JLabel label) {
+  /**
+   * Saves a template and preview it.
+   *
+   * @param file the template to save
+   * @param label thumbnail component
+   */
+  private void importTemplate(File file, JLabel label) {
 
     try {
-      setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-      byte[] ba = getByteArrayFromFile(file);
-      save(ba, label);
+      byte[] ba = Files.readAllBytes(file.toPath());
+      if (ba.length > (2*1024*1024)) { // 2Mo
+        MessagePopup.warning(this, MessageUtil.getMessage("file.too.large.warning", "2 Mo"));
+        return;
+      }
       PDFFile pdffile = new PDFFile(ByteBuffer.wrap(ba));
-      BufferedImage img = getThumbnailFromPdf(pdffile);
+      BufferedImage img = pdfHandler.getThumbnail(pdffile);
       if (img == null) {
         img = getDefaultThumbnail();
       }
 
       ImageIcon icon = (img == null ? null : new ImageIcon(img));
       label.setIcon(icon);
+      save(ba, label);
     } catch (IOException | SQLException ex) {
       GemLogger.logException(ex);
       //label.setIcon(null);
-    } finally {
-      setCursor(Cursor.getDefaultCursor());
     }
 
   }
 
+  private void resetTemplate(short type) {
+    if (templates.get(type) != null) {
+      try {
+        pdfHandler.resetTemplate(type, templates);
+      } catch (SQLException ex) {
+        GemLogger.logException(ex);
+      }
+    }
+  }
+
   private ImageIcon getIconFromFile(PDFFile pdffile) throws IOException {
-    BufferedImage img = getThumbnailFromPdf(pdffile);
+    BufferedImage img = pdfHandler.getThumbnail(pdffile);
     if (img == null) {
       img = getDefaultThumbnail();
     }
@@ -199,94 +271,50 @@ public class ConfigTemplates
     return (img == null ? null : new ImageIcon(img));
   }
 
-  private void load() throws SQLException, IOException {
-//    PageModel pages = pageModelIO.find(QUOTE_PAGE_MODEL);
-    List<PageTemplate> pages = templateIO.findAll();
-    PDFFile pdffile = null;
-    for (PageTemplate p : pages) {
-      templates.put(p.getType(), p);
+  private void load() throws SQLException {
+    List<PageTemplate> tpl = pdfHandler.getTemplates();
+    for (PageTemplate p : tpl) {
       switch (p.getType()) {
         case QUOTE_PAGE_MODEL:
-          pdffile = new PDFFile(ByteBuffer.wrap(p.getContent()));
-          quoteThumb.setIcon(getIconFromFile(pdffile));
+          loadTemplate(quoteThumb, p);
           break;
         case AGREEMENT_PAGE_MODEL:
-          pdffile = new PDFFile(ByteBuffer.wrap(p.getContent()));
-          agreementThumb.setIcon(getIconFromFile(pdffile));
+          loadTemplate(agreementThumb, p);
           break;
         case CONTRACT_PAGE_MODEL:
-          pdffile = new PDFFile(ByteBuffer.wrap(p.getContent()));
-          contractThumb.setIcon(getIconFromFile(pdffile));
+          loadTemplate(contractThumb, p);
           break;
+        default :
+          loadTemplate(defaultThumb, p);
       }
     }
+  }
 
+  private void loadTemplate(JLabel thumb, PageTemplate p) {
+    try {
+      PDFFile pdffile = new PDFFile(ByteBuffer.wrap(p.getContent()));
+      thumb.setIcon(getIconFromFile(pdffile));
+      templates.put(p.getType(), p);
+    } catch (IOException ex) {
+      GemLogger.logException(ex);
+    }
   }
 
   private void save(byte[] bytes, JLabel label) throws SQLException, IOException {
     if (quoteThumb == label) {
-        if (templates.get(QUOTE_PAGE_MODEL) == null) {
-          templateIO.insert(QUOTE_PAGE_MODEL, bytes);
-        } else {
-          templateIO.update(QUOTE_PAGE_MODEL, bytes);
-      }
-    } else if (agreementThumb == label) {//XXX à terminer
-      templateIO.insert(AGREEMENT_PAGE_MODEL, bytes);
+      pdfHandler.saveTemplate(new PageTemplate(QUOTE_PAGE_MODEL, bytes), templates);
+    } else if (agreementThumb == label) {
+      pdfHandler.saveTemplate(new PageTemplate(AGREEMENT_PAGE_MODEL, bytes), templates);
+    } else if (contractThumb == label) {
+      pdfHandler.saveTemplate(new PageTemplate(CONTRACT_PAGE_MODEL, bytes), templates);
     } else {
-      templateIO.insert(CONTRACT_PAGE_MODEL, bytes);
+      pdfHandler.saveTemplate(new PageTemplate(DEFAULT_MODEL, bytes), templates);
     }
-  }
-
-  private void preview() {
-
   }
 
   private BufferedImage getDefaultThumbnail() throws IOException {
     InputStream input = getClass().getResourceAsStream(ImageUtil.DEFAULT_PDF_TEMPLATE);
     return input == null ? null : ImageIO.read(input);
-  }
-
-  private ByteBuffer getBufferFromFile(File file) throws IOException {
-    RandomAccessFile raf = new RandomAccessFile(file, "r");
-    //ReadableByteChannel ch = Channels.newChannel(new FileInputStream(file));
-    FileChannel channel = raf.getChannel();
-    return channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
-  }
-
-  private byte[] getByteArrayFromFile(File file) throws IOException {
-    return Files.readAllBytes(file.toPath());
-  }
-
-  private BufferedImage getThumbnailFromPdf(PDFFile pdffile) throws IOException {
-    PDFPage page = pdffile.getPage(1);
-    //  create new image
-    Rectangle rect = new Rectangle(0, 0, (int) (page.getBBox().getWidth()), (int) (page.getBBox().getHeight()));
-
-    Image img = page.getImage(
-      rect.width, rect.height, //width & height
-      rect, // clip rect
-      null, // null for the ImageObserver
-      true, // fill background with white
-      true // block until drawing is done
-    );
-
-    BufferedImage bufferedImage = new BufferedImage(rect.width, rect.height, BufferedImage.TYPE_INT_RGB);
-    Graphics g = bufferedImage.createGraphics();
-    g.drawImage(img, 0, 0, null);
-    g.dispose();
-
-    return rescale(bufferedImage, rect.width / 4, rect.height / 4);
-//    return null;
-  }
-
-  private BufferedImage rescale(BufferedImage img, int nw, int nh) {
-    Image imgSmall = img.getScaledInstance(nw, nh, Image.SCALE_SMOOTH);
-    BufferedImage dimg = new BufferedImage(nw, nh, img.getType());
-
-    Graphics2D g = dimg.createGraphics();
-    g.drawImage(imgSmall, 0, 0, null);
-    g.dispose();
-    return dimg;
   }
 
 }

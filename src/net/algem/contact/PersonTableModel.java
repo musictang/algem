@@ -73,7 +73,7 @@ public class PersonTableModel
       case 0:
         return new Integer(p.getId());
       case 1:
-        return p.getOrganization();
+        return p.getOrgName();
       case 2:
         return p.getName();
       case 3:

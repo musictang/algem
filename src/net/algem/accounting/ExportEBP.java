@@ -327,8 +327,8 @@ extends CommonAccountExportService
     for (Map.Entry<String, Contact> entry : map.entrySet()) {
       sb.append(entry.getKey()).append(c);//account number
       Contact v = entry.getValue();
-      String org = v.getOrganization();
-      String vName = org == null || org.isEmpty() ? v.getNameFirstname() : v.getOrganization();
+      String org = v.getOrgName();
+      String vName = org == null || org.isEmpty() ? v.getNameFirstname() : v.getOrgName();
       sb.append(vName).append(c);//account label
       String companyName = (org == null || org.isEmpty() ? "" : org);
       sb.append(companyName).append(c);//company name

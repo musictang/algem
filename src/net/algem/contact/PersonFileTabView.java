@@ -318,7 +318,7 @@ public class PersonFileTabView
       if (parent != null) {
         String name = "";
         if (parent.getContact() != null) {
-          String org = parent.getContact().getOrganization();
+          String org = parent.getContact().getOrgName();
           name = (org == null || org.isEmpty()) ? parent.getContact().getFirstnameName() : org;
         }
         memberEditor.setPayer(parent.getId(), name);

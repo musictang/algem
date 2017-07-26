@@ -1,7 +1,7 @@
 /*
- * @(#)MenuConfig.java 2.10.0 19/05/16
+ * @(#)MenuConfig.java 2.15.0 21/07/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -52,7 +52,7 @@ import net.algem.util.module.GemModule;
 /**
  * Configuration menu.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.15.0
  * @since 2.6.a 12/10/2012
  */
 public class MenuConfig
@@ -148,7 +148,7 @@ public class MenuConfig
     desktop.setWaitCursor();
     if (menus.get("Menu.general.parameters.label").equals(arg)) {
       ConfigEditor confEditor = new ConfigEditor(desktop);
-      desktop.addPanel(ConfigEditor.GLOBAL_CONFIG_KEY, confEditor, new Dimension(850, 570));
+      desktop.addPanel(ConfigEditor.GLOBAL_CONFIG_KEY, confEditor, new Dimension(850, 625));
     } else if (menus.get("Menu.instrument.label").equals(arg)) {
       InstrumentCtrl instrumentCtrl = new InstrumentCtrl(desktop);
       instrumentCtrl.load();

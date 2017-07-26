@@ -1,7 +1,7 @@
 /*
- * @(#)ContactExportDlg.java	2.9.2.1 18/02/15
- * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * @(#)ContactExportDlg.java	2.15.0 26/07/2017
+ *
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.edition;
 
@@ -35,7 +35,7 @@ import net.algem.util.ui.GemPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2.1
+ * @version 2.15.0
  * @since 1.0a 14/12/1999
  */
 public class ContactExportDlg
@@ -44,15 +44,15 @@ public class ContactExportDlg
 
   private static final String CONTACT_TITLE = BundleUtil.getLabel("Export.contact.title");
   private static Object[] criteria = {
-    MessageUtil.getMessage("export.criterium.contact.all"), 
-    MessageUtil.getMessage("export.criterium.contact.organization"), 
+    MessageUtil.getMessage("export.criterium.contact.all"),
+    MessageUtil.getMessage("export.criterium.contact.organization"),
     MessageUtil.getMessage("export.criterium.contact.not.member"),
     MessageUtil.getMessage("export.criterium.contact.room")
   };
   private GemPanel pCriterion;
   private JComboBox criterion;
 
-  
+
 
   public ContactExportDlg(GemDesktop desktop) {
     super(desktop, CONTACT_TITLE);
@@ -76,14 +76,14 @@ public class ContactExportDlg
 	@Override
   public String getRequest() {
     switch (criterion.getSelectedIndex()) {
-      case 1: 
-        return "WHERE id > 0 AND ptype = " + Person.PERSON + " AND (organisation IS NOT NULL OR length(organisation) > 0)";
+      case 1:
+        return "WHERE p.id > 0 AND p.ptype = " + Person.PERSON + " AND (p.organisation IS NOT NULL OR length(p.organisation) > 0)";
       case 2:
-        return "WHERE id > 0 AND ptype = " + Person.PERSON + " AND id NOT IN(SELECT idper FROM " + MemberIO.TABLE + ")";
+        return "WHERE p.id > 0 AND p.ptype = " + Person.PERSON + " AND p.id NOT IN(SELECT idper FROM " + MemberIO.TABLE + ")";
       case 3:
-        return "WHERE id > 0 AND id IN(SELECT idper FROM " + RoomIO.TABLE + " WHERE nom !~* 'RATTRAP')";
+        return "WHERE p.id > 0 AND p.id IN(SELECT idper FROM " + RoomIO.TABLE + " WHERE nom !~* 'RATTRAP')";
       default:
-        return "WHERE id > 0 AND ptype = " + Person.PERSON;
+        return "WHERE p.id > 0 AND p.ptype = " + Person.PERSON;
     }
   }
 

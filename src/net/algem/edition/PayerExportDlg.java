@@ -1,7 +1,7 @@
 /*
- * @(#)PayerExportDlg.java	2.9.2.1 17/02/15
- * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * @(#)PayerExportDlg.java	2.15.0 26/07/2017
+ *
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -44,7 +44,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2.1
+ * @version 2.15.0
  * @since 1.0a 14/12/1999
  */
 public class PayerExportDlg
@@ -61,7 +61,7 @@ public class PayerExportDlg
   private JComboBox cbCriterion;
   private DateRangePanel dateRange;
   private JComboBox payment;
-  
+
   private static String all_payment = MessageUtil.getMessage("all.payment.label");
 
   public PayerExportDlg(GemDesktop desktop) {
@@ -81,7 +81,7 @@ public class PayerExportDlg
     cbCriterion = new JComboBox(criteria);
     payment = new JComboBox(ParamTableIO.getValues(ModeOfPaymentCtrl.TABLE, ModeOfPaymentCtrl.COLUMN_NAME, dc));
     payment.addItem(all_payment);
-    
+
     initDateRange();
     gb.add(new JLabel(BundleUtil.getLabel("Type.label")), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(cbCriterion, 1, 0, 1, 1, GridBagHelper.WEST);
@@ -89,7 +89,7 @@ public class PayerExportDlg
     gb.add(payment, 1, 1, 1, 1, GridBagHelper.WEST);
     gb.add(new JLabel(BundleUtil.getLabel("Date.From.label")), 0, 2, 1, 1, GridBagHelper.WEST);
     gb.add(dateRange, 1, 2, 1, 1, GridBagHelper.WEST);
-    
+
     cbCriterion.setPreferredSize(new Dimension(dateRange.getPreferredSize().width, cbCriterion.getPreferredSize().height));
     payment.setPreferredSize(cbCriterion.getPreferredSize());
 
@@ -102,16 +102,16 @@ public class PayerExportDlg
     String r = (String)payment.getSelectedItem();
     switch (cbCriterion.getSelectedIndex()) {
       case 0 : // Payeurs non encaissés
-        //query = "where id in (SELECT distinct p.id from personne p,adresse a,echeancier2 e where e.payeur=p.id and p.id=a.idper and p.arch='f' and e.reglement='CHQ' and e.paye = 'f' and e.echeance <= '" + d2 + "')";  
-        query = "WHERE id IN (SELECT DISTINCT payeur FROM " + OrderLineIO.TABLE + " WHERE paye = 'f' AND";
+        //query = "where id in (SELECT distinct p.id from personne p,adresse a,echeancier2 e where e.payeur=p.id and p.id=a.idper and p.arch='f' and e.reglement='CHQ' and e.paye = 'f' and e.echeance <= '" + d2 + "')";
+        query = "WHERE p.id IN (SELECT DISTINCT payeur FROM " + OrderLineIO.TABLE + " WHERE paye = 'f' AND";
         break;
       case 1: // Les payeurs encaissés
         //query = "where id in (SELECT distinct p.id from personne p,adresse a,echeancier2 e where e.payeur=p.id and p.id=a.idper and p.arch='f' and e.echeance >= '" + dc.getDebutPeriode() + "')";
-        query = "WHERE id IN (SELECT DISTINCT payeur FROM " + OrderLineIO.TABLE + " WHERE paye = 't' AND";
+        query = "WHERE p.id IN (SELECT DISTINCT payeur FROM " + OrderLineIO.TABLE + " WHERE paye = 't' AND";
         break;
       case 2 : // Tous les payeurs
         //query = "where id in (SELECT distinct p.id from personne p,adresse a,echeancier2 e where e.payeur=p.id and p.id=a.idper and p.arch='f')";
-        query = "WHERE id IN (SELECT DISTINCT payeur FROM " + OrderLineIO.TABLE + " WHERE";
+        query = "WHERE p.id IN (SELECT DISTINCT payeur FROM " + OrderLineIO.TABLE + " WHERE";
         break;
     }
     if (!all_payment.equals(r)) {
@@ -120,7 +120,7 @@ public class PayerExportDlg
     query += " echeance BETWEEN '"+dateRange.getStartFr().toString()+"' AND '"+dateRange.getEndFr().toString()+"')";
     //System.out.println(query);
     return query;
-    
+
   }
 
   /**
@@ -135,10 +135,10 @@ public class PayerExportDlg
     e.decDay(1);
     dateRange = new DateRangePanel(b,e);
   }
-  
+
   @Override
   protected String getFileName() {
     return BundleUtil.getLabel("Export.payer.file");
   }
-  
+
 }

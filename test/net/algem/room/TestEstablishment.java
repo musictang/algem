@@ -75,7 +75,7 @@ public class TestEstablishment {
      p1.setName("E1");
      p1.setFirstName("");
      p1.setGender("");
-     p1.setOrganization(null);
+     p1.setOrgName(null);
      p1.setImgRights(false);
      p1.setType(Person.ESTABLISHMENT);
 
@@ -83,7 +83,7 @@ public class TestEstablishment {
      p2.setName("E2");
      p2.setFirstName("");
      p2.setGender("");
-     p2.setOrganization(null);
+     p2.setOrgName(null);
      p2.setImgRights(false);
      p2.setType(Person.ESTABLISHMENT);
 

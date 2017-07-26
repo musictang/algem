@@ -1,5 +1,5 @@
 /*
- * @(#)ContactIO.java	2.13.0 22/03/2017
+ * @(#)ContactIO.java	2.15.0 26/07/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -49,7 +49,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.13.0
+ * @version 2.15.0
  * @since 1.0a 07/07/1999
  */
 public class ContactIO
@@ -242,7 +242,7 @@ public class ContactIO
    * @return a contact or null
    */
   public static Contact findId(int n, DataConnection dc) {
-    String query = "WHERE id = " + n;
+    String query = "WHERE p.id = " + n;
     Vector<Contact> v = find(query, true, dc);
     if (v.size() > 0) {
       return v.elementAt(0);
@@ -318,7 +318,7 @@ public class ContactIO
    */
   public static int count(String where, DataConnection dc) {
     int cpt = 0;
-    String query = "SELECT count(*) FROM personne " + where;
+    String query = "SELECT count(*) " + PersonIO.POST_QUERY + " " + where;
     try {
       ResultSet rs = dc.executeQuery(query);
       if (rs.next()) {
@@ -377,6 +377,10 @@ public class ContactIO
   private static void checkDelete(Contact c, DataConnection dc) throws SQLException, ContactDeleteException {
 
     String msg = MessageUtil.getMessage("delete.exception");
+    if (c.getType() == 0) {
+      msg += MessageUtil.getMessage("contact.delete.company.warning");
+      throw new ContactDeleteException(msg);
+    }
     if (c.getType() == Person.PERSON || c.getType() == Person.ROOM) {
       // vérifier qu'il n'existe plus d'échéances pour ce contact (en tant que payeur)
       String check = "SELECT count(payeur) FROM " + OrderLineIO.TABLE + " WHERE payeur = " + c.getId();

@@ -1,7 +1,7 @@
 /*
- * @(#)GemCommand.java 2.9.4.13 03/11/15
+ * @(#)GemCommand.java 2.15.0 19/07/2017
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -23,7 +23,7 @@ package net.algem.util;
 /**
  * Generic action commands.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.15.0
  * @since 2.2.c
  */
 public class GemCommand

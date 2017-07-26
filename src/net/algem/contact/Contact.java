@@ -1,7 +1,7 @@
 /*
- * @(#)Contact.java 2.9.4.13 03/11/15
+ * @(#)Contact.java 2.15.0 26/07/2017
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,7 +27,7 @@ import java.util.Vector;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.15.0
  * @since 1.0a 07/07/1999
  */
 public class Contact
@@ -36,7 +36,7 @@ public class Contact
 {
 
   private static final long serialVersionUID = 4651926516240269103L;
-  
+
   private boolean complete;
   private Vector<Address> addresses;
   private Vector<Telephone> telephones;
@@ -56,7 +56,8 @@ public class Contact
     //note = pp.getNote();
     imgRights = pp.hasImgRights();
     partnerInfo = pp.isPartnerInfo();
-    organization = pp.getOrganization();
+    orgId = pp.getOrgId();
+    orgName = pp.getOrgName();
     nickName = pp.getNickName();
   }
 
@@ -175,7 +176,7 @@ public class Contact
     if (hasImgRights() != c.hasImgRights()) {
       return out(3);
     }
-    
+
     if (isPartnerInfo() != c.isPartnerInfo()) {
       return out(4);
     }
@@ -195,7 +196,7 @@ public class Contact
     if (!sitesEqual(sites, c.getSites())) {
       return out(8);
     }
-    
+
     return true;
   }
 
@@ -327,5 +328,5 @@ public class Contact
     }
     return c;
   }
-  
+
 }

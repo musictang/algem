@@ -1,5 +1,5 @@
 /*
- * @(#)Person.java	2.13.3 17/05/17
+ * @(#)Person.java	2.15.0 26/07/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -32,7 +32,7 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.13.3
+ * @version 2.15.0
  *
  * @since 1.0a 07/07/1999
  */
@@ -56,7 +56,8 @@ public class Person
   protected String nickName;
   protected String gender;
   protected boolean imgRights;
-  protected String organization;
+  protected String orgName;
+  protected int orgId;
   protected boolean partnerInfo;
 
   public Person() {
@@ -122,9 +123,10 @@ public class Person
     if ((this.gender == null) ? (other.gender != null) : !this.gender.equals(other.gender)) {
       return false;
     }
-    if ((this.organization == null) ? (other.organization != null) : !this.organization.equals(other.organization)) {
+    if ((this.orgName == null) ? (other.orgName != null) : !this.orgName.equals(other.orgName)) {
       return false;
     }
+    // todo ?? orgId
     if ((this.nickName == null) ? (other.nickName != null) : !this.nickName.equals(other.nickName)) {
       return false;
     }
@@ -135,7 +137,7 @@ public class Person
   public int hashCode() {
     int hash = 5;
     hash = 23 * hash + this.id;
-    hash = 23 * hash + (this.organization != null ? this.organization.hashCode() : 0);
+    hash = 23 * hash + (this.orgName != null ? this.orgName.hashCode() : 0);
     hash = 23 * hash + (this.name != null ? this.name.hashCode() : 0);
     hash = 23 * hash + (this.firstName != null ? this.firstName.hashCode() : 0);
     hash = 23 * hash + (this.gender != null ? this.gender.hashCode() : 0);
@@ -247,12 +249,20 @@ public class Person
     return imgRights;
   }
 
-  public String getOrganization() {
-    return organization;
+  public String getOrgName() {
+    return orgName;
   }
 
-  public void setOrganization(String organization) {
-    this.organization = organization;
+  public void setOrgName(String organization) {
+    this.orgName = organization;
+  }
+
+  public int getOrgId() {
+    return orgId;
+  }
+
+  public void setOrgId(int orgId) {
+    this.orgId = orgId;
   }
 
   public boolean isPartnerInfo() {
@@ -264,8 +274,8 @@ public class Person
   }
 
   public boolean isValid() {
-    return organization != null && !organization.isEmpty()
-            ? organization.length() > 1 : name.length() > 1;
+    return orgName != null && !orgName.isEmpty()
+            ? orgName.length() > 1 : name.length() > 1;
   }
 
   @Override

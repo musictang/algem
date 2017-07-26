@@ -1,5 +1,5 @@
 /*
- * @(#)ExportDlg.java 2.14.0 15/06/17
+ * @(#)ExportDlg.java 2.15.0 26/07/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -46,7 +46,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.14.0
+ * @version 2.15.0
  * @since 1.0a 14/12/1999
  */
 public abstract class ExportDlg
@@ -177,6 +177,13 @@ public abstract class ExportDlg
     return fileChooser;
   }
 
+  public static JFileChooser getFileChooser(String file, FileNameExtensionFilter filter) {
+    JFileChooser fileChooser = new JFileChooser((File) null);
+    fileChooser.setFileFilter(filter);
+    fileChooser.setSelectedFile(new File(file));
+    return fileChooser;
+  }
+
   /**
    * Exports to csv file.
    */
@@ -205,7 +212,7 @@ public abstract class ExportDlg
         Contact c = v.elementAt(i);
         cpt++;
         out.print(c.getId() + ";");
-        out.print(c.getOrganization() == null ? ";" : c.getOrganization() + ";");
+        out.print(c.getOrgName() == null ? ";" : c.getOrgName() + ";");
         out.print(c.getGender() + ";");
         out.print(c.getName() + ";");
         out.print(c.getFirstName() + ";");

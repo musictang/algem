@@ -1,5 +1,5 @@
 /*
- * @(#)InvoiceView.java 2.15.0 21/07/17
+ * @(#)InvoiceView.java 2.15.0 24/07/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -23,12 +23,7 @@ package net.algem.billing;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.PageSize;
-import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfGraphics2D;
-import com.lowagie.text.pdf.PdfImportedPage;
-import com.lowagie.text.pdf.PdfStamper;
-import com.lowagie.text.pdf.PdfTemplate;
 import com.lowagie.text.pdf.PdfWriter;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -43,9 +38,7 @@ import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.NumberFormat;
@@ -53,8 +46,6 @@ import java.text.ParseException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.print.attribute.standard.MediaSizeName;
 import javax.print.attribute.standard.OrientationRequested;
 import javax.swing.JFormattedTextField;
@@ -62,6 +53,8 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import net.algem.accounting.AccountUtil;
 import net.algem.accounting.OrderLine;
+import net.algem.config.PageTemplate;
+import net.algem.config.PageTemplateIO;
 import net.algem.contact.Address;
 import net.algem.contact.Contact;
 import net.algem.contact.ContactIO;
@@ -88,9 +81,8 @@ import net.algem.util.ui.*;
  * @since 2.3.a 07/02/12
  */
 public class InvoiceView
-        extends GemPanel
-        implements ActionListener, GemEventListener, Printable
-{
+  extends GemPanel
+  implements ActionListener, GemEventListener, Printable {
 
   public static final int MARGIN = ImageUtil.mmToPoints(15);
   private final static Font sans = new Font(Font.SANS_SERIF, Font.PLAIN, 8);
@@ -122,12 +114,14 @@ public class InvoiceView
   private final BillingService service;
   private Collection<OrderLine> orderLines;
   private boolean isInvoice;
+  private PdfHandler pdfHandler;
 
   public InvoiceView(GemDesktop desktop, BillingService service) {
     this.desktop = desktop;
     this.dataCache = desktop.getDataCache();
     this.dc = DataCache.getDataConnection();
     this.service = service;
+    pdfHandler = new PdfHandler(new PageTemplateIO(dc));
     init();
   }
 
@@ -149,14 +143,13 @@ public class InvoiceView
     estab = new EstabChoice(dataCache.getList(Model.Establishment));
     payerId = new GemNumericField(5);
     payerId.setMinimumSize(new Dimension(50, payerId.getPreferredSize().height));
-    payerId.addActionListener(new ActionListener()
-    {
+    payerId.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
         try {
           int id = Integer.parseInt(payerId.getText());
           Person p = (Person) DataCache.findId(id, Model.Person);
-          payerName.setText(p.getOrganization() != null && p.getOrganization().length() > 0 ? p.getOrganization() : p.getFirstnameName());
+          payerName.setText(p.getOrgName() != null && p.getOrgName().length() > 0 ? p.getOrgName() : p.getFirstnameName());
         } catch (Exception ex) {
           GemLogger.log(ex.getMessage());
         }
@@ -512,8 +505,8 @@ public class InvoiceView
       return NO_SUCH_PAGE;
     }
     Quote quote = get();
-    String invoiceNumber = invoice.getClass() == Quote.class
-            ? BundleUtil.getLabel("Quotation.label") : BundleUtil.getLabel("Invoice.label");
+    String genericLabel = invoice.getClass() == Quote.class
+      ? BundleUtil.getLabel("Quotation.label") : BundleUtil.getLabel("Invoice.label");
     int left = ImageUtil.mmToPoints(110);
     int top = ImageUtil.mmToPoints(50);
     int bottom = ImageUtil.mmToPoints(297 - 20);// hauteur de page - 20 mm de marge
@@ -521,21 +514,15 @@ public class InvoiceView
     Font defaultFont = g.getFont();
     g.setFont(serif);
     int itemsHeight = ((g.getFontMetrics().getHeight() * 2) * (quote.getItems().size() - 1)); // average
-    System.out.println("itemsHeight " + itemsHeight);
-    System.out.println("itemsHeight2 " + ImageUtil.mmToPoints(93));
     int footerHeight = InvoiceFooterEditor.getFooter().size() * 10;
     int maxHeight = top + 160 + 20 + itemsHeight + ImageUtil.mmToPoints(50);
 
-    System.out.println("footerHeight " + footerHeight);
-    System.out.println("footerHeight2 " + ImageUtil.mmToPoints(45));
-    System.out.println("maxheight " + maxHeight);
-    System.out.println("bottom " + (bottom - footerHeight));
     if (pageIndex == 1) {
       if (maxHeight > (bottom - footerHeight)) {
         g.setFont(serif.deriveFont(Font.ITALIC));
         g.drawString("(page 2)", margin, top + 90);
         g.setFont(serif);
-        g.drawString(invoiceNumber + " : " + quote.getNumber(), margin, top + 100);
+        g.drawString(genericLabel + " : " + quote.getNumber(), margin, top + 100);
         // description
         g.drawString(BundleUtil.getLabel("Invoice.description.label") + " : " + quote.getDescription(), margin, top + 140);
         // pied tableau
@@ -547,6 +534,140 @@ public class InvoiceView
         return NO_SUCH_PAGE;
       }
     }
+    drawHeader(g, defaultFont, quote, genericLabel, top, left, margin);
+    int tablebottom = drawContent(g, quote, top, margin);
+    if (maxHeight > (bottom - footerHeight)) {
+      g.setFont(sans.deriveFont(Font.ITALIC));
+      g.drawString(MessageUtil.getMessage("see.back.page.label"), margin, tablebottom + 10);
+      drawFooter(g, margin, bottom);
+      return PAGE_EXISTS;
+    }
+    // pied tableau
+    new InvoiceFooterElement(margin, tablebottom + 20, quote).draw(g);
+    // infos légales
+    drawFooter(g, margin, bottom);
+
+    return PAGE_EXISTS;
+  }
+
+  private void drawPdf(Document document, PdfWriter writer) {
+
+    PdfContentByte cb = writer.getDirectContent();
+    Graphics2D g = cb.createGraphics(document.getPageSize().getWidth(), document.getPageSize().getHeight());
+    Quote quote = get();
+    String genericLabel = invoice.getClass() == Quote.class
+      ? BundleUtil.getLabel("Quotation.label") : BundleUtil.getLabel("Invoice.label");
+    int left = ImageUtil.mmToPoints(110);
+    int top = ImageUtil.mmToPoints(50);
+    int bottom = ImageUtil.mmToPoints(297 - 20);// hauteur de page - 20 mm de marge
+    int margin = ImageUtil.mmToPoints(15);
+
+    Font defaultFont = g.getFont();
+    g.setFont(serif);
+    int itemsHeight = ((g.getFontMetrics().getHeight() * 2) * (quote.getItems().size() - 1)); // average
+    int footerHeight = InvoiceFooterEditor.getFooter().size() * 10;
+    int maxHeight = top + 160 + 20 + itemsHeight + ImageUtil.mmToPoints(50);
+
+    drawHeader(g, defaultFont, quote, genericLabel, top, left, margin);
+    int tablebottom = drawContent(g, quote, top, margin);
+
+    if (maxHeight > (bottom - footerHeight)) {
+      g.setFont(serif.deriveFont(Font.ITALIC));
+      g.drawString(MessageUtil.getMessage("see.back.page.label"), margin, tablebottom + 10);
+      drawFooter(g, margin, bottom);
+      //IMPORTANT
+      g.dispose();
+      document.newPage();
+      g = cb.createGraphics(document.getPageSize().getWidth(), document.getPageSize().getHeight());
+
+      g.setFont(serif.deriveFont(Font.ITALIC));
+      g.drawString("(page 2)", margin, top + 90);
+      g.setFont(serif);
+      g.drawString(genericLabel + " : " + quote.getNumber(), margin, top + 100);
+      // description
+      g.drawString(BundleUtil.getLabel("Invoice.description.label") + " : " + quote.getDescription(), margin, top + 140);
+      // pied tableau
+      new InvoiceFooterElement(margin, top + 160, quote).draw(g);
+      // infos légales
+      drawFooter(g, margin, bottom);
+      g.dispose();
+    } else {
+      // pied tableau
+      new InvoiceFooterElement(margin, tablebottom + 20, quote).draw(g);
+      // infos légales
+      drawFooter(g, margin, bottom);
+      g.dispose();
+    }
+
+  }
+
+  /**
+   * Prints the invoice.
+   */
+  void print() {
+    if (invoice.getClass() != Quote.class && (invoice.getNumber() == null || invoice.getNumber().isEmpty())) {
+      MessagePopup.warning(this, MessageUtil.getMessage("invoice.printing.warning"));
+      return;
+    }
+    PrinterJob job = PrinterJob.getPrinterJob();
+    job.setPrintable(this);
+
+    try {
+      if (job.printDialog()) {
+        job.print(FileUtil.getAttributeSet(MediaSizeName.ISO_A4, OrientationRequested.PORTRAIT));
+      }
+    } catch (PrinterException e) {
+      GemLogger.logException(e);
+    }
+
+  }
+
+  void preview() {
+    if (isNotSaved()) {
+      MessagePopup.warning(this, MessageUtil.getMessage("invoice.printing.warning"));
+    } else {
+      try {
+        createPdf();
+      } catch (IOException | DocumentException ex) {
+        GemLogger.logException(ex);
+      }
+    }
+  }
+
+  private <Q extends Quote> boolean isNotSaved () {
+      return invoice.getClass() != Quote.class && (invoice.getNumber() == null || invoice.getNumber().isEmpty());
+  }
+
+  private void createPdf() throws IOException, DocumentException {
+    Document document = new Document(PageSize.A4);
+    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    PdfWriter writer = PdfWriter.getInstance(document, outputStream);
+    document.open();
+    drawPdf(document, writer);
+    document.close();
+
+    String prefix = invoice.getClass() == Quote.class ? BundleUtil.getLabel("Quotation.label") : BundleUtil.getLabel("Invoice.label");
+    String tmpFileName = prefix.toLowerCase() + "-" + invoice.getNumber() + "_";
+    pdfHandler.createPdf(tmpFileName, outputStream, PageTemplate.QUOTE_PAGE_MODEL);
+  }
+
+  /**
+   * Search establishment name.
+   *
+   * @param q quote/invoice
+   * @return a name or null
+   */
+  private String getEstabName(Quote q) {
+    try {
+      Establishment e = EstablishmentIO.findId(q.getEstablishment(), dc);
+      return e == null ? "" : e.getName();
+    } catch (SQLException ex) {
+      GemLogger.logException(ex);
+      return "";
+    }
+  }
+
+  private void drawHeader(Graphics g, Font font, Quote quote, String label, int top, int left, int margin) {
 
     Contact c = ContactIO.findId(quote.getPayer(), dc);
     Address a = null;
@@ -557,20 +678,22 @@ public class InvoiceView
     IdentityElement name = new IdentityElement(c, left, top + 10);
     AddressElement address = new InvoiceAddressElement(a, left, top + 30);
     // nom et adresse
-    g.setFont(defaultFont);
+    g.setFont(font);
     name.draw(g);
     address.draw(g);
 
     g.setFont(serif);
     // numéro invoice
-    g.drawString(invoiceNumber + " : " + quote.getNumber(), margin, top + 100);
+    g.drawString(label + " : " + quote.getNumber(), margin, top + 100);
     // nom établissement
     g.drawString(getEstabName(quote) + ", le " + quote.getDate(), left, top + 85);
     // référence
     g.drawString("Ref. : " + quote.getReference(), left, top + 100);
     // description
     g.drawString(BundleUtil.getLabel("Invoice.description.label") + " : " + quote.getDescription(), margin, top + 140);
+  }
 
+  private int drawContent(Graphics g, Quote quote, int top, int margin) {
     int tableY = top + 160;
     int tabletop = tableY;
     //int end = margin + InvoiceItemElement.TABLE_WIDTH;
@@ -593,163 +716,12 @@ public class InvoiceView
     g.drawLine(InvoiceItemElement.xColVAT, tabletop, InvoiceItemElement.xColVAT, tablebottom); // colonne tva
     g.drawLine(InvoiceItemElement.xColQty, tabletop, InvoiceItemElement.xColQty, tablebottom); // colonne quantité
     g.drawLine(InvoiceItemElement.xColHT, tabletop, InvoiceItemElement.xColHT, tablebottom); // colonne total HT
+    return tablebottom;
 
-    if (maxHeight > (bottom - footerHeight)) {
-      g.setFont(sans.deriveFont(Font.ITALIC));
-      g.drawString(MessageUtil.getMessage("see.back.page.label"), margin, tablebottom + 10);
-      drawFooter(g, margin, bottom);
-      return PAGE_EXISTS;
-    }
-    // pied tableau
-    new InvoiceFooterElement(margin, tablebottom + 20, quote).draw(g);
-    // infos légales
-    drawFooter(g, margin, bottom);
-
-    return PAGE_EXISTS;
-  }
-
-  private void drawContent(Graphics g, Quote quote) {
-    int left = ImageUtil.mmToPoints(110);
-    int top = ImageUtil.mmToPoints(50);
-    int bottom = ImageUtil.mmToPoints(297 - 20);// hauteur de page - 20 mm de marge
-    int margin = ImageUtil.mmToPoints(15);
-
-    Contact c = ContactIO.findId(quote.getPayer(), dc);
-    Address a = null;
-    if (c != null) {
-      a = c.getAddress();
-    }
-
-    IdentityElement name = new IdentityElement(c, left, top + 10);
-    AddressElement address = new InvoiceAddressElement(a, left, top + 30);
-    // nom et adresse
-    name.draw(g);
-    address.draw(g);
-
-    g.setFont(serif);
-    // numéro invoice
-    String invoiceNumber = invoice.getClass() == Quote.class
-            ? BundleUtil.getLabel("Quotation.label") : BundleUtil.getLabel("Invoice.label");
-    g.drawString(invoiceNumber + " : " + quote.getNumber(), margin, top + 100);
-    // nom établissement
-    g.drawString(getEstabName(quote) + ", le " + quote.getDate(), left, top + 85);
-    // référence
-    g.drawString("Ref. : " + quote.getReference(), left, top + 100);
-    /*
-    // @since 2.9.4.6 ne plus afficher l'émetteur à l'impression
-    Person issuer = null;
-    try {
-      // émetteur
-      issuer = (Person) DataCache.findId(quote.getIssuer(), Model.Person);
-    } catch (SQLException ex) {
-      GemLogger.log(ex.getMessage());
-    }
-    g.drawString(BundleUtil.getLabel("Issuer.label") + " : " + (issuer != null && issuer.getId() > 0 ? issuer.getFirstnameName(): ""), margin, top + 120);
-     */
-    // description
-    g.drawString(BundleUtil.getLabel("Invoice.description.label") + " : " + quote.getDescription(), margin, top + 140);
-
-    int tableY = top + 160;
-    int tabletop = tableY;
-    int end = margin + InvoiceItemElement.TABLE_WIDTH;
-    // entete tableau
-    new InvoiceHeaderElement(margin, tableY).draw(g);
-    g.drawLine(margin, tableY + 20, margin + InvoiceItemElement.TABLE_WIDTH, tableY + 20);
-    // items
-    tableY += 5;
-    for (InvoiceItem invoiceItem : quote.getItems()) {
-      InvoiceItemElement item = new InvoiceItemElement(margin, tableY + 20, invoiceItem);
-      item.draw(g);
-      tableY = tableY + 20 + item.getOffset();
-    }
-    tableY += 5;
-    int tablebottom = tableY + 20;
-    // encadrement du tableau d'items
-    g.drawRect(margin, tabletop, InvoiceItemElement.TABLE_WIDTH, tablebottom - tabletop);
-    // lignes séparatrices verticales des colonnes
-    g.drawLine(InvoiceItemElement.xColPrice, tabletop, InvoiceItemElement.xColPrice, tablebottom); // colonne prix
-    g.drawLine(InvoiceItemElement.xColVAT, tabletop, InvoiceItemElement.xColVAT, tablebottom); // colonne tva
-    g.drawLine(InvoiceItemElement.xColQty, tabletop, InvoiceItemElement.xColQty, tablebottom); // colonne quantité
-    g.drawLine(InvoiceItemElement.xColHT, tabletop, InvoiceItemElement.xColHT, tablebottom); // colonne total HT
-
-    // pied tableau
-    new InvoiceFooterElement(margin, tablebottom + 20, quote).draw(g);
-    // infos légales
-    drawFooter(g, margin, bottom);
   }
 
   /**
-   * Prints the invoice.
-   */
-  void print() {
-    try {
-      createPdf();
-    } catch (IOException | DocumentException ex) {
-      Logger.getLogger(InvoiceView.class.getName()).log(Level.SEVERE, null, ex);
-    }
-    if (invoice.getClass() != Quote.class && (invoice.getNumber() == null || invoice.getNumber().isEmpty())) {
-      MessagePopup.warning(this, MessageUtil.getMessage("invoice.printing.warning"));
-      return;
-    }
-    PrinterJob job = PrinterJob.getPrinterJob();
-    job.setPrintable(this);
-
-    try {
-      if (job.printDialog()) {
-        job.print(FileUtil.getAttributeSet(MediaSizeName.ISO_A4, OrientationRequested.PORTRAIT));
-      }
-    } catch (PrinterException e) {
-      System.err.println(e.getMessage());
-    }
-
-  }
-
-  public void createPdf() throws IOException, DocumentException {
-    Document document = new Document(PageSize.A4);
-    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-    PdfWriter writer = PdfWriter.getInstance(document, outputStream);
-    document.open();
-    PdfContentByte cb = writer.getDirectContent();
-    Graphics2D g2d = cb.createGraphics(document.getPageSize().getWidth(), document.getPageSize().getHeight());
-    drawContent(g2d, invoice);
-    g2d.dispose();
-
-    document.close();
-    final String DEST = "/tmp/facture-et.pdf";
-    final String MODEL = "/tmp/Papier_entete_2010.pdf";
-    com.lowagie.text.pdf.PdfReader reader = new com.lowagie.text.pdf.PdfReader(outputStream.toByteArray());
-    PdfStamper stamper = new PdfStamper(reader, new FileOutputStream(DEST));
-
-    com.lowagie.text.pdf.PdfReader model = new com.lowagie.text.pdf.PdfReader(MODEL);
-    PdfImportedPage template = stamper.getImportedPage(model, 1);
-    for (int i = 1; i <= reader.getNumberOfPages(); i++) {
-      PdfContentByte canvas = stamper.getUnderContent(i);
-      canvas.addTemplate(template, 0, 0);
-    }
-
-    stamper.getWriter().freeReader(model);
-    model.close();
-    stamper.close();
-  }
-
-  /**
-   * Search establishment name.
-   *
-   * @param q quote/invoice
-   * @return a name or null
-   */
-  private String getEstabName(Quote q) {
-    try {
-      Establishment e = EstablishmentIO.findId(q.getEstablishment(), dc);
-      return e == null ? "" : e.getName();
-    } catch (SQLException ex) {
-      GemLogger.logException(ex);
-      return "";
-    }
-  }
-
-  /**
-   * Prinst footer.
+   * Prints footer.
    *
    * @param g graphics
    * @param x horizontal position
@@ -769,8 +741,7 @@ public class InvoiceView
   }
 
   class DownPaymentListener
-          implements DocumentListener
-  {
+    implements DocumentListener {
 
     @Override
     public void insertUpdate(DocumentEvent e) {

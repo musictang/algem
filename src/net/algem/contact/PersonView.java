@@ -1,5 +1,5 @@
 /*
- * @(#)PersonView.java	2.13.3 16/05/17
+ * @(#)PersonView.java	2.15.0 25/07/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,32 +20,33 @@
  */
 package net.algem.contact;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.Collection;
+import java.sql.SQLException;
 import java.util.logging.Level;
 import javax.swing.*;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
 import net.algem.contact.member.PersonSubscriptionCard;
-import net.algem.group.Group;
-import net.algem.group.GroupFileEditor;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.FileUtil;
+import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
 import net.algem.util.ImageUtil;
 import net.algem.util.MessageUtil;
 import net.algem.util.model.DataException;
-import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.*;
 
 /**
@@ -53,7 +54,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.13.3
+ * @version 2.15.0
  */
 public class PersonView
   extends GemPanel {
@@ -66,7 +67,8 @@ public class PersonView
   private CivilChoice civil;
   private JCheckBox cbImgRights;
   private JCheckBox cbPartner;
-  private GemField organization;
+  private GemField orgName;
+  private Organization organization;
   private GemField nickname;
 
   /** Picture frame location. */
@@ -78,9 +80,12 @@ public class PersonView
   /** Rest time on subscription card. */
   private GemLabel cardInfo;
 
-  private GemDesktop desktop;
   private GridBagHelper gb;
+
+//  private int orgId;
   private short ptype = Person.PERSON;
+
+  private Contact person;
 
   public PersonView() {
   }
@@ -91,18 +96,18 @@ public class PersonView
     no.setBackground(Color.LIGHT_GRAY);
     no.setMinimumSize(new Dimension(60, no.getPreferredSize().height));
 
-    organization = new GemField(true, 20);
-    organization.setMinimumSize(new Dimension(200, organization.getPreferredSize().height));
+    orgName = new GemField(true, 20);
+    orgName.setMinimumSize(new Dimension(200, orgName.getPreferredSize().height));
 
     name = new GemField(true, 20);
     name.setMaxChars(32);
-    name.setMinimumSize(organization.getMinimumSize());
+    name.setMinimumSize(orgName.getMinimumSize());
     firstname = new GemField(true, 20);
     firstname.setMaxChars(32);
-    firstname.setMinimumSize(organization.getMinimumSize());
+    firstname.setMinimumSize(orgName.getMinimumSize());
     nickname = new GemField(true, 20);
     nickname.setMaxChars(64);
-    nickname.setMinimumSize(organization.getMinimumSize());
+    nickname.setMinimumSize(orgName.getMinimumSize());
     civil = new CivilChoice();
 
     cbImgRights = new JCheckBox(BundleUtil.getLabel("Person.img.rights.label"));
@@ -130,17 +135,29 @@ public class PersonView
         savePhoto(Integer.parseInt(no.getText()));
       }
     });
-
+    JLabel btOrgDetails = new JLabel(ImageUtil.createImageIcon("document-properties-symbolic-2.png"));
+    btOrgDetails.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+    btOrgDetails.setToolTipText(BundleUtil.getLabel("Organization.details.tip"));
+    btOrgDetails.addMouseListener(new MouseAdapter() {
+      @Override
+      public void mouseClicked(MouseEvent e) {
+        //if (!orgName.getText().isEmpty()) {
+        System.out.println(organization.getId());
+        setUpOrganization(organization.getId(), orgName.getText());
+        //}
+      }
+    });
     gb.add(photoPanel, 0, 0, 1, 6, GridBagHelper.NORTHWEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Number.label")), 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Organization.label")), 1, 1, 1, 1, GridBagHelper.WEST);
+    gb.add(btOrgDetails, 3, 1, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Name.label")), 1, 2, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("First.name.label")), 1, 3, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Nickname.label")), 1, 4, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Person.civility.label")), 1, 5, 1, 1, GridBagHelper.WEST);
 
     gb.add(no, 2, 0, 1, 1, GridBagHelper.WEST);
-    gb.add(organization, 2, 1, 1, 1, GridBagHelper.WEST);
+    gb.add(orgName, 2, 1, 1, 1, GridBagHelper.WEST);
     gb.add(name, 2, 2, 1, 1, GridBagHelper.WEST);
     gb.add(firstname, 2, 3, 1, 1, GridBagHelper.WEST);
     gb.add(nickname, 2, 4, 1, 1, GridBagHelper.WEST);
@@ -151,6 +168,7 @@ public class PersonView
   }
 
   void set(Person p, String dir) {
+    this.person = new Contact(p);
     no.setText(String.valueOf(p.getId()));
     if (p.getType() == Person.ROOM) {
       no.setToolTipText(MessageUtil.getMessage("person.view.change.contact.tip"));
@@ -161,13 +179,174 @@ public class PersonView
     civil.setSelectedItem(p.getGender());
     cbImgRights.setSelected(p.hasImgRights());
     cbPartner.setSelected(p.isPartnerInfo());
-    organization.setText(p.getOrganization());
+    organization = new Organization();
+    organization.setId(p.getOrgId());
+    organization.setName(p.getOrgName());
+    orgName.setText(p.getOrgName());
     ptype = p.getType();
     loadPhoto(p);
   }
 
+  private void setUpOrganization(int orgId, String name) {
+    final JDialog dlg = new JDialog((Frame) null, BundleUtil.getLabel("Organization.details.label"), true);
+    final OrganizationIO orgIO = new OrganizationIO(DataCache.getDataConnection());
+    dlg.setSize(440, 240);
+    final OrganizationPanel orgPanel;
+    try {
+      if (orgId > 0) {
+        organization = orgIO.findId(orgId);
+        if (!organization.getName().toLowerCase().equals(name.toLowerCase().trim())) {
+          organization = orgIO.find(name);
+          if (organization == null) {
+            organization = new Organization(0);
+            organization.setName(name);
+          } else {
+            person.setOrgId(organization.getId());
+            person.setOrgName(organization.getName());
+            orgName.setText(organization.getName());
+          }
+        }
+      } else if (orgName != null && !orgName.getText().isEmpty()) {
+        // check name if exists
+//        organization = new Organization();
+        organization.setName(orgName.getText());
+      }
+      orgPanel = new OrganizationPanel(organization.getId());
+      orgPanel.createUI();
+      orgPanel.setDetails(organization);
+    } catch (SQLException ex) {
+      GemLogger.logException(ex);
+      return;
+    }
+
+    GemPanel btPanel = new GemPanel(new GridLayout(1, 2));
+    GemButton btSave = new GemButton(GemCommand.SAVE_CMD);
+    btSave.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        int idper = Integer.parseInt(no.getText());
+        if (idper == 0) {
+          MessagePopup.warning(null, MessageUtil.getMessage("organization.null.id.warning"));
+          dlg.setVisible(false);
+          return;
+        }
+        organization = orgPanel.getDetails();
+        try {
+          updateOrganization(organization, orgIO);
+          dlg.setVisible(false);
+        } catch (SQLException ex) {
+          GemLogger.logException(ex);
+          if ("23505".equals(ex.getSQLState())) {
+            MessagePopup.warning(null, MessageUtil.getMessage("organization.unique.violation.exception"));
+          } else {
+            MessagePopup.warning(null, ex.getMessage());
+          }
+        }
+      }
+    });
+
+    GemButton btCancel = new GemButton(GemCommand.CANCEL_CMD);
+    btCancel.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        dlg.setVisible(false);
+      }
+    });
+    btPanel.add(btSave);
+    btPanel.add(btCancel);
+
+    dlg.add(orgPanel, BorderLayout.CENTER);
+    dlg.add(btPanel, BorderLayout.SOUTH);
+    dlg.pack();
+    dlg.setLocationRelativeTo(this);
+    dlg.setVisible(true);
+  }
+
+  private class OrganizationPanel extends JPanel {
+
+    private int orgId;
+    private GemField name = new GemField(20);
+    private GemField companyName = new GemField(20);
+    private GemField siret = new GemField(20);
+    private GemField naf = new GemField(20);
+    private GemField codeFP = new GemField(20);
+    private GemField vatId = new GemField(20);
+
+    public OrganizationPanel(int orgId) {
+      this.orgId = orgId;
+    }
+
+    private void createUI() {
+      setLayout(new GridBagLayout());
+      setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+      GridBagHelper gb2 = new GridBagHelper(this);
+      JLabel cpNameL = new JLabel(BundleUtil.getLabel("ConfEditor.corporate.label"));
+
+      JLabel siretL = new JLabel(BundleUtil.getLabel("Organization.SIRET.label"));
+      siretL.setToolTipText(BundleUtil.getLabel("ConfEditor.organization.SIRET.number.label"));
+      JLabel nafL = new JLabel(BundleUtil.getLabel("Organization.NAF.label"));
+      nafL.setToolTipText(BundleUtil.getLabel("ConfEditor.organization.Code.NAF.label"));
+      JLabel codeFPL = new JLabel(BundleUtil.getLabel("Organization.FP.label"));
+      codeFPL.setToolTipText(BundleUtil.getLabel("ConfEditor.organization.Code.FP.label"));
+      JLabel vatL = new JLabel(BundleUtil.getLabel("Organization.VAT.label"));
+      vatL.setToolTipText(BundleUtil.getLabel("ConfEditor.organization.Code.VAT.label"));
+
+      gb2.add(new JLabel(BundleUtil.getLabel("Name.label")), 0, 0, 1, 1, GridBagHelper.WEST);
+      gb2.add(cpNameL, 0, 1, 1, 1, GridBagHelper.WEST);
+      gb2.add(siretL, 0, 2, 1, 1, GridBagHelper.WEST);
+      gb2.add(nafL, 0, 3, 1, 1, GridBagHelper.WEST);
+      gb2.add(codeFPL, 0, 4, 1, 1, GridBagHelper.WEST);
+      gb2.add(vatL, 0, 5, 1, 1, GridBagHelper.WEST);
+
+      gb2.add(name, 1, 0, 1, 1, GridBagHelper.WEST);
+      gb2.add(companyName, 1, 1, 1, 1, GridBagHelper.WEST);
+      gb2.add(siret, 1, 2, 1, 1, GridBagHelper.WEST);
+      gb2.add(naf, 1, 3, 1, 1, GridBagHelper.WEST);
+      gb2.add(codeFP, 1, 4, 1, 1, GridBagHelper.WEST);
+      gb2.add(vatId, 1, 5, 1, 1, GridBagHelper.WEST);
+
+    }
+
+    void setDetails(Organization org) {
+      name.setText(org.getName());
+      if (org.getId() > 0) {
+        companyName.setText(org.getCompanyName());
+        siret.setText(org.getSiret());
+        naf.setText(org.getNafCode());
+        codeFP.setText(org.getFpCode());
+        vatId.setText(org.getVatCode());
+      }
+    }
+
+    Organization getDetails() {
+      Organization org = new Organization();
+      org.setId(orgId);//XXX
+      org.setName(name.getText());
+      org.setCompanyName(companyName.getText());
+      org.setSiret(siret.getText());
+      org.setNafCode(naf.getText());
+      org.setFpCode(codeFP.getText());
+      org.setVatCode(vatId.getText());
+
+      return org;
+    }
+
+  }
+
+  private void updateOrganization(Organization target, OrganizationIO orgIO) throws SQLException {
+    Organization o = orgIO.findId(target.getId());
+    if (o == null) {
+      orgIO.create(target);
+    } else {
+      orgIO.update(target);
+    }
+
+  }
+
   private void loadPhoto(Person p) {
-    if (p.getId() == 0) return;
+    if (p.getId() == 0) {
+      return;
+    }
     if (Person.PERSON == p.getType() || Person.ROOM == p.getType()) {
       BufferedImage img = ImageUtil.getPhoto(p.getId());
       ImageIcon icon = (img == null ? null : new ImageIcon(img));
@@ -176,7 +355,9 @@ public class PersonView
   }
 
   private void savePhoto(int idper) {
-    if (idper == 0) return;
+    if (idper == 0) {
+      return;
+    }
     try {
       File file = FileUtil.getFile(
         this,
@@ -253,7 +434,9 @@ public class PersonView
     pr.setGender((String) civil.getSelectedItem());
     pr.setImgRights(cbImgRights.isSelected());
     pr.setPartnerInfo(cbPartner.isSelected());
-    pr.setOrganization(organization.getText().isEmpty() ? null : organization.getText().trim());
+
+    pr.setOrgId(organization != null ? organization.getId() : 0);
+    pr.setOrgName(organization.getName().trim());
 
     return pr;
   }
@@ -274,7 +457,7 @@ public class PersonView
   public void clear() {
     no.setText("");
     name.setText("");
-    organization.setText(null);
+    orgName.setText(null);
     firstname.setText("");
     nickname.setText("");
     civil.setSelectedIndex(0);
@@ -293,24 +476,28 @@ public class PersonView
     }
   }
 
-  public void showGroups(Collection<Group> gl) {
-    if (gl.isEmpty()) {
-      return;
-    }
-    GemPanel groupsPanel = new GemPanel();
-    for (final Group g : gl) {
-      JButton jb = new JButton(g.getName());
-      jb.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          GroupFileEditor groupEditor = new GroupFileEditor(g);
-          desktop.addModule(groupEditor);
-        }
-      });
-      groupsPanel.add(jb);
-    }
-    gb.add(groupsPanel, 0, 7, 1, 1, GridBagHelper.WEST);
-
-  }
-
+  /**
+   *
+   * @param gl
+   * @deprecated
+   */
+//  public void showGroups(Collection<Group> gl) {
+//    if (gl.isEmpty()) {
+//      return;
+//    }
+//    GemPanel groupsPanel = new GemPanel();
+//    for (final Group g : gl) {
+//      JButton jb = new JButton(g.getName());
+//      jb.addActionListener(new ActionListener() {
+//        @Override
+//        public void actionPerformed(ActionEvent e) {
+//          GroupFileEditor groupEditor = new GroupFileEditor(g);
+//          desktop.addModule(groupEditor);
+//        }
+//      });
+//      groupsPanel.add(jb);
+//    }
+//    gb.add(groupsPanel, 0, 7, 1, 1, GridBagHelper.WEST);
+//
+//  }
 }

@@ -150,8 +150,8 @@ public class RoomFileView
     if (room.getPayer() != null) {
       if (room.getPayer().getNameFirstname() != null && room.getPayer().getNameFirstname().trim().length() > 0) {
         label = room.getPayer().getNameFirstname();
-      } else if (room.getPayer().getOrganization() != null && room.getPayer().getOrganization().length() > 0) {
-        label = room.getPayer().getOrganization();
+      } else if (room.getPayer().getOrgName() != null && room.getPayer().getOrgName().length() > 0) {
+        label = room.getPayer().getOrgName();
       }
     }
     orderLineEditor.setLabel(label);

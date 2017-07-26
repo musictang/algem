@@ -1,7 +1,7 @@
 /*
- * @(#)EnrolmentService.java	2.10.0 14/06/2016
+ * @(#)EnrolmentService.java	2.15.0 26/07/2017
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -42,12 +42,11 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.15.0
  * @since 2.4.a 20/04/12
  */
 public class EnrolmentService
-        extends GemService
-{
+  extends GemService {
 
   private final RoomIO roomIO;
   private final ActionIO actionIO;
@@ -91,22 +90,20 @@ public class EnrolmentService
     int type = getScheduleType(courseInfo.getCode().getId());
 
     String query = "SELECT DISTINCT cours.id, cours.titre FROM cours, planning, action, salle"
-            + " WHERE planning.ptype = " + type
-            + " AND planning.jour >= '" + startDate + "'"
-            + " AND planning.action = action.id"
-            + " AND action.cours = cours.id"
-            + " AND cours.code = " + code
-            + " AND planning.lieux = salle.id AND salle.etablissement = " + estab;
+      + " WHERE planning.ptype = " + type
+      + " AND planning.jour >= '" + startDate + "'"
+      + " AND planning.action = action.id"
+      + " AND action.cours = cours.id"
+      + " AND cours.code = " + code
+      + " AND planning.lieux = salle.id AND salle.etablissement = " + estab;
     if (Algem.getAppClient().equals("PaysRoiMorvan")) {
       if (code == CourseCodeType.ATL.getId() || code == CourseCodeType.FMU.getId()) {
         query += " AND planning.fin - planning.debut <= '" + new Hour(courseInfo.getTimeLength()) + "'";
       } else if (code != CourseCodeType.ATP.getId() && code != CourseCodeType.INS.getId() && code != CourseCodeType.STG.getId()) {
         query += " AND planning.fin - planning.debut = '" + new Hour(courseInfo.getTimeLength()) + "'";
       }
-    } else {
-      if (code != CourseCodeType.ATP.getId() && code != CourseCodeType.INS.getId() && code != CourseCodeType.STG.getId()) {
-        query += " AND planning.fin - planning.debut = '" + new Hour(courseInfo.getTimeLength()) + "'";
-      }
+    } else if (code != CourseCodeType.ATP.getId() && code != CourseCodeType.INS.getId() && code != CourseCodeType.STG.getId()) {
+      query += " AND planning.fin - planning.debut = '" + new Hour(courseInfo.getTimeLength()) + "'";
     }
     query += " ORDER BY cours.titre";
 
@@ -144,14 +141,14 @@ public class EnrolmentService
 
     int type = getScheduleType(c.getCode());
     String query = ",salle, action WHERE p.ptype = " + type
-            + " AND p.jour >= '" + p.getDate() + "' AND p.jour < '" + end + "'"
-            + " AND p.action = action.id"
-            + " AND action.cours = " + c.getId()
-            + " AND p.lieux = salle.id AND salle.etablissement = " + idEstab
-            + " AND salle.nom NOT LIKE 'RATTRAP%' ORDER BY jour,debut,idper";
+      + " AND p.jour >= '" + p.getDate() + "' AND p.jour < '" + end + "'"
+      + " AND p.action = action.id"
+      + " AND action.cours = " + c.getId()
+      + " AND p.lieux = salle.id AND salle.etablissement = " + idEstab
+      + " AND salle.nom NOT LIKE 'RATTRAP%' ORDER BY jour,debut,idper";
     return ScheduleIO.find(query, dc);
   }
-  
+
   List<CourseSchedule> getSchedules(CourseModuleInfo cmi, DateFr start, int action, int estab) throws SQLException {
     DateFr s = new DateFr(start);
     DateFr end = new DateFr(s);
@@ -186,22 +183,22 @@ public class EnrolmentService
     }
     String dateStart = "00-00-0000".equals(start.toString()) ? "01-01-1900" : start.toString();
     String query = "SELECT jour FROM " + ScheduleIO.TABLE + " p, " + ScheduleRangeIO.TABLE + " pl"
-            + " WHERE p.id = pl.idplanning"
-            + " AND p.jour >= '" + dateStart + "' AND p.action = " + action
-            + " AND pl.adherent = " + member
-            + " LIMIT 1";
+      + " WHERE p.id = pl.idplanning"
+      + " AND p.jour >= '" + dateStart + "' AND p.action = " + action
+      + " AND pl.adherent = " + member
+      + " LIMIT 1";
 
     ResultSet rs = dc.executeQuery(query);
     if (rs.next()) {
       d = new DateFr(rs.getString(1));
     } else { // pour les anciennes commandes
       query = "SELECT jour FROM " + ScheduleIO.TABLE + " p, "
-              + ScheduleRangeIO.TABLE + " pl, action a"
-              + " WHERE p.jour >= '" + dateStart + "' AND p.id = pl.idplanning"
-              + " AND pl.adherent = " + member
-              + " AND p.action = a.id"
-              + " AND a.cours = " + course.getId()
-              + " LIMIT 1";
+        + ScheduleRangeIO.TABLE + " pl, action a"
+        + " WHERE p.jour >= '" + dateStart + "' AND p.id = pl.idplanning"
+        + " AND pl.adherent = " + member
+        + " AND p.action = a.id"
+        + " AND a.cours = " + course.getId()
+        + " LIMIT 1";
       rs = dc.executeQuery(query);
       if (rs.next()) {
         d = new DateFr(rs.getString(1));
@@ -242,9 +239,9 @@ public class EnrolmentService
   private Schedule get1PlanCours(int courseId, DateFr start) {
 
     String query = " ,action WHERE ptype = " + Schedule.COURSE
-            + " AND jour >= '" + start + "'"
-            + " AND p.action = action.id"
-            + " AND action.cours = " + courseId + " ORDER BY jour LIMIT 1";
+      + " AND jour >= '" + start + "'"
+      + " AND p.action = action.id"
+      + " AND action.cours = " + courseId + " ORDER BY jour LIMIT 1";
     Vector<Schedule> v = ScheduleIO.find(query, dc);
 
     return (v.size() > 0 ? v.elementAt(0) : null);
@@ -281,9 +278,9 @@ public class EnrolmentService
     Vector<ScheduleRange> ranges = new Vector<ScheduleRange>();
     try {
       String query = "SELECT DISTINCT pg.debut, pg.fin FROM plage pg, planning p WHERE pg.idplanning = p.id"
-              + " AND p.action = " + idAction
-              + " AND p.jour >= '" + start + "'"
-              + " AND p.jour <= '" + end + "'";
+        + " AND p.action = " + idAction
+        + " AND p.jour >= '" + start + "'"
+        + " AND p.jour <= '" + end + "'";
 
       ResultSet rs = dc.executeQuery(query);
       while (rs.next()) {
@@ -305,10 +302,10 @@ public class EnrolmentService
   int getPlaceNumber(int a, DateFr debut, DateFr fin) throws SQLException {
     int n = 0;
     String query = "SELECT count(pg.id) FROM plage pg, planning p "
-            + " WHERE p.action = " + a
-            + " AND pg.idplanning = p.id"
-            + " AND p.jour BETWEEN '" + debut + "' AND '" + fin + "'"
-            + " GROUP BY p.id";
+      + " WHERE p.action = " + a
+      + " AND pg.idplanning = p.id"
+      + " AND p.jour BETWEEN '" + debut + "' AND '" + fin + "'"
+      + " GROUP BY p.id";
     ResultSet rs = dc.executeQuery(query);
     while (rs.next()) {
       if (rs.getInt(1) > n) {
@@ -345,6 +342,7 @@ public class EnrolmentService
 
   /**
    * Get the list of enrolments in pro training.
+   *
    * @param idper member id
    * @param from start date
    * @param to end date
@@ -363,8 +361,6 @@ public class EnrolmentService
     }
     return null;
   }
-
-
 
   Vector<MemberOrder> getOrders() {
     return OrderIO.findMemberOrders(dc);
@@ -389,23 +385,22 @@ public class EnrolmentService
 
   /**
    * Gets the members scheduled for this {@literal plan}.
+   *
    * @param plan schedule
    * @return a list of person files
    */
   public static Vector<PersonFile> findMembersByPlanning(Schedule plan) {
-    //23092003 String query = "SELECT p.id,p.ptype,p.nom,p.prenom,p.civilite,p.note,e.instrument1 from personne p, eleve e, commande c, commande_cours cc WHERE cc.cours = "+cours+" AND c.id = cc.idcmd and cc.datedebut <= '"+date+"' and cc.datefin >= '"+date+"' AND p.id = c.adh and p.id = e.idper ORDER by p.nom";
-    //String query = "SELECT p.id,p.ptype,p.nom,p.prenom,p.civilite,p.note,p.droit_img,e.idper,e.instrument1,e.instrument2,e.profession,e.datenais,e.payeur,e.nadhesions,e.pratique,e.niveau  from personne p, eleve e, plage pl WHERE pl.cours = " + cours + " AND pl.date = '" + date + "' AND pl.prof = " + idprof + " AND p.id = pl.adherent and p.id = e.idper ORDER by p.nom";
-    String query = "SELECT " + PersonIO.COLUMNS + "," + MemberIO.COLUMNS
-            + " FROM " + PersonIO.TABLE + " p, " + MemberIO.TABLE + ", " + ScheduleRangeIO.TABLE + " pl "
-            + " WHERE pl.idplanning = " + plan.getId()
-            + " AND p.id = pl.adherent "
-            + " AND p.id = " + MemberIO.TABLE + ".idper ORDER BY p.nom";
+    String query = PersonIO.PRE_QUERY + "," + MemberIO.COLUMNS + PersonIO.POST_QUERY
+      + " JOIN " + MemberIO.TABLE + " m ON p.id = m.idper"
+      + " JOIN " + ScheduleRangeIO.TABLE + " pl ON p.id = pl.adherent "
+      + " WHERE pl.idplanning = " + plan.getId();
     return ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findRegistered(query);
 //    return ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findByIdOrder(query, false);
   }
 
   /**
    * Gets the list of students taking this course {@code id}.
+   *
    * @param course course id
    * @param start start date
    * @param end end date
@@ -418,6 +413,7 @@ public class EnrolmentService
 
   /**
    * Gets the list of students enrolled in this module {@code id}.
+   *
    * @param id module id
    * @param start start date
    * @param end end date
@@ -474,11 +470,11 @@ public class EnrolmentService
 
     int type = getScheduleType(c.getCode());
     String query = " ,salle, action WHERE ptype = " + type
-            + " AND jour >= '" + debut + "'"
-            + " AND p.action = action.id"
-            + " AND action.cours = " + c.getId()
-            + " AND lieux = salle.id AND salle.etablissement = " + estab
-            + " AND salle.nom NOT LIKE 'RATTRAP%' ORDER BY jour LIMIT 1";
+      + " AND jour >= '" + debut + "'"
+      + " AND p.action = action.id"
+      + " AND action.cours = " + c.getId()
+      + " AND lieux = salle.id AND salle.etablissement = " + estab
+      + " AND salle.nom NOT LIKE 'RATTRAP%' ORDER BY jour LIMIT 1";
 
     Vector<Schedule> v = ScheduleIO.find(query, dc);
     if (v.size() > 0) {
@@ -505,11 +501,11 @@ public class EnrolmentService
 
     try {
       String where = "pg WHERE pg.adherent = " + m + " AND pg.idplanning IN("
-              + "SELECT id FROM " + ScheduleIO.TABLE
-              + " WHERE action = " + p.getIdAction()
-              //+ " AND jour >= '" + courseOrder.getDateStart() + "' AND jour <= '" + courseOrder.getDateEnd()
-              + " AND jour >= '" + p.getDate() + "' AND jour <= '" + courseOrder.getDateEnd()
-              + "')";
+        + "SELECT id FROM " + ScheduleIO.TABLE
+        + " WHERE action = " + p.getIdAction()
+        //+ " AND jour >= '" + courseOrder.getDateStart() + "' AND jour <= '" + courseOrder.getDateEnd()
+        + " AND jour >= '" + p.getDate() + "' AND jour <= '" + courseOrder.getDateEnd()
+        + "')";
 
       Vector<ScheduleRange> vp = ScheduleRangeIO.find(where, dc);
       if (vp.size() > 0) {
@@ -527,7 +523,7 @@ public class EnrolmentService
   }
 
   private void insertRange(CourseOrder co, Course c, Vector<Schedule> v, ScheduleRange h)
-          throws SQLException, EnrolmentScheduleException {
+    throws SQLException, EnrolmentScheduleException {
 
     List<Schedule> notInRange = new ArrayList<Schedule>();
 
@@ -542,7 +538,7 @@ public class EnrolmentService
         // TODO VERIFIER heures de début/fin si planning a été copié/déplacé
         // et tenir compte du décalage si oui
         if (!co.getStart().between(p.getStart(), p.getEnd())
-                || !co.getEnd().between(p.getStart(), p.getEnd())) {
+          || !co.getEnd().between(p.getStart(), p.getEnd())) {
           notInRange.add(p);
           continue;
         }
@@ -557,11 +553,11 @@ public class EnrolmentService
         sb.append(s.getDate()).append("->").append(s.getStart()).append("-").append(s.getEnd()).append("\n");
       }
       String msgKey = notInRange.size() == 1 ? "member.enrolment.schedule.session.warning"
-              : "member.enrolment.schedule.sessions.warning";
-      String msg2 = MessageUtil.getMessage(msgKey, new Object[] {notInRange.size(), v.size()});
+        : "member.enrolment.schedule.sessions.warning";
+      String msg2 = MessageUtil.getMessage(msgKey, new Object[]{notInRange.size(), v.size()});
       if (!MessagePopup.confirm(null,
-              MessageUtil.getMessage("member.enrolment.schedule.warning",
-              new Object[]{c.getTitle(), sb.toString(), }) + msg2)) {
+        MessageUtil.getMessage("member.enrolment.schedule.warning",
+          new Object[]{c.getTitle(), sb.toString(),}) + msg2)) {
         throw new EnrolmentScheduleException();
       }
     }
@@ -579,9 +575,9 @@ public class EnrolmentService
   int updateRange(ModuleOrder module, CourseOrder co, int memberId) throws SQLException {
 
     String query = "WHERE action = " + co.getAction()
-            + " AND jour >='" + module.getStart() + "'"
-            + " AND jour <= '" + module.getEnd() + "'"
-            + " ORDER BY p.jour";
+      + " AND jour >='" + module.getStart() + "'"
+      + " AND jour <= '" + module.getEnd() + "'"
+      + " ORDER BY p.jour";
 
     Vector<Schedule> v = ScheduleIO.findCourse(query, dc);
     if (v.size() < 1) {
@@ -610,8 +606,8 @@ public class EnrolmentService
   public void updateRange(CourseOrder co, int m) throws SQLException {
 
     String query = "WHERE action = " + co.getAction()
-            + " AND jour >='" + co.getDateStart() + "'"
-            + " AND jour <= '" + co.getDateEnd() + "'";
+      + " AND jour >='" + co.getDateStart() + "'"
+      + " AND jour <= '" + co.getDateEnd() + "'";
     Vector<Schedule> v = ScheduleIO.findCourse(query, dc);
 
     if (v.isEmpty()) {
@@ -629,23 +625,21 @@ public class EnrolmentService
 
   public void deleteRange(DateFr from, int member, int action) throws SQLException {
     String query = "DELETE FROM " + ScheduleRangeIO.TABLE
-            + " WHERE adherent = " + member
-            + " AND idplanning IN ("
-            + " SELECT id FROM planning"
-            + " WHERE jour >= '" + from + "' AND action = " + action
-            + ")";
-      dc.executeUpdate(query);
+      + " WHERE adherent = " + member
+      + " AND idplanning IN ("
+      + " SELECT id FROM planning"
+      + " WHERE jour >= '" + from + "' AND action = " + action
+      + ")";
+    dc.executeUpdate(query);
   }
 
-
-
-   void changeHour(int member, CourseOrder co, Course c, DateFr from) throws EnrolmentException {
+  void changeHour(int member, CourseOrder co, Course c, DateFr from) throws EnrolmentException {
     String query = "DELETE FROM " + ScheduleRangeIO.TABLE
-            + " WHERE adherent = " + member
-            + " AND idplanning IN ("
-            + " SELECT id FROM planning"
-            + " WHERE jour >= '" + from + "' AND action = " + co.getAction()
-            + ")";
+      + " WHERE adherent = " + member
+      + " AND idplanning IN ("
+      + " SELECT id FROM planning"
+      + " WHERE jour >= '" + from + "' AND action = " + co.getAction()
+      + ")";
     try {
       dc.setAutoCommit(false);
       dc.executeUpdate(query);
@@ -688,8 +682,8 @@ public class EnrolmentService
         CourseOrder cc = courseOrders.elementAt(i);
         // suppression des plages de cours
         String query = "idplanning IN (SELECT id FROM " + ScheduleIO.TABLE
-                + " WHERE action = " + cc.getAction() + ")"
-                + " AND adherent = " + member;
+          + " WHERE action = " + cc.getAction() + ")"
+          + " AND adherent = " + member;
         ScheduleRangeIO.delete(query, dc);
       }
       // suppression de la commande_cours
@@ -753,9 +747,10 @@ public class EnrolmentService
 
   /**
    * Removes the course order with id {@literal id}.
+   *
    * @param id course order's id
    */
-  void stopCourse(int id)  {
+  void stopCourse(int id) {
     try {
       CourseOrderIO.deleteById(id, dc);
     } catch (SQLException ex) {
@@ -776,11 +771,11 @@ public class EnrolmentService
   public void stopCourse(int member, final CourseOrder co, final Course c, final DateFr from, final boolean redefine) throws EnrolmentException {
     try {
       final String query = "DELETE FROM " + ScheduleRangeIO.TABLE
-              + " WHERE adherent = " + member
-              + " AND idplanning IN ("
-              + " SELECT id FROM planning"
-              + " WHERE jour >= '" + from + "' AND action = " + co.getAction()
-              + ")";
+        + " WHERE adherent = " + member
+        + " AND idplanning IN ("
+        + " SELECT id FROM planning"
+        + " WHERE jour >= '" + from + "' AND action = " + co.getAction()
+        + ")";
       dc.withTransaction(new DataConnection.SQLRunnable<Void>() {
         @Override
         public Void run(DataConnection conn) throws Exception {
@@ -793,10 +788,10 @@ public class EnrolmentService
       throw new EnrolmentException(ex.getMessage());
     }
   }
-  
+
   private void refreshCourseOrder(DateFr from, CourseOrder co, Course c, boolean redefine) throws SQLException {
     String label = ((GemParam) DataCache.findId(c.getCode(), Model.CourseCode)).getLabel()
-            + " " + BundleUtil.getLabel("To.define.label");
+      + " " + BundleUtil.getLabel("To.define.label");
     Hour timeLength = new Hour(co.getStart().getLength(co.getEnd()));
     if (from.after(co.getDateStart())) {
       if (!c.isATP()) {
@@ -814,46 +809,45 @@ public class EnrolmentService
         // on insère une nouvelle commande_cours (à définir)
         CourseOrderIO.insert(co, dc);
       }
-    } else {// si la demande d'arret est antérieure ou égale à la date d'inscription à ce cours
-      if (redefine) {
-        co.setAction(0);
-        co.setTitle(label);
-        co.setStart(new Hour());
-        co.setEnd(timeLength);
-        co.setDay(0);
-        if (c.isATP()) {
-          co.setDateStart(from);
-          co.setDateEnd(dataCache.getEndOfYear());
-          co.setEnd(new Hour());
-        }
-        // on modifie la commande_cours existante
-        CourseOrderIO.update(co, dc);
-      } else {
-        CourseOrderIO.deleteById(co.getId(), dc);
+    } else// si la demande d'arret est antérieure ou égale à la date d'inscription à ce cours
+    if (redefine) {
+      co.setAction(0);
+      co.setTitle(label);
+      co.setStart(new Hour());
+      co.setEnd(timeLength);
+      co.setDay(0);
+      if (c.isATP()) {
+        co.setDateStart(from);
+        co.setDateEnd(dataCache.getEndOfYear());
+        co.setEnd(new Hour());
       }
+      // on modifie la commande_cours existante
+      CourseOrderIO.update(co, dc);
+    } else {
+      CourseOrderIO.deleteById(co.getId(), dc);
     }
   }
 
   void stopCourseFromModule(int member, CourseOrder co, DateFr from) throws EnrolmentException {
     String query = "DELETE FROM " + ScheduleRangeIO.TABLE
-            + " WHERE adherent = " + member
-            + " AND idplanning IN ("
-            + " SELECT id FROM planning"
-            + " WHERE jour >= '" + from + "' AND action = " + co.getAction()
-            + ")";
+      + " WHERE adherent = " + member
+      + " AND idplanning IN ("
+      + " SELECT id FROM planning"
+      + " WHERE jour >= '" + from + "' AND action = " + co.getAction()
+      + ")";
     try {
       if (co.getAction() > 0) {
         dc.executeUpdate(query);
       }
 
       String label = ((GemParam) DataCache.findId(co.getCode(), Model.CourseCode)).getLabel()
-              + " " + BundleUtil.getLabel("To.define.label");
+        + " " + BundleUtil.getLabel("To.define.label");
 
       Hour timeLength = new Hour(co.getStart().getLength(co.getEnd()));
 
       // si la demande d'arret est postérieure à la date d'inscription à ce cours
       if (from.after(co.getDateStart())) {
-          co.setDateEnd(from);	// on change la date de fin de la commande_cours
+        co.setDateEnd(from);	// on change la date de fin de la commande_cours
       } else {// si la demande d'arret est antérieure ou égale à la date d'inscription à ce cours
         co.setAction(0);
         co.setTitle(label);
@@ -900,6 +894,7 @@ public class EnrolmentService
    * Gets the time length of the sessions already performed by the member {@literal idper} between {@code start} and {@code end},
    * corresponding to the module order {@literal mOrderId}.
    * A session is seen as completed if it was scheduled, even though it has not actually occurred.
+   *
    * @param idper member's id
    * @param mOrderId id of the module order corresponding to the training performed
    * @param start start date
@@ -919,6 +914,7 @@ public class EnrolmentService
    * Gets the time length of the sessions already performed by the member {@literal idper} from {@code start},
    * corresponding to the module order {@literal mOrderId}.
    * A session is seen as completed if it was scheduled, even though it has not actually occurred.
+   *
    * @param idper member's id
    * @param mOrderId id of the module order corresponding to the training performed
    * @param start start date

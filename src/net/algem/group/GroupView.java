@@ -1,7 +1,7 @@
 /*
- * @(#)GroupView.java	2.9.4.8 23/06/15
- * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * @(#)GroupView.java	2.15.0 26/07/2017
+ *
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.group;
 
@@ -47,7 +47,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.8
+ * @version 2.15.0
  * @since 1.1aa mardi 24 février 2009
  *
  */
@@ -58,18 +58,18 @@ public class GroupView
 
   private static Dimension btDimension = new Dimension(100, 20);
   private static final Contact nullContact = new Contact();
-  
+
 //  private static final String PARENT_DIR = "groupes/";
-  
+
    /** Default bio dir name. */
   private static final String BIO_DIR = "bio";
-  
+
   /** Default datasheet dir name. */
   private static final String DATASHEET_DIR = "fiche-technique";
-  
+
   /** Default stage plan name. */
   static final String STAGE_DIR = "plan-scene";
-  
+
 
   static {
     nullContact.setId(0);
@@ -98,11 +98,11 @@ public class GroupView
   private ImageIcon resetIcon;
   private Note note;
   private GemGroupService service;
-  
+
   private GemButton bioBt;
   private GemButton dataSheetBt;
   private GemButton stagePlanBt;
-  
+
   private File bio;
   private File dataSheet;
   private File stage;
@@ -112,10 +112,10 @@ public class GroupView
     this.desktop = desktop;
     this.service = service;
     handler = new DesktopOpenHandler();
-    
+
     resetIcon = ImageUtil.createImageIcon(ImageUtil.DELETE_ICON);
     noteLabel = new GemLabel();
-    
+
     noteLabel.setForeground(java.awt.Color.red);
     noteLabel.setFont(noteLabel.getFont().deriveFont(Font.BOLD));
 
@@ -152,7 +152,7 @@ public class GroupView
     gb.add(sw, 0, 6, 5, 1, GridBagHelper.BOTH, GridBagHelper.WEST);
 
     ActionListener groupFileListener = new GroupDocListener();
-    
+
     GemPanel buttons = new GemPanel(new GridLayout(1,3));
     bioBt = new GemButton(BundleUtil.getLabel("Bio.label"));
     bioBt.addActionListener(groupFileListener);
@@ -160,12 +160,12 @@ public class GroupView
     dataSheetBt.addActionListener(groupFileListener);
     stagePlanBt = new GemButton(BundleUtil.getLabel("Stage.plan.label"));
     stagePlanBt.addActionListener(groupFileListener);
-    
+
     buttons.add(bioBt);
     buttons.add(dataSheetBt);
     buttons.add(stagePlanBt);
     gb.add(buttons, 0, 7, 5, 1, GridBagHelper.BOTH, GridBagHelper.WEST);
-    
+
     this.setLayout(new BorderLayout());
     add(contactPanel, BorderLayout.CENTER);
     GemBorderPanel labelBox = new GemBorderPanel(new FlowLayout(FlowLayout.LEFT));
@@ -193,7 +193,7 @@ public class GroupView
     setContact(g);
     setNote(g.getNote());
     sw.setSites(g.getSites());
-    
+
     setButtonAccess(id);
   }
 
@@ -227,34 +227,34 @@ public class GroupView
     idbook = c.getId();
     book.setText(getContactName(c));
   }
-  
+
   private String getContactName(Contact c) {
     String n = c.getFirstnameName();
     if (n != null && n.length() > 0 ) {
       return n;
     }
-    n = c.getOrganization();
+    n = c.getOrgName();
     if (n != null && n.length() > 0) {
       return n;
     }
     return String.valueOf(c.getId());
   }
-  
+
   /**
    * Sets the state of the file's access buttons.
    * If a particular file exists for this group, the button is enabled.
-   * @param groupId 
+   * @param groupId
    */
   private void setButtonAccess(int groupId) {
-    
+
     String parent = service.getDocumentPath();
 
     bio = FileUtil.findLastFile(parent, BIO_DIR, groupId);
     bioBt.setEnabled(bio != null && bio.canRead());
-    
+
     dataSheet = FileUtil.findLastFile(parent, DATASHEET_DIR, groupId);
     dataSheetBt.setEnabled(dataSheet != null && dataSheet.canRead());
-    
+
     stage = FileUtil.findLastFile(parent, STAGE_DIR, groupId);
     stagePlanBt.setEnabled(stage != null && stage.canRead());
   }
@@ -345,7 +345,7 @@ public class GroupView
 
     bookBt = new GemButton(BundleUtil.getLabel("Group.booker"));
     set(bookBt, "setTOUR");
-    
+
     refReset = new GemButton(resetIcon);
     setReset(refReset, "resetREF");
 
@@ -356,13 +356,13 @@ public class GroupView
     setReset(bookReset, "resetTOUR");
 
   }
-  
+
   private void setReset(GemButton b, String cmd) {
     b.setActionCommand(cmd);
     b.setToolTipText(GemCommand.DELETE_CMD);
     b.addActionListener(this);
   }
-  
+
   private void set(GemButton b, String cmd) {
     b.setActionCommand(cmd);
     b.addActionListener(this);
@@ -467,7 +467,7 @@ public class GroupView
   public String toString() {
     return getClass().getSimpleName();
   }
-  
+
   private class GroupDocListener implements ActionListener
   {
     @Override
@@ -487,9 +487,9 @@ public class GroupView
         }
       }
     }
-  
+
   }
-  
+
   /* pour aligner les items dans la combobox */
   /* class AlignedListCellRenderer extends DefaultListCellRenderer { private int
    * align;

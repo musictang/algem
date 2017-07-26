@@ -1,5 +1,5 @@
 /*
- * @(#)PersonIO.java 2.12.1 30/03/17
+ * @(#)PersonIO.java 2.15.0 26/07/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -37,14 +37,13 @@ import net.algem.util.model.TableIO;
 
 import java.sql.PreparedStatement;
 import static java.lang.String.format;
-import static java.lang.String.format;
 
 /**
  * IO methods for class {@link net.algem.contact.Person}.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.12.1
+ * @version 2.15.0
  */
 public class PersonIO
         extends TableIO
@@ -53,12 +52,16 @@ public class PersonIO
 
   public static final String TABLE = "personne";
   public static final String ALIAS = "p";
-  public static final String COLUMNS = "p.id,p.ptype,p.nom,p.prenom,p.civilite,p.droit_img,p.organisation,p.partenaire,p.pseudo";
+//  public static final String COLUMNS = "p.id,p.ptype,p.nom,p.prenom,p.civilite,p.droit_img,p.organisation,p.partenaire,p.pseudo";
+  public static final String COLUMNS = "p.id,p.ptype,p.nom,p.prenom,p.civilite,p.droit_img,p.partenaire,p.pseudo,coalesce(o.id,0),o.nom";
   public static final String SEQUENCE = "idper";
 
+  public static final String PRE_QUERY = "SELECT DISTINCT " + COLUMNS;
+  public static final String POST_QUERY = " FROM " + TABLE + " p LEFT JOIN " + OrganizationIO.TABLE + " o ON p.organisation = o.id ";
+
   /** Next column number in joined queries. */
-  public static final int PERSON_COLUMNS_OFFSET = 10;
-  private static final String FIND_BY_ID_QUERY = "SELECT * FROM " + TABLE + " WHERE id = ? LIMIT 1";
+  public static final int PERSON_COLUMNS_OFFSET = 11;
+  private static final String FIND_BY_ID_QUERY = PRE_QUERY + POST_QUERY + " WHERE p.id = ? LIMIT 1";
 
   private DataConnection dc;
   private PreparedStatement findByIdStmt;
@@ -71,41 +74,61 @@ public class PersonIO
 
   public void insert(Person p) throws SQLException {
     int n = nextId(SEQUENCE, dc);
-    // numero peut être remplacé par le mot clé DEFAULT à l'insertion
-    // dans le cas où la colonne id est de type serial ou une valeur par défaut (nextval('idper') a été définie
-    String query = "INSERT INTO " + TABLE + " VALUES(" + n
-            + ", " + p.getType()
-            + ",'" + escape(p.getName().toUpperCase())
-            + "','" + escape(p.getFirstName())
-            //+ "','" + p.getGender()
-            + (p.getGender() == null || p.getGender().isEmpty() ? "',NULL" : "','" + p.getGender() + "'")
-            + ",'" + (p.hasImgRights() ? "t" : "f") // t pour non autorisation, f pour autorisation image
-            + (p.getOrganization() == null || p.getOrganization().isEmpty() ? "',NULL" : "','" + escape(p.getOrganization()) + "'")
-            + ",'" + (p.isPartnerInfo() ? "t" : "f")
-            + (p.getNickName() == null || p.getNickName().isEmpty() ? "',NULL" : "','" + escape(p.getNickName()) + "'") + ")";
+    String query = "INSERT INTO " + TABLE + " VALUES(?,?,?,?,?,?,?,?,?)";
+    try(PreparedStatement ps = dc.prepareStatement(query)) {
+      ps.setInt(1, n);
+      ps.setInt(2, p.getType());
+      ps.setString(3, p.getName().toUpperCase());
+      ps.setString(4, p.getFirstName());
+      if (p.getGender() == null || p.getGender().isEmpty()) {
+        ps.setNull(5,java.sql.Types.CHAR);
+      } else {
+        ps.setString(5, p.getGender());
+      }
+      ps.setBoolean(6, p.hasImgRights());
+      ps.setBoolean(7, p.isPartnerInfo());
+      if (p.getNickName() == null || p.getNickName().isEmpty()) {
+        ps.setNull(8,java.sql.Types.VARCHAR);
+      } else {
+        ps.setString(8, p.getNickName());
+      }
+      ps.setInt(9, p.getOrgId());
 
-    dc.executeUpdate(query);
-    p.setId(n);
+      GemLogger.info(ps.toString());
+
+      ps.executeUpdate();
+      p.setId(n);
+    }
   }
 
   public void update(Person p) throws SQLException {
-    String query;
+    String query = "UPDATE " + TABLE + " SET nom=?,prenom=?,civilite=?,droit_img=?,partenaire=?,pseudo=?,organisation=? WHERE id=?";
+    try(PreparedStatement ps = dc.prepareStatement(query)) {
+      ps.setString(1, p.getName().toUpperCase());
+      ps.setString(2, p.getFirstName());
+      if (p.getGender() == null || p.getGender().isEmpty()) {
+        ps.setNull(3,java.sql.Types.CHAR);
+      } else {
+        ps.setString(3, p.getGender());
+      }
+      ps.setBoolean(4, p.hasImgRights());
+      ps.setBoolean(5, p.isPartnerInfo());
+      if (p.getNickName() == null || p.getNickName().isEmpty()) {
+        ps.setNull(6,java.sql.Types.VARCHAR);
+      } else {
+        ps.setString(6, p.getNickName());
+      }
+      ps.setInt(7, p.getOrgId());
+      ps.setInt(8,p.getId());
 
-    query = "UPDATE " + TABLE + " SET "
-            + "nom = '" + escape(p.getName())
-            + "',prenom = '" + escape(p.getFirstName())
-            + "',civilite = '" + p.getGender() + "'"
-            + ",droit_img = '" + (p.hasImgRights() ? "t" : "f")
-            + "',organisation = " + (p.getOrganization() == null || p.getOrganization().isEmpty() ? "NULL" : "'" + escape(p.getOrganization()) + "'")
-            + ",partenaire = '" + (p.isPartnerInfo() ? "t" : "f")
-            + "',pseudo = " + (p.getNickName() == null || p.getNickName().isEmpty() ? "NULL" : "'" + escape(p.getNickName()) + "'")
-            + " WHERE id = " + p.getId();
+      GemLogger.info(ps.toString());
 
-    dc.executeUpdate(query);
+      ps.executeUpdate();
+    }
   }
 
   public void delete(Person p) throws SQLException {
-    String query = "DELETE FROM " + TABLE + " WHERE id = " + p.getId() + " AND ptype = " + p.getType();
+    String query = "DELETE FROM " + TABLE + " WHERE id = " + p.getId() + " AND ptype > 0 AND ptype = " + p.getType();
     dc.executeUpdate(query);
   }
 
@@ -143,17 +166,22 @@ public class PersonIO
     String cv = rs.getString(5);
     p.setGender(cv != null ? cv.trim() : null);
     p.setImgRights(rs.getBoolean(6));
-    p.setOrganization(unEscape(rs.getString(7)));
-    p.setPartnerInfo(rs.getBoolean(8));
-    String nickname = rs.getString(9);
+    //p.setOrgName(unEscape(rs.getString(7)));
+    p.setPartnerInfo(rs.getBoolean(7));
+    String nickname = rs.getString(8);
     p.setNickName(nickname != null ? unEscape(nickname.trim()) : null);
+    int orgId = rs.getInt(9);
+    p.setOrgId(orgId);
+    if (orgId > 0) {
+      p.setOrgName(rs.getString(10));
+    }
 
     return p;
   }
 
   public static Vector<Person> find(String where, DataConnection dc) {
     Vector<Person> v = new Vector<Person>();
-    String query = "SELECT * FROM " + TABLE + " " + where + " ORDER BY nom";
+    String query = PRE_QUERY + POST_QUERY + where + " ORDER BY p.nom";
     try (ResultSet rs = dc.executeQuery(query)) {
       while (rs.next()) {
         v.addElement(getFromRS(rs));
@@ -178,6 +206,9 @@ public class PersonIO
   }
 
   @Override
+  /**
+   * @deprecated
+   */
   public List<Person> load() throws SQLException {
     List<Person> lp = new ArrayList<Person>();
     String query = "SELECT " + COLUMNS + " FROM  " + TABLE + " p"

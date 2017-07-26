@@ -1,7 +1,7 @@
 /*
- * @(#)TeacherExportDlg.java	2.9.2.1 18/02/15
- * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * @(#)TeacherExportDlg.java	2.15.0 26/07/2017
+ *
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.edition;
 
@@ -38,7 +38,7 @@ import net.algem.util.ui.GemPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2.1
+ * @version 2.15.0
  * @since 1.0a 14/12/1999
  */
 public class TeacherExportDlg
@@ -55,7 +55,7 @@ public class TeacherExportDlg
   private JComboBox cbCriterion;
   private EstabChoice estab;
   private GemList<Establishment> allEstabList;
-  
+
   public TeacherExportDlg(GemDesktop desktop) {
     super(desktop, TEACHER_TITLE);
   }
@@ -82,29 +82,29 @@ public class TeacherExportDlg
     int e = estab.getKey();
     switch (cbCriterion.getSelectedIndex()) {
       case 0: // tous les profs
-        query = "WHERE id > 0 AND id IN (SELECT idper FROM prof)";
+        query = "WHERE p.id > 0 AND p.id IN (SELECT idper FROM prof)";
         if (e > 0) {
-          query += " AND id IN (SELECT DISTINCT e.idper FROM prof e, planning p, salle s"
-                  + " WHERE e.idper = p.idper"
-                  + " AND p.ptype IN (" + Schedule.COURSE + "," + Schedule.WORKSHOP + "," + Schedule.TRAINING + ")"
-                  + " AND p.lieux = s.id AND s.etablissement = " + e + ")";
+          query += " AND p.id IN (SELECT DISTINCT e.idper FROM prof e, planning pl, salle s"
+                  + " WHERE e.idper = pl.idper"
+                  + " AND pl.ptype IN (" + Schedule.COURSE + "," + Schedule.WORKSHOP + "," + Schedule.TRAINING + ")"
+                  + " AND pl.lieux = s.id AND s.etablissement = " + e + ")";
         }
         break;
       case 1: // tous les profs actifs
-        query = "WHERE id > 0 AND id IN (SELECT idper FROM prof WHERE actif = 't')";
+        query = "WHERE p.id > 0 AND p.id IN (SELECT idper FROM prof WHERE actif = 't')";
         if (e > 0) {
-          query += " AND id IN (SELECT DISTINCT e.idper FROM prof e, planning p, salle s"
-                  + " WHERE e.idper = p.idper"
-                  + " AND p.ptype IN (" + Schedule.COURSE + "," + Schedule.WORKSHOP + "," + Schedule.TRAINING + ")"
-                  + " AND p.lieux = s.id AND s.etablissement = " + e + ")";
+          query += " AND p.id IN (SELECT DISTINCT e.idper FROM prof e, planning pl, salle s"
+                  + " WHERE e.idper = pl.idper"
+                  + " AND pl.ptype IN (" + Schedule.COURSE + "," + Schedule.WORKSHOP + "," + Schedule.TRAINING + ")"
+                  + " AND pl.lieux = s.id AND s.etablissement = " + e + ")";
         }
         break;
       case 2: // les intervenants de l'année
-        query = "WHERE id > 0 AND id IN (SELECT DISTINCT e.idper FROM prof e, planning p, salle s"
-                + " WHERE e.idper = p.idper"
-                + " AND p.lieux = s.id"
-                + " AND p.ptype IN (" + Schedule.COURSE + "," + Schedule.WORKSHOP + "," + Schedule.TRAINING + ")"
-                + " AND p.jour >= '" + desktop.getDataCache().getStartOfYear() + "'";
+        query = "WHERE p.id > 0 AND p.id IN (SELECT DISTINCT e.idper FROM prof e, planning pl, salle s"
+                + " WHERE e.idper = pl.idper"
+                + " AND pl.lieux = s.id"
+                + " AND pl.ptype IN (" + Schedule.COURSE + "," + Schedule.WORKSHOP + "," + Schedule.TRAINING + ")"
+                + " AND pl.jour >= '" + desktop.getDataCache().getStartOfYear() + "'";
         if (e > 0) {
           query += " AND s.etablissement = " + e;
         }
@@ -114,12 +114,12 @@ public class TeacherExportDlg
 
     return query;
   }
-  
+
   @Override
   protected String getFileName() {
     return BundleUtil.getLabel("Export.teacher.file");
   }
-  
+
   @Override
   protected void close() {
     allEstabList.removeElement((Establishment) allEstabList.getItem(0));

@@ -1,7 +1,7 @@
 /*
- * @(#)EmployeeType.java	2.8.v 29/05/14
+ * @(#)EmployeeType.java	2.15.0 26/07/2017
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -23,14 +23,14 @@ package net.algem.contact;
 
 /**
  * Enumeration of the different employee categories.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.v
+ * @version 2.15.0
  * @since 2.8.v 21/05/14
  */
 public enum EmployeeType
 {
-  // DO NOT MODIDY THE ORDER !
+  // DO NOT CHANGE ORDER !
   NONE,
   TEACHER,
   TECHNICIAN,
