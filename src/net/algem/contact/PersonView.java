@@ -29,11 +29,14 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.logging.Level;
 import javax.swing.*;
 import net.algem.config.ConfigKey;
@@ -47,6 +50,7 @@ import net.algem.util.GemLogger;
 import net.algem.util.ImageUtil;
 import net.algem.util.MessageUtil;
 import net.algem.util.model.DataException;
+import net.algem.util.module.GemModule;
 import net.algem.util.ui.*;
 
 /**
@@ -82,12 +86,13 @@ public class PersonView
 
   private GridBagHelper gb;
 
-//  private int orgId;
   private short ptype = Person.PERSON;
 
   private Contact person;
+  private final OrganizationIO orgIO;
 
   public PersonView() {
+    orgIO = new OrganizationIO(DataCache.getDataConnection());
   }
 
   protected void init() {
@@ -98,6 +103,15 @@ public class PersonView
 
     orgName = new GemField(true, 20);
     orgName.setMinimumSize(new Dimension(200, orgName.getPreferredSize().height));
+    orgName.addKeyListener(new KeyAdapter() {
+      @Override
+      public void keyReleased(KeyEvent e) {
+        int length = orgName.getText().length();
+        if (length >= 2) {
+          findOrg(orgName);
+        }
+      }
+    });
 
     name = new GemField(true, 20);
     name.setMaxChars(32);
@@ -141,10 +155,10 @@ public class PersonView
     btOrgDetails.addMouseListener(new MouseAdapter() {
       @Override
       public void mouseClicked(MouseEvent e) {
-        //if (!orgName.getText().isEmpty()) {
-        System.out.println(organization.getId());
-        setUpOrganization(organization.getId(), orgName.getText());
-        //}
+        if (!orgName.getText().isEmpty()) {
+          System.out.println(organization.getId());
+          setUpOrganization(organization.getId(), orgName.getText());
+        }
       }
     });
     gb.add(photoPanel, 0, 0, 1, 6, GridBagHelper.NORTHWEST);
@@ -165,6 +179,31 @@ public class PersonView
     gb.add(cbImgRights, 2, 6, 1, 1, GridBagHelper.WEST);
     gb.add(cbPartner, 2, 7, 1, 1, GridBagHelper.WEST);
     gb.add(cardPanel, 2, 8, 1, 1, GridBagHelper.WEST);
+  }
+
+  public void findOrg(GemField field) {
+    List<Organization> orgs;
+    try {
+      orgs = orgIO.find(field.getText());
+    } catch (SQLException ex) {
+      GemLogger.logException(ex);
+      return;
+    }
+    int size = orgs.size();
+    if (size > 0) {
+      if (size == 1) {
+        field.setText(orgs.get(0).getName());
+      } else {
+       SelectOrgDlg selectOrgDlg = new SelectOrgDlg(PopupDlg.getTopFrame(this), true);
+        selectOrgDlg.loadResult(orgs);
+        selectOrgDlg.initUI();
+        Organization o = selectOrgDlg.getOrg();
+        if (o != null) {
+          field.setText(o.getName());
+          organization = o;
+        }
+      }
+    }
   }
 
   void set(Person p, String dir) {
@@ -189,14 +228,14 @@ public class PersonView
 
   private void setUpOrganization(int orgId, String name) {
     final JDialog dlg = new JDialog((Frame) null, BundleUtil.getLabel("Organization.details.label"), true);
-    final OrganizationIO orgIO = new OrganizationIO(DataCache.getDataConnection());
+
     dlg.setSize(440, 240);
     final OrganizationPanel orgPanel;
     try {
       if (orgId > 0) {
         organization = orgIO.findId(orgId);
         if (!organization.getName().toLowerCase().equals(name.toLowerCase().trim())) {
-          organization = orgIO.find(name);
+          organization = orgIO.findId(name);
           if (organization == null) {
             organization = new Organization(0);
             organization.setName(name);
@@ -473,6 +512,72 @@ public class PersonView
       cbImgRights.setEnabled(false);
       cbPartner.setEnabled(false);
       nickname.setEnabled(false);
+    }
+  }
+
+  class SelectOrgDlg
+          extends JDialog
+          implements ActionListener
+  {
+
+    private OrganizationTableModel model;
+    private JTable table;
+    private GemButton btOk, btCancel;
+    private Frame parent;
+    private Organization org;
+
+    SelectOrgDlg(Frame owner, boolean modal) {
+      super(owner, BundleUtil.getLabel("Organization.label"), modal);
+      this.parent = owner;
+      model = new OrganizationTableModel();
+      table = new JTable(model);
+    }
+
+    void initUI() {
+      table.getColumnModel().getColumn(0).setPreferredWidth(80);
+      table.getColumnModel().getColumn(1).setPreferredWidth(240);
+      GemPanel buttons = new GemPanel(new GridLayout(1, 2));
+      JScrollPane scroll = new JScrollPane(table);
+      add(scroll, BorderLayout.CENTER);
+      btOk = new GemButton(GemCommand.OK_CMD);
+      btOk.addActionListener(this);
+      btCancel = new GemButton(GemCommand.CANCEL_CMD);
+      btCancel.addActionListener(this);
+      buttons.add(btOk);
+      buttons.add(btCancel);
+      add(buttons, BorderLayout.SOUTH);
+      setSize(GemModule.XS_SIZE);
+      setLocationRelativeTo(parent);
+      setVisible(true);
+    }
+
+    void setCity() {
+      int row = table.getSelectedRow();
+      if (row >= 0) {
+        org = (Organization) model.getItem(row);
+      }
+    }
+
+    Organization getOrg() {
+      return org;
+    }
+
+    public void loadResult(List<Organization> result) {
+      for (Organization c : result) {
+        model.addItem(c);
+      }
+
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      Object src = e.getSource();
+      if (src == btOk) {
+        setCity();
+      } else {
+        org = null;
+      }
+      setVisible(false);
     }
   }
 

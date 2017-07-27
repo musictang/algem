@@ -22,6 +22,8 @@ package net.algem.contact;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import net.algem.config.Company;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
@@ -62,7 +64,7 @@ public class OrganizationIO extends TableIO {
     }
   }
 
-  public Organization find(String name) throws SQLException {
+  public Organization findId(String name) throws SQLException {
     if (name == null) {
       return null;
     }
@@ -76,6 +78,22 @@ public class OrganizationIO extends TableIO {
       }
       return null;
     }
+  }
+
+  public List<Organization> find(String name) throws SQLException {
+    List<Organization> orgs = new ArrayList<>();
+    if (name != null) {
+      String query = "SELECT id,nom,raison,siret,naf,codefp,tva FROM " + TABLE + " WHERE nom ~* ?";
+      try (PreparedStatement ps = dc.prepareStatement(query)) {
+        ps.setString(1, name);
+        GemLogger.info(ps.toString());
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+          orgs.add(getFromRS(rs));
+        }
+      }
+    }
+    return orgs;
   }
 
   private Organization getFromRS(ResultSet rs) throws SQLException {
@@ -176,7 +194,7 @@ public class OrganizationIO extends TableIO {
         c.setLogo(rs.getBytes(3));
         c.setStamp(rs.getBytes(4));
 
-        c.setOrg(findId(c.getIdper()));
+        c.setOrg(OrganizationIO.this.findId(c.getIdper()));
         c.setContact(ContactIO.findId(c.getIdper(), dc));
 
         return c;

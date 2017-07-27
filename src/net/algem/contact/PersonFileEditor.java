@@ -928,9 +928,9 @@ public class PersonFileEditor
     boolean found = false;
     String where = "";
     if (c.getName() != null && c.getName().length() > 0) {
-      where = " WHERE lower(nom) = E'" + TableIO.escape(c.getName().toLowerCase()) + "'";
+      where = " WHERE lower(p.nom) = E'" + TableIO.escape(c.getName().toLowerCase()) + "'";
       if (c.getFirstName() != null && c.getFirstName().length() > 0) {
-        where +=  " AND lower(prenom) = E'" + TableIO.escape(c.getFirstName().toLowerCase()) + "'";
+        where +=  " AND lower(p.prenom) = E'" + TableIO.escape(c.getFirstName().toLowerCase()) + "'";
       }
       if (ContactIO.findId(where, dc) != null) {
         return true;
@@ -938,7 +938,9 @@ public class PersonFileEditor
     }
 
     if (c.getOrgName() != null && c.getOrgName().length() > 0) {
-      where = " WHERE lower(organisation) = E'" + TableIO.escape(c.getOrgName().toLowerCase()) + "'";
+      //where = " WHERE lower(organisation) = E'" + TableIO.escape(c.getOrgName().toLowerCase()) + "'";
+      where = " WHERE o.id = " + c.getOrgId();
+      //where = " WHERE lower(o.nom) = E'" + TableIO.escape(c.getOrgName().toLowerCase()) + "'";
       found = ContactIO.findId(where, dc) != null;
     }
     return found;

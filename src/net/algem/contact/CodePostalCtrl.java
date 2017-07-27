@@ -1,6 +1,6 @@
 /*
  * @(#)CodePostalCtrl.java	2.11.0 16/09/16
- * 
+ *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.contact;
 
@@ -33,7 +33,7 @@ import java.util.List;
 import javax.swing.JDialog;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.table.TableColumnModel;
+import net.algem.util.BundleUtil;
 import net.algem.util.DataConnection;
 import net.algem.util.GemCommand;
 import net.algem.util.module.GemModule;
@@ -68,10 +68,10 @@ public class CodePostalCtrl
     zipCode = _zip;
   }
 
-  @Override
+  /*@Override
   public Object clone() {
     return new CodePostalCtrl(dc);
-  }
+  }*/
 
   public void findCity(GemField cdp) {
     List<City> v = CityIO.findCity(cdp.getText(), dc);
@@ -127,7 +127,7 @@ public class CodePostalCtrl
     private City city;
 
     SelectCityDlg(Frame owner, boolean modal) {
-      super(owner, modal);
+      super(owner, BundleUtil.getLabel("City.label"), modal);
       this.parent = owner;
       model = new CityTableModel();
       table = new JTable(model);
