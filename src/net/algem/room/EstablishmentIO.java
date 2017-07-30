@@ -1,5 +1,5 @@
 /*
- * @(#)EstablishmentIO.java	2.15.0 26/07/2017
+ * @(#)EstablishmentIO.java	2.15.0 30/07/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -59,8 +59,8 @@ public class EstablishmentIO
   public static List<Establishment> find(String where, DataConnection dc) throws SQLException {
 
     List<Establishment> estabs = new ArrayList<Establishment>();
-    String query = "SELECT DISTINCT ON (p.nom) " + PersonIO.COLUMNS + ", e.actif " + PersonIO.POST_QUERY
-      + " JOIN " + TABLE + " e ON (p.id = e.id)"
+    String query = "SELECT DISTINCT ON (p.nom) " + PersonIO.COLUMNS + ", e.actif"
+      + " FROM " + PersonIO.VIEW + " p JOIN " + TABLE + " e ON (p.id = e.id)"
       + " WHERE p.ptype = " + Person.ESTABLISHMENT;
     query += where;
 
@@ -144,7 +144,9 @@ public class EstablishmentIO
       + "',''" // firstname
       + ",''" // gender
       + ",FALSE" // img rights
-      + (p.getOrgName() == null || p.getOrgName().isEmpty() ? ",NULL" : ",'" + escape(p.getOrgName()) + "'")
+      + ",NULL"
+      + "," + p.getOrganization()
+//      + (p.getOrganization() == null || p.getOrganization().isEmpty() ? ",NULL" : ",'" + escape(p.getOrganization()) + "'")
       + ")";
 
     dc.executeUpdate(query);

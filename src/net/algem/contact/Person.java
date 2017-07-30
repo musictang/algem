@@ -1,5 +1,5 @@
 /*
- * @(#)Person.java	2.15.0 26/07/2017
+ * @(#)Person.java	2.15.0 30/07/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -56,8 +56,7 @@ public class Person
   protected String nickName;
   protected String gender;
   protected boolean imgRights;
-  protected String orgName;
-  protected int orgId;
+  protected Organization organization;
   protected boolean partnerInfo;
 
   public Person() {
@@ -123,10 +122,9 @@ public class Person
     if ((this.gender == null) ? (other.gender != null) : !this.gender.equals(other.gender)) {
       return false;
     }
-    if ((this.orgName == null) ? (other.orgName != null) : !this.orgName.equals(other.orgName)) {
+    if ((this.organization == null) ? (other.organization != null) : !this.organization.equals(other.organization)) {
       return false;
     }
-    // todo ?? orgId
     if ((this.nickName == null) ? (other.nickName != null) : !this.nickName.equals(other.nickName)) {
       return false;
     }
@@ -137,7 +135,8 @@ public class Person
   public int hashCode() {
     int hash = 5;
     hash = 23 * hash + this.id;
-    hash = 23 * hash + (this.orgName != null ? this.orgName.hashCode() : 0);
+//    hash = 23 * hash + this.organization;
+    hash = 23 * hash + (this.organization != null ? this.organization.hashCode() : 0);
     hash = 23 * hash + (this.name != null ? this.name.hashCode() : 0);
     hash = 23 * hash + (this.firstName != null ? this.firstName.hashCode() : 0);
     hash = 23 * hash + (this.gender != null ? this.gender.hashCode() : 0);
@@ -249,20 +248,12 @@ public class Person
     return imgRights;
   }
 
-  public String getOrgName() {
-    return orgName;
+  public Organization getOrganization() {
+    return organization;
   }
 
-  public void setOrgName(String organization) {
-    this.orgName = organization;
-  }
-
-  public int getOrgId() {
-    return orgId;
-  }
-
-  public void setOrgId(int orgId) {
-    this.orgId = orgId;
+  public void setOrganization(Organization organization) {
+    this.organization = organization;
   }
 
   public boolean isPartnerInfo() {
@@ -274,8 +265,12 @@ public class Person
   }
 
   public boolean isValid() {
-    return orgName != null && !orgName.isEmpty()
-            ? orgName.length() > 1 : name.length() > 1;
+    if (organization != null && organization.getId() > 0) {
+      if (organization.getName() != null && organization.getName().length() > 1) {
+        return true;
+      }
+    }
+    return  name.length() > 1;
   }
 
   @Override

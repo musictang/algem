@@ -1,5 +1,5 @@
 /*
- * @(#)DataCache.java	2.15.0 26/07/2017
+ * @(#)DataCache.java	2.15.0 30/07/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -896,7 +896,7 @@ public class DataCache
   private void loadRoomContactCache() {
 //    String query = "SELECT " + PersonIO.COLUMNS + " FROM " + PersonIO.TABLE + " p, " + RoomIO.TABLE + " r "
 //            + "WHERE r.idper = p.id OR r.payeur = p.id ORDER BY nom";
-  String query = PersonIO.PRE_QUERY + PersonIO.POST_QUERY + " JOIN " + RoomIO.TABLE + " r ON (p.id = r.idper OR p.id = r.payeur) ORDER BY p.nom";
+  String query = PersonIO.PRE_QUERY + " JOIN " + RoomIO.TABLE + " r ON (p.id = r.idper OR p.id = r.payeur) ORDER BY p.nom";
     try {
       ResultSet rs = DATA_CONNECTION.executeQuery(query);
       while (rs.next()) {

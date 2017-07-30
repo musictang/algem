@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileEditor 2.15.0 26/07/2017
+ * @(#)PersonFileEditor 2.15.0 30/07/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -758,7 +758,7 @@ public class PersonFileEditor
     if (dossier.getMember() == null || dossier.getMember().getPayer() == dossier.getId()) {
       orderLineEditor.setLabel(dossier.getContact().getFirstnameName());
     } else {
-      String org = p.getOrgName();
+      String org = p.getOrganization() == null ? null : p.getOrganization().getCompanyName();
       orderLineEditor.setLabel(org != null && org.trim().length() > 0 ? org : p.getFirstnameName());
     }
     personFileView.addTab(orderLineEditor, BundleUtil.getLabel("Person.schedule.payment.tab.label"));
@@ -937,11 +937,12 @@ public class PersonFileEditor
       }
     }
 
-    if (c.getOrgName() != null && c.getOrgName().length() > 0) {
-      //where = " WHERE lower(organisation) = E'" + TableIO.escape(c.getOrgName().toLowerCase()) + "'";
-      where = " WHERE o.id = " + c.getOrgId();
-      //where = " WHERE lower(o.nom) = E'" + TableIO.escape(c.getOrgName().toLowerCase()) + "'";
-      found = ContactIO.findId(where, dc) != null;
+    if (c.getOrganization() != null) {
+      String org = c.getOrganization().getName();
+      if (org != null && org.length() > 0) {
+        where = " WHERE lower(p.onom) = E'" + TableIO.escape(org.toLowerCase()) + "'";
+        found = ContactIO.findId(where, dc) != null;
+      }
     }
     return found;
   }

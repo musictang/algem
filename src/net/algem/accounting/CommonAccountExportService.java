@@ -1,5 +1,5 @@
 /*
- * @(#)CommonAccountExportService.java	2.14.0 14/06/17
+ * @(#)CommonAccountExportService.java	2.15.0 30/07/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -51,7 +51,7 @@ import net.algem.util.model.ModelNotFoundException;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.14.0
+ * @version 2.15.0
  * @since 2.8.r 13/12/13
  */
 public abstract class CommonAccountExportService
@@ -219,7 +219,9 @@ public abstract class CommonAccountExportService
         }
         Contact c = ContactIO.findId(e.getPayer(), dbx);
         Person m = ContactIO.findId(e.getMember(), dbx);
-        String payerName = c == null ? "" : (c.getOrgName() != null && c.getOrgName().length() > 0 ? c.getOrgName() : c.getNameFirstname());
+        String org = ContactIO.findCompanyName(e.getPayer(), dbx);
+//        String payerName = c == null ? "" : (c.getOrganization() != null && c.getOrganization().length() > 0 ? c.getOrganization() : c.getNameFirstname());
+        String payerName = c == null ? "" : org != null ? org : c.getNameFirstname();
         total += e.getAmount();
         out.print(String.valueOf(e.getPayer())
                 + ";" + payerName

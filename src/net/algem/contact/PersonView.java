@@ -1,5 +1,5 @@
 /*
- * @(#)PersonView.java	2.15.0 25/07/2017
+ * @(#)PersonView.java	2.15.0 30/07/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,15 +20,11 @@
  */
 package net.algem.contact;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -45,12 +41,10 @@ import net.algem.contact.member.PersonSubscriptionCard;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.FileUtil;
-import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
 import net.algem.util.ImageUtil;
 import net.algem.util.MessageUtil;
 import net.algem.util.model.DataException;
-import net.algem.util.module.GemModule;
 import net.algem.util.ui.*;
 
 /**
@@ -72,7 +66,6 @@ public class PersonView
   private JCheckBox cbImgRights;
   private JCheckBox cbPartner;
   private GemField orgName;
-  private Organization organization;
   private GemField nickname;
 
   /** Picture frame location. */
@@ -93,6 +86,10 @@ public class PersonView
 
   public PersonView() {
     orgIO = new OrganizationIO(DataCache.getDataConnection());
+  }
+
+  OrganizationIO getDao() {
+    return orgIO;
   }
 
   protected void init() {
@@ -155,9 +152,8 @@ public class PersonView
     btOrgDetails.addMouseListener(new MouseAdapter() {
       @Override
       public void mouseClicked(MouseEvent e) {
-        if (!orgName.getText().isEmpty()) {
-          System.out.println(organization.getId());
-          setUpOrganization(organization.getId(), orgName.getText());
+        if (!orgName.getText().isEmpty() && person.getOrganization().getId() > 0) {
+          setUpOrganization();
         }
       }
     });
@@ -185,25 +181,25 @@ public class PersonView
     List<Organization> orgs;
     try {
       orgs = orgIO.find(field.getText());
+
+      OrganizationListDlg orgListDlg = new OrganizationListDlg(PopupDlg.getTopFrame(this), true, this);
+
+      orgListDlg.loadResult(orgs);
+      orgListDlg.initUI();
+      Organization o = orgListDlg.getOrg();
+      if (o != null) {
+        field.setText(o.getName());
+        person.setOrganization(o);
+      } else if (orgListDlg.isCancelled()) {
+
+      }
     } catch (SQLException ex) {
       GemLogger.logException(ex);
-      return;
     }
-    int size = orgs.size();
-    if (size > 0) {
-      if (size == 1) {
-        field.setText(orgs.get(0).getName());
-      } else {
-       SelectOrgDlg selectOrgDlg = new SelectOrgDlg(PopupDlg.getTopFrame(this), true);
-        selectOrgDlg.loadResult(orgs);
-        selectOrgDlg.initUI();
-        Organization o = selectOrgDlg.getOrg();
-        if (o != null) {
-          field.setText(o.getName());
-          organization = o;
-        }
-      }
-    }
+  }
+
+  String getOrgName() {
+    return orgName.getText();
   }
 
   void set(Person p, String dir) {
@@ -218,168 +214,14 @@ public class PersonView
     civil.setSelectedItem(p.getGender());
     cbImgRights.setSelected(p.hasImgRights());
     cbPartner.setSelected(p.isPartnerInfo());
-    organization = new Organization();
-    organization.setId(p.getOrgId());
-    organization.setName(p.getOrgName());
-    orgName.setText(p.getOrgName());
+    orgName.setText(p.getOrganization() == null ? null : p.getOrganization().getName());
     ptype = p.getType();
     loadPhoto(p);
   }
 
-  private void setUpOrganization(int orgId, String name) {
-    final JDialog dlg = new JDialog((Frame) null, BundleUtil.getLabel("Organization.details.label"), true);
-
-    dlg.setSize(440, 240);
-    final OrganizationPanel orgPanel;
-    try {
-      if (orgId > 0) {
-        organization = orgIO.findId(orgId);
-        if (!organization.getName().toLowerCase().equals(name.toLowerCase().trim())) {
-          organization = orgIO.findId(name);
-          if (organization == null) {
-            organization = new Organization(0);
-            organization.setName(name);
-          } else {
-            person.setOrgId(organization.getId());
-            person.setOrgName(organization.getName());
-            orgName.setText(organization.getName());
-          }
-        }
-      } else if (orgName != null && !orgName.getText().isEmpty()) {
-        // check name if exists
-//        organization = new Organization();
-        organization.setName(orgName.getText());
-      }
-      orgPanel = new OrganizationPanel(organization.getId());
-      orgPanel.createUI();
-      orgPanel.setDetails(organization);
-    } catch (SQLException ex) {
-      GemLogger.logException(ex);
-      return;
-    }
-
-    GemPanel btPanel = new GemPanel(new GridLayout(1, 2));
-    GemButton btSave = new GemButton(GemCommand.SAVE_CMD);
-    btSave.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        int idper = Integer.parseInt(no.getText());
-        if (idper == 0) {
-          MessagePopup.warning(null, MessageUtil.getMessage("organization.null.id.warning"));
-          dlg.setVisible(false);
-          return;
-        }
-        organization = orgPanel.getDetails();
-        try {
-          updateOrganization(organization, orgIO);
-          dlg.setVisible(false);
-        } catch (SQLException ex) {
-          GemLogger.logException(ex);
-          if ("23505".equals(ex.getSQLState())) {
-            MessagePopup.warning(null, MessageUtil.getMessage("organization.unique.violation.exception"));
-          } else {
-            MessagePopup.warning(null, ex.getMessage());
-          }
-        }
-      }
-    });
-
-    GemButton btCancel = new GemButton(GemCommand.CANCEL_CMD);
-    btCancel.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        dlg.setVisible(false);
-      }
-    });
-    btPanel.add(btSave);
-    btPanel.add(btCancel);
-
-    dlg.add(orgPanel, BorderLayout.CENTER);
-    dlg.add(btPanel, BorderLayout.SOUTH);
-    dlg.pack();
-    dlg.setLocationRelativeTo(this);
-    dlg.setVisible(true);
-  }
-
-  private class OrganizationPanel extends JPanel {
-
-    private int orgId;
-    private GemField name = new GemField(20);
-    private GemField companyName = new GemField(20);
-    private GemField siret = new GemField(20);
-    private GemField naf = new GemField(20);
-    private GemField codeFP = new GemField(20);
-    private GemField vatId = new GemField(20);
-
-    public OrganizationPanel(int orgId) {
-      this.orgId = orgId;
-    }
-
-    private void createUI() {
-      setLayout(new GridBagLayout());
-      setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-      GridBagHelper gb2 = new GridBagHelper(this);
-      JLabel cpNameL = new JLabel(BundleUtil.getLabel("ConfEditor.corporate.label"));
-
-      JLabel siretL = new JLabel(BundleUtil.getLabel("Organization.SIRET.label"));
-      siretL.setToolTipText(BundleUtil.getLabel("ConfEditor.organization.SIRET.number.label"));
-      JLabel nafL = new JLabel(BundleUtil.getLabel("Organization.NAF.label"));
-      nafL.setToolTipText(BundleUtil.getLabel("ConfEditor.organization.Code.NAF.label"));
-      JLabel codeFPL = new JLabel(BundleUtil.getLabel("Organization.FP.label"));
-      codeFPL.setToolTipText(BundleUtil.getLabel("ConfEditor.organization.Code.FP.label"));
-      JLabel vatL = new JLabel(BundleUtil.getLabel("Organization.VAT.label"));
-      vatL.setToolTipText(BundleUtil.getLabel("ConfEditor.organization.Code.VAT.label"));
-
-      gb2.add(new JLabel(BundleUtil.getLabel("Name.label")), 0, 0, 1, 1, GridBagHelper.WEST);
-      gb2.add(cpNameL, 0, 1, 1, 1, GridBagHelper.WEST);
-      gb2.add(siretL, 0, 2, 1, 1, GridBagHelper.WEST);
-      gb2.add(nafL, 0, 3, 1, 1, GridBagHelper.WEST);
-      gb2.add(codeFPL, 0, 4, 1, 1, GridBagHelper.WEST);
-      gb2.add(vatL, 0, 5, 1, 1, GridBagHelper.WEST);
-
-      gb2.add(name, 1, 0, 1, 1, GridBagHelper.WEST);
-      gb2.add(companyName, 1, 1, 1, 1, GridBagHelper.WEST);
-      gb2.add(siret, 1, 2, 1, 1, GridBagHelper.WEST);
-      gb2.add(naf, 1, 3, 1, 1, GridBagHelper.WEST);
-      gb2.add(codeFP, 1, 4, 1, 1, GridBagHelper.WEST);
-      gb2.add(vatId, 1, 5, 1, 1, GridBagHelper.WEST);
-
-    }
-
-    void setDetails(Organization org) {
-      name.setText(org.getName());
-      if (org.getId() > 0) {
-        companyName.setText(org.getCompanyName());
-        siret.setText(org.getSiret());
-        naf.setText(org.getNafCode());
-        codeFP.setText(org.getFpCode());
-        vatId.setText(org.getVatCode());
-      }
-    }
-
-    Organization getDetails() {
-      Organization org = new Organization();
-      org.setId(orgId);//XXX
-      org.setName(name.getText());
-      org.setCompanyName(companyName.getText());
-      org.setSiret(siret.getText());
-      org.setNafCode(naf.getText());
-      org.setFpCode(codeFP.getText());
-      org.setVatCode(vatId.getText());
-
-      return org;
-    }
-
-  }
-
-  private void updateOrganization(Organization target, OrganizationIO orgIO) throws SQLException {
-    Organization o = orgIO.findId(target.getId());
-    if (o == null) {
-      orgIO.create(target);
-    } else {
-      orgIO.update(target);
-    }
-
+  private void setUpOrganization() {
+    OrganizationCtrl orgCtrl = new OrganizationCtrl((Frame) null, true, this);
+    orgCtrl.createUI();
   }
 
   private void loadPhoto(Person p) {
@@ -474,8 +316,7 @@ public class PersonView
     pr.setImgRights(cbImgRights.isSelected());
     pr.setPartnerInfo(cbPartner.isSelected());
 
-    pr.setOrgId(organization != null ? organization.getId() : 0);
-    pr.setOrgName(organization.getName().trim());
+    pr.setOrganization(person.getOrganization());
 
     return pr;
   }
@@ -491,6 +332,11 @@ public class PersonView
       GemLogger.log(Level.WARNING, e.getMessage());
       return 0;
     }
+  }
+
+  void setOrganization(Organization o) {
+    person.setOrganization(o);
+    orgName.setText(o.getName());
   }
 
   public void clear() {
@@ -512,72 +358,6 @@ public class PersonView
       cbImgRights.setEnabled(false);
       cbPartner.setEnabled(false);
       nickname.setEnabled(false);
-    }
-  }
-
-  class SelectOrgDlg
-          extends JDialog
-          implements ActionListener
-  {
-
-    private OrganizationTableModel model;
-    private JTable table;
-    private GemButton btOk, btCancel;
-    private Frame parent;
-    private Organization org;
-
-    SelectOrgDlg(Frame owner, boolean modal) {
-      super(owner, BundleUtil.getLabel("Organization.label"), modal);
-      this.parent = owner;
-      model = new OrganizationTableModel();
-      table = new JTable(model);
-    }
-
-    void initUI() {
-      table.getColumnModel().getColumn(0).setPreferredWidth(80);
-      table.getColumnModel().getColumn(1).setPreferredWidth(240);
-      GemPanel buttons = new GemPanel(new GridLayout(1, 2));
-      JScrollPane scroll = new JScrollPane(table);
-      add(scroll, BorderLayout.CENTER);
-      btOk = new GemButton(GemCommand.OK_CMD);
-      btOk.addActionListener(this);
-      btCancel = new GemButton(GemCommand.CANCEL_CMD);
-      btCancel.addActionListener(this);
-      buttons.add(btOk);
-      buttons.add(btCancel);
-      add(buttons, BorderLayout.SOUTH);
-      setSize(GemModule.XS_SIZE);
-      setLocationRelativeTo(parent);
-      setVisible(true);
-    }
-
-    void setCity() {
-      int row = table.getSelectedRow();
-      if (row >= 0) {
-        org = (Organization) model.getItem(row);
-      }
-    }
-
-    Organization getOrg() {
-      return org;
-    }
-
-    public void loadResult(List<Organization> result) {
-      for (Organization c : result) {
-        model.addItem(c);
-      }
-
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      Object src = e.getSource();
-      if (src == btOk) {
-        setCity();
-      } else {
-        org = null;
-      }
-      setVisible(false);
     }
   }
 

@@ -1,5 +1,5 @@
 /*
- * @(#)ContactIO.java	2.15.0 26/07/2017
+ * @(#)ContactIO.java	2.15.0 30/07/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,6 +20,7 @@
  */
 package net.algem.contact;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Enumeration;
@@ -318,7 +319,7 @@ public class ContactIO
    */
   public static int count(String where, DataConnection dc) {
     int cpt = 0;
-    String query = "SELECT count(*) " + PersonIO.POST_QUERY + " " + where;
+    String query = "SELECT count(*) FROM " + PersonIO.TABLE + " p " + where;
     try {
       ResultSet rs = dc.executeQuery(query);
       if (rs.next()) {
@@ -345,6 +346,36 @@ public class ContactIO
     } catch (SQLException ex) {
       GemLogger.logException(ex);
     }
+  }
+
+  public static String findOrgName(int orgId, DataConnection dc) {
+    String query = "SELECT nom FROM " + OrganizationIO.TABLE + " WHERE id=?";
+    try (PreparedStatement ps = dc.prepareStatement(query)) {
+      ps.setInt(1, orgId);
+      try (ResultSet rs = ps.executeQuery()) {
+        while (rs.next()) {
+          return rs.getString(1);
+        }
+      }
+    } catch (SQLException ex) {
+      GemLogger.logException(ex);
+    }
+    return null;
+  }
+
+  public static String findCompanyName(int orgId, DataConnection dc) {
+    String query = "SELECT coalesce(raison,nom) FROM " + OrganizationIO.TABLE + " WHERE id=?";
+    try (PreparedStatement ps = dc.prepareStatement(query)) {
+      ps.setInt(1, orgId);
+      try (ResultSet rs = ps.executeQuery()) {
+        while (rs.next()) {
+          return rs.getString(1);
+        }
+      }
+    } catch (SQLException ex) {
+      GemLogger.logException(ex);
+    }
+    return null;
   }
 
   /**

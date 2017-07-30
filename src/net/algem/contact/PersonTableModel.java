@@ -1,7 +1,7 @@
 /*
- * @(#)PersonTableModel.java	2.9.2 26/01/15
+ * @(#)PersonTableModel.java	2.15.0 30/07/2017
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -26,7 +26,7 @@ import net.algem.util.ui.JTableModel;
 /**
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.15.0
  */
 public class PersonTableModel
         extends JTableModel<Person>
@@ -73,7 +73,7 @@ public class PersonTableModel
       case 0:
         return new Integer(p.getId());
       case 1:
-        return p.getOrgName();
+        return p.getOrganization() == null ? null : p.getOrganization().getName();
       case 2:
         return p.getName();
       case 3:

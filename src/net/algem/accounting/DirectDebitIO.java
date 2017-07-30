@@ -1,7 +1,7 @@
 /*
- * @(#)DirectDebitIO.java 2.9.6 22/03/16
+ * @(#)DirectDebitIO.java 2.15.0 30/07/2017
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -37,7 +37,7 @@ import net.algem.util.model.TableIO;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.9.6
+ * @version 2.15.0
  * @since 2.8.r 08/01/14
  */
 public class DirectDebitIO
@@ -95,8 +95,8 @@ public class DirectDebitIO
    */
   List<DDMandate> getMandates() throws SQLException {
     List<DDMandate> mandates = new ArrayList<DDMandate>();
-    String query = "SELECT s.*, CASE WHEN p.organisation IS NOT NULL AND trim(p.organisation) != '' THEN p.organisation ELSE p.nom END FROM "
-            + TABLE + " s, " + PersonIO.TABLE + " p"
+    String query = "SELECT s.*, CASE WHEN p.onom IS NOT NULL AND trim(p.onom) != '' THEN p.onom ELSE p.nom END FROM "
+            + TABLE + " s, " + PersonIO.VIEW + " p"
             + " WHERE s.payeur = p.id"
             + " AND s.seqtype != '" + DDSeqType.LOCK.name()
             + "' ORDER BY s.payeur";

@@ -1,5 +1,5 @@
 /*
- * @(#) Organization.java Algem 2.15.0 26/07/2017
+ * @(#) Organization.java Algem 2.15.0 30/07/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -29,6 +29,7 @@ public class Organization {
 
   private int id;
   private String name;
+  private int referent;
   private String companyName;
   private String siret;
   private String nafCode;
@@ -77,8 +78,16 @@ public class Organization {
     this.name = name;
   }
 
+  public int getReferent() {
+    return referent;
+  }
+
+  public void setReferent(int referent) {
+    this.referent = referent;
+  }
+
   public String getCompanyName() {
-    return companyName;
+    return companyName == null || companyName.isEmpty() ? name : companyName;
   }
 
   public void setCompanyName(String companyName) {
@@ -119,8 +128,8 @@ public class Organization {
 
   @Override
   public int hashCode() {
-    int hash = 5;
-    hash = 89 * hash + this.id;
+    int hash = 7;
+    hash = 31 * hash + this.id;
     return hash;
   }
 
@@ -140,6 +149,11 @@ public class Organization {
       return false;
     }
     return true;
+  }
+
+  @Override
+  public String toString() {
+    return name;
   }
 
 }

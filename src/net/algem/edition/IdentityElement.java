@@ -1,7 +1,7 @@
 /*
- * @(#)IdentityElement.java 2.13.3 17/05/17
+ * @(#)IdentityElement.java 2.15.0 30/07/2017
  *
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -29,7 +29,7 @@ import net.algem.util.TextUtil;
  * Identity element.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.13.3
+ * @version 2.15.0
  * @since 2.1.n 22/07/2011
  */
 public class IdentityElement
@@ -50,7 +50,7 @@ public class IdentityElement
     if (contact != null) {
       ident = TextUtil.crop(contact.toString(), g, COURSE_LIST_X);
 
-      String org = contact.getOrgName();
+      String org = contact.getOrganization() == null ? null : contact.getOrganization().getName();
       if (org != null && !org.isEmpty()) {
         g.drawString(org, x, y - 10);
       }

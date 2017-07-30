@@ -1,5 +1,5 @@
 /*
-* @(#)OrderLineTableView.java 2.14.0 20/06/17
+* @(#)OrderLineTableView.java 2.15.0 30/07/2017
 *
 * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
 *
@@ -31,6 +31,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.*;
 import javax.swing.text.JTextComponent;
+import net.algem.contact.Organization;
 import net.algem.contact.Person;
 import net.algem.planning.DateFr;
 import net.algem.util.BundleUtil;
@@ -44,7 +45,7 @@ import net.algem.util.model.Model;
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @author <a href="mailto:damien.loustau@gmail.com">Damien Loustau</a>
- * @version 2.14.0
+ * @version 2.15.0
  * @since 1.0a 07/07/1999
  *
  */
@@ -317,7 +318,7 @@ public class OrderLineTableView
   }
 
   /**
-   * 
+   *
    * @param begin start date
    * @param end end date
    * @param hideBilling hide billing lines
@@ -386,7 +387,8 @@ public class OrderLineTableView
         Person p = (Person) DataCache.findId(Integer.parseInt(idper.trim()), Model.Person);
         //assert(p != null);
         if (p != null) {
-          String org = p.getOrgName();
+          Organization o = p.getOrganization();
+          String org = o == null ? null : o.getCompanyName();
           c.setToolTipText(org != null && org.length() > 0 ? org : p.getFirstnameName());
         } else {
           c.setToolTipText(null);

@@ -1,7 +1,7 @@
 /*
- * @(#)PersonFile.java 2.9.4.13 03/11/15
+ * @(#)PersonFile.java 2.15.0 30/07/2017
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -36,14 +36,14 @@ import net.algem.util.model.GemModel;
  * Person management.
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.15.0
  * @since 1.0a 12/08/2009
  */
 public class PersonFile
   implements GemModel
 {
   private static final long serialVersionUID = -5525671215374943510L;
-  
+
   protected EventListenerList listenerList = new EventListenerList();
   private Contact contact, oldContact;
   private Member member, oldMember;
@@ -65,7 +65,7 @@ public class PersonFile
       contact.setId(id);
     }
   }
-  
+
   @Override
   public int getId() {
     return contact == null ? 0 : contact.getId();
@@ -124,7 +124,7 @@ public class PersonFile
   public void setOldTeacher(Teacher t) {
     this.oldTeacher = t;
   }
-  
+
   public void loadTeacher(Teacher t) {
     teacher = oldTeacher = t;
   }
@@ -135,7 +135,7 @@ public class PersonFile
 
   /**
    * Rib.
-   * @param b 
+   * @param b
    */
   public void setRib(Rib b) {
     oldRib = rib;
@@ -152,7 +152,7 @@ public class PersonFile
 
   public void removeRib() {
 //    fireContentsChanged(rib, PersonFileEvent.BANK_REMOVED);
-    rib = oldRib = null;  
+    rib = oldRib = null;
   }
 
   public void addRib(Rib b) {
@@ -169,7 +169,7 @@ public class PersonFile
   }
 
   public boolean hasChanged() {
-    if (contact.getId() == 0 && (contact.getName().length() > 0 || contact.getOrgName().length() > 0)) {
+    if (contact.getId() == 0 && (contact.getName().length() > 0 || contact.getOrganization() != null && contact.getOrganization().getId() > 0)) {
       return true;
     } else if (oldContact != null && !contact.equals(oldContact)) {
       return true;

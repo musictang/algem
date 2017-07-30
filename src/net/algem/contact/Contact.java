@@ -56,8 +56,7 @@ public class Contact
     //note = pp.getNote();
     imgRights = pp.hasImgRights();
     partnerInfo = pp.isPartnerInfo();
-    orgId = pp.getOrgId();
-    orgName = pp.getOrgName();
+    organization = pp.getOrganization();
     nickName = pp.getNickName();
   }
 

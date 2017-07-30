@@ -1,5 +1,5 @@
 /*
- * @(#) OrganizationTableModel.java Algem 2.15.0 27/07/2017
+ * @(#) OrganizationTableModel.java Algem 2.15.0 30/07/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package net.algem.contact;
 
 import net.algem.util.BundleUtil;
@@ -30,12 +29,12 @@ import net.algem.util.ui.JTableModel;
  * @since 2.15.0 27/07/2017
  */
 public class OrganizationTableModel
-extends JTableModel<Organization>{
+  extends JTableModel<Organization> {
 
   public OrganizationTableModel() {
     header = new String[]{
-      BundleUtil.getLabel("Id.label"),
-      BundleUtil.getLabel("Organization.label")
+      BundleUtil.getLabel("Organization.label"),
+      BundleUtil.getLabel("Referent.label")
     };
   }
 
@@ -48,9 +47,9 @@ extends JTableModel<Organization>{
   public Class getColumnClass(int column) {
     switch (column) {
       case 0:
-        return Integer.class;
-      case 1:
         return String.class;
+      case 1:
+        return Integer.class;
       default:
         return Object.class;
     }
@@ -66,9 +65,9 @@ extends JTableModel<Organization>{
     Organization c = tuples.elementAt(line);
     switch (col) {
       case 0:
-        return c.getId();
-      case 1:
         return c.getName();
+      case 1:
+        return c.getReferent();
     }
     return null;
   }

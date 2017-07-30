@@ -1,5 +1,5 @@
 /*
- * @(#)PersonIO.java 2.15.0 26/07/2017
+ * @(#)PersonIO.java 2.15.0 30/07/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -51,17 +51,16 @@ public class PersonIO
 {
 
   public static final String TABLE = "personne";
-  public static final String ALIAS = "p";
-//  public static final String COLUMNS = "p.id,p.ptype,p.nom,p.prenom,p.civilite,p.droit_img,p.organisation,p.partenaire,p.pseudo";
-  public static final String COLUMNS = "p.id,p.ptype,p.nom,p.prenom,p.civilite,p.droit_img,p.partenaire,p.pseudo,coalesce(o.id,0),o.nom";
+  public static final String VIEW = "personnevue";
   public static final String SEQUENCE = "idper";
+  public static final String ALIAS = "p";
+  public static final String COLUMNS = "p.id,p.ptype,p.nom,p.prenom,p.civilite,p.droit_img,p.partenaire,p.pseudo,p.organisation,p.onom,p.oraison";
 
-  public static final String PRE_QUERY = "SELECT DISTINCT " + COLUMNS;
-  public static final String POST_QUERY = " FROM " + TABLE + " p LEFT JOIN " + OrganizationIO.TABLE + " o ON p.organisation = o.id ";
+  public static final String PRE_QUERY = "SELECT DISTINCT " + COLUMNS + " FROM " + VIEW + " p ";
 
   /** Next column number in joined queries. */
-  public static final int PERSON_COLUMNS_OFFSET = 11;
-  private static final String FIND_BY_ID_QUERY = PRE_QUERY + POST_QUERY + " WHERE p.id = ? LIMIT 1";
+  public static final int PERSON_COLUMNS_OFFSET = 12;
+  private static final String FIND_BY_ID_QUERY = PRE_QUERY + "WHERE p.id = ? LIMIT 1";
 
   private DataConnection dc;
   private PreparedStatement findByIdStmt;
@@ -87,13 +86,13 @@ public class PersonIO
       }
       ps.setBoolean(6, p.hasImgRights());
       ps.setBoolean(7, p.isPartnerInfo());
+
       if (p.getNickName() == null || p.getNickName().isEmpty()) {
         ps.setNull(8,java.sql.Types.VARCHAR);
       } else {
         ps.setString(8, p.getNickName());
       }
-      ps.setInt(9, p.getOrgId());
-
+      ps.setInt(9, p.getOrganization().getId());
       GemLogger.info(ps.toString());
 
       ps.executeUpdate();
@@ -112,13 +111,14 @@ public class PersonIO
         ps.setString(3, p.getGender());
       }
       ps.setBoolean(4, p.hasImgRights());
+
       ps.setBoolean(5, p.isPartnerInfo());
       if (p.getNickName() == null || p.getNickName().isEmpty()) {
         ps.setNull(6,java.sql.Types.VARCHAR);
       } else {
         ps.setString(6, p.getNickName());
       }
-      ps.setInt(7, p.getOrgId());
+      ps.setInt(7, p.getOrganization().getId());
       ps.setInt(8,p.getId());
 
       GemLogger.info(ps.toString());
@@ -128,7 +128,7 @@ public class PersonIO
   }
 
   public void delete(Person p) throws SQLException {
-    String query = "DELETE FROM " + TABLE + " WHERE id = " + p.getId() + " AND ptype > 0 AND ptype = " + p.getType();
+    String query = "DELETE FROM " + TABLE + " WHERE id = " + p.getId() + " AND ptype = " + p.getType();
     dc.executeUpdate(query);
   }
 
@@ -166,22 +166,20 @@ public class PersonIO
     String cv = rs.getString(5);
     p.setGender(cv != null ? cv.trim() : null);
     p.setImgRights(rs.getBoolean(6));
-    //p.setOrgName(unEscape(rs.getString(7)));
     p.setPartnerInfo(rs.getBoolean(7));
     String nickname = rs.getString(8);
     p.setNickName(nickname != null ? unEscape(nickname.trim()) : null);
-    int orgId = rs.getInt(9);
-    p.setOrgId(orgId);
-    if (orgId > 0) {
-      p.setOrgName(rs.getString(10));
-    }
+    Organization o = new Organization(rs.getInt(9));
+    o.setName(rs.getString(10));
+    o.setCompanyName(rs.getString(11));
+    p.setOrganization(o);
 
     return p;
   }
 
   public static Vector<Person> find(String where, DataConnection dc) {
     Vector<Person> v = new Vector<Person>();
-    String query = PRE_QUERY + POST_QUERY + where + " ORDER BY p.nom";
+    String query = PRE_QUERY +  where + " ORDER BY p.nom";
     try (ResultSet rs = dc.executeQuery(query)) {
       while (rs.next()) {
         v.addElement(getFromRS(rs));
@@ -211,7 +209,7 @@ public class PersonIO
    */
   public List<Person> load() throws SQLException {
     List<Person> lp = new ArrayList<Person>();
-    String query = "SELECT " + COLUMNS + " FROM  " + TABLE + " p"
+    String query = "SELECT " + COLUMNS + " FROM  " + VIEW + " p"
             + " WHERE p.id IN (SELECT debiteur FROM " + InvoiceIO.TABLE + ")"
             + " OR p.id IN (SELECT adherent FROM " + InvoiceIO.TABLE + ")";
     try (ResultSet rs = dc.executeQuery(query)) {

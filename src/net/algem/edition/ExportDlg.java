@@ -1,5 +1,5 @@
 /*
- * @(#)ExportDlg.java 2.15.0 26/07/2017
+ * @(#)ExportDlg.java 2.15.0 30/07/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -212,7 +212,7 @@ public abstract class ExportDlg
         Contact c = v.elementAt(i);
         cpt++;
         out.print(c.getId() + ";");
-        out.print(c.getOrgName() == null ? ";" : c.getOrgName() + ";");
+        out.print(c.getOrganization() == null || c.getOrganization().getName() == null ? ";" : c.getOrganization() + ";");
         out.print(c.getGender() + ";");
         out.print(c.getName() + ";");
         out.print(c.getFirstName() + ";");

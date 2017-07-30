@@ -1,7 +1,7 @@
 /*
- * @(#)PersonFileIO.java  2.11.0 21/09/16
+ * @(#)PersonFileIO.java  2.15.0 30/07/2017
  *
- * Copyright (c) 1999-2016 Musiques Tangentes All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -49,7 +49,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.0
+ * @version 2.15.0
  */
 public class PersonFileIO
         extends TableIO
@@ -232,16 +232,8 @@ public class PersonFileIO
 
   public Vector<PersonFile> findMembers(String where) {
     Vector<PersonFile> v = new Vector<PersonFile>();
-    String query = PersonIO.PRE_QUERY + "," + MemberIO.COLUMNS + PersonIO.POST_QUERY
-      + " JOIN " +  MemberIO.TABLE + " m ON p.id = m.idper";
-//            "SELECT " + PersonIO.COLUMNS + "," + MemberIO.COLUMNS
-//            + " + MemberIO.TABLE + " ";
-//    if (where != null) {
-//      query += where + " AND p.id = " + MemberIO.TABLE + ".idper";
-//    } else {
-//      query += " WHERE p.id = " + MemberIO.TABLE + ".idper";
-//    }
-
+    String query = "SELECT " + PersonIO.COLUMNS + "," + MemberIO.COLUMNS
+      + " FROM " + PersonIO.VIEW + " p JOIN " +  MemberIO.TABLE + " m ON p.id = m.idper";
     query += (where == null ? "" : " " + where) + " ORDER BY p.prenom,p.nom";
     try {
       ResultSet rs = dc.executeQuery(query);
@@ -276,7 +268,7 @@ public class PersonFileIO
   public Vector<PersonFile> findPayers(String where) {
     Vector<PersonFile> v = new Vector<>();
 //    String query = "SELECT " + PersonIO.COLUMNS + " FROM " + PersonIO.TABLE + " p";
-String query = PersonIO.PRE_QUERY + PersonIO.POST_QUERY;
+String query = PersonIO.PRE_QUERY;
     query += (where != null) ? (" " + where + " AND") :  " WHERE";
     query += " p.id IN (SELECT payeur FROM " + MemberIO.TABLE + ")";
     query += " ORDER BY p.nom,p.prenom";

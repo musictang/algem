@@ -1,5 +1,5 @@
 /*
- * @(#)ConfigOrganization.java 2.15.0 26/07/2017
+ * @(#)ConfigOrganization.java 2.15.0 30/07/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -52,6 +52,7 @@ import javax.swing.SwingConstants;
 import javax.swing.text.MaskFormatter;
 import net.algem.contact.Address;
 import net.algem.contact.AddressView;
+import net.algem.contact.Organization;
 import net.algem.contact.OrganizationIO;
 import net.algem.contact.PersonFile;
 import net.algem.contact.PersonFileEditor;
@@ -113,53 +114,57 @@ public class ConfigOrganization
 
   private void init() {
     try {
-      Company comp = orgIO.getDefault();
-      final int idper = comp.getIdper();
+      final Company comp = orgIO.getDefault();
+      final int idper = comp.getContact().getId();
       content = new GemPanel(new BorderLayout());
 
       JPanel panel = new JPanel(new GridBagLayout());
       GridBagHelper gb = new GridBagHelper(panel);
-      btName = new GemButton(comp.getContact().getOrgName());
+      btName = new GemButton(comp.getContact().getOrganization().getName());
       btName.setPreferredSize(new Dimension(200, btName.getPreferredSize().height));
       btName.setToolTipText(MessageUtil.getMessage("open.company.profile.tip"));
       btName.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-          showContactFile(idper);
+          if (idper > 0) {
+            showContactFile(idper);
+          } else {
+            MessagePopup.warning(desktop.getFrame(), MessageUtil.getMessage("company.no.contact.warning", comp.getOrg().getName()));
+          }
         }
       });
-
+      Organization org = comp.getOrg();
       MaskFormatter siretMask = MessageUtil.createFormatter("### ### ### #####");
       siretMask.setValueContainsLiteralCharacters(false);
       siret = new JFormattedTextField(siretMask);
       Dimension fieldDim = new Dimension(200, siret.getPreferredSize().height);
       siret.setPreferredSize(fieldDim);
       siret.setEditable(false);
-      siret.setValue(comp.getOrg().getSiret());
+      siret.setValue(org.getSiret());
 
       JTextField referent = new JTextField();
       referent.setEditable(false);
       referent.setPreferredSize(fieldDim);
-      referent.setText(comp.getContact().getFirstnameName());
+      referent.setText(comp.getReferent().getFirstnameName());
 
       naf = new JFormattedTextField(MessageUtil.createFormatter("AAAAA"));
       naf.setPreferredSize(fieldDim);
       naf.setEditable(false);
-      naf.setValue(comp.getOrg().getNafCode());
+      naf.setValue(org.getNafCode());
 
       MaskFormatter forProMask = MessageUtil.createFormatter("## ## ##### ##");
       forProMask.setValueContainsLiteralCharacters(false);
       forPro = new JFormattedTextField(forProMask);
       forPro.setPreferredSize(fieldDim);
       forPro.setEditable(false);
-      forPro.setValue(comp.getOrg().getFpCode());
+      forPro.setValue(org.getFpCode());
 
       MaskFormatter tvaMask = MessageUtil.createFormatter("AA AA AAA AAA AAA AAAAA");
       tvaMask.setValueContainsLiteralCharacters(false);
       tva = new JFormattedTextField(tvaMask);
       tva.setPreferredSize(fieldDim);
       tva.setEditable(false);
-      tva.setValue(comp.getOrg().getVatCode());
+      tva.setValue(org.getVatCode());
 
       domainName = new JTextField();
       domainName.setPreferredSize(fieldDim);
@@ -173,7 +178,7 @@ public class ConfigOrganization
 
       gb.add(new GemLabel(BundleUtil.getLabel("Name.label")), 0, 0, 1, 1, GridBagHelper.WEST);
       gb.add(btName, 1, 0, 1, 1, GridBagHelper.WEST);
-      gb.add(new GemLabel(BundleUtil.getLabel("Group.referent")), 0, 1, 1, 1, GridBagHelper.WEST);
+      gb.add(new GemLabel(BundleUtil.getLabel("Referent.label")), 0, 1, 1, 1, GridBagHelper.WEST);
       gb.add(referent, 1, 1, 1, 1, GridBagHelper.WEST);
 
       JLabel siretL = new JLabel(BundleUtil.getLabel("Organization.SIRET.label"));

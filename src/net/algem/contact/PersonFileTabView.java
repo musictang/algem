@@ -1,7 +1,7 @@
 /*
- * @(#)PersonFileTabView.java  2.11.3 17/10/16
+ * @(#)PersonFileTabView.java  2.15.0 30/07/2017
  *
- * Copyright (c) 1999-2016 Musiques Tangentes All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -67,7 +67,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.3
+ * @version 2.15.0
  */
 public class PersonFileTabView
         extends FileTabView
@@ -208,7 +208,7 @@ public class PersonFileTabView
     if (dossier.getRib() != null) {
       addBankTab();
     }
-    
+
     saveBt = closeToolbar.addIcon(BundleUtil.getLabel("Contact.save.icon"),
             GemCommand.SAVE_CMD,
             BundleUtil.getLabel("Save.tip"));
@@ -318,7 +318,8 @@ public class PersonFileTabView
       if (parent != null) {
         String name = "";
         if (parent.getContact() != null) {
-          String org = parent.getContact().getOrgName();
+          Organization o = parent.getContact().getOrganization();
+          String org = o == null ? null : o.getCompanyName();
           name = (org == null || org.isEmpty()) ? parent.getContact().getFirstnameName() : org;
         }
         memberEditor.setPayer(parent.getId(), name);
@@ -671,7 +672,7 @@ public class PersonFileTabView
   boolean addHistoSubscriptionTab() {
     if (histoSubscriptionCard == null) {
       histoSubscriptionCard = new HistoSubscriptionCard(desktop, dossier.getId(), listener, memberService);
-    }  
+    }
     histoSubscriptionCard.load();
     if (!histoSubscriptionCard.isLoaded()) {
       return false;

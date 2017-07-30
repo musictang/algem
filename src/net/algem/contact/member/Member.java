@@ -1,7 +1,7 @@
 /*
- * @(#)Member.java	2.9.4.13 03/11/15
- * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * @(#)Member.java	2.15.0 30/07/2017
+ *
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.contact.member;
 
@@ -30,14 +30,14 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.15.0
  */
 public class Member
         implements GemModel, Cloneable
 {
 
   private static final long serialVersionUID = -8119742313674776277L;
-  
+
   private int id;
   private String occupation;
   private DateFr birth;
@@ -46,6 +46,8 @@ public class Member
   private int practice;
   private int level;
   private List<Integer> instruments;
+  private String insurance;
+  private String insuranceRef;
 
   public Member(int _id) {
     id = _id;
@@ -91,7 +93,12 @@ public class Member
     if (this.instruments != other.instruments && (this.instruments == null || !this.instruments.equals(other.instruments))) {
       return false;
     }
-    
+    if ((this.insurance == null) ? (other.insurance != null) : !this.insurance.equals(other.insurance)) {
+      return false;
+    }
+    if ((this.insuranceRef == null) ? (other.insuranceRef != null) : !this.insuranceRef.equals(other.insuranceRef)) {
+      return false;
+    }
     return true;
   }
 
@@ -105,6 +112,8 @@ public class Member
     hash = 47 * hash + this.practice;
     hash = 47 * hash + this.level;
     hash = 47 * hash + (this.instruments != null ? this.instruments.hashCode() : 0);
+    hash = 47 * hash + (this.insurance != null ? this.insurance.hashCode() : 0);
+    hash = 47 * hash + (this.insuranceRef != null ? this.insuranceRef.hashCode() : 0);
     return hash;
   }
 
@@ -145,7 +154,7 @@ public class Member
   public void setInstruments(List<Integer> instruments) {
     this.instruments = instruments;
   }
-  
+
   public int getFirstInstrument() {
     return instruments == null || instruments.isEmpty() ? 0 : instruments.get(0);
   }
@@ -182,6 +191,22 @@ public class Member
     return practice;
   }
 
+  public String getInsurance() {
+    return insurance;
+  }
+
+  public void setInsurance(String insurance) {
+    this.insurance = insurance;
+  }
+
+  public String getInsuranceRef() {
+    return insuranceRef;
+  }
+
+  public void setInsuranceRef(String insuranceRef) {
+    this.insuranceRef = insuranceRef;
+  }
+
   public boolean isValid() {
     return true;
     // && instrument1.length() > 1;
@@ -196,5 +221,5 @@ public class Member
   public Object clone() throws CloneNotSupportedException {
     return super.clone();
   }
-  
+
 }

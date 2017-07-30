@@ -1,7 +1,7 @@
 /*
- * @(#)TeacherIO.java	2.9.4.0 06/04/15
+ * @(#)TeacherIO.java	2.15.0 30/07/2017
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -42,7 +42,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.0
+ * @version 2.15.0
  */
 public class TeacherIO
         extends TableIO
@@ -150,7 +150,7 @@ public class TeacherIO
 
   public Vector<Teacher> find(String where) throws SQLException {
     Vector<Teacher> v = new Vector<Teacher>();
-    String query = "SELECT " + COLUMNS + ", nom, prenom FROM " + TABLE + " t, " + PersonIO.TABLE + " p WHERE t.idper = p.id " + where;
+    String query = "SELECT " + COLUMNS + ", nom, prenom FROM " + TABLE + " t, " + PersonIO.VIEW + " p WHERE t.idper = p.id " + where;
     String order = ConfigUtil.getConf(ConfigKey.PERSON_SORT_ORDER.getKey());
 
     query += " ORDER BY " + (order == null || order.toLowerCase().startsWith("n") ? "p.nom, p.prenom" : "p.prenom, p.nom");

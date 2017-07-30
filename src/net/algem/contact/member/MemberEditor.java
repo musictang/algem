@@ -1,7 +1,7 @@
 /*
- * @(#)MemberEditor.java	2.12.0 14/03/17
+ * @(#)MemberEditor.java	2.15.0 30/07/2017
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -49,7 +49,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.12.0
+ * @version 2.15.0
  */
 public class MemberEditor
         extends FileTab
@@ -64,6 +64,8 @@ public class MemberEditor
   private GemField payerName;
   private GemNumericField practice;
   private GemNumericField level;
+  private GemField insurance;
+  private GemField insuranceRef;
   private int id;
   private InstrumentView instrument;
 
@@ -83,6 +85,8 @@ public class MemberEditor
     payerName.setBackground(Color.lightGray);
     practice = new GemNumericField(3);
     level = new GemNumericField(3);
+    insurance = new GemField(20);
+    insuranceRef = new GemField(20);
 
     age = new GemNumericField(3);
     age.setEditable(false);
@@ -98,6 +102,13 @@ public class MemberEditor
     gb.add(new GemLabel(BundleUtil.getLabel("Practical.experience.label")), 0, 5, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Level.label")), 0, 6, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Payer.label")), 0, 7, 1, 1, GridBagHelper.WEST);
+    GemLabel insuranceL = new GemLabel(BundleUtil.getLabel("Insurance.label"));
+    insuranceL.setToolTipText(BundleUtil.getLabel("Insurance.tip"));
+    GemLabel insuranceRefL = new GemLabel(BundleUtil.getLabel("Insurance.ref.label"));
+    insuranceRefL.setToolTipText(BundleUtil.getLabel("Insurance.ref.tip"));
+    gb.add(insuranceL, 0, 8, 1, 1, GridBagHelper.WEST);
+    gb.add(insuranceRefL, 0, 9, 1, 1, GridBagHelper.WEST);
+
     gb.add(instrument, 1, 0, 3, 1, GridBagHelper.WEST);
     occupation.setPreferredSize(new Dimension(200, occupation.getPreferredSize().height));
     gb.add(occupation, 1, 2, 2, 1, GridBagHelper.WEST);
@@ -108,6 +119,8 @@ public class MemberEditor
     gb.add(level, 1, 6, 2, 1, GridBagHelper.WEST);
     gb.add(payer, 1, 7, 1, 1, GridBagHelper.WEST);
     gb.add(payerName, 2, 7, 1, 1, GridBagHelper.WEST);
+    gb.add(insurance, 1, 8, 2, 1, GridBagHelper.WEST);
+    gb.add(insuranceRef, 1, 9, 2, 1, GridBagHelper.WEST);
 
     this.setLayout(new BorderLayout());
     add(p, BorderLayout.CENTER);
@@ -175,6 +188,8 @@ public class MemberEditor
       m.setPayer(0);
     }
     m.setInstruments(instrument.get());
+    m.setInsurance(insurance.getText().isEmpty() ? null : insurance.getText());
+    m.setInsuranceRef(insuranceRef.getText().isEmpty() ? null : insuranceRef.getText());
     return m;
   }
 
@@ -197,6 +212,9 @@ public class MemberEditor
     level.setText(String.valueOf(m.getLevel()));
     payer.setText(String.valueOf(m.getPayer()));
     loadPayeur(m.getPayer());
+
+    insurance.setText(m.getInsurance());
+    insuranceRef.setText(m.getInsuranceRef());
   }
 
   public void setPayer(int _id, String name) {
@@ -219,7 +237,7 @@ public class MemberEditor
     }
     Person p = ((PersonIO) DataCache.getDao(Model.Person)).findById(_id);
     if (p != null) {
-      String org = p.getOrgName();
+      String org = p.getOrganization() != null ? p.getOrganization().getCompanyName() : null;
       payerName.setText(org == null || org.isEmpty() ? p.getFirstnameName() : org);
     } else {
       payerName.setText(BundleUtil.getLabel("Unknown.label"));
@@ -234,6 +252,8 @@ public class MemberEditor
     nMemberships.setText("");
     payer.setText("");
     payerName.setText("");
+    insurance.setText(null);
+    insuranceRef.setText(null);
   }
 
   @Override

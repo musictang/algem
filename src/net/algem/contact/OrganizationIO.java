@@ -38,6 +38,7 @@ import net.algem.util.model.TableIO;
 public class OrganizationIO extends TableIO {
 
   public static final String TABLE = "organisation";
+  public static final String COLUMNS = "id,nom,idper,raison,siret,naf,codefp,codetva";
   public static final String LOGO_COL = "logo";
   public static final String STAMP_COL = "stamp";
   private static final String SEQUENCE = "organisation_id_seq";
@@ -49,28 +50,10 @@ public class OrganizationIO extends TableIO {
   }
 
   public Organization findId(int id) throws SQLException {
-    if (id == 0) {
-      return null;
-    }
-    String query = "SELECT id,nom,raison,siret,naf,codefp,tva FROM " + TABLE + " WHERE id=?";
+
+    String query = "SELECT " + COLUMNS + " FROM " + TABLE + " WHERE id=?";
     try (PreparedStatement ps = dc.prepareStatement(query)) {
       ps.setInt(1, id);
-      GemLogger.info(ps.toString());
-      ResultSet rs = ps.executeQuery();
-      while (rs.next()) {
-        return getFromRS(rs);
-      }
-      return null;
-    }
-  }
-
-  public Organization findId(String name) throws SQLException {
-    if (name == null) {
-      return null;
-    }
-    String query = "SELECT id,nom,raison,siret,naf,codefp,tva FROM " + TABLE + " WHERE nom ~* ?";
-    try (PreparedStatement ps = dc.prepareStatement(query)) {
-      ps.setString(1, name);
       GemLogger.info(ps.toString());
       ResultSet rs = ps.executeQuery();
       while (rs.next()) {
@@ -83,9 +66,9 @@ public class OrganizationIO extends TableIO {
   public List<Organization> find(String name) throws SQLException {
     List<Organization> orgs = new ArrayList<>();
     if (name != null) {
-      String query = "SELECT id,nom,raison,siret,naf,codefp,tva FROM " + TABLE + " WHERE nom ~* ?";
+      String query = "SELECT " + COLUMNS + " FROM " + TABLE + " WHERE lower(nom) LIKE ?";
       try (PreparedStatement ps = dc.prepareStatement(query)) {
-        ps.setString(1, name);
+        ps.setString(1, name.toLowerCase() + "%");
         GemLogger.info(ps.toString());
         ResultSet rs = ps.executeQuery();
         while (rs.next()) {
@@ -96,23 +79,84 @@ public class OrganizationIO extends TableIO {
     return orgs;
   }
 
+  public List<Person> findMembers(int orgId) throws SQLException {
+    List<Person> pers = new ArrayList<>();
+    if (orgId > 0) {
+      String query = "SELECT p.id,CASE WHEN p.nom IS NULL OR p.nom = '' THEN o.nom ELSE p.nom END,p.prenom FROM " + PersonIO.TABLE + " p JOIN organisation o ON p.organisation = o.id WHERE o.id = ? ORDER BY p.prenom";
+      try (PreparedStatement ps = dc.prepareStatement(query)) {
+        ps.setInt(1, orgId);
+        GemLogger.info(ps.toString());
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+          Person p = new Person(rs.getInt(1));
+          p.setName(rs.getString(2));
+          p.setOrganization(new Organization());
+          p.setFirstName(rs.getString(3));
+          pers.add(p);
+        }
+      }
+    }
+    return pers;
+  }
+
   private Organization getFromRS(ResultSet rs) throws SQLException {
     Organization org = new Organization(rs.getInt(1));
     org.setName(rs.getString(2));
-    org.setCompanyName(rs.getString(3));
-    org.setSiret(rs.getString(4));
-    org.setNafCode(rs.getString(5));
-    org.setFpCode(rs.getString(6));
-    org.setVatCode(rs.getString(7));
+    org.setReferent(rs.getInt(3));
+    org.setCompanyName(rs.getString(4));
+    org.setSiret(rs.getString(5));
+    org.setNafCode(rs.getString(6));
+    org.setFpCode(rs.getString(7));
+    org.setVatCode(rs.getString(8));
     return org;
   }
 
   public void create(Organization org) throws SQLException {
-    int next = nextId(SEQUENCE, dc);
-    String query = "INSERT INTO " + TABLE + " VALUES(?,?,?,?,?,?,?)";
+    int nextId = nextId(SEQUENCE, dc);
+
+    String query = "INSERT INTO " + TABLE + " VALUES(?,?,?,?,?,?,?,?)";
     try (PreparedStatement ps = dc.prepareStatement(query)) {
-      ps.setInt(1, next);
+      ps.setInt(1, nextId);
       ps.setString(2, org.getName());
+      ps.setInt(3,org.getReferent());
+      if (org.getCompanyName() == null || org.getCompanyName().trim().isEmpty()) {
+        ps.setNull(4, java.sql.Types.VARCHAR);
+      } else {
+        ps.setString(4, org.getCompanyName());
+      }
+      if (org.getSiret() == null || org.getSiret().trim().isEmpty()) {
+        ps.setNull(5, java.sql.Types.VARCHAR);
+      } else {
+        ps.setString(5, org.getSiret());
+      }
+      if (org.getNafCode() == null || org.getNafCode().trim().isEmpty()) {
+        ps.setNull(6, java.sql.Types.VARCHAR);
+      } else {
+        ps.setString(6, org.getNafCode());
+      }
+      if (org.getFpCode() == null || org.getFpCode().trim().isEmpty()) {
+        ps.setNull(7, java.sql.Types.VARCHAR);
+      } else {
+        ps.setString(7, org.getFpCode());
+      }
+      if (org.getVatCode() == null || org.getVatCode().trim().isEmpty()) {
+        ps.setNull(8, java.sql.Types.VARCHAR);
+      } else {
+        ps.setString(8, org.getVatCode());
+      }
+
+      GemLogger.info(ps.toString());
+      ps.executeUpdate();
+      org.setId(nextId);
+    }
+
+  }
+
+  public void update(Organization org) throws SQLException {
+    String query = "UPDATE " + TABLE + " SET nom=?,idper=?,raison=?,siret=?,naf=?,codefp=?,codetva=? WHERE id=?";
+    try (PreparedStatement ps = dc.prepareStatement(query)) {
+      ps.setString(1, org.getName());
+      ps.setInt(2, org.getReferent());
       if (org.getCompanyName() == null || org.getCompanyName().trim().isEmpty()) {
         ps.setNull(3, java.sql.Types.VARCHAR);
       } else {
@@ -139,44 +183,7 @@ public class OrganizationIO extends TableIO {
         ps.setString(7, org.getVatCode());
       }
 
-      GemLogger.info(ps.toString());
-      ps.executeUpdate();
-      org.setId(next);
-    }
-
-  }
-
-  public void update(Organization org) throws SQLException {
-    String query = "UPDATE " + TABLE + " SET nom=?,raison=?,siret=?,naf=?,codefp=?,tva=? WHERE id=?";
-    try (PreparedStatement ps = dc.prepareStatement(query)) {
-      ps.setString(1, org.getName());
-      if (org.getCompanyName() == null || org.getCompanyName().trim().isEmpty()) {
-        ps.setNull(2, java.sql.Types.VARCHAR);
-      } else {
-        ps.setString(2, org.getCompanyName());
-      }
-      if (org.getSiret() == null || org.getSiret().trim().isEmpty()) {
-        ps.setNull(3, java.sql.Types.VARCHAR);
-      } else {
-        ps.setString(3, org.getSiret());
-      }
-      if (org.getNafCode() == null || org.getNafCode().trim().isEmpty()) {
-        ps.setNull(4, java.sql.Types.VARCHAR);
-      } else {
-        ps.setString(4, org.getNafCode());
-      }
-      if (org.getFpCode() == null || org.getFpCode().trim().isEmpty()) {
-        ps.setNull(5, java.sql.Types.VARCHAR);
-      } else {
-        ps.setString(5, org.getFpCode());
-      }
-      if (org.getVatCode() == null || org.getVatCode().trim().isEmpty()) {
-        ps.setNull(6, java.sql.Types.VARCHAR);
-      } else {
-        ps.setString(6, org.getVatCode());
-      }
-
-      ps.setInt(7, org.getId());
+      ps.setInt(8, org.getId());
 
       GemLogger.info(ps.toString());
       ps.executeUpdate();
@@ -186,16 +193,18 @@ public class OrganizationIO extends TableIO {
 
   public Company getDefault() throws SQLException {
 
-    String query = "SELECT idper,domaine,logo,stamp FROM societe WHERE id=1";
+    String query = "SELECT p.id,s.domaine,s.logo,s.stamp FROM personne p JOIN societe s ON p.id = s.idper WHERE s.id=1";
     try (ResultSet rs = dc.executeQuery(query)) {
       while (rs.next()) {
-        Company c = new Company(rs.getInt(1));
+        Company c = new Company();
+        
         c.setDomain(rs.getString(2));
         c.setLogo(rs.getBytes(3));
         c.setStamp(rs.getBytes(4));
 
-        c.setOrg(OrganizationIO.this.findId(c.getIdper()));
-        c.setContact(ContactIO.findId(c.getIdper(), dc));
+        c.setContact(ContactIO.findId(rs.getInt(1), dc));
+        c.setOrg(OrganizationIO.this.findId(c.getContact().getOrganization().getId()));
+        c.setReferent(ContactIO.findId(c.getOrg().getReferent(), dc));
 
         return c;
       }

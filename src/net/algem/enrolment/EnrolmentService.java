@@ -1,5 +1,5 @@
 /*
- * @(#)EnrolmentService.java	2.15.0 26/07/2017
+ * @(#)EnrolmentService.java	2.15.0 30/07/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -390,8 +390,8 @@ public class EnrolmentService
    * @return a list of person files
    */
   public static Vector<PersonFile> findMembersByPlanning(Schedule plan) {
-    String query = PersonIO.PRE_QUERY + "," + MemberIO.COLUMNS + PersonIO.POST_QUERY
-      + " JOIN " + MemberIO.TABLE + " m ON p.id = m.idper"
+    String query = "SELECT " + PersonIO.COLUMNS + "," + MemberIO.COLUMNS
+      + " FROM " + PersonIO.VIEW + " p JOIN " + MemberIO.TABLE + " m ON p.id = m.idper"
       + " JOIN " + ScheduleRangeIO.TABLE + " pl ON p.id = pl.adherent "
       + " WHERE pl.idplanning = " + plan.getId();
     return ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findRegistered(query);

@@ -1,5 +1,5 @@
 /*
- * @(#)MemberIO.java	2.13.0 31/03/17
+ * @(#)MemberIO.java	2.15.0 30/07/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -23,6 +23,7 @@ package net.algem.contact.member;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.List;
 import java.util.Vector;
 import net.algem.config.Instrument;
@@ -38,7 +39,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.13.0
+ * @version 2.15.0
  * @since 1.0a 07/07/1999
  */
 public class MemberIO
@@ -46,10 +47,10 @@ public class MemberIO
         implements Cacheable
 {
 
-  public static final String COLUMNS = "idper,profession,datenais,payeur,nadhesions,pratique,niveau";
+  public static final String COLUMNS = "idper,profession,datenais,payeur,nadhesions,pratique,niveau,assurance,assuranceref";
   public static final String TABLE = "eleve";
-  private static final String CREATE_QUERY = "INSERT INTO " + TABLE + " VALUES(?,?,?,?,?,?,?)";
-  private static final String UPDATE_QUERY = "UPDATE " + TABLE + " SET profession=?,datenais=?,payeur=?,nadhesions=?,pratique=?,niveau=? WHERE idper=?";
+  private static final String CREATE_QUERY = "INSERT INTO " + TABLE + " VALUES(?,?,?,?,?,?,?,?,?)";
+  private static final String UPDATE_QUERY = "UPDATE " + TABLE + " SET profession=?,datenais=?,payeur=?,nadhesions=?,pratique=?,niveau=?,assurance=?,assuranceref=? WHERE idper=?";
 
   private DataConnection dc;
 
@@ -78,6 +79,16 @@ public class MemberIO
       createPs.setInt(5, m.getMembershipCount());
       createPs.setInt(6, m.getPractice());
       createPs.setInt(7, m.getLevel());
+      if (m.getInsurance() == null || m.getInsurance().isEmpty()) {
+        createPs.setNull(8, Types.VARCHAR);
+      } else {
+        createPs.setString(8, m.getInsurance());
+      }
+       if (m.getInsuranceRef() == null || m.getInsuranceRef().isEmpty()) {
+        createPs.setNull(9, Types.VARCHAR);
+      } else {
+        createPs.setString(9, m.getInsuranceRef());
+      }
       createPs.executeUpdate();
     }
     InstrumentIO.insert(m.getInstruments(), m.getId(), Instrument.MEMBER, dc);
@@ -99,7 +110,19 @@ public class MemberIO
       updatePs.setInt(4, m.getMembershipCount());
       updatePs.setInt(5, m.getPractice());
       updatePs.setInt(6, m.getLevel());
-      updatePs.setInt(7, m.getId());
+      if (m.getInsurance() == null || m.getInsurance().isEmpty()) {
+        updatePs.setNull(7, Types.VARCHAR);
+      } else {
+        updatePs.setString(7, m.getInsurance());
+      }
+       if (m.getInsuranceRef() == null || m.getInsuranceRef().isEmpty()) {
+        updatePs.setNull(8, Types.VARCHAR);
+      } else {
+        updatePs.setString(8, m.getInsuranceRef());
+      }
+
+      updatePs.setInt(9, m.getId());
+
       updatePs.executeUpdate();
     }
     InstrumentIO.delete(m.getId(), Instrument.MEMBER, dc);
@@ -135,16 +158,18 @@ public class MemberIO
   }
 
   public Member getFromRS(ResultSet rs, int col) throws SQLException {
-    Member member = new Member(rs.getInt(col++));
+    Member m = new Member(rs.getInt(col++));
     String occup = rs.getString(col++);
-    member.setOccupation(occup == null ? BundleUtil.getLabel("None.label") : occup.trim());
-    member.setBirth(new DateFr(rs.getString(col++)));
-    member.setPayer(rs.getInt(col++));
-    member.setMembershipCount(rs.getInt(col++));
-    member.setPractice(rs.getInt(col++));
-    member.setLevel(rs.getInt(col++));
+    m.setOccupation(occup == null ? BundleUtil.getLabel("None.label") : occup.trim());
+    m.setBirth(new DateFr(rs.getString(col++)));
+    m.setPayer(rs.getInt(col++));
+    m.setMembershipCount(rs.getInt(col++));
+    m.setPractice(rs.getInt(col++));
+    m.setLevel(rs.getInt(col++));
+    m.setInsurance(rs.getString(col++));
+    m.setInsuranceRef(rs.getString(col++));
 
-    return member;
+    return m;
   }
 
   public Vector<Member> find(String where) throws SQLException {

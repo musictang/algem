@@ -1,5 +1,5 @@
 /*
- * @(#)GroupView.java	2.15.0 26/07/2017
+ * @(#)GroupView.java	2.15.0 30/07/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -67,7 +67,7 @@ public class GroupView
   /** Default datasheet dir name. */
   private static final String DATASHEET_DIR = "fiche-technique";
 
-  /** Default stage plan name. */
+  /** Default stage dir name. */
   static final String STAGE_DIR = "plan-scene";
 
 
@@ -233,10 +233,10 @@ public class GroupView
     if (n != null && n.length() > 0 ) {
       return n;
     }
-    n = c.getOrgName();
+    /*n = c.getOrganization();
     if (n != null && n.length() > 0) {
       return n;
-    }
+    }*/
     return String.valueOf(c.getId());
   }
 
@@ -337,7 +337,7 @@ public class GroupView
 
   /** Initialisation des boutons du panneau central. */
   private void initButtons() {
-    refBt = new GemButton(BundleUtil.getLabel("Group.referent"));
+    refBt = new GemButton(BundleUtil.getLabel("Referent.label"));
     set(refBt, "setREF");
 
     manBt = new GemButton(BundleUtil.getLabel("Group.manager"));

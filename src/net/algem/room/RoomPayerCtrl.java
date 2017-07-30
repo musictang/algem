@@ -1,7 +1,7 @@
 /*
- * @(#)RoomPayerCtrl.java 2.7.l 11/03/13
- * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * @(#)RoomPayerCtrl.java 2.15.0 30/07/2017
+ *
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.room;
 
@@ -33,7 +33,7 @@ import net.algem.util.ui.GemPanel;
 /**
  * TODO reuse in person file
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.7.l
+ * @version 2.15.0
  * @since 2.2.b
  */
 public class RoomPayerCtrl
@@ -70,7 +70,7 @@ public class RoomPayerCtrl
     if (p.getId() == room.getContact().getId()) {
       payerName.setText(BundleUtil.getLabel("Himself.label"));
     } else {
-      String org = p.getOrgName();
+      String org = p.getOrganization() == null ? null : p.getOrganization().getCompanyName();
       payerName.setText(org == null || org.isEmpty() ? p.getFirstnameName() : org);
     }
     room.setPayer(p);

@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileSearchCtrl.java 2.15.0 26/07/2017
+ * @(#)PersonFileSearchCtrl.java 2.15.0 30/07/2017
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -50,7 +50,7 @@ public class PersonFileSearchCtrl
 
   private GemDesktop desktop;
   private String query;
-  private String cquery = "DECLARE pc CURSOR FOR " + PersonIO.PRE_QUERY + PersonIO.POST_QUERY;
+  private String cquery = "DECLARE pc CURSOR FOR " + PersonIO.PRE_QUERY;
   private PersonFileEditor dossier;
   private Contact currentContact;
   private GemEventListener gemListener;
@@ -89,7 +89,7 @@ public class PersonFileSearchCtrl
     if (id > 0) {
       query = "WHERE p.id = " + id;
     } else if ((org = searchView.getField(1)) != null) {
-      query = "WHERE translate(lower(o.nom),'" + TRANSLATE_FROM + "', '" + TRANSLATE_TO + "') ~* '"
+      query = "JOIN " + OrganizationIO.TABLE + " o ON p.organisation = o.id WHERE translate(lower(o.nom),'" + TRANSLATE_FROM + "', '" + TRANSLATE_TO + "') ~* '"
               + TableIO.normalize(org) + "'";
     } else if ((name = searchView.getField(2)) != null) {
       query = "WHERE translate(lower(p.nom),'" + TRANSLATE_FROM + "', '" + TRANSLATE_TO + "') ~* '"
@@ -235,9 +235,9 @@ public class PersonFileSearchCtrl
   private Contact preFill() {
     Contact c = new Contact();
     String org = searchView.getField(1);
-    if (org != null && org.length() > 0) {
-     c.setOrgName(org);
-    }
+    /*if (org != null && org.length() > 0) {
+     c.setOrganization(org);
+    }*/
     String name = searchView.getField(2);
     if (name != null && name.length() > 0) {
       c.setName(name);

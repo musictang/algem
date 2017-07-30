@@ -1,5 +1,5 @@
 /*
- * @(#)InvoiceView.java 2.15.0 24/07/17
+ * @(#)InvoiceView.java 2.15.0 30/07/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -149,7 +149,8 @@ public class InvoiceView
         try {
           int id = Integer.parseInt(payerId.getText());
           Person p = (Person) DataCache.findId(id, Model.Person);
-          payerName.setText(p.getOrgName() != null && p.getOrgName().length() > 0 ? p.getOrgName() : p.getFirstnameName());
+          String org = p.getOrganization() != null ? p.getOrganization().getCompanyName() : null;
+          payerName.setText(org != null && org.length() > 0 ? org : p.getFirstnameName());
         } catch (Exception ex) {
           GemLogger.log(ex.getMessage());
         }

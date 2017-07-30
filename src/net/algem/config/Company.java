@@ -1,5 +1,5 @@
 /*
- * @(#) Company.java Algem 2.15.0 25/07/2017
+ * @(#) Company.java Algem 2.15.0 30/07/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -22,6 +22,7 @@ package net.algem.config;
 
 import net.algem.contact.Contact;
 import net.algem.contact.Organization;
+import net.algem.contact.Person;
 
 /**
  *
@@ -31,28 +32,39 @@ import net.algem.contact.Organization;
  */
 public class Company {
 
-//  private int id;
-  private int idper;
   private String domain;
   private byte[] logo;
   private byte[] stamp;
 
   private Organization org;
   private Contact contact;
+  private Person referent;
 
   public Company() {
   }
 
-  public Company(int idper) {
-    this.idper = idper;
+  public Organization getOrg() {
+    return org;
   }
 
-  public int getIdper() {
-    return idper;
+  public void setOrg(Organization org) {
+    this.org = org;
   }
 
-  public void setIdper(int idper) {
-    this.idper = idper;
+  public Contact getContact() {
+    return contact;
+  }
+
+  public Person getReferent() {
+    return referent;
+  }
+
+  public void setReferent(Person referent) {
+    this.referent = referent;
+  }
+
+  public void setContact(Contact contact) {
+    this.contact = contact;
   }
 
   public String getDomain() {
@@ -78,48 +90,5 @@ public class Company {
   public void setStamp(byte[] stamp) {
     this.stamp = stamp;
   }
-
-  public Organization getOrg() {
-    return org;
-  }
-
-  public void setOrg(Organization org) {
-    this.org = org;
-  }
-
-  public Contact getContact() {
-    return contact;
-  }
-
-  public void setContact(Contact contact) {
-    this.contact = contact;
-  }
-  
-
-  @Override
-  public int hashCode() {
-    int hash = 5;
-    hash = 41 * hash + this.idper;
-    return hash;
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    final Company other = (Company) obj;
-    if (this.idper != other.idper) {
-      return false;
-    }
-    return true;
-  }
-
 
 }

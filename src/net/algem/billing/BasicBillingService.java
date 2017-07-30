@@ -1,5 +1,5 @@
 /*
- * @(#)BasicBillingService 2.14.0 20/06/17
+ * @(#)BasicBillingService 2.15.0 30/07/2017
  *
  * Copyright 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -26,6 +26,7 @@ import net.algem.accounting.*;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
 import net.algem.config.Param;
+import net.algem.contact.Organization;
 import net.algem.contact.Person;
 import net.algem.planning.DateFr;
 import net.algem.planning.DateRange;
@@ -42,7 +43,7 @@ import net.algem.util.model.Model;
  * Service class for billing.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.14.0
+ * @version 2.15.0
  * @since 2.3.a 06/02/12
  */
 public class BasicBillingService
@@ -194,10 +195,12 @@ public class BasicBillingService
   public String getContact(int id)  {
     try {
       Person p = (Person) DataCache.findId(id, Model.Person);
-      if (p.getOrgName() != null && !p.getOrgName().isEmpty()) {
-        return p.getOrgName();
+      if (p == null) {
+        return "";
       }
-      return p != null ? p.getFirstnameName() : "";
+      Organization o = p.getOrganization();
+      String oName = o == null ? null : o.getCompanyName();
+      return oName != null && oName.length() > 0 ? oName : p.getFirstnameName();
     } catch (SQLException ex) {
        GemLogger.logException(ex);
        return "";
@@ -264,7 +267,7 @@ public class BasicBillingService
 
     assert(items.size() > 0);
 
-    double total = getTotaByAccount(items); 
+    double total = getTotaByAccount(items);
 if (total <= 0 || (total - inv.getDownPayment()) <= 0) return; //XXX TEST
     InvoiceItem item = items.get(0);
     Account c = (Account) DataCache.findId(item.getItem().getAccount(), Model.Account);
@@ -485,15 +488,15 @@ if (total <= 0 || (total - inv.getDownPayment()) <= 0) return; //XXX TEST
         e = copy(it.getItem());
         excTotal += e.getPrice();
       }
-      
+
       if (e != null && excTotal > 0.0) {
         e.setPrice(excTotal);
         vItem.setItem(e);
         n.items.add(vItem);
       }
-      
+
     }
-    
+
     return n;
   }
 

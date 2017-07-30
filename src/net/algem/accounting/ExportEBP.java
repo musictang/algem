@@ -1,5 +1,5 @@
 /*
- * @(#) ExportEBP.java Algem 2.15.0 14/07/2017
+ * @(#) ExportEBP.java Algem 2.15.0 30/07/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -40,6 +40,7 @@ import java.util.Vector;
 import net.algem.billing.VatIO;
 import net.algem.contact.Contact;
 import net.algem.contact.ContactIO;
+import net.algem.contact.Organization;
 import net.algem.contact.Telephone;
 import net.algem.util.DataConnection;
 import net.algem.util.FileUtil;
@@ -327,8 +328,9 @@ extends CommonAccountExportService
     for (Map.Entry<String, Contact> entry : map.entrySet()) {
       sb.append(entry.getKey()).append(c);//account number
       Contact v = entry.getValue();
-      String org = v.getOrgName();
-      String vName = org == null || org.isEmpty() ? v.getNameFirstname() : v.getOrgName();
+      Organization o = v.getOrganization();
+      String org = o == null ? null : o.getCompanyName();
+      String vName = org == null || org.isEmpty() ? v.getNameFirstname() : org;
       sb.append(vName).append(c);//account label
       String companyName = (org == null || org.isEmpty() ? "" : org);
       sb.append(companyName).append(c);//company name
