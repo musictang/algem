@@ -25,23 +25,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.TableColumnModel;
 import net.algem.course.Module;
-import net.algem.util.BundleUtil;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
-import static net.algem.util.model.Model.Module;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.FileTab;
 import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GemPanel;
-import net.algem.util.ui.JTableModel;
 import net.algem.util.ui.MessagePopup;
 
 /**
@@ -56,7 +51,7 @@ public class TrainingContractHistory
 
   private JTable table;
   private int idper;
-  private JTableModel<TrainingContract> tableModel;
+  private TrainingContractTableModel tableModel;
   private TrainingContractIO contractIO;
   private GemButton btDelete, btCreate, btEdit;
   private Enrolment lastEnrolment;
@@ -99,15 +94,6 @@ public class TrainingContractHistory
     add(buttons, BorderLayout.SOUTH);
   }
 
-//  @Override
-//  public void validation() {
-//
-//  }
-//
-//  @Override
-//  public void cancel() {
-//
-//  }
   @Override
   public void load() {
     tableModel.clear();
@@ -140,9 +126,10 @@ public class TrainingContractHistory
       if (lastEnrolment != null) {
         try {
           Module m = contractIO.getModuleInfo(lastEnrolment.getId());
+          c.setPersonId(idper);
+          c.setOrderId(lastEnrolment.getId());
           c.setTotal(m.getBasePrice());
           c.setLabel(m.getTitle());
-
           c.setInternalVolume(contractIO.getVolume(lastEnrolment.getId()));
         } catch (SQLException ex) {
           GemLogger.logException(ex);
@@ -165,10 +152,20 @@ public class TrainingContractHistory
   }
 
   private void openContract(TrainingContract c) {
-    TrainingContractEditor editor = new TrainingContractEditor(desktop, BundleUtil.getLabel("Training.contract.label"), false);
-editor.createUI();
+    TrainingContractEditor editor = new TrainingContractEditor(this, contractIO, desktop);
+    editor.createUI();
     editor.setContract(c);
-
+  }
+  
+  void updateHistory(TrainingContract c, boolean creation) {
+    if (creation) {
+      tableModel.addItem(c);  
+    } else {
+      int row = table.getSelectedRow();
+      if (row >= 0) {
+        tableModel.modItem(table.convertRowIndexToModel(row), c);
+      }
+    }
   }
 
 }

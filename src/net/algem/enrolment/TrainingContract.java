@@ -33,7 +33,6 @@ public class TrainingContract {
   private int id;
   private byte type;
   private int personId;
-  private int orgId;
   private String label;
   private int orderId;
   private Date start;
@@ -99,14 +98,6 @@ public class TrainingContract {
 
   public void setPersonId(int personId) {
     this.personId = personId;
-  }
-
-  public int getOrgId() {
-    return orgId;
-  }
-
-  public void setOrgId(int orgId) {
-    this.orgId = orgId;
   }
 
   public String getLabel() {
@@ -201,7 +192,7 @@ public class TrainingContract {
 
   }
 
-  private enum TrainingContractType {
+  enum TrainingContractType {
     BIPARTITE,
     TRIPARTITE
   }

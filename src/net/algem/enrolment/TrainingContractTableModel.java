@@ -19,13 +19,8 @@
  */
 package net.algem.enrolment;
 
-import java.sql.SQLException;
-import net.algem.contact.Person;
 import net.algem.planning.DateFr;
 import net.algem.util.BundleUtil;
-import net.algem.util.DataCache;
-import net.algem.util.GemLogger;
-import net.algem.util.model.Model;
 import net.algem.util.ui.JTableModel;
 
 /**
@@ -34,13 +29,15 @@ import net.algem.util.ui.JTableModel;
  * @version 2.15.0
  * @since 2.15.0 30/08/2017
  */
-public class TrainingContractTableModel extends JTableModel<TrainingContract> {
+public class TrainingContractTableModel
+        extends JTableModel<TrainingContract>
+{
 
   public TrainingContractTableModel() {
     header = new String[]{
       BundleUtil.getLabel("Id.label"),
       BundleUtil.getLabel("Label.label"),
-      BundleUtil.getLabel("Organization.label"),
+      BundleUtil.getLabel("Funding.label"),
       BundleUtil.getLabel("Start.label"),
       BundleUtil.getLabel("End.label")
     };
@@ -62,7 +59,6 @@ public class TrainingContractTableModel extends JTableModel<TrainingContract> {
     }
   }
 
-
   @Override
   public boolean isCellEditable(int row, int column) {
     return false;
@@ -75,26 +71,22 @@ public class TrainingContractTableModel extends JTableModel<TrainingContract> {
 
   @Override
   public Object getValueAt(int line, int col) {
-    try {
-      TrainingContract t = tuples.elementAt(line);
-      switch (col) {
-        case 0:
-          return t.getId();
-        case 1:
-          return t.getLabel();
-        case 2:
-          Person p = (Person) DataCache.findId(t.getOrgId(), Model.Person);
-          return p == null ? "" : p.getOrganization() == null ? "" : p.getOrganization().getName();
-        case 3:
-          return new DateFr(t.getStart());
-        case 4:
-          return new DateFr(t.getEnd());
-        default:
-          return null;
-      }
-    } catch (SQLException ex) {
-      GemLogger.logException(ex);
-      return null;
+    TrainingContract t = tuples.elementAt(line);
+    switch (col) {
+      case 0:
+        return t.getId();
+      case 1:
+        return t.getLabel();
+      case 2:
+//          Person p = (Person) DataCache.findId(, Model.Person);
+//          return p == null ? "" : p.getOrganization() == null ? "" : p.getOrganization().getName();
+        return t.getFunding();
+      case 3:
+        return new DateFr(t.getStart());
+      case 4:
+        return new DateFr(t.getEnd());
+      default:
+        return null;
     }
   }
 

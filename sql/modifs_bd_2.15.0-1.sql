@@ -2,7 +2,6 @@ CREATE TABLE contratformation (
     id serial,
     ctype smallint,
     idper  integer,
-    idorg integer,
     idcmd integer,
     libelle varchar(256),
     debut date,
@@ -17,7 +16,6 @@ CREATE TABLE contratformation (
 );
 ALTER TABLE contratformation OWNER TO nobody;
 COMMENT ON COLUMN contratformation.ctype IS 'Type de contrat : 0 = non défini, 1 = bipartite, 2 = tripartite';
-COMMENT ON COLUMN contratformation.idorg IS 'Organisation id';
 COMMENT ON COLUMN contratformation.libelle IS 'Nom formation';
 COMMENT ON COLUMN contratformation.financement IS 'Nom de l''organisme financeur';
 COMMENT ON COLUMN contratformation.total IS 'Montant total de la formation';
@@ -26,7 +24,7 @@ COMMENT ON COLUMN contratformation.volumint IS 'Nombre d''heures de formation en
 COMMENT ON COLUMN contratformation.volumext IS 'Nombre d''heures de formation en entreprise';
 
 -- données de test
-INSERT into contratformation values(default,2,18691,22268,6387,'TEST CONTRAT 2017', '2017-01-01','2017-03-30','Région',4600,4600,400,150,'2017-12-01');
+INSERT into contratformation values(default,2,18691,6387,'TEST CONTRAT 2017', '2017-01-01','2017-03-30','Région',4600,4600,400,150,'2017-12-01');
 
 -- test
 -- select m.titre from module m join commande_module cm on m.id = cm.module join commande c on cm.idcmd = c.id where c.id=6387;

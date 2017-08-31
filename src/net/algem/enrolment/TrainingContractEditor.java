@@ -25,6 +25,7 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import java.text.NumberFormat;
 import javax.swing.JDialog;
 import javax.swing.JFormattedTextField;
@@ -35,10 +36,10 @@ import net.algem.accounting.AccountUtil;
 import net.algem.planning.DateFrField;
 import net.algem.util.BundleUtil;
 import net.algem.util.GemCommand;
+import net.algem.util.GemLogger;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.module.GemModule;
 import net.algem.util.ui.GemButton;
-import net.algem.util.ui.GemNumericField;
 import net.algem.util.ui.GemPanel;
 import net.algem.util.ui.GemToolBar;
 import net.algem.util.ui.GridBagHelper;
@@ -50,27 +51,31 @@ import net.algem.util.ui.GridBagHelper;
  * @since 2.15.0 30/08/2017
  */
 public class TrainingContractEditor
-  extends JDialog
-  implements ActionListener {
+        extends JDialog
+        implements ActionListener
+{
 
-  private TrainingContract contract;
-  private JLabel trainingLabel;
-
+  private JTextField trainingLabel;
   private JTextField funding;
   private JFormattedTextField total;
   private JFormattedTextField amount;
   private DateFrField startDate;
   private DateFrField endDate;
   private DateFrField signDate;
-  private GemNumericField internalLength;
+  private JFormattedTextField internalLength;
   private JFormattedTextField length;
   private GemButton btSave;
   private GemButton btCancel;
+  
+  private TrainingContract contract;
+  private final TrainingContractHistory history;
+  private final TrainingContractIO contractIO;
+  private final GemDesktop desktop;
 
-  private GemDesktop desktop;
-
-  public TrainingContractEditor(GemDesktop desktop, String title, boolean modal) {
-    super(desktop.getFrame(), title, modal);
+  public TrainingContractEditor(TrainingContractHistory history, TrainingContractIO contractIO, GemDesktop desktop) {
+    super(desktop.getFrame(), BundleUtil.getLabel("Training.contract.label"), false);
+    this.contractIO = contractIO;
+    this.history = history;
     this.desktop = desktop;
   }
 
@@ -82,21 +87,23 @@ public class TrainingContractEditor
             BundleUtil.getLabel("Preview.pdf.label"));
 
     JPanel p = new JPanel(new GridBagLayout());
-    trainingLabel = new JLabel();
+    trainingLabel = new JTextField();
     startDate = new DateFrField();
     endDate = new DateFrField();
     funding = new JTextField(20);
     NumberFormat nf = AccountUtil.getNumberFormat(2, 2);
     int minSize = 100;
     total = new JFormattedTextField(nf);
-    total.setEditable(false);
-     total.setPreferredSize(new Dimension(minSize,total.getPreferredSize().height));
+//    total.setEditable(false);
+    total.setPreferredSize(new Dimension(minSize, total.getPreferredSize().height));
     amount = new JFormattedTextField(nf);
 
-    amount.setPreferredSize(new Dimension(minSize,amount.getPreferredSize().height));
-//    internalLength = new GemNumericField(3);
+    amount.setPreferredSize(new Dimension(minSize, amount.getPreferredSize().height));
+    internalLength = new JFormattedTextField(AccountUtil.getDefaultNumberFormat());
+    internalLength.setPreferredSize(new Dimension(minSize, internalLength.getPreferredSize().height));
     length = new JFormattedTextField(AccountUtil.getDefaultNumberFormat());
-    length.setPreferredSize(new Dimension(minSize,length.getPreferredSize().height));
+    length.setPreferredSize(new Dimension(minSize, length.getPreferredSize().height));
+
     signDate = new DateFrField();
 
     GridBagHelper gb = new GridBagHelper(p);
@@ -111,14 +118,15 @@ public class TrainingContractEditor
     JLabel amountLabel = new JLabel(BundleUtil.getLabel("Amount.label"));
     amountLabel.setToolTipText(BundleUtil.getLabel("Amount.supported.tip"));
     gb.add(amountLabel, 0, 5, 1, 1, GridBagHelper.WEST);
+
+    JLabel intVolumeLabel = new JLabel(BundleUtil.getLabel("Internal.training.length.label"));
+    intVolumeLabel.setToolTipText(BundleUtil.getLabel("Internal.training.length.tip"));
+    gb.add(intVolumeLabel, 0, 6, 1, 1, GridBagHelper.WEST);
     JLabel extVolumeLabel = new JLabel(BundleUtil.getLabel("External.training.length.label"));
     extVolumeLabel.setToolTipText(BundleUtil.getLabel("External.training.length.tip"));
-    gb.add(extVolumeLabel, 0, 6, 1, 1, GridBagHelper.WEST);
-    gb.add(new JLabel(BundleUtil.getLabel("Signature.date.label")), 0, 7, 1, 1, GridBagHelper.WEST);
+    gb.add(extVolumeLabel, 0, 7, 1, 1, GridBagHelper.WEST);
 
-//    JLabel intVolumeLabel = new JLabel(BundleUtil.getLabel("Internal.training.length.label"));
-//    intVolumeLabel.setToolTipText(BundleUtil.getLabel("Internal.training.length.tip"));
-//    gb.add(intVolumeLabel, 0, 7, 1, 1, GridBagHelper.WEST);
+    gb.add(new JLabel(BundleUtil.getLabel("Signature.date.label")), 0, 8, 1, 1, GridBagHelper.WEST);
 
     gb.add(trainingLabel, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(startDate, 1, 1, 1, 1, GridBagHelper.WEST);
@@ -126,8 +134,9 @@ public class TrainingContractEditor
     gb.add(funding, 1, 3, 1, 1, GridBagHelper.WEST);
     gb.add(total, 1, 4, 1, 1, GridBagHelper.WEST);
     gb.add(amount, 1, 5, 1, 1, GridBagHelper.WEST);
-    gb.add(length, 1, 6, 1, 1, GridBagHelper.WEST);
-    gb.add(signDate, 1, 7, 1, 1, GridBagHelper.WEST);
+    gb.add(internalLength, 1, 6, 1, 1, GridBagHelper.WEST);
+    gb.add(length, 1, 7, 1, 1, GridBagHelper.WEST);
+    gb.add(signDate, 1, 8, 1, 1, GridBagHelper.WEST);
 
     setLayout(new BorderLayout());
 
@@ -141,7 +150,7 @@ public class TrainingContractEditor
     buttons.add(btSave);
     buttons.add(btCancel);
 
-    add(bar,BorderLayout.NORTH);
+    add(bar, BorderLayout.NORTH);
     add(p, BorderLayout.CENTER);
     add(buttons, BorderLayout.SOUTH);
     setSize(GemModule.S_SIZE);
@@ -152,13 +161,10 @@ public class TrainingContractEditor
 
   public void setContract(TrainingContract c) {
     this.contract = c;
-
-
-
     if (c != null) {
       trainingLabel.setText(c.getLabel());
       total.setValue(c.getTotal());
-//      internalLength.setText(String.valueOf(c.getIntVolume()));
+      internalLength.setValue(c.getInternalVolume());
       if (c.getId() > 0) {
         trainingLabel.setText(c.getLabel());
         startDate.setDate(c.getStart());
@@ -172,11 +178,47 @@ public class TrainingContractEditor
 
   }
 
+  private TrainingContract getContract() {
+    TrainingContract c = new TrainingContract();
+    c.setId(contract.getId());
+    c.setType((byte) 2);
+    c.setOrderId(contract.getOrderId());
+    c.setPersonId(contract.getPersonId());
+    c.setLabel(trainingLabel.getText());
+    c.setStart(startDate.getDate());
+    c.setEnd(endDate.getDate());
+    c.setSignDate(signDate.getDate());
+    c.setFunding(funding.getText().trim());
+    c.setTotal(((Number) total.getValue()).doubleValue());
+    c.setAmount(((Number) amount.getValue()).doubleValue());
+    c.setInternalVolume(((Number) internalLength.getValue()).floatValue());
+    c.setExternalVolume(((Number) length.getValue()).floatValue());
+
+    return c;
+  }
+
   @Override
   public void actionPerformed(ActionEvent e) {
     Object src = e.getSource();
-    if (src == btCancel) {
-      setVisible(false);
+    if (src == btSave) {
+      TrainingContract t = getContract();
+      try {
+        if (t.getId() == 0) {
+          contractIO.create(t);
+          history.updateHistory(t, true);
+        } else {
+          contractIO.update(t);
+          history.updateHistory(t, false);
+        }
+      } catch (SQLException ex) {
+        GemLogger.logException(ex);
+      }
     }
+    close();
+  }
+  
+  private void close() {
+    setVisible(false);
+    dispose();
   }
 }
