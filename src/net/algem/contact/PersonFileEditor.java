@@ -74,9 +74,8 @@ import org.passay.PasswordValidator;
  * @version 2.15.0
  */
 public class PersonFileEditor
-        extends FileEditor
-        implements PersonFileListener, UIAdjustable
-{
+  extends FileEditor
+  implements PersonFileListener, UIAdjustable {
 
   private JMenuBar mBar;
   private JMenu mFile;
@@ -89,6 +88,9 @@ public class PersonFileEditor
   private JMenuItem miMember, miTeacher, miBank, miEmployee;
   private JMenuItem miPassRehearsal, miRehearsal, miHistoPass;
   private JMenuItem miHistoRehearsal;
+
+  private JMenuItem miContracts;
+  private JMenuItem miAgreements;
   private JMenuItem miHistoInvoice;
   private JMenuItem miHistoQuote;
   private JMenuItem miMonthPlanning;
@@ -235,8 +237,8 @@ public class PersonFileEditor
     Object src = evt.getSource();
     // On sauve au préalable l'éventuel nouveau contact avant d'executer les actions des menus.
     if (dossier.getId() <= 0
-            && !arg.equals(GemCommand.SAVE_CMD)
-            && !arg.equals(GemCommand.CLOSE_CMD)) {
+      && !arg.equals(GemCommand.SAVE_CMD)
+      && !arg.equals(GemCommand.CLOSE_CMD)) {
 
       updatePersonFile();
       String msg = dossier.hasErrors();
@@ -257,8 +259,7 @@ public class PersonFileEditor
     if ("Member.reading".equals(arg)) {
       personFileView.addMemberTab();
       miMember.setEnabled(false);
-    }
-    else if ("Teacher".equals(arg)) {
+    } else if ("Teacher".equals(arg)) {
       personFileView.addTeacherTab(this);
       miTeacher.setEnabled(false);
     } else if ("TeacherDelete".equals(arg)) {
@@ -268,7 +269,7 @@ public class PersonFileEditor
       }
       try {
         deleteTeacher();
-       } catch (SQLException ex) {
+      } catch (SQLException ex) {
         GemLogger.logException(ex);
       }
     } else if ("Person.group.tab".equals(arg) || "Groups".equals(arg)) {
@@ -303,7 +304,7 @@ public class PersonFileEditor
     } else if ("Payer.debiting".equals(arg)) {
       try {
         showMandates();
-      }  catch (DDMandateException ex) {
+      } catch (DDMandateException ex) {
         MessagePopup.error(view, ex.getMessage());
       }
     } else if ("Login.creation".equals(arg)) {
@@ -339,8 +340,7 @@ public class PersonFileEditor
     } // clic sur le bouton Enregistrer
     else if (GemCommand.SAVE_CMD.equals(arg)) {
       savePersonFile();
-    }
-    else if ("Contact.suppression".equals(arg)) {
+    } else if ("Contact.suppression".equals(arg)) {
       suppressPerson();
     } else if ("Person.pass.scheduling".equals(arg)) {
       MemberRehearsalPassCtrl dlg = new MemberRehearsalPassCtrl(desktop, this, dossier);
@@ -411,25 +411,27 @@ public class PersonFileEditor
           MessagePopup.information(view, MessageUtil.getMessage("no.invoice.recorded"));
         }
       }
+    } else if ("Training.contracts".equals(arg)) {
+      personFileView.addHistoryContractsTab();
     } else if (FileTabView.INVOICE_TAB_TITLE.equals(arg)) {
       addInvoice(src);
     } else if (FileTabView.ESTIMATE_TAB_TITLE.equals(arg)) {
       addQuotation(src);
     } else if ("Quotation.history".equals(arg)) {
-        int payer = getPayer();
-        if (payer > 0) {
-          HistoQuote histoQuote = getHistoQuotation(dossier.getId());
-          if (histoQuote != null) {
-            if (histoQuote.isLoaded()) {
-              histoQuote.addActionListener(this);
-              personFileView.addTab(histoQuote, FileTabView.HISTO_ESTIMATE_TAB_TITLE);
-              miHistoQuote.setEnabled(false);
-            } else {
-              MessagePopup.information(view, MessageUtil.getMessage("no.quote.recorded"));
-            }
+      int payer = getPayer();
+      if (payer > 0) {
+        HistoQuote histoQuote = getHistoQuotation(dossier.getId());
+        if (histoQuote != null) {
+          if (histoQuote.isLoaded()) {
+            histoQuote.addActionListener(this);
+            personFileView.addTab(histoQuote, FileTabView.HISTO_ESTIMATE_TAB_TITLE);
+            miHistoQuote.setEnabled(false);
+          } else {
+            MessagePopup.information(view, MessageUtil.getMessage("no.quote.recorded"));
           }
         }
-      } else if (CloseableTab.CLOSE_CMD.equals(arg)) {
+      }
+    } else if (CloseableTab.CLOSE_CMD.equals(arg)) {
       closeTab(src);
     } else if (src == miSaveUISettings) {
       storeUISettings();
@@ -443,6 +445,7 @@ public class PersonFileEditor
   /**
    * Deletes this contact as a teacher.
    * Only teachers who have had no course should be removed.
+   *
    * @throws SQLException
    */
   private void deleteTeacher() throws SQLException {
@@ -462,6 +465,7 @@ public class PersonFileEditor
 
   /**
    * Opens the list of SEPA direct debit mandates of the payer.
+   *
    * @throws DDMandateException
    */
   private void showMandates() throws DDMandateException {
@@ -546,7 +550,7 @@ public class PersonFileEditor
    * @return true if no errors
    */
   boolean save() {
-     if (!dataCache.authorize("Contact.modification.auth")) {
+    if (!dataCache.authorize("Contact.modification.auth")) {
       MessagePopup.information(personFileView, MessageUtil.getMessage("rights.exception"));
       return false;
     }
@@ -603,11 +607,11 @@ public class PersonFileEditor
       dossier.setId(currentId);
       GemLogger.logException(e1.getMessage(), e1);
       JOptionPane.showMessageDialog(personFileView,
-              "identifiant = " + dossier.getId() + "<br>" + e1,
-              "Erreur mise à jour dossier :",
-              JOptionPane.ERROR_MESSAGE);
+        "identifiant = " + dossier.getId() + "<br>" + e1,
+        "Erreur mise à jour dossier :",
+        JOptionPane.ERROR_MESSAGE);
       return false;
-    } catch(DDMandateException ex){
+    } catch (DDMandateException ex) {
       MessagePopup.warning(view, ex.getMessage());
     } finally {
       dc.setAutoCommit(true);
@@ -701,8 +705,7 @@ public class PersonFileEditor
    */
   public void addMenuDossier(String _label, PersonFile _dossier) {
     PersonFileMenuItem m = new PersonFileMenuItem(_label, _dossier);
-    m.addActionListener(new ActionListener()
-    {
+    m.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent evt) {
         PersonFile d = ((PersonFileMenuItem) evt.getSource()).getPersonFile();
@@ -720,8 +723,7 @@ public class PersonFileEditor
 
   private void addPayerFile(String _label, final PersonFile _dossier) {
     GemButton b = personFileView.addIcon("Member.payer");
-    b.addActionListener(new ActionListener()
-    {
+    b.addActionListener(new ActionListener() {
 
       @Override
       public void actionPerformed(ActionEvent evt) {
@@ -740,6 +742,7 @@ public class PersonFileEditor
 
   /**
    * Adds schedule payment editor.
+   *
    * @param t table model
    * @param p payer
    */
@@ -773,7 +776,6 @@ public class PersonFileEditor
     /*mHelp = new JMenu(BundleUtil.getLabel("Menu.help.label"));
     miAbout = new JMenuItem(BundleUtil.getLabel("About.label"));
     miDoc = new JMenuItem(BundleUtil.getLabel("Menu.doc.label"));*/
-
     mFile.add(miDelete);
 
     mOptions.add(miMember = getMenuItem("Member.reading"));
@@ -805,7 +807,11 @@ public class PersonFileEditor
     mOptions.addSeparator();
     mOptions.add(miHistoRehearsal = getMenuItem("Rehearsal.history"));
     mOptions.add(miMonthPlanning = getMenuItem("Menu.month.schedule"));
-
+//if (gestion contrats et conventions)
+    mOptions.addSeparator();
+    mOptions.add(miContracts = getMenuItem("Training.contracts"));
+    mOptions.add(miAgreements = getMenuItem("Internship.agreements"));
+// end if
     mOptions.addSeparator();
     mOptions.add(miHistoInvoice = getMenuItem("Invoice.history"));
     mOptions.add(miHistoQuote = getMenuItem("Quotation.history"));
@@ -867,7 +873,7 @@ public class PersonFileEditor
         addPayerFile("Payeur", d);// ajout jm 2.0ma
       } else { //Attention aux cas où le payeur auquel est lié l'adhérent n'existe pas
         MessagePopup.information(personFileView,
-                MessageUtil.getMessage("not.existing.payer.link", dossier.getMember().getPayer()));
+          MessageUtil.getMessage("not.existing.payer.link", dossier.getMember().getPayer()));
         personFileView.setParent(dossier);
       }
     }
@@ -880,8 +886,7 @@ public class PersonFileEditor
     if (setMemberList() > 0) {
       //final GemButton b = personFileView.addLinkedMembersIcon();
       final GemButton b = personFileView.addIcon("Payer.members");
-      b.addActionListener(new ActionListener()
-      {
+      b.addActionListener(new ActionListener() {
 
         public void actionPerformed(ActionEvent evt) {
           ListCtrl list = PersonFileEditor.this.getMemberList();
@@ -930,7 +935,7 @@ public class PersonFileEditor
     if (c.getName() != null && c.getName().length() > 0) {
       where = " WHERE lower(p.nom) = E'" + TableIO.escape(c.getName().toLowerCase()) + "'";
       if (c.getFirstName() != null && c.getFirstName().length() > 0) {
-        where +=  " AND lower(p.prenom) = E'" + TableIO.escape(c.getFirstName().toLowerCase()) + "'";
+        where += " AND lower(p.prenom) = E'" + TableIO.escape(c.getFirstName().toLowerCase()) + "'";
       }
       if (ContactIO.findId(where, dc) != null) {
         return true;
@@ -1012,9 +1017,9 @@ public class PersonFileEditor
     } else {
       dossier.restoreOldValues(backup);
       JOptionPane.showMessageDialog(personFileView,
-              MessageUtil.getMessage("no.update.info"),
-              BundleUtil.getLabel("Warning.label"),
-              JOptionPane.INFORMATION_MESSAGE);
+        MessageUtil.getMessage("no.update.info"),
+        BundleUtil.getLabel("Warning.label"),
+        JOptionPane.INFORMATION_MESSAGE);
     }
   }
 
@@ -1065,15 +1070,13 @@ public class PersonFileEditor
     String msg = dossier.hasErrors();
     if (msg != null) {
       MessagePopup.error(personFileView, msg);
-    } else {
-      if (hasChanged()) {
-        msg = checkContact(MessageUtil.getMessage("update.warning"));
-        if (MessagePopup.confirm(personFileView, msg, MessageUtil.getMessage("closing.record.info", dossier.getId()))) {
-          save();
-        }
-      } else {
-        System.out.println(MessageUtil.getMessage("no.update.info"));
+    } else if (hasChanged()) {
+      msg = checkContact(MessageUtil.getMessage("update.warning"));
+      if (MessagePopup.confirm(personFileView, msg, MessageUtil.getMessage("closing.record.info", dossier.getId()))) {
+        save();
       }
+    } else {
+      System.out.println(MessageUtil.getMessage("no.update.info"));
     }
     if (savePrefs) {
       storeUISettings();

@@ -27,8 +27,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -47,8 +51,11 @@ import net.algem.contact.teacher.Teacher;
 import net.algem.contact.teacher.TeacherEditor;
 import net.algem.contact.teacher.TeacherFollowUpEditor;
 import net.algem.edition.DirectDebitRequest;
+import net.algem.enrolment.Enrolment;
 import net.algem.enrolment.EnrolmentEvent;
 import net.algem.enrolment.MemberEnrolmentEditor;
+import net.algem.enrolment.TrainingContractHistory;
+import net.algem.enrolment.TrainingContractIO;
 import net.algem.group.GemGroupService;
 import net.algem.group.Group;
 import net.algem.group.Musician;
@@ -96,6 +103,8 @@ public class PersonFileTabView
   private MemberEnrolmentEditor enrolmentEditor;
   private HistoRehearsalView histoRehearsalView;
   private PersonFileGroupView groupView;
+
+  private TrainingContractHistory historyContracts;
   private GemButton saveBt, closeBt;
   private Note note;
   private GemToolBar mainToolbar;
@@ -722,6 +731,39 @@ public class PersonFileTabView
     addTab(groupView, BAND_TAB_TITLE, selectionFlag);
 
     return true;
+  }
+
+  void addHistoryContractsTab() {
+    desktop.setWaitCursor();
+    if (historyContracts == null) {
+      historyContracts = new TrainingContractHistory(desktop, dossier.getId(), new TrainingContractIO(DataCache.getDataConnection()));
+      historyContracts.createUI();
+      try {
+        List<Enrolment> enrolments = memberService.getEnrolments(dossier.getId(), dataCache.getStartOfPeriod().toString());
+        if (enrolments.size() > 0) {
+          Collections.sort(enrolments, new Comparator<Enrolment>() {
+            @Override
+            public int compare(Enrolment o1, Enrolment o2) {
+              if (o1.getOrder().getCreation().before(o2.getOrder().getCreation())) {
+                return -1;
+              } else if (o1.getOrder().getCreation().after(o2.getOrder().getCreation())) {
+                return 1;
+              } else {
+                return 0;
+              }
+            }
+
+          });
+          historyContracts.setLastEnrolment(enrolments.get(enrolments.size() - 1));
+        }
+      } catch (SQLException ex) {
+        GemLogger.logException(ex);
+      }
+    }
+
+    wTab.addItem(historyContracts, BundleUtil.getLabel("Training.contracts.label"));
+    addTab(historyContracts);
+    desktop.setDefaultCursor();
   }
 
   void setNote(Note nd) {
