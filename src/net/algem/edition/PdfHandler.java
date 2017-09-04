@@ -19,11 +19,16 @@
  */
 package net.algem.edition;
 
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfImportedPage;
-import com.lowagie.text.pdf.PdfReader;
-import com.lowagie.text.pdf.PdfStamper;
+//import com.lowagie.text.DocumentException;
+//import com.lowagie.text.pdf.PdfContentByte;
+//import com.lowagie.text.pdf.PdfImportedPage;
+//import com.lowagie.text.pdf.PdfReader;
+//import com.lowagie.text.pdf.PdfStamper;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfImportedPage;
+import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.PdfStamper;
 import com.sun.pdfview.PDFFile;
 import com.sun.pdfview.PDFPage;
 import com.sun.pdfview.PDFPrintPage;
@@ -90,10 +95,10 @@ public class PdfHandler {
       File tmpFile = File.createTempFile(fileName, ".pdf");
       final String target = tmpFile.getPath();
       PageTemplate pt = getTemplate(templateType);
-      PdfReader reader = new com.lowagie.text.pdf.PdfReader(out.toByteArray());
+      PdfReader reader = new com.itextpdf.text.pdf.PdfReader(out.toByteArray());
       if (pt != null) {
         PdfStamper stamper = new PdfStamper(reader, new FileOutputStream(target));
-        PdfReader model = new com.lowagie.text.pdf.PdfReader(pt.getContent());
+        PdfReader model = new com.itextpdf.text.pdf.PdfReader(pt.getContent());
         PdfImportedPage importedPage = stamper.getImportedPage(model, 1);
         for (int i = 1; i <= reader.getNumberOfPages(); i++) {
           PdfContentByte canvas = stamper.getUnderContent(i);
