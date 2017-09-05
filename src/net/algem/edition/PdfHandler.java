@@ -24,11 +24,25 @@ package net.algem.edition;
 //import com.lowagie.text.pdf.PdfImportedPage;
 //import com.lowagie.text.pdf.PdfReader;
 //import com.lowagie.text.pdf.PdfStamper;
+import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfImportedPage;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfStamper;
+import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.tool.xml.XMLWorker;
+import com.itextpdf.tool.xml.XMLWorkerFontProvider;
+import com.itextpdf.tool.xml.css.StyleAttrCSSResolver;
+import com.itextpdf.tool.xml.html.CssAppliers;
+import com.itextpdf.tool.xml.html.CssAppliersImpl;
+import com.itextpdf.tool.xml.html.Tags;
+import com.itextpdf.tool.xml.parser.XMLParser;
+import com.itextpdf.tool.xml.pipeline.css.CSSResolver;
+import com.itextpdf.tool.xml.pipeline.css.CssResolverPipeline;
+import com.itextpdf.tool.xml.pipeline.end.PdfWriterPipeline;
+import com.itextpdf.tool.xml.pipeline.html.HtmlPipeline;
+import com.itextpdf.tool.xml.pipeline.html.HtmlPipelineContext;
 import com.sun.pdfview.PDFFile;
 import com.sun.pdfview.PDFPage;
 import com.sun.pdfview.PDFPrintPage;
@@ -139,6 +153,26 @@ public class PdfHandler {
       templates.remove(type);
     }
   }
+  
+  public XMLParser createParser(Document document, PdfWriter writer) {
+    CSSResolver cssResolver = new StyleAttrCSSResolver();
+    XMLWorkerFontProvider fontProvider = new XMLWorkerFontProvider(XMLWorkerFontProvider.DONTLOOKFORFONTS);
+//    fontProvider.register("resources/fonts/Cardo-Regular.ttf");
+//    fontProvider.register("resources/fonts/Cardo-Bold.ttf");
+//    fontProvider.register("resources/fonts/Cardo-Italic.ttf");
+//    fontProvider.addFontSubstitute("lowagie", "cardo");
+    CssAppliers cssAppliers = new CssAppliersImpl(fontProvider);
+    HtmlPipelineContext htmlContext = new HtmlPipelineContext(cssAppliers);
+    htmlContext.setTagFactory(Tags.getHtmlTagProcessorFactory());
+    // Pipelines
+    PdfWriterPipeline pdf = new PdfWriterPipeline(document, writer);
+    HtmlPipeline html = new HtmlPipeline(htmlContext, pdf);
+    CssResolverPipeline css = new CssResolverPipeline(cssResolver, html);
+    // XML Worker
+    XMLWorker worker = new XMLWorker(css, true);
+    return new XMLParser(worker);
+  }
+
 
   private PageTemplate getTemplate(short type) throws SQLException {
     PageTemplate pt = templateIO.find(type);

@@ -4,6 +4,7 @@ CREATE TABLE contratformation (
     idper  integer,
     idcmd integer,
     libelle varchar(256),
+    saison varchar(32),
     debut date,
     fin date,
     financement varchar(128),
@@ -24,7 +25,7 @@ COMMENT ON COLUMN contratformation.volumint IS 'Nombre d''heures de formation en
 COMMENT ON COLUMN contratformation.volumext IS 'Nombre d''heures de formation en entreprise';
 
 -- données de test
-INSERT into contratformation values(default,2,18691,6387,'TEST CONTRAT 2017', '2017-01-01','2017-03-30','Région',4600,4600,400,150,'2017-12-01');
+INSERT into contratformation values(default,2,18691,6387,'TEST CONTRAT 2017', 'Saison 2016-2017','2017-01-01','2017-03-30','Région',4600,4600,400,150,'2017-12-01');
 
 -- test
 -- select m.titre from module m join commande_module cm on m.id = cm.module join commande c on cm.idcmd = c.id where c.id=6387;

@@ -736,7 +736,7 @@ public class PersonFileTabView
   void addHistoryContractsTab() {
     desktop.setWaitCursor();
     if (historyContracts == null) {
-      historyContracts = new TrainingContractHistory(desktop, dossier.getId(), new TrainingContractIO(DataCache.getDataConnection()));
+      historyContracts = new TrainingContractHistory(desktop, dossier, new TrainingContractIO(DataCache.getDataConnection()));
       historyContracts.createUI();
       try {
         List<Enrolment> enrolments = memberService.getEnrolments(dossier.getId(), dataCache.getStartOfPeriod().toString());

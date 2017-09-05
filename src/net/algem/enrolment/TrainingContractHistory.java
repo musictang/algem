@@ -1,5 +1,5 @@
 /*
- * @(#) TrainingContractHistory.java Algem 2.15.0 30/08/2017
+ * @(#) TrainingContractHistory.java Algem 2.15.0 05/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -29,6 +29,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.TableColumnModel;
+import net.algem.contact.PersonFile;
 import net.algem.course.Module;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
@@ -50,16 +51,18 @@ public class TrainingContractHistory
   implements ActionListener {
 
   private JTable table;
+  private PersonFile dossier;
   private int idper;
   private TrainingContractTableModel tableModel;
   private TrainingContractIO contractIO;
   private GemButton btDelete, btCreate, btEdit;
   private Enrolment lastEnrolment;
 
-  public TrainingContractHistory(GemDesktop desktop, int idper, TrainingContractIO contractIO) {
+  public TrainingContractHistory(GemDesktop desktop, PersonFile dossier, TrainingContractIO contractIO) {
     super(desktop);
 
     this.idper = idper;
+    this.dossier = dossier;
     this.contractIO = contractIO;
   }
 
@@ -98,7 +101,7 @@ public class TrainingContractHistory
   public void load() {
     tableModel.clear();
     try {
-      List<TrainingContract> contracts = contractIO.findAll(idper);
+      List<TrainingContract> contracts = contractIO.findAll(dossier.getId());
       for (TrainingContract t : contracts) {
         tableModel.addItem(t);
       }
@@ -126,7 +129,7 @@ public class TrainingContractHistory
       if (lastEnrolment != null) {
         try {
           Module m = contractIO.getModuleInfo(lastEnrolment.getId());
-          c.setPersonId(idper);
+          c.setPersonId(dossier.getId());
           c.setOrderId(lastEnrolment.getId());
           c.setTotal(m.getBasePrice());
           c.setLabel(m.getTitle());
@@ -152,7 +155,7 @@ public class TrainingContractHistory
   }
 
   private void openContract(TrainingContract c) {
-    TrainingContractEditor editor = new TrainingContractEditor(this, contractIO, desktop);
+    TrainingContractEditor editor = new TrainingContractEditor(this, contractIO, dossier, desktop);
     editor.createUI();
     editor.setContract(c);
   }

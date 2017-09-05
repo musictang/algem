@@ -108,7 +108,20 @@ public class Address
 
   @Override
   public String toString() {
-    return adr1 + " " + adr2 + " " + cdp + " " + city;
+//    return adr1 + " " + adr2 + " " + cdp + " " + city;
+    StringBuilder address = new StringBuilder();
+    address.append(getAdr1() == null || getAdr1().isEmpty() ? "" : getAdr1());
+    if (getAdr2() != null && !getAdr2().isEmpty()) {
+      address.append(' ').append(getAdr2());
+    }
+    if (getCdp() != null && !getCdp().isEmpty()) {
+      address.append(' ').append(getCdp());
+    }
+    if (getCity() != null && !getCity().isEmpty()) {
+      address.append(' ').append(getCity());
+    }
+
+    return address.toString();
   }
 
   public void setId(int i) {

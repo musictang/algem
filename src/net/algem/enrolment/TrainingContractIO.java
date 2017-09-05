@@ -1,5 +1,5 @@
 /*
- * @(#) TrainingContractIO.java Algem 2.15.0 30/08/2017
+ * @(#) TrainingContractIO.java Algem 2.15.0 05/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -24,14 +24,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import net.algem.config.ConfigKey;
-import net.algem.config.ConfigUtil;
 import net.algem.course.Module;
 import net.algem.course.ModuleIO;
 import net.algem.planning.Hour;
 import net.algem.planning.ScheduleIO;
 import net.algem.planning.ScheduleRangeIO;
-import net.algem.util.BundleUtil;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
 import net.algem.util.model.TableIO;
@@ -60,21 +57,22 @@ public class TrainingContractIO
 
     int nextId = nextId(SEQUENCE, dc);
 
-    String query = "INSERT INTO " + TABLE + "(" + COLUMNS + ") VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    String query = "INSERT INTO " + TABLE + "(" + COLUMNS + ") VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
     try (PreparedStatement ps = dc.prepareStatement(query)) {
       ps.setInt(1, nextId);
       ps.setByte(2, t.getType());
       ps.setInt(3, t.getPersonId());
       ps.setInt(4, t.getOrderId());
       ps.setString(5, t.getLabel());
-      ps.setDate(6, new java.sql.Date(t.getStart().getTime()));
-      ps.setDate(7, new java.sql.Date(t.getEnd().getTime()));
-      ps.setString(8, t.getFunding());
-      ps.setDouble(9, t.getTotal());
-      ps.setDouble(10, t.getAmount());
-      ps.setFloat(11, t.getInternalVolume());
-      ps.setFloat(12, t.getExternalVolume());
-      ps.setDate(13, new java.sql.Date(t.getSignDate().getTime()));
+      ps.setString(6, t.getSeason());
+      ps.setDate(7, new java.sql.Date(t.getStart().getTime()));
+      ps.setDate(8, new java.sql.Date(t.getEnd().getTime()));
+      ps.setString(9, t.getFunding());
+      ps.setDouble(10, t.getTotal());
+      ps.setDouble(11, t.getAmount());
+      ps.setFloat(12, t.getInternalVolume());
+      ps.setFloat(13, t.getExternalVolume());
+      ps.setDate(14, new java.sql.Date(t.getSignDate().getTime()));
       GemLogger.info(ps.toString());
       
       ps.executeUpdate();
@@ -83,20 +81,21 @@ public class TrainingContractIO
   }
 
   public void update(TrainingContract t) throws SQLException {
-    String query = "UPDATE " + TABLE + " SET libelle=?,debut=?,fin=?,financement=?,total=?,montant=?,volumint=?,volumext=?,datesign=? WHERE id = ?";
+    String query = "UPDATE " + TABLE + " SET libelle=?,saison=?,debut=?,fin=?,financement=?,total=?,montant=?,volumint=?,volumext=?,datesign=? WHERE id = ?";
     try (PreparedStatement ps = dc.prepareStatement(query)) {
 
       ps.setString(1, t.getLabel());
-      ps.setDate(2, new java.sql.Date(t.getStart().getTime()));
-      ps.setDate(3, new java.sql.Date(t.getEnd().getTime()));
-      ps.setString(4, t.getFunding());
-      ps.setDouble(5, t.getTotal());
-      ps.setDouble(6, t.getAmount());
-      ps.setFloat(7, t.getInternalVolume());
-      ps.setFloat(8, t.getExternalVolume());
-      ps.setDate(9, new java.sql.Date(t.getSignDate().getTime()));
+      ps.setString(2,t.getSeason());
+      ps.setDate(3, new java.sql.Date(t.getStart().getTime()));
+      ps.setDate(4, new java.sql.Date(t.getEnd().getTime()));
+      ps.setString(5, t.getFunding());
+      ps.setDouble(6, t.getTotal());
+      ps.setDouble(7, t.getAmount());
+      ps.setFloat(8, t.getInternalVolume());
+      ps.setFloat(9, t.getExternalVolume());
+      ps.setDate(10, new java.sql.Date(t.getSignDate().getTime()));
 
-      ps.setInt(10, t.getId());
+      ps.setInt(11, t.getId());
       GemLogger.info(ps.toString());
 
       ps.executeUpdate();
@@ -153,14 +152,15 @@ public class TrainingContractIO
     t.setPersonId(rs.getInt(3));
     t.setOrderId(4);
     t.setLabel(rs.getString(5));
-    t.setStart(rs.getDate(6));
-    t.setEnd(rs.getDate(7));
-    t.setFunding(rs.getString(8));
-    t.setTotal(rs.getDouble(9));
-    t.setAmount(rs.getDouble(10));
-    t.setInternalVolume(rs.getShort(11));
-    t.setExternalVolume(rs.getShort(12));
-    t.setSignDate(rs.getDate(13));
+    t.setSeason(rs.getString(6));
+    t.setStart(rs.getDate(7));
+    t.setEnd(rs.getDate(8));
+    t.setFunding(rs.getString(9));
+    t.setTotal(rs.getDouble(10));
+    t.setAmount(rs.getDouble(11));
+    t.setInternalVolume(rs.getShort(12));
+    t.setExternalVolume(rs.getShort(13));
+    t.setSignDate(rs.getDate(14));
 
     return t;
   }

@@ -1,5 +1,5 @@
 /*
- * @(#) TrainingContract.java Algem 2.15.0 30/08/2017
+ * @(#) TrainingContract.java Algem 2.15.0 05/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -34,6 +34,7 @@ public class TrainingContract {
   private byte type;
   private int personId;
   private String label;
+  private String season;
   private int orderId;
   private Date start;
   private Date end;
@@ -106,6 +107,14 @@ public class TrainingContract {
 
   public void setLabel(String label) {
     this.label = label;
+  }
+
+  public String getSeason() {
+    return season;
+  }
+
+  public void setSeason(String season) {
+    this.season = season;
   }
 
   public int getOrderId() {

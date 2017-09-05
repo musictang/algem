@@ -1,5 +1,5 @@
 /*
- * @(#) TestXmltoPdf.java Algem 2.15.0 01/09/2017
+ * @(#) TestXmltoPdf.java Algem 2.15.0 05/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -19,17 +19,6 @@
  */
 package net.algem.enrolment;
 
-//import com.lowagie.text.Chunk;
-//import com.lowagie.text.Document;
-//import com.lowagie.text.DocumentException;
-//import com.lowagie.text.ElementTags;
-//import com.lowagie.text.Font;
-//import com.lowagie.text.FontFactory;
-//import com.lowagie.text.Paragraph;
-//import com.lowagie.text.Phrase;
-//import com.lowagie.text.html.Markup;
-//import com.lowagie.text.pdf.PdfWriter;
-//import com.lowagie.text.xml.XmlPeer;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
@@ -44,15 +33,17 @@ import com.lowagie.text.ElementTags;
 //import com.lowagie.text.Paragraph;
 import com.lowagie.text.html.Markup;
 import com.lowagie.text.xml.XmlPeer;
-import java.awt.Color;
+import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Scanner;
+import net.algem.TestProperties;
+import net.algem.util.DataConnection;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -65,13 +56,15 @@ import org.junit.Ignore;
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  */
-public class TestXmltoPdf {
+public class TestXmltoPdf
+{
 
   public TestXmltoPdf() {
   }
 
   @BeforeClass
   public static void setUpClass() {
+
   }
 
   @AfterClass
@@ -89,6 +82,7 @@ public class TestXmltoPdf {
   /**
    * Html conversion is better with iText 5.
    * XmlPeer is obsolete.
+   *
    * @throws DocumentException
    * @throws IOException
    * @deprecated
@@ -162,22 +156,35 @@ public class TestXmltoPdf {
   public void testFillItext5() throws DocumentException, IOException {
     File xml = new File("/tmp/contrat.xml");
     File html = new File("/tmp/contrat.html");
-    File tpl = new File("/tmp/contrat.html");
+//    File tpl = new File("/tmp/contrat.html");
     Font f1 = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.RED);
     Properties props = new Properties();
     props.put("__student_name__", "Jean-Marc Gobat");
     props.put("__student_birth__", "18/09/1980");
     props.put("__student_address__", "61 B rue Victor Hugo");
-    props.put("__org_name__", "Le CIAM");
-    props.put("__org_referent__", "Stéphane Allaux");
-    props.put("__org_address__", "12 rue Leyteire 33000 BORDEAUX");
-    props.put("__org_tel__", "01 02 03 04 05");
-    props.put("__org_mail__", "info@leciam.org");
-    props.put("__fpcode__", "123456");
-    props.put("__siret__", "fr124578");
-    props.put("__ape__", "zz456e");
+    props.put("__company_name__", "CIAM");
+    props.put("__company_ref__", "Stéphane Allaux");
+    props.put("__company_address__", "12 rue Leyteire 33000 BORDEAUX");
+    props.put("__company_tel__", "01 02 03 04 05");
+    props.put("__company_mail__", "info@leciam.org");
+    props.put("__company_fpcode__", "123456");
+    props.put("__company_siret__", "fr124578");
+    props.put("__company_ape__", "zz456e");
+    props.put("__company_city__", "Bordeaux");
+    props.put("__training_title__", "Cycle intensif guitare");
+    props.put("__training_start__", "10-10-2016");
+    props.put("__training_end__", "30-06-2017");
+    props.put("__internal_volume__", "505");
+    props.put("__external_volume__", "150");
+    props.put("__funding__", "Région");
+    props.put("__total_cost__", "4600,00");
+    props.put("__total_funding__", "4600,00");
+    props.put("__total_student__", "00,00");
 
+    InputStream tpl = getClass().getResourceAsStream("/resources/doc/contrat.html");
+//    OutputStream outTpl = new BufferedOutputStream(new ByteArrayOutputStream());
     Scanner scanner = new Scanner(tpl);
+    StringBuilder content = new StringBuilder();
     while (scanner.hasNextLine()) {
       String line = scanner.nextLine();
       for (Entry<Object, Object> entry : props.entrySet()) {
@@ -185,21 +192,25 @@ public class TestXmltoPdf {
         String v = (String) entry.getValue();
         if (line.contains(k)) {
           line = line.replaceAll(k, v);
-//          System.out.println(line);
         }
       }
+      content.append(line);
     }
-
+    tpl = new ByteArrayInputStream(content.toString().getBytes());
     //step 1
     Document document = new Document();
     //step 2
     PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream("/tmp/contrat.pdf"));
+//ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+//PdfWriter writer = PdfWriter.getInstance(document, outputStream);
     // step 3
     document.open();
     // step 4
-    XMLWorkerHelper.getInstance().parseXHtml(writer, document, new FileInputStream(html));
+//    XMLWorkerHelper.getInstance().parseXHtml(writer, document, new FileInputStream(html));
+    XMLWorkerHelper.getInstance().parseXHtml(writer, document, tpl);
     // step 5
     document.close();
+
   }
 
   private HashMap<String, XmlPeer> getTagMap() {

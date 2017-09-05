@@ -40,7 +40,7 @@ public class TestProperties
   /** SGBD server. */
   public final static String HOST = "localhost";
 	/** Test database port. */
-  public final static int PORT = 5432;
+  public final static int PORT = 5442;
   /** User with profile 4. */
   public final static String ADMIN = System.getProperty("user.name");
    /** User with profile 1. */
