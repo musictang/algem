@@ -44,7 +44,7 @@ public class TrainingContractIO
 {
 
   private final static String TABLE = "contratformation";
-  private final static String COLUMNS = "id,ctype,idper,idcmd,libelle,debut,fin,financement,total,montant,volumint,volumext,datesign";
+  private final static String COLUMNS = "id,ctype,idper,idcmd,libelle,saison,debut,fin,financement,total,montant,volumint,volumext,datesign";
   private final static String SEQUENCE = "contratformation_id_seq";
 
   private DataConnection dc;
@@ -74,7 +74,7 @@ public class TrainingContractIO
       ps.setFloat(13, t.getExternalVolume());
       ps.setDate(14, new java.sql.Date(t.getSignDate().getTime()));
       GemLogger.info(ps.toString());
-      
+
       ps.executeUpdate();
       t.setId(nextId);
     }

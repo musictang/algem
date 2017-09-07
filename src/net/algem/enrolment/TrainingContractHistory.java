@@ -1,5 +1,5 @@
 /*
- * @(#) TrainingContractHistory.java Algem 2.15.0 05/09/17
+ * @(#) TrainingContractHistory.java Algem 2.15.0 06/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -23,7 +23,10 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -51,19 +54,16 @@ public class TrainingContractHistory
   implements ActionListener {
 
   private JTable table;
-  private PersonFile dossier;
-  private int idper;
+  private final PersonFile dossier;
   private TrainingContractTableModel tableModel;
-  private TrainingContractIO contractIO;
+  private final TrainingService trainingService;
   private GemButton btDelete, btCreate, btEdit;
   private Enrolment lastEnrolment;
 
-  public TrainingContractHistory(GemDesktop desktop, PersonFile dossier, TrainingContractIO contractIO) {
+  public TrainingContractHistory(GemDesktop desktop, PersonFile dossier, TrainingService service) {
     super(desktop);
-
-    this.idper = idper;
     this.dossier = dossier;
-    this.contractIO = contractIO;
+    this.trainingService = service;
   }
 
   public void createUI() {
@@ -89,6 +89,19 @@ public class TrainingContractHistory
     btCreate.addActionListener(this);
     btEdit = new GemButton(GemCommand.VIEW_EDIT_CMD);
     btEdit.addActionListener(this);
+    table.addMouseListener(new MouseAdapter() {
+      @Override
+      public void mouseClicked(MouseEvent e) {
+        if (e.getClickCount() == 2) {
+          int row = table.getSelectedRow();
+          if (row < 0) {
+            return;
+          }
+          TrainingContract c = tableModel.getItem(table.convertRowIndexToModel(row));
+          openContract(c);
+        }
+      }
+    });
 
     buttons.add(btDelete);
     buttons.add(btCreate);
@@ -101,7 +114,7 @@ public class TrainingContractHistory
   public void load() {
     tableModel.clear();
     try {
-      List<TrainingContract> contracts = contractIO.findAll(dossier.getId());
+      List<TrainingContract> contracts = trainingService.findContracts(dossier.getId());
       for (TrainingContract t : contracts) {
         tableModel.addItem(t);
       }
@@ -126,14 +139,18 @@ public class TrainingContractHistory
     Object src = e.getSource();
     if (btCreate == src) {
       TrainingContract c = new TrainingContract();
+      c.setPersonId(dossier.getId());
+      c.setStart(dataCache.getStartOfYear().getDate());
+      c.setEnd(dataCache.getEndOfYear().getDate());
+      c.setSeason(dataCache.getStartOfYear().getYear() + "-" + dataCache.getEndOfYear().getYear());
+      c.setSignDate(new Date());
       if (lastEnrolment != null) {
         try {
-          Module m = contractIO.getModuleInfo(lastEnrolment.getId());
-          c.setPersonId(dossier.getId());
+          Module m = trainingService.getModule(lastEnrolment.getId());
           c.setOrderId(lastEnrolment.getId());
           c.setTotal(m.getBasePrice());
           c.setLabel(m.getTitle());
-          c.setInternalVolume(contractIO.getVolume(lastEnrolment.getId()));
+          c.setInternalVolume(trainingService.getVolume(lastEnrolment.getId()));
         } catch (SQLException ex) {
           GemLogger.logException(ex);
         }
@@ -145,24 +162,32 @@ public class TrainingContractHistory
         MessagePopup.warning(this, MessageUtil.getMessage("no.line.selected"));
         return;
       }
+      TrainingContract c = tableModel.getItem(row);
       if (btEdit == src) {
-        TrainingContract c = tableModel.getItem(table.convertRowIndexToModel(row));
         openContract(c);
       } else if (btDelete == src) {
-
+        if (MessagePopup.confirm(this, MessageUtil.getMessage("action.delete.confirmation"))) {
+          try {
+            trainingService.deleteContract(c.getId());
+            tableModel.deleteItem(c);
+          } catch (SQLException ex) {
+            GemLogger.logException(ex);
+            MessagePopup.error(this, ex.getMessage());
+          }
+        }
       }
     }
   }
 
   private void openContract(TrainingContract c) {
-    TrainingContractEditor editor = new TrainingContractEditor(this, contractIO, dossier, desktop);
+    TrainingContractEditor editor = new TrainingContractEditor(this, trainingService, dossier, desktop);
     editor.createUI();
     editor.setContract(c);
   }
-  
+
   void updateHistory(TrainingContract c, boolean creation) {
     if (creation) {
-      tableModel.addItem(c);  
+      tableModel.addItem(c);
     } else {
       int row = table.getSelectedRow();
       if (row >= 0) {

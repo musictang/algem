@@ -53,7 +53,7 @@ public enum ConfigKey
   CODE_TVA("Code.TVA", BundleUtil.getLabel("ConfEditor.organization.Code.VAT.label")),
   /** Pro formation code. */
   CODE_FP("Code.FP", BundleUtil.getLabel("ConfEditor.organization.Code.FP.label")),
-  
+
   //== PLANNING ==//
   /** Start of school year. */
   BEGINNING_YEAR("Date.DebutAnnee", BundleUtil.getLabel("ConfEditor.date.start.label")),
@@ -88,7 +88,7 @@ public enum ConfigKey
   DEFAULT_ESTABLISHMENT("Etablissement.par.defaut", BundleUtil.getLabel("ConfEditor.default.establishment")),
   DEFAULT_STUDIO("Studio.par.defaut", BundleUtil.getLabel("ConfEditor.default.studio")),
   DEFAULT_PRICING_PERIOD("Periode.tarification", BundleUtil.getLabel("ConfEditor.default.module.pricing")),
-  
+
   //== PATHS ==//
   /** Log path. */
   LOG_PATH("LogPath", BundleUtil.getLabel("ConfEditor.log.path.label")),
@@ -100,7 +100,7 @@ public enum ConfigKey
   EMPLOYEES_PATH("Dossier.Salaries", BundleUtil.getLabel("ConfEditor.employees.path.label")),
   GROUPS_PATH("Dossier.Groupes", BundleUtil.getLabel("ConfEditor.groups.path.label")),
   INVOICE_FOOTER("Pied.de.page.Facture", BundleUtil.getLabel("Menu.invoice.footer.label")),
-  
+
   //== ACCOUNTING ==//
   /** Direct debit creditor NNE. */
   DIRECT_DEBIT_CREDITOR_NNE("Compta.prelevement.emetteur", BundleUtil.getLabel("ConfEditor.debiting.issuer.label")),
@@ -131,9 +131,14 @@ public enum ConfigKey
   ADMINISTRATIVE_MANAGEMENT("Planification.administrative", BundleUtil.getLabel("Administrative.scheduling.label")),
   FINANCIAL_YEAR_START("Debut.annee.comptable", BundleUtil.getLabel("Financial.year.start.label")),
   LANGUAGE_CODE("Code.langue", BundleUtil.getLabel("Language.code.label")),
-  
+
   //== OTHERS ==//
-  ESTABLISHEMENT_ACTIVATION_TYPE("Activation.etablissement.type", BundleUtil.getLabel("ConfEditor.pre-enrolment.start.date.label"));
+  ESTABLISHEMENT_ACTIVATION_TYPE("Activation.etablissement.type", BundleUtil.getLabel("ConfEditor.pre-enrolment.start.date.label")),
+
+  TRAINING_CONTRACT_MANAGEMENT("Gestion.contrats.formation",BundleUtil.getLabel("ConfEditor.training.contract.management.label")),
+  INTERNSHIP_AGREEMENT_MANAGEMENT("Gestion.conventions.stage", BundleUtil.getLabel("ConfEditor.internship.agreement.management.label"))
+  ;
+
 
   private final String key;
   private final String label;

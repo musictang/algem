@@ -1,5 +1,5 @@
 /*
- * @(#) ConfigTemplates.java Algem 2.15.0 24/07/17
+ * @(#) ConfigTemplates.java Algem 2.15.0 06/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -172,28 +172,28 @@ public class ConfigTemplates
     p1.add(btQuote, BorderLayout.SOUTH);
 
     JPanel p2 = new JPanel(new BorderLayout());
-    p2.add(new JLabel(BundleUtil.getLabel("Internship.agreements.label"), SwingConstants.CENTER), BorderLayout.NORTH);
-    agreementThumb = new JLabel("", SwingConstants.CENTER);
-    agreementThumb.setIcon(icon);
-    agreementThumb.setCursor(hand);
-    agreementThumb.setToolTipText(GemCommand.DEFINE_CMD);
-    agreementThumb.addMouseListener(mouseAdapter);
-    p2.add(agreementThumb, BorderLayout.CENTER);
-    btAgreement = new GemButton(GemCommand.DELETE_CMD);
-    btAgreement.addActionListener(listener);
-    p2.add(btAgreement, BorderLayout.SOUTH);
-
-    JPanel p3 = new JPanel(new BorderLayout());
-    p3.add(new JLabel(BundleUtil.getLabel("Training.contracts.label"), SwingConstants.CENTER), BorderLayout.NORTH);
+    p2.add(new JLabel(BundleUtil.getLabel("Training.contracts.label"), SwingConstants.CENTER), BorderLayout.NORTH);
     contractThumb = new JLabel("", SwingConstants.CENTER);
     contractThumb.setToolTipText(GemCommand.DEFINE_CMD);
     contractThumb.setIcon(icon);
     contractThumb.setCursor(hand);
     contractThumb.addMouseListener(mouseAdapter);
-    p3.add(contractThumb, BorderLayout.CENTER);
+    p2.add(contractThumb, BorderLayout.CENTER);
     btContract = new GemButton(GemCommand.DELETE_CMD);
     btContract.addActionListener(listener);
-    p3.add(btContract, BorderLayout.SOUTH);
+    p2.add(btContract, BorderLayout.SOUTH);
+
+    JPanel p3 = new JPanel(new BorderLayout());
+    p3.add(new JLabel(BundleUtil.getLabel("Internship.agreements.label"), SwingConstants.CENTER), BorderLayout.NORTH);
+    agreementThumb = new JLabel("", SwingConstants.CENTER);
+    agreementThumb.setIcon(icon);
+    agreementThumb.setCursor(hand);
+    agreementThumb.setToolTipText(GemCommand.DEFINE_CMD);
+    agreementThumb.addMouseListener(mouseAdapter);
+    p3.add(agreementThumb, BorderLayout.CENTER);
+    btAgreement = new GemButton(GemCommand.DELETE_CMD);
+    btAgreement.addActionListener(listener);
+    p3.add(btAgreement, BorderLayout.SOUTH);
 
     JPanel p4 = new JPanel(new BorderLayout());
     p4.add(new JLabel(BundleUtil.getLabel("Default.template.label"), SwingConstants.CENTER), BorderLayout.NORTH);

@@ -1,5 +1,5 @@
 /*
- * @(#)PersonView.java	2.15.0 30/07/2017
+ * @(#)PersonView.java	2.15.0 06/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -146,7 +146,7 @@ public class PersonView
         savePhoto(Integer.parseInt(no.getText()));
       }
     });
-    JLabel btOrgDetails = new JLabel(ImageUtil.createImageIcon("document-properties-symbolic-2.png"));
+    JLabel btOrgDetails = new JLabel(ImageUtil.createImageIcon("document-properties-symbolic.png"));
     btOrgDetails.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     btOrgDetails.setToolTipText(BundleUtil.getLabel("Organization.details.tip"));
     btOrgDetails.addMouseListener(new MouseAdapter() {

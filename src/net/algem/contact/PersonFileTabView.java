@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileTabView.java  2.15.0 30/07/2017
+ * @(#)PersonFileTabView.java  2.15.0 06/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes All Rights Reserved.
  *
@@ -56,6 +56,7 @@ import net.algem.enrolment.EnrolmentEvent;
 import net.algem.enrolment.MemberEnrolmentEditor;
 import net.algem.enrolment.TrainingContractHistory;
 import net.algem.enrolment.TrainingContractIO;
+import net.algem.enrolment.TrainingService;
 import net.algem.group.GemGroupService;
 import net.algem.group.Group;
 import net.algem.group.Musician;
@@ -736,7 +737,7 @@ public class PersonFileTabView
   void addHistoryContractsTab() {
     desktop.setWaitCursor();
     if (historyContracts == null) {
-      historyContracts = new TrainingContractHistory(desktop, dossier, new TrainingContractIO(DataCache.getDataConnection()));
+      historyContracts = new TrainingContractHistory(desktop, dossier, new TrainingService(DataCache.getDataConnection()));
       historyContracts.createUI();
       try {
         List<Enrolment> enrolments = memberService.getEnrolments(dossier.getId(), dataCache.getStartOfPeriod().toString());

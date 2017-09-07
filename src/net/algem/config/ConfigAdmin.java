@@ -51,13 +51,13 @@ public class ConfigAdmin
         extends ConfigPanel
 {
 
-  private Config c1, c2, c3, c4, c5, c6, c7;
-  private JCheckBox jc1, jc2, jc3;
+  private Config c1, c2, c3, c4, c5, c6, c7,c8,c9;
+  private JCheckBox jc1, jc2, jc3, jc4, jc5;
   private ParamChoice school;
   private EstabChoice estab;
   private RoomChoice studio;
   private JComboBox pricingPeriod;
-  private JRadioButton jr1, jr2;
+  //private JRadioButton jr1, jr2;
 
   public ConfigAdmin(String title, Map<String, Config> cm) {
     super(title, cm);
@@ -72,6 +72,8 @@ public class ConfigAdmin
     c5 = confs.get(ConfigKey.DEFAULT_ESTABLISHMENT.getKey());
     c6 = confs.get(ConfigKey.DEFAULT_STUDIO.getKey());
     c7 = confs.get(ConfigKey.DEFAULT_PRICING_PERIOD.getKey());
+    c8 = confs.get(ConfigKey.TRAINING_CONTRACT_MANAGEMENT.getKey());
+    c9 = confs.get(ConfigKey.INTERNSHIP_AGREEMENT_MANAGEMENT.getKey());
     //c8 = confs.get(ConfigKey.ESTABLISHEMENT_ACTIVATION_TYPE.getKey());
 
     content = new GemPanel();
@@ -83,6 +85,10 @@ public class ConfigAdmin
     jc2.setBorder(checkBorder);
     jc3 = new JCheckBox(ConfigKey.ADMINISTRATIVE_MANAGEMENT.getLabel());
     jc3.setBorder(checkBorder);
+    jc4 = new JCheckBox(ConfigKey.TRAINING_CONTRACT_MANAGEMENT.getLabel());
+    jc4.setBorder(checkBorder);
+    jc5 = new JCheckBox(ConfigKey.INTERNSHIP_AGREEMENT_MANAGEMENT.getLabel());
+    jc5.setBorder(checkBorder);
 
     school = new ParamChoice(dataCache.getList(Model.School).getData());
     school.setKey(Integer.parseInt(c4.getValue()));
@@ -96,6 +102,8 @@ public class ConfigAdmin
     jc1.setSelected(isSelected(c1.getValue()));
     jc2.setSelected(isSelected(c2.getValue()));
     jc3.setSelected(isSelected(c3.getValue()));
+    jc4.setSelected(isSelected(c8.getValue()));
+    jc5.setSelected(isSelected(c9.getValue()));
 
     pricingPeriod = new JComboBox(PricingPeriod.values());
     String frequencyTip = BundleUtil.getLabel("ConfEditor.default.module.pricing.tip");
@@ -109,15 +117,25 @@ public class ConfigAdmin
     Box box2 = Box.createHorizontalBox();
     box2.add(jc2);
     box2.add(Box.createHorizontalGlue());
-    
+
     Box box3 = Box.createHorizontalBox();
     box3.add(jc3);
     box3.add(Box.createHorizontalGlue());
+
+    Box box4 = Box.createHorizontalBox();
+    box4.add(jc4);
+    box4.add(Box.createHorizontalGlue());
+
+    Box box5 = Box.createHorizontalBox();
+    box5.add(jc5);
+    box5.add(Box.createHorizontalGlue());
 
     content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
     content.add(box1);
     content.add(box2);
     content.add(box3);
+    content.add(box4);
+    content.add(box5);
 
     GemPanel defs = new GemPanel(new GridLayout(4,2,0,5));
 
@@ -135,9 +153,9 @@ public class ConfigAdmin
     defs.add(pricingPeriod);
 
     content.add(defs);
-    Box box4 = Box.createHorizontalBox();
-    box4.add(Box.createVerticalStrut(10));
-    content.add(box4);
+    Box box6 = Box.createHorizontalBox();
+    box6.add(Box.createVerticalStrut(10));
+    content.add(box6);
     /*
     jr1 = new JRadioButton("Globale");
     jr1.setToolTipText("<html>L'activation ou la désactivation d'un établissement est commune<br />à tous les utilisateurs d'Algem dans la structure.</html>");
@@ -172,7 +190,9 @@ public class ConfigAdmin
     c5.setValue(String.valueOf(estab.getKey()));
     c6.setValue(String.valueOf(studio.getKey()));
     c7.setValue(((PricingPeriod) pricingPeriod.getSelectedItem()).name());
-    //c8.setValue(jr1.isSelected() ? "0" : "1");
+    c8.setValue(getValue(jc4));
+    c9.setValue(getValue(jc5));
+    //c10.setValue(jr1.isSelected() ? "0" : "1");
 
     conf.add(c1);
     conf.add(c2);
@@ -181,7 +201,8 @@ public class ConfigAdmin
     conf.add(c5);
     conf.add(c6);
     conf.add(c7);
-    //conf.add(c8);
+    conf.add(c8);
+    conf.add(c9);
 
     return conf;
   }

@@ -1,5 +1,5 @@
 /*
- * @(#) TrainingContractEditor.java Algem 2.15.0 05/09/17
+ * @(#) TrainingContractEditor.java Algem 2.15.0 06/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -23,13 +23,16 @@ import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfWriter;
 import java.awt.BorderLayout;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
@@ -40,6 +43,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Scanner;
+import javax.imageio.ImageIO;
 import javax.swing.JDialog;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
@@ -60,12 +64,14 @@ import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
+import net.algem.util.MessageUtil;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.module.GemModule;
 import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GemPanel;
 import net.algem.util.ui.GemToolBar;
 import net.algem.util.ui.GridBagHelper;
+import net.algem.util.ui.MessagePopup;
 
 /**
  *
@@ -74,9 +80,8 @@ import net.algem.util.ui.GridBagHelper;
  * @since 2.15.0 30/08/2017
  */
 public class TrainingContractEditor
-        extends JDialog
-        implements ActionListener
-{
+  extends JDialog
+  implements ActionListener {
 
   private JTextField trainingLabel;
   private JTextField funding;
@@ -91,16 +96,17 @@ public class TrainingContractEditor
   private GemButton btSave;
   private GemButton btCancel;
   private GemButton btPreview;
+  private GemButton btCertificate;
 
   private TrainingContract contract;
-  private PersonFile dossier;
+  private final PersonFile dossier;
   private final TrainingContractHistory history;
-  private final TrainingContractIO contractIO;
+  private final TrainingService trainingService;
   private final GemDesktop desktop;
 
-  public TrainingContractEditor(TrainingContractHistory history, TrainingContractIO contractIO, PersonFile dossier, GemDesktop desktop) {
+  public TrainingContractEditor(TrainingContractHistory history, TrainingService trainingService, PersonFile dossier, GemDesktop desktop) {
     super(desktop.getFrame(), BundleUtil.getLabel("Training.contract.label"), false);
-    this.contractIO = contractIO;
+    this.trainingService = trainingService;
     this.history = history;
     this.dossier = dossier;
     this.desktop = desktop;
@@ -110,12 +116,17 @@ public class TrainingContractEditor
     GemToolBar bar = new GemToolBar();
     bar.setFloatable(false);
     btPreview = bar.addIcon(BundleUtil.getLabel("Training.contract.print.icon"),
-            GemCommand.PRINT_CMD,
-            BundleUtil.getLabel("Preview.pdf.label"));
+      GemCommand.PRINT_CMD,
+      BundleUtil.getLabel("Preview.pdf.label"));
     btPreview.addActionListener(this);
 
+    btCertificate = bar.addIcon(BundleUtil.getLabel("Training.contract.certificate.icon"),
+      BundleUtil.getLabel("Training.contract.certificate.label"),
+      BundleUtil.getLabel("Training.contract.certificate.tip"));
+    btCertificate.addActionListener(this);
+
     JPanel p = new JPanel(new GridBagLayout());
-    trainingLabel = new JTextField();
+    trainingLabel = new JTextField(20);
     startDate = new DateFrField();
     endDate = new DateFrField();
     funding = new JTextField(20);
@@ -123,7 +134,6 @@ public class TrainingContractEditor
     NumberFormat nf = AccountUtil.getNumberFormat(2, 2);
     int minSize = 100;
     total = new JFormattedTextField(nf);
-//    total.setEditable(false);
     total.setPreferredSize(new Dimension(minSize, total.getPreferredSize().height));
     amount = new JFormattedTextField(nf);
 
@@ -154,7 +164,6 @@ public class TrainingContractEditor
     JLabel extVolumeLabel = new JLabel(BundleUtil.getLabel("External.training.length.label"));
     extVolumeLabel.setToolTipText(BundleUtil.getLabel("External.training.length.tip"));
     gb.add(extVolumeLabel, 0, 8, 1, 1, GridBagHelper.WEST);
-
     gb.add(new JLabel(BundleUtil.getLabel("Signature.date.label")), 0, 9, 1, 1, GridBagHelper.WEST);
 
     gb.add(trainingLabel, 1, 0, 1, 1, GridBagHelper.WEST);
@@ -194,14 +203,13 @@ public class TrainingContractEditor
     this.contract = c;
     if (c != null) {
       trainingLabel.setText(c.getLabel());
+      season.setText(c.getSeason());
+      startDate.setDate(c.getStart());
+      endDate.setDate(c.getEnd());
       total.setValue(c.getTotal());
       internalLength.setValue(c.getInternalVolume());
+      signDate.setDate(c.getSignDate());
       if (c.getId() > 0) {
-        trainingLabel.setText(c.getLabel());
-        season.setText(c.getSeason());
-        startDate.setDate(c.getStart());
-        endDate.setDate(c.getEnd());
-        signDate.setDate(c.getSignDate());
         funding.setText(c.getFunding());
         amount.setValue(c.getAmount());
         length.setValue(c.getExternalVolume());
@@ -235,18 +243,23 @@ public class TrainingContractEditor
     Object src = e.getSource();
     TrainingContract t = null;
     try {
-      desktop.setWaitCursor();
+      setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
       if (src == btSave) {
         t = getContract();
         if (t.getId() == 0) {
-          contractIO.create(t);
+          trainingService.createContract(t);
           history.updateHistory(t, true);
         } else {
-          contractIO.update(t);
+          trainingService.updateContract(t);
           history.updateHistory(t, false);
         }
 
       } else if (src == btPreview) {
+        t = getContract();
+        if (t.getId() == 0) {
+          MessagePopup.warning(this, MessageUtil.getMessage("contract.not.saved.warning"));
+          return;
+        }
         preview(fillProperties(getContract()));
       }
     } catch (SQLException ex) {
@@ -254,7 +267,7 @@ public class TrainingContractEditor
     } catch (DocumentException | IOException ex) {
       GemLogger.logException(ex);
     } finally {
-      desktop.setDefaultCursor();
+      setCursor(Cursor.getDefaultCursor());
     }
     close();
   }
@@ -262,7 +275,7 @@ public class TrainingContractEditor
   private void preview(Properties props) throws DocumentException, IOException {
     InputStream tpl = getClass().getResourceAsStream("/resources/doc/model/custom/contrat.html");
     if (tpl == null) {
-      tpl = getClass().getResourceAsStream("/resources/doc/model/contrat_.html");
+      tpl = getClass().getResourceAsStream("/resources/doc/model/contrat.html");
     }
     if (tpl == null) {
       return;
@@ -284,6 +297,7 @@ public class TrainingContractEditor
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     //step 1
     Document document = new Document();
+    document.setMargins(40, 40, 40, 40);
     //step 2
     PdfWriter writer = PdfWriter.getInstance(document, out);
     document.open();
@@ -293,7 +307,7 @@ public class TrainingContractEditor
     handler.createParser(document, writer).parse(tpl);
     // step 5
     document.close();
-    handler.createPdf("_contrat.pdf", out, PageTemplate.CONTRACT_PAGE_MODEL);
+    handler.createPdf("contrat-" + dossier.getId() + "_", out, PageTemplate.CONTRACT_PAGE_MODEL);
   }
 
   private Properties fillProperties(TrainingContract contract) throws SQLException {
@@ -306,18 +320,19 @@ public class TrainingContractEditor
 
     props.put("__student_name__", dossier.getContact().getFirstnameName());
     props.put("__student_birth__", dossier.getMember().getBirth().toString());
-    props.put("__student_address__", dossier.getContact().getAddress() == null ? "" : dossier.getContact().getAddress().toString());
+    props.put("__student_address__", dossier.getContact().getAddress() == null ? "NC" : dossier.getContact().getAddress().toString());
     props.put("__company_name__", comp.getOrg().getName());
     props.put("__company_ref__", comp.getReferent().getFirstnameName());
-    props.put("__company_address__", compAddress == null ? "" : compAddress.toString());
+    props.put("__company_address__", compAddress == null ? "NC" : compAddress.toString());
     List<Telephone> tels = comp.getContact().getTele();
-    props.put("__company_tel__", tels != null && tels.size() > 0 ? tels.get(0).getNumber() : "");
+    props.put("__company_tel__", tels != null && tels.size() > 0 ? tels.get(0).getNumber() : "NC");
     List<Email> emails = comp.getContact().getEmail();
-    props.put("__company_mail__", emails != null && emails.size() > 0 ? emails.get(0).getEmail() : "");
+    props.put("__company_mail__", emails != null && emails.size() > 0 ? emails.get(0).getEmail() : "NC");
     props.put("__company_fpcode__", comp.getOrg().getFpCode());
     props.put("__company_siret__", comp.getOrg().getSiret());
     props.put("__company_ape__", comp.getOrg().getNafCode());
     props.put("__company_city__", city);
+    props.put("__company_stamp__", getStampPath(comp));
     props.put("__training_title__", contract.getLabel());
     props.put("__season__", contract.getSeason());
     props.put("__training_start__", df.format(contract.getStart()));
@@ -333,25 +348,24 @@ public class TrainingContractEditor
     return props;
   }
 
-//  private String formatAddress(Address a) {
-//    if (a == null) {
-//      return "";
-//    }
-//    StringBuilder address = new StringBuilder();
-//    address.append(a.getAdr1() == null || a.getAdr1().isEmpty() ? "" : a.getAdr1());
-//    if (a.getAdr2() != null && !a.getAdr2().isEmpty()) {
-//      address.append(' ').append(a.getAdr2());
-//    }
-//    if (a.getCdp() != null && !a.getCdp().isEmpty()) {
-//      address.append(' ').append(a.getCdp());
-//    }
-//    if (a.getCity() != null && !a.getCity().isEmpty()) {
-//      address.append(' ').append(a.getCity());
-//    }
-//
-//    return address.toString();
-//
-//  }
+  private String getStampPath(Company comp) {
+    try {
+      File logo = File.createTempFile("comp-stamp_", ".png");
+      byte[] data = comp.getStamp();
+      if (data == null) {
+        return "";
+      }
+      ByteArrayInputStream in = new ByteArrayInputStream(data);
+      BufferedImage img = ImageIO.read(in);
+
+      ImageIO.write(img, "png", logo);
+      return logo.getPath();
+    } catch (IOException ex) {
+      GemLogger.logException(ex);
+      return "";
+    }
+  }
+
   private void close() {
     setVisible(false);
     dispose();

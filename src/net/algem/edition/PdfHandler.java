@@ -1,5 +1,5 @@
 /*
- * @(#) PdfHandler.java Algem 2.15.0 23/07/2017
+ * @(#) PdfHandler.java Algem 2.15.0 06/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -19,11 +19,6 @@
  */
 package net.algem.edition;
 
-//import com.lowagie.text.DocumentException;
-//import com.lowagie.text.pdf.PdfContentByte;
-//import com.lowagie.text.pdf.PdfImportedPage;
-//import com.lowagie.text.pdf.PdfReader;
-//import com.lowagie.text.pdf.PdfStamper;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfContentByte;
@@ -75,8 +70,6 @@ import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
@@ -129,7 +122,7 @@ public class PdfHandler {
 
       preview(target, null);
     } catch (SQLException ex) {
-      Logger.getLogger(PdfHandler.class.getName()).log(Level.SEVERE, null, ex);
+      GemLogger.logException(ex);
     }
   }
 
@@ -153,7 +146,7 @@ public class PdfHandler {
       templates.remove(type);
     }
   }
-  
+
   public XMLParser createParser(Document document, PdfWriter writer) {
     CSSResolver cssResolver = new StyleAttrCSSResolver();
     XMLWorkerFontProvider fontProvider = new XMLWorkerFontProvider(XMLWorkerFontProvider.DONTLOOKFORFONTS);

@@ -807,11 +807,18 @@ public class PersonFileEditor
     mOptions.addSeparator();
     mOptions.add(miHistoRehearsal = getMenuItem("Rehearsal.history"));
     mOptions.add(miMonthPlanning = getMenuItem("Menu.month.schedule"));
-//if (gestion contrats et conventions)
-    mOptions.addSeparator();
-    mOptions.add(miContracts = getMenuItem("Training.contracts"));
-    mOptions.add(miAgreements = getMenuItem("Internship.agreements"));
-// end if
+    String cConf = ConfigUtil.getConf(ConfigKey.TRAINING_CONTRACT_MANAGEMENT.getKey());
+    String aConf = ConfigUtil.getConf(ConfigKey.INTERNSHIP_AGREEMENT_MANAGEMENT.getKey());
+    if ((cConf != null && cConf.toLowerCase().startsWith("t")) || (aConf != null && aConf.toLowerCase().startsWith("t"))) {
+      mOptions.addSeparator();
+      if (cConf != null && cConf.toLowerCase().startsWith("t")) {
+        mOptions.add(miContracts = getMenuItem("Training.contracts"));
+      }
+      if (aConf != null && aConf.toLowerCase().startsWith("t")) {
+        mOptions.add(miAgreements = getMenuItem("Internship.agreements"));
+      }
+    }
+
     mOptions.addSeparator();
     mOptions.add(miHistoInvoice = getMenuItem("Invoice.history"));
     mOptions.add(miHistoQuote = getMenuItem("Quotation.history"));
