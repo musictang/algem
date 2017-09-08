@@ -38,10 +38,10 @@ import net.algem.util.model.TableIO;
 public class OrganizationIO extends TableIO {
 
   public static final String TABLE = "organisation";
-  public static final String COLUMNS = "id,nom,idper,raison,siret,naf,codefp,codetva";
+  public static final String COLUMNS = "idper,referent,nom,raison,siret,naf,codefp,codetva";
   public static final String LOGO_COL = "logo";
   public static final String STAMP_COL = "stamp";
-  private static final String SEQUENCE = "organisation_id_seq";
+//  private static final String SEQUENCE = "organisation_id_seq";
 
   private DataConnection dc;
 
@@ -49,11 +49,11 @@ public class OrganizationIO extends TableIO {
     this.dc = dc;
   }
 
-  public Organization findId(int id) throws SQLException {
+  public Organization findId(int idper) throws SQLException {
 
-    String query = "SELECT " + COLUMNS + " FROM " + TABLE + " WHERE id=?";
+    String query = "SELECT " + COLUMNS + " FROM " + TABLE + " WHERE idper=?";
     try (PreparedStatement ps = dc.prepareStatement(query)) {
-      ps.setInt(1, id);
+      ps.setInt(1, idper);
       GemLogger.info(ps.toString());
       ResultSet rs = ps.executeQuery();
       while (rs.next()) {
@@ -78,11 +78,22 @@ public class OrganizationIO extends TableIO {
     }
     return orgs;
   }
+  
+   public List<Organization> findAll() throws SQLException {
+    List<Organization> orgs = new ArrayList<>();
+      String query = "SELECT " + COLUMNS + " FROM " + TABLE + " ORDER BY nom";
+      try (ResultSet rs = dc.executeQuery(query)) {
+        while (rs.next()) {
+          orgs.add(getFromRS(rs));
+        }
+      }
+    return orgs;
+  }
 
   public List<Person> findMembers(int orgId) throws SQLException {
     List<Person> pers = new ArrayList<>();
     if (orgId > 0) {
-      String query = "SELECT p.id,CASE WHEN p.nom IS NULL OR p.nom = '' THEN o.nom ELSE p.nom END,p.prenom FROM " + PersonIO.TABLE + " p JOIN organisation o ON p.organisation = o.id WHERE o.id = ? ORDER BY p.prenom";
+      String query = "SELECT p.id,CASE WHEN p.nom IS NULL OR p.nom = '' THEN o.nom ELSE p.nom END,p.prenom FROM " + PersonIO.TABLE + " p JOIN organisation o ON p.organisation = o.idper WHERE o.idper = ? ORDER BY p.prenom";
       try (PreparedStatement ps = dc.prepareStatement(query)) {
         ps.setInt(1, orgId);
         GemLogger.info(ps.toString());
@@ -101,8 +112,8 @@ public class OrganizationIO extends TableIO {
 
   private Organization getFromRS(ResultSet rs) throws SQLException {
     Organization org = new Organization(rs.getInt(1));
-    org.setName(rs.getString(2));
-    org.setReferent(rs.getInt(3));
+    org.setReferent(rs.getInt(2));
+    org.setName(rs.getString(3));
     org.setCompanyName(rs.getString(4));
     org.setSiret(rs.getString(5));
     org.setNafCode(rs.getString(6));
@@ -112,13 +123,14 @@ public class OrganizationIO extends TableIO {
   }
 
   public void create(Organization org) throws SQLException {
-    int nextId = nextId(SEQUENCE, dc);
+    //int nextId = nextId(SEQUENCE, dc);
 
     String query = "INSERT INTO " + TABLE + " VALUES(?,?,?,?,?,?,?,?)";
     try (PreparedStatement ps = dc.prepareStatement(query)) {
-      ps.setInt(1, nextId);
-      ps.setString(2, org.getName());
-      ps.setInt(3,org.getReferent());
+      ps.setInt(1, org.getId());
+      ps.setInt(2,org.getReferent());
+      ps.setString(3, org.getName());
+      
       if (org.getCompanyName() == null || org.getCompanyName().trim().isEmpty()) {
         ps.setNull(4, java.sql.Types.VARCHAR);
       } else {
@@ -147,13 +159,13 @@ public class OrganizationIO extends TableIO {
 
       GemLogger.info(ps.toString());
       ps.executeUpdate();
-      org.setId(nextId);
+//      org.setId(nextId);
     }
 
   }
 
   public void update(Organization org) throws SQLException {
-    String query = "UPDATE " + TABLE + " SET nom=?,idper=?,raison=?,siret=?,naf=?,codefp=?,codetva=? WHERE id=?";
+    String query = "UPDATE " + TABLE + " SET nom=?,referent=?,raison=?,siret=?,naf=?,codefp=?,codetva=? WHERE idper=?";
     try (PreparedStatement ps = dc.prepareStatement(query)) {
       ps.setString(1, org.getName());
       ps.setInt(2, org.getReferent());

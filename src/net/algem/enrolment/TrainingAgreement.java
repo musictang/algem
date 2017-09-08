@@ -21,6 +21,7 @@
 package net.algem.enrolment;
 
 import java.util.Date;
+import net.algem.contact.Organization;
 
 /**
  *
@@ -33,7 +34,7 @@ public class TrainingAgreement {
   private int id;
   private byte type;
   private int personId;
-  private int orgId;
+  private Organization org;
   private String insurance;
   private String insuranceRef;
   private String label;
@@ -98,12 +99,12 @@ public class TrainingAgreement {
     this.personId = personId;
   }
 
-  public int getOrgId() {
-    return orgId;
+  public Organization getOrg() {
+    return org;
   }
 
-  public void setOrgId(int orgId) {
-    this.orgId = orgId;
+  public void setOrg(Organization org) {
+    this.org = org;
   }
 
   public String getInsurance() {

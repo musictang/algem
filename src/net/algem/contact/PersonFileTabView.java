@@ -54,6 +54,7 @@ import net.algem.edition.DirectDebitRequest;
 import net.algem.enrolment.Enrolment;
 import net.algem.enrolment.EnrolmentEvent;
 import net.algem.enrolment.MemberEnrolmentEditor;
+import net.algem.enrolment.TrainingAgreementHistory;
 import net.algem.enrolment.TrainingContractHistory;
 import net.algem.enrolment.TrainingContractIO;
 import net.algem.enrolment.TrainingService;
@@ -106,6 +107,7 @@ public class PersonFileTabView
   private PersonFileGroupView groupView;
 
   private TrainingContractHistory historyContracts;
+  private TrainingAgreementHistory historyAgreements;
   private GemButton saveBt, closeBt;
   private Note note;
   private GemToolBar mainToolbar;
@@ -764,6 +766,39 @@ public class PersonFileTabView
 
     wTab.addItem(historyContracts, BundleUtil.getLabel("Training.contracts.label"));
     addTab(historyContracts);
+    desktop.setDefaultCursor();
+  }
+  
+  void addHistoryAgreementsTab() {
+    desktop.setWaitCursor();
+    if (historyAgreements == null) {
+      historyAgreements = new TrainingAgreementHistory(desktop, dossier, new TrainingService(DataCache.getDataConnection()));
+      historyAgreements.createUI();
+      try {
+        List<Enrolment> enrolments = memberService.getEnrolments(dossier.getId(), dataCache.getStartOfPeriod().toString());
+        if (enrolments.size() > 0) {
+          Collections.sort(enrolments, new Comparator<Enrolment>() {
+            @Override
+            public int compare(Enrolment o1, Enrolment o2) {
+              if (o1.getOrder().getCreation().before(o2.getOrder().getCreation())) {
+                return -1;
+              } else if (o1.getOrder().getCreation().after(o2.getOrder().getCreation())) {
+                return 1;
+              } else {
+                return 0;
+              }
+            }
+
+          });
+          historyAgreements.setLastEnrolment(enrolments.get(enrolments.size() - 1));
+        }
+      } catch (SQLException ex) {
+        GemLogger.logException(ex);
+      }
+    }
+
+    wTab.addItem(historyAgreements, BundleUtil.getLabel("Internship.agreements.label"));
+    addTab(historyAgreements);
     desktop.setDefaultCursor();
   }
 

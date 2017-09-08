@@ -300,7 +300,7 @@ public class ImportCsvCtrl
             processors[idx] = new ConvertNullTo("\"\"", new Trim(new Truncate(4)));
             break; // title
           case 2:
-            processors[idx] = new Trim(new Truncate(32));
+            processors[idx] = new Trim(new Truncate(32)); //XXX manage null values
             break; // lastName *
           case 3:
             processors[idx] = new ConvertNullTo("\"\"", new Trim(new Truncate(32)));

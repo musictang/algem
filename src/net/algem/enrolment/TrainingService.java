@@ -22,6 +22,8 @@ package net.algem.enrolment;
 
 import java.sql.SQLException;
 import java.util.List;
+import net.algem.contact.Organization;
+import net.algem.contact.OrganizationIO;
 import net.algem.course.Module;
 import net.algem.util.DataConnection;
 
@@ -33,14 +35,28 @@ import net.algem.util.DataConnection;
  */
 public class TrainingService {
   private final TrainingContractIO contractIO;
+  private final TrainingAgreementIO agreementIO;
+  private final OrganizationIO orgIO;
 
   public TrainingService(DataConnection dc) {
     this.contractIO = new TrainingContractIO(dc);
+    this.agreementIO = new TrainingAgreementIO(dc);
+    this.orgIO = new OrganizationIO(dc);
   }
 
   public List<TrainingContract> findContracts(int idper) throws SQLException {
     return contractIO.findAll(idper);
   }
+  
+   public List<TrainingAgreement> findAgreements(int idper) throws SQLException {
+    return agreementIO.findAll(idper);
+  }
+   
+   public Organization[] getOrganizations() throws SQLException {
+     List<Organization> orgs = orgIO.findAll();
+     Organization [] orgArray = new Organization[orgs.size()];
+     return orgs.toArray(orgArray);
+   }
 
   public Module getModule(int orderId) throws SQLException {
     return contractIO.getModuleInfo(orderId);
@@ -59,5 +75,17 @@ public class TrainingService {
 
   public void deleteContract(int id) throws SQLException {
     contractIO.delete(id);
+  }
+  
+  public void createAgreement(TrainingAgreement t) throws SQLException {
+    agreementIO.create(t);
+  }
+
+  public void updateAgreement(TrainingAgreement t) throws SQLException {
+    agreementIO.update(t);
+  }
+
+  public void deleteAgreement(int id) throws SQLException {
+    agreementIO.delete(id);
   }
 }

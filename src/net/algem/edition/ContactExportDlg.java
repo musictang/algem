@@ -77,7 +77,7 @@ public class ContactExportDlg
   public String getRequest() {
     switch (criterion.getSelectedIndex()) {
       case 1:
-        return "WHERE p.id > 0 AND p.ptype = " + Person.PERSON + " AND (p.organisation IS NOT NULL OR length(p.organisation) > 0)";
+        return "WHERE p.id > 0 AND p.ptype = " + Person.PERSON + " AND p.organisation > 0";
       case 2:
         return "WHERE p.id > 0 AND p.ptype = " + Person.PERSON + " AND p.id NOT IN(SELECT idper FROM " + MemberIO.TABLE + ")";
       case 3:

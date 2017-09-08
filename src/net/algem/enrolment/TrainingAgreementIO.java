@@ -24,6 +24,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import net.algem.contact.Organization;
+import net.algem.contact.OrganizationIO;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
 import net.algem.util.model.TableIO;
@@ -43,9 +45,11 @@ public class TrainingAgreementIO
   private final static String SEQUENCE = "conventionstage_id_seq";
 
   private DataConnection dc;
+  private final OrganizationIO organizationIO;
 
   public TrainingAgreementIO(DataConnection dc) {
     this.dc = dc;
+    this.organizationIO = new OrganizationIO(dc);
   }
 
   public void create(TrainingAgreement t) throws SQLException {
@@ -57,7 +61,7 @@ public class TrainingAgreementIO
       ps.setInt(1, nextId);
       ps.setByte(2, t.getType());
       ps.setInt(3, t.getPersonId());
-      ps.setInt(4, t.getOrgId());
+      ps.setInt(4, t.getOrg().getId());
       ps.setString(5, t.getInsurance());
       ps.setString(6, t.getInsuranceRef());
       ps.setString(7, t.getLabel());
@@ -75,7 +79,7 @@ public class TrainingAgreementIO
   public void update(TrainingAgreement t) throws SQLException {
     String query = "UPDATE " + TABLE + " SET idorg=?,assurance=?,assuranceref=?,libelle=?,saison=?,debut=?,fin=?datesign=? WHERE id = ?";
     try (PreparedStatement ps = dc.prepareStatement(query)) {
-      ps.setInt(1, t.getOrgId());
+      ps.setInt(1, t.getOrg().getId());
       ps.setString(2, t.getInsurance());
       ps.setString(3,t.getInsuranceRef());
       ps.setString(4,t.getLabel());
@@ -139,7 +143,7 @@ public class TrainingAgreementIO
     TrainingAgreement t = new TrainingAgreement(rs.getInt(1));
     t.setType(rs.getByte(2));
     t.setPersonId(rs.getInt(3));
-    t.setOrgId(4);
+    t.setOrg(organizationIO.findId(rs.getInt(4)));
     t.setInsurance(rs.getString(5));
     t.setInsuranceRef(rs.getString(6));
     t.setLabel(rs.getString(7));

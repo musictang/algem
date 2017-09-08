@@ -92,7 +92,9 @@ public class PersonIO
       } else {
         ps.setString(8, p.getNickName());
       }
-      ps.setInt(9, p.getOrganization().getId());
+
+      ps.setInt(9, p.getOrganization() == null ? 0 : p.getOrganization().getId());
+      
       GemLogger.info(ps.toString());
 
       ps.executeUpdate();

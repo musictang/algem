@@ -21,4 +21,4 @@ COMMENT ON COLUMN conventionstage.fin IS 'Date de fin de stage en entreprise';
 COMMENT ON COLUMN conventionstage.datesign IS 'Date de signature';
 
 -- données de test
-INSERT into conventionstage values(default,2,18691,21751,'Generali','G42568FR','Cycle intensif Guitare','Saison 2016-2017','2017-01-01','2017-03-30','2017-12-01');
+INSERT INTO conventionstage values(default,2,18691,21751,'Generali','G42568FR','Cycle intensif Guitare','Saison 2016-2017','2017-01-01','2017-03-30','2017-12-01');

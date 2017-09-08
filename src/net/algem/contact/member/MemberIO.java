@@ -31,6 +31,7 @@ import net.algem.config.InstrumentIO;
 import net.algem.planning.DateFr;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataConnection;
+import net.algem.util.GemLogger;
 import net.algem.util.model.Cacheable;
 import net.algem.util.model.TableIO;
 
@@ -79,6 +80,7 @@ public class MemberIO
       createPs.setInt(5, m.getMembershipCount());
       createPs.setInt(6, m.getPractice());
       createPs.setInt(7, m.getLevel());
+      //TODO archiv ?? default false
       if (m.getInsurance() == null || m.getInsurance().isEmpty()) {
         createPs.setNull(8, Types.VARCHAR);
       } else {
@@ -89,6 +91,7 @@ public class MemberIO
       } else {
         createPs.setString(9, m.getInsuranceRef());
       }
+      GemLogger.info(createPs.toString());
       createPs.executeUpdate();
     }
     InstrumentIO.insert(m.getInstruments(), m.getId(), Instrument.MEMBER, dc);

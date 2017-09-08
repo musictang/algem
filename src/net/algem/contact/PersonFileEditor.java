@@ -413,6 +413,8 @@ public class PersonFileEditor
       }
     } else if ("Training.contracts".equals(arg)) {
       personFileView.addHistoryContractsTab();
+    } else if ("Internship.agreements".equals(arg)) {
+      personFileView.addHistoryAgreementsTab();
     } else if (FileTabView.INVOICE_TAB_TITLE.equals(arg)) {
       addInvoice(src);
     } else if (FileTabView.ESTIMATE_TAB_TITLE.equals(arg)) {
