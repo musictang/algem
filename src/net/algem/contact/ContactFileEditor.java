@@ -139,8 +139,8 @@ public class ContactFileEditor
     return personView.getId();
   }
 
-  public void setID(int i) {
-    personView.setId(i);
+  public void refreshView(PersonFile dossier) {
+    personView.setId(dossier);
   }
 
   public void setNote(Note n) {

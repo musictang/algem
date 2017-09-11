@@ -250,7 +250,7 @@ public class PersonFileEditor
       if (MessagePopup.confirm(personFileView, msg, BundleUtil.getLabel("Contact.save.label"))) {
         dossier.setOldValues();// important
         save();
-        personFileView.setID(dossier.getId());
+        personFileView.setID(dossier);
       } else {
         desktop.removeCurrentModule();
         return;
@@ -1012,7 +1012,7 @@ public class PersonFileEditor
       if (MessagePopup.confirm(personFileView, msg, "Enregistrement du dossier:" + dossier.getId())) {
         save();
         dossier.setOldValues();
-        personFileView.setID(dossier.getId());//mise à jour de la view dans le cas d'un nouveau contact(2.0c)
+        personFileView.setID(dossier);//mise à jour de la view dans le cas d'un nouveau contact(2.0c)
         //dossier.clearOldValues();
         // jm 2.0ma ajout automatique des onglets inscription et suivi lors de l'enregistrement d'un nouvel adhérent
         if (dossier.getMember() != null && personFileView.getMemberEnrolment() == null) {

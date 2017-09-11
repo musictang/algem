@@ -89,7 +89,7 @@ public class PersonFileSearchCtrl
     if (id > 0) {
       query = "WHERE p.id = " + id;
     } else if ((org = searchView.getField(1)) != null) {
-      query = "JOIN " + OrganizationIO.TABLE + " o ON p.organisation = o.id WHERE translate(lower(o.nom),'" + TRANSLATE_FROM + "', '" + TRANSLATE_TO + "') ~* '"
+      query = "JOIN " + OrganizationIO.TABLE + " o ON p.organisation = o.idper WHERE translate(lower(o.nom),'" + TRANSLATE_FROM + "', '" + TRANSLATE_TO + "') ~* '"
               + TableIO.normalize(org) + "'";
     } else if ((name = searchView.getField(2)) != null) {
       query = "WHERE translate(lower(p.nom),'" + TRANSLATE_FROM + "', '" + TRANSLATE_TO + "') ~* '"

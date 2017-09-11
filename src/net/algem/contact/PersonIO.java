@@ -37,6 +37,8 @@ import net.algem.util.model.TableIO;
 
 import java.sql.PreparedStatement;
 import static java.lang.String.format;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * IO methods for class {@link net.algem.contact.Person}.
@@ -46,9 +48,8 @@ import static java.lang.String.format;
  * @version 2.15.0
  */
 public class PersonIO
-        extends TableIO
-        implements Cacheable
-{
+  extends TableIO
+  implements Cacheable {
 
   public static final String TABLE = "personne";
   public static final String VIEW = "personnevue";
@@ -65,50 +66,74 @@ public class PersonIO
   private DataConnection dc;
   private PreparedStatement findByIdStmt;
 
-
   public PersonIO(DataConnection _dc) {
     this.dc = _dc;
     findByIdStmt = dc.prepareStatement(FIND_BY_ID_QUERY);
   }
 
-  public void insert(Person p) throws SQLException {
-    int n = nextId(SEQUENCE, dc);
-    String query = "INSERT INTO " + TABLE + " VALUES(?,?,?,?,?,?,?,?,?)";
-    try(PreparedStatement ps = dc.prepareStatement(query)) {
-      ps.setInt(1, n);
-      ps.setInt(2, p.getType());
-      ps.setString(3, p.getName().toUpperCase());
-      ps.setString(4, p.getFirstName());
-      if (p.getGender() == null || p.getGender().isEmpty()) {
-        ps.setNull(5,java.sql.Types.CHAR);
-      } else {
-        ps.setString(5, p.getGender());
-      }
-      ps.setBoolean(6, p.hasImgRights());
-      ps.setBoolean(7, p.isPartnerInfo());
+  public void insert(final Person p) throws SQLException {
+    try {
+      final int n = nextId(SEQUENCE, dc);
+      final String query = "INSERT INTO " + TABLE + " VALUES(?,?,?,?,?,?,?,?,?)";
+      dc.withTransaction(new DataConnection.SQLRunnable<Void>() {
+        @Override
+        public Void run(DataConnection conn) throws Exception {
+          try (PreparedStatement ps = dc.prepareStatement(query)) {
+            ps.setInt(1, n);
+            ps.setInt(2, p.getType());
+            ps.setString(3, p.getName().toUpperCase());
+            ps.setString(4, p.getFirstName());
+            if (p.getGender() == null || p.getGender().isEmpty()) {
+              ps.setNull(5, java.sql.Types.CHAR);
+            } else {
+              ps.setString(5, p.getGender());
+            }
+            ps.setBoolean(6, p.hasImgRights());
+            ps.setBoolean(7, p.isPartnerInfo());
 
-      if (p.getNickName() == null || p.getNickName().isEmpty()) {
-        ps.setNull(8,java.sql.Types.VARCHAR);
-      } else {
-        ps.setString(8, p.getNickName());
-      }
+            if (p.getNickName() == null || p.getNickName().isEmpty()) {
+              ps.setNull(8, java.sql.Types.VARCHAR);
+            } else {
+              ps.setString(8, p.getNickName());
+            }
+            Organization o = p.getOrganization();
+            if (o != null && o.getName() != null && !o.getName().isEmpty()) {
+              //TODO check exists ??
+              ps.setInt(9, n);
+              o.setId(n);
+              o.setReferent(n);
+            } else {
+              ps.setInt(9, 0);
+            }
 
-      ps.setInt(9, p.getOrganization() == null ? 0 : p.getOrganization().getId());
-      
-      GemLogger.info(ps.toString());
+            GemLogger.info(ps.toString());
 
-      ps.executeUpdate();
-      p.setId(n);
+            ps.executeUpdate();
+            p.setId(n);
+            createOrganization(p);
+          }
+          return null;
+        }
+      });
+    } catch (Exception ex) {
+      throw new SQLException(ex.getMessage());
+    }
+
+  }
+
+  private void createOrganization(Person p) throws SQLException {
+    if (p.getOrganization() != null && p.getOrganization().getId() > 0) {
+        new OrganizationIO(dc).create(p.getOrganization());
     }
   }
 
   public void update(Person p) throws SQLException {
     String query = "UPDATE " + TABLE + " SET nom=?,prenom=?,civilite=?,droit_img=?,partenaire=?,pseudo=?,organisation=? WHERE id=?";
-    try(PreparedStatement ps = dc.prepareStatement(query)) {
+    try (PreparedStatement ps = dc.prepareStatement(query)) {
       ps.setString(1, p.getName().toUpperCase());
       ps.setString(2, p.getFirstName());
       if (p.getGender() == null || p.getGender().isEmpty()) {
-        ps.setNull(3,java.sql.Types.CHAR);
+        ps.setNull(3, java.sql.Types.CHAR);
       } else {
         ps.setString(3, p.getGender());
       }
@@ -116,12 +141,12 @@ public class PersonIO
 
       ps.setBoolean(5, p.isPartnerInfo());
       if (p.getNickName() == null || p.getNickName().isEmpty()) {
-        ps.setNull(6,java.sql.Types.VARCHAR);
+        ps.setNull(6, java.sql.Types.VARCHAR);
       } else {
         ps.setString(6, p.getNickName());
       }
       ps.setInt(7, p.getOrganization().getId());
-      ps.setInt(8,p.getId());
+      ps.setInt(8, p.getId());
 
       GemLogger.info(ps.toString());
 
@@ -181,7 +206,7 @@ public class PersonIO
 
   public static Vector<Person> find(String where, DataConnection dc) {
     Vector<Person> v = new Vector<Person>();
-    String query = PRE_QUERY +  where + " ORDER BY p.nom";
+    String query = PRE_QUERY + where + " ORDER BY p.nom";
     try (ResultSet rs = dc.executeQuery(query)) {
       while (rs.next()) {
         v.addElement(getFromRS(rs));
@@ -212,10 +237,10 @@ public class PersonIO
   public List<Person> load() throws SQLException {
     List<Person> lp = new ArrayList<Person>();
     String query = "SELECT " + COLUMNS + " FROM  " + VIEW + " p"
-            + " WHERE p.id IN (SELECT debiteur FROM " + InvoiceIO.TABLE + ")"
-            + " OR p.id IN (SELECT adherent FROM " + InvoiceIO.TABLE + ")";
+      + " WHERE p.id IN (SELECT debiteur FROM " + InvoiceIO.TABLE + ")"
+      + " OR p.id IN (SELECT adherent FROM " + InvoiceIO.TABLE + ")";
     try (ResultSet rs = dc.executeQuery(query)) {
-      while(rs.next()) {
+      while (rs.next()) {
         lp.add(getFromRS(rs));
       }
     }
@@ -224,12 +249,12 @@ public class PersonIO
 
   public List<Integer> getPersonsIdsForAction(int idAction) throws SQLException {
     String query = format(
-            "SELECT DISTINCT p.id, p.nom, p.prenom FROM " + PersonIO.TABLE + " p\n"
-                    + "JOIN " + OrderIO.TABLE + " c ON c.adh = p.id\n"
-                    + "JOIN " + CourseOrderIO.TABLE + " cc ON cc.idcmd = c.id\n"
-                    + "JOIN " + ActionIO.TABLE + " a ON cc.idaction = a.id\n"
-                    + "WHERE a.id = %d\n"
-                    + "ORDER BY p.prenom, p.nom ", idAction
+      "SELECT DISTINCT p.id, p.nom, p.prenom FROM " + PersonIO.TABLE + " p\n"
+      + "JOIN " + OrderIO.TABLE + " c ON c.adh = p.id\n"
+      + "JOIN " + CourseOrderIO.TABLE + " cc ON cc.idcmd = c.id\n"
+      + "JOIN " + ActionIO.TABLE + " a ON cc.idaction = a.id\n"
+      + "WHERE a.id = %d\n"
+      + "ORDER BY p.prenom, p.nom ", idAction
     );
 
     List<Integer> result = new ArrayList<>();

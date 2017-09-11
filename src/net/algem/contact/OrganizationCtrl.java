@@ -25,6 +25,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JDialog;
 import net.algem.util.BundleUtil;
@@ -64,17 +65,24 @@ public class OrganizationCtrl
   void setView() {
     try {
       person = personView.get();
-      List<Person> pers = orgIO.findMembers(person.getOrganization().getId());
+      List<Person> pers = new ArrayList<>();
+      if (person.getOrganization() != null) {
+        pers = orgIO.findMembers(person.getOrganization().getId());
+      }
+
       if (pers.isEmpty()) {
         pers.add(person);
       }
       orgView = new OrganizationView(pers);
-      Organization org = orgIO.findId(person.getOrganization().getId());
-
+      Organization org = null;
+      if (person.getOrganization() != null) {
+        org = orgIO.findId(person.getOrganization().getId());
+      }
       if (org == null || isCreation) {
-        org = new Organization(0);
-        org.setName(personView.getOrgName());
+        org = new Organization(person.getId());
+//        org.setId(person.getId());
         org.setReferent(person.getId());
+        org.setName(personView.getOrgName());
       } else {
         isCreation = false;
       }
@@ -129,9 +137,13 @@ public class OrganizationCtrl
   void updateOrganization(Organization target, OrganizationIO orgIO) {
     try {
       Organization o = orgIO.findId(target.getId());
+
       if (o == null) {
         orgIO.create(target);
       } else {
+        if (target.getReferent() == -1) {
+          target.setReferent(target.getId());
+        }
         orgIO.update(target);
       }
       personView.setOrganization(target);

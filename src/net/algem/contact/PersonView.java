@@ -103,9 +103,11 @@ public class PersonView
     orgName.addKeyListener(new KeyAdapter() {
       @Override
       public void keyReleased(KeyEvent e) {
-        int length = orgName.getText().length();
-        if (length >= 2) {
-          findOrg(orgName);
+        if (person != null && person.getId() > 0) {
+          int length = orgName.getText().length();
+          if (length >= 2) {
+            findOrg(orgName);
+          }
         }
       }
     });
@@ -215,6 +217,9 @@ public class PersonView
     cbImgRights.setSelected(p.hasImgRights());
     cbPartner.setSelected(p.isPartnerInfo());
     orgName.setText(p.getOrganization() == null ? null : p.getOrganization().getName());
+    if (p.getOrganization() != null && p.getOrganization().getId() == p.getId()) {
+      orgName.setEditable(false);
+    }
     ptype = p.getType();
     loadPhoto(p);
   }
@@ -316,13 +321,20 @@ public class PersonView
     pr.setImgRights(cbImgRights.isSelected());
     pr.setPartnerInfo(cbPartner.isSelected());
 
-    pr.setOrganization(person.getOrganization());
+    if (pr.getId() == 0  && !orgName.getText().isEmpty()) {
+      Organization o = new Organization(1);//TEMP id
+      o.setName(orgName.getText().trim());
+      pr.setOrganization(o);
+    } else {
+      pr.setOrganization(person.getOrganization());
+    }
 
     return pr;
   }
 
-  public void setId(int n) {
-    no.setText(String.valueOf(n));
+  public void setId(PersonFile dossier) {
+    no.setText(String.valueOf(dossier.getId()));
+    person.setOrganization(dossier.getContact().getOrganization());
   }
 
   public int getId() {

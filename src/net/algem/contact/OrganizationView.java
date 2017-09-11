@@ -19,6 +19,7 @@
  */
 package net.algem.contact;
 
+import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.util.List;
 import javax.swing.BorderFactory;
@@ -80,6 +81,7 @@ public class OrganizationView
     orgId.setEditable(false);
     gb2.add(orgId, 1, 0, 1, 1, GridBagHelper.WEST);
     gb2.add(name, 1, 1, 1, 1, GridBagHelper.WEST);
+    referent.setPreferredSize(new Dimension(name.getPreferredSize().width,referent.getPreferredSize().height));
     gb2.add(referent, 1, 2, 1, 1, GridBagHelper.WEST);
     gb2.add(companyName, 1, 3, 1, 1, GridBagHelper.WEST);
     gb2.add(siret, 1, 4, 1, 1, GridBagHelper.WEST);

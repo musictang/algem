@@ -768,7 +768,7 @@ public class PersonFileTabView
     addTab(historyContracts);
     desktop.setDefaultCursor();
   }
-  
+
   void addHistoryAgreementsTab() {
     desktop.setWaitCursor();
     if (historyAgreements == null) {
@@ -807,8 +807,8 @@ public class PersonFileTabView
     contactFileEditor.setNote(nd);
   }
 
-  void setID(int i) {
-    contactFileEditor.setID(i);
+  void setID(PersonFile dossier) {
+    contactFileEditor.refreshView(dossier);
   }
 
   Note getNote() {

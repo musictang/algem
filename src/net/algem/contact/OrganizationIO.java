@@ -78,7 +78,7 @@ public class OrganizationIO extends TableIO {
     }
     return orgs;
   }
-  
+
    public List<Organization> findAll() throws SQLException {
     List<Organization> orgs = new ArrayList<>();
       String query = "SELECT " + COLUMNS + " FROM " + TABLE + " ORDER BY nom";
@@ -93,7 +93,7 @@ public class OrganizationIO extends TableIO {
   public List<Person> findMembers(int orgId) throws SQLException {
     List<Person> pers = new ArrayList<>();
     if (orgId > 0) {
-      String query = "SELECT p.id,CASE WHEN p.nom IS NULL OR p.nom = '' THEN o.nom ELSE p.nom END,p.prenom FROM " + PersonIO.TABLE + " p JOIN organisation o ON p.organisation = o.idper WHERE o.idper = ? ORDER BY p.prenom";
+      String query = "SELECT p.id,CASE WHEN p.nom IS NULL OR p.nom = '' THEN o.nom ELSE p.nom END,p.prenom FROM " + PersonIO.TABLE + " p JOIN " + TABLE + " o ON p.organisation = o.idper WHERE o.idper = ? ORDER BY p.prenom";
       try (PreparedStatement ps = dc.prepareStatement(query)) {
         ps.setInt(1, orgId);
         GemLogger.info(ps.toString());
@@ -130,7 +130,7 @@ public class OrganizationIO extends TableIO {
       ps.setInt(1, org.getId());
       ps.setInt(2,org.getReferent());
       ps.setString(3, org.getName());
-      
+
       if (org.getCompanyName() == null || org.getCompanyName().trim().isEmpty()) {
         ps.setNull(4, java.sql.Types.VARCHAR);
       } else {
@@ -209,7 +209,7 @@ public class OrganizationIO extends TableIO {
     try (ResultSet rs = dc.executeQuery(query)) {
       while (rs.next()) {
         Company c = new Company();
-        
+
         c.setDomain(rs.getString(2));
         c.setLogo(rs.getBytes(3));
         c.setStamp(rs.getBytes(4));
