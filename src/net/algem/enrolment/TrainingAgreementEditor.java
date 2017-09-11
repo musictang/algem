@@ -43,8 +43,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -290,7 +288,7 @@ public class TrainingAgreementEditor
     handler.createParser(document, writer).parse(tpl);
     // step 5
     document.close();
-    handler.createPdf("convention-" + dossier.getId() + "_", out, PageTemplate.CONTRACT_PAGE_MODEL);
+    handler.createPdf("convention-" + dossier.getId() + "_", out, PageTemplate.AGREEMENT_PAGE_MODEL);
   }
 
   private Properties fillProperties(TrainingAgreement agreement) throws SQLException {
@@ -303,15 +301,25 @@ public class TrainingAgreementEditor
     Organization o = agreement.getOrg();
     if (o != null) {
       props.put("__org_name__", o.getName());
-      Person p = (Person) DataCache.findId(o.getReferent(), Model.Person);
-      props.put("__org_ref__", p.getFirstnameName() == null ? "NC" : p.getFirstnameName());
+      Person ref = (Person) DataCache.findId(o.getReferent(), Model.Person);
+      PersonFile pf = (PersonFile) DataCache.findId(o.getId(), Model.PersonFile);
+      props.put("__org_ref__", ref.getFirstnameName() == null ? "NC" : ref.getFirstnameName());
       props.put("__org_siret__", o.getSiret() == null ? "NC" : o.getSiret());
       props.put("__org_ape__", o.getNafCode() == null ? "NC" : o.getNafCode());
+      
+      props.put("__org_address__", pf.getContact().getAddress() == null ? "NC" : ref.getFirstnameName());
+      List<Telephone> pTels = pf.getContact().getTele();
+      props.put("__org_tel__", pTels != null && pTels.size() > 0 ? pTels.get(0).getNumber() : "NC");
+      List<Email> pMails = pf.getContact().getEmail();
+      props.put("__org_mail__", pMails != null && pMails.size() > 0 ? pMails.get(0).getEmail() : "NC");
     }
 
     props.put("__student_name__", dossier.getContact().getFirstnameName());
     props.put("__student_birth__", dossier.getMember().getBirth().toString());
     props.put("__student_address__", dossier.getContact().getAddress() == null ? "NC" : dossier.getContact().getAddress().toString());
+    props.put("__insurance__", dossier.getMember() == null ? "NC" : dossier.getMember().getInsurance());
+    props.put("__insurance_ref__", dossier.getMember() == null ? "NC" : dossier.getMember().getInsuranceRef());
+    
     Organization compOrg = comp.getOrg();
     props.put("__company_name__", compOrg.getName());
     props.put("__company_ref__", comp.getReferent() == null ? "" : comp.getReferent().getFirstnameName());
