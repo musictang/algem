@@ -1,5 +1,5 @@
 /*
- * @(#)InvoiceEditor.java 2.15.0 23/07/2017
+ * @(#)InvoiceEditor.java 2.15.0 13/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -37,6 +37,7 @@ import net.algem.util.event.GemEventListener;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.FileTabDialog;
 import net.algem.util.ui.GemButton;
+import net.algem.util.ui.GemToolBar;
 import net.algem.util.ui.MessagePopup;
 
 /**
@@ -53,6 +54,7 @@ public class InvoiceEditor
   protected InvoiceView view;
   protected ActionListener listener;
   protected GemEventListener gemListener;
+  protected GemButton btPreview;
   protected GemButton btPrint;
   protected GemButton btDuplicate;
   private GemButton btCreditNote;//avoir
@@ -75,11 +77,21 @@ public class InvoiceEditor
 
   protected void addView() {
     add(view, BorderLayout.CENTER);
-    btPrint = new GemButton(BundleUtil.getLabel("Print.preview.label"));
-//    btPrint = new GemButton(GemCommand.PRINT_CMD);
-//    btPrint.setToolTipText(BundleUtil.getLabel("Invoice.print.tip"));
-    btPrint.setToolTipText(BundleUtil.getLabel("Print.preview.tip"));
+    GemToolBar bar = new GemToolBar();
+    bar.setFloatable(false);
+    btPreview = bar.addIcon(
+      BundleUtil.getLabel("Training.contract.pdf.icon"),
+      BundleUtil.getLabel("Action.pdf.label"),
+      BundleUtil.getLabel("Action.save.pdf.tip"));
+    btPreview.addActionListener(this);
+
+    btPrint = bar.addIcon(BundleUtil.getLabel("Member.card.icon"),
+      GemCommand.PRINT_CMD,
+      BundleUtil.getLabel("Invoice.print.tip"));
     btPrint.addActionListener(this);
+
+/*    btPrint = new GemButton(GemCommand.PRINT_CMD);
+    btPrint.addActionListener(this);*/
 
     btDuplicate = new GemButton(GemCommand.DUPLICATE_CMD);
     btDuplicate.setToolTipText(BundleUtil.getLabel("Invoice.duplicate.tip"));
@@ -91,9 +103,10 @@ public class InvoiceEditor
 
     btValidation.setToolTipText(BundleUtil.getLabel("Invoice.validate.tip"));
 
-    buttons.add(btPrint, 0);
-    buttons.add(btCreditNote, 1);
-    buttons.add(btDuplicate, 2);
+    buttons.add(bar, 0);
+//    buttons.add(btPrint, 1);
+    buttons.add(btCreditNote, 2);
+    buttons.add(btDuplicate, 3);
 
     add(buttons, BorderLayout.SOUTH);
   }
@@ -253,7 +266,8 @@ public class InvoiceEditor
   public void actionPerformed(ActionEvent evt) {
     super.actionPerformed(evt);
     if (evt.getSource() == btPrint) {
-      //view.print();
+      view.print();
+    } else if (evt.getSource() == btPreview) {
       view.preview();
     } else if (evt.getSource() == btCreditNote) {
       try {

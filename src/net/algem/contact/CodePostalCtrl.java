@@ -1,5 +1,5 @@
 /*
- * @(#)CodePostalCtrl.java	2.11.0 16/09/16
+ * @(#)CodePostalCtrl.java	2.15.0 13/09/17
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -33,6 +33,9 @@ import java.util.List;
 import javax.swing.JDialog;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataConnection;
 import net.algem.util.GemCommand;
@@ -47,7 +50,7 @@ import net.algem.util.ui.PopupDlg;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.0
+ * @version 2.15.0
  */
 public class CodePostalCtrl
         extends KeyAdapter
@@ -136,6 +139,17 @@ public class CodePostalCtrl
     void initUI() {
       table.getColumnModel().getColumn(0).setPreferredWidth(80);
       table.getColumnModel().getColumn(1).setPreferredWidth(240);
+      table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+      table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+        @Override
+        public void valueChanged(ListSelectionEvent event) {
+          if (event.getValueIsAdjusting()) {
+            return;
+          }
+          setCity();
+          setVisible(false);
+        }
+      });
       GemPanel buttons = new GemPanel(new GridLayout(1, 2));
       JScrollPane scroll = new JScrollPane(table);
       add(scroll, BorderLayout.CENTER);

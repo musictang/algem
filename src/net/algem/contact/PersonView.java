@@ -1,5 +1,5 @@
 /*
- * @(#)PersonView.java	2.15.0 06/09/17
+ * @(#)PersonView.java	2.15.0 13/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -104,6 +104,9 @@ public class PersonView
       @Override
       public void keyReleased(KeyEvent e) {
         if (person != null && person.getId() > 0) {
+          if (person.getOrganization() != null && person.getId() == person.getOrganization().getId()) {
+            return;
+          }
           int length = orgName.getText().length();
           if (length >= 2) {
             findOrg(orgName);

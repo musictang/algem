@@ -1,5 +1,5 @@
 /*
- * @(#) PdfHandler.java Algem 2.15.0 06/09/17
+ * @(#) PdfHandler.java Algem 2.15.0 13/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -60,8 +60,11 @@ import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
@@ -70,6 +73,20 @@ import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import javax.print.Doc;
+import javax.print.DocFlavor;
+import javax.print.DocPrintJob;
+import javax.print.PrintException;
+import javax.print.PrintService;
+import javax.print.PrintServiceLookup;
+import javax.print.SimpleDoc;
+import javax.print.attribute.AttributeSet;
+import javax.print.attribute.HashAttributeSet;
+import javax.print.attribute.HashPrintRequestAttributeSet;
+import javax.print.attribute.PrintRequestAttributeSet;
+import javax.print.attribute.standard.MediaPrintableArea;
+import javax.print.attribute.standard.MediaSize;
+import javax.print.attribute.standard.Sides;
 import javax.swing.BorderFactory;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
@@ -80,6 +97,8 @@ import net.algem.util.BundleUtil;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
+import net.algem.util.jdesktop.DesktopHandlerException;
+import net.algem.util.jdesktop.DesktopOpenHandler;
 import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GemPanel;
 
@@ -166,7 +185,6 @@ public class PdfHandler {
     return new XMLParser(worker);
   }
 
-
   private PageTemplate getTemplate(short type) throws SQLException {
     PageTemplate pt = templateIO.find(type);
     if (pt == null) {
@@ -194,7 +212,6 @@ public class PdfHandler {
     g.dispose();
 
     return rescale(bufferedImage, rect.width / 4, rect.height / 4);
-//    return null;
   }
 
   private void preview(String path, final Frame parent) throws IOException {
@@ -217,21 +234,33 @@ public class PdfHandler {
 
     GemPanel btPanel = new GemPanel(new GridLayout(1, 2));
 
-    GemButton btPrint = new GemButton(GemCommand.PRINT_CMD);
+    /*GemButton btPrint = new GemButton(GemCommand.PRINT_CMD);
     btPrint.setToolTipText(BundleUtil.getLabel("Action.print.pdf.tip"));
     btPrint.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        print(file);
+        openPrintintDialog(file);
       }
     });
-    btPanel.add(btPrint);
+    btPanel.add(btPrint);*/
+
+    GemButton btOpen = new GemButton(BundleUtil.getLabel("Action.open.label"));
+    btOpen.setToolTipText(BundleUtil.getLabel("Action.open.document.tip"));
+    btOpen.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        open(file);
+      }
+    });
+    btPanel.add(btOpen);
+
     GemButton btSave = new GemButton(GemCommand.SAVE_CMD);
     btSave.setToolTipText(BundleUtil.getLabel("Action.save.pdf.tip"));
     btSave.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
         copy(file, parent, true);
+        dlg.dispose();
       }
     });
     btPanel.add(btSave);
@@ -263,7 +292,7 @@ public class PdfHandler {
     return dimg;
   }
 
-  private void print(File file) {
+  private void openPrintintDialog(File file) {
     try {
       final PDFFile pdfFile = new PDFFile(ByteBuffer.wrap(Files.readAllBytes(file.toPath())));
       PDFPrintPage pages = new PDFPrintPage(pdfFile);
@@ -274,6 +303,8 @@ public class PdfHandler {
         //the printer would have to support it.
         PageFormat pf = new PageFormat();
         pf.setOrientation(PageFormat.PORTRAIT);
+        PrintRequestAttributeSet attr = new HashPrintRequestAttributeSet();
+        attr.add(Sides.DUPLEX);
         /*int margin = ImageUtil.mmToPoints(10);
         paper.setImageableArea(margin, 0, (pdfFile.getPage(1).getWidth() * 2) - (2 * margin), pdfFile.getPage(1).getHeight()  - (2 * margin));*/
         Paper paper = new Paper();
@@ -285,12 +316,58 @@ public class PdfHandler {
         book.append(pages, pf, pdfFile.getNumPages());
         job.setJobName(file.getName());
         job.setPageable(book);
-        job.print();
+        job.print(attr);
       }
     } catch (PrinterException | IOException e) {
       GemLogger.logException(e);
     }
 
+  }
+
+  private void print(File file) {
+    InputStream in = null;
+    try {
+      in = new FileInputStream(file);
+      DocFlavor flavor = DocFlavor.INPUT_STREAM.PDF;
+      // find the printing service
+      AttributeSet attr = new HashAttributeSet();
+      attr.add(MediaSize.ISO.A4);
+//      attributeSet.add(new Copies(1));
+      int width = Math.round(MediaSize.ISO.A4.getX(MediaSize.MM));
+      int height = Math.round(MediaSize.ISO.A4.getY(MediaSize.MM));
+      attr.add(new MediaPrintableArea(0, 0, width, height, MediaPrintableArea.MM));
+//attributeSet.add(new MediaPrintableArea(0f, 0f, w/72f, h/72f, MediaPrintableArea.MM));
+      attr.add(Sides.DUPLEX);
+
+      PrintService[] services = PrintServiceLookup.lookupPrintServices(DocFlavor.INPUT_STREAM.PDF, attr);
+      //create document
+      Doc doc = new SimpleDoc(in, flavor, null);
+      // create the print job
+      PrintService service = services[0];
+      DocPrintJob job = service.createPrintJob();
+
+      job.print(doc, null);
+    } catch (FileNotFoundException | PrintException ex) {
+      GemLogger.logException(ex);
+    } finally {
+      try {
+        if (in != null) {
+          in.close();
+        }
+      } catch (IOException ex) {
+        GemLogger.log(ex.getMessage());
+      }
+    }
+
+  }
+
+  private void open(File pdf) {
+    try {
+      DesktopOpenHandler handler = new DesktopOpenHandler();
+      handler.open(pdf.getPath());
+    } catch (DesktopHandlerException ex) {
+      GemLogger.logException(ex);
+    }
   }
 
   private void copy(File file, Frame parent, boolean deleteSource) {

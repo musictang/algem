@@ -1,5 +1,5 @@
 /*
- * @(#) TrainingService.java Algem 2.15.0 06/09/2017
+ * @(#) TrainingService.java Algem 2.15.0 13/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,12 +20,26 @@
 
 package net.algem.enrolment;
 
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.pdf.PdfWriter;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Properties;
+import net.algem.config.PageTemplateIO;
 import net.algem.contact.Organization;
 import net.algem.contact.OrganizationIO;
 import net.algem.course.Module;
+import net.algem.edition.PdfHandler;
 import net.algem.util.DataConnection;
+import net.algem.util.FileUtil;
+import net.algem.util.MessageUtil;
+import net.algem.util.ui.MessagePopup;
 
 /**
  *
@@ -37,21 +51,23 @@ public class TrainingService {
   private final TrainingContractIO contractIO;
   private final TrainingAgreementIO agreementIO;
   private final OrganizationIO orgIO;
+  private final PageTemplateIO templateIO;
 
   public TrainingService(DataConnection dc) {
     this.contractIO = new TrainingContractIO(dc);
     this.agreementIO = new TrainingAgreementIO(dc);
     this.orgIO = new OrganizationIO(dc);
+    this.templateIO = new PageTemplateIO(dc);
   }
 
   public List<TrainingContract> findContracts(int idper) throws SQLException {
     return contractIO.findAll(idper);
   }
-  
+
    public List<TrainingAgreement> findAgreements(int idper) throws SQLException {
     return agreementIO.findAll(idper);
   }
-   
+
    public Organization[] getOrganizations() throws SQLException {
      List<Organization> orgs = orgIO.findAll();
      Organization [] orgArray = new Organization[orgs.size()];
@@ -76,7 +92,7 @@ public class TrainingService {
   public void deleteContract(int id) throws SQLException {
     contractIO.delete(id);
   }
-  
+
   public void createAgreement(TrainingAgreement t) throws SQLException {
     agreementIO.create(t);
   }
@@ -88,4 +104,39 @@ public class TrainingService {
   public void deleteAgreement(int id) throws SQLException {
     agreementIO.delete(id);
   }
+
+  void preview(Properties props, String fileName, short templateKey, int idper) throws DocumentException, IOException {
+    InputStream tpl = getClass().getResourceAsStream("/resources/doc/"+fileName+".html");
+    if (tpl == null) {
+      tpl = getClass().getResourceAsStream("/resources/doc/def/"+fileName+".html");
+    }
+    if (tpl == null) {
+      MessagePopup.warning(null, MessageUtil.getMessage("html.template.not.found.warning",fileName+".html"));
+      return;
+    }
+    String content = FileUtil.scanContent(tpl, props);
+    tpl = new ByteArrayInputStream(content.getBytes());
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+    //step 1
+    Document doc = new Document(PageSize.A4);
+    doc.setMargins(40, 40, 40, 40);
+
+    //step 2
+    PdfWriter writer = PdfWriter.getInstance(doc, out);
+//    writer.addViewerPreference(PdfName.PRINTSCALING, PdfName.NONE);
+//    writer.addViewerPreference(PdfName.PRINTSCALING, PdfName.FIT);
+//    writer.addViewerPreference(PdfName.DUPLEX, PdfName.DUPLEXFLIPLONGEDGE);
+    doc.open();
+    // step 4
+    //XMLWorkerHelper.getInstance().parseXHtml(writer, document, tpl);
+    PdfHandler handler = new PdfHandler(templateIO);
+    handler.createParser(doc, writer).parse(tpl);
+    // step 5
+    doc.close();
+    handler.createPdf(fileName+"-" + idper + "_", out, templateKey);
+  }
+//
+//  public PdfHandler getPdfHandler() {
+//    return new PdfHandler(templateIO);
+//  }
 }

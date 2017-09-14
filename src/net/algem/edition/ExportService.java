@@ -1,7 +1,7 @@
 /*
- * @(#)ExportService.java 2.10.0 20/05/16
+ * @(#)ExportService.java 2.15.0 14/09/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -44,7 +44,7 @@ import net.algem.util.DataConnection;
  * Service class for export operations.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.15.0
  * @since 2.6.d 06/11/2012
  */
 public class ExportService
@@ -318,7 +318,7 @@ public class ExportService
       + " JOIN " + PersonIO.TABLE + " p ON (m.payeur = p.id)"
       + " WHERE m.idper = " + idper
       + " AND m.idper NOT IN (SELECT idper FROM " + AddressIO.TABLE + ")"
-      + " AND p.organisation IS NULL" // maybe do not include
+      + " AND p.organisation = 0" // maybe do not include
       + " AND a.archive = false";
     ResultSet rs = dc.executeQuery(query);
 
@@ -363,7 +363,7 @@ public class ExportService
       + TeleIO.TABLE + " t JOIN " + MemberIO.TABLE + " m ON (t.idper = m.payeur)"
       + " JOIN " + PersonIO.TABLE + " p ON (m.payeur = p.id)"
       + " WHERE m.idper = " + idper
-      + " AND p.organisation IS NULL"
+      + " AND p.organisation = 0"
       + " AND m.idper NOT IN (SELECT idper FROM " + TeleIO.TABLE + ")";
     ResultSet rs = dc.executeQuery(query);
     List<String> list = new ArrayList<String>();

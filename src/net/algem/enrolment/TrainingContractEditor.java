@@ -1,5 +1,5 @@
 /*
- * @(#) TrainingContractEditor.java Algem 2.15.0 06/09/17
+ * @(#) TrainingContractEditor.java Algem 2.15.0 12/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -19,9 +19,7 @@
  */
 package net.algem.enrolment;
 
-import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.pdf.PdfWriter;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -31,18 +29,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
-import java.util.Scanner;
 import javax.imageio.ImageIO;
 import javax.swing.JDialog;
 import javax.swing.JFormattedTextField;
@@ -52,13 +46,11 @@ import javax.swing.JTextField;
 import net.algem.accounting.AccountUtil;
 import net.algem.config.Company;
 import net.algem.config.PageTemplate;
-import net.algem.config.PageTemplateIO;
 import net.algem.contact.Address;
 import net.algem.contact.Email;
 import net.algem.contact.OrganizationIO;
 import net.algem.contact.PersonFile;
 import net.algem.contact.Telephone;
-import net.algem.edition.PdfHandler;
 import net.algem.planning.DateFrField;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
@@ -115,7 +107,7 @@ public class TrainingContractEditor
   public void createUI() {
     GemToolBar bar = new GemToolBar();
     bar.setFloatable(false);
-    btPreview = bar.addIcon(BundleUtil.getLabel("Training.contract.print.icon"),
+    btPreview = bar.addIcon(BundleUtil.getLabel("Training.contract.pdf.icon"),
       GemCommand.PRINT_CMD,
       BundleUtil.getLabel("Preview.pdf.label"));
     btPreview.addActionListener(this);
@@ -192,7 +184,7 @@ public class TrainingContractEditor
     add(bar, BorderLayout.NORTH);
     add(p, BorderLayout.CENTER);
     add(buttons, BorderLayout.SOUTH);
-    setSize(GemModule.S_SIZE);
+    setSize(new Dimension(420, 440));
 
     setLocationRelativeTo(desktop.getFrame());
     setVisible(true);
@@ -230,10 +222,10 @@ public class TrainingContractEditor
     c.setEnd(endDate.getDate());
     c.setSignDate(signDate.getDate());
     c.setFunding(funding.getText().trim());
-    c.setTotal(((Number) total.getValue()).doubleValue());
-    c.setAmount(((Number) amount.getValue()).doubleValue());
-    c.setInternalVolume(((Number) internalLength.getValue()).floatValue());
-    c.setExternalVolume(((Number) length.getValue()).floatValue());
+    c.setTotal(total.getValue() == null ? 0.0 : ((Number) total.getValue()).doubleValue());
+    c.setAmount(amount.getValue() == null ? 0.0 : ((Number) amount.getValue()).doubleValue());
+    c.setInternalVolume(internalLength.getValue() == null ? 0.0f : ((Number) internalLength.getValue()).floatValue());
+    c.setExternalVolume(length.getValue() == null ? 0.0f : ((Number) length.getValue()).floatValue());
 
     return c;
   }
@@ -260,7 +252,16 @@ public class TrainingContractEditor
           MessagePopup.warning(this, MessageUtil.getMessage("contract.not.saved.warning"));
           return;
         }
-        preview(fillProperties(getContract()));
+        //preview(fillProperties(getContract()), "contrat", PageTemplate.CONTRACT_PAGE_MODEL);
+        trainingService.preview(fillProperties(getContract()), "contrat", PageTemplate.CONTRACT_PAGE_MODEL, dossier.getId());
+      } else if (src == btCertificate) {
+        t = getContract();
+        if (t.getId() == 0) {
+          MessagePopup.warning(this, MessageUtil.getMessage("contract.not.saved.warning"));
+          return;
+        }
+        //preview(fillProperties(getContract()),"attestation", PageTemplate.CONTRACT_PAGE_MODEL);
+        trainingService.preview(fillProperties(getContract()), "attestation", PageTemplate.CONTRACT_PAGE_MODEL, dossier.getId());
       }
     } catch (SQLException ex) {
       GemLogger.logException(ex);
@@ -272,43 +273,35 @@ public class TrainingContractEditor
     close();
   }
 
-  private void preview(Properties props) throws DocumentException, IOException {
-    InputStream tpl = getClass().getResourceAsStream("/resources/doc/model/custom/contrat.html");
+  /*private void preview(Properties props, String fileName, short templateKey) throws DocumentException, IOException {
+    InputStream tpl = getClass().getResourceAsStream("/resources/doc/"+fileName+".html");
     if (tpl == null) {
-      tpl = getClass().getResourceAsStream("/resources/doc/model/contrat.html");
+      tpl = getClass().getResourceAsStream("/resources/doc/def/"+fileName+".html");
     }
     if (tpl == null) {
       return;
     }
-    Scanner scanner = new Scanner(tpl);
-    StringBuilder content = new StringBuilder();
-    while (scanner.hasNextLine()) {
-      String line = scanner.nextLine();
-      for (Map.Entry<Object, Object> entry : props.entrySet()) {
-        String k = (String) entry.getKey();
-        String v = (String) entry.getValue();
-        if (line.contains(k)) {
-          line = line.replaceAll(k, v);
-        }
-      }
-      content.append(line);
-    }
-    tpl = new ByteArrayInputStream(content.toString().getBytes());
+    String content = scanContent(tpl, props);
+    tpl = new ByteArrayInputStream(content.getBytes());
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     //step 1
-    Document document = new Document();
-    document.setMargins(40, 40, 40, 40);
+    Document doc = new Document(PageSize.A4);
+    doc.setMargins(40, 40, 40, 40);
+
     //step 2
-    PdfWriter writer = PdfWriter.getInstance(document, out);
-    document.open();
+    PdfWriter writer = PdfWriter.getInstance(doc, out);
+//    writer.addViewerPreference(PdfName.PRINTSCALING, PdfName.NONE);
+//    writer.addViewerPreference(PdfName.PRINTSCALING, PdfName.FIT);
+//    writer.addViewerPreference(PdfName.DUPLEX, PdfName.DUPLEXFLIPLONGEDGE);
+    doc.open();
     // step 4
     //XMLWorkerHelper.getInstance().parseXHtml(writer, document, tpl);
-    PdfHandler handler = new PdfHandler(new PageTemplateIO(DataCache.getDataConnection()));
-    handler.createParser(document, writer).parse(tpl);
+    PdfHandler handler = trainingService.getPdfHandler();
+    handler.createParser(doc, writer).parse(tpl);
     // step 5
-    document.close();
-    handler.createPdf("contrat-" + dossier.getId() + "_", out, PageTemplate.CONTRACT_PAGE_MODEL);
-  }
+    doc.close();
+    handler.createPdf(fileName+"-" + dossier.getId() + "_", out, templateKey);
+  }*/
 
   private Properties fillProperties(TrainingContract contract) throws SQLException {
     Properties props = new Properties();
@@ -327,7 +320,7 @@ public class TrainingContractEditor
     List<Telephone> tels = comp.getContact().getTele();
     props.put("__company_tel__", tels != null && tels.size() > 0 ? tels.get(0).getNumber() : "NC");
     List<Email> emails = comp.getContact().getEmail();
-    props.put("__company_mail__", emails != null && emails.size() > 0 ? emails.get(0).getEmail() : "NC");
+    props.put("__company_email__", emails != null && emails.size() > 0 ? emails.get(0).getEmail() : "NC");
     props.put("__company_fpcode__", comp.getOrg().getFpCode());
     props.put("__company_siret__", comp.getOrg().getSiret());
     props.put("__company_ape__", comp.getOrg().getNafCode());
@@ -344,6 +337,7 @@ public class TrainingContractEditor
     props.put("__total_funding__", nf.format(contract.getAmount()));
     double rest = contract.getTotal() - contract.getAmount();
     props.put("__total_student__", nf.format(rest));
+    props.put("__date_sign__", df.format(contract.getSignDate()));
 
     return props;
   }

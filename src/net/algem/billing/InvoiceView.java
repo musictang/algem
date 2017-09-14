@@ -1,5 +1,5 @@
 /*
- * @(#)InvoiceView.java 2.15.0 30/07/17
+ * @(#)InvoiceView.java 2.15.0 13/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,11 +20,6 @@
  */
 package net.algem.billing;
 
-//import com.lowagie.text.Document;
-//import com.lowagie.text.DocumentException;
-//import com.lowagie.text.PageSize;
-//import com.lowagie.text.pdf.PdfContentByte;
-//import com.lowagie.text.pdf.PdfWriter;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.PageSize;
@@ -673,6 +668,19 @@ public class InvoiceView
     }
   }
 
+  private void drawContactName(Graphics g, Contact c, int x, int y) {
+    g.setFont(new Font(Font.SERIF, Font.PLAIN, 10));
+    if (c != null) {
+      String org = c.getCompanyName();
+      if (org != null) {
+        g.drawString(org, x, y - 10);
+      } else {
+        g.drawString(c.toString(), x, y);
+      }
+    }
+
+  }
+
   private void drawHeader(Graphics g, Font font, Quote quote, String label, int top, int left, int margin) {
 
     Contact c = ContactIO.findId(quote.getPayer(), dc);
@@ -681,11 +689,12 @@ public class InvoiceView
       a = c.getAddress();
     }
 
-    IdentityElement name = new IdentityElement(c, left, top + 10);
+    //IdentityElement name = new IdentityElement(c, left, top + 10);
     AddressElement address = new InvoiceAddressElement(a, left, top + 30);
     // nom et adresse
     g.setFont(font);
-    name.draw(g);
+    //name.draw(g);
+    drawContactName(g, c, left, top + 10);
     address.draw(g);
 
     g.setFont(serif);
@@ -694,7 +703,7 @@ public class InvoiceView
     // nom établissement
     g.drawString(getEstabName(quote) + ", le " + quote.getDate(), left, top + 85);
     // référence
-    g.drawString("Ref. : " + quote.getReference(), left, top + 100);
+    g.drawString(BundleUtil.getLabel("Reference.abbreviation.label") + " : " + quote.getReference(), left, top + 100);
     // description
     g.drawString(BundleUtil.getLabel("Invoice.description.label") + " : " + quote.getDescription(), margin, top + 140);
   }

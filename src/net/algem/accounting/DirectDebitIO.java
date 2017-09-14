@@ -1,5 +1,5 @@
 /*
- * @(#)DirectDebitIO.java 2.15.0 30/07/2017
+ * @(#)DirectDebitIO.java 2.15.0 14/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,6 +20,7 @@
  */
 package net.algem.accounting;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -29,9 +30,11 @@ import net.algem.bank.RibIO;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
 import net.algem.contact.AddressIO;
+import net.algem.contact.OrganizationIO;
 import net.algem.contact.PersonIO;
 import net.algem.planning.DateFr;
 import net.algem.util.DataConnection;
+import net.algem.util.GemLogger;
 import net.algem.util.model.TableIO;
 
 /**
@@ -157,15 +160,16 @@ public class DirectDebitIO
    * @throws SQLException
    */
   ResultSet getDDTransaction(int payer) throws SQLException {
-    String query = "SELECT p.id, p.civilite, CASE WHEN p.organisation IS NOT NULL AND trim(p.organisation) != '' THEN p.organisation ELSE p.nom END"
-            + ", p.prenom, a.adr1, a.adr2, a.cdp, a.ville,"
-            + " s.id, s.rum, s.signature, s.seqtype, r.iban, g.bic"
-            + " FROM " + PersonIO.TABLE + " p LEFT JOIN " + AddressIO.TABLE + " a ON p.id = a.idper, "
-            + RibIO.TABLE + " r, " + BranchIO.TABLE + " g, " + TABLE + " s"
-            + " WHERE p.id = " + payer
-            + " AND p.id = r.idper AND r.guichetid = g.id"
-            + " AND p.id = s.payeur"
-            + " AND s.seqtype != '" + DDSeqType.LOCK.name() + "'";
+    String query = "SELECT p.id, p.civilite,"
+            + " CASE WHEN p.organisation > 0 AND p.id = p.organisation THEN (CASE WHEN o.raison IS NULL OR o.raison = ''  THEN o.nom ELSE o.raison END) ELSE p.nom END"
+            + ", p.prenom, a.adr1, a.adr2, a.cdp, a.ville, s.id, s.rum, s.signature, s.seqtype, r.iban, g.bic"
+            + " FROM " + PersonIO.TABLE + " p LEFT JOIN " + OrganizationIO.TABLE + " o ON p.organisation = o.idper"
+            + " LEFT JOIN " + AddressIO.TABLE + " a ON p.id = a.idper"
+            + " JOIN " + RibIO.TABLE + " r ON p.id = r.idper"
+            + " JOIN " + BranchIO.TABLE + " g ON r.guichetid = g.id"
+            + " JOIN " + TABLE + " s ON p.id = s.payeur"
+            + " WHERE p.id = " + payer + " AND s.seqtype != '" + DDSeqType.LOCK.name() + "'";
+    GemLogger.info(query);
     //9 id, 10 rum, 11 sign, 12 seqtype, 13 iban, 14 bic
     return dc.executeQuery(query);
   }

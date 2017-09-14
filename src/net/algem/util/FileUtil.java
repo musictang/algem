@@ -1,5 +1,5 @@
 /*
- * @(#)FileUtil.java	2.13.0 03/04/17
+ * @(#)FileUtil.java	2.15.0 12/09/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -29,7 +29,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
+import java.util.Scanner;
 import java.util.Set;
 import javax.print.Doc;
 import javax.print.DocFlavor;
@@ -60,7 +63,7 @@ import net.algem.util.ui.MessagePopup;
  * Utility class for file operations.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.13.0
+ * @version 2.15.0
  * @since 2.0q
  */
 public class FileUtil
@@ -207,7 +210,7 @@ public class FileUtil
       GemLogger.log(ex.getMessage());
     }
   }
-  
+
    /**
    * Tries to detect the charset of the file {@code f}.
    * @param f file
@@ -401,5 +404,28 @@ public class FileUtil
       System.out.println(UIManager.getColor(colorKey));
     }
 
+  }
+
+  /**
+   * Scan a file as stream and optionnaly replace some fields with properties values.
+   * @param input input stream
+   * @param props properties
+   * @return the content of the file as string
+   */
+  public static String scanContent(InputStream input, Properties props) {
+    Scanner scanner = new Scanner(input);
+    StringBuilder content = new StringBuilder();
+    while (scanner.hasNextLine()) {
+      String line = scanner.nextLine();
+      for (Map.Entry<Object, Object> entry : props.entrySet()) {
+        String k = (String) entry.getKey();
+        String v = (String) entry.getValue();
+        if (line.contains(k)) {
+          line = line.replaceAll(k, v);
+        }
+      }
+      content.append(line);
+    }
+    return content.toString();
   }
 }

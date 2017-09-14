@@ -1,5 +1,5 @@
 /*
- * @(#) TrainingAgreementEditor.java Algem 2.15.0 06/09/17
+ * @(#) TrainingAgreementEditor.java Algem 2.15.0 13/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -19,9 +19,7 @@
  */
 package net.algem.enrolment;
 
-import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.pdf.PdfWriter;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -31,28 +29,21 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.sql.SQLException;
 import java.text.DateFormat;
-import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
-import java.util.Scanner;
 import javax.imageio.ImageIO;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import net.algem.accounting.AccountUtil;
 import net.algem.config.Company;
 import net.algem.config.PageTemplate;
-import net.algem.config.PageTemplateIO;
 import net.algem.contact.Address;
 import net.algem.contact.Email;
 import net.algem.contact.Organization;
@@ -60,7 +51,6 @@ import net.algem.contact.OrganizationIO;
 import net.algem.contact.Person;
 import net.algem.contact.PersonFile;
 import net.algem.contact.Telephone;
-import net.algem.edition.PdfHandler;
 import net.algem.planning.DateFrField;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
@@ -87,7 +77,6 @@ public class TrainingAgreementEditor
   implements ActionListener {
 
   private JTextField trainingLabel;
-  private JTextField orgName;
   private JComboBox<Organization> org;
   private JTextField season;
   private JTextField insurance;
@@ -98,8 +87,10 @@ public class TrainingAgreementEditor
 
   private GemButton btSave;
   private GemButton btCancel;
+  private GemButton btPrint;
   private GemButton btPreview;
-  private GemButton btCertificate;
+  private GemButton btMonitoring;
+  private GemButton btSignOff;
 
   private TrainingAgreement agreement;
   private final PersonFile dossier;
@@ -118,24 +109,31 @@ public class TrainingAgreementEditor
   public void createUI() {
     GemToolBar bar = new GemToolBar();
     bar.setFloatable(false);
-    btPreview = bar.addIcon(BundleUtil.getLabel("Training.contract.print.icon"),
+
+
+    btPreview = bar.addIcon(BundleUtil.getLabel("Training.contract.pdf.icon"),
       GemCommand.PRINT_CMD,
       BundleUtil.getLabel("Preview.pdf.label"));
     btPreview.addActionListener(this);
 
-    btCertificate = bar.addIcon(BundleUtil.getLabel("Training.contract.certificate.icon"),
-      BundleUtil.getLabel("Training.contract.certificate.label"),
-      BundleUtil.getLabel("Training.contract.certificate.tip"));
-    btCertificate.addActionListener(this);
+    btMonitoring = bar.addIcon(BundleUtil.getLabel("Training.agreement.monitoring.icon"),
+      BundleUtil.getLabel("Training.agreement.monitoring.label"),
+      BundleUtil.getLabel("Training.agreement.monitoring.tip"));
+    btMonitoring.addActionListener(this);
+
+    btSignOff = bar.addIcon(BundleUtil.getLabel("Training.agreement.signoff.icon"),
+      BundleUtil.getLabel("Training.agreement.signoff.label"),
+      BundleUtil.getLabel("Training.agreement.signoff.tip"));
+    btSignOff.addActionListener(this);
 
     JPanel p = new JPanel(new GridBagLayout());
     trainingLabel = new JTextField(20);
     startDate = new DateFrField();
     endDate = new DateFrField();
-//    orgName = new JTextField(20);
     try {
       org = new JComboBox<>(trainingService.getOrganizations());
     } catch (SQLException ex) {
+      GemLogger.log(ex.getMessage());
       org.addItem(new Organization());
     }
     season = new JTextField(20);
@@ -180,7 +178,7 @@ public class TrainingAgreementEditor
     add(bar, BorderLayout.NORTH);
     add(p, BorderLayout.CENTER);
     add(buttons, BorderLayout.SOUTH);
-    setSize(GemModule.S_SIZE);
+    setSize(new Dimension(420, 440));
 
     setLocationRelativeTo(desktop.getFrame());
     setVisible(true);
@@ -215,6 +213,7 @@ public class TrainingAgreementEditor
     t.setEnd(endDate.getDate());
     t.setInsurance(insurance.getText());
     t.setInsuranceRef(insuranceRef.getText());
+    t.setSignDate(signDate.getDate());
 
     return t;
   }
@@ -241,7 +240,24 @@ public class TrainingAgreementEditor
           MessagePopup.warning(this, MessageUtil.getMessage("contract.not.saved.warning"));
           return;
         }
-        preview(fillProperties(getAgreement()));
+//        preview(fillProperties(getAgreement()));
+trainingService.preview(fillProperties(getAgreement()), "convention", PageTemplate.AGREEMENT_PAGE_MODEL, dossier.getId());
+      } else if(src == btMonitoring) {
+        t = getAgreement();
+        if (t.getId() == 0) {
+          MessagePopup.warning(this, MessageUtil.getMessage("contract.not.saved.warning"));
+          return;
+        }
+//        preview(fillProperties(getAgreement()));
+        trainingService.preview(fillProperties(getAgreement()), "evaluation", PageTemplate.AGREEMENT_PAGE_MODEL, dossier.getId());
+      } else if(src == btSignOff) {
+        t = getAgreement();
+        if (t.getId() == 0) {
+          MessagePopup.warning(this, MessageUtil.getMessage("contract.not.saved.warning"));
+          return;
+        }
+//        preview(fillProperties(getAgreement()));
+        trainingService.preview(fillProperties(getAgreement()), "emargement", PageTemplate.AGREEMENT_PAGE_MODEL, dossier.getId());
       }
     } catch (SQLException ex) {
       GemLogger.logException(ex);
@@ -253,52 +269,13 @@ public class TrainingAgreementEditor
     close();
   }
 
-  private void preview(Properties props) throws DocumentException, IOException {
-    InputStream tpl = getClass().getResourceAsStream("/resources/doc/model/custom/convention.html");
-    if (tpl == null) {
-      tpl = getClass().getResourceAsStream("/resources/doc/model/convention.html");
-    }
-    if (tpl == null) {
-      return;
-    }
-    Scanner scanner = new Scanner(tpl);
-    StringBuilder content = new StringBuilder();
-    while (scanner.hasNextLine()) {
-      String line = scanner.nextLine();
-      for (Map.Entry<Object, Object> entry : props.entrySet()) {
-        String k = (String) entry.getKey();
-        String v = (String) entry.getValue();
-        if (line.contains(k)) {
-          line = line.replaceAll(k, v);
-        }
-      }
-      content.append(line);
-    }
-    tpl = new ByteArrayInputStream(content.toString().getBytes());
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
-    //step 1
-    Document document = new Document();
-    document.setMargins(40, 40, 40, 40);
-    //step 2
-    PdfWriter writer = PdfWriter.getInstance(document, out);
-    document.open();
-    // step 4
-    //XMLWorkerHelper.getInstance().parseXHtml(writer, document, tpl);
-    PdfHandler handler = new PdfHandler(new PageTemplateIO(DataCache.getDataConnection()));
-    handler.createParser(document, writer).parse(tpl);
-    // step 5
-    document.close();
-    handler.createPdf("convention-" + dossier.getId() + "_", out, PageTemplate.AGREEMENT_PAGE_MODEL);
-  }
-
-  private Properties fillProperties(TrainingAgreement agreement) throws SQLException {
+  private Properties fillProperties(TrainingAgreement ta) throws SQLException {
     Properties props = new Properties();
     Company comp = new OrganizationIO(DataCache.getDataConnection()).getDefault();
     Address compAddress = comp.getContact().getAddress();
     String city = (compAddress != null ? (compAddress.getCity() != null ? compAddress.getCity() : "") : "");
-    NumberFormat nf = AccountUtil.getNumberFormat(2, 2);
     DateFormat df = new SimpleDateFormat("dd-MM-yyyy");
-    Organization o = agreement.getOrg();
+    Organization o = ta.getOrg();
     if (o != null) {
       props.put("__org_name__", o.getName());
       Person ref = (Person) DataCache.findId(o.getReferent(), Model.Person);
@@ -306,20 +283,24 @@ public class TrainingAgreementEditor
       props.put("__org_ref__", ref.getFirstnameName() == null ? "NC" : ref.getFirstnameName());
       props.put("__org_siret__", o.getSiret() == null ? "NC" : o.getSiret());
       props.put("__org_ape__", o.getNafCode() == null ? "NC" : o.getNafCode());
-      
-      props.put("__org_address__", pf.getContact().getAddress() == null ? "NC" : ref.getFirstnameName());
+      Address orgAddr = pf.getContact().getAddress();
+      props.put("__org_address__", orgAddr == null ? "NC" : orgAddr.toString());
       List<Telephone> pTels = pf.getContact().getTele();
       props.put("__org_tel__", pTels != null && pTels.size() > 0 ? pTels.get(0).getNumber() : "NC");
       List<Email> pMails = pf.getContact().getEmail();
-      props.put("__org_mail__", pMails != null && pMails.size() > 0 ? pMails.get(0).getEmail() : "NC");
+      props.put("__org_email__", pMails != null && pMails.size() > 0 ? pMails.get(0).getEmail() : "NC");
     }
 
     props.put("__student_name__", dossier.getContact().getFirstnameName());
     props.put("__student_birth__", dossier.getMember().getBirth().toString());
     props.put("__student_address__", dossier.getContact().getAddress() == null ? "NC" : dossier.getContact().getAddress().toString());
-    props.put("__insurance__", dossier.getMember() == null ? "NC" : dossier.getMember().getInsurance());
-    props.put("__insurance_ref__", dossier.getMember() == null ? "NC" : dossier.getMember().getInsuranceRef());
-    
+    List<Telephone> stdTels = dossier.getContact().getTele();
+    props.put("__student_tel__", stdTels != null && stdTels.size() > 0 ? stdTels.get(0).getNumber() : "NC");
+    List<Email> stdEmails = dossier.getContact().getEmail();
+    props.put("__student_email__", stdEmails != null && stdEmails.size() > 0 ? stdEmails.get(0).getEmail() : "NC");
+    props.put("__insurance__", ta.getInsurance() == null ? "NC" : ta.getInsurance());
+    props.put("__insurance_ref__", ta.getInsuranceRef() == null ? "NC" : ta.getInsuranceRef());
+
     Organization compOrg = comp.getOrg();
     props.put("__company_name__", compOrg.getName());
     props.put("__company_ref__", comp.getReferent() == null ? "" : comp.getReferent().getFirstnameName());
@@ -327,16 +308,17 @@ public class TrainingAgreementEditor
     List<Telephone> tels = comp.getContact().getTele();
     props.put("__company_tel__", tels != null && tels.size() > 0 ? tels.get(0).getNumber() : "NC");
     List<Email> emails = comp.getContact().getEmail();
-    props.put("__company_mail__", emails != null && emails.size() > 0 ? emails.get(0).getEmail() : "NC");
+    props.put("__company_email__", emails != null && emails.size() > 0 ? emails.get(0).getEmail() : "NC");
     props.put("__company_fpcode__", compOrg.getFpCode() == null ? "NC" : compOrg.getFpCode());
     props.put("__company_siret__", compOrg.getSiret() == null ? "NC" : compOrg.getSiret());
     props.put("__company_ape__", compOrg.getNafCode() == null ? "NC" : compOrg.getNafCode());
     props.put("__company_city__", city);
     props.put("__company_stamp__", getStampPath(comp));
-    props.put("__training_title__", agreement.getLabel());
-    props.put("__season__", agreement.getSeason());
-    props.put("__training_start__", df.format(agreement.getStart()));
-    props.put("__training_end__", df.format(agreement.getEnd()));
+    props.put("__training_title__", ta.getLabel());
+    props.put("__season__", ta.getSeason());
+    props.put("__training_start__", df.format(ta.getStart()));
+    props.put("__training_end__", df.format(ta.getEnd()));
+    props.put("__date_sign__", df.format(ta.getSignDate()));
 
     return props;
   }

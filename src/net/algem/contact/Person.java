@@ -1,5 +1,5 @@
 /*
- * @(#)Person.java	2.15.0 30/07/2017
+ * @(#)Person.java	2.15.0 14/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -254,6 +254,18 @@ public class Person
 
   public void setOrganization(Organization organization) {
     this.organization = organization;
+  }
+
+  public String getCompanyName() {
+    if (organization != null) {
+      if (organization.getId() == 0) {
+        return null;
+      } else if (organization.getId() == this.id) {
+        String cpn = organization.getCompanyName();
+        return cpn == null || cpn.isEmpty() ? organization.getName() : cpn;
+      }
+    }
+    return null;
   }
 
   public boolean isPartnerInfo() {

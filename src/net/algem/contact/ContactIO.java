@@ -1,5 +1,5 @@
 /*
- * @(#)ContactIO.java	2.15.0 30/07/2017
+ * @(#)ContactIO.java	2.15.0 14/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -349,7 +349,7 @@ public class ContactIO
   }
 
   public static String findOrgName(int orgId, DataConnection dc) {
-    String query = "SELECT nom FROM " + OrganizationIO.TABLE + " WHERE id=?";
+    String query = "SELECT nom FROM " + OrganizationIO.TABLE + " WHERE idper=?";
     try (PreparedStatement ps = dc.prepareStatement(query)) {
       ps.setInt(1, orgId);
       try (ResultSet rs = ps.executeQuery()) {
@@ -364,7 +364,7 @@ public class ContactIO
   }
 
   public static String findCompanyName(int orgId, DataConnection dc) {
-    String query = "SELECT coalesce(raison,nom) FROM " + OrganizationIO.TABLE + " WHERE id=?";
+    String query = "SELECT coalesce(raison,nom) FROM " + OrganizationIO.TABLE + " WHERE idper=?";
     try (PreparedStatement ps = dc.prepareStatement(query)) {
       ps.setInt(1, orgId);
       try (ResultSet rs = ps.executeQuery()) {
