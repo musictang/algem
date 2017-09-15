@@ -24,7 +24,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import net.algem.contact.Organization;
 import net.algem.contact.OrganizationIO;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;

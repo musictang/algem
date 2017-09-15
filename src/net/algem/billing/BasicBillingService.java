@@ -1,5 +1,5 @@
 /*
- * @(#)BasicBillingService 2.15.0 30/07/2017
+ * @(#)BasicBillingService 2.15.0 14/09/17
  *
  * Copyright 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -26,7 +26,6 @@ import net.algem.accounting.*;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
 import net.algem.config.Param;
-import net.algem.contact.Organization;
 import net.algem.contact.Person;
 import net.algem.planning.DateFr;
 import net.algem.planning.DateRange;
@@ -198,9 +197,8 @@ public class BasicBillingService
       if (p == null) {
         return "";
       }
-      Organization o = p.getOrganization();
-      String oName = o == null ? null : o.getCompanyName();
-      return oName != null && oName.length() > 0 ? oName : p.getFirstnameName();
+      String org = p.getCompanyName();
+      return org != null ? org : p.getFirstnameName();
     } catch (SQLException ex) {
        GemLogger.logException(ex);
        return "";

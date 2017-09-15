@@ -1,0 +1,27 @@
+2.15.0
+
+CORRECTIFS
+* Il n'y avait pas assez de place pour afficher 12 échéances dans la partie basse de la feuille de prélèvement (mandat SEPA).
+* Le cadre créditeur dans la partie basse de la feuille de prélèvement a été rehaussé afin qu'il ne soit pas tronqué à l'impression (pour certaines imprimantes).
+
+DEVIS/FACTURES
+
+Il est maintenant possible de paramétrer son propre fond de page pour les devis et les factures. Ce paramétrage est disponible dans la section Modèles de documents dans les paramètres généraux. Préparez pour cela un fichier pdf au format A4, et comportant les parties immuables (logo, pied de page, etc.).
+
+Les devis et factures peuvent être maintenant exportés en pdf. Deux icones se substituent au bouton d'impression précédent dans la fenêtre de consultation des devis et factures. La première permet d'ouvrir un aperçu de la facture et de l'exporter au format pdf. La deuxième permet d'imprimer directement la facture (sans tenir compte du modèle de document éventuellement défini).
+
+Les devis et factures peuvent maintenant s'étendre sur 2 pages. Une nouvelle page est maintenant imprimée lorsque la place est insuffisante pour afficher le contenu de la facture, pied de page compris.
+
+CONFIGURATION
+Dans les paramètres généraux, la section Organisation a été remodelée et les informations comme l'adresse, le téléphone, l'email sont maintenant accessibles depuis la fiche de la société.
+On peut maintenant importer une image de logo et une image de tampon/signature. Le tampon est utilisé par exemple dans les contrats de formation et les conventions de stage.
+
+ORGANISME
+La section organisme dans la fiche d'une personne a été complètement réorganisée. L'organisme est maintenant une entité à part entière et peut être complété dans le détail (raison sociale, numéro siret, code ape, etc.). Le bouton à droite du champ Organisme permet d'accéder aux détails d'un organisme et de les modifier si nécessaire.
+
+Plusieurs personnes peuvent maintenant être rattachées à un même organisme. 
+
+On peut maintenant modifier le référent d'un organisme. Auparavant, le référent correspondait au nom de la personne dans la fiche de l'organisme.
+
+CONTRATS DE FORMATION
+Il est maintenant possible d'éditer pour chaque élève un contrat de formation. 

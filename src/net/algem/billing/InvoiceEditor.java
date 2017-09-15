@@ -1,5 +1,5 @@
 /*
- * @(#)InvoiceEditor.java 2.15.0 13/09/17
+ * @(#)InvoiceEditor.java 2.15.0 14/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -82,7 +82,7 @@ public class InvoiceEditor
     btPreview = bar.addIcon(
       BundleUtil.getLabel("Training.contract.pdf.icon"),
       BundleUtil.getLabel("Action.pdf.label"),
-      BundleUtil.getLabel("Action.save.pdf.tip"));
+      BundleUtil.getLabel("Export.pdf.tip"));
     btPreview.addActionListener(this);
 
     btPrint = bar.addIcon(BundleUtil.getLabel("Member.card.icon"),

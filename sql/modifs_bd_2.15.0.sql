@@ -6,7 +6,7 @@ CREATE TABLE pagemodel(
 ALTER TABLE pagemodel OWNER TO nobody;
 
 CREATE TABLE societe(
-    id integer PRIMARY KEY DEFAULT(1),
+    id integer PRIMARY KEY,
     idper integer, -- contact
     guid uuid,
     domaine varchar(64),
@@ -23,9 +23,9 @@ ALTER TABLE societe OWNER TO nobody;
 COMMENT ON COLUMN personne.ptype IS '1 = personne physique, 4 = salle, 5 = etablissement, 6 = agence bancaire';
 
 CREATE TABLE organisation(
-    id serial PRIMARY KEY,
+    idper integer PRIMARY KEY REFERENCES personne(id),
+    referent integer REFERENCES personne(id),
     nom varchar(64) UNIQUE,
-    idper integer REFERENCES personne(id),
     raison varchar(64),
     siret varchar(16) UNIQUE,
     naf varchar(16),
@@ -69,44 +69,102 @@ CREATE FUNCTION setup_organisation() RETURNS void AS $$
         SELECT valeur INTO company_codefp FROM config WHERE clef = 'Code.FP';
         SELECT valeur INTO company_codetva FROM config WHERE clef = 'Code.TVA';
         
-        INSERT INTO organisation(nom,idper) SELECT DISTINCT ON (organisation) organisation,id FROM personne WHERE organisation IS NOT NULL AND organisation != 'null' ORDER BY organisation;
+        INSERT INTO organisation(nom,idper,referent) SELECT DISTINCT ON (organisation) organisation,id,id FROM personne WHERE organisation IS NOT NULL AND organisation != 'null' ORDER BY organisation;
         
         ALTER TABLE personne ADD orgid integer;
-        UPDATE personne p SET orgid = (SELECT id FROM organisation WHERE nom = p.organisation);
-        RAISE NOTICE 'societe idper is null %', company_idper;  -- Prints
+        --UPDATE personne p SET orgid = (SELECT id FROM organisation WHERE nom = p.organisation);
+        UPDATE personne SET orgid = id WHERE id IN(SELECT idper FROM organisation);
         -- l'organisation <UNTEL> existe-elle ?
-        SELECT id INTO org_id FROM organisation WHERE lower(nom) = lower(company_name);
+        SELECT idper INTO org_id FROM organisation WHERE lower(nom) = lower(company_name);
         if org_id IS NULL THEN
             RAISE NOTICE 'company not found  %', org_id;  -- Prints
-            INSERT INTO organisation(nom,idper,raison,siret,naf,codefp,codetva) VALUES(company_name, 0, company_raison, company_siret, company_naf, company_codefp, company_codetva);
+            INSERT INTO personne(ptype,civilite,droit_img,organisation) values (1,'','f',company_name);
+            SELECT id INTO org_id FROM personne WHERE organisation = company_name;
+            INSERT INTO organisation(idper,referent,nom,raison,siret,naf,codefp,codetva) VALUES(org_id,org_id, company_name,company_raison, company_siret, company_naf, company_codefp, company_codetva);
+            UPDATE personne SET orgid = id WHERE id = org_id;
             -- INSERT INTO personne(ptype,nom,prenom,civilite,droit_img,orgid) SELECT 0,'','','',false,id FROM organisation WHERE idper =0;
-            SELECT id INTO org_id FROM organisation WHERE nom = company_name;
         ELSE
             RAISE NOTICE 'company found  %', org_name;  -- Prints
-            UPDATE organisation SET raison=company_raison,siret=company_siret,naf=company_naf,codefp=company_codefp,codetva=company_codetva WHERE id = org_id;
+            UPDATE organisation SET raison=company_raison,siret=company_siret,naf=company_naf,codefp=company_codefp,codetva=company_codetva WHERE idper = org_id;
         END IF;
         
         -- Nettoyage
         ALTER TABLE personne DROP COLUMN organisation;-- RENAME organisation to orgname
         ALTER TABLE personne RENAME orgid TO organisation;
-        INSERT INTO personne(ptype,nom,prenom,civilite,droit_img,organisation) VALUES(0,'','','',false,org_id);
-        SELECT id INTO company_idper FROM personne WHERE ptype = 0;
+        --INSERT INTO personne(ptype,nom,prenom,civilite,droit_img,organisation) VALUES(0,'','','',false,org_id);
+        --SELECT id INTO company_idper FROM personne WHERE ptype = 0;
+        SELECT idper INTO company_idper FROM organisation WHERE nom = company_name;
         RAISE NOTICE 'societe idper  %', company_idper;  -- Prints
         INSERT INTO societe(id,idper,domaine) VALUES(1,company_idper,company_domain);
-        UPDATE organisation SET idper=company_idper WHERE id=org_id;
+        --UPDATE organisation SET idper=company_idper WHERE id=org_id;
     END;
 $$ LANGUAGE plpgsql;
 
 select setup_organisation();
 
-CREATE VIEW personnevue AS SELECT p.*,o.nom AS onom,o.raison AS oraison FROM personne p LEFT JOIN organisation o ON p.organisation = o.id;
+CREATE VIEW personnevue AS SELECT p.*,o.nom AS onom,o.raison AS oraison FROM personne p LEFT JOIN organisation o ON p.organisation = o.idper;
 ALTER VIEW personnevue OWNER TO nobody;
 ALTER TABLE eleve ADD assurance varchar(64);
 ALTER TABLE eleve ADD assuranceref varchar(64);
--- DROP FUNCTION IF EXISTS setup_organisation();
 
--- voir export adhérents (à revérifier)
--- liste des mandats sepa (à revérifier) DirectDebitIO.getMandates
--- libelle echéancier payeur dans échéancier (organisme)
--- voir pied de page facture (ne pas imprimer si vide)
--- aperçu impression pdf facture (chargement trop rapide)
+-- part 1
+CREATE TABLE contratformation (
+    id serial,
+    ctype smallint,
+    idper  integer,
+    idcmd integer,
+    libelle varchar(256),
+    saison varchar(32),
+    debut date,
+    fin date,
+    financement varchar(128),
+    total numeric(9,2),
+    montant numeric(9,2),
+    volumint real,
+    volumext real,
+    datesign date
+    
+);
+ALTER TABLE contratformation OWNER TO nobody;
+COMMENT ON COLUMN contratformation.ctype IS 'Type de contrat : 0 = non défini, 1 = bipartite, 2 = tripartite';
+COMMENT ON COLUMN contratformation.libelle IS 'Nom formation';
+COMMENT ON COLUMN contratformation.financement IS 'Nom de l''organisme financeur';
+COMMENT ON COLUMN contratformation.total IS 'Montant total de la formation';
+COMMENT ON COLUMN contratformation.montant IS 'Montant pris en charge';
+COMMENT ON COLUMN contratformation.volumint IS 'Nombre d''heures de formation en interne';
+COMMENT ON COLUMN contratformation.volumext IS 'Nombre d''heures de formation en entreprise';
+
+-- part 2
+INSERT INTO config VALUES('Gestion.contrats.formation','f');
+INSERT INTO config VALUES('Gestion.conventions.stage','f');
+-- part 3
+CREATE TABLE conventionstage (
+    id serial,
+    ctype smallint,
+    idper  integer,
+    idorg integer,
+    assurance varchar(64),
+    assuranceref varchar(64),
+    libelle varchar(256),
+    saison varchar(32),
+    debut date,
+    fin date,
+    datesign date
+);
+ALTER TABLE conventionstage OWNER TO nobody;
+COMMENT ON COLUMN conventionstage.ctype IS 'Type de contrat : 0 = non défini, 1 = bipartite, 2 = tripartite';
+COMMENT ON COLUMN conventionstage.libelle IS 'Nom de la formation';
+COMMENT ON COLUMN conventionstage.assurance IS 'Nom assurance responsabilité civile';
+COMMENT ON COLUMN conventionstage.assuranceref IS 'Référence du contrat d''assurance';
+COMMENT ON COLUMN conventionstage.debut IS 'Date de début du stage en entreprise';
+COMMENT ON COLUMN conventionstage.fin IS 'Date de fin de stage en entreprise';
+COMMENT ON COLUMN conventionstage.datesign IS 'Date de signature';
+
+-- part 4
+ALTER TABLE eleve ADD COLUMN archive boolean DEFAULT FALSE;
+UPDATE eleve SET archive = archiv;
+ALTER TABLE eleve DROP COLUMN archiv;
+
+DROP FUNCTION IF EXISTS setup_organisation();
+
+

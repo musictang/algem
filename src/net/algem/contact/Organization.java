@@ -1,5 +1,5 @@
 /*
- * @(#) Organization.java Algem 2.15.0 30/07/2017
+ * @(#) Organization.java Algem 2.15.0 14/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -18,6 +18,8 @@
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  */
 package net.algem.contact;
+
+import java.util.Objects;
 
 /**
  *
@@ -128,8 +130,15 @@ public class Organization {
 
   @Override
   public int hashCode() {
-    int hash = 7;
-    hash = 31 * hash + this.id;
+    int hash = 3;
+    hash = 83 * hash + this.id;
+    hash = 83 * hash + Objects.hashCode(this.name);
+    hash = 83 * hash + this.referent;
+    hash = 83 * hash + Objects.hashCode(this.companyName);
+    hash = 83 * hash + Objects.hashCode(this.siret);
+    hash = 83 * hash + Objects.hashCode(this.nafCode);
+    hash = 83 * hash + Objects.hashCode(this.fpCode);
+    hash = 83 * hash + Objects.hashCode(this.vatCode);
     return hash;
   }
 
@@ -148,9 +157,31 @@ public class Organization {
     if (this.id != other.id) {
       return false;
     }
+    if (this.referent != other.referent) {
+      return false;
+    }
+    if (!Objects.equals(this.name, other.name)) {
+      return false;
+    }
+    if (!Objects.equals(this.companyName, other.companyName)) {
+      return false;
+    }
+    if (!Objects.equals(this.siret, other.siret)) {
+      return false;
+    }
+    if (!Objects.equals(this.nafCode, other.nafCode)) {
+      return false;
+    }
+    if (!Objects.equals(this.fpCode, other.fpCode)) {
+      return false;
+    }
+    if (!Objects.equals(this.vatCode, other.vatCode)) {
+      return false;
+    }
     return true;
   }
-
+  
+  
   @Override
   public String toString() {
     return name;

@@ -58,7 +58,6 @@ import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
 import net.algem.util.module.GemDesktop;
-import net.algem.util.module.GemModule;
 import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GemPanel;
 import net.algem.util.ui.GemToolBar;

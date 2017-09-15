@@ -1,5 +1,5 @@
 /*
- * @(#)PersonIO.java 2.15.0 30/07/2017
+ * @(#)PersonIO.java 2.15.0 14/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -37,8 +37,6 @@ import net.algem.util.model.TableIO;
 
 import java.sql.PreparedStatement;
 import static java.lang.String.format;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * IO methods for class {@link net.algem.contact.Person}.
@@ -145,7 +143,7 @@ public class PersonIO
       } else {
         ps.setString(6, p.getNickName());
       }
-      ps.setInt(7, p.getOrganization().getId());
+      ps.setInt(7, p.getOrganization() == null ? 0 : p.getOrganization().getId());
       ps.setInt(8, p.getId());
 
       GemLogger.info(ps.toString());
@@ -196,10 +194,13 @@ public class PersonIO
     p.setPartnerInfo(rs.getBoolean(7));
     String nickname = rs.getString(8);
     p.setNickName(nickname != null ? unEscape(nickname.trim()) : null);
-    Organization o = new Organization(rs.getInt(9));
-    o.setName(rs.getString(10));
-    o.setCompanyName(rs.getString(11));
-    p.setOrganization(o);
+    int org = rs.getInt(9);
+    if (org > 0) {
+      Organization o = new Organization(rs.getInt(9));
+      o.setName(rs.getString(10));
+      o.setCompanyName(rs.getString(11));
+      p.setOrganization(o);
+    }
 
     return p;
   }

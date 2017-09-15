@@ -59,7 +59,6 @@ import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
 import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
-import net.algem.util.module.GemModule;
 import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GemPanel;
 import net.algem.util.ui.GemToolBar;
@@ -73,8 +72,9 @@ import net.algem.util.ui.MessagePopup;
  * @since 2.15.0 30/08/2017
  */
 public class TrainingAgreementEditor
-  extends JDialog
-  implements ActionListener {
+        extends JDialog
+        implements ActionListener
+{
 
   private JTextField trainingLabel;
   private JComboBox<Organization> org;
@@ -110,20 +110,19 @@ public class TrainingAgreementEditor
     GemToolBar bar = new GemToolBar();
     bar.setFloatable(false);
 
-
     btPreview = bar.addIcon(BundleUtil.getLabel("Training.contract.pdf.icon"),
-      GemCommand.PRINT_CMD,
-      BundleUtil.getLabel("Preview.pdf.label"));
+            GemCommand.PRINT_CMD,
+            BundleUtil.getLabel("Preview.pdf.label"));
     btPreview.addActionListener(this);
 
     btMonitoring = bar.addIcon(BundleUtil.getLabel("Training.agreement.monitoring.icon"),
-      BundleUtil.getLabel("Training.agreement.monitoring.label"),
-      BundleUtil.getLabel("Training.agreement.monitoring.tip"));
+            BundleUtil.getLabel("Training.agreement.monitoring.label"),
+            BundleUtil.getLabel("Training.agreement.monitoring.tip"));
     btMonitoring.addActionListener(this);
 
     btSignOff = bar.addIcon(BundleUtil.getLabel("Training.agreement.signoff.icon"),
-      BundleUtil.getLabel("Training.agreement.signoff.label"),
-      BundleUtil.getLabel("Training.agreement.signoff.tip"));
+            BundleUtil.getLabel("Training.agreement.signoff.label"),
+            BundleUtil.getLabel("Training.agreement.signoff.tip"));
     btSignOff.addActionListener(this);
 
     JPanel p = new JPanel(new GridBagLayout());
@@ -196,7 +195,7 @@ public class TrainingAgreementEditor
       insuranceRef.setText(t.getInsuranceRef());
       signDate.setDate(t.getSignDate());
       if (t.getId() > 0) {
-          org.setSelectedItem(t.getOrg());
+        org.setSelectedItem(t.getOrg());
       }
     }
   }
@@ -240,23 +239,20 @@ public class TrainingAgreementEditor
           MessagePopup.warning(this, MessageUtil.getMessage("contract.not.saved.warning"));
           return;
         }
-//        preview(fillProperties(getAgreement()));
-trainingService.preview(fillProperties(getAgreement()), "convention", PageTemplate.AGREEMENT_PAGE_MODEL, dossier.getId());
-      } else if(src == btMonitoring) {
+        trainingService.preview(fillProperties(getAgreement()), "convention", PageTemplate.AGREEMENT_PAGE_MODEL, dossier.getId());
+      } else if (src == btMonitoring) {
         t = getAgreement();
         if (t.getId() == 0) {
           MessagePopup.warning(this, MessageUtil.getMessage("contract.not.saved.warning"));
           return;
         }
-//        preview(fillProperties(getAgreement()));
         trainingService.preview(fillProperties(getAgreement()), "evaluation", PageTemplate.AGREEMENT_PAGE_MODEL, dossier.getId());
-      } else if(src == btSignOff) {
+      } else if (src == btSignOff) {
         t = getAgreement();
         if (t.getId() == 0) {
           MessagePopup.warning(this, MessageUtil.getMessage("contract.not.saved.warning"));
           return;
         }
-//        preview(fillProperties(getAgreement()));
         trainingService.preview(fillProperties(getAgreement()), "emargement", PageTemplate.AGREEMENT_PAGE_MODEL, dossier.getId());
       }
     } catch (SQLException ex) {

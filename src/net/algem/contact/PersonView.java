@@ -1,5 +1,5 @@
 /*
- * @(#)PersonView.java	2.15.0 13/09/17
+ * @(#)PersonView.java	2.15.0 14/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -310,29 +310,33 @@ public class PersonView
   }
 
   public Person get() {
-    Person pr = new Person();
+    Person per = new Person();
     try {
-      pr.setId(Integer.parseInt(no.getText()));
+      per.setId(Integer.parseInt(no.getText()));
     } catch (NumberFormatException e) {
-      pr.setId(0);
+      per.setId(0);
     }
-    pr.setType(ptype);
-    pr.setName(name.getText());
-    pr.setFirstName(firstname.getText());
-    pr.setNickName(nickname.getText().isEmpty() ? null : nickname.getText().trim());
-    pr.setGender((String) civil.getSelectedItem());
-    pr.setImgRights(cbImgRights.isSelected());
-    pr.setPartnerInfo(cbPartner.isSelected());
+    per.setType(ptype);
+    per.setName(name.getText());
+    per.setFirstName(firstname.getText());
+    per.setNickName(nickname.getText().isEmpty() ? null : nickname.getText().trim());
+    per.setGender((String) civil.getSelectedItem());
+    per.setImgRights(cbImgRights.isSelected());
+    per.setPartnerInfo(cbPartner.isSelected());
 
-    if (pr.getId() == 0  && !orgName.getText().isEmpty()) {
+    if (per.getId() == 0  && !orgName.getText().isEmpty()) {
       Organization o = new Organization(1);//TEMP id
       o.setName(orgName.getText().trim());
-      pr.setOrganization(o);
+      per.setOrganization(o);
     } else {
-      pr.setOrganization(person.getOrganization());
+      if (person.getOrganization() != null && person.getOrganization().getId() != per.getId() && orgName.getText().isEmpty()) {
+        per.setOrganization(null); // reset
+      } else {
+        per.setOrganization(person.getOrganization());
+      }
     }
 
-    return pr;
+    return per;
   }
 
   public void setId(PersonFile dossier) {

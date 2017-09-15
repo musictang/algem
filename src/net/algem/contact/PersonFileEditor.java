@@ -43,6 +43,9 @@ import net.algem.contact.teacher.TeacherEvent;
 import net.algem.contact.teacher.TeacherIO;
 import net.algem.edition.*;
 import net.algem.enrolment.MemberEnrolmentDlg;
+import net.algem.enrolment.TrainingAgreementHistory;
+import net.algem.enrolment.TrainingContract;
+import net.algem.enrolment.TrainingContractHistory;
 import net.algem.group.PersonFileGroupView;
 import net.algem.planning.TeacherBreakDlg;
 import net.algem.planning.month.MonthScheduleTab;
@@ -413,8 +416,10 @@ public class PersonFileEditor
       }
     } else if ("Training.contracts".equals(arg)) {
       personFileView.addHistoryContractsTab();
+      miContracts.setEnabled(false);
     } else if ("Internship.agreements".equals(arg)) {
       personFileView.addHistoryAgreementsTab();
+      miAgreements.setEnabled(false);
     } else if (FileTabView.INVOICE_TAB_TITLE.equals(arg)) {
       addInvoice(src);
     } else if (FileTabView.ESTIMATE_TAB_TITLE.equals(arg)) {
@@ -433,7 +438,8 @@ public class PersonFileEditor
           }
         }
       }
-    } else if (CloseableTab.CLOSE_CMD.equals(arg)) {
+    } 
+    else if (CloseableTab.CLOSE_CMD.equals(arg)) {
       closeTab(src);
     } else if (src == miSaveUISettings) {
       storeUISettings();
@@ -1144,6 +1150,10 @@ public class PersonFileEditor
       personFileView.activate(true, "Payer.debiting");
     } else if (HistoSubscriptionCard.class.getSimpleName().equals(classname)) {
       miHistoPass.setEnabled(true);
+    } else if(TrainingContractHistory.class.getSimpleName().equals(classname)) {
+      miContracts.setEnabled(true);
+    } else if(TrainingAgreementHistory.class.getSimpleName().equals(classname)) {
+      miAgreements.setEnabled(true);
     }
   }
 

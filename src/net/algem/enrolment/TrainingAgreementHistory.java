@@ -33,6 +33,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.TableColumnModel;
 import net.algem.contact.PersonFile;
+import net.algem.contact.member.Member;
 import net.algem.course.Module;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
@@ -138,21 +139,27 @@ public class TrainingAgreementHistory
 
     Object src = e.getSource();
     if (btCreate == src) {
-      TrainingAgreement c = new TrainingAgreement();
-      c.setPersonId(dossier.getId());
-      c.setStart(dataCache.getStartOfYear().getDate());
-      c.setEnd(dataCache.getEndOfYear().getDate());
-      c.setSeason(dataCache.getStartOfYear().getYear() + "-" + dataCache.getEndOfYear().getYear());
-      c.setSignDate(new Date());
+      TrainingAgreement ta =  new TrainingAgreement();
+      ta.setPersonId(dossier.getId());
+      ta.setStart(dataCache.getStartOfYear().getDate());
+      ta.setEnd(dataCache.getEndOfYear().getDate());
+      ta.setSeason(dataCache.getStartOfYear().getYear() + "-" + dataCache.getEndOfYear().getYear());
+      ta.setSignDate(new Date());
       if (lastEnrolment != null) {
         try {
           Module m = trainingService.getModule(lastEnrolment.getId());
-          c.setLabel(m.getTitle());
+          ta.setLabel(m.getTitle());
         } catch (SQLException ex) {
           GemLogger.logException(ex);
         }
       }
-      openAgreement(c);
+      Member m = dossier.getMember();
+      if (m != null) {
+        ta.setInsurance(m.getInsurance());
+        ta.setInsuranceRef(m.getInsuranceRef());
+      }
+      
+      openAgreement(ta);
     } else {
       int row = table.getSelectedRow();
       if (row < 0) {
@@ -165,7 +172,7 @@ public class TrainingAgreementHistory
       } else if (btDelete == src) {
         if (MessagePopup.confirm(this, MessageUtil.getMessage("action.delete.confirmation"))) {
           try {
-            trainingService.deleteContract(c.getId());
+            trainingService.deleteAgreement(c.getId());
             tableModel.deleteItem(c);
           } catch (SQLException ex) {
             GemLogger.logException(ex);

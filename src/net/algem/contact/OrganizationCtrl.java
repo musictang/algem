@@ -1,5 +1,5 @@
 /*
- * @(#) OrganizationCtrl.java Algem 2.15.0 30/07/2017
+ * @(#) OrganizationCtrl.java Algem 2.15.0 14/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -52,8 +52,7 @@ public class OrganizationCtrl
   private boolean isCreation;
 
   public OrganizationCtrl(Frame owner, boolean modal, PersonView personView) {
-    super(owner, modal);
-    setTitle(BundleUtil.getLabel("Organization.details.label"));
+    super(owner, BundleUtil.getLabel("Organization.details.label"), modal);
     this.personView = personView;
     this.orgIO = personView.getDao();
   }
