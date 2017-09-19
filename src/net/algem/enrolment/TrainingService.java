@@ -1,5 +1,5 @@
 /*
- * @(#) TrainingService.java Algem 2.15.0 14/09/17
+ * @(#) TrainingService.java Algem 2.15.0 18/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package net.algem.enrolment;
 
 import com.itextpdf.text.Document;
@@ -28,6 +27,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Properties;
@@ -48,6 +48,7 @@ import net.algem.util.ui.MessagePopup;
  * @since 2.15.0 06/09/2017
  */
 public class TrainingService {
+
   private final TrainingContractIO contractIO;
   private final TrainingAgreementIO agreementIO;
   private final OrganizationIO orgIO;
@@ -64,15 +65,15 @@ public class TrainingService {
     return contractIO.findAll(idper);
   }
 
-   public List<TrainingAgreement> findAgreements(int idper) throws SQLException {
+  public List<TrainingAgreement> findAgreements(int idper) throws SQLException {
     return agreementIO.findAll(idper);
   }
 
-   public Organization[] getOrganizations() throws SQLException {
-     List<Organization> orgs = orgIO.findAll();
-     Organization [] orgArray = new Organization[orgs.size()];
-     return orgs.toArray(orgArray);
-   }
+  public Organization[] getOrganizations() throws SQLException {
+    List<Organization> orgs = orgIO.findAll();
+    Organization[] orgArray = new Organization[orgs.size()];
+    return orgs.toArray(orgArray);
+  }
 
   public Module getModule(int orderId) throws SQLException {
     return contractIO.getModuleInfo(orderId);
@@ -81,6 +82,7 @@ public class TrainingService {
   public float getVolume(int orderId) throws SQLException {
     return contractIO.getVolume(orderId);
   }
+
   public void createContract(TrainingContract t) throws SQLException {
     contractIO.create(t);
   }
@@ -106,37 +108,39 @@ public class TrainingService {
   }
 
   void preview(Properties props, String fileName, short templateKey, int idper) throws DocumentException, IOException {
-    InputStream tpl = getClass().getResourceAsStream("/resources/doc/tpl/"+fileName+".html");
+    InputStream tpl = getClass().getResourceAsStream("/resources/doc/tpl/" + fileName + ".html");
     if (tpl == null) {
-      tpl = getClass().getResourceAsStream("/resources/doc/tpl/def/"+fileName+".html");
+      tpl = getClass().getResourceAsStream("/resources/doc/tpl/def/" + fileName + ".html");
     }
     if (tpl == null) {
-      MessagePopup.warning(null, MessageUtil.getMessage("html.template.not.found.warning",fileName+".html"));
+      MessagePopup.warning(null, MessageUtil.getMessage("html.template.not.found.warning", fileName + ".html"));
       return;
     }
     String content = FileUtil.scanContent(tpl, props);
-    tpl = new ByteArrayInputStream(content.getBytes());
+    System.out.println(content);
+    //tpl = new ByteArrayInputStream(content.getBytes());
+    tpl = new ByteArrayInputStream(content.getBytes("UTF-8"));
+
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     //step 1
     Document doc = new Document(PageSize.A4);
     doc.setMargins(40, 40, 40, 40);
 
     //step 2
+    /*OutputStream printStream = new PrintStream(out, true, "UTF-8");
+    PdfWriter writer = PdfWirter.getInstance(doc, printStream);*/
     PdfWriter writer = PdfWriter.getInstance(doc, out);
-//    writer.addViewerPreference(PdfName.PRINTSCALING, PdfName.NONE);
-//    writer.addViewerPreference(PdfName.PRINTSCALING, PdfName.FIT);
-//    writer.addViewerPreference(PdfName.DUPLEX, PdfName.DUPLEXFLIPLONGEDGE);
+    //writer.addViewerPreference(PdfName.PRINTSCALING, PdfName.NONE);
+    //writer.addViewerPreference(PdfName.PRINTSCALING, PdfName.FIT);
+    //writer.addViewerPreference(PdfName.DUPLEX, PdfName.DUPLEXFLIPLONGEDGE);
     doc.open();
     // step 4
-    //XMLWorkerHelper.getInstance().parseXHtml(writer, document, tpl);
     PdfHandler handler = new PdfHandler(templateIO);
-    handler.createParser(doc, writer).parse(tpl);
+    // IMPORTANT !! : set Charset here
+    handler.createParser(doc, writer).parse(tpl, Charset.forName("UTF-8"));
     // step 5
     doc.close();
-    handler.createPdf(fileName+"-" + idper + "_", out, templateKey);
+    handler.createPdf(fileName + "-" + idper + "_", out, templateKey);
   }
-//
-//  public PdfHandler getPdfHandler() {
-//    return new PdfHandler(templateIO);
-//  }
+
 }

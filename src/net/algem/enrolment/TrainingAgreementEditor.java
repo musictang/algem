@@ -1,5 +1,5 @@
 /*
- * @(#) TrainingAgreementEditor.java Algem 2.15.0 13/09/17
+ * @(#) TrainingAgreementEditor.java Algem 2.15.0 18/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -27,16 +27,12 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Properties;
-import javax.imageio.ImageIO;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -56,6 +52,7 @@ import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
+import net.algem.util.ImageUtil;
 import net.algem.util.MessageUtil;
 import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
@@ -309,7 +306,7 @@ public class TrainingAgreementEditor
     props.put("__company_siret__", compOrg.getSiret() == null ? "NC" : compOrg.getSiret());
     props.put("__company_ape__", compOrg.getNafCode() == null ? "NC" : compOrg.getNafCode());
     props.put("__company_city__", city);
-    props.put("__company_stamp__", getStampPath(comp));
+    props.put("__company_stamp__", ImageUtil.getStampPath(comp));
     props.put("__training_title__", ta.getLabel());
     props.put("__season__", ta.getSeason());
     props.put("__training_start__", df.format(ta.getStart()));
@@ -317,24 +314,6 @@ public class TrainingAgreementEditor
     props.put("__date_sign__", df.format(ta.getSignDate()));
 
     return props;
-  }
-
-  private String getStampPath(Company comp) {
-    try {
-      File logo = File.createTempFile("comp-stamp_", ".png");
-      byte[] data = comp.getStamp();
-      if (data == null) {
-        return "";
-      }
-      ByteArrayInputStream in = new ByteArrayInputStream(data);
-      BufferedImage img = ImageIO.read(in);
-
-      ImageIO.write(img, "png", logo);
-      return logo.getPath();
-    } catch (IOException ex) {
-      GemLogger.logException(ex);
-      return "";
-    }
   }
 
   private void close() {

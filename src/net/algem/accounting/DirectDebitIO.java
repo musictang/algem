@@ -1,5 +1,5 @@
 /*
- * @(#)DirectDebitIO.java 2.15.0 14/09/17
+ * @(#)DirectDebitIO.java 2.15.0 18/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,7 +20,6 @@
  */
 package net.algem.accounting;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;

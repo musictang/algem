@@ -1,5 +1,5 @@
 /*
- * @(#) TrainingContractEditor.java Algem 2.15.0 12/09/17
+ * @(#) TrainingContractEditor.java Algem 2.15.0 18/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -27,9 +27,6 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -37,7 +34,6 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Properties;
-import javax.imageio.ImageIO;
 import javax.swing.JDialog;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
@@ -56,6 +52,7 @@ import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
+import net.algem.util.ImageUtil;
 import net.algem.util.MessageUtil;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.GemButton;
@@ -324,7 +321,7 @@ public class TrainingContractEditor
     props.put("__company_siret__", comp.getOrg().getSiret());
     props.put("__company_ape__", comp.getOrg().getNafCode());
     props.put("__company_city__", city);
-    props.put("__company_stamp__", getStampPath(comp));
+    props.put("__company_stamp__", ImageUtil.getStampPath(comp));
     props.put("__training_title__", contract.getLabel());
     props.put("__season__", contract.getSeason());
     props.put("__training_start__", df.format(contract.getStart()));
@@ -339,24 +336,6 @@ public class TrainingContractEditor
     props.put("__date_sign__", df.format(contract.getSignDate()));
 
     return props;
-  }
-
-  private String getStampPath(Company comp) {
-    try {
-      File logo = File.createTempFile("comp-stamp_", ".png");
-      byte[] data = comp.getStamp();
-      if (data == null) {
-        return "";
-      }
-      ByteArrayInputStream in = new ByteArrayInputStream(data);
-      BufferedImage img = ImageIO.read(in);
-
-      ImageIO.write(img, "png", logo);
-      return logo.getPath();
-    } catch (IOException ex) {
-      GemLogger.logException(ex);
-      return "";
-    }
   }
 
   private void close() {

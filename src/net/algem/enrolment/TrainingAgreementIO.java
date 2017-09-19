@@ -1,5 +1,5 @@
 /*
- * @(#) TrainingAgreementIO.java Algem 2.15.0 07/09/17
+ * @(#) TrainingAgreementIO.java Algem 2.15.0 18/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -39,7 +39,7 @@ public class TrainingAgreementIO
         extends TableIO
 {
 
-  private final static String TABLE = "conventionstage";
+  public final static String TABLE = "conventionstage";
   private final static String COLUMNS = "id,ctype,idper,idorg,assurance,assuranceref,libelle,saison,debut,fin,datesign";
   private final static String SEQUENCE = "conventionstage_id_seq";
 

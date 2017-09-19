@@ -1,5 +1,5 @@
 /*
- * @(#)ImageUtil.java	2.15.0 25/07/2017
+ * @(#)ImageUtil.java	2.15.0 18/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -24,6 +24,7 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -32,6 +33,7 @@ import java.net.URL;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import net.algem.accounting.AccountUtil;
+import net.algem.config.Company;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
 import net.algem.contact.PhotoHandler;
@@ -207,6 +209,24 @@ public class ImageUtil
     return img;
   }
 
+  public static String getStampPath(Company comp) {
+    try {
+      File stamp = File.createTempFile("stamp_", ".png");
+      byte[] data = comp.getStamp();
+      if (data == null) {
+        return "";
+      }
+      ByteArrayInputStream in = new ByteArrayInputStream(data);
+      BufferedImage img = ImageIO.read(in);
+
+      ImageIO.write(img, "png", stamp);
+
+      return stamp.getPath().replaceAll("\\\\", "/");
+    } catch (IOException ex) {
+      GemLogger.logException(ex);
+      return "";
+    }
+  }
 
   /**
    * Gets the photo matching this {@code filter}.

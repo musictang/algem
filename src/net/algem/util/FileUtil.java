@@ -1,5 +1,5 @@
 /*
- * @(#)FileUtil.java	2.15.0 12/09/2017
+ * @(#)FileUtil.java	2.15.0 18/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -413,7 +413,8 @@ public class FileUtil
    * @return the content of the file as string
    */
   public static String scanContent(InputStream input, Properties props) {
-    Scanner scanner = new Scanner(input);
+    Scanner scanner = new Scanner(input, "UTF-8");
+//    Scanner scanner = new Scanner(input);
     StringBuilder content = new StringBuilder();
     while (scanner.hasNextLine()) {
       String line = scanner.nextLine();

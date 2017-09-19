@@ -1,5 +1,5 @@
 /*
- * @(#)ContactIO.java	2.15.0 14/09/17
+ * @(#)ContactIO.java	2.15.0 18/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -33,6 +33,7 @@ import net.algem.billing.InvoiceIO;
 import net.algem.contact.member.MemberIO;
 import net.algem.contact.member.PersonSubscriptionCard;
 import net.algem.contact.member.PersonSubscriptionCardIO;
+import net.algem.enrolment.TrainingAgreementIO;
 import net.algem.planning.Schedule;
 import net.algem.planning.ScheduleIO;
 import net.algem.planning.ScheduleRange;
@@ -54,8 +55,7 @@ import net.algem.util.model.TableIO;
  * @since 1.0a 07/07/1999
  */
 public class ContactIO
-        extends TableIO
-{
+  extends TableIO {
 
   private DataConnection dc;
   private PersonIO personIO;
@@ -217,21 +217,32 @@ public class ContactIO
    * @throws java.sql.SQLException
    * @throws net.algem.contact.ContactDeleteException
    */
-  public void delete(Contact c) throws SQLException, ContactDeleteException {
-    checkDelete(c, dc);
+  public void delete(final Contact c) throws SQLException, ContactDeleteException {
+    try {
+      checkDelete(c, dc); // may throw ContactDeleteException
+      dc.withTransaction(new DataConnection.SQLRunnable<Void>() {
+        @Override
+        public Void run(DataConnection conn) throws Exception {
+          personIO.delete(c);
 
-    personIO.delete(c);
-    AddressIO.delete(c.getId(), dc);
+          AddressIO.delete(c.getId(), dc);
 
-    if (c.getType() != Person.BANK) {
-      TeleIO.delete(c.getId(), dc);
-      EmailIO.delete(c.getId(), dc);
-      WebSiteIO.delete(c.getId(), Person.PERSON, dc);
-    }
-    // member and rib might be deleted if exists
-    if (c.getType() == Person.PERSON) {
-      ((MemberIO) DataCache.getDao(Model.Member)).delete(c.getId());
-      RibIO.delete(c.getId(), dc);
+          if (c.getType() != Person.BANK) {
+            TeleIO.delete(c.getId(), dc);
+            EmailIO.delete(c.getId(), dc);
+            WebSiteIO.delete(c.getId(), Person.PERSON, dc);
+          }
+          // member and rib might be deleted if exists
+          if (c.getType() == Person.PERSON) {
+            ((MemberIO) DataCache.getDao(Model.Member)).delete(c.getId());
+            RibIO.delete(c.getId(), dc);
+          }
+          return null;
+        }
+      });
+
+    } catch (Exception ex) {
+      throw new ContactDeleteException(ex.getMessage());
     }
   }
 
@@ -448,7 +459,7 @@ public class ContactIO
         throw new ContactDeleteException(msg);
       }
       /* // checks if some rib exists for this contact (DO NOT USE) */
-      /* check = "SELECT idper FROM " + RibIO.TABLE + " WHERE idper = " + c.getId();
+ /* check = "SELECT idper FROM " + RibIO.TABLE + " WHERE idper = " + c.getId();
        * rs = dc.executeQuery(check);
        * if (rs.next()) {
        * int g = rs.getInt(1);
@@ -489,6 +500,22 @@ public class ContactIO
         msg += MessageUtil.getMessage("contact.delete.subscription.warning", cards.size());
         throw new ContactDeleteException(msg);
       }
+
+      if (c.getOrganization() != null && c.getOrganization().getId() > 0) {
+        // checks if organization is used in contracts/agreements
+        int agreements = usedInAgreements(c.getId(), dc);
+        if (agreements > 0) {
+          msg += MessageUtil.getMessage("contact.delete.organization.agreements.warning", agreements);
+          throw new ContactDeleteException(msg);
+        }
+         // checks organization members
+        int orgMembers = countOrganizationMembers(c.getId(), dc);
+        if (orgMembers > 0) {
+          String msgKey = orgMembers == 1 ? "contact.delete.organization.member.warning" : "contact.delete.organization.members.warning";
+          msg += MessageUtil.getMessage(msgKey, orgMembers);
+          throw new ContactDeleteException(msg);
+        }
+      }
     } else if (c.getType() == Person.BANK) {
       String check = "SELECT count(guichetid) FROM " + RibIO.TABLE + " WHERE guichetid = " + c.getId();
       ResultSet rs = dc.executeQuery(check);
@@ -499,5 +526,30 @@ public class ContactIO
       }
     }
 
+  }
+
+  private static int countOrganizationMembers(int idper, DataConnection dc) throws SQLException {
+    int found = 0;
+    List<Person> members = new OrganizationIO(dc).findMembers(idper);
+    for (Person p : members) {
+      if (p.getId() != idper) {
+        found++;
+      }
+    }
+    return found;
+  }
+
+  private static int usedInAgreements(int idper,  DataConnection dc) throws SQLException {
+    String query = "SELECT count(id) FROM " + TrainingAgreementIO.TABLE + " WHERE idorg = ?";
+
+    try(PreparedStatement ps = dc.prepareStatement(query)) {
+      ps.setInt(1, idper);
+      try(ResultSet rs = ps.executeQuery()) {
+        while(rs.next()) {
+          return rs.getInt(1);
+        }
+      }
+    }
+    return 0;
   }
 }
