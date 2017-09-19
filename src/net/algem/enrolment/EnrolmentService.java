@@ -489,7 +489,7 @@ public class EnrolmentService
   }
 
   /**
-   * Specifies if member {@literal a} is already scheduled for {@literal p} between the dates of enrolment.
+   * Checks if member width the id {@code m} is already scheduled between start of schedule {@code p} and end of enrolment.
    *
    * @param m member id
    * @param p schedule
@@ -506,7 +506,6 @@ public class EnrolmentService
         //+ " AND jour >= '" + courseOrder.getDateStart() + "' AND jour <= '" + courseOrder.getDateEnd()
         + " AND jour >= '" + p.getDate() + "' AND jour <= '" + courseOrder.getDateEnd()
         + "')";
-
       Vector<ScheduleRange> vp = ScheduleRangeIO.find(where, dc);
       if (vp.size() > 0) {
         return true;

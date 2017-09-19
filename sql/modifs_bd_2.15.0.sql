@@ -23,8 +23,8 @@ ALTER TABLE societe OWNER TO nobody;
 COMMENT ON COLUMN personne.ptype IS '1 = personne physique, 4 = salle, 5 = etablissement, 6 = agence bancaire';
 
 CREATE TABLE organisation(
-    idper integer PRIMARY KEY REFERENCES personne(id),
-    referent integer REFERENCES personne(id),
+    idper integer PRIMARY KEY REFERENCES personne(id) ON DELETE CASCADE,
+    referent integer DEFAULT 0 REFERENCES personne(id) ON DELETE SET DEFAULT,
     nom varchar(64) UNIQUE,
     raison varchar(64),
     siret varchar(16) UNIQUE,

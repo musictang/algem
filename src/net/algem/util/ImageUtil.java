@@ -1,5 +1,5 @@
 /*
- * @(#)ImageUtil.java	2.15.0 18/09/17
+ * @(#)ImageUtil.java	2.15.0 19/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -184,7 +184,7 @@ public class ImageUtil
    */
   public static ImageIcon createImageIcon(String file) {
     ImageIcon img = null;
-    String path = ImageUtil.IMAGE_PATH + file;
+    String path = IMAGE_PATH + file;
     URL url = new ImageUtil().getClass().getResource(path);
     if (url != null) {
       img = new ImageIcon(url);

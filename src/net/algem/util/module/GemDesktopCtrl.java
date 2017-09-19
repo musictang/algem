@@ -1,5 +1,5 @@
 /*
- * @(#)GemDesktopCtrl.java	2.13.2 05/05/17
+ * @(#)GemDesktopCtrl.java	2.15.0 19/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -68,7 +68,7 @@ import net.algem.util.ui.UIAdjustable;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.13.2
+ * @version 2.15.0
  * @since 1.0a 05/07/2002
  */
 public class GemDesktopCtrl
@@ -194,10 +194,12 @@ public class GemDesktopCtrl
               continue;
             }
             Contact c = ContactIO.findId(id, dc);
-            PersonFile pFile = new PersonFile(c);
-            ((PersonFileIO) DataCache.getDao(Model.PersonFile)).complete(pFile);
-            PersonFileEditor editor = new PersonFileEditor(pFile);
-            addModule(editor, true);
+            if (c != null) {
+              PersonFile pFile = new PersonFile(c);
+              ((PersonFileIO) DataCache.getDao(Model.PersonFile)).complete(pFile);
+              PersonFileEditor editor = new PersonFileEditor(pFile);
+              addModule(editor, true);
+            }
           } else if (sid.getModuleClass().equals(DayScheduleCtrl.class.getSimpleName())) {
             DayScheduleCtrl dayScheduleCtrl = new DayScheduleCtrl();
             addModule(dayScheduleCtrl);

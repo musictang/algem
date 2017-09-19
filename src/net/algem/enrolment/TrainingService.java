@@ -1,5 +1,5 @@
 /*
- * @(#) TrainingService.java Algem 2.15.0 18/09/17
+ * @(#) TrainingService.java Algem 2.15.0 19/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -109,15 +109,15 @@ public class TrainingService {
 
   void preview(Properties props, String fileName, short templateKey, int idper) throws DocumentException, IOException {
     InputStream tpl = getClass().getResourceAsStream("/resources/doc/tpl/" + fileName + ".html");
+    String defPath = "/resources/doc/tpl/def/" + fileName + ".html";
     if (tpl == null) {
-      tpl = getClass().getResourceAsStream("/resources/doc/tpl/def/" + fileName + ".html");
+      tpl = getClass().getResourceAsStream(defPath);
     }
     if (tpl == null) {
       MessagePopup.warning(null, MessageUtil.getMessage("html.template.not.found.warning", fileName + ".html"));
       return;
     }
     String content = FileUtil.scanContent(tpl, props);
-    System.out.println(content);
     //tpl = new ByteArrayInputStream(content.getBytes());
     tpl = new ByteArrayInputStream(content.getBytes("UTF-8"));
 

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2016 Musiques Tangentes. All rights reserved.
+ * Copyright 2016-2017 Musiques Tangentes. All rights reserved.
  *
  * The contents of this file are subject to the terms of the GNU General Public License Version 3
  * only ("GPL"). You may not use this file except in compliance with the License. You can obtain a
@@ -31,7 +31,7 @@ import org.openconcerto.utils.FileUtils;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 1.0
+ * @version 1.1 19/09/17
  * @since 1.0 15/12/2016
  */
 public class Module extends AbstractModule {
@@ -40,6 +40,7 @@ public class Module extends AbstractModule {
 		super(f);
 	}
 
+    @Override
 	protected void setupMenu(MenuContext menuContext) {
 
 		menuContext.addMenuItem(new CustomImportEcritureAction(), "Algem");

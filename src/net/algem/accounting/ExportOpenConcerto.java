@@ -1,5 +1,5 @@
 /*
- * @(#) ExportOpenConcerto.java Algem 2.14.0 12/06/17
+ * @(#) ExportOpenConcerto.java Algem 2.15.0 19/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -37,7 +37,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.14.0
+ * @version 2.15.0
  * @since 2.11.4 13/12/2016
  */
 public class ExportOpenConcerto
@@ -75,6 +75,7 @@ public class ExportOpenConcerto
       StringBuilder sb = new StringBuilder();
       for (int i = 0, n = lines.size(); i < n; i++) {
         e = lines.elementAt(i);
+        String label = e.getLabel() == null ? "" : e.getLabel().replaceAll("\"", "");
         if (e.getAmount() > 0) {
           totalDebit += e.getAmount();
         } else {
@@ -84,7 +85,7 @@ public class ExportOpenConcerto
         sb.append(';').append(codeJournal);
         sb.append(';').append(getAccount(e));
         sb.append(';').append(e.getDocument());
-        sb.append(';').append(e.getLabel()).append(' ').append(getInvoiceNumber(e));
+        sb.append(';').append(label).append(' ').append(getInvoiceNumber(e));
         if (e.getAmount() > 0 ) {
           sb.append(';').append(nf.format(0.0));
           sb.append(';').append(nf.format(e.getAmount() / 100.0));
@@ -141,6 +142,7 @@ public class ExportOpenConcerto
       StringBuilder sb = new StringBuilder();
       for (int i = 0, n = lines.size(); i < n; i++) {
         e = lines.elementAt(i);
+        String label = e.getLabel() == null ? "" : e.getLabel().replaceAll("\"", "");
         if (!AccountUtil.isPersonalAccount(e.getAccount())) {
           errors++;
           logMessage.append(m1prefix).append(" -> ").append(e).append(" [").append(e.getAccount()).append("]").append(TextUtil.LINE_SEPARATOR);
@@ -173,7 +175,7 @@ public class ExportOpenConcerto
         sb.append(';').append(codeJournal); // code journal
         sb.append(';').append(c.getNumber()); // n° de compte
         sb.append(';').append(e.getDocument()); // n° de pièce
-        sb.append(';').append(e.getLabel()).append(' ').append(getInvoiceNumber(e));// libellé
+        sb.append(';').append(label).append(' ').append(getInvoiceNumber(e));// libellé
         if (e.getAmount() < 0) {
           sb.append(';').append(nf.format(0.0));
           sb.append(';').append(exclTax > 0 ? nf.format(exclTax) : total);// CREDIT
@@ -191,7 +193,7 @@ public class ExportOpenConcerto
           sb.append(';').append(codeJournal);
           sb.append(';').append(taxAccount.getNumber());
           sb.append(';').append(e.getDocument());
-          sb.append(';').append(e.getLabel()).append(' ').append(getInvoiceNumber(e));
+          sb.append(';').append(label).append(' ').append(getInvoiceNumber(e));
           if (e.getAmount() < 0) {
             sb.append(';').append(nf.format(0.0));
             sb.append(';').append(nf.format(vat));// CREDIT
@@ -210,7 +212,7 @@ public class ExportOpenConcerto
         sb.append(';').append(getAccount(e));
         sb.append(';').append(e.getDocument());
         //TODO maybe remove " or ' from label
-        sb.append(';').append(e.getLabel()).append(' ').append(getInvoiceNumber(e));
+        sb.append(';').append(label).append(' ').append(getInvoiceNumber(e));
         if (e.getAmount() < 0) {
           sb.append(';').append(total); // DEBIT
           sb.append(';').append(nf.format(0.0));
@@ -225,9 +227,9 @@ public class ExportOpenConcerto
     }
 
     if (logMessage.length() > 0) {
-      PrintWriter log = new PrintWriter(new FileWriter(logpath));
-      log.println(logMessage.toString());
-      log.close();
+      try (PrintWriter log = new PrintWriter(new FileWriter(logpath))) {
+        log.println(logMessage.toString());
+      }
     }
 
     String errorsMessage = null;

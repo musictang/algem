@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2016 Musiques Tangentes. All rights reserved.
+ * Copyright 2016-2017 Musiques Tangentes. All rights reserved.
  *
  * The contents of this file are subject to the terms of the GNU General Public License Version 3
  * only ("GPL"). You may not use this file except in compliance with the License. You can obtain a
@@ -12,38 +12,18 @@
  */
 package org.openconcerto.module.algem.accounting;
 import org.openconcerto.erp.config.ComptaPropsConfiguration;
-import org.openconcerto.erp.core.common.element.BanqueSQLElement;
-import org.openconcerto.erp.core.common.ui.TotalCalculator;
-import org.openconcerto.erp.core.finance.accounting.element.ComptePCESQLElement;
-import org.openconcerto.erp.core.finance.accounting.element.JournalSQLElement;
-import org.openconcerto.erp.generationEcritures.AnalytiqueCache;
 import org.openconcerto.erp.generationEcritures.GenerationEcritures;
-import org.openconcerto.erp.generationEcritures.provider.AnalytiqueProvider;
-import org.openconcerto.erp.generationEcritures.provider.AnalytiqueProviderManager;
-import org.openconcerto.erp.preferences.DefaultNXProps;
-import org.openconcerto.erp.preferences.GestionPieceCommercialePanel;
 import org.openconcerto.sql.Configuration;
-import org.openconcerto.sql.model.SQLBase;
 import org.openconcerto.sql.model.SQLRow;
-import org.openconcerto.sql.model.SQLRowAccessor;
 import org.openconcerto.sql.model.SQLRowValues;
 import org.openconcerto.sql.model.SQLSelect;
 import org.openconcerto.sql.model.SQLTable;
 import org.openconcerto.sql.users.UserManager;
 import org.openconcerto.utils.ExceptionHandler;
 
-import java.math.BigDecimal;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-import org.openconcerto.sql.model.IResultSetHandler;
-import org.openconcerto.sql.model.SQLDataSource;
 import org.openconcerto.sql.model.SQLField;
 
 /**
@@ -51,6 +31,9 @@ import org.openconcerto.sql.model.SQLField;
  * Generation des ecritures comptables, permet l'ajout d'ecriture, la creation des mouvements
  *
  * @author Administrateur
+ * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
+ * @version 1.1 19/09/17
+ * @since 1.0 15/12/2016
  * @see org.openconcerto.erp.generationEcritures.GenerationEcritures
  */
 public class CustomGenerationEcritures extends GenerationEcritures{
@@ -63,6 +46,7 @@ public class CustomGenerationEcritures extends GenerationEcritures{
      * @return Id de l'ecriture crée
      * @throws IllegalArgumentException
      */
+    @Override
     synchronized public SQLRow ajoutEcriture() throws IllegalArgumentException {
 
         long debit = ((Long) this.mEcritures.get("DEBIT")).longValue();
