@@ -1,7 +1,7 @@
 /*
- * @(#)MusicianDlg.java	2.9.6 17/03/16
- * 
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * @(#)MusicianDlg.java	2.15.0 20/09/17
+ *
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.group;
 
@@ -49,7 +49,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.6
+ * @version 2.15.0
  */
 public class MusicianDlg
         extends PopupDlg
@@ -86,7 +86,7 @@ public class MusicianDlg
     icon = ImageUtil.createImageIcon(ImageUtil.SEARCH_ICON);
     btSearch = new GemButton(icon);
     btSearch.setMargin(new Insets(0, 0, 0, 0));
-    //btSearch.setBorder(null);
+    btSearch.setBorder(null);
     btSearch.addActionListener(this);
 
     back = new GemPanel();
@@ -150,14 +150,14 @@ public class MusicianDlg
     m.setInstrument(Integer.parseInt(getField(3)));
     return m;
   }
-  
+
   public void setOperation(int operation) {
     this.operation = operation;
   }
 
   @Override
   public void actionPerformed(ActionEvent evt) {
-    
+
     DataConnection dc = DataCache.getDataConnection();
     if (evt.getSource() == no) {
       try {
@@ -167,7 +167,7 @@ public class MusicianDlg
         GemLogger.log(Level.SEVERE, ex.getMessage());
       }
     } else if (evt.getSource() == btSearch) {
-      PersonFileSearchCtrl pfSearch = new PersonFileSearchCtrl(desktop, BundleUtil.getLabel("Contact.browser.label"), this); 
+      PersonFileSearchCtrl pfSearch = new PersonFileSearchCtrl(desktop, BundleUtil.getLabel("Contact.browser.label"), this);
       pfSearch.init();
       desktop.addPanel("Contact", pfSearch, GemModule.S_SIZE);
       dlg.setLocation(pfSearch.getLocation().x + pfSearch.getWidth(), dlg.getLocation().y);// shift the position to avoid overlapping
@@ -178,7 +178,7 @@ public class MusicianDlg
       super.actionPerformed(evt);
     }
   }
-  
+
   private void setMusician(Person p, DataConnection dc) throws SQLException {
     int inst = 0;
     List<Integer> li = InstrumentIO.find(p.getId(), Instrument.MUSICIAN, dc);
@@ -209,6 +209,6 @@ public class MusicianDlg
       }
     }
   }
-  
-  
+
+
 }

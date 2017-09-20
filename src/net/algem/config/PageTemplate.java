@@ -1,5 +1,5 @@
 /*
- * @(#) PageModel.java Algem 2.15.0 19/07/2017
+ * @(#) PageModel.java Algem 2.15.0 20/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -30,8 +30,8 @@ public class PageTemplate {
 
   public final static short DEFAULT_MODEL = 0;
   public final static short QUOTE_PAGE_MODEL = 1;
-  public final static short AGREEMENT_PAGE_MODEL = 2;
-  public final static short CONTRACT_PAGE_MODEL = 3;
+  public final static short CONTRACT_PAGE_MODEL = 2;
+  public final static short AGREEMENT_PAGE_MODEL = 3;
   private short type;
   private byte[] content;
 

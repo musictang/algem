@@ -1,5 +1,5 @@
 /*
- * @(#) TrainingContractEditor.java Algem 2.15.0 18/09/17
+ * @(#) TrainingContractEditor.java Algem 2.15.0 20/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -268,36 +268,6 @@ public class TrainingContractEditor
     }
     close();
   }
-
-  /*private void preview(Properties props, String fileName, short templateKey) throws DocumentException, IOException {
-    InputStream tpl = getClass().getResourceAsStream("/resources/doc/"+fileName+".html");
-    if (tpl == null) {
-      tpl = getClass().getResourceAsStream("/resources/doc/def/"+fileName+".html");
-    }
-    if (tpl == null) {
-      return;
-    }
-    String content = scanContent(tpl, props);
-    tpl = new ByteArrayInputStream(content.getBytes());
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
-    //step 1
-    Document doc = new Document(PageSize.A4);
-    doc.setMargins(40, 40, 40, 40);
-
-    //step 2
-    PdfWriter writer = PdfWriter.getInstance(doc, out);
-//    writer.addViewerPreference(PdfName.PRINTSCALING, PdfName.NONE);
-//    writer.addViewerPreference(PdfName.PRINTSCALING, PdfName.FIT);
-//    writer.addViewerPreference(PdfName.DUPLEX, PdfName.DUPLEXFLIPLONGEDGE);
-    doc.open();
-    // step 4
-    //XMLWorkerHelper.getInstance().parseXHtml(writer, document, tpl);
-    PdfHandler handler = trainingService.getPdfHandler();
-    handler.createParser(doc, writer).parse(tpl);
-    // step 5
-    doc.close();
-    handler.createPdf(fileName+"-" + dossier.getId() + "_", out, templateKey);
-  }*/
 
   private Properties fillProperties(TrainingContract contract) throws SQLException {
     Properties props = new Properties();

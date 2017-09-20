@@ -1,7 +1,7 @@
 /*
- * @(#)DateRangePanel.java 2.9.6 16/03/16
+ * @(#)DateRangePanel.java 2.15.0 20/09/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -44,7 +44,7 @@ import net.algem.util.ui.GemPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.6
+ * @version 2.15.0
  */
 public class DateRangePanel
         extends GemPanel
@@ -79,7 +79,9 @@ public class DateRangePanel
     icon = ImageUtil.createImageIcon(ImageUtil.CAL_ICON);
     start = new DateFrField(new Date());
 
+    String tip = BundleUtil.getLabel("Calendar.tip");
     cal1 = new GemButton(icon);
+    cal1.setToolTipText(tip);
     cal1.setMargin(NULL_INSETS);
     cal1.addActionListener(this);
     if (border == null) {
@@ -99,6 +101,7 @@ public class DateRangePanel
       end.addFocusListener(this);
 
       cal2 = new GemButton(icon);
+      cal2.setToolTipText(tip);
       cal2.setMargin(NULL_INSETS);
       cal2.addActionListener(this);
 

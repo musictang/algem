@@ -1,5 +1,5 @@
 /*
- * @(#)ImageUtil.java	2.15.0 19/09/17
+ * @(#)ImageUtil.java	2.15.0 20/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -54,8 +54,8 @@ public class ImageUtil
   public static final String DEFAULT_PHOTO_ID = "/resources/images/idphoto.png";
   public static final String DEFAULT_PDF_TEMPLATE = "/resources/images/pdf.png";
   public static final String ALGEM_LOGO = "logo.png";
-  public static final String SEARCH_ICON = "cherche.png";
-  public static final String CAL_ICON = "cal.gif";
+  public static final String SEARCH_ICON = "edit-find.png";
+  public static final String CAL_ICON = "cal.png";
   public static final String NO_CONFLICT_ICON = "feuvert.gif";
   public static final String CONFLICT_ICON = "feurouge.gif";
   public static final String DELETE_ICON = "quitter_trans_12x12.png";
