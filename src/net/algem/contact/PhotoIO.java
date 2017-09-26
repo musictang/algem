@@ -1,7 +1,7 @@
 /*
- * @(#) PhotoIO.java Algem 2.9.4.14 17/12/15
+ * @(#) PhotoIO.java Algem 2.15.1 25/09/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -36,7 +36,7 @@ import net.algem.util.model.TableIO;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.14
+ * @version 2.15.1
  * @since 2.9.4.14 09/12/2015
  */
 public class PhotoIO
@@ -197,6 +197,15 @@ public class PhotoIO
       }
     }
     return saved;
+  }
+  
+  void delete(int idper) throws SQLException {
+    String query = "DELETE FROM " + TABLE + " WHERE idper = ?";
+    try(PreparedStatement ps = dc.prepareStatement(query)) {
+      ps.setInt(1, idper);
+      
+      ps.executeUpdate();
+    }
   }
 
 }

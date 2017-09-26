@@ -1,5 +1,5 @@
 /*
- * @(#)ContactFileEditor.java	2.13.3 16/05/17
+ * @(#)ContactFileEditor.java	2.15.1 25/09/2017
  *
  * Copyright (c) 1998-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -44,7 +44,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.13.3
+ * @version 2.15.1
  * @since 1.0a 09/07/2002
  */
 public class ContactFileEditor
@@ -291,5 +291,9 @@ public class ContactFileEditor
    */
   public void filter(int f) {
     personView.filter(f);
+  }
+  
+  void deletePhoto(int idper) {
+    personView.deletePhoto(idper);
   }
 }

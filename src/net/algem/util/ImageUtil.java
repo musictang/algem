@@ -54,8 +54,8 @@ public class ImageUtil
   public static final String DEFAULT_PHOTO_ID = "/resources/images/idphoto.png";
   public static final String DEFAULT_PDF_TEMPLATE = "/resources/images/pdf.png";
   public static final String ALGEM_LOGO = "logo.png";
-  public static final String SEARCH_ICON = "cherche.png";
-  public static final String CAL_ICON = "cal.gif";
+  public static final String SEARCH_ICON = "edit-find.png";
+  public static final String CAL_ICON = "cal.png";
   public static final String NO_CONFLICT_ICON = "feuvert.gif";
   public static final String CONFLICT_ICON = "feurouge.gif";
   public static final String DELETE_ICON = "quitter_trans_12x12.png";
@@ -188,6 +188,8 @@ public class ImageUtil
     URL url = new ImageUtil().getClass().getResource(path);
     if (url != null) {
       img = new ImageIcon(url);
+    } else {
+            System.out.println("url icon null : " + path);
     }
     return img;
   }
@@ -261,7 +263,7 @@ public class ImageUtil
     return null;
   }
 
-  private static BufferedImage getPhotoDefault() {
+  public static BufferedImage getPhotoDefault() {
     try {
       InputStream input = new ImageUtil().getClass().getResourceAsStream(DEFAULT_PHOTO_ID);
       return ImageIO.read(input);

@@ -1,5 +1,5 @@
 /*
- * @(#) TrainingAgreementIO.java Algem 2.15.0 18/09/17
+ * @(#) TrainingAgreementIO.java Algem 2.15.1 25/09/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -76,7 +76,7 @@ public class TrainingAgreementIO
   }
 
   public void update(TrainingAgreement t) throws SQLException {
-    String query = "UPDATE " + TABLE + " SET idorg=?,assurance=?,assuranceref=?,libelle=?,saison=?,debut=?,fin=?datesign=? WHERE id = ?";
+    String query = "UPDATE " + TABLE + " SET idorg=?,assurance=?,assuranceref=?,libelle=?,saison=?,debut=?,fin=?,datesign=? WHERE id = ?";
     try (PreparedStatement ps = dc.prepareStatement(query)) {
       ps.setInt(1, t.getOrg().getId());
       ps.setString(2, t.getInsurance());

@@ -1,5 +1,5 @@
 /*
- * @(#) PhotoHandler.java Algem 2.11.0 29/09/16
+ * @(#) PhotoHandler.java Algem 2.15.1 25/09/17
  *
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -27,7 +27,7 @@ import net.algem.util.model.DataException;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.0
+ * @version 2.15.1
  * @since 2.9.4.14 09/12/2015
  */
 public interface PhotoHandler {
@@ -50,6 +50,8 @@ public interface PhotoHandler {
    * @throws DataException if other exception was thrown
    */
   public BufferedImage saveFromBuffer(int idper, BufferedImage img) throws DataException;
+  
+  public void delete(int idper) throws DataException;
 
   /**
    * Import a set of files from source {@code dir}.

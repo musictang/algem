@@ -1,5 +1,5 @@
 /*
- * @(#) TrainingContractEditor.java Algem 2.15.0 18/09/17
+ * @(#) TrainingContractEditor.java Algem 2.15.1 25/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -64,7 +64,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.0
+ * @version 2.15.1
  * @since 2.15.0 30/08/2017
  */
 public class TrainingContractEditor
@@ -317,9 +317,9 @@ public class TrainingContractEditor
     props.put("__company_tel__", tels != null && tels.size() > 0 ? tels.get(0).getNumber() : "NC");
     List<Email> emails = comp.getContact().getEmail();
     props.put("__company_email__", emails != null && emails.size() > 0 ? emails.get(0).getEmail() : "NC");
-    props.put("__company_fpcode__", comp.getOrg().getFpCode());
-    props.put("__company_siret__", comp.getOrg().getSiret());
-    props.put("__company_ape__", comp.getOrg().getNafCode());
+    props.put("__company_fpcode__", comp.getOrg().getFpCode() == null ? "NC" : comp.getOrg().getFpCode());
+    props.put("__company_siret__", comp.getOrg().getSiret() == null ? "NC" : comp.getOrg().getSiret());
+    props.put("__company_ape__", comp.getOrg().getNafCode() == null ? "NC" : comp.getOrg().getNafCode());
     props.put("__company_city__", city);
     props.put("__company_stamp__", ImageUtil.getStampPath(comp));
     props.put("__training_title__", contract.getLabel());

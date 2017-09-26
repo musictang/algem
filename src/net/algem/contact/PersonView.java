@@ -1,5 +1,5 @@
 /*
- * @(#)PersonView.java	2.15.0 14/09/17
+ * @(#)PersonView.java	2.15.1 25/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -52,10 +52,11 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.0
+ * @version 2.15.1
  */
 public class PersonView
-  extends GemPanel {
+        extends GemPanel
+{
 
   private static final PhotoHandler PHOTO_HANDLER = new SimplePhotoHandler(DataCache.getDataConnection());
 
@@ -100,7 +101,8 @@ public class PersonView
 
     orgName = new GemField(true, 20);
     orgName.setMinimumSize(new Dimension(200, orgName.getPreferredSize().height));
-    orgName.addKeyListener(new KeyAdapter() {
+    orgName.addKeyListener(new KeyAdapter()
+    {
       @Override
       public void keyReleased(KeyEvent e) {
         if (person != null && person.getId() > 0) {
@@ -145,16 +147,26 @@ public class PersonView
     photoPanel.add(photoField);
     photoPanel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     photoPanel.setToolTipText(BundleUtil.getLabel("Photo.add.tip"));
-    photoPanel.addMouseListener(new MouseAdapter() {
+    photoPanel.addMouseListener(new MouseAdapter()
+    {
       @Override
       public void mouseClicked(MouseEvent m) {
-        savePhoto(Integer.parseInt(no.getText()));
+        if (SwingUtilities.isLeftMouseButton(m)) { // Left click(s)
+          if (m.isControlDown()) {
+            if (MessagePopup.confirm(PersonView.this, MessageUtil.getMessage("photo.delete.confirmation"))) {
+              deletePhoto(Integer.parseInt(no.getText()));
+            }
+          } else {
+            savePhoto(Integer.parseInt(no.getText()));
+          }
+        }
       }
     });
     JLabel btOrgDetails = new JLabel(ImageUtil.createImageIcon("document-properties-symbolic.png"));
     btOrgDetails.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     btOrgDetails.setToolTipText(BundleUtil.getLabel("Organization.details.tip"));
-    btOrgDetails.addMouseListener(new MouseAdapter() {
+    btOrgDetails.addMouseListener(new MouseAdapter()
+    {
       @Override
       public void mouseClicked(MouseEvent e) {
         if (!orgName.getText().isEmpty() && person.getOrganization().getId() > 0) {
@@ -249,11 +261,11 @@ public class PersonView
     }
     try {
       File file = FileUtil.getFile(
-        this,
-        BundleUtil.getLabel("FileChooser.selection"),
-        ConfigUtil.getConf(ConfigKey.PHOTOS_PATH.getKey()),
-        MessageUtil.getMessage("filechooser.image.filter.label"),
-        "jpg", "jpeg", "JPG", "JPEG", "png", "PNG");
+              this,
+              BundleUtil.getLabel("FileChooser.selection"),
+              ConfigUtil.getConf(ConfigKey.PHOTOS_PATH.getKey()),
+              MessageUtil.getMessage("filechooser.image.filter.label"),
+              "jpg", "jpeg", "JPG", "JPEG", "png", "PNG");
       if (file != null) {
         BufferedImage img = PHOTO_HANDLER.saveFromFile(idper, file);
         if (img != null) {
@@ -264,6 +276,18 @@ public class PersonView
       GemLogger.logException(ex);
     }
 
+  }
+
+  void deletePhoto(int idper) {
+    if (idper == 0) {
+      return;
+    }
+    try {
+      PHOTO_HANDLER.delete(idper);
+      photoField.setIcon(new ImageIcon(ImageUtil.getPhotoDefault()));
+    } catch (DataException ex) {
+      GemLogger.logException(ex);
+    }
   }
 
   /**
@@ -324,16 +348,14 @@ public class PersonView
     per.setImgRights(cbImgRights.isSelected());
     per.setPartnerInfo(cbPartner.isSelected());
 
-    if (per.getId() == 0  && !orgName.getText().isEmpty()) {
+    if (per.getId() == 0 && !orgName.getText().isEmpty()) {
       Organization o = new Organization(1);//TEMP id
       o.setName(orgName.getText().trim());
       per.setOrganization(o);
+    } else if (person.getOrganization() != null && person.getOrganization().getId() != per.getId() && orgName.getText().isEmpty()) {
+      per.setOrganization(null); // reset
     } else {
-      if (person.getOrganization() != null && person.getOrganization().getId() != per.getId() && orgName.getText().isEmpty()) {
-        per.setOrganization(null); // reset
-      } else {
-        per.setOrganization(person.getOrganization());
-      }
+      per.setOrganization(person.getOrganization());
     }
 
     return per;

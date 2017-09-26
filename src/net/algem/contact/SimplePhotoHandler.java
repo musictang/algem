@@ -1,7 +1,7 @@
 /*
- * @(#) SimplePhotoHandler.java Algem 2.11.0 29/09/16
+ * @(#) SimplePhotoHandler.java Algem 2.15.1 25/09/2017
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -49,11 +49,11 @@ import net.algem.util.ui.ProgressMonitorHandler;
  * Class charged to save and load the photos of the contacts.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.0
+ * @version 2.15.1
  * @since 2.9.4.14 09/12/2015
  */
 public class SimplePhotoHandler
-  implements PhotoHandler
+        implements PhotoHandler
 {
 
   /** Instance of DAO. */
@@ -97,20 +97,20 @@ public class SimplePhotoHandler
 
   /**
    * Extract id from file name.
-   * 
+   *
    * @param fileName file name with extension
    * @return -1 if the name doesn't last by digits
    */
   private int getIdFromFileName(String fileName) {
     try {
       String sub = fileName.substring(0, fileName.lastIndexOf('.'));
-      
+
       StringBuilder n = new StringBuilder();
-      for (int i = sub.length() -1; i >=0 ; i--) {
+      for (int i = sub.length() - 1; i >= 0; i--) {
         char c = sub.charAt(i);
         if (Character.isDigit(c)) {
           n.append(c);
-        } else  {
+        } else {
           break;
         }
       }
@@ -142,8 +142,8 @@ public class SimplePhotoHandler
     }
 
   }
-  
-   @Override
+
+  @Override
   public BufferedImage saveFromFile(int idper, File file) throws DataException {
     try {
       BufferedImage img = ImageIO.read(file);
@@ -156,6 +156,14 @@ public class SimplePhotoHandler
       throw new DataException(e.getMessage());
     }
 
+  }
+
+  public void delete(int idper) throws DataException {
+    try {
+      photoIO.delete(idper);
+    } catch (SQLException e) {
+      throw new DataException(e.getMessage());
+    }
   }
 
   /**
@@ -190,7 +198,8 @@ public class SimplePhotoHandler
    * Async task dedicated to the export of a set of photos.
    */
   class PhotoImportTask
-    extends SwingWorker<Integer, Void> {
+          extends SwingWorker<Integer, Void>
+  {
 
     /** Destination directory. */
     private final File dir;
@@ -218,7 +227,7 @@ public class SimplePhotoHandler
               buffered = format(buffered);
               byte[] data = getBytesFromImage(buffered);
               if (data != null) {
-                if (photoIO.save(id,data)) {
+                if (photoIO.save(id, data)) {
                   saved++;
                 }
               }
@@ -256,9 +265,10 @@ public class SimplePhotoHandler
    * Async task dedicated to the import of a set of photos.
    */
   class PhotoExportTask
-    extends SwingWorker<Integer, Void> {
+          extends SwingWorker<Integer, Void>
+  {
 
-    /** Source directory.*/
+    /** Source directory. */
     private final File dir;
 
     public PhotoExportTask(File dir) {

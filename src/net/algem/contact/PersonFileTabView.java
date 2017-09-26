@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileTabView.java  2.15.0 06/09/17
+ * @(#)PersonFileTabView.java  2.15.1 25/09/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes All Rights Reserved.
  *
@@ -31,8 +31,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -56,7 +54,6 @@ import net.algem.enrolment.EnrolmentEvent;
 import net.algem.enrolment.MemberEnrolmentEditor;
 import net.algem.enrolment.TrainingAgreementHistory;
 import net.algem.enrolment.TrainingContractHistory;
-import net.algem.enrolment.TrainingContractIO;
 import net.algem.enrolment.TrainingService;
 import net.algem.group.GemGroupService;
 import net.algem.group.Group;
@@ -76,7 +73,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.0
+ * @version 2.15.1
  */
 public class PersonFileTabView
         extends FileTabView
@@ -384,6 +381,12 @@ public class PersonFileTabView
 
   boolean hasEmployeeChanged() {
     return employeeEditor != null && employeeEditor.hasChanged();
+  }
+  
+  void deletePhoto() {
+    if (MessagePopup.confirm(this, MessageUtil.getMessage("photo.delete.confirmation"))) {
+    contactFileEditor.deletePhoto(dossier.getId());
+    }
   }
 
   void addMandates(final DirectDebitService ddService, final int payer) {

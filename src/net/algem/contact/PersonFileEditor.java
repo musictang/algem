@@ -77,8 +77,9 @@ import org.passay.PasswordValidator;
  * @version 2.15.0
  */
 public class PersonFileEditor
-  extends FileEditor
-  implements PersonFileListener, UIAdjustable {
+        extends FileEditor
+        implements PersonFileListener, UIAdjustable
+{
 
   private JMenuBar mBar;
   private JMenu mFile;
@@ -87,6 +88,7 @@ public class PersonFileEditor
   private JMenuItem miAbout;
   private JMenuItem miDoc;*/
   private JMenuItem miDelete;
+  private JMenuItem miDeletePhoto;
   private JMenuItem miLogin;
   private JMenuItem miMember, miTeacher, miBank, miEmployee;
   private JMenuItem miPassRehearsal, miRehearsal, miHistoPass;
@@ -240,8 +242,8 @@ public class PersonFileEditor
     Object src = evt.getSource();
     // On sauve au préalable l'éventuel nouveau contact avant d'executer les actions des menus.
     if (dossier.getId() <= 0
-      && !arg.equals(GemCommand.SAVE_CMD)
-      && !arg.equals(GemCommand.CLOSE_CMD)) {
+            && !arg.equals(GemCommand.SAVE_CMD)
+            && !arg.equals(GemCommand.CLOSE_CMD)) {
 
       updatePersonFile();
       String msg = dossier.hasErrors();
@@ -345,6 +347,8 @@ public class PersonFileEditor
       savePersonFile();
     } else if ("Contact.suppression".equals(arg)) {
       suppressPerson();
+    } else if ("Photo.suppression".equals(arg)) {
+      personFileView.deletePhoto();
     } else if ("Person.pass.scheduling".equals(arg)) {
       MemberRehearsalPassCtrl dlg = new MemberRehearsalPassCtrl(desktop, this, dossier);
       personFileView.addTab(dlg, BundleUtil.getLabel("Rehearsal.pass.label"));
@@ -438,8 +442,7 @@ public class PersonFileEditor
           }
         }
       }
-    } 
-    else if (CloseableTab.CLOSE_CMD.equals(arg)) {
+    } else if (CloseableTab.CLOSE_CMD.equals(arg)) {
       closeTab(src);
     } else if (src == miSaveUISettings) {
       storeUISettings();
@@ -615,9 +618,9 @@ public class PersonFileEditor
       dossier.setId(currentId);
       GemLogger.logException(e1.getMessage(), e1);
       JOptionPane.showMessageDialog(personFileView,
-        "identifiant = " + dossier.getId() + "<br>" + e1,
-        "Erreur mise à jour dossier :",
-        JOptionPane.ERROR_MESSAGE);
+              "identifiant = " + dossier.getId() + "<br>" + e1,
+              "Erreur mise à jour dossier :",
+              JOptionPane.ERROR_MESSAGE);
       return false;
     } catch (DDMandateException ex) {
       MessagePopup.warning(view, ex.getMessage());
@@ -713,7 +716,8 @@ public class PersonFileEditor
    */
   public void addMenuDossier(String _label, PersonFile _dossier) {
     PersonFileMenuItem m = new PersonFileMenuItem(_label, _dossier);
-    m.addActionListener(new ActionListener() {
+    m.addActionListener(new ActionListener()
+    {
 
       public void actionPerformed(ActionEvent evt) {
         PersonFile d = ((PersonFileMenuItem) evt.getSource()).getPersonFile();
@@ -731,7 +735,8 @@ public class PersonFileEditor
 
   private void addPayerFile(String _label, final PersonFile _dossier) {
     GemButton b = personFileView.addIcon("Member.payer");
-    b.addActionListener(new ActionListener() {
+    b.addActionListener(new ActionListener()
+    {
 
       @Override
       public void actionPerformed(ActionEvent evt) {
@@ -779,13 +784,16 @@ public class PersonFileEditor
     mBar = new JMenuBar();
     mFile = new JMenu(BundleUtil.getLabel("Menu.file.label"));
     miDelete = getMenuItem("Contact.suppression");
+    miDeletePhoto = getMenuItem("Photo.suppression");
+    miDeletePhoto.setToolTipText(BundleUtil.getLabel("Photo.suppression.tip"));
+    mFile.add(miDelete);
+    mFile.add(miDeletePhoto);
+
     mOptions = createJMenu("Menu.options");
 
     /*mHelp = new JMenu(BundleUtil.getLabel("Menu.help.label"));
     miAbout = new JMenuItem(BundleUtil.getLabel("About.label"));
     miDoc = new JMenuItem(BundleUtil.getLabel("Menu.doc.label"));*/
-    mFile.add(miDelete);
-
     mOptions.add(miMember = getMenuItem("Member.reading"));
     miMember.setToolTipText(BundleUtil.getLabel("Member.tab.tip"));
     mOptions.add(miTeacher = getMenuItem("Teacher"));
@@ -888,7 +896,7 @@ public class PersonFileEditor
         addPayerFile("Payeur", d);// ajout jm 2.0ma
       } else { //Attention aux cas où le payeur auquel est lié l'adhérent n'existe pas
         MessagePopup.information(personFileView,
-          MessageUtil.getMessage("not.existing.payer.link", dossier.getMember().getPayer()));
+                MessageUtil.getMessage("not.existing.payer.link", dossier.getMember().getPayer()));
         personFileView.setParent(dossier);
       }
     }
@@ -901,7 +909,8 @@ public class PersonFileEditor
     if (setMemberList() > 0) {
       //final GemButton b = personFileView.addLinkedMembersIcon();
       final GemButton b = personFileView.addIcon("Payer.members");
-      b.addActionListener(new ActionListener() {
+      b.addActionListener(new ActionListener()
+      {
 
         public void actionPerformed(ActionEvent evt) {
           ListCtrl list = PersonFileEditor.this.getMemberList();
@@ -1032,9 +1041,9 @@ public class PersonFileEditor
     } else {
       dossier.restoreOldValues(backup);
       JOptionPane.showMessageDialog(personFileView,
-        MessageUtil.getMessage("no.update.info"),
-        BundleUtil.getLabel("Warning.label"),
-        JOptionPane.INFORMATION_MESSAGE);
+              MessageUtil.getMessage("no.update.info"),
+              BundleUtil.getLabel("Warning.label"),
+              JOptionPane.INFORMATION_MESSAGE);
     }
   }
 
@@ -1150,9 +1159,9 @@ public class PersonFileEditor
       personFileView.activate(true, "Payer.debiting");
     } else if (HistoSubscriptionCard.class.getSimpleName().equals(classname)) {
       miHistoPass.setEnabled(true);
-    } else if(TrainingContractHistory.class.getSimpleName().equals(classname)) {
+    } else if (TrainingContractHistory.class.getSimpleName().equals(classname)) {
       miContracts.setEnabled(true);
-    } else if(TrainingAgreementHistory.class.getSimpleName().equals(classname)) {
+    } else if (TrainingAgreementHistory.class.getSimpleName().equals(classname)) {
       miAgreements.setEnabled(true);
     }
   }
