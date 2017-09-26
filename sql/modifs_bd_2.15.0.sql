@@ -3,7 +3,10 @@ CREATE TABLE pagemodel(
     mtype smallint PRIMARY KEY,
     page bytea
 );
+
 ALTER TABLE pagemodel OWNER TO nobody;
+COMMENT ON COLUMN pagemodel.mtype IS 'Type de modèle : 0 = modèle par défaut, 1 = devis/factures, 2 = contrat de formation, 3 = convention de stage';
+COMMENT ON COLUMN pagemodel.page IS 'Document pdf';
 
 CREATE TABLE societe(
     id integer PRIMARY KEY,
@@ -20,7 +23,14 @@ CREATE TABLE societe(
     constraint societe_single_row CHECK(id = 1)
 );
 ALTER TABLE societe OWNER TO nobody;
-COMMENT ON COLUMN personne.ptype IS '1 = personne physique, 4 = salle, 5 = etablissement, 6 = agence bancaire';
+COMMENT ON COLUMN societe.idper IS 'Numéro de contact';
+COMMENT ON COLUMN societe.guid IS 'Identification globale';
+COMMENT ON COLUMN societe.domaine IS 'Nom de domaine';
+COMMENT ON COLUMN societe.logo IS 'Logo de la société';
+COMMENT ON COLUMN societe.stamp IS 'Image de tampon/signature';
+
+COMMENT ON COLUMN personne.ptype IS '1 = personne physique ou organisme, 4 = salle, 5 = etablissement, 6 = agence bancaire';
+
 
 CREATE TABLE organisation(
     idper integer PRIMARY KEY REFERENCES personne(id) ON DELETE CASCADE,
@@ -33,6 +43,14 @@ CREATE TABLE organisation(
     codetva varchar(16)
 );
 ALTER TABLE organisation OWNER TO nobody;
+COMMENT ON COLUMN organisation.idper IS 'Identifiant fiche contact';
+COMMENT ON COLUMN organisation.referent IS 'Identifiant référent';
+COMMENT ON COLUMN organisation.nom IS 'Nom organisme';
+COMMENT ON COLUMN organisation.raison IS 'Raison sociale';
+COMMENT ON COLUMN organisation.siret IS 'Numéro siret';
+COMMENT ON COLUMN organisation.naf IS 'Code NAF (APE)';
+COMMENT ON COLUMN organisation.codefp IS 'Code formation professionnelle';
+COMMENT ON COLUMN organisation.codetva IS 'Identifiant TVA intra-communautaire';
 
 DROP FUNCTION IF EXISTS setup_organisation();
 CREATE FUNCTION setup_organisation() RETURNS void AS $$
@@ -152,7 +170,7 @@ CREATE TABLE conventionstage (
     datesign date
 );
 ALTER TABLE conventionstage OWNER TO nobody;
-COMMENT ON COLUMN conventionstage.ctype IS 'Type de contrat : 0 = non défini, 1 = bipartite, 2 = tripartite';
+COMMENT ON COLUMN conventionstage.ctype IS 'Type de convention : 0 = non défini, 1 = bipartite, 2 = tripartite';
 COMMENT ON COLUMN conventionstage.libelle IS 'Nom de la formation';
 COMMENT ON COLUMN conventionstage.assurance IS 'Nom assurance responsabilité civile';
 COMMENT ON COLUMN conventionstage.assuranceref IS 'Référence du contrat d''assurance';
@@ -166,5 +184,3 @@ UPDATE eleve SET archive = archiv;
 ALTER TABLE eleve DROP COLUMN archiv;
 
 DROP FUNCTION IF EXISTS setup_organisation();
-
-

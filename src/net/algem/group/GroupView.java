@@ -1,5 +1,5 @@
 /*
- * @(#)GroupView.java	2.15.0 30/07/2017
+ * @(#)GroupView.java	2.15.0 20/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -58,8 +58,6 @@ public class GroupView
 
   private static Dimension btDimension = new Dimension(100, 20);
   private static final Contact nullContact = new Contact();
-
-//  private static final String PARENT_DIR = "groupes/";
 
    /** Default bio dir name. */
   private static final String BIO_DIR = "bio";
@@ -155,10 +153,13 @@ public class GroupView
 
     GemPanel buttons = new GemPanel(new GridLayout(1,3));
     bioBt = new GemButton(BundleUtil.getLabel("Bio.label"));
+    bioBt.setIcon(ImageUtil.createImageIcon("groupe_trans_24x24.png"));
     bioBt.addActionListener(groupFileListener);
     dataSheetBt = new GemButton(BundleUtil.getLabel("Datasheet.label"));
+    dataSheetBt.setIcon(ImageUtil.createImageIcon("fiche_tech_trans_24x24.png"));
     dataSheetBt.addActionListener(groupFileListener);
     stagePlanBt = new GemButton(BundleUtil.getLabel("Stage.plan.label"));
+    stagePlanBt.setIcon(ImageUtil.createImageIcon("scene_trans_24x24.png"));
     stagePlanBt.addActionListener(groupFileListener);
 
     buttons.add(bioBt);
