@@ -1,5 +1,5 @@
 /*
- * @(#)PersonIO.java 2.15.0 14/09/17
+ * @(#)PersonIO.java 2.15.2 27/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -43,7 +43,7 @@ import static java.lang.String.format;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.0
+ * @version 2.15.2
  */
 public class PersonIO
   extends TableIO
@@ -58,7 +58,7 @@ public class PersonIO
   public static final String PRE_QUERY = "SELECT DISTINCT " + COLUMNS + " FROM " + VIEW + " p ";
 
   /** Next column number in joined queries. */
-  public static final int PERSON_COLUMNS_OFFSET = 12;
+  public static final int COLUMNS_OFFSET = 12;
   private static final String FIND_BY_ID_QUERY = PRE_QUERY + "WHERE p.id = ? LIMIT 1";
 
   private DataConnection dc;

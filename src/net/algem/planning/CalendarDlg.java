@@ -1,7 +1,7 @@
 /*
- * @(#)CalendarDlg.java	2.9.6 16/03/16
+ * @(#)CalendarDlg.java	2.15.2 27/09/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -30,7 +30,6 @@ import java.util.Date;
 import javax.swing.JDialog;
 import net.algem.util.GemCommand;
 import net.algem.util.ui.GemButton;
-import net.algem.util.ui.GemLabel;
 import net.algem.util.ui.GemPanel;
 import net.algem.util.ui.PopupDlg;
 
@@ -39,14 +38,13 @@ import net.algem.util.ui.PopupDlg;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.6
+ * @version 2.15.2
  */
 public class CalendarDlg
   implements ActionListener {
 
   private Frame parent;
   private JDialog dlg;
-  private GemLabel title;
   private boolean validation;
   private GemButton btCancel;
   private GemButton btValidate;
@@ -66,8 +64,9 @@ public class CalendarDlg
 
     GemPanel buttons = new GemPanel();
     buttons.setLayout(new GridLayout(1, 2));
-    buttons.add(btCancel);
+
     buttons.add(btValidate);
+    buttons.add(btCancel);
 
     dlg = new JDialog(parent, true);
     dlg.add(calView, BorderLayout.CENTER);
@@ -75,6 +74,7 @@ public class CalendarDlg
 
     dlg.setLocation(c.getLocation());
     dlg.setTitle(t);
+
     dlg.pack();
   }
 
@@ -82,7 +82,7 @@ public class CalendarDlg
     calView.setDate(d);
   }
 
-  public void saisie() {
+  public void open() {
     dlg.setVisible(true);
   }
 
@@ -96,15 +96,20 @@ public class CalendarDlg
 
   @Override
   public void actionPerformed(ActionEvent evt) {
-    if (evt.getActionCommand().equals("click")) {
+    String cmd = evt.getActionCommand();
+    if ("click".equals(cmd)) {
       validation = true;
-    } else if (evt.getActionCommand().equals(GemCommand.VALIDATE_CMD)) {
+    } else if (GemCommand.VALIDATE_CMD.equals(cmd)) {
       validation = true;
-    } else if (evt.getActionCommand().equals("date")) {
+    } else if ("date".equals(cmd)) {
       return;
     } else {
       validation = false;
     }
+    close();
+  }
+
+  private void close() {
     dlg.setVisible(false);
     //dlg.dispose();
   }

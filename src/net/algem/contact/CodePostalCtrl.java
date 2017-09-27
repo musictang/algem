@@ -1,7 +1,7 @@
 /*
- * @(#)CodePostalCtrl.java	2.15.0 13/09/17
+ * @(#)CodePostalCtrl.java	2.15.2 27/09/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -50,7 +50,7 @@ import net.algem.util.ui.PopupDlg;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.0
+ * @version 2.15.2
  */
 public class CodePostalCtrl
         extends KeyAdapter
@@ -70,11 +70,6 @@ public class CodePostalCtrl
     city = _city;
     zipCode = _zip;
   }
-
-  /*@Override
-  public Object clone() {
-    return new CodePostalCtrl(dc);
-  }*/
 
   public void findCity(GemField cdp) {
     List<City> v = CityIO.findCity(cdp.getText(), dc);
@@ -125,7 +120,7 @@ public class CodePostalCtrl
 
     private CityTableModel model;
     private JTable table;
-    private GemButton btOk, btCancel;
+    private GemButton btClose;
     private Frame parent;
     private City city;
 
@@ -153,12 +148,10 @@ public class CodePostalCtrl
       GemPanel buttons = new GemPanel(new GridLayout(1, 2));
       JScrollPane scroll = new JScrollPane(table);
       add(scroll, BorderLayout.CENTER);
-      btOk = new GemButton(GemCommand.OK_CMD);
-      btOk.addActionListener(this);
-      btCancel = new GemButton(GemCommand.CANCEL_CMD);
-      btCancel.addActionListener(this);
-      buttons.add(btOk);
-      buttons.add(btCancel);
+      btClose = new GemButton(GemCommand.CLOSE_CMD);
+      btClose.addActionListener(this);
+
+      buttons.add(btClose);
       add(buttons, BorderLayout.SOUTH);
       setSize(GemModule.XS_SIZE);
       setLocationRelativeTo(parent);
@@ -185,12 +178,12 @@ public class CodePostalCtrl
 
     @Override
     public void actionPerformed(ActionEvent e) {
-      Object src = e.getSource();
+      /*Object src = e.getSource();
       if (src == btOk) {
         setCity();
       } else {
         city = null;
-      }
+      }*/
       setVisible(false);
     }
   }

@@ -1,7 +1,7 @@
 /*
- * @(#)AtelierInstrumentsDialog.java 2.9.2 02/02/15
+ * @(#)AtelierInstrumentsDialog.java 2.15.2 27/09/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -30,16 +30,15 @@ import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.awt.*;
 import java.awt.event.*;
-import java.sql.SQLException;
 import java.util.List;
 import net.algem.util.GemCommand;
 import net.algem.util.ui.GemPanel;
 
 /**
- * 
+ *
  * @author <a href="mailto:alexandre.delattre.biz@gmail.com">Alexd</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.15.2
  * @since 2.9.2
  */
 public class AtelierInstrumentsDialog
@@ -57,7 +56,7 @@ public class AtelierInstrumentsDialog
     contentPane.add(scroll, BorderLayout.CENTER);
     contentPane.setPreferredSize(new Dimension(300, 200));
     GemPanel buttonPanel = new GemPanel(new GridLayout(1, 2));
-    buttonOK = new JButton(GemCommand.OK_CMD);
+    buttonOK = new JButton(GemCommand.VALIDATE_CMD);
     buttonPanel.add(buttonOK);
     buttonCancel = new JButton(GemCommand.CANCEL_CMD);
     buttonPanel.add(buttonCancel);

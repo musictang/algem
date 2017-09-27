@@ -1,7 +1,7 @@
 /*
- * @(#)Group.java	2.9.4.13 05/11/15
- * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * @(#)Group.java	2.15.2 27/09/17
+ *
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,10 +16,11 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.group;
 
+import java.util.List;
 import java.util.Vector;
 import net.algem.config.MusicStyle;
 import net.algem.contact.Contact;
@@ -43,32 +44,32 @@ public class Group
   static final byte REFERENT = 1;
   static final byte MANAGER = 2;
   static final byte TOURNEUR = 3;
-  
+
   private static final long serialVersionUID = -4359556012446341963L;
-  
+
   private int id;
-  
+
   /** Group name. */
   private String name;
-  
+
   /** Person in charge id. */
   private int idref;
-  
+
   /** Manager id. */
   private int idman;
-  
+
   /** Booker id. */
   private int idbook;
-  
+
   private Contact referent;
   private Contact manager;
   private Contact booker; // tourneur
-  
+
   private Note note;
-  
+
   private Vector<WebSite> sites;
   private MusicStyle style;
-  private Vector<Musician> musicians;
+  private List<Musician> musicians;
 
   public Group() {
   }
@@ -86,7 +87,7 @@ public class Group
   }
 
   /**
-   * 
+   *
    * @param i group id
    * @param n name
    * @param st style
@@ -198,7 +199,7 @@ public class Group
     this.idman = man;
     this.idbook = tour;
   }
-  
+
   public void setContact(Contact ref, Contact man, Contact tour) {
     this.referent = ref;
     this.manager = man;
@@ -233,11 +234,11 @@ public class Group
     this.sites = sites;
   }
 
-  public void setMusicians(Vector<Musician> musiciens) {
-    this.musicians = musiciens;
+  public void setMusicians(List<Musician> musicians) {
+    this.musicians = musicians;
   }
 
-  public Vector<Musician> getMusicians() {
+  public List<Musician> getMusicians() {
     return musicians;
   }
 
@@ -249,5 +250,5 @@ public class Group
     }
     return null;
   }
-  
+
 }

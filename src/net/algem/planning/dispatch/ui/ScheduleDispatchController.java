@@ -68,15 +68,15 @@ public class ScheduleDispatchController implements SubscriptionPatternDialog.OnS
             table1.setModel(dataModel);
         } catch (Exception e) {
             throw new RuntimeException(e);
-        } 
-        
+        }
+
         okButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 saveScheduleDispatch();
             }
         });
-        
+
         btCancel.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -157,14 +157,14 @@ public class ScheduleDispatchController implements SubscriptionPatternDialog.OnS
         table1 = new JTable();
         scrollPane.setViewportView(table1);
         okButton = new JButton();
-        okButton.setText(GemCommand.OK_CMD);
+        okButton.setText(GemCommand.VALIDATE_CMD);
         gbc = new GridBagConstraints();
         gbc.gridx = 5;
         gbc.gridy = 2;
         gbc.anchor = GridBagConstraints.EAST;
         gbc.insets = new Insets(0, 0, 8, 8);
         panel.add(okButton, gbc);
-        
+
         btCancel = new JButton();
         btCancel.setText(GemCommand.CANCEL_CMD);
         gbc = new GridBagConstraints();

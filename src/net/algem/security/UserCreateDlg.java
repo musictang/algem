@@ -1,7 +1,7 @@
 /*
- * @(#)UserCreateDlg.java	2.13.1 12/04/17
+ * @(#)UserCreateDlg.java	2.15.2 27/09/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -40,7 +40,7 @@ import org.passay.Rule;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.13.1
+ * @version 2.15.2
  */
 public class UserCreateDlg
         implements ActionListener
@@ -58,7 +58,7 @@ public class UserCreateDlg
 
     dlg = new JDialog(PopupDlg.getTopFrame(c), true);
 
-    btValidation = new GemButton(GemCommand.OK_CMD);
+    btValidation = new GemButton(GemCommand.VALIDATE_CMD);
     btValidation.addActionListener(this);
 
     userView = new UserView(person, validator, btValidation);
@@ -116,7 +116,7 @@ public class UserCreateDlg
 
   @Override
   public void actionPerformed(ActionEvent evt) {
-    if (evt.getActionCommand().equals(GemCommand.OK_CMD)) {
+    if (evt.getActionCommand().equals(GemCommand.VALIDATE_CMD)) {
       validation = isEntryValid();
     } else {
       validation = false;

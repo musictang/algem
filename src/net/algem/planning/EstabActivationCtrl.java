@@ -1,7 +1,7 @@
 /*
- * @(#) EstabActivationCtrl.java Algem 2.11.0 27/09/2016
+ * @(#) EstabActivationCtrl.java Algem 2.15.2 27/09/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -42,32 +42,31 @@ import net.algem.util.module.GemDesktop;
 import net.algem.util.module.GemModule;
 import net.algem.util.ui.GemButton;
 import net.algem.util.ui.JTableModel;
-import net.algem.util.ui.Toast;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.0
+ * @version 2.15.2
  * @since 2.11.0 27/09/2016
  */
-public class EstabActivationCtrl 
+public class EstabActivationCtrl
         extends JDialog
-        
+
 {
 
   private JTable table;
   private JTableModel model;
   private GemDesktop desktop;
   private boolean changed;
-  
+
   public EstabActivationCtrl(GemDesktop desktop, boolean modal) {
     super(desktop.getFrame(), BundleUtil.getLabel("Menu.establishment.label"), modal);
     this.desktop = desktop;
   }
-  
+
   public void initUI() {
     model = new EstabTableModel();
-    
+
     table = new JTable(model);
     table.addMouseListener(new MouseAdapter() {
       @Override
@@ -78,8 +77,8 @@ public class EstabActivationCtrl
 
     load();
     JScrollPane js = new JScrollPane(table);
-    
-    GemButton btOk = new GemButton(GemCommand.OK_CMD);
+
+    GemButton btOk = new GemButton(GemCommand.CLOSE_CMD);
     btOk.addActionListener(new ActionListener()
     {
       @Override
@@ -91,7 +90,7 @@ public class EstabActivationCtrl
     setLayout(new BorderLayout());
     add(js,BorderLayout.CENTER);
     add(btOk,BorderLayout.SOUTH);
-    
+
     setSize(new Dimension(GemModule.XS_SIZE));
     pack();
     setLocationRelativeTo(desktop.getFrame());
@@ -101,11 +100,11 @@ public class EstabActivationCtrl
   public boolean hasChanged() {
     return changed;
   }
-  
+
   private void load() {
     try {
       List<Establishment> v = EstablishmentIO.find(" AND e.idper = " + desktop.getDataCache().getUser().getId() + " ORDER BY p.nom", DataCache.getDataConnection());
-      
+
       for (Establishment e : v) {
         model.addItem(e);
       }
@@ -113,7 +112,7 @@ public class EstabActivationCtrl
       GemLogger.log(ex.getMessage());
     }
   }
-  
+
   private void updateStatus() {
     Establishment et = (Establishment) model.getItem(table.convertRowIndexToModel(table.getSelectedRow()));
     if (et != null) {

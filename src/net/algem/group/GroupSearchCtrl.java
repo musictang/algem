@@ -1,7 +1,7 @@
 /*
- * @(#)GroupSearchCtrl.java	2.8.w 08/07/14
+ * @(#)GroupSearchCtrl.java	2.15.2 27/09/17
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -23,7 +23,7 @@ package net.algem.group;
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
-import java.util.Vector;
+import java.util.List;
 import net.algem.config.MusicStyleIO;
 import net.algem.contact.Person;
 import net.algem.contact.WebSiteIO;
@@ -35,7 +35,6 @@ import net.algem.util.event.GemEvent;
 import net.algem.util.event.GemEventListener;
 import net.algem.util.model.TableIO;
 import net.algem.util.module.GemDesktop;
-import net.algem.util.module.GemModule;
 import net.algem.util.ui.SearchCtrl;
 
 /**
@@ -43,7 +42,7 @@ import net.algem.util.ui.SearchCtrl;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.15.2
  * @since 1.0a 07/07/1999
  */
 public class GroupSearchCtrl
@@ -60,7 +59,6 @@ public class GroupSearchCtrl
     desktop = _desktop;
     desktop.addGemEventListener(this);
     service = new GemGroupService(dc);
-
   }
 
   @Override
@@ -100,11 +98,11 @@ public class GroupSearchCtrl
     }
     query += " ORDER BY nom";
     try {
-      Vector<Group> v = service.find(query);
+      List<Group> v = service.find(query);
       if (v.isEmpty()) {
         setStatus(EMPTY_LIST);
       } else if (v.size() == 1) {
-        loadGroupFileEditor(v.elementAt(0));
+        loadGroupFileEditor(v.get(0));
       } else {
         setStatus(MessageUtil.getMessage("search.list.status", v.size()));
         ((CardLayout) wCard.getLayout()).show(wCard, "liste");

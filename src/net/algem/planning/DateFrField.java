@@ -1,5 +1,5 @@
 /*
- * @(#)DateFrField.java	2.14.0 20/06/17
+ * @(#)DateFrField.java	2.15.2 27/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -34,12 +34,11 @@ import net.algem.util.BundleUtil;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.14.0
+ * @version 2.15.2
  * @since 1.0a 02/09/2001
  */
 public class DateFrField extends JTextField
-        implements KeyListener
-{
+  implements KeyListener {
 
   private int pos;
   private DateDocument dateDocument;
@@ -107,8 +106,8 @@ public class DateFrField extends JTextField
   public void keyReleased(KeyEvent ke) {
     char c = ke.getKeyChar();
     if (c == 'M' || c == 'm'
-            || c == 'J' || c == 'j'
-            || c == 'A' || c == 'a') {
+      || c == 'J' || c == 'j'
+      || c == 'A' || c == 'a') {
       fireActionPerformed();
     }
   }
@@ -117,15 +116,15 @@ public class DateFrField extends JTextField
   public void keyPressed(KeyEvent ke) {
     if (ke.isActionKey() && ke.getKeyCode() == KeyEvent.VK_F1) // 112)
     {
-      CalendarDlg calendrierdlg = new CalendarDlg(this, BundleUtil.getLabel("Calendar.label"));
+      CalendarDlg calDlg = new CalendarDlg(this, BundleUtil.getLabel("Calendar.label"));
       String s = getText();
       DateFr datefr = new DateFr(s);
       if (!s.equals(DateFr.NULLDATE)) {
-        calendrierdlg.setDate(datefr.getDate());
+        calDlg.setDate(datefr.getDate());
       }
-      calendrierdlg.saisie();
-      if (calendrierdlg.isValidate()) {
-        DateFr datefr1 = new DateFr(calendrierdlg.getDate());
+      calDlg.open();
+      if (calDlg.isValidate()) {
+        DateFr datefr1 = new DateFr(calDlg.getDate());
         dateDocument.setDate(datefr1.toString());
         fireActionPerformed();
       }

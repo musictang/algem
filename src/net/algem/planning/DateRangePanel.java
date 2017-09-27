@@ -301,7 +301,7 @@ public class DateRangePanel
     }
     if (evt.getSource() == cal1) {
       dlg.setDate(start.getDate());
-      dlg.saisie();
+      dlg.open();
       if (dlg.isValidate()) {
         if (mode == RANGE_DATE) {
           validDate1(dlg.getDate());
@@ -311,7 +311,7 @@ public class DateRangePanel
       }
     } else if (evt.getSource() == cal2) {
       dlg.setDate(end.getDate());
-      dlg.saisie();
+      dlg.open();
       if (dlg.isValidate()) {
         if (mode == RANGE_DATE) {
           validDate2(dlg.getDate());

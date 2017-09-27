@@ -1,5 +1,5 @@
 /*
- * @(#)Person.java	2.15.0 14/09/17
+ * @(#)Person.java	2.15.2 27/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -32,7 +32,7 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.0
+ * @version 2.15.2
  *
  * @since 1.0a 07/07/1999
  */
@@ -287,7 +287,7 @@ public class Person
 
   @Override
   public int compareTo(Person o) {
-    return getFirstnameName().compareToIgnoreCase(o.getFirstnameName());
+    return toString().compareToIgnoreCase(o.toString());
   }
 
 

@@ -1,7 +1,7 @@
 /*
- * @(#)GroupFileView.java 2.9.4.6 02/06/15
- * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * @(#)GroupFileView.java 2.15.2 27/09/17
+ *
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,14 +16,14 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.group;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionListener;
-import java.util.Vector;
+import java.util.List;
 import net.algem.util.BundleUtil;
 import net.algem.util.module.DefaultGemView;
 import net.algem.util.module.GemDesktop;
@@ -36,7 +36,7 @@ import net.algem.util.ui.TabPanel;
  * View is divided in 4 tabs (group, musicians, history, schedule payment).
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.6
+ * @version 2.15.2
  */
 public class GroupFileView
         extends DefaultGemView
@@ -62,7 +62,7 @@ public class GroupFileView
     this.group = group;
   }
 
-  public void init(Vector<Musician> vm) {
+  public void init(List<Musician> vm) {
 
     setLayout(new BorderLayout());
 
@@ -81,20 +81,20 @@ public class GroupFileView
 
     setSize(GemModule.XXL_SIZE);
   }
-  
+
   @Override
   public void addActionListener(ActionListener listener) {
     this.listener = listener;
   }
-  
+
   void addTab(FileTab tab, String label) {
     tabPanel.addItem(tab, label);
-    
+
     tabPanel.setSelectedComponent(tab);
     tabPanel.addCloseButton(tabPanel.getSelectedIndex(),listener);
-    
+
   }
-  
+
    /**
    * Gets the component which type is {@code clazz}.
    * @param <T>
@@ -109,7 +109,7 @@ public class GroupFileView
     }
     return null;
   }
-  
+
   /**
    * Removes the tab which type is {@code clazz}.
    * @param <T>
@@ -122,9 +122,9 @@ public class GroupFileView
         tabPanel.remove(c);
         break;
       }
-    }   
+    }
   }
-  
+
   @Override
   public void setSelectedTab(int index) {
     tabPanel.setSelectedIndex(index);
@@ -143,9 +143,9 @@ public class GroupFileView
    *
    * @return a list of musicians or null
    */
-  public Vector<Musician> getMusicians() {
+  public List<Musician> getMusicians() {
     if (musiciansEditor.hasChanged()) {
-      Vector<Musician> lm = musiciansEditor.getMusicians();
+      List<Musician> lm = musiciansEditor.getMusicians();
       musiciansEditor.load();
       return lm;
     }
@@ -155,6 +155,6 @@ public class GroupFileView
   @Override
   public void close() {
     groupEditor.dispose();
-    dispose();  
+    dispose();
   }
 }

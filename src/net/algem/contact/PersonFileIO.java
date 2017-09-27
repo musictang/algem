@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileIO.java  2.15.0 30/07/2017
+ * @(#)PersonFileIO.java  2.15.2 27/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes All Rights Reserved.
  *
@@ -49,7 +49,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.0
+ * @version 2.15.2
  */
 public class PersonFileIO
         extends TableIO
@@ -239,7 +239,7 @@ public class PersonFileIO
       ResultSet rs = dc.executeQuery(query);
       while (rs.next()) {
         Person p = PersonIO.getFromRS(rs);
-        Member m = memberIO.getFromRS(rs, PersonIO.PERSON_COLUMNS_OFFSET);
+        Member m = memberIO.getFromRS(rs, PersonIO.COLUMNS_OFFSET);
 //        m.setInstruments(InstrumentIO.find(m.getId(), InstrumentIO.MEMBER, dc));
         PersonFile dossier = new PersonFile(new Contact(p));
         dossier.setMember(m);
@@ -298,7 +298,7 @@ String query = PersonIO.PRE_QUERY;
       ResultSet rs = dc.executeQuery(query);
       while (rs.next()) {
         Person p = PersonIO.getFromRS(rs);
-        Member m = memberIO.getFromRS(rs, PersonIO.PERSON_COLUMNS_OFFSET);
+        Member m = memberIO.getFromRS(rs, PersonIO.COLUMNS_OFFSET);
         PersonFile d = new PersonFile(new Contact(p));
         d.setMember(m);
 

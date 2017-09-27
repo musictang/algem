@@ -1,5 +1,5 @@
 /*
- * @(#)GroupView.java	2.15.0 20/09/17
+ * @(#)GroupView.java	2.15.2 27/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -47,7 +47,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.0
+ * @version 2.15.2
  * @since 1.1aa mardi 24 février 2009
  *
  */
@@ -118,7 +118,7 @@ public class GroupView
     noteLabel.setFont(noteLabel.getFont().deriveFont(Font.BOLD));
 
     cbStyle = new GemParamChoice(desktop.getDataCache().getList(Model.MusicStyle));
-    cbStyle.setBackground(Color.WHITE);
+    //cbStyle.setBackground(Color.WHITE);
     //cbStyle.setRenderer(new AlignedListCellRenderer(SwingConstants.RIGHT));
     initButtons();
     initFields();

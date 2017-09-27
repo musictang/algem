@@ -1,7 +1,7 @@
 /*
- * @(#)MusicianTableModel.java	2.9.2 26/01/15
+ * @(#)MusicianTableModel.java	2.15.2 27/09/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,7 +28,7 @@ import net.algem.util.ui.JTableModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2
+ * @version 2.15.2
  */
 public class MusicianTableModel
         extends JTableModel<Musician>
@@ -68,7 +68,7 @@ public class MusicianTableModel
 
   @Override
   public boolean isCellEditable(int row, int column) {
-    return column > 0;
+    return false;
   }
 
   @Override

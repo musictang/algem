@@ -1,7 +1,7 @@
 /*
- * @(#)FollowUpDlg.java	2.11.0 20/09/16
+ * @(#)FollowUpDlg.java	2.15.2 27/09/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -38,7 +38,7 @@ import net.algem.util.ui.GemPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.11.0
+ * @version 2.15.2
  */
 public class FollowUpDlg
         implements ActionListener
@@ -53,10 +53,10 @@ public class FollowUpDlg
   public FollowUpDlg(GemDesktop desktop, ScheduleRangeObject range, String courseName, boolean collective) {
     String title = BundleUtil.getLabel("Follow.up.label") + " " + range.getMember();
     dlg = new JDialog(desktop.getFrame(), title, true);
-    
+
     pv = new FollowUpView(courseName, range.getDate(), range.getStart(), range.getEnd());
     pv.set(range, collective);
-    btOk = new GemButton(GemCommand.OK_CMD);
+    btOk = new GemButton(GemCommand.VALIDATE_CMD);
     btOk.setEnabled(!collective);
     btOk.addActionListener(this);
     btCancel = new GemButton(GemCommand.CANCEL_CMD);
@@ -64,9 +64,10 @@ public class FollowUpDlg
 
     GemPanel btPanel = new GemPanel();
     btPanel.setLayout(new GridLayout(1, 2));
-    btPanel.add(btCancel);
+
     btPanel.add(btOk);
-  
+    btPanel.add(btCancel);
+
     dlg.add(pv, BorderLayout.CENTER);
     dlg.add(btPanel, BorderLayout.SOUTH);
     dlg.setSize(400, 200);
@@ -77,7 +78,7 @@ public class FollowUpDlg
   public FollowUp getFollowUp() {
     return pv.get();
   }
-  
+
   public void clear() {
     pv.clear();
   }

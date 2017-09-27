@@ -1,7 +1,7 @@
 /*
- * @(#)ScheduleDetailCtrl.java 2.13.1 12/04/17
+ * @(#)ScheduleDetailCtrl.java 2.15.2 27/09/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -69,7 +69,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.13.1
+ * @version 2.15.2
  * @since 1.0a 07/07/1999
  */
 public class ScheduleDetailCtrl
@@ -515,13 +515,13 @@ public class ScheduleDetailCtrl
   /**
    * Adds as many buttons as members of a group or workshop.
    */
-  private void loadMusicianList(Vector<Musician> v) {
+  private void loadMusicianList(List<Musician> v) {
     if (v == null) {
       return;
     }
     Collections.sort(v, personComparator);
     for (int i = 0; i < v.size(); i++) {
-      listPanel.add(getMemberButton(v.elementAt(i)));
+      listPanel.add(getMemberButton(v.get(i)));
     }
   }
 
@@ -642,7 +642,7 @@ public class ScheduleDetailCtrl
           new MessageDialog(frame, BundleUtil.getLabel("Information.label"), false, info, message);
         }
       } else if ("MailingGroup".equals(arg)) {
-        Vector<Musician> mus = null;
+        List<Musician> mus = null;
         mus = groupService.getMusicians(schedule.getIdPerson());
         if (mus != null && mus.size() > 0) {
           String message = "";

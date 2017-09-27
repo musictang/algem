@@ -1,5 +1,5 @@
 /*
- * @(#)ConflictListDlg.java	2.12.0 01/03/17
+ * @(#)ConflictListDlg.java	2.15.2 27/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -34,10 +34,10 @@ import net.algem.util.ui.PopupDlg;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.12.0
+ * @version 2.15.2
  */
 public class ConflictListDlg
-        implements ActionListener
+
 {
 
   private JDialog dlg;
@@ -63,8 +63,13 @@ public class ConflictListDlg
 
   public ConflictListDlg(Component c, String t, boolean modal, PlanningService service) {
     this.dlg = new JDialog(PopupDlg.getTopFrame(c), modal);
-    btClose = new GemButton(GemCommand.OK_CMD);
-    btClose.addActionListener(this);
+    btClose = new GemButton(GemCommand.CLOSE_CMD);
+    btClose.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent evt) {
+        dlg.setVisible(false);
+      }
+    });
 
     listView = new ConflictListView(new ConflictTableModel(service) {
       @Override
@@ -93,12 +98,4 @@ public class ConflictListDlg
     listView.addConflict(p);
   }
 
-
-  @Override
-  public void actionPerformed(ActionEvent evt) {
-    if (evt.getActionCommand().equals(GemCommand.OK_CMD)) {
-      dlg.setVisible(false);
-      //dlg.dispose();
-    }
-  }
 }

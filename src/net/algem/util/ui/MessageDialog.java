@@ -1,7 +1,7 @@
 /*
- * @(#)MessageDialog.java	2.8.k 26/07/13
- * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * @(#)MessageDialog.java	2.15.2 27/09/17
+ *
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.util.ui;
 
@@ -26,11 +26,11 @@ import java.awt.event.ActionListener;
 import javax.swing.*;
 import net.algem.util.GemCommand;
 
-/** 
+/**
  * Displays messages in a non modal frame.
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.k
+ * @version 2.15.2
  */
 public class MessageDialog
         extends JDialog
@@ -47,38 +47,38 @@ public class MessageDialog
 
   public MessageDialog(Frame parent, String title, boolean modal, String label, String infos) {
     super(parent, title, modal);
-    
+
     this.label = label;
     this.infos = infos;
-    
+
     initView();
-    
+
     Point p = parent.getLocationOnScreen();
     p.setLocation(p.getX() + 100D, p.getY());
     setLocation(p);
-    
+
     pack();
     setVisible(true);
   }
 
   public MessageDialog(Dialog owner, String title, boolean modal, String label, String infos) {
     super(owner, title, modal);
-    
+
     this.label = label;
     this.infos = infos;
-    
+
     initView();
-    
+
     Point p = owner.getLocationOnScreen();
     p.setLocation(p.getX() + 100D, p.getY());
     setLocation(p);
-    
+
     pack();
     setVisible(true);
   }
-  
+
   private void initView() {
-    
+
     mainPanel = new JPanel(new BorderLayout());
     mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
@@ -95,10 +95,13 @@ public class MessageDialog
     infoPanel.add(jtxt, BorderLayout.WEST);
     mainPanel.add(libellePanel, BorderLayout.NORTH);
     mainPanel.add(infoPanel, BorderLayout.CENTER);
-    mainPanel.add(okButton, BorderLayout.SOUTH);
-    
+
+    JPanel ap = new JPanel();
+    ap.add(okButton);
+    mainPanel.add(ap, BorderLayout.SOUTH);
+
     add(mainPanel);
-    
+
   }
 
   @Override

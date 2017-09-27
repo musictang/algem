@@ -1,7 +1,7 @@
 /*
- * @(#)ModifPlanDlg.java 2.8.y.1 08/10/14
- * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * @(#)ModifPlanDlg.java 2.15.2 27/09/17
+ *
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning.editing;
 
@@ -32,7 +32,7 @@ import net.algem.util.ui.GemPanel;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.y.1
+ * @version 2.15.2
  * @since 2.2.e 20/10/11
  */
 public abstract class ModifPlanDlg
@@ -51,14 +51,14 @@ public abstract class ModifPlanDlg
     buttons = new GemPanel();
     buttons.setLayout(new GridLayout(1, 2));
 
-    btValid = new GemButton(GemCommand.OK_CMD);
+    btValid = new GemButton(GemCommand.VALIDATE_CMD);
     btValid.addActionListener(this);
     btCancel = new GemButton(GemCommand.CANCEL_CMD);
     btCancel.addActionListener(this);
 
     buttons.add(btValid);
     buttons.add(btCancel);
-    
+
   }
 
   protected void addContent(Component c, String key) {
@@ -84,7 +84,7 @@ public abstract class ModifPlanDlg
 
   @Override
   public void actionPerformed(ActionEvent evt) {
-    if (evt.getActionCommand().equals(GemCommand.OK_CMD)) {
+    if (evt.getActionCommand().equals(GemCommand.VALIDATE_CMD)) {
       if (!isEntryValid()) {
         return;
       }

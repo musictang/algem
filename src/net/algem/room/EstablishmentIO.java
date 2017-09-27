@@ -1,5 +1,5 @@
 /*
- * @(#)EstablishmentIO.java	2.15.0 30/07/2017
+ * @(#)EstablishmentIO.java	2.15.2 27/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -39,7 +39,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.0
+ * @version 2.15.2
  */
 public class EstablishmentIO
   extends TableIO {
@@ -67,7 +67,7 @@ public class EstablishmentIO
     ResultSet rs = dc.executeQuery(query);
     while (rs.next()) {
       Establishment e = new Establishment(PersonIO.getFromRS(rs));
-      e.setActive(rs.getBoolean(10));
+      e.setActive(rs.getBoolean(PersonIO.COLUMNS_OFFSET));
       e.setAddress(AddressIO.findId(e.getId(), dc));
       e.setTele(TeleIO.findId(e.getId(), dc));
       e.setEmail(EmailIO.find(e.getId(), dc));

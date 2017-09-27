@@ -1,7 +1,7 @@
 /*
- * @(#)MailUtil.java	2.10.0 12/06/16
+ * @(#)MailUtil.java	2.15.2 27/09/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -25,6 +25,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Vector;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
@@ -43,7 +44,7 @@ import net.algem.util.model.Model;
  * Utility class for sending emails.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.15.2
  * @since 2.8.k 26/07/13
  */
 public class MailUtil {
@@ -154,7 +155,7 @@ public class MailUtil {
    * @param mus the list of musicians (members)
    * @return a mailto-string
    */
-  public String mailToGroupMembers(Vector<Musician> mus) {
+  public String mailToGroupMembers(List<Musician> mus) {
     String message = "";
     StringBuilder bcc = new StringBuilder();
 
@@ -174,7 +175,7 @@ public class MailUtil {
     return message;
   }
 
-  public String mailToGroupMembers(Vector<Musician> mus, int action) throws SQLException {
+  public String mailToGroupMembers(List<Musician> mus, int action) throws SQLException {
     String message = "";
     StringBuilder bcc = new StringBuilder();
 

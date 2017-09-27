@@ -1,6 +1,6 @@
 /*
  * @(#)JTableModel.java	2.11.0 23/09/16
- * 
+ *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.util.ui;
 
@@ -24,7 +24,7 @@ import java.util.Vector;
 import javax.swing.table.AbstractTableModel;
 
 /**
- * 
+ *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.11.0

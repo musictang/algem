@@ -1,7 +1,7 @@
 /*
- * @(#)CommonFollowUpDlg.java	2.11.0 21/09/16
- * 
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * @(#)CommonFollowUpDlg.java	2.15.2 27/09/17
+ *
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning;
 
@@ -43,7 +43,7 @@ import net.algem.util.ui.GemPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.11.0
+ * @version 2.15.2
  * @since 2.9.4.12 17/09/15
  */
 public class CommonFollowUpDlg
@@ -62,9 +62,9 @@ public class CommonFollowUpDlg
   private boolean onlyCollective;
 
   public CommonFollowUpDlg(GemDesktop desktop, PlanningService service, ScheduleObject plan, String courseTitle, boolean collective)
-          throws SQLException 
+          throws SQLException
   {
-    
+
     dc = desktop.getDataCache();
     this.service = service;
     this.scheduleObject = plan;
@@ -75,15 +75,16 @@ public class CommonFollowUpDlg
 
     pv.set(scheduleObject.getFollowUp(), collective);
 
-    btValid = new GemButton(GemCommand.OK_CMD);
+    btValid = new GemButton(GemCommand.VALIDATE_CMD);
     btValid.addActionListener(this);
     btCancel = new GemButton(GemCommand.CANCEL_CMD);
     btCancel.addActionListener(this);
 
     GemPanel btPanel = new GemPanel();
     btPanel.setLayout(new GridLayout(1, 2));
-    btPanel.add(btCancel);
+
     btPanel.add(btValid);
+    btPanel.add(btCancel);
 
     dlg.getContentPane().add(pv, BorderLayout.CENTER);
     dlg.getContentPane().add(btPanel, BorderLayout.SOUTH);
@@ -92,7 +93,7 @@ public class CommonFollowUpDlg
     pt.translate(200, 200);
     dlg.setLocation(pt);
   }
-  
+
   public FollowUp getFollowUp() {
     return pv.get();
   }
@@ -115,7 +116,7 @@ public class CommonFollowUpDlg
 
   @Override
   public void actionPerformed(ActionEvent evt) {
-    if (evt.getActionCommand().equals(GemCommand.OK_CMD)) {
+    if (evt.getActionCommand().equals(GemCommand.VALIDATE_CMD)) {
       try {
         if (scheduleObject.getNote() == 0) {
           if (onlyCollective) {

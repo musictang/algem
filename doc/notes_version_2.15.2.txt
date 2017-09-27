@@ -1,0 +1,12 @@
+2.15.2
+
+CORRECTIFS
+- L'activation/désactivation d'un établissement ne fonctionnait plus correctement.
+- L'affichage de la date de fin des cours arrêtés n'était pas correct dans l'onglet Inscriptions d'un élève. Il correspondait à la date de la dernière séance, même si celle-ci était postérieure à la date d'arrêt.
+Rappel : la date de fin d'une ligne de cours correspond par défaut à la date de la dernière séance programmée (antérieure à la date d'arrêt).
+
+FICHE GROUPE
+La liste des musiciens est maintenant classée dans l'ordre alphabétique (par nom ou prénom suivant l'ordre défini dans les préférences générales).
+
+INTERFACE
+Harmonisation des libellés et des emplacements des boutons d'action dans les fenêtres de dialogue.

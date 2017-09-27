@@ -1,7 +1,7 @@
 /*
- * @(#)CalendarView.java	2.6.a 19/09/12
- * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * @(#)CalendarView.java	2.15.2 27/09/17
+ *
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning;
 
@@ -38,12 +38,11 @@ import net.algem.util.ui.GemPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.15.2
  */
 public class CalendarView
-        extends GemPanel
-        implements ActionListener
-{
+  extends GemPanel
+  implements ActionListener {
 
   private GemField dateField;
   private Calendar cal;
@@ -65,12 +64,23 @@ public class CalendarView
 
     holiday = new boolean[31];
     busy = new boolean[31];
+    /*FocusListener focusL = new FocusAdapter() {
+      @Override
+      public void focusGained(FocusEvent e) {
+        getRootPane().setDefaultButton((JButton) e.getComponent());
+      }
+    };*/
 
     btNextYear = new GemButton(">>>");
+    //btNextYear.addFocusListener(focusL);
     btNextMonth = new GemButton(">>");
+    //btNextMonth.addFocusListener(focusL);
     btPrevMonth = new GemButton("<<");
+    //btPrevMonth.addFocusListener(focusL);
     btPrevYear = new GemButton("<<<");
+    //btPrevYear.addFocusListener(focusL);
     today = new GemButton(BundleUtil.getLabel("Action.today.label"));
+    //today.addFocusListener(focusL);
 
     btNextYear.addActionListener(this);
     btNextMonth.addActionListener(this);
@@ -89,6 +99,11 @@ public class CalendarView
     this.setLayout(new BorderLayout());
     add(cv, BorderLayout.CENTER);
     add(buttons, BorderLayout.SOUTH);
+
+  }
+
+  void setDefaultButton() {
+    today.requestFocusInWindow();
   }
 
   public void removeActionListener(ActionListener l) {

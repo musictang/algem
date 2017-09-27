@@ -1,6 +1,6 @@
 /*
- * @(#)MusicianListView.java	2.11.6 27/02/17
- * 
+ * @(#)MusicianListView.java	2.15.2 27/09/17
+ *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.group;
 
@@ -26,6 +26,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Vector;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -42,7 +43,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.6
+ * @version 2.15.2
  * @since 1.0a 18/02/2004
  */
 public class MusicianListView
@@ -139,7 +140,7 @@ public class MusicianListView
   public void actionPerformed(ActionEvent e) {
     String cmd = e.getActionCommand();
     if (GemCommand.MAIL_CMD.equals(cmd)) {
-      Vector<Musician> vm = musicians.getData();
+      List<Musician> vm = musicians.getData();
       MailUtil mailUtil = new MailUtil(dataCache);
       String message = mailUtil.mailToGroupMembers(vm);
       if (message.length() > 0) {
@@ -177,7 +178,7 @@ public class MusicianListView
         return;
       }
       musicians.modItem(n, m);
-    } 
+    }
 
   }
 
@@ -186,9 +187,9 @@ public class MusicianListView
     if (row < 0) {
       return -1;
     }
-    return table.convertRowIndexToModel(row); 
+    return table.convertRowIndexToModel(row);
   }
-  
+
   public int getId() {
     return id;
   }

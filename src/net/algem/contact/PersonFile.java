@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFile.java 2.15.0 30/07/2017
+ * @(#)PersonFile.java 2.15.2 27/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -21,7 +21,7 @@
 package net.algem.contact;
 
 import java.util.Collection;
-import java.util.Vector;
+import java.util.List;
 import javax.swing.event.EventListenerList;
 import net.algem.bank.BankUtil;
 import net.algem.bank.Rib;
@@ -36,7 +36,7 @@ import net.algem.util.model.GemModel;
  * Person management.
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.0
+ * @version 2.15.2
  * @since 1.0a 12/08/2009
  */
 public class PersonFile
@@ -266,7 +266,7 @@ public class PersonFile
     oldRib = getRib();
   }
 
-  public void setGroups(Vector<Group> groups) {
+  public void setGroups(List<Group> groups) {
     this.groups = groups;
   }
 

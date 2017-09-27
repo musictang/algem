@@ -1,7 +1,7 @@
 /*
- * @(#)GroupFileEditor.java 2.11.3 30/11/16
+ * @(#)GroupFileEditor.java 2.15.2 27/09/17
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -23,6 +23,7 @@ package net.algem.group;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Vector;
 import javax.swing.*;
 import net.algem.accounting.GroupOrderLineEditor;
@@ -46,7 +47,7 @@ import net.algem.util.ui.*;
 /**
  * Group file main editor.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.3
+ * @version 2.15.2
  */
 public class GroupFileEditor
         extends GemModule
@@ -54,7 +55,7 @@ public class GroupFileEditor
 
   private static final String GROUP_DOSSIER_KEY = "ModuleGroupe";
   private Group group, oldGroup;
-  private Vector<Musician> musicians;
+  private List<Musician> musicians;
   private GroupFileView groupFileTabView;
   private GroupPassCreateCtrl passCreateCtrl;
   private GroupRehearsalCreateCtrl rehearsalCtrl;
@@ -120,7 +121,7 @@ public class GroupFileEditor
       oldGroup = group;
       view = groupFileTabView = new GroupFileView(desktop, service, group);
       view.addActionListener(this);
-      Vector<Musician> vm = service.getMusicians(group);
+      List<Musician> vm = service.getMusicians(group);
       oldGroup.setMusicians(vm);
       groupFileTabView.init(vm);
     } catch(NoteException ne) {

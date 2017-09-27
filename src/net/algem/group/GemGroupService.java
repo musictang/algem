@@ -1,5 +1,5 @@
 /*
- * @(#)GemGroupService.java	2.12.0 08/03/17
+ * @(#)GemGroupService.java	2.15.2 27/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -41,14 +41,14 @@ import net.algem.util.model.Model;
 
 /**
  * Service class for group operations.
+ *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.12.0
+ * @version 2.15.2
  * @since 2.4.a 10/05/12
  */
 public class GemGroupService
-  implements DocService, GroupService
-{
+  implements DocService, GroupService {
 
   public static final int BOOKING_CANCEL_DELAY = 72; // default cancel delay if config is not set
   private DataConnection dc;
@@ -91,32 +91,34 @@ public class GemGroupService
   }
 
   @Override
-  public void update(int g, Vector<Musician> vm, Vector<Musician> om) throws GroupException {
+  public void update(final int g, final List<Musician> vm, final List<Musician> om) throws GroupException {
     try {
-      dc.setAutoCommit(false);
-      dc.executeUpdate("DELETE FROM " + GroupIO.TABLE_DETAIL + " WHERE id = " + g);
-      if (om != null) {
-        for (Musician m : om) {
-          InstrumentIO.delete(m.getId(), Instrument.MUSICIAN, dc);
+      dc.withTransaction(new DataConnection.SQLRunnable<Void>() {
+        @Override
+        public Void run(DataConnection conn) throws Exception {
+          dc.executeUpdate("DELETE FROM " + GroupIO.TABLE_DETAIL + " WHERE id = " + g);
+          if (om != null) {
+            for (Musician m : om) {
+              InstrumentIO.delete(m.getId(), Instrument.MUSICIAN, dc);
+            }
+          }
+          if (vm != null) {
+            for (Musician m : vm) {
+              create(g, m);
+            }
+          }
+          return null;
         }
-      }
-      if (vm != null) {
-        for (Musician m : vm) {
-          create(g, m);
-        }
-      }
-      dc.commit();
-    } catch (SQLException ex) {
-      dc.rollback();
+      });
+
+    } catch (Exception ex) {
       GemLogger.log(getClass().getName() + "#update " + ex.getMessage());
       throw new GroupException(ex.getMessage());
-    } finally {
-      dc.setAutoCommit(true);
     }
   }
 
   @Override
-  public void delete(Group g) throws GroupException {
+  public void delete(final Group g) throws GroupException {
     String where = " WHERE idper = " + g.getId() + " AND ptype = " + Schedule.GROUP;
 
     try {
@@ -128,29 +130,32 @@ public class GemGroupService
       throw new GroupException(e.getMessage());
     }
     try {
-      dc.setAutoCommit(false);
-      groupIO.delete(g);
-      // instruments suppression
-      if (g.getMusicians() != null) {
-        for (Musician m : g.getMusicians()) {
-          InstrumentIO.delete(m.getId(), Instrument.MUSICIAN, dc);
+      dc.withTransaction(new DataConnection.SQLRunnable<Void>() {
+        @Override
+        public Void run(DataConnection conn) throws Exception {
+          groupIO.delete(g);
+          // instruments suppression
+          if (g.getMusicians() != null) {
+            for (Musician m : g.getMusicians()) {
+              InstrumentIO.delete(m.getId(), Instrument.MUSICIAN, dc);
+            }
+          }
+          // group detail suppression
+          String query = "DELETE FROM " + GroupIO.TABLE_DETAIL + " WHERE id = " + g.getId();
+          dc.executeUpdate(query);
+          return null;
         }
-      }
-      // group detail suppression
-      String query = "DELETE FROM " + GroupIO.TABLE_DETAIL + " WHERE id = " + g.getId();
-      dc.executeUpdate(query);
-      dc.commit();
-    } catch (SQLException se) {
-      dc.rollback();
+      });
+
+    } catch (Exception se) {
+      GemLogger.log(getClass().getName() + "#update " + se.getMessage());
       throw new GroupException(se.getMessage());
-    } finally {
-      dc.setAutoCommit(true);
     }
 
   }
 
   @Override
-  public Vector<Group> findAll(String order) throws SQLException {
+  public List<Group> findAll(String order) throws SQLException {
     return groupIO.find(order);
   }
 
@@ -160,7 +165,7 @@ public class GemGroupService
   }
 
   @Override
-  public Vector<Group> find(String where) throws SQLException {
+  public List<Group> find(String where) throws SQLException {
     return groupIO.find(where);
   }
 
@@ -181,17 +186,17 @@ public class GemGroupService
   }
 
   @Override
-  public Vector<Musician> getMusicians(Group g) throws SQLException {
+  public List<Musician> getMusicians(Group g) throws SQLException {
     return groupIO.findMusicians(g);
   }
 
   @Override
-  public Vector<Musician> getMusicians(int idper) throws SQLException {
+  public List<Musician> getMusicians(int idper) throws SQLException {
     return groupIO.findMusicians(idper);
   }
 
   @Override
-  public Vector<Group> getGroups(int idper) throws SQLException {
+  public List<Group> getGroups(int idper) throws SQLException {
     return groupIO.find(idper);
   }
 
@@ -214,10 +219,11 @@ public class GemGroupService
 
   /**
    * Gets the payment schedules of the group {@literal g}.
+   *
    * @param g group instance
    * @return a list of order lines
    */
-  Vector<OrderLine> getSchedulePayment(Group g)  {
+  Vector<OrderLine> getSchedulePayment(Group g) {
     int membershipAccount = 0;
     StringBuilder where = new StringBuilder("WHERE (groupe > 0 AND groupe = ");
     where.append(g.getId()).append(')');
@@ -234,7 +240,7 @@ public class GemGroupService
       for (Musician m : lm) {
         where.append(m.getId()).append(",");
       }
-      where.deleteCharAt(where.length()-1);
+      where.deleteCharAt(where.length() - 1);
       where.append(") AND compte = ").append(membershipAccount);
       where.append(")");
     }
@@ -244,10 +250,11 @@ public class GemGroupService
 
   /**
    * Gets the payment schedules of the persons in the group {@literal g}.
+   *
    * @param g group instance
    * @return a list of order lines
    */
-  Vector<OrderLine> getMemberSchedulePayment(Group g)  {
+  Vector<OrderLine> getMemberSchedulePayment(Group g) {
     List<Musician> lm = g.getMusicians();
     if (lm == null) {
       return new Vector<OrderLine>();
@@ -256,18 +263,19 @@ public class GemGroupService
     for (Musician m : lm) {
       where.append(m.getId()).append(",");
     }
-    where.deleteCharAt(where.length()-1);
+    where.deleteCharAt(where.length() - 1);
     where.append(")");
     return OrderLineIO.find(where.toString(), dc);
   }
 
   /**
    * Changes the group number of the order lines with the selected {@literal oids}.
+   *
    * @param oids the list of lines to change
    * @param g group number
    * @throws SQLException
    */
-  public void updateOrderLine(int oids [], int g) throws SQLException {
+  public void updateOrderLine(int oids[], int g) throws SQLException {
     OrderLineIO.setGroup(oids, g, dc);
   }
 
@@ -427,7 +435,7 @@ public class GemGroupService
    */
   private int getNumberOfMusicians(Group g) {
     int nm = 1;// nombre de musiciens
-    Vector<Musician> vm = null;
+    List<Musician> vm = null;
     try {
       vm = groupIO.findMusicians(g);
     } catch (SQLException ex) {

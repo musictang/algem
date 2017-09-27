@@ -1,7 +1,7 @@
 /*
- * @(#)BreakSuppressionDlg.java 2.6.a 21/09/12
- * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * @(#)BreakSuppressionDlg.java 2.15.2 27/09/17
+ *
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning.editing;
 
@@ -36,9 +36,9 @@ import net.algem.util.ui.*;
 
 /**
  * Break suppression dialog.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.6.a
+ * @version 2.15.2
  * @since 2.2.d 07/10/11
  */
 public class BreakSuppressionDlg
@@ -92,7 +92,7 @@ public class BreakSuppressionDlg
     cmdPanel.add(btCancel);
 
     add(cmdPanel, BorderLayout.SOUTH);
-    pack();
+    setSize(380,150);
     setLocationRelativeTo(owner);
     setVisible(true);
   }

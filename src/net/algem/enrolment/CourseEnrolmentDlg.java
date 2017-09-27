@@ -1,7 +1,7 @@
 /*
- * @(#)CourseEnrolmentDlg.java	2.10.0 15/06/2016
+ * @(#)CourseEnrolmentDlg.java	2.15.2 27/09/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -62,7 +62,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.15.2
  * @since 1.0a 07/07/1999
  */
 public class CourseEnrolmentDlg
@@ -271,12 +271,12 @@ public class CourseEnrolmentDlg
     if (GemCommand.NEXT_CMD.equals(cmd)) {// affichage de la page 2
       if (courseList.getKey() >= 0) {
         ((CardLayout) bgPanel.getLayout()).show(bgPanel, "page2");
-        btNext.setText(GemCommand.OK_CMD);
+        btNext.setText(GemCommand.VALIDATE_CMD);
       }
     } else if (GemCommand.PREVIOUS_CMD.equals(cmd)) {
       ((CardLayout) bgPanel.getLayout()).show(bgPanel, "page1");
       btNext.setText(GemCommand.NEXT_CMD);
-    } else if (GemCommand.OK_CMD.equals(cmd)) {
+    } else if (GemCommand.VALIDATE_CMD.equals(cmd)) {
       if (!isEntryValid()) {
         return;
       }

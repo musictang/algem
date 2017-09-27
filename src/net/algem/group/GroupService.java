@@ -1,7 +1,7 @@
 /*
- * @(#)GroupService.java	2.8.p 08/11/13
+ * @(#)GroupService.java	2.15.2 27/09/17
  *
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -22,12 +22,12 @@
 package net.algem.group;
 
 import java.sql.SQLException;
-import java.util.Vector;
+import java.util.List;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.p
+ * @version 2.15.2
  * @since 2.8.p 08/11/13
  */
 public interface GroupService {
@@ -40,18 +40,18 @@ public interface GroupService {
 
   Group find(int id) throws SQLException;
 
-  Vector<Group> find(String where) throws SQLException;
+  List<Group> find(String where) throws SQLException;
 
-  Vector<Group> findAll(String order) throws SQLException;
+  List<Group> findAll(String order) throws SQLException;
 
-  Vector<Group> getGroups(int idper) throws SQLException;
+  List<Group> getGroups(int idper) throws SQLException;
 
-  Vector<Musician> getMusicians(Group g) throws SQLException;
+  List<Musician> getMusicians(Group g) throws SQLException;
 
-  Vector<Musician> getMusicians(int idper) throws SQLException;
+  List<Musician> getMusicians(int idper) throws SQLException;
 
   void update(Group old, Group g) throws SQLException;
 
-  void update(int g, Vector<Musician> vm, Vector<Musician> om) throws GroupException;
+  void update(int g, List<Musician> vm, List<Musician> om) throws GroupException;
 
 }

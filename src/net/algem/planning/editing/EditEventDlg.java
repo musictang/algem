@@ -1,7 +1,7 @@
 /*
- * @(#)EditEventDlg.java 2.11.3 25/11/16
+ * @(#)EditEventDlg.java 2.15.2 27/09/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -67,7 +67,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.3
+ * @version 2.15.2
  * @since 2.9.4.0 31/03/2015
  */
 public class EditEventDlg
@@ -135,6 +135,7 @@ public class EditEventDlg
     eList.setToolTipText(MessageUtil.getMessage("attendee.list.tip"));
 
     eList.addMouseListener(new MouseAdapter() {
+      @Override
       public void mouseClicked(MouseEvent e) {
         if (SwingUtilities.isRightMouseButton(e)) {
           eList.setSelectedIndex(eList.locationToIndex(e.getPoint()));
@@ -142,6 +143,7 @@ public class EditEventDlg
           JPopupMenu menu = new JPopupMenu();
           JMenuItem itemRemove = new JMenuItem(GemCommand.DELETE_CMD);
           itemRemove.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
               removeAttendee();
             }
@@ -164,7 +166,7 @@ public class EditEventDlg
     buttons.setLayout(new GridLayout(1, 3));
 
 
-    GemButton btValid = new GemButton(GemCommand.OK_CMD);
+    GemButton btValid = new GemButton(GemCommand.VALIDATE_CMD);
     btValid.addActionListener(this);
     GemButton btCancel = new GemButton(GemCommand.CANCEL_CMD);
     btCancel.addActionListener(this);
@@ -200,7 +202,7 @@ public class EditEventDlg
     int minTime = 15;
     HourRange oldTimeRange = new HourRange(range.getStart(), range.getEnd());
     try {
-      if (GemCommand.OK_CMD.equals(cmd)) {
+      if (GemCommand.VALIDATE_CMD.equals(cmd)) {
         if (logErrors() == null || logErrors().isEmpty()) {
           if (timePanel.getStart().getLength(timePanel.getEnd()) > minTime
             || MessagePopup.confirm(this, MessageUtil.getMessage("invalid.range.length.confirmation"))) {

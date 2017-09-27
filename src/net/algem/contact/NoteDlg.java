@@ -1,7 +1,7 @@
 /*
- * @(#)NoteDlg.java	2.8.w 08/07/14
- * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * @(#)NoteDlg.java	2.15.2 27/09/17
+ *
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.contact;
 
@@ -26,6 +26,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JDialog;
 import javax.swing.JScrollPane;
 import javax.swing.text.DefaultCaret;
+import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.DataConnection;
 import net.algem.util.GemCommand;
@@ -38,7 +39,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.w
+ * @version 2.15.2
  */
 public class NoteDlg
         implements ActionListener
@@ -57,14 +58,14 @@ public class NoteDlg
   protected GemButton btValidation;
   protected GemButton btCancel;
   protected ActionListener listener;
-  
+
   public NoteDlg(Frame f) {
-    dlg = new JDialog(f, true);
-    setDisplay();   
+    dlg = new JDialog(f, BundleUtil.getLabel("Note.label"),true);
+    setDisplay();
   }
-  
+
   private void setDisplay() {
-    btValidation = new GemButton(GemCommand.OK_CMD);
+    btValidation = new GemButton(GemCommand.VALIDATE_CMD);
     btValidation.addActionListener(this);
     btCancel = new GemButton(GemCommand.CANCEL_CMD);
     btCancel.addActionListener(this);
@@ -87,7 +88,7 @@ public class NoteDlg
 
     JScrollPane jspane = new JScrollPane(text, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     body.add(jspane, BorderLayout.CENTER);
-    
+
     Container c = dlg.getContentPane();
     c.setLayout(new BorderLayout());
     c.add(title, BorderLayout.NORTH);
@@ -97,7 +98,7 @@ public class NoteDlg
     dlg.pack();
     dlg.setLocation(100, 100);
   }
-  
+
   public NoteDlg(Component c, DataConnection dc) {
     this.dc = dc;
     Frame parent = PopupDlg.getTopFrame(c);
@@ -118,7 +119,7 @@ public class NoteDlg
   }
 
   public void loadNote(Note n, Person p) {
-    
+
     if (p != null) {
       this.idper = p.getId();
       this.ptype = p.getType();
@@ -135,8 +136,8 @@ public class NoteDlg
   public boolean save() {
     try {
       String s = text.getText().trim();
-      if (note == null) {       
-        //pas d'insertion si text null          
+      if (note == null) {
+        //pas d'insertion si text null
         if (idper > 0 && s.length() > 0) {
           note = new Note(idper, text.getText(), ptype);
           NoteIO.insert(note, dc);
@@ -166,14 +167,14 @@ public class NoteDlg
 
   @Override
   public void actionPerformed(ActionEvent evt) {
-    if (evt.getActionCommand().equals(GemCommand.OK_CMD)) {
+    if (evt.getActionCommand().equals(GemCommand.VALIDATE_CMD)) {
       if (!save()) {
         return;
       }
     }
     dlg.setVisible(false);
   }
-  
+
   @Override
   public String toString() {
     return getClass().getSimpleName();

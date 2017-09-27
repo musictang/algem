@@ -1,7 +1,7 @@
 /*
- * @(#)MultiBranchDlg.java	2.9.4.3 23/04/15
- * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * @(#)MultiBranchDlg.java	2.15.2 27/09/17
+ *
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.bank;
 
@@ -38,7 +38,7 @@ import net.algem.util.ui.PopupDlg;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.3
+ * @version 2.15.2
  */
 public class MultiBranchDlg
         implements ActionListener
@@ -61,7 +61,7 @@ public class MultiBranchDlg
 
     gv = new MultiBranchView(bankCode, branchCode);
 
-    btValidation = new GemButton(GemCommand.OK_CMD);
+    btValidation = new GemButton(GemCommand.VALIDATE_CMD);
     btValidation.addActionListener(this);
     btCreation = new GemButton(GemCommand.CREATE_CMD);
     btCreation.addActionListener(this);
@@ -115,7 +115,7 @@ public class MultiBranchDlg
 
   @Override
   public void actionPerformed(ActionEvent evt) {
-    if (evt.getActionCommand().equals(GemCommand.OK_CMD)) {
+    if (evt.getActionCommand().equals(GemCommand.VALIDATE_CMD)) {
       if (!isValidEntry()) {
         return;
       }

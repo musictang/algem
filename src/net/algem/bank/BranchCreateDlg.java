@@ -1,7 +1,7 @@
 /*
- * @(#)BranchCreateDlg.java	2.13.0 31/03/17
- * 
- * Copyright (c) 1999-2013 Musiques Tangentes. All Rights Reserved.
+ * @(#)BranchCreateDlg.java	2.15.2 27/09/17
+ *
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.bank;
 
@@ -39,7 +39,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.13.0
+ * @version 2.15.2
  */
 public class BranchCreateDlg
         implements ActionListener
@@ -64,7 +64,7 @@ public class BranchCreateDlg
     branchView.setPostalCodeCtrl(new CodePostalCtrl(this.dc));
     branchView.setBankCodeCtrl(new BankCodeCtrl(this.dc, bankBranchIO));
 
-    btValidation = new GemButton(GemCommand.OK_CMD);
+    btValidation = new GemButton(GemCommand.VALIDATE_CMD);
     btValidation.addActionListener(this);
     btCancel = new GemButton(GemCommand.CANCEL_CMD);
     btCancel.addActionListener(this);
@@ -139,7 +139,7 @@ public class BranchCreateDlg
 
   @Override
   public void actionPerformed(ActionEvent evt) {
-    if (evt.getActionCommand().equals(GemCommand.OK_CMD)) {
+    if (evt.getActionCommand().equals(GemCommand.VALIDATE_CMD)) {
       if (!validate()) {
         return;
       }

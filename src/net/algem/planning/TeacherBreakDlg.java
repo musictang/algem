@@ -1,7 +1,7 @@
 /*
- * @(#)TeacherBreakDlg.java 2.9.4.13 03/11/15
- * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * @(#)TeacherBreakDlg.java 2.15.2 27/09/17
+ *
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning;
 
@@ -26,12 +26,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JDialog;
 import net.algem.planning.editing.ModifPlanEvent;
+import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.GemCommand;
 import net.algem.util.MessageUtil;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.GemButton;
-import net.algem.util.ui.GemLabel;
 import net.algem.util.ui.GemPanel;
 import net.algem.util.ui.MessagePopup;
 
@@ -40,7 +40,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.15.2
  * @since 1.0a 08/10/2001
  */
 public class TeacherBreakDlg
@@ -59,17 +59,14 @@ public class TeacherBreakDlg
 
   public <T extends Schedule> TeacherBreakDlg(GemDesktop desktop,  int idper) {
     this.desktop = desktop;
-		
+
     dataCache = desktop.getDataCache();
     service = new PlanningService(DataCache.getDataConnection());
     teacher = idper;
-    dlg = new JDialog(desktop.getFrame(), true);
-
-    GemLabel title = new GemLabel("Pause prof");
-
+    dlg = new JDialog(desktop.getFrame(), BundleUtil.getLabel("Teacher.break.tip"), true);
     pv = new TeacherBreakView(dataCache, service, teacher);
-    
-    btValid = new GemButton(GemCommand.OK_CMD);
+
+    btValid = new GemButton(GemCommand.VALIDATE_CMD);
     btValid.addActionListener(this);
     btCancel = new GemButton(GemCommand.CANCEL_CMD);
     btCancel.addActionListener(this);
@@ -79,13 +76,12 @@ public class TeacherBreakDlg
     buttonPanel.add(btValid);
     buttonPanel.add(btCancel);
 
-    dlg.getContentPane().add(title, BorderLayout.NORTH);
     dlg.getContentPane().add(pv, BorderLayout.CENTER);
     dlg.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
     dlg.pack();
     dlg.setLocation(100, 100);
   }
-  
+
   public <T extends Schedule> TeacherBreakDlg(GemDesktop desktop,  T plan) {
     this(desktop, plan.getIdPerson());
     set(plan);
@@ -125,7 +121,7 @@ public class TeacherBreakDlg
   @Override
   public void actionPerformed(ActionEvent evt) {
     String cmd = evt.getActionCommand();
-    if (GemCommand.OK_CMD.equals(cmd)) {
+    if (GemCommand.VALIDATE_CMD.equals(cmd)) {
       validation = isEntryValid();
     } else if (GemCommand.CANCEL_CMD.equals(cmd)) {
       validation = false;
@@ -149,7 +145,7 @@ public class TeacherBreakDlg
       MessagePopup.warning(pv, ex.getMessage());
     }
   }
-  
+
   /**
    * Gets an error message.
    * @return a string
