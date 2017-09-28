@@ -1,7 +1,7 @@
 /*
- * @(#)MemberEnrolmentEditor.java 2.11.0 20/09/16
+ * @(#)MemberEnrolmentEditor.java 2.15.2 26/09/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -76,7 +76,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.0
+ * @version 2.15.2
  * @since 1.0b 06/09/2001
  */
 public class MemberEnrolmentEditor
@@ -297,7 +297,8 @@ public class MemberEnrolmentEditor
             int jj = service.getCourseDayMember(cc.getAction(), cc.getDateStart(), i.getMember());
             //auto update of end date
             DateFr last = new DateFr(service.getLastSchedule(dossier.getId(), cc.getId()));
-            if (!DateFr.NULLDATE.equals(last.toString()) && !last.equals(cc.getDateEnd())) {
+            // do not update if end date before last date (end date may be changed when course order is stopped by the end of year)
+            if (!DateFr.NULLDATE.equals(last.toString()) && !last.afterOrEqual(cc.getDateEnd())) {
               cc.setDateEnd(last);
               //service.update(cc); // no need to update (displayed in real time)
             }

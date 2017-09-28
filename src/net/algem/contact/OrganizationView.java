@@ -1,5 +1,5 @@
 /*
- * @(#) OrganizationView.java Algem 2.15.0 30/07/2017
+ * @(#) OrganizationView.java Algem 2.15.2 28/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -59,6 +59,7 @@ public class OrganizationView
     GridBagHelper gb2 = new GridBagHelper(this);
 
     JLabel cpNameL = new JLabel(BundleUtil.getLabel("ConfEditor.corporate.label"));
+    cpNameL.setToolTipText(BundleUtil.getLabel("Organization.corporate.tip"));
 
     JLabel siretL = new JLabel(BundleUtil.getLabel("Organization.SIRET.label"));
     siretL.setToolTipText(BundleUtil.getLabel("ConfEditor.organization.SIRET.number.label"));
@@ -69,9 +70,15 @@ public class OrganizationView
     JLabel vatL = new JLabel(BundleUtil.getLabel("Organization.VAT.label"));
     vatL.setToolTipText(BundleUtil.getLabel("ConfEditor.organization.Code.VAT.label"));
 
-    gb2.add(new JLabel(BundleUtil.getLabel("Id.label")), 0, 0, 1, 1, GridBagHelper.WEST);
-    gb2.add(new JLabel(BundleUtil.getLabel("Name.label")), 0, 1, 1, 1, GridBagHelper.WEST);
-    gb2.add(new JLabel(BundleUtil.getLabel("Referent.label")), 0, 2, 1, 1, GridBagHelper.WEST);
+    JLabel idLabel = new JLabel(BundleUtil.getLabel("Id.label"));
+    idLabel.setToolTipText(BundleUtil.getLabel("Organization.id.tip"));
+    gb2.add(idLabel, 0, 0, 1, 1, GridBagHelper.WEST);
+    JLabel orgLabel = new JLabel(BundleUtil.getLabel("Organization.label"));
+    orgLabel.setToolTipText(BundleUtil.getLabel("Organization.label.tip"));
+    gb2.add(orgLabel, 0, 1, 1, 1, GridBagHelper.WEST);
+    JLabel refLabel = new JLabel(BundleUtil.getLabel("Referent.label"));
+    refLabel.setToolTipText(BundleUtil.getLabel("Organization.referent.tip"));
+    gb2.add(refLabel, 0, 2, 1, 1, GridBagHelper.WEST);
     gb2.add(cpNameL, 0, 3, 1, 1, GridBagHelper.WEST);
     gb2.add(siretL, 0, 4, 1, 1, GridBagHelper.WEST);
     gb2.add(nafL, 0, 5, 1, 1, GridBagHelper.WEST);
