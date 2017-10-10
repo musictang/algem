@@ -1,0 +1,5 @@
+2.15.3
+
+CORRECTIFS
+- L'ajout ou la modification d'un musicien dans un groupe ne fonctionnait plus (depuis la version 2.15).
+- Les devis ne pouvaient être exportés en pdf. Désormais, la fenêtre de consultation des devis dispose des deux mêmes icones que la fenêtre de consultation de facture : la première, pour exporter en pdf, la deuxième pour imprimer directement (sans fond de page prédéfini).

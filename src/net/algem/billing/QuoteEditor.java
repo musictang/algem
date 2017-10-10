@@ -1,5 +1,5 @@
 /*
- * @(#)QuoteEditor 2.14.0 30/05/17
+ * @(#)QuoteEditor 2.15.3 09/10/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -29,12 +29,13 @@ import net.algem.util.GemCommand;
 import net.algem.util.MessageUtil;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.GemButton;
+import net.algem.util.ui.GemToolBar;
 import net.algem.util.ui.MessagePopup;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.14.0
+ * @version 2.15.3
  * @since 2.4.d 07/06/12
  */
 public class QuoteEditor
@@ -54,21 +55,30 @@ public class QuoteEditor
   @Override
    protected void addView() {
     add(view, BorderLayout.CENTER);
+    GemToolBar bar = new GemToolBar();
+    bar.setFloatable(false);
+    btPreview = bar.addIcon(
+      BundleUtil.getLabel("Training.contract.pdf.icon"),
+      BundleUtil.getLabel("Action.pdf.label"),
+      BundleUtil.getLabel("Export.pdf.tip"));
+    btPreview.addActionListener(this);
+
+    btPrint = bar.addIcon(BundleUtil.getLabel("Member.card.icon"),
+      GemCommand.PRINT_CMD,
+      BundleUtil.getLabel("Quotation.print.tip"));
+    btPrint.addActionListener(this);
 
     btDuplicate = new GemButton(GemCommand.DUPLICATE_CMD);
     btDuplicate.addActionListener(this);
-    
-    btPrint = new GemButton(GemCommand.PRINT_CMD);
-    btPrint.addActionListener(this);
-    
+
     btInvoice = new GemButton(BundleUtil.getLabel("Quotation.invoice.creation.label"));
     btInvoice.addActionListener(this);
     btInvoice.setToolTipText(BundleUtil.getLabel("Quotation.invoice.creation.tip"));
 
-    buttons.add(btPrint,0);
     buttons.add(btDuplicate,0);
     buttons.add(btInvoice,0);
-    
+    buttons.add(bar, 0);
+
     add(buttons, BorderLayout.SOUTH);
   }
 
@@ -87,7 +97,7 @@ public class QuoteEditor
       } catch (BillingException fe) {
         MessagePopup.warning(this, MessageUtil.getMessage("quote.create.exception")+"\n"+fe.getMessage());
       }
-    } else {    
+    } else {
       try {
         service.update(edit);
         MessagePopup.information(view, MessageUtil.getMessage("modification.success.label"));
@@ -100,7 +110,7 @@ public class QuoteEditor
     //abandon(); // COMMENTÉ POUR LAISSER OUVERTE LA FENETRE
 
   }
-	
+
 	@Override
   public void cancel() {
     if (listener != null) {
@@ -122,7 +132,7 @@ public class QuoteEditor
         MessagePopup.warning(this, MessageUtil.getMessage("invoice.estimate.create.warning"));
         return;
       }
-      edit.setItems(view.getItems()); // récupération des articles éventuellement modifiés dans la vue 
+      edit.setItems(view.getItems()); // récupération des articles éventuellement modifiés dans la vue
       try {
         Invoice v = service.createInvoiceFrom(edit);
         if (v != null) {
@@ -133,7 +143,7 @@ public class QuoteEditor
         MessagePopup.warning(this, ex.getMessage());
       }
       cancel();
-    } 
+    }
   }
 
 }

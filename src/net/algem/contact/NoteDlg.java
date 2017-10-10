@@ -1,5 +1,5 @@
 /*
- * @(#)NoteDlg.java	2.15.2 27/09/17
+ * @(#)NoteDlg.java	2.15.3 10/10/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -39,7 +39,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.2
+ * @version 2.15.3
  */
 public class NoteDlg
         implements ActionListener
@@ -72,8 +72,8 @@ public class NoteDlg
 
     GemPanel boutons = new GemPanel();
     boutons.setLayout(new GridLayout(1, 2));
-    boutons.add(btCancel);
     boutons.add(btValidation);
+    boutons.add(btCancel);
 
     body = new GemBorderPanel();
     body.setLayout(new BorderLayout());

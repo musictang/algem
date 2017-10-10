@@ -1,7 +1,7 @@
 /*
- * @(#)DDMandateCtrl.java 2.8.r 21/01/14
- * 
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * @(#)DDMandateCtrl.java 2.15.3 10/10/17
+ *
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.accounting;
 
@@ -36,7 +36,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.8.r
+ * @version 2.15.3
  * @since 2.8.r 08/01/14
  */
 public class DDMandateCtrl
@@ -55,7 +55,7 @@ public class DDMandateCtrl
   public DDMandateCtrl(GemDesktop desktop, DirectDebitService service) {
     super(desktop);
     this.service = service;
-    btValidation.setText(GemCommand.EDIT_CMD);
+    btValidation.setText(GemCommand.MODIFY_CMD);
 		if (!dataCache.authorize("Direct.debit.mandate.editing.auth")) {
 			btValidation.setEnabled(false);
 		}

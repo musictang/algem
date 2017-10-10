@@ -1,5 +1,5 @@
 /*
- * @(#)MusicianDlg.java	2.15.2 27/09/17
+ * @(#)MusicianDlg.java	2.15.3 09/10/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -49,7 +49,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.2
+ * @version 2.15.3
  */
 public class MusicianDlg
         extends PopupDlg
@@ -163,7 +163,7 @@ public class MusicianDlg
       try {
         int id = Integer.parseInt(no.getText());
         setMusician((Person) DataCache.findId(id, Model.Person), dc);
-      } catch (Exception ex) {
+      } catch (NumberFormatException | SQLException ex) {
         GemLogger.log(Level.SEVERE, ex.getMessage());
       }
     } else if (evt.getSource() == btSearch) {
@@ -171,7 +171,7 @@ public class MusicianDlg
       pfSearch.init();
       desktop.addPanel("Contact", pfSearch, GemModule.S_SIZE);
       dlg.setLocation(pfSearch.getLocation().x + pfSearch.getWidth(), dlg.getLocation().y);// shift the position to avoid overlapping
-    } else if (evt.getActionCommand().equals(GemCommand.VALIDATE_CMD)) {
+    } else if (GemCommand.OK_CMD.equals(evt.getActionCommand())) {
       ((MusicianListView) component).setMusician(get(), operation);
       super.actionPerformed(evt);// force closing
     } else {
