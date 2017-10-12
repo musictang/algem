@@ -925,7 +925,9 @@ public class MemberEnrolmentEditor
         pw.println(FileUtil.getHtmlHeader(BundleUtil.getLabel("Enrolment.label"), getCss()));
         pw.println(catchEnrolmentInfo(node));
         //pw.println(catchActivity(order.getCreation(), dataCache.getEndOfYear()));//XXX probleme date fin si cours programmés après
-        pw.println(catchActivity(dossier.getId(), order.getCreation(), null, getActions(node), memberService));
+        List<ScheduleRangeObject> ranges = getActivityRanges(dossier.getId(), order.getCreation(), null, getActions(node), memberService);
+        pw.println(fillActivityFull(ranges));
+//        pw.println(catchActivity(dossier.getId(), order.getCreation(), null, getActions(node), memberService));
         pw.println("</body></html>");
       }
       if (pw != null) {
@@ -1000,9 +1002,8 @@ public class MemberEnrolmentEditor
       } else {
         ranges = service.findFollowUp(idper, start.getDate(), end.getDate(), actions);
       }
-//        Vector<ScheduleRangeObject> ranges = service.findFollowUp(idper, start.getDate(), actions);
 
-      sb.append("<table><thead>");
+      /*sb.append("<table><thead>");
       sb.append("<tr><th>").append(BundleUtil.getLabel("Activity.label")).append("</th><th>")
               .append(BundleUtil.getLabel("Teacher.label")).append("</th><th>")
               .append(BundleUtil.getLabel("Room.label")).append("</th><th>")
@@ -1029,12 +1030,122 @@ public class MemberEnrolmentEditor
       }
       sb.append("</tbody><tfoot><tr><td colspan=\"7\">Total</td><td> ").append(Hour.format(min)).append("</td></tr>");
       sb.append("</tfoot></table>");
+
       return sb.toString();
+      */
+      return fillActivityAMPM(ranges);
     } catch (SQLException ex) {
       GemLogger.log(ex.getMessage());
       return "";
     }
   }
+
+    public static List<ScheduleRangeObject> getActivityRanges(int idper, DateFr start, DateFr end, String actions, MemberService service) {
+    List<ScheduleRangeObject> ranges = new Vector<>();
+    try {
+      if (end == null) {
+        ranges = service.findFollowUp(idper, start.getDate(), actions);
+      } else {
+        ranges = service.findFollowUp(idper, start.getDate(), end.getDate(), actions);
+      }
+    } catch (SQLException ex) {
+      GemLogger.log(ex.getMessage());
+    }
+    return ranges;
+  }
+
+    public static String fillActivityFull(List<ScheduleRangeObject> ranges) {
+      StringBuilder sb = new StringBuilder();
+      sb.append("<table><thead>");
+      sb.append("<tr><th>").append(BundleUtil.getLabel("Activity.label")).append("</th><th>")
+              .append(BundleUtil.getLabel("Teacher.label")).append("</th><th>")
+              .append(BundleUtil.getLabel("Room.label")).append("</th><th>")
+              .append(BundleUtil.getLabel("Signature.label")).append("</th><th>") // individual follow up
+              .append(BundleUtil.getLabel("Date.label")).append("</th><th>")
+              .append(BundleUtil.getLabel("Start.label")).append("</th><th>")
+              .append(BundleUtil.getLabel("End.label")).append("</th><th>")
+              .append(BundleUtil.getLabel("Duration.label")).append("</th></tr></thead><tbody>");
+      int min = 0;
+      for (ScheduleRangeObject r : ranges) {
+        Hour hs = r.getStart();
+        Hour he = r.getEnd();
+        min += hs.getLength(he);
+        //String note = r.getFollowUp() == null ? "" : r.getFollowUp().getContent();
+        sb.append("<tr><td>")
+                .append(r.getActivity()).append("</td><td>")
+                .append(r.getTeacher().getFirstnameName()).append("</td><td>")
+                .append(r.getRoom().getName()).append("</td><td>")
+                //.append(note == null ? "" : note).append("</td><td>")
+                .append("</td><td>")
+                .append(r.getDate()).append("</td><td>")
+                .append(r.getStart()).append("</td><td>")
+                .append(r.getEnd()).append("</td><td>")
+                .append(Hour.format(hs.getLength(he))).append("</td></tr>");
+      }
+      sb.append("</tbody><tfoot><tr><td colspan=\"7\">Total</td><td> ").append(Hour.format(min)).append("</td></tr>");
+      sb.append("</tfoot></table>");
+      return sb.toString();
+    }
+
+
+    public static String fillActivityAMPM(List<ScheduleRangeObject> ranges){
+      StringBuilder sb = new StringBuilder();
+
+      String thead = "<table class=\"content\"><thead><tr><th rowspan=\"2\">"+BundleUtil.getLabel("Date.label")+"</th><th colspan=\"2\">"+BundleUtil.getLabel("Morning.label")+"</th><th rowspan=\"2\">Signature</th><th colspan=\"2\">"+BundleUtil.getLabel("Afternoon.label")+"</th><th rowspan=\"2\">"+BundleUtil.getLabel("Signature.label")+"</th></tr><tr><td>"+BundleUtil.getLabel("Present.abbrev.label")+"</td><td>"+BundleUtil.getLabel("Absent.abbrev.label")+"</td><td>"+BundleUtil.getLabel("Present.abbrev.label")+"</td><td>"+BundleUtil.getLabel("Absent.abbrev.label")+"</td></tr></thead>";
+sb.append(thead);
+sb.append("<tbody>");
+
+      int min = 0;
+      Hour pm = new Hour("14:00");
+      double totalPreAM = 0.0;
+        double totalAbsAM = 0.0;
+        double totalPrePM = 0.0;
+        double totalAbsPM = 0.0;
+      for (ScheduleRangeObject r : ranges) {
+        double preAM = 0.0;
+        double absAM = 0.0;
+        double prePM = 0.0;
+        double absPM = 0.0;
+
+        Hour hs = r.getStart();
+        Hour he = r.getEnd();
+        min += hs.getLength(he);
+        FollowUp up = r.getFollowUp();
+        if (hs.before(pm)) {
+          if (up.isAbsent() || up.isExcused()) {
+            absAM = min / 60;
+            totalAbsAM += absAM;
+          } else {
+            preAM = min / 60;
+            totalPreAM += preAM;
+          }
+        } else {
+          if (up.isAbsent() || up.isExcused()) {
+            absPM = min / 60;
+            totalAbsPM += absPM;
+          } else {
+            prePM = min / 60;
+            totalPrePM += prePM;
+          }
+        }
+        sb.append("<tr><td>").append(r.getDate()).append("</td>");
+        sb.append("<td>").append(preAM > 0 ? preAM : "").append("</td>");
+        sb.append("<td>").append(absAM > 0 ? absAM : "").append("</td>");
+        sb.append("<td></td>");
+        sb.append("<td>").append(prePM > 0 ? prePM : "").append("</td>");
+        sb.append("<td>").append(absPM > 0 ? absPM : "").append("</td>");
+        sb.append("<td></td></tr>");
+      }
+      sb.append("</tbody><tfoot><tr><th>TOTAL</th>");
+      sb.append("<td>").append(totalPreAM).append("</td>");
+      sb.append("<td>").append(totalAbsAM).append("</td>");
+      sb.append("<td></td>");
+      sb.append("<td>").append(totalPrePM).append("</td>");
+      sb.append("<td>").append(totalAbsPM).append("</td>");
+      sb.append("<td></td>");
+      sb.append("</tr></tfoot></table>");
+      return sb.toString();
+    }
 
   /**
    * Returns main infos about this enrolment {@literal node}.

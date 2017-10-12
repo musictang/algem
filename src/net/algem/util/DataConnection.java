@@ -23,6 +23,7 @@ package net.algem.util;
 import java.sql.*;
 import java.util.Properties;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Utility class for database connection.
@@ -165,7 +166,12 @@ public class DataConnection
   }
 
   public boolean isConnected() {
-    return connected;
+    try {
+      return cnx != null && !cnx.isClosed() && connected;
+    } catch (SQLException ex) {
+      GemLogger.logException("connection error ", ex);
+    }
+    return false;
   }
 
   public PreparedStatement prepareStatement(String query) {

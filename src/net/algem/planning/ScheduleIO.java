@@ -296,12 +296,12 @@ public class ScheduleIO
 
     Vector<ScheduleObject> v = new Vector<ScheduleObject>();
 
-    ResultSet rs = ps.executeQuery();
-    while (!Thread.interrupted() && rs.next()) {
-      ScheduleObject p = planningObjectFactory(rs, dc);
-      v.addElement(p);
+    try (ResultSet rs = ps.executeQuery()) {
+      while (!Thread.interrupted() && rs.next()) {
+        ScheduleObject p = planningObjectFactory(rs, dc);
+        v.addElement(p);
+      }
     }
-    rs.close();
     return v;
   }
 
@@ -467,7 +467,7 @@ public class ScheduleIO
         + note
         + up.getStatus() + ")";
 
-//    String query = "INSERT INTO " + FOLLOW_UP_TABLE 
+//    String query = "INSERT INTO " + FOLLOW_UP_TABLE
 //            + " VALUES(" + nextId + ",'" + escape(text) + "')";
     dc.executeUpdate(query);
     return nextId;

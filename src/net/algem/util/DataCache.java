@@ -166,8 +166,8 @@ public class DataCache
   private DateFr endOfPeriod;
   private PreparedStatement loadMonthStmt;
   private PreparedStatement loadMonthRangeStmt;
-  private PreparedStatement loadDayStmt;
-  private PreparedStatement loadDayRangeStmt;
+  /*private PreparedStatement loadDayStmt;
+  private PreparedStatement loadDayRangeStmt;*/
 
   private MonthSchedule monthSchedule;
   private DaySchedule daySchedule;
@@ -183,6 +183,10 @@ public class DataCache
   private ScriptExportService scriptExportService;
   private PlanningFactDAO planningFactDAO;
   private ScheduleDispatchService scheduleDispatchService;
+
+  private String loadDayQuery = "SELECT " + ScheduleIO.COLUMNS
+            + " FROM " + ScheduleIO.TABLE + " p JOIN " + RoomIO.TABLE + " s ON (p.lieux = s.id) JOIN " + EstablishmentIO.TABLE + " e ON (s.etablissement = e.id)"
+            + " WHERE p.jour = ? AND e.actif = TRUE AND e.idper = ? ORDER BY p.debut";
 
   private DataCache() {
 
@@ -226,13 +230,13 @@ public class DataCache
     loadMonthStmt = dc.prepareStatement(loadMonthQuery);
     loadMonthRangeStmt = dc.prepareStatement(ScheduleRangeIO.getMonthRangeStmt());
 
-    String loadDayQuery = "SELECT " + ScheduleIO.COLUMNS
+    /*String loadDayQuery = "SELECT " + ScheduleIO.COLUMNS
             + " FROM planning p JOIN salle s ON (p.lieux = s.id) JOIN etablissement e ON (s.etablissement = e.id)"
             + " WHERE p.jour = ?"
             + " AND e.actif = TRUE AND e.idper = ? ORDER BY p.debut";
 
     loadDayStmt = dc.prepareStatement(loadDayQuery);//ORDER BY p.action,p.debut
-    loadDayRangeStmt = dc.prepareStatement(ScheduleRangeIO.getDayRangeStmt());
+    loadDayRangeStmt = dc.prepareStatement(ScheduleRangeIO.getDayRangeStmt());*/
 
     userService = new DefaultUserService(this);
 
@@ -1097,7 +1101,8 @@ public class DataCache
   }
 
   public void setDaySchedule(java.util.Date date) {
-    try {
+
+    try (PreparedStatement loadDayStmt = DATA_CONNECTION.prepareStatement(loadDayQuery);PreparedStatement loadDayRangeStmt = DATA_CONNECTION.prepareStatement(ScheduleRangeIO.getDayRangeStmt())) {
       loadDayStmt.setDate(1, new java.sql.Date(date.getTime()));
       loadDayStmt.setInt(2, user.getId());
       loadDayRangeStmt.setDate(1, new java.sql.Date(date.getTime()));
@@ -1165,11 +1170,10 @@ public class DataCache
    *
    * @param menu prefix key in properties files
    * @param full with parameters
-   * @return un jMenuItem
+   * @return a jMenuItem
    */
   public JMenuItem getMenu2(String menu, boolean full) {
-    String label = menu;
-    label = BundleUtil.getLabel(menu + ".label");
+    String label = BundleUtil.getLabel(menu + ".label");
 
     JMenuItem m = new JMenuItem(label);
     if (full) {
