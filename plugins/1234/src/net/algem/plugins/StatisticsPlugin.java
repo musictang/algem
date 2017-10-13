@@ -198,7 +198,7 @@ public class StatisticsPlugin
           break;
         case 21:
           printTitle(entry.getLabel());
-          printTimeResult(getQuery("external_hours"));
+          printTimeResult(getQuery("external_hours"));// XXX FIX !
           break;
         case 22:
           printTitle(entry.getLabel());
