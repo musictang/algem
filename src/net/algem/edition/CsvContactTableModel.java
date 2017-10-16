@@ -44,7 +44,7 @@ public class CsvContactTableModel
 
   public CsvContactTableModel() {
     header = ImportCsvCtrl.IMPORT_FIELDS;
-    df = new SimpleDateFormat("dd/mm/yyyy");
+    df = new SimpleDateFormat("dd/MM/yyyy");
   }
 
   @Override

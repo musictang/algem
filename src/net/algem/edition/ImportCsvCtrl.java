@@ -306,7 +306,7 @@ public class ImportCsvCtrl
             processors[idx] = new ConvertNullTo("\"\"", new Trim(new Truncate(32)));
             break; // firstName
           case 4:
-            processors[idx] = new Optional(new ParseDate("dd/mm/yyyy"));
+            processors[idx] = new Optional(new ParseDate("dd/MM/yyyy"));
             break; // date of birth
           case 5:
             processors[idx] = new Optional(new Trim());
@@ -374,7 +374,7 @@ public class ImportCsvCtrl
     }
     return false;
   }
-  
+
   private Object[] getCommonCharsets() {
     try {
       return new Charset[]{
