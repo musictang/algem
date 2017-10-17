@@ -1,5 +1,5 @@
 /*
- * @(#)MemberEnrolmentEditor.java 2.15.2 26/09/17
+ * @(#)MemberEnrolmentEditor.java 2.15.4 16/10/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -76,7 +76,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.2
+ * @version 2.15.4
  * @since 1.0b 06/09/2001
  */
 public class MemberEnrolmentEditor
@@ -107,7 +107,7 @@ public class MemberEnrolmentEditor
   private GemLabel title;
   private boolean loaded;
   private CourseEnrolmentDlg courseDlg;
-  private JMenuItem m1, m2, m3, m4, m5, m6, m7, m8, m9, m10,m11,m12;
+  private JMenuItem m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12;
   /** New enrolment button. */
   private GemButton btEnrolment;
   private TreePath currentSelection;
@@ -115,7 +115,6 @@ public class MemberEnrolmentEditor
   private EnrolmentService service;
   private ModuleDlg moduleDlg;
   private DefaultTreeCellRenderer cellRenderer;
-
 
   public MemberEnrolmentEditor(GemDesktop desktop, ActionListener listener, PersonFile dossier) {
 
@@ -136,9 +135,9 @@ public class MemberEnrolmentEditor
     popup.addSeparator();
     popup.add(m5 = new JMenuItem(MODULE_ADD));
     popup.add(m6 = new JMenuItem(MODULE_DEL));
-    popup.add(m8 = new JMenuItem (MODULE_STOP));
-    popup.add(m9 = new JMenuItem (MODULE_TIME_CHANGE));
-    popup.add(m11 = new JMenuItem (MODULE_DATE_CHANGE));
+    popup.add(m8 = new JMenuItem(MODULE_STOP));
+    popup.add(m9 = new JMenuItem(MODULE_TIME_CHANGE));
+    popup.add(m11 = new JMenuItem(MODULE_DATE_CHANGE));
     popup.addSeparator();
     popup.add(m10 = new JMenuItem(PRINT_ORDER));
 
@@ -203,6 +202,7 @@ public class MemberEnrolmentEditor
 
   /**
    * Enable or disable some menus depending on the state of {@literal e}.
+   *
    * @param e true or false
    */
   private void setCoursePopupMenu(boolean e) {
@@ -364,14 +364,12 @@ public class MemberEnrolmentEditor
         return;
       }
       stopAndDefine();
-    }
-
-    else if (s.equals(COURSE_DATE)) {
+    } else if (s.equals(COURSE_DATE)) {
       if (currentSelection == null) {
         return;
       }
       changeDateOfCourseOrder();
-    } else if (s.equals (MODULE_STOP)) {
+    } else if (s.equals(MODULE_STOP)) {
       if (currentSelection == null) {
         return;
       }
@@ -743,7 +741,7 @@ public class MemberEnrolmentEditor
     }
   }// end addModule
 
-    private void addCourse(ModuleOrder mo, CourseModuleInfo cm) throws SQLException {
+  private void addCourse(ModuleOrder mo, CourseModuleInfo cm) throws SQLException {
     CourseOrder co = new CourseOrder();
     co.setIdOrder(mo.getIdOrder());
     co.setTitle(cm.getCode().getLabel());
@@ -779,7 +777,7 @@ public class MemberEnrolmentEditor
     mo.setPayment((PayFrequency) moduleDlg.getField(6));
     mo.setPricing((PricingPeriod) moduleDlg.getField(9));
     if (PricingPeriod.HOUR.equals(mo.getPricing())) {
-      mo.setTotalTime(Hour.decimalToMinutes((Double)moduleDlg.getField(8)));
+      mo.setTotalTime(Hour.decimalToMinutes((Double) moduleDlg.getField(8)));
     } else {
       mo.setTotalTime(0);
     }
@@ -817,7 +815,7 @@ public class MemberEnrolmentEditor
     List<CourseOrder> orders = new ArrayList<CourseOrder>();
     for (Enumeration e = node.children(); e.hasMoreElements();) {
       TreeNode n = (TreeNode) e.nextElement();
-      if(n instanceof CourseEnrolmentNode) {
+      if (n instanceof CourseEnrolmentNode) {
         orders.add(((CourseEnrolmentNode) n).getCourseOrder());
       }
     }
@@ -955,6 +953,7 @@ public class MemberEnrolmentEditor
 
   /**
    * Get the list of actions registered for this order command.
+   *
    * @param node enrolment node order
    * @return a comma-separated list of actions
    */
@@ -979,13 +978,14 @@ public class MemberEnrolmentEditor
     for (int a : actions) {
       sb.append(a).append(',');
     }
-    sb.deleteCharAt(sb.length()-1);
+    sb.deleteCharAt(sb.length() - 1);
     return sb.toString();
   }
 
   /**
    * Returns the list of activities performed by member from {@literal start}
    * and corresponding to this list of {@code actions}.
+   *
    * @param idper
    * @param start starting date
    * @param end
@@ -993,7 +993,7 @@ public class MemberEnrolmentEditor
    * @param service
    * @return a html-formatted string
    */
-    public static String catchActivity(int idper, DateFr start, DateFr end, String actions, MemberService service){
+  public static String catchActivity(int idper, DateFr start, DateFr end, String actions, MemberService service) {
     try {
       StringBuilder sb = new StringBuilder();
       Vector<ScheduleRangeObject> ranges;
@@ -1032,15 +1032,15 @@ public class MemberEnrolmentEditor
       sb.append("</tfoot></table>");
 
       return sb.toString();
-      */
-      return fillActivityAMPM(ranges);
+       */
+      return fillActivityAMPM(ranges, new String[]{"14:00", ""});
     } catch (SQLException ex) {
       GemLogger.log(ex.getMessage());
       return "";
     }
   }
 
-    public static List<ScheduleRangeObject> getActivityRanges(int idper, DateFr start, DateFr end, String actions, MemberService service) {
+  public static List<ScheduleRangeObject> getActivityRanges(int idper, DateFr start, DateFr end, String actions, MemberService service) {
     List<ScheduleRangeObject> ranges = new Vector<>();
     try {
       if (end == null) {
@@ -1054,101 +1054,101 @@ public class MemberEnrolmentEditor
     return ranges;
   }
 
-    public static String fillActivityFull(List<ScheduleRangeObject> ranges) {
-      StringBuilder sb = new StringBuilder();
-      sb.append("<table><thead>");
-      sb.append("<tr><th>").append(BundleUtil.getLabel("Activity.label")).append("</th><th>")
-              .append(BundleUtil.getLabel("Teacher.label")).append("</th><th>")
-              .append(BundleUtil.getLabel("Room.label")).append("</th><th>")
-              .append(BundleUtil.getLabel("Signature.label")).append("</th><th>") // individual follow up
-              .append(BundleUtil.getLabel("Date.label")).append("</th><th>")
-              .append(BundleUtil.getLabel("Start.label")).append("</th><th>")
-              .append(BundleUtil.getLabel("End.label")).append("</th><th>")
-              .append(BundleUtil.getLabel("Duration.label")).append("</th></tr></thead><tbody>");
-      int min = 0;
-      for (ScheduleRangeObject r : ranges) {
-        Hour hs = r.getStart();
-        Hour he = r.getEnd();
-        min += hs.getLength(he);
-        //String note = r.getFollowUp() == null ? "" : r.getFollowUp().getContent();
-        sb.append("<tr><td>")
-                .append(r.getActivity()).append("</td><td>")
-                .append(r.getTeacher().getFirstnameName()).append("</td><td>")
-                .append(r.getRoom().getName()).append("</td><td>")
-                //.append(note == null ? "" : note).append("</td><td>")
-                .append("</td><td>")
-                .append(r.getDate()).append("</td><td>")
-                .append(r.getStart()).append("</td><td>")
-                .append(r.getEnd()).append("</td><td>")
-                .append(Hour.format(hs.getLength(he))).append("</td></tr>");
-      }
-      sb.append("</tbody><tfoot><tr><td colspan=\"7\">Total</td><td> ").append(Hour.format(min)).append("</td></tr>");
-      sb.append("</tfoot></table>");
-      return sb.toString();
+  public static String fillActivityFull(List<ScheduleRangeObject> ranges) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("<table><thead>");
+    sb.append("<tr><th>").append(BundleUtil.getLabel("Activity.label")).append("</th><th>")
+            .append(BundleUtil.getLabel("Teacher.label")).append("</th><th>")
+            .append(BundleUtil.getLabel("Room.label")).append("</th><th>")
+            .append(BundleUtil.getLabel("Signature.label")).append("</th><th>") // individual follow up
+            .append(BundleUtil.getLabel("Date.label")).append("</th><th>")
+            .append(BundleUtil.getLabel("Start.label")).append("</th><th>")
+            .append(BundleUtil.getLabel("End.label")).append("</th><th>")
+            .append(BundleUtil.getLabel("Duration.label")).append("</th></tr></thead><tbody>");
+    int min = 0;
+    for (ScheduleRangeObject r : ranges) {
+      Hour hs = r.getStart();
+      Hour he = r.getEnd();
+      min += hs.getLength(he);
+      //String note = r.getFollowUp() == null ? "" : r.getFollowUp().getContent();
+      sb.append("<tr><td>")
+              .append(r.getActivity()).append("</td><td>")
+              .append(r.getTeacher().getFirstnameName()).append("</td><td>")
+              .append(r.getRoom().getName()).append("</td><td>")
+              //.append(note == null ? "" : note).append("</td><td>")
+              .append("</td><td>")
+              .append(r.getDate()).append("</td><td>")
+              .append(r.getStart()).append("</td><td>")
+              .append(r.getEnd()).append("</td><td>")
+              .append(Hour.format(hs.getLength(he))).append("</td></tr>");
     }
+    sb.append("</tbody><tfoot><tr><td colspan=\"7\">Total</td><td> ").append(Hour.format(min)).append("</td></tr>");
+    sb.append("</tfoot></table>");
+    return sb.toString();
+  }
 
+  public static String fillActivityAMPM(List<ScheduleRangeObject> ranges, String [] options) {
+    StringBuilder sb = new StringBuilder();
 
-    public static String fillActivityAMPM(List<ScheduleRangeObject> ranges){
-      StringBuilder sb = new StringBuilder();
+    String thead = "<table class=\"content\"><thead><tr><th rowspan=\"2\">" + BundleUtil.getLabel("Date.label") + "</th><th colspan=\"2\">" + BundleUtil.getLabel("Morning.label") + "</th><th rowspan=\"2\">Signature</th><th colspan=\"2\">" + BundleUtil.getLabel("Afternoon.label") + "</th><th rowspan=\"2\">" + BundleUtil.getLabel("Signature.label") + "</th></tr><tr><td>" + BundleUtil.getLabel("Present.abbrev.label") + "</td><td>" + BundleUtil.getLabel("Absent.abbrev.label") + "</td><td>" + BundleUtil.getLabel("Present.abbrev.label") + "</td><td>" + BundleUtil.getLabel("Absent.abbrev.label") + "</td></tr></thead>";
+    sb.append(thead);
+    sb.append("<tbody>");
 
-      String thead = "<table class=\"content\"><thead><tr><th rowspan=\"2\">"+BundleUtil.getLabel("Date.label")+"</th><th colspan=\"2\">"+BundleUtil.getLabel("Morning.label")+"</th><th rowspan=\"2\">Signature</th><th colspan=\"2\">"+BundleUtil.getLabel("Afternoon.label")+"</th><th rowspan=\"2\">"+BundleUtil.getLabel("Signature.label")+"</th></tr><tr><td>"+BundleUtil.getLabel("Present.abbrev.label")+"</td><td>"+BundleUtil.getLabel("Absent.abbrev.label")+"</td><td>"+BundleUtil.getLabel("Present.abbrev.label")+"</td><td>"+BundleUtil.getLabel("Absent.abbrev.label")+"</td></tr></thead>";
-sb.append(thead);
-sb.append("<tbody>");
-
+    Hour pm = new Hour(options[0] == null || Hour.NULL_HOUR.equals(options[0]) ? "14:00" : options[0]);
+    double totalPreAM = 0.0;
+    double totalAbsAM = 0.0;
+    double totalPrePM = 0.0;
+    double totalAbsPM = 0.0;
+    for (ScheduleRangeObject r : ranges) {
+      double preAM = 0.0;
+      double absAM = 0.0;
+      double prePM = 0.0;
+      double absPM = 0.0;
       int min = 0;
-      Hour pm = new Hour("14:00");
-      double totalPreAM = 0.0;
-        double totalAbsAM = 0.0;
-        double totalPrePM = 0.0;
-        double totalAbsPM = 0.0;
-      for (ScheduleRangeObject r : ranges) {
-        double preAM = 0.0;
-        double absAM = 0.0;
-        double prePM = 0.0;
-        double absPM = 0.0;
 
-        Hour hs = r.getStart();
-        Hour he = r.getEnd();
-        min += hs.getLength(he);
-        FollowUp up = r.getFollowUp();
-        if (hs.before(pm)) {
-          if (up.isAbsent() || up.isExcused()) {
-            absAM = min / 60;
-            totalAbsAM += absAM;
-          } else {
-            preAM = min / 60;
-            totalPreAM += preAM;
-          }
+      Hour hs = r.getStart();
+      Hour he = r.getEnd();
+      min += hs.getLength(he);
+      FollowUp up = r.getFollowUp();
+      if (hs.before(pm)) {
+        if (up.isAbsent() || up.isExcused()) {
+          absAM = min / 60.0;
+          totalAbsAM += absAM;
         } else {
-          if (up.isAbsent() || up.isExcused()) {
-            absPM = min / 60;
-            totalAbsPM += absPM;
-          } else {
-            prePM = min / 60;
-            totalPrePM += prePM;
-          }
+          preAM = min / 60.0;
+          totalPreAM += preAM;
         }
-        sb.append("<tr><td>").append(r.getDate()).append("</td>");
-        sb.append("<td>").append(preAM > 0 ? preAM : "").append("</td>");
-        sb.append("<td>").append(absAM > 0 ? absAM : "").append("</td>");
-        sb.append("<td></td>");
-        sb.append("<td>").append(prePM > 0 ? prePM : "").append("</td>");
-        sb.append("<td>").append(absPM > 0 ? absPM : "").append("</td>");
-        sb.append("<td></td></tr>");
+      } else if (up.isAbsent() || up.isExcused()) {
+        absPM = min / 60.0;
+        totalAbsPM += absPM;
+      } else {
+        prePM = min / 60.0;
+        totalPrePM += prePM;
       }
-      sb.append("</tbody><tfoot><tr><th>TOTAL</th>");
-      sb.append("<td>").append(totalPreAM).append("</td>");
-      sb.append("<td>").append(totalAbsAM).append("</td>");
+      sb.append("<tr><td>").append(r.getDate()).append("</td>");
+      sb.append("<td>").append(preAM > 0 ? preAM : "").append("</td>");
+      sb.append("<td>").append(absAM > 0 ? absAM : "").append("</td>");
       sb.append("<td></td>");
-      sb.append("<td>").append(totalPrePM).append("</td>");
-      sb.append("<td>").append(totalAbsPM).append("</td>");
-      sb.append("<td></td>");
-      sb.append("</tr></tfoot></table>");
-      return sb.toString();
+      sb.append("<td>").append(prePM > 0 ? prePM : "").append("</td>");
+      sb.append("<td>").append(absPM > 0 ? absPM : "").append("</td>");
+      sb.append("<td></td></tr>");
     }
+    sb.append("</tbody><tfoot><tr><th>TOTAL</th>");
+    sb.append("<td>").append(totalPreAM).append("</td>");
+    sb.append("<td>").append(totalAbsAM).append("</td>");
+    sb.append("<td></td>");
+    sb.append("<td>").append(totalPrePM).append("</td>");
+    sb.append("<td>").append(totalAbsPM).append("</td>");
+    sb.append("<td></td></tr>");
+    sb.append("<tr><th class=\"signature\" colspan=\"7\">").append(BundleUtil.getLabel("Name.and.quality.of.training.manager.label")).append(" : ").append(options[1]).append("</th></tr>");
+    sb.append("<tr><th class=\"signature\" colspan=\"7\">").append(BundleUtil.getLabel("Signature.label")).append(" :</th></tr>");
+    sb.append("</tfoot></table>");
+    return sb.toString();
+  }
 
   /**
    * Returns main infos about this enrolment {@literal node}.
+   *
    * @param node enrolment node
    * @return a html-formatted string
    */
@@ -1191,6 +1191,7 @@ sb.append("<tbody>");
 
   /**
    * Gets the css style used to print enrolment information.
+   *
    * @return a css-formatted string
    */
   public static String getCss() {
@@ -1239,7 +1240,8 @@ sb.append("<tbody>");
   }
 
   private class StopCourseDateDlg
-    extends StopCourseAbstractDlg {
+          extends StopCourseAbstractDlg
+  {
 
     private DateFr date;
 

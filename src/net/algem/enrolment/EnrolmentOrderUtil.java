@@ -1,5 +1,5 @@
 /*
- * @(#)EnrolmentOrderUtil.java	2.14.0 20/06/17
+ * @(#)EnrolmentOrderUtil.java	2.15.4 16/10/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -41,7 +41,7 @@ import net.algem.util.model.Model;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.14.0
+ * @version 2.15.4
  * @since 2.8.a 01/04/2013
  */
 public class EnrolmentOrderUtil {
@@ -539,7 +539,7 @@ public class EnrolmentOrderUtil {
    */
   public static double calcFirstOrderLineAmount(double total, int maxSessions, int nbOrderLines, String type) {
 
-    double fistAmount = total;
+    double firstAmount = total;
     double sessionPrice = 0.0;
 
     if (type.equals("TRIM")) {
@@ -552,13 +552,13 @@ public class EnrolmentOrderUtil {
       if (maxSessions > 0) {
         // au prorata du nombre de commandes_cours effectifs
         // (prixSeance * maxCours) supposé supérieur à (total * (necheances - 1)
-        fistAmount = (sessionPrice * maxSessions) - (total * (nbOrderLines - 1));
+        firstAmount = (sessionPrice * maxSessions) - (total * (nbOrderLines - 1));
       }
     } else {
-      fistAmount = 0.0;
+      firstAmount = 0.0;
     }
 
-    return fistAmount;
+    return firstAmount;
   }
 
   /**

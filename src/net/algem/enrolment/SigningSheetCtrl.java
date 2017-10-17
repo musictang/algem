@@ -1,5 +1,5 @@
 /*
- * @(#) SigningSheetCtrl.java Algem 2.15.4 13/10/17
+ * @(#) SigningSheetCtrl.java Algem 2.15.4 16/10/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -31,14 +31,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import javax.swing.SwingWorker;
+import net.algem.config.Company;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
+import net.algem.contact.OrganizationIO;
 import net.algem.contact.Person;
 import net.algem.contact.member.MemberService;
 import net.algem.planning.DateFr;
 import net.algem.planning.ScheduleRangeObject;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
+import net.algem.util.DataConnection;
 import net.algem.util.FileUtil;
 import net.algem.util.GemLogger;
 import net.algem.util.jdesktop.DesktopBrowseHandler;
@@ -65,11 +68,18 @@ public class SigningSheetCtrl
   private PrintWriter pw;
   private SigningSheetView dlg;
   private final DateFormat dateFormat = new SimpleDateFormat("MMM yyyy");
+  //private Company company;
 
   public SigningSheetCtrl(GemDesktop desktop) {
     this.dataCache = desktop.getDataCache();
     this.service = new EnrolmentService(dataCache);
-    this.memberService = new MemberService(DataCache.getDataConnection());
+    DataConnection dc = DataCache.getDataConnection();
+    this.memberService = new MemberService(dc);
+    /*try {
+      company = new OrganizationIO(dc).getDefault();
+    } catch (SQLException ex) {
+      GemLogger.log(ex.getMessage());
+    }*/
     this.dlg = new SigningSheetView(desktop.getFrame(), true);
     //dateFormat.setTimeZone(TimeZone.getTimeZone("Europe/Paris"));
     dlg.createUI();
@@ -94,7 +104,9 @@ public class SigningSheetCtrl
       DateFr start = dlg.getPeriod().getStart();
       DateFr end = dlg.getPeriod().getEnd();
       String headerImgData = getBase64StringFromImgDataSource("emargement-header.png");
+      //String headerImgData = ImageUtil.getLogoAsBase64(company);
       String footerImgData = getBase64StringFromImgDataSource("emargement-footer.png");
+      //String companyName = company != null ? company.getOrg().getName() : "";
       for (int i = 0, len = all.size(); i < len; i++) {
         Enrolment e = all.get(i);
         List<ScheduleRangeObject> ranges = MemberEnrolmentEditor.getActivityRanges(e.getMember(), start, end, getActions(e.getCourseOrder()), memberService);
@@ -103,13 +115,17 @@ public class SigningSheetCtrl
           pw.println(MemberEnrolmentEditor.fillActivityFull(ranges));
           //pw.println("<div class=\"pageBreak\"></div>");
         } else {
-          pw.print("<header><img class=\"banner\" src=\"data:image/png;base64," + headerImgData + "\" width=100 />");
+          pw.print("<header>");
+          if (!headerImgData.isEmpty()) {
+            pw.print("<img class=\"logo\" src=\"data:image/png;base64," + headerImgData + "\" width=100 />");
+          }
           pw.print(getEnrolmentInfo(e, SigningSheetType.DETAILED, start));
           pw.println("</header>");
-          pw.println(MemberEnrolmentEditor.fillActivityAMPM(ranges));
-          pw.println("<div class=\"footer\">");
-          pw.println("<table class=\"signature\"><tr><td>Nom et qualité du référent pédagogique : </td><td></td></tr><tr><td>Signature :</td><td><textarea cols=\"20\" rows=\"2\"></textarea></td></tr></table>");
-          pw.println("<img src=\"data:image/png;base64," + footerImgData + "\" width=\"610\"/></div>");
+          pw.println(MemberEnrolmentEditor.fillActivityAMPM(ranges, dlg.getOptions()));
+          if (!footerImgData.isEmpty()) {
+            pw.println("<div class=\"banner\">");
+            pw.println("<img src=\"data:image/png;base64," + footerImgData + "\" width=\"610\"/></div>");
+          }
         }
 //        pw.println(MemberEnrolmentEditor.catchActivity(e.getMember(), start, end, getActions(e.getCourseOrder()), memberService));
         int p = (i + 1) * 100 / len;
@@ -189,10 +205,10 @@ public class SigningSheetCtrl
         }
         break;
       case DETAILED:
-        sb.append("<table class=\"top\"><tr><td><h1>").append(dateFormat.format(from.getDate())).append("</h1></td><td>Feuille d'émargement centre<br />");
-        sb.append(p.getFirstnameName()).append("<br />");
+        sb.append("<table class=\"top\"><tr><td><h1>").append(dateFormat.format(from.getDate())).append("</h1></td><td>").append(BundleUtil.getLabel("Signing.sheet.center.label")).append("<br />");
+        sb.append("<b>").append(p.getFirstnameName()).append("</b><br />");
         if (enrol.getModule().size() > 0) {
-          sb.append(enrol.getModule().get(0).getTitle());
+          sb.append("<b>").append(enrol.getModule().get(0).getTitle()).append("</b>");
 //          sb.append(getModuleInfo(enrol.getModule().get(0), enrol.getMember()));
         }
         sb.append("</td></tr></table>");
@@ -275,27 +291,26 @@ public class SigningSheetCtrl
             + " ul {font-size: 0.9em;line-height: 1.4em}"
             + " h1, h2 {background-color: #CCC !important}"
             + " tbody tr td:nth-child(4) {min-width: 70pt;height: 20pt} @page { margin: 1cm } table {page-break-after: always;} ";
-    String amPmCss = " body {font-family: Arial, Helvetica, sans-serif;font-size: 1em}"
+    String amPmCss = "body {font-family: Arial, Helvetica, sans-serif;font-size: 1em}"
             + " table {border-spacing: 0;border-collapse: collapse;font-size: 0.8em}"
-            + " td, th { border-left: 1px solid Gray; }"
+            + " td, th { border-left: 1px solid #888; }"
             + " thead th, thead td {text-align: center;vertical-align: top}"
-            + " thead td, thead th, tfoot td, tfoot th { border-bottom: 1px solid Gray}"
-            + " tbody td, tbody th { border-bottom: 1px solid LightGray; text-align: center}"
-            + " table.content tbody tr:nth-child(even) {background-color: #E6E6E6 !important}"
-            + " table.content tbody tr:nth-child(odd) {background-color: #FFF}"
-            + " tbody tr td:nth-child(1),tbody tr td:nth-child(4),tbody tr td:nth-child(7) {width: 20%}"
-            + " tfoot tr td {border-top: 1px solid #222;text-align: right}"
+            + " thead td, thead th, tfoot td, tfoot th { border-bottom: 1px solid #ccc}"
+            + " tbody td, tbody th { border-bottom: 1px solid #ccc; text-align: center}"
+            + " tfoot tr th, tfoot tr td{border-top: 2px solid #888;text-align: right}"
             + " table.top {width:80%;margin:0;padding:0;}"
             + " table.top td, table.top th {border:0;vertical-align: bottom}"
             + " table.top td:first-child {text-align: center;width:50%}"
             + " table.top td:last-child {text-align: right;width:30%}"
-            + " table.content {width:100%;border:1px solid Gray;page-break-after: always;}"
-            + " table.signature {width: 100%}"
-            + " table.signature td {text-align: left;border: none}"
-            + " table.signature td:first-child{width:50%;text-align: right}"
-            + " .banner {float:left;vertical-align: bottom;margin-bottom: 1em}"
-            + " .footer {text-align: center;}"
-            + " @page { margin: 1cm } @media print {.footer {position: fixed;bottom: 0;left:1cm}";
+            + " table.content {width:100%;border:2px solid #888;page-break-after: always;}"
+            + " table.content tbody tr {height: 2.2em}"
+            + " table.content tbody tr:first-child td {border-top: 2px solid #888;}"
+            + " table.content tbody tr td:nth-child(1),tbody tr td:nth-child(4),tbody tr td:nth-child(7) {width: 20%}"
+            + " th.signature {text-align: left;height: 3em;}"
+            + " textarea {border: 1px solid #ddd}"
+            + " .logo {float:left;vertical-align: bottom;margin-bottom: 1em}"
+            + " .banner {text-align: center;}"
+            + " @page { margin: 1cm } @media print {.banner {position: fixed;bottom: 0;left:1cm}";
     switch (type) {
       case STANDARD:
         return defCss;

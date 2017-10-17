@@ -39,6 +39,8 @@ import net.algem.config.ConfigUtil;
 import net.algem.contact.PhotoHandler;
 import net.algem.contact.SimplePhotoHandler;
 import net.algem.util.model.DataException;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.poi.util.IOUtils;
 
 /**
  * Utility class for image operations.
@@ -226,6 +228,12 @@ public class ImageUtil
       GemLogger.logException(ex);
       return "";
     }
+  }
+  
+  public static String getLogoAsBase64(Company comp) {
+    if (comp == null) return "";
+    byte[] data = comp.getLogo();
+    return data == null ? "" : Base64.encodeBase64String(data);
   }
 
   /**
