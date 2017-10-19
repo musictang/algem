@@ -1,5 +1,5 @@
 /*
- * @(#) ImportCsvCtrl.java Algem 2.13.0 31/03/2017
+ * @(#) ImportCsvCtrl.java Algem 2.15.4 18/10/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -67,7 +67,7 @@ import org.supercsv.io.ICsvListReader;
  *
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.13.0
+ * @version 2.15.4
  * @since 2.13.0 15/03/2017
  */
 public class ImportCsvCtrl

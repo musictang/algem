@@ -1,5 +1,5 @@
 /*
- * @(#) SigningSheetCtrl.java Algem 2.15.4 16/10/17
+ * @(#) SigningSheetCtrl.java Algem 2.15.4 19/10/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -31,10 +31,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import javax.swing.SwingWorker;
-import net.algem.config.Company;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
-import net.algem.contact.OrganizationIO;
 import net.algem.contact.Person;
 import net.algem.contact.member.MemberService;
 import net.algem.planning.DateFr;

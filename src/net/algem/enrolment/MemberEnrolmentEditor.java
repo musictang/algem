@@ -1,5 +1,5 @@
 /*
- * @(#)MemberEnrolmentEditor.java 2.15.4 16/10/17
+ * @(#)MemberEnrolmentEditor.java 2.15.4 18/10/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,6 +20,7 @@
  */
 package net.algem.enrolment;
 
+import com.sun.javafx.scene.control.skin.VirtualFlow;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -33,7 +34,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.Vector;
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
@@ -80,9 +84,8 @@ import net.algem.util.ui.*;
  * @since 1.0b 06/09/2001
  */
 public class MemberEnrolmentEditor
-        extends FileTab
-        implements ActionListener
-{
+  extends FileTab
+  implements ActionListener {
 
   private final static String STOP = BundleUtil.getLabel("Course.stop.label");
   private final static String COURSE_MODIF = BundleUtil.getLabel("Course.define.label");
@@ -157,16 +160,14 @@ public class MemberEnrolmentEditor
     cellRenderer = new EnrolmentTreeCellRenderer();
     tree = new JTree(new DefaultMutableTreeNode(NONE_ENROLMENT));
     tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-    tree.addTreeSelectionListener(new TreeSelectionListener()
-    {
+    tree.addTreeSelectionListener(new TreeSelectionListener() {
 
       public void valueChanged(TreeSelectionEvent e) {
         currentSelection = e.getNewLeadSelectionPath();
       }
     });
 
-    tree.addMouseListener(new MenuPopupListener(tree, popup)
-    {
+    tree.addMouseListener(new MenuPopupListener(tree, popup) {
 
       @Override
       public void maybeShowPopup(MouseEvent e) {
@@ -458,8 +459,8 @@ public class MemberEnrolmentEditor
       courseDlg.entry();
       if (courseDlg.isValidation()) {
         if (!MessagePopup.confirm(view,
-                MessageUtil.getMessage("enrolment.update.confirmation", co.getDateStart()),
-                BundleUtil.getLabel("Confirmation.title"))) {
+          MessageUtil.getMessage("enrolment.update.confirmation", co.getDateStart()),
+          BundleUtil.getLabel("Confirmation.title"))) {
           return;
         }
         modifyCourseOrder(co, courseDlg);
@@ -567,8 +568,7 @@ public class MemberEnrolmentEditor
         s.incDay(1);
       }*/
       final CourseOrder co = new CourseOrder();
-      dc.withTransaction(new DataConnection.SQLRunnable<Void>()
-      {
+      dc.withTransaction(new DataConnection.SQLRunnable<Void>() {
         @Override
         public Void run(DataConnection conn) throws Exception {
           service.stopCourse(dossier.getId(), cc, c, now, false);
@@ -655,7 +655,7 @@ public class MemberEnrolmentEditor
       courseDlg.entry();
       if (courseDlg.isValidation()) {
         if (!MessagePopup.confirm(desktop.getFrame(),
-                MessageUtil.getMessage("enrolment.update.confirmation", co.getDateStart()))) {
+          MessageUtil.getMessage("enrolment.update.confirmation", co.getDateStart()))) {
           view.setCursor(Cursor.getDefaultCursor());
           return;
         }
@@ -1058,13 +1058,13 @@ public class MemberEnrolmentEditor
     StringBuilder sb = new StringBuilder();
     sb.append("<table><thead>");
     sb.append("<tr><th>").append(BundleUtil.getLabel("Activity.label")).append("</th><th>")
-            .append(BundleUtil.getLabel("Teacher.label")).append("</th><th>")
-            .append(BundleUtil.getLabel("Room.label")).append("</th><th>")
-            .append(BundleUtil.getLabel("Signature.label")).append("</th><th>") // individual follow up
-            .append(BundleUtil.getLabel("Date.label")).append("</th><th>")
-            .append(BundleUtil.getLabel("Start.label")).append("</th><th>")
-            .append(BundleUtil.getLabel("End.label")).append("</th><th>")
-            .append(BundleUtil.getLabel("Duration.label")).append("</th></tr></thead><tbody>");
+      .append(BundleUtil.getLabel("Teacher.label")).append("</th><th>")
+      .append(BundleUtil.getLabel("Room.label")).append("</th><th>")
+      .append(BundleUtil.getLabel("Signature.label")).append("</th><th>") // individual follow up
+      .append(BundleUtil.getLabel("Date.label")).append("</th><th>")
+      .append(BundleUtil.getLabel("Start.label")).append("</th><th>")
+      .append(BundleUtil.getLabel("End.label")).append("</th><th>")
+      .append(BundleUtil.getLabel("Duration.label")).append("</th></tr></thead><tbody>");
     int min = 0;
     for (ScheduleRangeObject r : ranges) {
       Hour hs = r.getStart();
@@ -1072,34 +1072,121 @@ public class MemberEnrolmentEditor
       min += hs.getLength(he);
       //String note = r.getFollowUp() == null ? "" : r.getFollowUp().getContent();
       sb.append("<tr><td>")
-              .append(r.getActivity()).append("</td><td>")
-              .append(r.getTeacher().getFirstnameName()).append("</td><td>")
-              .append(r.getRoom().getName()).append("</td><td>")
-              //.append(note == null ? "" : note).append("</td><td>")
-              .append("</td><td>")
-              .append(r.getDate()).append("</td><td>")
-              .append(r.getStart()).append("</td><td>")
-              .append(r.getEnd()).append("</td><td>")
-              .append(Hour.format(hs.getLength(he))).append("</td></tr>");
+        .append(r.getActivity()).append("</td><td>")
+        .append(r.getTeacher().getFirstnameName()).append("</td><td>")
+        .append(r.getRoom().getName()).append("</td><td>")
+        //.append(note == null ? "" : note).append("</td><td>")
+        .append("</td><td>")
+        .append(r.getDate()).append("</td><td>")
+        .append(r.getStart()).append("</td><td>")
+        .append(r.getEnd()).append("</td><td>")
+        .append(Hour.format(hs.getLength(he))).append("</td></tr>");
     }
     sb.append("</tbody><tfoot><tr><td colspan=\"7\">Total</td><td> ").append(Hour.format(min)).append("</td></tr>");
     sb.append("</tfoot></table>");
     return sb.toString();
   }
 
-  public static String fillActivityAMPM(List<ScheduleRangeObject> ranges, String [] options) {
+  public static String fillActivityAMPM(List<ScheduleRangeObject> ranges, String[] options) {
+    Hour pm = new Hour(options[0] == null || Hour.NULL_HOUR.equals(options[0]) ? "14:00" : options[0]);
+    DateFr currentDate;
+    List<SigningSheetDaySchedule> sheetDays = new ArrayList<>();
+    double sdTotalPreAM = 0.0;
+    double sdTotalPrePM = 0.0;
+    double sdTotalAbsAM = 0.0;
+    double sdTotalAbsPM = 0.0;
+    if (ranges.isEmpty()) {
+      currentDate = new DateFr(DateFr.NULLDATE);
+    } else {
+      currentDate = ranges.get(0).getDate();
+    }
+    for (ScheduleRangeObject r : ranges) {
+      if (r.getDate().equals(currentDate)) {
+        Hour hs = r.getStart();
+        Hour he = r.getEnd();
+        int min = hs.getLength(he);
+        FollowUp up = r.getFollowUp();
+        if (hs.before(pm)) {
+          if (up.isAbsent() || up.isExcused()) {
+            sdTotalAbsAM += min / 60.0;
+          } else {
+            sdTotalPreAM += min / 60.0;
+          }
+        } else if (up.isAbsent() || up.isExcused()) {
+          sdTotalAbsPM += min / 60.0;
+        } else {
+          sdTotalPrePM += min / 60.0;
+        }
+      } else {
+        SigningSheetDaySchedule sheetDay = new SigningSheetDaySchedule();
+        sheetDay.setDay(currentDate);
+        sheetDay.setTotalAbsAM(sdTotalAbsAM);
+        sheetDay.setTotalAbsPM(sdTotalAbsPM);
+        sheetDay.setTotalPreAM(sdTotalPreAM);
+        sheetDay.setTotalPrePM(sdTotalPrePM);
+        sheetDays.add(sheetDay);
+        //reset
+        currentDate = r.getDate();
+        sdTotalPreAM = 0.0;
+        sdTotalPrePM = 0.0;
+        sdTotalAbsAM = 0.0;
+        sdTotalAbsPM = 0.0;
+
+        Hour hs = r.getStart();
+        Hour he = r.getEnd();
+        int min = hs.getLength(he);
+        FollowUp up = r.getFollowUp();
+        if (hs.before(pm)) {
+          if (up.isAbsent() || up.isExcused()) {
+            sdTotalAbsAM += min / 60.0;
+          } else {
+            sdTotalPreAM += min / 60.0;
+          }
+        } else if (up.isAbsent() || up.isExcused()) {
+          sdTotalAbsPM += min / 60.0;
+        } else {
+          sdTotalPrePM += min / 60.0;
+        }
+      }
+    }
+    if (ranges.size() > 0) {
+      SigningSheetDaySchedule sheetDay = new SigningSheetDaySchedule();
+      sheetDay.setDay(currentDate);
+      sheetDay.setTotalAbsAM(sdTotalAbsAM);
+      sheetDay.setTotalAbsPM(sdTotalAbsPM);
+      sheetDay.setTotalPreAM(sdTotalPreAM);
+      sheetDay.setTotalPrePM(sdTotalPrePM);
+      sheetDays.add(sheetDay);
+    }
+
     StringBuilder sb = new StringBuilder();
 
     String thead = "<table class=\"content\"><thead><tr><th rowspan=\"2\">" + BundleUtil.getLabel("Date.label") + "</th><th colspan=\"2\">" + BundleUtil.getLabel("Morning.label") + "</th><th rowspan=\"2\">Signature</th><th colspan=\"2\">" + BundleUtil.getLabel("Afternoon.label") + "</th><th rowspan=\"2\">" + BundleUtil.getLabel("Signature.label") + "</th></tr><tr><td>" + BundleUtil.getLabel("Present.abbrev.label") + "</td><td>" + BundleUtil.getLabel("Absent.abbrev.label") + "</td><td>" + BundleUtil.getLabel("Present.abbrev.label") + "</td><td>" + BundleUtil.getLabel("Absent.abbrev.label") + "</td></tr></thead>";
     sb.append(thead);
     sb.append("<tbody>");
 
-    Hour pm = new Hour(options[0] == null || Hour.NULL_HOUR.equals(options[0]) ? "14:00" : options[0]);
     double totalPreAM = 0.0;
     double totalAbsAM = 0.0;
     double totalPrePM = 0.0;
     double totalAbsPM = 0.0;
-    for (ScheduleRangeObject r : ranges) {
+    for (SigningSheetDaySchedule d : sheetDays) {
+      totalPreAM += d.getTotalPreAM();
+      totalAbsAM += d.getTotalAbsAM();
+      totalPrePM += d.getTotalPrePM();
+      totalAbsPM += d.getTotalAbsPM();
+      sb.append("<tr><td>").append(d.getDay()).append("</td>");
+
+      sb.append("<td>").append(d.getTotalPreAM() > 0 ? d.getTotalPreAM() : "").append("</td>");
+      sb.append("<td>").append(d.getTotalAbsAM() > 0 ? d.getTotalAbsAM() : "").append("</td>");
+      sb.append("<td></td>");
+      sb.append("<td>").append(d.getTotalPrePM() > 0 ? d.getTotalPrePM() : "").append("</td>");
+      sb.append("<td>").append(d.getTotalAbsPM() > 0 ? d.getTotalAbsPM() : "").append("</td>");
+      sb.append("<td></td></tr>");
+    }
+
+    /*for (ScheduleRangeObject r : ranges) {
+
+
       double preAM = 0.0;
       double absAM = 0.0;
       double prePM = 0.0;
@@ -1125,14 +1212,16 @@ public class MemberEnrolmentEditor
         prePM = min / 60.0;
         totalPrePM += prePM;
       }
+
       sb.append("<tr><td>").append(r.getDate()).append("</td>");
+
       sb.append("<td>").append(preAM > 0 ? preAM : "").append("</td>");
       sb.append("<td>").append(absAM > 0 ? absAM : "").append("</td>");
       sb.append("<td></td>");
       sb.append("<td>").append(prePM > 0 ? prePM : "").append("</td>");
       sb.append("<td>").append(absPM > 0 ? absPM : "").append("</td>");
       sb.append("<td></td></tr>");
-    }
+    }*/
     sb.append("</tbody><tfoot><tr><th>TOTAL</th>");
     sb.append("<td>").append(totalPreAM).append("</td>");
     sb.append("<td>").append(totalAbsAM).append("</td>");
@@ -1157,11 +1246,11 @@ public class MemberEnrolmentEditor
     String nickName = dossier.getContact().getNickName();
     sb.append("<h1>").append(dossier.getContact().getFirstnameName()).append(" : ").append(nickName == null ? "" : nickName).append("</h1>");
     sb.append("<h2>")
-            .append(BundleUtil.getLabel("Enrolment.label")).append(" n° ")
-            .append(node.getOrder().getId()).append(' ')
-            .append(BundleUtil.getLabel("Date.From.label").toLowerCase()).append(' ')
-            .append(node.getOrder().getCreation())
-            .append("</h2>");
+      .append(BundleUtil.getLabel("Enrolment.label")).append(" n° ")
+      .append(node.getOrder().getId()).append(' ')
+      .append(BundleUtil.getLabel("Date.From.label").toLowerCase()).append(' ')
+      .append(node.getOrder().getCreation())
+      .append("</h2>");
     for (Enumeration e = node.children(); e.hasMoreElements();) {
       TreeNode n = (TreeNode) e.nextElement();
       if (n instanceof ModuleEnrolmentNode) {
@@ -1196,19 +1285,19 @@ public class MemberEnrolmentEditor
    */
   public static String getCss() {
     return " body {font-family: Arial, Helvetica, sans-serif;font-size: 1em}"
-            + " table {width: 100%;border-spacing: 0;border-collapse: collapse;border:1px solid Gray;font-size: 0.8em}"
-            + " td, th { border-left: 1px solid Gray;text-align :left }"
-            + " tbody td, tbody th { border-bottom: 1px solid LightGray}"
-            + " tbody tr:last-child td {border-bottom: 1px solid Gray}"
-            + " thead td, thead th, tfoot td, tfoot th { border-bottom: 1px solid Gray}"
-            + " tbody tr:nth-child(even) {background-color: #E6E6E6 !important}"
-            + " tbody tr:nth-child(odd) {background-color: #FFF}"
-            + " body  ul li {font-weight: bold}"
-            + " body  ul ul li {font-weight: normal}"
-            + " h1 {font-size: 1.2em}"
-            + " h2 {font-size : 1.1em}"
-            + " ul {font-size: 0.9em;line-height: 1.4em}"
-            + " h1, h2 {background-color: #CCC !important}";
+      + " table {width: 100%;border-spacing: 0;border-collapse: collapse;border:1px solid Gray;font-size: 0.8em}"
+      + " td, th { border-left: 1px solid Gray;text-align :left }"
+      + " tbody td, tbody th { border-bottom: 1px solid LightGray}"
+      + " tbody tr:last-child td {border-bottom: 1px solid Gray}"
+      + " thead td, thead th, tfoot td, tfoot th { border-bottom: 1px solid Gray}"
+      + " tbody tr:nth-child(even) {background-color: #E6E6E6 !important}"
+      + " tbody tr:nth-child(odd) {background-color: #FFF}"
+      + " body  ul li {font-weight: bold}"
+      + " body  ul ul li {font-weight: normal}"
+      + " h1 {font-size: 1.2em}"
+      + " h2 {font-size : 1.1em}"
+      + " ul {font-size: 0.9em;line-height: 1.4em}"
+      + " h1, h2 {background-color: #CCC !important}";
 //      + " -webkit-print-color-adjust:exact;";
   }
 
@@ -1240,8 +1329,7 @@ public class MemberEnrolmentEditor
   }
 
   private class StopCourseDateDlg
-          extends StopCourseAbstractDlg
-  {
+    extends StopCourseAbstractDlg {
 
     private DateFr date;
 

@@ -23,7 +23,6 @@ package net.algem.util;
 import java.sql.*;
 import java.util.Properties;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Utility class for database connection.
