@@ -122,7 +122,7 @@ public class SigningSheetCtrl
           pw.println(MemberEnrolmentEditor.fillActivityAMPM(ranges, dlg.getOptions()));
           if (!footerImgData.isEmpty()) {
             pw.println("<div class=\"banner\">");
-            pw.println("<img src=\"data:image/png;base64," + footerImgData + "\" width=\"610\"/></div>");
+            pw.println("<img src=\"data:image/png;base64," + footerImgData + "\" width=\"620\"/></div>");
           }
         }
 //        pw.println(MemberEnrolmentEditor.catchActivity(e.getMember(), start, end, getActions(e.getCourseOrder()), memberService));
@@ -295,7 +295,7 @@ public class SigningSheetCtrl
             + " thead th, thead td {text-align: center;vertical-align: top}"
             + " thead td, thead th, tfoot td, tfoot th { border-bottom: 1px solid #ccc}"
             + " tbody td, tbody th { border-bottom: 1px solid #ccc; text-align: center}"
-            + " tfoot tr th, tfoot tr td{border-top: 2px solid #888;text-align: right}"
+            + " tfoot tr th, tfoot tr td{border-top: 2px solid #888;text-align: center}"
             + " table.top {width:80%;margin:0;padding:0;}"
             + " table.top td, table.top th {border:0;vertical-align: bottom}"
             + " table.top td:first-child {text-align: center;width:50%}"
