@@ -20,7 +20,6 @@
  */
 package net.algem.enrolment;
 
-import com.sun.javafx.scene.control.skin.VirtualFlow;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -34,10 +33,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.Vector;
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
@@ -1071,11 +1067,13 @@ public class MemberEnrolmentEditor
       Hour he = r.getEnd();
       min += hs.getLength(he);
       //String note = r.getFollowUp() == null ? "" : r.getFollowUp().getContent();
+      String abs = r.getFollowUp().isAbsent() ? "ABS" : r.getFollowUp().isExcused() ? "EXC" : "";
       sb.append("<tr><td>")
         .append(r.getActivity()).append("</td><td>")
         .append(r.getTeacher().getFirstnameName()).append("</td><td>")
         .append(r.getRoom().getName()).append("</td><td>")
         //.append(note == null ? "" : note).append("</td><td>")
+        .append(abs.isEmpty() ? "" : abs)
         .append("</td><td>")
         .append(r.getDate()).append("</td><td>")
         .append(r.getStart()).append("</td><td>")

@@ -1,5 +1,5 @@
 /*
- * @(#)DataCache.java	2.15.0 30/07/2017
+ * @(#)DataCache.java	2.15.4 24/10/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -90,7 +90,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.0
+ * @version 2.15.4
  * @since 1.0b 03/09/2001
  */
 public class DataCache

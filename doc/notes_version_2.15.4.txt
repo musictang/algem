@@ -1,0 +1,14 @@
+2.15.4
+
+CORRECTIFS
+* Le mois de date de naissance n'était pas correctement détecté lors de l'import csv d'une base de contacts (menu Fichier → Importer  → Importer contacts (csv)).
+* La colonne "Suivi" a été renommée "Signature" dans la feuille d'émargement Pro.
+* Les appréciations de suivi pédagogique n'apparaissent plus dans la feuille d'émargement Pro, excepté pour les mentions ABS ou EXC (en cas d'absence).
+Rappel : le feuille d'émargement pro permet de lister les heures de présence des élèves inscrits à au moins une formule de type "Pro".
+
+FEUILLE D'EMARGEMENT
+Deux possibilités vous sont maintenant offertes pour imprimer la feuille d'émargement des élèves en formation professionnelle :
+- l'émargement standard : descriptif détaillé de la formation en en-tête suivi de la liste des cours de l'élève dans l'ordre chronologique avec sous-totaux par journée.
+- l'émargement par demi-journée : en-tête simplifié suivi de la liste des cours de l'élève avec sous-totaux des heures de présence et d'absence par demi-journée. Le nom et la qualité du référent pédagogique peuvent être précisés en bas de liste.
+
+Un formulaire vous permet de choisir l'une des deux présentations (avant ouverture dans votre navigateur par défaut). Les différents réglages (type d'émargement, heure de début d'après-midi, nom et qualité du référent pédagogique) peuvent être rappelés à chaque ouverture en cliquant sur "Mémoriser mes réglages".

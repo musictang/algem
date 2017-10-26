@@ -1,5 +1,5 @@
 /*
- * @(#)DataConnection.java	2.14.0 30/05/17
+ * @(#)DataConnection.java	2.15.4 18/10/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -28,7 +28,7 @@ import java.util.logging.Level;
  * Utility class for database connection.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.14.0
+ * @version 2.15.4
  * @since 2.6.a 01/08/2012
  */
 public class DataConnection
@@ -248,9 +248,9 @@ public class DataConnection
     int rc = 0; // row count
     GemLogger.info(query);
 
-    Statement stmt = createStatement();
-    rc = stmt.executeUpdate(query);
-    stmt.close();
+    try (Statement stmt = createStatement()) {
+      rc = stmt.executeUpdate(query);
+    }
 
     return rc;
   }

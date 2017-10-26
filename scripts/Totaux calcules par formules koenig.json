@@ -1,0 +1,8 @@
+{
+  "description": "Totaux par formule.\nSi vous ne saisissez pas de date, la p\u00e9riode de recherche par d\u00e9faut correspond \u00e0 l'ann\u00e9e scolaire.\nLa derni\u00e9re colonne correspond au montant calcul\u00e9 (montant de la formule + 400).",
+"args":
+[
+    {"name" : "debut", "label": "Date d\u00e9but", "type": "date"},
+    {"name" : "fin", "label": "Date fin", "type": "date"}
+]
+}

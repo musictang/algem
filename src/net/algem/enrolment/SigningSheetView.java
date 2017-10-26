@@ -124,7 +124,7 @@ public class SigningSheetView
 
     ButtonGroup stype = new ButtonGroup();
     stype.add(rStandard = new JRadioButton(BundleUtil.getLabel("Signing.sheet.standard.type.label")));
-    stype.add(rDetailed = new JRadioButton(BundleUtil.getLabel("Signing.sheet.detailed.type.label")));
+    stype.add(rDetailed = new JRadioButton(BundleUtil.getLabel("Signing.sheet.half-day.type.label")));
     final JTextArea radioHelp = new JTextArea(5, 30);
 
     final JPanel p = new JPanel(new GridBagLayout());

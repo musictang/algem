@@ -1,5 +1,5 @@
 /*
- * @(#) SigningSheetCtrl.java Algem 2.15.4 19/10/17
+ * @(#) SigningSheetCtrl.java Algem 2.15.4 24/10/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -130,9 +130,7 @@ public class SigningSheetCtrl
         setProgress(p);
       }
       pw.println("</body></html>");
-    } catch (SQLException ex) {
-      GemLogger.log(ex.getMessage());
-    } catch (IOException ex) {
+    } catch (SQLException | IOException ex) {
       GemLogger.log(ex.getMessage());
     }
     return null;
