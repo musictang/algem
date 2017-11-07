@@ -1,5 +1,5 @@
 /*
- * @(#) SigningSheetCtrl.java Algem 2.15.4 24/10/17
+ * @(#) SigningSheetCtrl.java Algem 2.15.5 07/11/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -52,7 +52,7 @@ import org.apache.poi.util.IOUtils;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.4
+ * @version 2.15.5
  * @since 2.10.0 01/06/16
  */
 public class SigningSheetCtrl
@@ -304,6 +304,7 @@ public class SigningSheetCtrl
             + " table.content tbody tr td:nth-child(1),tbody tr td:nth-child(4),tbody tr td:nth-child(7) {width: 20%}"
             + " th.signature {text-align: left;height: 3em;}"
             + " textarea {border: 1px solid #ddd}"
+            + " .total {font-family: monospace,sans-serif,text-align: right}"
             + " .logo {float:left;vertical-align: bottom;margin-bottom: 1em}"
             + " .banner {text-align: center;}"
             + " @page { margin: 1cm } @media print {.banner {position: fixed;bottom: 0;left:1cm}";

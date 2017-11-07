@@ -1,5 +1,5 @@
 /*
- * @(#)MemberEnrolmentEditor.java 2.15.4 18/10/17
+ * @(#)MemberEnrolmentEditor.java 2.15.5 07/11/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -76,7 +76,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.4
+ * @version 2.15.5
  * @since 1.0b 06/09/2001
  */
 public class MemberEnrolmentEditor
@@ -988,6 +988,7 @@ public class MemberEnrolmentEditor
    * @param actions a comma-separated list of actions' id
    * @param service
    * @return a html-formatted string
+   * @deprecated 
    */
   public static String catchActivity(int idper, DateFr start, DateFr end, String actions, MemberService service) {
     try {
@@ -1174,59 +1175,27 @@ public class MemberEnrolmentEditor
       totalAbsPM += d.getTotalAbsPM();
       sb.append("<tr><td>").append(d.getDay()).append("</td>");
 
-      sb.append("<td>").append(d.getTotalPreAM() > 0 ? d.getTotalPreAM() : "").append("</td>");
-      sb.append("<td>").append(d.getTotalAbsAM() > 0 ? d.getTotalAbsAM() : "").append("</td>");
+      sb.append("<td>").append(d.getTotalPreAM() > 0 ? String.format("%.2f",d.getTotalPreAM()) : "").append("</td>");
+      sb.append("<td>").append(d.getTotalAbsAM() > 0 ? String.format("%.2f", d.getTotalAbsAM()) : "").append("</td>");
       sb.append("<td></td>");
-      sb.append("<td>").append(d.getTotalPrePM() > 0 ? d.getTotalPrePM() : "").append("</td>");
-      sb.append("<td>").append(d.getTotalAbsPM() > 0 ? d.getTotalAbsPM() : "").append("</td>");
+      sb.append("<td>").append(d.getTotalPrePM() > 0 ? String.format("%.2f", d.getTotalPrePM()) : "").append("</td>");
+      sb.append("<td>").append(d.getTotalAbsPM() > 0 ? String.format("%.2f", d.getTotalAbsPM()) : "").append("</td>");
       sb.append("<td></td></tr>");
     }
 
-    /*for (ScheduleRangeObject r : ranges) {
-
-
-      double preAM = 0.0;
-      double absAM = 0.0;
-      double prePM = 0.0;
-      double absPM = 0.0;
-      int min = 0;
-
-      Hour hs = r.getStart();
-      Hour he = r.getEnd();
-      min += hs.getLength(he);
-      FollowUp up = r.getFollowUp();
-      if (hs.before(pm)) {
-        if (up.isAbsent() || up.isExcused()) {
-          absAM = min / 60.0;
-          totalAbsAM += absAM;
-        } else {
-          preAM = min / 60.0;
-          totalPreAM += preAM;
-        }
-      } else if (up.isAbsent() || up.isExcused()) {
-        absPM = min / 60.0;
-        totalAbsPM += absPM;
-      } else {
-        prePM = min / 60.0;
-        totalPrePM += prePM;
-      }
-
-      sb.append("<tr><td>").append(r.getDate()).append("</td>");
-
-      sb.append("<td>").append(preAM > 0 ? preAM : "").append("</td>");
-      sb.append("<td>").append(absAM > 0 ? absAM : "").append("</td>");
-      sb.append("<td></td>");
-      sb.append("<td>").append(prePM > 0 ? prePM : "").append("</td>");
-      sb.append("<td>").append(absPM > 0 ? absPM : "").append("</td>");
-      sb.append("<td></td></tr>");
-    }*/
     sb.append("</tbody><tfoot><tr><th>TOTAL</th>");
-    sb.append("<td>").append(totalPreAM).append("</td>");
-    sb.append("<td>").append(totalAbsAM).append("</td>");
+    sb.append("<td>").append(String.format("%.2f",totalPreAM)).append("</td>");
+    sb.append("<td>").append(String.format("%.2f",totalAbsAM)).append("</td>");
     sb.append("<td></td>");
-    sb.append("<td>").append(totalPrePM).append("</td>");
-    sb.append("<td>").append(totalAbsPM).append("</td>");
-    sb.append("<td></td></tr>");
+    sb.append("<td>").append(String.format("%.2f",totalPrePM)).append("</td>");
+    sb.append("<td>").append(String.format("%.2f",totalAbsPM)).append("</td>");
+    
+    //print total
+    double totalPre = totalPreAM + totalPrePM;
+    double totalAbs = totalAbsAM + totalAbsPM;
+    sb.append("<td class=\"total\">Total ").append(BundleUtil.getLabel("Present.abbrev.label")).append("&nbsp;:").append(String.format("%8.2f", totalPre).replace(" ","&nbsp;")).append("<br />");
+    sb.append("Total ").append(BundleUtil.getLabel("Absent.abbrev.label")).append("&nbsp;:").append(String.format("%8.2f",totalAbs).replace(" ","&nbsp;")).append("</td>");
+
     sb.append("<tr><th class=\"signature\" colspan=\"7\">").append(BundleUtil.getLabel("Name.and.quality.of.training.manager.label")).append(" : ").append(options[1]).append("</th></tr>");
     sb.append("<tr><th class=\"signature\" colspan=\"7\">").append(BundleUtil.getLabel("Signature.label")).append(" :</th></tr>");
     sb.append("</tfoot></table>");

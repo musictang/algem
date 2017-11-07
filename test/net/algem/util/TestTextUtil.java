@@ -1,5 +1,5 @@
 /*
- * @(#) TestTextUtil.java Algem 2.14.0 14/06/17
+ * @(#) TestTextUtil.java Algem 2.15.5 07/11/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -22,6 +22,7 @@ package net.algem.util;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.util.Locale;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -32,7 +33,7 @@ import static org.junit.Assert.*;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.14.0
+ * @version 2.15.5
  * @since 2.13.3 17/05/17
  */
 public class TestTextUtil {
@@ -95,5 +96,12 @@ public class TestTextUtil {
     }
     System.out.println(path);
     assertEquals(path, "myfile.pnm");
+  }
+  
+  @Test
+  public void testStringFormat() {
+    String e = String.format(Locale.FRANCE, "%8.2f", 11.5d);
+    //System.out.printf(e);
+    assertEquals("   11,50", e);
   }
 }
