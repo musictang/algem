@@ -1,5 +1,5 @@
 /*
- * @(#) SigningSheetCtrl.java Algem 2.15.5 07/11/17
+ * @(#) SigningSheetCtrl.java Algem 2.15.5 08/11/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -301,10 +301,11 @@ public class SigningSheetCtrl
             + " table.content {width:100%;border:2px solid #888;page-break-after: always;}"
             + " table.content tbody tr {height: 2.2em}"
             + " table.content tbody tr:first-child td {border-top: 2px solid #888;}"
-            + " table.content tbody tr td:nth-child(1),tbody tr td:nth-child(4),tbody tr td:nth-child(7) {width: 20%}"
-            + " th.signature {text-align: left;height: 3em;}"
+            + " table.content tbody tr td:nth-child(1),tbody tr td:nth-child(4),tbody tr td:nth-child(7) {width: 22%}"
+      + " table.content tbody tr td:nth-child(2),tbody tr td:nth-child(3),tbody tr td:nth-child(5), tbody tr td:nth-child(6) {width: 8%}"
+            + " th.signature {text-align: left;height: 3em;padding-left: 1em}"
             + " textarea {border: 1px solid #ddd}"
-            + " .total {font-family: monospace,sans-serif,text-align: right}"
+            + " .total {font-family: monospace,sans-serif;text-align: right}"
             + " .logo {float:left;vertical-align: bottom;margin-bottom: 1em}"
             + " .banner {text-align: center;}"
             + " @page { margin: 1cm } @media print {.banner {position: fixed;bottom: 0;left:1cm}";
