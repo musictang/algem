@@ -181,7 +181,8 @@ public class ModuleDlg
       public void stateChanged(ChangeEvent e) {
         JSpinner o = (JSpinner) e.getSource();
         int val = (int) o.getValue();
-        double baseP = module.getBasePrice();//((Number) price.getValue()).doubleValue();
+        double baseP = module.getBasePrice();
+        //double baseP = price.getValue() == null ? module.getBasePrice() : ((Number) price.getValue()).doubleValue();
         adjustBasePrice(baseP, val);
       }
 

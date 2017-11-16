@@ -108,6 +108,7 @@ public class SigningSheetCtrl
       for (int i = 0, len = all.size(); i < len; i++) {
         Enrolment e = all.get(i);
         List<ScheduleRangeObject> ranges = MemberEnrolmentEditor.getActivityRanges(e.getMember(), start, end, getActions(e.getCourseOrder()), memberService);
+        //TODO ajouter repets 
         if (SigningSheetType.STANDARD.equals(sheetType)) {
           pw.println(getEnrolmentInfo(e, SigningSheetType.STANDARD, start));
           pw.println(MemberEnrolmentEditor.fillActivityFull(ranges));
