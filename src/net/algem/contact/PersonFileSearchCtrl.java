@@ -1,7 +1,7 @@
 /*
- * @(#)PersonFileSearchCtrl.java 2.15.0 30/07/2017
+ * @(#)PersonFileSearchCtrl.java 2.15.6 29/11/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -40,7 +40,7 @@ import net.algem.util.ui.SearchCtrl;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.0
+ * @version 2.15.6
  * @since 1.0a 07/07/1999
  */
 public class PersonFileSearchCtrl
@@ -115,6 +115,12 @@ public class PersonFileSearchCtrl
     query += query.length() > 0 ? " AND " : " WHERE ";
     query += "p.ptype != " + Person.BANK + " AND p.ptype != " + Person.ESTABLISHMENT;
 
+    if (((PersonSearchView) searchView).isFilteredByTeacher()) {
+      query += " AND p.id IN (SELECT idper FROM prof)";
+    } else if (((PersonSearchView) searchView).isFilteredByMember()) {
+      query += " AND p.id IN (SELECT idper FROM eleve)";
+    }
+
     int nb = ContactIO.count(query, dc);
 
     if (nb == 0) {
@@ -154,6 +160,7 @@ public class PersonFileSearchCtrl
     }
 
     String squery = cquery + " " + query + " ORDER BY p.nom,p.prenom";
+
     int cpt = 0;
     try {
       Vector<Contact> block; // vecteur de Contact

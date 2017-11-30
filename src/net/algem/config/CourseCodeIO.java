@@ -1,7 +1,7 @@
 /*
- * @(#) CourseCodeIO.java Algem 2.8.a 14/03/2013
- * 
- * Copyright (c) 1999-2012 Musiques Tangentes. All Rights Reserved.
+ * @(#) CourseCodeIO.java Algem 2.15.6 29/11/17
+ *
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,6 +20,8 @@
 package net.algem.config;
 
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import net.algem.util.DataConnection;
 import net.algem.util.model.Cacheable;
@@ -27,21 +29,28 @@ import net.algem.util.model.Cacheable;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.a
+ * @version 2.15.6
  * @since 2.8.a 14/03/2013
  */
 public class CourseCodeIO
-  extends GemParamIO 
+  extends GemParamIO
         implements Cacheable
 {
-  
+
   private final static String TABLE = "module_type";
   private final static String SEQUENCE = "idmoduletype";
+  private final Comparator<GemParam> comparator;
 
   public CourseCodeIO(DataConnection dc) {
     this.dc = dc;
+    this.comparator = new Comparator<GemParam>() {
+      @Override
+      public int compare(GemParam o1, GemParam o2) {
+        return o1.getValue().compareTo(o2.getValue());
+      }
+    };
   }
-  
+
   @Override
   protected String getSequence() {
     return SEQUENCE;
@@ -54,7 +63,9 @@ public class CourseCodeIO
 
   @Override
   public List<GemParam> load() throws SQLException {
-    return find();
+    List<GemParam> codes = find();
+    Collections.sort(codes, comparator);
+    return codes;
   }
 
 }

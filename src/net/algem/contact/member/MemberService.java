@@ -1,5 +1,5 @@
 /*
- * @(#)MemberService.java	2.12.0 08/03/17
+ * @(#)MemberService.java	2.15.6 29/11/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -49,7 +49,7 @@ import net.algem.util.model.Model;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.12.0
+ * @version 2.15.6
  * @since 2.4.a 14/05/12
  */
 public class MemberService
@@ -343,6 +343,27 @@ public class MemberService
       GemLogger.log(ex.getMessage());
       return new ArrayList<Module>();
     }
+  }
+
+  /**
+   * Get all rehearsals of a person between @{code start} and @{code end} as range objects.
+   *
+   * @param idper member's id
+   * @param start start date
+   * @param end end date
+   * @return a list of ScheduleRangeObject
+   * @throws SQLException
+   */
+  public List<ScheduleRangeObject> getMemberRehearsals(int idper, Date start, Date end, boolean individual, boolean group) throws SQLException {
+    List<ScheduleRangeObject> ranges = new ArrayList<>();
+    if (individual) {
+      ranges.addAll(ScheduleRangeIO.findMemberRehearsals(idper, Schedule.MEMBER, start, end, dc));
+    }
+    if (group) {
+      ranges.addAll(ScheduleRangeIO.findMemberRehearsals(idper, Schedule.GROUP, start, end, dc));
+    }
+
+    return ranges;
   }
 
   public void saveRehearsal(ScheduleObject p) throws MemberException {

@@ -1,6 +1,6 @@
 /*
- * @(#)PersonSearchView.java	2.11.4 02/01/17
- * 
+ * @(#)PersonSearchView.java	2.15.6 29/11/17
+ *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -16,12 +16,15 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.contact;
 
+import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
+import javax.swing.ButtonGroup;
+import javax.swing.JRadioButton;
 import net.algem.util.BundleUtil;
 import net.algem.util.GemCommand;
 import net.algem.util.ui.*;
@@ -29,10 +32,10 @@ import net.algem.util.ui.*;
 /**
  * View used to search a contact whose type is other than
  * {@code  net.algem.contact.Person.BANK} and  {@code net.algem.contact.Person.ESTABLISHMENT}.
- * 
+ *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.4
+ * @version 2.15.6
  * @since 1.0a 07/07/1999
  */
 public class PersonSearchView
@@ -48,6 +51,9 @@ public class PersonSearchView
   private GemField email;
   private GemField site;
   private GemPanel mask;
+  ButtonGroup filter;
+  private JRadioButton checkTeacherOnly;
+  private JRadioButton checkMemberOnly;
 
   public PersonSearchView() {
 
@@ -56,23 +62,33 @@ public class PersonSearchView
   @Override
   public GemPanel init() {
     number = new GemNumericField(6);
+    number.setMinimumSize(new Dimension(70, number.getPreferredSize().height));
     number.addActionListener(this);
     org = new GemField(15);
+    Dimension min = new Dimension(170, org.getPreferredSize().height);
+    org.setMinimumSize(min);
     org.addActionListener(this);
     name = new GemField(15);
+    name.setMinimumSize(min);
     name.addActionListener(this);
     firstname = new GemField(15);
+    firstname.setMinimumSize(min);
     firstname.addActionListener(this);
     pseudo = new GemField(15);
+    pseudo.setMinimumSize(min);
     pseudo.addActionListener(this);
     telephone = new GemField(15);
+    telephone.setMinimumSize(min);
     telephone.addActionListener(this);
     email = new GemField(15);
+    email.setMinimumSize(min);
     email.addActionListener(this);
     site = new GemField(15);
+    site.setMinimumSize(min);
     site.addActionListener(this);
 
     btErase = new GemButton(GemCommand.ERASE_CMD);
+    btErase.setToolTipText(BundleUtil.getLabel("Person.search.erase.tip"));
     btErase.addActionListener(this);
 
     mask = new GemPanel();
@@ -96,7 +112,13 @@ public class PersonSearchView
     gb.add(telephone, 1, 5, 1, 1, GridBagHelper.WEST);
     gb.add(email, 1, 6, 1, 1, GridBagHelper.WEST);
     gb.add(site, 1, 7, 1, 1, GridBagHelper.WEST);
-    gb.add(btErase, 2, 9, 1, 1, GridBagHelper.WEST);
+
+    filter = new ButtonGroup();
+    gb.add(checkTeacherOnly = new JRadioButton(BundleUtil.getLabel("Person.search.teacher.filter.label")), 0,8,2,1, GridBagHelper.WEST);
+    gb.add(checkMemberOnly = new JRadioButton(BundleUtil.getLabel("Person.search.member.filter.label")), 0,9,2,1, GridBagHelper.WEST);
+    filter.add(checkTeacherOnly);
+    filter.add(checkMemberOnly);
+    gb.add(btErase, 2, 10, 1, 1, GridBagHelper.WEST);
 
     return mask;
   }
@@ -157,6 +179,14 @@ public class PersonSearchView
     }
   }
 
+  boolean isFilteredByTeacher() {
+    return checkTeacherOnly.isSelected();
+  }
+
+  boolean isFilteredByMember() {
+    return checkMemberOnly.isSelected();
+  }
+
   @Override
   public void clear() {
     number.setText("");
@@ -167,5 +197,6 @@ public class PersonSearchView
     telephone.setText("");
     email.setText("");
     site.setText("");
+    filter.clearSelection();
   }
 }

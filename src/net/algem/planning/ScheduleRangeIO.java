@@ -1,7 +1,7 @@
 /*
- * @(#)ScheduleRangeIO.java	2.11.0 30/09/16
+ * @(#)ScheduleRangeIO.java	2.15.6 29/11/17
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -23,6 +23,9 @@ package net.algem.planning;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Vector;
 import net.algem.contact.Person;
 import net.algem.course.Course;
@@ -39,7 +42,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.0
+ * @version 2.15.6
  * @since 1.0a 7/7/1999
  */
 public class ScheduleRangeIO
@@ -240,6 +243,66 @@ public class ScheduleRangeIO
       }
     }
     return v;
+  }
+
+  /**
+   * Retun a list of ranges from a list of schedules.
+   * This method is used to find all individual rehearsals of a person between @{code start} and @{code end}.
+   * As rehearsals are of schedule type, schedule entries are converted in schedule range objects.
+   * @param idper member's id
+   * @param start start date
+   * @param end end date
+   * @param dc data connexion instance
+   * @return a list of ranges
+   * @throws SQLException
+   */
+   public static List<ScheduleRangeObject> findMemberRehearsals(int idper, int type, Date start, Date end, DataConnection dc) throws SQLException {
+
+    List<ScheduleRangeObject> ranges = new ArrayList<>();
+
+    String query = "SELECT p.id,p.jour,p.debut,p.fin,p.action FROM planning p"
+      + " WHERE p.ptype = " + Schedule.MEMBER
+      + " AND p.jour BETWEEN ? AND ?"
+      + " AND p.idper = ?"
+      + " ORDER BY p.jour";
+    if (Schedule.GROUP == type) {
+      query = "SELECT p.id, p.jour, p.debut,p.fin,p.action"
++ " FROM planning p JOIN groupe g ON p.idper = g.id JOIN groupe_det gd ON gd.id = g.id"
++ " WHERE p.ptype = " + Schedule.GROUP
++ " AND p.jour BETWEEN ? AND ?"
++ " AND gd.musicien = ?"
++ " ORDER BY p.jour";
+    }
+    try (PreparedStatement ps = dc.prepareStatement(query)) {
+      ps.setDate(1, new java.sql.Date(start.getTime()));
+      ps.setDate(2, new java.sql.Date(end.getTime()));
+      ps.setInt(3, idper);
+
+      ResultSet rs = ps.executeQuery();
+      while (rs.next()) {
+        ScheduleRangeObject p = new ScheduleRangeObject();
+        p.setId(rs.getInt(1));
+        p.setScheduleId(rs.getInt(1));
+        p.setDate(new DateFr(rs.getString(2)));
+        p.setStart(new Hour(rs.getString(3)));
+        p.setEnd(new Hour(PlanningService.getTime(rs.getString(4))));
+        //p.setMember((Person) DataCache.findId(idper);
+        p.setNote(0);
+
+        p.setIdAction(rs.getInt(5));
+        p.setIdPerson(idper);// idper in schedule
+        p.setIdRoom(0);
+        p.setType(Schedule.MEMBER);
+
+//    p.setRoom((Room) DataCache.findId(p.getIdRoom(), Model.Room));
+//    p.setTeacher((Person) DataCache.findId(p.getIdPerson(), Model.Teacher));
+//    p.setAction(service.getAction(p.getIdAction()));
+//    p.setCourse((Course) DataCache.findId(p.getAction().getCourse(), Model.Course));
+        ranges.add(p);
+      }
+    }
+
+    return ranges;
   }
 
   private static String getFollowUpRequest(boolean action) {//TODO !!!!

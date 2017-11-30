@@ -1,5 +1,5 @@
 /*
- * @(#) SigningSheetView.java Algem 2.15.4 16/10/17
+ * @(#) SigningSheetView.java Algem 2.15.6 29/11/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -36,17 +36,14 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import net.algem.config.Company;
-import net.algem.contact.OrganizationIO;
+
 import net.algem.enrolment.SigningSheetCtrl.SigningSheetType;
 import net.algem.planning.DateFr;
-import net.algem.planning.DateFrField;
 import net.algem.planning.DateRange;
 import net.algem.planning.DateRangePanel;
 import net.algem.planning.Hour;
 import net.algem.planning.HourField;
 import net.algem.util.BundleUtil;
-import net.algem.util.DataCache;
 import net.algem.util.GemCommand;
 import net.algem.util.MessageUtil;
 import net.algem.util.ui.GemButton;
@@ -57,7 +54,7 @@ import net.algem.util.ui.GridBagHelper;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.4
+ * @version 2.15.6
  * @since 2.10.0 02/06/2016
  */
 public class SigningSheetView
@@ -74,6 +71,8 @@ public class SigningSheetView
   private JRadioButton rStandard, rDetailed;
   private JPanel options;
   private JTextField referent;
+  private JCheckBox checkIndividualRehearsals;
+  private JCheckBox checkGroupRehearsals;
   private HourField pm = new HourField("14:00");
   private final static Preferences SIGNING_SHEET_PREFS = Preferences.userRoot().node("/algem/emargement");
 
@@ -136,6 +135,8 @@ public class SigningSheetView
 
     referent = new JTextField();
     referent.setPreferredSize(new Dimension(radioHelp.getPreferredSize().width, referent.getPreferredSize().height));
+    checkIndividualRehearsals = new JCheckBox(BundleUtil.getLabel("Signing.sheet.include.individual.rehearsals"));
+    checkGroupRehearsals = new JCheckBox(BundleUtil.getLabel("Signing.sheet.include.group.rehearsals"));
 
     final GridBagHelper gb = new GridBagHelper(p);
 
@@ -145,6 +146,8 @@ public class SigningSheetView
     gb2.add(pm, 2, 0, 1, 1, GridBagHelper.WEST);
     gb2.add(new GemLabel(BundleUtil.getLabel("Name.and.quality.of.training.manager.label")), 1, 1, 2, 1, GridBagHelper.WEST);
     gb2.add(referent, 1, 2, 2, 1, GridBagHelper.WEST);
+    gb2.add(checkIndividualRehearsals, 1, 3, 2, 1, GridBagHelper.WEST);
+    gb2.add(checkGroupRehearsals, 1, 4, 2, 1, GridBagHelper.WEST);
 
     setLayout(new BorderLayout());
     ActionListener typeListener = new ActionListener()
@@ -177,6 +180,8 @@ public class SigningSheetView
 
     String pmPref = SIGNING_SHEET_PREFS.get("pm", null);
     String refPref = SIGNING_SHEET_PREFS.get("ref", null);
+    boolean individualPref = SIGNING_SHEET_PREFS.getBoolean("individual", false);
+    boolean groupPref = SIGNING_SHEET_PREFS.getBoolean("group", false);
     boolean detailPref = SIGNING_SHEET_PREFS.getBoolean("detailed", false);
     if (pmPref != null) {
       pm.set(new Hour(pmPref));
@@ -184,6 +189,8 @@ public class SigningSheetView
     if (refPref != null) {
       referent.setText(refPref);
     }
+    checkIndividualRehearsals.setSelected(individualPref);
+    checkGroupRehearsals.setSelected(groupPref);
     if (detailPref) {
       rDetailed.setSelected(true);
       radioHelp.setText(MessageUtil.getMessage("signing.sheet.detailed.type.info"));
@@ -202,15 +209,17 @@ public class SigningSheetView
           SIGNING_SHEET_PREFS.put("pm", pm.getText());
           SIGNING_SHEET_PREFS.put("ref", referent.getText());
           SIGNING_SHEET_PREFS.putBoolean("detailed", rDetailed.isSelected());
+          SIGNING_SHEET_PREFS.putBoolean("individual", checkIndividualRehearsals.isSelected());
+          SIGNING_SHEET_PREFS.putBoolean("group", checkGroupRehearsals.isSelected());
         }
       }
     });
-    gb.add(cbMemo, 1, 4, 2, 1, GridBagHelper.WEST);
+    gb.add(cbMemo, 0, 5, 3, 1, GridBagHelper.WEST);
 
     add(p, BorderLayout.CENTER);
     add(buttons, BorderLayout.SOUTH);
 
-    setSize(440, 380);
+    setSize(480, 420);
     setLocationRelativeTo(parent);
 
     setVisible(true);
@@ -223,6 +232,14 @@ public class SigningSheetView
 
   String[] getOptions() {
     return new String[]{pm.get().toString(), referent.getText()};
+  }
+
+  boolean withIndividualRehearsals() {
+    return checkIndividualRehearsals.isSelected();
+  }
+
+  boolean withGroupRehearsals() {
+    return checkGroupRehearsals.isSelected();
   }
 
 }

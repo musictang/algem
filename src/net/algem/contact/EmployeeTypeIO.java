@@ -82,7 +82,7 @@ public class EmployeeTypeIO
     }
     return vn;
   }
-  
+
   private String getLocalizedLabel(int idx) {
     switch (idx) {
       case 0:
@@ -93,6 +93,8 @@ public class EmployeeTypeIO
         return BundleUtil.getLabel("Technician.label");
       case 3:
         return BundleUtil.getLabel("Administrative.label");
+      case 4:
+        return BundleUtil.getLabel("Artist.label");
     }
     return BundleUtil.getLabel("To.define.label");
   }

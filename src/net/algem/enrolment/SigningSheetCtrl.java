@@ -1,5 +1,5 @@
 /*
- * @(#) SigningSheetCtrl.java Algem 2.15.5 08/11/17
+ * @(#) SigningSheetCtrl.java Algem 2.15.6 29/11/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -28,6 +28,8 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 import javax.swing.SwingWorker;
@@ -52,7 +54,7 @@ import org.apache.poi.util.IOUtils;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.5
+ * @version 2.15.6
  * @since 2.10.0 01/06/16
  */
 public class SigningSheetCtrl
@@ -105,15 +107,38 @@ public class SigningSheetCtrl
       //String headerImgData = ImageUtil.getLogoAsBase64(company);
       String footerImgData = getBase64StringFromImgDataSource("emargement-footer.png");
       //String companyName = company != null ? company.getOrg().getName() : "";
+      Comparator<ScheduleRangeObject> dateComparator = new Comparator<ScheduleRangeObject>() {
+        @Override
+        public int compare(ScheduleRangeObject o1, ScheduleRangeObject o2) {
+          if (o1.getDate().before(o2.getDate())) {
+            return -1;
+          } else if (o1.getDate().after(o2.getDate())) {
+            return 1;
+          } else {
+            return 0;
+          }
+        }
+
+      };
       for (int i = 0, len = all.size(); i < len; i++) {
         Enrolment e = all.get(i);
         List<ScheduleRangeObject> ranges = MemberEnrolmentEditor.getActivityRanges(e.getMember(), start, end, getActions(e.getCourseOrder()), memberService);
-        //TODO ajouter repets 
+
         if (SigningSheetType.STANDARD.equals(sheetType)) {
           pw.println(getEnrolmentInfo(e, SigningSheetType.STANDARD, start));
           pw.println(MemberEnrolmentEditor.fillActivityFull(ranges));
           //pw.println("<div class=\"pageBreak\"></div>");
         } else {
+          // maybe include rehearsals
+          boolean individual = dlg.withIndividualRehearsals();
+          boolean group = dlg.withGroupRehearsals();
+          if (individual || group) {
+            List<ScheduleRangeObject> rehearsals = MemberEnrolmentEditor.completeActivityRanges(e.getMember(),start, end, memberService,individual, group);
+            if (rehearsals.size() > 0) {
+              ranges.addAll(rehearsals);
+              Collections.sort(ranges, dateComparator);
+            }
+          }
           pw.print("<header>");
           if (!headerImgData.isEmpty()) {
             pw.print("<img class=\"logo\" src=\"data:image/png;base64," + headerImgData + "\" width=100 />");

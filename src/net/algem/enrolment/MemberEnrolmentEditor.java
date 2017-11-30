@@ -1,5 +1,5 @@
 /*
- * @(#)MemberEnrolmentEditor.java 2.15.5 07/11/17
+ * @(#)MemberEnrolmentEditor.java 2.15.6 29/11/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -76,7 +76,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.5
+ * @version 2.15.6
  * @since 1.0b 06/09/2001
  */
 public class MemberEnrolmentEditor
@@ -988,7 +988,7 @@ public class MemberEnrolmentEditor
    * @param actions a comma-separated list of actions' id
    * @param service
    * @return a html-formatted string
-   * @deprecated 
+   * @deprecated
    */
   public static String catchActivity(int idper, DateFr start, DateFr end, String actions, MemberService service) {
     try {
@@ -1051,6 +1051,30 @@ public class MemberEnrolmentEditor
     return ranges;
   }
 
+  /**
+   * Complete the activity of the student {@code idper} with the list of his rehearsals.
+   *
+   * @param idper member's id
+   * @param start start date
+   * @param end end date
+   * @param service member service
+   * @param individual if true, include individual rehearsals
+   * @param group if true, include group rehearsals
+   * @return a list of ScheduleRangeObject
+   */
+  public static List<ScheduleRangeObject> completeActivityRanges(int idper, DateFr start, DateFr end, MemberService service, boolean individual, boolean group) {
+    List<ScheduleRangeObject> ranges = new ArrayList<>();
+    try {
+      List<ScheduleRangeObject> memberRanges = service.getMemberRehearsals(idper, start.getDate(), end.getDate(),individual, group);
+      ranges.addAll(memberRanges);
+    } catch (SQLException ex) {
+      GemLogger.logException(ex);
+    }
+    return ranges;
+
+  }
+
+
   public static String fillActivityFull(List<ScheduleRangeObject> ranges) {
     StringBuilder sb = new StringBuilder();
     sb.append("<table><thead>");
@@ -1104,14 +1128,15 @@ public class MemberEnrolmentEditor
         Hour hs = r.getStart();
         Hour he = r.getEnd();
         int min = hs.getLength(he);
+        // distinguer repets (up is null)
         FollowUp up = r.getFollowUp();
         if (hs.before(pm)) {
-          if (up.isAbsent() || up.isExcused()) {
+          if (up != null && (up.isAbsent() || up.isExcused())) {
             sdTotalAbsAM += min / 60.0;
           } else {
             sdTotalPreAM += min / 60.0;
           }
-        } else if (up.isAbsent() || up.isExcused()) {
+        } else if (up != null && (up.isAbsent() || up.isExcused())) {
           sdTotalAbsPM += min / 60.0;
         } else {
           sdTotalPrePM += min / 60.0;
@@ -1136,12 +1161,12 @@ public class MemberEnrolmentEditor
         int min = hs.getLength(he);
         FollowUp up = r.getFollowUp();
         if (hs.before(pm)) {
-          if (up.isAbsent() || up.isExcused()) {
+          if (up != null && (up.isAbsent() || up.isExcused())) {
             sdTotalAbsAM += min / 60.0;
           } else {
             sdTotalPreAM += min / 60.0;
           }
-        } else if (up.isAbsent() || up.isExcused()) {
+        } else if (up != null && (up.isAbsent() || up.isExcused())) {
           sdTotalAbsPM += min / 60.0;
         } else {
           sdTotalPrePM += min / 60.0;
@@ -1189,7 +1214,7 @@ public class MemberEnrolmentEditor
     sb.append("<td></td>");
     sb.append("<td>").append(String.format("%.2f",totalPrePM)).append("</td>");
     sb.append("<td>").append(String.format("%.2f",totalAbsPM)).append("</td>");
-    
+
     //print total
     double totalPre = totalPreAM + totalPrePM;
     double totalAbs = totalAbsAM + totalAbsPM;
