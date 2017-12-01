@@ -1,5 +1,5 @@
 /*
- * @(#)ConfigAdmin.java 2.11.0 27/09/16
+ * @(#)ConfigAdmin.java 2.15.6 01/12/17
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -29,7 +29,6 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JRadioButton;
 import javax.swing.border.Border;
 import net.algem.enrolment.PricingPeriod;
 import net.algem.room.EstabChoice;
@@ -45,7 +44,7 @@ import net.algem.util.ui.GemPanel;
  * Panel for config and administrative tasks.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.0
+ * @version 2.15.6
  */
 public class ConfigAdmin
         extends ConfigPanel

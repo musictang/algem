@@ -1,5 +1,5 @@
 /*
-* @(#)OrderLineTableView.java 2.15.0 30/07/2017
+* @(#)OrderLineTableView.java 2.15.6 01/12/17
 *
 * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
 *
@@ -25,6 +25,7 @@ import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
+import java.util.Comparator;
 import javax.swing.RowFilter.Entry;
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
@@ -45,14 +46,13 @@ import net.algem.util.model.Model;
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @author <a href="mailto:damien.loustau@gmail.com">Damien Loustau</a>
- * @version 2.15.0
+ * @version 2.15.6
  * @since 1.0a 07/07/1999
  *
  */
 public class OrderLineTableView
-        extends JPanel
-        implements TableModelListener
-{
+  extends JPanel
+  implements TableModelListener {
 
   private OrderLineTableModel tableModel;
   private JTable table;
@@ -87,13 +87,11 @@ public class OrderLineTableView
   public OrderLineTableView(OrderLineTableModel tableModel, ActionListener al) {
 
     this.tableModel = tableModel;
-    table = new JTable(tableModel)
-    {
+    table = new JTable(tableModel) {
       //Implements table header tool tips.
       @Override
       protected JTableHeader createDefaultTableHeader() {
-        return new JTableHeader(columnModel)
-        {
+        return new JTableHeader(columnModel) {
 
           @Override
           public String getToolTipText(MouseEvent e) {
@@ -108,9 +106,21 @@ public class OrderLineTableView
 
     sorter = new TableRowSorter<TableModel>(tableModel);
     table.setRowSorter(sorter);
+    // column 0,1 are rendered as strings {@link #ContactNameTableCellRenderer}
+    // a special comparator must be set to sort these columns
+    Comparator idComparator = new Comparator<String>() {
+      @Override
+      public int compare(String o1, String o2) {
+        Integer i1 = Integer.valueOf(o1.trim());
+        Integer i2 = Integer.valueOf(o2.trim());
+        return i1.compareTo(i2);
+      }
+    };
 
-    dateFilter = new RowFilter<Object, Object>()
-    {
+    sorter.setComparator(0, idComparator);
+    sorter.setComparator(1, idComparator);
+
+    dateFilter = new RowFilter<Object, Object>() {
 
       @Override
       public boolean include(Entry<? extends Object, ? extends Object> entry) {
@@ -125,8 +135,7 @@ public class OrderLineTableView
       }
     };
 
-    unpaidFilter = new RowFilter<Object, Object>()
-    {
+    unpaidFilter = new RowFilter<Object, Object>() {
 
       @Override
       public boolean include(Entry<? extends Object, ? extends Object> entry) {
@@ -135,8 +144,7 @@ public class OrderLineTableView
       }
     };
 
-    invoiceFilter = new RowFilter<Object, Object>()
-    {
+    invoiceFilter = new RowFilter<Object, Object>() {
       @Override
       public boolean include(Entry<? extends Object, ? extends Object> entry) {
         DateFr date = (DateFr) entry.getValue(3);
@@ -169,7 +177,7 @@ public class OrderLineTableView
 
     DefaultTableCellRenderer rd = new DefaultTableCellRenderer();
     rd.setHorizontalAlignment(SwingConstants.RIGHT);
-    // alignement à droite de la colonne Montant
+    // right alignment of amount (column 6)
     table.getColumnModel().getColumn(6).setCellRenderer(rd);
     //tableVue.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     // la sélection multiple permet le copier-coller d'un ensemble de lignes vers une autre application
@@ -197,8 +205,7 @@ public class OrderLineTableView
    * @param popup
    */
   void addPopupMenuListener(JPopupMenu popup, final DataCache dataCache) {
-    table.addMouseListener(new MenuPopupListener(table, popup)
-    {
+    table.addMouseListener(new MenuPopupListener(table, popup) {
 
       @Override
       public void maybeShowPopup(MouseEvent e) {
@@ -269,8 +276,7 @@ public class OrderLineTableView
   }
 
   public void setMemberShipFilter(final String... values) {
-    memberShipFilter = new RowFilter<Object, Object>()
-    {
+    memberShipFilter = new RowFilter<Object, Object>() {
       @Override
       public boolean include(Entry<? extends Object, ? extends Object> entry) {
         DateFr date = (DateFr) entry.getValue(3);
@@ -372,17 +378,21 @@ public class OrderLineTableView
     return table;
   }
 
+  /**
+   * This rendered is used to show payer and member names when mouse is moved over payer's or member's id.
+   * The cell value returned is a String and overrides Integer.class returned by the model.
+   */
   class ContactNameTableCellRenderer
-          extends DefaultTableCellRenderer
-  {
+    extends DefaultTableCellRenderer {
 
     @Override
     public Component getTableCellRendererComponent(
-            JTable table, Object value,
-            boolean isSelected, boolean hasFocus,
-            int row, int column) {
+      JTable table, Object value,
+      boolean isSelected, boolean hasFocus,
+      int row, int column) {
       JLabel c = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
       String idper = (String) value;
+      setHorizontalAlignment(SwingConstants.RIGHT);
       try {
         Person p = (Person) DataCache.findId(Integer.parseInt(idper.trim()), Model.Person);
         //assert(p != null);
@@ -401,14 +411,13 @@ public class OrderLineTableView
   }
 
   class AccountNameTableCellRenderer
-          extends DefaultTableCellRenderer
-  {
+    extends DefaultTableCellRenderer {
 
     @Override
     public Component getTableCellRendererComponent(
-            JTable table, Object value,
-            boolean isSelected, boolean hasFocus,
-            int row, int column) {
+      JTable table, Object value,
+      boolean isSelected, boolean hasFocus,
+      int row, int column) {
       JLabel c = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
       c.setToolTipText((String) value);
       return c;

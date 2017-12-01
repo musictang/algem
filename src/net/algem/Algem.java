@@ -1,5 +1,5 @@
 /*
- * @(#)Algem.java	2.15.5 07/11/17
+ * @(#)Algem.java	2.15.6 01/12/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -25,6 +25,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Point;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -39,12 +41,15 @@ import java.util.Locale;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.prefs.Preferences;
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.plaf.InsetsUIResource;
+import net.algem.config.Company;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
 import net.algem.config.ThemeConfig;
+import net.algem.contact.OrganizationIO;
 import net.algem.security.AuthDlg;
 import net.algem.security.User;
 import net.algem.util.*;
@@ -57,12 +62,12 @@ import org.apache.commons.codec.binary.Base64;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.5
+ * @version 2.15.6
  */
 public class Algem
 {
 
-  public static final String APP_VERSION = "2.15.5";
+  public static final String APP_VERSION = "2.15.6";
   public static List<LookAndFeelInfo> ALTERNATIVE_LAF = new ArrayList<>();
   private static final int DEF_WIDTH = 1080;// (850,650) => ancienne taille
   private static final int DEF_HEIGHT = 780;
@@ -153,17 +158,19 @@ public class Algem
       try {
         GemLogger.set(new File(logPath).getPath());
       } catch (IOException ex1) {
-        ex1.printStackTrace();
+        System.err.println(ex1.getMessage());
+        //ex1.printStackTrace();
         try {
           setDefaultLogFile();
         } catch (IOException ex2) {
-          ex2.printStackTrace();
+          //ex2.printStackTrace();
+          System.err.println(ex2.getMessage());
         }
       }
     }
     GemLogger.log(Level.INFO, "net.algem.Algem", "main", msg);
 
-    final GemBoot gemBoot = new GemBoot();
+    final GemBoot gemBoot = new GemBoot(new OrganizationIO(dc));
 
     /* ------------------------ */
     /* Test login user validity */
@@ -184,6 +191,13 @@ public class Algem
     gemBoot.close();
   }
 
+  /**
+   *
+   * @param u user name
+   * @param pass user pass
+   * @param auth authentication config
+   * @deprecated
+   */
   private void checkUser(String u, String pass, boolean auth) {
     User currentUser = cache.getUser();
     if (currentUser == null) {
@@ -197,6 +211,13 @@ public class Algem
     }
   }
 
+  /**
+   *
+   * @param login
+   * @param pass
+   * @return true if authentication succeeded
+   * @deprecated 
+   */
   private boolean authenticate(String login, String pass) {
     return cache.getUserService().authenticate(login, pass);
   }
@@ -537,9 +558,22 @@ public class Algem
     private JLabel label;
     private JFrame frame;
 
-    public GemBoot() {
+    public GemBoot(OrganizationIO orgIO) {
       frame = new JFrame("Algem (" + APP_VERSION + ")");
-      ImageIcon icon = ImageUtil.createImageIcon(ImageUtil.ALGEM_LOGO);
+      ImageIcon icon = null;
+      try {
+        final Company comp = orgIO.getDefault();
+        byte[] data = comp.getLogo();
+        if (data != null) {
+          BufferedImage img = ImageIO.read(new ByteArrayInputStream(data));
+          icon = new ImageIcon(ImageUtil.rescaleSmooth(img, 128, 128));
+        } else  {
+          icon = ImageUtil.createImageIcon(ImageUtil.ALGEM_LOGO);
+        }
+      } catch (SQLException | IOException ex) {
+        GemLogger.log(ex.getMessage());
+        icon = ImageUtil.createImageIcon(ImageUtil.ALGEM_LOGO);
+      }
 
       label = new JLabel("", JLabel.LEFT);
       frame.setSize(420, 160);

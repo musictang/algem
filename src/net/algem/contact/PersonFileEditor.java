@@ -1,5 +1,5 @@
 /*
- * @(#)PersonFileEditor 2.15.0 30/07/2017
+ * @(#)PersonFileEditor 2.15.6 01/12/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -44,7 +44,6 @@ import net.algem.contact.teacher.TeacherIO;
 import net.algem.edition.*;
 import net.algem.enrolment.MemberEnrolmentDlg;
 import net.algem.enrolment.TrainingAgreementHistory;
-import net.algem.enrolment.TrainingContract;
 import net.algem.enrolment.TrainingContractHistory;
 import net.algem.group.PersonFileGroupView;
 import net.algem.planning.TeacherBreakDlg;
@@ -74,7 +73,7 @@ import org.passay.PasswordValidator;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.0
+ * @version 2.15.6
  */
 public class PersonFileEditor
         extends FileEditor
@@ -772,7 +771,8 @@ public class PersonFileEditor
     }
 
     if (dossier.getMember() == null || dossier.getMember().getPayer() == dossier.getId()) {
-      orderLineEditor.setLabel(dossier.getContact().getFirstnameName());
+      //orderLineEditor.setLabel(dossier.getContact().getFirstnameName());
+      orderLineEditor.setLabel(p.getFirstnameName() == null || p.getFirstnameName().isEmpty() ? (p.getOrganization() == null ? String.valueOf(p.getId()) : p.getOrganization().getCompanyName()) : p.getFirstnameName());
     } else {
       String org = p.getOrganization() == null ? null : p.getOrganization().getCompanyName();
       orderLineEditor.setLabel(org != null && org.trim().length() > 0 ? org : p.getFirstnameName());

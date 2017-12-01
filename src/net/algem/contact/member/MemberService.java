@@ -351,6 +351,8 @@ public class MemberService
    * @param idper member's id
    * @param start start date
    * @param end end date
+   * @param individual include individual rehearsals if true
+   * @param group include groupe rehearsals if true
    * @return a list of ScheduleRangeObject
    * @throws SQLException
    */

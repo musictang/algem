@@ -1,0 +1,24 @@
+2.15.6
+
+CORRECTIFS
+* Le tri des colonnes "Payeur" et "Adhérent" était incorrect dans l'échéancier (menu Compta → MAJ échéancier, en particulier). Le tri est maintenant numérique et non plus alphabétique comme auparavant.
+* Les numéros de "Payeur" et d'"Adhérent" sont maintenant alignés à droite dans l'échéancier.
+* Les types de cours sont maintenant triés dans l'ordre alphabétique dans les fenêtres de consultation d'une formule ou d'un cours.
+* Le nom du payeur n'était pas visible en haut de l'échéancier d'une fiche dont seul le nom d'organisme était présent.
+
+EMARGEMENT PRO
+L'émargement par demi-journée comprend maintenant deux nouvelles options :
+- Inclure les répétitions individuelles
+- Inclure les répétitions de groupe
+
+Si ces options sont cochées, les heures de répétition seront comptabilisés dans le calcul du total par demi-journée.
+
+RECHERCHE CONTACT
+Deux nouvelles options sont disponibles dans la fenêtre de recherche de contacts :
+- Ne rechercher que les professeurs
+- Ne rechercher que les adhérents (stagiaires)
+
+Dans le premier cas, la recherche ne portera que sur les professeurs, dans le second, elle ne portera que sur les élèves (les personnes ayant un onglet adhérent dans leur fiche). Si vous ne saisissez rien, vous pouvez lister ainsi l'ensemble des professeurs ou l'ensemble des élèves (passés et présents).
+
+LOGO DE DEMARRAGE
+Votre propre logo, s'il existe, est maintenant affiché au démarrage (à la place de celui de Musiques Tangentes). Vous devez avoir au préalable ajouté votre image dans les paramètres généraux, section "Organisation". Le poids de l'image doit être inférieur à 1Mo (entre 1ko et 250ko, pour de meilleures performances).

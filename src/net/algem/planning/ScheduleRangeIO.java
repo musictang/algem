@@ -249,6 +249,7 @@ public class ScheduleRangeIO
    * Retun a list of ranges from a list of schedules.
    * This method is used to find all individual rehearsals of a person between @{code start} and @{code end}.
    * As rehearsals are of schedule type, schedule entries are converted in schedule range objects.
+   *
    * @param idper member's id
    * @param start start date
    * @param end end date
@@ -256,7 +257,7 @@ public class ScheduleRangeIO
    * @return a list of ranges
    * @throws SQLException
    */
-   public static List<ScheduleRangeObject> findMemberRehearsals(int idper, int type, Date start, Date end, DataConnection dc) throws SQLException {
+  public static List<ScheduleRangeObject> findMemberRehearsals(int idper, int type, Date start, Date end, DataConnection dc) throws SQLException {
 
     List<ScheduleRangeObject> ranges = new ArrayList<>();
 
@@ -267,11 +268,11 @@ public class ScheduleRangeIO
       + " ORDER BY p.jour";
     if (Schedule.GROUP == type) {
       query = "SELECT p.id, p.jour, p.debut,p.fin,p.action"
-+ " FROM planning p JOIN groupe g ON p.idper = g.id JOIN groupe_det gd ON gd.id = g.id"
-+ " WHERE p.ptype = " + Schedule.GROUP
-+ " AND p.jour BETWEEN ? AND ?"
-+ " AND gd.musicien = ?"
-+ " ORDER BY p.jour";
+        + " FROM planning p JOIN groupe g ON p.idper = g.id JOIN groupe_det gd ON gd.id = g.id"
+        + " WHERE p.ptype = " + Schedule.GROUP
+        + " AND p.jour BETWEEN ? AND ?"
+        + " AND gd.musicien = ?"
+        + " ORDER BY p.jour";
     }
     try (PreparedStatement ps = dc.prepareStatement(query)) {
       ps.setDate(1, new java.sql.Date(start.getTime()));
@@ -286,18 +287,12 @@ public class ScheduleRangeIO
         p.setDate(new DateFr(rs.getString(2)));
         p.setStart(new Hour(rs.getString(3)));
         p.setEnd(new Hour(PlanningService.getTime(rs.getString(4))));
-        //p.setMember((Person) DataCache.findId(idper);
         p.setNote(0);
-
         p.setIdAction(rs.getInt(5));
         p.setIdPerson(idper);// idper in schedule
         p.setIdRoom(0);
         p.setType(Schedule.MEMBER);
 
-//    p.setRoom((Room) DataCache.findId(p.getIdRoom(), Model.Room));
-//    p.setTeacher((Person) DataCache.findId(p.getIdPerson(), Model.Teacher));
-//    p.setAction(service.getAction(p.getIdAction()));
-//    p.setCourse((Course) DataCache.findId(p.getAction().getCourse(), Model.Course));
         ranges.add(p);
       }
     }
