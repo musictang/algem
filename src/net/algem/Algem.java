@@ -62,12 +62,12 @@ import org.apache.commons.codec.binary.Base64;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.6
+ * @version 2.15.7
  */
 public class Algem
 {
 
-  public static final String APP_VERSION = "2.15.6";
+  public static final String APP_VERSION = "2.15.7";
   public static List<LookAndFeelInfo> ALTERNATIVE_LAF = new ArrayList<>();
   private static final int DEF_WIDTH = 1080;// (850,650) => ancienne taille
   private static final int DEF_HEIGHT = 780;
@@ -216,7 +216,7 @@ public class Algem
    * @param login
    * @param pass
    * @return true if authentication succeeded
-   * @deprecated 
+   * @deprecated
    */
   private boolean authenticate(String login, String pass) {
     return cache.getUserService().authenticate(login, pass);

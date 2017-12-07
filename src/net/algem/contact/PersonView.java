@@ -1,5 +1,5 @@
 /*
- * @(#)PersonView.java	2.15.1 25/09/17
+ * @(#)PersonView.java	2.15.7 06/12/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -52,7 +52,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.1
+ * @version 2.15.7
  */
 public class PersonView
         extends GemPanel
@@ -165,12 +165,13 @@ public class PersonView
     JLabel btOrgDetails = new JLabel(ImageUtil.createImageIcon("document-properties-symbolic.png"));
     btOrgDetails.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     btOrgDetails.setToolTipText(BundleUtil.getLabel("Organization.details.tip"));
-    btOrgDetails.addMouseListener(new MouseAdapter()
-    {
+    btOrgDetails.addMouseListener(new MouseAdapter() {
       @Override
       public void mouseClicked(MouseEvent e) {
-        if (!orgName.getText().isEmpty() && person.getOrganization().getId() > 0) {
-          setUpOrganization();
+        if (person != null && person.getOrganization() != null) {
+          if (!orgName.getText().isEmpty() && person.getOrganization().getId() > 0) {
+            setUpOrganization();
+          }
         }
       }
     });
@@ -352,10 +353,10 @@ public class PersonView
       Organization o = new Organization(1);//TEMP id
       o.setName(orgName.getText().trim());
       per.setOrganization(o);
-    } else if (person.getOrganization() != null && person.getOrganization().getId() != per.getId() && orgName.getText().isEmpty()) {
+    } else if (person != null && person.getOrganization() != null && person.getOrganization().getId() != per.getId() && orgName.getText().isEmpty()) {
       per.setOrganization(null); // reset
     } else {
-      per.setOrganization(person.getOrganization());
+      per.setOrganization(person == null ? null : person.getOrganization());
     }
 
     return per;
