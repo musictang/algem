@@ -35,8 +35,8 @@ NOTES POUR LE DEVELOPPEUR
 ============================================================================
 Si le projet vous intéresse, n'hésitez pas à nous contacter.
 Le projet est supporté par l'association Musiques Tangentes.
-Responsable du projet (Bruno Mauguil) :
-bruno (@) musiques-tangentes.asso.fr
+Responsable du projet (Maet Charles) :
+maet (@) musiques-tangentes.asso.fr
 Développeur principal (Jean-Marc Gobat) :
 jmg (@) musiques-tangentes.asso.fr
 
@@ -114,9 +114,8 @@ différente.
 
 LOG
 ===
-- La gestion des journaux se fait désormais par l'intermédiaire de l'API Logger.
-- Le journal est enregistré dans le fichier algem.log dans le sous-répertoire
-Journaux de l'application.
+- Le journal est enregistré par défaut dans le fichier algem.log dans le sous-
+répertoire Journaux de l'application.
 - Le nom de l'utilisateur et la date sont visibles dans l'en-tête de chaque log.
 
 CONNEXION
@@ -143,12 +142,6 @@ des objets implémentant Map ou Set)
 Ce sont les données récurrentes (Action, Niveau, Status, Instrument, etc.) pour
 lesquelles la mise en cache se révèle la plus efficace.
 
-Depuis sa création, Algem a connu de multiples changements de cap. La gestion du
-cache et les appels aux méthodes du cache dans les différents services 
-n'est pas rigoureusement uniforme. Le cas échéant, des caches locaux peuvent être
-encore présents dans certains DAO, pour des raisons pratiques.
-Du travail reste à faire à ce niveau.
-
 DISPATCHER
 ==========
 - Le dispatcher est un service (java) tournant en tache de fond. Il permet la
@@ -165,10 +158,9 @@ DataCache permet de déclencher les actions appropriées à la réception d'un
 
 MVC
 ===
-Algem est construit suivant une architecture MVC : modèles, vues, controlleurs.
+Algem est construit suivant une architecture MVC.
 Les développeurs se sont efforcés dans la mesure du possible de coller à cette
-architecture. La dissociation entre vues et controlleurs n'est pas toujours
-parfaite cependant et du travail reste à faire à ce niveau.
+architecture. Du travail reste à faire à ce niveau.
 
 SERVICES
 ========
@@ -179,7 +171,8 @@ mais ils devraient être idéalement déchargés de cette responsabilité.
 SECURITE
 ========
 Des profils permettent de différencier les différents rôles d'utilisateurs.
-Dans la pratique, seuls 2 profils sont utilisés au quotidien : Administrateur et Utilisateur.
+Dans la pratique, seuls 2 profils sont utilisés au quotidien : Administrateur et
+Utilisateur.
 L'administrateur a tous les droits par défaut, alors que ceux de l'utilisateur
 (une personne de l'accueil par exemple) sont limités à certaines opérations.
 Un certain nombre de droits sont paramétrables au cas par cas, indépendamment
@@ -215,25 +208,12 @@ placer ce jar dans le classpath pour que l'organisation dispose de statistiques
 
 SCRIPTS
 =======
-Les scripts permettent d'effectuer des exports "ON THE FLY". C'est une manière simple d'étendre les DAO existants sans avoir besoin de recompiler.
-
-TESTS
-=====
-Très incomplètes, les classes de test nécessitent JUnit 3 et JUnit 4. Il serait
-préférable d'unifier le tout sous JUnit 4.
-Par défaut, une copie de la base de travail (nommée test) doit être présente
-dans l'environnement de travail. Rien n'a été fait pour automatiser la création
-ou la recréation de cette base. Rien n'assure non plus la cohérence des données
-dans la base après test (bien que des opérations de nettoyage soient présentes
-dans certains tests faisant appel aux DAO).
+Les scripts permettent d'effectuer des exports "ON THE FLY". C'est une manière
+simple d'étendre les DAO existants sans avoir besoin de recompiler.
 
 EN PROJET
 =========
 - Gestion des acomptes dans l'échéancier après création de facture.
 - Gestion optimisée des absences.
 - Gestion de bulletin scolaire
-- Optimisation des exports comptables vers les logiciels CIEL et SAGE.
-- Extension et amélioration des exportations de données.
-- Extension des tests unitaires et des tests d'intégration.
 - Mise en conformité LF 2016
-
