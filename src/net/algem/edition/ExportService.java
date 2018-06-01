@@ -1,7 +1,7 @@
 /*
- * @(#)ExportService.java 2.15.0 14/09/17
+ * @(#)ExportService.java 2.15.8 22/03/18
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -30,6 +30,7 @@ import net.algem.config.InstrumentIO;
 import net.algem.contact.*;
 import net.algem.contact.member.MemberIO;
 import net.algem.course.ModuleIO;
+import static net.algem.edition.ExportDlg.MAX_TELS;
 import net.algem.enrolment.CourseOrderIO;
 import net.algem.enrolment.ModuleOrderIO;
 import net.algem.enrolment.OrderIO;
@@ -44,11 +45,10 @@ import net.algem.util.DataConnection;
  * Service class for export operations.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.0
+ * @version 2.15.8
  * @since 2.6.d 06/11/2012
  */
-public class ExportService
-{
+public class ExportService {
 
   public static final String[] CSV_HEADER = {
     BundleUtil.getLabel("First.name.label"),
@@ -63,30 +63,13 @@ public class ExportService
     BundleUtil.getLabel("Telephone.label") + 2,
     BundleUtil.getLabel("Telephone.label") + 3
   };
+
   private DataConnection dc;
   private PlanningService service;
 
   public ExportService(DataConnection dc) {
     this.dc = dc;
     this.service = new PlanningService(dc);
-  }
-
-  int printAddressCSV(PrintWriter out, String query) throws SQLException {
-    int counter = 0;
-
-    out.println(getHeader(CSV_HEADER));
-    ResultSet rs = dc.executeQuery(query);
-    while (rs.next()) {
-      out.print(rs.getString(1));
-      out.printf(";%s", rs.getString(2));
-      out.printf(";%s", rs.getString(3));
-      out.printf(";%s", rs.getString(4));
-      out.printf(";%s", rs.getString(5));
-      out.printf(";%s", rs.getString(6));
-      out.println();
-      counter++;
-    }
-    return counter;
   }
 
   int printCSV(PrintWriter out, List<Person> list) throws SQLException {
@@ -129,31 +112,99 @@ public class ExportService
     return list.size();
   }
 
+  int printCSV(PrintWriter out, List<Person> list, List<String> options) throws SQLException {
+    ExportDlg.printHeader(out, options);
+    StringBuilder sb = new StringBuilder();
+    for (Person p : list) {
+      List<String> emails = getEmails(p.getId());
+
+      for (String key : options) {
+        switch (key) {
+          case "01-id": {
+            sb.append(p.getId()).append(';');
+            break;
+          }
+          case "02-organization": {
+            if (p.getOrganization() == null || p.getOrganization().getName() == null) {
+              sb.append(';');
+            } else {
+              sb.append(p.getOrganization()).append(';');
+            }
+            break;
+          }
+          case "03-civility": {
+            sb.append(p.getGender() == null ? "" : p.getGender()).append(';');
+            break;
+          }
+          case "04-name": {
+            sb.append(p.getName()).append(';');
+            break;
+          }
+          case "05-firstname": {
+            sb.append(p.getFirstName()).append(';');
+            break;
+          }
+          case "06-nickname": {
+            sb.append(p.getNickName() == null ? "" : p.getNickName()).append(';');
+            break;
+          }
+          case "07-address": {
+            Address a = getAddress(p.getId());
+            if (a != null && !a.isArchive()) {//on tient compte de l'attribut archive
+              sb.append(a.getAdr1() == null || "null".equalsIgnoreCase(a.getAdr1()) ? "" : a.getAdr1()).append(';');
+              sb.append(a.getAdr2() == null || "null".equalsIgnoreCase(a.getAdr2()) ? "" : a.getAdr2()).append(';');
+              sb.append(a.getCdp() == null || "null".equalsIgnoreCase(a.getCdp()) ? "" : a.getCdp()).append(';');
+              sb.append(a.getCity() == null || "null".equalsIgnoreCase(a.getCity()) ? "" : a.getCity()).append(';');
+            }
+            break;
+          }
+          case "08-tels": {
+            List<String> t = getTels(p.getId());
+            int j = 0;
+            if (t != null && t.size() > 0) {
+              for (; j < t.size() && j < MAX_TELS; j++) {
+                sb.append(t.get(j)).append(';');
+              }
+            }
+            while (j++ < MAX_TELS) {
+              sb.append(";");
+            }
+            break;
+          }
+          case "09-email1": {
+            if (emails != null && emails.size() > 0) {
+              String e = emails.get(0);
+              sb.append(e).append(';');
+            } else {
+              sb.append(';');
+            }
+            break;
+          }
+          case "10-email2": {
+            if (emails != null && emails.size() > 1) {
+              String e = emails.get(1);
+              sb.append(e).append(';');
+            } else {
+              sb.append(';');
+            }
+            break;
+          }
+
+        }
+
+      }
+      out.println(sb.toString());
+      sb.delete(0, sb.length());
+    }
+    return list.size();
+  }
+
   private String getHeader(String[] header) {
     StringBuilder h = new StringBuilder();
     for (String s : header) {
       h.append(s).append(";");
     }
     return h.substring(0, h.length() - 1);
-  }
-
-  int printEmailCSV(PrintWriter out, String query) throws SQLException {
-    int counter = 0;
-    String[] headers = {
-      BundleUtil.getLabel("First.name.label"),
-      BundleUtil.getLabel("Name.label"),
-      BundleUtil.getLabel("Email.label")
-    };
-    out.println(getHeader(headers));
-    ResultSet rs = dc.executeQuery(query);
-    while (rs.next()) {
-      out.print(rs.getString(1));
-      out.printf(";%s", rs.getString(2));
-      out.printf(";%s", rs.getString(3));
-      out.println();
-      counter++;
-    }
-    return counter;
   }
 
   String getBcc(List<Person> list) throws SQLException {
@@ -176,19 +227,19 @@ public class ExportService
 
   String getContactQueryByTeacher(int teacher, Date start, Date end, Boolean pro) {
     String query = "SELECT DISTINCT p.id, p.nom, p.prenom FROM "
-            + ScheduleIO.TABLE + " s,"
-            + PersonIO.TABLE + " p,"
-            + CourseOrderIO.TABLE + " cc,"
-            + OrderIO.TABLE + " c,"
-            + ModuleOrderIO.TABLE + " cm,"
-            + ModuleIO.TABLE + " m"
-            + " WHERE s.jour >= '" + start + "' AND s.jour <= '" + end + "'"
-            + " AND s.idper = " + teacher
-            + " AND s.action = cc.idaction"
-            + " AND cc.idcmd = c.id"
-            + " AND c.adh = p.id"
-            + " AND cc.module = cm.id"
-            + " AND cm.module = m.id";
+      + ScheduleIO.TABLE + " s,"
+      + PersonIO.TABLE + " p,"
+      + CourseOrderIO.TABLE + " cc,"
+      + OrderIO.TABLE + " c,"
+      + ModuleOrderIO.TABLE + " cm,"
+      + ModuleIO.TABLE + " m"
+      + " WHERE s.jour >= '" + start + "' AND s.jour <= '" + end + "'"
+      + " AND s.idper = " + teacher
+      + " AND s.action = cc.idaction"
+      + " AND cc.idcmd = c.id"
+      + " AND c.adh = p.id"
+      + " AND cc.module = cm.id"
+      + " AND cm.module = m.id";
     if (pro != null) {
       query += " AND m.code LIKE '" + (pro ? "P%'" : "L%'");
     }
@@ -198,21 +249,21 @@ public class ExportService
 
   String getContactQueryByCourse(int course, Date start, Date end, Boolean pro) {
     String query = "SELECT DISTINCT p.id, p.nom, p.prenom FROM "
-            + PersonIO.TABLE + " p,"
-            + ActionIO.TABLE + " a,"
-            + ScheduleIO.TABLE + " s,"
-            + CourseOrderIO.TABLE + " cc,"
-            + OrderIO.TABLE + " c,"
-            + ModuleOrderIO.TABLE + " cm,"
-            + ModuleIO.TABLE + " m"
-            + " WHERE s.jour >= '" + start + "' AND s.jour <= '" + end + "'"
-            + " AND s.action = a.id"
-            + " AND a.cours = " + course
-            + " AND a.id = cc.idaction"
-            + " AND cc.idcmd = c.id"
-            + " AND c.adh = p.id"
-            + " AND cc.module = cm.id"
-            + " AND cm.module = m.id";
+      + PersonIO.TABLE + " p,"
+      + ActionIO.TABLE + " a,"
+      + ScheduleIO.TABLE + " s,"
+      + CourseOrderIO.TABLE + " cc,"
+      + OrderIO.TABLE + " c,"
+      + ModuleOrderIO.TABLE + " cm,"
+      + ModuleIO.TABLE + " m"
+      + " WHERE s.jour >= '" + start + "' AND s.jour <= '" + end + "'"
+      + " AND s.action = a.id"
+      + " AND a.cours = " + course
+      + " AND a.id = cc.idaction"
+      + " AND cc.idcmd = c.id"
+      + " AND c.adh = p.id"
+      + " AND cc.module = cm.id"
+      + " AND cm.module = m.id";
     if (pro != null) {
       query += " AND m.code LIKE '" + (pro ? "P%'" : "L%'");
     }
@@ -222,19 +273,19 @@ public class ExportService
 
   String getContactQueryByModule(int module, Date start, Date end, Boolean pro) {
     String query = "SELECT DISTINCT p.id, p.nom, p.prenom FROM "
-            + PersonIO.TABLE + " p, "
-            + ScheduleIO.TABLE + " s, "
-            + OrderIO.TABLE + " c, "
-            + CourseOrderIO.TABLE + " cc, "
-            + ModuleOrderIO.TABLE + " cm,"
-            + ModuleIO.TABLE + " m"
-            + " WHERE s.jour >= '" + start + "' AND s.jour <= '" + end + "'"
-            + " AND s.action = cc.idaction"
-            + " AND cc.module = cm.id"
-            + " AND cm.module = " + module
-            + " AND cm.module = m.id"
-            + " AND cc.idcmd = c.id"
-            + " AND c.adh = p.id";
+      + PersonIO.TABLE + " p, "
+      + ScheduleIO.TABLE + " s, "
+      + OrderIO.TABLE + " c, "
+      + CourseOrderIO.TABLE + " cc, "
+      + ModuleOrderIO.TABLE + " cm,"
+      + ModuleIO.TABLE + " m"
+      + " WHERE s.jour >= '" + start + "' AND s.jour <= '" + end + "'"
+      + " AND s.action = cc.idaction"
+      + " AND cc.module = cm.id"
+      + " AND cm.module = " + module
+      + " AND cm.module = m.id"
+      + " AND cc.idcmd = c.id"
+      + " AND c.adh = p.id";
 
     if (pro != null) {
       query += " AND m.code LIKE '" + (pro ? "P%'" : "L%'");
@@ -254,19 +305,19 @@ public class ExportService
    */
   String getContactQueryByInstrument(int instId, Date start, Date end, Boolean pro) {
     String query = "SELECT DISTINCT p.id, p.nom, p.prenom FROM "
-            + OrderIO.TABLE + " c,"
-            + InstrumentIO.PERSON_INSTRUMENT_TABLE + " i,"
-            + CourseOrderIO.TABLE + " cc,"
-            + ModuleOrderIO.TABLE + " cm,"
-            + ModuleIO.TABLE + " m,"
-            + PersonIO.TABLE + " p"
-            + " WHERE c.adh = i.idper"
-            + " AND i.instrument = " + instId + " AND i.ptype = " + Instrument.MEMBER
-            + " AND c.id = cc.idcmd"
-            + " AND c.adh = p.id"
-            + " AND cc.datedebut >= '" + start + "' AND cc.datefin <= '" + end + "'"
-            + " AND cc.module = cm.id"
-            + " AND cm.module = m.id";
+      + OrderIO.TABLE + " c,"
+      + InstrumentIO.PERSON_INSTRUMENT_TABLE + " i,"
+      + CourseOrderIO.TABLE + " cc,"
+      + ModuleOrderIO.TABLE + " cm,"
+      + ModuleIO.TABLE + " m,"
+      + PersonIO.TABLE + " p"
+      + " WHERE c.adh = i.idper"
+      + " AND i.instrument = " + instId + " AND i.ptype = " + Instrument.MEMBER
+      + " AND c.id = cc.idcmd"
+      + " AND c.adh = p.id"
+      + " AND cc.datedebut >= '" + start + "' AND cc.datefin <= '" + end + "'"
+      + " AND cc.module = cm.id"
+      + " AND cm.module = m.id";
     if (pro != null) {
       query += " AND m.code LIKE '" + (pro ? "P%'" : "L%'");
     }
@@ -276,14 +327,14 @@ public class ExportService
 
   String getStudent(Date start, Date end, Boolean pro, int estab) {
     String query = "SELECT DISTINCT p.id, p.nom, p.prenom"
-            + " FROM " + OrderIO.TABLE + " c JOIN " + MemberIO.TABLE + " e ON (c.adh = e.idper)"
-            + " JOIN " + PersonIO.TABLE + " p ON (e.idper = p.id)"
-            + " JOIN " + CourseOrderIO.TABLE + " cc ON (c.id = cc.idcmd)"
-            + " JOIN " + ModuleOrderIO.TABLE + " cm ON (cc.module = cm.id)"
-            + " JOIN " + ModuleIO.TABLE + " m ON (cm.module = m.id)"
-            + " JOIN " + ScheduleIO.TABLE + " pl ON (cc.idaction = pl.action)"
-            + " JOIN " + RoomIO.TABLE + " s ON (pl.lieux = s.id)"
-            + " WHERE cc.datedebut BETWEEN '" + start + "' AND '" + end + "'";
+      + " FROM " + OrderIO.TABLE + " c JOIN " + MemberIO.TABLE + " e ON (c.adh = e.idper)"
+      + " JOIN " + PersonIO.TABLE + " p ON (e.idper = p.id)"
+      + " JOIN " + CourseOrderIO.TABLE + " cc ON (c.id = cc.idcmd)"
+      + " JOIN " + ModuleOrderIO.TABLE + " cm ON (cc.module = cm.id)"
+      + " JOIN " + ModuleIO.TABLE + " m ON (cm.module = m.id)"
+      + " JOIN " + ScheduleIO.TABLE + " pl ON (cc.idaction = pl.action)"
+      + " JOIN " + RoomIO.TABLE + " s ON (pl.lieux = s.id)"
+      + " WHERE cc.datedebut BETWEEN '" + start + "' AND '" + end + "'";
     if (pro != null) {
       query += " AND m.code LIKE '" + (pro ? "P%'" : "L%'");
     }
@@ -318,7 +369,7 @@ public class ExportService
       + " JOIN " + PersonIO.TABLE + " p ON (m.payeur = p.id)"
       + " WHERE m.idper = " + idper
       + " AND m.idper NOT IN (SELECT idper FROM " + AddressIO.TABLE + ")"
-      + " AND p.organisation = 0" // maybe do not include
+      + " AND p.organisation = 0" //FIX (organisation may be null)
       + " AND a.archive = false";
     ResultSet rs = dc.executeQuery(query);
 
@@ -375,15 +426,15 @@ public class ExportService
 
   String getMusicianByInstrument(int instrument, Date start, Date end) {
     String query = "SELECT DISTINCT p.id, p.nom, p.prenom"
-            + " FROM " + PersonIO.TABLE + " p, "
-            + ScheduleIO.TABLE + " s, "
-            + GroupIO.TABLE + " g, "
-            + GroupIO.TABLE_DETAIL + " d, "
-            + InstrumentIO.PERSON_INSTRUMENT_TABLE + " i"
-            + " WHERE s.jour >= '" + start + "' AND s.jour <= '" + end + "'"
-            + " AND s.ptype = " + Schedule.GROUP
-            + " AND s.idper = g.id AND g.id = d.id AND d.musicien = p.id"
-            + " AND d.musicien = i.idper AND i.ptype = " + Instrument.MUSICIAN;
+      + " FROM " + PersonIO.TABLE + " p, "
+      + ScheduleIO.TABLE + " s, "
+      + GroupIO.TABLE + " g, "
+      + GroupIO.TABLE_DETAIL + " d, "
+      + InstrumentIO.PERSON_INSTRUMENT_TABLE + " i"
+      + " WHERE s.jour >= '" + start + "' AND s.jour <= '" + end + "'"
+      + " AND s.ptype = " + Schedule.GROUP
+      + " AND s.idper = g.id AND g.id = d.id AND d.musicien = p.id"
+      + " AND d.musicien = i.idper AND i.ptype = " + Instrument.MUSICIAN;
     if (instrument > 0) {
       query += " AND i.instrument = " + instrument;
     }

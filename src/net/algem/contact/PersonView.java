@@ -1,7 +1,7 @@
 /*
- * @(#)PersonView.java	2.15.7 06/12/17
+ * @(#)PersonView.java	2.15.8 26/03/18
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -52,7 +52,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.7
+ * @version 2.15.8
  */
 public class PersonView
         extends GemPanel
@@ -84,6 +84,7 @@ public class PersonView
 
   private Contact person;
   private final OrganizationIO orgIO;
+  private JLabel btOrgDetails;
 
   public PersonView() {
     orgIO = new OrganizationIO(DataCache.getDataConnection());
@@ -162,15 +163,17 @@ public class PersonView
         }
       }
     });
-    JLabel btOrgDetails = new JLabel(ImageUtil.createImageIcon("document-properties-symbolic.png"));
+    btOrgDetails = new JLabel(ImageUtil.createImageIcon("document-properties-symbolic.png"));
     btOrgDetails.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     btOrgDetails.setToolTipText(BundleUtil.getLabel("Organization.details.tip"));
     btOrgDetails.addMouseListener(new MouseAdapter() {
       @Override
       public void mouseClicked(MouseEvent e) {
-        if (person != null && person.getOrganization() != null) {
-          if (!orgName.getText().isEmpty() && person.getOrganization().getId() > 0) {
-            setUpOrganization();
+        if (btOrgDetails.isEnabled()) {
+          if (person != null && person.getOrganization() != null) {
+            if (!orgName.getText().isEmpty() && person.getOrganization().getId() > 0) {
+              setUpOrganization();
+            }
           }
         }
       }
@@ -395,6 +398,8 @@ public class PersonView
 
   public void filter(int f) {
     if (Person.ESTABLISHMENT == f) {
+      orgName.setEnabled(false);
+      btOrgDetails.setEnabled(false);
       firstname.setEnabled(false);
       civil.setEnabled(false);
       cbImgRights.setEnabled(false);

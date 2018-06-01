@@ -1,7 +1,7 @@
 /*
- * @(#)PlanningService.java	2.15.0 26/07/2017
+ * @(#)PlanningService.java	2.15.8 26/03/2018
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,6 +20,7 @@
  */
 package net.algem.planning;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormatSymbols;
@@ -43,11 +44,10 @@ import net.algem.util.ui.MessagePopup;
  * Service class for planning.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.0
+ * @version 2.15.8s
  * @since 2.4.a 07/05/12
  */
-public class PlanningService
-{
+public class PlanningService {
 
   public final static String[] WEEK_DAYS = new DateFormatSymbols().getWeekdays();
   private DataConnection dc;
@@ -63,6 +63,7 @@ public class PlanningService
   /**
    * Utility method to reformat midnight.
    * Postgresql usually represents midnight as "00:00".
+   *
    * @param time string-formatted time (hh:mm)
    * @return a string
    */
@@ -123,10 +124,16 @@ public class PlanningService
       if (c == null) {
         throw new PlanningException("Course is null");
       }
-      switch(c.getCode()) {
-        case 11: type = Schedule.WORKSHOP; break;
-        case 12: type = Schedule.TRAINING; break;
-        default: type = Schedule.COURSE; break;
+      switch (c.getCode()) {
+        case 11:
+          type = Schedule.WORKSHOP;
+          break;
+        case 12:
+          type = Schedule.TRAINING;
+          break;
+        default:
+          type = Schedule.COURSE;
+          break;
       }
       actionIO.planify(a, type);
     } catch (SQLException ex) {
@@ -150,7 +157,7 @@ public class PlanningService
       a.setIdper(session.getGroup());
       actionIO.insert(a);
       actionIO.planify(a, Schedule.STUDIO, session.getRooms(), session);
-      actionIO.planify(a, Schedule.TECH, new int[] {session.getStudio()}, session);
+      actionIO.planify(a, Schedule.TECH, new int[]{session.getStudio()}, session);
     } catch (SQLException ex) {
       dc.rollback();
       throw new PlanningException(ex.getMessage());
@@ -161,8 +168,7 @@ public class PlanningService
 
   void plan(final List<Action> actions) throws PlanningException {
     try {
-      dc.withTransaction(new DataConnection.SQLRunnable<Void>()
-      {
+      dc.withTransaction(new DataConnection.SQLRunnable<Void>() {
         @Override
         public Void run(DataConnection conn) throws Exception {
           for (Action a : actions) {
@@ -180,8 +186,7 @@ public class PlanningService
   List<ScheduleTestConflict> planAdministrative(final List<Action> actions) throws PlanningException {
     final List<ScheduleTestConflict> allConflicts = new ArrayList<ScheduleTestConflict>();
     try {
-      dc.withTransaction(new DataConnection.SQLRunnable<Void>()
-      {
+      dc.withTransaction(new DataConnection.SQLRunnable<Void>() {
         @Override
         public Void run(DataConnection conn) throws Exception {
           for (final Action a : actions) {
@@ -201,7 +206,7 @@ public class PlanningService
               if (allConflicts.isEmpty()) {
                 throw new PlanningException(MessageUtil.getMessage("administrative.schedule.ctrl.no.scheduled.dates"));
               }
-          }
+            }
           }
           return null;
         }
@@ -215,9 +220,8 @@ public class PlanningService
 
   public List<Person> getEmployees(Enum type) {
     String where = "JOIN " + EmployeeIO.TYPE_TABLE + " t  ON p.id = t.idper WHERE t.idcat = " + type.ordinal();
-    return  PersonIO.find(where, dc);
+    return PersonIO.find(where, dc);
   }
-
 
   /**
    * Replan a course.
@@ -266,7 +270,7 @@ public class PlanningService
   public void deletePlanning(Action action) throws PlanningException {
 
     try {
-      int r = ScheduleIO.containRanges(action,  dc);
+      int r = ScheduleIO.containRanges(action, dc);
       if (r == 0) {
         // on vérifie que l'action n'est plus référencée par un planning
         ScheduleIO.deleteSchedule(action, dc);
@@ -278,7 +282,9 @@ public class PlanningService
         if (MessagePopup.confirm(null, MessageUtil.getMessage("schedule.suppression.warning", r))) {
           ScheduleIO.deleteSchedule(action, dc);
           ScheduleRangeIO.delete(action, dc);
-        } else throw new PlanningException(GemCommand.CANCEL_CMD);
+        } else {
+          throw new PlanningException(GemCommand.CANCEL_CMD);
+        }
       }
 
     } catch (SQLException ex) {
@@ -288,6 +294,7 @@ public class PlanningService
 
   /**
    * Deletes the schedule {@literal s}.
+   *
    * @param s schedule to delete
    * @throws PlanningException if SQLException is caught
    */
@@ -302,6 +309,7 @@ public class PlanningService
 
   /**
    * Removes all schedules sharing the same action {@literal a} and enclosed in the same timeslot.
+   *
    * @param a a action
    * @param s selected schedule
    * @throws PlanningException
@@ -315,23 +323,26 @@ public class PlanningService
         if (MessagePopup.confirm(null, MessageUtil.getMessage("schedule.suppression.warning", r))) {
           ScheduleIO.deleteSchedule(a, s, dc);
           ScheduleRangeIO.delete(a, s, dc);
-        } else throw new PlanningException(GemCommand.CANCEL_CMD);
+        } else {
+          throw new PlanningException(GemCommand.CANCEL_CMD);
+        }
       }
     } catch (SQLException ex) {
       throw new PlanningException(ex.getMessage());
     }
   }
 
-   public void deleteScheduleRange(ScheduleRangeObject s) throws PlanningException {
+  public void deleteScheduleRange(ScheduleRangeObject s) throws PlanningException {
     try {
       ScheduleRangeIO.delete(s, dc);
     } catch (SQLException ex) {
       throw new PlanningException(ex.getMessage());
     }
-   }
+  }
 
   /**
    * Gets all schedule sharing the same action {@literal a}.
+   *
    * @param a action
    * @return a list of schedules
    */
@@ -341,8 +352,9 @@ public class PlanningService
 
   /**
    * Checks if several schedules share the same action on the selected date.
+   *
    * @param s schedule
-   * @return  true if several schedules are found
+   * @return true if several schedules are found
    */
   public boolean hasSiblings(Schedule s) {
     List<Schedule> schedules = ScheduleIO.find("WHERE action = " + s.getIdAction() + " AND jour = '" + s.getDate() + "'", dc);
@@ -351,10 +363,11 @@ public class PlanningService
 
   /**
    * Checks if other schedules at different times share the same action {@literal a} between 2 dates.
+   *
    * @param a action
    * @return true if several schedules are found
    */
-   public boolean hasSiblings(Action a) {
+  public boolean hasSiblings(Action a) {
     List<Schedule> schedules = ScheduleIO.find("WHERE action = " + a.getId(), dc);
     if (schedules == null || schedules.size() < 2) {
       return false;
@@ -362,7 +375,7 @@ public class PlanningService
     Hour start = schedules.get(0).getStart();
     Hour end = schedules.get(0).getEnd();
     for (Schedule s : schedules) {
-      if (! (s.getStart().ge(start) && s.getEnd().le(end))) {
+      if (!(s.getStart().ge(start) && s.getEnd().le(end))) {
         return true;
       }
     }
@@ -382,9 +395,9 @@ public class PlanningService
    */
   public void changeHour(ScheduleObject plan, DateFr start, DateFr end, Hour hStart, Hour hEnd) throws PlanningException {
     String query = "UPDATE planning SET debut = '" + hStart + "', fin='" + hEnd + "'"
-            + " WHERE action = " + plan.getIdAction()
-            + " AND jour >= '" + start + "' AND jour <= '" + end + "'"
-            + " AND lieux = " + plan.getIdRoom();
+      + " WHERE action = " + plan.getIdAction()
+      + " AND jour >= '" + start + "' AND jour <= '" + end + "'"
+      + " AND lieux = " + plan.getIdRoom();
     try {
       if (dc.executeUpdate(query) < 1) {
         throw new PlanningException("PLANNING UPDATE = 0 " + query);
@@ -415,8 +428,8 @@ public class PlanningService
   public void changeRoom(ScheduleObject orig, DateFr start, DateFr end, int roomId) throws PlanningException, SQLException {
 
     String query = "UPDATE " + ScheduleIO.TABLE + " SET lieux = " + roomId + " WHERE action = " + orig.getIdAction()
-            + " AND jour >= '" + start + "' AND jour <= '" + end + "'"
-            + " AND debut >= '" + orig.getStart() + "' AND fin <= '" + orig.getEnd() + "'";
+      + " AND jour >= '" + start + "' AND jour <= '" + end + "'"
+      + " AND debut >= '" + orig.getStart() + "' AND fin <= '" + orig.getEnd() + "'";
     // le changement de salle est borné à l'heure de début et de fin du planning
     if (dc.executeUpdate(query) < 1) {
       throw new PlanningException("PLANNING UPDATE=0 " + query);
@@ -426,6 +439,7 @@ public class PlanningService
   /**
    * This room modification affects only the selected schedule.
    * This occurs for exemple on studio-type schedules.
+   *
    * @param scheduleId
    * @param roomId new room id
    * @throws SQLException
@@ -447,14 +461,15 @@ public class PlanningService
     return true;
   }
 
-   /**
-    * Changes the teacher on selected schedule.
-    * @param orig initial schedule
-    * @param range replacement schedule
-    * @param date start date
-    * @throws PlanningException
-    */
-	 public void changeTeacherForSchedule(ScheduleObject orig, ScheduleObject range, DateFr date) throws PlanningException {
+  /**
+   * Changes the teacher on selected schedule.
+   *
+   * @param orig initial schedule
+   * @param range replacement schedule
+   * @param date start date
+   * @throws PlanningException
+   */
+  public void changeTeacherForSchedule(ScheduleObject orig, ScheduleObject range, DateFr date) throws PlanningException {
 
     if (range.getStart().le(orig.getStart()) && range.getEnd().ge(orig.getEnd())) {
       String query = "UPDATE " + ScheduleIO.TABLE + " SET idper = " + range.getIdPerson() + " WHERE id = " + orig.getId();
@@ -486,8 +501,8 @@ public class PlanningService
       dc.setAutoCommit(false);
       if (range.getStart().le(orig.getStart()) && range.getEnd().ge(orig.getEnd())) {
         String query = "UPDATE " + ScheduleIO.TABLE + " SET idper = " + range.getIdPerson()
-                + " WHERE action = " + orig.getIdAction()
-                + " AND jour >= '" + start + "' AND jour <= '" + end + "'";
+          + " WHERE action = " + orig.getIdAction()
+          + " AND jour >= '" + start + "' AND jour <= '" + end + "'";
         if (dc.executeUpdate(query) < 1) {
           throw new PlanningException("PLANNING UPDATE=0 " + query);
         }
@@ -498,7 +513,7 @@ public class PlanningService
         CourseSchedule rc = addSchedule(orig, range);
         ScheduleIO.insert(rc, dc);
         query = "UPDATE " + ScheduleRangeIO.TABLE + " SET idplanning = " + rc.getId()
-                + " WHERE idplanning = " + orig.getId() + " AND debut >= '" + rc.getStart() + "'";
+          + " WHERE idplanning = " + orig.getId() + " AND debut >= '" + rc.getStart() + "'";
         dc.executeUpdate(query);
         orig.setEnd(range.getStart());
       } else if (range.getStart().le(orig.getStart()) && range.getEnd().before(orig.getEnd())) {
@@ -508,7 +523,7 @@ public class PlanningService
         CourseSchedule rc = addSchedule(orig, range);
         ScheduleIO.insert(rc, dc);
         query = "UPDATE " + ScheduleRangeIO.TABLE + " SET idplanning = " + rc.getId()
-                + " WHERE idplanning = " + orig.getId() + " AND fin <= '" + rc.getEnd() + "'";
+          + " WHERE idplanning = " + orig.getId() + " AND fin <= '" + rc.getEnd() + "'";
         dc.executeUpdate(query);
         orig.setStart(range.getEnd());
       } else {
@@ -517,7 +532,7 @@ public class PlanningService
         CourseSchedule s2 = addSchedule(orig, range);
         ScheduleIO.insert(s2, dc);
         query = "UPDATE " + ScheduleRangeIO.TABLE + " SET idplanning = " + s2.getId()
-                + " WHERE idplanning = " + orig.getId() + " AND debut >= '" + s2.getStart() + "' AND fin <= '" + s2.getEnd() + "'";
+          + " WHERE idplanning = " + orig.getId() + " AND debut >= '" + s2.getStart() + "' AND fin <= '" + s2.getEnd() + "'";
         dc.executeUpdate(query);
         s2.setStart(range.getEnd());
         s2.setEnd(orig.getEnd());
@@ -526,7 +541,7 @@ public class PlanningService
         ScheduleIO.insert(s2, dc); //id has changed
         orig.setEnd(range.getStart());
         query = "UPDATE " + ScheduleRangeIO.TABLE + " SET idplanning = " + s2.getId()
-                + " WHERE idplanning = " + orig.getId() + " AND debut >= '" + s2.getStart() + "' AND fin <= '" + s2.getEnd() + "'";
+          + " WHERE idplanning = " + orig.getId() + " AND debut >= '" + s2.getStart() + "' AND fin <= '" + s2.getEnd() + "'";
         dc.executeUpdate(query);
       }
       dc.commit();
@@ -549,7 +564,7 @@ public class PlanningService
   }
 
   public Vector<ScheduleTestConflict> checkRange(ScheduleObject orig, ScheduleObject range)
-          throws SQLException {
+    throws SQLException {
     return conflictService.getRangeConflicts(orig, range, orig.getDate(), orig.getDate());
   }
 
@@ -581,28 +596,28 @@ public class PlanningService
   public void postPoneCourse(ScheduleObject plan, ScheduleObject newPlan) throws PlanningException {
     // probleme avec les heures de fin = 24:00 l'update les transforme en 23:59 / erreurs futures dans le décompte des heures
     String query = "UPDATE " + ScheduleIO.TABLE
-            + " SET jour = '" + newPlan.getDate()
-            + "', debut = '" + newPlan.getStart()
-            + "', fin = '" + newPlan.getEnd()
-            + "', lieux = " + newPlan.getIdRoom()
-            + " WHERE id = " + plan.getId();
+      + " SET jour = '" + newPlan.getDate()
+      + "', debut = '" + newPlan.getStart()
+      + "', fin = '" + newPlan.getEnd()
+      + "', lieux = " + newPlan.getIdRoom()
+      + " WHERE id = " + plan.getId();
     try {
       dc.setAutoCommit(false);
       dc.executeUpdate(query); // update schedule
       int offset = plan.getStart().getLength(newPlan.getStart()); // getLength en minutes entre l'ancienne heure et la nouvelle passée en paramètre.
       query = "UPDATE " + ScheduleRangeIO.TABLE
-              + " SET debut = debut + interval '" + offset + " min'"
-              // forcer les heures de fin à 24:00 si calcul résultant = 00:00
-              + ", fin = (CASE WHEN fin + interval '" + offset + " min' = '00:00:00' THEN '24:00:00' ELSE fin + interval '" + offset + " min' END)"
-              //+ ", fin = fin + interval '" + offset + " min'"
-              + " WHERE idplanning = " + plan.getId();
+        + " SET debut = debut + interval '" + offset + " min'"
+        // forcer les heures de fin à 24:00 si calcul résultant = 00:00
+        + ", fin = (CASE WHEN fin + interval '" + offset + " min' = '00:00:00' THEN '24:00:00' ELSE fin + interval '" + offset + " min' END)"
+        //+ ", fin = fin + interval '" + offset + " min'"
+        + " WHERE idplanning = " + plan.getId();
       dc.executeUpdate(query); // plage update
       // pour les ateliers ponctuels d'un jour seulement
       if (Schedule.WORKSHOP == plan.getType()) {
         query = "UPDATE " + CourseOrderIO.TABLE
-                + " SET debut = '" + newPlan.getStart() + "', fin = '" + newPlan.getEnd()
-                + "', datedebut = '" + newPlan.getDate() + "', datefin = '" + newPlan.getDate()
-                + "' WHERE idaction = " + plan.getIdAction();
+          + " SET debut = '" + newPlan.getStart() + "', fin = '" + newPlan.getEnd()
+          + "', datedebut = '" + newPlan.getDate() + "', datefin = '" + newPlan.getDate()
+          + "' WHERE idaction = " + plan.getIdAction();
         dc.executeUpdate(query); // commande_cours update
       }
       dc.commit();
@@ -626,12 +641,12 @@ public class PlanningService
       ScheduleIO.insert(newPlan, dc); // create postpone schedule
       int offset = plan.getStart().getLength(newPlan.getStart());
       query = "UPDATE " + ScheduleRangeIO.TABLE
-              + " SET idplanning = " + newPlan.getId()
-              + " , debut = debut + interval '" + offset + " min'"
-              //+ ", fin = fin + interval '" + offset + " min'"
-              + ", fin = (CASE WHEN fin + interval '" + offset + " min' = '00:00:00' THEN '24:00:00' ELSE fin + interval '" + offset + " min' END)"
-              + " WHERE idplanning = " + plan.getId()
-              + " AND fin <= '" + rangeEnd + "'";
+        + " SET idplanning = " + newPlan.getId()
+        + " , debut = debut + interval '" + offset + " min'"
+        //+ ", fin = fin + interval '" + offset + " min'"
+        + ", fin = (CASE WHEN fin + interval '" + offset + " min' = '00:00:00' THEN '24:00:00' ELSE fin + interval '" + offset + " min' END)"
+        + " WHERE idplanning = " + plan.getId()
+        + " AND fin <= '" + rangeEnd + "'";
 
       dc.executeUpdate(query);
 
@@ -656,12 +671,12 @@ public class PlanningService
       ScheduleIO.insert(newPlan, dc); // create postpone schedule
       int offset = rangeStart.getLength(newPlan.getStart());
       query = "UPDATE " + ScheduleRangeIO.TABLE
-              + " SET idplanning = " + newPlan.getId()
-              + " , debut = debut + interval '" + offset + " min'"
-              //+ ", fin = fin + interval '" + offset + " min'"
-              + ", fin = (CASE WHEN fin + interval '" + offset + " min' = '00:00:00' THEN '24:00:00' ELSE fin + interval '" + offset + " min' END)"
-              + " WHERE idplanning = " + plan.getId()
-              + " AND debut >= '" + rangeStart + "'";
+        + " SET idplanning = " + newPlan.getId()
+        + " , debut = debut + interval '" + offset + " min'"
+        //+ ", fin = fin + interval '" + offset + " min'"
+        + ", fin = (CASE WHEN fin + interval '" + offset + " min' = '00:00:00' THEN '24:00:00' ELSE fin + interval '" + offset + " min' END)"
+        + " WHERE idplanning = " + plan.getId()
+        + " AND debut >= '" + rangeStart + "'";
       dc.executeUpdate(query);
       dc.commit();
     } catch (SQLException ex) {
@@ -684,11 +699,11 @@ public class PlanningService
       dc.executeUpdate(query); // update schedule
       ScheduleIO.insert(newPlan, dc); // create postpone schedule
       query = "UPDATE " + ScheduleRangeIO.TABLE
-              + " SET idplanning = " + newPlan.getId()
-              + " , debut = debut + interval '" + offset + " min'"
-              + ", fin = fin + interval '" + offset + " min'"
-              + " WHERE idplanning = " + plan.getId()
-              + " AND debut >= '" + range[0] + "' AND fin <= '" + range[1] + "'";
+        + " SET idplanning = " + newPlan.getId()
+        + " , debut = debut + interval '" + offset + " min'"
+        + ", fin = fin + interval '" + offset + " min'"
+        + " WHERE idplanning = " + plan.getId()
+        + " AND debut >= '" + range[0] + "' AND fin <= '" + range[1] + "'";
       dc.executeUpdate(query);
       newPlan.setDate(plan.getDate());//important
       newPlan.setStart(range[1]);
@@ -697,9 +712,9 @@ public class PlanningService
       ScheduleIO.insert(newPlan, dc);
 
       query = "UPDATE " + ScheduleRangeIO.TABLE
-              + " SET idplanning = " + newPlan.getId()
-              + " WHERE idplanning = " + plan.getId()
-              + " AND debut >= '" + range[1] + "'";
+        + " SET idplanning = " + newPlan.getId()
+        + " WHERE idplanning = " + plan.getId()
+        + " AND debut >= '" + range[1] + "'";
       dc.executeUpdate(query);
       dc.commit();
     } catch (SQLException ex) {
@@ -707,6 +722,20 @@ public class PlanningService
       throw new PlanningException(ex.getMessage() + " : " + query);
     } finally {
       dc.setAutoCommit(true);
+    }
+  }
+
+  public void deferRehearsal(ScheduleObject p) throws SQLException {
+    String query = "UPDATE " + ScheduleIO.TABLE + " SET jour=?,debut=?,fin=?,lieux=? WHERE id = ?";
+
+    try (PreparedStatement ps = dc.prepareStatement(query)) {
+      ps.setDate(1, new java.sql.Date(p.getDate().getTime()));
+      ps.setTime(2, java.sql.Time.valueOf(p.getStart().toString() + ":00"));
+      ps.setTime(3, java.sql.Time.valueOf(p.getEnd().toString() + ":00"));
+      ps.setInt(4, p.getIdRoom());
+      ps.setInt(5, p.getId());
+
+      ps.executeUpdate();
     }
   }
 
@@ -786,7 +815,8 @@ public class PlanningService
       dc.commit();
 
     } catch (SQLException ex) {
-      dc.rollback();GemLogger.logException(ex);
+      dc.rollback();
+      GemLogger.logException(ex);
       throw new PlanningException(ex.getMessage());
     } finally {
       dc.setAutoCommit(true);
@@ -829,11 +859,11 @@ public class PlanningService
     int dow = cal.get(Calendar.DAY_OF_WEEK) - 1;
 
     String query = "UPDATE " + ScheduleIO.TABLE + " SET debut = '" + start + "', fin = '" + end + "'"
-            + " WHERE jour BETWEEN '" + plan.getDate() + "' AND '" + endDate + "'"
-            + " AND date_part('dow', jour) = " + dow
-            + " AND debut = '" + plan.getStart() + "' AND fin = '" + plan.getEnd() + "'"
-            + " AND action = " + plan.getIdAction() // on ne touche pas aux plannings dont l'action est différente
-            + " AND lieux = " + plan.getIdRoom();
+      + " WHERE jour BETWEEN '" + plan.getDate() + "' AND '" + endDate + "'"
+      + " AND date_part('dow', jour) = " + dow
+      + " AND debut = '" + plan.getStart() + "' AND fin = '" + plan.getEnd() + "'"
+      + " AND action = " + plan.getIdAction() // on ne touche pas aux plannings dont l'action est différente
+      + " AND lieux = " + plan.getIdRoom();
 
     try {
       if (dc.executeUpdate(query) < 1) {
@@ -843,15 +873,15 @@ public class PlanningService
         Course c = (Course) plan.getActivity();
         if (c.isCollective()) {
           query = "UPDATE " + ScheduleRangeIO.TABLE
-                  + " SET debut = '" + start + "', fin = '" + end
-                  + "' WHERE idplanning IN ("
-                  + " SELECT id FROM " + ScheduleIO.TABLE
-                  + " WHERE jour BETWEEN '" + plan.getDate() + "' AND '" + endDate + "'"
-                  + " AND date_part('dow', jour) = " + dow
-                  + " AND debut = '" + start + "' AND fin = '" + end + "'" // new length
-                  + " AND action = " + plan.getIdAction()
-                  + " AND lieux = " + plan.getIdRoom()
-                  + ")";
+            + " SET debut = '" + start + "', fin = '" + end
+            + "' WHERE idplanning IN ("
+            + " SELECT id FROM " + ScheduleIO.TABLE
+            + " WHERE jour BETWEEN '" + plan.getDate() + "' AND '" + endDate + "'"
+            + " AND date_part('dow', jour) = " + dow
+            + " AND debut = '" + start + "' AND fin = '" + end + "'" // new length
+            + " AND action = " + plan.getIdAction()
+            + " AND lieux = " + plan.getIdRoom()
+            + ")";
           dc.executeUpdate(query);
         }
       }
@@ -884,13 +914,13 @@ public class PlanningService
     int course = a.getCourse();
     int room = a.getRoom();
     String where = ", action a WHERE ptype = " + Schedule.COURSE
-            + " AND p.action = a.id"
-            + " AND a.cours = " + course
-            + " AND p.jour >='" + startDate + "' AND p.jour <='" + endDate + "'"
-            + " AND extract(dow from timestamp '" + startDate + "') = date_part('dow',jour)"
-            + " AND p.idper=" + a.getIdper()
-            + " AND p.debut <='" + startTime + "' AND p.fin >='" + endTime + "'"
-            + " AND p.lieux=" + room;
+      + " AND p.action = a.id"
+      + " AND a.cours = " + course
+      + " AND p.jour >='" + startDate + "' AND p.jour <='" + endDate + "'"
+      + " AND extract(dow from timestamp '" + startDate + "') = date_part('dow',jour)"
+      + " AND p.idper=" + a.getIdper()
+      + " AND p.debut <='" + startTime + "' AND p.fin >='" + endTime + "'"
+      + " AND p.lieux=" + room;
 
     Vector<Schedule> v = ScheduleIO.find(where, dc);
     try {
@@ -930,14 +960,13 @@ public class PlanningService
    */
   public void deleteBreak(ScheduleRangeObject p, DateFr start, DateFr end) throws SQLException {
     String where = "adherent = " + Course.BREAK
-            + " AND debut ='" + p.getStart() + "' AND fin ='" + p.getEnd() + "'"
-            + " AND idplanning IN ("
-            + "SELECT id FROM " + ScheduleIO.TABLE + " WHERE action = " + p.getIdAction()
-            + " AND jour >='" + start.toString() + "' AND jour <='" + end.toString() + "')";
+      + " AND debut ='" + p.getStart() + "' AND fin ='" + p.getEnd() + "'"
+      + " AND idplanning IN ("
+      + "SELECT id FROM " + ScheduleIO.TABLE + " WHERE action = " + p.getIdAction()
+      + " AND jour >='" + start.toString() + "' AND jour <='" + end.toString() + "')";
 
     ScheduleRangeIO.delete(where, dc);
   }
-
 
   /**
    * Modifies an individual followup note.
@@ -963,10 +992,9 @@ public class PlanningService
     }
   }
 
-  public void createAdministrativeEvent(final ScheduleRange range,  final FollowUp info, final List<ScheduleRange> attendees) throws PlanningException {
+  public void createAdministrativeEvent(final ScheduleRange range, final FollowUp info, final List<ScheduleRange> attendees) throws PlanningException {
     try {
-      dc.withTransaction(new DataConnection.SQLRunnable<Void>()
-      {
+      dc.withTransaction(new DataConnection.SQLRunnable<Void>() {
         @Override
         public Void run(DataConnection conn) throws Exception {
           ScheduleRangeObject rv = new ScheduleRangeObject(range);
@@ -988,6 +1016,7 @@ public class PlanningService
 
   /**
    * Gets the list of attendees present in this {@code timeRange}.
+   *
    * @param scheduleId
    * @param idper organizer id
    * @param timeRange time range of the event
@@ -1021,6 +1050,7 @@ public class PlanningService
   /**
    * Gets the note contents of the schedule including this {@code rangeId}.
    * The note is common to all persons present in the schedule.
+   *
    * @param rangeId range number
    * @return a text or an empty string if no text exists
    * @throws SQLException
@@ -1064,9 +1094,9 @@ public class PlanningService
 
   public Vector<Course> getCourseByTeacher(int teacherId, String dateStart) {
     String query = ", planning p, action a WHERE "
-            + "p.action = a.id AND a.cours = c.id"
-            + " AND p.idper = " + teacherId
-            + " AND p.jour >= '" + dateStart + "'";
+      + "p.action = a.id AND a.cours = c.id"
+      + " AND p.idper = " + teacherId
+      + " AND p.jour >= '" + dateStart + "'";
     try {
       return ((CourseIO) DataCache.getDao(Model.Course)).find(query);
     } catch (SQLException ex) {
@@ -1094,15 +1124,16 @@ public class PlanningService
 
   /**
    * Gets all the persons stored in this schedule {@literal id}.
+   *
    * @param id schedule id
    * @return a list of persons or an empty list if no one was found
    * @throws SQLException
    */
   public List<Person> getPersons(int id) throws SQLException {
     List<Person> persons = new ArrayList<Person>();
-    String query =  "SELECT adherent FROM " + ScheduleRangeIO.TABLE + " WHERE idplanning = " + id;
+    String query = "SELECT adherent FROM " + ScheduleRangeIO.TABLE + " WHERE idplanning = " + id;
     ResultSet rs = dc.executeQuery(query);
-    while(rs.next()) {
+    while (rs.next()) {
       Person per = (Person) DataCache.findId(rs.getInt(1), Model.Person);
       if (per != null) {
         persons.add(per);
@@ -1116,8 +1147,7 @@ public class PlanningService
   }
 
   public void updateAction(final Action a) throws Exception {
-    dc.withTransaction(new DataConnection.SQLRunnable<Void>()
-    {
+    dc.withTransaction(new DataConnection.SQLRunnable<Void>() {
       @Override
       public Void run(DataConnection conn) throws Exception {
         actionIO.update(a);
@@ -1191,8 +1221,7 @@ public class PlanningService
    */
   public void deleteAdministrativeEvent(final ScheduleRangeObject range) throws PlanningException {
     try {
-      dc.withTransaction(new DataConnection.SQLRunnable<Void>()
-      {
+      dc.withTransaction(new DataConnection.SQLRunnable<Void>() {
         @Override
         public Void run(DataConnection conn) throws Exception {
           deleteFollowUp(range);
@@ -1214,6 +1243,7 @@ public class PlanningService
 
   /**
    * Gets a schedule including the range with Id {@code rangeId}.
+   *
    * @param rangeId range Id
    * @return a schedule or null if no schedule was found
    */
@@ -1231,6 +1261,7 @@ public class PlanningService
 
   /**
    * Gets the id of an establishment from an action code.
+   *
    * @param action
    * @return an integer or -1 if establishment is not found
    * @throws SQLException
@@ -1250,7 +1281,7 @@ public class PlanningService
   }
 
   public Vector<ScheduleTestConflict> testRange(ScheduleObject plan, Hour hStart, Hour hEnd, DateFr lastDate)
-          throws SQLException {
+    throws SQLException {
     return conflictService.testRange(plan, hStart, hEnd, lastDate);
   }
 
@@ -1277,48 +1308,53 @@ public class PlanningService
   }
 
   public Vector<ScheduleTestConflict> checkHour(ScheduleObject plan, DateFr dateStart, DateFr dateEnd, Hour hStart, Hour hEnd)
-          throws SQLException {
+    throws SQLException {
     return conflictService.testHourConflict(plan, dateStart, dateEnd, hStart, hEnd);
   }
 
-  public Vector<ScheduleTestConflict> checkChangeRoom(ScheduleObject plan, DateFr dateStart, DateFr dateEnd, int roomId)
-          throws SQLException {
+  public List<ScheduleTestConflict> checkChangeRoom(ScheduleObject plan, DateFr dateStart, DateFr dateEnd, int roomId)
+    throws SQLException {
     return conflictService.testRoomConflict(plan, dateStart, dateEnd, roomId);
   }
 
-  public Vector<ScheduleTestConflict> checkRoomForScheduleCopy(ScheduleObject newPlan)
-          throws SQLException {
+  public List<ScheduleTestConflict> checkChangeRoomRehearsal(ScheduleObject plan)
+    throws SQLException {
+    return conflictService.testRehearsalRoomConflict(plan);
+  }
+
+  public List<ScheduleTestConflict> checkRoomForScheduleCopy(ScheduleObject newPlan)
+    throws SQLException {
     return conflictService.testRoomConflict(newPlan.getDate(), newPlan.getStart(), newPlan.getEnd(), newPlan.getIdRoom());
   }
 
   public Vector<ScheduleTestConflict> checkRoomForSchedulePostpone(ScheduleObject plan, ScheduleObject newPlan)
-          throws SQLException {
+    throws SQLException {
     return conflictService.testRoomConflict(plan.getId(), newPlan);
     //return conflictService.testRoomConflict(newPlan.getIdRoom(), plan.getId(), newPlan.getDate(), newPlan.getStart(), newPlan.getEnd());
   }
 
   public Vector<ScheduleTestConflict> checkRoomForScheduleLengthModif(ScheduleObject plan, Hour hStart, Hour hEnd, DateFr lastDate)
-          throws SQLException {
+    throws SQLException {
     return conflictService.testRoomConflict(plan, hStart, hEnd, lastDate);
   }
 
   public Vector<ScheduleTestConflict> checkTeacherForScheduleLengthModif(ScheduleObject plan, DateFr lastDate, Hour hStart, Hour hEnd)
-          throws SQLException {
+    throws SQLException {
     return conflictService.testTeacherConflictForScheduleLength(plan, lastDate, hStart, hEnd);
   }
 
   public Vector<ScheduleTestConflict> checkTeacherForScheduleCopy(ScheduleObject plan, ScheduleObject newPlan)
-          throws SQLException {
+    throws SQLException {
     return conflictService.testTeacherConflict(plan.getIdPerson(), newPlan);
   }
 
   public Vector<ScheduleTestConflict> checkTeacherForSchedulePostpone(ScheduleObject plan, ScheduleObject newPlan)
-          throws SQLException {
+    throws SQLException {
     return conflictService.testTeacherConflict(plan, newPlan.getDate(), newPlan.getStart(), newPlan.getEnd());
   }
 
   public Vector<ScheduleTestConflict> checkChangeTeacher(ScheduleObject orig, ScheduleObject range, DateFr dateStart, DateFr dateEnd)
-          throws PlanningException {
+    throws PlanningException {
     try {
       return conflictService.testTeacherConflict(orig, range, dateStart, dateEnd);
     } catch (SQLException ex) {

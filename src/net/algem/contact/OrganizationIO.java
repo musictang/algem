@@ -1,7 +1,7 @@
 /*
- * @(#) OrganizationIO.java Algem 2.15.0 25/07/2017
+ * @(#) OrganizationIO.java Algem 2.15.8 26/03/18
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -32,7 +32,7 @@ import net.algem.util.model.TableIO;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.0
+ * @version 2.15.8
  * @since 2.15.0 25/07/2017
  */
 public class OrganizationIO extends TableIO {
@@ -54,7 +54,7 @@ public class OrganizationIO extends TableIO {
     String query = "SELECT " + COLUMNS + " FROM " + TABLE + " WHERE idper=?";
     try (PreparedStatement ps = dc.prepareStatement(query)) {
       ps.setInt(1, idper);
-      GemLogger.info(ps.toString());
+      //GemLogger.info(ps.toString());
       ResultSet rs = ps.executeQuery();
       while (rs.next()) {
         return getFromRS(rs);
@@ -69,7 +69,7 @@ public class OrganizationIO extends TableIO {
       String query = "SELECT " + COLUMNS + " FROM " + TABLE + " WHERE lower(nom) LIKE ?";
       try (PreparedStatement ps = dc.prepareStatement(query)) {
         ps.setString(1, name.toLowerCase() + "%");
-        GemLogger.info(ps.toString());
+        //GemLogger.info(ps.toString());
         ResultSet rs = ps.executeQuery();
         while (rs.next()) {
           orgs.add(getFromRS(rs));
@@ -93,10 +93,11 @@ public class OrganizationIO extends TableIO {
   public List<Person> findMembers(int orgId) throws SQLException {
     List<Person> pers = new ArrayList<>();
     if (orgId > 0) {
-      String query = "SELECT p.id,CASE WHEN p.nom IS NULL OR p.nom = '' THEN o.nom ELSE p.nom END,p.prenom FROM " + PersonIO.TABLE + " p JOIN " + TABLE + " o ON p.organisation = o.idper WHERE o.idper = ? ORDER BY p.prenom";
+      String query = "SELECT p.id,CASE WHEN p.nom IS NULL OR p.nom = '' THEN o.nom ELSE p.nom END,p.prenom FROM " + PersonIO.TABLE + " p JOIN " + TABLE + " o ON p.organisation = o.idper WHERE o.idper = ?"
+        + " AND (p.ptype = " + Person.PERSON + " OR p.ptype = " + Person.ROOM + ") ORDER BY p.prenom";
       try (PreparedStatement ps = dc.prepareStatement(query)) {
         ps.setInt(1, orgId);
-        GemLogger.info(ps.toString());
+        //GemLogger.info(ps.toString());
         ResultSet rs = ps.executeQuery();
         while (rs.next()) {
           Person p = new Person(rs.getInt(1));

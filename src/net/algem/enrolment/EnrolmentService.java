@@ -1,7 +1,7 @@
 /*
- * @(#)EnrolmentService.java	2.15.0 30/07/2017
+ * @(#)EnrolmentService.java	2.15.8 25/03/18
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -42,7 +42,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.0
+ * @version 2.15.8
  * @since 2.4.a 20/04/12
  */
 public class EnrolmentService
@@ -720,6 +720,10 @@ public class EnrolmentService
 
   public void update(ModuleOrder mo) throws SQLException {
     ModuleOrderIO.update(mo, dc);
+  }
+
+  public void updateOrderDate(Order o) throws SQLException {
+    OrderIO.updateOrderDate(o, dc);
   }
 
   /**

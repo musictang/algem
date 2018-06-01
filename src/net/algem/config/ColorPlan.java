@@ -48,11 +48,11 @@ public enum ColorPlan
     INSTRUMENT_CO_LABEL("plan.cours.instr.collectif.label.color", Color.BLACK.getRGB()),
     GROUP_LABEL("plan.groupe.label.color", Color.WHITE.getRGB()),
   */
-//  
+//
   // Background
   ACTION("plan.action.color", Color.WHITE.getRGB()),
   WORKSHOP("plan.atelier.color", -526420),
-  TRAINING("plan.stage.color", 16250748), //247,247,124 
+  TRAINING("plan.stage.color", 16250748), //247,247,124
   COURSE_CO("plan.cours.collectif.color", -44462),
   INSTRUMENT_CO("plan.cours.instr.collectif.color", -32743),
   COURSE_INDIVIDUAL("plan.cours.individuel.color", -16723879),
@@ -62,8 +62,8 @@ public enum ColorPlan
   GROUP_REHEARSAL("plan.repet.groupe.color", -14591745),
   STUDIO("plan.studio.color", -5160193),//153,0,255 (alternative : 6711039 //102,102,255 | 10027263)
   ADMINISTRATIVE("plan.administratif.color", -6710785),//light purple 153,153,255 #9999FF,
-  BOOKING_GROUP("plan.reservation.groupe.color", Color.MAGENTA.getRGB()), 
-  BOOKING_MEMBER("plan.reservation.groupe.color", Color.MAGENTA.brighter().getRGB()), 
+  BOOKING_GROUP("plan.reservation.groupe.color", Color.MAGENTA.getRGB()),
+  BOOKING_MEMBER("plan.reservation.groupe.color", Color.MAGENTA.brighter().getRGB()),
   // Foreground
   ACTION_LABEL("plan.action.label.color", Color.GREEN.getRGB()),
   MEMBER_LABEL("plan.adherent.label.color", -256),
@@ -78,7 +78,7 @@ public enum ColorPlan
   CATCHING_UP_LABEL("plan.rattrapage.label.color", Color.GREEN.getRGB()),
   STUDIO_LABEL("plan.studio.label.color", Color.WHITE.getRGB()),
   ADMINISTRATIVE_LABEL("plan.administratif.label.color", -16777216),
-  BOOKING_LABEL("plan.reservation.label.color", Color.WHITE.getRGB()); 
+  BOOKING_LABEL("plan.reservation.label.color", Color.WHITE.getRGB());
 
   private final String key;
   private final int color;

@@ -1,0 +1,14 @@
+class net/algem/group/MusicianTableModel uses deprecated method java/lang/Integer::<init>(I)V 
+class net/algem/group/GroupTableModel uses deprecated method java/lang/Integer::<init>(I)V 
+class net/algem/enrolment/ModuleOrderTableModel uses deprecated method java/lang/Integer::<init>(I)V 
+class net/algem/bank/BranchTableModel uses deprecated method java/lang/Integer::<init>(I)V 
+class net/algem/bank/MultiBranchTableModel uses deprecated method java/lang/Integer::<init>(I)V 
+class net/algem/accounting/OrderLineEditor uses deprecated method java/lang/Double::<init>(D)V 
+class net/algem/room/RoomTableModel uses deprecated method java/lang/Integer::<init>(I)V 
+class net/algem/util/ui/GemChoiceFilterModel uses deprecated method java/lang/Integer::<init>(I)V 
+class net/algem/contact/PersonIO uses deprecated method java/lang/Integer::<init>(Ljava/lang/String;)V 
+class net/algem/contact/PersonFileTableModel uses deprecated method java/lang/Integer::<init>(I)V 
+class net/algem/contact/PersonTableModel uses deprecated method java/lang/Integer::<init>(I)V 
+class net/algem/security/UserTableModel uses deprecated method java/lang/Integer::<init>(I)V 
+class net/algem/planning/fact/ui/PlanningFactDialog uses deprecated method java/util/Date::getHours()I 
+class net/algem/planning/fact/ui/PlanningFactDialog uses deprecated method java/util/Date::getMinutes()I 

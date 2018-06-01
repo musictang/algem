@@ -1,7 +1,7 @@
 /*
- * @(#)AllStudentExportDlg.java	2.10.0 19/05/16
+ * @(#)AllStudentExportDlg.java	2.15.8 22/03/18
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -33,7 +33,7 @@ import net.algem.util.ui.GridBagHelper;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.15.8
  * @since 2.9.2.1 17/02/15
  */
 public class AllStudentExportDlg
@@ -52,12 +52,8 @@ extends StudentExportDlg
     allEstabList = desktop.getDataCache().getList(Model.Establishment);
     allEstabList.addElement(new Establishment(new Person(0, BundleUtil.getLabel("All.label"))));
     estab = new EstabChoice(allEstabList);
-    estab.setPreferredSize(typeContact.getPreferredSize());
-
     gb.add(new JLabel(BundleUtil.getLabel("Date.From.label")), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(dateRange, 1, 0, 1, 1, GridBagHelper.WEST);
-    gb.add(new JLabel(BundleUtil.getLabel("Type.label")), 0, 1, 1, 1, GridBagHelper.WEST);
-    gb.add(typeContact, 1, 1, 1, 1, GridBagHelper.WEST);
     gb.add(new JLabel(BundleUtil.getLabel("Establishment.label")), 0, 2, 1, 1, GridBagHelper.WEST);
     gb.add(estab, 1, 2, 1, 1, GridBagHelper.WEST);
 

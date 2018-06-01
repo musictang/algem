@@ -1,7 +1,7 @@
 /*
- * @(#)DayScheduleCtrl.java 2.11.0 27/09/2016
+ * @(#)DayScheduleCtrl.java 2.15.8 25/03/18
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -60,25 +60,26 @@ import net.algem.util.model.Model;
 import net.algem.util.module.GemModule;
 import net.algem.util.ui.Toast;
 import net.algem.util.ui.UIAdjustable;
+import org.apache.poi.ss.usermodel.PrintSetup;
 
 /**
  * Day schedule main controller.
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.0
+ * @version 2.15.8
  * @since 1.0b 06/10/2001
  */
 public class DayScheduleCtrl
-        extends GemModule
-        implements UIAdjustable
-{
+  extends GemModule
+  implements UIAdjustable {
 
   public static final int DAY_SCHEDULE_WINDOW_HEIGHT = 550;
   private static final Dimension DAY_SCHEDULE_DIMENSION = new Dimension(920, DAY_SCHEDULE_WINDOW_HEIGHT);
   private JMenuItem miPrint;
   private JMenuItem miQuit;
-  private JMenuItem miExport;
+  private JMenuItem miExportA4;
+  private JMenuItem miExportA3;
 
   private DaySchedule daySchedule;
   private boolean monthLink = false;
@@ -89,7 +90,6 @@ public class DayScheduleCtrl
   private boolean savePrefs;
   private final Preferences prefs = Preferences.userRoot().node("/algem/ui");
 
-
   public DayScheduleCtrl() {
     super("TableauJour");
     cal = Calendar.getInstance(Locale.FRANCE);
@@ -97,6 +97,7 @@ public class DayScheduleCtrl
 
   /**
    * Inits the module.
+   *
    * @see net.algem.util.module.GemDesktop#addModule(net.algem.util.module.GemModule)
    */
   @Override
@@ -114,18 +115,21 @@ public class DayScheduleCtrl
     JMenu mFile = createJMenu("Menu.file");
     miQuit = getMenuItem("Menu.quit");
     miPrint = getMenuItem("Menu.print");
-    miExport = getMenuItem("Menu.export");
+
+    miExportA4 = getMenuItem("Schedule.export.A4");
+    miExportA3 = getMenuItem("Schedule.export.A3");
+
     mFile.add(miPrint);
     if (Algem.isFeatureEnabled("export_planning_xls")) {
-      mFile.add(miExport);
+      mFile.add(miExportA4);
+      mFile.add(miExportA3);
     }
     mFile.add(miQuit);
 
     JMenu mOptions = new JMenu("Options");
     JCheckBoxMenuItem miLinkMonth = new JCheckBoxMenuItem(BundleUtil.getLabel("Day.schedule.link.label"), monthLink);
     miLinkMonth.setSelected(false);
-    miLinkMonth.addItemListener(new ItemListener()
-    {
+    miLinkMonth.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
         monthLink = (e.getStateChange() == ItemEvent.SELECTED);
       }
@@ -133,8 +137,7 @@ public class DayScheduleCtrl
 
     miAllRooms = new JCheckBoxMenuItem(BundleUtil.getLabel("Room.show.all.label"));
     miAllRooms.setSelected(false);
-    miAllRooms.addItemListener(new ItemListener()
-    {
+    miAllRooms.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
         ((DayScheduleView) view).propertyChange(new PropertyChangeEvent(daySchedule, "@all_rooms", null, e.getStateChange() == ItemEvent.SELECTED));
       }
@@ -156,8 +159,7 @@ public class DayScheduleCtrl
     miQuit.addActionListener(this);
     miLinkMonth.addActionListener(this);
     view.setJMenuBar(mBar);
-    SwingUtilities.invokeLater(new Runnable()
-    {
+    SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
         load(new java.util.Date());
@@ -173,6 +175,7 @@ public class DayScheduleCtrl
   //XXX dans DataCache + thread
   /**
    * Loads all the schedules of the day corresponding to this {@code date}.
+   *
    * @param date date of the day to load
    */
   private void load(Date date) {
@@ -186,8 +189,8 @@ public class DayScheduleCtrl
    * Maximizes the internal view to optimize name display in ranges.
    */
   public void mayBeMaximize() {
-     if (ConfigUtil.getConf(ConfigKey.SCHEDULE_RANGE_NAMES.getKey()).equals("t")) {
-        view.setSize(prefs.getInt("dayplan.w",960), prefs.getInt("dayplan.h", 720)); // new Dimension(960,720));
+    if (ConfigUtil.getConf(ConfigKey.SCHEDULE_RANGE_NAMES.getKey()).equals("t")) {
+      view.setSize(prefs.getInt("dayplan.w", 960), prefs.getInt("dayplan.h", 720)); // new Dimension(960,720));
     }
   }
 
@@ -231,9 +234,9 @@ public class DayScheduleCtrl
       } catch (GemCloseVetoException ex) {
         GemLogger.logException(ex);
       }
-    } else if (src == miExport) {
+    } else if (src == miExportA3 || src == miExportA4) {
       List<DayPlan> planning = ((DayScheduleView) view).getCurrentPlanning();
-      String proposed = null;
+      String proposed = "planning";
       DayPlan plan = planning == null || planning.isEmpty() ? null : planning.get(0);
       if (plan != null && plan.getSchedule() != null && plan.getSchedule().size() > 0) {
         proposed = "planning_" + plan.getSchedule().get(0).getDate().toString();
@@ -241,14 +244,16 @@ public class DayScheduleCtrl
       File destFile = FileUtil.getSaveFile(view, "xls", BundleUtil.getLabel("Excel.file.label"), proposed);
       if (destFile != null) {
         try {
+          short paperSize = src == miExportA3 ? PrintSetup.A3_PAPERSIZE : PrintSetup.A4_PAPERSIZE;
+          boolean printMembers = ConfigUtil.getConf(ConfigKey.SCHEDULE_RANGE_NAMES.getKey()).toLowerCase().charAt(0) == 't';
           new PlanningExportService(
-                  new PlanningService(DataCache.getDataConnection()),
-                  new StandardScheduleColorizer(new ColorPrefs())
+            new PlanningService(DataCache.getDataConnection()),
+            new StandardScheduleColorizer(new ColorPrefs()),
+            paperSize,
+            printMembers
           ).exportPlanning(planning, destFile);
           new DesktopOpenHandler().open(destFile.getAbsolutePath());
-        } catch (IOException e) {
-          GemLogger.log(e.getMessage());
-        } catch (DesktopHandlerException e) {
+        } catch (IOException | DesktopHandlerException e) {
           GemLogger.log(e.getMessage());
         }
       }
@@ -273,8 +278,7 @@ public class DayScheduleCtrl
       if (d.equals(cal.getTime())) {
         return;
       }
-      EventQueue.invokeLater(new Runnable()
-      {
+      EventQueue.invokeLater(new Runnable() {
         public void run() {
           load(d);
         }
@@ -290,8 +294,7 @@ public class DayScheduleCtrl
       if (d.equals(cal.getTime())) {
         return;
       }
-      EventQueue.invokeLater(new Runnable()
-      {
+      EventQueue.invokeLater(new Runnable() {
         public void run() {
           load(d);
         }
@@ -304,8 +307,7 @@ public class DayScheduleCtrl
       //if (d.getTime() >= debut.getTime() && d.getTime() <= fin.getTime())
       //Correction bug non rafraichissement du planning
       if (currentDate.afterOrEqual(start) && currentDate.beforeOrEqual(end)) {//XXX OU logique ?
-        EventQueue.invokeLater(new Runnable()
-        {
+        EventQueue.invokeLater(new Runnable() {
 
           public void run() {
             load(d);
@@ -315,8 +317,7 @@ public class DayScheduleCtrl
     } else if (_evt instanceof RoomUpdateEvent) {
       final Date d = ((RoomUpdateEvent) _evt).getDate();
       if (d != null) {
-        EventQueue.invokeLater(new Runnable()
-        {
+        EventQueue.invokeLater(new Runnable() {
           public void run() {
             load(d);
           }
@@ -365,7 +366,7 @@ public class DayScheduleCtrl
   @Override
   public String getUIInfo() {
     Dimension d = view.getSize();
-    return BundleUtil.getLabel("New.size.label") + " : " + d.width+"x"+d.height;
+    return BundleUtil.getLabel("New.size.label") + " : " + d.width + "x" + d.height;
   }
 
 }

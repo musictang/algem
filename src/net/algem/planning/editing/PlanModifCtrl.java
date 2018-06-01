@@ -1,7 +1,7 @@
 /*
- * @(#)PlanModifCtrl.java	2.14.0 20/06/17
+ * @(#)PlanModifCtrl.java	2.15.8 26/03/2018
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -53,6 +53,7 @@ import net.algem.planning.fact.ui.DeleteLowActivityCtrl;
 import net.algem.planning.fact.ui.AbsenceToCatchUpCtrl;
 import net.algem.planning.fact.ui.ReplanifyCtrl;
 import net.algem.room.Room;
+import net.algem.room.RoomService;
 import net.algem.util.*;
 import net.algem.util.jdesktop.DesktopMailHandler;
 import net.algem.util.model.Model;
@@ -65,12 +66,11 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.14.0
+ * @version 2.15.8
  * @since 1.0b 05/07/2002 lien salle et groupe
  */
 public class PlanModifCtrl
-        implements ActionListener
-{
+  implements ActionListener {
 
   private Calendar cal;
   private ScheduleObject plan;
@@ -153,8 +153,9 @@ public class PlanModifCtrl
     Vector<GemMenuButton> v = new Vector<GemMenuButton>();
 
     v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.room.modification.label"), this, "ChangeRoom"));
-    v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.hour.modification.label"), this, "ChangeHour"));
+    v.add(new GemMenuButton(BundleUtil.getLabel("Rehearsal.time.modification.label"), this, "ChangeHour"));
     v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.rehearsal.cancellation.label"), this, "CancelRehearsal"));
+    v.add(new GemMenuButton(BundleUtil.getLabel("Defer.label"), this, "DeferRehearsal"));
     v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.paid.annotation.label"), this, "MarkPaid"));
     v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.unpaid.annotation.label"), this, "MarkNotPaid"));
 
@@ -170,8 +171,9 @@ public class PlanModifCtrl
     Vector<GemMenuButton> v = new Vector<GemMenuButton>();
 
     v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.room.modification.label"), this, "ChangeRoom"));
-    v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.hour.modification.label"), this, "ChangeHour"));
+    v.add(new GemMenuButton(BundleUtil.getLabel("Rehearsal.time.modification.label"), this, "ChangeHour"));
     v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.rehearsal.cancellation.label"), this, "CancelRehearsal"));
+    v.add(new GemMenuButton(BundleUtil.getLabel("Defer.label"), this, "DeferRehearsal"));
     v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.paid.annotation.label"), this, "MarkPaid"));
     v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.unpaid.annotation.label"), this, "MarkNotPaid"));
 
@@ -223,7 +225,7 @@ public class PlanModifCtrl
     v.add(new GemMenuButton(BundleUtil.getLabel("Copy.label"), this, "CopyCourse"));
     v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.add.event.label"), this, "AddEvent"));
     //if (dataCache.authorize("Schedule.suppression.auth")) { //TODO authorise default profil 1 ?
-      v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.suppression.label"), this, "DeletePlanning"));
+    v.add(new GemMenuButton(BundleUtil.getLabel("Schedule.suppression.label"), this, "DeletePlanning"));
     //}
     return v;
   }
@@ -283,6 +285,8 @@ public class PlanModifCtrl
         dialogCancelWorkshop();
       } else if (arg.equals("CancelRehearsal")) {
         dialogCancelRehearsal();
+      } else if (arg.equals("DeferRehearsal")) {
+        deferRehearsal();
       } else if (arg.equals("MarkPaid")) {
         service.markPaid(plan);
         desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));
@@ -293,12 +297,11 @@ public class PlanModifCtrl
         desktop.removeCurrentModule();
       } else if (arg.equals("AtelierInstruments")) {
         dialogAtelierInstruments();
-      } else if(arg.equals("AddEvent")) {
+      } else if (arg.equals("AddEvent")) {
         dialogAddEvent();
-      }
-      else if(arg.equals("AbsenceToCatchUp")) {
+      } else if (arg.equals("AbsenceToCatchUp")) {
         new AbsenceToCatchUpCtrl(desktop, plan).run();
-      } else if(arg.equals("DeleteLowActivity")) {
+      } else if (arg.equals("DeleteLowActivity")) {
         new DeleteLowActivityCtrl(desktop, plan).run();
       } else if (arg.equals("Replanify")) {
         new ReplanifyCtrl(desktop, plan).run();
@@ -330,6 +333,7 @@ public class PlanModifCtrl
 
   /**
    * Calls the add event dialog.
+   *
    * @throws PlanningException
    */
   private void dialogAddEvent() throws PlanningException {
@@ -415,11 +419,11 @@ public class PlanModifCtrl
    */
   private void changeHour(DateFr start, DateFr end, Hour hStart, Hour hEnd) throws Exception {
     String query = "UPDATE planning SET debut = '" + hStart + "', fin='" + hEnd + "'"
-            + " WHERE action = " + plan.getIdAction()
-            + " AND jour >= '" + start + "' AND jour <= '" + end + "'"
-            + " AND ptype = " + plan.getType()
-            + " AND debut = '" + plan.getStart() + "' AND fin = '" + plan.getEnd() + "'"
-            + " AND lieux = " + plan.getIdRoom() + " AND idper = " + plan.getIdPerson();
+      + " WHERE action = " + plan.getIdAction()
+      + " AND jour >= '" + start + "' AND jour <= '" + end + "'"
+      + " AND ptype = " + plan.getType()
+      + " AND debut = '" + plan.getStart() + "' AND fin = '" + plan.getEnd() + "'"
+      + " AND lieux = " + plan.getIdRoom() + " AND idper = " + plan.getIdPerson();
     if (dc.executeUpdate(query) < 1) {
       throw new Exception("PLANNING UPDATE=0 " + query);
     }
@@ -530,11 +534,11 @@ public class PlanModifCtrl
     int roomId = dlg.getNewRoom();
 
     try {
-      Vector<ScheduleTestConflict> v = service.checkChangeRoom(plan, start, end, roomId);
+      List<ScheduleTestConflict> v = service.checkChangeRoom(plan, start, end, roomId);
       if (v.size() > 0) {
         ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), "Conflits changement de salle", service);
         for (int i = 0; i < v.size(); i++) {
-          cfd.addConflict(v.elementAt(i));
+          cfd.addConflict(v.get(i));
         }
         cfd.show();
         return;
@@ -731,7 +735,7 @@ public class PlanModifCtrl
   }
 
   private boolean testConflictCourse(ScheduleObject plan, ScheduleObject newPlan, Hour[] range)
-          throws SQLException {
+    throws SQLException {
 
     Vector<ScheduleTestConflict> v = service.checkRoomForSchedulePostpone(plan, newPlan);
     // room conflict
@@ -762,14 +766,14 @@ public class PlanModifCtrl
   }
 
   private boolean testConflictCopyCourse(ScheduleObject plan, ScheduleObject newPlan)
-          throws SQLException {
+    throws SQLException {
 
-    Vector<ScheduleTestConflict> v = service.checkRoomForScheduleCopy(newPlan);
+    List<ScheduleTestConflict> v = service.checkRoomForScheduleCopy(newPlan);
 
     if (v.size() > 0) {
       ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), BundleUtil.getLabel("Room.conflict.label"), service);
       for (int i = 0; i < v.size(); i++) {
-        cfd.addConflict(v.elementAt(i));
+        cfd.addConflict(v.get(i));
       }
       cfd.show();
       return false;
@@ -779,7 +783,7 @@ public class PlanModifCtrl
       if (v.size() > 0) {
         ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), BundleUtil.getLabel("Teacher.conflict.label"), service);
         for (int i = 0; i < v.size(); i++) {
-          cfd.addConflict(v.elementAt(i));
+          cfd.addConflict(v.get(i));
         }
         cfd.show();
         return false;
@@ -868,6 +872,39 @@ public class PlanModifCtrl
     MessagePopup.information(desktop.getFrame(), "Not yet implemented");
   }
 
+  /**
+   * Defer rehearsal.
+   * This method can be used when changing room, start time or day of rehearsal.
+   * The change may apply on any of these three parameters.
+   */
+  private void deferRehearsal() {
+    DeferRehearsalDlg dlg = new DeferRehearsalDlg(desktop, plan, service, "Defer.label");
+    dlg.show();
+    if (dlg.isValidate()) {
+      try {
+        ScheduleObject s = dlg.getSchedule();
+        s.setId(plan.getId());
+        s.setIdPerson(plan.getIdPerson());
+        // check room and member usage
+        List<ScheduleTestConflict> conflicts = service.checkChangeRoomRehearsal(s);
+        if (conflicts.size() > 0) {
+          ConflictListDlg cfd = new ConflictListDlg(desktop.getFrame(), "Conflits changement de salle", service);
+          for (int i = 0; i < conflicts.size(); i++) {
+            cfd.addConflict(conflicts.get(i));
+          }
+          cfd.show();
+          return;
+        }
+        if (RoomService.isOpened(s.getIdRoom(),s.getDate(), s.getStart(), s.getEnd())) {
+          service.deferRehearsal(s);
+          desktop.postEvent(new ModifPlanEvent(this, s.getDate(), s.getDate()));
+        }
+      } catch (SQLException ex) {
+        GemLogger.logException(ex);
+      }
+    }
+  }
+
   private void dialogCancelRehearsal() {
 
     RehearsalCancelDlg dlg = new RehearsalCancelDlg(desktop.getFrame(), plan);
@@ -888,7 +925,7 @@ public class PlanModifCtrl
           Group g = new GemGroupService(dc).find(plan.getIdPerson());
           if (g != null && g.getIdref() > 0) {
             if (forceDeletePayment(delay)) {
-              memberService.deleteOrderLine(dlg.getDateStart(), g.getIdref(), g.getId(),0);// referent
+              memberService.deleteOrderLine(dlg.getDateStart(), g.getIdref(), g.getId(), 0);// referent
             }
           }
         }
@@ -903,6 +940,7 @@ public class PlanModifCtrl
 
   /**
    * Gets the minimal number of hours required to cancel a rehearsal.
+   *
    * @param def default value
    * @return a number of hours
    */
@@ -918,6 +956,7 @@ public class PlanModifCtrl
 
   /**
    * Optionally delete payment after cancellation.
+   *
    * @param delay Minimal number of hours required to cancel a rehearsal.
    * @return true if deleting payment is confirmed
    */
@@ -935,7 +974,7 @@ public class PlanModifCtrl
     return true;
   }
 
-   private boolean forceDeleteSession(int delay) {
+  private boolean forceDeleteSession(int delay) {
     if (!RehearsalUtil.isCancelledBefore(plan.getDate(), delay)) {
       if (!MessagePopup.confirm(desktop.getFrame(), MessageUtil.getMessage("Restaurer le nombre d'heures sur la carte ?"))) {
         return false;
@@ -1039,13 +1078,13 @@ public class PlanModifCtrl
         email = memberService.getEmail(plan.getIdPerson());
         name = plan.getPerson().getFirstnameName();
       } else {
-        Group g = (Group) DataCache.findId(plan.getIdPerson(),Model.Group);
+        Group g = (Group) DataCache.findId(plan.getIdPerson(), Model.Group);
         email = memberService.getEmail(b.getPerson());
         name = g.getName();
       }
       String subject = MailUtil.urlEncode(MessageUtil.getMessage("booking.cancellation.subject"));
       String signature = MailUtil.getSignature(dataCache.getUser());
-      String body = MailUtil.urlEncode(MessageUtil.getMessage("booking.cancellation.message", new Object[] {name, plan.getDate().toString(), plan.getStart(), signature}));
+      String body = MailUtil.urlEncode(MessageUtil.getMessage("booking.cancellation.message", new Object[]{name, plan.getDate().toString(), plan.getStart(), signature}));
       sendMessage(email, subject, body);
       desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));
       desktop.loadPostits();
@@ -1069,7 +1108,7 @@ public class PlanModifCtrl
         email = memberService.getEmail(plan.getIdPerson());
         name = plan.getPerson().getFirstnameName();
       } else {
-        Group g = (Group) DataCache.findId(plan.getIdPerson(),Model.Group);
+        Group g = (Group) DataCache.findId(plan.getIdPerson(), Model.Group);
         new GemGroupService(dc).order(plan, g);
         email = memberService.getEmail(b.getPerson());
         name = g.getName();
@@ -1077,15 +1116,15 @@ public class PlanModifCtrl
       String subject = MailUtil.urlEncode(MessageUtil.getMessage("booking.confirmation.subject"));
       String signature = MailUtil.getSignature(dataCache.getUser());
       String body = MailUtil.urlEncode(
-              MessageUtil.getMessage(
-                      "booking.confirmation.message",
-                      new Object[] {name, plan.getDate().toString(), plan.getStart(), plan.getRoom().getName(), signature}
-              )
+        MessageUtil.getMessage(
+          "booking.confirmation.message",
+          new Object[]{name, plan.getDate().toString(), plan.getStart(), plan.getRoom().getName(), signature}
+        )
       );
       sendMessage(email, subject, body);
       desktop.postEvent(new ModifPlanEvent(this, plan.getDate(), plan.getDate()));
       desktop.loadPostits();
-    } catch (BookingException |SQLException|MemberException|GroupException ex) {
+    } catch (BookingException | SQLException | MemberException | GroupException ex) {
       GemLogger.logException(ex);
       MessagePopup.warning(null, ex.getMessage());
     }

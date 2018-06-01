@@ -1,7 +1,7 @@
 /*
- * @(#)MemberRehearsalCtrl.java	2.11.3 30/11/16
+ * @(#)MemberRehearsalCtrl.java	2.15.8 26/03/18
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -50,7 +50,7 @@ import net.algem.util.ui.PopupDlg;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.3
+ * @version 2.15.8
  * @since 1.0a 12/12/2001
  */
 public class MemberRehearsalCtrl
@@ -419,7 +419,7 @@ public class MemberRehearsalCtrl
     }
 
     // course member checking
-    query = ConflictQueries.getMemberScheduleSelection(p.getDate().toString(), p.getStart().toString(), p.getEnd().toString(), p.getIdPerson());
+    query = ConflictQueries.getCourseMemberSelection(p.getDate().toString(), p.getStart().toString(), p.getEnd().toString(), p.getIdPerson());
     if (ScheduleIO.count(query, dc) > 0) {
       MessagePopup.error(view, BundleUtil.getLabel("Member.conflict.label"), BundleUtil.getLabel("Conflit.label"));
       return false;

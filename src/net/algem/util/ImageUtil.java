@@ -1,7 +1,7 @@
 /*
- * @(#)ImageUtil.java	2.15.0 20/09/17
+ * @(#)ImageUtil.java	2.15.8 14/03/18
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -46,7 +46,7 @@ import org.apache.poi.util.IOUtils;
  * Utility class for image operations.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.0
+ * @version 2.15.8
  */
 public class ImageUtil
 {
@@ -113,7 +113,11 @@ public class ImageUtil
 
   public static BufferedImage rescaleSmooth(BufferedImage img, int nw, int nh) {
     Image imgSmall = img.getScaledInstance(nw, -nh, Image.SCALE_SMOOTH);
-    BufferedImage dimg = new BufferedImage(imgSmall.getWidth(null), imgSmall.getHeight(null), img.getType());
+    int type = img.getType();
+    if (BufferedImage.TYPE_CUSTOM == type) {
+      type = BufferedImage.TYPE_INT_ARGB;
+    }
+    BufferedImage dimg = new BufferedImage(imgSmall.getWidth(null), imgSmall.getHeight(null), type);
     Graphics2D g = dimg.createGraphics();
     g.drawImage(imgSmall, 0, 0, null);
     g.dispose();
@@ -190,8 +194,22 @@ public class ImageUtil
     URL url = new ImageUtil().getClass().getResource(path);
     if (url != null) {
       img = new ImageIcon(url);
-    } 
+    }
     return img;
+  }
+
+   /**
+   *
+   * @param img buffered image to set
+   * @param maxW max width
+   * @param maxH max height
+   * @return an imageIcon possibly rescaled
+   */
+  public static ImageIcon getRescaledIcon(BufferedImage img, int maxW, int maxH) {
+    if (img.getWidth() > maxW || img.getHeight() > maxH) {
+      return new ImageIcon(ImageUtil.rescaleSmooth(img, maxW, maxH));
+    }
+    return new ImageIcon(img);
   }
 
   public static BufferedImage getPhoto(int idper) {
@@ -229,7 +247,7 @@ public class ImageUtil
       return "";
     }
   }
-  
+
   public static String getLogoAsBase64(Company comp) {
     if (comp == null) return "";
     byte[] data = comp.getLogo();

@@ -1,7 +1,7 @@
 /*
- * @(#)ModifPlanRangeDlg.java	2.8.y.1 08/10/14
+ * @(#)ModifPlanRangeDlg.java	2.15.8 26/03/2018
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -32,7 +32,7 @@ import net.algem.util.MessageUtil;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.y.1
+ * @version 2.15.8
  * @since 1.1b vendredi 27 mars 2009
  */
 public class ModifPlanRangeDlg
@@ -75,10 +75,10 @@ public class ModifPlanRangeDlg
   @Override
   public boolean isEntryValid() {
     if (!pv.getNewHourEnd().after(pv.getNewHourStart())) {
-      JOptionPane.showMessageDialog(dlg,
+      /*JOptionPane.showMessageDialog(dlg,
               BundleUtil.getLabel("Warning.label"),
               MessageUtil.getMessage("invalid.time.slot"),
-              JOptionPane.ERROR_MESSAGE);
+              JOptionPane.ERROR_MESSAGE);*/
       return false;
     }
     if (!pv.getEnd().afterOrEqual(pv.getStart())) {

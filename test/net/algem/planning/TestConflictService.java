@@ -92,7 +92,7 @@ public class TestConflictService
     Schedule p = vp.elementAt(0);
     CourseSchedule pc = new CourseSchedule(p);
 
-    Vector<ScheduleTestConflict> conflicts = service.testRoomConflict(pc, start, end, room2);
+    List<ScheduleTestConflict> conflicts = service.testRoomConflict(pc, start, end, room2);
     assertTrue(conflicts != null && conflicts.size() > 0);
     conflicts = service.testRoomConflict(pc, start, end, room3);
     assertFalse(conflicts.size() > 0);
@@ -100,7 +100,7 @@ public class TestConflictService
     clear(a1);
     clear(a2);
   }
-  
+
 
   private Action createAction(DateFr d, DateFr f, Hour hd, Hour hf, int prof, int salle) {
     Action a = new Action();

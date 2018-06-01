@@ -1,5 +1,5 @@
 /*
- * @(#)ChangeModuleDateDlg.java 2.15.8 21/03/2018
+ * @(#) ChangeEnrolmentDateDlg.java Algem 2.15.8 21/03/2018
  *
  * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
@@ -15,8 +15,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with Algem. If not, see http://www.gnu.org/licenses.
- *
+ * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package net.algem.enrolment;
@@ -26,8 +25,8 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import net.algem.planning.DateRange;
-import net.algem.planning.DateRangePanel;
+import net.algem.planning.DateFr;
+import net.algem.planning.DateFrField;
 import net.algem.util.BundleUtil;
 import net.algem.util.GemCommand;
 import net.algem.util.module.GemDesktop;
@@ -36,35 +35,34 @@ import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GridBagHelper;
 
 /**
- * Dialog to change the dates of a module order.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.15.8
- * @since 2.9.6 22/03/16
+ * @since 2.15.8 21/03/2018
  */
-public class ChangeModuleDateDlg
+public class ChangeEnrolmentDateDlg
         extends AbstractEditDlg
 {
-  private DateRangePanel origPanel, datePanel;
+  private DateFrField orig, changed;
   private GemDesktop desktop;
 
-  public ChangeModuleDateDlg(GemDesktop desktop, String title, boolean modal) {
+  public ChangeEnrolmentDateDlg(GemDesktop desktop, String title, boolean modal) {
     super(desktop.getFrame(), title, modal);
     this.desktop = desktop;
   }
 
-  public void initUI(ModuleOrder m) {
-    origPanel = new DateRangePanel(m.getStart(), m.getEnd());
-    origPanel.setEnabled(false, DateRangePanel.ALL_FIELDS);
-    datePanel = new DateRangePanel(m.getStart(), m.getEnd());
+  public void initUI(Order e) {
+    orig = new DateFrField(e.getCreation());
+    orig.setEditable(false);
+    changed = new DateFrField(e.getCreation());
 
     JPanel p = new JPanel(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(p);
 
-    gb.add(new JLabel(BundleUtil.getLabel("Old.period.label")), 0, 0, 1, 1, GridBagHelper.WEST);
-    gb.add(new JLabel(BundleUtil.getLabel("New.period.label")), 0, 1, 1, 1, GridBagHelper.WEST);
-    gb.add(origPanel, 1, 0, 1, 1, GridBagHelper.WEST);
-    gb.add(datePanel, 1, 1, 1, 1, GridBagHelper.WEST);
+    gb.add(new JLabel(BundleUtil.getLabel("Current.date.label")), 0, 0, 1, 1, GridBagHelper.WEST);
+    gb.add(new JLabel(BundleUtil.getLabel("New.date.label")), 0, 1, 1, 1, GridBagHelper.WEST);
+    gb.add(orig, 1, 0, 1, 1, GridBagHelper.WEST);
+    gb.add(changed, 1, 1, 1, 1, GridBagHelper.WEST);
     JPanel buttons = new JPanel();
     btOk = new GemButton(GemCommand.VALIDATION_CMD);
     btOk.addActionListener(this);
@@ -82,8 +80,8 @@ public class ChangeModuleDateDlg
     setLocationRelativeTo(desktop.getFrame());
   }
 
-  DateRange getRange() {
-    return new DateRange(datePanel.getStartFr(), datePanel.getEndFr());
+  DateFr getDate() {
+    return changed.get();
   }
 
 }

@@ -1,7 +1,7 @@
 /*
- * @(#)TeacherStudentExportDlg.java 2.10.0 21/05/16
- * 
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * @(#)TeacherStudentExportDlg.java 2.15.8 22/03/18
+ *
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -33,7 +33,7 @@ import net.algem.util.ui.GridBagHelper;
  * Export dialog for contact infos of the selected teacher's students.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.15.8
  * @since 2.6.d 05/11/2012
  */
 public class TeacherStudentExportDlg
@@ -49,15 +49,13 @@ public class TeacherStudentExportDlg
   protected void setPanel() {
 
     teacher = new TeacherChoice(desktop.getDataCache().getList(Model.Teacher), true);
-    teacher.setPreferredSize(typeContact.getPreferredSize());
 
     gb.add(new JLabel(BundleUtil.getLabel("Teacher.label")), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(teacher, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(new JLabel(BundleUtil.getLabel("Date.From.label")), 0, 1, 1, 1, GridBagHelper.WEST);
     gb.add(dateRange, 1, 1, 1, 1, GridBagHelper.WEST);
-    gb.add(new JLabel(BundleUtil.getLabel("Type.label")), 0, 2, 1, 1, GridBagHelper.WEST);
-    gb.add(typeContact, 1, 2, 1, 1, GridBagHelper.WEST);
-    nextRow = 3;
+
+    nextRow = 2;
   }
 
   @Override

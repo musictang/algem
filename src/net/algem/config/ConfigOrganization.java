@@ -1,7 +1,7 @@
 /*
- * @(#)ConfigOrganization.java 2.15.0 30/07/2017
+ * @(#)ConfigOrganization.java 2.15.8 14/03/18
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -76,11 +76,14 @@ import net.algem.util.ui.MessagePopup;
  * Organization parameters and contact.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.0
+ * @version 2.15.8
  * @since 2.2.p 23/01/12
  */
 public class ConfigOrganization
   extends ConfigPanel {
+
+  private static final int MAX_LOGO_WIDTH = 200;
+  private static final int MAX_LOGO_HEIGHT = 200;
 
   private Config c10;
 
@@ -309,7 +312,7 @@ public class ConfigOrganization
       }
       ByteArrayInputStream in = new ByteArrayInputStream(data);
       BufferedImage img = ImageIO.read(in);
-      return new ImageIcon(ImageUtil.rescaleSmooth(img, 200, 200));
+      return ImageUtil.getRescaledIcon(img, MAX_LOGO_WIDTH, MAX_LOGO_HEIGHT);
     } catch (IOException ex) {
       GemLogger.logException(ex);
       return def;
@@ -340,7 +343,7 @@ public class ConfigOrganization
         orgIO.saveImage(type, data);
         BufferedImage img = ImageIO.read(file);
         if (img != null) {
-          label.setIcon(new ImageIcon(ImageUtil.rescaleSmooth(img, 200, 200)));
+          label.setIcon(ImageUtil.getRescaledIcon(img, MAX_LOGO_HEIGHT, MAX_LOGO_HEIGHT));
         }
       } catch (IOException | SQLException e) {
         GemLogger.logException(e);
@@ -348,6 +351,8 @@ public class ConfigOrganization
     }
 
   }
+
+
 
   private void showContactFile(int id) {
     PersonFileEditor editor = ((GemDesktopCtrl) desktop).getPersonFileEditor(id);

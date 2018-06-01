@@ -1,5 +1,7 @@
 package net.algem.util;
 
+import java.awt.event.ActionEvent;
+import javax.swing.JButton;
 import junit.framework.TestCase;
 
 public class OptionTest extends TestCase {

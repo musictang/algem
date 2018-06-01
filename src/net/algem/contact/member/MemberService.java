@@ -432,7 +432,7 @@ public class MemberService
     AccountUtil.createEntry(e, dc);
   }
 
-  public Vector<ScheduleTestConflict> testRoom(DateFr debut, Hour hd, Hour hf, int salle) throws SQLException {
+  public List<ScheduleTestConflict> testRoom(DateFr debut, Hour hd, Hour hf, int salle) throws SQLException {
     return conflictService.testRoomConflict(debut, hd, hf, salle);
   }
 

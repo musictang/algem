@@ -1,7 +1,7 @@
 /*
- * @(#)ExportDlg.java 2.15.0 30/07/2017
+ * @(#)ExportDlg.java 2.15.8 22/03/18
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -23,9 +23,13 @@ package net.algem.edition;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Vector;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -39,6 +43,7 @@ import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GemField;
 import net.algem.util.ui.GemPanel;
+import net.algem.util.ui.GridBagHelper;
 import net.algem.util.ui.MessagePopup;
 
 /**
@@ -46,15 +51,15 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.0
+ * @version 2.15.8
  * @since 1.0a 14/12/1999
  */
 public abstract class ExportDlg
-        extends JDialog
-        implements ActionListener
-{
+  extends JDialog
+  implements ActionListener {
 
   public static final String TEXT_FILTER_LABEL = MessageUtil.getMessage("filechooser.text.filter.label");
+  protected static int MAX_TELS = 3;
 
   protected DataConnection dc;
   protected GemDesktop desktop;
@@ -65,6 +70,8 @@ public abstract class ExportDlg
   protected JButton chooser;
   protected File file;
   protected JProgressBar progress;
+  protected java.util.List<String> selectedOptions = new ArrayList<>();
+  protected JCheckBox checkId, checkOrganization, checkCivility, checkName, checkFirstName, checKNickname, checkAddress, checkTels, checkEmail1, checkEmail2;
 
   public ExportDlg(GemDesktop desktop, String _title) {
     super(desktop.getFrame(), _title);
@@ -97,24 +104,97 @@ public abstract class ExportDlg
     footer.add(buttons, BorderLayout.SOUTH);
 
     fileName = new GemField(ConfigUtil.getExportPath() + FileUtil.FILE_SEPARATOR + getFileName() + ".csv", 30);
-    GemPanel pFile = new GemPanel();
-    pFile.add(new Label(BundleUtil.getLabel("Menu.file.label")));
-    pFile.add(fileName);
+    GemPanel filePanel = new GemPanel(new FlowLayout(FlowLayout.LEFT));
+    filePanel.setBorder(BorderFactory.createTitledBorder("Fichier"));
+    filePanel.setPreferredSize(new Dimension(480, 80));
+    filePanel.setMinimumSize(new Dimension(480, 60));
+    filePanel.add(fileName);
     chooser = new JButton(GemCommand.BROWSE_CMD);
     chooser.setPreferredSize(new Dimension(chooser.getPreferredSize().width, fileName.getPreferredSize().height));
     chooser.addActionListener(this);
-    pFile.add(chooser);
+    filePanel.add(chooser);
 
-    GemPanel body = new GemPanel(new BorderLayout());
-    body.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
-    body.add(pFile, BorderLayout.NORTH);
-    body.add(getCriterion(), BorderLayout.SOUTH);
+    ItemListener optionsListener = new ItemListener() {
+      @Override
+      public void itemStateChanged(ItemEvent e) {
+        if (e.getStateChange() == ItemEvent.SELECTED) {
+          selectedOptions.add(((JCheckBox) e.getItem()).getActionCommand());
+        } else {
+          selectedOptions.remove(((JCheckBox) e.getItem()).getActionCommand());
+        }
+      }
+    };
+    JPanel checkPanel = new JPanel(new GridBagLayout());
+    GridBagHelper gb0 = new GridBagHelper(checkPanel);
+
+    checkPanel.setBorder(BorderFactory.createTitledBorder("Sélection"));
+    checkPanel.setPreferredSize(new Dimension(480, 100));
+    checkPanel.setMinimumSize(new Dimension(480, 80));
+    checkId = new JCheckBox(BundleUtil.getLabel("Id.label"));
+    checkId.setActionCommand("01-id");
+    checkId.addItemListener(optionsListener);
+    checkOrganization = new JCheckBox(BundleUtil.getLabel("Organization.label"));
+    checkOrganization.setActionCommand("02-organization");
+    checkOrganization.addItemListener(optionsListener);
+    checkCivility = new JCheckBox(BundleUtil.getLabel("Person.civility.label"));
+    checkCivility.setActionCommand("03-civility");
+    checkCivility.addItemListener(optionsListener);
+    checkName = new JCheckBox(BundleUtil.getLabel("Name.label"));
+    checkName.setActionCommand("04-name");
+    checkName.addItemListener(optionsListener);
+    checkFirstName = new JCheckBox(BundleUtil.getLabel("First.name.label"));
+    checkFirstName.setActionCommand("05-firstname");
+    checkFirstName.addItemListener(optionsListener);
+    checKNickname = new JCheckBox(BundleUtil.getLabel("Nickname.label"));
+    checKNickname.setActionCommand("06-nickname");
+    checKNickname.addItemListener(optionsListener);
+    checkAddress = new JCheckBox(BundleUtil.getLabel("Address.label"));
+    checkAddress.setActionCommand("07-address");
+    checkAddress.addItemListener(optionsListener);
+    checkTels = new JCheckBox(BundleUtil.getLabel("Telephones.label"));
+    checkTels.setActionCommand("08-tels");
+    checkTels.addItemListener(optionsListener);
+    checkEmail1 = new JCheckBox(BundleUtil.getLabel("Email.label") + " 1");
+    checkEmail1.setActionCommand("09-email1");
+    checkEmail1.addItemListener(optionsListener);
+    checkEmail2 = new JCheckBox(BundleUtil.getLabel("Email.label") + " 2");
+    checkEmail2.setActionCommand("10-email2");
+    checkEmail2.addItemListener(optionsListener);
+
+    checkId.setSelected(true);
+    checkName.setSelected(true);
+    checkFirstName.setSelected(true);
+    checkEmail1.setSelected(true);
+
+    gb0.add(checkId, 0, 0, 1, 1, GridBagHelper.WEST);
+    gb0.add(checkOrganization, 1, 0, 1, 1, GridBagHelper.WEST);
+    gb0.add(checkCivility, 2, 0, 1, 1, GridBagHelper.WEST);
+    gb0.add(checkName, 3, 0, 1, 1, GridBagHelper.WEST);
+    gb0.add(checkFirstName, 4, 0, 1, 1, GridBagHelper.WEST);
+
+    gb0.add(checKNickname, 0, 1, 1, 1, GridBagHelper.WEST);
+    gb0.add(checkAddress, 1, 1, 1, 1, GridBagHelper.WEST);
+    gb0.add(checkTels, 2, 1, 1, 1, GridBagHelper.WEST);
+    gb0.add(checkEmail1, 3, 1, 1, 1, GridBagHelper.WEST);
+    gb0.add(checkEmail2, 4, 1, 1, 1, GridBagHelper.WEST);
+
+    JPanel customPanel = new JPanel(new GridBagLayout());
+    customPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+    GridBagHelper gb = new GridBagHelper(customPanel);
+    gb.add(checkPanel, 0, 0, 1, 1, GridBagHelper.WEST);
+    gb.add(filePanel, 0, 1, 1, 1, GridBagHelper.WEST);
+    JPanel criterionPanel = getCriterion();
+
+    criterionPanel.setBorder(BorderFactory.createTitledBorder("Options"));
+    criterionPanel.setPreferredSize(new Dimension(480, criterionPanel.getPreferredSize().height));
+    gb.add(criterionPanel, 0, 2, 1, 1, GridBagHelper.WEST);
 
     setLayout(new BorderLayout());
-    add(body, BorderLayout.CENTER);
+    add(customPanel, BorderLayout.CENTER);
     add(footer, BorderLayout.SOUTH);
-    setLocation(100,100);
-    //setPreferredSize(new Dimension(520,260));
+    setLocation(100, 100);
+//    setPreferredSize(new Dimension(520,380));
     pack();
   }
 
@@ -127,10 +207,10 @@ public abstract class ExportDlg
     if (evt.getSource() == btCancel) {
       close();
     } else if (evt.getSource() == btValidation) {
-      file = new File(fileName.getText());
-      if (!writeFile()) {
-        return;
-      }
+//      file = new File(fileName.getText());
+//      if (!writeFile()) {
+//        return;
+//      }
       btValidation.setEnabled(false);
       btCancel.setEnabled(false);
       new SwingWorker<Object, Object>() {
@@ -141,13 +221,14 @@ public abstract class ExportDlg
           validation();
           return null;
         }
+
         @Override
-          public void done() {
-            btValidation.setEnabled(true);
-            btCancel.setEnabled(true);
-            progress.setIndeterminate(false);
-            //close();
-          }
+        public void done() {
+          btValidation.setEnabled(true);
+          btCancel.setEnabled(true);
+          progress.setIndeterminate(false);
+          //close();
+        }
 
       }.execute();
     } else if (evt.getSource() == chooser) {
@@ -188,78 +269,27 @@ public abstract class ExportDlg
    * Exports to csv file.
    */
   protected void validation() {
-    int cpt = 0;
-    int maxTels = 3;
-    int maxEmails = 2;
     String path = null;
+
+    file = new File(fileName.getText());
+    if (!writeFile()) {
+      return;
+    }
     if (file == null) {
       path = fileName.getText();
     } else {
       path = file.getPath();
     }
+
     String query = getRequest();
 
-    PrintWriter out;
-    try {
-      /*out = new PrintWriter(new File(path), StandardCharsets.UTF_8.name());
-      // force Byte Order Mark (BOM) : windows compatibility
-      out.print("\ufeff");*/
-      out = new PrintWriter(new File(path), "UTF-16LE");
-      out.println(MessageUtil.getMessage("export.headers"));
+    Vector<Contact> contacts = ContactIO.find(query, true, dc);
+    Collections.sort(selectedOptions);
+    try (PrintWriter out = new PrintWriter(new File(path), "UTF-16LE")) {
+      printHeader(out, selectedOptions);
+      printLines(out, contacts, selectedOptions);
 
-      Vector<Contact> v = ContactIO.find(query, true, dc);
-      for (int i = 0; i < v.size(); i++) {
-        Contact c = v.elementAt(i);
-        cpt++;
-        out.print(c.getId() + ";");
-        out.print(c.getOrganization() == null || c.getOrganization().getName() == null ? ";" : c.getOrganization() + ";");
-        out.print(c.getGender() + ";");
-        out.print(c.getName() + ";");
-        out.print(c.getFirstName() + ";");
-        out.print(c.getNickName() == null ? ";" : c.getNickName() + ";");
-        Address a = c.getAddress();
-        if (a != null && !a.isArchive()) {//on tient compte de l'attribut archive
-          out.print(a.getAdr1() + ";");
-          out.print(a.getAdr2() + ";");
-          out.print(a.getCdp() + ";");
-          out.print(a.getCity() + ";");
-        } else {
-          out.print(";;;;");
-        }
-        //Telephones
-        Vector<Telephone> t = c.getTele();
-        int j = 0;
-        if (t != null) {
-          for (j = 0; j < t.size() && j < maxTels; j++) {
-            Telephone tel = t.elementAt(j);
-            //out.print(tel.getTypeTel() + ":" + tel.getNumber() + ";");
-            out.print(tel.getNumber() + ";");
-          }
-        }
-        while (j++ < maxTels) {
-          out.print(";");
-        }
-        // emails
-        int k = 0;
-        Vector<Email> emails = c.getEmail();
-        if (emails != null) {
-          for (; k < emails.size() && k < maxEmails; k++) {
-            Email e = emails.elementAt(k);
-            if (e.isArchive()) {
-              out.print(";");
-            } else {
-              out.print(e.getEmail() + ";");
-            }
-          }
-        }
-        while (k++ < maxEmails - 1) {
-          out.print(";");
-        }
-
-        out.println();
-      }
-      out.close();
-      MessagePopup.information(this, MessageUtil.getMessage("export.success.info", new Object[]{cpt, path}));
+      MessagePopup.information(this, MessageUtil.getMessage("export.success.info", new Object[]{contacts.size(), path}));
       DesktopHandler handler = new DesktopOpenHandler();
       ((DesktopOpenHandler) handler).open(path);
     } catch (IOException e) {
@@ -269,6 +299,158 @@ public abstract class ExportDlg
       MessagePopup.warning(this, ex.getMessage());
     }
 
+  }
+
+  public static void printHeader(PrintWriter out, java.util.List<String> selectedOptions) {
+    boolean single = selectedOptions.size() == 1;
+    StringBuilder sb = new StringBuilder();
+
+    for (String key : selectedOptions) {
+      switch (key) {
+        case "01-id": {
+          sb.append(BundleUtil.getLabel("Id.label")).append(';');
+          break;
+        }
+        case "02-organization": {
+          sb.append(BundleUtil.getLabel("Organization.label")).append(';');
+          break;
+        }
+        case "03-civility": {
+          sb.append(BundleUtil.getLabel("Person.civility.label")).append(';');
+          break;
+        }
+        case "04-name": {
+          sb.append(BundleUtil.getLabel("Name.label")).append(';');
+          break;
+        }
+        case "05-firstname": {
+          sb.append(BundleUtil.getLabel("First.name.label")).append(';');
+          break;
+        }
+        case "06-nickname": {
+          sb.append(BundleUtil.getLabel("Nickname.label")).append(';');
+          break;
+        }
+        case "07-address": {
+          sb.append(BundleUtil.getLabel("Address1.label")).append(';');
+          sb.append(BundleUtil.getLabel("Address2.label")).append(';');
+          sb.append(BundleUtil.getLabel("Address.zip.code.label")).append(';');
+          sb.append(BundleUtil.getLabel("City.label")).append(';');
+          break;
+        }
+        case "08-tels": {
+          for (int i = 0; i < MAX_TELS; i++) {
+            sb.append(BundleUtil.getLabel("Telephone.label")).append(i + 1).append(';');
+          }
+          break;
+        }
+
+        case "09-email1": {
+          sb.append(BundleUtil.getLabel("Email.label")).append(1).append(';');
+          break;
+        }
+        case "10-email2": {
+          sb.append(BundleUtil.getLabel("Email.label")).append(2).append(';');
+          break;
+        }
+      }
+    }
+    if (single) {
+      sb.deleteCharAt(sb.length() - 1);
+    }
+    out.println(sb.toString());
+  }
+
+  private void printLines(PrintWriter out, java.util.List<Contact> v, java.util.List<String> selectedOptions) {
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < v.size(); i++) {
+      Contact c = v.get(i);
+      Vector<Telephone> t = c.getTele();
+      Vector<Email> emails = c.getEmail();
+
+      boolean single = selectedOptions.size() == 1;
+      for (String key : selectedOptions) {
+        switch (key) {
+          case "01-id": {
+            sb.append(c.getId()).append(';');
+            break;
+          }
+          case "02-organization": {
+            if (c.getOrganization() == null || c.getOrganization().getName() == null) {
+              sb.append(';');
+            } else {
+              sb.append(c.getOrganization()).append(';');
+            }
+            break;
+          }
+          case "03-civility": {
+            sb.append(c.getGender() == null ? "" : c.getGender()).append(';');
+            break;
+          }
+          case "04-name": {
+            sb.append(c.getName()).append(';');
+            break;
+          }
+          case "05-firstname": {
+            sb.append(c.getFirstName()).append(';');
+            break;
+          }
+          case "06-nickname": {
+            sb.append(c.getNickName() == null ? "" : c.getNickName()).append(';');
+            break;
+          }
+          case "07-address": {
+            Address a = c.getAddress();
+            if (a != null && !a.isArchive()) {//on tient compte de l'attribut archive
+              sb.append(a.getAdr1() == null || "null".equalsIgnoreCase(a.getAdr1()) ? "" : a.getAdr1()).append(';');
+              sb.append(a.getAdr2() == null || "null".equalsIgnoreCase(a.getAdr2()) ? "" : a.getAdr2()).append(';');
+              sb.append(a.getCdp() == null || "null".equalsIgnoreCase(a.getCdp()) ? "" : a.getCdp()).append(';');
+              sb.append(a.getCity() == null || "null".equalsIgnoreCase(a.getCity()) ? "" : a.getCity()).append(';');
+            } else {
+              sb.append(";;;;");
+            }
+            break;
+          }
+          case "08-tels": {
+            int j = 0;
+            if (t != null && t.size() > 0) {
+              for (; j < t.size() && j < MAX_TELS; j++) {
+                sb.append(t.get(j).getNumber()).append(';');
+              }
+            }
+            while (j++ < MAX_TELS) {
+              sb.append(";");
+            }
+            break;
+
+          }
+          case "09-email1": {
+            if (emails != null && emails.size() > 0) {
+              Email e = emails.get(0);
+              sb.append(e.isArchive() ? "" : e.getEmail()).append(';');
+            } else {
+              sb.append(';');
+            }
+            break;
+          }
+          case "10-email2": {
+            if (emails != null && emails.size() > 1) {
+              Email e = emails.get(1);
+              sb.append(e.isArchive() ? "" : e.getEmail()).append(';');
+            } else {
+              sb.append(';');
+            }
+            break;
+          }
+        }
+
+      }
+      if (single) {
+        sb.deleteCharAt(sb.length() - 1);
+      }
+      out.println(sb.toString());
+      sb.delete(0, sb.length());
+    }
   }
 
   protected void close() {

@@ -1,7 +1,7 @@
 /*
- * @(#)MemberEnrolmentEditor.java 2.15.6 29/11/17
+ * @(#)MemberEnrolmentEditor.java 2.15.8 25/03/18
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -76,13 +76,14 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.6
+ * @version 2.15.8
  * @since 1.0b 06/09/2001
  */
 public class MemberEnrolmentEditor
   extends FileTab
   implements ActionListener {
 
+  private final static String ENROLMENT_DATE_CHANGE = BundleUtil.getLabel("Enrolment.date.change.label");
   private final static String STOP = BundleUtil.getLabel("Course.stop.label");
   private final static String COURSE_MODIF = BundleUtil.getLabel("Course.define.label");
   private final static String REDEFINE = BundleUtil.getLabel("Course.stop.and.define.label");
@@ -95,7 +96,7 @@ public class MemberEnrolmentEditor
   private final static String MODULE_DATE_CHANGE = BundleUtil.getLabel("Module.date.change.label");
   private final static String NONE_ENROLMENT = MessageUtil.getMessage("enrolment.empty.list");
   private final static String COURSE_DATE = BundleUtil.getLabel("Course.date.modification.label");
-  private final static String PRINT_ORDER = GemCommand.PRINT_CMD;
+  private final static String PRINT_ORDER = BundleUtil.getLabel("Order.print.detail.label");
 
   private PersonFile dossier;
   private DefaultMutableTreeNode root;
@@ -106,7 +107,7 @@ public class MemberEnrolmentEditor
   private GemLabel title;
   private boolean loaded;
   private CourseEnrolmentDlg courseDlg;
-  private JMenuItem m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12;
+  private JMenuItem m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12;
   /** New enrolment button. */
   private GemButton btEnrolment;
   private TreePath currentSelection;
@@ -125,12 +126,8 @@ public class MemberEnrolmentEditor
     title = new GemLabel(BundleUtil.getLabel("Member.enrolment.label"));
 
     popup = new JPopupMenu();
-    popup.add(m1 = new JMenuItem(STOP));
-    popup.add(m2 = new JMenuItem(COURSE_MODIF));
-    popup.add(m12 = new JMenuItem(REDEFINE));
-    popup.add(m3 = new JMenuItem(HOUR_MODIF));
-    popup.add(m7 = new JMenuItem(COURSE_DATE));
-    popup.add(m4 = new JMenuItem(COURSE_ADD));
+    popup.add(m0 = new JMenuItem(ENROLMENT_DATE_CHANGE));
+    popup.add(m10 = new JMenuItem(PRINT_ORDER));
     popup.addSeparator();
     popup.add(m5 = new JMenuItem(MODULE_ADD));
     popup.add(m6 = new JMenuItem(MODULE_DEL));
@@ -138,8 +135,15 @@ public class MemberEnrolmentEditor
     popup.add(m9 = new JMenuItem(MODULE_TIME_CHANGE));
     popup.add(m11 = new JMenuItem(MODULE_DATE_CHANGE));
     popup.addSeparator();
-    popup.add(m10 = new JMenuItem(PRINT_ORDER));
+    popup.add(m1 = new JMenuItem(STOP));
+    popup.add(m2 = new JMenuItem(COURSE_MODIF));
+    popup.add(m12 = new JMenuItem(REDEFINE));
+    popup.add(m3 = new JMenuItem(HOUR_MODIF));
+    popup.add(m7 = new JMenuItem(COURSE_DATE));
+    popup.add(m4 = new JMenuItem(COURSE_ADD));
 
+
+    m0.addActionListener(this);
     m1.addActionListener(this);
     m2.addActionListener(this);
     m3.addActionListener(this);
@@ -217,6 +221,7 @@ public class MemberEnrolmentEditor
       m11.setEnabled(false);
       m12.setEnabled(true);
     } else {
+      m0.setEnabled(true);
       m1.setEnabled(false);
       m2.setEnabled(false);
       m3.setEnabled(false);
@@ -236,6 +241,7 @@ public class MemberEnrolmentEditor
    * Sets the popup menu to suit module stopping.
    */
   private void setModulePopupMenu() {
+    m0.setEnabled(false);
     m1.setEnabled(false);
     m2.setEnabled(false);
     m3.setEnabled(false);
@@ -345,48 +351,49 @@ public class MemberEnrolmentEditor
   @Override
   public void actionPerformed(ActionEvent evt) {
     String s = evt.getActionCommand();
-
-    if (s.equals(STOP)) {
+    if (ENROLMENT_DATE_CHANGE.equals(s)) {
+      changeDateOfEnrolment();
+    } else if (STOP.equals(s)) {
       if (currentSelection == null) {
         return;
       }
       stopCourse();
-    } else if (s.equals(COURSE_MODIF)) {
+    } else if (COURSE_MODIF.equals(s)) {
       if (currentSelection == null) {
         return;
       }
       modifCourse();
-    } else if (s.equals(REDEFINE)) {
+    } else if (REDEFINE.equals(s)) {
       if (currentSelection == null) {
         return;
       }
       stopAndDefine();
-    } else if (s.equals(COURSE_DATE)) {
+    } else if (COURSE_DATE.equals(s)) {
       if (currentSelection == null) {
         return;
       }
       changeDateOfCourseOrder();
-    } else if (s.equals(MODULE_STOP)) {
+    } else if (MODULE_STOP.equals(s)) {
       if (currentSelection == null) {
         return;
       }
       stopModule();
-    } else if (s.equals(HOUR_MODIF)) {
+    } else if (HOUR_MODIF.equals(s)) {
       if (currentSelection == null) {
         return;
       }
       changeHour();
-    } else if (s.equals(COURSE_ADD)) {
+    } else if (COURSE_ADD.equals(s)) {
       addCourse();
-    } else if (s.equals(MODULE_ADD)) {
+    } else if (MODULE_ADD.equals(s)) {
       addModule();
-    } else if (s.equals(MODULE_DEL)) {
+    } else if (MODULE_DEL.equals(s)) {
       deleteModuleOrder();
-    } else if (s.equals(MODULE_TIME_CHANGE)) {
+    } else if (MODULE_TIME_CHANGE.equals(s)) {
       changeModuleTime();
-    } else if (s.equals(MODULE_DATE_CHANGE)) {
+    } else if (MODULE_DATE_CHANGE.equals(s)) {
       changeModuleDate();
-    } else if (s.equals(GemCommand.PRINT_CMD)) {
+    } else if (PRINT_ORDER.equals(s)) {
       printOrder();
     }
 
@@ -614,6 +621,31 @@ public class MemberEnrolmentEditor
         GemLogger.log(e.getMessage());
       }
     }
+  }
+
+  private void changeDateOfEnrolment() {
+    System.out.println("Modification date d'inscription");
+    Object[] path = currentSelection.getPath();
+    int i = path.length;
+    if (!(path[i - 1] instanceof EnrolmentNode)) {
+      return;
+    }
+    EnrolmentNode node = (EnrolmentNode) path[i - 1];
+    Order order = node.getOrder();
+
+    ChangeEnrolmentDateDlg dlg = new ChangeEnrolmentDateDlg(desktop, BundleUtil.getLabel("Enrolment.date.change.label"), true);
+    dlg.initUI(order);
+    dlg.setVisible(true);
+    if (dlg.isValidation()) {
+      order.setCreation(dlg.getDate());
+      try {
+        service.updateOrderDate(order);
+        desktop.postEvent(new EnrolmentUpdateEvent(this, dossier.getId()));
+      } catch (SQLException ex) {
+        MessagePopup.warning(this, ex.getMessage());
+      }
+    }
+
   }
 
   private void modifCourse() {
@@ -1065,7 +1097,7 @@ public class MemberEnrolmentEditor
   public static List<ScheduleRangeObject> completeActivityRanges(int idper, DateFr start, DateFr end, MemberService service, boolean individual, boolean group) {
     List<ScheduleRangeObject> ranges = new ArrayList<>();
     try {
-      List<ScheduleRangeObject> memberRanges = service.getMemberRehearsals(idper, start.getDate(), end.getDate(),individual, group);
+      List<ScheduleRangeObject> memberRanges = service.getMemberRehearsals(idper, start.getDate(), end.getDate(), individual, group);
       ranges.addAll(memberRanges);
     } catch (SQLException ex) {
       GemLogger.logException(ex);
@@ -1073,7 +1105,6 @@ public class MemberEnrolmentEditor
     return ranges;
 
   }
-
 
   public static String fillActivityFull(List<ScheduleRangeObject> ranges) {
     StringBuilder sb = new StringBuilder();
@@ -1200,7 +1231,7 @@ public class MemberEnrolmentEditor
       totalAbsPM += d.getTotalAbsPM();
       sb.append("<tr><td>").append(d.getDay()).append("</td>");
 
-      sb.append("<td>").append(d.getTotalPreAM() > 0 ? String.format("%.2f",d.getTotalPreAM()) : "").append("</td>");
+      sb.append("<td>").append(d.getTotalPreAM() > 0 ? String.format("%.2f", d.getTotalPreAM()) : "").append("</td>");
       sb.append("<td>").append(d.getTotalAbsAM() > 0 ? String.format("%.2f", d.getTotalAbsAM()) : "").append("</td>");
       sb.append("<td></td>");
       sb.append("<td>").append(d.getTotalPrePM() > 0 ? String.format("%.2f", d.getTotalPrePM()) : "").append("</td>");
@@ -1209,17 +1240,17 @@ public class MemberEnrolmentEditor
     }
 
     sb.append("</tbody><tfoot><tr><th>TOTAL</th>");
-    sb.append("<td>").append(String.format("%.2f",totalPreAM)).append("</td>");
-    sb.append("<td>").append(String.format("%.2f",totalAbsAM)).append("</td>");
+    sb.append("<td>").append(String.format("%.2f", totalPreAM)).append("</td>");
+    sb.append("<td>").append(String.format("%.2f", totalAbsAM)).append("</td>");
     sb.append("<td></td>");
-    sb.append("<td>").append(String.format("%.2f",totalPrePM)).append("</td>");
-    sb.append("<td>").append(String.format("%.2f",totalAbsPM)).append("</td>");
+    sb.append("<td>").append(String.format("%.2f", totalPrePM)).append("</td>");
+    sb.append("<td>").append(String.format("%.2f", totalAbsPM)).append("</td>");
 
     //print total
     double totalPre = totalPreAM + totalPrePM;
     double totalAbs = totalAbsAM + totalAbsPM;
-    sb.append("<td class=\"total\">Total ").append(BundleUtil.getLabel("Present.abbrev.label")).append("&nbsp;:").append(String.format("%8.2f", totalPre).replace(" ","&nbsp;")).append("<br />");
-    sb.append("Total ").append(BundleUtil.getLabel("Absent.abbrev.label")).append("&nbsp;:").append(String.format("%8.2f",totalAbs).replace(" ","&nbsp;")).append("</td>");
+    sb.append("<td class=\"total\">Total ").append(BundleUtil.getLabel("Present.abbrev.label")).append("&nbsp;:").append(String.format("%8.2f", totalPre).replace(" ", "&nbsp;")).append("<br />");
+    sb.append("Total ").append(BundleUtil.getLabel("Absent.abbrev.label")).append("&nbsp;:").append(String.format("%8.2f", totalAbs).replace(" ", "&nbsp;")).append("</td>");
 
     sb.append("<tr><th class=\"signature\" colspan=\"7\">").append(BundleUtil.getLabel("Name.and.quality.of.training.manager.label")).append(" : ").append(options[1]).append("</th></tr>");
     sb.append("<tr><th class=\"signature\" colspan=\"7\">").append(BundleUtil.getLabel("Signature.label")).append(" :</th></tr>");

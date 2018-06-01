@@ -1,0 +1,2 @@
+Bugs 2.15
+* si on appuie sur le bouton précédent dans le choix des horaires à l'inscription et qu'on sélectionne un cours différent du cours initial, la durée de la plage horaire n'est pas mise à jour.

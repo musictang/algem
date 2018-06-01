@@ -1,7 +1,7 @@
 /*
- * @(#)OrderIO.java	2.9.4.3 21/04/15
- * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * @(#)OrderIO.java	2.15.8 21/03/2018
+ *
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,10 +16,11 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.enrolment;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
@@ -41,12 +42,11 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.3
+ * @version 2.15.8
  * @since 1.0a 07/07/1999
  */
 public class OrderIO
-        extends TableIO
-{
+  extends TableIO {
 
   public static final String TABLE = "commande";
   private static final String SEQUENCE = "idcommande";
@@ -54,26 +54,50 @@ public class OrderIO
   public static void insert(Order c, DataConnection dc) throws SQLException {
 
     int n = nextId(SEQUENCE, dc);
-    String query = "INSERT INTO " + TABLE + " VALUES("
-            + "'" + n
-            + "','" + c.getMember()
-            + "','" + c.getPayer()
-            + "','" + c.getCreation().toString()
-            + "'," + ((c.getInvoice() == null) ? "NULL" : "'" + c.getInvoice() + "'")
-            + ")";
-    dc.executeUpdate(query);
-    c.setId(n);
+    String query = "INSERT INTO " + TABLE + " VALUES(?,?,?,?,?)";
+    try (PreparedStatement ps = dc.prepareStatement(query)) {
+      ps.setInt(1, n);
+      ps.setInt(2, c.getMember());
+      ps.setInt(3, c.getPayer());
+      ps.setDate(4, new java.sql.Date(c.getCreation().getTime()));
+      if (c.getInvoice() == null) {
+        ps.setNull(5, java.sql.Types.VARCHAR);
+      } else {
+        ps.setString(5, c.getInvoice());
+      }
+      ps.executeUpdate();
+      c.setId(n);
+    }
+
   }
 
   public static void update(Order c, DataConnection dc) throws SQLException {
-    String query = "UPDATE " + TABLE + " SET "
-            + "adh = '" + c.getMember()
-            + "',payeur = '" + c.getPayer()
-            + "',creation = " + c.getCreation().toString()
-            + "',facture =  " + ((c.getInvoice() == null) ? "NULL" : "'" + c.getInvoice() + "'")
-            + " WHERE id = " + c.getId();
+    String query = "UPDATE " + TABLE + " SET adh=?,payeur=?,creation=?,facture=? WHERE id=?";
+    try (PreparedStatement ps = dc.prepareStatement(query)) {
+      ps.setInt(1, c.getMember());
+      ps.setInt(2, c.getPayer());
+      ps.setDate(3, new java.sql.Date(c.getCreation().getTime()));
+      if (c.getInvoice() == null) {
+        ps.setNull(4, java.sql.Types.VARCHAR);
+      } else {
+        ps.setString(4, c.getInvoice());
+      }
+      ps.setInt(5, c.getId());
 
-    dc.executeUpdate(query);
+      GemLogger.info(ps.toString());
+      ps.executeUpdate();
+    }
+  }
+
+  public static void updateOrderDate(Order o, DataConnection dc) throws SQLException {
+    String query = "UPDATE " + TABLE + " SET creation = ? WHERE id = ?";
+    try (PreparedStatement ps = dc.prepareStatement(query)) {
+      ps.setDate(1, new java.sql.Date(o.getCreation().getTime()));
+      ps.setInt(2, o.getId());
+
+      GemLogger.info(ps.toString());
+      ps.executeUpdate();
+    }
   }
 
   /**
@@ -95,7 +119,7 @@ public class OrderIO
         CourseOrder cc = cours.elementAt(i);
         // suppression des plages de cours
         String query = "idplanning IN (SELECT id FROM " + ScheduleIO.TABLE + " WHERE action = " + cc.getAction() + ")"
-                + " AND adherent = " + c.getMember();
+          + " AND adherent = " + c.getMember();
         ScheduleRangeIO.delete(query, dc);
       }
       // suppression de la commande_cours
@@ -159,10 +183,10 @@ public class OrderIO
     String end = ConfigUtil.getConf(ConfigKey.END_PERIOD.getKey());
     Vector<MemberOrder> v = new Vector<MemberOrder>();
     String query = "SELECT c.id,c.adh,c.payeur,c.creation,c.facture,p.nom,p.prenom"
-            + " FROM " + TABLE + " c, " + PersonIO.TABLE + " p"
-            + " WHERE c.adh = p.id"
-            + " AND c.creation >= '" + start + "' AND c.creation <= '" + end + "'"
-            + " ORDER BY c.id DESC";
+      + " FROM " + TABLE + " c, " + PersonIO.TABLE + " p"
+      + " WHERE c.adh = p.id"
+      + " AND c.creation >= '" + start + "' AND c.creation <= '" + end + "'"
+      + " ORDER BY c.id DESC";
     try {
       ResultSet rs = dc.executeQuery(query);
       while (rs.next()) {

@@ -1,7 +1,7 @@
 /*
- * @(#)Algem.java	2.15.6 01/12/17
+ * @(#)Algem.java	2.15.8 27/03/18
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -62,15 +62,17 @@ import org.apache.commons.codec.binary.Base64;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.7
+ * @version 2.15.8
  */
 public class Algem
 {
 
-  public static final String APP_VERSION = "2.15.7";
+  public static final String APP_VERSION = "2.15.8";
   public static List<LookAndFeelInfo> ALTERNATIVE_LAF = new ArrayList<>();
   private static final int DEF_WIDTH = 1080;// (850,650) => ancienne taille
   private static final int DEF_HEIGHT = 780;
+  private static final int BOOT_ICON_MAX_WIDTH = 128;
+  private static final int BOOT_ICON_MAX_HEIGHT = 128;
   private static final Point DEF_LOCATION = new Point(70, 30);
   private static final String[] ADDITIONAL_PROPERTIES = {
     "local.properties",
@@ -566,7 +568,7 @@ public class Algem
         byte[] data = comp.getLogo();
         if (data != null) {
           BufferedImage img = ImageIO.read(new ByteArrayInputStream(data));
-          icon = new ImageIcon(ImageUtil.rescaleSmooth(img, 128, 128));
+          icon = ImageUtil.getRescaledIcon(img, BOOT_ICON_MAX_WIDTH, BOOT_ICON_MAX_HEIGHT);
         } else  {
           icon = ImageUtil.createImageIcon(ImageUtil.ALGEM_LOGO);
         }

@@ -1,7 +1,7 @@
 /*
- * @(#)ColorPrefs.java	2.9.4.3 23/04/15
+ * @(#)ColorPrefs.java	2.15.8 21/03/18
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -32,9 +32,9 @@ import java.util.prefs.Preferences;
  * Under Windows, preferences are saved in registry. At system level, only
  * users with administrative rights may apply modifications.
  * For this reason, current preferences are declared at user level.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.3
+ * @version 2.15.8
  */
 public class ColorPrefs
 {
@@ -88,7 +88,7 @@ public class ColorPrefs
       prefs.putInt(key.getKey(), c);
     }
   }
-  
+
   /**
    * Automatically selecting a foreground color based on a background color.
    * @param bg background color
@@ -98,15 +98,15 @@ public class ColorPrefs
     int r = bg.getRed();
     int g = bg.getGreen();
     int b = bg.getBlue();
-    
+
     double luminance = r * 0.299 + g * 0.587 + b * 0.114;
-    
+
     if (luminance <= 128) {
-      return luminance <= 64 ? Color.WHITE.darker() : Color.WHITE;
+      return luminance <= 48 ? Color.WHITE.darker() : Color.WHITE;
     }
     return Color.BLACK;
   }
-  
+
   /**
    * Lightens a color to enhance the foreground display.
    * @param c initial color
@@ -126,5 +126,5 @@ public class ColorPrefs
     }
     return new Color(Color.HSBtoRGB(h, s, b));
   }
-  
+
 }

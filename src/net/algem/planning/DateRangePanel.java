@@ -1,7 +1,7 @@
 /*
- * @(#)DateRangePanel.java 2.15.0 20/09/17
+ * @(#)DateRangePanel.java 2.15.8 21/03/2018
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -44,7 +44,7 @@ import net.algem.util.ui.GemPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.0
+ * @version 2.15.8
  */
 public class DateRangePanel
         extends GemPanel
@@ -54,6 +54,10 @@ public class DateRangePanel
   //private static final long maxi = 60 * 60 * 24 * 365;
   public static final int SIMPLE_DATE = 1;
   public static final int RANGE_DATE = 2;
+
+  public static final int FIRST_FIELD = 10;
+  public static final int SECOND_FIELD = 20;
+  public static final int ALL_FIELDS = 100;
 
   private static final Border DEFAULT_BORDER = BorderFactory.createBevelBorder(BevelBorder.LOWERED);
   private static final Insets NULL_INSETS = new Insets(0, 0, 0, 0);

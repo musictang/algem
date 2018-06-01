@@ -1,7 +1,7 @@
 /*
- * @(#)MenuConfig.java 2.15.0 21/07/17
+ * @(#)MenuConfig.java 2.15.8 26/03/18
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -52,7 +52,7 @@ import net.algem.util.module.GemModule;
 /**
  * Configuration menu.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.0
+ * @version 2.15.8
  * @since 2.6.a 12/10/2012
  */
 public class MenuConfig
@@ -209,7 +209,7 @@ public class MenuConfig
       estabCreate.addActionListener(this);
       estabCreate.init();
       desktop.addPanel("Establishment.create", estabCreate);
-      desktop.getSelectedModule().setSize(GemModule.M_SIZE);
+      desktop.getSelectedModule().setSize(GemModule.XXL_SIZE);
     } else if (src == miEstabBrowse) {
       EstabSearchCtrl estabBrowse = new EstabSearchCtrl(desktop, BundleUtil.getLabel("Establishment.browser.label"));
       estabBrowse.addActionListener(this);
@@ -248,7 +248,7 @@ public class MenuConfig
       desktop.addPanel("Menu.holidays.cat", vacancyCatCtrl);
     } else if (menus.get("Menu.periods.label").equals(arg)) {
       VacationCtrl vacancyCtrl = new VacationCtrl(dataCache);
-      desktop.addPanel("Menu.periods", vacancyCtrl);
+      desktop.addPanel("Menu.periods", vacancyCtrl, new Dimension(680,460));
     } else if (src == miRightsBrowse) {
       RightsSearchCtrl rightsCtrl = new RightsSearchCtrl(dataCache);
       rightsCtrl.addActionListener(this);

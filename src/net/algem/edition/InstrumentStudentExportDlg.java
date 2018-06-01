@@ -1,7 +1,7 @@
 /*
- * @(#)InstrumentStudentExportDlg.java 2.10.0 20/05/16
- * 
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * @(#)InstrumentStudentExportDlg.java 2.15.8 22/03/18
+ *
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -32,7 +32,7 @@ import net.algem.util.ui.GridBagHelper;
  * Export dialog for contact infos of students playing the instrument selected.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.15.8
  * @since 2.6.d 06/11/2012
  */
 public class InstrumentStudentExportDlg
@@ -49,16 +49,13 @@ public class InstrumentStudentExportDlg
   protected void setPanel() {
 
     instrument = new InstrumentChoice(desktop.getDataCache().getInstruments());
-    instrument.setPreferredSize(typeContact.getPreferredSize());
 
     gb.add(new JLabel(BundleUtil.getLabel("Instrument.label")), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(instrument, 1, 0, 1, 1, GridBagHelper.WEST);
     gb.add(new JLabel(BundleUtil.getLabel("Date.From.label")), 0, 1, 1, 1, GridBagHelper.WEST);
     gb.add(dateRange, 1, 1, 1, 1, GridBagHelper.WEST);
-    gb.add(new JLabel(BundleUtil.getLabel("Type.label")), 0, 2, 1, 1, GridBagHelper.WEST);
-    gb.add(typeContact, 1, 2, 1, 1, GridBagHelper.WEST);
 
-    nextRow = 3;
+    nextRow = 2;
   }
 
   /**

@@ -1,7 +1,7 @@
 /*
- * @(#)StudentExportDlg.java 2.10.0 20/05/16
+ * @(#)StudentExportDlg.java 2.15.8 22/03/18
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -18,20 +18,19 @@
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 package net.algem.edition;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
-import javax.swing.JComboBox;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JRadioButton;
 import net.algem.contact.Person;
@@ -50,21 +49,19 @@ import net.algem.util.ui.MessagePopup;
  * Abstract class for student export operations.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.15.8
  * @since 2.6.a 06/11/2012
  */
 public abstract class StudentExportDlg
-  extends ExportDlg
-{
+  extends ExportDlg {
 
-  /** Type of info (all, mail only). */
-  protected JComboBox typeContact;
   protected JRadioButton rdLeisure, rdPro, rdAll;
   protected DateRangePanel dateRange;
   protected GridBagHelper gb;
   protected ExportService service;
   protected int nextRow;
   protected DataCache dataCache;
+  protected JCheckBox directToMail;
 
   public StudentExportDlg(GemDesktop desktop) {
     this(desktop, BundleUtil.getLabel("Export.student.title"));
@@ -79,7 +76,6 @@ public abstract class StudentExportDlg
   @Override
   public GemPanel getCriterion() {
     GemPanel outerPanel = new GemPanel();
-    //outerPanel.setBorder(BorderFactory.createLineBorder(UIManager.getColor("Separator.foreground")));
     outerPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
     GemPanel pCriterion = new GemPanel();
     pCriterion.setLayout(new GridBagLayout());
@@ -89,14 +85,11 @@ public abstract class StudentExportDlg
     gb = new GridBagHelper(pCriterion);
 
     dateRange = new DateRangePanel(desktop.getDataCache().getStartOfYear(), desktop.getDataCache().getEndOfYear());
-    String[] category = {
-      BundleUtil.getLabel("Contact.full.information.label"),
-      BundleUtil.getLabel("Email.label")
-    };
-    typeContact = new JComboBox(category);
-    typeContact.setPreferredSize(new Dimension(dateRange.getPreferredSize().width, typeContact.getPreferredSize().height));
+    directToMail = new JCheckBox(BundleUtil.getLabel("Export.direct.to.mail.label"));
+    directToMail.setToolTipText(BundleUtil.getLabel("Export.direct.to.mail.tip"));
+
     ButtonGroup status = new ButtonGroup();
-    
+
     rdLeisure = new JRadioButton(BundleUtil.getLabel("Leisure.label"));
     rdLeisure.setBorder(null);
     rdPro = new JRadioButton(BundleUtil.getLabel("Pro.label"));
@@ -107,7 +100,7 @@ public abstract class StudentExportDlg
     status.add(rdAll);
 
     GemPanel statusPanel = new GemPanel();
-    
+
     statusPanel.add(rdLeisure);
     statusPanel.add(rdPro);
     statusPanel.add(rdAll);
@@ -116,6 +109,7 @@ public abstract class StudentExportDlg
     if (nextRow > 0) {
       gb.add(new JLabel(BundleUtil.getLabel("Status.label")), 0, nextRow, 1, 1, GridBagHelper.WEST);
       gb.add(statusPanel, 1, nextRow, 1, 1, GridBagHelper.WEST);
+      gb.add(directToMail, 1, nextRow + 1, 1, 1, GridBagHelper.WEST);
     }
 
     return outerPanel;
@@ -128,20 +122,14 @@ public abstract class StudentExportDlg
 
   /**
    * Gets the appropriate SQL request.
+   *
    * @return a string
    */
   @Override
   abstract public String getRequest();
 
   @Override
-  protected boolean writeFile() {
-    return typeContact.getSelectedIndex() == 1 || super.writeFile();
-  }
-
-  @Override
   protected final void validation() {
-    PrintWriter out = null;
-    int counter = 0;
     String query = getRequest();
     String path = null;
     if (file == null) {
@@ -149,29 +137,31 @@ public abstract class StudentExportDlg
     } else {
       path = file.getPath();
     }
-    try {
-        List<Person> list = service.getContacts(query);
-        if (typeContact.getSelectedIndex() == 0) {
-          out = new PrintWriter(new File(path), "UTF-16LE");
-          counter = service.printCSV(out, list);
-          MessagePopup.information(this, MessageUtil.getMessage("export.success.info", new Object[]{counter, path}));
-        } else {
-          DesktopMailHandler mail = new DesktopMailHandler();
-          mail.send(service.getUserEmail(dataCache.getUser()), service.getBcc(list));
+    Collections.sort(selectedOptions);
+    try (PrintWriter out = new PrintWriter(new File(path), "UTF-16LE")) {
+      List<Person> list = service.getContacts(query);
+      if (directToMail.isSelected()) {
+        DesktopMailHandler mail = new DesktopMailHandler();
+        mail.send(service.getUserEmail(dataCache.getUser()), service.getBcc(list));
+      } else {
+        file = new File(fileName.getText());
+        if (!writeFile()) {
+          return;
         }
-    } catch(IOException ie) {
+
+        int counter = service.printCSV(out, list, selectedOptions);
+        MessagePopup.information(this, MessageUtil.getMessage("export.success.info", new Object[]{counter, path}));
+      }
+    } catch (IOException ie) {
       GemLogger.logException(ie);
       MessagePopup.warning(this, MessageUtil.getMessage("file.path.exception", fileName.getText()));
-    } catch(SQLException sqe) {
+    } catch (SQLException sqe) {
       GemLogger.logException(sqe);
-    } finally {
-      if (out != null) {
-        out.close();
-      }
     }
+
   }
 
-   @Override
+  @Override
   protected String getFileName() {
     return BundleUtil.getLabel("Export.student.file");
   }

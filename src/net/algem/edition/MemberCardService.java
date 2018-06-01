@@ -1,7 +1,7 @@
 /*
- * @(#)MemberCardService.java 2.13.3 17/05/17
+ * @(#)MemberCardService.java 2.15.8 21/03/18
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
 import net.algem.contact.*;
 import net.algem.contact.member.Member;
@@ -47,7 +48,7 @@ import net.algem.util.module.GemDesktop;
  * Service class for member card edition.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.13.3
+ * @version 2.15.8
  * @since 2.4.a 16/05/12
  */
 public class MemberCardService {
@@ -106,11 +107,14 @@ public class MemberCardService {
   private List<CourseOrder> getCourseOrder(PersonFile p) {
 
     List<CourseOrder> vcc = new ArrayList<CourseOrder>();
-    // on commence au 1er mai en raison des préinscriptions possibles
-    String start = "01-05-" + dataCache.getStartOfYear().getYear();
+    String preEnrolmentStartDate = ConfigUtil.getConf(ConfigKey.PRE_ENROLMENT_START_DATE.getKey());
+    if (preEnrolmentStartDate == null) {
+      preEnrolmentStartDate = "01-05-" + dataCache.getStartOfYear().getYear();
+    }
+
     List<Enrolment> vi = null;
     try {
-      vi = memberService.getEnrolments(p.getId(), start); // recherche des inscriptions
+      vi = memberService.getEnrolments(p.getId(), preEnrolmentStartDate); // recherche des inscriptions
     } catch (SQLException ex) {
       GemLogger.logException(ex);
     }

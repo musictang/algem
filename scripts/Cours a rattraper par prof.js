@@ -3,6 +3,7 @@ var dateDebut = args.debut != null ? utils.sqlDate(args.debut) : utils.sqlDate(u
 var dateFin = args.fin != null ? utils.sqlDate(args.fin) : utils.sqlDate(utils.getEndOfYear());
 
 var query = "SELECT DISTINCT p1.nom AS \"NOM\",p1.prenom AS \"PRENOM\",p.jour AS \"DATE\", to_char(pl.debut,'HH24:MI') AS \"DEBUT\",to_char(pl.fin,'HH24:MI') AS \"FIN\","
++ " c.titre AS \"COURS\","
 + " CASE" 
 + " WHEN c.code = 12 THEN 'Stage'"
 + " WHEN c.collectif = false OR (c.code = 1 AND (pl.debut = p.debut AND pl.fin = p.fin)) THEN 'Individuel'"

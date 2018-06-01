@@ -1,7 +1,7 @@
 /*
- * @(#)ConflictService.java	2.9.7.1 26/05/16
+ * @(#)ConflictService.java	2.15.8 26/03/2018
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -37,7 +37,7 @@ import net.algem.util.model.Model;
  * Service class for conflict verification.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.7.1
+ * @version 2.15.8
  * @since 2.4.a 08/05/12
  */
 public class ConflictService
@@ -64,8 +64,6 @@ public class ConflictService
 			+ " WHERE jour = ? AND lieux = ? "
 			+ " AND ((debut >= ? AND debut < ?) "
 			+ " OR (fin > ? and fin <= ?) OR (debut <= ? AND fin >= ?))");
-//    testRoomPS2 = this.dc.prepareStatement("SELECT "+ScheduleIO.COLUMNS+" FROM planning p "
-//			+ "WHERE jour = ? AND lieux = ? AND debut = ? AND fin = ?");
 
     testRoomPS3 = this.dc.prepareStatement("SELECT " + ScheduleIO.COLUMNS + " FROM " + ScheduleIO.TABLE + " p"
 			+ " WHERE jour = ? AND lieux = ?"
@@ -93,6 +91,7 @@ public class ConflictService
 
     testMemberPS = this.dc.prepareStatement("SELECT " + ScheduleIO.COLUMNS + " FROM " + ScheduleIO.TABLE + " p"
             + " WHERE (ptype = " + Schedule.COURSE + " OR ptype = " + Schedule.MEMBER + ")"
+            + " AND id != ?"
             + " AND jour = ? AND idper = ?"
             + " AND ((debut >= ? AND debut < ?)"
             + " OR (fin > ? AND fin <= ?) OR (debut <= ? AND fin >= ?))");
@@ -177,8 +176,8 @@ public class ConflictService
    * @return a list of conflicts
    * @throws java.sql.SQLException
    */
-  Vector<ScheduleTestConflict> testRoomConflict(ScheduleObject plan, DateFr dateStart, DateFr dateEnd, int roomId) throws SQLException {
-    Vector<ScheduleTestConflict> conflicts = new Vector<ScheduleTestConflict>();
+  List<ScheduleTestConflict> testRoomConflict(ScheduleObject plan, DateFr dateStart, DateFr dateEnd, int roomId) throws SQLException {
+    List<ScheduleTestConflict> conflicts = new ArrayList<ScheduleTestConflict>();
     Calendar cal = Calendar.getInstance(Locale.FRANCE);
     cal.setTime(plan.getDate().getDate());
     int dow = cal.get(Calendar.DAY_OF_WEEK);
@@ -191,10 +190,10 @@ public class ConflictService
             + " AND action = " + plan.getIdAction()
             + " AND lieux = " + plan.getIdRoom();
     // sélection des plannings dont on veut modifier la salle
-    Vector<Schedule> v = ScheduleIO.find(query, dc);
+    List<Schedule> v = ScheduleIO.find(query, dc);
     // pour chaque instance de planning, vérifier l'occupation
     for (int i = 0; i < v.size(); i++) {
-      Schedule p = v.elementAt(i);
+      Schedule p = v.get(i);
       Hour endTime = new Hour(p.getEnd());
       endTime.maybeDecMidnight();
       testRoomPS.setDate(1, new java.sql.Date(p.getDate().getTime()));
@@ -205,16 +204,63 @@ public class ConflictService
       testRoomPS.setTime(6, java.sql.Time.valueOf(endTime.toString() + ":00"));
       testRoomPS.setTime(7, java.sql.Time.valueOf(p.getStart().toString() + ":00"));
       testRoomPS.setTime(8, java.sql.Time.valueOf(endTime.toString() + ":00"));
-      // Stocker les conflits dans un vecteur
-      Vector<ScheduleObject> v2 = ScheduleIO.getLoadRS(testRoomPS, dc);
+      // Stocker les conflits dans une liste
+      List<ScheduleObject> v2 = ScheduleIO.getLoadRS(testRoomPS, dc);
       for (int j = 0; j < v2.size(); j++) {
-        ScheduleObject pc = v2.elementAt(j);
+        ScheduleObject pc = v2.get(j);
         ScheduleTestConflict conflict = new ScheduleTestConflict(pc.getDate(), pc.getStart(), pc.getEnd());
         conflict.setRoomFree(false);
         conflict.setDetail(pc.getScheduleDetail());
-        conflicts.addElement(conflict);
+        conflicts.add(conflict);
       }
     }
+    return conflicts;
+  }
+
+  List<ScheduleTestConflict> testRehearsalRoomConflict(ScheduleObject plan) throws SQLException {
+    List<ScheduleTestConflict> conflicts = new ArrayList<ScheduleTestConflict>();
+    Hour endTime = new Hour(plan.getEnd());
+
+    endTime.maybeDecMidnight();
+    testRoomPS.setDate(1, new java.sql.Date(plan.getDate().getTime()));
+    testRoomPS.setInt(2, plan.getIdRoom());
+    testRoomPS.setTime(3, java.sql.Time.valueOf(plan.getStart().toString() + ":00"));
+    testRoomPS.setTime(4, java.sql.Time.valueOf(endTime.toString() + ":00"));
+    testRoomPS.setTime(5, java.sql.Time.valueOf(plan.getStart().toString() + ":00"));
+    testRoomPS.setTime(6, java.sql.Time.valueOf(endTime.toString() + ":00"));
+    testRoomPS.setTime(7, java.sql.Time.valueOf(plan.getStart().toString() + ":00"));
+    testRoomPS.setTime(8, java.sql.Time.valueOf(endTime.toString() + ":00"));
+
+    List<ScheduleObject> v2 = ScheduleIO.getLoadRS(testRoomPS, dc);
+    for (int j = 0; j < v2.size(); j++) {
+      ScheduleObject pc = v2.get(j);
+      ScheduleTestConflict conflict = new ScheduleTestConflict(pc.getDate(), pc.getStart(), pc.getEnd());
+      conflict.setRoomFree(false);
+      conflict.setDetail(pc.getScheduleDetail());
+      conflicts.add(conflict);
+    }
+
+    if (plan.getType() != Schedule.GROUP) {
+      testMemberPS.setInt(1, plan.getId());
+      testMemberPS.setDate(2, new java.sql.Date(plan.getDate().getTime()));
+      testMemberPS.setInt(3, plan.getIdPerson());
+      testMemberPS.setTime(4, java.sql.Time.valueOf(plan.getStart().toString() + ":00"));
+      testMemberPS.setTime(5, java.sql.Time.valueOf(endTime.toString() + ":00"));
+      testMemberPS.setTime(6, java.sql.Time.valueOf(plan.getStart().toString() + ":00"));
+      testMemberPS.setTime(7, java.sql.Time.valueOf(endTime.toString() + ":00"));
+      testMemberPS.setTime(8, java.sql.Time.valueOf(plan.getStart().toString() + ":00"));
+      testMemberPS.setTime(9, java.sql.Time.valueOf(endTime.toString() + ":00"));
+
+      v2 = ScheduleIO.getLoadRS(testMemberPS, dc);
+      for (int j = 0; j < v2.size(); j++) {
+        ScheduleObject pc = v2.get(j);
+        ScheduleTestConflict conflict = new ScheduleTestConflict(pc.getDate(), pc.getStart(), pc.getEnd());
+        conflict.setMemberFree(false);
+        conflict.setDetail(pc.getScheduleDetail());
+        conflicts.add(conflict);
+      }
+    }
+
     return conflicts;
   }
 
@@ -227,8 +273,8 @@ public class ConflictService
    * @return a list of conflicts
    * @throws SQLException
    */
-  public Vector<ScheduleTestConflict> testRoomConflict(DateFr dateStart, Hour newHourStart, Hour newHourEnd, int roomId) throws SQLException {
-    Vector<ScheduleTestConflict> conflicts = new Vector<ScheduleTestConflict>();
+  public List<ScheduleTestConflict> testRoomConflict(DateFr dateStart, Hour newHourStart, Hour newHourEnd, int roomId) throws SQLException {
+    List<ScheduleTestConflict> conflicts = new ArrayList<ScheduleTestConflict>();
     Hour endTime = new Hour(newHourEnd);
 
     endTime.maybeDecMidnight();
@@ -241,13 +287,13 @@ public class ConflictService
     testRoomPS.setTime(7, java.sql.Time.valueOf(newHourStart.toString() + ":00"));
     testRoomPS.setTime(8, java.sql.Time.valueOf(endTime.toString() + ":00"));
 
-    Vector<ScheduleObject> v2 = ScheduleIO.getLoadRS(testRoomPS, dc);
+    List<ScheduleObject> v2 = ScheduleIO.getLoadRS(testRoomPS, dc);
     for (int j = 0; j < v2.size(); j++) {
-      ScheduleObject pc = v2.elementAt(j);
+      ScheduleObject pc = v2.get(j);
       ScheduleTestConflict conflict = new ScheduleTestConflict(pc.getDate(), pc.getStart(), pc.getEnd());
       conflict.setRoomFree(false);
       conflict.setDetail(pc.getScheduleDetail());
-      conflicts.addElement(conflict);
+      conflicts.add(conflict);
     }
     return conflicts;
   }
@@ -579,14 +625,15 @@ public class ConflictService
     Hour endTime = new Hour(end);
     endTime.maybeDecMidnight();
 
-    testMemberPS.setDate(1, new java.sql.Date(date.getTime()));
-    testMemberPS.setInt(2, plan.getIdPerson());
-    testMemberPS.setTime(3, java.sql.Time.valueOf(start.toString() + ":00"));
-    testMemberPS.setTime(4, java.sql.Time.valueOf(endTime.toString() + ":00"));
-    testMemberPS.setTime(5, java.sql.Time.valueOf(start.toString() + ":00"));
-    testMemberPS.setTime(6, java.sql.Time.valueOf(endTime.toString() + ":00"));
-    testMemberPS.setTime(7, java.sql.Time.valueOf(start.toString() + ":00"));
-    testMemberPS.setTime(8, java.sql.Time.valueOf(endTime.toString() + ":00"));
+    testMemberPS.setInt(1, plan.getId());
+    testMemberPS.setDate(2, new java.sql.Date(date.getTime()));
+    testMemberPS.setInt(3, plan.getIdPerson());
+    testMemberPS.setTime(4, java.sql.Time.valueOf(start.toString() + ":00"));
+    testMemberPS.setTime(5, java.sql.Time.valueOf(endTime.toString() + ":00"));
+    testMemberPS.setTime(6, java.sql.Time.valueOf(start.toString() + ":00"));
+    testMemberPS.setTime(7, java.sql.Time.valueOf(endTime.toString() + ":00"));
+    testMemberPS.setTime(8, java.sql.Time.valueOf(start.toString() + ":00"));
+    testMemberPS.setTime(9, java.sql.Time.valueOf(endTime.toString() + ":00"));
 
     Vector<ScheduleObject> v2 = ScheduleIO.getLoadRS(testMemberPS, dc);
     for (int j = 0; j < v2.size(); j++) {

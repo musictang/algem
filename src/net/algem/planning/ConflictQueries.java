@@ -1,7 +1,7 @@
 /*
- * @(#)ConflictQueries.java 2.9.7.1 25/05/16
+ * @(#)ConflictQueries.java 2.15.8 25/03/18
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -24,7 +24,7 @@ package net.algem.planning;
  * Set of requests used in conflict detection when schedule is busy.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.7.1
+ * @version 2.15.8
  */
 public class ConflictQueries
 {
@@ -45,6 +45,17 @@ public class ConflictQueries
             + " OR (plage.fin > '" + hStart + "' AND plage.fin <= '" + hEnd + "')"
             + " OR (plage.debut <= '" + hStart + "' AND plage.fin >= '" + hEnd + "'))";
 
+  }
+
+  public static String getCourseMemberSelection(String date, String hStart, String hEnd, int memberId) {
+    //do not include catch-up rooms
+    return ",plage pg, salle s WHERE planning.jour = '" + date + "'"
+            + " AND pg.idplanning = planning.id"
+            + " AND s.id = planning.lieux AND s.nom !~* 'rattrap'"
+            + " AND pg.adherent = " + memberId
+            + " AND ((pg.debut >= '" + hStart + "' AND pg.debut < '" + hEnd + "')"
+            + " OR (pg.fin > '" + hStart + "' AND pg.fin <= '" + hEnd + "')"
+            + " OR (pg.debut <= '" + hStart + "' AND pg.fin >= '" + hEnd + "'))";
   }
 
   public static String getRangeOverlapSelection(DateFr start, int member, Hour hStart, Hour hEnd, int action) {

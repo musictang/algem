@@ -1,7 +1,7 @@
 /*
- * @(#)ContactIO.java	2.15.0 18/09/17
+ * @(#)ContactIO.java	2.15.8 21/03/18
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -51,7 +51,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.0
+ * @version 2.15.8
  * @since 1.0a 07/07/1999
  */
 public class ContactIO
@@ -400,10 +400,12 @@ public class ContactIO
   private static void addCity(Address a, DataConnection dc) {
     List<City> v = CityIO.findCity(a.getCdp(), dc);
     if (v == null || v.isEmpty()) {
-      try {
-        CityIO.insert(new City(a.getCdp(), a.getCity()), dc);
-      } catch (SQLException se) {
-        GemLogger.logException(se);
+      if (a.getCdp() != null && a.getCity() != null) {
+        try {
+          CityIO.insert(new City(a.getCdp(), a.getCity()), dc);
+        } catch (SQLException se) {
+          GemLogger.logException(se);
+        }
       }
     }
   }
