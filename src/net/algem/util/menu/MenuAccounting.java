@@ -1,7 +1,7 @@
 /*
- * @(#)MenuAccounting.java 2.14.0 13/06/17
+ * @(#)MenuAccounting.java 2.15.9 04/06/18
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -48,7 +48,7 @@ import net.algem.util.ui.ProgressMonitorHandler;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.14.0
+ * @version 2.15.9
  * @since 1.0a 07/07/1999
  */
 public class MenuAccounting
@@ -199,7 +199,7 @@ public class MenuAccounting
       String[] keys = null;
       List<Account> accounts = null;
       List<Param> costAccounts = null;
-      AccountingService service = new AccountingService(dc);
+      AccountingServiceImpl service = new AccountingServiceImpl(dc);
       try {
         keys = service.getAccountTypes();
         accounts = service.getAccounts();
@@ -237,11 +237,11 @@ public class MenuAccounting
     } else if ("HistoDevis.Abandon".equals(arg)) {
       desktop.removeModule("Menu.quotation.history");
     } else if (menus.get("Menu.standard.orderLine.label").equals(arg)) {
-      AccountingService accService = new AccountingService(dc);
+      AccountingServiceImpl accService = new AccountingServiceImpl(dc);
       StandardOrderLineDlg dlg = new StandardOrderLineDlg(desktop, accService, "Echéances standards");
       dlg.createUI();
       try {
-        dlg.load();
+        dlg.load(accService.findStandardOrderLines());
       } catch (SQLException ex) {
         GemLogger.logException(ex);
       }

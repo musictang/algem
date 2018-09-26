@@ -1,7 +1,7 @@
 /*
- * @(#)MemberService.java	2.15.6 29/11/17
+ * @(#)MemberService.java	2.15.9 07/06/18
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,14 +20,18 @@
  */
 package net.algem.contact.member;
 
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
+import net.algem.accounting.Account;
+import net.algem.accounting.AccountIO;
 import net.algem.accounting.AccountPrefIO;
 import net.algem.accounting.AccountUtil;
+import net.algem.accounting.ModeOfPayment;
 import net.algem.accounting.OrderLine;
 import net.algem.accounting.OrderLineIO;
 import net.algem.config.Preference;
@@ -49,11 +53,10 @@ import net.algem.util.model.Model;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.6
+ * @version 2.15.9
  * @since 2.4.a 14/05/12
  */
-public class MemberService
-{
+public class MemberService {
 
   private DataConnection dc;
   private ConflictService conflictService;
@@ -85,6 +88,7 @@ public class MemberService
 
   /**
    * Method called when changing time or length of some rehearsal.
+   *
    * @param plan schedule
    * @param start start time
    * @param end end time
@@ -100,7 +104,7 @@ public class MemberService
       int newDuration = start.getLength(end);
       List<SubscriptionCardSession> sessions = card.getSessions();
       if (sessions != null && sessions.size() > 0) {
-        SubscriptionCardSession lastSession = sessions.get(sessions.size()-1);
+        SubscriptionCardSession lastSession = sessions.get(sessions.size() - 1);
         if (lastSession != null) {
           lastSession.setStart(new Hour(start));
           lastSession.setEnd(new Hour(end));
@@ -144,7 +148,7 @@ public class MemberService
 
     boolean hasSession = false;
     Iterator<SubscriptionCardSession> iterator = card.getSessions().iterator();
-    while(iterator.hasNext()) {
+    while (iterator.hasNext()) {
       SubscriptionCardSession s = iterator.next();
       if (s.getScheduleId() == plan.getId()) {
         iterator.remove();
@@ -166,13 +170,13 @@ public class MemberService
       List<PersonSubscriptionCard> cards = cardIO.find(idper, null, complete, 1);
       return cards.isEmpty() ? null : cards.get(0);
     } catch (SQLException ex) {
-      GemLogger.logException(getClass().getName()+"#findSubscriptionCard", ex);
+      GemLogger.logException(getClass().getName() + "#findSubscriptionCard", ex);
       return null;
     }
   }
 
   List<PersonSubscriptionCard> getSubscriptions(int idper, boolean complete) throws SQLException {
-      return cardIO.find(idper, null, complete, 0);
+    return cardIO.find(idper, null, complete, 0);
   }
 
   /**
@@ -201,22 +205,30 @@ public class MemberService
     plan.setStart(endOffset);
     plan.setEnd(end);
     nc.addSession(plan);
+    //TODO : maybe put card and orderline creation in the same transaction ?
     create(nc);
 
-    PersonFile pf = ((PersonFileIO)DataCache.getDao(Model.PersonFile)).findMember(card.getIdper(), false);
+    PersonFile pf = ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findMember(card.getIdper(), false);
     pf.setSubscriptionCard(nc);
-    OrderLine e = AccountUtil.setRehearsalOrderLine(pf, plan.getDate(), getPrefAccount(AccountPrefIO.REHEARSAL), pass.getAmount(), nc.getId());
+    OrderLine e = AccountUtil.createRehearsalOrderLine(pf, plan.getDate(), getPrefAccount(AccountPrefIO.REHEARSAL), pass.getAmount(), nc.getId());
 
     AccountUtil.createEntry(e, dc);
 
     return nc;
   }
 
+  /**
+   *
+   * @param card
+   * @param pFile
+   * @throws SQLException
+   */
   public void create(PersonSubscriptionCard card, PersonFile pFile) throws SQLException {
+    //TODO : maybe put card and orderline creation in the same transaction ?
     create(card);
     RehearsalPass abo = RehearsalPassIO.find(card.getPassId(), dc);
     Preference p = AccountPrefIO.find(AccountPrefIO.REHEARSAL, dc);
-    OrderLine e = AccountUtil.setRehearsalOrderLine(pFile, new DateFr(new Date()), p, abo.getAmount(), card.getId());
+    OrderLine e = AccountUtil.createRehearsalOrderLine(pFile, new DateFr(new Date()), p, abo.getAmount(), card.getId());
     AccountUtil.createEntry(e, dc);
   }
 
@@ -224,6 +236,7 @@ public class MemberService
    * Updates subscription card.
    * An existing card should not be deleted.
    * Therefore, remaining time on this card may exceed the total time of the pass on some occasions.
+   *
    * @param card actual card
    */
   private void updateSubscriptionCard(PersonSubscriptionCard card) throws SQLException, MemberException {
@@ -233,9 +246,14 @@ public class MemberService
 
   private void deleteSubscriptionCard(PersonSubscriptionCard abo) throws SQLException {
     cardIO.delete(abo.getId());
-    deleteOrderLine(abo.getPurchaseDate(), abo.getIdper(), 0,0);
+    deleteOrderLine(abo.getPurchaseDate(), abo.getIdper(), 0, 0);
   }
 
+  /**
+   * Persists a new card.
+   * @param card
+   * @throws SQLException
+   */
   public void create(PersonSubscriptionCard card) throws SQLException {
     cardIO.insert(card);
   }
@@ -252,6 +270,34 @@ public class MemberService
     Vector<OrderLine> ve = OrderLineIO.find(where, dc);
     if (ve.size() > 0) {
       OrderLineIO.delete(ve.elementAt(0), dc); // suppression de la première échéance trouvée seulement
+    }
+  }
+
+  public void deleteGroupRehearsalOrderLine(int action, int group) throws SQLException {
+    String query = "DELETE FROM " + OrderLineIO.TABLE
+      + " WHERE commande = ? AND groupe = ?"
+      + " AND (reglement = ? OR paye = false) AND transfert = false";
+    try (PreparedStatement ps = dc.prepareStatement(query)) {
+      ps.setInt(1, action);
+      ps.setInt(2, group);
+      ps.setString(3, ModeOfPayment.FAC.name());
+
+      System.out.println(ps.toString());
+      ps.executeUpdate();
+    }
+  }
+
+  public void deleteMemberRehearsalOrderLine(int scheduleId, int member) throws SQLException {
+    String query = "DELETE FROM " + OrderLineIO.TABLE
+      + " WHERE commande = ? AND adherent = ?"
+      + " AND (reglement = ? OR paye = false) AND transfert = false";
+    try (PreparedStatement ps = dc.prepareStatement(query)) {
+      ps.setInt(1, scheduleId);
+      ps.setInt(2, member);
+      ps.setString(3, ModeOfPayment.FAC.name());
+
+      GemLogger.log(ps.toString());
+      ps.executeUpdate();
     }
   }
 
@@ -275,7 +321,7 @@ public class MemberService
   }
 
   public PersonFile find(int id) {
-    return ((PersonFileIO)DataCache.getDao(Model.PersonFile)).findId(id);
+    return ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findId(id);
   }
 
   /**
@@ -290,9 +336,9 @@ public class MemberService
    */
   public Vector<ScheduleRangeObject> findFollowUp(int memberId, int courseId, boolean collective) throws SQLException {
     String where = " AND (pg.note >= 0 OR p.note > 0)"
-            + " AND pg.note = s1.id"
-            + " AND p.note = s2.id"
-            + " AND pg.adherent = " + memberId + " AND p.action = a.id AND a.cours = " + courseId + " ORDER BY p.jour, pg.debut";
+      + " AND pg.note = s1.id"
+      + " AND p.note = s2.id"
+      + " AND pg.adherent = " + memberId + " AND p.action = a.id AND a.cours = " + courseId + " ORDER BY p.jour, pg.debut";
     return ScheduleRangeIO.findFollowUp(where, true, dc);
   }
 
@@ -306,37 +352,37 @@ public class MemberService
    */
   public Vector<ScheduleRangeObject> findFollowUp(int memberId, DateRange dates) throws SQLException {
     String where = " AND p.jour BETWEEN '" + dates.getStart() + "' AND '" + dates.getEnd()
-            + "' AND (pg.note >= 0 OR p.note > 0)"
-//            + " AND (pg.note = s.id OR p.note = s.id)"
-           // + " AND (pg.note = s.id OR (p.note = s.id AND p.note > 0 AND s.texte IS NOT NULL AND trim(s.texte) != ''))"
-            + " AND pg.note = s1.id"
-            + " AND p.note = s2.id"
-            + " AND pg.adherent = " + memberId
-            + " ORDER BY p.jour, pg.debut";
+      + "' AND (pg.note >= 0 OR p.note > 0)"
+      //            + " AND (pg.note = s.id OR p.note = s.id)"
+      // + " AND (pg.note = s.id OR (p.note = s.id AND p.note > 0 AND s.texte IS NOT NULL AND trim(s.texte) != ''))"
+      + " AND pg.note = s1.id"
+      + " AND p.note = s2.id"
+      + " AND pg.adherent = " + memberId
+      + " ORDER BY p.jour, pg.debut";
     return ScheduleRangeIO.findFollowUp(where, false, dc);
   }
 
   public Vector<ScheduleRangeObject> findFollowUp(int memberId, Date date, String actions) throws SQLException {
     String where = " AND p.jour >= '" + date + "' AND p.action IN (" + actions + ")"
-            + " AND (pg.note >= 0 OR p.note > 0)"
-            + " AND pg.note = s1.id"
-            + " AND p.note = s2.id"
-            + " AND pg.adherent = " + memberId
-            + " ORDER BY p.jour, pg.debut";
+      + " AND (pg.note >= 0 OR p.note > 0)"
+      + " AND pg.note = s1.id"
+      + " AND p.note = s2.id"
+      + " AND pg.adherent = " + memberId
+      + " ORDER BY p.jour, pg.debut";
     return ScheduleRangeIO.findFollowUp(where, false, dc);
   }
 
   public Vector<ScheduleRangeObject> findFollowUp(int memberId, Date start, Date end, String actions) throws SQLException {
     String where = " AND p.jour BETWEEN '" + start + "' AND '" + end + "' AND p.action IN (" + actions + ")"
-            + " AND (pg.note >= 0 OR p.note > 0)"
-            + " AND pg.note = s1.id"
-            + " AND p.note = s2.id"
-            + " AND pg.adherent = " + memberId
-            + " ORDER BY p.jour, pg.debut";
+      + " AND (pg.note >= 0 OR p.note > 0)"
+      + " AND pg.note = s1.id"
+      + " AND p.note = s2.id"
+      + " AND pg.adherent = " + memberId
+      + " ORDER BY p.jour, pg.debut";
     return ScheduleRangeIO.findFollowUp(where, false, dc);
   }
 
-  public  List<Module> findModuleOrders(int member, Date start, Date end) {
+  public List<Module> findModuleOrders(int member, Date start, Date end) {
     try {
       return ModuleOrderIO.findModules(member, start, end, dc);
     } catch (SQLException ex) {
@@ -427,9 +473,18 @@ public class MemberService
   public void saveRehearsalOrderLine(PersonFile pFile, DateFr date, double amount, int linkId) throws SQLException {
 
     Preference p = AccountPrefIO.find(AccountPrefIO.REHEARSAL, dc);
-    OrderLine e = AccountUtil.setRehearsalOrderLine(pFile, date, p, amount, linkId);
+    OrderLine ol = AccountUtil.createRehearsalOrderLine(pFile, date, p, amount, linkId);
+    AccountUtil.createEntry(ol, dc);
+    Account prefAccount = AccountIO.find(ol.getAccount().getId(), dc);
+    if (prefAccount != null && AccountUtil.isPersonalAccount(prefAccount)) {
+      OrderLine counterpart = new OrderLine(ol);
+      counterpart.setAccount(prefAccount);// includes number as string
+      counterpart.setAmount(-ol.getAmount());
+      counterpart.setModeOfPayment(ModeOfPayment.FAC.toString());
+      counterpart.setPaid(true);
 
-    AccountUtil.createEntry(e, dc);
+      AccountUtil.createEntry(counterpart, false, dc);
+    }
   }
 
   public List<ScheduleTestConflict> testRoom(DateFr debut, Hour hd, Hour hf, int salle) throws SQLException {
@@ -448,7 +503,7 @@ public class MemberService
 
     Vector<DateFr> v = new Vector<DateFr>();
     DateFr s = new DateFr(start);
-    while(!s.after(end)) {
+    while (!s.after(end)) {
       if (s.getDayOfWeek() == day) {
         v.addElement(new DateFr(s));
       }

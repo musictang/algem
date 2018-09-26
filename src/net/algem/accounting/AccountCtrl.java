@@ -37,7 +37,7 @@ import net.algem.util.module.GemDesktop;
 public class AccountCtrl
   extends ParamTableCtrl  {
 
-  private AccountingService service;
+  private AccountingServiceImpl service;
 
   /**
    * Constructs a controller.
@@ -47,7 +47,7 @@ public class AccountCtrl
    */
   public AccountCtrl(GemDesktop _desktop) {
     super(_desktop, "Comptes comptables", true, true);
-    service = new AccountingService(dc);
+    service = new AccountingServiceImpl(dc);
   }
 
   @Override

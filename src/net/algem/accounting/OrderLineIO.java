@@ -1,7 +1,7 @@
 /*
- * @(#)OrderLineIO.java	2.14.0 20/06/17
+ * @(#)OrderLineIO.java	2.15.9 05/06/18
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,6 +20,7 @@
  */
 package net.algem.accounting;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.TreeMap;
@@ -39,12 +40,11 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.14.0
+ * @version 2.15.9
  *
  */
 public class OrderLineIO
-        extends TableIO
-{
+  extends TableIO {
 
   public static final String TABLE = "echeancier2";
   public static final String COLUMNS = "oid,echeance,payeur,adherent,commande,libelle,reglement,montant,piece,ecole,compte,paye,transfert,monnaie,analytique,facture,groupe,tva";
@@ -57,106 +57,128 @@ public class OrderLineIO
   private static final String SEQUENCE = "echeancier2_oid_seq";
 
   /**
-   * OrderLine insertion.
+   * Orderline insertion.
    *
-   * @param e orderLine
+   * @param ol orderline to insert
    * @param dc dataConnection instance
    * @throws SQLException
    */
-  public static void insert(OrderLine e, DataConnection dc) throws SQLException {
-
+  public static void insert(OrderLine ol, DataConnection dc) throws SQLException {
     int nextid = TableIO.nextId(SEQUENCE, dc);
+    String query = "INSERT INTO " + TABLE + " VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    try (PreparedStatement ps = dc.prepareStatement(query)) {
+      ps.setInt(1, nextid);
+      ps.setDate(2, new java.sql.Date(ol.getDate().getDate().getTime()));
+      ps.setInt(3, ol.getPayer());
+      ps.setInt(4, ol.getMember());
+      ps.setInt(5, ol.getOrder());
+      ps.setString(6, ol.getModeOfPayment());
+      ps.setString(7, ol.getLabel());
+      ps.setInt(8, ol.getAmount());
+      ps.setString(9, ol.getDocument());
+      ps.setInt(10, ol.getSchool());
 
-    String query = "INSERT INTO " + TABLE + " VALUES("
-            + nextid
-            + ", " + (e.getDate() == null || DateFr.NULLDATE.equals(e.getDate().toString()) ? "NULL" : "'" + e.getDate().toString() + "'")
-            + "," + e.getPayer()
-            + "," + e.getMember()
-            + "," + e.getOrder()
-            + ",'" + e.getModeOfPayment()
-            + "','" + escape(e.getLabel())
-            + "'," + e.getAmount()
-            + ",'" + e.getDocument()
-            + "','" + e.getSchool()
-            + "','" + e.getAccount().getId() //@since 2.3.c
-            + "','" + (e.isPaid() ? "t" : "f")
-            + "','f'" // transfer false by default
-            + ",'" + e.getCurrency()
-            + "','" + e.getCostAccount().getNumber()
-            + "'," + ((e.getInvoice() == null || e.getInvoice().isEmpty()) ? "NULL" : "'" + e.getInvoice() + "'") //@since 2.3.a
-            + ", " + e.getGroup()
-            + ", " + e.getTax()
+      ps.setInt(11, ol.getAccount().getId());
+      ps.setBoolean(12, ol.isPaid());
+      ps.setBoolean(13, ol.isTransfered());
+      ps.setString(14, ol.getCurrency());
+      ps.setString(15, ol.getCostAccount().getNumber());
+      if (ol.getInvoice() == null || ol.getInvoice().isEmpty()) {
+        ps.setNull(16, java.sql.Types.VARCHAR);
+      } else {
+        ps.setString(16, ol.getInvoice());
+      }
 
-            + ")";
+      ps.setInt(17, ol.getGroup());
+      ps.setFloat(18, ol.getTax());
 
-    dc.executeUpdate(query);
+      GemLogger.info(ps.toString());
+      ps.executeUpdate();
+      ol.setId(nextid);
 
-    e.setId(nextid);
-
+    }
   }
 
   /**
    * OrderLine update.
    *
-   * @param e orderLine to update
+   * @param ol orderLine to update
    * @param dc dataConnection instance
    * @throws SQLException
    */
-  public static void update(OrderLine e, DataConnection dc) throws SQLException {
-    String query = "UPDATE " + TABLE + " SET"
-            + " echeance = " + (e.getDate() == null || DateFr.NULLDATE.equals(e.getDate().toString()) ? "NULL" : "'" + e.getDate().toString() + "'")
-            + ", payeur = " + e.getPayer()
-            + ", adherent = " + e.getMember()
-            + ", commande = " + e.getOrder()
-            + ", libelle = '" + escape(e.getLabel())
-            + "', reglement = '" + e.getModeOfPayment()
-            + "', montant = " + e.getAmount()
-            + ", piece = '" + e.getDocument()
-            + "', ecole = '" + e.getSchool()
-            + "', compte = '" + e.getAccount().getId() // int
-            + "', paye = '" + (e.isPaid() ? "t" : "f")
-            //+"', transfer='"+ (e.isTransfered() ? "t" : "f") // on ne modifie pas le champ transfer
-            + "', monnaie = '" + e.getCurrency()
-            + "', analytique = '" + e.getCostAccount().getNumber()
-            + "', facture = " + ((e.getInvoice() == null || e.getInvoice().isEmpty()) ? "NULL" : "'" + e.getInvoice() + "'")
-            + ", groupe = " + e.getGroup()
-            + ", tva = " + e.getTax();
-    query += " WHERE oid = " + e.getId();
-    dc.executeUpdate(query);
+  public static void update(OrderLine ol, DataConnection dc) throws SQLException {
+    String query = "UPDATE " + TABLE
+      + " SET echeance=?,payeur=?,adherent=?,commande=?,reglement=?,libelle=?,montant=?,piece=?,ecole=?,"
+      + "compte=?,paye=?,monnaie=?,analytique=?,facture=?,groupe=?,tva=? WHERE oid=?";
+    try (PreparedStatement ps = dc.prepareStatement(query)) {
+      ps.setDate(1, new java.sql.Date(ol.getDate().getDate().getTime()));
+      ps.setInt(2, ol.getPayer());
+      ps.setInt(3, ol.getMember());
+      ps.setInt(4, ol.getOrder());
+      ps.setString(5, ol.getModeOfPayment());
+      ps.setString(6, ol.getLabel());
+      ps.setInt(7, ol.getAmount());
+      ps.setString(8, ol.getDocument());
+      ps.setInt(9, ol.getSchool());
+      ps.setInt(10, ol.getAccount().getId());
+      ps.setBoolean(11, ol.isPaid());
+      ps.setString(12, ol.getCurrency());
+      ps.setString(13, ol.getCostAccount().getNumber());
+      if (ol.getInvoice() == null || ol.getInvoice().isEmpty()) {
+        ps.setNull(14, java.sql.Types.VARCHAR);
+      } else {
+        ps.setString(14, ol.getInvoice());
+      }
+      ps.setInt(15, ol.getGroup());
+      ps.setFloat(16, ol.getTax());
+
+      ps.setInt(17, ol.getId());
+
+      GemLogger.info(ps.toString());
+      ps.executeUpdate();
+    }
 
   }
 
   /**
    * Update of column transfer for one orderline.
    *
-   * @param e orderLine to transfer
+   * @param ol orderLine to transfer
    * @param dc dataConnection instance
    * @throws SQLException
    */
-  public static void transfer(OrderLine e, DataConnection dc) throws SQLException {
+  public static void transfer(OrderLine ol, DataConnection dc) throws SQLException {
+    String query = "UPDATE " + TABLE + " SET transfert = ? WHERE oid = ?";
+    try(PreparedStatement ps = dc.prepareStatement(query)) {
+      ps.setBoolean(1, ol.isTransfered());
+      ps.setInt(2, ol.getId());
 
-    String query = "UPDATE " + TABLE + " SET transfert = '" + (e.isTransfered() ? "t" : "f") + "'";
-    query += " WHERE oid = " + e.getId();
+      GemLogger.info(ps.toString());
+      ps.executeUpdate();
+    }
 
-    dc.executeUpdate(query);
   }
 
   /**
    * Update paid.
-   * Allow to update, in the databse, the colum 'paye' in the eheancier 2 table
-   * @param e selected line
+   * Allow updating, in the databse, the colum 'paye' in the echeancier2 table
+   *
+   * @param ol selected line
    * @param dc data connection
    * @throws SQLException
    */
-  public static void paid(OrderLine e, DataConnection dc) throws SQLException {
+  public static void paid(OrderLine ol, DataConnection dc) throws SQLException {
+    String query = "UPDATE " + TABLE + " SET paye = ? WHERE oid = ?";
+    try(PreparedStatement ps = dc.prepareStatement(query)) {
+      ps.setBoolean(1, ol.isPaid());
+      ps.setInt(2, ol.getId());
 
-    String query = "UPDATE " + TABLE + " SET paye = '" + (e.isPaid() ? "t" : "f") + "'";
-    query += " WHERE oid = " +e.getId();
-
-    dc.executeUpdate(query);
+      GemLogger.info(ps.toString());
+      ps.executeUpdate();
+    }
   }
 
-  public static void setGroup(int [] oids, int g, DataConnection dc) throws SQLException {
+  public static void setGroup(int[] oids, int g, DataConnection dc) throws SQLException {
     if (oids == null || oids.length == 0) {
       return;
     }
@@ -164,14 +186,18 @@ public class OrderLineIO
     for (int i : oids) {
       query.append(i).append(",");
     }
-    query.deleteCharAt(query.length()-1);
+    query.deleteCharAt(query.length() - 1);
     query.append(")");
     dc.executeUpdate(query.toString());
   }
 
-  public static void delete(OrderLine e, DataConnection dc) throws SQLException {
-    String query = "DELETE FROM " + TABLE + " WHERE oid = " + e.getId();
-    dc.executeUpdate(query);
+  public static void delete(OrderLine ol, DataConnection dc) throws SQLException {
+    String query = "DELETE FROM " + TABLE + " WHERE oid = ?";
+    try(PreparedStatement ps = dc.prepareStatement(query)) {
+      ps.setInt(1, ol.getId());
+
+      ps.executeUpdate();
+    }
   }
 
   /**
@@ -234,9 +260,9 @@ public class OrderLineIO
     String query = "SELECT * FROM " + TABLE + " WHERE reglement";
     query += fac.equals(e.getModeOfPayment()) ? " != '" + fac + "'" : " = '" + fac + "'";
     query += " AND commande >  0 AND commande = " + e.getOrder()
-            + " AND payeur = " + e.getPayer()
-            + " AND echeance = '" + e.getDate() + "'"
-            + " AND abs(montant) = " + Math.abs(e.getAmount());
+      + " AND payeur = " + e.getPayer()
+      + " AND echeance = '" + e.getDate() + "'"
+      + " AND abs(montant) = " + Math.abs(e.getAmount());
     Vector<OrderLine> r = getResult(query, dc);
     return (r == null || r.isEmpty()) ? null : r.elementAt(0);
   }
@@ -297,7 +323,7 @@ public class OrderLineIO
       while (rs.next()) {
         String code = rs.getString(1).toLowerCase();
         String label = rs.getString(2).toLowerCase();
-        if (code.indexOf("pro") > -1 || label.indexOf("pro") > -1 ) {
+        if (code.indexOf("pro") > -1 || label.indexOf("pro") > -1) {
           return true;
         }
       }
@@ -324,10 +350,10 @@ public class OrderLineIO
     Preference p2 = AccountPrefIO.find(AccountPrefIO.PRO_MEMBERSHIP, dc);
     //String query = "SELECT count(echeance) FROM echeancier2 WHERE adherent=" + m + " AND compte like '" + p.getValues()[0].substring(0, 8) + "%'";
     String query = "SELECT count(echeance) FROM " + TABLE
-            + " WHERE adherent = " + m
-            + " AND reglement != '" + ModeOfPayment.FAC.name()
-            + "' AND montant > 0"
-            + " AND (compte = " + (p1 == null ? -1 : p1.getValues()[0]) + " OR compte = " + (p2 == null ? -1 : p2.getValues()[0]) + ")";
+      + " WHERE adherent = " + m
+      + " AND reglement != '" + ModeOfPayment.FAC.name()
+      + "' AND montant > 0"
+      + " AND (compte = " + (p1 == null ? -1 : p1.getValues()[0]) + " OR compte = " + (p2 == null ? -1 : p2.getValues()[0]) + ")";
     ResultSet rs = dc.executeQuery(query);
     if (rs.next()) {
       return rs.getInt(1);
@@ -354,6 +380,7 @@ public class OrderLineIO
 
   /**
    * Utility method used where joint expression is needed.
+   *
    * @param query sql query
    * @param dc
    * @return a list of order lines
@@ -367,7 +394,7 @@ public class OrderLineIO
    * @param key column key
    * @param dc
    * @return an account
-   * @deprecated from 2.3.a
+   * @deprecated since 2.3.a
    */
   public static Account findAccount(int key, DataConnection dc) {
 
@@ -419,7 +446,7 @@ public class OrderLineIO
    * Format account number on ten digits.
    *
    * @param code the number
-   * @deprecated from 2.3.a
+   * @deprecated since 2.3.a
    */
   private static String format(String code) {
     String num = code;

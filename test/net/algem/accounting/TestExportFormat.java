@@ -1,7 +1,7 @@
 /*
- * @(#)TestExportFormat.java	2.15.0 21/07/17
+ * @(#)TestExportFormat.java	2.15.9 05/06/18
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -56,6 +56,7 @@ import java.nio.channels.FileChannel;
 import java.text.NumberFormat;
 import java.util.Locale;
 import javax.imageio.ImageIO;
+import net.algem.util.FileUtil;
 
 import net.algem.util.TextUtil;
 import org.junit.*;
@@ -64,7 +65,7 @@ import static org.junit.Assert.*;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.0
+ * @version 2.15.9
  * @since 2.7.a 17/12/2013
  */
 public class TestExportFormat {
@@ -106,11 +107,12 @@ public class TestExportFormat {
     assertEquals("         1.53", formatted);
   }
 
-  @Ignore
+  @Test
   public void testParentPath() {
-    String path = "/home/jm/export.txt";
-    String dir = new File(path).getParent();
-    assertEquals(dir, "/home/jm", dir);
+    String home = System.getProperty("user.home");
+    String path = home + FileUtil.FILE_SEPARATOR + "export.txt";
+    String parentDir = new File(path).getParent();
+    assertEquals(parentDir, home, parentDir);
   }
 
 //  @Ignore
@@ -183,6 +185,7 @@ public class TestExportFormat {
 
   }
 
+  @Ignore
   @Test
   public void testPdfPreviewAsImage() throws FileNotFoundException, IOException {
     //  load a pdf from a file

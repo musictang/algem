@@ -1,7 +1,7 @@
 /*
- * @(#) StandardOrderLineDlg.java Algem 2.14.0 21/06/17
+ * @(#) StandardOrderLineDlg.java Algem 2.15.9 04/06/18
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -47,7 +47,7 @@ import net.algem.util.ui.GemPanel;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.14.0
+ * @version 2.15.9
  * @since 2.10.0 18/05/16
  */
 public class StandardOrderLineDlg
@@ -55,7 +55,7 @@ public class StandardOrderLineDlg
   implements ActionListener {
 
   private GemDesktop desktop;
-  private AccountingService service;
+  private AccountingServiceImpl service;
   private OrderLineView dlg;
   private OrderLineTableModel model;
   private OrderLineTableView view;
@@ -67,7 +67,7 @@ public class StandardOrderLineDlg
   public StandardOrderLineDlg() {
   }
 
-  public StandardOrderLineDlg(GemDesktop desktop, AccountingService service, String title) {
+  public StandardOrderLineDlg(GemDesktop desktop, AccountingServiceImpl service, String title) {
     super(desktop.getFrame(), title);
     this.desktop = desktop;
     this.service = service;
@@ -107,8 +107,7 @@ public class StandardOrderLineDlg
 
   }
 
-  public void load() throws SQLException {
-    List<OrderLine> lines = service.findStandardOrderLines();
+  public void load(List<OrderLine> lines) throws SQLException {
     for (OrderLine line : lines) {
       model.addElement(line);
     }

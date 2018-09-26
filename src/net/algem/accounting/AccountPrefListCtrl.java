@@ -61,10 +61,10 @@ public class AccountPrefListCtrl
 
   private static final String DEFAULT_ACCOUNT_KEY = "Menu.default.account";
   private GemDesktop desktop;
-  private AccountingService service;
+  private AccountingServiceImpl service;
   private GemButton btValidate;
   
-  public AccountPrefListCtrl(GemDesktop desktop, AccountingService service, List<Account> accounts, List<Param> costAccounts) {
+  public AccountPrefListCtrl(GemDesktop desktop, AccountingServiceImpl service, List<Account> accounts, List<Param> costAccounts) {
     super(false);
     this.desktop = desktop;
     this.service = service;

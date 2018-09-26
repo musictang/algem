@@ -40,44 +40,43 @@ import net.algem.util.ui.TableSGBDView;
  * @deprecated
  */
 public class ServeurCtrl
-	extends GemPanel {
+  extends GemPanel {
 
-	private DataConnection dc;
-	private ServerView vueServeur;
-	private SQLView sql;
-	private TableSGBDView table;
+  private DataConnection dc;
+  private ServerView vueServeur;
+  private SQLView sql;
+  private TableSGBDView table;
 //	PgAdmin		admin;
-	private GemPanel trace;
-	private GemTextArea log;
-	private TabPanel wCard;
+  private GemPanel trace;
+  private GemTextArea log;
+  private TabPanel wCard;
 
-	public ServeurCtrl(DataConnection dc) {
-		this.dc = dc;
+  public ServeurCtrl(DataConnection dc) {
+    this.dc = dc;
 
-		vueServeur = new ServerView(dc);
-		sql = new SQLView();
-		table = new TableSGBDView(dc);
+    vueServeur = new ServerView(dc);
+    sql = new SQLView();
+    table = new TableSGBDView(dc);
 
 //		admin = new PgAdmin(dc);
 //		wCard.addItem("admin",admin);
+    trace = new GemPanel();
+    trace.setLayout(new BorderLayout());
+    log = new GemTextArea();
+    log.setEditable(false);
+    trace.add(log, BorderLayout.CENTER);
 
-		trace = new GemPanel();
-		trace.setLayout(new BorderLayout());
-		log = new GemTextArea();
-		log.setEditable(false);
-		trace.add(log, BorderLayout.CENTER);
+    wCard = new TabPanel();
+    wCard.addItem(vueServeur, "cache");
+    wCard.addItem(sql, "sql");
+    wCard.addItem(table, "Tables SGBD");
+    wCard.addItem(trace, "log");
 
-		wCard = new TabPanel();
-		wCard.addItem(vueServeur, "cache");
-		wCard.addItem(sql, "sql");
-		wCard.addItem(table, "Tables SGBD");
-		wCard.addItem(trace, "log");
+    setLayout(new BorderLayout());
+    add("Center", wCard);
+  }
 
-		setLayout(new BorderLayout());
-		add("Center", wCard);
-	}
-
-    /**
+  /**
    * @deprecated
    */
   private void jmvLog() {
@@ -99,6 +98,13 @@ public class ServeurCtrl
     MessagePopup.information(null, message.toString());
   }
 
+  /**
+   * List system properties.
+   */
+  public static void listSystemProperties() {
+    java.util.Properties props = System.getProperties();
+    props.list(System.out);
+  }
 
   /**
    * Checks if java webstart is running.

@@ -32,7 +32,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import javax.swing.*;
-import net.algem.accounting.AccountingService;
+import net.algem.accounting.AccountingServiceImpl;
 import net.algem.config.Param;
 import net.algem.contact.EmployeeType;
 import net.algem.contact.Person;
@@ -61,7 +61,7 @@ public class HourEmployeeDlg
   static String[] SORTING_CMD = {"DefaultSorting", "DateSorting", "MemberSorting", "ModuleSorting", "Custom"};
 
   private HourEmployeeView view;
-  private AccountingService service;
+  private AccountingServiceImpl service;
   private int employeeId = 0;
   private ProgressMonitor pm;
   private SwingWorker employeeTask;
@@ -72,7 +72,7 @@ public class HourEmployeeDlg
   public HourEmployeeDlg(Frame parent, DataCache dataCache) {
     super(parent, BundleUtil.getLabel("Menu.edition.export.label") + " " + BundleUtil.getLabel("Menu.employee.hour.label"), DataCache.getDataConnection());
     this.dataCache = dataCache;
-    service = new AccountingService(dc);
+    service = new AccountingServiceImpl(dc);
   }
 
   public HourEmployeeDlg(Frame parent, int idper, DataCache dataCache) {

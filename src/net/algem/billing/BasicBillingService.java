@@ -281,7 +281,7 @@ if (total <= 0 || (total - inv.getDownPayment()) <= 0) return; //XXX TEST
       p.setAccount(c);
       p.setCostAccount(a);
       p.setPaid(true); // IMPORTANT
-      p.setTransfered(true); // IMPPORTANT
+      p.setTransfered(true); // IMPORTANT
 
       inv.addOrderLine(p);
       for(InvoiceItem i : items) {
@@ -366,7 +366,7 @@ if (total <= 0 || (total - inv.getDownPayment()) <= 0) return; //XXX TEST
       pe.setAccount(c);
       pe.setCostAccount(a);
       pe.setPaid(true); // IMPORTANT
-      pe.setTransfered(true); // IMPPORTANT
+      pe.setTransfered(true); // IMPORTANT
       it.setOrderLine(pe); // lien avec l'article
       inv.addOrderLine(pe);
       return;

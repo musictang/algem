@@ -1,7 +1,7 @@
 /*
- * @(#)EnrolmentOrderUtil.java	2.15.4 16/10/17
+ * @(#)EnrolmentOrderUtil.java	2.15.9 04/06/18
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -41,20 +41,25 @@ import net.algem.util.model.Model;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.4
+ * @version 2.15.9
  * @since 2.8.a 01/04/2013
  */
 public class EnrolmentOrderUtil {
 
   private static int LAST_MONTH_DD = 6;
-  private static int DEFAULT_DUE_DAY = Integer.parseInt(ConfigUtil.getConf(ConfigKey.DEFAULT_DUE_DAY.getKey()));
+  private static int DEFAULT_DUE_DAY;
   private PersonFile dossier;
   private double total;
   private DataConnection dc;
 
+  public EnrolmentOrderUtil() {
+
+  }
+
   public EnrolmentOrderUtil(PersonFile dossier, DataConnection dc) {
     this.dossier = dossier;
     this.dc = dc;
+    DEFAULT_DUE_DAY = Integer.parseInt(ConfigUtil.getConf(ConfigKey.DEFAULT_DUE_DAY.getKey()));
   }
 
   public void setTotalOrderLine(double total) {
@@ -83,7 +88,7 @@ public class EnrolmentOrderUtil {
     //libelle
     orderLine.setLabel(label);
     //compte et analytique
-    Account [] prefAccount = getPrefAccount(mod, dc);
+    Account[] prefAccount = getPrefAccount(mod, dc);
     Account p = prefAccount[0];
     Account a = prefAccount[1];
     if (p != null && a != null) {
@@ -95,7 +100,7 @@ public class EnrolmentOrderUtil {
 
     orderLine.setSchool(schoolId);
     List<OrderLine> lines = getOrderLines(moduleOrder, orderLine);
-    if (lines.size() == 1 && (PayFrequency.QUARTER.equals(moduleOrder.getPayment()) || PayFrequency.MONTH.equals(moduleOrder.getPayment()))){
+    if (lines.size() == 1 && (PayFrequency.QUARTER.equals(moduleOrder.getPayment()) || PayFrequency.MONTH.equals(moduleOrder.getPayment()))) {
       //montant total de l'échéance * nombre d'échéances par défaut
       lines.get(0).setAmount(AccountUtil.getIntValue(total * getDefaultPayFrequency(moduleOrder.getPayment())));
     }
@@ -113,13 +118,13 @@ public class EnrolmentOrderUtil {
           ol.setAmount(ol.getAmount() - d);
           totalFraction += d;
         }
-        if (i == len -1) {
+        if (i == len - 1) {
           double b = ol.getAmount() + totalFraction;
           ol.setAmount(Math.rint(b * 0.01));// ajustement
         }
       } else {
         // ajuster la dernière échéance pour que la somme des échéances corresponde au montant total calculé
-        if (i == len -1) {
+        if (i == len - 1) {
           int ta = AccountUtil.getIntValue(total * len);
           if (totalAmount > ta) {
             int rest = totalAmount - ta;
@@ -135,7 +140,7 @@ public class EnrolmentOrderUtil {
     }
     if (lines.size() > 0 && (billing || AccountUtil.isPersonalAccount(lines.get(0).getAccount()))) {
       int totalBilling = 0;
-      for (OrderLine o: lines) {
+      for (OrderLine o : lines) {
         totalBilling += o.getAmount();
       }
       OrderLine b = lines.get(0);
@@ -149,7 +154,8 @@ public class EnrolmentOrderUtil {
 
   /**
    * Creates a list of order lines.
-   * @param mo
+   *
+   * @param mo module order
    * @param e a single order line
    * @return the size of order lines collection
    * @throws SQLException
@@ -189,15 +195,24 @@ public class EnrolmentOrderUtil {
 
   }
 
-  public void saveStandardOrderLines(ModuleOrder mo, int memberId) throws SQLException {
-    AccountingService service = new AccountingService(dc);
-    List<OrderLine> std = service.findStandardOrderLines();
-    Map<Integer,List<OrderLine>> totalAccountMap = new HashMap<>();
-    String startDateCheck = ConfigUtil.getConf(ConfigKey.PRE_ENROLMENT_START_DATE.getKey());
+  /**
+   * Collect any configured standard order lines and complete them with contextual parameters.
+   *
+   * @param mo module order
+   * @param memberId member's id
+   * @param stdLines list of standard order lines
+   * @param service accounting service
+   * @param startDateCheck beginning date of current year subscriptions
+   * @param billing add billing line (ModeOfPayment.FAC)
+   * @throws SQLException
+   */
+  public List<OrderLine> getCompletedStandardOrderLines(ModuleOrder mo, int memberId, List<OrderLine> stdLines, AccountingService service, String startDateCheck, boolean billing) throws SQLException {
+    List<OrderLine> completedOrderLines = new ArrayList<>();
+    Map<Integer, List<OrderLine>> counterpartMapByAccountId = new HashMap<>();
     Date now = new Date();
     String suffix = " p" + mo.getPayer() + " a" + memberId;
-    if (std.size() > 0) {
-      for (OrderLine o : std) {
+    if (stdLines.size() > 0) {
+      for (OrderLine o : stdLines) {
         if (service.exists(o, startDateCheck, memberId)) {
           continue;// do not include duplicates
         }
@@ -211,43 +226,52 @@ public class EnrolmentOrderUtil {
         o.setPaid(false);
         o.setTransfered(false);
         o.setOrder(mo.getIdOrder());
-        List<OrderLine> ol = totalAccountMap.get(o.getAccount().getId());
-        if (ol == null) {
-          ol = new ArrayList<OrderLine>();
-          totalAccountMap.put(o.getAccount().getId(), ol);
-        }
-        ol.add(o);
-        AccountUtil.createEntry(o, false, dc);
-      }
-      String billing = ConfigUtil.getConf(ConfigKey.CHARGE_ENROLMENT_LINES.getKey());
-      if (billing.toLowerCase().startsWith("t")) {
-        for (Map.Entry<Integer,List<OrderLine>> entry : totalAccountMap.entrySet()) {
-          int t = 0;
-          for (OrderLine o : entry.getValue()) {
-            t += o.getAmount();
-          }
-          OrderLine b = entry.getValue().get(0);
-          b.setMember(memberId);
-          b.setPayer(mo.getPayer());
-          b.setLabel(b.getLabel() + suffix);
-          if (b.getDate() == null || DateFr.NULLDATE.equals(b.getDate().toString())) {
-            b.setDate(now);
-          }
-          b.setPaid(true);
-          b.setTransfered(false);
-          b.setOrder(mo.getIdOrder());
-          b.setModeOfPayment(ModeOfPayment.FAC.toString());
-          b.setAmount(-t);
-          AccountUtil.createEntry(b, false, dc);
-        }
-      }
-    }
-  }
+        completedOrderLines.add(o);
 
+        List<OrderLine> linesWithSameAccountId = counterpartMapByAccountId.get(o.getAccount().getId());
+        if (linesWithSameAccountId == null) {
+          linesWithSameAccountId = new ArrayList<OrderLine>();
+          counterpartMapByAccountId.put(o.getAccount().getId(), linesWithSameAccountId);
+        }
+        if (billing || AccountUtil.isPersonalAccount(o.getAccount())) {
+          linesWithSameAccountId.add(new OrderLine(o));// instance prototype here
+        }
+      }
+
+      // add counterpart lines if any
+      for (Map.Entry<Integer, List<OrderLine>> entry : counterpartMapByAccountId.entrySet()) {
+        int totalAmount = 0;
+
+        if (!entry.getValue().isEmpty()) {
+          for (OrderLine o : entry.getValue()) {
+            totalAmount += o.getAmount();
+          }
+          OrderLine counterPart = entry.getValue().get(0);
+          counterPart.setMember(memberId);
+          counterPart.setPayer(mo.getPayer());
+          if (counterPart.getDate() == null || DateFr.NULLDATE.equals(counterPart.getDate().toString())) {
+            counterPart.setDate(now);
+          }
+
+          counterPart.setOrder(mo.getIdOrder());
+          counterPart.setModeOfPayment(ModeOfPayment.FAC.toString());
+          counterPart.setAmount(-totalAmount);
+          counterPart.setPaid(true);
+          //set non-transferable
+          counterPart.setTransfered(AccountUtil.isRevenueAccount(counterPart.getAccount()));
+
+          completedOrderLines.add(counterPart);
+        }
+      }
+
+    }
+    return completedOrderLines;
+  }
 
   /**
    * Gets the date of the first payment.
    * Optionnaly updates the first month of payment.
+   *
    * @param orderDateStart
    * @return a date
    */
@@ -265,6 +289,7 @@ public class EnrolmentOrderUtil {
 
   /**
    * Checks if the first date of payment is after some day or month.
+   *
    * @param orderDateStart
    * @return true if after
    */
@@ -281,10 +306,10 @@ public class EnrolmentOrderUtil {
    * @deprecated
    */
   private void addPersonalOrderLine(OrderLine e, List<DateFr> dates) throws SQLException {
-      e.setPaid(true);
-      e.setAmount(-(total * dates.size()));
-      e.setDate(dates.get(0));
-      AccountUtil.createPersonalEntry(e, dc);
+    e.setPaid(true);
+    e.setAmount(-(total * dates.size()));
+    e.setDate(dates.get(0));
+    AccountUtil.createPersonalEntry(e, dc);
   }
 
   /**
@@ -306,6 +331,7 @@ public class EnrolmentOrderUtil {
 
   /**
    * Updates the module order with the actual number of due dates.
+   *
    * @param n number of due dates
    * @param mo module order
    * @throws SQLException
@@ -319,6 +345,7 @@ public class EnrolmentOrderUtil {
 
   /**
    * Gets the number of payments for the rate period {@code p}.
+   *
    * @param p payment frequency
    * @return an integer
    */
@@ -337,17 +364,17 @@ public class EnrolmentOrderUtil {
     }
   }
 
-
   /**
    * Gets the preferred accounts.
+   *
    * @param m module instance
    * @param dc dataConnection
    * @return an array of 2 elements
    * @throws SQLException
    */
   private Account[] getPrefAccount(Module m, DataConnection dc) throws SQLException {
-     int key = 0;
-     String analytics = "";
+    int key = 0;
+    String analytics = "";
     if (m.isLeisure()) {
       Preference p = AccountPrefIO.find(AccountPrefIO.LEISURE, dc);
       key = (Integer) p.getValues()[0];
@@ -360,7 +387,7 @@ public class EnrolmentOrderUtil {
     Account p = AccountIO.find(key, dc);
     Param a = ParamTableIO.findByKey(CostAccountCtrl.tableName, CostAccountCtrl.columnKey, analytics, dc);
 
-    return new Account[] {p, new Account(a)};
+    return new Account[]{p, new Account(a)};
   }
 
   /**
@@ -419,6 +446,7 @@ public class EnrolmentOrderUtil {
 
   /**
    * Gets a list of order lines for quarter dues.
+   *
    * @param moduleOrder
    * @param e single order line
    * @return a list of order lines
@@ -463,6 +491,7 @@ public class EnrolmentOrderUtil {
 
   /**
    * Gets a list of dates for monthly payment.
+   *
    * @param startOrderDate
    * @param endOrderDate
    * @return a list of dates
@@ -483,8 +512,9 @@ public class EnrolmentOrderUtil {
     return dates;
   }
 
-   /**
+  /**
    * Gets a list of order lines for month dues.
+   *
    * @param moduleOrder
    * @param e
    * @return a list of order lines
@@ -531,6 +561,7 @@ public class EnrolmentOrderUtil {
 
   /**
    * Calculates the amount of the first date due.
+   *
    * @param total amount for the period
    * @param maxSessions max sessions
    * @param nbOrderLines number of dues
@@ -581,6 +612,7 @@ public class EnrolmentOrderUtil {
 
   /**
    * Calculates a number of months between 2 dates.
+   *
    * @param start start due date
    * @param end end due date
    * @return an integer
@@ -613,7 +645,5 @@ public class EnrolmentOrderUtil {
       return number + 2 + month;
     }
   }
-
-
 
 }

@@ -1,7 +1,7 @@
 /*
- * @(#)AccountDocumentTransferDlg.java	2.11.6 27/02/17
+ * @(#)AccountDocumentTransferDlg.java	2.15.9 07/06/18
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -24,6 +24,8 @@ import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Frame;
 import java.awt.GridBagLayout;
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Vector;
 import javax.swing.BorderFactory;
@@ -43,7 +45,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.6
+ * @version 2.15.9
  * @since 1.0a 27/09/2000
  */
 public class AccountDocumentTransferDlg
@@ -124,28 +126,32 @@ public class AccountDocumentTransferDlg
         if (ModeOfPayment.FAC.toString().equalsIgnoreCase(payment)) {
           errors = exportService.tiersExport(path, orderLines);
         } else {
+          // if transfer is native, filter payment orderlines
+          orderLines = filter(orderLines);
           exportService.export(path, orderLines, codeJournal, documentAccount);
         }
         updateTransfer(orderLines);
       }
-      MessagePopup.information(this, MessageUtil.getMessage("payment.transfer.info", new Object[]{orderLines.size() - errors, path}));
-    } catch (Exception ex) {
+      int transfered = orderLines.size() - errors;
+      String msgKey = transfered > 1 ? "payment.transfer.info" : "payment.single.transfer.info";
+      MessagePopup.information(this, MessageUtil.getMessage(msgKey, new Object[]{transfered, path}));
+    } catch (IOException | SQLException ex) {
       GemLogger.logException(MessageUtil.getMessage("payment.transfer.exception"), ex, this);
     }
     setCursor(Cursor.getDefaultCursor());
   }
 
-  private Vector<OrderLine> getOrderLines(String payment, DateFr start, DateFr end, String document, boolean unpaid) {
+  private Vector<OrderLine> getOrderLines(String modeOfPayment, DateFr start, DateFr end, String document, boolean unpaid) {
 
     String query = "WHERE echeance >= '" + start + "' AND echeance <= '" + end
       + "' AND piece = '" + document
-      + "' AND reglement = '" + payment + "'";
+      + "' AND reglement = '" + modeOfPayment + "'";
     if (!unpaid) {
       query += " AND paye = 't'";
     }
     query += " AND transfert = 'f'";
     // DO NOT export if no invoice is present
-    if (ModeOfPayment.FAC.name().equals(payment)) {
+    if (ModeOfPayment.FAC.name().equals(modeOfPayment)) {
       query += " AND facture IS NOT NULL AND facture != ''";
     }
     return OrderLineIO.find(query, dc);

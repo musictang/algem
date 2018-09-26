@@ -1,5 +1,5 @@
 /*
- * @(#)MemberEnrolmentDlg.java	2.10.5 08/09/16
+ * @(#)MemberEnrolmentDlg.java	2.15.9 04/06/18
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -26,8 +26,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.List;
 import java.util.Vector;
+import net.algem.accounting.AccountUtil;
+import net.algem.accounting.AccountingServiceImpl;
 import net.algem.accounting.NullAccountException;
+import net.algem.accounting.OrderLine;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
 import net.algem.contact.PersonFile;
@@ -50,7 +54,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.5
+ * @version 2.15.9
  * @since 1.0a 07/07/1999
  * @see net.algem.contact.PersonFileEditor
  *
@@ -161,7 +165,15 @@ public class MemberEnrolmentDlg
           for (ModuleOrder mo : module_orders) {
             orderUtil.updateModuleOrder(n, mo);
           }
-          orderUtil.saveStandardOrderLines(module_orders.elementAt(0), dossier.getId());
+          AccountingServiceImpl accountingService = new AccountingServiceImpl(dc);
+          List<OrderLine> stdLines = accountingService.findStandardOrderLines();
+          String startDateCheck = ConfigUtil.getConf(ConfigKey.PRE_ENROLMENT_START_DATE.getKey());
+          List<OrderLine> completedStdLines = orderUtil.getCompletedStandardOrderLines(module_orders.elementAt(0), dossier.getId(), stdLines, accountingService, startDateCheck, withBilling);
+          if (completedStdLines.size() > 0) {
+            for(OrderLine ol : completedStdLines) {
+              AccountUtil.createEntry(ol, false, dc);
+            }
+          }
         } catch (NullAccountException ne) {
           MessagePopup.warning(view, ne.getMessage());
         }

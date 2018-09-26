@@ -1,7 +1,7 @@
 /*
- * @(#)AccountUtil.java	2.14.0 21/06/17
+ * @(#)AccountUtil.java	2.15.9 04/06/18
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -40,7 +40,7 @@ import net.algem.util.DataConnection;
  * Utility class for orderline operations.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.14.0
+ * @version 2.15.9
  * @since 2.0r
  */
 public class AccountUtil {
@@ -86,7 +86,7 @@ public class AccountUtil {
   }
 
   /**
-   * Sets an orderline for a single rehearsal.
+   * Get the orderline corresponding to some single rehearsal.
    *
    * @param pf person file
    * @param date schedule date
@@ -95,7 +95,7 @@ public class AccountUtil {
    * @param link link to this rehearsal (card id if subscription, scheduleId if not)
    * @return a single orderline
    */
-  public static OrderLine setRehearsalOrderLine(PersonFile pf, DateFr date, Preference pref, double amount, int link) {
+  public static OrderLine createRehearsalOrderLine(PersonFile pf, DateFr date, Preference pref, double amount, int link) {
 
     OrderLine e = new OrderLine();
     e.setMember(pf.getId());
@@ -122,7 +122,8 @@ public class AccountUtil {
     e.setCurrency("E");
     e.setDocument("");
     e.setPaid(false);
-    e.setModeOfPayment(""); // aucun règlement par défaut
+    // à partir de 2.15.9, le règlement par défaut "" a été remplacé par "ESP" (le plus fréquent en pratique)
+    e.setModeOfPayment("ESP");
     e.setTransfered(false);
     e.setAmount(getIntValue(amount));
 
@@ -130,7 +131,7 @@ public class AccountUtil {
   }
 
   public static OrderLine setGroupOrderLine(int group, PersonFile pf, DateFr date, Preference pref, double amount) {
-    OrderLine ol = setRehearsalOrderLine(pf, date, pref, amount, 0);
+    OrderLine ol = createRehearsalOrderLine(pf, date, pref, amount, 0);
     ol.setGroup(group);
     return ol;
   }
@@ -149,6 +150,7 @@ public class AccountUtil {
 
     OrderLine n = new OrderLine(e);
     n.setPaid(false);
+    n.setTransfered(false);
     String mode = e.getModeOfPayment();
 
     if (!ModeOfPayment.FAC.toString().equals(mode)) {
@@ -178,7 +180,7 @@ public class AccountUtil {
    * @throws SQLException
    */
   public static OrderLine createEntry(final OrderLine e, boolean counterpart, final DataConnection dc) throws SQLException {
-    e.setTransfered(false);
+    //e.setTransfered(false);
     if (ModeOfPayment.FAC.toString().equals(e.getModeOfPayment()) && counterpart && isPersonalAccount(e.getAccount()) && !existsEntry(e, dc)) { // compte de classe 4
       final OrderLine p = createOrderLine(e);
       try {

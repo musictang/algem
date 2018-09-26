@@ -1,7 +1,7 @@
 /*
- * @(#)OrderLineView.java	2.14.0 20/06/17
+ * @(#)OrderLineView.java	2.15.9 02/06/18
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -48,7 +48,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.14.0
+ * @version 2.15.9
  * @since 1.0a 18/07/1999
  */
 public class OrderLineView
@@ -56,19 +56,20 @@ public class OrderLineView
         implements ActionListener
 {
 
+
   private static final int DOC_NUMBER_LENGTH = 10;
   private static final double TOTAL_AMOUNT_ALLOWED = 10000;
+
+  private NumberFormat nf;
   private GemNumericField payer;
   private GemNumericField member;
   private GemNumericField group;
   private DateFrField date;
   private GemField label;
-
   private JFormattedTextField amount;
   private JComboBox modeOfPayment;
   private GemField document;
   private ParamChoice schoolChoice;
-  private JCheckBox cbPaid;
 
   private GemChoice account;
   private ParamChoice costAccount;
@@ -76,14 +77,19 @@ public class OrderLineView
   private JLabel taxLabel;
   private List<Vat> taxList;
   private JLabel inclTax;
+  private JCheckBox cbPaid;
   private GemField invoice;
+
   private GemButton okBt;
   private GemButton cancelBt;
   private boolean validation;
+
   private OrderLine orderLine;
-  private NumberFormat nf;
   private ActionListener listener;
   private DataCache dataCache;
+
+  public OrderLineView() {
+  }
 
   /**
    *
@@ -444,7 +450,10 @@ public class OrderLineView
     orderLine.setSchool(schoolChoice.getKey());
     orderLine.setAccount(getAccount());
     orderLine.setCostAccount(getCostAccount());
-    orderLine.setPaid(cbPaid.isSelected());
+
+    orderLine.setPaid(checkPaid(cbPaid.isSelected(), orderLine.getModeOfPayment()));
+    orderLine.setTransfered(checkTransfered(orderLine));
+
     orderLine.setInvoice(invoice.getText());
 
     if (isInvoicePayment()) {
@@ -452,6 +461,24 @@ public class OrderLineView
     }
 
     return orderLine;
+  }
+
+  boolean checkPaid(boolean paid, String modeOfPayment) {
+    return paid || ModeOfPayment.FAC.name().equals(modeOfPayment);
+  }
+
+
+   /**
+   * Do not transfer orderlines with a class 7 account.
+   * @param ol orderline
+   * @return true if transfer must be checked
+   */
+  boolean checkTransfered(OrderLine ol) {
+    boolean isTransfered = ModeOfPayment.FAC.name().equals(ol.getModeOfPayment()) && AccountUtil.isRevenueAccount(ol.getAccount());
+    if (isTransfered && !ol.isPaid()) {
+      ol.setPaid(true);
+    }
+    return isTransfered;
   }
 
   private boolean isInvoicePayment() {

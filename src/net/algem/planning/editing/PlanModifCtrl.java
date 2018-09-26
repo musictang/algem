@@ -1,5 +1,5 @@
 /*
- * @(#)PlanModifCtrl.java	2.15.8 26/03/2018
+ * @(#)PlanModifCtrl.java	2.15.9 02/06/18
  *
  * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
@@ -66,7 +66,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.8
+ * @version 2.15.9
  * @since 1.0b 05/07/2002 lien salle et groupe
  */
 public class PlanModifCtrl
@@ -917,7 +917,8 @@ public class PlanModifCtrl
         if (ScheduleObject.MEMBER == plan.getType()) {
           if (!memberService.cancelSubscriptionCardSession(dataCache, plan)) {
             if (forceDeletePayment(delay)) {
-              memberService.deleteOrderLine(dlg.getDateStart(), plan.getIdPerson(), 0, plan.getId());
+              memberService.deleteMemberRehearsalOrderLine(plan.getId(), plan.getIdPerson());
+              //memberService.deleteOrderLine(dlg.getDateStart(), plan.getIdPerson(), 0, plan.getId());
             }
           }
         } else if (ScheduleObject.GROUP == plan.getType()) {
@@ -925,7 +926,8 @@ public class PlanModifCtrl
           Group g = new GemGroupService(dc).find(plan.getIdPerson());
           if (g != null && g.getIdref() > 0) {
             if (forceDeletePayment(delay)) {
-              memberService.deleteOrderLine(dlg.getDateStart(), g.getIdref(), g.getId(), 0);// referent
+              memberService.deleteGroupRehearsalOrderLine(plan.getIdAction(), plan.getIdPerson());
+              //memberService.deleteOrderLine(dlg.getDateStart(), g.getIdref(), g.getId(), 0);// referent
             }
           }
         }

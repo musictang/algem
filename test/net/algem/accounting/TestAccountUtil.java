@@ -160,6 +160,7 @@ public class TestAccountUtil
   public void testIsPersonalAccount() {
     Account c1 = new Account("4111111111");
     Account c2 = new Account("41100001");
+    Account c7 = new Account("411C1234");
     Account c3 = new Account("7110000000");
     Account c4 = new Account("C19000000000");
     Account c5 = new Account("c190000000");
@@ -169,12 +170,13 @@ public class TestAccountUtil
     assertTrue(AccountUtil.isPersonalAccount(c2));
     assertTrue(AccountUtil.isPersonalAccount(c4));
     assertTrue(AccountUtil.isPersonalAccount(c5));
+    assertTrue(AccountUtil.isPersonalAccount(c7));
     assertFalse(AccountUtil.isPersonalAccount(c3));
     assertFalse(AccountUtil.isPersonalAccount(c6));
     assertFalse(AccountUtil.isPersonalAccount(null));
     assertFalse(AccountUtil.isPersonalAccount(new Account("")));
   }
-  
+
   @Test
   /**
    *  test ISO 639-1-ISO_3166-1 sequences.
@@ -184,53 +186,53 @@ public class TestAccountUtil
     nf1.setMinimumFractionDigits(2);
     nf1.setMaximumFractionDigits(2);
     String res = nf1.format(123.45);
-    System.out.println(res);
     assertEquals("£123.45",res);
+
     nf1 = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("en-US"));
     res = nf1.format(123.45);
-    System.out.println(res);
     assertEquals("$123.45",res);
+
     nf1 = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("fr-FR"));
     res = nf1.format(123.45);
-    System.out.println(res);
     assertEquals("123,45 €",res);
+
     nf1 = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("fr-NC"));//nouvelle-caledonie
     nf1.setMinimumFractionDigits(2);// force decimal
     nf1.setMaximumFractionDigits(2);
     res = nf1.format(123.45);
-    System.out.println(res);
     assertEquals("123,45 XPF",res);
+
     nf1 = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("es-ES"));//espagne
     res = nf1.format(123.45);
-    System.out.println(res);
     assertEquals("123,45 €",res);
+
     nf1 = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("de-DE"));//allemagne
     res = nf1.format(123.45);
-    System.out.println(res);
     assertEquals("123,45 €",res);
+
     nf1 = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("uk-UA"));//ukraine
     res = nf1.format(123.45);
-    System.out.println(res);
     assertEquals("123,45 грн.",res);
+
     nf1 = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("pt-PT"));//portugal
     res = nf1.format(123.45);
-    System.out.println(res);
     assertEquals("123,45 €",res);
+
     nf1 = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("pt-BR"));//brésil
     res = nf1.format(123.45);
-    System.out.println(res);
     assertEquals("R$ 123,45",res);
+
     nf1 = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("zh-CN"));//chine
     res = nf1.format(123.45);
-    System.out.println(res);
     assertEquals("￥123.45",res);
   }
-  
+
   @Test
   public void testTaxValue() {
     double tax = 19.6;
     double c = AccountUtil.round(tax);
-    
+
     assertTrue(""+c, c == tax);
   }
+
 }

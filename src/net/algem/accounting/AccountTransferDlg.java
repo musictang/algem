@@ -1,7 +1,7 @@
 /*
- * @(#)AccountTransferDlg.java	2.12.0 13/03/17
+ * @(#)AccountTransferDlg.java	2.15.9 07/06/18
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -49,7 +49,7 @@ import net.algem.util.ui.MessagePopup;
  * Dialog for transfering orderlines to a file readable by accounting software.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.12.0
+ * @version 2.15.9
  * @since 2.8.r 13/12/13
  */
 public abstract class AccountTransferDlg
@@ -66,6 +66,12 @@ public abstract class AccountTransferDlg
   protected GemPanel buttons;
   protected GemField filePath;
   protected File file;
+
+  /**
+   * Empty constructor used for testing.
+   */
+  public AccountTransferDlg() {
+  }
 
   public AccountTransferDlg(Frame parent, DataCache dataCache, AccountExportService exportService) {
     super(parent);
@@ -138,6 +144,24 @@ public abstract class AccountTransferDlg
         }
       }
     }
+  }
+
+   /**
+   * Filter lines with a personal account and no invoice association.
+   * @param orderLines the lines to filter
+   * @return a list of (possibly) filtered orderLines
+   */
+  protected Vector<OrderLine> filter(Vector<OrderLine> orderLines) {
+    Vector<OrderLine> filtered = new Vector<>();
+    for(OrderLine ol : orderLines) {
+      if (!ModeOfPayment.FAC.name().equals(ol.getModeOfPayment())
+        && AccountUtil.isPersonalAccount(ol.getAccount())
+        && (ol.getInvoice() == null || ol.getInvoice().isEmpty())) {
+        continue;
+      }
+      filtered.add(ol);
+    }
+    return filtered;
   }
 
 

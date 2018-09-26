@@ -1,7 +1,7 @@
 /*
- * @(#)OrderLineEditor.java	2.14.0 21/06/17
+ * @(#)OrderLineEditor.java	2.15.9 02/06/18
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -60,7 +60,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.14.0
+ * @version 2.15.9
  * @since 1.0a 07/07/1999
  */
 public class OrderLineEditor
@@ -376,6 +376,7 @@ public class OrderLineEditor
       e.setPaid(false); // echeance remise à non payée pour la copie
       e.setInvoice(null);
       e.setTax(0.0f);
+      e.setOrder(0);// maybe more secure
     }
     try {
 
@@ -397,13 +398,16 @@ public class OrderLineEditor
     }
   }
 
+
   private void create(OrderLine e) {
     if (ModeOfPayment.FAC.toString().equals(e.getModeOfPayment())) {
       e.setAmount(-Math.abs(e.getAmount()));
     }
     try {
-      OrderLine c = AccountUtil.createEntry(e, dc);
+      OrderLine c = AccountUtil.createEntry(e, false, dc);
+
       tableModel.addElement(e);
+      // optional counterpart
       if (c != null) {
         tableModel.addElement(c);
       }
@@ -411,6 +415,8 @@ public class OrderLineEditor
       GemLogger.logException(PAYMENT_CREATE_EXCEPTION, ex, this);
     }
   }
+
+
 
   @Override
   public void postEvent(GemEvent evt) {

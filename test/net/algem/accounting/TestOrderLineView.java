@@ -1,7 +1,7 @@
 /*
- * @(#)TestOrderLineView.java 2.9.4.14 14/12/15
- * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * @(#)TestOrderLineView.java 2.15.9 02/06/18
+ *
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,62 +16,48 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.accounting;
 
-import java.awt.Frame;
 import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.List;
+import java.util.Vector;
 import javax.swing.JFormattedTextField;
-import junit.framework.TestCase;
-import net.algem.TestProperties;
-import net.algem.config.ParamTableIO;
-import net.algem.config.Preference;
 import net.algem.planning.DateFr;
-import net.algem.util.DataCache;
-import net.algem.util.DataConnection;
-import net.algem.util.module.GemDesktop;
+import net.algem.util.ui.GemChoice;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.14
+ * @version 2.15.9
  */
 public class TestOrderLineView
-        extends TestCase
+
 {
 
-  private JFormattedTextField amount;
-  private NumberFormat amountFormat;
-  private DataCache dataCache;
-  private GemDesktop desktop;
-  private DataConnection dc;
-  private OrderLineView view;
+  private static JFormattedTextField amount;
+  private static NumberFormat amountFormat;
 
-  public TestOrderLineView(String testName) {
-    super(testName);
-  }
-
-  @Override
-  protected void setUp() throws Exception {
-    super.setUp();
-    dc = TestProperties.getDataConnection();
-    dataCache = DataCache.getInstance(dc, System.getProperty("user.name"));
-    dataCache.load(null);
+  @BeforeClass
+  public static void setUp() throws Exception {
     amountFormat = NumberFormat.getNumberInstance();
     amountFormat.setMaximumFractionDigits(2);
     amountFormat.setMinimumFractionDigits(2);
     amount = new JFormattedTextField(amountFormat);
-    view = new OrderLineView(new Frame(), "", dataCache, false);
   }
 
-  @Override
-  protected void tearDown() throws Exception {
-    super.tearDown();
-  }
-
+  @Test
   public void testGetAmount() throws ParseException {
     double expected = 144.92;
     OrderLine e = new OrderLine();
@@ -90,7 +76,7 @@ public class TestOrderLineView
     amount.commitEdit();
     m = ((Number) amount.getValue()).doubleValue();
     assertTrue(expected == m);
-    
+
     expected = -1144.57;
     amount.setText("-1144,57");
     amount.commitEdit();
@@ -100,14 +86,18 @@ public class TestOrderLineView
 
   }
 
+  @Test
   public void testSetOrderLine() throws SQLException {
+    OrderLineView view = mock(OrderLineView.class);
+    Account c = new Account(1, "706", "Adhésions", true);
+    Account a = new Account(2, "ADH", "Adhésions loisir", true);
+    List<Account> accounts = new Vector<>();
+    accounts.add(new Account(1, "70602", "Cotisations", true));
+    accounts.add(c);
+    GemChoice accountChoice = new AccountChoice((Vector<Account>) accounts);
+
     OrderLine e = new OrderLine();
     int member = 1234;
-    String prefkey = AccountPrefIO.MEMBERSHIP;
-    Preference p = AccountPrefIO.find(prefkey, dc);
-
-    Account c = AccountIO.find((Integer) p.getValues()[0], dc);
-    Account a = new Account(ParamTableIO.findByKey(CostAccountCtrl.tableName, CostAccountCtrl.columnKey, (String) p.getValues()[1], dc));
     e.setAccount(c);
     e.setCostAccount(a);
     e.setMember(member);
@@ -115,7 +105,6 @@ public class TestOrderLineView
     e.setDate(new DateFr());
     e.setAmount(0);
     e.setModeOfPayment("CHQ");
-
     e.setSchool(0);
     e.setDocument("");
     e.setLabel("");
@@ -123,9 +112,68 @@ public class TestOrderLineView
     e.setTransfered(false);
 
     view.setOrderLine(e);
+    accountChoice.setSelectedItem(c);
+    when(view.getAccount()).thenReturn((Account) accountChoice.getSelectedItem());
 
     Account expected = view.getAccount();
     assertEquals("compte equality " + c.getKey() + ":" + expected.getKey(), expected, c);
+
+  }
+
+  @Test
+  public void getOrderLinePaidStatus() throws ParseException {
+    OrderLineView view = spy(OrderLineView.class);
+    OrderLine e = new OrderLine();
+    int member = 1234;
+    Account revenueAccount = new Account(1, "706", "Prd Adhésions", true);
+    Account personalAccount = new Account(10, "411000", "Adhésions", true);
+    Account costAccount =  new Account(2, "ADH", "Adhésions loisir", true);
+    e.setAccount(revenueAccount);
+    e.setCostAccount(costAccount);
+    e.setMember(member);
+    e.setPayer(member);
+    e.setDate(new DateFr());
+    e.setAmount(0);
+    e.setModeOfPayment("FAC");
+    e.setSchool(0);
+    e.setDocument("");
+    e.setLabel("");
+
+    e.setPaid(false);
+    e.setTransfered(false);
+
+
+    e.setPaid(false);
+    assertTrue(view.checkPaid(true, e.getModeOfPayment()));
+
+    e.setModeOfPayment("CHQ");
+    assertFalse(view.checkPaid(false, e.getModeOfPayment()));
+    assertTrue(view.checkPaid(true, e.getModeOfPayment()));
+    assertFalse(view.checkTransfered(e));
+    // e.paid must not be modified here
+    assertFalse(e.isPaid());
+
+    // test personal account
+    // when personal account and ModeOfPayment.FAC, paid only must be true
+    e.setAccount(personalAccount);
+    e.setModeOfPayment("FAC");
+    e.setPaid(view.checkPaid(false, e.getModeOfPayment()));
+    assertTrue(e.isPaid());
+    assertFalse(view.checkTransfered(e));
+
+    e.setTransfered(true);
+    assertFalse(view.checkTransfered(e));
+    e.setPaid(view.checkPaid(false, e.getModeOfPayment()));
+    assertTrue(e.isPaid());
+
+    e.setModeOfPayment("CHQ");
+    e.setPaid(false);
+    assertFalse(view.checkPaid(false, e.getModeOfPayment()));
+    assertTrue(view.checkPaid(true, e.getModeOfPayment()));
+    assertFalse(view.checkTransfered(e));
+    // e.paid must not be modified here
+    assertFalse(e.isPaid());
+
 
   }
 }

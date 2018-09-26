@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.Vector;
 import javax.swing.ProgressMonitor;
 import javax.swing.SwingWorker;
-import net.algem.accounting.AccountingService;
+import net.algem.accounting.AccountingServiceImpl;
 import net.algem.course.Module;
 import net.algem.course.ModulePresetDlg;
 import net.algem.planning.DateFr;
@@ -47,7 +47,7 @@ import net.algem.util.DataCache;
 public class EmployeeTaskFactory {
 
   private HourEmployeeDlg parent;
-  private AccountingService service;
+  private AccountingServiceImpl service;
   private DataCache dataCache;
   private ProgressMonitor monitor;
   private PrintWriter out;
@@ -60,7 +60,7 @@ public class EmployeeTaskFactory {
   private boolean detail;
   private Map<String, Object> props;
 
-  public EmployeeTaskFactory(HourEmployeeDlg parent, AccountingService service, DataCache dataCache, ProgressMonitor pm, PrintWriter out) {
+  public EmployeeTaskFactory(HourEmployeeDlg parent, AccountingServiceImpl service, DataCache dataCache, ProgressMonitor pm, PrintWriter out) {
     this.parent = parent;
     this.service = service;
     this.dataCache = dataCache;

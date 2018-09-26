@@ -1,7 +1,7 @@
 /*
- * @(#)GemGroupService.java	2.15.2 27/09/17
+ * @(#)GemGroupService.java	2.15.9 02/06/18
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,8 +27,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
 import net.algem.accounting.Account;
+import net.algem.accounting.AccountIO;
 import net.algem.accounting.AccountPrefIO;
 import net.algem.accounting.AccountUtil;
+import net.algem.accounting.ModeOfPayment;
 import net.algem.accounting.OrderLine;
 import net.algem.accounting.OrderLineIO;
 import net.algem.config.*;
@@ -44,7 +46,7 @@ import net.algem.util.model.Model;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.2
+ * @version 2.15.9
  * @since 2.4.a 10/05/12
  */
 public class GemGroupService
@@ -340,10 +342,22 @@ public class GemGroupService
       // Echéance référent
       if (ref != null && ref.getId() > 0) {
         PersonFile dossier = ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findId(ref.getId());
-        OrderLine ol = AccountUtil.setGroupOrderLine(g.getId(), dossier, date, getAccount(AccountPrefIO.REHEARSAL), amount);
+        Preference accountPreference = getAccount(AccountPrefIO.REHEARSAL);
+        OrderLine ol = AccountUtil.setGroupOrderLine(g.getId(), dossier, date, accountPreference, amount);
+        ol.setOrder(dto.getIdAction());
         String s = ConfigUtil.getConf(ConfigKey.DEFAULT_SCHOOL.getKey());
         ol.setSchool(Integer.parseInt(s));
         AccountUtil.createEntry(ol, dc);
+        Account prefAccount = AccountIO.find(ol.getAccount().getId(), dc);
+        if (prefAccount != null && AccountUtil.isPersonalAccount(prefAccount)) {
+          OrderLine counterpart = new OrderLine(ol);
+          counterpart.setAccount(prefAccount);// includes number as string
+          counterpart.setAmount(-ol.getAmount());
+          counterpart.setModeOfPayment(ModeOfPayment.FAC.toString());
+          counterpart.setPaid(true);
+
+          AccountUtil.createEntry(counterpart, false, dc);
+        }
       }
       dc.commit();
     } catch (SQLException sqe) {

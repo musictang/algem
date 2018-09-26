@@ -39,11 +39,11 @@ public class CostAccountCtrl
   public static String columnName = "libelle";
   public static String columnFilter = "actif";
 
-  private AccountingService service;
+  private AccountingServiceImpl service;
   
   public CostAccountCtrl(GemDesktop _desktop) {
     super(_desktop, "Comptes analytiques", true, true, -1);
-    service = new AccountingService(dc);
+    service = new AccountingServiceImpl(dc);
   }
 
   @Override

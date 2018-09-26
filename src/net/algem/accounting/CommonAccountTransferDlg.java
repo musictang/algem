@@ -1,7 +1,7 @@
 /*
- * @(#)CommonAccountTransferDlg.java	2.14.0 14/06/17
+ * @(#)CommonAccountTransferDlg.java	2.15.9 07/06/18
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -45,13 +45,19 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.14.0
+ * @version 2.15.9
  * @since 2.8.r 13/12/13
  */
 public class CommonAccountTransferDlg
         extends AccountTransferDlg
 {
   private AccountTransferView transferView;
+
+  /**
+   * Empty constructor used for testing.
+   */
+  public CommonAccountTransferDlg() {
+  }
 
   public CommonAccountTransferDlg(Frame parent, DataCache dataCache, AccountExportService exportService) {
     super(parent, dataCache, exportService);
@@ -128,12 +134,16 @@ public class CommonAccountTransferDlg
         if (ModeOfPayment.FAC.toString().equalsIgnoreCase(modeOfPayment)) {
           errors = exportService.tiersExport(path, orderLines);
         } else {
+          // if transfer is native, filter payment orderlines
+          orderLines = filter(orderLines);
           exportService.export(path, orderLines, codeJournal, documentAccount);
         }
         // maj transfer echeances
         updateTransfer(orderLines);
       }
-      MessagePopup.information(this, MessageUtil.getMessage("payment.transfer.info", new Object[]{orderLines.size() - errors, path}));
+      int transfered = orderLines.size() - errors;
+      String msgKey = transfered > 1 ? "payment.transfer.info" : "payment.single.transfer.info";
+      MessagePopup.information(this, MessageUtil.getMessage(msgKey, new Object[]{transfered, path}));
     } catch (IOException ioe) {
       GemLogger.log(ioe.getMessage());
     } catch (SQLException sqe) {
@@ -157,5 +167,6 @@ public class CommonAccountTransferDlg
 
     return OrderLineIO.find(query, dc);
   }
+
 
 }

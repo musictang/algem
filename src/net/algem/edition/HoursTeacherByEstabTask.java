@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 import javax.swing.ProgressMonitor;
-import net.algem.accounting.AccountingService;
+import net.algem.accounting.AccountingServiceImpl;
 import net.algem.accounting.OrderLineIO;
 import net.algem.course.Course;
 import net.algem.planning.DateFr;
@@ -57,7 +57,7 @@ class HoursTeacherByEstabTask
     private Vector<PlanningLib> plan;
     private int k;
     private DataCache dataCache;
-    private AccountingService service;
+    private AccountingServiceImpl service;
 //    private ExportService exportService;
     private String [] types = {
       BundleUtil.getLabel("Leisure.label"),
@@ -85,7 +85,7 @@ class HoursTeacherByEstabTask
       return null;
     }
 
-    void set(DataCache cache, AccountingService service) {
+    void set(DataCache cache, AccountingServiceImpl service) {
       this.dataCache = cache;
       this.service = service;
 //      exportService = new ExportService(DataCache.getDataConnection());
