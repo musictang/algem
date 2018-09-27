@@ -1,7 +1,7 @@
 /*
- * @(#)ExportCiel.java	2.14.0 21/06/17
+ * @(#)ExportCiel.java	2.15.10 27/09/18
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -43,7 +43,7 @@ import net.algem.util.ui.MessagePopup;
  * Utility class for exporting lines to CIEL accounting software.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.14.0
+ * @version 2.15.10
  * @since 2.8.r 13/12/13
  */
 public class ExportCiel
@@ -89,12 +89,12 @@ public class ExportCiel
                 + TextUtil.padWithTrailingSpaces(codeJournal, 2) // code journal
                 + dateFormat.format(e.getDate().getDate()) // date écriture
                 + dateFormat.format(new Date()) // date échéance
-                + TextUtil.padWithTrailingSpaces(e.getDocument(), 12) // libellé pièce
+                + TextUtil.padWithTrailingSpaces(e.getDocument(), REF_MAX_LENGTH) // libellé pièce
                 + TextUtil.padWithTrailingSpaces(getAccount(e), 11) // n° compte
                 + TextUtil.padWithTrailingSpaces(TextUtil.truncate(TextUtil.stripDiacritics(e.getLabel()) + getInvoiceNumber(e), 25), 25) // numéro de facture pour les echéances correspondant à une facture.
                 + TextUtil.padWithLeadingSpaces(nf.format(e.getAmount() / 100.0), 13) // montant
                 + (e.getAmount() > 0 ? cd : dc) // credit - debit
-                + TextUtil.padWithTrailingSpaces(e.getDocument(), 12) // numéro pointage
+                + TextUtil.padWithTrailingSpaces(e.getDocument(), REF_MAX_LENGTH) // numéro pointage
                 + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getCostAccount().getNumber(), 6), 6) // code analytique
                 + TextUtil.padWithTrailingSpaces(TextUtil.truncate(TextUtil.stripDiacritics(e.getAccount().getLabel()), 34), 34) // libellé compte
                 + "O" // lettre O pour Euro = Oui
@@ -189,12 +189,12 @@ public class ExportCiel
                 + TextUtil.padWithTrailingSpaces(codeJournal, 2) // code journal
                 + dateFormat.format(e.getDate().getDate()) // date écriture
                 + dateFormat.format(new Date()) // date échéance
-                + TextUtil.padWithTrailingSpaces(e.getDocument(), 12) // libellé pièce
+                + TextUtil.padWithTrailingSpaces(e.getDocument(), REF_MAX_LENGTH) // libellé pièce
                 + TextUtil.padWithTrailingSpaces(c.getNumber(), 11) // numéro compte
                 + TextUtil.padWithTrailingSpaces(TextUtil.truncate(TextUtil.stripDiacritics(e.getLabel()) + getInvoiceNumber(e), 25), 25) // numéro de facture pour les echéances correspondant à une facture.
                 + TextUtil.padWithLeadingSpaces(exclTax > 0 ? nf.format(exclTax) : m, 13) // montant
                 + (e.getAmount() < 0 ? cd : dc) //cd crédit
-                + TextUtil.padWithTrailingSpaces(e.getDocument(), 12) // numéro pointage
+                + TextUtil.padWithTrailingSpaces(e.getDocument(), REF_MAX_LENGTH) // numéro pointage
                 + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getCostAccount().getNumber(), 6), 6) // code analytique
                 + TextUtil.padWithTrailingSpaces(TextUtil.truncate(TextUtil.stripDiacritics(e.getAccount().getLabel()), 34), 34) // libellé compte
                 + "O" // lettre O pour Euro = Oui
@@ -207,12 +207,12 @@ public class ExportCiel
                   + TextUtil.padWithTrailingSpaces(codeJournal, 2) // code journal
                   + dateFormat.format(e.getDate().getDate()) // date écriture
                   + dateFormat.format(new Date()) // date échéance
-                  + TextUtil.padWithTrailingSpaces(e.getDocument(), 12) // libellé pièce
+                  + TextUtil.padWithTrailingSpaces(e.getDocument(), REF_MAX_LENGTH) // libellé pièce
                   + TextUtil.padWithTrailingSpaces(taxAccount.getNumber(), 11) // numéro dompte
                   + TextUtil.padWithTrailingSpaces(TextUtil.truncate(TextUtil.stripDiacritics(taxAccount.getLabel()) + getInvoiceNumber(e), 25), 25) // numéro de facture pour les echéances correspondant à une facture.
                   + TextUtil.padWithLeadingSpaces(nf.format(vat), 13) // montant
                   + (e.getAmount() < 0 ? cd : dc) //cd crédit
-                  + TextUtil.padWithTrailingSpaces(e.getDocument(), 12) // numéro pointage
+                  + TextUtil.padWithTrailingSpaces(e.getDocument(), REF_MAX_LENGTH) // numéro pointage
                   + TextUtil.padWithTrailingSpaces(TextUtil.truncate(null, 6), 6) // code analytique
                   + TextUtil.padWithTrailingSpaces(TextUtil.truncate(TextUtil.stripDiacritics(taxAccount.getLabel()), 34), 34) // libellé compte
                   + "O" // lettre O pour Euro = Oui

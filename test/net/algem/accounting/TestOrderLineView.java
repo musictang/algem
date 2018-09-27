@@ -196,7 +196,7 @@ public class TestOrderLineView {
     boolean isValid = view.checkPayer(form.getPayer())
       && view.checkLabel(form.getLabel())
       && view.checkTotal(form)
-      && view.checkNegativePayment(form)
+      && view.checkPositivePayment(form)
       && view.checkDocumentRef(form)
       && view.isDateValid(form.getDate())
       && !view.isDateBefore(form.getDate(), start)
@@ -230,7 +230,20 @@ public class TestOrderLineView {
     end.incYear(1);
 
     OrderLineView view = new OrderLineView();
-    assertFalse(view.checkNegativePayment(form));
+    assertFalse(view.checkPositivePayment(form));
+  }
+  
+  @Test
+  public void negativeAmountShouldBeAcceptedWhenInvoiceModeOfPayment() {
+    OrderLineForm form = buildForm(10000, 12).total(-100).modeOfPayment(ModeOfPayment.FAC.toString());
+
+    DateFr start = new DateFr(new Date());
+    start.decMonth(1);
+    DateFr end = new DateFr(start);
+    end.incYear(1);
+
+    OrderLineView view = new OrderLineView();
+    assertTrue(view.checkPositivePayment(form));
   }
 
    @Test
@@ -239,8 +252,6 @@ public class TestOrderLineView {
     OrderLineForm form = buildForm(10000, 10).documentRef("ABCDE123456");
     assertFalse(view.checkDocumentRef(form));
   }
-
-
 
   @Test
   public void dateShouldBeInvalid() throws ParseException {

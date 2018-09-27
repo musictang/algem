@@ -1,7 +1,7 @@
 /*
- * @(#)ExportSage30.java	2.14.0 19/06/17
+ * @(#)ExportSage30.java	2.15.10 27/09/18
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -45,18 +45,20 @@ import net.algem.util.ui.MessagePopup;
  * Utility class for exporting lines to CIEL accounting software.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.14.0
+ * @version 2.15.10
  * @since 2.8.r 17/12/13
  */
 public class ExportSage30
         extends CommonAccountExportService
 {
 
-  private final DateFormat dateFormat = new SimpleDateFormat("ddMMyy");
-  private final NumberFormat nf = NumberFormat.getInstance(Locale.ENGLISH);
+  
+  private static final int SAGE_REF_LENGTH = 13;
   private static final char cd = 'C';// credit
   private static final char dc = 'D';//debit
   private static final String default_document_type = "OD";
+  private final DateFormat dateFormat = new SimpleDateFormat("ddMMyy");
+  private final NumberFormat nf = NumberFormat.getInstance(Locale.ENGLISH);
   private String dossierName;
 
   public ExportSage30(DataConnection dc) {
@@ -105,7 +107,7 @@ public class ExportSage30
                   + TextUtil.padWithTrailingSpaces("411", 13) // compte général
                   + "X" // compte auxiliaire
                   + TextUtil.padWithTrailingSpaces(getAccount(e), 13) // compte client
-                  + TextUtil.padWithTrailingSpaces(e.getDocument(), 13) // libellé pièce
+                  + TextUtil.padWithTrailingSpaces(e.getDocument(), SAGE_REF_LENGTH) // libellé pièce
                   + TextUtil.padWithTrailingSpaces(TextUtil.truncate(TextUtil.stripDiacritics(e.getLabel()) + " " + getInvoiceNumber(e), 25), 25) // libellé
                   + getModeOfPayment(e.getModeOfPayment()) // mode de paiement
                   //+ dateFormat.format(e.getDate().getDate())
@@ -121,7 +123,7 @@ public class ExportSage30
                   + TextUtil.padWithTrailingSpaces(e.getAccount().getNumber(), 13) // compte général
                   + " " // code analytique
                   + TextUtil.padWithTrailingSpaces(null, 13) // compte client
-                  + TextUtil.padWithTrailingSpaces(e.getDocument(), 13) // libellé pièce
+                  + TextUtil.padWithTrailingSpaces(e.getDocument(), SAGE_REF_LENGTH) // libellé pièce
                   + TextUtil.padWithTrailingSpaces(TextUtil.truncate(TextUtil.stripDiacritics(e.getLabel()) + " " + getInvoiceNumber(e), 25), 25) // libellé
                   + getModeOfPayment(e.getModeOfPayment()) // mode de paiement
                   + TextUtil.padWithTrailingSpaces(null, 6) // date échéance
@@ -137,7 +139,7 @@ public class ExportSage30
                   + TextUtil.padWithTrailingSpaces(personal ? getAccount(e) : e.getAccount().getNumber(), 13) // numéro compte
                   + "A" // flag analytique
                   + TextUtil.padWithTrailingSpaces(a.getNumber(), 13) // numéro analytique
-                  + TextUtil.padWithTrailingSpaces(e.getDocument(), 13) // libellé pièce
+                  + TextUtil.padWithTrailingSpaces(e.getDocument(), SAGE_REF_LENGTH) // libellé pièce
                   + TextUtil.padWithTrailingSpaces(TextUtil.truncate(TextUtil.stripDiacritics(e.getLabel()) + getInvoiceNumber(e), 25), 25) // libellé
                   + getModeOfPayment(e.getModeOfPayment()) // mode de paiement
                   + TextUtil.padWithTrailingSpaces(null, 6) // date échéance
@@ -238,7 +240,7 @@ public class ExportSage30
                 + TextUtil.padWithTrailingSpaces(c.getNumber(), 13) // numéro compte produit
                 + " " // (G ou ' ')
                 + TextUtil.padWithTrailingSpaces(null, 13) // numéro analytique
-                + TextUtil.padWithTrailingSpaces(e.getDocument(), 13) // libellé pièce
+                + TextUtil.padWithTrailingSpaces(e.getDocument(), SAGE_REF_LENGTH) // libellé pièce
                 + TextUtil.padWithTrailingSpaces(TextUtil.truncate(TextUtil.stripDiacritics(e.getLabel()) + getInvoiceNumber(e), 25), 25) // libellé
                 + getModeOfPayment(e.getModeOfPayment()) // mode de paiement
                 + TextUtil.padWithTrailingSpaces(null, 6)// date échéance
@@ -254,7 +256,7 @@ public class ExportSage30
                   + TextUtil.padWithTrailingSpaces(c.getNumber(), 13) // numéro compte produit
                   + "A" // flag analytique
                   + TextUtil.padWithTrailingSpaces(a.getNumber(), 13) // numéro analytique
-                  + TextUtil.padWithTrailingSpaces(e.getDocument(), 13) // libellé pièce
+                  + TextUtil.padWithTrailingSpaces(e.getDocument(), SAGE_REF_LENGTH) // libellé pièce
                   + TextUtil.padWithTrailingSpaces(TextUtil.truncate(TextUtil.stripDiacritics(e.getLabel()) + getInvoiceNumber(e), 25), 25) // libellé
                   + getModeOfPayment(e.getModeOfPayment()) // mode de paiement
                   + TextUtil.padWithTrailingSpaces(null, 6) // date échéance

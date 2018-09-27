@@ -1,7 +1,7 @@
 /*
- * @(#) TestTextUtil.java Algem 2.15.5 07/11/17
+ * @(#) TestTextUtil.java Algem 2.15.10 27/09/18
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -33,7 +33,7 @@ import static org.junit.Assert.*;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.5
+ * @version 2.15.10
  * @since 2.13.3 17/05/17
  */
 public class TestTextUtil {
@@ -97,11 +97,53 @@ public class TestTextUtil {
     System.out.println(path);
     assertEquals(path, "myfile.pnm");
   }
-  
+
   @Test
   public void testStringFormat() {
     String e = String.format(Locale.FRANCE, "%8.2f", 11.5d);
     //System.out.printf(e);
     assertEquals("   11,50", e);
+  }
+
+  @Test
+  public void nullStringWithTrailingSpaces() {
+    String input = null;
+    String expected = "            ";//12 spaces
+    assertEquals(expected, TextUtil.padWithTrailingSpaces(input, 12));
+  }
+
+  @Test
+  public void trailingStringLengthAboveMax() {
+    String input = "12345678ABC";
+    int max = 10;
+
+    String expected = "12345678ABC";//12 spaces
+    assertEquals(expected, TextUtil.padWithTrailingSpaces(input, max));
+  }
+
+  @Test
+  public void truncateLargeString() {
+    String input = "12345678ABCD";
+    int max = 10;
+
+    String expected = "12345678AB";
+    assertEquals(expected, TextUtil.truncate(input, max));
+  }
+
+  @Test
+  public void truncateSmallString() {
+    String input = "1234";
+    int max = 10;
+
+    String expected = "1234";
+    assertEquals(expected, TextUtil.truncate(input, max));
+  }
+
+  @Test
+  public void truncateNullString() {
+    String input = null;
+    int max = 10;
+
+    assertNull(TextUtil.truncate(input, max));
   }
 }

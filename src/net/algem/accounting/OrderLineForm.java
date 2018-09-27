@@ -114,4 +114,8 @@ class OrderLineForm {
     return accountingExportFormat;
   }
 
+  public void setRefMaxLength(int refMaxLength) {
+    this.refMaxLength = refMaxLength;
+  }
+
 }

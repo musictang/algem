@@ -1,7 +1,7 @@
 /*
- * @(#)CommonAccountExportService.java	2.15.0 30/07/2017
+ * @(#)CommonAccountExportService.java	2.15.10 27/09/18
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -51,13 +51,14 @@ import net.algem.util.model.ModelNotFoundException;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.0
+ * @version 2.15.10
  * @since 2.8.r 13/12/13
  */
 public abstract class CommonAccountExportService
         implements AccountExportService
 {
 
+  protected static final int REF_MAX_LENGTH = 12;
   protected DataConnection dbx;
   protected JournalAccountService journalService;
   protected NumberFormat defaultNumberFormat = NumberFormat.getInstance(Locale.FRENCH);
