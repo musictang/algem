@@ -5,11 +5,11 @@ and open the template in the editor.
 -->
 
 <Document  	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:iso:std:iso:20022:tech:xsd:pain.008.001.02"
-					 xsi:schemaLocation="urn:iso:std:iso:20022:tech:xsd:pain.008.001.02 file:/home/jm/Algem/src/git/test/net/algem/pain.008.001.02.xsd">
+					 xsi:schemaLocation="urn:iso:std:iso:20022:tech:xsd:pain.008.001.02 file:/path/to/pain.008.001.02.xsd">
 
 	<CstmrDrctDbtInitn>
 		<GrpHdr> <!-- GroupHeader -->
-			<MsgId>MSGID - 123456</MsgId><!-- MessageIdentification A GENERER--> <!-- A GENERER--> 
+			<MsgId>MSGID - 123456</MsgId><!-- MessageIdentification A GENERER--> <!-- A GENERER-->
 			<CreDtTm>2009-09-04T14:25:00</CreDtTm> <!-- CreationDateTime -->
 			<NbOfTxs>2</NbOfTxs> <!--NumberOfTransactions -->
 <!--			<CtrlSum>6530.15</CtrlSum>  ControlSum  optionnel -->
@@ -17,11 +17,11 @@ and open the template in the editor.
 				<Nm>Musiques Tangentes</Nm><!-- Raison sociale telle qu'elle figure sur le mandat Limité à 70 car. -->
 			</InitgPty>
 		</GrpHdr>
-		
+
 		<PmtInf><!-- PaymentInformation -->
-			<PmtInfId>COTIS MT 2013-2014 [0-9]</PmtInfId> <!-- PaymentInformationIdentification --> <!-- A GENERER--> 
+			<PmtInfId>COTIS MT 2013-2014 [0-9]</PmtInfId> <!-- PaymentInformationIdentification --> <!-- A GENERER-->
 			<PmtMtd>DD</PmtMtd> <!-- PaymentMethod La valeur "DD" (pour Direct Debit) est obligatoire -->
-			<BtchBookg>true</BtchBookg> <!-- BatchBooking "true" implique une comptabilisation globale, "false" une comptabilisation unitaire.--> 
+			<BtchBookg>true</BtchBookg> <!-- BatchBooking "true" implique une comptabilisation globale, "false" une comptabilisation unitaire.-->
 			<NbOfTxs>2</NbOfTxs>
 			<CtrlSum>3250.15</CtrlSum>
 			<PmtTpInf> <!-- PaymentTypeInformation Type de prélèvement -->
@@ -47,8 +47,8 @@ and open the template in the editor.
 				<FinInstnId> <!-- FinancialInstitutionIdentification -->
 					<BIC>CCBPFRPPBDX</BIC>
 				</FinInstnId>
-			</CdtrAgt> 
-<!-- 			<ChrgBr>SLEV</ChrgBr> ChargeBearer (optionnel) --> 
+			</CdtrAgt>
+<!-- 			<ChrgBr>SLEV</ChrgBr> ChargeBearer (optionnel) -->
 			<CdtrSchmeId> <!-- CreditorSchemeIdentification Eléments d'identification du créancier SEPA.-->
 				<Id>
 					<PrvtId> <!-- PrivateIdentification -->
@@ -61,24 +61,24 @@ and open the template in the editor.
 					</PrvtId>
 				</Id>
 			</CdtrSchmeId>
-			
+
 			<DrctDbtTxInf> <!-- DirectDebitTransactionInformation -->
 				<PmtId><!-- PaymentIdentification -->
 <!--					<InstrId>REF OPE AAAA</InstrId>  InstructionIdentification (optionnel)-->
-					<EndToEndId>REF E2E XXX</EndToEndId> <!-- EndToEndIdentification requis  Référence de bout-en-bout qui est restituée au débiteur.--><!-- A GENERER--> 
+					<EndToEndId>REF E2E XXX</EndToEndId> <!-- EndToEndIdentification requis  Référence de bout-en-bout qui est restituée au débiteur.--><!-- A GENERER-->
 				</PmtId>
 				<InstdAmt Ccy="EUR">1100.07</InstdAmt><!-- InstructedAmount Montant du prélévement SEPA en euro, compris entre 0,01 et 999 999 999,99. -->
 				<DrctDbtTx> <!-- DirectDebitTransaction -->
 					<MndtRltdInf> <!-- MandateRelatedInformation -->
-						<MndtId>++M1446136132 160927 12345</MndtId><!-- MandateIdentification RUM référence unique du mandat --><!-- A GENERER ET STOCKER --> 
+						<MndtId>++M1446136132 160927 12345</MndtId><!-- MandateIdentification RUM référence unique du mandat --><!-- A GENERER ET STOCKER -->
 						<DtOfSgntr>2014-01-15</DtOfSgntr>  <!-- Date de signature du mandat. (date d'échéance si inconnue) -->
 						<AmdmntInd>false</AmdmntInd> <!-- true si N° emetteur non inclus dans ics(migration national -> sepa) -->
-<!--						<AmendmentInformationDetails> <!- prsesent si AmdntInd à true 
+<!--						<AmendmentInformationDetails> <!- prsesent si AmdntInd à true
 							<OrgnlCdtrSchmeId>  OriginalCreditorScheme Identification ( Ancienne(s) donnée(s) relative(s) au créancier(ICS, ou NNE en cas de migration SEPA).
 								<Id>
-									<PrvtId>  PrivateIdentification 
-										<Othr>  Une seule occurrence possible. 
-											<Id>000144</Id>  (ancienne identification ) NNE  
+									<PrvtId>  PrivateIdentification
+										<Othr>  Une seule occurrence possible.
+											<Id>000144</Id>  (ancienne identification ) NNE
 										</Othr>
 									</PrvtId>
 								</Id>
@@ -89,7 +89,7 @@ and open the template in the editor.
 				<DbtrAgt> <!-- DebtorAgent (banque du débiteur) -->
 					<FinInstnId> <!-- FinancialInstitutionIdentification -->
 						<BIC>CCBBFRPP</BIC> <!-- [A-Z]{6,6}[A-Z2-9][A-NP-Z0-9]([A-Z0-9]{3,3}){0,1} -->
-<!--						<Othr>  Utilisé obligatoirement lorsque l'élément BIC n'est pas renseigné 
+<!--						<Othr>  Utilisé obligatoirement lorsque l'élément BIC n'est pas renseigné
 							<Id>NOT PROVIDED</Id>
 						</Othr>-->
 					</FinInstnId>
@@ -106,24 +106,24 @@ and open the template in the editor.
 					<Ustrd>Facture N1</Ustrd>
 				</RmtInf>-->
 			</DrctDbtTxInf>
-			
+
 			<DrctDbtTxInf> <!-- DirectDebitTransactionInformation -->
 				<PmtId><!-- PaymentIdentification -->
 					<!-- <InstrId>REF OPE AAAA</InstrId> InstructionIdentification (optionnel)-->
-					<EndToEndId>REF E2E XXX</EndToEndId> <!-- EndToEndIdentification requis  Référence de bout-en-bout qui est restituée au débiteur.--><!-- A GENERER--> 
+					<EndToEndId>REF E2E XXX</EndToEndId> <!-- EndToEndIdentification requis  Référence de bout-en-bout qui est restituée au débiteur.--><!-- A GENERER-->
 				</PmtId>
 				<InstdAmt Ccy="EUR">1100.07</InstdAmt><!-- InstructedAmount Montant du prélévement SEPA en euro, compris entre 0,01 et 999 999 999,99. -->
 				<DrctDbtTx> <!-- DirectDebitTransaction -->
 					<MndtRltdInf> <!-- MandateRelatedInformation -->
-						<MndtId>++MANDAT NO 55555</MndtId><!-- MandateIdentification RUM référence unique du mandat --><!-- A GENERER ET STOCKER --> 
+						<MndtId>++MANDAT NO 55555</MndtId><!-- MandateIdentification RUM référence unique du mandat --><!-- A GENERER ET STOCKER -->
 						<DtOfSgntr>2009-09-01</DtOfSgntr>  <!-- Date de signature du mandat. (date d'échéance si inconnue) -->
 						<AmdmntInd>true</AmdmntInd> <!-- true si modification (migration national -> sepa) -->
-<!--						<AmdmntInfDtls>  prseent si AmdntInd à true 
+<!--						<AmdmntInfDtls>  prseent si AmdntInd à true
 							<OrgnlCdtrSchmeId>  OriginalCreditorScheme Identification ( Ancienne(s) donnée(s) relative(s) au créancier(ICS, ou NNE en cas de migration SEPA).
 								<Id>
-									<PrvtId>  PrivateIdentification 
-										<Othr>  Une seule occurrence possible. 
-											<Id>000144</Id>  (ancienne identification ) NNE  
+									<PrvtId>  PrivateIdentification
+										<Othr>  Une seule occurrence possible.
+											<Id>000144</Id>  (ancienne identification ) NNE
 										</Othr>
 									</PrvtId>
 								</Id>
@@ -151,11 +151,11 @@ and open the template in the editor.
 				</RmtInf>-->
 			</DrctDbtTxInf>
 		</PmtInf>
-		
+
 		<PmtInf><!-- PaymentInformation pour les prélèvements récurrents -->
-			<PmtInfId>COTIS MT 2013-2014 [0-9]</PmtInfId> <!-- PaymentInformationIdentification --> <!-- A GENERER--> 
+			<PmtInfId>COTIS MT 2013-2014 [0-9]</PmtInfId> <!-- PaymentInformationIdentification --> <!-- A GENERER-->
 			<PmtMtd>DD</PmtMtd> <!-- PaymentMethod La valeur "DD" (pour Direct Debit) est obligatoire -->
-			<BtchBookg>true</BtchBookg> <!-- BatchBooking "true" implique une comptabilisation globale, "false" une comptabilisation unitaire.--> 
+			<BtchBookg>true</BtchBookg> <!-- BatchBooking "true" implique une comptabilisation globale, "false" une comptabilisation unitaire.-->
 			<NbOfTxs>2</NbOfTxs>
 			<CtrlSum>3250.15</CtrlSum>
 			<PmtTpInf> <!-- PaymentTypeInformation Type de prélèvement -->
@@ -181,8 +181,8 @@ and open the template in the editor.
 				<FinInstnId> <!-- FinancialInstitutionIdentification -->
 					<BIC>BANKFRPP</BIC>
 				</FinInstnId>
-			</CdtrAgt> 
-<!-- 			<ChrgBr>SLEV</ChrgBr> ChargeBearer (optionnel) --> 
+			</CdtrAgt>
+<!-- 			<ChrgBr>SLEV</ChrgBr> ChargeBearer (optionnel) -->
 			<CdtrSchmeId> <!-- CreditorSchemeIdentification Eléments d'identification du créancier SEPA.-->
 				<Id>
 					<PrvtId> <!-- PrivateIdentification -->
@@ -195,24 +195,24 @@ and open the template in the editor.
 					</PrvtId>
 				</Id>
 			</CdtrSchmeId>
-			
+
 			<DrctDbtTxInf> <!-- DirectDebitTransactionInformation -->
 				<PmtId><!-- PaymentIdentification -->
 <!--					<InstrId>REF OPE AAAA</InstrId>  InstructionIdentification (optionnel)-->
-					<EndToEndId>REF E2E XXX</EndToEndId> <!-- EndToEndIdentification requis  Référence de bout-en-bout qui est restituée au débiteur.--><!-- A GENERER--> 
+					<EndToEndId>REF E2E XXX</EndToEndId> <!-- EndToEndIdentification requis  Référence de bout-en-bout qui est restituée au débiteur.--><!-- A GENERER-->
 				</PmtId>
 				<InstdAmt Ccy="EUR">1100.07</InstdAmt><!-- InstructedAmount Montant du prélévement SEPA en euro, compris entre 0,01 et 999 999 999,99. -->
 				<DrctDbtTx> <!-- DirectDebitTransaction -->
 					<MndtRltdInf> <!-- MandateRelatedInformation -->
-						<MndtId>++M1446136132 160927 12345</MndtId><!-- MandateIdentification RUM référence unique du mandat --><!-- A GENERER ET STOCKER --> 
+						<MndtId>++M1446136132 160927 12345</MndtId><!-- MandateIdentification RUM référence unique du mandat --><!-- A GENERER ET STOCKER -->
 						<DtOfSgntr>2014-01-15</DtOfSgntr>  <!-- Date de signature du mandat. (date d'échéance si inconnue) -->
 						<AmdmntInd>false</AmdmntInd> <!-- true si N° emetteur non inclus dans ics(migration national -> sepa) -->
-<!--						<AmendmentInformationDetails> <!- prsesent si AmdntInd à true 
+<!--						<AmendmentInformationDetails> <!- prsesent si AmdntInd à true
 							<OrgnlCdtrSchmeId>  OriginalCreditorScheme Identification ( Ancienne(s) donnée(s) relative(s) au créancier(ICS, ou NNE en cas de migration SEPA).
 								<Id>
-									<PrvtId>  PrivateIdentification 
-										<Othr>  Une seule occurrence possible. 
-											<Id>000144</Id>  (ancienne identification ) NNE  
+									<PrvtId>  PrivateIdentification
+										<Othr>  Une seule occurrence possible.
+											<Id>000144</Id>  (ancienne identification ) NNE
 										</Othr>
 									</PrvtId>
 								</Id>

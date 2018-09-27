@@ -1,7 +1,7 @@
 /*
- * @(#)DateFr.java	2.9.4.13 05/11/15
+ * @(#)DateFr.java	2.15.10 27/09/18
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -31,16 +31,16 @@ import java.util.Locale;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.15.10
  * @since 1.0a 07/07/1999
  */
 public class DateFr
         implements java.io.Serializable, Comparable
 {
 
-    
+
   private static final long serialVersionUID = 3399465614682929593L;
-  
+
   public static String NULLDATE = "00-00-0000";
   private StringBuffer buf;
   //XXXtransient Calendar	cal;
@@ -342,6 +342,12 @@ public class DateFr
     }
     return true;
 
+  }
+
+  public static boolean isRegular(DateFr d) {
+    return d.getDay() >= 1 && d.getDay() <= 31
+      && d.getMonth() >= 1 && d.getMonth() <= 12
+      && d.getYear() >= 1960 && d.getYear() <= 3000;
   }
 
   /**

@@ -1,5 +1,5 @@
 /*
- * @(#)OrderLineView.java	2.15.9 02/06/18
+ * @(#)OrderLineView.java	2.15.10 27/09/18
  *
  * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
@@ -26,8 +26,6 @@ import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
@@ -36,7 +34,6 @@ import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.List;
-import java.util.logging.Logger;
 import javax.swing.*;
 import net.algem.billing.Vat;
 import net.algem.config.*;
@@ -51,12 +48,12 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.9
+ * @version 2.15.10
  * @since 1.0a 18/07/1999
  */
 public class OrderLineView
-    extends JDialog
-    implements ActionListener {
+  extends JDialog
+  implements ActionListener {
 
   private static final int REF_MAX_LENGTH = 12;
   private static final double TOTAL_AMOUNT_ALLOWED = 10000;
@@ -156,9 +153,9 @@ public class OrderLineView
     inclTax.setEnabled(false);
     DataConnection dc = DataCache.getDataConnection();
     modeOfPayment = new JComboBox(
-        ParamTableIO.getValues(
-            ModeOfPaymentCtrl.TABLE,
-            ModeOfPaymentCtrl.COLUMN_NAME, dc)
+      ParamTableIO.getValues(
+        ModeOfPaymentCtrl.TABLE,
+        ModeOfPaymentCtrl.COLUMN_NAME, dc)
     );
     modeOfPayment.addItemListener(new ItemListener() {
       @Override
@@ -190,9 +187,9 @@ public class OrderLineView
     schoolChoice = new ParamChoice(dataCache.getList(Model.School).getData());
     account = new AccountChoice(AccountIO.find(true, dc));
     costAccount = new ParamChoice(
-        ActivableParamTableIO.findActive(
-            CostAccountCtrl.tableName, CostAccountCtrl.columnName,
-            CostAccountCtrl.columnFilter, dc)
+      ActivableParamTableIO.findActive(
+        CostAccountCtrl.tableName, CostAccountCtrl.columnName,
+        CostAccountCtrl.columnFilter, dc)
     );
     costAccount.setPreferredSize(account.getPreferredSize());
     cbPaid = new JCheckBox();
@@ -327,7 +324,6 @@ public class OrderLineView
   }
 
   boolean testValidation() throws IllegalArgumentException {
-// payer, label, getTotalTaxesIncluded, ModeOfPayment, start, end
     String s = payer.getText();
     if (s.length() < 1) {
       throw new IllegalArgumentException(MessageUtil.getMessage("orderline.no.payer.warning"));
@@ -375,15 +371,50 @@ public class OrderLineView
     return true;
 
   }
-  
-  void checkDocumentRef(String ref, int maxLength, String exportFormat) {
+
+  boolean checkPayer(String payer) {
+    return payer.length() >= 1;
+  }
+
+  boolean checkLabel(String label) {
+    return label.length() >= 1;
+  }
+
+  boolean checkTotal(OrderLineForm form) {
+    return Math.abs(form.getTotal()) <= form.getTotalMax();
+  }
+
+  boolean checkNegativePayment(OrderLineForm form) {
+    return !ModeOfPayment.FAC.toString().equals(form.getModeOfPayment()) && form.getTotal() >= 0.0;
+  }
+
+  boolean isDateValid(DateFr date) {
+    return DateFr.isRegular(date);
+  }
+
+  boolean isDateBefore(DateFr date, DateFr start) {
+    return date.before(start);
+  }
+
+  boolean isDateAfter(DateFr date, DateFr end) {
+    end.incYear(2);// add enough margin time
+    return date.after(end);
+  }
+
+  boolean checkDocumentRef(String ref, int maxLength, String exportFormat) {
     int maxDocumentLength = maxLength;
     if (AccountingExportFormat.DVLOG.getLabel().equals(exportFormat)) {
       maxDocumentLength = 10;
     }
-    if (ref.length() > maxDocumentLength) {
-      throw new IllegalArgumentException(MessageUtil.getMessage("document.number.length.warning", maxDocumentLength));
+    return ref.length() <= maxDocumentLength;
+  }
+
+  boolean checkDocumentRef(OrderLineForm form) {
+    int maxDocumentLength = form.getRefMaxLength();
+    if (AccountingExportFormat.DVLOG.getLabel().equals(form.getAccountingExportFormat())) {
+      maxDocumentLength = 10;
     }
+    return form.getDocumentRef().length() <= maxDocumentLength;
   }
 
   void setPayerId(int _payerid) {
@@ -493,12 +524,7 @@ public class OrderLineView
   @Override
   public void actionPerformed(ActionEvent evt) {
     if (evt.getSource() == okBt) {
-      try {
-        validation = testValidation();
-      } catch (IllegalArgumentException ex) {
-        MessagePopup.error(this, ex.getMessage());
-        validation = false;
-      }
+      validation = validateForm();
       if (validation) {
         if (listener != null) {
           listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "orderline.view.validate"));
@@ -515,6 +541,73 @@ public class OrderLineView
         setVisible(false);
       }
     }
+  }
+
+  boolean validateForm() {
+    OrderLineForm form = new OrderLineForm(TOTAL_AMOUNT_ALLOWED, REF_MAX_LENGTH, ConfigUtil.getConf("Compta.format.export"));
+    String startOfFinancialYear = ConfigUtil.getConf(ConfigKey.FINANCIAL_YEAR_START.getKey());
+    boolean authorizeDateBefore = dataCache.authorize("OrderLine.date.before.financial.year.auth");
+    try {
+      form = form.payer(payer.getText())
+        .label(label.getText())
+        .total(getTotalTaxesIncluded())
+        .modeOfPayment((String) modeOfPayment.getSelectedItem())
+        .date(date.get())
+        .documentRef(document.getText());
+    } catch (ParseException ex) {
+      MessagePopup.error(this, ex.getMessage());
+      return false;
+    }
+
+    if (!checkPayer(form.getPayer())) {
+      MessagePopup.error(this, MessageUtil.getMessage("orderline.no.payer.warning"));
+      return false;
+    }
+    if (!checkLabel(form.getLabel())) {
+      MessagePopup.error(this, MessageUtil.getMessage("orderline.no.label.warning"));
+      return false;
+    }
+
+    if (!checkDocumentRef(form.getDocumentRef(), form.getRefMaxLength(), form.getAccountingExportFormat())) {
+      MessagePopup.warning(this, MessageUtil.getMessage("document.number.length.warning", form.getRefMaxLength()));
+      return false;
+    }
+
+    if (!checkTotal(form)) {
+      if (!MessagePopup.confirm(this, MessageUtil.getMessage("payment.large.amount.warning", form.getTotalMax()))) {
+        return false;
+      }
+    }
+
+    if (!checkNegativePayment(form)) {
+      if (!MessagePopup.confirm(this, MessageUtil.getMessage("payment.negative.amount.warning"))) {
+        return false;
+      }
+    }
+
+    if(!isDateValid(form.getDate())) {
+      MessagePopup.error(this, MessageUtil.getMessage("date.invalid"));
+      return false;
+    }
+
+    if (isDateBefore(form.getDate(), new DateFr(startOfFinancialYear))) {
+      if (authorizeDateBefore) {
+        if (!MessagePopup.confirm(this, MessageUtil.getMessage("date.before.period.confirmation", startOfFinancialYear))) {
+          return false;
+        }
+      } else {
+        return false;
+      }
+
+    }
+
+    if (isDateAfter(form.getDate(), new DateFr(dataCache.getEndOfYear()))) {
+      if (!MessagePopup.confirm(this, MessageUtil.getMessage("date.out.of.period.confirmation"))) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   /**
@@ -592,4 +685,5 @@ public class OrderLineView
   void addActionListener(ActionListener listener) {
     this.listener = listener;
   }
+
 }

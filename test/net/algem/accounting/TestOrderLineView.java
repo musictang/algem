@@ -1,5 +1,5 @@
 /*
- * @(#)TestOrderLineView.java 2.15.9 02/06/18
+ * @(#)TestOrderLineView.java 2.15.10 27/09/18
  *
  * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
@@ -23,36 +23,27 @@ package net.algem.accounting;
 import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 import javax.swing.JFormattedTextField;
 import net.algem.planning.DateFr;
-import net.algem.util.MessageUtil;
 import net.algem.util.ui.GemChoice;
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import org.junit.Ignore;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.9
+ * @version 2.15.10
  */
 public class TestOrderLineView {
 
@@ -68,7 +59,6 @@ public class TestOrderLineView {
   }
 
   @Test
-  @Ignore
   public void testGetAmount() throws ParseException {
     double expected = 144.92;
     OrderLine e = new OrderLine();
@@ -98,7 +88,6 @@ public class TestOrderLineView {
   }
 
   @Test
-  @Ignore
   public void testSetOrderLine() throws SQLException {
     OrderLineView view = mock(OrderLineView.class);
     Account c = new Account(1, "706", "Adhésions", true);
@@ -133,7 +122,6 @@ public class TestOrderLineView {
   }
 
   @Test
-  @Ignore
   public void getOrderLinePaidStatus() throws ParseException {
     OrderLineView view = spy(OrderLineView.class);
     OrderLine e = new OrderLine();
@@ -191,34 +179,118 @@ public class TestOrderLineView {
   @Rule
   public ExpectedException documentRefException = ExpectedException.none();
 
-  //@Test(expected=IllegalArgumentException.class)
   @Test
+  public void formShouldBeValid() {
+
+    double totalMax = 10_000;
+    int maxRefLength = 12;
+
+    OrderLineView view = new OrderLineView();
+    OrderLineForm form = buildForm(totalMax, maxRefLength);
+
+    DateFr start = new DateFr(new Date());
+    start.decMonth(1);
+    DateFr end = new DateFr(start);
+    end.incYear(1);
+
+    boolean isValid = view.checkPayer(form.getPayer())
+      && view.checkLabel(form.getLabel())
+      && view.checkTotal(form)
+      && view.checkNegativePayment(form)
+      && view.checkDocumentRef(form)
+      && view.isDateValid(form.getDate())
+      && !view.isDateBefore(form.getDate(), start)
+      && !view.isDateAfter(form.getDate(), end);
+
+    assertTrue(isValid);
+
+  }
+
+  @Test
+  public void totalAboveMaxShouldBeFalse() {
+    OrderLineForm form = buildForm(10000, 12).total(10_000.00001);
+
+    DateFr start = new DateFr(new Date());
+    start.decMonth(1);
+    DateFr end = new DateFr(start);
+    end.incYear(1);
+
+    OrderLineView view = new OrderLineView();
+    assertFalse(view.checkTotal(form));
+
+  }
+
+  @Test
+  public void negativeAmountShouldBeFalse() {
+    OrderLineForm form = buildForm(10000, 12).total(-100);
+
+    DateFr start = new DateFr(new Date());
+    start.decMonth(1);
+    DateFr end = new DateFr(start);
+    end.incYear(1);
+
+    OrderLineView view = new OrderLineView();
+    assertFalse(view.checkNegativePayment(form));
+  }
+
+   @Test
   public void tooLongDocumentReference() {
-    int maxLength = 10;
-    final String message = MessageUtil.getMessage("document.number.length.warning", maxLength);
-    documentRefException.expect(IllegalArgumentException.class);
-    documentRefException.expectMessage(message);
-    // alternative : specify a custom matcher
-    /*documentRefException.expectMessage(new BaseMatcher<String>() {
-      @Override
-      public boolean matches(Object o) {
-          return ((String)o).startsWith(message);
-      }
-
-      @Override
-      public void describeTo(Description d) {
-        
-      }
-    }
-    );*/
-    OrderLineView view = spy(OrderLineView.class);
-    view.checkDocumentRef("REF123456789B", maxLength, AccountingExportFormat.DVLOG.getLabel());
-
+    OrderLineView view = new OrderLineView();
+    OrderLineForm form = buildForm(10000, 10).documentRef("ABCDE123456");
+    assertFalse(view.checkDocumentRef(form));
   }
-  
+
+
+
   @Test
-  @Ignore
-  public void testValidation() {
-    
+  public void dateShouldBeInvalid() throws ParseException {
+    OrderLineView view = new OrderLineView();
+    DateFr date1 = new DateFr("33-17-2018");
+    OrderLineForm form = buildForm(10000, 12).date(date1);
+
+    assertFalse(view.isDateValid(form.getDate()));
+
   }
+
+  @Test
+  public void dateBefore() throws ParseException {
+    OrderLineView view = new OrderLineView();
+    DateFr start = new DateFr(new Date());
+    DateFr d = new DateFr(start);
+    d.decMonth(1);
+    OrderLineForm form = buildForm(10000, 12).date(d);
+
+    assertTrue(view.isDateBefore(form.getDate(), start));
+
+  }
+
+  @Test
+  public void dateAfter() throws ParseException {
+    OrderLineView view = new OrderLineView();
+    DateFr start = new DateFr(new Date());
+    DateFr d = new DateFr(start);
+    d.incYear(3);
+    OrderLineForm form = buildForm(10000, 12).date(d);
+
+    assertTrue(view.isDateAfter(form.getDate(), start));
+
+  }
+
+  private OrderLineForm buildForm(double totalMax, int maxRefLength) {
+    OrderLineForm form = new OrderLineForm(totalMax, maxRefLength, AccountingExportFormat.CIEL.getLabel())
+      .payer("1234")
+      .label("Info")
+      .total(10000)
+      .modeOfPayment(ModeOfPayment.CHQ.toString())
+      .date(new DateFr(new Date()))
+      .documentRef("123456");
+    DateFr start = new DateFr(new Date());
+    start.decMonth(1);
+    DateFr end = new DateFr(start);
+    end.incYear(1);
+
+    return form;
+  }
+
+
 }
