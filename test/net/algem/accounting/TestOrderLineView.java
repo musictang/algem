@@ -27,24 +27,34 @@ import java.util.List;
 import java.util.Vector;
 import javax.swing.JFormattedTextField;
 import net.algem.planning.DateFr;
+import net.algem.util.MessageUtil;
 import net.algem.util.ui.GemChoice;
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import org.junit.Ignore;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.15.9
  */
-public class TestOrderLineView
-
-{
+public class TestOrderLineView {
 
   private static JFormattedTextField amount;
   private static NumberFormat amountFormat;
@@ -58,6 +68,7 @@ public class TestOrderLineView
   }
 
   @Test
+  @Ignore
   public void testGetAmount() throws ParseException {
     double expected = 144.92;
     OrderLine e = new OrderLine();
@@ -87,6 +98,7 @@ public class TestOrderLineView
   }
 
   @Test
+  @Ignore
   public void testSetOrderLine() throws SQLException {
     OrderLineView view = mock(OrderLineView.class);
     Account c = new Account(1, "706", "Adhésions", true);
@@ -121,13 +133,14 @@ public class TestOrderLineView
   }
 
   @Test
+  @Ignore
   public void getOrderLinePaidStatus() throws ParseException {
     OrderLineView view = spy(OrderLineView.class);
     OrderLine e = new OrderLine();
     int member = 1234;
     Account revenueAccount = new Account(1, "706", "Prd Adhésions", true);
     Account personalAccount = new Account(10, "411000", "Adhésions", true);
-    Account costAccount =  new Account(2, "ADH", "Adhésions loisir", true);
+    Account costAccount = new Account(2, "ADH", "Adhésions loisir", true);
     e.setAccount(revenueAccount);
     e.setCostAccount(costAccount);
     e.setMember(member);
@@ -141,7 +154,6 @@ public class TestOrderLineView
 
     e.setPaid(false);
     e.setTransfered(false);
-
 
     e.setPaid(false);
     assertTrue(view.checkPaid(true, e.getModeOfPayment()));
@@ -174,6 +186,39 @@ public class TestOrderLineView
     // e.paid must not be modified here
     assertFalse(e.isPaid());
 
+  }
 
+  @Rule
+  public ExpectedException documentRefException = ExpectedException.none();
+
+  //@Test(expected=IllegalArgumentException.class)
+  @Test
+  public void tooLongDocumentReference() {
+    int maxLength = 10;
+    final String message = MessageUtil.getMessage("document.number.length.warning", maxLength);
+    documentRefException.expect(IllegalArgumentException.class);
+    documentRefException.expectMessage(message);
+    // alternative : specify a custom matcher
+    /*documentRefException.expectMessage(new BaseMatcher<String>() {
+      @Override
+      public boolean matches(Object o) {
+          return ((String)o).startsWith(message);
+      }
+
+      @Override
+      public void describeTo(Description d) {
+        
+      }
+    }
+    );*/
+    OrderLineView view = spy(OrderLineView.class);
+    view.checkDocumentRef("REF123456789B", maxLength, AccountingExportFormat.DVLOG.getLabel());
+
+  }
+  
+  @Test
+  @Ignore
+  public void testValidation() {
+    
   }
 }

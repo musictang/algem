@@ -26,6 +26,8 @@ import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
@@ -34,6 +36,7 @@ import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.List;
+import java.util.logging.Logger;
 import javax.swing.*;
 import net.algem.billing.Vat;
 import net.algem.config.*;
@@ -52,12 +55,10 @@ import net.algem.util.ui.*;
  * @since 1.0a 18/07/1999
  */
 public class OrderLineView
-        extends JDialog
-        implements ActionListener
-{
+    extends JDialog
+    implements ActionListener {
 
-
-  private static final int DOC_NUMBER_LENGTH = 10;
+  private static final int REF_MAX_LENGTH = 12;
   private static final double TOTAL_AMOUNT_ALLOWED = 10000;
 
   private NumberFormat nf;
@@ -124,8 +125,7 @@ public class OrderLineView
     taxList = dataCache.getList(Model.Vat).getData();
     taxLabel = new JLabel(BundleUtil.getLabel("Invoice.item.vat.label"));
     taxLabel.setEnabled(false);
-    tax = new ParamChoice(taxList)
-    {
+    tax = new ParamChoice(taxList) {
       @Override
       public int getKey() {
         Param p = (Param) getSelectedItem();
@@ -144,8 +144,7 @@ public class OrderLineView
 
     tax.setEnabled(false);
 
-    amount.addKeyListener(new KeyAdapter()
-    {
+    amount.addKeyListener(new KeyAdapter() {
       @Override
       public void keyReleased(KeyEvent e) {
         if (isInvoicePayment()) {
@@ -157,12 +156,11 @@ public class OrderLineView
     inclTax.setEnabled(false);
     DataConnection dc = DataCache.getDataConnection();
     modeOfPayment = new JComboBox(
-            ParamTableIO.getValues(
-                    ModeOfPaymentCtrl.TABLE,
-                    ModeOfPaymentCtrl.COLUMN_NAME, dc)
+        ParamTableIO.getValues(
+            ModeOfPaymentCtrl.TABLE,
+            ModeOfPaymentCtrl.COLUMN_NAME, dc)
     );
-    modeOfPayment.addItemListener(new ItemListener()
-    {
+    modeOfPayment.addItemListener(new ItemListener() {
       @Override
       public void itemStateChanged(ItemEvent e) {
         if (isInvoicePayment()) {
@@ -177,8 +175,7 @@ public class OrderLineView
       }
     });
 
-    tax.addItemListener(new ItemListener()
-    {
+    tax.addItemListener(new ItemListener() {
       @Override
       public void itemStateChanged(ItemEvent e) {
         if (isInvoicePayment() && e.getStateChange() == ItemEvent.SELECTED) {
@@ -187,14 +184,15 @@ public class OrderLineView
       }
     });
 
-    document = new GemField(8);
+    document = new GemField(8, REF_MAX_LENGTH);
     document.setMinimumSize(new Dimension(amount.getPreferredSize().width, document.getPreferredSize().height));
+    document.setColumns(12);
     schoolChoice = new ParamChoice(dataCache.getList(Model.School).getData());
     account = new AccountChoice(AccountIO.find(true, dc));
     costAccount = new ParamChoice(
-            ActivableParamTableIO.findActive(
-                    CostAccountCtrl.tableName, CostAccountCtrl.columnName,
-                    CostAccountCtrl.columnFilter, dc)
+        ActivableParamTableIO.findActive(
+            CostAccountCtrl.tableName, CostAccountCtrl.columnName,
+            CostAccountCtrl.columnFilter, dc)
     );
     costAccount.setPreferredSize(account.getPreferredSize());
     cbPaid = new JCheckBox();
@@ -329,7 +327,7 @@ public class OrderLineView
   }
 
   boolean testValidation() throws IllegalArgumentException {
-
+// payer, label, getTotalTaxesIncluded, ModeOfPayment, start, end
     String s = payer.getText();
     if (s.length() < 1) {
       throw new IllegalArgumentException(MessageUtil.getMessage("orderline.no.payer.warning"));
@@ -372,13 +370,20 @@ public class OrderLineView
     if (d.after(end) && !MessagePopup.confirm(this, MessageUtil.getMessage("date.out.of.period.confirmation"))) {
       return false;
     }
+    checkDocumentRef(document.getText(), REF_MAX_LENGTH, ConfigUtil.getConf("Compta.format.export"));
 
-    String docNumber = document.getText();
-    if (docNumber.length() > DOC_NUMBER_LENGTH) {
-      throw new IllegalArgumentException(MessageUtil.getMessage("document.number.length.warning", DOC_NUMBER_LENGTH));
-    }
     return true;
 
+  }
+  
+  void checkDocumentRef(String ref, int maxLength, String exportFormat) {
+    int maxDocumentLength = maxLength;
+    if (AccountingExportFormat.DVLOG.getLabel().equals(exportFormat)) {
+      maxDocumentLength = 10;
+    }
+    if (ref.length() > maxDocumentLength) {
+      throw new IllegalArgumentException(MessageUtil.getMessage("document.number.length.warning", maxDocumentLength));
+    }
   }
 
   void setPayerId(int _payerid) {
@@ -467,9 +472,9 @@ public class OrderLineView
     return paid || ModeOfPayment.FAC.name().equals(modeOfPayment);
   }
 
-
-   /**
+  /**
    * Do not transfer orderlines with a class 7 account.
+   *
    * @param ol orderline
    * @return true if transfer must be checked
    */

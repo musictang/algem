@@ -50,6 +50,7 @@ public class ExportDvlogPGI
   private static char dc = 'D';//debit
   private DateFormat dateFormat = new SimpleDateFormat("ddMMyyyy");
   private NumberFormat nf = NumberFormat.getInstance(Locale.FRENCH);
+  private static final int REF_MAX_LENGTH = 10;
 
   public ExportDvlogPGI(DataConnection dc) {
     dbx = dc;
@@ -85,7 +86,7 @@ public class ExportDvlogPGI
       out.print(TextUtil.padWithTrailingZeros(getAccount(e), 10)
               + "#" + dateFormat.format(e.getDate().getDate())
               + "#" + codeJournal
-              + "#" + TextUtil.padWithTrailingSpaces(e.getDocument(), 10)
+              + "#" + TextUtil.padWithTrailingSpaces(e.getDocument(), REF_MAX_LENGTH)
               // La valeur 13 ne semble pas obligatoire. On peut étendre la taille du champ.
               //+ "#" + padWithTrailingSpaces(truncate(e.getLabel(), 13), 13)
               + "#" + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getLabel() + getInvoiceNumber(e), 24), 24) // numéro de facture pour les echéances correspondant à une facture.
@@ -171,7 +172,7 @@ public class ExportDvlogPGI
       out.print(TextUtil.padWithTrailingZeros(c.getNumber(), 10)
               + "#" + dateFormat.format(e.getDate().getDate())
               + "#" + codeJournal
-              + "#" + TextUtil.padWithTrailingSpaces(e.getDocument(), 10)
+              + "#" + TextUtil.padWithTrailingSpaces(e.getDocument(), REF_MAX_LENGTH)
               + "#" + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getLabel(), 24), 24)
               + "#" + TextUtil.padWithLeadingZeros(exclTax > 0 ? nf.format(exclTax) : m, 13)
               + "#" + (e.getAmount() < 0 ? cd : dc) // cd Crédit
@@ -183,7 +184,7 @@ public class ExportDvlogPGI
        out.print(TextUtil.padWithTrailingZeros(taxAccount.getNumber(), 10)
           + "#" + dateFormat.format(e.getDate().getDate())
           + "#" + codeJournal
-          + "#" + TextUtil.padWithTrailingSpaces(e.getDocument(), 10)
+          + "#" + TextUtil.padWithTrailingSpaces(e.getDocument(), REF_MAX_LENGTH)
           + "#" + TextUtil.padWithTrailingSpaces(TextUtil.truncate(e.getLabel(), 24), 24)
           + "#" + TextUtil.padWithLeadingZeros(nf.format(vat), 13)
           + "#" + (e.getAmount() < 0 ? cd : dc) // cd Crédit
