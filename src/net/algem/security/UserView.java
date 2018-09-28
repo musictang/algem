@@ -1,7 +1,7 @@
 /*
- * @(#)UserView.java	2.13.1 12/04/17
+ * @(#)UserView.java	2.15.10 28/09/18
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -23,6 +23,8 @@ package net.algem.security;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
@@ -48,7 +50,7 @@ import org.passay.RuleResultDetail;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.13.1
+ * @version 2.15.10
  */
 public class UserView
   extends GemBorderPanel {
@@ -104,6 +106,13 @@ public class UserView
         checkAndWarn(src, password2);
       }
     });
+    password1.addFocusListener(new FocusAdapter() {
+      @Override
+      public void focusLost(FocusEvent e) {
+        JPasswordField src = (JPasswordField) e.getSource();
+        checkAndWarn(src, password2);
+      }
+    });
 
     password2 = new JPasswordField(8);
     password2.setMinimumSize(password1.getMinimumSize());
@@ -114,6 +123,14 @@ public class UserView
       public void keyReleased(KeyEvent event) {
         JPasswordField src = (JPasswordField) event.getSource();
         checkAndWarn(password1, src);
+      }
+    });
+
+    password2.addFocusListener(new FocusAdapter() {
+      @Override
+      public void focusLost(FocusEvent e) {
+        JPasswordField src = (JPasswordField) e.getSource();
+        checkAndWarn(src, password1);
       }
     });
 
@@ -189,27 +206,32 @@ public class UserView
 
     if (!result.isValid()) {
       for (RuleResultDetail detail : result.getDetails()) {
-        String d = detail.getErrorCode();
+        String errorCode = detail.getErrorCode();
         switch (strength) {
           case RuleFactory.LOW:
-            if ("TOO_SHORT".equals(d)) {
-              return "Password." + d;
+            if ("TOO_SHORT".equals(errorCode)) {
+              return "Password." + errorCode;
             } else {
-              err = d;
+              err = errorCode;
             }
             break;
           case RuleFactory.MEDIUM:
-            if ("TOO_SHORT".equals(d) || "INSUFFICIENT_LOWERCASE".equals(d)) {
-              return "Password." + d;
-            } else {
-              err = d;
+            if ("TOO_SHORT".equals(errorCode)
+              || "TOO_LONG".equals(errorCode)
+              || "INSUFFICIENT_UPPERCASE".equals(errorCode)
+              || "INSUFFICIENT_LOWERCASE".equals(errorCode)) {
+              return "Password." + errorCode;
             }
             break;
           case RuleFactory.STRONG:
-            if ("TOO_SHORT".equals(d) || "INSUFFICIENT_LOWERCASE".equals(d) || "INSUFFICIENT_UPPERCASE".equals(d) || "INSUFFICIENT_DIGIT".equals(d) || "INSUFFICIENT_SPECIAL".equals(d)) {
-              return "Password." + d;
+            if ("TOO_SHORT".equals(errorCode)
+              || "INSUFFICIENT_LOWERCASE".equals(errorCode)
+              || "INSUFFICIENT_UPPERCASE".equals(errorCode)
+              || "INSUFFICIENT_DIGIT".equals(errorCode)
+              || "INSUFFICIENT_SPECIAL".equals(errorCode)) {
+              return "Password." + errorCode;
             } else {
-              err = d;
+              err = errorCode;
             }
             break;
         }
@@ -219,18 +241,27 @@ public class UserView
     return err;
   }
 
-  private Color getRuleColor(String err) {
+  private Color getRuleColor(String err, int strength) {
     if (err == null || err.isEmpty()) {
       return UIManager.getColor("PasswordField.background");
     }
 
-    //mandatory
-    if ("Password.TOO_SHORT".equals(err)
-      || "Password.INSUFFICIENT_LOWERCASE".equals(err)
-      || "Password.INSUFFICIENT_UPPERCASE".equals(err)
-      || "Password.INSUFFICIENT_DIGIT".equals(err)
-      || "Password.INSUFFICIENT_SPECIAL".equals(err)) {
-      return Color.RED;
+    if (RuleFactory.STRONG == strength) {
+      if ("Password.TOO_SHORT".equals(err)
+        || "Password.TOO_LONG".equals(err)
+        || "Password.INSUFFICIENT_LOWERCASE".equals(err)
+        || "Password.INSUFFICIENT_UPPERCASE".equals(err)
+        || "Password.INSUFFICIENT_DIGIT".equals(err)
+        || "Password.INSUFFICIENT_SPECIAL".equals(err)) {
+        return Color.RED;
+      }
+    } else {
+      if ("Password.TOO_SHORT".equals(err)
+        || "Password.TOO_LONG".equals(err)
+        || "Password.INSUFFICIENT_LOWERCASE".equals(err)
+        || "Password.INSUFFICIENT_DIGIT".equals(err)) {
+        return Color.RED;
+      }
     }
     return Color.ORANGE;
   }
@@ -239,8 +270,8 @@ public class UserView
     String p = String.copyValueOf(one.getPassword());
     RuleResult result = validator.validate(new PasswordData(p));
     String err = getErrorKey(result, RuleFactory.MEDIUM);//TODO config
-    Color ruleColor = getRuleColor(err);
-    one.setBackground(result.isValid() ? Color.GREEN : getRuleColor(err));
+    Color ruleColor = getRuleColor(err, RuleFactory.MEDIUM);
+    one.setBackground(result.isValid() ? Color.GREEN : ruleColor);
     if (Color.ORANGE.equals(ruleColor)) {
       errorStatus.setText(BundleUtil.getLabel("Password.weak.warning"));
     } else if (Color.RED.equals(ruleColor)) {

@@ -1,7 +1,7 @@
 /*
- * @(#) RuleFactory.java Algem 2.13.1 12/04/2017
+ * @(#) RuleFactory.java Algem 2.15.10 28/09/18
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -31,7 +31,7 @@ import org.passay.Rule;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.13.1
+ * @version 2.15.10
  * @since 2.13.1 12/04/2017
  */
 public class RuleFactory {
@@ -44,12 +44,12 @@ public class RuleFactory {
     switch (rule) {
       case LOW:
         List<Rule> rl = new ArrayList<>();
-        rl.add(new LengthRule(8, 16));
+        rl.add(new LengthRule(8, 32));
         return new PasswordValidator(rl);
       case STRONG:
         return new PasswordValidator(Arrays.asList(
           // length between 8 and 16 characters
-          new LengthRule(10, 16),
+          new LengthRule(10, 32),
           // at least one upper-case character
           new CharacterRule(FrenchCharacterData.UpperCase, 1),
           // at least one lower-case character
@@ -61,7 +61,7 @@ public class RuleFactory {
         );
       default:
         return new PasswordValidator(Arrays.asList(
-          new LengthRule(8, 16),
+          new LengthRule(8, 32),
           new CharacterRule(FrenchCharacterData.UpperCase, 1),
           new CharacterRule(FrenchCharacterData.LowerCase, 1),
           new CharacterRule(FrenchCharacterData.Digit, 1))

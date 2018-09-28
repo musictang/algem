@@ -208,7 +208,7 @@ public class TestOrderLineView {
 
   @Test
   public void totalAboveMaxShouldBeFalse() {
-    OrderLineForm form = buildForm(10000, 12).total(10_000.00001);
+    OrderLineForm form = buildForm(10_000, 12).total(10_000.00001);
 
     DateFr start = new DateFr(new Date());
     start.decMonth(1);
@@ -221,7 +221,7 @@ public class TestOrderLineView {
   }
 
   @Test
-  public void negativeAmountShouldBeFalse() {
+  public void negativeAmountShouldBeRejected() {
     OrderLineForm form = buildForm(10000, 12).total(-100);
 
     DateFr start = new DateFr(new Date());
@@ -232,7 +232,7 @@ public class TestOrderLineView {
     OrderLineView view = new OrderLineView();
     assertFalse(view.checkPositivePayment(form));
   }
-  
+
   @Test
   public void negativeAmountShouldBeAcceptedWhenInvoiceModeOfPayment() {
     OrderLineForm form = buildForm(10000, 12).total(-100).modeOfPayment(ModeOfPayment.FAC.toString());
