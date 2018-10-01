@@ -1,4 +1,5 @@
 ---
+lang: fr-FR
 title: Notes de version Algem 2.15.10
 # fontfamily: cabin
 # fontfamilyoptions: sfdefault

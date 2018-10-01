@@ -12,18 +12,25 @@ $endif$
 \usepackage{ifxetex,ifluatex}
 \usepackage{fixltx2e} % provides \textsubscript
 % CUSTOM OPTIONS
-\usepackage{pifont}
-\usepackage[usenames]{xcolor}
+\usepackage{pifont} % optional font for symbols
+\usepackage{csquotes} % french quotes
+\usepackage[usenames]{xcolor} % specify color by name
 \definecolor{gris}{gray}{0.50}
-\usepackage[colorlinks=false,urlbordercolor=gris,breaklinks,pagebackref,pdftex,pdfborderstyle={/S/U/W 1}]{hyperref}
+\definecolor{bleu}{RGB}{24,160,227}
+\usepackage[colorlinks=false,urlbordercolor=bleu,breaklinks,pagebackref,pdftex,pdfborderstyle={/S/U/W 1}]{hyperref}
 \renewcommand*{\rmdefault}{lmss}
 \usepackage{fancyhdr}
 \pagestyle{fancy}
+\usepackage{lastpage}
 \fancyhf{}  % désactive le style plain par défaut de latex
 \fancyhead[L]{Algem}
 \fancyhead[R]{\leftmark}
-\setlength{\headheight}{30pt} % hauteur de l'entete
+\usepackage{sectsty} % styling sections titles
+%\sectionfont{\color{bleu}}
+\subsectionfont{\color{bleu}}
+%\setlength{\headheight}{30pt} % hauteur de l'entete
 \renewcommand{\footrulewidth}{0.5pt}
+\fancyfoot[R]{\thepage/\pageref*{LastPage}} % Page number (* is used to disable automatic page link)
 \fancyfoot[C]{\small {\copyright 2018 Musiques Tangentes --- \href{https://www.algem.net}{algem.net}}}
 % END CUSTOM OPTIONS
 \ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
@@ -96,6 +103,7 @@ $endif$
 $if(lang)$
 \ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
   \usepackage[shorthands=off,$for(babel-otherlangs)$$babel-otherlangs$,$endfor$main=$babel-lang$]{babel}
+  \frenchbsetup{StandardLists=true} % disable em dash and replace by standard square
 $if(babel-newcommands)$
   $babel-newcommands$
 $endif$

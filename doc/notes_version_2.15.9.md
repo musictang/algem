@@ -1,4 +1,6 @@
 ---
+# Apply some language features (quotes, list symbol)
+lang: fr-FR 
 title: Notes de version Algem 2.15.9
 ...
 # 2.15.9 07/06/2018
@@ -27,7 +29,7 @@ Dans Algem, cela consiste en résumé à facturer toute opération comptable au 
  
 **Rappel**\
 L'usage de comptes de tiers dans vos comptes par défaut (menu `Compta → Comptes par défaut`) permet la **création automatique de comptes clients** dans votre logiciel comptable après importation automatisée des écritures en mode "**natif**" (au format de votre logiciel comptable).\
-Un compte de tiers est systématiquement associé à un compte de produits équivalent (menu `Compta -> Correspondances de comptes`).\
+Un compte de tiers est systématiquement associé à un compte de produits équivalent (menu `Compta → Correspondances de comptes`).\
 En pratique, on duplique le compte de tiers "411" autant de fois qu'il y a d'activités.
 
 > Exemple :\
