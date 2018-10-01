@@ -1,5 +1,5 @@
 /*
- * @(#)TestExportFormat.java	2.15.9 05/06/18
+ * @(#)TestExportFormat.java	2.15.10 01/10/18
  *
  * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,24 +20,6 @@
  */
 package net.algem.accounting;
 
-//import com.itextpdf.kernel.font.PdfFontFactory;
-//import com.itextpdf.kernel.pdf.PdfDocument;
-//import com.itextpdf.kernel.pdf.PdfReader;
-//import com.itextpdf.kernel.pdf.PdfWriter;
-//import com.itextpdf.layout.Document;
-//import com.itextpdf.layout.element.Paragraph;
-//
-//import com.itextpdf.io.font.FontConstants;
-//import com.itextpdf.kernel.color.Color;
-//import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
-//import com.itextpdf.kernel.pdf.xobject.PdfFormXObject;
-//import com.itextpdf.kernel.utils.PdfMerger;
-//import com.itextpdf.layout.property.TextAlignment;
-//import com.itextpdf.layout.property.VerticalAlignment;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfImportedPage;
-import com.lowagie.text.pdf.PdfStamper;
 import com.sun.pdfview.PDFFile;
 import com.sun.pdfview.PDFPage;
 import java.awt.Graphics;
@@ -48,7 +30,6 @@ import java.awt.image.BufferedImage;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.MappedByteBuffer;
@@ -65,28 +46,12 @@ import static org.junit.Assert.*;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.9
+ * @version 2.15.10
  * @since 2.7.a 17/12/2013
  */
 public class TestExportFormat {
 
   public TestExportFormat() {
-  }
-
-  @BeforeClass
-  public static void setUpClass() throws Exception {
-  }
-
-  @AfterClass
-  public static void tearDownClass() throws Exception {
-  }
-
-  @Before
-  public void setUp() {
-  }
-
-  @After
-  public void tearDown() {
   }
 
   @Test
@@ -163,8 +128,13 @@ public class TestExportFormat {
    *
    * @throws IOException
    * @throws DocumentException
+   * @see com.lowagie.text.DocumentException
+   * @see com.lowagie.text.pdf.PdfReader
+   * @see com.lowagie.text.pdf.PdPdfStamper
+   *
+   * @deprecated
    */
-  @Ignore
+  /*@Ignore
   public void testPdfMerge2() throws IOException, DocumentException {
     final String SRC = "/tmp/memo.pdf";
     final String DEST = "/tmp/memo-et.pdf";
@@ -183,7 +153,7 @@ public class TestExportFormat {
     model.close();
     stamper.close();
 
-  }
+  }*/
 
   @Ignore
   @Test

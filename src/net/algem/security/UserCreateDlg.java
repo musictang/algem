@@ -1,7 +1,7 @@
 /*
- * @(#)UserCreateDlg.java	2.15.2 27/09/17
+ * @(#)UserCreateDlg.java	2.15.10 01/10/18
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -40,7 +40,7 @@ import org.passay.Rule;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.2
+ * @version 2.15.10
  */
 public class UserCreateDlg
         implements ActionListener
@@ -122,6 +122,5 @@ public class UserCreateDlg
       validation = false;
     }
     dlg.setVisible(false);
-    //dlg.dispose();
   }
 }

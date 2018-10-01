@@ -1,5 +1,5 @@
 /*
- * @(#)DateRangePanel.java 2.15.8 21/03/2018
+ * @(#)DateRangePanel.java 2.15.10 01/10/18
  *
  * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
@@ -44,7 +44,7 @@ import net.algem.util.ui.GemPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.8
+ * @version 2.15.10
  */
 public class DateRangePanel
         extends GemPanel
@@ -247,18 +247,28 @@ public class DateRangePanel
     end.setText(s);
   }
 
-  public void setEnabled(boolean b, int field) {
-    if (field == 0) {
-      start.setEditable(b);
-      cal1.setEnabled(b);
-    } else if (field == 1) {
-      end.setEditable(b);
-      cal2.setEnabled(b);
-    } else {
-      start.setEditable(b);
-      end.setEditable(b);
-      cal1.setEnabled(b);
-      cal2.setEnabled(b);
+  /**
+   * Enable specific field in component.
+   * If field number > 1, enabled status is applied to all fields.
+   * @param enabled true if this field is enabled
+   * @param field field number starting with 0
+   */
+  public void setEnabled(boolean enabled, int field) {
+    switch (field) {
+      case 0:
+        start.setEditable(enabled);
+        cal1.setEnabled(enabled);
+        break;
+      case 1:
+        end.setEditable(enabled);
+        cal2.setEnabled(enabled);
+        break;
+      default:
+        start.setEditable(enabled);
+        end.setEditable(enabled);
+        cal1.setEnabled(enabled);
+        cal2.setEnabled(enabled);
+        break;
     }
 
   }

@@ -1,7 +1,7 @@
 /*
- * @(#) TestXmltoPdf.java Algem 2.15.0 05/09/17
+ * @(#) TestXmltoPdf.java Algem 2.15.10 01/10/18
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -29,25 +29,14 @@ import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.tool.xml.XMLWorkerHelper;
-import com.lowagie.text.ElementTags;
-//import com.lowagie.text.Paragraph;
-import com.lowagie.text.html.Markup;
-import com.lowagie.text.xml.XmlPeer;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Scanner;
-import net.algem.TestProperties;
-import net.algem.util.DataConnection;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Ignore;
@@ -55,28 +44,11 @@ import org.junit.Ignore;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
+ * @version 2.15.10
  */
-public class TestXmltoPdf
-{
+public class TestXmltoPdf {
 
   public TestXmltoPdf() {
-  }
-
-  @BeforeClass
-  public static void setUpClass() {
-
-  }
-
-  @AfterClass
-  public static void tearDownClass() {
-  }
-
-  @Before
-  public void setUp() {
-  }
-
-  @After
-  public void tearDown() {
   }
 
   /**
@@ -100,14 +72,14 @@ public class TestXmltoPdf
 //      XmlParser.parse(document,xml.getPath(),getTagMap());
     document.open();
     Properties props = new Properties();
-    props.put("__student_name__", "Jean-Marc Gobat");
+    props.put("__student_name__", "Mephisto Pheles");
     props.put("__student_birth__", "18/09/1980");
-    props.put("__student_address__", "61 B rue Victor Hugo");
+    props.put("__student_address__", "12 rue des Lois");
     props.put("__org_name__", "Le CIAM");
-    props.put("__org_referent__", "Stéphane Allaux");
-    props.put("__org_address__", "12 rue Leyteire 33000 BORDEAUX");
+    props.put("__org_referent__", "Michel ANGE");
+    props.put("__org_address__", "12 rue des peintres 33000 BORDEAUX");
     props.put("__org_tel__", "01 02 03 04 05");
-    props.put("__org_mail__", "info@leciam.org");
+    props.put("__org_mail__", "info@mycompany.local");
     props.put("__fpcode__", "123456");
     props.put("__siret__", "fr124578");
     props.put("__ape__", "zz456e");
@@ -120,7 +92,6 @@ public class TestXmltoPdf
         String v = (String) entry.getValue();
         if (line.contains(k)) {
           line = line.replaceAll(k, v);
-//          System.out.println(line);
         }
       }
       if (line.startsWith("*")) {
@@ -137,18 +108,18 @@ public class TestXmltoPdf
     scanner.close();
     document.close();
 
-//HtmlParser.parse(document,html.getPath());
-//      Properties props = new Properties();
-//      FileInputStream io = new FileInputStream(new File("/tmp/contrat.properties"));
-//      props.load(io);
-//      System.out.println(MessageFormat.format(props.getProperty("line3"), "29-10-60"));
-//    PdfReader reader = new PdfReader("/tmp/contrat-tpl.pdf");
-//PdfStamper stamper = new PdfStamper(reader, new FileOutputStream("/tmp/contrat2.pdf"));
-//AcroFields form = stamper.getAcroFields();
-//form.setField("student_name", "Laura Specimen");
-//form.setField("org_name", "Musiques Tangentes");
-//stamper.setFormFlattening(true);
-//stamper.close();
+    //HtmlParser.parse(document,html.getPath());
+    //Properties props = new Properties();
+    //FileInputStream io = new FileInputStream(new File("/tmp/contrat.properties"));
+    //props.load(io);
+    //System.out.println(MessageFormat.format(props.getProperty("line3"), "29-10-60"));
+    //PdfReader reader = new PdfReader("/tmp/contrat-tpl.pdf");
+    //PdfStamper stamper = new PdfStamper(reader, new FileOutputStream("/tmp/contrat2.pdf"));
+    //AcroFields form = stamper.getAcroFields();
+    //form.setField("student_name", "Laura Specimen");
+    //form.setField("org_name", "Musiques Tangentes");
+    //stamper.setFormFlattening(true);
+    //stamper.close();
     assertTrue(1 == 1);
   }
 
@@ -156,17 +127,16 @@ public class TestXmltoPdf
   public void testFillItext5() throws DocumentException, IOException {
     File xml = new File("/tmp/contrat.xml");
     File html = new File("/tmp/contrat.html");
-//    File tpl = new File("/tmp/contrat.html");
     Font f1 = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.RED);
     Properties props = new Properties();
-    props.put("__student_name__", "Jean-Marc Gobat");
+    props.put("__student_name__", "Mephisto Pheles");
     props.put("__student_birth__", "18/09/1980");
-    props.put("__student_address__", "61 B rue Victor Hugo");
-    props.put("__company_name__", "CIAM");
-    props.put("__company_ref__", "Stéphane Allaux");
-    props.put("__company_address__", "12 rue Leyteire 33000 BORDEAUX");
+    props.put("__student_address__", "12 rue des Lois");
+    props.put("__company_name__", "MY COMPANY");
+    props.put("__company_ref__", "Michel ANGE");
+    props.put("__company_address__", "12 rue des peintres 33000 BORDEAUX");
     props.put("__company_tel__", "01 02 03 04 05");
-    props.put("__company_mail__", "info@leciam.org");
+    props.put("__company_mail__", "info@mycompany.local");
     props.put("__company_fpcode__", "123456");
     props.put("__company_siret__", "fr124578");
     props.put("__company_ape__", "zz456e");
@@ -182,7 +152,6 @@ public class TestXmltoPdf
     props.put("__total_student__", "00,00");
 
     InputStream tpl = getClass().getResourceAsStream("/resources/doc/contrat.html");
-//    OutputStream outTpl = new BufferedOutputStream(new ByteArrayOutputStream());
     Scanner scanner = new Scanner(tpl);
     StringBuilder content = new StringBuilder();
     while (scanner.hasNextLine()) {
@@ -201,8 +170,6 @@ public class TestXmltoPdf
     Document document = new Document();
     //step 2
     PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream("/tmp/contrat.pdf"));
-//ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-//PdfWriter writer = PdfWriter.getInstance(document, outputStream);
     // step 3
     document.open();
     // step 4
@@ -213,6 +180,7 @@ public class TestXmltoPdf
 
   }
 
+  /*
   private HashMap<String, XmlPeer> getTagMap() {
     HashMap<String, XmlPeer> tagMap = new HashMap<>();
 //    Font largeBold = new Font(Font.COURIER, 32, Font.BOLD);
@@ -235,7 +203,7 @@ public class TestXmltoPdf
     peer.addValue(ElementTags.COLOR, "#FF0000");
     peer.addValue(ElementTags.SIZE, "10");
 //javax.xml.parsers.SAXParser sax = SAXParserFactory.
-    peer.setContent("Anthony ALBERT");
+    peer.setContent("Anthony ANONYMOUS");
     tagMap.put(peer.getAlias(), peer);
 
     peer = new XmlPeer(ElementTags.CHUNK, "birthdate");
@@ -247,19 +215,19 @@ public class TestXmltoPdf
     tagMap.put(peer.getAlias(), peer);
 
     peer = new XmlPeer(ElementTags.CHUNK, "student_address");
-    peer.setContent("86 rue Dejean Castaing - 33470 GUJAN MESTRAS");
+    peer.setContent("86 rue des Tests - 33470 GUJAN MESTRAS");
     tagMap.put(peer.getAlias(), peer);
 
     peer = new XmlPeer(ElementTags.CHUNK, "org_name");
-    peer.setContent("CIAM");
+    peer.setContent("MYCOMPANY");
     tagMap.put(peer.getAlias(), peer);
 
     peer = new XmlPeer(ElementTags.CHUNK, "org_ref");
-    peer.setContent("Stéphane ALAUX");
+    peer.setContent("Michel ANGE");
     tagMap.put(peer.getAlias(), peer);
 
     peer = new XmlPeer(ElementTags.CHUNK, "org_address");
-    peer.setContent("35 rue Leyteire – 33000 BORDEAUX");
+    peer.setContent("35 rue des peintres – 33000 BORDEAUX");
     tagMap.put(peer.getAlias(), peer);
 
     peer = new XmlPeer(ElementTags.CHUNK, "org_tel");
@@ -267,7 +235,7 @@ public class TestXmltoPdf
     tagMap.put(peer.getAlias(), peer);
 
     peer = new XmlPeer(ElementTags.CHUNK, "org_mail");
-    peer.setContent("info@le-ciam.com");
+    peer.setContent("info@mycompany.local");
     tagMap.put(peer.getAlias(), peer);
 
     peer = new XmlPeer(ElementTags.CHUNK, "fp_number");
@@ -275,7 +243,7 @@ public class TestXmltoPdf
     tagMap.put(peer.getAlias(), peer);
 
     peer = new XmlPeer(ElementTags.CHUNK, "siret");
-    peer.setContent("334 008 653 00027");
+    peer.setContent("334 008 653 00011");
     tagMap.put(peer.getAlias(), peer);
 
     peer = new XmlPeer(ElementTags.CHUNK, "ape");
@@ -284,4 +252,5 @@ public class TestXmltoPdf
 
     return tagMap;
   }
+   */
 }

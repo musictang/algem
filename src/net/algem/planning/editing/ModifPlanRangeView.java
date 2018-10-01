@@ -1,7 +1,7 @@
 /*
- * @(#)ModifPlanRangeView.java	2.9.4.0 26/03/2015
- * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * @(#)ModifPlanRangeView.java	2.15.10 01/10/18
+ *
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning.editing;
 
@@ -33,7 +33,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.0
+ * @version 2.15.10
  * @since 1.0a 07/07/1999
  */
 public class ModifPlanRangeView
@@ -53,6 +53,7 @@ public class ModifPlanRangeView
     setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
     dateRange = new DateRangePanel();
+    dateRange.setEnabled(false, 0);// disable start date
     scheduleLabel = new GemField(ModifPlanView.DEF_FIELD_WIDTH);
     scheduleLabel.setEditable(false);
     currentRange = new HourRangePanel();

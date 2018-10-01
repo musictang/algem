@@ -192,12 +192,12 @@ public class UserView
   }
 
   public void clear() {
-    id.setText("");
-    name.setText("");
-    password1.setText("");
-    password2.setText("");
+    id.setText(null);
+    name.setText(null);
+    password1.setText(null);
+    password2.setText(null);
     echoPass.setSelected(false);
-    login.setText("");
+    login.setText(null);
     profile.setSelectedIndex(0);
   }
 

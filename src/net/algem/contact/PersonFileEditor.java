@@ -1,7 +1,7 @@
 /*
- * @(#)PersonFileEditor 2.15.6 01/12/17
+ * @(#)PersonFileEditor 2.15.10 01/10/18
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -73,12 +73,11 @@ import org.passay.PasswordValidator;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.6
+ * @version 2.15.10
  */
 public class PersonFileEditor
-        extends FileEditor
-        implements PersonFileListener, UIAdjustable
-{
+  extends FileEditor
+  implements PersonFileListener, UIAdjustable {
 
   private JMenuBar mBar;
   private JMenu mFile;
@@ -241,8 +240,8 @@ public class PersonFileEditor
     Object src = evt.getSource();
     // On sauve au préalable l'éventuel nouveau contact avant d'executer les actions des menus.
     if (dossier.getId() <= 0
-            && !arg.equals(GemCommand.SAVE_CMD)
-            && !arg.equals(GemCommand.CLOSE_CMD)) {
+      && !arg.equals(GemCommand.SAVE_CMD)
+      && !arg.equals(GemCommand.CLOSE_CMD)) {
 
       updatePersonFile();
       String msg = dossier.hasErrors();
@@ -312,7 +311,7 @@ public class PersonFileEditor
         MessagePopup.error(view, ex.getMessage());
       }
     } else if ("Login.creation".equals(arg)) {
-      dlgLogin();
+      loginDialog();
     } else if ("Lié".equals(arg)) {
       Person p = new Person(dossier.getContact().getName());
       PersonFile d = new PersonFile(new Contact(p));
@@ -617,9 +616,9 @@ public class PersonFileEditor
       dossier.setId(currentId);
       GemLogger.logException(e1.getMessage(), e1);
       JOptionPane.showMessageDialog(personFileView,
-              "identifiant = " + dossier.getId() + "<br>" + e1,
-              "Erreur mise à jour dossier :",
-              JOptionPane.ERROR_MESSAGE);
+        "identifiant = " + dossier.getId() + "<br>" + e1,
+        "Erreur mise à jour dossier :",
+        JOptionPane.ERROR_MESSAGE);
       return false;
     } catch (DDMandateException ex) {
       MessagePopup.warning(view, ex.getMessage());
@@ -634,7 +633,7 @@ public class PersonFileEditor
     return dossier.hasChanged() || personFileView.hasEmployeeChanged();
   }
 
-  void dlgLogin() {
+  void loginDialog() {
     UserService service = dataCache.getUserService();
     PasswordValidator validator = RuleFactory.getValidator(RuleFactory.MEDIUM);
     personFileView.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
@@ -646,12 +645,11 @@ public class PersonFileEditor
     personFileView.setCursor(Cursor.getDefaultCursor());
     dlg.display();
 
-    if (!dlg.isValidation()) {
-      MessagePopup.information(view, MessageUtil.getMessage("no.update.info"));
-      return;
-    }
-//    String error = null;
     try {
+      if (!dlg.isValidation()) {
+        MessagePopup.information(view, MessageUtil.getMessage("no.update.info"));
+        return;
+      }
       desktop.setWaitCursor();
       if (u == null) {
         u = dlg.getUser();
@@ -671,6 +669,7 @@ public class PersonFileEditor
       GemLogger.logException(e.getMessage(), e);
       MessagePopup.warning(view, MessageUtil.getMessage(e.getMessageKey()));
     } finally {
+      dlg.dispose();
       desktop.setDefaultCursor();
     }
   }
@@ -715,8 +714,7 @@ public class PersonFileEditor
    */
   public void addMenuDossier(String _label, PersonFile _dossier) {
     PersonFileMenuItem m = new PersonFileMenuItem(_label, _dossier);
-    m.addActionListener(new ActionListener()
-    {
+    m.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent evt) {
         PersonFile d = ((PersonFileMenuItem) evt.getSource()).getPersonFile();
@@ -734,8 +732,7 @@ public class PersonFileEditor
 
   private void addPayerFile(String _label, final PersonFile _dossier) {
     GemButton b = personFileView.addIcon("Member.payer");
-    b.addActionListener(new ActionListener()
-    {
+    b.addActionListener(new ActionListener() {
 
       @Override
       public void actionPerformed(ActionEvent evt) {
@@ -896,7 +893,7 @@ public class PersonFileEditor
         addPayerFile("Payeur", d);// ajout jm 2.0ma
       } else { //Attention aux cas où le payeur auquel est lié l'adhérent n'existe pas
         MessagePopup.information(personFileView,
-                MessageUtil.getMessage("not.existing.payer.link", dossier.getMember().getPayer()));
+          MessageUtil.getMessage("not.existing.payer.link", dossier.getMember().getPayer()));
         personFileView.setParent(dossier);
       }
     }
@@ -909,8 +906,7 @@ public class PersonFileEditor
     if (setMemberList() > 0) {
       //final GemButton b = personFileView.addLinkedMembersIcon();
       final GemButton b = personFileView.addIcon("Payer.members");
-      b.addActionListener(new ActionListener()
-      {
+      b.addActionListener(new ActionListener() {
 
         public void actionPerformed(ActionEvent evt) {
           ListCtrl list = PersonFileEditor.this.getMemberList();
@@ -1041,9 +1037,9 @@ public class PersonFileEditor
     } else {
       dossier.restoreOldValues(backup);
       JOptionPane.showMessageDialog(personFileView,
-              MessageUtil.getMessage("no.update.info"),
-              BundleUtil.getLabel("Warning.label"),
-              JOptionPane.INFORMATION_MESSAGE);
+        MessageUtil.getMessage("no.update.info"),
+        BundleUtil.getLabel("Warning.label"),
+        JOptionPane.INFORMATION_MESSAGE);
     }
   }
 

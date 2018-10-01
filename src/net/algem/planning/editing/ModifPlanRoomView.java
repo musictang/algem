@@ -1,7 +1,7 @@
 /*
- * @(#)ModifPlanRoomView.java	2.9.4.13 10/11/15
- * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * @(#)ModifPlanRoomView.java	2.15.10 01/10/18
+ *
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning.editing;
 
@@ -38,7 +38,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.15.10
  * @since 1.0a 07/07/1999
  */
 public class ModifPlanRoomView
@@ -55,6 +55,7 @@ public class ModifPlanRoomView
   public ModifPlanRoomView(DataCache dataCache, String label) {
     super(dataCache, label);
 
+    dateRange.setEnabled(false, 0);
     before = new GemField(DEF_FIELD_WIDTH);
     before.setEditable(false);
     after = new RoomChoice(dataCache.getList(Model.Room));
@@ -105,7 +106,7 @@ public class ModifPlanRoomView
       } catch (SQLException ex) {
         GemLogger.log(Level.WARNING, ex.getMessage());
       }
-    } 
+    }
     else if (src == checkAbsence) {
       loadNoteAbsence();
     }*/
@@ -113,7 +114,7 @@ public class ModifPlanRoomView
 
   /**
    * Adds or remove a note component depending on the state of {@code checkAbsence}.
-   * @deprecated 
+   * @deprecated
    */
   private void loadNoteAbsence() {
     /*if (checkAbsence.isSelected()) {
@@ -125,7 +126,7 @@ public class ModifPlanRoomView
 
   /**
    * Adds a note component.
-   * @deprecated 
+   * @deprecated
    */
   private void addNote() {
     /*if (noteAbs == null) {
@@ -139,7 +140,7 @@ public class ModifPlanRoomView
 
   /**
    * Removes the note component.
-   * @deprecated 
+   * @deprecated
    */
   private void removeNote() {
     /*if (noteAbs != null) {

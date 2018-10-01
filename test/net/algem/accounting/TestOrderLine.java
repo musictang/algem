@@ -1,7 +1,7 @@
 /*
- * @(#) TestOrderLine.java Algem 2.14.0 21/06/17
+ * @(#) TestOrderLine.java Algem 2.15.10 01/10/18
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -20,58 +20,36 @@
 package net.algem.accounting;
 
 import net.algem.planning.DateFr;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
+ * @version 2.15.10
  */
 public class TestOrderLine {
 
   public TestOrderLine() {
   }
 
-  @BeforeClass
-  public static void setUpClass() {
-  }
-
-  @AfterClass
-  public static void tearDownClass() {
-  }
-
-  @Before
-  public void setUp() {
-  }
-
-  @After
-  public void tearDown() {
-  }
-
-  // TODO add test methods here.
-  // The methods must be annotated with annotation @Test. For example:
-  //
-   @Test
+  @Test
   public void testVat() {
     int a = 21100;
     float t = 5.5f;
     double coeff = 100d / (100 + t);
 
-    double ht = (Math.abs(a) /100d) * coeff;
-    System.out.println("TTC = " + Math.abs(a) /100d);
+    double ht = (Math.abs(a) / 100d) * coeff;
+    System.out.println("TTC = " + Math.abs(a) / 100d);
     System.out.println("HT =" + ht);
     int v = AccountUtil.getIntValue(ht);
     System.out.println(v);
     assertTrue(20000 == v);
     System.out.println("==========");
     a = 20005;
-    ht = (Math.abs(a) /100d) * coeff;
-    System.out.println("TTC = " + Math.abs(a) /100d);
-    System.out.println("HT =" +ht);
+    ht = (Math.abs(a) / 100d) * coeff;
+    System.out.println("TTC = " + Math.abs(a) / 100d);
+    System.out.println("HT =" + ht);
     v = AccountUtil.getIntValue(ht);
     System.out.println(v);
     assertTrue(18962 == v);
@@ -90,5 +68,7 @@ public class TestOrderLine {
     ol.setTax(0.0f);
 
     System.out.println(ol.toString());
+    String expected = "[1234,22250,02-11-2017,Test p1234 a22250,CHQ,125,5]";
+    assertEquals(expected, ol.toString());
   }
 }
