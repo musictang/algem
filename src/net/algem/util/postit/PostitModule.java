@@ -1,7 +1,7 @@
 /*
- * @(#)PostitModule.java	2.13.2 04/05/17
+ * @(#)PostitModule.java	2.15.11 09/10/18
  *
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,6 +27,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.JInternalFrame;
@@ -42,7 +43,7 @@ import static net.algem.planning.day.DayScheduleCtrl.DAY_SCHEDULE_WINDOW_HEIGHT;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.13.2
+ * @version 2.15.11
  */
 public class PostitModule
         extends GemModule
@@ -51,9 +52,14 @@ public class PostitModule
 
   public static final int POSTIT_MODULE_WIDTH = 110;
   static final Dimension POSTIT_SIZE = new Dimension(POSTIT_MODULE_WIDTH, DAY_SCHEDULE_WINDOW_HEIGHT);
-  private int read;
+  private int lastRead;
   private PostitCanvas postitCanvas;
   private UserService service;
+
+  public PostitModule(String label) {
+    super(label);
+    postitCanvas = new PostitCanvas();
+  }
 
   public PostitModule(UserService service) {
     super("Postit");
@@ -66,7 +72,7 @@ public class PostitModule
 
     postitCanvas = new PostitCanvas();
     postitCanvas.addActionListener(this);
-    read = 0;
+    lastRead = 0;
     view.add(postitCanvas, BorderLayout.CENTER);
     view.setMaximizable(false);
     view.setClosable(false);
@@ -77,19 +83,19 @@ public class PostitModule
 
   @Override
   public String getSID() {
-    return String.valueOf(read);
+    return String.valueOf(lastRead);
   }
 
   /**
-   * Adds a postit.
+   * Loads current postits.
    * A receiver == 0 implies a public status.
    * Private postits are seen by current user only.
    */
-  public void getNewPostit() {
+  public void loadPostits() {
 
     int userId = dataCache.getUser().getId();
 
-    List<Postit> v = service.getPostits(userId, read);
+    List<Postit> v = service.getPostits(userId, lastRead);
     Iterator<Postit> enu = v.iterator();
     while (enu.hasNext()) {
       Postit p = enu.next();
@@ -103,14 +109,35 @@ public class PostitModule
         }
         continue;
       }
-      read = p.getId();
-      // ajout 1.1d : gestion des postits privés
-      if (p.getReceiver() > 0 && userId == p.getReceiver()) { // si privé
-        postitCanvas.add(p);
-      } else {
-        postitCanvas.add(p); // si public
-      }
+      postitCanvas.add(p);
     }
+  }
+
+  public void loadPostits(List<Postit> postits) {
+    Iterator<Postit> enu = postits.iterator();
+    while (enu.hasNext()) {
+      Postit p = enu.next();
+
+      DateFr toDay = new DateFr(new java.util.Date());
+      if (toDay.after(p.getTerm())) {
+        try {
+          service.delete(p);
+        } catch (SQLException ex) {
+          GemLogger.logException("Erreur suppression postit", ex);
+        }
+        continue;
+      }
+      postitCanvas.add(p);
+    }
+  }
+
+  List<Postit> getPostitsFromCanvas() {
+    List<Postit> postitComponents = new ArrayList<>();
+    List<PostitPosition> positions = postitCanvas.getPositions();
+    for (PostitPosition p : positions) {
+        postitComponents.add(p.getPostit());
+    }
+    return postitComponents;
   }
 
   @Override
@@ -160,12 +187,12 @@ public class PostitModule
 
   public void addPostit(Postit p) {
     postitCanvas.add(p);
-    read = p.getId();
-    GemLogger.log("PostitModule lu=" + read);
+    lastRead = p.getId();
+    GemLogger.log("PostitModule : last postit read = " + lastRead);
   }
 
   public void clear() {
-    read = 0;
+    lastRead = 0;
     postitCanvas.clear();
   }
 

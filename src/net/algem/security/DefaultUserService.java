@@ -1,7 +1,7 @@
 /*
- * @(#)DefaultUserService.java	2.13.2 10/05/17
+ * @(#)DefaultUserService.java	2.15.11 09/10/2018
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -47,7 +47,7 @@ import org.apache.commons.codec.binary.Base64;
  * User operations service.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.13.2
+ * @version 2.15.11
  * @since 2.6.a 06/08/2012
  */
 public class DefaultUserService
@@ -281,9 +281,20 @@ public class DefaultUserService
     PostitIO.delete(p, dc);
   }
 
+  /**
+   * Gets the list of postits readable by current user.
+   * A postit is readable if it meets one of the following conditions :
+   * <ul>
+   * <li>its receiver is public ( = 0)</li>
+   * <li>its issuer equals {@code userId}</li>
+   * <li>its receiver equals {@code userId}</li>
+   * </ul>
+   * @param userId current user id
+   * @param read last postit read
+   * @return a list of readable postits
+   */
   @Override
   public List<Postit> getPostits(int userId, int read) {
-    //String where = "WHERE (dest = 0 OR dest = " + userId + ") AND id > " + read;
     String where = "WHERE (dest = 0 OR emet = " + userId + " OR dest = " + userId + ") AND id > " + read;
     return PostitIO.find(where, dc);
   }

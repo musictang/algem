@@ -1,7 +1,7 @@
 /*
- * @(#)PostitCanvas.java	2.13.2 10/05/17
+ * @(#)PostitCanvas.java	2.15.11 09/10/2018
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -33,7 +33,7 @@ import net.algem.util.ui.GemPanel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.13.2
+ * @version 2.15.11
  */
 public class PostitCanvas
         extends GemPanel
@@ -288,6 +288,10 @@ public class PostitCanvas
       }
       repaint();
     }
+  }
+
+  List<PostitPosition> getPositions() {
+    return postits;
   }
 
   public void clear() {

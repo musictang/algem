@@ -1,7 +1,7 @@
 /*
- * @(#)DesktopDispatcher.java	2.8.x 16/09/14
+ * @(#)DesktopDispatcher.java	2.15.11 09/10/18
  *
- * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -33,7 +33,7 @@ import net.algem.util.GemLogger;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.8.x
+ * @version 2.15.11
  */
 public class DesktopDispatcher {
 
@@ -43,10 +43,10 @@ public class DesktopDispatcher {
   Vector<ObjectOutputStream> outs = new Vector<ObjectOutputStream>();
 
   public static void main(String[] argv) {
-    ServerSocket sock;
+    ServerSocket serverSocket;
 
     try {
-      sock = new ServerSocket(DEFAULT_SOCKET_PORT);
+      serverSocket = new ServerSocket(DEFAULT_SOCKET_PORT);
     } catch (IOException e) {
       GemLogger.logException(e);
       return;
@@ -56,7 +56,7 @@ public class DesktopDispatcher {
     System.out.println("dispatcher started");
     while (true) {
       try {
-        Socket client = sock.accept();
+        Socket client = serverSocket.accept();
         ThreadDispatcher t = new ThreadDispatcher(client, dispatcher);
         t.start();
       } catch (IOException e) {

@@ -1,7 +1,7 @@
 /*
- * @(#)GemDesktopCtrl.java	2.15.0 19/09/17
+ * @(#)GemDesktopCtrl.java	2.15.11 09/10/18
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -30,6 +30,9 @@ import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.prefs.Preferences;
 import javax.swing.*;
@@ -68,12 +71,13 @@ import net.algem.util.ui.UIAdjustable;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.0
+ * @version 2.15.11
  * @since 1.0a 05/07/2002
  */
 public class GemDesktopCtrl
   implements ActionListener, GemDesktop, UIAdjustable {
 
+  private static final Object POSTIT_LOCK = new Object();
   private final Cursor waitCursor = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
   private final Cursor defaultCursor = Cursor.getDefaultCursor();
 
@@ -83,7 +87,7 @@ public class GemDesktopCtrl
   private DataConnection dc;
   private UserService userService;
   private final JDesktopPane desktop;
-  private PostitModule postit;
+  private PostitModule postitModule;
   private PostitCreateCtrl postitCreate;
   private PlanModifCtrl modifCtrl;
   private ScheduleDetailCtrl detailCtrl;
@@ -150,7 +154,7 @@ public class GemDesktopCtrl
       GemLogger.logException(ex);
     }
     try {
-      setDispatcher();
+      launchDispatcher();
     } catch (IOException e) {
       System.err.println("exception dispatcher:" + e);
       dispatcher = null;
@@ -158,20 +162,32 @@ public class GemDesktopCtrl
   } // end constructor
 
   private void addPostit() {
-    postit = new PostitModule(userService); // postit windows
-    addModule(postit);
-    postit.getView().setLocation(new java.awt.Point(0, 0));
+    postitModule = new PostitModule(userService); // postit windows
+    addModule(postitModule);
+    postitModule.getView().setLocation(new java.awt.Point(0, 0));
 
-    loadPostits();
+    Runnable reloadPostitTask = new Runnable() {
+      @Override
+      public void run() {
+        loadPostits();
+      }
+    };
+    ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+    executor.scheduleAtFixedRate(reloadPostitTask, 0, 5, TimeUnit.MINUTES);
+
   }
 
   @Override
   public void loadPostits() {
-    if (postit != null) {
-      postit.clear();
-      postit.getNewPostit();
-      Postit bookings = userService.getBookingAlert();
-      if (bookings != null) {postit.addPostit(bookings);}
+    if (postitModule != null) {
+      synchronized (POSTIT_LOCK) {
+        postitModule.clear();// lastRead == 0
+        postitModule.loadPostits(userService.getPostits(dataCache.getUser().getId(), 0));
+        Postit bookings = userService.getBookingAlert();
+        if (bookings != null) {
+          postitModule.addPostit(bookings);
+        }
+      }
     }
   }
 
@@ -186,9 +202,11 @@ public class GemDesktopCtrl
 
     try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(path + ".gemdesktop"))) {
       java.util.List<GemModuleSID> serList = (ArrayList<GemModuleSID>) ois.readObject();
+
       for (GemModuleSID sid : serList) {
         if (sid != null) {
-          if (sid.getModuleClass().equals(PersonFileEditor.class.getSimpleName())) {
+          if (sid.getModuleClass().equals(PersonFileEditor.class
+            .getSimpleName())) {
             int id = Integer.parseInt(sid.getSID());
             if (id <= 0) {
               continue;
@@ -199,8 +217,10 @@ public class GemDesktopCtrl
               ((PersonFileIO) DataCache.getDao(Model.PersonFile)).complete(pFile);
               PersonFileEditor editor = new PersonFileEditor(pFile);
               addModule(editor, true);
+
             }
-          } else if (sid.getModuleClass().equals(DayScheduleCtrl.class.getSimpleName())) {
+          } else if (sid.getModuleClass().equals(DayScheduleCtrl.class
+            .getSimpleName())) {
             DayScheduleCtrl dayScheduleCtrl = new DayScheduleCtrl();
             addModule(dayScheduleCtrl);
             dayScheduleCtrl.setState(sid.getState());
@@ -220,7 +240,7 @@ public class GemDesktopCtrl
    *
    * @throws IOException
    */
-  private void setDispatcher() throws IOException {
+  private void launchDispatcher() throws IOException {
     initDispatcher();
     new Thread(new Runnable() {
 
@@ -253,7 +273,7 @@ public class GemDesktopCtrl
    * @return a postitModule
    */
   public PostitModule getPostit() {
-    return postit;
+    return postitModule;
   }
 
   /**
@@ -456,7 +476,8 @@ public class GemDesktopCtrl
 //        System.out.println("GemDesktopCtrl.forwardEvent:"+evt);
     Object[] listeners = listenerList.getListenerList();
 
-    for (int i = listeners.length - 2; i >= 0; i -= 2) {
+    for (int i = listeners.length - 2; i >= 0; i
+      -= 2) {
       if (listeners[i] == GemEventListener.class) {
         GemEventListener l = (GemEventListener) listeners[i + 1];
         if (l != evt.getSource()) {
@@ -483,10 +504,10 @@ public class GemDesktopCtrl
       Postit p = ((CreatePostitEvent) evt).getPostit();
       if (p.getReceiver() > 0) {
         if (dataCache.getUser().getId() == p.getReceiver()) {
-          postit.addPostit(((CreatePostitEvent) evt).getPostit());
+          postitModule.addPostit(((CreatePostitEvent) evt).getPostit());
         }
       } else {
-        postit.addPostit(((CreatePostitEvent) evt).getPostit());
+        postitModule.addPostit(((CreatePostitEvent) evt).getPostit());
       }
       return;
     }
@@ -553,7 +574,7 @@ public class GemDesktopCtrl
 
   @Override
   public void removeModule(GemModule module) {
-    if (module == null || module == postit) {
+    if (module == null || module == postitModule) {
       return;
     }
     desktop.remove(module.getView());
@@ -823,7 +844,7 @@ public class GemDesktopCtrl
   private void detachCurrent() {
     System.out.println("detacheCurrent");
     GemModule m = getSelectedModule();
-    if (m == null || m == postit) {
+    if (m == null || m == postitModule) {
       return;
     }
 
@@ -841,7 +862,7 @@ public class GemDesktopCtrl
     JInternalFrame frames[] = desktop.getAllFrames();
     for (int i = 0; i < frames.length; i++) {
       if (frames[i].isIcon()
-        && frames[i] != postit.getView()) {
+        && frames[i] != postitModule.getView()) {
         try {
           frames[i].setIcon(false);
         } catch (PropertyVetoException ignore) {
@@ -855,7 +876,7 @@ public class GemDesktopCtrl
     JInternalFrame frames[] = desktop.getAllFrames();
     for (int i = 0; i < frames.length; i++) {
       if (!frames[i].isIcon()
-        && frames[i] != postit.getView()) {
+        && frames[i] != postitModule.getView()) {
         try {
           frames[i].setIcon(true);
         } catch (PropertyVetoException ignore) {
@@ -869,7 +890,7 @@ public class GemDesktopCtrl
     JInternalFrame frames[] = desktop.getAllFrames();
     for (int i = 0; i < frames.length; i++) {
       if (!frames[i].isClosed()
-        && frames[i] != postit.getView()) {
+        && frames[i] != postitModule.getView()) {
         try {
           frames[i].setClosed(true);
           frames[i].dispose();
@@ -887,7 +908,7 @@ public class GemDesktopCtrl
 
     for (int i = 0; i < frames.length; i++) {
       if (!frames[i].isIcon()
-        && frames[i] != postit.getView()) {
+        && frames[i] != postitModule.getView()) {
         frames[i].setLocation(x, y);
         frames[i].toFront();
         x += 10;
@@ -920,7 +941,6 @@ public class GemDesktopCtrl
    * URL(urlPrefix+url)); } catch (Exception e) { } }
    *
    * } */
-
   @Override
   public void storeUISettings() {
     Rectangle bounds = frame.getBounds();
