@@ -1,10 +1,10 @@
-<#assign projectVersion = "2.15.10">
+<#assign projectVersion = "2.16.0">
 <#if licenseFirst??>
 ${licenseFirst}
 </#if>
  * @(#) ${nameAndExt} Algem ${projectVersion} ${date?date?string("dd/MM/yyyy")}
  *
- * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2019 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it

@@ -1,7 +1,7 @@
 /*
- * @(#)MemberEnrolmentView.java	2.10.0 13/05/16
+ * @(#)MemberEnrolmentView.java	2.16.0 05/03/19
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2019 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -57,7 +57,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.16.0
  * @since 2.10.0 13/05/16
  */
 public abstract class MemberEnrolmentView
@@ -78,7 +78,7 @@ public abstract class MemberEnrolmentView
     this.desktop = desktop;
     this.service = service;
     this.dataCache = desktop.getDataCache();
-    membersTableModel = new MusicianTableModel(dataCache);
+    membersTableModel = new MusicianTableModel(dataCache, true);
 
     memberTable = new JTable(membersTableModel)
     {
@@ -161,7 +161,7 @@ public abstract class MemberEnrolmentView
    * Initial loading.
    *
    * @param id
-   * @param title 
+   * @param title
    */
   public void load(int id, String title) {
     this.id = id;
@@ -172,7 +172,7 @@ public abstract class MemberEnrolmentView
     clear();
     load(id, dataCache.getStartOfYear().getDate(), dataCache.getEndOfYear().getDate());
   }
-  
+
   protected void load() {
     Date start = datePanel.getStart();
     Date end = datePanel.getEnd();
@@ -182,7 +182,7 @@ public abstract class MemberEnrolmentView
     clear();
     load(id, start, end);
   }
-  
+
   /**
    * Load the list of members between {@code start} and {@code end}.
    * @param id course id

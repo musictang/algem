@@ -1,7 +1,7 @@
 /*
- * @(#)PlanningService.java	2.15.8 26/03/2018
+ * @(#)PlanningService.java	2.16.0 05/03/19
  *
- * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2019 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -44,7 +44,7 @@ import net.algem.util.ui.MessagePopup;
  * Service class for planning.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.8s
+ * @version 2.16.0
  * @since 2.4.a 07/05/12
  */
 public class PlanningService {
@@ -781,7 +781,7 @@ public class PlanningService {
     try {
       dc.setAutoCommit(false);
       //modifier les commande_cours jusqu'à la date de début
-      String where = " AND cc.idaction = " + a.getId();
+      String where = "WHERE cc.idaction = " + a.getId();
       Vector<CourseOrder> vcc = CourseOrderIO.find(where, dc);
 
       // selection planning

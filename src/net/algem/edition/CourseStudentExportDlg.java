@@ -1,7 +1,7 @@
 /*
- * @(#)CourseStudentExportDlg.java 2.15.8 22/03/18
+ * @(#)CourseStudentExportDlg.java 2.16.0 05/03/19
  *
- * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2019 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -34,7 +34,7 @@ import net.algem.util.ui.GridBagHelper;
  * Export dialog for contact infos of students doing the selected course.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.8
+ * @version 2.16.0
  * @since 2.6.d 06/11/2012
  */
 public class CourseStudentExportDlg
@@ -61,7 +61,7 @@ public class CourseStudentExportDlg
 
   @Override
   public String getRequest() {
-    // boxing required : null value may be returned
+    // BOXING REQUIRED : null value may be returned
     Boolean pro = rdPro.isSelected() ? Boolean.valueOf(true) : (rdLeisure.isSelected() ? Boolean.valueOf(false) : null);
     return service.getContactQueryByCourse(course.getKey(), dateRange.getStart(), dateRange.getEnd(), pro);
   }

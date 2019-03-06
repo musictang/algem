@@ -84,6 +84,8 @@ public class ModuleIO
             ps.setInt(7, 0);
             ps.setBoolean(8, true);
             ps.setDouble(9, m.getYearReducRate());
+
+            GemLogger.info(ps.toString());
             ps.executeUpdate();
           }
           m.setId(n);

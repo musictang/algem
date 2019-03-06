@@ -1,7 +1,7 @@
 /*
- * @(#)ExportService.java 2.15.8 22/03/18
+ * @(#)ExportService.java 2.16.0 05/03/19
  *
- * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2019 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -45,7 +45,7 @@ import net.algem.util.DataConnection;
  * Service class for export operations.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.8
+ * @version 2.16.0
  * @since 2.6.d 06/11/2012
  */
 public class ExportService {
@@ -348,12 +348,13 @@ public class ExportService {
 
   List<Person> getContacts(String query) throws SQLException {
     List<Person> list = new ArrayList<Person>();
-    ResultSet rs = dc.executeQuery(query);
-    while (rs.next()) {
-      Person p = new Person(rs.getInt(1));
-      p.setName(rs.getString(2));
-      p.setFirstName(rs.getString(3));
-      list.add(p);
+    try (ResultSet rs = dc.executeQuery(query)) {
+      while (rs.next()) {
+        Person p = new Person(rs.getInt(1));
+        p.setName(rs.getString(2));
+        p.setFirstName(rs.getString(3));
+        list.add(p);
+      }
     }
     return list;
   }
@@ -369,7 +370,7 @@ public class ExportService {
       + " JOIN " + PersonIO.TABLE + " p ON (m.payeur = p.id)"
       + " WHERE m.idper = " + idper
       + " AND m.idper NOT IN (SELECT idper FROM " + AddressIO.TABLE + ")"
-      + " AND p.organisation = 0" //FIX (organisation may be null)
+      + " AND (p.organisation IS NULL OR p.organisation = 0)"
       + " AND a.archive = false";
     ResultSet rs = dc.executeQuery(query);
 
@@ -384,6 +385,11 @@ public class ExportService {
 
   }
 
+  /**
+   * @param idper
+   * @return
+   * @throws SQLException
+   */
   List<String> getEmails(int idper) throws SQLException {
     String query = "SELECT DISTINCT e.email FROM "
       + EmailIO.TABLE + " e"
@@ -394,13 +400,14 @@ public class ExportService {
       + " e JOIN " + MemberIO.TABLE + " m ON (e.idper = m.payeur) JOIN " + PersonIO.TABLE + " p ON (m.payeur = p.id)"
       + " WHERE m.idper = " + idper
       + " AND m.idper NOT IN (SELECT idper FROM  " + EmailIO.TABLE + ")"
-      + " AND p.organisation IS NULL"
+      + " AND (p.organisation IS NULL OR p.organisation = 0)"
       + " AND e.archive = false";
 
-    ResultSet rs = dc.executeQuery(query);
     List<String> list = new ArrayList<String>();
-    while (rs.next()) {
-      list.add(rs.getString(1));
+    try (ResultSet rs = dc.executeQuery(query)) {
+      while (rs.next()) {
+        list.add(rs.getString(1));
+      }
     }
     return list;
   }
@@ -414,7 +421,7 @@ public class ExportService {
       + TeleIO.TABLE + " t JOIN " + MemberIO.TABLE + " m ON (t.idper = m.payeur)"
       + " JOIN " + PersonIO.TABLE + " p ON (m.payeur = p.id)"
       + " WHERE m.idper = " + idper
-      + " AND p.organisation = 0"
+      + " AND (p.organisation IS NULL OR p.organisation = 0)"
       + " AND m.idper NOT IN (SELECT idper FROM " + TeleIO.TABLE + ")";
     ResultSet rs = dc.executeQuery(query);
     List<String> list = new ArrayList<String>();

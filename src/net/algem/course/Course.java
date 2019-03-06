@@ -1,7 +1,7 @@
 /*
- * @(#)Course.java	2.10.0 13/06/16
+ * @(#)Course.java	2.15.12 12/10/18
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -27,7 +27,7 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.15.12
  * @since 1.0a 07/07/1999
  */
 public class Course
@@ -45,7 +45,7 @@ public class Course
 
   /** Maximum length of label. */
   public static final int MAX_LABEL_LENGTH = 32;
-  
+
   private static final long serialVersionUID = -487195875125578605L;
 
   protected int id;
@@ -148,18 +148,34 @@ public class Course
     code = idCode;
   }
 
+  /**
+   * @deprecated
+   * @return
+   */
   public short getLevel() {
     return level;
   }
 
+    /**
+   * @deprecated
+   * @return
+   */
   public void setLevel(short n) {
     level = n;
   }
 
+  /**
+   * @deprecated
+   * @return
+   */
   public short getNPlaces() {
     return nplaces;
   }
 
+  /**
+   * @deprecated
+   * @param n
+   */
   public void setNPlaces(short n) {
     nplaces = n;
   }

@@ -1,7 +1,7 @@
 /*
- * @(#)DateLib.java	2.9.4.8 23/06/15
- * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * @(#)DateLib.java	2.16.0 05/03/19
+ *
+ * Copyright (c) 1999-2019 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,18 +16,19 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.planning;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.9.4.8
+ * @version 2.16.0
  */
 public class DateLib
 {
@@ -78,5 +79,21 @@ public class DateLib
     }
 
     return (year % 4) == 0;
+  }
+
+  /**
+   * Converts a birthdate into an integer representing an age.
+   * @param birth birthDate french-formatted
+   * @return an age in number of years
+   */
+  public static int getAge(DateFr birth) {
+    Calendar cal = Calendar.getInstance(Locale.FRANCE);
+    int a = cal.get(Calendar.YEAR) - birth.getYear();
+    int m = birth.getMonth() -1;
+    if (m  > cal.get(Calendar.MONTH)
+      || (m == cal.get(Calendar.MONTH) && birth.getDay() > cal.get(Calendar.DATE))) {
+      a--;
+    }
+    return a;
   }
 }

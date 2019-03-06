@@ -1,7 +1,7 @@
 /*
- * @(#)MusicianTableModel.java	2.15.2 27/09/17
+ * @(#)MusicianTableModel.java	2.16.0 05/03/19
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2019 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,22 +28,34 @@ import net.algem.util.ui.JTableModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.2
+ * @version 2.16.0
  */
 public class MusicianTableModel
-        extends JTableModel<Musician>
-{
+  extends JTableModel<Musician> {
 
   private DataCache dataCache;
 
-  public MusicianTableModel(DataCache dataCache) {
+  /**
+   * Musician table model, generally speaking.
+   * A member is also a musician and this class may be used in contexts where member is involved.
+   *
+   * @param dataCache cache
+   * @param ageIncluded is age included in model
+   */
+  public MusicianTableModel(DataCache dataCache, boolean ageIncluded) {
     this.dataCache = dataCache;
-    header = new String[]{
-            BundleUtil.getLabel("Id.label"),
-			BundleUtil.getLabel("Name.label"),
-			BundleUtil.getLabel("First.name.label"),
-			BundleUtil.getLabel("Instrument.label")
-		};
+    if (ageIncluded) {
+      header = new String[5];
+    } else {
+      header = new String[4];
+    }
+    header[0] = BundleUtil.getLabel("Id.label");
+    header[1] = BundleUtil.getLabel("Name.label");
+    header[2] = BundleUtil.getLabel("First.name.label");
+    header[3] = BundleUtil.getLabel("Instrument.label");
+    if (ageIncluded) {
+      header[4] = BundleUtil.getLabel("Age.label");
+    }
   }
 
   @Override
@@ -61,6 +73,8 @@ public class MusicianTableModel
       case 2:
       case 3:
         return String.class;
+      case 4:
+        return Integer.class;
       default:
         return Object.class;
     }
@@ -73,24 +87,18 @@ public class MusicianTableModel
 
   @Override
   public Object getValueAt(int ligne, int colonne) {
-    Musician p = tuples.elementAt(ligne);
+    Musician m = tuples.elementAt(ligne);
     switch (colonne) {
       case 0:
-        return new Integer(p.getId());
+        return m.getId();
       case 1:
-        return p.getName();
+        return m.getName();
       case 2:
-        return p.getFirstName();
+        return m.getFirstName();
       case 3:
-        return dataCache.getInstrumentName(p.getInstrument());
-      /*
-      if (p instanceof Adherent)
-      return ((Adherent)p).getInstrument1();
-      else if (p instanceof Enseignant)
-      return ((Enseignant)p).getInstrument1();
-      else
-      return "???";
-       */
+        return dataCache.getInstrumentName(m.getInstrument());
+      case 4:
+        return m.getAge();
     }
     return null;
   }

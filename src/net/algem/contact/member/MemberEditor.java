@@ -1,7 +1,7 @@
 /*
- * @(#)MemberEditor.java	2.15.0 30/07/2017
+ * @(#)MemberEditor.java	2.16.0 05/03/19
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2019 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -28,8 +28,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.util.Calendar;
-import java.util.Locale;
 import net.algem.config.CategoryOccupChoice;
 import net.algem.contact.InstrumentView;
 import net.algem.contact.Person;
@@ -37,6 +35,7 @@ import net.algem.contact.PersonFile;
 import net.algem.contact.PersonIO;
 import net.algem.planning.DateFr;
 import net.algem.planning.DateFrField;
+import net.algem.planning.DateLib;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.model.Model;
@@ -49,7 +48,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.0
+ * @version 2.16.0
  */
 public class MemberEditor
         extends FileTab
@@ -144,10 +143,7 @@ public class MemberEditor
     if (evt.getSource() == payer) {
       searchPayer();
     } else if (evt.getSource() == birth) {
-//      Calendar cal = Calendar.getInstance(Locale.FRANCE);
-//      int a = cal.get(Calendar.YEAR) - birth.get().getYear();
-//      age.setText(String.valueOf(a));
-      age.setText(String.valueOf(getAge(birth.get())));
+      age.setText(String.valueOf(DateLib.getAge(birth.get())));
     }
   }
 
@@ -199,10 +195,7 @@ public class MemberEditor
     occupation.setSelectedItem((String) m.getOccupation());
     if (m.getBirth() != null) {
       birth.set(m.getBirth());
-//      Calendar cal = Calendar.getInstance(Locale.FRANCE);
-//      int a = cal.get(Calendar.YEAR) - m.getBirth().getYear();
-//      age.setText(String.valueOf(a));
-      age.setText(String.valueOf(getAge(m.getBirth())));
+      age.setText(String.valueOf(DateLib.getAge(m.getBirth())));
     } else {
       age.setText("0");
     }
@@ -271,14 +264,4 @@ public class MemberEditor
     set(d.getOldMember());
   }
 
-  private int getAge(DateFr birth) {
-    Calendar cal = Calendar.getInstance(Locale.FRANCE);
-    int a = cal.get(Calendar.YEAR) - birth.getYear();
-    int m = birth.getMonth() -1;
-    if (m  > cal.get(Calendar.MONTH)
-      || (m == cal.get(Calendar.MONTH) && birth.getDay() > cal.get(Calendar.DATE))) {
-      a--;
-    }
-    return a;
-  }
 }

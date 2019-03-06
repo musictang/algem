@@ -1,7 +1,7 @@
 /*
- * @(#)MemberEnrolmentEditor.java 2.15.8 25/03/18
+ * @(#)MemberEnrolmentEditor.java 2.16.0 05/03/19
  *
- * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2019 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -76,7 +76,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.8
+ * @version 2.16.0
  * @since 1.0b 06/09/2001
  */
 public class MemberEnrolmentEditor
@@ -294,9 +294,9 @@ public class MemberEnrolmentEditor
           if (mo.isStopped()) {
             mnode.setInfo(" <font color=\"#666666\">" + BundleUtil.getLabel("Module.stopped.label") + " : " + mo.getEnd().toString() + "</font>");
           }
-          Vector<CourseOrder> v = service.getCourseOrder(i.getId(), mo.getId());
-          for (int k = 0; k < v.size(); k++) {
-            CourseOrder cc = v.elementAt(k);
+          Vector<CourseOrder> courseOrders = service.getCourseOrder(i.getId(), mo.getId());
+          for (int k = 0; k < courseOrders.size(); k++) {
+            CourseOrder cc = courseOrders.elementAt(k);
             int jj = service.getCourseDayMember(cc.getAction(), cc.getDateStart(), i.getMember());
             //auto update of end date
             DateFr last = new DateFr(service.getLastSchedule(dossier.getId(), cc.getId()));

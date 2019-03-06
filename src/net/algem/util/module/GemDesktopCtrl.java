@@ -1,7 +1,7 @@
 /*
- * @(#)GemDesktopCtrl.java	2.15.11 09/10/18
+ * @(#)GemDesktopCtrl.java	2.16.0 05/03/19
  *
- * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2019 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -71,7 +71,7 @@ import net.algem.util.ui.UIAdjustable;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.11
+ * @version 2.16.0
  * @since 1.0a 05/07/2002
  */
 public class GemDesktopCtrl
@@ -108,6 +108,7 @@ public class GemDesktopCtrl
   private Preferences prefs;
   private boolean savePrefs;
   private EventListenerList listenerList = new EventListenerList();
+  private ScheduledExecutorService postitScheduledExecutor;
   Socket dispatcher;
   ObjectInputStream iDispatcher;
   ObjectOutputStream oDispatcher;
@@ -166,14 +167,8 @@ public class GemDesktopCtrl
     addModule(postitModule);
     postitModule.getView().setLocation(new java.awt.Point(0, 0));
 
-    Runnable reloadPostitTask = new Runnable() {
-      @Override
-      public void run() {
-        loadPostits();
-      }
-    };
-    ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-    executor.scheduleAtFixedRate(reloadPostitTask, 0, 5, TimeUnit.MINUTES);
+    postitScheduledExecutor = Executors.newSingleThreadScheduledExecutor();
+    postitScheduledExecutor.scheduleAtFixedRate(this::loadPostits, 0, 5, TimeUnit.MINUTES);
 
   }
 
@@ -311,6 +306,9 @@ public class GemDesktopCtrl
       } catch (IOException e) {
         GemLogger.logException(e);
       }
+    }
+    if (postitScheduledExecutor != null) {
+      postitScheduledExecutor.shutdown();
     }
     // deconnexion
     dc.close();

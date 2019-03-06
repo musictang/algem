@@ -1,7 +1,7 @@
 /*
- * @(#)EnrolmentService.java	2.15.8 25/03/18
+ * @(#)EnrolmentService.java	2.16.0 05/03/19
  *
- * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2019 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -42,7 +42,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.8
+ * @version 2.16.0
  * @since 2.4.a 20/04/12
  */
 public class EnrolmentService
@@ -372,11 +372,11 @@ public class EnrolmentService
    *
    * @param i enrolment id
    * @param m module id
-   * @return a liste of course order
+   * @return a list of course orders
    * @throws java.sql.SQLException
    */
   public Vector<CourseOrder> getCourseOrder(int i, int m) throws SQLException {
-    return CourseOrderIO.find(" AND cc.idcmd = " + i + " AND cc.module = " + m + " ORDER BY idaction, datedebut", dc);
+    return CourseOrderIO.find("WHERE cc.idcmd = " + i + " AND cc.module = " + m + " ORDER BY cc.idaction, cc.datedebut", dc);
   }
 
   PersonFile getMemberFile(int idMember) throws SQLException {
@@ -393,7 +393,7 @@ public class EnrolmentService
     String query = "SELECT " + PersonIO.COLUMNS + "," + MemberIO.COLUMNS
       + " FROM " + PersonIO.VIEW + " p JOIN " + MemberIO.TABLE + " m ON p.id = m.idper"
       + " JOIN " + ScheduleRangeIO.TABLE + " pl ON p.id = pl.adherent "
-      + " WHERE pl.idplanning = " + plan.getId();
+      + " WHERE pl.idplanning = " + plan.getId() + " ORDER BY p.nom, p.prenom";
     return ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findRegistered(query);
 //    return ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findByIdOrder(query, false);
   }
@@ -676,7 +676,7 @@ public class EnrolmentService
       dc.setAutoCommit(false);
 
       ModuleOrderIO.delete(mo.getId(), dc);
-      Vector<CourseOrder> courseOrders = CourseOrderIO.find(" AND cc.module = " + mo.getId(), dc);
+      Vector<CourseOrder> courseOrders = CourseOrderIO.find("WHERE cc.module = " + mo.getId(), dc);
       for (int i = 0; i < courseOrders.size(); i++) {
         CourseOrder cc = courseOrders.elementAt(i);
         // suppression des plages de cours
@@ -860,7 +860,7 @@ public class EnrolmentService
         co.setDateStart(from);
         co.setDateEnd(from);
       }
-      // on updateAdministrativeEvent la commande_cours
+      // on update la commande_cours
       CourseOrderIO.update(co, dc);
     } catch (SQLException sqe) {
       throw new EnrolmentException(sqe.getMessage());

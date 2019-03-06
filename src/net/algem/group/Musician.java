@@ -1,7 +1,7 @@
 /*
- * @(#)Musician.java	2.9.4.13 05/11/15
- * 
- * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
+ * @(#)Musician.java	2.16.0 05/03/19
+ *
+ * Copyright (c) 1999-2019 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,27 +16,30 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.group;
 
+import java.util.Date;
 import net.algem.contact.Person;
+import net.algem.planning.DateFr;
+import net.algem.planning.DateLib;
 
 /**
  * comment
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.4.13
+ * @version 2.16.0
  */
 public class Musician
-        extends Person
-{
+  extends Person {
 
   private static final long serialVersionUID = 4348331342721723243L;
-  
+
   private int instrument;
   private Group group;
+  private int age;
 
   public Musician() {
   }
@@ -71,6 +74,15 @@ public class Musician
     this.group = group;
   }
 
+  public int getAge() {
+    return age;
+  }
+
+  public void setAge(Date birthDate) {
+    if (birthDate != null) {
+      this.age = DateLib.getAge(new DateFr(birthDate));
+    }
+  }
 
   @Override
   public boolean equals(Object obj) {
@@ -102,5 +114,5 @@ public class Musician
   public String toString() {
     return super.toString() + " " + instrument;
   }
- 
+
 }

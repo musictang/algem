@@ -63,7 +63,7 @@ public class ModuleService
   }
 
   public void delete(Module m) throws SQLException, ModuleException {
-    Vector<ModuleOrder> vm = ModuleOrderIO.find("AND m.id = " + m.getId(), dc);
+    Vector<ModuleOrder> vm = ModuleOrderIO.find("WHERE m.id = " + m.getId(), dc);
     if (vm != null && vm.size() > 0) {
       if (vm.size() < 10) {
         StringBuilder sb = new StringBuilder();
@@ -79,7 +79,7 @@ public class ModuleService
   }
 
   boolean isUsed(int moduleId, DateFr start) throws SQLException {
-    Vector<ModuleOrder> vm = ModuleOrderIO.find("AND m.id = " + moduleId + " AND cm.debut >= '" + start.toString() + "'", dc);
+    Vector<ModuleOrder> vm = ModuleOrderIO.find("WHERE m.id = " + moduleId + " AND cm.debut >= '" + start.toString() + "'", dc);
     return vm != null && vm.size() > 0;
   }
 

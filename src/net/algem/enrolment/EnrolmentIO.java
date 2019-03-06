@@ -1,7 +1,7 @@
 /*
- * @(#)EnrolmentIO.java 2.10.0 01/06/16
+ * @(#)EnrolmentIO.java 2.16.0 05/03/19
  *
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2019 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -35,7 +35,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.10.0
+ * @version 2.16.0
  */
 public class EnrolmentIO
         extends TableIO
@@ -101,10 +101,10 @@ public class EnrolmentIO
   }
 
   public static List<Enrolment> find(String where, DataConnection dc) throws SQLException {
-    List<Enrolment> v = new ArrayList<Enrolment>();
+    List<Enrolment> enrolments = new ArrayList<Enrolment>();
     Vector<Order> orders = OrderIO.find(where, dc);
     if (orders.size() < 1) {
-      return v;
+      return enrolments;
     }
     Enumeration<Order> enu = orders.elements();
     while (enu.hasMoreElements()) {
@@ -112,8 +112,8 @@ public class EnrolmentIO
       Enrolment e = new Enrolment(o);
       e.setModule(ModuleOrderIO.findByIdOrder(e.getId(), dc));
       e.setCourseOrder(CourseOrderIO.findId(e.getId(), dc));
-      v.add(e);
+      enrolments.add(e);
     }
-    return v;
+    return enrolments;
   }
 }
