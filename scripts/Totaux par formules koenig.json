@@ -1,8 +1,0 @@
-{
-  "description": "Totaux par formule.\nSi vous ne saisissez pas de date, la p\u00e9riode de recherche par d\u00e9faut correspond \u00e0 l'ann\u00e9e scolaire.\nLes \u00e9ch\u00e9ances correspondant aux comptes 17 (Frais de gestion), 18 (Frais rdv nouvel \u00e9l\u00e8ve), 19 (Adh\u00e9sion N+1) 20 (Frais de gestion N+1) et 31 (Adh\u00e9sions) ne sont pas prises en compte.",
-"args":
-[
-    {"name" : "debut", "label": "Date d\u00e9but", "type": "date"},
-    {"name" : "fin", "label": "Date fin", "type": "date"}
-]
-}
