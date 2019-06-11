@@ -1,0 +1,12 @@
+BUGS CORRIGES
+* Le profil d'un utilisateur n'était pas mis à jour dans le cache après modification (Création/Modification login).
+* Il n'est plus possible d'associer plusieurs autorisations pour un même menu dans la gestion des droits d'un utilisateur (interdiction des doublons dans la table menuaccess).
+* Le même profil ne peut plus être associé 2 fois au même menu (interdiction des doublons dans la table menuprofil).
+* On ne pouvait saisir des nombres de plus de 3 chiffres dans les arguments d'un script en raison d'une erreur de formatage.
+* Le panneau de gauche de la liste des scripts n'était plus accessible si l'on déplaçait la barre de séparation.
+* Les cellules du tableau des arguments dans le paramétrage d'un script étaient trop étroites dans certains Look & Feel (Nimbus, en particulier).
+
+PLANNING
+Vous pouvez maintenant associer une note (un mémo) à une planification. Ne confondez pas cette note avec les notes de suivi, propres à chaque planning (séance de cours) ou à chaque plage élève (suivi individuel). Cette note aura surtout son utilité en début d'année, lorsque qu'il reste encore des indéterminations dans l'attribution des horaires et des plages élèves. On pourra spécifier par ce biais des critères de remplissage ou de gestion que les notions de statut, de niveau ou de tranche d'âge ne suffisent pas à définir. 
+Afin d'enregistrer ce type de note, ouvrez le menu Paramètres planification après avoir cliqué sur le planning adéquat dans la fenêtre Planning jour. Entrez vos informations dans le champ de saisie de note et validez pour enregistrer. Un triangle noir, en haut à gauche de la séance, vous permettra d'identifier l'existence d'une note pour cette planification. Pour consulter cette note, ouvrez les paramètres planification comme vous l'avez fait au moment de la création. Pour supprimer la note, effacez le texte et validez vos modifications.
+Notez bien que cette note sera commune à toutes les séances programmées lors de la même planification (et par extension, à tous les séances copiées).

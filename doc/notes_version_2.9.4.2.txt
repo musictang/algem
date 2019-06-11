@@ -1,0 +1,6 @@
+BUGS CORRIGES
+* Dans l'onglet salarié de la fiche personne, les modifications n'étaient pas prises en compte si l'on ne renseignait que la catégorie ou le nombre d'enfants. Il fallait renseigner auparavant au moins un des autres champs (date de naissance ou nationalité, par exemple).
+* Lorsqu'on changeait d'établissement en cours de planification administrative et que l'une des salles dans le tableau des jours était encore en mode édition, la liste des salles correspondantes à l'établissement sélectionné était incorrecte.
+* Dans l'onglet Equipement d'une salle, les modifications n'étaient pas correctement enregistrées lorsque l'une des lignes était encore en mode d'édition.
+* La modification d'un employé entraînait une erreur SQL si l'on utilisait le pilote jdbc postgresql-9.4-1201.jdbc41.jar. Des erreurs liées à l'autoCommit étaient déclenchées lors de certaines opérations.
+* Les couleurs de premier plan et d'arrière plan des plannings de type stage n'étaient pas prises en compte après modification de la couleur par défaut dans Configuration -> Paramètres -> Couleurs

@@ -1,0 +1,222 @@
+/*
+ * @(#)ConfigEditor.java 2.17.0 23/03/2019
+ *                      2.15.0 25/07/2017
+ *
+ * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ *
+ * This file is part of Algem.
+ * Algem is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Algem is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with Algem. If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+package net.algem.config;
+
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.SQLException;
+import java.util.Map;
+import javax.swing.BorderFactory;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import net.algem.contact.OrganizationIO;
+import net.algem.util.*;
+import net.algem.util.module.GemDesktop;
+import net.algem.util.ui.GemButton;
+import net.algem.util.ui.GemPanel;
+
+/**
+ * General config editor.
+ *
+ * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
+ * @version 2.17.0
+ * @since 2.1.k
+ */
+public class ConfigEditor
+        extends GemPanel
+        implements ActionListener, ListSelectionListener
+{
+
+  public static final String GLOBAL_CONFIG_KEY = "Menu.configuration";
+  private ConfigOrganization orgPanel;
+  private ConfigPlanning activityPanel;
+  private ConfigPanel adminPanel;
+  private ConfigPanel filePanel;
+  private ConfigPanel mailingPanel; //ERIC 2.17.0e 08/04/2019
+  private ConfigPanel templatesPanel;
+  private ConfigPanel accountingPanel;
+  private Map<String, Config> confs;
+  private DataConnection dc;
+  private DataCache dataCache;
+  private GemPanel btPanel;
+  private GemButton btValidation;
+  private GemButton btClose;
+  private GemDesktop desktop;
+  private JList sectionList;
+  private JPanel confPanel;
+  private OrganizationIO orgIO;
+
+  public ConfigEditor() {
+  }
+
+  public ConfigEditor(GemDesktop desktop) {
+    this.desktop = desktop;
+    dataCache = desktop.getDataCache();
+    this.dc = DataCache.getDataConnection();
+    load();
+  }
+
+  /**
+   * Loading of the configuration panels.
+   */
+  private void load() {
+    setLayout(new BorderLayout());
+    confPanel = new JPanel(new CardLayout());
+    confPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+    try {
+      confs = ConfigIO.find(null, dc);
+      orgIO = new OrganizationIO(dc);
+      orgPanel = new ConfigOrganization(BundleUtil.getLabel("ConfEditor.organization.label"), confs, orgIO,desktop);
+      activityPanel = new ConfigPlanning(confs);
+      adminPanel = new ConfigAdmin(BundleUtil.getLabel("ConfEditor.management.label"), confs);
+      ((ConfigAdmin) adminPanel).init(dataCache);
+      filePanel = new ConfigFile(BundleUtil.getLabel("ConfEditor.file.label"), confs);
+      templatesPanel = new ConfigTemplates(BundleUtil.getLabel("Page.templates.label"),new PageTemplateIO(dc));
+      mailingPanel = new ConfigMailing(BundleUtil.getLabel("ConfEditor.mailing.label"), confs); //ERIC 2.17.0e 08/04/2019
+      ((ConfigTemplates) templatesPanel).init();
+      accountingPanel = new ConfigAccounting(BundleUtil.getLabel("ConfEditor.accounting.label"), confs);
+      confPanel.add(orgPanel, "organization");
+      confPanel.add(activityPanel, "schedule");
+      confPanel.add(adminPanel, "management");
+      confPanel.add(filePanel, "files");
+      confPanel.add(templatesPanel, "templates");
+      confPanel.add(accountingPanel, "accounting");
+      confPanel.add(mailingPanel, "mailing");
+    } catch (SQLException ex) {
+      GemLogger.logException(ex);
+    }
+
+    String[] sections = {
+      BundleUtil.getLabel("ConfEditor.organization.label"),
+      BundleUtil.getLabel("ConfEditor.schedule.label"),
+      BundleUtil.getLabel("ConfEditor.management.label"),
+      BundleUtil.getLabel("ConfEditor.file.label"),
+      BundleUtil.getLabel("Page.templates.label"),
+      BundleUtil.getLabel("ConfEditor.accounting.label"),
+      BundleUtil.getLabel("ConfEditor.mailing.label"),};
+    sectionList = new JList(sections);
+    sectionList.setSelectedIndex(0);
+    sectionList.addListSelectionListener(this);
+
+    JScrollPane scroll = new JScrollPane(confPanel);
+    scroll.setMinimumSize(new Dimension(550, scroll.getPreferredSize().height));
+
+    JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, sectionList, scroll);
+    splitPane.setDividerLocation(150);
+
+    add(splitPane, BorderLayout.CENTER);
+    btPanel = new GemPanel();
+    btPanel.setLayout(new GridLayout(1, 1));
+    btValidation = new GemButton(GemCommand.SAVE_CMD);
+    btClose = new GemButton(GemCommand.CANCEL_CMD);
+    btValidation.addActionListener(this);
+    btClose.addActionListener(this);
+    btPanel.add(btValidation);
+    btPanel.add(btClose);
+
+    add(btPanel, BorderLayout.SOUTH);
+  }
+
+  @Override
+  public void actionPerformed(ActionEvent e) {
+    if (e.getSource() == btValidation) {
+      try {
+        for (Config c : orgPanel.get()) {
+          Company comp = new Company();
+          if (ConfigKey.ORGANIZATION_DOMAIN.getKey().equals(c.getKey())) {
+            comp.setDomain(c.getValue());
+          }
+          orgIO.saveDefault(comp);
+        }
+        for (Config c : activityPanel.get()) {
+          confs.put(c.getKey(), c);
+        }
+        for (Config c : adminPanel.get()) {
+          confs.put(c.getKey(), c);
+        }
+        for (Config c : filePanel.get()) {
+          confs.put(c.getKey(), c);
+        }
+        for (Config c : accountingPanel.get()) {
+          confs.put(c.getKey(), c);
+        }
+        for (Config c : mailingPanel.get()) {   //ERIC 2.17.0e 08/04/2019
+          confs.put(c.getKey(), c);
+        }
+        ConfigIO.update(confs, dc);
+        dataCache.setConfig();// mise à jour du dataCache
+      } catch (SQLException ex) {
+        GemLogger.logException(MessageUtil.getMessage("config.update.exception"), ex);
+      }
+    }
+    close();
+  }
+
+  @Override
+  public void valueChanged(ListSelectionEvent e) {
+    JList list = (JList) e.getSource();
+    CardLayout cl = (CardLayout) (confPanel.getLayout());
+    switch (list.getSelectedIndex()) {
+      case 0:
+        cl.show(confPanel, "organization");
+        break;
+      case 1:
+        cl.show(confPanel, "schedule");
+        break;
+      case 2:
+        cl.show(confPanel, "management");
+        break;
+      case 3:
+        cl.show(confPanel, "files");
+        break;
+      case 4:
+        cl.show(confPanel, "templates");
+        break;
+      case 5:
+        // panneau infos bancaires
+        cl.show(confPanel, "accounting");
+        break;
+      case 6: //ERIC 2.17.0e 08/04/2019
+        // panneau configuration SMTP pour javaxmail
+        cl.show(confPanel, "mailing");
+        break;
+      default:
+        cl.show(confPanel, "organization");
+    }
+  }
+
+  private void close() {
+    confs.clear();
+    desktop.removeModule(GLOBAL_CONFIG_KEY);
+  }
+
+}

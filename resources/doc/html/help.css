@@ -1,0 +1,22 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 9 sept. 2014, 17:42:18
+    Author     : <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
+*/
+
+html * {
+  margin: 0;
+  padding: 0
+}
+
+body {
+  font-family: Arial, sans-serif
+}
+
+h1, h2, h3, p, ul {
+  margin-bottom: 0;
+}

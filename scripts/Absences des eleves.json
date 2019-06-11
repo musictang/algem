@@ -1,0 +1,8 @@
+{
+  "description": "Absences des \u00e9l\u00e8ves sur la p\u00e9riode.\nLes \u00e9l\u00e8ves sont class\u00e9s dans l'ordre alphab\u00e9tique. Seuls les \u00e9l\u00e8ves Absents ou Excus\u00e9s apparaissent dans les r\u00e9sultats.\nSi vous n'indiquez pas de p\u00e9riode, la recherche portera sur l'ann\u00e9e scolaire.",
+"args":
+[   
+    {"name" : "dateDebut", "label": "Date d\u00e9but", "type": "date"},
+    {"name" : "dateFin", "label": "Date fin", "type": "date"}
+]
+}

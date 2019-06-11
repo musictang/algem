@@ -1,0 +1,21 @@
+BUGS CORRIGES
+* L'ajout automatique des préfixes facebook, twitter ou myspace entraînait parfois des erreurs dans l'édition des sites web d'une fiche contact. Dans certains cas, les modifications effectuées sur les adresses web n'étaient pas prises en compte.
+* La détection des documents relatifs aux groupes ou aux salariés était parfois incorrecte car aucune distinction n'était faite entre 2 numéros se terminant pas les mêmes chiffres. S'il existait par exemple dans l'un des répertoires prédéfinis un document ayant pour nom bio 322.doc, ce document était aussi détecté pour le groupe n°22.
+* Le montant restant (ou PCA) dans la liste des commandes formules (programmes de formation) n'était pas égal à 0 lorsque l'ensemble des heures avait été distribué (dans le cas des formules à tarification horaire). Le montant restant affichait de manière erronnée le tarif horaire.
+* Dans l'historique des factures et des devis, le tri par numéro (1ère colonne) n'était pas correct lorsqu'il existait plusieurs numéros semblables sur le même mois (15032, 150320 par exemple). Désormais, le tri s'effectue sur la partie incrémentale du numéro : 1 sera toujours avant 10 et 10 toujours après 2.
+* Les prélèvements SEPA dont le nom du débiteur n'était pas renseigné entraînaient un rejet. Ce cas se présentait si la fiche personne comportait par exemple un nom d'organisation mais pas de nom de famille. En effet, le champ <Dbtor><Nm></Nm></Dbtor> ne peut être vide dans le fichier xml au format SEPA. Désormais, ce champ est complété en priorité par le nom d'organisation. S'il n'existe aucun nom d'organisation, le nom de la personne est utilisé, comme auparavant.
+
+FORMULES - PROGRAMMES DE FORMATION
+Dans les formules soumises à tarification horaire (quota d'heures de formation), le champ définissant le nombre d'heures total est maintenant au FORMAT DÉCIMAL. Auparavant, ce champ était au format heures:minutes et ne pouvait dépasser 99:59. Il est donc désormais possible de spécifier un nombre d'heures supérieur à 100 et bien au delà si on le désire. Attention toutefois à bien respecter le format décimal : 01:30 équivaut à 1,5 en décimal (avec une virgule pour séparateur) et 01:45 équivaut par ex. à 1,75.
+Cette modification est reflétée dans la liste des formules choisies au moment de l'inscription et dans la liste globale du menu Catalogue -> Commandes formules.
+
+EXPORT PLANNING
+Les couleurs exportées par l'intermédiaire du menu Exporter dans le planning jour n'étaient pas fidèles. Elles sont maintenant conformes aux couleurs définies dans les préférences.
+Rappel : les couleurs par défaut peuvent être redéfinies dans le menu Configuration -> Paramètres -> Couleurs.
+Auparavant, le libellé du cours était affiché en haut de chaque séance. Dans le cas où ce libellé n'a pas été défini, c'est maintenant le titre du cours qui est affiché.
+Pour les plannings individuels dont la durée est supérieure à 30 minutes, le nom de l'élève (ou le pseudo s'il existe) est également affiché en-dessous de l'intervenant.
+
+FACTURATION
+Le payeur est maintenant éditable après création d'un devis ou d'une facture (ainsi qu'au moment de la création).
+Rappel : à la création, le payeur est celui figurant sur la fiche de l'adhérent ou de la salle et ce payeur était auparavant en lecture seule.
+Pour le modifier, indiquez le numéro de payeur dans le champ correspondant. Vous pouvez appuyez sur la touche Entrée pour mettre à jour son nom dans la vue en cours. N'oubliez pas d'enregistrer votre modification en cliquant sur le bouton Validation.

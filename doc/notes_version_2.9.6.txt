@@ -1,0 +1,42 @@
+2.9.6
+CORRECTIFS
+* Lorsqu'on supprimait un contact disposant encore d'une carte d'abonnement, la suppression était impossible mais aucun message ne nous renseignait pourquoi.
+* Si vous modifiez le RIB d'une personne ayant un mandat de prélèvement SEPA, UN MESSAGE D'AVERTISSEMENT VOUS DEMANDE MAINTENANT D'ARCHIVER L'ANCIEN MANDAT et d'en créer un nouveau.
+* LA RECHERCHE DES AGENCES BANCAIRES DISPONIBLES NE FONCTIONNAIT PAS CORRECTEMENT APRÈS MODIFICATION DE RIB. Cela pouvait entraîner l'utilisateur à créer une nouvelle agence alors que celle-ci existait déjà.
+* La sélection d'un établissement ne fonctionnait pas toujours correctement après avoir ouvert la fenêtre d'impression de la feuille de présence.
+* Dans certains logiciels de courrier, le champ "cci" ou "bcc" comportait la mention "null" après avoir cliqué sur le bouton d'envoi de courrier dans la fiche "Personne".
+* Lorsqu'on envoyait un mail aux participants d'un planning de type Atelier ponctuel ou de type Stage, le mail du professeur n'était pas automatiquement inclus.
+* Les fiches Personne "à définir" ne sont plus réouvertes au démarrage (cela pouvait arriver lorsqu'on fermait le logiciel sans avoir terminé la création d'une fiche Personne).
+* La police des menus dans le thème Nimbus ne correspondait plus à la police originale après un certain temps d'utilisation.
+* Si vous choisissez un thème autre que celui par défaut (Metal), la police utilisée sera celle de votre système, que vous ayez activé ou pas ce réglage dans le fichier de paramètres (local.properties, en principe).
+* La police du calendrier n'était pas très élégante. Elle bénéficie maintenant d'un lissage.
+Rappel : on ouvre le calendrier en cliquant sur l'icone correspondante dans un champ date ou en appuyant sur F1 dans un champ date.
+* La décoration et l'affichage des boutons du planning jour sont mieux pris en charge dans les thèmes autres que celui par défaut.
+* La couleur des jours et des mois sélectionnés dans la barre de navigation du planning est maintenant prise en compte par les thème GTK et Mac OS X.
+* Meilleure gestion des marges pour les boutons du thème Nimbus.
+
+AMELIORATIONS
+FEUILLE DE PRESENCE
+- LES PLANNINGS DE TYPE ATELIER PONCTUEL OU STAGE APPARAISSENT MAINTENANT DANS LES FEUILLES DE PRÉSENCE.
+- Les FEUILLES DE PRÉSENCE sont maintenant CLASSÉES DANS L'ORDRE CHRONOLOGIQUE DES COURS. Elles étaient auparavant classées d'abord par salle.
+- Les PLANNINGS ALTERNÉS PAR QUINZAINE SONT MAINTENANT CORRECTEMENT PRIS EN COMPTE (à condition qu'ils aient été planifiés en deux étapes). Auparavant, seul le nom de l'élève de la première semaine était visible en début de ligne.
+- Les dates d'impression de la feuille de présence sont maintenant automatiquement positionnées au premier et au dernier jour du mois courant.
+- Aménagements divers dans la présentation de la feuille de présence.
+
+FICHE GROUPE
+La fenêtre de recherche d'un contact est maintenant directement accessible en saisie après avoir cliqué sur l'icone de recherche dans le dialogue d'ajout de musicien (bouton Ajouter dans l'onglet "Musiciens"). Elle était auparavant masquée par le dialogue d'ajout.
+
+RECHERCHE CONTACT
+Les informations (organisation,nom, prénom,pseudo) déjà saisies dans la fenêtre de recherche sont maintenant récupérées après avoir cliqué sur le bouton Créer. Cela vous évite ainsi d'avoir à les resaisir en créant une nouvelle fiche (après une recherche infructueuse par exemple).
+
+FICHE SALLE
+IL EST MAINTENANT POSSIBLE DE MODIFIER LE CONTACT PAR DÉFAUT D'UNE SALLE DÈS SA CRÉATION. Cliquez pour cela sur Options -> Changer/Ajouter contact. L'onglet Equipement étant ouvert, il vous sera également possible de renseigner l'équipement de cette salle.
+Il fallait auparavant enregistrer la salle pour pouvoir modifier le contact par défaut.
+
+ONGLET INSCRIPTION
+IL EST MAINTENANT POSSIBLE DE CHANGER LA DATE DE FIN (et éventuellement la date de début) D'UNE FORMULE OU D'UN PROGRAMME DE FORMATION. Sélectionnez la formule qui vous intéresse dans la liste des inscriptions de l'élève, cliquez droit et choisissez : Modifier période.
+Auparavant, si l'on inscrivait un élève à un cours ayant lieu après la date de fin d'inscription, la plage horaire de cet élève n'apparaissait pas dans le planning. En modifiant la date de fin de la formule, vous pourrez ainsi l'inscrire à des cours postérieurs à la date d'origine.
+
+PRELEVEMENTS
+- La validité d'un IBAN n'était pas toujours correctement détectée lors de l'export du fichier bancaire de prélèvement. La détection est maintenant identique à celle qui se fait dans le rib, par calcul de la clé.
+- L'export du fichier bancaire de prélèvement ne faisait pas de différence entre les lignes d'échéance marquées transférées et celles qui ne l'étaient pas, ce qui pouvait conduire à une différence de décompte entre le fichier de prélèvement (Compta->Prélèvement->Exporter) et le fichier de transfert (Compta->Transfert échéancier).

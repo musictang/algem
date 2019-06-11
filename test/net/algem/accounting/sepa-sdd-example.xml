@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+
+<Document  	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:iso:std:iso:20022:tech:xsd:pain.008.001.02"
+					 xsi:schemaLocation="urn:iso:std:iso:20022:tech:xsd:pain.008.001.02 file:/path/to/pain.008.001.02.xsd">
+
+	<CstmrDrctDbtInitn>
+		<GrpHdr> <!-- GroupHeader -->
+			<MsgId>MSGID - 123456</MsgId><!-- MessageIdentification A GENERER--> <!-- A GENERER-->
+			<CreDtTm>2009-09-04T14:25:00</CreDtTm> <!-- CreationDateTime -->
+			<NbOfTxs>2</NbOfTxs> <!--NumberOfTransactions -->
+<!--			<CtrlSum>6530.15</CtrlSum>  ControlSum  optionnel -->
+			<InitgPty> <!-- InitiatingParty -->
+				<Nm>Musiques Tangentes</Nm><!-- Raison sociale telle qu'elle figure sur le mandat Limité à 70 car. -->
+			</InitgPty>
+		</GrpHdr>
+
+		<PmtInf><!-- PaymentInformation -->
+			<PmtInfId>COTIS MT 2013-2014 [0-9]</PmtInfId> <!-- PaymentInformationIdentification --> <!-- A GENERER-->
+			<PmtMtd>DD</PmtMtd> <!-- PaymentMethod La valeur "DD" (pour Direct Debit) est obligatoire -->
+			<BtchBookg>true</BtchBookg> <!-- BatchBooking "true" implique une comptabilisation globale, "false" une comptabilisation unitaire.-->
+			<NbOfTxs>2</NbOfTxs>
+			<CtrlSum>3250.15</CtrlSum>
+			<PmtTpInf> <!-- PaymentTypeInformation Type de prélèvement -->
+				<SvcLvl> <!-- ServiceLevel -->
+					<Cd>SEPA</Cd> <!-- code valeur SEPA obligatoire -->
+				</SvcLvl>
+				<LclInstrm> <!-- LocalInstrument Permet de préciser le type de prélèvement. -->
+					<Cd>CORE</Cd> <!-- Code "CORE" pour un prélèvement SEPA (SDD Core) -->
+				</LclInstrm>
+				<SeqTp>FRST</SeqTp> <!-- SequenceType "FRST" (1er d'une serie), "RCUR" (récurrent-série en "FNAL" (dernier d'une série) -->
+			</PmtTpInf>
+			<ReqdColltnDt>2009-09-10</ReqdColltnDt> <!-- RequestedCollectionDate Date d'échéance -->
+			<Cdtr> <!-- Creditor Créancier -->
+				<Nm>Musiques Tangentes</Nm> <!-- Name -->
+			</Cdtr>
+			<CdtrAcct> <!-- CreditorAccount -->
+				<Id>
+<!--					<IBAN>FR7610041010050500013M02606</IBAN>-->
+					<IBAN>FR76425590000521027378707KK</IBAN>
+				</Id>
+			</CdtrAcct>
+			<CdtrAgt> <!-- Creditor agent (banque du créancier -->
+				<FinInstnId> <!-- FinancialInstitutionIdentification -->
+					<BIC>CCBPFRPPBDX</BIC>
+				</FinInstnId>
+			</CdtrAgt>
+<!-- 			<ChrgBr>SLEV</ChrgBr> ChargeBearer (optionnel) -->
+			<CdtrSchmeId> <!-- CreditorSchemeIdentification Eléments d'identification du créancier SEPA.-->
+				<Id>
+					<PrvtId> <!-- PrivateIdentification -->
+						<Othr> <!-- Une seule occurrence possible. -->
+							<Id>FR00ZZZ000144</Id> <!-- ICS -->
+							<SchmeNm> <!-- SchemeName -->
+								<Prtry>SEPA</Prtry> <!-- Proprietary La valeur "SEPA" est obligatoire -->
+							</SchmeNm>
+						</Othr>
+					</PrvtId>
+				</Id>
+			</CdtrSchmeId>
+
+			<DrctDbtTxInf> <!-- DirectDebitTransactionInformation -->
+				<PmtId><!-- PaymentIdentification -->
+<!--					<InstrId>REF OPE AAAA</InstrId>  InstructionIdentification (optionnel)-->
+					<EndToEndId>REF E2E XXX</EndToEndId> <!-- EndToEndIdentification requis  Référence de bout-en-bout qui est restituée au débiteur.--><!-- A GENERER-->
+				</PmtId>
+				<InstdAmt Ccy="EUR">1100.07</InstdAmt><!-- InstructedAmount Montant du prélévement SEPA en euro, compris entre 0,01 et 999 999 999,99. -->
+				<DrctDbtTx> <!-- DirectDebitTransaction -->
+					<MndtRltdInf> <!-- MandateRelatedInformation -->
+						<MndtId>++M1446136132 160927 12345</MndtId><!-- MandateIdentification RUM référence unique du mandat --><!-- A GENERER ET STOCKER -->
+						<DtOfSgntr>2014-01-15</DtOfSgntr>  <!-- Date de signature du mandat. (date d'échéance si inconnue) -->
+						<AmdmntInd>false</AmdmntInd> <!-- true si N° emetteur non inclus dans ics(migration national -> sepa) -->
+<!--						<AmendmentInformationDetails> <!- prsesent si AmdntInd à true
+							<OrgnlCdtrSchmeId>  OriginalCreditorScheme Identification ( Ancienne(s) donnée(s) relative(s) au créancier(ICS, ou NNE en cas de migration SEPA).
+								<Id>
+									<PrvtId>  PrivateIdentification
+										<Othr>  Une seule occurrence possible.
+											<Id>000144</Id>  (ancienne identification ) NNE
+										</Othr>
+									</PrvtId>
+								</Id>
+							</OrgnlCdtrSchmeId>
+						</AmendmentInformationDetails>-->
+					</MndtRltdInf>
+				</DrctDbtTx>
+				<DbtrAgt> <!-- DebtorAgent (banque du débiteur) -->
+					<FinInstnId> <!-- FinancialInstitutionIdentification -->
+						<BIC>CCBBFRPP</BIC> <!-- [A-Z]{6,6}[A-Z2-9][A-NP-Z0-9]([A-Z0-9]{3,3}){0,1} -->
+<!--						<Othr>  Utilisé obligatoirement lorsque l'élément BIC n'est pas renseigné
+							<Id>NOT PROVIDED</Id>
+						</Othr>-->
+					</FinInstnId>
+				</DbtrAgt>
+				<Dbtr><!-- Debtor : titulaire du compte à débier -->
+					<Nm>Mr Debiteur N1</Nm> <!--Name nom du débiteur limité à 70 car. -->
+				</Dbtr>
+				<DbtrAcct> <!-- DebtorAccount compte du débiteur -->
+					<Id>
+						<IBAN>FR763004136210001234567811</IBAN> <!-- IBAN du compte débiteur -->
+					</Id>
+				</DbtrAcct>
+				<!--<RmtInf>
+					<Ustrd>Facture N1</Ustrd>
+				</RmtInf>-->
+			</DrctDbtTxInf>
+
+			<DrctDbtTxInf> <!-- DirectDebitTransactionInformation -->
+				<PmtId><!-- PaymentIdentification -->
+					<!-- <InstrId>REF OPE AAAA</InstrId> InstructionIdentification (optionnel)-->
+					<EndToEndId>REF E2E XXX</EndToEndId> <!-- EndToEndIdentification requis  Référence de bout-en-bout qui est restituée au débiteur.--><!-- A GENERER-->
+				</PmtId>
+				<InstdAmt Ccy="EUR">1100.07</InstdAmt><!-- InstructedAmount Montant du prélévement SEPA en euro, compris entre 0,01 et 999 999 999,99. -->
+				<DrctDbtTx> <!-- DirectDebitTransaction -->
+					<MndtRltdInf> <!-- MandateRelatedInformation -->
+						<MndtId>++MANDAT NO 55555</MndtId><!-- MandateIdentification RUM référence unique du mandat --><!-- A GENERER ET STOCKER -->
+						<DtOfSgntr>2009-09-01</DtOfSgntr>  <!-- Date de signature du mandat. (date d'échéance si inconnue) -->
+						<AmdmntInd>true</AmdmntInd> <!-- true si modification (migration national -> sepa) -->
+<!--						<AmdmntInfDtls>  prseent si AmdntInd à true
+							<OrgnlCdtrSchmeId>  OriginalCreditorScheme Identification ( Ancienne(s) donnée(s) relative(s) au créancier(ICS, ou NNE en cas de migration SEPA).
+								<Id>
+									<PrvtId>  PrivateIdentification
+										<Othr>  Une seule occurrence possible.
+											<Id>000144</Id>  (ancienne identification ) NNE
+										</Othr>
+									</PrvtId>
+								</Id>
+							</OrgnlCdtrSchmeId>
+						</AmdmntInfDtls>-->
+					</MndtRltdInf>
+				</DrctDbtTx>
+				<DbtrAgt> <!-- DebtorAgent (banque du débiteur) -->
+					<FinInstnId> <!-- FinancialInstitutionIdentification -->
+						<Othr> <!-- Utilisé obligatoirement lorsque l'élément BIC n'est pas renseigné -->
+							<Id>NOT PROVIDED</Id>
+						</Othr>
+					</FinInstnId>
+				</DbtrAgt>
+				<Dbtr><!-- Debtor : titulaire du compte à débier -->
+					<Nm>Mr Debiteur N1</Nm> <!--Name nom du débiteur limité à 70 car. -->
+				</Dbtr>
+				<DbtrAcct> <!-- DebtorAccount compte du débiteur -->
+					<Id>
+						<IBAN>FR763004136210001234567811</IBAN> <!-- IBAN du compte débiteur -->
+					</Id>
+				</DbtrAcct>
+				<!--<RmtInf>
+					<Ustrd>Facture N1</Ustrd>
+				</RmtInf>-->
+			</DrctDbtTxInf>
+		</PmtInf>
+
+		<PmtInf><!-- PaymentInformation pour les prélèvements récurrents -->
+			<PmtInfId>COTIS MT 2013-2014 [0-9]</PmtInfId> <!-- PaymentInformationIdentification --> <!-- A GENERER-->
+			<PmtMtd>DD</PmtMtd> <!-- PaymentMethod La valeur "DD" (pour Direct Debit) est obligatoire -->
+			<BtchBookg>true</BtchBookg> <!-- BatchBooking "true" implique une comptabilisation globale, "false" une comptabilisation unitaire.-->
+			<NbOfTxs>2</NbOfTxs>
+			<CtrlSum>3250.15</CtrlSum>
+			<PmtTpInf> <!-- PaymentTypeInformation Type de prélèvement -->
+				<SvcLvl> <!-- ServiceLevel -->
+					<Cd>SEPA</Cd> <!-- code valeur SEPA obligatoire -->
+				</SvcLvl>
+				<LclInstrm> <!-- LocalInstrument Permet de préciser le type de prélèvement. -->
+					<Cd>CORE</Cd> <!-- Code "CORE" pour un prélèvement SEPA (SDD Core) -->
+				</LclInstrm>
+				<SeqTp>RCUR</SeqTp> <!-- SequenceType "FRST" (1er d'une serie), "RCUR" (récurrent-série en "FNAL" (dernier d'une série) -->
+			</PmtTpInf>
+			<ReqdColltnDt>2009-09-10</ReqdColltnDt> <!-- RequestedCollectionDate Date d'échéance -->
+			<Cdtr> <!-- Creditor Créancier -->
+				<Nm>Musiques Tangentes</Nm> <!-- Name -->
+			</Cdtr>
+			<CdtrAcct> <!-- CreditorAccount -->
+				<Id>
+<!--					<IBAN>FR7610041010050500013M02606</IBAN>-->
+					<IBAN>FR76425590000521027378707KK</IBAN>
+				</Id>
+			</CdtrAcct>
+			<CdtrAgt> <!-- Creditor agent (banque du créancier -->
+				<FinInstnId> <!-- FinancialInstitutionIdentification -->
+					<BIC>BANKFRPP</BIC>
+				</FinInstnId>
+			</CdtrAgt>
+<!-- 			<ChrgBr>SLEV</ChrgBr> ChargeBearer (optionnel) -->
+			<CdtrSchmeId> <!-- CreditorSchemeIdentification Eléments d'identification du créancier SEPA.-->
+				<Id>
+					<PrvtId> <!-- PrivateIdentification -->
+						<Othr> <!-- Une seule occurrence possible. -->
+							<Id>FR00ZZZ000144</Id> <!-- ICS -->
+							<SchmeNm> <!-- SchemeName -->
+								<Prtry>SEPA</Prtry> <!-- Proprietary La valeur "SEPA" est obligatoire -->
+							</SchmeNm>
+						</Othr>
+					</PrvtId>
+				</Id>
+			</CdtrSchmeId>
+
+			<DrctDbtTxInf> <!-- DirectDebitTransactionInformation -->
+				<PmtId><!-- PaymentIdentification -->
+<!--					<InstrId>REF OPE AAAA</InstrId>  InstructionIdentification (optionnel)-->
+					<EndToEndId>REF E2E XXX</EndToEndId> <!-- EndToEndIdentification requis  Référence de bout-en-bout qui est restituée au débiteur.--><!-- A GENERER-->
+				</PmtId>
+				<InstdAmt Ccy="EUR">1100.07</InstdAmt><!-- InstructedAmount Montant du prélévement SEPA en euro, compris entre 0,01 et 999 999 999,99. -->
+				<DrctDbtTx> <!-- DirectDebitTransaction -->
+					<MndtRltdInf> <!-- MandateRelatedInformation -->
+						<MndtId>++M1446136132 160927 12345</MndtId><!-- MandateIdentification RUM référence unique du mandat --><!-- A GENERER ET STOCKER -->
+						<DtOfSgntr>2014-01-15</DtOfSgntr>  <!-- Date de signature du mandat. (date d'échéance si inconnue) -->
+						<AmdmntInd>false</AmdmntInd> <!-- true si N° emetteur non inclus dans ics(migration national -> sepa) -->
+<!--						<AmendmentInformationDetails> <!- prsesent si AmdntInd à true
+							<OrgnlCdtrSchmeId>  OriginalCreditorScheme Identification ( Ancienne(s) donnée(s) relative(s) au créancier(ICS, ou NNE en cas de migration SEPA).
+								<Id>
+									<PrvtId>  PrivateIdentification
+										<Othr>  Une seule occurrence possible.
+											<Id>000144</Id>  (ancienne identification ) NNE
+										</Othr>
+									</PrvtId>
+								</Id>
+							</OrgnlCdtrSchmeId>
+						</AmendmentInformationDetails>-->
+					</MndtRltdInf>
+				</DrctDbtTx>
+				<DbtrAgt> <!-- DebtorAgent (banque du débiteur) -->
+					<FinInstnId> <!-- FinancialInstitutionIdentification -->
+						<Othr> <!-- Utilisé obligatoirement lorsque l'élément BIC n'est pas renseigné -->
+							<Id>NOT PROVIDED</Id>
+						</Othr>
+					</FinInstnId>
+				</DbtrAgt>
+				<Dbtr><!-- Debtor : titulaire du compte à débier -->
+					<Nm>Mr Debiteur N1</Nm> <!--Name nom du débiteur limité à 70 car. -->
+				</Dbtr>
+				<DbtrAcct> <!-- DebtorAccount compte du débiteur -->
+					<Id>
+						<IBAN>FR763004136210001234567811</IBAN> <!-- IBAN du compte débiteur -->
+					</Id>
+				</DbtrAcct>
+				<!--<RmtInf>
+					<Ustrd>Facture N1</Ustrd>
+				</RmtInf>-->
+			</DrctDbtTxInf>
+		</PmtInf>
+	</CstmrDrctDbtInitn>
+</Document>

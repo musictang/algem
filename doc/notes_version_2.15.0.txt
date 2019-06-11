@@ -1,0 +1,78 @@
+2.15.0
+
+CORRECTIFS
+* Il n'y avait pas assez de place pour afficher 12 échéances dans la partie basse de la feuille de prélèvement (mandat SEPA).
+* Le cadre créditeur dans la partie basse de la feuille de prélèvement a été rehaussé afin qu'il ne soit pas tronqué à l'impression (avec certaines imprimantes).
+* L'import vers OpenConcerto ne fonctionnait pas lorsque les libellés d'une échéance étaient trop longs et comportaient des guillemets.
+
+DEVIS/FACTURES
+
+Il est maintenant possible de paramétrer son propre fond de page pour les devis et les factures. Ce paramétrage est disponible dans la section Modèles de documents dans les paramètres généraux. Préparez pour cela un fichier pdf au format A4, et comportant les parties immuables (logo, pied de page, etc.) puis importez-le en cliquant sur le modèle des devis/factures dans la section Modèles de document des paramètres généraux : menu Configuration → Paramètres → Généraux.
+
+Les devis et factures peuvent être maintenant exportés en pdf. Deux icones se substituent à l'ancien bouton d'impression dans la fenêtre de consultation des devis et factures. La première permet d'ouvrir un aperçu de la facture et de l'exporter au format pdf. La deuxième permet d'imprimer (comme auparavant) directement la facture (sans tenir compte du modèle de document éventuellement défini).
+
+Les devis et factures peuvent maintenant s'étendre sur 2 pages. Une nouvelle page est maintenant imprimée lorsque la place est insuffisante pour afficher le contenu de la facture, pied de page compris.
+
+CONFIGURATION
+Dans les paramètres généraux, la section Organisation a été remodelée et les informations comme l'adresse, le téléphone, l'email sont maintenant accessibles depuis la fiche de la société.
+On peut maintenant importer une image de logo et une image de tampon/signature. Le tampon est utilisé par exemple dans les contrats de formation et les conventions de stage.
+
+FICHE PERSONNE
+La section organisme dans la fiche d'une personne a été complètement réorganisée. L'organisme est maintenant une entité à part entière et peut être complété dans le détail (raison sociale, numéro siret, code ape, etc.). Le bouton à droite du champ Organisme permet d'accéder aux détails d'un organisme et de les modifier si nécessaire.
+
+Pour modifier un organisme existant, accédez à sa fiche par le menu Recherche puis cliquez sur le bouton à droite du champ "Organisme" pour ouvrir les infos détaillées. Cliquez sur Enregistrer pour valider vos modifications et n'oubliez pas non plus d'enregistrer la fiche personne à la fermeture.
+
+Plusieurs personnes peuvent maintenant être rattachées à un même organisme. Pour rattacher une personne à un organisme, ouvrez la fiche de cette personne puis à l'intérieur du champ "Organisme", tapez les premières lettres de son nom et choisissez dans la liste celui qui vous intéresse. S'il n'existe pas encore, cliquez sur le bouton "Créer", saisissez un nom puis enregistrez.
+
+On peut maintenant modifier le référent d'un organisme. Auparavant, le référent correspondait au nom et prénom de la personne dans la fiche de l'organisme. Pour changer le référent d'un organisme, il faut tout d'abord attacher une personne à un organisme, comme vu plus haut. Ce rattachement effectué, ouvrez les infos détaillées de l'organisme et sélectionnez le référent désiré devant le champ correspondant.
+
+L'onglet Adhérent dispose de deux champs supplémentaires (optionnels) : Assurance et Référence contrat. Ces 2 informations sont utilisées en particulier pour les conventions de stage et permettent de pré-remplir ces informations lors de la création d'une nouvelle convention.
+
+CONTRATS DE FORMATION
+Il est maintenant possible d'éditer pour chaque élève (en formation professionnelle) un contrat de formation. La rubrique "Gestion des contrats de formation" doit être cochée pour cela dans les paramètres généraux, menu Configuration → Paramètres → Généraux, section Gestion.
+
+Ouvrez la fiche d'un élève puis cliquer sur Contrats de formation dans le menu Options pour consulter les contrats existants ou en créer un nouveau.
+Les champs Intitulé, Saison, Début, Fin, Total, Heures centre et Date de signature sont pré-remplis après création d'un nouveau contrat.
+Les valeurs par défaut correspondent aux valeurs suivantes :
+L'intitulé correspond au titre de la formule choisie durant l'inscription
+La saison est basée sur les dates de début et de fin d'année scolaire
+Les dates de début et de fin correspondent aux dates d'inscription au cours
+Le montant total correspond au montant de la formule à l'année.
+Le nombre d'heures en centre correspond au nombre d'heures de présence de l'élève (ce nombre est calculé en fonction du nombrede plages horaires occupées sur le planning).
+
+Toutes ces valeurs peuvent être modifiées.
+
+Le contrat une fois enregistré peut être enregistré en pdf ou directement ouvert pour impression avec votre application par défaut.
+Le formulaire comporte 3 icones :
+- la première permet de consulter le contrat (au format pdf)
+- la deuxième permet de consulter et d'enregistrer l'attestation d'entrée en formation
+Ces deux documents disposent d'un aperçu (première page seulement) et peuvent être enregistrés en pdf.
+
+Le texte du contrat peut être éventuellement personnalisé, si le contenu par défaut ne vous satisfait pas : demandez-nous un devis si nécessaire.
+
+De même que pour les devis et factures, les contrats peuvent disposer de leur propre fond de page. Suivez la même procédure que pour les devis et factures (décrite plus haut) pour le modifier si nécessaire.
+
+CONVENTIONS DE STAGE
+Parallèlement aux contrats de formation, il est possible d'enregistrer des conventions de stage (tripartite) associant l'élève, votre société et un organisme externe. La rubrique "Gestion des conventions de stage" doit être cochée pour cela dans les paramètres généraux, menu Configuration → Paramètres → Généraux, section Gestion.
+
+Ouvrez la fiche d'un élève puis cliquer sur Conventions de stage dans le menu Options pour consulter les conventions existantes ou en créer une nouvelle.
+Le formulaire de consultation/création de convention est très semblable à celui des contrats de formation. Il comporte 3 champs spécifiques : 
+- l'organisme dans lequel s'effectue le stage en entreprise
+- le nom de l'assurance responsabilité civile
+- la référence du contrat d'assurance
+
+Le champ Organisme permet de choisir parmi tous les organismes enregistrés dans Algem. Avant de créer une nouvelle convention, vérifiez que l'organisme y prenant part existe bien dans Algem. Créez-le sinon en ajoutant une nouvelle fiche contact (menu Recherche -> Contact -> Créer).
+
+Comme pour les contrats de formation, les champs Intitulé, Saison, Début, Fin et Date de signature sont pré-remplis avec les valeurs par défaut au moment de la création.
+
+Le formulaire dispose de 3 icones :
+- la première permet de consulter la convention (au format pdf)
+- la deuxième permet de consulter et d'enregistrer la fiche d'évaluation de stage en entreprise
+- la troisième permet de consulter et d'enregistrer la feuille d'émargement en entreprise
+
+COMPTABILITE
+Un nouveau modèle d'export vers EBP v3 est disponible dans la section Infos comptables des paramètres généraux. L'export vers EBP permet également d'automatiser la création d'un compte comptable s'il n'existe pas, grâce à la présence du fichier COMPTES.TXT.
+
+INTERFACE
+Les boutons d'accès aux documents dans la fiche Groupe sont maintenant accompagnés d'icones
+Les icones de recherche et de calendrier ont été modifiées

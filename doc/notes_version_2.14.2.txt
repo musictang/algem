@@ -1,0 +1,4 @@
+2.14.2
+
+CORRECTIFS
+* La création (ou modification) d'une facture était impossible si l'on modifiait un article et qu'on ne précisait pas son taux de TVA, Dorénavant, le taux de TVA est automatiquement égal à 0.00 (autrement dit, pas de TVA) s'il n'est pas explicitement sélectionné.

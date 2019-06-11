@@ -1,0 +1,15 @@
+#Format d'import CSV
+Numéro : format numérique, ex. : 1234 ou 0 ou vide
+Civilité : 4 caractères max à choisir parmi M, Mme, Mlle ou vide
+Nom : 32 caractères max (chiffres, ponctuation et caractères spéciaux non autorisés) obligatoire
+Prénom : 32 caractères max (chiffres ponctuation et caractères spéciaux non autorisés) obligatoire
+Adresse Rue : numéro et nom de la voie  (50 caractères max) optionnel
+Adresse Complément : complément d'adresse (50 caractères max) 
+Adresse Code postal : 5 caractères max
+Adresse Ville : 50 caractères max (chiffres ponctuation et caractères spéciaux non autorisés)
+Téléphone domicile : 24 caractères max
+Téléphone mobile : 24 caractères max
+Email 1 : 64 caractères max (l'email doit être valide)
+Email 2 : 64 caractères max (l'email doit être valide)
+
+;M;DUPONT;Untel;12 rue sans issue;Batiment B;92240;MALAKOFF;01 02 03 04 05;0601000203;untel@gmail.com;

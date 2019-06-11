@@ -1,0 +1,9 @@
+{
+  "description": "Cours \u00e0 rattraper par professeur. Les cours sont consid\u00e9r\u00e9s \u00e0 rattraper lorsqu'ils existent en salle de rattrapage.\nSi vous ne saisissez pas de date, la p\u00e9riode de recherche par d\u00e9faut correspond \u00e0 l'ann\u00e9e scolaire.\nSi ne vous s\u00e9lectionnez aucun professeur, la liste incluera les cours \u00e0 rattraper de tous les professeurs.",
+"args":
+[
+    {"name" : "prof", "label" : "Nom du professeur", "type" : "tlist"},
+    {"name" : "debut", "label": "Date d\u00e9but", "type": "date"},
+    {"name" : "fin", "label": "Date fin", "type": "date"}
+]
+}

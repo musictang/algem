@@ -1,0 +1,4 @@
+2.15.7
+
+CORRECTIFS
+* L'enregistrement d'un nouvel établissement n'était possible que si un nom d'organisation avait été saisi dans le formulaire de création.

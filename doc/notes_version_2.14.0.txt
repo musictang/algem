@@ -1,0 +1,54 @@
+2.14.0
+
+CORRECTIFS
+- Dans l'export vers OpenConcerto, le sens débit/crédit était inversé dans le transfert des écritures en attente (FAC et compte de tiers)
+- La date de fin d'année comptable s'étend maintenant jusqu'au dernier jour de l'exercice courant : si par exemple la date de début est au 01/09/2016, la date de fin correspond au 31/08/2017)
+- Lorsqu'une ligne de facturation comportant un n° de commande avait été prise comme modèle lors de l'ajout d'une échéance, la suppression de cette ligne pouvait entraîner dans certains cas celle de la ligne ajoutée.
+- L'ajout d'une ligne de paiement sur un compte de tiers (classe 4) ne crée plus systématiquement de contrepartie de facturation (ligne de règlement 'FAC' au montant opposé). L'inverse (l'ajout d'une ligne de facturation sur un compte de tiers crée une ligne de contrepartie de paiement) reste toujours vrai cependant.
+- Il fallait saisir explicitement un nom de fichier après avoir cliqué sur Parcourir dans la fenêtre d'export des prélèvements. Le nom de fichier proposé correspond maintenant au nom par défaut, quel que soit l'endroit sélectionné. L'extension par défaut est maintenant .xml.
+
+COMPTABILITE
+AVOIR
+Création de facture d'avoir
+Vous pouvez maintenant créer directement une facture d'avoir à partir d'une facture existante. Cliquez sur le bouton "Avoir" dans la fenêtre de consultation de facture. Après enregistrement de la facture d'Avoir, les lignes d'écriture adéquates sont automatiquement ajoutées dans l'échéancier du payeur. Notez que les montants seront inversés par rapport à la facture originale. Les lignes de facturation auront un montant positif et les lignes de règlement un montant négatif.
+Le montant de la facture d'avoir peut être partiel et si la facture originale comportait plusieurs articles (correspondant à plusieurs comptes), il n'est pas obligatoire de tous les inclure dans l'avoir. Avant de valider la nouvelle facture, supprimez le cas échéant les lignes désirées ou modifiez les montants.
+
+Gestion des avoirs dans les exports
+Les lignes d'avoir sont maintenant prises en compte dans les exports. Le sens débit/crédit est tout simplement inversé par rapport à l'export habituel.
+
+TVA
+Export
+Il était déjà possible d'indiquer un taux de TVA autre que 0 pour chaque article de facturation. La nouveauté est que la TVA est maintenant prise en compte dans les exports comptables (menu Transfert → Echéancier et Transfert → Pièce). Si par exemple, une facture est composée d'un article dont le montant HT est de 100 € et dont le taux de TVA est 19.6, l'export comptable des lignes de facturation (FAC) sera décomposé ainsi :
+- une ligne de crédit pour le montant HT sur le compte de produits.
+- une ligne de crédit pour le montant de la TVA associée au compte TVA correspondant (445714, par exemple pour une TVA à 19.6).
+- une ligne de débit pour le montant TTC associée au compte client 411.
+
+Gestion de la tva dans les échéances
+Lorsqu'on ajoute ou modifie une échéance, il est maintenant possible d'indiquer un taux de TVA particulier pour les lignes de facturation. Le champ TVA n'est actif que si vous choisissez un règlement 'FAC'. Dans ce cas, le champ montant correspond au prix HT. Le montant TTC est calculé automatiquement et indiqué à droite de ce champ.
+Seuls les montants TTC sont visibles dans l'échéancier.
+
+Améliorations export Ciel/SAGE
+Les exports au format ximport (Ciel) et pnm (SAGE) ont été revus en détail et corrigés. Le programme a été testé avec Ciel Compta 2010 (16) et SAGE 100. L'import des lignes d'écriture à partir d'un fichier généré par Algem ne devrait plus poser de problèmes.
+
+Langue et région
+Pour ceux dont la devise n'est pas l'euro, il était parfois gênant de voir afficher ce symbole dans certains champs de saisie. Le paramètre "Langue et région" dans la section "Infos comptables" des paramètres généraux vous permet d'afficher les montants numériques dans la devise que vous souhaitez. Ce paramètre est composé de deux sections :
+- la langue sur 2 lettres en minuscules (fr, par exemple pour le français)
+- le pays ou la région du monde sur 2 lettres en majuscules (FR pour la France, GB pour le Royaume Uni, NC pour la Nouvelle Calédonie, etc.)
+
+AJOUT/MODIFICATION ECHEANCE
+De nouvelles vérifications sont faites lors de l'ajout ou modification d'une échéance :
+- la date saisie ne peut être antérieure à la date de début d'année comptable, à moins de disposer de ce droit. Ce droit, intitulé "Saisie de date d'échéance antérieure à l'année comptable" est paramétrable pour chaque utilisateur en passant par le menu Configuration → Admin → Gestion des droits. Seules les personnes ayant le profil "Administrateur" disposent de ce droit par défaut.
+- une confirmation vous est demandée si le montant dépasse 10000 (€) ou si la date est postérieure de 2 ans à la date de fin de période.
+- vous ne pouvez plus saisir des numéros de pièce supérieurs à 10 caractères.
+
+ECHEANCES STANDARDS
+La date a été ajoutée dans la configuration des échéances standards. Il était souhaitable en effet que certaines échéances générées automatiquement après inscription prennent une date bien précise (celle du début de l'année comptable ou scolaire, par exemple). Auparavant, les échéances standards prenaient systématiquement la date du jour de leur création, ce qui pouvait ne pas convenir pour certains types d'échéances comme les adhésions ou les frais d'inscription.
+Maintenant que la date est paramétrable, il faudra penser néanmoins à la modifier chaque nouvelle année, pour qu'elle reflète la période d'exercice courant (menu Compta → Echéances standards).
+
+SALLE
+Equipement
+Deux nouvelles colonnes sont maintenant disponibles dans l'équipement d'une salle :
+- le numéro d'immo (n° d'immobilisation)
+- le statut "public"
+Le numéro d'immo permet de repérer plus facilement un équipement et de faire le lien avec les fiches d'immobilisation.
+Un équipement non "public" n'apparaît pas dans les informations de salles de l'application en ligne.

@@ -1,0 +1,5 @@
+BUGS CORRIGES
+* Il n'était pas possible de changer l'heure d'une répétition si la carte d'abonnement ne comportait encore aucune session enregistrée.
+Note : l'enregistrement et l'historique des sessions n'est disponible qu'à partir de la version 2.9.2.
+* Les délimitations des demi-heures en pointillés ne s'affichaient plus correctement dans les plannings.
+* L'ajout d'une échéance à partir d'une ligne existante ne fonctionnait pas lorsque le type de règlement de l'échéance source était "FAC".

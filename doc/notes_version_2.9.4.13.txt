@@ -1,0 +1,79 @@
+﻿2.9.4.13
+CORRECTIFS
+* Le calcul des heures restantes était faux pour les formules (programmes de formation) à tarification horaire de plus de 100h. Les champs durée et montant restant n'étaient pas mis à jour en fonction du nombre de séances réellement effectuées par l'élève et restait à 0.
+* Le calcul des heures administratives ne fonctionnait pas correctement s'il était lancé à partir de la fiche individuelle du salarié (icone "Heures professeur"). Le fichier généré recensait les heures de TOUS les salariés de l'équipe au lieu de ne recenser que celles du salarié sélectionné.
+* Le calcul des heures "Technicien" n'était pas pris en compte s'il était lancé à partir de la fiche individuelle du salarié (icone "Heures professeur"). Le fichier généré recensait les heures de TOUS les techniciens au lieu de ne recenser que celles du technicien sélectionné.
+* Lorsque plusieurs cours collectifs (d'instrument) étaient programmées sur la journée dans la même salle, la couleur de la plage élèves du cours dont on avait modifié la couleur par défaut était reportée sur l'un des cours précédents. La couleur personnalisée correspond bien maintenant au cours sélectionné.
+* Après avoir cliqué sur Imprimer dans la liste des commandes formules (menu Catalogue -> Commandes formules(programmes de formation)), le fichier à imprimer ne pouvait être ouvert dans le tableur par défaut car il était signalé comme déjà utilisé.
+* Les couleurs personnalisées n'étaient pas prises en compte dans l'export au format Excel du planning jour (menu Fichier -> Exporter). Celles-ci sont maintenant prises en charge. De plus, la couleur du texte des plannings exportés s'adapte à leur couleur de fond. Auparavant, le texte de certains plannings n'était pas bien visible si ceux-ci avaient des couleurs trop sombres.
+* Après modification, le tarif d'une salle n'était pas mis à jour correctement dans la liste : menu Compta -> Tarifs salles. Si l'on modifiait les montants d'une ou plusieurs colonnes, ces nouveaux tarifs étaient bien enregistrés en base de données mais n'apparaissaient pas dans la liste après édition.
+* Il était possible de mémoriser les dimensions de la fenêtre du planning "Jour" mais celles-ci n'étaient pas prises en compte à la réouverture (ce bug a déjà été corrigé dans les derniers envois de la version 2.9.4.12).
+* Le tri par numéro ne fonctionnait pas correctement dans les tableaux représentant les listes de salles.
+* Le tri par adresse ne fonctionnait pas correctement dans la liste des agences bancaires.
+* La modification d'un article de facture (ou de devis) entraînait la déconnexion du dispatcher.
+* Le tableau d'historique des factures n'était pas mis à jour si aucune facture n'avait été trouvée sur la période.
+
+FACTURES/DEVIS
+- En mode d'édition de facture ou de devis, il est maintenant possible d'insérer une DÉSIGNATION D'ARTICLE COMPORTANT PLUSIEURS LIGNES (dans la limite des 128 caractères autorisés en base de données). La hauteur de la rangée correspondante reflètera la composition de l'article en temps réel.
+- On peut aussi GLISSER-DÉPLACER UNE LIGNE DANS LE TABLEAU ET DONC MODIFIER L'ORDRE DANS LEQUEL APPARAISSENT LES ARTICLES de facturation. Auparavant, cet ordre était immuable et dépendait de l'ordre de création.
+- Si la désignation d'un article s'étend sur plusieurs lignes, vous n'avez pas à vous préoccuper des changements de ligne. Ceux-ci seront automatiques à l'impression et se feront en tenant compte des limites de colonne et de mots (un mot ne sera pas coupé en plein milieu).
+- A l'impression, le nom de l'établissement et la date ont été légèrement décalés vers le bas pour ne pas prêter confusion avec le bloc d'adresse.
+- Durant le chargement de l'historique des factures, une fenêtre d'attente vous permet de visualiser la progression de ce chargement si celui-ci prend trop de temps.
+
+CONFIGURATION
+La fenêtre de configuration dans Configuration -> Paramètres -> Généraux a été réorganisée. La liste des rubriques est maintenant visible sur le panneau de gauche et il suffit de cliquer sur l'une d'elles pour accèder à sa page de configuration. Il fallait auparavant utiliser en permanence l'ascenceur pour accéder aux différentes rubriques.
+
+Certains paramètres, nécessaires au bon fonctionnement d'Algem, ne sont plus modifiables :
+- le taux de TVA = 0.0
+- les modes de règlement par défaut : CHQ,ESP,PRL,VIR,NUL,FAC
+- l'instrument dont l'id est 0 (aucun)
+- le code cours dont l'id est 0
+- le statut "Aucun"
+- le niveau "Aucun"
+- la tranche d'âge "Aucune"
+
+COMPTABILITE
+Heures salariés
+- LES HEURES PROFESSEUR PEUVENT MAINTENANT ÊTRE FILTRÉES PAR ÉTABLISSEMENT. Par défaut, ce calcul se fait sur "Tous" les établissements confondus. Mais vous pouvez comptabiliser ces heures pour un établissement spécifique en le sélectionnant dans la liste. Cette option n'est utilisée que pour les 3 derniers choix : tri par date, par élève/cours ou par formule.
+- Une quatrième option est désormais disponible dans les heures salariés pour le type "Professeur" : "Tri par formule". LE CALCUL DES HEURES PEUT SE FAIRE PAR CE BIAIS EN FONCTION D'UNE OU PLUSIEURS FORMULES SÉLECTIONNÉES. On ne prendra donc en compte que les heures planning effectuées dans ce cadre bien précis. Prenons l'exemple d'un élève inscrit à une formule intitulée "Pratique individuelle" et comprenant un cours de guitare et d'un autre élève inscrit à une formule intitulée "Cycle court" et comprenant également un cours de guitare. Si l'on choisit la formule "Cycle court", seuls les cours de guitare du second élève seront comptabilisés dans le calcul.
+Après avoir cliqué sur le bouton "Validation", une fenêtre de dialogue vous permet de choisir les formules désirées et d'enregistrer cette sélection pour la rappeler ultérieurement. VOUS POUVEZ AINSI CALCULER LES HEURES EN FONCTION D'UN ENSEMBLE PRÉDÉTERMINÉ DE FORMULES (dans le cadre d'un cycle de formation, par exemple). 
+Echéancier
+- La fenêtre MAJ échéancier n'est plus modale (fenêtre bloquante en premier-plan). On peut désormais la minimiser ou la maximiser, quel que soit le thème utilisé, et la passer à l'arrière-plan.
+- La hauteur des boutons "Charger" et "Mois courant" est maintenant identique à celle des champs date sur leur gauche.
+
+Correspondance de comptes
+La fenêtre des correspondances de comptes a été entièrement remaniée. Les correspondances apparaissent désormais dans un tableau. La colonne de gauche, non éditable, présente dans l'ordre alphabétique (libellé du compte) la liste de tous les comptes de tiers enregistrés et actifs. En cliquant sur la colonne de droite, on pourra choisir parmi les comptes de produits actifs, celui qui correspond le mieux au compte de tiers sur la gauche.
+Cette nouvelle présentation, plus simple et plus claire, permet d'éviter de paramétrer des comptes en doublon et fait apparaître sans ambiguïté les comptes restant à configurer (ceux pour lesquels il n'existe encore aucune correspondance).
+Rappel : cette correspondance est utilisée en particulier pour les exports comptables.
+
+Tarifs salle
+Les tarifs accessibles depuis le menu Compta -> Tarifs salles sont maintenant alignés sur la droite et sont formatés avec 2 chiffres après la virgule.
+
+Prélèvement
+Le format SEPA est maintenant proposé par défaut dans la fenêtre Compta -> Prélèvement -> Exporter. Le format NATIONAL est obsolète depuis Août 2014. Il n'a été conservé qu'afin de prévisualiser de manière plus claire les payeurs et montants exportés.
+
+CATALOGUE COMMANDES FORMULES (PROGRAMMES DE FORMATION)
+La recherche de la liste des commandes formules sur la période devrait prendre un peu moins de temps qu'auparavant. Ces temps de chargement sont principalement significatifs en mode Webstart.
+Un dialogue de progression vous permet maintenant de suivre en détail le chargement des commandes.
+
+La première colonne (auparavant Id de la personne) a été remplacée par la date de début de commande. La date permet de mieux distinguer les commandes surtout si la période de recherche s'étend sur plusieurs années.
+
+PLANNING
+Un LISSAGE (traitement anti aliasing) a été appliqué sur la police du texte des plannings (titres des cours, noms des professeurs ou intervenants, etc.). Le rendu devrait être plus agréable sur la plupart des configurations d'écran.
+Les codes associés à un cours (niveau, statut, tranche d'âge) n'étaient pas correctement alignés dans le planning mois et collaient trop au bord de plage.
+Optimisations diverses dans l'affichage des boutons de la barre de navigation (jour et mois).
+
+Les fenêtres de dialogue "Changer prof" et "Changer salle" n'incluent plus les cases à cocher "Mémoriser l'absence" ou "Mémoriser le remplacement". Ces actions étaient sans effet et leur présence ne se justifiait plus. De nouveaux menus seront dédiés à cet usage dans une prochaine version du logiciel.
+
+Le nom du fichier exporté vous est maintenant automatiquement proposé après avoir cliqué sur Fichier -> Exporter dans le planning du tableau Jour. Ce nom reprend la date en cours de consultation.
+
+Le menu Planning -> Planification administrative est maintenant inactif (grisé) si l'option "Planification administrative" est décochée dans la rubrique Gestion des paramètres généraux (menu Configuration -> Paramètres -> Généraux).
+
+SALLE
+ON PEUT MAINTENANT ÉDITER LES STATUTS "Publique" et "Active" POUR TOUT UN ENSEMBLE DE SALLES sans avoir besoin d'ouvrir la fiche de chacune. Pour le faire, allez dans Configuration -> Etablissements -> Consulter/Modifier, sélectionnez l'établissement qui vous intéresse et cliquez sur le bouton "Suivant". Vous pouvez modifier les deux dernières colonnes de chaque ligne. Cliquez sur "Valider" pour enregistrer les modifications (ces modifications incluent celles de la fiche établissement).
+Les colonnes "Active" et "Publique" sont maintenant visibles dans la liste de résultats de la recherche Salle (menu Recherche -> Salle).
+
+FICHE PERSONNE
+L'icone "Heures professeur" ("Heures intervenant") a été renommée "Heures salarié". En cliquant sur cette icone, on peut en effet lister les heures de la personne en tant qu'enseignant, mais aussi ses heures en tant qu'"administrateur" ou "technicien".
+
+

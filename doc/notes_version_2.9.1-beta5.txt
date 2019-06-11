@@ -1,0 +1,9 @@
+POSTITS
+La modification de la date d'échéance et du type de postit (Notes, Urgent) est maintenant possible.
+L'émetteur du postit est maintenant visible dans la fenêtre de modification d'un postit.
+Auparavant, le numéro d'émetteur d'un postit n'était pas enregistré et il n'y avait donc aucun moyen de savoir qui avait créé cette note.
+A la création d'un postit, la date d'échéance est placée par défaut au jour courant dans la fenêtre d'édition. Auparavant, cette date était à 0 et enregistrée au jour courant en cas de non modification.
+
+MAJ ECHEANCIER
+Il est maintenant possible de modifier au cas par cas le statut "Transféré" d'une échéance. Cette option n'est activée que si l'utilisateur dispose du droit "Transfert compta". L'activation du statut "Transféré" n'est possible que pour une ligne unique. Dans le cas où plusieurs lignes auraient été sélectionnées, seule la première sera modifiée.
+ 

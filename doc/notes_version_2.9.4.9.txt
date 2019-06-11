@@ -1,0 +1,26 @@
+2.9.4.9
+BUGS CORRIGES
+* La configuration des droits d'accès aux menus pour le profil "Basique" était incomplète, si bien que certains menus restaient actifs alors qu'ils n'auraient pas du l'être.
+* La mise à jour du cache ne fonctionnait pas correctement lors de l'ajout, la modification ou la suppression d'un login utilisateur.
+
+THEMES - LOOK & FEEL
+Le Look & Feel est synonyme de thème graphique pour Java. L'apparence des boutons, des fenêtres ou des couleurs varient en fonction du look & feel utilisé.
+Jusqu'alors, Algem fonctionnait avec le look & feel par défaut, appelé Metal. Il est désormais possible de sélectionner un autre thème parmi ceux disponibles. Ce choix est propre à chaque utilisateur et sera enregistré dans les préférences du système.
+La choix du thème se fait par l'intermédiaire du menu Configuration -> Paramètres -> Thème
+Note 1 : afin d'éviter un certain nombre de désagréments graphiques, l'application d'un nouveau thème ne sera effective qu'après redémarrage du logiciel.
+Note 2 : l'utilisation de certains thèmes peut entraîner des problèmes d'affichage, de tailles de fenêtres ou de polices de caractères. Il sera préférable dans ce cas de reprendre le thème par défaut (Metal) ou d'utiliser un thème proche de votre système d'exploitation (Windows si vous êtes par exemple sous ce système).
+
+DROITS
+Il est maintenant possible de supprimer un login utilisateur. Ouvrez la fenêtre Admin -> Gestion des droits et recherchez l'utilisateur à supprimer puis cliquez sur le bouton "Supprimer" et validez l'opération.
+Note 1 : la suppression d'un login n'entraîne pas la suppression de la fiche personne associée. On ne supprime que la possibilité pour cette personne de démarrer Algem avec le nom de login qu'elle avait jusqu'alors utilisé.
+Note 2 : il est toujours possible après avoir supprimé un login d'en recréer un avec le même nom que l'ancien (et/ou le même mot de passe).
+
+L'enregistrement ou la modification d'une fiche contact font désormais l'objet d'une vérification de droits.
+
+PLANNING
+Affectation des plages élèves dans un cours collectif :
+Si l'option "feature.schedule_dispatch" est égale à "true" dans le fichier de configuration local.properties, un nouveau menu "Affectation des plages élèves" sera disponible dans la vue détaillée d'un planning. Ce menu n'est présent que pour les cours collectifs et vous permettra pour chaque élève inscrit au cours sélectionné de l'ajouter ou de le supprimer d'une séance. Jusqu'alors, vous aviez la possibilité de supprimer la plage horaire d'un élève en CTRL-cliquant sur le nom de l'élève dans la vue détaillée du planning. Cette nouvelle fonction vous permettra en une seule étape de gérer les plages horaires des élèves sur tout un ensemble de séances. De plus, en double cliquant sur le nom d'un élève il vous sera possible de l'inscrire ou de le désinscrire selon un motif répétitif. C'est particulièrement utile lorsque l'on veut inscrire en alternance deux élèves sur un même cours une semaine sur deux.
+
+SCRIPTS
+S'il est activé dans le fichier de configuration (option feature.scripting), un moteur de scripts vous permettra d'exécuter des requêtes personnalisées. L'emplacement des scripts est pour l'instant spécifié par le paramètre scripts_path du fichier de configuration. Cette option n'est pas pour l'instant activée par défaut. Elle permettra aux développeurs et aux administrateurs de base de données d'interroger la base Algem en fonction de leurs propres critères et de présenter aux utilisateurs des résultats conformes à leurs besoins. On y accède par le menu Catalogue.
+

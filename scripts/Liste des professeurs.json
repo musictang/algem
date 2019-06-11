@@ -1,0 +1,9 @@
+{
+  "description": "En cochant la case \"Planifi\u00e9s\", vous listez les professeurs ayant au moins un planning de cours durant la p\u00e9riode. Si vous n'indiquez pas de p\u00e9riode, la recherche portera sur l'ann\u00e9e scolaire. Les enseignants sont tri\u00e9s dans l'ordre alphab\u00e9tique.\nSi vous d\u00e9cochez la case \"Planifi\u00e9s\", la recherche portera sur l'ensemble des professeurs enregistr\u00e9s, tri\u00e9s par instrument.",
+"args":
+[   
+    {"name" : "dateDebut", "label": "Date d\u00e9but", "type": "date"},
+    {"name" : "dateFin", "label": "Date fin", "type": "date"}
+    {"name" : "onPlan", "label": "Planifi\u00e9s", "type": "bool"}
+]
+}

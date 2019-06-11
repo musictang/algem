@@ -1,0 +1,13 @@
+2.11.1
+CORRECTIFS
+* L'exécution de scripts en mode Webstart avec Java 1.8 était impossible en raison d'un problème de permissions.
+* Lorsqu'on créait une fiche personne et qu'une photo dont le nom se terminait par "0" existait dans le répertoire par défaut, cette photo était chargée par erreur dans la nouvelle fiche.
+
+SCRIPTS
+De nombreuses améliorations dans les scripts. La saisie de dates n'est plus obligatoire pour la plupart (par défaut, les dates correspondent à l'année scolaire).
+Les scripts "Adresses des payeurs", "Emails des adhérents" ont été revus et corrigés.
+Deux nouveaux scripts disponibles :
+- Groupes actifs
+    groupes ayant répété durant la période.
+- Liste des professeurs
+    deux choix sont possibles suivant que vous cochiez ou pas la case "Planifiés" : l'ensemble des professeurs, les professeurs présents sur les plannings durant la période.

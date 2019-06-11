@@ -1,0 +1,37 @@
+BUGS CORRIGES
+* Le calcul du décompte des heures dans formules à tarification horaire ne s'effectuait pas correctement lorque la formule comportait plus d'une session de cours individuel sur la même plage de réservation (session de réservation professeur verte).
+* Les heures de début et de fin de session étaient permutées entre l'ancienne et la nouvelle carte lorsqu'une répétition entraînait la création d'une nouvelle carte d'abonnement. S'il restait par exemple 00:30 sur l'ancienne carte et que l'on prenait une répétition de 2h entre 10:00 et 12:00, la session correspondante à l'ancienne carte affichait 10:30-12:00 et celle de la nouvelle 10:00-10:30.
+* Si l'on fermait l'onglet "Abonnements" d'une personne en position vue détaillée, et que l'on réouvrait l'onglet, le texte du bouton de gauche était inversé (Retour au lieu de Détail).
+* Lorsqu'une chaîne de caractères comportait le caractère backspace (\), ce caractère disparaissait à l'enregistrement.
+* Lorsqu'un devis était créé à partir d'une facture ou à la suite d'une duplication, le mot "Facture" apparaissait à l'impression devant le numéro de devis. Il fallait refermer l'onglet "Devis" pour réimprimer correctement avec la mention "Devis".
+
+CATALOGUE
+Un nouveau menu est maintenant disponible dans Catalogue : Commandes formules (programmes de formation). Ce menu permet de lister toutes les commandes de formules enregistrées pour l'année scolaire en cours.
+Dans le cas de formules avec tarification horaire, cela permet de visualiser pour l'ensemble des élèves le nombre d'heures restantes et le montant restant alloué (PCA ou Produit Constaté d'Avance).
+Pour les autes types de tarification, la colonne "Total" permet de visualiser le nombre d'heures actuellement distribué et la colonne "Montant" le montant total acquitté pour cette formule (sans tenir compte des éventuels proratas).
+On peut charger la période de son choix en utilisant les champs de date en bas de la fenêtre.
+En cliquant sur le bouton "Imprimer", il est également possible d'enregistrer au format tableur (CSV) l'ensemble des lignes sélectionnées (utilisez les touches CTRL ou MAJ pour effectuer des sélections multiples). Si aucune sélection n'a été faite, toutes les lignes seront enregistrées.
+
+EXPORT
+Trois nouveaux critères sont disponibles dans l'export des contacts (Menu Fichier -> Export -> Contacts) :
+  - Organisations : les contacts dont le champ Organisation a été rempli
+  - Les contacts de type personne ne correspondant pas à des élèves
+  - Les contacts rattachés à une salle
+
+Le fichier d'exportation comprend 2 nouvelles colonnes : Organisation et Pseudo afin de prendre en compte ces champs lorsqu'ils ont été renseignés.
+
+On peut maintenant exporter les enseignants en fonction d'un établissement spécifique (Menu Fichier -> Export -> Enseignants). Si l'on choisit "Tout", l'export se fera tous établissements confondus.
+
+Le nouveau menu Fichier -> Export -> Tous les élèves vous permettra d'exporter les données de contact des élèves en fonction d'un établissement, d'une période et d'un statut (Loisir ou professionnel).
+
+De même, dans les exports Elèves par professeur, par activité et par instrument, on pourra filtrer les résultats en fonction du statut Loisir ou Professionnel.
+
+ABONNEMENTS
+Un message d'info vous informera désormais de la création éventuelle d'une nouvelle carte d'abonnement lors de la création ou de la modification de durée d'une répétition individuelle.
+RAPPEL : dans l'échéance générée après création d'une nouvelle carte, la date de création (date du jour) figure dans la colonne Date et la date de répétition proprement dite figure dans le libellé.
+Ce comportement est identique pour les répétitions sans abonnement ou les répétitions de groupe.
+
+INTERFACE UTILISATEUR
+Le nouveau paramètre "feature.native_fonts" dans le fichier local.properties permet d'activer ou pas les polices natives. RAPPEL : ce fichier est optionnel et doit être placé dans le répertoire de travail de l'utilisateur (emplacement dépendant du système d'exploitation).
+Pour l'activer, indiquer le mot true après le signe =
+

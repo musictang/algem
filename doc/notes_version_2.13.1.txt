@@ -1,0 +1,45 @@
+﻿2.13.1
+CORRECTIFS
+Dans la fiche contact, section Sites/Liens, les fichiers locaux ne s'ouvraient pas après avoir cliqué sur Voir si leur nom ou leur chemin d'accès comportaient des espaces. La reconnaissance du fichier ne fonctionnait pas sous Windows avec le séparateur par défaut (l'anti-slash).
+Rappel : dans la section Sites/Liens d'une fiche "Contact", il est possible d'indiquer un chemin vers un fichier local, à condition de le préfixer par file://
+(ex. : file://C:\Mes Documents\monfichier.pdf).
+Sous Windows, pour récupérer le chemin d'accès d'un fichier, cliquez droit sur le fichier puis faites Propriétés. Copiez le texte à droite d'Emplacement.
+La fenêtre de création/modification login était trop étroite sous Windows avec le thème Nimbus.
+Le bouton Abandonner n’avait pas d’effet dans les fenêtres suivantes :
+Réservation ponctuelle de groupe, Réservation forfait de groupe, Création d’un établissement.
+
+SECURITE
+Création/modification login
+La saisie de mot de passe dans Création/modification login (menu Options de la fiche "Personne") est maintenant plus restrictive :
+Le mot de passe doit être resaisi.
+Le mot de passe doit obéir à certains critères : comporter au moins 8 caractères et au moins une minuscule. Les mots de passe ne comportant aucun chiffre ou aucune majuscule seront acceptés mais considérés comme faibles.
+Le bouton Valider n'est actif qu'à deux conditions :
+Les deux champs de saisie du mot de passe sont identiques.
+Le mot de passe répond aux conditions de base : 8 caractères, au moins une minuscule.
+
+Une nouvelle case à cocher Afficher permet d'afficher temporairement les caractères saisis.
+Une indication est affichée en rouge en cas d'erreur ou de mot de passe trop faible. Dans ce dernier cas, le champ est coloré en orange, à titre de rappel.
+Droits
+Les droits de consultation sont maintenant pris en compte dans la vue de détail d'un planning. Les personnes dont le profil est "Basique" ne pourront pas par exemple accéder par ce moyen aux fiches élèves et professeurs, ni aux fiches Cours ou Salle.
+
+FORMULE
+Taux de réduction annuelle
+La section Tarif d'une formule comporte maintenant un quatrième champ intitulé "Tx.Réduc. annuel" permettant d'appliquer une réduction spécifique en pourcentage en cas de paiement annuel (quel que soit le mode de paiement). C'est le cas par exemple à Musiques Tangentes où l'on applique une réduction de 12%.
+
+Ajout de formule
+Information sur les réductions appliquées
+Un texte d'information est maintenant affiché à droite du montant de l'échéance si l'un des trois taux de réduction (mensuel, trimestriel, annuel) est appliqué dans le calcul d'une échéance.
+
+Application d'un pourcentage sur le tarif de base
+On peut maintenant appliquer une réduction (ou une majoration) en pourcentage au tarif initial d'une formule lors de l'inscription d'un élève. Cela peut être utile par exemple si vous appliquez une réduction pour l'inscription d'un deuxième ou troisième enfant. Cela vous évite ainsi de calculer ce pourcentage et de le soustraire manuellement du tarif initial.
+Rappel : il est toujours possible à ce stade de modifier directement le tarif de base. Le calcul de l'échéance est automatiquement mis à jour.
+
+PLANNING
+Affichage du nombre de places occupées
+Le nombre de places occupées dans un cours collectif est maintenant directement visible dans le planning jour. Ce nombre est affiché en bas de zone sous la forme n/n (ex. 2/3 pour 2 places occupées sur 3 au total). Cette information n'est présente que si le planning comporte un nombre de places maximal > 0.
+Rappel : par convention, le nombre de places est considéré comme illimité lorsqu'il est égal à 0. Le paramétrage du nombre de places se fait au moment de la planification d'un cours, ou a posteriori, en cliquant sur Paramètres planification dans le détail d'une session de cours collectif.
+Zoom horizontal
+Un zoom horizontal est maintenant disponible dans le planning Jour, en haut à droite de la fenêtre. Ce zoom a pour effet d'élargir ou de rétrécir les colonnes. Cela peut être utile lorsque le nom des cours ne peut être affiché dans son intégralité ou pour mieux distinguer les textes lorsqu'ils se superposent.
+Voilà par exemple comment est affiché le planning en position normale, maxi et mini.
+
+Notez que le réglage de zoom est indépendant pour chaque onglet.

@@ -1,0 +1,45 @@
+/*
+@(#)help.css 2.9.4.13 22/10/2015
+  Created on : 22 oct. 2015, 17:02:32
+  Author     : <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
+*/
+/*RESET SECTION*/
+/* @see http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+body {
+  font-size: 100%;
+}
+ul {
+  margin-top: 0;
+}
+h1,h2,h3,h4,h5 {
+ margin: 0 0 0.2em 0;
+ padding: 0;
+}
+h1 {
+  font-size: 120%;
+}
+h2 {
+  font-size: 115%;
+}
+h3 {
+  font-size: 110%;
+}
+h4 {
+  font-size: 105%;
+}
+h5 {
+  font-size: 100%;
+}
+
+p {
+  margin: 0 0 0.5em 0;
+}
+/*MAIN SECTION*/
+body {
+  font-family: "Lucida Sans",Verdana,sans-serif;
+  background-color: #DDDDDD;
+}
+

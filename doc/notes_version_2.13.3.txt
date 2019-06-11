@@ -1,0 +1,24 @@
+2.13.3
+CORRECTIFS
+* La photo de la personne n'était imprimée sur sa carte d'adhérent qu'à condition de se trouver dans le dossier par défaut, ce qui n'est jamais le cas en mode WebStart.
+* Les mentions trop longues se chevauchaient à l'impression de la carte d'adhérent.
+
+CARTE D'ADHERENT
+Améliorations :
+- Le nom de la personne est affiché en correspondance avec le paramètre de configuration "Ordre de tri pour les listes de personnes" dans les paramètres généraux. Autrement dit, si cet ordre correspond à "Nom Prénom", le nom sera affiché en premier sur sa carte.
+
+- Les libellés trop longs sont tronqués et suivis d'un point s'ils empiètent sur le champ suivant (il arrivait souvent que le nom de la personne chevauche le nom du premier cours ou que le nom du cours empiète sur le nom du professeur).
+
+- Les cours sont listés dans l'ordre chronologique (jour de la semaine et heure de début).
+
+- La liste des cours ne chevauche plus le pied de page (ou le bloc de signature) si elle est trop longue. Le bloc de signature ou d'informations est maintenant décalé automatiquement en cas de place insuffisante.
+
+- Les stages et les ateliers ponctuels sont maintenant inclus dans la liste de cours.
+
+- La carte d'adhérent n'affichait pas tous les cours si les élèves en avaient beaucoup. Elle offre maintenant assez de place pour en imprimer jusqu'à 19.
+
+- Les horaires de début et de fin sont maintenant reliés par un tiret (hh:mm-hh-mm), ex. : 17:00-17:45
+
+- Le cadre de titre central, affiché en haut de page, est maintenant proportionnel à la largeur du titre. Auparavant, le titre débordait du cadre si le nom de la structure était plus long que la normale.
+
+- Le calcul des espacements est maintenant plus précis (conversion des millimètres en points).

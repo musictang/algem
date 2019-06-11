@@ -1,0 +1,48 @@
+2.12.0
+
+* Après avoir modifié une échéance, le message "Une échéance est déjà ouverte..." continuait de s'afficher alors que la fenêtre de modification avait pourtant bien été fermée. Ce problème apparaissait quand la fenêtre de modification était fermée en cliquant sur la croix de fermeture (en haut à droite de la fenêtre) plutôt qu'en utilisant le bouton "Abandon". La fermeture de la fenêtre est maintenant bien détectée, quelle que soit la manière dont on s'y prend.
+* La couleur personnalisée d'un planning n'était pas conservée si l'on modifiait les paramètres de ce planning (Statut, Niveau ou tranche d'âge).
+* Dans la planification administrative, l'insertion d'une ligne se faisait AVANT la ligne sélectionnée et non "après", contrairement à ce qui était spécifié dans la bulle d'aide. La ligne ajoutée reprend maintenant le jour et la salle de la ligne sélectionnée.
+* Le champ correspondant à l'emplacement du fichier d'export dans Transfert → Echéancier et Transfert → Pièce et Exporter  → Prélèvements n'était pas toujours visible dans certaines configurations d'écran.
+* Le champ de saisie de note disparaissait en cas d'appréciation trop longue dans l'édition du suivi d'un élève ou d'un enseignant.
+
+
+PLANIFICATION
+Planification d'un cours périodique
+Le nombre de sessions par défaut est maintenant paramétrable dans Configuration → Paramètres → Généraux, rubrique Planning, section Options. Cela vous permet de préremplir ce nombre au moment de planifier un cours (menu Planning → Planification cours).
+
+Lorsqu'on planifie un cours, on peut maintenant intervenir sur les dates après avoir appuyé sur le bouton Suivant (menu Planning → Planification cours).
+Si la date est en conflit (représenté par un feu rouge), vous pouvez maintenant la changer directement dans cette fenêtre. Le feu s'affichera en vert si la date modifiée correspond à un horaire libre. La première colonne est formatée pour la saisie de dates. De plus, comme pour tous les champs de type Date, vous pouvez ouvrir un calendrier en appuyant sur la touche F1.
+Inversement, vous pouvez désactiver une date (si le feu est au vert) si vous ne voulez pas l'inclure dans la planification (jour de congé, par exemple, date particulière à ne pas prendre en compte).
+
+Planification de stage
+La planification de stage est beaucoup plus rapide qu'auparavant. Ce qui pouvait prendre plusieurs minutes ne prend plus que quelques secondes. Il fallait auparavant remplir la date, l'heure de début et de fin de chaque séance et si le stage s'étalait sur plus de quelques jours, cela devenait vite fastidieux.
+La dernière ligne remplie peut maintenant servir de modèle et il suffit d'appuyer sur le bouton + autant de fois que nécessaires pour ajouter les séances suivantes : la date est incrémentée d'une journée et les heures de début et de fin sont recopiées automatiquement. Si une séance ne doit pas être incluse, sélectionnez-là et appuyez sur le bouton - pour la supprimer.
+Comme pour la planification de cours, il est possible d'intervenir sur ces dates après avoir cliqué sur le bouton Suivant, soit pour changer la date pour qu'elle passe au vert, soit au contraire pour la désactiver.
+
+Planification de studio
+La saisie des dates de planification s'appuie sur le même principe que pour la planification de stage. Saisissez le modèle, puis cliquez sur + pour ajouter automatiquement une date avec jour et heures préremplies. Contrairement à la planification de cours, la fenêtre de conflits n'est pas éditable. Cela présente peu d'intérêt dans ce contexte, car il suffit de revenir sur la fenêtre principale pour modifier les horaires, qui en général, sont peu nombreux.
+
+Planification de forfait répétition (indviduelle ou de groupe)
+Après avoir cliqué sur le bouton Suivant, l'existence de conflits horaires (salle ou personne occupée) n'est plus bloquante. Vous pouvez cliquez sur Valider : les séances en conflit ne seront tout simplement pas incluses. De plus, vous pouvez désactiver une séance (dont le feu est au vert) si vous ne souhaitez pas l'inclure dans la planification finale.
+
+
+CATALOGUE
+Le bouton "Imprimer" a été renommé "Exporter" dans le catalogue des commandes formules (menu Catalogue → Commandes formules). Le mot Imprimer prêtait à confusion car le rôle de cette commande est d'enregistrer la sélection dans un fichier puis de l'ouvrir automatiquement dans votre tableur par défaut (à partir duquel vous pouvez imprimer le contenu).
+
+Formules
+Les formules peuvent maintenant être activées ou désactivées si nécessaire. Une formule est activée par défaut à sa création.
+Une nouvelle case à cocher permet de modifier ce paramètre dans la fiche Formule (menu Catalogue → Formule). Une formule désactivée n'apparaît plus lors du choix d'une nouvelle formule à l'inscription d'un élève.
+
+Un ascenseur est maintenant visible dans la fenêtre de création/modification d'une formule dans le cas où la formule comporte un nombre de cours important.
+
+COMPTABILITE
+Les comptes clients débutent maintenant par le préfixe "411C". Cela permet ainsi de les faire apparaître automatiquement comme des sous-branches du compte 411 dans certains logiciels de comptabilité.
+Rappel : dans Algem, un compte client est généré automatiquement lors d'un export comptable quand l'échéance transférée correspond à un compte de classe 4 et dispose d'un numéro de facture. Auparavant, les comptes clients débutaient par la lettre C.
+
+La date de début d'année comptable est maintenant paramétrable. Elle était fixée auparavant au 1er jour du mois de début d'année scolaire (le plus souvent en septembre). 
+Ce paramètre est présent dans les options comptables de la rubrique Infos comptables dans les paramètres généraux : Configuration → Paramètres → Généraux.
+Il est utilisé dans l'échéancier pour filtrer les anciennes écritures et se concentrer sur les échéances de l'année en cours. Il faudra penser à modifier cette date à chaque début de saison, comme vous le faites pour les dates de début et de fin d'année scolaire et de période.
+
+FICHE PERSONNE
+Le menu Aide (en haut à droite de la fiche) a été supprimé de la fiche Personne. Ce menu était inactif et ne se justifiait pas.

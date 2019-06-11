@@ -1,0 +1,49 @@
+2.11.0
+CORRECTIFS
+* Le document d'exportation du "Payeur" ne comportait aucune échéance lorsque l'adhérent n'était pas son propre payeur : icone "Dossier Adhérent" dans la fiche d'une personne.
+* La suppression d'une plage de cours ne comportant pas de note de suivi entraînait la disparition de l'affichage du suivi dans l'onglet "Suivi" d'un élève.
+* La recherche automatique des photos disponibles ne fonctionnait que si le nom du fichier ne comportait rien d'autre que le numéro de la personne (ex. : 1234.jpg). Le nom d'une photo peut maintenant débuter par d'autres caractères, comme le nom de la personne, par exemple (ex. : Jean-Marc 1234.jpg, Jean-Marc_1234.jpg, etc.). 
+RAPPEL : pour que l'import à partir du menu Catalogue puisse fonctionner correctement, il faut que le nom des photos se termine par le numéro de la personne, suivi de l'extension (jpg, png, etc.).
+
+NOUVEAUTES
+SUIVI PEDAGOGIQUE
+Une nouvelle colonne "Statut" est présente dans le "Suivi" de l'élève et du professeur. Cette colonne permet de répertorier l'absence d'un élève (ou son statut "Excusé", si le motif de l'absence a été donné).
+Un élève absent est signalé par "ABS". Un élève excusé est signalé par "EXC".
+
+La saisie du suivi pédagogique comporte maintenant deux champs supplémentaires : le statut à choisir parmi "Présent(e)", "Absent(e)" et "Excusé(e)" et une "Note" optionnelle. La note peut comporter des lettres (sans accents), des chiffres, ou les caractères "." (point), "," (virgule), "+" (le signe +) et "-" (le signe -), ex. : A, B, B+, 12, 12.5, 12,5, etc.
+
+Dans l'onglet "Suivi enseignant" de la fiche professeur, on peut maintenant double-cliquer sur une ligne pour ajouter ou modifier une note de suivi. Auparavant, on ne pouvait le faire qu'en cliquant sur le bouton "Consultation/Modification".
+
+Le statut et la note sont désactivés lorsque le suivi est collectif.
+
+CODES POSTAUX
+La base de données intègre maintenant les codes postaux de toutes les communes de France. La ville est automatiquement déduite du code postal saisi dans l'adresse d'un contact. Si plusieurs villes correspondent au même code postal, une fenêtre de sélection vous permettra de choisir la bonne.
+
+La recherche automatique de la ville est maintenant active dans la fiche "Etablissement".
+
+ETABLISSEMENTS
+Il est maintenant possible de désactiver un établissement. Cette désactivation peut se faire à deux endroits :
+- Dans le planning "Jour" ou "Mois", en cliquant sur "Etablissements" dans le menu "Options" et en décochant les établissements que l'on ne veut plus rendre visibles.
+- Dans la configuration générale en ouvrant le menu Configuration -> Etablissements -> Consulter/Modifier.
+
+Cette désactivation est propre à chaque utilisateur et a deux conséquences :
+- Les établissements désactivés n'apparaissent plus dans les plannings "Jour" et "Mois".
+- Les salles des établissements désactivés n'apparaissent plus dans les listes de choix (ex. Planification cours, Changer Salle, etc.).
+
+SCRIPTS
+Les scripts sont maintenant opérationnels pour tous les clients Webstart.
+L'emplacement des fichiers de scripts est maintenant configurable à deux niveaux :
+- Un emplacement par défaut défini dans les paramètres généraux, section Fichiers : "Dossier scripts".
+- Un emplacement personnalisé, propre à chaque utilisateur : ouvrir la fenêtre de scripts et choisir un nouvel emplacement en cliquant sur le bouton "Parcourir". Votre choix sera mémorisé.
+
+Deux nouveaux scripts ont été mis à disposition : "Absences des eleves" et "Suivi des eleves". Le premier permet de lister les élèves marqués "Absents" ou "Excusés" durant la période sélectionnée. Le second permet de lister le suivi des élèves (appréciations et absences comprises) durant la période sélectionnée.
+
+STATISTIQUES
+Les statistiques par défaut bénéficient des apports suivants :
+- Ajout du code postal dans la répartition géographique des élèves et des adhérents. Le code postal permet de classer plus facilement les élèves en fonction de zones géographiques (agglo., hors agglo., etc.).
+- Répartition des élèves par ville
+- Répartition des élèves par activité (cours)
+
+PHOTOS
+Lorsque la photo d'une personne a été déposée dans le répertoire par défaut (défini dans la section Fichiers des paramètres généraux : menu Configuration -> Paramètres -> Généraux), cette photo est automatiquement ouverte et sauvegardée à l'ouverture de la fiche.
+

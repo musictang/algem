@@ -1,0 +1,24 @@
+2.11.4
+CORRECTIFS
+* La modification d'un horaire dans le tableau des horaires d'une salle (menu Option -> Horaires dans la fiche d'une salle) n'était prise en compte qu'après avoir appuyé sur Entrée ou changé de ligne. Ces actions ne sont plus maintenant indispensables avant validation.
+* Les doublons n'étaient pas détectés si un espace était ajouté avant le terme recherché (menus Recherche->Contact, Recherche->Groupe, Recherche->Salle).
+
+COMPTABILITÉ
+Un nouveau format d'export est désormais disponible pour le logiciel libre OpenConcerto (ERP et comptabilité). Cela vous permet d'importer automatiquement vos écritures à partir d'un fichier généré par Algem. Le module Algem doit être activé et installé dans OpenConcerto. Le fichier exporté est au format csv (avec le caractère ";" comme séparateur) et comporte dans l'ordre les champs suivants :
+- Date au format jj/mm/aaaa
+- Code journal
+- Numéro de compte
+- Numéro de pièce
+- Libellé
+- Crédit
+- Débit
+- Analytique
+
+Ce dernier champ (analytique) est optionnel. Il restera indéfini s'il ne correspond à aucun des postes analytiques configurés dans OpenConcerto.
+
+FICHE CONTACT
+La zone "Site web" a été renommée "Site/Lien". Ces champs en effet ne sont pas réservés aux seuls sites internet. On peut très bien saisir un lien vers un fichier local (dans ce cas, le chemin d'accès au fichier doit débuter par file://), vers un partage (sur Dropbox, Onedrive, GoogleDrive, etc.) ou tout autre fichier dont l'adresse correspond à une URL (image, vidéo, etc.). C'est un moyen simple d'accéder à divers documents dans Algem et vous pouvez ajouter autant de liens que vous voulez pour un même contact.
+Le programme approprié s'ouvrira en fonction du type de document mentionné : Word par exemple, s'il s'agit d'un fichier local au format docx, ou la page internet de partage s'il s'agit d'un document sur le Cloud.
+
+Le menu Configuration -> Paramètres -> Catégories sites web a été renommé "Catégories sites/liens".
+A ce sujet, 2 nouvelles catégories ont été ajoutées : Fichier, Partage. Libre à vous de les renommer ou de les supprimer si vous n'en voyez pas l'utilité.

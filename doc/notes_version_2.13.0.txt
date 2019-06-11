@@ -1,0 +1,43 @@
+2.13.0
+CORRECTIFS
+* La suppression du groupe 0 (Aucun) n'est plus possible.
+* Il était impossible de supprimer une ville dont le code postal n'était pas précisé (Configuration → Paramètres → Codes postaux).
+* Certains libellés de commandes ont été uniformisés ("Abandonner" plutôt qu'"Abandon", Valider plutôt que "Validation" ou "Ok", "Fermer" plutôt que "Fermeture").
+
+IMPORTATION DE CONTACTS
+Le menu Fichier comporte un nouveau sous-menu Importer → Importer contacts (csv).
+
+Ce nouveau module vous permet d'importer un ensemble de contacts dans Algem. Il est destiné en priorité aux nouveaux utilisateurs du logiciel afin de leur éviter de resaisir des informations dont ils disposent déjà. Si vous partez d'un fichier Excel, il faut l'enregistrer au format CSV, en tenant compte des caractéristiques suivantes :
+- Le séparateur de champs est le caractère point-virgule.
+- Les champs sont délimités par des guillemets.
+- Si vous avez la possibilité de spécifier l'encodage des caractères, choisissez de préférence UTF-8.
+- La première ligne de votre fichier doit comporter un en-tête comportant le nom des colonnes.
+Utilisation
+- Cliquez sur Parcourir pour sélectionner le fichier à importer.
+- Après avoir cliqué sur Suivant, configurez votre import en paramétrant les correspondances de champ. S'il n'existe pas de correspondance entre certaines colonnes de votre tableur et celles proposées, laissez sur [Aucune].
+- Cliquez à nouveau sur Suivant pour prévisualiser les données sur le point d'être importées.
+- Cliquez sur Validation pour lancer l'importation.
+Remarques
+- Le numéro d'un contact (ou d'un parent) correspond à son numéro dans la base de données d'Algem. Ce champ ne doit être utilisé que si vous importez des contacts déjà présents dans Algem.
+- Le nom et le prénom du parent, s'ils sont présents, seront utilisés pour relier un enfant à son payeur (responsable).
+- Les contacts existants ne sont pas réimportés (contacts dont le numéro, ou les nom et prénom existent déjà dans Algem).
+- Les doublons (mêmes nom et prénom) ne sont pas pris en compte.
+
+Les données pouvant être importées sont les suivantes :
+Civilité (ex. : M, Mme, Mlle)
+Nom
+Prénom
+Date de naissance (au format jj/mm/aaaa : ex. : 21/12/1998)
+Instrument principal (le nom de l'instrument doit correspondre à l'un des instruments déjà prédéfinis dans Algem)
+Civilité parent
+Nom parent
+Prénom parent
+Adresse (N° et nom de voie, Complément d'adresse, Code postal, Ville)
+Téléphone domicile
+Téléphone mobile
+Email
+Email du parent
+
+Si le parent est renseigné, l'adresse et les téléphones seront enregistrés dans la fiche du parent.
+Le numéro de contact n'est utilisé qu'à titre de vérification, afin de ne pas réimporter un contact déjà existant dans Algem.
+

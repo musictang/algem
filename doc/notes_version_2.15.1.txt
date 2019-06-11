@@ -1,0 +1,17 @@
+2.15.1
+
+CORRECTIFS
+- La modification d'une convention de stage entraînait une erreur SQL.
+- L'ouverture d'un contrat de formation ou d'une convention de stage était impossible si la société ne disposait pas de siret, de code naf ou de numéro d'organisme formateur. L'absence de ces critères sera maintenant représentée par la mention "NC" dans le fichier généré.
+
+- Modifications mineures dans les modèles de document par défaut des contrats de formation et des conventions de stage.
+
+FICHE PERSONNE
+Il est maintenant possible de supprimer la photo d'une personne. Il y a deux moyens de le faire :
+- cliquer sur "Supprimer photo" dans le menu "Fichier" de la fiche contact
+- cliquer gauche sur la photo du contact tout en appuyant sur la touche Control
+
+La suppression ne se fera qu'après confirmation.
+S'il existe une photo portant le même numéro dans votre répertoire par défaut, celle-ci sera réimportée à la prochaine ouverture. N'oubliez pas si c'est le cas de la supprimer également (ou de la renommer).
+Rappel 1 : le répertoire par défaut des photos d'identité est configurable dans les paramètres généraux : menu Configuration → Paramètres → Généraux, rubrique Fichiers.
+Rappel 2 : la photo d'un contact est automatiquement importée à l'ouverture de sa fiche si une photo portant le même numéro est présente dans le répertoire par défaut.

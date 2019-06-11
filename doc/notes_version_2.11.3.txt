@@ -1,0 +1,54 @@
+2.11.3
+CORRECTIFS
+* La liste des établissements n'était pas mise à jour après création d'un nouvel établissement.
+* La mise à jour ou la suppression d'un établissement restait bloquée sur le bouton "Validation".
+* Lorsqu'on fermait une fiche sans avoir rien modifié, le message "Voulez-vous enregistrer les modifications ?" se déclenchait malgré tout si le champ Civilité n'était pas renseigné.
+* On pouvait dans certains cas imprimer une feuille de prélèvement sans avoir enregistré le RIB du payeur.
+* L'export de certains scripts n'était pas lisible avec Open Office ou certaines versions d'Excel. La présence du mot "ID" (en majuscules) dans la première colonne d'entête entraînait une mauvaise interprétation du tableur. Le problème se posait avec les scripts suivants : 
+Absences des eleves.js, Groupes actifs.js, Liste des professeurs.js, Suivi des eleves.js.
+* Lorsqu'on modifiait le numéro de groupe d'une ou de plusieurs échéances dans l'échéancier du groupe (clic droit sur une sélection d'échéances puis Modifier groupe), la fenêtre de modification restait ouverte et laissait croire qu'aucune modification n'avait été faite.
+* Quand une personne ne disposait pas de photo et que le nom d'une autre photo se terminait par le numéro de cette personne, cette photo était chargée par erreur à l'ouverture de la fiche.
+
+COMPTABILITÉ
+EXPORT ECHEANCIER
+Une échéance de facturation n'est plus exportable si aucune facture n'y est associée.
+Rappel : une échéance de facturation est une ligne d'échéance dont le règlement est "FAC".
+
+PRELEVEMENT
+Les payeurs dont le RIB ne comporte pas de BIC (Bank Identifier Code) ou dont le BIC est incorrect ne sont plus pris en compte dans le fichier d'export des prélèvements SEPA (Compta -> Prélèvement -> Exporter).
+
+Une nouvelle option "Inclure les lignes non encaissées" est maintenant disponible dans le tranfert des échéances si vous avez choisi 'PRL' et coché la case 'CSV' (menu Compta -> Transfert échéancier, Compta -> Transfert pièce). Cela vous permet de vérifier que toutes les échéances à prélever sont bien encaissées (voir ci-dessous).
+
+L'export CSV des prélèvements à partir du menu Compta -> Transfert échéancier inclue maintenant la détection automatique des erreurs suivantes :
+- Echéance non encaissée (si l'option 'Inclure les lignes non encaissées' a été cochée)
+- Payeur sans RIB
+- Payeur dont le numéro d'IBAN est incorrect
+- Payeur dont le RIB ne comporte pas de BIC
+- Payeur dont le BIC est incorrect
+- Payeur sans mandat SEPA
+- Payeur dont le mandat SEPA est périmé
+
+Cela vous permet de vérifier la validité des lignes à prélever avant d'exporter votre fichier d'envoi (Compta -> Prélèvement -> Exporter) 
+
+ECHEANCIER
+Une échéance transférée ne peut plus être modifiée que par les personnes dont le profil est "Administrateur".
+La suppression d'une échéance de groupe (après annulation d'une répétition hors délai) n'est autorisée que pour les personnes dont le profil est "Administrateur".
+
+La suppression automatique d'une échéance (hors carte d'abonnement) est maintenant active en cas d'annulation d'une répétition individuelle. Comme pour les groupes cependant, cette suppression est optionnelle et n'est autorisée que pour les personnes dont le profil est "Administrateur".
+
+Trois nouveaux droits ont été ajoutés :
+- Suppression échéance (OUI par défaut pour les profils Utilisateur et Administrateur)
+- Suppression échéance (annulation hors délai) (OUI par défaut pour le profil Adminstrateur)
+- Modification échéance transférée (OUI par défaut pour le profil Administrateur)
+     
+PLANNING ADMINISTRATIF
+Il est maintenant possible d'ajouter des participants à un rendez-vous/réunion.
+
+Cliquez sur Ajouter rendez-vous/réunion dans le détail d'un planning administratif.
+Indiquez un horaire et un intitulé. Une boîte de sélection vous permet de choisir les participants. Cette boîte ne contient que les personnes appartenant à la catégorie "Administratif".
+Rappel : pour qu'une personne fasse partie de la catégorie "Administratif", ouvrez le menu "Options->Salarié" dans sa fiche puis ajoutez-la à cette catégorie en bas de fenêtre.). 
+
+Cliquez droit sur le nom d'un participant pour le "Supprimer" de la réunion.
+
+Un rendez-vous/réunion se distingue sur le planning par une plage jaune dont le libellé correspond à l'intitulé de cette réunion.
+La liste des participants est visible en cliquant sur la séance. Pour le distinguer des autres, le titre de la réunion et le nom de l'organisateur est précédé d'un astérisque. Cliquez sur cette ligne pour modifier le rendez-vous.

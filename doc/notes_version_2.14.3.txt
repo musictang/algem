@@ -1,0 +1,7 @@
+2.14.3
+
+CORRECTIFS
+
+* A l'impression d'une facture, le solde TTC n'était pas affiché s'il était égal à 0.
+* A l'impression d'une facture, les montants sont indiqués dans une police à chasse fixe (monospace) afin de les aligner plus précisément (notamment lorsqu'ils sont négatifs).
+* Après création de facture, les articles dont le solde est négatif ne génèrent pas de nouvelles lignes dans l'échéancier du payeur.

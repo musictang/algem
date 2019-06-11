@@ -1,0 +1,67 @@
+2.10.0
+CORRECTIFS
+* Lorqu'on modifiait un article de facture créée à partir d'un devis, la modification se répercutait dans le devis d'origine. Une facture est maintenant complètement indépendante du devis à partir duquel elle a été créée.
+Note : la duplication d'un devis n'entraînait pas ce problème.
+
+* Dans le suivi enseignant de la fiche professeur, le calcul du nombre d'heures correspondant aux lignes sélectionnées était faux après avoir effectué un tri sur l'une des colonnes.
+
+* L'enregistrement des modifications était impossible si l'on ne remplissait aucun champ dans l'adresse de l'organisation (menu Configuration -> Paramètres -> Généraux, section "Organisation").
+
+* La fenêtre de changement d'heure (menu clic droit "Changer d'heure" sur un cours dans l'onglet Inscriptions d'un élève) était trop étroite pour afficher les horaires d'origine dans leur intégralité.
+
+* L'annulation de l'opération "Arrêter/Supprimer cours" (clic droit sur un cours à définir dans l'onglet Inscriptions d'un élève) entraînait l'ouverture inopinée de l'avertissement "Choix de cours invalide".
+
+* Si le libellé d'un équipement de salle comportait un caractère spécial (comme une apostrophe par exemple), ce caractère était précédé d'un anti-slash (\). Ce n'est plus le cas désormais.
+
+* Les lignes d'"AVOIR" en facturation sont maintenant exportées dans le bon sens. Les lignes de "Débit", "Crédit" étaient auparavant inversées : menu Compta -> Transfert échéancier et Compta -> Transfert pièce.
+Rappel : on représente une facture d'Avoir dans l'échéancier par une ligne de règlement "FAC" avec un montant positif. Le montant de la ligne de paiement est inversement négatif.
+
+* Le calcul de l'âge dans l'onglet Adhérent ne tenait pas compte du mois ni du jour de naissance. L'âge des personnes tient compte maintenant de la date exacte d'anniversaire et n'est plus anticipé comme auparavant.
+
+CODES COURS
+La suppression des codes cours suivants est désormais impossible : INST, AT, ATP, STG. Ces codes ayant une signification particulière dans le logiciel, il est important de les conserver.
+
+FICHE COURS
+Après avoir cliqué sur le bouton Suivant dans la fiche d'un cours, on accède maintenant à la liste des élèves participant à ce cours pour l'année courante. Il est également possible de lister les élèves ayant participé à ce cours sur une période donnée. Auparavant, il n'y avait pas distinction de période et le logiciel se contentait de lister l'ensemble des élèves ayant participé au cours. Vous pouvez double-cliquer sur une ligne pour ouvrir la fiche de l'élève.
+
+FICHE FORMULE
+A l'instar de la fiche cours, après avoir cliqué sur le bouton Suivant dans la fiche d'une formule (programme de formation), on accède maintenant à la liste des élèves inscrits à cette formule pour l'année courante. Les champs Date permettent de charger la liste des élèves sur une période spécifique. Vous pouvez double-cliquer sur une ligne pour ouvrir la fiche de l'élève.
+
+COMPTABILITE
+La configuration comptable s'enrichit de trois nouveaux paramètres :
+- Jour d'échéance par défaut : cette option permet de spécifier le jour du mois des échéances générées automatiquement au moment d'une inscription. Cette date était auparavant fixée au 15 du mois. Vous pouvez la changer ici. Si par exemple, vous choisissez 10, les échéances générées pour un paiement trimestriel (en 2105-2016) auront les dates suivantes :
+10-10-2015, 10-01-2016, 10-04-2016...
+- Arrondir les paiements intermédiaires : le montant de la cotisation à l'inscription est souvent réparti en plusieurs échéances, suivant la périodicité choisie (mensuelle, trimestrielle). Prenons l'exemple d'un paiement mensuel sur 9 mois pour un montant total de 1299 €. Sans arrondi, chaque échéance serait de 144,33€. Si cette option est cochée, les 8 premières échéances seront de 144€ et la dernière de 146,97€.
+- Facturer les échéances d'inscription : si cette option est cochée, les échéances générées après une inscription seront accompagnées d'une échéance de facturation en contrepartie (règlement "FAC" et montant négatif). Cela vous évite ainsi de générer manuellement ces lignes avant de créer des factures d'inscription. Les lignes de facturation sont regroupées par numéro de compte comptable. Si vous avez par exemple 9 mensualités de paiement sur le même compte comptable, la ligne de facturation générée correspondra au total de ces 9 lignes. Les éventuelles échéances automatiques (issues des échéances standards) auront aussi leur ligne de contrepartie.
+
+ECHEANCIER
+Dans l'échéancier général et dans l'échéancier du payeur, vous pouvez maintenant alléger la vue en cochant l'option "Cacher lignes de facturation". Cette option est mémorisée et vous n'aurez pas besoin d'y retoucher après ouverture/fermeture de l'échéancier. De plus, elle est propre à chaque utilisateur : elle peut être activée chez l'un et non activée chez un autre.
+
+ECHEANCES STANDARDS
+Les échéances standards sont générées automatiquement au moment de l'inscription d'un élève. L'adhésion ou les Frais de dossier par exemple sont souvent des données récurrentes et il est fastidieux d'avoir à les rentrer manuellement à chaque nouvelle inscription. Pour éviter cela, vous pouvez créer des échéances standards en utilisant le menu Compta->Echéances standards et en renseignant leurs caractéristiques. Les champs grisés prendront leur valeur en fonction du contexte, à vous de configurer les autres suivant vos besoins. Les éléments configurables sont les suivants : Libellé, Montant, Règlement, N° de pièce, Compte, Analytique. Cliquez sur Ajouter pour créer une nouvelle échéance standard, sur Modifier ou Supprimer pour modifier ou supprimer une ligne existante. 
+
+SUIVI ELEVE
+On peut maintenant imprimer le suivi d'un élève sur une période déterminée. Déplacez-vous dans l'onglet Suivi de la fiche Eleve et cliquez sur le bouton Imprimer. Les cours en salle de rattrapage ne seront pas pris en compte à l'impression.
+
+ONGLET INSCRIPTIONS
+La date de fin des cours est maintenant calculée automatiquement en fonction de la date du dernier cours planifié. Auparavant, cette date était fixée à la date de fin d'année scolaire. Cela vous permet d'avoir une information plus rapide et précise du planning de l'élève. Cette date est affichée à droite de chaque ligne dans la liste des cours composant la formule (ou le programme de formation).
+
+Une nouvelle fonction "Arrêter et redéfinir" est maintenant disponible lorsqu'on clique droit sur une ligne de cours collectif. Comme son nom l'indique, cette fonction permet d'arrêter et de définir un cours en une seule étape. Après avoir choisi la date d'arrêt (par défaut, cette date correspond au jour courant), sélectionnez un cours dans la liste de ceux disponibles. Le tableau présenté ici regroupe tous les cours de même type et de même durée que celui que vous voulez modifier. Cette liste correspond aux cours présents sur le planning les 6 premiers jours suivants la date d'arrêt.
+Note : le cours est arrếté à partir de la date exacte que vous avez définie. Il n'y a pas d'arrêt à partir du prochain dimanche, comme c'est le cas pour la fonction "Arrêter cours".
+
+PLANNING
+Il est possible d'imprimer la feuille d'émargement de chaque étudiant en formation professionnelle. Cette feuille reprend la structure du Suivi élève et peut être générée pour une période spécifique (par défaut, le mois courant). Cliquez sur Planning -> Feulle d'émargement forpro pour y accéder. Il est ainsi possible d'imprimer en une seule fois ces feuilles pour tout un ensemble d'élèves sans avoir besoin de passer par leurs fiches respectives.
+
+EXPORT
+Les exports élèves du menu Fichier -> Exporter -> Tous les élèves, etc. offrent maintenant la possibilité de choisir entre 3 critères : Loisir, Pro, Loisir + Pro. Pour avoir l'équivalent de Loisir + Pro, il fallait auparavant ne rien cocher mais cela ne fonctionnait pas avant la version 2.9.7.2.
+
+STATISTIQUES
+Il est maintenant possible de ne sélectionner que certaines requêtes dans la liste des statistiques offertes. Une fenêtre de dialogue vous permet de cocher/décocher les lignes qui vous intéressent. Menu Ficher -> Exporter -> Statistiques.
+Rappel : la liste des requêtes offertes peut dépendre de votre organisation. Certains clients d'Algem bénéficient de statistiques personnalisées, propres à leur structure. Les autres se contentent des statistiques par défaut. La création de statistiques personnalisées est un service payant (comptez de 1 à 10 jours de développement, suivant la complexité des demandes). N'hésitez pas à nous contacter si vous êtes intéressé par ce genre d'extension.
+
+Des améliorations ont été apportées dans l'affichage des résultats : les numéros de personne sont accompagnés par leur nom, prénom. Les montants décimaux ou horaires sont alignés à droite, les titres, la police de caractères et les espacements sont mieux mis en valeur.
+
+SCRIPTS
+Les bénéficiaires du catalogue de scripts ont droit à un nouvel export intitulé "Cours à rattraper par prof". Ce script permet de lister les heures restantes en salle de rattrapage durant la période sélectionnée. Si vous ne sélectionnez aucune date, la période de référence correspond à l'année scolaire. Si ne vous sélectionnez aucun professeur, le résultat incluera l'ensemble des professeurs concernés.
+Note : une salle de rattrapage est à l'heure actuelle une salle dont le nom commence par "RATTRAP" (ex. : RATTRAPAGE 1, RATTRAPAGE EXT., etc.).
+Il est désormais possible d'inclure dans les arguments d'un script une liste de professeurs.

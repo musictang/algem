@@ -1,0 +1,5 @@
+2.9.7.2
+CORRECTIFS
+* Une confirmation vous est maintenant demandée si vous planifiez un cours sans avoir défini le professeur. Cela pouvait autrement entraîner une certaine confusion en cas d'oubli involontaire.
+
+Rappel : il est possible depuis la version 2.9.7.1 de planifier un cours sans préciser le professeur.

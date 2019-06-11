@@ -1,0 +1,27 @@
+2.9.4.8
+
+BUGS CORRIGES
+* La création de personne ne fonctionnait plus lorsque le nom du contact comportait des apostrophes.
+* La recherche des jours disponibles pour la planification avec périodicité mensuelle ne fonctionnait pas correctement. Le choix du samedi entraînait de plus un blocage du logiciel.
+* La recherche d'un fichier de log (journal d'erreurs) entraînait une erreur d'ouverture sous Windows si ce fichier était déjà présent à l'emplacement par défaut. Il fallait supprimer le fichier algem.log pour résoudre le problème.
+
+FICHIER JOURNAL
+Le paramètre de configuration "Dossier d'historique" est maintenant actif. Ce paramètre permet de définir l'endroit où est enregistré le journal d'erreurs. En cas d'erreur ou de chemin d'accès inexistant, Algem tentera d'enregistrer le journal dans le dossier temporaire par défaut de l'utilisateur (C:\Users\<nom-utilisateur>\AppData\Local\Temp sous Windows 7, par exemple).
+
+PLANNING
+- Le mois sélectionné est maintenant coloré en vert afin de faciliter le repérage. Il se peut que cette coloration ne soit pas visible suivant le Look&Feel utilisé : les Look&Feel Metal, Windows et Nimbus sont a priori compatibles.
+- Le même procédé est utilisé dans le planning mois.
+- La taille de la fenêtre et la police de caractères du planning mois ont été agrandies afin de le rendre plus lisible sur des écrans à haute résolution.
+- Dans la vue détaillée d'un planning, les noms de personnes précèdent désormais leurs prénoms si l'ordre de tri choisi est "Nom prénom" dans les paramètres généraux (et inversement). Ce n'était pas le cas auparavant : les prénoms s'affichaient en premier, quelque soit l'ordre de tri.
+Ce choix influera plus généralement sur l'affichage des listes de personne (professeurs en particulier).
+
+THEMES - INTERFACE
+Algem a été également revu pour améliorer la compatibilité des Look&Feel Windows et Nimbus.
+Rappel : le thème utilisable par défaut est pour l'heure paramétrable dans le fichier de démarrage algem.conf.
+Note : le thème sélectionné et l'option d'affichage des polices n'étaient pas opérationnels dès la séquence de démarrage. Cela ne devrait plus être le cas maintenant.
+Des améliorations diverses ont été apportées au niveau de l'interface : alignements de boutons, bordures, espacements...
+
+COMPTABILITÉ
+- Dans le détail des heures par établissement, les totaux ne s'affichent plus que sur 2 lignes afin de réduire le nombre de pages générées après l'export.
+
+

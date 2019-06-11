@@ -1,0 +1,1 @@
+ALTER TABLE eleve ADD COLUMN famille int DEFAULT 0;

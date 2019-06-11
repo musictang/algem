@@ -1,0 +1,40 @@
+2.15.8 26/03/18
+CORRECTIFS
+* La liste des cours n'était pas imprimée sur la carte d'adhérent si l'inscription se faisait avant le 1er mai de l'année scolaire en cours. Dorénavant, cette liste est imprimée si la date d'inscription est supérieure ou égale à la date de pré-inscription (celle qui est saisie dans les paramètres généraux).
+* L'export du planning jour au format Excel ne fonctionnait pas si l'une des séances débutait avant l'heure d'ouverture par défaut (si par exemple, la séance débutait à 08:30 alors que l'heure d'ouverture était de 09:00).
+* Il était impossible de réserver une répétition individuelle si l'adhérent avait cours au même moment dans une salle de rattrapage. La présence en salle de rattrapage n'est désormais plus bloquante.
+* L'importation de contacts ne pouvait être réalisée si certains contacts comportaient une adresse sans ville ou sans code postal.
+L'ajout automatique d'une ville dans la liste des codes postaux ne peut plus se faire que si la ville et le code postal sont tous les deux renseignés.
+* Certaines images entraînaient une erreur lors de l'ajout d'un logo dans les paramètres généraux (rubrique Organisation).
+* Le choix du type de période de vacances (menu Configuration -> Vacances -> Périodes) n'était pas visible sous certaines configurations de thème ou d'écran. La fenêtre de modification des périodes de vacances a été élargie pour que tous les champs puissent apparaîtrent sans avoir besoin de redimensionner manuellement la fenêtre.
+* La fenêtre de création d'un établissement était trop étroite. Elle reprend désormais les dimensions par défaut d'une fiche personne.
+* Le champ Organisation a été désactivé dans la fiche d'un établissement.
+
+PLANNING JOUR
+L'export au format Excel a été optimisé :
+- vous pouvez choisir le format de page avant l'export (A4 ou A3)
+- la page n'est plus centrée horizontalement par défaut
+- les marges ont été réduites afin de gagner de la place à l'impression (A4 en particulier)
+- les pages exportées comportent maintenant un entête correspondant au jour sélectionné (ex. : lundi 19 mars 2018)
+- l'horaire de la séance est affiché en haut de chaque plage colorée (grâce à cette information, il n'est plus nécessaire d'afficher la grille* à l'impression)
+- les informations (horaire, titre du cours, nom du professeur et éventuellement nom de l'élève) s'affichent maintenant en haut de la plage colorée (et non plus au centre comme auparavant)
+- les intervalles de temps autres que l'heure ou la demi-heure sont maintenant correctement représentés (la hauteur d'une cellule correspond à une plage de 5 mn) : ex. 14:05-14:45 ou 18:00-18:40
+- les demi-heures et les subdivisions de quarts d'heures sont représentées dans l'échelle de temps
+
+* Rappel : vous pouvez afficher la grille à l'impression en cliquant sur l'option adéquate dans les paramètres de page de votre tableur.
+
+INSCRIPTIONS
+Il est maintenant possible de modifier la date d'une inscription. Pour cela, cliquez droit sur le titre de l'inscription désirée dans l'onglet "Inscriptions" de l'élève. Cette fonctionnalité est surtout utile lorsque vous faites des inscriptions anticipées (avant le début de l'année scolaire).
+
+La disposition des menus clic droit dans l'onglet "Inscriptions" de l'élève a été légèrement modifiée. Les menus sont affichés dans l'ordre logique de présentation (Inscriptions -> Formules -> Cours).
+
+EXPORTS
+Les différents exports du menu Fichier ont été optimisés :
+- une zone de sélection vous permet maintenant de n'exporter que les colonnes désirées.
+- la disposition des options a été repensée afin qu'elle soit plus claire et concise.
+- pour certains exports, le choix de l'envoi direct par mail est maintenant bien visible en bas de fenêtre. Auparavant, ce choix ne pouvait se faire que par l'intermédiaire d'une boîte de sélection, bien moins intuitive.
+
+REPETITIONS
+Un nouvelle fonction "Différer" est disponible dans la fenêtre de détail d'une répétition (individuelle ou de groupe). Elle permet de modifier non seulement l'horaire d'une séance mais aussi la salle et/ou le jour. Auparavant, si l'on voulait modifier la date et l'heure d'une répétition, il fallait s'y prendre en deux temps (annuler la répétition, puis la recréer au jour et à l'heure désirés).
+
+Le menu "Changer heure" a été renommé "Changer heure/durée" car cette fonction permet non seulement de modifier l'heure de début d'une répétition mais aussi son heure de fin, ce qui revient à modifier sa durée.
