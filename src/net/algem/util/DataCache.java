@@ -866,7 +866,7 @@ public class DataCache {
             showMessage(frame, BundleUtil.getLabel("Modules.label"));
             // important : before module
             COURSE_CODE_LIST = new GemList<GemParam>(COURSE_CODE_IO.load());
-            loadModuleCourses(); //ERIC 30/03/2019 après course_code et avant module_io
+            //loadModuleCourses(); //ERIC 11-06-2019 en attente de gérer les mises à jour
             MODULE_LIST = new GemList<Module>(MODULE_IO.load());
 
             occupCat = CategoryOccupIO.find("ORDER BY nom", DATA_CONNECTION);
@@ -886,7 +886,7 @@ public class DataCache {
             loadAccountingCache();
 
 //      showMessage(frame, BundleUtil.getLabel("Billing.label"));
-      loadBillingCache(); //FIXME ERIC voir findOrderLines() invoiceloader invoceio.find +findorderlines
+//      loadBillingCache(); //FIXME ERIC voir findOrderLines() invoiceloader invoceio.find +findorderlines
 
             for (User u : USER_IO.load()) {
                 USER_CACHE.put(u.getId(), u);
@@ -1362,6 +1362,7 @@ public class DataCache {
         }
     }
 
+    //ERIC 30-03-2019 //TODO gérer les mises à jour du cache
     public static List<CourseModuleInfo> getModuleCourse(int module) {
         return moduleCourses.get(module);
     }

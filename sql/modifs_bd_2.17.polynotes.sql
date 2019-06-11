@@ -36,22 +36,12 @@ COMMENT ON COLUMN reinscription.action IS 'id action pour les cours collectifs p
 CREATE INDEX reins_student_idx ON reinscription USING btree(student);
 CREATE INDEX reins_cours_idx ON reinscription USING btree(cours);
 
--- nouvelles clés de config avec les valeurs spécifique à Polynotes
+-- nouvelles clés de config pour l'envoi de mail par smtp
 
-INSERT INTO config VALUES ('Smtp.server.name','smtpauth.online.net');
+INSERT INTO config VALUES ('Smtp.server.name','smtp.domaine.net');
 INSERT INTO config VALUES ('Smtp.server.security','TLS');
 INSERT INTO config VALUES ('Smtp.server.port','587');
-INSERT INTO config VALUES ('Smtp.server.authentification','t');
-INSERT INTO config VALUES ('Smtp.server.user','accueil@polynotes.org');
-INSERT INTO config VALUES ('Smtp.server.password','Fanfare2014');
+INSERT INTO config VALUES ('Smtp.server.authentification','f');
+INSERT INTO config VALUES ('Smtp.server.user','email@domainet.net');
+INSERT INTO config VALUES ('Smtp.server.password','password');
 
--- mises à jour spécifiques à Polynotes
-
--- toutes les chorales
-update cours set nplaces=25 where id=55 or id=56 or id=57; 
--- FM violon
-update cours set nplaces=10 where id=68; 
--- musique de chambre
-update cours set nplaces=8 where id=82; 
--- mise a jour des places dans les actions
-update action set places=(select nplaces from cours where id=action.cours)

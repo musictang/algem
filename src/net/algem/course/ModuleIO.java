@@ -207,8 +207,8 @@ public class ModuleIO
         m.setActive(rs.getBoolean(8));
         m.setYearReducRate(rs.getDouble(9));
 
-//        m.setCourses(findCourses(m.getId())); // ERIC 30/03/2019
-        m.setCourses(DataCache.getModuleCourse(m.getId()));
+        m.setCourses(findCourses(m.getId()));
+//        m.setCourses(DataCache.getModuleCourse(m.getId()));  // ERIC 11-06-2019 en attente de gérer les mises à jour
         v.addElement(m);
       }
     }
