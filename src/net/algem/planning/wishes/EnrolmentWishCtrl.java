@@ -457,6 +457,7 @@ public class EnrolmentWishCtrl implements ActionListener, TableModelListener {
                 EnrolmentWish w = new EnrolmentWish();
                 w.setStudent(p);
                 w.setCourse(csp.getCourse().getId());
+                w.setDay((short)csp.getDow());
                 w.setAction(csp.getAction().getId()); //getIdAction()); //getCourse().getId());
                 w.setHour(new Hour(csp.getStart().toString()));
                 w.setDuration(new Hour(csp.getEnd().toMinutes()-csp.getStart().toMinutes()));

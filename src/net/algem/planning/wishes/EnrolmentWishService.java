@@ -106,7 +106,6 @@ public class EnrolmentWishService {
     }
 
     public void insertGroupWish(EnrolmentWish w) throws SQLException {
-        w.setDay((short) view.getDayChoice());
         wishesIO.insert(w);
         wishesByCourse.add(w);
     }

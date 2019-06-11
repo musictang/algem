@@ -202,12 +202,17 @@ public class EnrolmentWishGroupCourseTableModel extends AbstractTableModel {
     public static String ageFromBirth(DateFr birth) {
     if (birth == null) return "";
     
-    LocalDate now = LocalDate.now();
-    LocalDate birthDate = LocalDate.of(birth.getYear(), birth.getMonth(), birth.getDay());
-    int year = birthDate.until(now).getYears();
-    int month = birthDate.until(now).getMonths();
+    try {
+        LocalDate now = LocalDate.now();
+        LocalDate birthDate = LocalDate.of(birth.getYear(), birth.getMonth(), birth.getDay());
+        int year = birthDate.until(now).getYears();
+        int month = birthDate.until(now).getMonths();
     
-    return year+" ans "+month+" mois";
+        return year+" ans "+month+" mois";
+    } catch (Exception e) {
+        GemLogger.log("EnrolmentWishGroupCourseTableModel.ageFromBirth:" + e);
+    }
+    return "";
 }
 /*     
     public void refreshStudent(int studentId) {
