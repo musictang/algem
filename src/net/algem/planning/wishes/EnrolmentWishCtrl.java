@@ -161,323 +161,327 @@ public class EnrolmentWishCtrl implements ActionListener, TableModelListener {
 
     @Override
     public void actionPerformed(ActionEvent evt) {
-
-        LocalDate ds = view.getReferenceDate().getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        if (ds.getDayOfWeek().getValue() != DayOfWeek.MONDAY.getValue()) {
-            MessagePopup.information(view, MessageUtil.getMessage("enrolment.wish.date.error"));
-            return;
-        }
-
-        if (evt.getActionCommand().equals("tableIncrement")) {
-            tableInit();
-            dayReload(false);
-            tableReload();
-        } else if (evt.getActionCommand().equals("teacherChoice")) {
-            teacherLoad=true;
-            wishService.setCurrentTeacher(view.getTeacherChoice()); //voir
-            tableInit();
-            teacherReload();
-            dayReload(true);
-            courseReload();
-            tableReload();
-            teacherLoad=false;
-        } else if (evt.getActionCommand().equals("dayChoice")) {
-            if (!teacherLoad) { 
-                dayLoad=true;
-                courseReload();
-                tableInit();
-                dayReload(true);
-                tableReload();
-                dayLoad=false;
-            }
-        } else if (evt.getActionCommand().equals("particularCourseChoice")) {
-            if (!teacherLoad && !dayLoad) {
-                tableInit();
-                dayReload(teacherCurrentPlanning.size() == 0);
-                tableReload();
-            }
-        } else if (evt.getActionCommand().equals("groupCourseChoice")) {
-            CourseSchedulePrintDetail csp = view.getGroupCourseChoice();
-            view.setGroupCourseLabels(csp.getDowLabel(), csp.getStart(), csp.getEnd(), csp.getTeacher().getFirstnameName());
-            view.setMaxPlaces(csp.getAction().getPlaces());
-            groupCourseReload(csp);
-
-        } else if (evt.getActionCommand().equals("EditablePanelDeleteButton")) {
-            EnrolmentWishEditablePanel cell = (EnrolmentWishEditablePanel) SwingUtilities.getAncestorOfClass(EnrolmentWishEditablePanel.class, (Component) evt.getSource());
-            if (cell.getStudentId() == 0) {
+        try {
+            LocalDate ds = view.getReferenceDate().getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            if (ds.getDayOfWeek().getValue() != DayOfWeek.MONDAY.getValue()) {
+                MessagePopup.information(view, MessageUtil.getMessage("enrolment.wish.date.error"));
                 return;
             }
-            try {
-                if (cell.isChecked()) {
-                    throw new EnrolmentWishException(MessageUtil.getMessage("enrolment.wish.error.selected"));
-                }
-                if (cell.getChoice().isMailConfirmSended()) {
-                    throw new EnrolmentWishException(MessageUtil.getMessage("enrolment.wish.error.maildone"));
-                }
-                if (MessagePopup.confirm(cell, MessageUtil.getMessage("enrolment.wish.delete.confirmation", " " + cell.getPreference() + " de " + cell.getStudentLabel()))) {
-                    if (view.isTableEditing()) {
-                        view.stopEditing();
-                    }
-                    wishService.deleteParticularWish(cell.getChoice());
-                    EnrolmentWish w = new EnrolmentWish();
-                    particularCourseModel.setValueAt(w, view.getSelectedRow(), view.getSelectedColumn());
-                }
 
-            } catch (SQLException e) {
-                GemLogger.logException("EnrolmentWishCtrl EditablePanelDeleteButton", e);
-                MessagePopup.warning(cell, e.getMessage());
-            } catch (EnrolmentWishException e) {
-                MessagePopup.warning(cell, e.getMessage());
-            } finally {
-                if (view.isTableEditing()) {
-                    view.stopEditing();
+            if (evt.getActionCommand().equals("tableIncrement")) {
+                tableInit();
+                dayReload(false);
+                tableReload();
+            } else if (evt.getActionCommand().equals("teacherChoice")) {
+                teacherLoad=true;
+                wishService.setCurrentTeacher(view.getTeacherChoice()); //voir
+                tableInit();
+                teacherReload();
+                dayReload(true);
+                courseReload();
+                tableReload();
+                teacherLoad=false;
+            } else if (evt.getActionCommand().equals("dayChoice")) {
+                if (!teacherLoad) { 
+                    dayLoad=true;
+                    courseReload();
+                    tableInit();
+                    dayReload(true);
+                    tableReload();
+                    dayLoad=false;
                 }
-            }
-        } else if (evt.getActionCommand().equals("EditablePanelShowButton")) {
-            EnrolmentWishEditablePanel cell = (EnrolmentWishEditablePanel) SwingUtilities.getAncestorOfClass(EnrolmentWishEditablePanel.class, (Component) evt.getSource());
-            EnrolmentWishFormDlg dlg = null;
-            try {
-                if (cell.isChecked()) {
-                    throw new EnrolmentWishException(MessageUtil.getMessage("enrolment.wish.error.selected"));
+            } else if (evt.getActionCommand().equals("particularCourseChoice")) {
+                if (!teacherLoad && !dayLoad) {
+                    tableInit();
+                    dayReload(teacherCurrentPlanning.size() == 0);
+                    tableReload();
                 }
-                if (view.getParticularCourseChoice() < 0) {
-                    throw new EnrolmentWishException(MessageUtil.getMessage("enrolment.wish.error.course.id"));
-                }
-                dlg = new EnrolmentWishFormDlg(view, wishService, particularCourseModel.getColumnName(view.getSelectedColumn()), view.getCurrentTeacherLabel(), view.getCurrentCourseLabel(), view.getDayChoiceLabel(), (Hour) particularCourseModel.getValueAt(view.getSelectedRow(), 0));
-                EnrolmentWish w = (EnrolmentWish) particularCourseModel.getValueAt(view.getSelectedRow(), view.getSelectedColumn());
-                if (view.getSelectedColumn() == EnrolmentWishParticularCourseTableModel.COLUMN_SAMEASCURRENT) {
-                    EnrolmentCurrent current = (EnrolmentCurrent) particularCourseModel.getValueAt(view.getSelectedRow(), EnrolmentWishParticularCourseTableModel.COLUMN_CURRENT);
-                    if (current.isCollectif()) {
-                        throw new EnrolmentWishException(MessageUtil.getMessage("enrolment.wish.error.couse.collective"));
-                    }
-                    if (current.getStudent() == null) {
-                        throw new EnrolmentWishException(MessageUtil.getMessage("enrolment.wish.error.course.null"));
-                    }
-                    dlg.setStudent(current.getStudent(), w.getPreference());
-                    dlg.setDuration(current.getDuration());
-                    //dlg.setOnlyPreferenceEditable(); //demande de Coralie 02/05/2019
-                } else {
-                    if (cell.getStudentId() != 0) {
-                        int pref = 0;
-                        try {
-                            pref = Integer.parseInt(cell.getPreference());
-                        } catch (NumberFormatException ignore) {
-                        }
-                        dlg.setStudent(cell.getStudent(), pref);
-                    } else {
-                        dlg.setStudent(cell.getStudent(), 0);
-                    }
-                    if (cell.getDuration().toString().equals("     ")) {
-                        dlg.setDuration(new Hour("00:00"));
-                    } else {
-                        dlg.setDuration(cell.getDuration());
-                    }
-                    dlg.setNote(cell.getNote());
-                }
-                dlg.setVisible(true);
-                if (dlg.isValidation()) {
-                    if (dlg.getDuration().toMinutes() < DURATION_MINIMUM) {
-                        throw new EnrolmentWishException(MessageUtil.getMessage("enrolment.wish.error.duration.min", DURATION_MINIMUM));
-                    }
-                    if (wishService.countStudentWishes(dlg.getStudent().getId(), view.getTeacherChoice(), view.getParticularCourseChoice()) >= MAX_WISHES) {
-                        throw new EnrolmentWishException(MessageUtil.getMessage("enrolment.wish.error.max", MAX_WISHES));
-                    }
-                    EnrolmentWish w2 = wishService.checkOtherDuration(dlg.getStudent().getId(), dlg.getDuration(), w.getColumn());
-                    if (w2 != null) {
-                        MessagePopup.information(cell, MessageUtil.getMessage("enrolment.wish.duration.warning", new Object[]{w2.getDuration(), w2.getDayLabel(), w2.getHour()}));
-                    }
+            } else if (evt.getActionCommand().equals("groupCourseChoice")) {
+                CourseSchedulePrintDetail csp = view.getGroupCourseChoice();
+                view.setGroupCourseLabels(csp.getDowLabel(), csp.getStart(), csp.getEnd(), csp.getTeacher().getFirstnameName());
+                view.setMaxPlaces(csp.getAction().getPlaces());
+                groupCourseReload(csp);
 
-                    w.setStudent(dlg.getStudent());
-                    w.setDuration(dlg.getDuration());
-                    w.setPreference((short) dlg.getPreference());
-                    w.setNote(dlg.getNote());
-                    Hour h = (Hour) particularCourseModel.getValueAt(view.getSelectedRow(), EnrolmentWishParticularCourseTableModel.COLUMN_HOUR);
-                    wishService.updateParticularWish(view.getSelectedColumn() - EnrolmentWishParticularCourseTableModel.COLUMN_SAMEASCURRENT, h, w);
-                    cell.setWish(w);
+            } else if (evt.getActionCommand().equals("EditablePanelDeleteButton")) {
+                EnrolmentWishEditablePanel cell = (EnrolmentWishEditablePanel) SwingUtilities.getAncestorOfClass(EnrolmentWishEditablePanel.class, (Component) evt.getSource());
+                if (cell.getStudentId() == 0) {
+                    return;
                 }
-                if (view.isTableEditing()) {
-                    view.stopEditing();
-                }
-            } catch (SQLException e) {
-                GemLogger.logException("EnrolmentWishCtrl EditablePanelShowButton", e);
-                MessagePopup.warning(cell, e.getMessage());
-            } catch (EnrolmentWishException e) {
-                MessagePopup.warning(cell, e.getMessage());
-            } finally {
-                if (view.isTableEditing()) {
-                    view.stopEditing();
-                }
-                if (dlg != null) {
-                    dlg.dispose();
-                }
-            }
-        } else if (evt.getActionCommand().equals("EditablePanelCheckbox")) {
-            EnrolmentWishEditablePanel cell = (EnrolmentWishEditablePanel) SwingUtilities.getAncestorOfClass(EnrolmentWishEditablePanel.class, (Component) evt.getSource());
-            try {
-                if (cell.getStudent() == null) {
-                    throw new EnrolmentWishException(MessageUtil.getMessage("enrolment.wish.error.course.null"));
-                }
-                if (cell.isChecked()) {
-                    checkDurationSelected(view.getSelectedRow(), cell.getDuration()); //throw Exception
-                    wishService.checkOtherSelected(cell.getStudentId()); // throw Exception
-                    EnrolmentSelected val = new EnrolmentSelected(cell.getDuration(), cell.getStudent());
-                    int colChecked = particularCourseModel.getChecked(view.getSelectedRow());
-                    if (colChecked > 0) {
-                        wishService.selectParticularWish((EnrolmentWish) particularCourseModel.getValueAt(view.getSelectedRow(), colChecked), false);
-                        particularCourseModel.unCheckColumn(view.getSelectedRow(), colChecked);
+                try {
+                    if (cell.isChecked()) {
+                        throw new EnrolmentWishException(MessageUtil.getMessage("enrolment.wish.error.selected"));
                     }
-                    wishService.selectParticularWish(cell.getChoice(), true);
-                    particularCourseModel.setValueAt(val, view.getSelectedRow(), EnrolmentWishParticularCourseTableModel.COLUMN_SELECTED);
-                    SwingUtilities.invokeLater(new Runnable() {
-                        public void run() {
-                            particularCourseModel.refreshStudent(cell.getStudentId());
-                        }
-                    });
-                } else {
                     if (cell.getChoice().isMailConfirmSended()) {
                         throw new EnrolmentWishException(MessageUtil.getMessage("enrolment.wish.error.maildone"));
                     }
-                    wishService.selectParticularWish(cell.getChoice(), false);
-                    EnrolmentSelected val = new EnrolmentSelected();
-                    particularCourseModel.setValueAt(val, view.getSelectedRow(), EnrolmentWishParticularCourseTableModel.COLUMN_SELECTED);
-                    SwingUtilities.invokeLater(new Runnable() {
-                        public void run() {
-                            particularCourseModel.refreshStudent(cell.getStudentId());
+                    if (MessagePopup.confirm(cell, MessageUtil.getMessage("enrolment.wish.delete.confirmation", " " + cell.getPreference() + " de " + cell.getStudentLabel()))) {
+                        if (view.isTableEditing()) {
+                            view.stopEditing();
                         }
-                    });
+                        wishService.deleteParticularWish(cell.getChoice());
+                        EnrolmentWish w = new EnrolmentWish();
+                        particularCourseModel.setValueAt(w, view.getSelectedRow(), view.getSelectedColumn());
+                    }
+
+                } catch (SQLException e) {
+                    GemLogger.logException("EnrolmentWishCtrl EditablePanelDeleteButton", e);
+                    MessagePopup.warning(cell, e.getMessage());
+                } catch (EnrolmentWishException e) {
+                    MessagePopup.warning(cell, e.getMessage());
+                } finally {
+                    if (view.isTableEditing()) {
+                        view.stopEditing();
+                    }
                 }
-            } catch (SQLException e) {
-                GemLogger.logException("EnrolmentWishCtrl EditablePanelCheckbox", e);
-                MessagePopup.warning(cell, e.getMessage());
-            } catch (EnrolmentWishException e) {
-                cell.setChecked(cell.isChecked() ? false : true);
-                MessagePopup.warning(cell, e.getMessage());
-            } finally {
+            } else if (evt.getActionCommand().equals("EditablePanelShowButton")) {
+                EnrolmentWishEditablePanel cell = (EnrolmentWishEditablePanel) SwingUtilities.getAncestorOfClass(EnrolmentWishEditablePanel.class, (Component) evt.getSource());
+                EnrolmentWishFormDlg dlg = null;
+                try {
+                    if (cell.isChecked()) {
+                        throw new EnrolmentWishException(MessageUtil.getMessage("enrolment.wish.error.selected"));
+                    }
+                    if (view.getParticularCourseChoice() < 0) {
+                        throw new EnrolmentWishException(MessageUtil.getMessage("enrolment.wish.error.course.id"));
+                    }
+                    dlg = new EnrolmentWishFormDlg(view, wishService, particularCourseModel.getColumnName(view.getSelectedColumn()), view.getCurrentTeacherLabel(), view.getCurrentCourseLabel(), view.getDayChoiceLabel(), (Hour) particularCourseModel.getValueAt(view.getSelectedRow(), 0));
+                    EnrolmentWish w = (EnrolmentWish) particularCourseModel.getValueAt(view.getSelectedRow(), view.getSelectedColumn());
+                    if (view.getSelectedColumn() == EnrolmentWishParticularCourseTableModel.COLUMN_SAMEASCURRENT) {
+                        EnrolmentCurrent current = (EnrolmentCurrent) particularCourseModel.getValueAt(view.getSelectedRow(), EnrolmentWishParticularCourseTableModel.COLUMN_CURRENT);
+                        if (current.isCollectif()) {
+                            throw new EnrolmentWishException(MessageUtil.getMessage("enrolment.wish.error.couse.collective"));
+                        }
+                        if (current.getStudent() == null) {
+                            throw new EnrolmentWishException(MessageUtil.getMessage("enrolment.wish.error.course.null"));
+                        }
+                        dlg.setStudent(current.getStudent(), w.getPreference());
+                        dlg.setDuration(current.getDuration());
+                        //dlg.setOnlyPreferenceEditable(); //demande de Coralie 02/05/2019
+                    } else {
+                        if (cell.getStudentId() != 0) {
+                            int pref = 0;
+                            try {
+                                pref = Integer.parseInt(cell.getPreference());
+                            } catch (NumberFormatException ignore) {
+                            }
+                            dlg.setStudent(cell.getStudent(), pref);
+                        } else {
+                            dlg.setStudent(cell.getStudent(), 0);
+                        }
+                        if (cell.getDuration().toString().equals("     ")) {
+                            dlg.setDuration(new Hour("00:00"));
+                        } else {
+                            dlg.setDuration(cell.getDuration());
+                        }
+                        dlg.setNote(cell.getNote());
+                    }
+                    dlg.setVisible(true);
+                    if (dlg.isValidation()) {
+                        if (dlg.getDuration().toMinutes() < DURATION_MINIMUM) {
+                            throw new EnrolmentWishException(MessageUtil.getMessage("enrolment.wish.error.duration.min", DURATION_MINIMUM));
+                        }
+                        if (wishService.countStudentWishes(dlg.getStudent().getId(), view.getTeacherChoice(), view.getParticularCourseChoice()) >= MAX_WISHES) {
+                            throw new EnrolmentWishException(MessageUtil.getMessage("enrolment.wish.error.max", MAX_WISHES));
+                        }
+                        EnrolmentWish w2 = wishService.checkOtherDuration(dlg.getStudent().getId(), dlg.getDuration(), w.getColumn());
+                        if (w2 != null) {
+                            MessagePopup.information(cell, MessageUtil.getMessage("enrolment.wish.duration.warning", new Object[]{w2.getDuration(), w2.getDayLabel(), w2.getHour()}));
+                        }
+
+                        w.setStudent(dlg.getStudent());
+                        w.setDuration(dlg.getDuration());
+                        w.setPreference((short) dlg.getPreference());
+                        w.setNote(dlg.getNote());
+                        Hour h = (Hour) particularCourseModel.getValueAt(view.getSelectedRow(), EnrolmentWishParticularCourseTableModel.COLUMN_HOUR);
+                        wishService.updateParticularWish(view.getSelectedColumn() - EnrolmentWishParticularCourseTableModel.COLUMN_SAMEASCURRENT, h, w);
+                        cell.setWish(w);
+                    }
+                    if (view.isTableEditing()) {
+                        view.stopEditing();
+                    }
+                } catch (SQLException e) {
+                    GemLogger.logException("EnrolmentWishCtrl EditablePanelShowButton", e);
+                    MessagePopup.warning(cell, e.getMessage());
+                } catch (EnrolmentWishException e) {
+                    MessagePopup.warning(cell, e.getMessage());
+                } finally {
+                    if (view.isTableEditing()) {
+                        view.stopEditing();
+                    }
+                    if (dlg != null) {
+                        dlg.dispose();
+                    }
+                }
+            } else if (evt.getActionCommand().equals("EditablePanelCheckbox")) {
+                EnrolmentWishEditablePanel cell = (EnrolmentWishEditablePanel) SwingUtilities.getAncestorOfClass(EnrolmentWishEditablePanel.class, (Component) evt.getSource());
+                try {
+                    if (cell.getStudent() == null) {
+                        throw new EnrolmentWishException(MessageUtil.getMessage("enrolment.wish.error.course.null"));
+                    }
+                    if (cell.isChecked()) {
+                        checkDurationSelected(view.getSelectedRow(), cell.getDuration()); //throw Exception
+                        wishService.checkOtherSelected(cell.getStudentId()); // throw Exception
+                        EnrolmentSelected val = new EnrolmentSelected(cell.getDuration(), cell.getStudent());
+                        int colChecked = particularCourseModel.getChecked(view.getSelectedRow());
+                        if (colChecked > 0) {
+                            wishService.selectParticularWish((EnrolmentWish) particularCourseModel.getValueAt(view.getSelectedRow(), colChecked), false);
+                            particularCourseModel.unCheckColumn(view.getSelectedRow(), colChecked);
+                        }
+                        wishService.selectParticularWish(cell.getChoice(), true);
+                        particularCourseModel.setValueAt(val, view.getSelectedRow(), EnrolmentWishParticularCourseTableModel.COLUMN_SELECTED);
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                particularCourseModel.refreshStudent(cell.getStudentId());
+                            }
+                        });
+                    } else {
+                        if (cell.getChoice().isMailConfirmSended()) {
+                            throw new EnrolmentWishException(MessageUtil.getMessage("enrolment.wish.error.maildone"));
+                        }
+                        wishService.selectParticularWish(cell.getChoice(), false);
+                        EnrolmentSelected val = new EnrolmentSelected();
+                        particularCourseModel.setValueAt(val, view.getSelectedRow(), EnrolmentWishParticularCourseTableModel.COLUMN_SELECTED);
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                particularCourseModel.refreshStudent(cell.getStudentId());
+                            }
+                        });
+                    }
+                } catch (SQLException e) {
+                    GemLogger.logException("EnrolmentWishCtrl EditablePanelCheckbox", e);
+                    MessagePopup.warning(cell, e.getMessage());
+                } catch (EnrolmentWishException e) {
+                    cell.setChecked(cell.isChecked() ? false : true);
+                    MessagePopup.warning(cell, e.getMessage());
+                } finally {
+                    if (view.isTableEditing()) {
+                        view.stopEditing();
+                    }
+                }
+            } else if (evt.getActionCommand().equals("EditablePanelStudentButton")) {
                 if (view.isTableEditing()) {
                     view.stopEditing();
                 }
-            }
-        } else if (evt.getActionCommand().equals("EditablePanelStudentButton")) {
-            if (view.isTableEditing()) {
-                view.stopEditing();
-            }
-            EnrolmentWishEditablePanel cell = (EnrolmentWishEditablePanel) SwingUtilities.getAncestorOfClass(EnrolmentWishEditablePanel.class, (Component) evt.getSource());
-            if (cell.getStudentId() != 0) {
-                showContactFile(cell.getStudentId());
-            }
-        } else if (evt.getActionCommand().equals("WishPanelMailButton")) {
-            int colChecked = particularCourseModel.getChecked(view.getSelectedRow());
-            if (colChecked < 0) {
-                return;
-            }
-
-            if (!MessagePopup.confirm(view, MessageUtil.getMessage("enrolment.wish.mail.confirm"))) {
-                return;
-            }
-            SwingWorker sw = new SwingWorker() {
-                LocalDateTime mailDate;
-                int line;
-                @Override
-                protected Object doInBackground() throws Exception {
-                    try {
-                        EnrolmentWish cell = (EnrolmentWish) particularCourseModel.getValueAt(view.getSelectedRow(), colChecked);
-                        PersonFile pf = (PersonFile) DataCache.findId(cell.getStudentId(), Model.PersonFile);
-
-                        mailDate = LocalDateTime.now();
-                        line = view.getSelectedRow();
-                        Vector<Email> emails = pf.getContact().getEmail();
-                        
-                        String f = createPdf(cell.getStudent());
-                        sendMail(f, emails.elementAt(0).getEmail());
-                        
-                        String saveFileName = "lettre-confirmation-" + cell.getStudent().getId() + "_"+mailDate.format(timestampFileNameFormatter)+".pdf";
-                        Files.copy(Paths.get(f), Paths.get(ConfigUtil.getConf(ConfigKey.LOG_PATH.getKey()),saveFileName));
-
-                        wishService.setMailConfirmDate(cell, mailDate);
-                    } catch (Exception e) {
-                        MessagePopup.warning(view, e.getMessage());
-                        GemLogger.logException("EnrolmentWishCtrl WishPanelMailButton", e);
-                    }
-                    return null;
+                EnrolmentWishEditablePanel cell = (EnrolmentWishEditablePanel) SwingUtilities.getAncestorOfClass(EnrolmentWishEditablePanel.class, (Component) evt.getSource());
+                if (cell.getStudentId() != 0) {
+                    showContactFile(cell.getStudentId());
                 }
-                public void done() {
-                    particularCourseModel.setValueAt(mailDate, line, EnrolmentWishParticularCourseTableModel.COLUMN_MAILDATE);
-                }
-            };
-            sw.execute();
-        } else if (evt.getActionCommand().equals("particularCourseSchedule")) {
-            if (view.getCurrentParticularCourse() == null
-                    || view.getCurrentParticularCourse().getId() == 0
-                    || view.getCurrentTeacher() == null
-                    || view.getCurrentTeacher().getId() == 0) {
-                return;
-            }
-            HourRange range = new HourRange();
-            List<EnrolmentWish> wishes = wishService.getParticularCourseRange(view.getCurrentParticularCourse().getId(), view.getCurrentTeacher().getId(), view.getDayChoice());
-            if (wishes.size() == 0) {
-                MessagePopup.warning(view, MessageUtil.getMessage("enrolment.wish.hour.novalidwish"));
-                return;
-            }
-            range.setStart(new net.algem.planning.Hour(wishes.get(0).getHour().toString()));
-            int end = wishes.get(wishes.size()-1).getHour().toMinutes() + wishes.get(wishes.size()-1).getDuration().toMinutes(); 
-            range.setEnd(new net.algem.planning.Hour(end));
-            if (!range.isValid()) { 
-                MessagePopup.warning(view, MessageUtil.getMessage("enrolment.wish.plagerange.invalid", new Object[] { range.getStart(), range.getEnd()}));
-                return;
-            }
-            if (MessagePopup.confirm(view, MessageUtil.getMessage("enrolment.wish.schedule.confirmation", new Object[] { view.getCurrentCourseLabel()+"/"+view.getCurrentTeacherLabel()+"/"+view.getDayChoiceLabel(), range.getStart(), range.getEnd()}))) {
-                try {
-                    showScheduleCtrl(view.getCurrentParticularCourse(), view.getCurrentTeacher(), view.getDayChoice(), range);
-                } catch (Exception ex) {
-                    GemLogger.logException("EnrolmentWishCtrl ParticularCourseSchedule", ex);
-                    MessagePopup.warning(view, ex.toString());
-                }
-            }
-        } else if (evt.getActionCommand().equals("Abandonner")) { // from CourseScheduleCtrl 
-            desktop.removeModule(CourseScheduleCtrl.COURSE_SCHEDULING_KEY);
-            csCtrl = null;
-        } else if (evt.getActionCommand().equals("addStudentToGroupCourse")) {
-            if (view.getMaxPlaces() <= groupCourseModel.getRowCount()) {
-                MessagePopup.information(view, MessageUtil.getMessage("enrolment.wish.group.addstudent.full", view.getMaxPlaces()));
-                return;
-            }
-            CourseSchedulePrintDetail csp = view.getGroupCourseChoice();
-            if (csp == null) return;
-            
-            int student = view.getStudentChoice();
-            try {
-                Person p = (Person)dataCache.findId(student, Model.Person);
-                Member m = (Member)dataCache.findId(student, Model.Member);
-                
-                if (wishService.countStudentWishes(student, csp.getAction().getId()) > 0) {
-                    MessagePopup.information(view, MessageUtil.getMessage("enrolment.wish.group.addstudent.duplicate", p));
+            } else if (evt.getActionCommand().equals("WishPanelMailButton")) {
+                int colChecked = particularCourseModel.getChecked(view.getSelectedRow());
+                if (colChecked < 0) {
                     return;
                 }
-                
-                EnrolmentWish w = new EnrolmentWish();
-                w.setStudent(p);
-                w.setCourse(csp.getCourse().getId());
-                w.setDay((short)csp.getDow());
-                w.setAction(csp.getAction().getId()); //getIdAction()); //getCourse().getId());
-                w.setHour(new Hour(csp.getStart().toString()));
-                w.setDuration(new Hour(csp.getEnd().toMinutes()-csp.getStart().toMinutes()));
-                w.setTeacher(csp.getIdPerson());
-                w.setPreference((short)(wishService.countStudentGroupWishes(student)+1));
-                wishService.insertGroupWish(w);
 
-                EnrolmentWishGroupCourseLine line = new EnrolmentWishGroupCourseLine(p);
-                line.setWish(w);
-                line.setBirthDate(m.getBirth());
-                line.setPractice(m.getPractice());
-                line.setInstrument(dataCache.getInstrumentName(m.getFirstInstrument()));
-                line.setSelected(false);
-                groupCourseModel.addElement(line);
+                if (!MessagePopup.confirm(view, MessageUtil.getMessage("enrolment.wish.mail.confirm"))) {
+                    return;
+                }
+                SwingWorker sw = new SwingWorker() {
+                    LocalDateTime mailDate;
+                    int line;
+                    @Override
+                    protected Object doInBackground() throws Exception {
+                        try {
+                            EnrolmentWish cell = (EnrolmentWish) particularCourseModel.getValueAt(view.getSelectedRow(), colChecked);
+                            PersonFile pf = (PersonFile) DataCache.findId(cell.getStudentId(), Model.PersonFile);
 
-            } catch (SQLException e) {
-                GemLogger.logException("EnrolmentWishCtrl.addStudentToGroupCourse", e);
+                            mailDate = LocalDateTime.now();
+                            line = view.getSelectedRow();
+                            Vector<Email> emails = pf.getContact().getEmail();
+
+                            String f = createPdf(cell.getStudent());
+                            sendMail(f, emails.elementAt(0).getEmail());
+
+                            String saveFileName = "lettre-confirmation-" + cell.getStudent().getId() + "_"+mailDate.format(timestampFileNameFormatter)+".pdf";
+                            Files.copy(Paths.get(f), Paths.get(ConfigUtil.getConf(ConfigKey.LOG_PATH.getKey()),saveFileName));
+
+                            wishService.setMailConfirmDate(cell, mailDate);
+                        } catch (Exception e) {
+                            MessagePopup.warning(view, e.getMessage());
+                            GemLogger.logException("EnrolmentWishCtrl WishPanelMailButton", e);
+                        }
+                        return null;
+                    }
+                    public void done() {
+                        particularCourseModel.setValueAt(mailDate, line, EnrolmentWishParticularCourseTableModel.COLUMN_MAILDATE);
+                    }
+                };
+                sw.execute();
+            } else if (evt.getActionCommand().equals("particularCourseSchedule")) {
+                if (view.getCurrentParticularCourse() == null
+                        || view.getCurrentParticularCourse().getId() == 0
+                        || view.getCurrentTeacher() == null
+                        || view.getCurrentTeacher().getId() == 0) {
+                    return;
+                }
+                HourRange range = new HourRange();
+                List<EnrolmentWish> wishes = wishService.getParticularCourseRange(view.getCurrentParticularCourse().getId(), view.getCurrentTeacher().getId(), view.getDayChoice());
+                if (wishes.size() == 0) {
+                    MessagePopup.warning(view, MessageUtil.getMessage("enrolment.wish.hour.novalidwish"));
+                    return;
+                }
+                range.setStart(new net.algem.planning.Hour(wishes.get(0).getHour().toString()));
+                int end = wishes.get(wishes.size()-1).getHour().toMinutes() + wishes.get(wishes.size()-1).getDuration().toMinutes(); 
+                range.setEnd(new net.algem.planning.Hour(end));
+                if (!range.isValid()) { 
+                    MessagePopup.warning(view, MessageUtil.getMessage("enrolment.wish.plagerange.invalid", new Object[] { range.getStart(), range.getEnd()}));
+                    return;
+                }
+                if (MessagePopup.confirm(view, MessageUtil.getMessage("enrolment.wish.schedule.confirmation", new Object[] { view.getCurrentCourseLabel()+"/"+view.getCurrentTeacherLabel()+"/"+view.getDayChoiceLabel(), range.getStart(), range.getEnd()}))) {
+                    try {
+                        showScheduleCtrl(view.getCurrentParticularCourse(), view.getCurrentTeacher(), view.getDayChoice(), range);
+                    } catch (Exception ex) {
+                        GemLogger.logException("EnrolmentWishCtrl ParticularCourseSchedule", ex);
+                        MessagePopup.warning(view, ex.toString());
+                    }
+                }
+            } else if (evt.getActionCommand().equals("Abandonner")) { // from CourseScheduleCtrl 
+                desktop.removeModule(CourseScheduleCtrl.COURSE_SCHEDULING_KEY);
+                csCtrl = null;
+            } else if (evt.getActionCommand().equals("addStudentToGroupCourse")) {
+                if (view.getMaxPlaces() <= groupCourseModel.getRowCount()) {
+                    MessagePopup.information(view, MessageUtil.getMessage("enrolment.wish.group.addstudent.full", view.getMaxPlaces()));
+                    return;
+                }
+                CourseSchedulePrintDetail csp = view.getGroupCourseChoice();
+                if (csp == null) return;
+
+                int student = view.getStudentChoice();
+                try {
+                    Person p = (Person)dataCache.findId(student, Model.Person);
+                    Member m = (Member)dataCache.findId(student, Model.Member);
+
+                    if (wishService.countStudentWishes(student, csp.getAction().getId()) > 0) {
+                        MessagePopup.information(view, MessageUtil.getMessage("enrolment.wish.group.addstudent.duplicate", p));
+                        return;
+                    }
+
+                    EnrolmentWish w = new EnrolmentWish();
+                    w.setStudent(p);
+                    w.setCourse(csp.getCourse().getId());
+                    w.setDay((short)csp.getDow());
+                    w.setAction(csp.getAction().getId()); //getIdAction()); //getCourse().getId());
+                    w.setHour(new Hour(csp.getStart().toString()));
+                    w.setDuration(new Hour(csp.getEnd().toMinutes()-csp.getStart().toMinutes()));
+                    w.setTeacher(csp.getIdPerson());
+                    w.setPreference((short)(wishService.countStudentGroupWishes(student)+1));
+                    wishService.insertGroupWish(w);
+
+                    EnrolmentWishGroupCourseLine line = new EnrolmentWishGroupCourseLine(p);
+                    line.setWish(w);
+                    line.setBirthDate(m.getBirth());
+                    line.setPractice(m.getPractice());
+                    line.setInstrument(dataCache.getInstrumentName(m.getFirstInstrument()));
+                    line.setSelected(false);
+                    groupCourseModel.addElement(line);
+
+                } catch (SQLException e) {
+                    GemLogger.logException("EnrolmentWishCtrl.addStudentToGroupCourse", e);
+                }
+            } else {
+                GemLogger.log("EnrolmentWishCtrl.actionPerformed unknown evt=" + evt);
             }
-        } else {
-            GemLogger.log("EnrolmentWishCtrl.actionPerformed unknown evt=" + evt);
+        } catch (Exception e) {
+            GemLogger.log("EnrolmentWishCtrl.actionPerformed e=" + e);
+            MessagePopup.information(view, MessageUtil.getMessage("enrolment.wish.exception", e.getMessage()));
         }
     }
 
