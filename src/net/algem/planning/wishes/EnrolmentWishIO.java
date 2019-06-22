@@ -189,7 +189,7 @@ public class EnrolmentWishIO
     }
 
     public static int dow2isodow(int d) {
-        return d == 0 ? 7 : d - 1;
+        return d == 1 ? 7 : d - 1;
     }
 
     private EnrolmentWish getEnrolmentWishesFromRS(ResultSet rs) throws SQLException {

@@ -164,7 +164,7 @@ public class EnrolmentWishCtrl implements ActionListener, TableModelListener {
 
         LocalDate ds = view.getReferenceDate().getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         if (ds.getDayOfWeek().getValue() != DayOfWeek.MONDAY.getValue()) {
-            MessagePopup.information(view, MessageUtil.getMessage("date.entry.error"));
+            MessagePopup.information(view, MessageUtil.getMessage("enrolment.wish.date.error"));
             return;
         }
 
