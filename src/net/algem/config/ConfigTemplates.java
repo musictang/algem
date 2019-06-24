@@ -44,6 +44,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import net.algem.Algem;
 import net.algem.edition.PdfHandler;
 import net.algem.util.BundleUtil;
 import net.algem.util.FileUtil;
@@ -219,29 +220,31 @@ public class ConfigTemplates
     p4.add(btDefault, BorderLayout.SOUTH);
 
     JPanel p5 = new JPanel(new BorderLayout()); // ERIC 29/03/2019
-    p5.add(new JLabel(BundleUtil.getLabel("Enrolment.wish.template.label"), SwingConstants.CENTER), BorderLayout.NORTH);
-    wishThumb = new JLabel("", SwingConstants.CENTER);
-    wishThumb.setIcon(icon);
-    wishThumb.setCursor(hand);
-    wishThumb.setToolTipText(GemCommand.DEFINE_CMD);
-    wishThumb.addMouseListener(mouseAdapter);
-    p5.add(wishThumb, BorderLayout.CENTER);
-    btWish = new GemButton(GemCommand.DELETE_CMD);
-    btWish.addActionListener(listener);
-    p5.add(btWish, BorderLayout.SOUTH);
-
     JPanel p6 = new JPanel(new BorderLayout()); // ERIC 29/03/2019
-    p6.add(new JLabel(BundleUtil.getLabel("Enrolment.wish.confirm.template.label"), SwingConstants.CENTER), BorderLayout.NORTH);
-    wishConfirmThumb = new JLabel("", SwingConstants.CENTER);
-    wishConfirmThumb.setIcon(icon);
-    wishConfirmThumb.setCursor(hand);
-    wishConfirmThumb.setToolTipText(GemCommand.DEFINE_CMD);
-    wishConfirmThumb.addMouseListener(mouseAdapter);
-    p6.add(wishConfirmThumb, BorderLayout.CENTER);
-    btWishConfirm = new GemButton(GemCommand.DELETE_CMD);
-    btWishConfirm.addActionListener(listener);
-    p6.add(btWishConfirm, BorderLayout.SOUTH);
+    if (Algem.isFeatureEnabled("polynotes")) { //ERIC 2.17
+        p5.add(new JLabel(BundleUtil.getLabel("Enrolment.wish.template.label"), SwingConstants.CENTER), BorderLayout.NORTH);
+        wishThumb = new JLabel("", SwingConstants.CENTER);
+        wishThumb.setIcon(icon);
+        wishThumb.setCursor(hand);
+        wishThumb.setToolTipText(GemCommand.DEFINE_CMD);
+        wishThumb.addMouseListener(mouseAdapter);
+        p5.add(wishThumb, BorderLayout.CENTER);
+        btWish = new GemButton(GemCommand.DELETE_CMD);
+        btWish.addActionListener(listener);
+        p5.add(btWish, BorderLayout.SOUTH);
 
+        p6.add(new JLabel(BundleUtil.getLabel("Enrolment.wish.confirm.template.label"), SwingConstants.CENTER), BorderLayout.NORTH);
+        wishConfirmThumb = new JLabel("", SwingConstants.CENTER);
+        wishConfirmThumb.setIcon(icon);
+        wishConfirmThumb.setCursor(hand);
+        wishConfirmThumb.setToolTipText(GemCommand.DEFINE_CMD);
+        wishConfirmThumb.addMouseListener(mouseAdapter);
+        p6.add(wishConfirmThumb, BorderLayout.CENTER);
+        btWishConfirm = new GemButton(GemCommand.DELETE_CMD);
+        btWishConfirm.addActionListener(listener);
+        p6.add(btWishConfirm, BorderLayout.SOUTH);
+    }
+    
     try {
       load();
     } catch (SQLException ex) {
@@ -252,8 +255,10 @@ public class ConfigTemplates
     content.add(p2);
     content.add(p3);
     content.add(Box.createHorizontalBox());
-    content.add(p5);
-    content.add(p6);
+    if (Algem.isFeatureEnabled("polynotes")) { //ERIC 2.17
+        content.add(p5);
+        content.add(p6);
+    }
     content.add(p4);
     content.add(Box.createHorizontalBox());
     add(content);
@@ -322,10 +327,14 @@ public class ConfigTemplates
           loadTemplate(contractThumb, p);
           break;
         case PageTemplate.ENROLMENTWISH_PAGE_MODEL:
-          loadTemplate(wishThumb, p);
+          if (Algem.isFeatureEnabled("polynotes")) { //ERIC 2.17
+              loadTemplate(wishThumb, p);
+          }
           break;
         case PageTemplate.WISHCONFIRM_PAGE_MODEL:
-          loadTemplate(wishConfirmThumb, p);
+          if (Algem.isFeatureEnabled("polynotes")) { //ERIC 2.17
+            loadTemplate(wishConfirmThumb, p);
+          }
           break;
         default :
           loadTemplate(defaultThumb, p);

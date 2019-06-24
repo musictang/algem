@@ -42,6 +42,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import net.algem.Algem;
 import net.algem.accounting.DDMandate;
 import net.algem.accounting.DDPrivateMandateCtrl;
 import net.algem.accounting.DirectDebitService;
@@ -200,15 +201,27 @@ public class PersonFileTabView
         addMemberTab();
         memberEditor.set(dossier.getMember());
         if (dossier.getContact().getAddress() == null && dossier.getContact().getTele() == null) {
-          Vector<Address> addressLink = AddressIO.findId(dossier.getMember().getPayer(), DataCache.getDataConnection());
-          Vector<Telephone> phoneLink = TeleIO.findId(dossier.getMember().getPayer(), DataCache.getDataConnection());
+            if (Algem.isFeatureEnabled("cc-mdl")) { //ERIC 2.17
+              Vector<Address> addressLink = AddressIO.findId(dossier.getMember().getFamily(), DataCache.getDataConnection());
+              Vector<Telephone> phoneLink = TeleIO.findId(dossier.getMember().getFamily(), DataCache.getDataConnection());
 
-          if (addressLink.size() > 0 || phoneLink.size() > 0) {
-            cbTelAdresse = new JCheckBox(MessageUtil.getMessage("payer.link.info", dossier.getMember().getPayer()), true);
-            cbTelAdresse.addItemListener(this);
-            // adherent lié info
-            contactFileEditor.setLinkTelAddress(addressLink, phoneLink, cbTelAdresse);
-          }
+              if (addressLink.size() > 0 || phoneLink.size() > 0) {
+                cbTelAdresse = new JCheckBox(MessageUtil.getMessage("family.link.info", dossier.getMember().getFamily()), true);
+                cbTelAdresse.addItemListener(this);
+                // adherent lié info
+                contactFileEditor.setLinkTelAddress(addressLink, phoneLink, cbTelAdresse);
+              }
+            } else {
+              Vector<Address> addressLink = AddressIO.findId(dossier.getMember().getPayer(), DataCache.getDataConnection());
+              Vector<Telephone> phoneLink = TeleIO.findId(dossier.getMember().getPayer(), DataCache.getDataConnection());
+
+              if (addressLink.size() > 0 || phoneLink.size() > 0) {
+                cbTelAdresse = new JCheckBox(MessageUtil.getMessage("payer.link.info", dossier.getMember().getPayer()), true);
+                cbTelAdresse.addItemListener(this);
+                // adherent lié info
+                contactFileEditor.setLinkTelAddress(addressLink, phoneLink, cbTelAdresse);
+              }
+            }
         }
       } catch (SQLException ex) {
         GemLogger.log(getClass().getName(), "init", ex);
@@ -656,6 +669,11 @@ public class PersonFileTabView
   void setParent(PersonFile _parent) {
     parent = _parent;
     memberEditor.setPayer(parent.getId(), parent.getContact().getFirstnameName());
+
+  }
+
+  void setFamily(int id, String name) {
+    memberEditor.setFamily(id, name);
 
   }
 

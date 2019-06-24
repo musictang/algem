@@ -947,8 +947,8 @@ public class PersonFileEditor
         addFamilyFile("Famille", d);
       } else { //Attention aux cas où le payeur auquel est lié l'adhérent n'existe pas
         MessagePopup.information(personFileView,
-          MessageUtil.getMessage("not.existing.payer.link", dossier.getMember().getFamily()));
-        personFileView.setParent(dossier);
+          MessageUtil.getMessage("not.existing.family.link", dossier.getMember().getFamily()));
+        personFileView.setFamily(0, "");
       }
     }
   }

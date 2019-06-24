@@ -54,18 +54,15 @@ public class InvoiceLoader
 
   @Override
   protected Void doInBackground() throws Exception {
-      System.out.println("InvoiceLoader per="+idper);
       histo.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
     if (idper > 0) {
       invoices = service.getInvoices(idper, range.getStart().getDate(), range.getEnd().getDate());
     } else {
       invoices = service.getInvoices(range.getStart().getDate(), range.getEnd().getDate());
     }
-      System.out.println("InvoiceLoader invoice size="+invoices.size());
     int k = 1;
     int size = invoices.size();
     for (Invoice v : invoices) {
-      System.out.println("InvoiceLoader invoice itemp="+v.getNumber());
       v.setItems(((BasicBillingService) service).findItemsByInvoiceId(v.getNumber()));
       int p = k * 100 / size;
       setProgress(p);
