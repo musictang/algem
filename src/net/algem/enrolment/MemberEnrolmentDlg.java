@@ -28,6 +28,7 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
+import net.algem.Algem;
 import net.algem.accounting.AccountUtil;
 import net.algem.accounting.AccountingServiceImpl;
 import net.algem.accounting.NullAccountException;
@@ -199,8 +200,10 @@ public class MemberEnrolmentDlg
     }
     // print member's card
     listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "MemberEnrolmentValidation"));
-    MemberCardEditor ca = new MemberCardEditor(desktop, dossier);
-    ca.edit();
+    if (!Algem.isFeatureEnabled("nocard")) { //ERIC 2.17 cc-mdl à mettre en configuration ?
+        MemberCardEditor ca = new MemberCardEditor(desktop, dossier);
+        ca.edit();
+    }
 
   }
 
