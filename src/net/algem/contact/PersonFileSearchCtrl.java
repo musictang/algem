@@ -90,7 +90,7 @@ public class PersonFileSearchCtrl
   @Override
   public void search() {
 
-    String org, name, firstname, pseudo, telephone, email, site, cycle, instrument=null;
+    String org, name, firstname, pseudo, telephone, email, site, cycle, instrument;
     int id = getId();
     if (id > 0) {
       query = "WHERE p.id = " + id;
@@ -146,8 +146,6 @@ public class PersonFileSearchCtrl
       query += " AND p.id IN (SELECT idper FROM eleve)";
     }
 
-    System.out.println("SEARCH q="+query);
-    
     int nb = ContactIO.count(query, dc);
 
     if (nb == 0) {
