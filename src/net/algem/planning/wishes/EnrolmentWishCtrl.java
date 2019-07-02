@@ -1,5 +1,5 @@
 /*
- * @(#)EnrolmentWishCtrl.java	2.17.0k 15/05/19
+ * @(#)EnrolmentWishCtrl.java	2.17.0p 02/07/19
  *
  * Copyright (c) 1999-2019 Musiques Tangentes. All Rights Reserved.
  *
@@ -84,12 +84,12 @@ import net.algem.util.ui.MessagePopup;
  * Tableau de réinscription pour Polynotes
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
- * @version 2.17.0j
+ * @version 2.17.0p
  * @since 2.17.0 13/03/2019
  */
 public class EnrolmentWishCtrl implements ActionListener, TableModelListener {
 
-    public static final int DURATION_MINIMUM = 15;
+    public static final int DURATION_MINIMUM = 5;
     public static final int MAX_WISHES = 4;
 
     private final DateTimeFormatter timestampFileNameFormatter = DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm");

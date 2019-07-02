@@ -1,7 +1,7 @@
 /*
- * @(#)Algem.java	polynotes_2.17.0n 08/06/2019
+ * @(#)Algem.java   2.17.0p 08/06/2019
  *
- * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2019 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -62,12 +62,12 @@ import org.apache.commons.codec.binary.Base64;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.17.0n
+ * @version 2.17.0p
  */
 public class Algem
 {
 
-  public static final String APP_VERSION = "2.17.0n";
+  public static final String APP_VERSION = "2.17.0p";
   public static final List<LookAndFeelInfo> ALTERNATIVE_LAF = new ArrayList<>();
   private static final int DEF_WIDTH = 1080;// (850,650) => ancienne taille
   private static final int DEF_HEIGHT = 780;
@@ -282,7 +282,7 @@ public class Algem
 
   private void setDesktop() {
     String title = "Algem" + "(" + APP_VERSION + ")/" + props.getProperty("appClient");
-    //			+ " - Utilisateur système " +System.getProperty("user.name")
+    //          + " - Utilisateur système " +System.getProperty("user.name")
     // + " - jdbc://" + hostName + "/" + baseName;
 
     frame = new JFrame(title);
