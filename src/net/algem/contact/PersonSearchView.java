@@ -24,7 +24,6 @@ package net.algem.contact;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
-import java.util.List;
 import java.util.Vector;
 import javax.swing.ButtonGroup;
 import javax.swing.JRadioButton;
@@ -41,7 +40,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.70.0
+ * @version 2.17.0
  * @since 1.0a 07/07/1999
  */
 public class PersonSearchView
