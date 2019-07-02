@@ -1,5 +1,5 @@
 /*
- * @(#)PersonSearchView.java	2.17.0 28/06/2019
+ * @(#)PersonSearchView.java    2.17.0p 28/06/2019
  *                              2.15.6 29/11/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
@@ -41,7 +41,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.70.0
+ * @version 2.17.0p
  * @since 1.0a 07/07/1999
  */
 public class PersonSearchView
