@@ -23,6 +23,8 @@ package net.algem.planning.wishes;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.print.PrinterException;
@@ -238,6 +240,17 @@ public class EnrolmentWishView extends JFrame implements EnrolmentWishIHM, Actio
         setJMenuBar(mBar);
 
         referenceDate = new DateFrField("20-05-2019");
+        referenceDate.setActionCommand("referenceDate");
+        referenceDate.addFocusListener(new FocusListener() {
+                @Override
+                public void focusLost(FocusEvent e) {
+                    setGroupCourseChoiceModel(new GemChoiceModel(new GemList(wishService.getWeekGroupCourses(getReferenceDate(), getEndReferenceDate()))));
+                }
+                @Override
+                public void focusGained(FocusEvent e) {
+                }
+        });        
+        referenceDate.addActionListener(this);
         referencePanel = new GemPanel();
         referencePanel.add(new GemLabel(BundleUtil.getLabel("Enrolment.wish.refweek.label")));
         referencePanel.add(referenceDate);
@@ -246,6 +259,7 @@ public class EnrolmentWishView extends JFrame implements EnrolmentWishIHM, Actio
         teacherChoice = new TeacherChoice(wishService.getTeachers(), true);
         particularCourseChoice = new CourseChoice(new CourseChoiceTeacherModel(new GemList())); //wishService.getCourseByTeacher(0, 0));
         groupCourseChoice = new CourseScheduleChoice(new GemList(wishService.getWeekGroupCourses(getReferenceDate(), getEndReferenceDate())));
+
 
         dayChoice.setActionCommand("dayChoice");
         dayChoice.addActionListener(listener);
@@ -556,12 +570,18 @@ public class EnrolmentWishView extends JFrame implements EnrolmentWishIHM, Actio
         return (Course)particularCourseChoice.getSelectedItem();
     }
 
-    public void setCoursChoiceModel(GemChoiceModel model) {
+    public void setParticularCourseChoiceModel(GemChoiceModel model) {
         particularCourseChoice.setModel(model);
         if (model.getSize() > 0) {
             particularCourseChoice.setSelectedIndex(0);
         }
+    }
 
+    public void setGroupCourseChoiceModel(GemChoiceModel model) {
+        groupCourseChoice.setModel(model);
+        if (model.getSize() > 0) {
+            groupCourseChoice.setSelectedIndex(0);
+        }
     }
 
     public DateFr getReferenceDate() {

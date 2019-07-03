@@ -553,7 +553,7 @@ public class EnrolmentWishCtrl implements ActionListener, TableModelListener {
 
     public int courseReload() {
         CourseChoiceTeacherModel m = wishService.getCourseByTeacher(view.getTeacherChoice(), view.getDayChoice() - 1);//FIXME dow
-        view.setCoursChoiceModel(m);
+        view.setParticularCourseChoiceModel(m);
         
         return m.getSize();
     }
