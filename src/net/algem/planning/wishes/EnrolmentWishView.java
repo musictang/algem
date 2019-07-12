@@ -444,7 +444,7 @@ public class EnrolmentWishView extends JFrame implements EnrolmentWishIHM, Actio
                 MessageFormat header = new MessageFormat(getCurrentTeacherLabel()+","+getDayChoiceLabel() + ","+getCurrentCourseLabel());
                 particularCourseTable.print(JTable.PrintMode.FIT_WIDTH, header, footer);
             } catch (PrinterException ex) {
-                MessagePopup.warning(this, MessageUtil.getMessage("enrolment.wish.printing.error")+ex.getMessage());
+                MessagePopup.warning(this, MessageUtil.getMessage("enrolment.wish.printing.error", ex.getMessage()));
             }
         } else if (evt.getSource() == miGroupCourses) {
             if (particularCourseMode) {

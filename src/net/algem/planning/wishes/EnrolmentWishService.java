@@ -162,6 +162,11 @@ public class EnrolmentWishService {
         return true;
     }
 
+    public boolean setMailConfirmDate(int student, LocalDateTime mailDate) throws SQLException {
+        wishesIO.updateMailConfirmDate(student, mailDate);
+        return true;
+    }
+
     public boolean setMailConfirmDate(EnrolmentWish w, LocalDateTime mailDate) throws SQLException {
         w.setDateMailConfirm(mailDate);
         wishesIO.updateMailConfirmDate(w);
@@ -217,7 +222,8 @@ public class EnrolmentWishService {
                 + " AND p.idper = " + teacher
                 + " AND p.jour >= '" + view.getReferenceDate() + "'"
                 + " AND p.jour <= '" + view.getEndReferenceDate() + "'"
-                + " AND extract (dow from p.jour) = " + day;
+                + " AND extract (dow from p.jour) = " + day
+                + " AND c.collectif = 'f'";
         //GemLogger.info(query);
 
         try {
@@ -241,7 +247,7 @@ public class EnrolmentWishService {
         if (teacher != currentTeacher) {
             try {
                 wishesByTeacher = wishesIO.find("where prof=" + teacher);
-            } catch (SQLException e) {
+            } catch (Exception e) {
                 GemLogger.logException("EnrolmentWishService.setCurrentTeacher", e);
             }
             currentTeacher = teacher;
@@ -299,7 +305,7 @@ public class EnrolmentWishService {
     }
 
     public static List<CourseSchedulePrintDetail> getWeekGroupCourses(DateFr from, DateFr to) {
-        String query = "SELECT DISTINCT ON (c.titre, dow, p.debut, p.fin) p.id,p.jour,extract('dow' from p.jour) AS dow,p.debut,p.fin,p.idper,a.id,a.places,c.id,c.titre,per.nom,per.prenom"
+        String query = "SELECT DISTINCT ON (c.titre, dow, p.debut, p.fin) p.id,p.jour,extract('isodow' from p.jour) AS dow,p.debut,p.fin,p.idper,a.id,a.places,c.id,c.titre,per.nom,per.prenom"
                 + " FROM planning p JOIN action a ON (p.action = a.id)"
                 + " JOIN cours c ON (a.cours = c.id)"
                 + " JOIN personne per ON (p.idper = per.id)"

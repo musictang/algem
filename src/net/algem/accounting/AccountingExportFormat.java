@@ -1,5 +1,6 @@
 /*
- * @(#)AccountingExportFormat.java	2.11.4 15/12/16
+ * @(#)AccountingExportFormat.java	2.17.0 01/07/2019
+ *                                      2.11.4 15/12/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -23,7 +24,7 @@ package net.algem.accounting;
 /**
  * Accounting export format.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.4
+ * @version 2.17.0
  * @since 2.8.r 13/12/13
  */
 public enum AccountingExportFormat
@@ -33,7 +34,8 @@ public enum AccountingExportFormat
  DVLOG("DVLOG"),
  OPENCONCERTO("OpenConcerto"),
  SAGE("SAGE 30/100 (pnm)"),
- EBP("EBP V3");
+ EBP("EBP V3"),
+ EMAGNUS("E-Magnus Berger-Levrault");   //ERIC 2.17.0
 
  private String label;
 

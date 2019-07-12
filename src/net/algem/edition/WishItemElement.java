@@ -61,7 +61,7 @@ public class WishItemElement
   @Override
   public void draw(Graphics g) {
     setFont(g);
-    String preference = String.valueOf(wish.getPreference());
+    String preference = wish.getPreference() == 4 ? "Polynotes" : String.valueOf(wish.getPreference());
     String course = wish.getCourseLabel();
     String day = wish.getDayLabel();
     Hour hour = wish.getHour();

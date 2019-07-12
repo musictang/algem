@@ -127,9 +127,15 @@ public class EnrolmentWishIO
         dc.executeUpdate(query);
     }
 
+    public void updateMailConfirmDate(int student, LocalDateTime mailDate) throws SQLException {
+        String query = "UPDATE " + TABLE 
+                + " SET mailconfirm='"+mailDate+"' WHERE student = " + student; //TODO AND creation between année scolaire en cours
+        dc.executeUpdate(query);
+    }
+
     public void updateMailConfirmDate(EnrolmentWish w) throws SQLException {
         String query = "UPDATE " + TABLE 
-                + " SET mailconfirm='"+w.getDateMailConfirm()+"' WHERE id = " + w.getId();
+                + " SET mailconfirm='"+w.getDateMailConfirm()+"' WHERE student = " + w.getStudentId();
         dc.executeUpdate(query);
     }
 
@@ -190,6 +196,10 @@ public class EnrolmentWishIO
 
     public static int dow2isodow(int d) {
         return d == 1 ? 7 : d - 1;
+    }
+
+    public static int isodow2dow(int d) {
+        return d == 7 ? 1 : d + 1;
     }
 
     private EnrolmentWish getEnrolmentWishesFromRS(ResultSet rs) throws SQLException {

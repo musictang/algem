@@ -212,7 +212,8 @@ public class EnrolmentWishCtrl implements ActionListener, TableModelListener {
                         throw new EnrolmentWishException(MessageUtil.getMessage("enrolment.wish.error.selected"));
                     }
                     if (cell.getChoice().isMailConfirmSended()) {
-                        throw new EnrolmentWishException(MessageUtil.getMessage("enrolment.wish.error.maildone"));
+//demande du 9/7/2019           throw new EnrolmentWishException(MessageUtil.getMessage("enrolment.wish.error.maildone"));
+                        MessagePopup.information(cell, MessageUtil.getMessage("enrolment.wish.error.maildone"));
                     }
                     if (MessagePopup.confirm(cell, MessageUtil.getMessage("enrolment.wish.delete.confirmation", " " + cell.getPreference() + " de " + cell.getStudentLabel()))) {
                         if (view.isTableEditing()) {
@@ -335,7 +336,9 @@ public class EnrolmentWishCtrl implements ActionListener, TableModelListener {
                         });
                     } else {
                         if (cell.getChoice().isMailConfirmSended()) {
-                            throw new EnrolmentWishException(MessageUtil.getMessage("enrolment.wish.error.maildone"));
+//demande du 9/7/2019       throw new EnrolmentWishException(MessageUtil.getMessage("enrolment.wish.error.maildone"));
+                            MessagePopup.information(cell, MessageUtil.getMessage("enrolment.wish.error.maildone"));
+                            
                         }
                         wishService.selectParticularWish(cell.getChoice(), false);
                         EnrolmentSelected val = new EnrolmentSelected();
@@ -375,6 +378,7 @@ public class EnrolmentWishCtrl implements ActionListener, TableModelListener {
                     return;
                 }
                 SwingWorker sw = new SwingWorker() {
+                    boolean sended = false;
                     LocalDateTime mailDate;
                     int line;
                     @Override
@@ -387,13 +391,14 @@ public class EnrolmentWishCtrl implements ActionListener, TableModelListener {
                             line = view.getSelectedRow();
                             Vector<Email> emails = pf.getContact().getEmail();
 
-                            String f = createPdf(cell.getStudent());
-                            sendMail(f, emails.elementAt(0).getEmail());
-
-                            String saveFileName = "lettre-confirmation-" + cell.getStudent().getId() + "_"+mailDate.format(timestampFileNameFormatter)+".pdf";
-                            Files.copy(Paths.get(f), Paths.get(ConfigUtil.getConf(ConfigKey.LOG_PATH.getKey()),saveFileName));
+                            String f = createMailConfirmPdf(cell.getStudent());
+                            sendConfirmMail(f, emails.elementAt(0).getEmail());
 
                             wishService.setMailConfirmDate(cell, mailDate);
+                            sended = true;
+
+                            //String saveFileName = "lettre-confirmation-" + cell.getStudent().getId() + "_"+mailDate.format(timestampFileNameFormatter)+".pdf";
+                            //Files.copy(Paths.get(f), Paths.get(ConfigUtil.getConf(ConfigKey.LOG_PATH.getKey()),saveFileName));
                         } catch (Exception e) {
                             MessagePopup.warning(view, e.getMessage());
                             GemLogger.logException("EnrolmentWishCtrl WishPanelMailButton", e);
@@ -401,7 +406,9 @@ public class EnrolmentWishCtrl implements ActionListener, TableModelListener {
                         return null;
                     }
                     public void done() {
-                        particularCourseModel.setValueAt(mailDate, line, EnrolmentWishParticularCourseTableModel.COLUMN_MAILDATE);
+                        if (sended) {
+                            particularCourseModel.setValueAt(mailDate, line, EnrolmentWishParticularCourseTableModel.COLUMN_MAILDATE);
+                        }
                     }
                 };
                 sw.execute();
@@ -457,7 +464,7 @@ public class EnrolmentWishCtrl implements ActionListener, TableModelListener {
                     EnrolmentWish w = new EnrolmentWish();
                     w.setStudent(p);
                     w.setCourse(csp.getCourse().getId());
-                    w.setDay((short)csp.getDow());
+                    w.setDay((short)EnrolmentWishIO.isodow2dow(csp.getDow()));
                     w.setAction(csp.getAction().getId()); //getIdAction()); //getCourse().getId());
                     w.setHour(new Hour(csp.getStart().toString()));
                     w.setDuration(new Hour(csp.getEnd().toMinutes()-csp.getStart().toMinutes()));
@@ -481,6 +488,7 @@ public class EnrolmentWishCtrl implements ActionListener, TableModelListener {
             }
         } catch (Exception e) {
             GemLogger.log("EnrolmentWishCtrl.actionPerformed e=" + e);
+            e.printStackTrace();
             MessagePopup.information(view, MessageUtil.getMessage("enrolment.wish.exception", e.getMessage()));
         }
     }
@@ -552,7 +560,7 @@ public class EnrolmentWishCtrl implements ActionListener, TableModelListener {
     }
 
     public int courseReload() {
-        CourseChoiceTeacherModel m = wishService.getCourseByTeacher(view.getTeacherChoice(), view.getDayChoice() - 1);//FIXME dow
+        CourseChoiceTeacherModel m = wishService.getCourseByTeacher(view.getTeacherChoice(), EnrolmentWishIO.dow2isodow(view.getDayChoice()));
         view.setParticularCourseChoiceModel(m);
         
         return m.getSize();
@@ -622,7 +630,43 @@ public class EnrolmentWishCtrl implements ActionListener, TableModelListener {
         }
     }
 
-    public boolean sendMail(String fichier, String dest) throws MessagingException, IOException {
+    public static boolean sendInfoMail(String file, String dest, String periode) throws MessagingException, IOException { 
+
+        System.out.println("MemberEnrolmentWishEditor.sendMail f="+file+" dest="+dest);
+        Session session = MailUtil.SmtpInitSession();
+        
+        Message message = new MimeMessage(session);
+        message.setFrom(new InternetAddress(ConfigUtil.getConf(ConfigKey.SMTP_SERVER_USER.getKey())));
+        //2.17 TEST
+        //message.addRecipient(Message.RecipientType.TO, new InternetAddress("eric@devmad.fr"));
+        //2.17 PROD
+        message.addRecipient(Message.RecipientType.TO, new InternetAddress(dest));
+        message.addRecipient(Message.RecipientType.CC, new InternetAddress("accueil@polynotes.org"));
+        
+        message.setSubject(MessageUtil.getMessage("enrolment.wish.mail.info.subject"));
+
+        String msg = MessageUtil.getMessage("enrolment.wish.mail.info.text", periode);
+        MimeBodyPart mimeBodyPart = new MimeBodyPart();
+        mimeBodyPart.setContent(msg, "text/html");
+
+        mimeBodyPart.setContent(msg, "text/html");
+
+        MimeBodyPart attachmentBodyPart = new MimeBodyPart();
+        attachmentBodyPart.attachFile(new File(file));
+
+        Multipart multipart = new MimeMultipart();
+        multipart.addBodyPart(mimeBodyPart);
+        multipart.addBodyPart(attachmentBodyPart);
+        
+        message.setContent(multipart);
+
+        Transport.send(message);
+        
+        return true;
+    }
+
+
+    public static boolean sendConfirmMail(String fichier, String dest) throws MessagingException, IOException {
         
         Session session = MailUtil.SmtpInitSession();
         
@@ -693,7 +737,7 @@ public class EnrolmentWishCtrl implements ActionListener, TableModelListener {
         view.setVisible(b);
     }
     
-    private String createPdf(Person student) throws IOException, DocumentException, SQLException {
+    private String createMailConfirmPdf(Person student) throws IOException, DocumentException, SQLException {
         
         PageTemplateIO ptio = new PageTemplateIO(dataCache.getDataConnection());
 

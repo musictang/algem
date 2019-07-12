@@ -1,7 +1,8 @@
 /*
- * @(#)MenuAccounting.java 2.15.9 04/06/18
+ * @(#)MenuAccounting.java 2.17.0 01/07/2019
+ *                          2.15.9 04/06/18
  *
- * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2019 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -48,7 +49,7 @@ import net.algem.util.ui.ProgressMonitorHandler;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.15.9
+ * @version 2.17.0
  * @since 1.0a 07/07/1999
  */
 public class MenuAccounting
@@ -262,6 +263,9 @@ public class MenuAccounting
     }
     if (format.equals(AccountingExportFormat.OPENCONCERTO.getLabel())) {
       return new ExportOpenConcerto(dc);
+    }
+    if (format.equals(AccountingExportFormat.EMAGNUS.getLabel())) {
+      return new ExportEMagnus(dc);
     }
     return new ExportDvlogPGI(dc);
   }

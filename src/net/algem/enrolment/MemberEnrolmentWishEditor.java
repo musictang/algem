@@ -60,12 +60,15 @@ import net.algem.config.PageTemplateIO;
 import net.algem.contact.Email;
 import net.algem.contact.Person;
 import net.algem.contact.PersonFile;
+import net.algem.edition.WishConfirmationLetter;
 import net.algem.edition.WishInformationLetter;
 import net.algem.planning.PlanningService;
 import net.algem.planning.wishes.EnrolmentWish;
+import net.algem.planning.wishes.EnrolmentWishCtrl;
 import net.algem.planning.wishes.EnrolmentWishTableModel;
 import net.algem.planning.wishes.EnrolmentWishService;
 import net.algem.util.BundleUtil;
+import net.algem.util.DataCache;
 import net.algem.util.GemLogger;
 import net.algem.util.MailUtil;
 import net.algem.util.MessageUtil;
@@ -100,7 +103,9 @@ public class MemberEnrolmentWishEditor
     private JTable noteTable;
     private JTable currentTable;
     private JTextField mailInfoDate;
-    private GemButton mailButton;
+    private GemButton mailInfoButton;
+    private JTextField mailConfirmDate;
+    private GemButton mailConfirmButton;
 
     private final EnrolmentWishService wishService;
     private List<EnrolmentWish> wishes = new ArrayList();
@@ -155,7 +160,9 @@ public class MemberEnrolmentWishEditor
         scrollNote.setMaximumSize(new Dimension(1024, 120));
 
         GemPanel mainPanel = new GemPanel(new BorderLayout());
-        GemPanel mailPanel = new GemPanel(new GridLayout(1, 3));
+        GemPanel mailPanel = new GemPanel(new BorderLayout());
+        GemPanel mailInfoPanel = new GemPanel(new GridLayout(1, 3));
+        GemPanel mailConfirmPanel = new GemPanel(new GridLayout(1, 3));
         GemPanel actualPanel = new GemPanel(new BorderLayout());
         GemPanel detailPanel = new GemPanel(new BorderLayout());
         GemPanel notePanel = new GemPanel(new BorderLayout());
@@ -169,13 +176,26 @@ public class MemberEnrolmentWishEditor
         mailInfoDate = new JTextField(15);
         //mailInfoDate.setText("mercredi 20 mars 2019");
         mailInfoDate.setEnabled(false);
-        mailButton = new GemButton(BundleUtil.getLabel("Enrolment.wish.mail.info.label"));
-        mailButton.setActionCommand("mailButton");
-        mailPanel.add(new GemLabel(BundleUtil.getLabel("Enrolment.wish.mail.info.date.label")));
-        mailPanel.add(mailInfoDate, BorderLayout.EAST);
-        mailPanel.add(mailButton, BorderLayout.CENTER);
-        mailButton.addActionListener(this);
+        mailInfoButton = new GemButton(BundleUtil.getLabel("Enrolment.wish.mail.info.label"));
+        mailInfoButton.setActionCommand("mailInfoButton");
+        mailInfoPanel.add(new GemLabel(BundleUtil.getLabel("Enrolment.wish.mail.info.date.label")));
+        mailInfoPanel.add(mailInfoDate, BorderLayout.EAST);
+        mailInfoPanel.add(mailInfoButton, BorderLayout.CENTER);
+        mailInfoButton.addActionListener(this);
 
+        mailConfirmDate = new JTextField(15);
+        //mailConfirmDate.setText("mercredi 20 mars 2019");
+        mailConfirmDate.setEnabled(false);
+        mailConfirmButton = new GemButton(BundleUtil.getLabel("Enrolment.wish.mail.confirm.label"));
+        mailConfirmButton.setActionCommand("mailConfirmButton");
+        mailConfirmPanel.add(new GemLabel(BundleUtil.getLabel("Enrolment.wish.mail.confirm.date.label")));
+        mailConfirmPanel.add(mailConfirmDate, BorderLayout.EAST);
+        mailConfirmPanel.add(mailConfirmButton, BorderLayout.CENTER);
+        mailConfirmButton.addActionListener(this);
+
+        mailPanel.add(mailInfoPanel, BorderLayout.NORTH);
+        mailPanel.add(mailConfirmPanel, BorderLayout.SOUTH);
+        
         detailPanel.add(new GemLabel(BundleUtil.getLabel("Enrolment.wish.details.label")), BorderLayout.NORTH);
         detailPanel.add(scrollDetail, BorderLayout.CENTER);
 
@@ -208,6 +228,11 @@ public class MemberEnrolmentWishEditor
         } else {
             mailInfoDate.setText("Non envoyé");
         }
+        if (wishes.get(0).getDateMailConfirm() != null) {
+            mailConfirmDate.setText(wishes.get(0).getDateMailConfirm().format(timestampFormatter));
+        } else {
+            mailConfirmDate.setText("Non envoyé");
+        }
         Vector<String[]> v = wishService.getCurrentEnrolmentForStudent(personFile.getId());
         for (int i = 0; i < v.size(); i++) {
             currentModel.addItem(v.elementAt(i));
@@ -220,12 +245,13 @@ public class MemberEnrolmentWishEditor
     @Override
     public void actionPerformed(ActionEvent evt) {
 //        System.out.println("ActionEvent:" + evt);
-        if (evt.getActionCommand().equals("mailButton")) {
+        if (evt.getActionCommand().equals("mailInfoButton")) {
             if (!MessagePopup.confirm(this, MessageUtil.getMessage("enrolment.wish.mail.info"))) {
                 return;
             }
 
             SwingWorker sw = new SwingWorker() {
+                boolean sended = false;
                 LocalDateTime mailDate;
                 @Override
                 protected Object doInBackground() throws Exception {
@@ -233,13 +259,15 @@ public class MemberEnrolmentWishEditor
                         mailDate = LocalDateTime.now();
                         Vector<Email> emails = personFile.getContact().getEmail();
                         
-                        String f = createPdf(personFile.getContact());
-                        sendMail(f, emails.elementAt(0).getEmail());
+                        String f = createMailInfoPdf(personFile.getContact());
+                        EnrolmentWishCtrl.sendInfoMail(f, emails.elementAt(0).getEmail(), dataCache.getSchoolNextYearLabel());
                         
-                        String saveFileName = "lettre-reinscription-" + personFile.getId() + "_"+mailDate.format(timestampFileNameFormatter)+".pdf";
-                        Files.copy(Paths.get(f), Paths.get(ConfigUtil.getConf(ConfigKey.LOG_PATH.getKey()),saveFileName));
-
                         wishService.setMailInfoDate(personFile.getId(), mailDate);
+                        sended = true;
+
+                        //String saveFileName = "lettre-reinscription-" + personFile.getId() + "_"+mailDate.format(timestampFileNameFormatter)+".pdf";
+                        //Files.copy(Paths.get(f), Paths.get(ConfigUtil.getConf(ConfigKey.LOG_PATH.getKey()),saveFileName));
+
                     } catch (Exception e) {
                         MessagePopup.warning(desktop.getFrame(), e.getMessage());
                         GemLogger.logException("MemberEnrolmentWishEditor sendMail:", e);
@@ -247,14 +275,52 @@ public class MemberEnrolmentWishEditor
                     return null;
                 }
                 public void done() {
-                    mailInfoDate.setText(mailDate.format(timestampFormatter));
+                    if (sended) {
+                        mailInfoDate.setText(mailDate.format(timestampFormatter));
+                    }
+                }
+            };
+            sw.execute();
+        }
+        else if (evt.getActionCommand().equals("mailConfirmButton")) {
+            if (!MessagePopup.confirm(this, MessageUtil.getMessage("enrolment.wish.mail.confirm"))) {
+                return;
+            }
+
+            SwingWorker sw = new SwingWorker() {
+                boolean sended = false;
+                LocalDateTime mailDate;
+                @Override
+                protected Object doInBackground() throws Exception {
+                    try {
+                        mailDate = LocalDateTime.now();
+                        Vector<Email> emails = personFile.getContact().getEmail();
+                        
+                        String f = createMailConfirmPdf(personFile.getContact());
+                        EnrolmentWishCtrl.sendConfirmMail(f, emails.elementAt(0).getEmail());
+
+                        wishService.setMailConfirmDate(personFile.getId(), mailDate);
+                        sended = true;
+                        
+                        //String saveFileName = "lettre-confirmation-" + personFile.getId() + "_"+mailDate.format(timestampFileNameFormatter)+".pdf";
+                        //Files.copy(Paths.get(f), Paths.get(ConfigUtil.getConf(ConfigKey.LOG_PATH.getKey()),saveFileName));
+                    } catch (Exception e) {
+                        MessagePopup.warning(desktop.getFrame(), e.getMessage());
+                        GemLogger.logException("MemberEnrolmentWishEditor sendMail:", e);
+                    }
+                    return null;
+                }
+                public void done() {
+                    if (sended) {
+                        mailConfirmDate.setText(mailDate.format(timestampFormatter));
+                    }
                 }
             };
             sw.execute();
         }
     }
 
-    private String createPdf(Person student) throws IOException, DocumentException, SQLException {
+    private String createMailInfoPdf(Person student) throws IOException, DocumentException, SQLException {
 
         PageTemplateIO ptio = new PageTemplateIO(dataCache.getDataConnection());
 
@@ -267,39 +333,17 @@ public class MemberEnrolmentWishEditor
         return filename;
     }
 
-    public boolean sendMail(String file, String dest) throws MessagingException, IOException { 
-
-        System.out.println("MemberEnrolmentWishEditor.sendMail f="+file+" dest="+dest);
-        Session session = MailUtil.SmtpInitSession();
+        private String createMailConfirmPdf(Person student) throws IOException, DocumentException, SQLException {
         
-        Message message = new MimeMessage(session);
-        message.setFrom(new InternetAddress(ConfigUtil.getConf(ConfigKey.SMTP_SERVER_USER.getKey())));
-        //2.17 TEST
-        //message.addRecipient(Message.RecipientType.TO, new InternetAddress("eric@devmad.fr"));
-        //2.17 PROD
-        message.addRecipient(Message.RecipientType.TO, new InternetAddress(dest));
-        message.addRecipient(Message.RecipientType.CC, new InternetAddress("accueil@polynotes.org"));
-        
-        message.setSubject(MessageUtil.getMessage("enrolment.wish.mail.info.subject"));
+        PageTemplateIO ptio = new PageTemplateIO(dataCache.getDataConnection());
 
-        String msg = MessageUtil.getMessage("enrolment.wish.mail.info.text", dataCache.getSchoolNextYearLabel());
-        MimeBodyPart mimeBodyPart = new MimeBodyPart();
-        mimeBodyPart.setContent(msg, "text/html");
+        String periode = dataCache.getSchoolNextYearLabel();
 
-        mimeBodyPart.setContent(msg, "text/html");
+        WishConfirmationLetter wl = new WishConfirmationLetter(ptio, periode, student, wishes);
 
-        MimeBodyPart attachmentBodyPart = new MimeBodyPart();
-        attachmentBodyPart.attachFile(new File(file));
+        String filename = wl.toPDF();
 
-        Multipart multipart = new MimeMultipart();
-        multipart.addBodyPart(mimeBodyPart);
-        multipart.addBodyPart(attachmentBodyPart);
-        
-        message.setContent(multipart);
-
-        Transport.send(message);
-        
-        return true;
+        return filename;
     }
 
     private void clear() {
