@@ -103,7 +103,8 @@ public class ExportEMagnus
 
                 sb.append(";;;R;");
                 //colonne Y
-                sb.append(new DateFr(new Date())).append(';');
+                sb.append(dateFormat.format(new Date())).append(',');
+                //sb.append(new DateFr(new Date())).append(';');
 
                 //colonne Z/AB/AC à mettre en config
                 sb.append("7062;;BP3001;33;");
@@ -128,7 +129,8 @@ public class ExportEMagnus
 
                 //colonne DC
                 if (member != null && member.getBirth() != null) {
-                    sb.append(member.getBirth()).append(';');
+                    sb.append(dateFormat.format(member.getBirth().getDate())).append(';');
+                    //sb.append(member.getBirth()).append(';');
                 } else {
                     sb.append(';');
                 }
