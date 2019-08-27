@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import net.algem.Algem;
 import net.algem.accounting.*;
 import net.algem.config.*;
 import net.algem.contact.PersonFile;
@@ -86,7 +87,11 @@ public class EnrolmentOrderUtil {
     //numero adherent
     orderLine.setMember(dossier.getId());
     //libelle
-    orderLine.setLabel(label);
+    if (Algem.isFeatureEnabled("cc-mdl")) {
+        orderLine.setLabel(mod.getTitle());
+    } else {
+        orderLine.setLabel(label);
+    }
     //compte et analytique
     Account[] prefAccount = getPrefAccount(mod, dc);
     Account p = prefAccount[0];
@@ -189,6 +194,13 @@ public class EnrolmentOrderUtil {
          setPaymentOrderLine(e, moduleOrder.getPayment());
          }*/
         orderLines = setMonthOrderLines(mo, e, dates);
+      } else if (PayFrequency.SEMESTER.equals(mo.getPayment())) {// echeance semestre //ERIC 2.17 23/08/2019
+        List<DateFr> dates = getSemesterPaymentDates(mo.getStart(), mo.getEnd());
+        /*if (AccountUtil.isPersonalAccount(e.getAccount())) {
+         addPersonalOrderLine(e, dates);
+         setPaymentOrderLine(e, moduleOrder.getPayment());
+         }*/
+        orderLines = setSemesterOrderLines(mo, e, dates);
       }
     }
     return orderLines;
@@ -559,6 +571,84 @@ public class EnrolmentOrderUtil {
     return orderLines;
   }
 
+  /**
+   * Gets a list of dates for quarterly payment.
+   *
+   * @param orderDateStart
+   * @param orderDateEnd
+   * @return a list of dates
+   */
+  //ERIC 2.17 23/08/2019
+  //FIXME
+  public Vector<DateFr> getSemesterPaymentDates(DateFr orderDateStart, DateFr orderDateEnd) {
+
+    Vector<DateFr> dates = new Vector<DateFr>();
+
+    int nbMonths = 0;
+    int nbOrderLines = 0;
+
+    DateFr firstOrderDate = getFirstDateOfPayment(orderDateStart);
+
+    int orderStartMonth = orderDateStart.getMonth();
+
+    dates.add(new DateFr(firstOrderDate));
+    nbMonths = calcNumberOfMonths(orderDateStart, orderDateEnd);
+    
+    if (nbMonths >= 6) { //TODO
+      firstOrderDate.incMonth(5);
+      dates.add(new DateFr(firstOrderDate));
+    } 
+    return dates;
+  }
+
+  /**
+   * Gets a list of order lines for quarter dues.
+   *
+   * @param moduleOrder
+   * @param e single order line
+   * @return a list of order lines
+   */
+  //ERIC 2.17 23/08/2019
+  //FIXME
+  ArrayList<OrderLine> setSemesterOrderLines(ModuleOrder moduleOrder, OrderLine e, List<DateFr> dates) {
+    ArrayList<OrderLine> orderLines = new ArrayList<OrderLine>();
+//    Vector<DateFr> dates = getQuarterPaymentDates(moduleOrder.getStart(), moduleOrder.getEnd());
+    int firstDocumentNumber = 0;
+    try {
+      firstDocumentNumber = Integer.parseInt(ConfigUtil.getConf(ConfigKey.ACCOUNTING_DOCUMENT_NUMBER.getKey()));
+    } catch (NumberFormatException nfe) {
+      System.err.println(getClass().getName() + "#setSemesterOrderLines " + nfe.getMessage());
+    }
+
+    int documentNumber = firstDocumentNumber;
+
+    // DESACTIVATION CALCUL PRORATA
+    // double montantPremiereEcheance = calcFirstOrderLineAmount(totalBase, maxCours, nombreEcheances, "TRIM");
+    // e.setAmount(AccountUtil.getIntValue(montantPremiereEcheance));
+    e.setAmount(AccountUtil.getIntValue(total));
+    e.setDate((DateFr) dates.get(0));
+    if (moduleOrder.getModeOfPayment().equals("PRL")) {
+      documentNumber = calcDocumentNumber(firstDocumentNumber, ((DateFr) dates.get(0)).getMonth());
+      e.setDocument("PRL" + String.valueOf(documentNumber));
+    } else {
+      e.setDocument(moduleOrder.getModeOfPayment() + 1);// pas nécessaire
+    }
+    orderLines.add(new OrderLine(e));// first
+    for (int i = 1; i < dates.size(); i++) {
+      //libelle numero piece
+      if (moduleOrder.getModeOfPayment().equals("PRL")) {
+        documentNumber = calcDocumentNumber(firstDocumentNumber, ((DateFr) dates.get(i)).getMonth());
+        e.setDocument("PRL" + String.valueOf(documentNumber));
+      } else {
+        e.setDocument(moduleOrder.getModeOfPayment() + (i + 1));
+      }
+      e.setDate((DateFr) dates.get(i));
+      orderLines.add(new OrderLine(e)); // others
+    }
+    return orderLines;
+  }
+  
+  
   /**
    * Calculates the amount of the first date due.
    *

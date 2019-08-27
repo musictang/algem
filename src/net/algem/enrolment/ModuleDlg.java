@@ -131,7 +131,7 @@ public class ModuleDlg
     dateEnd = new DateFrField(dataCache.getEndOfYear());
     payment = new JComboBox(service.getListOfPayment());
     payment.addItemListener(this);
-    frequency = new JComboBox(new Enum[]{PayFrequency.MONTH, PayFrequency.QUARTER, PayFrequency.YEAR});
+    frequency = new JComboBox(new Enum[]{PayFrequency.MONTH, PayFrequency.QUARTER, PayFrequency.SEMESTER, PayFrequency.YEAR});
     frequency.addItemListener(this);
     pricing = new JComboBox(PricingPeriod.values());
     pricing.setSelectedItem(getDefaultPricingPeriod());
@@ -402,7 +402,7 @@ public class ModuleDlg
           reduc = yearPrice;
           break;
         case SEMESTER:
-          reduc = price;
+          reduc = price / 2; //ERIC 2.17 23/08/2019 = price;
           break;
         case QUARTER:
           reduc = price / 3;
