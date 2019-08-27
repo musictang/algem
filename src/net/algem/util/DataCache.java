@@ -83,6 +83,8 @@ import java.sql.SQLException;
 import java.util.*;
 import net.algem.billing.VatIO;
 import net.algem.contact.Note;
+import net.algem.rental.RentableObject;
+import net.algem.rental.RentableObjectIO;
 import net.algem.util.ui.MessagePopup;
 
 /**
@@ -116,6 +118,7 @@ public class DataCache {
     private static EmployeeTypeIO EMPLOYEE_TYPE_IO;
     private static StudioTypeIO STUDIO_TYPE_IO;
     private static GemParamIO MARITAL_STATUS_IO;
+    private static RentableObjectIO RENTABLE_IO;
 
     // Cache data
     private static Hashtable<Integer, List<Integer>> TEACHER_INSTRUMENT_CACHE = new Hashtable<Integer, List<Integer>>();
@@ -161,6 +164,7 @@ public class DataCache {
     private static GemList<GemParam> EMPLOYEE_TYPE_LIST;
     private static GemList<GemParam> STUDIO_TYPE_LIST;
     private static GemList<GemParam> MARITAL_STATUS_LIST;
+    private static GemList<RentableObject> RENTABLE_LIST;
 
     private static Vector<Instrument> instruments;//TODO manage list
     private Vector<CategoryOccup> occupCat;
@@ -230,6 +234,7 @@ public class DataCache {
         EMPLOYEE_TYPE_IO = new EmployeeTypeIO(dc);
         STUDIO_TYPE_IO = new StudioTypeIO(dc);
         MARITAL_STATUS_IO = new MaritalStatusIO(dc);
+        RENTABLE_IO = new RentableObjectIO(dc);
 
         String loadMonthQuery = "SELECT " + ScheduleIO.COLUMNS
                 + " FROM planning p JOIN salle s ON (p.lieux = s.id) JOIN etablissement e ON (s.etablissement = e.id)"
@@ -355,6 +360,8 @@ public class DataCache {
                 return STUDIO_TYPE_LIST;
             case MaritalStatus:
                 return MARITAL_STATUS_LIST;
+            case RentableObject:
+                return RENTABLE_LIST;
             default:
                 return null;
         }
@@ -400,6 +407,8 @@ public class DataCache {
                 return COURSE_CODE_IO;
             case User:
                 return USER_IO;
+            case RentableObject:
+                return RENTABLE_IO;
             default:
                 return null;
         }
@@ -514,6 +523,9 @@ public class DataCache {
                     PASS_CARD.put(pc.getId(), pc);
                 }
                 return pc;
+            case RentableObject:
+                RentableObject o = (RentableObject) RENTABLE_LIST.getItem(id);
+                return o != null ? o : RENTABLE_IO.findId(id);
             default:
                 return null;
         }
@@ -589,6 +601,9 @@ public class DataCache {
             PASS_CARD.put(m.getId(), (RehearsalPass) m);
         } else if (m instanceof MaritalStatus) {
             MARITAL_STATUS_LIST.addElement((MaritalStatus) m);
+        } else if (m instanceof RentableObject) {
+            RENTABLE_LIST.addElement((RentableObject) m);
+            //Collections.sort(RENTABLE_LIST.getData(), new RentableComparator());
         }
     }
 
@@ -673,6 +688,8 @@ public class DataCache {
             PASS_CARD.put(m.getId(), (RehearsalPass) m);
         } else if (m instanceof MaritalStatus) {
             MARITAL_STATUS_LIST.update((MaritalStatus) m, null);
+        } else if (m instanceof RentableObject) {
+            RENTABLE_LIST.update((RentableObject) m, null); // new RentableObjectComparator()
         }
 
     }
@@ -727,6 +744,8 @@ public class DataCache {
             PASS_CARD.remove(m.getId());
         } else if (m instanceof MaritalStatus) {
             MARITAL_STATUS_LIST.removeElement((MaritalStatus) m);
+        } else if (m instanceof RentableObject) {
+            RENTABLE_LIST.removeElement((RentableObject) m);
         }
 
     }
@@ -868,6 +887,9 @@ public class DataCache {
             COURSE_CODE_LIST = new GemList<GemParam>(COURSE_CODE_IO.load());
             //loadModuleCourses(); //ERIC 11-06-2019 en attente de gérer les mises à jour
             MODULE_LIST = new GemList<Module>(MODULE_IO.load());
+
+            showMessage(frame, BundleUtil.getLabel("Rentable.label"));
+            RENTABLE_LIST = new GemList<RentableObject>(RENTABLE_IO.load());
 
             occupCat = CategoryOccupIO.find("ORDER BY nom", DATA_CONNECTION);
             vacancyCat = ParamTableIO.find(Category.VACANCY.getTable(), Category.VACANCY.getCol(), DATA_CONNECTION);

@@ -60,6 +60,7 @@ public enum Model {
   Training,
   User,
   Vat,
-  Workshop
+  Workshop,
+  RentableObject
 
 }

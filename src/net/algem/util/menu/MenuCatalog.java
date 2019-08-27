@@ -39,6 +39,7 @@ import net.algem.enrolment.EnrolmentService;
 import net.algem.enrolment.ExtendeModuleOrderListCtrl;
 import net.algem.enrolment.ExtendedModuleOrderTableModel;
 import net.algem.planning.fact.ui.PlanningFactCRUDController;
+import net.algem.rental.RentSearchCtrl;
 import net.algem.script.ui.ScriptingFormController;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
@@ -63,9 +64,11 @@ public class MenuCatalog
   private static final String ENROLMENT_BROWSER_KEY = "Enrolment.browser";
   private static final String MODULE_BROWSER_KEY = "Module.browser";
   private static final String COURSE_BROWSER_KEY = "Course.browser";
+  private static final String RENTAL_BROWSER_KEY = "Rental.browser";
   private JMenuItem miModule;
   private JMenuItem miModuleOrder;
   private JMenuItem miCoursBrowse;
+  private JMenuItem miRentalBrowse;
   private JMenuItem miEnrolment;
   private JMenuItem miImportPhotos;
   private JMenuItem miExportPhotos;
@@ -82,6 +85,11 @@ public class MenuCatalog
       miCoursBrowse = new JMenuItem(BundleUtil.getLabel("Course.label"));
       miCoursBrowse.setToolTipText(BundleUtil.getLabel("Course.catalog.tip"));
       add(miCoursBrowse);
+      if (Algem.isFeatureEnabled("location")) {
+        miRentalBrowse = new JMenuItem(BundleUtil.getLabel("Rental.label"));
+        miRentalBrowse.setToolTipText(BundleUtil.getLabel("Rental.catalog.tip"));
+        add(miRentalBrowse);
+      }
       addSeparator();
       
       add(miEnrolment = new JMenuItem(BundleUtil.getLabel("Menu.enrolment.label")));
@@ -141,6 +149,11 @@ public class MenuCatalog
       coursCtrl.addActionListener(this);
       coursCtrl.init();
       desktop.addPanel(COURSE_BROWSER_KEY, coursCtrl);
+    } else if (src == miRentalBrowse) {
+      RentSearchCtrl rentCtrl = new RentSearchCtrl(desktop);
+      rentCtrl.addActionListener(this);
+      rentCtrl.init();
+      desktop.addPanel(RENTAL_BROWSER_KEY, rentCtrl);
     } else if (src == miEnrolment) {
       EnrolmentListCtrl enrolmentList = new EnrolmentListCtrl(desktop);
       enrolmentList.addActionListener(this);
