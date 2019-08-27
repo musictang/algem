@@ -32,6 +32,7 @@ import net.algem.contact.teacher.TeacherService;
 import net.algem.course.Course;
 import net.algem.course.CourseChoiceTeacherModel;
 import net.algem.course.CourseIO;
+import net.algem.enrolment.CourseOrder;
 import net.algem.enrolment.OrderIO;
 import net.algem.planning.Action;
 import net.algem.planning.CourseSchedulePrintDetail;
@@ -286,6 +287,22 @@ public class EnrolmentWishService {
 
         try {
             return wishesIO.find("WHERE student=" + student + " ORDER by action, cours, preference");
+        } catch (SQLException e) {
+            GemLogger.logException("EnrolmentWishService.findStudentWishes", e);
+        }
+        return new ArrayList<>();
+    }
+
+    public List<EnrolmentWish> findStudentValidatedWishes(int student, CourseOrder co) {
+        try {
+            String code="";
+            ResultSet rs = dc.executeQuery("select code from module_type where id="+co.getCode());
+            if (rs.next()) {
+                code = rs.getString(1);
+            }
+            String query = "WHERE student=" + student + " AND duration='" + co.getEnd() + "' AND selected='t' AND action"+(code.equals("INST") ? "=" : "!=") + "'0'";
+            //System.out.println("EnrolmentWishService.findStudentValidatedWishes query="+query);
+            return wishesIO.find(query);
         } catch (SQLException e) {
             GemLogger.logException("EnrolmentWishService.findStudentWishes", e);
         }

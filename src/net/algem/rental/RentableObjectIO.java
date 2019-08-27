@@ -24,6 +24,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Vector;
+import net.algem.Algem;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
 import net.algem.util.MessageUtil;
@@ -150,6 +151,6 @@ public class RentableObjectIO
 
     @Override
     public List<RentableObject> load() {
-        return findAll();
+        return Algem.isFeatureEnabled("location") ? findAll() : null;
     }
 }
