@@ -41,6 +41,7 @@ import net.algem.edition.MemberCardEditor;
 import net.algem.planning.DateFr;
 import net.algem.planning.Hour;
 import net.algem.planning.Schedule;
+import net.algem.planning.ScheduleRange;
 import net.algem.planning.editing.ModifPlanEvent;
 import net.algem.planning.wishes.EnrolmentWish;
 import net.algem.planning.wishes.EnrolmentWishIO;
@@ -498,10 +499,51 @@ public class MemberEnrolmentDlg
         boolean fromWish=false;
         if (Algem.isFeatureEnabled("polynotes")) { //FIXME feature=reinscription
             List<EnrolmentWish> wishes = wishService.findStudentValidatedWishes(dossier.getId(), co);
+            System.out.println("MemberEnrolmentDlg.modifyCourse wishes size=" + wishes.size());
             if (wishes.size() > 0) {
-                EnrolmentWish w = wishes.get(0);
+                for (EnrolmentWish w : wishes) {
+                    boolean wishOk = true;
+                    Hour hw = new Hour(w.getHour().toString());
+                    String libelle = w.getCourseLabel()+" "+w.getTeacherLabel()+" "+w.getDayLabel()+" "+w.getHour()+" "+w.getDuration();
+                //EnrolmentWish w = wishes.get(0);
                 //System.out.println("MemberEnrolmentDlg.modifyCourse w=" + w);
-                if (MessagePopup.confirm(view, "utiliser le voeux "+w.getCourseLabel()+" "+w.getTeacherLabel()+" "+w.getDayLabel()+" "+w.getHour()+" "+w.getDuration())) {
+                try {
+                Course c = (Course) DataCache.findId(w.getCourse(), Model.Course);
+                Vector<Schedule> ctrls = service.getCourseWeek2(c, co.getDateStart(), 3, EnrolmentWishIO.dow2isodow(w.getDay()));
+                for (Schedule s : ctrls) {
+                    int day = s.getDate().getDayOfWeek();
+                    System.out.println("MemberEnrolmentDlg.modifyCourse schedule ctrl =" + s + " day="+day + " wday="+w.getDay());
+                    if (day == w.getDay()) {
+                        Vector<ScheduleRange> plages = service.getBusyTimeSlot2(s.getIdAction(), w.getCourse(), s.getDate());
+                        for (ScheduleRange range : plages) {
+                            System.out.println("MemberEnrolmentDlg.modifyCourse schedule ctrl range=" + range.toLongString());
+                            if (range.getMemberId() == dossier.getId()) {
+                                wishOk=false;
+                                if (range.getStart().equals(hw)) {
+                                    MessagePopup.information(view, "voeux "+libelle+" déjà inscrit");
+                                } else {
+                                    MessagePopup.information(view, "voeux "+libelle+" déjà inscrit mais à "+range.getStart());
+                                }
+                            }
+                            else if (w.getAction() == 0) {
+                            Hour hws = new Hour(w.getHour().toString());
+                            hws.incMinute(w.getDuration().toMinutes());
+                            if (range.getStart().equals(hw) || 
+                                    (range.getStart().lt(hw) && range.getEnd().gt(hw)) ||
+                                    (range.getStart().gt(hw) && range.getStart().lt(hws))) {
+                                MessagePopup.information(view, "plage du voeux "+libelle+" occupé par adh:"+range.getMemberId()+ " " + range.getStart()+"-"+range.getEnd());
+                                wishOk=false;
+                            }
+                            }
+                        }
+                    }
+                    
+                }
+                } catch (SQLException ex) {
+                        
+                }
+                //if (wishService.isdejainscrit ou plage prise)
+                if (wishOk && MessagePopup.confirm(view, "utiliser le voeux "+libelle)) {
                     fromWish=true;
                     Vector<Schedule> v = service.getCourseDay(w.getCourse(), EnrolmentWishIO.dow2isodow(w.getDay()), co.getCode(), co.getDateStart(), 3); //FIXME codage dur estab pour polynotes
                     if (v.size() == 0) {
@@ -523,6 +565,8 @@ public class MemberEnrolmentDlg
                         co.setEstab(3); //FIXME  codage dur estab pour polynotes
                         //System.out.println("MemberEnrolmentDlg.modifyCourse co=" + co);
                     }
+                }
+                if (fromWish) break;
                 }
                 setCursor(Cursor.getDefaultCursor());
             }
