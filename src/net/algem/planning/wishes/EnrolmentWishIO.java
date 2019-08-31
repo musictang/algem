@@ -221,7 +221,11 @@ public class EnrolmentWishIO
         w.setAction(rs.getInt(15));
         
         w.setTeacherLabel(((Person) DataCache.findId(w.getTeacher(), Model.Teacher)).getName());
-        w.setCourseLabel(((Course) DataCache.findId(w.getCourse(), Model.Course)).getTitle());
+        try {
+            w.setCourseLabel(((Course) DataCache.findId(w.getCourse(), Model.Course)).getTitle());
+        } catch (Exception ex) {
+                w.setCourseLabel("Cours supprimé ??");
+        }
         w.setDayLabel(DayOfWeek.of(dow2isodow(w.getDay())).getDisplayName(TextStyle.FULL, Locale.FRANCE));
 
 

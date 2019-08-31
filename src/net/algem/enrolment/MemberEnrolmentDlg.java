@@ -520,9 +520,9 @@ public class MemberEnrolmentDlg
                             if (range.getMemberId() == dossier.getId()) {
                                 wishOk=false;
                                 if (range.getStart().equals(hw)) {
-                                    MessagePopup.information(view, "voeux "+libelle+" déjà inscrit");
+                                    MessagePopup.information(view, "voeu "+libelle+" déjà inscrit");
                                 } else {
-                                    MessagePopup.information(view, "voeux "+libelle+" déjà inscrit mais à "+range.getStart());
+                                    MessagePopup.information(view, "voeu "+libelle+" déjà inscrit mais à "+range.getStart());
                                 }
                             }
                             else if (w.getAction() == 0) {
@@ -531,7 +531,7 @@ public class MemberEnrolmentDlg
                             if (range.getStart().equals(hw) || 
                                     (range.getStart().lt(hw) && range.getEnd().gt(hw)) ||
                                     (range.getStart().gt(hw) && range.getStart().lt(hws))) {
-                                MessagePopup.information(view, "plage du voeux "+libelle+" occupé par adh:"+range.getMemberId()+ " " + range.getStart()+"-"+range.getEnd());
+                                MessagePopup.information(view, "plage du voeu "+libelle+" occupée par adh:"+range.getMemberId()+ " " + range.getStart()+"-"+range.getEnd());
                                 wishOk=false;
                             }
                             }
