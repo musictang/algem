@@ -150,7 +150,7 @@ public class EnrolmentService
     return ScheduleIO.find(query, dc);
   }
 
-  Vector<Schedule> getCourseWeek2(Course c, DateFr start, int idEstab, int day) {
+  Vector<Schedule> getCourseWeek2(Course c, DateFr start, int idEstab, int day, int teacher) {
 
     Schedule p = get1PlanCourse(c, start, idEstab);
     if (p == null) {
@@ -168,6 +168,7 @@ public class EnrolmentService
       + " AND extract(dow from jour) = "+day      
       + " AND p.action = action.id"
       + " AND action.cours = " + c.getId()
+      + " AND p.idper = " + teacher      
       + " AND p.lieux = salle.id AND salle.etablissement = " + idEstab
       + " AND salle.nom NOT LIKE 'RATTRAP%' ORDER BY jour,debut,idper";
     return ScheduleIO.find(query, dc);
@@ -197,6 +198,25 @@ public class EnrolmentService
       + " AND extract(isodow from jour) = "+day
       + " AND p.action = action.id"
       + " AND action.cours = " + course
+      + " AND p.lieux = salle.id AND salle.etablissement = " + estab
+      + " AND salle.nom NOT LIKE 'RATTRAP%' ORDER BY jour,debut,idper";
+      //System.out.println("EnrolmentService.getCourseDay query="+query);
+    return ScheduleIO.find(query, dc);
+  }
+  
+  Vector<Schedule> getCourseDay2(int course, int day, int code, DateFr start, int estab, int teacher) {
+
+    //System.out.println("EnrolmentService.getCourseDay cours="+course+" code="+code+" start="+start+" estab="+estab);
+    DateFr end = new DateFr(start);
+    end.incDay(7);
+
+    int type = getScheduleType(code);
+    String query = ",salle, action WHERE p.ptype = " + type
+      + " AND p.jour >= '" + start + "' AND p.jour < '" + end + "'"
+      + " AND extract(isodow from jour) = "+day
+      + " AND p.action = action.id"
+      + " AND action.cours = " + course
+      + " AND p.idper = " + teacher      
       + " AND p.lieux = salle.id AND salle.etablissement = " + estab
       + " AND salle.nom NOT LIKE 'RATTRAP%' ORDER BY jour,debut,idper";
       //System.out.println("EnrolmentService.getCourseDay query="+query);

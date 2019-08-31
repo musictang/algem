@@ -509,7 +509,7 @@ public class MemberEnrolmentDlg
                 //System.out.println("MemberEnrolmentDlg.modifyCourse w=" + w);
                 try {
                 Course c = (Course) DataCache.findId(w.getCourse(), Model.Course);
-                Vector<Schedule> ctrls = service.getCourseWeek2(c, co.getDateStart(), 3, EnrolmentWishIO.dow2isodow(w.getDay()));
+                Vector<Schedule> ctrls = service.getCourseWeek2(c, co.getDateStart(), 3, EnrolmentWishIO.dow2isodow(w.getDay()), w.getTeacher());
                 for (Schedule s : ctrls) {
                     int day = s.getDate().getDayOfWeek();
                     System.out.println("MemberEnrolmentDlg.modifyCourse schedule ctrl =" + s + " day="+day + " wday="+w.getDay());
@@ -545,7 +545,7 @@ public class MemberEnrolmentDlg
                 //if (wishService.isdejainscrit ou plage prise)
                 if (wishOk && MessagePopup.confirm(view, "utiliser le voeux "+libelle)) {
                     fromWish=true;
-                    Vector<Schedule> v = service.getCourseDay(w.getCourse(), EnrolmentWishIO.dow2isodow(w.getDay()), co.getCode(), co.getDateStart(), 3); //FIXME codage dur estab pour polynotes
+                    Vector<Schedule> v = service.getCourseDay2(w.getCourse(), EnrolmentWishIO.dow2isodow(w.getDay()), co.getCode(), co.getDateStart(), 3, w.getTeacher()); //FIXME codage dur estab pour polynotes
                     if (v.size() == 0) {
                         MessagePopup.error(view, "le cours n'est pas planifié");
                     } else {
