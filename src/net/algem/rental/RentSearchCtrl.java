@@ -87,7 +87,7 @@ public class RentSearchCtrl
         }
         }
 
-        query += " ORDER BY type";
+        query += " ORDER BY type, marque";
 
         Vector<RentableObject> v = null;
         //try {

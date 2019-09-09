@@ -52,12 +52,12 @@ public class RentCtrl
 
   private final GemDesktop desktop;
   private final DataCache dataCache;
-  private final RentableService service;
+  private final RentalService service;
 
   public RentCtrl(GemDesktop desktop) {
     this.desktop = desktop;
     dataCache = desktop.getDataCache();
-    service = new RentableService(dataCache.getDataConnection());
+    service = new RentalService(dataCache.getDataConnection());
 
     v = new RentView();
     rv = new RentalView(desktop, service);
@@ -172,13 +172,18 @@ public class RentCtrl
 
     if (t == null || t.length() < RentableObject.MIN_TITLE_LENGTH || t.length() > RentableObject.MAX_TITLE_LENGTH) {
       ok = false;
-      errors[0] = MessageUtil.getMessage("course.invalid.title",
+      errors[0] = MessageUtil.getMessage("rentable.invalid.type",
               new Object[] {RentableObject.MIN_TITLE_LENGTH, RentableObject.MAX_TITLE_LENGTH} );
     }
 
-    if (c.getIdentification() != null && c.getIdentification().length() > RentableObject.MAX_LABEL_LENGTH) {
+    if (c.getIdentification() != null && c.getIdentification().length() > RentableObject.MAX_IDENT_LENGTH) {
       ok = false;
-      errors[1] = MessageUtil.getMessage("course.invalid.label", RentableObject.MAX_LABEL_LENGTH);
+      errors[1] = MessageUtil.getMessage("rentable.invalid.ident", RentableObject.MAX_IDENT_LENGTH);
+    }
+
+    if (c.getDescription() != null && c.getDescription().length() > RentableObject.MAX_DESC_LENGTH) {
+      ok = false;
+      errors[2] = MessageUtil.getMessage("rentable.invalid.desc", RentableObject.MAX_DESC_LENGTH);
     }
 
 /*

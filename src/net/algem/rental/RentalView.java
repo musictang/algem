@@ -21,7 +21,6 @@
 
 package net.algem.rental;
 
-import net.algem.enrolment.*;
 import java.awt.Color;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -40,8 +39,6 @@ import net.algem.contact.ContactIO;
 import net.algem.contact.PersonFile;
 import net.algem.contact.PersonFileEditor;
 import net.algem.contact.PersonFileIO;
-import net.algem.group.Musician;
-import net.algem.group.MusicianTableModel;
 import net.algem.planning.DateRangePanel;
 import net.algem.util.DataCache;
 import net.algem.util.GemCommand;
@@ -65,9 +62,9 @@ public class RentalView
         extends GemPanel
 {
 
-  protected MusicianTableModel membersTableModel;
+  protected RentalOperationTableModel rentalsTableModel;
   protected JTable memberTable;
-  protected RentableService service;
+  protected RentalService service;
   protected DateRangePanel datePanel;
   protected DataCache dataCache;
   protected int id;
@@ -75,13 +72,13 @@ public class RentalView
   protected GemDesktop desktop;
   protected GemNumericField total;
 
-  public RentalView(final GemDesktop desktop, RentableService service) {
+  public RentalView(final GemDesktop desktop, RentalService service) {
     this.desktop = desktop;
     this.service = service;
     this.dataCache = desktop.getDataCache();
-    membersTableModel = new MusicianTableModel(dataCache, true);
+    rentalsTableModel = new RentalOperationTableModel(dataCache);
 
-    memberTable = new JTable(membersTableModel)
+    memberTable = new JTable(rentalsTableModel)
     {
       @Override
       public void processMouseEvent(MouseEvent evt) {
@@ -103,10 +100,10 @@ public class RentalView
     memberTable.setAutoCreateRowSorter(true);
 
     TableColumnModel cm = memberTable.getColumnModel();
-    cm.getColumn(0).setPreferredWidth(30);
-    cm.getColumn(1).setPreferredWidth(120);
-    cm.getColumn(2).setPreferredWidth(120);
-    cm.getColumn(3).setPreferredWidth(120);
+    cm.getColumn(0).setPreferredWidth(200);
+    cm.getColumn(1).setPreferredWidth(80);
+    cm.getColumn(2).setPreferredWidth(80);
+    cm.getColumn(3).setPreferredWidth(80);
 
     JScrollPane pm = new JScrollPane(memberTable);
 
@@ -145,14 +142,14 @@ public class RentalView
       return;
     }
 
-    Musician m = (Musician) membersTableModel.getItem(n);
+    RentalOperation ro = (RentalOperation) rentalsTableModel.getItem(n);
     // il est nécessaire de récupérer les adresses, tel et email éventuels du contact
-    Contact c = ContactIO.findId(m.getId(), DataCache.getDataConnection());
+    Contact c = ContactIO.findId(ro.getMemberId(), DataCache.getDataConnection());
     PersonFile pf = new PersonFile(c);
     try {
       ((PersonFileIO) DataCache.getDao(Model.PersonFile)).complete(pf);
     } catch (SQLException ex) {
-      GemLogger.logException("complete dossier musicien liste", ex);
+      GemLogger.logException("complete dossier rental liste", ex);
     }
     PersonFileEditor editor = new PersonFileEditor(pf);
     desktop.addModule(editor);
@@ -195,9 +192,9 @@ public class RentalView
       return;
     }
     try {
-      List<Musician> vm = service.findCourseMembers(id, start, end);
-      for (Musician m : vm) {
-        membersTableModel.addItem(m);
+      List<RentalOperation> vm = service.findRentals(id, start, end);
+      for (RentalOperation m : vm) {
+        rentalsTableModel.addItem(m);
         total.setText(String.valueOf(vm.size()));
       }
     } catch (SQLException e) {
@@ -206,7 +203,7 @@ public class RentalView
   }
 
   public void clear() {
-    membersTableModel.clear();
+    rentalsTableModel.clear();
     total.setText(null);
   }
 }

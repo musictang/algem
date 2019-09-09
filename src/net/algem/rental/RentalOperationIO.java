@@ -1,5 +1,5 @@
 /*
- * @(#)RentableObjectIO.java	2.17.1 29/09/2019
+ * @(#)RentalOperationIO.java	2.17.1 29/09/2019
  *
  * Copyright (c) 1999-2019 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,11 +20,22 @@
  */
 package net.algem.rental;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 import net.algem.Algem;
+import net.algem.config.Instrument;
+import net.algem.config.InstrumentIO;
+import net.algem.contact.PersonIO;
+import net.algem.contact.member.MemberIO;
+import static net.algem.enrolment.CourseOrderIO.TABLE;
+import net.algem.enrolment.OrderIO;
+import net.algem.group.Musician;
+import net.algem.planning.ActionIO;
 import net.algem.planning.DateFr;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
@@ -39,31 +50,30 @@ import net.algem.util.model.TableIO;
  * @version 2.17.1
  * @since 2.17.1 29/09/2019
  */
-public class RentableObjectIO
+public class RentalOperationIO
         extends TableIO
         implements Cacheable
 {
 
-    public static final String TABLE = "objetalouer";
-    private static final String SEQUENCE = "objetalouer_id_seq";
+    public static final String TABLE = "location";
+    private static final String SEQUENCE = "location_id_seq";
     private DataConnection dc;
 
-    public RentableObjectIO(DataConnection dc) {
+    public RentalOperationIO(DataConnection dc) {
         this.dc = dc;
     }
 
-    public void insert(RentableObject o) throws SQLException {
+    public void insert(RentalOperation o) throws SQLException {
         int id = nextId(SEQUENCE, dc);
 
         String query = "INSERT INTO " + TABLE + " VALUES("
                 + id
-                + ",'" + o.getDateAchat()
-                + "','" + escape(o.getType())
-                + "','" + escape(o.getMarque())
-                + "','" + escape(o.getIdentification())
+                + ",'" + o.getRentableObjectId()
+                + "','" + o.getStartDate()
+                + "','" + o.getEndDate()
+                + "','" + o.getMemberId()
+                + "','" + o.getAmount()
                 + "','" + escape(o.getDescription())
-                + "','" + escape(o.getVendeur())
-                + "','" + (o.isActif() ? "t" : "f")
                 + "')";
 
         dc.executeUpdate(query);
@@ -75,15 +85,14 @@ public class RentableObjectIO
      * @param n new room
      * @throws SQLException
      */
-    public void update(RentableObject o) throws SQLException {
+    public void update(RentalOperation o) throws SQLException {
         String query = "UPDATE " + TABLE + " SET "
-                + "creation = '"+o.getDateAchat()
-                + "', type ='" + escape(o.getType())
-                + "',marque = '" + escape(o.getMarque())
-                + "',identification = '" + escape(o.getIdentification())
-                + "',description = '" + escape(o.getDescription())
-                + "',vendeur = '" + escape(o.getVendeur())
-                + "',actif = '" + (o.isActif() ? "t" : "f")
+                + "object = '"+o.getRentableObjectId()
+                + "', debut ='" + o.getStartDate()
+                + "', fin ='" + o.getEndDate()
+                + "',adherent = '" + o.getMemberId()
+                + "',montant = '" + o.getAmount()
+                + "',libelle = '" + escape(o.getDescription())
                 + "' WHERE id = " + o.getId();
 
         dc.executeUpdate(query);
@@ -93,11 +102,14 @@ public class RentableObjectIO
    * Deletes a rentable object.
      *
      * @param r
-     * @throws RentmException if rentableobject is used
      */
-    public void delete(RentableObject r) throws SQLException {
+    public void delete(RentalOperation r) throws RentException {
+        try {
             String query = "DELETE FROM " + TABLE + " WHERE id = " + r.getId();
             dc.executeUpdate(query);
+        } catch (SQLException e) {
+            throw new RentException(MessageUtil.getMessage("delete.exception") + e.getMessage());
+        }
     }
 
 
@@ -113,7 +125,7 @@ public class RentableObjectIO
 
 
     public Vector<RentableObject> findAll() {
-        String query = "SELECT * FROM " + TABLE + " ORDER BY type,marque";
+        String query = "SELECT * FROM " + TABLE + " ORDER BY type";
         return findAll(query);
     }
 
@@ -146,6 +158,44 @@ public class RentableObjectIO
         return v;
     }
 
+    public static List<RentalOperation> findRentals(int rentableObject, Date start, Date end, DataConnection dc) throws SQLException {
+
+    List<RentalOperation> rentals = new ArrayList<RentalOperation>();
+    String query = "SELECT l.id, l.objet, l.debut, l.fin, l.montant, l.libelle, p.id, p.nom, p.prenom, o.type, o.marque, o.identification FROM "
+      + TABLE + " l "
+      + " JOIN " + RentableObjectIO.TABLE + " o ON l.objet = o.id"
+      + " JOIN " + PersonIO.TABLE + " p ON l.adherent = p.id"
+      + " WHERE l.objet = ? AND l.debut BETWEEN ? AND ?";
+
+    try (PreparedStatement ps = dc.prepareStatement(query)) {
+      ps.setInt(1, rentableObject);
+      ps.setDate(2, new java.sql.Date(start.getTime()));
+      ps.setDate(3, new java.sql.Date(end.getTime()));
+
+      GemLogger.info(ps.toString());
+
+      try (ResultSet rs = ps.executeQuery()) {
+        while (rs.next()) {
+          RentalOperation r = new RentalOperation();
+          r.setId(rs.getInt(1));
+          r.setRentableObjectId(rs.getInt(2));
+          r.setStartDate(new DateFr(rs.getString(3)));
+          r.setEndDate(new DateFr(rs.getString(4)));
+          r.setAmount(rs.getInt(5));
+          r.setDescription(rs.getString(6).trim());
+          r.setMemberId(rs.getInt(7));
+          r.setMemberName(rs.getString(8)+" "+rs.getString(9));
+          r.setRentableObjectName(rs.getString(10)+" "+rs.getString(11)+" "+rs.getString(12));
+
+          rentals.add(r);
+        }
+      }
+    }
+
+    return rentals;
+  }
+        
+    
     @Override
     public List<RentableObject> load() {
         return Algem.isFeatureEnabled("location") ? findAll() : null;

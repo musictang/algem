@@ -20,9 +20,7 @@
  */
 package net.algem.rental;
 
-import java.time.LocalDate;
-import java.util.Date;
-import net.algem.course.*;
+import net.algem.planning.DateFr;
 import net.algem.util.model.GemModel;
 
 /**
@@ -45,13 +43,16 @@ public class RentableObject
   /** Maximum length of title. */
   public static final int MAX_TITLE_LENGTH = 32;
 
-  /** Maximum length of label. */
-  public static final int MAX_LABEL_LENGTH = 32;
+  /** Maximum length of description. */
+  public static final int MAX_DESC_LENGTH = 48;
+
+  /** Maximum length of ident. */
+  public static final int MAX_IDENT_LENGTH = 64;
 
   private static final long serialVersionUID = 1L;
 
   protected int id;
-  protected Date dateAchat;
+  protected DateFr dateAchat;
   protected String type;
   protected String marque;
   protected String identification;
@@ -116,11 +117,11 @@ public class RentableObject
     id = i;
   }
 
-    public Date getDateAchat() {
+    public DateFr getDateAchat() {
         return dateAchat;
     }
 
-    public void setDateAchat(Date dateAchat) {
+    public void setDateAchat(DateFr dateAchat) {
         this.dateAchat = dateAchat;
     }
 

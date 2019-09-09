@@ -49,6 +49,7 @@ import net.algem.enrolment.TrainingContractHistory;
 import net.algem.group.PersonFileGroupView;
 import net.algem.planning.TeacherBreakDlg;
 import net.algem.planning.month.MonthScheduleTab;
+import net.algem.rental.MemberRentalCtrl;
 import net.algem.security.RuleFactory;
 import net.algem.security.User;
 import net.algem.security.UserCreateDlg;
@@ -92,6 +93,7 @@ public class PersonFileEditor
   private JMenuItem miMember, miTeacher, miBank, miEmployee;
   private JMenuItem miPassRehearsal, miRehearsal, miHistoPass;
   private JMenuItem miHistoRehearsal;
+  private JMenuItem miRental;
 
   private JMenuItem miContracts;
   private JMenuItem miAgreements;
@@ -367,6 +369,11 @@ public class PersonFileEditor
       personFileView.addTab(dlg, BundleUtil.getLabel("Rehearsal.label"));
       miRehearsal.setEnabled(false);
       personFileView.activate(false, "Person.rehearsal.scheduling");
+    } else if ("Person.rental".equals(arg)) {
+      MemberRentalCtrl dlg = new MemberRentalCtrl(desktop, this, dossier);
+      personFileView.addTab(dlg, BundleUtil.getLabel("Rental.label"));
+      miRental.setEnabled(false);
+      personFileView.activate(false, "Person.rental");
     } else if ("Rehearsal.history".equals(arg)) {
       personFileView.addRehearsalHistoryTab();
       miHistoRehearsal.setEnabled(false);
@@ -389,6 +396,10 @@ public class PersonFileEditor
       personFileView.removeTab((MemberRehearsalCtrl) src);
       personFileView.activate(true, "Person.rehearsal.scheduling");
       miRehearsal.setEnabled(true);
+    } else if ("AdherentLocation.Abandon".equals(arg) || "AdherentLocation.Validation".equals(arg)) {
+      personFileView.removeTab((MemberRentalCtrl) src);
+      personFileView.activate(true, "Person.rental");
+      miRental.setEnabled(true);
     } else if ("AdherentForfaitRepetition.Abandon".equals(arg) || "AdherentForfaitRepetition.Validation".equals(arg)) {
       personFileView.removeTab((MemberRehearsalPassCtrl) src);
       miPassRehearsal.setEnabled(true);
@@ -846,6 +857,7 @@ public class PersonFileEditor
     miHistoPass.setActionCommand("Histo.pass");
     miHistoPass.addActionListener(this);
     mOptions.add(miHistoPass);
+    mOptions.add(miRental = getMenuItem("Person.rental"));
 
     mOptions.addSeparator();
     mOptions.add(miHistoRehearsal = getMenuItem("Rehearsal.history"));

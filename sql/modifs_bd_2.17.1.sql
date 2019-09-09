@@ -26,6 +26,7 @@ CREATE TABLE location (
     debut date,
     fin date,
     adherent int,
+    montant int,
     libelle varchar(64)
 );
 
@@ -34,6 +35,7 @@ COMMENT ON COLUMN location.objet IS 'ID object loué';
 COMMENT ON COLUMN location.debut IS 'Date debut location';
 COMMENT ON COLUMN location.fin IS 'Date fin location';
 COMMENT ON COLUMN location.adherent IS 'id adherent';
+COMMENT ON COLUMN location.montant IS 'montant';
 COMMENT ON COLUMN location.libelle IS 'texte libelle';
 
 

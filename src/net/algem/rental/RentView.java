@@ -22,8 +22,8 @@ package net.algem.rental;
 
 import java.awt.Color;
 import java.awt.GridBagLayout;
-import java.util.Date;
 import javax.swing.JCheckBox;
+import net.algem.planning.DateFr;
 import net.algem.planning.DateFrField;
 import net.algem.util.BundleUtil;
 import net.algem.util.ui.*;
@@ -96,7 +96,7 @@ public class RentView
     identification.setText(o.getIdentification());
     description.setText(o.getDescription());
     vendeur.setText(o.getVendeur());
-    dateAchat.setText(o.getDateAchat().toString());
+    dateAchat.set(o.getDateAchat());
     actif.setSelected(o.isActif());
   }
 
@@ -114,7 +114,7 @@ public class RentView
     o.setIdentification(identification.getText());
     o.setDescription(description.getText());
     o.setVendeur(vendeur.getText());
-    o.setDateAchat(dateAchat.getDate() == null ? new Date() : dateAchat.getDate());
+    o.setDateAchat(dateAchat.getDate() == null ? new DateFr() : dateAchat.get());
     o.setActif(actif.isSelected());
 
     return o;

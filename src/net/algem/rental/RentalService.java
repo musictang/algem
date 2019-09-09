@@ -1,5 +1,5 @@
 /*
- * @(#)RentableService.java 2.17.1 29/08/2019
+ * @(#)RentalService.java 2.17.1 29/08/2019
  *
  * Copyright (c) 1999-2019 Musiques Tangentes. All Rights Reserved.
  *
@@ -42,13 +42,13 @@ import net.algem.util.model.Model;
  * @version 2.17.1
  * @since 2.17.1 29/08/2019
  */
-public class RentableService
+public class RentalService
 {
 
   private DataConnection dc;
   private RentableObjectIO RentableObjectIO;
 
-  public RentableService(DataConnection dc) {
+  public RentalService(DataConnection dc) {
     this.dc = dc;
     RentableObjectIO = (RentableObjectIO) DataCache.getDao(Model.RentableObject);
   }
@@ -66,8 +66,11 @@ public class RentableService
     RentableObjectIO.update(o);
   }
 
+  /*
+   * @throws RentmException if rentableobject is used
+  */
   public void delete(RentableObject o) throws RentException, SQLException {
-    String query = "SELECT object from location WHERE object = " + o.getId();
+    String query = "SELECT objet from location WHERE objet = " + o.getId();
     ResultSet rs = dc.executeQuery(query);
 
     if (rs.next()) {
@@ -77,16 +80,16 @@ public class RentableService
   }
 
   /**
-   * Gets the list of students taking this course {@code id}.
+   * Gets the list of rentals for this rentable object {@code id}.
    *
-   * @param course course id
+   * @param rentableObject id
    * @param start start date
    * @param end end date
-   * @return a list of students or an empty list if no student was found
+   * @return a list of rental operations or an empty list if no student was found
    * @throws SQLException
    */
-  List<Musician> findCourseMembers(int course, Date start, Date end) throws SQLException {
-    return CourseOrderIO.findCourseMembers(course, start, end, dc); //FIXME 
+  List<RentalOperation> findRentals(int rentableObject, Date start, Date end) throws SQLException {
+    return RentalOperationIO.findRentals(rentableObject, start, end, dc); 
   }
 
 }
