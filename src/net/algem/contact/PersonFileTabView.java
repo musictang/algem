@@ -63,6 +63,7 @@ import net.algem.group.Group;
 import net.algem.group.Musician;
 import net.algem.group.PersonFileGroupView;
 import net.algem.planning.wishes.EnrolmentWishService;
+import net.algem.rental.HistoMemberRentalView;
 import net.algem.util.*;
 import net.algem.util.event.GemEvent;
 import net.algem.util.model.Model;
@@ -93,6 +94,7 @@ public class PersonFileTabView
   private static final String BAND_TAB_TITLE = BundleUtil.getLabel("Groups.label");
   private static final String HISTO_REHEARSAL_TAB_TITLE = BundleUtil.getLabel("Person.rehearsal.history.tab.label");
   private static final String HISTO_SUBSCRIPTIONS_TAB_TITLE = BundleUtil.getLabel("Subscriptions.label");
+  private static final String HISTO_RENTAL_TAB_TITLE = BundleUtil.getLabel("Rental.history.tab.label");
 
   private PersonFile dossier, parent;
   private ContactFileEditor contactFileEditor;
@@ -104,7 +106,8 @@ public class PersonFileTabView
   private MemberFollowUpEditor memberFollowUpEditor;
   private TeacherFollowUpEditor teacherFollowUpEditor;
   private MemberEnrolmentEditor enrolmentEditor;
-  private MemberEnrolmentWishEditor enrolmentWishEditor;    // ERIC 20/03/2019
+  private MemberEnrolmentWishEditor enrolmentWishEditor;    //ERIC 20/03/2019
+  private HistoMemberRentalView histoMemberRentalView;      //ERIC 29/08/2019
   private HistoRehearsalView histoRehearsalView;
   private PersonFileGroupView groupView;
 
@@ -714,6 +717,17 @@ public class PersonFileTabView
     histoRehearsalView.load(true);
     wTab.addItem(histoRehearsalView, HISTO_REHEARSAL_TAB_TITLE);
     addTab(histoRehearsalView);
+    desktop.setDefaultCursor();
+  }
+
+  void addRentalHistoryTab() {
+    if (histoMemberRentalView == null) {
+      histoMemberRentalView = new HistoMemberRentalView(desktop, listener, dossier.getId());
+    }
+    desktop.setWaitCursor();
+    histoMemberRentalView.load();
+    wTab.addItem(histoMemberRentalView, HISTO_RENTAL_TAB_TITLE);
+    addTab(histoMemberRentalView);
     desktop.setDefaultCursor();
   }
 

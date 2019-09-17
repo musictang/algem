@@ -60,10 +60,10 @@ public class RentCtrl
     service = new RentalService(dataCache.getDataConnection());
 
     v = new RentView();
-    rv = new RentalView(desktop, service);
-    btNext.setToolTipText(BundleUtil.getLabel("Student.list.label"));
+    rv = new RentalView(desktop);
+    btNext.setToolTipText(BundleUtil.getLabel("Rental.list.label"));
     addCard("", v);
-    addCard(BundleUtil.getLabel("Rent.enrolment.list.label"), rv);
+    addCard(BundleUtil.getLabel("Rental.list.label"), rv);
 
     select(0);
   }
@@ -106,11 +106,11 @@ public class RentCtrl
         btPrev.setActionCommand(GemCommand.DELETE_CMD);
         btPrev.setText(GemCommand.DELETE_CMD);
         select(step - 1);
-        btNext.setToolTipText(BundleUtil.getLabel("Student.list.label"));
+        btNext.setToolTipText(BundleUtil.getLabel("Rental.list.label"));
         break;
       default:
         select(step - 1);
-        btNext.setToolTipText(BundleUtil.getLabel("Student.list.label"));
+        btNext.setToolTipText(BundleUtil.getLabel("Rental.list.label"));
         break;
     }
     return true;
@@ -186,12 +186,6 @@ public class RentCtrl
       errors[2] = MessageUtil.getMessage("rentable.invalid.desc", RentableObject.MAX_DESC_LENGTH);
     }
 
-/*
-    if (c.getCode() <= 0) {
-      ok = false;
-      errors[2] = MessageUtil.getMessage("course.invalid.code");
-    }
-*/
     return ok;
 
   }
@@ -221,7 +215,7 @@ public class RentCtrl
     }
     select(0);
     rv.load(rentable.getId(), rentable.toString());
-    btNext.setToolTipText(BundleUtil.getLabel("Student.list.label"));
+    btNext.setToolTipText(BundleUtil.getLabel("Rental.list.label"));
     return true;
   }
 

@@ -22,7 +22,6 @@ package net.algem.rental;
 
 import java.awt.GridBagLayout;
 import java.util.Date;
-import javax.swing.JCheckBox;
 import net.algem.contact.Person;
 import net.algem.planning.DateFr;
 import net.algem.planning.DateRangePanel;
@@ -46,34 +45,33 @@ public class MemberRentalView
 {
 
   private GemField memberField;
+  private RentableChoice rentableChoice;
   private DateRangePanel datePanel;
   private GemField amount;
-  private RentableChoice rentableChoice;
-  private JCheckBox withCard;
+  private GemField description;
 
   public MemberRentalView(GemList<RentableObject> rentableList) {
 
     memberField = new GemField(35);
     memberField.setEditable(false);
-    amount = new GemField(8);
-    datePanel = new DateRangePanel(DateRangePanel.SIMPLE_DATE, null);
     rentableChoice = new RentableChoice(rentableList);
-    withCard = new JCheckBox(BundleUtil.getLabel("Subscription.label"));
-    withCard.setBorder(null);
+    datePanel = new DateRangePanel(DateRangePanel.SIMPLE_DATE, null);
+    amount = new GemField(8);
+    description = new GemField(64);
     this.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
     
     gb.add(new GemLabel(BundleUtil.getLabel("Member.label")), 0, 0, 1, 1, GridBagHelper.WEST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Date.label")), 0, 1, 1, 1, GridBagHelper.WEST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Rentable.label")), 0, 3, 1, 1, GridBagHelper.WEST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Amount.label")), 0, 2, 1, 1, GridBagHelper.WEST);
-    //gb.add(new GemLabel(BundleUtil.getLabel("Subscription.label")), 0, 4, 1, 1, GridBagHelper.EAST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Rentable.label")), 0, 1, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Date.label")), 0, 2, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Amount.label")), 0, 3, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Rental.info.label")), 0, 4, 1, 1, GridBagHelper.WEST);
     
     gb.add(memberField, 1, 0, 1, 1, GridBagHelper.WEST);
-    gb.add(datePanel, 1, 1, 1, 1, GridBagHelper.WEST);
-    gb.add(rentableChoice, 1, 3, 1, 1, GridBagHelper.WEST);
-    gb.add(amount, 1, 2, 1, 1, GridBagHelper.WEST);
-    //gb.add(withCard, 1, 4, 1, 1, GridBagHelper.WEST);
+    gb.add(rentableChoice, 1, 1, 1, 1, GridBagHelper.WEST);
+    gb.add(datePanel, 1, 2, 1, 1, GridBagHelper.WEST);
+    gb.add(amount, 1, 3, 1, 1, GridBagHelper.WEST);
+    gb.add(description, 1, 4, 1, 1, GridBagHelper.WEST);
 
   }
 
@@ -87,25 +85,34 @@ public class MemberRentalView
     return n;
   }
 
-  int getRentable() {
+  int getRentableId() {
     return rentableChoice.getKey();
   }
 
+  RentableObject getRentable() {
+    return (RentableObject)rentableChoice.getSelectedItem();
+      
+  }
   DateFr getDate() {
     return datePanel.get();
+  }
+
+  String getAmount() {
+    return amount.getText();
+  }
+
+  String getDescription() {
+    return description.getText();
   }
 
   void set(Person per) {
     memberField.setText(per.getId() + " " + per.getFirstName() + " " + per.getName());
   }
 
-  boolean withCard() {
-    return withCard.isSelected();
-  }
-
   void clear() {
+    rentableChoice.setSelectedIndex(0);
     datePanel.setDate(new Date());
     amount.setText("");
-    rentableChoice.setSelectedIndex(0);
+    description.setText("");
   }
 }

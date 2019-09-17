@@ -1,5 +1,5 @@
 /*
- * @(#)RentalOperationTableModel.java	2.17.1 29/08/2019
+ * @(#)RentalHistoTableModel.java	2.17.1 29/08/2019
  *
  * Copyright (c) 1999-2019 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,52 +20,45 @@
  */
 package net.algem.rental;
 
-import net.algem.accounting.GemAmount;
+import net.algem.planning.DateFr;
 import net.algem.util.BundleUtil;
-import net.algem.util.DataCache;
 import net.algem.util.ui.JTableModel;
 
 /**
- *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @version 2.17.1
  * @since 2.17.1
  */
-public class RentalOperationTableModel
-  extends JTableModel<RentalOperation> {
+public class RentalHistoTableModel
+        extends JTableModel<RentalOperation>
+{
 
-  private DataCache dataCache;
-
-  /**
-   * Rental Operation table model
-   *
-   * @param dataCache cache
-   */
-  public RentalOperationTableModel(DataCache dataCache) {
-    this.dataCache = dataCache;
-      header = new String[4];
-
-    header[0] = BundleUtil.getLabel("Member.label");
-    header[1] = BundleUtil.getLabel("Date.From.label");
-    header[2] = BundleUtil.getLabel("Date.To.label");
-    header[3] = BundleUtil.getLabel("Amount.label");
+  public RentalHistoTableModel() {
+    header = new String[]{
+      BundleUtil.getLabel("Intrument.label"),
+      BundleUtil.getLabel("Date.From.label"),
+      BundleUtil.getLabel("Date.To.label"),
+      BundleUtil.getLabel("Rental.info.label")
+    };
   }
 
   @Override
   public int getIdFromIndex(int i) {
-    RentalOperation p = tuples.elementAt(i);
-    return p.getId();
+    //Plage m = (Plage)tuples.elementAt(i);
+    //return m.getId();
+    return -1;
   }
 
   @Override
   public Class getColumnClass(int column) {
     switch (column) {
       case 0:
+        return String.class;
       case 1:
       case 2:
-        return String.class;
+        return DateFr.class;
       case 3:
-        return GemAmount.class;
+        return String.class;
       default:
         return Object.class;
     }
@@ -77,22 +70,22 @@ public class RentalOperationTableModel
   }
 
   @Override
-  public Object getValueAt(int ligne, int colonne) {
-    RentalOperation o = tuples.elementAt(ligne);
-    switch (colonne) {
+  public Object getValueAt(int line, int col) {
+    RentalOperation r = tuples.elementAt(line);
+    switch (col) {
       case 0:
-        return o.getMemberName();
+        return r.getRentableObjectName();
       case 1:
-        return o.getStartDate().toString();
+        return r.getStartDate().toString();
       case 2:
-        return o.getEndDate().toString();
+        return r.getEndDate().toString();
       case 3:
-        return new GemAmount(o.getAmount());
+        return r.getDescription();
     }
     return null;
   }
 
   @Override
-  public void setValueAt(Object value, int ligne, int column) {
+  public void setValueAt(Object value, int line, int column) {
   }
 }

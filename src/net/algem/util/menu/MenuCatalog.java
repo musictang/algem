@@ -64,7 +64,7 @@ public class MenuCatalog
   private static final String ENROLMENT_BROWSER_KEY = "Enrolment.browser";
   private static final String MODULE_BROWSER_KEY = "Module.browser";
   private static final String COURSE_BROWSER_KEY = "Course.browser";
-  private static final String RENTAL_BROWSER_KEY = "Rental.browser";
+  private static final String RENTAL_BROWSER_KEY = "Rentable.browser";
   private JMenuItem miModule;
   private JMenuItem miModuleOrder;
   private JMenuItem miCoursBrowse;
@@ -87,7 +87,7 @@ public class MenuCatalog
       add(miCoursBrowse);
       if (Algem.isFeatureEnabled("location")) {
         miRentalBrowse = new JMenuItem(BundleUtil.getLabel("Rental.label"));
-        miRentalBrowse.setToolTipText(BundleUtil.getLabel("Rental.catalog.tip"));
+        miRentalBrowse.setToolTipText(BundleUtil.getLabel("Rental.tip"));
         add(miRentalBrowse);
       }
       addSeparator();

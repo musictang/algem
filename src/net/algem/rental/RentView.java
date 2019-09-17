@@ -68,11 +68,11 @@ public class RentView
 
     gb.add(new GemLabel(BundleUtil.getLabel("Number.label")), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Instrument.label")), 0, 1, 1, 1, GridBagHelper.WEST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Marque.label")), 0, 2, 1, 1, GridBagHelper.WEST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Identification.label")), 0, 3, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Rentable.brand.label")), 0, 2, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Rentable.identification.label")), 0, 3, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Description.label")), 0, 4, 1, 1, GridBagHelper.WEST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Vendeur.label")), 0, 5, 1, 1, GridBagHelper.WEST);
-    gb.add(new GemLabel(BundleUtil.getLabel("DateAchat.label")), 0, 6, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Rentable.seller.label")), 0, 5, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Rentable.purchasedate.label")), 0, 6, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Active.label")), 0, 7, 1, 1, GridBagHelper.WEST);
 
     gb.add(no, 1, 0, 1, 1, GridBagHelper.WEST);

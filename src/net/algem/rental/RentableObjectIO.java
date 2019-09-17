@@ -117,8 +117,12 @@ public class RentableObjectIO
         return findAll(query);
     }
 
+    public List<RentableObject> findAvailable() {
+        String query = "SELECT * FROM " + TABLE + " o LEFT JOIN location l ON o.id = l.objet WHERE l.debut is null OR l.fin is not NULL ORDER BY type,marque";
+        return findAll(query);
+    }
+
     public Vector<RentableObject> find(String where) {
-        System.out.println("RentableObjectIO.find query="+where);
         String query = "SELECT " + TABLE + ".* FROM " + TABLE + " " + where;
         return findAll(query);
     }

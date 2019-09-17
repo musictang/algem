@@ -42,7 +42,8 @@ public class RentableActiveChoiceModel
     super(list);
     this.active = active;
     load(list);
-    selected = this.list.getElementAt(indices.get(0));
+    if (indices.size() > 0)
+        selected = this.list.getElementAt(indices.get(0));
   }
 
   public RentableActiveChoiceModel(Vector<RentableObject> list, boolean active) {

@@ -495,11 +495,9 @@ public class MemberEnrolmentDlg
 
         CourseOrder co = view.getCourseOrder(n);
 
-        //System.out.println("MemberEnrolmentDlg.modifyCourse co=" + co);
         boolean fromWish=false;
         if (Algem.isFeatureEnabled("polynotes")) { //FIXME feature=reinscription
             List<EnrolmentWish> wishes = wishService.findStudentValidatedWishes(dossier.getId(), co);
-            System.out.println("MemberEnrolmentDlg.modifyCourse wishes size=" + wishes.size());
             if (wishes.size() > 0) {
                 for (EnrolmentWish w : wishes) {
                     boolean wishOk = true;
@@ -512,11 +510,9 @@ public class MemberEnrolmentDlg
                 Vector<Schedule> ctrls = service.getCourseWeek2(c, co.getDateStart(), 3, EnrolmentWishIO.dow2isodow(w.getDay()), w.getTeacher());
                 for (Schedule s : ctrls) {
                     int day = s.getDate().getDayOfWeek();
-                    System.out.println("MemberEnrolmentDlg.modifyCourse schedule ctrl =" + s + " day="+day + " wday="+w.getDay());
                     if (day == w.getDay()) {
                         Vector<ScheduleRange> plages = service.getBusyTimeSlot2(s.getIdAction(), w.getCourse(), s.getDate());
                         for (ScheduleRange range : plages) {
-                            System.out.println("MemberEnrolmentDlg.modifyCourse schedule ctrl range=" + range.toLongString());
                             if (range.getMemberId() == dossier.getId()) {
                                 wishOk=false;
                                 if (range.getStart().equals(hw)) {
@@ -554,16 +550,9 @@ public class MemberEnrolmentDlg
                         co.setAction(p.getIdAction());
                         co.setTitle(getModuleTitle(co) + w.getCourseLabel());
                         co.setDay(EnrolmentWishIO.dow2isodow(w.getDay()));
-                        //if (CourseCodeType.ATP.getId() == courseEnrolmentDlg.getCourse().getCode()) {
-                        //    DateFr dfr = new DateFr(courseEnrolmentDlg.getField(7));
-                        //    co.setDateStart(dfr);
-                        //    co.setDateEnd(dfr);
-                        //}
-
                         co.setStart(new Hour(w.getHour().toString()));
                         co.setEnd(co.getStart().end(w.getDuration().toMinutes()));
                         co.setEstab(3); //FIXME  codage dur estab pour polynotes
-                        //System.out.println("MemberEnrolmentDlg.modifyCourse co=" + co);
                     }
                 }
                 if (fromWish) break;

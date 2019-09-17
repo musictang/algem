@@ -63,8 +63,7 @@ public class RentalView
 {
 
   protected RentalOperationTableModel rentalsTableModel;
-  protected JTable memberTable;
-  protected RentalService service;
+  protected JTable rentalsTable;
   protected DateRangePanel datePanel;
   protected DataCache dataCache;
   protected int id;
@@ -72,13 +71,12 @@ public class RentalView
   protected GemDesktop desktop;
   protected GemNumericField total;
 
-  public RentalView(final GemDesktop desktop, RentalService service) {
+  public RentalView(final GemDesktop desktop) {
     this.desktop = desktop;
-    this.service = service;
     this.dataCache = desktop.getDataCache();
     rentalsTableModel = new RentalOperationTableModel(dataCache);
 
-    memberTable = new JTable(rentalsTableModel)
+    rentalsTable = new JTable(rentalsTableModel)
     {
       @Override
       public void processMouseEvent(MouseEvent evt) {
@@ -97,15 +95,15 @@ public class RentalView
       }
     };
 
-    memberTable.setAutoCreateRowSorter(true);
+    rentalsTable.setAutoCreateRowSorter(true);
 
-    TableColumnModel cm = memberTable.getColumnModel();
+    TableColumnModel cm = rentalsTable.getColumnModel();
     cm.getColumn(0).setPreferredWidth(200);
     cm.getColumn(1).setPreferredWidth(80);
     cm.getColumn(2).setPreferredWidth(80);
     cm.getColumn(3).setPreferredWidth(80);
 
-    JScrollPane pm = new JScrollPane(memberTable);
+    JScrollPane pm = new JScrollPane(rentalsTable);
 
     this.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
@@ -133,11 +131,11 @@ public class RentalView
   }
 
   private void loadMember() {
-    int row = memberTable.getSelectedRow();
+    int row = rentalsTable.getSelectedRow();
     if (row < 0) {
       return;
     }
-    int n = memberTable.convertRowIndexToModel(row);
+    int n = rentalsTable.convertRowIndexToModel(row);
     if (n < 0) {
       return;
     }
@@ -192,7 +190,7 @@ public class RentalView
       return;
     }
     try {
-      List<RentalOperation> vm = service.findRentals(id, start, end);
+      List<RentalOperation> vm = RentalOperationIO.findRentals(id, start, end, DataCache.getDataConnection());
       for (RentalOperation m : vm) {
         rentalsTableModel.addItem(m);
         total.setText(String.valueOf(vm.size()));

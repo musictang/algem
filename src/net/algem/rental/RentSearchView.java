@@ -70,7 +70,7 @@ public class RentSearchView
     GridBagHelper gb = new GridBagHelper(mask);
     gb.add(new GemLabel(BundleUtil.getLabel("Number.label")), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Instrument.label")), 0, 1, 1, 1, GridBagHelper.WEST);
-    gb.add(new GemLabel(BundleUtil.getLabel("Marque.label")), 0, 2, 1, 1, GridBagHelper.WEST);
+    gb.add(new GemLabel(BundleUtil.getLabel("Rentable.brand.label")), 0, 2, 1, 1, GridBagHelper.WEST);
     //gb.add(new GemLabel(BundleUtil.getLabel("Active.label")), 0, 3, 1, 1, GridBagHelper.WEST);
 
     gb.add(number, 1, 0, 1, 1, GridBagHelper.WEST);

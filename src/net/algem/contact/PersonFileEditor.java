@@ -29,10 +29,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.prefs.Preferences;
 import javax.swing.*;
+import net.algem.Algem;
 import net.algem.accounting.*;
 import net.algem.bank.*;
 import net.algem.billing.*;
@@ -47,9 +49,13 @@ import net.algem.enrolment.MemberEnrolmentDlg;
 import net.algem.enrolment.TrainingAgreementHistory;
 import net.algem.enrolment.TrainingContractHistory;
 import net.algem.group.PersonFileGroupView;
+import net.algem.planning.DateFr;
 import net.algem.planning.TeacherBreakDlg;
 import net.algem.planning.month.MonthScheduleTab;
+import net.algem.rental.HistoMemberRentalView;
 import net.algem.rental.MemberRentalCtrl;
+import net.algem.rental.RentalOperation;
+import net.algem.rental.RentalOperationIO;
 import net.algem.security.RuleFactory;
 import net.algem.security.User;
 import net.algem.security.UserCreateDlg;
@@ -93,6 +99,8 @@ public class PersonFileEditor
   private JMenuItem miMember, miTeacher, miBank, miEmployee;
   private JMenuItem miPassRehearsal, miRehearsal, miHistoPass;
   private JMenuItem miHistoRehearsal;
+
+  private JMenuItem miHistoRental; //ERIC 2.17.1 29/08/2019
   private JMenuItem miRental;
 
   private JMenuItem miContracts;
@@ -369,11 +377,14 @@ public class PersonFileEditor
       personFileView.addTab(dlg, BundleUtil.getLabel("Rehearsal.label"));
       miRehearsal.setEnabled(false);
       personFileView.activate(false, "Person.rehearsal.scheduling");
-    } else if ("Person.rental".equals(arg)) {
+    } else if ("Rental.menu".equals(arg)) {
       MemberRentalCtrl dlg = new MemberRentalCtrl(desktop, this, dossier);
       personFileView.addTab(dlg, BundleUtil.getLabel("Rental.label"));
       miRental.setEnabled(false);
-      personFileView.activate(false, "Person.rental");
+      personFileView.activate(false, "Rental.menu");
+    } else if ("Rental.history.menu".equals(arg)) {
+      personFileView.addRentalHistoryTab();
+      miHistoRental.setEnabled(false);
     } else if ("Rehearsal.history".equals(arg)) {
       personFileView.addRehearsalHistoryTab();
       miHistoRehearsal.setEnabled(false);
@@ -423,6 +434,13 @@ public class PersonFileEditor
     } else if ("HistoRepet.Abandon".equals(arg)) {
       miHistoRehearsal.setEnabled(true);
       personFileView.removeTab((HistoRehearsalView) src);
+    } else if ("HistoLocation.Abandon".equals(arg)) {
+      miHistoRental.setEnabled(true);
+      personFileView.removeTab((HistoMemberRentalView) src);
+    } else if ("HistoLocation.Return".equals(arg)) {
+        RentalOperation o = ((HistoMemberRentalView) src).getSelected();
+        rentalReturn(o);
+        ((HistoMemberRentalView) src).reload();
     } else if (DDPrivateMandateCtrl.CLOSE_COMMAND.equals(arg)) {
       personFileView.removeTab((DDPrivateMandateCtrl) src);
       personFileView.activate(true, "Payer.debiting");
@@ -857,8 +875,13 @@ public class PersonFileEditor
     miHistoPass.setActionCommand("Histo.pass");
     miHistoPass.addActionListener(this);
     mOptions.add(miHistoPass);
-    mOptions.add(miRental = getMenuItem("Person.rental"));
 
+    if (Algem.isFeatureEnabled("location")) {
+        mOptions.addSeparator();
+        mOptions.add(miRental = getMenuItem("Rental.menu"));
+        mOptions.add(miHistoRental = getMenuItem("Rental.history.menu"));
+    }
+    
     mOptions.addSeparator();
     mOptions.add(miHistoRehearsal = getMenuItem("Rehearsal.history"));
     mOptions.add(miMonthPlanning = getMenuItem("Menu.month.schedule"));
@@ -1246,6 +1269,8 @@ public class PersonFileEditor
       desktop.removeGemEventListener(orderLineEditor); //XXX unused
     } else if (HistoRehearsalView.class.getSimpleName().equals(classname)) {
       miHistoRehearsal.setEnabled(true);
+    } else if (HistoMemberRentalView.class.getSimpleName().equals(classname)) {
+      miHistoRental.setEnabled(true);
     } else if (PersonFileGroupView.class.getSimpleName().equals(classname)) {
       miGroups.setEnabled(true);
     } else if (MemberEnrolmentDlg.class.getSimpleName().equals(classname)) {
@@ -1253,6 +1278,9 @@ public class PersonFileEditor
     } else if (MemberRehearsalCtrl.class.getSimpleName().equals(classname)) {
       miRehearsal.setEnabled(true);
       personFileView.activate(true, "Person.rehearsal.scheduling");
+    } else if (MemberRentalCtrl.class.getSimpleName().equals(classname)) {
+      miRental.setEnabled(true);
+      personFileView.activate(true, "Rental.menu");
     } else if (MemberRehearsalPassCtrl.class.getSimpleName().equals(classname)) {
       miPassRehearsal.setEnabled(true);
     } else if (HistoInvoice.class.getSimpleName().equals(classname)) {
@@ -1334,5 +1362,15 @@ public class PersonFileEditor
   public String getUIInfo() {
     Dimension d = view.getSize();
     return BundleUtil.getLabel("New.size.label") + " : " + d.width + "x" + d.height;
+  }
+  
+  private void rentalReturn(RentalOperation o) {
+      try {
+          RentalOperationIO service = new RentalOperationIO(dc);
+          o.setEndDate(new DateFr(new Date()));
+          service.update(o);
+      } catch (Exception ex) {
+          GemLogger.logException("rentalReturn", ex);
+      }
   }
 }

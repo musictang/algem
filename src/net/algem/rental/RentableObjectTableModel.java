@@ -37,8 +37,8 @@ public class RentableObjectTableModel
     header = new String[]{
       BundleUtil.getLabel("Id.label"),
       BundleUtil.getLabel("Instrument.label"),
-      BundleUtil.getLabel("Marque.label"),
-      BundleUtil.getLabel("Identificaion.label")
+      BundleUtil.getLabel("Rentable.brand.label"),
+      BundleUtil.getLabel("Rentable.identification.label")
     };
   }
 

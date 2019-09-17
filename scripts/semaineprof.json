@@ -1,0 +1,8 @@
+{
+  "description": "Liste planning prof (pour une semaine type)",
+  "args": [{
+    "name" : "dateDebut", "label": "Date début", "type": "date"
+  }, {
+    "name" : "dateFin", "label": "Date fin", "type": "date"
+  }]
+}
