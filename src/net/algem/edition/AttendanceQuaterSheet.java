@@ -60,13 +60,13 @@ import net.algem.util.model.Model;
 public class AttendanceQuaterSheet
         extends Canvas {
 
-    private static final int PAGE_HEIGTH = 800;//page height page 595*841
+    private static final int PAGE_HEIGHT = 800;//page height page 595*841
     private static final int PAGE_WIDTH = 550;//page height page 595*841
     private static final int DAY_WIDTH = 30;//ex 120 en landscape
     private static final int FIRST_COL = 200;//ex 160
     private static final int NB_COL = 12;//ex 5
-    private static final int LINE_HEIGTH = 20;//ex 30
-    private static final int ADH_HEIGTH = 15;//ex 15
+    private static final int LINE_HEIGHT = 20;//ex 30
+    private static final int ADH_HEIGHT = 15;//ex 15
     private int margeh = 30;
     private int marged = 50;
     private DateRange dateRange;
@@ -211,7 +211,7 @@ public class AttendanceQuaterSheet
                     detailRange(course, room, v);
                 }
 
-                line += LINE_HEIGTH;
+                line += LINE_HEIGHT;
             }
         } catch (SQLException e) {
             GemLogger.log(getClass().getName(), "edite", e);
@@ -226,7 +226,7 @@ public class AttendanceQuaterSheet
     public void courseHeader(Course course, Room room, Vector<ScheduleObject> vpl) {
 
         //System.out.println("coursHeader course=" + course + " line=" + line);
-        if (line + 50 > PAGE_HEIGTH) {
+        if (line + 50 > PAGE_HEIGHT) {
             g.dispose();
             g = prn.getGraphics();
             g.setFont(normalFont);
@@ -264,8 +264,8 @@ public class AttendanceQuaterSheet
             cal.setTime(pl.getDate().getDate());
             g.drawString(dayLabels[cal.get(Calendar.DAY_OF_WEEK)] + pl.getDate().getDay(), col, line + 15);// 25 -> 15
         }
-        g.drawLine(25, line + LINE_HEIGTH, PAGE_WIDTH, line + LINE_HEIGTH); // 30->LINE_HEIGTH
-        line += LINE_HEIGTH;
+        g.drawLine(25, line + LINE_HEIGHT, PAGE_WIDTH, line + LINE_HEIGHT); // 30->LINE_HEIGHT
+        line += LINE_HEIGHT;
     }
 
     public void detailCollective(Course course, Room room, DateRange _range, Vector<ScheduleObject> vpl) {
@@ -278,7 +278,7 @@ public class AttendanceQuaterSheet
         for (int i = 0; i < v.size(); i++) {
             PersonFile d = v.elementAt(i);
             int col = FIRST_COL;
-            if (line + 5 > PAGE_HEIGTH) {
+            if (line + 5 > PAGE_HEIGHT) {
                 for (int j = 0; j < NB_COL; j++, col += DAY_WIDTH) {
                     g.drawLine(col, topl, col, line);
                     //g.drawLine(col + 10, topl, col + 10, line);// topl hauteur de départ
@@ -317,10 +317,10 @@ public class AttendanceQuaterSheet
             //  g.drawLine(col, line + 5, col + 10, line + 5);
             //}
             g.drawLine(25, line + 5, PAGE_WIDTH, line + 5);
-            line += ADH_HEIGTH; // espacement inter noms
+            line += ADH_HEIGHT; // espacement inter noms
         }
         //espacement supplémentaire pour les éventuels nouveaux élèves
-        line += LINE_HEIGTH - ADH_HEIGTH;
+        line += LINE_HEIGHT - ADH_HEIGHT;
         g.drawLine(25, line, PAGE_WIDTH, line);
         if (!np) {
             int col = FIRST_COL;
@@ -353,9 +353,9 @@ public class AttendanceQuaterSheet
         g.drawString(p.getFirstName() + " " + p.getName(), 25, line += 10);
       }
              */
-            line += ADH_HEIGTH - 10;
+            line += ADH_HEIGHT - 10;
             g.drawLine(25, line, PAGE_WIDTH, line);
-            if (line + 5 > PAGE_HEIGTH) {
+            if (line + 5 > PAGE_HEIGHT) {
 
                 int col = FIRST_COL;
                 for (int j = 0; j < NB_COL; j++, col += DAY_WIDTH) {
@@ -380,7 +380,7 @@ public class AttendanceQuaterSheet
         }
 
         //espacement supplémentaire pour les éventuels nouveaux élèves
-        /*line += LINE_HEIGTH; 
+        /*line += LINE_HEIGHT; 
     g.drawLine(25, line, 800, line); */
         if (!np) {
             int col = FIRST_COL;

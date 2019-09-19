@@ -35,7 +35,7 @@ public class RentalHistoTableModel
 
   public RentalHistoTableModel() {
     header = new String[]{
-      BundleUtil.getLabel("Intrument.label"),
+      BundleUtil.getLabel("Instrument.label"),
       BundleUtil.getLabel("Date.From.label"),
       BundleUtil.getLabel("Date.To.label"),
       BundleUtil.getLabel("Rental.info.label")

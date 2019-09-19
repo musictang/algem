@@ -20,6 +20,7 @@
  */
 package net.algem.rental;
 
+import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.util.Date;
 import net.algem.contact.Person;
@@ -54,10 +55,13 @@ public class MemberRentalView
 
     memberField = new GemField(35);
     memberField.setEditable(false);
+    memberField.setMinimumSize(new Dimension(400, memberField.getPreferredSize().height));
     rentableChoice = new RentableChoice(rentableList);
     datePanel = new DateRangePanel(DateRangePanel.SIMPLE_DATE, null);
     amount = new GemField(8);
+    amount.setMinimumSize(new Dimension(60, amount.getPreferredSize().height));
     description = new GemField(64);
+    description.setMinimumSize(new Dimension(500, description.getPreferredSize().height));
     this.setLayout(new GridBagLayout());
     GridBagHelper gb = new GridBagHelper(this);
     

@@ -94,6 +94,7 @@ public class HistoMemberRentalView
 
     @Override
     public void cancel() {
+        System.out.println("HistoMemberRentalView cancel");
         clear();
         if (listener != null) {
             listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "HistoLocation.Abandon"));
@@ -141,10 +142,14 @@ public class HistoMemberRentalView
 
     @Override
     public void actionPerformed(ActionEvent evt) {
-        int idx = table.getSelectedRow();
-        if (idx < 0) return;
-        if (listener != null) {
-            listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "HistoLocation.Return"));
+        if (evt.getSource() == btValidation) {
+            int idx = table.getSelectedRow();
+            if (idx < 0) return;
+            if (listener != null) {
+                listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "HistoLocation.Return"));
+            }
+        } else {
+           super.actionPerformed(evt); 
         }
     }
 
