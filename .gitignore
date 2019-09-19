@@ -10,5 +10,7 @@ loc-doc.txt
 loc.txt
 /nbproject/private/
 /build/
+build.xml
 /dist/
 /plugins/22570-algem-plugins/nbproject/private/
+manifest.mf
