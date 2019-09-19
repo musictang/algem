@@ -12,4 +12,4 @@ var query = "SELECT p.id, p.nom, p.prenom, f.type, f.statut, ( case when f.statu
         "GROUP BY p.id, p.nom, p.prenom, f.type, f.statut, niv";
 
 utils.print(query);
-out.resultSet(dc.executeQuery(query));
+out.setQuery(query);

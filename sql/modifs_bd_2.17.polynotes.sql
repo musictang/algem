@@ -42,6 +42,6 @@ INSERT INTO config VALUES ('Smtp.server.name','smtp.domaine.net');
 INSERT INTO config VALUES ('Smtp.server.security','TLS');
 INSERT INTO config VALUES ('Smtp.server.port','587');
 INSERT INTO config VALUES ('Smtp.server.authentification','f');
-INSERT INTO config VALUES ('Smtp.server.user','email@domainet.net');
+INSERT INTO config VALUES ('Smtp.server.user','email@domaine.net');
 INSERT INTO config VALUES ('Smtp.server.password','password');
 
