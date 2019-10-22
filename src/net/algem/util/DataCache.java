@@ -1255,7 +1255,7 @@ public class DataCache {
         //AVANT 2.17 return userService.authorize(menu2, user);
         HashMap<Integer, Boolean> d = authorizations.get(menu2);
 
-        return d == null ? true : d.get(user.getId()); // true par defaut comme DefaultUserService.autorize()
+        return d == null || d.get(user.getId()) == null ? true : d.get(user.getId()); // true par defaut comme DefaultUserService.autorize()
     }
 
     public String getVersion() {
