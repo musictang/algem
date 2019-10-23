@@ -24,7 +24,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
-import java.util.Vector;
 import net.algem.accounting.Account;
 import net.algem.accounting.AccountPrefIO;
 import static net.algem.accounting.AccountUtil.getIntValue;
@@ -35,8 +34,6 @@ import net.algem.config.ConfigUtil;
 import net.algem.config.Preference;
 import net.algem.contact.PersonFile;
 import net.algem.contact.member.Member;
-import net.algem.enrolment.ModuleOrder;
-import net.algem.enrolment.ModuleOrderIO;
 import net.algem.planning.DateFr;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
@@ -111,9 +108,8 @@ public class RentalService
    * Saves an order line for a single rehearsal.
    *
    * @param pFile person file
-   * @param date date of reservation
+   * @param date date of rental
    * @param amount total of the order
-   * @param linkId If subscription, this is the id of the card, else the id of the schedule
    * @throws SQLException
    */
   public void saveRentalOrderLine(RentableObject r, PersonFile pFile, DateFr date, double amount) throws SQLException {
@@ -142,7 +138,10 @@ public class RentalService
     e.setPaid(false);
     e.setModeOfPayment("TP"); //FIXME set default mode of payment (ccmdl=TP)
     e.setTransfered(false);
-    e.setAmount(getIntValue(amount));
+    e.setAmount(getIntValue(amount/2)); //FIXME
+    OrderLineIO.insert(e, dc);
+    //FIXME seconde échéance CCMDL
+    date.incMonth(5); 
     OrderLineIO.insert(e, dc);
   }
 

@@ -67,12 +67,14 @@ public class MenuAccounting
   private JMenuItem miAccountHourEmployee;
   private JMenuItem miRoomRate;
   private JMenuItem miDirectDebitList;
+  private JMenuItem miAccountControl;
   private DataConnection dc;
 
   public MenuAccounting(GemDesktop _desktop) {
     super(menus.get("Menu.accounting.label"), _desktop);
 
     miAccountSchedule = add(getItem(new JMenuItem(menus.get("Menu.schedule.payment.label")), "Accounting.global.schedule.auth"));
+    miAccountControl = add(getItem(new JMenuItem(menus.get("Menu.schedule.control.label")), "Accounting.global.schedule.auth"));
     addSeparator();
 
     miAccountTransfert = add(getItem(new JMenuItem(menus.get("Menu.schedule.payment.transfer.label")), "Accounting.transfer.auth"));
@@ -128,6 +130,11 @@ public class MenuAccounting
       OrderLineDlg dlg = new OrderLineDlg(desktop, orderLineDlg);
       dlg.init();
       desktop.addPanel("Menu.schedule.payment", dlg, GemModule.XL_SIZE);
+    }  else if (src == miAccountControl) {
+      OrderControlTableModel orderControlModel = new OrderControlTableModel();
+      OrderControlDlg dlg = new OrderControlDlg(desktop, orderControlModel);
+      dlg.init();
+      desktop.addPanel("Menu.schedule.control", dlg, GemModule.XL_SIZE);
     } else if (src == miAccountTransfert) {
       AccountExportService exportService = getAccountingExportService(ConfigUtil.getConf(ConfigKey.ACCOUNTING_EXPORT_FORMAT.getKey()));
       CommonAccountTransferDlg accountTransfertDlg = new CommonAccountTransferDlg(desktop.getFrame(), dataCache, exportService);
@@ -272,6 +279,7 @@ public class MenuAccounting
 
   private static void initLabels() {
     menus.put("Menu.schedule.payment.label", BundleUtil.getLabel("Menu.schedule.payment.label"));
+    menus.put("Menu.schedule.control.label", BundleUtil.getLabel("Menu.schedule.control.label"));
     menus.put("Menu.schedule.payment.transfer.label", BundleUtil.getLabel("Menu.schedule.payment.transfer.label"));
     menus.put("Menu.document.transfer.label", BundleUtil.getLabel("Menu.document.transfer.label"));
     menus.put("Menu.debiting.label", BundleUtil.getLabel("Menu.debiting.label"));

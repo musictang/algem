@@ -1,5 +1,5 @@
 /*
- * @(#)Algem.java   2.17.1d 15/09/2019
+ * @(#)Algem.java   2.17.1e 20/10/2019
  *
  * Copyright (c) 1999-2019 Musiques Tangentes. All Rights Reserved.
  *
@@ -34,13 +34,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
-import java.util.Vector;
 import java.util.logging.Level;
 import java.util.prefs.Preferences;
 import javax.imageio.ImageIO;
@@ -52,7 +50,6 @@ import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
 import net.algem.config.ThemeConfig;
 import net.algem.contact.OrganizationIO;
-import net.algem.planning.DateFr;
 import net.algem.security.AuthDlg;
 import net.algem.security.User;
 import net.algem.util.*;
@@ -65,12 +62,12 @@ import org.apache.commons.codec.binary.Base64;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.17.1d
+ * @version 2.17.1e
  */
 public class Algem
 {
 
-  public static final String APP_VERSION = "2.17.1d";
+  public static final String APP_VERSION = "2.17.1e";
   public static final List<LookAndFeelInfo> ALTERNATIVE_LAF = new ArrayList<>();
   private static final int DEF_WIDTH = 1080;// (850,650) => ancienne taille
   private static final int DEF_HEIGHT = 780;
@@ -174,7 +171,7 @@ public class Algem
       }
     }
     GemLogger.log(Level.INFO, "net.algem.Algem", "main", msg);
-    
+
     final GemBoot gemBoot = new GemBoot(new OrganizationIO(dc));
 
     /* ------------------------ */
