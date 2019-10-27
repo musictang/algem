@@ -1,7 +1,7 @@
 /*
- * @(#)DataCache.java	2.17.0 26/03/2019 (prev 2.15.4 24/10/17)
+ * @(#)DataCache.java	2.17.2 27/10/19
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2019 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -92,7 +92,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.17.0
+ * @version 2.17.2
  * @since 1.0b 03/09/2001
  */
 public class DataCache {
@@ -131,7 +131,7 @@ public class DataCache {
     private static Hashtable<Integer, OrderLine> ORDER_LINE_CACHE = new Hashtable<Integer, OrderLine>();
     private static Hashtable<Integer, RehearsalPass> PASS_CARD = new Hashtable<Integer, RehearsalPass>();
 
-    public static int PERSON_CACHE_MIN_SIZE = 675; // ERIC 26/03/2019 à calculer suivant le nombre d'élèves ~675/800 pour polynotes
+    public static int PERSON_CACHE_MIN_SIZE = 675; // ERIC 26/03/2019 à calculer suivant le nombre access'élèves ~675/800 pour polynotes
     private static Map<Integer, DailyTimes[]> roomsTimes = new HashMap<>(); //ERIC 2.17 27/03/2019
     private static Map<String, HashMap> authorizations = new HashMap<>(); //ERIC 2.17 30/03/2019
     private static Map<Integer, List> moduleCourses = new HashMap<>(); //ERIC 2.17 30/03/2019
@@ -1140,7 +1140,7 @@ public class DataCache {
                     loadMonthRangeStmt.setDate(1, new java.sql.Date(start.getTime()));
                     loadMonthRangeStmt.setDate(2, new java.sql.Date(end.getTime()));
                     Vector<ScheduleRangeObject> vpg = ScheduleRangeIO.getLoadRS(loadMonthRangeStmt, DATA_CONNECTION);
-                    //ERIC 2.17 
+                    //ERIC 2.17
                      System.out.println("setMonthSchedule PersonCacheSize=" + DataCache.PERSON_CACHE.size());
                     //dump("plagemois.ser",vpg);
                     if (Thread.interrupted()) {
@@ -1171,7 +1171,7 @@ public class DataCache {
         } catch (SQLException e) {
             GemLogger.logException(e);
         }
-        //ERIC 2.17 
+        //ERIC 2.17
         System.out.println("setDaySchedule PersonCacheSize=" + DataCache.PERSON_CACHE.size());
     }
 
@@ -1251,22 +1251,25 @@ public class DataCache {
         return getMenu2(menu, false);
     }
 
+    /**
+     *
+     * @param menu2 menu key
+     * @return true if menu is authorized for current user
+     * @see net.algem.security.DefaultUserService#authorize(java.lang.String, net.algem.security.User)
+     */
     public boolean authorize(String menu2) {
-        //AVANT 2.17 return userService.authorize(menu2, user);
-        HashMap<Integer, Boolean> d = authorizations.get(menu2);
-
-        return d == null || d.get(user.getId()) == null ? true : d.get(user.getId()); // true par defaut comme DefaultUserService.autorize()
+        Map<Integer, Boolean> access = authorizations.get(menu2);
+        if (access == null) return true;
+        return Optional.ofNullable(access.get(user.getId())).orElse(true); // authorize by default
     }
 
     public String getVersion() {
         String v = "inconnue";
         String query = "SELECT version FROM version";
-        try {
-            ResultSet rs = DATA_CONNECTION.executeQuery(query);
+        try (ResultSet rs = DATA_CONNECTION.executeQuery(query)) {
             if (rs.next()) {
                 v = rs.getString(1).trim();
             }
-            rs.close();
         } catch (SQLException e) {
             GemLogger.logException(e);
         }
@@ -1378,7 +1381,7 @@ public class DataCache {
     public static boolean existId(int id, Model m) {
         switch (m) {
             case Person:
-                return PERSON_CACHE.get(id) == null ? false : true;
+                return PERSON_CACHE.get(id) != null;
             default:
                 return false;
         }

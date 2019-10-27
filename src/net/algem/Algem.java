@@ -1,5 +1,5 @@
 /*
- * @(#)Algem.java   2.17.1e 20/10/2019
+ * @(#)Algem.java   2.17.2 27/10/2019
  *
  * Copyright (c) 1999-2019 Musiques Tangentes. All Rights Reserved.
  *
@@ -62,12 +62,12 @@ import org.apache.commons.codec.binary.Base64;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.17.1e
+ * @version 2.17.2
  */
 public class Algem
 {
 
-  public static final String APP_VERSION = "2.17.1e";
+  public static final String APP_VERSION = "2.17.2";
   public static final List<LookAndFeelInfo> ALTERNATIVE_LAF = new ArrayList<>();
   private static final int DEF_WIDTH = 1080;// (850,650) => ancienne taille
   private static final int DEF_HEIGHT = 780;
@@ -496,7 +496,7 @@ public class Algem
     } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
       GemLogger.log("look&feel exception : " + ex.getMessage());
     }
-    
+
     String lafName = UIManager.getLookAndFeel().getName();
     UIDefaults def = UIManager.getLookAndFeelDefaults();
     def.put("ProgressMonitor.progressText", BundleUtil.getLabel("Running.job.label"));

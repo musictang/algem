@@ -1,8 +1,7 @@
 /*
- * @(#)UserIO.java 2.17.0 23/03/2019
- *                  2.12.1 30/03/17
+ * @(#)UserIO.java 2.17.2 27/10/19
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2019 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -169,6 +168,7 @@ public class UserIO
 
   /**
    * Establishment active status initialization.
+   *
    * @param idper user id
    * @throws SQLException
    */
@@ -198,7 +198,7 @@ public class UserIO
     String query = "SELECT p.id,p.ptype,p.nom,p.prenom,p.civilite,u.login,u.profil,u.pass,u.clef"
       + " FROM " + PersonIO.TABLE + " p JOIN " + TABLE + " u ON (p.id = u.idper)";
     if (where != null) {
-      query += " "  + where;
+      query += " " + where;
     }
     query += " ORDER BY p.nom, p.prenom";
     ResultSet rs = dc.executeQuery(query);
@@ -261,29 +261,25 @@ public class UserIO
   public List<User> load() throws SQLException {
     return find(null);
   }
-  
-  public HashMap<String, HashMap>loadAuthorizations() {
+
+  public HashMap<String, HashMap> loadAuthorizations() {
     HashMap<String, HashMap> authorizations = new HashMap<>();
 
-     String query = "SELECT idper, label, autorisation from menuaccess a, menu2 m"
-              +" WHERE a.idmenu = m.id";
-    try {
-      ResultSet rs = dc.executeQuery(query);
+    String query = "SELECT idper, label, autorisation FROM " + T_ACCESS + " a JOIN " + T_MENU + " m ON a.idmenu = m.id";
+    try (ResultSet rs = dc.executeQuery(query)) {
       while (rs.next()) {
-          if (authorizations.get(rs.getString(2)) == null)
-          {
-               HashMap<Integer, Boolean> d = new HashMap<>();
-               d.put(rs.getInt(1), rs.getBoolean(3));
-               authorizations.put(rs.getString(2), d);
-          } else {
-              HashMap d = authorizations.get(rs.getString(2));
-              d.put(rs.getInt(1), rs.getBoolean(3));
-          }
+        if (authorizations.get(rs.getString(2)) == null) {
+          HashMap<Integer, Boolean> d = new HashMap<>();
+          d.put(rs.getInt(1), rs.getBoolean(3));
+          authorizations.put(rs.getString(2), d);
+        } else {
+          HashMap d = authorizations.get(rs.getString(2));
+          d.put(rs.getInt(1), rs.getBoolean(3));
+        }
       }
     } catch (SQLException e) {
-      GemLogger.logException("DataCache.loadAuhorizations:"+ query, e);
+      GemLogger.logException("DataCache.loadAuhorizations:" + query, e);
     }
-   return authorizations;  
+    return authorizations;
   }
 }
-  

@@ -35,13 +35,3 @@ COMMENT ON COLUMN reinscription.action IS 'id action pour les cours collectifs p
 
 CREATE INDEX reins_student_idx ON reinscription USING btree(student);
 CREATE INDEX reins_cours_idx ON reinscription USING btree(cours);
-
--- nouvelles clés de config pour l'envoi de mail par smtp
-
-INSERT INTO config VALUES ('Smtp.server.name','smtp.domaine.net');
-INSERT INTO config VALUES ('Smtp.server.security','TLS');
-INSERT INTO config VALUES ('Smtp.server.port','587');
-INSERT INTO config VALUES ('Smtp.server.authentification','f');
-INSERT INTO config VALUES ('Smtp.server.user','email@domaine.net');
-INSERT INTO config VALUES ('Smtp.server.password','password');
-

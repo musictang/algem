@@ -1,4 +1,4 @@
-Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
+Copyright (c) 1999-2019 Musiques Tangentes. All Rights Reserved.
 
 This file is part of Algem.
 Algem is free software: you can redistribute it and/or modify it
@@ -26,16 +26,15 @@ de consulter leur planning ou leur suivi pédagogique. Cette interface
 permet aussi aux répétiteurs de réserver une salle en ligne.
 
 Cette deuxième application est optionnelle. Le code source de l'application
-web est disponible à cette adresse : [algem-web-app](https://github.com/musictang/algem-web-app).
+web est disponible à cette adresse :  
+[algem-web-app](https://github.com/musictang/algem-web-app).
 
 ## NOTES POUR LE DEVELOPPEUR
 
-Si le projet vous intéresse, n'hésitez pas à nous contacter.
+Si le projet vous intéresse, n'hésitez pas à nous contacter.  
 Le projet est supporté par l'association **Musiques Tangentes**.
-* Responsable du projet (Maet Charles) :
+* Responsable de l'association (Maet Charles) :
 <maet@musiques-tangentes.asso.fr>
-* Développeur principal (Jean-Marc Gobat) :
-<jmg@musiques-tangentes.asso.fr>
 
 ### CONTENU DE L'ARCHIVE
 * `src` : code source de l'application

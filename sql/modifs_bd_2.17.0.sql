@@ -5,3 +5,5 @@ INSERT INTO config VALUES ('Smtp.server.port','587');
 INSERT INTO config VALUES ('Smtp.server.authentification','f');
 INSERT INTO config VALUES ('Smtp.server.user','user@localhost');
 INSERT INTO config VALUES ('Smtp.server.password','password');
+
+ALTER TABLE eleve ADD COLUMN famille int DEFAULT 0;
