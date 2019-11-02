@@ -1,27 +1,23 @@
-/plugins/19658/nbproject/
-/plugins/19658/nbbuild.xml
-/plugins/19658/manifest.mf
-/plugins/19658/dist/
-/plugins/1234/nbproject/
-/plugins/1234/dist/
-/plugins/1234/build/
-/plugins/1234/dist/
-/plugins/1234/nbproject/
-/plugins/1234/manifest.mf
-/plugins/1234/nbbuild.xml
+# Plugins build patterns
+/plugins/**/nbproject/
+/plugins/**/nbbuild.xml
+/plugins/**/manifest.mf
+/plugins/**/dist/
+
+# Build patterns
+/nbproject/
+/build/
+build.xml
+/dist/
+.idea
+/target/
+
+# Files
+manifest.mf
+preview-application.html
+master-application.jnlp
 doclist
 cloclist
 loc-doc.txt
 loc.txt
-/nbproject/private/
-/build/
-build.xml
-/dist/
-/lib/doc/
-/lib/src/
-/plugins/22570-algem-plugins/nbproject/
-/plugins/22570-algem-plugins/nbbuild.xml
-/plugins/22570-algem-plugins/manifest.mf
-manifest.mf
-preview-application.html
-master-application.jnlp
+.attach*

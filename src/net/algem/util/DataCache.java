@@ -1,5 +1,5 @@
 /*
- * @(#)DataCache.java	2.17.2 27/10/19
+ * @(#)DataCache.java	2.17.3 01/11/19
  *
  * Copyright (c) 1999-2019 Musiques Tangentes. All Rights Reserved.
  *
@@ -92,7 +92,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.17.2
+ * @version 2.17.3
  * @since 1.0b 03/09/2001
  */
 public class DataCache {
@@ -284,7 +284,7 @@ public class DataCache {
      * @param dc
      * @param user
      * @return a cache instance
-   * @see The "Double-Checked Locking is Broken" Declaration  http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html
+     * @see   <a href="http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html">"Double-Checked Locking Broken" Declaration</a>
      */
     public static DataCache getInstance(DataConnection dc, String user) {
         if (INSTANCE == null) {
@@ -1260,7 +1260,7 @@ public class DataCache {
     public boolean authorize(String menu2) {
         Map<Integer, Boolean> access = authorizations.get(menu2);
         if (access == null) return true;
-        return Optional.ofNullable(access.get(user.getId())).orElse(true); // authorize by default
+        return Optional.ofNullable(access.get(getUser().getId())).orElse(true); // authorize by default
     }
 
     public String getVersion() {
@@ -1314,7 +1314,7 @@ public class DataCache {
      * Date configuration for planning and enrolment.
      *
      * @throws ConfigException
-     * @see net.algem.bdio.ConfigIO#findId
+     * @see net.algem.config.ConfigIO#findId
      */
     private void setDates() throws ConfigException {
         String s = ConfigUtil.getConf(ConfigKey.BEGINNING_YEAR.getKey());
