@@ -15,7 +15,6 @@ You should have received a copy of the GNU Affero General Public License
 along with Algem. If not, see <http://www.gnu.org/licenses/>.
 
 # PRESENTATION
-
 Algem se décompose en deux applications :
 - Une application de bureau en Java (Swing), dédiée au back-office et
 principalement utilisée par l'équipe administrative.
@@ -30,21 +29,20 @@ web est disponible à cette adresse :
 [algem-web-app](https://github.com/musictang/algem-web-app).
 
 ## NOTES POUR LE DEVELOPPEUR
-
 Si le projet vous intéresse, n'hésitez pas à nous contacter.  
 Le projet est supporté par l'association **Musiques Tangentes**.
 
-* Equipe développement : info@algem.net
+* Equipe développement : <info@algem.net>
 * Responsable de l'association : <admin@musiques-tangentes.asso.fr>
 
 ## COMPILATION / LANCEMENT avec Maven
 Préalables :  
 * Le service postgresql doit être démarré et la base algem configurée
-* L'exécutable mvn doit être présent dans le PATH. 
+* L'exécutable mvn doit être présent dans le PATH.
 
+Lancement :
 * Compilez le projet : `mvn compile`
 * Démarrez : `mvn exec:java`
-
 
 ### CONTENU DE L'ARCHIVE
 * `src` : code source de l'application
