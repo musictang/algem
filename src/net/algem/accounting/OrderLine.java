@@ -36,7 +36,7 @@ import net.algem.util.model.GemModel;
  */
 public class OrderLine
   extends StandardOrderLine
-  implements GemModel {
+  implements GemModel, Comparable {
 
   private static final long serialVersionUID = -4614812764226507224L;
 
@@ -296,4 +296,8 @@ public class OrderLine
     return hash;
   }
 
+  @Override  
+  public int compareTo(Object o) {
+      return ((payer-((OrderLine)o).payer)*10000) + (member-((OrderLine)o).member);
+  }
 }

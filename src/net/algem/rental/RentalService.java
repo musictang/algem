@@ -114,7 +114,7 @@ public class RentalService
    */
   public void saveRentalOrderLine(RentableObject r, PersonFile pFile, DateFr date, double amount) throws SQLException {
 
-    Preference p = AccountPrefIO.find(AccountPrefIO.PERSONAL, dc);
+    Preference p = AccountPrefIO.find(AccountPrefIO.LEISURE, dc);
     OrderLine e = new OrderLine();
     e.setMember(pFile.getId());
     int payer;
@@ -135,9 +135,10 @@ public class RentalService
     e.setLabel(BundleUtil.getLabel("Rental.label") + " " + r.toString());
     e.setCurrency("E");
     e.setDocument("");
-    e.setPaid(false);
+    e.setPaid(true);
     e.setModeOfPayment("TP"); //FIXME set default mode of payment (ccmdl=TP)
     e.setTransfered(false);
+    e.setAccount(new Account((Integer) p.getValues()[0]));
     e.setAmount(getIntValue(amount/2)); //FIXME
     OrderLineIO.insert(e, dc);
     //FIXME seconde échéance CCMDL
