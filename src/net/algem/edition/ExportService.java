@@ -24,6 +24,7 @@ import java.io.PrintWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import net.algem.Algem;
 import net.algem.config.ConfigUtil;
 import net.algem.config.Instrument;
 import net.algem.config.InstrumentIO;
@@ -396,9 +397,9 @@ public class ExportService {
       + " WHERE e.idper = " + idper
       + " AND e.archive = false"
       + " UNION"
-      + " SELECT DISTINCT e.email FROM " + EmailIO.TABLE
-      + " e JOIN " + MemberIO.TABLE + " m ON (e.idper = m.payeur) JOIN " + PersonIO.TABLE + " p ON (m.payeur = p.id)"
-      + " WHERE m.idper = " + idper
+      + " SELECT DISTINCT e.email FROM " + EmailIO.TABLE + " e JOIN " + MemberIO.TABLE + " m ";
+      query += Algem.isFeatureEnabled("cc-mdl") ? "ON (e.idper = m.famille) JOIN " + PersonIO.TABLE + " p ON (m.famille = p.id)" : "ON (e.idper = m.payeur) JOIN " + PersonIO.TABLE + " p ON (m.payeur = p.id)";
+      query += " WHERE m.idper = " + idper
       + " AND m.idper NOT IN (SELECT idper FROM  " + EmailIO.TABLE + ")"
       + " AND (p.organisation IS NULL OR p.organisation = 0)"
       + " AND e.archive = false";
@@ -418,9 +419,9 @@ public class ExportService {
       + " WHERE t.idper = " + idper
       + " UNION"
       + " SELECT DISTINCT t.numero FROM "
-      + TeleIO.TABLE + " t JOIN " + MemberIO.TABLE + " m ON (t.idper = m.payeur)"
-      + " JOIN " + PersonIO.TABLE + " p ON (m.payeur = p.id)"
-      + " WHERE m.idper = " + idper
+      + TeleIO.TABLE + " t JOIN " + MemberIO.TABLE + " m ";
+    query += Algem.isFeatureEnabled("cc-mdl") ? "ON (t.idper = m.famille) JOIN " + PersonIO.TABLE + " p ON (m.famille = p.id)" : "ON (t.idper = m.payeur) JOIN " + PersonIO.TABLE + " p ON (m.payeur = p.id)";
+    query += " WHERE m.idper = " + idper
       + " AND (p.organisation IS NULL OR p.organisation = 0)"
       + " AND m.idper NOT IN (SELECT idper FROM " + TeleIO.TABLE + ")";
     ResultSet rs = dc.executeQuery(query);
