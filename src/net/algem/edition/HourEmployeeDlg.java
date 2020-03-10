@@ -122,7 +122,22 @@ public class HourEmployeeDlg
       path = filepath.getText();
     }
     int idx = path.lastIndexOf('.');
-    if (EmployeeType.TECHNICIAN.ordinal() == type || (!SORTING_CMD[0].equals(cmd))) {
+    if (SORTING_CMD[4].equals(cmd)) { //ERIC 2.17.3 24/02/2020 export excel
+     try {
+      Class.forName("net.algem.plugins.XLSWorkingTimePlugin");
+      if (idx >= 0) {
+        path = path.substring(0, idx);
+        path = path.concat(".xls");
+        filepath.setText(path);
+      }
+    } catch (Exception ex) {
+      if (idx >= 0) {
+        path = path.substring(0, idx);
+        path = path.concat(".csv");
+        filepath.setText(path);
+      }
+    }
+    } else if (EmployeeType.TECHNICIAN.ordinal() == type || (!SORTING_CMD[0].equals(cmd))) {
       if (idx >= 0) {
         path = path.substring(0, idx);
         path = path.concat(".csv");
@@ -182,6 +197,8 @@ public class HourEmployeeDlg
       MessagePopup.warning(view, MessageUtil.getMessage("file.exception"));
       GemLogger.logException(ex);
     } catch (SQLException ex) {
+      GemLogger.logException(MessageUtil.getMessage("export.exception"), ex, this);
+    } catch (Exception ex) {
       GemLogger.logException(MessageUtil.getMessage("export.exception"), ex, this);
     }
   }
