@@ -636,7 +636,7 @@ public class EnrolmentWishCtrl implements ActionListener, TableModelListener {
         Session session = MailUtil.SmtpInitSession();
         
         Message message = new MimeMessage(session);
-        message.setFrom(new InternetAddress(ConfigUtil.getConf(ConfigKey.SMTP_SERVER_USER.getKey())));
+        message.setFrom(new InternetAddress(ConfigUtil.getConf(ConfigKey.SMTP_SERVER_SENDER.getKey())));
         //2.17 TEST
         //message.addRecipient(Message.RecipientType.TO, new InternetAddress("eric@devmad.fr"));
         //2.17 PROD
@@ -671,7 +671,7 @@ public class EnrolmentWishCtrl implements ActionListener, TableModelListener {
         Session session = MailUtil.SmtpInitSession();
         
         Message message = new MimeMessage(session);
-        message.setFrom(new InternetAddress(ConfigUtil.getConf(ConfigKey.SMTP_SERVER_USER.getKey())));
+        message.setFrom(new InternetAddress(ConfigUtil.getConf(ConfigKey.SMTP_SERVER_SENDER.getKey())));
         //2.17 TEST
         //message.addRecipient(Message.RecipientType.TO, new InternetAddress("eric@devmad.fr"));
         //2.17 PROD

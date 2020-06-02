@@ -143,6 +143,7 @@ public enum ConfigKey
   SMTP_SERVER_NAME("Smtp.server.name", BundleUtil.getLabel("ConfEditor.smtp.server.name.label")),
   SMTP_SERVER_PORT("Smtp.server.port", BundleUtil.getLabel("ConfEditor.smtp.server.port.label")),
   SMTP_SERVER_USER("Smtp.server.user", BundleUtil.getLabel("ConfEditor.smtp.server.user.label")),
+  SMTP_SERVER_SENDER("Smtp.server.sender", BundleUtil.getLabel("ConfEditor.smtp.server.sender.label")),
   SMTP_SERVER_PSWD("Smtp.server.password", BundleUtil.getLabel("ConfEditor.smtp.server.password.label")),
   SMTP_SERVER_AUTH("Smtp.server.authentification", BundleUtil.getLabel("ConfEditor.smtp.server.authentification.label")),
   SMTP_SERVER_SECURITY("Smtp.server.security", BundleUtil.getLabel("ConfEditor.smtp.server.security.label")),

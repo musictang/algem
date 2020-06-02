@@ -1,5 +1,5 @@
 /*
- * @(#)ConfigMailing.java 2.17.0 08/04/19
+ * @(#)ConfigMailing.java 2.17.3d 02/06/20
  *
  * Copyright (c) 1999-2019 Musiques Tangentes. All Rights Reserved.
  *
@@ -41,18 +41,19 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
- * @version 2.17.0
+ * @version 2.17.3d
  * @since 2.17.0 08/04/2019
  */
 public class ConfigMailing
   extends ConfigPanel {
 
 
-  private Config c1,c2,c3,c4,c5,c6;
+  private Config c1,c2,c3,c4,c5,c6,c7;
 
   private JTextField server;
   private JTextField port;
   private JTextField user;
+  private JTextField sender; //ajout adresse expéditeur le 02/06/20
   private JPasswordField password;
   private JCheckBox authentification;
   private static String[] protocols = new String[] {"Aucun","SSL","TLS"};
@@ -75,10 +76,13 @@ public class ConfigMailing
     c4 = confs.get(ConfigKey.SMTP_SERVER_PSWD.getKey());
     c5 = confs.get(ConfigKey.SMTP_SERVER_SECURITY.getKey());
     c6 = confs.get(ConfigKey.SMTP_SERVER_AUTH.getKey());
+    c7 = confs.get(ConfigKey.SMTP_SERVER_SENDER.getKey());
+    if (c7 == null) c7 = confs.get(ConfigKey.SMTP_SERVER_USER.getKey());
     
     server = new JTextField(20);
     port = new JTextField(4);
     user = new JTextField(32);
+    sender = new JTextField(32);
     password = new JPasswordField(16);
     password.setEchoChar('*');
     authentification = new JCheckBox();
@@ -95,6 +99,7 @@ public class ConfigMailing
       password.setText(c4.getValue());
       security.setSelectedItem(c5.getValue());
       authentification.setSelected(c6.getValue().equals("true") ? true : false);
+      sender.setText(c7.getValue());
       
       gb.add(new GemLabel(BundleUtil.getLabel("ConfEditor.smtp.server.name.label")), 0, 0, 1, 1, GridBagHelper.WEST);
       gb.add(server, 1, 0, 1, 1, GridBagHelper.WEST);
@@ -108,6 +113,8 @@ public class ConfigMailing
       gb.add(user, 1, 4, 1, 1, GridBagHelper.WEST);
       gb.add(new GemLabel(BundleUtil.getLabel("ConfEditor.smtp.server.password.label")), 0, 5, 1, 1, GridBagHelper.WEST);
       gb.add(password, 1, 5, 1, 1, GridBagHelper.WEST);
+      gb.add(new GemLabel(BundleUtil.getLabel("ConfEditor.smtp.server.sender.label")), 0, 6, 1, 1, GridBagHelper.WEST);
+      gb.add(sender, 1, 6, 1, 1, GridBagHelper.WEST);
 
       content.add(panel, BorderLayout.WEST);
 
@@ -123,6 +130,7 @@ public class ConfigMailing
     c4.setValue(new String(password.getPassword()));
     c5.setValue((String)security.getSelectedItem());
     c6.setValue(authentification.isSelected() ? "true" : "false");
+    c7.setValue(sender.getText());
 
     conf.add(c1);
     conf.add(c2);
@@ -130,6 +138,7 @@ public class ConfigMailing
     conf.add(c4);
     conf.add(c5);
     conf.add(c6);
+    conf.add(c7);
 
     return conf;
   }

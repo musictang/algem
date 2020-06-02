@@ -1,7 +1,7 @@
 /*
- * @(#)Algem.java   2.17.3 01/11/19
+ * @(#)Algem.java   2.17.3d 02/06/20
  *
- * Copyright (c) 1999-2019 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2020 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -66,7 +66,7 @@ import org.apache.commons.codec.binary.Base64;
  */
 public class Algem
 {
-  public static final String APP_VERSION = "2.17.3";
+  public static final String APP_VERSION = "2.17.3d";
   public static final List<LookAndFeelInfo> ALTERNATIVE_LAF = new ArrayList<>();
   private static final int DEF_WIDTH = 1080;// (850,650) => ancienne taille
   private static final int DEF_HEIGHT = 780;
