@@ -77,7 +77,6 @@ public class ConfigMailing
     c5 = confs.get(ConfigKey.SMTP_SERVER_SECURITY.getKey());
     c6 = confs.get(ConfigKey.SMTP_SERVER_AUTH.getKey());
     c7 = confs.get(ConfigKey.SMTP_SERVER_SENDER.getKey());
-    if (c7 == null) c7 = confs.get(ConfigKey.SMTP_SERVER_USER.getKey());
     
     server = new JTextField(20);
     port = new JTextField(4);
