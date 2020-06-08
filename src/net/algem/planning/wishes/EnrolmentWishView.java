@@ -239,7 +239,7 @@ public class EnrolmentWishView extends JFrame implements EnrolmentWishIHM, Actio
 
         setJMenuBar(mBar);
 
-        referenceDate = new DateFrField("20-05-2019");
+        referenceDate = new DateFrField("02-03-2020");
         referenceDate.setActionCommand("referenceDate");
         referenceDate.addFocusListener(new FocusListener() {
                 @Override
