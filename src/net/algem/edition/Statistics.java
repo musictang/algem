@@ -304,6 +304,8 @@ public abstract class Statistics
       makeStats();
     } catch(SQLException sqe) {
       GemLogger.logException(sqe);
+    } catch(Exception e) {
+      GemLogger.logException(e);
     }
     return null;
   }
@@ -344,7 +346,8 @@ public abstract class Statistics
    * @throws SQLException
    */
   protected int getIntResult(String query) throws SQLException {
-    ResultSet rs = dc.executeQuery(query);
+//System.out.println("Statistics.getIntResult:"+query);
+      ResultSet rs = dc.executeQuery(query);
     int n = 0;
     while (rs.next()) {
       n += rs.getInt(1);

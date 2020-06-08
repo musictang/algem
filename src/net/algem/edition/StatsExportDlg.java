@@ -190,6 +190,8 @@ public class StatsExportDlg
       MessagePopup.warning(desktop.getFrame(), MessageUtil.getMessage("file.path.exception", filePathField.getText()));
     } catch (SQLException ex) {
       GemLogger.logException(ex);
+    } catch (Exception ex) {
+      GemLogger.logException(ex);
     }
   }
 
