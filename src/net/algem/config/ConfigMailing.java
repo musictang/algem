@@ -98,7 +98,7 @@ public class ConfigMailing
       password.setText(c4.getValue());
       security.setSelectedItem(c5.getValue());
       authentification.setSelected(c6.getValue().equals("true") ? true : false);
-      sender.setText(c7.getValue());
+      sender.setText(c7 != null ? c7.getValue() : "");
       
       gb.add(new GemLabel(BundleUtil.getLabel("ConfEditor.smtp.server.name.label")), 0, 0, 1, 1, GridBagHelper.WEST);
       gb.add(server, 1, 0, 1, 1, GridBagHelper.WEST);
@@ -129,6 +129,7 @@ public class ConfigMailing
     c4.setValue(new String(password.getPassword()));
     c5.setValue((String)security.getSelectedItem());
     c6.setValue(authentification.isSelected() ? "true" : "false");
+    if (c7 != null)
     c7.setValue(sender.getText());
 
     conf.add(c1);
@@ -137,7 +138,8 @@ public class ConfigMailing
     conf.add(c4);
     conf.add(c5);
     conf.add(c6);
-    conf.add(c7);
+    if (c7 != null)
+        conf.add(c7);
 
     return conf;
   }
