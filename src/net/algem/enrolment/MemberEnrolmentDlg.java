@@ -38,9 +38,11 @@ import net.algem.config.ConfigUtil;
 import net.algem.contact.PersonFile;
 import net.algem.course.*;
 import net.algem.edition.MemberCardEditor;
+import net.algem.planning.ConflictQueries;
 import net.algem.planning.DateFr;
 import net.algem.planning.Hour;
 import net.algem.planning.Schedule;
+import net.algem.planning.ScheduleIO;
 import net.algem.planning.ScheduleRange;
 import net.algem.planning.editing.ModifPlanEvent;
 import net.algem.planning.wishes.EnrolmentWish;
@@ -130,6 +132,25 @@ public class MemberEnrolmentDlg
                 if (m.getModule() == 0 || mod == null) {// si module inexistant
                     MessagePopup.warning(this, MessageUtil.getMessage("invalid.module.choice"));
                     return;
+                }
+                //ERIC 10/06/2020 conflit horaire inscription adhérent
+                List<CourseOrder> courses = m.getCourseOrders();
+                for (CourseOrder course : courses) {
+                    for (CourseOrder course2 : courses) {
+                        if (course2.getDay() == course.getDay() 
+                                && ((course2.getStart().before(course.getStart()) && course2.getEnd().after(course.getStart()))
+                                || (course2.getStart().before(course.getEnd()) && course2.getEnd().after(course.getEnd())))
+                                || (course2.getStart().after(course.getStart()) && course2.getEnd().before(course.getEnd())))
+                        {
+                            MessagePopup.warning(this, BundleUtil.getLabel("Member.conflict.label"));
+                            return;
+                        }
+                    }
+                    String query = ConflictQueries.getMemberScheduleSelection(course.getDay(), course.getDateStart().toString(), course.getDateEnd().toString(), course.getStart().toString(), course.getEnd().toString(), dossier.getId());
+                    if (ScheduleIO.count(query, dc) > 0) {
+                        MessagePopup.warning(this, BundleUtil.getLabel("Member.conflict.label"));
+                        return;
+                    }
                 }
             }
 

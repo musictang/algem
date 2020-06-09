@@ -47,6 +47,18 @@ public class ConflictQueries
 
   }
 
+//ERIC 10/06/2020
+public static String getMemberScheduleSelection(int day, String dStart, String dEnd, String hStart, String hEnd, int memberId) {
+    return ",plage WHERE planning.jour between '" + dStart +"' AND '" +dEnd + "'"
+            + " AND EXTRACT(dow FROM planning.jour) = "+day
+            + " AND plage.idplanning = planning.id"
+            + " AND plage.adherent = " + memberId
+            + " AND ((plage.debut >= '" + hStart + "' AND plage.debut < '" + hEnd + "')"
+            + " OR (plage.fin > '" + hStart + "' AND plage.fin <= '" + hEnd + "')"
+            + " OR (plage.debut <= '" + hStart + "' AND plage.fin >= '" + hEnd + "'))";
+
+  }
+
   public static String getCourseMemberSelection(String date, String hStart, String hEnd, int memberId) {
     //do not include catch-up rooms
     return ",plage pg, salle s WHERE planning.jour = '" + date + "'"
