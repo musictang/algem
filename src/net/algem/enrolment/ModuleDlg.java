@@ -39,6 +39,7 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import net.algem.Algem;
 import net.algem.accounting.AccountUtil;
 import net.algem.accounting.ModeOfPayment;
 import net.algem.config.ConfigKey;
@@ -130,8 +131,14 @@ public class ModuleDlg
     dateStart = new DateFrField(deb.getTime());
     dateEnd = new DateFrField(dataCache.getEndOfYear());
     payment = new JComboBox(service.getListOfPayment());
+    if (Algem.isFeatureEnabled("cc-mdl")) {
+        payment.setSelectedIndex(5);
+    }
     payment.addItemListener(this);
     frequency = new JComboBox(new Enum[]{PayFrequency.MONTH, PayFrequency.QUARTER, PayFrequency.SEMESTER, PayFrequency.YEAR});
+    if (Algem.isFeatureEnabled("cc-mdl")) {
+        frequency.setSelectedIndex(2);
+    }
     frequency.addItemListener(this);
     pricing = new JComboBox(PricingPeriod.values());
     pricing.setSelectedItem(getDefaultPricingPeriod());
