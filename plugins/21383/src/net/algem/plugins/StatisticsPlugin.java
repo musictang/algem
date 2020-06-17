@@ -240,7 +240,7 @@ public class StatisticsPlugin
                     out.println("\t\t\t<tr><th>CYCLE 1</th><td>" + getIntResult(getQuery("cycle",1, 0)) + "</td><td>" + getIntResult(getQuery("cycle", 1, 18)) + "</td></tr>");
                     out.println("\t\t\t<tr><th>CYCLE 2</th><td>" + getIntResult(getQuery("cycle",2, 0)) + "</td><td>" + getIntResult(getQuery("cycle", 2, 18)) + "</td></tr>");
                     out.println("\t\t\t<tr><th>CYCLE 3</th><td>" + getIntResult(getQuery("cycle",3, 0)) + "</td><td>" + getIntResult(getQuery("cycle", 3, 18)) + "</td></tr>");
-                    out.println("\t\t\t<tr><th>Hors cursus</th><td>" + getIntResult(getQuery("horscycle",3, 0)) + "</td><td>" + getIntResult(getQuery("horscycle", 3, 18)) + "</td></tr>");
+                    out.println("\t\t\t<tr><th>Hors cursus (avec Eveil)</th><td>" + getIntResult(getQuery("horscycle",3, 0)) + "</td><td>" + getIntResult(getQuery("horscycle", 3, 18)) + "</td></tr>");
                     /*
                      */
                     out.print("\n\t\t</table>");
@@ -601,7 +601,7 @@ public class StatisticsPlugin
         statList.add(new StatElement(15, MessageUtil.getMessage("statistics.hours.of.studio.by.type"), true));
         statList.add(new StatElement(16, MessageUtil.getMessage("statistics.hours.of.training"), true));
 
-        statList.add(new StatElement(17 /* 4 */, "Personnes avec erreur adhésion ou ligne d'adhésion incorrecte", true));
+        statList.add(new StatElement(17 /* 4 */, "Personnes avec adhésion imcomplète", true));
         statList.add(new StatElement(18 /* 5 */, "Nombre d'adhérents", true));
         statList.add(new StatElement(19, "Elèves sans date de naissance", true));
         statList.add(new StatElement(20 /* 7 */, "Répartition des élèves par sexe", true));
