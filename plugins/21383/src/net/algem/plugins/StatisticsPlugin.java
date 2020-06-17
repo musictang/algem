@@ -601,7 +601,7 @@ public class StatisticsPlugin
         statList.add(new StatElement(15, MessageUtil.getMessage("statistics.hours.of.studio.by.type"), true));
         statList.add(new StatElement(16, MessageUtil.getMessage("statistics.hours.of.training"), true));
 
-        statList.add(new StatElement(17 /* 4 */, "Personnes avec adhésion imcomplète", true));
+        statList.add(new StatElement(17 /* 4 */, "Personnes avec adhésion incomplète", true));
         statList.add(new StatElement(18 /* 5 */, "Nombre d'adhérents", true));
         statList.add(new StatElement(19, "Elèves sans date de naissance", true));
         statList.add(new StatElement(20 /* 7 */, "Répartition des élèves par sexe", true));
