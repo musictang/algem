@@ -3,6 +3,7 @@
 /plugins/**/nbbuild.xml
 /plugins/**/manifest.mf
 /plugins/**/dist/
+/plugins/**/out/
 
 # Build patterns
 /nbproject/
@@ -11,6 +12,10 @@ build.xml
 /dist/
 .idea
 /target/
+.classpath
+.project
+.settings
+*.iml
 
 # Files
 manifest.mf
