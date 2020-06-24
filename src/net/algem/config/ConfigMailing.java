@@ -1,5 +1,5 @@
 /*
- * @(#)ConfigMailing.java 2.17.3d 02/06/20
+ * @(#)ConfigMailing.java 2.17.3h 24/06/20
  *
  * Copyright (c) 1999-2019 Musiques Tangentes. All Rights Reserved.
  *
@@ -31,6 +31,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import net.algem.util.BundleUtil;
+import net.algem.util.MailUtil;
 import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.GemLabel;
 import net.algem.util.ui.GemPanel;
@@ -41,7 +42,7 @@ import net.algem.util.ui.GridBagHelper;
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
- * @version 2.17.3d
+ * @version 2.17.3h
  * @since 2.17.0 08/04/2019
  */
 public class ConfigMailing
@@ -95,7 +96,8 @@ public class ConfigMailing
       server.setText(c1.getValue());
       port.setText(c2.getValue());
       user.setText(c3.getValue());
-      password.setText(c4.getValue());
+      password.setText(MailUtil.decode(c3.getValue(),c4.getValue()));
+//      password.setText(c4.getValue());
       security.setSelectedItem(c5.getValue());
       authentification.setSelected(c6.getValue().equals("true") ? true : false);
       sender.setText(c7 != null ? c7.getValue() : "");
@@ -126,7 +128,8 @@ public class ConfigMailing
     c1.setValue(server.getText());
     c2.setValue(port.getText());
     c3.setValue(user.getText());
-    c4.setValue(new String(password.getPassword()));
+    c4.setValue(MailUtil.encode(user.getText(), new String(password.getPassword())));
+//    c4.setValue(new String(password.getPassword()));
     c5.setValue((String)security.getSelectedItem());
     c6.setValue(authentification.isSelected() ? "true" : "false");
     if (c7 != null)
