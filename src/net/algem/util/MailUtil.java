@@ -45,6 +45,7 @@ import net.algem.planning.ScheduleRangeObject;
 import net.algem.security.User;
 import net.algem.util.jdesktop.DesktopMailHandler;
 import net.algem.util.model.Model;
+import org.apache.commons.codec.binary.Base64;
 
 /**
  * Utility class for sending emails.
@@ -244,7 +245,7 @@ public class MailUtil {
     mailHandler.send(to, bcc);
   }
 
-  public static Session SmtpInitSession() { //ERIC 2.17.0 08/04/2019
+  public static Session SmtpInitSession() { //ERIC 2.17.3h 24/06/2020 encode pwd
 
 /* FAI Orange
         prop.put("mail.transport.protocol", "smtp");
@@ -297,11 +298,29 @@ public class MailUtil {
     Session session = Session.getInstance(prop, new Authenticator() {
         @Override
         protected PasswordAuthentication getPasswordAuthentication() {
-            return new PasswordAuthentication(ConfigUtil.getConf(ConfigKey.SMTP_SERVER_USER.getKey()), ConfigUtil.getConf(ConfigKey.SMTP_SERVER_PSWD.getKey()));
+            String pwd = decode(ConfigUtil.getConf(ConfigKey.SMTP_SERVER_USER.getKey()), ConfigUtil.getConf(ConfigKey.SMTP_SERVER_PSWD.getKey()));
+//            return new PasswordAuthentication(ConfigUtil.getConf(ConfigKey.SMTP_SERVER_USER.getKey()), ConfigUtil.getConf(ConfigKey.SMTP_SERVER_PSWD.getKey()));
+            return new PasswordAuthentication(ConfigUtil.getConf(ConfigKey.SMTP_SERVER_USER.getKey()), pwd);
         }
     });
     //session.setDebug(true);
     
     return session;
+  }
+  
+  public static String encode(String u, String p) {
+    char [] pwd = p.toCharArray();
+    for (int i=0; i < pwd.length; i++) {
+        pwd[i] = (char) (pwd[i] ^ u.charAt(i));
+    }
+    return new String(Base64.encodeBase64(new String(pwd).getBytes()));      
+  }
+
+  public static String decode(String u, String p) {
+    char [] pwd = new String(Base64.decodeBase64(p)).toCharArray();
+    for (int i=0; i < pwd.length; i++) {
+        pwd[i] = (char) (pwd[i] ^ u.charAt(i));
+    }
+    return new String(pwd);
   }
 }

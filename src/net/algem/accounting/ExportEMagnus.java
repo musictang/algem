@@ -176,7 +176,7 @@ public class ExportEMagnus
                 //sb.append(new DateFr(new Date())).append(';');
 
                 //colonne Z/AB/AC à mettre en config
-                sb.append("7062;;BP3001;33;");
+                sb.append("7062;;ECOLE MUSI;33;");
 
                 //colonne AD Mnt HT
 //                sb.append(nf.format(e.getAmount() / 100.0)).append(';');
