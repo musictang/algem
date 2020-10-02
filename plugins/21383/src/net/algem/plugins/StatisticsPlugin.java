@@ -400,8 +400,12 @@ public class StatisticsPlugin
                     + " AND adresse.cdp NOT IN ('42140','69440','69590','69610','69690','69770','69850','69930')"
                     + " AND SUBSTRING(adresse.cdp,1,2) = '69'";
         } else if (m.equals("members_by_association")) {
-            return "select p.id, p.nom, p.prenom, o.idper, o.nom from personne p, organisation o, eleve e"
-                    + " WHERE e.idper = p.id AND o.idper = e.payeur"
+            return "select DISTINCT p.id, p.nom, p.prenom, o.idper, o.nom from commande c, commande_cours cc, personne p, organisation o, eleve e"
+                    + " WHERE datedebut >= '" + start + "' AND datedebut <= '" + end + "'"
+                    + " AND cc.idcmd = c.id"
+                    + " AND c.adh = e.idper"
+                    + " AND cc.debut != '00:00:00'"
+                    + " AND e.idper = p.id AND o.idper = e.payeur"
                     + " ORDER by o.nom, p.nom";
         } else if (m.equals("date naissance nulle")) {
             return "SELECT DISTINCT eleve.idper, personne.prenom, personne.nom"
