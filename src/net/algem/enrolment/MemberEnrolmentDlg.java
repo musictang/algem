@@ -137,7 +137,7 @@ public class MemberEnrolmentDlg
                 List<CourseOrder> courses = m.getCourseOrders();
                 for (CourseOrder course : courses) {
                     for (CourseOrder course2 : courses) {
-                        if (course2.getDay() == course.getDay() 
+                        if (course2.getAction() != 0 && course2.getDay() == course.getDay() 
                                 && ((course2.getStart().before(course.getStart()) && course2.getEnd().after(course.getStart()))
                                 || (course2.getStart().before(course.getEnd()) && course2.getEnd().after(course.getEnd())))
                                 || (course2.getStart().after(course.getStart()) && course2.getEnd().before(course.getEnd())))
