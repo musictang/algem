@@ -133,23 +133,24 @@ public class MemberEnrolmentDlg
                     MessagePopup.warning(this, MessageUtil.getMessage("invalid.module.choice"));
                     return;
                 }
-                //ERIC 10/06/2020 conflit horaire inscription adhérent
+                //ERIC 10/06/2020 conflit horaire inscription adhérent FIX 17/10/2020
                 List<CourseOrder> courses = m.getCourseOrders();
                 for (CourseOrder course : courses) {
-                    for (CourseOrder course2 : courses) {
-                        if (course2.getAction() != 0 && course2.getDay() == course.getDay() 
-                                && ((course2.getStart().before(course.getStart()) && course2.getEnd().after(course.getStart()))
-                                || (course2.getStart().before(course.getEnd()) && course2.getEnd().after(course.getEnd())))
-                                || (course2.getStart().after(course.getStart()) && course2.getEnd().before(course.getEnd())))
-                        {
+                    if (course.getAction() != 0) {
+                        for (CourseOrder course2 : courses) {
+                            if (course2.getAction() != 0 && course2.getDay() == course.getDay()
+                                    && ((course2.getStart().le(course.getStart()) && course2.getEnd().ge(course.getStart()))
+                                    || (course2.getStart().le(course.getEnd()) && course2.getEnd().ge(course.getEnd())))
+                                    || (course2.getStart().ge(course.getStart()) && course2.getEnd().le(course.getEnd()))) {
+                                MessagePopup.warning(this, BundleUtil.getLabel("Member.conflict.label"));
+                                return;
+                            }
+                        }
+                        String query = ConflictQueries.getMemberScheduleSelection(course.getDay(), course.getDateStart().toString(), course.getDateEnd().toString(), course.getStart().toString(), course.getEnd().toString(), dossier.getId());
+                        if (ScheduleIO.count(query, dc) > 0) {
                             MessagePopup.warning(this, BundleUtil.getLabel("Member.conflict.label"));
                             return;
                         }
-                    }
-                    String query = ConflictQueries.getMemberScheduleSelection(course.getDay(), course.getDateStart().toString(), course.getDateEnd().toString(), course.getStart().toString(), course.getEnd().toString(), dossier.getId());
-                    if (ScheduleIO.count(query, dc) > 0) {
-                        MessagePopup.warning(this, BundleUtil.getLabel("Member.conflict.label"));
-                        return;
                     }
                 }
             }
@@ -516,67 +517,68 @@ public class MemberEnrolmentDlg
 
         CourseOrder co = view.getCourseOrder(n);
 
-        boolean fromWish=false;
+        boolean fromWish = false;
         if (Algem.isFeatureEnabled("polynotes")) { //FIXME feature=reinscription
             List<EnrolmentWish> wishes = wishService.findStudentValidatedWishes(dossier.getId(), co);
             if (wishes.size() > 0) {
                 for (EnrolmentWish w : wishes) {
                     boolean wishOk = true;
                     Hour hw = new Hour(w.getHour().toString());
-                    String libelle = w.getCourseLabel()+" "+w.getTeacherLabel()+" "+w.getDayLabel()+" "+w.getHour()+" "+w.getDuration();
-                //EnrolmentWish w = wishes.get(0);
-                //System.out.println("MemberEnrolmentDlg.modifyCourse w=" + w);
-                try {
-                Course c = (Course) DataCache.findId(w.getCourse(), Model.Course);
-                Vector<Schedule> ctrls = service.getCourseWeek2(c, co.getDateStart(), 3, EnrolmentWishIO.dow2isodow(w.getDay()), w.getTeacher());
-                for (Schedule s : ctrls) {
-                    int day = s.getDate().getDayOfWeek();
-                    if (day == w.getDay()) {
-                        Vector<ScheduleRange> plages = service.getBusyTimeSlot2(s.getIdAction(), w.getCourse(), s.getDate());
-                        for (ScheduleRange range : plages) {
-                            if (range.getMemberId() == dossier.getId()) {
-                                wishOk=false;
-                                if (range.getStart().equals(hw)) {
-                                    MessagePopup.information(view, "voeu "+libelle+" déjà inscrit");
-                                } else {
-                                    MessagePopup.information(view, "voeu "+libelle+" déjà inscrit mais à "+range.getStart());
+                    String libelle = w.getCourseLabel() + " " + w.getTeacherLabel() + " " + w.getDayLabel() + " " + w.getHour() + " " + w.getDuration();
+                    //EnrolmentWish w = wishes.get(0);
+                    //System.out.println("MemberEnrolmentDlg.modifyCourse w=" + w);
+                    try {
+                        Course c = (Course) DataCache.findId(w.getCourse(), Model.Course);
+                        Vector<Schedule> ctrls = service.getCourseWeek2(c, co.getDateStart(), 3, EnrolmentWishIO.dow2isodow(w.getDay()), w.getTeacher());
+                        for (Schedule s : ctrls) {
+                            int day = s.getDate().getDayOfWeek();
+                            if (day == w.getDay()) {
+                                Vector<ScheduleRange> plages = service.getBusyTimeSlot2(s.getIdAction(), w.getCourse(), s.getDate());
+                                for (ScheduleRange range : plages) {
+                                    if (range.getMemberId() == dossier.getId()) {
+                                        wishOk = false;
+                                        if (range.getStart().equals(hw)) {
+                                            MessagePopup.information(view, "voeu " + libelle + " déjà inscrit");
+                                        } else {
+                                            MessagePopup.information(view, "voeu " + libelle + " déjà inscrit mais à " + range.getStart());
+                                        }
+                                    } else if (w.getAction() == 0) {
+                                        Hour hws = new Hour(w.getHour().toString());
+                                        hws.incMinute(w.getDuration().toMinutes());
+                                        if (range.getStart().equals(hw)
+                                                || (range.getStart().lt(hw) && range.getEnd().gt(hw))
+                                                || (range.getStart().gt(hw) && range.getStart().lt(hws))) {
+                                            MessagePopup.information(view, "plage du voeu " + libelle + " occupée par adh:" + range.getMemberId() + " " + range.getStart() + "-" + range.getEnd());
+                                            wishOk = false;
+                                        }
+                                    }
                                 }
                             }
-                            else if (w.getAction() == 0) {
-                            Hour hws = new Hour(w.getHour().toString());
-                            hws.incMinute(w.getDuration().toMinutes());
-                            if (range.getStart().equals(hw) || 
-                                    (range.getStart().lt(hw) && range.getEnd().gt(hw)) ||
-                                    (range.getStart().gt(hw) && range.getStart().lt(hws))) {
-                                MessagePopup.information(view, "plage du voeu "+libelle+" occupée par adh:"+range.getMemberId()+ " " + range.getStart()+"-"+range.getEnd());
-                                wishOk=false;
-                            }
-                            }
+
+                        }
+                    } catch (SQLException ex) {
+
+                    }
+                    //if (wishService.isdejainscrit ou plage prise)
+                    if (wishOk && MessagePopup.confirm(view, "utiliser le voeux " + libelle)) {
+                        fromWish = true;
+                        Vector<Schedule> v = service.getCourseDay2(w.getCourse(), EnrolmentWishIO.dow2isodow(w.getDay()), co.getCode(), co.getDateStart(), 3, w.getTeacher()); //FIXME codage dur estab pour polynotes
+                        if (v.size() == 0) {
+                            MessagePopup.error(view, "le cours n'est pas planifié");
+                        } else {
+                            Schedule p = v.elementAt(0);
+                            co.setModule(co.getModuleOrder());
+                            co.setAction(p.getIdAction());
+                            co.setTitle(getModuleTitle(co) + w.getCourseLabel());
+                            co.setDay(EnrolmentWishIO.dow2isodow(w.getDay()));
+                            co.setStart(new Hour(w.getHour().toString()));
+                            co.setEnd(co.getStart().end(w.getDuration().toMinutes()));
+                            co.setEstab(3); //FIXME  codage dur estab pour polynotes
                         }
                     }
-                    
-                }
-                } catch (SQLException ex) {
-                        
-                }
-                //if (wishService.isdejainscrit ou plage prise)
-                if (wishOk && MessagePopup.confirm(view, "utiliser le voeux "+libelle)) {
-                    fromWish=true;
-                    Vector<Schedule> v = service.getCourseDay2(w.getCourse(), EnrolmentWishIO.dow2isodow(w.getDay()), co.getCode(), co.getDateStart(), 3, w.getTeacher()); //FIXME codage dur estab pour polynotes
-                    if (v.size() == 0) {
-                        MessagePopup.error(view, "le cours n'est pas planifié");
-                    } else {
-                        Schedule p = v.elementAt(0);
-                        co.setModule(co.getModuleOrder());
-                        co.setAction(p.getIdAction());
-                        co.setTitle(getModuleTitle(co) + w.getCourseLabel());
-                        co.setDay(EnrolmentWishIO.dow2isodow(w.getDay()));
-                        co.setStart(new Hour(w.getHour().toString()));
-                        co.setEnd(co.getStart().end(w.getDuration().toMinutes()));
-                        co.setEstab(3); //FIXME  codage dur estab pour polynotes
+                    if (fromWish) {
+                        break;
                     }
-                }
-                if (fromWish) break;
                 }
                 setCursor(Cursor.getDefaultCursor());
             }
