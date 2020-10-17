@@ -138,12 +138,12 @@ public class MemberEnrolmentDlg
                 for (CourseOrder course : courses) {
                     if (course.getAction() != 0) {
                         for (CourseOrder course2 : courses) {
-                            if (course2.getAction() != 0 && course2.getDay() == course.getDay()
-                                    && ((course2.getStart().le(course.getStart()) && course2.getEnd().ge(course.getStart()))
-                                    || (course2.getStart().le(course.getEnd()) && course2.getEnd().ge(course.getEnd())))
-                                    || (course2.getStart().ge(course.getStart()) && course2.getEnd().le(course.getEnd()))) {
-                                MessagePopup.warning(this, BundleUtil.getLabel("Member.conflict.label"));
-                                return;
+                            if (course2.getAction() != 0 && course2.getAction() != course.getAction() && course2.getDay() == course.getDay()
+                                        && ((course2.getStart().le(course.getStart()) && course2.getEnd().ge(course.getStart()))
+                                        || (course2.getStart().le(course.getEnd()) && course2.getEnd().ge(course.getEnd()))
+                                        || (course2.getStart().ge(course.getStart()) && course2.getEnd().le(course.getEnd())))) {
+                                    MessagePopup.warning(this, BundleUtil.getLabel("Member.conflict.label"));
+                                    return;
                             }
                         }
                         String query = ConflictQueries.getMemberScheduleSelection(course.getDay(), course.getDateStart().toString(), course.getDateEnd().toString(), course.getStart().toString(), course.getEnd().toString(), dossier.getId());
