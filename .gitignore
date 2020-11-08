@@ -6,18 +6,20 @@
 /plugins/**/out/
 
 # Build patterns
-/nbproject/
-/build/
+nbproject/
+build/
 build.xml
-/dist/
+dist/
+out/
 .idea
-/target/
+target/
 .classpath
 .project
 .settings
 *.iml
 
 # Files
+/clients/
 manifest.mf
 preview-application.html
 master-application.jnlp
