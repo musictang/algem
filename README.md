@@ -42,7 +42,7 @@ Préalables :
 
 Lancement :
 * Compilez le projet : `mvn compile`
-* Démarrez : `mvn exec:java`
+* Démarrez : `mvn -P local exec:java`
 
 ### CONTENU DE L'ARCHIVE
 * `src` : code source de l'application
