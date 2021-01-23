@@ -4,7 +4,8 @@ TARGET=./target/libs
 CUSTOM_DIR=./clients
 ## DON'T FORGET TO CHANGE MANIFEST FILE DEPENDING ON CONTEXT SIGNATURE
 ## algem-sec-srv.mf | algem-backup.mf | algem-demo.mf
-MANIFEST=algem-backup.mf
+# MANIFEST=algem-backup.mf
+MANIFEST=algem-sec-srv.mf
 
 if [ -d $TARGET ] && [ -n "$(ls -A $TARGET)" ]
 then
