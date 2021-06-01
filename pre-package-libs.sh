@@ -4,7 +4,8 @@ TARGET=./target/libs
 CUSTOM_DIR=./clients
 ## DON'T FORGET TO CHANGE MANIFEST FILE DEPENDING ON CONTEXT SIGNATURE
 ## algem-sec-srv.mf | algem-backup.mf | algem-demo.mf
-MANIFEST=algem-backup.mf
+#MANIFEST=algem-backup.mf
+MANIFEST=algem-sec-srv.mf
 
 if [ -d $TARGET ] && [ -n "$(ls -A $TARGET)" ]
 then
@@ -28,16 +29,18 @@ then
   fi
   cp algem.properties local.properties $TARGET/
   cd $TARGET || { echo "Moving to directory $TARGET failed"; exit 2; }
+  # CREATE COMMON JARS
+  jar cf algem.properties.jar algem.properties
+  jar cf local.properties.jar local.properties
   # CREATE CLIENT JARS
+  mv algem.properties algem.properties.bak
   for propfile in algem.properties_*
     do
       [[ $propfile =~ algem.properties_(.*) ]];
       CID=${BASH_REMATCH[1]}
-      jar cf algem.properties_"$CID".jar $propfile
+      mv "$propfile" algem.properties
+      jar cf algem.properties_"$CID".jar algem.properties
   done
-  # CREATE COMMON JARS
-  jar cf algem.properties.jar algem.properties
-  jar cf local.properties.jar local.properties
   # UPDATE MANIFEST
   for j in *.jar
   do
@@ -47,7 +50,7 @@ then
     fi
   done
   # REMOVE COPIED PROPERTIES FILES
-  rm algem.properties local.properties
+  rm algem.properties algem.properties.bak local.properties
 else
   echo "Directory $TARGET not found"
 fi
