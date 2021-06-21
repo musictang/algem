@@ -89,6 +89,7 @@ public class EnrolmentOrderUtil {
     //libelle
     if (Algem.isFeatureEnabled("cc-mdl")) {
         orderLine.setLabel(mod.getTitle());
+        orderLine.setPaid(true);
     } else {
         orderLine.setLabel(label);
     }
