@@ -1,7 +1,7 @@
 /*
- * @(#)Algem.java	2.16.0 09/10/18
+ * @(#)Algem.java   2.17.6 12/07/2021
  *
- * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2021 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -62,12 +62,11 @@ import org.apache.commons.codec.binary.Base64;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.16.0
+ * @version 2.17.6
  */
 public class Algem
 {
-
-  public static final String APP_VERSION = "2.16.0";
+  public static final String APP_VERSION = "2.17.6";
   public static final List<LookAndFeelInfo> ALTERNATIVE_LAF = new ArrayList<>();
   private static final int DEF_WIDTH = 1080;// (850,650) => ancienne taille
   private static final int DEF_HEIGHT = 780;
@@ -282,7 +281,7 @@ public class Algem
 
   private void setDesktop() {
     String title = "Algem" + "(" + APP_VERSION + ")/" + props.getProperty("appClient");
-    //			+ " - Utilisateur système " +System.getProperty("user.name")
+    //          + " - Utilisateur système " +System.getProperty("user.name")
     // + " - jdbc://" + hostName + "/" + baseName;
 
     frame = new JFrame(title);
@@ -457,6 +456,7 @@ public class Algem
     try {
       System.out.println("lafClassName " + lafClassName);
 
+    /*
       if (lafClassName.startsWith("com.jtattoo")) {
         switch (lafClassName) {
           case "com.jtattoo.plaf.acryl.AcrylLookAndFeel":
@@ -490,11 +490,12 @@ public class Algem
             com.jtattoo.plaf.texture.TextureLookAndFeel.setTheme("Default", "INSERT YOUR LICENSE KEY HERE", "Algem");
             break;
         }
-      }
+      } */
       UIManager.setLookAndFeel(lafClassName);
     } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
       GemLogger.log("look&feel exception : " + ex.getMessage());
     }
+
     String lafName = UIManager.getLookAndFeel().getName();
     UIDefaults def = UIManager.getLookAndFeelDefaults();
     def.put("ProgressMonitor.progressText", BundleUtil.getLabel("Running.job.label"));

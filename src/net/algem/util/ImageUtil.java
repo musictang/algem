@@ -1,5 +1,6 @@
 /*
- * @(#)ImageUtil.java	2.15.8 14/03/18
+ * @(#)ImageUtil.java	2.17.0 26/03/2019
+ *                      2.15.8 14/03/18
  *
  * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
@@ -40,13 +41,12 @@ import net.algem.contact.PhotoHandler;
 import net.algem.contact.SimplePhotoHandler;
 import net.algem.util.model.DataException;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.poi.util.IOUtils;
 
 /**
  * Utility class for image operations.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.8
+ * @version 2.17.0
  */
 public class ImageUtil
 {
@@ -61,6 +61,7 @@ public class ImageUtil
   public static final String NO_CONFLICT_ICON = "feuvert.gif";
   public static final String CONFLICT_ICON = "feurouge.gif";
   public static final String DELETE_ICON = "quitter_trans_12x12.png";
+  public static final String EDIT_ICON = "edit_12x12.png";
   public static final String TAB_CLOSING_ICON = "quitter_trans_12x12.png";
   public static final String [] DEFAULT_IMG_EXTENSIONS = {".jpg",".jpg",".JPG",".JPEG",".png",".PNG"};
   public static final int PHOTO_ID_HEIGHT = 130;

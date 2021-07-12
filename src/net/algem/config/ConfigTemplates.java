@@ -1,7 +1,7 @@
 /*
- * @(#) ConfigTemplates.java Algem 2.15.0 06/09/17
+ * @(#) ConfigTemplates.java Algem 2.17.0 29/03/19
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2019 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -44,10 +44,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-import static net.algem.config.PageTemplate.AGREEMENT_PAGE_MODEL;
-import static net.algem.config.PageTemplate.CONTRACT_PAGE_MODEL;
-import static net.algem.config.PageTemplate.DEFAULT_MODEL;
-import static net.algem.config.PageTemplate.QUOTE_PAGE_MODEL;
+import net.algem.Algem;
 import net.algem.edition.PdfHandler;
 import net.algem.util.BundleUtil;
 import net.algem.util.FileUtil;
@@ -62,7 +59,7 @@ import net.algem.util.ui.MessagePopup;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.0
+ * @version 2.17.0
  * @since 2.15.0 19/07/17
  */
 public class ConfigTemplates
@@ -72,11 +69,16 @@ public class ConfigTemplates
   private JLabel contractThumb;
   private JLabel agreementThumb;
   private JLabel defaultThumb;
+  private JLabel wishThumb; //ERIC 29/03/2019
+  private JLabel wishConfirmThumb;  //ERIC 29/03/2019
 
   private JButton btQuote;
   private JButton btAgreement;
   private JButton btContract;
   private JButton btDefault;
+  private JButton btWish;  //ERIC 29/03/2019
+  private JButton btWishConfirm;  //ERIC 29/03/2019
+  
   private File file;
   private PdfHandler pdfHandler;
   private Map<Short, PageTemplate> templates = new HashMap<>();
@@ -110,16 +112,22 @@ public class ConfigTemplates
         if (src instanceof JButton) {
           try {
             if (src == btQuote) {
-              resetTemplate(QUOTE_PAGE_MODEL);
+              resetTemplate(PageTemplate.QUOTE_PAGE_MODEL);
               quoteThumb.setIcon(new ImageIcon(getDefaultThumbnail()));
             } else if (src == btAgreement) {
-              resetTemplate(AGREEMENT_PAGE_MODEL);
+              resetTemplate(PageTemplate.AGREEMENT_PAGE_MODEL);
               agreementThumb.setIcon(new ImageIcon(getDefaultThumbnail()));
             } else if (src == btContract) {
-              resetTemplate(CONTRACT_PAGE_MODEL);
+              resetTemplate(PageTemplate.CONTRACT_PAGE_MODEL);
+              contractThumb.setIcon(new ImageIcon(getDefaultThumbnail()));
+            } else if (src == btWish) {
+              resetTemplate(PageTemplate.ENROLMENTWISH_PAGE_MODEL);
+              contractThumb.setIcon(new ImageIcon(getDefaultThumbnail()));
+            } else if (src == btWishConfirm) {
+              resetTemplate(PageTemplate.WISHCONFIRM_PAGE_MODEL);
               contractThumb.setIcon(new ImageIcon(getDefaultThumbnail()));
             } else {
-              resetTemplate(DEFAULT_MODEL);
+              resetTemplate(PageTemplate.DEFAULT_MODEL);
               defaultThumb.setIcon(new ImageIcon(getDefaultThumbnail()));
             }
           } catch (IOException ex) {
@@ -147,6 +155,10 @@ public class ConfigTemplates
             importTemplate(file, agreementThumb);
           } else if (src == contractThumb) {
             importTemplate(file, contractThumb);
+          } else if (src == wishThumb) {
+            importTemplate(file, wishThumb);
+          } else if (src == wishConfirmThumb) {
+            importTemplate(file, wishConfirmThumb);
           } else {
             importTemplate(file, defaultThumb);
           }
@@ -207,6 +219,32 @@ public class ConfigTemplates
     btDefault.addActionListener(listener);
     p4.add(btDefault, BorderLayout.SOUTH);
 
+    JPanel p5 = new JPanel(new BorderLayout()); // ERIC 29/03/2019
+    JPanel p6 = new JPanel(new BorderLayout()); // ERIC 29/03/2019
+    if (Algem.isFeatureEnabled("polynotes")) { //ERIC 2.17
+        p5.add(new JLabel(BundleUtil.getLabel("Enrolment.wish.template.label"), SwingConstants.CENTER), BorderLayout.NORTH);
+        wishThumb = new JLabel("", SwingConstants.CENTER);
+        wishThumb.setIcon(icon);
+        wishThumb.setCursor(hand);
+        wishThumb.setToolTipText(GemCommand.DEFINE_CMD);
+        wishThumb.addMouseListener(mouseAdapter);
+        p5.add(wishThumb, BorderLayout.CENTER);
+        btWish = new GemButton(GemCommand.DELETE_CMD);
+        btWish.addActionListener(listener);
+        p5.add(btWish, BorderLayout.SOUTH);
+
+        p6.add(new JLabel(BundleUtil.getLabel("Enrolment.wish.confirm.template.label"), SwingConstants.CENTER), BorderLayout.NORTH);
+        wishConfirmThumb = new JLabel("", SwingConstants.CENTER);
+        wishConfirmThumb.setIcon(icon);
+        wishConfirmThumb.setCursor(hand);
+        wishConfirmThumb.setToolTipText(GemCommand.DEFINE_CMD);
+        wishConfirmThumb.addMouseListener(mouseAdapter);
+        p6.add(wishConfirmThumb, BorderLayout.CENTER);
+        btWishConfirm = new GemButton(GemCommand.DELETE_CMD);
+        btWishConfirm.addActionListener(listener);
+        p6.add(btWishConfirm, BorderLayout.SOUTH);
+    }
+    
     try {
       load();
     } catch (SQLException ex) {
@@ -217,6 +255,10 @@ public class ConfigTemplates
     content.add(p2);
     content.add(p3);
     content.add(Box.createHorizontalBox());
+    if (Algem.isFeatureEnabled("polynotes")) { //ERIC 2.17
+        content.add(p5);
+        content.add(p6);
+    }
     content.add(p4);
     content.add(Box.createHorizontalBox());
     add(content);
@@ -275,14 +317,24 @@ public class ConfigTemplates
     List<PageTemplate> tpl = pdfHandler.getTemplates();
     for (PageTemplate p : tpl) {
       switch (p.getType()) {
-        case QUOTE_PAGE_MODEL:
+        case PageTemplate.QUOTE_PAGE_MODEL:
           loadTemplate(quoteThumb, p);
           break;
-        case AGREEMENT_PAGE_MODEL:
+        case PageTemplate.AGREEMENT_PAGE_MODEL:
           loadTemplate(agreementThumb, p);
           break;
-        case CONTRACT_PAGE_MODEL:
+        case PageTemplate.CONTRACT_PAGE_MODEL:
           loadTemplate(contractThumb, p);
+          break;
+        case PageTemplate.ENROLMENTWISH_PAGE_MODEL:
+          if (Algem.isFeatureEnabled("polynotes")) { //ERIC 2.17
+              loadTemplate(wishThumb, p);
+          }
+          break;
+        case PageTemplate.WISHCONFIRM_PAGE_MODEL:
+          if (Algem.isFeatureEnabled("polynotes")) { //ERIC 2.17
+            loadTemplate(wishConfirmThumb, p);
+          }
           break;
         default :
           loadTemplate(defaultThumb, p);
@@ -302,13 +354,17 @@ public class ConfigTemplates
 
   private void save(byte[] bytes, JLabel label) throws SQLException, IOException {
     if (quoteThumb == label) {
-      pdfHandler.saveTemplate(new PageTemplate(QUOTE_PAGE_MODEL, bytes), templates);
+      pdfHandler.saveTemplate(new PageTemplate(PageTemplate.QUOTE_PAGE_MODEL, bytes), templates);
     } else if (agreementThumb == label) {
-      pdfHandler.saveTemplate(new PageTemplate(AGREEMENT_PAGE_MODEL, bytes), templates);
+      pdfHandler.saveTemplate(new PageTemplate(PageTemplate.AGREEMENT_PAGE_MODEL, bytes), templates);
     } else if (contractThumb == label) {
-      pdfHandler.saveTemplate(new PageTemplate(CONTRACT_PAGE_MODEL, bytes), templates);
+      pdfHandler.saveTemplate(new PageTemplate(PageTemplate.CONTRACT_PAGE_MODEL, bytes), templates);
+    } else if (wishThumb == label) {
+      pdfHandler.saveTemplate(new PageTemplate(PageTemplate.ENROLMENTWISH_PAGE_MODEL, bytes), templates);
+    } else if (wishConfirmThumb == label) {
+      pdfHandler.saveTemplate(new PageTemplate(PageTemplate.WISHCONFIRM_PAGE_MODEL, bytes), templates);
     } else {
-      pdfHandler.saveTemplate(new PageTemplate(DEFAULT_MODEL, bytes), templates);
+      pdfHandler.saveTemplate(new PageTemplate(PageTemplate.DEFAULT_MODEL, bytes), templates);
     }
   }
 

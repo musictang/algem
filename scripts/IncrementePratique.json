@@ -1,0 +1,7 @@
+{
+  "description": "Incrémentation année de pratique.",
+"args":
+[
+    {"name" : "update", "label": "Mise à jour", "type": "bool"}
+]
+}

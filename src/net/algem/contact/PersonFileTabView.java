@@ -1,5 +1,6 @@
 /*
- * @(#)PersonFileTabView.java  2.15.2 27/09/17
+ * @(#)PersonFileTabView.java  2.17.0 20/03/2019
+ *                              2.15.2 27/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes All Rights Reserved.
  *
@@ -20,6 +21,7 @@
  */
 package net.algem.contact;
 
+import net.algem.enrolment.MemberEnrolmentWishEditor;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -40,6 +42,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import net.algem.Algem;
 import net.algem.accounting.DDMandate;
 import net.algem.accounting.DDPrivateMandateCtrl;
 import net.algem.accounting.DirectDebitService;
@@ -59,6 +62,8 @@ import net.algem.group.GemGroupService;
 import net.algem.group.Group;
 import net.algem.group.Musician;
 import net.algem.group.PersonFileGroupView;
+import net.algem.planning.wishes.EnrolmentWishService;
+import net.algem.rental.HistoMemberRentalView;
 import net.algem.util.*;
 import net.algem.util.event.GemEvent;
 import net.algem.util.model.Model;
@@ -73,7 +78,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.2
+ * @version 2.17.0
  */
 public class PersonFileTabView
         extends FileTabView
@@ -89,6 +94,7 @@ public class PersonFileTabView
   private static final String BAND_TAB_TITLE = BundleUtil.getLabel("Groups.label");
   private static final String HISTO_REHEARSAL_TAB_TITLE = BundleUtil.getLabel("Person.rehearsal.history.tab.label");
   private static final String HISTO_SUBSCRIPTIONS_TAB_TITLE = BundleUtil.getLabel("Subscriptions.label");
+  private static final String HISTO_RENTAL_TAB_TITLE = BundleUtil.getLabel("Rental.history.tab.label");
 
   private PersonFile dossier, parent;
   private ContactFileEditor contactFileEditor;
@@ -100,6 +106,8 @@ public class PersonFileTabView
   private MemberFollowUpEditor memberFollowUpEditor;
   private TeacherFollowUpEditor teacherFollowUpEditor;
   private MemberEnrolmentEditor enrolmentEditor;
+  private MemberEnrolmentWishEditor enrolmentWishEditor;    //ERIC 20/03/2019
+  private HistoMemberRentalView histoMemberRentalView;      //ERIC 29/08/2019
   private HistoRehearsalView histoRehearsalView;
   private PersonFileGroupView groupView;
 
@@ -112,6 +120,7 @@ public class PersonFileTabView
   private BankBranchIO bankBranchIO;
   private HistoSubscriptionCard histoSubscriptionCard;
   private final MemberService memberService;
+  private final EnrolmentWishService wishService;
 
   public PersonFileTabView(GemDesktop desktop, PersonFile dossier, ActionListener listener) {
     super(desktop, "Person");
@@ -119,10 +128,15 @@ public class PersonFileTabView
     this.listener = listener;
     this.dossier = dossier;
     this.memberService = new MemberService(DataCache.getDataConnection());
+    this.wishService = new EnrolmentWishService(desktop.getDataCache());
   }
 
   public MemberEnrolmentEditor getEnrolmentView() {
     return enrolmentEditor;
+  }
+
+  public MemberEnrolmentWishEditor getEnrolmentWishView() {
+    return enrolmentWishEditor;
   }
 
   public MemberFollowUpEditor getMemberFollowUp() {
@@ -190,15 +204,27 @@ public class PersonFileTabView
         addMemberTab();
         memberEditor.set(dossier.getMember());
         if (dossier.getContact().getAddress() == null && dossier.getContact().getTele() == null) {
-          Vector<Address> addressLink = AddressIO.findId(dossier.getMember().getPayer(), DataCache.getDataConnection());
-          Vector<Telephone> phoneLink = TeleIO.findId(dossier.getMember().getPayer(), DataCache.getDataConnection());
+            if (Algem.isFeatureEnabled("cc-mdl")) { //ERIC 2.17
+              Vector<Address> addressLink = AddressIO.findId(dossier.getMember().getFamily(), DataCache.getDataConnection());
+              Vector<Telephone> phoneLink = TeleIO.findId(dossier.getMember().getFamily(), DataCache.getDataConnection());
 
-          if (addressLink.size() > 0 || phoneLink.size() > 0) {
-            cbTelAdresse = new JCheckBox(MessageUtil.getMessage("payer.link.info", dossier.getMember().getPayer()), true);
-            cbTelAdresse.addItemListener(this);
-            // adherent lié info
-            contactFileEditor.setLinkTelAddress(addressLink, phoneLink, cbTelAdresse);
-          }
+              if (addressLink.size() > 0 || phoneLink.size() > 0) {
+                cbTelAdresse = new JCheckBox(MessageUtil.getMessage("family.link.info", dossier.getMember().getFamily()), true);
+                cbTelAdresse.addItemListener(this);
+                // adherent lié info
+                contactFileEditor.setLinkTelAddress(addressLink, phoneLink, cbTelAdresse);
+              }
+            } else {
+              Vector<Address> addressLink = AddressIO.findId(dossier.getMember().getPayer(), DataCache.getDataConnection());
+              Vector<Telephone> phoneLink = TeleIO.findId(dossier.getMember().getPayer(), DataCache.getDataConnection());
+
+              if (addressLink.size() > 0 || phoneLink.size() > 0) {
+                cbTelAdresse = new JCheckBox(MessageUtil.getMessage("payer.link.info", dossier.getMember().getPayer()), true);
+                cbTelAdresse.addItemListener(this);
+                // adherent lié info
+                contactFileEditor.setLinkTelAddress(addressLink, phoneLink, cbTelAdresse);
+              }
+            }
         }
       } catch (SQLException ex) {
         GemLogger.log(getClass().getName(), "init", ex);
@@ -508,6 +534,11 @@ public class PersonFileTabView
     wTab.addItem(enrolmentEditor, BundleUtil.getLabel("Person.enrolment.tab.label"));//inscription
     wTab.addItem(memberFollowUpEditor, MEMBER_TAB_F_TITLE);//suivi
 
+    if (enrolmentWishEditor == null  && wishService.countStudentWishes(dossier.getId()) > 0) {
+      enrolmentWishEditor = new MemberEnrolmentWishEditor(desktop, dossier);
+      wTab.addItem(enrolmentWishEditor, BundleUtil.getLabel("Person.enrolment.wish.tab.label"));//réinscription
+    }
+
     mainToolbar.addIcon(listener,
             BundleUtil.getLabel("Member.file.icon"),
             "Member.file",
@@ -644,6 +675,11 @@ public class PersonFileTabView
 
   }
 
+  void setFamily(int id, String name) {
+    memberEditor.setFamily(id, name);
+
+  }
+
   void setSaveState(boolean state) {
     saveBt.setEnabled(!state);
   }
@@ -681,6 +717,17 @@ public class PersonFileTabView
     histoRehearsalView.load(true);
     wTab.addItem(histoRehearsalView, HISTO_REHEARSAL_TAB_TITLE);
     addTab(histoRehearsalView);
+    desktop.setDefaultCursor();
+  }
+
+  void addRentalHistoryTab() {
+    if (histoMemberRentalView == null) {
+      histoMemberRentalView = new HistoMemberRentalView(desktop, listener, dossier.getId());
+    }
+    desktop.setWaitCursor();
+    histoMemberRentalView.load();
+    wTab.addItem(histoMemberRentalView, HISTO_RENTAL_TAB_TITLE);
+    addTab(histoMemberRentalView);
     desktop.setDefaultCursor();
   }
 

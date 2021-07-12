@@ -1,5 +1,6 @@
 /*
- * @(#)AccountTransferDlg.java	2.15.9 07/06/18
+ * @(#)AccountTransferDlg.java	2.17.0 01/07/2019
+ *                              2.15.9 07/06/18
  *
  * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
@@ -37,6 +38,7 @@ import java.util.logging.Level;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
+import net.algem.Algem;
 import net.algem.config.ConfigUtil;
 import net.algem.edition.ExportDlg;
 import net.algem.util.*;
@@ -49,7 +51,7 @@ import net.algem.util.ui.MessagePopup;
  * Dialog for transfering orderlines to a file readable by accounting software.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.9
+ * @version 2.17.0
  * @since 2.8.r 13/12/13
  */
 public abstract class AccountTransferDlg
@@ -88,7 +90,7 @@ public abstract class AccountTransferDlg
     buttons.add(btValidation);
     buttons.add(btCancel);
 
-    filePath = new GemField(ConfigUtil.getExportPath() + FileUtil.FILE_SEPARATOR + "export.txt");
+    filePath = new GemField(ConfigUtil.getExportPath() + FileUtil.FILE_SEPARATOR + (Algem.isFeatureEnabled("cc-mdl") ? "WTAMC001.txt" : "export.txt"));
     filePath.setMinimumSize(new Dimension(200, filePath.getPreferredSize().height));
     chooser = new JButton(GemCommand.BROWSE_CMD);
     chooser.addActionListener(this);

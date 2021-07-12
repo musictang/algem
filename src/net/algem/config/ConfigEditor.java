@@ -1,5 +1,6 @@
 /*
- * @(#)ConfigEditor.java 2.15.0 25/07/2017
+ * @(#)ConfigEditor.java 2.17.0 23/03/2019
+ *                      2.15.0 25/07/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -46,7 +47,7 @@ import net.algem.util.ui.GemPanel;
  * General config editor.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.0
+ * @version 2.17.0
  * @since 2.1.k
  */
 public class ConfigEditor
@@ -59,6 +60,7 @@ public class ConfigEditor
   private ConfigPlanning activityPanel;
   private ConfigPanel adminPanel;
   private ConfigPanel filePanel;
+  private ConfigPanel mailingPanel; //ERIC 2.17.0e 08/04/2019
   private ConfigPanel templatesPanel;
   private ConfigPanel accountingPanel;
   private Map<String, Config> confs;
@@ -99,6 +101,7 @@ public class ConfigEditor
       ((ConfigAdmin) adminPanel).init(dataCache);
       filePanel = new ConfigFile(BundleUtil.getLabel("ConfEditor.file.label"), confs);
       templatesPanel = new ConfigTemplates(BundleUtil.getLabel("Page.templates.label"),new PageTemplateIO(dc));
+      mailingPanel = new ConfigMailing(BundleUtil.getLabel("ConfEditor.mailing.label"), confs); //ERIC 2.17.0e 08/04/2019
       ((ConfigTemplates) templatesPanel).init();
       accountingPanel = new ConfigAccounting(BundleUtil.getLabel("ConfEditor.accounting.label"), confs);
       confPanel.add(orgPanel, "organization");
@@ -107,6 +110,7 @@ public class ConfigEditor
       confPanel.add(filePanel, "files");
       confPanel.add(templatesPanel, "templates");
       confPanel.add(accountingPanel, "accounting");
+      confPanel.add(mailingPanel, "mailing");
     } catch (SQLException ex) {
       GemLogger.logException(ex);
     }
@@ -117,7 +121,8 @@ public class ConfigEditor
       BundleUtil.getLabel("ConfEditor.management.label"),
       BundleUtil.getLabel("ConfEditor.file.label"),
       BundleUtil.getLabel("Page.templates.label"),
-      BundleUtil.getLabel("ConfEditor.accounting.label"),};
+      BundleUtil.getLabel("ConfEditor.accounting.label"),
+      BundleUtil.getLabel("ConfEditor.mailing.label"),};
     sectionList = new JList(sections);
     sectionList.setSelectedIndex(0);
     sectionList.addListSelectionListener(this);
@@ -164,6 +169,9 @@ public class ConfigEditor
         for (Config c : accountingPanel.get()) {
           confs.put(c.getKey(), c);
         }
+        for (Config c : mailingPanel.get()) {   //ERIC 2.17.0e 08/04/2019
+          confs.put(c.getKey(), c);
+        }
         ConfigIO.update(confs, dc);
         dataCache.setConfig();// mise à jour du dataCache
       } catch (SQLException ex) {
@@ -196,6 +204,10 @@ public class ConfigEditor
       case 5:
         // panneau infos bancaires
         cl.show(confPanel, "accounting");
+        break;
+      case 6: //ERIC 2.17.0e 08/04/2019
+        // panneau configuration SMTP pour javaxmail
+        cl.show(confPanel, "mailing");
         break;
       default:
         cl.show(confPanel, "organization");

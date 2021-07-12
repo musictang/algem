@@ -1,7 +1,7 @@
 /*
- * @(#)UserIO.java 2.12.1 30/03/17
+ * @(#)UserIO.java 2.17.2 27/10/19
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2019 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -24,6 +24,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
@@ -31,6 +32,7 @@ import net.algem.contact.Person;
 import net.algem.contact.PersonIO;
 import net.algem.room.EstablishmentIO;
 import net.algem.util.DataConnection;
+import net.algem.util.GemLogger;
 import net.algem.util.model.Cacheable;
 import net.algem.util.model.TableIO;
 import org.apache.commons.codec.binary.Base64;
@@ -40,7 +42,7 @@ import org.apache.commons.codec.binary.Base64;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.12.1
+ * @version 2.17.0
  * @since 1.0a 07/07/1999
  */
 public class UserIO
@@ -166,6 +168,7 @@ public class UserIO
 
   /**
    * Establishment active status initialization.
+   *
    * @param idper user id
    * @throws SQLException
    */
@@ -195,7 +198,7 @@ public class UserIO
     String query = "SELECT p.id,p.ptype,p.nom,p.prenom,p.civilite,u.login,u.profil,u.pass,u.clef"
       + " FROM " + PersonIO.TABLE + " p JOIN " + TABLE + " u ON (p.id = u.idper)";
     if (where != null) {
-      query += " "  + where;
+      query += " " + where;
     }
     query += " ORDER BY p.nom, p.prenom";
     ResultSet rs = dc.executeQuery(query);
@@ -257,5 +260,26 @@ public class UserIO
   @Override
   public List<User> load() throws SQLException {
     return find(null);
+  }
+
+  public HashMap<String, HashMap> loadAuthorizations() {
+    HashMap<String, HashMap> authorizations = new HashMap<>();
+
+    String query = "SELECT idper, label, autorisation FROM " + T_ACCESS + " a JOIN " + T_MENU + " m ON a.idmenu = m.id";
+    try (ResultSet rs = dc.executeQuery(query)) {
+      while (rs.next()) {
+        if (authorizations.get(rs.getString(2)) == null) {
+          HashMap<Integer, Boolean> d = new HashMap<>();
+          d.put(rs.getInt(1), rs.getBoolean(3));
+          authorizations.put(rs.getString(2), d);
+        } else {
+          HashMap d = authorizations.get(rs.getString(2));
+          d.put(rs.getInt(1), rs.getBoolean(3));
+        }
+      }
+    } catch (SQLException e) {
+      GemLogger.logException("DataCache.loadAuhorizations:" + query, e);
+    }
+    return authorizations;
   }
 }

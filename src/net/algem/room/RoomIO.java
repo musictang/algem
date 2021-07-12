@@ -50,270 +50,270 @@ public class RoomIO
         implements Cacheable
 {
 
-  public static final String TABLE = "salle";
-  private static final String SEQUENCE = "idsalle";
-  private static String NOTE_TABLE = "note";
-  private static String EQUIP_TABLE = "sallequip";
-  private DataConnection dc;
-  private PreparedStatement updateStatusPS;
-  private PreparedStatement updateEquipmentPS;
+    public static final String TABLE = "salle";
+    private static final String SEQUENCE = "idsalle";
+    private static String NOTE_TABLE = "note";
+    private static String EQUIP_TABLE = "sallequip";
+    private DataConnection dc;
+    private PreparedStatement updateStatusPS;
+    private PreparedStatement updateEquipmentPS;
 //  private String insertEquipStatement = "INSERT INTO " + EQUIP_TABLE + " VALUES(?,?,?)";
 //  private String updateEquipStatement = "UPDATE " + EQUIP_TABLE + " SET libelle = ?, qte = ? WHERE idsalle = ? AND libelle = ?";
 
-  public RoomIO(DataConnection dc) {
-    this.dc = dc;
-    updateStatusPS = dc.prepareStatement("UPDATE " + TABLE + " SET active = ?, public = ? WHERE id = ?");
-    updateEquipmentPS = dc.prepareStatement("INSERT INTO " + EQUIP_TABLE + " VALUES(?,?,?,?,?,?)");
-  }
-
-  public void insert(Room s) throws SQLException {
-    int id = nextId(SEQUENCE, dc);
-
-    String query = "INSERT INTO " + TABLE + " VALUES("
-            + "'" + id
-            + "','" + escape(s.getName())
-            + "','" + escape(s.getFunction())
-            + "'," + s.getSurface()
-            + "," + s.getNPers()
-            + "," + s.getEstab()
-            + ",'" + (s.isActive() ? "t" : "f")
-            + "'," + s.getRate().getId()
-            + "," + s.getContact().getId()
-            + "," + s.getPayer().getId()
-            + ",'" + (s.isAvailable() ? "t" : "f") + "'"
-            + ")";
-
-    dc.executeUpdate(query);
-    s.setId(id);
-  }
-
-  /**
-   *
-   * @param old old room
-   * @param nr new room
-   * @throws SQLException
-   */
-  public void update(Room old, Room nr) throws SQLException {
-    trans_update(old, nr);
-  }
-
-  public void updateStatus(Room r) throws SQLException {
-    updateStatusPS.setBoolean(1, r.isActive());
-    updateStatusPS.setBoolean(2, r.isAvailable());
-    updateStatusPS.setInt(3, r.getId());
-    updateStatusPS.executeUpdate();
-  }
-
-  public void updateEquipment(Room r) throws SQLException {
-
-    deleteEquipment(r.getId());
-
-    List<Equipment> ve = r.getEquipment();
-
-    for (int i = 0; i < ve.size(); i++) {
-      Equipment e = ve.get(i);
-      e.setRoom(r.getId());
-      e.setIdx((short) i);
-      updateEquipmentPS.setInt(1, e.getRoom());
-      updateEquipmentPS.setString(2, e.getLabel());// no need to escape with preparedstatement
-      updateEquipmentPS.setInt(3, e.getQuantity());
-      updateEquipmentPS.setShort(4, e.getIdx());
-      updateEquipmentPS.setBoolean(5, e.isVisible());
-      updateEquipmentPS.setString(6, e.getFixedAssetNumber());
-
-      updateEquipmentPS.executeUpdate();
+    public RoomIO(DataConnection dc) {
+        this.dc = dc;
+        updateStatusPS = dc.prepareStatement("UPDATE " + TABLE + " SET active = ?, public = ? WHERE id = ?");
+        updateEquipmentPS = dc.prepareStatement("INSERT INTO " + EQUIP_TABLE + " VALUES(?,?,?,?,?,?)");
     }
-  }
-  private void insert(Equipment e) throws SQLException {
-    String query = "INSERT INTO " + EQUIP_TABLE + " VALUES("
-            + "" + e.getRoom()
-            + ",'" + escape(e.getLabel()) // 64 caractères max depuis version 2.0pc
-            + "'," + e.getQuantity()
-            + "," + e.getIdx()
-            + ")";
-    dc.executeUpdate(query);
-  }
 
-  /**
-   *
-   * @param old old room
-   * @param n new room
-   * @throws SQLException
-   */
-  private void trans_update(Room old, Room n) throws SQLException {
-    String query = "UPDATE " + TABLE + " SET "
-            + "nom ='" + escape(n.getName())
-            + "',fonction = '" + escape(n.getFunction())
-            + "',surf = " + n.getSurface()
-            + ",npers = " + n.getNPers()
-            + ",etablissement =" + n.getEstab()
-            + ",active = '" + (n.isActive() ? "t" : "f")
-            + "',idtarif =" + n.getRate().getId()
-            + ",idper = " + n.getContact().getId()
-            + ",payeur = " + n.getPayer().getId()
-            + ",public = '" + (n.isAvailable() ? "t" : "f") + "'"
-            + " WHERE id = " + n.getId();
+    public void insert(Room s) throws SQLException {
+        int id = nextId(SEQUENCE, dc);
 
-    dc.executeUpdate(query);
+        String query = "INSERT INTO " + TABLE + " VALUES("
+                + "'" + id
+                + "','" + escape(s.getName())
+                + "','" + escape(s.getFunction())
+                + "'," + s.getSurface()
+                + "," + s.getNPers()
+                + "," + s.getEstab()
+                + ",'" + (s.isActive() ? "t" : "f")
+                + "'," + s.getRate().getId()
+                + "," + s.getContact().getId()
+                + "," + s.getPayer().getId()
+                + ",'" + (s.isAvailable() ? "t" : "f") + "'"
+                + ")";
 
-    new ContactIO(dc).update(old.getContact(), n.getContact());
+        dc.executeUpdate(query);
+        s.setId(id);
+    }
 
-  }
+    /**
+     *
+     * @param old old room
+     * @param nr new room
+     * @throws SQLException
+     */
+    public void update(Room old, Room nr) throws SQLException {
+        trans_update(old, nr);
+    }
 
-  /**
+    public void updateStatus(Room r) throws SQLException {
+        updateStatusPS.setBoolean(1, r.isActive());
+        updateStatusPS.setBoolean(2, r.isAvailable());
+        updateStatusPS.setInt(3, r.getId());
+        updateStatusPS.executeUpdate();
+    }
+
+    public void updateEquipment(Room r) throws SQLException {
+
+        deleteEquipment(r.getId());
+
+        List<Equipment> ve = r.getEquipment();
+
+        for (int i = 0; i < ve.size(); i++) {
+            Equipment e = ve.get(i);
+            e.setRoom(r.getId());
+            e.setIdx((short) i);
+            updateEquipmentPS.setInt(1, e.getRoom());
+            updateEquipmentPS.setString(2, e.getLabel());// no need to escape with preparedstatement
+            updateEquipmentPS.setInt(3, e.getQuantity());
+            updateEquipmentPS.setShort(4, e.getIdx());
+            updateEquipmentPS.setBoolean(5, e.isVisible());
+            updateEquipmentPS.setString(6, e.getFixedAssetNumber());
+
+            updateEquipmentPS.executeUpdate();
+        }
+    }
+    private void insert(Equipment e) throws SQLException {
+        String query = "INSERT INTO " + EQUIP_TABLE + " VALUES("
+                + "" + e.getRoom()
+                + ",'" + escape(e.getLabel()) // 64 caractères max depuis version 2.0pc
+                + "'," + e.getQuantity()
+                + "," + e.getIdx()
+                + ")";
+        dc.executeUpdate(query);
+    }
+
+    /**
+     *
+     * @param old old room
+     * @param n new room
+     * @throws SQLException
+     */
+    private void trans_update(Room old, Room n) throws SQLException {
+        String query = "UPDATE " + TABLE + " SET "
+                + "nom ='" + escape(n.getName())
+                + "',fonction = '" + escape(n.getFunction())
+                + "',surf = " + n.getSurface()
+                + ",npers = " + n.getNPers()
+                + ",etablissement =" + n.getEstab()
+                + ",active = '" + (n.isActive() ? "t" : "f")
+                + "',idtarif =" + n.getRate().getId()
+                + ",idper = " + n.getContact().getId()
+                + ",payeur = " + n.getPayer().getId()
+                + ",public = '" + (n.isAvailable() ? "t" : "f") + "'"
+                + " WHERE id = " + n.getId();
+
+        dc.executeUpdate(query);
+
+        new ContactIO(dc).update(old.getContact(), n.getContact());
+
+    }
+
+    /**
    * Deletes a room.
    * Equipment infos are also deleted but the contact is not.
-   *
-   * @param r
-   * @throws RoomException if error sql
-   */
-  public void delete(Room r) throws RoomException {
-    try {
-      dc.setAutoCommit(false);
-      String query = "DELETE FROM " + TABLE + " WHERE id = " + r.getId();
-      dc.executeUpdate(query);
-      deleteEquipment(r.getId());
-      query = "DELETE FROM " + NOTE_TABLE + " WHERE idper = " + r.getContact().getId() + " AND ptype = " + Person.ROOM;
-      dc.executeUpdate(query);
-      dc.commit();
-    } catch (SQLException e) {
-      dc.rollback();
-      throw new RoomException(MessageUtil.getMessage("delete.exception") + e.getMessage());
-    } finally {
-      dc.setAutoCommit(true);
+     *
+     * @param r
+     * @throws RoomException if error sql
+     */
+    public void delete(Room r) throws RoomException {
+        try {
+            dc.setAutoCommit(false);
+            String query = "DELETE FROM " + TABLE + " WHERE id = " + r.getId();
+            dc.executeUpdate(query);
+            deleteEquipment(r.getId());
+            query = "DELETE FROM " + NOTE_TABLE + " WHERE idper = " + r.getContact().getId() + " AND ptype = " + Person.ROOM;
+            dc.executeUpdate(query);
+            dc.commit();
+        } catch (SQLException e) {
+            dc.rollback();
+            throw new RoomException(MessageUtil.getMessage("delete.exception") + e.getMessage());
+        } finally {
+            dc.setAutoCommit(true);
+        }
     }
-  }
 
-  /**
-   * Deletes equipment for room {@code r}.
-   *
-   * @param r room id
-   * @throws SQLException
-   */
-  private void deleteEquipment(int r) throws SQLException {
-    String query = "DELETE FROM " + EQUIP_TABLE + " WHERE idsalle = " + r;
-    dc.executeUpdate(query);
-  }
-
-  public Room findId(int n) {
-
-    String query = "WHERE id = " + n;
-    Vector<Room> v = find(query);
-    if (v != null && v.size() > 0) {
-      return v.elementAt(0);
+    /**
+     * Deletes equipment for room {@code r}.
+     *
+     * @param r room id
+     * @throws SQLException
+     */
+    private void deleteEquipment(int r) throws SQLException {
+        String query = "DELETE FROM " + EQUIP_TABLE + " WHERE idsalle = " + r;
+        dc.executeUpdate(query);
     }
-    return null;
-  }
 
-  /**
+    public Room findId(int n) {
+
+        String query = "WHERE id = " + n;
+        Vector<Room> v = find(query);
+        if (v != null && v.size() > 0) {
+            return v.elementAt(0);
+        }
+        return null;
+    }
+
+    /**
    * Gets the room where the course {@code courseId} is scheduled from {@code dateStart}.
-   *
-   * @param courseId
-   * @param dateStart
-   * @return a room
-   * @throws java.sql.SQLException
-   */
-  public Room getRoom(int courseId, String dateStart) throws SQLException {
-    int s = 0;
+     *
+     * @param courseId
+     * @param dateStart
+     * @return a room
+     * @throws java.sql.SQLException
+     */
+    public Room getRoom(int courseId, String dateStart) throws SQLException {
+        int s = 0;
 
-    String query = "SELECT lieux FROM planning, action WHERE ptype = " + Schedule.COURSE
-            + " AND jour >= '" + dateStart + "' AND planning.action = action.id AND action.cours = " + courseId + " LIMIT 1";
-    ResultSet rs = dc.executeQuery(query);
-    if (rs.next()) {
-      s = rs.getInt(1);
+        String query = "SELECT lieux FROM planning, action WHERE ptype = " + Schedule.COURSE
+                + " AND jour >= '" + dateStart + "' AND planning.action = action.id AND action.cours = " + courseId + " LIMIT 1";
+        ResultSet rs = dc.executeQuery(query);
+        if (rs.next()) {
+            s = rs.getInt(1);
+        }
+        rs.close();
+
+        return findId(s);
     }
-    rs.close();
 
-    return findId(s);
-  }
-
-  public Vector<Room> findAll() {
-    String query = "SELECT * FROM " + TABLE + " ORDER BY nom";
-    return findAll(query);
-  }
-
-  public Vector<Room> find(String where) {
-    String query = "SELECT " + TABLE + ".* FROM " + TABLE + " " + where;
-    return findAll(query);
-  }
-
-  private Vector<Room> findAll(String query) {
-    Vector<Room> v = new Vector<Room>();
-    try {
-      ResultSet rs = dc.executeQuery(query);
-      while (rs.next()) {
-        Room s = new Room();
-        s.setId(rs.getInt(1));
-        s.setName(unEscape(rs.getString(2).trim()));
-        s.setFunction(unEscape(rs.getString(3).trim()));
-        s.setSurface(rs.getInt(4));
-        s.setNPers(rs.getInt(5));
-        s.setEstab(rs.getInt(6));
-        s.setActive(rs.getBoolean(7));
-        RoomRate rt = loadRate(rs.getInt(8));
-        s.setRate(rt);
-        Contact c = loadContact(rs.getInt(9));
-        s.setContact(c);
-        s.setPayer(loadPayer(rs.getInt(10)));
-        s.setAvailable(rs.getBoolean(11));
-        v.addElement(s);
-      }
-      rs.close();
-    } catch (SQLException e) {
-      GemLogger.logException(query, e);
+    public Vector<Room> findAll() {
+        String query = "SELECT * FROM " + TABLE + " ORDER BY nom";
+        return findAll(query);
     }
-    return v;
-  }
 
-  public Vector<Equipment> loadEquip(int idsalle) {
-    Vector<Equipment> v = new Vector<Equipment>();
-    String query = "SELECT * FROM " + EQUIP_TABLE + " WHERE idsalle = " + idsalle + " ORDER BY idx";
-    try {
-      ResultSet rs = dc.executeQuery(query);
-      while (rs.next()) {
-        Equipment e = new Equipment();
-        e.setRoom(rs.getInt(1));
-        e.setLabel(unEscape(rs.getString(2).trim()));
-        e.setQuantity(rs.getInt(3));
-        e.setIdx(rs.getShort(4));
-        e.setVisible(rs.getBoolean(5));
-        e.setFixedAssetNumber(rs.getString(6));
-
-        v.addElement(e);
-      }
-      rs.close();
-    } catch (SQLException e) {
-      GemLogger.logException(query, e);
+    public Vector<Room> find(String where) {
+        String query = "SELECT " + TABLE + ".* FROM " + TABLE + " " + where;
+        return findAll(query);
     }
-    return v;
-  }
 
-  private Contact loadContact(int idper) throws SQLException {
-
-    Person p = (Person) DataCache.findId(idper, Model.Person);
-    if (p != null) {
-      return new Contact(p);
+    private Vector<Room> findAll(String query) {
+        Vector<Room> v = new Vector<Room>();
+        try {
+            ResultSet rs = dc.executeQuery(query);
+            while (rs.next()) {
+                Room s = new Room();
+                s.setId(rs.getInt(1));
+                s.setName(unEscape(rs.getString(2).trim()));
+                s.setFunction(unEscape(rs.getString(3).trim()));
+                s.setSurface(rs.getInt(4));
+                s.setNPers(rs.getInt(5));
+                s.setEstab(rs.getInt(6));
+                s.setActive(rs.getBoolean(7));
+                RoomRate rt = loadRate(rs.getInt(8));
+                s.setRate(rt);
+                Contact c = loadContact(rs.getInt(9));
+                s.setContact(c);
+                s.setPayer(loadPayer(rs.getInt(10)));
+                s.setAvailable(rs.getBoolean(11));
+                v.addElement(s);
+            }
+            rs.close();
+        } catch (SQLException e) {
+            GemLogger.logException(query, e);
+        }
+        return v;
     }
-    return null;
-  }
 
-  private RoomRate loadRate(int rate) throws SQLException {
-    return (RoomRate) DataCache.findId(rate, Model.RoomRate);
-  }
+    public Vector<Equipment> loadEquip(int idsalle) {
+        Vector<Equipment> v = new Vector<Equipment>();
+        String query = "SELECT * FROM " + EQUIP_TABLE + " WHERE idsalle = " + idsalle + " ORDER BY idx";
+        try {
+            ResultSet rs = dc.executeQuery(query);
+            while (rs.next()) {
+                Equipment e = new Equipment();
+                e.setRoom(rs.getInt(1));
+                e.setLabel(unEscape(rs.getString(2).trim()));
+                e.setQuantity(rs.getInt(3));
+                e.setIdx(rs.getShort(4));
+                e.setVisible(rs.getBoolean(5));
+                e.setFixedAssetNumber(rs.getString(6));
 
-  private Person loadPayer(int payerId) throws SQLException {
-    return (Person) DataCache.findId(payerId, Model.Person);
-  }
+                v.addElement(e);
+            }
+            rs.close();
+        } catch (SQLException e) {
+            GemLogger.logException(query, e);
+        }
+        return v;
+    }
+
+    private Contact loadContact(int idper) throws SQLException {
+
+        Person p = (Person) DataCache.findId(idper, Model.Person);
+        if (p != null) {
+            return new Contact(p);
+        }
+        return null;
+    }
+
+    private RoomRate loadRate(int rate) throws SQLException {
+        return (RoomRate) DataCache.findId(rate, Model.RoomRate);
+    }
+
+    private Person loadPayer(int payerId) throws SQLException {
+        return (Person) DataCache.findId(payerId, Model.Person);
+    }
 
   
-  @Override
-  public List<Room> load() {
-    return findAll();
-  }
-  
+    @Override
+    public List<Room> load() {
+        return findAll();
+    }
+
 //  @Override
-  public List<Room> load(int userId) {
-    return find(" JOIN etablissement ON salle.etablissement = etablissement.id "
-            + "WHERE etablissement.actif = TRUE AND etablissement.idper = " + userId + " ORDER BY salle.nom");
-  }
+    public List<Room> load(int userId) {
+        return find(" JOIN etablissement ON salle.etablissement = etablissement.id "
+                + "WHERE etablissement.actif = TRUE AND etablissement.idper = " + userId + " ORDER BY salle.nom");
+    }
 }

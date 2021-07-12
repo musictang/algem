@@ -24,6 +24,9 @@ import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.sql.*;
 import java.util.Vector;
+import net.algem.Algem;
+import net.algem.config.InstrumentIO;
+import net.algem.contact.member.MemberIO;
 import net.algem.util.DataCache;
 import net.algem.util.GemCommand;
 import net.algem.util.GemLogger;
@@ -70,6 +73,9 @@ public class PersonFileSearchCtrl
   public void init() {
     searchView = new PersonSearchView();
     searchView.addActionListener(this);
+    if (Algem.isFeatureEnabled("cc-mdl")) {
+        ((PersonSearchView)searchView).setInstruments(desktop.getDataCache().getInstruments());
+    }
 
     list = new PersonListCtrl();
     list.addMouseListener(this);
@@ -80,11 +86,11 @@ public class PersonFileSearchCtrl
 
     ((CardLayout) wCard.getLayout()).show(wCard, "cherche");
   }
-
+  
   @Override
   public void search() {
 
-    String org, name, firstname, pseudo, telephone, email, site;
+    String org, name, firstname, pseudo, telephone, email, site, cycle, instrument;
     int id = getId();
     if (id > 0) {
       query = "WHERE p.id = " + id;
@@ -108,6 +114,25 @@ public class PersonFileSearchCtrl
     } else if ((pseudo = searchView.getField(7)) != null) {
       query = "WHERE translate(lower(p.pseudo),'" + TRANSLATE_FROM + "', '" + TRANSLATE_TO + "') ~* '"
                + TableIO.normalize(pseudo) + "'";
+    } else if (searchView.getField(8) != null || searchView.getField(9) != null) { //ERIC 2.17
+      cycle = searchView.getField(8);
+      instrument = searchView.getField(9);
+      query="";
+      if (cycle != null) {
+          query += ", "+MemberIO.TABLE+" m";
+      }
+      if (instrument != null) {
+          query += ", "+InstrumentIO.PERSON_INSTRUMENT_TABLE+" pi";
+      }
+      query += " WHERE";
+      if (cycle != null) {
+          query += " p.id = m.idper AND m.niveau = '"+cycle+"'";
+      }
+      if (instrument != null) {
+          if (cycle != null) query+=" AND";
+          query += "  p.id = pi.idper AND pi.instrument = '"+instrument+"'";
+      }
+        
     } else {
       query = "";
     }

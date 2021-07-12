@@ -1,5 +1,6 @@
 /*
- * @(#)TeacherService.java	2.9.6 21/03/16
+ * @(#)TeacherService.java	2.17.0 20/03/2019
+ *                              2.9.6 21/03/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -20,11 +21,16 @@
  */
 package net.algem.contact.teacher;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
+import net.algem.contact.Person;
+import net.algem.course.Course;
 import net.algem.planning.*;
 import net.algem.util.DataConnection;
 import net.algem.util.GemLogger;
@@ -32,7 +38,8 @@ import net.algem.util.GemLogger;
 /**
  * Service class for teachers.
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.6
+ * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
+ * @version 2.17.0
  * @since 2.4.a 22/05/12
  */
 public class TeacherService
@@ -124,6 +131,42 @@ public class TeacherService
     }
   }
   
+    //TODO ERIC AJOUT
+    public List<CourseSchedule> getTeacherDaySchedules(int prof, String date, int estab) throws SQLException {
+    String query = "SELECT p.id,p.jour, p.debut,p.fin,p.idper,a.id,c.titre,c.collectif,per.nom,per.prenom"
+            + " FROM planning p JOIN action a ON (p.action = a.id)"
+            + " JOIN cours c ON (a.cours = c.id)"
+            + " JOIN salle s ON (p.lieux = s.id)"
+            + " JOIN personne per ON (p.idper = per.id)"
+            + " WHERE p.idper = "+ prof
+            + " AND p.jour = '" + date.toString()+ "'";
+    if (estab > 0) {
+      query += " AND s.etablissemnt = " + estab;
+    }
+    query += " ORDER BY p.debut";
+    //System.out.println(query);
+    List<CourseSchedule> schedules = new ArrayList<>();
+    ResultSet rs = dc.executeQuery(query);
+    while (rs.next()) {
+      CourseSchedule s = new CourseSchedule();
+      s.setId(rs.getInt(1));
+      s.setDate(new DateFr(rs.getString(2)));
+      s.setStart(new Hour(rs.getString(3)));
+      s.setEnd(new Hour(rs.getString(4)));
+      s.setIdPerson(rs.getInt(5));
+      Action a = new Action(rs.getInt(6));
+      s.setAction(a);
+      Course c = new Course(rs.getString(7));
+      System.out.println("getTeacherDay c="+c.getTitle()+" collectif="+rs.getBoolean(8));
+      c.setCollective(rs.getBoolean(8));
+      s.setCourse(c);
+      s.setPerson(new Person(rs.getInt(5), rs.getString(9), rs.getString(10), ""));
+      schedules.add(s);
+    }
+    return schedules;
+  }
+  
+
   /**
    * Under postgresql, days of week (only for timestamp values) 
    * are enumerated from 0 to 6 (sunday is 0).

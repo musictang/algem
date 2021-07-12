@@ -1,5 +1,6 @@
 /*
- * @(#)GemDesktop.java	2.9.2.1 16/02/15
+ * @(#)GemDesktop.java	2.17.0 26/3/2019
+ *                      2.9.2.1 16/02/15
  * 
  * Copyright (c) 1999-2015 Musiques Tangentes. All Rights Reserved.
  *
@@ -31,7 +32,7 @@ import net.algem.util.event.GemRemoteEvent;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.9.2.1
+ * @version 2.17.0
  * @since 1.0a 06/07/2002
  */
 public interface GemDesktop
@@ -49,6 +50,12 @@ public interface GemDesktop
    */
   public void addModule(GemModule module);
 
+  /**
+   * return internal window by label
+   * @param module module to get
+   */
+  public GemModule getModule(String label);
+  
   /**
    * Adds new internal window on the desktop.
    * @param label title key (without .label extension)

@@ -1,7 +1,8 @@
 /*
- * @(#)MenuAccounting.java 2.15.9 04/06/18
+ * @(#)MenuAccounting.java 2.17.0 01/07/2019
+ *                          2.15.9 04/06/18
  *
- * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2019 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -48,7 +49,7 @@ import net.algem.util.ui.ProgressMonitorHandler;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.15.9
+ * @version 2.17.0
  * @since 1.0a 07/07/1999
  */
 public class MenuAccounting
@@ -66,12 +67,14 @@ public class MenuAccounting
   private JMenuItem miAccountHourEmployee;
   private JMenuItem miRoomRate;
   private JMenuItem miDirectDebitList;
+  private JMenuItem miAccountControl;
   private DataConnection dc;
 
   public MenuAccounting(GemDesktop _desktop) {
     super(menus.get("Menu.accounting.label"), _desktop);
 
     miAccountSchedule = add(getItem(new JMenuItem(menus.get("Menu.schedule.payment.label")), "Accounting.global.schedule.auth"));
+    miAccountControl = add(getItem(new JMenuItem(menus.get("Menu.schedule.control.label")), "Accounting.global.schedule.auth"));
     addSeparator();
 
     miAccountTransfert = add(getItem(new JMenuItem(menus.get("Menu.schedule.payment.transfer.label")), "Accounting.transfer.auth"));
@@ -127,6 +130,11 @@ public class MenuAccounting
       OrderLineDlg dlg = new OrderLineDlg(desktop, orderLineDlg);
       dlg.init();
       desktop.addPanel("Menu.schedule.payment", dlg, GemModule.XL_SIZE);
+    }  else if (src == miAccountControl) {
+      OrderControlTableModel orderControlModel = new OrderControlTableModel();
+      OrderControlDlg dlg = new OrderControlDlg(desktop, orderControlModel);
+      dlg.init();
+      desktop.addPanel("Menu.schedule.control", dlg, GemModule.XL_SIZE);
     } else if (src == miAccountTransfert) {
       AccountExportService exportService = getAccountingExportService(ConfigUtil.getConf(ConfigKey.ACCOUNTING_EXPORT_FORMAT.getKey()));
       CommonAccountTransferDlg accountTransfertDlg = new CommonAccountTransferDlg(desktop.getFrame(), dataCache, exportService);
@@ -157,6 +165,7 @@ public class MenuAccounting
         monitor.setMillisToDecideToPopup(10);
         DateRange range = billingService.getFinancialYear();
         SwingWorker<Void, String> task = new InvoiceLoader(histo, billingService, range, 0, monitor);
+        //2.17.0 ERIC SwingWorker<Void, String> task = new InvoiceJoinLoader(histo, billingService, range, 0, monitor);//2s vs 2m28s
         task.addPropertyChangeListener(new ProgressMonitorHandler(monitor, task));
         task.execute();
         desktop.addPanel("Menu.invoice.history", histo, GemModule.XXL_SIZE);
@@ -262,11 +271,15 @@ public class MenuAccounting
     if (format.equals(AccountingExportFormat.OPENCONCERTO.getLabel())) {
       return new ExportOpenConcerto(dc);
     }
+    if (format.equals(AccountingExportFormat.EMAGNUS.getLabel())) {
+      return new ExportEMagnus(dc);
+    }
     return new ExportDvlogPGI(dc);
   }
 
   private static void initLabels() {
     menus.put("Menu.schedule.payment.label", BundleUtil.getLabel("Menu.schedule.payment.label"));
+    menus.put("Menu.schedule.control.label", BundleUtil.getLabel("Menu.schedule.control.label"));
     menus.put("Menu.schedule.payment.transfer.label", BundleUtil.getLabel("Menu.schedule.payment.transfer.label"));
     menus.put("Menu.document.transfer.label", BundleUtil.getLabel("Menu.document.transfer.label"));
     menus.put("Menu.debiting.label", BundleUtil.getLabel("Menu.debiting.label"));

@@ -1,4 +1,4 @@
-Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
+Copyright (c) 1999-2019 Musiques Tangentes. All Rights Reserved.
 
 This file is part of Algem.
 Algem is free software: you can redistribute it and/or modify it
@@ -15,7 +15,6 @@ You should have received a copy of the GNU Affero General Public License
 along with Algem. If not, see <http://www.gnu.org/licenses/>.
 
 # PRESENTATION
-
 Algem se décompose en deux applications :
 - Une application de bureau en Java (Swing), dédiée au back-office et
 principalement utilisée par l'équipe administrative.
@@ -26,16 +25,24 @@ de consulter leur planning ou leur suivi pédagogique. Cette interface
 permet aussi aux répétiteurs de réserver une salle en ligne.
 
 Cette deuxième application est optionnelle. Le code source de l'application
-web est disponible à cette adresse : [algem-web-app](https://github.com/musictang/algem-web-app).
+web est disponible à cette adresse :  
+[algem-web-app](https://github.com/musictang/algem-web-app).
 
 ## NOTES POUR LE DEVELOPPEUR
-
-Si le projet vous intéresse, n'hésitez pas à nous contacter.
+Si le projet vous intéresse, n'hésitez pas à nous contacter.  
 Le projet est supporté par l'association **Musiques Tangentes**.
-* Responsable du projet (Maet Charles) :
-<maet@musiques-tangentes.asso.fr>
-* Développeur principal (Jean-Marc Gobat) :
-<jmg@musiques-tangentes.asso.fr>
+
+* Equipe développement : <info@algem.net>
+* Responsable de l'association : <admin@musiques-tangentes.asso.fr>
+
+## COMPILATION / LANCEMENT avec Maven
+Préalables :  
+* Le service postgresql doit être démarré et la base algem configurée
+* L'exécutable mvn doit être présent dans le PATH.
+
+Lancement :
+* Compilez le projet : `mvn compile`
+* Démarrez : `mvn -P local exec:java`
 
 ### CONTENU DE L'ARCHIVE
 * `src` : code source de l'application
@@ -45,6 +52,7 @@ Le projet est supporté par l'association **Musiques Tangentes**.
 * `resources` : fichiers statiques de resources (images, etc.)
 * `lib` : dépendances
 * `plugins` (optionnel) : projets associés
+* `local-repo` : repository local du package scripthelper
 
 ### ARBORESCENCE DES PACKAGES
 (entre parenthèses, usage et signification)
@@ -132,8 +140,8 @@ Il est possible de forcer la saisie d'un login et d'un mot de passe au démarrag
 Optionnellement, on peut exiger la présence chez l'utilisateur d'un certificat SSL (de connexion à la base de données).
 
 ### I18N
-* Le fichier `algem.properties` (non inclus dans le jar) est destiné à la traduction des labels, des titres ou des menus.
-Ce fichier est placé dans le répertoire de travail (à l'extérieur du .jar) pour des raisons pratiques et historiques. Le cas échéant, il est possible pour le client de modifier certains labels afin qu'ils correspondent aux besoins spécifiques de l'entreprise. \
+* Le fichier `algem.properties` (pouvant être détaché du jar) est destiné à la traduction des labels, des titres ou des menus.
+Ce fichier peut être placé dans le répertoire de travail (à l'extérieur du .jar) pour des raisons pratiques et historiques. Le cas échéant, il est possible pour le client de modifier certains labels afin qu'ils correspondent aux besoins spécifiques de l'entreprise. \
 Les clés sont en anglais et commencent arbitrairement par une majuscule.
 
 * Le fichier `messages.properties` (inclus dans le jar) est utilisé, comme son nom l'indique pour les messages et les différents textes d'accompagnement : clés en minuscules et mots séparés par des points.

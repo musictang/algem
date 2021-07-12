@@ -1,2 +1,0 @@
-Fix analyse robustesse mot de passe (bug mot de passe faible si plus de n caractères)
-Fix différer séance de studio à une date antérieure

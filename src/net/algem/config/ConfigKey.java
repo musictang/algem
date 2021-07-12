@@ -1,5 +1,6 @@
 /*
- * @(#)ConfigKey.java 2.14.0 26/05/17
+ * @(#)ConfigKey.java 2.17.0 23/3/2019
+ *                      2.14.0 26/05/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -27,7 +28,8 @@ import net.algem.util.BundleUtil;
  * First arg represents key in the table, second arg represents the label.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.14.0
+ * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
+ * @version 2.17.0
  * @since 2.1.k 07/07/11
  */
 public enum ConfigKey
@@ -136,7 +138,15 @@ public enum ConfigKey
   ESTABLISHEMENT_ACTIVATION_TYPE("Activation.etablissement.type", BundleUtil.getLabel("ConfEditor.pre-enrolment.start.date.label")),
 
   TRAINING_CONTRACT_MANAGEMENT("Gestion.contrats.formation",BundleUtil.getLabel("ConfEditor.training.contract.management.label")),
-  INTERNSHIP_AGREEMENT_MANAGEMENT("Gestion.conventions.stage", BundleUtil.getLabel("ConfEditor.internship.agreement.management.label"))
+  INTERNSHIP_AGREEMENT_MANAGEMENT("Gestion.conventions.stage", BundleUtil.getLabel("ConfEditor.internship.agreement.management.label")),
+  
+  SMTP_SERVER_NAME("Smtp.server.name", BundleUtil.getLabel("ConfEditor.smtp.server.name.label")),
+  SMTP_SERVER_PORT("Smtp.server.port", BundleUtil.getLabel("ConfEditor.smtp.server.port.label")),
+  SMTP_SERVER_USER("Smtp.server.user", BundleUtil.getLabel("ConfEditor.smtp.server.user.label")),
+  SMTP_SERVER_SENDER("Smtp.server.sender", BundleUtil.getLabel("ConfEditor.smtp.server.sender.label")),
+  SMTP_SERVER_PSWD("Smtp.server.password", BundleUtil.getLabel("ConfEditor.smtp.server.password.label")),
+  SMTP_SERVER_AUTH("Smtp.server.authentification", BundleUtil.getLabel("ConfEditor.smtp.server.authentification.label")),
+  SMTP_SERVER_SECURITY("Smtp.server.security", BundleUtil.getLabel("ConfEditor.smtp.server.security.label")),
   ;
 
 

@@ -1,5 +1,6 @@
 /*
- * @(#)MemberIO.java	2.15.0 30/07/2017
+ * @(#)MemberIO.java	2.17.0 04/06/219
+ *                      2.15.0 30/07/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -40,7 +41,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.0
+ * @version 2.17.0
  * @since 1.0a 07/07/1999
  */
 public class MemberIO
@@ -48,10 +49,10 @@ public class MemberIO
         implements Cacheable
 {
 
-  public static final String COLUMNS = "idper,profession,datenais,payeur,nadhesions,pratique,niveau,assurance,assuranceref";
+  public static final String COLUMNS = "idper,profession,datenais,payeur,nadhesions,pratique,niveau,assurance,assuranceref,famille";
   public static final String TABLE = "eleve";
-  private static final String CREATE_QUERY = "INSERT INTO " + TABLE + " VALUES(?,?,?,?,?,?,?,?,?)";
-  private static final String UPDATE_QUERY = "UPDATE " + TABLE + " SET profession=?,datenais=?,payeur=?,nadhesions=?,pratique=?,niveau=?,assurance=?,assuranceref=? WHERE idper=?";
+  private static final String CREATE_QUERY = "INSERT INTO " + TABLE + " VALUES(?,?,?,?,?,?,?,?,?,?,?)";
+  private static final String UPDATE_QUERY = "UPDATE " + TABLE + " SET profession=?,datenais=?,payeur=?,nadhesions=?,pratique=?,niveau=?,assurance=?,assuranceref=?,famille=? WHERE idper=?";
 
   private DataConnection dc;
 
@@ -80,7 +81,7 @@ public class MemberIO
       createPs.setInt(5, m.getMembershipCount());
       createPs.setInt(6, m.getPractice());
       createPs.setInt(7, m.getLevel());
-      //TODO archiv ?? default false
+
       if (m.getInsurance() == null || m.getInsurance().isEmpty()) {
         createPs.setNull(8, Types.VARCHAR);
       } else {
@@ -91,6 +92,9 @@ public class MemberIO
       } else {
         createPs.setString(9, m.getInsuranceRef());
       }
+      //TODO archiv ?? default false
+      createPs.setBoolean(10, false);
+      createPs.setInt(11, m.getFamily());
       GemLogger.info(createPs.toString());
       createPs.executeUpdate();
     }
@@ -123,8 +127,9 @@ public class MemberIO
       } else {
         updatePs.setString(8, m.getInsuranceRef());
       }
+      updatePs.setInt(9, m.getFamily());
 
-      updatePs.setInt(9, m.getId());
+      updatePs.setInt(10, m.getId());
 
       updatePs.executeUpdate();
     }
@@ -171,6 +176,7 @@ public class MemberIO
     m.setLevel(rs.getInt(col++));
     m.setInsurance(rs.getString(col++));
     m.setInsuranceRef(rs.getString(col++));
+    m.setFamily(rs.getInt(col++));
 
     return m;
   }

@@ -1,10 +1,30 @@
-/plugins/19658/nbproject/private/
-/plugins/19658/build/
-/plugins/19658/dist/
-/plugins/1234/nbproject/private/
-/plugins/1234/build/
-/plugins/1234/dist/
+# Plugins build patterns
+/plugins/**/nbproject/
+/plugins/**/nbbuild.xml
+/plugins/**/manifest.mf
+/plugins/**/dist/
+/plugins/**/out/
+
+# Build patterns
+nbproject/
+build/
+build.xml
+dist/
+out/
+.idea
+target/
+.classpath
+.project
+.settings
+*.iml
+
+# Files
+/clients/
+manifest.mf
+preview-application.html
+master-application.jnlp
 doclist
 cloclist
 loc-doc.txt
 loc.txt
+.attach*

@@ -1,5 +1,6 @@
 /*
- * @(#)DataConnection.java	2.15.4 18/10/17
+ * @(#)DataConnection.java	2.17.0 26/3/2019
+ *                              2.15.4 18/10/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -28,7 +29,8 @@ import java.util.logging.Level;
  * Utility class for database connection.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.4
+ * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
+ * @version 2.17.0
  * @since 2.6.a 01/08/2012
  */
 public class DataConnection
@@ -143,6 +145,14 @@ public class DataConnection
       // keytool -keystore /path/to/java/lib/security/cacerts -alias <myalias> -import -file /path/to/server.crt.der
       if (!cacert) { // for demo usage
         props.setProperty("sslfactory", "org.postgresql.ssl.NonValidatingFactory");
+      } else { //ERIC 26/03/2019
+          // avec pg_hba.conf: hostssl algem_22570  all  x.x.x.x/32 cert map=algem
+          // avec pg_ident.conf: algem CNduclient nobody
+          props.setProperty("sslfactory", "org.postgresql.ssl.jdbc4.LibPQFactory");
+          props.setProperty("sslmode", "verify-full");
+          props.setProperty("sslcompression", "1");
+          //props.setProperty("loggerLevel", "DEBUG"); // "TRACE" pour plus de traces
+          //props.setProperty("loggerFile", "/tmp/jdbc.traces"); 
       }
     }
     return props;

@@ -54,7 +54,7 @@ public class InvoiceLoader
 
   @Override
   protected Void doInBackground() throws Exception {
-    histo.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+      histo.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
     if (idper > 0) {
       invoices = service.getInvoices(idper, range.getStart().getDate(), range.getEnd().getDate());
     } else {

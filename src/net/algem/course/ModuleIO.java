@@ -1,5 +1,6 @@
 /*
- * @(#)ModuleIO.java 2.13.1 17/04/17
+ * @(#)ModuleIO.java 2.17.0 20/03/2019
+ *                  2.13.1 17/04/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -24,6 +25,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
@@ -41,7 +44,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.13.1
+ * @version 2.17.0
  */
 public class ModuleIO
         extends TableIO
@@ -205,6 +208,7 @@ public class ModuleIO
         m.setYearReducRate(rs.getDouble(9));
 
         m.setCourses(findCourses(m.getId()));
+//        m.setCourses(DataCache.getModuleCourse(m.getId()));  // ERIC 11-06-2019 en attente de gérer les mises à jour
         v.addElement(m);
       }
     }
@@ -212,6 +216,7 @@ public class ModuleIO
     return v;
   }
 
+  
   private List<CourseModuleInfo> findCourses(int module) throws SQLException {
     String query = "SELECT id,code,duree FROM module_cours WHERE idmodule = ?";
     List<CourseModuleInfo> courses = new ArrayList<CourseModuleInfo>();
@@ -284,6 +289,35 @@ public class ModuleIO
   public void deletePreset(int p) throws SQLException {
     String query = "DELETE FROM " + PRESET_SELECTION_TABLE + " WHERE id = " + p;
     dc.executeUpdate(query);
+  }
+  
+    public HashMap<Integer, List> loadModuleCourses() {   //ERIC 27/03/2019 cache module_cours
+    String query = "SELECT idmodule,code,duree FROM module_cours order by idmodule";
+    HashMap<Integer, List> moduleCourses = new HashMap<>();
+    try {
+        ResultSet rs = dc.executeQuery(query);
+        while (rs.next()) {
+            if (moduleCourses.get(rs.getInt(1)) == null) {
+                List l = new ArrayList<CourseModuleInfo>();
+                CourseModuleInfo info = new CourseModuleInfo();
+                info.setIdModule(rs.getInt(1));
+                info.setCode((GemParam) DataCache.findId(rs.getInt(2), Model.CourseCode));
+                info.setTimeLength(rs.getInt(3));
+                l.add(info);
+                moduleCourses.put(rs.getInt(1), l);
+            } else {
+                List l = moduleCourses.get(rs.getInt(1));
+                CourseModuleInfo info = new CourseModuleInfo();
+                info.setIdModule(rs.getInt(1));
+                info.setCode((GemParam) DataCache.findId(rs.getInt(2), Model.CourseCode));
+                info.setTimeLength(rs.getInt(3));
+                l.add(info);
+            }
+        }
+    } catch (Exception e) {
+      GemLogger.logException("ModuleIO.loadModulesCourses:"+ query, e);
+    }
+    return moduleCourses;
   }
 
 }

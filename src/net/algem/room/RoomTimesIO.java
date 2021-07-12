@@ -1,7 +1,7 @@
 /*
- * @(#)RoomTimesIO.java	2.11.4 15/12/16
- * 
- * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
+ * @(#)RoomTimesIO.java	2.17.2 27/10/19
+ *
+ * Copyright (c) 1999-2019 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -16,13 +16,14 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with Algem. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 package net.algem.room;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import net.algem.planning.Hour;
 import net.algem.util.DataConnection;
@@ -30,9 +31,9 @@ import net.algem.util.GemLogger;
 
 /**
  * Daily times DAO.
- * 
+ *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.4
+ * @version 2.17.2
  * @since 2.8.w 16/07/14
  */
 public class RoomTimesIO
@@ -80,7 +81,7 @@ public class RoomTimesIO
         DailyTimes dt = new DailyTimes(i+1);
         dt.setOpening(new Hour("00:00"));
         dt.setClosing(new Hour("24:00"));
-        timesArray[i] = dt;      
+        timesArray[i] = dt;
       }
     } else {
       timesArray = times.toArray(timesArray);
@@ -106,5 +107,34 @@ public class RoomTimesIO
       dc.setAutoCommit(true);
     }
   }
+
+      public static HashMap<Integer, DailyTimes[]> loadDailyTimes(List rooms) {   //ERIC 2.17 27/03/2019
+        HashMap<Integer, DailyTimes[]> roomsTimes = new HashMap<>();
+        for (int i = 0; i < rooms.size(); i++) {
+            Room r = (Room) rooms.get(i);
+            DailyTimes[] timesArray = new DailyTimes[7];
+            for (int j = 0; j < 7; j++) {
+                DailyTimes dt = new DailyTimes(j + 1);
+                dt.setOpening(new Hour("00:00"));
+                dt.setClosing(new Hour("24:00"));
+                timesArray[j] = dt;
+            }
+            roomsTimes.put(r.getId(), timesArray);
+        }
+        return roomsTimes;
+    }
+
+    public static HashMap<Integer, DailyTimes[]> findDailyTimes() {   //ERIC 2.17 27/03/2019
+        String query = "SELECT idsalle, jour, ouverture, fermeture FROM horaires ORDER BY idsalle, jour";
+        System.out.println("RoomIO.findDailyTimes query=" + query);
+        HashMap<Integer, DailyTimes[]> roomsTimes = new HashMap<>();
+
+        //TODO a faire
+        //voir RoomService.findDailyTimes()
+
+        System.out.println("RoomIO.findDailyTimes rooms size=" + roomsTimes.size());
+        return roomsTimes;
+    }
+
 
 }

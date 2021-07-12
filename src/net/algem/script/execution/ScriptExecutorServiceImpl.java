@@ -33,7 +33,10 @@ import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
 import net.algem.planning.DateFr;
@@ -69,7 +72,12 @@ public class ScriptExecutorServiceImpl implements ScriptExecutorService {
                 //bindings.put("dc", conn);
                 bindings.put("utils", new Utils());
                 engine.eval(script.getCode(), bindings);
-                
+
+                //2.17.3g eric le 17/05/2020
+                if (arguments.getArguments().containsKey("update")) {
+                    out.updateSet(dataConnection.executeUpdate(out.getQuery()));
+                    return out.getResult();
+                }
                 out.resultSet(dataConnection.executeQuery(out.getQuery()));
                 return out.getResult();
             }
@@ -123,6 +131,16 @@ public class ScriptExecutorServiceImpl implements ScriptExecutorService {
         }
         rows.add(row);
       }
+    }
+
+      //2.17.3g eric le 17/05/2020
+      public void updateSet(int nb) throws Exception {
+      _header = new ArrayList<>();
+      _header.add("Nombre de mise à jour");
+      rows = new ArrayList<>();
+      List<Object> row = new ArrayList<>();
+      row.add(new Integer(nb));
+      rows.add(row);
     }
 
     @Override

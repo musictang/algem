@@ -335,6 +335,11 @@ public class Quote
     return orderLines;
   }
 
+  public void addOrderLine(OrderLine e) {
+    orderLines.add(e);
+  }
+  
+
   /**
    * Adds an item to a quote/invoice.
    *

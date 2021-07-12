@@ -20,6 +20,7 @@
  */
 package net.algem.config;
 
+import java.util.ArrayList;
 import java.util.List;
 import net.algem.util.model.GemModel;
 import net.algem.util.ui.GemChoice;
@@ -44,6 +45,21 @@ public class InstrumentChoice
     }
   }
 
+  public InstrumentChoice() {
+
+    list = new ArrayList<>();
+    addItem(new Instrument());
+  }
+
+  public void setList(List<Instrument> instruments) {
+    list = instruments;
+    removeAllItems();
+    for (Instrument i : instruments) {
+      addItem(i);
+    }
+      
+  }
+          
   @Override
   public int getKey() {
     return ((GemModel) getSelectedItem()).getId();

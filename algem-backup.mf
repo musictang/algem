@@ -1,0 +1,3 @@
+Application-Name: Algem
+Permissions: all-permissions
+Codebase: https://www.musiques-tangentes.asso.fr/install/srv/

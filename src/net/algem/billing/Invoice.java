@@ -71,10 +71,6 @@ public class Invoice
     return ef.isEmpty() ? null : ef;
   }
 
-  public void addOrderLine(OrderLine e) {
-    orderLines.add(e);
-  }
-  
   boolean isFromScratch() {
     List<OrderLine> lines = new ArrayList<OrderLine>(orderLines);
     return lines != null && lines.size() > 0 && lines.get(0).getId() <= 0;

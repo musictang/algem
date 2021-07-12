@@ -1,5 +1,6 @@
 /*
- * @(#)MenuPlanning.java	2.11.4 02/12/16
+ * @(#)MenuPlanning.java	2.17.0 26/03/2019
+ *                              2.11.4 02/12/16
  *
  * Copyright (c) 1999-2016 Musiques Tangentes. All Rights Reserved.
  *
@@ -24,6 +25,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import javax.swing.JMenuItem;
 import javax.swing.ProgressMonitor;
+import net.algem.Algem;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
 import net.algem.contact.teacher.SubstituteTeacherCtrl;
@@ -36,6 +38,7 @@ import net.algem.planning.TrainingScheduleCtrl;
 import net.algem.planning.WorkhopScheduleCtrl;
 import net.algem.planning.day.DayScheduleCtrl;
 import net.algem.planning.month.MonthScheduleCtrl;
+import net.algem.planning.wishes.EnrolmentWishCtrl;
 import net.algem.util.BundleUtil;
 import net.algem.util.GemCommand;
 import net.algem.util.MessageUtil;
@@ -49,7 +52,7 @@ import net.algem.util.ui.ProgressMonitorHandler;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.11.4
+ * @version 2.17.0
  * @since 1.0a 07/07/1999
  */
 public class MenuPlanning
@@ -66,6 +69,10 @@ public class MenuPlanning
   private JMenuItem miStudio;
   private JMenuItem miReplacement;
   private JMenuItem miAdministrative;
+  private JMenuItem miEnrolmentWish;    //TODO ERIC
+  private CourseScheduleCtrl csCtrl;
+  private EnrolmentWishCtrl ewCtrl;
+
 
   public MenuPlanning(GemDesktop desktop) {
 
@@ -96,7 +103,10 @@ public class MenuPlanning
     if (manage == null || !manage.startsWith("t")) {
       miAdministrative.setEnabled(false);
     }
-
+    if (Algem.isFeatureEnabled("polynotes")) {
+        add(miEnrolmentWish = new JMenuItem(BundleUtil.getLabel("Enrolment.wish.menu.label")));
+    }
+    
     setListener(this);
   }
 
@@ -151,6 +161,12 @@ public class MenuPlanning
     } else if (src == miAdministrative) {
       AdministrativeScheduleCtrl adminScheduleCtrl = new AdministrativeScheduleCtrl(desktop);
       desktop.addPanel("Administrative.scheduling", adminScheduleCtrl, new Dimension(650,480));
+    } else if (src == miEnrolmentWish) {
+        if (ewCtrl == null) {
+            ewCtrl = new EnrolmentWishCtrl(desktop);
+        } else {
+            ewCtrl.setVisible(true);
+        }
     } else if (GemCommand.CANCEL_CMD.equals(arg)) {
       desktop.removeCurrentModule();
     }

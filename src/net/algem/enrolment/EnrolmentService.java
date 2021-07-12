@@ -33,6 +33,7 @@ import net.algem.contact.teacher.Teacher;
 import net.algem.course.*;
 import net.algem.group.Musician;
 import net.algem.planning.*;
+import net.algem.planning.wishes.EnrolmentWishIO;
 import net.algem.room.RoomIO;
 import net.algem.util.*;
 import net.algem.util.model.Model;
@@ -149,6 +150,79 @@ public class EnrolmentService
     return ScheduleIO.find(query, dc);
   }
 
+  Vector<Schedule> getCourseWeek2(Course c, DateFr start, int idEstab, int day, int teacher) {
+
+    Schedule p = get1PlanCourse(c, start, idEstab);
+    if (p == null) {
+      return new Vector<Schedule>();
+    }
+
+    DateFr end = new DateFr(p.getDate());
+    end.incDay(7);
+    //XXX et si le reste de la semaine tombe pendant les vacances ?
+//    int type = c.isATP() ? Schedule.WORKSHOP : Schedule.COURSE;
+
+    int type = getScheduleType(c.getCode());
+    String query = ",salle, action WHERE p.ptype = " + type
+      + " AND p.jour >= '" + p.getDate() + "' AND p.jour < '" + end + "'"
+      + " AND extract(dow from jour) = "+day      
+      + " AND p.action = action.id"
+      + " AND action.cours = " + c.getId()
+      + " AND p.idper = " + teacher      
+      + " AND p.lieux = salle.id AND salle.etablissement = " + idEstab
+      + " AND salle.nom NOT LIKE 'RATTRAP%' ORDER BY jour,debut,idper";
+    return ScheduleIO.find(query, dc);
+  }
+
+  /**
+   * Used for enrolment in {@link net.algem.enrolment.MemberEnrolmentDlg }.
+   * Gets all schedules for the course {@literal c } in a week.
+   *
+   * @version 2.17.1a
+   * @param course
+   * @param day
+   * @param start
+   * @param idEstab
+   * @return a list of schedules
+   * @see net.algem.enrolment.CourseEnrolmentDlg
+   */
+  Vector<Schedule> getCourseDay(int course, int day, int code, DateFr start, int estab) {
+
+    //System.out.println("EnrolmentService.getCourseDay cours="+course+" code="+code+" start="+start+" estab="+estab);
+    DateFr end = new DateFr(start);
+    end.incDay(7);
+
+    int type = getScheduleType(code);
+    String query = ",salle, action WHERE p.ptype = " + type
+      + " AND p.jour >= '" + start + "' AND p.jour < '" + end + "'"
+      + " AND extract(isodow from jour) = "+day
+      + " AND p.action = action.id"
+      + " AND action.cours = " + course
+      + " AND p.lieux = salle.id AND salle.etablissement = " + estab
+      + " AND salle.nom NOT LIKE 'RATTRAP%' ORDER BY jour,debut,idper";
+      //System.out.println("EnrolmentService.getCourseDay query="+query);
+    return ScheduleIO.find(query, dc);
+  }
+  
+  Vector<Schedule> getCourseDay2(int course, int day, int code, DateFr start, int estab, int teacher) {
+
+    //System.out.println("EnrolmentService.getCourseDay cours="+course+" code="+code+" start="+start+" estab="+estab);
+    DateFr end = new DateFr(start);
+    end.incDay(7);
+
+    int type = getScheduleType(code);
+    String query = ",salle, action WHERE p.ptype = " + type
+      + " AND p.jour >= '" + start + "' AND p.jour < '" + end + "'"
+      + " AND extract(isodow from jour) = "+day
+      + " AND p.action = action.id"
+      + " AND action.cours = " + course
+      + " AND p.idper = " + teacher      
+      + " AND p.lieux = salle.id AND salle.etablissement = " + estab
+      + " AND salle.nom NOT LIKE 'RATTRAP%' ORDER BY jour,debut,idper";
+      //System.out.println("EnrolmentService.getCourseDay query="+query);
+    return ScheduleIO.find(query, dc);
+  }
+  
   List<CourseSchedule> getSchedules(CourseModuleInfo cmi, DateFr start, int action, int estab) throws SQLException {
     DateFr s = new DateFr(start);
     DateFr end = new DateFr(s);
@@ -288,6 +362,31 @@ public class EnrolmentService
         pg.setCourseId(idCourse); //?
         pg.setStart(new Hour(rs.getString(1)));
         pg.setEnd(new Hour(rs.getString(2)));
+        ranges.addElement(pg);
+        //plage.addItem(p.getStart()+" - "+p.getEnd());
+      }
+      rs.close();
+    } catch (SQLException ex) {
+      GemLogger.logException(ex);
+    }
+    return ranges;
+
+  }
+
+  Vector<ScheduleRange> getBusyTimeSlot2(int idAction, int idCourse, DateFr date) {
+    Vector<ScheduleRange> ranges = new Vector<ScheduleRange>();
+    try {
+      String query = "SELECT DISTINCT pg.debut, pg.fin, pg.adherent FROM plage pg, planning p WHERE pg.idplanning = p.id"
+        + " AND p.action = " + idAction
+        + " AND p.jour = '" + date + "'";
+
+      ResultSet rs = dc.executeQuery(query);
+      while (rs.next()) {
+        ScheduleRange pg = new ScheduleRange();
+        pg.setCourseId(idCourse); //?
+        pg.setStart(new Hour(rs.getString(1)));
+        pg.setEnd(new Hour(rs.getString(2)));
+        pg.setMemberId(rs.getInt(3));
         ranges.addElement(pg);
         //plage.addItem(p.getStart()+" - "+p.getEnd());
       }
