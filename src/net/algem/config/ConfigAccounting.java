@@ -1,5 +1,6 @@
 /*
- * @(#)ConfigAccounting.java 2.14.0 26/05/17
+ * @(#)ConfigAccounting.java 2.17.0 01/07/2019
+ *                          2.14.0 26/05/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -48,7 +49,7 @@ import net.algem.util.ui.GridBagHelper;
  * Bic infos for the organization.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc gobat</a>
- * @version 2.14.0
+ * @version 2.17.0
  * @since 2.2.d
  */
 public class ConfigAccounting
@@ -118,7 +119,8 @@ public class ConfigAccounting
       AccountingExportFormat.EBP.getLabel(),
       AccountingExportFormat.DVLOG.getLabel(),
       AccountingExportFormat.OPENCONCERTO.getLabel(),
-      AccountingExportFormat.SAGE.getLabel()
+      AccountingExportFormat.SAGE.getLabel(),
+      AccountingExportFormat.EMAGNUS.getLabel()
     });
 
     accountingFormat.setSelectedItem(c8.getValue());

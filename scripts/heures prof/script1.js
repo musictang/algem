@@ -34,4 +34,4 @@ if (args.showDetail) {
 
 utils.print(query);
 
-out.resultSet(dc.executeQuery(query));
+out.setQuery(query);

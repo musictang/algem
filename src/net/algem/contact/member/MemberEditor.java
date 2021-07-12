@@ -1,5 +1,6 @@
 /*
- * @(#)MemberEditor.java	2.16.0 05/03/19
+ * @(#)MemberEditor.java	2.17.0 04/06/2019
+ *                              2.16.0 05/03/19
  *
  * Copyright (c) 1999-2019 Musiques Tangentes. All Rights Reserved.
  *
@@ -28,6 +29,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import net.algem.Algem;
 import net.algem.config.CategoryOccupChoice;
 import net.algem.contact.InstrumentView;
 import net.algem.contact.Person;
@@ -48,7 +50,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.16.0
+ * @version 2.17.0
  */
 public class MemberEditor
         extends FileTab
@@ -60,7 +62,9 @@ public class MemberEditor
   private GemNumericField age;
   private GemNumericField nMemberships;
   private GemNumericField payer;
+  private GemNumericField family;
   private GemField payerName;
+  private GemField familyName;
   private GemNumericField practice;
   private GemNumericField level;
   private GemField insurance;
@@ -82,6 +86,12 @@ public class MemberEditor
     payerName = new GemField(20);
     payerName.setEditable(false);
     payerName.setBackground(Color.lightGray);
+    family = new GemNumericField(6);
+    family.addFocusListener(this);
+    family.addActionListener(this);
+    familyName = new GemField(20);
+    familyName.setEditable(false);
+    familyName.setBackground(Color.lightGray);
     practice = new GemNumericField(3);
     level = new GemNumericField(3);
     insurance = new GemField(20);
@@ -101,12 +111,15 @@ public class MemberEditor
     gb.add(new GemLabel(BundleUtil.getLabel("Practical.experience.label")), 0, 5, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Level.label")), 0, 6, 1, 1, GridBagHelper.WEST);
     gb.add(new GemLabel(BundleUtil.getLabel("Payer.label")), 0, 7, 1, 1, GridBagHelper.WEST);
+    if (Algem.isFeatureEnabled("cc-mdl")) {
+        gb.add(new GemLabel(BundleUtil.getLabel("Family.label")), 0, 8, 1, 1, GridBagHelper.WEST);
+    }
     GemLabel insuranceL = new GemLabel(BundleUtil.getLabel("Insurance.label"));
     insuranceL.setToolTipText(BundleUtil.getLabel("Insurance.tip"));
     GemLabel insuranceRefL = new GemLabel(BundleUtil.getLabel("Insurance.ref.label"));
     insuranceRefL.setToolTipText(BundleUtil.getLabel("Insurance.ref.tip"));
-    gb.add(insuranceL, 0, 8, 1, 1, GridBagHelper.WEST);
-    gb.add(insuranceRefL, 0, 9, 1, 1, GridBagHelper.WEST);
+    gb.add(insuranceL, 0, 9, 1, 1, GridBagHelper.WEST);
+    gb.add(insuranceRefL, 0, 10, 1, 1, GridBagHelper.WEST);
 
     gb.add(instrument, 1, 0, 3, 1, GridBagHelper.WEST);
     occupation.setPreferredSize(new Dimension(200, occupation.getPreferredSize().height));
@@ -118,8 +131,12 @@ public class MemberEditor
     gb.add(level, 1, 6, 2, 1, GridBagHelper.WEST);
     gb.add(payer, 1, 7, 1, 1, GridBagHelper.WEST);
     gb.add(payerName, 2, 7, 1, 1, GridBagHelper.WEST);
-    gb.add(insurance, 1, 8, 2, 1, GridBagHelper.WEST);
-    gb.add(insuranceRef, 1, 9, 2, 1, GridBagHelper.WEST);
+    if (Algem.isFeatureEnabled("cc-mdl")) {
+        gb.add(family, 1, 8, 1, 1, GridBagHelper.WEST);
+        gb.add(familyName, 2, 8, 1, 1, GridBagHelper.WEST);
+    }
+    gb.add(insurance, 1, 9, 2, 1, GridBagHelper.WEST);
+    gb.add(insuranceRef, 1, 10, 2, 1, GridBagHelper.WEST);
 
     this.setLayout(new BorderLayout());
     add(p, BorderLayout.CENTER);
@@ -134,6 +151,15 @@ public class MemberEditor
     }
   }
 
+  public void searchFamily() {
+    try {
+      loadFamily(Integer.parseInt(family.getText()));
+    } catch (NumberFormatException e) {
+      family.setText("");
+      familyName.setText(BundleUtil.getLabel("Unknown.label"));
+    }
+  }
+
 	@Override
   public void focusGained(FocusEvent evt) {
   }
@@ -142,6 +168,8 @@ public class MemberEditor
   public void focusLost(FocusEvent evt) {
     if (evt.getSource() == payer) {
       searchPayer();
+    }  else if (evt.getSource() == family) {
+      searchFamily();
     } else if (evt.getSource() == birth) {
       age.setText(String.valueOf(DateLib.getAge(birth.get())));
     }
@@ -152,10 +180,17 @@ public class MemberEditor
     if (evt.getSource() == payer) {
       searchPayer();
     }
+    if (evt.getSource() == family) {
+      searchFamily();
+    }
   }
 
   public String getPayer() {
     return payer.getText();
+  }
+
+  public String getFamily() {
+    return family.getText();
   }
 
   public Member getMember() {
@@ -183,6 +218,11 @@ public class MemberEditor
     } catch (NumberFormatException e) {
       m.setPayer(0);
     }
+    try {
+      m.setFamily(Integer.parseInt(family.getText()));
+    } catch (NumberFormatException e) {
+      m.setFamily(0);
+    }
     m.setInstruments(instrument.get());
     m.setInsurance(insurance.getText().isEmpty() ? null : insurance.getText());
     m.setInsuranceRef(insuranceRef.getText().isEmpty() ? null : insuranceRef.getText());
@@ -205,6 +245,8 @@ public class MemberEditor
     level.setText(String.valueOf(m.getLevel()));
     payer.setText(String.valueOf(m.getPayer()));
     loadPayeur(m.getPayer());
+    family.setText(String.valueOf(m.getFamily()));
+    loadFamily(m.getFamily());
 
     insurance.setText(m.getInsurance());
     insuranceRef.setText(m.getInsuranceRef());
@@ -216,6 +258,15 @@ public class MemberEditor
       payerName.setText(name);
     } else {
       payerName.setText("");
+    }
+  }
+
+  public void setFamily(int _id, String name) {
+    family.setText(String.valueOf(_id));
+    if (name != null) {
+      familyName.setText(name);
+    } else {
+      familyName.setText("");
     }
   }
 
@@ -237,6 +288,20 @@ public class MemberEditor
     }
   }
 
+  public void loadFamily(int _id) {
+    if (_id == id) {
+      familyName.setText(BundleUtil.getLabel("Himself.label"));
+      return;
+    }
+    Person p = ((PersonIO) DataCache.getDao(Model.Person)).findById(_id);
+    if (p != null) {
+      String org = p.getOrganization() != null ? p.getOrganization().getCompanyName() : null;
+      familyName.setText(org == null || org.isEmpty() ? p.getFirstnameName() : org);
+    } else {
+      familyName.setText(BundleUtil.getLabel("Unknown.label"));
+    }
+  }
+
   public void clear() {
     id = 0;
     occupation.setSelectedIndex(0);
@@ -245,6 +310,8 @@ public class MemberEditor
     nMemberships.setText("");
     payer.setText("");
     payerName.setText("");
+    family.setText("");
+    familyName.setText("");
     insurance.setText(null);
     insuranceRef.setText(null);
   }

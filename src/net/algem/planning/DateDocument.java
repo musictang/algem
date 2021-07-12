@@ -1,5 +1,6 @@
 /*
- * @(#)DateDocument.java	2.14.0 20/06/17
+ * @(#)DateDocument.java	2.17.0 20/03/2019
+ *                              2.14.0 20/06/17
  * 
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -31,7 +32,7 @@ import javax.swing.text.PlainDocument;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.14.0
+ * @version 2.17.0
  */
 public class DateDocument
         extends PlainDocument
@@ -148,7 +149,8 @@ public class DateDocument
   }
 
   public DateFr getDateFr() {
-    return buf;
+//    return buf; //TODO ERIC ERROR retourne référence variable privée !
+    return new DateFr(buf.toString()); 
   }
 
   public void setDate(String s) {

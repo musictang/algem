@@ -26,6 +26,7 @@ import java.awt.event.ActionListener;
 import java.util.Calendar;
 import java.util.Date;
 import javax.swing.BorderFactory;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import net.algem.contact.teacher.Teacher;
@@ -59,6 +60,7 @@ public class AttendanceSheetDlg
   private GemButton btPrint;
   private Teacher teacher;
   private GemChoice estabChoice;
+  private JCheckBox compress;
 
   public AttendanceSheetDlg(Component _parent, DataCache _cache, Teacher _teacher) {
     this.dataCache = _cache;
@@ -86,14 +88,16 @@ public class AttendanceSheetDlg
     String e = BundleUtil.getLabel("Establishment.label");
     gb.add(new JLabel(e == null ? "" : e.substring(0, 4)), 0, 0, 1, 1, GridBagHelper.WEST);
     gb.add(estabChoice, 1, 0, 1, 1, GridBagHelper.WEST);
+    compress = new JCheckBox();
     GemPanel datePanel = new GemPanel();
-    
     datePanel.add(startDate);
     datePanel.add(new JLabel(BundleUtil.getLabel("Date.To.label")));
     datePanel.add(endDate);
     gb.add(new JLabel(BundleUtil.getLabel("Date.From.label")), 0, 1, 1, 1, GridBagHelper.WEST);
     gb.add(datePanel, 1, 1, 1, 1, GridBagHelper.WEST);
-
+    gb.add(new JLabel(BundleUtil.getLabel("AttendanceQuarterSheet.label")), 0, 2, 1, 1, GridBagHelper.WEST);
+    gb.add(compress, 1,2,1,1, GridBagHelper.WEST);
+    
     btPrint = new GemButton(GemCommand.PRINT_CMD);
     btPrint.addActionListener(this);
     btCancel = new GemButton(GemCommand.CANCEL_CMD);
@@ -136,6 +140,19 @@ public class AttendanceSheetDlg
         return;
       }
       dialog.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+      if (compress.isSelected()) {
+      final AttendanceQuaterSheet sheet = new AttendanceQuaterSheet(dialog, dataCache);
+      if (teacher != null) {
+        sheet.edit(teacher, pg, getEstab());
+      } else { // feuille de présence globale
+        new Thread(new Runnable() {
+          @Override
+          public void run() {
+            sheet.edit(pg, getEstab());
+          }
+        }).start();
+      }
+      } else {
       final AttendanceSheet sheet = new AttendanceSheet(dialog, dataCache);
       if (teacher != null) {
         sheet.edit(teacher, pg, getEstab());
@@ -146,6 +163,8 @@ public class AttendanceSheetDlg
             sheet.edit(pg, getEstab());
           }
         }).start();
+      }
+          
       }
       dialog.setCursor(Cursor.getDefaultCursor());
 

@@ -209,6 +209,33 @@ public class InvoiceIO
   }
 
   /**
+   * Search for invoices on jointure 2.17
+   *
+   * @param where
+   * @return a list of invoices
+   * @throws SQLException
+   */
+  //FIXME ERIC TODO 
+  public static ResultSet invoiceJoinSelect(String where) throws SQLException {
+      String query = "select * from article_facture join facture f on f.NUMERO=id_facture join echeancier2 e on e.oid=id_echeancier "+where+" order by id_facture,id_echeancier";
+      
+      return DataCache.getDataConnection().executeQuery(query);
+  }
+  
+  public static int countInvoice(String where) {
+//      String query = "select count(distinct numero) from facture  "+where; 877 avec jointure = 843
+      String query = "select count(distinct numero) from article_facture join facture f on f.NUMERO=id_facture join echeancier2 e on e.oid=id_echeancier "+where;
+      
+    try {
+        ResultSet rs = DataCache.getDataConnection().executeQuery(query);
+        if (rs.next()) {
+            return rs.getInt(1);
+        }
+    } catch (Exception ex) {}
+    return 0;
+  }
+  
+  /**
    * Search for invoices.
    *
    * @param where

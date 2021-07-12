@@ -20,8 +20,10 @@
  */
 package net.algem.util.menu;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import javax.swing.JMenuItem;
+import net.algem.Algem;
 import net.algem.contact.PersonFileSearchCtrl;
 import net.algem.group.GroupSearchCtrl;
 import net.algem.room.RoomSearchCtrl;
@@ -74,7 +76,11 @@ public class MenuSearch
         contact.addActionListener(this);
         contact.init();
         desktop.addPanel(CONTACT_BROWSER_KEY, contact);
-        desktop.getSelectedModule().setSize(GemModule.S_SIZE);
+        if (Algem.isFeatureEnabled("cc-mdl")) {
+            desktop.getSelectedModule().setSize(new Dimension(420, 460));
+        } else {
+            desktop.getSelectedModule().setSize(GemModule.S_SIZE);
+        }
       }
     } else if (src == miGroupBrowse) {
       if (!desktop.hasModule(GroupSearchCtrl.GROUP_BROWSER_KEY)) {

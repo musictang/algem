@@ -1,5 +1,6 @@
 /*
- * @(#)OrderIO.java	2.15.8 21/03/2018
+ * @(#)OrderIO.java	2.17.0 20/03/2019
+ *                      2.15.8 21/03/2018
  *
  * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
@@ -23,12 +24,15 @@ package net.algem.enrolment;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 import net.algem.accounting.AccountPrefIO;
 import net.algem.accounting.OrderLineIO;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
 import net.algem.config.Preference;
+import net.algem.contact.Person;
 import net.algem.contact.PersonIO;
 import net.algem.planning.DateFr;
 import net.algem.planning.ScheduleIO;
@@ -42,7 +46,7 @@ import net.algem.util.model.TableIO;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.8
+ * @version 2.17.0
  * @since 1.0a 07/07/1999
  */
 public class OrderIO
@@ -207,4 +211,33 @@ public class OrderIO
     }
     return v;
   }
+
+  //FIXME ajout eric pour polynotes
+  public static List<Person> findMembersWithOrders(DataConnection dc) {
+
+    String start = ConfigUtil.getConf(ConfigKey.BEGINNING_PERIOD.getKey());
+    String end = ConfigUtil.getConf(ConfigKey.END_PERIOD.getKey());
+    List<Person> v = new ArrayList<>();
+    String query = "SELECT DISTINCT c.adh,p.nom,p.prenom"
+      + " FROM " + TABLE + " c, " + PersonIO.TABLE + " p"
+      + " WHERE c.adh = p.id"
+      + " AND c.creation >= '" + start + "' AND c.creation <= '" + end + "'"
+      + " ORDER BY p.nom,p.prenom";
+    try {
+      ResultSet rs = dc.executeQuery(query);
+      while (rs.next()) {
+        Person p = new Person();
+        p.setId(rs.getInt(1));
+        p.setName(rs.getString(2));
+        p.setFirstName(rs.getString(3));
+
+        v.add(p);
+      }
+      rs.close();
+    } catch (SQLException e) {
+      GemLogger.logException(query, e);
+    }
+    return v;
+  }
+
 }

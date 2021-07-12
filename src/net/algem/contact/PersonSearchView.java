@@ -1,5 +1,6 @@
 /*
- * @(#)PersonSearchView.java	2.15.6 29/11/17
+ * @(#)PersonSearchView.java    2.17.0p 28/06/2019
+ *                              2.15.6 29/11/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -23,8 +24,12 @@ package net.algem.contact;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
+import java.util.Vector;
 import javax.swing.ButtonGroup;
 import javax.swing.JRadioButton;
+import net.algem.Algem;
+import net.algem.config.Instrument;
+import net.algem.config.InstrumentChoice;
 import net.algem.util.BundleUtil;
 import net.algem.util.GemCommand;
 import net.algem.util.ui.*;
@@ -35,7 +40,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.6
+ * @version 2.17.0p
  * @since 1.0a 07/07/1999
  */
 public class PersonSearchView
@@ -51,6 +56,10 @@ public class PersonSearchView
   private GemField email;
   private GemField site;
   private GemPanel mask;
+  private InstrumentChoice instrument;      //ERIC 2.17
+  private GemNumericField cycle;    //ERIC 2.17
+  //private List<Instrument> instruments;
+
   ButtonGroup filter;
   private JRadioButton checkTeacherOnly;
   private JRadioButton checkMemberOnly;
@@ -86,7 +95,13 @@ public class PersonSearchView
     site = new GemField(15);
     site.setMinimumSize(min);
     site.addActionListener(this);
+//ERIC 2.17
+    instrument = new InstrumentChoice();    //desktop.getDataCache().getInstruments());
 
+    cycle = new GemNumericField(2);
+    //cycle.setMinimumSize(new Dimension(70, cycle.getPreferredSize().height));
+    cycle.addActionListener(this);
+    
     btErase = new GemButton(GemCommand.ERASE_CMD);
     btErase.setToolTipText(BundleUtil.getLabel("Person.search.erase.tip"));
     btErase.addActionListener(this);
@@ -112,15 +127,28 @@ public class PersonSearchView
     gb.add(telephone, 1, 5, 1, 1, GridBagHelper.WEST);
     gb.add(email, 1, 6, 1, 1, GridBagHelper.WEST);
     gb.add(site, 1, 7, 1, 1, GridBagHelper.WEST);
-
+    
+    if (Algem.isFeatureEnabled("cc-mdl")) {
+        gb.add(new GemLabel(BundleUtil.getLabel("Cycle.label")), 0, 8, 1, 1, GridBagHelper.WEST);
+        gb.add(new GemLabel(BundleUtil.getLabel("Instrument.label")), 0, 9, 1, 1, GridBagHelper.WEST);
+        gb.add(cycle, 1, 8, 1, 1, GridBagHelper.WEST);
+        gb.add(instrument, 1, 9, 1, 1, GridBagHelper.WEST);
+        gb.add(checkTeacherOnly = new JRadioButton(BundleUtil.getLabel("Person.search.teacher.filter.label")), 0,10,2,1, GridBagHelper.WEST);
+        gb.add(checkMemberOnly = new JRadioButton(BundleUtil.getLabel("Person.search.member.filter.label")), 0,11,2,1, GridBagHelper.WEST);
+    } else {
+        gb.add(checkTeacherOnly = new JRadioButton(BundleUtil.getLabel("Person.search.teacher.filter.label")), 0,8,2,1, GridBagHelper.WEST);
+        gb.add(checkMemberOnly = new JRadioButton(BundleUtil.getLabel("Person.search.member.filter.label")), 0,9,2,1, GridBagHelper.WEST);
+    }
     filter = new ButtonGroup();
-    gb.add(checkTeacherOnly = new JRadioButton(BundleUtil.getLabel("Person.search.teacher.filter.label")), 0,8,2,1, GridBagHelper.WEST);
-    gb.add(checkMemberOnly = new JRadioButton(BundleUtil.getLabel("Person.search.member.filter.label")), 0,9,2,1, GridBagHelper.WEST);
     filter.add(checkTeacherOnly);
     filter.add(checkMemberOnly);
     gb.add(btErase, 2, 10, 1, 1, GridBagHelper.WEST);
 
     return mask;
+  }
+  
+  public void setInstruments(Vector<Instrument> instruments) {
+      instrument.setList(instruments);
   }
 
   @Override
@@ -136,7 +164,8 @@ public class PersonSearchView
             || evt.getSource() == firstname
             || evt.getSource() == pseudo
             || evt.getSource() == email
-            || evt.getSource() == site) {
+            || evt.getSource() == site
+            || evt.getSource() == cycle) {
       actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, GemCommand.SEARCH_CMD));
     } else {
       actionListener.actionPerformed(evt);
@@ -171,7 +200,12 @@ public class PersonSearchView
       case 7:
         s = pseudo.getText().trim();
         break;
-    }
+      case 8:
+        s = cycle.getText().trim();
+        break;
+      case 9:
+        s = instrument.getKey() != 0 ? String.valueOf(instrument.getKey()) : null;
+        break;    }
     if (s != null && s.length() > 0) {
       return s;
     } else {
@@ -197,6 +231,8 @@ public class PersonSearchView
     telephone.setText("");
     email.setText("");
     site.setText("");
+    cycle.setText("");
+    instrument.setSelectedIndex(0);
     filter.clearSelection();
   }
 }

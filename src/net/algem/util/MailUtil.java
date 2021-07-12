@@ -1,5 +1,6 @@
 /*
- * @(#)MailUtil.java	2.15.2 27/09/17
+ * @(#)MailUtil.java	2.17.0 08/04/2019
+ *                      2.15.2 27/09/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -26,7 +27,12 @@ import java.net.URLEncoder;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Properties;
 import java.util.Vector;
+import javax.mail.Authenticator;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import net.algem.config.Config;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
 import net.algem.contact.*;
@@ -39,12 +45,14 @@ import net.algem.planning.ScheduleRangeObject;
 import net.algem.security.User;
 import net.algem.util.jdesktop.DesktopMailHandler;
 import net.algem.util.model.Model;
+import org.apache.commons.codec.binary.Base64;
 
 /**
  * Utility class for sending emails.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.2
+ * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
+ * @version 2.17.0
  * @since 2.8.k 26/07/13
  */
 public class MailUtil {
@@ -235,7 +243,84 @@ public class MailUtil {
       to = dataCache.getUser().getLogin() + "@" + (domain == null ? BundleUtil.getLabel("Domain") : domain.trim().toLowerCase());
     }
     mailHandler.send(to, bcc);
-
   }
 
+  public static Session SmtpInitSession() { //ERIC 2.17.3h 24/06/2020 encode pwd
+
+/* FAI Orange
+        prop.put("mail.transport.protocol", "smtp");
+        prop.put("mail.smtp.host", "smtp.orange.fr");
+        prop.put("mail.smtp.port", "465");
+        prop.put("mail.smtp.auth", true); 
+        prop.put("mail.smtp.ssl.enable", "true");
+        prop.put("mail.smtp.ssl.trust", "smtp.orange.fr");
+/**/
+/* FAI Free 
+        prop.put("mail.transport.protocol", "smtp");
+        prop.put("mail.smtp.host", "smtp.free.fr");
+        prop.put("mail.smtp.port", "465");
+        prop.put("mail.smtp.auth", false); // inutile chez free
+        prop.put("mail.smtp.ssl.enable", "true");
+        prop.put("mail.smtp.ssl.trust", "smtp.free.fr");
+/**/
+/* FAI OVH 
+        prop.put("mail.transport.protocol", "smtp");
+        prop.put("mail.smtp.host", "ssl0.ovh.net");
+        prop.put("mail.smtp.port", "587");
+        prop.put("mail.smtp.auth", true); // obligatoire chez ovh
+        prop.put("mail.smtp.starttls.enable", "true");
+/**/  
+      
+    Config config;
+
+    Properties prop = new Properties();
+    prop.put("mail.transport.protocol", "smtp");
+    prop.put("mail.smtp.host", ConfigUtil.getConf(ConfigKey.SMTP_SERVER_NAME.getKey()));
+    prop.put("mail.smtp.port", ConfigUtil.getConf(ConfigKey.SMTP_SERVER_PORT.getKey()));
+    prop.put("mail.smtp.auth", ConfigUtil.getConf(ConfigKey.SMTP_SERVER_AUTH.getKey()));
+    if (ConfigUtil.getConf(ConfigKey.SMTP_SERVER_SECURITY.getKey()).equals("SSL")) {
+        prop.put("mail.smtp.ssl.enable", "true");
+        prop.put("mail.smtp.ssl.trust", ConfigUtil.getConf(ConfigKey.SMTP_SERVER_NAME.getKey()));
+        prop.put("mail.smtps.connectiontimeout", "2000");
+        prop.put("mail.smtps.timeout", "5000");
+        
+    } else if (ConfigUtil.getConf(ConfigKey.SMTP_SERVER_SECURITY.getKey()).equals("TLS")) {
+        prop.put("mail.smtp.starttls.enable", "true");
+        prop.put("mail.smtps.connectiontimeout", "2000");
+        prop.put("mail.smtps.timeout", "5000");
+    } else {
+        prop.put("mail.smtp.connectiontimeout", "2000");
+        prop.put("mail.smtp.timeout", "5000");
+    }
+
+    //System.out.println("auth="+ConfigUtil.getConf(ConfigKey.SMTP_SERVER_AUTH.getKey()) +" security="+ConfigUtil.getConf(ConfigKey.SMTP_SERVER_SECURITY.getKey()));
+    //System.out.println("user="+ConfigUtil.getConf(ConfigKey.SMTP_SERVER_USER.getKey()) +" pswd="+ConfigUtil.getConf(ConfigKey.SMTP_SERVER_PSWD.getKey()));
+    Session session = Session.getInstance(prop, new Authenticator() {
+        @Override
+        protected PasswordAuthentication getPasswordAuthentication() {
+            String pwd = decode(ConfigUtil.getConf(ConfigKey.SMTP_SERVER_USER.getKey()), ConfigUtil.getConf(ConfigKey.SMTP_SERVER_PSWD.getKey()));
+//            return new PasswordAuthentication(ConfigUtil.getConf(ConfigKey.SMTP_SERVER_USER.getKey()), ConfigUtil.getConf(ConfigKey.SMTP_SERVER_PSWD.getKey()));
+            return new PasswordAuthentication(ConfigUtil.getConf(ConfigKey.SMTP_SERVER_USER.getKey()), pwd);
+        }
+    });
+    //session.setDebug(true);
+    
+    return session;
+  }
+  
+  public static String encode(String u, String p) {
+    char [] pwd = p.toCharArray();
+    for (int i=0; i < pwd.length; i++) {
+        pwd[i] = (char) (pwd[i] ^ u.charAt(i));
+    }
+    return new String(Base64.encodeBase64(new String(pwd).getBytes()));      
+  }
+
+  public static String decode(String u, String p) {
+    char [] pwd = new String(Base64.decodeBase64(p)).toCharArray();
+    for (int i=0; i < pwd.length; i++) {
+        pwd[i] = (char) (pwd[i] ^ u.charAt(i));
+    }
+    return new String(pwd);
+  }
 }

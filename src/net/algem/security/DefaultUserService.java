@@ -1,7 +1,7 @@
 /*
- * @(#)DefaultUserService.java	2.15.11 09/10/2018
+ * @(#)DefaultUserService.java	2.17.2 27/10/19
  *
- * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 1999-2019 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
@@ -47,7 +47,7 @@ import org.apache.commons.codec.binary.Base64;
  * User operations service.
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.11
+ * @version 2.17.2
  * @since 2.6.a 06/08/2012
  */
 public class DefaultUserService
@@ -335,7 +335,13 @@ public class DefaultUserService
     return b;
   }
 
-
+  /**
+   *
+   * @param menu menu key
+   * @param user user instance
+   * @return true if menu is authorized for this user
+   * @deprecated
+   */
   @Override
   public boolean authorize(String menu, User user) {
     String query = "SELECT autorisation FROM menuaccess a, menu2 m"

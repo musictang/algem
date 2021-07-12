@@ -38,6 +38,14 @@ public class HoursTaskFactory {
     } catch (ClassNotFoundException ex) {
       GemLogger.log(ex.getMessage());
     }
+    try {
+      Class c = Class.forName("net.algem.plugins.XLSWorkingTimePlugin");
+      return (HoursTaskExecutor) c.newInstance();
+    } catch (InstantiationException | IllegalAccessException ex) {
+      GemLogger.logException(ex);
+    } catch (ClassNotFoundException ex) {
+      GemLogger.log(ex.getMessage());
+    }
     return null;
   }
 }

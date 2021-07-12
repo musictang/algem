@@ -106,7 +106,7 @@ public class CourseOrder
 
   @Override
   public String toString() {
-    return idcmd + " " + moduleOrder + " " + action + " " + start + " " + end + " " + startDate + " " + endDate;
+    return idcmd + " " + moduleOrder + " " + action + " "+ code + " " + start + " " + end + " " + startDate + " " + endDate;
   }
 
   public int getId() {

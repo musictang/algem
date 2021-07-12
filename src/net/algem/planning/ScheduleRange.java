@@ -72,7 +72,7 @@ public class ScheduleRange
   }
 
   public String toLongString() {
-    return day + " " + start + " " + end + " (" + roomId + "/" + courseId + "/" + teacherId + ")";
+    return day + " " + start + " " + end + " (" + roomId + "/" + courseId + "/" + teacherId + "/" + memberId +")";
   }
 
   public int getId() {

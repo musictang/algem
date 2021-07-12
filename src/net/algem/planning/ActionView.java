@@ -1,5 +1,6 @@
 /*
- * @(#)ActionView.java	2.14.3 06/07/17
+ * @(#)ActionView.java	2.17.0 20/05/2019 
+ *                      2.14.3 06/07/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -35,6 +36,7 @@ import net.algem.config.ColorPrefs;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
 import net.algem.config.ParamChoice;
+import net.algem.contact.Person;
 import net.algem.contact.teacher.Teacher;
 import net.algem.contact.teacher.TeacherChoice;
 import net.algem.contact.teacher.TeacherEvent;
@@ -61,7 +63,7 @@ import net.algem.util.ui.*;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.14.3
+ * @version 2.17.0
  * @see net.algem.planning.CourseScheduleCtrl
  */
 public class ActionView
@@ -198,6 +200,15 @@ public class ActionView
     gb.add(vacancy, 1, 8, 1, 1, GridBagHelper.WEST);
   }
 
+  //ERIC ajout 2.17.0
+  public void setReinscription(Course c, Teacher t, int dow, Hour start, Hour end) { 
+      course.setSelectedItem(c);
+      teacher.setSelectedItem(t);
+      day.setSelectedIndex(dow-2);
+      hourPanel.setStart(start);
+      hourPanel.setEnd(end);
+  }
+  
   public Action get() {
     Action a = new Action();
 

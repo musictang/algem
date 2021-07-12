@@ -1,0 +1,8 @@
+{
+  "description": "Alarmes des absences non excus\u00e9es des \u00e9l\u00e8ves r\u00e9p\u00e9t\u00e9es plus de deux fois pour un cours sur la p\u00e9riode.\nLes \u00e9l\u00e8ves sont class\u00e9s dans l'ordre alphab\u00e9tique et nombre d'absences.\nSi vous n'indiquez pas de p\u00e9riode, la recherche portera sur l'ann\u00e9e scolaire.",
+"args":
+[   
+    {"name" : "dateDebut", "label": "Date d\u00e9but", "type": "date"},
+    {"name" : "dateFin", "label": "Date fin", "type": "date"}
+]
+}

@@ -1,5 +1,6 @@
 /*
- * @(#)DayPlanRoomView.java	2.9.2 22/12/14
+ * @(#)DayPlanRoomView.java	2.17.0 27/03/2019
+ *                              2.9.2 22/12/14
  *
  * Copyright (c) 1999-2014 Musiques Tangentes. All Rights Reserved.
  *
@@ -21,12 +22,14 @@
 package net.algem.planning.day;
 
 import java.beans.PropertyChangeEvent;
+import java.util.Map;
 import java.util.Vector;
-import net.algem.config.ConfigUtil;
 import net.algem.planning.ScheduleObject;
 import net.algem.planning.ScheduleRangeObject;
+import net.algem.room.DailyTimes;
 import net.algem.room.Room;
 import net.algem.util.BundleUtil;
+import net.algem.util.DataCache;
 import net.algem.util.model.GemList;
 
 /**
@@ -34,7 +37,7 @@ import net.algem.util.model.GemList;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">jean-marc Gobat</a>
- * @version 2.9.2
+ * @version 2.17.0
  * @since 1.0a 07/07/1999
  */
 public class DayPlanRoomView
@@ -44,12 +47,14 @@ public class DayPlanRoomView
   private int estab;
   private GemList<Room> roomList;
   private boolean all;
+  private Map<Integer,DailyTimes[]>  roomTimesList; //ERIC 2.17 27/03/2019
 
   public DayPlanRoomView(GemList<Room> list, int e) {
     super(BundleUtil.getLabel("Room.label"));
 
     estab = e;
     roomList = list;
+    roomTimesList = DataCache.getDailyTimes();
   }
 
   @Override
@@ -73,7 +78,8 @@ public class DayPlanRoomView
         pj.setLabel(s.getName());
         pj.setSchedule(v1);
         pj.setScheduleRange(v2);
-        pj.setDailyTimes(ConfigUtil.getTimes(s.getId()));
+//        pj.setDailyTimes(ConfigUtil.getTimes(s.getId())); //ERIC 23/03/2019
+        pj.setDailyTimes(roomTimesList.get(s.getId())); //ERIC 23/03/2019
         dayPlanView.addCol(pj);
 
         cpt++;

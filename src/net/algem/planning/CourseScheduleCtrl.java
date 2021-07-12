@@ -1,5 +1,6 @@
 /*
- * @(#)CourseScheduleCtrl.java	2.12.0 09/03/17
+ * @(#)CourseScheduleCtrl.java	2.17.0 20/05/2019
+ *                              2.12.0 09/03/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -23,6 +24,7 @@ package net.algem.planning;
 import java.awt.event.ActionEvent;
 import java.util.*;
 import javax.swing.JOptionPane;
+import net.algem.contact.teacher.Teacher;
 import net.algem.course.Course;
 import net.algem.planning.editing.ModifPlanEvent;
 import net.algem.util.BundleUtil;
@@ -39,7 +41,7 @@ import net.algem.util.ui.MessagePopup;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.12.0
+ * @version 2.17.0
  * @since 1.0a 07/07/1999
  */
 public class CourseScheduleCtrl
@@ -71,6 +73,11 @@ public class CourseScheduleCtrl
     select(0);
   }
 
+//ERIC ajout 2.17 planning depuis voeux de réinscription 
+  public void setReinscription(Course c, Teacher t, int dow, Hour start, Hour end) {
+    av.setReinscription(c, t, dow, start, end);
+  }
+  
   @Override
   public boolean prev() {
     select(step - 1);
@@ -171,7 +178,7 @@ public class CourseScheduleCtrl
 
   @Override
   public boolean cancel() {
-    clear();
+      clear();
     if (actionListener != null) {
       cleanUp();
       actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, GemCommand.CANCEL_CMD));

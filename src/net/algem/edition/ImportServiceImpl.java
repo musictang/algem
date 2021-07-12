@@ -1,5 +1,6 @@
 /*
- * @(#) ImportServiceImpl.java Algem 2.13.0 04/04/17
+ * @(#) ImportServiceImpl.java Algem 2.17.0 04/06/2019
+ *                                  2.13.0 04/04/17
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -24,6 +25,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Vector;
 import java.util.concurrent.ExecutionException;
 import javax.swing.SwingWorker;
 import net.algem.config.Instrument;
@@ -45,7 +47,7 @@ import static net.algem.util.ui.SearchCtrl.TRANSLATE_TO;
 /**
  *
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.13.0
+ * @version 2.17.0
  * @since 2.13.0 22/03/2017
  */
 public class ImportServiceImpl implements ImportService {
@@ -67,7 +69,7 @@ public class ImportServiceImpl implements ImportService {
   public int importContacts(final List<ContactImport> contacts) throws Exception {
     final ContactIO contactIO = new ContactIO(dc);
     final MemberIO memberIO = new MemberIO(dc);
-
+    
     return dc.withTransaction(new DataConnection.SQLRunnable<Integer>() {
       @Override
       public Integer run(DataConnection conn) throws Exception {
@@ -107,12 +109,25 @@ public class ImportServiceImpl implements ImportService {
    */
   private int importContact(ContactImport c, ContactIO contactIO, MemberIO memberIO) throws Exception {
     boolean np = updateParent(contactIO, c.getParent());
+    int parent = getParent(contactIO, c);
     if (c.getId() == 0) {
+      if (c.getFirstName().equals(c.getParent().getFirstName()) && c.getName().equals(c.getParent().getName())) { // payeur et adherent
+          Member m = getMemberFromContact(c, true, dc);
+          if (m != null) {
+              m.setId(c.getParent().getId());
+              memberIO.insert(m);
+          }
+          return 1;
+
+          }
       if (hasDuplicates(c)) {
         return 0;// do not import duplicates
       }
+      if (parent != 0) {
+        c.getParent().setId(parent);
+      }
       contactIO.insert(c);
-      Member m = getMemberFromContact(c, np, dc);
+      Member m = getMemberFromContact(c, parent!=0, dc);
       if (m != null) {
         memberIO.insert(m);
       }
@@ -138,6 +153,7 @@ public class ImportServiceImpl implements ImportService {
   }
 
   private Member getMemberFromContact(ContactImport c, boolean np, DataConnection dc) throws SQLException {
+
     if (c.getBirthDate() != null || c.getInstrument() != null || np) {
       String instrument = c.getInstrument();
       Date birth = c.getBirthDate();
@@ -212,6 +228,18 @@ public class ImportServiceImpl implements ImportService {
       }
     }
     return false;
+  }
+
+  private int getParent(ContactIO contactIO, ContactImport p) throws SQLException {
+    if (p == null) {
+      return 0;
+    }
+    String query = "where UPPER(p.nom)=UPPER('"+p.getParent().getName()+"') and p.prenom='"+p.getParent().getFirstName()+"'";
+    Vector<Contact> op = ContactIO.find(query,false, dc);
+    if (op.size() > 0) {
+        return op.get(0).getId();
+    } 
+    return 0;
   }
 
   private static class ImportException extends Exception {

@@ -1,5 +1,6 @@
 /*
- * @(#)Member.java	2.15.0 30/07/2017
+ * @(#)Member.java	2.17.0 05/06/2019
+ *                      2.15.0 30/07/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
  *
@@ -30,18 +31,19 @@ import net.algem.util.model.GemModel;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.0
+ * @version 2.17.0 lien payer+family
  */
 public class Member
         implements GemModel, Cloneable
 {
 
-  private static final long serialVersionUID = -8119742313674776277L;
+  private static final long serialVersionUID = 217;
 
   private int id;
   private String occupation;
   private DateFr birth;
   private int payer;
+  private int family;
   private int membershipCount;
   private int practice;
   private int level;
@@ -81,6 +83,9 @@ public class Member
     if (this.payer != other.payer) {
       return false;
     }
+    if (this.family != other.family) {
+      return false;
+    }
     if (this.membershipCount != other.membershipCount) {
       return false;
     }
@@ -108,6 +113,7 @@ public class Member
     hash = 47 * hash + (this.occupation != null ? this.occupation.hashCode() : 0);
     hash = 47 * hash + (this.birth != null ? this.birth.hashCode() : 0);
     hash = 47 * hash + this.payer;
+    hash = 47 * hash + this.family;
     hash = 47 * hash + this.membershipCount;
     hash = 47 * hash + this.practice;
     hash = 47 * hash + this.level;
@@ -166,6 +172,14 @@ public class Member
   public int getPayer() {
     return payer;
   }
+
+    public int getFamily() {
+        return family;
+    }
+
+    public void setFamily(int family) {
+        this.family = family;
+    }
 
   public void setMembershipCount(int n) {
     membershipCount = n;

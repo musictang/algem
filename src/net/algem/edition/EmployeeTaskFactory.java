@@ -84,6 +84,7 @@ public class EmployeeTaskFactory {
     props.put("estab", estab);
     props.put("catchup", catchup);
     props.put("detail", detail);
+    props.put("path", parent.getPath());    //ERIC 2.17.3 24/02/2020 export excel
   }
 
   public Map<String, Object> getProps() {

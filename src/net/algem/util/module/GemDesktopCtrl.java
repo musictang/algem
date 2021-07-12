@@ -1,5 +1,6 @@
 /*
- * @(#)GemDesktopCtrl.java	2.16.0 05/03/19
+ * @(#)GemDesktopCtrl.java	2.17.0 26/03/2019
+ *                              2.16.0 05/03/19
  *
  * Copyright (c) 1999-2019 Musiques Tangentes. All Rights Reserved.
  *
@@ -30,6 +31,7 @@ import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -71,7 +73,7 @@ import net.algem.util.ui.UIAdjustable;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.16.0
+ * @version 2.17.0
  * @since 1.0a 05/07/2002
  */
 public class GemDesktopCtrl
@@ -248,6 +250,7 @@ public class GemDesktopCtrl
             evt = (GemRemoteEvent) iDispatcher.readObject();
             System.out.println("thread evt " + evt);
             remoteEvent(evt);
+            nerr = 0;   //ERIC 2.17 
           } catch (Exception e) {
             if (++nerr > 2) {
               System.err.println("thread exception " + e);
@@ -595,12 +598,28 @@ public class GemDesktopCtrl
   }
 
   @Override
-  public GemModule getSelectedModule() {
+  public GemModule getSelectedModule() { //ERIC TableauJour vs Menu.Day.Schedule
+      System.out.println("GEMDESKTOPCTRL.GETSELECTEDMODULE");
     DefaultGemView v = (DefaultGemView) desktop.getSelectedFrame();
+    if (v == null) {
+        return null;
+    }
+
+    Set<Entry<String, GemModule>> entrySet = modules.entrySet();
+    for (Entry<String, GemModule> m : entrySet) {
+        if (m.getValue().getView().getLabel().equals(v.getLabel())) {
+            return m.getValue();
+        }
+    }
+    return null;
+
+/*
     GemModule m = modules.get(v.getLabel());
     return m;
+*/
   }
 
+  @Override //ERIC 2.17
   public GemModule getModule(String label) {
     return modules.get(label);
   }

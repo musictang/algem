@@ -1,5 +1,6 @@
 /*
- * @(#)PersonFileEditor 2.15.10 01/10/18
+ * @(#)PersonFileEditor 2.17.0 03/06/2019
+ *                      2.15.10 01/10/18
  *
  * Copyright (c) 1999-2018 Musiques Tangentes. All Rights Reserved.
  *
@@ -28,10 +29,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.prefs.Preferences;
 import javax.swing.*;
+import net.algem.Algem;
 import net.algem.accounting.*;
 import net.algem.bank.*;
 import net.algem.billing.*;
@@ -46,8 +49,13 @@ import net.algem.enrolment.MemberEnrolmentDlg;
 import net.algem.enrolment.TrainingAgreementHistory;
 import net.algem.enrolment.TrainingContractHistory;
 import net.algem.group.PersonFileGroupView;
+import net.algem.planning.DateFr;
 import net.algem.planning.TeacherBreakDlg;
 import net.algem.planning.month.MonthScheduleTab;
+import net.algem.rental.HistoMemberRentalView;
+import net.algem.rental.MemberRentalCtrl;
+import net.algem.rental.RentalOperation;
+import net.algem.rental.RentalOperationIO;
 import net.algem.security.RuleFactory;
 import net.algem.security.User;
 import net.algem.security.UserCreateDlg;
@@ -73,7 +81,7 @@ import org.passay.PasswordValidator;
  *
  * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
- * @version 2.15.10
+ * @version 2.17.0
  */
 public class PersonFileEditor
   extends FileEditor
@@ -92,6 +100,9 @@ public class PersonFileEditor
   private JMenuItem miPassRehearsal, miRehearsal, miHistoPass;
   private JMenuItem miHistoRehearsal;
 
+  private JMenuItem miHistoRental; //ERIC 2.17.1 29/08/2019
+  private JMenuItem miRental;
+
   private JMenuItem miContracts;
   private JMenuItem miAgreements;
   private JMenuItem miHistoInvoice;
@@ -102,6 +113,7 @@ public class PersonFileEditor
   private PersonFile dossier, parent;
   private PersonFileTabView personFileView;
   private PersonFileListCtrl memberList;
+  private PersonFileListCtrl familyList;    //ERIC 2.17 04/06/2019
   private HistoInvoice histoInvoice;
   private OrderLineEditor orderLineEditor;
   private DataConnection dc;
@@ -176,6 +188,15 @@ public class PersonFileEditor
 
     // search for payer
     checkPayer();
+
+    // search for family linked members
+    checkFamilyMembers();
+
+    // search for family
+    Member m = personFileView.getMemberFile();
+    if (m != null && m.getFamily() != m.getPayer()) {
+        checkFamily();
+    }
 
     // search for groups
     if (personFileView.addGroupsTab(false)) {
@@ -356,6 +377,14 @@ public class PersonFileEditor
       personFileView.addTab(dlg, BundleUtil.getLabel("Rehearsal.label"));
       miRehearsal.setEnabled(false);
       personFileView.activate(false, "Person.rehearsal.scheduling");
+    } else if ("Rental.menu".equals(arg)) {
+      MemberRentalCtrl dlg = new MemberRentalCtrl(desktop, this, dossier);
+      personFileView.addTab(dlg, BundleUtil.getLabel("Rental.label"));
+      miRental.setEnabled(false);
+      personFileView.activate(false, "Rental.menu");
+    } else if ("Rental.history.menu".equals(arg)) {
+      personFileView.addRentalHistoryTab();
+      miHistoRental.setEnabled(false);
     } else if ("Rehearsal.history".equals(arg)) {
       personFileView.addRehearsalHistoryTab();
       miHistoRehearsal.setEnabled(false);
@@ -378,6 +407,10 @@ public class PersonFileEditor
       personFileView.removeTab((MemberRehearsalCtrl) src);
       personFileView.activate(true, "Person.rehearsal.scheduling");
       miRehearsal.setEnabled(true);
+    } else if ("AdherentLocation.Abandon".equals(arg) || "AdherentLocation.Validation".equals(arg)) {
+      personFileView.removeTab((MemberRentalCtrl) src);
+      personFileView.activate(true, "Person.rental");
+      miRental.setEnabled(true);
     } else if ("AdherentForfaitRepetition.Abandon".equals(arg) || "AdherentForfaitRepetition.Validation".equals(arg)) {
       personFileView.removeTab((MemberRehearsalPassCtrl) src);
       miPassRehearsal.setEnabled(true);
@@ -401,6 +434,13 @@ public class PersonFileEditor
     } else if ("HistoRepet.Abandon".equals(arg)) {
       miHistoRehearsal.setEnabled(true);
       personFileView.removeTab((HistoRehearsalView) src);
+    } else if ("HistoLocation.Abandon".equals(arg)) {
+      miHistoRental.setEnabled(true);
+      personFileView.removeTab((HistoMemberRentalView) src);
+    } else if ("HistoLocation.Return".equals(arg)) {
+        RentalOperation o = ((HistoMemberRentalView) src).getSelected();
+        rentalReturn(o);
+        ((HistoMemberRentalView) src).reload();
     } else if (DDPrivateMandateCtrl.CLOSE_COMMAND.equals(arg)) {
       personFileView.removeTab((DDPrivateMandateCtrl) src);
       personFileView.activate(true, "Payer.debiting");
@@ -749,6 +789,25 @@ public class PersonFileEditor
     });
   }
 
+  private void addFamilyFile(String _label, final PersonFile _dossier) {
+    GemButton b = personFileView.addIcon("Member.family");
+    b.addActionListener(new ActionListener() {
+
+      @Override
+      public void actionPerformed(ActionEvent evt) {
+        desktop.setWaitCursor();
+        PersonFileEditor m = ((GemDesktopCtrl) desktop).getPersonFileEditor(_dossier.getId());
+        if (m == null) {
+          PersonFileEditor editor = new PersonFileEditor(_dossier);
+          desktop.addModule(editor);
+        } else {
+          desktop.setSelectedModule(m);
+        }
+        desktop.setDefaultCursor();
+      }
+    });
+  }
+
   /**
    * Adds schedule payment editor.
    *
@@ -817,6 +876,12 @@ public class PersonFileEditor
     miHistoPass.addActionListener(this);
     mOptions.add(miHistoPass);
 
+    if (Algem.isFeatureEnabled("location")) {
+        mOptions.addSeparator();
+        mOptions.add(miRental = getMenuItem("Rental.menu"));
+        mOptions.add(miHistoRental = getMenuItem("Rental.history.menu"));
+    }
+    
     mOptions.addSeparator();
     mOptions.add(miHistoRehearsal = getMenuItem("Rehearsal.history"));
     mOptions.add(miMonthPlanning = getMenuItem("Menu.month.schedule"));
@@ -900,6 +965,30 @@ public class PersonFileEditor
   }
 
   /**
+   * Family identification.
+   */
+  private void checkFamily() {  //ERIC 2.17 04/06/2019
+    if (dossier.getMember() != null 
+            && dossier.getMember().getFamily() != 0 
+            && dossier.getMember().getFamily() != dossier.getId()) {
+      Contact c = ContactIO.findId(dossier.getMember().getFamily(), dc);
+      if (c != null) {
+        PersonFile d = new PersonFile(c);
+        try {
+          ((PersonFileIO) DataCache.getDao(Model.PersonFile)).complete(d);
+        } catch (SQLException ex) {
+          GemLogger.logException(MessageUtil.getMessage("record.completion.exception"), ex);
+        }
+        addFamilyFile("Famille", d);
+      } else { //Attention aux cas où le payeur auquel est lié l'adhérent n'existe pas
+        MessagePopup.information(personFileView,
+          MessageUtil.getMessage("not.existing.family.link", dossier.getMember().getFamily()));
+        personFileView.setFamily(0, "");
+      }
+    }
+  }
+
+  /**
    * Opens a tab for linked members.
    */
   private void checkAttachedMembers() {
@@ -944,6 +1033,52 @@ public class PersonFileEditor
    */
   private ListCtrl getMemberList() {
     return memberList;
+  }
+
+  /**
+   * Opens a tab for family linked members.
+   * ERIC 2.17 04/06/2019
+   */
+  private void checkFamilyMembers() {
+    if (setFamilyList() > 0) {
+      final GemButton b = personFileView.addIcon("Family.members");
+      b.addActionListener(new ActionListener() {
+
+        public void actionPerformed(ActionEvent evt) {
+          ListCtrl list = getFamilyList();
+          FamilyListTab familyList = new FamilyListTab(desktop, list);
+          personFileView.addTab(familyList, BundleUtil.getLabel("Person.linked.family.tab.label"));
+          b.setEnabled(false);
+        }
+      });
+    }
+  }
+
+  /**
+   * Gets the number of linked members.
+   */
+  private int setFamilyList() {
+    Vector<PersonFile> v = ((PersonFileIO) DataCache.getDao(Model.PersonFile)).findMembers("WHERE famille != 0 AND famille = " + dossier.getId() + " AND p.id != famille");
+    familyList = new PersonFileListCtrl();
+
+    for (int i = 0; i < v.size(); i++) {
+      PersonFile d = v.elementAt(i);
+      ContactIO.complete(d.getContact(), dc);
+    }
+    if (v != null && v.size() > 0) {
+      familyList.addBlock(v);
+      return v.size();
+    }
+    return 0;
+  }
+
+  /**
+   * Gets the list of linked members.
+   *
+   * @return a {@link ListCtrl } instance
+   */
+  private ListCtrl getFamilyList() {
+    return familyList;
   }
 
   /**
@@ -1134,6 +1269,8 @@ public class PersonFileEditor
       desktop.removeGemEventListener(orderLineEditor); //XXX unused
     } else if (HistoRehearsalView.class.getSimpleName().equals(classname)) {
       miHistoRehearsal.setEnabled(true);
+    } else if (HistoMemberRentalView.class.getSimpleName().equals(classname)) {
+      miHistoRental.setEnabled(true);
     } else if (PersonFileGroupView.class.getSimpleName().equals(classname)) {
       miGroups.setEnabled(true);
     } else if (MemberEnrolmentDlg.class.getSimpleName().equals(classname)) {
@@ -1141,12 +1278,17 @@ public class PersonFileEditor
     } else if (MemberRehearsalCtrl.class.getSimpleName().equals(classname)) {
       miRehearsal.setEnabled(true);
       personFileView.activate(true, "Person.rehearsal.scheduling");
+    } else if (MemberRentalCtrl.class.getSimpleName().equals(classname)) {
+      miRental.setEnabled(true);
+      personFileView.activate(true, "Rental.menu");
     } else if (MemberRehearsalPassCtrl.class.getSimpleName().equals(classname)) {
       miPassRehearsal.setEnabled(true);
     } else if (HistoInvoice.class.getSimpleName().equals(classname)) {
       miHistoInvoice.setEnabled(true);
     } else if (HistoQuote.class.getSimpleName().equals(classname)) {
       miHistoQuote.setEnabled(true);
+    } else if (FamilyListTab.class.getSimpleName().equals(classname)) {
+      personFileView.activate(true, "Family.members");
     } else if (MemberListTab.class.getSimpleName().equals(classname)) {
       personFileView.activate(true, "Payer.members");
     } else if (EmployeeEditor.class.getSimpleName().equals(classname)) {
@@ -1220,5 +1362,15 @@ public class PersonFileEditor
   public String getUIInfo() {
     Dimension d = view.getSize();
     return BundleUtil.getLabel("New.size.label") + " : " + d.width + "x" + d.height;
+  }
+  
+  private void rentalReturn(RentalOperation o) {
+      try {
+          RentalOperationIO service = new RentalOperationIO(dc);
+          o.setEndDate(new DateFr(new Date()));
+          service.update(o);
+      } catch (Exception ex) {
+          GemLogger.logException("rentalReturn", ex);
+      }
   }
 }
