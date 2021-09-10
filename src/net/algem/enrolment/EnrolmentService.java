@@ -30,6 +30,7 @@ import net.algem.contact.PersonFileIO;
 import net.algem.contact.PersonIO;
 import net.algem.contact.member.MemberIO;
 import net.algem.contact.teacher.Teacher;
+import net.algem.course.Module;
 import net.algem.course.*;
 import net.algem.group.Musician;
 import net.algem.planning.*;

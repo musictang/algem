@@ -36,6 +36,7 @@ import net.algem.accounting.OrderLine;
 import net.algem.config.ConfigKey;
 import net.algem.config.ConfigUtil;
 import net.algem.contact.PersonFile;
+import net.algem.course.Module;
 import net.algem.course.*;
 import net.algem.edition.MemberCardEditor;
 import net.algem.planning.ConflictQueries;

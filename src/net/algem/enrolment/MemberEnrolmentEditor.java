@@ -45,6 +45,7 @@ import net.algem.config.ConfigUtil;
 import net.algem.config.GemParam;
 import net.algem.contact.PersonFile;
 import net.algem.contact.member.MemberService;
+import net.algem.course.Module;
 import net.algem.course.*;
 import net.algem.planning.CourseSchedule;
 import net.algem.planning.DateFr;

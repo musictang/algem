@@ -4,8 +4,8 @@ TARGET=./target/libs
 CUSTOM_DIR=./clients
 ## DON'T FORGET TO CHANGE MANIFEST FILE DEPENDING ON CONTEXT SIGNATURE
 ## algem-sec-srv.mf | algem-backup.mf | algem-demo.mf
-#MANIFEST=algem-backup.mf
-MANIFEST=algem-sec-srv.mf
+MANIFEST=algem-backup.mf
+#MANIFEST=algem-sec-srv.mf
 
 if [ -d $TARGET ] && [ -n "$(ls -A $TARGET)" ]
 then
@@ -50,7 +50,7 @@ then
     fi
   done
   # REMOVE COPIED PROPERTIES FILES
-  rm algem.properties algem.properties.bak local.properties
+  rm -f algem.properties algem.properties.bak local.properties
 else
   echo "Directory $TARGET not found"
 fi

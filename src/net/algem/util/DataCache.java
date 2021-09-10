@@ -41,6 +41,7 @@ import net.algem.contact.teacher.Teacher;
 import net.algem.contact.teacher.TeacherComparator;
 import net.algem.contact.teacher.TeacherEvent;
 import net.algem.contact.teacher.TeacherIO;
+import net.algem.course.Module;
 import net.algem.course.*;
 import net.algem.group.*;
 import net.algem.planning.Action;

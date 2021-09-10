@@ -93,7 +93,7 @@ public class AddressIO
 
   public static Vector<Address> find(String where, DataConnection dc) throws SQLException {
     Vector<Address> v = new Vector<Address>();
-    String query = "SELECT oid,idper,adr1,adr2,cdp,ville,archive FROM " + TABLE + " " + where;
+    String query = "SELECT idper,idper,adr1,adr2,cdp,ville,archive FROM " + TABLE + " " + where;
     ResultSet rs = dc.executeQuery(query);
     for (int i = 0; rs.next(); i++) {
       Address a = new Address();
