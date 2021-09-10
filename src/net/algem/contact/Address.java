@@ -35,7 +35,6 @@ public class Address
 {
   private static final long serialVersionUID = -4271706486538263344L;
 
-  private int oid;
   private int idper;
   private int type;
   private String adr1;
@@ -130,14 +129,6 @@ public class Address
 
   public int getId() {
     return idper;
-  }
-
-  public void setOID(int i) {
-    oid = i;
-  }
-
-  public int getIOD() {
-    return oid;
   }
 
   public void setAdr1(String s) {
