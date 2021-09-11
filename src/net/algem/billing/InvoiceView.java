@@ -20,6 +20,7 @@
  */
 package net.algem.billing;
 
+import com.itextpdf.awt.PdfGraphics2D;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.PageSize;
@@ -324,7 +325,7 @@ public class InvoiceView
   Quote get() {
     Quote q;
     try {
-      q = invoice.getClass().newInstance();
+      q = invoice.getClass().getConstructor().newInstance();
       q.setNumber(invoiceId.getText());
       //Quote inv = new Invoice(invoiceId.getText());
     } catch (ReflectiveOperationException ex) {
@@ -554,7 +555,7 @@ public class InvoiceView
   private void drawPdf(Document document, PdfWriter writer) {
 
     PdfContentByte cb = writer.getDirectContent();
-    Graphics2D g = cb.createGraphics(document.getPageSize().getWidth(), document.getPageSize().getHeight());
+    PdfGraphics2D g = new PdfGraphics2D(cb, document.getPageSize().getWidth(), document.getPageSize().getHeight());
     Quote quote = get();
     String genericLabel = invoice.getClass() == Quote.class
       ? BundleUtil.getLabel("Quotation.label") : BundleUtil.getLabel("Invoice.label");
@@ -579,7 +580,7 @@ public class InvoiceView
       //IMPORTANT
       g.dispose();
       document.newPage();
-      g = cb.createGraphics(document.getPageSize().getWidth(), document.getPageSize().getHeight());
+      g = new PdfGraphics2D(cb, document.getPageSize().getWidth(), document.getPageSize().getHeight());
 
       g.setFont(serif.deriveFont(Font.ITALIC));
       g.drawString("(page 2)", margin, top + 90);

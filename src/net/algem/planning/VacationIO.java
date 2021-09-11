@@ -107,7 +107,7 @@ public class VacationIO
         j.setDay(new DateFr(rs.getString(1)));
         j.setType(rs.getInt(2));
         j.setVid(rs.getInt(3));
-        j.setLabel(unEscape(rs.getString(4).trim()));
+        j.setLabel(rs.getString(4).trim());
 
         v.addElement(j);
       }

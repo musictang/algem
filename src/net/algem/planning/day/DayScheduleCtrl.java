@@ -21,7 +21,7 @@
 package net.algem.planning.day;
 
 import java.awt.Dimension;
-import java.awt.Event;
+import java.awt.event.InputEvent;
 import java.awt.EventQueue;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -228,7 +228,7 @@ public class DayScheduleCtrl
     } else if (src == miPrint) {
       view.print();
     } else if (src == miQuit) {
-      savePrefs = (evt.getModifiers() & Event.SHIFT_MASK) == Event.SHIFT_MASK;
+      savePrefs = (evt.getModifiers() & InputEvent.SHIFT_DOWN_MASK) == InputEvent.SHIFT_DOWN_MASK;
       try {
         close();
       } catch (GemCloseVetoException ex) {

@@ -68,7 +68,7 @@ public abstract class GemParamIO
 
     ResultSet rs = dc.executeQuery(query);
     if (rs.next()) {
-      return new GemParam(rs.getInt(1), rs.getString(2), unEscape(rs.getString(3)));
+      return new GemParam(rs.getInt(1), rs.getString(2), rs.getString(3));
     }
     return null;
   }
@@ -82,7 +82,7 @@ public abstract class GemParamIO
     Vector<GemParam> vn = new Vector<GemParam>();
     ResultSet rs = dc.executeQuery(query);
     while (rs.next()) {
-      GemParam n = new GemParam(rs.getInt(1), rs.getString(2), unEscape(rs.getString(3)));
+      GemParam n = new GemParam(rs.getInt(1), rs.getString(2), rs.getString(3));
       vn.addElement(n);
     }
     return vn;

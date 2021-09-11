@@ -85,13 +85,13 @@ public class RoomTableModel
     Room r = tuples.elementAt(line);
     switch (col) {
       case 0:
-        return new Integer(r.getId());
+        return Integer.valueOf(r.getId());
       case 1:
         return r.getName();
       case 2:
         return r.getFunction();
       case 3:
-        return new Integer(r.getNPers());
+        return Integer.valueOf(r.getNPers());
       case 4:
         return r.isActive();
       case 5:

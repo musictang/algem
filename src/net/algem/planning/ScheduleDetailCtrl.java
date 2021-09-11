@@ -552,12 +552,12 @@ public class ScheduleDetailCtrl
         if (Schedule.COURSE == schedule.getType()) {
           c = ((CourseSchedule) schedule).getCourse();
           //if (!(evt.getModifiers() == InputEvent.BUTTON1_MASK)) {
-          if ((evt.getModifiers() & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK) {//ouverture du suivi élève touche MAJ
+          if ((evt.getModifiers() & InputEvent.SHIFT_DOWN_MASK) == InputEvent.SHIFT_DOWN_MASK) {//ouverture du suivi élève touche MAJ
             setFollowUp(range, c);
             return;
           }
         }
-        if ((evt.getModifiers() & InputEvent.CTRL_MASK) == InputEvent.CTRL_MASK) {
+        if ((evt.getModifiers() & InputEvent.CTRL_DOWN_MASK) == InputEvent.CTRL_DOWN_MASK) {
           deleteRange(range);
           return;
         }
@@ -578,7 +578,7 @@ public class ScheduleDetailCtrl
         Object src = ((GemMenuButton) evt.getSource()).getObject();
         if (src instanceof ScheduleRangeObject) {
           ScheduleRangeObject range = (ScheduleRangeObject) ((GemMenuButton) evt.getSource()).getObject();
-          if ((evt.getModifiers() & InputEvent.CTRL_MASK) == InputEvent.CTRL_MASK) {
+          if ((evt.getModifiers() & InputEvent.CTRL_DOWN_MASK) == InputEvent.CTRL_DOWN_MASK) {
             deleteRange(range);
             return;
           }
@@ -591,7 +591,7 @@ public class ScheduleDetailCtrl
         PersonFile pf = (PersonFile) DataCache.findId(p.getId(), Model.PersonFile);
         loadPersonFile(pf);
       } else if ("TeacherLink".equals(arg)) {
-        if (!(evt.getModifiers() == InputEvent.BUTTON1_MASK)) {
+        if (!(evt.getModifiers() == InputEvent.BUTTON1_DOWN_MASK)) {
           TeacherBreakDlg dlg = new TeacherBreakDlg(desktop, (CourseSchedule) schedule);
           dlg.entry();
           if (dlg.isValidation()) {
@@ -621,7 +621,7 @@ public class ScheduleDetailCtrl
       } else if ("CourseLink".equals(arg) || "WorkshopLink".equals(arg)) {
         setWaitCursor();
         c = (Course) ((GemMenuButton) evt.getSource()).getObject();
-        if (!(evt.getModifiers() == InputEvent.BUTTON1_MASK)) { // ouverture du suivi cours touche majuscule
+        if (!(evt.getModifiers() == InputEvent.BUTTON1_DOWN_MASK)) { // ouverture du suivi cours touche majuscule
           if (schedule.getNote() > 0) {
             ((ScheduleObject) schedule).setFollowUp(scheduleService.getFollowUp(schedule.getNote()));
           }

@@ -37,7 +37,6 @@ import net.algem.security.User;
 import net.algem.util.BundleUtil;
 import net.algem.util.DataCache;
 import net.algem.util.model.Model;
-import static net.algem.util.model.TableIO.unEscape;
 
 /**
  *
@@ -90,8 +89,8 @@ public class InvoiceJoinLoader
                 inv.setIssuer(rs.getInt(8));
                 inv.setUser((User) DataCache.findId(rs.getInt(8), Model.User));
                 inv.setPayer(rs.getInt(9));
-                inv.setDescription(unEscape(rs.getString(10)));
-                inv.setReference(unEscape(rs.getString(11)));
+                inv.setDescription(rs.getString(10));
+                inv.setReference(rs.getString(11));
                 inv.setMember(rs.getInt(12));
                 inv.setDownPayment(rs.getDouble(13));
 

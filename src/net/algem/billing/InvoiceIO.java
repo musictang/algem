@@ -256,8 +256,8 @@ public class InvoiceIO
         inv.setIssuer(rs.getInt(4));
         inv.setUser((User) DataCache.findId(rs.getInt(4), Model.User));
         inv.setPayer(rs.getInt(5));
-        inv.setDescription(unEscape(rs.getString(6)));
-        inv.setReference(unEscape(rs.getString(7)));
+        inv.setDescription(rs.getString(6));
+        inv.setReference(rs.getString(7));
         inv.setMember(rs.getInt(8));
         inv.setDownPayment(rs.getDouble(9));
   //      inv.setItems(findItems(inv.getNumber()));//

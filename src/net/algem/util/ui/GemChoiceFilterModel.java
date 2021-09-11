@@ -72,7 +72,7 @@ public abstract class GemChoiceFilterModel
   {
     GemModel m = (GemModel) list.getElementAt(evt.getIndex0());
     if (isFilterOk(m)) {
-      indices.add(new Integer(evt.getIndex0()));
+      indices.add(Integer.valueOf(evt.getIndex0()));
       fireIntervalAdded(this, indices.size() - 1, indices.size() - 1);
     }
   }

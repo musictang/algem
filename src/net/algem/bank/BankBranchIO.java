@@ -161,7 +161,7 @@ public class BankBranchIO
         a.setType(rs.getShort(2));
         Bank b = new Bank();
         b.setCode(rs.getString(3).trim());
-        b.setName(unEscape(rs.getString(4)).trim());
+        b.setName(rs.getString(4).trim());
         b.setMulti(rs.getBoolean(5));
         a.setBank(b);
         a.setCode(rs.getString(6).trim());

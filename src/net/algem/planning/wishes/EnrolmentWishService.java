@@ -383,7 +383,7 @@ public class EnrolmentWishService {
         List<Integer> list = new ArrayList();
         for (EnrolmentWish w : wishesByTeacher) {
             if (w.getStudentId() == student && w.getTeacher() == currentTeacher && w.getCourse() == view.getParticularCourseChoice()) {
-                list.add(new Integer(w.getPreference()));
+                list.add(Integer.valueOf(w.getPreference()));
             }
         }
         return list;

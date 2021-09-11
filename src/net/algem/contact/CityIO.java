@@ -82,7 +82,7 @@ public class CityIO
       while (rs.next()) {
         City n = new City();
         n.setCdp(rs.getString(1));
-        n.setCity(unEscape(rs.getString(2).trim()));
+        n.setCity(rs.getString(2).trim());
 
         cities.add(n);
       }

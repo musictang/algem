@@ -77,7 +77,7 @@ public class MultiBranchTableModel
     Address adr = bb.getAddress();
     switch (col) {
       case 0:
-        return new Integer(bb.getId());
+        return Integer.valueOf(bb.getId());
       case 1:
         if (adr == null) {
           return "";

@@ -77,7 +77,7 @@ public class BranchTableModel
     BankBranch bb = tuples.elementAt(line);
     switch (col) {
       case 0:
-        return new Integer(bb.getId());
+        return Integer.valueOf(bb.getId());
       case 1:
         return bb.getBank().getCode();
       case 2:

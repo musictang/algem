@@ -139,7 +139,7 @@ public class ScriptExecutorServiceImpl implements ScriptExecutorService {
       _header.add("Nombre de mise à jour");
       rows = new ArrayList<>();
       List<Object> row = new ArrayList<>();
-      row.add(new Integer(nb));
+      row.add(Integer.valueOf(nb));
       rows.add(row);
     }
 

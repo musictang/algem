@@ -158,7 +158,7 @@ public class PersonIO
   }
 
   public Person findById(String n) {
-    return PersonIO.this.findById(new Integer(n));
+    return PersonIO.this.findById(Integer.valueOf(n));
   }
 
   public Person findById(int n) {
@@ -184,16 +184,16 @@ public class PersonIO
     Person p = new Person();
     p.setId(rs.getInt(1));
     p.setType(rs.getShort(2));
-    String name = unEscape(rs.getString(3));
+    String name = rs.getString(3);
     p.setName(name != null ? name.trim() : null);
-    String firstname = unEscape(rs.getString(4));
+    String firstname = rs.getString(4);
     p.setFirstName(firstname != null ? firstname.trim() : null);
     String cv = rs.getString(5);
     p.setGender(cv != null ? cv.trim() : null);
     p.setImgRights(rs.getBoolean(6));
     p.setPartnerInfo(rs.getBoolean(7));
     String nickname = rs.getString(8);
-    p.setNickName(nickname != null ? unEscape(nickname.trim()) : null);
+    p.setNickName(nickname != null ? nickname.trim() : null);
     int org = rs.getInt(9);
     if (org > 0) {
       Organization o = new Organization(rs.getInt(9));

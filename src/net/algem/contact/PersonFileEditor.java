@@ -23,7 +23,7 @@ package net.algem.contact;
 
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.Event;
+import java.awt.event.InputEvent;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -355,7 +355,7 @@ public class PersonFileEditor
       hoursDlg.init(fileName, dc);
     } // clic sur le bouton/icone Fermer la fiche
     else if (GemCommand.CLOSE_CMD.equals(arg)) { // GemCommand.
-      savePrefs = (evt.getModifiers() & Event.SHIFT_MASK) == Event.SHIFT_MASK;
+      savePrefs = (evt.getModifiers() & InputEvent.SHIFT_DOWN_MASK) == InputEvent.SHIFT_DOWN_MASK;
       try {
         close();
       } catch (GemCloseVetoException i) {

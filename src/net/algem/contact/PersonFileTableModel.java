@@ -76,7 +76,7 @@ public class PersonFileTableModel
     PersonFile p = tuples.elementAt(line);
     switch (col) {
       case 0:
-        return new Integer(p.getId());
+        return Integer.valueOf(p.getId());
       case 1:
         return p.getContact().getGender();
       case 2:

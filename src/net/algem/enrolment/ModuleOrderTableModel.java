@@ -87,7 +87,7 @@ public class ModuleOrderTableModel
     ModuleOrder m = tuples.elementAt(ligne);
     switch (colonne) {
       case 0:
-        return new Integer(m.getModule());//id du module
+        return Integer.valueOf(m.getModule());//id du module
       case 1:
         return m.getTitle();
       case 2:

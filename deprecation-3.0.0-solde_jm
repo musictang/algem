@@ -1,0 +1,15 @@
+net/algem/util/ServeurCtrl.java:[29,25] net.algem.util.ui.TableSGBDView in net.algem.util.ui has been deprecated
+net/algem/course/CourseIO.java:[67,23] getLevel() in net.algem.course.Course has been deprecated
+net/algem/course/CourseIO.java:[88,23] getLevel() in net.algem.course.Course has been deprecated
+net/algem/course/CourseIO.java:[143,6] setLevel(short) in net.algem.course.Course has been deprecated
+net/algem/planning/editing/PlanModifCtrl.java:[77,11] net.algem.planning.editing.UpdateCoursePlanCtrl in net.algem.planning.editing has been deprecated
+net/algem/edition/HoursTeacherByEstabTask.java:[195,32] isPro(int,net.algem.util.DataCache) in net.algem.accounting.OrderLineIO has been deprecated
+net/algem/edition/HoursTeacherByEstabTask.java:[230,30] isPro(int,net.algem.util.DataCache) in net.algem.accounting.OrderLineIO has been deprecated
+net/algem/planning/fact/ui/PlanningFactDialog.java:[328,54] getHours() in java.util.Date has been deprecated
+net/algem/planning/fact/ui/PlanningFactDialog.java:[328,89] getMinutes() in java.util.Date has been deprecated
+net/algem/course/CourseView.java:[111,35] getLevel() in net.algem.course.Course has been deprecated
+net/algem/course/CourseView.java:[135,9] setLevel(short) in net.algem.course.Course has been deprecated
+net/algem/course/CourseView.java:[137,9] setLevel(short) in net.algem.course.Course has been deprecated
+net/algem/opt/CDromListCtrl.java:[41,22] net.algem.opt.CDromTableModel in net.algem.opt has been deprecated
+net/algem/billing/Item.java: Some input files use unchecked or unsafe operations.
+net/algem/billing/Item.java: Recompile with -Xlint:unchecked for details.

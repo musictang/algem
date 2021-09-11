@@ -75,7 +75,7 @@ public class FieldTableModel
       case 1:
         return m.getType();
       case 2:
-        return new Integer(m.getLength());
+        return Integer.valueOf(m.getLength());
     }
     return null;
   }

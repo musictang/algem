@@ -1,7 +1,8 @@
 /*
- * @(#)Address.java	2.13.0 22/03/2017
+ * @(#)Address.java	3.0.0 10/09/2021
  *
- * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
+ * Copyright (c) 2021 eric@productionlibre.fr. All Rights Reserved.
+ * Copyright (c) 1999-2021 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it

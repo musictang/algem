@@ -141,7 +141,7 @@ public class GroupIO
       while (rs.next()) {
         Group g = new Group();
         g.setId(rs.getInt(1));
-        g.setName(unEscape(rs.getString(2).trim()));
+        g.setName(rs.getString(2).trim());
         int idStyle = rs.getInt(3);
         MusicStyle style = findStyle(idStyle);
         if (style == null) {

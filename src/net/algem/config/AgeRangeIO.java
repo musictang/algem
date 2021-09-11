@@ -119,7 +119,7 @@ public class AgeRangeIO
       t.setId(rs.getInt(1));
       t.setAgemin(rs.getInt(2));
       t.setAgemax(rs.getInt(3));
-      t.setLabel(unEscape(rs.getString(4).trim()));
+      t.setLabel(rs.getString(4).trim());
       t.setCode(rs.getString(5));
 
       v.addElement(t);

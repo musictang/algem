@@ -72,7 +72,7 @@ public class GroupTableModel
     Group g = tuples.elementAt(line);
     switch (col) {
       case 0:
-        return new Integer(g.getId());
+        return Integer.valueOf(g.getId());
       case 1:
         return g.getName();
       case 2:

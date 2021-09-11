@@ -118,14 +118,14 @@ public class EmployeeIO
     Employee e = null;
     while (rs.next()) {
       e = new Employee(idper);
-      String insee = TableIO.unEscape(rs.getString(2));
+      String insee = rs.getString(2);
       e.setNir(insee == null ? null : insee.trim());
       Date d = rs.getDate(3);
       e.setDateBirth(d == null ? null : new DateFr(d));
-      e.setPlaceBirth(TableIO.unEscape(rs.getString(4)));
-      String guso = TableIO.unEscape(rs.getString(5));
+      e.setPlaceBirth(rs.getString(4));
+      String guso = rs.getString(5);
       e.setGuso(guso == null ? null : guso.trim());
-      e.setNationality(TableIO.unEscape(rs.getString(6)));
+      e.setNationality(rs.getString(6));
       e.setMaritalStatus(rs.getInt(7));
       Array dates = rs.getArray(8);
       if (dates != null) {

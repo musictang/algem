@@ -136,8 +136,8 @@ public class CourseIO
   private Course getCourseFromRS(ResultSet rs) throws SQLException {
     Course c = new Course();
     c.setId(rs.getInt(1));
-    c.setTitle(unEscape(rs.getString(2).trim()));
-    c.setLabel(unEscape(rs.getString(3).trim()));
+    c.setTitle(rs.getString(2).trim());
+    c.setLabel(rs.getString(3).trim());
     //c.setNSessions(rs.getShort(4));
 //    c.setNPlaces(rs.getShort(4));
     c.setLevel(rs.getShort(5));

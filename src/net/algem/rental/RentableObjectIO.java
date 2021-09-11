@@ -135,11 +135,11 @@ public class RentableObjectIO
                 RentableObject s = new RentableObject();
                 s.setId(rs.getInt(1));
                 s.setDateAchat(new DateFr(rs.getDate(2)));
-                s.setType(unEscape(rs.getString(3).trim()));
-                s.setMarque(unEscape(rs.getString(4).trim()));
-                s.setIdentification(unEscape(rs.getString(5).trim()));
-                s.setDescription(unEscape(rs.getString(6).trim()));
-                s.setVendeur(unEscape(rs.getString(7).trim()));
+                s.setType(rs.getString(3).trim());
+                s.setMarque(rs.getString(4).trim());
+                s.setIdentification(rs.getString(5).trim());
+                s.setDescription(rs.getString(6).trim());
+                s.setVendeur(rs.getString(7).trim());
                 s.setActif(rs.getBoolean(8));
                 v.addElement(s);
             }

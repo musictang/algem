@@ -1,7 +1,9 @@
 /*
- * @(#)GemDesktopCtrl.java	2.17.0 26/03/2019
+ * @(#)GemDesktopCtrl.java	3.0.0  10/09/2021
+ *                              2.17.0 26/03/2019
  *                              2.16.0 05/03/19
  *
+ * Copyright (c) 2021 eric@productionlibre.fr. All Rights Reserved.
  * Copyright (c) 1999-2019 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.
@@ -26,6 +28,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.event.InputEvent;
 import java.beans.PropertyVetoException;
 import java.io.*;
 import java.net.Socket;
@@ -349,7 +352,7 @@ public class GemDesktopCtrl
     setWaitCursor();
 
     if (BundleUtil.getLabel("Menu.quit.label").equals(arg)) {
-      savePrefs = (evt.getModifiers() & Event.SHIFT_MASK) == Event.SHIFT_MASK;
+      savePrefs = (evt.getModifiers() & InputEvent.SHIFT_DOWN_MASK) == InputEvent.SHIFT_DOWN_MASK;
       try {
         close();
         System.exit(0);

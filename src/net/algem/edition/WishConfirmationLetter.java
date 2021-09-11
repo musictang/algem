@@ -20,6 +20,7 @@
  */
 package net.algem.edition;
 
+import com.itextpdf.awt.PdfGraphics2D;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.PageSize;
@@ -93,7 +94,7 @@ public class WishConfirmationLetter {
         document.open();
 
         PdfContentByte cb = writer.getDirectContent();
-        Graphics2D g = cb.createGraphics(document.getPageSize().getWidth(), document.getPageSize().getHeight());
+        PdfGraphics2D g = new PdfGraphics2D(cb, document.getPageSize().getWidth(), document.getPageSize().getHeight());
 
         //int top = ImageUtil.mmToPoints(50);
         int margin = ImageUtil.mmToPoints(15);

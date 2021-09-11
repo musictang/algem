@@ -74,13 +74,13 @@ public class SGBDTableModel
       case 1:
         return m.getOwner();
       case 2:
-        return new Integer(m.getNTuples());
+        return Integer.valueOf(m.getNTuples());
       case 3:
         return m.getIndex();
       case 4:
         return m.getType();
       case 5:
-        return new Integer(m.getNAtts());
+        return Integer.valueOf(m.getNAtts());
     }
     return null;
   }

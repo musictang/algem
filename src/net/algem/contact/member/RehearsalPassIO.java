@@ -51,7 +51,7 @@ public class RehearsalPassIO
     }
     RehearsalPass c = new RehearsalPass();
     c.setId(rs.getInt(1));
-    c.setLabel(unEscape(rs.getString(2)));
+    c.setLabel(rs.getString(2));
     c.setAmount(rs.getFloat(3));
     c.setMin(rs.getInt(4));
     c.setTotalTime(rs.getInt(5));
@@ -66,7 +66,7 @@ public class RehearsalPassIO
     while (rs.next()) {
       RehearsalPass c = new RehearsalPass();
       c.setId(rs.getInt(1));
-      c.setLabel(unEscape(rs.getString(2)));
+      c.setLabel(rs.getString(2));
       c.setAmount(rs.getFloat(3));
       c.setMin(rs.getInt(4));
       c.setTotalTime(rs.getInt(5));

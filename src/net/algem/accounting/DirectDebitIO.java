@@ -146,7 +146,7 @@ public class DirectDebitIO
     dd.setRecurrent(rs.getBoolean(5));
     dd.setSeqType(DDSeqType.valueOf(rs.getString(6).trim()));
     dd.setRum(rs.getString(7));
-    dd.setName(TableIO.unEscape(rs.getString(8)));
+    dd.setName(rs.getString(8));
 
     return dd;
   }

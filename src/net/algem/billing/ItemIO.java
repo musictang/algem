@@ -77,7 +77,7 @@ public class ItemIO
     String query = "SELECT " + COLUMNS + " FROM " + TABLE + " WHERE id = " + id;
     ResultSet rs = dc.executeQuery(query);
     while (rs.next()) {
-      n = new Item(rs.getInt(1), unEscape(rs.getString(2)), rs.getDouble(3), rs.getInt(5), rs.getBoolean(6));
+      n = new Item(rs.getInt(1), rs.getString(2), rs.getDouble(3), rs.getInt(5), rs.getBoolean(6));
       n.setTax(getVat(rs.getInt(4)));
     }
     return n;
@@ -89,7 +89,7 @@ public class ItemIO
     String query = "SELECT " + COLUMNS + " FROM " + TABLE + " " + where;
     ResultSet rs = dc.executeQuery(query);
     while (rs.next()) {
-      Item a = new Item(rs.getInt(1), unEscape(rs.getString(2)), rs.getDouble(3), rs.getInt(5), rs.getBoolean(6));
+      Item a = new Item(rs.getInt(1), rs.getString(2), rs.getDouble(3), rs.getInt(5), rs.getBoolean(6));
       a.setTax(getVat(rs.getInt(4)));
       v.add(a);
     }

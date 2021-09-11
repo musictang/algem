@@ -2,7 +2,7 @@
  * @(#)AddressIO.java	2.13.0 29/03/2017
  *
  * Copyright (c) 1999-2017 Musiques Tangentes. All Rights Reserved.
- *
+ * Copyright (c) 2021 eric@productionlibre.fr. All Rights Reserved.
  * This file is part of Algem.
  * Algem is free software: you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
@@ -29,7 +29,7 @@ import net.algem.util.model.TableIO;
 /**
  * IO methods for class {@link net.algem.contact.Address}.
  *
- * @author <a href="mailto:eric@musiques-tangentes.asso.fr">Eric</a>
+ * @author <a href="mailto:eric@productionlibre.fr">Eric</a>
  * @author <a href="mailto:jmg@musiques-tangentes.asso.fr">Jean-Marc Gobat</a>
  * @version 2.13.0
  */
@@ -97,7 +97,6 @@ public class AddressIO
     ResultSet rs = dc.executeQuery(query);
     for (int i = 0; rs.next(); i++) {
       Address a = new Address();
-      a.setOID(rs.getInt(1));
       a.setId(rs.getInt(2));
       String adr1 = rs.getString(3);
       a.setAdr1(adr1 != null ? adr1.trim() : null);

@@ -20,6 +20,7 @@
  */
 package net.algem.edition;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 import net.algem.util.GemLogger;
 
@@ -47,10 +48,10 @@ public class StatisticsFactory
   public static Statistics getInstance() {
     try {
       Class c = Class.forName("net.algem.plugins.StatisticsPlugin");
-      return (Statistics) c.newInstance();
-    } catch (InstantiationException | IllegalAccessException | ClassNotFoundException ex) {
+      return (Statistics) c.getConstructor().newInstance();
+    } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
       GemLogger.log(Level.SEVERE, ex.getMessage());
-    }
+      }
     return null;
   }
 

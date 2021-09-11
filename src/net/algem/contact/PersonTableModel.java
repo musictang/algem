@@ -71,7 +71,7 @@ public class PersonTableModel
     Person p = tuples.elementAt(line);
     switch (col) {
       case 0:
-        return new Integer(p.getId());
+        return Integer.valueOf(p.getId());
       case 1:
         return p.getOrganization() == null ? null : p.getOrganization().getName();
       case 2:

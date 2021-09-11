@@ -500,8 +500,8 @@ public class ScheduleIO
     try (ResultSet rs = dc.executeQuery(query)) {
       if (rs.next()) {
         FollowUp up = new FollowUp();
-        up.setContent(unEscape(rs.getString(1)));
-        up.setNote(unEscape(rs.getString(2)));
+        up.setContent(rs.getString(1));
+        up.setNote(rs.getString(2));
         up.setStatus(rs.getShort(3));
         return up;
       }
@@ -526,7 +526,7 @@ public class ScheduleIO
     ResultSet rs = dc.executeQuery(query);
     if (rs.next()) {
       up.setId(rs.getInt(1));
-      up.setContent(unEscape(rs.getString(2)));
+      up.setContent(rs.getString(2));
     }
     return up;
   }

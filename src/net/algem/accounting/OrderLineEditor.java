@@ -280,7 +280,7 @@ public class OrderLineEditor
         JOptionPane.ERROR_MESSAGE);
       return;
     }
-    Object params[] = {new Double(e.getAmount() / 100), e.getCurrencyCode(), e.getDate()};
+    Object params[] = {Double.valueOf(e.getAmount()) / 100, e.getCurrencyCode(), e.getDate()};
     if (!MessagePopup.confirm(this,
       MessageUtil.getMessage("payment.delete.confirmation", params),
       MessageUtil.getMessage("payment.delete.label"))) {

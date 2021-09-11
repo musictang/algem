@@ -1,7 +1,8 @@
 /*
- * @(#)Algem.java   3.0.0 10/09/2021 12/07/2021
+ * @(#)Algem.java   3.0.0  10/09/2021
  *                  2.17.6 12/07/2021
  *
+ * Copyright (c) 2021 eric@productionlibre.fr. All Rights Reserved.
  * Copyright (c) 1999-2021 Musiques Tangentes. All Rights Reserved.
  *
  * This file is part of Algem.

@@ -147,7 +147,7 @@ public class AccountIO
     }
     try (ResultSet rs = dc.executeQuery(query)) {
       if (rs.next()) {
-        c = new Account(rs.getInt(1), rs.getString(2), unEscape(rs.getString(3)), rs.getBoolean(4));
+        c = new Account(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getBoolean(4));
       }
     }
     return c;

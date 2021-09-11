@@ -57,7 +57,7 @@ public class ConfigIO
     try (ResultSet rs = dc.executeQuery(query)) {
       while (rs.next()) {
         String k = rs.getString(1).trim();
-        String v = TableIO.unEscape(rs.getString(2).trim());
+        String v = rs.getString(2).trim();
         Config c = new Config(k, v);
         confs.put(k, c);
         cache.put(k, new Config(k, v));
@@ -76,7 +76,7 @@ public class ConfigIO
     try (ResultSet rs = dc.executeQuery(query)) {
       while (rs.next()) {
         String k = rs.getString(1).trim();
-        String v = TableIO.unEscape(rs.getString(2).trim());
+        String v = rs.getString(2).trim();
         cfg = new Config(key, v);
         cache.put(k, new Config(key, v));
       }

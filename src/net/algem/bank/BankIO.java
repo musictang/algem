@@ -87,7 +87,7 @@ public class BankIO
       while (rs.next()) {
         Bank b = new Bank();
         b.setCode(rs.getString(1));
-        b.setName(unEscape(rs.getString(2)).trim());
+        b.setName(rs.getString(2).trim());
         b.setMulti(rs.getBoolean(3));
 
         v.addElement(b);

@@ -244,8 +244,8 @@ public class RoomIO
             while (rs.next()) {
                 Room s = new Room();
                 s.setId(rs.getInt(1));
-                s.setName(unEscape(rs.getString(2).trim()));
-                s.setFunction(unEscape(rs.getString(3).trim()));
+                s.setName(rs.getString(2).trim());
+                s.setFunction(rs.getString(3).trim());
                 s.setSurface(rs.getInt(4));
                 s.setNPers(rs.getInt(5));
                 s.setEstab(rs.getInt(6));
@@ -273,7 +273,7 @@ public class RoomIO
             while (rs.next()) {
                 Equipment e = new Equipment();
                 e.setRoom(rs.getInt(1));
-                e.setLabel(unEscape(rs.getString(2).trim()));
+                e.setLabel(rs.getString(2).trim());
                 e.setQuantity(rs.getInt(3));
                 e.setIdx(rs.getShort(4));
                 e.setVisible(rs.getBoolean(5));

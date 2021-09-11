@@ -19,6 +19,9 @@
  */
 package net.algem.edition;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.algem.util.GemLogger;
 
 /**
@@ -32,20 +35,20 @@ public class HoursTaskFactory {
   public static HoursTaskExecutor getInstance() {
     try {
       Class c = Class.forName("net.algem.plugins.WorkingTimePlugin");
-      return (HoursTaskExecutor) c.newInstance();
-    } catch (InstantiationException | IllegalAccessException ex) {
+      return (HoursTaskExecutor) c.getConstructor().newInstance();
+    } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException | SecurityException ex) {
       GemLogger.logException(ex);
     } catch (ClassNotFoundException ex) {
       GemLogger.log(ex.getMessage());
     }
     try {
       Class c = Class.forName("net.algem.plugins.XLSWorkingTimePlugin");
-      return (HoursTaskExecutor) c.newInstance();
-    } catch (InstantiationException | IllegalAccessException ex) {
+      return (HoursTaskExecutor) c.getConstructor().newInstance();
+    } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException | SecurityException ex) {
       GemLogger.logException(ex);
     } catch (ClassNotFoundException ex) {
       GemLogger.log(ex.getMessage());
-    }
+      }
     return null;
   }
 }

@@ -87,7 +87,7 @@ public class TableIOTest {
     ResultSet rs = dc.executeQuery(query);
     String e = "";
     while(rs.next()) {
-      e = TableIO.unEscape(rs.getString(1)); 
+      e = rs.getString(1); 
     }
     assertEquals("c:\\Algem\\Journaux", e);
     s = "Un' deux ' trois";
@@ -98,7 +98,7 @@ public class TableIOTest {
     rs = dc.executeQuery(query);
     e = "";
     while(rs.next()) {
-      e = TableIO.unEscape(rs.getString(1)); 
+      e = rs.getString(1); 
     }
     assertEquals("Un' deux ' trois", e);
   }

@@ -151,8 +151,8 @@ public class QuoteIO
       d.setIssuer(rs.getInt(4));
       d.setUser((User) DataCache.findId(rs.getInt(4), Model.User));
       d.setPayer(rs.getInt(5));
-      d.setDescription(unEscape(rs.getString(6)));
-      d.setReference(unEscape(rs.getString(7)));
+      d.setDescription(rs.getString(6));
+      d.setReference(rs.getString(7));
       d.setMember(rs.getInt(8));
       d.setEditable(rs.getBoolean(9));
 

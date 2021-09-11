@@ -67,7 +67,7 @@ public class GenericTableModel
     GenericTable v = (GenericTable) tuples.elementAt(ligne);
     switch (colonne) {
       case 0:
-        return new Integer(v.getId());
+        return Integer.valueOf(v.getId());
       case 1:
         return v.getLabel();
     }

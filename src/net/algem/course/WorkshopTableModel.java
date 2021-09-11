@@ -66,7 +66,7 @@ public class WorkshopTableModel
     Course m = tuples.elementAt(ligne);
     switch (colonne) {
       case 0:
-        return new Integer(m.getId());
+        return Integer.valueOf(m.getId());
       case 1:
         return m.getTitle();
     }

@@ -114,7 +114,7 @@ public class NoteIO
     Note n = new Note();
     n.setId(rs.getInt(1));
     n.setIdPer(rs.getInt(2));
-    n.setText(unEscape(rs.getString(3)));
+    n.setText(rs.getString(3));
     n.setPtype(rs.getShort(4));
     return n;
   }
