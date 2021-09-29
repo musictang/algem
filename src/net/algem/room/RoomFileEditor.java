@@ -38,7 +38,6 @@ import net.algem.util.model.GemCloseVetoException;
 import net.algem.util.model.Model;
 import net.algem.util.module.FileEditor;
 import net.algem.util.module.FileTabView;
-import net.algem.util.module.AbstractDesktopCtrl;
 import net.algem.util.module.GemModule;
 import net.algem.util.ui.*;
 
@@ -193,7 +192,7 @@ public class RoomFileEditor
     } else if ("Room.suppression".equals(arg)) {
       delete();
     } else if ("PayerLink".equals(arg)) {
-      PersonFileEditor m = ((AbstractDesktopCtrl) desktop).getPersonFileEditor(room.getPayer().getId());
+      PersonFileEditor m = desktop.getPersonFileEditor(room.getPayer().getId());
       if (m == null) {
         PersonFileEditor editor = new PersonFileEditor(payerFile);
         desktop.addModule(editor);

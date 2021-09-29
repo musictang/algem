@@ -57,7 +57,7 @@ import net.algem.security.User;
 import net.algem.util.*;
 import net.algem.util.module.GemDesktopCtrl;
 import net.algem.util.module.GemSPADesktop;
-import net.algem.util.module.AbstractDesktopCtrl;
+import net.algem.util.module.GemDesktop;
 import net.algem.util.ui.MessagePopup;
 import org.apache.commons.codec.binary.Base64;
 
@@ -96,7 +96,7 @@ public class Algem
   private static final Font MY_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 11);
   private DataConnection dc;
   
-  private AbstractDesktopCtrl desktop;
+  private GemDesktop desktop;
 
   public Algem() {
     Locale.setDefault(Locale.FRENCH);

@@ -35,7 +35,6 @@ import net.algem.util.event.GemEventListener;
 import net.algem.util.model.Model;
 import net.algem.util.model.TableIO;
 import net.algem.util.module.GemDesktop;
-import net.algem.util.module.AbstractDesktopCtrl;
 import net.algem.util.ui.SearchCtrl;
 
 /**
@@ -233,7 +232,7 @@ public class PersonFileSearchCtrl
       return;
     }
     // Recherche si un module correspondant au contact est déjà ouvert.
-    PersonFileEditor m = ((AbstractDesktopCtrl) desktop).getPersonFileEditor(currentContact.getId());
+    PersonFileEditor m = desktop.getPersonFileEditor(currentContact.getId());
 
     if (m == null) {
       PersonFile pFile = new PersonFile(currentContact);

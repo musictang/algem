@@ -25,7 +25,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import net.algem.contact.PersonFileGroupListCtrl;
 import net.algem.util.module.GemDesktop;
-import net.algem.util.module.AbstractDesktopCtrl;
 import net.algem.util.ui.FileTab;
 import net.algem.util.ui.ListCtrl;
 
@@ -73,7 +72,7 @@ public class PersonFileGroupView
   }
 
   private void loadModule(Group g) {
-    GroupFileEditor m = ((AbstractDesktopCtrl) desktop).getGroupFileEditor(g.getId());
+    GroupFileEditor m = desktop.getGroupFileEditor(g.getId());
     if (m == null) {
       m = new GroupFileEditor(g);
       desktop.addModule(m);

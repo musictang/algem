@@ -26,7 +26,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
 import net.algem.util.GemCommand;
-import net.algem.util.module.AbstractDesktopCtrl;
+import net.algem.util.module.GemDesktop;
 import net.algem.util.module.GemModule;
 
 /**
@@ -41,13 +41,13 @@ public class FrameDetach
         implements ActionListener
 {
 
-  private AbstractDesktopCtrl desktop;
+  private GemDesktop desktop;
   private String label;
   private Container panel;
   private GemButton btQuit;
   private GemModule module;
 
-  public FrameDetach(AbstractDesktopCtrl _desktop, GemModule _module, Container p) {
+  public FrameDetach(GemDesktop _desktop, GemModule _module, Container p) {
     super("Algem " + _module.getLabel());
 
     desktop = _desktop;

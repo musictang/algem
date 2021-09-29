@@ -26,8 +26,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -77,7 +75,6 @@ import net.algem.util.MailUtil;
 import net.algem.util.MessageUtil;
 import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
-import net.algem.util.module.AbstractDesktopCtrl;
 import net.algem.util.ui.MessagePopup;
 
 /**
@@ -95,7 +92,6 @@ public class EnrolmentWishCtrl implements ActionListener, TableModelListener {
     private final DateTimeFormatter timestampFileNameFormatter = DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm");
 
     private final GemDesktop desktop;
-    private AbstractDesktopCtrl desktopCtrl;
     private CourseScheduleCtrl csCtrl;
 
     private final DataCache dataCache;
@@ -699,7 +695,7 @@ public class EnrolmentWishCtrl implements ActionListener, TableModelListener {
 
     private void showContactFile(int id) {
 
-        PersonFileEditor editor = ((AbstractDesktopCtrl) desktop).getPersonFileEditor(id);
+        PersonFileEditor editor = desktop.getPersonFileEditor(id);
         if (editor != null) {
             desktop.setSelectedModule(editor);
         } else {

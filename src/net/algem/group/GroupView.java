@@ -38,7 +38,6 @@ import net.algem.util.jdesktop.DesktopHandler;
 import net.algem.util.jdesktop.DesktopOpenHandler;
 import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
-import net.algem.util.module.AbstractDesktopCtrl;
 import net.algem.util.module.GemModule;
 import net.algem.util.ui.*;
 
@@ -428,7 +427,7 @@ public class GroupView
    * @param id contact id
    */
   private void viewCard(int id) {
-    PersonFileEditor m = ((AbstractDesktopCtrl) desktop).getPersonFileEditor(id);
+    PersonFileEditor m = desktop.getPersonFileEditor(id);
     if (m == null) {
       PersonFile dossier = new PersonFile(service.getContact(id));
       try {

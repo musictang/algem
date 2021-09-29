@@ -22,10 +22,14 @@
 package net.algem.util.module;
 
 import java.awt.Dimension;
+import java.awt.event.ActionListener;
+import net.algem.contact.PersonFileEditor;
+import net.algem.group.GroupFileEditor;
 import net.algem.util.DataCache;
 import net.algem.util.event.GemEvent;
 import net.algem.util.event.GemEventListener;
 import net.algem.util.event.GemRemoteEvent;
+import net.algem.util.postit.PostitModule;
 
 /**
  * Gem desktop interface.
@@ -36,70 +40,80 @@ import net.algem.util.event.GemRemoteEvent;
  * @since 1.0a 06/07/2002
  */
 public interface GemDesktop
-        extends GemEventListener
-{
+        extends GemEventListener, ActionListener {
 
-  public void remoteEvent(GemRemoteEvent evt);
+    public void remoteEvent(GemRemoteEvent evt);
 
-  @Override
-  public void postEvent(GemEvent evt);
+    @Override
+    public void postEvent(GemEvent evt);
 
-  /**
-   * Add new internal window module on the desktop.
-   * @param module module to add
-   */
-  public void addModule(GemModule module);
+    /**
+     * Add new internal window module on the desktop.
+     *
+     * @param module module to add
+     */
+    public void addModule(GemModule module);
 
-  /**
-   * return internal window by label
-   * @param module module to get
-   */
-  public GemModule getModule(String label);
-  
-  /**
-   * Adds new internal window on the desktop.
-   * @param label title key (without .label extension)
-   * @param panel container
-   */
-  public void addPanel(String label, java.awt.Container panel);
+    /**
+     * return internal window by label
+     *
+     * @param module module to get
+     */
+    public GemModule getModule(String label);
 
-  /**
-   * Adds new internal window on the desktop with preferred size.
-   * @param s title key (without .label extension)
-   * @param p container
-   * @param size preferred size
-   */
-  public void addPanel(String s, java.awt.Container p, Dimension size);
+    /**
+     * Adds new internal window on the desktop.
+     *
+     * @param label title key (without .label extension)
+     * @param panel container
+     */
+    public void addPanel(String label, java.awt.Container panel);
 
-  public boolean hasModule(String key);
+    /**
+     * Adds new internal window on the desktop with preferred size.
+     *
+     * @param s title key (without .label extension)
+     * @param p container
+     * @param size preferred size
+     */
+    public void addPanel(String s, java.awt.Container p, Dimension size);
 
-  public void showModule(String key);
+    public boolean hasModule(String key);
 
-  public void retourModule(GemModule module, boolean tree);
+    public void showModule(String key);
 
-  public void removeModule(GemModule module);
+    public void retourModule(GemModule module, boolean tree);
 
-  public void removeModule(String key);
+    public void removeModule(GemModule module);
 
-  public void removeCurrentModule();
+    public void removeModule(String key);
 
-  public GemModule getSelectedModule();
+    public void removeCurrentModule();
 
-  public void setSelectedModule(String title);
+    public GemModule getSelectedModule();
 
-  public void setSelectedModule(GemModule module);
+    public void setSelectedModule(String title);
 
-  public void setWaitCursor();
+    public void setSelectedModule(GemModule module);
 
-  public void setDefaultCursor();
+    public void setWaitCursor();
 
-  public java.awt.Frame getFrame();
+    public void setDefaultCursor();
 
-  public DataCache getDataCache();
-  
-  public void loadPostits();
+    public java.awt.Frame getFrame();
 
-  public void addGemEventListener(GemEventListener l);
+    public DataCache getDataCache();
 
-  public void removeGemEventListener(GemEventListener l);
-}
+    public void loadPostits();
+
+    public void addGemEventListener(GemEventListener l);
+
+    public void removeGemEventListener(GemEventListener l);
+
+    public PersonFileEditor getPersonFileEditor(int idper);
+
+    public GroupFileEditor getGroupFileEditor(int id);
+    
+    public PostitModule getPostit();
+
+    }

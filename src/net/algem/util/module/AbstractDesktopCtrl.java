@@ -458,6 +458,7 @@ public abstract class AbstractDesktopCtrl
         }
     }
 
+    @Override
     public PersonFileEditor getPersonFileEditor(int idper) {
         Enumeration<GemModule> mods = modules.elements();
         while (mods.hasMoreElements()) {
@@ -478,6 +479,7 @@ public abstract class AbstractDesktopCtrl
      * @param id group id
      * @return a group file editor
      */
+    @Override
     public GroupFileEditor getGroupFileEditor(int id) {
         Enumeration<GemModule> mods = modules.elements();
         while (mods.hasMoreElements()) {

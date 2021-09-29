@@ -65,7 +65,6 @@ import net.algem.util.ImageUtil;
 import net.algem.util.MessageUtil;
 import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
-import net.algem.util.module.AbstractDesktopCtrl;
 import net.algem.util.ui.GemButton;
 import net.algem.util.ui.GemLabel;
 import net.algem.util.ui.GemPanel;
@@ -355,7 +354,7 @@ public class ConfigOrganization
 
 
   private void showContactFile(int id) {
-    PersonFileEditor editor = ((AbstractDesktopCtrl) desktop).getPersonFileEditor(id);
+    PersonFileEditor editor = desktop.getPersonFileEditor(id);
     if (editor != null) {
       desktop.setSelectedModule(editor);
     } else {

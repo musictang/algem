@@ -23,17 +23,10 @@ package net.algem.contact.member;
 import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import net.algem.contact.PersonFile;
 import net.algem.contact.PersonFileEditor;
 import net.algem.contact.PersonFileListCtrl;
-import net.algem.util.DataCache;
-import net.algem.util.GemLogger;
-import net.algem.util.model.Model;
 import net.algem.util.module.GemDesktop;
-import net.algem.util.module.AbstractDesktopCtrl;
 import net.algem.util.ui.FileTab;
 import net.algem.util.ui.ListCtrl;
 
@@ -61,7 +54,7 @@ public class MemberListTab
       public void mouseClicked(MouseEvent e) {
         int id = _list.getSelectedID();
         if (id > 0) {
-          PersonFileEditor m = ((AbstractDesktopCtrl) desktop).getPersonFileEditor(id);
+          PersonFileEditor m = desktop.getPersonFileEditor(id);
           if (m == null) {
             PersonFile pf = ((PersonFileListCtrl) _list).getPersonFile();
               PersonFileEditor editor = new PersonFileEditor(pf);

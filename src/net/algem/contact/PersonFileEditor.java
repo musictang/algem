@@ -23,7 +23,6 @@ package net.algem.contact;
 
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.event.InputEvent;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -72,7 +71,6 @@ import net.algem.util.model.Model;
 import net.algem.util.model.TableIO;
 import net.algem.util.module.FileEditor;
 import net.algem.util.module.FileTabView;
-import net.algem.util.module.AbstractDesktopCtrl;
 import net.algem.util.ui.*;
 import org.passay.PasswordValidator;
 
@@ -758,7 +756,7 @@ public class PersonFileEditor
 
       public void actionPerformed(ActionEvent evt) {
         PersonFile d = ((PersonFileMenuItem) evt.getSource()).getPersonFile();
-        PersonFileEditor m = ((AbstractDesktopCtrl) desktop).getPersonFileEditor(d.getId());
+        PersonFileEditor m = desktop.getPersonFileEditor(d.getId());
         if (m == null) {
           PersonFileEditor editeur = new PersonFileEditor(d);
           desktop.addModule(editeur);
@@ -777,7 +775,7 @@ public class PersonFileEditor
       @Override
       public void actionPerformed(ActionEvent evt) {
         desktop.setWaitCursor();
-        PersonFileEditor m = ((AbstractDesktopCtrl) desktop).getPersonFileEditor(_dossier.getId());
+        PersonFileEditor m = desktop.getPersonFileEditor(_dossier.getId());
         if (m == null) {
           PersonFileEditor editor = new PersonFileEditor(_dossier);
           desktop.addModule(editor);
@@ -796,7 +794,7 @@ public class PersonFileEditor
       @Override
       public void actionPerformed(ActionEvent evt) {
         desktop.setWaitCursor();
-        PersonFileEditor m = ((AbstractDesktopCtrl) desktop).getPersonFileEditor(_dossier.getId());
+        PersonFileEditor m = desktop.getPersonFileEditor(_dossier.getId());
         if (m == null) {
           PersonFileEditor editor = new PersonFileEditor(_dossier);
           desktop.addModule(editor);

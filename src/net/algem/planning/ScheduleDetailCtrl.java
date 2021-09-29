@@ -28,7 +28,6 @@ import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
@@ -61,7 +60,6 @@ import net.algem.util.jdesktop.DesktopMailHandler;
 import net.algem.util.model.Model;
 import net.algem.util.module.DefaultGemView;
 import net.algem.util.module.GemDesktop;
-import net.algem.util.module.AbstractDesktopCtrl;
 import net.algem.util.ui.*;
 
 /**
@@ -562,7 +560,7 @@ public class ScheduleDetailCtrl
         }
 
         Person p = range.getMember();
-        PersonFileEditor editor = ((AbstractDesktopCtrl) desktop).getPersonFileEditor(p.getId());
+        PersonFileEditor editor = desktop.getPersonFileEditor(p.getId());
         if (editor != null) {
           desktop.setSelectedModule(editor);
         } else {
@@ -628,7 +626,7 @@ public class ScheduleDetailCtrl
           dlg.entry();
         } else {
           CourseCtrl courseCard = new CourseCtrl(desktop);
-          courseCard.addActionListener((AbstractDesktopCtrl) desktop);
+          courseCard.addActionListener(desktop);
           courseCard.loadCard(c);
           desktop.addPanel("Cours " + c.getTitle(), courseCard);
           if (desktop.getSelectedModule() != null && desktop.getSelectedModule().getView() != null) {
